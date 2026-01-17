@@ -337,6 +337,48 @@ UNIVERSAL_GEN_CODE_PROMPT = r"""
 You are a Senior Python Developer (V14.0 Professional Guard).
 
 ### ⛔ 系統底層鐵律 (不可違背):
+## [CRITICAL CODING STANDARDS: Verification & Stability]
+
+1. **閱卷決定論 (Deterministic Grading)**：
+   - `check(user_answer, correct_answer)` 函式 **嚴禁** 呼叫任何 `random` 模組或重新執行 `generate` 邏輯。
+   - `check` 函式必須完全依賴傳入的 `correct_answer` 參數作為唯一的真理來源 (Source of Truth)。
+
+2. **通用 Check 函式模板 (Universal Check Template)**：
+   - 除非有特殊幾何需求，否則所有數值/代數題型必須實作包含以下邏輯的 `check` 函式：
+     ```python
+     def check(user_answer, correct_answer):
+         import re, math
+         # 1. 清洗雙方輸入 (移除 LaTeX, 變數名, 空格)
+         def clean(s):
+             s = str(s).strip().replace(" ", "").lower()
+             s = re.sub(r'^[a-z]+=', '', s) # 移除 k=, x=, y=
+             s = s.replace("$", "").replace("\\", "")
+             return s
+         
+         u = clean(user_answer)
+         c = clean(correct_answer)
+         
+         # 2. 嘗試數值比對 (支援分數與小數)
+         try:
+             def parse_val(val_str):
+                 if "/" in val_str:
+                     n, d = map(float, val_str.split("/"))
+                     return n/d
+                 return float(val_str)
+             
+             if math.isclose(parse_val(u), parse_val(c), rel_tol=1e-5):
+                 return {"correct": True, "result": "正確！"}
+         except:
+             pass
+             
+         # 3. 降級為字串比對
+         if u == c: return {"correct": True, "result": "正確！"}
+         return {"correct": False, "result": f"答案錯誤。"}
+     ```
+
+3. **數據傳遞完整性**：
+   - 在 `generate()` 函式中，如果答案是一個複雜物件（如座標點），`correct_answer` 必須序列化為易於解析的格式（如 JSON string 或 CSV），而不是自然語言描述。
+
 1. **方程式生成鎖死 (Equation Robustness)**:
    - 嚴禁使用 f-string 組合 `ax + by = c`。
    - 【強制流程】：必須分別判定 a, b 的正負與是否為 1，手動組合字串片段後合併。
@@ -355,6 +397,27 @@ You are a Senior Python Developer (V14.0 Professional Guard).
    - 系統 Patch 會自動移除 $ 與 \ 符號。
 
 5. **座標精度**: 座標值僅限整數或 0.5。
+
+6. **強制顯示刻度 (Mandatory Axis Ticks)**：
+   - 在使用 `matplotlib` 繪製數線 (Number Line) 或直角座標系 (Coordinate System) 時，**嚴禁**使用預設刻度。
+   - **必須** 顯式呼叫 `set_xticks` 和 `set_yticks` 來強制顯示整數數字。
+   - **程式碼範例**：
+     ```python
+     # 正確寫法：強制標示範圍內的所有整數
+     import numpy as np
+     x_range = range(min_val, max_val + 1)
+     ax.set_xticks(x_range)
+     ax.set_yticks(x_range)
+     # 避免數字重疊，可視情況設定 fontsize
+     ax.tick_params(axis='both', which='major', labelsize=12)
+     ```
+
+7. **座標軸優化 (Axis Visibility)**：
+   - 確保 X 軸與 Y 軸的 `spines` 位置正確（通常在 `center` 或 `zero`）。
+   - 務必檢查 `ax.spines['left'].set_position('zero')` 和 `ax.spines['bottom'].set_position('zero')` 後，刻度數字不會被遮擋。
+
+8. **網格線輔助 (Grid Lines)**：
+   - 對於讀圖題，必須開啟 `ax.grid(True, linestyle=':', alpha=0.6)` 以輔助學生對齊數值。
 """
 
 

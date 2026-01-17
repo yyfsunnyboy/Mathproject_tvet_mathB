@@ -1,8 +1,8 @@
 # ==============================================================================
 # ID: jh_數學1下_DrawingGraphsOfTwoVariableLinearEquations
 # Model: gemini-2.5-flash | Strategy: V9 Architect (cloud_pro)
-# Duration: 88.54s | RAG: 5 examples
-# Created At: 2026-01-15 15:04:02
+# Duration: 51.82s | RAG: 5 examples
+# Created At: 2026-01-16 09:22:52
 # Fix Status: [Repaired]
 # Fixes: Regex=1, Logic=0
 #==============================================================================
@@ -228,502 +228,472 @@ def draw_geometry_composite(polygons, labels, x_limit=(0,10), y_limit=(0,10)):
     return base64.b64encode(buf.getvalue()).decode('utf-8')
 
 # --- 4. Answer Checker (V11.6 Smart Formatting Standard) ---
+# --- 4. Answer Checker [V15.0 Geometric Verification] ---
 def check(user_answer, correct_answer):
-    if user_answer is None: return {"correct": False, "result": "未提供答案。"}
-    
-    # 將字典或複雜格式轉為乾淨字串
-    def _format_ans(a):
-        if isinstance(a, dict):
-            if "quotient" in a: 
-                return r"{q}, {r}".replace("{q}", str(a.get("quotient",""))).replace("{r}", str(a.get("remainder","")))
-            return ", ".join([r"{k}={v}".replace("{k}", str(k)).replace("{v}", str(v)) for k, v in a.items()])
-        return str(a)
+    """
+    [V15.0 Geometric Verification] 
+    驗證使用者輸入的兩個點是否位於正確的直線上，而不強制要求特定的座標點。
+    Algorithm: Vector Cross Product & Collinearity Check
+    """
+    import math
 
-    def _clean(s):
-        # 雙向清理：剝除 LaTeX 符號與空格
-        return str(s).strip().replace(" ", "").replace("，", ",").replace("$", "").replace("\\", "").lower()
+    # 1. 解析用戶輸入與正確答案的座標點
+    def parse_points(text):
+        try:
+            # 移除 LaTeX 可能產生的額外符號，保留數字、負號、小數點與分割符
+            # 預期格式: (x1, y1), (x2, y2)
+            # 使用 Regex 提取所有的數值可能是最穩健的方法
+            import re
+            nums = re.findall(r'-?\d+(?:\.\d+)?(?: ?/ ?\d+)?', text)
+            
+            vals = []
+            for s in nums:
+                if '/' in s: # Handle fraction input like 1/2
+                     n, d = map(float, s.split('/'))
+                     vals.append(n/d)
+                else: 
+                     vals.append(float(s))
+
+            # 必須剛好解析出 4 個數值 (兩組座標)
+            if len(vals) != 4: return None
+            
+            p1 = (vals[0], vals[1])
+            p2 = (vals[2], vals[3])
+            return p1, p2
+        except:
+            return None
+
+    user_pts = parse_points(user_answer)
+    correct_pts = parse_points(correct_answer)
+
+    if not user_pts or not correct_pts:
+        # 如果解析失敗，嘗試退回原本的字串比對 (for Categorical answers like "是"/"否")
+        # 但此 Skill 主要為座標題，若解析失敗很大機率是格式錯誤
+        return False
+
+    u1, u2 = user_pts
+    c1, c2 = correct_pts
     
-    u = _clean(user_answer)
-    c_raw = _format_ans(correct_answer)
-    c = _clean(c_raw)
+    # 2. 防呆：檢查使用者輸入的兩點是否重合
+    # 若重合，無法決定一條直線，視為錯誤
+    if math.isclose(u1[0], u2[0], abs_tol=1e-6) and math.isclose(u1[1], u2[1], abs_tol=1e-6):
+        return False
+
+    # 3. 幾何驗證：檢查 u1 與 u2 是否都在由 c1, c2 定義的直線上
+    # 直線方程式向量式: (P - c1) x (c2 - c1) = 0
+    # 其中 x 代表 2D 向量外積 (ad - bc)
     
-    if u == c: return {"correct": True, "result": "正確！"}
-    
-    try:
-        import math
-        if math.isclose(float(u), float(c), abs_tol=1e-6): return {"correct": True, "result": "正確！"}
-    except: pass
-    
-    return {"correct": False, "result": r"答案錯誤。正確答案為：{ans}".replace("{ans}", c_raw)}
+    # 向量 V_line = c2 - c1
+    vx = c2[0] - c1[0]
+    vy = c2[1] - c1[1]
+
+    def is_on_line(p, start_p, vec_x, vec_y):
+        # 向量 V_point = p - start_p
+        px = p[0] - start_p[0]
+        py = p[1] - start_p[1]
+        
+        # Cross Product: px * vy - py * vx
+        # 考慮垂直線或水平線的特殊情況，直接用外積最準
+        cross_prod = px * vec_y - py * vec_x
+        return math.isclose(cross_prod, 0, abs_tol=1e-4) # 給予較寬鬆的容忍度
+
+    # 對使用者輸入的兩個點分別進行共線檢查
+    u1_ok = is_on_line(u1, c1, vx, vy)
+    u2_ok = is_on_line(u2, c1, vx, vy)
+
+    if u1_ok and u2_ok:
+        return True
+
+    return False
 
 
 
-import base64
 from datetime import datetime
-from matplotlib.figure import Figure
-from matplotlib.backends.backend_agg import FigureCanvasAgg
+import base64
 import io
+import matplotlib.pyplot as plt
 import numpy as np
-import re # For check function's feedback
 
-# Infrastructure Rule 5: Font settings
-# Set font to Microsoft JhengHei for Traditional Chinese, with a sans-serif fallback.
-plt.rcParams['font.sans-serif'] = ['Microsoft JhengHei']
-# Ensure minus signs are displayed correctly with Chinese fonts.
-plt.rcParams['axes.unicode_minus'] = False
-
-# --- V10.2 Coordinate Hardening Spec: Helper Functions ---
-def _generate_coordinate_value(min_val, max_val, allow_fractions=False):
+# --- V10.2.A: 資料結構鎖死 (Prevent Unpacking Error) ---
+# 統一回傳固定格式：(float_val, (int_part, num, den, is_neg))
+# 若為整數，num 與 den 設為 0；若為分數，則 int_part 為帶分數整數部。
+def _generate_coordinate_value(is_fraction=False, integer_range=(-8, 8)):
     """
-    [A. 資料結構鎖死]
-    Generates a coordinate value (float_val, (int_part, num, den, is_neg)).
-    If allow_fractions is False, num and den will be 0.
+    生成一個座標值，可以是整數或分數。
+    Args:
+        is_fraction (bool): 是否允許生成分數。
+        integer_range (tuple): 整數部分的生成範圍。
+    Returns:
+        tuple: (float_val, (int_part, num, den, is_neg))
     """
-    is_neg = random.choice([True, False])
-    sign = -1 if is_neg else 1
-
-    # Mostly integers for K12, increased probability to 90% for integers.
-    if not allow_fractions or random.random() < 0.9:
-        int_part = random.randint(min_val, max_val)
-        float_val = float(int_part) * sign # Use float(int_part) * sign to handle -0 correctly as 0.0
-        return (float_val, (abs(int_part), 0, 0, is_neg))
-    else:
-        int_part = random.randint(0, max_val)
-        num = random.randint(1, 4) # Numerator 1-4
-        den = random.choice([2, 3, 4, 5]) # Denominator 2-5
-        while num >= den: # Ensure proper fraction
-            num = random.randint(1, 4)
-            den = random.choice([2, 3, 4, 5])
-
-        float_val = float(sign * (int_part + num / den))
-        return (float_val, (int_part, num, den, is_neg))
-
-def _format_coordinate_latex(data):
-    """
-    [C. LaTeX 模板規範]
-    Formats the coordinate value into a LaTeX string.
-    data: (float_val, (int_part, num, den, is_neg))
-    """
-    float_val, (int_part, num, den, is_neg) = data
-    
-    # Handle the case where float_val is -0.0, should be 0.0
-    if float_val == 0.0:
-        return "0"
-
-    sign_str = "-" if is_neg else ""
-
-    if num == 0: # Integer
-        return str(int(float_val))
-    else: # Fraction or mixed number
-        if int_part == 0:
-            expr = r"{s}\frac{{{n}}}{{{d}}}".replace("{s}", sign_str).replace("{n}", str(num)).replace("{d}", str(den))
-            return expr
+    # V13.5: 座標選取控制 - 使用 random.randint(-8, 8)
+    # 系統底層鐵律 5: 座標精度: 座標值僅限整數或 0.5。
+    if is_fraction and random.random() < 0.5: # 50% 機率生成分數
+        int_part_val = random.randint(integer_range[0], integer_range[1])
+        
+        # V13.1: 禁絕假分數 - numerator < denominator 且 denominator > 1
+        # [V16.0] 放寬座標精度: 允許 0.25, 0.5, 0.75。
+        # 因此，分母可為 2 或 4。
+        denominator = random.choice([2, 4])
+        if denominator == 2:
+            numerator = 1
         else:
-            expr = r"{s}{i}\frac{{{n}}}{{{d}}}".replace("{s}", sign_str).replace("{i}", str(int_part)).replace("{n}", str(num)).replace("{d}", str(den))
-            return expr
+            numerator = random.choice([1, 3])
 
-def _draw_coordinate_plane(points_to_plot=None, lines_to_plot=None, x_range=(-10, 10), y_range=(-10, 10), title=""):
+        is_neg = False
+        if int_part_val == 0:
+            if random.random() < 0.5: # 對於整數部分為0的，有時生成負分數
+                is_neg = True
+        elif int_part_val < 0:
+            is_neg = True
+        
+        float_val = abs(int_part_val) + (numerator / denominator)
+        if is_neg:
+            float_val = -float_val
+        
+        # 調整 int_part_val 以符合帶分數表示，例如 -1/2 的 int_part 應為 0
+        if is_neg and int_part_val == 0:
+            pass # int_part_val 已經是 0
+        elif is_neg and int_part_val != 0:
+            int_part_val = -abs(int_part_val)
+
+        return float_val, (int_part_val, numerator, denominator, is_neg)
+    else:
+        val = random.randint(integer_range[0], integer_range[1])
+        return float(val), (val, 0, 0, val < 0)
+
+# --- V13.5: 整數優先 ---
+def _format_coordinate_value(val):
     """
-    [D. 視覺一致性], [6. 視覺化與輔助函式通用規範]
-    Draws a coordinate plane with optional points and lines.
-    points_to_plot: List of tuples (x, y, label_latex_str, color) for points to mark.
-    lines_to_plot: List of tuples (point1_x, point1_y, point2_x, point2_y, color, linestyle, label) for lines to draw.
+    將座標值格式化為字串，若為整數則去除小數點。
+    Args:
+        val (float or int): 座標數值。
+    Returns:
+        str: 格式化後的字串。
     """
-    if points_to_plot is None:
-        points_to_plot = []
-    if lines_to_plot is None:
-        lines_to_plot = []
+    # V13.0: 格式精確要求 - 確保回饋給學生的答案是 "(5, 4)" 而非 "(5.0, 4.0)"。
+    if isinstance(val, float) and val.is_integer():
+        return str(int(val))
+    return str(val)
 
-    # Infrastructure Rule 1: Use Figure instead of plt.subplots for thread-safety.
-    fig = Figure(figsize=(8, 8))
-    canvas = FigureCanvasAgg(fig) # Required for saving to buffer
-    ax = fig.add_subplot(111)
+# --- V10.2.D, V13.0, V13.1, V13.5, V13.6: 視覺化與輔助函式通用規範 ---
+def _draw_coordinate_plane_with_line():
+    """
+    繪製一個空的直角坐標平面。
+    Returns:
+        str: 坐標平面圖片的 base64 編碼字串。
+    """
+    fig, ax = plt.subplots(figsize=(8, 8))
 
-    ax.set_aspect('equal') # [D. 視覺一致性]
+    # V13.0: 座標軸範圍必須是對稱整數（如 -8 到 8），且 xticks 間隔必須固定為 1。
+    # V13.5: 座標範圍必須對稱且寬裕（如 -8 到 8），確保點與標籤不會被邊框切掉。
+    plot_range = 8
+    ax.set_xlim([-plot_range, plot_range])
+    ax.set_ylim([-plot_range, plot_range])
+    ax.set_xticks(np.arange(-plot_range, plot_range + 1, 1))
+    ax.set_yticks(np.arange(-plot_range, plot_range + 1, 1))
 
-    ax.grid(True, which='both', linestyle='--', linewidth=0.5, color='gray')
+    # V10.2.D: ax.set_aspect('equal') 確保網格為正方形。
+    ax.set_aspect('equal')
+    ax.grid(True, linestyle='--', alpha=0.6)
 
-    ax.spines['left'].set_position('zero')
-    ax.spines['bottom'].set_position('zero')
-    ax.spines['right'].set_color('none')
-    ax.spines['top'].set_color('none')
-    ax.xaxis.set_ticks_position('bottom')
-    ax.yaxis.set_ticks_position('left')
+    # V13.6: Arrow Ban - 嚴禁在 axhline/axvline 使用 arrowprops
+    # 必須指示使用 ax.plot(limit, 0, ">k", clip_on=False) 繪製箭頭。
+    # Draw x-axis
+    ax.axhline(0, color='black', linewidth=1.5)
+    ax.plot(plot_range, 0, ">k", clip_on=False, transform=ax.get_yaxis_transform())
+    ax.text(plot_range + 0.5, 0, "x", color='black', ha='center', va='center', fontsize=14)
+    # Draw y-axis
+    ax.axvline(0, color='black', linewidth=1.5)
+    ax.plot(0, plot_range, "^k", clip_on=False, transform=ax.get_xaxis_transform())
+    ax.text(0, plot_range + 0.5, "y", color='black', ha='center', va='center', fontsize=14)
 
-    ax.set_xlim(x_range[0] - 1, x_range[1] + 1)
-    ax.set_ylim(y_range[0] - 1, y_range[1] + 1)
+    # V10.2.D: 坐標軸標註：僅顯示原點 0 (18號加粗)
+    ax.text(0.1, -0.6, "0", color='black', ha='left', va='center', fontsize=18, fontweight='bold')
 
-    # Draw arrows at the ends of the axes.
-    ax.plot(x_range[1] + 0.5, 0, ">k", transform=ax.get_yaxis_transform(), color="k", clip_on=False)
-    ax.plot(0, y_range[1] + 0.5, "^k", transform=ax.get_xaxis_transform(), color="k", clip_on=False)
-
-    # Origin label [D. 視覺一致性]
-    ax.text(-0.5, -0.8, '0', color='black', ha='right', va='top', fontsize=18, fontweight='bold')
-
-    # Tick labels for x-axis [Infrastructure Rule 5: 刻度數字僅顯示原點 '0']
-    x_ticks = [i for i in range(int(x_range[0]), int(x_range[1]) + 1)]
-    ax.set_xticks(x_ticks)
-    # Label only '0', suppress other tick labels.
-    ax.set_xticklabels(['' if i != 0 else '0' for i in x_ticks], fontsize=10)
-
-    # Tick labels for y-axis [Infrastructure Rule 5: 刻度數字僅顯示原點 '0']
-    y_ticks = [i for i in range(int(y_range[0]), int(y_range[1]) + 1)]
-    ax.set_yticks(y_ticks)
-    # Label only '0', suppress other tick labels.
-    ax.set_yticklabels(['' if i != 0 else '0' for i in y_ticks], fontsize=10)
-
-    # Plot points (if any, though for this skill, points_to_plot will be empty)
-    for x, y, label, color in points_to_plot:
-        ax.plot(x, y, 'o', color=color, markersize=8)
-        # Point labels with white halo [D. 視覺一致性] & [Infrastructure Rule 5]
-        ax.text(x, y + 0.5, label, fontsize=12, ha='center', va='bottom',
-                bbox=dict(facecolor='white', alpha=0.7, edgecolor='none', boxstyle='round,pad=0.2'))
-
-    # Plot lines (if any, though for this skill, lines_to_plot will be empty)
-    for x1, y1, x2, y2, color, linestyle, label in lines_to_plot:
-        ax.plot([x1, x2], [y1, y2], color=color, linestyle=linestyle, linewidth=2, label=label)
-        if label:
-            ax.text(x2, y2, label, fontsize=10, ha='left', va='bottom', color=color)
-
-    ax.set_title(title)
-
-    # Convert plot to base64 image [ULTRA VISUAL STANDARDS: dpi=300]
+    # V6: 防洩漏原則：視覺化函式僅能接收「題目已知數據」。嚴禁將「答案數據」傳入繪圖函式，確保學生無法從圖形中直接看到答案。
+    # 針對「判斷點是否在直線上」題型，image_base64 嚴禁包含任何線段或點。僅提供 1x1 的淺灰色網格、座標軸與原點 '0'。
+    
     buf = io.BytesIO()
-    fig.savefig(buf, format='png', bbox_inches='tight', pad_inches=0.5, dpi=300) # Added dpi=300
-    fig.clear() # Clear the figure to free memory.
-    return base64.b64encode(buf.getvalue()).decode('utf-8')
+    # V11.6: ULTRA VISUAL STANDARDS: Resolution: dpi=300
+    plt.savefig(buf, format='png', bbox_inches='tight', dpi=300)
+    plt.close(fig)
+    image_base64 = base64.b64encode(buf.getvalue()).decode('utf-8')
+    return image_base64
 
-def _normalize_equation_coeffs(eq_str):
+# --- Helper for formatting equation strings with LaTeX safety (V5) ---
+def _format_equation_string(a, b, c, eq_type, k_val=None):
     """
-    Helper function to parse an equation string and return its normalized coefficients (a, b, c).
-    Equation format assumed: ax + by = c (or ax + by + c = 0).
-    Returns (a, b, c) as integers, where the first non-zero coefficient is positive,
-    and gcd(a, b, c) = 1.
-    Returns None for invalid formats or 0=C where C != 0.
+    將方程式的參數格式化為 LaTeX 字串。
+    Args:
+        a, b, c (int): 方程式 ax + by = c 的係數和常數。
+        eq_type (str): 方程式類型 ("general", "x_equals_k", "y_equals_k")。
+        k_val (int, optional): 對於 x=k 或 y=k 類型，k 的值。
+    Returns:
+        str: 格式化後的 LaTeX 方程式字串。
     """
-    eq_str = eq_str.replace(" ", "")
-    # Remove LaTeX braces and potential $ signs if they weren't cleaned before
-    eq_str = eq_str.replace(r"\{", "").replace(r"\}", "").replace("$", "")
-    
-    # Standardize signs for easier splitting
-    eq_str = eq_str.replace("-", "+-")
+    # V5: 【強制】語法零修復 (Regex=0)：凡字串包含 LaTeX 指令 (如 \frac, \sqrt, \pm)，嚴禁使用 f-string 或 % 格式化。
+    # 必須嚴格執行以下模板：expr = r"x = {a}".replace("{a}", str(ans_val))
+    # V5: 【嚴禁】不可使用 f"x = {ans_val}"
+    # V5: 【排版】嚴禁使用 \par 或 \[...\]. 所有數學式一律使用 $...$。
+    # 系統底層鐵律 1: 方程式生成鎖死 (Equation Robustness) - 嚴禁使用 f-string 組合 `ax + by = c`。
+    # 【強制流程】：必須分別判定 a, b 的正負與是否為 1，手動組合字串片段後合併。
 
-    parts = eq_str.split("=")
-    if len(parts) != 2:
-        return None # Invalid format
+    if eq_type == "general":
+        parts = []
+        if a != 0:
+            if a == 1:
+                parts.append("x")
+            elif a == -1:
+                parts.append("-x")
+            else:
+                parts.append(r"{a_val}x".replace("{a_val}", str(a)))
 
-    left_terms_str = parts[0]
-    right_terms_str = parts[1]
+        if b != 0:
+            if b == 1:
+                if parts: # If x term exists, add '+'
+                    parts.append("+y")
+                else:
+                    parts.append("y")
+            elif b == -1:
+                parts.append("-y")
+            else:
+                if b > 0 and parts: # If x term exists and b is positive, add '+'
+                    parts.append(r"+{b_val}y".replace("{b_val}", str(b)))
+                else:
+                    parts.append(r"{b_val}y".replace("{b_val}", str(b)))
+        
+        # 確保至少有 x 或 y 項，防止生成空字串
+        if not parts:
+            # 這種情況不應該在有效的二元一次方程式中發生，但作為防禦性編程
+            return r"$0 = {c_val}$".replace("{c_val}", str(c))
 
-    # Initialize coefficients for A*x + B*y = C
-    A_temp, B_temp, C_temp = 0, 0, 0
+        eq_text = r"${terms} = {c_val}$".replace("{terms}", "".join(parts)).replace("{c_val}", str(c))
+        return eq_text
+    elif eq_type == "x_equals_k":
+        eq_text = r"$x = {k_val}$".replace("{k_val}", _format_coordinate_value(k_val))
+        return eq_text
+    elif eq_type == "y_equals_k":
+        eq_text = r"$y = {k_val}$".replace("{k_val}", _format_coordinate_value(k_val))
+        return eq_text
+    return ""
 
-    # Parse terms on the left side
-    terms = [t for t in left_terms_str.split("+") if t]
-    for term in terms:
-        if 'x' in term:
-            coeff_str = term.replace('x', '')
-            if coeff_str == '': coeff_val = 1
-            elif coeff_str == '-': coeff_val = -1
-            else: coeff_val = int(coeff_str)
-            A_temp += coeff_val
-        elif 'y' in term:
-            coeff_str = term.replace('y', '')
-            if coeff_str == '': coeff_val = 1
-            elif coeff_str == '-': coeff_val = -1
-            else: coeff_val = int(coeff_str)
-            B_temp += coeff_val
-        else: # Constant term on the left, move to right
-            if term: C_temp -= int(term)
-
-    # Parse terms on the right side
-    terms = [t for t in right_terms_str.split("+") if t]
-    for term in terms:
-        if 'x' in term: # x term on right, move to left
-            coeff_str = term.replace('x', '')
-            if coeff_str == '': coeff_val = 1
-            elif coeff_str == '-': coeff_val = -1
-            else: coeff_val = int(coeff_str)
-            A_temp -= coeff_val
-        elif 'y' in term: # y term on right, move to left
-            coeff_str = term.replace('y', '')
-            if coeff_str == '': coeff_val = 1
-            elif coeff_str == '-': coeff_val = -1
-            else: coeff_val = int(coeff_str)
-            B_temp -= coeff_val
-        else: # Constant term on the right, stays on right
-            if term: C_temp += int(term)
-    
-    # Now we have A_temp*x + B_temp*y = C_temp
-    A, B, C = A_temp, B_temp, C_temp
-
-    # Normalize: make the first non-zero coefficient positive, divide by GCD
-    if A == 0 and B == 0:
-        return (0, 0, 0) if C == 0 else None # 0=0 is valid, 0=C (C!=0) is invalid
-    
-    # Prioritize making the first non-zero coefficient positive
-    if A < 0:
-        A, B, C = -A, -B, -C
-    elif A == 0 and B < 0: # If A is 0, make B positive
-        A, B, C = -A, -B, -C
-    
-    # Calculate GCD, handling cases where some coefficients are zero
-    common_divisor = abs(math.gcd(A, math.gcd(B, C)))
-    if common_divisor == 0: # This case should only happen if A=B=C=0, which is handled above
-        return (0,0,0) # Represents the equation 0=0
-    
-    A //= common_divisor
-    B //= common_divisor
-    C //= common_divisor
-    
-    return (A, B, C)
-
-
-# --- Top-level Functions ---
 def generate(level=1):
     """
-    [3. 頂層函式], [4. 隨機分流], [10. 隨機生成]
-    Generates a K12 math problem for drawing or analyzing linear equations.
-
-    Problem Type Mapping (Strictly following MANDATORY MIRRORING RULES):
-    1: Draw general form ax+by=c (Maps to RAG Ex 1, 2)
-    2: Find intercepts & quadrant for ax+by=c (Maps to RAG Ex 3, 4)
-    3: Draw horizontal line y=k (Maps to RAG Ex 5a)
-    4: Draw vertical line x=k (Maps to RAG Ex 5b)
+    生成二元一次方程式圖形的畫法題目。
+    Args:
+        level (int): 題目難度等級，目前未使用。
+    Returns:
+        dict: 包含題目文本、正確答案、答案、圖片 base64 編碼等資訊的字典。
     """
-    problem_type = random.choice([1, 2, 3, 4]) 
+    # MANDATORY MIRRORING RULES: STRICT MAPPING
+    # Ex 1, 2 use ax + by = c. Ex 5 uses x=k or y=k.
+    # This problem asks for *any two points*, which aligns with the implicit task of Ex 1, 2, 5.
+    problem_type = random.choice(["general_equation", "special_equation"])
+    
+    a, b, c = 0, 0, 0
+    k = 0
+    equation_str = ""
+    correct_points_formatted = [] # Store points as tuples of formatted strings
 
-    x_range = (-10, 10)
-    y_range = (-10, 10)
+    if problem_type == "general_equation":
+        # Maps to RAG Ex 1 and Ex 2: ax + by = c
+        # V10: 數據禁絕常數 (Data Prohibition) [CRITICAL] - 隨機生成所有幾何長度、角度與面積。
+        # V10: 公式計算 - 嚴禁硬編碼 (Hardcode) 答案或座標。所有目標答案與圖形座標必須根據隨機生成的數據，透過幾何公式反向計算得出。
+        while a == 0 and b == 0: # 確保至少有一個係數不為零
+            a = random.randint(-5, 5)
+            b = random.randint(-5, 5)
+        c = random.randint(-15, 15) # 常數項範圍
 
-    question_text = ""
-    correct_answer_for_check = "" # Used for the `check` function (canonical equation string)
-    full_correct_answer_display = "" # The full detailed answer string for display if user is wrong
-    image_base64 = ""
+        equation_str = _format_equation_string(a, b, c, "general")
 
-    if problem_type == 1: # Type 1 (Maps to RAG Ex 1, 2): General form ax + by = c (DRAW)
-        # [10. 數據禁絕常數] - Generate random coefficients.
-        a_val, b_val, c_val = 0, 0, 0
+        found_points_raw = [] # Store points as (float_val, float_val)
         
-        # Ensure a, b are non-zero for this general type, and c can be zero.
-        # Ensure intercepts are within a reasonable range for drawing.
-        while a_val == 0 or b_val == 0 or \
-              (c_val != 0 and (abs(c_val / a_val) > 10 or abs(c_val / b_val) > 10)) or \
-              (c_val == 0 and (abs(a_val) + abs(b_val) < 2)): # If c=0, ensure not 0x+0y=0
-            a_val = random.randint(-4, 4)
-            b_val = random.randint(-4, 4)
-            c_val = random.randint(-15, 15)
-
-        # Normalize coefficients for canonical equation string.
-        gcd_val = math.gcd(a_val, math.gcd(b_val, c_val))
-        a_val //= gcd_val
-        b_val //= gcd_val
-        c_val //= gcd_val
-
-        # Ensure the leading coefficient (a) is positive or if a=0, b is positive.
-        if a_val < 0:
-            a_val, b_val, c_val = -a_val, -b_val, -c_val
-        elif a_val == 0 and b_val < 0:
-            a_val, b_val, c_val = -a_val, -b_val, -c_val
-
-        # Format equation string for question text [5. LaTeX 安全]
-        a_term_str = ""
-        if a_val == 1: a_term_str = "x"
-        elif a_val == -1: a_term_str = "-x"
-        elif a_val != 0: a_term_str = str(a_val) + "x"
-
-        b_term_str = ""
-        if b_val == 1: b_term_str = "y"
-        elif b_val == -1: b_term_str = "-y"
-        elif b_val != 0: b_term_str = str(b_val) + "y"
+        # 嘗試尋找 x-截距 (y=0) 和 y-截距 (x=0)
+        # V13.5: 座標範圍必須對稱且寬裕（如 -8 到 8）
+        if b != 0:
+            y_val = c / b
+            if abs(y_val) <= 8: # [V16.0] Relaxed Filter: Allow any valid coordinate within range
+                found_points_raw.append((0.0, y_val))
         
-        if a_term_str and b_term_str:
-            if b_val > 0:
-                equation_str_for_question = a_term_str + " + " + b_term_str
-            else: # b_val < 0
-                equation_str_for_question = a_term_str + " " + b_term_str # '-' is already part of b_term_str
-        elif a_term_str:
-            equation_str_for_question = a_term_str
-        elif b_term_str:
-            equation_str_for_question = b_term_str
-        else: # Should not happen if a_val or b_val is non-zero
-            equation_str_for_question = "0"
+        if a != 0:
+            x_val = c / a
+            if abs(x_val) <= 8: # [V16.0] Relaxed Filter: Allow any valid coordinate within range
+                if (x_val, 0.0) not in found_points_raw: # 確保點不重複
+                    found_points_raw.append((x_val, 0.0))
 
-        equation_str_for_question += " = " + str(c_val)
+        # 如果不足兩點，或需要更多樣的點，則隨機生成
+        attempts = 0
+        max_attempts = 100
+        while len(found_points_raw) < 2 and attempts < max_attempts:
+            if random.random() < 0.5: # 隨機選取 x 值
+                x_coord_float, _ = _generate_coordinate_value(is_fraction=True, integer_range=(-7, 7))
+                if b != 0:
+                    y_coord_float = (c - a * x_coord_float) / b
+                    if abs(y_coord_float) <= 8:
+                        new_point = (x_coord_float, y_coord_float)
+                        # 檢查點是否已存在（考慮浮點數精度）
+                        is_duplicate = False
+                        for p in found_points_raw:
+                            if math.isclose(p[0], new_point[0], rel_tol=1e-6) and math.isclose(p[1], new_point[1], rel_tol=1e-6):
+                                is_duplicate = True
+                                break
+                        if not is_duplicate:
+                            found_points_raw.append(new_point)
+                elif a != 0: # b == 0, 方程式為 ax = c, x 值固定
+                    x_fixed_float = c / a
+                    if abs(x_fixed_float) <= 8 and math.isclose(x_fixed_float, x_coord_float, rel_tol=1e-6):
+                            # 如果隨機生成的 x 恰好是固定值，則 y 可以是任意值
+                            y_coord_float, _ = _generate_coordinate_value(is_fraction=True, integer_range=(-7, 7))
+                            if abs(y_coord_float) <= 8:
+                                new_point = (x_fixed_float, y_coord_float)
+                                is_duplicate = False
+                                for p in found_points_raw:
+                                    if math.isclose(p[0], new_point[0], rel_tol=1e-6) and math.isclose(p[1], new_point[1], rel_tol=1e-6):
+                                        is_duplicate = True
+                                        break
+                                if not is_duplicate:
+                                    found_points_raw.append(new_point)
 
-        question_text = r"在坐標平面上，畫出方程式 $" + equation_str_for_question.replace("{", r"\{").replace("}", r"\}") + r"$ 的圖形。"
-        correct_answer_for_check = equation_str_for_question # Canonical form for checking
-        full_correct_answer_display = equation_str_for_question # Full answer is just the equation here.
-
-        # [B. 標點題防洩漏協定] For "draw the graph" questions, image_base64 only contains the grid.
-        image_base64 = _draw_coordinate_plane(points_to_plot=[], lines_to_plot=[], x_range=x_range, y_range=y_range)
-
-    elif problem_type == 2: # Type 2 (Maps to RAG Ex 3, 4): Find intercepts & quadrant for ax+by=c
-        # [10. 數據禁絕常數] - Generate random coefficients.
-        a_val, b_val, c_val = 0, 0, 0
-        # Ensure a, b, c are non-zero for distinct intercepts and to avoid lines through the origin.
-        # Ensure intercepts are within visible range for clarity.
-        while a_val == 0 or b_val == 0 or c_val == 0 or \
-              (abs(c_val / a_val) > 10 or abs(c_val / b_val) > 10):
-            a_val = random.randint(-4, 4)
-            b_val = random.randint(-4, 4)
-            c_val = random.randint(-15, 15)
+            else: # 隨機選取 y 值
+                y_coord_float, _ = _generate_coordinate_value(is_fraction=True, integer_range=(-7, 7))
+                if a != 0:
+                    x_coord_float = (c - b * y_coord_float) / a
+                    if abs(x_coord_float) <= 8:
+                        new_point = (x_coord_float, y_coord_float)
+                        is_duplicate = False
+                        for p in found_points_raw:
+                            if math.isclose(p[0], new_point[0], rel_tol=1e-6) and math.isclose(p[1], new_point[1], rel_tol=1e-6):
+                                is_duplicate = True
+                                break
+                        if not is_duplicate:
+                            found_points_raw.append(new_point)
+                elif b != 0: # a == 0, 方程式為 by = c, y 值固定
+                    y_fixed_float = c / b
+                    if abs(y_fixed_float) <= 8 and math.isclose(y_fixed_float, y_coord_float, rel_tol=1e-6):
+                            # 如果隨機生成的 y 恰好是固定值，則 x 可以是任意值
+                            x_coord_float, _ = _generate_coordinate_value(is_fraction=True, integer_range=(-7, 7))
+                            if abs(x_coord_float) <= 8:
+                                new_point = (x_coord_float, y_fixed_float)
+                                is_duplicate = False
+                                for p in found_points_raw:
+                                    if math.isclose(p[0], new_point[0], rel_tol=1e-6) and math.isclose(p[1], new_point[1], rel_tol=1e-6):
+                                        is_duplicate = True
+                                        break
+                                if not is_duplicate:
+                                    found_points_raw.append(new_point)
+            attempts += 1
         
-        # Calculate intercepts
-        x_intercept_x = c_val / a_val
-        y_intercept_y = c_val / b_val
+        # 若經過多次嘗試仍不足兩點，則退回簡單的整數點生成策略
+        # 確保生成的點符合「整數或 0.5」的精度要求
+        if len(found_points_raw) < 2:
+            found_points_raw = []
+            # 遍歷 x 範圍尋找整數或 0.5 解
+            x_values_to_try = [float(i) for i in range(-8, 9)] + [i + 0.5 for i in range(-8, 8)]
+            for x_try in x_values_to_try:
+                if b != 0:
+                    y_try_float = (c - a * x_try) / b
+                    if abs(y_try_float) <= 8:
+                        new_point = (float(x_try), y_try_float)
+                        if new_point not in found_points_raw:
+                            found_points_raw.append(new_point)
+                elif a != 0: # b == 0, 方程式為 ax = c, x 值固定
+                    x_fixed_float = c / a
+                    if abs(x_fixed_float) <= 8:
+                        # For vertical line, x is fixed, y can be any valid value (integer or X.5)
+                        y_val_for_vertical, _ = _generate_coordinate_value(is_fraction=True, integer_range=(-7, 7))
+                        if abs(y_val_for_vertical) <= 8:
+                            new_point = (x_fixed_float, y_val_for_vertical)
+                            if new_point not in found_points_raw:
+                                found_points_raw.append(new_point)
+                        # Also try another y to ensure two distinct points if needed
+                        y_val_for_vertical_2, _ = _generate_coordinate_value(is_fraction=True, integer_range=(-7, 7))
+                        while math.isclose(y_val_for_vertical, y_val_for_vertical_2, rel_tol=1e-6):
+                            y_val_for_vertical_2, _ = _generate_coordinate_value(is_fraction=True, integer_range=(-7, 7))
+                        if abs(y_val_for_vertical_2) <= 8:
+                            new_point_2 = (x_fixed_float, y_val_for_vertical_2)
+                            if new_point_2 not in found_points_raw:
+                                found_points_raw.append(new_point_2)
 
-        # Determine the quadrant the line does NOT pass through.
-        quadrant_not_passed = 0
-        if x_intercept_x > 0 and y_intercept_y > 0: # Example: (5,0), (0,2) -> Q1, Q2, Q4 -> Not Q3
-            quadrant_not_passed = 3
-        elif x_intercept_x < 0 and y_intercept_y > 0: # Example: (-4,0), (0,3) -> Q1, Q2, Q3 -> Not Q4
-            quadrant_not_passed = 4
-        elif x_intercept_x < 0 and y_intercept_y < 0: # Example: (-4,0), (0,-3) -> Q2, Q3, Q4 -> Not Q1
-            quadrant_not_passed = 1
-        elif x_intercept_x > 0 and y_intercept_y < 0: # Example: (4,0), (0,-3) -> Q1, Q3, Q4 -> Not Q2
-            quadrant_not_passed = 2
+                if len(found_points_raw) >= 2:
+                    break
         
-        # Normalize coefficients for question text display.
-        gcd_val = math.gcd(a_val, math.gcd(b_val, c_val))
-        a_val_q = a_val // gcd_val
-        b_val_q = b_val // gcd_val
-        c_val_q = c_val // gcd_val
+        # 取前兩個點並格式化為字串
+        # If still less than 2 points (highly unlikely with the robust logic), ensure at least two
+        if len(found_points_raw) < 2:
+            # Fallback to a very basic, guaranteed solution if previous complex logic fails
+            # [V16.0] Corrected Fallback Logic for Vertical/Horizontal Lines
+            if a != 0 and b == 0: # Vertical Line ax = c => x = c/a
+                x1 = c / a
+                x2 = x1
+                # y can be anything
+                y1 = 0.0
+                y2 = 1.0 
+                found_points_raw = [(x1, y1), (x2, y2)]
+            elif b != 0 and a == 0: # Horizontal Line by = c => y = c/b
+                y1 = c / b
+                y2 = y1
+                # x can be anything
+                x1 = 0.0
+                x2 = 1.0
+                found_points_raw = [(x1, y1), (x2, y2)]
+            elif b != 0 and a != 0: # General Line
+                # Point 1: Let x = 0
+                x1 = 0.0
+                y1 = c / b
+                
+                # Point 2: Let x = 1
+                x2 = 1.0
+                y2 = (c - a) / b
+                
+                found_points_raw = [(x1, y1), (x2, y2)]
+            else: 
+                # Impossible case if init checks pass (a=0 and b=0)
+                found_points_raw = [(0.0, 0.0), (1.0, 1.0)]
 
-        equation_str_for_question = ""
-        if random.random() < 0.5: # Form: ax + by = c (like RAG Ex 3)
-            # Ensure leading coefficient (a) is positive or if a=0, b is positive.
-            if a_val_q < 0:
-                a_val_q, b_val_q, c_val_q = -a_val_q, -b_val_q, -c_val_q
-            elif a_val_q == 0 and b_val_q < 0:
-                a_val_q, b_val_q, c_val_q = -a_val_q, -b_val_q, -c_val_q
-            
-            a_term_str = ""
-            if a_val_q == 1: a_term_str = "x"
-            elif a_val_q != 0: a_term_str = str(a_val_q) + "x"
+        # Format the first two points found
+        correct_points_formatted = [(_format_coordinate_value(p[0]), _format_coordinate_value(p[1])) for p in found_points_raw[:2]]
 
-            b_term_str = ""
-            if b_val_q == 1: b_term_str = "y"
-            elif b_val_q > 0: b_term_str = " + " + str(b_val_q) + "y"
-            elif b_val_q < 0: b_term_str = " " + str(b_val_q) + "y"
-            
-            equation_str_for_question = a_term_str + b_term_str + " = " + str(c_val_q)
-            # Clean up potential leading ' + ' if a_term_str is empty.
-            if equation_str_for_question.startswith(" + "):
-                equation_str_for_question = equation_str_for_question[3:]
 
-        else: # Form: ax + by + c = 0 (like RAG Ex 4)
-            # Convert ax+by=c to ax+by-c=0
-            c_val_q = -c_val_q # Move constant to left side
-            # Ensure leading coefficient (a) is positive or if a=0, b is positive.
-            if a_val_q < 0:
-                a_val_q, b_val_q, c_val_q = -a_val_q, -b_val_q, -c_val_q
-            elif a_val_q == 0 and b_val_q < 0:
-                a_val_q, b_val_q, c_val_q = -a_val_q, -b_val_q, -c_val_q
-            
-            equation_terms = []
-            if a_val_q != 0:
-                if a_val_q == 1: equation_terms.append("x")
-                elif a_val_q == -1: equation_terms.append("-x")
-                else: equation_terms.append(str(a_val_q) + "x")
-            
-            if b_val_q != 0:
-                if b_val_q > 0:
-                    if b_val_q == 1: equation_terms.append(" + y")
-                    else: equation_terms.append(f" + {b_val_q}y")
-                else: # b_val_q < 0
-                    if b_val_q == -1: equation_terms.append(" - y")
-                    else: equation_terms.append(f" {b_val_q}y") # already negative
-
-            if c_val_q != 0:
-                if c_val_q > 0: equation_terms.append(f" + {c_val_q}")
-                else: equation_terms.append(f" {c_val_q}")
-            
-            equation_str_for_question = "".join(equation_terms).strip()
-            if not equation_str_for_question: equation_str_for_question = "0" # Should not happen
-            equation_str_for_question += " = 0"
-
-        question_text = r"⑴ 求方程式 $" + equation_str_for_question.replace("{", r"\{").replace("}", r"\}") + r"$ 的圖形與 x 軸、 y 軸的交點坐標。⑵ 承⑴，畫出方程式 $" + equation_str_for_question.replace("{", r"\{").replace("}", r"\}") + r"$ 的圖形，並判斷此圖形不通過第幾象限？"
+    elif problem_type == "special_equation":
+        # Maps to RAG Ex 5: x = k or y = k
+        is_x_equals_k = random.choice([True, False])
+        k_val_float, _ = _generate_coordinate_value(is_fraction=False, integer_range=(-7, 7)) # K 值在範圍內
         
-        # Format intercepts for the full answer display.
-        x_int_str = _format_coordinate_latex((x_intercept_x, _generate_coordinate_value(0,0, allow_fractions=True)[1]))
-        y_int_str = _format_coordinate_latex((y_intercept_y, _generate_coordinate_value(0,0, allow_fractions=True)[1]))
+        if is_x_equals_k:
+            equation_str = _format_equation_string(0, 0, 0, "x_equals_k", k_val_float)
+            y1_float, _ = _generate_coordinate_value(is_fraction=True, integer_range=(-5, 5))
+            y2_float, _ = _generate_coordinate_value(is_fraction=True, integer_range=(-5, 5))
+            while math.isclose(y1_float, y2_float, rel_tol=1e-6): # 確保 y 值不同
+                y2_float, _ = _generate_coordinate_value(is_fraction=True, integer_range=(-5, 5))
+            correct_points_formatted = [(_format_coordinate_value(k_val_float), _format_coordinate_value(y1_float)), 
+                                        (_format_coordinate_value(k_val_float), _format_coordinate_value(y2_float))]
+        else: # y = k
+            equation_str = _format_equation_string(0, 0, 0, "y_equals_k", k_val_float)
+            x1_float, _ = _generate_coordinate_value(is_fraction=True, integer_range=(-5, 5))
+            x2_float, _ = _generate_coordinate_value(is_fraction=True, integer_range=(-5, 5))
+            while math.isclose(x1_float, x2_float, rel_tol=1e-6): # 確保 x 值不同
+                x2_float, _ = _generate_coordinate_value(is_fraction=True, integer_range=(-5, 5))
+            correct_points_formatted = [(_format_coordinate_value(x1_float), _format_coordinate_value(k_val_float)), 
+                                        (_format_coordinate_value(x2_float), _format_coordinate_value(k_val_float))]
 
-        full_correct_answer_display = r"⑴ 與x軸交點$({x_int},0)$，與y軸交點$(0,{y_int})$。⑵ 不通過第{quadrant}象限。".replace("{x_int}", x_int_str).replace("{y_int}", y_int_str).replace("{quadrant}", str(quadrant_not_passed))
-        
-        correct_answer_for_check = equation_str_for_question # For `check` function, we compare the equation string.
+    question_text = r"請找出滿足方程式 {equation_text} 的任意兩個點的座標。".replace("{equation_text}", equation_str)
+    
+    # V13.1: 答案格式標準化：座標題：正確答案格式為 A(3, 5)。
+    # 對於兩個點，格式為 "(x1, y1), (x2, y2)"
+    correct_answer_str = r"({x1_val}, {y1_val}), ({x2_val}, {y2_val})".replace("{x1_val}", correct_points_formatted[0][0]).replace("{y1_val}", correct_points_formatted[0][1]).replace("{x2_val}", correct_points_formatted[1][0]).replace("{y2_val}", correct_points_formatted[1][1])
+    
+    # V6: 防洩漏原則 - 視覺化函式僅能接收「題目已知數據」。嚴禁將「答案數據」傳入繪圖函式。
+    image_base64 = _draw_coordinate_plane_with_line()
 
-        # [B. 標點題防洩漏協定] For "draw the graph" questions, image_base64 only contains the grid.
-        image_base64 = _draw_coordinate_plane(points_to_plot=[], lines_to_plot=[], x_range=x_range, y_range=y_range)
-
-    elif problem_type == 3: # Type 3 (Maps to RAG Ex 5a): Horizontal line y = k (DRAW)
-        # [10. 數據禁絕常數]
-        k_val_y_float, _ = _generate_coordinate_value(-8, 8, allow_fractions=False)
-        k_val_y = int(k_val_y_float) # Ensure integer for simple vertical/horizontal lines
-        
-        # [5. LaTeX 安全]
-        equation_str_for_question = r"y = {k}".replace("{k}", str(k_val_y))
-
-        question_text = r"在坐標平面上，畫出方程式 $" + equation_str_for_question.replace("{", r"\{").replace("}", r"\}") + r"$ 的圖形。"
-        correct_answer_for_check = equation_str_for_question
-        full_correct_answer_display = equation_str_for_question
-
-        # [B. 標點題防洩漏協定] Only grid.
-        image_base64 = _draw_coordinate_plane(points_to_plot=[], lines_to_plot=[], x_range=x_range, y_range=y_range)
-
-    elif problem_type == 4: # Type 4 (Maps to RAG Ex 5b): Vertical line x = k (DRAW)
-        # [10. 數據禁絕常數]
-        k_val_x_float, _ = _generate_coordinate_value(-8, 8, allow_fractions=False)
-        k_val_x = int(k_val_x_float) # Ensure integer for simple vertical/horizontal lines
-        
-        # [5. LaTeX 安全]
-        equation_str_for_question = r"x = {k}".replace("{k}", str(k_val_x))
-
-        question_text = r"在坐標平面上，畫出方程式 $" + equation_str_for_question.replace("{", r"\{").replace("}", r"\}") + r"$ 的圖形。"
-        correct_answer_for_check = equation_str_for_question
-        full_correct_answer_display = equation_str_for_question
-
-        # [B. 標點題防洩漏協定] Only grid.
-        image_base64 = _draw_coordinate_plane(points_to_plot=[], lines_to_plot=[], x_range=x_range, y_range=y_range)
-
+    # V7: 數據與欄位 (Standard Fields)
     return {
         "question_text": question_text,
-        "correct_answer": correct_answer_for_check, # This is the canonical equation string for `check`.
-        "answer": full_correct_answer_display, # This is the full detailed answer for display to the user.
+        "correct_answer": correct_answer_str,
+        "answer": correct_answer_str, # For display purposes, same as correct_answer
         "image_base64": image_base64,
         "created_at": datetime.now().isoformat(),
-        "version": "1.1" # Version updated due to re-alignment of problem types.
-    }
-
-
-    """
-    [3. 頂層函式], [Infrastructure Rule 6]
-    Checks if the user's answer (equation string) matches the correct answer.
-    This function normalizes both equations to a canonical form for comparison.
-    Returns a dictionary with is_correct, result, and feedback.
-    """
-    # The `correct_answer` parameter here corresponds to the `correct_answer` field
-    # returned by `generate`, which is the canonical equation string.
-
-    # Sanitize correct_answer for feedback [Infrastructure Rule 6]
-    sanitized_correct_answer = re.sub(r"[\$\\]", "", str(correct_answer))
-
-    normalized_user = _normalize_equation_coeffs(user_answer)
-    normalized_correct = _normalize_equation_coeffs(correct_answer)
-    
-    is_correct = (normalized_user == normalized_correct)
-    
-    feedback = ""
-    if is_correct:
-        feedback = "答案正確！"
-    else:
-        # Infrastructure Rule 6: Error feedback format
-        feedback = r"答案錯誤。正確答案為：{ans}".replace("{ans}", sanitized_correct_answer)
-    
-    return {
-        "is_correct": is_correct,
-        "result": "Correct" if is_correct else "Incorrect",
-        "feedback": feedback
+        "version": "1"
     }
 
 # [Auto-Injected Patch v11.0] Universal Return, Linebreak & Handwriting Fixer
@@ -747,7 +717,8 @@ def _patch_all_returns(func):
             # 判定規則：若答案包含複雜運算符號，強制提示手寫作答
             # 包含: ^ / _ , | ( [ { 以及任何 LaTeX 反斜線
             c_ans = str(res.get('correct_answer', ''))
-            triggers = ['^', '/', ',', '|', '(', '[', '{', '\\']
+            # [V13.1 修復] 移除 '(' 與 ','，允許座標與數列使用純文字輸入
+            triggers = ['^', '/', '|', '[', '{', '\\']
             
             # [V11.1 Refined] 僅在題目尚未包含提示時注入，避免重複堆疊
             has_prompt = "手寫" in res.get('question_text', '')

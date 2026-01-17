@@ -1,10 +1,10 @@
 # ==============================================================================
 # ID: jh_數學1下_GeometricMeaningOfSystemOfTwoVariableLinearEquations
 # Model: gemini-2.5-flash | Strategy: V9 Architect (cloud_pro)
-# Duration: 82.72s | RAG: 4 examples
-# Created At: 2026-01-15 15:05:24
+# Duration: 104.60s | RAG: 4 examples
+# Created At: 2026-01-16 10:25:07
 # Fix Status: [Repaired]
-# Fixes: Regex=2, Logic=0
+# Fixes: Regex=1, Logic=0
 #==============================================================================
 
 
@@ -257,763 +257,553 @@ def check(user_answer, correct_answer):
     return {"correct": False, "result": r"答案錯誤。正確答案為：{ans}".replace("{ans}", c_raw)}
 
 
+
 import base64
-from io import BytesIO
-import matplotlib.pyplot as plt # Temporarily keep for rcParams, will ensure Figure is used for plotting
-from matplotlib.figure import Figure # V1. Infrastructure Rule 1: Use Figure for thread-safety
-import numpy as np
 from datetime import datetime
+import matplotlib.pyplot as plt
+import io
+import re
 
-import re # V6. Result Feedback: For sanitizing LaTeX
+# --- 輔助函式 (Helper Functions) ---
 
-# V5. Visual Style (Coordinate Scale Protocol): Set font for Traditional Chinese
-plt.rcParams['font.sans-serif'] = ['Microsoft JhengHei']
-plt.rcParams['axes.unicode_minus'] = False # To correctly display minus sign with JhengHei font
-
-# --- V10.2 Coordinate Hardening Spec A: Data Structure Lock-down ---
-# 必須指示 Coder 定義 _generate_coordinate_value() 並統一回傳固定格式：(float_val, (int_part, num, den, is_neg))。
-# 格式化函式必須嚴格執行 int_part, num, den, is_neg = data[1] 的解包方式。
-# 若為整數，num 與 den 設為 0；若為分數，則 int_part 為帶分數整數部。
-def _generate_coordinate_value(min_val=-5, max_val=5, allow_fractions=False):
+def _generate_coordinate_value(min_val=-8, max_val=8, allow_fraction=False):
     """
-    Generates a coordinate value (float) and its fractional/integer representation.
-    Returns: (float_val, (int_part, numerator, denominator, is_negative))
+    [V10.2 A. 資料結構鎖死]：統一回傳固定格式 (float_val, (abs_int_part, num, den, is_neg)).
+    [V13.0 座標選取控制]：使用 random.randint(-8, 8) 或其分數形式.
+    [V13.1 禁絕假分數]：檢查 numerator < denominator 且 denominator > 1.
+    [V13.5 整數優先]：生成後判斷是否為整數並轉換.
     """
-    # For K12, especially lower levels, prefer integers.
-    # Set allow_fractions to True for higher levels or specific problem types if needed.
-    if random.random() < 0.8 or not allow_fractions: # 80% chance of integer
-        val = random.randint(min_val, max_val)
-        return float(val), (val, 0, 0, val < 0)
+    is_neg = random.choice([True, False])
+    abs_int_part = random.randint(0, max(0, max_val - 1)) # 確保 abs_int_part 非負
+
+    float_val_raw = float(abs_int_part)
+    num = 0
+    den = 0
+
+    if allow_fraction and random.random() < 0.4: # 約40%的機率生成分數，增加分數出現頻率
+        # [V13.1 禁絕假分數]: numerator < denominator and denominator > 1
+        num = random.randint(1, 5) # 較小的分子
+        # RAG Ex 1: (2, 8/3) 包含分母為 3 的情況，因此 den 應允許 3。
+        # random.randint(num + 1, 6) 允許分母為 2, 3, 4, 5, 6
+        den = random.randint(num + 1, 6) 
+        
+        # 簡化分數
+        gcd = math.gcd(num, den)
+        num //= gcd
+        den //= gcd
+
+        float_val_raw += float(num) / den
+    
+    float_val = float_val_raw
+    if is_neg and float_val != 0:
+        float_val = -float_val
+    
+    # [V13.5 整數優先]:
+    if float_val.is_integer():
+        float_val = int(float_val)
+        num = 0
+        den = 0
+        abs_int_part = abs(int(float_val)) # 如果是整數，更新 abs_int_part
     else:
-        # Generate a simple fraction (e.g., 1/2, 3/4)
-        int_part_range_limit = max(1, min(abs(min_val), abs(max_val)) // 2)
-        int_part = random.randint(-int_part_range_limit, int_part_range_limit) # Keep magnitude smaller for fractions
-        numerator = random.randint(1, 4) # Small numerator
-        denominator = random.choice([2, 3, 4, 5]) # Small denominator
-        
-        # Ensure proper fraction for the fractional part
-        if numerator >= denominator: # e.g., if num=3, den=2, regenerate or adjust
-            numerator = random.randint(1, denominator - 1)
-            if numerator == 0: numerator = 1 # Avoid 0/den
-
-        sign = random.choice([-1, 1])
-        
-        float_val_abs_frac_part = numerator / denominator
-        
-        if int_part == 0:
-            float_val = sign * float_val_abs_frac_part
-            is_neg = (sign == -1)
-            return float_val, (0, numerator, denominator, is_neg)
-        else:
-            # For mixed fractions, the sign applies to the whole number.
-            # Example: -2.5 is -(2 + 1/2). So int_part is -2, num is 1, den is 2.
-            # Our _format_coordinate_latex handles the display as -2\frac{1}{2}.
-            # The int_part in the tuple should be the integer part of the mixed number.
-            
-            # Create a temporary float value for calculation
-            temp_float_val = abs(int_part) + float_val_abs_frac_part
-            if int_part < 0:
-                temp_float_val = -temp_float_val
-            
-            is_neg = (temp_float_val < 0)
-
-            # Adjust int_part for mixed fraction representation
-            if is_neg:
-                abs_float_val = abs(temp_float_val)
-                abs_int_part_for_display = math.floor(abs_float_val)
-                frac_part_val = abs_float_val - abs_int_part_for_display
-                
-                # Convert frac_part_val back to num/den for the current denominator
-                # Find the closest integer numerator for the given denominator
-                num_approx = round(frac_part_val * denominator)
-                if num_approx == 0 and frac_part_val > 0: num_approx = 1 # ensure non-zero numerator if frac_part exists
-                if num_approx == denominator: # if it rounded up to 1, make it 0 and increment int_part
-                    abs_int_part_for_display += 1
-                    num_approx = 0
-
-                return temp_float_val, (-abs_int_part_for_display if abs_int_part_for_display > 0 else 0, num_approx, denominator if num_approx > 0 else 0, True)
-            else:
-                return temp_float_val, (int_part, numerator, denominator, False)
+        # 如果最終不是整數，則 abs_int_part 應為 float_val 的整數部分絕對值
+        abs_int_part = math.floor(abs(float_val)) if float_val != 0 else 0
 
 
-# V10.2 C: LaTeX 模板規範 (No Double Braces)
-# 嚴禁指示 Coder 使用 f"{{...}}" 這種寫法。
-# 必須規範 LaTeX 模板使用單層大括號（如 {n}, {d}），並搭配 .replace("{n}", str(num)) 進行代換。
+    # 回傳時，is_neg 應反映最終 float_val 的正負，而非最初的隨機選擇
+    return float_val, (abs_int_part, num, den, float_val < 0)
+
 def _format_coordinate_latex(coord_data):
     """
-    Formats a coordinate value (from _generate_coordinate_value) into a LaTeX string.
+    [V10.2 A. 資料結構鎖死]：格式化函式嚴格執行 int_part, num, den, is_neg = data[1] 的解包方式.
+    [V10.2 C. LaTeX 模板規範]：使用單層大括號 {n}, {d} 搭配 .replace.
     """
-    float_val, (int_part, num, den, is_neg) = coord_data
+    float_val, (abs_int_part, num, den, is_neg) = coord_data
 
-    if num == 0:  # It's an integer
-        return str(int_part)
-    else:  # It's a fraction or mixed number
-        sign_str = r"-" if is_neg else ""
-        if int_part == 0:
-            # Proper fraction
-            expr = r"\frac{n}{d}".replace("{n}", str(num)).replace("{d}", str(den))
-            return sign_str + expr
-        else:
-            # Mixed number
-            # For negative mixed numbers, LaTeX typically shows -(A \frac{B}{C})
-            # So, we take the absolute value of int_part for display.
-            expr = r"{i}\frac{n}{d}".replace("{i}", str(abs(int_part))).replace("{n}", str(num)).replace("{d}", str(den))
-            return sign_str + expr
+    if num == 0: # 整數
+        return str(int(float_val)) # [V13.0 格式精確要求]: str(int(val))
+    else: # 分數
+        sign_str = "-" if is_neg else "" # 根據 is_neg 判斷是否顯示負號
+        
+        if abs_int_part == 0: # 真分數
+            template = r"{sign}\frac{{{n}}}{{{d}}}"
+            return template.replace("{sign}", sign_str).replace("{n}", str(num)).replace("{d}", str(den))
+        else: # 帶分數
+            template = r"{sign}{i}\frac{{{n}}}{{{d}}}"
+            return template.replace("{sign}", sign_str).replace("{i}", str(abs_int_part)).replace("{n}", str(num)).replace("{d}", str(den))
 
-
-# Helper function to convert matplotlib plot to base64 image
-# 必須回傳 'return' 語句回傳結果。回傳值必須強制轉為字串 (str)。
-def _plot_to_base64(fig):
-    """Converts a matplotlib figure to a base64 encoded PNG image."""
-    buf = BytesIO()
-    # V11.6: Resolution: dpi=300
-    fig.savefig(buf, format='png', bbox_inches='tight', pad_inches=0.1, dpi=300)
-    plt.close(fig) # Use plt.close for the figure object
-    return base64.b64encode(buf.getvalue()).decode('utf-8')
-
-
-# --- V10.2 D: Visual Consistency ---
-# 必須鎖定 ax.set_aspect('equal') 確保網格為正方形。
-# 坐標軸標註：僅顯示原點 0 (18號加粗)，點標籤須加白色光暈 (bbox)。
-# 視覺化函式僅能接收「題目已知數據」。嚴禁將「答案數據」傳入繪圖函式。
-def _draw_coordinate_plane(lines_data=None, points_data=None, x_range=(-10, 10), y_range=(-10, 10)):
+def _plot_lines(line_eqs_coeffs, intersection_point=None, point_labels=None, highlight_area=None):
     """
-    Draws a coordinate plane with optional lines and points.
-    lines_data: List of dictionaries { 'equation': (a, b, c), 'label': 'L1', 'color': 'blue' }
-                where ax + by = c
-    points_data: List of dictionaries { 'coord': (x, y), 'label': 'P', 'color': 'red' }
+    [V6. 視覺化與輔助函式通用規範]：回傳結果 (str), 類型一致. 防洩漏原則.
+    [V10.2 D. 視覺一致性]：ax.set_aspect('equal'), 原點 '0' (18號加粗), 點標籤白色光暈.
+    [V13.0 格線對齊]：座標軸範圍對稱整數 (-8 到 8), xticks 間隔 1.
+    [V13.5 座標範圍]：座標範圍必須對稱且寬裕 (-8 到 8).
+    [V13.6 Arrow Ban]：嚴禁使用 arrowprops. 使用 ax.plot(limit, 0, ">k", clip_on=False) 繪製箭頭.
+    [V13.5 標籤隔離]：ax.text 只能標註點名稱.
+    [V13.1 標籤純淨化]：ax.text 的內容只能是標籤文字（Label），座標值（Values）只能存在於文字敘述與 correct_answer 中。
     """
-    if lines_data is None:
-        lines_data = []
-    if points_data is None:
-        points_data = []
+    fig, ax = plt.subplots(figsize=(8, 8))
 
-    # V1. Infrastructure Rule 1: Use Figure for thread-safety
-    fig = Figure(figsize=(8, 8))
-    ax = fig.add_subplot(111)
-    
-    ax.set_aspect('equal') # V10.2 D: Ensure square grid
-
-    # Set grid and axes
+    # [V13.0 格線對齊] & [V13.5 座標範圍]
+    min_coord, max_coord = -8, 8
+    ax.set_xlim(min_coord, max_coord)
+    ax.set_ylim(min_coord, max_coord)
+    ax.set_xticks(range(min_coord, max_coord + 1))
+    ax.set_yticks(range(min_coord, max_coord + 1))
     ax.grid(True, linestyle='--', alpha=0.6)
-    ax.axhline(0, color='black', linewidth=0.8)
-    ax.axvline(0, color='black', linewidth=0.8)
+    ax.set_aspect('equal') # [V10.2 D. 視覺一致性]
 
-    # Set x, y limits
-    ax.set_xlim(x_range[0], x_range[1])
-    ax.set_ylim(y_range[0], y_range[1])
+    # 繪製座標軸
+    ax.axhline(0, color='black', linewidth=1.5)
+    ax.axvline(0, color='black', linewidth=1.5)
 
-    # Tick labels for major intervals (e.g., every 1 unit)
-    ax.set_xticks(np.arange(x_range[0], x_range[1] + 1, 1))
-    ax.set_yticks(np.arange(y_range[0], y_range[1] + 1, 1))
+    # [V13.6 Arrow Ban]: 繪製箭頭
+    ax.plot(max_coord, 0, ">k", transform=ax.get_yaxis_transform(), clip_on=False) # x軸箭頭
+    ax.plot(0, max_coord, "^k", transform=ax.get_xaxis_transform(), clip_on=False) # y軸箭頭
 
-    # V5. Visual Style (Coordinate Scale Protocol): Hide all tick labels except origin '0'
-    ax.set_xticklabels([])
-    ax.set_yticklabels([])
+    # [V10.2 D. 視覺一致性]: 標註原點 '0'
+    ax.text(0, 0, '0', color='black', ha='right', va='top', fontsize=18, fontweight='bold',
+            bbox=dict(boxstyle='round,pad=0.1', fc='white', ec='none', alpha=0.8))
 
-    # V10.2 D: Origin label
-    ax.text(0, 0, '0', color='black', ha='right', va='top', fontsize=18, fontweight='bold', bbox=dict(facecolor='white', alpha=0.7, edgecolor='none', boxstyle='round,pad=0.2'))
+    # 繪製直線
+    x_vals = [min_coord, max_coord]
+    colors = ['blue', 'red', 'green', 'purple'] # 直線顏色
+    line_labels = ['L1', 'L2', 'L3', 'L4'] # 直線標籤
+    
+    for i, coeffs in enumerate(line_eqs_coeffs):
+        a, b, c = coeffs # 方程式形式: ax + by = c
+        
+        if b == 0: # 垂直線: ax = c => x = c/a
+            x_val = c / a
+            ax.axvline(x_val, color=colors[i % len(colors)], linestyle='-', label=f"${line_labels[i]}$")
+        elif a == 0: # 水平線: by = c => y = c/b
+            y_val = c / b
+            ax.axhline(y_val, color=colors[i % len(colors)], linestyle='-', label=f"${line_labels[i]}$")
+        else: # 一般直線: y = (-a/b)x + (c/b)
+            y_vals = [(-a * x + c) / b for x in x_vals]
+            ax.plot(x_vals, y_vals, color=colors[i % len(colors)], linestyle='-', label=f"${line_labels[i]}$")
 
-    # Draw lines
-    for line in lines_data:
-        a, b, c = line['equation']
-        color = line.get('color', 'blue')
-        label = line.get('label', '')
-        linestyle = line.get('linestyle', '-')
+    # 繪製交點
+    if intersection_point:
+        point_name = point_labels if point_labels else "P" 
+        ax.plot(intersection_point[0], intersection_point[1], 'o', color='black', markersize=8, zorder=5)
+        ax.text(intersection_point[0], intersection_point[1], point_name,
+                color='black', fontsize=12, ha='left', va='bottom',
+                bbox=dict(boxstyle='round,pad=0.1', fc='white', ec='none', alpha=0.8))
 
-        if b != 0: # Not a vertical line
-            # Determine x values to plot to ensure the line crosses the entire graph
-            # Find points at the boundary of the plot
-            y_at_xmin = (-a * x_range[0] + c) / b
-            y_at_xmax = (-a * x_range[1] + c) / b
+    # 繪製圍成區域 (如果提供)
+    if highlight_area:
+        # highlight_area = {'axis': 'x' or 'y', 'x_intercepts': (x1, x2), 'y_intercepts': (y1, y2), 'intersection': (sx, sy)}
+        if highlight_area['axis'] == 'x':
+            x_vals_area = sorted([highlight_area['x_intercept1'], highlight_area['x_intercept2'], highlight_area['intersection'][0]])
+            y_vals_area = [0, 0, highlight_area['intersection'][1]] # y-coords for triangle vertices
             
-            # Find x values where y crosses y_range boundaries
-            x_at_ymin = (c - b * y_range[0]) / a if a != 0 else float('inf')
-            x_at_ymax = (c - b * y_range[1]) / a if a != 0 else float('inf')
+            # Create a polygon for the triangle. The order of points might need adjustment for correct filling.
+            # Points: (x1_intercept, 0), (x2_intercept, 0), (sol_x, sol_y)
+            triangle_points = [
+                (highlight_area['x_intercept1'], 0),
+                (highlight_area['x_intercept2'], 0),
+                highlight_area['intersection']
+            ]
+            ax.fill(*zip(*triangle_points), color='yellow', alpha=0.3, label='Area')
+
+        elif highlight_area['axis'] == 'y':
+            x_vals_area = [0, 0, highlight_area['intersection'][0]] # x-coords for triangle vertices
+            y_vals_area = sorted([highlight_area['y_intercept1'], highlight_area['y_intercept2'], highlight_area['intersection'][1]])
             
-            plot_x = []
-            plot_y = []
-
-            # Consider points at x_range boundaries
-            if y_range[0] <= y_at_xmin <= y_range[1]:
-                plot_x.append(x_range[0])
-                plot_y.append(y_at_xmin)
-            if y_range[0] <= y_at_xmax <= y_range[1]:
-                plot_x.append(x_range[1])
-                plot_y.append(y_at_xmax)
-
-            # Consider points at y_range boundaries
-            if x_range[0] <= x_at_ymin <= x_range[1]:
-                plot_x.append(x_at_ymin)
-                plot_y.append(y_range[0])
-            if x_range[0] <= x_at_ymax <= x_range[1]:
-                plot_x.append(x_at_ymax)
-                plot_y.append(y_range[1])
-            
-            # Remove duplicates and sort by x-coordinate
-            unique_points = sorted(list(set(zip(plot_x, plot_y))))
-            if len(unique_points) >= 2:
-                final_plot_x = [p[0] for p in unique_points]
-                final_plot_y = [p[1] for p in unique_points]
-                ax.plot(final_plot_x, final_plot_y, color=color, label=label, linewidth=2, linestyle=linestyle)
-            elif len(unique_points) == 1: # Line is just a point or very short segment
-                ax.plot(unique_points[0][0], unique_points[0][1], 'o', color=color) # Plot as a point
-            else: # Fallback for very steep lines or lines outside view
-                # Choose two arbitrary points on the line that are far apart
-                x_vals = np.array([x_range[0] - 50, x_range[1] + 50])
-                y_vals = (-a * x_vals + c) / b
-                ax.plot(x_vals, y_vals, color=color, label=label, linewidth=2, linestyle=linestyle)
-        else: # Vertical line: x = c/a (b is 0)
-            if a != 0:
-                x_val = c / a
-                if x_range[0] <= x_val <= x_range[1]:
-                    ax.plot([x_val, x_val], [y_range[0], y_range[1]], color=color, label=label, linewidth=2, linestyle=linestyle)
-            elif c == 0: # a=0, b=0, c=0 => 0=0, an infinite line (whole plane). Not representable.
-                pass # Should not happen for valid line generation
-            else: # a=0, b=0, c!=0 => 0=c, no solution. Not representable as a line.
-                pass # Should not happen for valid line generation
+            # Points: (0, y1_intercept), (0, y2_intercept), (sol_x, sol_y)
+            triangle_points = [
+                (0, highlight_area['y_intercept1']),
+                (0, highlight_area['y_intercept2']),
+                highlight_area['intersection']
+            ]
+            ax.fill(*zip(*triangle_points), color='yellow', alpha=0.3, label='Area')
 
 
-    # Draw points
-    for point in points_data:
-        x, y = point['coord']
-        label = point.get('label', '')
-        color = point.get('color', 'red')
-        ax.plot(x, y, 'o', color=color, markersize=8, zorder=5)
-        # V10.2 D: Point labels with white bbox (V11.6 Ultra Visual Standards: Label Halo)
-        ax.text(x, y + 0.5, label, color='black', ha='center', va='bottom',
-                bbox=dict(facecolor='white', alpha=0.7, edgecolor='none', boxstyle='round,pad=0.2'))
+    ax.legend()
+    ax.set_xlabel('x')
+    ax.set_ylabel('y')
 
-    if lines_data: # Only show legend if there are lines
-        ax.legend()
-    return _plot_to_base64(fig)
+    # 將圖形轉換為 base64 字串
+    img_buf = io.BytesIO()
+    plt.savefig(img_buf, format='png', bbox_inches='tight', dpi=300) # [V11.6 Resolution]
+    plt.close(fig)
+    img_buf.seek(0)
+    img_base64 = base64.b64encode(img_buf.read()).decode('utf-8')
+    return img_base64
 
+def _get_line_info(a, b, c):
+    """輔助函式：獲取直線資訊（斜率、y截距或是否為垂直/水平線）"""
+    if b == 0: # 垂直線 x = c/a
+        if a == 0: return 'degenerate', None, None # 0x + 0y = c, invalid line unless c=0 (0=0)
+        return 'vertical', c/a, None
+    elif a == 0: # 水平線 y = c/b
+        if b == 0: return 'degenerate', None, None # Should be caught by a==0 and b==0 earlier
+        return 'horizontal', None, c/b
+    else: # 一般直線 y = (-a/b)x + (c/b)
+        slope = -a / b
+        y_intercept = c / b
+        return 'normal', slope, y_intercept
 
-# Helper to calculate the intersection of two lines (ax + by = c)
-# 數據禁絕常數: 嚴禁硬編碼答案或座標。所有目標答案與圖形座標必須根據隨機生成的數據，透過幾何公式反向計算得出。
-def _calculate_intersection(eq1, eq2):
+def _format_equation(a, b, c):
     """
-    Calculates the intersection point of two linear equations.
-    eq: (a, b, c) representing ax + by = c
-    Returns: (x, y) if unique solution, "infinite_solutions" for coincident, "no_solution" for parallel.
+    [系統底層鐵律 1]: 方程式生成鎖死 (Equation Robustness)
+    嚴禁使用 f-string 組合 `ax + by = c`。
+    【強制流程】：必須分別判定 a, b 的正負與是否為 1，手動組合字串片段後合併。
     """
-    a1, b1, c1 = eq1
-    a2, b2, c2 = eq2
+    terms = []
 
-    det = a1 * b2 - a2 * b1
+    # x term
+    if a == 1:
+        terms.append("x")
+    elif a == -1:
+        terms.append("-x")
+    elif a != 0:
+        terms.append(f"{a}x")
 
-    if det == 0:
-        # Lines are parallel or coincident
-        # Check if coincident: if all determinants are zero, or one equation is a multiple of the other
-        det_x = c1 * b2 - c2 * b1
-        det_y = a1 * c2 - a2 * c1
-        
-        # Using a small tolerance for float comparison
-        tolerance = 1e-9 
-        if abs(det_x) < tolerance and abs(det_y) < tolerance:
-            # If all three determinants (main, x, y) are zero, lines are coincident
-            return "infinite_solutions"
-        else:
-            # If main determinant is zero, but x or y determinant is not, lines are parallel
-            return "no_solution"
-    else:
-        x = (c1 * b2 - c2 * b1) / det
-        y = (a1 * c2 - a2 * c1) / det
-        return x, y
+    # y term
+    if b == 1:
+        if terms: terms.append(" + y")
+        else: terms.append("y")
+    elif b == -1:
+        if terms: terms.append(" - y")
+        else: terms.append("-y")
+    elif b > 0:
+        if terms: terms.append(f" + {b}y")
+        else: terms.append(f"{b}y")
+    elif b < 0:
+        if terms: terms.append(f" {b}y") # e.g. "2x -3y"
+        else: terms.append(f"{b}y")
 
-# Helper to generate random linear equation coefficients (ax + by = c)
-def _generate_equation_coeffs(x_intersect, y_intersect, min_coeff=-4, max_coeff=4, non_zero_b=False):
-    """
-    Generates coefficients (a, b, c) for a linear equation ax + by = c
-    that passes through (x_intersect, y_intersect).
-    Ensures a and b are not both zero.
-    If non_zero_b is True, ensures b is not zero (for non-vertical lines).
-    """
-    while True:
-        a = random.randint(min_coeff, max_coeff)
-        b = random.randint(min_coeff, max_coeff)
-        
-        if a == 0 and b == 0:
-            continue # Not a valid line
-        if non_zero_b and b == 0:
-            continue # For non-vertical lines, b cannot be zero
-            
-        c = a * x_intersect + b * y_intersect
-        
-        return a, b, c
+    # Combine terms to form the left-hand side of the equation
+    equation_lhs = "".join(terms).strip()
 
+    # Handle cases where LHS is empty (e.g., 0x + 0y = c)
+    if not equation_lhs:
+        equation_lhs = "0"
 
-# Helper to simplify equation coefficients by dividing by GCD
-def _simplify_equation(a, b, c):
-    """Simplifies coefficients (a, b, c) by dividing by their GCD."""
-    coeffs = [a, b, c]
-    
-    # Find a common multiplier to convert all coefficients to integers if they are fractions
-    common_multiplier = 1
-    for val in coeffs:
-        if isinstance(val, float) and not val.is_integer():
-            temp_str = str(val)
-            if '.' in temp_str:
-                decimal_places = len(temp_str) - temp_str.index('.') - 1
-                common_multiplier = max(common_multiplier, 10**decimal_places)
-    
-    if common_multiplier > 1:
-        # Apply multiplier and round to nearest integer to handle float inaccuracies
-        a, b, c = round(a * common_multiplier), round(b * common_multiplier), round(c * common_multiplier)
-    else:
-        # If no fractional floats, ensure they are integers for GCD
-        a, b, c = int(a), int(b), int(c)
-    
-    # Filter out zeros for GCD calculation
-    non_zero_coeffs = [val for val in [a, b, c] if val != 0]
+    return f"{equation_lhs} = {c}"
 
-    if not non_zero_coeffs: # All zero, not a valid equation (0=0)
-        return 0, 0, 0
-    
-    current_gcd = abs(non_zero_coeffs[0])
-    for i in range(1, len(non_zero_coeffs)):
-        current_gcd = math.gcd(current_gcd, abs(non_zero_coeffs[i]))
+# --- 頂層函式 (Top-level Functions) ---
 
-    if current_gcd > 0:
-        a = a // current_gcd
-        b = b // current_gcd
-        c = c // current_gcd
-    
-    # Ensure leading coefficient (a) is positive if possible
-    # (or b if a is zero, to normalize the equation form)
-    if a < 0 or (a == 0 and b < 0):
-        a, b, c = -a, -b, -c
-        
-    return a, b, c
-
-# Helper to convert equation (a, b, c) to LaTeX string
-# 排版與 LaTeX 安全: 凡字串包含 LaTeX 指令 (如 \frac, \sqrt, \pm)，嚴禁使用 f-string 或 % 格式化。
-# 必須嚴格執行以下模板：expr = r"x = {a}".replace("{a}", str(ans_val))
-def _format_equation_latex(a, b, c):
-    """Formats ax + by = c into a LaTeX string."""
-    parts = []
-    
-    # Handle 'a' term
-    if a != 0:
-        if a == 1:
-            parts.append("x")
-        elif a == -1:
-            parts.append(r"-x")
-        else:
-            parts.append(str(a) + "x")
-            
-    # Handle 'b' term
-    if b != 0:
-        if b > 0:
-            if parts: # If 'a' term already added, add '+'
-                parts.append(r"+")
-            if b == 1:
-                parts.append("y")
-            else:
-                parts.append(str(b) + "y")
-        else: # b < 0
-            if b == -1:
-                parts.append(r"-y")
-            else:
-                parts.append(str(b) + "y")
-                
-    # If both a and b are 0, this is an invalid equation (e.g., 0 = c)
-    if not parts:
-        # This case should ideally not happen for valid lines
-        # But if it does, represent as '0 = c'
-        expr = r"0 = {c}".replace("{c}", str(c))
-        return expr
-        
-    equation_str = " ".join(parts)
-    expr = equation_str + r" = {c}".replace("{c}", str(c))
-    return expr
-
-# --- Main functions ---
-
-# 頂層函式: 嚴禁使用 class 封裝。必須直接定義 generate 與 check 於模組最外層。
-# 自動重載: 確保代碼不依賴全域狀態。
 def generate(level=1):
-    # 隨機分流: generate() 內部必須使用 random.choice 或 if/elif 邏輯，明確對應到 RAG 中的例題。
-    # 範例: Spec 必須描述如何將 RAG 例題中的數據「動態化」(Dynamize)，而不是創造新題型。
-    problem_type = random.choice([1, 2, 3, 4, 5, 6]) # Randomly select problem type
-
-    # Common parameters for coordinate generation
-    x_range = (-8, 8)
-    y_range = (-8, 8)
-    coord_min_val = -5
-    coord_max_val = 5
-
-    # Use _generate_coordinate_value for all coordinate generation
-    # For K12, we prioritize integer intersection points for simplicity, especially at lower levels.
-    # [數據禁絕常數]: 隨機生成所有幾何長度、角度與面積。
-    # V7. Coordinate Logic Hardening: Generate values first, then check.
-    x_intersect_float, x_intersect_data = _generate_coordinate_value(coord_min_val, coord_max_val, allow_fractions=(level>=2))
-    y_intersect_float, y_intersect_data = _generate_coordinate_value(coord_min_val, coord_max_val, allow_fractions=(level>=2))
-
-    intersection_point = (x_intersect_float, y_intersect_float)
-    intersection_point_latex = r"({x}, {y})".replace("{x}", _format_coordinate_latex(x_intersect_data)).replace("{y}", _format_coordinate_latex(y_intersect_data))
-
-    # To ensure a unique solution for most types, generate equations that definitely intersect.
-    # We must ensure they are not parallel or coincident for unique solution types.
-    
-    a1, b1, c1, a2, b2, c2 = 0, 0, 0, 0, 0, 0 # Initialize to avoid UnboundLocalError
-    
-    # Generate equations for unique solutions (default)
-    while True:
-        # Generate equation 1 (a1x + b1y = c1)
-        a1, b1, c1 = _generate_equation_coeffs(x_intersect_float, y_intersect_float, min_coeff=-4, max_coeff=4)
-        a1, b1, c1 = _simplify_equation(a1, b1, c1)
-
-        # Generate equation 2 (a2x + b2y = c2)
-        a2, b2, c2 = _generate_equation_coeffs(x_intersect_float, y_intersect_float, min_coeff=-4, max_coeff=4)
-        a2, b2, c2 = _simplify_equation(a2, b2, c2)
-        
-        # Check if lines are parallel or coincident
-        det_coeffs = a1 * b2 - a2 * b1
-        if det_coeffs != 0: # Unique solution
-            break
-        # If det_coeffs == 0, they are parallel or coincident. Regenerate.
-
-    eq1_latex = _format_equation_latex(a1, b1, c1)
-    eq2_latex = _format_equation_latex(a2, b2, c2)
+    """
+    [V3. 頂層函式]：直接定義於模組最外層。
+    [V4. 題型鏡射]：使用 random.choice 或 if/elif 邏輯對應 RAG 例題.
+    [V7. 數據與欄位]：返回字典包含指定欄位。
+    [V10. 數據禁絕常數]：隨機生成所有幾何長度、角度與面積。
+    [MANDATORY MIRRORING RULES]: Strict mapping to RAG Ex 1-4.
+    """
+    # Problem types now strictly map to RAG examples by number.
+    problem_type = random.choice([1, 2, 3, 4]) 
 
     question_text = ""
-    image_base64 = None
     correct_answer = ""
-    answer = {} # 欄位鎖死: 返回字典必須且僅能包含 question_text, correct_answer, answer, image_base64。
+    answer_data = {} # Renamed to avoid conflict with `answer` in `check`
+    image_base64 = None
+    
+    sol_x_float = None
+    sol_y_float = None
+    area = None
 
-    if problem_type == 1:
-        # Type 1 (Maps to Example 1): Solve System Algebraically.
-        # Goal: Find the intersection point (x, y) of two lines given their equations.
-        question_text = r"請找出下列二元一次聯立方程式的解，並說明其在坐標平面上的幾何意義："
-        question_text += r"$" + eq1_latex + r"$"
-        question_text += r"$" + eq2_latex + r"$"
-        
-        # correct_answer will be formatted at the end for consistency
-        
-        # No image needed for algebraic solution.
-        image_base64 = None
+    coeffs1 = [0, 0, 0] # a1, b1, c1 for line 1 (a1*x + b1*y = c1)
+    coeffs2 = [0, 0, 0] # a2, b2, c2 for line 2 (a2*x + b2*y = c2)
 
-    elif problem_type == 2:
-        # Type 2 (Maps to Example 2): Verify Point as Solution.
-        # Goal: Given two equations and a point, determine if the point is the solution.
-        test_point_is_solution = random.choice([True, False])
+    if problem_type == 1 or problem_type == 2:
+        # RAG Ex 1 & 2: Plot lines, find intersection point.
+        # Example 1: 4x=3y, x+3y=10 -> (2, 8/3)
+        # Example 2: y=-x+6, x+2y=8 -> (4, 2)
         
-        if test_point_is_solution:
-            test_x_float, test_x_data = x_intersect_float, x_intersect_data
-            test_y_float, test_y_data = y_intersect_float, y_intersect_data
-            correct_answer_text = "是"
-        else:
-            # Generate a point that is NOT the intersection
-            while True:
-                test_x_float, test_x_data = _generate_coordinate_value(coord_min_val, coord_max_val, allow_fractions=(level>=2))
-                test_y_float, test_y_data = _generate_coordinate_value(coord_min_val, coord_max_val, allow_fractions=(level>=2))
-                # Ensure it's not the actual solution AND not on both lines
-                is_on_L1 = abs(a1 * test_x_float + b1 * test_y_float - c1) < 1e-6
-                is_on_L2 = abs(a2 * test_x_float + b2 * test_y_float - c2) < 1e-6
-                
-                if not (is_on_L1 and is_on_L2): # If it's not the actual solution
-                    # Also ensure it's not the exact intersection point (redundant with above, but good for robustness)
-                    if abs(test_x_float - x_intersect_float) > 1e-6 or abs(test_y_float - y_intersect_float) > 1e-6:
-                        break
-            correct_answer_text = "否"
+        while True:
+            sol_x_float, sol_x_data = _generate_coordinate_value(min_val=-5, max_val=5, allow_fraction=True)
+            sol_y_float, sol_y_data = _generate_coordinate_value(min_val=-5, max_val=5, allow_fraction=True)
 
-        test_point_latex = r"({x}, {y})".replace("{x}", _format_coordinate_latex(test_x_data)).replace("{y}", _format_coordinate_latex(test_y_data))
+            # Ensure intersection is not trivial
+            if (sol_x_float == 0 and sol_y_float == 0) or \
+               (sol_x_float == 1 and sol_y_float == 1) or \
+               (sol_x_float == -1 and sol_y_float == -1):
+                continue
+            
+            # Generate coefficients that pass through (sol_x_float, sol_y_float)
+            a1 = random.randint(-3, 3)
+            b1 = random.randint(-3, 3)
+            c1 = a1 * sol_x_float + b1 * sol_y_float
+            
+            a2 = random.randint(-3, 3)
+            b2 = random.randint(-3, 3)
+            c2 = a2 * sol_x_float + b2 * sol_y_float
+
+            # Avoid degenerate equations (0x+0y=c) or (0x+0y=0)
+            if (a1 == 0 and b1 == 0) or (a2 == 0 and b2 == 0):
+                continue
+            
+            info1 = _get_line_info(a1, b1, c1)
+            info2 = _get_line_info(a2, b2, c2)
+
+            if info1[0] == 'degenerate' or info2[0] == 'degenerate': continue
+
+            # Ensure lines are not parallel or coincident (must intersect uniquely)
+            if (info1[0] == 'vertical' and info2[0] == 'vertical' and info1[1] == info2[1]) or \
+               (info1[0] == 'horizontal' and info2[0] == 'horizontal' and info1[2] == info2[2]) or \
+               (info1[0] == 'normal' and info2[0] == 'normal' and info1[1] == info2[1]):
+                continue
+            
+            # Ensure intersection point is within reasonable plot range
+            min_plot_coord, max_plot_coord = -8, 8
+            if not (min_plot_coord <= sol_x_float <= max_plot_coord and min_plot_coord <= sol_y_float <= max_plot_coord):
+                continue
+            
+            break
         
-        question_text = r"點 $" + test_point_latex + r"$ 是否為下列聯立方程式的解？"
-        question_text += r"$" + eq1_latex + r"$"
-        question_text += r"$" + eq2_latex + r"$"
+        coeffs1 = [a1, b1, c1]
+        coeffs2 = [a2, b2, c2]
+
+        eq1_str = _format_equation(a1, b1, c1)
+        eq2_str = _format_equation(a2, b2, c2)
+
+        question_text = r"在坐標平面上分別畫出二元一次方程式 " + eq1_str + r"、" + eq2_str + r" 的圖形，並標記這兩條直線的交點坐標。"
+        correct_answer = f"({str(int(sol_x_float)) if sol_x_float.is_integer() else _format_coordinate_latex(sol_x_data)}, " \
+                         f"{str(int(sol_y_float)) if sol_y_float.is_integer() else _format_coordinate_latex(sol_y_data)})"
         
-        correct_answer = correct_answer_text
-        image_base64 = None
+        image_base64 = _plot_lines([coeffs1, coeffs2], intersection_point=(sol_x_float, sol_y_float), point_labels="P")
+        
+        answer_data["x"] = sol_x_float
+        answer_data["y"] = sol_y_float
 
     elif problem_type == 3:
-        # Type 3 (Maps to Example 3): Find Unknown Coefficient.
-        # Goal: Given an intersection point and two equations (one with an unknown), find the unknown.
+        # RAG Ex 3: Plot lines, find area with x-axis.
+        # Example: x-y=1, 2x+3y=12 -> Area 5
         
-        # Randomly choose which equation has the unknown and which coefficient is unknown
-        coeff_to_hide = random.choice(['a', 'b', 'c'])
-        which_equation = random.choice([1, 2])
+        while True:
+            # Generate intersection point (sol_x, sol_y) such that sol_y is not zero (for triangle height)
+            sol_x_float, sol_x_data = _generate_coordinate_value(min_val=-3, max_val=3, allow_fraction=True)
+            sol_y_float, sol_y_data = _generate_coordinate_value(min_val=1, max_val=3, allow_fraction=True) # Ensure non-zero height
+            if random.random() < 0.5: sol_y_float = -sol_y_float # Can be above or below x-axis
 
-        k_val = 0 # Initialize k_val
-        
-        if which_equation == 1:
-            # Hide a coefficient in eq1
-            if coeff_to_hide == 'a':
-                k_val = a1
-                # Temporarily use 'K_placeholder' as a placeholder to generate LaTeX, then replace 'K_placeholder' with 'k'
-                question_eq1_latex = _format_equation_latex("K_placeholder", b1, c1).replace("K_placeholder", r"k") 
-            elif coeff_to_hide == 'b':
-                k_val = b1
-                question_eq1_latex = _format_equation_latex(a1, "K_placeholder", c1).replace("K_placeholder", r"k")
-            else: # coeff_to_hide == 'c'
-                k_val = c1
-                question_eq1_latex = _format_equation_latex(a1, b1, "K_placeholder").replace("K_placeholder", r"k")
+            # Generate two lines passing through (sol_x, sol_y)
+            a1 = random.randint(-3, 3)
+            b1 = random.randint(-3, 3)
+            c1 = a1 * sol_x_float + b1 * sol_y_float
             
-            question_text = r"已知點 $" + intersection_point_latex + r"$ 是下列聯立方程式的解，求 $k$ 的值："
-            question_text += r"$" + question_eq1_latex + r"$"
-            question_text += r"$" + eq2_latex + r"$"
+            a2 = random.randint(-3, 3)
+            b2 = random.randint(-3, 3)
+            c2 = a2 * sol_x_float + b2 * sol_y_float
 
-        else: # which_equation == 2
-            # Hide a coefficient in eq2
-            if coeff_to_hide == 'a':
-                k_val = a2
-                question_eq2_latex = _format_equation_latex("K_placeholder", b2, c2).replace("K_placeholder", r"k")
-            elif coeff_to_hide == 'b':
-                k_val = b2
-                question_eq2_latex = _format_equation_latex(a2, "K_placeholder", c2).replace("K_placeholder", r"k")
-            else: # coeff_to_hide == 'c'
-                k_val = c2
-                question_eq2_latex = _format_equation_latex(a2, b2, "K_placeholder").replace("K_placeholder", r"k")
+            # Avoid degenerate equations
+            if (a1 == 0 and b1 == 0) or (a2 == 0 and b2 == 0): continue
             
-            question_text = r"已知點 $" + intersection_point_latex + r"$ 是下列聯立方程式的解，求 $k$ 的值："
-            question_text += r"$" + eq1_latex + r"$"
-            question_text += r"$" + question_eq2_latex + r"$"
-        
-        correct_answer = str(k_val) # K value can be float if intersection point was fractional
-        image_base64 = None
+            info1 = _get_line_info(a1, b1, c1)
+            info2 = _get_line_info(a2, b2, c2)
+
+            if info1[0] == 'degenerate' or info2[0] == 'degenerate': continue
+
+            # Ensure lines are not parallel or coincident
+            if (info1[0] == 'vertical' and info2[0] == 'vertical' and info1[1] == info2[1]) or \
+               (info1[0] == 'horizontal' and info2[0] == 'horizontal' and info1[2] == info2[2]) or \
+               (info1[0] == 'normal' and info2[0] == 'normal' and info1[1] == info2[1]):
+                continue
+            
+            # Ensure both lines have x-intercepts (i.e., not horizontal lines with c!=0)
+            if a1 == 0 or a2 == 0: continue # If a=0, it's a horizontal line (y=c/b). If c!=0, it doesn't intersect x-axis.
+
+            # Calculate x-intercepts for area calculation
+            x_intercept1 = c1 / a1 # when y=0
+            x_intercept2 = c2 / a2 # when y=0
+
+            # Ensure x-intercepts are distinct and reasonably spaced for a visible triangle
+            if abs(x_intercept1 - x_intercept2) < 0.5: continue # Too close
+            
+            # Ensure all points (x_intercept1, 0), (x_intercept2, 0), (sol_x_float, sol_y_float) are within plot range
+            min_plot_coord, max_plot_coord = -8, 8
+            if not (min_plot_coord <= sol_x_float <= max_plot_coord and min_plot_coord <= sol_y_float <= max_plot_coord and \
+                    min_plot_coord <= x_intercept1 <= max_plot_coord and min_plot_coord <= x_intercept2 <= max_plot_coord):
+                continue
+            
+            base = abs(x_intercept1 - x_intercept2)
+            height = abs(sol_y_float)
+            area = 0.5 * base * height
+            
+            # Ensure area is a simple number (integer or simple fraction like X.5)
+            if not (area * 2).is_integer(): 
+                continue # regenerate if not simple
+            
+            break # Found valid equations
+
+        coeffs1 = [a1, b1, c1]
+        coeffs2 = [a2, b2, c2]
+
+        eq1_str = _format_equation(a1, b1, c1)
+        eq2_str = _format_equation(a2, b2, c2)
+
+        question_text = r"在坐標平面上畫出二元一次方程式 " + eq1_str + r"、" + eq2_str + r" 的圖形，並求出這兩個二元一次方程式的圖形與 x 軸所圍成的區域面積。"
+        correct_answer = str(int(area)) if area.is_integer() else str(area)
+
+        image_base64 = _plot_lines([coeffs1, coeffs2], 
+                                   intersection_point=(sol_x_float, sol_y_float), 
+                                   point_labels="P",
+                                   highlight_area={'axis': 'x', 
+                                                   'x_intercept1': x_intercept1, 
+                                                   'x_intercept2': x_intercept2, 
+                                                   'intersection': (sol_x_float, sol_y_float)})
+        answer_data["area"] = area
 
     elif problem_type == 4:
-        # Type 4 (Maps to Example 4): Read Intersection from Graph.
-        # Goal: Interpret a given graph to find the intersection point.
-        question_text = r"下圖顯示了兩個二元一次方程式的圖形。請從圖中找出它們的交點坐標。"
+        # RAG Ex 4: Find area with y-axis.
+        # Example: x+y=10, x-y=4 -> Area 49
         
-        lines_to_draw = [
-            {'equation': (a1, b1, c1), 'label': r'$L_1$', 'color': 'blue'}, # Don't put full equation in label for image clarity
-            {'equation': (a2, b2, c2), 'label': r'$L_2$', 'color': 'red'}
-        ]
-        
-        # V10.2 B: Reading Type - show points and labels
-        # 防洩漏原則: 視覺化函式僅能接收「題目已知數據」。嚴禁將「答案數據」傳入繪圖函式，確保學生無法從圖形中直接看到答案。
-        # For "reading type", the point IS part of the known data presented to the student to read.
-        points_to_draw = [
-            {'coord': intersection_point, 'label': intersection_point_latex, 'color': 'green'}
-        ]
-        
-        image_base64 = _draw_coordinate_plane(lines_data=lines_to_draw, points_data=points_to_draw, x_range=x_range, y_range=y_range)
-        # correct_answer will be formatted at the end for consistency
+        while True:
+            # Generate intersection point (sol_x, sol_y) such that sol_x is not zero (for triangle width)
+            sol_x_float, sol_x_data = _generate_coordinate_value(min_val=1, max_val=3, allow_fraction=True) # Ensure non-zero width
+            if random.random() < 0.5: sol_x_float = -sol_x_float # Can be left or right of y-axis
+            sol_y_float, sol_y_data = _generate_coordinate_value(min_val=-3, max_val=3, allow_fraction=True)
 
-    elif problem_type == 5:
-        # Type 5 (Maps to Example 5): Graph and Find Intersection.
-        # Goal: Given two equations, students need to graph them and find the intersection.
-        question_text = r"請在坐標平面上繪製下列兩個二元一次方程式的圖形，並找出它們的交點坐標。"
-        question_text += r"$" + eq1_latex + r"$"
-        question_text += r"$" + eq2_latex + r"$"
-        
-        lines_to_draw = [
-            {'equation': (a1, b1, c1), 'label': r'$L_1$', 'color': 'blue'},
-            {'equation': (a2, b2, c2), 'label': r'$L_2$', 'color': 'red'}
-        ]
-        
-        # V10.2 B: 標點題防洩漏協定 (Anti-Leak Protocol):
-        # 針對「在平面上標出點」的題型 (Plotting Type)，Spec 必須明確指示 Coder：
-        # 在呼叫繪圖函式時，`points` 參數必須傳入 空列表 `[]`。
-        # 圖形僅能顯示網格與坐標軸，學生需根據題目文字自行判斷位置。
-        image_base64 = _draw_coordinate_plane(lines_data=lines_to_draw, points_data=[], x_range=x_range, y_range=y_range)
-        # correct_answer will be formatted at the end for consistency
-        
-    elif problem_type == 6:
-        # Type 6 (Maps to Example 6): Special Cases (Parallel/Coincident).
-        # Goal: Identify if lines are parallel, coincident, or intersecting, and state the number of solutions.
-        
-        # Randomly choose between parallel, coincident, or intersecting (unique)
-        # Adjust probability based on level. Higher level => more special cases.
-        if level >= 2:
-            case_type = random.choice(['unique', 'unique', 'parallel', 'coincident']) # More special cases
-        else: # level 1, mostly unique
-            case_type = random.choice(['unique', 'unique', 'unique', 'parallel']) # Higher chance of unique
-        
-        if case_type == 'unique':
-            # Already generated unique solutions (a1,b1,c1) and (a2,b2,c2)
-            correct_answer = "唯一解"
-            question_text = r"下列聯立方程式在坐標平面上的圖形關係為何？有幾個解？"
-            question_text += r"$" + eq1_latex + r"$"
-            question_text += r"$" + eq2_latex + r"$"
+            # Generate two lines passing through (sol_x, sol_y)
+            a1 = random.randint(-3, 3)
+            b1 = random.randint(-3, 3)
+            c1 = a1 * sol_x_float + b1 * sol_y_float
             
-            lines_to_draw = [
-                {'equation': (a1, b1, c1), 'label': r'$L_1$', 'color': 'blue'},
-                {'equation': (a2, b2, c2), 'label': r'$L_2$', 'color': 'red'}
-            ]
-            # For unique case, we can show the intersection point as part of the "known" visual
-            points_to_draw = [{'coord': intersection_point, 'label': intersection_point_latex, 'color': 'green'}]
-            image_base64 = _draw_coordinate_plane(lines_data=lines_to_draw, points_data=points_to_draw, x_range=x_range, y_range=y_range)
+            a2 = random.randint(-3, 3)
+            b2 = random.randint(-3, 3)
+            c2 = a2 * sol_x_float + b2 * sol_y_float
 
-        elif case_type == 'parallel':
-            # Generate parallel lines (same slope, different y-intercept)
-            # Use existing a1, b1. Generate a new c2 such that it's parallel but not coincident.
-            while True:
-                k = random.choice([-2, -1, 1, 2, 3]) # Multiplier for a1, b1
-                if k == 0: continue # Multiplier cannot be zero
-                
-                a2_parallel = a1 * k
-                b2_parallel = b1 * k
-                
-                # Ensure c2_parallel is different from c1*k
-                # Add a non-zero, small integer offset to make it parallel but not coincident
-                offset = random.choice([-2, -1, 1, 2])
-                c2_parallel = c1 * k + offset
-                
-                if c2_parallel != c1 * k: # Ensure they are not coincident
-                    # Also ensure a2_parallel and b2_parallel are not both zero
-                    if a2_parallel != 0 or b2_parallel != 0:
-                        break
+            # Avoid degenerate equations
+            if (a1 == 0 and b1 == 0) or (a2 == 0 and b2 == 0): continue
+            
+            info1 = _get_line_info(a1, b1, c1)
+            info2 = _get_line_info(a2, b2, c2)
 
-            a2_parallel, b2_parallel, c2_parallel = _simplify_equation(a2_parallel, b2_parallel, c2_parallel)
-            
-            eq2_parallel_latex = _format_equation_latex(a2_parallel, b2_parallel, c2_parallel)
-            
-            correct_answer = "無解"
-            question_text = r"下列聯立方程式在坐標平面上的圖形關係為何？有幾個解？"
-            question_text += r"$" + eq1_latex + r"$"
-            question_text += r"$" + eq2_parallel_latex + r"$"
-            
-            lines_to_draw = [
-                {'equation': (a1, b1, c1), 'label': r'$L_1$', 'color': 'blue'},
-                {'equation': (a2_parallel, b2_parallel, c2_parallel), 'label': r'$L_2$', 'color': 'red'}
-            ]
-            # For parallel lines, no intersection point to show
-            image_base64 = _draw_coordinate_plane(lines_data=lines_to_draw, points_data=[], x_range=x_range, y_range=y_range)
+            if info1[0] == 'degenerate' or info2[0] == 'degenerate': continue
 
-        elif case_type == 'coincident':
-            # Generate coincident lines (one is a multiple of the other)
-            k = random.choice([-2, -1, 2, 3]) # Multiplier for eq1
-            if k == 0: k = 1 # Multiplier cannot be zero for generating a multiple
+            # Ensure lines are not parallel or coincident
+            if (info1[0] == 'vertical' and info2[0] == 'vertical' and info1[1] == info2[1]) or \
+               (info1[0] == 'horizontal' and info2[0] == 'horizontal' and info1[2] == info2[2]) or \
+               (info1[0] == 'normal' and info2[0] == 'normal' and info1[1] == info2[1]):
+                continue
             
-            a2_coincident = a1 * k
-            b2_coincident = b1 * k
-            c2_coincident = c1 * k
-            
-            a2_coincident, b2_coincident, c2_coincident = _simplify_equation(a2_coincident, b2_coincident, c2_coincident)
+            # Ensure both lines have y-intercepts (i.e., not vertical lines with c!=0)
+            if b1 == 0 or b2 == 0: continue # If b=0, it's a vertical line (x=c/a). If c!=0, it doesn't intersect y-axis.
 
-            eq2_coincident_latex = _format_equation_latex(a2_coincident, b2_coincident, c2_coincident)
+            # Calculate y-intercepts for area calculation
+            y_intercept1 = c1 / b1 # when x=0
+            y_intercept2 = c2 / b2 # when x=0
+
+            # Ensure y-intercepts are distinct and reasonably spaced
+            if abs(y_intercept1 - y_intercept2) < 0.5: continue
             
-            correct_answer = "無限多組解"
-            question_text = r"下列聯立方程式在坐標平面上的圖形關係為何？有幾個解？"
-            question_text += r"$" + eq1_latex + r"$"
-            question_text += r"$" + eq2_coincident_latex + r"$"
+            # Ensure all points (0, y_intercept1), (0, y_intercept2), (sol_x_float, sol_y_float) are within plot range
+            min_plot_coord, max_plot_coord = -8, 8
+            if not (min_plot_coord <= sol_x_float <= max_plot_coord and min_plot_coord <= sol_y_float <= max_plot_coord and \
+                    min_plot_coord <= y_intercept1 <= max_plot_coord and min_plot_coord <= y_intercept2 <= max_plot_coord):
+                continue
             
-            lines_to_draw = [
-                {'equation': (a1, b1, c1), 'label': r'$L_1$', 'color': 'blue'},
-                {'equation': (a2_coincident, b2_coincident, c2_coincident), 'label': r'$L_2$', 'color': 'red', 'linestyle': '--'} # Use different style to show two distinct lines that are coincident
-            ]
-            # For coincident lines, no single intersection point to show
-            image_base64 = _draw_coordinate_plane(lines_data=lines_to_draw, points_data=[], x_range=x_range, y_range=y_range)
+            base = abs(y_intercept1 - y_intercept2)
+            height = abs(sol_x_float)
+            area = 0.5 * base * height
+
+            if not (area * 2).is_integer():
+                continue # regenerate if not simple
+            
+            break # Found valid equations
+        
+        coeffs1 = [a1, b1, c1]
+        coeffs2 = [a2, b2, c2]
+
+        eq1_str = _format_equation(a1, b1, c1)
+        eq2_str = _format_equation(a2, b2, c2)
+
+        question_text = r"求二元一次方程式 " + eq1_str + r"、" + eq2_str + r" 的圖形與 y 軸所圍成的區域面積。"
+        correct_answer = str(int(area)) if area.is_integer() else str(area)
+
+        image_base64 = _plot_lines([coeffs1, coeffs2], 
+                                   intersection_point=(sol_x_float, sol_y_float), 
+                                   point_labels="P",
+                                   highlight_area={'axis': 'y', 
+                                                   'y_intercept1': y_intercept1, 
+                                                   'y_intercept2': y_intercept2, 
+                                                   'intersection': (sol_x_float, sol_y_float)})
+        answer_data["area"] = area
     
-    # Final check for correct_answer type for specific problem types (coordinates should be formatted)
-    if problem_type in [1, 4, 5]: # Intersection point
-        ans_x_formatted = _format_coordinate_latex(x_intersect_data)
-        ans_y_formatted = _format_coordinate_latex(y_intersect_data)
-        correct_answer = r"({x}, {y})".replace("{x}", ans_x_formatted).replace("{y}", ans_y_formatted)
-        
-    # Other problem types (2, 3, 6) already have their correct_answer as strings ("是", "否", k_val, "唯一解" etc.)
-
     return {
         "question_text": question_text,
         "correct_answer": correct_answer,
-        "answer": {}, # Placeholder for structured answer if needed, currently empty as per spec
+        "answer": answer_data,
         "image_base64": image_base64,
-        "created_at": datetime.now().isoformat(), # 時間戳記: 更新時必須將 created_at 設為 datetime.now() 並遞增 version。
+        "created_at": datetime.now().isoformat(),
         "version": "1.0"
     }
 
-# 頂層函式: 嚴禁使用 class 封裝。必須直接定義 generate 與 check 於模組最外層。
-# 自動重載: 確保代碼不依賴全域狀態。
 
     """
-    Checks the user's answer against the correct answer.
-    Handles different answer formats (e.g., (x,y) tuples, strings).
+    [V3. 頂層函式]：直接定義於模組最外層。
+    [V12.6 結構鎖死]：必須實作「數值序列比對」。
+    [V13.5 禁絕複雜比對]：統一要求使用數字序列比對。
+    [V13.6 Exact Check Logic]：指示 Coder 必須逐字複製 4-line check logic。
     """
-    # V6. Result Feedback (Pure Feedback Protocol): Sanitized answer for feedback
-    sanitized_ans = re.sub(r"[\$\\]", "", str(correct_answer))
-
-    # Normalize string answers for comparison
-    user_answer_norm = str(user_answer).strip().lower().replace(" ", "")
-    correct_answer_norm = str(correct_answer).strip().lower().replace(" ", "")
-
-    # For simple string comparisons (Yes/No, solution types)
-    if user_answer_norm == correct_answer_norm:
-        return True
     
-    # Special handling for coordinate tuples: (x,y)
-    # Try to parse as (float, float) for comparison
-    try:
-        # Remove LaTeX formatting if present in correct_answer (e.g., \frac{1}{2})
-        # Use regex to replace \frac{num}{den} with (num/den) for eval
-        correct_answer_for_eval = re.sub(r"\\frac\{(\-?\d+)\}\{(\d+)\}", r"(\1/\2)", correct_answer_norm)
-        correct_answer_for_eval = correct_answer_for_eval.replace("{", "").replace("}", "") # Remove remaining braces from mixed fractions
+    # Helper to parse a single numeric value, handling integers, floats, and simple fractions (e.g., "8/3")
+    def _parse_simple_value(s):
+        if '/' in s:
+            num, den = map(float, s.split('/'))
+            return num / den
+        return float(s)
 
-        if user_answer_norm.startswith('(') and user_answer_norm.endswith(')'):
-            user_coords_str = user_answer_norm[1:-1].split(',')
-            user_x = float(eval(user_coords_str[0])) # Using eval to handle fractions like 1/2
-            user_y = float(eval(user_coords_str[1]))
-            
-            # For correct_answer, handle potential mixed numbers like -2(1/2) -> -2-1/2 for eval
-            # First, check for negative sign outside a mixed number
-            correct_coords_str = correct_answer_for_eval[1:-1].split(',')
-            
-            # Eval can handle simple numbers, fractions, and negative numbers.
-            # Mixed numbers like "2 1/2" are not directly handled by eval, but "2+1/2" is.
-            # Our _format_coordinate_latex produces "2\frac{1}{2}" or "-2\frac{1}{2}".
-            # After regex conversion, it would be "2(1/2)" or "-2(1/2)".
-            # Eval treats "2(1/2)" as 2 * (1/2) = 1.0, which is incorrect for 2 and 1/2.
-            # We need to explicitly convert "A(B/C)" to "A+B/C" or "A-B/C".
-            
-            # Re-process correct_x/y for mixed numbers or negative fractions
-            def parse_coord_for_eval(coord_str):
-                coord_str = coord_str.strip()
-                match_mixed = re.match(r"^(-?)(\d+)\((\d+)/(\d+)\)$", coord_str) # e.g., -2(1/2)
-                match_fraction = re.match(r"^(-?)\((\d+)/(\d+)\)$", coord_str) # e.g., -(1/2)
-                
-                if match_mixed:
-                    sign = -1 if match_mixed.group(1) == "-" else 1
-                    integer_part = int(match_mixed.group(2))
-                    numerator = int(match_mixed.group(3))
-                    denominator = int(match_mixed.group(4))
-                    return sign * (integer_part + numerator / denominator)
-                elif match_fraction:
-                    sign = -1 if match_fraction.group(1) == "-" else 1
-                    numerator = int(match_fraction.group(2))
-                    denominator = int(match_fraction.group(3))
-                    return sign * (numerator / denominator)
-                else: # Assume it's a simple integer or fraction eval can handle directly
-                    return float(eval(coord_str))
-
-            correct_x = parse_coord_for_eval(correct_coords_str[0])
-            correct_y = parse_coord_for_eval(correct_coords_str[1])
-
-            # Compare floats with a tolerance
-            tolerance = 1e-6
-            if abs(user_x - correct_x) < tolerance and abs(user_y - correct_y) < tolerance:
-                return True
-    except (ValueError, IndexError, SyntaxError, NameError):
-        pass # Not a valid coordinate pair, or eval failed
-
-    # For '是'/'否'
-    if user_answer_norm in ["是", "否"] and correct_answer_norm in ["是", "否"]:
-        return user_answer_norm == correct_answer_norm
+    # Helper to parse a single numeric value, handling LaTeX fractions and mixed numbers for `correct_answer`
+    def _parse_latex_value(latex_str):
+        # Try to match mixed fraction: -I\frac{N}{D} or I\frac{N}{D}
+        match_mixed = re.match(r'(-?)(\d+)\\frac{(\d+)}{(\d+)}', latex_str)
+        if match_mixed:
+            sign = -1 if match_mixed.group(1) == '-' else 1
+            integer_part = int(match_mixed.group(2))
+            numerator = int(match_mixed.group(3))
+            denominator = int(match_mixed.group(4))
+            return sign * (integer_part + numerator / denominator)
         
-    # For number of solutions
-    solution_mapping = {
-        "唯一解": ["唯一解", "1", "一個解", "一組解", "one solution", "unique solution"],
-        "無解": ["無解", "0", "零解", "沒有解", "no solution"],
-        "無限多組解": ["無限多組解", "無限解", "many solutions", "infinite solutions"]
-    }
-    
-    for key, values in solution_mapping.items():
-        if correct_answer_norm == key.lower() and user_answer_norm in values:
-            return True
+        # Try to match simple fraction: -\frac{N}{D} or \frac{N}{D}
+        match_frac = re.match(r'(-?)\\frac{(\d+)}{(\d+)}', latex_str)
+        if match_frac:
+            sign = -1 if match_frac.group(1) == '-' else 1
+            numerator = int(match_frac.group(2))
+            denominator = int(match_frac.group(3))
+            return sign * (numerator / denominator)
+        
+        # Try to match integer or float
+        return float(latex_str)
 
-    # For numerical answers (e.g., finding k)
     try:
-        user_num = float(eval(user_answer_norm)) # eval to handle "1/2"
-        correct_num = float(eval(correct_answer_norm))
-        tolerance = 1e-6
-        if abs(user_num - correct_num) < tolerance:
-            return True
-    except (ValueError, SyntaxError, NameError):
-        pass # Not a valid number
+        # 1. Parse correct_answer (can be single area value or coordinate pair)
+        parsed_correct_values = []
+        if not correct_answer.strip().startswith('('): # It's an area value
+            parsed_correct_values.append(_parse_latex_value(correct_answer))
+        else: # It's a coordinate pair "(x, y)"
+            # Extract x and y parts from (x, y)
+            coord_match = re.match(r'\((.*?),\s*(.*?)\)', correct_answer)
+            if not coord_match:
+                return False # Invalid coordinate format in correct_answer
+            x_str, y_str = coord_match.groups()
+            parsed_correct_values.append(_parse_latex_value(x_str))
+            parsed_correct_values.append(_parse_latex_value(y_str))
 
-    return False
+        # 2. Parse user_answer (assume cleaned: no '$' or '\', only numbers, '.', '/')
+        user_answer_cleaned = user_answer.strip().replace('(', '').replace(')', '')
+        # Split by comma, then parse each part
+        user_parts = [p.strip() for p in user_answer_cleaned.split(',') if p.strip()]
+        
+        parsed_user_values = []
+        for p in user_parts:
+            parsed_user_values.append(_parse_simple_value(p))
+        
+        # 3. [V12.6 & V13.5]：數值序列比對
+        if len(parsed_user_values) != len(parsed_correct_values):
+            return False
+        
+        tolerance = 1e-9 # 浮點數比較容忍度
+        for u, c in zip(parsed_user_values, parsed_correct_values):
+            if abs(u - c) > tolerance:
+                return False
+        return True
+    except Exception:
+        # 如果解析失敗，則答案錯誤
+        return False
+
 
 # [Auto-Injected Patch v11.0] Universal Return, Linebreak & Handwriting Fixer
 def _patch_all_returns(func):
@@ -1036,7 +826,8 @@ def _patch_all_returns(func):
             # 判定規則：若答案包含複雜運算符號，強制提示手寫作答
             # 包含: ^ / _ , | ( [ { 以及任何 LaTeX 反斜線
             c_ans = str(res.get('correct_answer', ''))
-            triggers = ['^', '/', ',', '|', '(', '[', '{', '\\']
+            # [V13.1 修復] 移除 '(' 與 ','，允許座標與數列使用純文字輸入
+            triggers = ['^', '/', '|', '[', '{', '\\']
             
             # [V11.1 Refined] 僅在題目尚未包含提示時注入，避免重複堆疊
             has_prompt = "手寫" in res.get('question_text', '')

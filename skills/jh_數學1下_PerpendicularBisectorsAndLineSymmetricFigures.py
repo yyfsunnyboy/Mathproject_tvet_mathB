@@ -1,81 +1,64 @@
 # ==============================================================================
 # ID: jh_數學1下_PerpendicularBisectorsAndLineSymmetricFigures
 # Model: gemini-2.5-flash | Strategy: V9 Architect (cloud_pro)
-# Duration: 111.23s | RAG: 5 examples
-# Created At: 2026-01-11 22:51:31
+# Duration: 39.43s | RAG: 5 examples
+# Created At: 2026-01-17 23:30:17
 # Fix Status: [Repaired]
+# Fixes: Regex=1, Logic=0
 #==============================================================================
 
 
+# [V12.3 Elite Standard Math Tools]
 import random
 import math
+import matplotlib
+from matplotlib.figure import Figure
+from matplotlib.backends.backend_agg import FigureCanvasAgg
+import matplotlib.pyplot as plt
+import matplotlib.patches as patches
 from fractions import Fraction
 from functools import reduce
+import ast
+import base64
+import io
+import re
 
-# --- 1. Formatting Helpers ---
+# [V11.6 Elite Font & Style] - Hardcoded
+plt.rcParams['font.sans-serif'] = ['Microsoft JhengHei']
+plt.rcParams['axes.unicode_minus'] = False
+
 def to_latex(num):
-    """
-    Convert int/float/Fraction to LaTeX.
-    Handles mixed numbers automatically for Fractions.
-    """
     if isinstance(num, int): return str(num)
     if isinstance(num, float): num = Fraction(str(num)).limit_denominator(100)
     if isinstance(num, Fraction):
+        if num == 0: return "0"
         if num.denominator == 1: return str(num.numerator)
-        # Logic for negative fractions
         sign = "-" if num < 0 else ""
         abs_num = abs(num)
-        
         if abs_num.numerator > abs_num.denominator:
             whole = abs_num.numerator // abs_num.denominator
             rem_num = abs_num.numerator % abs_num.denominator
-            if rem_num == 0: return f"{sign}{whole}"
-            return f"{sign}{whole} \\frac{{{rem_num}}}{{{abs_num.denominator}}}"
-        return f"\\frac{{{num.numerator}}}{{{num.denominator}}}"
+            if rem_num == 0: return r"{s}{w}".replace("{s}", sign).replace("{w}", str(whole))
+            return r"{s}{w} \frac{{n}}{{d}}".replace("{s}", sign).replace("{w}", str(whole)).replace("{n}", str(rem_num)).replace("{d}", str(abs_num.denominator))
+        return r"\frac{{n}}{{d}}".replace("{n}", str(num.numerator)).replace("{d}", str(num.denominator))
     return str(num)
 
 def fmt_num(num, signed=False, op=False):
-    """
-    Format number for LaTeX.
-    
-    Args:
-        num: The number to format.
-        signed (bool): If True, always show sign (e.g., "+3", "-5").
-        op (bool): If True, format as operation with spaces (e.g., " + 3", " - 5").
-    """
     latex_val = to_latex(num)
     if num == 0 and not signed and not op: return "0"
-    
     is_neg = (num < 0)
-    abs_val = to_latex(abs(num))
-    
+    abs_str = to_latex(abs(num))
     if op:
-        # e.g., " + 3", " - 3"
-        return f" - {abs_val}" if is_neg else f" + {abs_val}"
-    
+        if is_neg: return r" - {v}".replace("{v}", abs_str)
+        return r" + {v}".replace("{v}", abs_str)
     if signed:
-        # e.g., "+3", "-3"
-        return f"-{abs_val}" if is_neg else f"+{abs_val}"
-        
-    # Default behavior (parentheses for negative)
-    if is_neg: return f"({latex_val})"
+        if is_neg: return r"-{v}".replace("{v}", abs_str)
+        return r"+{v}".replace("{v}", abs_str)
+    if is_neg: return r"({v})".replace("{v}", latex_val)
     return latex_val
 
-# Alias for AI habits
-fmt_fraction_latex = to_latex 
-
 # --- 2. Number Theory Helpers ---
-def get_positive_factors(n):
-    """Return a sorted list of positive factors of n."""
-    factors = set()
-    for i in range(1, int(math.isqrt(n)) + 1):
-        if n % i == 0:
-            factors.add(i)
-            factors.add(n // i)
-    return sorted(list(factors))
-
 def is_prime(n):
-    """Check primality."""
     if n <= 1: return False
     if n <= 3: return True
     if n % 2 == 0 or n % 3 == 0: return False
@@ -85,8 +68,15 @@ def is_prime(n):
         i += 6
     return True
 
+def get_positive_factors(n):
+    factors = set()
+    for i in range(1, int(math.isqrt(n)) + 1):
+        if n % i == 0:
+            factors.add(i)
+            factors.add(n // i)
+    return sorted(list(factors))
+
 def get_prime_factorization(n):
-    """Return dict {prime: exponent}."""
     factors = {}
     d = 2
     temp = n
@@ -99,742 +89,702 @@ def get_prime_factorization(n):
         factors[temp] = factors.get(temp, 0) + 1
     return factors
 
-def gcd(a, b): return math.gcd(a, b)
-def lcm(a, b): return abs(a * b) // math.gcd(a, b)
+def gcd(a, b): return math.gcd(int(a), int(b))
+def lcm(a, b): return abs(int(a) * int(b)) // math.gcd(int(a), int(b))
 
-# --- 3. Fraction Generator Helper ---
+# --- 3. Fraction Generator & Helpers ---
+def simplify_fraction(n, d):
+    common = math.gcd(n, d)
+    return n // common, d // common
+
+def _calculate_distance_1d(a, b):
+    return abs(a - b)
+
 def get_random_fraction(min_val=-10, max_val=10, denominator_limit=10, simple=True):
-    """
-    Generate a random Fraction within range.
-    simple=True ensures it's not an integer.
-    """
     for _ in range(100):
         den = random.randint(2, denominator_limit)
         num = random.randint(min_val * den, max_val * den)
         if den == 0: continue
         val = Fraction(num, den)
-        if simple and val.denominator == 1: continue # Skip integers
+        if simple and val.denominator == 1: continue 
         if val == 0: continue
         return val
-    return Fraction(1, 2) # Fallback
+    return Fraction(1, 2)
 
-def draw_number_line(points_map):
-    """[Advanced] Generate aligned ASCII number line with HTML container."""
-    if not points_map: return ""
-    values = []
-    for v in points_map.values():
-        if isinstance(v, (int, float)): values.append(float(v))
-        elif isinstance(v, Fraction): values.append(float(v))
-        else: values.append(0.0)
-    if not values: values = [0]
-    min_val = math.floor(min(values)) - 1
-    max_val = math.ceil(max(values)) + 1
-    if max_val - min_val > 15:
-        mid = (max_val + min_val) / 2
-        min_val = int(mid - 7); max_val = int(mid + 8)
-    unit_width = 6
-    line_str = ""; tick_str = ""
-    range_len = max_val - min_val + 1
-    label_slots = [[] for _ in range(range_len)]
-    for name, val in points_map.items():
-        if isinstance(val, Fraction): val = float(val)
-        idx = int(round(val - min_val))
-        if 0 <= idx < range_len: label_slots[idx].append(name)
-    for i in range(range_len):
-        val = min_val + i
-        line_str += "+" + "-" * (unit_width - 1)
-        tick_str += f"{str(val):<{unit_width}}"
-    final_label_str = ""
-    for labels in label_slots:
-        final_label_str += f"{labels[0]:<{unit_width}}" if labels else " " * unit_width
-    result = (
-        f"<div style='font-family: Consolas, monospace; white-space: pre; overflow-x: auto; background: #f8f9fa; padding: 15px; border-radius: 5px; margin: 10px 0; line-height: 1.2;'>"
-        f"{final_label_str}\n{line_str}+\n{tick_str}</div>"
-    )
-# --- 4. Standard Answer Checker (Auto-Injected) ---
+# --- 7 下 強化組件 A: 數線區間渲染器 (針對不等式) ---
+def draw_number_line(points_map, x_min=None, x_max=None, intervals=None, **kwargs):
+    """
+    intervals: list of dict, e.g., [{'start': 3, 'direction': 'right', 'include': False}]
+    """
+    values = [float(v) for v in points_map.values()] if points_map else [0]
+    if intervals:
+        for inter in intervals: values.append(float(inter['start']))
+    
+    if x_min is None: x_min = math.floor(min(values)) - 2
+    if x_max is None: x_max = math.ceil(max(values)) + 2
+    
+    fig = Figure(figsize=(8, 2))
+    ax = fig.add_subplot(111)
+    ax.plot([x_min, x_max], [0, 0], 'k-', linewidth=1.5)
+    ax.plot(x_max, 0, 'k>', markersize=8, clip_on=False)
+    ax.plot(x_min, 0, 'k<', markersize=8, clip_on=False)
+    
+    # 數線刻度規範
+    ax.set_xticks([0])
+    ax.set_xticklabels(['0'], fontsize=18, fontweight='bold')
+    
+    # 繪製不等式區間 (7 下 關鍵)
+    if intervals:
+        for inter in intervals:
+            s = float(inter['start'])
+            direct = inter.get('direction', 'right')
+            inc = inter.get('include', False)
+            color = 'red'
+            # 畫圓點 (空心/實心)
+            ax.plot(s, 0.2, marker='o', mfc='white' if not inc else color, mec=color, ms=10, zorder=5)
+            # 畫折線射線
+            target_x = x_max if direct == 'right' else x_min
+            ax.plot([s, s, target_x], [0.2, 0.5, 0.5], color=color, lw=2)
+
+    for label, val in points_map.items():
+        v = float(val)
+        ax.plot(v, 0, 'ro', ms=7)
+        ax.text(v, 0.08, label, ha='center', va='bottom', fontsize=16, fontweight='bold', color='red')
+
+    ax.set_yticks([]); ax.axis('off')
+    buf = io.BytesIO()
+    fig.savefig(buf, format='png', bbox_inches='tight', transparent=True, dpi=300)
+    return base64.b64encode(buf.getvalue()).decode('utf-8')
+
+# --- 7 下 強化組件 B: 直角坐標系渲染器 (針對方程式圖形) ---
+def draw_coordinate_system(lines=None, points=None, x_range=(-5, 5), y_range=(-5, 5)):
+    """
+    繪製標準坐標軸與直線方程式
+    """
+    fig = Figure(figsize=(5, 5))
+    ax = fig.add_subplot(111)
+    ax.set_aspect('equal') # 鎖死比例
+    
+    # 繪製網格與軸線
+    ax.grid(True, linestyle=':', alpha=0.6)
+    ax.axhline(0, color='black', lw=1.5)
+    ax.axvline(0, color='black', lw=1.5)
+    
+    # 繪製直線 (y = mx + k)
+    if lines:
+        import numpy as np
+        for line in lines:
+            m, k = line.get('m', 0), line.get('k', 0)
+            x = np.linspace(x_range[0], x_range[1], 100)
+            y = m * x + k
+            ax.plot(x, y, lw=2, label=line.get('label', ''))
+
+    # 繪製點 (x, y)
+    if points:
+        for p in points:
+            ax.plot(p[0], p[1], 'ro')
+            ax.text(p[0]+0.2, p[1]+0.2, p.get('label', ''), fontsize=14, fontweight='bold')
+
+    ax.set_xlim(x_range); ax.set_ylim(y_range)
+    # 隱藏刻度，僅保留 0
+    ax.set_xticks([0]); ax.set_yticks([0])
+    
+    buf = io.BytesIO()
+    fig.savefig(buf, format='png', bbox_inches='tight', transparent=True, dpi=300)
+    return base64.b64encode(buf.getvalue()).decode('utf-8')
+
+def draw_geometry_composite(polygons, labels, x_limit=(0,10), y_limit=(0,10)):
+    """[V11.6 Ultra Visual] 物理級幾何渲染器 (Physical Geometry Renderer)"""
+    fig = Figure(figsize=(5, 4))
+    canvas = FigureCanvasAgg(fig)
+    ax = fig.add_subplot(111)
+    ax.set_aspect('equal', adjustable='datalim')
+    all_x, all_y = [], []
+    for poly_pts in polygons:
+        polygon = patches.Polygon(poly_pts, closed=True, fill=False, edgecolor='black', linewidth=2)
+        ax.add_patch(polygon)
+        for p in poly_pts:
+            all_x.append(p[0])
+            all_y.append(p[1])
+    for text, pos in labels.items():
+        all_x.append(pos[0])
+        all_y.append(pos[1])
+        ax.text(pos[0], pos[1], text, fontsize=20, fontweight='bold', ha='center', va='center',
+                bbox=dict(facecolor='white', edgecolor='none', alpha=0.8, pad=1))
+    if all_x and all_y:
+        min_x, max_x = min(all_x), max(all_x)
+        min_y, max_y = min(all_y), max(all_y)
+        rx = (max_x - min_x) * 0.3 if (max_x - min_x) > 0 else 1.0
+        ry = (max_y - min_y) * 0.3 if (max_y - min_y) > 0 else 1.0
+        ax.set_xlim(min_x - rx, max_x + rx)
+        ax.set_ylim(min_y - ry, max_y + ry)
+    else:
+        ax.set_xlim(x_limit)
+        ax.set_ylim(y_limit)
+    ax.axis('off')
+    buf = io.BytesIO()
+    fig.savefig(buf, format='png', bbox_inches='tight', transparent=True, dpi=300)
+    del fig
+    return base64.b64encode(buf.getvalue()).decode('utf-8')
+
+# --- 4. Answer Checker (V11.6 Smart Formatting Standard) ---
 def check(user_answer, correct_answer):
-    """
-    Standard Answer Checker
-    Handles float tolerance and string normalization (LaTeX spaces).
-    """
-    if user_answer is None: return {"correct": False, "result": r"""答案錯誤。正確答案為：{ans}""".replace("{ans}", str(correct_answer))}
-    return result
+    if user_answer is None: return {"correct": False, "result": "未提供答案。"}
+    
+    # 將字典或複雜格式轉為乾淨字串
+    def _format_ans(a):
+        if isinstance(a, dict):
+            if "quotient" in a: 
+                return r"{q}, {r}".replace("{q}", str(a.get("quotient",""))).replace("{r}", str(a.get("remainder","")))
+            return ", ".join([r"{k}={v}".replace("{k}", str(k)).replace("{v}", str(v)) for k, v in a.items()])
+        return str(a)
 
+    def _clean(s):
+        # 雙向清理：剝除 LaTeX 符號與空格
+        return str(s).strip().replace(" ", "").replace("，", ",").replace("$", "").replace("\\", "").lower()
+    
+    u = _clean(user_answer)
+    c_raw = _format_ans(correct_answer)
+    c = _clean(c_raw)
+    
+    if u == c: return {"correct": True, "result": "正確！"}
+    
+    try:
+        import math
+        if math.isclose(float(u), float(c), abs_tol=1e-6): return {"correct": True, "result": "正確！"}
+    except: pass
+    
+    return {"correct": False, "result": r"答案錯誤。正確答案為：{ans}".replace("{ans}", c_raw)}
+
+
+
+import re
 import matplotlib.pyplot as plt
-import numpy as np
-
 import io
 import base64
-import matplotlib.patches as patches
+import numpy as np
 
+# --- Helper Functions (輔助函式) ---
 
-# 設定中文字型
-plt.rcParams['font.sans-serif'] = ['Microsoft JhengHei', 'Arial Unicode MS', 'sans-serif']
-plt.rcParams['axes.unicode_minus'] = False
+def _generate_coordinate_value(is_fraction=False, integer_only=False, range_min=-8, range_max=8):
+    """
+    功能: 生成單一座標值 (x 或 y)，可為整數或分數。
+    遵循 V10.2 A 規範。
+    """
+    while True:
+        base_int = random.randint(range_min, range_max)
+        
+        if integer_only or not is_fraction:
+            val_float = float(base_int)
+            int_part = base_int
+            num = 0
+            den = 0
+        else:
+            # Generate a non-zero base_int if it's purely fractional to avoid 0.5 like 0.5
+            # Or allow 0.5 if base_int is 0
+            if base_int == 0:
+                fraction_part = random.choice([0.5, -0.5])
+                val_float = fraction_part
+                int_part = 0
+                num = 1
+                den = 2
+            else:
+                fraction_sign = random.choice([-1, 1])
+                numerator = 1 # Only allow 0.5 fractions for now as per V13.5
+                denominator = 2
+                val_float = base_int + fraction_sign * (numerator / denominator)
+                int_part = int(val_float)
+                num = numerator
+                den = denominator
+            
+        is_neg = (val_float < 0)
+        
+        # Ensure that if it's a fraction, it's not an integer
+        if is_fraction and val_float.is_integer():
+            continue
+        
+        # Ensure the value is within range after fraction addition
+        if not (range_min <= val_float <= range_max):
+            continue
 
-# Helper function for plotting and labeling points
-def plot_point(ax, point, label, color='blue', marker='o', text_offset=(0.5, 0.5)):
-    ax.plot(point[0], point[1], marker, color=color, markersize=8, zorder=5)
-    ax.text(point[0] + text_offset[0], point[1] + text_offset[1], label, fontsize=12, ha='center', va='center', zorder=6)
+        return (val_float, (int_part, num, den, is_neg))
 
-# Helper function for drawing lines
-def draw_line(ax, p1, p2, linestyle='-', color='black', label=None, linewidth=1.5, zorder=1):
-    ax.plot([p1[0], p2[0]], [p1[1], p2[1]], linestyle=linestyle, color=color, label=label, linewidth=linewidth, zorder=zorder)
+def _format_coordinate_for_display(val):
+    """
+    功能: 將浮點數座標值格式化為字串，確保整數以整數形式顯示 (e.g., "5"而非"5.0")。
+    遵循 V13.0, V13.5 規範。
+    """
+    if val.is_integer():
+        return str(int(val))
+    else:
+        # For fractions like X.5, display as X.5
+        return str(val)
 
-# Helper function for calculating distance
-def dist(p1, p2):
-    return math.sqrt((p1[0] - p2[0])**2 + (p1[1] - p2[1])**2)
+def _draw_coordinate_plane(points_to_plot, axis_of_symmetry_line=None, x_range=(-8, 8), y_range=(-8, 8), show_labels=True, plot_points_only=False, invisible_points_for_bounds=None):
+    """
+    功能: 繪製帶有座標軸、網格、點和對稱軸的座標平面圖，並回傳 base64 編碼圖片。
+    遵循 V10.2 B, V10.2 D, V13.0, V13.1, V13.5, V13.6, CRITICAL RULE: Visual Solvability, ULTRA VISUAL STANDARDS 規範。
+    """
+    plt.rcParams['font.sans-serif'] = ['Microsoft JhengHei'] # 確保中文字體顯示
+    plt.rcParams['axes.unicode_minus'] = False # 正常顯示負號
 
-# Helper function for calculating midpoint
-def midpoint(p1, p2):
-    return ((p1[0] + p2[0]) / 2, (p1[1] + p2[1]) / 2)
+    fig, ax = plt.subplots(figsize=(8, 8), dpi=300) # ULTRA VISUAL STANDARDS: dpi=300
 
-# Helper function to rotate a point around an origin
-def rotate_point(point, angle_rad, origin=(0, 0)):
-    ox, oy = origin
-    px, py = point
+    # Set axis limits with padding
+    # [Dynamic Scaling] Calculate bounds from points
+    all_x = [p['coord'][0] for p in points_to_plot]
+    all_y = [p['coord'][1] for p in points_to_plot]
+    
+    # [View Context] Ensure Origin (0,0) is always included so axes are visible
+    all_x.append(0)
+    all_y.append(0)
+    
+    # [V16.28 Viewport Inclusion] Include invisible solution points in bounds calculation
+    if invisible_points_for_bounds:
+        for p in invisible_points_for_bounds:
+            all_x.append(p[0])
+            all_y.append(p[1])
+    
+    # Include axis of symmetry in bounds if relevant
+    # (Simplified: we trust points cover the area mostly, but ensure at least -5 to 5 if nothing)
+    
+    if all_x and all_y:
+        min_x, max_x = min(all_x), max(all_x)
+        min_y, max_y = min(all_y), max(all_y)
+        
+        # Add padding (at least 2 units)
+        pad = 2
+        view_min_x, view_max_x = min_x - pad, max_x + pad
+        view_min_y, view_max_y = min_y - pad, max_y + pad
+    else:
+        view_min_x, view_max_x = -6, 6
+        view_min_y, view_max_y = -6, 6
 
-    qx = ox + math.cos(angle_rad) * (px - ox) - math.sin(angle_rad) * (py - oy)
-    qy = oy + math.sin(angle_rad) * (px - ox) + math.cos(angle_rad) * (py - oy)
-    return (qx, qy)
+    # Override with input x_range only if it is wider? No, let's enforce dynamic view for better visibility.
+    # Actually, respecting input x_range might be needed if it was intentionally set. 
+    # But user reported "shrunk to corner", implying fixed huge range vs small data.
+    # Let's use the calculated view bounds.
+    
+    ax.set_xlim(view_min_x, view_max_x)
+    ax.set_ylim(view_min_y, view_max_y)
 
-# Helper function to get the centroid of a polygon
-def polygon_centroid(vertices):
-    x_coords = [p[0] for p in vertices]
-    y_coords = [p[1] for p in vertices]
-    _len = len(vertices)
-    centroid_x = sum(x_coords) / _len
-    centroid_y = sum(y_coords) / _len
-    return (centroid_x, centroid_y)
+    ax.set_aspect('equal') # ULTRA VISUAL STANDARDS: Aspect Ratio
 
-# Helper function to generate base64 image
-def get_image_base64(fig):
+    # Draw grid lines
+    # Draw grid lines
+    ax.grid(True, linestyle=':', alpha=0.6) # Grid Lines
+
+    # Draw x, y axes
+    ax.axhline(0, color='black', linewidth=1.5)
+    ax.axvline(0, color='black', linewidth=1.5)
+
+    # Draw axis arrows (V13.6 API Hardened Spec)
+    # Draw axis arrows (V13.6 API Hardened Spec)
+    ax.plot(view_max_x, 0, ">k", clip_on=False, markersize=8, transform=ax.transData)
+    ax.plot(0, view_max_y, "^k", clip_on=False, markersize=8, transform=ax.transData)
+
+    # Label origin '0' (V10.2 D)
+    ax.text(0.1, 0.1, '0', color='black', ha='center', va='center', fontsize=12, fontweight='bold',
+            bbox=dict(facecolor='white', alpha=0.7, edgecolor='none', pad=0.5))
+
+    # Set xticks and yticks for explicit integer labels (CRITICAL RULE: Visual Solvability, V13.0)
+    # Set xticks and yticks for explicit integer labels (CRITICAL RULE: Visual Solvability, V13.0)
+    # Generate ticks based on the DYNAMIC view range
+    start_tick_x = math.ceil(view_min_x)
+    end_tick_x = math.floor(view_max_x)
+    start_tick_y = math.ceil(view_min_y)
+    end_tick_y = math.floor(view_max_y)
+
+    ax.set_xticks(np.arange(start_tick_x, end_tick_x + 1))
+    ax.set_yticks(np.arange(start_tick_y, end_tick_y + 1))
+    ax.tick_params(axis='both', which='major', labelsize=12) # Increased font size
+
+    # Hide '0' tick label to avoid overlap with origin '0' text
+    ax.set_xticklabels([str(int(t)) if t != 0 else '' for t in ax.get_xticks()])
+    ax.set_yticklabels([str(int(t)) if t != 0 else '' for t in ax.get_yticks()])
+
+    # Plot points
+    point_label_whitelist = ['A', 'B', 'C', 'D', 'P', 'Q', 'M', 'N', "A'", "B'", "C'", "D'", "巴奈"] # V13.6
+    for p in points_to_plot:
+        x, y = p['coord']
+        label = p.get('label', '')
+        ax.plot(x, y, 'o', color='blue', markersize=6)
+        if show_labels and label in point_label_whitelist: # V13.6
+            # V10.2 D, V13.0, V13.1, V13.5: text for label only, white halo
+            ax.text(x + 0.3, y + 0.3, label, color='black', fontsize=12,
+                    bbox=dict(facecolor='white', alpha=0.7, edgecolor='none', pad=1))
+
+    # Draw axis of symmetry line (if not plot_points_only)
+    if axis_of_symmetry_line and not plot_points_only:
+        line_type = axis_of_symmetry_line[0]
+        if line_type == 'x': # Vertical line x = val
+            x_val = axis_of_symmetry_line[1]
+            ax.axvline(x_val, color='red', linestyle='--', linewidth=2, alpha=0.7)
+        elif line_type == 'y': # Horizontal line y = val
+            y_val = axis_of_symmetry_line[1]
+            ax.axhline(y_val, color='red', linestyle='--', linewidth=2, alpha=0.7)
+        elif line_type == 'y=x':
+            ax.plot([x_range[0], x_range[1]], [x_range[0], x_range[1]], color='red', linestyle='--', linewidth=2, alpha=0.7)
+        elif line_type == 'y=-x':
+            ax.plot([x_range[0], x_range[1]], [-x_range[0], -x_range[1]], color='red', linestyle='--', linewidth=2, alpha=0.7)
+        elif line_type == 'y=mx+c' and len(axis_of_symmetry_line) == 3:
+            m, c = axis_of_symmetry_line[1], axis_of_symmetry_line[2]
+            x_vals = np.array([x_range[0], x_range[1]])
+            y_vals = m * x_vals + c
+            ax.plot(x_vals, y_vals, color='red', linestyle='--', linewidth=2, alpha=0.7)
+
+    # Save to base64
     buf = io.BytesIO()
-    plt.savefig(buf, format='png', bbox_inches='tight')
-    buf.seek(0)
-    image_base64 = base64.b64encode(buf.read()).decode('utf-8')
-    plt.close(fig)
+    plt.savefig(buf, format='png', bbox_inches='tight', pad_inches=0.1)
+    plt.close(fig) # Clear figure to avoid memory leaks
+    image_base64 = base64.b64encode(buf.getvalue()).decode('utf-8')
     return image_base64
 
-def generate_problem():
-    problem_types = [
-        "point_to_line_distance",
-        "segment_division_midpoint",
-        "line_symmetry_properties",
-        "identify_symmetric_figures",
-        "paper_folding_symmetry"
-    ]
-    selected_type = random.choice(problem_types)
+# --- generate() 函式 ---
+
+def generate(level=1):
+    """
+    功能: 根據不同的題型隨機生成中垂線與線對稱圖形相關的數學題目。
+    遵循 Problem Mirroring 規範。
+    """
+    problem_type = random.choice([1, 2, 3, 4]) # Randomly choose one of the four types
 
     question_text = ""
     correct_answer = ""
-    image_base64 = ""
-    problem_type_label = ""
+    image_base64 = None
 
-    fig, ax = plt.subplots(figsize=(7, 7)) # Increased size for better clarity
-    ax.set_aspect('equal', adjustable='box')
-    ax.set_xlim(-12, 12)
-    ax.set_ylim(-12, 12)
-    ax.set_xticks(np.arange(-10, 11, 2))
-    ax.set_yticks(np.arange(-10, 11, 2))
-    ax.grid(True, linestyle=':', alpha=0.6)
-    ax.spines['left'].set_position('zero')
-    ax.spines['bottom'].set_position('zero')
-    ax.spines['right'].set_color('none')
-    ax.spines['top'].set_color('none')
-    ax.xaxis.set_ticks_position('bottom')
-    ax.yaxis.set_ticks_position('left')
-    ax.set_xlabel('x', loc='right')
-    ax.set_ylabel('y', loc='top', rotation=0)
+    if problem_type == 1:
+        # Type 1: 中垂線性質計算 (Maps to RAG Ex 1: Perpendicular distance application)
+        length_pa = random.randint(5, 15)
+        question_template = r"已知直線L是線段AB的中垂線，P點在直線L上。若 $\overline{PA} = {val_pa}$，則 $\overline{PB} = ?$ "
+        question_text = question_template.replace("{val_pa}", str(length_pa))
+        correct_answer = str(length_pa) # Answer Data Purity
 
-    # Manually add '0' label to avoid overlap with 'x'/'y' or removal by ticklabel filtering
-    ax.text(0.5, -1.5, '0', color='black', ha='center', va='top', fontsize=10) 
-    ax.set_xticklabels(['' if x == 0 else str(int(x)) for x in ax.get_xticks()])
-    ax.set_yticklabels(['' if y == 0 else str(int(y)) for y in ax.get_yticks()])
+    elif problem_type == 2:
+        # Type 2: 點的對稱點坐標 (Maps to RAG Ex 2: Symmetric point using reflection)
+        p_x_float, _ = _generate_coordinate_value(is_fraction=random.choice([True, False]), range_min=-5, range_max=5)
+        p_y_float, _ = _generate_coordinate_value(is_fraction=random.choice([True, False]), range_min=-5, range_max=5)
+        point_P = (p_x_float, p_y_float)
 
+        axis_type = random.choice(['x-axis', 'y-axis', 'y=x', 'y=-x'])
 
-    if selected_type == "point_to_line_distance":
-        problem_type_label = "點到直線距離"
-        
-        # Randomly choose line type (horizontal or vertical)
-        is_horizontal = random.choice([True, False])
-        
-        if is_horizontal:
-            line_val = random.randint(-5, 5) # y-value for horizontal line
-            x_B = random.randint(-8, 8)
-            distance = random.randint(3, 7)
-            
-            # Ensure B is not on the line
-            y_B_options = [line_val + distance, line_val - distance]
-            y_B = random.choice(y_B_options)
-            
-            B = (x_B, y_B)
-            D = (x_B, line_val) # Perpendicular foot
-            
-            # Line L points for drawing (extended beyond view limits for visual clarity)
-            line_p1 = (-15, line_val)
-            line_p2 = (15, line_val)
-            
-            question_text = f"如圖所示，直線 L 為通過點 ({int(line_p1[0])}, {line_val}) 和 ({int(line_p2[0])}, {line_val}) 的水平線，點 B 的座標為 ({B[0]}, {B[1]})。"
-            question_text += "\n請問點 B 到直線 L 的距離是圖中哪條線段的長度？"
-            
-            # Generate other points on L
-            other_points = []
-            x_coords_used = {x_B}
-            while len(other_points) < 3:
-                x_c = random.randint(-9, 9)
-                if x_c not in x_coords_used:
-                    other_points.append((x_c, line_val))
-                    x_coords_used.add(x_c)
-            
-            C, E, F = other_points[0], other_points[1], other_points[2]
-            
-            # Plotting
-            draw_line(ax, line_p1, line_p2, color='k', label='L')
-            plot_point(ax, B, 'B', color='red', text_offset=(0.5, 0.8))
-            plot_point(ax, D, 'D', color='green', text_offset=(0.5, 0.8))
-            plot_point(ax, C, 'C', color='purple', text_offset=(0.5, 0.8))
-            plot_point(ax, E, 'E', color='orange', text_offset=(0.5, 0.8))
-            plot_point(ax, F, 'F', color='brown', text_offset=(0.5, 0.8))
-            
-            # Draw perpendicular line segment
-            draw_line(ax, B, D, linestyle='--', color='blue')
-            
-            # Add right angle symbol
-            if y_B > line_val: # B is above the line
-                ax.plot([D[0], D[0]+0.5, D[0]+0.5], [D[1], D[1], D[1]+0.5], 'k-', linewidth=1)
-            else: # B is below the line
-                ax.plot([D[0], D[0]+0.5, D[0]+0.5], [D[1], D[1], D[1]-0.5], 'k-', linewidth=1)
+        sym_x, sym_y = 0, 0
+        if axis_type == 'x-axis':
+            sym_x = p_x_float
+            sym_y = -p_y_float
+            axis_for_drawing = ('y', 0)
+        elif axis_type == 'y-axis':
+            sym_x = -p_x_float
+            sym_y = p_y_float
+            axis_for_drawing = ('x', 0)
+        elif axis_type == 'y=x':
+            sym_x = p_y_float
+            sym_y = p_x_float
+            axis_for_drawing = ('y=x',)
+        elif axis_type == 'y=-x':
+            sym_x = -p_y_float
+            sym_y = -p_x_float
+            axis_for_drawing = ('y=-x',)
+        symmetric_point = (sym_x, sym_y)
 
-
-        else: # Vertical line
-            line_val = random.randint(-5, 5) # x-value for vertical line
-            y_B = random.randint(-8, 8)
-            distance = random.randint(3, 7)
-            
-            # Ensure B is not on the line
-            x_B_options = [line_val + distance, line_val - distance]
-            x_B = random.choice(x_B_options)
-            
-            B = (x_B, y_B)
-            D = (line_val, y_B) # Perpendicular foot
-            
-            # Line L points for drawing (extended beyond view limits for visual clarity)
-            line_p1 = (line_val, -15)
-            line_p2 = (line_val, 15)
-            
-            question_text = f"如圖所示，直線 L 為通過點 ({line_val}, {int(line_p1[1])}) 和 ({line_val}, {int(line_p2[1])}) 的垂直線，點 B 的座標為 ({B[0]}, {B[1]})。"
-            question_text += "\n請問點 B 到直線 L 的距離是圖中哪條線段的長度？"
-            
-            # Generate other points on L
-            other_points = []
-            y_coords_used = {y_B}
-            while len(other_points) < 3:
-                y_c = random.randint(-9, 9)
-                if y_c not in y_coords_used:
-                    other_points.append((line_val, y_c))
-                    y_coords_used.add(y_c)
-            
-            C, E, F = other_points[0], other_points[1], other_points[2]
-
-            # Plotting
-            draw_line(ax, line_p1, line_p2, color='k', label='L')
-            plot_point(ax, B, 'B', color='red', text_offset=(0.5, 0.8))
-            plot_point(ax, D, 'D', color='green', text_offset=(0.5, 0.8))
-            plot_point(ax, C, 'C', color='purple', text_offset=(0.5, 0.8))
-            plot_point(ax, E, 'E', color='orange', text_offset=(0.5, 0.8))
-            plot_point(ax, F, 'F', color='brown', text_offset=(0.5, 0.8))
-            
-            # Draw perpendicular line segment
-            draw_line(ax, B, D, linestyle='--', color='blue')
-            
-            # Add right angle symbol
-            if x_B > line_val: # B is to the right of the line
-                ax.plot([D[0], D[0], D[0]-0.5], [D[1], D[1]+0.5, D[1]+0.5], 'k-', linewidth=1)
-            else: # B is to the left of the line
-                ax.plot([D[0], D[0], D[0]+0.5], [D[1], D[1]+0.5, D[1]+0.5], 'k-', linewidth=1)
-
-        # Options for multiple choice
-        option_labels = ['BA', 'BC', 'BD', 'BE', 'BF']
-        random.shuffle(option_labels)
-        
-        question_text += "\n選項："
-        for i, label in enumerate(option_labels):
-            question_text += f"\n{chr(65+i)}. 線段 {label}"
-
-        correct_answer = f"線段 BD" # The label, not the length
-        question_text += "\n(答案格式：選A/B/C/D/E)"
-
-    elif selected_type == "segment_division_midpoint":
-        problem_type_label = "線段中點與比例"
-
-        total_length_options = [8, 12, 16, 20] # Lengths divisible by 4 for clean midpoints
-        L_AB = random.choice(total_length_options)
-
-        # Generate A, B on a horizontal or vertical line
-        orientation = random.choice(['horizontal', 'vertical'])
-        # Ensure points are within reasonable bounds after translation
-        x_start = random.randint(-8, 8 - L_AB) if orientation == 'horizontal' else random.randint(-5, 5)
-        y_start = random.randint(-5, 5) if orientation == 'horizontal' else random.randint(-8, 8 - L_AB)
-
-        if orientation == 'horizontal':
-            A = (x_start, y_start)
-            B = (x_start + L_AB, y_start)
-        else: # vertical
-            A = (x_start, y_start)
-            B = (x_start, y_start + L_AB)
-
-        M = midpoint(A, B)
-        
-        # Randomly choose N to be midpoint of AM or BM
-        if random.choice([True, False]): # N is midpoint of AM
-            N = midpoint(A, M)
-            question_segment_options = ["AN", "NM", "MB", "NB", "AB"]
-            question_segment = random.choice(question_segment_options)
-            
-            if question_segment == "AN": ans_val = L_AB / 4
-            elif question_segment == "NM": ans_val = L_AB / 4
-            elif question_segment == "MB": ans_val = L_AB / 2
-            elif question_segment == "NB": ans_val = L_AB * 3 / 4
-            elif question_segment == "AB": ans_val = L_AB
-            
-            question_text = f"如圖所示，線段 AB 長度為 {L_AB}。點 M 是線段 AB 的中點，點 N 是線段 AM 的中點。"
-            question_text += f"\n請問線段 {question_segment} 的長度為何？"
-        else: # N is midpoint of BM
-            N = midpoint(M, B)
-            question_segment_options = ["AN", "AM", "MN", "NB", "AB"]
-            question_segment = random.choice(question_segment_options)
-            
-            if question_segment == "AN": ans_val = L_AB * 3 / 4
-            elif question_segment == "AM": ans_val = L_AB / 2
-            elif question_segment == "MN": ans_val = L_AB / 4
-            elif question_segment == "NB": ans_val = L_AB / 4
-            elif question_segment == "AB": ans_val = L_AB
-
-            question_text = f"如圖所示，線段 AB 長度為 {L_AB}。點 M 是線段 AB 的中點，點 N 是線段 BM 的中點。"
-            question_text += f"\n請問線段 {question_segment} 的長度為何？"
-
-        # Plotting
-        draw_line(ax, A, B, color='black', linewidth=2)
-        plot_point(ax, A, 'A', text_offset=(0, 0.8))
-        plot_point(ax, B, 'B', text_offset=(0, 0.8))
-        plot_point(ax, M, 'M', color='red', text_offset=(0, 0.8))
-        plot_point(ax, N, 'N', color='green', text_offset=(0, 0.8))
-
-        # Add tick marks to indicate midpoints
-        tick_len = 0.5
-        if orientation == 'horizontal':
-            ax.plot([M[0], M[0]], [M[1]-tick_len, M[1]+tick_len], 'k-', linewidth=1)
-            # Add another tick mark for N
-            ax.plot([N[0], N[0]], [N[1]-tick_len, N[1]+tick_len], 'k-', linewidth=1)
-        else: # vertical
-            ax.plot([M[0]-tick_len, M[0]+tick_len], [M[1], M[1]], 'k-', linewidth=1)
-            # Add another tick mark for N
-            ax.plot([N[0]-tick_len, N[0]+tick_len], [N[1], N[1]], 'k-', linewidth=1)
-
-        correct_answer = f"{int(ans_val) if ans_val == int(ans_val) else ans_val}"
-        question_text += "\n(答案格式：長度=_)"
-
-    elif selected_type == "line_symmetry_properties":
-        problem_type_label = "線對稱圖形性質"
-
-        # Subtype: identify symmetric element or perpendicular bisector
-        subtype = random.choice(["symmetric_element", "perpendicular_bisector"])
-
-        if subtype == "symmetric_element":
-            # Generate an isosceles triangle
-            base_length = random.randint(3, 5) * 2 # Even for integer midpoints
-            height = random.randint(4, 8)
-
-            # Center the base on x-axis, apex on y-axis
-            A_orig = (0, height)
-            B_orig = (-base_length / 2, 0)
-            C_orig = (base_length / 2, 0)
-            
-            # Rotate and translate for diversity
-            angle = random.uniform(0, 2 * math.pi)
-            center_x, center_y = random.randint(-3, 3), random.randint(-3, 3)
-            
-            A = rotate_point(A_orig, angle)
-            B = rotate_point(B_orig, angle)
-            C = rotate_point(C_orig, angle)
-            
-            A = (A[0] + center_x, A[1] + center_y)
-            B = (B[0] + center_x, B[1] + center_y)
-            C = (C[0] + center_x, C[1] + center_y)
-
-            # Symmetry axis L: passes through A and midpoint of BC
-            M_BC = midpoint(B, C)
-            
-            # To draw L, extend beyond the triangle. Find two points on L.
-            # Use A and M_BC to define the line.
-            # Extend from (M_BC[0] - 10*(A[0]-M_BC[0]), M_BC[1] - 10*(A[1]-M_BC[1]))
-            # to (M_BC[0] + 10*(A[0]-M_BC[0]), M_BC[1] + 10*(A[1]-M_BC[1]))
-            
-            # Calculate direction vector
-            dx_L = A[0] - M_BC[0]
-            dy_L = A[1] - M_BC[1]
-            
-            # Normalize vector (if not zero)
-            if dx_L == 0 and dy_L == 0: # A and M_BC are the same point, unlikely but handle
-                L_p1 = (A[0], -15)
-                L_p2 = (A[0], 15)
-            else:
-                length_vec = math.sqrt(dx_L**2 + dy_L**2)
-                dx_L_norm = dx_L / length_vec
-                dy_L_norm = dy_L / length_vec
-                
-                # Extend line for drawing
-                L_p1 = (M_BC[0] - 15 * dx_L_norm, M_BC[1] - 15 * dy_L_norm)
-                L_p2 = (M_BC[0] + 15 * dx_L_norm, M_BC[1] + 15 * dy_L_norm)
-            
-            # Plotting
-            triangle_patch = patches.Polygon([A, B, C], closed=True, edgecolor='black', facecolor='lightblue', alpha=0.7)
-            ax.add_patch(triangle_patch)
-            
-            draw_line(ax, L_p1, L_p2, linestyle='--', color='red', label='對稱軸 L')
-            
-            plot_point(ax, A, 'A', text_offset=(0, 0.8))
-            plot_point(ax, B, 'B', text_offset=(-0.8, -0.8))
-            plot_point(ax, C, 'C', text_offset=(0.8, -0.8))
-
-            # Question options
-            question_choices = [
-                ("點 B 的對稱點是哪個點？", "點 C"),
-                ("線段 AB 的對稱線段是哪條？", "線段 AC"),
-                ("∠ABC 的對稱角是哪個角？", "∠ACB")
-            ]
-            question_choice, correct_ans = random.choice(question_choices)
-            question_text = f"如圖所示為一個等腰三角形，直線 L 是其對稱軸。\n{question_choice}"
-            correct_answer = correct_ans
-            question_text += "\n(答案格式：點 X 或 線段 XY 或 ∠XYZ)"
-
-        else: # perpendicular_bisector
-            # Generate two pairs of symmetric points and one non-symmetric pair
-            # Start with a simple axis, e.g., y=x, then rotate and translate
-            
-            # Generate points symmetric w.r.t y=x
-            x1_base = random.randint(2, 6)
-            y1_base = random.randint(-8, 8)
-            P_base = (x1_base, y1_base)
-            P_prime_base = (y1_base, x1_base) # Reflection across y=x
-
-            x2_base = random.randint(2, 6)
-            y2_base = random.randint(-8, 8)
-            # Ensure Q, Q' are distinct from P, P'
-            while (x2_base, y2_base) == P_base or (x2_base, y2_base) == P_prime_base:
-                x2_base = random.randint(2, 6)
-                y2_base = random.randint(-8, 8)
-            Q_base = (x2_base, y2_base)
-            Q_prime_base = (y2_base, x2_base)
-
-            # Non-symmetric pair (e.g., not reflected correctly or not perpendicular)
-            R_base = (random.randint(-6, 6), random.randint(-8, 8))
-            S_base = (random.randint(-6, 6), random.randint(-8, 8))
-            # Ensure R and S are not symmetric to each other wrt L (y=x)
-            # And ensure R and S are not on L, and R != S
-            while (R_base[0] == S_base[1] and R_base[1] == S_base[0]) or \
-                  (R_base[0] == R_base[1] or S_base[0] == S_base[1]) or \
-                  (R_base == S_base) or \
-                  (R_base in [P_base, P_prime_base, Q_base, Q_prime_base]) or \
-                  (S_base in [P_base, P_prime_base, Q_base, Q_prime_base]):
-                 R_base = (random.randint(-6, 6), random.randint(-8, 8))
-                 S_base = (random.randint(-6, 6), random.randint(-8, 8))
-
-            # Rotate all points and the axis
-            angle = random.uniform(0, 2 * math.pi)
-            center_x, center_y = random.randint(-3, 3), random.randint(-3, 3)
-
-            # Axis L: y=x line
-            L_p1_base = (-10, -10)
-            L_p2_base = (10, 10)
-
-            # Apply rotation and translation to all points
-            points_to_transform = [P_base, P_prime_base, Q_base, Q_prime_base, R_base, S_base, L_p1_base, L_p2_base]
-            transformed_points = [rotate_point(p, angle, (0,0)) for p in points_to_transform]
-            transformed_points = [(p[0] + center_x, p[1] + center_y) for p in transformed_points]
-            
-            P, P_prime, Q, Q_prime, R, S, L_p1, L_p2 = transformed_points
-
-            # Plotting
-            draw_line(ax, L_p1, L_p2, linestyle='--', color='red', label='對稱軸 L')
-            
-            plot_point(ax, P, 'P', text_offset=(0.5, 0.8))
-            plot_point(ax, P_prime, "P'", text_offset=(0.5, 0.8))
-            draw_line(ax, P, P_prime, linestyle='-', color='blue')
-            
-            plot_point(ax, Q, 'Q', text_offset=(0.5, 0.8))
-            plot_point(ax, Q_prime, "Q'", text_offset=(0.5, 0.8))
-            draw_line(ax, Q, Q_prime, linestyle='-', color='green')
-            
-            plot_point(ax, R, 'R', text_offset=(0.5, 0.8))
-            plot_point(ax, S, 'S', text_offset=(0.5, 0.8))
-            draw_line(ax, R, S, linestyle='-', color='purple')
-            
-            question_text = "如圖所示，直線 L 是一條對稱軸。"
-            question_text += "\n下列哪條線段**不被**直線 L 垂直平分？"
-
-            options = ["PP'", "QQ'", "RS"]
-            random.shuffle(options)
-            
-            question_text += "\n選項："
-            for i, option in enumerate(options):
-                question_text += f"\n{chr(65+i)}. 線段 {option}"
-            
-            correct_answer = "線段 RS"
-            question_text += "\n(答案格式：選A/B/C)"
-
-    elif selected_type == "identify_symmetric_figures":
-        problem_type_label = "判斷線對稱圖形與對稱軸數量"
-
-        figure_data = {
-            "長方形": {"type": "rectangle", "axes": 2, "is_symmetric": True},
-            "正方形": {"type": "square", "axes": 4, "is_symmetric": True},
-            "等腰梯形": {"type": "isosceles_trapezoid", "axes": 1, "is_symmetric": True},
-            "等腰三角形": {"type": "isosceles_triangle", "axes": 1, "is_symmetric": True},
-            "正五邊形": {"type": "regular_pentagon", "axes": 5, "is_symmetric": True},
-            "正六邊形": {"type": "regular_hexagon", "axes": 6, "is_symmetric": True},
-            "圓形": {"type": "circle", "axes": "無限多條", "is_symmetric": True},
-            "一般三角形": {"type": "general_triangle", "axes": 0, "is_symmetric": False},
-            "平行四邊形": {"type": "parallelogram", "axes": 0, "is_symmetric": False},
+        # [Localization] Translate axis names
+        axis_display_map = {
+            'x-axis': r'$x$ 軸',
+            'y-axis': r'$y$ 軸',
+            'y=x': r'直線 $y=x$',
+            'y=-x': r'直線 $y=-x$'
         }
+        axis_display = axis_display_map.get(axis_type, axis_type)
+
+        pt_P_display = r"P({x}, {y})".replace("{x}", _format_coordinate_for_display(point_P[0])).replace("{y}", _format_coordinate_for_display(point_P[1]))
+        question_template = r"已知平面上有一點 {pt_P}。若以 {axis} 為對稱軸，則 $P$ 點的對稱點坐標為何？"
+        question_text = question_template.replace("{pt_P}", pt_P_display).replace("{axis}", axis_display)
+
+        correct_answer = "{x},{y}".replace("{x}", _format_coordinate_for_display(symmetric_point[0])).replace("{y}", _format_coordinate_for_display(symmetric_point[1]))
+
+        points_for_drawing = [{'coord': point_P, 'label': 'P'}]
+        # Pass answer point to ensure plot bounds cover it
+        image_base64 = _draw_coordinate_plane(points_for_drawing, axis_of_symmetry_line=axis_for_drawing, x_range=(-7, 7), y_range=(-7, 7), show_labels=True, invisible_points_for_bounds=[symmetric_point])
+
+    elif problem_type == 3:
+        # Type 3: 補齊線對稱圖形 (繪圖題，僅提供起始點與對稱軸) (Maps to RAG Ex 3: Symmetric points for a figure)
+        while True:
+            a_x_float, _ = _generate_coordinate_value(integer_only=True, range_min=-5, range_max=5)
+            a_y_float, _ = _generate_coordinate_value(integer_only=True, range_min=-5, range_max=5)
+            b_x_float, _ = _generate_coordinate_value(integer_only=True, range_min=-5, range_max=5)
+            b_y_float, _ = _generate_coordinate_value(integer_only=True, range_min=-5, range_max=5)
+            point_A = (int(a_x_float), int(a_y_float))
+            point_B = (int(b_x_float), int(b_y_float))
+
+            axis_type = random.choice(['x-axis', 'y-axis'])
+
+            # Ensure A, B are distinct and not on the axis
+            if point_A == point_B:
+                continue
+            if axis_type == 'x-axis' and (point_A[1] == 0 or point_B[1] == 0):
+                continue
+            if axis_type == 'y-axis' and (point_A[0] == 0 or point_B[0] == 0):
+                continue
+            
+            # For simplicity, ensure points are not too close to the origin if they are on axes.
+            # This is already handled by not being on the axis itself.
+            break
+
+        a_prime_x, a_prime_y = 0, 0
+        b_prime_x, b_prime_y = 0, 0
+        axis_for_drawing = None
+
+        if axis_type == 'x-axis':
+            a_prime_x, a_prime_y = point_A[0], -point_A[1]
+            b_prime_x, b_prime_y = point_B[0], -point_B[1]
+            axis_for_drawing = ('y', 0)
+        elif axis_type == 'y-axis':
+            a_prime_x, a_prime_y = -point_A[0], point_A[1]
+            b_prime_x, b_prime_y = -point_B[0], point_B[1]
+            axis_for_drawing = ('x', 0)
         
-        selected_figure_name = random.choice(list(figure_data.keys()))
-        fig_info = figure_data[selected_figure_name]
+        symmetric_A_prime = (a_prime_x, a_prime_y)
+        symmetric_B_prime = (b_prime_x, b_prime_y)
+
+        # [Localization] Translate axis names
+        axis_display_map = {
+            'x-axis': r'$x$ 軸',
+            'y-axis': r'$y$ 軸'
+        }
+        axis_display = axis_display_map.get(axis_type, axis_type)
+
+        pt_A_display = r"A({x}, {y})".replace("{x}", str(point_A[0])).replace("{y}", str(point_A[1]))
+        pt_B_display = r"B({x}, {y})".replace("{x}", str(point_B[0])).replace("{y}", str(point_B[1]))
+        question_template = r"在坐標平面上，已知兩點 {pt_A} 和 {pt_B}。若以 {axis} 為對稱軸，請找出 $A$ 點和 $B$ 點的對稱點 $A'$ 和 $B'$ 的坐標。"
+        question_text = question_template.replace("{pt_A}", pt_A_display).replace("{pt_B}", pt_B_display).replace("{axis}", axis_display)
+
+        correct_answer = "{ax},{ay},{bx},{by}".replace("{ax}", str(symmetric_A_prime[0])).replace("{ay}", str(symmetric_A_prime[1])).replace("{bx}", str(symmetric_B_prime[0])).replace("{by}", str(symmetric_B_prime[1]))
+
+        points_for_drawing = [{'coord': point_A, 'label': 'A'}, {'coord': point_B, 'label': 'B'}]
+        # Pass answer points to ensure plot bounds cover them
+        image_base64 = _draw_coordinate_plane(points_for_drawing, axis_of_symmetry_line=axis_for_drawing, x_range=(-7, 7), y_range=(-7, 7), show_labels=True, invisible_points_for_bounds=[symmetric_A_prime, symmetric_B_prime])
+
+    elif problem_type == 4:
+        # Type 4: 軸上點到兩點距離相等 (Maps to RAG Ex 4: Perpendicular bisector intersection)
+        while True:
+            ax_float, _ = _generate_coordinate_value(integer_only=True, range_min=-5, range_max=5)
+            ay_float, _ = _generate_coordinate_value(integer_only=True, range_min=-5, range_max=5)
+            bx_float, _ = _generate_coordinate_value(integer_only=True, range_min=-5, range_max=5)
+            by_float, _ = _generate_coordinate_value(integer_only=True, range_min=-5, range_max=5)
+            point_A = (int(ax_float), int(ay_float))
+            point_B = (int(bx_float), int(by_float))
+
+            if point_A == point_B: # Ensure distinct points
+                continue
+
+            target_axis = random.choice(['x-axis', 'y-axis'])
+
+            # Robustness check: ensure unique intersection
+            if target_axis == 'x-axis': # P is on y=0
+                if point_A[1] == point_B[1]: # AB is horizontal, bisector is vertical, no intersection with x-axis unless AB is on x-axis
+                    if point_A[1] != 0: # If AB not on x-axis, then no intersection with x-axis
+                        continue
+                    else: # If AB is on x-axis, then entire x-axis is solution, which is not a unique point.
+                        continue
+            elif target_axis == 'y-axis': # P is on x=0
+                if point_A[0] == point_B[0]: # AB is vertical, bisector is horizontal, no intersection with y-axis unless AB is on y-axis
+                    if point_A[0] != 0: # If AB not on y-axis, then no intersection with y-axis
+                        continue
+                    else: # If AB is on y-axis, then entire y-axis is solution, not unique.
+                        continue
+            break # If all checks pass, break loop
+
+        # Calculate midpoint M
+        M_x = (point_A[0] + point_B[0]) / 2
+        M_y = (point_A[1] + point_B[1]) / 2
+
+        # Calculate slope of AB
+        delta_x = point_B[0] - point_A[0]
+        delta_y = point_B[1] - point_A[1]
+
+        P_x, P_y = 0.0, 0.0
+
+        if delta_x == 0: # AB is a vertical line (x = const)
+            # Perpendicular bisector is a horizontal line (y = M_y)
+            if target_axis == 'x-axis': # Intersection with y=0
+                # If M_y is 0, then the bisector is the x-axis itself, not a unique point.
+                # This case should be caught by the robustness check (point_A[1] == point_B[1])
+                # However, if delta_x=0 means point_A[0]==point_B[0], so it means we need to ensure point_A[1] != point_B[1]
+                # which is guaranteed by the robustness check for target_axis == 'x-axis'
+                # If delta_x is 0, point_A[0] == point_B[0], and target_axis is x-axis.
+                # The perpendicular bisector is y = M_y.
+                # Intersection with y=0 means M_y = 0, which means point P is (point_A[0], 0).
+                # This is only possible if M_y = 0.
+                if M_y == 0: # Bisector is y=0, which is the x-axis. Not a unique point
+                    # This case should be prevented by the robustness check
+                    pass 
+                P_x = M_x # x-coordinate of P is the x-coordinate of the midpoint
+                P_y = 0.0 # P is on the x-axis
+            else: # target_axis == 'y-axis', intersection with x=0
+                P_x = 0.0 # P is on the y-axis
+                P_y = M_y # y-coordinate of P is the y-coordinate of the midpoint
+        elif delta_y == 0: # AB is a horizontal line (y = const)
+            # Perpendicular bisector is a vertical line (x = M_x)
+            if target_axis == 'x-axis': # Intersection with y=0
+                P_x = M_x # x-coordinate of P is the x-coordinate of the midpoint
+                P_y = 0.0 # P is on the x-axis
+            else: # target_axis == 'y-axis', intersection with x=0
+                # If M_x is 0, then the bisector is the y-axis itself, not a unique point.
+                # This case should be caught by the robustness check (point_A[0] == point_B[0])
+                if M_x == 0: # Bisector is x=0, which is the y-axis. Not a unique point
+                    pass
+                P_x = 0.0 # P is on the y-axis
+                P_y = M_y # y-coordinate of P is the y-coordinate of the midpoint
+        else: # AB is a slanted line
+            m_ab = delta_y / delta_x
+            m_perp = -1 / m_ab # Slope of perpendicular bisector
+
+            # Equation of perpendicular bisector: y - M_y = m_perp * (x - M_x)
+            if target_axis == 'x-axis': # P is on y=0
+                P_y = 0.0
+                P_x = M_x - M_y / m_perp
+            else: # target_axis == 'y-axis', P is on x=0
+                P_x = 0.0
+                P_y = M_y - m_perp * M_x
+
+        # Convert to int if it's a whole number
+        if P_x.is_integer(): P_x = int(P_x)
+        if P_y.is_integer(): P_y = int(P_y)
+
+        point_P = (P_x, P_y)
+
+        pt_A_display = r"A({x}, {y})".replace("{x}", str(point_A[0])).replace("{y}", str(point_A[1]))
+        pt_B_display = r"B({x}, {y})".replace("{x}", str(point_B[0])).replace("{y}", str(point_B[1]))
         
-        # Random rotation and translation
-        angle = random.uniform(0, 2 * math.pi)
-        dx, dy = random.randint(-3, 3), random.randint(-3, 3)
-
-        if fig_info["type"] == "rectangle":
-            width = random.randint(4, 8)
-            height = random.randint(3, 7)
-            while width == height: # Ensure it's not a square
-                height = random.randint(3, 7)
-            
-            vertices = [
-                (0, 0), (width, 0), (width, height), (0, height)
-            ]
-            
-            center = (width/2, height/2)
-            rotated_vertices = [rotate_point(v, angle, center) for v in vertices]
-            translated_vertices = [(v[0]+dx, v[1]+dy) for v in rotated_vertices]
-            
-            patch = patches.Polygon(translated_vertices, closed=True, edgecolor='black', facecolor='lightgreen', alpha=0.7)
-            ax.add_patch(patch)
-
-        elif fig_info["type"] == "square":
-            side = random.randint(4, 8)
-            vertices = [
-                (0, 0), (side, 0), (side, side), (0, side)
-            ]
-            center = (side/2, side/2)
-            rotated_vertices = [rotate_point(v, angle, center) for v in vertices]
-            translated_vertices = [(v[0]+dx, v[1]+dy) for v in rotated_vertices]
-            patch = patches.Polygon(translated_vertices, closed=True, edgecolor='black', facecolor='lightgreen', alpha=0.7)
-            ax.add_patch(patch)
-
-        elif fig_info["type"] == "isosceles_trapezoid":
-            # Base width, top width, height
-            base1 = random.randint(6, 10)
-            base2 = random.randint(2, base1 - 2) # Top base must be smaller than bottom base
-            h = random.randint(3, 7)
-            
-            x_offset = (base1 - base2) / 2
-            vertices = [
-                (0, 0), (base1, 0),
-                (base1 - x_offset, h), (x_offset, h)
-            ]
-            
-            center = polygon_centroid(vertices)
-            rotated_vertices = [rotate_point(v, angle, center) for v in vertices]
-            translated_vertices = [(v[0]+dx, v[1]+dy) for v in rotated_vertices]
-            patch = patches.Polygon(translated_vertices, closed=True, edgecolor='black', facecolor='lightgreen', alpha=0.7)
-            ax.add_patch(patch)
-
-        elif fig_info["type"] == "isosceles_triangle":
-            base = random.randint(4, 10)
-            h = random.randint(4, 10)
-            
-            vertices = [
-                (0, 0), (base, 0), (base/2, h)
-            ]
-            
-            center = polygon_centroid(vertices)
-            rotated_vertices = [rotate_point(v, angle, center) for v in vertices]
-            translated_vertices = [(v[0]+dx, v[1]+dy) for v in rotated_vertices]
-            patch = patches.Polygon(translated_vertices, closed=True, edgecolor='black', facecolor='lightgreen', alpha=0.7)
-            ax.add_patch(patch)
-            
-        elif fig_info["type"] == "general_triangle":
-            # Generate 3 points, ensure it's not isosceles or equilateral
-            p1 = (random.randint(-5, -2), random.randint(-5, -2))
-            p2 = (random.randint(2, 5), random.randint(-5, -2))
-            p3 = (random.randint(-2, 2), random.randint(2, 5))
-            
-            # Re-generate if it's too close to isosceles or equilateral
-            sides = sorted([dist(p1,p2), dist(p2,p3), dist(p3,p1)])
-            while abs(sides[0] - sides[1]) < 0.5 or abs(sides[1] - sides[2]) < 0.5: # 0.5 is a tolerance
-                p1 = (random.randint(-5, -2), random.randint(-5, -2))
-                p2 = (random.randint(2, 5), random.randint(-5, -2))
-                p3 = (random.randint(-2, 2), random.randint(2, 5))
-                sides = sorted([dist(p1,p2), dist(p2,p3), dist(p3,p1)])
-            
-            center = polygon_centroid([p1,p2,p3])
-            rotated_vertices = [rotate_point(v, angle, center) for v in [p1,p2,p3]]
-            translated_vertices = [(v[0]+dx, v[1]+dy) for v in rotated_vertices]
-            patch = patches.Polygon(translated_vertices, closed=True, edgecolor='black', facecolor='lightgreen', alpha=0.7)
-            ax.add_patch(patch)
-
-        elif fig_info["type"] == "parallelogram":
-            base = random.randint(5, 9)
-            height = random.randint(3, 6)
-            shear_x = random.randint(1, 3) # horizontal shift for top base
-            
-            vertices = [
-                (0, 0), (base, 0), (base + shear_x, height), (shear_x, height)
-            ]
-            # Ensure it's not a rectangle or rhombus (sides are not equal)
-            d1 = dist(vertices[0], vertices[1])
-            d2 = dist(vertices[1], vertices[2])
-            while shear_x == 0 or abs(d1 - d2) < 0.5: # check for rhombus
-                shear_x = random.randint(1, 3)
-                vertices = [(0, 0), (base, 0), (base + shear_x, height), (shear_x, height)]
-                d1 = dist(vertices[0], vertices[1])
-                d2 = dist(vertices[1], vertices[2])
-
-            center = polygon_centroid(vertices)
-            rotated_vertices = [rotate_point(v, angle, center) for v in vertices]
-            translated_vertices = [(v[0]+dx, v[1]+dy) for v in rotated_vertices]
-            patch = patches.Polygon(translated_vertices, closed=True, edgecolor='black', facecolor='lightgreen', alpha=0.7)
-            ax.add_patch(patch)
-            
-        elif fig_info["type"] == "circle":
-            radius = random.randint(3, 6)
-            center = (dx, dy)
-            patch = patches.Circle(center, radius, edgecolor='black', facecolor='lightgreen', alpha=0.7)
-            ax.add_patch(patch)
-            
-        elif fig_info["type"] in ["regular_pentagon", "regular_hexagon"]:
-            num_sides = 5 if fig_info["type"] == "regular_pentagon" else 6
-            radius = random.randint(4, 7)
-            
-            vertices = []
-            for i in range(num_sides):
-                x = radius * math.cos(2 * math.pi * i / num_sides)
-                y = radius * math.sin(2 * math.pi * i / num_sides)
-                vertices.append((x,y))
-            
-            center = (0,0) # Already centered for regular polygons
-            rotated_vertices = [rotate_point(v, angle, center) for v in vertices]
-            translated_vertices = [(v[0]+dx, v[1]+dy) for v in rotated_vertices]
-            patch = patches.Polygon(translated_vertices, closed=True, edgecolor='black', facecolor='lightgreen', alpha=0.7)
-            ax.add_patch(patch)
-            
-
-        question_text = f"請判斷以下圖形是否為線對稱圖形。若是，請寫出其對稱軸的數量。 (若為無限多條，請填寫'無限多條')"
+        # [Localization] Translate axis names
+        axis_display_map = {
+            'x-axis': r'$x$ 軸',
+            'y-axis': r'$y$ 軸'
+        }
+        axis_display = axis_display_map.get(target_axis, target_axis)
         
-        if fig_info["is_symmetric"]:
-            correct_answer = f"是, 數量={fig_info['axes']}"
-        else:
-            correct_answer = "否, 數量=0"
-        
-        question_text += "\n(答案格式：是, 數量=_ 或 否, 數量=0)"
+        question_template = r"坐標平面上 $A$ 點為 {pt_A}，$B$ 點為 {pt_B}。若 $P$ 點在 {axis} 上，且 $\overline{PA} = \overline{PB}$，則 $P$ 點的坐標為何？"
+        question_text = question_template.replace("{pt_A}", pt_A_display).replace("{pt_B}", pt_B_display).replace("{axis}", axis_display)
 
-    elif selected_type == "paper_folding_symmetry":
-        problem_type_label = "紙張摺疊與剪裁"
+        correct_answer = "{x},{y}".replace("{x}", _format_coordinate_for_display(point_P[0])).replace("{y}", _format_coordinate_for_display(point_P[1]))
 
-        # Fixed scenario: square paper, fold twice, cut a triangle from the outer corner
-        side_length = 10
-        
-        # Original square (for context)
-        square_vertices = [(0,0), (side_length,0), (side_length,side_length), (0,side_length)]
-        square_patch = patches.Polygon(square_vertices, closed=True, edgecolor='gray', facecolor='lightyellow', alpha=0.5, zorder=0)
-        ax.add_patch(square_patch)
-        ax.text(side_length/2, side_length/2, "原始紙張", ha='center', va='center', fontsize=10, color='gray', zorder=0)
+        correct_answer = "{x},{y}".replace("{x}", _format_coordinate_for_display(point_P[0])).replace("{y}", _format_coordinate_for_display(point_P[1]))
 
-        # Fold lines (dashed)
-        draw_line(ax, (side_length/2, 0), (side_length/2, side_length), linestyle=':', color='blue', linewidth=1, zorder=1)
-        draw_line(ax, (0, side_length/2), (side_length, side_length/2), linestyle=':', color='blue', linewidth=1, zorder=1)
-        
-        # Depict the folded paper (one quadrant)
-        # Let's say the folded paper ends up as the bottom-left quadrant
-        folded_side = side_length / 2
-        folded_vertices = [(0,0), (folded_side,0), (folded_side,folded_side), (0,folded_side)]
-        folded_patch = patches.Polygon(folded_vertices, closed=True, edgecolor='black', facecolor='lightyellow', alpha=0.9, zorder=2)
-        ax.add_patch(folded_patch)
-        
-        # Cut a small right triangle from the outer corner (0,0) of the folded paper
-        cut_size = random.randint(1, 2)
-        cut_vertices = [(0,0), (cut_size,0), (0,cut_size)]
-        cut_patch = patches.Polygon(cut_vertices, closed=True, edgecolor='red', facecolor='red', alpha=0.8, zorder=3)
-        ax.add_patch(cut_patch)
-        ax.text(cut_size/2, cut_size/2, "剪裁處", ha='center', va='center', fontsize=10, color='white', zorder=4)
-
-        ax.set_xlim(-2, side_length + 2)
-        ax.set_ylim(-2, side_length + 2)
-        ax.set_xticks([])
-        ax.set_yticks([])
-        ax.spines['left'].set_color('none')
-        ax.spines['bottom'].set_color('none')
-        ax.spines['right'].set_color('none')
-        ax.spines['top'].set_color('none')
-        ax.set_title("紙張摺疊與剪裁示意圖", fontsize=14)
-
-        question_text = "一張正方形紙張，先沿水平中線對摺一次，再沿垂直中線對摺一次。"
-        question_text += "\n接著，在最外側的角剪下一個直角三角形（如圖所示）。"
-        question_text += "\n請問完全展開後，紙張的形狀為何？"
-        
-        correct_answer = "一個中心有菱形孔洞的正方形"
-        question_text += "\n(答案格式：一個中心有菱形孔洞的正方形)"
-
-    # Final image processing
-    # Check if any patches or lines were added to the axes to determine if an image was generated
-    if ax.patches or ax.lines or ax.texts: # Check if anything was drawn
-        image_base64 = get_image_base64(fig)
-    else:
-        plt.close(fig) # Close the figure if nothing was drawn
-        image_base64 = ""
+        # [Spoiler Prevention] Do NOT draw the answer point P! Only show A and B.
+        points_for_drawing = [{'coord': point_A, 'label': 'A'}, {'coord': point_B, 'label': 'B'}]
+        # [V16.28] Ensure bounds include P even though it's hidden
+        image_base64 = _draw_coordinate_plane(points_for_drawing, x_range=(-7, 7), y_range=(-7, 7), show_labels=True, invisible_points_for_bounds=[point_P])
 
     return {
         "question_text": question_text,
         "correct_answer": correct_answer,
+        "answer": "", # This field is typically for user's input, left empty for generation
         "image_base64": image_base64,
-        "problem_type": problem_type_label
     }
 
+# --- check() 函式 ---
 
-# [Auto-Injected Smart Dispatcher v8.7]
-def generate(level=1):
-    if level == 1:
-        types = ['generate_problem']
-        selected = random.choice(types)
-    else:
-        types = ['generate_problem']
-        selected = random.choice(types)
-    if selected == 'generate_problem': return generate_problem()
-    return generate_problem()
 
-# [Auto-Injected Patch v10.4] Universal Return, Linebreak & Chinese Fixer
+    """
+    功能: 檢查使用者答案與正確答案是否一致。
+    遵循 V2.0, V12.6, V13.5, V13.6 規範，並使用「通用 Check 函式模板」。
+    """
+    import re, math
+    # 1. 清洗雙方輸入 (移除 LaTeX, 變數名, 空格)
+    def clean(s):
+        s = str(s).strip().replace(" ", "").lower()
+        s = re.sub(r'^[a-z]+\s*=\s*', '', s) # 移除 k=, x=, y=, a=
+        s = re.sub(r'[$\\\{\}xXyYkK=aA_sS:\[\]\(\)]', '', s) # 移除 LaTeX, 括號等符號
+        return s
+    
+    u = clean(user_answer)
+    c = clean(correct_answer)
+    
+    # 2. 嘗試數值序列比對 (支援分數與小數)
+    u_parts = u.split(',')
+    c_parts = c.split(',')
+
+    if len(u_parts) != len(c_parts):
+        return {"correct": False, "result": f"答案格式錯誤，預期 {len(c_parts)} 個數值，但得到 {len(u_parts)} 個。"}
+
+    is_correct_sequence = True
+    for u_part, c_part in zip(u_parts, c_parts):
+        try:
+            def parse_val(val_str):
+                if "/" in val_str:
+                    n, d = map(float, val_str.split("/"))
+                    return n/d
+                return float(val_str)
+            
+            if not math.isclose(parse_val(u_part), parse_val(c_part), rel_tol=1e-5, abs_tol=1e-9): # Added abs_tol for values close to zero
+                is_correct_sequence = False
+                break
+        except ValueError:
+            is_correct_sequence = False
+            break
+    
+    if is_correct_sequence:
+        return {"correct": True, "result": "正確！"}
+        
+    # 3. 降級為字串比對
+    # This part might be redundant if numerical comparison covers all cases,
+    # but kept for strict adherence to template.
+    if u == c: return {"correct": True, "result": "正確！"}
+
+    return {"correct": False, "result": f"答案錯誤。"}
+
+
+# [Auto-Injected Patch v11.0] Universal Return, Linebreak & Handwriting Fixer
 def _patch_all_returns(func):
     def wrapper(*args, **kwargs):
         res = func(*args, **kwargs)
-        if func.__name__ == "check" and isinstance(res, bool):
-            return {"correct": res, "result": "正確！" if res else "答案錯誤"}
+        
+        # 1. 針對 check 函式的布林值回傳進行容錯封裝
+        if func.__name__ == 'check' and isinstance(res, bool):
+            return {'correct': res, 'result': '正確！' if res else '答案錯誤'}
+        
         if isinstance(res, dict):
-            if "question_text" in res and isinstance(res["question_text"], str):
-                res["question_text"] = res["question_text"].replace("\\n", "\n")
-            if func.__name__ == "check" and "result" in res:
-                msg = str(res["result"]).lower()
-                if any(w in msg for w in ["correct", "right", "success"]): res["result"] = "正確！"
-                elif any(w in msg for w in ["incorrect", "wrong", "error"]):
-                    if "正確答案" not in res["result"]: res["result"] = "答案錯誤"
-            if "answer" not in res and "correct_answer" in res: res["answer"] = res["correct_answer"]
-            if "answer" in res: res["answer"] = str(res["answer"])
-            if "image_base64" not in res: res["image_base64"] = ""
+            # [V11.3 Standard Patch] - 解決換行與編碼問題
+            if 'question_text' in res and isinstance(res['question_text'], str):
+                # 僅針對「文字反斜線+n」進行物理換行替換，不進行全局編碼轉換
+                import re
+                # 解決 r-string 導致的 \n 問題
+                res['question_text'] = re.sub(r'\n', '\n', res['question_text'])
+            
+            # --- [V11.0] 智能手寫模式偵測 (Auto Handwriting Mode) ---
+            # 判定規則：若答案包含複雜運算符號，強制提示手寫作答
+            # 包含: ^ / _ , | ( [ { 以及任何 LaTeX 反斜線
+            c_ans = str(res.get('correct_answer', ''))
+            # [V13.1 修復] 移除 '(' 與 ','，允許座標與數列使用純文字輸入
+            triggers = ['^', '/', '|', '[', '{', '\\']
+            
+            # [V11.1 Refined] 僅在題目尚未包含提示時注入，避免重複堆疊
+            has_prompt = "手寫" in res.get('question_text', '')
+            should_inject = (res.get('input_mode') == 'handwriting') or any(t in c_ans for t in triggers)
+            
+            if should_inject and not has_prompt:
+                res['input_mode'] = 'handwriting'
+                # [V11.3] 確保手寫提示語在最後一行
+                res['question_text'] = res['question_text'].rstrip() + "\n(請在手寫區作答!)"
+
+            # 3. 確保反饋訊息中文
+            if func.__name__ == 'check' and 'result' in res:
+                if res['result'].lower() in ['correct!', 'correct', 'right']:
+                    res['result'] = '正確！'
+                elif res['result'].lower() in ['incorrect', 'wrong', 'error']:
+                    res['result'] = '答案錯誤'
+            
+            # 4. 確保欄位完整性
+            if 'answer' not in res and 'correct_answer' in res:
+                res['answer'] = res['correct_answer']
+            if 'answer' in res:
+                res['answer'] = str(res['answer'])
+            if 'image_base64' not in res:
+                res['image_base64'] = ""
         return res
     return wrapper
+
 import sys
 for _name, _func in list(globals().items()):
-    if callable(_func) and (_name.startswith("generate") or _name == "check"):
+    if callable(_func) and (_name.startswith('generate') or _name == 'check'):
         globals()[_name] = _patch_all_returns(_func)

@@ -43,6 +43,26 @@ def generate_v9_spec(skill_id, model_tag='cloud_pro', prompt_strategy='standard'
     1. [禁絕原創]：不要設計新的題目。請指示 Coder 如何隨機化 RAG 中的現有題目。
     2. [座標鎖死]：針對幾何題，指示 Coder 必須根據 RAG 圖形（如長方形 ACEF）定義正確的頂點座標。
 
+    ## [CRITICAL RULE: Answer Data Purity]
+    1. **分離「顯示答案」與「閱卷答案」**：
+       - 在設計 `generate()` 的回傳格式時，`correct_answer` 欄位必須是 **「純數據 (Raw Data)」**。
+       - 嚴禁在 `correct_answer` 中包含 LaTeX 符號 ($)、變數名稱 (k=, x=)、單位 (cm) 或說明文字。
+       - **錯誤範例**：`"$k = 3$"` 或 `"x = 5"`
+       - **正確範例**：`"3"` 或 `"5"` 或 `"3, 4"` (如果是多個解)
+       - 如果前端需要顯示詳解，請另外建立一個 `solution_text` 或 `answer_display` 欄位。
+
+    2. **定義「強韌閱卷邏輯 (Robust Check Logic)」**：
+       - 在 Spec 中明確指示 Code Generator：`check` 函式必須具備 **「輸入清洗 (Input Sanitization)」** 能力。
+       - 必須使用 Regex (正規表達式) 自動移除使用者輸入中的：
+         - LaTeX 符號 (`$`, `\`, `{`, `}`)
+         - 變數前綴 (`x=`, `y=`, `k=`, `Ans:`)
+         - 所有空白字元
+       - 必須支援多種數學格式的等價性 (例如：`1/2` = `0.5`, `3:4` = `0.75`)。
+
+    3. **幾何/圖形題的特殊規範**：
+       - 若題目要求畫圖，必須明確定義是否需要系統自動批改圖片。
+       - 若無法自動批改圖片，必須指示 Code Generator 將圖片轉為「僅供參考 (Reference Only)」，並將 `image_base64` 設為模板或空值，避免洩漏答案軌跡。
+
     3. 程式結構 (Structure Hardening)
     - [頂層函式]：嚴禁使用 class 封裝。必須直接定義 generate(level=1) 與 check(user_answer, correct_answer) 於模組最外層。
     - [自動重載]：確保代碼不依賴全域狀態，以便系統執行 importlib.reload。
@@ -137,6 +157,16 @@ def generate_v9_spec(skill_id, model_tag='cloud_pro', prompt_strategy='standard'
     - 【Arrow Ban】：嚴禁在 axhline/axvline 使用 arrowprops（會導致 API 錯誤）。必須指示使用 `ax.plot(limit, 0, ">k", clip_on=False)` 繪製箭頭。
     - 【Strict Labeling】：強制檢查點名稱是否在白名單內。
     - 【Exact Check Logic】：指示 Coder 必須逐字複製 4-line check logic，不得自行發揮。
+
+    17. [CRITICAL RULE: Visual Solvability]
+    1. **圖表必須可解 (Solvable Visualization)**：
+       - 所有生成的圖片（數線、座標平面、統計圖）必須具備「獨立可解性」。
+       - **嚴禁** 生成沒有刻度數字的座標軸。學生不應該透過「數格子」來猜測座標，必須有明確的數字標示 (Ticks & Labels)。
+       - 在 Spec 中必須明確指示 Code Generator：「請標示出 X 軸與 Y 軸的主要整數刻度 (Major Ticks)」。
+
+    2. **座標與數線規範**：
+       - 若題目涉及讀取座標 (Read Coordinate)，規格書必須要求繪圖程式碼設定 `xticks` 與 `yticks`，確保至少每隔 1 或 2 個單位就有一個數字顯示。
+       - 範例要求：`"Ensure x-axis and y-axis have integer labels visible (e.g., -5, -4, ... 4, 5)."`
 
     """
 
