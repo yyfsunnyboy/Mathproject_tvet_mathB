@@ -184,6 +184,18 @@ def generate_v9_spec(skill_id, model_tag='cloud_pro', prompt_strategy='standard'
     2. **語意消歧義 (Semantic Disambiguation)**：
        - 當 Skill Name 為「綜合應用」、「進階題」這類模糊名詞時，**必須**強制參考該單元的 RAG 例題關鍵字。
        - 若 RAG 為空，則根據 `skill_id` 的前綴推斷主題（例如：看到 `2上` 預設為乘法公式或畢氏定理）。
+
+    19. [CRITICAL RULE: Variant Support] (變體支援)
+    - Check the source of the RAG examples. If examples contain both 'Textbook' and 'Student Upload' sources, you MUST implement a random.choice logic in the generate() function to toggle between these different problem structures (Variants).
+    - Ensure the code covers logic for ALL provided examples.
+    - Example:
+      ```python
+      variant = random.choice(['textbook', 'student_upload'])
+      if variant == 'textbook':
+          # Logic for textbook example
+      else:
+          # Logic for student upload example
+      ```
     """
 
     system_instruction += """
