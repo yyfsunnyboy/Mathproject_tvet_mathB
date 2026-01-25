@@ -582,6 +582,12 @@ def admin_promote_question():
 
         # 4. 觸發重生成
         try:
+            # [STEP 1] Force Architect to re-analyze examples and update SkillInfo.gemini_prompt
+            print(f"Triggering Architect for {skill_id}...")
+            from core.prompt_architect import generate_v9_spec
+            generate_v9_spec(skill_id, model_tag='cloud_pro')
+
+            # [STEP 2] Now call Coder -> Uses NEW Prompt
             from core.code_generator import auto_generate_skill_code
             # Run in background ideally, but here synchronous for feedback
             auto_generate_skill_code(skill_id, queue=None)
