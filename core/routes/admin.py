@@ -516,7 +516,8 @@ def admin_toggle_skill(skill_id):
 def admin_regenerate_skill_code(skill_id):
     try:
         from core.code_generator import auto_generate_skill_code
-        result = auto_generate_skill_code(skill_id, queue=None)
+        # [修改] 從後台單點重建時，強制刷新 Architect，確保使用最新 Prompt
+        result = auto_generate_skill_code(skill_id, queue=None, force_architect_refresh=True)
         success = result[0] if isinstance(result, tuple) else result
         return jsonify({"success": success, "message": "生成成功" if success else "失敗"})
     except Exception as e:

@@ -194,7 +194,8 @@ def process_textbook_file(file_path, curriculum_info, queue, skip_code_gen=False
             for idx, skill_id in enumerate(processed_skill_ids):
                 queue.put(f"INFO: [{idx+1}/{len(processed_skill_ids)}] 正在生成 {skill_id}.py ...")
                 try:
-                    success, msg = auto_generate_skill_code(skill_id, queue)
+                    # [修正] 針對新匯入的技能，強制執行 Architect 生成最新的 Prompt
+                    success, msg = auto_generate_skill_code(skill_id, queue, force_architect_refresh=True)
                     if success:
                         queue.put(f"INFO: {skill_id} 生成成功！")
                     else:

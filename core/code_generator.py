@@ -146,6 +146,12 @@ def get_prime_factorization(n):
 def gcd(a, b): return math.gcd(int(a), int(b))
 def lcm(a, b): return abs(int(a) * int(b)) // math.gcd(int(a), int(b))
 
+def op_latex(num):
+    return fmt_num(num, op=True)
+
+def clean_latex_output(s):
+    return str(s).strip()
+
 # --- 3. Fraction Generator & Helpers ---
 def simplify_fraction(n, d):
     common = math.gcd(n, d)
@@ -601,9 +607,12 @@ def _patch_all_returns(func):
                 elif res['result'].lower() in ['incorrect', 'wrong', 'error']:
                     res['result'] = '答案錯誤'
             
-            # 4. 確保欄位完整性
-            if 'answer' not in res and 'correct_answer' in res:
-                res['answer'] = res['correct_answer']
+            # 4. 確保欄位完整性 & 答案同步
+            if 'correct_answer' in res:
+                # 若 answer 不存在或為空字串，強制同步 correct_answer
+                if 'answer' not in res or not res['answer']:
+                     res['answer'] = res['correct_answer']
+            
             if 'answer' in res:
                 res['answer'] = str(res['answer'])
             if 'image_base64' not in res:
@@ -648,6 +657,23 @@ def fix_code_syntax(code_str, error_msg=""):
         cleaned_lines.append(line)
         
     return '\n'.join(cleaned_lines), total_fixes
+
+
+def fix_chinese_in_latex(code_str):
+    """
+    [Active Healing] 修復 LaTeX 中的中文混排問題
+    1. $中文$ -> 中文
+    2. $x軸$ -> $x$軸
+    3. $y軸$ -> $y$軸
+    """
+    # 1. 純中文在 $ $ 內 -> 去除 $
+    code_str = re.sub(r'\$([\u4e00-\u9fa5]+)\$', r'\1', code_str)
+    
+    # 2. 混合情況: $x軸$ -> $x$軸 (針對常見變數)
+    code_str = re.sub(r'\$([a-zA-Z0-9_]+)([\u4e00-\u9fa5]+)\$', r'$\1$ \2', code_str)
+    code_str = re.sub(r'\$([\u4e00-\u9fa5]+)([a-zA-Z0-9_]+)\$', r'\1 $\2$', code_str)
+    
+    return code_str
 
 
 def validate_and_fix_code(code_content):
@@ -874,7 +900,7 @@ def log_experiment(skill_id, start_time, input_len, output_len, success, error_m
         print(f"🚨 Experiment Log 寫入失敗: {e}")
 
 
-def auto_generate_skill_code(skill_id, queue=None):
+def auto_generate_skill_code(skill_id, queue=None, force_architect_refresh=False):
     start_time = time.time()
     
     # 1. Determine Target Tag based on Config
@@ -886,11 +912,24 @@ def auto_generate_skill_code(skill_id, queue=None):
     # 2. [Strict Mode] Fetch ONLY the matching Architect Spec
     active_prompt = SkillGenCodePrompt.query.filter_by(skill_id=skill_id, model_tag=target_tag, is_active=True).first()
     
-    # 3. Error Handling if Prompt is Missing
+    # 3. [Auto-Architect] If Prompt is Missing OR Forced Refresh, Generate it on the fly
+    if not active_prompt or force_architect_refresh:
+        try:
+            msg = f"   ⚠️ Spec not found for {target_tag}. Invoking V9 Architect..." if not active_prompt else f"   🔄 Forced Refresh: Re-invoking V9 Architect for {target_tag}..."
+            print(msg)
+            from core.prompt_architect import generate_v9_spec
+            result = generate_v9_spec(skill_id, model_tag=target_tag)
+            
+            if result['success']:
+                # Re-fetch the newly created prompt
+                active_prompt = SkillGenCodePrompt.query.filter_by(skill_id=skill_id, model_tag=target_tag, is_active=True).first()
+            else:
+                return False, f"Architect Failed: {result.get('message')}"
+        except Exception as e:
+            return False, f"Architect Error: {str(e)}"
+            
     if not active_prompt:
-        error_msg = f"⛔ [阻擋] 找不到對應 '{target_tag}' ({current_model}) 的 V9 規格書！請先執行專家模式或手動生成 Prompt。"
-        if current_app: current_app.logger.error(f"{skill_id}: {error_msg}")
-        return False, error_msg
+        return False, "Critical: Architect claimed success but prompt is still missing."
 
     # Pre-fetch skill info (needed for fallback or logging)
     skill = SkillInfo.query.filter_by(skill_id=skill_id).first()
@@ -1087,6 +1126,9 @@ if 'generate' not in globals() and any(k.startswith('generate_') for k in global
         # Patches all draw_* functions to ensure they return values
         code, patch_fixes = universal_function_patcher(code)
         regex_fixes += patch_fixes
+        
+        # [Active Healing] Fix Chinese in LaTeX
+        code = fix_chinese_in_latex(code)
         
         code = fix_return_format(code)
         code = clean_global_scope_execution(code)

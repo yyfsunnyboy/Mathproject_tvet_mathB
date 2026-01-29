@@ -176,7 +176,10 @@ def run_expert_pipeline(skill_ids, arch_model, current_model):
     for skill_id in pbar_code:
         pbar_code.set_description(f"Coding: {skill_id}")
         
-        result = auto_generate_skill_code(skill_id, queue=None)
+        # [Phase 2] Generate Code
+        # We set force_architect_refresh=False because Phase 1 already generated the spec.
+        # If Phase 1 failed, the Auto-Architect inside will try again as a fallback.
+        result = auto_generate_skill_code(skill_id, queue=None, force_architect_refresh=False)
         
         is_ok = False
         msg = ""
