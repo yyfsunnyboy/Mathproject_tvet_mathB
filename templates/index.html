@@ -2379,11 +2379,14 @@
                         updateStreak(data.correct);
 
                         // [Phase 6] 處理前置單元推薦
+                        console.log('[前置單元推薦] API 回應:', data);
                         const prereqSuggestion = document.getElementById('prerequisite-suggestion');
                         if (data.suggested_prerequisite) {
+                            console.log('[前置單元推薦] 找到推薦:', data.suggested_prerequisite);
                             // 顯示前置單元推薦卡片
                             showPrerequisiteSuggestion(data.suggested_prerequisite);
                         } else {
+                            console.log('[前置單元推薦] 無推薦資料');
                             // 隱藏推薦卡片
                             if (prereqSuggestion) {
                                 prereqSuggestion.style.display = 'none';
@@ -3142,13 +3145,28 @@
 
         // [Phase 6] 顯示前置單元推薦
         function showPrerequisiteSuggestion(prerequisite) {
+            console.log('[前置單元推薦] 呼叫 showPrerequisiteSuggestion，參數:', prerequisite);
+
             const suggestionDiv = document.getElementById('prerequisite-suggestion');
             const reasonText = document.getElementById('prerequisite-reason');
             const nameSpan = document.getElementById('prerequisite-name');
             const goBtn = document.getElementById('go-prerequisite-btn');
 
+            console.log('[前置單元推薦] DOM 元素:', {
+                suggestionDiv: !!suggestionDiv,
+                reasonText: !!reasonText,
+                nameSpan: !!nameSpan,
+                goBtn: !!goBtn
+            });
+
             if (!suggestionDiv || !reasonText || !nameSpan || !goBtn) {
                 console.error('前置單元推薦元素未找到');
+                console.error('缺少元素:', {
+                    suggestionDiv: !suggestionDiv,
+                    reasonText: !reasonText,
+                    nameSpan: !nameSpan,
+                    goBtn: !goBtn
+                });
                 return;
             }
 
@@ -3164,6 +3182,7 @@
 
             // 顯示推薦卡片
             suggestionDiv.style.display = 'block';
+            console.log('[前置單元推薦] 卡片已顯示');
         }
 
         // 初始化

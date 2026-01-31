@@ -95,6 +95,61 @@ def upload_exam():
         # 6. 回傳結果
         result = analysis_response['result'].get('analysis_result', {})
         
+        # [Phase 6] 前置單元推薦
+        suggested_prerequisite = None
+        if not result.get('is_correct'):
+            try:
+                from core.ai_analyzer import diagnose_error
+                from models import SkillInfo
+                
+                # 取得匹配的單元 ID
+                matched_unit = result.get('matched_unit', {})
+                skill_id = matched_unit.get('unit_id')
+                
+                if skill_id:
+                    # 查找單元資訊
+                    skill_info = db.session.get(SkillInfo, skill_id)
+                    if skill_info and skill_info.prerequisites:
+                        # 收集前置單元
+                        prerequisite_units = [
+                            {"id": prereq.skill_id, "name": prereq.skill_ch_name}
+                            for prereq in skill_info.prerequisites
+                        ]
+                        
+                        # AI 診斷錯誤
+                        error_analysis_data = result.get('error_analysis', {})
+                        question_text = matched_unit.get('path_name', '考卷題目')
+                        student_answer = "錯誤答案"  # 考卷分析沒有具體答案
+                        correct_answer = "正確答案"
+                        
+                        current_app.logger.info(f"[考卷前置單元推薦] 開始診斷 - 技能: {skill_id}")
+                        
+                        error_diagnosis = diagnose_error(
+                            question_text,
+                            correct_answer,
+                            student_answer,
+                            prerequisite_units=prerequisite_units,
+                            conversation_history=None
+                        )
+                        
+                        current_app.logger.info(f"[考卷前置單元推薦] 診斷結果: {error_diagnosis}")
+                        
+                        # 如果有相關的前置單元推薦
+                        if error_diagnosis.get("related_prerequisite_id"):
+                            prereq_id = error_diagnosis["related_prerequisite_id"]
+                            prereq_skill = db.session.get(SkillInfo, prereq_id)
+                            if prereq_skill:
+                                suggested_prerequisite = {
+                                    "id": prereq_id,
+                                    "name": prereq_skill.skill_ch_name,
+                                    "reason": error_diagnosis.get("prerequisite_explanation", "建議複習此單元")
+                                }
+                                current_app.logger.info(f"[考卷前置單元推薦] 推薦單元: {prereq_skill.skill_ch_name}")
+            except Exception as e:
+                current_app.logger.error(f"考卷前置單元推薦失敗: {e}")
+                import traceback
+                traceback.print_exc()
+        
         return jsonify({
             'success': True,
             'message': '分析完成!',
@@ -103,7 +158,8 @@ def upload_exam():
                 'is_correct': result.get('is_correct'),
                 'matched_unit': result.get('matched_unit'),
                 'error_analysis': result.get('error_analysis'),
-                'image_url': url_for('static', filename=relative_path)
+                'image_url': url_for('static', filename=relative_path),
+                'suggested_prerequisite': suggested_prerequisite  # [Phase 6] 添加推薦
             }
         })
         

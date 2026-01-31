@@ -279,6 +279,76 @@
             display: none;
             border-left: 4px solid #e74c3c;
         }
+
+        /* [Phase 6] 前置單元推薦卡片 */
+        .prerequisite-suggestion {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 16px;
+            border-radius: 8px;
+            margin-top: 12px;
+            display: none;
+            animation: slideIn 0.4s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateY(-10px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .prerequisite-suggestion-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+            font-size: 15px;
+            font-weight: 600;
+        }
+
+        .prerequisite-suggestion-header i {
+            font-size: 20px;
+            margin-right: 8px;
+        }
+
+        .prerequisite-reason {
+            font-size: 14px;
+            margin-bottom: 10px;
+            opacity: 0.95;
+        }
+
+        .prerequisite-action {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .prerequisite-name {
+            font-size: 15px;
+            font-weight: 600;
+        }
+
+        .go-prerequisite-btn {
+            background: white;
+            color: #667eea;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+            font-size: 14px;
+        }
+
+        .go-prerequisite-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
     </style>
 </head>
 
@@ -558,6 +628,27 @@
                         <p><strong>AI 建議:</strong> ${errorAnalysis.feedback}</p>
                         <p><strong>信心分數:</strong> ${(matchedUnit.confidence * 100).toFixed(0)}%</p>
                     `;
+
+                    // [Phase 6] 為答錯的題目添加前置單元推薦
+                    if (!isCorrect && data.suggested_prerequisite) {
+                        const prereqDiv = document.createElement('div');
+                        prereqDiv.className = 'prerequisite-suggestion';
+                        prereqDiv.style.display = 'block';
+                        prereqDiv.innerHTML = `
+                            <div class="prerequisite-suggestion-header">
+                                <i class="bi bi-lightbulb"></i>
+                                建議複習前置單元
+                            </div>
+                            <div class="prerequisite-reason">${data.suggested_prerequisite.reason}</div>
+                            <div class="prerequisite-action">
+                                <span class="prerequisite-name">${data.suggested_prerequisite.name}</span>
+                                <button class="go-prerequisite-btn" onclick="window.location.href='/practice/${data.suggested_prerequisite.id}'">
+                                    前往練習 →
+                                </button>
+                            </div>
+                        `;
+                        resultSection.appendChild(prereqDiv);
+                    }
                 } else {
                     resultSection.innerHTML = `
                         <h3>${index + 1}. ${result.fileName} ❌</h3>

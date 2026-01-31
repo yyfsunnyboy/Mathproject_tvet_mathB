@@ -207,74 +207,75 @@ def diagnose_error(question_text, correct_answer, student_answer, prerequisite_u
     try:
         model = get_model()
         
-        # 準備前置單元資訊文字
-        prereq_info = ""
+        # 準備前置單元資訊文字（簡化版）
+        prereq_list = ""
         if prerequisite_units and len(prerequisite_units) > 0:
-            prereq_list = "\n".join([f"  - {p['name']} (ID: {p['id']})" for p in prerequisite_units])
-            prereq_info = f"""
+            prereq_list = "\n".join([f"- {p['name']} (ID: {p['id']})" for p in prerequisite_units])
         
-        **前置單元列表**（學生在學習此題目前應該已經掌握的單元）：
-{prereq_list}
-        """
+        # 暫時移除對話歷史以節省 token
+        # convo_info = ""
+        # if conversation_history and len(conversation_history) > 0:
+        #     convo_text = "\n".join([f"[{c['role']}]: {c['content']}" for c in conversation_history[-2:]])
+        #     convo_info = f"\n對話: {convo_text}"
         
-        # 準備對話歷史文字
-        convo_info = ""
-        if conversation_history and len(conversation_history) > 0:
-            convo_text = "\n".join([f"  [{c['role']}]: {c['content']}" for c in conversation_history[-3:]])  # 只取最近3條
-            convo_info = f"""
-        
-        **AI對話記錄**（學生與AI助手的最近對話）：
-{convo_text}
-        """
-        
-        prompt = f"""
-        你是一位資深的數學老師，請根據以下資訊診斷學生的錯誤。
+        prompt = f"""診斷錯誤。
 
-        **題目**: {question_text}
-        **正確答案**: {correct_answer}
-        **學生的錯誤答案**: {student_answer}{prereq_info}{convo_info}
+題目: {question_text}
+答案: {correct_answer}
+學生: {student_answer}
 
-        請完成以下任務：
-        1. 判斷錯誤類型：
-           - "concept": 觀念錯誤（使用了錯誤的公式、混淆了定義、不理解原理）
-           - "calculation": 計算錯誤（加減乘除錯誤、正負號錯誤、計算疏忽）
-           - "careless": 粗心錯誤（抄寫錯誤、單位錯誤等）
-        
-        2. 判斷是否與前置單元相關：
-           - 如果學生的錯誤顯示出對某個前置單元的觀念不熟悉，請指出該前置單元的 ID
-           - 如果錯誤與前置單元無關（純粹是計算疏忽或粗心），則不需指出前置單元
-        
-        請嚴格以 JSON 格式回傳：
-        {{
-          "error_type": "concept" | "calculation" | "careless",
-          "related_prerequisite_id": "前置單元ID或null",
-          "prerequis
+前置單元:
+{prereq_list if prereq_list else "無"}
 
-ite_explanation": "簡短說明為何建議該前置單元（20字內）或null"
-        }}
+正負號錯誤→推薦「正數與負數」
 
-        範例 1（與前置單元相關）：
-        {{
-          "error_type": "concept",
-          "related_prerequisite_id": "jh_數學1上_MultiplicationOfNegativeNumbers",
-          "prerequisite_explanation": "您在處理負數乘法時出現混淆"
-        }}
-
-        範例 2（與前置單元無關）：
-        {{
-          "error_type": "calculation",
-          "related_prerequisite_id": null,
-          "prerequisite_explanation": null
-        }}
-        """
+JSON:
+{{
+  "error_type": "concept",
+  "related_prerequisite_id": "單元ID或null",
+  "prerequisite_explanation": "簡短說明或null"
+}}
+"""
         
         response = model.generate_content(
             prompt,
-            generation_config={"max_output_tokens": 300, "temperature": 0.2}
+            generation_config={"max_output_tokens": 2000, "temperature": 0.1}
         )
         
+        # 檢查 API 回應狀態
+        print("=" * 80)
+        print("[AI 診斷] API 狀態檢查:")
+        if hasattr(response, 'candidates') and response.candidates:
+            candidate = response.candidates[0]
+            print(f"  - Finish Reason: {candidate.finish_reason}")
+            if hasattr(candidate, 'safety_ratings'):
+                print(f"  - Safety Ratings: {candidate.safety_ratings}")
+        if hasattr(response, 'prompt_feedback'):
+            print(f"  - Prompt Feedback: {response.prompt_feedback}")
+        print("=" * 80)
+        
+        # 完整記錄 AI 回應
+        print("[AI 診斷] 完整回應:")
+        print(response.text)
+        print("=" * 80)
+        print(f"[AI 診斷] 回應長度: {len(response.text)} 字符")
+        
+        # 從 markdown 代碼塊中提取 JSON
+        response_text = response.text.strip()
+        
+        # 移除 markdown 代碼塊標記
+        if response_text.startswith('```'):
+            # 找到第一個 { 和最後一個 }
+            start = response_text.find('{')
+            end = response_text.rfind('}')
+            if start != -1 and end != -1:
+                response_text = response_text[start:end+1]
+                print(f"[AI 診斷] 提取的 JSON: {response_text}")
+        
         # 使用既有的 robust JSON parser
-        result = clean_and_parse_json(response.text)
+        result = clean_and_parse_json(response_text)
+        
+        print(f"[AI 診斷] 解析結果: {result}")
         
         # 確保回傳格式正確
         return {

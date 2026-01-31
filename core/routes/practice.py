@@ -423,12 +423,12 @@ def check_answer():
                     time_taken_seconds=float(time_taken)
                 )
 
-                # 如果答錯，則啟動錯誤分析與懲罰
+                # 如果答錯，啟動錯誤分析與懲罰（僅限自適應模式）
                 if not is_correct:
                     question_text = current.get('question_text', '')
                     correct_answer = current.get('correct_answer', '')
                     
-                    # [Phase 6] 收集前置單元資訊
+                    # 收集前置單元資訊
                     from models import SkillInfo
                     skill_info = db.session.get(SkillInfo, skill_id)
                     prerequisite_units = []
@@ -438,7 +438,7 @@ def check_answer():
                             for prereq in skill_info.prerequisites
                         ]
                     
-                    # [Phase 6] 收集對話歷史（如果有的話）
+                    # 收集對話歷史（如果有的話）
                     conversation_history = session.get('conversation_history', [])
                     
                     # 呼叫增強版 AI 診斷
@@ -452,7 +452,7 @@ def check_answer():
                     
                     error_type = error_diagnosis.get("error_type", "unknown")
                     
-                    # 應用懲罰
+                    # 應用懲罰（僅自適應模式）
                     if error_type != "unknown":
                         apply_error_penalty(
                             user_id=current_user.id,
@@ -474,6 +474,66 @@ def check_answer():
 
         except Exception as e:
             current_app.logger.error(f"自適應引擎處理失敗: {e}")
+    
+    # [Phase 6] 普通模式的錯誤診斷與前置單元推薦
+    if not is_adaptive_mode and not is_correct:
+        try:
+            question_text = current.get('question_text', '')
+            correct_answer = current.get('correct_answer', '')
+            
+            current_app.logger.info(f"[前置單元推薦] 開始診斷 - 技能: {skill_id}")
+            
+            # 收集前置單元資訊
+            from models import SkillInfo
+            skill_info = db.session.get(SkillInfo, skill_id)
+            prerequisite_units = []
+            if skill_info and skill_info.prerequisites:
+                prerequisite_units = [
+                    {"id": prereq.skill_id, "name": prereq.skill_ch_name}
+                    for prereq in skill_info.prerequisites
+                ]
+            
+            current_app.logger.info(f"[前置單元推薦] 找到 {len(prerequisite_units)} 個前置單元")
+            
+            # 只有當有前置單元時才進行診斷（節省 API 成本）
+            if prerequisite_units:
+                # 收集對話歷史
+                conversation_history = session.get('conversation_history', [])
+                
+                current_app.logger.info(f"[前置單元推薦] 呼叫 AI 診斷...")
+                
+                # 呼叫 AI 診斷
+                error_diagnosis = diagnose_error(
+                    question_text, 
+                    correct_answer, 
+                    user_ans,
+                    prerequisite_units=prerequisite_units,
+                    conversation_history=conversation_history
+                )
+                
+                current_app.logger.info(f"[前置單元推薦] AI 診斷結果: {error_diagnosis}")
+                
+                # 如果有相關的前置單元推薦，加入回應中
+                if error_diagnosis.get("related_prerequisite_id"):
+                    prereq_id = error_diagnosis["related_prerequisite_id"]
+                    prereq_skill = db.session.get(SkillInfo, prereq_id)
+                    if prereq_skill:
+                        result["suggested_prerequisite"] = {
+                            "id": prereq_id,
+                            "name": prereq_skill.skill_ch_name,
+                            "reason": error_diagnosis.get("prerequisite_explanation", "建議複習此單元")
+                        }
+                        current_app.logger.info(f"[前置單元推薦] 推薦單元: {prereq_skill.skill_ch_name}")
+                    else:
+                        current_app.logger.warning(f"[前置單元推薦] 找不到前置單元: {prereq_id}")
+                else:
+                    current_app.logger.info(f"[前置單元推薦] AI 判斷與前置單元無關")
+            else:
+                current_app.logger.info(f"[前置單元推薦] 此技能無前置單元，跳過診斷")
+        except Exception as e:
+            current_app.logger.error(f"前置單元推薦失敗: {e}")
+            import traceback
+            traceback.print_exc()
     
     # 更新一般進度
     update_progress(current_user.id, skill_id, is_correct)
