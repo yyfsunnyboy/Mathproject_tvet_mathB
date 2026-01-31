@@ -1,0 +1,735 @@
+<!--
+=============================================================================
+模組名稱 (Module Name): templates/knowledge_graph.html
+功能說明 (Description): 知識圖譜視覺化頁面
+後端呼叫 (Backend Call): core/routes/knowledge_graph.py -> knowledge_graph
+版本資訊 (Version): V1.0
+更新日期 (Date): 2026-01-31
+維護團隊 (Maintainer): Math AI Project Team
+=============================================================================
+-->
+<!DOCTYPE html>
+<html lang="zh-Hant">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>知識圖譜 - 自適應性教學系統</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css" rel="stylesheet">
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+            background: #f5f7fa;
+            min-height: 100vh;
+            padding-bottom: 50px;
+        }
+
+        /* Navbar */
+        .navbar {
+            background: #2c3e50;
+            color: white;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .navbar a {
+            color: #ecf0f1;
+            text-decoration: none;
+            padding: 8px 15px;
+            margin-left: 10px;
+            transition: 0.2s;
+        }
+
+        .navbar a:hover {
+            color: #3498db;
+        }
+
+        /* Container */
+        .container {
+            max-width: 1600px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+
+        /* Page Header */
+        .page-header {
+            margin-bottom: 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .page-header h1 {
+            color: #2c3e50;
+            font-size: 1.8rem;
+        }
+
+        /* Card Styles */
+        .card {
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+
+        .card-header {
+            background: #fff;
+            padding: 15px 20px;
+            border-bottom: 1px solid #eee;
+            font-weight: 600;
+            color: #2c3e50;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .card-body {
+            padding: 20px;
+        }
+
+        /* Filter Controls */
+        .filter-controls {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .filter-group label {
+            font-size: 0.85em;
+            color: #666;
+            font-weight: 500;
+        }
+
+        .filter-group select {
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 0.95em;
+            min-width: 150px;
+            background: white;
+        }
+
+        /* Button Styles */
+        .btn {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: 0.2s;
+        }
+
+        .btn:hover {
+            background: #2980b9;
+        }
+
+        .btn-secondary {
+            background: #95a5a6;
+        }
+
+        .btn-secondary:hover {
+            background: #7f8c8d;
+        }
+
+        /* Graph Container */
+        .graph-container {
+            position: relative;
+            width: 100%;
+            height: 700px;
+            background: #fafafa;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        #graph-svg {
+            width: 100%;
+            height: 100%;
+        }
+
+        /* Node Styles */
+        .node circle {
+            stroke: #fff;
+            stroke-width: 2px;
+            cursor: pointer;
+        }
+
+        .node text {
+            font-size: 12px;
+            font-weight: 500;
+            pointer-events: none;
+        }
+
+        .node.mastered circle {
+            fill: #27ae60;
+        }
+
+        .node.learning circle {
+            fill: #f39c12;
+        }
+
+        .node.not-started circle {
+            fill: #95a5a6;
+        }
+
+        /* Link Styles */
+        .link {
+            fill: none;
+            stroke: #999;
+            stroke-width: 2px;
+            stroke-opacity: 0.6;
+        }
+
+        .link-arrow {
+            fill: #999;
+        }
+
+        /* Legend */
+        .legend {
+            display: flex;
+            gap: 20px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 6px;
+            margin-bottom: 15px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            border: 2px solid #fff;
+        }
+
+        .legend-color.mastered {
+            background: #27ae60;
+        }
+
+        .legend-color.learning {
+            background: #f39c12;
+        }
+
+        .legend-color.not-started {
+            background: #95a5a6;
+        }
+
+        /* Tooltip */
+        .tooltip {
+            position: absolute;
+            background: rgba(0, 0, 0, 0.9);
+            color: white;
+            padding: 10px 15px;
+            border-radius: 6px;
+            font-size: 0.85em;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.2s;
+            z-index: 1000;
+            max-width: 300px;
+        }
+
+        .tooltip.show {
+            opacity: 1;
+        }
+
+        /* Loading Overlay */
+        #loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.8);
+            z-index: 9999;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #3498db;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 10px;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #7f8c8d;
+        }
+
+        .empty-state i {
+            font-size: 4em;
+            margin-bottom: 20px;
+            opacity: 0.3;
+        }
+
+        .empty-state h3 {
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="loading-overlay">
+        <div class="spinner"></div>
+        <div style="color: #555; font-weight: 500;">載入知識圖譜中...</div>
+    </div>
+
+    {% include '_admin_navbar.html' %}
+
+    <div class="container">
+        <div class="page-header">
+            <h1>
+                <i class="bi bi-diagram-3" style="color: #16a085;"></i> 知識圖譜
+            </h1>
+        </div>
+
+        <!-- 篩選控制區 -->
+        <div class="card">
+            <div class="card-header">
+                <span><i class="bi bi-funnel"></i> 篩選條件</span>
+                <button class="btn btn-secondary" onclick="resetFilters()">
+                    <i class="bi bi-arrow-counterclockwise"></i> 重置
+                </button>
+            </div>
+            <div class="card-body">
+                <div class="filter-controls">
+                    <div class="filter-group">
+                        <label>課程類型</label>
+                        <select id="curriculum-select" onchange="onCurriculumChange()">
+                            <option value="">請選擇...</option>
+                            <option value="junior_high">國中</option>
+                            <option value="general">普高</option>
+                            <option value="vocational">技高</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label>年級</label>
+                        <select id="grade-select" onchange="onGradeChange()" disabled>
+                            <option value="">請選擇...</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label>冊別</label>
+                        <select id="volume-select" onchange="onVolumeChange()" disabled>
+                            <option value="">請選擇...</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label>章節</label>
+                        <select id="chapter-select" onchange="onChapterChange()" disabled>
+                            <option value="">請選擇...</option>
+                        </select>
+                    </div>
+                    <div class="filter-group" style="margin-top: 20px;">
+                        <button class="btn" onclick="loadGraph()">
+                            <i class="bi bi-search"></i> 顯示圖譜
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 圖例 -->
+        <div class="legend">
+            <div class="legend-item">
+                <div class="legend-color mastered"></div>
+                <span>已掌握 (能力值 ≥ 100)</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color learning"></div>
+                <span>學習中 (50 ≤ 能力值 < 100)</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color not-started"></div>
+                <span>未開始 (能力值 < 50)</span>
+            </div>
+        </div>
+
+        <!-- 圖表區域 -->
+        <div class="card">
+            <div class="card-header">
+                <span><i class="bi bi-diagram-3"></i> 知識點關係圖</span>
+            </div>
+            <div class="card-body" style="padding: 0;">
+                <div class="graph-container">
+                    <svg id="graph-svg"></svg>
+                    <div id="empty-state" class="empty-state">
+                        <i class="bi bi-diagram-3"></i>
+                        <h3>請選擇篩選條件</h3>
+                        <p>選擇課程類型、年級、冊別和章節來查看知識圖譜</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tooltip -->
+    <div id="tooltip" class="tooltip"></div>
+
+    <script>
+        let currentData = null;
+        let svg, g, zoom;
+
+        // 初始化 SVG
+        function initSVG() {
+            svg = d3.select("#graph-svg");
+            svg.selectAll("*").remove();
+
+            // 添加縮放功能
+            zoom = d3.zoom()
+                .scaleExtent([0.1, 4])
+                .on("zoom", (event) => {
+                    g.attr("transform", event.transform);
+                });
+
+            svg.call(zoom);
+
+            // 創建主要繪圖組
+            g = svg.append("g");
+
+            // 添加箭頭標記
+            svg.append("defs").append("marker")
+                .attr("id", "arrowhead")
+                .attr("viewBox", "0 -5 10 10")
+                .attr("refX", 20)
+                .attr("refY", 0)
+                .attr("markerWidth", 6)
+                .attr("markerHeight", 6)
+                .attr("orient", "auto")
+                .append("path")
+                .attr("d", "M0,-5L10,0L0,5")
+                .attr("class", "link-arrow");
+        }
+
+        // 載入年級選項
+        async function onCurriculumChange() {
+            const curriculum = document.getElementById('curriculum-select').value;
+            const gradeSelect = document.getElementById('grade-select');
+            const volumeSelect = document.getElementById('volume-select');
+            const chapterSelect = document.getElementById('chapter-select');
+
+            // 重置後續選項
+            gradeSelect.innerHTML = '<option value="">請選擇...</option>';
+            volumeSelect.innerHTML = '<option value="">請選擇...</option>';
+            chapterSelect.innerHTML = '<option value="">請選擇...</option>';
+            gradeSelect.disabled = true;
+            volumeSelect.disabled = true;
+            chapterSelect.disabled = true;
+
+            if (!curriculum) return;
+
+            try {
+                const response = await fetch(`/api/knowledge-graph/filters?curriculum=${curriculum}`);
+                const data = await response.json();
+
+                if (data.grades) {
+                    data.grades.forEach(grade => {
+                        const option = document.createElement('option');
+                        option.value = grade;
+                        option.textContent = grade + '年級';
+                        gradeSelect.appendChild(option);
+                    });
+                    gradeSelect.disabled = false;
+                }
+            } catch (error) {
+                console.error('載入年級失敗:', error);
+            }
+        }
+
+        // 載入冊別選項
+        async function onGradeChange() {
+            const curriculum = document.getElementById('curriculum-select').value;
+            const grade = document.getElementById('grade-select').value;
+            const volumeSelect = document.getElementById('volume-select');
+            const chapterSelect = document.getElementById('chapter-select');
+
+            volumeSelect.innerHTML = '<option value="">請選擇...</option>';
+            chapterSelect.innerHTML = '<option value="">請選擇...</option>';
+            volumeSelect.disabled = true;
+            chapterSelect.disabled = true;
+
+            if (!grade) return;
+
+            try {
+                const response = await fetch(`/api/knowledge-graph/filters?curriculum=${curriculum}&grade=${grade}`);
+                const data = await response.json();
+
+                if (data.volumes) {
+                    data.volumes.forEach(volume => {
+                        const option = document.createElement('option');
+                        option.value = volume;
+                        option.textContent = volume;
+                        volumeSelect.appendChild(option);
+                    });
+                    volumeSelect.disabled = false;
+                }
+            } catch (error) {
+                console.error('載入冊別失敗:', error);
+            }
+        }
+
+        // 載入章節選項
+        async function onVolumeChange() {
+            const curriculum = document.getElementById('curriculum-select').value;
+            const grade = document.getElementById('grade-select').value;
+            const volume = document.getElementById('volume-select').value;
+            const chapterSelect = document.getElementById('chapter-select');
+
+            chapterSelect.innerHTML = '<option value="">請選擇...</option>';
+            chapterSelect.disabled = true;
+
+            if (!volume) return;
+
+            try {
+                const response = await fetch(`/api/knowledge-graph/filters?curriculum=${curriculum}&grade=${grade}&volume=${volume}`);
+                const data = await response.json();
+
+                if (data.chapters) {
+                    data.chapters.forEach(chapter => {
+                        const option = document.createElement('option');
+                        option.value = chapter;
+                        option.textContent = chapter;
+                        chapterSelect.appendChild(option);
+                    });
+                    chapterSelect.disabled = false;
+                }
+            } catch (error) {
+                console.error('載入章節失敗:', error);
+            }
+        }
+
+        // 章節變更（可選）
+        function onChapterChange() {
+            // 可以在這裡添加額外的邏輯
+        }
+
+        // 載入圖譜資料
+        async function loadGraph() {
+            const curriculum = document.getElementById('curriculum-select').value;
+            const grade = document.getElementById('grade-select').value;
+            const volume = document.getElementById('volume-select').value;
+            const chapter = document.getElementById('chapter-select').value;
+
+            if (!curriculum) {
+                alert('請至少選擇課程類型');
+                return;
+            }
+
+            // 顯示載入中
+            document.getElementById('loading-overlay').style.display = 'flex';
+            document.getElementById('empty-state').style.display = 'none';
+
+            try {
+                let url = `/api/knowledge-graph/data?curriculum=${curriculum}`;
+                if (grade) url += `&grade=${grade}`;
+                if (volume) url += `&volume=${volume}`;
+                if (chapter) url += `&chapter=${chapter}`;
+
+                const response = await fetch(url);
+                const data = await response.json();
+
+                currentData = data;
+                renderGraph(data);
+            } catch (error) {
+                console.error('載入圖譜失敗:', error);
+                alert('載入圖譜失敗，請稍後再試');
+                document.getElementById('empty-state').style.display = 'block';
+            } finally {
+                document.getElementById('loading-overlay').style.display = 'none';
+            }
+        }
+
+        // 渲染圖譜
+        function renderGraph(data) {
+            if (!data.nodes || data.nodes.length === 0) {
+                document.getElementById('empty-state').innerHTML = `
+                    <i class="bi bi-inbox"></i>
+                    <h3>沒有找到知識點</h3>
+                    <p>該篩選條件下沒有知識點資料</p>
+                `;
+                document.getElementById('empty-state').style.display = 'block';
+                return;
+            }
+
+            initSVG();
+
+            const width = document.querySelector('.graph-container').clientWidth;
+            const height = 700;
+
+            // 建立節點和連接的映射
+            const nodeMap = new Map(data.nodes.map(n => [n.id, n]));
+
+            // 建立層級結構（樹狀圖需要）
+            const roots = data.nodes.filter(node => {
+                // 找出沒有前置知識點的節點作為根節點
+                return !data.links.some(link => link.target === node.id);
+            });
+
+            if (roots.length === 0 && data.nodes.length > 0) {
+                // 如果沒有根節點，使用第一個節點
+                roots.push(data.nodes[0]);
+            }
+
+            // 使用力導向圖佈局（更適合有多個根節點的情況）
+            const simulation = d3.forceSimulation(data.nodes)
+                .force("link", d3.forceLink(data.links).id(d => d.id).distance(150))
+                .force("charge", d3.forceManyBody().strength(-300))
+                .force("center", d3.forceCenter(width / 2, height / 2))
+                .force("y", d3.forceY().strength(0.1));
+
+            // 繪製連接線
+            const link = g.append("g")
+                .selectAll("line")
+                .data(data.links)
+                .join("line")
+                .attr("class", "link")
+                .attr("marker-end", "url(#arrowhead)");
+
+            // 繪製節點
+            const node = g.append("g")
+                .selectAll("g")
+                .data(data.nodes)
+                .join("g")
+                .attr("class", d => `node ${d.mastery_status.replace('_', '-')}`)
+                .call(d3.drag()
+                    .on("start", dragstarted)
+                    .on("drag", dragged)
+                    .on("end", dragended));
+
+            // 節點圓圈
+            node.append("circle")
+                .attr("r", 15)
+                .on("mouseover", showTooltip)
+                .on("mouseout", hideTooltip);
+
+            // 節點文字
+            node.append("text")
+                .attr("dy", 25)
+                .attr("text-anchor", "middle")
+                .text(d => d.name)
+                .style("fill", "#2c3e50");
+
+            // 更新位置
+            simulation.on("tick", () => {
+                link
+                    .attr("x1", d => d.source.x)
+                    .attr("y1", d => d.source.y)
+                    .attr("x2", d => d.target.x)
+                    .attr("y2", d => d.target.y);
+
+                node.attr("transform", d => `translate(${d.x},${d.y})`);
+            });
+
+            // 拖曳函數
+            function dragstarted(event) {
+                if (!event.active) simulation.alphaTarget(0.3).restart();
+                event.subject.fx = event.subject.x;
+                event.subject.fy = event.subject.y;
+            }
+
+            function dragged(event) {
+                event.subject.fx = event.x;
+                event.subject.fy = event.y;
+            }
+
+            function dragended(event) {
+                if (!event.active) simulation.alphaTarget(0);
+                event.subject.fx = null;
+                event.subject.fy = null;
+            }
+        }
+
+        // 顯示提示框
+        function showTooltip(event, d) {
+            const tooltip = document.getElementById('tooltip');
+            tooltip.innerHTML = `
+                <strong>${d.name}</strong><br>
+                <small>${d.description || ''}</small><br>
+                <hr style="margin: 8px 0; border-color: rgba(255,255,255,0.3);">
+                綜合能力: ${d.ability_a}<br>
+                觀念能力: ${d.concept_u}<br>
+                計算熟練度: ${d.calculation_c}
+            `;
+            tooltip.classList.add('show');
+            tooltip.style.left = (event.pageX + 10) + 'px';
+            tooltip.style.top = (event.pageY + 10) + 'px';
+        }
+
+        // 隱藏提示框
+        function hideTooltip() {
+            document.getElementById('tooltip').classList.remove('show');
+        }
+
+        // 重置篩選
+        function resetFilters() {
+            document.getElementById('curriculum-select').value = '';
+            document.getElementById('grade-select').innerHTML = '<option value="">請選擇...</option>';
+            document.getElementById('volume-select').innerHTML = '<option value="">請選擇...</option>';
+            document.getElementById('chapter-select').innerHTML = '<option value="">請選擇...</option>';
+            document.getElementById('grade-select').disabled = true;
+            document.getElementById('volume-select').disabled = true;
+            document.getElementById('chapter-select').disabled = true;
+
+            if (svg) {
+                svg.selectAll("*").remove();
+            }
+            document.getElementById('empty-state').style.display = 'block';
+            document.getElementById('empty-state').innerHTML = `
+                <i class="bi bi-diagram-3"></i>
+                <h3>請選擇篩選條件</h3>
+                <p>選擇課程類型、年級、冊別和章節來查看知識圖譜</p>
+            `;
+        }
+
+        // 頁面載入時初始化
+        window.addEventListener('DOMContentLoaded', function () {
+            initSVG();
+        });
+    </script>
+</body>
+
+</html>

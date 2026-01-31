@@ -14,4 +14,4 @@ core_bp = Blueprint('core', __name__, template_folder='../../templates')
 practice_bp = Blueprint('practice', __name__)
 
 # 這一行會去讀取你的 admin.py
-from . import auth, admin, practice, classroom, analysis, exam
+from . import auth, admin, practice, classroom, analysis, exam, knowledge_graph
