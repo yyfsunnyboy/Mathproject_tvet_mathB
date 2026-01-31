@@ -297,6 +297,7 @@ def init_db(engine):
     add_column_if_not_exists('skills_info', 'suggested_prompt_1', 'TEXT')
     add_column_if_not_exists('skills_info', 'suggested_prompt_2', 'TEXT')
     add_column_if_not_exists('skills_info', 'suggested_prompt_3', 'TEXT')
+    add_column_if_not_exists('skills_info', 'importance', 'FLOAT NOT NULL DEFAULT 1.0')
 
     # Experiment Log (v9.0 補丁)
     new_log_cols = [
@@ -313,6 +314,9 @@ def init_db(engine):
 
     # [v9.0 補丁] Skill GenCode Prompt 新增 architect_model
     add_column_if_not_exists('skill_gencode_prompt', 'architect_model', "TEXT DEFAULT 'human'")
+
+    # [Phase 1 補丁] Textbook Examples 新增 difficulty_h
+    add_column_if_not_exists('textbook_examples', 'difficulty_h', 'FLOAT NOT NULL DEFAULT 1.0')
 
     conn.commit()
     conn.close()
