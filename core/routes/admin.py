@@ -187,11 +187,17 @@ def db_maintenance():
         elif action == 'clear_all_data':
             meta = db.metadata
             for table in reversed(meta.sorted_tables):
-                if table.name == 'users':
-                    db.session.query(User).filter(User.username != 'admin').delete(synchronize_session=False)
-                else:
-                    db.session.execute(text(f"DELETE FROM {table.name}"))
-                db.session.commit()
+                try:
+                    if table.name == 'users':
+                        db.session.query(User).filter(User.username != 'admin').delete(synchronize_session=False)
+                    else:
+                        db.session.execute(text(f"DELETE FROM {table.name}"))
+                    db.session.commit()
+                except Exception as e:
+                    # 跳過不存在的表或其他錯誤
+                    db.session.rollback()
+                    current_app.logger.warning(f"清空表 {table.name} 時發生錯誤（可能表不存在）: {e}")
+                    continue
             flash('資料庫已清空 (保留 Admin)', 'success')
 
         elif action == 'batch_import_folder':

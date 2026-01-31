@@ -147,33 +147,80 @@ def practice(skill_id):
 @login_required
 def get_adaptive_question():
     """
-    API: [Phase 3] 獲取下一道自適應推薦題目
+    API: [Phase 4] 獲取下一道自適應推薦題目
+    支援三種模式：
+    - single: 單一章節練習 (需要 skill_ids 參數，為章節名稱)
+    - multiple: 多章節組合練習 (需要 skill_ids 參數，為逗號分隔的章節列表)
+    - review: 課程總複習 (需要 curriculum 參數)
     """
-    skill_id = request.args.get('skill_id')
-    if not skill_id:
-        return jsonify({"error": "缺少 skill_id 參數"}), 400
-
+    mode = request.args.get('mode', 'single')
+    
+    # 根據不同模式獲取技能列表
+    target_skill_ids = []
+    
+    # 調試信息
+    current_app.logger.info(f"[Adaptive Question] Mode: {mode}")
+    current_app.logger.info(f"[Adaptive Question] Request args: {request.args}")
+    
     try:
-        # 1. 呼叫推薦引擎獲取最佳題目模板
-        question_template = recommend_question(current_user.id, skill_id)
+        if mode == 'review':
+            # 總複習模式：獲取整個課程的所有技能
+            curriculum = request.args.get('curriculum')
+            if not curriculum:
+                return jsonify({"error": "總複習模式需要 curriculum 參數"}), 400
+            
+            current_app.logger.info(f"[Review Mode] Curriculum: {curriculum}")
+            from models import SkillCurriculum
+            skills = db.session.query(SkillCurriculum.skill_id).filter_by(
+                curriculum=curriculum
+            ).distinct().all()
+            target_skill_ids = [s.skill_id for s in skills]
+            current_app.logger.info(f"[Review Mode] Found {len(target_skill_ids)} skills")
+            
+        elif mode in ['single', 'multiple']:
+            # 單一或多章節模式：根據章節名稱獲取技能
+            skill_ids_param = request.args.get('skill_ids', '')
+            if not skill_ids_param:
+                return jsonify({"error": f"{mode} 模式需要 skill_ids 參數"}), 400
+            
+            # skill_ids 可能是單一章節名或逗號分隔的章節列表
+            chapter_names = [ch.strip() for ch in skill_ids_param.split(',')]
+            current_app.logger.info(f"[{mode.upper()} Mode] Chapter names: {chapter_names}")
+            
+            from models import SkillCurriculum
+            skills = db.session.query(SkillCurriculum.skill_id).filter(
+                SkillCurriculum.chapter.in_(chapter_names)
+            ).distinct().all()
+            target_skill_ids = [s.skill_id for s in skills]
+            current_app.logger.info(f"[{mode.upper()} Mode] Found {len(target_skill_ids)} skills: {target_skill_ids[:5]}")
+        
+        else:
+            return jsonify({"error": f"不支援的模式: {mode}"}), 400
+        
+        if not target_skill_ids:
+            current_app.logger.error(f"[Adaptive Question] No skills found for mode={mode}")
+            return jsonify({"error": "找不到符合條件的技能單元"}), 404
+        
+        # 呼叫推薦引擎獲取最佳題目模板
+        question_template = recommend_question(current_user.id, target_skill_ids)
         if not question_template:
             return jsonify({"error": "題庫中已無合適的題目可供推薦。"}), 404
             
-        # 2. 使用 skill.generate() 動態生成具體題目
+        # 使用 skill.generate() 動態生成具體題目
         mod = get_skill(question_template.skill_id)
         if not mod:
             return jsonify({"error": f"無法載入技能模組 {question_template.skill_id}"}), 500
 
         data = mod.generate(level=question_template.difficulty_level)
 
-        # 3. 準備 Session 資料 (與 next_question 邏輯類似)
+        # 準備 Session 資料 (與 next_question 邏輯類似)
         session_data = data.copy()
         for k in ['image', 'fig', 'figure', 'image_base64', 'visuals']:
             if k in session_data: del session_data[k]
         
-        set_current(skill_id, session_data)
+        set_current(question_template.skill_id, session_data)
 
-        # 4. 回傳包含 mode 和 question_id 的 JSON 給前端
+        # 回傳包含 mode 和 question_id 的 JSON 給前端
         return jsonify({
             "question_id": question_template.id, # 重要：回傳 DB 中的題目 ID
             "skill_id": question_template.skill_id,
@@ -187,6 +234,8 @@ def get_adaptive_question():
         })
     except Exception as e:
         current_app.logger.error(f"生成自適應題目失敗: {e}")
+        import traceback
+        traceback.print_exc()
         return jsonify({"error": f"生成自適應題目時發生內部錯誤: {str(e)}"}), 500
 
 
@@ -379,8 +428,29 @@ def check_answer():
                     question_text = current.get('question_text', '')
                     correct_answer = current.get('correct_answer', '')
                     
-                    # 呼叫 AI 診斷
-                    error_type = diagnose_error(question_text, correct_answer, user_ans)
+                    # [Phase 6] 收集前置單元資訊
+                    from models import SkillInfo
+                    skill_info = db.session.get(SkillInfo, skill_id)
+                    prerequisite_units = []
+                    if skill_info and skill_info.prerequisites:
+                        prerequisite_units = [
+                            {"id": prereq.skill_id, "name": prereq.skill_ch_name}
+                            for prereq in skill_info.prerequisites
+                        ]
+                    
+                    # [Phase 6] 收集對話歷史（如果有的話）
+                    conversation_history = session.get('conversation_history', [])
+                    
+                    # 呼叫增強版 AI 診斷
+                    error_diagnosis = diagnose_error(
+                        question_text, 
+                        correct_answer, 
+                        user_ans,
+                        prerequisite_units=prerequisite_units,
+                        conversation_history=conversation_history
+                    )
+                    
+                    error_type = error_diagnosis.get("error_type", "unknown")
                     
                     # 應用懲罰
                     if error_type != "unknown":
@@ -390,6 +460,17 @@ def check_answer():
                             question_id=question_id,
                             error_type=error_type
                         )
+                    
+                    # [Phase 6] 如果有相關的前置單元推薦，加入回應中
+                    if error_diagnosis.get("related_prerequisite_id"):
+                        prereq_id = error_diagnosis["related_prerequisite_id"]
+                        prereq_skill = db.session.get(SkillInfo, prereq_id)
+                        if prereq_skill:
+                            result["suggested_prerequisite"] = {
+                                "id": prereq_id,
+                                "name": prereq_skill.skill_ch_name,
+                                "reason": error_diagnosis.get("prerequisite_explanation", "建議複習此單元")
+                            }
 
         except Exception as e:
             current_app.logger.error(f"自適應引擎處理失敗: {e}")

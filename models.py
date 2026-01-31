@@ -276,6 +276,22 @@ def init_db(engine):
         )
     ''')
 
+    # [Phase 4] Student Abilities 表格 (自適應學習引擎)
+    c.execute('''
+        CREATE TABLE IF NOT EXISTS student_abilities (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id INTEGER NOT NULL,
+            skill_id TEXT NOT NULL,
+            ability_a REAL DEFAULT 1.0,
+            concept_u REAL DEFAULT 1.0,
+            calculation_c REAL DEFAULT 1.0,
+            updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (user_id) REFERENCES users (id),
+            FOREIGN KEY (skill_id) REFERENCES skills_info (skill_id),
+            UNIQUE(user_id, skill_id)
+        )
+    ''')
+
     # --------------------------------------------------------
     # 2. 自動升級邏輯：為舊資料庫補上新欄位
     # --------------------------------------------------------

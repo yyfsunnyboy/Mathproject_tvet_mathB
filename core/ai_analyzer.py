@@ -186,52 +186,112 @@ def configure_gemini(api_key, model_name):
     gemini_model = genai.GenerativeModel(model_name)
     gemini_chat = gemini_model.start_chat(history=[])  # 動態設定！
 
-def diagnose_error(question_text, correct_answer, student_answer):
+def diagnose_error(question_text, correct_answer, student_answer, prerequisite_units=None, conversation_history=None):
     """
-    [Phase 5] 使用 LLM 診斷學生的錯誤類型。
+    [Phase 6] 使用 LLM 診斷學生的錯誤類型並判斷是否與前置單元相關。
 
     Args:
         question_text (str): 題目內容。
         correct_answer (str): 正確答案。
         student_answer (str): 學生的答案。
+        prerequisite_units (list, optional): 前置單元列表，格式 [{"id": "unit_id", "name": "單元名稱"}, ...]
+        conversation_history (list, optional): AI 對話歷史，格式 [{"role": "...", "content": "..."}, ...]
 
     Returns:
-        str: "concept", "calculation", 或 "unknown"。
+        dict: {
+            "error_type": "concept" | "calculation" | "careless" | "unknown",
+            "related_prerequisite_id": "unit_id" or None,
+            "prerequisite_explanation": "說明文字" or None
+        }
     """
     try:
         model = get_model()
+        
+        # 準備前置單元資訊文字
+        prereq_info = ""
+        if prerequisite_units and len(prerequisite_units) > 0:
+            prereq_list = "\n".join([f"  - {p['name']} (ID: {p['id']})" for p in prerequisite_units])
+            prereq_info = f"""
+        
+        **前置單元列表**（學生在學習此題目前應該已經掌握的單元）：
+{prereq_list}
+        """
+        
+        # 準備對話歷史文字
+        convo_info = ""
+        if conversation_history and len(conversation_history) > 0:
+            convo_text = "\n".join([f"  [{c['role']}]: {c['content']}" for c in conversation_history[-3:]])  # 只取最近3條
+            convo_info = f"""
+        
+        **AI對話記錄**（學生與AI助手的最近對話）：
+{convo_text}
+        """
+        
         prompt = f"""
-        你是一位資深的數學老師，請根據以下資訊判斷學生的錯誤類型。
+        你是一位資深的數學老師，請根據以下資訊診斷學生的錯誤。
 
-        - 題目: {question_text}
-        - 正確答案: {correct_answer}
-        - 學生的錯誤答案: {student_answer}
+        **題目**: {question_text}
+        **正確答案**: {correct_answer}
+        **學生的錯誤答案**: {student_answer}{prereq_info}{convo_info}
 
-        請判斷這個錯誤主要是「觀念錯誤」（例如：使用了錯誤的公式、混淆了定義）還是「計算錯誤」（例如：加減乘除錯誤、正負號錯誤）。
-
-        請嚴格以 JSON 格式回傳，只需提供錯誤類型，像這樣：
+        請完成以下任務：
+        1. 判斷錯誤類型：
+           - "concept": 觀念錯誤（使用了錯誤的公式、混淆了定義、不理解原理）
+           - "calculation": 計算錯誤（加減乘除錯誤、正負號錯誤、計算疏忽）
+           - "careless": 粗心錯誤（抄寫錯誤、單位錯誤等）
+        
+        2. 判斷是否與前置單元相關：
+           - 如果學生的錯誤顯示出對某個前置單元的觀念不熟悉，請指出該前置單元的 ID
+           - 如果錯誤與前置單元無關（純粹是計算疏忽或粗心），則不需指出前置單元
+        
+        請嚴格以 JSON 格式回傳：
         {{
-          "error_type": "concept"
+          "error_type": "concept" | "calculation" | "careless",
+          "related_prerequisite_id": "前置單元ID或null",
+          "prerequis
+
+ite_explanation": "簡短說明為何建議該前置單元（20字內）或null"
         }}
-        或
+
+        範例 1（與前置單元相關）：
         {{
-          "error_type": "calculation"
+          "error_type": "concept",
+          "related_prerequisite_id": "jh_數學1上_MultiplicationOfNegativeNumbers",
+          "prerequisite_explanation": "您在處理負數乘法時出現混淆"
+        }}
+
+        範例 2（與前置單元無關）：
+        {{
+          "error_type": "calculation",
+          "related_prerequisite_id": null,
+          "prerequisite_explanation": null
         }}
         """
         
         response = model.generate_content(
             prompt,
-            generation_config={"max_output_tokens": 100, "temperature": 0.1}
+            generation_config={"max_output_tokens": 300, "temperature": 0.2}
         )
         
         # 使用既有的 robust JSON parser
         result = clean_and_parse_json(response.text)
         
-        return result.get("error_type", "unknown")
+        # 確保回傳格式正確
+        return {
+            "error_type": result.get("error_type", "unknown"),
+            "related_prerequisite_id": result.get("related_prerequisite_id"),
+            "prerequisite_explanation": result.get("prerequisite_explanation")
+        }
 
     except Exception as e:
         current_app.logger.error(f"診斷錯誤類型失敗: {e}")
-        return "unknown"
+        import traceback
+        traceback.print_exc()
+        return {
+            "error_type": "unknown",
+            "related_prerequisite_id": None,
+            "prerequisite_explanation": None
+        }
 
 def get_model():
     if gemini_model is None:

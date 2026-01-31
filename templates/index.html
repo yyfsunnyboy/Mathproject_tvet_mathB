@@ -271,6 +271,63 @@
             border: 1px solid #f5b7b1;
         }
 
+        /* === [Phase 6] Prerequisite Suggestion === */
+        #prerequisite-suggestion {
+            margin-top: 15px;
+            display: none;
+        }
+
+        .prerequisite-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+            animation: slideIn 0.3s ease-out;
+        }
+
+        .prerequisite-card i {
+            font-size: 1.5em;
+            margin-right: 10px;
+            vertical-align: middle;
+        }
+
+        #prerequisite-reason {
+            margin: 10px 0;
+            font-size: 1.05em;
+            line-height: 1.5;
+        }
+
+        .btn-prerequisite {
+            background: white;
+            color: #667eea;
+            padding: 12px 24px;
+            border-radius: 8px;
+            border: none;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 1em;
+            transition: all 0.2s;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-prerequisite:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
         /* === 畫布區 === */
         .practice-bottom {
             flex: 3;
@@ -1064,6 +1121,18 @@
                 <div class="input-group"><input type="text" id="answer-input" placeholder="輸入答案..."><button
                         id="submit-button">提交</button></div>
                 <div id="result-display"></div>
+
+                <!-- [Phase 6] Prerequisite Suggestion Card -->
+                <div id="prerequisite-suggestion" style="display: none;">
+                    <div class="prerequisite-card">
+                        <i class="fas fa-lightbulb"></i>
+                        <strong>建議複習</strong>
+                        <p id="prerequisite-reason"></p>
+                        <button id="go-prerequisite-btn" class="btn-prerequisite">
+                            前往 <span id="prerequisite-name"></span> 複習
+                        </button>
+                    </div>
+                </div>
             </div>
             <div class="practice-bottom" id="scratchpad-container">
                 <div id="scratchpad-controls">
@@ -2308,11 +2377,24 @@
                         resultDisplay.textContent = data.result || (data.correct ? '正確！' : '錯誤');
                         resultDisplay.className = data.correct ? 'correct' : 'incorrect';
                         updateStreak(data.correct);
+
+                        // [Phase 6] 處理前置單元推薦
+                        const prereqSuggestion = document.getElementById('prerequisite-suggestion');
+                        if (data.suggested_prerequisite) {
+                            // 顯示前置單元推薦卡片
+                            showPrerequisiteSuggestion(data.suggested_prerequisite);
+                        } else {
+                            // 隱藏推薦卡片
+                            if (prereqSuggestion) {
+                                prereqSuggestion.style.display = 'none';
+                            }
+                        }
+
                         if (data.correct) {
                             // 功文式鼓勵：強調持續練習，而非單次答對
                             const messages = [
                                 '🎉 答對了！很棒！讓我們繼續下一題吧！',
-                                '正確！保持這個節奏！',
+                                '正確！保持這客節奏！',
                                 '做得好！你離目標又近了一步！'
                             ];
                             showCustomAlert(messages[Math.floor(Math.random() * messages.length)], () => {
@@ -3056,6 +3138,32 @@
                         alert('發生錯誤: ' + err);
                     });
             });
+        }
+
+        // [Phase 6] 顯示前置單元推薦
+        function showPrerequisiteSuggestion(prerequisite) {
+            const suggestionDiv = document.getElementById('prerequisite-suggestion');
+            const reasonText = document.getElementById('prerequisite-reason');
+            const nameSpan = document.getElementById('prerequisite-name');
+            const goBtn = document.getElementById('go-prerequisite-btn');
+
+            if (!suggestionDiv || !reasonText || !nameSpan || !goBtn) {
+                console.error('前置單元推薦元素未找到');
+                return;
+            }
+
+            // 設定內容
+            reasonText.textContent = prerequisite.reason || '建議複習此單元以加強基礎';
+            nameSpan.textContent = prerequisite.name;
+
+            // 設定跳轉按鈕
+            goBtn.onclick = () => {
+                // 跳轉到該前置單元的練習頁面
+                window.location.href = `/practice/${prerequisite.id}`;
+            };
+
+            // 顯示推薦卡片
+            suggestionDiv.style.display = 'block';
         }
 
         // 初始化
