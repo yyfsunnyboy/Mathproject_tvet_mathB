@@ -19,7 +19,7 @@ import traceback
 
 from . import core_bp, practice_bp
 from core.session import get_current
-from core.ai_analyzer import build_chat_prompt, get_chat_response, analyze
+from core.ai_analyzer import build_chat_prompt, get_chat_response, analyze, diagnose_error
 from core.exam_analyzer import analyze_exam_image, save_analysis_result
 from core.diagnosis_analyzer import perform_weakness_analysis
 from models import db, MistakeNotebookEntry, ExamAnalysis, SkillInfo
@@ -80,6 +80,42 @@ def analyze_handwriting():
     result = analyze(image_data_url=img, context=state['question'], 
                      api_key=api_key, 
                      prerequisite_skills=prereq_skills)
+
+    # [Start of modification] Diagnosis for handwriting
+    if result.get('correct') is False:
+        try:
+            current_app.logger.info(f"[Handwriting Check] Incorrect answer detected, diagnosing...")
+            question_text = state.get('question_text', '')
+            correct_answer = state.get('correct_answer', '')
+            student_answer = f"手寫答案分析: {result.get('reply', '')}"
+            
+            # [Phase 6] Diagnosis
+            diagnosis = diagnose_error(
+                question_text=question_text,
+                correct_answer=correct_answer,
+                student_answer=student_answer,
+                prerequisite_units=prereq_skills
+            )
+            
+            if diagnosis.get('related_prerequisite_id'):
+                prereq_id = diagnosis['related_prerequisite_id']
+                # Find name
+                prereq_name = "基礎單元"
+                if prereq_skills:
+                    for p in prereq_skills:
+                        # prereq_skills structure: [{'id':..., 'name':...}]
+                        if str(p.get('id')) == str(prereq_id) or str(p.get('skill_id')) == str(prereq_id):
+                            prereq_name = p.get('name') or p.get('skill_ch_name')
+                            break
+                
+                result['suggested_prerequisite'] = {
+                    'id': prereq_id,
+                    'name': prereq_name,
+                    'reason': diagnosis.get('prerequisite_explanation', '建議複習')
+                }
+        except Exception as e:
+            current_app.logger.error(f"Handwriting diagnosis failed: {e}")
+    # [End of modification]
     
     # 這裡的 update_progress 邏輯若有需要可在此處呼叫 helper
     

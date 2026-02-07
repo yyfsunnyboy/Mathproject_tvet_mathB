@@ -2647,6 +2647,15 @@
                             resultDisplay.className = '';
                             updateStreak(false);
                         }
+
+                        // [Phase 6] 處理前置單元推薦 (AI Handwriting Check)
+                        if (data.suggested_prerequisite) {
+                            showPrerequisiteSuggestion(data.suggested_prerequisite);
+                        } else {
+                            // Hide suggestion if not present (optional, but good for cleanup)
+                            const suggestionDiv = document.getElementById('prerequisite-suggestion');
+                            if (suggestionDiv) suggestionDiv.style.display = 'none';
+                        }
                     })
                     .catch(err => {
                         // 停止載入訊息
