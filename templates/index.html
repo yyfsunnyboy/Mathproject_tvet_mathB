@@ -1240,6 +1240,75 @@
                         data-symbol="∑">∑</button><button class="symbol-button" data-symbol="∫">∫</button></div>
                 <!-- 新增：隱藏的圖片上傳 input --><input type="file" id="image-uploader" accept="image/*" style="display: none;">
             </div>
+
+            <!-- ========== RAG 模式 ========== -->
+            <button id="rag-mode-btn" onclick="toggleRagMode()" style="
+                width: 100%;
+                padding: 10px 16px;
+                margin-top: 8px;
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                color: white;
+                border: none;
+                border-radius: 12px;
+                font-size: 0.95em;
+                font-weight: 600;
+                cursor: pointer;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 8px;
+                transition: all 0.3s ease;
+                box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+            ">
+                <span style="font-size: 1.1em;">📚</span> RAG 模式
+            </button>
+
+            <!-- RAG 面板 (預設隱藏) -->
+            <div id="rag-panel"
+                style="display: none; margin-top: 8px; padding: 12px; background: #f8f5ff; border: 1px solid #d4c5f9; border-radius: 12px;">
+                <div style="display: flex; gap: 6px; margin-bottom: 10px;">
+                    <input type="text" id="rag-query-input" placeholder="輸入你的問題…" style="
+                        flex: 1;
+                        padding: 10px 14px;
+                        border: 1px solid #d4c5f9;
+                        border-radius: 8px;
+                        font-size: 1.1em;
+                        outline: none;
+                    ">
+                    <button id="rag-search-btn" onclick="performRagSearch()" style="
+                        padding: 8px 16px;
+                        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                        color: white;
+                        border: none;
+                        border-radius: 8px;
+                        font-size: 0.9em;
+                        font-weight: 600;
+                        cursor: pointer;
+                        white-space: nowrap;
+                    ">🔍 檢索</button>
+                </div>
+
+                <!-- RAG 檢索中 Loading -->
+                <div id="rag-loading" style="display: none; text-align: center; padding: 10px; color: #764ba2;">
+                    <i class="fas fa-spinner fa-spin"></i> 正在檢索相關單元...
+                </div>
+
+                <!-- Top-5 結果按鈕區 -->
+                <div id="rag-results" style="display: none; margin-bottom: 10px;">
+                    <div style="font-size: 0.8em; color: #764ba2; font-weight: 600; margin-bottom: 6px;">📌 Top-5 相關單元：
+                    </div>
+                    <div id="rag-results-buttons" style="display: flex; flex-wrap: wrap; gap: 6px;"></div>
+                </div>
+
+                <!-- AI 回答區 -->
+                <div id="rag-ai-answer"
+                    style="display: none; padding: 10px; background: white; border-radius: 8px; border: 1px solid #e8e0f5; font-size: 0.9em; line-height: 1.6; color: #333;">
+                    <div style="font-size: 0.8em; color: #764ba2; font-weight: 600; margin-bottom: 6px;">🤖 AI 回答 (基於
+                        RAG 檢索結果)：</div>
+                    <div id="rag-ai-answer-text"></div>
+                </div>
+            </div>
+
         </div>
     </div>
     <!-- The Image Modal -->
@@ -3197,7 +3266,122 @@
         // 初始化
         document.addEventListener('DOMContentLoaded', () => {
             setupQuestionUpload();
+
+            // RAG 模式：Enter 鍵觸發檢索
+            const ragInput = document.getElementById('rag-query-input');
+            if (ragInput) {
+                ragInput.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') performRagSearch();
+                });
+            }
         });
+
+        // ========== RAG 模式 ==========
+
+        function toggleRagMode() {
+            const panel = document.getElementById('rag-panel');
+            const btn = document.getElementById('rag-mode-btn');
+            if (panel.style.display === 'none') {
+                panel.style.display = 'block';
+                btn.style.background = 'linear-gradient(135deg, #e74c3c 0%, #c0392b 100%)';
+                btn.innerHTML = '<span style="font-size: 1.1em;">✖</span> 關閉 RAG 模式';
+            } else {
+                panel.style.display = 'none';
+                btn.style.background = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
+                btn.innerHTML = '<span style="font-size: 1.1em;">📚</span> RAG 模式';
+            }
+        }
+
+        async function performRagSearch() {
+            const query = document.getElementById('rag-query-input').value.trim();
+            if (!query) return;
+
+            const loading = document.getElementById('rag-loading');
+            const resultsDiv = document.getElementById('rag-results');
+            const buttonsDiv = document.getElementById('rag-results-buttons');
+            const answerDiv = document.getElementById('rag-ai-answer');
+            const answerText = document.getElementById('rag-ai-answer-text');
+
+            // 顯示載入中
+            loading.style.display = 'block';
+            resultsDiv.style.display = 'none';
+            answerDiv.style.display = 'none';
+            buttonsDiv.innerHTML = '';
+
+            try {
+                // 1. 呼叫 RAG 檢索 API
+                const searchResp = await fetch('/api/rag_search', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ query: query })
+                });
+                const searchData = await searchResp.json();
+
+                if (!searchData.results || searchData.results.length === 0) {
+                    loading.style.display = 'none';
+                    answerDiv.style.display = 'block';
+                    answerText.textContent = '未找到相關單元，請嘗試其他關鍵字。';
+                    return;
+                }
+
+                // 2. 渲染 Top-5 按鈕 (全部都是可練習的國中技能)
+                searchData.results.forEach((item, index) => {
+                    const btn = document.createElement('button');
+                    btn.style.cssText = `
+                        padding: 6px 14px;
+                        border-radius: 20px;
+                        border: 1px solid ${index === 0 ? '#667eea' : '#d4c5f9'};
+                        background: ${index === 0 ? 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' : 'white'};
+                        color: ${index === 0 ? 'white' : '#764ba2'};
+                        font-size: 0.85em;
+                        font-weight: ${index === 0 ? '700' : '500'};
+                        cursor: pointer;
+                        transition: all 0.2s ease;
+                    `;
+                    const distStr = item.distance !== undefined ? ` (${(1 - item.distance).toFixed(2)})` : '';
+                    btn.textContent = `${item.chinese_name}${distStr}`;
+                    btn.title = `點擊前往練習：${item.skill_id}`;
+                    btn.onmouseover = () => { if (index !== 0) btn.style.background = '#f0ebff'; };
+                    btn.onmouseout = () => { if (index !== 0) btn.style.background = 'white'; };
+                    btn.onclick = () => {
+                        window.location.href = `/practice/${item.skill_id}`;
+                    };
+                    buttonsDiv.appendChild(btn);
+                });
+
+                resultsDiv.style.display = 'block';
+
+                // 3. 同時呼叫 RAG Chat API (用 Top-1 結果)
+                const topSkill = searchData.results[0].skill_id;
+                answerDiv.style.display = 'block';
+                answerText.innerHTML = '<i class="fas fa-spinner fa-spin"></i> AI 正在根據檢索結果生成回答...';
+
+                const chatResp = await fetch('/api/rag_chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ query: query, top_skill_id: topSkill })
+                });
+                const chatData = await chatResp.json();
+
+                // 顯示 AI 回答 (支援換行與 LaTeX)
+                let replyHtml = (chatData.reply || '無法生成回答')
+                    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')  // 粗體
+                    .replace(/\n/g, '<br>');  // 換行
+                answerText.innerHTML = replyHtml;
+
+                // 嘗試渲染 MathJax
+                if (window.MathJax && window.MathJax.typesetPromise) {
+                    window.MathJax.typesetPromise([answerText]);
+                }
+
+            } catch (err) {
+                console.error('RAG Error:', err);
+                answerDiv.style.display = 'block';
+                answerText.textContent = '檢索發生錯誤：' + err.message;
+            } finally {
+                loading.style.display = 'none';
+            }
+        }
     </script>
 </body>
 

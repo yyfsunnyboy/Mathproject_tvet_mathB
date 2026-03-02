@@ -48,6 +48,7 @@ from flask_login import LoginManager, login_user, logout_user, login_required, c
 from werkzeug.security import generate_password_hash, check_password_hash
 from core.routes import core_bp
 from core.ai_analyzer import configure_gemini
+from core.rag_engine import init_rag
 from config import Config
 from models import init_db, User, db, Progress, SkillInfo, SkillCurriculum, SkillPrerequisites
 from core.utils import get_all_active_skills
@@ -431,6 +432,12 @@ def create_app():
             api_key=app.config['GEMINI_API_KEY'],
             model_name=app.config['GEMINI_MODEL_NAME']
         )
+
+        # 初始化 Naive RAG 引擎 (ChromaDB + Embedding)
+        try:
+            init_rag(app)
+        except Exception as e:
+            app.logger.error(f"RAG 初始化失敗: {e}")
 
     return app
 

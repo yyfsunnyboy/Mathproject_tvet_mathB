@@ -22,6 +22,7 @@ from core.session import get_current
 from core.ai_analyzer import build_chat_prompt, get_chat_response, analyze, diagnose_error
 from core.exam_analyzer import analyze_exam_image, save_analysis_result
 from core.diagnosis_analyzer import perform_weakness_analysis
+from core.rag_engine import rag_search, rag_chat
 from models import db, MistakeNotebookEntry, ExamAnalysis, SkillInfo
 
 ALLOWED_EXAM_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
@@ -213,3 +214,34 @@ def student_diagnosis():
     顯示學生學習診斷頁面
     """
     return render_template('student_diagnosis.html', username=current_user.username)
+
+# ==========================================
+# Naive RAG (RAG 檢索 + LLM 回答)
+# ==========================================
+
+@practice_bp.route('/api/rag_search', methods=['POST'])
+def api_rag_search():
+    """RAG 語意檢索 API：回傳 Top-5 最相似的國中練習技能"""
+    data = request.get_json()
+    query = data.get('query', '').strip()
+
+    if not query:
+        return jsonify({"results": [], "error": "請輸入搜尋文字"}), 400
+
+    # 所有結果都是系統中存在的練習技能，可直接跳轉
+    results = rag_search(query, top_k=5)
+    return jsonify({"results": results})
+
+
+@practice_bp.route('/api/rag_chat', methods=['POST'])
+def api_rag_chat():
+    """RAG + LLM API：使用 Top-1 檢索結果 + Gemini 回答學生問題"""
+    data = request.get_json()
+    query = data.get('query', '').strip()
+    top_skill_id = data.get('top_skill_id', '').strip()
+
+    if not query or not top_skill_id:
+        return jsonify({"reply": "缺少必要參數"}), 400
+
+    result = rag_chat(query, top_skill_id)
+    return jsonify(result)
