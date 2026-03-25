@@ -566,7 +566,14 @@
         const response = await fetch("/chat_ai", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ question, context: `Adaptive diagnosis | family=${state.currentFamilyId} | subskills=${state.currentSubskills.join(", ")}`, question_text: state.currentQuestionText })
+          body: JSON.stringify({
+            question,
+            context: `Adaptive diagnosis | family=${state.currentFamilyId} | subskills=${state.currentSubskills.join(", ")}`,
+            question_text: state.currentQuestionText,
+            question_context: state.currentContext,
+            family_id: state.currentFamilyId,
+            subskill_nodes: state.currentSubskills,
+          })
         });
         const data = await response.json();
         setMessageContent(thinking, (data.reply || "先檢查題目的條件與運算順序。").trim());

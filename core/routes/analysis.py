@@ -1,12 +1,12 @@
-# -*- coding: utf-8 -*-
+﻿# -*- coding: utf-8 -*-
 """
 =============================================================================
-模組名稱 (Module Name): core/routes/analysis.py
-功能說明 (Description): AI 分析與診斷模組，包含 AI 聊天助手 (Chat AI)、手寫辨識分析、考卷上傳與診斷 (Exam Analysis)、錯題本與弱點分析功能。
-執行語法 (Usage): 由系統調用
-版本資訊 (Version): V2.0
-更新日期 (Date): 2026-01-13
-維護團隊 (Maintainer): Math AI Project Team
+璅∠??迂 (Module Name): core/routes/analysis.py
+?隤芣? (Description): AI ???那?瑟芋蝯?? AI ?予?拇? (Chat AI)??撖怨儘霅??銝?那??(Exam Analysis)?憿?摹暺????賬?
+?瑁?隤? (Usage): ?梁頂蝯梯矽??
+?鞈? (Version): V2.0
+?湔?交? (Date): 2026-01-13
+蝬剛風?? (Maintainer): Math AI Project Team
 =============================================================================
 """
 
@@ -37,30 +37,35 @@ def allowed_exam_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXAM_EXTENSIONS
 
 # ==========================================
-# AI Chat & Handwriting (AI 互動)
+# AI Chat & Handwriting (AI 鈭?)
 # ==========================================
 
 @practice_bp.route('/chat_ai', methods=['POST'])
 def chat_ai():
-    """AI 助教對話 API"""
+    """AI ?拇?撠店 API"""
     data = request.get_json()
     user_question = data.get('question', '').strip()
     context = data.get('context', '')
     question_text = data.get('question_text', '')
+    family_id = (data.get('family_id') or '').strip()
+    question_context = (data.get('question_context') or context or '').strip()
+    subskill_nodes = data.get('subskill_nodes') or []
 
     if not user_question:
-        return jsonify({"reply": "請輸入問題！"}), 400
+        return jsonify({"reply": "隢撓?亙?憿?"}), 400
 
     current = get_current()
     skill_id = current.get("skill")
     prereq_skills = current.get('prereq_skills', [])
+    if not family_id:
+        family_id = (current.get('family_id') or current.get('skill') or skill_id or '').strip()
     
-    full_question_context = question_text if question_text else (current.get("question") or context)
+    full_question_context = question_text if question_text else (current.get("question") or question_context)
     
     if not skill_id and context:
-        # 簡單推測 skill_id (Fallback)
-        if '餘式' in context: skill_id = 'remainder'
-        elif '因式' in context: skill_id = 'factor_theorem'
+        # 蝪∪?冽葫 skill_id (Fallback)
+        if '擗?' in context: skill_id = 'remainder'
+        elif '??' in context: skill_id = 'factor_theorem'
 
     full_prompt = build_chat_prompt(
         skill_id=skill_id,
@@ -82,7 +87,7 @@ def chat_ai():
         question_context=full_question_context
     )
 
-    # 每輪根據學生當前提問重整紅色追問按鈕，避免固定模板重複出現
+    # 瘥憚?寞?摮貊??嗅????蝝餈賢???嚗?摰芋?輸?銴??
     chat_state = session.get('chat_followup_state', {}) if isinstance(session.get('chat_followup_state', {}), dict) else {}
     last_prompts = chat_state.get('last_prompts', [])
     turn_index = int(chat_state.get('turn_index', 0))
@@ -92,7 +97,7 @@ def chat_ai():
         last_prompts = []
         turn_index = 0
 
-    # 以本輪學生提問為核心產生紅色提示詞，再做跨輪去重，確保每輪都會跟提問變化。
+    # 隞交頛芸飛????詨??Ｙ?蝝?內閰???頝刻憚?駁?嚗Ⅱ靽?頛芷????霈???
     per_turn_prompts = build_dynamic_follow_up_prompts_variant(
         user_question=user_question,
         question_context=full_question_context,
@@ -120,13 +125,23 @@ def chat_ai():
         'last_context': full_question_context
     }
 
+    subskill_map = {
+        'sign_handling': '正負號判讀',
+        'add_sub': '整數加減',
+        'mul_div': '整數乘除',
+        'mixed_ops': '四則混合運算',
+        'absolute_value': '絕對值',
+        'parentheses': '括號運算',
+        'divide_terms': '分項整理',
+        'conjugate_rationalize': '分母有理化',
+    }
     focus_points = []
-    for item in state.get('subskill_nodes', []) or []:
+    for item in subskill_nodes:
         label = subskill_map.get(str(item), str(item).replace('_', ' '))
         if label and label not in focus_points:
             focus_points.append(label)
     if not focus_points:
-        focus_points.append('看清楚數字、符號和運算順序')
+        focus_points.append('先抓這一題的核心觀念')
     result['subskill_labels'] = focus_points
 
     result['question_text'] = question_text
@@ -138,10 +153,10 @@ def chat_ai():
 @practice_bp.route('/analyze_handwriting', methods=['POST'])
 @login_required
 def analyze_handwriting():
-    """手寫數學算式辨識與分析"""
+    """?神?詨飛蝞?颲刻?????""
     data = request.get_json()
     img = data.get('image_data_url')
-    if not img: return jsonify({"reply": "缺少圖片"}), 400
+    if not img: return jsonify({"reply": "蝻箏???"}), 400
     
     state = get_current()
     api_key = current_app.config['GEMINI_API_KEY']
@@ -150,14 +165,14 @@ def analyze_handwriting():
     question_context = (data.get('question_context') or state.get('question') or "").strip()
     family_id = (data.get('family_id') or state.get('family_id') or state.get('skill') or "").strip()
     subskill_map = {
-        'sign_handling': '正負號判讀',
-        'add_sub': '整數加減',
-        'mul_div': '整數乘除',
-        'mixed_ops': '四則混合運算',
-        'absolute_value': '絕對值',
-        'parentheses': '括號運算',
-        'divide_terms': '分項整理',
-        'conjugate_rationalize': '分母有理化',
+        'sign_handling': '甇???霈',
+        'add_sub': '?湔??',
+        'mul_div': '?湔銋',
+        'mixed_ops': '??瘛瑕???',
+        'absolute_value': '蝯???,
+        'parentheses': '?祈???',
+        'divide_terms': '???渡?',
+        'conjugate_rationalize': '??????,
     }
     
     result = analyze(image_data_url=img, context=question_context or question_text, 
@@ -170,7 +185,7 @@ def analyze_handwriting():
             current_app.logger.info(f"[Handwriting Check] Incorrect answer detected, diagnosing...")
             question_text = state.get('question_text', '')
             correct_answer = state.get('correct_answer', '')
-            student_answer = f"手寫答案分析: {result.get('reply', '')}"
+            student_answer = f"?神蝑???: {result.get('reply', '')}"
             
             # [Phase 6] Diagnosis
             diagnosis = diagnose_error(
@@ -183,7 +198,7 @@ def analyze_handwriting():
             if diagnosis.get('related_prerequisite_id'):
                 prereq_id = diagnosis['related_prerequisite_id']
                 # Find name
-                prereq_name = "基礎單元"
+                prereq_name = "?箇??桀?"
                 if prereq_skills:
                     for p in prereq_skills:
                         # prereq_skills structure: [{'id':..., 'name':...}]
@@ -194,20 +209,20 @@ def analyze_handwriting():
                 result['suggested_prerequisite'] = {
                     'id': prereq_id,
                     'name': prereq_name,
-                    'reason': diagnosis.get('prerequisite_explanation', '建議複習')
+                    'reason': diagnosis.get('prerequisite_explanation', '撱箄降銴?')
                 }
         except Exception as e:
             current_app.logger.error(f"Handwriting diagnosis failed: {e}")
     # [End of modification]
     
-    # 這裡的 update_progress 邏輯若有需要可在此處呼叫 helper
+    # ?ㄐ??update_progress ?摩?交??閬?冽迨???helper
     
     return jsonify(result)
 
 
 
 # ==========================================
-# Mistake Notebook & Diagnosis (錯題本與診斷)
+# Mistake Notebook & Diagnosis (?舫??祈?閮箸)
 # ==========================================
 
 @core_bp.route('/mistake-notebook')
@@ -234,7 +249,7 @@ def add_mistake_entry():
             skill_id=data.get('skill_id')
         ))
         db.session.commit()
-        return jsonify({'success': True, 'message': '已記錄'})
+        return jsonify({'success': True, 'message': '撌脰???})
     except Exception as e:
         db.session.rollback()
         return jsonify({'success': False, 'message': str(e)}), 500
@@ -242,34 +257,34 @@ def add_mistake_entry():
 @core_bp.route('/student/analyze_weakness', methods=['POST'])
 @login_required
 def analyze_weakness():
-    """學生學習弱點分析 (Radar Chart Data)"""
+    """摮貊?摮貊?撘梢??? (Radar Chart Data)"""
     try:
         force_refresh = request.json.get('force_refresh', False) if request.json else False
         result = perform_weakness_analysis(current_user.id, force_refresh)
         return jsonify(result)
     except Exception as e:
-        current_app.logger.error(f"弱點分析錯誤: {e}")
+        current_app.logger.error(f"撘梢????航炊: {e}")
         return jsonify({'success': False, 'error': str(e)}), 500
 
 # ==========================================
-# [遺漏補齊] Mistake Notebook Helpers
+# [?箸?鋆?] Mistake Notebook Helpers
 # ==========================================
 
 @core_bp.route('/add_mistake_page')
 @login_required
 def add_mistake_page():
-    """顯示手動新增錯題的頁面"""
+    """憿舐內???啣??舫?????""
     skills = db.session.query(SkillInfo).filter_by(is_active=True).order_by(SkillInfo.skill_ch_name).all()
     return render_template('add_mistake.html', skills=skills, username=current_user.username)
 
 @core_bp.route('/mistake-notebook/upload-image', methods=['POST'])
 @login_required
 def upload_mistake_image():
-    """處理錯題圖片上傳"""
-    if 'file' not in request.files: return jsonify({'success': False, 'message': '沒有檔案'}), 400
+    """???舫???銝"""
+    if 'file' not in request.files: return jsonify({'success': False, 'message': '瘝?瑼?'}), 400
     file = request.files['file']
     if file.filename == '' or not allowed_exam_file(file.filename):
-        return jsonify({'success': False, 'message': '檔案無效'}), 400
+        return jsonify({'success': False, 'message': '瑼??⊥?'}), 400
 
     try:
         upload_dir = os.path.join(current_app.static_folder, 'mistake_uploads', str(current_user.id))
@@ -286,44 +301,44 @@ def upload_mistake_image():
         return jsonify({'success': False, 'message': str(e)}), 500
 
 # ==========================================
-# Student Diagnosis (學生學習診斷頁面)
+# Student Diagnosis (摮貊?摮貊?閮箸?)
 # ==========================================
 
 @core_bp.route('/student/diagnosis')
 @login_required
 def student_diagnosis():
     """
-    顯示學生學習診斷頁面
+    憿舐內摮貊?摮貊?閮箸?
     """
     return render_template('student_diagnosis.html', username=current_user.username)
 
 # ==========================================
-# Naive RAG (RAG 檢索 + LLM 回答)
+# Naive RAG (RAG 瑼Ｙ揣 + LLM ??)
 # ==========================================
 
 @practice_bp.route('/api/rag_search', methods=['POST'])
 def api_rag_search():
-    """RAG 語意檢索 API：回傳 Top-5 最相似的國中練習技能"""
+    """RAG 隤?瑼Ｙ揣 API嚗???Top-5 ??訾撮??銝剔毀蝧???""
     data = request.get_json()
     query = data.get('query', '').strip()
 
     if not query:
-        return jsonify({"results": [], "error": "請輸入搜尋文字"}), 400
+        return jsonify({"results": [], "error": "隢撓?交?撠?摮?}), 400
 
-    # 所有結果都是系統中存在的練習技能，可直接跳轉
+    # ?????舐頂蝯曹葉摮?毀蝧??踝??舐?亥歲頧?
     results = rag_search(query, top_k=5)
     return jsonify({"results": results})
 
 
 @practice_bp.route('/api/rag_chat', methods=['POST'])
 def api_rag_chat():
-    """RAG + LLM API：使用 Top-1 檢索結果 + Gemini 回答學生問題"""
+    """RAG + LLM API嚗蝙??Top-1 瑼Ｙ揣蝯? + Gemini ??摮貊???"""
     data = request.get_json()
     query = data.get('query', '').strip()
     top_skill_id = data.get('top_skill_id', '').strip()
 
     if not query or not top_skill_id:
-        return jsonify({"reply": "缺少必要參數"}), 400
+        return jsonify({"reply": "蝻箏?敹??"}), 400
 
     result = rag_chat(query, top_skill_id)
     return jsonify(result)
