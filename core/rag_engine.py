@@ -1,43 +1,153 @@
 # -*- coding: utf-8 -*-
-"""
-=============================================================================
-模組名稱 (Module Name): core/rag_engine.py
-功能說明 (Description): Naive RAG 引擎 — 使用 ChromaDB + all-MiniLM-L6-v2
-                        僅索引系統中存在的國中練習技能，搭配 Gemini 2.5 Flash 回答
-版本資訊 (Version): V2.0
-更新日期 (Date): 2026-03-02
-=============================================================================
-"""
+from __future__ import annotations
 
-import os
+import json
+import re
+from typing import Any
+
 import google.generativeai as genai
 
-# --- ChromaDB & Embedding ---
 try:
     import chromadb
     from chromadb.utils import embedding_functions
     HAS_CHROMADB = True
-except ImportError:
+except ImportError:  # pragma: no cover
     chromadb = None
     embedding_functions = None
     HAS_CHROMADB = False
 
-# 全域變數
+
 _chroma_client = None
 _collection = None
-_skill_map = {}  # skill_id -> skill_ch_name
+_skill_map: dict[str, str] = {}
+_bridge_rows: list[dict[str, Any]] = []
 
 
-# ==========================================
-# Initialization (從資料庫讀取國中技能)
-# ==========================================
+def _table_exists(db, table_name: str) -> bool:
+    row = db.session.execute(
+        db.text("SELECT name FROM sqlite_master WHERE type='table' AND name=:name"),
+        {"name": table_name},
+    ).first()
+    return row is not None
 
-def init_rag(app=None):
-    """
-    從 SkillInfo + SkillCurriculum 表中讀取國中(junior_high)的活躍技能，
-    以 skill_ch_name 作為虛擬文本進行 embedding，存入 ChromaDB。
-    """
-    global _chroma_client, _collection, _skill_map
+
+def _parse_subskill_nodes(value: Any) -> list[str]:
+    if value is None:
+        return []
+    if isinstance(value, list):
+        return [str(item).strip() for item in value if str(item).strip()]
+    text = str(value).strip()
+    if not text:
+        return []
+    if text.startswith("["):
+        try:
+            data = json.loads(text)
+            if isinstance(data, list):
+                return [str(item).strip() for item in data if str(item).strip()]
+        except Exception:
+            pass
+    return [item.strip() for item in text.replace(",", ";").split(";") if item.strip()]
+
+
+def _label_node(node: str) -> str:
+    return {
+        "sign_handling": "正負號判讀",
+        "add_sub": "整數加減",
+        "mul_div": "整數乘除",
+        "mixed_ops": "四則混合",
+        "order_of_operations": "運算順序",
+        "absolute_value": "絕對值",
+        "conjugate_rationalize": "共軛有理化",
+        "divide_terms": "因式分解後約分",
+        "multiply_terms": "分子分母乘法",
+    }.get(node, node.replace("_", " "))
+
+
+def _build_document_text(row: dict[str, Any]) -> str:
+    nodes = _parse_subskill_nodes(row.get("subskill_nodes"))
+    node_text = "、".join(_label_node(node) for node in nodes) if nodes else ""
+    parts = [
+        row.get("skill_ch_name") or row.get("skill_name") or row.get("skill_id", ""),
+    ]
+    if row.get("family_name"):
+        parts.append(f"題型：{row['family_name']}")
+    if row.get("theme"):
+        parts.append(f"主題：{row['theme']}")
+    if node_text:
+        parts.append(f"子技能：{node_text}")
+    if row.get("curriculum"):
+        parts.append(f"課綱：{row['curriculum']} {row.get('grade', '')}年級")
+    if row.get("chapter"):
+        parts.append(f"章節：{row['chapter']}")
+    if row.get("section"):
+        parts.append(f"小節：{row['section']}")
+    if row.get("paragraph"):
+        parts.append(f"段落：{row['paragraph']}")
+    return " | ".join(str(part) for part in parts if str(part).strip())
+
+
+def _load_bridge_rows(app) -> list[dict[str, Any]]:
+    from models import db
+
+    if _table_exists(db, "skill_family_bridge"):
+        rows = db.session.execute(
+            db.text("""
+                SELECT
+                    b.skill_id,
+                    COALESCE(si.skill_ch_name, b.skill_ch_name, b.skill_name) AS skill_ch_name,
+                    COALESCE(si.skill_en_name, b.skill_en_name, '') AS skill_en_name,
+                    b.family_id,
+                    b.family_name,
+                    b.theme,
+                    b.subskill_nodes,
+                    b.curriculum,
+                    b.grade,
+                    b.volume,
+                    b.chapter,
+                    b.section,
+                    b.paragraph,
+                    b.notes
+                FROM skill_family_bridge b
+                LEFT JOIN skills_info si ON si.skill_id = b.skill_id
+                WHERE COALESCE(si.is_active, 1) = 1
+                ORDER BY b.skill_id, b.family_id
+            """)
+        ).mappings().all()
+        if rows:
+            return [dict(row) for row in rows]
+
+    if _table_exists(db, "skills_info") and _table_exists(db, "skill_curriculum"):
+        rows = db.session.execute(
+            db.text("""
+                SELECT DISTINCT
+                    si.skill_id,
+                    si.skill_ch_name,
+                    COALESCE(si.skill_en_name, '') AS skill_en_name,
+                    NULL AS family_id,
+                    NULL AS family_name,
+                    si.category AS theme,
+                    NULL AS subskill_nodes,
+                    sc.curriculum,
+                    sc.grade,
+                    sc.volume,
+                    sc.chapter,
+                    sc.section,
+                    sc.paragraph,
+                    NULL AS notes
+                FROM skills_info si
+                JOIN skill_curriculum sc ON si.skill_id = sc.skill_id
+                WHERE sc.curriculum = 'junior_high'
+                  AND si.is_active = 1
+                ORDER BY si.skill_id
+            """)
+        ).mappings().all()
+        return [dict(row) for row in rows]
+
+    return []
+
+
+def _index_documents(rows: list[dict[str, Any]]):
+    global _chroma_client, _collection, _skill_map, _bridge_rows
 
     if not HAS_CHROMADB:
         print("[RAG] chromadb not installed; RAG disabled.")
@@ -46,40 +156,9 @@ def init_rag(app=None):
         _skill_map = {}
         return
 
-    if not app:
-        print("[RAG] ⚠️ 需要 Flask app 來存取資料庫")
-        return
-
-    with app.app_context():
-        from models import db
-        # 從 DB 查詢國中所有活躍技能 (含中文名稱)
-        rows = db.session.execute(
-            db.text("""
-                SELECT DISTINCT si.skill_id, si.skill_ch_name
-                FROM skills_info si
-                JOIN skill_curriculum sc ON si.skill_id = sc.skill_id
-                WHERE sc.curriculum = 'junior_high'
-                  AND si.is_active = 1
-                ORDER BY si.skill_id
-            """)
-        ).fetchall()
-
-    if not rows:
-        print("[RAG] ⚠️ 資料庫中無國中技能資料")
-        return
-
-    # 建立 skill_id -> 中文名稱 的對照表
-    _skill_map = {row[0]: row[1] for row in rows}
-    skill_ids = list(_skill_map.keys())
-
-    print(f"[RAG] ✅ 從資料庫讀取到 {len(skill_ids)} 個國中技能")
-
-    # 初始化 ChromaDB (in-memory)
+    _skill_map = {}
     _chroma_client = chromadb.Client()
-
-    ef = embedding_functions.SentenceTransformerEmbeddingFunction(
-        model_name="all-MiniLM-L6-v2"
-    )
+    ef = embedding_functions.SentenceTransformerEmbeddingFunction(model_name="all-MiniLM-L6-v2")
 
     try:
         _chroma_client.delete_collection("math_skills")
@@ -89,92 +168,167 @@ def init_rag(app=None):
     _collection = _chroma_client.create_collection(
         name="math_skills",
         embedding_function=ef,
-        metadata={"hnsw:space": "cosine"}
+        metadata={"hnsw:space": "cosine"},
     )
 
-    # 以 skill_ch_name (中文名稱) 作為 document 進行 embedding
-    documents = [_skill_map[sid] for sid in skill_ids]
-    metadatas = [{"skill_id": sid, "ch_name": _skill_map[sid]} for sid in skill_ids]
+    documents: list[str] = []
+    ids: list[str] = []
+    metadatas: list[dict[str, Any]] = []
+
+    for row in rows:
+        skill_id = str(row.get("skill_id", "") or "").strip()
+        family_id = str(row.get("family_id", "") or "").strip()
+        if not skill_id:
+            continue
+        display_name = str(row.get("skill_ch_name") or row.get("skill_name") or skill_id).strip()
+        _skill_map.setdefault(skill_id, display_name)
+        doc_text = _build_document_text(row)
+        if not doc_text:
+            continue
+        documents.append(doc_text)
+        doc_id = f"{skill_id}:{family_id}" if family_id else skill_id
+        ids.append(doc_id)
+        metadatas.append({
+            "skill_id": skill_id,
+            "family_id": family_id,
+            "family_name": row.get("family_name"),
+            "subskill_nodes": row.get("subskill_nodes"),
+            "curriculum": row.get("curriculum"),
+            "grade": row.get("grade"),
+            "chapter": row.get("chapter"),
+            "section": row.get("section"),
+            "skill_ch_name": row.get("skill_ch_name"),
+        })
+
+    if not documents:
+        print("[RAG] No documents to index.")
+        _collection = None
+        return
 
     _collection.add(
         documents=documents,
-        ids=skill_ids,
-        metadatas=metadatas
+        ids=ids,
+        metadatas=metadatas,
     )
+    _bridge_rows = list(rows)
+    print(f"[RAG] ✅ ChromaDB 初始化完成，已索引 {len(documents)} 筆知識節點")
+    for sample in rows[:5]:
+        print(f"  {sample.get('skill_id')}:{sample.get('family_id')} → {sample.get('skill_ch_name') or sample.get('skill_name')}")
 
-    print(f"[RAG] ✅ ChromaDB 初始化完成，已索引 {len(skill_ids)} 個國中技能")
-    for s in skill_ids[:5]:
-        print(f"  {s} → {_skill_map[s]}")
 
+def init_rag(app=None):
+    """
+    讀取 bridge table，將課程技能層、family 層與 subskill 層對齊後再做 embedding。
+    """
+    if not HAS_CHROMADB:
+        print("[RAG] chromadb not installed; RAG disabled.")
+        return
+    if not app:
+        print("[RAG] 請提供 Flask app 以初始化 RAG。")
+        return
 
-# ==========================================
-# Retrieval
-# ==========================================
+    with app.app_context():
+        rows = _load_bridge_rows(app)
+
+    if not rows:
+        print("[RAG] 找不到可索引的技能資料。")
+        return
+
+    print(f"[RAG] ✅ 從資料庫讀取到 {len(rows)} 筆對齊資料")
+    _index_documents(rows)
+
 
 def rag_search(query, top_k=5):
     """
-    接收學生問題，回傳 Top-K 最相似的 skill_ids。
-    所有結果都是系統中存在的可練習技能。
+    回傳 RAG 相關技能節點。
     """
     if (not HAS_CHROMADB) or _collection is None:
         return []
 
     results = _collection.query(
         query_texts=[query],
-        n_results=top_k
+        n_results=top_k,
     )
 
     output = []
-    if results and results['ids'] and len(results['ids']) > 0:
-        for i, sid in enumerate(results['ids'][0]):
+    if results and results.get("ids") and results["ids"]:
+        for i, item_id in enumerate(results["ids"][0]):
+            metadata = results.get("metadatas", [[]])[0][i] if results.get("metadatas") else {}
             output.append({
-                'skill_id': sid,
-                'chinese_name': _skill_map.get(sid, sid),
-                'distance': results['distances'][0][i] if results.get('distances') else 0
+                "skill_id": metadata.get("skill_id") or item_id.split(":", 1)[0],
+                "family_id": metadata.get("family_id"),
+                "family_name": metadata.get("family_name"),
+                "chinese_name": metadata.get("skill_ch_name") or _skill_map.get(metadata.get("skill_id"), metadata.get("skill_id")),
+                "subskill_nodes": _parse_subskill_nodes(metadata.get("subskill_nodes")),
+                "curriculum": metadata.get("curriculum"),
+                "grade": metadata.get("grade"),
+                "chapter": metadata.get("chapter"),
+                "section": metadata.get("section"),
+                "distance": results["distances"][0][i] if results.get("distances") else 0,
             })
-
     return output
 
 
-# ==========================================
-# RAG + LLM (Gemini 2.5 Flash)
-# ==========================================
-
 def rag_chat(query, top_skill_id):
     """
-    將 Top-1 檢索結果作為上下文，使用 Gemini 2.5 Flash 簡短回答學生問題。
+    用第一筆對齊資料做受控回答。
     """
-    ch_name = _skill_map.get(top_skill_id, top_skill_id)
-
     if not HAS_CHROMADB:
         return {"reply": "RAG is unavailable because chromadb is not installed."}
 
-    prompt = f"""你是數學老師，回答要精簡直接。
+    top_row = None
+    for row in _bridge_rows:
+        if row.get("skill_id") == top_skill_id:
+            top_row = row
+            break
 
-學生問：「{query}」
-最相關單元：「{ch_name}」
+    if top_row is None and _collection is not None:
+        search_rows = rag_search(query, top_k=1)
+        if search_rows:
+            top_row = search_rows[0]
 
-規則：
-- 用繁體中文回答，控制在 3-5 句話，確保每句話都完整
-- 數學公式用 $$ 包裹（LaTeX 格式）
-- 不要開場白，直接回答重點
-- 給出關鍵公式或定義，搭配簡短說明
-"""
+    if not top_row:
+        return {"reply": "目前找不到對應的知識節點。"}
+
+    ch_name = top_row.get("skill_ch_name") or top_row.get("skill_name") or top_row.get("chinese_name") or top_skill_id
+    family_name = top_row.get("family_name") or ""
+    subskills = _parse_subskill_nodes(top_row.get("subskill_nodes"))
+    subskill_text = "、".join(_label_node(node) for node in subskills) if subskills else "核心概念"
+
+    prompt = f"""
+你是一位台灣國中數學助教。
+請用繁體中文回答，語氣簡短，讓國中生看得懂。
+只能提示，不要直接給完整答案。
+
+學生問題：
+{query}
+
+目前對應技能：
+{ch_name}
+{f'（{family_name}）' if family_name else ''}
+
+重點子技能：
+{subskill_text}
+
+請輸出：
+1. 先提醒一個最重要的觀念
+2. 再給一個小提示
+3. 最後給一個下一步方向
+""".strip()
 
     try:
         from core.ai_analyzer import gemini_model
         if not gemini_model:
-            return {"reply": "系統尚未初始化。"}
+            return {"reply": "目前 AI 助教尚未啟用。"}
 
         response = gemini_model.generate_content(
             prompt,
             generation_config=genai.types.GenerationConfig(
                 temperature=0.3,
                 max_output_tokens=1024,
-            )
+            ),
         )
         return {"reply": response.text}
-
     except Exception as e:
         print(f"[RAG Chat] Error: {e}")
-        return {"reply": f"AI 回答錯誤：{str(e)}"}
+        return {"reply": f"AI 回覆發生錯誤：{str(e)}"}

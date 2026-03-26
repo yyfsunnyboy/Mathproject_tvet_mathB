@@ -14,12 +14,150 @@ import sqlite3
 import json
 import secrets
 import string
+import csv
+from pathlib import Path
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import UserMixin
 from datetime import datetime
 
 # 建立 SQLAlchemy 實例
 db = SQLAlchemy()
+
+PROJECT_ROOT = Path(__file__).resolve().parent
+BRIDGE_CATALOG_PATH = PROJECT_ROOT / "docs" / "自適應實作" / "skill_breakpoint_catalog.csv"
+
+
+
+def _read_bridge_catalog_rows() -> list[dict[str, str]]:
+    if not BRIDGE_CATALOG_PATH.exists():
+        return []
+    last_error: Exception | None = None
+    for encoding in ("utf-8-sig", "utf-8", "cp950"): 
+        try:
+            with BRIDGE_CATALOG_PATH.open("r", encoding=encoding, newline="") as fh:
+                reader = csv.DictReader(fh)
+                return [dict(row) for row in reader]
+        except Exception as exc:  # pragma: no cover
+            last_error = exc
+    raise RuntimeError(f"Failed to read bridge catalog {BRIDGE_CATALOG_PATH}: {last_error}")
+
+
+def _sync_skill_family_bridge(conn):
+    """
+    ? skill_breakpoint_catalog.csv ????????????
+    ?????????????????????
+    """
+    c = conn.cursor()
+    c.execute("""
+        CREATE TABLE IF NOT EXISTS skill_family_bridge (
+            bridge_id INTEGER PRIMARY KEY AUTOINCREMENT,
+            skill_id TEXT NOT NULL,
+            family_id TEXT NOT NULL,
+            skill_name TEXT NOT NULL,
+            skill_ch_name TEXT,
+            skill_en_name TEXT,
+            family_name TEXT NOT NULL,
+            theme TEXT,
+            subskill_nodes TEXT NOT NULL,
+            notes TEXT,
+            curriculum TEXT,
+            grade INTEGER,
+            volume TEXT,
+            chapter TEXT,
+            section TEXT,
+            paragraph TEXT,
+            hint_scope TEXT,
+            version INTEGER NOT NULL DEFAULT 1,
+            source TEXT NOT NULL DEFAULT 'skill_breakpoint_catalog.csv',
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+            updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+            UNIQUE(skill_id, family_id)
+        )
+    """)
+    c.execute('CREATE INDEX IF NOT EXISTS idx_skill_family_bridge_skill_id ON skill_family_bridge(skill_id)')
+    c.execute('CREATE INDEX IF NOT EXISTS idx_skill_family_bridge_family_id ON skill_family_bridge(family_id)')
+    c.execute('CREATE INDEX IF NOT EXISTS idx_skill_family_bridge_curriculum ON skill_family_bridge(curriculum)')
+    c.execute("DELETE FROM skill_family_bridge WHERE source = 'skill_breakpoint_catalog.csv'")
+
+    rows = _read_bridge_catalog_rows()
+    if not rows:
+        conn.commit()
+        return
+
+    curriculum_rows = c.execute("""
+        SELECT skill_id, curriculum, grade, volume, chapter, section, paragraph
+        FROM skill_curriculum
+        ORDER BY display_order ASC, difficulty_level ASC, id ASC
+    """).fetchall()
+    curriculum_map: dict[str, tuple] = {}
+    for row in curriculum_rows:
+        curriculum_map.setdefault(row[0], row)
+
+    for row in rows:
+        skill_id = str(row.get("skill_id", "") or "").strip()
+        family_id = str(row.get("family_id", "") or "").strip()
+        skill_name = str(row.get("skill_name", "") or "").strip()
+        family_name = str(row.get("family_name", "") or "").strip()
+        theme = str(row.get("theme", "") or "").strip()
+        notes = str(row.get("notes", "") or "").strip()
+        subskill_nodes = [item.strip() for item in str(row.get("subskill_nodes", "") or "").split(";") if item.strip()]
+        if not skill_id or not family_id or not skill_name or not family_name or not subskill_nodes:
+            continue
+
+        curriculum_row = curriculum_map.get(skill_id)
+        curriculum = curriculum_row[1] if curriculum_row else None
+        grade = curriculum_row[2] if curriculum_row else None
+        volume = curriculum_row[3] if curriculum_row else None
+        chapter = curriculum_row[4] if curriculum_row else None
+        section = curriculum_row[5] if curriculum_row else None
+        paragraph = curriculum_row[6] if curriculum_row else None
+
+        skill_row = c.execute("""
+            SELECT skill_ch_name, skill_en_name
+            FROM skills_info
+            WHERE skill_id = ?
+        """, (skill_id,)).fetchone()
+        skill_ch_name = skill_row[0] if skill_row and skill_row[0] else skill_name
+        skill_en_name = skill_row[1] if skill_row and skill_row[1] else None
+
+        c.execute("""
+            INSERT INTO skill_family_bridge (
+                skill_id, family_id, skill_name, skill_ch_name, skill_en_name,
+                family_name, theme, subskill_nodes, notes,
+                curriculum, grade, volume, chapter, section, paragraph,
+                hint_scope, version, source, created_at, updated_at
+            ) VALUES (
+                ?, ?, ?, ?, ?,
+                ?, ?, ?, ?,
+                ?, ?, ?, ?, ?, ?,
+                ?, 1, 'skill_breakpoint_catalog.csv', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP
+            )
+            ON CONFLICT(skill_id, family_id) DO UPDATE SET
+                skill_name = excluded.skill_name,
+                skill_ch_name = excluded.skill_ch_name,
+                skill_en_name = excluded.skill_en_name,
+                family_name = excluded.family_name,
+                theme = excluded.theme,
+                subskill_nodes = excluded.subskill_nodes,
+                notes = excluded.notes,
+                curriculum = excluded.curriculum,
+                grade = excluded.grade,
+                volume = excluded.volume,
+                chapter = excluded.chapter,
+                section = excluded.section,
+                paragraph = excluded.paragraph,
+                hint_scope = excluded.hint_scope,
+                version = excluded.version,
+                source = excluded.source,
+                updated_at = CURRENT_TIMESTAMP
+        """, (
+            skill_id, family_id, skill_name, skill_ch_name, skill_en_name,
+            family_name, theme, json.dumps(subskill_nodes, ensure_ascii=False), notes,
+            curriculum, grade, volume, chapter, section, paragraph,
+            ";".join(subskill_nodes)
+        ))
+
+    conn.commit()
 
 def init_db(engine):
     """
@@ -387,6 +525,8 @@ def init_db(engine):
         )
     ''')
 
+    _sync_skill_family_bridge(conn)
+
     conn.commit()
     conn.close()
     print("資料庫結構初始化與檢查完成 (v9.0)！")
@@ -540,6 +680,68 @@ class SkillCurriculum(db.Model):
             'display_order': self.display_order,
             'difficulty_level': self.difficulty_level
         }
+
+
+class SkillFamilyBridge(db.Model):
+    __tablename__ = 'skill_family_bridge'
+
+    bridge_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    skill_id = db.Column(db.String, db.ForeignKey('skills_info.skill_id', ondelete='CASCADE'), nullable=False, index=True)
+    family_id = db.Column(db.String(64), nullable=False, index=True)
+    skill_name = db.Column(db.String, nullable=False)
+    skill_ch_name = db.Column(db.String, nullable=True)
+    skill_en_name = db.Column(db.String, nullable=True)
+    family_name = db.Column(db.String, nullable=False)
+    theme = db.Column(db.String, nullable=True)
+    subskill_nodes = db.Column(db.Text, nullable=False)
+    notes = db.Column(db.Text, nullable=True)
+    curriculum = db.Column(db.String, nullable=True, index=True)
+    grade = db.Column(db.Integer, nullable=True)
+    volume = db.Column(db.String, nullable=True)
+    chapter = db.Column(db.String, nullable=True)
+    section = db.Column(db.String, nullable=True)
+    paragraph = db.Column(db.String, nullable=True)
+    hint_scope = db.Column(db.Text, nullable=True)
+    version = db.Column(db.Integer, nullable=False, default=1)
+    source = db.Column(db.String, nullable=False, default='skill_breakpoint_catalog.csv')
+    created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False)
+
+    __table_args__ = (
+        db.UniqueConstraint('skill_id', 'family_id', name='_skill_family_bridge_uc'),
+    )
+
+    skill = db.relationship('SkillInfo', backref=db.backref('family_bridges', lazy=True, cascade="all, delete-orphan"))
+
+    def to_dict(self):
+        try:
+            nodes = json.loads(self.subskill_nodes) if self.subskill_nodes else []
+        except Exception:
+            nodes = [item.strip() for item in str(self.subskill_nodes or '').split(';') if item.strip()]
+        return {
+            'bridge_id': self.bridge_id,
+            'skill_id': self.skill_id,
+            'family_id': self.family_id,
+            'skill_name': self.skill_name,
+            'skill_ch_name': self.skill_ch_name,
+            'skill_en_name': self.skill_en_name,
+            'family_name': self.family_name,
+            'theme': self.theme,
+            'subskill_nodes': nodes,
+            'notes': self.notes,
+            'curriculum': self.curriculum,
+            'grade': self.grade,
+            'volume': self.volume,
+            'chapter': self.chapter,
+            'section': self.section,
+            'paragraph': self.paragraph,
+            'hint_scope': self.hint_scope,
+            'version': self.version,
+            'source': self.source,
+            'created_at': self.created_at.isoformat() if self.created_at else None,
+            'updated_at': self.updated_at.isoformat() if self.updated_at else None,
+        }
+
 
 class SkillPrerequisites(db.Model):
     __tablename__ = 'skill_prerequisites'
