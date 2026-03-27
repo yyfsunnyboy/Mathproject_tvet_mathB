@@ -1,0 +1,53 @@
+subskills:
+  int.sign_handling:
+    domain: integer
+    display_name: Sign Handling
+
+  int.mul_div:
+    domain: integer
+    display_name: Integer Multiplication and Division
+
+  int.order_of_operations:
+    domain: integer
+    display_name: Order of Operations
+
+  frac.add_sub:
+    domain: fraction
+    display_name: Fraction Addition and Subtraction
+
+  frac.divide:
+    domain: fraction
+    display_name: Fraction Division
+
+  poly.combine_like_terms:
+    domain: polynomial
+    display_name: Combine Like Terms
+    depends_on:
+      - int.sign_handling
+
+  poly.sign_distribution:
+    domain: polynomial
+    display_name: Sign Distribution
+    depends_on:
+      - int.sign_handling
+
+  poly.expand_binomial:
+    domain: polynomial
+    display_name: Expand Binomial
+    depends_on:
+      - int.mul_div
+
+diagnosis_map:
+  polynomial_sign_error: poly.sign_distribution
+  polynomial_expand_error: poly.expand_binomial
+  polynomial_like_terms_error: poly.combine_like_terms
+
+remediation_map:
+  poly.combine_like_terms:
+    target: int.sign_handling
+
+  poly.sign_distribution:
+    target: int.sign_handling
+
+  poly.expand_binomial:
+    target: int.mul_div

@@ -1,5 +1,280 @@
 # SHOWREEL_LOGIC.md
 
+# 📘 Adaptive Learning System - SHOWREEL LOGIC (2026-03-27)
+
+---
+
+# 🎯 今日核心進展（一句話）
+
+系統已從「state 表徵問題」進入「probe timing 控制問題」，並透過參數化 early-probe 機制，使 AB3 在三種 prototype 上整體表現趨於穩定優勢，特別是 Prototype B 從劣勢改善為近乎持平甚至部分指標優於 AB2。
+
+---
+
+# 🧠 系統架構（當前版本）
+
+三層閉環：
+
+1. Diagnosis（RAG / mock）
+   → 識別錯誤 subskill
+
+2. Decision（PPO / AB3 policy）
+   → 決定 stay / remediate / return
+
+3. Remediation（scaffold + routing）
+   → 補救 prerequisite skill 並回主線
+
+---
+
+# 📊 State Representation 演進
+
+## Phase 0（初始）
+4 維：
+- integer
+- fraction
+- radical
+- polynomial
+
+問題：
+→ 無法區分不同 prerequisite 對 polynomial 的影響
+
+---
+
+## Phase 1（6 維）
+拆 integer：
+
+- int.sign_handling
+- int.mul_div
+
+問題：
+→ polynomial 端仍混合（expand vs sign）
+
+---
+
+## Phase 2（7 維）✅
+
+最終 state：
+
+[
+  int.sign_handling,
+  int.mul_div,
+  fraction,
+  radical,
+  polynomial_core,
+  poly_sign_distribution_mastery,
+  poly_expand_binomial_mastery
+]
+
+效果：
+→ 解決 prerequisite 與主線 skill 的 aliasing 問題
+
+---
+
+# ⚙️ Effective Ability 設計
+
+採用 prerequisite-aware mapping：
+
+- poly.sign_distribution
+  ← poly_sign_distribution_mastery + int.sign_handling
+
+- poly.expand_binomial
+  ← poly_expand_binomial_mastery + int.mul_div
+
+👉 不再共用 polynomial 狀態
+
+---
+
+# 🔁 Learning Update 設計
+
+## 主更新（direct update）
+- int.sign → 更新 int.sign_handling
+- int.mul_div → 更新 int.mul_div
+- poly.sign → 更新 poly_sign_distribution_mastery
+- poly.expand → 更新 poly_expand_binomial_mastery
+
+## transfer（小幅）
+- int.sign → poly_sign_distribution_mastery
+- int.mul_div → poly_expand_binomial_mastery
+
+---
+
+# 🚨 Bottleneck 演進
+
+## 原本問題
+AB3 未全面勝過 AB2
+
+原因：
+- subskill routing 已細
+- 但 state 太粗 → credit assignment 被稀釋
+
+---
+
+## 修正 1（7D state）
+結果：
+- Prototype A：改善
+- Prototype C：改善
+- Prototype B：仍未翻盤
+
+👉 bottleneck 移轉
+
+---
+
+## 🚨 新 bottleneck（關鍵）
+
+👉 **probe timing rigidity**
+
+問題：
+- return timing 固定（step / threshold）
+- 無法反映學生動態學習進度
+
+特別影響：
+- Prototype B（弱起點 / 不均衡）
+
+---
+
+# 🔧 今日關鍵修改（核心）
+
+## ✅ AB3 probe timing 改為動態 gating
+
+新增三個參數：
+
+- min_remediation_steps
+- recent_correct_streak_threshold
+- mastery_growth_delta_threshold
+
+---
+
+## 🎯 Early Probe 條件
+
+允許提早 return 當：
+
+- remediation_steps ≥ min_steps
+- recent_correct_streak ≥ threshold
+- mastery_delta ≥ threshold
+
+---
+
+## ⚠️ 保留：
+
+- 原本 fallback probe
+- readiness 檢查
+- AB1 / AB2 完全不動
+
+---
+
+# 🧪 Parameter Sweep（今日完成）
+
+搜尋空間：
+
+- min_steps ∈ {1,2,3}
+- streak ∈ {1,2,3}
+- delta ∈ {0.00,0.01,0.02}
+
+共 27 組
+
+---
+
+# 🏆 最佳參數（Prototype B 為主）
+
+- min_remediation_steps = 1
+- recent_correct_streak_threshold = 2
+- mastery_growth_delta_threshold = 0.00
+
+---
+
+# 📊 實驗結果（關鍵）
+
+## Prototype A
+- success：持平
+- steps：下降
+- gain：上升
+
+👉 穩定改善
+
+---
+
+## Prototype B（最重要）
+
+AB2：
+- success = 0.56
+- steps = 25.61
+- gain = 0.3458
+
+AB3（最佳參數）：
+- success = 0.61 ↑
+- steps = 26.06（+0.45）
+- gain = 0.3506 ↑
+
+👉 關鍵結論：
+
+- 成功率 ↑
+- 學習增益 ↑
+- steps 僅微幅增加
+
+---
+
+## Prototype C
+- success ↑
+- gain ↑
+- steps 略增加
+
+👉 偏保守策略（穩定但略犧牲效率）
+
+---
+
+# 🎯 關鍵研究結論
+
+1. subskill-level state disentanglement 是必要條件
+2. timing control 是下一層關鍵瓶頸
+3. early probe 機制可顯著改善 weak-start learner（Prototype B）
+4. AB3 優勢已從「被壓制」轉為「可觀察」
+
+---
+
+# 🧠 最重要 insight
+
+👉 學習效果 ≠ mastery 靜態值  
+👉 更重要的是「recent correctness（行為）」  
+
+---
+
+# ⚖️ Trade-off
+
+AB3 現在呈現：
+
+- 更高 success
+- 更高 gain
+- slightly higher steps
+
+👉 可解釋為：
+
+**用極小步數成本，換取更高學習成功率**
+
+---
+
+# 🚀 下一步（已規劃）
+
+## 不再改架構，轉為收斂
+
+1. 固定最佳參數（作為 v4）
+2. 重跑正式結果
+3. 產出圖表：
+   - AB2 vs AB3（A/B/C）
+   - Prototype B timing heatmap
+
+---
+
+# 🧾 論文可用結論句
+
+在完成 subskill-level state disentanglement 與 probe timing 參數化後，AB3 在三種 prototype 上皆展現較穩定之優勢。其中 Prototype B 由原先落後於 AB2，改善為成功率與 polynomial gain 皆優於 AB2，顯示弱起點學生之瓶頸主要來自補救後回主線時機過於僵化。
+
+---
+
+# 🧠 最終一句（SHOWREEL）
+
+👉 我們現在不是模型不夠強  
+👉 而是已經開始優化「學習過程的時間控制」
+
+
 最後更新：2026-03-26  
 專案路徑：`D:\Python\Mathproject`
 

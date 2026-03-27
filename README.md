@@ -160,3 +160,79 @@ python app.py
 
 ---
 *Built with ❤️ for the future of education.*
+
+---
+
+## Simulation-Based Ablation Experiment
+
+This repo now includes a simulation framework for comparing three teaching control strategies:
+
+* `AB1`: always assign polynomial questions, with no remediation.
+* `AB2`: after 2 consecutive polynomial failures, diagnose integer weakness, remediate with exactly 3 integer questions, then return to polynomial.
+* `AB3`: after 2 consecutive polynomial failures, diagnose integer weakness, remediate on integer until return-readiness is satisfied.
+
+### Model assumptions
+
+* Student ability vector: `integer`, `fraction`, `radical`, `polynomial`
+* IRT-style success probability: `P(correct) = 1 / (1 + exp(-6(A_eff - D)))`
+* Effective ability for polynomial: `A_eff = 0.7 * A_polynomial + 0.3 * A_integer`
+* Effective ability for integer: `A_eff = A_integer`
+* Ability update: `Delta A_s = 0.08 * w(q,s) * (0.8 + 0.4D) * r`
+* Correct reward: `r = 1.0`
+* Incorrect reward: `r = 0.3`
+* Same-skill weight: `w = 1.0`
+* Integer to polynomial transfer: `w = 0.2`
+* Other unrelated skills: `w = 0`
+
+### Extensible interfaces
+
+The experiment core is designed so diagnosis and decision logic can be swapped later:
+
+* `DiagnosisStrategy`: current implementation is `FixedIntegerDiagnosis`
+* `DecisionPolicy`: current implementations are rule-based `AB1Policy`, `AB2Policy`, `AB3Policy`
+
+This keeps the simulation loop reusable when replacing the current logic with RAG-based diagnosis or PPO-based routing.
+
+### How to run
+
+```bash
+python scripts/run_ablation_experiment.py
+```
+
+Optional flags:
+
+```bash
+python scripts/run_ablation_experiment.py --episodes 100 --max-steps 30 --seed 42 --output-dir outputs
+```
+
+### Output files
+
+Running the script writes:
+
+* `outputs/experiment_logs.csv`: per-step simulation logs for every controller / prototype / episode
+* `outputs/summary_metrics.csv`: aggregated metrics by controller and prototype
+* `outputs/config_used.json`: exact config used for the run
+* `outputs/plots/success_rate.png`: success-rate comparison
+* `outputs/plots/total_steps.png`: average steps comparison
+* `outputs/plots/fail_streak.png`: average maximum polynomial fail streak comparison
+* `outputs/plots/sample_trajectory.png`: sample polynomial ability trajectory for one episode per controller / prototype
+
+### Metrics
+
+* `success_rate`: share of episodes that reached the polynomial success condition before max steps
+* `avg_total_steps`: average number of steps used per episode
+* `avg_max_polynomial_fail_streak`: average worst consecutive polynomial failure streak within an episode
+* `avg_remediation_entries`: average number of times the controller entered remediation
+* `avg_integer_gain`: average final integer ability minus initial integer ability
+* `avg_polynomial_gain`: average final polynomial ability minus initial polynomial ability
+
+### Episode success condition
+
+By default, an episode is marked successful when:
+
+* current question is polynomial
+* the answer is correct
+* `A_polynomial >= 0.8`
+* the student has answered at least 2 consecutive polynomial questions correctly
+
+If success is not reached, the episode stops at `--max-steps`.
