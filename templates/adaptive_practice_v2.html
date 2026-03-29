@@ -141,6 +141,13 @@
     .adaptive-state-item { border:1px solid var(--line); border-radius:14px; padding:10px 12px; background:#ffffff; }
     .adaptive-state-item strong { display:block; font-size:12px; color:var(--muted); margin-bottom:6px; }
     .adaptive-state-item div { font-size:14px; font-weight:700; line-height:1.5; color:#26415f; }
+    .milestone-chip { display:inline-flex; align-items:center; gap:6px; padding:4px 10px; border-radius:999px; font-size:12px; font-weight:700; border:1px solid transparent; }
+    .milestone-remediation { background:#fff5e8; color:#a85f00; border-color:#efcf95; }
+    .milestone-returned { background:#ecf8ff; color:#005d9a; border-color:#b9dff4; }
+    .milestone-completed { background:#eaf8ef; color:#1a7a3f; border-color:#bde3ca; }
+    .milestone-mainline { background:#eef3ff; color:#3559a6; border-color:#c8d6fb; }
+    .return-celebration { margin:10px 0 0; padding:10px 12px; border:1px solid #b8e2c8; border-radius:12px; background:#f3fff8; color:#1d6a3f; font-size:13px; line-height:1.6; display:none; }
+    .return-celebration.show { display:block; }
     .json-box { margin:0; max-height:240px; overflow-y:auto; color:#384965; white-space:pre-wrap; }
     .summary-card { display:none; border:1px solid var(--line); border-radius:14px; padding:14px; background:#f8fbff; }
     .summary-card.show { display:block; }
@@ -312,10 +319,18 @@
               <strong>返回主線狀態</strong>
               <div id="returnStateValue">尚未判定</div>
             </div>
+            <div class="adaptive-state-item">
+              <strong>學習進度里程碑</strong>
+              <div id="milestoneValue">尚未開始</div>
+            </div>
             <div class="adaptive-state-item" style="grid-column:1 / -1;">
               <strong>決策說明（Explanation）</strong>
               <div id="adaptiveRationaleValue">尚未開始診斷，系統尚未做路由決策。</div>
             </div>
+          </div>
+          <div class="return-celebration" id="returnCelebration">
+            <div>✨ 已完成本輪補救，成功返回主線</div>
+            <div>你已補回這個知識斷點，接下來系統會繼續檢核本單元其他核心題型。</div>
           </div>
         </section>
 
@@ -400,12 +415,19 @@
       displayFamily: "",
       displaySubskill: "",
       displaySkill: "",
+      mode: "teaching",
+      milestoneState: "",
+      localRemediationCompleted: false,
+      unitCompleted: false,
+      assessmentCompleted: false,
+      assessmentStopReason: "",
     };
     const skillId = {{ skill_id|tojson }};
     const adaptiveEntryMode = {{ mode|default('teaching')|tojson }};
     const basePayload = {};
     if (skillId) basePayload.skill_id = skillId;
     if (adaptiveEntryMode) basePayload.mode = adaptiveEntryMode;
+    state.mode = String(adaptiveEntryMode || "teaching").toLowerCase();
 
     const canvas = document.getElementById("handwriting-canvas");
     const ctx = canvas.getContext("2d");
@@ -728,6 +750,66 @@
       if (value === "completed" || value === "mainline" || value === "remediation") return value;
       return "";
     }
+    function normalizeMilestoneState(value) {
+      const raw = String(value || "").trim().toLowerCase();
+      if (
+        raw === "remediation_in_progress"
+        || raw === "remediation_returned_success"
+        || raw === "unit_completed"
+        || raw === "mainline_progress"
+        || raw === "assessment_in_progress"
+        || raw === "assessment_breakpoint_detected"
+        || raw === "assessment_completed"
+      ) return raw;
+      return "";
+    }
+    function deriveMilestoneStateFromState() {
+      const explicit = normalizeMilestoneState(state.milestoneState);
+      if (explicit) return explicit;
+      if (String(state.mode || "").toLowerCase() === "assessment") {
+        if (state.assessmentCompleted) {
+          return state.assessmentStopReason === "stable_breakpoint_detected"
+            ? "assessment_breakpoint_detected"
+            : "assessment_completed";
+        }
+        return "assessment_in_progress";
+      }
+      if (state.unitCompleted || state.isCompleted) return "unit_completed";
+      if (state.localRemediationCompleted || state.hasReturnedToMain) return "remediation_returned_success";
+      if (state.isRemediationActive || normalizeLearningMode(state.postMode) === "remediation") return "remediation_in_progress";
+      return "mainline_progress";
+    }
+    function milestoneLabel(value) {
+      const map = {
+        remediation_in_progress: "補救中",
+        remediation_returned_success: "已補回主線",
+        unit_completed: "本單元完成",
+        mainline_progress: "主線學習中",
+        assessment_in_progress: "評量中",
+        assessment_breakpoint_detected: "已偵測學習斷點",
+        assessment_completed: "評量完成",
+      };
+      return map[deriveMilestoneStateFromState()] || map.mainline_progress;
+    }
+    function milestoneClass(value) {
+      const map = {
+        remediation_in_progress: "milestone-chip milestone-remediation",
+        remediation_returned_success: "milestone-chip milestone-returned",
+        unit_completed: "milestone-chip milestone-completed",
+        mainline_progress: "milestone-chip milestone-mainline",
+        assessment_in_progress: "milestone-chip milestone-mainline",
+        assessment_breakpoint_detected: "milestone-chip milestone-remediation",
+        assessment_completed: "milestone-chip milestone-completed",
+      };
+      return map[deriveMilestoneStateFromState()] || map.mainline_progress;
+    }
+    function updateReturnCelebration() {
+      const box = document.getElementById("returnCelebration");
+      if (!box) return;
+      const milestone = deriveMilestoneStateFromState();
+      const show = milestone === "remediation_returned_success" && !state.unitCompleted && !state.isCompleted && state.mode !== "assessment";
+      box.classList.toggle("show", show);
+    }
     function resolveFamilyLabel({ skillKey, familyId, familyNameEn, backendFamilyLabel }) {
       if (backendFamilyLabel) return String(backendFamilyLabel);
       const id = String(familyId || "").trim();
@@ -743,10 +825,23 @@
     function buildAdaptiveRationale() {
       const hasStarted = Boolean(state.sessionId) || Number(state.stepNumber || 0) > 0;
       if (!hasStarted) return "尚未開始診斷，系統尚未做路由決策。";
+      if (state.mode === "assessment") {
+        const milestone = deriveMilestoneStateFromState();
+        if (milestone === "assessment_breakpoint_detected") {
+          return "評量模式已偵測到穩定學習斷點，建議切換 teaching 模式補強後再回來評量。";
+        }
+        if (milestone === "assessment_completed") {
+          return "評量模式已完成核心題型檢核，已產生本單元精熟度與學習建議。";
+        }
+        return "目前為評量模式，系統只檢核主線核心題型，不會切入補救支線。";
+      }
       if (state.isCompleted || normalizeDisplayMode(state.displayMode) === "completed") {
         const mainSkillDone = state.mainSkillLabel || toSkillLabel(state.displaySkill || state.mainSkill) || "本單元";
         const familyDone = state.currentFamilyLabel || state.displayFamily || state.currentFamilyId || "主線 family";
         return `本次診斷已完成。最終停留於主線「${mainSkillDone} / ${familyDone}」，不再顯示補救中狀態。`;
+      }
+      if (deriveMilestoneStateFromState() === "remediation_returned_success") {
+        return "已完成本輪補救並成功返回主線；接下來系統會繼續檢核本單元其他核心題型。";
       }
       const mode = normalizeLearningMode(state.learningMode);
       const route = normalizeRouteAction(state.ppoRouteAction);
@@ -775,30 +870,38 @@
       const showCompleted = state.isCompleted || displayMode === "completed";
       const showMainlineByDisplay = !showCompleted && displayMode === "mainline";
       const showRemediationByDisplay = !showCompleted && displayMode === "remediation";
+      const milestoneState = deriveMilestoneStateFromState();
       const modeLabel = showCompleted
         ? "本次診斷完成"
+        : (milestoneState === "remediation_returned_success"
+          ? "已補回主線"
         : (showMainlineByDisplay
           ? "主技能學習中"
-          : (showRemediationByDisplay ? "前置子技能補救中" : (hasStarted ? toLearningModeLabel(state.learningMode) : "尚未開始")));
+          : (showRemediationByDisplay ? "前置子技能補救中" : (hasStarted ? toLearningModeLabel(state.learningMode) : "尚未開始"))));
       const mainSkillText = state.mainSkillLabel || toSkillLabel(state.mainSkill) || "待載入";
       const familyText = state.currentFamilyLabel || state.displayFamily || state.currentFamilyId || "待載入";
       const detectedText = showCompleted
         ? (state.detectedSubskillLabel || getSubskillLabel(state.displaySubskill || state.detectedSubskill) || "已完成")
         : (state.detectedSubskillLabel || getSubskillLabel(state.displaySubskill || state.detectedSubskill) || "尚未偵測");
-      const remediationText = (showCompleted || showMainlineByDisplay)
+      const assessmentMode = state.mode === "assessment";
+      const remediationText = assessmentMode
+        ? "評量模式不進補救支線"
+        : ((showCompleted || showMainlineByDisplay)
         ? "目前為主線狀態"
         : (state.isRemediationActive
         ? (state.remediationSkillLabel || toSkillLabel(state.remediationSkill) || "待載入")
         : (state.isRemediationCandidate
           ? `建議補救候選：${state.remediationSkillLabel || toSkillLabel(state.remediationSkill) || "待判定"}`
-          : "尚未進入補救"));
-      const remediationSubskillText = (showCompleted || showMainlineByDisplay)
+          : "尚未進入補救")));
+      const remediationSubskillText = assessmentMode
+        ? "請先完成主線診斷，再依建議切換教學模式"
+        : ((showCompleted || showMainlineByDisplay)
         ? "目前無補救進行中"
         : (state.isRemediationActive
         ? (getSubskillLabel(state.detectedSubskill) || state.detectedSubskillLabel || "待載入")
         : (state.isRemediationCandidate
           ? `偵測斷點：${getSubskillLabel(state.detectedSubskill) || state.detectedSubskillLabel || "待判定"}`
-          : "尚未進入補救"));
+          : "尚未進入補救")));
       const switchReasonText = state.switchReason || "無";
       const returnText = showCompleted
         ? (state.hasReturnedToMain ? "已回主線後完成" : "已完成")
@@ -813,7 +916,13 @@
       setText("remediationSubskillValue", remediationSubskillText);
       setText("switchReasonValue", switchReasonText);
       setText("returnStateValue", state.stepNumber > 0 ? returnText : "尚未判定");
+      const milestoneEl = document.getElementById("milestoneValue");
+      if (milestoneEl) {
+        milestoneEl.className = milestoneClass(milestoneState);
+        milestoneEl.textContent = milestoneLabel(milestoneState);
+      }
       setText("adaptiveRationaleValue", buildAdaptiveRationale());
+      updateReturnCelebration();
     }
     function scrollChatToBottom() {
       const box = document.getElementById("chatHistory");
@@ -1090,6 +1199,12 @@
       state.displayFamily = String(response?.display_family || "");
       state.displaySubskill = String(response?.display_subskill || "");
       state.displaySkill = String(response?.display_skill || "");
+      state.mode = String(response?.mode || state.mode || adaptiveEntryMode || "teaching").toLowerCase();
+      state.milestoneState = String(response?.milestone_state || "");
+      state.localRemediationCompleted = normalizeBoolean(response?.local_remediation_completed, false);
+      state.unitCompleted = normalizeBoolean(response?.unit_completed, false);
+      state.assessmentCompleted = normalizeBoolean(response?.assessment_completed, false);
+      state.assessmentStopReason = String(response?.assessment_stop_reason || "");
       state.remediationTriggeredFinal = normalizeBoolean(response?.remediation_triggered_final, false);
       state.remediationReviewReady = normalizeBoolean(response?.remediation_review_ready, false);
       state.crossSkillTrigger = normalizeBoolean(response?.cross_skill_trigger, false);
@@ -1118,6 +1233,10 @@
       state.isRemediationActive = normalizeDisplayMode(state.displayMode) === "remediation"
         ? true
         : isRemediationActiveFromState();
+      if (state.mode === "assessment") {
+        state.isRemediationActive = false;
+        state.isRemediationCandidate = false;
+      }
       if (!state.learningMode) {
         state.learningMode = state.isRemediationActive ? "remediation" : "main";
       }
@@ -1172,7 +1291,13 @@
       clearCanvas(true);
       resetChatHistory();
       resetHintBox();
-      if (state.learningMode === "returned") {
+      if (state.mode === "assessment" && deriveMilestoneStateFromState() === "assessment_breakpoint_detected") {
+        setAssistantBanner("已偵測到本單元學習斷點，建議切換到 teaching 模式補強後再回來評量。", true);
+      } else if (state.mode === "assessment") {
+        setAssistantBanner("目前為評量模式：系統會持續檢核主線核心題型，不會切入補救支線。", false);
+      } else if (deriveMilestoneStateFromState() === "remediation_returned_success") {
+        setAssistantBanner("✨ 已完成本輪補救，成功返回主線。接下來系統會繼續檢核本單元其他核心題型。", false);
+      } else if (state.learningMode === "returned") {
         setAssistantBanner(`你已完成「${state.detectedSubskillLabel || "前置子技能"}」補救，系統現在帶你回到主技能「${state.mainSkillLabel || "主技能"}」。`, false);
       } else if (state.isRemediationActive || state.learningMode === "remediation") {
         if (previousMode !== "remediation") {
@@ -1198,6 +1323,21 @@
       state.displayFamily = String(summary?.display_family || responseMeta?.display_family || state.currentFamilyId || "");
       state.displaySubskill = String(summary?.display_subskill || responseMeta?.display_subskill || state.detectedSubskill || "");
       state.displaySkill = String(summary?.display_skill || responseMeta?.display_skill || state.mainSkill || skillId || "");
+      state.mode = String(summary?.mode || responseMeta?.mode || state.mode || adaptiveEntryMode || "teaching").toLowerCase();
+      state.milestoneState = String(summary?.milestone_state || responseMeta?.milestone_state || "unit_completed");
+      state.localRemediationCompleted = normalizeBoolean(
+        summary?.local_remediation_completed,
+        normalizeBoolean(responseMeta?.local_remediation_completed, false)
+      );
+      state.unitCompleted = normalizeBoolean(
+        summary?.unit_completed,
+        normalizeBoolean(responseMeta?.unit_completed, state.isCompleted)
+      );
+      state.assessmentCompleted = normalizeBoolean(
+        summary?.assessment_completed,
+        normalizeBoolean(responseMeta?.assessment_completed, false)
+      );
+      state.assessmentStopReason = String(summary?.assessment_stop_reason || responseMeta?.assessment_stop_reason || "");
       state.learningMode = normalizeLearningMode(summary?.learning_mode || state.learningMode || "");
       state.mainSkill = String(summary?.main_skill || state.mainSkill || skillId || "");
       state.mainSkillLabel = String(summary?.main_skill_label || state.mainSkillLabel || toSkillLabel(state.mainSkill) || "待載入");
@@ -1239,8 +1379,11 @@
       state.actionMaskHasRemediate = parseAllowedActions(summary?.allowed_actions || summary?.action_mask).includes("remediate");
       state.isRemediationActive = isRemediationActiveFromState();
       state.isRemediationCandidate = isRemediationCandidateOnlyFromState();
+      if (state.mode === "assessment") {
+        state.isRemediationCandidate = false;
+      }
       if (state.isCompleted || normalizeDisplayMode(state.displayMode) === "completed") {
-        state.learningMode = "returned";
+        state.learningMode = state.mode === "assessment" ? "main" : "returned";
         state.currentMode = "main";
         state.postMode = "main";
         state.remediationTriggeredFinal = false;
@@ -1294,7 +1437,17 @@
       const subskillsBox = document.getElementById("subskillsBox");
       if (subskillsBox) subskillsBox.innerHTML = "";
       setStatus(`本次診斷已結束。模式：${toLearningModeLabel(state.learningMode)}`);
-      setAssistantBanner(passed ? "這個單元已經達標了。你可以先換下一單元，或再做一次加強。" : "這次診斷已結束。先看右邊提示，再回頭補強同類題型。", !passed);
+      if (state.mode === "assessment" && state.assessmentCompleted && state.assessmentStopReason === "stable_breakpoint_detected") {
+        setAssistantBanner("已偵測到本單元穩定斷點。建議切換 teaching 模式，針對斷點子技能進行補強。", true);
+      } else if (state.mode === "assessment" && state.assessmentCompleted) {
+        setAssistantBanner("評量模式完成：已通過核心題型檢核，系統已產出精熟度與學習建議。", false);
+      } else if (state.unitCompleted) {
+        setAssistantBanner("🎉 本次診斷完成：已達本單元目標。你可以進入下一單元，或回頭複習弱點。", false);
+      } else if (state.localRemediationCompleted) {
+        setAssistantBanner("✅ 已完成本輪補救並返回主線，系統會繼續檢核本單元核心題型。", false);
+      } else {
+        setAssistantBanner(passed ? "這個單元已經達標了。你可以先換下一單元，或再做一次加強。" : "這次診斷已結束。先看右邊提示，再回頭補強同類題型。", !passed);
+      }
       updateRagScopeBadge("done");
     }
 
@@ -1327,6 +1480,14 @@
         state.remediationFamily = "";
         state.isRemediationActive = false;
         state.isRemediationCandidate = false;
+        state.isCompleted = false;
+        state.displayMode = "";
+        state.displayFamily = "";
+        state.displaySubskill = "";
+        state.displaySkill = "";
+        state.milestoneState = "";
+        state.localRemediationCompleted = false;
+        state.unitCompleted = false;
         updateAdaptiveStatePanel();
         resetChatHistory();
         resetHintBox();

@@ -1087,6 +1087,38 @@ def _build_display_state(
     }
 
 
+def _derive_milestone_state(
+    *,
+    mode: str,
+    unit_completed: bool,
+    local_remediation_completed: bool,
+    return_to_mainline: bool,
+    return_triggered_final: bool,
+    post_mode: str,
+    scenario_stage: str | None,
+    assessment_completed: bool = False,
+    assessment_stop_reason: str = "",
+) -> str:
+    if _normalize_mode(mode) == "assessment":
+        if bool(assessment_completed):
+            if str(assessment_stop_reason or "") == "stable_breakpoint_detected":
+                return "assessment_breakpoint_detected"
+            return "assessment_completed"
+        return "assessment_in_progress"
+    if bool(unit_completed):
+        return "unit_completed"
+    if (
+        bool(local_remediation_completed)
+        or bool(return_to_mainline)
+        or bool(return_triggered_final)
+        or str(scenario_stage or "").strip() == "returned_to_origin_family"
+    ):
+        return "remediation_returned_success"
+    if str(post_mode or "").strip().lower() == "remediation":
+        return "remediation_in_progress"
+    return "mainline_progress"
+
+
 def _safe(value: Any) -> Any:
     return value if value is not None else None
 
@@ -1261,6 +1293,13 @@ def submit_and_get_next(payload: dict[str, Any]) -> dict[str, Any]:
         recent_results.append(bool(last_is_correct))
         routing_session["recent_results"] = recent_results[-4:]
         routing_session["steps_taken"] = int(routing_session.get("steps_taken", 0) or 0) + 1
+    if mode == "assessment" and bool(routing_session.get("in_remediation", False)):
+        routing_session["in_remediation"] = False
+        routing_session["steps_taken"] = 0
+        routing_session["recent_results"] = []
+        routing_session["remediation_skill"] = ""
+        routing_session["remediation_subskill"] = ""
+        routing_session["bridge_remaining"] = 0
     return_ready, return_reason = should_return_from_remediation(routing_session)
     local_remediation_completed = bool(
         payload.get("return_to_mainline", False)
@@ -1277,6 +1316,12 @@ def submit_and_get_next(payload: dict[str, Any]) -> dict[str, Any]:
         answered_steps=answered_steps,
     )
     completion_eval["local_remediation_completed"] = local_remediation_completed
+    completion_eval.setdefault("assessment_completed", False)
+    completion_eval.setdefault("assessment_stop_reason", "")
+    completion_eval.setdefault("assessment_breakpoint_detected", False)
+    if mode == "assessment" and bool(completion_eval.get("unit_completed", False)):
+        completion_eval["assessment_completed"] = True
+        completion_eval["assessment_stop_reason"] = "completed_all_core_families"
     should_finish = bool(last_is_correct is not None and completion_eval.get("unit_completed", False))
 
     next_step_number = requested_step + 1
@@ -1449,8 +1494,21 @@ def submit_and_get_next(payload: dict[str, Any]) -> dict[str, Any]:
             completed_observability["selection_debug"]["mode"] = mode
             completed_observability["selection_debug"]["unit_completed"] = bool(completion_eval.get("unit_completed", False))
             completed_observability["selection_debug"]["local_remediation_completed"] = bool(completion_eval.get("local_remediation_completed", False))
+            completed_observability["selection_debug"]["assessment_completed"] = bool(completion_eval.get("assessment_completed", False))
+            completed_observability["selection_debug"]["assessment_stop_reason"] = str(completion_eval.get("assessment_stop_reason", ""))
             completed_observability["selection_debug"]["completion_reason"] = str(completion_eval.get("completion_reason", ""))
             completed_observability["selection_debug"]["completion_stats"] = completion_eval
+            completed_observability["selection_debug"]["milestone_state"] = _derive_milestone_state(
+                mode=mode,
+                unit_completed=bool(completion_eval.get("unit_completed", False)),
+                local_remediation_completed=bool(completion_eval.get("local_remediation_completed", False)),
+                return_to_mainline=bool(payload.get("has_returned_to_main", False)),
+                return_triggered_final=bool(payload.get("has_returned_to_main", False)),
+                post_mode="mainline",
+                scenario_stage=scenario_stage,
+                assessment_completed=bool(completion_eval.get("assessment_completed", False)),
+                assessment_stop_reason=str(completion_eval.get("assessment_stop_reason", "")),
+            )
         _emit_decision_trace(decision_trace)
         if ROUTING_SUMMARY_LOG:
             print(
@@ -1511,6 +1569,17 @@ def submit_and_get_next(payload: dict[str, Any]) -> dict[str, Any]:
             ),
             scenario_stage=scenario_stage,
         )
+        completed_milestone_state = _derive_milestone_state(
+            mode=mode,
+            unit_completed=bool(completion_eval.get("unit_completed", False)),
+            local_remediation_completed=bool(completion_eval.get("local_remediation_completed", False)),
+            return_to_mainline=completed_return_to_mainline,
+            return_triggered_final=completed_return_to_mainline,
+            post_mode="mainline",
+            scenario_stage=scenario_stage,
+            assessment_completed=bool(completion_eval.get("assessment_completed", False)),
+            assessment_stop_reason=str(completion_eval.get("assessment_stop_reason", "")),
+        )
         summary.update(
             {
                 "display_mode": completed_display_state["display_mode"],
@@ -1524,6 +1593,9 @@ def submit_and_get_next(payload: dict[str, Any]) -> dict[str, Any]:
                 "post_mode": "mainline",
                 "learning_mode": "returned" if completed_return_to_mainline else "main",
                 "mode": mode,
+                "milestone_state": completed_milestone_state,
+                "assessment_completed": bool(completion_eval.get("assessment_completed", False)),
+                "assessment_stop_reason": str(completion_eval.get("assessment_stop_reason", "")),
             }
         )
         return {
@@ -1556,6 +1628,11 @@ def submit_and_get_next(payload: dict[str, Any]) -> dict[str, Any]:
             "completion_reason": str(completion_eval.get("completion_reason", "")),
             "completion_stats": completion_eval,
             "mode": mode,
+            "milestone_state": completed_milestone_state,
+            "assessment_completed": bool(completion_eval.get("assessment_completed", False)),
+            "assessment_stop_reason": str(completion_eval.get("assessment_stop_reason", "")),
+            "allowed_actions": [],
+            "action_mask": {"stay": True, "remediate": False, "return": False} if mode == "assessment" else {},
             "return_to_mainline": completed_display_state["return_to_mainline"],
             **completed_observability,
         }
@@ -1575,6 +1652,7 @@ def submit_and_get_next(payload: dict[str, Any]) -> dict[str, Any]:
     just_returned_from_remediation = False
     current_mode = "mainline"
     post_mode = "mainline"
+    assessment_breakpoint_detected = False
 
     try:
         family_subskill_map = load_family_subskill_map()
@@ -1722,6 +1800,23 @@ def submit_and_get_next(payload: dict[str, Any]) -> dict[str, Any]:
         allowed_agent_skills_before_filter = list(allowed_agent_skills)
         allowed_agent_skills_after_filter = list(allowed_agent_skills)
         allowed_actions = [k for k, v in action_mask.items() if v]
+        teaching_trigger_ready = bool(
+            current_mode == "mainline"
+            and remediation_review_ready
+            and action_mask.get("remediate", False)
+        )
+        if mode == "assessment":
+            assessment_breakpoint_detected = bool(teaching_trigger_ready)
+            completion_eval["assessment_breakpoint_detected"] = assessment_breakpoint_detected
+            if assessment_breakpoint_detected:
+                completion_eval["assessment_completed"] = True
+                completion_eval["assessment_stop_reason"] = "stable_breakpoint_detected"
+                completion_eval["unit_completed"] = False
+            action_mask = {"stay": True, "remediate": False, "return": False}
+            allowed_actions = ["stay"]
+            allowed_agent_skills = [current_skill]
+            allowed_agent_skills_before_filter = list(allowed_agent_skills)
+            allowed_agent_skills_after_filter = list(allowed_agent_skills)
 
         print(
             "[ROUTING] "
@@ -1748,6 +1843,97 @@ def submit_and_get_next(payload: dict[str, Any]) -> dict[str, Any]:
             f"findings_enabled={ENABLE_POLICY_FINDINGS}",
             flush=True,
         )
+
+        if mode == "assessment" and assessment_breakpoint_detected:
+            scenario_stage = "assessment_stable_breakpoint_detected"
+            routing_session["scenario_stage"] = scenario_stage
+            breakpoint_subskill = str(
+                diagnosis.get("selected_prereq_subskill")
+                or diagnosis.get("suggested_prereq_subskill")
+                or current_subskill
+                or ""
+            ).strip()
+            breakpoint_concept = str(diagnosis.get("error_concept") or "").strip()
+            completion_eval["assessment_completed"] = True
+            completion_eval["assessment_stop_reason"] = "stable_breakpoint_detected"
+            summary = _build_summary(
+                answered_steps=answered_steps,
+                current_apr=current_apr,
+                frustration_index=frustration_index,
+                visited_family_ids=visited + [_normalize_family_id(payload.get("last_family_id"))],
+                mode=mode,
+                unit_completed=False,
+                local_remediation_completed=False,
+                completion_reason="stable_breakpoint_detected",
+                completion_stats=completion_eval,
+            )
+            summary.update(
+                {
+                    "passed": False,
+                    "mode": mode,
+                    "assessment_completed": True,
+                    "assessment_stop_reason": "stable_breakpoint_detected",
+                    "breakpoint_family": current_family_for_progression or _normalize_family_id(payload.get("last_family_id")),
+                    "breakpoint_subskill": breakpoint_subskill,
+                    "breakpoint_concept": breakpoint_concept,
+                    "learning_recommendation": "已偵測到本單元學習斷點，建議改進入 teaching 模式補強。",
+                    "title": "評量完成：已偵測學習斷點",
+                    "message": "已偵測到穩定斷點，這是評量模式的停止點，系統不會進入補救支線。",
+                    "next_action": "建議切換到 teaching 模式，針對斷點進行補救後再回主線。",
+                    "milestone_state": "assessment_breakpoint_detected",
+                    "display_mode": "completed",
+                    "display_family": current_family_for_progression or _normalize_family_id(payload.get("last_family_id")),
+                    "display_subskill": breakpoint_subskill,
+                    "display_skill": current_skill,
+                    "is_completed": True,
+                    "unit_completed": False,
+                    "local_remediation_completed": False,
+                    "current_mode": "mainline",
+                    "post_mode": "mainline",
+                    "learning_mode": "main",
+                }
+            )
+            return {
+                "session_id": session_id,
+                "step_number": requested_step,
+                "current_apr": current_apr,
+                "ppo_strategy": strategy,
+                "frustration_index": frustration_index,
+                "execution_latency": 0,
+                "target_family_id": current_family_for_progression or _normalize_family_id(payload.get("last_family_id")),
+                "target_subskills": last_subskills,
+                "new_question_data": {},
+                "completed": True,
+                "summary": summary,
+                "routing_state": routing_session,
+                "routing_summary": routing_summary,
+                "routing_timeline": routing_timeline,
+                "routing_timeline_summary": routing_timeline_summary,
+                "mode": mode,
+                "assessment_completed": True,
+                "assessment_stop_reason": "stable_breakpoint_detected",
+                "unit_completed": False,
+                "local_remediation_completed": False,
+                "milestone_state": "assessment_breakpoint_detected",
+                "return_to_mainline": False,
+                "scenario_stage": scenario_stage,
+                "display_mode": "completed",
+                "display_family": current_family_for_progression or _normalize_family_id(payload.get("last_family_id")),
+                "display_subskill": breakpoint_subskill,
+                "display_skill": current_skill,
+                "is_completed": True,
+                "remediation_review_ready": remediation_review_ready,
+                "cross_skill_trigger": cross_skill_trigger,
+                "allowed_actions": allowed_actions,
+                "diagnostic_choice": diagnosis.get("diagnostic_choice"),
+                "diagnostic_confidence": diagnosis.get("diagnostic_confidence"),
+                "evidence_score": diagnosis.get("evidence_score"),
+                "resolved_runtime_subskill": diagnosis.get("selected_runtime_subskill"),
+                "selected_prereq_skill": diagnosis.get("selected_prereq_skill") or diagnosis.get("suggested_prereq_skill"),
+                "selected_prereq_subskill": diagnosis.get("selected_prereq_subskill") or diagnosis.get("suggested_prereq_subskill"),
+                "completion_reason": "stable_breakpoint_detected",
+                "completion_stats": completion_eval,
+            }
 
         policy_model = load_phase2_policy_model()
         policy_model_loaded = policy_model is not None
@@ -2494,6 +2680,19 @@ def submit_and_get_next(payload: dict[str, Any]) -> dict[str, Any]:
         observability["selection_debug"]["local_remediation_completed"] = bool(just_returned_from_remediation)
         observability["selection_debug"]["completion_reason"] = str(completion_eval.get("completion_reason", ""))
         observability["selection_debug"]["completion_stats"] = completion_eval
+        observability["selection_debug"]["assessment_completed"] = bool(completion_eval.get("assessment_completed", False))
+        observability["selection_debug"]["assessment_stop_reason"] = str(completion_eval.get("assessment_stop_reason", ""))
+        observability["selection_debug"]["milestone_state"] = _derive_milestone_state(
+            mode=mode,
+            unit_completed=False,
+            local_remediation_completed=bool(just_returned_from_remediation),
+            return_to_mainline=bool(just_returned_from_remediation),
+            return_triggered_final=bool(return_triggered_final),
+            post_mode=post_mode,
+            scenario_stage=scenario_stage,
+            assessment_completed=bool(completion_eval.get("assessment_completed", False)),
+            assessment_stop_reason=str(completion_eval.get("assessment_stop_reason", "")),
+        )
 
     started = time.perf_counter()
     question_payload = _generate_question_payload(next_entry, selected_subskill=selected_subskill)
@@ -2598,6 +2797,21 @@ def submit_and_get_next(payload: dict[str, Any]) -> dict[str, Any]:
         "completion_reason": str(completion_eval.get("completion_reason", "")),
         "completion_stats": completion_eval,
         "mode": mode,
+        "allowed_actions": allowed_actions,
+        "action_mask": action_mask,
+        "milestone_state": _derive_milestone_state(
+            mode=mode,
+            unit_completed=False,
+            local_remediation_completed=bool(just_returned_from_remediation),
+            return_to_mainline=bool(just_returned_from_remediation),
+            return_triggered_final=bool(return_triggered_final),
+            post_mode=post_mode,
+            scenario_stage=scenario_stage,
+            assessment_completed=bool(completion_eval.get("assessment_completed", False)),
+            assessment_stop_reason=str(completion_eval.get("assessment_stop_reason", "")),
+        ),
+        "assessment_completed": bool(completion_eval.get("assessment_completed", False)),
+        "assessment_stop_reason": str(completion_eval.get("assessment_stop_reason", "")),
         "retrieved_candidates": diagnosis.get("retrieved_candidates", []),
         "diagnostic_choice": diagnosis.get("diagnostic_choice"),
         "qwen_classifier_choice": diagnosis.get("diagnostic_choice"),
