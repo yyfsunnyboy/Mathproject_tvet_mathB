@@ -1,4 +1,4 @@
-﻿# -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 from __future__ import annotations
 
 from fractions import Fraction
@@ -223,6 +223,11 @@ def _parse_quotient_remainder(value: object) -> tuple[str, str] | None:
     if m:
         return m.group(1).strip(), m.group(2).strip()
 
+    # 2b) labeled without comma: 商:-3x-2餘:-1 (NFKC 後空白已移除)
+    m2 = re.match(r"^商\s*[:=]\s*(.+?)餘\s*[:=]\s*(.+)$", text)
+    if m2:
+        return m2.group(1).strip(), m2.group(2).strip()
+
     # 3) tuple form: (-3x-2,-1)
     if text.startswith("(") and text.endswith(")") and "," in text:
         body = text[1:-1]
@@ -230,6 +235,31 @@ def _parse_quotient_remainder(value: object) -> tuple[str, str] | None:
         if len(parts) == 2 and parts[0] and parts[1]:
             return parts[0].strip(), parts[1].strip()
 
+    return None
+
+
+def _parse_quotient_remainder_f9_tolerant(value: object) -> tuple[str, str] | None:
+    """
+    F9 / poly_div_poly_qr only: extra QR shapes after standard _parse_quotient_remainder fails.
+    Keeps deterministic symbolic compare via _symbolic_equal; no LLM.
+    """
+    got = _parse_quotient_remainder(value)
+    if got:
+        return got
+    text = _normalize_qr_input(value)
+    if not text:
+        return None
+    # Plain "quotient, remainder" when no 商/餘/ellipsis (e.g. -2x^2+x-1,4)
+    if (
+        text.count(",") == 1
+        and "商" not in text
+        and "餘" not in text
+        and "..." not in text
+    ):
+        a, b = text.split(",", 1)
+        a, b = a.strip(), b.strip()
+        if a and b:
+            return a, b
     return None
 
 
@@ -249,15 +279,30 @@ def judge_answer_with_feedback(
     correct_answer: object,
     *,
     question_text: object = "",
+    family_id: object = None,
 ) -> dict[str, Any]:
-    result: dict[str, Any] = {"is_correct": False, "feedback": ""}
+    result: dict[str, Any] = {
+        "is_correct": False,
+        "feedback": "",
+        "analysis_source": "generic_text_answer_judge",
+    }
+
+    fid = str(family_id or "").strip()
+    f9_family = fid in ("F9", "poly_div_poly_qr")
+
+    # Divisor hint from stem (F9/QR diagnostics); reserved for future remainder checks.
+    _ = _extract_divisor_from_question(question_text)
 
     correct_qr = _parse_quotient_remainder(correct_answer)
     user_qr = _parse_quotient_remainder(user_answer)
+    if f9_family and correct_qr and not user_qr:
+        user_qr = _parse_quotient_remainder_f9_tolerant(user_answer)
 
-    # F8/F9 style expected answer: compare quotient and remainder independently.
+    # F8/F9 style expected answer: compare quotient and remainder independently (_symbolic_equal).
     if correct_qr:
         cq, cr = correct_qr
+        if f9_family:
+            result["analysis_source"] = "text_answer_qr_parser"
         if user_qr:
             uq, ur = user_qr
             result["is_correct"] = _symbolic_equal(uq, cq) and _symbolic_equal(ur, cr)
@@ -267,7 +312,10 @@ def judge_answer_with_feedback(
         result["feedback"] = "你的答案可能在數學上接近正確，但本題需用『商與餘數』格式表示，例如：3x+2 ... -3"
         return result
 
-    result["is_correct"] = judge_answer(user_answer, correct_answer)
+    try:
+        result["is_correct"] = judge_answer(user_answer, correct_answer)
+    except Exception:
+        result["is_correct"] = False
     return result
 
 

@@ -180,7 +180,13 @@ from core.ai_analyzer import (
     enforce_strict_mode,
 )
 from core.ai_client import call_ai
-from core.adaptive.judge import judge_answer_with_feedback, _as_symbolic_tolerant
+from core.adaptive.judge import (
+    judge_answer_with_feedback,
+    _as_symbolic_tolerant,
+    _parse_quotient_remainder,
+    _symbolic_equal,
+    _extract_divisor_from_question,
+)
 
 from core.exam_analyzer import analyze_exam_image, save_analysis_result
 
@@ -455,7 +461,167 @@ FAMILY_ERROR_PRIORITY = {
     "poly_mul_monomial": ["operation_error", "sign_error", "combine_error", "unknown"],
     "F5": ["structure_error", "operation_error", "sign_error", "combine_error", "unknown"],
     "poly_mul_poly": ["structure_error", "operation_error", "sign_error", "combine_error", "unknown"],
+    "F9": ["structure_error", "sign_error", "operation_error", "notation_error", "unknown"],
+    "poly_div_poly_qr": ["structure_error", "sign_error", "operation_error", "notation_error", "unknown"],
 }
+
+F9_ERROR_MAIN_ISSUE = {
+    "structure_error": "長除法各列的對齊與次序關係不清楚，請先釐清商、乘回、相減三種列。",
+    "sign_error": "相減時整行變號有誤，請逐項檢查正負。",
+    "operation_error": "乘回除式或上下相減的規則有誤，請對照每一步係數。",
+    "notation_error": "長除法書寫不完整，請補齊商與餘數的標示。",
+}
+
+_F9_TUTOR_ROWS = (
+    # (mechanism, step_focus or "" for default, hint_focus, guided_question, micro_step)
+    ("structure_error", "subtract_row_1", "對齊相減後各列", "次方直欄是否對齊？", "缺項可補零再減"),
+    ("structure_error", "quotient_term_1", "對齊商與被除式", "第一次商對到哪一階項？", "先寫第一次商"),
+    ("structure_error", "final_remainder", "最後一列要對齊", "餘式與除式次方？", "確認最底行寫完"),
+    ("structure_error", "", "長除法列要對齊", "商、乘回、相減順序？", "由上到下逐步核對"),
+    ("sign_error", "final_remainder", "相減後餘項變號", "最底行每項符號？", "整行相減逐項改"),
+    ("sign_error", "subtract_row_1", "相減要逐項變號", "這列減上列每項？", "先改符號再加"),
+    ("sign_error", "", "相減逐項變號", "上下相減有漏負？", "整行取反再相加"),
+    ("operation_error", "final_remainder", "最後餘數要檢查", "餘式還能再除？", "看餘式次方"),
+    ("operation_error", "quotient_term_2", "下一項商核對", "降次後再除一次？", "對齊再取下一商"),
+    ("operation_error", "subtract_row_2", "第二次相減核對", "乘回列是否完整？", "先乘回再相減"),
+    ("operation_error", "quotient_term_1", "第一次相除核對", "首項除以除式首項？", "只決定第一項商"),
+    ("operation_error", "", "乘回與相減規則", "商的每項都乘除式？", "一步一步寫乘回"),
+    ("notation_error", "final_remainder", "餘數要寫清楚", "最後有沒有標餘？", "用商餘格式彙整"),
+    ("notation_error", "", "長除法書寫", "商與餘數標示？", "依題目格式整理"),
+)
+
+
+def _f9_long_division_layout_heuristic(expr: object) -> bool:
+    """True when OCR-flattened work still looks like polynomial long division (not a single line)."""
+    raw = str(expr or "").strip()
+    if not raw:
+        return False
+    parts = [p.strip() for p in re.split(r"[;\n\r]+", raw) if p.strip()]
+    if len(parts) >= 3:
+        return True
+    if raw.count(";") >= 2:
+        return True
+    if ")" in raw and len(parts) >= 2:
+        return True
+    if "..." in raw or "…" in raw:
+        return True
+    return False
+
+
+def _f9_find_student_quotient_remainder(parts: list[str]):
+    """Best-effort QR parse from semicolon-separated OCR lines (single segment only)."""
+    for p in reversed(parts):
+        qr = _parse_quotient_remainder(p)
+        if qr:
+            return qr
+    joined = " ".join(parts)
+    return _parse_quotient_remainder(joined)
+
+
+def _f9_remainder_is_sign_flip(ur: str, cr: str) -> bool:
+    try:
+        from sympy import simplify
+
+        su = _as_symbolic_tolerant(ur)
+        sc = _as_symbolic_tolerant(cr)
+        if su is None or sc is None:
+            return False
+        return simplify(su + sc) == 0
+    except Exception:
+        return False
+
+
+def _f9_default_step_focus(parts: list[str]) -> str:
+    n = len(parts)
+    if n >= 5:
+        return "subtract_row_1"
+    if n >= 3:
+        return "quotient_term_1"
+    return ""
+
+
+def analyze_polynomial_long_division_layout(
+    recognized_expression: object,
+    expected_answer: object,
+    question_text: object,
+) -> dict:
+    """
+    Rule-based F9 / poly_div_poly_qr layout analysis. Does not call LLMs.
+    Returns error_mechanism, main_issue, step_focus for merging into structured_analysis.
+    """
+    rec = str(recognized_expression or "").strip()
+    exp = str(expected_answer or "").strip()
+    parts = [p.strip() for p in re.split(r"[;\n\r]+", rec) if p.strip()]
+
+    def pack(mech: str, step: str) -> dict:
+        return {
+            "error_mechanism": mech,
+            "main_issue": F9_ERROR_MAIN_ISSUE.get(mech, ERROR_MECHANISM_FEEDBACK.get(mech, "")),
+            "step_focus": step,
+        }
+
+    exp_qr = _parse_quotient_remainder(exp)
+    st_qr = _f9_find_student_quotient_remainder(parts) if parts else _parse_quotient_remainder(rec)
+
+    # No expected QR: still avoid blanket notation_error when multiline layout exists.
+    if not exp_qr:
+        if len(parts) >= 3:
+            return pack("structure_error", _f9_default_step_focus(parts))
+        if len(parts) >= 2:
+            return pack("structure_error", "quotient_term_1")
+        return pack("notation_error", "")
+
+    cq, cr = exp_qr
+
+    if st_qr:
+        uq, ur = st_qr
+        q_ok = _symbolic_equal(uq, cq)
+        r_ok = _symbolic_equal(ur, cr)
+        if q_ok and r_ok:
+            return {
+                "error_mechanism": "structure_error",
+                "main_issue": "長除法演算與最後答案欄位對應不一致，請確認分號後最後一行是否為完整商餘格式。",
+                "step_focus": "final_remainder",
+            }
+
+        q_step = "quotient_term_2" if len(parts) >= 5 else "quotient_term_1"
+        if not q_ok and r_ok:
+            return pack("operation_error", q_step)
+        if q_ok and not r_ok:
+            if _f9_remainder_is_sign_flip(ur, cr):
+                return pack("sign_error", "final_remainder")
+            return pack("operation_error", "final_remainder")
+        # both differ: prefer structure when many rows (OCR layout noise), else operation
+        if len(parts) >= 4:
+            return pack("structure_error", "subtract_row_1")
+        return pack("operation_error", q_step)
+
+    # Multiline work but final answer not in QR — treat as layout / step trace issue first.
+    if len(parts) >= 3:
+        return pack("structure_error", _f9_default_step_focus(parts))
+    if len(parts) == 2:
+        return pack("structure_error", "quotient_term_1")
+
+    # Single blob: try labeled divisor row hint
+    div_hint = _extract_divisor_from_question(question_text)
+    if div_hint and div_hint.replace(" ", "") and parts:
+        row0 = parts[0].replace(" ", "")
+        if div_hint.replace(" ", "") in row0:
+            return pack("structure_error", "quotient_term_1")
+
+    return pack("notation_error", "")
+
+
+def _f9_tutor_guidance_pick(error_mechanism: str, step_focus: str):
+    mech = str(error_mechanism or "").strip()
+    step = str(step_focus or "").strip()
+    for m, s, h, g, ms in _F9_TUTOR_ROWS:
+        if m == mech and s == step:
+            return h, g, ms
+    for m, s, h, g, ms in _F9_TUTOR_ROWS:
+        if m == mech and s == "":
+            return h, g, ms
+    return None
 
 
 def _handwriting_has_unflipped_negative_parenthesis(question_text, user_segment):
@@ -573,10 +739,13 @@ def _handwriting_structured_analysis(recognized_expression, expected_answer, que
         "family_id": family_id or "",
         "family_label_zh": family_label_zh,
         "family_description_zh": family_description_zh,
+        "step_focus": "",
+        "analysis_source": "generic_handwriting_analysis",
     }
     if not exp:
         base["main_issue"] = "目前缺少可對照的標準答案，無法完成穩定批改。"
         base["skill_focus"] = skill_focus or "依題目重點進行化簡與整理"
+        base["analysis_source"] = "generic_handwriting_analysis"
         return base
 
     candidates = [final_expr] if final_expr else []
@@ -586,7 +755,9 @@ def _handwriting_structured_analysis(recognized_expression, expected_answer, que
         candidates = [str(recognized_expression).strip()]
 
     for cand in candidates:
-        judged = judge_answer_with_feedback(cand, exp, question_text=qt)
+        judged = judge_answer_with_feedback(
+            cand, exp, question_text=qt, family_id=family_id
+        )
         if judged.get("is_correct"):
             base.update(
                 {
@@ -596,6 +767,8 @@ def _handwriting_structured_analysis(recognized_expression, expected_answer, que
                     "skill_focus": skill_focus or "你已掌握本題重點",
                     "issue_tag": "",
                     "error_mechanism": "unknown",
+                    "step_focus": "",
+                    "analysis_source": "generic_handwriting_analysis",
                 }
             )
             return base
@@ -612,13 +785,26 @@ def _handwriting_structured_analysis(recognized_expression, expected_answer, que
         )
 
     mechanism = ""
+    step_focus = ""
+    analysis_src = "generic_handwriting_analysis"
+    fid = str(family_id or "").strip()
+    ua_full = str(recognized_expression or "").strip()
     if status in ("incorrect", "partially_correct"):
-        mechanism = _handwriting_infer_error_mechanism(
-            primary, exp, family_id, question_text=qt
-        )
-        main_issue = ERROR_MECHANISM_FEEDBACK.get(
-            mechanism, ERROR_MECHANISM_FEEDBACK["unknown"]
-        )
+        if fid in ("F9", "poly_div_poly_qr") and _f9_long_division_layout_heuristic(ua_full):
+            f9_res = analyze_polynomial_long_division_layout(ua_full, exp, qt)
+            mechanism = f9_res.get("error_mechanism") or "notation_error"
+            main_issue = f9_res.get("main_issue") or ERROR_MECHANISM_FEEDBACK.get(
+                mechanism, ERROR_MECHANISM_FEEDBACK["unknown"]
+            )
+            step_focus = str(f9_res.get("step_focus") or "")
+            analysis_src = "f9_layout_heuristic"
+        else:
+            mechanism = _handwriting_infer_error_mechanism(
+                primary, exp, family_id, question_text=qt
+            )
+            main_issue = ERROR_MECHANISM_FEEDBACK.get(
+                mechanism, ERROR_MECHANISM_FEEDBACK["unknown"]
+            )
 
     base.update(
         {
@@ -628,6 +814,8 @@ def _handwriting_structured_analysis(recognized_expression, expected_answer, que
             "skill_focus": skill_focus or "憭?撘?蝪∟???",
             "issue_tag": mechanism,
             "error_mechanism": mechanism,
+            "step_focus": step_focus,
+            "analysis_source": analysis_src,
         }
     )
     return base
@@ -641,6 +829,7 @@ def _handwriting_family_meta(family_id):
         "poly_mul_monomial": "F3",
         "poly_mul_poly": "F5",
         "poly_div_monomial": "F11",
+        "poly_div_poly_qr": "F9",
     }
     fid = alias.get(fid, fid)
     mapping = {
@@ -648,6 +837,7 @@ def _handwriting_family_meta(family_id):
         "F2": ("巢狀多項式加減", "先處理括號與符號，再合併同類項"),
         "F3": ("多項式乘以單項式", "分配律與係數次方正確分配"),
         "F5": ("多項式乘法展開", "每一項都要完整分配相乘"),
+        "F9": ("多項式長除法（商餘）", "長除法對齊、乘回與相減"),
         "F11": ("多項式除以單項式", "各項分別相除並化簡"),
     }
     return mapping.get(fid, ("多項式題", "依題意完成整理、化簡與等值轉換"))
@@ -795,21 +985,44 @@ TUTOR_FORBIDDEN_PHRASES = (
 
 
 def _tutor_extract_structured_analysis(data):
-    sa = data.get("structured_analysis")
-    if isinstance(sa, dict):
-        return sa
+    """Prefer explicit structured_analysis; else handwriting_analysis; else flat request fields."""
+    if not isinstance(data, dict):
+        data = {}
+    raw_sa = data.get("structured_analysis")
+    raw_ha = data.get("handwriting_analysis")
+    if isinstance(raw_sa, dict) and raw_sa:
+        src = dict(raw_sa)
+    elif isinstance(raw_ha, dict) and raw_ha:
+        src = dict(raw_ha)
+    else:
+        src = {}
     return {
-        "status": str(data.get("status") or "unknown"),
-        "main_issue": str(data.get("main_issue") or ""),
-        "issue_tag": str(data.get("issue_tag") or ""),
-        "expected_answer": str(data.get("expected_answer") or ""),
-        "error_mechanism": str(data.get("error_mechanism") or "unknown"),
+        "status": str(src.get("status") or data.get("status") or "unknown"),
+        "main_issue": str(src.get("main_issue") or data.get("main_issue") or ""),
+        "issue_tag": str(src.get("issue_tag") or data.get("issue_tag") or ""),
+        "expected_answer": str(src.get("expected_answer") or data.get("expected_answer") or ""),
+        "error_mechanism": str(src.get("error_mechanism") or data.get("error_mechanism") or "unknown"),
+        "step_focus": str(src.get("step_focus") or data.get("step_focus") or ""),
+        "family_id": str(src.get("family_id") or data.get("family_id") or ""),
+        "analysis_source": str(src.get("analysis_source") or data.get("analysis_source") or ""),
     }
 
 
 def _tutor_deterministic_fallback(structured_analysis):
     mech = str(structured_analysis.get("error_mechanism") or "unknown")
     issue = str(structured_analysis.get("main_issue") or "")
+    fid = str(structured_analysis.get("family_id") or "").strip()
+    step = str(structured_analysis.get("step_focus") or "").strip()
+    if fid in ("F9", "poly_div_poly_qr"):
+        picked = _f9_tutor_guidance_pick(mech, step)
+        if picked:
+            hint_focus, guided_question, micro_step = picked
+            return {
+                "hint_focus": hint_focus[:18],
+                "guided_question": guided_question[:28],
+                "micro_step": micro_step[:22],
+                "forbidden": False,
+            }
     by_mech = {
         "sign_error": (
             "先看括號前的符號",
@@ -1126,6 +1339,9 @@ def chat_ai():
         f"main_issue={structured_analysis.get('main_issue','')}; "
         f"issue_tag={structured_analysis.get('issue_tag','')}; "
         f"error_mechanism={structured_analysis.get('error_mechanism','unknown')}; "
+        f"step_focus={structured_analysis.get('step_focus','')}; "
+        f"family_id={structured_analysis.get('family_id','')}; "
+        f"analysis_source={structured_analysis.get('analysis_source','')}; "
         f"expected_answer={structured_analysis.get('expected_answer','')}"
     )
     if structured_summary:
@@ -1249,6 +1465,13 @@ def chat_ai():
 
 
 
+    current_app.logger.info(
+        "[chat_ai] analysis_source=%s family_id=%s error_mechanism=%s step_focus=%s",
+        structured_analysis.get("analysis_source", ""),
+        structured_analysis.get("family_id", ""),
+        structured_analysis.get("error_mechanism", ""),
+        structured_analysis.get("step_focus", ""),
+    )
     current_app.logger.info(
 
 
@@ -2027,6 +2250,12 @@ def analyze_handwriting():
         print("[HW DEBUG] question_text:", question_text)
         analysis_result = _handwriting_structured_analysis(
             expr, expected_answer, question_text, family_id
+        )
+        current_app.logger.info(
+            "analyze_handwriting: analysis_source=%s family_id=%s status=%s",
+            analysis_result.get("analysis_source"),
+            family_id,
+            analysis_result.get("status"),
         )
         _hw_err = {
             "correct": "handwriting_ok",

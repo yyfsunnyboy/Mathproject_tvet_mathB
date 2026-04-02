@@ -153,6 +153,7 @@ def adaptive_submit_and_get_next():
         session_id = str(payload.get("session_id") or "")
         runtime = runtime_store.get(session_id, {}) if session_id else {}
 
+        grading_analysis = None
         if runtime:
             payload["last_family_id"] = runtime.get("family_id", payload.get("last_family_id"))
             payload["last_subskills"] = runtime.get("subskill_nodes", payload.get("last_subskills"))
@@ -164,14 +165,38 @@ def adaptive_submit_and_get_next():
                     payload.get("user_answer"),
                     runtime.get("correct_answer"),
                     question_text=runtime.get("question_text", ""),
+                    family_id=runtime.get("family_id"),
                 )
                 payload["is_correct"] = bool(judged.get("is_correct", False))
                 payload["answer_feedback"] = str(judged.get("feedback") or "")
+                fam = _trim_text(runtime.get("family_id"), max_len=24)
+                grading_analysis = {
+                    "family_id": fam,
+                    "error_mechanism": "unknown",
+                    "step_focus": "",
+                    "main_issue": str(payload.get("answer_feedback") or ""),
+                    "status": "correct" if payload["is_correct"] else "incorrect",
+                    "expected_answer": _trim_text(runtime.get("correct_answer"), max_len=_MAX_ANSWER_LEN),
+                    "answer_feedback": str(payload.get("answer_feedback") or ""),
+                    "analysis_source": str(judged.get("analysis_source") or "generic_text_answer_judge"),
+                    "is_correct": bool(payload["is_correct"]),
+                    "grading_step": int(payload.get("step_number") or 0),
+                }
             payload["last_user_answer"] = payload.get("user_answer", payload.get("last_user_answer"))
         else:
             payload["routing_state"] = _slim_routing_state(payload.get("routing_state"))
 
         response = submit_and_get_next(payload)
+        if grading_analysis is not None:
+            response["grading_analysis"] = grading_analysis
+            try:
+                print(
+                    f"[adaptive_submit] grading_analysis_source={grading_analysis.get('analysis_source')} "
+                    f"family_id={grading_analysis.get('family_id')} status={grading_analysis.get('status')}",
+                    flush=True,
+                )
+            except Exception:
+                pass
         if payload.get("answer_feedback"):
             response["answer_feedback"] = str(payload.get("answer_feedback"))
         next_session_id = response["session_id"]
