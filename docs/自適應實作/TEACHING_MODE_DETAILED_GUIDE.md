@@ -156,6 +156,65 @@ teaching mode 預設先留在主線，不會一進來就直接補救。
 2. 同一 family 一錯就先停留觀察
 3. 連續錯到 2 次時，補救需求會顯著上升
 
+### 5.3 切補救其實是兩段判斷，不是一步到位
+
+系統不是只要偵測到「有補救需求」就立刻切補救，而是會經過兩段判斷：
+
+1. 先判斷是否已經出現穩定卡點
+2. 再判斷這一輪 routing action 是否真的選擇 `remediate`
+
+可以把這兩段拆成：
+
+#### 第一段：建立補救需求
+
+這一段的目的是產生：
+
+`remediation_review_ready = true / false`
+
+也就是系統先回答：
+
+「這個學生現在是不是已經卡到值得考慮補救了？」
+
+目前教學模式常見會讓補救需求上升的訊號包括：
+
+1. 同一個 family 連錯達門檻
+2. 整體 fail streak 達門檻
+3. `frustration_index` 偏高
+4. 題目或錯誤訊號呈現明顯 sign / bracket / power 類型卡點
+
+所以白話上：
+
+1. 錯 1 題通常還只是觀察
+2. 同類題持續錯，才會被視為「穩定卡點」
+
+#### 第二段：routing 是否批准切補救
+
+即使第一段已經認定補救需求存在，也還不等於下一題一定切補救。
+
+因為系統還要建立 `action_mask`，看目前允許的行為有哪些：
+
+1. `stay`
+2. `remediate`
+3. `return`
+
+接著再由 PPO route action 或 heuristic fallback 決定這一輪最後動作。
+
+因此真正切補救的條件不是單一布林值，而是：
+
+`有補救需求 + routing 最後選擇 remediate`
+
+### 5.4 實際理解方式
+
+可以把 teaching mode 中的補救切入理解成：
+
+1. 系統先覺得你有可能真的卡住了
+2. 系統再決定「這一輪要不要真的帶你去補救」
+
+換句話說：
+
+- `remediation_review_ready` 像是「老師判斷你可能需要補課」
+- `route_action = remediate` 像是「老師這一題真的帶你去補課」
+
 ### 5.3 誰決定真的切補救
 
 即使 `remediation_review_ready = true`，也不是直接硬切。
@@ -230,6 +289,29 @@ teaching mode 預設先留在主線，不會一進來就直接補救。
 1. 補救掌握度高於 `0.85`，可回主線
 2. 或掌握度高於 `0.75` 且最近有答對，也可回主線
 
+### 7.2 返回主線不是補一題就回去
+
+這裡要特別強調，補救題並不是做完一題就會回主線。
+
+系統在補救期間會持續累積：
+
+1. `steps_taken`
+2. `recent_results`
+3. `last_result`
+4. `remediation_mastery`
+
+然後再判斷：
+
+1. 是否已達高掌握門檻
+2. 是否已達較低掌握門檻且最近答對
+
+只有當 return 規則通過時，routing 才會允許 `return` 這個 action。
+
+所以白話上：
+
+1. 補救不是「做過」就算
+2. 要補到系統覺得你真的有補回來，才會放你回主線
+
 ### 7.2 返回主線後的狀態
 
 返回主線時，系統通常會標記：
@@ -239,6 +321,164 @@ teaching mode 預設先留在主線，不會一進來就直接補救。
 3. `learning_mode = returned`
 
 這表示「本輪局部補救成功」，但**不等於整個 teaching mode 完成**。
+
+---
+
+## 7A. 補救子技能是怎麼決定的
+
+這一段是 teaching mode 中最容易被誤解的部分。
+
+目前系統不是用單一檔案直接寫死：
+
+「F2 錯了就一定回某一個固定子技能」
+
+而是分成多段決策。
+
+### 7A.1 第一層：先決定這個 family 可回哪些候選補救子技能
+
+這一層主要由單元 progression 設定決定。
+
+以多項式四則運算為例，每個 family 都會在教材設定中宣告：
+
+1. `main_subskills`
+2. `prerequisite_candidates`
+3. `prerequisite_candidate_descriptions`
+
+例如：
+
+1. `F2` 可能對應 `outer_minus_scope`
+2. `F2` 也可能對應 `monomial_distribution`
+3. `F2` 也可能對應 `like_term_combination`
+
+因此這一層回答的是：
+
+「如果這個 family 卡住，合理的補救候選有哪些？」
+
+### 7A.2 第二層：再從候選裡挑這次最像哪個卡點
+
+候選出來之後，系統不一定直接選第一個，而是會進一步根據學生這次作答現象做診斷。
+
+這一層會綜合使用：
+
+1. 當前 family
+2. 當前 subskill
+3. 題目文字
+4. 學生答案
+5. 正確答案
+6. 錯誤訊號 hint
+
+在多項式單元中，這一步可能產出：
+
+1. `suggested_prereq_subskill`
+2. `selected_prereq_subskill`
+3. `selected_runtime_subskill`
+
+### 7A.3 第三層：如果診斷沒選出來，才走 fallback
+
+如果候選診斷不夠明確，系統還會走 heuristic fallback。
+
+例如：
+
+1. sign / bracket 類型錯誤時，優先回外層負號、分配律、同類項整理
+2. power 類型錯誤時，優先回 signed power interpretation、same-base multiplication rule、power-of-power rule、product-power distribution
+
+所以最終補救子技能的決策不是單一步驟，而是：
+
+`family -> 候選補救清單 -> 診斷選擇 -> 若失敗則 fallback`
+
+### 7A.4 文件層面要怎麼看這件事
+
+如果要追這個流程，通常要分開看三類設定：
+
+1. `textbook_progression_polynomial.yaml`
+   用來決定 family 的補救候選清單
+
+2. `rag_diagnosis_mapping.yaml`
+   用來把某些錯誤概念映射到較合理的 prereq subskill
+
+3. `subskill_remediation.yaml`
+   用來描述 subskill 與更底層 bridge target 的對應
+
+---
+
+## 7B. 系統裡「學生的錯法」是怎麼定義的
+
+這一段直接影響 teaching mode 的補救決策。
+
+### 7B.1 錯法不是只有「答錯」
+
+目前系統中的錯法至少分兩層：
+
+1. 第一層：是否答對 `is_correct`
+2. 第二層：如果答錯，進一步把錯誤歸類成某個 `error_concept`
+
+所以：
+
+- `is_correct = false` 只是代表答錯
+- 真正影響補救決策的是後續的 `error_concept`
+
+### 7B.2 第一層：答對/答錯如何判
+
+系統會先透過批改器比對：
+
+1. 數值答案是否相同
+2. 分數值是否等價
+3. 代數式是否符號等價
+4. 商與餘式格式是否正確
+
+這一層回答的是：
+
+「學生有沒有答對」
+
+### 7B.3 第二層：答錯後如何判定錯法
+
+答錯之後，系統會嘗試把這次錯誤歸成一個較具教學意義的 `error_concept`。
+
+以多項式單元來說，目前常見概念標籤包括：
+
+1. `outer_minus_scope`
+2. `sign_distribution`
+3. `sign_flip_after_distribution`
+4. `combine_like_terms_after_distribution`
+5. `coefficient_arithmetic_error`
+6. `binomial_expansion_structure_error`
+7. `mixed_simplify_transition_error`
+8. `family_isomorphism_confusion`
+9. `nested_grouping_structure_error`
+
+這些概念標籤不是完整的人工語意分析，而是系統根據當前情境推定出的錯誤概念。
+
+### 7B.4 系統用哪些訊號推定錯法
+
+目前主要看：
+
+1. 當前 family
+2. 當前 subskill
+3. 題目文字特徵
+4. 學生答案與正解的差異
+5. 目前 session 的 error type hint
+
+例如：
+
+1. 在 `F2` 且題目有 `-(` 這類括號結構時，較可能判成 `outer_minus_scope`
+2. 在多項式展開 family 中，若和展開結構相關，可能判成 `binomial_expansion_structure_error`
+3. 若學生答案與正解都含變數但未正確整理，可能判成 `combine_like_terms_after_distribution`
+
+### 7B.5 錯法最後怎麼接到補救
+
+一旦 `error_concept` 被推定出來，系統會再把它映射成：
+
+1. `suggested_prereq_skill`
+2. `suggested_prereq_subskill`
+
+再交由 routing 決定：
+
+1. 是先留在主線
+2. 還是切去補救
+
+所以完整鏈條是：
+
+`答錯 -> 推定 error_concept -> 映射到 prereq subskill -> routing 決定是否補救`
 
 ---
 
