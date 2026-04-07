@@ -1,0 +1,47 @@
+<!--
+=============================================================================
+模組名稱 (Module Name): templates/_admin_navbar.html
+功能說明 (Description): 後台管理導覽列 (Include)
+後端呼叫 (Backend Call): Include File
+版本資訊 (Version): V2.0
+更新日期 (Date): 2026-01-13
+維護團隊 (Maintainer): Math AI Project Team
+=============================================================================
+-->
+<div class="navbar">
+    <a href="{{ url_for('teacher_dashboard') }}" class="logo" style="font-size: 1.3rem;">
+        自適應性教學系統 後台 ( <strong>{{ username or current_user.username }}</strong> )
+    </a>
+    <div style="display: flex; align-items: center; gap: 5px; flex-wrap: nowrap;">
+        {% if current_user.is_admin %}
+        <a href="{{ url_for('core.admin_curriculum') }}"
+            style="padding: 6px 8px; border-radius: 4px; font-size: 1.1rem; white-space: nowrap;"
+            onmouseover="this.style.background='#3498db'" onmouseout="this.style.background='none'">📚 課程分類</a>
+        <a href="{{ url_for('core.admin_skills') }}"
+            style="padding: 6px 8px; border-radius: 4px; font-size: 1.1rem; white-space: nowrap;"
+            onmouseover="this.style.background='#9b59b6'" onmouseout="this.style.background='none'">⚙️ 單元管理</a>
+        <a href="{{ url_for('core.admin_prerequisites') }}"
+            style="padding: 6px 8px; border-radius: 4px; font-size: 1.1rem; white-space: nowrap;"
+            onmouseover="this.style.background='#1abc9c'" onmouseout="this.style.background='none'">🔗 技能關聯</a>
+        <a href="{{ url_for('core.admin_examples') }}"
+            style="padding: 6px 8px; border-radius: 4px; font-size: 1.1rem; white-space: nowrap;"
+            onmouseover="this.style.background='#e67e22'" onmouseout="this.style.background='none'">📖 例題管理</a>
+        <a href="{{ url_for('core.admin_textbook_importer') }}"
+            style="padding: 6px 8px; border-radius: 4px; font-size: 1.1rem; white-space: nowrap;"
+            onmouseover="this.style.background='#2ecc71'" onmouseout="this.style.background='none'">🤖 AI 教材</a>
+        <a href="{{ url_for('core.db_maintenance') }}"
+            style="padding: 6px 8px; border-radius: 4px; font-size: 1.1rem; white-space: nowrap;"
+            onmouseover="this.style.background='#f1c40f'; this.style.color='#2c3e50'"
+            onmouseout="this.style.background='none'; this.style.color='white'">🗃️ 資料庫</a>
+        <a href="{{ url_for('core.ai_prompt_settings_page') }}"
+            style="padding: 6px 8px; border-radius: 4px; font-size: 1.1rem; white-space: nowrap;"
+            onmouseover="this.style.background='#e74c3c'" onmouseout="this.style.background='none'">🤖 AI 參數</a>
+        {% endif %}
+
+        <a href="{{ url_for('practice.similar_questions') }}"
+            style="padding: 6px 8px; border-radius: 4px; font-size: 1.1rem; white-space: nowrap;"
+            onmouseover="this.style.background='#8e44ad'" onmouseout="this.style.background='none'">🧩 類題練習</a>
+        <a href="{{ url_for('logout') }}"
+            style="margin-left: 15px; color: #aaa; font-size: 1.1rem; white-space: nowrap;">登出</a>
+    </div>
+</div>

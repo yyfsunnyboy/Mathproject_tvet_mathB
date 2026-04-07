@@ -1,0 +1,339 @@
+<!--
+=============================================================================
+模組名稱 (Module Name): templates/ai_prompt_settings.html
+功能說明 (Description): AI Prompt 參數設定
+後端呼叫 (Backend Call): core/routes/admin.py -> ai_prompt_settings_page
+版本資訊 (Version): V2.0
+更新日期 (Date): 2026-01-13
+維護團隊 (Maintainer): Math AI Project Team
+=============================================================================
+-->
+<!DOCTYPE html>
+<html lang="zh-Hant">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI 參數設定 - 自適應性教學系統</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+            background: #f5f7fa;
+            min-height: 100vh;
+            padding-bottom: 50px;
+        }
+
+        /* Navbar 樣式 */
+        /* Navbar - 參考自 admin_curriculum.html */
+        .navbar {
+            background: #2c3e50;
+            color: white;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .navbar .logo {
+            font-weight: bold;
+            font-size: 1.3em;
+        }
+
+        .navbar a {
+            color: #ecf0f1;
+            text-decoration: none;
+            padding: 8px 15px;
+            border-radius: 4px;
+            transition: background 0.2s;
+            margin-left: 10px;
+        }
+
+        .navbar a:hover {
+            background: #34495e;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+
+        .page-header {
+            margin-bottom: 25px;
+        }
+
+        .page-header h1 {
+            color: #2c3e50;
+            font-size: 1.8rem;
+        }
+
+        .card {
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+
+        .card-header {
+            background: #fff;
+            padding: 15px 20px;
+            border-bottom: 1px solid #eee;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .card-body {
+            padding: 20px;
+        }
+
+        .warning-box {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 4px;
+        }
+
+        .warning-box strong {
+            color: #d32f2f;
+        }
+
+        .warning-box code {
+            background: #fff;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            color: #d32f2f;
+            font-weight: bold;
+        }
+
+        textarea {
+            width: 100%;
+            min-height: 400px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            line-height: 1.6;
+            resize: vertical;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: 0.2s;
+            font-size: 14px;
+        }
+
+        .btn-primary {
+            background: #3498db;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #2980b9;
+        }
+
+        .btn-warning {
+            background: #f39c12;
+            color: white;
+        }
+
+        .btn-warning:hover {
+            background: #e67e22;
+        }
+
+        .btn-secondary {
+            background: #95a5a6;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #7f8c8d;
+        }
+
+        .info-text {
+            color: #7f8c8d;
+            font-size: 0.9em;
+            margin-top: 10px;
+        }
+
+        .alert {
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 4px;
+            display: none;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+    </style>
+</head>
+
+<body>
+    {% include '_admin_navbar.html' %}
+
+    <div class="container">
+        <div class="page-header">
+            <h1>🤖 AI 參數設定</h1>
+        </div>
+
+        <div id="alert-container"></div>
+
+        <div class="card">
+            <div class="card-header">
+                AI Prompt 模板編輯器
+            </div>
+            <div class="card-body">
+                <div class="warning-box">
+                    <strong>⚠️ 重要提醒：</strong><br>
+                    此 Prompt 用於 AI 分析學生手寫答案。請務必保留以下兩個關鍵變數，否則系統將無法正常運作：
+                    <ul style="margin-top: 10px; margin-left: 20px;">
+                        <li><code>{context}</code> - 題目內容</li>
+                        <li><code>{prereq_text}</code> - 前置技能列表</li>
+                    </ul>
+                </div>
+
+                <textarea id="prompt-editor" placeholder="載入中..."></textarea>
+
+                <div class="info-text" id="update-time">
+                    最後更新時間：載入中...
+                </div>
+
+                <div class="button-group">
+                    <button class="btn btn-primary" onclick="savePrompt()">💾 儲存變更</button>
+                    <button class="btn btn-warning" onclick="resetToDefault()">🔄 恢復預設值</button>
+                    <button class="btn btn-secondary"
+                        onclick="window.location.href='{{ url_for('teacher_dashboard') }}'">
+                        ← 返回後台
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 頁面載入時取得當前 Prompt
+        window.addEventListener('DOMContentLoaded', function () {
+            loadPrompt();
+        });
+
+        function loadPrompt() {
+            fetch('/admin/ai_prompt_settings/get')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        document.getElementById('prompt-editor').value = data.prompt;
+                        document.getElementById('update-time').textContent =
+                            '最後更新時間：' + (data.updated_at || '未知');
+                    } else {
+                        showAlert('載入失敗：' + data.message, 'error');
+                    }
+                })
+                .catch(error => {
+                    showAlert('網路錯誤：' + error, 'error');
+                });
+        }
+
+        function savePrompt() {
+            const promptValue = document.getElementById('prompt-editor').value;
+
+            // 前端驗證：檢查是否包含必要變數
+            if (!promptValue.includes('{context}') || !promptValue.includes('{prereq_text}')) {
+                showAlert('錯誤：Prompt 必須包含 {context} 和 {prereq_text} 變數！', 'error');
+                return;
+            }
+
+            fetch('/admin/ai_prompt_settings/update', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ prompt: promptValue })
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        showAlert('✅ 儲存成功！', 'success');
+                        loadPrompt(); // 重新載入以更新時間
+                    } else {
+                        showAlert('儲存失敗：' + data.message, 'error');
+                    }
+                })
+                .catch(error => {
+                    showAlert('網路錯誤：' + error, 'error');
+                });
+        }
+
+        function resetToDefault() {
+            if (!confirm('確定要恢復為預設 Prompt 嗎？\n\n此操作將覆蓋您目前的所有修改。')) {
+                return;
+            }
+
+            fetch('/admin/ai_prompt_settings/reset', {
+                method: 'POST'
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        showAlert('✅ 已恢復預設值！', 'success');
+                        loadPrompt();
+                    } else {
+                        showAlert('恢復失敗：' + data.message, 'error');
+                    }
+                })
+                .catch(error => {
+                    showAlert('網路錯誤：' + error, 'error');
+                });
+        }
+
+        function showAlert(message, type) {
+            const container = document.getElementById('alert-container');
+            const alertClass = type === 'success' ? 'alert-success' : 'alert-error';
+
+            container.innerHTML = `<div class="alert ${alertClass}">${message}</div>`;
+            container.firstChild.style.display = 'block';
+
+            // 3 秒後自動隱藏
+            setTimeout(() => {
+                container.innerHTML = '';
+            }, 3000);
+        }
+    </script>
+</body>
+
+</html>
