@@ -158,6 +158,13 @@
     .assistant-input { display:grid; grid-template-columns:1fr 110px; gap:8px; }
     .assistant-input input { min-height:44px; }
     #assistantSendBtn { background:#16a34a; }
+    .adv-rag-provider-row { display:flex; align-items:center; justify-content:space-between; gap:8px; margin:0 0 10px; font-size:13px; }
+    .adv-rag-provider-label { color:#31557d; font-weight:700; white-space:nowrap; }
+    .adv-rag-provider-toggle { display:inline-flex; border:1px solid #b9d7f2; border-radius:8px; overflow:hidden; background:#f8fbff; }
+    .adv-rag-provider-btn { border:0; border-right:1px solid #b9d7f2; border-radius:0; background:transparent; color:#2563a8; padding:6px 9px; font-size:12px; cursor:pointer; }
+    .adv-rag-provider-btn:last-child { border-right:0; }
+    .adv-rag-provider-btn.active { background:#2b83bd; color:#fff; }
+    .adv-rag-provider-note { margin:-4px 0 10px; color:#60708c; font-size:12px; line-height:1.45; }
     .nav-kpis { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
     .nav-chip { border:1px solid var(--line); border-radius:14px; padding:10px 12px; background:#fafcff; }
     .nav-chip strong { display:block; font-size:12px; color:var(--muted); margin-bottom:4px; }
@@ -377,85 +384,39 @@
 
         <div class="top-right">
           <section class="panel assistant-card idle ai-assistant-panel" id="assistantCard">
-            <div style="display: none;">
+            <div>
               <div class="assistant-title">AI 助教（這題專用）</div>
-              <div class="assistant-rag-scope" id="ragScopeBadge">RAG 影響範圍：右側補救提示、AI 助教回覆、手寫檢查摘要</div>
+              <div class="assistant-rag-scope" id="ragScopeBadge">問問題會使用 RAG；AI 檢查手寫只讀取白板過程。</div>
               <div class="assistant-banner" id="assistantBanner">先自己做題就好。我會先在旁邊看著，只有在你卡住，或系統判定需要補救時，我才會跳出來提醒你。</div>
               <div class="chat-history" id="chatHistory"><div class="msg bot">你好，我是這一題的 AI 助教。我會用國中生聽得懂的方式提醒你重點，但不會直接把最後答案講出來。</div></div>
               <div style="height:10px;"></div>
               <div class="guide-buttons">
-                <button type="button" data-guide="請用國中生能懂的方式提醒我这题先看哪一個觀念。">看核心觀念</button>
+                <button type="button" data-guide="請用國中生能懂的方式提醒我這題先看哪一個觀念。">看核心觀念</button>
                 <button type="button" data-guide="不要直接給答案，只提示我下一步該做什麼。">提示下一步</button>
                 <button type="button" data-guide="提醒我這類題最容易犯的錯誤。">提醒易錯點</button>
               </div>
               <div style="height:10px;"></div>
+              <div class="adv-rag-provider-row">
+                <span class="adv-rag-provider-label">回答來源</span>
+                <div class="adv-rag-provider-toggle" role="group" aria-label="選擇 RAG 回答來源">
+                  <button type="button" class="adv-rag-provider-btn active" data-provider="local" onclick="setAdvRagProvider('local')">本地模型</button>
+                  <button type="button" class="adv-rag-provider-btn" data-provider="google" onclick="setAdvRagProvider('google')">API Key</button>
+                </div>
+              </div>
+              <div class="adv-rag-provider-note" id="adv-rag-provider-note">使用 config.py 的 tutor 本地模型回答。</div>
               <div class="assistant-input">
                 <input id="assistantInput" type="text" placeholder="只問本題相關問題，例如：我第一步該先做什麼？">
                 <button class="success" id="assistantSendBtn" type="button">詢問助教</button>
               </div>
+              <div id="adv-rag-loading" style="display: none; text-align: center; padding: 8px; color: #1565c0; font-size: 13px;">
+                正在檢索相關單元...
+              </div>
+              <div id="adv-rag-results" style="display: none; margin-top: 10px; margin-bottom: 10px; padding: 10px; background: #f0f7ff; border: 1px solid #cce1ff; border-radius: 8px;">
+                <div id="adv-rag-routing-badge" style="font-size: 0.75em; padding: 3px 6px; border-radius: 6px; background:#e6f4ff; color:#0958d9; margin-bottom: 8px; display:none; font-weight:bold;"></div>
+                <div style="font-size: 0.8em; color: #1565c0; font-weight: 700; margin-bottom: 6px;">最相關 5 個知識點：</div>
+                <div id="adv-rag-results-buttons" style="display: flex; flex-wrap: wrap; gap: 6px;"></div>
+              </div>
               <div class="hint-box" id="hintBox">這裡會顯示這一題的補救提示。若系統切到 Review，我會用簡單中文提醒你先看哪個觀念。</div>
-            </div>
-            
-            <!-- ========== Advanced RAG 模式 ========== -->
-            <button id="adv-rag-mode-btn" onclick="toggleAdvRagMode()" style="
-                width: 100%;
-                padding: 10px 16px;
-                margin-top: 12px;
-                background: linear-gradient(135deg, #1565c0 0%, #31a2ac 100%);
-                color: white;
-                border: none;
-                border-radius: 12px;
-                font-size: 0.95em;
-                font-weight: 700;
-                cursor: pointer;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                gap: 8px;
-            ">
-                <span style="font-size: 1.1em;">📚</span> RAG 模式
-            </button>
-
-            <!-- Advanced RAG 面板 (預設隱藏) -->
-            <div id="adv-rag-panel"
-                style="display: none; margin-top: 8px; padding: 12px; background: #f0f7ff; border: 1px solid #cce1ff; border-radius: 12px;">
-                <div style="display: flex; gap: 6px; margin-bottom: 10px;">
-                    <input type="text" id="adv-rag-query-input" placeholder="輸入你的問題…" style="
-                        flex: 1;
-                        padding: 10px 14px;
-                        border: 1px solid #cce1ff;
-                        border-radius: 8px;
-                        font-size: 1em;
-                        outline: none;
-                    ">
-                    <button id="adv-rag-search-btn" onclick="performAdvRagSearch()" style="
-                        padding: 8px 16px;
-                        background: linear-gradient(135deg, #1565c0 0%, #31a2ac 100%);
-                        color: white;
-                        border: none;
-                        border-radius: 8px;
-                        font-size: 0.9em;
-                        font-weight: 600;
-                        cursor: pointer;
-                        white-space: nowrap;
-                    ">🔍 檢索</button>
-                </div>
-
-                <div id="adv-rag-loading" style="display: none; text-align: center; padding: 10px; color: #1565c0;">
-                    正在檢索相關單元...
-                </div>
-
-                <div id="adv-rag-results" style="display: none; margin-bottom: 10px;">
-                    <div style="font-size: 0.8em; color: #1565c0; font-weight: 700; margin-bottom: 6px;">📌 最相關單元：</div>
-                    <div id="adv-rag-results-buttons" style="display: flex; flex-wrap: wrap; gap: 6px;"></div>
-                </div>
-
-                <div id="adv-rag-ai-answer"
-                    style="display: none; padding: 10px; background: white; border-radius: 8px; border: 1px solid #dce8ea; font-size: 0.9em; line-height: 1.6; color: #333;">
-                    <div id="adv-rag-routing-badge" style="font-size: 0.75em; padding: 3px 6px; border-radius: 6px; background:#e6f4ff; color:#0958d9; margin-bottom: 8px; display:inline-block; font-weight:bold; display:none;"></div>
-                    <div style="font-size: 0.8em; color: #1565c0; font-weight: 700; margin-bottom: 6px;">🤖 AI 教學教材 (基於 RAG)：</div>
-                    <div id="adv-rag-ai-answer-text"></div>
-                </div>
             </div>
           </section>
         </div>
@@ -646,10 +607,10 @@
       const badge = document.getElementById("ragScopeBadge");
       if (!badge) return;
       const map = {
-        idle: "RAG 影響範圍：右側補救提示、手寫檢查摘要",
-        review: "RAG 已啟用：現在會優先給你這題的補救提示",
-        active: "RAG 目前只影響右側補救提示，不會改變題目本身",
-        done: "RAG 已結束：你可以看總結，或回頭複習相同微技能",
+        idle: "問問題會使用 RAG；AI 檢查手寫只讀取白板過程。",
+        review: "補救提示會參考 RAG；手寫檢查仍只看你的白板步驟。",
+        active: "問問題會使用 RAG；AI 檢查手寫只讀取白板過程。",
+        done: "本次診斷已結束；你仍可回頭複習相同微技能。",
       };
       badge.textContent = map[mode] || map.idle;
     }
@@ -1461,6 +1422,7 @@
             question_context: state.currentContext,
             family_id: state.currentFamilyId,
             subskill_nodes: state.currentSubskills,
+            provider: advRagProvider,
           })
         });
         const data = await response.json();
@@ -2059,8 +2021,8 @@
 
     answerInput.addEventListener("keydown", (event) => { if (event.key === "Enter") { event.preventDefault(); submitBtn.click(); } });
     hintBtn.addEventListener("click", async () => { try { updateRagScopeBadge("review"); await fetchHint(); setAssistantBanner("你已手動請求補救提示。助教會優先針對本題相關的 subskill 給出提示。", true); setStatus("已載入補救提示。"); } catch (err) { setStatus(`提示載入失敗：${err.message}`); } });
-    document.querySelectorAll("[data-guide]").forEach((btn) => btn.addEventListener("click", async () => { await askTutor(btn.dataset.guide, "user"); }));
-    assistantSendBtn.addEventListener("click", async () => { const question = assistantInput.value.trim(); if (!question) { setStatus("請輸入你想問助教的問題。"); return; } assistantInput.value = ""; await askTutor(question, "user"); });
+    document.querySelectorAll("[data-guide]").forEach((btn) => btn.addEventListener("click", async () => { await performAdvRagSearch(btn.dataset.guide); }));
+    assistantSendBtn.addEventListener("click", async () => { const question = assistantInput.value.trim(); if (!question) { setStatus("請輸入你想問助教的問題。"); return; } assistantInput.value = ""; await performAdvRagSearch(question); });
     assistantInput.addEventListener("keydown", (event) => { if (event.key === "Enter") { event.preventDefault(); assistantSendBtn.click(); } });
     analyzeCanvasBtn.addEventListener("click", analyzeHandwriting);
 
@@ -2094,37 +2056,40 @@
     assistantInput.disabled = true;
     analyzeCanvasBtn.disabled = true;
 
-    // === Advanced RAG API functions ===
-    function toggleAdvRagMode() {
-        const panel = document.getElementById('adv-rag-panel');
-        const btn = document.getElementById('adv-rag-mode-btn');
-        if (panel.style.display === 'none') {
-            panel.style.display = 'block';
-            btn.style.opacity = '0.7';
-            setTimeout(() => {
-                document.getElementById('adv-rag-query-input')?.focus();
-            }, 100);
-        } else {
-            panel.style.display = 'none';
-            btn.style.opacity = '1';
+    // === RAG-backed assistant chat ===
+    let advRagProvider = localStorage.getItem('advRagProvider') || 'local';
+
+    function setAdvRagProvider(provider) {
+        advRagProvider = provider === 'google' ? 'google' : 'local';
+        localStorage.setItem('advRagProvider', advRagProvider);
+
+        document.querySelectorAll('.adv-rag-provider-btn').forEach((btn) => {
+            btn.classList.toggle('active', btn.dataset.provider === advRagProvider);
+        });
+
+        const note = document.getElementById('adv-rag-provider-note');
+        if (note) {
+            note.innerText = advRagProvider === 'google'
+                ? '使用 GEMINI_API_KEY 呼叫 Google API 回答。'
+                : '使用 config.py 的 tutor 本地模型回答。';
         }
     }
 
-    async function performAdvRagSearch() {
-        const query = document.getElementById('adv-rag-query-input').value.trim();
+    async function performAdvRagSearch(queryOverride = "") {
+        const query = (queryOverride || '').trim();
         if (!query) return;
 
         const loading = document.getElementById('adv-rag-loading');
         const resultsDiv = document.getElementById('adv-rag-results');
         const buttonsDiv = document.getElementById('adv-rag-results-buttons');
-        const answerDiv = document.getElementById('adv-rag-ai-answer');
-        const answerText = document.getElementById('adv-rag-ai-answer-text');
         const routingBadge = document.getElementById('adv-rag-routing-badge');
 
-        loading.style.display = 'block';
-        resultsDiv.style.display = 'none';
-        answerDiv.style.display = 'none';
-        routingBadge.style.display = 'none';
+        if (loading) loading.style.display = 'block';
+        if (resultsDiv) resultsDiv.style.display = 'none';
+        if (routingBadge) routingBadge.style.display = 'none';
+
+        await addMessage("user", query);
+        const thinking = await addMessage("bot", "我先用 RAG 找相關單元，再整理成這一題的提示...");
 
         try {
             // 1. Search Advanced RAG
@@ -2138,7 +2103,7 @@
             if (searchParams.error) throw new Error(searchParams.error);
 
             const results = searchParams.results || [];
-            buttonsDiv.innerHTML = '';
+            if (buttonsDiv) buttonsDiv.innerHTML = '';
 
             let firstRouting = "";
             let retrievedSkillsForChat = [];
@@ -2175,7 +2140,7 @@
                             window.location.href = `/practice/${encodeURIComponent(item.skill_id)}`;
                         });
                     };
-                    buttonsDiv.appendChild(btn);
+                    if (buttonsDiv) buttonsDiv.appendChild(btn);
 
                     retrievedSkillsForChat.push({
                         skill_id: item.skill_id,
@@ -2184,11 +2149,13 @@
                         subskill_nodes: item.subskill_nodes
                     });
                 });
-                resultsDiv.style.display = 'block';
+                if (resultsDiv) resultsDiv.style.display = 'block';
                 
                 if (firstRouting) {
-                    routingBadge.innerText = `💡 檢索通道：${firstRouting}`;
-                    routingBadge.style.display = 'inline-block';
+                    if (routingBadge) {
+                        routingBadge.innerText = `檢索通道：${firstRouting}`;
+                        routingBadge.style.display = 'inline-block';
+                    }
                 }
 
                 // 2. Query Chat AI
@@ -2197,48 +2164,40 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         query: query,
-                        retrieved_skills: retrievedSkillsForChat
+                        question_text: state.currentQuestionText || document.getElementById('questionText')?.innerText || '',
+                        family_id: state.currentFamilyId || '',
+                        retrieved_skills: retrievedSkillsForChat,
+                        provider: advRagProvider
                     })
                 });
 
                 const chatParams = await chatResp.json();
                 if (chatParams.error) throw new Error(chatParams.error);
                 if (chatParams.reply) {
-                    if (typeof marked !== 'undefined') {
-                        answerText.innerHTML = marked.parse(chatParams.reply);
-                    } else {
-                        answerText.innerText = chatParams.reply;
-                    }
+                    const routingNote = firstRouting ? `檢索通道：${firstRouting}\n\n` : "";
+                    setMessageContent(thinking, `${routingNote}${chatParams.reply}`);
                     if (window.MathJax) {
-                        window.MathJax.typesetPromise([answerText]).catch(e => console.error("MathJax Error", e));
+                        window.MathJax.typesetPromise([thinking]).catch(e => console.error("MathJax Error", e));
                     }
-                    answerDiv.style.display = 'block';
                 } else {
-                    answerText.innerText = "抱歉，處理您的問題時發生錯誤。";
-                    answerDiv.style.display = 'block';
+                    setMessageContent(thinking, "抱歉，處理你的問題時發生錯誤。");
                 }
 
             } else {
-                buttonsDiv.innerHTML = '<span style="font-size:0.85em; color:#999;">找不到相關文章</span>';
-                resultsDiv.style.display = 'block';
+                if (buttonsDiv) buttonsDiv.innerHTML = '<span style="font-size:0.85em; color:#999;">找不到相關文章</span>';
+                if (resultsDiv) resultsDiv.style.display = 'block';
+                setMessageContent(thinking, "我目前找不到足夠相關的單元，請把題目或卡住的步驟說得更具體一點。");
             }
 
         } catch (err) {
-            alert('RAG Search Failed: ' + err.message);
+            console.error('RAG Search Failed:', err);
+            setMessageContent(thinking, `RAG 回答暫時失敗：${err.message}`);
         } finally {
-            loading.style.display = 'none';
+            if (loading) loading.style.display = 'none';
+            scrollChatToBottom();
         }
     }
-
-    // Bind Enter key
-    const advRagInput = document.getElementById('adv-rag-query-input');
-    if (advRagInput) {
-        advRagInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') {
-                performAdvRagSearch();
-            }
-        });
-    }
+    setAdvRagProvider(advRagProvider);
 
   </script>
 </body>

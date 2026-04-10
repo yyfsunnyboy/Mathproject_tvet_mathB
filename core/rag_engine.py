@@ -2,6 +2,8 @@
 from __future__ import annotations
 
 import json
+import hashlib
+import math
 import re
 from typing import Any
 
@@ -10,11 +12,9 @@ from core.adaptive.catalog_loader import load_catalog
 
 try:
     import chromadb
-    from chromadb.utils import embedding_functions
     HAS_CHROMADB = True
 except ImportError:  # pragma: no cover
     chromadb = None
-    embedding_functions = None
     HAS_CHROMADB = False
 
 
@@ -22,6 +22,8 @@ _chroma_client = None
 _collection = None
 _skill_map: dict[str, str] = {}
 _bridge_rows: list[dict[str, Any]] = []
+_HASH_EMBEDDING_DIM = 384
+_HASH_EMBEDDING_CACHE_BACKEND = "local_hash_v1"
 
 
 def _table_exists(db, table_name: str) -> bool:
@@ -110,6 +112,30 @@ def _build_document_text(row: dict[str, Any]) -> str:
     if row.get("paragraph"):
         parts.append(f"paragraph: {row['paragraph']}")
     return " | ".join(str(part) for part in parts if str(part).strip())
+
+
+def _hash_embedding(text: str, dim: int = _HASH_EMBEDDING_DIM) -> list[float]:
+    vector = [0.0] * dim
+    clean_text = str(text or "").lower()
+    terms = re.findall(r"[a-z0-9_]+|[\u4e00-\u9fff]", clean_text)
+    terms.extend(clean_text[i:i + 2] for i in range(max(0, len(clean_text) - 1)))
+
+    for term in terms:
+        if not term.strip():
+            continue
+        digest = hashlib.md5(term.encode("utf-8")).digest()
+        index = int.from_bytes(digest[:4], "little") % dim
+        sign = 1.0 if digest[4] % 2 == 0 else -1.0
+        vector[index] += sign
+
+    norm = math.sqrt(sum(value * value for value in vector))
+    if norm == 0:
+        return vector
+    return [value / norm for value in vector]
+
+
+def _hash_embeddings(texts: list[str]) -> list[list[float]]:
+    return [_hash_embedding(text) for text in texts]
 
 
 def _load_catalog_rows() -> list[dict[str, Any]]:
@@ -212,7 +238,7 @@ def _load_bridge_rows(app) -> list[dict[str, Any]]:
     return rows_out
 
 
-def _index_documents(rows: list[dict[str, Any]]):
+def _index_documents(rows: list[dict[str, Any]], app=None):
     global _chroma_client, _collection, _skill_map, _bridge_rows
 
     if not HAS_CHROMADB:
@@ -224,7 +250,6 @@ def _index_documents(rows: list[dict[str, Any]]):
 
     _skill_map = {}
     _chroma_client = chromadb.Client()
-    ef = embedding_functions.SentenceTransformerEmbeddingFunction(model_name="all-MiniLM-L6-v2")
 
     try:
         _chroma_client.delete_collection("math_skills")
@@ -233,7 +258,6 @@ def _index_documents(rows: list[dict[str, Any]]):
 
     _collection = _chroma_client.create_collection(
         name="math_skills",
-        embedding_function=ef,
         metadata={"hnsw:space": "cosine"},
     )
 
@@ -272,27 +296,32 @@ def _index_documents(rows: list[dict[str, Any]]):
         _collection = None
         return
 
-    import os, pickle, hashlib
+    import os, pickle
     docs_string = "".join(documents)
     docs_hash = hashlib.md5(docs_string.encode('utf-8')).hexdigest()
-    cache_file = os.path.join(app.root_path, '..', 'configs', 'rag_embeddings_cache.pkl')
+    base_path = app.root_path if app is not None else os.getcwd()
+    cache_file = os.path.join(base_path, 'configs', 'rag_embeddings_cache.pkl')
     
     embeddings = None
     if os.path.exists(cache_file):
         try:
             with open(cache_file, 'rb') as f:
                 cache_data = pickle.load(f)
-                if cache_data.get('hash') == docs_hash:
+                if cache_data.get('hash') == docs_hash and cache_data.get('backend') == _HASH_EMBEDDING_CACHE_BACKEND:
                     embeddings = cache_data.get('embeddings')
         except Exception:
             pass
             
     if embeddings is None:
-        embeddings = _embedding_model.encode(documents).tolist()
+        embeddings = _hash_embeddings(documents)
         try:
             os.makedirs(os.path.dirname(cache_file), exist_ok=True)
             with open(cache_file, 'wb') as f:
-                pickle.dump({'hash': docs_hash, 'embeddings': embeddings}, f)
+                pickle.dump({
+                    'hash': docs_hash,
+                    'backend': _HASH_EMBEDDING_CACHE_BACKEND,
+                    'embeddings': embeddings,
+                }, f)
         except Exception:
             pass
 
@@ -300,7 +329,7 @@ def _index_documents(rows: list[dict[str, Any]]):
         documents=documents,
         ids=ids,
         metadatas=metadatas,
-        embeddings=embeddings
+        embeddings=embeddings,
     )
     _bridge_rows = list(rows)
     print(f"[RAG] ✅ ChromaDB 初始化完成，已索引 {len(documents)} 筆知識節點")
@@ -327,7 +356,7 @@ def init_rag(app=None):
         return
 
     print(f"[RAG] ✅ 從資料庫讀取到 {len(rows)} 筆對齊資料")
-    _index_documents(rows)
+    _index_documents(rows, app)
 
 
 def rag_search(query, top_k=5):
@@ -338,7 +367,7 @@ def rag_search(query, top_k=5):
         return []
 
     results = _collection.query(
-        query_texts=[query],
+        query_embeddings=[_hash_embedding(query)],
         n_results=top_k,
     )
 

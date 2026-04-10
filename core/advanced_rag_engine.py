@@ -268,30 +268,33 @@ def adv_rag_search(query: str, top_k=5):
     return adv_results
 
 
-def adv_rag_chat(query: str, retrieved_skills: list):
-    """
-    Generates Answer utilizing multiple retrieved contents from Advanced RAG.
-    If no text is available, asks LLM to generate a very short textbook lesson.
-    """
-    if not retrieved_skills:
-        return {"reply": "我找不到與問題相關的單元，或許你可以換個問法？"}
+def _build_adv_rag_prompt(
+    query: str,
+    retrieved_skills: list,
+    question_text: str = "",
+    family_id: str = "",
+) -> str:
+    units_text = ""
+    for i, skill in enumerate(retrieved_skills):
+        ch_name = skill.get("chinese_name", "")
+        fam_name = skill.get("family_name", "")
+        subs = skill.get("subskill_nodes", [])
+        subs_str = "、".join(_label_node(n) for n in subs) if subs else "核心基礎"
+        units_text += f"{i+1}. 單元: {ch_name} (類別: {fam_name}) - 重點: {subs_str}\n"
 
-    try:
-        from core.ai_analyzer import gemini_model
-        if not gemini_model:
-            return {"reply": "目前 AI 助教尚未啟用。"}
+    current_question_block = ""
+    if question_text:
+        current_question_block = f"""
+目前正在作答的題目：
+{question_text}
+"""
+        if family_id:
+            current_question_block += f"\n目前題型 family：{family_id}\n"
 
-        # Compile retrieved resources
-        units_text = ""
-        for i, skill in enumerate(retrieved_skills):
-            ch_name = skill.get("chinese_name", "")
-            fam_name = skill.get("family_name", "")
-            subs = skill.get("subskill_nodes", [])
-            subs_str = "、".join(_label_node(n) for n in subs) if subs else "核心基礎"
-            units_text += f"{i+1}. 單元: {ch_name} (類別: {fam_name}) - 重點: {subs_str}\n"
-
-        prompt = f"""
+    return f"""
 你是一位台灣國中數學助教。學生遇到了一個不會的問題，我們透過 RAG 系統檢索出了五個最相關的單元教材資訊。
+
+{current_question_block}
 
 學生問題：
 {query}
@@ -304,7 +307,40 @@ def adv_rag_chat(query: str, retrieved_skills: list):
 2. 給予學生面對此題目的第一步小提示（不要直接講出答案）。
 3. 語氣簡潔友好，適合國中生理解。
 """
-        import google.generativeai as genai
+
+
+def adv_rag_chat(
+    query: str,
+    retrieved_skills: list,
+    provider: str = "local",
+    question_text: str = "",
+    family_id: str = "",
+):
+    """
+    Generates Answer utilizing multiple retrieved contents from Advanced RAG.
+    If no text is available, asks LLM to generate a very short textbook lesson.
+    """
+    if not retrieved_skills:
+        return {"reply": "我找不到與問題相關的單元，或許你可以換個問法？"}
+
+    provider = (provider or "local").strip().lower()
+    prompt = _build_adv_rag_prompt(
+        query,
+        retrieved_skills,
+        question_text=question_text,
+        family_id=family_id,
+    )
+
+    try:
+        if provider == "local":
+            from core.ai_client import call_ai
+            response = call_ai("tutor", prompt)
+            return {"reply": getattr(response, "text", str(response)), "provider": "local"}
+
+        from core.ai_analyzer import gemini_model
+        if not gemini_model:
+            return {"reply": "目前 Google API 助教尚未啟用，請改用本地模型。", "provider": "google"}
+
         import google.generativeai as genai
         response = gemini_model.generate_content(
             prompt,
@@ -312,7 +348,7 @@ def adv_rag_chat(query: str, retrieved_skills: list):
                 temperature=0.4,
             ),
         )
-        return {"reply": response.text}
+        return {"reply": response.text, "provider": "google"}
 
     except Exception as e:
         logger.error(f"[Adv RAG Chat] Error: {e}")

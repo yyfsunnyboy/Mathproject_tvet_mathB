@@ -320,7 +320,10 @@ def api_adv_rag_chat():
     """RAG + LLM chat API for generating hints/short lessons from retrieved materials."""
     data = request.get_json(silent=True) or {}
     query = (data.get('query') or '').strip()
+    question_text = (data.get('question_text') or '').strip()
+    family_id = (data.get('family_id') or '').strip()
     retrieved_skills = data.get('retrieved_skills') or []
+    provider = (data.get('provider') or 'local').strip().lower()
 
     if not query:
         return jsonify({"reply": "請提供問題"}), 400
@@ -330,7 +333,13 @@ def api_adv_rag_chat():
             return jsonify({"reply": "目前 AI 助教已由老師關閉"})
 
         from core.advanced_rag_engine import adv_rag_chat
-        result = adv_rag_chat(query, retrieved_skills)
+        result = adv_rag_chat(
+            query,
+            retrieved_skills,
+            provider=provider,
+            question_text=question_text,
+            family_id=family_id,
+        )
         return jsonify(result)
     except Exception as e:
         import traceback

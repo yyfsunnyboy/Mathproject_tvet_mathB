@@ -339,13 +339,13 @@ class Config:
         # },
         # [rollback] tutor 原本：CODER_PRESETS['qwen3-vl-8b']
         # [rollback] 原本：CODER_PRESETS['gemma4-e4b']
-        'tutor': CODER_PRESETS['qwen2.5-3b'],
+        'tutor': CODER_PRESETS['qwen3-vl-8b'],
         
         # 撠?閬箏??敺?Gemini ???典?? Qwen3-VL
         # [rollback] vision_analyzer 原本：CODER_PRESETS['qwen3-vl-8b']
         # [rollback] vision_analyzer 改回 qwen3-vl-8b（Gemma 在手寫 OCR 不穩）
         # [rollback] 原本：CODER_PRESETS['gemma4-e4b']
-        'vision_analyzer': CODER_PRESETS['qwen2.5-3b'],
+        'vision_analyzer': CODER_PRESETS['qwen3-vl-8b'],
         # 'vision_analyzer': CODER_PRESETS['gemma4-e4b'],
 
         # 'vision_analyzer': {

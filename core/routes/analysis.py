@@ -162,6 +162,7 @@ from . import core_bp, practice_bp
 
 
 from core.session import get_current
+from config import Config
 
 
 
@@ -179,7 +180,7 @@ from core.ai_analyzer import (
     clean_and_parse_json,
     enforce_strict_mode,
 )
-from core.ai_client import call_ai
+from core.ai_client import call_ai, call_google_model
 from core.adaptive.judge import (
     judge_answer_with_feedback,
     _as_symbolic_tolerant,
@@ -2483,6 +2484,9 @@ def analyze_handwriting():
 
 
     prereq_skills = state.get('prereq_skills', [])
+    ai_provider = (data.get('provider') or 'local').strip().lower()
+    if ai_provider not in ('local', 'google'):
+        ai_provider = 'local'
     question_text = (data.get('question_text') or state.get('question_text') or state.get('question') or "").strip()
     question_context = (data.get('question_context') or state.get('question') or "").strip()
     family_id = (data.get('family_id') or state.get('family_id') or state.get('skill') or "").strip()
@@ -2528,14 +2532,25 @@ def analyze_handwriting():
             "If the image is blank, illegible, or has no mathematical writing, set \"expression\" to \"\". "
             "Do not invent symbols or steps that are not clearly visible."
         )
-        rec_response = call_ai(
-            role="vision_analyzer",
-            prompt=recognition_prompt,
-            image_path=temp_path,
-            max_retries=2,
-            retry_delay=1,
-            verbose=False,
-        )
+        if ai_provider == 'google':
+            vision_cfg = dict(Config.LEGACY_MODEL_ROLES.get('vision_analyzer') or {})
+            rec_response = call_google_model(
+                vision_cfg,
+                recognition_prompt,
+                image_path=temp_path,
+                max_retries=2,
+                retry_delay=1,
+                verbose=False,
+            )
+        else:
+            rec_response = call_ai(
+                role="vision_analyzer",
+                prompt=recognition_prompt,
+                image_path=temp_path,
+                max_retries=2,
+                retry_delay=1,
+                verbose=False,
+            )
         rec_raw = (getattr(rec_response, 'text', '') or '').strip()
         rec_cleaned = re.sub(r'^```json\s*|\s*```$', '', rec_raw, flags=re.MULTILINE)
         rec_parsed = clean_and_parse_json(rec_cleaned)
@@ -2598,14 +2613,25 @@ def analyze_handwriting():
             prompt = _handwriting_feedback_second_prompt(
                 analysis_result, question_text, question_context, prereq_text, family_id
             )
-            response = call_ai(
-                role="tutor",
-                prompt=prompt,
-                image_path=None,
-                max_retries=2,
-                retry_delay=1,
-                verbose=False,
-            )
+            if ai_provider == 'google':
+                tutor_cfg = dict(Config.MODEL_ROLES.get('architect') or {})
+                response = call_google_model(
+                    tutor_cfg,
+                    prompt,
+                    image_path=None,
+                    max_retries=2,
+                    retry_delay=1,
+                    verbose=False,
+                )
+            else:
+                response = call_ai(
+                    role="tutor",
+                    prompt=prompt,
+                    image_path=None,
+                    max_retries=2,
+                    retry_delay=1,
+                    verbose=False,
+                )
             raw_text = (getattr(response, "text", "") or "").strip()
             cleaned = re.sub(r"^```json\s*|\s*```$", "", raw_text, flags=re.MULTILINE)
             parsed = clean_and_parse_json(cleaned)
