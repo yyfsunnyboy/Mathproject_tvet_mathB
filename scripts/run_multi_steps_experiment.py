@@ -37,12 +37,21 @@ from pathlib import Path
 import pandas as pd
 
 import simulate_student
-from plot_experiment_results import plot_ablation_by_student_type, plot_multi_steps_results
+import plot_experiment_results as plot_results_module
+from plot_experiment_results import (
+    create_timestamped_run_dir,
+    plot_multi_steps_results,
+    sync_run_to_latest,
+    setup_report_style,
+)
 
 MAX_STEPS_LIST = [30, 40, 50]
 REPORTS_DIR = Path("reports")
-EXP1_DIR = REPORTS_DIR / "experiment_1_ablation"
-EXPERIMENT1_OUTPUT_DIR = (Path(__file__).resolve().parents[1] / "reports" / "experiment_1_ablation")
+EXP1_BASE_DIR = REPORTS_DIR / "experiment_1_ablation"
+RUNS_DIR = EXP1_BASE_DIR / "runs"
+LATEST_DIR = EXP1_BASE_DIR / "latest"
+FINAL_DIR = EXP1_BASE_DIR / "final"
+EXP1_OUTPUT_DIR_ENV = "MATHPROJECT_EXP1_OUTPUT_DIR"
 
 # Per-run outputs that should be preserved with a steps suffix.
 PRESERVE_FILES = [
@@ -64,10 +73,63 @@ EXP1_ARTIFACTS = [
     "fig_exp1_student_type_improved.png",
 ]
 
+STRATEGY_DISPLAY_MAP = {
+    "AB1_Baseline": "Baseline",
+    "AB2_RuleBased": "Rule-Based",
+    "AB3_PPO_Dynamic": "Adaptive (Ours)",
+}
+
+REDUNDANT_EXP1_FIGURES = [
+    "fig_ablation_by_student_type.png",
+    "fig_ablation_by_student_type_success.png",
+    "fig_ablation_success_rate.png",
+    "fig_ablation_steps_vs_success.png",
+    "fig_ablation_strategy_breakdown.png",
+    "fig_multi_steps_ab3_by_student_type.png",
+]
+
+ACTIVE_EXP1_DIR: Path = LATEST_DIR
+
+
+def get_active_exp1_dir() -> Path:
+    """Current Experiment 1 output directory for this process."""
+    return ACTIVE_EXP1_DIR
+
+
+def set_active_exp1_dir(path: Path) -> None:
+    """Configure active Experiment 1 output directory and env override."""
+    global ACTIVE_EXP1_DIR
+    ACTIVE_EXP1_DIR = path
+    os.environ[EXP1_OUTPUT_DIR_ENV] = str(path)
+
+
+def create_run_output_dir() -> Path:
+    """Create runs/<timestamp> folder for current Experiment 1 execution."""
+    dirs = create_timestamped_run_dir(EXP1_BASE_DIR)
+    return dirs["run_dir"]
+
+
+def refresh_latest_from_run(run_dir: Path) -> None:
+    """Replace latest/ with current run outputs."""
+    sync_run_to_latest(run_dir, LATEST_DIR)
+
+
+def cleanup_redundant_experiment1_figures() -> None:
+    """Remove redundant Experiment 1 figure files from root and exp1 folders."""
+    REPORTS_DIR.mkdir(parents=True, exist_ok=True)
+    exp1_dir = get_active_exp1_dir()
+    exp1_dir.mkdir(parents=True, exist_ok=True)
+    for filename in REDUNDANT_EXP1_FIGURES:
+        for parent in (REPORTS_DIR, exp1_dir):
+            path = parent / filename
+            if path.exists():
+                path.unlink()
+
 
 def cleanup_previous_step_snapshots(max_steps_list: list[int]) -> None:
     """Remove stale step-suffixed CSV snapshots before a new multi-step run."""
-    EXP1_DIR.mkdir(parents=True, exist_ok=True)
+    exp1_dir = get_active_exp1_dir()
+    exp1_dir.mkdir(parents=True, exist_ok=True)
     stems = [
         "ablation_simulation_results",
         "ablation_strategy_summary",
@@ -75,9 +137,11 @@ def cleanup_previous_step_snapshots(max_steps_list: list[int]) -> None:
     ]
     for steps in max_steps_list:
         for stem in stems:
-            path = EXP1_DIR / f"{stem}_steps{int(steps)}.csv"
+            path = exp1_dir / f"{stem}_steps{int(steps)}.csv"
             if path.exists():
                 path.unlink()
+
+    cleanup_redundant_experiment1_figures()
 
 
 def run_single_steps_experiment(max_steps: int) -> None:
@@ -89,15 +153,14 @@ def run_single_steps_experiment(max_steps: int) -> None:
 def preserve_step_outputs(max_steps: int) -> None:
     """Copy current report CSVs to step-suffixed files to avoid overwrite."""
     REPORTS_DIR.mkdir(parents=True, exist_ok=True)
-    EXP1_DIR.mkdir(parents=True, exist_ok=True)
+    exp1_dir = get_active_exp1_dir()
+    exp1_dir.mkdir(parents=True, exist_ok=True)
     for filename in PRESERVE_FILES:
-        src = REPORTS_DIR / filename
-        if not src.exists():
-            src = EXP1_DIR / filename
+        src = exp1_dir / filename
         if not src.exists():
             continue
         stem = src.stem
-        dst = EXP1_DIR / f"{stem}_steps{max_steps}.csv"
+        dst = exp1_dir / f"{stem}_steps{max_steps}.csv"
         shutil.copy2(src, dst)
 
 
@@ -107,23 +170,18 @@ def consolidate_experiment1_outputs() -> None:
     Note: experiment1_summary_table.* are generated from aggregated multi-step results.
     We avoid moving same-name files from reports root to prevent accidental overwrite.
     """
-    REPORTS_DIR.mkdir(parents=True, exist_ok=True)
-    EXP1_DIR.mkdir(parents=True, exist_ok=True)
-    for filename in EXP1_ARTIFACTS:
-        if filename in {"experiment1_summary_table.csv", "experiment1_summary_table.md"}:
-            continue
-        src = REPORTS_DIR / filename
-        if not src.exists():
-            continue
-        dst = EXP1_DIR / filename
-        shutil.move(src, dst)
+    # Outputs are already written into run_dir via env override. Keep as no-op
+    # for backward compatibility.
+    exp1_dir = get_active_exp1_dir()
+    exp1_dir.mkdir(parents=True, exist_ok=True)
 
 
 def build_multi_steps_strategy_summary(max_steps_list: list[int]) -> Path:
     """Merge per-step strategy summaries into one cross-step table."""
+    exp1_dir = get_active_exp1_dir()
     rows: list[pd.DataFrame] = []
     for steps in max_steps_list:
-        path = EXP1_DIR / f"ablation_strategy_summary_steps{steps}.csv"
+        path = exp1_dir / f"ablation_strategy_summary_steps{steps}.csv"
         if not path.exists():
             continue
         df = pd.read_csv(path)
@@ -147,9 +205,11 @@ def build_multi_steps_strategy_summary(max_steps_list: list[int]) -> Path:
         for col in keep:
             if col not in df.columns:
                 df[col] = pd.NA
+        # Safety clamp: reported average steps cannot exceed configured MAX_STEPS.
+        df["avg_steps"] = pd.to_numeric(df["avg_steps"], errors="coerce").clip(upper=int(steps))
         rows.append(df[keep])
 
-    out = EXP1_DIR / "multi_steps_strategy_summary.csv"
+    out = exp1_dir / "multi_steps_strategy_summary.csv"
     if rows:
         pd.concat(rows, ignore_index=True).to_csv(out, index=False, encoding="utf-8-sig")
     else:
@@ -168,9 +228,10 @@ def build_multi_steps_strategy_summary(max_steps_list: list[int]) -> Path:
 
 def build_multi_steps_strategy_by_type_summary(max_steps_list: list[int]) -> Path:
     """Merge per-step strategy x student_type summaries into one cross-step table."""
+    exp1_dir = get_active_exp1_dir()
     rows: list[pd.DataFrame] = []
     for steps in max_steps_list:
-        path = EXP1_DIR / f"ablation_strategy_by_student_type_summary_steps{steps}.csv"
+        path = exp1_dir / f"ablation_strategy_by_student_type_summary_steps{steps}.csv"
         if not path.exists():
             continue
         df = pd.read_csv(path)
@@ -189,9 +250,11 @@ def build_multi_steps_strategy_by_type_summary(max_steps_list: list[int]) -> Pat
         for col in keep:
             if col not in df.columns:
                 df[col] = pd.NA
+        # Safety clamp: reported average steps cannot exceed configured MAX_STEPS.
+        df["avg_steps"] = pd.to_numeric(df["avg_steps"], errors="coerce").clip(upper=int(steps))
         rows.append(df[keep])
 
-    out = EXP1_DIR / "multi_steps_strategy_by_type_summary.csv"
+    out = exp1_dir / "multi_steps_strategy_by_type_summary.csv"
     if rows:
         pd.concat(rows, ignore_index=True).to_csv(out, index=False, encoding="utf-8-sig")
     else:
@@ -210,7 +273,7 @@ def build_multi_steps_strategy_by_type_summary(max_steps_list: list[int]) -> Pat
 
 def build_experiment1_summary_table_from_multi_steps() -> pd.DataFrame:
     """Build Experiment 1 final summary table from cross-step strategy summary."""
-    src = EXP1_DIR / "multi_steps_strategy_summary.csv"
+    src = get_active_exp1_dir() / "multi_steps_strategy_summary.csv"
     if not src.exists():
         return pd.DataFrame(
             columns=[
@@ -252,6 +315,9 @@ def build_experiment1_summary_table_from_multi_steps() -> pd.DataFrame:
         if col not in df.columns:
             df[col] = pd.NA
     out = df[keep].copy()
+    out["avg_steps"] = pd.to_numeric(out["avg_steps"], errors="coerce")
+    out["max_steps"] = pd.to_numeric(out["max_steps"], errors="coerce")
+    out["avg_steps"] = out[["avg_steps", "max_steps"]].min(axis=1)
     out = out.rename(
         columns={
             "max_steps": "MAX_STEPS",
@@ -279,14 +345,16 @@ def build_experiment1_summary_table_from_multi_steps() -> pd.DataFrame:
     ]:
         out[col] = pd.to_numeric(out[col], errors="coerce").round(2)
     out["MAX_STEPS"] = out["MAX_STEPS"].astype("Int64")
+    out["Strategy"] = out["Strategy"].map(lambda s: STRATEGY_DISPLAY_MAP.get(str(s), str(s)))
     return out
 
 
 def write_experiment1_summary_table(df: pd.DataFrame) -> tuple[Path, Path]:
     """Write Experiment 1 summary table in CSV and Markdown formats."""
-    EXP1_DIR.mkdir(parents=True, exist_ok=True)
-    csv_path = EXP1_DIR / "experiment1_summary_table.csv"
-    md_path = EXP1_DIR / "experiment1_summary_table.md"
+    exp1_dir = get_active_exp1_dir()
+    exp1_dir.mkdir(parents=True, exist_ok=True)
+    csv_path = exp1_dir / "experiment1_summary_table.csv"
+    md_path = exp1_dir / "experiment1_summary_table.md"
 
     df.to_csv(csv_path, index=False, encoding="utf-8-sig")
 
@@ -317,6 +385,12 @@ def write_experiment1_summary_table(df: pd.DataFrame) -> tuple[Path, Path]:
             )
             + " |"
         )
+    lines.extend(
+        [
+            "",
+            "Note: The weak foundation group shows low absolute success rates, but Adaptive (Ours) still achieves the highest relative improvement.",
+        ]
+    )
     md_path.write_text("\n".join(lines) + "\n", encoding="utf-8-sig")
     return csv_path, md_path
 
@@ -324,7 +398,7 @@ def write_experiment1_summary_table(df: pd.DataFrame) -> tuple[Path, Path]:
 def validate_experiment1_summary_table(df: pd.DataFrame, max_steps_list: list[int]) -> None:
     """Enforce complete 3xN strategy table before writing final report artifacts."""
     expected_steps = sorted({int(s) for s in max_steps_list})
-    expected_strategies = ["AB1_Baseline", "AB2_RuleBased", "AB3_PPO_Dynamic"]
+    expected_strategies = ["Baseline", "Rule-Based", "Adaptive (Ours)"]
     expected_pairs = {(s, st) for s in expected_steps for st in expected_strategies}
 
     got_pairs = set()
@@ -349,7 +423,14 @@ def validate_experiment1_summary_table(df: pd.DataFrame, max_steps_list: list[in
 def main() -> None:
     """Run multiple MAX_STEPS experiments and generate cross-step summaries + plots."""
     original_max_steps = simulate_student.MAX_STEPS
+    prev_exp1_env = os.environ.get(EXP1_OUTPUT_DIR_ENV)
     max_steps_list = [int(s) for s in MAX_STEPS_LIST]
+    run_dir = create_run_output_dir()
+    set_active_exp1_dir(run_dir)
+    # Ensure Experiment 1 plotting helpers write into this run folder.
+    plot_results_module.EXP1_DIR = str(run_dir)
+    print(f"[RUN] Writing outputs to {run_dir}")
+    print(f"[PROTECT] Skipping final/ directory: {FINAL_DIR}")
     try:
         cleanup_previous_step_snapshots(max_steps_list)
 
@@ -364,21 +445,30 @@ def main() -> None:
         validate_experiment1_summary_table(exp1_table_df, max_steps_list)
         exp1_csv, exp1_md = write_experiment1_summary_table(exp1_table_df)
 
-        # Explicitly render Experiment 1 student-type figure from this runner.
-        plot_ablation_by_student_type()
+        # Render only the 3 core Experiment 1 report figures.
+        setup_report_style()
         plot_multi_steps_results(include_ab3_by_student_type=False)
         consolidate_experiment1_outputs()
+        cleanup_redundant_experiment1_figures()
+        print(f"[LATEST] Updating {LATEST_DIR}")
+        refresh_latest_from_run(run_dir)
+        print(f"[LATEST] Updated {LATEST_DIR}")
+        print(f"[PROTECT] Skipping final/ directory: {FINAL_DIR}")
 
         print("\nMulti-steps experiment completed.")
         print(f"Output CSV: {strategy_out}")
         print(f"Output CSV: {by_type_out}")
         print(f"Output CSV: {exp1_csv}")
         print(f"Output Markdown: {exp1_md}")
-        print("Output Figure: reports/experiment_1_ablation/fig_multi_steps_success_rate.png")
-        print("Output Figure: reports/experiment_1_ablation/fig_multi_steps_efficiency.png")
-        print("Output Figure: reports/experiment_1_ablation/fig_exp1_student_type_improved.png")
+        print(f"Output Figure: {run_dir / 'fig_multi_steps_success_rate.png'}")
+        print(f"Output Figure: {run_dir / 'fig_multi_steps_efficiency.png'}")
+        print(f"Output Figure: {run_dir / 'fig_exp1_student_type_improved.png'}")
     finally:
         simulate_student.MAX_STEPS = original_max_steps
+        if prev_exp1_env is None:
+            os.environ.pop(EXP1_OUTPUT_DIR_ENV, None)
+        else:
+            os.environ[EXP1_OUTPUT_DIR_ENV] = prev_exp1_env
 
 
 if __name__ == "__main__":

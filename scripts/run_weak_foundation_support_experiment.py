@@ -31,16 +31,22 @@ The outputs are used as supporting evidence for weak-focused intervention design
 """
 
 import csv
+import os
 import random
 from collections import Counter
 from pathlib import Path
 
 import simulate_student
-from organize_experiment_outputs import sync_experiment_output_dirs
-from plot_experiment_results import plot_weak_foundation_support_results
+from plot_experiment_results import (
+    create_timestamped_run_dir,
+    plot_weak_foundation_support_results,
+    setup_report_style,
+    sync_run_to_latest,
+)
 
 REPORTS_DIR = Path("reports")
 EXP3_DIR = REPORTS_DIR / "experiment_3_weak_foundation_support"
+EXP3_OUTPUT_DIR_ENV = "MATHPROJECT_EXP3_OUTPUT_DIR"
 FOUNDATION_EXTRA_STEPS_LIST = [0, 10, 20, 40, 50, 60]
 
 
@@ -179,76 +185,92 @@ def write_csv(path: Path, fieldnames: list[str], rows: list[dict[str, object]]) 
 def main() -> None:
     """Run Weak Foundation Support experiment (AB3 + Weak only)."""
     REPORTS_DIR.mkdir(parents=True, exist_ok=True)
-    EXP3_DIR.mkdir(parents=True, exist_ok=True)
+    exp3_dirs = create_timestamped_run_dir(EXP3_DIR)
+    run_dir = exp3_dirs["run_dir"]
+    latest_dir = exp3_dirs["latest_dir"]
+    final_dir = exp3_dirs["final_dir"]
+    prev_exp3_env = os.environ.get(EXP3_OUTPUT_DIR_ENV)
+    os.environ[EXP3_OUTPUT_DIR_ENV] = str(run_dir)
+    print(f"[RUN] Writing outputs to {run_dir}")
+    print(f"[PROTECT] Skipping final/ directory: {final_dir}")
 
     original_extra = simulate_student.WEAK_FOUNDATION_EXTRA_STEPS
     all_episodes: dict[int, list[dict[str, object]]] = {}
-
     try:
-        for extra_steps in FOUNDATION_EXTRA_STEPS_LIST:
-            print(f"Running Weak foundation support condition: extra_steps={extra_steps}")
-            all_episodes[extra_steps] = run_condition(extra_steps)
+        try:
+            for extra_steps in FOUNDATION_EXTRA_STEPS_LIST:
+                print(f"Running Weak foundation support condition: extra_steps={extra_steps}")
+                all_episodes[extra_steps] = run_condition(extra_steps)
+        finally:
+            simulate_student.WEAK_FOUNDATION_EXTRA_STEPS = original_extra
+
+        summary_rows = build_support_summary(all_episodes)
+        subskill_rows = build_subskill_summary(all_episodes)
+        breakpoint_rows = build_breakpoint_summary(all_episodes)
+
+        summary_path = run_dir / "weak_foundation_support_summary.csv"
+        subskill_path = run_dir / "weak_foundation_subskill_summary.csv"
+        breakpoint_path = run_dir / "weak_foundation_breakpoint_summary.csv"
+
+        write_csv(
+            summary_path,
+            [
+                "foundation_extra_steps",
+                "success_rate",
+                "avg_total_steps",
+                "avg_mainline_steps",
+                "avg_foundation_extra_used",
+                "avg_final_polynomial_mastery",
+                "avg_reached_mastery_step",
+                "avg_remediation_count",
+                "avg_unnecessary_remediations",
+                "marginal_success_gain",
+                "marginal_mastery_gain",
+            ],
+            summary_rows,
+        )
+        write_csv(
+            subskill_path,
+            [
+                "foundation_extra_steps",
+                "subskill",
+                "avg_initial_mastery",
+                "avg_final_mastery",
+                "avg_gain",
+            ],
+            subskill_rows,
+        )
+        write_csv(
+            breakpoint_path,
+            [
+                "foundation_extra_steps",
+                "subskill",
+                "count",
+                "percentage",
+            ],
+            breakpoint_rows,
+        )
+
+        setup_report_style()
+        plot_weak_foundation_support_results(str(run_dir))
+        print(f"[LATEST] Updating {latest_dir}")
+        sync_run_to_latest(run_dir, latest_dir)
+        print(f"[LATEST] Updated {latest_dir}")
+        print(f"[PROTECT] Skipping final/ directory: {final_dir}")
+
+        print("Weak Foundation Support experiment completed.")
+        print(f"Output CSV: {summary_path}")
+        print(f"Output CSV: {subskill_path}")
+        print(f"Output CSV: {breakpoint_path}")
+        print(f"Output Figure: {run_dir / 'fig_weak_foundation_success_rate.png'}")
+        print(f"Output Figure: {run_dir / 'fig_weak_foundation_mastery.png'}")
+        print(f"Output Figure: {run_dir / 'fig_weak_foundation_breakpoint_shift.png'}")
+        print(f"Output Figure: {run_dir / 'fig_weak_foundation_subskill_gain.png'}")
     finally:
-        simulate_student.WEAK_FOUNDATION_EXTRA_STEPS = original_extra
-
-    summary_rows = build_support_summary(all_episodes)
-    subskill_rows = build_subskill_summary(all_episodes)
-    breakpoint_rows = build_breakpoint_summary(all_episodes)
-
-    summary_path = EXP3_DIR / "weak_foundation_support_summary.csv"
-    subskill_path = EXP3_DIR / "weak_foundation_subskill_summary.csv"
-    breakpoint_path = EXP3_DIR / "weak_foundation_breakpoint_summary.csv"
-
-    write_csv(
-        summary_path,
-        [
-            "foundation_extra_steps",
-            "success_rate",
-            "avg_total_steps",
-            "avg_mainline_steps",
-            "avg_foundation_extra_used",
-            "avg_final_polynomial_mastery",
-            "avg_reached_mastery_step",
-            "avg_remediation_count",
-            "avg_unnecessary_remediations",
-            "marginal_success_gain",
-            "marginal_mastery_gain",
-        ],
-        summary_rows,
-    )
-    write_csv(
-        subskill_path,
-        [
-            "foundation_extra_steps",
-            "subskill",
-            "avg_initial_mastery",
-            "avg_final_mastery",
-            "avg_gain",
-        ],
-        subskill_rows,
-    )
-    write_csv(
-        breakpoint_path,
-        [
-            "foundation_extra_steps",
-            "subskill",
-            "count",
-            "percentage",
-        ],
-        breakpoint_rows,
-    )
-
-    plot_weak_foundation_support_results(str(EXP3_DIR))
-    sync_experiment_output_dirs()
-
-    print("Weak Foundation Support experiment completed.")
-    print(f"Output CSV: {summary_path}")
-    print(f"Output CSV: {subskill_path}")
-    print(f"Output CSV: {breakpoint_path}")
-    print(f"Output Figure: {EXP3_DIR / 'fig_weak_foundation_success_rate.png'}")
-    print(f"Output Figure: {EXP3_DIR / 'fig_weak_foundation_mastery.png'}")
-    print(f"Output Figure: {EXP3_DIR / 'fig_weak_foundation_breakpoint_shift.png'}")
-    print(f"Output Figure: {EXP3_DIR / 'fig_weak_foundation_subskill_gain.png'}")
+        if prev_exp3_env is None:
+            os.environ.pop(EXP3_OUTPUT_DIR_ENV, None)
+        else:
+            os.environ[EXP3_OUTPUT_DIR_ENV] = prev_exp3_env
 
 
 if __name__ == "__main__":

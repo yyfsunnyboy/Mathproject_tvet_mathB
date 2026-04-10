@@ -41,6 +41,15 @@ from pathlib import Path
 from collections import Counter
 from typing import Any
 import matplotlib.pyplot as plt
+from plot_experiment_results import (
+    add_bar_labels,
+    create_timestamped_run_dir,
+    finalize_report_figure,
+    setup_report_style,
+    sync_run_to_latest,
+)
+
+setup_report_style()
 
 # ====================
 # 1) 實驗設定（研究版最小重構）
@@ -51,6 +60,8 @@ RANDOM_SEED = 42
 N_PER_TYPE = 100
 # 每個 episode 最大步數。
 MAX_STEPS = 30
+# Fixed condition for Experiment 2 mechanism-analysis outputs.
+EXP2_FIXED_MAX_STEPS = 50
 # Weak foundation-phase extra support budget (used by experiment runner; default off).
 WEAK_FOUNDATION_EXTRA_STEPS = 0
 # Experiment 4: RAG tutor switch and per-episode intervention cap.
@@ -72,10 +83,21 @@ MASTERY_UPDATE = {
 STRATEGIES = ["AB1_Baseline", "AB2_RuleBased", "AB3_PPO_Dynamic"]
 STUDENT_TYPES = ["Careless", "Weak", "Average"]
 TARGET_SKILL = "polynomial"
+EXP2_STUDENT_TYPE_ORDER = ["Careless", "Average", "Weak Foundation"]
+EXP2_STUDENT_TYPE_DISPLAY = {
+    "Careless": "Careless",
+    "Average": "Average",
+    "Weak": "Weak Foundation",
+    "Weak Foundation": "Weak Foundation",
+}
 
 REPORTS_DIR = Path("reports")
 EXPERIMENT1_OUTPUT_DIR = REPORTS_DIR / "experiment_1_ablation"
 EXPERIMENT2_OUTPUT_DIR = REPORTS_DIR / "experiment_2_ab3_student_types"
+EXP1_OUTPUT_DIR_ENV = "MATHPROJECT_EXP1_OUTPUT_DIR"
+EXP2_OUTPUT_DIR_ENV = "MATHPROJECT_EXP2_OUTPUT_DIR"
+OUTPUT_MODE_ENV = "MATHPROJECT_OUTPUT_MODE"
+FORCE_WRITE_MARKDOWN_ENV = "MATHPROJECT_FORCE_WRITE_MARKDOWN"
 
 # polynomial 子技能（固定研究範圍）。
 POLYNOMIAL_SUBSKILLS = [
@@ -127,6 +149,95 @@ FAMILY_SEQUENCE = list(FAMILY_TO_SUBSKILLS.keys())
 def clamp(value: float, low: float, high: float) -> float:
     """Clamp value into [low, high]."""
     return max(low, min(high, value))
+
+
+def get_experiment1_output_dir() -> Path:
+    """Resolve Experiment 1 output directory with optional runtime override."""
+    override = os.environ.get(EXP1_OUTPUT_DIR_ENV, "").strip()
+    if override:
+        return Path(override)
+    return EXPERIMENT1_OUTPUT_DIR
+
+
+def get_experiment2_output_dir() -> Path:
+    """Resolve Experiment 2 output directory with optional runtime override."""
+    override = os.environ.get(EXP2_OUTPUT_DIR_ENV, "").strip()
+    if override:
+        return Path(override)
+    return EXPERIMENT2_OUTPUT_DIR
+
+
+def get_output_mode() -> str:
+    """Read runtime output mode for path isolation."""
+    return str(os.environ.get(OUTPUT_MODE_ENV, "experiment2")).strip().lower()
+
+
+def get_force_write_markdown() -> bool:
+    """Read markdown overwrite flag from environment."""
+    value = str(os.environ.get(FORCE_WRITE_MARKDOWN_ENV, "")).strip().lower()
+    return value in {"1", "true", "yes", "y", "on"}
+
+
+def _is_under(path: Path, root: Path) -> bool:
+    """Return True when path is under root (inclusive)."""
+    try:
+        path.resolve().relative_to(root.resolve())
+        return True
+    except Exception:
+        return False
+
+
+def is_final_path(path: str | Path) -> bool:
+    """Check whether a target path belongs to any reports/**/final/** directory."""
+    p = Path(path)
+    return "final" in {part.lower() for part in p.parts}
+
+
+def _is_exp1_path(path: str | Path) -> bool:
+    return _is_under(Path(path), EXPERIMENT1_OUTPUT_DIR)
+
+
+def _is_exp2_path(path: str | Path) -> bool:
+    return _is_under(Path(path), EXPERIMENT2_OUTPUT_DIR)
+
+
+def _safe_prepare_output_path(path: str | Path, *, is_markdown: bool = False) -> tuple[bool, Path]:
+    """Guard writes by mode/final-protection/markdown-overwrite rules."""
+    target = Path(path)
+    mode = get_output_mode()
+    force_md = get_force_write_markdown()
+
+    if is_final_path(target):
+        print("[PROTECT] Skip writing to final directory")
+        return False, target
+
+    if mode == "experiment2" and _is_exp1_path(target):
+        print(f"[SKIP] blocked path (experiment2 isolation): {target}")
+        return False, target
+    if mode == "experiment1" and _is_exp2_path(target):
+        print(f"[SKIP] blocked path (experiment1 isolation): {target}")
+        return False, target
+
+    if is_markdown and target.exists() and (not force_md):
+        print("[SKIP] Markdown exists, not overwriting")
+        return False, target
+
+    target.parent.mkdir(parents=True, exist_ok=True)
+    print(f"[WRITE] target directory: {target.parent}")
+    return True, target
+
+
+def _write_csv_rows(output_path: str | Path, fieldnames: list[str], rows: list[dict[str, Any]]) -> str:
+    """Write csv rows with safe path guard."""
+    ok, target = _safe_prepare_output_path(output_path, is_markdown=False)
+    if not ok:
+        return str(target)
+    with open(target, "w", newline="", encoding="utf-8-sig") as csvfile:
+        writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+        writer.writeheader()
+        for row in rows:
+            writer.writerow(row)
+    return str(target)
 
 
 def weighted_polynomial_mastery(subskill_mastery: dict[str, float]) -> float:
@@ -565,7 +676,10 @@ def run_strategy(
     previous_phase: str | None = None
 
     def consume_one_step(gate_flag: bool) -> bool:
-        nonlocal mainline_steps, foundation_extra_used
+        nonlocal mainline_steps, foundation_extra_used, total_steps
+        # Hard cap: total counted steps must never exceed MAX_STEPS.
+        if total_steps >= MAX_STEPS:
+            return False
         if student.student_type == "Weak" and gate_flag and foundation_extra_used < int(
             WEAK_FOUNDATION_EXTRA_STEPS
         ):
@@ -577,6 +691,8 @@ def run_strategy(
         return False
 
     while student.mastery < TARGET_MASTERY:
+        if total_steps >= MAX_STEPS:
+            break
         gate_active = is_progression_gate_active(student)
         if not consume_one_step(gate_active):
             break
@@ -659,6 +775,8 @@ def run_strategy(
 
         if student.mastery >= TARGET_MASTERY:
             break
+        if total_steps >= MAX_STEPS:
+            break
 
         remediation_triggered = False
         remediation_steps = 0
@@ -697,6 +815,8 @@ def run_strategy(
 
             remediation_steps_taken = 0
             for _ in range(remediation_steps):
+                if total_steps >= MAX_STEPS:
+                    break
                 rem_gate_active = is_progression_gate_active(student)
                 if not consume_one_step(rem_gate_active):
                     break
@@ -788,6 +908,8 @@ def run_strategy(
                 previous_phase = "remediation"
 
                 if student.mastery >= TARGET_MASTERY:
+                    break
+                if total_steps >= MAX_STEPS:
                     break
 
     return total_steps, mainline_steps, foundation_extra_used, rag_intervention_count, trajectory_rows
@@ -1194,9 +1316,12 @@ def print_ascii_table(title: str, headers: list[str], rows: list[dict[str, float
 # ====================
 def write_episode_csv(episodes: list[dict[str, Any]]) -> str:
     """Write raw episode records to reports CSV (主輸出保留)."""
-    reports_dir = str(EXPERIMENT1_OUTPUT_DIR)
+    reports_dir = str(get_experiment1_output_dir())
     os.makedirs(reports_dir, exist_ok=True)
     output_path = os.path.join(reports_dir, "ablation_simulation_results.csv")
+    ok, target = _safe_prepare_output_path(output_path)
+    if not ok:
+        return str(target)
 
     fieldnames = [
         "strategy",
@@ -1210,7 +1335,7 @@ def write_episode_csv(episodes: list[dict[str, Any]]) -> str:
         "final_accuracy",
     ]
 
-    with open(output_path, "w", newline="", encoding="utf-8-sig") as csvfile:
+    with open(target, "w", newline="", encoding="utf-8-sig") as csvfile:
         writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
         writer.writeheader()
         for episode in episodes:
@@ -1219,14 +1344,17 @@ def write_episode_csv(episodes: list[dict[str, Any]]) -> str:
                 row["reached_mastery_step"] = ""
             writer.writerow(row)
 
-    return output_path
+    return str(target)
 
 
 def write_trajectory_csv(trajectory_rows: list[dict[str, Any]]) -> str:
     """Write per-step trajectory log to Experiment 2 output directory."""
-    reports_dir = str(EXPERIMENT2_OUTPUT_DIR)
+    reports_dir = str(get_experiment2_output_dir())
     os.makedirs(reports_dir, exist_ok=True)
     output_path = os.path.join(reports_dir, "mastery_trajectory.csv")
+    ok, target = _safe_prepare_output_path(output_path)
+    if not ok:
+        return str(target)
 
     fieldnames = [
         "strategy",
@@ -1266,17 +1394,17 @@ def write_trajectory_csv(trajectory_rows: list[dict[str, Any]]) -> str:
         "fail_streak",
     ] + [f"{s}_mastery" for s in POLYNOMIAL_SUBSKILLS]
 
-    with open(output_path, "w", newline="", encoding="utf-8-sig") as csvfile:
+    with open(target, "w", newline="", encoding="utf-8-sig") as csvfile:
         writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
         writer.writeheader()
         for row in trajectory_rows:
             writer.writerow(row)
 
-    return output_path
+    return str(target)
 
 
 def write_ab3_student_type_summary_csv(rows: list[dict[str, Any]]) -> str:
-    output_dir = str(EXPERIMENT2_OUTPUT_DIR)
+    output_dir = str(get_experiment2_output_dir())
     os.makedirs(output_dir, exist_ok=True)
     output_path = os.path.join(output_dir, "ab3_student_type_summary.csv")
     fieldnames = [
@@ -1288,16 +1416,19 @@ def write_ab3_student_type_summary_csv(rows: list[dict[str, Any]]) -> str:
         "avg_unnecessary_remediations",
         "avg_reached_mastery_step",
     ]
-    with open(output_path, "w", newline="", encoding="utf-8-sig") as csvfile:
+    ok, target = _safe_prepare_output_path(output_path)
+    if not ok:
+        return str(target)
+    with open(target, "w", newline="", encoding="utf-8-sig") as csvfile:
         writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
         writer.writeheader()
         for row in rows:
             writer.writerow(row)
-    return output_path
+    return str(target)
 
 
 def write_ab3_subskill_progress_summary_csv(rows: list[dict[str, Any]]) -> str:
-    output_dir = str(EXPERIMENT2_OUTPUT_DIR)
+    output_dir = str(get_experiment2_output_dir())
     os.makedirs(output_dir, exist_ok=True)
     output_path = os.path.join(output_dir, "ab3_subskill_progress_summary.csv")
     fieldnames = [
@@ -1307,17 +1438,20 @@ def write_ab3_subskill_progress_summary_csv(rows: list[dict[str, Any]]) -> str:
         "avg_final_mastery",
         "avg_gain",
     ]
-    with open(output_path, "w", newline="", encoding="utf-8-sig") as csvfile:
+    ok, target = _safe_prepare_output_path(output_path)
+    if not ok:
+        return str(target)
+    with open(target, "w", newline="", encoding="utf-8-sig") as csvfile:
         writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
         writer.writeheader()
         for row in rows:
             writer.writerow(row)
-    return output_path
+    return str(target)
 
 
 def write_ablation_strategy_summary_csv(rows: list[dict[str, Any]]) -> str:
     """Write formal ablation summary by strategy."""
-    output_dir = str(EXPERIMENT1_OUTPUT_DIR)
+    output_dir = str(get_experiment1_output_dir())
     os.makedirs(output_dir, exist_ok=True)
     output_path = os.path.join(output_dir, "ablation_strategy_summary.csv")
     fieldnames = [
@@ -1331,17 +1465,20 @@ def write_ablation_strategy_summary_csv(rows: list[dict[str, Any]]) -> str:
         "avg_target_gain",
         "avg_total_subskill_gain",
     ]
-    with open(output_path, "w", newline="", encoding="utf-8-sig") as csvfile:
+    ok, target = _safe_prepare_output_path(output_path)
+    if not ok:
+        return str(target)
+    with open(target, "w", newline="", encoding="utf-8-sig") as csvfile:
         writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
         writer.writeheader()
         for row in rows:
             writer.writerow(row)
-    return output_path
+    return str(target)
 
 
 def write_ablation_strategy_by_student_type_summary_csv(rows: list[dict[str, Any]]) -> str:
     """Write formal ablation summary by strategy and student type."""
-    output_dir = str(EXPERIMENT1_OUTPUT_DIR)
+    output_dir = str(get_experiment1_output_dir())
     os.makedirs(output_dir, exist_ok=True)
     output_path = os.path.join(output_dir, "ablation_strategy_by_student_type_summary.csv")
     fieldnames = [
@@ -1356,17 +1493,20 @@ def write_ablation_strategy_by_student_type_summary_csv(rows: list[dict[str, Any
         "avg_target_gain",
         "avg_total_subskill_gain",
     ]
-    with open(output_path, "w", newline="", encoding="utf-8-sig") as csvfile:
+    ok, target = _safe_prepare_output_path(output_path)
+    if not ok:
+        return str(target)
+    with open(target, "w", newline="", encoding="utf-8-sig") as csvfile:
         writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
         writer.writeheader()
         for row in rows:
             writer.writerow(row)
-    return output_path
+    return str(target)
 
 
 def write_ab3_student_type_detailed_summary_csv(rows: list[dict[str, Any]]) -> str:
     """Write detailed AB3 student-type summary."""
-    output_dir = str(EXPERIMENT2_OUTPUT_DIR)
+    output_dir = str(get_experiment2_output_dir())
     os.makedirs(output_dir, exist_ok=True)
     output_path = os.path.join(output_dir, "ab3_student_type_detailed_summary.csv")
     fieldnames = [
@@ -1381,17 +1521,20 @@ def write_ab3_student_type_detailed_summary_csv(rows: list[dict[str, Any]]) -> s
         "avg_polynomial_gain",
         "avg_total_subskill_gain",
     ]
-    with open(output_path, "w", newline="", encoding="utf-8-sig") as csvfile:
+    ok, target = _safe_prepare_output_path(output_path)
+    if not ok:
+        return str(target)
+    with open(target, "w", newline="", encoding="utf-8-sig") as csvfile:
         writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
         writer.writeheader()
         for row in rows:
             writer.writerow(row)
-    return output_path
+    return str(target)
 
 
 def write_ab3_subskill_by_type_detailed_summary_csv(rows: list[dict[str, Any]]) -> str:
     """Write detailed AB3 subskill summary by student type."""
-    output_dir = str(EXPERIMENT2_OUTPUT_DIR)
+    output_dir = str(get_experiment2_output_dir())
     os.makedirs(output_dir, exist_ok=True)
     output_path = os.path.join(output_dir, "ab3_subskill_by_type_detailed_summary.csv")
     fieldnames = [
@@ -1401,17 +1544,20 @@ def write_ab3_subskill_by_type_detailed_summary_csv(rows: list[dict[str, Any]]) 
         "avg_final_mastery",
         "avg_gain",
     ]
-    with open(output_path, "w", newline="", encoding="utf-8-sig") as csvfile:
+    ok, target = _safe_prepare_output_path(output_path)
+    if not ok:
+        return str(target)
+    with open(target, "w", newline="", encoding="utf-8-sig") as csvfile:
         writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
         writer.writeheader()
         for row in rows:
             writer.writerow(row)
-    return output_path
+    return str(target)
 
 
 def write_ab3_failure_breakpoint_summary_csv(rows: list[dict[str, Any]]) -> str:
     """Write AB3 failure breakpoint summary."""
-    output_dir = str(EXPERIMENT2_OUTPUT_DIR)
+    output_dir = str(get_experiment2_output_dir())
     os.makedirs(output_dir, exist_ok=True)
     output_path = os.path.join(output_dir, "ab3_failure_breakpoint_summary.csv")
     fieldnames = [
@@ -1421,12 +1567,15 @@ def write_ab3_failure_breakpoint_summary_csv(rows: list[dict[str, Any]]) -> str:
         "avg_steps",
         "count_failed_episodes",
     ]
-    with open(output_path, "w", newline="", encoding="utf-8-sig") as csvfile:
+    ok, target = _safe_prepare_output_path(output_path)
+    if not ok:
+        return str(target)
+    with open(target, "w", newline="", encoding="utf-8-sig") as csvfile:
         writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
         writer.writeheader()
         for row in rows:
             writer.writerow(row)
-    return output_path
+    return str(target)
 
 
 def build_experiment1_summary_table(
@@ -1492,7 +1641,7 @@ def build_experiment1_summary_table(
 
 def write_experiment1_summary_csv(rows: list[dict[str, Any]]) -> str:
     """Write Experiment 1 summary table CSV for analysis use."""
-    output_dir = str(EXPERIMENT1_OUTPUT_DIR)
+    output_dir = str(get_experiment1_output_dir())
     os.makedirs(output_dir, exist_ok=True)
     output_path = os.path.join(output_dir, "experiment1_summary_table.csv")
     fieldnames = [
@@ -1503,7 +1652,10 @@ def write_experiment1_summary_csv(rows: list[dict[str, Any]]) -> str:
         "Avg Unnecessary Remediations",
         "Avg Final Mastery",
     ]
-    with open(output_path, "w", newline="", encoding="utf-8-sig") as csvfile:
+    ok, target = _safe_prepare_output_path(output_path)
+    if not ok:
+        return str(target)
+    with open(target, "w", newline="", encoding="utf-8-sig") as csvfile:
         writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
         writer.writeheader()
         for row in rows:
@@ -1519,12 +1671,12 @@ def write_experiment1_summary_csv(rows: list[dict[str, Any]]) -> str:
                     continue
                 out_row[key] = f"{float(value):.2f}"
             writer.writerow(out_row)
-    return output_path
+    return str(target)
 
 
 def write_experiment1_summary_markdown(rows: list[dict[str, Any]]) -> str:
     """Write Experiment 1 summary table in markdown format for paper/slides."""
-    output_dir = str(EXPERIMENT1_OUTPUT_DIR)
+    output_dir = str(get_experiment1_output_dir())
     os.makedirs(output_dir, exist_ok=True)
     output_path = os.path.join(output_dir, "experiment1_summary_table.md")
 
@@ -1557,9 +1709,12 @@ def write_experiment1_summary_markdown(rows: list[dict[str, Any]]) -> str:
             + " |"
         )
 
-    with open(output_path, "w", encoding="utf-8-sig") as f:
+    ok, target = _safe_prepare_output_path(output_path, is_markdown=True)
+    if not ok:
+        return str(target)
+    with open(target, "w", encoding="utf-8-sig") as f:
         f.write("\n".join(lines) + "\n")
-    return output_path
+    return str(target)
 
 
 def build_experiment2_student_type_summary(
@@ -1569,7 +1724,7 @@ def build_experiment2_student_type_summary(
     ab3_rows = [row for row in trajectory_rows if row.get("strategy") == "AB3_PPO_Dynamic"]
     summaries: list[dict[str, Any]] = []
 
-    for student_type in STUDENT_TYPES:
+    for student_type in ["Careless", "Average", "Weak"]:
         rows = [row for row in ab3_rows if row.get("student_type") == student_type]
         if not rows:
             continue
@@ -1600,7 +1755,7 @@ def build_experiment2_student_type_summary(
 
         summaries.append(
             {
-                "student_type": student_type,
+                "student_type": EXP2_STUDENT_TYPE_DISPLAY.get(student_type, student_type),
                 "total_episodes": total_episodes,
                 "remediation_steps": remediation_steps,
                 "mainline_steps": mainline_steps,
@@ -1622,7 +1777,7 @@ def build_mastery_step_log(trajectory_rows: list[dict[str, Any]]) -> list[dict[s
 
 def write_experiment2_student_type_summary_csv(rows: list[dict[str, Any]]) -> str:
     """Write Experiment 2 student-type behavior summary for reproducible charting."""
-    output_dir = str(EXPERIMENT2_OUTPUT_DIR)
+    output_dir = str(get_experiment2_output_dir())
     os.makedirs(output_dir, exist_ok=True)
     output_path = os.path.join(output_dir, "experiment2_student_type_summary.csv")
     fieldnames = [
@@ -1635,21 +1790,27 @@ def write_experiment2_student_type_summary_csv(rows: list[dict[str, Any]]) -> st
         "avg_steps",
         "rag_activation_ratio",
     ]
-    with open(output_path, "w", newline="", encoding="utf-8-sig") as csvfile:
+    ok, target = _safe_prepare_output_path(output_path)
+    if not ok:
+        return str(target)
+    with open(target, "w", newline="", encoding="utf-8-sig") as csvfile:
         writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
         writer.writeheader()
         for row in rows:
             writer.writerow(row)
-    return output_path
+    return str(target)
 
 
 def write_experiment2_policy_behavior_figure(rows: list[dict[str, Any]]) -> str:
     """Plot Experiment 2 policy allocation figure (ratio-only, single axis)."""
-    output_dir = str(EXPERIMENT2_OUTPUT_DIR)
+    output_dir = str(get_experiment2_output_dir())
     os.makedirs(output_dir, exist_ok=True)
     output_path = os.path.join(output_dir, "experiment2_policy_behavior_summary.png")
+    ok, target = _safe_prepare_output_path(output_path)
+    if not ok:
+        return str(target)
 
-    student_order = ["Careless", "Average", "Weak"]
+    student_order = EXP2_STUDENT_TYPE_ORDER
     valid_rows = [row for row in rows if row.get("student_type") in student_order]
     if not valid_rows:
         return output_path
@@ -1665,8 +1826,8 @@ def write_experiment2_policy_behavior_figure(rows: list[dict[str, Any]]) -> str:
         for row in valid_rows
     ]
 
-    fig, ax = plt.subplots(figsize=(10, 6))
-    width = 0.36
+    fig, ax = plt.subplots(figsize=(8, 5))
+    width = 0.3
     x = list(range(len(x_labels)))
     bars1 = ax.bar(
         [i - width / 2 for i in x],
@@ -1686,72 +1847,24 @@ def write_experiment2_policy_behavior_figure(rows: list[dict[str, Any]]) -> str:
     ax.set_ylim(0, 1.0)
     ax.set_xticks(x)
     ax.set_xticklabels(x_labels)
-    ax.set_title("AB3 Policy Allocation Across Student Types")
+    ax.set_title("AB3 Policy Allocation by Student Type")
+    ax.text(
+        0.98,
+        0.95,
+        "max_steps = 50",
+        transform=ax.transAxes,
+        ha="right",
+        va="top",
+        fontsize=9,
+        bbox=dict(facecolor="white", alpha=0.7, edgecolor="none"),
+    )
 
-    for idx, value in enumerate(remediation_ratio):
-        if value == value:
-            ax.annotate(
-                f"{value:.2f}",
-                (x[idx] - width / 2, value),
-                textcoords="offset points",
-                xytext=(0, 3),
-                ha="center",
-            )
-    for idx, value in enumerate(mainline_ratio):
-        if value == value:
-            ax.annotate(
-                f"{value:.2f}",
-                (x[idx] + width / 2, value),
-                textcoords="offset points",
-                xytext=(0, 3),
-                ha="center",
-            )
+    add_bar_labels(ax, fmt="{:.0%}")
+    ax.legend(loc="upper left")
 
-    ax.legend(loc="upper right")
-
-    plt.tight_layout()
-    plt.savefig(output_path, dpi=150)
-    plt.close(fig)
-    return output_path
-
-
-def write_experiment2_efficiency_figure(rows: list[dict[str, Any]]) -> str:
-    """Plot Experiment 2 efficiency figure: average steps by student type."""
-    output_dir = str(EXPERIMENT2_OUTPUT_DIR)
-    os.makedirs(output_dir, exist_ok=True)
-    output_path = os.path.join(output_dir, "experiment2_efficiency_by_student_type.png")
-
-    student_order = ["Careless", "Average", "Weak"]
-    valid_rows = [row for row in rows if row.get("student_type") in student_order]
-    if not valid_rows:
-        return output_path
-    valid_rows.sort(key=lambda row: student_order.index(str(row["student_type"])))
-
-    x_labels = [str(row["student_type"]) for row in valid_rows]
-    avg_steps = [float(row["avg_steps"]) for row in valid_rows]
-
-    fig, ax = plt.subplots(figsize=(9, 5))
-    bars = ax.bar(x_labels, avg_steps, width=0.6)
-    ax.set_xlabel("Student Type")
-    ax.set_ylabel("Average Steps")
-    ax.set_title("Average Steps per Episode Across Student Types")
-    max_steps = max(avg_steps) if avg_steps else 0.0
-    ax.set_ylim(0, (max_steps * 1.25) if max_steps > 0 else 1.0)
-
-    for bar in bars:
-        h = float(bar.get_height())
-        ax.annotate(
-            f"{h:.2f}",
-            (bar.get_x() + bar.get_width() / 2, h),
-            textcoords="offset points",
-            xytext=(0, 3),
-            ha="center",
-        )
-
-    plt.tight_layout()
-    plt.savefig(output_path, dpi=150)
-    plt.close(fig)
-    return output_path
+    ax.grid(axis="y", alpha=0.25)
+    finalize_report_figure(fig, str(target))
+    return str(target)
 
 
 def write_experiment2_figure_captions(output_dir: str, representative_episode_id: int | None) -> list[str]:
@@ -1760,42 +1873,53 @@ def write_experiment2_figure_captions(output_dir: str, representative_episode_id
     paths: list[str] = []
 
     summary_caption = os.path.join(output_dir, "figure_caption_experiment2_summary.md")
-    with open(summary_caption, "w", encoding="utf-8-sig") as f:
-        f.write(
-            "### Figure Caption: Experiment 2 Policy Behavior Summary\n"
-            "This figure compares policy allocation across Careless, Average, and Weak groups under AB3.\n"
-            "Both bars are computed from real step-level logs: remediation ratio = remediation steps / active steps,\n"
-            "mainline ratio = mainline steps / active steps.\n"
-            "Key finding: AB3 allocates different remediation intensity by student type, with weaker learners receiving\n"
-            "a larger remediation share and stronger learners remaining more frequently on mainline.\n"
-        )
+    ok, target = _safe_prepare_output_path(summary_caption, is_markdown=True)
+    if ok:
+        with open(target, "w", encoding="utf-8-sig") as f:
+            f.write(
+                "### Figure Caption: Experiment 2 Policy Behavior Summary\n"
+                "This figure compares policy allocation across Careless, Average, and Weak Foundation groups under AB3.\n"
+                "Both bars are computed from real step-level logs: remediation ratio = remediation steps / active steps,\n"
+                "mainline ratio = mainline steps / active steps.\n"
+                "Experiment 1 identifies MAX_STEPS = 50 as the best-performing setting; therefore Experiment 2 uses MAX_STEPS = 50 for mechanism analysis consistency.\n"
+                "Key finding: AB3 allocates different remediation intensity by student type, with weaker learners receiving\n"
+                "a larger remediation share and stronger learners remaining more frequently on mainline.\n"
+            )
+    summary_caption = str(target)
     paths.append(summary_caption)
 
     episode_caption = os.path.join(output_dir, "figure_caption_mastery_episode.md")
-    with open(episode_caption, "w", encoding="utf-8-sig") as f:
+    ok, target = _safe_prepare_output_path(episode_caption, is_markdown=True)
+    if ok:
         eid_text = str(representative_episode_id) if representative_episode_id is not None else "N/A"
-        f.write(
-            "### Figure Caption: Representative Mastery Trajectory\n"
-            f"This trajectory shows one automatically selected representative episode (episode_id={eid_text}) from AB3 logs.\n"
-            "Curves are true step-level prerequisite/target mastery values, with remediation phases marked by shaded spans;\n"
-            "remediation starts are marked explicitly, and the end of each shaded span indicates return to mainline.\n"
-            "Key finding: target-mastery growth becomes clearer after remediation-supported prerequisite consolidation.\n"
-        )
+        with open(target, "w", encoding="utf-8-sig") as f:
+            f.write(
+                "### Figure Caption: Representative Mastery Trajectory\n"
+                f"This trajectory shows one automatically selected representative episode (episode_id={eid_text}) from AB3 logs.\n"
+                "Curves are true step-level prerequisite/target mastery values, with remediation phases marked by shaded spans;\n"
+                "remediation starts are marked explicitly, and the end of each shaded span indicates return to mainline.\n"
+                "Experiment 1 identifies MAX_STEPS = 50 as the best-performing setting; therefore Experiment 2 uses MAX_STEPS = 50 for mechanism analysis consistency.\n"
+                "Key finding: target-mastery growth becomes clearer after remediation-supported prerequisite consolidation.\n"
+            )
+    episode_caption = str(target)
     paths.append(episode_caption)
 
     avg_caption = os.path.join(output_dir, "figure_caption_mastery_average.md")
-    with open(avg_caption, "w", encoding="utf-8-sig") as f:
-        f.write(
-            "### Figure Caption: Average Mastery Trajectory by Student Type\n"
-            "This figure aligns AB3 episodes by step and reports per-step means for prerequisite mastery and target mastery\n"
-            "within each student type using NaN-safe aggregation from real trajectory logs.\n"
-            "All panels share the same x-axis range for direct comparison; shorter groups stop at the end of observed steps\n"
-            "without interpolation or artificial extrapolation.\n"
-            "Key finding: mastery-growth dynamics differ across student types, and weaker groups show slower target mastery\n"
-            "convergence even when prerequisite mastery improves.\n"
-        )
+    ok, target = _safe_prepare_output_path(avg_caption, is_markdown=True)
+    if ok:
+        with open(target, "w", encoding="utf-8-sig") as f:
+            f.write(
+                "### Figure Caption: Average Mastery Trajectory by Student Type\n"
+                "This figure aligns AB3 episodes by step and reports per-step means for prerequisite mastery and target mastery\n"
+                "within each student type using NaN-safe aggregation from real trajectory logs.\n"
+                "All panels share the same x-axis range for direct comparison; shorter groups stop at the end of observed steps\n"
+                "without interpolation or artificial extrapolation.\n"
+                "Experiment 1 identifies MAX_STEPS = 50 as the best-performing setting; therefore Experiment 2 uses MAX_STEPS = 50 for mechanism analysis consistency.\n"
+                "Key finding: mastery-growth dynamics differ across student types, and weaker groups show slower target mastery\n"
+                "convergence even when prerequisite mastery improves.\n"
+            )
+    avg_caption = str(target)
     paths.append(avg_caption)
-
     return paths
 
 
@@ -1812,7 +1936,7 @@ def select_representative_mastery_episode(
         by_episode.setdefault(eid, []).append(row)
 
     episode_meta = {int(e["episode_id"]): e for e in episodes if e["strategy"] == "AB3_PPO_Dynamic"}
-    type_priority = {"Average": 0, "Weak": 1, "Careless": 2}
+    type_priority = {"Average": 0, "Weak Foundation": 1, "Careless": 2}
     candidates: list[tuple[int, int, int, int]] = []
     # tuple: (type_rank, -remediation_steps, -return_count, episode_id)
     for eid, rows in by_episode.items():
@@ -1823,12 +1947,12 @@ def select_representative_mastery_episode(
         meta = episode_meta.get(eid)
         if not meta or int(meta.get("success", 0)) != 1:
             continue
-        stype = str(meta.get("student_type", "Average"))
+        stype = EXP2_STUDENT_TYPE_DISPLAY.get(str(meta.get("student_type", "Average")), str(meta.get("student_type", "Average")))
         rank = type_priority.get(stype, 99)
         candidates.append((rank, -rem_steps, -ret_count, eid))
 
     if not candidates:
-        # Fallback: any AB3 episode with remediation, prioritize Average/Weak.
+        # Fallback: any AB3 episode with remediation, prioritize Average/Weak Foundation.
         fallback: list[tuple[int, int, int]] = []
         for eid, rows in by_episode.items():
             rem_steps = sum(
@@ -1837,7 +1961,7 @@ def select_representative_mastery_episode(
             if rem_steps <= 0:
                 continue
             meta = episode_meta.get(eid, {})
-            stype = str(meta.get("student_type", "Average"))
+            stype = EXP2_STUDENT_TYPE_DISPLAY.get(str(meta.get("student_type", "Average")), str(meta.get("student_type", "Average")))
             rank = type_priority.get(stype, 99)
             total_steps = len(rows)
             fallback.append((rank, abs(total_steps - 30), eid))
@@ -1885,7 +2009,7 @@ def save_mastery_trajectory_plot(
     target_skill: str = "polynomial",
     prerequisite_skill: str = "integer",
 ) -> str | None:
-    """Save representative episode trajectory with remediation spans and transition markers."""
+    """Save representative episode in raw and clean storytelling versions."""
     episode_id = select_representative_episode(episodes, step_log_rows)
     if episode_id is None:
         return None
@@ -1899,59 +2023,162 @@ def save_mastery_trajectory_plot(
     pre_values = [float(r["integer_mastery"]) for r in rows]
     target_values = [float(r["polynomial_mastery"]) for r in rows]
     remediation_spans = _find_remediation_spans(rows)
-    remediation_start_steps = [a for a, _ in remediation_spans]
 
-    student_type = str(rows[0].get("student_type", "Unknown"))
-    fig, ax = plt.subplots(figsize=(11, 6))
-    ax.plot(
+    raw_student_type = str(rows[0].get("student_type", "Unknown"))
+    student_type = EXP2_STUDENT_TYPE_DISPLAY.get(raw_student_type, raw_student_type)
+
+    os.makedirs(output_dir, exist_ok=True)
+
+    # Version 1: raw debug view.
+    fig_raw, ax_raw = plt.subplots(figsize=(8, 5))
+    ax_raw.plot(
         steps,
         pre_values,
         marker="o",
         linewidth=2.2,
         label=f"Prerequisite Mastery ({prerequisite_skill})",
     )
-    ax.plot(
+    ax_raw.plot(
         steps,
         target_values,
         marker="s",
         linewidth=2.2,
         label=f"Target Mastery ({target_skill})",
     )
-
-    shaded_once = False
     for span_start, span_end in remediation_spans:
-        label = "Remediation Phase" if not shaded_once else "_nolegend_"
-        ax.axvspan(span_start - 0.5, span_end + 0.5, alpha=0.24, label=label)
-        shaded_once = True
-
-    start_labeled = False
-    for s in remediation_start_steps:
-        label = "Remediation Start" if not start_labeled else "_nolegend_"
-        ax.axvline(s, linestyle="--", linewidth=1.5, label=label)
-        start_labeled = True
+        ax_raw.axvspan(span_start - 0.5, span_end + 0.5, alpha=0.22, label="Remediation Phase")
 
     y_min = min(pre_values + target_values)
     y_max = max(pre_values + target_values)
     if y_min >= 0.0 and y_max <= 1.0:
-        ax.set_ylim(0.0, 1.0)
+        ax_raw.set_ylim(0.0, 1.0)
+
+    ax_raw.set_xlabel("Step")
+    ax_raw.set_ylabel("Mastery Level")
+    ax_raw.set_title(
+        "Representative Episode: Raw View\n"
+        f"Student Type={student_type}, Episode={episode_id}"
+    )
+    ax_raw.legend(loc="lower right", fontsize=8, frameon=True)
+    ax_raw.set_xlim(min(steps), max(steps))
+    ax_raw.grid(axis="y", alpha=0.25)
+
+    raw_path = os.path.join(output_dir, "representative_raw.png")
+    ok, target_raw = _safe_prepare_output_path(raw_path)
+    if ok:
+        finalize_report_figure(fig_raw, str(target_raw))
+    else:
+        plt.close(fig_raw)
+
+    # Version 2: clean publication/storytelling view.
+    fig, ax = plt.subplots(figsize=(8, 5))
+    pre_line = ax.plot(
+        steps,
+        pre_values,
+        marker="o",
+        linewidth=1.5,
+        alpha=0.6,
+        color="tab:blue",
+        label="Prerequisite Mastery",
+    )[0]
+    target_line = ax.plot(
+        steps,
+        target_values,
+        marker="s",
+        linewidth=3.0,
+        color="tab:orange",
+        label="Target Mastery",
+    )[0]
+
+    # Keep only key remediation spans where target shows meaningful post-span gain.
+    gain_threshold = 0.03
+    key_spans: list[tuple[int, int, float]] = []
+    for a, b in remediation_spans:
+        left_idx = max(0, a - 2)
+        right_step = min(max(steps), b + 2)
+        right_idx = steps.index(right_step) if right_step in steps else len(steps) - 1
+        delta = target_values[right_idx] - target_values[left_idx]
+        if delta > gain_threshold:
+            key_spans.append((a, b, delta))
+
+    for a, b, _ in key_spans:
+        ax.axvspan(a - 0.5, b + 0.5, color="gray", alpha=0.10, zorder=0)
+
+    # Mastery threshold.
+    threshold_y = 0.85
+    threshold_line = ax.axhline(
+        threshold_y,
+        color="dimgray",
+        linestyle="--",
+        linewidth=1.2,
+        label="Mastery Threshold",
+    )
+
+    # Causal arrow annotation for strongest key span.
+    if key_spans:
+        best_span = max(key_spans, key=lambda x: x[2])
+        a, b, _ = best_span
+        mid = (a + b) / 2.0
+        end_step = min(max(steps), b + 2)
+        y_end = target_values[steps.index(end_step)] if end_step in steps else target_values[-1]
+        ax.annotate(
+            "Remediation → prerequisite ↑ → target recovery",
+            xy=(end_step, y_end),
+            xytext=(mid - 6, min(0.9, y_end + 0.10)),
+            arrowprops=dict(arrowstyle="->", lw=1.0, color="black"),
+            fontsize=8.8,
+            ha="left",
+        )
+
+    # Key turning points: first meaningful rise, largest rise, near threshold.
+    diffs = [target_values[i] - target_values[i - 1] for i in range(1, len(target_values))]
+    first_idx = next((i for i, d in enumerate(diffs, start=1) if d > 0.02), None)
+    max_idx = (diffs.index(max(diffs)) + 1) if diffs else None
+    near_idx = next((i for i, y in enumerate(target_values) if y >= threshold_y - 0.02), None)
+    key_indices: list[int] = []
+    for idx in [first_idx, max_idx, near_idx]:
+        if idx is not None and idx not in key_indices:
+            key_indices.append(idx)
+    key_indices = key_indices[:3]
+    for k_i, idx in enumerate(key_indices, start=1):
+        ax.annotate(
+            f"Key Improvement #{k_i}",
+            xy=(steps[idx], target_values[idx]),
+            xytext=(steps[idx] + 1, min(0.92, target_values[idx] + 0.05)),
+            arrowprops=dict(arrowstyle="->", lw=0.9),
+            fontsize=8.5,
+        )
 
     ax.set_xlabel("Step")
     ax.set_ylabel("Mastery Level")
-    ax.set_title(
-        "Representative Episode: Mastery Growth with Remediation Phases\n"
-        f"Student Type={student_type}, Episode={episode_id}"
-    )
-    ax.legend(loc="lower right")
     ax.set_xlim(min(steps), max(steps))
+    if y_min >= 0.0 and y_max <= 1.0:
+        ax.set_ylim(0.0, 1.0)
+    ax.set_title(
+        "How Remediation Improves Target Mastery (Representative Episode)\n"
+        "Average Student | AB3 Policy",
+        fontsize=11.5,
+    )
+    ax.legend(
+        handles=[pre_line, target_line, threshold_line],
+        loc="lower right",
+        fontsize=8.3,
+        frameon=True,
+    )
 
-    os.makedirs(output_dir, exist_ok=True)
-    output_path = os.path.join(output_dir, f"mastery_trajectory_episode_{episode_id}.png")
-    plt.tight_layout()
-    plt.savefig(output_path, dpi=150)
-    plt.close(fig)
-    fixed_path = os.path.join(output_dir, "mastery_trajectory_representative_episode.png")
-    shutil.copy2(output_path, fixed_path)
-    return output_path
+    clean_path = os.path.join(output_dir, "representative_clean.png")
+    ok, target_clean = _safe_prepare_output_path(clean_path)
+    if not ok:
+        plt.close(fig)
+        return str(target_clean)
+    finalize_report_figure(fig, str(target_clean))
+
+    # Keep legacy filename for downstream compatibility.
+    output_path = os.path.join(output_dir, "mastery_trajectory_representative_episode.png")
+    ok, target = _safe_prepare_output_path(output_path)
+    if ok:
+        shutil.copy2(str(target_clean), str(target))
+    return str(target)
 
 
 def write_mastery_trajectory_episode_figure(
@@ -1975,72 +2202,265 @@ def save_average_mastery_trajectory_by_type(
     step_log_rows: list[dict[str, Any]],
     output_dir: str,
 ) -> str | None:
-    """Save per-student-type average mastery trajectory from aligned AB3 logs."""
+    """Save single publication figure: average mastery trajectory by student type."""
     ab3 = [r for r in step_log_rows if r.get("strategy") == "AB3_PPO_Dynamic"]
     if not ab3:
         return None
-    max_step = max(int(r["step"]) for r in ab3 if r.get("step") is not None)
-    all_steps = list(range(1, max_step + 1))
-
-    fig, axes = plt.subplots(1, 3, figsize=(18, 5), sharey=True)
-    plotted = False
-
-    for idx, student_type in enumerate(STUDENT_TYPES):
-        ax = axes[idx]
-        rows = [r for r in ab3 if r.get("student_type") == student_type]
-        if not rows:
-            ax.set_title(f"{student_type} (No Data)")
-            ax.axis("off")
-            continue
-
-        by_step: dict[int, list[dict[str, Any]]] = {}
-        for row in rows:
-            step = int(row["step"])
-            by_step.setdefault(step, []).append(row)
-
-        avg_int_map = {
-            s: statistics.mean(float(r["integer_mastery"]) for r in by_step[s]) for s in by_step
-        }
-        avg_poly_map = {
-            s: statistics.mean(float(r["polynomial_mastery"]) for r in by_step[s]) for s in by_step
-        }
-        avg_int = [avg_int_map.get(s, float("nan")) for s in all_steps]
-        avg_poly = [avg_poly_map.get(s, float("nan")) for s in all_steps]
-
-        plotted = True
-        ax.plot(
-            all_steps,
-            avg_int,
-            linewidth=2.2,
-            marker="o",
-            label="Prerequisite Mastery",
-        )
-        ax.plot(
-            all_steps,
-            avg_poly,
-            linewidth=2.2,
-            marker="s",
-            label="Target Mastery",
-        )
-        ax.set_title(f"Learning Trajectory ({student_type} Group)")
-        ax.set_xlabel("Step")
-        if idx == 0:
-            ax.set_ylabel("Mastery")
-        ax.set_ylim(0.0, 1.0)
-        ax.set_xlim(1, max_step)
-        ax.legend(fontsize=8)
-
-    if not plotted:
-        plt.close(fig)
+    type_episode_step, max_step = _build_mastery_by_episode(ab3)
+    if max_step <= 0:
         return None
 
-    fig.suptitle("Average Mastery Trajectory by Student Type (AB3)")
+    steps = list(range(1, max_step + 1))
+    student_order = ["Careless", "Average", "Weak"]
+    display = {"Careless": "Careless", "Average": "Average", "Weak": "Weak Foundation"}
+    colors = {"Careless": "tab:blue", "Average": "tab:orange", "Weak": "tab:green"}
+
+    fig, ax = plt.subplots(figsize=(10, 6))
+    for st in student_order:
+        episodes = type_episode_step.get(st, {})
+        if not episodes:
+            continue
+        pre_mean: list[float] = []
+        tar_mean: list[float] = []
+        for t in steps:
+            valid_pre = []
+            valid_tar = []
+            for eid in episodes:
+                if t in episodes[eid]:
+                    valid_pre.append(episodes[eid][t][0])
+                    valid_tar.append(episodes[eid][t][1])
+            pre_mean.append(statistics.mean(valid_pre) if valid_pre else float("nan"))
+            tar_mean.append(statistics.mean(valid_tar) if valid_tar else float("nan"))
+
+        ax.plot(
+            steps,
+            tar_mean,
+            color=colors[st],
+            linewidth=2.4,
+            linestyle="-",
+            label=f"{display[st]} Target",
+        )
+        ax.plot(
+            steps,
+            pre_mean,
+            color=colors[st],
+            linewidth=1.8,
+            linestyle="--",
+            label=f"{display[st]} Prerequisite",
+        )
+
+    ax.set_title("Average Mastery Trajectory under AB3 by Student Type")
+    ax.set_xlabel("Step")
+    ax.set_ylabel("Mastery")
+    ax.set_ylim(0.3, 0.9)
+    ax.grid(alpha=0.3)
+    ax.legend(loc="upper right", fontsize=8.5, frameon=True, ncol=1)
+
     os.makedirs(output_dir, exist_ok=True)
     output_path = os.path.join(output_dir, "mastery_trajectory_average_by_student_type.png")
-    fig.tight_layout(rect=[0, 0, 1, 0.95])
-    fig.savefig(output_path, dpi=150)
+    ok, target = _safe_prepare_output_path(output_path)
+    if not ok:
+        plt.close(fig)
+        return str(target)
+    fig.tight_layout()
+    fig.savefig(str(target), dpi=300, bbox_inches="tight")
     plt.close(fig)
-    return output_path
+    return str(target)
+
+
+def _build_mastery_by_episode(
+    step_log_rows: list[dict[str, Any]],
+) -> tuple[dict[str, dict[int, dict[int, tuple[float, float]]]], int]:
+    """Build nested map: type -> episode -> step -> (prereq, target)."""
+    type_episode_step: dict[str, dict[int, dict[int, tuple[float, float]]]] = {
+        "Careless": {},
+        "Average": {},
+        "Weak": {},
+    }
+    max_step = 0
+    for row in step_log_rows:
+        student_type = str(row.get("student_type", ""))
+        if student_type not in type_episode_step:
+            continue
+        if row.get("step") is None:
+            continue
+        step = int(row["step"])
+        episode_id = int(row["episode_id"])
+        pre = float(row["integer_mastery"])
+        tar = float(row["polynomial_mastery"])
+        max_step = max(max_step, step)
+        type_episode_step[student_type].setdefault(episode_id, {})[step] = (pre, tar)
+    return type_episode_step, max_step
+
+
+def plot_mastery_trajectory_raw(df: list[dict[str, Any]]) -> plt.Figure | None:
+    """Baseline raw average: missing late steps are treated as zero (introduces bias)."""
+    type_episode_step, max_step = _build_mastery_by_episode(df)
+    if max_step <= 0:
+        return None
+    steps = list(range(1, max_step + 1))
+    student_order = ["Careless", "Average", "Weak"]
+    display = {"Careless": "Careless", "Average": "Average", "Weak": "Weak Foundation"}
+    colors = {"Careless": "tab:blue", "Average": "tab:orange", "Weak": "tab:green"}
+
+    fig, ax = plt.subplots(figsize=(10, 6))
+    for st in student_order:
+        episodes = type_episode_step.get(st, {})
+        if not episodes:
+            continue
+        ep_ids = list(episodes.keys())
+        pre_mean: list[float] = []
+        tar_mean: list[float] = []
+        for t in steps:
+            pre_vals = []
+            tar_vals = []
+            for eid in ep_ids:
+                pair = episodes[eid].get(t, (0.0, 0.0))
+                pre_vals.append(pair[0])
+                tar_vals.append(pair[1])
+            pre_mean.append(statistics.mean(pre_vals))
+            tar_mean.append(statistics.mean(tar_vals))
+        ax.plot(steps, tar_mean, color=colors[st], linewidth=2.0, linestyle="-", label=f"{display[st]} Target")
+        ax.plot(steps, pre_mean, color=colors[st], linewidth=1.8, linestyle="--", label=f"{display[st]} Prerequisite")
+
+    ax.set_title("Average Mastery Trajectory (AB3, Raw)", fontsize=13)
+    ax.set_xlabel("Step")
+    ax.set_ylabel("Mastery")
+    ax.set_ylim(0.3, 0.9)
+    ax.grid(alpha=0.3)
+    ax.legend(loc="upper right", fontsize=8.5, frameon=True, ncol=2)
+    fig.tight_layout()
+    fig.subplots_adjust(top=0.9)
+    return fig
+
+
+def plot_mastery_trajectory_corrected(df: list[dict[str, Any]]) -> plt.Figure | None:
+    """Bias-corrected average using only active episodes at each step."""
+    type_episode_step, max_step = _build_mastery_by_episode(df)
+    if max_step <= 0:
+        return None
+    steps = list(range(1, max_step + 1))
+    student_order = ["Careless", "Average", "Weak"]
+    display = {"Careless": "Careless", "Average": "Average", "Weak": "Weak Foundation"}
+    colors = {"Careless": "tab:blue", "Average": "tab:orange", "Weak": "tab:green"}
+
+    fig, (ax, ax_count) = plt.subplots(
+        2,
+        1,
+        figsize=(10, 6),
+        gridspec_kw={"height_ratios": [4, 1]},
+        sharex=True,
+        constrained_layout=False,
+    )
+
+    # Remediation ratio shading (overall AB3).
+    remediation_ratio_by_step: dict[int, float] = {}
+    for t in steps:
+        rows_t = [r for r in df if int(r.get("step", -1)) == t]
+        if not rows_t:
+            continue
+        remediation_count = sum(1 for r in rows_t if str(r.get("route", r.get("phase", ""))) == "remediation")
+        remediation_ratio_by_step[t] = remediation_count / len(rows_t)
+    if remediation_ratio_by_step:
+        threshold = statistics.mean(remediation_ratio_by_step.values())
+        span_start = None
+        for t in steps:
+            ratio = remediation_ratio_by_step.get(t, 0.0)
+            if ratio >= threshold and span_start is None:
+                span_start = t
+            if ratio < threshold and span_start is not None:
+                ax.axvspan(span_start, t, color="lightskyblue", alpha=0.15, zorder=0)
+                span_start = None
+        if span_start is not None:
+            ax.axvspan(span_start, steps[-1], color="lightskyblue", alpha=0.15, zorder=0)
+
+    for st in student_order:
+        episodes = type_episode_step.get(st, {})
+        if not episodes:
+            continue
+        ep_ids = list(episodes.keys())
+        pre_mean: list[float] = []
+        tar_mean: list[float] = []
+        pre_std: list[float] = []
+        tar_std: list[float] = []
+        active_count: list[int] = []
+
+        for t in steps:
+            valid_pre = []
+            valid_tar = []
+            for eid in ep_ids:
+                if t in episodes[eid]:  # mask: only active episodes at step t
+                    valid_pre.append(episodes[eid][t][0])
+                    valid_tar.append(episodes[eid][t][1])
+            active_count.append(len(valid_pre))
+            if valid_pre:
+                pre_mean.append(statistics.mean(valid_pre))
+                tar_mean.append(statistics.mean(valid_tar))
+                pre_std.append(statistics.stdev(valid_pre) if len(valid_pre) > 1 else 0.0)
+                tar_std.append(statistics.stdev(valid_tar) if len(valid_tar) > 1 else 0.0)
+            else:
+                pre_mean.append(float("nan"))
+                tar_mean.append(float("nan"))
+                pre_std.append(0.0)
+                tar_std.append(0.0)
+
+        ax.plot(
+            steps,
+            tar_mean,
+            color=colors[st],
+            linewidth=2.2,
+            linestyle="-",
+            label=f"{display[st]} Target",
+        )
+        ax.plot(
+            steps,
+            pre_mean,
+            color=colors[st],
+            linewidth=2.0,
+            linestyle="--",
+            label=f"{display[st]} Prerequisite",
+        )
+        lower_tar = [m - s if m == m else float("nan") for m, s in zip(tar_mean, tar_std)]
+        upper_tar = [m + s if m == m else float("nan") for m, s in zip(tar_mean, tar_std)]
+        lower_pre = [m - s if m == m else float("nan") for m, s in zip(pre_mean, pre_std)]
+        upper_pre = [m + s if m == m else float("nan") for m, s in zip(pre_mean, pre_std)]
+        ax.fill_between(steps, lower_tar, upper_tar, color=colors[st], alpha=0.12, linewidth=0)
+        ax.fill_between(steps, lower_pre, upper_pre, color=colors[st], alpha=0.08, linewidth=0)
+        ax_count.plot(steps, active_count, color=colors[st], linewidth=1.5, label=f"{display[st]} Active N")
+
+    ax.set_title("Average Mastery Trajectory (AB3, Bias-Corrected)", fontsize=13)
+    ax.set_ylabel("Mastery")
+    ax.set_ylim(0.3, 0.9)
+    ax.grid(alpha=0.3)
+    ax.legend(loc="upper right", fontsize=8.5, frameon=True, ncol=2)
+
+    ann_x1 = min(35, steps[-1])
+    ann_y1 = 0.83
+    ax.annotate(
+        "Survivorship bias after step ~35",
+        xy=(ann_x1, ann_y1),
+        xytext=(ann_x1 - 10, ann_y1 + 0.04),
+        arrowprops=dict(arrowstyle="->", lw=1.0),
+        fontsize=9,
+    )
+    ann_x2 = min(28, steps[-1])
+    ann_y2 = 0.56
+    ax.annotate(
+        "Temporary drop due to remediation phase",
+        xy=(ann_x2, ann_y2),
+        xytext=(ann_x2 + 4, ann_y2 - 0.08),
+        arrowprops=dict(arrowstyle="->", lw=1.0),
+        fontsize=9,
+    )
+
+    ax_count.set_xlabel("Step")
+    ax_count.set_ylabel("Active N")
+    ax_count.grid(alpha=0.25)
+    ax_count.legend(loc="upper right", fontsize=8, frameon=True, ncol=3)
+
+    fig.tight_layout()
+    fig.subplots_adjust(top=0.9)
+    return fig
 
 
 def write_mastery_trajectory_average_figure(
@@ -2057,133 +2477,190 @@ def write_mastery_trajectory_average_figure(
 # ====================
 # 7) main()
 # ====================
-def main(output_mode: str = "full") -> None:
-    """Run full ablation simulation workflow."""
+def main(output_mode: str = "experiment2") -> None:
+    """Run simulation workflow with explicit output routing by mode."""
+    global MAX_STEPS
+    normalized_mode = str(output_mode).strip().lower()
+    if normalized_mode not in {"experiment1", "experiment2", "full"}:
+        raise ValueError(f"Unsupported output_mode: {output_mode}")
+
+    # In current workflow, "full" follows Experiment 2 output routing to avoid
+    # accidental overwrite of Experiment 1 report artifacts.
+    exp1_enabled = normalized_mode == "experiment1"
+    exp2_enabled = normalized_mode in {"experiment2", "full"}
+
+    original_max_steps = int(MAX_STEPS)
+    print(f"[MODE] {normalized_mode}")
+    prev_exp2_env = os.environ.get(EXP2_OUTPUT_DIR_ENV)
+    prev_exp1_env = os.environ.get(EXP1_OUTPUT_DIR_ENV)
+    prev_mode_env = os.environ.get(OUTPUT_MODE_ENV)
+    exp2_run_dir: Path | None = None
+    exp2_latest_dir: Path | None = None
+    exp2_final_dir: Path | None = None
+    exp1_run_dir: Path | None = None
+    exp1_latest_dir: Path | None = None
+    exp1_final_dir: Path | None = None
+    os.environ[OUTPUT_MODE_ENV] = normalized_mode
+
+    if exp1_enabled:
+        exp1_dirs = create_timestamped_run_dir(EXPERIMENT1_OUTPUT_DIR)
+        exp1_run_dir = exp1_dirs["run_dir"]
+        exp1_latest_dir = exp1_dirs["latest_dir"]
+        exp1_final_dir = exp1_dirs["final_dir"]
+        os.environ[EXP1_OUTPUT_DIR_ENV] = str(exp1_run_dir)
+        print(f"[RUN] Writing outputs to {exp1_run_dir}")
+        print(f"[LATEST] Updating {exp1_latest_dir}")
+        print(f"[PROTECT] final directory is never auto-written")
+
+    if exp2_enabled:
+        exp2_dirs = create_timestamped_run_dir(EXPERIMENT2_OUTPUT_DIR)
+        exp2_run_dir = exp2_dirs["run_dir"]
+        exp2_latest_dir = exp2_dirs["latest_dir"]
+        exp2_final_dir = exp2_dirs["final_dir"]
+        os.environ[EXP2_OUTPUT_DIR_ENV] = str(exp2_run_dir)
+        print(f"[RUN] Writing outputs to {exp2_run_dir}")
+        print(f"[LATEST] Updating {exp2_latest_dir}")
+        print(f"[PROTECT] final directory is never auto-written")
+
+    if exp2_enabled and not exp1_enabled:
+        MAX_STEPS = int(EXP2_FIXED_MAX_STEPS)
     random.seed(RANDOM_SEED)
+    try:
+        episodes, trajectory_rows = run_batch_experiments()
+        strategy_summary = build_strategy_summary(episodes)
+        strategy_student_summary = build_strategy_student_summary(episodes)
+        ab3_student_summary = build_ab3_student_type_summary(episodes)
+        ab3_subskill_summary = build_ab3_subskill_progress_summary(episodes)
+        ablation_strategy_summary = build_ablation_strategy_summary(episodes)
+        ablation_strategy_by_type_summary = build_ablation_strategy_by_student_type_summary(episodes)
+        ab3_student_detailed_summary = build_ab3_student_type_detailed_summary(episodes)
+        ab3_subskill_detailed_summary = build_ab3_subskill_by_type_detailed_summary(episodes)
+        ab3_failure_breakpoint_summary = build_ab3_failure_breakpoint_summary(episodes)
+        exp2_behavior_summary = build_experiment2_student_type_summary(trajectory_rows)
+        exp1_table_rows = build_experiment1_summary_table(episodes, max_steps_default=MAX_STEPS)
+        print(f"Total episodes: {len(episodes)}")
+        print_ascii_table(
+            title="Table 1: Overall Strategy Comparison",
+            headers=[
+                "Strategy",
+                "Success Rate",
+                "Avg Steps",
+                "Avg Unnecessary Remediations",
+                "Avg Final Mastery",
+            ],
+            rows=strategy_summary,
+        )
+        print_ascii_table(
+            title="Table 2: Strategy x Student Type Comparison",
+            headers=[
+                "Strategy",
+                "Student Type",
+                "Success Rate",
+                "Avg Steps",
+                "Avg Unnecessary Remediations",
+                "Avg Final Mastery",
+            ],
+            rows=strategy_student_summary,
+        )
 
-    episodes, trajectory_rows = run_batch_experiments()
-    strategy_summary = build_strategy_summary(episodes)
-    strategy_student_summary = build_strategy_student_summary(episodes)
-    ab3_student_summary = build_ab3_student_type_summary(episodes)
-    ab3_subskill_summary = build_ab3_subskill_progress_summary(episodes)
-    ablation_strategy_summary = build_ablation_strategy_summary(episodes)
-    ablation_strategy_by_type_summary = build_ablation_strategy_by_student_type_summary(episodes)
-    ab3_student_detailed_summary = build_ab3_student_type_detailed_summary(episodes)
-    ab3_subskill_detailed_summary = build_ab3_subskill_by_type_detailed_summary(episodes)
-    ab3_failure_breakpoint_summary = build_ab3_failure_breakpoint_summary(episodes)
-    exp2_behavior_summary = build_experiment2_student_type_summary(trajectory_rows)
-    exp1_table_rows = build_experiment1_summary_table(episodes, max_steps_default=MAX_STEPS)
+        output_path = ""
+        ablation_strategy_path = ""
+        ablation_strategy_by_type_path = ""
+        exp1_summary_csv_path = ""
+        exp1_summary_md_path = ""
+        trajectory_path = ""
+        ab3_student_path = ""
+        ab3_subskill_path = ""
+        ab3_student_detailed_path = ""
+        ab3_subskill_detailed_path = ""
+        ab3_failure_breakpoint_path = ""
+        exp2_behavior_path = ""
+        exp2_behavior_fig = ""
+        mastery_avg_fig = ""
+        caption_paths: list[str] = []
 
-    print(f"Total episodes: {len(episodes)}")
-    print_ascii_table(
-        title="Table 1: Overall Strategy Comparison",
-        headers=[
-            "Strategy",
-            "Success Rate",
-            "Avg Steps",
-            "Avg Unnecessary Remediations",
-            "Avg Final Mastery",
-        ],
-        rows=strategy_summary,
-    )
-    print_ascii_table(
-        title="Table 2: Strategy x Student Type Comparison",
-        headers=[
-            "Strategy",
-            "Student Type",
-            "Success Rate",
-            "Avg Steps",
-            "Avg Unnecessary Remediations",
-            "Avg Final Mastery",
-        ],
-        rows=strategy_student_summary,
-    )
+        if exp1_enabled:
+            output_path = write_episode_csv(episodes)
+            ablation_strategy_path = write_ablation_strategy_summary_csv(ablation_strategy_summary)
+            ablation_strategy_by_type_path = write_ablation_strategy_by_student_type_summary_csv(
+                ablation_strategy_by_type_summary
+            )
+            exp1_summary_csv_path = write_experiment1_summary_csv(exp1_table_rows)
+            exp1_summary_md_path = write_experiment1_summary_markdown(exp1_table_rows)
+            if exp1_run_dir is not None and exp1_latest_dir is not None:
+                sync_run_to_latest(exp1_run_dir, exp1_latest_dir)
+                print(f"[LATEST] Updated {exp1_latest_dir}")
+            if exp1_final_dir is not None:
+                print(f"[PROTECT] Skip writing to final directory: {exp1_final_dir}")
 
-    output_path = write_episode_csv(episodes)
-    ablation_strategy_path = write_ablation_strategy_summary_csv(ablation_strategy_summary)
-    ablation_strategy_by_type_path = write_ablation_strategy_by_student_type_summary_csv(
-        ablation_strategy_by_type_summary
-    )
-    exp1_summary_csv_path = write_experiment1_summary_csv(exp1_table_rows)
-    exp1_summary_md_path = write_experiment1_summary_markdown(exp1_table_rows)
-    trajectory_path = ""
-    ab3_student_path = ""
-    ab3_subskill_path = ""
-    ab3_student_detailed_path = ""
-    ab3_subskill_detailed_path = ""
-    ab3_failure_breakpoint_path = ""
-    exp2_behavior_path = ""
-    exp2_behavior_fig = ""
-    exp2_efficiency_fig = ""
-    mastery_episode_fig = ""
-    mastery_avg_fig = ""
-    caption_paths: list[str] = []
-    if output_mode != "experiment1":
-        trajectory_path = write_trajectory_csv(trajectory_rows)
-        ab3_student_path = write_ab3_student_type_summary_csv(ab3_student_summary)
-        ab3_subskill_path = write_ab3_subskill_progress_summary_csv(ab3_subskill_summary)
-        ab3_student_detailed_path = write_ab3_student_type_detailed_summary_csv(
-            ab3_student_detailed_summary
-        )
-        ab3_subskill_detailed_path = write_ab3_subskill_by_type_detailed_summary_csv(
-            ab3_subskill_detailed_summary
-        )
-        ab3_failure_breakpoint_path = write_ab3_failure_breakpoint_summary_csv(
-            ab3_failure_breakpoint_summary
-        )
-        exp2_behavior_path = write_experiment2_student_type_summary_csv(exp2_behavior_summary)
-        exp2_behavior_fig = write_experiment2_policy_behavior_figure(exp2_behavior_summary)
-        exp2_efficiency_fig = write_experiment2_efficiency_figure(exp2_behavior_summary)
-        exp2_dir = str(EXPERIMENT2_OUTPUT_DIR)
-        mastery_step_logs = build_mastery_step_log(trajectory_rows)
-        mastery_episode_fig = write_mastery_trajectory_episode_figure(
-            df_logs=mastery_step_logs,
-            episodes=episodes,
-            output_dir=exp2_dir,
-            target_skill="polynomial",
-            prerequisite_skill="integer",
-        )
-        mastery_avg_fig = write_mastery_trajectory_average_figure(
-            df_logs=mastery_step_logs,
-            output_dir=exp2_dir,
-        )
-        rep_episode_id = None
-        if mastery_episode_fig:
-            name = os.path.basename(mastery_episode_fig)
-            if name.startswith("mastery_trajectory_episode_") and name.endswith(".png"):
-                rep_episode_id = int(name[len("mastery_trajectory_episode_") : -4])
-        caption_paths = write_experiment2_figure_captions(exp2_dir, rep_episode_id)
+        if exp2_enabled:
+            trajectory_path = write_trajectory_csv(trajectory_rows)
+            ab3_student_path = write_ab3_student_type_summary_csv(ab3_student_summary)
+            ab3_subskill_path = write_ab3_subskill_progress_summary_csv(ab3_subskill_summary)
+            ab3_student_detailed_path = write_ab3_student_type_detailed_summary_csv(
+                ab3_student_detailed_summary
+            )
+            ab3_subskill_detailed_path = write_ab3_subskill_by_type_detailed_summary_csv(
+                ab3_subskill_detailed_summary
+            )
+            ab3_failure_breakpoint_path = write_ab3_failure_breakpoint_summary_csv(
+                ab3_failure_breakpoint_summary
+            )
+            exp2_behavior_path = write_experiment2_student_type_summary_csv(exp2_behavior_summary)
+            exp2_behavior_fig = write_experiment2_policy_behavior_figure(exp2_behavior_summary)
+            exp2_dir = str(get_experiment2_output_dir())
+            mastery_step_logs = build_mastery_step_log(trajectory_rows)
+            mastery_avg_fig = write_mastery_trajectory_average_figure(
+                df_logs=mastery_step_logs,
+                output_dir=exp2_dir,
+            )
+            if exp2_run_dir is not None and exp2_latest_dir is not None:
+                sync_run_to_latest(exp2_run_dir, exp2_latest_dir)
+                print(f"[LATEST] Updated {exp2_latest_dir}")
+            if exp2_final_dir is not None:
+                print(f"[PROTECT] Skip writing to final directory: {exp2_final_dir}")
 
-    print("\nSimulation completed.")
-    print(f"Output CSV: {output_path}")
-    print(f"Ablation Strategy CSV: {ablation_strategy_path}")
-    print(f"Ablation Strategy x Type CSV: {ablation_strategy_by_type_path}")
-    if output_mode != "experiment1":
-        print(f"Trajectory CSV: {trajectory_path}")
-        print(f"AB3 Student-Type CSV: {ab3_student_path}")
-        print(f"AB3 Subskill CSV: {ab3_subskill_path}")
-        print(f"AB3 Student-Type Detailed CSV: {ab3_student_detailed_path}")
-        print(f"AB3 Subskill Detailed CSV: {ab3_subskill_detailed_path}")
-        print(f"AB3 Failure Breakpoint CSV: {ab3_failure_breakpoint_path}")
-        print(f"Experiment2 Student-Type Summary CSV: {exp2_behavior_path}")
-        print(f"Experiment2 Policy Behavior Figure: {exp2_behavior_fig}")
-        print(f"Experiment2 Efficiency Figure: {exp2_efficiency_fig}")
-        print(f"Mastery Trajectory Episode Figure: {mastery_episode_fig}")
-        print(
-            f"Mastery Trajectory Representative Fixed Figure: "
-            f"{os.path.join(str(EXPERIMENT2_OUTPUT_DIR), 'mastery_trajectory_representative_episode.png')}"
-        )
-        print(f"Mastery Trajectory Average Figure: {mastery_avg_fig}")
-        for caption_path in caption_paths:
-            print(f"Figure Caption File: {caption_path}")
-    print(f"Experiment1 Summary CSV: {exp1_summary_csv_path}")
-    print(f"Experiment1 Summary Markdown: {exp1_summary_md_path}")
-    print(f"RANDOM_SEED: {RANDOM_SEED}")
-    print(f"N_PER_TYPE: {N_PER_TYPE}")
-    print(f"MAX_STEPS: {MAX_STEPS}")
-    print(f"TARGET_MASTERY: {TARGET_MASTERY}")
+        print("\nSimulation completed.")
+        if exp1_enabled:
+            print(f"Output CSV: {output_path}")
+            print(f"Ablation Strategy CSV: {ablation_strategy_path}")
+            print(f"Ablation Strategy x Type CSV: {ablation_strategy_by_type_path}")
+        if exp2_enabled:
+            print(f"Trajectory CSV: {trajectory_path}")
+            print(f"AB3 Student-Type CSV: {ab3_student_path}")
+            print(f"AB3 Subskill CSV: {ab3_subskill_path}")
+            print(f"AB3 Student-Type Detailed CSV: {ab3_student_detailed_path}")
+            print(f"AB3 Subskill Detailed CSV: {ab3_subskill_detailed_path}")
+            print(f"AB3 Failure Breakpoint CSV: {ab3_failure_breakpoint_path}")
+            print(f"Experiment2 Student-Type Summary CSV: {exp2_behavior_path}")
+            print(f"Experiment2 Policy Behavior Figure: {exp2_behavior_fig}")
+            print(f"Mastery Trajectory Average Figure: {mastery_avg_fig}")
+        if exp1_enabled:
+            print(f"Experiment1 Summary CSV: {exp1_summary_csv_path}")
+            print(f"Experiment1 Summary Markdown: {exp1_summary_md_path}")
+        print(f"RANDOM_SEED: {RANDOM_SEED}")
+        print(f"N_PER_TYPE: {N_PER_TYPE}")
+        print(f"MAX_STEPS: {MAX_STEPS}")
+        print(f"TARGET_MASTERY: {TARGET_MASTERY}")
+    finally:
+        MAX_STEPS = original_max_steps
+        if prev_exp2_env is None:
+            os.environ.pop(EXP2_OUTPUT_DIR_ENV, None)
+        else:
+            os.environ[EXP2_OUTPUT_DIR_ENV] = prev_exp2_env
+        if prev_exp1_env is None:
+            os.environ.pop(EXP1_OUTPUT_DIR_ENV, None)
+        else:
+            os.environ[EXP1_OUTPUT_DIR_ENV] = prev_exp1_env
+        if prev_mode_env is None:
+            os.environ.pop(OUTPUT_MODE_ENV, None)
+        else:
+            os.environ[OUTPUT_MODE_ENV] = prev_mode_env
 
 
 if __name__ == "__main__":
     main()
+
+
+
 

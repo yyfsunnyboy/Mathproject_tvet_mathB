@@ -1,6 +1,16 @@
 import os
 import pandas as pd
 import matplotlib.pyplot as plt
+from figure_style import (
+    add_threshold_line,
+    color_for_strategy,
+    save_figure,
+    setup_publication_style,
+    style_axes,
+    style_legend,
+)
+
+setup_publication_style()
 
 
 def plot_by_student_type(df: pd.DataFrame) -> None:
@@ -11,9 +21,9 @@ def plot_by_student_type(df: pd.DataFrame) -> None:
         "Weak": "Weak Students",
     }
     strategy_colors = {
-        "AB1_Baseline": "blue",
-        "AB2_RuleBased": "orange",
-        "AB3_PPO_Dynamic": "green",
+        "AB1_Baseline": color_for_strategy("AB1_Baseline"),
+        "AB2_RuleBased": color_for_strategy("AB2_RuleBased"),
+        "AB3_PPO_Dynamic": color_for_strategy("AB3_PPO_Dynamic"),
     }
 
     fig, axes = plt.subplots(1, 3, figsize=(18, 5), sharey=True)
@@ -37,18 +47,17 @@ def plot_by_student_type(df: pd.DataFrame) -> None:
         else:
             ax.text(0.5, 0.5, "No data", ha="center", va="center", transform=ax.transAxes)
 
-        ax.axhline(y=0.85, color="gray", linestyle="--", label="TARGET_MASTERY")
+        add_threshold_line(ax, y=0.85, label="TARGET_MASTERY")
         ax.set_title(subplot_titles[student_type])
         ax.set_xlabel("Step")
         ax.set_ylim(0.0, 1.0)
-        ax.grid(alpha=0.3)
-        ax.legend()
+        style_axes(ax, ygrid=True)
+        style_legend(ax, loc="upper left")
 
     axes[0].set_ylabel("Mean Polynomial Mastery")
     fig.suptitle("Mastery Trajectory by Student Type")
     fig.tight_layout(rect=[0, 0, 1, 0.95])
-    fig.savefig("reports/fig_mastery_trajectory_by_student_type.png", dpi=150)
-    plt.close(fig)
+    save_figure(fig, "reports/fig_mastery_trajectory_by_student_type.png", dpi=300)
 
 
 def main() -> None:
@@ -72,11 +81,12 @@ def main() -> None:
     plt.xlabel("Step")
     plt.ylabel("Mean Polynomial Mastery")
     plt.ylim(0.0, 1.0)
-    plt.grid(alpha=0.25)
-    plt.legend()
-    plt.tight_layout()
-    plt.savefig("reports/fig_mastery_trajectory_overall.png", dpi=150)
-    plt.close()
+    ax = plt.gca()
+    style_axes(ax, ygrid=True)
+    style_legend(ax, loc="upper left")
+    fig = plt.gcf()
+    fig.tight_layout()
+    save_figure(fig, "reports/fig_mastery_trajectory_overall.png", dpi=300)
 
     # 圖2：Average 學生三策略平均 polynomial mastery vs step
     avg_df = df[df["student_type"] == "Average"]
@@ -92,11 +102,12 @@ def main() -> None:
     plt.xlabel("Step")
     plt.ylabel("Mean Polynomial Mastery")
     plt.ylim(0.0, 1.0)
-    plt.grid(alpha=0.25)
-    plt.legend()
-    plt.tight_layout()
-    plt.savefig("reports/fig_mastery_trajectory_average.png", dpi=150)
-    plt.close()
+    ax = plt.gca()
+    style_axes(ax, ygrid=True)
+    style_legend(ax, loc="upper left")
+    fig = plt.gcf()
+    fig.tight_layout()
+    save_figure(fig, "reports/fig_mastery_trajectory_average.png", dpi=300)
 
     plot_by_student_type(df)
 

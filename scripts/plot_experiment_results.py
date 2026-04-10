@@ -34,22 +34,196 @@ It re-renders figures directly from latest logs to keep reporting synchronized w
 import csv
 import os
 import shutil
+from datetime import datetime
+from pathlib import Path
 from typing import Any
 
 import matplotlib.pyplot as plt
 import pandas as pd
 from matplotlib.colors import ListedColormap
 from matplotlib.patches import Patch
-try:
-    import seaborn as sns
-except Exception:  # pragma: no cover - plotting fallback
-    sns = None
 
 REPORTS_DIR = "reports"
-EXP1_DIR = os.path.join(REPORTS_DIR, "experiment_1_ablation")
+EXP1_BASE_DIR = os.path.join(REPORTS_DIR, "experiment_1_ablation")
+EXP2_BASE_DIR = os.path.join(REPORTS_DIR, "experiment_2_ab3_student_types")
+EXP3_BASE_DIR = os.path.join(REPORTS_DIR, "experiment_3_weak_foundation_support")
+EXP4_BASE_DIR = os.path.join(REPORTS_DIR, "experiment_4_rag_tutor")
+EXP1_DIR = os.path.join(EXP1_BASE_DIR, "latest")
+EXP2_DIR = os.path.join(EXP2_BASE_DIR, "latest")
+FORCE_WRITE_MARKDOWN_ENV = "MATHPROJECT_FORCE_WRITE_MARKDOWN"
+
+REPORT_COLOR_MAP = {
+    "AB1_Baseline": "#4C72B0",
+    "AB2_RuleBased": "#DD8452",
+    "AB3_PPO_Dynamic": "#55A868",
+    "baseline": "#4C72B0",
+    "rule_based": "#DD8452",
+    "adaptive": "#55A868",
+}
+
+STRATEGY_LABEL_MAP = {
+    "AB1_Baseline": "Baseline",
+    "AB2_RuleBased": "Rule-Based",
+    "AB3_PPO_Dynamic": "Adaptive (Ours)",
+}
+
+
+def setup_report_style() -> None:
+    """Apply a simple report-style matplotlib theme for all generated figures."""
+    plt.rcParams.update(
+        {
+            "figure.facecolor": "white",
+            "axes.facecolor": "white",
+            "font.family": "sans-serif",
+            "font.sans-serif": ["Microsoft JhengHei", "DejaVu Sans", "Arial"],
+            "axes.unicode_minus": False,
+            "axes.titlesize": 13,
+            "axes.labelsize": 10.5,
+            "xtick.labelsize": 9.5,
+            "ytick.labelsize": 9.5,
+            "legend.fontsize": 9.5,
+            "axes.linewidth": 0.8,
+            "legend.frameon": True,
+            "savefig.dpi": 300,
+            "savefig.bbox": "tight",
+        }
+    )
+
+
+def report_color_for_strategy(strategy: str) -> str:
+    """Return a stable strategy color using report palette."""
+    return REPORT_COLOR_MAP.get(strategy, "tab:blue")
+
+
+def display_strategy(strategy: str) -> str:
+    """Normalize strategy display names for report figures."""
+    return STRATEGY_LABEL_MAP.get(strategy, strategy)
+
+
+def add_bar_labels(ax: plt.Axes, fmt: str = "{:.1f}%") -> None:
+    """Attach value labels to all bar patches in an axis."""
+    for bar in ax.patches:
+        height = bar.get_height()
+        if height != height:  # NaN
+            continue
+        ax.annotate(
+            fmt.format(float(height)),
+            (bar.get_x() + bar.get_width() / 2, height),
+            textcoords="offset points",
+            xytext=(0, 3),
+            ha="center",
+            va="bottom",
+            fontsize=9,
+            color="#333333",
+        )
+
+
+def add_figure_note(fig: plt.Figure, text: str, y: float = 0.03) -> None:
+    """Add small centered note at figure bottom."""
+    fig.text(0.5, y, text, ha="center", va="center", fontsize=8.5, color="dimgray")
+
+
+def finalize_report_figure(fig_or_plt: Any, path: str) -> None:
+    """Finalize and save figure with unified report output settings."""
+    target = Path(path)
+    if "final" in {part.lower() for part in target.parts}:
+        print(f"[PROTECT] Skip writing to final directory: {target}")
+        plt.close(fig_or_plt if hasattr(fig_or_plt, "axes") else plt.gcf())
+        return
+    setup_report_style()
+    fig = fig_or_plt if hasattr(fig_or_plt, "savefig") else plt.gcf()
+    for ax in fig.axes:
+        ax.grid(False)
+    fig.tight_layout()
+    target.parent.mkdir(parents=True, exist_ok=True)
+    fig.savefig(str(target), dpi=300, bbox_inches="tight")
+    plt.close(fig)
+
+
+def safe_write_markdown(path: str | Path, content: str) -> bool:
+    """Write markdown with overwrite protection unless explicitly forced."""
+    target = Path(path)
+    if "final" in {part.lower() for part in target.parts}:
+        print(f"[PROTECT] Skip writing to final directory: {target}")
+        return False
+    force_md = str(os.environ.get(FORCE_WRITE_MARKDOWN_ENV, "")).strip().lower() in {
+        "1",
+        "true",
+        "yes",
+        "y",
+        "on",
+    }
+    if target.exists() and (not force_md):
+        print("[SKIP] Markdown exists, not overwriting")
+        return False
+    target.parent.mkdir(parents=True, exist_ok=True)
+    target.write_text(content, encoding="utf-8-sig")
+    return True
+
+
+def ensure_experiment_output_dirs(experiment_base_dir: str | Path) -> dict[str, Path]:
+    """Ensure run/latest scaffolding exists; never auto-write into final/."""
+    base_dir = Path(experiment_base_dir)
+    runs_dir = base_dir / "runs"
+    latest_dir = base_dir / "latest"
+    final_dir = base_dir / "final"
+    base_dir.mkdir(parents=True, exist_ok=True)
+    runs_dir.mkdir(parents=True, exist_ok=True)
+    latest_dir.mkdir(parents=True, exist_ok=True)
+    return {
+        "base_dir": base_dir,
+        "runs_dir": runs_dir,
+        "latest_dir": latest_dir,
+        "final_dir": final_dir,
+    }
+
+
+def create_timestamped_run_dir(experiment_base_dir: str | Path) -> dict[str, Path]:
+    """Create runs/<timestamp>/ under one experiment output root."""
+    dirs = ensure_experiment_output_dirs(experiment_base_dir)
+    run_dir = dirs["runs_dir"] / datetime.now().strftime("%Y%m%d_%H%M%S")
+    run_dir.mkdir(parents=True, exist_ok=True)
+    dirs["run_dir"] = run_dir
+    return dirs
+
+
+def sync_run_to_latest(run_dir: str | Path, latest_dir: str | Path) -> None:
+    """Replace latest/ contents with files from this run."""
+    run_path = Path(run_dir)
+    latest_path = Path(latest_dir)
+    latest_path.mkdir(parents=True, exist_ok=True)
+    for child in latest_path.iterdir():
+        if child.is_dir():
+            shutil.rmtree(child)
+        else:
+            child.unlink()
+    for child in run_path.iterdir():
+        dst = latest_path / child.name
+        if child.is_dir():
+            shutil.copytree(child, dst)
+        else:
+            shutil.copy2(child, dst)
+
+
+setup_report_style()
 
 STRATEGY_ORDER = ["AB1_Baseline", "AB2_RuleBased", "AB3_PPO_Dynamic"]
-STUDENT_TYPE_ORDER = ["Careless", "Average", "Weak"]
+student_type_order = ["Careless", "Average", "Weak Foundation"]
+STUDENT_TYPE_ORDER = student_type_order
+STUDENT_TYPE_SLUG_MAP = {
+    "Careless": "careless",
+    "Average": "average",
+    "Weak Foundation": "weak",
+}
+STUDENT_TYPE_NORMALIZE_MAP = {
+    "careless": "Careless",
+    "average": "Average",
+    "weak": "Weak Foundation",
+    "weak foundation": "Weak Foundation",
+    "low": "Weak Foundation",
+    "mid": "Average",
+    "high": "Careless",
+}
 SUBSKILL_ORDER = [
     "sign_handling",
     "combine_like_terms",
@@ -58,6 +232,23 @@ SUBSKILL_ORDER = [
     "expand_binomial",
     "family_isomorphism",
 ]
+
+
+def normalize_student_type(value: Any) -> str:
+    """Normalize student-type labels to report-standard names."""
+    text = str(value).strip()
+    return STUDENT_TYPE_NORMALIZE_MAP.get(text.lower(), text)
+
+
+def normalize_and_sort_student_types(df: pd.DataFrame, col: str = "student_type") -> pd.DataFrame:
+    """Normalize and apply fixed ordered student-type categorical sorting."""
+    if df.empty or col not in df.columns:
+        return df
+    out = df.copy()
+    out[col] = out[col].astype(str).map(normalize_student_type)
+    out[col] = pd.Categorical(out[col], categories=student_type_order, ordered=True)
+    out = out.sort_values(col)
+    return out
 
 
 def read_csv_rows(path: str) -> list[dict[str, str]]:
@@ -83,18 +274,12 @@ def as_float(value: Any) -> float | None:
 
 def save_fig(path: str) -> None:
     """Save current figure with consistent layout and dpi."""
-    plt.tight_layout()
-    plt.savefig(path, dpi=150)
-    plt.close()
+    finalize_report_figure(plt.gcf(), path)
 
 
 def save_fig_high_quality(path: str) -> None:
     """Save high-quality publication figure."""
-    plt.tight_layout()
-    plt.savefig(path, dpi=300, bbox_inches="tight")
-    if sns is not None:
-        sns.despine()
-    plt.close()
+    finalize_report_figure(plt.gcf(), path)
 
 
 def plot_ablation_success_rate(summary_rows: list[dict[str, str]]) -> None:
@@ -115,14 +300,22 @@ def plot_ablation_success_rate(summary_rows: list[dict[str, str]]) -> None:
     if not xs:
         return
 
-    plt.figure(figsize=(8, 5))
-    plt.bar(xs, ys)
-    plt.title("Ablation Success Rate by Strategy")
-    plt.xlabel("Strategy")
-    plt.ylabel("Success Rate (%)")
-    plt.ylim(0, 100)
+    setup_report_style()
+    fig, ax = plt.subplots(figsize=(8, 5))
+    x_labels = [display_strategy(s) for s in xs]
+    bars = ax.bar(
+        x_labels,
+        ys,
+        width=0.3,
+        color=[report_color_for_strategy(s) for s in xs],
+    )
+    add_bar_labels(ax, fmt="{:.1f}%")
+    ax.set_title("Overall Strategy Comparison")
+    ax.set_xlabel("Strategy")
+    ax.set_ylabel("Success Rate (%)")
+    ax.set_ylim(0, 100)
     os.makedirs(EXP1_DIR, exist_ok=True)
-    save_fig(os.path.join(EXP1_DIR, "fig_ablation_success_rate.png"))
+    finalize_report_figure(fig, os.path.join(EXP1_DIR, "fig_ablation_success_rate.png"))
 
 
 def plot_ablation_steps_vs_success(summary_rows: list[dict[str, str]]) -> None:
@@ -147,38 +340,33 @@ def plot_ablation_steps_vs_success(summary_rows: list[dict[str, str]]) -> None:
         return
 
     x = list(range(len(labels)))
-    width = 0.38
+    width = 0.3
 
-    plt.figure(figsize=(9, 5))
-    bars_steps = plt.bar([i - width / 2 for i in x], steps_vals, width=width, label="Avg Steps")
-    bars_success = plt.bar([i + width / 2 for i in x], success_vals, width=width, label="Success Rate (%)")
-    plt.xticks(x, labels)
-    plt.title("Ablation Avg Steps vs Success Rate")
-    plt.xlabel("Strategy")
-    plt.ylabel("Value")
-    for bar in bars_steps:
-        h = float(bar.get_height())
-        plt.annotate(
-            f"{h:.2f}",
-            (bar.get_x() + bar.get_width() / 2, h),
-            textcoords="offset points",
-            xytext=(0, 3),
-            ha="center",
-            fontsize=8,
-        )
-    for bar in bars_success:
-        h = float(bar.get_height())
-        plt.annotate(
-            f"{h:.2f}%",
-            (bar.get_x() + bar.get_width() / 2, h),
-            textcoords="offset points",
-            xytext=(0, 3),
-            ha="center",
-            fontsize=8,
-        )
-    plt.legend()
+    setup_report_style()
+    fig, ax = plt.subplots(figsize=(8, 5))
+    bars_steps = ax.bar(
+        [i - width / 2 for i in x],
+        steps_vals,
+        width=width,
+        label="Avg Steps",
+        color="tab:orange",
+    )
+    bars_success = ax.bar(
+        [i + width / 2 for i in x],
+        success_vals,
+        width=width,
+        label="Success Rate (%)",
+        color="tab:blue",
+    )
+    ax.set_xticks(x)
+    ax.set_xticklabels([display_strategy(s) for s in labels])
+    ax.set_title("Ablation Avg Steps vs Success Rate")
+    ax.set_xlabel("Strategy")
+    ax.set_ylabel("Value")
+    add_bar_labels(ax, fmt="{:.1f}%")
+    ax.legend()
     os.makedirs(EXP1_DIR, exist_ok=True)
-    save_fig(os.path.join(EXP1_DIR, "fig_ablation_steps_vs_success.png"))
+    finalize_report_figure(fig, os.path.join(EXP1_DIR, "fig_ablation_steps_vs_success.png"))
 
 
 def plot_ablation_by_student_type_success(rows: list[dict[str, str]]) -> None:
@@ -188,9 +376,10 @@ def plot_ablation_by_student_type_success(rows: list[dict[str, str]]) -> None:
         return
 
     x = list(range(len(present_types)))
-    width = 0.24
+    width = 0.3
 
-    plt.figure(figsize=(10, 5))
+    setup_report_style()
+    fig, ax = plt.subplots(figsize=(8, 5))
     for idx, strategy in enumerate(STRATEGY_ORDER):
         ys: list[float] = []
         for student_type in present_types:
@@ -205,20 +394,28 @@ def plot_ablation_by_student_type_success(rows: list[dict[str, str]]) -> None:
             v = as_float(row.get("success_rate")) if row else None
             ys.append((v * 100.0) if v is not None else 0.0)
         offset = (idx - 1) * width
-        plt.bar([i + offset for i in x], ys, width=width, label=strategy)
+        ax.bar(
+            [i + offset for i in x],
+            ys,
+            width=width,
+            label=display_strategy(strategy),
+            color=report_color_for_strategy(strategy),
+        )
 
-    plt.xticks(x, present_types)
-    plt.title("Ablation Success Rate by Student Type")
-    plt.xlabel("Student Type")
-    plt.ylabel("Success Rate (%)")
-    plt.ylim(0, 100)
-    plt.legend()
+    ax.set_xticks(x)
+    ax.set_xticklabels(present_types)
+    ax.set_title("Ablation Success Rate by Student Type")
+    ax.set_xlabel("Student Type")
+    ax.set_ylabel("Success Rate (%)")
+    ax.set_ylim(0, 100)
+    add_bar_labels(ax, fmt="{:.1f}%")
+    ax.legend()
     os.makedirs(EXP1_DIR, exist_ok=True)
-    save_fig(os.path.join(EXP1_DIR, "fig_ablation_by_student_type_success.png"))
+    finalize_report_figure(fig, os.path.join(EXP1_DIR, "fig_ablation_by_student_type_success.png"))
 
 
 def plot_ablation_strategy_breakdown(summary_csv_path: str | None = None) -> None:
-    """Experiment 1 analysis figure: grouped strategy metrics from ablation summary."""
+    """Experiment 1 analysis figure: simplified success-rate comparison."""
     path = summary_csv_path or os.path.join(EXP1_DIR, "ablation_strategy_summary.csv")
     if not os.path.exists(path):
         alt = os.path.join(REPORTS_DIR, "ablation_strategy_summary.csv")
@@ -230,15 +427,8 @@ def plot_ablation_strategy_breakdown(summary_csv_path: str | None = None) -> Non
     if df.empty or "strategy" not in df.columns:
         return
 
-    metric_specs = [
-        ("Success Rate (%)", "success_rate", 100.0),
-        ("Avg Steps", "avg_steps", 1.0),
-        ("Avg Final Mastery (%)", "avg_final_polynomial_mastery", 100.0),
-        ("Avg Unnecessary Remediations", "avg_unnecessary_remediations", 1.0),
-    ]
-    for _, col, _ in metric_specs:
-        if col not in df.columns:
-            return
+    if "success_rate" not in df.columns:
+        return
 
     ordered = df[df["strategy"].isin(STRATEGY_ORDER)].copy()
     if ordered.empty:
@@ -246,33 +436,23 @@ def plot_ablation_strategy_breakdown(summary_csv_path: str | None = None) -> Non
     ordered["strategy"] = pd.Categorical(ordered["strategy"], categories=STRATEGY_ORDER, ordered=True)
     ordered = ordered.sort_values("strategy")
 
+    setup_report_style()
+    fig, ax = plt.subplots(figsize=(8, 5))
     x_labels = ordered["strategy"].tolist()
-    x = list(range(len(x_labels)))
-    width = 0.2
-
-    plt.figure(figsize=(11, 6))
-    for idx, (label, col, scale) in enumerate(metric_specs):
-        vals = pd.to_numeric(ordered[col], errors="coerce").fillna(0.0) * scale
-        offset = (idx - 1.5) * width
-        bars = plt.bar([i + offset for i in x], vals, width=width, label=label)
-        for bar in bars:
-            h = bar.get_height()
-            plt.annotate(
-                f"{h:.2f}",
-                (bar.get_x() + bar.get_width() / 2, h),
-                textcoords="offset points",
-                xytext=(0, 3),
-                ha="center",
-                fontsize=8,
-            )
-
-    plt.xticks(x, x_labels)
-    plt.title("Experiment 1 Strategy Breakdown")
-    plt.xlabel("Strategy")
-    plt.ylabel("Metric Value")
-    plt.legend()
+    y_vals = pd.to_numeric(ordered["success_rate"], errors="coerce").fillna(0.0) * 100.0
+    ax.bar(
+        [display_strategy(s) for s in x_labels],
+        y_vals,
+        width=0.3,
+        color=[report_color_for_strategy(s) for s in x_labels],
+    )
+    add_bar_labels(ax, fmt="{:.1f}%")
+    ax.set_title("Overall Strategy Comparison")
+    ax.set_xlabel("Strategy")
+    ax.set_ylabel("Success Rate (%)")
+    ax.set_ylim(0, 100)
     os.makedirs(EXP1_DIR, exist_ok=True)
-    save_fig(os.path.join(EXP1_DIR, "fig_ablation_strategy_breakdown.png"))
+    finalize_report_figure(fig, os.path.join(EXP1_DIR, "fig_ablation_strategy_breakdown.png"))
 
 
 def plot_ablation_by_student_type(by_type_csv_path: str | None = None) -> None:
@@ -290,8 +470,20 @@ def plot_ablation_by_student_type(by_type_csv_path: str | None = None) -> None:
     if "success_rate" not in df.columns:
         return
 
+    student_type_alias = {
+        "high": "Careless",
+        "mid": "Average",
+        "low": "Weak",
+    }
+    normalized = df.copy()
+    normalized["student_type"] = (
+        normalized["student_type"]
+        .astype(str)
+        .map(lambda s: student_type_alias.get(s.strip().lower(), s))
+    )
+
     grouped = (
-        df.groupby(["strategy", "student_type"], as_index=False)
+        normalized.groupby(["strategy", "student_type"], as_index=False)
         .agg(success_rate=("success_rate", "mean"))
         .copy()
     )
@@ -307,21 +499,20 @@ def plot_ablation_by_student_type(by_type_csv_path: str | None = None) -> None:
     strategy_display = {
         "AB1_Baseline": "Baseline",
         "AB2_RuleBased": "Rule-Based",
-        "AB3_PPO_Dynamic": "Adaptive Strategy",
+        "AB3_PPO_Dynamic": "Adaptive (Ours)",
     }
-    strategy_colors = {
-        "AB1_Baseline": "#6B7A8F",   # gray-blue
-        "AB2_RuleBased": "#F39C34",  # orange
-        "AB3_PPO_Dynamic": "#2E8B57",  # green
-    }
+    strategy_colors = {s: report_color_for_strategy(s) for s in STRATEGY_ORDER}
     x_labels = [t for t in student_order if any(grouped["student_type"] == t)]
     if not x_labels:
         return
 
     x = list(range(len(x_labels)))
-    width = 0.24
+    width = 0.3
 
-    plt.figure(figsize=(10, 6))
+    setup_report_style()
+    fig, ax = plt.subplots(figsize=(8, 5), constrained_layout=False)
+    fig.subplots_adjust(left=0.10, right=0.98, top=0.90, bottom=0.13)
+    ax.set_facecolor("white")
     strategy_peak: dict[str, float] = {}
     for idx, strategy in enumerate(STRATEGY_ORDER):
         ys: list[float] = []
@@ -334,68 +525,42 @@ def plot_ablation_by_student_type(by_type_csv_path: str | None = None) -> None:
         finite_vals = [v for v in ys if not pd.isna(v)]
         strategy_peak[strategy] = max(finite_vals) if finite_vals else 0.0
         offset = (idx - 1) * width
-        bars = plt.bar(
+        ax.bar(
             [i + offset for i in x],
             ys,
             width=width,
             label=strategy_display.get(strategy, strategy),
             color=strategy_colors.get(strategy),
         )
-        for bar in bars:
-            h = bar.get_height()
-            if pd.isna(h):
-                continue
-            plt.annotate(
-                f"{h:.2f}",
-                (bar.get_x() + bar.get_width() / 2, h),
-                textcoords="offset points",
-                xytext=(0, 3),
-                ha="center",
-                fontsize=8,
-            )
+    add_bar_labels(ax, fmt="{:.1f}%")
 
-    plt.xticks(x, [student_display.get(s, s) for s in x_labels])
-    plt.title("Effect of Teaching Strategy Across Student Types")
-    plt.figtext(
-        0.5,
-        0.01,
-        "(Careless = high initial mastery)\n(Average = mid initial mastery)\n(Weak Foundation = low initial mastery)",
-        ha="center",
-        fontsize=9,
+    ax.set_xticks(x)
+    ax.set_xticklabels([student_display.get(s, s) for s in x_labels], fontsize=11)
+    ax.set_title(
+        "Student Type Comparison",
+        fontsize=13,
+        pad=8,
+        color="#333333",
+        fontweight="normal",
     )
-    plt.xlabel("Student Type")
-    plt.ylabel("Success Rate (%)")
-    plt.ylim(0, 100)
-    plt.legend()
+    ax.set_xlabel("Student Type", labelpad=8, fontsize=10.5, color="#333333")
+    ax.set_ylabel("Success Rate (%)", fontsize=10.5, color="#333333")
+    ax.set_ylim(0, 100)
+    ax.tick_params(axis="both", labelsize=9.5, colors="#333333")
+    ax.legend(loc="upper left", fontsize=9.5, frameon=True)
     ab3_peak = strategy_peak.get("AB3_PPO_Dynamic", 0.0)
     ab2_peak = strategy_peak.get("AB2_RuleBased", 0.0)
-    plt.text(
-        x[-1] + 0.35,
-        min(98.0, ab3_peak + 8.0),
+    ax.text(
+        x[-1] + 0.15,
+        min(95.0, ab3_peak + 6.0),
         "Consistent improvement across all student types",
-        fontsize=9,
-        color=strategy_colors["AB3_PPO_Dynamic"],
-        ha="right",
-        va="bottom",
-    )
-    plt.text(
-        x[-1] + 0.35,
-        min(92.0, ab2_peak + 8.0),
-        "Over-remediation leads to lower efficiency",
-        fontsize=9,
-        color=strategy_colors["AB2_RuleBased"],
+        fontsize=9.5,
+        color="tab:green",
         ha="right",
         va="bottom",
     )
     os.makedirs(EXP1_DIR, exist_ok=True)
-    plt.tight_layout()
-    plt.savefig(os.path.join(EXP1_DIR, "fig_ablation_by_student_type.png"), dpi=150)
-    plt.savefig(
-        os.path.join(EXP1_DIR, "fig_exp1_student_type_improved.png"),
-        dpi=300,
-        bbox_inches="tight",
-    )
-    plt.close()
+    finalize_report_figure(fig, os.path.join(EXP1_DIR, "fig_exp1_student_type_improved.png"))
 
 
 def plot_ab3_subskill_gain_by_type(rows: list[dict[str, str]]) -> None:
@@ -405,9 +570,10 @@ def plot_ab3_subskill_gain_by_type(rows: list[dict[str, str]]) -> None:
         return
 
     x = list(range(len(present_subskills)))
-    width = 0.24
+    width = 0.3
 
-    plt.figure(figsize=(12, 5))
+    setup_report_style()
+    fig, ax = plt.subplots(figsize=(8, 5))
     for idx, student_type in enumerate(STUDENT_TYPE_ORDER):
         ys: list[float] = []
         for subskill in present_subskills:
@@ -422,14 +588,17 @@ def plot_ab3_subskill_gain_by_type(rows: list[dict[str, str]]) -> None:
             v = as_float(row.get("avg_gain")) if row else None
             ys.append(v if v is not None else 0.0)
         offset = (idx - 1) * width
-        plt.bar([i + offset for i in x], ys, width=width, label=student_type)
+        color = "tab:blue" if student_type == "Careless" else ("tab:orange" if student_type == "Average" else "tab:green")
+        ax.bar([i + offset for i in x], ys, width=width, label=student_type, color=color)
 
-    plt.xticks(x, present_subskills, rotation=20, ha="right")
-    plt.title("AB3 Subskill Gain by Student Type")
-    plt.xlabel("Subskill")
-    plt.ylabel("Average Gain")
-    plt.legend()
-    save_fig(os.path.join(REPORTS_DIR, "fig_ab3_subskill_gain_by_type.png"))
+    ax.set_xticks(x)
+    ax.set_xticklabels(present_subskills, rotation=20, ha="right")
+    ax.set_title("AB3 Subskill Gain by Student Type")
+    ax.set_xlabel("Subskill")
+    ax.set_ylabel("Average Gain")
+    add_bar_labels(ax, fmt="{:.2f}")
+    ax.legend()
+    finalize_report_figure(fig, os.path.join(REPORTS_DIR, "fig_ab3_subskill_gain_by_type.png"))
 
 
 def plot_ab3_polynomial_gain_by_type(rows: list[dict[str, str]]) -> None:
@@ -450,15 +619,17 @@ def plot_ab3_polynomial_gain_by_type(rows: list[dict[str, str]]) -> None:
     if not xs:
         return
 
-    plt.figure(figsize=(8, 5))
-    plt.bar(xs, ys)
-    plt.title("AB3 Polynomial Gain by Student Type")
-    plt.xlabel("Student Type")
-    plt.ylabel("Average Polynomial Gain")
-    save_fig(os.path.join(REPORTS_DIR, "fig_ab3_polynomial_gain_by_type.png"))
+    setup_report_style()
+    fig, ax = plt.subplots(figsize=(8, 5))
+    ax.bar(xs, ys, color=["tab:blue", "tab:orange", "tab:green"][: len(xs)])
+    add_bar_labels(ax, fmt="{:.2f}")
+    ax.set_title("AB3 Polynomial Gain by Student Type")
+    ax.set_xlabel("Student Type")
+    ax.set_ylabel("Average Polynomial Gain")
+    finalize_report_figure(fig, os.path.join(REPORTS_DIR, "fig_ab3_polynomial_gain_by_type.png"))
 
 
-def plot_multi_steps_results(include_ab3_by_student_type: bool = True) -> None:
+def plot_multi_steps_results(include_ab3_by_student_type: bool = False) -> None:
     """Plot cross-step comparisons from multi-step summary CSV outputs."""
     strategy_path = os.path.join(REPORTS_DIR, "multi_steps_strategy_summary.csv")
     by_type_path = os.path.join(REPORTS_DIR, "multi_steps_strategy_by_type_summary.csv")
@@ -471,32 +642,64 @@ def plot_multi_steps_results(include_ab3_by_student_type: bool = True) -> None:
     by_type_df = pd.read_csv(by_type_path) if os.path.exists(by_type_path) else pd.DataFrame()
 
     if not strategy_df.empty and {"max_steps", "strategy", "success_rate", "avg_steps"}.issubset(strategy_df.columns):
+        setup_report_style()
         plt.figure(figsize=(8, 5))
         for idx, strategy in enumerate(STRATEGY_ORDER):
             sub = strategy_df[strategy_df["strategy"] == strategy].copy()
             if sub.empty:
                 continue
             sub = sub.sort_values("max_steps")
-            plt.plot(sub["max_steps"], sub["success_rate"] * 100.0, marker="o", label=strategy)
+            is_adaptive = strategy == "AB3_PPO_Dynamic"
+            plt.plot(
+                sub["max_steps"],
+                sub["success_rate"] * 100.0,
+                marker="o",
+                label=display_strategy(strategy),
+                color=report_color_for_strategy(strategy),
+                linewidth=3.0 if is_adaptive else 2.0,
+                markersize=8 if is_adaptive else 6,
+            )
             for _, row in sub.iterrows():
                 max_steps = pd.to_numeric(row["max_steps"], errors="coerce")
                 success_pct = pd.to_numeric(row["success_rate"], errors="coerce") * 100.0
                 avg_steps = pd.to_numeric(row["avg_steps"], errors="coerce")
                 if pd.isna(max_steps) or pd.isna(success_pct) or pd.isna(avg_steps):
                     continue
+                if strategy == "AB2_RuleBased":
+                    y_offset = -12
+                    va = "top"
+                elif strategy == "AB3_PPO_Dynamic":
+                    y_offset = 18
+                    va = "bottom"
+                else:
+                    y_offset = 8
+                    va = "bottom"
                 plt.annotate(
-                    f"Avg Steps: {float(avg_steps):.2f}",
+                    f"Avg Steps = {float(avg_steps):.2f}",
                     (float(max_steps), float(success_pct)),
                     textcoords="offset points",
-                    xytext=(0, 8 + (idx * 10)),
+                    xytext=(0, y_offset),
                     ha="center",
-                    fontsize=8,
+                    va=va,
+                    fontsize=9,
                 )
         plt.title("Success Rate vs MAX_STEPS")
         plt.xlabel("MAX_STEPS")
         plt.ylabel("Success Rate (%)")
         plt.ylim(0, 100)
         plt.legend()
+        try:
+            baseline_last = strategy_df[strategy_df["strategy"] == "AB1_Baseline"].sort_values("max_steps").iloc[-1]
+            adaptive_last = strategy_df[strategy_df["strategy"] == "AB3_PPO_Dynamic"].sort_values("max_steps").iloc[-1]
+            plt.annotate(
+                "Higher success with fewer steps",
+                xy=(float(adaptive_last["max_steps"]), float(adaptive_last["success_rate"]) * 100.0),
+                xytext=(float(baseline_last["max_steps"]) - 6, float(baseline_last["success_rate"]) * 100.0 + 18),
+                arrowprops={"arrowstyle": "->", "linewidth": 1.2, "color": "#333333"},
+                fontsize=9.5,
+            )
+        except Exception:
+            pass
         os.makedirs(EXP1_DIR, exist_ok=True)
         save_fig(os.path.join(EXP1_DIR, "fig_multi_steps_success_rate.png"))
 
@@ -522,28 +725,64 @@ def plot_multi_steps_results(include_ab3_by_student_type: bool = True) -> None:
             save_fig(os.path.join(REPORTS_DIR, "fig_multi_steps_ab3_by_student_type.png"))
 
     if not strategy_df.empty and {"avg_steps", "success_rate", "strategy", "max_steps"}.issubset(strategy_df.columns):
+        setup_report_style()
         plt.figure(figsize=(8, 5))
-        plt.scatter(strategy_df["avg_steps"], strategy_df["success_rate"] * 100.0)
-        for _, row in strategy_df.iterrows():
-            label = f"{row['strategy']}@{int(row['max_steps'])}"
-            plt.annotate(label, (row["avg_steps"], row["success_rate"] * 100.0), fontsize=8)
+        for strategy in STRATEGY_ORDER:
+            sub = strategy_df[strategy_df["strategy"] == strategy]
+            if sub.empty:
+                continue
+            is_adaptive = strategy == "AB3_PPO_Dynamic"
+            plt.scatter(
+                sub["avg_steps"],
+                sub["success_rate"] * 100.0,
+                s=90 if is_adaptive else 55,
+                color=report_color_for_strategy(strategy),
+                label=display_strategy(strategy),
+            )
+            for _, row in sub.iterrows():
+                label = f"{display_strategy(str(row['strategy']))}@{int(row['max_steps'])}"
+                plt.annotate(label, (row["avg_steps"], row["success_rate"] * 100.0), fontsize=9)
+                plt.annotate(
+                    f"Avg Steps = {float(row['avg_steps']):.2f}",
+                    (row["avg_steps"], row["success_rate"] * 100.0),
+                    textcoords="offset points",
+                    xytext=(0, -10),
+                    ha="center",
+                    va="top",
+                    fontsize=9,
+                )
+        try:
+            adaptive = strategy_df[strategy_df["strategy"] == "AB3_PPO_Dynamic"]
+            if not adaptive.empty:
+                best = adaptive.sort_values("success_rate", ascending=False).iloc[0]
+                plt.annotate(
+                    "Higher success with fewer steps",
+                    (float(best["avg_steps"]), float(best["success_rate"]) * 100.0),
+                    textcoords="offset points",
+                    xytext=(18, -18),
+                    ha="left",
+                    va="top",
+                    arrowprops={"arrowstyle": "->", "linewidth": 1.2, "color": "#333333"},
+                    fontsize=9.5,
+                )
+        except Exception:
+            pass
         plt.title("Steps vs Success Tradeoff Across MAX_STEPS")
         plt.xlabel("Average Steps")
         plt.ylabel("Success Rate (%)")
+        plt.legend(loc="upper left")
         os.makedirs(EXP1_DIR, exist_ok=True)
         save_fig(os.path.join(EXP1_DIR, "fig_multi_steps_efficiency.png"))
 
-    # Experiment 1 analysis figures from per-strategy and strategy-by-type summaries.
-    plot_ablation_strategy_breakdown()
+    # Experiment 1: keep only the 3 main report figures.
     plot_ablation_by_student_type()
 
 
 def plot_weak_foundation_support_results(
-    output_dir: str = os.path.join(REPORTS_DIR, "experiment_3_weak_foundation_support"),
+    output_dir: str = os.path.join(EXP3_BASE_DIR, "latest"),
 ) -> None:
     """Plot weak foundation support decision-focused figures from experiment_3 CSV outputs."""
-    plt.style.use("seaborn-v0_8-whitegrid")
-    plt.rcParams["font.family"] = "Microsoft JhengHei"
+    setup_report_style()
     out_dir = output_dir
     summary_path = os.path.join(out_dir, "weak_foundation_support_summary.csv")
     subskill_path = os.path.join(out_dir, "weak_foundation_subskill_summary.csv")
@@ -590,8 +829,6 @@ def plot_weak_foundation_support_results(
             )
         except Exception:
             pass
-        if sns is not None:
-            sns.despine()
         save_fig_high_quality(os.path.join(out_dir, "fig_weak_foundation_success_rate.png"))
 
     # B) Learning cost vs foundation support (main figure).
@@ -618,8 +855,6 @@ def plot_weak_foundation_support_results(
             plt.annotate("Cost increases steadily", (x_mid, y_mid), textcoords="offset points", xytext=(12, 12))
         except Exception:
             pass
-        if sns is not None:
-            sns.despine()
         save_fig_high_quality(os.path.join(out_dir, "fig_weak_foundation_cost.png"))
 
     # C) Final mastery vs foundation extra steps (supporting main effect).
@@ -648,8 +883,6 @@ def plot_weak_foundation_support_results(
             plt.annotate("Near saturation", (x_max, y_max), textcoords="offset points", xytext=(-70, 10))
         except Exception:
             pass
-        if sns is not None:
-            sns.despine()
         save_fig_high_quality(os.path.join(out_dir, "fig_weak_foundation_mastery.png"))
 
     # D) Breakpoint shift simplified: top-2 weakest subskills only (supporting).
@@ -665,7 +898,7 @@ def plot_weak_foundation_support_results(
             )
             top_skills = mean_pct["subskill"].head(2).tolist()
             if top_skills:
-                plt.figure(figsize=(10, 5))
+                plt.figure(figsize=(8, 5))
                 for skill in top_skills:
                     vals = []
                     for steps in steps_list:
@@ -679,8 +912,6 @@ def plot_weak_foundation_support_results(
                 plt.xlabel("Foundation Extra Steps")
                 plt.ylabel("Share of Failed Episodes (%)")
                 plt.legend()
-                if sns is not None:
-                    sns.despine()
                 save_fig_high_quality(os.path.join(out_dir, "fig_weak_foundation_breakpoint_shift.png"))
 
     # E) Subskill gain simplified as heatmap (supporting).
@@ -699,7 +930,7 @@ def plot_weak_foundation_support_results(
                 )
                 .reindex(index=subskills, columns=steps_list)
             )
-            plt.figure(figsize=(10, 5))
+            plt.figure(figsize=(8, 5))
             im = plt.imshow(pivot.values, aspect="auto", interpolation="nearest", cmap="YlGnBu")
             plt.title("Subskill Gain Heatmap by Foundation Support")
             plt.xlabel("Foundation Extra Steps")
@@ -708,8 +939,6 @@ def plot_weak_foundation_support_results(
             plt.yticks(range(len(subskills)), subskills)
             cbar = plt.colorbar(im)
             cbar.set_label("Average Gain")
-            if sns is not None:
-                sns.despine()
             save_fig_high_quality(os.path.join(out_dir, "fig_weak_foundation_subskill_gain.png"))
 
     # F) Marginal success gain only (main decision figure).
@@ -745,8 +974,6 @@ def plot_weak_foundation_support_results(
                 y60 = y_vals[x_vals.index(60.0)]
                 plt.annotate("Over-support", (60.0, y60), textcoords="offset points", xytext=(-5, -16))
             plt.legend()
-            if sns is not None:
-                sns.despine()
             save_fig_high_quality(os.path.join(out_dir, "fig_weak_foundation_marginal_gain.png"))
 
     # Captions for Experiment 3 decision-oriented figures.
@@ -776,46 +1003,46 @@ def plot_weak_foundation_support_results(
             dim_step_label = str(int(float(non_pos.iloc[0]["foundation_extra_steps"])))
 
     caption_success = os.path.join(out_dir, "figure_caption_exp3_success.md")
-    with open(caption_success, "w", encoding="utf-8-sig") as f:
-        f.write(
-            "### Figure Caption: Effect of Foundation Support on Success Rate\n"
-            "This figure plots weak-learner success rate across foundation-extra-step settings using simulation outputs.\n"
-            "Data are taken directly from weak_foundation_support_summary.csv without manual adjustment.\n"
-            f"Key finding: success generally improves with additional support, with the observed peak around {peak_steps_label} extra steps.\n"
-        )
+    safe_write_markdown(
+        caption_success,
+        "### Figure Caption: Effect of Foundation Support on Success Rate\n"
+        "This figure plots weak-learner success rate across foundation-extra-step settings using simulation outputs.\n"
+        "Data are taken directly from weak_foundation_support_summary.csv without manual adjustment.\n"
+        f"Key finding: success generally improves with additional support, with the observed peak around {peak_steps_label} extra steps.\n",
+    )
 
     caption_cost = os.path.join(out_dir, "figure_caption_exp3_cost.md")
-    with open(caption_cost, "w", encoding="utf-8-sig") as f:
-        f.write(
-            "### Figure Caption: Learning Cost vs Foundation Support\n"
-            "This figure reports average total steps per episode across foundation support levels.\n"
-            "Values are computed from simulation summary outputs and indicate learning cost rather than learning gain.\n"
-            "Key finding: increased foundation support is associated with higher learning cost, which must be balanced against success improvement.\n"
-        )
+    safe_write_markdown(
+        caption_cost,
+        "### Figure Caption: Learning Cost vs Foundation Support\n"
+        "This figure reports average total steps per episode across foundation support levels.\n"
+        "Values are computed from simulation summary outputs and indicate learning cost rather than learning gain.\n"
+        "Key finding: increased foundation support is associated with higher learning cost, which must be balanced against success improvement.\n",
+    )
 
     caption_marginal = os.path.join(out_dir, "figure_caption_exp3_marginal.md")
-    with open(caption_marginal, "w", encoding="utf-8-sig") as f:
-        f.write(
-            "### Figure Caption: Marginal Benefit of Additional Foundation Support\n"
-            "This figure shows marginal success gain for each increment of foundation support, derived from simulation summary rows.\n"
-            "A horizontal zero line is included to distinguish positive and non-positive incremental benefit.\n"
-            f"Key finding: diminishing returns are observed as extra support increases; the practical optimal range is around {peak_steps_label} steps"
-            + (f", with non-positive marginal gain appearing by {dim_step_label} steps." if dim_step_label != "N/A" else ".")
-            + "\n"
-        )
+    safe_write_markdown(
+        caption_marginal,
+        "### Figure Caption: Marginal Benefit of Additional Foundation Support\n"
+        "This figure shows marginal success gain for each increment of foundation support, derived from simulation summary rows.\n"
+        "A horizontal zero line is included to distinguish positive and non-positive incremental benefit.\n"
+        f"Key finding: diminishing returns are observed as extra support increases; the practical optimal range is around {peak_steps_label} steps"
+        + (f", with non-positive marginal gain appearing by {dim_step_label} steps." if dim_step_label != "N/A" else ".")
+        + "\n",
+    )
 
     caption_mastery = os.path.join(out_dir, "figure_caption_exp3_mastery.md")
-    with open(caption_mastery, "w", encoding="utf-8-sig") as f:
-        f.write(
-            "### Figure Caption: Final Polynomial Mastery vs Foundation Support\n"
-            "This figure visualizes average final polynomial mastery under different foundation support budgets.\n"
-            "Values are read from simulation-generated summary CSV outputs.\n"
-            "Key finding: final mastery increases with support but serves as supporting evidence; the primary decision signal remains success-rate gain versus cost.\n"
-        )
+    safe_write_markdown(
+        caption_mastery,
+        "### Figure Caption: Final Polynomial Mastery vs Foundation Support\n"
+        "This figure visualizes average final polynomial mastery under different foundation support budgets.\n"
+        "Values are read from simulation-generated summary CSV outputs.\n"
+        "Key finding: final mastery increases with support but serves as supporting evidence; the primary decision signal remains success-rate gain versus cost.\n",
+    )
 
 
 def plot_rag_intervention_results(
-    output_dir: str = os.path.join(REPORTS_DIR, "experiment_4_rag_tutor"),
+    output_dir: str = os.path.join(EXP4_BASE_DIR, "latest"),
 ) -> None:
     """Plot Experiment 4 (Weak + RAG intervention) summary figures."""
     out_dir = output_dir
@@ -844,7 +1071,7 @@ def plot_rag_intervention_results(
             x = list(range(len(plot_df)))
             y = plot_df["learning_efficiency"].tolist()
 
-            plt.figure(figsize=(9, 5))
+            plt.figure(figsize=(8, 5))
             plt.plot(x, y, marker="o", linewidth=2.0)
             plt.xticks(x, plot_df["condition"].tolist(), rotation=15, ha="right")
             plt.title("RAG Tutor: Learning Efficiency Comparison")
@@ -886,21 +1113,27 @@ def plot_rag_intervention_results(
             save_fig(os.path.join(out_dir, "fig_rag_efficiency.png"))
 
     if not summary_df.empty and {"condition", "success_rate"}.issubset(summary_df.columns):
-        plt.figure(figsize=(8, 5))
-        plt.bar(summary_df["condition"], summary_df["success_rate"] * 100.0)
-        plt.title("RAG Tutor: Success Rate Comparison")
-        plt.xlabel("Condition")
-        plt.ylabel("Success Rate (%)")
-        plt.ylim(0, 100)
-        save_fig(os.path.join(out_dir, "fig_rag_success_rate.png"))
+        setup_report_style()
+        fig, ax = plt.subplots(figsize=(8, 5))
+        colors = ["tab:green" if "rag" in str(c).lower() else "tab:blue" for c in summary_df["condition"]]
+        ax.bar(summary_df["condition"], summary_df["success_rate"] * 100.0, color=colors)
+        add_bar_labels(ax, fmt="{:.1f}%")
+        ax.set_title("RAG Tutor: Success Rate Comparison")
+        ax.set_xlabel("Condition")
+        ax.set_ylabel("Success Rate (%)")
+        ax.set_ylim(0, 100)
+        finalize_report_figure(fig, os.path.join(out_dir, "fig_rag_success_rate.png"))
 
     if not summary_df.empty and {"condition", "avg_final_polynomial_mastery"}.issubset(summary_df.columns):
-        plt.figure(figsize=(8, 5))
-        plt.bar(summary_df["condition"], summary_df["avg_final_polynomial_mastery"])
-        plt.title("RAG Tutor: Final Polynomial Mastery")
-        plt.xlabel("Condition")
-        plt.ylabel("Average Final Polynomial Mastery")
-        save_fig(os.path.join(out_dir, "fig_rag_mastery.png"))
+        setup_report_style()
+        fig, ax = plt.subplots(figsize=(8, 5))
+        colors = ["tab:green" if "rag" in str(c).lower() else "tab:blue" for c in summary_df["condition"]]
+        ax.bar(summary_df["condition"], summary_df["avg_final_polynomial_mastery"], color=colors)
+        add_bar_labels(ax, fmt="{:.2f}")
+        ax.set_title("RAG Tutor: Final Polynomial Mastery")
+        ax.set_xlabel("Condition")
+        ax.set_ylabel("Average Final Polynomial Mastery")
+        finalize_report_figure(fig, os.path.join(out_dir, "fig_rag_mastery.png"))
 
     if not subskill_df.empty and {"condition", "subskill", "avg_gain"}.issubset(subskill_df.columns):
         conditions = summary_df["condition"].tolist() if not summary_df.empty else sorted(
@@ -909,8 +1142,9 @@ def plot_rag_intervention_results(
         subskills = [s for s in SUBSKILL_ORDER if any(subskill_df["subskill"] == s)]
         if conditions and subskills:
             x = list(range(len(subskills)))
-            width = 0.35
-            plt.figure(figsize=(12, 5))
+            width = 0.3
+            setup_report_style()
+            fig, ax = plt.subplots(figsize=(8, 5))
             for idx, cond in enumerate(conditions):
                 ys: list[float] = []
                 cond_df = subskill_df[subskill_df["condition"] == cond]
@@ -918,11 +1152,14 @@ def plot_rag_intervention_results(
                     row = cond_df[cond_df["subskill"] == skill]
                     ys.append(float(row["avg_gain"].iloc[0]) if not row.empty else 0.0)
                 offset = (idx - (len(conditions) - 1) / 2) * width
-                plt.bar([i + offset for i in x], ys, width=width, label=cond)
-            plt.xticks(x, subskills, rotation=20, ha="right")
-            plt.title("RAG Tutor: Subskill Gain Comparison")
-            plt.xlabel("Subskill")
-            plt.ylabel("Average Gain")
+                color = "tab:green" if "rag" in str(cond).lower() else "tab:blue"
+                ax.bar([i + offset for i in x], ys, width=width, label=cond, color=color)
+            ax.set_xticks(x)
+            ax.set_xticklabels(subskills, rotation=20, ha="right")
+            ax.set_title("RAG Tutor: Subskill Gain Comparison")
+            ax.set_xlabel("Subskill")
+            ax.set_ylabel("Average Gain")
+            add_bar_labels(ax, fmt="{:.2f}")
 
             # Highlight whether gains are concentrated on the weakest baseline subskills.
             baseline_rows = subskill_df[subskill_df["condition"] == "weak_ab3_foundation"].copy()
@@ -945,10 +1182,10 @@ def plot_rag_intervention_results(
                     title_suffix = f" | weakest baseline: {', '.join(weakest)}"
                     if gain_delta_parts:
                         title_suffix += f" | {'; '.join(gain_delta_parts)}"
-                    plt.title("RAG Tutor: Subskill Gain Comparison" + title_suffix)
+                    ax.set_title("RAG Tutor: Subskill Gain Comparison" + title_suffix)
 
-            plt.legend()
-            save_fig(os.path.join(out_dir, "fig_rag_subskill_gain.png"))
+            ax.legend()
+            finalize_report_figure(fig, os.path.join(out_dir, "fig_rag_subskill_gain.png"))
 
     if not breakpoint_df.empty and {"condition", "subskill", "percentage"}.issubset(
         breakpoint_df.columns
@@ -957,8 +1194,9 @@ def plot_rag_intervention_results(
         subskills = [s for s in SUBSKILL_ORDER if any(breakpoint_df["subskill"] == s)]
         if conditions and subskills:
             x = list(range(len(subskills)))
-            width = 0.35
-            plt.figure(figsize=(12, 5))
+            width = 0.3
+            setup_report_style()
+            fig, ax = plt.subplots(figsize=(8, 5))
             for idx, cond in enumerate(conditions):
                 ys: list[float] = []
                 cond_df = breakpoint_df[breakpoint_df["condition"] == cond]
@@ -966,13 +1204,16 @@ def plot_rag_intervention_results(
                     row = cond_df[cond_df["subskill"] == skill]
                     ys.append(float(row["percentage"].iloc[0]) * 100.0 if not row.empty else 0.0)
                 offset = (idx - (len(conditions) - 1) / 2) * width
-                plt.bar([i + offset for i in x], ys, width=width, label=cond)
-            plt.xticks(x, subskills, rotation=20, ha="right")
-            plt.title("RAG Tutor: Breakpoint Shift")
-            plt.xlabel("Subskill")
-            plt.ylabel("Weakest Subskill Share (%)")
-            plt.legend()
-            save_fig(os.path.join(out_dir, "fig_rag_breakpoint_shift.png"))
+                color = "tab:green" if "rag" in str(cond).lower() else "tab:blue"
+                ax.bar([i + offset for i in x], ys, width=width, label=cond, color=color)
+            ax.set_xticks(x)
+            ax.set_xticklabels(subskills, rotation=20, ha="right")
+            ax.set_title("RAG Tutor: Breakpoint Shift")
+            ax.set_xlabel("Subskill")
+            ax.set_ylabel("Weakest Subskill Share (%)")
+            add_bar_labels(ax, fmt="{:.1f}%")
+            ax.legend()
+            finalize_report_figure(fig, os.path.join(out_dir, "fig_rag_breakpoint_shift.png"))
 
 
 def plot_rag_v2_enhanced_results(
@@ -993,6 +1234,11 @@ def plot_rag_v2_enhanced_results(
         "weak_ab3_foundation_rag_v1",
         "weak_ab3_foundation_rag_v2",
     ]
+    color_map = {
+        "weak_ab3_foundation": "tab:blue",
+        "weak_ab3_foundation_rag_v1": "tab:orange",
+        "weak_ab3_foundation_rag_v2": "tab:green",
+    }
 
     if not summary_df.empty:
         summary_df["condition"] = pd.Categorical(
@@ -1001,23 +1247,29 @@ def plot_rag_v2_enhanced_results(
         summary_df = summary_df.sort_values("condition")
 
     if not summary_df.empty and {"condition", "success_rate"}.issubset(summary_df.columns):
-        plt.figure(figsize=(8, 5))
-        plt.bar(summary_df["condition"], summary_df["success_rate"] * 100.0)
-        plt.title("RAG v2: Success Rate Comparison")
-        plt.xlabel("Condition")
-        plt.ylabel("Success Rate (%)")
-        plt.ylim(0, 100)
-        plt.xticks(rotation=15, ha="right")
-        save_fig(os.path.join(out_dir, "fig_rag_v2_success_rate.png"))
+        setup_report_style()
+        fig, ax = plt.subplots(figsize=(8, 5))
+        colors = [color_map.get(str(c), "tab:blue") for c in summary_df["condition"]]
+        ax.bar(summary_df["condition"], summary_df["success_rate"] * 100.0, color=colors)
+        add_bar_labels(ax, fmt="{:.1f}%")
+        ax.set_title("RAG v2: Success Rate Comparison")
+        ax.set_xlabel("Condition")
+        ax.set_ylabel("Success Rate (%)")
+        ax.set_ylim(0, 100)
+        ax.tick_params(axis="x", rotation=15)
+        finalize_report_figure(fig, os.path.join(out_dir, "fig_rag_v2_success_rate.png"))
 
     if not summary_df.empty and {"condition", "avg_final_polynomial_mastery"}.issubset(summary_df.columns):
-        plt.figure(figsize=(8, 5))
-        plt.bar(summary_df["condition"], summary_df["avg_final_polynomial_mastery"])
-        plt.title("RAG v2: Final Polynomial Mastery")
-        plt.xlabel("Condition")
-        plt.ylabel("Average Final Polynomial Mastery")
-        plt.xticks(rotation=15, ha="right")
-        save_fig(os.path.join(out_dir, "fig_rag_v2_mastery.png"))
+        setup_report_style()
+        fig, ax = plt.subplots(figsize=(8, 5))
+        colors = [color_map.get(str(c), "tab:blue") for c in summary_df["condition"]]
+        ax.bar(summary_df["condition"], summary_df["avg_final_polynomial_mastery"], color=colors)
+        add_bar_labels(ax, fmt="{:.2f}")
+        ax.set_title("RAG v2: Final Polynomial Mastery")
+        ax.set_xlabel("Condition")
+        ax.set_ylabel("Average Final Polynomial Mastery")
+        ax.tick_params(axis="x", rotation=15)
+        finalize_report_figure(fig, os.path.join(out_dir, "fig_rag_v2_mastery.png"))
 
     if not subskill_df.empty and {"condition", "subskill", "avg_gain"}.issubset(subskill_df.columns):
         subskill_df["condition"] = pd.Categorical(
@@ -1027,8 +1279,9 @@ def plot_rag_v2_enhanced_results(
         conditions = [c for c in condition_order if any(subskill_df["condition"] == c)]
         if subskills and conditions:
             x = list(range(len(subskills)))
-            width = 0.24
-            plt.figure(figsize=(12, 5))
+            width = 0.3
+            setup_report_style()
+            fig, ax = plt.subplots(figsize=(8, 5))
             for idx, cond in enumerate(conditions):
                 ys: list[float] = []
                 cond_df = subskill_df[subskill_df["condition"] == cond]
@@ -1036,13 +1289,16 @@ def plot_rag_v2_enhanced_results(
                     row = cond_df[cond_df["subskill"] == skill]
                     ys.append(float(row["avg_gain"].iloc[0]) if not row.empty else 0.0)
                 offset = (idx - (len(conditions) - 1) / 2) * width
-                plt.bar([i + offset for i in x], ys, width=width, label=cond)
-            plt.xticks(x, subskills, rotation=20, ha="right")
-            plt.title("RAG v2: Subskill Gain Comparison")
-            plt.xlabel("Subskill")
-            plt.ylabel("Average Gain")
-            plt.legend()
-            save_fig(os.path.join(out_dir, "fig_rag_v2_subskill_gain.png"))
+                color = color_map.get(str(cond), "tab:blue")
+                ax.bar([i + offset for i in x], ys, width=width, label=cond, color=color)
+            ax.set_xticks(x)
+            ax.set_xticklabels(subskills, rotation=20, ha="right")
+            ax.set_title("RAG v2: Subskill Gain Comparison")
+            ax.set_xlabel("Subskill")
+            ax.set_ylabel("Average Gain")
+            add_bar_labels(ax, fmt="{:.2f}")
+            ax.legend()
+            finalize_report_figure(fig, os.path.join(out_dir, "fig_rag_v2_subskill_gain.png"))
 
     if not breakpoint_df.empty and {"condition", "subskill", "percentage"}.issubset(
         breakpoint_df.columns
@@ -1054,8 +1310,9 @@ def plot_rag_v2_enhanced_results(
         conditions = [c for c in condition_order if any(breakpoint_df["condition"] == c)]
         if subskills and conditions:
             x = list(range(len(subskills)))
-            width = 0.24
-            plt.figure(figsize=(12, 5))
+            width = 0.3
+            setup_report_style()
+            fig, ax = plt.subplots(figsize=(8, 5))
             for idx, cond in enumerate(conditions):
                 ys: list[float] = []
                 cond_df = breakpoint_df[breakpoint_df["condition"] == cond]
@@ -1063,38 +1320,46 @@ def plot_rag_v2_enhanced_results(
                     row = cond_df[cond_df["subskill"] == skill]
                     ys.append(float(row["percentage"].iloc[0]) * 100.0 if not row.empty else 0.0)
                 offset = (idx - (len(conditions) - 1) / 2) * width
-                plt.bar([i + offset for i in x], ys, width=width, label=cond)
-            plt.xticks(x, subskills, rotation=20, ha="right")
-            plt.title("RAG v2: Breakpoint Shift")
-            plt.xlabel("Subskill")
-            plt.ylabel("Weakest Subskill Share (%)")
-            plt.legend()
-            save_fig(os.path.join(out_dir, "fig_rag_v2_breakpoint_shift.png"))
+                color = color_map.get(str(cond), "tab:blue")
+                ax.bar([i + offset for i in x], ys, width=width, label=cond, color=color)
+            ax.set_xticks(x)
+            ax.set_xticklabels(subskills, rotation=20, ha="right")
+            ax.set_title("RAG v2: Breakpoint Shift")
+            ax.set_xlabel("Subskill")
+            ax.set_ylabel("Weakest Subskill Share (%)")
+            add_bar_labels(ax, fmt="{:.1f}%")
+            ax.legend()
+            finalize_report_figure(fig, os.path.join(out_dir, "fig_rag_v2_breakpoint_shift.png"))
 
     if not summary_df.empty and {"condition", "rag_usage_rate", "avg_rag_per_episode"}.issubset(
         summary_df.columns
     ):
         x = list(range(len(summary_df)))
-        width = 0.38
-        plt.figure(figsize=(9, 5))
-        plt.bar(
+        width = 0.3
+        setup_report_style()
+        fig, ax = plt.subplots(figsize=(8, 5))
+        ax.bar(
             [i - width / 2 for i in x],
             summary_df["rag_usage_rate"] * 100.0,
             width=width,
             label="RAG Usage Rate (%)",
+            color="tab:green",
         )
-        plt.bar(
+        ax.bar(
             [i + width / 2 for i in x],
             summary_df["avg_rag_per_episode"],
             width=width,
             label="Avg RAG Per Episode",
+            color="tab:orange",
         )
-        plt.xticks(x, summary_df["condition"], rotation=15, ha="right")
-        plt.title("RAG v2: Usage Distribution")
-        plt.xlabel("Condition")
-        plt.ylabel("Value")
-        plt.legend()
-        save_fig(os.path.join(out_dir, "fig_rag_usage_distribution.png"))
+        ax.set_xticks(x)
+        ax.set_xticklabels(summary_df["condition"], rotation=15, ha="right")
+        ax.set_title("RAG v2: Usage Distribution")
+        ax.set_xlabel("Condition")
+        ax.set_ylabel("Value")
+        add_bar_labels(ax, fmt="{:.2f}")
+        ax.legend()
+        finalize_report_figure(fig, os.path.join(out_dir, "fig_rag_usage_distribution.png"))
 
 
 def _build_exp2_timeline_matrix(df: pd.DataFrame, student_type: str) -> tuple[pd.DataFrame, list[int]]:
@@ -1141,7 +1406,7 @@ def _build_exp2_timeline_matrix(df: pd.DataFrame, student_type: str) -> tuple[pd
 
 def plot_exp2_remediation_timeline(
     trajectory_path: str = os.path.join(REPORTS_DIR, "mastery_trajectory.csv"),
-    output_dir: str = os.path.join(REPORTS_DIR, "experiment_2_ab3_student_types"),
+    output_dir: str = os.path.join(EXP2_BASE_DIR, "latest"),
 ) -> None:
     """Plot AB3 remediation timeline by student type and combined 1x3 overview."""
     if not os.path.exists(trajectory_path):
@@ -1153,6 +1418,7 @@ def plot_exp2_remediation_timeline(
         return
 
     ab3 = df[df["strategy"] == "AB3_PPO_Dynamic"].copy()
+    ab3 = normalize_and_sort_student_types(ab3, "student_type")
     if ab3.empty:
         return
 
@@ -1172,7 +1438,7 @@ def plot_exp2_remediation_timeline(
             continue
         matrices[student_type] = matrix
 
-        plt.figure(figsize=(10, 6))
+        plt.figure(figsize=(8, 5))
         plt.imshow(matrix.values, aspect="auto", interpolation="nearest", cmap=cmap, vmin=0, vmax=3)
         plt.title(f"AB3 Remediation Timeline - {student_type}")
         plt.xlabel("Step")
@@ -1181,9 +1447,10 @@ def plot_exp2_remediation_timeline(
         plt.xticks(xticks, [str(matrix.columns[i]) for i in xticks])
         plt.yticks([])
         plt.legend(handles=legend_handles, loc="upper right", frameon=True)
-        save_fig(os.path.join(output_dir, f"fig_exp2_remediation_timeline_{student_type.lower()}.png"))
+        slug = STUDENT_TYPE_SLUG_MAP.get(student_type, student_type.lower().replace(" ", "_"))
+        save_fig(os.path.join(output_dir, f"fig_exp2_remediation_timeline_{slug}.png"))
 
-    fig, axes = plt.subplots(1, 3, figsize=(18, 6), sharex=False, sharey=False)
+    fig, axes = plt.subplots(1, 3, figsize=(8, 5), sharex=False, sharey=False)
     has_any = False
     for idx, student_type in enumerate(STUDENT_TYPE_ORDER):
         ax = axes[idx]
@@ -1207,11 +1474,12 @@ def plot_exp2_remediation_timeline(
         fig.suptitle("AB3 Remediation Timeline by Student Type")
         fig.legend(handles=legend_handles, loc="upper center", ncol=3, frameon=True)
         fig.tight_layout(rect=[0, 0, 1, 0.94])
-        fig.savefig(
+        finalize_report_figure(
+            fig,
             os.path.join(output_dir, "fig_exp2_remediation_timeline_by_student_type.png"),
-            dpi=150,
         )
-    plt.close(fig)
+    else:
+        plt.close(fig)
 
 
 def _build_exp2_ratio_profile(
@@ -1220,7 +1488,8 @@ def _build_exp2_ratio_profile(
     phase_name: str,
 ) -> pd.DataFrame:
     """Compute per-step phase ratio for one student type."""
-    sub = ab3_df[ab3_df["student_type"] == student_type].copy()
+    normalized = normalize_and_sort_student_types(ab3_df, "student_type")
+    sub = normalized[normalized["student_type"] == student_type].copy()
     if sub.empty:
         return pd.DataFrame(columns=["step", "ratio"])
 
@@ -1257,7 +1526,8 @@ def _build_exp2_rag_ratio_weak(ab3_df: pd.DataFrame) -> pd.DataFrame:
     if "rag_triggered" not in ab3_df.columns:
         return pd.DataFrame(columns=["step", "ratio"])
 
-    weak = ab3_df[ab3_df["student_type"] == "Weak"].copy()
+    normalized = normalize_and_sort_student_types(ab3_df, "student_type")
+    weak = normalized[normalized["student_type"] == "Weak Foundation"].copy()
     if weak.empty:
         return pd.DataFrame(columns=["step", "ratio"])
 
@@ -1289,7 +1559,7 @@ def _build_exp2_rag_ratio_weak(ab3_df: pd.DataFrame) -> pd.DataFrame:
 
 def plot_exp2_remediation_profile_summary(
     trajectory_path: str = os.path.join(REPORTS_DIR, "mastery_trajectory.csv"),
-    output_dir: str = os.path.join(REPORTS_DIR, "experiment_2_ab3_student_types"),
+    output_dir: str = os.path.join(EXP2_BASE_DIR, "latest"),
 ) -> None:
     """Plot step-wise remediation/mainline/rag ratio summaries for AB3 student-type analysis."""
     if not os.path.exists(trajectory_path):
@@ -1301,13 +1571,14 @@ def plot_exp2_remediation_profile_summary(
         return
 
     ab3 = df[df["strategy"] == "AB3_PPO_Dynamic"].copy()
+    ab3 = normalize_and_sort_student_types(ab3, "student_type")
     if ab3.empty:
         return
 
     os.makedirs(output_dir, exist_ok=True)
 
     # 1) Remediation ratio by step
-    plt.figure(figsize=(9, 5))
+    plt.figure(figsize=(8, 5))
     has_line = False
     for student_type in STUDENT_TYPE_ORDER:
         profile = _build_exp2_ratio_profile(ab3, student_type, "remediation")
@@ -1326,7 +1597,7 @@ def plot_exp2_remediation_profile_summary(
         plt.close()
 
     # 2) Mainline ratio by step
-    plt.figure(figsize=(9, 5))
+    plt.figure(figsize=(8, 5))
     has_line = False
     for student_type in STUDENT_TYPE_ORDER:
         profile = _build_exp2_ratio_profile(ab3, student_type, "mainline")
@@ -1347,7 +1618,7 @@ def plot_exp2_remediation_profile_summary(
     # 3) Weak-only RAG ratio by step
     rag_profile = _build_exp2_rag_ratio_weak(ab3)
     if not rag_profile.empty:
-        plt.figure(figsize=(9, 5))
+        plt.figure(figsize=(8, 5))
         plt.plot(rag_profile["step"], rag_profile["ratio"], marker="o", linewidth=1.5, color="#7a5195")
         plt.title("AB3 Weak RAG Trigger Ratio by Step")
         plt.xlabel("Step")
@@ -1356,7 +1627,7 @@ def plot_exp2_remediation_profile_summary(
         save_fig(os.path.join(output_dir, "fig_exp2_rag_ratio_by_step_weak.png"))
 
     # 4) Phase profile summary (1x3)
-    fig, axes = plt.subplots(1, 3, figsize=(18, 5), sharey=True)
+    fig, axes = plt.subplots(1, 3, figsize=(8, 5), sharey=True)
     plots_drawn = 0
 
     for student_type in STUDENT_TYPE_ORDER:
@@ -1396,16 +1667,15 @@ def plot_exp2_remediation_profile_summary(
 
     fig.suptitle("AB3 Phase Profile Summary by Student Type")
     fig.tight_layout(rect=[0, 0, 1, 0.95])
-    fig.savefig(
+    finalize_report_figure(
+        fig,
         os.path.join(output_dir, "fig_exp2_phase_profile_summary.png"),
-        dpi=150,
     )
-    plt.close(fig)
 
 
 def build_experiment2_summary(
     df_logs: pd.DataFrame,
-    output_dir: str = os.path.join(REPORTS_DIR, "experiment_2_ab3_student_types"),
+    output_dir: str = os.path.join(EXP2_BASE_DIR, "latest"),
 ) -> pd.DataFrame:
     """Aggregate AB3 behavior summary by student type from trajectory logs."""
     required_cols = {"strategy", "student_type", "episode_id", "step", "phase"}
@@ -1413,6 +1683,7 @@ def build_experiment2_summary(
         return pd.DataFrame()
 
     ab3 = df_logs[df_logs["strategy"] == "AB3_PPO_Dynamic"].copy()
+    ab3 = normalize_and_sort_student_types(ab3, "student_type")
     if ab3.empty:
         return pd.DataFrame()
 
@@ -1466,7 +1737,7 @@ def build_experiment2_summary(
 
 def generate_student_type_summary_charts(
     summary_df: pd.DataFrame,
-    output_dir: str = os.path.join(REPORTS_DIR, "experiment_2_ab3_student_types"),
+    output_dir: str = os.path.join(EXP2_BASE_DIR, "latest"),
 ) -> None:
     """Generate Experiment 2 dual-axis summary chart from aggregated summary dataframe."""
     if summary_df.empty:
@@ -1481,19 +1752,14 @@ def generate_student_type_summary_charts(
     if not required_cols.issubset(summary_df.columns):
         return
 
-    plot_df = summary_df.copy()
-    plot_df["student_type"] = plot_df["student_type"].astype(str)
+    plot_df = normalize_and_sort_student_types(summary_df.copy(), "student_type")
     plot_df = plot_df[plot_df["student_type"].isin(STUDENT_TYPE_ORDER)]
     if plot_df.empty:
         return
-    plot_df["student_type"] = pd.Categorical(
-        plot_df["student_type"],
-        categories=STUDENT_TYPE_ORDER,
-        ordered=True,
-    )
+    plot_df["student_type"] = pd.Categorical(plot_df["student_type"], categories=STUDENT_TYPE_ORDER, ordered=True)
     plot_df = plot_df.sort_values("student_type")
 
-    fig, ax1 = plt.subplots(figsize=(11, 6))
+    fig, ax1 = plt.subplots(figsize=(8, 5))
     line1 = ax1.plot(
         plot_df["student_type"],
         plot_df["remediation_ratio"],
@@ -1579,6 +1845,7 @@ def build_mastery_plot_dataframe(df_logs: pd.DataFrame) -> pd.DataFrame:
         return pd.DataFrame()
 
     df = df_logs.copy()
+    df = normalize_and_sort_student_types(df, "student_type")
     if "route" not in df.columns and "phase" in df.columns:
         df["route"] = df["phase"]
 
@@ -1607,14 +1874,14 @@ def _select_representative_mastery_episode_plot(
     if ab3.empty:
         return None
 
-    priority = {"Average": 0, "Weak": 1, "Careless": 2}
+    priority = {"Average": 0, "Weak Foundation": 1, "Careless": 2}
     candidates: list[tuple[int, int, int, int]] = []
     for episode_id, sub in ab3.groupby("episode_id"):
         rem_steps = int((sub["route"] == "remediation").sum()) if "route" in sub.columns else 0
         if rem_steps <= 0:
             continue
         return_count = int(pd.to_numeric(sub.get("is_return_to_mainline", 0), errors="coerce").fillna(0).sum())
-        stype = str(sub["student_type"].iloc[0]) if "student_type" in sub.columns else "Average"
+        stype = normalize_student_type(sub["student_type"].iloc[0]) if "student_type" in sub.columns else "Average"
         rank = priority.get(stype, 99)
         success = 0
         if not episodes_df.empty and {"episode_id", "success"}.issubset(episodes_df.columns):
@@ -1633,7 +1900,7 @@ def _select_representative_mastery_episode_plot(
         rem_steps = int((sub["route"] == "remediation").sum()) if "route" in sub.columns else 0
         if rem_steps <= 0:
             continue
-        stype = str(sub["student_type"].iloc[0]) if "student_type" in sub.columns else "Average"
+        stype = normalize_student_type(sub["student_type"].iloc[0]) if "student_type" in sub.columns else "Average"
         rank = priority.get(stype, 99)
         fallback.append((rank, abs(len(sub) - 30), int(episode_id)))
     if not fallback:
@@ -1665,7 +1932,7 @@ def _collect_remediation_spans_plot(sub: pd.DataFrame) -> list[tuple[int, int]]:
 
 def generate_mastery_trajectory_charts(
     df_logs: pd.DataFrame,
-    output_dir: str = os.path.join(REPORTS_DIR, "experiment_2_ab3_student_types"),
+    output_dir: str = os.path.join(EXP2_BASE_DIR, "latest"),
 ) -> list[str]:
     """Generate representative and averaged mastery trajectory charts from real logs."""
     out_files: list[str] = []
@@ -1687,7 +1954,7 @@ def generate_mastery_trajectory_charts(
         ].copy()
         sub = sub.sort_values("step")
         if not sub.empty and {"step", "integer_mastery", "polynomial_mastery"}.issubset(sub.columns):
-            fig, ax = plt.subplots(figsize=(11, 6))
+            fig, ax = plt.subplots(figsize=(8, 5))
             ax.plot(
                 sub["step"],
                 sub["integer_mastery"],
@@ -1717,19 +1984,16 @@ def generate_mastery_trajectory_charts(
                 f"(Representative Episode: {stype}, #{int(rep_episode)})"
             )
             ax.legend(loc="lower right")
-            out_path = os.path.join(output_dir, f"mastery_trajectory_episode_{int(rep_episode)}.png")
-            plt.tight_layout()
-            plt.savefig(out_path, dpi=150)
-            plt.close(fig)
+            out_path = os.path.join(output_dir, "mastery_trajectory_representative_episode.png")
+            fig.tight_layout()
+            finalize_report_figure(fig, out_path)
             out_files.append(out_path)
-            fixed_out_path = os.path.join(output_dir, "mastery_trajectory_representative_episode.png")
-            shutil.copy2(out_path, fixed_out_path)
-            out_files.append(fixed_out_path)
 
     # Average by student type with step alignment (NaN-safe groupby mean).
     ab3 = mastery_df[mastery_df["strategy"] == "AB3_PPO_Dynamic"].copy()
+    ab3 = normalize_and_sort_student_types(ab3, "student_type")
     if not ab3.empty and {"student_type", "step", "integer_mastery", "polynomial_mastery"}.issubset(ab3.columns):
-        fig, axes = plt.subplots(1, 3, figsize=(18, 5), sharey=True)
+        fig, axes = plt.subplots(1, 3, figsize=(8, 5), sharey=True)
         has_plot = False
         for i, student_type in enumerate(STUDENT_TYPE_ORDER):
             ax = axes[i]
@@ -1787,9 +2051,10 @@ def generate_mastery_trajectory_charts(
             fig.suptitle("Learning Trajectory by Student Type (AB3)")
             out_path = os.path.join(output_dir, "mastery_trajectory_average_by_student_type.png")
             fig.tight_layout(rect=[0, 0, 1, 0.95])
-            fig.savefig(out_path, dpi=150)
+            finalize_report_figure(fig, out_path)
             out_files.append(out_path)
-        plt.close(fig)
+        else:
+            plt.close(fig)
 
     return out_files
 
@@ -1800,38 +2065,41 @@ def write_experiment2_figure_captions(output_dir: str, representative_episode_id
     paths: list[str] = []
 
     summary_caption = os.path.join(output_dir, "figure_caption_experiment2_summary.md")
-    with open(summary_caption, "w", encoding="utf-8-sig") as f:
-        f.write(
-            "### Figure Caption: Experiment 2 Policy Behavior Summary\n"
-            "This figure reports AB3 policy behavior across Careless, Average, and Weak groups.\n"
-            "All values are computed from the current run logs: remediation ratio (remediation steps / total steps),\n"
-            "mainline ratio (mainline steps / total steps), and average steps per episode.\n"
-            "Key finding: policy behavior differs by student type, with weaker learners spending more time in remediation\n"
-            "and requiring longer trajectories before convergence.\n"
-        )
+    safe_write_markdown(
+        summary_caption,
+        "### Figure Caption: Experiment 2 Policy Behavior Summary\n"
+        "This figure reports AB3 policy behavior across Careless, Average, and Weak Foundation groups.\n"
+        "All values are computed from the current run logs: remediation ratio (remediation steps / total steps),\n"
+        "mainline ratio (mainline steps / total steps), and average steps per episode.\n"
+        "Experiment 1 identifies MAX_STEPS = 50 as the best-performing setting; therefore Experiment 2 uses MAX_STEPS = 50 for mechanism analysis consistency.\n"
+        "Key finding: policy behavior differs by student type, with weaker learners spending more time in remediation\n"
+        "and requiring longer trajectories before convergence.\n",
+    )
     paths.append(summary_caption)
 
     episode_caption = os.path.join(output_dir, "figure_caption_mastery_episode.md")
-    with open(episode_caption, "w", encoding="utf-8-sig") as f:
-        eid_text = str(representative_episode_id) if representative_episode_id is not None else "N/A"
-        f.write(
-            "### Figure Caption: Representative Mastery Trajectory\n"
-            f"This plot shows one automatically selected representative AB3 episode (episode_id={eid_text}).\n"
-            "Curves are true per-step mastery values from trajectory logs (prerequisite and target mastery), and shaded\n"
-            "bands denote remediation phases identified by route==remediation.\n"
-            "Key finding: remediation intervals are associated with prerequisite consolidation before stronger target mastery growth.\n"
-        )
+    eid_text = str(representative_episode_id) if representative_episode_id is not None else "N/A"
+    safe_write_markdown(
+        episode_caption,
+        "### Figure Caption: Representative Mastery Trajectory\n"
+        f"This plot shows one automatically selected representative AB3 episode (episode_id={eid_text}).\n"
+        "Curves are true per-step mastery values from trajectory logs (prerequisite and target mastery), and shaded\n"
+        "bands denote remediation phases identified by route==remediation.\n"
+        "Experiment 1 identifies MAX_STEPS = 50 as the best-performing setting; therefore Experiment 2 uses MAX_STEPS = 50 for mechanism analysis consistency.\n"
+        "Key finding: remediation intervals are associated with prerequisite consolidation before stronger target mastery growth.\n",
+    )
     paths.append(episode_caption)
 
     avg_caption = os.path.join(output_dir, "figure_caption_mastery_average.md")
-    with open(avg_caption, "w", encoding="utf-8-sig") as f:
-        f.write(
-            "### Figure Caption: Average Mastery Trajectory by Student Type\n"
-            "This figure aggregates AB3 episodes by step within each student type using NaN-safe averaging,\n"
-            "reporting average prerequisite mastery, average target mastery, and average remediation ratio.\n"
-            "Key finding: student types exhibit distinct learning dynamics; weaker groups sustain higher remediation intensity\n"
-            "and slower target mastery accumulation.\n"
-        )
+    safe_write_markdown(
+        avg_caption,
+        "### Figure Caption: Average Mastery Trajectory by Student Type\n"
+        "This figure aggregates AB3 episodes by step within each student type using NaN-safe averaging,\n"
+        "reporting average prerequisite mastery, average target mastery, and average remediation ratio.\n"
+        "Experiment 1 identifies MAX_STEPS = 50 as the best-performing setting; therefore Experiment 2 uses MAX_STEPS = 50 for mechanism analysis consistency.\n"
+        "Key finding: student types exhibit distinct learning dynamics; weaker groups sustain higher remediation intensity\n"
+        "and slower target mastery accumulation.\n",
+    )
     paths.append(avg_caption)
     return paths
 
@@ -1857,61 +2125,37 @@ def main() -> None:
         os.path.join(REPORTS_DIR, "ab3_student_type_detailed_summary.csv")
     )
 
-    plot_ablation_success_rate(ablation_summary)
-    plot_ablation_steps_vs_success(ablation_summary)
-    plot_ablation_by_student_type_success(ablation_by_type)
-    plot_ab3_subskill_gain_by_type(ab3_subskill_detail)
-    plot_ab3_polynomial_gain_by_type(ab3_student_detail)
-    plot_multi_steps_results()
-    plot_exp2_remediation_timeline()
-    plot_exp2_remediation_profile_summary()
+    # Experiment 1 (report priority): keep only three core figures.
+    plot_multi_steps_results(include_ab3_by_student_type=False)
     trajectory_path = os.path.join(REPORTS_DIR, "mastery_trajectory.csv")
     if os.path.exists(trajectory_path):
         traj_df = pd.read_csv(trajectory_path)
         exp2_summary_df = build_experiment2_summary(
             traj_df,
-            output_dir=os.path.join(REPORTS_DIR, "experiment_2_ab3_student_types"),
+            output_dir=os.path.join(EXP2_BASE_DIR, "latest"),
         )
         generate_student_type_summary_charts(
             exp2_summary_df,
-            output_dir=os.path.join(REPORTS_DIR, "experiment_2_ab3_student_types"),
+            output_dir=os.path.join(EXP2_BASE_DIR, "latest"),
         )
         mastery_paths = generate_mastery_trajectory_charts(
             traj_df,
-            output_dir=os.path.join(REPORTS_DIR, "experiment_2_ab3_student_types"),
+            output_dir=os.path.join(EXP2_BASE_DIR, "latest"),
         )
         rep_episode_id: int | None = None
-        for p in mastery_paths:
-            name = os.path.basename(p)
-            if name.startswith("mastery_trajectory_episode_") and name.endswith(".png"):
-                rep_episode_id = int(name[len("mastery_trajectory_episode_") : -4])
-                break
         caption_paths = write_experiment2_figure_captions(
-            output_dir=os.path.join(REPORTS_DIR, "experiment_2_ab3_student_types"),
+            output_dir=os.path.join(EXP2_BASE_DIR, "latest"),
             representative_episode_id=rep_episode_id,
         )
     else:
         mastery_paths = []
         caption_paths = []
 
-    print("Saved reports/experiment_1_ablation/fig_ablation_success_rate.png")
-    print("Saved reports/experiment_1_ablation/fig_ablation_steps_vs_success.png")
-    print("Saved reports/experiment_1_ablation/fig_ablation_by_student_type_success.png")
-    print("Saved reports/fig_ab3_subskill_gain_by_type.png")
-    print("Saved reports/fig_ab3_polynomial_gain_by_type.png")
+    print("Saved reports/experiment_1_ablation/fig_exp1_student_type_improved.png")
     print("Saved reports/experiment_1_ablation/fig_multi_steps_success_rate.png")
-    print("Saved reports/fig_multi_steps_ab3_by_student_type.png")
     print("Saved reports/experiment_1_ablation/fig_multi_steps_efficiency.png")
-    print("Saved reports/experiment_2_ab3_student_types/fig_exp2_remediation_timeline_careless.png")
-    print("Saved reports/experiment_2_ab3_student_types/fig_exp2_remediation_timeline_average.png")
-    print("Saved reports/experiment_2_ab3_student_types/fig_exp2_remediation_timeline_weak.png")
-    print("Saved reports/experiment_2_ab3_student_types/fig_exp2_remediation_timeline_by_student_type.png")
-    print("Saved reports/experiment_2_ab3_student_types/fig_exp2_remediation_ratio_by_step.png")
-    print("Saved reports/experiment_2_ab3_student_types/fig_exp2_mainline_ratio_by_step.png")
-    print("Saved reports/experiment_2_ab3_student_types/fig_exp2_rag_ratio_by_step_weak.png")
-    print("Saved reports/experiment_2_ab3_student_types/fig_exp2_phase_profile_summary.png")
-    print("Saved reports/experiment_2_ab3_student_types/experiment2_student_type_summary.csv")
-    print("Saved reports/experiment_2_ab3_student_types/experiment2_policy_behavior_summary.png")
+    print("Saved reports/experiment_2_ab3_student_types/latest/experiment2_student_type_summary.csv")
+    print("Saved reports/experiment_2_ab3_student_types/latest/experiment2_policy_behavior_summary.png")
     for p in mastery_paths:
         print(f"Saved {p.replace(os.sep, '/')}")
     for p in caption_paths:
@@ -1920,3 +2164,6 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
+
+
+

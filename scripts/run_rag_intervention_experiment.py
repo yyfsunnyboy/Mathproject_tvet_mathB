@@ -29,15 +29,23 @@ Its outputs are treated as appendix evidence rather than mainline conclusions.
 """
 
 import csv
+import os
 import random
 from collections import Counter
 from pathlib import Path
 
 import simulate_student
-from plot_experiment_results import plot_rag_intervention_results
+from plot_experiment_results import (
+    create_timestamped_run_dir,
+    plot_rag_intervention_results,
+    setup_report_style,
+    sync_run_to_latest,
+)
 
 REPORTS_DIR = Path("reports")
 EXP4_DIR = REPORTS_DIR / "experiment_4_rag_tutor"
+EXP4_OUTPUT_DIR_ENV = "MATHPROJECT_EXP4_OUTPUT_DIR"
+FORCE_WRITE_MARKDOWN_ENV = "MATHPROJECT_FORCE_WRITE_MARKDOWN"
 
 # Keep foundation support condition aligned with Experiment 3 setting.
 FOUNDATION_EXTRA_STEPS = 20
@@ -267,6 +275,19 @@ def write_csv(path: Path, fieldnames: list[str], rows: list[dict[str, object]]) 
 def write_experiment4_readme(exp4_dir: Path) -> None:
     """Write concise Experiment 4 report README focused on efficiency findings."""
     path = exp4_dir / "README.md"
+    if "final" in {part.lower() for part in path.parts}:
+        print(f"[PROTECT] Skip writing to final directory: {path}")
+        return
+    force_md = str(os.environ.get(FORCE_WRITE_MARKDOWN_ENV, "")).strip().lower() in {
+        "1",
+        "true",
+        "yes",
+        "y",
+        "on",
+    }
+    if path.exists() and (not force_md):
+        print("[SKIP] Markdown exists, not overwriting")
+        return
     lines = [
         "# Experiment 4: Weak + RAG Tutor（研究等級分析）",
         "",
@@ -296,106 +317,124 @@ def write_experiment4_readme(exp4_dir: Path) -> None:
 def main() -> None:
     """Run Experiment 4: Weak + RAG tutor intervention."""
     REPORTS_DIR.mkdir(parents=True, exist_ok=True)
-    EXP4_DIR.mkdir(parents=True, exist_ok=True)
+    exp4_dirs = create_timestamped_run_dir(EXP4_DIR)
+    run_dir = exp4_dirs["run_dir"]
+    latest_dir = exp4_dirs["latest_dir"]
+    final_dir = exp4_dirs["final_dir"]
+    prev_exp4_env = os.environ.get(EXP4_OUTPUT_DIR_ENV)
+    os.environ[EXP4_OUTPUT_DIR_ENV] = str(run_dir)
+    print(f"[RUN] Writing outputs to {run_dir}")
+    print(f"[PROTECT] Skipping final/ directory: {final_dir}")
 
     original_extra = simulate_student.WEAK_FOUNDATION_EXTRA_STEPS
     original_rag = simulate_student.ENABLE_RAG_TUTOR
 
     all_results: dict[str, list[dict[str, object]]] = {}
     try:
-        for cfg in CONDITIONS:
-            name = str(cfg["name"])
-            enabled = bool(cfg["enable_rag"])
-            print(f"Running condition: {name} (RAG={enabled})")
-            all_results[name] = run_condition(name, enabled)
+        try:
+            for cfg in CONDITIONS:
+                name = str(cfg["name"])
+                enabled = bool(cfg["enable_rag"])
+                print(f"Running condition: {name} (RAG={enabled})")
+                all_results[name] = run_condition(name, enabled)
+        finally:
+            simulate_student.WEAK_FOUNDATION_EXTRA_STEPS = original_extra
+            simulate_student.ENABLE_RAG_TUTOR = original_rag
+
+        summary_rows = build_summary(all_results)
+        student_rows = build_student_type_summary(all_results)
+        efficiency_rows = build_efficiency_summary(all_results)
+        subskill_rows = build_subskill_summary(all_results)
+        breakpoint_rows = build_breakpoint_shift(all_results)
+
+        summary_path = run_dir / "rag_vs_baseline_summary.csv"
+        student_path = run_dir / "rag_student_type_summary.csv"
+        efficiency_path = run_dir / "rag_efficiency_summary.csv"
+        subskill_path = run_dir / "rag_subskill_summary.csv"
+        breakpoint_path = run_dir / "rag_breakpoint_shift.csv"
+
+        write_csv(
+            summary_path,
+            [
+                "condition",
+                "success_rate",
+                "avg_final_polynomial_mastery",
+                "avg_total_steps",
+                "family_isomorphism_gain",
+                "avg_reached_mastery_step",
+                "avg_rag_intervention_count",
+            ],
+            summary_rows,
+        )
+        write_csv(
+            student_path,
+            [
+                "condition",
+                "student_type",
+                "success_rate",
+                "avg_final_polynomial_mastery",
+                "avg_total_steps",
+                "avg_mainline_steps",
+                "family_isomorphism_gain",
+            ],
+            student_rows,
+        )
+        write_csv(
+            efficiency_path,
+            [
+                "condition",
+                "student_type",
+                "avg_initial_polynomial_mastery",
+                "avg_final_polynomial_mastery",
+                "avg_mastery_gain",
+                "avg_total_steps",
+                "learning_efficiency",
+                "avg_rag_intervention_count",
+                "weakest_subskills_baseline",
+            ],
+            efficiency_rows,
+        )
+        write_csv(
+            subskill_path,
+            [
+                "condition",
+                "subskill",
+                "avg_initial_mastery",
+                "avg_final_mastery",
+                "avg_gain",
+            ],
+            subskill_rows,
+        )
+        write_csv(
+            breakpoint_path,
+            ["condition", "subskill", "count", "percentage"],
+            breakpoint_rows,
+        )
+
+        setup_report_style()
+        plot_rag_intervention_results(str(run_dir))
+        write_experiment4_readme(run_dir)
+        print(f"[LATEST] Updating {latest_dir}")
+        sync_run_to_latest(run_dir, latest_dir)
+        print(f"[LATEST] Updated {latest_dir}")
+        print(f"[PROTECT] Skipping final/ directory: {final_dir}")
+
+        print("Experiment 4 completed.")
+        print(f"Output CSV: {summary_path}")
+        print(f"Output CSV: {student_path}")
+        print(f"Output CSV: {efficiency_path}")
+        print(f"Output CSV: {subskill_path}")
+        print(f"Output CSV: {breakpoint_path}")
+        print(f"Output Figure: {run_dir / 'fig_rag_efficiency.png'}")
+        print(f"Output Figure: {run_dir / 'fig_rag_success_rate.png'}")
+        print(f"Output Figure: {run_dir / 'fig_rag_mastery.png'}")
+        print(f"Output Figure: {run_dir / 'fig_rag_subskill_gain.png'}")
+        print(f"Output Figure: {run_dir / 'fig_rag_breakpoint_shift.png'}")
     finally:
-        simulate_student.WEAK_FOUNDATION_EXTRA_STEPS = original_extra
-        simulate_student.ENABLE_RAG_TUTOR = original_rag
-
-    summary_rows = build_summary(all_results)
-    student_rows = build_student_type_summary(all_results)
-    efficiency_rows = build_efficiency_summary(all_results)
-    subskill_rows = build_subskill_summary(all_results)
-    breakpoint_rows = build_breakpoint_shift(all_results)
-
-    summary_path = EXP4_DIR / "rag_vs_baseline_summary.csv"
-    student_path = EXP4_DIR / "rag_student_type_summary.csv"
-    efficiency_path = EXP4_DIR / "rag_efficiency_summary.csv"
-    subskill_path = EXP4_DIR / "rag_subskill_summary.csv"
-    breakpoint_path = EXP4_DIR / "rag_breakpoint_shift.csv"
-
-    write_csv(
-        summary_path,
-        [
-            "condition",
-            "success_rate",
-            "avg_final_polynomial_mastery",
-            "avg_total_steps",
-            "family_isomorphism_gain",
-            "avg_reached_mastery_step",
-            "avg_rag_intervention_count",
-        ],
-        summary_rows,
-    )
-    write_csv(
-        student_path,
-        [
-            "condition",
-            "student_type",
-            "success_rate",
-            "avg_final_polynomial_mastery",
-            "avg_total_steps",
-            "avg_mainline_steps",
-            "family_isomorphism_gain",
-        ],
-        student_rows,
-    )
-    write_csv(
-        efficiency_path,
-        [
-            "condition",
-            "student_type",
-            "avg_initial_polynomial_mastery",
-            "avg_final_polynomial_mastery",
-            "avg_mastery_gain",
-            "avg_total_steps",
-            "learning_efficiency",
-            "avg_rag_intervention_count",
-            "weakest_subskills_baseline",
-        ],
-        efficiency_rows,
-    )
-    write_csv(
-        subskill_path,
-        [
-            "condition",
-            "subskill",
-            "avg_initial_mastery",
-            "avg_final_mastery",
-            "avg_gain",
-        ],
-        subskill_rows,
-    )
-    write_csv(
-        breakpoint_path,
-        ["condition", "subskill", "count", "percentage"],
-        breakpoint_rows,
-    )
-
-    plot_rag_intervention_results(str(EXP4_DIR))
-    write_experiment4_readme(EXP4_DIR)
-
-    print("Experiment 4 completed.")
-    print(f"Output CSV: {summary_path}")
-    print(f"Output CSV: {student_path}")
-    print(f"Output CSV: {efficiency_path}")
-    print(f"Output CSV: {subskill_path}")
-    print(f"Output CSV: {breakpoint_path}")
-    print(f"Output Figure: {EXP4_DIR / 'fig_rag_efficiency.png'}")
-    print(f"Output Figure: {EXP4_DIR / 'fig_rag_success_rate.png'}")
-    print(f"Output Figure: {EXP4_DIR / 'fig_rag_mastery.png'}")
-    print(f"Output Figure: {EXP4_DIR / 'fig_rag_subskill_gain.png'}")
-    print(f"Output Figure: {EXP4_DIR / 'fig_rag_breakpoint_shift.png'}")
+        if prev_exp4_env is None:
+            os.environ.pop(EXP4_OUTPUT_DIR_ENV, None)
+        else:
+            os.environ[EXP4_OUTPUT_DIR_ENV] = prev_exp4_env
 
 
 if __name__ == "__main__":
