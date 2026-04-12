@@ -44,33 +44,39 @@ C < 0.60 → 未達基本學力
 
 | Group | 名稱 | 對應會考 | Mastery區間 | 特徵 | 系統代號 |
 |---|---|---|---|---|---|
-| G1 | 拔尖組 | B++~A | 0.68–0.80 | 粗心失誤 | Careless |
-| G2 | 固本組 | B~B+ | 0.50–0.68 | 整合不穩 | Average |
-| G3 | 減C組 | C | 0.20–0.50 | 基礎不足 | Weak |
+| G1 | Careless 組 | B++ / B+ | 0.68–0.80 | 高起點但易粗心失誤 | Careless (B+,B++) |
+| G2 | Average 組 | B | 0.50–0.68 | 中段能力、整合不穩 | Average (B) |
+| G3 | Weak 組 | C | 0.20–0.50 | 基礎不足、需補救支持 | Weak (C) |
 
-此分組不是僅用單一分數切割，而是反映不同學習瓶頸型態：Careless 偏向穩定性問題、Average 偏向整合與遷移問題、Weak 偏向前置能力不足。如此可讓系統策略對應更具教育意義。
+此分組不是僅用單一分數切割，而是反映不同學習瓶頸型態：Careless 偏向穩定性問題、Average 偏向整合與遷移問題、Weak 偏向前置能力不足。  
+對應目前程式實作，內部 key 使用 `careless / average / weak`，對外顯示統一為 `Careless (B+,B++) / Average (B) / Weak (C)`。
 
 ---
 
 # 3. Simulation 設計（Reproducibility）
 
-為確保可重現性與可比較性，本研究採用固定模擬設定：
+為確保可重現性與可比較性，本研究採用固定模擬設定（對齊目前程式）：
 
-- Episodes per group: 300
-- Total: 900 students
-- 初始分布：
-  - Careless → Uniform(0.68, 0.80)
-  - Average → Uniform(0.50, 0.68)
-  - Weak → Uniform(0.20, 0.50)
-- Max steps: 50
+- Experiment 1（classic multi-step）：
+  - N_PER_TYPE = 100
+  - 每個 MAX_STEPS 設定下：3 組 × 3 策略 × 100 = 900 episodes
+  - Multi-step sweep：MAX_STEPS = 30 / 40 / 50
+  - 主展示設定（main presentation setting）：MAX_STEPS = 40
+- 初始分布（Experiment 1 output_mode）：
+  - Careless (B+,B++) → Uniform(0.68, 0.80)
+  - Average (B) → Uniform(0.50, 0.68)
+  - Weak (C) → Uniform(0.20, 0.50)
+- Reproducibility：
+  - random.seed(42)
 - mastery update：
   - correct → +Δ
   - incorrect → minimal
 - Success criteria：
-  - Exp1：mastery ≥ 0.80
+  - Exp1：final mastery ≥ 0.80
   - Exp3：mastery ≥ 0.60
 
-上述設定的理由如下：第一，透過固定樣本量與步數上限，避免不同策略因資源不一致而產生比較偏差；第二，以區間初始化保留學生異質性；第三，使用分實驗門檻定義（0.80 與 0.60）對應不同研究目標（整體精熟 vs 減C成效）。
+上述設定的理由如下：第一，透過固定樣本量與步數上限，避免不同策略因資源不一致而產生比較偏差；第二，以區間初始化保留學生異質性；第三，使用分實驗門檻定義（0.80 與 0.60）對應不同研究目標（整體精熟 vs 減C成效）。  
+另外，30/40/50 的多步數設計可同時觀察「受限步數」與「高步數天花板」情境，40 步在公平性、現實性與策略可分性之間較平衡，因此作為正式主敘事設定。
 
 ---
 
@@ -103,6 +109,11 @@ C < 0.60 → 未達基本學力
 - unnecessary remediation
 
 核心問題是：為什麼 Adaptive 較好。研究重點不只看最終分數，而是同時觀察達標效率與補救精準度。若策略能在較少無效補救下達到更高成功率，代表其決策具備實質效益。
+
+目前正式流程採用「先做 30/40/50 multi-step 比較，再以 40 作為主展示設定」：  
+- 30 步：較受限、策略差異通常更明顯  
+- 50 步：所有方法都會上升，較易出現 ceiling effect  
+- 40 步：兼顧可分性與實務合理性，作為主要比較基準
 
 結論：Adaptive 在三類學生上整體優於其他策略。其優勢來自能根據學生狀態調整介入節奏，而非固定流程推進。
 
