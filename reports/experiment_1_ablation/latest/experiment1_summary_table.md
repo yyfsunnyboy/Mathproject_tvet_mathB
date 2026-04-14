@@ -2,15 +2,15 @@
 
 | MAX_STEPS | Strategy | Success Rate (%) | Avg Steps | Avg Unnecessary Remediations | Avg Final Mastery |
 |-----------|----------|------------------|-----------|------------------------------|-------------------|
-| 30 | Baseline | 44.00 | 25.29 | 0.00 | 0.70 |
-| 30 | Rule-Based | 46.00 | 24.56 | 0.59 | 0.72 |
-| 30 | Adaptive (Ours) | 61.33 | 22.00 | 0.19 | 0.69 |
-| 40 | Baseline | 54.67 | 30.16 | 0.00 | 0.72 |
-| 40 | Rule-Based | 58.33 | 29.33 | 0.88 | 0.74 |
-| 40 | Adaptive (Ours) | 70.33 | 25.36 | 0.16 | 0.73 |
-| 50 | Baseline | 62.67 | 34.06 | 0.00 | 0.73 |
-| 50 | Rule-Based | 65.67 | 32.95 | 0.73 | 0.75 |
-| 50 | Adaptive (Ours) | 75.33 | 28.04 | 0.23 | 0.73 |
+| 30 | Baseline | 45.00 | 24.92 | 0.00 | 0.67 |
+| 30 | Rule-Based | 45.33 | 24.35 | 0.60 | 0.69 |
+| 30 | Adaptive (Ours) | 62.67 | 22.00 | 0.20 | 0.68 |
+| 40 | Baseline | 55.33 | 30.35 | 0.00 | 0.69 |
+| 40 | Rule-Based | 59.33 | 29.26 | 0.81 | 0.71 |
+| 40 | Adaptive (Ours) | 66.00 | 25.92 | 0.18 | 0.68 |
+| 50 | Baseline | 62.33 | 34.60 | 0.00 | 0.70 |
+| 50 | Rule-Based | 64.67 | 33.41 | 0.76 | 0.73 |
+| 50 | Adaptive (Ours) | 71.00 | 29.02 | 0.19 | 0.69 |
 
 Note: The weak foundation group shows low absolute success rates, but Adaptive (Ours) still achieves the highest relative improvement.
 

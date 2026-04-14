@@ -102,6 +102,15 @@ MASTERY_UPDATE = {
     "minor_error": -0.015,
     "major_error": -0.035,
 }
+# Updated (RQ3 - Weak Transfer Setting)
+# Based on Cognitive Load Theory & Evidence Reliability:
+# Careless > Average > Weak
+# Weak students have low transfer reliability -> conservative reflect scale
+REFLECT_SCALE_BY_STUDENT_TYPE: dict[str, float] = {
+    "Careless": 0.15,
+    "Average": 0.10,
+    "Weak": 0.05,
+}
 
 STRATEGIES = ["AB1_Baseline", "AB2_RuleBased", "AB3_PPO_Dynamic"]
 STUDENT_TYPES = ["Careless", "Weak", "Average"]
@@ -109,9 +118,9 @@ TARGET_SKILL = "polynomial"
 EXP2_STUDENT_TYPE_ORDER = ["Careless", "Average", "Weak"]
 EXP2_STRATEGIES = ["AB3_PPO_Dynamic"]
 EXP2_STUDENT_TYPE_ZH = {
-    "Careless": "拔尖組",
-    "Average": "固本組",
-    "Weak": "減C組",
+    "Careless": "Careless (B++, B+)",
+    "Average": "Average (B)",
+    "Weak": "Weak (C)",
 }
 EXP2_INTERPRETATION = {
     "Careless": "Mostly stayed on mainline with minimal remediation; already near mastery.",
@@ -646,7 +655,7 @@ def update_mastery(
     )
     if prerequisite_transfer_bonus > 0.0:
         # Keep transfer effect persistent by reflecting a fraction back into foundation profile.
-        reflect_scale = 0.60 if student.student_type == "Weak" else 0.25
+        reflect_scale = REFLECT_SCALE_BY_STUDENT_TYPE.get(student.student_type, 0.25)
         for key in PREREQUISITE_SUBSKILLS:
             student.subskill_mastery[key] = clamp(
                 student.subskill_mastery[key] + (prerequisite_transfer_bonus * reflect_scale),
@@ -2296,18 +2305,17 @@ def write_experiment2_learning_path_diagram(rows: list[dict[str, Any]]) -> str:
     if not ok:
         return str(target)
 
-    by_group = {str(r["student_group_zh"]): r for r in rows}
     group_order = [to_exp2_student_type_zh(st) for st in EXP2_STUDENT_TYPE_ORDER]
     fig, axes = plt.subplots(1, 3, figsize=(14, 4), sharey=True)
     threshold = 0.80
     x_curve = [0, 1, 2, 3, 4, 5]
 
     for ax, group in zip(axes, group_order):
-        if group == "拔尖組":
+        if group == "Careless (B++, B+)":
             y_curve = [0.65, 0.69, 0.72, 0.75, 0.78, 0.80]
             note = "主線為主，少量補救，\n快速接近門檻（示意）"
             rem_points = [3]
-        elif group == "固本組":
+        elif group == "Average (B)":
             y_curve = [0.52, 0.57, 0.61, 0.69, 0.76, 0.80]
             note = "主線與補救平衡，\n補救後有明顯提升（示意）"
             rem_points = [2, 3]

@@ -1,50 +1,34 @@
-﻿# Experiment 2 Student-Type Summary
+﻿# Experiment 2 學生分群摘要（AB3，MAX_STEPS = 40）
 
-| student_group | student_group_zh | max_steps | total_episodes | success_rate | avg_steps | avg_final_mastery | mainline_steps_mean | remediation_steps_mean | mainline_ratio | remediation_ratio | avg_reached_mastery_step | avg_mastery_gain |
-|---|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
-| careless | 拔尖組 | 40 | 100 | 94.0% | 16.82 | 0.801 | 11.57 | 5.25 | 0.688 | 0.312 | 15.51 | 0.149 |
-| average | 固本組 | 40 | 100 | 91.0% | 29.18 | 0.799 | 21.40 | 7.78 | 0.733 | 0.267 | 28.11 | 0.274 |
-| weak | 減C組 | 40 | 100 | 1.0% | 39.96 | 0.475 | 19.94 | 20.02 | 0.499 | 0.501 | 36.00 | 0.177 |
+## 一、實驗範圍
 
-## Experiment 2 Scope
+本實驗為固定條件下的機制分析（mechanism analysis），用於觀察 AB3 在不同學生群體上的資源分配差異，而非策略排名比較。
 
-The Experiment 2 runtime path is: `scripts/simulate_student.py` -> `main(output_mode="experiment2")` -> `run_batch_experiments(strategies=["AB3_PPO_Dynamic"], student_types=["Careless","Average","Weak"])` -> `simulate_episode()`.  
-This experiment is a mechanism analysis under a fixed condition, not a strategy-ranking study.
+- 策略：`AB3_PPO_Dynamic`（僅 AB3）
+- 步數上限：`MAX_STEPS = 40`
+- 成功定義：`final mastery >= 0.80`（達標 A）
+- 學生群體：`Careless (B++, B+)`、`Average (B)`、`Weak (C)`
 
-- Strategy: `AB3_PPO_Dynamic` only
-- MAX_STEPS: `40` (hard cap)
-- Success definition: final mastery `>= 0.80`
-- Student groups: 拔尖組（Careless）, 固本組（Average）, 減C組（Weak）
+## 二、核心結果表（最新）
 
-## Student-Type Interpretation
+| 學生群體 | MAX_STEPS | 總樣本數 | 成功率 | 平均步數 | 平均最終精熟度 | 主線步數均值 | 補救步數均值 | 主線比例 | 補救比例 | 平均達標步數 | 平均精熟增益 |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| Careless (B++, B+) | 40 | 100 | 93.0% | 17.22 | 0.7998 | 11.59 | 5.63 | 0.6731 | 0.3269 | 15.67 | 0.1537 |
+| Average (B) | 40 | 100 | 91.0% | 28.93 | 0.7939 | 21.49 | 7.44 | 0.7428 | 0.2572 | 27.84 | 0.2685 |
+| Weak (C) | 40 | 100 | 0.0% | 40.00 | 0.4301 | 19.24 | 20.76 | 0.4810 | 0.5190 | — | 0.1242 |
 
-- 拔尖組：Mostly stayed on mainline with minimal remediation; already near mastery.
-- 固本組：Received balanced mainline and remediation support; achieved the largest overall improvement.
-- 減C組：Spent significant time in remediation; improved but rarely reached stable A-level within 40 steps.
+## 三、分群解讀
 
-## Analysis
+- Careless (B++, B+)：以主線學習為主、補救需求較低，能在較少步數內接近達標。
+- Average (B)：主線與補救配置相對平衡，且取得三組中最高的平均精熟增益（0.2685）。
+- Weak (C)：投入大量補救步數（20.76），但在 40 步限制下仍難穩定達 A（成功率 0.0%）。
 
-1. Path Allocation Difference
-- AB3 does not apply one fixed path to all groups.
-- 拔尖組與固本組以主線為主（mainline ratio 分別為 `0.688`、`0.733`）。
-- 減C組幾乎主線/補救各半（`0.499 / 0.501`），顯示更多前置補救需求。
+## 四、重點分析
 
-2. Time Budget Difference
-- 拔尖組平均僅使用 `16.82` 步，且補救步數較少（`5.25`）。
-- 固本組平均 `29.18` 步，在有限步數內取得平衡配置（主線 `21.40`、補救 `7.78`）。
-- 減C組幾乎用滿 40 步（`39.96`），其中補救成本最高（`20.02` 步）。
+1. **路徑配置差異明確**：AB3 並非對所有群體套用同一路徑，而是依能力狀態調整主線與補救比例。  
+2. **時間預算壓力集中在 Weak 組**：Weak 幾乎用滿 40 步，且補救成本最高。  
+3. **主要受益群體為 Average**：在固定 40 步條件下，Average 同時具有高成功率與最高平均增益。  
 
-3. Benefit Difference
-- 固本組的 `avg_mastery_gain = 0.274` 為三組最高，是 40-step budget 下的主要受益者。
-- 減C組並非沒有進步（`avg_mastery_gain = 0.177`），但成功率僅 `1.0%`，表示在 40 步限制下從 C 穩定到 A 難度仍高。
-- 拔尖組成功率高（`94.0%`），但 gain 較小（`0.149`），符合高起點族群的邊際提升特性。
+## 五、結論
 
-## Conclusion
-
-Experiment 2 supports a clear mechanism-level conclusion:
-
-- Adaptive（AB3）不是同一種教法套用所有學生，而是依群體差異重分配主線與補救資源。
-- 固本組是固定 40 步預算下的最大受益者。
-- 減C組有明顯改善，但受限於高補救成本與步數上限，仍難在 40 步內穩定達 A。
-
-因此，Experiment 2 的重點是解釋 AB3 的資源配置機制，而非重新證明策略勝負。
+Experiment 2 支持以下機制層結論：AB3 會依學生群體差異動態重分配學習資源；其中 Average (B) 為固定 40 步預算下的主要受益者，而 Weak (C) 雖有進步，但受限於高補救成本與步數上限，仍難在同一預算內穩定達 A。

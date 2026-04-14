@@ -1542,6 +1542,173 @@ def plot_exp3_strategy_comparison(
     plt.close(fig)
 
 
+def plot_exp3_rq3_results(
+    summary_csv_path: str | Path,
+    output_dir: str | Path,
+    error_by_point: dict[tuple[int, str], float] | None = None,
+) -> None:
+    """Plot Experiment 3 RQ3 main figure only (Weak, strategy comparison, 30-100 budgets)."""
+    setup_report_style()
+    df = _read_csv_df(summary_csv_path)
+    if df.empty:
+        return
+
+    required = {
+        "MAX_STEPS",
+        "Strategy",
+        "Escape-from-C Rate (%)",
+    }
+    if not required.issubset(df.columns):
+        return
+
+    work = df.copy()
+    for c in ["MAX_STEPS", "Escape-from-C Rate (%)"]:
+        work[c] = pd.to_numeric(work[c], errors="coerce")
+    work = work.dropna(subset=["MAX_STEPS"]).copy()
+    if work.empty:
+        return
+
+    out_dir = Path(output_dir)
+    out_dir.mkdir(parents=True, exist_ok=True)
+    strategy_order = ["Baseline", "Rule-Based", "Adaptive (Ours)"]
+    color_map = {
+        "Baseline": "#1f77b4",
+        "Rule-Based": "#ff7f0e",
+        "Adaptive (Ours)": "#2ca02c",
+    }
+    budgets = sorted(work["MAX_STEPS"].astype(int).unique().tolist())
+    x = [int(v) for v in budgets]
+
+    fig, ax = plt.subplots(figsize=(9, 6))
+    max_x = int(max(x)) if x else 100
+    adaptive_last: tuple[int, float] | None = None
+
+    for strategy in strategy_order:
+        sub = work[work["Strategy"] == strategy].sort_values("MAX_STEPS")
+        if sub.empty:
+            continue
+        xs = sub["MAX_STEPS"].astype(int).tolist()
+        ys = sub["Escape-from-C Rate (%)"].astype(float).tolist()
+        lw = 2.5 if strategy == "Adaptive (Ours)" else 2.0
+        ax.plot(
+            xs,
+            ys,
+            marker="o",
+            linewidth=lw,
+            markersize=7,
+            label=strategy,
+            color=color_map[strategy],
+            alpha=1.0,
+        )
+        if strategy == "Adaptive (Ours)" and xs and ys:
+            adaptive_last = (int(xs[-1]), float(ys[-1]))
+
+    if adaptive_last is not None:
+        ax.annotate(
+            "Consistently highest performance",
+            adaptive_last,
+            textcoords="offset points",
+            xytext=(-65, 8),
+            fontsize=10,
+            fontweight="normal",
+            alpha=0.9,
+        )
+    ax.set_title("Success Rate vs MAX_STEPS", fontsize=16, pad=20)
+    ax.text(
+        0.02,
+        0.95,
+        "Student Group: Weak (C)",
+        transform=ax.transAxes,
+        ha="left",
+        va="top",
+        fontsize=10,
+        alpha=0.9,
+    )
+    ax.set_xlabel("MAX_STEPS", fontsize=12)
+    ax.set_ylabel("Success Rate 達標B (%)", fontsize=12)
+    ax.set_xticks(x)
+    ax.set_ylim(0, 100)
+    ax.tick_params(axis="both", labelsize=12)
+    ax.legend(
+        loc="upper left",
+        bbox_to_anchor=(0.0, 0.90),
+        fontsize=12,
+        frameon=True,
+        shadow=False,
+    )
+    ax.grid(True, alpha=0.28)
+    for spine in ["top", "right"]:
+        ax.spines[spine].set_visible(False)
+    fig.tight_layout()
+    fig.savefig(str(out_dir / "fig_multi_steps_success_rate.png"), dpi=300, bbox_inches="tight")
+    plt.close(fig)
+
+
+def plot_exp3_marginal_gain(
+    summary_csv_path: str | Path,
+    output_dir: str | Path,
+) -> None:
+    """Plot marginal success-rate gain for each +10 MAX_STEPS in Experiment 3."""
+    setup_report_style()
+    df = _read_csv_df(summary_csv_path)
+    if df.empty:
+        return
+
+    required = {"MAX_STEPS", "Strategy", "Escape-from-C Rate (%)"}
+    if not required.issubset(df.columns):
+        return
+
+    work = df.copy()
+    work["MAX_STEPS"] = pd.to_numeric(work["MAX_STEPS"], errors="coerce")
+    work["Escape-from-C Rate (%)"] = pd.to_numeric(work["Escape-from-C Rate (%)"], errors="coerce")
+    work = work.dropna(subset=["MAX_STEPS", "Escape-from-C Rate (%)"]).copy()
+    if work.empty:
+        return
+
+    out_dir = Path(output_dir)
+    out_dir.mkdir(parents=True, exist_ok=True)
+
+    strategy_order = ["Baseline", "Rule-Based", "Adaptive (Ours)"]
+    color_map = {
+        "Baseline": "#1f77b4",
+        "Rule-Based": "#ff7f0e",
+        "Adaptive (Ours)": "#2ca02c",
+    }
+
+    fig, ax = plt.subplots(figsize=(9, 6))
+    for strategy in strategy_order:
+        sub = work[work["Strategy"] == strategy].sort_values("MAX_STEPS")
+        if len(sub) < 2:
+            continue
+        steps = sub["MAX_STEPS"].astype(int).tolist()
+        success = sub["Escape-from-C Rate (%)"].astype(float).tolist()
+        x_vals = steps[1:]
+        y_vals = [success[i] - success[i - 1] for i in range(1, len(success))]
+        lw = 2.5 if strategy == "Adaptive (Ours)" else 2.0
+        ax.plot(
+            x_vals,
+            y_vals,
+            marker="o",
+            linewidth=lw,
+            markersize=7,
+            color=color_map[strategy],
+            label=strategy,
+        )
+
+    ax.set_title("Marginal Gain of Success Rate vs MAX_STEPS", fontsize=16, pad=20)
+    ax.set_xlabel("MAX_STEPS", fontsize=12)
+    ax.set_ylabel("Δ Success Rate (%)", fontsize=12)
+    ax.set_xticks([40, 50, 60, 70, 80, 90, 100])
+    ax.tick_params(axis="both", labelsize=12)
+    ax.legend(loc="upper right", fontsize=12, frameon=True, shadow=False)
+    ax.grid(True, alpha=0.3)
+    for spine in ["top", "right"]:
+        ax.spines[spine].set_visible(False)
+    fig.tight_layout()
+    fig.savefig(str(out_dir / "fig_exp3_marginal_gain.png"), dpi=300, bbox_inches="tight")
+    plt.close(fig)
+
+
 def plot_rag_intervention_results(
     output_dir: str = os.path.join(EXP4_BASE_DIR, "latest"),
 ) -> None:

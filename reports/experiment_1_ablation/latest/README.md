@@ -63,15 +63,15 @@ python scripts/run_experiment1_multisteps.py
 
 > `scripts/run_multi_steps_experiment.py` 已退役，不可用於正式 Experiment 1 結果產生。
 
-## 6. 最新結果摘要（Run: 20260413_100557）
+## 6. 最新結果摘要（Run: 20260414_141945）
 整體趨勢顯示，Adaptive（我們的方法）在各 `MAX_STEPS` 設定下皆呈現最高成功率，且以更少步數達成。  
 各步數預算下（Strategy-level）結果如下：
 
 | MAX_STEPS | Baseline Success | Rule-Based Success | Adaptive Success |
 |---:|---:|---:|---:|
-| 30 | 44.00% | 46.00% | 61.33% |
-| 40 | 54.67% | 58.33% | 70.33% |
-| 50 | 62.67% | 65.67% | 75.33% |
+| 30 | 45.00% | 45.33% | 62.67% |
+| 40 | 55.33% | 59.33% | 66.00% |
+| 50 | 62.33% | 64.67% | 71.00% |
 
 ## 7. 結果分析（Analysis）
 Adaptive 的主要優勢來自動態決策（dynamic routing）：能依當前作答與能力狀態調整主線與補救切換時機，降低錯配補救的機率。  
