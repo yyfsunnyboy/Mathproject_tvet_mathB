@@ -18,9 +18,17 @@
 # ==============================================================================
 
 import shutil
+import sys
 from pathlib import Path
 
-REPORTS_DIR = Path("reports")
+_STUDY_ROOT = Path(__file__).resolve().parents[1]
+if str(_STUDY_ROOT) not in sys.path:
+    sys.path.insert(0, str(_STUDY_ROOT))
+import study_paths as _study_paths  # noqa: E402
+
+_study_paths.ensure_repo_root_on_syspath()
+
+REPORTS_DIR = _study_paths.study_reports_root()
 EXP1_DIR = REPORTS_DIR / "experiment_1_ablation"
 EXP2_DIR = REPORTS_DIR / "experiment_2_ab3_student_types"
 EXP3_DIR = REPORTS_DIR / "experiment_3_weak_foundation_support"

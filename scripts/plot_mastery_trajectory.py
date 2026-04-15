@@ -18,9 +18,21 @@
 #   3. 輸出 PNG。
 # ==============================================================================
 import os
+import sys
+from pathlib import Path
+
 import pandas as pd
 import matplotlib.pyplot as plt
-from figure_style import (
+
+_STUDY = Path(__file__).resolve().parent / "adaptive_strategy_study"
+if str(_STUDY) not in sys.path:
+    sys.path.insert(0, str(_STUDY))
+import study_paths as _study_paths  # noqa: E402
+
+_SR = _study_paths.study_reports_root()
+_EXP2_LATEST = _SR / "experiment_2_ab3_student_types" / "latest"
+
+from figure_style import (  # noqa: E402
     add_threshold_line,
     color_for_strategy,
     save_figure,
@@ -76,11 +88,11 @@ def plot_by_student_type(df: pd.DataFrame) -> None:
     axes[0].set_ylabel("Mean Polynomial Mastery")
     fig.suptitle("Mastery Trajectory by Student Type")
     fig.tight_layout(rect=[0, 0, 1, 0.95])
-    save_figure(fig, "reports/fig_mastery_trajectory_by_student_type.png", dpi=300)
+    save_figure(fig, str(_EXP2_LATEST / "fig_mastery_trajectory_by_student_type.png"), dpi=300)
 
 
 def main() -> None:
-    input_path = "reports/mastery_trajectory.csv"
+    input_path = str(_EXP2_LATEST / "mastery_trajectory.csv")
     if not os.path.exists(input_path):
         raise FileNotFoundError(f"Missing input CSV: {input_path}")
 
@@ -105,7 +117,7 @@ def main() -> None:
     style_legend(ax, loc="upper left")
     fig = plt.gcf()
     fig.tight_layout()
-    save_figure(fig, "reports/fig_mastery_trajectory_overall.png", dpi=300)
+    save_figure(fig, str(_EXP2_LATEST / "fig_mastery_trajectory_overall.png"), dpi=300)
 
     # 圖2：Average 學生三策略平均 polynomial mastery vs step
     avg_df = df[df["student_type"] == "Average"]
@@ -126,13 +138,13 @@ def main() -> None:
     style_legend(ax, loc="upper left")
     fig = plt.gcf()
     fig.tight_layout()
-    save_figure(fig, "reports/fig_mastery_trajectory_average.png", dpi=300)
+    save_figure(fig, str(_EXP2_LATEST / "fig_mastery_trajectory_average.png"), dpi=300)
 
     plot_by_student_type(df)
 
-    print("Saved reports/fig_mastery_trajectory_overall.png")
-    print("Saved reports/fig_mastery_trajectory_average.png")
-    print("Saved reports/fig_mastery_trajectory_by_student_type.png")
+    print(f"Saved {_EXP2_LATEST / 'fig_mastery_trajectory_overall.png'}")
+    print(f"Saved {_EXP2_LATEST / 'fig_mastery_trajectory_average.png'}")
+    print(f"Saved {_EXP2_LATEST / 'fig_mastery_trajectory_by_student_type.png'}")
 
 
 if __name__ == "__main__":

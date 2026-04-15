@@ -6,7 +6,7 @@
 # Author: *Steve
 #
 # [Description]:
-#   讀取 reports/ 下實驗 CSV，產生 Exp1/2/3/4 等出版用圖表（消融、分群、掌握度、
+#   讀取 reports/adaptive_strategy_study/ 下實驗 CSV，產生 Exp1/2/3/4 等出版用圖表（消融、分群、掌握度、
 #   Weak foundation、RAG 延伸）；含目錄建立、樣式與 caption 檔輸出，供各 runner 共用。
 #
 # [Database Schema Usage]:
@@ -20,16 +20,24 @@
 import csv
 import os
 import shutil
+import sys
 from datetime import datetime
 from pathlib import Path
 from typing import Any
+
+_STUDY_ROOT = Path(__file__).resolve().parents[1]
+if str(_STUDY_ROOT) not in sys.path:
+    sys.path.insert(0, str(_STUDY_ROOT))
+import study_paths as _study_paths  # noqa: E402
+
+_study_paths.ensure_repo_root_on_syspath()
 
 import matplotlib.pyplot as plt
 import pandas as pd
 from matplotlib.colors import ListedColormap
 from matplotlib.patches import Patch
 
-REPORTS_DIR = "reports"
+REPORTS_DIR = str(_study_paths.study_reports_root())
 EXP1_BASE_DIR = os.path.join(REPORTS_DIR, "experiment_1_ablation")
 EXP2_BASE_DIR = os.path.join(REPORTS_DIR, "experiment_2_ab3_student_types")
 EXP3_BASE_DIR = os.path.join(REPORTS_DIR, "experiment_3_weak_foundation_support")
@@ -2805,11 +2813,11 @@ def main() -> None:
         mastery_paths = []
         caption_paths = []
 
-    print("Saved reports/experiment_1_ablation/fig_exp1_student_type_improved.png")
-    print("Saved reports/experiment_1_ablation/fig_multi_steps_success_rate.png")
-    print("Saved reports/experiment_1_ablation/fig_multi_steps_efficiency.png")
-    print("Saved reports/experiment_2_ab3_student_types/latest/experiment2_student_type_summary.csv")
-    print("Saved reports/experiment_2_ab3_student_types/latest/experiment2_policy_behavior_summary.png")
+    print("Saved reports/adaptive_strategy_study/experiment_1_ablation/fig_exp1_student_type_improved.png")
+    print("Saved reports/adaptive_strategy_study/experiment_1_ablation/fig_multi_steps_success_rate.png")
+    print("Saved reports/adaptive_strategy_study/experiment_1_ablation/fig_multi_steps_efficiency.png")
+    print("Saved reports/adaptive_strategy_study/experiment_2_ab3_student_types/latest/experiment2_student_type_summary.csv")
+    print("Saved reports/adaptive_strategy_study/experiment_2_ab3_student_types/latest/experiment2_policy_behavior_summary.png")
     for p in mastery_paths:
         print(f"Saved {p.replace(os.sep, '/')}")
     for p in caption_paths:

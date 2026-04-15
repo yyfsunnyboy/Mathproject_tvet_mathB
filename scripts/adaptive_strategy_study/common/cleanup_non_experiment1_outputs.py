@@ -21,11 +21,18 @@ from __future__ import annotations
 
 import fnmatch
 import shutil
+import sys
 from datetime import datetime
 from pathlib import Path
 
+_STUDY_ROOT = Path(__file__).resolve().parents[1]
+if str(_STUDY_ROOT) not in sys.path:
+    sys.path.insert(0, str(_STUDY_ROOT))
+import study_paths as _study_paths  # noqa: E402
 
-REPORTS_DIR = Path("reports")
+_study_paths.ensure_repo_root_on_syspath()
+
+REPORTS_DIR = _study_paths.study_reports_root()
 EXP2_DIR = REPORTS_DIR / "experiment_2_ab3_student_types"
 
 # Only clean these root-level file patterns.

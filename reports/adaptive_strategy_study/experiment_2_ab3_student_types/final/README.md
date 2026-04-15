@@ -52,8 +52,8 @@ python scripts/simulate_student.py
 ```
 
 輸出位置：
-- Run: `reports/experiment_2_ab3_student_types/runs/20260413_131235/`
-- Latest: `reports/experiment_2_ab3_student_types/latest/`
+- Run: `reports/adaptive_strategy_study/experiment_2_ab3_student_types/runs/20260413_131235/`
+- Latest: `reports/adaptive_strategy_study/experiment_2_ab3_student_types/latest/`
 
 ## 6. 最新結果摘要（Run: 20260413_131235）
 

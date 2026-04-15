@@ -1,14 +1,7 @@
 from __future__ import annotations
 
-import os
-import sys
-
-# Bootstrap: parent `scripts/` must be on sys.path for `import simulate_student`
-_scripts_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-if _scripts_dir not in sys.path:
-    sys.path.insert(0, _scripts_dir)
-
 import csv
+import sys
 import hashlib
 import os
 import random
@@ -19,13 +12,22 @@ from typing import Any
 
 import pandas as pd
 
-import simulate_student
+_REPO_ROOT = Path(__file__).resolve().parents[2]
+_STUDY_ROOT = _REPO_ROOT / "scripts" / "adaptive_strategy_study"
+if str(_STUDY_ROOT) not in sys.path:
+    sys.path.insert(0, str(_STUDY_ROOT))
+import study_paths as _study_paths  # noqa: E402
 
-EXP3_BASE = Path('reports/experiment_3_weak_foundation_support')
-RUNS_DIR = EXP3_BASE / 'runs'
-LATEST_DIR = EXP3_BASE / 'latest'
-AUDIT_MD = Path('reports/debug_exp3_60_vs_70.md')
-AUDIT_CSV = Path('reports/debug_exp3_60_vs_70.csv')
+_study_paths.ensure_exp2_mechanism_on_syspath()
+
+import simulate_student  # noqa: E402
+
+_EXP3_REPORTS = _study_paths.study_reports_root() / "experiment_3_weak_foundation_support"
+EXP3_BASE = _EXP3_REPORTS
+RUNS_DIR = EXP3_BASE / "runs"
+LATEST_DIR = EXP3_BASE / "latest"
+AUDIT_MD = _study_paths.study_reports_root() / "debug_exp3_60_vs_70.md"
+AUDIT_CSV = _study_paths.study_reports_root() / "debug_exp3_60_vs_70.csv"
 
 THRESHOLD = 0.60
 TARGET_MAX_STEPS = [60, 70]

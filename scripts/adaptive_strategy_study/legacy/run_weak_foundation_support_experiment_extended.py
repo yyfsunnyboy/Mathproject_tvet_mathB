@@ -26,16 +26,26 @@ import os
 import random
 import shutil
 import statistics
+import sys
 from pathlib import Path
 from typing import Any
 
-import matplotlib.pyplot as plt
-import pandas as pd
+_STUDY_ROOT = Path(__file__).resolve().parents[1]
+if str(_STUDY_ROOT) not in sys.path:
+    sys.path.insert(0, str(_STUDY_ROOT))
+import study_paths as _study_paths  # noqa: E402
 
-import simulate_student
-from plot_experiment_results import create_timestamped_run_dir, setup_report_style
+_study_paths.ensure_repo_root_on_syspath()
+_study_paths.ensure_exp2_mechanism_on_syspath()
+_study_paths.ensure_common_on_syspath()
 
-REPORTS_DIR = Path("reports")
+import matplotlib.pyplot as plt  # noqa: E402
+import pandas as pd  # noqa: E402
+
+import simulate_student  # noqa: E402
+from plot_experiment_results import create_timestamped_run_dir, setup_report_style  # noqa: E402
+
+REPORTS_DIR = _study_paths.study_reports_root()
 EXP3_DIR = REPORTS_DIR / "experiment_3_weak_foundation_support"
 LATEST_DIR = EXP3_DIR / "latest"
 EXP3_OUTPUT_DIR_ENV = "MATHPROJECT_EXP3_OUTPUT_DIR"

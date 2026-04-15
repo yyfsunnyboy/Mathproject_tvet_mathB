@@ -25,6 +25,16 @@
             transition: all 0.2s ease;
         }
         .unit-btn:hover { background: #d96f13; transform: translateY(-1px); }
+
+        /* Units not yet tuned: keep clickable, but visually de-emphasize */
+        .unit-btn.unit-untuned {
+            background: #9e9e9e;
+            color: #fff;
+        }
+        .unit-btn.unit-untuned:hover {
+            background: #8a8a8a;
+            transform: translateY(-1px);
+        }
         .back-link { display: inline-block; margin-top: 16px; color: #007bff; text-decoration: none; }
         .back-link:hover { text-decoration: underline; }
 
@@ -74,7 +84,7 @@
             <div class="unit-grid">
                 {% for unit in units %}
                 <button
-                    class="unit-btn adaptive-learning-entry"
+                    class="unit-btn adaptive-learning-entry{% if unit.label != '多項式四則運算' %} unit-untuned{% endif %}"
                     data-skill-id="{{ unit.skill_id }}"
                     data-unit-name="{{ unit.label }}"
                 >

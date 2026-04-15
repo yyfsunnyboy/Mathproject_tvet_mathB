@@ -72,13 +72,13 @@ AB3 does not apply one fixed learning path. It adapts remediation/mainline alloc
 
 ---
 Data sources used in this document:
-- `reports/experiment_2_ab3_student_types/latest/experiment2_student_type_summary.csv`
-- `reports/experiment_2_ab3_student_types/latest/ab3_student_type_summary.csv`
-- `reports/experiment_2_ab3_student_types/latest/ab3_student_type_detailed_summary.csv`
-- `reports/experiment_2_ab3_student_types/latest/ab3_failure_breakpoint_summary.csv`
-- `reports/experiment_2_ab3_student_types/latest/mastery_trajectory.csv`
-- `reports/experiment_2_ab3_student_types/figure_caption_experiment2_summary.md`
-- `reports/experiment_2_ab3_student_types/figure_caption_mastery_average.md`
-- `reports/experiment_2_ab3_student_types/figure_caption_mastery_episode.md`
+- `reports/adaptive_strategy_study/experiment_2_ab3_student_types/latest/experiment2_student_type_summary.csv`
+- `reports/adaptive_strategy_study/experiment_2_ab3_student_types/latest/ab3_student_type_summary.csv`
+- `reports/adaptive_strategy_study/experiment_2_ab3_student_types/latest/ab3_student_type_detailed_summary.csv`
+- `reports/adaptive_strategy_study/experiment_2_ab3_student_types/latest/ab3_failure_breakpoint_summary.csv`
+- `reports/adaptive_strategy_study/experiment_2_ab3_student_types/latest/mastery_trajectory.csv`
+- `reports/adaptive_strategy_study/experiment_2_ab3_student_types/figure_caption_experiment2_summary.md`
+- `reports/adaptive_strategy_study/experiment_2_ab3_student_types/figure_caption_mastery_average.md`
+- `reports/adaptive_strategy_study/experiment_2_ab3_student_types/figure_caption_mastery_episode.md`
 - `scripts/simulate_student.py`
 - `/mnt/data/experiments_overview.md` (Unable to recover from current outputs)

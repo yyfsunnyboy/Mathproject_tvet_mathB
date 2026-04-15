@@ -20,13 +20,23 @@
 
 import csv
 import random
+import sys
 from collections import Counter
 from pathlib import Path
 
-import simulate_student
-from plot_experiment_results import plot_rag_v2_enhanced_results
+_STUDY_ROOT = Path(__file__).resolve().parent / "adaptive_strategy_study"
+if str(_STUDY_ROOT) not in sys.path:
+    sys.path.insert(0, str(_STUDY_ROOT))
+import study_paths as _study_paths  # noqa: E402
 
-REPORTS_DIR = Path("reports")
+_study_paths.ensure_repo_root_on_syspath()
+_study_paths.ensure_exp2_mechanism_on_syspath()
+_study_paths.ensure_common_on_syspath()
+
+import simulate_student  # noqa: E402
+from plot_experiment_results import plot_rag_v2_enhanced_results  # noqa: E402
+
+REPORTS_DIR = _study_paths.study_reports_root()
 EXP5_DIR = REPORTS_DIR / "experiment_5_rag_enhanced"
 
 FOUNDATION_EXTRA_STEPS = 20

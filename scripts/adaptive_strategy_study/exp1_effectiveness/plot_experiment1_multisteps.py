@@ -19,13 +19,21 @@
 # ==============================================================================
 from __future__ import annotations
 
+import sys
 from pathlib import Path
 import shutil
+
+_STUDY_ROOT = Path(__file__).resolve().parents[1]
+if str(_STUDY_ROOT) not in sys.path:
+    sys.path.insert(0, str(_STUDY_ROOT))
+import study_paths as _study_paths  # noqa: E402
+
+_study_paths.ensure_repo_root_on_syspath()
 
 import matplotlib.pyplot as plt
 import pandas as pd
 from matplotlib.patches import Patch
-from core.experiment_config import (
+from core.experiment_config import (  # noqa: E402
     display_student_group,
     student_group_display_order,
     validate_group_config,
@@ -477,7 +485,7 @@ def plot_student_type_improved(df: pd.DataFrame, output_dir: str | Path) -> None
     plt.close(fig)
 
     # Keep canonical path refreshed for quick access outside run folders.
-    base_fig = Path("reports/experiment_1_ablation/fig_exp1_student_type_improved.png")
+    base_fig = _study_paths.study_reports_root() / "experiment_1_ablation" / "fig_exp1_student_type_improved.png"
     base_fig.parent.mkdir(parents=True, exist_ok=True)
     try:
         shutil.copy2(run_fig, base_fig)

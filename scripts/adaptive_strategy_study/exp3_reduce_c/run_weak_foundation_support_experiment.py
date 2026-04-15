@@ -24,12 +24,22 @@ import csv
 import os
 import random
 import statistics
+import sys
 from collections import Counter
 from pathlib import Path
 from typing import Any
 
-import simulate_student
-from plot_experiment_results import (
+_STUDY_ROOT = Path(__file__).resolve().parents[1]
+if str(_STUDY_ROOT) not in sys.path:
+    sys.path.insert(0, str(_STUDY_ROOT))
+import study_paths as _study_paths  # noqa: E402
+
+_study_paths.ensure_repo_root_on_syspath()
+_study_paths.ensure_exp2_mechanism_on_syspath()
+_study_paths.ensure_common_on_syspath()
+
+import simulate_student  # noqa: E402
+from plot_experiment_results import (  # noqa: E402
     create_timestamped_run_dir,
     plot_exp3_multiseed_results,
     plot_exp3_marginal_cost,
@@ -38,7 +48,7 @@ from plot_experiment_results import (
     sync_run_to_latest,
 )
 
-REPORTS_DIR = Path("reports")
+REPORTS_DIR = _study_paths.study_reports_root()
 EXP3_DIR = REPORTS_DIR / "experiment_3_weak_foundation_support"
 EXP3_OUTPUT_DIR_ENV = "MATHPROJECT_EXP3_OUTPUT_DIR"
 

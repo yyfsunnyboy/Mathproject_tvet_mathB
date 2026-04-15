@@ -1,7 +1,8 @@
 """
 DEPRECATED: Do not use this script for official Experiment 1 results.
 
-Use scripts/run_experiment1_multisteps.py instead (this file lives under scripts/temp/).
+Use scripts/adaptive_strategy_study/exp1_effectiveness/run_experiment1_multisteps.py instead
+(this file lives under scripts/adaptive_strategy_study/legacy/).
 Reason: Experiment 1 reproducibility and config policy are centralized there
 (condition-wise seed, unified sample size source, explicit experiment profile,
 and consistent MAX_STEPS hard-cap semantics).
@@ -13,9 +14,9 @@ import sys
 
 
 DEPRECATION_MESSAGE = (
-    "[DEPRECATED] scripts/temp/run_multi_steps_experiment.py is no longer an official "
+    "[DEPRECATED] scripts/adaptive_strategy_study/legacy/run_multi_steps_experiment.py is not an official "
     "Experiment 1 runner.\n"
-    "Use: python scripts/run_experiment1_multisteps.py\n"
+    "Use: python scripts/adaptive_strategy_study/exp1_effectiveness/run_experiment1_multisteps.py\n"
     "Reason: to prevent seed/sample-size/profile policy divergence and "
     "non-reproducible outputs."
 )
