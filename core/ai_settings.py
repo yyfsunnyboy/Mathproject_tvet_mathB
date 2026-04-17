@@ -195,48 +195,84 @@ def _resolve_role_preset_from_strategy(role: str, strategy: str, default_provide
     if strategy == "cloud_first":
         return _fallback_preset_for_provider(role, "google")
 
-    # hybrid_balanced: keep current config tendency first, then provider fallback
+    # hybrid_balanced:
+    if strategy == "hybrid_balanced" and role == "tutor":
+        # Hybrid 模式下，tutor 必須是 Gemini
+        return _fallback_preset_for_provider(role, "google")
+
+    # keep current config tendency first, then provider fallback
     cfg_key = _config_role_to_preset_key(role)
     if cfg_key and cfg_key in Config.CODER_PRESETS:
         return cfg_key
     return _fallback_preset_for_provider(role, default_provider)
 
 
-def get_effective_model_preset_key(role: str) -> str | None:
+def get_effective_model_config(role: str) -> dict[str, Any]:
     normalized_role = role if role in AI_ROLE_KEYS else "default"
     settings = get_ai_settings_snapshot()
-    role_overrides = settings["ai_model_roles"]
+    ai_mode = settings.get("ai_global_strategy", "unknown")
+    role_overrides = settings.get("ai_model_roles", {})
 
+    preset_key = None
+    source = "unknown"
+
+    # Step 1: Check DB override
     override = role_overrides.get(normalized_role)
     if override in Config.CODER_PRESETS:
-        return override
+        preset_key = override
+        source = "db_override"
 
-    strategy_key = _resolve_role_preset_from_strategy(
-        normalized_role,
-        settings["ai_global_strategy"],
-        settings["ai_default_provider"],
-    )
-    if strategy_key in Config.CODER_PRESETS:
-        return strategy_key
+    # Step 2: Strategy fallback
+    if not preset_key:
+        strategy_key = _resolve_role_preset_from_strategy(
+            normalized_role,
+            ai_mode,
+            settings.get("ai_default_provider", "local"),
+        )
+        if strategy_key in Config.CODER_PRESETS:
+            preset_key = strategy_key
+            source = "global_strategy"
 
-    cfg_key = _config_role_to_preset_key(normalized_role)
-    if cfg_key in Config.CODER_PRESETS:
-        return cfg_key
+    # Step 3: Hardcoded defaults in config.py
+    if not preset_key:
+        cfg_key = _config_role_to_preset_key(normalized_role)
+        if cfg_key in Config.CODER_PRESETS:
+            preset_key = cfg_key
+            source = "config_hardcoded"
 
-    if Config.DEFAULT_CODER_PRESET in Config.CODER_PRESETS:
-        return Config.DEFAULT_CODER_PRESET
+    # Step 4: System default preset fallback
+    if not preset_key:
+        if Config.DEFAULT_CODER_PRESET in Config.CODER_PRESETS:
+            preset_key = Config.DEFAULT_CODER_PRESET
+            source = "system_default"
+        else:
+            preset_key = next(iter(Config.CODER_PRESETS.keys()), None)
+            source = "random_fallback"
 
-    return next(iter(Config.CODER_PRESETS.keys()), None)
-
-
-def get_effective_model_config(role: str) -> dict[str, Any]:
-    preset_key = get_effective_model_preset_key(role)
     if preset_key and preset_key in Config.CODER_PRESETS:
         cfg = dict(Config.CODER_PRESETS[preset_key])
         cfg["preset_key"] = preset_key
+        
+        provider = cfg.get("provider", "unknown")
+        model_name = cfg.get("model", "unknown")
+        
+        if has_app_context():
+            current_app.logger.info(
+                f"[AI CONFIG RESOLVE] role={role} mode={ai_mode} source={source} "
+                f"provider={provider} model={model_name}"
+            )
+            
         return cfg
 
+    # Extreme fallback
     base = Config.MODEL_ROLES.get(role) or Config.MODEL_ROLES.get("default") or {}
+    
+    if has_app_context():
+        current_app.logger.info(
+            f"[AI CONFIG RESOLVE] role={role} mode={ai_mode} source=extreme_fallback "
+            f"provider={base.get('provider', 'unknown')} model={base.get('model', 'unknown')}"
+        )
+        
     return dict(base)
 
 

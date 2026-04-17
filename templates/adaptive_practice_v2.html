@@ -293,13 +293,7 @@
     .assistant-input { display:grid; grid-template-columns:1fr 110px; gap:8px; }
     .assistant-input input { min-height:44px; }
     #assistantSendBtn { background:#16a34a; }
-    .adv-rag-provider-row { display:flex; align-items:center; justify-content:space-between; gap:8px; margin:0 0 10px; font-size:13px; }
-    .adv-rag-provider-label { color:#31557d; font-weight:700; white-space:nowrap; }
-    .adv-rag-provider-toggle { display:inline-flex; border:1px solid #b9d7f2; border-radius:8px; overflow:hidden; background:#f8fbff; }
-    .adv-rag-provider-btn { border:0; border-right:1px solid #b9d7f2; border-radius:0; background:transparent; color:#2563a8; padding:6px 9px; font-size:12px; cursor:pointer; }
-    .adv-rag-provider-btn:last-child { border-right:0; }
-    .adv-rag-provider-btn.active { background:#2b83bd; color:#fff; }
-    .adv-rag-provider-note { margin:-4px 0 10px; color:#60708c; font-size:12px; line-height:1.45; }
+
     .nav-panel { display:flex; flex-direction:column; justify-content:flex-start; }
     .nav-status-row { display:flex; gap:10px; margin-top:8px; }
     .nav-mini-box {
@@ -610,7 +604,7 @@
         <div class="main-right-column">
           <section class="panel assistant-card idle ai-assistant-panel" id="assistantCard">
             <div>
-              <div class="assistant-title">AI 助教（這題專用）</div>
+              <div class="assistant-title"><span id="tutor-ai-status">AI 助教（載入中...）</span></div>
               <div class="assistant-rag-scope" id="ragScopeBadge">問問題會使用 RAG；AI 檢查手寫只讀取白板過程。</div>
               <div class="assistant-summary-card neutral" id="assistantSummaryCard" data-state="neutral">
                 <div class="assistant-summary-title">系統診斷說明</div>
@@ -624,14 +618,7 @@
                 <button type="button" data-guide="提醒我這類題最容易犯的錯誤。">提醒易錯點</button>
               </div>
               <div style="height:10px;"></div>
-              <div class="adv-rag-provider-row">
-                <span class="adv-rag-provider-label">回答來源</span>
-                <div class="adv-rag-provider-toggle" role="group" aria-label="選擇 RAG 回答來源">
-                  <button type="button" class="adv-rag-provider-btn active" data-provider="local" onclick="setAdvRagProvider('local')">本地模型</button>
-                  <button type="button" class="adv-rag-provider-btn" data-provider="google" onclick="setAdvRagProvider('google')">API Key</button>
-                </div>
-              </div>
-              <div class="adv-rag-provider-note" id="adv-rag-provider-note">使用 config.py 的 tutor 本地模型回答。</div>
+
               <div class="assistant-input">
                 <input id="assistantInput" type="text" placeholder="只問本題相關問題，例如：我第一步該先做什麼？">
                 <button class="success" id="assistantSendBtn" type="button">詢問助教</button>
@@ -1789,8 +1776,7 @@
             question_text: state.currentQuestionText,
             question_context: state.currentContext,
             family_id: state.currentFamilyId,
-            subskill_nodes: state.currentSubskills,
-            provider: advRagProvider,
+            subskill_nodes: state.currentSubskills
           })
         });
         const data = await response.json();
@@ -2457,23 +2443,6 @@
     analyzeCanvasBtn.disabled = true;
 
     // === RAG-backed assistant chat ===
-    let advRagProvider = localStorage.getItem('advRagProvider') || 'local';
-
-    function setAdvRagProvider(provider) {
-        advRagProvider = provider === 'google' ? 'google' : 'local';
-        localStorage.setItem('advRagProvider', advRagProvider);
-
-        document.querySelectorAll('.adv-rag-provider-btn').forEach((btn) => {
-            btn.classList.toggle('active', btn.dataset.provider === advRagProvider);
-        });
-
-        const note = document.getElementById('adv-rag-provider-note');
-        if (note) {
-            note.innerText = advRagProvider === 'google'
-                ? '使用 GEMINI_API_KEY 呼叫 Google API 回答。'
-                : '使用 config.py 的 tutor 本地模型回答。';
-        }
-    }
 
     async function performAdvRagSearch(queryOverride = "") {
         const query = (queryOverride || '').trim();
@@ -2500,17 +2469,47 @@
             });
 
             const searchParams = await searchResp.json();
+            console.log("[AI TUTOR META]", searchParams);
+            
             if (searchParams.error) throw new Error(searchParams.error);
+
+            function formatRetrievalChannel(params) {
+                let rawChannel = params.retrieval_channel || params.retrieval_mode || params.rag_mode || params.search_mode || params.pipeline || params.source || params.used_pipeline;
+                if (!rawChannel && params.results && params.results.length > 0) {
+                    rawChannel = params.results[0].routing || params.results[0].source || params.results[0].pipeline || params.results[0].retrieval_channel;
+                }
+
+                const isFallback = (params.fallback_reason || params.advanced_rag_ready === false || params.used_pipeline === 'naive' || String(params.fallback_reason).length > 0);
+
+                if (!rawChannel) {
+                    if (isFallback) return "Naive RAG（Fallback）";
+                    return "未回報";
+                }
+
+                const lower = String(rawChannel).toLowerCase();
+                if (lower === "fallback_naive" || lower === "fallback_to_naive" || lower.includes("fallback")) {
+                    return "Naive RAG（Fallback）";
+                }
+                
+                if (lower === "advanced") return "Advanced RAG";
+                if (lower === "naive") {
+                    return isFallback ? "Naive RAG（Fallback）" : "Naive RAG";
+                }
+                if (lower === "hybrid") return "Hybrid RAG";
+
+                // 若都是未知，但被戳上 fallback 就標記
+                if (isFallback && lower === "unknown") return "Naive RAG（Fallback）";
+                
+                return lower === "unknown" ? "未回報" : rawChannel;
+            }
 
             const results = searchParams.results || [];
             if (buttonsDiv) buttonsDiv.innerHTML = '';
 
-            let firstRouting = "";
+            let channelDisplay = formatRetrievalChannel(searchParams);
             let retrievedSkillsForChat = [];
 
             if (results.length > 0) {
-                firstRouting = results[0].routing || "Unknown";
-                
                 results.forEach((item, index) => {
                     const btn = document.createElement('button');
                     const chineseName = item.chinese_name || item.skill_id;
@@ -2551,9 +2550,9 @@
                 });
                 if (resultsDiv) resultsDiv.style.display = 'block';
                 
-                if (firstRouting) {
+                if (channelDisplay !== "未回報") {
                     if (routingBadge) {
-                        routingBadge.innerText = `檢索通道：${firstRouting}`;
+                        routingBadge.innerText = `檢索通道：${channelDisplay}`;
                         routingBadge.style.display = 'inline-block';
                     }
                 }
@@ -2566,15 +2565,14 @@
                         query: query,
                         question_text: state.currentQuestionText || document.getElementById('questionText')?.innerText || '',
                         family_id: state.currentFamilyId || '',
-                        retrieved_skills: retrievedSkillsForChat,
-                        provider: advRagProvider
+                        retrieved_skills: retrievedSkillsForChat
                     })
                 });
 
                 const chatParams = await chatResp.json();
                 if (chatParams.error) throw new Error(chatParams.error);
                 if (chatParams.reply) {
-                    const routingNote = firstRouting ? `檢索通道：${firstRouting}\n\n` : "";
+                    const routingNote = channelDisplay !== "未回報" ? `檢索通道：${channelDisplay}\n\n` : "";
                     setMessageContent(thinking, `${routingNote}${chatParams.reply}`);
                     if (window.MathJax) {
                         window.MathJax.typesetPromise([thinking]).catch(e => console.error("MathJax Error", e));
@@ -2597,7 +2595,59 @@
             scrollChatToBottom();
         }
     }
-    setAdvRagProvider(advRagProvider);
+
+
+    // AI 助教標題動態更新邏輯
+    async function fetchRuntimeAIStatus() {
+        try {
+            const res = await fetch('/api/runtime_ai_status');
+            const data = await res.json();
+            return data;
+        } catch (e) {
+            console.error('[AI STATUS] failed to fetch runtime ai status', e);
+            return null;
+        }
+    }
+
+    function formatMode(mode) {
+        if (!mode) return "Unknown";
+        if (mode === "edge") return "Edge";
+        if (mode === "cloud") return "Cloud";
+        if (mode === "hybrid") return "Hybrid";
+        return mode.charAt(0).toUpperCase() + mode.slice(1);
+    }
+
+    async function updateTutorAIStatus() {
+        const el = document.getElementById('tutor-ai-status');
+        if (!el) return;
+
+        try {
+            const data = await fetchRuntimeAIStatus();
+            if (data && data.success && data.tutor_model) {
+                const formattedMode = formatMode(data.ai_mode);
+                el.innerText = `AI 助教（${data.tutor_model}｜${formattedMode}）`;
+                
+                // 設定顏色提示
+                if (data.ai_mode === 'edge') {
+                    el.style.color = '#10b981'; // Tailwind emerald-500
+                } else if (data.ai_mode === 'cloud') {
+                    el.style.color = '#3b82f6'; // Tailwind blue-500
+                } else if (data.ai_mode === 'hybrid') {
+                    el.style.color = '#f59e0b'; // Tailwind amber-500
+                }
+            } else {
+                el.innerText = `AI 助教（無法取得狀態）`;
+                el.style.color = '#ef4444';
+            }
+        } catch (e) {
+            el.innerText = `AI 助教（無法取得狀態）`;
+            el.style.color = '#ef4444';
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        updateTutorAIStatus();
+    });
 
   </script>
 </body>

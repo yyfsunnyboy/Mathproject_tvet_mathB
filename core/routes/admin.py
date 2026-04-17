@@ -52,6 +52,7 @@ from core.data_importer import import_excel_to_db
 from config import Config
 # [Fix] 確保 SkillPrerequisites 被引用
 from models import db, SkillInfo, SkillCurriculum, User, TextbookExample, Progress, SkillGenCodePrompt, SkillPrerequisites, init_db, StudentUploadedQuestion
+from core.models.prompt_template import PromptTemplate
 
 # ==========================================
 # Background Tasks (背景任務)
@@ -1161,6 +1162,105 @@ def _build_ai_settings_payload(prompt, updated_at):
         'ai_model_roles': model_roles,
         'available_models': available_models,
     }
+
+
+def _parse_required_variables(raw_value):
+    if not raw_value:
+        return []
+    return [item.strip() for item in str(raw_value).split(',') if item and item.strip()]
+
+
+@core_bp.route('/admin/ai_prompt_settings/list')
+@login_required
+def list_prompt_templates():
+    if not (current_user.is_admin or current_user.role == 'teacher'):
+        return jsonify({'success': False, 'message': 'Permission denied'}), 403
+    try:
+        templates = (
+            PromptTemplate.query.order_by(PromptTemplate.prompt_key.asc()).all()
+        )
+        rows = []
+        for item in templates:
+            rows.append({
+                'prompt_key': item.prompt_key,
+                'title': item.title,
+                'category': item.category,
+                'description': item.description,
+                'usage_context': item.usage_context,
+                'used_in': item.used_in,
+                'example_trigger': item.example_trigger,
+                'content': item.content,
+                'default_content': item.default_content,
+                'required_variables': item.required_variables or '',
+                'is_active': bool(item.is_active),
+                'updated_at': item.updated_at.strftime('%Y-%m-%d %H:%M:%S') if item.updated_at else None,
+            })
+        return jsonify({'success': True, 'prompts': rows, 'items': rows})
+    except Exception as e:
+        return jsonify({'success': False, 'message': str(e)}), 500
+
+
+@core_bp.route('/admin/ai_prompt_settings/prompt/update', methods=['POST'])
+@login_required
+def update_prompt_template_content():
+    if not (current_user.is_admin or current_user.role == 'teacher'):
+        return jsonify({'success': False, 'message': 'Permission denied'}), 403
+    try:
+        data = request.get_json(silent=True) or {}
+        prompt_key = str(data.get('prompt_key', '')).strip()
+        content = str(data.get('content', '')).strip()
+        if not prompt_key:
+            return jsonify({'success': False, 'message': 'prompt_key is required'}), 400
+        if not content:
+            return jsonify({'success': False, 'message': 'content cannot be empty'}), 400
+
+        template = PromptTemplate.query.filter_by(prompt_key=prompt_key).first()
+        if not template:
+            return jsonify({'success': False, 'message': f'Prompt not found: {prompt_key}'}), 404
+
+        required_vars = _parse_required_variables(template.required_variables)
+        missing = [var_name for var_name in required_vars if f'{{{var_name}}}' not in content]
+        if missing:
+            return jsonify({
+                'success': False,
+                'message': f"Missing required variables: {', '.join(missing)}",
+            }), 400
+
+        template.content = content
+        template.updated_at = datetime.utcnow()
+        db.session.commit()
+        return jsonify({'success': True, 'message': 'Prompt template updated'})
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'success': False, 'message': str(e)}), 500
+
+
+@core_bp.route('/admin/ai_prompt_settings/prompt/reset', methods=['POST'])
+@login_required
+def reset_prompt_template_content():
+    if not (current_user.is_admin or current_user.role == 'teacher'):
+        return jsonify({'success': False, 'message': 'Permission denied'}), 403
+    try:
+        data = request.get_json(silent=True) or {}
+        prompt_key = str(data.get('prompt_key', '')).strip()
+        if not prompt_key:
+            return jsonify({'success': False, 'message': 'prompt_key is required'}), 400
+
+        template = PromptTemplate.query.filter_by(prompt_key=prompt_key).first()
+        if not template:
+            return jsonify({'success': False, 'message': f'Prompt not found: {prompt_key}'}), 404
+
+        template.content = template.default_content
+        template.updated_at = datetime.utcnow()
+        db.session.commit()
+        return jsonify({
+            'success': True,
+            'message': 'Prompt template reset',
+            'content': template.content,
+        })
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'success': False, 'message': str(e)}), 500
 
 
 @core_bp.route('/admin/ai_prompt_settings/get')

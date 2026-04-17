@@ -21,6 +21,7 @@ from flask import current_app
 import PIL.Image
 import io
 from core.ai_wrapper import get_ai_client
+from core.prompts.registry import render_prompt
 
 # 初始化 gemini_model 為 None，避免 NameError
 gemini_model = None
@@ -247,6 +248,51 @@ DEFAULT_CHAT_PROMPT = """
   ]
 }
 """
+
+
+def _render_student_visible_prompt(prompt_key, **kwargs):
+    """Render DB-configurable student-facing prompt with strict fallback."""
+    try:
+        return render_prompt(prompt_key, **kwargs)
+    except Exception:
+        if prompt_key == "concept_prompt":
+            return (
+                f"Please explain the core concept in a short way.\n"
+                f"Question: {kwargs.get('question', '')}\n"
+                f"Context: {kwargs.get('context', '')}"
+            )
+        if prompt_key == "mistake_prompt":
+            return (
+                f"Please identify likely mistakes and give one correction hint.\n"
+                f"Question: {kwargs.get('question', '')}\n"
+                f"Student answer: {kwargs.get('student_answer', '')}\n"
+                f"Context: {kwargs.get('context', '')}"
+            )
+        return (
+            f"Please guide the student with one next step, no final answer.\n"
+            f"Question: {kwargs.get('question', '')}\n"
+            f"Context: {kwargs.get('context', '')}"
+        )
+
+
+def _build_default_chat_prompt_from_registry():
+    """Keep DEFAULT_CHAT_PROMPT student-facing and registry-driven."""
+    try:
+        return render_prompt(
+            "tutor_hint_prompt",
+            context="{context}\nPrereq: {prereq_text}",
+            question="{user_answer}",
+            prereq_text="{prereq_text}",
+            concept="{user_answer}",
+            grade="junior_high",
+            student_answer="{user_answer}",
+            correct_answer="",
+        )
+    except Exception:
+        return DEFAULT_CHAT_PROMPT
+
+
+DEFAULT_CHAT_PROMPT = _build_default_chat_prompt_from_registry()
 
 
 def _looks_generic_followup_prompt(text):
@@ -755,6 +801,21 @@ def identify_skills_from_problem(problem_text):
 def ask_ai_text(user_question):
     try:
         model = get_model()
+        prompt = _render_student_visible_prompt(
+            "concept_prompt",
+            question=user_question,
+            context=user_question,
+            concept=user_question,
+            grade="junior_high",
+            prereq_text="",
+            student_answer=user_question,
+            correct_answer="",
+        )
+        resp = model.generate_content(
+            prompt + "\n\n(Keep concise. Do not reveal final answer. Guide next step only.)",
+            generation_config={"max_output_tokens": 4096, "temperature": 0.5},
+        )
+        return resp.text.strip()
         prompt = f"""
         你是功文數學 AI 助教，用繁體中文親切回答。
         要求：
@@ -780,6 +841,32 @@ def ask_ai_text_with_context(user_question, context=""):
     聊天專用 AI：帶入當前題目 context
     """
     model = get_model()
+    context_text = context or ""
+    context_lower = context_text.lower()
+    prompt_key = "tutor_hint_prompt"
+    if any(token in context_lower for token in ["error", "mistake", "wrong", "incorrect", "\u932f", "\u8aa4", "\u7b97\u932f", "\u4e0d\u6b63\u78ba"]):
+        prompt_key = "mistake_prompt"
+    elif any(token in context_lower for token in ["concept", "definition", "formula", "\u89c0\u5ff5", "\u5b9a\u7fa9", "\u516c\u5f0f"]):
+        prompt_key = "concept_prompt"
+
+    system_prompt = _render_student_visible_prompt(
+        prompt_key,
+        question=user_question,
+        context=context_text,
+        concept=user_question,
+        grade="junior_high",
+        student_answer=user_question,
+        correct_answer="",
+        prereq_text=context_text,
+    )
+    try:
+        resp = model.generate_content(
+            system_prompt + "\n\n(Keep concise. Do not reveal final answer. Guide next step only.)",
+            generation_config={"max_output_tokens": 4096, "temperature": 0.5}
+        )
+        return resp.text.strip()
+    except Exception as e:
+        return f"AI error: {str(e)}"
     
     system_prompt = f"""
     [CRITICAL RULES]

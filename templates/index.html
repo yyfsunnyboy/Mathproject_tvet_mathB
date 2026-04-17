@@ -1240,7 +1240,7 @@
         </div>
         <!-- 聊天區 -->
         <div class="chat-area">
-            <h3 style="margin-bottom: 0; padding-bottom: 2px;">AI 助教（{{ tutor_model_name or 'unknown' }}）</h3>
+            <h3 id="tutor-model-label" style="margin-bottom: 0; padding-bottom: 2px;">AI 助教（載入中...）</h3>
             <div id="chat-history" style="padding-top: 5px;">
                 <div class="bot-message">
                     <div style="margin: 0; padding: 0; font-weight: bold; line-height: 1.2;">你好！有問題問我～</div>
@@ -3648,6 +3648,33 @@
         // 初始化
         document.addEventListener('DOMContentLoaded', () => {
             setupQuestionUpload();
+            
+            // 載入實際 Runtime Tutor Model 狀態
+            async function loadRuntimeAIStatus() {
+                try {
+                    const res = await fetch('/api/runtime_ai_status');
+                    const data = await res.json();
+
+                    const el = document.getElementById('tutor-model-label');
+                    if (!el) return;
+
+                    if (data.success && data.tutor_display_name) {
+                        // 可以加上 Cloud/Edge 提供更詳細狀態
+                        let modeDisplay = "";
+                        if (data.ai_mode === 'cloud') modeDisplay = '｜Cloud';
+                        else if (data.ai_mode === 'edge') modeDisplay = '｜Edge';
+                        else if (data.ai_mode === 'hybrid') modeDisplay = '｜Hybrid';
+                        
+                        el.textContent = `AI 助教（${data.tutor_display_name}${modeDisplay}）`;
+                    } else {
+                        el.textContent = 'AI 助教（unknown）';
+                    }
+                } catch (e) {
+                    const el = document.getElementById('tutor-model-label');
+                    if (el) el.textContent = 'AI 助教（unknown）';
+                }
+            }
+            loadRuntimeAIStatus();
 
             // RAG 模式：Enter 鍵觸發檢索
             const ragInput = document.getElementById('rag-query-input');

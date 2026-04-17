@@ -506,6 +506,11 @@ def init_db(engine):
     for col, definition in new_log_cols:
         add_column_if_not_exists('experiment_log', col, definition)
 
+    # Prompt Templates Extensions
+    add_column_if_not_exists('prompt_templates', 'usage_context', 'TEXT')
+    add_column_if_not_exists('prompt_templates', 'used_in', 'TEXT')
+    add_column_if_not_exists('prompt_templates', 'example_trigger', 'TEXT')
+
     # [v9.0 補丁] Skill GenCode Prompt 新增 architect_model 和 experiment_group
     add_column_if_not_exists('skill_gencode_prompt', 'architect_model', "TEXT DEFAULT 'human'")
     add_column_if_not_exists('skill_gencode_prompt', 'experiment_group', 'TEXT')

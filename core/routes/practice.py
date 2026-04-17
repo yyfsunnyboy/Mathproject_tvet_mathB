@@ -217,6 +217,41 @@ def similar_questions():
         practice_mode='similar_practice',
     )
 
+@practice_bp.route('/api/runtime_ai_status', methods=['GET'])
+@login_required
+def runtime_ai_status():
+    """
+    API: 取回實際 runtime tutor model 的狀態
+    """
+    from core.ai_settings import get_effective_model_config, get_ai_settings_snapshot
+    
+    tutor_config = get_effective_model_config('tutor')
+    provider = tutor_config.get('provider', 'unknown')
+    tutor_model = tutor_config.get('model', 'unknown')
+    
+    settings = get_ai_settings_snapshot()
+    ai_mode_raw = settings.get("ai_global_strategy", "unknown")
+    
+    mode_map = {
+        "cloud_first": "cloud",
+        "local_first": "edge",
+        "hybrid_balanced": "hybrid"
+    }
+    ai_mode = mode_map.get(ai_mode_raw, ai_mode_raw)
+    
+    display_name = tutor_model if tutor_model != 'unknown' else 'unknown'
+    
+    # 簡潔 log
+    current_app.logger.info(f"[RUNTIME AI STATUS] mode={ai_mode} provider={provider} tutor_model={tutor_model}")
+    
+    return jsonify({
+        "success": True,
+        "ai_mode": ai_mode,
+        "tutor_provider": provider,
+        "tutor_model": tutor_model,
+        "tutor_display_name": display_name
+    })
+
 @practice_bp.route('/get_adaptive_question', methods=['GET'])
 @login_required
 def get_adaptive_question():

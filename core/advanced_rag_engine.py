@@ -4,6 +4,7 @@ import logging
 import numpy as np
 from typing import Any, List, Dict
 from config import Config
+from core.prompts.registry import render_prompt
 
 try:
     import chromadb
@@ -287,12 +288,23 @@ def _build_adv_rag_prompt(
         current_question_block = f"""
 目前正在作答的題目：
 {question_text}
-"""
+""" 
         if family_id:
             current_question_block += f"\n目前題型 family：{family_id}\n"
 
     return f"""
-你是一位台灣國中數學助教。學生遇到了一個不會的問題，我們透過 RAG 系統檢索出了五個最相關的單元教材資訊。
+你是「數學引導型助教（Scaffolding Tutor）」。
+
+【任務】
+只提供「下一步操作提示」。
+
+【限制】
+- 不要開場白
+- 不要長篇解釋
+- 不要完整解法
+- 不要講核心觀念
+- 不要提到檢索內容
+- 控制在 1～2 句
 
 {current_question_block}
 
@@ -302,11 +314,46 @@ def _build_adv_rag_prompt(
 檢索出的相關知識點：
 {units_text}
 
-請你根據這些檢索出的單元，為學生準備一個「簡短教材與提示」：
-1. 針對學生的問題，提供一個最貼切的核心觀念（如果資料庫沒有詳細教材，請直接運用你豐富的數學知識寫出一個精簡的教學，不要太長）。
-2. 給予學生面對此題目的第一步小提示（不要直接講出答案）。
-3. 語氣簡潔友好，適合國中生理解。
+【輸出】
+直接給提示，例如：
+- 先把有 x 的項和常數項分開
+- 試著整理成兩個括號
 """
+
+
+def _render_adv_rag_prompt_via_registry(
+    query: str,
+    retrieved_skills: list,
+    question_text: str = "",
+    family_id: str = "",
+) -> str:
+    units = []
+    for idx, skill in enumerate(retrieved_skills or []):
+        ch_name = skill.get("chinese_name", "")
+        fam_name = skill.get("family_name", "")
+        subs = skill.get("subskill_nodes", [])
+        subs_str = "、".join(_label_node(n) for n in subs) if subs else "未分類子技能"
+        units.append(f"{idx + 1}. {ch_name}（{fam_name}）: {subs_str}")
+
+    context_lines = []
+    if question_text:
+        context_lines.append("目前題目：")
+        context_lines.append(question_text)
+    if family_id:
+        context_lines.append(f"family_id: {family_id}")
+    context_lines.append(f"學生提問：{query}")
+    if units:
+        context_lines.append("可參考知識：")
+        context_lines.extend(units)
+    context_text = "\n".join(context_lines)
+
+    # Primary path: DB-configurable tutor prompt.
+    return render_prompt(
+        "tutor_hint_prompt",
+        context=context_text,
+        question=query,
+        prereq_text="\n".join(units),
+    )
 
 
 def adv_rag_chat(
@@ -324,12 +371,21 @@ def adv_rag_chat(
         return {"reply": "我找不到與問題相關的單元，或許你可以換個問法？"}
 
     provider = (provider or "local").strip().lower()
-    prompt = _build_adv_rag_prompt(
-        query,
-        retrieved_skills,
-        question_text=question_text,
-        family_id=family_id,
-    )
+    try:
+        prompt = _render_adv_rag_prompt_via_registry(
+            query,
+            retrieved_skills,
+            question_text=question_text,
+            family_id=family_id,
+        )
+    except Exception:
+        # Keep legacy builder as fallback to avoid runtime interruption.
+        prompt = _build_adv_rag_prompt(
+            query,
+            retrieved_skills,
+            question_text=question_text,
+            family_id=family_id,
+        )
 
     try:
         if provider == "local":

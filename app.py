@@ -63,6 +63,7 @@ from core.routes import core_bp
 from core.ai_analyzer import configure_gemini
 from core.rag_engine import init_rag
 from core.advanced_rag_engine import init_adv_rag
+from core.prompts.bootstrap_templates import bootstrap_prompt_templates
 from config import Config
 from models import init_db, User, db, Progress, SkillInfo, SkillCurriculum, SkillPrerequisites
 from core.utils import get_all_active_skills
@@ -515,6 +516,11 @@ def create_app():
 
     with app.app_context():
         init_db(db.engine)
+        try:
+            created_count = bootstrap_prompt_templates()
+            app.logger.info(f"Prompt template bootstrap done. created={created_count}")
+        except Exception as e:
+            app.logger.error(f"Prompt template bootstrap failed: {e}")
         # 啟用 WAL (Write-Ahead Logging) 模式以提高併發性並減少鎖定
         try:
             with db.engine.connect() as conn:
