@@ -355,7 +355,7 @@
 
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
             <h2 style="margin: 0;">學習儀表板</h2>
-            <!-- 新增：普高/技高/國中 切換按鈕 -->
+            <!-- 新增：普高/技高/國中 切換按鈕 + 自適應複習模式 -->
             <div
                 style="flex-grow: 1; text-align: center; display: flex; justify-content: center; align-items: center; gap: 5px;">
                 {% for c, name in [('junior_high', '國中'), ('general', '普高'), ('vocational', '技高')] %}
@@ -373,9 +373,13 @@
                 </div>
                 {% endfor %}
             </div>
-            <div>
+            <div style="display: flex; gap: 8px;">
+                <a href="{{ url_for('adaptive_review') }}"
+                    style="padding: 10px 18px; background: #0066cc; color: white; text-decoration: none; border-radius: 4px; font-weight: 500; cursor: pointer;">
+                    自適應複習
+                </a>
                 <a href="{{ url_for('dashboard', view='all') }}"
-                    style="padding: 8px 16px; margin-left: 10px; background: {{ '#28a745' if view_mode == 'all' else '#6c757d' }}; color: white; text-decoration: none; border-radius: 4px;">
+                    style="padding: 8px 16px; margin-left: 2px; background: {{ '#28a745' if view_mode == 'all' else '#6c757d' }}; color: white; text-decoration: none; border-radius: 4px;">
                     顯示所有
                 </a>
             </div>

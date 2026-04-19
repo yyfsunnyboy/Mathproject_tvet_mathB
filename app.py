@@ -54,10 +54,14 @@ matplotlib.use('Agg') # Use non-interactive backend
 from matplotlib import font_manager
 import matplotlib.pyplot as plt
 
+import logging
 from flask import Flask, render_template, request, redirect, url_for, flash, session
 from sqlalchemy import inspect, Table, MetaData, text, func
 from sqlalchemy.exc import IntegrityError
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user, AnonymousUserMixin
+
+# 設定日誌記錄器
+logger = logging.getLogger(__name__)
 from werkzeug.security import generate_password_hash, check_password_hash
 from core.routes import core_bp
 from core.ai_analyzer import configure_gemini
@@ -154,6 +158,14 @@ def create_app():
     app.register_blueprint(core_bp)
     app.register_blueprint(practice_bp) # 註冊練習用的 blueprint，沒有前綴
     app.register_blueprint(live_show_bp) # 註冊科展展演用的 blueprint
+    
+    # [自適應複習 API] 導入並註冊自適應複習模式 blueprint
+    try:
+        from adaptive_review_api import adaptive_review_bp
+        app.register_blueprint(adaptive_review_bp)
+        logger.info("✅ 自適應複習 API 已註冊：/api/adaptive-review")
+    except ImportError as e:
+        logger.warning(f"⚠️ 自適應複習模式未啟用: {e}")
 
     # [模擬學生 API] 註冊模擬學生 blueprint（本地開發用）
     try:
@@ -232,6 +244,12 @@ def create_app():
         logout_user()
         flash('已登出', 'info')
         return redirect(url_for('login'))
+
+    @app.route('/adaptive-review')
+    @login_required
+    def adaptive_review():
+        """自適應複習模式入口頁面"""
+        return render_template('adaptive_review.html')
 
     @app.route('/teacher_dashboard')
     @login_required
