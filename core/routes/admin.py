@@ -1167,7 +1167,18 @@ def _build_ai_settings_payload(prompt, updated_at):
 def _parse_required_variables(raw_value):
     if not raw_value:
         return []
-    return [item.strip() for item in str(raw_value).split(',') if item and item.strip()]
+    val_str = str(raw_value).strip()
+    if val_str == '[]':
+        return []
+    import json
+    try:
+        if val_str.startswith('[') and val_str.endswith(']'):
+            parsed = json.loads(val_str)
+            if isinstance(parsed, list):
+                return [str(item).strip() for item in parsed if item and str(item).strip()]
+    except Exception:
+        pass
+    return [item.strip() for item in val_str.split(',') if item and item.strip()]
 
 
 @core_bp.route('/admin/ai_prompt_settings/list')
@@ -1248,8 +1259,13 @@ def update_prompt_template_content():
             db.session.add(template)
             is_new = True
 
+        required_vars = []
         if template.required_variables:
             required_vars = _parse_required_variables(template.required_variables)
+            
+        if not required_vars:
+            logger.info("[admin debug] /prompt/update skip required variable validation (empty list)")
+        else:
             missing = [var_name for var_name in required_vars if f'{{{var_name}}}' not in content]
             if missing:
                 err_msg = f"Missing required variables in prompt: {', '.join(missing)}"

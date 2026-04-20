@@ -171,24 +171,50 @@ def init_adv_rag(app):
 def get_llm_keywords(query: str) -> List[str]:
     """Uses Local LLM or Gemini to extract key search words from the student's problem."""
     try:
+        from core.ai_settings import get_effective_model_config
+        
         prompt = f"""
         請從以下學生的數學問題中，提取出最關鍵的數學單元名稱或核心概念關鍵字，
         請只回傳一行，包含 3 到 5 個關鍵詞，以空白分隔。不要加上任何說明文字。
         學生問題：{query}
         """
 
-        # First attempt with Gemini (can easily switch to Ollama request like in original app)
-        from core.ai_analyzer import gemini_model
-        if gemini_model:
-            import google.generativeai as genai
-            response = gemini_model.generate_content(
-                prompt,
-                generation_config=genai.types.GenerationConfig(temperature=0.1, max_output_tokens=30)
-            )
-            keywords_text = response.text.replace('\n', ' ').strip()
+        # 1. 取得目前系統解析後的 AI 提供者
+        cfg = get_effective_model_config("tutor")
+        provider = str(cfg.get("provider", "local")).strip().lower()
+
+        # 2. 僅在 Cloud 模式時允許呼叫 Gemini
+        if provider in ("google", "cloud", "gemini"):
+            from core.ai_analyzer import gemini_model
+            if gemini_model:
+                import google.generativeai as genai
+                response = gemini_model.generate_content(
+                    prompt,
+                    generation_config=genai.types.GenerationConfig(temperature=0.1, max_output_tokens=30)
+                )
+                keywords_text = response.text.replace('\n', ' ').strip()
+                logger.info("[Advanced RAG Keyword Extraction] provider=cloud strategy=gemini")
+                return [kw for kw in keywords_text.split() if kw]
+            else:
+                logger.warning("[Advanced RAG Keyword Extraction] Provider is cloud but gemini_model is missing.")
+
+        # 3. Edge 模式 (Local) 或備援方案
+        try:
+            from core.ai_client import call_ai
+            response = call_ai("tutor", prompt)
+            keywords_text = getattr(response, "text", str(response)).replace('\n', ' ').strip()
+            logger.info("[Advanced RAG Keyword Extraction] provider=local strategy=qwen_local")
             return [kw for kw in keywords_text.split() if kw]
+        except Exception as local_e:
+            logger.warning(f"[Advanced RAG Keyword Extraction] Local LLM failed: {local_e}, using fallback.")
+            import jieba
+            tokenized = list(jieba.cut(query))
+            logger.info("[Advanced RAG Keyword Extraction] provider=local strategy=rule_based")
+            return [w for w in tokenized if len(w) >= 2][:5]
+
     except Exception as e:
         logger.error(f"[Advanced RAG Keyword Extraction] Failed: {e}")
+        
     return []
 
 def extract_advanced_rag(query: str, K_VALUE=42, top_k=5):

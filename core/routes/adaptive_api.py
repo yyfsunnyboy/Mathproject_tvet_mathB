@@ -423,6 +423,31 @@ def api_adv_rag_search():
         return jsonify({"results": [], "error": str(e)}), 500
 
 
+def _adv_rag_invoke_tutor(prompt: str, provider: str) -> dict:
+    """與 advanced_rag_engine.adv_rag_chat 相同的 LLM 呼叫方式（不重複改 engine）。"""
+    provider = (provider or "local").strip().lower()
+    if provider == "local":
+        from core.ai_client import call_ai
+
+        response = call_ai("tutor", prompt)
+        return {"reply": getattr(response, "text", str(response)), "provider": "local"}
+
+    from core.ai_analyzer import gemini_model
+
+    if not gemini_model:
+        return {"reply": "目前 Google API 助教尚未啟用，請改用本地模型。", "provider": "google"}
+
+    import google.generativeai as genai
+
+    response = gemini_model.generate_content(
+        prompt,
+        generation_config=genai.types.GenerationConfig(
+            temperature=0.4,
+        ),
+    )
+    return {"reply": response.text, "provider": "google"}
+
+
 @practice_bp.route('/api/adaptive/adv_rag_chat', methods=['POST'])
 @login_required
 def api_adv_rag_chat():
@@ -437,11 +462,70 @@ def api_adv_rag_chat():
     if not query:
         return jsonify({"reply": "請提供問題"}), 400
 
+    is_learning_intent = any(
+        kw in query
+        for kw in (
+            "不會",
+            "不懂",
+            "看不懂",
+            "怎麼算",
+            "怎麼做",
+            "為什麼",
+            "可以教",
+            "教我",
+        )
+    )
+    prompt_key = "rag_tutor_prompt" if (is_learning_intent and retrieved_skills) else "tutor_hint_prompt"
+
     try:
         if not current_app.config.get('ADVANCED_RAG_ENABLE_AI_CHAT', True):
             return jsonify({"reply": "目前 AI 助教已由老師關閉"})
 
+        print(
+            f"[RAG PROMPT SELECT] intent={'learning' if is_learning_intent else 'hint'} prompt={prompt_key}"
+        )
+
+        if prompt_key == "rag_tutor_prompt":
+            from core.prompts.composer import compose_prompt
+            from core.rag_engine import _label_node, _parse_subskill_nodes
+
+            first = retrieved_skills[0]
+            ch_name = (
+                first.get("chinese_name")
+                or first.get("ch_name")
+                or first.get("skill_ch_name")
+                or "（未命名技能）"
+            )
+            fam = first.get("family_name") or ""
+            family_name_block = f"（{fam}）" if fam else ""
+            subs = _parse_subskill_nodes(first.get("subskill_nodes"))
+            subskill_text = "、".join(_label_node(n) for n in subs) if subs else "核心概念"
+            if len(retrieved_skills) > 1:
+                names = [
+                    str(s.get("chinese_name") or s.get("ch_name") or s.get("skill_ch_name") or "").strip()
+                    for s in retrieved_skills[1:6]
+                ]
+                names = [n for n in names if n]
+                if names:
+                    subskill_text = subskill_text + "\n（另含相關檢索：" + "、".join(names) + "）"
+            uq = query
+            if question_text:
+                uq = f"[目前題目]\n{question_text}\n\n{uq}"
+            if family_id:
+                uq = f"[family_id: {family_id}]\n{uq}"
+            prompt, _source = compose_prompt(
+                task_key="rag_tutor_prompt",
+                query=uq,
+                ch_name=ch_name,
+                family_name_block=family_name_block,
+                subskill_text=subskill_text,
+                route_label="Adaptive-AdvRAG",
+            )
+            result = _adv_rag_invoke_tutor(prompt, provider)
+            return jsonify(result)
+
         from core.advanced_rag_engine import adv_rag_chat
+
         result = adv_rag_chat(
             query,
             retrieved_skills,

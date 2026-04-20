@@ -160,6 +160,10 @@ def init_prompt_templates():
 
     try:
         with app.app_context():
+            # [DEBUG] Check DB connection URL
+            log(f"[DEBUG] db.engine.url: {db.engine.url}")
+            log(f"[DEBUG] app.config['SQLALCHEMY_DATABASE_URI']: {app.config.get('SQLALCHEMY_DATABASE_URI')}")
+            
             inspector = inspect(db.engine)
 
             # 1️⃣ 檢查 Table
@@ -175,18 +179,39 @@ def init_prompt_templates():
 
             result = bootstrap_prompt_registry(update_existing=True)
 
-            # 👉 建議你的 loader 回傳 dict
-            # {created: X, updated: Y, skipped: Z}
-            if isinstance(result, dict):
+            # 👉 處理回傳型別 (tuple/dict) 並印出
+            created = 0
+            updated = 0
+            skipped = 0
+
+            if isinstance(result, tuple) and len(result) == 3:
+                created, updated, skipped = result
+                log(f"[RESULT] created={created} updated={updated} skipped={skipped}")
+            elif isinstance(result, dict):
                 created = result.get("created", 0)
                 updated = result.get("updated", 0)
                 skipped = result.get("skipped", 0)
-
                 log(f"[RESULT] created={created} updated={updated} skipped={skipped}")
             else:
-                log("[WARN] bootstrap 沒有回傳統計資訊")
+                log("[WARN] bootstrap 沒有回傳預期的統計資訊格式: " + str(result))
 
             log("[SUCCESS] Prompt Templates 同步完成")
+            
+            # [DEBUG] 查詢更新後的資料庫狀態
+            try:
+                from core.models.prompt_template import PromptTemplate
+                log("---------- [DEBUG] DB Prompt Check ----------")
+                target_keys = ["handwriting_feedback_prompt", "chat_tutor_prompt", "rag_tutor_prompt"]
+                prompts = PromptTemplate.query.filter(PromptTemplate.prompt_key.in_(target_keys)).all()
+                for p in prompts:
+                    log(f"Key: {p.prompt_key}")
+                    log(f"Category: {p.category}")
+                    log(f"Required Vars: {p.required_variables}")
+                    log(f"Default Content (head): {str(p.default_content)[:300]}")
+                    log(f"Content (head): {str(p.content)[:300]}")
+                    log("-------------------------------------------")
+            except Exception as e:
+                log(f"[DEBUG] Error querying prompts: {e}")
 
     except Exception as e:
         log("❌ [ERROR] Prompt Registry Sync 失敗")

@@ -1,175 +1,34 @@
 # -*- coding: utf-8 -*-
-
-
-
-
-
-
-
 """
-
-
-
-
-
-
-
 =============================================================================
+模組名稱 (Module Name): core/routes/analysis.py
 
+說明 (Description):
+  練習與測驗相關之 AI 分析路由：手寫辨識／批改、Chat AI 對話、考卷影像分析等。
 
+用法 (Usage):
+  由 Flask 應用程式註冊 blueprint 後載入。
 
-
-
-
-
-?????? (Module Name): core/routes/analysis.py
-
-
-
-
-
-
-
-?賹??方? (Description): AI ?????祇????荔????荒? AI ??鈭??? (Chat AI)?蹓??典??朱???蹓壇?蛛??蹌??祇??(Exam Analysis)?蹓選??選謓??拇?綜竣?????鞈玲?
-
-
-
-
-
-
-
-????止等? (Usage): ?璇??舀０???
-
-
-
-
-
-
-
-??秧?? (Version): V2.0
-
-
-
-
-
-
-
-?皝??鈭? (Date): 2026-01-13
-
-
-
-
-
-
-
-?砍?憸?謢? (Maintainer): Math AI Project Team
-
-
-
-
-
-
-
+版本 (Version): V2.0
+日期 (Date): 2026-01-13
+維護者 (Maintainer): Math AI Project Team
 =============================================================================
-
-
-
-
-
-
-
 """
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 from flask import request, jsonify, render_template, current_app, url_for, session
-
-
-
-
-
-
-
 from flask_login import current_user, login_required
-
-
-
-
-
-
-
 from werkzeug.utils import secure_filename
-
-
-
-
-
-
 
 import os
 import base64
 import re
 import tempfile
-
-
-
-
-
-
-
 import uuid
-
-
-
-
-
-
-
 import traceback
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 from . import core_bp, practice_bp
-
-
-
-
-
-
-
 from core.session import get_current
 from config import Config
-
-
-
-
-
-
-
 from core.ai_analyzer import (
     build_chat_prompt,
     get_chat_response,
@@ -189,52 +48,17 @@ from core.adaptive.judge import (
     _symbolic_equal,
     _extract_divisor_from_question,
 )
-
 from core.exam_analyzer import analyze_exam_image, save_analysis_result
-
-
-
-
-
-
-
 from core.diagnosis_analyzer import perform_weakness_analysis
-
-
-
-
-
-
-
 from core.rag_engine import rag_search, rag_chat
-
-
-
-
-
-
-
 from models import db, MistakeNotebookEntry, ExamAnalysis, SkillInfo
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 ALLOWED_EXAM_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 
 
 def _handwriting_not_recognized_response():
-    """Missing image, invalid payload, unreadable OCR, or unusable expression ??do not run tutoring LLM."""
+    """缺圖、payload 無效、OCR 無法讀取或運算式不可用時的回應；不呼叫教學用 LLM。"""
     return jsonify({"success": False, "reason": "handwriting_not_recognized"})
 
 
@@ -461,6 +285,17 @@ ERROR_MECHANISM_FEEDBACK = {
     "substitution_error": "代值或抄值可能有誤，請先核對代入的數值與位置。",
     "notation_error": "式子格式或記號不完整，請先補齊括號、變數與表示方式。",
     "unknown": "最後整理結果不正確，請再檢查最終答案。",
+}
+
+# 白板 second-stage / rule-based fallback 用的「具體下一步」（不揭露數值答案）
+ERROR_MECHANISM_ACTION_STEP = {
+    "structure_error": "請先重寫去括號或展開後的式子，逐項核對符號是否正確，再重新合併同類項。",
+    "sign_error": "請把負號或減號如何分配到括號內「每一項」寫清楚，再重新加減係數與常數項。",
+    "combine_error": "請把同類項分組列出，確認次方相同的項才合併，再重算一次係數加總。",
+    "operation_error": "請對照題目這一步應使用的運算規則，逐步寫出中間式再接到下一步。",
+    "substitution_error": "請把代入或抄寫的數字與位置逐一核對，再重算代入後的運算。",
+    "notation_error": "請先補齊括號、變數與等號兩側的式子結構，再依題意繼續化簡。",
+    "unknown": "請從題目要求的最簡形式往回對照：括號、符號與同類項是否都處理完畢，再整理一次。",
 }
 
 FAMILY_ERROR_PRIORITY = {
@@ -1139,7 +974,7 @@ def _handwriting_structured_analysis(recognized_expression, expected_answer, que
             "is_correct": False,
             "status": status,
             "main_issue": main_issue,
-            "skill_focus": skill_focus or "憭?撘?蝪∟???",
+            "skill_focus": skill_focus or "依題目重點進行化簡與整理",
             "issue_tag": mechanism,
             "error_mechanism": mechanism,
             "step_focus": step_focus,
@@ -1171,52 +1006,120 @@ def _handwriting_family_meta(family_id):
     return mapping.get(fid, ("一般題型", "請根據題目內容判斷關鍵步驟與常見錯誤"))
 
 
-def _handwriting_sentence_count(reply):
-    parts = re.split(r"[。！？!?]+|\n+", str(reply or ""))
-    return len([p.strip() for p in parts if p.strip()])
+_HW_SECOND_STAGE_ERROR_HINT = re.compile(
+    r"(錯誤|有誤|不正確|不對|問題|偏差|少了|多了|漏掉|混淆|沒有對|不一致|不符|差在|"
+    r"哪裡|這一步|這一列|括號|符號|同類項|合併|化簡|分配|係數|次方|展開|去括號|負號|正負|"
+    r"方向正確|大致正確|尚未|需要修正|還沒|還差|不成立|算成|寫成|目前|關鍵小錯|"
+    r"推理|化簡|整理|最後一步|前一步|中間|"
+    r"代表|表示|意思是|也就是|因此|所以|因為|應該是|常見的誤解|這裡其實|這代表比例|比例應該|"
+    r"不是.{0,35}而是)"
+)
+_HW_SECOND_STAGE_GUIDANCE = re.compile(
+    r"(請|建議|下一步|試著|不妨|重新|再試|再算|再寫|再檢查|再核對|再確認|對照|核對|確認|"
+    r"逐步|一步一步|逐項|試算|試試|想一下|👉|不妨先|可以先|試著先|先.{0,14}再|"
+    r"可以|接著|然後|先看|先把|再把|檢查一下|想想看|重算|重整|化簡一次)"
+)
 
 
-def _handwriting_reply_is_compliant(reply, status):
-    text = str(reply or "").strip()
-    if not text:
+def _hw_second_stage_reply_suggests_final_answer(text: str, expected: str) -> bool:
+    """偵測是否像在公布標準答案（避免暴雷）；允許『你目前算成…』類 framing。"""
+    exp = _clean_math_expr(str(expected or ""))
+    if len(exp) < 5:
         return False
-    if _handwriting_sentence_count(text) > 3:
+    compact = _clean_math_expr(str(text or ""))
+    if exp not in compact:
         return False
-
-    lines = [ln.strip() for ln in text.splitlines() if ln.strip()]
-    first_line = lines[0] if lines else text
-    tail_line = lines[-1] if lines else text
-    st = str(status or "unknown").strip()
-
-    if st == "correct":
-        if "答案正確" not in first_line:
-            return False
-        if "進入下一題" not in tail_line:
-            return False
-    elif st == "partially_correct":
-        if "方向正確" not in first_line or "關鍵小錯" not in first_line:
-            return False
-        if "請再檢查一次" not in tail_line:
-            return False
-    elif st == "incorrect":
-        if "這題有錯" not in first_line:
-            return False
-        if "想一下再試一次" not in tail_line:
-            return False
-        banned = (
-            "檢查一下",
-            "再看看",
-            "檢查運算順序",
-            "注意運算順序",
-            "檢查係數與符號",
-            "檢查括號是否正確",
+    idx = compact.find(exp)
+    prefix = compact[max(0, idx - 48) : idx]
+    student_frame = any(
+        x in prefix
+        for x in (
+            "你目前",
+            "你寫",
+            "你算",
+            "辨識",
+            "這裡寫",
+            "寫成",
+            "算成",
+            "寫的是",
+            "得到",
+            "變成",
         )
-        if any(b in text for b in banned):
-            return False
-    elif st == "unknown":
-        if "無法穩定判斷" not in text:
-            return False
-    return True
+    )
+    leak_markers = (
+        "答案是",
+        "正確答案",
+        "最終答案",
+        "所以答案",
+        "結果應該",
+        "應該等於",
+        "故得",
+        "因此得",
+        "正解為",
+        "答為",
+        "所以為",
+        "因此答案",
+    )
+    window = compact[max(0, idx - 48) : idx + len(exp) + 36]
+    if any(m in window for m in leak_markers):
+        return True
+    if student_frame and not any(m in window for m in leak_markers):
+        return False
+    if idx + len(exp) >= len(compact) - 2 and len(compact) <= len(exp) + 24:
+        return True
+    return False
+
+
+def _handwriting_second_stage_compliance_flags(reply, status, expected_answer=""):
+    """
+    白板 second-stage：語意合規（不要求固定標題／段數）。
+    須同時：指出錯誤或問題點、給出可操作的下一步、且未直接公布完整答案。
+    """
+    text = str(reply or "").strip()
+    st = str(status or "unknown").strip()
+    reject_reasons = []
+    non_empty = bool(text)
+    exp_ans = str(expected_answer or "").strip()
+
+    if st not in ("partially_correct", "incorrect"):
+        ok = non_empty
+        if not non_empty:
+            reject_reasons.append("empty_reply")
+        return {
+            "compliance_ok": ok,
+            "non_empty_reply": non_empty,
+            "has_error_explanation": ok,
+            "has_guidance": ok,
+            "gives_final_answer": False,
+            "status": st,
+            "reject_reasons": reject_reasons,
+        }
+
+    gives_final = _hw_second_stage_reply_suggests_final_answer(text, exp_ans)
+    has_err = bool(_HW_SECOND_STAGE_ERROR_HINT.search(text)) and len(text) >= 12
+    if (not has_err) and len(text) >= 8 and ("不是" in text and "而是" in text):
+        has_err = True
+    has_guide = bool(_HW_SECOND_STAGE_GUIDANCE.search(text))
+
+    if not non_empty:
+        reject_reasons.append("empty_reply")
+    if non_empty and not has_err:
+        reject_reasons.append("missing_error_explanation")
+    if non_empty and not has_guide:
+        reject_reasons.append("missing_guidance")
+    if gives_final:
+        reject_reasons.append("gave_final_answer")
+
+    compliance_ok = non_empty and has_err and has_guide and not gives_final
+    return {
+        "compliance_ok": compliance_ok,
+        "non_empty_reply": non_empty,
+        "has_error_explanation": has_err,
+        "has_guidance": has_guide,
+        "gives_final_answer": gives_final,
+        "status": st,
+        "reject_reasons": reject_reasons,
+    }
 
 
 def _handwriting_feedback_second_prompt(
@@ -1265,8 +1168,8 @@ def _handwriting_feedback_second_prompt(
         logger.info(f"[handwriting second stage] prompt_key=handwriting_feedback_prompt source=fallback has_expected_answer={bool(expected_answer)} fallback_to_hardcoded=True")
         
         return (
-            "你是國中數學評量系統的批改回饋模組，不是解題老師。\n\n"
-            "你只根據以下資訊，產生非常短的批改回饋：\n\n"
+            "你是國中數學評量系統的批改回饋模組，不是直接把整題算完的答案機。\n\n"
+            "你只根據以下資訊撰寫 JSON 內的 reply 欄位（其餘欄位依語意填寫）：\n\n"
             f"題目：{question}\n"
             f"學生手寫結果：{student_expression}\n"
             f"正確答案：{expected_answer}\n"
@@ -1274,43 +1177,52 @@ def _handwriting_feedback_second_prompt(
             f"本題重點：{family_description_zh}\n"
             f"錯誤機制：{error_mechanism}\n"
             f"已知錯誤重點：{main_issue}\n\n"
-            "請嚴格遵守：\n"
-            "1. 如果 status = correct：\n"
-            "- 第一行一定要說「答案正確」\n"
-            "- 最後一行一定要說「進入下一題」\n"
-            "- 不要解題\n"
-            "- 不要長篇說明\n"
-            "2. 如果 status = partially_correct：\n"
-            "- 第一行說「方向正確，但有一個關鍵小錯」\n"
-            "- 只指出一個最重要的錯誤\n"
-            "- 最後一行說「請再檢查一次」\n"
-            "3. 如果 status = incorrect：\n"
-            "- 第一行直接說「這題有錯」\n"
-            "- 只指出一個最核心錯誤\n"
-            "- 優先使用提供的「已知錯誤重點」\n"
-            "- 禁止說：請檢查、再看看、計算方向大致正確、檢查運算順序、檢查係數與符號\n"
-            "- 最後一行說「想一下再試一次」\n"
-            "4. 回答最多 3 行\n"
-            "5. 不要解完整題目\n"
-            "6. 不要聊天\n"
-            "7. 語氣像老師批改，不像聊天機器人\n\n"
+            "請嚴格遵守（輸出僅能是下方指定的 JSON，不要 markdown、不要多餘文字）：\n"
+            "- 若 status 為 partially_correct 或 incorrect：reply 必須指出「一個」最關鍵的具體錯誤或偏差"
+            "（可說是哪一步、哪種觀念或式子哪一段），並給出「一個」可執行的具體下一步"
+            "（例如先如何整理算式、先核對哪一類項），避免空泛只說『再想想』；"
+            "優先銜接「已知錯誤重點」與錯誤機制。\n"
+            "- 若 status 為 correct：reply 以簡短肯定為主，可鼓勵進入下一題，不須刻意找錯。\n"
+            "- 不要直接寫出或暗示題目的最終數值／最終化簡答案；不要替學生把整題解完。\n"
+            "- 不要規定固定套語或結尾句型（例如不必強迫寫「請再檢查一次」「想一下再試一次」等）。\n"
+            "- 不要限制 reply 行數；語氣簡潔、像老師批改即可；不要聊天。\n\n"
             + json_format_str
         )
 
 
 def _handwriting_rule_based_reply(analysis_result):
-    """Primary short feedback generator for production handwriting flow."""
-    st = analysis_result.get("status")
-    mech = str(analysis_result.get("error_mechanism") or "").strip()
+    """白板流程用的 rule-based 回饋（含 second-stage 失敗 fallback）：具體提示＋下一步，不直接給答案。"""
+    ar = analysis_result or {}
+    st = ar.get("status")
+    mech = str(ar.get("error_mechanism") or "").strip()
     issue = ERROR_MECHANISM_FEEDBACK.get(
-        mech, str(analysis_result.get("main_issue") or "").strip() or ERROR_MECHANISM_FEEDBACK["unknown"]
+        mech, str(ar.get("main_issue") or "").strip() or ERROR_MECHANISM_FEEDBACK["unknown"]
     )
+    action = ERROR_MECHANISM_ACTION_STEP.get(mech, ERROR_MECHANISM_ACTION_STEP["unknown"])
+    expr_raw = str(ar.get("recognized_expression") or ar.get("final_expression") or "").strip()
+    expr_show = expr_raw if len(expr_raw) <= 320 else expr_raw[:317] + "…"
+    family_hint = str(ar.get("family_label_zh") or "").strip()
+
     if st == "correct":
         return "✔ 答案正確！\n👉 進入下一題"
     if st == "partially_correct":
-        return f"⚠️ 方向正確，但還有一個關鍵小錯\n{issue}\n👉 請再檢查一次"
+        lines = ["⚠️ 前面的整理大致正確，但還有一個關鍵步驟需要修正"]
+        if expr_show:
+            lines.append(f"你目前辨識到的式子：{expr_show}")
+        lines.append(f"錯誤提示：{issue}")
+        if family_hint:
+            lines.append(f"本題題型重點：{family_hint}")
+        lines.append(f"👉 具體下一步：{action}")
+        return "\n".join(lines)
     if st == "incorrect":
-        return f"✘ 這題有錯\n{issue}\n👉 想一下再試一次"
+        lines = ["✘ 這題的推理或化簡仍有需要調整之處"]
+        if expr_show:
+            lines.append(f"你目前辨識到的式子：{expr_show}")
+        lines.append(f"錯誤提示：{issue}")
+        if family_hint:
+            lines.append(f"本題題型重點：{family_hint}")
+        lines.append(f"👉 具體下一步：{action}")
+        return "\n".join(lines)
     return "目前我無法穩定判斷你的手寫結果，請確認筆跡清楚或再試一次。"
 
 
@@ -1504,7 +1416,7 @@ def allowed_exam_file(filename):
 
 
 
-# AI Chat & Handwriting (AI ?叟??)
+# AI Chat & Handwriting（AI 對話與手寫）
 
 
 
@@ -1752,7 +1664,7 @@ def chat_ai():
 
 
 
-        # ?芬謘??質 skill_id (Fallback)
+        # 依內文關鍵字推測 skill_id（Fallback）
 
 
 
@@ -1760,7 +1672,7 @@ def chat_ai():
 
 
 
-        if '?朱?' in context: skill_id = 'remainder'
+        if '餘式' in context: skill_id = 'remainder'
 
 
 
@@ -1768,7 +1680,7 @@ def chat_ai():
 
 
 
-        elif '?蹎?' in context: skill_id = 'factor_theorem'
+        elif '因式' in context: skill_id = 'factor_theorem'
 
 
 
@@ -1974,7 +1886,7 @@ def chat_ai():
 
 
 
-    # ?伍??撖??株????????????圈?鞈?????蹓??迫?堊垮??頛??湛???
+    # 讀寫 session 中的延伸問答狀態（與題目脈絡綁定）。
 
 
 
@@ -2054,7 +1966,7 @@ def chat_ai():
 
 
 
-    # ?漱謓梢??賊??賹???啾冪?閰??嚗??????堊筑???????擏???⊿豲??????????????
+    # 題目脈絡變更時重置回合索引；依序產生本回合的後續引導題組。
 
 
 
@@ -2286,7 +2198,7 @@ def chat_ai():
 
 
 
-        'sign_handling': '甇???霈',
+        'sign_handling': '符號處理',
 
 
 
@@ -2294,7 +2206,7 @@ def chat_ai():
 
 
 
-        'add_sub': '?湔??',
+        'add_sub': '加減運算',
 
 
 
@@ -2302,7 +2214,7 @@ def chat_ai():
 
 
 
-        'mul_div': '?湔銋',
+        'mul_div': '乘除運算',
 
 
 
@@ -2310,7 +2222,7 @@ def chat_ai():
 
 
 
-        'mixed_ops': '??瘛瑕???',
+        'mixed_ops': '四則混合',
 
 
 
@@ -2326,7 +2238,7 @@ def chat_ai():
 
 
 
-        'parentheses': '?祈???',
+        'parentheses': '括號運算',
 
 
 
@@ -2334,7 +2246,7 @@ def chat_ai():
 
 
 
-        'divide_terms': '???渡?',
+        'divide_terms': '分項除法',
 
 
 
@@ -2571,14 +2483,14 @@ def analyze_handwriting():
     question_context = (data.get('question_context') or state.get('question') or "").strip()
     family_id = (data.get('family_id') or state.get('family_id') or state.get('skill') or "").strip()
     skill_labels = {
-        'sign_handling': '?????',
-        'add_sub': '????',
-        'mul_div': '????',
-        'mixed_ops': '??????',
-        'absolute_value': '???',
-        'parentheses': '????',
-        'divide_terms': '????',
-        'conjugate_rationalize': '?????',
+        'sign_handling': '符號處理',
+        'add_sub': '加減運算',
+        'mul_div': '乘除運算',
+        'mixed_ops': '四則混合',
+        'absolute_value': '絕對值',
+        'parentheses': '括號運算',
+        'divide_terms': '分項除法',
+        'conjugate_rationalize': '有理化',
     }
     prereq_text = ", ".join(
         f"{skill_labels.get(item.get('id'), item.get('name', item.get('id', '')))}"
@@ -2711,22 +2623,44 @@ def analyze_handwriting():
             reply_stripped = ""
             if isinstance(parsed, dict):
                 reply_stripped = str(parsed.get("reply", "") or "").strip()
-            if (not reply_stripped) or (not _handwriting_reply_is_compliant(reply_stripped, analysis_result.get("status"))):
-                current_app.logger.info(
-                    "analyze_handwriting: second-stage reply non-compliant; using rule-based reply"
-                )
-                mech = str((analysis_result or {}).get("error_mechanism") or "").strip()
-                issue = ERROR_MECHANISM_FEEDBACK.get(
-                    mech,
-                    str((analysis_result or {}).get("main_issue") or "").strip() or ERROR_MECHANISM_FEEDBACK["unknown"],
-                )
-                st = str((analysis_result or {}).get("status") or "")
-                if st == "incorrect" and issue:
-                    reply_stripped = f"✘ 這題有錯\n{issue}\n👉 想一下再試一次"
-                elif st == "partially_correct" and issue:
-                    reply_stripped = f"⚠️ 方向正確，但還有一個關鍵小錯\n{issue}\n👉 請再檢查一次"
+
+            current_app.logger.info(
+                "[handwriting second stage] raw reply start\n%s\n[handwriting second stage] raw reply end",
+                raw_text,
+            )
+            current_app.logger.info(
+                "[handwriting second stage] meta prompt_key=handwriting_feedback_prompt status=%s "
+                "raw_total_len=%s reply_field_len=%s",
+                hw_status,
+                len(raw_text or ""),
+                len(reply_stripped or ""),
+            )
+
+            _hw_exp = str((analysis_result or {}).get("expected_answer") or "")
+            _hw_flags = _handwriting_second_stage_compliance_flags(
+                reply_stripped, analysis_result.get("status"), _hw_exp
+            )
+            _hw_ok = _hw_flags.get("compliance_ok")
+            current_app.logger.info(
+                "[handwriting second stage] compliance flags=%r",
+                _hw_flags,
+            )
+
+            if (not reply_stripped) or (not _hw_ok):
+                if _hw_flags.get("reject_reasons"):
+                    current_app.logger.info(
+                        "[handwriting second stage] rejected: %s; using rule-based reply",
+                        "; ".join(_hw_flags["reject_reasons"]),
+                    )
                 else:
-                    reply_stripped = _handwriting_rule_based_reply(analysis_result)
+                    current_app.logger.info(
+                        "[handwriting second stage] rejected: unknown; using rule-based reply"
+                    )
+                reply_stripped = _handwriting_rule_based_reply(analysis_result)
+            else:
+                current_app.logger.info(
+                    "[handwriting second stage] accepted (semantic compliance)"
+                )
             result = {
                 "reply": "目前無法產生穩定批改回饋，請再試一次。",
                 "is_process_correct": False,
@@ -2818,7 +2752,7 @@ def analyze_handwriting():
 
 
 
-            student_answer = f"?????????: {result.get('reply', '')}"
+            student_answer = f"【手寫批改回覆】：{result.get('reply', '')}"
 
 
 
@@ -2922,7 +2856,7 @@ def analyze_handwriting():
 
 
 
-                prereq_name = "?蝞??獢?"
+                prereq_name = "未知先備課題"
 
 
 
@@ -3010,7 +2944,7 @@ def analyze_handwriting():
 
 
 
-                    'reason': diagnosis.get('prerequisite_explanation', '?梁????')
+                    'reason': diagnosis.get('prerequisite_explanation', '建議先複習相關先備概念。')
 
 
 
@@ -3058,7 +2992,7 @@ def analyze_handwriting():
 
 
 
-    # ?謕???update_progress ??湔?鈭????秋撒???質縐?????helper
+    # 進度更新交由其他路由／helper；此處不直接呼叫 update_progress
 
 
 
@@ -3114,7 +3048,7 @@ def analyze_handwriting():
 
 
 
-# Mistake Notebook & Diagnosis (????蟡??桃捂謘?
+# Mistake Notebook & Diagnosis（錯題本與診斷）
 
 
 
@@ -3330,7 +3264,7 @@ def add_mistake_entry():
 
 
 
-        return jsonify({'success': True, 'message': '??'})
+        return jsonify({'success': True, 'message': '已儲存'})
 
 
 
@@ -3442,7 +3376,7 @@ def analyze_weakness():
 
 
 
-        current_app.logger.error(f"?╰??????芰?: {e}")
+        current_app.logger.error(f"錯題本寫入失敗: {e}")
 
 
 
@@ -3474,7 +3408,7 @@ def analyze_weakness():
 
 
 
-# [?蝞??乾?] Mistake Notebook Helpers
+# Mistake Notebook 相關輔助函式
 
 
 
@@ -3586,7 +3520,7 @@ def upload_mistake_image():
 
 
 
-    if 'file' not in request.files: return jsonify({'success': False, 'message': '????澗??'}), 400
+    if 'file' not in request.files: return jsonify({'success': False, 'message': '未找到上傳檔案'}), 400
 
 
 
@@ -3610,7 +3544,7 @@ def upload_mistake_image():
 
 
 
-        return jsonify({'success': False, 'message': '?澗?????'}), 400
+        return jsonify({'success': False, 'message': '不允許的檔案類型'}), 400
 
 
 
@@ -3746,7 +3680,7 @@ def upload_mistake_image():
 
 
 
-# Student Diagnosis (?株???株???桃捂謘?蹓遴?)
+# Student Diagnosis（學生診斷頁）
 
 
 
@@ -3794,23 +3728,7 @@ def student_diagnosis():
 
 
 
-    """
-
-
-
-
-
-
-
-    ?輯??扳鞎??株???桃捂謘?蹓遴?
-
-
-
-
-
-
-
-    """
+    """顯示學生診斷（學習落點）頁面。"""
 
 
 
@@ -3842,7 +3760,7 @@ def student_diagnosis():
 
 
 
-# Naive RAG (RAG ?潘撕??+ LLM ?豯?)
+# Naive RAG（簡易檢索 + LLM 彙整）
 
 
 
@@ -3858,7 +3776,7 @@ def student_diagnosis():
 
 
 
-# RAG??? + ???
+# RAG 查詢與進階 RAG
 
 
 
@@ -3938,7 +3856,7 @@ def api_rag_search():
 
 
 
-        return jsonify({"results": [], "error": "???????"}), 400
+        return jsonify({"results": [], "error": "查詢字串不可為空"}), 400
 
 
 
@@ -4050,7 +3968,7 @@ def api_rag_chat():
 
 
 
-        return jsonify({"reply": "??????????"}), 400
+        return jsonify({"reply": "查詢或技能 ID 不可為空"}), 400
 
 
 

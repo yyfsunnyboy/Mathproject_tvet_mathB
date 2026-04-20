@@ -1,6 +1,9 @@
 # ==========================================
 # 專案特定 (Project Specific) - 最重要放在前面
 # ==========================================
+# Prompt registry：DB 反向匯出腳本產生的本機備份（勿提交）
+configs/prompts/prompt_registry.yaml.bak
+
 # 忽略上傳的檔案 (Word/PDF)
 uploads/
 *.docx

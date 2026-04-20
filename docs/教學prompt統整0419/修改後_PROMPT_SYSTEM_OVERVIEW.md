@@ -7,6 +7,11 @@
 - **為什麼不能所有 prompt 都拿答案**：AI 助教的核心任務是「引導（Scaffolding）」而非「解答」。避免 AI 拿到標準答案後，因模型參數過小而發生「直接把答案唸出來」的洩題事故，多數的 Tutor / Concept prompt 不會主動獲取標準答案。
 - **為什麼小模型（Qwen 8B）與 Gemini Flash 需要共用一套偏精簡的 prompt**：為支援「Runtime AI」配置，系統能自由切換地端（Local Edge）與雲端模型。精簡且指引明確的 Prompt 有助於小參數量模型能遵循指令，同時在大模型上也能保持高效不偏移。
 - **分層機制與 Guardrail**：將行為準則（Guardrail）與教學主體（Tutor）分開，確保無論對話如何偏移，核心的「不可直接評價對錯、不可給出最終答案」安全邊界總能在最終階段強制注入系統提示中。
+- **為什麼 Prompt 系統不能只看 Admin / DB**：本系統現況不是純 prompt-driven system，而是混合式分層架構。  
+  1) **Prompt Layer**：正式教學內容主體，應以 YAML / DB / Admin 作為主要可維護來源。  
+  2) **Policy Layer**：如 compliance、regex、error_mechanism mapping 等神經符號控制層，保留於 code。  
+  3) **Fallback Layer**：如 hard-coded fallback prompt / rule-based reply 的失敗保底層，保留於 code。  
+  維護原則為「Prompt 可調、Policy 不應完全搬進 Prompt、Fallback 不應主導主要輸出」。
 
 # 3. Prompt 總覽表
 
@@ -19,6 +24,9 @@
 | `concept_prompt` | concept | 特定數學名詞/觀念解析 | `concept`, `grade` | Concept 卡片 | `core/ai_analyzer.py` 等 | 前端特定名詞點擊 | 解釋觀念與迷思概念 | 否 |
 | `mistake_prompt` | diagnosis | 錯題診斷與錯誤原因歸納 | `question`, `student_answer`, `correct_answer` | 後台邏輯 / 錯題本 | `core/ai_analyzer.py` -> `analyze_student_mistake` | 批改邏輯送出錯題資料 | 分析出 Concept / Careless 等盲點 | **是**（必須有答案） |
 | `handwriting_feedback_prompt` | tutor | 白板批改 second-stage 主流程回饋 prompt | `question`, `student_expression`, `expected_answer`, `status`, `family_description_zh`, `error_mechanism`, `main_issue` | 白板畫布 | `core/routes/analysis.py` -> `_handwriting_feedback_second_prompt()` | 前端截圖傳回的圖片 + 題目描述 | 確認手寫計算步驟並指出具體錯誤步驟 | ✅ 是（使用 `expected_answer`，僅供內部比對） |
+
+**補充說明：**  
+表內列出的 prompt key 代表的是「正式可管理的 Prompt（Prompt Registry / DB / Admin）」；系統仍存在少量 code-side fallback（不在 admin 直接編輯）。因此本表不是所有教學文字輸出的完整清單，而是主要 Prompt registry / DB 清單。
 
 # 4. 題目、學生答案、正確答案的資料流
 
@@ -92,6 +100,21 @@
    - **根因**：在 `core/routes/analysis.py -> analyze_handwriting()` 流程中，存在 `elif _handwriting_issue_is_clear(analysis_result):` 的攔截分支。
    - **修改**：移除該攔截分支，讓 `hw_status in ("unknown", "correct")` 確保放行快速通道後，所有 `partially_correct` / `incorrect` 皆統一無條件進入 `_handwriting_feedback_second_prompt()`。
    - **結果**：`handwriting_feedback_prompt` 已真正接管白板 second-stage 教學回饋；舊的 generic rule-based 回覆不再攔截主要錯誤情境；後台修改 prompt 已能直接且穩定影響部分正確與錯誤作答的教學回覆。
+
+9. **Second-stage compliance 與 fallback 層定位明確化**
+   - **現況**：白板 second-stage 已加入 semantic compliance 檢查，合規條件不再只看固定格式。
+   - **檢查重點**：
+     - 是否有錯誤說明
+     - 是否有下一步引導
+     - 是否直接暴露最終答案
+   - **架構定位**：同時保留 rule-based fallback / hard-coded fallback prompt，作為失敗保底。
+   - **結論**：上述機制屬於 Policy / Fallback Layer，不應與 DB Prompt 管理層混為同一層。
+
+10. **RAG Prompt 意圖分流（`rag_tutor_prompt` vs `tutor_hint_prompt`）**
+   - **問題背景**：原本 Advanced RAG 問答容易一律使用 `tutor_hint_prompt`，導致使用者明明在求教學，回覆仍過短。
+   - **修改位置**：於 `/api/adaptive/adv_rag_chat` 的 route 層加入簡單意圖分流。
+   - **分流規則**：若 query 帶有「不會 / 不懂 / 看不懂 / 怎麼算 / 怎麼做 / 為什麼 / 可以教 / 教我」等語氣，且檢索結果存在，則優先使用 `rag_tutor_prompt`；其餘情況維持 `tutor_hint_prompt`。
+   - **定位說明**：此變更屬於「RAG 教學強度控制」，不是 RAG engine 本身變更。
 
 # 6. 目前建議採用的預設 prompts
 
@@ -242,6 +265,8 @@
 - **Handwriting Pipeline 持續追蹤與 Legacy 遺留物：** 白板批改主流程已完美接回系統，但仍需持續驗證 prompt render 與 fallback 的發動行為；另外舊版的 `core/ai_analyzer.py -> analyze()` 屬於 legacy / orphan path，目前需在此註記並放置不管，若未來要進一步整潔化，可考慮將 legacy path 明確標記為 deprecated。
 - **`family_name_block` 再進化：** 雖然經過教學化格式修補，但 fallback 時的字串依然存在系統特性的機器感，建議擴充 DB 對應更口語的章節表。
 - **多台電腦與多環境切換的同步率：** 目前系統有 DB 版本也有原碼中 fallback 版本，多地開發時可能因 SQLite 不同步導致結果差異。
+- **混合架構誤判風險：** 後續維護者若只看 Admin 後台，可能誤以為所有教學輸出都來自 DB Prompt；實際上仍有 Policy / Fallback 層存在，若誤刪 code-side fallback 可能造成 Edge 模式穩定性下降。
+- **RAG Prompt 選擇誤解風險：** `rag_tutor_prompt` 與 `tutor_hint_prompt` 的差異不在於是否使用 RAG，而在於教學強度與回覆目標不同。若後續維護者未理解這個分流，可能會把所有 RAG 回覆再次壓回過短提示。
 
 # 9. 建議後續維護策略
 - **Prompt as Config**：將核心 Prompt 定位為設定檔，不應隨意硬編碼（Hardcode）散落於各組件。
@@ -249,3 +274,8 @@
 - **DB 作為 Runtime Override**：當系統管理員於後台進行更動時，透過 DB 的內容凌駕（Override） YAML。
 - **匯入 / 匯出**：建議實現一份腳本，能把線上 DB 調校好的最佳成果備份為 JSON/YAML，以防環境毀損。
 - **Prompt Versioning**：若要做 A/B Testing，可以在 DB 表單內擴充 `version_tag` 與 `is_active`。
+- **分層維護原則（Prompt / Policy / Fallback）**：
+  1. **Prompt Layer**：教學內容主體，優先維護於 YAML / DB / Admin（例如：`handwriting_feedback_prompt`、`rag_tutor_prompt`、`tutor_hint_prompt`）。  
+  2. **Policy Layer**：合規與安全規則，保留在 code（例如：compliance flags、regex、錯誤機制判定、禁止直接給答案規則）。  
+  3. **Fallback Layer**：例外與失敗保底，保留在 code，僅在 prompt render 失敗 / LLM 不合規 / Edge 回覆異常時啟動。  
+  維護警語：未來若要重構 Prompt 系統，應優先搬移 Prompt Layer，而不是把 Policy / Fallback 混入 Prompt Registry。
