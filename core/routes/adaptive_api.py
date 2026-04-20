@@ -458,28 +458,37 @@ def api_adv_rag_chat():
     family_id = (data.get('family_id') or '').strip()
     retrieved_skills = data.get('retrieved_skills') or []
     provider = (data.get('provider') or 'local').strip().lower()
+    use_rag = data.get('use_rag', True)
 
     if not query:
         return jsonify({"reply": "請提供問題"}), 400
 
-    is_learning_intent = any(
-        kw in query
-        for kw in (
-            "不會",
-            "不懂",
-            "看不懂",
-            "怎麼算",
-            "怎麼做",
-            "為什麼",
-            "可以教",
-            "教我",
-        )
-    )
-    prompt_key = "rag_tutor_prompt" if (is_learning_intent and retrieved_skills) else "tutor_hint_prompt"
-
     try:
         if not current_app.config.get('ADVANCED_RAG_ENABLE_AI_CHAT', True):
             return jsonify({"reply": "目前 AI 助教已由老師關閉"})
+
+        if not use_rag:
+            raw_prompt = query
+            if question_text:
+                raw_prompt = f"以下是學生目前的題目：\n{question_text}\n\n學生的問題：\n{query}"
+            print(f"[RAG PROMPT SELECT] Direct chat without RAG. prompt_key=direct")
+            result = _adv_rag_invoke_tutor(raw_prompt, provider)
+            return jsonify(result)
+
+        is_learning_intent = any(
+            kw in query
+            for kw in (
+                "不會",
+                "不懂",
+                "看不懂",
+                "怎麼算",
+                "怎麼做",
+                "為什麼",
+                "可以教",
+                "教我",
+            )
+        )
+        prompt_key = "rag_tutor_prompt" if (is_learning_intent and retrieved_skills) else "tutor_hint_prompt"
 
         print(
             f"[RAG PROMPT SELECT] intent={'learning' if is_learning_intent else 'hint'} prompt={prompt_key}"
