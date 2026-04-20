@@ -16,9 +16,9 @@ werkzeug
 pypandoc
 frontend
 tools
-pypandoc
 pytesseract
 Pillow
 chromadb
 sentence-transformers
 gymnasium
+stable-baselines3

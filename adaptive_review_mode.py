@@ -228,7 +228,7 @@ class AdaptiveReviewEngine:
                 with torch.no_grad():
                     obs = torch.tensor(s_t, dtype=torch.float32).unsqueeze(0)
                     action, _ = self.rl_model.predict(obs, deterministic=True)
-                    item_id = int(action)
+                    item_id = int(action.item())
             else:
                 # 備選方案：Max-Fisher (最高不確定性)
                 item_id = self._select_max_fisher(s_t, visited_items)

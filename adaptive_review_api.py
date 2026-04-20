@@ -500,6 +500,79 @@ def health_check():
         }), 500
 
 
+@adaptive_review_bp.route('/question/<int:item_id>', methods=['GET'])
+def get_question(item_id: int):
+    """
+    獲取單個題目的詳細信息
+    
+    Response:
+    {
+        "status": "success",
+        "data": {
+            "item_id": 42,
+            "skill_id": 3,
+            "skill_name": "polynomial-operations",
+            "question_text": "化簡多項式...",
+            "predicted_difficulty": 0.45,
+            "answer_type": "text",
+            "hint": "可以先分組..."
+        }
+    }
+    """
+    try:
+        engine = get_engine()
+        
+        # 從引擎獲取題目的技能映射
+        skill_id = engine.akt_inference.problem_to_skill_id.get(item_id, 0)
+        
+        # 獲取實際的 skill_name (如果有的話)
+        if hasattr(engine.akt_inference, 'skills_list') and skill_id < len(engine.akt_inference.skills_list):
+            skill_name = engine.akt_inference.skills_list[skill_id]
+        else:
+            skill_name = f"skill_{skill_id}"
+            
+        # 獲取題目難度
+        predicted_difficulty = engine.item_properties.get(item_id, {}).get('difficulty', 0.5) if hasattr(engine, 'item_properties') else 0.5
+        
+        from models import db
+        from sqlalchemy import text
+        # 從資料庫當中抓取一題同樣 skill_name 的題目
+        query = text('''
+            SELECT problem_text 
+            FROM textbook_examples 
+            WHERE skill_id = :skill_id 
+            ORDER BY RANDOM() LIMIT 1
+        ''')
+        result = db.session.execute(query, {'skill_id': skill_name}).fetchone()
+        
+        if result and result[0]:
+            question_text = result[0]
+        else:
+            question_text = f"題目 {item_id}: 請回答該數學題\n\n" \
+                           f"(技能 ID: {skill_name})\n" \
+                           f"難度級別: {'簡單' if predicted_difficulty < 0.4 else '中等' if predicted_difficulty < 0.65 else '困難'}"
+        
+        return jsonify({
+            'status': 'success',
+            'data': {
+                'item_id': item_id,
+                'skill_id': skill_id,
+                'skill_name': skill_name,
+                'question_text': question_text,
+                'predicted_difficulty': float(predicted_difficulty),
+                'answer_type': 'text',
+                'hint': '仔細思考題目的要求，一步步解答。',
+            }
+        }), 200
+        
+    except Exception as e:
+        logger.error(f"❌ 獲取題目失敗: {e}", exc_info=True)
+        return jsonify({
+            'status': 'error',
+            'message': f'無法獲取題目: {str(e)}'
+        }), 500
+
+
 if __name__ == "__main__":
     from flask import Flask
     

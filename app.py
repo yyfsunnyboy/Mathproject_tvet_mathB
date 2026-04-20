@@ -248,8 +248,8 @@ def create_app():
     @app.route('/adaptive-review')
     @login_required
     def adaptive_review():
-        """自適應複習模式入口頁面"""
-        return render_template('adaptive_review.html')
+        """自適應複習模式入口頁面（簡潔版本）"""
+        return render_template('adaptive_review_simple.html')
 
     @app.route('/teacher_dashboard')
     @login_required

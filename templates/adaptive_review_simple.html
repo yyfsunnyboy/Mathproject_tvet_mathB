@@ -1,0 +1,1087 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>自適應複習 - 智學平台</title>
+  <style>
+    :root {
+      --bg: #eef4fb;
+      --panel: #ffffff;
+      --line: #d8e1ef;
+      --ink: #1f2a44;
+      --muted: #64748b;
+      --accent: #1565c0;
+      --accent-soft: #edf5ff;
+      --ok: #1f9d55;
+      --warn: #d97706;
+      --hint-bg: #fff7e8;
+      --hint-line: #f1cc84;
+    }
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      font-family: "Microsoft JhengHei", "Noto Sans TC", sans-serif;
+      color: var(--ink);
+      background: radial-gradient(circle at top right, rgba(21, 101, 192, 0.08), transparent 28%), linear-gradient(180deg, #f8fbff 0%, var(--bg) 100%);
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .shell {
+      max-width: 1800px;
+      margin: 0 auto;
+      padding: 22px 18px 36px;
+      width: 98%;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .hero {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 14px;
+      flex-wrap: wrap;
+    }
+    .hero h1 {
+      margin: 0 0 4px;
+      font-size: 28px;
+      font-weight: 700;
+    }
+    .hero p {
+      margin: 0;
+      line-height: 1.65;
+      color: var(--muted);
+      max-width: 900px;
+      font-size: 14px;
+    }
+    
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 260px;
+      text-align: center;
+      font-size: 13px;
+      color: #274472;
+      background: rgba(255, 255, 255, 0.92);
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 10px 14px;
+    }
+    
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      box-shadow: 0 14px 44px rgba(18, 44, 99, 0.06);
+      padding: 14px;
+    }
+    
+    .page-layout {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      flex: 1;
+    }
+    
+    .main-columns {
+      display: grid;
+      grid-template-columns: 260px 1.6fr 1.2fr;
+      gap: 16px;
+      align-items: stretch;
+      flex: 1;
+    }
+    
+    .nav-panel {
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      gap: 12px;
+    }
+    
+    .nav-panel h2 {
+      margin: 0 0 8px;
+      font-size: 17px;
+      font-weight: 700;
+    }
+    
+    .nav-progress-box {
+      margin: 0;
+      padding: 10px 12px;
+      border: 1px solid #cfe0f5;
+      border-radius: 12px;
+      background: #f4f9ff;
+      color: #2d4668;
+      font-size: 12.5px;
+      line-height: 1.55;
+    }
+    .nav-progress-box strong {
+      font-size: 13px;
+      color: #1f3f63;
+    }
+    
+    .nav-progress-bar {
+      height: 6px;
+      background: #e5eaf3;
+      border-radius: 6px;
+      overflow: hidden;
+      margin-top: 6px;
+    }
+    #navProgressFill {
+      width: 0%;
+      height: 100%;
+      background: linear-gradient(90deg, #4facfe, #00c6ff);
+      transition: width 0.3s ease;
+    }
+    
+    .stat-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+    .stat-box {
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 8px 10px;
+      background: #f5f7fb;
+      font-size: 14px;
+      color: #2f4566;
+      line-height: 1.4;
+    }
+    .stat-box span {
+      font-weight: 700;
+      color: var(--accent);
+    }
+    
+    .btn {
+      border: 0;
+      border-radius: 12px;
+      padding: 10px 16px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: inherit;
+      transition: all 0.2s;
+    }
+    .btn-primary {
+      background: var(--accent);
+      color: white;
+    }
+    .btn-primary:hover:not(:disabled) {
+      background: #0052a3;
+    }
+    .btn-secondary {
+      background: #eaf1fa;
+      color: var(--ink);
+      border: 1px solid var(--line);
+    }
+    .btn-secondary:hover {
+      background: #d8e5f7;
+    }
+    .btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+    
+    .btn-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    
+    .question-section {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      min-width: 0;
+    }
+    
+    .question-section h2 {
+      margin: 0;
+      font-size: 18px;
+      font-weight: 700;
+    }
+    
+    .question-box {
+      min-height: 128px;
+      border: 1px dashed #bdd1ec;
+      border-radius: 14px;
+      background: #fbfdff;
+      padding: 14px;
+      flex: 0 0 auto;
+    }
+    .question-family {
+      margin-bottom: 10px;
+      font-size: 14px;
+      color: var(--muted);
+    }
+    .question-text {
+      white-space: pre-wrap;
+      line-height: 1.65;
+      font-size: 21px;
+      font-weight: 700;
+    }
+    .question-meta {
+      display: flex;
+      gap: 12px;
+      margin-top: 8px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+    
+    .answer-box {
+      display: grid;
+      grid-template-columns: 1fr 150px;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+    .answer-box input {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 12px 14px;
+      font-size: 16px;
+      background: #fff;
+      font-family: inherit;
+    }
+    .answer-box button {
+      padding: 10px 16px;
+    }
+    
+    .response-feedback {
+      padding: 10px 12px;
+      border-radius: 10px;
+      font-size: 13px;
+      margin-bottom: 10px;
+      display: none;
+    }
+    .response-feedback.show {
+      display: block;
+    }
+    .response-feedback.correct {
+      background: #d1e7dd;
+      color: #0a3622;
+      border: 1px solid #badbcc;
+    }
+    .response-feedback.incorrect {
+      background: #f8d7da;
+      color: #842029;
+      border: 1px solid #f5c2c7;
+    }
+    
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .controls button {
+      flex: 1;
+      min-width: 100px;
+    }
+    
+    .scratchpad-section {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      min-width: 0;
+    }
+    .scratchpad-section h2 {
+      margin: 0;
+      font-size: 17px;
+      font-weight: 700;
+    }
+    
+    .canvas-tools {
+      display: flex;
+      flex-wrap: nowrap;
+      align-items: center;
+      gap: 6px;
+      overflow-x: auto;
+      overflow-y: hidden;
+      padding-bottom: 2px;
+      margin-bottom: 10px;
+    }
+    .tool-btn {
+      border: 1px solid transparent;
+      background: #eff4fb;
+      color: var(--ink);
+      padding: 7px 9px;
+      border-radius: 10px;
+      min-width: 36px;
+      height: 36px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .tool-btn:hover, .tool-btn.active {
+      background: #d9ebff;
+      border-color: #7ab4f0;
+      color: #0f5aa8;
+    }
+    .tool-btn svg {
+      width: 18px;
+      height: 18px;
+      stroke: currentColor;
+      stroke-width: 1.9;
+      fill: none;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+    .tool-sep { width: 1px; height: 22px; background: #d6deeb; margin: 0 4px; }
+    .pen-width-wrap { display: inline-flex; align-items: center; gap: 6px; padding: 7px 10px; border-radius: 10px; background: #eff4fb; font-size: 12px; color: var(--muted); height: 36px; }
+    .pen-width-wrap input[type="range"] { width: 84px; }
+    .color-dot { display: inline-block; width: 16px; height: 16px; border-radius: 999px; border: 2px solid rgba(255,255,255,0.92); box-shadow: 0 0 0 1px rgba(0,0,0,0.12); }
+    
+    .canvas-wrap {
+      flex: 1;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      overflow: hidden;
+      background: linear-gradient(90deg, rgba(21, 101, 192, 0.04) 1px, transparent 1px),
+                  linear-gradient(rgba(21, 101, 192, 0.04) 1px, transparent 1px),
+                  #ffffff;
+      background-size: 20px 20px;
+    }
+    #handwriting-canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+      min-height: 250px;
+      cursor: crosshair;
+      touch-action: none;
+      user-select: none;
+    }
+    
+    .ai-assistant-panel {
+      border-color: var(--hint-line);
+      background: linear-gradient(180deg, #fffdf6 0%, #fff7e8 100%);
+      flex: 1;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+    .ai-assistant-panel h2 {
+      margin: 0 0 10px;
+      font-size: 17px;
+      font-weight: 700;
+      color: #9b59b6;
+    }
+    
+    .chat-history {
+      flex: 1;
+      overflow-y: auto;
+      border: 1px solid #dee2e6;
+      border-radius: 10px;
+      background: #ffffff;
+      padding: 10px;
+      margin-bottom: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      scroll-behavior: smooth;
+    }
+    .chat-history::-webkit-scrollbar {
+      width: 8px;
+    }
+    .chat-history::-webkit-scrollbar-thumb {
+      background: #c7d5e8;
+      border-radius: 999px;
+    }
+    
+    .msg {
+      max-width: 95%;
+      padding: 8px 10px;
+      border-radius: 10px;
+      font-size: 13px;
+      line-height: 1.5;
+      white-space: pre-wrap;
+    }
+    .msg.user {
+      align-self: flex-end;
+      background: #e7f2ff;
+      color: #17447a;
+    }
+    .msg.bot {
+      align-self: flex-start;
+      background: #f0f0f0;
+      color: #333;
+      border: 1px solid #e0e0e0;
+    }
+    
+    .assistant-input {
+      display: flex;
+      gap: 8px;
+    }
+    .assistant-input input {
+      flex: 1;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 8px 10px;
+      font-size: 13px;
+      font-family: inherit;
+      background: #fff;
+    }
+    .assistant-input button {
+      padding: 8px 12px;
+      font-size: 12px;
+    }
+    
+    .empty-state {
+      text-align: center;
+      color: var(--muted);
+      font-size: 13px;
+      padding: 20px;
+    }
+    
+    .welcome-panel {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 60px 20px;
+      text-align: center;
+      gap: 30px;
+    }
+    .welcome-panel h1 {
+      margin: 0;
+      font-size: 28px;
+      color: var(--ink);
+    }
+    .welcome-panel p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.6;
+    }
+    
+    @media (max-width: 1200px) {
+      .main-columns {
+        grid-template-columns: 1fr 1fr;
+      }
+      .nav-panel {
+        display: none;
+      }
+    }
+    @media (max-width: 768px) {
+      .main-columns {
+        grid-template-columns: 1fr;
+      }
+      .shell {
+        padding: 14px 12px;
+      }
+      .hero {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <!-- Hero 區域 -->
+    <div class="hero">
+      <div>
+        <h1>📚 自適應複習</h1>
+        <p>根據你的學習進度，智能推薦最適合的複習題目</p>
+      </div>
+      <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+        <div class="badge">
+          <span style="display: flex; align-items: center; gap: 8px;">
+            <strong id="aprDisplay">準備中...</strong>
+            <span style="color: var(--muted); font-size: 12px;">當前掌握度</span>
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 主要布局 -->
+    <div class="page-layout">
+      <!-- 初始歡迎狀態 -->
+      <div id="welcomeState" class="panel welcome-panel" style="display: flex;">
+        <div>
+          <h1>👋 歡迎來到自適應複習！</h1>
+          <p>這是一個智能學習系統，會根據你的表現動態推薦最適合的題目。<br>
+          無論是否有過之前的學習記錄，你都可以立即開始！</p>
+          <button class="btn btn-primary" id="startBtn" onclick="startReview()" style="margin-top: 20px; padding: 12px 32px; font-size: 16px;">
+            開始複習 →
+          </button>
+        </div>
+      </div>
+
+      <!-- 複習工作區 -->
+      <div id="reviewState" style="display: none;">
+        <div class="main-columns">
+          <!-- 左側：導航面板 -->
+          <div class="panel nav-panel">
+            <h2>進度</h2>
+            <div class="nav-progress-box">
+              <strong>當前掌握度</strong><br>
+              <span id="navAPR">-</span>
+            </div>
+            <div class="nav-progress-box">
+              <strong>已答題數</strong><br>
+              <span id="navCount">0</span>
+            </div>
+            <div class="nav-progress-box">
+              <strong>正確率</strong><br>
+              <span id="navRate">-</span>
+            </div>
+            
+            <div style="margin-top: 20px;">
+              <h2 style="margin: 0 0 8px;">操作</h2>
+              <div class="btn-group">
+                <button class="btn btn-primary" id="submitBtn" onclick="submitAnswer()">
+                  提交答案
+                </button>
+                <button class="btn btn-secondary" onclick="requestHint()">
+                  💡 提示
+                </button>
+                <button class="btn btn-secondary" onclick="skipQuestion()">
+                  ⏭️ 跳過
+                </button>
+                <button class="btn btn-secondary" onclick="nextQuestion()">
+                  ➡️ 下一題
+                </button>
+                <button class="btn btn-secondary" onclick="refreshSession()">
+                  🔄 重新開始
+                </button>
+                <button class="btn btn-secondary" onclick="window.location.href='{{ url_for('dashboard') }}'">
+                  ← 返回儀表板
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- 中間：題目 & 手寫板 -->
+          <div class="panel question-section">
+            <h2>📝 題目</h2>
+            <div class="question-box">
+              <div class="question-family" id="skillName">技能</div>
+              <div class="question-text" id="questionText">-</div>
+              <div class="question-meta">
+                <span id="difficulty">難度</span>
+              </div>
+            </div>
+            
+            <div style="flex: 1; min-height: 400px; display: flex; flex-direction: column;">
+              <div style="margin-bottom: 10px;">
+                <h3 style="margin: 0 0 6px; font-size: 18px; font-weight: 700;">手寫計算紙</h3>
+                <p style="margin: 0; font-size: 13px; color: var(--muted);">把中間步驟寫出來，比較不會把所有運算都塞在腦中。你也可以把白板送給 AI 幫你檢查。</p>
+              </div>
+              <div class="canvas-tools">
+                <button class="tool-btn active" id="penBtn" onclick="setTool('pen')" title="畫筆">
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 1 1 3 3L7 19l-4 1 1-4Z"/></svg>
+                </button>
+                <button class="tool-btn" id="eraserBtn" onclick="setTool('eraser')" title="橡皮擦">
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m7 21 10.6-10.6a2 2 0 0 0 0-2.8l-2.6-2.6a2 2 0 0 0-2.8 0L1.6 15.6a2 2 0 0 0 0 2.8L4.2 21"/><path d="M22 21H7"/></svg>
+                </button>
+                <button class="tool-btn active" onclick="setPenColor('#1f2937')" title="黑筆"><span class="color-dot" style="background:#1f2937;"></span></button>
+                <button class="tool-btn" onclick="setPenColor('#1565c0')" title="藍筆"><span class="color-dot" style="background:#1565c0;"></span></button>
+                <button class="tool-btn" onclick="setPenColor('#dc2626')" title="紅筆"><span class="color-dot" style="background:#dc2626;"></span></button>
+                <button class="tool-btn" onclick="setPenColor('#16a34a')" title="綠筆"><span class="color-dot" style="background:#16a34a;"></span></button>
+                <div class="tool-sep"></div>
+                <div class="pen-width-wrap"><span>筆寬</span><input id="penWidthRange" type="range" min="1" max="8" value="2" onchange="setPenWidth(this.value)"><span id="penWidthLabel">2</span></div>
+                <div class="tool-sep"></div>
+                <button class="tool-btn" onclick="undoCanvas()" title="上一步">
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 14 4 9l5-5"/><path d="M20 20a8 8 0 0 0-8-8H4"/></svg>
+                </button>
+                <button class="tool-btn" onclick="redoCanvas()" title="下一步">
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 14 5-5-5-5"/><path d="M4 20a8 8 0 0 1 8-8h8"/></svg>
+                </button>
+                <button class="tool-btn" onclick="clearCanvas()" title="清空白板">
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="m19 6-1 14H6L5 6"/></svg>
+                </button>
+                <button class="btn btn-primary" onclick="alert('TODO')" style="padding: 7px 12px; height: 36px; border-radius: 10px; background: #eab308; border: none; color: white; white-space: nowrap;">AI 檢查手寫</button>
+              </div>
+              <div class="canvas-wrap" style="flex: 1; resize: vertical; overflow: hidden; min-height: 250px;">
+                <canvas id="handwriting-canvas"></canvas>
+              </div>
+            </div>
+            
+            <div>
+              <h3 style="margin: 0 0 8px; font-size: 14px; font-weight: 700;">✍️ 答案輸入</h3>
+              <div class="answer-box">
+                <input type="text" id="answerInput" placeholder="輸入你的答案..." />
+                <button class="btn btn-primary" onclick="submitAnswer()">提交</button>
+              </div>
+              <div id="responseFeedback" class="response-feedback"></div>
+            </div>
+          </div>
+
+          <!-- 右側：AI 助手 -->
+          <div class="panel ai-assistant-panel">
+            <h2>🤖 AI 助手</h2>
+            <div class="chat-history" id="chatHistory">
+              <div class="empty-state">準備就緒，開始提問吧！</div>
+            </div>
+            <div class="assistant-input">
+              <input type="text" id="chatInput" placeholder="提問..." onkeypress="handleChatKeypress(event)" />
+              <button class="btn btn-primary" onclick="sendChatMessage()">發送</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es2015"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <script>
+    // ════════════════════════════════════════════════════════════════════
+    // 全局變數
+    // ════════════════════════════════════════════════════════════════════
+    let currentStudentId = '{{ current_user.id }}' || 'guest';
+    let currentQuestion = null;
+    let currentSession = null;
+    let learningHistory = {
+      item_history: [],
+      skill_history: [],
+      resp_history: []
+    };
+    let canvasContext = null;
+    let isDrawing = false;
+    let currentTool = 'pen';
+    let penWidth = 2;
+    let penColor = '#1f2937';
+    let undoStack = [];
+    let redoStack = [];
+
+    // ════════════════════════════════════════════════════════════════════
+    // 初始化
+    // ════════════════════════════════════════════════════════════════════
+    window.addEventListener('DOMContentLoaded', () => {
+      console.log('[init] 頁面 DOM 已加載，開始初始化...');
+      
+      // 確保歡迎狀態可見
+      const welcomeState = document.getElementById('welcomeState');
+      const reviewState = document.getElementById('reviewState');
+      
+      if (welcomeState) welcomeState.style.display = 'flex';
+      if (reviewState) reviewState.style.display = 'none';
+      
+      console.log('[init] 狀態已設置為：welcome');
+      
+      // 初始化畫布
+      setTimeout(initializeCanvas, 100);
+      console.log('✅ 自適應複習頁面已初始化完成');
+    });
+
+    function initializeCanvas() {
+      const canvas = document.getElementById('handwriting-canvas');
+      if (!canvas) return;
+      
+      const parent = canvas.parentElement;
+      const rect = parent.getBoundingClientRect();
+      if (rect.width > 0 && rect.height > 0) {
+        canvas.width = rect.width;
+        canvas.height = rect.height;
+      }
+      canvasContext = canvas.getContext('2d');
+      canvasContext.lineCap = 'round';
+      canvasContext.lineJoin = 'round';
+
+      // 手寫事件
+      canvas.addEventListener('mousedown', (e) => { isDrawing = true; startDraw(e); });
+      canvas.addEventListener('mousemove', (e) => { if (isDrawing) draw(e); });
+      canvas.addEventListener('mouseup', () => { isDrawing = false; });
+      canvas.addEventListener('mouseout', () => { isDrawing = false; });
+      
+      // 觸控支持
+      canvas.addEventListener('touchstart', (e) => { e.preventDefault(); isDrawing = true; startDraw(e.touches[0]); }, {passive: false});
+      canvas.addEventListener('touchmove', (e) => { if (isDrawing) { e.preventDefault(); draw(e.touches[0]); } }, {passive: false});
+      canvas.addEventListener('touchend', (e) => { e.preventDefault(); isDrawing = false; });
+
+      // 使用 ResizeObserver 以支援使用者自行拖曳縮放
+      const resizeObserver = new ResizeObserver(entries => {
+        for (let entry of entries) {
+           const newRect = entry.contentRect;
+           if (newRect.width > 0 && newRect.height > 0) {
+             // 調整前先保存已畫的內容
+             let imgData = null;
+             if (canvas.width > 0 && canvas.height > 0) {
+                imgData = canvas.toDataURL();
+             }
+             canvas.width = newRect.width;
+             canvas.height = newRect.height;
+             canvasContext.lineCap = 'round';
+             canvasContext.lineJoin = 'round';
+             if (imgData) {
+                let img = new Image();
+                img.onload = () => {
+                  canvasContext.drawImage(img, 0, 0, canvas.width, canvas.height);
+                };
+                img.src = imgData;
+             }
+           }
+        }
+      });
+      resizeObserver.observe(parent);
+    }
+
+    function setTool(tool) {
+      currentTool = tool;
+      document.querySelectorAll('.tool-btn').forEach(btn => btn.classList.remove('active'));
+      if (tool === 'pen') document.getElementById('penBtn').classList.add('active');
+      else if (tool === 'eraser') document.getElementById('eraserBtn').classList.add('active');
+    }
+
+    function startDraw(e) {
+      saveState();
+      const canvas = document.getElementById('handwriting-canvas');
+      const rect = canvas.getBoundingClientRect();
+      const x = (e.clientX - rect.left) * (canvas.width / rect.width);
+      const y = (e.clientY - rect.top) * (canvas.height / rect.height);
+      
+      canvasContext.beginPath();
+      canvasContext.moveTo(x, y);
+    }
+
+    function draw(e) {
+      const canvas = document.getElementById('handwriting-canvas');
+      const rect = canvas.getBoundingClientRect();
+      const x = (e.clientX - rect.left) * (canvas.width / rect.width);
+      const y = (e.clientY - rect.top) * (canvas.height / rect.height);
+
+      if (currentTool === 'pen') {
+        canvasContext.strokeStyle = penColor;
+        canvasContext.lineWidth = penWidth;
+        canvasContext.lineTo(x, y);
+        canvasContext.stroke();
+      } else if (currentTool === 'eraser') {
+        canvasContext.clearRect(x - 10, y - 10, 20, 20);
+      }
+    }
+    
+    function setPenColor(color) {
+      penColor = color;
+      setTool('pen');
+    }
+    
+    function setPenWidth(width) {
+      penWidth = width;
+      document.getElementById('penWidthLabel').textContent = width;
+    }
+    
+    function saveState() {
+      const canvas = document.getElementById('handwriting-canvas');
+      if(undoStack.length > 20) undoStack.shift();
+      undoStack.push(canvas.toDataURL());
+      redoStack = [];
+    }
+    
+    function undoCanvas() {
+      const canvas = document.getElementById('handwriting-canvas');
+      if (undoStack.length > 0) {
+        redoStack.push(canvas.toDataURL());
+        let imgData = undoStack.pop();
+        let img = new Image();
+        img.onload = () => { 
+          canvasContext.clearRect(0,0,canvas.width,canvas.height); 
+          canvasContext.drawImage(img,0,0, canvas.width, canvas.height); 
+        };
+        img.src = imgData;
+      }
+    }
+    
+    function redoCanvas() {
+      const canvas = document.getElementById('handwriting-canvas');
+      if (redoStack.length > 0) {
+        undoStack.push(canvas.toDataURL());
+        let imgData = redoStack.pop();
+        let img = new Image();
+        img.onload = () => { 
+          canvasContext.clearRect(0,0,canvas.width,canvas.height); 
+          canvasContext.drawImage(img,0,0, canvas.width, canvas.height); 
+        };
+        img.src = imgData;
+      }
+    }
+
+    function clearCanvas() {
+      saveState();
+      const canvas = document.getElementById('handwriting-canvas');
+      canvasContext.clearRect(0, 0, canvas.width, canvas.height);
+    }
+
+    // ════════════════════════════════════════════════════════════════════
+    // 會話管理
+    // ════════════════════════════════════════════════════════════════════
+    async function startReview() {
+      try {
+        document.getElementById('startBtn').disabled = true;
+        
+        const response = await fetch('/api/adaptive-review/start', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            student_id: currentStudentId,
+            history: learningHistory,
+            n_recommendations: 1,
+            use_rl: true
+          })
+        });
+
+        if (!response.ok) throw new Error(`API 錯誤: ${response.status}`);
+        const data = await response.json();
+
+        if (data.status === 'success') {
+          currentSession = data.data;
+          updateStats(data.data);
+          if (data.data.recommendations && data.data.recommendations.length > 0) {
+            displayQuestion(data.data.recommendations[0]);
+          }
+          showState('review');
+          addChatMessage('bot', '👋 歡迎！我已為你推薦了第一道題目。你可以在手寫板上計算，然後在答案框中輸入答案。');
+        }
+      } catch (error) {
+        console.error('初始化失敗:', error);
+        addChatMessage('bot', '❌ 無法載入複習內容，請稍後重試。');
+      } finally {
+        document.getElementById('startBtn').disabled = false;
+      }
+    }
+
+    function showState(state) {
+      console.log(`[state] 切換到: ${state}`);
+      const welcomeState = document.getElementById('welcomeState');
+      const reviewState = document.getElementById('reviewState');
+      
+      if (state === 'welcome') {
+        if (welcomeState) welcomeState.style.display = 'flex';
+        if (reviewState) reviewState.style.display = 'none';
+      } else if (state === 'review') {
+        if (welcomeState) welcomeState.style.display = 'none';
+        if (reviewState) reviewState.style.display = 'block';
+        
+        // 進入答題狀態後動態修正 Canvas 大小
+        setTimeout(() => {
+          const canvas = document.getElementById('handwriting-canvas');
+          if (canvas) {
+            const rect = canvas.parentElement.getBoundingClientRect();
+            if (rect.width > 0 && rect.height > 0 && (canvas.width === 0 || canvas.height === 0 || canvas.width === 300)) {
+               canvas.width = rect.width;
+               canvas.height = rect.height;
+               canvasContext.lineCap = 'round';
+               canvasContext.lineJoin = 'round';
+            }
+          }
+        }, 50);
+      }
+    }
+
+    function updateStats(sessionData) {
+      const current = sessionData.current_apr !== undefined ? sessionData.current_apr : sessionData.apr_after;
+      const apr = current !== undefined ? (current * 100).toFixed(1) : 'NaN';
+      
+      document.getElementById('aprDisplay').textContent = apr + '%';
+      document.getElementById('navAPR').textContent = apr + '%';
+      document.getElementById('navCount').textContent = learningHistory.resp_history.length;
+
+      if (learningHistory.resp_history.length > 0) {
+        const correctCount = learningHistory.resp_history.filter(r => r === 1).length;
+        const correctRate = ((correctCount / learningHistory.resp_history.length) * 100).toFixed(1);
+        document.getElementById('navRate').textContent = correctRate + '%';
+      }
+    }
+
+    // ════════════════════════════════════════════════════════════════════
+    // 題目顯示
+    // ════════════════════════════════════════════════════════════════════
+    async function displayQuestion(rec) {
+      currentQuestion = rec;
+      
+      try {
+        const response = await fetch(`/api/adaptive-review/question/${rec.item_id}`);
+        if (response.ok) {
+          const data = await response.json();
+          if (data.status === 'success') {
+            // 自動格式化排版與分行
+            let formattedText = data.data.question_text.replace(/(⑴|⑵|⑶|⑷|⑸|①|②|③|④|⑤)/g, '\n$1');
+            document.getElementById('questionText').textContent = formattedText.trim();
+            if (window.MathJax) {
+               MathJax.typesetPromise([document.getElementById('questionText')]);
+            }
+          } else {
+            displayQuestionFallback(rec);
+          }
+        } else {
+          displayQuestionFallback(rec);
+        }
+      } catch (error) {
+        console.log('無法從 API 獲取題目，使用備用方案');
+        displayQuestionFallback(rec);
+      }
+      
+      document.getElementById('skillName').textContent = `📌 ${rec.skill_name || '技能 ' + rec.skill_id}`;
+      
+      const difficulty = rec.predicted_difficulty < 0.4 ? '簡單' 
+                        : rec.predicted_difficulty < 0.65 ? '中等' : '困難';
+      document.getElementById('difficulty').textContent = `⭐ ${difficulty}`;
+      
+      document.getElementById('answerInput').value = '';
+      document.getElementById('responseFeedback').classList.remove('show', 'correct', 'incorrect');
+      clearCanvas();
+    }
+    
+    function displayQuestionFallback(rec) {
+      document.getElementById('questionText').textContent = `題目 ${rec.item_id}\n\n` +
+        `技能: ${rec.skill_name || '技能 ' + rec.skill_id}\n` +
+        `難度: ${rec.predicted_difficulty.toFixed(2)}\n\n` +
+        `請輸入你對此題的答案。`;
+    }
+
+    // ════════════════════════════════════════════════════════════════════
+    // 答題提交
+    // ════════════════════════════════════════════════════════════════════
+    async function submitAnswer() {
+      const answer = document.getElementById('answerInput').value.trim();
+      if (!answer || !currentQuestion) {
+        addChatMessage('bot', '請先輸入答案');
+        return;
+      }
+
+      try {
+        document.getElementById('submitBtn').disabled = true;
+        
+        const response = await fetch('/api/adaptive-review/feedback', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            student_id: currentStudentId,
+            history: learningHistory,
+            item_id: currentQuestion.item_id,
+            correct: 1,
+            time_spent: 60
+          })
+        });
+
+        const data = await response.json();
+        
+        if (data.status === 'success') {
+          const feedbackData = data.data;
+          
+          learningHistory.item_history.push(currentQuestion.item_id);
+          learningHistory.skill_history.push(currentQuestion.skill_id);
+          learningHistory.resp_history.push(1);
+          
+          const feedbackDiv = document.getElementById('responseFeedback');
+          feedbackDiv.classList.add('show', 'correct');
+          feedbackDiv.textContent = `✅ ${feedbackData.feedback}`;
+          
+          updateStats(feedbackData);
+          
+          addChatMessage('user', `我的答案是：${answer}`);
+          addChatMessage('bot', `✅ 很棒！你已掌握了這道題。\n${feedbackData.feedback}`);
+          
+          setTimeout(() => {
+            if (feedbackData.next_recommendations && feedbackData.next_recommendations.length > 0) {
+              displayQuestion(feedbackData.next_recommendations[0]);
+            }
+            document.getElementById('submitBtn').disabled = false;
+          }, 2000);
+        } else {
+          throw new Error(data.message || '提交失敗');
+        }
+      } catch (error) {
+        console.error('提交失敗:', error);
+        addChatMessage('bot', `❌ 提交失敗: ${error.message}`);
+        document.getElementById('submitBtn').disabled = false;
+      }
+    }
+
+    function requestHint() {
+      if (!currentQuestion) return;
+      addChatMessage('bot', `💡 提示：這道題考查的是 ${currentQuestion.skill_name}。試試分步驟思考。`);
+    }
+
+    function skipQuestion() {
+      addChatMessage('bot', '已跳過此題。準備下一題...');
+      setTimeout(() => nextQuestion(), 500);
+    }
+
+    async function nextQuestion() {
+      try {
+        const response = await fetch('/api/adaptive-review/start', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            student_id: currentStudentId,
+            history: learningHistory,
+            n_recommendations: 1,
+            use_rl: true
+          })
+        });
+
+        const data = await response.json();
+        if (data.status === 'success' && data.data.recommendations.length > 0) {
+          updateStats(data.data);
+          displayQuestion(data.data.recommendations[0]);
+          addChatMessage('bot', '下一題已為您準備好了！');
+        }
+      } catch (error) {
+        console.error('獲取下一題失敗:', error);
+      }
+    }
+
+    async function refreshSession() {
+      learningHistory = { item_history: [], skill_history: [], resp_history: [] };
+      clearCanvas();
+      document.getElementById('chatHistory').innerHTML = '<div class="empty-state">準備就緒，開始提問吧！</div>';
+      showState('welcome');
+    }
+
+    // ════════════════════════════════════════════════════════════════════
+    // AI 對話
+    // ════════════════════════════════════════════════════════════════════
+    function addChatMessage(role, message) {
+      const chatHistory = document.getElementById('chatHistory');
+      if (chatHistory.querySelector('.empty-state')) {
+        chatHistory.innerHTML = '';
+      }
+      
+      const msgDiv = document.createElement('div');
+      msgDiv.className = `msg ${role}`;
+      msgDiv.textContent = message;
+      chatHistory.appendChild(msgDiv);
+      chatHistory.scrollTop = chatHistory.scrollHeight;
+    }
+
+    function handleChatKeypress(event) {
+      if (event.key === 'Enter') {
+        event.preventDefault();
+        sendChatMessage();
+      }
+    }
+
+    function sendChatMessage() {
+      const input = document.getElementById('chatInput');
+      const message = input.value.trim();
+      
+      if (!message) return;
+      
+      addChatMessage('user', message);
+      input.value = '';
+      
+      setTimeout(() => {
+        const responses = [
+          '這是一個很好的問題！讓我幫你分析一下。',
+          '你可以試試從基本定義開始思考。',
+          '這道題的關鍵是理解概念的含義。',
+          '記住公式的前提條件很重要。',
+          '你在正確的方向上！繼續加油。'
+        ];
+        const randomResponse = responses[Math.floor(Math.random() * responses.length)];
+        addChatMessage('bot', randomResponse);
+      }, 500);
+    }
+  </script>
+</body>
+</html>
