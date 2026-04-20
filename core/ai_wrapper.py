@@ -43,6 +43,24 @@ except ImportError:
 # 設定 Logger
 logger = logging.getLogger(__name__)
 
+
+def _normalize_ollama_image_b64(raw: str) -> str:
+    """
+    Ollama /api/chat 需要純 base64，不可含 data URL 前綴。
+    支援 data:image/png;base64,XXXX 或純 base64 字串。
+    """
+    if not isinstance(raw, str):
+        return raw
+    s = raw.strip()
+    if not s:
+        return s
+    if s.startswith("data:") and "," in s:
+        return s.split(",", 1)[1].strip()
+    if "base64," in s:
+        return s.split("base64,", 1)[1].strip()
+    return s
+
+
 class LocalAIClient:
     """
     處理 Local Ollama API 的客戶端
@@ -58,22 +76,32 @@ class LocalAIClient:
         self.max_tokens = kwargs.get('max_tokens', 4096)
         self.extra_options = kwargs.get('extra_body', {})
 
-    def _fallback_chat_url(self):
+    def _ollama_chat_url(self):
+        """由 LOCAL_API_URL（/api/generate 或基底 URL）推導 Ollama Chat 端點。"""
         if self.api_url.endswith("/api/generate"):
-            return self.api_url[:-len("/api/generate")] + "/api/chat"
-        return self.api_url
+            return self.api_url[: -len("/api/generate")] + "/api/chat"
+        if self.api_url.endswith("/api/chat"):
+            return self.api_url
+        return self.api_url.rstrip("/") + "/api/chat"
+
+    def _fallback_chat_url(self):
+        return self._ollama_chat_url()
 
     def _build_chat_payload(self, prompt, options, system_prompt=None, images=None, stream=False):
-        content = prompt
-        if images:
-            content = [{"type": "text", "text": prompt}]
-            for image in images:
-                content.append({"type": "image", "image": image})
-
+        """
+        Ollama /api/chat 規範：
+        - messages 為陣列
+        - 視覺：user 訊息使用字串 content + images: [base64, ...]（純 base64，無 data: 前綴）
+        """
         messages = []
         if system_prompt:
             messages.append({"role": "system", "content": system_prompt})
-        messages.append({"role": "user", "content": content})
+        user_msg = {"role": "user", "content": prompt}
+        if images:
+            norm = [_normalize_ollama_image_b64(img) for img in images if img]
+            if norm:
+                user_msg["images"] = norm
+        messages.append(user_msg)
 
         return {
             "model": self.model,
@@ -89,7 +117,9 @@ class LocalAIClient:
             import base64
             try:
                 with open(image_path, "rb") as f:
-                    images.append(base64.b64encode(f.read()).decode('utf-8'))
+                    raw_bytes = f.read()
+                if raw_bytes:
+                    images.append(base64.b64encode(raw_bytes).decode("utf-8"))
             except Exception as e:
                 logger.error(f"Failed to encode image for Ollama: {e}")
         # 基礎 options
@@ -108,29 +138,104 @@ class LocalAIClient:
         system_prompt = None
         if "system" in options:
              system_prompt = options.pop("system") # Remove from options, move to top-level
-        
+
+        json_headers = {"Content-Type": "application/json"}
+
+        # [Vision] 有圖只走 /api/chat；不可走 /api/generate。
+        if images:
+            chat_url = self._ollama_chat_url()
+            image_list = [_normalize_ollama_image_b64(img) for img in images if img]
+            image_b64 = image_list[0] if image_list else ""
+            payload = self._build_chat_payload(
+                prompt,
+                options,
+                system_prompt=system_prompt,
+                images=image_list,
+                stream=False,
+            )
+            print("[VISION PAYLOAD KEYS]", list(payload.keys()))
+            print("[VISION IMAGE LENGTH]", len(image_b64))
+
+            class _VisionMockResponse:
+                def __init__(self, text, thinking="", lat_ms=0, pt=0, ct=0):
+                    self.text = text
+                    self.thinking = thinking
+                    self.latency_ms = lat_ms
+                    self.usage = type("Usage", (), {})()
+                    self.usage.prompt_tokens = pt
+                    self.usage.completion_tokens = ct
+                    self.usage.total_tokens = pt + ct
+                    self.prompt_tokens = pt
+                    self.completion_tokens = ct
+                    self.total_tokens = pt + ct
+
+            import time
+            start_time = time.perf_counter()
+            try:
+                response = requests.post(
+                    chat_url,
+                    json=payload,
+                    headers=json_headers,
+                    timeout=1200,
+                )
+            except requests.exceptions.RequestException as e:
+                err = f"Local AI (Ollama) Vision request failed: {e}\n{chat_url}"
+                logger.error(err)
+                return _VisionMockResponse(err)
+
+            end_time = time.perf_counter()
+            latency_ms = int((end_time - start_time) * 1000)
+            body_preview = (response.text or "")[:500]
+            if response.status_code != 200:
+                print("[VISION OLLAMA]", response.status_code, body_preview)
+                err = (
+                    f"Local AI (Ollama) Vision HTTP {response.status_code}: {body_preview}\n{chat_url}"
+                )
+                logger.error(err)
+                return _VisionMockResponse(err, lat_ms=latency_ms)
+
+            try:
+                result = response.json()
+            except ValueError as e:
+                print("[VISION OLLAMA] invalid JSON body[:500]=", body_preview)
+                err = f"Local AI (Ollama) Vision invalid JSON: {e}\n{body_preview}"
+                logger.error(err)
+                return _VisionMockResponse(err, lat_ms=latency_ms)
+
+            generated_text = (result.get("message") or {}).get("content", "")
+            thinking_text = (result.get("message") or {}).get("thinking", "") or result.get("thinking", "")
+            if not generated_text and thinking_text:
+                print("[WARN] Response empty, but 'thinking' content exists (handled natively now).")
+            prompt_tokens = result.get("prompt_eval_count", 0)
+            completion_tokens = result.get("eval_count", 0)
+            return _VisionMockResponse(
+                generated_text, thinking_text, latency_ms, prompt_tokens, completion_tokens
+            )
+
         payload = {
             "model": self.model,
             "prompt": prompt,
             "stream": False,
             "options": options
         }
-        if images:
-            payload["images"] = images
-        
+
         if system_prompt:
             payload["system"] = system_prompt
-        
-        
+
         # [DEBUG] Check Payload Options
         # print(f"[DEBUG OLLAMA PAYLOAD]: num_predict={options.get('num_predict')}, num_ctx={options.get('num_ctx')}")
-        
+
         try:
             # [V3.1] Add Latency Measurement
             import time
             start_time = time.perf_counter()
             request_url = self.api_url
-            response = requests.post(request_url, json=payload, timeout=1200) # [FIX] Increase timeout for Thinking Models
+            response = requests.post(
+                request_url,
+                json=payload,
+                headers=json_headers,
+                timeout=1200,
+            )  # [FIX] Increase timeout for Thinking Models
             using_chat_fallback = False
             if response.status_code == 404 and self.api_url.endswith("/api/generate"):
                 request_url = self._fallback_chat_url()
@@ -140,25 +245,30 @@ class LocalAIClient:
                     prompt,
                     options,
                     system_prompt=system_prompt,
-                    images=images,
+                    images=None,
                     stream=False,
                 )
-                response = requests.post(request_url, json=chat_payload, timeout=1200)
+                response = requests.post(
+                    request_url,
+                    json=chat_payload,
+                    headers=json_headers,
+                    timeout=1200,
+                )
             end_time = time.perf_counter()
             latency_ms = int((end_time - start_time) * 1000)
 
             response.raise_for_status()
             result = response.json()
-            
+
             # [DEBUG] Print raw result from Ollama
             # print(f"[DEBUG OLLAMA RAW]: {str(result)[:500]}")
-            
+
             # 取出 Ollama 回傳的真正內容與 token 計數
             if using_chat_fallback:
                 generated_text = (result.get("message") or {}).get("content", "")
             else:
                 generated_text = result.get("response", "")
-            
+
             # [Fallback] 如果 response 為空，保留空字串，不要將 thinking 倒進來
             # 因為現在我們已經獨立將 thinking 透過 .thinking 屬性向外傳遞了
             if using_chat_fallback:

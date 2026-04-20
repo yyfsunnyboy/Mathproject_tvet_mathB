@@ -21,3 +21,4 @@ pytesseract
 Pillow
 chromadb
 sentence-transformers
+gymnasium
