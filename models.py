@@ -515,6 +515,7 @@ def init_db(engine):
     add_column_if_not_exists('skill_gencode_prompt', 'architect_model', "TEXT DEFAULT 'human'")
     add_column_if_not_exists('skill_gencode_prompt', 'experiment_group', 'TEXT')
     add_column_if_not_exists('skill_gencode_prompt', 'generation_duration', 'REAL')
+    add_column_if_not_exists('skill_gencode_prompt', 'success_rate', 'FLOAT DEFAULT 0.0')
     add_column_if_not_exists('textbook_examples', 'difficulty_h', 'FLOAT NOT NULL DEFAULT 1.0')
 
     c.execute('''

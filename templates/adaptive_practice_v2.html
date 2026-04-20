@@ -623,6 +623,9 @@
                 <input id="assistantInput" type="text" placeholder="只問本題相關問題，例如：我第一步該先做什麼？">
                 <button class="success" id="assistantSendBtn" type="button">詢問助教</button>
               </div>
+              <div style="margin-top: 5px; font-size: 0.85em; display: flex; align-items: center;">
+                <label style="cursor: pointer;"><input type="checkbox" id="useRagToggle" checked style="margin-right: 4px;"> 使用 RAG 模式加強回答</label>
+              </div>
               <div id="adv-rag-loading" style="display: none; text-align: center; padding: 8px; color: #1565c0; font-size: 13px;">
                 正在檢索相關單元...
               </div>
@@ -2455,14 +2458,42 @@
         const buttonsDiv = document.getElementById('adv-rag-results-buttons');
         const routingBadge = document.getElementById('adv-rag-routing-badge');
 
+        const useRag = document.getElementById('useRagToggle') ? document.getElementById('useRagToggle').checked : true;
+
         if (loading) loading.style.display = 'block';
         if (resultsDiv) resultsDiv.style.display = 'none';
         if (routingBadge) routingBadge.style.display = 'none';
 
         await addMessage("user", query);
-        const thinking = await addMessage("bot", "我先用 RAG 找相關單元，再整理成這一題的提示...");
+        const thinking = await addMessage("bot", useRag ? "我先用 RAG 找相關單元，再整理成這一題的提示..." : "我正在直接回答你的問題...");
 
         try {
+            if (!useRag) { // Direct chat mode
+                if (buttonsDiv) buttonsDiv.innerHTML = '';
+                const chatResp = await fetch('/api/adaptive/adv_rag_chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        query: query,
+                        question_text: state.currentQuestionText || document.getElementById('questionText')?.innerText || '',
+                        family_id: state.currentFamilyId || '',
+                        retrieved_skills: [],
+                        use_rag: false
+                    })
+                });
+                const chatParams = await chatResp.json();
+                if (chatParams.error) throw new Error(chatParams.error);
+                if (chatParams.reply) {
+                    setMessageContent(thinking, chatParams.reply);
+                    if (window.MathJax) {
+                        window.MathJax.typesetPromise([thinking]).catch(e => console.error("MathJax Error", e));
+                    }
+                } else {
+                    setMessageContent(thinking, "抱歉，處理你的問題時發生錯誤。");
+                }
+                return;
+            }
+
             // 1. Search Advanced RAG
             const searchResp = await fetch('/api/adaptive/adv_rag_search', {
                 method: 'POST',
