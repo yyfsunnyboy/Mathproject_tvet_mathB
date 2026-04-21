@@ -7,32 +7,32 @@
 
 API 端點：
 1. POST /api/adaptive-review/start
-   - 開始新的複習會話
-   - 輸入：學生學習歷史
-   - 輸出：推薦題目列表
-
-2. GET /api/adaptive-review/analyze/<student_id>
+   - 開始新的複習會話（若前端 history 為空，從 DB 恢復）
+2. GET  /api/adaptive-review/analyze/<student_id>
    - 分析學生弱項
-   - 輸出：弱項技能、建議
-
 3. POST /api/adaptive-review/feedback
-   - 提交答題反饋
-   - 輸入：題目 ID、答對結果
-   - 輸出：更新後的知識狀態、下一步推薦
-
-4. GET /api/adaptive-review/plan/<student_id>
-   - 生成多會話複習計畫
-   - 輸出：完整複習規劃
+   - 提交答題反饋（LLM 評分、NodeCompetency 更新、歷史持久化）
+4. GET  /api/adaptive-review/question/<item_id>
+   - 取得題目（包含單題截斷 + LLM 答案格式提示）
+5. POST /api/adaptive-review/chat
+   - AI 引導式提示
+6. GET  /api/adaptive-review/health
+   - 健康檢查
 """
 
 from flask import Blueprint, request, jsonify
 from functools import lru_cache
 import json
+import re
 import logging
 from typing import Dict, List, Optional, Tuple
 from datetime import datetime
 
 from core.ai_wrapper import get_ai_client, call_ai_with_retry
+
+# ═══════════════════════════════════════════════════════════════════════════
+# 集中式 Prompt 管理
+# ═══════════════════════════════════════════════════════════════════════════
 
 LLM_GUIDE_PROMPT = """你是一個耐心、鼓勵學生的數學 AI 家教。
 這是一道關於【{skill}】的算式題：
@@ -48,6 +48,154 @@ LLM_GUIDE_PROMPT = """你是一個耐心、鼓勵學生的數學 AI 家教。
 4. 解釋要簡潔，避免在一則對話中包含過多步驟。
 5. **盡可能控制字數在 50 字以內，極度精簡，一語中的。**
 """
+
+LLM_ANSWER_FORMAT_PROMPT = """根據以下這道數學題，用少於 20 字的中文提示學生應該怎麼作答（重點說明需要填的提入內容形式，例如「填入一個整數」、「寫出一元二次方程式」）。不要告訴答案，只說明格式。
+
+題目：{question}
+
+答案格式提示："""
+
+# 規則式答案格式提示萃取（避免每次呼叫 LLM）
+def _rule_based_format_hint(question_text: str) -> str:
+    """從題目文字用規則萃取答案格式提示。無法判斷時回傳空字串。"""
+    import re
+    q = question_text.lower().strip()
+    # 題目本身已含答案格式提示
+    m = re.search(r'[（(]答案格式[：:]([^）)]{1,30})[）)]', question_text)
+    if m:
+        return f'請輸入：{m.group(1).strip()}'
+    # 座標類
+    if re.search(r'座標|坐標|交點|頂點|A\(|B\(', question_text):
+        return '請輸入座標，如 (x, y)'
+    # 聯立方程式 / 解
+    if re.search(r'聯立|消去|代入法|elimination|substitution', q):
+        return '請輸入 x 和 y 的值，如 x=2, y=3'
+    # 不等式
+    if re.search(r'不等式|inequality|解集', q):
+        return '請輸入不等式解，如 x > 2'
+    # 因式分解
+    if re.search(r'因式分解|factori', q):
+        return '請輸入因式分解結果，如 (x+1)(x-2)'
+    # 多個數字
+    if re.search(r'分別|各為|各是|列出所有', question_text):
+        return '請輸入所有答案，用逗號分隔，如 1, 2, 3'
+    # 根號 / 根式
+    if re.search(r'根號|√|平方根|radical', q):
+        return '請輸入根式或數字，如 2√3 或 6'
+    # 方程式
+    if re.search(r'方程|equation|求.*x', q):
+        return '請輸入 x 的值（數字或分數，如 3 或 1/2）'
+    # 機率
+    if re.search(r'機率|probability', q):
+        return '請輸入機率（分數或小數，如 1/4 或 0.25）'
+    # 面積 / 體積
+    if re.search(r'面積|體積|周長|area|volume|perimeter', q):
+        return '請輸入數字（含單位如 cm²）'
+    return ''  # 無法判斷
+
+# ── 規則式評分引擎（取代 LLM，速度從秒級 → 毫秒級） ──────────────────────
+def _parse_number(s: str):
+    """將字串解析為 float。支援整數、小數、分數（如 1/2）。失敗回傳 None。"""
+    s = s.strip().replace('，', ',').replace(' ', '')
+    try:
+        return float(s)
+    except ValueError:
+        pass
+    # 分數
+    frac = re.match(r'^(-?\d+)/(-?\d+)$', s)
+    if frac:
+        num, den = int(frac.group(1)), int(frac.group(2))
+        if den != 0:
+            return num / den
+    return None
+
+def _normalize_token(t: str) -> str:
+    """把單一 token 正規化為可比較的字串。"""
+    t = t.strip()
+    # 去除座標包裝括號 A(3,5) / (3,5)
+    t = re.sub(r'^[A-Za-z]*\((.+)\)$', r'\1', t)
+    # 數字統一為小數字串（精度 6 位）
+    n = _parse_number(t)
+    if n is not None:
+        return f'{n:.6g}'
+    # 去除空格、大小寫統一
+    return t.lower().replace(' ', '')
+
+def _split_answers(s: str) -> list:
+    """將多答案字串拆成 token 列表（支援逗號/分號/空格分隔）。"""
+    # 先把全形逗號轉半形
+    s = s.replace('，', ',').replace('；', ';')
+    # 以逗號或分號分割
+    parts = re.split(r'[,;]+', s)
+    tokens = [p.strip() for p in parts if p.strip()]
+    return tokens
+
+def _rule_based_grade(correct_answer: str, student_answer: str) -> tuple:
+    """
+    規則式評分，回傳 (is_correct: bool, detail: str)。
+    支援：
+      - 精確字串比對（大小寫不敏感）
+      - 數字 / 分數 / 小數等價（1/2 == 0.5）
+      - 多答案逗號列表（順序不敏感）
+      - 座標 (x, y) / A(x, y)
+      - 不等式（x > 2, x<=3 等）
+      - 因式分解括號表達式（簡單比對符號去除空格後）
+    """
+    ca = correct_answer.strip()
+    sa = student_answer.strip()
+    if not ca:
+        return True, '✅ 已記錄（無標準答案）'
+    if not sa:
+        return False, '❌ 未輸入答案'
+
+    # 1. 精確比對（大小寫不敏感）
+    if ca.lower() == sa.lower():
+        return True, '✅ 答對了！'
+
+    # 2. 數字等價比對（支援分數↔小數）
+    ca_num = _parse_number(ca)
+    sa_num = _parse_number(sa)
+    if ca_num is not None and sa_num is not None:
+        if abs(ca_num - sa_num) < 1e-6:
+            return True, '✅ 答對了！'
+        else:
+            return False, f'❌ 答案不正確（正確：{ca}）'
+
+    # 3. 多答案列表比對（順序不敏感）
+    ca_parts = _split_answers(ca)
+    sa_parts = _split_answers(sa)
+    if len(ca_parts) > 1 or len(sa_parts) > 1:
+        ca_norm = sorted([_normalize_token(t) for t in ca_parts])
+        sa_norm = sorted([_normalize_token(t) for t in sa_parts])
+        if ca_norm == sa_norm:
+            return True, '✅ 答對了！'
+        # 嘗試數字等價（列表中每個元素）
+        if len(ca_norm) == len(sa_norm):
+            all_match = True
+            for c, s in zip(sorted(ca_parts), sorted(sa_parts)):
+                cn, sn = _parse_number(_normalize_token(c)), _parse_number(_normalize_token(s))
+                if cn is None or sn is None or abs(cn - sn) > 1e-6:
+                    all_match = False
+                    break
+            if all_match:
+                return True, '✅ 答對了！'
+        return False, f'❌ 答案不正確（正確：{ca}）'
+
+    # 4. 去除所有空格後精確比對（因式分解、括號表達式）
+    ca_compact = re.sub(r'\s+', '', ca).lower()
+    sa_compact = re.sub(r'\s+', '', sa).lower()
+    if ca_compact == sa_compact:
+        return True, '✅ 答對了！'
+
+    # 5. 不等式正規化比對（x>2 vs x > 2）
+    def norm_ineq(s):
+        return re.sub(r'\s*([><]=?|[≤≥])\s*', lambda m: m.group(1), s.lower()).replace(' ', '')
+    if norm_ineq(ca) == norm_ineq(sa):
+        return True, '✅ 答對了！'
+
+    # 6. 無法確定 — 視為錯誤，提示學生注意格式
+    return False, f'❌ 答案不正確（正確答案格式：{ca}）'
+
 
 from adaptive_review_mode import (
     AdaptiveReviewEngine,
@@ -82,16 +230,8 @@ def get_engine() -> AdaptiveReviewEngine:
 # ═══════════════════════════════════════════════════════════════════════════
 
 def normalize_history(history: Dict) -> Dict:
-    """
-    標準化學習歷史格式
-    
-    支援多種輸入格式：
-    - 格式1: {'item_history': [...], 'skill_history': [...], 'resp_history': [...]}
-    - 格式2: {'items': [...], 'skills': [...], 'responses': [...]}
-    - 格式3: [{'item_id': ..., 'skill_id': ..., 'correct': ...}, ...]
-    """
+    """標準化學習歷史格式"""
     if isinstance(history, list):
-        # 格式3 → 標準格式
         items = [h.get('item_id', 0) for h in history]
         skills = [h.get('skill_id', 0) for h in history]
         responses = [h.get('correct', 0) for h in history]
@@ -101,7 +241,6 @@ def normalize_history(history: Dict) -> Dict:
             'resp_history': responses,
         }
     
-    # 支援別名
     if 'items' in history and 'item_history' not in history:
         history['item_history'] = history.pop('items')
     if 'skills' in history and 'skill_history' not in history:
@@ -127,6 +266,77 @@ def validate_history(history: Dict) -> Tuple[bool, str]:
     return True, "OK"
 
 
+def _save_review_state(student_id: str, history: Dict, apr: float):
+    """持久化學習歷史到 adaptive_review_state 表格"""
+    try:
+        from models import db
+        from sqlalchemy import text as sql_text
+        db.session.execute(sql_text("""
+            INSERT INTO adaptive_review_state (user_id, history_json, last_apr, updated_at)
+            VALUES (:uid, :hist, :apr, CURRENT_TIMESTAMP)
+            ON CONFLICT(user_id) DO UPDATE SET
+                history_json = excluded.history_json,
+                last_apr = excluded.last_apr,
+                updated_at = excluded.updated_at
+        """), {
+            'uid': int(student_id),
+            'hist': json.dumps(history),
+            'apr': apr,
+        })
+        db.session.commit()
+    except Exception as e:
+        logger.warning(f"無法儲存學習狀態: {e}")
+
+
+def _load_review_state(student_id: str) -> Optional[Dict]:
+    """從 adaptive_review_state 表格讀取舊歷史"""
+    try:
+        from models import db
+        from sqlalchemy import text as sql_text
+        row = db.session.execute(sql_text("""
+            SELECT history_json FROM adaptive_review_state WHERE user_id = :uid
+        """), {'uid': int(student_id)}).fetchone()
+        if row and row[0]:
+            return json.loads(row[0])
+    except Exception as e:
+        logger.warning(f"無法讀取學習狀態: {e}")
+    return None
+
+
+def _ensure_state_table():
+    """確保 adaptive_review_state 表格存在"""
+    try:
+        from models import db
+        from sqlalchemy import text as sql_text
+        db.session.execute(sql_text("""
+            CREATE TABLE IF NOT EXISTS adaptive_review_state (
+                user_id INTEGER PRIMARY KEY,
+                history_json TEXT NOT NULL DEFAULT '{}',
+                last_apr REAL DEFAULT 0.5,
+                updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+            )
+        """))
+        db.session.commit()
+    except Exception as e:
+        logger.warning(f"無法建立 adaptive_review_state 表格: {e}")
+
+
+def _truncate_first_subproblem(full_text: str, correct_answer: str):
+    """截斷多小題，只取第一小題；同步截斷答案"""
+    # 匹配第二個子題標記 ⑵ ② 2.  (2) 等
+    SUB2 = re.compile(r'[⑵②]|(?:^|\s|\d)[（\(]?2[）\)][\s.、]', re.MULTILINE)
+    m = SUB2.search(full_text)
+    if m and m.start() > 10:
+        question_text = full_text[:m.start()].strip()
+        # 嘗試同步截斷答案
+        am = SUB2.search(correct_answer)
+        if am:
+            correct_answer = correct_answer[:am.start()].strip()
+    else:
+        question_text = full_text.strip()
+    return question_text, correct_answer
+
+
 # ═══════════════════════════════════════════════════════════════════════════
 # API 端點
 # ═══════════════════════════════════════════════════════════════════════════
@@ -134,61 +344,35 @@ def validate_history(history: Dict) -> Tuple[bool, str]:
 @adaptive_review_bp.route('/start', methods=['POST'])
 def start_review_session():
     """
-    開始新的自適應複習會話
-    
-    Request:
-    {
-        "student_id": "STU_001",
-        "history": {
-            "item_history": [0, 5, 10, ...],
-            "skill_history": [0, 1, 2, ...],
-            "resp_history": [1, 0, 1, ...]
-        },
-        "n_recommendations": 5,  // 可選，預設 5
-        "use_rl": true            // 可選，預設 true
-    }
-    
-    Response:
-    {
-        "status": "success",
-        "data": {
-            "student_id": "STU_001",
-            "current_apr": 0.65,
-            "recommendations": [
-                {
-                    "item_id": 42,
-                    "skill_id": 3,
-                    "skill_name": "polynomial-operations",
-                    "predicted_difficulty": 0.45
-                },
-                ...
-            ],
-            "session_id": "sess_abc123",
-            "timestamp": "2024-01-15T10:30:00"
-        }
-    }
+    開始新的自適應複習會話。
+    若前端傳來的 history 為空陣列，則嘗試從資料庫恢復上次的學習歷程。
     """
     try:
         data = request.get_json()
         if not data:
             return jsonify({'status': 'error', 'message': '無效的 JSON'}), 400
         
-        # 提取必要信息
         student_id = data.get('student_id', 'unknown')
         history = data.get('history', {})
-        n_recommendations = data.get('n_recommendations', 5)
+        n_recommendations = data.get('n_recommendations', 1)
         use_rl = data.get('use_rl', True)
         
-        # 標準化和驗證
         history = normalize_history(history)
+
+        # 若 history 為空，嘗試從 DB 恢復
+        if (not history.get('item_history') and student_id not in ('unknown', 'guest')):
+            _ensure_state_table()
+            saved = _load_review_state(student_id)
+            if saved:
+                history = normalize_history(saved)
+                logger.info(f"[RESTORE] 已恢復用戶 {student_id} 的學習歷程，共 {len(history['item_history'])} 題")
+
         is_valid, error_msg = validate_history(history)
         if not is_valid:
             return jsonify({'status': 'error', 'message': error_msg}), 400
         
-        # 獲取引擎
         engine = get_engine()
         
-        # 計算當前知識狀態和 APR
         s_t = engine.get_knowledge_state(
             history['item_history'],
             history['skill_history'],
@@ -196,7 +380,6 @@ def start_review_session():
         )
         current_apr = engine.get_apr(s_t)
         
-        # 推薦題目
         recommendations = engine.recommend_next_items(
             history['item_history'],
             history['skill_history'],
@@ -205,7 +388,6 @@ def start_review_session():
             use_rl=use_rl
         )
         
-        # 生成會話 ID
         session_id = f"sess_{student_id}_{datetime.now().strftime('%Y%m%d%H%M%S')}"
         
         return jsonify({
@@ -216,6 +398,7 @@ def start_review_session():
                 'apr_target': BETA_THRESHOLD,
                 'recommendations': recommendations,
                 'session_id': session_id,
+                'restored_history': history,  # 讓前端更新 learningHistory
                 'timestamp': datetime.now().isoformat(),
                 'config': {
                     'min_session_length': REVIEW_CONFIG['min_session_length'],
@@ -226,43 +409,13 @@ def start_review_session():
         
     except Exception as e:
         logger.error(f"❌ 複習會話啟動失敗: {e}", exc_info=True)
-        return jsonify({
-            'status': 'error',
-            'message': f'伺服器錯誤: {str(e)}'
-        }), 500
+        return jsonify({'status': 'error', 'message': f'伺服器錯誤: {str(e)}'}), 500
 
 
 @adaptive_review_bp.route('/analyze/<student_id>', methods=['GET'])
 def analyze_student(student_id: str):
-    """
-    分析學生的弱項和強項
-    
-    Query Parameters:
-    - history_json: URL-encoded JSON of history
-    
-    Response:
-    {
-        "status": "success",
-        "data": {
-            "student_id": "STU_001",
-            "overall_apr": 0.62,
-            "weakest_skills": [
-                {"skill_id": 5, "skill_name": "radical-operations", "mastery": 0.35},
-                ...
-            ],
-            "strongest_skills": [
-                {"skill_id": 1, "skill_name": "addition", "mastery": 0.85},
-                ...
-            ],
-            "recommendations": [
-                "建議加強根式運算",
-                "已掌握基本整數運算，可考慮進階內容"
-            ]
-        }
-    }
-    """
+    """分析學生的弱項和強項"""
     try:
-        # 從 URL 參數讀取歷史
         history_json = request.args.get('history_json', '{}')
         history = json.loads(history_json)
         
@@ -273,7 +426,6 @@ def analyze_student(student_id: str):
         
         engine = get_engine()
         
-        # 分析弱項
         analysis = analyze_weak_skills(
             engine,
             history['item_history'],
@@ -281,21 +433,20 @@ def analyze_student(student_id: str):
             history['resp_history']
         )
         
-        # 生成建議
         recommendations = []
         overall_apr = analysis['overall_apr']
         
         if overall_apr < 0.5:
-            recommendations.append("⚠️ 整體掌握度較低，建議從基礎概念開始複習")
+            recommendations.append("⚠️ 整體熟練度較低，建議從基礎概念開始複習")
         
         for skill in analysis['weakest_skills'][:3]:
             if skill['mastery'] < 0.4:
-                recommendations.append(f"🔴 {skill['skill_name']}: 掌握度 {skill['mastery']:.2%}，需要重點加強")
+                recommendations.append(f"🔴 {skill['skill_name']}: 熟練度 {skill['mastery']:.2%}，需要重點加強")
             elif skill['mastery'] < 0.65:
-                recommendations.append(f"🟡 {skill['skill_name']}: 掌握度 {skill['mastery']:.2%}，建議強化練習")
+                recommendations.append(f"🟡 {skill['skill_name']}: 熟練度 {skill['mastery']:.2%}，建議強化練習")
         
         if overall_apr >= BETA_THRESHOLD:
-            recommendations.append(f"✅ 已達到目標掌握度 ({overall_apr:.2%})，可考慮進階內容")
+            recommendations.append(f"✅ 已達到目標熟練度 ({overall_apr:.2%})，可考慮進階內容")
         
         return jsonify({
             'status': 'success',
@@ -320,27 +471,11 @@ def analyze_student(student_id: str):
 @adaptive_review_bp.route('/feedback', methods=['POST'])
 def submit_feedback():
     """
-    提交答題反饋並獲取下一步推薦
-    
-    Request:
-    {
-        "student_id": "STU_001",
-        "history": {...},
-        "item_id": 42,
-        "correct": 1,
-        "time_spent": 45  // 可選，單位秒
-    }
-    
-    Response:
-    {
-        "status": "success",
-        "data": {
-            "updated_apr": 0.68,
-            "apr_change": +0.03,
-            "next_recommendations": [...],
-            "feedback": "很好！掌握度提升了，建議繼續練習相關題目"
-        }
-    }
+    提交答題反饋：
+    1. 用 LLM 評分學生答案
+    2. 更新 AKT 知識狀態與 APR
+    3. 將 APR 寫入 NodeCompetency（連動知識圖譜）
+    4. 持久化學習歷史
     """
     try:
         data = request.get_json()
@@ -350,19 +485,34 @@ def submit_feedback():
         student_id = data.get('student_id', 'unknown')
         history = normalize_history(data.get('history', {}))
         item_id = data.get('item_id')
-        correct = data.get('correct', 0)
+        user_answer = data.get('user_answer', '').strip()  # 學生的真實作答
+        question_text = data.get('question_text', '')
+        correct_answer = data.get('correct_answer', '')
         
         if item_id is None:
             return jsonify({'status': 'error', 'message': '缺少 item_id'}), 400
         
-        # 驗證歷史
         is_valid, error_msg = validate_history(history)
         if not is_valid:
             return jsonify({'status': 'error', 'message': error_msg}), 400
         
+        # ── 規則式評分（毫秒級，取代 LLM）────────────────────────────────
+        correct = 0
+        grade_detail = '未能評分'
+        if not user_answer:
+            correct = 0
+            grade_detail = '❌ 未輸入答案'
+        elif correct_answer:
+            is_correct, grade_detail = _rule_based_grade(correct_answer, user_answer)
+            correct = 1 if is_correct else 0
+        else:
+            # 無正確答案可比，保守當作對
+            correct = 1
+            grade_detail = '✅ 已記錄（無標準答案）'
+        
+        # ── AKT 更新 ──────────────────────────────────────────────────────
         engine = get_engine()
         
-        # 計算反饋前的 APR
         s_t_before = engine.get_knowledge_state(
             history['item_history'],
             history['skill_history'],
@@ -370,7 +520,6 @@ def submit_feedback():
         )
         apr_before = engine.get_apr(s_t_before)
         
-        # 更新歷史
         skill_id = engine.akt_inference.problem_to_skill_id.get(item_id, 0)
         updated_history = {
             'item_history': history['item_history'] + [item_id],
@@ -378,7 +527,6 @@ def submit_feedback():
             'resp_history': history['resp_history'] + [correct],
         }
         
-        # 計算反饋後的 APR
         s_t_after = engine.get_knowledge_state(
             updated_history['item_history'],
             updated_history['skill_history'],
@@ -387,49 +535,55 @@ def submit_feedback():
         apr_after = engine.get_apr(s_t_after)
         apr_change = apr_after - apr_before
         
-        # 獲取下一步推薦
         next_recommendations = engine.recommend_next_items(
             updated_history['item_history'],
             updated_history['skill_history'],
             updated_history['resp_history'],
-            n_items=3,
+            n_items=1,
             use_rl=True
         )
         
-        # [新增] 同步 NodeCompetency 以連動知識圖譜
+        # ── NodeCompetency 更新（連動知識圖譜）────────────────────────────
         try:
             from models import db, NodeCompetency
-            
-            # 使用 skill_name 作為 node_id (例如: "_數學1上_PolynomialOperations")
             skill_name = "unknown"
             if hasattr(engine.akt_inference, 'skills_list') and skill_id < len(engine.akt_inference.skills_list):
                 skill_name = engine.akt_inference.skills_list[skill_id]
                 
-            if skill_name != "unknown" and student_id != "unknown" and student_id != "guest":
-                comp_score = float(apr_after * 100.0) # 轉換 0-1 到 0-100 分數
+            if skill_name != "unknown" and student_id not in ('unknown', 'guest'):
+                comp_score = float(apr_after * 100.0)
                 nc = db.session.query(NodeCompetency).filter_by(user_id=int(student_id), node_id=skill_name).first()
                 if nc:
                     nc.competency_score = comp_score
                     nc.competency_theta = apr_after
                 else:
-                    nc = NodeCompetency(user_id=int(student_id), node_id=skill_name, competency_score=comp_score, competency_theta=apr_after)
+                    nc = NodeCompetency(
+                        user_id=int(student_id),
+                        node_id=skill_name,
+                        competency_score=comp_score,
+                        competency_theta=apr_after
+                    )
                     db.session.add(nc)
                 db.session.commit()
-                logger.info(f"Updated NodeCompetency for user {student_id}, node {skill_name} to {comp_score}")
         except Exception as db_err:
-            logger.warning(f"Failed to update NodeCompetency: {db_err}")
-            
-        # 生成反饋訊息
-        feedback_msg = "✓ 回答已記錄" if correct else "✗ 本題未掌握"
+            logger.warning(f"無法更新 NodeCompetency: {db_err}")
         
+        # ── 持久化學習歷史 ────────────────────────────────────────────────
+        if student_id not in ('unknown', 'guest'):
+            _ensure_state_table()
+            _save_review_state(student_id, updated_history, apr_after)
+        
+        # ── 組合回饋訊息 ──────────────────────────────────────────────────
         if apr_change > 0.05:
-            feedback_msg += " - 掌握度顯著提升！"
+            apr_msg = " 熟練度顯著提升！"
         elif apr_change > 0:
-            feedback_msg += " - 掌握度略有提升"
+            apr_msg = " 熟練度略有提升"
         elif apr_after >= BETA_THRESHOLD:
-            feedback_msg = f"🎉 恭喜！已達到目標掌握度 ({apr_after:.2%})"
+            apr_msg = f" 🎉 已達到目標熟練度！"
         else:
-            feedback_msg += " - 建議加強練習"
+            apr_msg = " 繼續加油！"
+        
+        feedback_msg = grade_detail + apr_msg
         
         return jsonify({
             'status': 'success',
@@ -437,6 +591,7 @@ def submit_feedback():
                 'student_id': student_id,
                 'item_id': item_id,
                 'correct': correct,
+                'grade_detail': grade_detail,
                 'apr_before': apr_before,
                 'apr_after': apr_after,
                 'apr_change': apr_change,
@@ -444,6 +599,7 @@ def submit_feedback():
                 'reached_target': apr_after >= BETA_THRESHOLD,
                 'next_recommendations': next_recommendations,
                 'feedback': feedback_msg,
+                'updated_history': updated_history,
                 'timestamp': datetime.now().isoformat(),
             }
         }), 200
@@ -453,145 +609,62 @@ def submit_feedback():
         return jsonify({'status': 'error', 'message': f'伺服器錯誤: {str(e)}'}), 500
 
 
-@adaptive_review_bp.route('/plan/<student_id>', methods=['GET'])
-def get_review_plan(student_id: str):
-    """
-    生成完整的多會話複習計畫
-    
-    Query Parameters:
-    - history_json: URL-encoded JSON of history
-    - num_sessions: 會話數（預設 3）
-    
-    Response:
-    {
-        "status": "success",
-        "data": {
-            "student_id": "STU_001",
-            "num_sessions": 3,
-            "overall_stats": {
-                "apr_initial": 0.60,
-                "apr_final": 0.78,
-                "apr_gain": +0.18,
-                "total_items_practiced": 18
-            },
-            "sessions": [
-                {
-                    "session_name": "複習會話 #1",
-                    "apr_initial": 0.60,
-                    "apr_final": 0.68,
-                    "apr_gain": +0.08,
-                    "correct_rate": 0.67,
-                    "skills_practiced": {...}
-                },
-                ...
-            ]
-        }
-    }
-    """
-    try:
-        history_json = request.args.get('history_json', '{}')
-        num_sessions = request.args.get('num_sessions', 3, type=int)
-        
-        history = json.loads(history_json)
-        history = normalize_history(history)
-        
-        is_valid, error_msg = validate_history(history)
-        if not is_valid:
-            return jsonify({'status': 'error', 'message': error_msg}), 400
-        
-        engine = get_engine()
-        
-        # 生成計畫
-        plan = generate_review_plan(history, num_sessions=num_sessions, engine=engine)
-        
-        return jsonify({
-            'status': 'success',
-            'data': {
-                'student_id': student_id,
-                'num_sessions': num_sessions,
-                'overall_stats': plan['overall_stats'],
-                'sessions': plan['sessions'],
-                'timestamp': datetime.now().isoformat(),
-            }
-        }), 200
-        
-    except json.JSONDecodeError:
-        return jsonify({'status': 'error', 'message': '無效的歷史 JSON'}), 400
-    except Exception as e:
-        logger.error(f"❌ 計畫生成失敗: {e}", exc_info=True)
-        return jsonify({'status': 'error', 'message': f'伺服器錯誤: {str(e)}'}), 500
-
-
-@adaptive_review_bp.route('/health', methods=['GET'])
-def health_check():
-    """健康檢查端點"""
-    try:
-        engine = get_engine()
-        return jsonify({
-            'status': 'success',
-            'message': '複習引擎就緒',
-            'n_skills': engine.n_skills,
-            'n_items': engine.n_items,
-        }), 200
-    except Exception as e:
-        return jsonify({
-            'status': 'error',
-            'message': f'複習引擎異常: {e}'
-        }), 500
-
-
 @adaptive_review_bp.route('/question/<int:item_id>', methods=['GET'])
 def get_question(item_id: int):
     """
-    獲取單個題目的詳細信息
-    
-    Response:
-    {
-        "status": "success",
-        "data": {
-            "item_id": 42,
-            "skill_id": 3,
-            "skill_name": "polynomial-operations",
-            "question_text": "化簡多項式...",
-            "predicted_difficulty": 0.45,
-            "answer_type": "text",
-            "hint": "可以先分組..."
-        }
-    }
+    獲取單個題目：
+    - 從 textbook_examples 隨機取一題相同技能的題目
+    - 截斷多小題，只顯示第一小題
+    - 用 LLM 推斷應填寫的答案格式（不洩漏答案）
+    - correct_answer 回傳給後端評分用，不在前端顯示
     """
     try:
         engine = get_engine()
-        
-        # 從引擎獲取題目的技能映射
         skill_id = engine.akt_inference.problem_to_skill_id.get(item_id, 0)
-        
-        # 獲取實際的 skill_name (如果有的話)
         if hasattr(engine.akt_inference, 'skills_list') and skill_id < len(engine.akt_inference.skills_list):
             skill_name = engine.akt_inference.skills_list[skill_id]
         else:
             skill_name = f"skill_{skill_id}"
-            
-        # 獲取題目難度
-        predicted_difficulty = engine.item_properties.get(item_id, {}).get('difficulty', 0.5) if hasattr(engine, 'item_properties') else 0.5
-        
+
+        predicted_difficulty = 0.5
+        if hasattr(engine, 'item_properties'):
+            predicted_difficulty = engine.item_properties.get(item_id, {}).get('difficulty', 0.5)
+
         from models import db
-        from sqlalchemy import text
-        # 從資料庫當中抓取一題同樣 skill_name 的題目
-        query = text('''
-            SELECT problem_text 
-            FROM textbook_examples 
-            WHERE skill_id = :skill_id 
+        from sqlalchemy import text as sql_text
+
+        result = db.session.execute(sql_text("""
+            SELECT problem_text, correct_answer, detailed_solution
+            FROM textbook_examples
+            WHERE skill_id = :skill_id
             ORDER BY RANDOM() LIMIT 1
-        ''')
-        result = db.session.execute(query, {'skill_id': skill_name}).fetchone()
-        
+        """), {'skill_id': skill_name}).fetchone()
+
         if result and result[0]:
-            question_text = result[0]
+            question_text, correct_answer = _truncate_first_subproblem(
+                result[0], result[1] or ''
+            )
+            detailed_solution = result[2] or ''
         else:
-            question_text = f"題目 {item_id}: 請回答該數學題\n\n" \
-                           f"(技能 ID: {skill_name})\n" \
-                           f"難度級別: {'簡單' if predicted_difficulty < 0.4 else '中等' if predicted_difficulty < 0.65 else '困難'}"
-        
+            question_text = f"題目 {item_id}（技能: {skill_name}）"
+            correct_answer = ''
+            detailed_solution = ''
+
+        # 答案格式提示：先用規則萃取，無法判斷時才呼叫 LLM（避免 429 Rate Limit）
+        answer_format_hint = '請輸入你的答案'
+        rule_hint = _rule_based_format_hint(question_text)
+        if rule_hint:
+            answer_format_hint = rule_hint
+        else:
+            try:
+                fmt_prompt = LLM_ANSWER_FORMAT_PROMPT.format(question=question_text[:300])
+                ai_client = get_ai_client('default')
+                fmt_resp = call_ai_with_retry(ai_client, fmt_prompt)
+                if fmt_resp and fmt_resp.text:
+                    answer_format_hint = fmt_resp.text.strip()[:80]
+            except Exception as fmt_err:
+                logger.warning(f"無法獲取答案格式: {fmt_err}")
+
         return jsonify({
             'status': 'success',
             'data': {
@@ -599,24 +672,21 @@ def get_question(item_id: int):
                 'skill_id': skill_id,
                 'skill_name': skill_name,
                 'question_text': question_text,
+                'correct_answer': correct_answer,   # 後端評分用，前端不顯示
                 'predicted_difficulty': float(predicted_difficulty),
-                'answer_type': 'text',
-                'hint': '仔細思考題目的要求，一步步解答。',
+                'answer_format_hint': answer_format_hint,
             }
         }), 200
-        
+
     except Exception as e:
         logger.error(f"❌ 獲取題目失敗: {e}", exc_info=True)
-        return jsonify({
-            'status': 'error',
-            'message': f'無法獲取題目: {str(e)}'
-        }), 500
+        return jsonify({'status': 'error', 'message': f'無法獲取題目: {str(e)}'}), 500
 
 
 @adaptive_review_bp.route('/chat', methods=['POST'])
 def chat_with_tutor():
     """
-    提供 LLM 引導式提示服務
+    提供 LLM 引導式提示服務（不可直接洩漏答案）
     Request JSON:
     {
         "question_text": "題目內容...",
@@ -632,7 +702,6 @@ def chat_with_tutor():
     skill_name = data.get('skill_name', '一般數學觀念')
     user_query = data.get('query', '請給我一個提示')
     
-    # 填充 Prompt
     prompt = LLM_GUIDE_PROMPT.format(
         skill=skill_name,
         question=question_text,
@@ -654,16 +723,26 @@ def chat_with_tutor():
         return jsonify({'status': 'error', 'message': '無法獲取提示，請檢查或重設 AI 管理功能的 API Key。'}), 500
 
 
+@adaptive_review_bp.route('/health', methods=['GET'])
+def health_check():
+    """健康檢查端點"""
+    try:
+        engine = get_engine()
+        return jsonify({
+            'status': 'success',
+            'message': '複習引擎就緒',
+            'n_skills': engine.n_skills,
+            'n_items': engine.n_items,
+        }), 200
+    except Exception as e:
+        return jsonify({'status': 'error', 'message': f'複習引擎異常: {e}'}), 500
+
+
 if __name__ == "__main__":
     from flask import Flask
-    
     app = Flask(__name__)
     app.register_blueprint(adaptive_review_bp)
-    
-    # 配置日誌
     logging.basicConfig(level=logging.INFO)
-    
     print("自適應複習模式 API 伺服器")
     print("http://127.0.0.1:5000/api/adaptive-review/health")
-    
     app.run(debug=True, port=5000)

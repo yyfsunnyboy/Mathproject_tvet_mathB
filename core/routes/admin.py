@@ -289,7 +289,7 @@ def db_maintenance():
 @core_bp.route('/upload_db', methods=['POST'])
 @login_required
 def upload_db():
-    if not current_user.is_admin:
+    if not (current_user.is_admin or current_user.role == 'teacher'):
         flash('權限不足', 'danger')
         return redirect(url_for('core.db_maintenance'))
 

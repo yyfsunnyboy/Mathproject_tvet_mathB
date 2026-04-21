@@ -613,6 +613,7 @@
             
             <div>
               <h3 style="margin: 0 0 8px; font-size: 14px; font-weight: 700;">✍️ 答案輸入</h3>
+              <p id="answerFormatHint" style="margin: 0 0 6px; font-size: 12px; color: #6b7a90; font-style: italic;">請輸入你的答案</p>
               <div class="answer-box">
                 <input type="text" id="answerInput" placeholder="輸入你的答案..." />
                 <button class="btn btn-primary" onclick="submitAnswer()">提交</button>
@@ -852,12 +853,21 @@
 
         if (data.status === 'success') {
           currentSession = data.data;
+          // 若後端恢復了歷史，更新前端 learningHistory
+          if (data.data.restored_history &&
+              data.data.restored_history.item_history &&
+              data.data.restored_history.item_history.length > 0) {
+            learningHistory = data.data.restored_history;
+            addChatMessage('bot', `🔄 已恢復 ${learningHistory.item_history.length} 題的學習紀錄，繼續上次進度！`);
+          }
           updateStats(data.data);
           if (data.data.recommendations && data.data.recommendations.length > 0) {
             displayQuestion(data.data.recommendations[0]);
           }
           showState('review');
-          addChatMessage('bot', '👋 歡迎！我已為你推薦了第一道題目。你可以在手寫板上計算，然後在答案框中輸入答案。');
+          if (!learningHistory.item_history.length) {
+            addChatMessage('bot', '👋 歡迎！第一道題目已為你準備好。你可以在手寫板上計算，再輸入答案。');
+          }
         }
       } catch (error) {
         console.error('初始化失敗:', error);
@@ -921,11 +931,19 @@
         if (response.ok) {
           const data = await response.json();
           if (data.status === 'success') {
-            // 自動格式化排版與分行
-            let formattedText = data.data.question_text.replace(/(⑴|⑵|⑶|⑷|⑸|①|②|③|④|⑤)/g, '\n$1');
-            document.getElementById('questionText').textContent = formattedText.trim();
+            const qData = data.data;
+            // 存下正確答案（後端評分用，不顯示）
+            currentQuestion.correct_answer = qData.correct_answer || '';
+            // 顯示答案格式提示
+            const hintEl = document.getElementById('answerFormatHint');
+            if (hintEl && qData.answer_format_hint) {
+              hintEl.textContent = qData.answer_format_hint;
+            }
+            // 顯示題目（只有第一題，無需再用正則截斷）
+            const qEl = document.getElementById('questionText');
+            qEl.textContent = qData.question_text;
             if (window.MathJax) {
-               MathJax.typesetPromise([document.getElementById('questionText')]);
+              MathJax.typesetPromise([qEl]);
             }
           } else {
             displayQuestionFallback(rec);
@@ -939,11 +957,9 @@
       }
       
       document.getElementById('skillName').textContent = `📌 ${rec.skill_name || '技能 ' + rec.skill_id}`;
-      
       const difficulty = rec.predicted_difficulty < 0.4 ? '簡單' 
                         : rec.predicted_difficulty < 0.65 ? '中等' : '困難';
       document.getElementById('difficulty').textContent = `⭐ ${difficulty}`;
-      
       document.getElementById('answerInput').value = '';
       document.getElementById('responseFeedback').classList.remove('show', 'correct', 'incorrect');
       clearCanvas();
@@ -962,12 +978,14 @@
     async function submitAnswer() {
       const answer = document.getElementById('answerInput').value.trim();
       if (!answer || !currentQuestion) {
-        addChatMessage('bot', '請先輸入答案');
+        document.getElementById('responseFeedback').classList.add('show');
+        document.getElementById('responseFeedback').textContent = '請先輸入答案';
         return;
       }
 
       try {
         document.getElementById('submitBtn').disabled = true;
+        const questionText = document.getElementById('questionText').textContent || '';
         
         const response = await fetch('/api/adaptive-review/feedback', {
           method: 'POST',
@@ -976,7 +994,9 @@
             student_id: currentStudentId,
             history: learningHistory,
             item_id: currentQuestion.item_id,
-            correct: 1,
+            user_answer: answer,             // 真實作答
+            correct_answer: currentQuestion.correct_answer || '',  // 後端評分用
+            question_text: questionText,
             time_spent: 60
           })
         });
@@ -985,32 +1005,33 @@
         
         if (data.status === 'success') {
           const feedbackData = data.data;
+          const isCorrect = feedbackData.correct === 1;
           
-          learningHistory.item_history.push(currentQuestion.item_id);
-          learningHistory.skill_history.push(currentQuestion.skill_id);
-          learningHistory.resp_history.push(1);
+          learningHistory = feedbackData.updated_history || {
+            item_history: [...learningHistory.item_history, currentQuestion.item_id],
+            skill_history: [...learningHistory.skill_history, currentQuestion.skill_id || 0],
+            resp_history: [...learningHistory.resp_history, feedbackData.correct],
+          };
           
           const feedbackDiv = document.getElementById('responseFeedback');
-          feedbackDiv.classList.add('show', 'correct');
-          feedbackDiv.textContent = `✅ ${feedbackData.feedback}`;
+          feedbackDiv.classList.add('show', isCorrect ? 'correct' : 'incorrect');
+          feedbackDiv.textContent = feedbackData.feedback;
           
           updateStats(feedbackData);
           
-          addChatMessage('user', `我的答案是：${answer}`);
-          addChatMessage('bot', `✅ 很棒！你已掌握了這道題。\n${feedbackData.feedback}`);
-          
+          // 延遲跳下一題
           setTimeout(() => {
             if (feedbackData.next_recommendations && feedbackData.next_recommendations.length > 0) {
               displayQuestion(feedbackData.next_recommendations[0]);
             }
             document.getElementById('submitBtn').disabled = false;
-          }, 2000);
+          }, 2500);
         } else {
           throw new Error(data.message || '提交失敗');
         }
       } catch (error) {
         console.error('提交失敗:', error);
-        addChatMessage('bot', `❌ 提交失敗: ${error.message}`);
+        document.getElementById('responseFeedback').textContent = `❌ 提交失敗: ${error.message}`;
         document.getElementById('submitBtn').disabled = false;
       }
     }
@@ -1021,8 +1042,8 @@
     }
 
     function skipQuestion() {
-      addChatMessage('bot', '已跳過此題。準備下一題...');
-      setTimeout(() => nextQuestion(), 500);
+      // 不在對話框顯示系統訊息，直接切換題目
+      nextQuestion();
     }
 
     async function nextQuestion() {
@@ -1042,7 +1063,7 @@
         if (data.status === 'success' && data.data.recommendations.length > 0) {
           updateStats(data.data);
           displayQuestion(data.data.recommendations[0]);
-          addChatMessage('bot', '下一題已為您準備好了！');
+          // 不在對話框顯示「下一題已準備」等系統訊息
         }
       } catch (error) {
         console.error('獲取下一題失敗:', error);
@@ -1107,27 +1128,16 @@
     }
 
     function sendSpecificMessage(message) {
-      const input = document.getElementById('chatInput');
-      input.value = message;
-      sendChatMessage();
+      // 不加入 user bubble，直接傳送，只顯示 bot 回覆
+      _callChatAPI(message);
     }
 
-    async function sendChatMessage() {
-      const input = document.getElementById('chatInput');
-      const message = input.value.trim();
-      
-      if (!message) return;
-      
-      addChatMessage('user', message);
-      input.value = '';
-      
+    async function _callChatAPI(message) {
       if (!currentQuestion) {
         addChatMessage('bot', '請先開始複習會話，獲得推薦題目後再進行提問哦。');
         return;
       }
-      
       const questionText = document.getElementById('questionText').textContent || '';
-      
       try {
         const response = await fetch('/api/adaptive-review/chat', {
           method: 'POST',
@@ -1138,7 +1148,6 @@
             query: message
           })
         });
-
         const data = await response.json();
         if (data.status === 'success') {
           addChatMessage('bot', data.data.reply);
@@ -1150,6 +1159,16 @@
         addChatMessage('bot', '❌ 網路發生錯誤，無法取得回覆。');
       }
     }
+
+    async function sendChatMessage() {
+      const input = document.getElementById('chatInput');
+      const message = input.value.trim();
+      if (!message) return;
+      addChatMessage('user', message);
+      input.value = '';
+      await _callChatAPI(message);
+    }
+
   </script>
 </body>
 </html>
