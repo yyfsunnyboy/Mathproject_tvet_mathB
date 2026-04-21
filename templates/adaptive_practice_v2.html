@@ -1332,6 +1332,8 @@
       if (postMode) return postMode;
       const currentMode = normalizeLearningMode(response?.current_mode);
       if (currentMode) return currentMode;
+      if (normalizeBoolean(response?.return_to_mainline, false) || normalizeBoolean(response?.has_returned_to_main, false)) return "returned";
+      if (Object.prototype.hasOwnProperty.call(response || {}, "in_remediation") && normalizeBoolean(response?.in_remediation, false) === false) return "main";
       if (normalizeBoolean(response?.remediation_triggered_final, false)) return "remediation";
       const explicit = String(response?.learning_mode || "").trim().toLowerCase();
       if (explicit === "main" || explicit === "remediation" || explicit === "returned") return explicit;
