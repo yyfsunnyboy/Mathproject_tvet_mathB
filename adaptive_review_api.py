@@ -24,9 +24,19 @@ from flask import Blueprint, request, jsonify
 from functools import lru_cache
 import json
 import re
+import time
 import logging
-from typing import Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional, Tuple
 from datetime import datetime
+
+import sympy as sp
+from sympy import latex as sympy_latex
+from sympy.parsing.sympy_parser import (
+    convert_xor,
+    implicit_multiplication_application,
+    parse_expr,
+    standard_transformations,
+)
 
 from core.ai_wrapper import get_ai_client, call_ai_with_retry
 from core.prompts.composer import compose_prompt
@@ -233,6 +243,23 @@ from adaptive_review_mode import (
 logger = logging.getLogger(__name__)
 adaptive_review_bp = Blueprint('adaptive_review', __name__, url_prefix='/api/adaptive-review')
 
+_SYMPY_TRANSFORMATIONS = standard_transformations + (
+    implicit_multiplication_application,
+    convert_xor,
+)
+_SYMPY_LOCAL_DICT = {
+    name: sp.Symbol(name)
+    for name in (
+        "a", "b", "c", "d", "m", "n", "p", "q", "r", "s", "t",
+        "u", "v", "w", "x", "y", "z"
+    )
+}
+_SYMPY_LOCAL_DICT.update({
+    "sqrt": sp.sqrt,
+    "Abs": sp.Abs,
+    "pi": sp.pi,
+})
+
 # 全局引擎實例（緩存）
 _engine_instance = None
 
@@ -416,6 +443,250 @@ def _build_adaptive_tutor_prompt(
     )
     fallback_prompt += f"\n\n【技能主題】\n{family_name_block or '未提供'}\n\n【可用知識】\n{subskill_text}"
     return fallback_prompt, "adaptive_review_fallback"
+
+
+def _fetch_seed_question_by_item_id(item_id: int, engine: AdaptiveReviewEngine) -> Dict[str, Any]:
+    """依照既有固定映射邏輯取出 RL 選中的資料庫題目，作為 seed question。"""
+    skill_id = engine.akt_inference.problem_to_skill_id.get(item_id, 0)
+    if hasattr(engine.akt_inference, 'skills_list') and skill_id < len(engine.akt_inference.skills_list):
+        skill_name = engine.akt_inference.skills_list[skill_id]
+    else:
+        skill_name = f"skill_{skill_id}"
+
+    predicted_difficulty = 0.5
+    if hasattr(engine, 'item_properties'):
+        predicted_difficulty = engine.item_properties.get(item_id, {}).get('difficulty', 0.5)
+
+    from models import db
+    from sqlalchemy import text as sql_text
+
+    count_res = db.session.execute(sql_text("""
+        SELECT COUNT(*) FROM textbook_examples WHERE skill_id = :skill_id
+    """), {'skill_id': skill_name}).scalar()
+
+    seed_row = None
+    if count_res and count_res > 0:
+        offset = item_id % count_res
+        seed_row = db.session.execute(sql_text("""
+            SELECT id, problem_text, correct_answer, detailed_solution, difficulty_level, problem_type
+            FROM textbook_examples
+            WHERE skill_id = :skill_id
+            ORDER BY id LIMIT 1 OFFSET :offset
+        """), {'skill_id': skill_name, 'offset': offset}).fetchone()
+
+    if seed_row and seed_row[1]:
+        question_text, correct_answer = _truncate_first_subproblem(
+            seed_row[1], seed_row[2] or ''
+        )
+        detailed_solution = seed_row[3] or ''
+        source_question_id = seed_row[0]
+        difficulty_level = seed_row[4] if seed_row[4] is not None else None
+        problem_type = seed_row[5] or ''
+    else:
+        question_text = f"題目 {item_id}（技能: {skill_name}）"
+        correct_answer = ''
+        detailed_solution = ''
+        source_question_id = None
+        difficulty_level = None
+        problem_type = ''
+
+    rag_meta = db.session.execute(sql_text("""
+        SELECT family_id, subskill_nodes
+        FROM skill_family_bridge
+        WHERE skill_id = :skill_id LIMIT 1
+    """), {'skill_id': skill_name}).fetchone()
+
+    family_id = rag_meta[0] if rag_meta else ''
+    subskill_nodes = []
+    if rag_meta and rag_meta[1]:
+        try:
+            if str(rag_meta[1]).startswith('['):
+                subskill_nodes = json.loads(rag_meta[1])
+            else:
+                subskill_nodes = [s.strip() for s in str(rag_meta[1]).split(';') if s.strip()]
+        except Exception:
+            subskill_nodes = []
+
+    answer_format_hint = _rule_based_format_hint(question_text)
+    seed_question = {
+        'item_id': item_id,
+        'skill_id': skill_id,
+        'skill_name': skill_name,
+        'question_text': question_text,
+        'correct_answer': correct_answer,
+        'predicted_difficulty': float(predicted_difficulty),
+        'answer_format_hint': answer_format_hint,
+        'family_id': family_id,
+        'subskill_nodes': subskill_nodes,
+        'detailed_solution': detailed_solution,
+        'difficulty_level': difficulty_level,
+        'problem_type': problem_type,
+        'source_question_id': source_question_id,
+        'source': 'rl_fixed_question',
+    }
+    seed_question['expected_answer'] = correct_answer
+    seed_question['acceptable_answers'] = [correct_answer] if correct_answer else []
+    return seed_question
+
+
+def _coerce_json_object(raw_text: str) -> Dict[str, Any]:
+    """最佳努力解析 AI 回傳 JSON。"""
+    from core.ai_analyzer import clean_and_parse_json
+
+    cleaned = re.sub(r'^\s*```json\s*|\s*```\s*$', '', str(raw_text or '').strip(), flags=re.IGNORECASE)
+    data = clean_and_parse_json(cleaned)
+    if not isinstance(data, dict):
+        raise ValueError("AI response is not a JSON object")
+    return data
+
+
+def _normalize_answer_expression(answer_expression: str) -> Tuple[str, str]:
+    """用 SymPy 正規化答案表達式，回傳 (plain_text, latex_text)。"""
+    raw = str(answer_expression or '').strip()
+    if not raw:
+        raise ValueError("answer_expression is empty")
+
+    expr_text = raw.replace('×', '*').replace('÷', '/').replace('−', '-')
+    expr_text = expr_text.replace('^', '**')
+    expr_text = re.sub(r'(?<![A-Za-z])√\s*([A-Za-z0-9(])', r'sqrt(\1', expr_text)
+    if expr_text.count('sqrt(') > expr_text.count(')'):
+        expr_text += ')' * (expr_text.count('sqrt(') - expr_text.count(')'))
+    expr = parse_expr(expr_text, transformations=_SYMPY_TRANSFORMATIONS, local_dict=_SYMPY_LOCAL_DICT)
+    simplified = sp.simplify(expr)
+    return str(simplified), sympy_latex(simplified)
+
+
+def _build_ai_variant_prompt(seed_question: Dict[str, Any], student_state: Optional[Dict[str, Any]] = None) -> str:
+    seed_question_text = str(seed_question.get("question_text") or "").strip()
+    seed_answer = str(seed_question.get("correct_answer") or "").strip()
+    difficulty_level = seed_question.get("difficulty_level")
+
+    return (
+        "你是一個數學題目變體生成器。\n"
+        "任務：根據 seed 題，產生 1 題同型新題。\n"
+        "只做出題，不要解釋，不要教學，不要詳解，不要 Markdown。\n"
+        "保持相同概念、相同解題結構、相近難度，只替換數字或情境。\n"
+        "數字要友善，避免巨大分數、複雜根式、超出課綱。\n\n"
+        f"seed_question: {seed_question_text}\n"
+        f"seed_answer: {seed_answer}\n"
+        f"seed_difficulty: {difficulty_level}\n\n"
+        "只輸出 JSON，格式如下：\n"
+        '{"question_text":"...","answer_expression":"...","answer_type":"integer|fraction|sympy_expression|polynomial|radical"}'
+    )
+
+
+def generate_ai_variant_from_rl_selected_question(question_id, student_state=None):
+    """
+    RL 仍直接選 question_id/item_id；這裡只負責：
+    1. 讀 seed 題
+    2. 讓 AI 生成同構變體
+    3. 用 SymPy/Python 驗證答案
+    4. 失敗時 fallback 回固定資料庫題目
+    """
+    started_at = time.perf_counter()
+    seed_question = None
+    fallback_used = False
+    ai_variant_success = False
+    sympy_validation_status = "not_started"
+
+    try:
+        engine = get_engine()
+        seed_question = _fetch_seed_question_by_item_id(int(question_id), engine)
+        payload = dict(seed_question)
+        payload['rl_selected_question_id'] = int(question_id)
+
+        required_seed_fields = (
+            seed_question.get('question_text'),
+            seed_question.get('skill_name'),
+            seed_question.get('family_id'),
+            seed_question.get('correct_answer'),
+        )
+        if not all(v is not None for v in required_seed_fields):
+            raise ValueError("seed question missing required fields")
+
+        prompt = _build_ai_variant_prompt(seed_question, student_state=student_state)
+        client = get_ai_client('default')
+        response = call_ai_with_retry(client, prompt, max_retries=1, retry_delay=0, timeout=10)
+        raw_text = getattr(response, 'text', str(response or ''))
+        ai_data = _coerce_json_object(raw_text)
+
+        for key in (
+            "question_text", "answer_expression", "answer_type"
+        ):
+            if key not in ai_data or ai_data[key] in (None, ""):
+                raise ValueError(f"missing required ai field: {key}")
+
+        normalized_answer, normalized_latex = _normalize_answer_expression(ai_data["answer_expression"])
+        sympy_validation_status = "parsed_ok"
+
+        acceptable_answers = []
+        for candidate in (
+            normalized_answer,
+            normalized_latex,
+            str(ai_data["answer_expression"]).strip(),
+            seed_question.get("correct_answer", ""),
+        ):
+            text = str(candidate or '').strip()
+            if text and text not in acceptable_answers:
+                acceptable_answers.append(text)
+
+        payload.update({
+            'question_text': str(ai_data['question_text']).strip(),
+            'latex': str(ai_data.get('latex') or normalized_latex).strip(),
+            'correct_answer': normalized_answer,
+            'expected_answer': normalized_answer,
+            'acceptable_answers': acceptable_answers,
+            'answer_expression': normalized_answer,
+            'answer_type': str(ai_data['answer_type']).strip(),
+            'difficulty_level': ai_data.get('difficulty_level', seed_question.get('difficulty_level')),
+            'problem_type': seed_question.get('problem_type', ''),
+            'source_question_id': seed_question.get('source_question_id'),
+            'variant_notes': str(ai_data.get('variant_notes') or '').strip(),
+            'source': 'ai_variant_from_rl_seed',
+            'answer_format_hint': _rule_based_format_hint(str(ai_data['question_text']).strip()),
+            'seed_question_text': seed_question.get('question_text', ''),
+            'seed_correct_answer': seed_question.get('correct_answer', ''),
+            'skill_catalog_id': seed_question.get('skill_name', ''),
+            'ai_raw_answer_expression': str(ai_data['answer_expression']).strip(),
+        })
+        ai_variant_success = True
+    except Exception as exc:
+        fallback_used = True
+        payload = dict(seed_question or {})
+        if payload:
+            payload.setdefault('rl_selected_question_id', int(question_id))
+            payload['source'] = 'rl_fixed_question_fallback'
+        else:
+            payload = {
+                'item_id': int(question_id),
+                'rl_selected_question_id': int(question_id),
+                'question_text': f'題目 {question_id}',
+                'correct_answer': '',
+                'expected_answer': '',
+                'acceptable_answers': [],
+                'source': 'rl_fixed_question_fallback',
+            }
+        sympy_validation_status = sympy_validation_status if sympy_validation_status != "not_started" else f"fallback:{type(exc).__name__}"
+        logger.warning(f"AI variant generation failed for rl_selected_question_id={question_id}: {exc}")
+
+    latency_ms = int((time.perf_counter() - started_at) * 1000)
+    payload['runtime_log'] = {
+        'rl_selected_question_id': int(question_id),
+        'ai_variant_success': ai_variant_success,
+        'fallback_used': fallback_used,
+        'sympy_validation_status': sympy_validation_status,
+        'generation_latency_ms': latency_ms,
+    }
+    logger.info(
+        "[adaptive_review.variant] rl_selected_question_id=%s ai_variant_success=%s "
+        "fallback_used=%s sympy_validation_status=%s generation_latency_ms=%s",
+        question_id,
+        ai_variant_success,
+        fallback_used,
+        sympy_validation_status,
+        latency_ms,
+    )
+    return payload
 
 
 # ═══════════════════════════════════════════════════════════════════════════
@@ -694,85 +965,43 @@ def submit_feedback():
 def get_question(item_id: int):
     """
     獲取單個題目：
-    - 從 textbook_examples 隨機取一題相同技能的題目
-    - 截斷多小題，只顯示第一小題
-    - 用 LLM 推斷應填寫的答案格式（不洩漏答案）
+    - RL 仍直接指定 item_id
+    - 優先把該固定資料庫題目當成 seed，生成 AI 同構變體
+    - 若 AI/JSON/SymPy 驗證失敗，fallback 回既有固定題目流程
     - correct_answer 回傳給後端評分用，不在前端顯示
     """
     try:
-        engine = get_engine()
-        skill_id = engine.akt_inference.problem_to_skill_id.get(item_id, 0)
-        if hasattr(engine.akt_inference, 'skills_list') and skill_id < len(engine.akt_inference.skills_list):
-            skill_name = engine.akt_inference.skills_list[skill_id]
-        else:
-            skill_name = f"skill_{skill_id}"
-
-        predicted_difficulty = 0.5
-        if hasattr(engine, 'item_properties'):
-            predicted_difficulty = engine.item_properties.get(item_id, {}).get('difficulty', 0.5)
-
-        from models import db
-        from sqlalchemy import text as sql_text
-
-        # 解決問題2 (重複): 將抽象的 item_id 映射到 DB 中固定的題目，避免 ORDER BY RANDOM() 造成短時間重複
-        count_res = db.session.execute(sql_text("""
-            SELECT COUNT(*) FROM textbook_examples WHERE skill_id = :skill_id
-        """), {'skill_id': skill_name}).scalar()
-
-        if count_res and count_res > 0:
-            offset = item_id % count_res
-            result = db.session.execute(sql_text("""
-                SELECT problem_text, correct_answer, detailed_solution
-                FROM textbook_examples
-                WHERE skill_id = :skill_id
-                ORDER BY id LIMIT 1 OFFSET :offset
-            """), {'skill_id': skill_name, 'offset': offset}).fetchone()
-        else:
-            result = None
-
-        if result and result[0]:
-            question_text, correct_answer = _truncate_first_subproblem(
-                result[0], result[1] or ''
-            )
-            detailed_solution = result[2] or ''
-        else:
-            question_text = f"題目 {item_id}（技能: {skill_name}）"
-            correct_answer = ''
-            detailed_solution = ''
-
-        # 解決問題3 (RAG未實作): 從 skill_family_bridge 取得語境節點資料，供前端帶入 /chat 呼叫
-        rag_meta = db.session.execute(sql_text("""
-            SELECT family_id, subskill_nodes 
-            FROM skill_family_bridge 
-            WHERE skill_id = :skill_id LIMIT 1
-        """), {'skill_id': skill_name}).fetchone()
-        
-        family_id = rag_meta[0] if rag_meta else ''
-        subskill_nodes = []
-        if rag_meta and rag_meta[1]:
+        student_state = request.args.get('student_state')
+        if student_state:
             try:
-                if str(rag_meta[1]).startswith('['):
-                    subskill_nodes = json.loads(rag_meta[1])
-                else:
-                    subskill_nodes = [s.strip() for s in str(rag_meta[1]).split(';') if s.strip()]
+                student_state = json.loads(student_state)
             except Exception:
-                pass
-
-        # 解決問題1 (卡頓): 答案格式提示完全採用規則萃取，移除耗時的同步 LLM (Gemini API) 呼叫
-        answer_format_hint = _rule_based_format_hint(question_text)
+                student_state = {'raw': str(student_state)}
+        data = generate_ai_variant_from_rl_selected_question(item_id, student_state=student_state)
 
         return jsonify({
             'status': 'success',
             'data': {
-                'item_id': item_id,
-                'skill_id': skill_id,
-                'skill_name': skill_name,
-                'question_text': question_text,
-                'correct_answer': correct_answer,   # 後端評分用，前端不顯示
-                'predicted_difficulty': float(predicted_difficulty),
-                'answer_format_hint': answer_format_hint,
-                'family_id': family_id,
-                'subskill_nodes': subskill_nodes
+                'item_id': data.get('item_id', item_id),
+                'skill_id': data.get('skill_id', 0),
+                'skill_name': data.get('skill_name', ''),
+                'question_text': data.get('question_text', ''),
+                'correct_answer': data.get('correct_answer', ''),   # 後端評分用，前端不顯示
+                'predicted_difficulty': float(data.get('predicted_difficulty', 0.5)),
+                'answer_format_hint': data.get('answer_format_hint', ''),
+                'family_id': data.get('family_id', ''),
+                'subskill_nodes': data.get('subskill_nodes', []),
+                'expected_answer': data.get('expected_answer', data.get('correct_answer', '')),
+                'acceptable_answers': data.get('acceptable_answers', []),
+                'difficulty_level': data.get('difficulty_level'),
+                'problem_type': data.get('problem_type', ''),
+                'source_question_id': data.get('source_question_id'),
+                'source': data.get('source', 'rl_fixed_question'),
+                'runtime_log': data.get('runtime_log', {}),
+                'latex': data.get('latex', ''),
+                'variant_notes': data.get('variant_notes', ''),
+                'skill_catalog_id': data.get('skill_catalog_id', data.get('skill_name', '')),
+                'rl_selected_question_id': data.get('rl_selected_question_id', item_id),
             }
         }), 200
 
