@@ -35,6 +35,7 @@ from core.session import get_current, set_current
 from core.adaptive_engine import recommend_question, update_student_ability, apply_error_penalty, get_all_prerequisites
 from core.ai_analyzer import diagnose_error
 from core.irt_engine import update_node_competencies
+from core.ai_settings import get_effective_model_config
 from config import Config
 
 # ==========================================
@@ -192,7 +193,7 @@ def practice(skill_id):
     ).order_by(SkillInfo.skill_ch_name).all()
 
     prereq_skills = [{'skill_id': p.skill_id, 'skill_ch_name': p.skill_ch_name} for p in prerequisites]
-    tutor_config = Config.MODEL_ROLES.get('tutor', {})
+    tutor_config = get_effective_model_config('tutor')
     tutor_model_name = tutor_config.get('model', 'unknown')
 
     return render_template('index.html', 
@@ -207,7 +208,7 @@ def practice(skill_id):
 @login_required
 def similar_questions():
     """進入類題練習模式，保留既有 index 版型與聊天/手寫互動。"""
-    tutor_config = Config.MODEL_ROLES.get('tutor', {})
+    tutor_config = get_effective_model_config('tutor')
     tutor_model_name = tutor_config.get('model', 'unknown')
 
     return render_template(
@@ -225,7 +226,7 @@ def runtime_ai_status():
     """
     API: 取回實際 runtime tutor model 的狀態
     """
-    from core.ai_settings import get_effective_model_config, get_ai_settings_snapshot
+    from core.ai_settings import get_ai_settings_snapshot
     
     tutor_config = get_effective_model_config('tutor')
     provider = tutor_config.get('provider', 'unknown')

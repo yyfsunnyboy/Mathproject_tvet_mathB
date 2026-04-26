@@ -88,6 +88,13 @@
                     <div class="api-key-global" id="global-api-key-container" style="flex-shrink:0; display:flex; align-items:center; gap:8px;">
                         <label id="key-label" style="font-size:0.85em; font-weight:600; color:#475569; margin:0;"><i class="bi bi-key-fill"></i> Gemini API Key</label>
                         <input type="password" id="gemini-api-key" placeholder="Enter API Key" oninput="checkApiKey()" style="width:180px; padding:4px 8px; border:1px solid #cbd5e1; border-radius:4px; outline:none; font-family:monospace;">
+                        <div id="cloud-model-container" style="display:flex; align-items:center; gap:6px;">
+                            <label for="cloud-model-select" style="font-size:0.85em; font-weight:600; color:#475569; margin:0;">Cloud 模型</label>
+                            <select id="cloud-model-select" style="padding:4px 8px; border:1px solid #cbd5e1; border-radius:4px; outline:none;">
+                                <option value="gemini-2.5-flash">Gemini 2.5 Flash</option>
+                                <option value="gemini-3-flash-preview">Gemini 3 Flash Preview（目前）</option>
+                            </select>
+                        </div>
                         <span id="api_key_status" class="req-key-hint">尚未輸入 Key</span>
                         <button id="btn-mode-action" class="btn btn-primary" onclick="testAndSaveMode()" style="padding:4px 10px; font-size:0.8em; min-height:unset; height:auto;"><i class="bi bi-check-circle"></i> 測試並儲存</button>
                     </div>
@@ -232,6 +239,7 @@
 
     <script>
         let currentMode = "cloud";
+        let currentCloudModel = "gemini-3-flash-preview";
         let modelMappingCache = {};
         let promptTemplatesCache = [];
         const ROLE_DESC = [
@@ -302,14 +310,20 @@
 
             const keyLabel = document.getElementById("key-label");
             const keyInput = document.getElementById("gemini-api-key");
+            const cloudModelContainer = document.getElementById("cloud-model-container");
+            const cloudModelSelect = document.getElementById("cloud-model-select");
             
             if (currentMode === "edge") {
                 if (keyLabel) keyLabel.style.display = "none";
                 if (keyInput) keyInput.style.display = "none";
+                if (cloudModelContainer) cloudModelContainer.style.display = "none";
+                if (cloudModelSelect) cloudModelSelect.disabled = true;
                 if (keyStatus) keyStatus.style.display = "none";
             } else {
                 if (keyLabel) keyLabel.style.display = "";
                 if (keyInput) keyInput.style.display = "";
+                if (cloudModelContainer) cloudModelContainer.style.display = "";
+                if (cloudModelSelect) cloudModelSelect.disabled = false;
                 if (keyStatus) keyStatus.style.display = "";
             }
 
@@ -348,10 +362,11 @@
                 if (statusText) statusText.innerText = "";
                 
                 try {
+                    const cloudModel = document.getElementById("cloud-model-select")?.value || currentCloudModel;
                     const res = await fetch("/admin/ai_prompt_settings/update", {
                         method: "POST",
                         headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({ ai_mode: currentMode })
+                        body: JSON.stringify({ ai_mode: currentMode, cloud_model: cloudModel })
                     });
                     const data = await res.json();
                     if (!res.ok || !data.success) throw new Error(data.message || "儲存失敗");
@@ -362,6 +377,7 @@
                         selectedBadge.innerHTML = `<i class="bi bi-check-circle-fill"></i> 已套用：${getModeDisplayName(currentMode)}`;
                     }
                     await refreshEffectiveModeStatus();
+                    loadSettings();
                 } catch (e) {
                     showAlert(e.message || "模式儲存失敗", false);
                 } finally {
@@ -413,7 +429,10 @@
                 const saveRes = await fetch("/admin/ai_prompt_settings/update", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ ai_mode: currentMode })
+                    body: JSON.stringify({
+                        ai_mode: currentMode,
+                        cloud_model: document.getElementById("cloud-model-select")?.value || currentCloudModel
+                    })
                 });
                 const saveData = await saveRes.json();
                 
@@ -427,6 +446,7 @@
                     selectedBadge.innerHTML = `<i class="bi bi-check-circle-fill"></i> 已套用：${getModeDisplayName(currentMode)}`;
                 }
                 await refreshEffectiveModeStatus();
+                loadSettings();
             } catch (e) {
                 showAlert(e.message || "作業失敗", false);
                 if (statusText && statusText.innerText === "測試中...") {
@@ -566,6 +586,10 @@
                 .then(data => {
                     if (!data.success) return showAlert("設定讀取失敗", false);
                     window._availModels = data.available_models || [];
+                    const cloudModel = data.cloud_model || "gemini-3-flash-preview";
+                    currentCloudModel = cloudModel;
+                    const cloudModelSelect = document.getElementById("cloud-model-select");
+                    if (cloudModelSelect) cloudModelSelect.value = cloudModel;
                     document.getElementById("prompt-editor").value = data.prompt || "";
                     currentMode = data.ai_mode || "cloud";
                     modelMappingCache[currentMode] = data.ai_model_roles || {};

@@ -131,6 +131,28 @@ def clean_pandoc_output(text):
     
     return text
 
+
+def parse_volume(volume_str: str):
+    volume_str = str(volume_str).strip()
+    if not volume_str:
+        return None, None
+
+    # 支援格式:
+    # 數學B4 / 數學B第4冊 / mathB4 / B4
+    match = re.search(
+        r'(?:數學|math)?\s*([ABCabc])\s*(?:第\s*)?(\d)\s*(?:冊)?',
+        volume_str,
+        flags=re.IGNORECASE,
+    )
+    if not match:
+        match = re.search(r'([ABCabc])\s*(\d)', volume_str, flags=re.IGNORECASE)
+    if not match:
+        return None, None
+
+    subject = match.group(1).upper()
+    volume_num = int(match.group(2))
+    return subject, volume_num
+
 def process_textbook_file(file_path, curriculum_info, queue, skip_code_gen=False):
     """
     主流程函式，包含完整的 try...except 錯誤處理。
@@ -167,6 +189,11 @@ def process_textbook_file(file_path, curriculum_info, queue, skip_code_gen=False
         # 步驟 2: 呼叫 AI 進行分析
         ai_json_result_string = call_gemini_for_analysis(content_by_page, curriculum_info, queue)
         # 步驟 3: 解析 AI 回傳的 JSON 字串
+        if ai_json_result_string is None:
+            return {"status": "error", "message": "AI 分析失敗，已中止匯入。"}
+        if not ai_json_result_string:
+            return {"status": "error", "message": "AI 回傳空內容，已中止匯入。"}
+
         parsed_data = parse_ai_response(ai_json_result_string, queue)
         if not parsed_data:
             return {"status": "error", "message": "AI 回傳的資料格式有誤或為空，無法解析。"}
@@ -473,52 +500,69 @@ def _sanitize_and_parse_json(s: str, queue=None):
     else:
         return None, "", original, attempts
 
-def _call_gemini_with_retry(model, prompt, queue, context_message="", parse_json=True, max_retries=3, initial_delay=5):
-    """
-    呼叫 Gemini API，並在遇到頻率限制錯誤時自動重試。
-    """
-    retries = 0
-    delay = initial_delay
 
-    while retries < max_retries:
+def _call_gemini_with_retry(model, analysis_prompt, queue=None, context_message='AI 分析', parse_json=False):
+    max_retries = 3
+    retry_delay = 2
+
+    for attempt in range(1, max_retries + 1):
         try:
-            resp = model.generate_content(prompt)
-            resp_text = ""
-            if hasattr(resp, "text"):
-                resp_text = resp.text or str(resp)
-            else:
-                resp_text = getattr(resp, "content", None) or str(resp)
+            if queue is not None:
+                queue.put(f"INFO: {context_message}，第 {attempt}/{max_retries} 次呼叫 Gemini。")
 
-            cleaned = re.sub(r'^```json\s*|\s*```$', '', resp_text.strip(), flags=re.MULTILINE)
-
+            generation_config = {
+                "temperature": 0.2,
+                "max_output_tokens": 65536,
+            }
             if parse_json:
-                parsed_obj, used_candidate, original_raw, attempts = _sanitize_and_parse_json(cleaned, queue)
-                if parsed_obj is not None:
-                    current_app.logger.info("Gemini 回傳 JSON 解析成功。")
-                    return parsed_obj
-                else:
-                    raise ValueError("Gemini 回傳內容無法解析為 JSON")
-            else:
-                return resp_text.strip()
+                generation_config["response_mime_type"] = "application/json"
+
+            response = model.generate_content(
+                analysis_prompt,
+                generation_config=generation_config,
+            )
+
+            result_text = (getattr(response, "text", "") or "").strip()
+            if result_text:
+                return result_text
+
+            candidates = getattr(response, "candidates", None)
+            if candidates:
+                parts = []
+                for cand in candidates:
+                    content = getattr(cand, "content", None)
+                    if not content:
+                        continue
+                    for p in getattr(content, "parts", []) or []:
+                        t = getattr(p, "text", None)
+                        if t:
+                            parts.append(t)
+                merged = "\n".join(parts).strip()
+                if merged:
+                    return merged
+
+            raise RuntimeError("Gemini 回傳內容為空。")
 
         except ResourceExhausted as e:
-            retries += 1
-            if retries >= max_retries:
+            if attempt >= max_retries:
+                err_type = type(e).__name__
+                err_msg = str(e) or repr(e)
+                tb = traceback.format_exc()
+                current_app.logger.error(f"_call_gemini_with_retry 發生錯誤: [{err_type}] {err_msg}\n{tb}")
+                if queue is not None:
+                    queue.put(f"ERROR: Gemini 呼叫失敗: [{err_type}] {err_msg}")
                 raise
-            retry_delay_match = re.search(r'retry_delay {\s*seconds: (\d+)\s*}', str(e))
-            if retry_delay_match:
-                delay = int(retry_delay_match.group(1)) + 1
-            message = f"WARN: {context_message}遇到 API 頻率限制。將在 {delay} 秒後重試..."
-            current_app.logger.warning(message)
-            if queue is not None:
-                queue.put(message)
-            time.sleep(delay)
-            delay *= 2
+            time.sleep(retry_delay * attempt)
+
         except Exception as e:
+            err_type = type(e).__name__
+            err_msg = str(e) or repr(e)
             tb = traceback.format_exc()
-            current_app.logger.error(f"_call_gemini_with_retry 發生錯誤: {e}\n{tb}")
+
+            current_app.logger.error(f"_call_gemini_with_retry 發生錯誤: [{err_type}] {err_msg}\n{tb}")
             if queue is not None:
-                queue.put(f"ERROR: _call_gemini_with_retry 發生錯誤: {str(e)}")
+                queue.put(f"ERROR: Gemini 呼叫失敗: [{err_type}] {err_msg}")
+
             raise
 
 def call_gemini_for_analysis(content_by_page, curriculum_info, queue):
@@ -628,6 +672,7 @@ def call_gemini_for_analysis(content_by_page, curriculum_info, queue):
     # ==========================
     # 3. 通用版 Prompt
     # ==========================
+
     prompt_generic = f"""
 你是一位數學教材編輯，請從以下內容中提取：章節 (Chapter)、小節 (Section) 和核心觀念 (Concept)。
 - 結構：章節 -> 小節 -> 核心觀念。
@@ -635,59 +680,171 @@ def call_gemini_for_analysis(content_by_page, curriculum_info, queue):
 輸出嚴格為 JSON 格式。
 """
 
-    curriculum = curriculum_info.get('curriculum', '').strip()
-    publisher = curriculum_info.get('publisher', '').strip()
 
-    debug_message = f"DEBUG: 接收到的課綱資訊 -> curriculum='{curriculum}', publisher='{publisher}'"
-    current_app.logger.info(debug_message)
-    queue.put(f"INFO: {debug_message}")
-    
-    if curriculum == 'junior_high' and publisher == 'kangxuan':
-        base_prompt = prompt_jh_kangxuan
-        queue.put("INFO: 已選擇 '國中康軒' 專用分析模型。")
-    elif curriculum == 'sh_longteng' or (curriculum == 'general' and publisher == 'longteng'): 
-        base_prompt = prompt_sh_longteng
-        queue.put("INFO: 已選擇 '普高龍騰' 專用分析模型 (題目擴增版)。")
-    else:
-        base_prompt = prompt_generic
-        queue.put("INFO: 未找到專用分析模型，使用通用模型。")
+    prompt_vh_mathB4 = f"""
+你是一位台灣技術型高中數學B教材分析專家。
+你的任務是將高職數學B課本內容解析成本系統可匯入資料庫的 JSON。
 
-    model = get_model()
-    full_content = "\n".join([f"--- Page {k} ---\n{v}" for k, v in content_by_page.items()])
-    
-    analysis_prompt = f"""
-{base_prompt}
+請嚴格依照本系統既有三層結構輸出：
 
-【重要提示】
-1. 輸出必須是**完整、有效的 JSON**。
-2. 反斜線需轉義 (例如 `\\\\sqrt`)。
-3. 不要 markdown code fence。
+Chapter 章
+→ Section 小節
+→ Concept / Skill 核心技能
+→ Examples 例題、隨堂練習、習題
 
-JSON 結構範例 (注意 section_title 為空字串的情況)：
+本次教材屬性：
+- curriculum: vocational
+- subject: 數學B
+- volume: 第四冊
+- chapter 可能包含：排列組合、機率
+- section 可能包含：1-1 加法原理與乘法原理、後續排列、組合、機率相關小節
+
+【一、結構辨識規則】
+
+1. chapter_title
+請保留課本章節名稱，例如：
+"1 排列組合"
+
+2. section_title
+請保留課本小節名稱，例如：
+"1-1 加法原理與乘法原理"
+
+3. concepts
+請依照課本中的真正教學概念拆分，不要只用頁面標題。
+以 1-1 加法原理與乘法原理為例，至少應能拆出：
+
+- 樹狀圖
+- 加法原理
+- 乘法原理
+- 正因數個數
+- 階乘記法
+
+後續章節請依課本內容拆成可教、可測、可補救的核心技能。
+
+【二、concept 欄位規則】
+
+每個 concept 必須包含：
+
+- concept_name：中文名稱，例如「加法原理」
+- concept_en_id：PascalCase 英文 ID，例如 AdditionPrinciple
+- concept_description：150 字內說明此技能在學習上的用途
+- concept_paragraph：短標題，不可超過 15 個中文字
+
+1-1 建議 concept_en_id 對照：
+樹狀圖 → TreeDiagramCounting
+加法原理 → AdditionPrinciple
+乘法原理 → MultiplicationPrinciple
+正因數個數 → NumberOfPositiveDivisors
+階乘記法 → FactorialNotation
+
+【三、題目提取規則】
+
+請提取以下類型內容：
+
+1. 例題
+例如：[例題 1]、[例題 2]、[例題 3]、[例題 4]
+
+2. 隨堂練習
+例如：標示為「隨堂練習」後的題目
+
+3. Touch 統測題
+若題目完整，請提取為 examples
+
+4. 習題
+基礎題與進階題都可以提取，但 source_description 要標示清楚，例如：
+"1-1習題 基礎題1"
+"1-1習題 進階題9"
+
+【四、題目欄位規則】
+
+每個 examples 物件必須包含：
+
+- source_description
+- problem_text
+- correct_answer
+- detailed_solution
+- problem_type
+- difficulty_level
+
+problem_type 僅能使用下列值之一：
+- tree_diagram
+- addition_principle
+- multiplication_principle
+- divisor_counting
+- factorial
+- permutation
+- combination
+- probability
+- mixed_counting
+
+difficulty_level：
+1 = 基礎
+2 = 中等
+3 = 進階或統測題
+
+【五、解答與詳解規則】
+
+1. 若原文有答案，請放入 correct_answer。
+2. 若原文有解析，請放入 detailed_solution。
+3. 若只有答案沒有解析，detailed_solution 填 "略"。
+4. 選擇題 correct_answer 請同時保留選項與數值，例如：
+"B，80"
+5. 不可自行亂補答案；若原文無法判斷，填空字串 ""。
+
+【六、清理規則】
+
+請移除以下內容，不要當成 concept 或 example：
+
+- What's up!
+- 雲端教室
+- 檔案位置
+- 熟習度自評表
+- Awesome / Excellent / Good / Average / Poor
+- 配合 Super 講義
+- 頁碼
+- 圖號本身，例如「圖1」「圖2」
+- 教師用書重複頁面
+- QR code、圖片說明、裝飾性文字
+
+【七、數學格式規則】
+
+請盡量修正常見 OCR 錯誤：
+
+- # 表示乘法時，轉為 \\times
+- 600 2 3 5 3 1 2 = # # 應整理成 600 = 2^3 \\times 3^1 \\times 5^2
+- 5 ! 應整理為 5!
+- 階乘分式請整理成 LaTeX，例如 \\frac{{8!}}{{6!}}
+
+若無法可靠修復，保留原文，不要亂猜。
+
+【八、輸出格式】
+
+只輸出 JSON，不要 markdown，不要說明文字，不要 code fence。
+
+JSON 格式如下：
+
 {{
   "chapters": [
     {{
-      "chapter_title": "1 實數",
+      "chapter_title": "1 排列組合",
       "sections": [
         {{
-          "section_title": "1.實數", 
+          "section_title": "1-1 加法原理與乘法原理",
           "concepts": [
             {{
-              "concept_name": "有理數",
-              "concept_en_id": "RationalNumbers",
-              "concept_description": "...",
-              "concept_paragraph": "甲.數列",
+              "concept_name": "加法原理",
+              "concept_en_id": "AdditionPrinciple",
+              "concept_description": "用於處理互斥分類情境下的方法數總和。",
+              "concept_paragraph": "加法原理",
               "examples": [
-                 {{
-                    "source_description": "例題1",
-                    "problem_text": "...",
-                    "problem_type": "calculation"
-                 }},
-                 {{
-                    "source_description": "隨堂練習",
-                    "problem_text": "...",
-                    "problem_type": "calculation"
-                 }}
+                {{
+                  "source_description": "例題2",
+                  "problem_text": "教室書櫃中有 3 本不同的中文書、4 本不同的日文書和 5 本不同的英文書，若只能從書櫃中選一本，試問共有幾種選法？",
+                  "correct_answer": "12 種",
+                  "detailed_solution": "依題意可分成中文書、日文書、英文書三類，由加法原理得 3 + 4 + 5 = 12。",
+                  "problem_type": "addition_principle",
+                  "difficulty_level": 1
+                }}
               ]
             }}
           ]
@@ -696,8 +853,128 @@ JSON 結構範例 (注意 section_title 為空字串的情況)：
     }}
   ]
 }}
+"""
 
-課本內容：
+    curriculum = curriculum_info.get('curriculum', '').strip()
+    publisher = curriculum_info.get('publisher', '').strip()
+    volume = str(curriculum_info.get('volume', '')).strip()
+    subject, vol_num = parse_volume(volume)
+    is_vocational_mathb = curriculum == 'vocational' and subject == 'B'
+    debug_message = (
+        f"DEBUG: curriculum='{curriculum}', publisher='{publisher}', volume='{volume}', "
+        f"parsed_subject='{subject}', parsed_volume={vol_num}"
+    )
+    current_app.logger.info(debug_message)
+    queue.put(debug_message)
+
+    if curriculum == 'junior_high' and publisher == 'kangxuan':
+        base_prompt = prompt_jh_kangxuan
+        queue.put("INFO: 已選擇「國中康軒」專用分析模型。")
+    elif is_vocational_mathb:
+        base_prompt = prompt_vh_mathB4
+        queue.put(f"INFO: 已選擇 高職數學{subject}{vol_num} 專用分析模型")
+    elif curriculum == 'sh_longteng' or (curriculum == 'general' and publisher == 'longteng'):
+        base_prompt = prompt_sh_longteng
+        queue.put("INFO: 已選擇「普高龍騰」專用分析模型 (題目擴增版)。")
+    else:
+        base_prompt = prompt_generic
+        queue.put("INFO: 未找到專用分析模型，使用通用模型。")
+
+    try:
+        model = get_model()
+    except Exception as e:
+        err_type = type(e).__name__
+        err_msg = str(e) or repr(e)
+        tb = traceback.format_exc()
+
+        current_app.logger.error(f"AI 分析失敗: [{err_type}] {err_msg}\n{tb}")
+        if "Gemini API Key" in err_msg or "API_KEY" in err_msg or "找不到" in err_msg:
+            queue.put("ERROR: 找不到 Gemini API Key，請先到 AI 後台設定頁輸入並儲存。")
+        else:
+            queue.put(f"ERROR: AI 分析失敗: [{err_type}] {err_msg}")
+        return None
+    full_content = "\n".join([f"--- Page {k} ---\n{v}" for k, v in content_by_page.items()])
+    
+    json_example = """
+{
+  "chapters": [
+    {
+      "chapter_title": "1 ???",
+      "sections": [
+        {
+          "section_title": "1.???",
+          "concepts": [
+            {
+              "concept_name": "?????,
+              "concept_en_id": "RationalNumbers",
+              "concept_description": "...",
+              "concept_paragraph": "?????",
+              "examples": [
+                 {
+                    "source_description": "???1",
+                    "problem_text": "...",
+                    "problem_type": "calculation"
+                 },
+                 {
+                    "source_description": "??????",
+                    "problem_text": "...",
+                    "problem_type": "calculation"
+                 }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
+"""
+    if is_vocational_mathb:
+        json_example = """
+{
+  "chapters": [
+    {
+      "chapter_title": "1 ????",
+      "sections": [
+        {
+          "section_title": "1-1 ?????????",
+          "concepts": [
+            {
+              "concept_name": "????",
+              "concept_en_id": "AdditionPrinciple",
+              "concept_description": "??????????????????",
+              "concept_paragraph": "????",
+              "examples": [
+                {
+                  "source_description": "??2",
+                  "problem_text": "?????? 3 ????????4 ???????? 5 ????????????????????????????",
+                  "correct_answer": "12 ?",
+                  "detailed_solution": "?????????????????????????? 3 + 4 + 5 = 12?",
+                  "problem_type": "addition_principle",
+                  "difficulty_level": 1
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
+"""
+
+    analysis_prompt = f"""
+{base_prompt}
+
+??????????
+1. ????????*????????? JSON**??
+2. ????????? (??? `\\sqrt`)??
+3. ??? markdown code fence??
+
+JSON ?????? (??? section_title ?????????????
+{json_example}
+
+????????
 {full_content}
 """
 
@@ -711,8 +988,13 @@ JSON 結構範例 (注意 section_title 為空字串的情況)：
         )
         return ai_response
     except Exception as e:
-        queue.put(f"ERROR: AI 分析失敗: {e}")
-        return ""
+        err_type = type(e).__name__
+        err_msg = str(e) or repr(e)
+        tb = traceback.format_exc()
+
+        current_app.logger.error(f"AI 分析失敗: [{err_type}] {err_msg}\n{tb}")
+        queue.put(f"ERROR: AI 分析失敗: [{err_type}] {err_msg}")
+        return None
 
 def parse_ai_response(ai_data_or_string, queue):
     """解析 AI 回傳的資料 (JSON 字串或已解析的 dict)，並進行基本驗證。"""
@@ -799,7 +1081,12 @@ def save_to_database(parsed_data, curriculum_info, queue):
         'general': 'gh_',
         'vocational': 'vh_'
     }
-    prefix = prefix_map.get(curriculum_info.get('curriculum', ''), '')
+    curriculum = curriculum_info.get('curriculum', '')
+    volume = str(curriculum_info.get('volume', '')).strip()
+    subject, vol_num = parse_volume(volume)
+    is_vocational_math = curriculum == 'vocational' and subject is not None and vol_num is not None
+    is_vocational_mathb = is_vocational_math and subject == 'B'
+    prefix = prefix_map.get(curriculum, '')
 
     try:
         current_app.logger.info(" -> 開始寫入資料庫...")
@@ -813,13 +1100,19 @@ def save_to_database(parsed_data, curriculum_info, queue):
             match = re.search(r'(\d+)', raw_chapter)
             if match:
                 chapter_num = int(match.group(1))
-                # 移除開頭的「單元」「第」「章」等雜訊,留下乾淨標題
-                clean_title = re.sub(r'^(?:單元|Unit|第)?\s*\d+\s*(?:單元|章)?\s*', '', raw_chapter).strip()
-                chapter_title = f"單元{chapter_num} {clean_title}" if clean_title else f"單元{chapter_num}"
+            else:
+                chapter_num = 999  # ?????????????
+
+            if is_vocational_mathb:
+                # ???B?? AI ???????: "1 ????"????? chapter_num ????
+                chapter_title = raw_chapter
+            elif match:
+                # ?????????????????????????????,?????????
+                clean_title = re.sub(r'^(\u55ae\u5143|Unit|\u7b2c)?\s*\d+\s*(\u55ae\u5143|\u7ae0)?\s*', '', raw_chapter).strip()
+                chapter_title = f"???{chapter_num} {clean_title}" if clean_title else f"???{chapter_num}"
             else:
                 chapter_title = raw_chapter
-                chapter_num = 999  # 沒有數字的排最後
-            
+
             sections = chapter_data.get('sections', [])
             
             # 國中教材專用處理 (保留原邏輯,但只在國中時執行)
@@ -848,7 +1141,13 @@ def save_to_database(parsed_data, curriculum_info, queue):
                     concept_paragraph = concept.get('concept_paragraph', '未命名').strip()
                     
                     clean_en_id = re.sub(r'[^a-zA-Z0-9]', '', concept_en_id)
-                    final_skill_id = f"{prefix}{clean_en_id}"
+                    if is_vocational_math:
+                        final_skill_id = f"vh_math{subject}{vol_num}_{clean_en_id}"
+                        skill_id_msg = f"INFO: vocational math skill_id = {final_skill_id}"
+                        current_app.logger.info(skill_id_msg)
+                        queue.put(skill_id_msg)
+                    else:
+                        final_skill_id = f"{prefix}{clean_en_id}"
                     
                     # === SkillInfo 新增/更新 (維持原邏輯) ===
                     existing_skill = SkillInfo.query.get(final_skill_id)
@@ -895,10 +1194,19 @@ def save_to_database(parsed_data, curriculum_info, queue):
                         
                         existing_ex = TextbookExample.query.filter_by(
                             skill_id=final_skill_id,
-                            source_description=ex.get('source_description', '例題')
+                            source_curriculum=curriculum_info.get('curriculum'),
+                            source_volume=str(curriculum_info.get('volume')),
+                            source_chapter=chapter_title,
+                            source_section=section_title,
+                            source_description=ex.get('source_description', '???')
                         ).first()
 
                         if not existing_ex:
+                            try:
+                                difficulty_level = int(ex.get('difficulty_level', 1))
+                            except Exception:
+                                difficulty_level = 1
+
                             new_ex = TextbookExample(
                                 skill_id=final_skill_id,
                                 source_curriculum=curriculum_info.get('curriculum'),
@@ -911,7 +1219,7 @@ def save_to_database(parsed_data, curriculum_info, queue):
                                 problem_type=ex.get('problem_type', 'calculation'),
                                 correct_answer=ex.get('correct_answer', ''),
                                 detailed_solution=ex.get('detailed_solution', ''),
-                                difficulty_level=int(ex.get('difficulty_level', 1))
+                                difficulty_level=difficulty_level
                             )
                             db.session.add(new_ex)
                             examples_added += 1
@@ -923,9 +1231,9 @@ def save_to_database(parsed_data, curriculum_info, queue):
             'examples_added': examples_added,
             'processed_skill_ids': processed_skill_ids
         }
-
     except Exception as e:
         db.session.rollback()
-        current_app.logger.error(f"寫入資料庫失敗: {e}")
+        tb = traceback.format_exc()
+        current_app.logger.error(f"寫入資料庫失敗: {e}\n{tb}")
         queue.put(f"ERROR: 寫入資料庫失敗: {e}")
         return {}

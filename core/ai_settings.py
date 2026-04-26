@@ -18,12 +18,15 @@ SETTING_AI_MODEL_ROLES = "ai_model_roles"
 SETTING_AI_RAG_NAIVE_THRESHOLD = "ai_rag_naive_threshold"
 SETTING_AI_ENABLE_TUTOR_RESPONSE = "ai_enable_tutor_response"
 SETTING_AI_ENABLE_HIGH_PRECISION_VISION = "ai_enable_high_precision_vision"
+SETTING_AI_CLOUD_MODEL = "ai_cloud_model"
 
 DEFAULT_AI_GLOBAL_STRATEGY = "hybrid_balanced"
 DEFAULT_AI_DEFAULT_PROVIDER = str(getattr(Config, "DEFAULT_PROVIDER", "local") or "local").lower()
 DEFAULT_AI_RAG_NAIVE_THRESHOLD = float(getattr(Config, "ADVANCED_RAG_NAIVE_THRESHOLD", 0.35))
 DEFAULT_AI_ENABLE_TUTOR_RESPONSE = True
 DEFAULT_AI_ENABLE_HIGH_PRECISION_VISION = False
+DEFAULT_AI_CLOUD_MODEL = str(getattr(Config, "DEFAULT_CLOUD_MODEL", "gemini-3-flash-preview") or "gemini-3-flash-preview")
+SUPPORTED_CLOUD_MODELS = tuple(getattr(Config, "SUPPORTED_CLOUD_MODELS", [DEFAULT_AI_CLOUD_MODEL]))
 
 
 def _safe_json_loads(raw: str | None) -> dict[str, Any]:
@@ -68,6 +71,13 @@ def _normalize_strategy(strategy: Any) -> str:
     if s in ("local_first", "cloud_first", "hybrid_balanced"):
         return s
     return DEFAULT_AI_GLOBAL_STRATEGY
+
+
+def _normalize_cloud_model(model_name: Any) -> str:
+    model = str(model_name or "").strip()
+    if model in SUPPORTED_CLOUD_MODELS:
+        return model
+    return DEFAULT_AI_CLOUD_MODEL
 
 
 def _get_system_setting_value(key: str) -> str | None:
@@ -131,12 +141,18 @@ def _fallback_preset_for_provider(role: str, provider: str) -> str | None:
         "classifier": "qwen2.5-3b",
         "default": "qwen2.5-3b",
     }
+    cloud_model = _normalize_cloud_model(_get_system_setting_value(SETTING_AI_CLOUD_MODEL))
+    cloud_key_by_model = {
+        "gemini-3-flash-preview": "gemini-3-flash",
+        "gemini-2.5-flash": "gemini-2.5-flash",
+    }
+    selected_cloud_key = cloud_key_by_model.get(cloud_model, "gemini-3-flash")
     cloud_pref = {
-        "coder": "gemini-3-flash",
-        "tutor": "gemini-3-flash",
-        "vision_analyzer": "gemini-3-flash",
-        "classifier": "gemini-3-flash",
-        "default": "gemini-3-flash",
+        "coder": selected_cloud_key,
+        "tutor": selected_cloud_key,
+        "vision_analyzer": selected_cloud_key,
+        "classifier": selected_cloud_key,
+        "default": selected_cloud_key,
     }
 
     if provider == "google":
@@ -178,6 +194,7 @@ def get_ai_settings_snapshot() -> dict[str, Any]:
         _get_system_setting_value(SETTING_AI_ENABLE_HIGH_PRECISION_VISION),
         DEFAULT_AI_ENABLE_HIGH_PRECISION_VISION,
     )
+    cloud_model = _normalize_cloud_model(_get_system_setting_value(SETTING_AI_CLOUD_MODEL))
 
     return {
         "ai_global_strategy": strategy,
@@ -186,6 +203,7 @@ def get_ai_settings_snapshot() -> dict[str, Any]:
         "ai_rag_naive_threshold": rag_threshold,
         "ai_enable_tutor_response": enable_tutor,
         "ai_enable_high_precision_vision": enable_vision,
+        "ai_cloud_model": cloud_model,
     }
 
 
@@ -219,8 +237,20 @@ def get_effective_model_config(role: str) -> dict[str, Any]:
     # Step 1: Check DB override
     override = role_overrides.get(normalized_role)
     if override in Config.CODER_PRESETS:
-        preset_key = override
-        source = "db_override"
+        override_cfg = Config.CODER_PRESETS.get(override, {})
+        override_provider = str(override_cfg.get("provider", "")).lower()
+        override_model = str(override_cfg.get("model", "")).strip()
+        selected_cloud_model = str(settings.get("ai_cloud_model", DEFAULT_AI_CLOUD_MODEL)).strip()
+        should_follow_cloud_selection = (
+            ai_mode == "cloud_first"
+            or (ai_mode == "hybrid_balanced" and normalized_role in ("tutor", "default"))
+        )
+        if should_follow_cloud_selection and override_provider == "google" and override_model != selected_cloud_model:
+            preset_key = _fallback_preset_for_provider(normalized_role, "google")
+            source = "cloud_model_sync"
+        else:
+            preset_key = override
+            source = "db_override"
 
     # Step 2: Strategy fallback
     if not preset_key:
@@ -287,3 +317,4 @@ def apply_ai_runtime_settings() -> None:
     current_app.config["AI_DEFAULT_PROVIDER"] = snapshot["ai_default_provider"]
     current_app.config["AI_ENABLE_TUTOR_RESPONSE"] = snapshot["ai_enable_tutor_response"]
     current_app.config["AI_ENABLE_HIGH_PRECISION_VISION"] = snapshot["ai_enable_high_precision_vision"]
+    current_app.config["AI_CLOUD_MODEL"] = snapshot["ai_cloud_model"]

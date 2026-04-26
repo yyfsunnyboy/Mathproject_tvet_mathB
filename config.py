@@ -62,6 +62,12 @@ class Config:
     
     # AI 預設提供者設定
     DEFAULT_PROVIDER = 'local' 
+    DEFAULT_CLOUD_PROVIDER = "google"
+    DEFAULT_CLOUD_MODEL = "gemini-3-flash-preview"
+    SUPPORTED_CLOUD_MODELS = [
+        "gemini-2.5-flash",
+        "gemini-3-flash-preview",
+    ]
 
     # [實驗與開發] 模型預設集合（Coder Presets）
     # 可在 scripts/run_experiment.py 透過 key 參照並切換設定
@@ -95,6 +101,31 @@ class Config:
                     "threshold": "BLOCK_NONE"
                 },
             ]            
+        },
+        'gemini-2.5-flash': {
+            'provider': 'google',
+            'model': 'gemini-2.5-flash',
+            'temperature': 0.1,
+            'max_tokens': 65536,
+            'description': 'Gemini 2.5 Flash (Cloud)',
+            'safety_settings': [
+                {
+                    "category": "HARM_CATEGORY_HARASSMENT",
+                    "threshold": "BLOCK_NONE"
+                },
+                {
+                    "category": "HARM_CATEGORY_HATE_SPEECH",
+                    "threshold": "BLOCK_NONE"
+                },
+                {
+                    "category": "HARM_CATEGORY_SEXUALLY_EXPLICIT",
+                    "threshold": "BLOCK_NONE"
+                },
+                {
+                    "category": "HARM_CATEGORY_DANGEROUS_CONTENT",
+                    "threshold": "BLOCK_NONE"
+                },
+            ]
         },
 
         # 2. Qwen 3 14B (Local) [Thinking Disabled via Modelfile]

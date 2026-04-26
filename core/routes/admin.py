@@ -40,6 +40,7 @@ from core import textbook_processor
 from core.utils import handle_curriculum_filters
 from core.ai_settings import (
     AI_ROLE_KEYS,
+    SETTING_AI_CLOUD_MODEL,
     SETTING_AI_DEFAULT_PROVIDER,
     SETTING_AI_ENABLE_HIGH_PRECISION_VISION,
     SETTING_AI_ENABLE_TUTOR_RESPONSE,
@@ -1059,7 +1060,13 @@ def ai_prompt_settings_page():
     if not (current_user.is_admin or current_user.role == 'teacher'):
         flash('Permission denied', 'error')
         return redirect(url_for('dashboard'))
-    return render_template('ai_prompt_settings.html', username=current_user.username)
+    snapshot = get_ai_settings_snapshot()
+    return render_template(
+        'ai_prompt_settings.html',
+        username=current_user.username,
+        cloud_model=snapshot.get("ai_cloud_model", Config.DEFAULT_CLOUD_MODEL),
+        supported_cloud_models=list(Config.SUPPORTED_CLOUD_MODELS),
+    )
 
 
 def _sanitize_role_overrides(raw_roles):
@@ -1089,19 +1096,39 @@ def _to_bool(value, default=False):
     return default
 
 
-def _generate_model_roles(ai_mode, available_models):
+def _normalize_cloud_model(model_name):
+    model = str(model_name or '').strip()
+    if model in Config.SUPPORTED_CLOUD_MODELS:
+        return model
+    return Config.DEFAULT_CLOUD_MODEL
+
+
+def _cloud_preset_key_from_model(cloud_model):
+    cloud_model = _normalize_cloud_model(cloud_model)
+    mapping = {
+        "gemini-2.5-flash": "gemini-2.5-flash",
+        "gemini-3-flash-preview": "gemini-3-flash",
+    }
+    return mapping.get(cloud_model, "gemini-3-flash")
+
+
+def _generate_model_roles(ai_mode, available_models, cloud_model=None):
     roles = {}
     ROLE_LIST = ['vision_analyzer', 'coder', 'tutor', 'classifier', 'system_coder', 'default']
+    selected_cloud_preset = _cloud_preset_key_from_model(cloud_model)
     
     def pick_gemini_model():
-        if not available_models: return ''
         keys = [m['key'] for m in available_models]
-        if 'gemini-3-flash' in keys: return 'gemini-3-flash'
+        if selected_cloud_preset in keys:
+            return selected_cloud_preset
+        if selected_cloud_preset in Config.CODER_PRESETS:
+            return selected_cloud_preset
+        if 'gemini-3-flash' in keys:
+            return 'gemini-3-flash'
         for k in keys:
-            if 'gemini-3-flash' in k.lower(): return k
-        for k in keys:
-            if 'gemini' in k.lower(): return k
-        return keys[0]
+            if 'gemini' in k.lower():
+                return k
+        return selected_cloud_preset
         
     def pick_edge_model():
         if not available_models: return ''
@@ -1156,15 +1183,19 @@ def _build_ai_settings_payload(prompt, updated_at):
     from models import SystemSetting
     ai_mode_setting = SystemSetting.query.filter_by(key='ai_mode').first()
     ai_mode = ai_mode_setting.value if ai_mode_setting else 'cloud'
+    cloud_model_setting = SystemSetting.query.filter_by(key=SETTING_AI_CLOUD_MODEL).first()
+    cloud_model = _normalize_cloud_model(cloud_model_setting.value if cloud_model_setting else Config.DEFAULT_CLOUD_MODEL)
 
     available_models = get_available_model_presets()
-    model_roles = _generate_model_roles(ai_mode, available_models)
+    model_roles = _generate_model_roles(ai_mode, available_models, cloud_model=cloud_model)
 
     return {
         'success': True,
         'prompt': prompt,
         'updated_at': updated_at,
         'ai_mode': ai_mode,
+        'cloud_model': cloud_model,
+        'supported_cloud_models': list(Config.SUPPORTED_CLOUD_MODELS),
         'ai_model_roles': model_roles,
         'available_models': available_models,
     }
@@ -1440,6 +1471,10 @@ def update_ai_prompt_setting():
                 return jsonify({'success': False, 'message': 'Prompt must include {context} and {prereq_text}'}), 400
             set_system_setting_value('ai_analyzer_prompt', new_prompt, 'AI analyzer prompt')
 
+        cloud_model = _normalize_cloud_model(data.get('cloud_model', Config.DEFAULT_CLOUD_MODEL))
+        if 'cloud_model' in data:
+            set_system_setting_value(SETTING_AI_CLOUD_MODEL, cloud_model, 'Cloud Gemini model for cloud/hybrid runtime')
+
         ai_mode = str(data.get('ai_mode', '')).strip()
         if ai_mode:
             if ai_mode not in ('cloud', 'edge', 'hybrid'):
@@ -1454,7 +1489,7 @@ def update_ai_prompt_setting():
             elif ai_mode == 'hybrid':
                 set_system_setting_value(SETTING_AI_GLOBAL_STRATEGY, 'hybrid_balanced', 'Global AI strategy')
 
-            model_roles = _generate_model_roles(ai_mode, get_available_model_presets())
+            model_roles = _generate_model_roles(ai_mode, get_available_model_presets(), cloud_model=cloud_model)
             cleaned_roles = _sanitize_role_overrides(model_roles)
             set_system_setting_value(SETTING_AI_MODEL_ROLES, cleaned_roles, 'AI role model map (JSON)')
 
@@ -1495,7 +1530,8 @@ def reset_ai_prompt_setting():
         if reset_scope == 'all':
             set_system_setting_value('ai_mode', 'cloud', 'Global AI Mode')
             set_system_setting_value(SETTING_AI_GLOBAL_STRATEGY, 'cloud_first', 'Global AI strategy')
-            model_roles = _generate_model_roles('cloud', get_available_model_presets())
+            set_system_setting_value(SETTING_AI_CLOUD_MODEL, Config.DEFAULT_CLOUD_MODEL, 'Cloud Gemini model for cloud/hybrid runtime')
+            model_roles = _generate_model_roles('cloud', get_available_model_presets(), cloud_model=Config.DEFAULT_CLOUD_MODEL)
             set_system_setting_value(SETTING_AI_MODEL_ROLES, _sanitize_role_overrides(model_roles), 'AI role model map')
 
         db.session.commit()

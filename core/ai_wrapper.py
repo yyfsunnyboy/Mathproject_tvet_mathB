@@ -410,25 +410,64 @@ class LocalAIClient:
 
 def resolve_gemini_api_key():
     """
-    優先使用 session 中的 GEMINI_API_KEY。
-    若當前不在 request context，或 session 中沒有值，
-    則 fallback 到 Config.GEMINI_API_KEY。
+    Resolve Gemini API key with strict priority:
+    1) DB SystemSetting
+    2) runtime current_app.config
+    3) config.py (Config)
+    4) environment (GOOGLE_API_KEY)
     """
-    if has_request_context():
-        key = session.get("GEMINI_API_KEY")
-        if key:
-            try:
-                current_app.logger.info("[AI KEY] source=session")
-            except Exception:
-                pass
-            return key
-            
-    try:
-        current_app.logger.info("[AI KEY] source=config")
-    except Exception:
-        pass
-    return getattr(Config, 'GEMINI_API_KEY', None)
+    # 1) DB SystemSetting
+    if current_app:
+        try:
+            from models import SystemSetting
 
+            db_keys = (
+                "gemini_api_key",
+                "google_api_key",
+                "ai_gemini_api_key",
+                "ai_google_api_key",
+                "GEMINI_API_KEY",
+                "GOOGLE_API_KEY",
+            )
+            for k in db_keys:
+                row = SystemSetting.query.filter_by(key=k).first()
+                if row and row.value and str(row.value).strip():
+                    current_app.logger.info("[AI KEY] source=db")
+                    return str(row.value).strip()
+        except Exception:
+            pass
+
+    # 2) runtime app config
+    if current_app:
+        try:
+            runtime_key = current_app.config.get("GEMINI_API_KEY") or current_app.config.get("GOOGLE_API_KEY")
+            if runtime_key:
+                current_app.logger.info("[AI KEY] source=runtime")
+                return str(runtime_key).strip()
+        except Exception:
+            pass
+
+    # 3) static Config
+    cfg_key = getattr(Config, "GEMINI_API_KEY", None) or getattr(Config, "GOOGLE_API_KEY", None)
+    if cfg_key:
+        try:
+            if current_app:
+                current_app.logger.info("[AI KEY] source=config")
+        except Exception:
+            pass
+        return str(cfg_key).strip()
+
+    # 4) environment
+    env_key = os.environ.get("GOOGLE_API_KEY") or os.environ.get("GEMINI_API_KEY")
+    if env_key:
+        try:
+            if current_app:
+                current_app.logger.info("[AI KEY] source=env")
+        except Exception:
+            pass
+        return str(env_key).strip()
+
+    return None
 class GoogleAIClient:
     """
     處理 Google Gemini API 的客戶端 (Modernized for google.genai SDK)

@@ -26,6 +26,7 @@ from core.prompts.registry import render_prompt
 # 初始化 gemini_model 為 None，避免 NameError
 gemini_model = None
 gemini_chat = None
+gemini_model_name = None
 
 def clean_and_parse_json(text):
     try:
@@ -490,10 +491,11 @@ def _extract_reply_and_prompts_from_jsonish(text):
     return reply, prompts
 
 def configure_gemini(api_key, model_name):
-    global gemini_model, gemini_chat
+    global gemini_model, gemini_chat, gemini_model_name
     genai.configure(api_key=api_key)
     gemini_model = genai.GenerativeModel(model_name)
-    gemini_chat = gemini_model.start_chat(history=[])  # 動態設定！
+    gemini_chat = gemini_model.start_chat(history=[])
+    gemini_model_name = model_name
 
 def diagnose_error(question_text, correct_answer, student_answer, prerequisite_units=None, conversation_history=None):
     """
@@ -604,18 +606,38 @@ JSON:
         }
 
 def get_model():
-    global gemini_model
-    if gemini_model is None:
-        raise RuntimeError("Gemini 尚未初始化！")
-        
+    global gemini_model, gemini_chat, gemini_model_name
+
+    # Keep runtime behavior aligned with /admin/ai_prompt_settings
     try:
-        from core.ai_wrapper import resolve_gemini_api_key
-        api_key = resolve_gemini_api_key()
-        if api_key:
-            genai.configure(api_key=api_key)
-    except Exception as e:
-        pass
-        
+        from core.ai_settings import apply_ai_runtime_settings, get_effective_model_config
+
+        apply_ai_runtime_settings()
+        model_cfg = get_effective_model_config("tutor")
+        runtime_model = str(model_cfg.get("model") or "").strip()
+    except Exception:
+        runtime_model = ""
+
+    if not runtime_model:
+        runtime_model = (
+            str(current_app.config.get("AI_CLOUD_MODEL") or "").strip()
+            or str(current_app.config.get("GEMINI_MODEL_NAME") or "").strip()
+            or "gemini-2.5-flash"
+        )
+
+    from core.ai_wrapper import resolve_gemini_api_key
+    api_key = resolve_gemini_api_key()
+    if not api_key:
+        raise RuntimeError("找不到 Gemini API Key，請先到 AI 後台設定頁輸入並儲存。")
+
+    # Always configure before constructing/using model
+    genai.configure(api_key=api_key)
+
+    if gemini_model is None or gemini_model_name != runtime_model:
+        gemini_model = genai.GenerativeModel(runtime_model)
+        gemini_chat = None
+        gemini_model_name = runtime_model
+
     return gemini_model
 
 def get_ai_prompt():
