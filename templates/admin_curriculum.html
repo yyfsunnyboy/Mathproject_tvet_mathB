@@ -365,7 +365,7 @@
                     <select id="add_curriculum" name="curriculum" required>
                         <option value="">-- 請選擇 --</option>
                         {% for c in curriculums %}
-                        <option value="{{ c }}">{{ curriculum_map.get(c, c) }}</option>
+                        <option value="{{ c }}">{{ '技高' if c == 'vocational' else curriculum_map.get(c, c) }}</option>
                         {% endfor %}
                     </select>
                 </div>
@@ -439,7 +439,7 @@
                     <label>課綱 *</label>
                     <select name="curriculum" id="edit_curriculum" required>
                         {% for c in curriculums %}
-                        <option value="{{ c }}">{{ curriculum_map.get(c, c) }}</option>
+                        <option value="{{ c }}">{{ '技高' if c == 'vocational' else curriculum_map.get(c, c) }}</option>
                         {% endfor %}
                     </select>
                 </div>

@@ -402,7 +402,7 @@
                             <option value="">-- 請選擇 --</option>
                             {% for c in filters.curriculums %}
                             <option value="{{ c }}" {% if selected_filters.f_curriculum==c %}selected{% endif %}>{{
-                                curriculum_map.get(c, c) }}</option>
+                                '技高' if c == 'vocational' else curriculum_map.get(c, c) }}</option>
                             {% endfor %}
                         </select>
                     </div>

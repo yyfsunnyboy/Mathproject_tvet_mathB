@@ -168,6 +168,17 @@
         {% endif %}
         {% endwith %}
 
+        {% if not has_gemini_api_key %}
+        <div style="max-width: 800px; margin: 0 auto;">
+            <div class="alert alert-danger">
+                <strong>尚未設定 Gemini API Key。</strong>
+                教材匯入需要 Cloud AI 分析，請先到
+                <a href="{{ ai_settings_url }}">AI 設定頁</a>
+                輸入並儲存 Gemini API Key。
+            </div>
+        </div>
+        {% endif %}
+
         <div class="card">
             <div class="card-header">
                 <i class="bi bi-upload"></i> 上傳教材
@@ -176,9 +187,9 @@
                 <div class="form-group">
                     <label for="curriculum">課綱 (Curriculum)</label>
                     <select id="curriculum" name="curriculum" required>
-                        <option value="general">普通高中 (general)</option>
-                        <option value="vocational">技術型高中 (vocational)</option>
-                        <option value="junior_high">國民中學 (junior_high)</option>
+                        <option value="general">普通高中</option>
+                        <option value="vocational">技高</option>
+                        <option value="junior_high">國中</option>
                     </select>
                 </div>
                 <div class="form-group">
@@ -282,7 +293,10 @@
                         updateVisibility();
                     });
                 </script>
-                <button type="submit" class="btn-primary">開始分析與匯入</button>
+                <button type="submit" class="btn-primary" {% if not has_gemini_api_key %}disabled{% endif %}>開始分析與匯入</button>
+                {% if not has_gemini_api_key %}
+                <small class="text-muted" style="display:block; margin-top:8px;">請先完成 Gemini API Key 設定後再匯入教材。</small>
+                {% endif %}
             </form>
         </div>
     </div>

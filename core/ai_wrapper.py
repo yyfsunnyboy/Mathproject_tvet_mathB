@@ -16,9 +16,9 @@ import os
 import requests
 import json
 import logging
-from flask import current_app, has_request_context, session
+from flask import current_app, has_app_context, has_request_context, session
 from config import Config
-from core.ai_settings import get_effective_model_config
+from core.ai_settings import get_ai_settings_snapshot, get_effective_model_config, SETTING_GEMINI_API_KEY
 
 # --- SDK Import Strategy ---
 # Priority: New SDK (google.genai) > Old SDK (google.generativeai)
@@ -417,57 +417,36 @@ def resolve_gemini_api_key():
     4) environment (GOOGLE_API_KEY)
     """
     # 1) DB SystemSetting
-    if current_app:
+    if has_app_context():
         try:
             from models import SystemSetting
 
-            db_keys = (
-                "gemini_api_key",
-                "google_api_key",
-                "ai_gemini_api_key",
-                "ai_google_api_key",
-                "GEMINI_API_KEY",
-                "GOOGLE_API_KEY",
-            )
-            for k in db_keys:
-                row = SystemSetting.query.filter_by(key=k).first()
-                if row and row.value and str(row.value).strip():
-                    current_app.logger.info("[AI KEY] source=db")
-                    return str(row.value).strip()
+            row = SystemSetting.query.filter_by(key=SETTING_GEMINI_API_KEY).first()
+            if row and row.value and str(row.value).strip():
+                return str(row.value).strip(), "db"
         except Exception:
             pass
 
     # 2) runtime app config
-    if current_app:
+    if has_app_context():
         try:
             runtime_key = current_app.config.get("GEMINI_API_KEY") or current_app.config.get("GOOGLE_API_KEY")
             if runtime_key:
-                current_app.logger.info("[AI KEY] source=runtime")
-                return str(runtime_key).strip()
+                return str(runtime_key).strip(), "runtime"
         except Exception:
             pass
 
     # 3) static Config
     cfg_key = getattr(Config, "GEMINI_API_KEY", None) or getattr(Config, "GOOGLE_API_KEY", None)
     if cfg_key:
-        try:
-            if current_app:
-                current_app.logger.info("[AI KEY] source=config")
-        except Exception:
-            pass
-        return str(cfg_key).strip()
+        return str(cfg_key).strip(), "config"
 
     # 4) environment
-    env_key = os.environ.get("GOOGLE_API_KEY") or os.environ.get("GEMINI_API_KEY")
+    env_key = os.environ.get("GEMINI_API_KEY") or os.environ.get("GOOGLE_API_KEY")
     if env_key:
-        try:
-            if current_app:
-                current_app.logger.info("[AI KEY] source=env")
-        except Exception:
-            pass
-        return str(env_key).strip()
+        return str(env_key).strip(), "env"
 
-    return None
+    return None, None
 class GoogleAIClient:
     """
     處理 Google Gemini API 的客戶端 (Modernized for google.genai SDK)
@@ -477,15 +456,14 @@ class GoogleAIClient:
         # 1. Config & API Key
         # Try multiple sources: kwargs > session > Config > environment variable
         api_key = kwargs.get('api_key')
+        api_key_source = "kwargs"
         if not api_key:
-            api_key = resolve_gemini_api_key()
+            api_key, api_key_source = resolve_gemini_api_key()
             
         if not api_key:
-            api_key = os.environ.get("GEMINI_API_KEY")
-            
-        if not api_key:
-            logger.error("❌ GEMINI_API_KEY not found! Please check your config.py or .env file.")
-            raise ValueError("GEMINI_API_KEY is missing. 無法啟動 Google AI Client。")
+            raise ValueError("找不到 Gemini API Key，請先到 AI 後台設定頁輸入並儲存。")
+        logger.info(f"[AI KEY] source={api_key_source}")
+        logger.info(f"[AI MODEL] provider=google model={model_name}")
 
         # 2. Model Parameters
         self.model_name = model_name
@@ -713,7 +691,14 @@ def get_ai_client(role='default'):
         try:
             return GoogleAIClient(model_name, temperature, max_tokens=max_tokens, safety_settings=safety_settings)
         except ValueError as e:
-            logger.warning(f"⚠️ Google AI Client init failed ({e}). Falling back to Local AI Client.")
+            ai_mode = "unknown"
+            try:
+                ai_mode = str(get_ai_settings_snapshot().get("ai_global_strategy", "unknown"))
+            except Exception:
+                pass
+            if ai_mode == "cloud_first":
+                raise RuntimeError(str(e))
+            logger.warning(f"Google AI Client init failed ({e}). fallback=local mode={ai_mode}")
             fb_config = Config.MODEL_ROLES.get('default', Config.CODER_PRESETS.get(Config.DEFAULT_CODER_PRESET, {}))
             fb_model = fb_config.get('model', Config.CODER_PRESETS.get(Config.DEFAULT_CODER_PRESET, {}).get('model', 'qwen3.5:9b'))
             return LocalAIClient(fb_model, temperature, max_tokens=max_tokens, extra_body=extra_body)

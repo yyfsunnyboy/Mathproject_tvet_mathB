@@ -626,9 +626,11 @@ def get_model():
         )
 
     from core.ai_wrapper import resolve_gemini_api_key
-    api_key = resolve_gemini_api_key()
+    api_key, source = resolve_gemini_api_key()
     if not api_key:
         raise RuntimeError("找不到 Gemini API Key，請先到 AI 後台設定頁輸入並儲存。")
+    current_app.logger.info(f"[AI KEY] source={source}")
+    current_app.logger.info(f"[AI MODEL] provider=google model={runtime_model}")
 
     # Always configure before constructing/using model
     genai.configure(api_key=api_key)

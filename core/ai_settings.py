@@ -19,6 +19,7 @@ SETTING_AI_RAG_NAIVE_THRESHOLD = "ai_rag_naive_threshold"
 SETTING_AI_ENABLE_TUTOR_RESPONSE = "ai_enable_tutor_response"
 SETTING_AI_ENABLE_HIGH_PRECISION_VISION = "ai_enable_high_precision_vision"
 SETTING_AI_CLOUD_MODEL = "ai_cloud_model"
+SETTING_GEMINI_API_KEY = "ai_gemini_api_key"
 
 DEFAULT_AI_GLOBAL_STRATEGY = "hybrid_balanced"
 DEFAULT_AI_DEFAULT_PROVIDER = str(getattr(Config, "DEFAULT_PROVIDER", "local") or "local").lower()

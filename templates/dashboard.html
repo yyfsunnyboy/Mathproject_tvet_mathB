@@ -395,7 +395,7 @@
         <div class="breadcrumb">
             <a href="{{ url_for('dashboard', view='curriculum') }}">課程首頁</a>
             {% if curriculum and (volume or chapter) %}
-            {% set curriculum_map = {'general': '普通高中', 'vocational': '技術型高中', 'junior_high': '國民中學'} %}
+            {% set curriculum_map = {'general': '普通高中', 'vocational': '技高', 'junior_high': '國中'} %}
             {% set curriculum_name = curriculum_map.get(curriculum, curriculum) %}
             <span>→</span>
             <a href="{{ url_for('dashboard', view='curriculum', curriculum=curriculum) }}">{{ curriculum_name }}</a>
@@ -419,7 +419,7 @@
                 <i class="fa fa-check-square"></i> 自選組合練習
             </a>
         </div>
-        {% set curriculum_map = {'general': '普通高中', 'vocational': '技術型高中', 'junior_high': '國民中學'} %}
+        {% set curriculum_map = {'general': '普通高中', 'vocational': '技高', 'junior_high': '國中'} %}
         {% set curriculum_name = curriculum_map.get(curriculum, curriculum) %}
         <p>{{ curriculum_name }} - 請選擇冊別：</p>
         {% for grade, grade_volumes in volumes.items() %}

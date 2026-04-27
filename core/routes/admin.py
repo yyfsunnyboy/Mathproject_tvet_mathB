@@ -37,6 +37,7 @@ from core.services.prompt_sync_service import (
 from . import core_bp
 from core.globals import TASK_QUEUES
 from core import textbook_processor
+from core.ai_wrapper import resolve_gemini_api_key
 from core.utils import handle_curriculum_filters
 from core.ai_settings import (
     AI_ROLE_KEYS,
@@ -44,6 +45,7 @@ from core.ai_settings import (
     SETTING_AI_DEFAULT_PROVIDER,
     SETTING_AI_ENABLE_HIGH_PRECISION_VISION,
     SETTING_AI_ENABLE_TUTOR_RESPONSE,
+    SETTING_GEMINI_API_KEY,
     SETTING_AI_GLOBAL_STRATEGY,
     SETTING_AI_MODEL_ROLES,
     SETTING_AI_RAG_NAIVE_THRESHOLD,
@@ -133,7 +135,15 @@ def admin_textbook_importer():
         flash('權限不足', 'error')
         return redirect(url_for('dashboard'))
 
+    api_key, key_source = resolve_gemini_api_key()
+    has_gemini_api_key = bool(api_key)
+    current_app.logger.info(f"[AI KEY] source={key_source or 'none'}")
+
     if request.method == 'POST':
+        if not has_gemini_api_key:
+            flash('尚未設定 Gemini API Key，請先到 AI 設定頁完成設定。', 'danger')
+            return redirect(url_for('core.admin_textbook_importer'))
+
         target_files = []
         upload_dir = os.path.join(current_app.root_path, 'uploads')
         os.makedirs(upload_dir, exist_ok=True)
@@ -175,7 +185,11 @@ def admin_textbook_importer():
         else:
             flash('請選擇有效檔案', 'warning')
 
-    return render_template('textbook_importer.html')
+    return render_template(
+        'textbook_importer.html',
+        has_gemini_api_key=has_gemini_api_key,
+        ai_settings_url='/admin/ai_prompt_settings'
+    )
 
 @core_bp.route('/importer/status/<task_id>')
 @login_required
@@ -1188,6 +1202,8 @@ def _build_ai_settings_payload(prompt, updated_at):
 
     available_models = get_available_model_presets()
     model_roles = _generate_model_roles(ai_mode, available_models, cloud_model=cloud_model)
+    gemini_key_row = SystemSetting.query.filter_by(key=SETTING_GEMINI_API_KEY).first()
+    has_gemini_api_key = bool(gemini_key_row and str(gemini_key_row.value or "").strip())
 
     return {
         'success': True,
@@ -1198,6 +1214,7 @@ def _build_ai_settings_payload(prompt, updated_at):
         'supported_cloud_models': list(Config.SUPPORTED_CLOUD_MODELS),
         'ai_model_roles': model_roles,
         'available_models': available_models,
+        'has_gemini_api_key': has_gemini_api_key,
     }
 
 
@@ -1461,7 +1478,10 @@ def update_ai_prompt_setting():
         return jsonify({'success': False, 'message': 'Permission denied'}), 403
     try:
         from models import SystemSetting
-        data = request.get_json() or {}
+        data = request.get_json(silent=True)
+        if not isinstance(data, dict):
+            data = {}
+        form_data = request.form if request.form else {}
 
         if 'prompt' in data:
             new_prompt = str(data.get('prompt', '')).strip()
@@ -1471,11 +1491,36 @@ def update_ai_prompt_setting():
                 return jsonify({'success': False, 'message': 'Prompt must include {context} and {prereq_text}'}), 400
             set_system_setting_value('ai_analyzer_prompt', new_prompt, 'AI analyzer prompt')
 
-        cloud_model = _normalize_cloud_model(data.get('cloud_model', Config.DEFAULT_CLOUD_MODEL))
-        if 'cloud_model' in data:
+        raw_api_key = data.get('api_key')
+        if raw_api_key is None:
+            raw_api_key = data.get('gemini_api_key')
+        if raw_api_key is None:
+            raw_api_key = form_data.get('api_key')
+        if raw_api_key is None:
+            raw_api_key = form_data.get('gemini_api_key')
+        if raw_api_key is None:
+            raw_api_key = session.get("GEMINI_API_KEY")
+        if raw_api_key is not None:
+            api_key_value = str(raw_api_key).strip()
+            if api_key_value:
+                set_system_setting_value(
+                    SETTING_GEMINI_API_KEY,
+                    api_key_value,
+                    'Gemini API key for cloud runtime'
+                )
+                current_app.logger.info("[AI KEY] source=db")
+
+        cloud_model_input = data.get('cloud_model')
+        if cloud_model_input is None:
+            cloud_model_input = form_data.get('cloud_model')
+        cloud_model = _normalize_cloud_model(cloud_model_input or Config.DEFAULT_CLOUD_MODEL)
+        if ('cloud_model' in data) or ('cloud_model' in form_data):
             set_system_setting_value(SETTING_AI_CLOUD_MODEL, cloud_model, 'Cloud Gemini model for cloud/hybrid runtime')
 
-        ai_mode = str(data.get('ai_mode', '')).strip()
+        ai_mode_raw = data.get('ai_mode')
+        if ai_mode_raw is None:
+            ai_mode_raw = form_data.get('ai_mode')
+        ai_mode = str(ai_mode_raw or '').strip()
         if ai_mode:
             if ai_mode not in ('cloud', 'edge', 'hybrid'):
                 return jsonify({'success': False, 'message': 'Invalid ai_mode'}), 400

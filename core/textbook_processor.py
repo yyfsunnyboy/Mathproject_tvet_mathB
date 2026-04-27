@@ -1135,14 +1135,32 @@ def save_to_database(parsed_data, curriculum_info, queue):
                 section_title = section_data.get('section_title', '') or ''  # 龍騰版很多是空字串,允許
                 concepts = section_data.get('concepts', [])
                 
-                for concept in concepts:
+                for concept_order, concept in enumerate(concepts, start=1):
                     concept_name = concept.get('concept_name', '未命名觀念').strip()
                     concept_en_id = concept.get('concept_en_id', 'Unknown')
                     concept_paragraph = concept.get('concept_paragraph', '未命名').strip()
                     
                     clean_en_id = re.sub(r'[^a-zA-Z0-9]', '', concept_en_id)
+                    order_index = concept_order
+
+                    if is_vocational_mathb and clean_en_id == "NumberOfPositiveDivisors":
+                        clean_en_id = "MultiplicationPrinciple"
+                        concept_name = "乘法原理"
+                        concept_paragraph = "乘法原理"
+
+                    if is_vocational_mathb:
+                        mathb_1_1_order_map = {
+                            "TreeDiagramCounting": 1,
+                            "AdditionPrinciple": 2,
+                            "MultiplicationPrinciple": 3,
+                            "FactorialNotation": 4,
+                        }
+                        order_index = mathb_1_1_order_map.get(clean_en_id, concept_order)
                     if is_vocational_math:
-                        final_skill_id = f"vh_math{subject}{vol_num}_{clean_en_id}"
+                        if subject == 'B' and vol_num == 4:
+                            final_skill_id = f"vh_數學{subject}{vol_num}_{clean_en_id}"
+                        else:
+                            final_skill_id = f"vh_math{subject}{vol_num}_{clean_en_id}"
                         skill_id_msg = f"INFO: vocational math skill_id = {final_skill_id}"
                         current_app.logger.info(skill_id_msg)
                         queue.put(skill_id_msg)
@@ -1160,11 +1178,20 @@ def save_to_database(parsed_data, curriculum_info, queue):
                             description=concept.get('concept_description', ''),
                             input_type='text',
                             gemini_prompt=f"Generate math problems about {concept_name}.",
-                            is_active=True
+                            is_active=True,
+                            order_index=order_index
                         )
                         db.session.add(new_skill)
                         skills_processed += 1
                         processed_skill_ids.append(final_skill_id)
+                    else:
+                        existing_skill.skill_en_name = clean_en_id
+                        existing_skill.skill_ch_name = concept_name
+                        existing_skill.category = section_title
+                        existing_skill.description = concept.get('concept_description', existing_skill.description)
+                        existing_skill.order_index = order_index
+                        if not existing_skill.gemini_prompt:
+                            existing_skill.gemini_prompt = f"Generate math problems about {concept_name}."
                     
                     # === SkillCurriculum 新增 (關鍵：加入正確的 display_order) ===
                     existing_curr = SkillCurriculum.query.filter_by(
