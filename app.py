@@ -65,6 +65,7 @@ logger = logging.getLogger(__name__)
 from werkzeug.security import generate_password_hash, check_password_hash
 from core.routes import core_bp
 from core.ai_analyzer import configure_gemini
+from core.ai_wrapper import resolve_gemini_api_key, mask_api_key, sanitize_secret_text
 from core.rag_engine import init_rag
 from core.advanced_rag_engine import init_adv_rag
 from core.prompts.prompt_loader import bootstrap_prompt_registry
@@ -337,10 +338,12 @@ def create_app():
             })
 
         except Exception as e:
-            app.logger.error(f"[API KEY TEST ERROR] model={model_name} err={repr(e)}")
+            safe_err = sanitize_secret_text(repr(e), [api_key])
+            app.logger.error(f"[API KEY TEST ERROR] model={model_name} err={safe_err}")
+            app.logger.warning("WARNING: Gemini API Key may be invalid or revoked.")
             return jsonify({
                 "success": False,
-                "message": str(e),
+                "message": sanitize_secret_text(str(e), [api_key]),
                 "model": model_name
             })
 
@@ -352,12 +355,17 @@ def create_app():
         return jsonify({
             "has_key": bool(key),
             "key_len": len(key) if key else 0,
-            "key_prefix": key[:6] if key else ""
+            "masked_key": mask_api_key(key)
         })
 
     @app.route('/dashboard')
     @login_required
     def dashboard():
+        def _clean_chapter_display(chapter_display):
+            chapter_display = str(chapter_display or "")
+            chapter_display = re.sub(r'^\?+', '', chapter_display).strip()
+            return chapter_display
+
         # --- 修改點：允許教師訪問學生儀表板 ---
         # 原本會將教師重導向，現在註解掉此邏輯，讓教師可以查看學生介面。
         # if current_user.role == 'teacher':
@@ -385,6 +393,7 @@ def create_app():
 
             if curriculum and volume and chapter:
                 skills_raw = get_skills_by_volume_chapter(volume, chapter)
+                chapter_display = _clean_chapter_display(chapter)
 
                 all_skills_with_progress = []
                 for s in skills_raw:
@@ -425,17 +434,25 @@ def create_app():
                                      curriculum=curriculum,
                                      volume=volume,
                                      chapter=chapter,
+                                     chapter_display=chapter_display,
                                      grouped_sections=grouped_sections,
                                      username=current_user.username,
                                      enrolled_classes=enrolled_classes)
             elif curriculum and volume:
                 chapters = get_chapters_by_curriculum_volume(curriculum, volume)
+                chapter_cards = [
+                    {
+                        'raw': ch,
+                        'display': _clean_chapter_display(ch)
+                    }
+                    for ch in chapters
+                ]
                 return render_template('dashboard.html',
                                      view_mode='curriculum',
                                      level='chapters',
                                      curriculum=curriculum,
                                      volume=volume,
-                                     chapters=chapters,
+                                     chapter_cards=chapter_cards,
                                      username=current_user.username,
                                      enrolled_classes=enrolled_classes)
             elif curriculum:
@@ -538,6 +555,14 @@ def create_app():
         # 確保 PromptTemplate 已經載入，使得 SQLAlchemy 能識別並在 create_all() 中建立這個資料表
         from core.models.prompt_template import PromptTemplate
         db.create_all()
+
+        # 啟動安全提醒：若無 Gemini API Key，明確提示管理者前往後台設定。
+        try:
+            startup_api_key, _startup_source = resolve_gemini_api_key()
+            if not startup_api_key:
+                print("WARNING: No Gemini API Key found. Please set it in /admin/ai_prompt_settings")
+        except Exception:
+            print("WARNING: No Gemini API Key found. Please set it in /admin/ai_prompt_settings")
 
         try:
             created_count, updated_count, skipped_count = bootstrap_prompt_registry(update_existing=False)

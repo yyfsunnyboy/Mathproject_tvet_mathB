@@ -37,7 +37,7 @@ from core.services.prompt_sync_service import (
 from . import core_bp
 from core.globals import TASK_QUEUES
 from core import textbook_processor
-from core.ai_wrapper import resolve_gemini_api_key
+from core.ai_wrapper import resolve_gemini_api_key, mask_api_key
 from core.utils import handle_curriculum_filters
 from core.ai_settings import (
     AI_ROLE_KEYS,
@@ -56,7 +56,7 @@ from core.ai_settings import (
 )
 
 # [Fix] 只引用確定存在的函式，避免 ImportError
-from core.data_importer import import_excel_to_db, CORE_TABLES
+from core.data_importer import import_excel_to_db, CORE_TABLES, FULL_CONFIRM_TOKEN
 
 from config import Config
 # [Fix] 確保 SkillPrerequisites 被引用
@@ -222,22 +222,48 @@ def importer_stream(task_id):
 @core_bp.route('/db_maintenance', methods=['GET', 'POST'])
 @login_required
 def db_maintenance():
+    def sanitize_dataframe_for_excel(df):
+        if df is None:
+            return pd.DataFrame()
+
+        # 將 NaN/NaT 轉成空字串，避免後續字串處理失敗
+        df = df.copy()
+        df = df.where(pd.notnull(df), "")
+
+        # object 欄位轉字串，但保留 int/float/bool 欄位原樣
+        for col in df.columns:
+            if str(df[col].dtype) == "object":
+                df[col] = df[col].apply(lambda x: "" if x is None else str(x))
+
+        return df
+
+    def safe_sheet_name(name):
+        name = str(name)
+        name = re.sub(r'[\[\]\:\*\?\/\\]', '_', name)
+        return name[:31]
+
     if not (current_user.is_admin or current_user.role == "teacher"):
         return redirect(url_for('dashboard'))
 
     if request.method == 'POST':
         action = request.form.get('action')
         table_name = request.form.get('table_name')
+        mode = str(request.form.get('mode', 'core')).strip().lower()
+        if mode not in ('core', 'full'):
+            mode = 'core'
+        confirm_full_clear = str(request.form.get('confirm_full_clear', '')).strip()
 
         if action == 'export_db':
             output = io.BytesIO()
             writer = pd.ExcelWriter(output, engine='xlsxwriter')
             inspector = db.inspect(db.engine)
-            mode = str(request.form.get('mode', 'core')).strip().lower()
-            if mode not in ('core', 'full'):
-                mode = 'core'
             detected_tables = inspector.get_table_names()
-            export_tables = list(CORE_TABLES) if mode == 'core' else list(dict.fromkeys(CORE_TABLES + detected_tables))
+            current_app.logger.info(f"INFO: CORE_TABLES_EXPORT = {list(CORE_TABLES)}")
+            # core 模式強制使用固定核心表，避免被 inspector 結果覆蓋或縮減。
+            if mode == 'core':
+                export_tables = list(CORE_TABLES)
+            else:
+                export_tables = list(dict.fromkeys(CORE_TABLES + detected_tables))
 
             for table in export_tables:
                 try:
@@ -245,32 +271,68 @@ def db_maintenance():
                     try:
                         df = pd.read_sql_table(table, db.engine)
                     except Exception:
-                        df = pd.read_sql_query(f"SELECT * FROM {table}", db.engine)
+                        try:
+                            df = pd.read_sql_query(f"SELECT * FROM {table}", db.engine)
+                        except Exception:
+                            # 至少保留核心表的空白 Sheet，避免技能主表漏失。
+                            df = pd.DataFrame()
+                            current_app.logger.warning(f"匯出資料表讀取失敗，改輸出空白 Sheet: {table}")
+                    df = sanitize_dataframe_for_excel(df)
+                    # 僅清理 object 欄位中的控制字元，避免 float/bool 欄位觸發 re.sub 型別錯誤。
                     for col in df.columns:
-                        df[col] = df[col].astype(str).apply(lambda x: re.sub(r'[\x00-\x1f\x7f-\x9f]', '', x) if x != 'None' else "")
-                    df.to_excel(writer, sheet_name=table[:31], index=False)
+                        if str(df[col].dtype) == "object":
+                            df[col] = df[col].apply(lambda x: re.sub(r'[\x00-\x1f\x7f-\x9f]', '', x))
+
+                    sheet = safe_sheet_name(table)
+                    df.to_excel(writer, sheet_name=sheet, index=False)
                     current_app.logger.info(f"INFO: exporting {mode} table {table} ({len(df)} rows)")
                 except Exception as e:
-                    current_app.logger.warning(f"匯出資料表失敗，已跳過 {table}: {e}")
+                    current_app.logger.exception(f"Export failed for table {table}")
+                    if mode == 'core':
+                        try:
+                            pd.DataFrame().to_excel(writer, sheet_name=safe_sheet_name(table), index=False)
+                            current_app.logger.warning(f"INFO: core export fallback to empty sheet {table}")
+                        except Exception:
+                            current_app.logger.exception(f"Export fallback failed for table {table}")
             writer.close()
             output.seek(0)
             return send_file(output, download_name=f"kumon_math_backup_{datetime.now().strftime('%Y%m%d_%H%M')}.xlsx", as_attachment=True)
 
         elif action == 'clear_all_data':
-            meta = db.metadata
-            for table in reversed(meta.sorted_tables):
-                try:
-                    if table.name == 'users':
-                        db.session.query(User).filter(User.username != 'admin').delete(synchronize_session=False)
-                    else:
+            inspector = db.inspect(db.engine)
+            all_tables = inspector.get_table_names()
+            if mode == 'full':
+                if confirm_full_clear != FULL_CONFIRM_TOKEN:
+                    flash('完整清空需要確認字串 YES_DELETE_ALL，已拒絕執行。', 'danger')
+                    return redirect(url_for('core.db_maintenance'))
+                clear_tables = list(reversed(db.metadata.sorted_tables))
+                for table in clear_tables:
+                    try:
                         db.session.execute(text(f"DELETE FROM {table.name}"))
-                    db.session.commit()
-                except Exception as e:
-                    # 跳過不存在的表或其他錯誤
-                    db.session.rollback()
-                    current_app.logger.warning(f"清空表 {table.name} 時發生錯誤（可能表不存在）: {e}")
-                    continue
-            flash('資料庫已清空 (保留 Admin)', 'success')
+                        db.session.commit()
+                        current_app.logger.info(f"INFO: clearing full table {table.name}")
+                    except Exception as e:
+                        db.session.rollback()
+                        current_app.logger.warning(f"清空表 {table.name} 時發生錯誤（可能表不存在）: {e}")
+                        continue
+                flash('資料庫已完整清空（full 模式）', 'warning')
+            else:
+                current_app.logger.info(f"INFO: CORE_TABLES_CLEAR = {list(CORE_TABLES)}")
+                # 預設安全模式：只清教材核心資料，不動系統設定與 prompt。
+                for table in CORE_TABLES:
+                    if table not in all_tables:
+                        continue
+                    try:
+                        db.session.execute(text(f"DELETE FROM {table}"))
+                        db.session.commit()
+                        current_app.logger.info(f"INFO: clearing core table {table}")
+                    except Exception as e:
+                        db.session.rollback()
+                        current_app.logger.warning(f"清空核心表 {table} 時發生錯誤: {e}")
+                for table in all_tables:
+                    if table not in CORE_TABLES:
+                        current_app.logger.info(f"INFO: preserved table {table}")
+                flash('教材核心資料已清空（core 模式）；系統設定與 prompt 已保留。', 'success')
 
         elif action == 'batch_import_folder':
             files = request.files.getlist('files')
@@ -336,9 +398,14 @@ def upload_db():
         mode = str(request.form.get('mode', 'core')).strip().lower()
         if mode not in ('core', 'full'):
             mode = 'core'
+        confirm_full_clear = str(request.form.get('confirm_full_clear', '')).strip()
         
         try:
-            success, message = import_excel_to_db(filepath, mode=mode)
+            success, message = import_excel_to_db(
+                filepath,
+                mode=mode,
+                confirm_full_clear=confirm_full_clear
+            )
             if success:
                 flash(Markup(message.replace('\n', '<br>')), 'success')
             else:
@@ -375,7 +442,12 @@ def import_textbook_examples():
             mode = str(request.form.get('mode', 'core')).strip().lower()
             if mode not in ('core', 'full'):
                 mode = 'core'
-            success, message = import_excel_to_db(filepath, mode=mode)
+            confirm_full_clear = str(request.form.get('confirm_full_clear', '')).strip()
+            success, message = import_excel_to_db(
+                filepath,
+                mode=mode,
+                confirm_full_clear=confirm_full_clear
+            )
             if os.path.exists(filepath): os.remove(filepath)
             
             if success: flash(Markup(message.replace('\n', '<br>')), 'success')
@@ -1505,6 +1577,23 @@ def check_gemini_api_key_status():
         return jsonify({'success': False, 'message': str(e)}), 500
 
 
+@core_bp.route('/admin/check_api_key', methods=['GET'])
+@login_required
+def admin_check_api_key():
+    """API: 安全回傳 API Key 狀態（僅 masked，不外洩完整值）。"""
+    if not (current_user.is_admin or current_user.role == 'teacher'):
+        return jsonify({'success': False, 'message': 'Permission denied'}), 403
+    try:
+        api_key, source = resolve_gemini_api_key()
+        return jsonify({
+            "has_api_key": bool(api_key),
+            "masked_key": mask_api_key(api_key),
+            "source": source,
+        })
+    except Exception as e:
+        return jsonify({'success': False, 'message': str(e)}), 500
+
+
 @core_bp.route('/admin/ai_prompt_settings/check_api_key_masked', methods=['GET'])
 @login_required
 def check_gemini_api_key_masked_status():
@@ -1514,14 +1603,7 @@ def check_gemini_api_key_masked_status():
     try:
         api_key, source = resolve_gemini_api_key()
         has_api_key = bool(api_key)
-        masked_key = None
-
-        if has_api_key:
-            api_key = str(api_key)
-            if len(api_key) <= 8:
-                masked_key = '*' * len(api_key)
-            else:
-                masked_key = f"{api_key[:4]}{'*' * (len(api_key) - 8)}{api_key[-4:]}"
+        masked_key = mask_api_key(api_key)
 
         return jsonify({
             'has_api_key': has_api_key,

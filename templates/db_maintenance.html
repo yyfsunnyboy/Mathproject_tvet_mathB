@@ -116,6 +116,12 @@
             font-weight: 600;
         }
 
+        .mode-note {
+            font-size: 0.85em;
+            color: #666;
+            margin-top: 6px;
+        }
+
         /* Buttons */
         .btn {
             padding: 10px 20px;
@@ -306,6 +312,14 @@
                         <p>下載當前的資料庫所有表格為 Excel 檔案 (.xlsx)。可用於備份或遷移數據。</p>
                         <form action="{{ url_for('core.db_maintenance') }}" method="POST">
                             <input type="hidden" name="action" value="export_db">
+                            <div class="form-group">
+                                <label>備份模式</label>
+                                <select name="mode" style="width: 100%; padding: 8px; border: 1px solid #ced4da; border-radius: 4px;">
+                                    <option value="core" selected>教材資料 core（預設，安全）</option>
+                                    <option value="full">完整資料 full（危險）</option>
+                                </select>
+                                <div class="mode-note">core 只匯出教材核心表；full 才匯出全部資料表。</div>
+                            </div>
                             <button type="submit" class="btn btn-primary" style="width: 100%;">
                                 <i class="bi bi-cloud-download"></i> 一鍵匯出 (下載 Excel)
                             </button>
@@ -325,21 +339,57 @@
                                     若 Sheet 名稱在資料庫中找不到，將會被自動略過。
                                 </div>
                             </div>
+                            <div class="form-group">
+                                <label>匯入模式</label>
+                                <select id="importMode" name="mode" style="width: 100%; padding: 8px; border: 1px solid #ced4da; border-radius: 4px;">
+                                    <option value="core" selected>教材資料 core（預設，安全）</option>
+                                    <option value="full">完整資料 full（危險）</option>
+                                </select>
+                                <div class="mode-note">core 只匯入核心表；full 允許全表匯入（需確認字串）。</div>
+                            </div>
+                            <div class="form-group">
+                                <label for="importConfirmFull">full 模式確認字串（僅 full 需要）</label>
+                                <input type="text" id="importConfirmFull" name="confirm_full_clear" placeholder="YES_DELETE_ALL"
+                                    style="width: 100%; padding: 8px; border: 1px solid #ced4da; border-radius: 4px;">
+                            </div>
                             <button type="submit" class="btn btn-warning" style="width: 100%;">
                                 <i class="bi bi-cloud-upload"></i> 開始匯入
                             </button>
                         </form>
                     </div>
 
-                    <!-- 清空資料庫 -->
+                    <!-- 清空教材資料（core） -->
                     <div class="operation-item" style="border-top: 3px solid #e74c3c;">
-                        <h3><i class="bi bi-trash" style="color: #e74c3c;"></i> 重置資料庫</h3>
-                        <p>清空所有表格中的資料。<br><strong style="color: #e74c3c;">警告：此操作無法復原！</strong></p>
+                        <h3><i class="bi bi-trash" style="color: #e74c3c;"></i> 清空教材資料（core）</h3>
+                        <p>只清空教材核心表，保留 prompt、system settings、API Key、使用者與紀錄資料。</p>
                         <form action="{{ url_for('core.db_maintenance') }}" method="POST"
-                            onsubmit="event.preventDefault(); showModal('超級警告！\n\n您確定要「清空整個資料庫」的所有資料嗎？\n\n此操作將刪除所有學生資料、進度紀錄等，且「無法復原」！\n\n請務必確認您已經備份了資料庫！', this, true);">
+                            onsubmit="event.preventDefault(); showModal('您確定要清空教材核心資料嗎？\\n\\n此操作會清空 skills_info / skill_curriculum / textbook_examples 等教材資料。\\n\\n系統設定與 prompt 會保留。', this, false);">
                             <input type="hidden" name="action" value="clear_all_data">
+                            <input type="hidden" name="mode" value="core">
                             <button type="submit" class="btn btn-danger" style="width: 100%;">
-                                <i class="bi bi-exclamation-octagon"></i> 一鍵清空 (危險)
+                                <i class="bi bi-trash"></i> 清空教材資料（安全）
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- 清空全部資料（full） -->
+                    <div class="operation-item" style="border-top: 3px solid #8e44ad;">
+                        <h3><i class="bi bi-exclamation-octagon" style="color: #8e44ad;"></i> 清空全部資料（full）</h3>
+                        <p>
+                            完整清空會刪除 prompt_templates、system_settings、API Key、使用者與紀錄資料。<br>
+                            <strong style="color: #e74c3c;">需輸入 YES_DELETE_ALL 才可執行。</strong>
+                        </p>
+                        <form action="{{ url_for('core.db_maintenance') }}" method="POST"
+                            onsubmit="event.preventDefault(); showModal('超級警告！\\n\\n這會清空所有資料表，包含 prompt_templates 與 system_settings。\\n\\n請確認已備份，且已輸入 YES_DELETE_ALL。', this, true);">
+                            <input type="hidden" name="action" value="clear_all_data">
+                            <input type="hidden" name="mode" value="full">
+                            <div class="form-group">
+                                <label for="fullClearConfirm">確認字串</label>
+                                <input type="text" id="fullClearConfirm" name="confirm_full_clear" placeholder="YES_DELETE_ALL"
+                                    style="width: 100%; padding: 8px; border: 1px solid #ced4da; border-radius: 4px;" required>
+                            </div>
+                            <button type="submit" class="btn btn-danger" style="width: 100%;">
+                                <i class="bi bi-exclamation-octagon"></i> 清空全部資料（危險）
                             </button>
                         </form>
                     </div>

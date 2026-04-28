@@ -21,6 +21,7 @@ static/generated_plots/
 
 # 忽略環境變數設定檔 (包含 API Key 等敏感資訊)
 .env
+.env.*
 .flaskenv
 
 # ==========================================
@@ -29,6 +30,8 @@ static/generated_plots/
 *.db
 *.sqlite
 *.sqlite3
+*.xlsx
+*.xls
 instance/
 migrations/
 

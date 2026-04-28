@@ -30,6 +30,35 @@ CORE_TABLES = [
     "skill_prerequisites",
 ]
 
+SYSTEM_TABLES = [
+    "prompt_templates",
+    "system_settings",
+    "users",
+    "classes",
+    "class_students",
+    "student_abilities",
+    "progress",
+    "quiz_attempts",
+    "adaptive_learning_logs",
+    "mistake_logs",
+    "mistake_notebook_entries",
+    "experiment_log",
+    "experiment_runs",
+    "ablation_settings",
+    "ablation_summary",
+    "healer_events",
+    "execution_samples",
+    "evaluation_items",
+    "exam_analysis",
+    "questions",
+    "student_uploaded_questions",
+    "node_competency",
+    "skill_gencode_prompt",
+    "sqlite_sequence",
+]
+
+FULL_CONFIRM_TOKEN = "YES_DELETE_ALL"
+
 
 def _get_primary_key_columns(model):
     return [column.name for column in model.__mapper__.primary_key]
@@ -189,7 +218,7 @@ def clean_excel_row(row_dict):
             
     return cleaned
 
-def import_excel_to_db(filepath, mode="core"):
+def import_excel_to_db(filepath, mode="core", confirm_full_clear=""):
     """
     讀取 Excel 檔案，將每個 Sheet 的資料匯入對應的資料庫 Table (支援 Upsert)
     """
@@ -209,11 +238,15 @@ def import_excel_to_db(filepath, mode="core"):
         mode = str(mode or "core").strip().lower()
         if mode not in ("core", "full"):
             mode = "core"
+        if mode == "full" and str(confirm_full_clear or "").strip() != FULL_CONFIRM_TOKEN:
+            return False, "❌ full 模式匯入需要確認字串 YES_DELETE_ALL"
+
         allowed_tables = set(CORE_TABLES) if mode == "core" else None
 
         results = []
         results.append(f"ℹ️ 系統動態偵測到 {len(mapping)} 個資料庫模型。")
         results.append(f"ℹ️ 匯入模式: {mode}")
+        logger.info(f"INFO: CORE_TABLES_IMPORT = {list(CORE_TABLES)}")
 
         if mode == "core":
             excel_sheet_names = {name.strip() for name in xls.keys()}
@@ -226,7 +259,8 @@ def import_excel_to_db(filepath, mode="core"):
         for sheet_name, df in xls.items():
             sheet_name_clean = sheet_name.strip()
             if allowed_tables is not None and sheet_name_clean not in allowed_tables:
-                results.append(f"ℹ️ 忽略非核心 Sheet '{sheet_name_clean}'。")
+                logger.info(f"INFO: ignored non-core sheet {sheet_name_clean}")
+                results.append(f"INFO: ignored non-core sheet {sheet_name_clean}")
                 continue
             
             # 尋找對應的 Model
@@ -249,6 +283,9 @@ def import_excel_to_db(filepath, mode="core"):
             if not model:
                 results.append(f"⚠️ 跳過 Sheet '{sheet_name}': 資料庫中無此 Table。")
                 continue
+            if mode == "core":
+                logger.info(f"INFO: importing core table {table_name}")
+                results.append(f"INFO: importing core table {table_name}")
             
             # 3. 資料處理 (Data Cleaning)
             # 將 pandas 的 NaN (空值) 轉為 Python 的 None

@@ -20,13 +20,17 @@ import re
 from flask import current_app
 import PIL.Image
 import io
-from core.ai_wrapper import get_ai_client
+from core.ai_wrapper import get_ai_client, sanitize_secret_text
 from core.prompts.registry import render_prompt
 
 # 初始化 gemini_model 為 None，避免 NameError
 gemini_model = None
 gemini_chat = None
 gemini_model_name = None
+
+
+def _sanitize_sensitive_error_message(message):
+    return sanitize_secret_text(str(message or ""), [])
 
 def clean_and_parse_json(text):
     try:
@@ -596,7 +600,7 @@ JSON:
         }
 
     except Exception as e:
-        current_app.logger.error(f"診斷錯誤類型失敗: {e}")
+        current_app.logger.error(f"診斷錯誤類型失敗: {_sanitize_sensitive_error_message(e)}")
         import traceback
         traceback.print_exc()
         return {
@@ -629,6 +633,8 @@ def get_model():
     api_key, source = resolve_gemini_api_key()
     if not api_key:
         raise RuntimeError("找不到 Gemini API Key，請先到 AI 後台設定頁輸入並儲存。")
+    if not (str(api_key).startswith("AIza") and len(str(api_key).strip()) >= 30):
+        current_app.logger.warning("WARNING: Gemini API Key may be invalid or revoked.")
     current_app.logger.info(f"[AI KEY] source={source}")
     current_app.logger.info(f"[AI MODEL] provider=google model={runtime_model}")
 
@@ -723,7 +729,7 @@ def analyze(image_data_url, context, api_key, prerequisite_skills=None, correct_
         except Exception as e:
             if attempt == 1:
                 return {
-                    "reply": f"AI 分析失敗：{str(e)}",
+                    "reply": f"AI 分析失敗：{_sanitize_sensitive_error_message(e)}",
                     "is_process_correct": False,
                     "correct": False,
                     "next_question": False,
@@ -838,7 +844,7 @@ def ask_ai_text(user_question):
         )
         return resp.text.strip()
     except Exception as e:
-        return f"AI 錯誤：{str(e)}"
+        return f"AI 錯誤：{_sanitize_sensitive_error_message(e)}"
     
 # core/ai_analyzer.py
 def ask_ai_text_with_context(user_question, context="", correct_answer=""):
@@ -875,7 +881,7 @@ def ask_ai_text_with_context(user_question, context="", correct_answer=""):
         )
         return resp.text.strip()
     except Exception as e:
-        return f"AI error: {str(e)}"
+        return f"AI error: {_sanitize_sensitive_error_message(e)}"
     
     system_prompt = f"""
     [CRITICAL RULES]
@@ -1153,7 +1159,7 @@ def get_chat_response(prompt, image=None, user_question='', question_context='')
         return data
 
     except Exception as e:
-        print(f"AI 生成錯誤: {e}")
+        print(f"AI 生成錯誤: {_sanitize_sensitive_error_message(e)}")
         return {
             "reply": "連線忙碌中，請稍後再試。", 
             "follow_up_prompts": ["重試"]

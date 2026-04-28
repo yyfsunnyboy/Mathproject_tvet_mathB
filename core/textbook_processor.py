@@ -1342,6 +1342,84 @@ def clean_skill_en_name(raw_en_name, queue=None):
         return raw_en_name[start_index:]
     return raw_en_name
 
+
+def is_non_skill_bucket(concept_name, clean_en_id):
+    """判斷該 concept 是否屬於不可建立 skill 的桶位。"""
+    name = (concept_name or "").strip()
+    en_id = (clean_en_id or "").strip().lower()
+    non_skill_names = {
+        "習題",
+        "章節介紹",
+        "排列組合概論",
+    }
+    non_skill_en_ids = {
+        "chapterintroduction",
+        "exercises",
+        "practice",
+        "review",
+    }
+    return name in non_skill_names or en_id in non_skill_en_ids
+
+
+def remap_mathb_non_skill_examples(section_title, concept_name, clean_en_id, example):
+    """
+    高職數學B4 1-1 專用：將非正式 skill bucket 例題重導到正式 skill。
+    回傳 clean_en_id（TreeDiagramCounting / AdditionPrinciple / MultiplicationPrinciple / FactorialNotation）。
+    """
+    section = (section_title or "").strip()
+    if "1-1" not in section and "加法原理與乘法原理" not in section:
+        return None
+
+    non_skill = is_non_skill_bucket(concept_name, clean_en_id)
+    if not non_skill:
+        return None
+
+    problem_type = str(example.get("problem_type", "") or "").strip().lower()
+    subskill_tag = str(example.get("subskill_tag", "") or "").strip().lower()
+    source_description = str(example.get("source_description", "") or "").strip().lower()
+    problem_text = str(example.get("problem_text", "") or "").strip().lower()
+
+    zh_hints = "".join([
+        str(example.get("source_description", "") or ""),
+        str(example.get("problem_text", "") or ""),
+    ])
+    signal = " ".join([problem_type, subskill_tag, source_description, problem_text])
+
+    if (
+        "tree_diagram" in signal
+        or "樹狀圖" in zh_hints
+        or "列舉" in zh_hints
+    ):
+        return "TreeDiagramCounting"
+
+    if (
+        "addition_principle" in signal
+        or "分類討論" in zh_hints
+        or "加法原理" in zh_hints
+    ):
+        return "AdditionPrinciple"
+
+    if (
+        "factorial" in signal
+        or "階乘" in zh_hints
+        or "n!" in signal
+        or "n!" in zh_hints.lower()
+    ):
+        return "FactorialNotation"
+
+    if (
+        "multiplication_principle" in signal
+        or "divisor_counting" in signal
+        or "mixed_counting" in signal
+        or "正因數個數" in zh_hints
+        or "步驟計數" in zh_hints
+        or "乘法原理" in zh_hints
+    ):
+        return "MultiplicationPrinciple"
+
+    # 無法判斷時預設歸入乘法原理
+    return "MultiplicationPrinciple"
+
 def save_to_database(parsed_data, curriculum_info, queue):
     """
     將 AI 分析完的目錄資料寫入資料庫。
@@ -1420,6 +1498,7 @@ def save_to_database(parsed_data, curriculum_info, queue):
                     
                     clean_en_id = re.sub(r'[^a-zA-Z0-9]', '', concept_en_id)
                     order_index = concept_order
+                    skip_skill_creation = is_non_skill_bucket(concept_name, clean_en_id)
 
                     if is_vocational_mathb and clean_en_id == "NumberOfPositiveDivisors":
                         clean_en_id = "MultiplicationPrinciple"
@@ -1445,60 +1524,92 @@ def save_to_database(parsed_data, curriculum_info, queue):
                     else:
                         final_skill_id = f"{prefix}{clean_en_id}"
                     
-                    # === SkillInfo 新增/更新 (維持原邏輯) ===
-                    existing_skill = SkillInfo.query.get(final_skill_id)
-                    if not existing_skill:
-                        new_skill = SkillInfo(
+                    if not skip_skill_creation:
+                        # === SkillInfo 新增/更新 (維持原邏輯) ===
+                        existing_skill = SkillInfo.query.get(final_skill_id)
+                        if not existing_skill:
+                            new_skill = SkillInfo(
+                                skill_id=final_skill_id,
+                                skill_en_name=clean_en_id,
+                                skill_ch_name=concept_name,
+                                category = section_title,
+                                description=concept.get('concept_description', ''),
+                                input_type='text',
+                                gemini_prompt=f"Generate math problems about {concept_name}.",
+                                is_active=True,
+                                order_index=order_index
+                            )
+                            db.session.add(new_skill)
+                            skills_processed += 1
+                            processed_skill_ids.append(final_skill_id)
+                        else:
+                            existing_skill.skill_en_name = clean_en_id
+                            existing_skill.skill_ch_name = concept_name
+                            existing_skill.category = section_title
+                            existing_skill.description = concept.get('concept_description', existing_skill.description)
+                            existing_skill.order_index = order_index
+                            if not existing_skill.gemini_prompt:
+                                existing_skill.gemini_prompt = f"Generate math problems about {concept_name}."
+                        
+                        # === SkillCurriculum 新增 (關鍵：加入正確的 display_order) ===
+                        existing_curr = SkillCurriculum.query.filter_by(
                             skill_id=final_skill_id,
-                            skill_en_name=clean_en_id,
-                            skill_ch_name=concept_name,
-                            category = section_title,
-                            description=concept.get('concept_description', ''),
-                            input_type='text',
-                            gemini_prompt=f"Generate math problems about {concept_name}.",
-                            is_active=True,
-                            order_index=order_index
-                        )
-                        db.session.add(new_skill)
-                        skills_processed += 1
-                        processed_skill_ids.append(final_skill_id)
-                    else:
-                        existing_skill.skill_en_name = clean_en_id
-                        existing_skill.skill_ch_name = concept_name
-                        existing_skill.category = section_title
-                        existing_skill.description = concept.get('concept_description', existing_skill.description)
-                        existing_skill.order_index = order_index
-                        if not existing_skill.gemini_prompt:
-                            existing_skill.gemini_prompt = f"Generate math problems about {concept_name}."
-                    
-                    # === SkillCurriculum 新增 (關鍵：加入正確的 display_order) ===
-                    existing_curr = SkillCurriculum.query.filter_by(
-                        skill_id=final_skill_id,
-                        chapter=chapter_title,
-                        section=section_title
-                    ).first()
-                    
-                    if not existing_curr:
-                        new_curr = SkillCurriculum(
-                            skill_id=final_skill_id,
-                            curriculum=curriculum_info.get('curriculum'),
-                            grade=int(curriculum_info.get('grade', 10)),
-                            volume=str(curriculum_info.get('volume', 1)),
                             chapter=chapter_title,
-                            section=section_title,
-                            paragraph=concept_paragraph,
-                            display_order=chapter_num * 10000 + skills_processed  # 10000 倍數確保單元間不會互相干擾
+                            section=section_title
+                        ).first()
+                        
+                        if not existing_curr:
+                            new_curr = SkillCurriculum(
+                                skill_id=final_skill_id,
+                                curriculum=curriculum_info.get('curriculum'),
+                                grade=int(curriculum_info.get('grade', 10)),
+                                volume=str(curriculum_info.get('volume', 1)),
+                                chapter=chapter_title,
+                                section=section_title,
+                                paragraph=concept_paragraph,
+                                display_order=chapter_num * 10000 + skills_processed  # 10000 倍數確保單元間不會互相干擾
+                            )
+                            db.session.add(new_curr)
+                            curriculums_added += 1
+                    else:
+                        queue.put(
+                            f"INFO: 跳過非技能桶位 concept='{concept_name}' ({clean_en_id})，僅重導 examples。"
                         )
-                        db.session.add(new_curr)
-                        curriculums_added += 1
 
                     # === 例題處理 (維持原邏輯) ===
                     for ex in concept.get('examples', []):
                         problem_text = ex.get('problem_text')
                         if not problem_text: continue
+
+                        target_clean_en_id = clean_en_id
+                        target_concept_name = concept_name
+                        if is_vocational_mathb and skip_skill_creation:
+                            remapped_en_id = remap_mathb_non_skill_examples(
+                                section_title=section_title,
+                                concept_name=concept_name,
+                                clean_en_id=clean_en_id,
+                                example=ex
+                            )
+                            if remapped_en_id:
+                                target_clean_en_id = remapped_en_id
+                                target_name_map = {
+                                    "TreeDiagramCounting": "樹狀圖",
+                                    "AdditionPrinciple": "加法原理",
+                                    "MultiplicationPrinciple": "乘法原理",
+                                    "FactorialNotation": "階乘記法",
+                                }
+                                target_concept_name = target_name_map.get(remapped_en_id, "乘法原理")
+
+                        if is_vocational_math:
+                            if subject == 'B' and vol_num == 4:
+                                target_skill_id = f"vh_數學{subject}{vol_num}_{target_clean_en_id}"
+                            else:
+                                target_skill_id = f"vh_math{subject}{vol_num}_{target_clean_en_id}"
+                        else:
+                            target_skill_id = f"{prefix}{target_clean_en_id}"
                         
                         existing_ex = TextbookExample.query.filter_by(
-                            skill_id=final_skill_id,
+                            skill_id=target_skill_id,
                             source_curriculum=curriculum_info.get('curriculum'),
                             source_volume=str(curriculum_info.get('volume')),
                             source_chapter=chapter_title,
@@ -1513,12 +1624,12 @@ def save_to_database(parsed_data, curriculum_info, queue):
                                 difficulty_level = 1
 
                             new_ex = TextbookExample(
-                                skill_id=final_skill_id,
+                                skill_id=target_skill_id,
                                 source_curriculum=curriculum_info.get('curriculum'),
                                 source_volume=str(curriculum_info.get('volume')),
                                 source_chapter=chapter_title,
                                 source_section=section_title,
-                                source_paragraph=concept_name,
+                                source_paragraph=target_concept_name,
                                 source_description=ex.get('source_description', '例題'),
                                 problem_text=problem_text,
                                 problem_type=ex.get('problem_type', 'calculation'),

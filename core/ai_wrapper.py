@@ -44,6 +44,30 @@ except ImportError:
 logger = logging.getLogger(__name__)
 
 
+def mask_api_key(api_key):
+    """Mask API key for safe logging/UI display."""
+    key = str(api_key or "").strip()
+    if not key:
+        return None
+    if len(key) <= 8:
+        return "*" * len(key)
+    return f"{key[:4]}{'*' * (len(key) - 8)}{key[-4:]}"
+
+
+def _looks_like_gemini_key(api_key):
+    key = str(api_key or "").strip()
+    return key.startswith("AIza") and len(key) >= 30
+
+
+def sanitize_secret_text(text, secrets):
+    """Redact known secrets from arbitrary text."""
+    cleaned = str(text or "")
+    for secret in secrets:
+        if secret:
+            cleaned = cleaned.replace(secret, mask_api_key(secret) or "***")
+    return cleaned
+
+
 def _normalize_ollama_image_b64(raw: str) -> str:
     """
     Ollama /api/chat 需要純 base64，不可含 data URL 前綴。
@@ -462,8 +486,11 @@ class GoogleAIClient:
             
         if not api_key:
             raise ValueError("找不到 Gemini API Key，請先到 AI 後台設定頁輸入並儲存。")
+        if not _looks_like_gemini_key(api_key):
+            logger.warning("WARNING: Gemini API Key may be invalid or revoked.")
         logger.info(f"[AI KEY] source={api_key_source}")
         logger.info(f"[AI MODEL] provider=google model={model_name}")
+        self.api_key = str(api_key).strip()
 
         # 2. Model Parameters
         self.model_name = model_name
@@ -662,7 +689,10 @@ class GoogleAIClient:
                 return response
 
         except Exception as e:
-            error_msg = f"Google AI Error: {str(e)}"
+            safe_error = sanitize_secret_text(str(e), [getattr(self, "api_key", "")])
+            error_msg = f"Google AI Error: {safe_error}"
+            if any(token in safe_error.lower() for token in ("api key", "api_key", "permission", "unauthorized", "revoked", "invalid")):
+                logger.warning("WARNING: Gemini API Key may be invalid or revoked.")
             logger.error(error_msg)
             # Retain robust error handling
             class MockResponse:

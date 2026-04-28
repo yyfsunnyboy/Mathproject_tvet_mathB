@@ -407,7 +407,7 @@
             {% endif %}
             {% if chapter %}
             <span>→</span>
-            <span class="current">{{ chapter }}</span>
+            <span class="current">{{ chapter_display if chapter_display is defined else chapter }}</span>
             {% endif %}
         </div>
 
@@ -444,15 +444,15 @@
         <!-- 顯示章節 -->
         <p>{{ volume }} - 請選擇章節：</p>
         <div class="level-grid chapters-grid">
-            {% for ch in chapters %}
+            {% for ch in chapter_cards %}
             <div class="chapter-container" style="display: flex; flex-direction: column; gap: 5px;">
-                <a href="{{ url_for('dashboard', view='curriculum', curriculum=curriculum, volume=volume, chapter=ch) }}"
+                <a href="{{ url_for('dashboard', view='curriculum', curriculum=curriculum, volume=volume, chapter=ch.raw) }}"
                     style="text-decoration: none; flex-grow: 1; display: flex;">
                     <div class="level-card chapter-card" style="width: 100%;">
-                        <h3>{{ ch }}</h3>
+                        <h3>{{ ch.display }}</h3>
                     </div>
                 </a>
-                <a href="{{ url_for('practice.adaptive_practice_page', mode='single', skill_ids=ch) }}"
+                <a href="{{ url_for('practice.adaptive_practice_page', mode='single', skill_ids=ch.raw) }}"
                     class="btn-practice"
                     style="background-color: #28a745; text-decoration: none; padding: 8px; font-size: 0.9em;">
                     單元練習
@@ -462,7 +462,7 @@
         </div>
         {% elif level == 'skills' %}
         <!-- 顯示技能 -->
-        <p>{{ volume }} / {{ chapter }} - 請選擇要練習的技能：</p>
+        <p>{{ volume }} / {{ chapter_display if chapter_display is defined else chapter }} - 請選擇要練習的技能：</p>
 
         <!-- 為每個 section 建立獨立的群組和網格 -->
         {% for section_group in grouped_sections %}
