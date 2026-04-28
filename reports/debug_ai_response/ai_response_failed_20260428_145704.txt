@@ -1,0 +1,163 @@
+{
+  "chapters": [
+    {
+      "chapter_title": "1 排列組合",
+      "sections": [
+        {
+          "section_title": "1-2 直線排列",
+          "concepts": [
+            {
+              "concept_name": "相異物的排列",
+              "concept_en_id": "PermutationOfDistinctObjects",
+              "concept_description": "處理不同物件依序排列的方法數，包含全取、選取、限制條件與應用排列問題。",
+              "concept_paragraph": "相異物的排列",
+              "examples": [
+                {
+                  "source_description": "想一想 (Page 1)",
+                  "problem_text": "若是5個環的位置可以互換，則奧運5環標誌將會有多少種不同的排列方式呢？",
+                  "correct_answer": "120 種",
+                  "detailed_solution": "5個環的排列方法，相當於排成一列的5個相異物，故排列方式共有 5! = 120 種。",
+                  "problem_type": "permutation",
+                  "subskill_tag": "all_objects_permutation",
+                  "difficulty_level": 1
+                },
+                {
+                  "source_description": "問題1",
+                  "problem_text": "將甲、乙、丙三位同學排成一列，有多少種排法？",
+                  "correct_answer": "6 種",
+                  "detailed_solution": "將三個人排成一列的方法數為 3 \times 2 \times 1 = 6 種。以符號 P3^3 表示，即 P3^3 = 3! = 6。",
+                  "problem_type": "permutation",
+                  "subskill_tag": "all_objects_permutation",
+                  "difficulty_level": 1
+                },
+                {
+                  "source_description": "例題 (Page 3)",
+                  "problem_text": "有國文、英文、數學、會計、經濟5本不同的書，將它們排列在書架上其排法共有幾種？",
+                  "correct_answer": "120 種",
+                  "detailed_solution": "將5本不同的書全取排成一列，其排法共有 P5^5 = 5! = 5 \times 4 \times 3 \times 2 \times 1 = 120 種。",
+                  "problem_type": "permutation",
+                  "subskill_tag": "all_objects_permutation",
+                  "difficulty_level": 1
+                },
+                {
+                  "source_description": "例題 (Page 3)",
+                  "problem_text": "中華隊6名排球員站成一排合照，問排法共有多少種？",
+                  "correct_answer": "720 種",
+                  "detailed_solution": "即將6件不同的事物全取排成一列，其方法數有 P6^6 = 6! = 6 \times 5 \times 4 \times 3 \times 2 \times 1 = 720 種。",
+                  "problem_type": "permutation",
+                  "subskill_tag": "all_objects_permutation",
+                  "difficulty_level": 1
+                },
+                {
+                  "source_description": "隨堂練習 1",
+                  "problem_text": "將「A、B、C、D」四個英文字母全取排成一列，問方法數有多少種？",
+                  "correct_answer": "24 種",
+                  "detailed_solution": "即將4個不同的事物全取排成一列，其方法數有 P4^4 = 4! = 4 \times 3 \times 2 \times 1 = 24 種。",
+                  "problem_type": "permutation",
+                  "subskill_tag": "all_objects_permutation",
+                  "difficulty_level": 1
+                },
+                {
+                  "source_description": "問題2",
+                  "problem_text": "自5位同學中任選3個人排成一列，問其排法有多少種？",
+                  "correct_answer": "60 種",
+                  "detailed_solution": "從5位同學中任選3個人排成一列的方法數為 P5^3 = 5 \times 4 \times 3 = 60 種。",
+                  "problem_type": "permutation",
+                  "subskill_tag": "partial_permutation",
+                  "difficulty_level": 1
+                },
+                {
+                  "source_description": "隨堂練習 2.1",
+                  "problem_text": "試求 P20^2 之值。",
+                  "correct_answer": "380",
+                  "detailed_solution": "P20^2 = \frac{20!}{(20-2)!} = \frac{20!}{18!} = 20 \times 19 = 380。",
+                  "problem_type": "permutation",
+                  "subskill_tag": "partial_permutation",
+                  "difficulty_level": 1
+                },
+                {
+                  "source_description": "隨堂練習 2.2",
+                  "problem_text": "試求 P9^3 之值。",
+                  "correct_answer": "504",
+                  "detailed_solution": "P9^3 = \frac{9!}{(9-3)!} = \frac{9!}{6!} = 9 \times 8 \times 7 = 504。",
+                  "problem_type": "permutation",
+                  "subskill_tag": "partial_permutation",
+                  "difficulty_level": 1
+                },
+                {
+                  "source_description": "隨堂練習 2.3",
+                  "problem_text": "試求 P100^0 之值。",
+                  "correct_answer": "1",
+                  "detailed_solution": "P100^0 = \frac{100!}{(100-0)!} = \frac{100!}{100!} = 1。0! 可以視為沒有物件作直線排列，其方法數是1種。",
+                  "problem_type": "permutation",
+                  "subskill_tag": "factorial_zero",
+                  "difficulty_level": 1
+                },
+                {
+                  "source_description": "隨堂練習 (Page 8) 1.1",
+                  "problem_text": "試填入下列各式之值：P7^4 = \frac{7!}{(7-4)!} = \frac{7!}{3!} = 7 \times 6 \times 5 \times 4 = ?",
+                  "correct_answer": "840",
+                  "detailed_solution": "P7^4 = 7 \times 6 \times 5 \times 4 = 840。",
+                  "problem_type": "permutation",
+                  "subskill_tag": "partial_permutation",
+                  "difficulty_level": 1
+                },
+                {
+                  "source_description": "隨堂練習 (Page 8) 1.2",
+                  "problem_text": "試填入下列各式之值：P10^8 = \frac{10!}{(10-8)!} = \frac{10!}{2!} = 10 \times 9 \times 8 \times 7 \times 6 \times 5 \times 4 \times 3 = ?",
+                  "correct_answer": "1814400",
+                  "detailed_solution": "P10^8 = 10 \times 9 \times 8 \times 7 \times 6 \times 5 \times 4 \times 3 = 1,814,400。",
+                  "problem_type": "permutation",
+                  "subskill_tag": "partial_permutation",
+                  "difficulty_level": 1
+                },
+                {
+                  "source_description": "隨堂練習 (Page 8) 1.3",
+                  "problem_text": "試填入下列各式之值：P5^5 = \frac{5!}{(5-5)!} = \frac{5!}{0!} = ?",
+                  "correct_answer": "120",
+                  "detailed_solution": "P5^5 = 5! = 120。",
+                  "problem_type": "permutation",
+                  "subskill_tag": "all_objects_permutation",
+                  "difficulty_level": 1
+                },
+                {
+                  "source_description": "隨堂練習 (Page 8) 2.1",
+                  "problem_text": "試求下列各式之值：P7^3 = 7 \times 6 \times 5 = ?",
+                  "correct_answer": "210",
+                  "detailed_solution": "P7^3 = 7 \times 6 \times 5 = 210。",
+                  "problem_type": "permutation",
+                  "subskill_tag": "partial_permutation",
+                  "difficulty_level": 1
+                },
+                {
+                  "source_description": "隨堂練習 (Page 8) 2.2",
+                  "problem_text": "試求下列各式之值：P10^2 = 10 \times 9 = ?",
+                  "correct_answer": "90",
+                  "detailed_solution": "P10^2 = 10 \times 9 = 90。",
+                  "problem_type": "permutation",
+                  "subskill_tag": "partial_permutation",
+                  "difficulty_level": 1
+                },
+                {
+                  "source_description": "隨堂練習 (Page 8) 2.3",
+                  "problem_text": "試求下列各式之值：P5^0 = ?",
+                  "correct_answer": "1",
+                  "detailed_solution": "P5^0 = 1。",
+                  "problem_type": "permutation",
+                  "subskill_tag": "factorial_zero",
+                  "difficulty_level": 1
+                },
+                {
+                  "source_description": "例題 (Page 9) 3",
+                  "problem_text": "自10位同學中選出3個人，分別擔任班長、學藝股長、康樂股長，則方法數有幾種？",
+                  "correct_answer": "720 種",
+                  "detailed_solution": "將三個工作職務視為排列的先後位置，由10位同學中選出3個人依序排入空格的方法數為 P10^3 = 10 \times 9 \times 8 = 720 種。",
+                  "problem_type": "permutation",
+                  "subskill_tag": "role_assignment",
+                  "difficulty_level": 2
+                },
+                {
+                  "source_description": "隨堂練習 3",
+                  "problem_text": "畢業旅行，旅行社提出8個旅遊景點，班上同學要自8個景點選出4個出遊，若考慮去此4個景點的先後順序，則有幾種不同的旅程安排？",
+                  "correct_answer": "1680 種",
+                  "detailed_solution": "將選出4

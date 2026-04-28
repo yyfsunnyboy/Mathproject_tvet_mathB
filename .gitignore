@@ -8,6 +8,8 @@ configs/prompts/prompt_registry.yaml.bak
 uploads/
 *.docx
 *.pdf
+backup/
+temp/
 
 # 忽略轉檔產生的暫存圖片資料夾
 media/

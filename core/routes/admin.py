@@ -56,7 +56,7 @@ from core.ai_settings import (
 )
 
 # [Fix] 只引用確定存在的函式，避免 ImportError
-from core.data_importer import import_excel_to_db
+from core.data_importer import import_excel_to_db, CORE_TABLES
 
 from config import Config
 # [Fix] 確保 SkillPrerequisites 被引用
@@ -141,7 +141,7 @@ def admin_textbook_importer():
 
     if request.method == 'POST':
         if not has_gemini_api_key:
-            flash('尚未設定 Gemini API Key，請先到 AI 設定頁完成設定。', 'danger')
+            flash("教材匯入需要 Gemini API Key，請先到 AI 設定頁完成設定。", "danger")
             return redirect(url_for('core.admin_textbook_importer'))
 
         target_files = []
@@ -233,13 +233,25 @@ def db_maintenance():
             output = io.BytesIO()
             writer = pd.ExcelWriter(output, engine='xlsxwriter')
             inspector = db.inspect(db.engine)
-            for table in inspector.get_table_names():
+            mode = str(request.form.get('mode', 'core')).strip().lower()
+            if mode not in ('core', 'full'):
+                mode = 'core'
+            detected_tables = inspector.get_table_names()
+            export_tables = list(CORE_TABLES) if mode == 'core' else list(dict.fromkeys(CORE_TABLES + detected_tables))
+
+            for table in export_tables:
                 try:
-                    df = pd.read_sql_table(table, db.engine)
+                    # 先用 read_sql_table；若失敗，退回 read_sql_query，避免單表讀取異常被靜默跳過。
+                    try:
+                        df = pd.read_sql_table(table, db.engine)
+                    except Exception:
+                        df = pd.read_sql_query(f"SELECT * FROM {table}", db.engine)
                     for col in df.columns:
                         df[col] = df[col].astype(str).apply(lambda x: re.sub(r'[\x00-\x1f\x7f-\x9f]', '', x) if x != 'None' else "")
                     df.to_excel(writer, sheet_name=table[:31], index=False)
-                except: pass
+                    current_app.logger.info(f"INFO: exporting {mode} table {table} ({len(df)} rows)")
+                except Exception as e:
+                    current_app.logger.warning(f"匯出資料表失敗，已跳過 {table}: {e}")
             writer.close()
             output.seek(0)
             return send_file(output, download_name=f"kumon_math_backup_{datetime.now().strftime('%Y%m%d_%H%M')}.xlsx", as_attachment=True)
@@ -321,9 +333,12 @@ def upload_db():
         filename = secure_filename(file.filename)
         filepath = os.path.join(Config.UPLOAD_FOLDER, filename)
         file.save(filepath)
+        mode = str(request.form.get('mode', 'core')).strip().lower()
+        if mode not in ('core', 'full'):
+            mode = 'core'
         
         try:
-            success, message = import_excel_to_db(filepath)
+            success, message = import_excel_to_db(filepath, mode=mode)
             if success:
                 flash(Markup(message.replace('\n', '<br>')), 'success')
             else:
@@ -357,7 +372,10 @@ def import_textbook_examples():
             if not os.path.exists(upload_dir): os.makedirs(upload_dir)
             filepath = os.path.join(upload_dir, filename)
             file.save(filepath)
-            success, message = import_excel_to_db(filepath)
+            mode = str(request.form.get('mode', 'core')).strip().lower()
+            if mode not in ('core', 'full'):
+                mode = 'core'
+            success, message = import_excel_to_db(filepath, mode=mode)
             if os.path.exists(filepath): os.remove(filepath)
             
             if success: flash(Markup(message.replace('\n', '<br>')), 'success')
@@ -1466,6 +1484,50 @@ def get_ai_prompt_setting():
             prompt=content, 
             updated_at=None
         ))
+    except Exception as e:
+        return jsonify({'success': False, 'message': str(e)}), 500
+
+
+@core_bp.route('/admin/ai_prompt_settings/check_api_key', methods=['GET'])
+@login_required
+def check_gemini_api_key_status():
+    """API: Return Gemini API key availability without exposing key content."""
+    if not (current_user.is_admin or current_user.role == 'teacher'):
+        return jsonify({'success': False, 'message': 'Permission denied'}), 403
+    try:
+        api_key, source = resolve_gemini_api_key()
+        has_api_key = bool(api_key)
+        return jsonify({
+            'has_api_key': has_api_key,
+            'source': source,
+        })
+    except Exception as e:
+        return jsonify({'success': False, 'message': str(e)}), 500
+
+
+@core_bp.route('/admin/ai_prompt_settings/check_api_key_masked', methods=['GET'])
+@login_required
+def check_gemini_api_key_masked_status():
+    """API: Return masked Gemini API key for safe verification."""
+    if not (current_user.is_admin or current_user.role == 'teacher'):
+        return jsonify({'success': False, 'message': 'Permission denied'}), 403
+    try:
+        api_key, source = resolve_gemini_api_key()
+        has_api_key = bool(api_key)
+        masked_key = None
+
+        if has_api_key:
+            api_key = str(api_key)
+            if len(api_key) <= 8:
+                masked_key = '*' * len(api_key)
+            else:
+                masked_key = f"{api_key[:4]}{'*' * (len(api_key) - 8)}{api_key[-4:]}"
+
+        return jsonify({
+            'has_api_key': has_api_key,
+            'source': source,
+            'masked_key': masked_key,
+        })
     except Exception as e:
         return jsonify({'success': False, 'message': str(e)}), 500
 

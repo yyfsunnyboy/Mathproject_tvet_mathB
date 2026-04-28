@@ -22,6 +22,14 @@ import numpy as np
 # 設定 Logger
 logger = logging.getLogger(__name__)
 
+CORE_TABLES = [
+    "skills_info",
+    "skill_curriculum",
+    "textbook_examples",
+    "skill_family_bridge",
+    "skill_prerequisites",
+]
+
 
 def _get_primary_key_columns(model):
     return [column.name for column in model.__mapper__.primary_key]
@@ -181,7 +189,7 @@ def clean_excel_row(row_dict):
             
     return cleaned
 
-def import_excel_to_db(filepath):
+def import_excel_to_db(filepath, mode="core"):
     """
     讀取 Excel 檔案，將每個 Sheet 的資料匯入對應的資料庫 Table (支援 Upsert)
     """
@@ -198,12 +206,28 @@ def import_excel_to_db(filepath):
         if not mapping:
             return False, "❌ 系統無法偵測到任何資料庫模型 (Model Mapping is empty)。"
 
+        mode = str(mode or "core").strip().lower()
+        if mode not in ("core", "full"):
+            mode = "core"
+        allowed_tables = set(CORE_TABLES) if mode == "core" else None
+
         results = []
         results.append(f"ℹ️ 系統動態偵測到 {len(mapping)} 個資料庫模型。")
+        results.append(f"ℹ️ 匯入模式: {mode}")
+
+        if mode == "core":
+            excel_sheet_names = {name.strip() for name in xls.keys()}
+            if "skills_info" not in excel_sheet_names:
+                warning_msg = "WARNING: skills_info missing in backup file"
+                logger.warning(warning_msg)
+                results.append(f"⚠️ {warning_msg}")
         
         # 2. 遍歷每一個 Sheet
         for sheet_name, df in xls.items():
             sheet_name_clean = sheet_name.strip()
+            if allowed_tables is not None and sheet_name_clean not in allowed_tables:
+                results.append(f"ℹ️ 忽略非核心 Sheet '{sheet_name_clean}'。")
+                continue
             
             # 尋找對應的 Model
             model = None

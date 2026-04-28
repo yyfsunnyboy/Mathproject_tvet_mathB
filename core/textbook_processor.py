@@ -153,6 +153,49 @@ def parse_volume(volume_str: str):
     volume_num = int(match.group(2))
     return subject, volume_num
 
+
+def normalize_json_text_before_parse(text):
+    """在 JSON 解析前做最小、保守的文字正規化，避免破壞結構。"""
+    if not text:
+        return text
+
+    normalized = str(text)
+    # 已知案例：未跳脫英文雙引號包住中文句子，改為中文引號避免破壞 JSON 字串
+    normalized = normalized.replace('"不能連續兩天考同一個科目"', '「不能連續兩天考同一個科目」')
+    return normalized
+
+
+def sanitize_detailed_solution_text(text, max_chars=500):
+    """保守清理 detailed_solution：去除常見推理語句並限制長度。"""
+    if text is None:
+        return ""
+
+    cleaned = str(text).strip()
+    if not cleaned:
+        return ""
+
+    banned_phrases = [
+        "Let's trace",
+        "Let's re-do",
+        "This is not",
+        "English chain-of-thought",
+        "嘗試錯誤過程",
+        "多次反覆推導",
+    ]
+    for phrase in banned_phrases:
+        cleaned = cleaned.replace(phrase, "")
+
+    # 只保留最後結論段，避免保留過多中間推理段落
+    paragraph_parts = [p.strip() for p in re.split(r"\n{2,}", cleaned) if p.strip()]
+    if paragraph_parts:
+        cleaned = paragraph_parts[-1]
+
+    if len(cleaned) > max_chars:
+        cleaned = cleaned[-max_chars:]
+
+    return cleaned.strip()
+
+
 def process_textbook_file(file_path, curriculum_info, queue, skip_code_gen=False):
     """
     主流程函式，包含完整的 try...except 錯誤處理。
@@ -194,6 +237,7 @@ def process_textbook_file(file_path, curriculum_info, queue, skip_code_gen=False
         if not ai_json_result_string:
             return {"status": "error", "message": "AI 回傳空內容，已中止匯入。"}
 
+        ai_json_result_string = normalize_json_text_before_parse(ai_json_result_string)
         parsed_data = parse_ai_response(ai_json_result_string, queue)
         if not parsed_data:
             return {"status": "error", "message": "AI 回傳的資料格式有誤或為空，無法解析。"}
@@ -505,6 +549,20 @@ def _call_gemini_with_retry(model, analysis_prompt, queue=None, context_message=
     max_retries = 3
     retry_delay = 2
 
+    def _validate_json_completeness(text):
+        cleaned_text = re.sub(r'^```(?:json)?\s*|\s*```$', '', str(text or ''), flags=re.MULTILINE).strip()
+        if not cleaned_text.startswith("{"):
+            return False, "missing_opening_brace", cleaned_text
+        if not cleaned_text.endswith("}"):
+            return False, "missing_closing_brace", cleaned_text
+        if re.search(r'\]\s*\}\s*$', cleaned_text, flags=re.DOTALL) is None:
+            return False, "missing_json_tail", cleaned_text
+        try:
+            json.loads(cleaned_text)
+            return True, "ok", cleaned_text
+        except Exception:
+            return False, "json_decode_failed", cleaned_text
+
     for attempt in range(1, max_retries + 1):
         try:
             if queue is not None:
@@ -522,8 +580,24 @@ def _call_gemini_with_retry(model, analysis_prompt, queue=None, context_message=
                 generation_config=generation_config,
             )
 
-            result_text = (getattr(response, "text", "") or "").strip()
+            raw_text = getattr(response, "text", "")
+            result_text = str(raw_text or "").strip()
             if result_text:
+                current_app.logger.info(f"Gemini response length = {len(result_text)}")
+                current_app.logger.info(f"first 300 chars = {result_text[:300]}")
+                current_app.logger.info(f"last 300 chars = {result_text[-300:]}")
+                if parse_json:
+                    is_valid_json, fail_reason, _ = _validate_json_completeness(result_text)
+                    if is_valid_json:
+                        return result_text
+                    if queue is not None and fail_reason == "missing_closing_brace":
+                        queue.put("WARNING: Gemini 回傳疑似被截斷，將重試。")
+                    if queue is not None:
+                        queue.put("WARNING: Gemini 回傳 JSON 不完整或格式錯誤，準備重試")
+                    if attempt >= max_retries:
+                        raise RuntimeError("Gemini 回傳 JSON 不完整或格式錯誤，重試 3 次後仍失敗。")
+                    time.sleep(retry_delay * attempt)
+                    continue
                 return result_text
 
             candidates = getattr(response, "candidates", None)
@@ -539,6 +613,21 @@ def _call_gemini_with_retry(model, analysis_prompt, queue=None, context_message=
                             parts.append(t)
                 merged = "\n".join(parts).strip()
                 if merged:
+                    current_app.logger.info(f"Gemini response length = {len(merged)}")
+                    current_app.logger.info(f"first 300 chars = {merged[:300]}")
+                    current_app.logger.info(f"last 300 chars = {merged[-300:]}")
+                    if parse_json:
+                        is_valid_json, fail_reason, _ = _validate_json_completeness(merged)
+                        if is_valid_json:
+                            return merged
+                        if queue is not None and fail_reason == "missing_closing_brace":
+                            queue.put("WARNING: Gemini 回傳疑似被截斷，將重試。")
+                        if queue is not None:
+                            queue.put("WARNING: Gemini 回傳 JSON 不完整或格式錯誤，準備重試")
+                        if attempt >= max_retries:
+                            raise RuntimeError("Gemini 回傳 JSON 不完整或格式錯誤，重試 3 次後仍失敗。")
+                        time.sleep(retry_delay * attempt)
+                        continue
                     return merged
 
             raise RuntimeError("Gemini 回傳內容為空。")
@@ -721,6 +810,81 @@ Chapter 章
 
 後續章節請依課本內容拆成可教、可測、可補救的核心技能。
 
+【Skill 切分核心原則】
+
+Skill = 課本正式小節標號 x-y.z 的標題。
+Subskill = 例題題型 / 解題策略 / 應用變化。
+不得把例題主題升格成 Skill。
+
+例如：
+1-2.1 相異物的排列
+1-2.2 不盡相異物的排列
+以上兩個才是 skill。
+
+下列僅可作為 subskill_tag 或 problem_type，不可建立成 skill：
+全取排列、部分排列、相鄰排列、不相鄰排列、插空法、棋盤格路徑、數字限制、統測題、綜合題、應用題型。
+
+【正式小節優先規則】
+
+1. 解析教材時，必須先掃描是否存在正式小節標號，格式為：數字-數字.數字。
+例如：1-1.1、1-1.2、1-2.1、1-2.2、1-3.1、1-3.2。
+
+2. 若存在正式小節標號，concepts 只能依照這些正式小節建立。
+3. 每一個 concept 對應一個正式小節。
+4. concept_name 必須等於該正式小節標題，不可使用例題題型名稱。
+5. concept_paragraph 必須等於該正式小節標題。
+6. concept_en_id 必須依正式小節標題翻譯成 PascalCase 英文 ID。
+7. 例題、隨堂練習、統測題、補充題型、習題中的題型名稱，不可升格為 concept。
+8. 若某題屬於正式小節下的應用題型，放入該 concept 的 examples，並以 subskill_tag 標記題型。
+
+【沒有正式小節時的 fallback】
+
+若教材文字中沒有偵測到 x-y.z 正式小節標號，才允許依照課文大標題建立 concept。
+但仍須遵守：
+- 不得把單一例題主題升格為 skill
+- 不得把統測題、補充題型、習題題型升格為 skill
+- 概念數量應少而精
+- 同一小節通常 2～5 個 concept，不應超過 6 個
+
+【1-1 專用補充】
+
+當 section_title 包含「1-1」或「加法原理與乘法原理」時，若教材出現正式小節：
+1-1.1 樹狀圖
+1-1.2 加法原理
+1-1.3 乘法原理
+1-1.4 階乘記法
+則 concepts 只能輸出：
+TreeDiagramCounting、AdditionPrinciple、MultiplicationPrinciple、FactorialNotation。
+
+注意：正因數個數不是正式小節，只能歸入 MultiplicationPrinciple 的 examples，subskill_tag 可用 divisor_counting 或 mixed_application。
+
+【1-2 專用補充】
+
+當 section_title 包含「1-2」或「直線排列」時，若教材中出現正式小節：
+1-2.1 相異物的排列
+1-2.2 不盡相異物的排列
+則 concepts 只能輸出兩個：
+1.
+concept_name: 相異物的排列
+concept_en_id: PermutationOfDistinctObjects
+concept_paragraph: 相異物的排列
+2.
+concept_name: 不盡相異物的排列
+concept_en_id: PermutationOfNonDistinctObjects
+concept_paragraph: 不盡相異物的排列
+
+嚴禁把以下題型建立為 concept：
+全取排列、部分排列、0!、數字排列限制、相鄰排列、不相鄰排列、插空法、棋盤格路徑、捷徑問題、統測題、綜合排列題。
+以上題型應歸入 subskill_tag。
+
+【1-3 與後續小節通用規則】
+
+1-3、1-4、2-1、2-2 等後續內容，必須使用同一規則：
+1. 先找正式小節標號 x-y.z
+2. 用正式小節標題建立 concept
+3. 題型變化放入 subskill_tag
+4. 不自行把例題主題升格為 skill
+
 【二、concept 欄位規則】
 
 每個 concept 必須包含：
@@ -755,6 +919,17 @@ Chapter 章
 "1-1習題 基礎題1"
 "1-1習題 進階題9"
 
+5. 每個 concept 最多輸出 20 個 examples。
+
+6. 若題目太多，優先保留：
+- 例題
+- 隨堂練習
+- 基礎題
+- 統測題代表題
+
+7. 不需要逐題完整收錄所有重複型題目。
+8. 若原文有很多統測補給站題目，只選代表性題目，不要全部塞入同一個 JSON。
+
 【四、題目欄位規則】
 
 每個 examples 物件必須包含：
@@ -764,7 +939,42 @@ Chapter 章
 - correct_answer
 - detailed_solution
 - problem_type
+- subskill_tag
 - difficulty_level
+
+detailed_solution 必須是精簡繁體中文解析。
+禁止輸出：
+- Let's trace
+- Let's re-do
+- This is not
+- English chain-of-thought
+- 嘗試錯誤過程
+- 多次反覆推導
+
+problem_text 保持完整，但不要抄整頁背景文字。
+
+subskill_tag 可用值：
+- general
+- all_objects_permutation
+- partial_permutation
+- factorial_zero
+- divisor_counting
+- role_assignment
+- number_restriction
+- odd_even_number
+- adjacent_grouping
+- non_adjacent_gap
+- complementary_counting
+- grid_path
+- repeated_objects
+- repeated_digits
+- repeated_words
+- combination_basic
+- combination_application
+- probability_basic
+- mixed_application
+
+如果無法判斷，填 general。
 
 problem_type 僅能使用下列值之一：
 - tree_diagram
@@ -790,6 +1000,14 @@ difficulty_level：
 4. 選擇題 correct_answer 請同時保留選項與數值，例如：
 "B，80"
 5. 不可自行亂補答案；若原文無法判斷，填空字串 ""。
+6. detailed_solution 不要輸出英文推理過程，只保留精簡繁體中文最終解法。
+7. detailed_solution 最多 200 字；若內容過長，僅保留最後正確解法，不保留試算錯誤過程。
+8. 不要輸出：
+- Let's trace
+- Let's re-do
+- This is not
+- English chain-of-thought
+- 反覆試算失敗過程
 
 【六、清理規則】
 
@@ -820,6 +1038,7 @@ difficulty_level：
 【八、輸出格式】
 
 只輸出 JSON，不要 markdown，不要說明文字，不要 code fence。
+JSON 字串內禁止使用英文半形雙引號 "；若需要引號，請改用中文全形引號「」。
 
 JSON 格式如下：
 
@@ -829,20 +1048,56 @@ JSON 格式如下：
       "chapter_title": "1 排列組合",
       "sections": [
         {{
-          "section_title": "1-1 加法原理與乘法原理",
+          "section_title": "1-2 直線排列",
           "concepts": [
             {{
-              "concept_name": "加法原理",
-              "concept_en_id": "AdditionPrinciple",
-              "concept_description": "用於處理互斥分類情境下的方法數總和。",
-              "concept_paragraph": "加法原理",
+              "concept_name": "相異物的排列",
+              "concept_en_id": "PermutationOfDistinctObjects",
+              "concept_description": "處理不同物件依序排列的方法數，包含全取、選取、限制條件與應用排列問題。",
+              "concept_paragraph": "相異物的排列",
               "examples": [
                 {{
-                  "source_description": "例題2",
-                  "problem_text": "教室書櫃中有 3 本不同的中文書、4 本不同的日文書和 5 本不同的英文書，若只能從書櫃中選一本，試問共有幾種選法？",
-                  "correct_answer": "12 種",
-                  "detailed_solution": "依題意可分成中文書、日文書、英文書三類，由加法原理得 3 + 4 + 5 = 12。",
-                  "problem_type": "addition_principle",
+                  "source_description": "問題1",
+                  "problem_text": "將甲、乙、丙三位同學排成一列，有多少種排法？",
+                  "correct_answer": "6 種",
+                  "detailed_solution": "三人全取排成一列，方法數為 3! = 6。",
+                  "problem_type": "permutation",
+                  "subskill_tag": "all_objects_permutation",
+                  "difficulty_level": 1
+                }},
+                {{
+                  "source_description": "例題5",
+                  "problem_text": "男生3人，女生2人排成一列拍照，女生二人必須相鄰的排法有幾種？",
+                  "correct_answer": "48 種",
+                  "detailed_solution": "將兩位女生視為一組，與3位男生共4個單位排列，再乘上女生內部排列，得 4! × 2! = 48。",
+                  "problem_type": "permutation",
+                  "subskill_tag": "adjacent_grouping",
+                  "difficulty_level": 2
+                }},
+                {{
+                  "source_description": "例題7",
+                  "problem_text": "棋盤格道路中，由甲到乙取捷徑的方法數。",
+                  "correct_answer": "依題目數據計算",
+                  "detailed_solution": "將向右與向上步數視為不盡相異物排列，例如 4 個右與 3 個上共有 7! / (4!3!) 種。",
+                  "problem_type": "shortest_path",
+                  "subskill_tag": "grid_path",
+                  "difficulty_level": 2
+                }}
+              ]
+            }},
+            {{
+              "concept_name": "不盡相異物的排列",
+              "concept_en_id": "PermutationOfNonDistinctObjects",
+              "concept_description": "處理含有相同物件的排列問題，需將重複排列除去。",
+              "concept_paragraph": "不盡相異物的排列",
+              "examples": [
+                {{
+                  "source_description": "例題6",
+                  "problem_text": "將 google 一字中所有字母重新排列，有多少種不同排法？",
+                  "correct_answer": "180 種",
+                  "detailed_solution": "google 有6個字母，其中 g 有2個、o 有2個，所以排法為 6! / (2!2!) = 180。",
+                  "problem_type": "permutation",
+                  "subskill_tag": "repeated_words",
                   "difficulty_level": 1
                 }}
               ]
@@ -1002,16 +1257,37 @@ def parse_ai_response(ai_data_or_string, queue):
     current_app.logger.info(message)
     queue.put(f"INFO: {message}")
 
+    def _save_failed_ai_response(raw_response_text, cleaned_response_text=None):
+        debug_dir = os.path.join("reports", "debug_ai_response")
+        os.makedirs(debug_dir, exist_ok=True)
+        timestamp = time.strftime("%Y%m%d_%H%M%S")
+        debug_filename = f"ai_response_failed_{timestamp}.txt"
+        debug_path = os.path.join(debug_dir, debug_filename)
+
+        raw_text = str(raw_response_text) if raw_response_text is not None else ""
+        cleaned_text = str(cleaned_response_text) if cleaned_response_text is not None else ""
+        payload = cleaned_text if cleaned_text else raw_text
+
+        with open(debug_path, "w", encoding="utf-8") as f:
+            f.write(payload)
+
+        queue.put(f"ERROR: AI JSON 解析失敗，已保存原始回覆至 {debug_path}")
+        current_app.logger.error(f"AI JSON 解析失敗，已保存原始回覆至 {debug_path}")
+        return debug_path
+
     if isinstance(ai_data_or_string, dict):
         return ai_data_or_string
 
-    if not isinstance(ai_data_or_string, str) or not ai_data_or_string.strip():
+    raw_response_string = str(ai_data_or_string) if ai_data_or_string is not None else ""
+
+    if not raw_response_string.strip():
         message = f"錯誤：無法處理的 AI 回傳類型: {type(ai_data_or_string)}"
         current_app.logger.error(message)
         queue.put(f"ERROR: {message}")
+        _save_failed_ai_response(raw_response_string)
         return None
 
-    cleaned_string = re.sub(r'^```(?:json)?\s*|\s*```$', '', ai_data_or_string, flags=re.MULTILINE).strip()
+    cleaned_string = re.sub(r'^```(?:json)?\s*|\s*```$', '', raw_response_string, flags=re.MULTILINE).strip()
     parsed_obj, _, _, _ = _sanitize_and_parse_json(cleaned_string, queue=None)
 
     if parsed_obj is not None:
@@ -1026,6 +1302,7 @@ def parse_ai_response(ai_data_or_string, queue):
 
     if not chapter_chunks:
         queue.put("ERROR: 備用方案失敗：無法從文本中提取任何章節區塊。")
+        _save_failed_ai_response(raw_response_string, cleaned_string)
         return None
 
     queue.put(f"INFO: 備用方案：偵測到 {len(chapter_chunks)} 個可能的章節區塊。")
@@ -1042,6 +1319,7 @@ def parse_ai_response(ai_data_or_string, queue):
 
     if not successful_chapters:
         queue.put("ERROR: 備用方案最終失敗：沒有任何章節區塊能被成功解析。")
+        _save_failed_ai_response(raw_response_string, cleaned_string)
         return None
 
     return {"chapters": successful_chapters}
@@ -1245,7 +1523,7 @@ def save_to_database(parsed_data, curriculum_info, queue):
                                 problem_text=problem_text,
                                 problem_type=ex.get('problem_type', 'calculation'),
                                 correct_answer=ex.get('correct_answer', ''),
-                                detailed_solution=ex.get('detailed_solution', ''),
+                                detailed_solution=sanitize_detailed_solution_text(ex.get('detailed_solution', ''), max_chars=500),
                                 difficulty_level=difficulty_level
                             )
                             db.session.add(new_ex)

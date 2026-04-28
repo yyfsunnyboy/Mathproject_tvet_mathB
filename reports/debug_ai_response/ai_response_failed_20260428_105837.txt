@@ -1,0 +1,502 @@
+{
+  "chapters": [
+    {
+      "chapter_title": "1 排列組合",
+      "sections": [
+        {
+          "section_title": "1-2 直線排列",
+          "concepts": [
+            {
+              "concept_name": "相異物的直線排列 (全取)",
+              "concept_en_id": "PermutationOfAllDistinctObjects",
+              "concept_description": "將n個不同的事物全部排成一列的方法數，通常表示為n!或P_n^n。",
+              "concept_paragraph": "相異物全取排列",
+              "examples": [
+                {
+                  "source_description": "想一想 (奧運五環)",
+                  "problem_text": "若是5 個環的位置可以互換，則奧運5 環標誌將會有多少種不同的排列方式呢？",
+                  "correct_answer": "120 種",
+                  "detailed_solution": "因為5 個環中上一行有3 個，下一行有2 個，且顏色均不同，所以5 個環的排列方法，相當於排成一列的5 個相異物，故排列方式共有 5! = 120 種。",
+                  "problem_type": "permutation",
+                  "difficulty_level": 1
+                },
+                {
+                  "source_description": "問題1",
+                  "problem_text": "將甲、乙、丙三位同學排成一列，有多少種排法？",
+                  "correct_answer": "6 種",
+                  "detailed_solution": "將此問題分成三個步驟來完成：第一步驟：自甲、乙、丙三人中，選出一人坐在位置1 上，有3 種選擇。第二步驟：接著從剩下的二人中，選出一人坐在位置2 上，有2 種選擇。第三步驟：最後一個人坐在位置3 上，只有1 種選擇。根據乘法原理，完成這三個步驟的方法數為 3 \\times 2 \\times 1 = 6 （種）。我們以符號 P_3^3 表示，即 P_3^3 = 3! = 3 \\times 2 \\times 1 = 6。",
+                  "problem_type": "permutation",
+                  "difficulty_level": 1
+                },
+                {
+                  "source_description": "例題 (中華隊排球員)",
+                  "problem_text": "中華隊 6 名排球員站成一排合照，問排法共有多少種？",
+                  "correct_answer": "720 種",
+                  "detailed_solution": "即將6 件不同的事物全取排成一列，其方法數有 P_6^6 = 6! = 6 \\times 5 \\times 4 \\times 3 \\times 2 \\times 1 = 720 種。",
+                  "problem_type": "permutation",
+                  "difficulty_level": 1
+                },
+                {
+                  "source_description": "隨堂練習1",
+                  "problem_text": "將「A、B、C、D」四個英文字母全取排成一列，問方法數有多少種？",
+                  "correct_answer": "24 種",
+                  "detailed_solution": "即將4 個不同的事物全取排成一列，其方法數有 P_4^4 = 4! = 4 \\times 3 \\times 2 \\times 1 = 24 種。",
+                  "problem_type": "permutation",
+                  "difficulty_level": 1
+                },
+                {
+                  "source_description": "例題 (12345全取) 1",
+                  "problem_text": "由1、2、3、4、5 五個數字，全取排成五位數，數字不重複，試問：全部有幾個？",
+                  "correct_answer": "120 個",
+                  "detailed_solution": "五個數全取排成五位數，共有 P_5^5 = 5! = 120 （個）。",
+                  "problem_type": "permutation",
+                  "difficulty_level": 1
+                },
+                {
+                  "source_description": "隨堂練習4.1",
+                  "problem_text": "由1、2、3、4 四個數字，全取排成四位數，數字不重複，試問：全部有幾個？",
+                  "correct_answer": "24 個",
+                  "detailed_solution": "所求即為4 個數字全取排成一列的方法數，因此有 P_4^4 = 4! = 24 （個）。",
+                  "problem_type": "permutation",
+                  "difficulty_level": 1
+                },
+                {
+                  "source_description": "1-2習題 基礎題1",
+                  "problem_text": "甲、乙、丙、丁、戊、己六位同學參加英文朗讀比賽，若以抽籤決定出場順序，試問六人朗讀的順序有幾種可能？",
+                  "correct_answer": "720 種",
+                  "detailed_solution": "所求即為6 人全取排成一列的方法數，因此有 P_6^6 = 6! = 6 \\times 5 \\times 4 \\times 3 \\times 2 \\times 1 = 720 （種）。",
+                  "problem_type": "permutation",
+                  "difficulty_level": 1
+                }
+              ]
+            },
+            {
+              "concept_name": "相異物的直線排列 (選取)",
+              "concept_en_id": "PermutationOfMFromNDistinctObjects",
+              "concept_description": "從n個不同的事物中選取m個排成一列的方法數，表示為P_n^m = n! / (n-m)!。",
+              "concept_paragraph": "相異物選取排列",
+              "examples": [
+                {
+                  "source_description": "問題2",
+                  "problem_text": "自5 位同學中任選3 個人排成一列，問其排法有多少種？",
+                  "correct_answer": "60 種",
+                  "detailed_solution": "我們將這問題分成三個步驟來完成，其中三個步驟的選法依序分別為：5 種、4 種、3 種，將這三個數字依序填入下列三個空格中 5 \\times 4 \\times 3 = 60 種。依據乘法原理，可知從5 位同學中任選3 個人排成一列的方法數為 P_5^3 = 5 \\times 4 \\times 3 = 60 （種）。",
+                  "problem_type": "permutation",
+                  "difficulty_level": 1
+                },
+                {
+                  "source_description": "隨堂練習2.1",
+                  "problem_text": "試求 P_{20}^2 之值。",
+                  "correct_answer": "380",
+                  "detailed_solution": "P_{20}^2 = \\frac{20!}{(20-2)!} = \\frac{20!}{18!} = 20 \\times 19 = 380。",
+                  "problem_type": "permutation",
+                  "difficulty_level": 1
+                },
+                {
+                  "source_description": "隨堂練習2.2",
+                  "problem_text": "試求 P_9^3 之值。",
+                  "correct_answer": "504",
+                  "detailed_solution": "P_9^3 = \\frac{9!}{(9-3)!} = \\frac{9!}{6!} = 9 \\times 8 \\times 7 = 504。",
+                  "problem_type": "permutation",
+                  "difficulty_level": 1
+                },
+                {
+                  "source_description": "隨堂練習2.3",
+                  "problem_text": "試求 P_{100}^0 之值。",
+                  "correct_answer": "1",
+                  "detailed_solution": "P_{100}^0 = \\frac{100!}{(100-0)!} = \\frac{100!}{100!} = 1。",
+                  "problem_type": "permutation",
+                  "difficulty_level": 1
+                },
+                {
+                  "source_description": "例題 (班級職務)",
+                  "problem_text": "自10 位同學中選出3 個人，分別擔任班長、學藝股長、康樂股長，則方法數有幾種？",
+                  "correct_answer": "720 種",
+                  "detailed_solution": "將三個工作職務視為排列的先後位置 □ □ □。由10 位同學中選出3 個人依序排入空格的方法數為 P_{10}^3 = 10 \\times 9 \\times 8 = 720。所以10 位同學中選出3 個人分別擔任不同的職務的方法數共有 720 種。",
+                  "problem_type": "permutation",
+                  "difficulty_level": 1
+                },
+                {
+                  "source_description": "隨堂練習3",
+                  "problem_text": "畢業旅行，旅行社提出8 個旅遊景點，班上同學要自8 個景點選出4 個出遊，若考慮去此4 個景點的先後順序，則有幾種不同的旅程安排？",
+                  "correct_answer": "1680 種",
+                  "detailed_solution": "將選出4 個景點視為排列的先後位置 □ □ □ □。由8 個景點選出4 個景點並進行排列的方法數為 P_8^4 = 8 \\times 7 \\times 6 \\times 5 = 1680。所以同學此行的旅程安排共有1680 種。",
+                  "problem_type": "permutation",
+                  "difficulty_level": 1
+                },
+                {
+                  "source_description": "統測補給站 例題3.1",
+                  "problem_text": "運動會的大隊接力有6 組進入決賽，且大會設備可精準判斷成績之差異，今取決賽成績前三名授與冠軍、亞軍和季軍，則前三名獲獎隊伍共有幾種可能情況？　A 6　B 30　C 120　D 720。",
+                  "correct_answer": "C，120",
+                  "detailed_solution": "從6 組中選出3 組並排列名次，方法數為 P_6^3 = 6 \\times 5 \\times 4 = 120。",
+                  "problem_type": "permutation",
+                  "difficulty_level": 3
+                },
+                {
+                  "source_description": "統測補給站 例題3.2",
+                  "problem_text": "如圖所示，使用8 種不同顏色塗在圖中標號A、B、C、D、E 的5 個格子內，顏色不可重複使用，若規定同一格子僅塗同一顏色，則共可塗出幾種不同的著色樣式？　A P_8^5 　B C_8^5 　C 5^6 　D 6^5 。",
+                  "correct_answer": "A，P_8^5",
+                  "detailed_solution": "從8 種顏色中選取5 種並塗在5 個不同的格子上，顏色不可重複，因此是排列問題，方法數為 P_8^5。",
+                  "problem_type": "permutation",
+                  "difficulty_level": 3
+                },
+                {
+                  "source_description": "統測補給站 例題4.3",
+                  "problem_text": "從 1, 3, 5, 7, 9 中選出三個相異數字以形成一個三位數，則所有可能形成的三位數的個數為何？　A 20　B 60　C 90　D 120。",
+                  "correct_answer": "B，60",
+                  "detailed_solution": "從5 個數字中選取3 個排成三位數，方法數為 P_5^3 = 5 \\times 4 \\times 3 = 60。",
+                  "problem_type": "permutation",
+                  "difficulty_level": 3
+                },
+                {
+                  "source_description": "1-2習題 基礎題2.1",
+                  "problem_text": "自甲、乙、丙、丁、戊、己六個人當中，任選四人由左至右排成一列，試問有多少種排法？",
+                  "correct_answer": "360 種",
+                  "detailed_solution": "自6 人中選出4 人排成一列，共有 P_6^4 = 6 \\times 5 \\times 4 \\times 3 = 360 （種）。",
+                  "problem_type": "permutation",
+                  "difficulty_level": 1
+                },
+                {
+                  "source_description": "1-2習題 基礎題2.2",
+                  "problem_text": "班會時，要從1 到10 號同學中選出3 人，分別擔任主席、司儀及記錄等三項職務，共有多少種選法？",
+                  "correct_answer": "720 種",
+                  "detailed_solution": "每一種選法，相當於從10 人中選出3 人的一種直線排列，因此有 P_{10}^3 = 10 \\times 9 \\times 8 = 720 （種）。",
+                  "problem_type": "permutation",
+                  "difficulty_level": 1
+                },
+                {
+                  "source_description": "1-2習題 基礎題3",
+                  "problem_text": "交通部 鐵道局規劃從屏東 內獅至恆春建設觀光鐵路，預計有8 個站，此8 個車站有包含內獅和恆春站，且去程與回程票不同。試問臺鐵公司需要印製幾種站與站之間的車票？",
+                  "correct_answer": "56 種",
+                  "detailed_solution": "任取2 站的排列數即代表不同的車票數，故所求為 P_8^2 = 8 \\times 7 = 56 （種）。",
+                  "problem_type": "permutation",
+                  "difficulty_level": 1
+                },
+                {
+                  "source_description": "1-2習題 進階題10",
+                  "problem_text": "設 P_n^4 = 20 \\times P_n^2，試求自然數n 的值。",
+                  "correct_answer": "n = 7",
+                  "detailed_solution": "因為 P_n^4 = 20 \\times P_n^2，則 n \\ge 4 且 n \\ge 2，所以 n \\ge 4。又由直線排列公式，知原式可化為 n(n-1)(n-2)(n-3) = 20 n(n-1)。因為 n(n-1) \\ne 0，等號兩邊可以消去它，得 (n-2)(n-3) = 20。計算得 n^2 - 5n + 6 = 20 \\Rightarrow n^2 - 5n - 14 = 0。分解得 (n-7)(n+2) = 0。即 n = 7 或 -2。（-2 不合，因為 n \\ge 4）。故 n = 7。",
+                  "problem_type": "permutation",
+                  "difficulty_level": 2
+                }
+              ]
+            },
+            {
+              "concept_name": "排列的限制條件",
+              "concept_en_id": "PermutationWithRestrictions",
+              "concept_description": "處理排列問題時，考慮特定元素相鄰、不相鄰、固定位置或數字限制等情況，常結合加法原理與乘法原理。",
+              "concept_paragraph": "限制條件排列",
+              "examples": [
+                {
+                  "source_description": "隨堂練習4.2",
+                  "problem_text": "由1、2、3、4 四個數字，全取排成四位數，數字不重複，試問：偶數有幾個？",
+                  "correct_answer": "12 個",
+                  "detailed_solution": "四位數為偶數，個位數須排偶數（2 或 4），先由2,4 兩個數選一個排入個位數，有 P_2^1 種選擇。接著將其餘三個數排前面三位數，有 P_3^3 種選擇。所以偶數有 P_2^1 \\times P_3^3 = 2 \\times 3! = 2 \\times 6 = 12 （個）。",
+                  "problem_type": "permutation",
+                  "difficulty_level": 1
+                },
+                {
+                  "source_description": "統測補給站 例題4.1",
+                  "problem_text": "由0、1、2、3、4、5、6 七個數字中，任取四個相異數字排成四位數，則這些四位數中有幾個為5 的倍數？　A 120　B 180　C 220　D 280。",
+                  "correct_answer": "C，220",
+                  "detailed_solution": "四位數為5 的倍數，個位數必須是0 或5。\n情況一：個位數是0。千位數有 P_6^1 種選擇，百位數有 P_5^1 種選擇，十位數有 P_4^1 種選擇。共 1 \\times P_6^3 = 1 \\times 6 \\times 5 \\times 4 = 120 種。\n情況二：個位數是5。千位數不能是0，有 P_5^1 種選擇（1,2,3,4,6），百位數有 P_5^1 種選擇（從剩下5個數字中選），十位數有 P_4^1 種選擇。共 1 \\times (P_5^1 \\times P_5^2) = 1 \\times 5 \\times 5 \\times 4 = 100 種。\n由加法原理，總共有 120 + 100 = 220 種。",
+                  "problem_type": "mixed_counting",
+                  "difficulty_level": 3
+                },
+                {
+                  "source_description": "統測補給站 例題4.2",
+                  "problem_text": "由0、1、2、3、4、5、6 七個數字中取三個相異數字排成三位數的偶數，則方法有幾種？　A 60　B 90　C 105　D 120。",
+                  "correct_answer": "C，105",
+                  "detailed_solution": "三位數為偶數，個位數必須是0, 2, 4, 6。\n情況一：個位數是0。百位數有 P_6^1 種選擇，十位數有 P_5^1 種選擇。共 1 \\times P_6^2 = 1 \\times 6 \\times 5 = 30 種。\n情況二：個位數是2, 4, 6 (3種選擇)。百位數不能是0，有 P_5^1 種選擇（從剩下5個數字中選，不含0）。十位數有 P_5^1 種選擇（從剩下5個數字中選）。共 3 \\times (P_5^1 \\times P_5^1) = 3 \\times 5 \\times 5 = 75 種。\n由加法原理，總共有 30 + 75 = 105 種。",
+                  "problem_type": "mixed_counting",
+                  "difficulty_level": 3
+                },
+                {
+                  "source_description": "例題 (12345奇數) 2",
+                  "problem_text": "由1、2、3、4、5 五個數字，全取排成五位數，數字不重複，試問：奇數有幾個？",
+                  "correct_answer": "72 個",
+                  "detailed_solution": "五位數為奇數，個位數須排奇數（1, 3, 5），先由1、3、5 三個數選一個排入個位數，有 P_3^1 種選擇。接著將其餘四個數排入前四位數，有 P_4^4 種選擇。所以奇數共有 P_3^1 \\times P_4^4 = 3 \\times 4! = 3 \\times 24 = 72 （個）。",
+                  "problem_type": "permutation",
+                  "difficulty_level": 1
+                },
+                {
+                  "source_description": "例題 (女生相鄰) 1",
+                  "problem_text": "男生3 人，女生2 人排成一列拍照，試問：女生二人必須相鄰的排法有幾種？",
+                  "correct_answer": "48 種",
+                  "detailed_solution": "將女1、女2 圈起來視為一體，與其餘3 人合起來看，共4 個事物，全取排列的排法有 P_4^4 = 4! 種。在上面4! 種的每一個排法中，女1、女2 二人間的排法又有 P_2^2 = 2! 種。由乘法原理知：女生二人必須相鄰的排法共有 4! \\times 2! = 24 \\times 2 = 48 種。",
+                  "problem_type": "permutation",
+                  "difficulty_level": 2
+                },
+                {
+                  "source_description": "例題 (女生不相鄰) 2",
+                  "problem_text": "男生3 人，女生2 人排成一列拍照，試問：女生二人不得相鄰的排法有幾種？",
+                  "correct_answer": "72 種",
+                  "detailed_solution": "先任意排男1、男2、男3，排法有 3! 種。其中每一種都形成4 個間隔（△男1 △男2 △男3 △）。再將女1、女2 二人插入標有「△」間隔中，排法有 P_4^2 種。由乘法原理知：女生二人不得相鄰的排法共有 3! \\times P_4^2 = 6 \\times 12 = 72 種。\n〈另解〉排列方法數 = 全部排法 - 女生相鄰排法 = P_5^5 - (P_4^4 \\times P_2^2) = 5! - (4! \\times 2!) = 120 - 48 = 72。",
+                  "problem_type": "permutation",
+                  "difficulty_level": 2
+                },
+                {
+                  "source_description": "隨堂練習5.1",
+                  "problem_text": "甲、乙、丙、⋯等七人排成一列，試問：甲、乙、丙三人必須相鄰的排法有幾種？",
+                  "correct_answer": "720 種",
+                  "detailed_solution": "將甲、乙、丙三人圈起來視為一體，與其餘4 人，共5 個事物排列的排法有 P_5^5 = 5! 種。在上面5! 種的每一種排法中，甲、乙、丙三人間的排法又有 P_3^3 = 3! 種。故排法共有 5! \\times 3! = 120 \\times 6 = 720 種。",
+                  "problem_type": "permutation",
+                  "difficulty_level": 2
+                },
+                {
+                  "source_description": "隨堂練習5.2",
+                  "problem_text": "甲、乙、丙、⋯等七人排成一列，試問：甲、乙、丙三人中任兩人皆不相鄰的排法有幾種？",
+                  "correct_answer": "1440 種",
+                  "detailed_solution": "先任意排丁、戊、己、庚（4人），排法有 P_4^4 = 4! 種。再將甲、乙、丙三人插入標有「△」間隔中（△丁△戊△己△庚△，共5個間隔），排法有 P_5^3 種。故排法共有 4! \\times P_5^3 = 24 \\times 60 = 1440 種。",
+                  "problem_type": "permutation",
+                  "difficulty_level": 2
+                },
+                {
+                  "source_description": "統測補給站 例題5.1",
+                  "problem_text": "某幼兒園規劃在畢業典禮時，安排即將畢業的西瓜班表演3 個不同節目，中班鳳梨班與小班蘋果班則各表演2 個不同節目。由於西瓜班的所有演出都需要換裝，所以西瓜班表演3 個的節目中，任意兩個都不會連著表演。試問這7 個節目的安排順序共有幾種可能性？ A 240　B 720　C 1440　D 5040。",
+                  "correct_answer": "C，1440",
+                  "detailed_solution": "設西瓜班節目為 S1, S2, S3，其他節目為 O1, O2, O3, O4 (共4個)。先排O1, O2, O3, O4，有 4! 種排法。這4個節目會產生5個空位 (△O1△O2△O3△O4△)。將S1, S2, S3 插入這5個空位中，且任意兩個S節目不連著，方法數為 P_5^3。總排法數為 4! \\times P_5^3 = 24 \\times (5 \\times 4 \\times 3) = 24 \\times 60 = 1440 種。",
+                  "problem_type": "permutation",
+                  "difficulty_level": 3
+                },
+                {
+                  "source_description": "統測補給站 例題5.2",
+                  "problem_text": "小安打算到遊樂園完整體驗「海盜船」、「雲霄飛車」、「摩天輪」、「碰碰車」、「小火車」與「旋轉木馬」這六樣設施，每玩完一樣設施就接著玩下一樣，且不重複搭乘。由於小安覺得「海盜船」與「雲霄飛車」較為刺激，因此這兩樣設施不會連續搭乘。試問小安的遊玩行程有幾種安排方式？　A 240　B 480　C 560　D 720。",
+                  "correct_answer": "B，480",
+                  "detailed_solution": "設「海盜船」為A，「雲霄飛車」為B，其餘四樣設施為C, D, E, F。先排C, D, E, F，有 4! 種排法。這4樣設施會產生5個空位。將A, B 插入這5個空位中，且A, B 不連續，方法數為 P_5^2。總排法數為 4! \\times P_5^2 = 24 \\times (5 \\times 4) = 24 \\times 20 = 480 種。",
+                  "problem_type": "permutation",
+                  "difficulty_level": 3
+                },
+                {
+                  "source_description": "統測補給站 例題5.3",
+                  "problem_text": "茜茜與珊珊和其他3 位同學相約出國畢業旅行，已知旅行社分配第11 排的A、B 及第13 排的C、D、E 五個機位給這5 位同學，如圖位置。若茜茜與珊珊要求坐在相鄰位置，則旅行社共有幾種滿足此要求的機位分配方法？　A 12　B 24　C 36　D 48。",
+                  "correct_answer": "C，36",
+                  "detailed_solution": "茜茜與珊珊相鄰的機位組合有：(A,B), (C,D), (D,E)。\n情況一：茜茜與珊珊坐(A,B)。有 2! 種排法。剩下3位同學排C,D,E，有 3! 種排法。共 2! \\times 3! = 2 \\times 6 = 12 種。\n情況二：茜茜與珊珊坐(C,D)。有 2! 種排法。剩下3位同學排A,B,E，有 3! 種排法。共 2! \\times 3! = 2 \\times 6 = 12 種。\n情況三：茜茜與珊珊坐(D,E)。有 2! 種排法。剩下3位同學排A,B,C，有 3! 種排法。共 2! \\times 3! = 2 \\times 6 = 12 種。\n由加法原理，總共有 12 + 12 + 12 = 36 種。",
+                  "problem_type": "mixed_counting",
+                  "difficulty_level": 3
+                },
+                {
+                  "source_description": "統測補給站 例題5.4",
+                  "problem_text": "張同學從某個星期日開始，規劃連續7 天來進行數學、英文及國文三科模擬測驗，每天只考一個科目，且不能連續兩天考同一個科目，試問星期一和星期五都考數學的規劃有幾種？　A 32　B 24　C 18　D 12。",
+                  "correct_answer": "B，24",
+                  "detailed_solution": "設科目為M(數學), E(英文), C(國文)。\n星期一(S1)和星期五(S5)都考數學(M)。\nS0, S1, S2, S3, S4, S5, S6\nS1=M, S5=M。\nS0有2種選擇(E或C，不能是M)。\nS6有2種選擇(E或C，不能是M)。\n考慮S2, S3, S4的選擇，需滿足相鄰不重複，且S2不能是M，S4不能是M。\nS2有2種選擇(E或C，不能是S1=M)。\nS4有2種選擇(E或C，不能是S5=M)。\nS3有2種選擇(不能是S2，不能是S4)。\n情況一：S2=E。\n  若S3=C：S4必須是E (不能是C，不能是M)。此路徑為(E,C,E)。\n  若S3=M：S4必須是E或C (不能是M)。此路徑為(E,M,E)或(E,M,C)。\n  S2=E時，S3有2種選擇(C或M)。\n  若S3=C，S4=E (1種)。\n  若S3=M，S4有2種(E或C)。\n  所以S2=E時，S2,S3,S4的組合有1+2=3種。\n情況二：S2=C。\n  若S3=E：S4必須是C (不能是E，不能是M)。此路徑為(C,E,C)。\n  若S3=M：S4必須是E或C (不能是M)。此路徑為(C,M,E)或(C,M,C)。\n  S2=C時，S3有2種選擇(E或M)。\n  若S3=E，S4=C (1種)。\n  若S3=M，S4有2種(E或C)。\n  所以S2=C時，S2,S3,S4的組合有1+2=3種。\n總計S2,S3,S4的組合有3+3=6種。\n\n更簡潔的計算S2,S3,S4：\nS2 (2 choices: E, C)\nS3 (2 choices: not S2)\nS4 (2 choices: not S3)\n但S4不能是M。\n\nLet's trace: S0 (2) -> S1(M) -> S2(2) -> S3(2) -> S4(2) -> S5(M) -> S6(2)\nS0: 2 choices (E, C)\nS1: M (fixed)\nS2: 2 choices (E, C) (cannot be M, cannot be S1)\nS3: 2 choices (not S2)\nS4: 2 choices (not S3)\nS5: M (fixed)\nS6: 2 choices (not S5)\n\nConsider the sequence S2, S3, S4. S2 \\ne M, S4 \\ne M, S2 \\ne S3, S3 \\ne S4.\nPossible (S2, S3, S4) sequences:\n(E, C, E) - Valid\n(E, M, C) - Valid\n(C, E, C) - Valid\n(C, M, E) - Valid\nThere are 4 such sequences.\n\nNow combine with S0 and S6:\nS0 has 2 choices (E or C).\nS6 has 2 choices (E or C).\nTotal ways = 2 (for S0) \\times 4 (for S2,S3,S4) \\times 2 (for S6) = 16 ways. This is not 24.\n\nLet's re-do the case analysis for S0, S2, S3, S4, S6 given S1=M, S5=M and "不能連續兩天考同一個科目".\nS0: 2 choices (E, C)\nS1: M (fixed)\nS2: 2 choices (E, C) (must not be M, must not be S1)\nS3: 2 choices (not S2)\nS4: 2 choices (not S3)\nS5: M (fixed)\nS6: 2 choices (not S5)\n\nCrucial constraints: S4 \\ne S5 (so S4 \\ne M). S2 \\ne S1 (so S2 \\ne M).\n\nLet's fix S0. Say S0 = E.\nS1 = M.\nS2: 2 choices (E, C).\n  If S2 = E:\n    S3: 2 choices (C, M). (S3 \\ne E)\n      If S3 = C:\n        S4: 2 choices (E, M). (S4 \\ne C). But S4 \\ne M. So S4 = E. (1 choice)\n        S6: 2 choices (E, C). (S6 \\ne M). (2 choices)\n        Total for this branch: 1 \\times 1 \\times 2 = 2 ways.\n      If S3 = M:\n        S4: 2 choices (E, C). (S4 \\ne M). (2 choices)\n        S6: 2 choices (E, C). (S6 \\ne M). (2 choices)\n        Total for this branch: 1 \\times 2 \\times 2 = 4 ways.\n    Subtotal for S2=E: 2 + 4 = 6 ways.\n  If S2 = C:\n    S3: 2 choices (E, M). (S3 \\ne C)\n      If S3 = E:\n        S4: 2 choices (C, M). (S4 \\ne E). But S4 \\ne M. So S4 = C. (1 choice)\n        S6: 2 choices (E, C). (S6 \\ne M). (2 choices)\n        Total for this branch: 1 \\times 1 \\times 2 = 2 ways.\n      If S3 = M:\n        S4: 2 choices (E, C). (S4 \\ne M). (2 choices)\n        S6: 2 choices (E, C). (S6 \\ne M). (2 choices)\n        Total for this branch: 1 \\times 2 \\times 2 = 4 ways.\n    Subtotal for S2=C: 2 + 4 = 6 ways.\nTotal for S0=E: 6 + 6 = 12 ways.\nSince S0 has 2 choices (E or C), and the logic is symmetric, total ways = 12 \\times 2 = 24 ways.",
+                  "problem_type": "mixed_counting",
+                  "difficulty_level": 3
+                },
+                {
+                  "source_description": "統測補給站 例題5.5",
+                  "problem_text": "甲、乙、丙、丁、戊、己六人排成一列。若甲、乙、丙三人相鄰，且丙介於甲、乙之間，則此六人共有多少種排法？　A 42　B 44　C 46　D 48。",
+                  "correct_answer": "D，48",
+                  "detailed_solution": "將甲、乙、丙三人視為一組，且丙介於甲、乙之間，則此組的內部排列方式只有兩種：(甲丙乙) 或 (乙丙甲)。將此組與丁、戊、己三人視為4個事物進行排列，方法數為 4!。因此總排法數為 4! \\times 2 = 24 \\times 2 = 48 種。",
+                  "problem_type": "permutation",
+                  "difficulty_level": 3
+                },
+                {
+                  "source_description": "1-2習題 基礎題4",
+                  "problem_text": "由1、2、3、4 四個數字，全取排成四位數，數字不許重複，試問奇數有幾個？",
+                  "correct_answer": "12 個",
+                  "detailed_solution": "四位數為奇數，個位數須排奇數（1 或 3），有 P_2^1 種選擇。其餘三個數排前面三位數，有 P_3^3 種選擇。所以奇數有 P_2^1 \\times P_3^3 = 2 \\times 3! = 2 \\times 6 = 12 （個）。",
+                  "problem_type": "permutation",
+                  "difficulty_level": 1
+                },
+                {
+                  "source_description": "1-2習題 基礎題5.1",
+                  "problem_text": "甲、乙、丙、丁、戊五人排成一列，試求：甲、乙須排前二位之排列數。",
+                  "correct_answer": "12 種",
+                  "detailed_solution": "甲、乙2 人先排前二位，有 P_2^2 = 2! 種排法。其餘3 人排後三位，有 P_3^3 = 3! 種排法。由乘法原理知，甲、乙須排前二位的排法共有 2! \\times 3! = 2 \\times 6 = 12 （種）。",
+                  "problem_type": "permutation",
+                  "difficulty_level": 1
+                },
+                {
+                  "source_description": "1-2習題 基礎題5.2",
+                  "problem_text": "甲、乙、丙、丁、戊五人排成一列，試求：甲不排首位之排列數。",
+                  "correct_answer": "96 種",
+                  "detailed_solution": "(甲不排首位之排列數) = (五人任意排的方法數) - (甲排首位的方法數) = P_5^5 - (P_1^1 \\times P_4^4) = 5! - (1 \\times 4!) = 120 - 24 = 96 （種）。",
+                  "problem_type": "permutation",
+                  "difficulty_level": 1
+                },
+                {
+                  "source_description": "1-2習題 基礎題6.1",
+                  "problem_text": "甲、乙、丙、丁、戊、己六人排成一列，試問：甲、乙二人必不相鄰排法有幾種？",
+                  "correct_answer": "480 種",
+                  "detailed_solution": "不相鄰最後排，故先排丙、丁、戊、己（4人），排法有 P_4^4 = 4! 種。再將甲、乙2 人插入間隔（△丙△丁△戊△己△，共5個間隔），排法有 P_5^2 種。依據乘法原理得共有 4! \\times P_5^2 = 24 \\times 20 = 480 種。",
+                  "problem_type": "permutation",
+                  "difficulty_level": 2
+                },
+                {
+                  "source_description": "1-2習題 基礎題6.2",
+                  "problem_text": "甲、乙、丙、丁、戊、己六人排成一列，試問：丁、戊、己三人必相鄰排法有幾種？",
+                  "correct_answer": "144 種",
+                  "detailed_solution": "將丁、戊、己圈起來視為一體，與其餘3 人（甲、乙、丙）共有4 個事物，排法有 P_4^4 = 4! 種。其中丁、戊、己3 人又可互換位置，排法有 P_3^3 = 3! 種。依據乘法原理得共有 4! \\times 3! = 24 \\times 6 = 144 （種）。",
+                  "problem_type": "permutation",
+                  "difficulty_level": 2
+                },
+                {
+                  "source_description": "1-2習題 進階題9",
+                  "problem_text": "若數字不重複，將0、1、2、3 四個數字排成四位數，試問可排出幾個不同的四位數？（提示：先考慮首位不可排0）",
+                  "correct_answer": "18 個",
+                  "detailed_solution": "因為首位不可排0，須先排。自1、2、3 三個數字任選一個排入，方法有 P_3^1 種。再將剩下的3 個數字（包含0）排入剩下的末三位數，方法有 P_3^3 種。由乘法原理知，排法共有 P_3^1 \\times P_3^3 = 3 \\times 3! = 3 \\times 6 = 18 （個）。\n〈另解〉利用反面思考：四位數個數 = (全部排法) - (0 排首位的排法) = P_4^4 - (P_1^1 \\times P_3^3) = 4! - (1 \\times 3!) = 24 - 6 = 18 （個）。",
+                  "problem_type": "permutation",
+                  "difficulty_level": 2
+                }
+              ]
+            },
+            {
+              "concept_name": "不盡相異物的排列",
+              "concept_en_id": "PermutationOfNonDistinctObjects",
+              "concept_description": "處理含有相同元素的事物排成一列的方法數，公式為n! / (m1! m2! ... mk!)，其中n為總事物數，m_i為第i類相同事物的個數。",
+              "concept_paragraph": "相同物排列",
+              "examples": [
+                {
+                  "source_description": "例題 (abbb排列) 1",
+                  "problem_text": "將「a、b、b、b」四個字母排成一列，共有多少種排法？（abbb 是其中一種）",
+                  "correct_answer": "4 種",
+                  "detailed_solution": "首先我們先將其視為「a、b_1 、b_2 、b_3 」四個相異物的排列，其排列數為 4! = 24 種。但其中像 a b_1 b_2 b_3 、a b_1 b_3 b_2 、a b_2 b_1 b_3 、a b_2 b_3 b_1 、a b_3 b_1 b_2 、a b_3 b_2 b_1 等六個，在去掉下標數字之後是完全一樣，只能算是「a、b、b、b」不同排列中的「abbb」這一種排列而已，而 b_1 、b_2 、b_3 三個全取的排列數為 3! = 6 種，相對於bbb 來說只能算是同一種排列，因此「a、b、b、b」四個字母排成一列時，實際上的排列數是 \\frac{4!}{3!} = \\frac{24}{6} = 4 種。",
+                  "problem_type": "permutation",
+                  "difficulty_level": 1
+                },
+                {
+                  "source_description": "例題 (aabbb排列) 2",
+                  "problem_text": "將字母「a、a、b、b、b」作直線排列，共有多少種排法？（aabbb 是其中一種）",
+                  "correct_answer": "10 種",
+                  "detailed_solution": "仿照上面的討論，先將其標上數字下標視為「a_1 、a_2 、b_1 、b_2 、b_3 」五個相異物的排列，其排列總數為 5! = 120。而其中確定 a_1 、a_2 落在5 個位置中的同樣兩個位置且固定其餘三個位置排列數為 2! = 2 種，去除數字下標之後，這2 種只能算1 種；同樣的，考慮 b_1 、b_2 、b_3 有 3! = 6 種排列數，去除數字下標之後，這6 種排列只能算1 種，因此將字母「a、a、b、b、b」五個字母排成一列共有 \\frac{5!}{2! \\times 3!} = \\frac{120}{12} = 10 種排法。",
+                  "problem_type": "permutation",
+                  "difficulty_level": 1
+                },
+                {
+                  "source_description": "例題 (3939889數字排列)",
+                  "problem_text": "將3939889 的各數字任意排列，可得幾個不同的七位數？",
+                  "correct_answer": "210 個",
+                  "detailed_solution": "在3939889 中，「3」有2 個，「8」有2 個，「9」有3 個。由不盡相異物的排列，得共有 \\frac{7!}{2! \\times 2! \\times 3!} = \\frac{5040}{2 \\times 2 \\times 6} = \\frac{5040}{24} = 210 個不同的七位數。",
+                  "problem_type": "permutation",
+                  "difficulty_level": 1
+                },
+                {
+                  "source_description": "隨堂練習6",
+                  "problem_text": "將「google」一字中所有的字母重新排列，有多少種不同的排法？",
+                  "correct_answer": "180 種",
+                  "detailed_solution": "「google」一字中共有6 個字母，其中g 有2 個，o 有2 個，l 有1 個，e 有1 個。由不盡相異物的排列，得排法有 \\frac{6!}{2! \\times 2! \\times 1! \\times 1!} = \\frac{720}{2 \\times 2 \\times 1 \\times 1} = \\frac{720}{4} = 180 種。",
+                  "problem_type": "permutation",
+                  "difficulty_level": 1
+                },
+                {
+                  "source_description": "統測補給站 例題6.1",
+                  "problem_text": "某人想在自家後院牆邊的長條空地種植一列菜苗，共有高麗菜5 株，萵苣4 株，菠菜4 株。若他決定在每兩株高麗菜之間任意種植萵苣或菠菜共兩株，則種植的排列方法有幾種？ A \\frac{8!}{4! \\times 4!}　B 2^8　C \\frac{13!}{4! \\times 4! \\times 5!}　D 5! \\times 4! \\times 4! 。",
+                  "correct_answer": "A，\\frac{8!}{4! \\times 4!}",
+                  "detailed_solution": "高麗菜5 株，萵苣4 株，菠菜4 株。若每兩株高麗菜之間任意種植萵苣或菠菜共兩株，則5株高麗菜會形成4個間隔。每個間隔種植2株，共需種植 4 \\times 2 = 8 株。這8株是由4株萵苣和4株菠菜組成。因此，問題轉化為將4株萵苣和4株菠菜排成一列的方法數，即不盡相異物的排列。方法數為 \\frac{8!}{4! \\times 4!}。",
+                  "problem_type": "permutation",
+                  "difficulty_level": 3
+                },
+                {
+                  "source_description": "統測補給站 例題6.2",
+                  "problem_text": "由2、2、3、3、4、4、4 這七個數字排成一列，則共可排成多少個不同的七位數？ A 140　B 210　C 350　D 420。",
+                  "correct_answer": "B，210",
+                  "detailed_solution": "此為不盡相異物的排列，共有7個數字，其中2有2個，3有2個，4有3個。排法數為 \\frac{7!}{2! \\times 2! \\times 3!} = \\frac{5040}{2 \\times 2 \\times 6} = \\frac{5040}{24} = 210 種。",
+                  "problem_type": "permutation",
+                  "difficulty_level": 3
+                },
+                {
+                  "source_description": "統測補給站 例題6.3",
+                  "problem_text": "將0、0、2、2、9、9、9、9 八個數字全取，排成一列，可得幾個不同的八位數？ A 155　B 210　C 315　D 420。",
+                  "correct_answer": "C，315",
+                  "detailed_solution": "此為不盡相異物的排列，共有8個數字，其中0有2個，2有2個，9有4個。總排列數為 \\frac{8!}{2! \\times 2! \\times 4!} = \\frac{40320}{2 \\times 2 \\times 24} = \\frac{40320}{96} = 420 種。但首位不可為0。首位為0的排列數為將剩下的7個數字 (0,2,2,9,9,9,9) 排列，其中0有1個，2有2個，9有4個。排法數為 \\frac{7!}{1! \\times 2! \\times 4!} = \\frac{5040}{1 \\times 2 \\times 24} = \\frac{5040}{48} = 105 種。因此，不同的八位數個數為 420 - 105 = 315 種。",
+                  "problem_type": "mixed_counting",
+                  "difficulty_level": 3
+                },
+                {
+                  "source_description": "補充題型1",
+                  "problem_text": "將「我為人人，人人為我」八個字排成一列且「人」不相鄰，問方法有幾種？",
+                  "correct_answer": "30 種",
+                  "detailed_solution": "先排「我我為為」四個字，排法有 \\frac{4!}{2! \\times 2!} = \\frac{24}{4} = 6 種。這四個字會產生5個間隔（△我△我△為△為△）。再將四個相同的「人」字插入這5個間隔中，且「人」不相鄰，即從5個間隔中選4個來放置「人」字，方法數為 C_5^4 = 5 種。依乘法原理，排法共有 6 \\times 5 = 30 種。",
+                  "problem_type": "mixed_counting",
+                  "difficulty_level": 2
+                },
+                {
+                  "source_description": "補充題型2",
+                  "problem_text": "將「庭院深深深幾許」七個字排成一列，但三個深字必須要相鄰，方法有幾種？",
+                  "correct_answer": "120 種",
+                  "detailed_solution": "將三個「深」字圈起來視為一體（深深深），與其它四個不同的字（庭、院、幾、許）共有5 個事物。故排法有 P_5^5 = 5! = 120 種。",
+                  "problem_type": "permutation",
+                  "difficulty_level": 2
+                },
+                {
+                  "source_description": "1-2習題 進階題7",
+                  "problem_text": "將「快樂快樂天天快樂」八個字排成一列，共有多少種排法？",
+                  "correct_answer": "560 種",
+                  "detailed_solution": "「快樂快樂天天快樂」八個字中，有3 個「快」，3 個「樂」，2 個「天」。利用不盡相異物的排列，得排法有 \\frac{8!}{3! \\times 3! \\times 2!} = \\frac{40320}{6 \\times 6 \\times 2} = \\frac{40320}{72} = 560 （種）。",
+                  "problem_type": "permutation",
+                  "difficulty_level": 2
+                }
+              ]
+            },
+            {
+              "concept_name": "捷徑問題",
+              "concept_en_id": "ShortestPathPermutation",
+              "concept_description": "在棋盤格狀道路中，計算從一點到另一個點的最短路徑方法數，屬於不盡相異物排列的應用。",
+              "concept_paragraph": "棋盤格捷徑",
+              "examples": [
+                {
+                  "source_description": "例題 (高雄捷徑) 1",
+                  "problem_text": "高雄市以棋盤格方式規劃道路...若阿國以走捷徑的方式由甲走到捷運三多商圈站，試求下列方法數：任意走。",
+                  "correct_answer": "35 種",
+                  "detailed_solution": "由甲到三多商圈站取捷徑走法，不論路線怎麼走，都必須向右「→」走4 段，向上「↑」走3 段。由甲走到三多商圈站即為4 個「→」與3 個「↑」的直線排列數。因此此題可看成4 個「→」與3 個「↑」的排列問題，即「右右右右上上上」的排列法。所以甲→三多商圈站走法共有 \\frac{7!}{4! \\times 3!} = \\frac{7 \\times 6 \\times 5}{3 \\times 2 \\times 1} = 35 （種）。",
+                  "problem_type": "shortest_path",
+                  "difficulty_level": 2
+                },
+                {
+                  "source_description": "例題 (高雄捷徑) 2",
+                  "problem_text": "高雄市以棋盤格方式規劃道路...若阿國以走捷徑的方式由甲走到捷運三多商圈站，試求下列方法數：須經過乙。",
+                  "correct_answer": "12 種",
+                  "detailed_solution": "從甲到三多商圈站取捷徑，且須經過乙，可看成先由甲到乙取捷徑，再從乙到三多商圈站取捷徑的連續兩個步驟。由乘法原理知：甲→乙走法為 \\frac{3!}{1! \\times 2!} = 3 種（1右2上）。乙→三多商圈站走法為 \\frac{4!}{3! \\times 1!} = 4 種（3右1上）。甲→乙→三多商圈站走法共有 3 \\times 4 = 12 （種）。",
+                  "problem_type": "shortest_path",
+                  "difficulty_level": 2
+                },
+                {
+                  "source_description": "例題 (高雄捷徑) 3",
+                  "problem_text": "高雄市以棋盤格方式規劃道路...若阿國以走捷徑的方式由甲走到捷運三多商圈站，試求下列方法數：不經過乙。",
+                  "correct_answer": "23 種",
+                  "detailed_solution": "不經過乙的走法，即 (甲→三多商圈站) 減掉 (甲→乙→三多商圈站) = 35 - 12 = 23 （種）。",
+                  "problem_type": "shortest_path",
+                  "difficulty_level": 2
+                },
+                {
+                  "source_description": "隨堂練習7.1",
+                  "problem_text": "右圖為一棋盤式街道圖，現有一人由A 出發走到B 或C 並取捷徑走法，試求：由A 到C 的方法數。",
+                  "correct_answer": "10 種",
+                  "detailed_solution": "由A 到C 取捷徑走法，不論路線怎麼走，都必須向右「→」走3 段，向上「↑」走2 段。因此由A 到C 的方法數即為3 個「→」與2 個「↑」的直線排列數。所以走法共有 \\frac{5!}{3! \\times 2!} = \\frac{5 \\times 4}{2 \\times 1} = 10 （種）。",
+                  "problem_type": "shortest_path",
+                  "difficulty_level": 2
+                },
+                {
+                  "source_description": "隨堂練習7.2",
+                  "problem_text": "右圖為一棋盤式街道圖，現有一人由A 出發走到B 或C 並取捷徑走法，試求：由A 到B，且須經過C 點的方法數。",
+                  "correct_answer": "30 種",
+                  "detailed_solution": "由A 到B 取捷徑，且須經過C 點，可看成先由A 到C 取捷徑，再從C 到B 取捷徑的連續兩個步驟。由乘法原理知：A→C 走法為 \\frac{5!}{3! \\times 2!} = 10 種。C→B 走法為 \\frac{3!}{2! \\times 1!} = 3 種。走法共有 10 \\times 3 = 30 （種）。",
+                  "problem_type": "shortest_path",
+                  "difficulty_level": 2
+                },
+                {
+                  "source_description": "1-2習題 進階題8.1",
+                  "problem_text": "右圖為一棋盤式街道圖，現小強以走捷徑的方式行走，試求：甲地到乙地的走法。",
+                  "correct_answer": "126 種",
+                  "detailed_solution": "甲地到乙地的走法，可看成5 個「→」與4 個「↑」的排列法。所以走法共有 \\frac{9!}{5! \\times 4!} = \\frac{9 \\times 8 \\times 7 \\times 6}{4 \\times 3 \\times 2 \\times 1} = 9 \\times 2 \\times 7 = 126 （種）。",
+                  "problem_type": "shortest_path",
+                  "difficulty_level": 2
+                },
+                {
+                  "source_description": "1-2習題 進階題8.2",
+                  "problem_text": "右圖為一棋盤式街道圖，現小強以走捷徑的方式行走，試求：由甲地到乙地，且須經過丙地的走法。",
+                  "correct_answer": "60 種",
+                  "detailed_solution": "由甲地到乙地，且須經過丙地的走法，可看成先由甲地到丙地取捷徑，再從丙地到乙地取捷徑的連續兩個步驟。由乘法原理知：甲→丙走法為 \\frac{5!}{3! \\times 2!} = 10 種。丙→乙走法為 \\frac{4!}{2! \\times 2!} = 6 種。走法共有 10 \\times 6 = 60 （種）。",
+                  "problem_type": "shortest_path",
+                  "difficulty_level": 2
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
