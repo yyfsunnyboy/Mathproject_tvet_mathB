@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+﻿# -*- coding: utf-8 -*-
 """
 =============================================================================
 模組名稱 (Module Name): core/ai_analyzer.py
@@ -609,7 +609,7 @@ JSON:
             "prerequisite_explanation": None
         }
 
-def get_model():
+def get_model(role="tutor"):
     global gemini_model, gemini_chat, gemini_model_name
 
     # Keep runtime behavior aligned with /admin/ai_prompt_settings
@@ -617,7 +617,7 @@ def get_model():
         from core.ai_settings import apply_ai_runtime_settings, get_effective_model_config
 
         apply_ai_runtime_settings()
-        model_cfg = get_effective_model_config("tutor")
+        model_cfg = get_effective_model_config(role)
         runtime_model = str(model_cfg.get("model") or "").strip()
     except Exception:
         runtime_model = ""
@@ -626,7 +626,7 @@ def get_model():
         runtime_model = (
             str(current_app.config.get("AI_CLOUD_MODEL") or "").strip()
             or str(current_app.config.get("GEMINI_MODEL_NAME") or "").strip()
-            or "gemini-2.5-flash"
+            or "gemini-3.1-flash-lite-preview"
         )
 
     from core.ai_wrapper import resolve_gemini_api_key
@@ -1322,3 +1322,4 @@ def analyze_question_image(image_file):
     except Exception as e:
         print(f"Error in analyze_question_image: {e}")
         return {"error": f"Analysis failed: {str(e)}"}
+

@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
     <meta charset="UTF-8">
@@ -91,8 +91,9 @@
                         <div id="cloud-model-container" style="display:flex; align-items:center; gap:6px;">
                             <label for="cloud-model-select" style="font-size:0.85em; font-weight:600; color:#475569; margin:0;">Cloud 模型</label>
                             <select id="cloud-model-select" style="padding:4px 8px; border:1px solid #cbd5e1; border-radius:4px; outline:none;">
-                                <option value="gemini-2.5-flash">Gemini 2.5 Flash</option>
-                                <option value="gemini-3-flash-preview">Gemini 3 Flash Preview（目前）</option>
+                                {% for model in google_model_options %}
+                                <option value="{{ model.value }}" title="{{ (model.recommended_for or [])|join(' / ') }}" {% if model.value == cloud_model %}selected{% endif %}>{{ model.label }}</option>
+                                {% endfor %}
                             </select>
                         </div>
                         <span id="api_key_status" class="req-key-hint">尚未輸入 Key</span>
@@ -239,9 +240,10 @@
 
     <script>
         let currentMode = "cloud";
-        let currentCloudModel = "gemini-3-flash-preview";
+        let currentCloudModel = "gemini-3.1-flash-lite-preview";
         let modelMappingCache = {};
         let promptTemplatesCache = [];
+        let googleModelOptions = {{ google_model_options|tojson }};
         const ROLE_DESC = [
             { key: "vision_analyzer", name: "OCR / 視覺分析" },
             { key: "coder", name: "程式生成" },
@@ -405,19 +407,20 @@
             }
             
             try {
+                const cloudModel = document.getElementById("cloud-model-select")?.value || currentCloudModel;
                 const testRes = await fetch("/test_api_key", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ api_key: apiKey })
+                    body: JSON.stringify({ api_key: apiKey, cloud_model: cloudModel })
                 });
                 const testData = await testRes.json();
                 
                 if (!testData.success) {
                     if (statusText) {
                         statusText.style.color = "#dc2626";
-                        statusText.innerText = "✖ Key 無效";
+                        statusText.innerText = testData.error_type === "model_not_found" ? "✖ 模型不可用" : "✖ Key 無效";
                     }
-                    throw new Error("API Key 測試失敗或無效");
+                    throw new Error(testData.message || "API Key 測試失敗或無效");
                 }
                 if (statusText) {
                     statusText.style.color = "#16a34a";
@@ -431,7 +434,7 @@
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({
                         ai_mode: currentMode,
-                        cloud_model: document.getElementById("cloud-model-select")?.value || currentCloudModel
+                        cloud_model: cloudModel
                     })
                 });
                 const saveData = await saveRes.json();
@@ -482,7 +485,8 @@
 
         function generateLocalPreview(mode, availableModels) {
             const roles = {};
-            const g = availableModels.find(m => (m.key || "").includes("gemini"))?.key || "gemini-3-flash";
+            const selectedCloud = document.getElementById("cloud-model-select")?.value || currentCloudModel || "gemini-3.1-flash-lite-preview";
+            const g = availableModels.find(m => (m.key || "") === selectedCloud)?.key || selectedCloud;
             const qVl = availableModels.find(m => (m.key || "").includes("qwen3-vl-8b"))?.key || "qwen3-vl-8b";
             const q8b = availableModels.find(m => (m.key || "").includes("qwen3-8b") && !(m.key || "").includes("vl"))?.key || "qwen3-8b";
             if (mode === "cloud") {
@@ -586,7 +590,8 @@
                 .then(data => {
                     if (!data.success) return showAlert("設定讀取失敗", false);
                     window._availModels = data.available_models || [];
-                    const cloudModel = data.cloud_model || "gemini-3-flash-preview";
+                    googleModelOptions = data.google_model_options || googleModelOptions || [];
+                    const cloudModel = data.cloud_model || "gemini-3.1-flash-lite-preview";
                     currentCloudModel = cloudModel;
                     const cloudModelSelect = document.getElementById("cloud-model-select");
                     if (cloudModelSelect) cloudModelSelect.value = cloudModel;
@@ -987,3 +992,4 @@
     </script>
 </body>
 </html>
+

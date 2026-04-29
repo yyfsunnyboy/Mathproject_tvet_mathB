@@ -226,7 +226,7 @@ def runtime_ai_status():
     """
     API: 取回實際 runtime tutor model 的狀態
     """
-    from core.ai_settings import get_ai_settings_snapshot
+    from core.ai_settings import get_ai_settings_snapshot, get_google_model_label
     
     tutor_config = get_effective_model_config('tutor')
     provider = tutor_config.get('provider', 'unknown')
@@ -242,7 +242,9 @@ def runtime_ai_status():
     }
     ai_mode = mode_map.get(ai_mode_raw, ai_mode_raw)
     
-    display_name = tutor_model if tutor_model != 'unknown' else 'unknown'
+    display_name = get_google_model_label(tutor_model) if provider == "google" else tutor_model
+    if tutor_model == 'unknown':
+        display_name = 'unknown'
     
     # 簡潔 log
     current_app.logger.info(f"[RUNTIME AI STATUS] mode={ai_mode} provider={provider} tutor_model={tutor_model}")

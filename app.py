@@ -307,18 +307,27 @@ def create_app():
 
         data = request.get_json(silent=True) or {}
         api_key = (data.get("api_key") or "").strip()
+        model_input = data.get("cloud_model") or data.get("model_id") or data.get("model")
 
         if not api_key:
             return jsonify({
                 "success": False,
+                "ok": False,
+                "error_type": "api_key_empty",
                 "message": "API key is empty"
             })
 
-        # 依照需求，指定使用 gemini-3-flash 這組 Preset 進行測試
         try:
-            model_name = Config.CODER_PRESETS['gemini-3-flash']['model']
-        except Exception:
-            model_name = "gemini-3-flash-preview"
+            from core.ai_settings import normalize_google_model_id
+            model_name = normalize_google_model_id(model_input or Config.DEFAULT_CLOUD_MODEL)
+        except ValueError as e:
+            return jsonify({
+                "success": False,
+                "ok": False,
+                "error_type": "unsupported_model",
+                "message": str(e),
+                "model": str(model_input or "")
+            }), 400
 
         try:
             genai.configure(api_key=api_key)
@@ -330,9 +339,36 @@ def create_app():
 
             # 測試成功後存入 session
             session["GEMINI_API_KEY"] = api_key
+            session["AI_CLOUD_MODEL"] = model_name
+            try:
+                app_db = None
+                from models import db as app_db
+                from core.ai_settings import (
+                    SETTING_AI_CLOUD_MODEL,
+                    SETTING_GEMINI_API_KEY,
+                    set_system_setting_value,
+                )
+
+                set_system_setting_value(SETTING_GEMINI_API_KEY, api_key, "Gemini API key for cloud runtime")
+                set_system_setting_value(SETTING_AI_CLOUD_MODEL, model_name, "Cloud Gemini model for cloud/hybrid runtime")
+                app_db.session.commit()
+            except Exception as save_error:
+                if app_db is not None:
+                    try:
+                        app_db.session.rollback()
+                    except Exception:
+                        pass
+                safe_save_err = sanitize_secret_text(repr(save_error), [api_key])
+                app.logger.error(f"[API KEY TEST SAVE ERROR] model={model_name} err={safe_save_err}")
+                return jsonify({
+                    "success": False,
+                    "message": "API key valid, but saving model setting failed",
+                    "model": model_name
+                }), 500
 
             return jsonify({
                 "success": True,
+                "ok": True,
                 "message": "API key valid",
                 "model": model_name
             })
@@ -340,9 +376,26 @@ def create_app():
         except Exception as e:
             safe_err = sanitize_secret_text(repr(e), [api_key])
             app.logger.error(f"[API KEY TEST ERROR] model={model_name} err={safe_err}")
-            app.logger.warning("WARNING: Gemini API Key may be invalid or revoked.")
+            raw_err = f"{type(e).__name__}: {str(e)}"
+            raw_err_lower = raw_err.lower()
+            is_model_not_found = (
+                "notfound" in raw_err_lower
+                or "not found" in raw_err_lower
+                or "404" in raw_err_lower
+                or "is not supported for generatecontent" in raw_err_lower
+            )
+            error_type = "model_not_found" if is_model_not_found else "api_key_invalid"
+            if is_model_not_found:
+                app.logger.warning(
+                    f"[API KEY TEST] model_not_found model={model_name}. "
+                    "Use a supported Gemini model id."
+                )
+            else:
+                app.logger.warning("WARNING: Gemini API Key may be invalid or revoked.")
             return jsonify({
                 "success": False,
+                "ok": False,
+                "error_type": error_type,
                 "message": sanitize_secret_text(str(e), [api_key]),
                 "model": model_name
             })

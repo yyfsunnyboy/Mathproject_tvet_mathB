@@ -52,6 +52,8 @@ from core.ai_settings import (
     apply_ai_runtime_settings,
     get_ai_settings_snapshot,
     get_available_model_presets,
+    get_google_model_options,
+    normalize_google_model_id,
     set_system_setting_value,
 )
 
@@ -1170,6 +1172,7 @@ def ai_prompt_settings_page():
         username=current_user.username,
         cloud_model=snapshot.get("ai_cloud_model", Config.DEFAULT_CLOUD_MODEL),
         supported_cloud_models=list(Config.SUPPORTED_CLOUD_MODELS),
+        google_model_options=get_google_model_options(),
     )
 
 
@@ -1201,19 +1204,12 @@ def _to_bool(value, default=False):
 
 
 def _normalize_cloud_model(model_name):
-    model = str(model_name or '').strip()
-    if model in Config.SUPPORTED_CLOUD_MODELS:
-        return model
-    return Config.DEFAULT_CLOUD_MODEL
+    return normalize_google_model_id(model_name, allow_fallback=True)
 
 
 def _cloud_preset_key_from_model(cloud_model):
     cloud_model = _normalize_cloud_model(cloud_model)
-    mapping = {
-        "gemini-2.5-flash": "gemini-2.5-flash",
-        "gemini-3-flash-preview": "gemini-3-flash",
-    }
-    return mapping.get(cloud_model, "gemini-3-flash")
+    return cloud_model if cloud_model in Config.CODER_PRESETS else Config.DEFAULT_CLOUD_MODEL
 
 
 def _generate_model_roles(ai_mode, available_models, cloud_model=None):
@@ -1227,8 +1223,10 @@ def _generate_model_roles(ai_mode, available_models, cloud_model=None):
             return selected_cloud_preset
         if selected_cloud_preset in Config.CODER_PRESETS:
             return selected_cloud_preset
-        if 'gemini-3-flash' in keys:
-            return 'gemini-3-flash'
+        if Config.DEFAULT_CLOUD_MODEL in keys:
+            return Config.DEFAULT_CLOUD_MODEL
+        if 'gemini-3.1-flash-lite-preview' in keys:
+            return 'gemini-3.1-flash-lite-preview'
         for k in keys:
             if 'gemini' in k.lower():
                 return k
@@ -1302,6 +1300,7 @@ def _build_ai_settings_payload(prompt, updated_at):
         'ai_mode': ai_mode,
         'cloud_model': cloud_model,
         'supported_cloud_models': list(Config.SUPPORTED_CLOUD_MODELS),
+        'google_model_options': get_google_model_options(),
         'ai_model_roles': model_roles,
         'available_models': available_models,
         'has_gemini_api_key': has_gemini_api_key,
@@ -1657,9 +1656,14 @@ def update_ai_prompt_setting():
         cloud_model_input = data.get('cloud_model')
         if cloud_model_input is None:
             cloud_model_input = form_data.get('cloud_model')
-        cloud_model = _normalize_cloud_model(cloud_model_input or Config.DEFAULT_CLOUD_MODEL)
         if ('cloud_model' in data) or ('cloud_model' in form_data):
+            try:
+                cloud_model = normalize_google_model_id(cloud_model_input)
+            except ValueError:
+                return jsonify({'success': False, 'message': 'Unknown or unsupported Gemini model id'}), 400
             set_system_setting_value(SETTING_AI_CLOUD_MODEL, cloud_model, 'Cloud Gemini model for cloud/hybrid runtime')
+        else:
+            cloud_model = _normalize_cloud_model(cloud_model_input or Config.DEFAULT_CLOUD_MODEL)
 
         ai_mode_raw = data.get('ai_mode')
         if ai_mode_raw is None:

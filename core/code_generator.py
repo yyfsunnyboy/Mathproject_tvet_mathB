@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+﻿#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 # ============================================================================== 
 # ID: code_generator.py
@@ -1085,7 +1085,7 @@ def auto_generate_skill_code(skill_id, queue=None, **kwargs):
     
     # 构建 model_key 映射
     model_size_to_preset = {
-        'cloud': 'gemini-3-flash',
+        'cloud': 'gemini-3-flash-preview',
         '14b': 'qwen3-14b', # [UPDATED 2026-02-13] Point to Qwen3 preset
         '7b': Config.DEFAULT_CODER_PRESET
     }
@@ -1429,3 +1429,5 @@ def build_calculation_skeleton(skill_id=None):
 
 # 保留舊的 CALCULATION_SKELETON 常量（向後兼容）
 CALCULATION_SKELETON = build_calculation_skeleton()
+
+

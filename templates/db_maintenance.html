@@ -363,7 +363,7 @@
                         <h3><i class="bi bi-trash" style="color: #e74c3c;"></i> 清空教材資料（core）</h3>
                         <p>只清空教材核心表，保留 prompt、system settings、API Key、使用者與紀錄資料。</p>
                         <form action="{{ url_for('core.db_maintenance') }}" method="POST"
-                            onsubmit="event.preventDefault(); showModal('您確定要清空教材核心資料嗎？\\n\\n此操作會清空 skills_info / skill_curriculum / textbook_examples 等教材資料。\\n\\n系統設定與 prompt 會保留。', this, false);">
+                            onsubmit="event.preventDefault(); showModal('您確定要清空教材核心資料嗎？\n\n此操作會清空 skills_info / skill_curriculum / textbook_examples 等教材資料。\n\n系統設定與 prompt 會保留。', this, false);">
                             <input type="hidden" name="action" value="clear_all_data">
                             <input type="hidden" name="mode" value="core">
                             <button type="submit" class="btn btn-danger" style="width: 100%;">
@@ -380,7 +380,7 @@
                             <strong style="color: #e74c3c;">需輸入 YES_DELETE_ALL 才可執行。</strong>
                         </p>
                         <form action="{{ url_for('core.db_maintenance') }}" method="POST"
-                            onsubmit="event.preventDefault(); showModal('超級警告！\\n\\n這會清空所有資料表，包含 prompt_templates 與 system_settings。\\n\\n請確認已備份，且已輸入 YES_DELETE_ALL。', this, true);">
+                            onsubmit="event.preventDefault(); showModal('超級警告！\n\n這會清空所有資料表，包含 prompt_templates 與 system_settings。\n\n請確認已備份，且已輸入 YES_DELETE_ALL。', this, true);">
                             <input type="hidden" name="action" value="clear_all_data">
                             <input type="hidden" name="mode" value="full">
                             <div class="form-group">

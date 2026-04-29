@@ -24,6 +24,7 @@
 import json
 import re
 import os
+import hashlib
 # import fitz  # PyMuPDF -> Moved to inside function
 import time
 import io
@@ -35,12 +36,120 @@ from core.ai_analyzer import get_model
 from flask import current_app
 import traceback
 from core.code_generator import auto_generate_skill_code
+from core.math_formula_normalizer import detect_suspicious_formula, normalize_math_text
 
 # (初始化檢查已移除)
 
 # ==============================================================================
 # [保留] 您原本的 LaTeX 通用修復函式
 # ==============================================================================
+def sanitize_gemini_json_text(raw: str) -> str:
+    r"""
+    修復 Gemini 回傳 JSON 中常見的格式問題。
+
+    注意：
+    這個函式只在 json.loads 前處理 raw text。
+    它的目的只是讓 raw text 成為合法 JSON。
+    json.loads 成功後，Python 字串中的 LaTeX 應該仍然是正常單反斜線，
+    例如資料庫最後應該存入 \(x+1\)，而不是 \\(x+1\\)。
+    """
+    if raw is None:
+        return raw
+
+    text = str(raw).strip()
+
+    # 移除 Markdown code fence
+    text = re.sub(r"^```(?:json)?\s*", "", text)
+    text = re.sub(r"\s*```$", "", text)
+
+    # 擷取最外層 JSON object，避免模型前後多說明文字
+    start = text.find("{")
+    end = text.rfind("}")
+    if start != -1 and end != -1 and end > start:
+        text = text[start:end + 1]
+
+    # 修復非法 JSON escape。
+    # JSON 合法 escape 只有：
+    # \" \\ \/ \b \f \n \r \t \uXXXX
+    # 其他 LaTeX escape，例如 \( \) \[ \] \frac \binom \times \cdot
+    # 都需要在 raw JSON 裡變成雙反斜線，json.loads 後才會還原成單反斜線。
+    # 先處理常見 LaTeX 命令。部分命令開頭剛好是合法 JSON escape
+    # (例如 \binom, \frac, \times)，直接 json.loads 會變成控制字元而破壞 MathJax。
+    latex_commands = (
+        "binom|frac|times|cdot|sum|prod|sqrt|left|right|over|overline|underline|"
+        "vec|hat|bar|lim|to|infty|sin|cos|tan|cot|sec|csc|log|ln|"
+        "alpha|beta|gamma|delta|theta|lambda|mu|pi|sigma|omega|phi|rho|tau|"
+        "Delta|Sigma"
+    )
+    text = re.sub(rf'(?<!\\)\\(?=(?:{latex_commands})\b|[()\[\]{{}}])', r'\\\\', text)
+
+    text = re.sub(r'(?<!\\)\\(?!["\\/bfnrtu])', r'\\\\', text)
+
+    return text
+
+
+def safe_load_gemini_json(raw: str):
+    r"""
+    安全解析 Gemini 回傳 JSON。
+    先直接 json.loads。
+    若失敗，修復 LaTeX escape 後再 json.loads。
+    """
+    raw_text = str(raw).strip() if raw is not None else raw
+    fixed = sanitize_gemini_json_text(raw)
+
+    try:
+        parsed = json.loads(raw)
+        if fixed != raw_text:
+            try:
+                sanitized_parsed = json.loads(fixed)
+                try:
+                    current_app.logger.info("[TEXTBOOK IMPORTER] Gemini JSON parsed after LaTeX escape sanitize.")
+                except RuntimeError:
+                    pass
+                return sanitized_parsed
+            except json.JSONDecodeError:
+                return parsed
+        return parsed
+    except json.JSONDecodeError as first_error:
+        try:
+            current_app.logger.debug(
+                "[TEXTBOOK IMPORTER] Gemini first json.loads failed at "
+                f"line {first_error.lineno}, col {first_error.colno}, pos {first_error.pos}: "
+                f"{first_error.msg}"
+            )
+        except RuntimeError:
+            pass
+        try:
+            parsed = json.loads(fixed)
+            try:
+                current_app.logger.info("[TEXTBOOK IMPORTER] Gemini JSON parsed after LaTeX escape sanitize.")
+            except RuntimeError:
+                pass
+            return parsed
+        except json.JSONDecodeError as second_error:
+            try:
+                _log_gemini_json_parse_failed_after_sanitize(first_error, second_error, raw)
+            except RuntimeError:
+                pass
+            preview = str(raw)[:800] if raw is not None else ""
+            raise ValueError(
+                "Gemini JSON parse failed after sanitize. "
+                f"First error: {first_error}. "
+                f"Second error: {second_error}. "
+                f"Raw preview: {preview}"
+            ) from second_error
+
+
+def _log_gemini_json_parse_failed_after_sanitize(first_error, second_error, raw):
+    preview = str(raw)[:800] if raw is not None else ""
+    current_app.logger.error(
+        "[TEXTBOOK IMPORTER] Gemini JSON parse failed after sanitize. "
+        f"First error: {first_error}. "
+        f"Second error: {second_error}. "
+        f"Raw preview: {preview}"
+    )
+
+
 def fix_common_latex_errors(text):
     """
     修復 AI/Pandoc 轉換後常見的 LaTeX 語法錯誤與符號遺漏 (增強版)
@@ -229,6 +338,8 @@ def process_textbook_file(file_path, curriculum_info, queue, skip_code_gen=False
             queue.put(f"ERROR: {message}")
             return {"status": "error", "message": "無法從檔案中提取任何內容。"}
 
+        content_by_page = _normalize_extracted_content_math(content_by_page, queue)
+
         # 步驟 2: 呼叫 AI 進行分析
         ai_json_result_string = call_gemini_for_analysis(content_by_page, curriculum_info, queue)
         # 步驟 3: 解析 AI 回傳的 JSON 字串
@@ -242,15 +353,25 @@ def process_textbook_file(file_path, curriculum_info, queue, skip_code_gen=False
         if not parsed_data:
             return {"status": "error", "message": "AI 回傳的資料格式有誤或為空，無法解析。"}
 
+        parsed_data = _normalize_parsed_textbook_math(parsed_data, queue)
+
         # 步驟 4: 將解析後的資料存入資料庫
         result = save_to_database(parsed_data, curriculum_info, queue)
 
         skills_count = result.get('skills_processed', 0)
         curriculums_count = result.get('curriculums_added', 0)
         examples_count = result.get('examples_added', 0)
+        practice_count = result.get('practice_questions_imported', 0)
+        in_class_practice_count = result.get('in_class_practices_imported', 0)
+        practice_needs_review_count = result.get('practice_questions_needs_review', 0)
+        practice_skipped_count = result.get('practice_questions_skipped', 0)
         processed_skill_ids = result.get('processed_skill_ids', [])
 
-        message = (f"課本處理完成。新增/更新 {skills_count} 個技能，建立 {curriculums_count} 筆課程綱要，匯入 {examples_count} 個例題。")
+        message = (
+            f"課本處理完成。新增/更新 {skills_count} 個技能，建立 {curriculums_count} 筆課程綱要，"
+            f"匯入例題 {examples_count} 筆、練習題 {practice_count} 筆（隨堂練習 {in_class_practice_count} 筆，"
+            f"需複核 {practice_needs_review_count} 筆，重複略過 {practice_skipped_count} 筆）。"
+        )
         current_app.logger.info(message)
         queue.put(f"INFO: {message}")
 
@@ -284,6 +405,10 @@ def process_textbook_file(file_path, curriculum_info, queue, skip_code_gen=False
                         f"新增/更新技能: {skills_count} 個\n"
                         f"新增課程綱要: {curriculums_count} 筆\n"
                         f"新增課本例題: {examples_count} 筆\n"
+                        f"新增練習題: {practice_count} 筆\n"
+                        f"隨堂練習: {in_class_practice_count} 筆\n"
+                        f"練習題需複核: {practice_needs_review_count} 筆\n"
+                        f"練習題略過: {practice_skipped_count} 筆\n"
                         f"自動生成程式碼: {code_gen_status}")
         }
 
@@ -557,11 +682,27 @@ def _call_gemini_with_retry(model, analysis_prompt, queue=None, context_message=
             return False, "missing_closing_brace", cleaned_text
         if re.search(r'\]\s*\}\s*$', cleaned_text, flags=re.DOTALL) is None:
             return False, "missing_json_tail", cleaned_text
+        fixed_text = sanitize_gemini_json_text(cleaned_text)
         try:
             json.loads(cleaned_text)
+            if fixed_text != cleaned_text:
+                json.loads(fixed_text)
+                current_app.logger.info("[TEXTBOOK IMPORTER] Gemini JSON parsed after LaTeX escape sanitize.")
+                return True, "ok_sanitized", fixed_text
             return True, "ok", cleaned_text
-        except Exception:
-            return False, "json_decode_failed", cleaned_text
+        except json.JSONDecodeError as first_error:
+            current_app.logger.debug(
+                "[TEXTBOOK IMPORTER] Gemini first json.loads failed at "
+                f"line {first_error.lineno}, col {first_error.colno}, pos {first_error.pos}: "
+                f"{first_error.msg}"
+            )
+            try:
+                json.loads(fixed_text)
+                current_app.logger.info("[TEXTBOOK IMPORTER] Gemini JSON parsed after LaTeX escape sanitize.")
+                return True, "ok_sanitized", fixed_text
+            except json.JSONDecodeError as second_error:
+                _log_gemini_json_parse_failed_after_sanitize(first_error, second_error, cleaned_text)
+                return False, "json_decode_failed", cleaned_text
 
     for attempt in range(1, max_retries + 1):
         try:
@@ -930,6 +1071,21 @@ concept_paragraph: 不盡相異物的排列
 7. 不需要逐題完整收錄所有重複型題目。
 8. 若原文有很多統測補給站題目，只選代表性題目，不要全部塞入同一個 JSON。
 
+【隨堂練習匯入規則】
+1. 「隨堂練習」必須視為獨立題目。
+2. 「隨堂練習」請放入 practice_questions 陣列。
+3. 不要把隨堂練習只附在 example.followup_practices 裡。
+4. 如果為了表示版面關係，可以填 linked_example_title。
+5. 隨堂練習 N 通常 linked_example_title = "例題N"。
+6. 隨堂練習通常繼承對應例題的 skill_id。
+7. 隨堂練習不是新的 concept。
+8. 隨堂練習不是新的 skill。
+9. 隨堂練習要保留題幹、答案、解法。
+10. 隨堂練習的 source_type 必須是 "in_class_practice"。
+11. 例題的 source_type 必須是 "textbook_example"。
+12. 如果無法判斷 linked example，linked_example_title = null，needs_review = true。
+13. 如果無法判斷 skill_id，使用同 concept 下最接近的 skill_id；仍無法判斷才使用 section_general 並 needs_review=true。
+
 【四、題目欄位規則】
 
 每個 examples 物件必須包含：
@@ -1136,7 +1292,7 @@ JSON 格式如下：
         queue.put("INFO: 未找到專用分析模型，使用通用模型。")
 
     try:
-        model = get_model()
+        model = get_model("architect")
     except Exception as e:
         err_type = type(e).__name__
         err_msg = str(e) or repr(e)
@@ -1221,10 +1377,30 @@ JSON 格式如下：
     analysis_prompt = f"""
 {base_prompt}
 
-??????????
-1. ????????*????????? JSON**??
-2. ????????? (??? `\\sqrt`)??
-3. ??? markdown code fence??
+重要輸出要求：
+1. 只能輸出合法 JSON，不可以輸出 Markdown code block。
+2. 不可以在 JSON 前後加入任何說明文字。
+3. 所有 LaTeX 反斜線在 JSON 原始輸出中必須使用合法 JSON escape。
+4. 錯誤："\\(x+1\\)" 若原始輸出實際只有單反斜線；正確："\\\\(x+1\\\\)"。
+5. 錯誤："\\binom{{n}}{{r}}" 若原始輸出實際只有單反斜線；正確："\\\\binom{{n}}{{r}}"。
+6. 錯誤："\\frac{{n!}}{{r!(n-r)!}}" 若原始輸出實際只有單反斜線；正確："\\\\frac{{n!}}{{r!(n-r)!}}"。
+7. 請保留 LaTeX 語法，資料匯入資料庫後會由前端 MathJax 解析。
+8. 回傳前請確認整份內容可以被 Python json.loads() 直接解析。
+
+PDF/OCR 數學式校正要求：
+1. 你會收到由 PDF 擷取而來的數學文字，其中可能包含 OCR / PDF 解析錯誤。
+2. #、＃、﹟ 通常代表乘號，應轉成 \\times 或 ×。
+3. 台灣高中課本中的 C_r^n 代表組合數，應理解為 C(n,r) 或 LaTeX C^n_r。
+4. 台灣高中課本中的 P_r^n 代表排列數，應理解為 P(n,r) 或 LaTeX P^n_r。
+5. 若看到 C_0^5 + C_1^5 + C_2^6 + C_3^7 + C_4^8 這類上下標不一致的式子，不要直接照抄，請標記 suspicious_formula 並盡可能根據上下文修正。
+6. 若無法可靠修正，請保留原始文字與 normalized_formula，並設定 needs_review = true。
+7. 不要把明顯錯誤的 OCR 公式直接寫成正式例題。
+8. 所有 LaTeX 反斜線仍需符合合法 JSON escape。
+
+隨堂練習 JSON 輸出要求：
+1. examples 只放例題；practice_questions 放隨堂練習與練習題，兩者都必須是可獨立入庫的題目物件。
+2. practice_questions 每題至少包含：practice_title(或 source_description)、problem、answer、solution、source_type="in_class_practice"。
+3. 如果為了版面關聯需要 followup_practices，仍要同步輸出到 practice_questions，避免隨堂練習遺失。
 
 JSON ?????? (??? section_title ?????????????
 {json_example}
@@ -1276,7 +1452,7 @@ def parse_ai_response(ai_data_or_string, queue):
         return debug_path
 
     if isinstance(ai_data_or_string, dict):
-        return ai_data_or_string
+        return _normalize_textbook_question_structure(ai_data_or_string, queue)
 
     raw_response_string = str(ai_data_or_string) if ai_data_or_string is not None else ""
 
@@ -1288,11 +1464,14 @@ def parse_ai_response(ai_data_or_string, queue):
         return None
 
     cleaned_string = re.sub(r'^```(?:json)?\s*|\s*```$', '', raw_response_string, flags=re.MULTILINE).strip()
-    parsed_obj, _, _, _ = _sanitize_and_parse_json(cleaned_string, queue=None)
-
-    if parsed_obj is not None:
+    try:
+        parsed_obj = safe_load_gemini_json(cleaned_string)
         queue.put("INFO: AI 回應成功解析為標準 JSON。")
-        return parsed_obj
+        return _normalize_textbook_question_structure(parsed_obj, queue)
+    except ValueError as e:
+        current_app.logger.warning(
+            f"[TEXTBOOK IMPORTER] safe_load_gemini_json failed, fallback parser will run: {e}"
+        )
 
     # --- 備用方案：逐章解析 (保留您原本的邏輯) ---
     queue.put("WARN: 標準 JSON 解析失敗，啟用備用方案：逐章節提取並解析。")
@@ -1309,7 +1488,10 @@ def parse_ai_response(ai_data_or_string, queue):
     successful_chapters = []
     for i, chunk in enumerate(chapter_chunks):
         try:
-            chapter_obj, _, _, _ = _sanitize_and_parse_json(chunk, queue=None)
+            try:
+                chapter_obj = safe_load_gemini_json(chunk)
+            except ValueError:
+                chapter_obj, _, _, _ = _sanitize_and_parse_json(chunk, queue=None)
             if chapter_obj:
                 successful_chapters.append(chapter_obj)
             else:
@@ -1322,7 +1504,7 @@ def parse_ai_response(ai_data_or_string, queue):
         _save_failed_ai_response(raw_response_string, cleaned_string)
         return None
 
-    return {"chapters": successful_chapters}
+    return _normalize_textbook_question_structure({"chapters": successful_chapters}, queue)
 
 def to_pascal_case(snake_case_string):
     """將 snake_case 或 kebab-case 字串轉換為 PascalCase。"""
@@ -1341,6 +1523,252 @@ def clean_skill_en_name(raw_en_name, queue=None):
         start_index = match.start()
         return raw_en_name[start_index:]
     return raw_en_name
+
+
+def _formula_context_label(path):
+    return " / ".join(str(p) for p in path if p is not None and str(p).strip())
+
+
+def _normalize_extracted_content_math(content_by_page, queue=None):
+    """Normalize extracted page text before Gemini sees OCR/PDF math artifacts."""
+    if not isinstance(content_by_page, dict):
+        return content_by_page
+
+    normalized_pages = {}
+    for page_no, page_text in content_by_page.items():
+        if not isinstance(page_text, str):
+            normalized_pages[page_no] = page_text
+            continue
+
+        check = detect_suspicious_formula(page_text)
+        normalized_text = normalize_math_text(page_text)
+        if check.get("is_suspicious"):
+            reasons = ",".join(check.get("reasons", []))
+            log_msg = f"[FORMULA CHECK] suspicious formula detected in extracted page={page_no} reasons={reasons}"
+            current_app.logger.warning(log_msg)
+            if queue is not None:
+                queue.put(f"WARN: {log_msg}")
+
+        if normalized_text != page_text:
+            current_app.logger.info(
+                f"[FORMULA NORMALIZE] extracted_page={page_no} before={page_text[:120]!r} after={normalized_text[:120]!r}"
+            )
+
+        normalized_pages[page_no] = normalized_text
+
+    return normalized_pages
+
+
+def _normalize_imported_math_value(value, *, section_title="", source_description="", field_name="", queue=None):
+    if value is None or not isinstance(value, str):
+        return value, None
+
+    suspicious = detect_suspicious_formula(value)
+    normalized = normalize_math_text(value)
+    suspicious_after = detect_suspicious_formula(normalized)
+    reasons = list(dict.fromkeys(suspicious.get("reasons", []) + suspicious_after.get("reasons", [])))
+
+    if reasons:
+        label = _formula_context_label([section_title, source_description, field_name])
+        log_msg = f"[FORMULA CHECK] suspicious formula detected in {label} reasons={reasons}"
+        current_app.logger.warning(log_msg)
+        if queue is not None:
+            queue.put(f"WARN: {log_msg}")
+
+    if normalized != value:
+        current_app.logger.info(
+            f"[FORMULA NORMALIZE] field={field_name} before={value[:120]!r} after={normalized[:120]!r}"
+        )
+
+    return normalized, {
+        "is_suspicious": bool(reasons),
+        "reasons": reasons,
+        "suggestions": suspicious.get("suggestions", []) + suspicious_after.get("suggestions", []),
+        "normalized_preview": normalized,
+    }
+
+
+def _normalize_parsed_textbook_math(parsed_data, queue=None):
+    """Normalize known textbook JSON text fields before DB persistence."""
+    if not isinstance(parsed_data, dict):
+        return parsed_data
+
+    for chapter in parsed_data.get("chapters", []) or []:
+        if not isinstance(chapter, dict):
+            continue
+        for section in chapter.get("sections", []) or []:
+            if not isinstance(section, dict):
+                continue
+            section_title = section.get("section_title", "")
+            for concept in section.get("concepts", []) or []:
+                if not isinstance(concept, dict):
+                    continue
+
+                for key in ("concept_description", "concept_paragraph"):
+                    if isinstance(concept.get(key), str):
+                        concept[key], check = _normalize_imported_math_value(
+                            concept[key],
+                            section_title=section_title,
+                            source_description=concept.get("concept_name", ""),
+                            field_name=key,
+                            queue=queue,
+                        )
+                        if check and check.get("is_suspicious"):
+                            concept["needs_review"] = True
+                            concept["parse_warning"] = ";".join(check.get("reasons", []))
+
+                for ex in concept.get("examples", []) or []:
+                    if not isinstance(ex, dict):
+                        continue
+                    source_description = ex.get("source_description", "example")
+                    for key in (
+                        "problem_text",
+                        "problem",
+                        "correct_answer",
+                        "answer",
+                        "detailed_solution",
+                        "solution",
+                        "hint",
+                        "hints",
+                    ):
+                        if isinstance(ex.get(key), str):
+                            ex[key], check = _normalize_imported_math_value(
+                                ex[key],
+                                section_title=section_title,
+                                source_description=source_description,
+                                field_name=key,
+                                queue=queue,
+                            )
+                            if check and check.get("is_suspicious"):
+                                ex["needs_review"] = True
+                                existing_warning = str(ex.get("parse_warning", "") or "").strip()
+                                reasons = ";".join(check.get("reasons", []))
+                                ex["parse_warning"] = ";".join(filter(None, [existing_warning, reasons]))
+
+                for practice in concept.get("practice_questions", []) or []:
+                    if not isinstance(practice, dict):
+                        continue
+                    for key in ("question", "problem_text", "solution", "answer", "hint", "hints"):
+                        if isinstance(practice.get(key), str):
+                            practice[key], check = _normalize_imported_math_value(
+                                practice[key],
+                                section_title=section_title,
+                                source_description="practice",
+                                field_name=key,
+                                queue=queue,
+                            )
+                            if check and check.get("is_suspicious"):
+                                practice["needs_review"] = True
+                                practice["parse_warning"] = ";".join(check.get("reasons", []))
+
+    return parsed_data
+
+
+def _first_non_empty_str(mapping, keys):
+    for key in keys:
+        value = mapping.get(key)
+        if isinstance(value, str) and value.strip():
+            return value.strip()
+    return ""
+
+
+def _normalize_textbook_question_structure(parsed_data, queue=None):
+    """
+    Normalize AI output structure so examples/practice_questions are consistently separable.
+    - examples: independent textbook examples
+    - practice_questions: independent in-class practices / exercises
+    - backward compatibility: example.followup_practices -> concept.practice_questions
+    """
+    if not isinstance(parsed_data, dict):
+        return parsed_data
+
+    for chapter in parsed_data.get("chapters", []) or []:
+        if not isinstance(chapter, dict):
+            continue
+        for section in chapter.get("sections", []) or []:
+            if not isinstance(section, dict):
+                continue
+            for concept in section.get("concepts", []) or []:
+                if not isinstance(concept, dict):
+                    continue
+
+                normalized_examples = []
+                extracted_practices = []
+
+                for ex in concept.get("examples", []) or []:
+                    if not isinstance(ex, dict):
+                        continue
+
+                    example_title = _first_non_empty_str(ex, ("example_title", "source_description", "title"))
+                    problem_text = _first_non_empty_str(ex, ("problem_text", "problem", "question"))
+                    answer = _first_non_empty_str(ex, ("correct_answer", "answer"))
+                    solution = _first_non_empty_str(ex, ("detailed_solution", "solution"))
+                    source_type = _first_non_empty_str(ex, ("source_type",)).lower() or "textbook_example"
+
+                    ex_normalized = dict(ex)
+                    ex_normalized["source_description"] = example_title or ex_normalized.get("source_description", "例題")
+                    if problem_text:
+                        ex_normalized["problem_text"] = problem_text
+                    if answer:
+                        ex_normalized["correct_answer"] = answer
+                    if solution:
+                        ex_normalized["detailed_solution"] = solution
+                    ex_normalized["source_type"] = source_type if source_type else "textbook_example"
+                    normalized_examples.append(ex_normalized)
+
+                    for fp in ex.get("followup_practices", []) or []:
+                        if not isinstance(fp, dict):
+                            continue
+                        p_title = _first_non_empty_str(fp, ("practice_title", "title", "source_description"))
+                        p_problem = _first_non_empty_str(fp, ("problem_text", "problem", "question"))
+                        p_answer = _first_non_empty_str(fp, ("correct_answer", "answer"))
+                        p_solution = _first_non_empty_str(fp, ("detailed_solution", "solution"))
+                        p_source_type = _first_non_empty_str(fp, ("source_type",)).lower() or "in_class_practice"
+                        linked_example_title = _first_non_empty_str(fp, ("linked_example_title",)) or ex_normalized["source_description"]
+
+                        practice_item = dict(fp)
+                        practice_item["source_description"] = p_title or "隨堂練習"
+                        if p_problem:
+                            practice_item["problem_text"] = p_problem
+                        if p_answer:
+                            practice_item["correct_answer"] = p_answer
+                        if p_solution:
+                            practice_item["detailed_solution"] = p_solution
+                        practice_item["source_type"] = p_source_type
+                        practice_item["linked_example_title"] = linked_example_title
+                        if not practice_item.get("skill_id") and ex_normalized.get("skill_id"):
+                            practice_item["skill_id"] = ex_normalized.get("skill_id")
+                        extracted_practices.append(practice_item)
+
+                normalized_practices = []
+                for practice in (concept.get("practice_questions", []) or []) + extracted_practices:
+                    if not isinstance(practice, dict):
+                        continue
+                    p_title = _first_non_empty_str(practice, ("practice_title", "source_description", "title"))
+                    p_problem = _first_non_empty_str(practice, ("problem_text", "problem", "question"))
+                    p_answer = _first_non_empty_str(practice, ("correct_answer", "answer"))
+                    p_solution = _first_non_empty_str(practice, ("detailed_solution", "solution"))
+                    p_source_type = _first_non_empty_str(practice, ("source_type",)).lower() or "in_class_practice"
+                    linked_example_title = _first_non_empty_str(practice, ("linked_example_title",))
+
+                    normalized_practice = dict(practice)
+                    normalized_practice["source_description"] = p_title or normalized_practice.get("source_description", "隨堂練習")
+                    if p_problem:
+                        normalized_practice["problem_text"] = p_problem
+                    if p_answer:
+                        normalized_practice["correct_answer"] = p_answer
+                    if p_solution:
+                        normalized_practice["detailed_solution"] = p_solution
+                    normalized_practice["source_type"] = p_source_type
+                    if linked_example_title:
+                        normalized_practice["linked_example_title"] = linked_example_title
+
+                    normalized_practices.append(normalized_practice)
+
+                concept["examples"] = normalized_examples
+                concept["practice_questions"] = normalized_practices
+
+    return parsed_data
 
 
 def is_non_skill_bucket(concept_name, clean_en_id):
@@ -1430,6 +1858,10 @@ def save_to_database(parsed_data, curriculum_info, queue):
     skills_processed = 0
     curriculums_added = 0
     examples_added = 0
+    practice_questions_imported = 0
+    in_class_practices_imported = 0
+    practice_questions_needs_review = 0
+    practice_questions_skipped = 0
     processed_skill_ids = []
 
     prefix_map = {
@@ -1443,6 +1875,50 @@ def save_to_database(parsed_data, curriculum_info, queue):
     is_vocational_math = curriculum == 'vocational' and subject is not None and vol_num is not None
     is_vocational_mathb = is_vocational_math and subject == 'B'
     prefix = prefix_map.get(curriculum, '')
+
+    def _extract_title_number(text):
+        if not text:
+            return None
+        match = re.search(r'(\d+)', str(text))
+        return int(match.group(1)) if match else None
+
+    def _normalize_problem_hash(problem_text):
+        normalized = normalize_math_text(str(problem_text or ""))
+        normalized = re.sub(r"\s+", " ", normalized).strip()
+        return hashlib.sha1(normalized.encode("utf-8")).hexdigest()[:16]
+
+    def _build_source_description(title, source_type, linked_example_title=None, needs_review=False, dedupe_hash=""):
+        title_text = str(title or "").strip() or "未命名題目"
+        parts = [f"source_type={source_type}"]
+        if linked_example_title:
+            parts.append(f"linked_example={linked_example_title}")
+        if needs_review:
+            parts.append("needs_review=true")
+        if dedupe_hash:
+            parts.append(f"dedupe={dedupe_hash}")
+        return f"{title_text} [{' | '.join(parts)}]"
+
+    def _determine_target_skill_id(base_clean_en_id, section_title, concept_name, example_obj):
+        target_clean_en_id = base_clean_en_id
+        if is_vocational_mathb and is_non_skill_bucket(concept_name, base_clean_en_id):
+            remapped_en_id = remap_mathb_non_skill_examples(
+                section_title=section_title,
+                concept_name=concept_name,
+                clean_en_id=base_clean_en_id,
+                example=example_obj
+            )
+            if remapped_en_id:
+                target_clean_en_id = remapped_en_id
+
+        explicit_skill_id = str(example_obj.get("skill_id", "") or "").strip()
+        if explicit_skill_id:
+            return explicit_skill_id
+
+        if is_vocational_math:
+            if subject == 'B' and vol_num == 4:
+                return f"vh_數學{subject}{vol_num}_{target_clean_en_id}"
+            return f"vh_math{subject}{vol_num}_{target_clean_en_id}"
+        return f"{prefix}{target_clean_en_id}"
 
     try:
         current_app.logger.info(" -> 開始寫入資料庫...")
@@ -1577,74 +2053,189 @@ def save_to_database(parsed_data, curriculum_info, queue):
                         )
 
                     # === 例題處理 (維持原邏輯) ===
+                    saved_example_skill_map = {}
+                    saved_example_order = []
                     for ex in concept.get('examples', []):
                         problem_text = ex.get('problem_text')
-                        if not problem_text: continue
+                        if not problem_text:
+                            continue
 
-                        target_clean_en_id = clean_en_id
-                        target_concept_name = concept_name
-                        if is_vocational_mathb and skip_skill_creation:
-                            remapped_en_id = remap_mathb_non_skill_examples(
-                                section_title=section_title,
-                                concept_name=concept_name,
-                                clean_en_id=clean_en_id,
-                                example=ex
-                            )
-                            if remapped_en_id:
-                                target_clean_en_id = remapped_en_id
-                                target_name_map = {
-                                    "TreeDiagramCounting": "樹狀圖",
-                                    "AdditionPrinciple": "加法原理",
-                                    "MultiplicationPrinciple": "乘法原理",
-                                    "FactorialNotation": "階乘記法",
-                                }
-                                target_concept_name = target_name_map.get(remapped_en_id, "乘法原理")
+                        example_title = str(ex.get("source_description", "") or ex.get("example_title", "") or "例題").strip()
+                        source_type = str(ex.get("source_type", "textbook_example") or "textbook_example").strip().lower()
+                        target_skill_id = _determine_target_skill_id(clean_en_id, section_title, concept_name, ex)
 
-                        if is_vocational_math:
-                            if subject == 'B' and vol_num == 4:
-                                target_skill_id = f"vh_數學{subject}{vol_num}_{target_clean_en_id}"
-                            else:
-                                target_skill_id = f"vh_math{subject}{vol_num}_{target_clean_en_id}"
-                        else:
-                            target_skill_id = f"{prefix}{target_clean_en_id}"
-                        
+                        dedupe_hash = _normalize_problem_hash(problem_text)
+                        source_description = _build_source_description(
+                            example_title,
+                            source_type=source_type,
+                            dedupe_hash=dedupe_hash
+                        )
+
                         existing_ex = TextbookExample.query.filter_by(
                             skill_id=target_skill_id,
                             source_curriculum=curriculum_info.get('curriculum'),
                             source_volume=str(curriculum_info.get('volume')),
                             source_chapter=chapter_title,
                             source_section=section_title,
-                            source_description=ex.get('source_description', '???')
+                            source_description=source_description
                         ).first()
 
-                        if not existing_ex:
-                            try:
-                                difficulty_level = int(ex.get('difficulty_level', 1))
-                            except Exception:
-                                difficulty_level = 1
+                        title_num = _extract_title_number(example_title)
+                        if title_num is not None:
+                            saved_example_skill_map[title_num] = target_skill_id
+                        saved_example_order.append((example_title, target_skill_id))
 
-                            new_ex = TextbookExample(
-                                skill_id=target_skill_id,
-                                source_curriculum=curriculum_info.get('curriculum'),
-                                source_volume=str(curriculum_info.get('volume')),
-                                source_chapter=chapter_title,
-                                source_section=section_title,
-                                source_paragraph=target_concept_name,
-                                source_description=ex.get('source_description', '例題'),
-                                problem_text=problem_text,
-                                problem_type=ex.get('problem_type', 'calculation'),
-                                correct_answer=ex.get('correct_answer', ''),
-                                detailed_solution=sanitize_detailed_solution_text(ex.get('detailed_solution', ''), max_chars=500),
-                                difficulty_level=difficulty_level
+                        if existing_ex:
+                            current_app.logger.info(
+                                f"[PRACTICE IMPORT] skipped duplicate title={example_title} reason=dedupe_match"
                             )
-                            db.session.add(new_ex)
-                            examples_added += 1
+                            continue
+
+                        try:
+                            difficulty_level = int(ex.get('difficulty_level', 1))
+                        except Exception:
+                            difficulty_level = 1
+
+                        new_ex = TextbookExample(
+                            skill_id=target_skill_id,
+                            source_curriculum=curriculum_info.get('curriculum'),
+                            source_volume=str(curriculum_info.get('volume')),
+                            source_chapter=chapter_title,
+                            source_section=section_title,
+                            source_paragraph=concept_name,
+                            source_description=source_description,
+                            problem_text=problem_text,
+                            problem_type=ex.get('problem_type', 'calculation'),
+                            correct_answer=ex.get('correct_answer', ''),
+                            detailed_solution=sanitize_detailed_solution_text(ex.get('detailed_solution', ''), max_chars=500),
+                            difficulty_level=difficulty_level
+                        )
+                        db.session.add(new_ex)
+                        examples_added += 1
+
+                    # === 隨堂練習/練習題：獨立寫入 ===
+                    for practice in concept.get('practice_questions', []) or []:
+                        if not isinstance(practice, dict):
+                            continue
+
+                        practice_problem = str(
+                            practice.get("problem_text", "") or practice.get("problem", "") or practice.get("question", "")
+                        ).strip()
+                        if not practice_problem:
+                            continue
+
+                        practice_title = str(
+                            practice.get("source_description", "") or practice.get("practice_title", "") or "隨堂練習"
+                        ).strip()
+                        source_type = str(practice.get("source_type", "in_class_practice") or "in_class_practice").strip().lower()
+                        linked_example_title = str(practice.get("linked_example_title", "") or "").strip() or None
+                        needs_review = bool(practice.get("needs_review", False))
+
+                        if not linked_example_title:
+                            practice_num = _extract_title_number(practice_title)
+                            if practice_num is not None:
+                                linked_example_title = f"例題{practice_num}"
+
+                        target_skill_id = str(practice.get("skill_id", "") or "").strip()
+                        if not target_skill_id:
+                            linked_num = _extract_title_number(linked_example_title) if linked_example_title else None
+                            if linked_num is not None and linked_num in saved_example_skill_map:
+                                target_skill_id = saved_example_skill_map[linked_num]
+                            elif len({sid for _, sid in saved_example_order}) == 1 and saved_example_order:
+                                target_skill_id = saved_example_order[0][1]
+                            elif saved_example_order:
+                                target_skill_id = saved_example_order[-1][1]
+                                needs_review = True
+                                warn_msg = (
+                                    f"[PRACTICE IMPORT WARNING] title={practice_title} reason=missing_exact_linked_example"
+                                )
+                                current_app.logger.warning(warn_msg)
+                                queue.put(f"WARN: {warn_msg}")
+                            else:
+                                target_skill_id = _determine_target_skill_id(clean_en_id, section_title, concept_name, practice)
+                                needs_review = True
+                                warn_msg = (
+                                    f"[PRACTICE IMPORT WARNING] title={practice_title} reason=missing_linked_example"
+                                )
+                                current_app.logger.warning(warn_msg)
+                                queue.put(f"WARN: {warn_msg}")
+
+                        log_msg = (
+                            f"[PRACTICE IMPORT] detected title={practice_title} source_type={source_type} "
+                            f"linked_example={linked_example_title} skill_id={target_skill_id}"
+                        )
+                        current_app.logger.info(log_msg)
+                        queue.put(f"INFO: {log_msg}")
+
+                        dedupe_hash = _normalize_problem_hash(practice_problem)
+                        source_description = _build_source_description(
+                            practice_title,
+                            source_type=source_type or "in_class_practice",
+                            linked_example_title=linked_example_title,
+                            needs_review=needs_review,
+                            dedupe_hash=dedupe_hash
+                        )
+
+                        existing_practice = TextbookExample.query.filter_by(
+                            skill_id=target_skill_id,
+                            source_curriculum=curriculum_info.get('curriculum'),
+                            source_volume=str(curriculum_info.get('volume')),
+                            source_chapter=chapter_title,
+                            source_section=section_title,
+                            source_description=source_description
+                        ).first()
+                        if existing_practice:
+                            practice_questions_skipped += 1
+                            skip_msg = (
+                                f"[PRACTICE IMPORT] skipped duplicate title={practice_title} reason=dedupe_match"
+                            )
+                            current_app.logger.info(skip_msg)
+                            queue.put(f"INFO: {skip_msg}")
+                            continue
+
+                        try:
+                            difficulty_level = int(practice.get('difficulty_level', 1))
+                        except Exception:
+                            difficulty_level = 1
+
+                        practice_row = TextbookExample(
+                            skill_id=target_skill_id,
+                            source_curriculum=curriculum_info.get('curriculum'),
+                            source_volume=str(curriculum_info.get('volume')),
+                            source_chapter=chapter_title,
+                            source_section=section_title,
+                            source_paragraph=concept_name,
+                            source_description=source_description,
+                            problem_text=practice_problem,
+                            problem_type=practice.get('problem_type', 'in_class_practice'),
+                            correct_answer=practice.get('correct_answer', ''),
+                            detailed_solution=sanitize_detailed_solution_text(practice.get('detailed_solution', ''), max_chars=500),
+                            difficulty_level=difficulty_level
+                        )
+                        db.session.add(practice_row)
+
+                        practice_questions_imported += 1
+                        if source_type == "in_class_practice":
+                            in_class_practices_imported += 1
+                        if needs_review:
+                            practice_questions_needs_review += 1
+                        saved_msg = (
+                            f"[PRACTICE IMPORT] saved independent question title={practice_title} "
+                            f"table=textbook_examples id=pending_commit"
+                        )
+                        current_app.logger.info(saved_msg)
+                        queue.put(f"INFO: {saved_msg}")
 
         db.session.commit()
         return {
             'skills_processed': skills_processed, 
             'curriculums_added': curriculums_added,
             'examples_added': examples_added,
+            'examples_imported': examples_added,
+            'practice_questions_imported': practice_questions_imported,
+            'in_class_practices_imported': in_class_practices_imported,
+            'practice_questions_needs_review': practice_questions_needs_review,
+            'practice_questions_skipped': practice_questions_skipped,
             'processed_skill_ids': processed_skill_ids
         }
     except Exception as e:

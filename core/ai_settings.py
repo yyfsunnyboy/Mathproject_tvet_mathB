@@ -10,7 +10,7 @@ from flask import current_app, has_app_context
 
 from config import Config
 
-AI_ROLE_KEYS = ("coder", "tutor", "vision_analyzer", "classifier", "default")
+AI_ROLE_KEYS = ("architect", "coder", "tutor", "vision_analyzer", "classifier", "default")
 
 SETTING_AI_GLOBAL_STRATEGY = "ai_global_strategy"
 SETTING_AI_DEFAULT_PROVIDER = "ai_default_provider"
@@ -26,7 +26,7 @@ DEFAULT_AI_DEFAULT_PROVIDER = str(getattr(Config, "DEFAULT_PROVIDER", "local") o
 DEFAULT_AI_RAG_NAIVE_THRESHOLD = float(getattr(Config, "ADVANCED_RAG_NAIVE_THRESHOLD", 0.35))
 DEFAULT_AI_ENABLE_TUTOR_RESPONSE = True
 DEFAULT_AI_ENABLE_HIGH_PRECISION_VISION = False
-DEFAULT_AI_CLOUD_MODEL = str(getattr(Config, "DEFAULT_CLOUD_MODEL", "gemini-3-flash-preview") or "gemini-3-flash-preview")
+DEFAULT_AI_CLOUD_MODEL = str(getattr(Config, "DEFAULT_CLOUD_MODEL", "gemini-3.1-flash-lite-preview") or "gemini-3.1-flash-lite-preview")
 SUPPORTED_CLOUD_MODELS = tuple(getattr(Config, "SUPPORTED_CLOUD_MODELS", [DEFAULT_AI_CLOUD_MODEL]))
 
 
@@ -74,11 +74,88 @@ def _normalize_strategy(strategy: Any) -> str:
     return DEFAULT_AI_GLOBAL_STRATEGY
 
 
+def _log_warning(message: str) -> None:
+    if has_app_context():
+        current_app.logger.warning(message)
+
+
+def normalize_google_model_id(model: Any, *, allow_fallback: bool = False) -> str:
+    raw = str(model or "").strip()
+    key = raw.lower()
+    aliases = {
+        "gemini 3.1 flash": "gemini-3.1-flash-lite-preview",
+        "gemini-3.1-flash": "gemini-3.1-flash-lite-preview",
+        "gemini 3.1 flash-lite": "gemini-3.1-flash-lite-preview",
+        "gemini 3.1 flash lite": "gemini-3.1-flash-lite-preview",
+        "gemini-3.1-flash-lite": "gemini-3.1-flash-lite-preview",
+        "gemini-3.1-flash-lite-preview": "gemini-3.1-flash-lite-preview",
+        "gemini 3 flash": "gemini-3-flash-preview",
+        "gemini 3 flash preview": "gemini-3-flash-preview",
+        "gemini 3.0 flash": "gemini-3-flash-preview",
+        "gemini 3.0 flash preview": "gemini-3-flash-preview",
+        "gemini-3-flash": "gemini-3-flash-preview",
+        "gemini-3-flash-preview": "gemini-3-flash-preview",
+        "gemini 3.1 flash stable": "gemini-3.1-flash-lite-preview",
+        "gemini-3.1-flash-001": "gemini-3.1-flash-lite-preview",
+        "gemini 3.1 pro": "gemini-3.1-flash-lite-preview",
+        "gemini-3.1-pro": "gemini-3.1-flash-lite-preview",
+        "gemini 2.5 flash": "gemini-2.5-flash",
+        "gemini-2.5-flash": "gemini-2.5-flash",
+    }
+    normalized = aliases.get(key)
+    if normalized and normalized in SUPPORTED_CLOUD_MODELS:
+        if key in {
+            "gemini-3.1-flash",
+            "gemini 3.1 flash",
+            "gemini-3.1-flash-lite",
+            "gemini-3.1-flash-001",
+            "gemini-3.1-pro",
+        }:
+            _log_warning(
+                f"[AI CONFIG] Deprecated/unsupported model {raw} normalized to {normalized}"
+            )
+        return normalized
+
+    message = f"Unknown or unsupported Gemini model id: {raw or '<empty>'}"
+    _log_warning(f"[AI MODEL] {message}")
+    if allow_fallback:
+        _log_warning(f"[AI MODEL] Falling back to DEFAULT_CLOUD_MODEL={DEFAULT_AI_CLOUD_MODEL}")
+        return DEFAULT_AI_CLOUD_MODEL
+    raise ValueError(message)
+
+
+def get_google_model_options() -> list[dict[str, Any]]:
+    models = getattr(Config, "GOOGLE_GEMINI_MODELS", {})
+    options: list[dict[str, Any]] = []
+    for model_id in SUPPORTED_CLOUD_MODELS:
+        meta = dict(models.get(model_id, {}))
+        if meta.get("enabled", True) is False:
+            continue
+        options.append(
+            {
+                "id": model_id,
+                "value": model_id,
+                "label": meta.get("label", model_id),
+                "provider": meta.get("provider", "google"),
+                "tier": meta.get("tier", ""),
+                "legacy": bool(meta.get("legacy", False)),
+                "recommended_for": meta.get("recommended_for", []),
+            }
+        )
+    return options
+
+
+def get_google_model_label(model: Any) -> str:
+    try:
+        model_id = normalize_google_model_id(model)
+    except ValueError:
+        return str(model or "")
+    return getattr(Config, "GOOGLE_GEMINI_MODELS", {}).get(model_id, {}).get("label", model_id)
+
+
 def _normalize_cloud_model(model_name: Any) -> str:
     model = str(model_name or "").strip()
-    if model in SUPPORTED_CLOUD_MODELS:
-        return model
-    return DEFAULT_AI_CLOUD_MODEL
+    return normalize_google_model_id(model, allow_fallback=True)
 
 
 def _get_system_setting_value(key: str) -> str | None:
@@ -143,11 +220,9 @@ def _fallback_preset_for_provider(role: str, provider: str) -> str | None:
         "default": "qwen2.5-3b",
     }
     cloud_model = _normalize_cloud_model(_get_system_setting_value(SETTING_AI_CLOUD_MODEL))
-    cloud_key_by_model = {
-        "gemini-3-flash-preview": "gemini-3-flash",
-        "gemini-2.5-flash": "gemini-2.5-flash",
-    }
-    selected_cloud_key = cloud_key_by_model.get(cloud_model, "gemini-3-flash")
+    selected_cloud_key = cloud_model
+    if selected_cloud_key not in Config.CODER_PRESETS:
+        selected_cloud_key = DEFAULT_AI_CLOUD_MODEL
     cloud_pref = {
         "coder": selected_cloud_key,
         "tutor": selected_cloud_key,
@@ -157,7 +232,7 @@ def _fallback_preset_for_provider(role: str, provider: str) -> str | None:
     }
 
     if provider == "google":
-        key = cloud_pref.get(role, "gemini-3-flash")
+        key = cloud_pref.get(role, DEFAULT_AI_CLOUD_MODEL)
         if key in Config.CODER_PRESETS:
             return key
     else:

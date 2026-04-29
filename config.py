@@ -63,10 +63,60 @@ class Config:
     # AI 預設提供者設定
     DEFAULT_PROVIDER = 'local' 
     DEFAULT_CLOUD_PROVIDER = "google"
-    DEFAULT_CLOUD_MODEL = "gemini-3-flash-preview"
+    GOOGLE_GEMINI_MODELS = {
+        "gemini-3.1-flash-lite-preview": {
+            "label": "Gemini 3.1 Flash-Lite",
+            "provider": "google",
+            "enabled": True,
+            "tier": "flash_lite",
+            "recommended_for": [
+                "ocr_json",
+                "self_assessment_import",
+                "bulk_classification",
+                "basic_hint",
+                "simple_table",
+                "large_scale_question_generation",
+            ],
+        },
+        "gemini-3-flash-preview": {
+            "label": "Gemini 3 Flash",
+            "provider": "google",
+            "enabled": True,
+            "tier": "flash",
+            "recommended_for": [
+                "complex_math_layout",
+                "textbook_import",
+                "rag_tutor",
+                "structured_output",
+                "complex_reasoning",
+            ],
+        },
+        "gemini-2.5-flash": {
+            "label": "Gemini 2.5 Flash",
+            "provider": "google",
+            "enabled": True,
+            "tier": "flash_ga",
+            "recommended_for": [
+                "stable_fallback",
+                "ga_stable_output",
+                "conservative_production",
+            ],
+        },
+    }
+    DEFAULT_GOOGLE_MODEL = "gemini-3.1-flash-lite-preview"
+    DEFAULT_CLOUD_MODEL = DEFAULT_GOOGLE_MODEL
+    DEFAULT_TUTOR_MODEL = "gemini-3.1-flash-lite-preview"
+    DEFAULT_HINT_MODEL = "gemini-3.1-flash-lite-preview"
+    DEFAULT_BASIC_QA_MODEL = "gemini-3.1-flash-lite-preview"
+    DEFAULT_SELF_ASSESSMENT_IMPORT_MODEL = "gemini-3.1-flash-lite-preview"
+    DEFAULT_OCR_JSON_MODEL = "gemini-3.1-flash-lite-preview"
+    DEFAULT_TEXTBOOK_IMPORT_MODEL = "gemini-3-flash-preview"
+    DEFAULT_RAG_TUTOR_MODEL = "gemini-3-flash-preview"
+    DEFAULT_STABLE_FALLBACK_MODEL = "gemini-2.5-flash"
     SUPPORTED_CLOUD_MODELS = [
-        "gemini-2.5-flash",
+        "gemini-3.1-flash-lite-preview",
         "gemini-3-flash-preview",
+        "gemini-2.5-flash",
     ]
 
     # [實驗與開發] 模型預設集合（Coder Presets）
@@ -74,12 +124,12 @@ class Config:
     # 格式：dictionary { 'safe-name': { config } }
     CODER_PRESETS = {
         # 1. Google Gemini (Cloud)
-        'gemini-3-flash': {
+        'gemini-3.1-flash-lite-preview': {
             'provider': 'google',
-            'model': 'gemini-3-flash-preview',
+            'model': 'gemini-3.1-flash-lite-preview',
             'temperature': 0.1,
             'max_tokens': 65536,
-            'description': 'Gemini 3.0 Flash Preview (SOTA Cloud)',
+            'description': 'Gemini 3.1 Flash-Lite (Cloud)',
 
             # [NEW] Gemini 安全性設定：全部門檻設為 BLOCK_NONE
             # 用於避免題目中正常數學內容被安全機制誤擋
@@ -101,6 +151,33 @@ class Config:
                     "threshold": "BLOCK_NONE"
                 },
             ]            
+        },
+        'gemini-3-flash-preview': {
+            'provider': 'google',
+            'model': 'gemini-3-flash-preview',
+            'temperature': 0.1,
+            'max_tokens': 65536,
+            'description': 'Gemini 3 Flash Preview (Cloud)',
+            'safety_settings': [
+                {"category": "HARM_CATEGORY_HARASSMENT", "threshold": "BLOCK_NONE"},
+                {"category": "HARM_CATEGORY_HATE_SPEECH", "threshold": "BLOCK_NONE"},
+                {"category": "HARM_CATEGORY_SEXUALLY_EXPLICIT", "threshold": "BLOCK_NONE"},
+                {"category": "HARM_CATEGORY_DANGEROUS_CONTENT", "threshold": "BLOCK_NONE"},
+            ],
+        },
+        'gemini-3-flash': {
+            'provider': 'google',
+            'model': 'gemini-3-flash-preview',
+            'temperature': 0.1,
+            'max_tokens': 65536,
+            'description': 'Legacy alias for Gemini 3 Flash Preview',
+            'legacy': True,
+            'safety_settings': [
+                {"category": "HARM_CATEGORY_HARASSMENT", "threshold": "BLOCK_NONE"},
+                {"category": "HARM_CATEGORY_HATE_SPEECH", "threshold": "BLOCK_NONE"},
+                {"category": "HARM_CATEGORY_SEXUALLY_EXPLICIT", "threshold": "BLOCK_NONE"},
+                {"category": "HARM_CATEGORY_DANGEROUS_CONTENT", "threshold": "BLOCK_NONE"},
+            ],
         },
         'gemini-2.5-flash': {
             'provider': 'google',
@@ -339,7 +416,7 @@ class Config:
     MODEL_ROLES = {
         'architect': {
             'provider': 'google',
-            'model': 'gemini-2.5-flash', 
+            'model': DEFAULT_TEXTBOOK_IMPORT_MODEL,
             'temperature': 0.7,
             'max_tokens': 1500,
         },
@@ -417,7 +494,7 @@ class Config:
     
     # （相容舊版變數）保留給舊流程與工具讀取
     AI_PROVIDER = DEFAULT_PROVIDER
-    GEMINI_MODEL_NAME = "gemini-2.5-flash"
+    GEMINI_MODEL_NAME = DEFAULT_GOOGLE_MODEL
     #LOCAL_MODEL_NAME = "qwen2.5-coder:3b"
     LOCAL_MODEL_NAME = "qwen2.5-coder:7b"
     
