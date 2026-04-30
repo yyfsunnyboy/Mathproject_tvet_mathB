@@ -798,6 +798,12 @@ def admin_examples():
             meta = {}
         ex._image_assets = meta.get("image_assets", []) if isinstance(meta, dict) else []
         ex._has_image = bool(meta.get("has_image")) if isinstance(meta, dict) else False
+        ex._needs_image_conversion = any(bool(a.get("needs_image_conversion")) for a in ex._image_assets if isinstance(a, dict))
+        ex._has_real_image_asset = any(
+            isinstance(a, dict) and bool(a.get("display_path") or (a.get("path") and str(a.get("path")).lower().endswith((".png", ".jpg", ".jpeg", ".webp"))))
+            for a in ex._image_assets
+        )
+        ex._missing_image_asset = ex._has_image and not ex._has_real_image_asset
     
     return render_template('admin_examples.html', 
                            pagination=pagination, 

@@ -26,3 +26,4 @@ python-dateutil
 rank-bm25
 jieba
 tf-keras
+python-docx

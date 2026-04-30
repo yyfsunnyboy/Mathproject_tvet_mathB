@@ -268,8 +268,12 @@
                         </td>
                         <td>
                             <small>{{ example.source_description }}</small>
-                            {% if example._has_image %}
+                            {% if example._needs_image_conversion %}
+                            <div><span style="display:inline-block;padding:2px 6px;margin-top:4px;background:#ffe4b5;color:#8a5a00;border-radius:4px;font-size:12px;">附圖需轉檔</span></div>
+                            {% elif example._has_real_image_asset %}
                             <div><span style="display:inline-block;padding:2px 6px;margin-top:4px;background:#dff0d8;color:#2e7d32;border-radius:4px;font-size:12px;">有附圖</span></div>
+                            {% elif example._missing_image_asset %}
+                            <div><span style="display:inline-block;padding:2px 6px;margin-top:4px;background:#fff3cd;color:#856404;border-radius:4px;font-size:12px;">附圖待確認</span></div>
                             {% endif %}
                         </td>
                         <td>

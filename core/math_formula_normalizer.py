@@ -9,6 +9,7 @@ from typing import Any
 
 _COMB_PERM_PATTERN_SUB_SUP = re.compile(r"\b([CP])\s*_\s*\{?(\d+)\}?\s*\^\s*\{?(\d+)\}?", re.IGNORECASE)
 _COMB_PERM_PATTERN_SUP_SUB = re.compile(r"\b([CP])\s*\^\s*\{?(\d+)\}?\s*_\s*\{?(\d+)\}?", re.IGNORECASE)
+_COMB_PERM_PATTERN_SUP_SUB_VAR = re.compile(r"\b([CP])\s*\^\s*\{?([a-zA-Z])\}?\s*_\s*\{?(\d+)\}?", re.IGNORECASE)
 _COMB_PERM_PATTERN_SPACED = re.compile(r"\b([CP])\s+(\d+)\s+(\d+)\b", re.IGNORECASE)
 _COMB_PERM_PATTERN_COMPACT = re.compile(r"\b([CP])(\d+)\s+(\d+)\b", re.IGNORECASE)
 _NORMALIZED_COMB_PERM = re.compile(r"\b([CP])\((\d+),\s*(\d+)\)", re.IGNORECASE)
@@ -54,6 +55,7 @@ def normalize_combination_permutation_notation(text: str) -> str:
 
     normalized = _COMB_PERM_PATTERN_SUB_SUP.sub(sub_sub_sup, normalized)
     normalized = _COMB_PERM_PATTERN_SUP_SUB.sub(sub_sup_sub, normalized)
+    normalized = _COMB_PERM_PATTERN_SUP_SUB_VAR.sub(lambda m: f"{m.group(1).upper()}({m.group(2)},{m.group(3)})", normalized)
     normalized = _COMB_PERM_PATTERN_SPACED.sub(sub_spaced, normalized)
     normalized = _COMB_PERM_PATTERN_COMPACT.sub(sub_spaced, normalized)
     return normalized

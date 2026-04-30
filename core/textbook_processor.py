@@ -25,28 +25,39 @@ import json
 import re
 import os
 import hashlib
+import zipfile
+import xml.etree.ElementTree as ET
+import uuid
 # import fitz  # PyMuPDF -> Moved to inside function
 import time
 import io
+from typing import Any
 # import pypandoc -> Moved to inside function
 # from pypandoc.pandoc_download import download_pandoc
 from google.api_core.exceptions import ResourceExhausted
 from models import db, SkillInfo, SkillCurriculum, TextbookExample
 from core.ai_analyzer import get_model
-from flask import current_app
+from flask import current_app, has_app_context
 import traceback
 from core.code_generator import auto_generate_skill_code
 from core.math_formula_normalizer import detect_suspicious_formula, normalize_math_text
+from core.math_expression_formatter import standardize_problem_latex
 from core.question_image_assets import (
     attach_image_metadata,
+    build_question_asset_filename,
+    build_question_asset_dir,
     build_question_assets_dir,
     build_question_code,
+    convert_vector_image_to_png,
     detect_image_reason,
     find_best_page_index,
+    infer_source_page_for_question,
     make_page_image_asset,
     question_needs_image,
     render_pdf_page_to_image,
 )
+
+_DOCX_IMPORT_CONTEXT: dict[str, Any] = {}
 
 # (初始化檢查已移除)
 
@@ -251,6 +262,398 @@ def clean_pandoc_output(text):
     return text
 
 
+def _xml_local_name(tag: str) -> str:
+    if not tag:
+        return ""
+    return tag.split("}", 1)[-1] if "}" in tag else tag
+
+
+def _omml_node_to_latex(node) -> str:
+    name = _xml_local_name(node.tag)
+    if name == "t":
+        return str(node.text or "")
+    if name in ("oMath", "oMathPara"):
+        return "".join(_omml_node_to_latex(child) for child in list(node)).strip()
+    if name == "f":
+        num = node.find(".//{*}num")
+        den = node.find(".//{*}den")
+        num_txt = "".join(_omml_node_to_latex(c) for c in list(num)) if num is not None else ""
+        den_txt = "".join(_omml_node_to_latex(c) for c in list(den)) if den is not None else ""
+        return f"\\frac{{{num_txt}}}{{{den_txt}}}" if (num_txt or den_txt) else ""
+    if name == "sSub":
+        e = node.find(".//{*}e")
+        sub = node.find(".//{*}sub")
+        e_txt = "".join(_omml_node_to_latex(c) for c in list(e)) if e is not None else ""
+        s_txt = "".join(_omml_node_to_latex(c) for c in list(sub)) if sub is not None else ""
+        return f"{e_txt}_{{{s_txt}}}" if e_txt else ""
+    if name == "sSup":
+        e = node.find(".//{*}e")
+        sup = node.find(".//{*}sup")
+        e_txt = "".join(_omml_node_to_latex(c) for c in list(e)) if e is not None else ""
+        s_txt = "".join(_omml_node_to_latex(c) for c in list(sup)) if sup is not None else ""
+        return f"{e_txt}^{{{s_txt}}}" if e_txt else ""
+    if name == "sSubSup":
+        e = node.find(".//{*}e")
+        sub = node.find(".//{*}sub")
+        sup = node.find(".//{*}sup")
+        e_txt = "".join(_omml_node_to_latex(c) for c in list(e)) if e is not None else ""
+        sub_txt = "".join(_omml_node_to_latex(c) for c in list(sub)) if sub is not None else ""
+        sup_txt = "".join(_omml_node_to_latex(c) for c in list(sup)) if sup is not None else ""
+        return f"{e_txt}_{{{sub_txt}}}^{{{sup_txt}}}" if e_txt else ""
+    return "".join(_omml_node_to_latex(child) for child in list(node))
+
+
+def _normalize_omml_latex(latex_text: str) -> str:
+    s = re.sub(r"\s+", " ", str(latex_text or "").strip())
+    # Common textbook notation: P with superscript/subscript means permutation P(n,r)
+    s = re.sub(r"P\^\{(\d+)\}_\{(\d+)\}", r"P(\1,\2)", s)
+    s = re.sub(r"P_\{(\d+)\}\^\{(\d+)\}", r"P(\2,\1)", s)
+    return s.strip()
+
+
+def convert_omml_to_latex(omml_xml: str) -> str:
+    root = ET.fromstring(omml_xml)
+    latex = _omml_node_to_latex(root)
+    return _normalize_omml_latex(latex)
+
+
+def _extract_docx_image_placeholder(run_el, paragraph_state):
+    image_blips = run_el.findall(".//{*}blip")
+    if not image_blips:
+        return ""
+    placeholders = []
+    for _ in image_blips:
+        paragraph_state["formula_image_count"] += 1
+        placeholders.append(f"[FORMULA_IMAGE_{paragraph_state['formula_image_count']}]")
+        paragraph_state["needs_formula_review"] = True
+    return "".join(placeholders)
+
+
+def extract_docx_paragraph_with_equations(paragraph) -> str:
+    state = {
+        "equations": 0,
+        "equation_failures": 0,
+        "needs_formula_review": False,
+        "formula_image_count": 0,
+    }
+    pieces = []
+    p_el = paragraph._p
+    for child in list(p_el):
+        cname = _xml_local_name(child.tag)
+        if cname == "r":
+            run_text = []
+            for rchild in list(child):
+                rname = _xml_local_name(rchild.tag)
+                if rname == "t":
+                    run_text.append(str(rchild.text or ""))
+                elif rname in ("oMath", "oMathPara"):
+                    state["equations"] += 1
+                    try:
+                        latex = convert_omml_to_latex(ET.tostring(rchild, encoding="unicode"))
+                        if latex:
+                            run_text.append(f"\\({latex}\\)")
+                            current_app.logger.info(f"[DOCX EQUATION] converted latex={latex}")
+                        else:
+                            raise ValueError("empty_latex")
+                    except Exception:
+                        state["equation_failures"] += 1
+                        state["needs_formula_review"] = True
+                        run_text.append("[WORD_EQUATION_UNPARSED]")
+                elif rname in ("drawing", "object", "pict"):
+                    run_text.append(_extract_docx_image_placeholder(child, state))
+            pieces.append("".join(run_text))
+        elif cname in ("oMath", "oMathPara"):
+            state["equations"] += 1
+            try:
+                latex = convert_omml_to_latex(ET.tostring(child, encoding="unicode"))
+                if latex:
+                    pieces.append(f"\\({latex}\\)")
+                else:
+                    raise ValueError("empty_latex")
+            except Exception:
+                state["equation_failures"] += 1
+                state["needs_formula_review"] = True
+                pieces.append("[WORD_EQUATION_UNPARSED]")
+    text = "".join(pieces).strip()
+    paragraph._math_meta = state
+    return text or str(paragraph.text or "").strip()
+
+
+def extract_docx_table_with_equations(table) -> str:
+    lines = []
+    for row in table.rows:
+        cells = []
+        for cell in row.cells:
+            segs = []
+            for p in cell.paragraphs:
+                seg = extract_docx_paragraph_with_equations(p)
+                if seg:
+                    segs.append(seg)
+            cells.append(" ".join(segs).strip())
+        lines.append(" | ".join(cells).strip())
+    return "\n".join(lines).strip()
+
+
+def build_docx_media_relationship_map(docx_path: str, extracted_media_dir: str) -> dict[str, dict[str, str]]:
+    rel_map: dict[str, dict[str, str]] = {}
+    try:
+        with zipfile.ZipFile(docx_path, "r") as zf:
+            rel_xml = zf.read("word/_rels/document.xml.rels")
+        rel_root = ET.fromstring(rel_xml)
+        for rel in rel_root.findall(".//{*}Relationship"):
+            rid = rel.attrib.get("Id")
+            target = rel.attrib.get("Target", "")
+            rtype = rel.attrib.get("Type", "")
+            if not rid or "image" not in rtype.lower():
+                continue
+            filename = os.path.basename(target)
+            extracted_path = os.path.join(extracted_media_dir, filename).replace("\\", "/")
+            rel_map[rid] = {
+                "target_ref": target,
+                "content_type": _guess_image_content_type(filename),
+                "extracted_path": extracted_path,
+            }
+    except Exception:
+        return {}
+    return rel_map
+
+
+def _guess_image_content_type(filename: str) -> str:
+    ext = os.path.splitext(str(filename or ""))[1].lower()
+    return {
+        ".png": "image/png",
+        ".jpg": "image/jpeg",
+        ".jpeg": "image/jpeg",
+        ".webp": "image/webp",
+        ".gif": "image/gif",
+        ".bmp": "image/bmp",
+        ".wmf": "image/x-wmf",
+        ".emf": "image/x-emf",
+    }.get(ext, "application/octet-stream")
+
+
+def extract_docx_image_rids_from_paragraph(paragraph) -> list[str]:
+    rids = []
+    p_el = paragraph._p
+    for blip in p_el.findall(".//{*}blip"):
+        rid = blip.attrib.get("{http://schemas.openxmlformats.org/officeDocument/2006/relationships}embed")
+        if rid:
+            rids.append(rid)
+    for imagedata in p_el.findall(".//{*}imagedata"):
+        rid = imagedata.attrib.get("{http://schemas.openxmlformats.org/officeDocument/2006/relationships}id")
+        if rid:
+            rids.append(rid)
+    return rids
+
+
+def _is_question_start_text(text: str) -> bool:
+    t = str(text or "").strip()
+    if not t:
+        return False
+    patterns = ["例題", "隨堂練習", "基礎題", "進階題", "習題", "自我評量", "統測補給站", "題目"]
+    return any(p in t for p in patterns) or bool(re.match(r"^\s*例\s*\d+", t))
+
+
+def _extract_question_title_from_text(text: str) -> str:
+    t = str(text or "").strip()
+    for pat in [
+        r"(統測補給站\s*\d+)",
+        r"(隨堂練習\s*\d+)",
+        r"(例題\s*\d+)",
+        r"(基礎題\s*\d+)",
+        r"(進階題\s*\d+)",
+        r"(自我評量[^\s，。]*)",
+        r"((?:\d+-\d+\s*)?習題\s*\d*)",
+    ]:
+        m = re.search(pat, t)
+        if m:
+            return m.group(1).replace(" ", "")
+    return (t[:20] or "未命名題目")
+
+
+def _is_formula_question_text(text: str) -> bool:
+    t = str(text or "")
+    return any(k in t for k in ("試填入下列各式", "試求下列各式之值", "設，試求自然數 n", "公式空白"))
+
+
+def _is_image_question_text(text: str) -> bool:
+    t = str(text or "")
+    return any(k in t for k in ("如圖", "右圖", "附圖", "棋盤式街道圖", "著色", "圖形"))
+
+
+def attach_docx_media_to_question_blocks(blocks):
+    question_assets: dict[str, list[dict[str, Any]]] = {}
+    orphan_images: list[dict[str, Any]] = []
+    image_kw = ["如圖", "右圖", "附圖", "棋盤式街道圖", "著色", "標號"]
+
+    question_points: list[dict[str, Any]] = []
+    image_blocks: list[dict[str, Any]] = []
+    for b in blocks:
+        if b.get("type") == "paragraph":
+            txt = str(b.get("text", "") or "")
+            if _is_question_start_text(txt):
+                title = _extract_question_title_from_text(txt)
+                q = {
+                    "title": title,
+                    "block_index": int(b.get("block_index") or 0),
+                    "text": txt,
+                    "has_image_kw": any(k in txt for k in image_kw),
+                    "has_formula_kw": _is_formula_question_text(txt),
+                }
+                question_points.append(q)
+                question_assets.setdefault(title, [])
+        elif b.get("type") == "image":
+            image_blocks.append(dict(b))
+
+    for img in image_blocks:
+        img_idx = int(img.get("block_index") or 0)
+        if not question_points:
+            orphan_images.append(img)
+            continue
+
+        prev_q = None
+        next_q = None
+        for q in question_points:
+            if q["block_index"] <= img_idx:
+                prev_q = q
+            elif q["block_index"] > img_idx and next_q is None:
+                next_q = q
+                break
+
+        attached = False
+        def _classify_asset(asset_obj, q):
+            ext = os.path.splitext(str(asset_obj.get("path") or ""))[1].lower().lstrip(".")
+            if ext in ("wmf", "emf") and q.get("has_formula_kw"):
+                asset_obj["media_kind"] = "formula_asset"
+                if has_app_context():
+                    current_app.logger.info(
+                        f"[DOCX MEDIA CLASSIFY] rid={asset_obj.get('rid')} kind=formula_asset reason=formula_question_block"
+                    )
+            else:
+                asset_obj["media_kind"] = "image_asset"
+                reason = "question_contains_附圖" if q.get("has_image_kw") else "default_image_asset"
+                if has_app_context():
+                    current_app.logger.info(
+                        f"[DOCX MEDIA CLASSIFY] rid={asset_obj.get('rid')} kind=image_asset reason={reason}"
+                    )
+
+        # Case 1: image before first question; bind to next only when question has image keywords.
+        if prev_q is None and next_q is not None:
+            if next_q["has_image_kw"] or next_q["has_formula_kw"]:
+                asset = dict(img)
+                asset["image_attach_reason"] = "near_next_question"
+                asset["needs_image_review"] = True
+                _classify_asset(asset, next_q)
+                question_assets.setdefault(next_q["title"], []).append(asset)
+                attached = True
+            else:
+                orphan_images.append(img)
+                continue
+
+        # Case 2: image after a known question and before next question.
+        if not attached and prev_q is not None and next_q is not None:
+            d_prev = abs(img_idx - prev_q["block_index"])
+            d_next = abs(next_q["block_index"] - img_idx)
+            if d_prev == d_next:
+                shared_prev = dict(img)
+                shared_next = dict(img)
+                shared_prev["image_attach_reason"] = "shared_nearby_image"
+                shared_prev["needs_image_review"] = True
+                shared_prev["shared_image"] = True
+                shared_next["image_attach_reason"] = "shared_nearby_image"
+                shared_next["needs_image_review"] = True
+                shared_next["shared_image"] = True
+                _classify_asset(shared_prev, prev_q)
+                _classify_asset(shared_next, next_q)
+                question_assets.setdefault(prev_q["title"], []).append(shared_prev)
+                question_assets.setdefault(next_q["title"], []).append(shared_next)
+                attached = True
+            elif next_q["has_image_kw"] and d_next <= d_prev:
+                asset = dict(img)
+                asset["image_attach_reason"] = "near_next_question"
+                asset["needs_image_review"] = True
+                _classify_asset(asset, next_q)
+                question_assets.setdefault(next_q["title"], []).append(asset)
+                attached = True
+            elif prev_q["has_image_kw"] and d_prev < d_next:
+                asset = dict(img)
+                asset["image_attach_reason"] = "near_prev_question"
+                asset["needs_image_review"] = True
+                _classify_asset(asset, prev_q)
+                question_assets.setdefault(prev_q["title"], []).append(asset)
+                attached = True
+            else:
+                asset = dict(img)
+                asset["image_attach_reason"] = "image_inside_question_block"
+                asset["needs_image_review"] = True
+                _classify_asset(asset, prev_q)
+                question_assets.setdefault(prev_q["title"], []).append(asset)
+                attached = True
+
+        # Case 3: image after last question -> attach to the latest question.
+        if not attached and prev_q is not None and next_q is None:
+            asset = dict(img)
+            asset["image_attach_reason"] = "image_inside_question_block"
+            asset["needs_image_review"] = True
+            _classify_asset(asset, prev_q)
+            question_assets.setdefault(prev_q["title"], []).append(asset)
+            attached = True
+
+        if not attached:
+            orphan_images.append(img)
+
+    return question_assets, orphan_images
+
+
+def build_docx_question_formula_context(blocks):
+    question_blocks: dict[str, str] = {}
+    current_title = None
+    buffer = []
+    for b in blocks or []:
+        btype = b.get("type")
+        if btype == "paragraph":
+            txt = str(b.get("text", "") or "").strip()
+            if not txt:
+                continue
+            if _is_question_start_text(txt):
+                if current_title and buffer:
+                    question_blocks[current_title] = "\n".join(buffer).strip()
+                current_title = _extract_question_title_from_text(txt)
+                buffer = [txt]
+            elif current_title:
+                buffer.append(txt)
+        elif btype == "image" and current_title:
+            buffer.append("[BLOCK_IMAGE]")
+    if current_title and buffer:
+        question_blocks[current_title] = "\n".join(buffer).strip()
+    return question_blocks
+
+
+def _safe_title_for_filename(title: str) -> str:
+    t = re.sub(r"\s+", "", str(title or "").strip())
+    t = re.sub(r"[\\/:*?\"<>|]", "_", t)
+    return t[:40] or "untitled"
+
+
+def _copy_docx_asset_to_question_assets(src_path: str, dst_dir: str, filename: str) -> str | None:
+    try:
+        import shutil
+        if not src_path:
+            return None
+        if not os.path.isabs(src_path):
+            src_abs = os.path.join(current_app.root_path, src_path)
+        else:
+            src_abs = src_path
+        if not os.path.exists(src_abs):
+            return None
+        os.makedirs(dst_dir, exist_ok=True)
+        dst_abs = os.path.join(dst_dir, filename)
+        shutil.copy2(src_abs, dst_abs)
+        return dst_abs
+    except Exception:
+        return None
+
+
 def parse_volume(volume_str: str):
     volume_str = str(volume_str).strip()
     if not volume_str:
@@ -383,6 +786,14 @@ def process_textbook_file(file_path, curriculum_info, queue, skip_code_gen=False
             source_file_path=file_path,
             content_by_page=content_by_page,
         )
+        try:
+            temp_dir = (_DOCX_IMPORT_CONTEXT or {}).get("temp_media_dir")
+            if temp_dir and bool(current_app.config.get("CLEAN_ORPHAN_DOCX_MEDIA", True)):
+                import shutil
+                shutil.rmtree(temp_dir, ignore_errors=True)
+                current_app.logger.info(f"[DOCX MEDIA CLEANUP] removed orphan temp dir={temp_dir}")
+        except Exception:
+            pass
 
         skills_count = result.get('skills_processed', 0)
         curriculums_count = result.get('curriculums_added', 0)
@@ -461,6 +872,8 @@ def extract_content_from_file(file_path, queue):
     current_app.logger.info(message)
     queue.put(f"INFO: {message}")
 
+    global _DOCX_IMPORT_CONTEXT
+    _DOCX_IMPORT_CONTEXT = {}
     content_by_page = {}
     
     try:
@@ -534,71 +947,104 @@ def extract_content_from_file(file_path, queue):
             doc.close()
 
         elif file_extension in ['.docx', '.doc']:
-            # --- Word (.docx) 處理邏輯 (使用 Pandoc) ---
-            message = "偵測到 Word (.docx) 檔案，使用 Pandoc 轉換以保留數學公式..."
+            # --- Word (.docx) 處理邏輯 ---
+            message = "偵測到 Word (.docx) 檔案，啟用段落/公式物件抽取並保留 LaTeX。"
             current_app.logger.info(message)
             queue.put(f"INFO: {message}")
 
             try:
-                # 建立一個暫存資料夾來存放從 Word 中提取的圖片
-                temp_media_dir = os.path.join(os.path.dirname(file_path), "media")
-                os.makedirs(temp_media_dir, exist_ok=True)
+                from docx import Document
+                from docx.table import Table
+                from docx.text.paragraph import Paragraph
 
-                # 設定 Pandoc 參數
-                extra_args = [
-                    '--wrap=none',
-                    f'--extract-media={temp_media_dir}'
-                ]
+                doc = Document(file_path)
+                job_id = uuid.uuid4().hex[:12]
+                media_rel_root = os.path.join("uploads", "tmp_docx_media", job_id)
+                media_abs_root = os.path.join(current_app.root_path, media_rel_root)
+                media_leaf_rel = os.path.join(media_rel_root, "media")
+                media_leaf_abs = os.path.join(current_app.root_path, media_leaf_rel)
+                os.makedirs(media_leaf_abs, exist_ok=True)
+                try:
+                    pypandoc.convert_file(
+                        file_path,
+                        'markdown',
+                        extra_args=['--wrap=none', f'--extract-media={media_abs_root}']
+                    )
+                except Exception:
+                    pass
+                rel_map = build_docx_media_relationship_map(file_path, media_leaf_rel)
+                text_chunks = []
+                ordered_blocks = []
+                paragraphs_count = 0
+                equations_count = 0
+                equation_failures = 0
+                formula_image_count = 0
 
-                # 執行轉換
-                markdown_output = pypandoc.convert_file(file_path, 'markdown', extra_args=extra_args)
+                for idx, block in enumerate(doc.element.body.iterchildren()):
+                    if block.tag.endswith('}p'):
+                        para = Paragraph(block, doc)
+                        paragraphs_count += 1
+                        ptxt = extract_docx_paragraph_with_equations(para)
+                        meta = getattr(para, "_math_meta", {}) or {}
+                        equations_count += int(meta.get("equations", 0) or 0)
+                        equation_failures += int(meta.get("equation_failures", 0) or 0)
+                        formula_image_count += int(meta.get("formula_image_count", 0) or 0)
+                        if int(meta.get("equations", 0) or 0) > 0:
+                            current_app.logger.info(f"[DOCX EQUATION] detected type=omml paragraph_index={idx}")
+                        if int(meta.get("equation_failures", 0) or 0) > 0:
+                            current_app.logger.warning(
+                                f"[DOCX EQUATION WARNING] conversion failed paragraph_index={idx}"
+                            )
+                        if ptxt:
+                            text_chunks.append(ptxt)
+                            ordered_blocks.append({"type": "paragraph", "text": ptxt, "block_index": len(ordered_blocks) + 1})
+                        for rid in extract_docx_image_rids_from_paragraph(para):
+                            info = rel_map.get(rid, {})
+                            ordered_blocks.append(
+                                {
+                                    "type": "image",
+                                    "rid": rid,
+                                    "path": info.get("extracted_path"),
+                                    "content_type": info.get("content_type", "application/octet-stream"),
+                                    "target_ref": info.get("target_ref"),
+                                    "block_index": len(ordered_blocks) + 1,
+                                }
+                            )
+                    elif block.tag.endswith('}tbl'):
+                        table = Table(block, doc)
+                        ttxt = extract_docx_table_with_equations(table)
+                        if ttxt:
+                            text_chunks.append(ttxt)
+                            ordered_blocks.append({"type": "paragraph", "text": ttxt, "block_index": len(ordered_blocks) + 1})
 
-                # 呼叫專用清洗函式
-                markdown_output = clean_pandoc_output(markdown_output)
+                cleaned_chunks = []
+                for chunk in text_chunks:
+                    c = str(chunk or "")
+                    c_wo = re.sub(r"\[FORMULA_IMAGE_\d+\]", "", c).strip()
+                    if not c_wo:
+                        continue
+                    cleaned_chunks.append(c)
+                extracted_text = "\n".join(cleaned_chunks).strip()
+                q_assets, orphan_images = attach_docx_media_to_question_blocks(ordered_blocks)
+                formula_blocks = build_docx_question_formula_context(ordered_blocks)
+                for o in orphan_images:
+                    current_app.logger.warning(f"[DOCX IMAGE WARNING] orphan image ignored path={o.get('path')}")
+                _DOCX_IMPORT_CONTEXT = {
+                    "media_rel_map": rel_map,
+                    "ordered_blocks": ordered_blocks,
+                    "question_assets": q_assets,
+                    "question_formula_blocks": formula_blocks,
+                    "orphan_images": orphan_images,
+                    "temp_media_dir": media_abs_root,
+                }
 
-                # --- 圖片 OCR 邏輯 ---
-                # (局部函式：需要使用外層的 WandImage)
-                def ocr_image_and_replace(match):
-                    image_path_in_md = match.group(1)
-                    from urllib.parse import unquote
-                    image_path_in_md = unquote(image_path_in_md)
-                    
-                    full_image_path = os.path.join(os.path.dirname(file_path), image_path_in_md)
+                if formula_image_count > 0:
+                    current_app.logger.info(f"[DOCX EQUATION IMAGE] saved path=[FORMULA_IMAGE_*] count={formula_image_count}")
+                current_app.logger.info(
+                    f"[DOCX IMPORT] paragraphs={paragraphs_count} equations={equations_count} equation_failures={equation_failures}"
+                )
+                content_by_page[1] = extracted_text
 
-                    if os.path.exists(full_image_path):
-                        try:
-                            image_to_ocr_path = full_image_path
-                            # 在 OCR 前先轉換 WMF/EMF 檔案
-                            if full_image_path.lower().endswith(('.wmf', '.emf')):
-                                if WandImage is None:
-                                    queue.put(f"WARN: 略過 WMF/EMF 圖片轉換 ({image_path_in_md})，因為系統未安裝 Wand/ImageMagick。")
-                                    return match.group(0) # 保持原樣
-
-                                png_path = os.path.splitext(full_image_path)[0] + '.png'
-                                try:
-                                    with WandImage(filename=full_image_path) as img:
-                                        img.format = 'png'
-                                        img.save(filename=png_path)
-                                    image_to_ocr_path = png_path
-                                except Exception as wand_e:
-                                    queue.put(f"WARN: 轉換圖片 {image_path_in_md} 失敗: {wand_e}")
-                                    return match.group(0)
-
-                            tesseract_path = current_app.config.get('TESSERACT_CMD')
-                            if tesseract_path:
-                                pytesseract.pytesseract.tesseract_cmd = tesseract_path
-                            
-                            img = Image.open(image_to_ocr_path)
-                            ocr_text = pytesseract.image_to_string(img, lang='chi_tra')
-                            return f" {ocr_text.strip()} "
-                        except Exception as ocr_e:
-                            queue.put(f"WARN: OCR 辨識圖片 '{image_path_in_md}' 失敗: {ocr_e}")
-                    
-                    return match.group(0)
-
-                # 使用 Regex 替換 Markdown 圖片標記
-                final_output = re.sub(r'!\[.*?\]\((.*?)\)', ocr_image_and_replace, markdown_output)
-                content_by_page[1] = final_output
 
             except (OSError, RuntimeError) as e:
                 error_str = str(e)
@@ -1455,6 +1901,12 @@ PDF/OCR 數學式校正要求：
 7. 不要把明顯錯誤的 OCR 公式直接寫成正式例題。
 8. 所有 LaTeX 反斜線仍需符合合法 JSON escape。
 
+DOCX 公式缺失安全規則（嚴格）：
+1. 若題目文字包含 [FORMULA_IMAGE_x]、[WORD_EQUATION_UNPARSED]、[UNREADABLE_FORMULA]、或只有 (1)(2)(3) 但小題公式缺失，禁止自行猜測/補齊排列組合公式數字。
+2. 這種情況必須保留 placeholder，並輸出 needs_review=true、needs_formula_review=true、formula_missing=true。
+3. 不可把缺失公式改寫成看似完整的 P^n_r 或 C^n_r。
+4. 若無法辨識公式內容，優先保留 [FORMULA_MISSING]，不要生成新公式。
+
 隨堂練習 JSON 輸出要求：
 1. examples 只放例題；practice_questions 放隨堂練習與練習題，兩者都必須是可獨立入庫的題目物件。
 2. practice_questions 每題至少包含：practice_title(或 source_description)、problem、answer、solution、source_type="in_class_practice"。
@@ -1938,10 +2390,12 @@ def _normalize_sub_questions(raw_sub_questions):
     for idx, item in enumerate(raw_sub_questions, start=1):
         if not isinstance(item, dict):
             continue
+        sq_problem_raw = _first_non_empty_str(item, ("problem_text", "problem", "question"))
+        sq_problem, _ = standardize_problem_latex(sq_problem_raw)
         normalized.append(
             {
                 "label": _first_non_empty_str(item, ("label", "index", "no", "number")) or str(idx),
-                "problem": _first_non_empty_str(item, ("problem_text", "problem", "question")),
+                "problem": sq_problem,
                 "answer": _first_non_empty_str(item, ("correct_answer", "answer")),
                 "solution": _first_non_empty_str(item, ("detailed_solution", "solution")),
             }
@@ -2263,7 +2717,30 @@ def save_to_database(parsed_data, curriculum_info, queue, source_file_path=None,
     practice_questions_needs_review = 0
     practice_questions_skipped = 0
     processed_skill_ids = []
+    detected_titles = []
+    in_class_nums = []
+    missing_image_questions = []
+    docx_attached_count = 0
+    docx_direct_display_images = 0
+    docx_vector_images = 0
+    docx_conversion_success = 0
+    docx_conversion_failed = 0
+    docx_copied_to_question_assets = 0
+    docx_formula_blocks = {}
     is_pdf_source = str(source_file_path or "").lower().endswith(".pdf")
+    is_docx_source = str(source_file_path or "").lower().endswith((".docx", ".doc"))
+    if is_docx_source:
+        ctx = _DOCX_IMPORT_CONTEXT or {}
+        q_assets = ctx.get("question_assets", {}) if isinstance(ctx, dict) else {}
+        docx_formula_blocks = ctx.get("question_formula_blocks", {}) if isinstance(ctx, dict) else {}
+        attached_asset_count = sum(len(v or []) for v in q_assets.values()) if isinstance(q_assets, dict) else 0
+        current_app.logger.info(f"[DOCX IMAGE DEBUG] attached_asset_count={attached_asset_count}")
+        if isinstance(q_assets, dict):
+            for t, assets in q_assets.items():
+                for a in (assets or []):
+                    current_app.logger.info(
+                        f"[DOCX IMAGE DEBUG] attached title={t} source_type=unknown path={a.get('path')}"
+                    )
     page_image_cache = {}
 
     prefix_map = {
@@ -2307,6 +2784,88 @@ def save_to_database(parsed_data, curriculum_info, queue, source_file_path=None,
         }
         return hashlib.sha1(json.dumps(payload, ensure_ascii=False, sort_keys=True).encode("utf-8")).hexdigest()[:16]
 
+    def _contains_perm_comb_formula(text: str) -> bool:
+        t = str(text or "")
+        return bool(
+            re.search(r"(?:\{\}\^\{[^}]+\}[PC]_\{[^}]+\}|[PC]\s*\(|[PC]\s*\^|[PC]_\{?|[⁰¹²³⁴⁵⁶⁷⁸⁹₀₁₂₃₄₅₆₇₈₉]P)", t)
+        )
+
+    def validate_problem_formula_not_hallucinated(item_title: str, item: dict, problem_text: str, raw_block: str):
+        text = str(problem_text or "")
+        block = str(raw_block or "")
+        has_placeholder = bool(
+            re.search(r"\[FORMULA_IMAGE_\d+\]|\[WORD_EQUATION_UNPARSED\]|\[UNREADABLE_FORMULA\]", block)
+        )
+        if is_docx_source:
+            current_app.logger.info(f"[DOCX FORMULA SOURCE] title={item_title} raw_block={block[:240]}")
+        if has_placeholder:
+            current_app.logger.warning(f"[DOCX FORMULA WARNING] formula placeholder found title={item_title}")
+        if has_placeholder and _contains_perm_comb_formula(text):
+            has_ocr_source = bool(item.get("formula_ocr_source"))
+            if not has_ocr_source:
+                current_app.logger.warning(f"[DOCX FORMULA WARNING] formula missing before AI title={item_title}")
+                fallback_text = block if block.strip() else text
+                fallback_text = re.sub(r"\[FORMULA_IMAGE_\d+\]", "[FORMULA_MISSING]", fallback_text)
+                fallback_text = re.sub(r"\[WORD_EQUATION_UNPARSED\]", "[FORMULA_MISSING]", fallback_text)
+                fallback_text = re.sub(r"\[UNREADABLE_FORMULA\]", "[FORMULA_MISSING]", fallback_text)
+                item["needs_review"] = True
+                item["needs_formula_review"] = True
+                item["formula_missing"] = True
+                item["formula_hallucination_risk"] = True
+                item["parse_warning"] = "formula generated by AI without source"
+                if re.search(r"試填入下列各式|試求下列各式之值", fallback_text):
+                    item["problem_unusable"] = True
+                return fallback_text
+        if has_placeholder and not _contains_perm_comb_formula(text):
+            fallback_text = block if block.strip() else text
+            fallback_text = re.sub(r"\[FORMULA_IMAGE_\d+\]", "[FORMULA_MISSING]", fallback_text)
+            fallback_text = re.sub(r"\[WORD_EQUATION_UNPARSED\]", "[FORMULA_MISSING]", fallback_text)
+            item["needs_review"] = True
+            item["needs_formula_review"] = True
+            item["formula_missing"] = True
+            if re.search(r"試填入下列各式|試求下列各式之值", fallback_text):
+                item["problem_unusable"] = True
+            return fallback_text
+        return text
+
+    def extract_formula_images_for_question_block(item_title: str):
+        if not bool(current_app.config.get("ENABLE_DOCX_FORMULA_OCR_FALLBACK", False)):
+            return []
+        if not is_docx_source:
+            return []
+        ctx = _DOCX_IMPORT_CONTEXT or {}
+        q_assets = ctx.get("question_assets", {}) if isinstance(ctx, dict) else {}
+        candidates = q_assets.get(str(item_title).replace(" ", ""), []) or q_assets.get(str(item_title), [])
+        results = []
+        if not candidates:
+            return results
+        try:
+            from PIL import Image
+            model = get_model("vision_analyzer")
+        except Exception:
+            return results
+        prompt = (
+            "請只轉錄圖片中的數學式。"
+            "不要補題目，不要解題，不要猜不存在的數字。"
+            "若看不清楚，輸出 [UNREADABLE_FORMULA]。"
+        )
+        for asset in candidates:
+            rel = str(asset.get("path") or "")
+            if not rel:
+                continue
+            abs_path = rel if os.path.isabs(rel) else os.path.join(current_app.root_path, rel)
+            if not os.path.exists(abs_path):
+                continue
+            try:
+                img = Image.open(abs_path)
+                resp = model.generate_content([prompt, img], generation_config={"temperature": 0.0, "max_output_tokens": 1024})
+                text = str(getattr(resp, "text", "") or "").strip()
+                if text:
+                    results.append(text)
+            except Exception:
+                continue
+        return results
+
     def _build_source_description(title, source_type, linked_example_title=None, needs_review=False, dedupe_hash=""):
         title_text = str(title or "").strip() or "未命名題目"
         parts = [f"source_type={source_type}"]
@@ -2335,8 +2894,21 @@ def save_to_database(parsed_data, curriculum_info, queue, source_file_path=None,
             return saved_titles[-1], True
         return None, True
 
-    def _build_image_metadata(question_title, question_text, chapter_title, section_title, source_type, question_code, force_has_image=False, image_description="", source_page=None, page_index=None):
-        if not force_has_image and not question_needs_image(question_text, ai_has_image=force_has_image):
+    def _build_image_metadata(
+        question_title,
+        question_text,
+        chapter_title,
+        section_title,
+        source_type,
+        question_code,
+        force_has_image=False,
+        image_description="",
+        source_page=None,
+        page_index=None,
+        item_payload=None,
+    ):
+        has_formula_image_placeholder = bool(re.search(r"\[FORMULA_IMAGE_\d+\]", str(question_text or "")))
+        if not force_has_image and not has_formula_image_placeholder and not question_needs_image(question_text, ai_has_image=force_has_image):
             return None
         reason = image_description or detect_image_reason(question_text)
         current_app.logger.info(f"[QUESTION IMAGE] needs image title={question_title} source_page={source_page}")
@@ -2348,32 +2920,42 @@ def save_to_database(parsed_data, curriculum_info, queue, source_file_path=None,
             "needs_image_review": True,
             "image_assets": [],
         }
-        if source_page is None and page_index is None:
-            metadata["image_warning"] = "missing_source_page"
-            current_app.logger.info(f"[QUESTION IMAGE] skipped title={question_title} reason=missing_source_page")
+        if has_formula_image_placeholder:
+            metadata["needs_formula_review"] = True
+            metadata["formula_asset_type"] = "image_formula"
+        infer_item = dict(item_payload or {})
+        infer_item.setdefault("source_description", question_title)
+        infer_item.setdefault("problem_text", question_text)
+        infer_item.setdefault("has_image", bool(force_has_image))
+        infer_item.setdefault("image_description", image_description or "")
+        infer_item["source_page"] = source_page
+        infer_item["page_index"] = page_index
+        inferred_source_page, infer_reason = infer_source_page_for_question(
+            infer_item,
+            extracted_pages=content_by_page or {},
+            section_title=section_title,
+            concept_name=concept_name,
+        )
+        if inferred_source_page is not None and infer_reason != "explicit_source_page":
+            current_app.logger.info(
+                f"[QUESTION IMAGE] inferred source_page title={question_title} source_page={inferred_source_page} reason={infer_reason}"
+            )
             if queue is not None:
-                queue.put(f"INFO: [QUESTION IMAGE] skipped title={question_title} reason=missing_source_page")
+                queue.put(
+                    f"INFO: [QUESTION IMAGE] inferred source_page title={question_title} source_page={inferred_source_page} reason={infer_reason}"
+                )
+
+        if inferred_source_page is None:
+            metadata["image_warning"] = "missing_source_page"
+            current_app.logger.info(f"[QUESTION IMAGE] missing image asset title={question_title} reason=missing_source_page")
+            if queue is not None:
+                queue.put(f"INFO: [QUESTION IMAGE] missing image asset title={question_title} reason=missing_source_page")
             return metadata
 
         if not is_pdf_source:
             return metadata
 
-        page_number = None
-        if source_page is not None:
-            try:
-                page_number = int(source_page)
-            except Exception:
-                page_number = None
-        if page_number is None and page_index is not None:
-            try:
-                page_number = int(page_index) + 1
-            except Exception:
-                page_number = None
-        if page_number is None:
-            page_number = find_best_page_index(content_by_page, question_text)
-        if page_number is None:
-            metadata["image_warning"] = "missing_source_page"
-            return metadata
+        page_number = int(inferred_source_page)
 
         rel_dir, abs_dir, chapter_id, section_id = build_question_assets_dir(
             curriculum_info, chapter_title, section_title
@@ -2404,9 +2986,132 @@ def save_to_database(parsed_data, curriculum_info, queue, source_file_path=None,
             )
             metadata["image_assets"][0]["source_page"] = int(page_number)
             metadata["image_assets"][0]["image_description"] = image_description or ""
+            if infer_reason != "explicit_source_page":
+                metadata["image_assets"][0]["source_page_inferred"] = True
+                metadata["image_assets"][0]["source_page_infer_reason"] = infer_reason
+                metadata["needs_image_review"] = True
         except Exception as e:
             current_app.logger.warning(f"[QUESTION IMAGE] render failed question={question_title} err={e}")
         return metadata
+
+    def _build_docx_assets_metadata(question_title, chapter_title, section_title, source_type, question_text=""):
+        ctx = _DOCX_IMPORT_CONTEXT or {}
+        q_assets = ctx.get("question_assets", {}) if isinstance(ctx, dict) else {}
+        all_candidates = q_assets.get(str(question_title or "").replace(" ", ""), []) or q_assets.get(str(question_title or ""), [])
+        candidates = [a for a in (all_candidates or []) if str(a.get("media_kind", "image_asset")) == "image_asset"]
+        if not candidates:
+            combo = f"{question_title} {question_text}"
+            if any(k in str(combo or "") for k in ("如圖", "右圖", "附圖", "棋盤式街道圖", "著色")):
+                return {"has_image": True, "image_assets": [], "image_warning": "missing_docx_image_asset", "needs_review": True}
+            return None
+        rel_dir = build_question_asset_dir(
+            curriculum=curriculum_info.get("curriculum", "unknown"),
+            publisher=curriculum_info.get("publisher", "unknown"),
+            volume=curriculum_info.get("volume", "unknown"),
+            chapter_title=chapter_title,
+            section_title=section_title,
+            source_filename=os.path.basename(str(source_file_path or "")),
+        )
+        abs_dir = os.path.join(current_app.root_path, rel_dir)
+        os.makedirs(abs_dir, exist_ok=True)
+        current_app.logger.info(f"[QUESTION ASSET] dir={rel_dir}")
+        image_assets = []
+        for idx, asset in enumerate(candidates, start=1):
+            src_rel = str(asset.get("path") or "")
+            ext = (os.path.splitext(src_rel)[1].lower() or ".bin").lstrip(".")
+            problem_key = str(question_title or "") + "|" + str(source_type or "") + "|" + str(asset.get("block_index") or "")
+            qhash = hashlib.sha1(problem_key.encode("utf-8")).hexdigest()[:8]
+            filename = build_question_asset_filename(
+                source_type=source_type,
+                question_title=question_title,
+                question_id_or_dedupe=qhash,
+                fig_index=idx,
+                ext=ext,
+            )
+            copied_abs = _copy_docx_asset_to_question_assets(src_rel, abs_dir, filename)
+            if not copied_abs:
+                continue
+            rel_path = os.path.join(rel_dir, filename).replace("\\", "/")
+            current_app.logger.info(
+                f"[DOCX IMAGE] attached title={question_title} original={src_rel} question_asset={rel_path}"
+            )
+            needs_conv = ext in ("wmf", "emf")
+            display_path = rel_path
+            converted_path = None
+            conv_error = None
+            needs_review = False
+            if needs_conv:
+                png_filename = os.path.splitext(filename)[0] + ".png"
+                png_abs = os.path.join(abs_dir, png_filename)
+                png_rel = os.path.join(rel_dir, png_filename).replace("\\", "/")
+                current_app.logger.info(f"[DOCX IMAGE] convert start input={copied_abs} output={png_abs}")
+                ok, err = convert_vector_image_to_png(copied_abs, png_abs)
+                if ok:
+                    current_app.logger.info(f"[DOCX IMAGE] convert success output={png_abs}")
+                    display_path = png_rel
+                    converted_path = png_rel
+                    needs_conv = False
+                else:
+                    current_app.logger.warning(f"[DOCX IMAGE WARNING] convert failed input={copied_abs} error={err}")
+                    display_path = None
+                    conv_error = err
+                    needs_review = True
+            image_assets.append(
+                {
+                    "asset_type": "word_embedded_image",
+                    "source": "docx",
+                    "path": rel_path,
+                    "display_path": display_path,
+                    "converted_path": converted_path,
+                    "original_path": src_rel.replace("\\", "/"),
+                    "content_type": asset.get("content_type", _guess_image_content_type(filename)),
+                    "original_format": ext if ext in ("wmf", "emf") else None,
+                    "needs_image_conversion": needs_conv,
+                    "needs_image_review": needs_review,
+                    "conversion_error": conv_error,
+                    "image_attach_reason": asset.get("image_attach_reason", "image_inside_question_block"),
+                }
+            )
+        if image_assets:
+            return {"has_image": True, "image_assets": image_assets}
+        return {"has_image": True, "image_assets": [], "image_warning": "missing_docx_image_asset", "needs_review": True}
+
+    def _build_docx_formula_assets_metadata(question_title, question_text=""):
+        ctx = _DOCX_IMPORT_CONTEXT or {}
+        q_assets = ctx.get("question_assets", {}) if isinstance(ctx, dict) else {}
+        all_candidates = q_assets.get(str(question_title or "").replace(" ", ""), []) or q_assets.get(str(question_title or ""), [])
+        formula_candidates = [a for a in (all_candidates or []) if str(a.get("media_kind", "")) == "formula_asset"]
+        if not formula_candidates:
+            return None
+        current_app.logger.info(f"[DOCX FORMULA ASSET] attached title={question_title} count={len(formula_candidates)}")
+        assets = []
+        for a in formula_candidates:
+            assets.append(
+                {
+                    "asset_type": "word_formula_image",
+                    "source": "docx",
+                    "path": str(a.get("path") or ""),
+                    "content_type": str(a.get("content_type") or ""),
+                    "rid": a.get("rid"),
+                    "image_attach_reason": a.get("image_attach_reason"),
+                }
+            )
+        meta = {"formula_assets": assets, "formula_placeholders": ["[FORMULA_MISSING]"] * len(assets)}
+        if not _contains_perm_comb_formula(question_text):
+            meta["needs_formula_review"] = True
+            meta["formula_missing"] = True
+            meta["needs_review"] = True
+            current_app.logger.warning(f"[DOCX FORMULA WARNING] formula_asset_without_ocr title={question_title}")
+        return meta
+
+    def _build_math_metadata(raw_text, standardized_meta, needs_review=False):
+        meta = {
+            "math_format": "standard_latex",
+            "raw_problem_backup": str(raw_text or ""),
+            "math_warnings": list(standardized_meta.get("warnings", [])),
+            "needs_review": bool(needs_review or standardized_meta.get("needs_review", False)),
+        }
+        return meta
 
     def _determine_target_skill_id(base_clean_en_id, section_title, concept_name, example_obj):
         target_clean_en_id = base_clean_en_id
@@ -2566,17 +3271,49 @@ def save_to_database(parsed_data, curriculum_info, queue, source_file_path=None,
                     saved_example_skill_map = {}
                     saved_example_order = []
                     saved_example_titles = []
+                    concept_known_pages = []
+                    for _bucket in ("examples", "practice_questions"):
+                        for _q in concept.get(_bucket, []) or []:
+                            if not isinstance(_q, dict):
+                                continue
+                            sp = _q.get("source_page")
+                            pi = _q.get("page_index")
+                            try:
+                                if sp is not None:
+                                    concept_known_pages.append(int(sp))
+                                elif pi is not None:
+                                    concept_known_pages.append(int(pi) + 1)
+                            except Exception:
+                                continue
                     for ex_idx, ex in enumerate(concept.get('examples', []), start=1):
                         problem_text = ex.get('problem_text')
                         if not problem_text:
                             continue
 
                         example_title = get_question_title(ex) or "例題"
+                        detected_titles.append(example_title)
                         source_type = normalize_source_type_by_title(ex, default_source_type="textbook_example")
                         target_skill_id = _determine_target_skill_id(clean_en_id, section_title, concept_name, ex)
 
                         sub_questions = ex.get("sub_questions", []) if isinstance(ex.get("sub_questions", []), list) else []
-                        db_problem_text = _render_sub_questions_problem(problem_text, sub_questions)
+                        db_problem_text_raw = _render_sub_questions_problem(problem_text, sub_questions)
+                        raw_formula_block = docx_formula_blocks.get(str(example_title).replace(" ", ""), "") or docx_formula_blocks.get(str(example_title), "")
+                        if raw_formula_block and re.search(r"\[FORMULA_IMAGE_\d+\]|\[WORD_EQUATION_UNPARSED\]", raw_formula_block):
+                            ocr_formulas = extract_formula_images_for_question_block(example_title)
+                            if ocr_formulas:
+                                block_replaced = str(raw_formula_block)
+                                for i, ftxt in enumerate(ocr_formulas, start=1):
+                                    block_replaced = block_replaced.replace(f"[FORMULA_IMAGE_{i}]", ftxt)
+                                ex["formula_ocr_source"] = ocr_formulas
+                                raw_formula_block = block_replaced
+                        db_problem_text_raw = validate_problem_formula_not_hallucinated(
+                            example_title, ex, db_problem_text_raw, raw_formula_block
+                        )
+                        db_problem_text_norm = normalize_math_text(db_problem_text_raw)
+                        db_problem_text, ex_math_meta = standardize_problem_latex(db_problem_text_norm)
+                        if re.search(r"P\(|C\(|P\^|C\^|\{\}\^|\{\}\^\{\\\(|\\\(\{\}\^|\\\(\{\}\^\{", str(db_problem_text_raw or "")):
+                            current_app.logger.info(f"[LATEX STANDARDIZE] title={example_title} before={db_problem_text_norm}")
+                            current_app.logger.info(f"[LATEX STANDARDIZE] title={example_title} after={db_problem_text}")
                         db_answer = _render_sub_questions_answer(ex.get('correct_answer', ''), sub_questions)
                         db_solution = _render_sub_questions_solution(ex.get('detailed_solution', ''), sub_questions)
                         needs_review = bool(ex.get("needs_review", False))
@@ -2646,26 +3383,66 @@ def save_to_database(parsed_data, curriculum_info, queue, source_file_path=None,
                         )
                         _ = chapter_rel_dir  # keep naming consistent, not used here
                         example_code = build_question_code(chapter_id, section_id, "example", ex_idx)
-                        image_meta = _build_image_metadata(
-                            question_title=example_title,
-                            question_text=db_problem_text,
-                            chapter_title=chapter_title,
-                            section_title=section_title,
-                            source_type=source_type,
-                            question_code=example_code,
-                            force_has_image=bool(ex.get("has_image", False)),
-                            image_description=str(ex.get("image_description", "") or ""),
-                            source_page=ex.get("source_page"),
-                            page_index=ex.get("page_index"),
-                        )
+                        image_meta = None
+                        if is_pdf_source:
+                            image_meta = _build_image_metadata(
+                                question_title=example_title,
+                                question_text=db_problem_text,
+                                chapter_title=chapter_title,
+                                section_title=section_title,
+                                source_type=source_type,
+                                question_code=example_code,
+                                force_has_image=bool(ex.get("has_image", False)),
+                                image_description=str(ex.get("image_description", "") or ""),
+                                source_page=ex.get("source_page"),
+                                page_index=ex.get("page_index"),
+                                item_payload={**ex, "_neighbor_source_pages": concept_known_pages},
+                            )
+                        if is_docx_source:
+                            docx_meta = _build_docx_assets_metadata(
+                                example_title, chapter_title, section_title, source_type, question_text=db_problem_text
+                            )
+                            if docx_meta:
+                                image_meta = dict(image_meta or {})
+                                image_meta.update(docx_meta)
+                            formula_meta = _build_docx_formula_assets_metadata(example_title, question_text=db_problem_text)
+                            if formula_meta:
+                                image_meta = dict(image_meta or {})
+                                image_meta.update(formula_meta)
                         if image_meta:
                             attached = attach_image_metadata(new_ex, image_meta)
                             if attached:
-                                current_app.logger.info(f"[QUESTION IMAGE] metadata attached question={example_title}")
+                                current_app.logger.info(f"{'[DOCX IMAGE]' if is_docx_source else '[QUESTION IMAGE]'} metadata attached question={example_title}")
+                                if is_docx_source:
+                                    img_assets = image_meta.get("image_assets", []) if isinstance(image_meta, dict) else []
+                                    docx_attached_count += len(img_assets)
+                                    docx_copied_to_question_assets += len(img_assets)
+                                    for ia in img_assets:
+                                        if ia.get("display_path"):
+                                            docx_direct_display_images += 1
+                                        if ia.get("original_format") in ("wmf", "emf"):
+                                            docx_vector_images += 1
+                                        if ia.get("converted_path"):
+                                            docx_conversion_success += 1
+                                        if ia.get("needs_image_conversion") is True and not ia.get("display_path"):
+                                            docx_conversion_failed += 1
                             else:
                                 current_app.logger.info(
                                     "[QUESTION IMAGE] detected but no metadata field available table=textbook_examples"
                                 )
+                        if is_docx_source and isinstance(image_meta, dict) and image_meta.get("has_image") and not image_meta.get("image_assets"):
+                            reason = image_meta.get("image_warning", "unknown")
+                            missing_image_questions.append((example_title, source_type, reason))
+                            current_app.logger.info(
+                                f"[DOCX IMAGE DEBUG] missing_image_candidate title={example_title} source_type={source_type} reason={reason}"
+                            )
+                        math_meta = _build_math_metadata(db_problem_text_raw, ex_math_meta, needs_review=needs_review)
+                        for k in ("needs_formula_review", "formula_missing", "formula_hallucination_risk", "parse_warning", "problem_unusable"):
+                            if ex.get(k) is not None:
+                                math_meta[k] = ex.get(k)
+                        attach_image_metadata(new_ex, math_meta)
+                        if re.search(r"[PC]\s*\(|[PC]\s*\^|[PC]\s*_|[⁰¹²³⁴⁵⁶⁷⁸⁹₀₁₂₃₄₅₆₇₈₉]", str(db_problem_text or "")):
+                            current_app.logger.info(f"[DB WRITE CHECK] title={example_title} problem_text={db_problem_text}")
                         db.session.add(new_ex)
                         if source_type == "textbook_example":
                             examples_added += 1
@@ -2699,9 +3476,27 @@ def save_to_database(parsed_data, curriculum_info, queue, source_file_path=None,
                             continue
 
                         practice_title = get_question_title(practice) or "隨堂練習"
+                        detected_titles.append(practice_title)
                         source_type = normalize_source_type_by_title(practice, default_source_type="in_class_practice")
                         sub_questions = practice.get("sub_questions", []) if isinstance(practice.get("sub_questions", []), list) else []
-                        practice_problem = _render_sub_questions_problem(practice_problem, sub_questions)
+                        practice_problem_raw = _render_sub_questions_problem(practice_problem, sub_questions)
+                        raw_formula_block = docx_formula_blocks.get(str(practice_title).replace(" ", ""), "") or docx_formula_blocks.get(str(practice_title), "")
+                        if raw_formula_block and re.search(r"\[FORMULA_IMAGE_\d+\]|\[WORD_EQUATION_UNPARSED\]", raw_formula_block):
+                            ocr_formulas = extract_formula_images_for_question_block(practice_title)
+                            if ocr_formulas:
+                                block_replaced = str(raw_formula_block)
+                                for i, ftxt in enumerate(ocr_formulas, start=1):
+                                    block_replaced = block_replaced.replace(f"[FORMULA_IMAGE_{i}]", ftxt)
+                                practice["formula_ocr_source"] = ocr_formulas
+                                raw_formula_block = block_replaced
+                        practice_problem_raw = validate_problem_formula_not_hallucinated(
+                            practice_title, practice, practice_problem_raw, raw_formula_block
+                        )
+                        practice_problem_norm = normalize_math_text(practice_problem_raw)
+                        practice_problem, practice_math_meta = standardize_problem_latex(practice_problem_norm)
+                        if re.search(r"P\(|C\(|P\^|C\^|\{\}\^|\{\}\^\{|\\\(\{\}\^|\\\(\{\}\^\{", str(practice_problem_raw or "")):
+                            current_app.logger.info(f"[LATEX STANDARDIZE] title={practice_title} before={practice_problem_norm}")
+                            current_app.logger.info(f"[LATEX STANDARDIZE] title={practice_title} after={practice_problem}")
                         practice_answer = _render_sub_questions_answer(practice.get('correct_answer', ''), sub_questions)
                         practice_solution = _render_sub_questions_solution(practice.get('detailed_solution', ''), sub_questions)
                         linked_example_title = str(practice.get("linked_example_title", "") or "").strip() or None
@@ -2798,31 +3593,74 @@ def save_to_database(parsed_data, curriculum_info, queue, source_file_path=None,
                         )
                         _ = chapter_rel_dir
                         practice_code = build_question_code(chapter_id, section_id, "practice", practice_idx)
-                        image_meta = _build_image_metadata(
-                            question_title=practice_title,
-                            question_text=practice_problem,
-                            chapter_title=chapter_title,
-                            section_title=section_title,
-                            source_type=source_type,
-                            question_code=practice_code,
-                            force_has_image=bool(practice.get("has_image", False)),
-                            image_description=str(practice.get("image_description", "") or ""),
-                            source_page=practice.get("source_page"),
-                            page_index=practice.get("page_index"),
-                        )
+                        image_meta = None
+                        if is_pdf_source:
+                            image_meta = _build_image_metadata(
+                                question_title=practice_title,
+                                question_text=practice_problem,
+                                chapter_title=chapter_title,
+                                section_title=section_title,
+                                source_type=source_type,
+                                question_code=practice_code,
+                                force_has_image=bool(practice.get("has_image", False)),
+                                image_description=str(practice.get("image_description", "") or ""),
+                                source_page=practice.get("source_page"),
+                                page_index=practice.get("page_index"),
+                                item_payload={**practice, "_neighbor_source_pages": concept_known_pages},
+                            )
+                        if is_docx_source:
+                            docx_meta = _build_docx_assets_metadata(
+                                practice_title, chapter_title, section_title, source_type, question_text=practice_problem
+                            )
+                            if docx_meta:
+                                image_meta = dict(image_meta or {})
+                                image_meta.update(docx_meta)
+                            formula_meta = _build_docx_formula_assets_metadata(practice_title, question_text=practice_problem)
+                            if formula_meta:
+                                image_meta = dict(image_meta or {})
+                                image_meta.update(formula_meta)
                         if image_meta:
                             attached = attach_image_metadata(practice_row, image_meta)
                             if attached:
-                                current_app.logger.info(f"[QUESTION IMAGE] metadata attached question={practice_title}")
+                                current_app.logger.info(f"{'[DOCX IMAGE]' if is_docx_source else '[QUESTION IMAGE]'} metadata attached question={practice_title}")
+                                if is_docx_source:
+                                    img_assets = image_meta.get("image_assets", []) if isinstance(image_meta, dict) else []
+                                    docx_attached_count += len(img_assets)
+                                    docx_copied_to_question_assets += len(img_assets)
+                                    for ia in img_assets:
+                                        if ia.get("display_path"):
+                                            docx_direct_display_images += 1
+                                        if ia.get("original_format") in ("wmf", "emf"):
+                                            docx_vector_images += 1
+                                        if ia.get("converted_path"):
+                                            docx_conversion_success += 1
+                                        if ia.get("needs_image_conversion") is True and not ia.get("display_path"):
+                                            docx_conversion_failed += 1
                             else:
                                 current_app.logger.info(
                                     "[QUESTION IMAGE] detected but no metadata field available table=textbook_examples"
                                 )
+                        if is_docx_source and isinstance(image_meta, dict) and image_meta.get("has_image") and not image_meta.get("image_assets"):
+                            reason = image_meta.get("image_warning", "unknown")
+                            missing_image_questions.append((practice_title, source_type, reason))
+                            current_app.logger.info(
+                                f"[DOCX IMAGE DEBUG] missing_image_candidate title={practice_title} source_type={source_type} reason={reason}"
+                            )
+                        math_meta = _build_math_metadata(practice_problem_raw, practice_math_meta, needs_review=needs_review)
+                        for k in ("needs_formula_review", "formula_missing", "formula_hallucination_risk", "parse_warning", "problem_unusable"):
+                            if practice.get(k) is not None:
+                                math_meta[k] = practice.get(k)
+                        attach_image_metadata(practice_row, math_meta)
+                        if re.search(r"[PC]\s*\(|[PC]\s*\^|[PC]\s*_|[⁰¹²³⁴⁵⁶⁷⁸⁹₀₁₂₃₄₅₆₇₈₉]", str(practice_problem or "")):
+                            current_app.logger.info(f"[DB WRITE CHECK] title={practice_title} problem_text={practice_problem}")
                         db.session.add(practice_row)
 
                         practice_questions_imported += 1
                         if source_type == "in_class_practice":
                             in_class_practices_imported += 1
+                            n = _extract_title_number(practice_title)
+                            if n is not None:
+                                in_class_nums.append(n)
                         elif source_type == "chapter_exercise":
                             chapter_exercises_imported += 1
                         elif source_type == "self_assessment":
@@ -2841,6 +3679,34 @@ def save_to_database(parsed_data, curriculum_info, queue, source_file_path=None,
                         queue.put(f"INFO: {saved_msg}")
 
         db.session.commit()
+        if is_docx_source:
+            ctx = _DOCX_IMPORT_CONTEXT or {}
+            media_total = len((ctx.get("media_rel_map") or {})) if isinstance(ctx, dict) else 0
+            orphan_total = len((ctx.get("orphan_images") or [])) if isinstance(ctx, dict) else 0
+            current_app.logger.info(f"[DOCX IMAGE SUMMARY] media_total={media_total}")
+            current_app.logger.info(f"[DOCX IMAGE SUMMARY] attached_images={docx_attached_count}")
+            current_app.logger.info(f"[DOCX IMAGE SUMMARY] orphan_images={orphan_total}")
+            current_app.logger.info(f"[DOCX IMAGE SUMMARY] copied_to_question_assets={docx_copied_to_question_assets}")
+            current_app.logger.info(f"[DOCX IMAGE SUMMARY] direct_display_images={docx_direct_display_images}")
+            current_app.logger.info(f"[DOCX IMAGE SUMMARY] vector_images={docx_vector_images}")
+            current_app.logger.info(f"[DOCX IMAGE SUMMARY] conversion_success={docx_conversion_success}")
+            current_app.logger.info(f"[DOCX IMAGE SUMMARY] conversion_failed={docx_conversion_failed}")
+            current_app.logger.info(f"[DOCX IMAGE SUMMARY] missing_image_questions={len(missing_image_questions)}")
+            for t, s_type, reason in missing_image_questions:
+                current_app.logger.warning(
+                    f"[DOCX IMAGE SUMMARY WARNING] missing_image title={t} source_type={s_type} reason={reason}"
+                )
+            current_app.logger.info(f"[DOCX IMPORT VALIDATION] detected_titles={len(detected_titles)}")
+            current_app.logger.info(f"[DOCX IMPORT VALIDATION] examples={examples_added}")
+            current_app.logger.info(f"[DOCX IMPORT VALIDATION] in_class_practices={in_class_practices_imported}")
+            current_app.logger.info(f"[DOCX IMPORT VALIDATION] exercises={chapter_exercises_imported}")
+            if in_class_nums:
+                uniq = sorted(set(in_class_nums))
+                miss = [x for x in range(uniq[0], uniq[-1] + 1) if x not in uniq]
+                if miss:
+                    current_app.logger.warning(
+                        f"[DOCX IMPORT VALIDATION WARNING] possible missing in_class_practice numbers={miss}"
+                    )
         return {
             'skills_processed': skills_processed, 
             'curriculums_added': curriculums_added,

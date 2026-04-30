@@ -512,3 +512,4 @@ class Config:
     EXECUTION_TIMEOUT = 10      # 單次程式執行逾時秒數（由 5s 提高為 10s）
     OLLAMA_TIMEOUT = 600        # 本地模型請求逾時秒數（由 300s 提高為 600s）
     STABILITY_REPS = 3          # L1.2 穩定性測試重複次數
+    CLEAN_ORPHAN_DOCX_MEDIA = True
