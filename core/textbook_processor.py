@@ -450,8 +450,129 @@ def _is_question_start_text(text: str) -> bool:
     t = str(text or "").strip()
     if not t:
         return False
-    patterns = ["例題", "隨堂練習", "基礎題", "進階題", "習題", "自我評量", "統測補給站", "題目"]
-    return any(p in t for p in patterns) or bool(re.match(r"^\s*例\s*\d+", t))
+    if classify_non_question_block(t) in ("concept_explanation", "figure_caption", "narration"):
+        return False
+    heading_patterns = [
+        r"^\s*例\s*題?\s*\d+",
+        r"^\s*隨堂練習\s*\d+",
+        r"^\s*基礎題\s*\d+",
+        r"^\s*進階題\s*\d+",
+        r"^\s*(?:\d+\s*-\s*\d+\s*)?習題(?:\s*基礎題|\s*進階題)?\s*\d*",
+        r"^\s*自我評量",
+        r"^\s*(統測補給站|統測題|會考題|學測題|指考題|分科測驗)\s*\d*",
+        r"^\s*題目\s*\d+",
+    ]
+    return any(re.search(p, t) for p in heading_patterns)
+
+
+_STRUCTURAL_BOUNDARY_PATTERNS = [
+    r"^\s*第\s*\d+\s*章",
+    r"^\s*\d+\s*[^\d\s].*$",
+    r"^\s*\d+\s*-\s*\d+\s+[^\s].*$",
+    r"^\s*\d+\s*-\s*\d+\s*\.\s*\d+\s*[^\s].*$",
+    r"^\s*例\s*題?\s*\d+",
+    r"^\s*隨堂練習\s*\d+",
+    r"^\s*(?:\d+\s*-\s*\d+\s*)?習題",
+    r"^\s*基礎題\s*\d*",
+    r"^\s*進階題\s*\d*",
+    r"^\s*自我評量",
+    r"^\s*(統測題|會考題|學測題|指考題|分科測驗|統測補給站)",
+]
+
+
+def is_structural_boundary_line(line: str) -> bool:
+    t = str(line or "").strip()
+    if not t:
+        return False
+    return any(re.search(p, t) for p in _STRUCTURAL_BOUNDARY_PATTERNS)
+
+
+_NON_QUESTION_EXPLANATION_CUES = (
+    "由上面的例題得知",
+    "由上述例題得知",
+    "我們把上述例題",
+    "利用公式可得",
+    "為了方便表示",
+    "本節介紹",
+    "接下來介紹",
+    "如下圖",
+    "上圖",
+    "下圖",
+    "▲圖",
+)
+
+_QUESTION_VERBS = (
+    "試問",
+    "試求",
+    "求",
+    "計算",
+    "化簡",
+    "證明",
+    "判斷",
+    "列出",
+    "填入",
+    "共有幾種",
+    "有幾種",
+    "問",
+    "解",
+)
+
+
+def _is_figure_caption_line(text: str) -> bool:
+    t = str(text or "").strip()
+    return bool(re.search(r"^(?:▲\s*)?圖\s*\d+", t))
+
+
+def classify_non_question_block(text: str) -> str | None:
+    t = str(text or "").strip()
+    if not t:
+        return "narration"
+    if t == "[BLOCK_IMAGE]" or _is_figure_caption_line(t):
+        return "figure_caption"
+
+    has_explain = any(cue in t for cue in _NON_QUESTION_EXPLANATION_CUES) or bool(re.search(r"^(即|因此)\b", t))
+    has_question_verb = any(v in t for v in _QUESTION_VERBS)
+    if has_explain and not has_question_verb:
+        return "concept_explanation"
+    if "[BLOCK_IMAGE]" in t and not has_question_verb:
+        return "figure_caption"
+    return None
+
+
+def segment_question_block_text(problem_text: str, question_title: str = "") -> tuple[str, dict]:
+    text = str(problem_text or "")
+    lines = [ln for ln in text.splitlines()]
+    kept: list[str] = []
+    dropped_reason = ""
+    started = False
+
+    for idx, raw_line in enumerate(lines):
+        line = str(raw_line or "").strip()
+        if not line:
+            if started:
+                kept.append(raw_line)
+            continue
+        if idx == 0:
+            kept.append(raw_line)
+            started = True
+            continue
+        if is_structural_boundary_line(line):
+            if question_title and _extract_question_title_from_text(line) == str(question_title).replace(" ", ""):
+                kept.append(raw_line)
+                started = True
+                continue
+            dropped_reason = f"stopped question block at structural boundary: {line}"
+            break
+        kind = classify_non_question_block(line)
+        if kind == "figure_caption":
+            dropped_reason = "detected figure caption, skipped from question text"
+            break
+        kept.append(raw_line)
+        started = True
+
+    result = "\n".join(kept).strip()
+    meta = {"changed": result != text.strip(), "reason": dropped_reason}
+    return result, meta
 
 
 def _extract_question_title_from_text(text: str) -> str:
@@ -620,6 +741,11 @@ def build_docx_question_formula_context(blocks):
                     question_blocks[current_title] = "\n".join(buffer).strip()
                 current_title = _extract_question_title_from_text(txt)
                 buffer = [txt]
+            elif current_title and is_structural_boundary_line(txt):
+                if buffer:
+                    question_blocks[current_title] = "\n".join(buffer).strip()
+                current_title = None
+                buffer = []
             elif current_title:
                 buffer.append(txt)
         elif btype == "image" and current_title:
@@ -2321,6 +2447,190 @@ ALLOWED_SOURCE_TYPES = {
     "textbook_practice",
 }
 
+CHAPTER_EXERCISE_TYPES = {
+    "chapter_exercise",
+    "basic_exercise",
+    "advanced_exercise",
+}
+
+_SUPERSCRIPT_TRANS = str.maketrans("⁰¹²³⁴⁵⁶⁷⁸⁹⁺⁻", "0123456789+-")
+_SUBSCRIPT_TRANS = str.maketrans("₀₁₂₃₄₅₆₇₈₉₊₋", "0123456789+-")
+
+
+def normalize_fill_blank_artifacts(text: str) -> tuple[str, dict]:
+    original = str(text or "")
+    out = original
+    log = {"changed": False, "reasons": []}
+
+    # Instruction semantic normalization first.
+    before = out
+    out = re.sub(
+        r"(試填入下列各式|求下列各式|填入下列各式)\s*(?:□|▢|◻|☐|（\s*　?\s*）|\(\s*　?\s*\)|＿＿|_{2,})\s*之值",
+        r"\1空格之值",
+        out,
+    )
+    if out != before:
+        log["changed"] = True
+        log["reasons"].append("normalized fill-blank instruction text")
+
+    # Generic blank symbols/slots normalization.
+    blank_patterns = [
+        r"[□▢◻☐]",
+        r"（\s*　?\s*）",
+        r"\(\s*　?\s*\)",
+        r"＿＿+",
+        r"_{2,}",
+    ]
+    before = out
+    for pat in blank_patterns:
+        out = re.sub(pat, "[BLANK]", out)
+    if out != before:
+        log["changed"] = True
+        log["reasons"].append("normalized fill blank symbol to [BLANK]")
+
+    return out, log
+
+
+def normalize_permutation_combination_notation(text: str) -> tuple[str, dict]:
+    original = str(text or "")
+    out = original
+    log = {"changed": False, "reasons": []}
+
+    # e.g., ⁷P₃ / ⁷C₃
+    def _replace_pre(match):
+        n = match.group(1).translate(_SUPERSCRIPT_TRANS)
+        op = match.group(2)
+        r = match.group(3).translate(_SUBSCRIPT_TRANS)
+        return f"{op}^{{{n}}}_{{{r}}}"
+
+    out = re.sub(r"([⁰¹²³⁴⁵⁶⁷⁸⁹⁺⁻]+)\s*([PC])\s*([₀₁₂₃₄₅₆₇₈₉₊₋]+)", _replace_pre, out)
+
+    # e.g., P₃⁷ / C₃⁷
+    def _replace_post(match):
+        op = match.group(1)
+        r = match.group(2).translate(_SUBSCRIPT_TRANS)
+        n = match.group(3).translate(_SUPERSCRIPT_TRANS)
+        return f"{op}^{{{n}}}_{{{r}}}"
+
+    out = re.sub(r"([PC])\s*([₀₁₂₃₄₅₆₇₈₉₊₋]+)\s*([⁰¹²³⁴⁵⁶⁷⁸⁹⁺⁻]+)", _replace_post, out)
+
+    # e.g., P^7_3 / C^7_3
+    out = re.sub(r"\b([PC])\s*\^\s*\{?\s*([0-9]+)\s*\}?\s*_\s*\{?\s*([0-9]+)\s*\}?", r"\1^{\2}_{\3}", out)
+
+    if out != original:
+        log["changed"] = True
+        log["reasons"].append("normalized permutation notation to P^{n}_{r}/C^{n}_{r}")
+    return out, log
+
+
+def _is_subsection_heading_line(line: str) -> bool:
+    t = str(line or "").strip()
+    return bool(re.search(r"^\s*\d+\s*-\s*\d+\s*\.\s*\d+\s*[^\s].*$", t))
+
+
+def repair_missing_single_variable_text(problem_text: str) -> tuple[str, dict]:
+    text = str(problem_text or "")
+    repair = {"applied": False, "symbol": None, "reason": ""}
+    if not text.strip():
+        repair["reason"] = "empty_text"
+        return text, repair
+
+    missing_slots = []
+    if re.search(r"設\s*為", text):
+        missing_slots.append("subject")
+    if re.search(r"之\s*值", text):
+        missing_slots.append("value")
+    if not missing_slots:
+        repair["reason"] = "no_missing_variable_slot"
+        return text, repair
+
+    symbols = set(re.findall(r"(?<![A-Za-z])[A-Za-z](?![A-Za-z])", text))
+    candidates = sorted(sym for sym in symbols if sym.isalpha() and sym.lower() in "nmxyab")
+    if len(candidates) != 1:
+        repair["reason"] = "non_unique_candidate_variable"
+        return text, repair
+
+    sym = candidates[0]
+    fixed = text
+    if "subject" in missing_slots:
+        fixed = re.sub(r"設\s*為", f"設 {sym} 為", fixed, count=1)
+    if "value" in missing_slots:
+        fixed = re.sub(r"之\s*值", f"之 {sym} 值", fixed, count=1)
+
+    if fixed != text:
+        repair["applied"] = True
+        repair["symbol"] = sym
+        repair["reason"] = f"filled missing variable with unique symbol {sym}"
+    else:
+        repair["reason"] = "pattern_not_replaced"
+    return fixed, repair
+
+
+def validate_problem_block_purity(problem: dict) -> dict:
+    if not isinstance(problem, dict):
+        return problem
+    text = str(problem.get("problem_text", "") or problem.get("problem", "") or "").strip()
+    if not text:
+        return problem
+
+    lines = [ln.strip() for ln in text.splitlines() if str(ln or "").strip()]
+    if any(_is_subsection_heading_line(ln) for ln in lines):
+        problem["needs_review"] = True
+        problem["block_boundary_error"] = True
+
+    explanation_cues = _NON_QUESTION_EXPLANATION_CUES + ("上述",)
+    problem_verbs = _QUESTION_VERBS
+    explanation_hits = sum(1 for cue in explanation_cues if cue in text)
+    has_problem_verb = any(v in text for v in problem_verbs)
+    if explanation_hits >= 2 and not has_problem_verb:
+        problem["needs_review"] = True
+        problem["likely_concept_explanation"] = True
+
+    formula_placeholders = (
+        r"\[FORMULA_MISSING\]",
+        r"\[FORMULA_IMAGE_\d+\]",
+        r"\[WORD_EQUATION_UNPARSED\]",
+        r"\[BLOCK_IMAGE\]",
+    )
+    has_formula_gap = any(re.search(p, text) for p in formula_placeholders)
+    readable_text = re.sub(r"\[[A-Z_0-9]+\]", " ", text)
+    readable_text = re.sub(r"\s+", " ", readable_text).strip()
+    if has_formula_gap and (len(readable_text) < 8 or not has_problem_verb):
+        problem["needs_review"] = True
+        problem["formula_missing"] = True
+        logs = problem.get("repair_log", [])
+        if not isinstance(logs, list):
+            logs = [str(logs)]
+        logs.append("marked formula_missing due to formula placeholder")
+        problem["repair_log"] = logs
+
+    if "[BLANK]" in text:
+        problem["has_answer_blank"] = True
+        problem["question_format"] = "fill_blank"
+        logs = problem.get("repair_log", [])
+        if not isinstance(logs, list):
+            logs = [str(logs)]
+        logs.append("preserved [BLANK] as fill blank, not formula missing")
+        problem["repair_log"] = logs
+
+    if problem.get("skill_id") and problem.get("block_boundary_error"):
+        problem["needs_review"] = True
+        problem["skill_boundary_mismatch"] = True
+    return problem
+
+
+def classify_practice_source_bucket(source_type: str) -> str:
+    st = str(source_type or "").strip().lower()
+    if st == "in_class_practice":
+        return "in_class_practice"
+    if st in CHAPTER_EXERCISE_TYPES:
+        return "chapter_exercise"
+    if st == "self_assessment":
+        return "self_assessment"
+    if st == "exam_practice":
+        return "exam_practice"
+    return "other_practice"
+
 
 def get_question_title(item: dict) -> str:
     if not isinstance(item, dict):
@@ -2794,7 +3104,7 @@ def save_to_database(parsed_data, curriculum_info, queue, source_file_path=None,
         text = str(problem_text or "")
         block = str(raw_block or "")
         has_placeholder = bool(
-            re.search(r"\[FORMULA_IMAGE_\d+\]|\[WORD_EQUATION_UNPARSED\]|\[UNREADABLE_FORMULA\]", block)
+            re.search(r"\[FORMULA_MISSING\]|\[FORMULA_IMAGE_\d+\]|\[WORD_EQUATION_UNPARSED\]|\[UNREADABLE_FORMULA\]", block)
         )
         if is_docx_source:
             current_app.logger.info(f"[DOCX FORMULA SOURCE] title={item_title} raw_block={block[:240]}")
@@ -3297,6 +3607,36 @@ def save_to_database(parsed_data, curriculum_info, queue, source_file_path=None,
 
                         sub_questions = ex.get("sub_questions", []) if isinstance(ex.get("sub_questions", []), list) else []
                         db_problem_text_raw = _render_sub_questions_problem(problem_text, sub_questions)
+                        segmented_text, seg_meta = segment_question_block_text(db_problem_text_raw, question_title=example_title)
+                        if seg_meta.get("changed"):
+                            logs = ex.get("repair_log", [])
+                            if not isinstance(logs, list):
+                                logs = [str(logs)]
+                            if seg_meta.get("reason"):
+                                logs.append(seg_meta.get("reason"))
+                            ex["repair_log"] = logs
+                            db_problem_text_raw = segmented_text
+                        block_kind = classify_non_question_block(db_problem_text_raw)
+                        if block_kind in ("concept_explanation", "figure_caption", "narration"):
+                            logs = ex.get("repair_log", [])
+                            if not isinstance(logs, list):
+                                logs = [str(logs)]
+                            logs.append(f"detected {block_kind}, not imported as textbook_example")
+                            ex["repair_log"] = logs
+                            current_app.logger.info(
+                                f"[DOCX BLOCK FILTER] skip example title={example_title} kind={block_kind}"
+                            )
+                            continue
+                        blank_norm_text, blank_meta = normalize_fill_blank_artifacts(db_problem_text_raw)
+                        perm_norm_text, perm_meta = normalize_permutation_combination_notation(blank_norm_text)
+                        db_problem_text_raw = perm_norm_text
+                        if blank_meta.get("changed") or perm_meta.get("changed"):
+                            logs = ex.get("repair_log", [])
+                            if not isinstance(logs, list):
+                                logs = [str(logs)]
+                            logs.extend(blank_meta.get("reasons", []))
+                            logs.extend(perm_meta.get("reasons", []))
+                            ex["repair_log"] = logs
                         raw_formula_block = docx_formula_blocks.get(str(example_title).replace(" ", ""), "") or docx_formula_blocks.get(str(example_title), "")
                         if raw_formula_block and re.search(r"\[FORMULA_IMAGE_\d+\]|\[WORD_EQUATION_UNPARSED\]", raw_formula_block):
                             ocr_formulas = extract_formula_images_for_question_block(example_title)
@@ -3309,6 +3649,16 @@ def save_to_database(parsed_data, curriculum_info, queue, source_file_path=None,
                         db_problem_text_raw = validate_problem_formula_not_hallucinated(
                             example_title, ex, db_problem_text_raw, raw_formula_block
                         )
+                        repaired_text, repair_meta = repair_missing_single_variable_text(db_problem_text_raw)
+                        if repair_meta.get("applied"):
+                            db_problem_text_raw = repaired_text
+                            logs = ex.get("repair_log", [])
+                            if not isinstance(logs, list):
+                                logs = [str(logs)]
+                            logs.append(repair_meta.get("reason"))
+                            ex["repair_log"] = logs
+                        elif repair_meta.get("reason") == "non_unique_candidate_variable":
+                            ex["needs_review"] = True
                         db_problem_text_norm = normalize_math_text(db_problem_text_raw)
                         db_problem_text, ex_math_meta = standardize_problem_latex(db_problem_text_norm)
                         if re.search(r"P\(|C\(|P\^|C\^|\{\}\^|\{\}\^\{\\\(|\\\(\{\}\^|\\\(\{\}\^\{", str(db_problem_text_raw or "")):
@@ -3316,6 +3666,9 @@ def save_to_database(parsed_data, curriculum_info, queue, source_file_path=None,
                             current_app.logger.info(f"[LATEX STANDARDIZE] title={example_title} after={db_problem_text}")
                         db_answer = _render_sub_questions_answer(ex.get('correct_answer', ''), sub_questions)
                         db_solution = _render_sub_questions_solution(ex.get('detailed_solution', ''), sub_questions)
+                        needs_review = bool(ex.get("needs_review", False))
+                        ex["problem_text"] = db_problem_text
+                        ex = validate_problem_block_purity(ex)
                         needs_review = bool(ex.get("needs_review", False))
                         linked_example_title = None
                         if source_type == "in_class_practice":
@@ -3437,7 +3790,19 @@ def save_to_database(parsed_data, curriculum_info, queue, source_file_path=None,
                                 f"[DOCX IMAGE DEBUG] missing_image_candidate title={example_title} source_type={source_type} reason={reason}"
                             )
                         math_meta = _build_math_metadata(db_problem_text_raw, ex_math_meta, needs_review=needs_review)
-                        for k in ("needs_formula_review", "formula_missing", "formula_hallucination_risk", "parse_warning", "problem_unusable"):
+                        for k in (
+                            "needs_formula_review",
+                            "formula_missing",
+                            "formula_hallucination_risk",
+                            "parse_warning",
+                            "problem_unusable",
+                            "block_boundary_error",
+                            "likely_concept_explanation",
+                            "skill_boundary_mismatch",
+                            "has_answer_blank",
+                            "question_format",
+                            "repair_log",
+                        ):
                             if ex.get(k) is not None:
                                 math_meta[k] = ex.get(k)
                         attach_image_metadata(new_ex, math_meta)
@@ -3448,13 +3813,14 @@ def save_to_database(parsed_data, curriculum_info, queue, source_file_path=None,
                             examples_added += 1
                         else:
                             practice_questions_imported += 1
-                            if source_type == "in_class_practice":
+                            summary_bucket = classify_practice_source_bucket(source_type)
+                            if summary_bucket == "in_class_practice":
                                 in_class_practices_imported += 1
-                            elif source_type == "chapter_exercise":
+                            elif summary_bucket == "chapter_exercise":
                                 chapter_exercises_imported += 1
-                            elif source_type == "self_assessment":
+                            elif summary_bucket == "self_assessment":
                                 self_assessments_imported += 1
-                            elif source_type == "exam_practice":
+                            elif summary_bucket == "exam_practice":
                                 exam_practices_imported += 1
                                 current_app.logger.info(
                                     f"[EXAM PRACTICE IMPORT] detected title={example_title} source_type={source_type} skill_id={target_skill_id}"
@@ -3480,6 +3846,36 @@ def save_to_database(parsed_data, curriculum_info, queue, source_file_path=None,
                         source_type = normalize_source_type_by_title(practice, default_source_type="in_class_practice")
                         sub_questions = practice.get("sub_questions", []) if isinstance(practice.get("sub_questions", []), list) else []
                         practice_problem_raw = _render_sub_questions_problem(practice_problem, sub_questions)
+                        segmented_text, seg_meta = segment_question_block_text(practice_problem_raw, question_title=practice_title)
+                        if seg_meta.get("changed"):
+                            logs = practice.get("repair_log", [])
+                            if not isinstance(logs, list):
+                                logs = [str(logs)]
+                            if seg_meta.get("reason"):
+                                logs.append(seg_meta.get("reason"))
+                            practice["repair_log"] = logs
+                            practice_problem_raw = segmented_text
+                        block_kind = classify_non_question_block(practice_problem_raw)
+                        if block_kind in ("concept_explanation", "figure_caption", "narration"):
+                            logs = practice.get("repair_log", [])
+                            if not isinstance(logs, list):
+                                logs = [str(logs)]
+                            logs.append(f"detected {block_kind}, skipped from question text")
+                            practice["repair_log"] = logs
+                            current_app.logger.info(
+                                f"[DOCX BLOCK FILTER] skip practice title={practice_title} kind={block_kind}"
+                            )
+                            continue
+                        blank_norm_text, blank_meta = normalize_fill_blank_artifacts(practice_problem_raw)
+                        perm_norm_text, perm_meta = normalize_permutation_combination_notation(blank_norm_text)
+                        practice_problem_raw = perm_norm_text
+                        if blank_meta.get("changed") or perm_meta.get("changed"):
+                            logs = practice.get("repair_log", [])
+                            if not isinstance(logs, list):
+                                logs = [str(logs)]
+                            logs.extend(blank_meta.get("reasons", []))
+                            logs.extend(perm_meta.get("reasons", []))
+                            practice["repair_log"] = logs
                         raw_formula_block = docx_formula_blocks.get(str(practice_title).replace(" ", ""), "") or docx_formula_blocks.get(str(practice_title), "")
                         if raw_formula_block and re.search(r"\[FORMULA_IMAGE_\d+\]|\[WORD_EQUATION_UNPARSED\]", raw_formula_block):
                             ocr_formulas = extract_formula_images_for_question_block(practice_title)
@@ -3492,6 +3888,16 @@ def save_to_database(parsed_data, curriculum_info, queue, source_file_path=None,
                         practice_problem_raw = validate_problem_formula_not_hallucinated(
                             practice_title, practice, practice_problem_raw, raw_formula_block
                         )
+                        repaired_text, repair_meta = repair_missing_single_variable_text(practice_problem_raw)
+                        if repair_meta.get("applied"):
+                            practice_problem_raw = repaired_text
+                            logs = practice.get("repair_log", [])
+                            if not isinstance(logs, list):
+                                logs = [str(logs)]
+                            logs.append(repair_meta.get("reason"))
+                            practice["repair_log"] = logs
+                        elif repair_meta.get("reason") == "non_unique_candidate_variable":
+                            practice["needs_review"] = True
                         practice_problem_norm = normalize_math_text(practice_problem_raw)
                         practice_problem, practice_math_meta = standardize_problem_latex(practice_problem_norm)
                         if re.search(r"P\(|C\(|P\^|C\^|\{\}\^|\{\}\^\{|\\\(\{\}\^|\\\(\{\}\^\{", str(practice_problem_raw or "")):
@@ -3500,6 +3906,9 @@ def save_to_database(parsed_data, curriculum_info, queue, source_file_path=None,
                         practice_answer = _render_sub_questions_answer(practice.get('correct_answer', ''), sub_questions)
                         practice_solution = _render_sub_questions_solution(practice.get('detailed_solution', ''), sub_questions)
                         linked_example_title = str(practice.get("linked_example_title", "") or "").strip() or None
+                        needs_review = bool(practice.get("needs_review", False))
+                        practice["problem_text"] = practice_problem
+                        practice = validate_problem_block_purity(practice)
                         needs_review = bool(practice.get("needs_review", False))
                         if source_type == "in_class_practice":
                             linked_example_title, needs_review = _infer_linked_example_title(
@@ -3647,7 +4056,19 @@ def save_to_database(parsed_data, curriculum_info, queue, source_file_path=None,
                                 f"[DOCX IMAGE DEBUG] missing_image_candidate title={practice_title} source_type={source_type} reason={reason}"
                             )
                         math_meta = _build_math_metadata(practice_problem_raw, practice_math_meta, needs_review=needs_review)
-                        for k in ("needs_formula_review", "formula_missing", "formula_hallucination_risk", "parse_warning", "problem_unusable"):
+                        for k in (
+                            "needs_formula_review",
+                            "formula_missing",
+                            "formula_hallucination_risk",
+                            "parse_warning",
+                            "problem_unusable",
+                            "block_boundary_error",
+                            "likely_concept_explanation",
+                            "skill_boundary_mismatch",
+                            "has_answer_blank",
+                            "question_format",
+                            "repair_log",
+                        ):
                             if practice.get(k) is not None:
                                 math_meta[k] = practice.get(k)
                         attach_image_metadata(practice_row, math_meta)
@@ -3656,16 +4077,17 @@ def save_to_database(parsed_data, curriculum_info, queue, source_file_path=None,
                         db.session.add(practice_row)
 
                         practice_questions_imported += 1
-                        if source_type == "in_class_practice":
+                        summary_bucket = classify_practice_source_bucket(source_type)
+                        if summary_bucket == "in_class_practice":
                             in_class_practices_imported += 1
                             n = _extract_title_number(practice_title)
                             if n is not None:
                                 in_class_nums.append(n)
-                        elif source_type == "chapter_exercise":
+                        elif summary_bucket == "chapter_exercise":
                             chapter_exercises_imported += 1
-                        elif source_type == "self_assessment":
+                        elif summary_bucket == "self_assessment":
                             self_assessments_imported += 1
-                        elif source_type == "exam_practice":
+                        elif summary_bucket == "exam_practice":
                             exam_practices_imported += 1
                         else:
                             other_practices_imported += 1
