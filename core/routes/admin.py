@@ -789,6 +789,15 @@ def admin_examples():
         query = query.filter(SkillCurriculum.section == selected['f_section'])
     
     pagination = query.order_by(TextbookExample.id.desc()).paginate(page=page, per_page=50, error_out=False)
+    for ex in pagination.items:
+        meta = {}
+        try:
+            if getattr(ex, "notes", None):
+                meta = json.loads(ex.notes)
+        except Exception:
+            meta = {}
+        ex._image_assets = meta.get("image_assets", []) if isinstance(meta, dict) else []
+        ex._has_image = bool(meta.get("has_image")) if isinstance(meta, dict) else False
     
     return render_template('admin_examples.html', 
                            pagination=pagination, 
@@ -843,7 +852,8 @@ def admin_get_example_details(example_id):
                 'problem_text': ex.problem_text or '',
                 'correct_answer': ex.correct_answer or '',
                 'detailed_solution': ex.detailed_solution or '',
-                'difficulty_level': ex.difficulty_level or 1
+                'difficulty_level': ex.difficulty_level or 1,
+                'notes': ex.notes or ''
             }
         })
     except Exception as e:

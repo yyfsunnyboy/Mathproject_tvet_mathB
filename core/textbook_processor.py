@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+﻿# -*- coding: utf-8 -*-
 """
 =============================================================================
 模組名稱 (Module Name): core/textbook_processor.py
@@ -37,6 +37,16 @@ from flask import current_app
 import traceback
 from core.code_generator import auto_generate_skill_code
 from core.math_formula_normalizer import detect_suspicious_formula, normalize_math_text
+from core.question_image_assets import (
+    attach_image_metadata,
+    build_question_assets_dir,
+    build_question_code,
+    detect_image_reason,
+    find_best_page_index,
+    make_page_image_asset,
+    question_needs_image,
+    render_pdf_page_to_image,
+)
 
 # (初始化檢查已移除)
 
@@ -338,10 +348,19 @@ def process_textbook_file(file_path, curriculum_info, queue, skip_code_gen=False
             queue.put(f"ERROR: {message}")
             return {"status": "error", "message": "無法從檔案中提取任何內容。"}
 
+        raw_content_by_page = dict(content_by_page)
         content_by_page = _normalize_extracted_content_math(content_by_page, queue)
+        page_analysis_payload = _build_page_analysis_payload(
+            raw_content_by_page,
+            content_by_page,
+            file_path=file_path,
+            queue=queue,
+        )
 
         # 步驟 2: 呼叫 AI 進行分析
-        ai_json_result_string = call_gemini_for_analysis(content_by_page, curriculum_info, queue)
+        ai_json_result_string = call_gemini_for_analysis(
+            content_by_page, curriculum_info, queue, page_analysis_payload=page_analysis_payload
+        )
         # 步驟 3: 解析 AI 回傳的 JSON 字串
         if ai_json_result_string is None:
             return {"status": "error", "message": "AI 分析失敗，已中止匯入。"}
@@ -353,24 +372,36 @@ def process_textbook_file(file_path, curriculum_info, queue, skip_code_gen=False
         if not parsed_data:
             return {"status": "error", "message": "AI 回傳的資料格式有誤或為空，無法解析。"}
 
+        parsed_data = _mark_needs_review_for_low_quality_pages(parsed_data, page_analysis_payload)
         parsed_data = _normalize_parsed_textbook_math(parsed_data, queue)
 
         # 步驟 4: 將解析後的資料存入資料庫
-        result = save_to_database(parsed_data, curriculum_info, queue)
+        result = save_to_database(
+            parsed_data,
+            curriculum_info,
+            queue,
+            source_file_path=file_path,
+            content_by_page=content_by_page,
+        )
 
         skills_count = result.get('skills_processed', 0)
         curriculums_count = result.get('curriculums_added', 0)
         examples_count = result.get('examples_added', 0)
         practice_count = result.get('practice_questions_imported', 0)
         in_class_practice_count = result.get('in_class_practices_imported', 0)
+        chapter_exercises_count = result.get('chapter_exercises_imported', 0)
+        self_assessments_count = result.get('self_assessments_imported', 0)
+        exam_practices_count = result.get('exam_practices_imported', 0)
+        other_practices_count = result.get('other_practices_imported', 0)
         practice_needs_review_count = result.get('practice_questions_needs_review', 0)
-        practice_skipped_count = result.get('practice_questions_skipped', 0)
+        practice_skipped_count = result.get('duplicates_skipped', result.get('practice_questions_skipped', 0))
         processed_skill_ids = result.get('processed_skill_ids', [])
 
         message = (
             f"課本處理完成。新增/更新 {skills_count} 個技能，建立 {curriculums_count} 筆課程綱要，"
             f"匯入例題 {examples_count} 筆、練習題 {practice_count} 筆（隨堂練習 {in_class_practice_count} 筆，"
-            f"需複核 {practice_needs_review_count} 筆，重複略過 {practice_skipped_count} 筆）。"
+            f"章節習題 {chapter_exercises_count} 筆，自我評量 {self_assessments_count} 筆，統測題 {exam_practices_count} 筆，"
+            f"其他練習 {other_practices_count} 筆，需複核 {practice_needs_review_count} 筆，重複略過 {practice_skipped_count} 筆）。"
         )
         current_app.logger.info(message)
         queue.put(f"INFO: {message}")
@@ -795,7 +826,7 @@ def _call_gemini_with_retry(model, analysis_prompt, queue=None, context_message=
 
             raise
 
-def call_gemini_for_analysis(content_by_page, curriculum_info, queue):
+def call_gemini_for_analysis(content_by_page, curriculum_info, queue, page_analysis_payload=None):
     """
     使用 Gemini 分析提取出的文本 (支援 Markdown/LaTeX 格式的數學公式)。
     """
@@ -1304,7 +1335,21 @@ JSON 格式如下：
         else:
             queue.put(f"ERROR: AI 分析失敗: [{err_type}] {err_msg}")
         return None
-    full_content = "\n".join([f"--- Page {k} ---\n{v}" for k, v in content_by_page.items()])
+    if page_analysis_payload:
+        blocks = []
+        for k in sorted(page_analysis_payload.keys(), key=lambda x: int(x)):
+            p = page_analysis_payload[k]
+            block = (
+                f"--- Page {k} ---\n"
+                f"[RAW PDF TEXT]\n{p.get('raw_text','')}\n\n"
+                f"[NORMALIZED TEXT]\n{p.get('normalized_text','')}\n\n"
+                f"[VISION OCR TEXT]\n{p.get('vision_ocr_text') or ''}\n\n"
+                f"[FORMULA WARNINGS]\n{', '.join(p.get('formula_warnings', [])) or 'none'}\n"
+            )
+            blocks.append(block)
+        full_content = "\n".join(blocks)
+    else:
+        full_content = "\n".join([f"--- Page {k} ---\n{v}" for k, v in content_by_page.items()])
     
     json_example = """
 {
@@ -1376,6 +1421,19 @@ JSON 格式如下：
 
     analysis_prompt = f"""
 {base_prompt}
+
+圖片標記規則：
+若題目包含「如圖」「下圖」「右圖」「圖」「樹狀圖」「表格」「幾何圖」「圓環圖」「路線圖」「附圖」等字樣，
+請在該題 JSON 物件加上：
+- "has_image": true
+- "image_description": "簡短描述圖形用途，例如樹狀圖、圓環著色圖、路線圖"
+- "source_page": 題目所在 PDF 頁碼（1-based，無法判定則 null）
+- "page_index": 題目所在頁索引（0-based，無法判定則 null）
+注意：不要輸出 base64 或虛構圖片，圖片由後端從 PDF 頁面 render 後保存。
+
+低品質頁面輸入規則：
+你可能同時收到 [RAW PDF TEXT]、[NORMALIZED TEXT]、[VISION OCR TEXT]、[FORMULA WARNINGS]。
+若 VISION OCR TEXT 有內容，請優先用於題目重建；若無則用 NORMALIZED TEXT 並提高 needs_review。
 
 重要輸出要求：
 1. 只能輸出合法 JSON，不可以輸出 Markdown code block。
@@ -1559,6 +1617,108 @@ def _normalize_extracted_content_math(content_by_page, queue=None):
     return normalized_pages
 
 
+def score_extracted_page_quality(page_text: str) -> dict:
+    text = str(page_text or "")
+    length = len(text.strip())
+    weird = len(re.findall(r"[�□◻◼◊¤�]", text))
+    symbols = len(re.findall(r"[#＃﹟]{2,}", text))
+    score = 1.0
+    if length < 40:
+        score -= 0.35
+    if weird > 0:
+        score -= min(0.35, weird * 0.03)
+    if symbols > 0:
+        score -= min(0.25, symbols * 0.05)
+    score = max(0.0, min(1.0, score))
+    return {
+        "score": score,
+        "is_low_quality": score < 0.60,
+        "length": length,
+        "weird_char_count": weird,
+        "artifact_symbol_count": symbols,
+    }
+
+
+def _render_page_image_temp(pdf_path: str, page_no_1based: int) -> str | None:
+    try:
+        import fitz
+    except Exception:
+        return None
+    try:
+        tmp_dir = os.path.join("reports", "tmp_vision_ocr")
+        os.makedirs(tmp_dir, exist_ok=True)
+        out = os.path.join(tmp_dir, f"page_{int(page_no_1based):04d}.png")
+        doc = fitz.open(pdf_path)
+        try:
+            page = doc.load_page(int(page_no_1based) - 1)
+            pix = page.get_pixmap(matrix=fitz.Matrix(2.5, 2.5), alpha=False)
+            pix.save(out)
+        finally:
+            doc.close()
+        return out
+    except Exception:
+        return None
+
+
+def _vision_ocr_page_text(pdf_path: str, page_no_1based: int, queue=None) -> str | None:
+    image_path = _render_page_image_temp(pdf_path, page_no_1based)
+    if not image_path:
+        return None
+    try:
+        from PIL import Image
+    except Exception:
+        return None
+    try:
+        model = get_model("vision_analyzer")
+        prompt = (
+            "請忠實讀取圖片中的數學教材文字。"
+            "保留題號、例題/隨堂練習標題、多小題(1)(2)(3)、"
+            "階乘、分式、乘號、上下標。"
+            "不要輸出 JSON，只輸出清楚純文字。"
+        )
+        img = Image.open(image_path)
+        resp = model.generate_content([prompt, img], generation_config={"temperature": 0.0, "max_output_tokens": 65536})
+        text = str(getattr(resp, "text", "") or "").strip()
+        if text:
+            return text
+    except Exception as e:
+        if queue is not None:
+            queue.put(f"WARN: Vision OCR failed on page {page_no_1based}: {e}")
+    return None
+
+
+def _build_page_analysis_payload(raw_pages, normalized_pages, file_path, queue=None):
+    payload = {}
+    enable_vision = bool(current_app.config.get("ENABLE_VISION_OCR_FALLBACK", False))
+    is_pdf = str(file_path or "").lower().endswith(".pdf")
+    for page_no, normalized_text in (normalized_pages or {}).items():
+        raw_text = (raw_pages or {}).get(page_no, normalized_text)
+        formula_check = detect_suspicious_formula(raw_text)
+        quality = score_extracted_page_quality(raw_text)
+        reasons = set(formula_check.get("reasons", []))
+        low_quality = bool(quality.get("is_low_quality"))
+        if "suspicious_factorial" in reasons or "suspicious_pdf_artifact" in reasons:
+            low_quality = True
+        vision_text = None
+        needs_review = False
+        if low_quality and enable_vision and is_pdf:
+            vision_text = _vision_ocr_page_text(file_path, int(page_no), queue=queue)
+            if not vision_text:
+                needs_review = True
+        elif low_quality:
+            needs_review = True
+        payload[page_no] = {
+            "raw_text": raw_text,
+            "normalized_text": normalized_text,
+            "vision_ocr_text": vision_text,
+            "formula_warnings": list(reasons),
+            "quality": quality,
+            "is_low_quality": low_quality,
+            "needs_review": needs_review,
+        }
+    return payload
+
+
 def _normalize_imported_math_value(value, *, section_title="", source_description="", field_name="", queue=None):
     if value is None or not isinstance(value, str):
         return value, None
@@ -1644,6 +1804,18 @@ def _normalize_parsed_textbook_math(parsed_data, queue=None):
                                 existing_warning = str(ex.get("parse_warning", "") or "").strip()
                                 reasons = ";".join(check.get("reasons", []))
                                 ex["parse_warning"] = ";".join(filter(None, [existing_warning, reasons]))
+                    for sq in ex.get("sub_questions", []) or []:
+                        if not isinstance(sq, dict):
+                            continue
+                        for key in ("problem", "answer", "solution"):
+                            if isinstance(sq.get(key), str):
+                                sq[key], _ = _normalize_imported_math_value(
+                                    sq[key],
+                                    section_title=section_title,
+                                    source_description=source_description,
+                                    field_name=f"sub_questions.{key}",
+                                    queue=queue,
+                                )
 
                 for practice in concept.get("practice_questions", []) or []:
                     if not isinstance(practice, dict):
@@ -1660,6 +1832,18 @@ def _normalize_parsed_textbook_math(parsed_data, queue=None):
                             if check and check.get("is_suspicious"):
                                 practice["needs_review"] = True
                                 practice["parse_warning"] = ";".join(check.get("reasons", []))
+                    for sq in practice.get("sub_questions", []) or []:
+                        if not isinstance(sq, dict):
+                            continue
+                        for key in ("problem", "answer", "solution"):
+                            if isinstance(sq.get(key), str):
+                                sq[key], _ = _normalize_imported_math_value(
+                                    sq[key],
+                                    section_title=section_title,
+                                    source_description="practice",
+                                    field_name=f"sub_questions.{key}",
+                                    queue=queue,
+                                )
 
     return parsed_data
 
@@ -1670,6 +1854,139 @@ def _first_non_empty_str(mapping, keys):
         if isinstance(value, str) and value.strip():
             return value.strip()
     return ""
+
+
+ALLOWED_SOURCE_TYPES = {
+    "textbook_example",
+    "in_class_practice",
+    "chapter_exercise",
+    "basic_exercise",
+    "advanced_exercise",
+    "self_assessment",
+    "exam_practice",
+    "generated_question",
+    "student_uploaded",
+    "textbook_practice",
+}
+
+
+def get_question_title(item: dict) -> str:
+    if not isinstance(item, dict):
+        return ""
+    return _first_non_empty_str(
+        item,
+        ("practice_title", "example_title", "title", "display_name", "name", "source_title", "source_description"),
+    )
+
+
+def normalize_source_type_by_title(item: dict, default_source_type: str = "textbook_example") -> str:
+    title = get_question_title(item)
+    raw_source_type = str(item.get("source_type", "") or "").strip().lower() if isinstance(item, dict) else ""
+    reason = ""
+
+    if "隨堂練習" in title:
+        normalized = "in_class_practice"
+        reason = "title_contains_隨堂練習"
+    elif "自我評量" in title:
+        normalized = "self_assessment"
+        reason = "title_contains_自我評量"
+    elif any(k in title for k in ("統測補給站", "統測題", "統測")):
+        normalized = "exam_practice"
+        reason = "title_contains_統測"
+    elif "基礎題" in title:
+        normalized = "basic_exercise"
+        reason = "title_contains_基礎題"
+    elif "進階題" in title:
+        normalized = "advanced_exercise"
+        reason = "title_contains_進階題"
+    elif "習題" in title:
+        normalized = "chapter_exercise"
+        reason = "title_contains_習題"
+    elif re.search(r"^\s*例\s*題?\s*\d+", title):
+        normalized = "textbook_example"
+        reason = "title_matches_example"
+    elif raw_source_type in ALLOWED_SOURCE_TYPES:
+        normalized = raw_source_type
+        reason = "item_source_type_allowed"
+    else:
+        fallback = str(default_source_type or "textbook_example").strip().lower() or "textbook_example"
+        if raw_source_type and raw_source_type not in ALLOWED_SOURCE_TYPES:
+            normalized = "textbook_practice"
+            reason = "invalid_source_type_fallback_textbook_practice"
+            if isinstance(item, dict):
+                item["needs_review"] = True
+        else:
+            normalized = fallback
+            reason = "default_source_type"
+
+    if isinstance(item, dict):
+        item["source_type"] = normalized
+        try:
+            current_app.logger.info(
+                f"[SOURCE TYPE] title={title or '<empty>'} raw_source_type={raw_source_type or 'None'} "
+                f"normalized_source_type={normalized} reason={reason}"
+            )
+        except Exception:
+            pass
+    return normalized
+
+
+def _normalize_sub_questions(raw_sub_questions):
+    normalized = []
+    if not isinstance(raw_sub_questions, list):
+        return normalized
+    for idx, item in enumerate(raw_sub_questions, start=1):
+        if not isinstance(item, dict):
+            continue
+        normalized.append(
+            {
+                "label": _first_non_empty_str(item, ("label", "index", "no", "number")) or str(idx),
+                "problem": _first_non_empty_str(item, ("problem_text", "problem", "question")),
+                "answer": _first_non_empty_str(item, ("correct_answer", "answer")),
+                "solution": _first_non_empty_str(item, ("detailed_solution", "solution")),
+            }
+        )
+    return normalized
+
+
+def _render_sub_questions_problem(problem_text, sub_questions):
+    if not sub_questions:
+        return (problem_text or "").strip()
+    lines = [str(problem_text or "").strip()] if str(problem_text or "").strip() else []
+    for sq in sub_questions:
+        label = str(sq.get("label", "") or "").strip()
+        p = str(sq.get("problem", "") or "").strip()
+        if p:
+            lines.append(f"({label}) {p}" if label else p)
+    return "\n".join(lines).strip()
+
+
+def _render_sub_questions_answer(answer_text, sub_questions):
+    if not sub_questions:
+        return (answer_text or "").strip()
+    parts = []
+    for sq in sub_questions:
+        label = str(sq.get("label", "") or "").strip()
+        ans = str(sq.get("answer", "") or "").strip()
+        if ans:
+            parts.append(f"({label}) {ans}" if label else ans)
+    return "；".join(parts) if parts else (answer_text or "").strip()
+
+
+def _render_sub_questions_solution(solution_text, sub_questions):
+    if not sub_questions:
+        return (solution_text or "").strip()
+    lines = [str(solution_text or "").strip()] if str(solution_text or "").strip() else []
+    for sq in sub_questions:
+        label = str(sq.get("label", "") or "").strip()
+        s = str(sq.get("solution", "") or "").strip()
+        p = str(sq.get("problem", "") or "").strip()
+        a = str(sq.get("answer", "") or "").strip()
+        if s:
+            lines.append(f"({label}) {s}" if label else s)
+        elif p or a:
+            lines.append(f"({label}) {p} = {a}".strip() if label else f"{p} = {a}".strip())
+    return "\n".join(lines).strip()
 
 
 def _normalize_textbook_question_structure(parsed_data, queue=None):
@@ -1703,7 +2020,10 @@ def _normalize_textbook_question_structure(parsed_data, queue=None):
                     problem_text = _first_non_empty_str(ex, ("problem_text", "problem", "question"))
                     answer = _first_non_empty_str(ex, ("correct_answer", "answer"))
                     solution = _first_non_empty_str(ex, ("detailed_solution", "solution"))
-                    source_type = _first_non_empty_str(ex, ("source_type",)).lower() or "textbook_example"
+                    source_type = normalize_source_type_by_title(ex, default_source_type="textbook_example")
+                    source_page = ex.get("source_page", ex.get("page"))
+                    page_index = ex.get("page_index")
+                    sub_questions = _normalize_sub_questions(ex.get("sub_questions", []))
 
                     ex_normalized = dict(ex)
                     ex_normalized["source_description"] = example_title or ex_normalized.get("source_description", "例題")
@@ -1714,7 +2034,17 @@ def _normalize_textbook_question_structure(parsed_data, queue=None):
                     if solution:
                         ex_normalized["detailed_solution"] = solution
                     ex_normalized["source_type"] = source_type if source_type else "textbook_example"
-                    normalized_examples.append(ex_normalized)
+                    ex_normalized["source_page"] = source_page if source_page is not None else None
+                    ex_normalized["page_index"] = page_index if page_index is not None else None
+                    if sub_questions:
+                        ex_normalized["sub_questions"] = sub_questions
+                        ex_normalized["problem_text"] = _render_sub_questions_problem(problem_text, sub_questions)
+                        ex_normalized["correct_answer"] = _render_sub_questions_answer(answer, sub_questions)
+                        ex_normalized["detailed_solution"] = _render_sub_questions_solution(solution, sub_questions)
+                    if source_type == "textbook_example":
+                        normalized_examples.append(ex_normalized)
+                    else:
+                        extracted_practices.append(ex_normalized)
 
                     for fp in ex.get("followup_practices", []) or []:
                         if not isinstance(fp, dict):
@@ -1723,8 +2053,10 @@ def _normalize_textbook_question_structure(parsed_data, queue=None):
                         p_problem = _first_non_empty_str(fp, ("problem_text", "problem", "question"))
                         p_answer = _first_non_empty_str(fp, ("correct_answer", "answer"))
                         p_solution = _first_non_empty_str(fp, ("detailed_solution", "solution"))
-                        p_source_type = _first_non_empty_str(fp, ("source_type",)).lower() or "in_class_practice"
+                        p_source_type = normalize_source_type_by_title(fp, default_source_type="in_class_practice")
                         linked_example_title = _first_non_empty_str(fp, ("linked_example_title",)) or ex_normalized["source_description"]
+                        p_source_page = fp.get("source_page", fp.get("page"))
+                        p_page_index = fp.get("page_index")
 
                         practice_item = dict(fp)
                         practice_item["source_description"] = p_title or "隨堂練習"
@@ -1736,6 +2068,8 @@ def _normalize_textbook_question_structure(parsed_data, queue=None):
                             practice_item["detailed_solution"] = p_solution
                         practice_item["source_type"] = p_source_type
                         practice_item["linked_example_title"] = linked_example_title
+                        practice_item["source_page"] = p_source_page if p_source_page is not None else None
+                        practice_item["page_index"] = p_page_index if p_page_index is not None else None
                         if not practice_item.get("skill_id") and ex_normalized.get("skill_id"):
                             practice_item["skill_id"] = ex_normalized.get("skill_id")
                         extracted_practices.append(practice_item)
@@ -1748,8 +2082,11 @@ def _normalize_textbook_question_structure(parsed_data, queue=None):
                     p_problem = _first_non_empty_str(practice, ("problem_text", "problem", "question"))
                     p_answer = _first_non_empty_str(practice, ("correct_answer", "answer"))
                     p_solution = _first_non_empty_str(practice, ("detailed_solution", "solution"))
-                    p_source_type = _first_non_empty_str(practice, ("source_type",)).lower() or "in_class_practice"
+                    p_source_type = normalize_source_type_by_title(practice, default_source_type="in_class_practice")
                     linked_example_title = _first_non_empty_str(practice, ("linked_example_title",))
+                    p_source_page = practice.get("source_page", practice.get("page"))
+                    p_page_index = practice.get("page_index")
+                    sub_questions = _normalize_sub_questions(practice.get("sub_questions", []))
 
                     normalized_practice = dict(practice)
                     normalized_practice["source_description"] = p_title or normalized_practice.get("source_description", "隨堂練習")
@@ -1762,12 +2099,71 @@ def _normalize_textbook_question_structure(parsed_data, queue=None):
                     normalized_practice["source_type"] = p_source_type
                     if linked_example_title:
                         normalized_practice["linked_example_title"] = linked_example_title
+                    normalized_practice["source_page"] = p_source_page if p_source_page is not None else None
+                    normalized_practice["page_index"] = p_page_index if p_page_index is not None else None
+                    if sub_questions:
+                        normalized_practice["sub_questions"] = sub_questions
+                        normalized_practice["problem_text"] = _render_sub_questions_problem(p_problem, sub_questions)
+                        normalized_practice["correct_answer"] = _render_sub_questions_answer(p_answer, sub_questions)
+                        normalized_practice["detailed_solution"] = _render_sub_questions_solution(p_solution, sub_questions)
 
                     normalized_practices.append(normalized_practice)
 
                 concept["examples"] = normalized_examples
                 concept["practice_questions"] = normalized_practices
+                if isinstance(concept.get("self_assessment_questions"), list):
+                    normalized_sa = []
+                    for q in concept.get("self_assessment_questions", []) or []:
+                        if not isinstance(q, dict):
+                            continue
+                        qn = dict(q)
+                        qn["source_type"] = normalize_source_type_by_title(qn, default_source_type="self_assessment")
+                        qn["source_page"] = q.get("source_page", q.get("page", None))
+                        qn["page_index"] = q.get("page_index", None)
+                        normalized_sa.append(qn)
+                    concept["self_assessment_questions"] = normalized_sa
+                if isinstance(concept.get("exercises"), list):
+                    normalized_exercises = []
+                    for q in concept.get("exercises", []) or []:
+                        if not isinstance(q, dict):
+                            continue
+                        qn = dict(q)
+                        qn["source_type"] = normalize_source_type_by_title(qn, default_source_type="chapter_exercise")
+                        normalized_exercises.append(qn)
+                    concept["exercises"] = normalized_exercises
 
+    return parsed_data
+
+
+def _mark_needs_review_for_low_quality_pages(parsed_data, page_analysis_payload):
+    if not isinstance(parsed_data, dict) or not isinstance(page_analysis_payload, dict):
+        return parsed_data
+    flagged = {int(k) for k, v in page_analysis_payload.items() if isinstance(v, dict) and v.get("needs_review")}
+    if not flagged:
+        return parsed_data
+    for chapter in parsed_data.get("chapters", []) or []:
+        if not isinstance(chapter, dict):
+            continue
+        for section in chapter.get("sections", []) or []:
+            if not isinstance(section, dict):
+                continue
+            for concept in section.get("concepts", []) or []:
+                if not isinstance(concept, dict):
+                    continue
+                for bucket in ("examples", "practice_questions", "self_assessment_questions"):
+                    for q in concept.get(bucket, []) or []:
+                        if not isinstance(q, dict):
+                            continue
+                        sp = q.get("source_page")
+                        try:
+                            sp_int = int(sp) if sp is not None else None
+                        except Exception:
+                            sp_int = None
+                        if sp_int in flagged:
+                            q["needs_review"] = True
+                            prev = str(q.get("parse_warning", "") or "").strip()
+                            extra = "low_quality_page_without_vision_ocr"
+                            q["parse_warning"] = ";".join(filter(None, [prev, extra]))
     return parsed_data
 
 
@@ -1848,7 +2244,7 @@ def remap_mathb_non_skill_examples(section_title, concept_name, clean_en_id, exa
     # 無法判斷時預設歸入乘法原理
     return "MultiplicationPrinciple"
 
-def save_to_database(parsed_data, curriculum_info, queue):
+def save_to_database(parsed_data, curriculum_info, queue, source_file_path=None, content_by_page=None):
     """
     將 AI 分析完的目錄資料寫入資料庫。
     """
@@ -1860,9 +2256,15 @@ def save_to_database(parsed_data, curriculum_info, queue):
     examples_added = 0
     practice_questions_imported = 0
     in_class_practices_imported = 0
+    chapter_exercises_imported = 0
+    self_assessments_imported = 0
+    exam_practices_imported = 0
+    other_practices_imported = 0
     practice_questions_needs_review = 0
     practice_questions_skipped = 0
     processed_skill_ids = []
+    is_pdf_source = str(source_file_path or "").lower().endswith(".pdf")
+    page_image_cache = {}
 
     prefix_map = {
         'junior_high': 'jh_',
@@ -1882,10 +2284,28 @@ def save_to_database(parsed_data, curriculum_info, queue):
         match = re.search(r'(\d+)', str(text))
         return int(match.group(1)) if match else None
 
-    def _normalize_problem_hash(problem_text):
+    def _normalize_problem_hash(problem_text, sub_questions=None, source_type="", title=""):
         normalized = normalize_math_text(str(problem_text or ""))
         normalized = re.sub(r"\s+", " ", normalized).strip()
-        return hashlib.sha1(normalized.encode("utf-8")).hexdigest()[:16]
+        sq_norm = []
+        for sq in sub_questions or []:
+            if not isinstance(sq, dict):
+                continue
+            sq_norm.append(
+                {
+                    "label": str(sq.get("label", "") or "").strip(),
+                    "problem": re.sub(r"\s+", " ", normalize_math_text(str(sq.get("problem", "") or ""))).strip(),
+                    "answer": re.sub(r"\s+", " ", normalize_math_text(str(sq.get("answer", "") or ""))).strip(),
+                    "solution": re.sub(r"\s+", " ", normalize_math_text(str(sq.get("solution", "") or ""))).strip(),
+                }
+            )
+        payload = {
+            "source_type": str(source_type or "").strip().lower(),
+            "title": str(title or "").strip(),
+            "problem": normalized,
+            "sub_questions": sq_norm,
+        }
+        return hashlib.sha1(json.dumps(payload, ensure_ascii=False, sort_keys=True).encode("utf-8")).hexdigest()[:16]
 
     def _build_source_description(title, source_type, linked_example_title=None, needs_review=False, dedupe_hash=""):
         title_text = str(title or "").strip() or "未命名題目"
@@ -1897,6 +2317,96 @@ def save_to_database(parsed_data, curriculum_info, queue):
         if dedupe_hash:
             parts.append(f"dedupe={dedupe_hash}")
         return f"{title_text} [{' | '.join(parts)}]"
+
+    def _infer_linked_example_title(practice_title, linked_example_title, saved_titles, needs_review):
+        linked = str(linked_example_title or "").strip() or None
+        review = bool(needs_review)
+        if linked:
+            return linked, review
+        practice_num = _extract_title_number(practice_title)
+        if practice_num is not None:
+            inferred = f"例題{practice_num}"
+            if inferred in saved_titles:
+                return inferred, review
+            if saved_titles:
+                return saved_titles[-1], True
+            return None, True
+        if saved_titles:
+            return saved_titles[-1], True
+        return None, True
+
+    def _build_image_metadata(question_title, question_text, chapter_title, section_title, source_type, question_code, force_has_image=False, image_description="", source_page=None, page_index=None):
+        if not force_has_image and not question_needs_image(question_text, ai_has_image=force_has_image):
+            return None
+        reason = image_description or detect_image_reason(question_text)
+        current_app.logger.info(f"[QUESTION IMAGE] needs image title={question_title} source_page={source_page}")
+        if queue is not None:
+            queue.put(f"INFO: [QUESTION IMAGE] needs image title={question_title} source_page={source_page}")
+
+        metadata = {
+            "has_image": True,
+            "needs_image_review": True,
+            "image_assets": [],
+        }
+        if source_page is None and page_index is None:
+            metadata["image_warning"] = "missing_source_page"
+            current_app.logger.info(f"[QUESTION IMAGE] skipped title={question_title} reason=missing_source_page")
+            if queue is not None:
+                queue.put(f"INFO: [QUESTION IMAGE] skipped title={question_title} reason=missing_source_page")
+            return metadata
+
+        if not is_pdf_source:
+            return metadata
+
+        page_number = None
+        if source_page is not None:
+            try:
+                page_number = int(source_page)
+            except Exception:
+                page_number = None
+        if page_number is None and page_index is not None:
+            try:
+                page_number = int(page_index) + 1
+            except Exception:
+                page_number = None
+        if page_number is None:
+            page_number = find_best_page_index(content_by_page, question_text)
+        if page_number is None:
+            metadata["image_warning"] = "missing_source_page"
+            return metadata
+
+        rel_dir, abs_dir, chapter_id, section_id = build_question_assets_dir(
+            curriculum_info, chapter_title, section_title
+        )
+        filename = f"page_{int(page_number):03d}.png"
+        abs_path = os.path.join(abs_dir, filename)
+        rel_path = os.path.join(rel_dir, filename)
+        cache_key = (os.path.abspath(str(source_file_path or "")), int(page_number), os.path.abspath(abs_dir))
+        try:
+            if cache_key in page_image_cache and os.path.exists(page_image_cache[cache_key]):
+                reused_abs = page_image_cache[cache_key]
+                rel_path = os.path.relpath(reused_abs, current_app.root_path)
+                current_app.logger.info(f"[QUESTION IMAGE] reused page image path={rel_path}")
+                if queue is not None:
+                    queue.put(f"INFO: [QUESTION IMAGE] reused page image path={rel_path}")
+            else:
+                render_pdf_page_to_image(source_file_path, int(page_number) - 1, abs_path, dpi=200)
+                page_image_cache[cache_key] = abs_path
+                current_app.logger.info(f"[QUESTION IMAGE] rendered page image path={rel_path}")
+                if queue is not None:
+                    queue.put(f"INFO: [QUESTION IMAGE] rendered page image path={rel_path}")
+            metadata["image_assets"].append(
+                make_page_image_asset(
+                    reason=reason,
+                    rel_image_path=rel_path,
+                    page_index=int(page_number) - 1,
+                )
+            )
+            metadata["image_assets"][0]["source_page"] = int(page_number)
+            metadata["image_assets"][0]["image_description"] = image_description or ""
+        except Exception as e:
+            current_app.logger.warning(f"[QUESTION IMAGE] render failed question={question_title} err={e}")
+        return metadata
 
     def _determine_target_skill_id(base_clean_en_id, section_title, concept_name, example_obj):
         target_clean_en_id = base_clean_en_id
@@ -2052,22 +2562,41 @@ def save_to_database(parsed_data, curriculum_info, queue):
                             f"INFO: 跳過非技能桶位 concept='{concept_name}' ({clean_en_id})，僅重導 examples。"
                         )
 
-                    # === 例題處理 (維持原邏輯) ===
+                    # === 題目寫入：先做 source_type 正規化，再依型別路由 ===
                     saved_example_skill_map = {}
                     saved_example_order = []
-                    for ex in concept.get('examples', []):
+                    saved_example_titles = []
+                    for ex_idx, ex in enumerate(concept.get('examples', []), start=1):
                         problem_text = ex.get('problem_text')
                         if not problem_text:
                             continue
 
-                        example_title = str(ex.get("source_description", "") or ex.get("example_title", "") or "例題").strip()
-                        source_type = str(ex.get("source_type", "textbook_example") or "textbook_example").strip().lower()
+                        example_title = get_question_title(ex) or "例題"
+                        source_type = normalize_source_type_by_title(ex, default_source_type="textbook_example")
                         target_skill_id = _determine_target_skill_id(clean_en_id, section_title, concept_name, ex)
 
-                        dedupe_hash = _normalize_problem_hash(problem_text)
+                        sub_questions = ex.get("sub_questions", []) if isinstance(ex.get("sub_questions", []), list) else []
+                        db_problem_text = _render_sub_questions_problem(problem_text, sub_questions)
+                        db_answer = _render_sub_questions_answer(ex.get('correct_answer', ''), sub_questions)
+                        db_solution = _render_sub_questions_solution(ex.get('detailed_solution', ''), sub_questions)
+                        needs_review = bool(ex.get("needs_review", False))
+                        linked_example_title = None
+                        if source_type == "in_class_practice":
+                            linked_example_title, needs_review = _infer_linked_example_title(
+                                example_title,
+                                ex.get("linked_example_title"),
+                                saved_example_titles,
+                                needs_review,
+                            )
+                            ex["linked_example_title"] = linked_example_title
+                        dedupe_hash = _normalize_problem_hash(
+                            db_problem_text, sub_questions=sub_questions, source_type=source_type, title=example_title
+                        )
                         source_description = _build_source_description(
                             example_title,
                             source_type=source_type,
+                            linked_example_title=linked_example_title,
+                            needs_review=needs_review,
                             dedupe_hash=dedupe_hash
                         )
 
@@ -2080,10 +2609,12 @@ def save_to_database(parsed_data, curriculum_info, queue):
                             source_description=source_description
                         ).first()
 
-                        title_num = _extract_title_number(example_title)
-                        if title_num is not None:
-                            saved_example_skill_map[title_num] = target_skill_id
-                        saved_example_order.append((example_title, target_skill_id))
+                        if source_type == "textbook_example":
+                            title_num = _extract_title_number(example_title)
+                            if title_num is not None:
+                                saved_example_skill_map[title_num] = target_skill_id
+                            saved_example_order.append((example_title, target_skill_id))
+                            saved_example_titles.append(example_title)
 
                         if existing_ex:
                             current_app.logger.info(
@@ -2104,17 +2635,60 @@ def save_to_database(parsed_data, curriculum_info, queue):
                             source_section=section_title,
                             source_paragraph=concept_name,
                             source_description=source_description,
-                            problem_text=problem_text,
-                            problem_type=ex.get('problem_type', 'calculation'),
-                            correct_answer=ex.get('correct_answer', ''),
-                            detailed_solution=sanitize_detailed_solution_text(ex.get('detailed_solution', ''), max_chars=500),
+                            problem_text=db_problem_text,
+                            problem_type=ex.get('problem_type', source_type or 'calculation'),
+                            correct_answer=db_answer,
+                            detailed_solution=sanitize_detailed_solution_text(db_solution, max_chars=500),
                             difficulty_level=difficulty_level
                         )
+                        chapter_rel_dir, _, chapter_id, section_id = build_question_assets_dir(
+                            curriculum_info, chapter_title, section_title
+                        )
+                        _ = chapter_rel_dir  # keep naming consistent, not used here
+                        example_code = build_question_code(chapter_id, section_id, "example", ex_idx)
+                        image_meta = _build_image_metadata(
+                            question_title=example_title,
+                            question_text=db_problem_text,
+                            chapter_title=chapter_title,
+                            section_title=section_title,
+                            source_type=source_type,
+                            question_code=example_code,
+                            force_has_image=bool(ex.get("has_image", False)),
+                            image_description=str(ex.get("image_description", "") or ""),
+                            source_page=ex.get("source_page"),
+                            page_index=ex.get("page_index"),
+                        )
+                        if image_meta:
+                            attached = attach_image_metadata(new_ex, image_meta)
+                            if attached:
+                                current_app.logger.info(f"[QUESTION IMAGE] metadata attached question={example_title}")
+                            else:
+                                current_app.logger.info(
+                                    "[QUESTION IMAGE] detected but no metadata field available table=textbook_examples"
+                                )
                         db.session.add(new_ex)
-                        examples_added += 1
+                        if source_type == "textbook_example":
+                            examples_added += 1
+                        else:
+                            practice_questions_imported += 1
+                            if source_type == "in_class_practice":
+                                in_class_practices_imported += 1
+                            elif source_type == "chapter_exercise":
+                                chapter_exercises_imported += 1
+                            elif source_type == "self_assessment":
+                                self_assessments_imported += 1
+                            elif source_type == "exam_practice":
+                                exam_practices_imported += 1
+                                current_app.logger.info(
+                                    f"[EXAM PRACTICE IMPORT] detected title={example_title} source_type={source_type} skill_id={target_skill_id}"
+                                )
+                            else:
+                                other_practices_imported += 1
+                            if needs_review:
+                                practice_questions_needs_review += 1
 
                     # === 隨堂練習/練習題：獨立寫入 ===
-                    for practice in concept.get('practice_questions', []) or []:
+                    for practice_idx, practice in enumerate(concept.get('practice_questions', []) or [], start=1):
                         if not isinstance(practice, dict):
                             continue
 
@@ -2124,17 +2698,18 @@ def save_to_database(parsed_data, curriculum_info, queue):
                         if not practice_problem:
                             continue
 
-                        practice_title = str(
-                            practice.get("source_description", "") or practice.get("practice_title", "") or "隨堂練習"
-                        ).strip()
-                        source_type = str(practice.get("source_type", "in_class_practice") or "in_class_practice").strip().lower()
+                        practice_title = get_question_title(practice) or "隨堂練習"
+                        source_type = normalize_source_type_by_title(practice, default_source_type="in_class_practice")
+                        sub_questions = practice.get("sub_questions", []) if isinstance(practice.get("sub_questions", []), list) else []
+                        practice_problem = _render_sub_questions_problem(practice_problem, sub_questions)
+                        practice_answer = _render_sub_questions_answer(practice.get('correct_answer', ''), sub_questions)
+                        practice_solution = _render_sub_questions_solution(practice.get('detailed_solution', ''), sub_questions)
                         linked_example_title = str(practice.get("linked_example_title", "") or "").strip() or None
                         needs_review = bool(practice.get("needs_review", False))
-
-                        if not linked_example_title:
-                            practice_num = _extract_title_number(practice_title)
-                            if practice_num is not None:
-                                linked_example_title = f"例題{practice_num}"
+                        if source_type == "in_class_practice":
+                            linked_example_title, needs_review = _infer_linked_example_title(
+                                practice_title, linked_example_title, saved_example_titles, needs_review
+                            )
 
                         target_skill_id = str(practice.get("skill_id", "") or "").strip()
                         if not target_skill_id:
@@ -2166,8 +2741,14 @@ def save_to_database(parsed_data, curriculum_info, queue):
                         )
                         current_app.logger.info(log_msg)
                         queue.put(f"INFO: {log_msg}")
+                        if source_type == "exam_practice":
+                            current_app.logger.info(
+                                f"[EXAM PRACTICE IMPORT] detected title={practice_title} source_type={source_type} skill_id={target_skill_id}"
+                            )
 
-                        dedupe_hash = _normalize_problem_hash(practice_problem)
+                        dedupe_hash = _normalize_problem_hash(
+                            practice_problem, sub_questions=sub_questions, source_type=source_type, title=practice_title
+                        )
                         source_description = _build_source_description(
                             practice_title,
                             source_type=source_type or "in_class_practice",
@@ -2208,15 +2789,48 @@ def save_to_database(parsed_data, curriculum_info, queue):
                             source_description=source_description,
                             problem_text=practice_problem,
                             problem_type=practice.get('problem_type', 'in_class_practice'),
-                            correct_answer=practice.get('correct_answer', ''),
-                            detailed_solution=sanitize_detailed_solution_text(practice.get('detailed_solution', ''), max_chars=500),
+                            correct_answer=practice_answer,
+                            detailed_solution=sanitize_detailed_solution_text(practice_solution, max_chars=500),
                             difficulty_level=difficulty_level
                         )
+                        chapter_rel_dir, _, chapter_id, section_id = build_question_assets_dir(
+                            curriculum_info, chapter_title, section_title
+                        )
+                        _ = chapter_rel_dir
+                        practice_code = build_question_code(chapter_id, section_id, "practice", practice_idx)
+                        image_meta = _build_image_metadata(
+                            question_title=practice_title,
+                            question_text=practice_problem,
+                            chapter_title=chapter_title,
+                            section_title=section_title,
+                            source_type=source_type,
+                            question_code=practice_code,
+                            force_has_image=bool(practice.get("has_image", False)),
+                            image_description=str(practice.get("image_description", "") or ""),
+                            source_page=practice.get("source_page"),
+                            page_index=practice.get("page_index"),
+                        )
+                        if image_meta:
+                            attached = attach_image_metadata(practice_row, image_meta)
+                            if attached:
+                                current_app.logger.info(f"[QUESTION IMAGE] metadata attached question={practice_title}")
+                            else:
+                                current_app.logger.info(
+                                    "[QUESTION IMAGE] detected but no metadata field available table=textbook_examples"
+                                )
                         db.session.add(practice_row)
 
                         practice_questions_imported += 1
                         if source_type == "in_class_practice":
                             in_class_practices_imported += 1
+                        elif source_type == "chapter_exercise":
+                            chapter_exercises_imported += 1
+                        elif source_type == "self_assessment":
+                            self_assessments_imported += 1
+                        elif source_type == "exam_practice":
+                            exam_practices_imported += 1
+                        else:
+                            other_practices_imported += 1
                         if needs_review:
                             practice_questions_needs_review += 1
                         saved_msg = (
@@ -2232,10 +2846,17 @@ def save_to_database(parsed_data, curriculum_info, queue):
             'curriculums_added': curriculums_added,
             'examples_added': examples_added,
             'examples_imported': examples_added,
+            'textbook_examples_imported': examples_added,
             'practice_questions_imported': practice_questions_imported,
             'in_class_practices_imported': in_class_practices_imported,
+            'chapter_exercises_imported': chapter_exercises_imported,
+            'self_assessments_imported': self_assessments_imported,
+            'exam_practices_imported': exam_practices_imported,
+            'other_practices_imported': other_practices_imported,
             'practice_questions_needs_review': practice_questions_needs_review,
+            'needs_review_count': practice_questions_needs_review,
             'practice_questions_skipped': practice_questions_skipped,
+            'duplicates_skipped': practice_questions_skipped,
             'processed_skill_ids': processed_skill_ids
         }
     except Exception as e:

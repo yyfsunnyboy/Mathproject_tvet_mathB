@@ -229,8 +229,12 @@ def runtime_ai_status():
     from core.ai_settings import get_ai_settings_snapshot, get_google_model_label
     
     tutor_config = get_effective_model_config('tutor')
+    architect_config = get_effective_model_config('architect')
+    vision_config = get_effective_model_config('vision_analyzer')
     provider = tutor_config.get('provider', 'unknown')
     tutor_model = tutor_config.get('model', 'unknown')
+    architect_model = architect_config.get('model', 'unknown')
+    vision_model = vision_config.get('model', 'unknown')
     
     settings = get_ai_settings_snapshot()
     ai_mode_raw = settings.get("ai_global_strategy", "unknown")
@@ -247,14 +251,19 @@ def runtime_ai_status():
         display_name = 'unknown'
     
     # 簡潔 log
-    current_app.logger.info(f"[RUNTIME AI STATUS] mode={ai_mode} provider={provider} tutor_model={tutor_model}")
+    current_app.logger.info(
+        f"[RUNTIME AI STATUS] mode={ai_mode} provider={provider} "
+        f"tutor_model={tutor_model} architect_model={architect_model} vision_analyzer_model={vision_model}"
+    )
     
     return jsonify({
         "success": True,
         "ai_mode": ai_mode,
         "tutor_provider": provider,
         "tutor_model": tutor_model,
-        "tutor_display_name": display_name
+        "tutor_display_name": display_name,
+        "architect_model": architect_model,
+        "vision_analyzer_model": vision_model
     })
 
 @practice_bp.route('/get_adaptive_question', methods=['GET'])

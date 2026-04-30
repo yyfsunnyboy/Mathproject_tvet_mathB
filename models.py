@@ -336,6 +336,7 @@ def init_db(engine):
             problem_type TEXT,
             correct_answer TEXT,
             detailed_solution TEXT,
+            notes TEXT,
             difficulty_level INTEGER DEFAULT 1,
             FOREIGN KEY (skill_id) REFERENCES skills_info (skill_id) ON DELETE CASCADE
         )
@@ -517,6 +518,7 @@ def init_db(engine):
     add_column_if_not_exists('skill_gencode_prompt', 'generation_duration', 'REAL')
     add_column_if_not_exists('skill_gencode_prompt', 'success_rate', 'FLOAT DEFAULT 0.0')
     add_column_if_not_exists('textbook_examples', 'difficulty_h', 'FLOAT NOT NULL DEFAULT 1.0')
+    add_column_if_not_exists('textbook_examples', 'notes', 'TEXT')
 
     c.execute('''
         CREATE TABLE IF NOT EXISTS ablation_settings (
@@ -951,6 +953,7 @@ class TextbookExample(db.Model):
     problem_type = db.Column(db.String)
     correct_answer = db.Column(db.String)
     detailed_solution = db.Column(db.Text)
+    notes = db.Column(db.Text)
     difficulty_level = db.Column(db.Integer, default=1)
     difficulty_h = db.Column(db.Float, nullable=False, default=1.0)
     skill_info = db.relationship('SkillInfo', backref=db.backref('textbook_examples', lazy=True, cascade="all, delete-orphan"))
@@ -969,6 +972,7 @@ class TextbookExample(db.Model):
             'problem_type': self.problem_type,
             'correct_answer': self.correct_answer,
             'detailed_solution': self.detailed_solution,
+            'notes': self.notes,
             'difficulty_level': self.difficulty_level,
             'difficulty_h': self.difficulty_h
         }

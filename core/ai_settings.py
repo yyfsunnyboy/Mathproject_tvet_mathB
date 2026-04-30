@@ -306,54 +306,52 @@ def get_effective_model_config(role: str) -> dict[str, Any]:
     settings = get_ai_settings_snapshot()
     ai_mode = settings.get("ai_global_strategy", "unknown")
     role_overrides = settings.get("ai_model_roles", {})
+    selected_cloud_model = str(settings.get("ai_cloud_model", DEFAULT_AI_CLOUD_MODEL)).strip()
 
     preset_key = None
     source = "unknown"
 
-    # Step 1: Check DB override
+    # Step 1: role-specific DB override
     override = role_overrides.get(normalized_role)
     if override in Config.CODER_PRESETS:
-        override_cfg = Config.CODER_PRESETS.get(override, {})
-        override_provider = str(override_cfg.get("provider", "")).lower()
-        override_model = str(override_cfg.get("model", "")).strip()
-        selected_cloud_model = str(settings.get("ai_cloud_model", DEFAULT_AI_CLOUD_MODEL)).strip()
-        should_follow_cloud_selection = (
-            ai_mode == "cloud_first"
-            or (ai_mode == "hybrid_balanced" and normalized_role in ("tutor", "default"))
-        )
-        if should_follow_cloud_selection and override_provider == "google" and override_model != selected_cloud_model:
-            preset_key = _fallback_preset_for_provider(normalized_role, "google")
-            source = "cloud_model_sync"
-        else:
-            preset_key = override
-            source = "db_override"
+        preset_key = override
+        source = "db_role_override"
 
-    # Step 2: Strategy fallback
+    # Step 2: global DB selected cloud model (for all cloud-oriented roles)
     if not preset_key:
-        strategy_key = _resolve_role_preset_from_strategy(
-            normalized_role,
-            ai_mode,
-            settings.get("ai_default_provider", "local"),
+        should_use_cloud_selection = (
+            ai_mode == "cloud_first"
+            or (ai_mode == "hybrid_balanced" and normalized_role in ("tutor", "architect", "vision_analyzer", "classifier", "default"))
         )
-        if strategy_key in Config.CODER_PRESETS:
-            preset_key = strategy_key
-            source = "global_strategy"
+        if should_use_cloud_selection and selected_cloud_model in Config.CODER_PRESETS:
+            cloud_cfg = Config.CODER_PRESETS.get(selected_cloud_model, {})
+            if str(cloud_cfg.get("provider", "")).lower() == "google":
+                preset_key = selected_cloud_model
+                source = "db_global_selected_model"
 
-    # Step 3: Hardcoded defaults in config.py
+    # Step 3: role-specific config default
     if not preset_key:
         cfg_key = _config_role_to_preset_key(normalized_role)
         if cfg_key in Config.CODER_PRESETS:
             preset_key = cfg_key
-            source = "config_hardcoded"
+            source = "config_role_default"
 
-    # Step 4: System default preset fallback
+    # Step 4: global config default (DEFAULT_CLOUD_MODEL)
     if not preset_key:
-        if Config.DEFAULT_CODER_PRESET in Config.CODER_PRESETS:
-            preset_key = Config.DEFAULT_CODER_PRESET
-            source = "system_default"
+        global_cfg_key = _normalize_cloud_model(getattr(Config, "DEFAULT_CLOUD_MODEL", DEFAULT_AI_CLOUD_MODEL))
+        if global_cfg_key in Config.CODER_PRESETS:
+            preset_key = global_cfg_key
+            source = "config_global_default"
+
+    # Step 5: hard fallback
+    if not preset_key:
+        stable_fallback = _normalize_cloud_model(getattr(Config, "DEFAULT_STABLE_FALLBACK_MODEL", "gemini-2.5-flash"))
+        if stable_fallback in Config.CODER_PRESETS:
+            preset_key = stable_fallback
+            source = "hard_fallback"
         else:
             preset_key = next(iter(Config.CODER_PRESETS.keys()), None)
-            source = "random_fallback"
+            source = "hard_fallback"
 
     if preset_key and preset_key in Config.CODER_PRESETS:
         cfg = dict(Config.CODER_PRESETS[preset_key])

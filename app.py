@@ -55,7 +55,8 @@ from matplotlib import font_manager
 import matplotlib.pyplot as plt
 
 import logging
-from flask import Flask, render_template, request, redirect, url_for, flash, session
+from flask import Flask, render_template, request, redirect, url_for, flash, session, send_from_directory, abort
+from werkzeug.utils import safe_join
 from sqlalchemy import inspect, Table, MetaData, text, func
 from sqlalchemy.exc import IntegrityError
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user, AnonymousUserMixin
@@ -125,7 +126,8 @@ def create_app():
         SQLALCHEMY_TRACK_MODIFICATIONS=Config.SQLALCHEMY_TRACK_MODIFICATIONS,
         SECRET_KEY=Config.SECRET_KEY,
         GEMINI_API_KEY=Config.GEMINI_API_KEY,
-        GEMINI_MODEL_NAME=Config.GEMINI_MODEL_NAME
+        GEMINI_MODEL_NAME=Config.GEMINI_MODEL_NAME,
+        ENABLE_VISION_OCR_FALLBACK=getattr(Config, "ENABLE_VISION_OCR_FALLBACK", False)
         ,SQLALCHEMY_ENGINE_OPTIONS={
             "connect_args": {"timeout": 30}  # 增加等待解鎖的時間到 30 秒
         }
@@ -187,6 +189,14 @@ def create_app():
         if current_user.is_authenticated:
             return redirect(url_for('dashboard'))
         return redirect(url_for('login'))
+
+    @app.route('/uploads/question_assets/<path:filename>')
+    def question_asset_file(filename):
+        base_dir = os.path.join(app.root_path, 'uploads', 'question_assets')
+        safe_path = safe_join(base_dir, filename)
+        if not safe_path or not os.path.isfile(safe_path):
+            abort(404)
+        return send_from_directory(base_dir, filename)
 
     @app.route('/login', methods=['GET', 'POST'])
     def login():

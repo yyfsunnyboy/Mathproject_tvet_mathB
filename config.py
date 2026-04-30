@@ -19,6 +19,8 @@ class Config:
     全域設定類別（Global Configuration）
     包含資料庫、上傳、角色模型映射、RAG 與實驗控制參數。
     """
+    ENABLE_VISION_OCR_FALLBACK = True
+    
 
     # ==========================================
     # 1. 資料庫設定（SQLite）

@@ -268,6 +268,9 @@
                         </td>
                         <td>
                             <small>{{ example.source_description }}</small>
+                            {% if example._has_image %}
+                            <div><span style="display:inline-block;padding:2px 6px;margin-top:4px;background:#dff0d8;color:#2e7d32;border-radius:4px;font-size:12px;">有附圖</span></div>
+                            {% endif %}
                         </td>
                         <td>
                             <div class="btn-group">
@@ -277,7 +280,8 @@
                                     "problem_text": {{ example.problem_text | tojson }},
                                     "correct_answer": {{ example.correct_answer | tojson }},
                                     "detailed_solution": {{ example.detailed_solution | tojson }},
-                                    "source_description": {{ example.source_description | tojson }}
+                                    "source_description": {{ example.source_description | tojson }},
+                                    "notes": {{ example.notes | tojson }}
                                 })'><i class="bi bi-pencil-fill"></i> 編輯</a>
                                 <button type="button" class="btn btn-delete" onclick="deleteExample({{ example.id }})">
                                     <i class="bi bi-trash-fill"></i> 刪除
@@ -344,6 +348,27 @@
             document.getElementById('edit_correct_answer').value = example.correct_answer;
             document.getElementById('edit_detailed_solution').value = example.detailed_solution;
             document.getElementById('edit_source_description').value = example.source_description;
+            const imageWrap = document.getElementById('edit_image_assets');
+            imageWrap.innerHTML = '';
+            try {
+                const meta = example.notes ? JSON.parse(example.notes) : {};
+                const assets = (meta && meta.image_assets) ? meta.image_assets : [];
+                if (assets.length === 0) {
+                    imageWrap.innerHTML = '<small style="color:#6c757d;">無</small>';
+                } else {
+                    assets.forEach(a => {
+                        const p = String(a.path || '');
+                        const img = document.createElement('img');
+                        img.src = '/' + p.replace(/^\/+/, '');
+                        img.style.maxWidth = '320px';
+                        img.style.display = 'block';
+                        img.style.marginBottom = '8px';
+                        imageWrap.appendChild(img);
+                    });
+                }
+            } catch (e) {
+                imageWrap.innerHTML = '<small style="color:#dc3545;">附圖 metadata 解析失敗</small>';
+            }
             openModal('editExampleModal');
         }
 
@@ -547,6 +572,10 @@
                 <div class="modal-form-group">
                     <label for="edit_source_description">來源描述</label>
                     <input type="text" id="edit_source_description" name="source_description">
+                </div>
+                <div class="modal-form-group">
+                    <label>附圖</label>
+                    <div id="edit_image_assets"></div>
                 </div>
                 <div class="modal-footer">
                     <button type="submit" class="btn-edit">儲存變更</button>

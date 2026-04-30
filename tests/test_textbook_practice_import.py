@@ -13,46 +13,50 @@ class DummyQueue:
         self.messages.append(msg)
 
 
-def _sample_ai_payload():
+def _make_item(title, source_type=None):
+    item = {"title": title}
+    if source_type is not None:
+        item["source_type"] = source_type
+    return item
+
+
+def test_normalize_source_type_by_title_rules():
+    assert processor.normalize_source_type_by_title(_make_item("隨堂練習4", "textbook_example")) == "in_class_practice"
+    assert processor.normalize_source_type_by_title(_make_item("統測補給站 例題3", "textbook_example")) == "exam_practice"
+    assert processor.normalize_source_type_by_title(_make_item("統測題")) == "exam_practice"
+    assert processor.normalize_source_type_by_title(_make_item("基礎題5")) == "basic_exercise"
+    assert processor.normalize_source_type_by_title(_make_item("進階題10")) == "advanced_exercise"
+    assert processor.normalize_source_type_by_title(_make_item("1-1 習題 3")) == "chapter_exercise"
+    assert processor.normalize_source_type_by_title(_make_item("自我評量第 23 題")) == "self_assessment"
+    assert processor.normalize_source_type_by_title(_make_item("例題5")) == "textbook_example"
+
+
+def test_invalid_source_type_falls_back_to_textbook_practice_and_needs_review():
+    item = _make_item("一般題目", "bad_type")
+    assert processor.normalize_source_type_by_title(item) == "textbook_practice"
+    assert item["needs_review"] is True
+
+
+def _payload_for_routing():
     return {
         "chapters": [
             {
-                "chapter_title": "1 排列組合",
+                "chapter_title": "第1章 排列組合",
                 "sections": [
                     {
-                        "section_title": "1-1 加法原理與乘法原理",
+                        "section_title": "1-1 計數原理",
                         "concepts": [
                             {
-                                "concept_name": "乘法原理",
-                                "concept_en_id": "MultiplicationPrinciple",
-                                "concept_description": "乘法原理",
+                                "concept_name": "階乘",
+                                "concept_en_id": "FactorialNotation",
                                 "examples": [
-                                    {
-                                        "example_title": "例題4",
-                                        "problem": "試問 600 = 2^3 \\times 3^1 \\times 5^2 的正因數共有幾個？",
-                                        "answer": "24",
-                                        "solution": "故 600 的正因數共有 4 \\times 2 \\times 3 = 24 個。",
-                                        "source_type": "textbook_example",
-                                        "skill_id": "vh_數學B4_MultiplicationPrinciple",
-                                        "followup_practices": [
-                                            {
-                                                "practice_title": "隨堂練習4",
-                                                "problem": "試問 1080 = 2^3 \\times 3^3 \\times 5^1 的正因數共有幾個？",
-                                                "answer": "32",
-                                                "solution": "故 1080 的正因數共有 4 \\times 4 \\times 2 = 32 個。",
-                                            }
-                                        ],
-                                    }
+                                    {"example_title": "例題5", "problem": "試求下列各式之值：", "source_type": "textbook_example", "sub_questions": [{"label": "1", "problem": "3!", "answer": "6"}]},
+                                    {"example_title": "例題12", "problem": "試求", "source_type": "textbook_example"},
+                                    {"example_title": "隨堂練習4", "problem": "試求下列各式之值：", "source_type": "textbook_example", "sub_questions": [{"label": "1", "problem": "4!", "answer": "24"}]},
+                                    {"example_title": "統測補給站 例題3", "problem": "某題", "source_type": "textbook_example"},
                                 ],
                                 "practice_questions": [
-                                    {
-                                        "practice_title": "隨堂練習5",
-                                        "problem": "試問 720 = 2^4 \\times 3^2 \\times 5^1 的正因數共有幾個？",
-                                        "answer": "30",
-                                        "solution": "故 720 的正因數共有 5 \\times 3 \\times 2 = 30 個。",
-                                        "source_type": "in_class_practice",
-                                        "linked_example_title": "例題4",
-                                    }
+                                    {"practice_title": "隨堂練習12", "problem": "試求", "source_type": "textbook_example", "sub_questions": [{"label": "1", "problem": "6!", "answer": "720"}]},
                                 ],
                             }
                         ],
@@ -61,22 +65,6 @@ def _sample_ai_payload():
             }
         ]
     }
-
-
-def test_parse_ai_response_splits_practice_questions_and_followups():
-    app = Flask(__name__)
-    queue = DummyQueue()
-    with app.app_context():
-        parsed = processor.parse_ai_response(_sample_ai_payload(), queue)
-
-    concept = parsed["chapters"][0]["sections"][0]["concepts"][0]
-    assert len(concept["examples"]) == 1
-    assert len(concept["practice_questions"]) == 2
-
-    followup = concept["practice_questions"][0]
-    assert followup["source_type"] == "in_class_practice"
-    assert followup["linked_example_title"] == "例題4"
-    assert followup["problem_text"].count("\\times") >= 1
 
 
 @dataclass
@@ -119,7 +107,23 @@ class _FakeQuery:
         return None
 
 
-def test_save_to_database_imports_independent_practice_and_no_skill_creation(monkeypatch):
+def test_parse_ai_response_normalizes_and_routes_by_title():
+    app = Flask(__name__)
+    with app.app_context():
+        parsed = processor.parse_ai_response(_payload_for_routing(), DummyQueue())
+
+    concept = parsed["chapters"][0]["sections"][0]["concepts"][0]
+    example_titles = [x["source_description"] for x in concept["examples"]]
+    practice_titles = [x["source_description"] for x in concept["practice_questions"]]
+    assert "例題5" in example_titles
+    assert "隨堂練習4" not in example_titles
+    assert "隨堂練習4" in practice_titles
+    assert "統測補給站 例題3" in practice_titles
+    p12 = next(x for x in concept["practice_questions"] if x["source_description"] == "隨堂練習12")
+    assert p12["source_type"] == "in_class_practice"
+
+
+def test_dedupe_and_summary_use_normalized_source_type(monkeypatch):
     app = Flask(__name__)
     queue = DummyQueue()
 
@@ -172,25 +176,90 @@ def test_save_to_database_imports_independent_practice_and_no_skill_creation(mon
     monkeypatch.setattr(processor, "TextbookExample", FakeTextbookExample)
     monkeypatch.setattr(processor, "db", FakeDB())
 
-    curriculum_info = {"curriculum": "vocational", "grade": 10, "volume": "數學B第四冊"}
+    payload = _payload_for_routing()
+    curriculum_info = {"curriculum": "vocational", "grade": 10, "volume": "數學B4"}
 
     with app.app_context():
-        parsed = processor.parse_ai_response(_sample_ai_payload(), queue)
-        result_first = processor.save_to_database(parsed, curriculum_info, queue)
-        result_second = processor.save_to_database(parsed, curriculum_info, queue)
+        parsed = processor.parse_ai_response(payload, queue)
+        result = processor.save_to_database(parsed, curriculum_info, queue)
 
-    assert result_first["examples_imported"] == 1
-    assert result_first["practice_questions_imported"] == 2
-    assert result_first["in_class_practices_imported"] == 2
-    assert result_second["practice_questions_skipped"] >= 1
+    assert result["textbook_examples_imported"] == 2
+    assert result["in_class_practices_imported"] == 2
+    assert result["exam_practices_imported"] == 1
+    assert result["chapter_exercises_imported"] == 0
+    assert result["self_assessments_imported"] == 0
+    assert result["practice_questions_imported"] == 3
 
-    # example + 2 practices are independent rows in textbook_examples
-    assert len(textbook_rows) == 3
+    rows_by_title = {r.source_description.split(" [")[0]: r for r in textbook_rows}
+    assert "source_type=textbook_example" in rows_by_title["例題5"].source_description
+    assert "source_type=textbook_example" in rows_by_title["例題12"].source_description
+    assert "source_type=in_class_practice" in rows_by_title["隨堂練習4"].source_description
+    assert "source_type=exam_practice" in rows_by_title["統測補給站 例題3"].source_description
+    assert "linked_example=例題12" in rows_by_title["隨堂練習12"].source_description
 
-    practice_rows = [r for r in textbook_rows if "source_type=in_class_practice" in r.source_description]
-    assert len(practice_rows) == 2
-    assert all("linked_example=例題4" in r.source_description for r in practice_rows)
-    assert all(r.skill_id == "vh_數學B4_MultiplicationPrinciple" for r in practice_rows)
 
-    # No additional skill created from title "隨堂練習"
-    assert all("隨堂練習" not in s.skill_id for s in skill_rows)
+def test_in_class_practice_missing_exact_example_falls_back_previous(monkeypatch):
+    app = Flask(__name__)
+    queue = DummyQueue()
+
+    skill_rows = []
+    curriculum_rows = []
+    textbook_rows = []
+
+    class FakeSkillInfo:
+        query = _FakeQuery(skill_rows, key_field="skill_id")
+
+        def __init__(self, **kwargs):
+            self.__dict__.update(kwargs)
+
+    class FakeSkillCurriculum:
+        query = _FakeQuery(curriculum_rows)
+
+        def __init__(self, **kwargs):
+            self.__dict__.update(kwargs)
+
+    class FakeTextbookExample:
+        query = _FakeQuery(textbook_rows)
+
+        def __init__(self, **kwargs):
+            self.__dict__.update(kwargs)
+            self.id = len(textbook_rows) + 1
+
+    class FakeSession:
+        @staticmethod
+        def add(obj):
+            if isinstance(obj, FakeSkillInfo):
+                skill_rows.append(obj)
+            elif isinstance(obj, FakeSkillCurriculum):
+                curriculum_rows.append(obj)
+            elif isinstance(obj, FakeTextbookExample):
+                textbook_rows.append(obj)
+
+        @staticmethod
+        def commit():
+            return None
+
+        @staticmethod
+        def rollback():
+            return None
+
+    class FakeDB:
+        session = FakeSession()
+
+    monkeypatch.setattr(processor, "SkillInfo", FakeSkillInfo)
+    monkeypatch.setattr(processor, "SkillCurriculum", FakeSkillCurriculum)
+    monkeypatch.setattr(processor, "TextbookExample", FakeTextbookExample)
+    monkeypatch.setattr(processor, "db", FakeDB())
+
+    payload = _payload_for_routing()
+    concepts = payload["chapters"][0]["sections"][0]["concepts"][0]
+    concepts["examples"] = [e for e in concepts["examples"] if e.get("example_title") != "例題12"]
+    curriculum_info = {"curriculum": "vocational", "grade": 10, "volume": "數學B4"}
+
+    with app.app_context():
+        parsed = processor.parse_ai_response(payload, queue)
+        processor.save_to_database(parsed, curriculum_info, queue)
+
+    rows_by_title = {r.source_description.split(" [")[0]: r for r in textbook_rows}
+    assert "linked_example=例題5" in rows_by_title["隨堂練習12"].source_description
+    assert "needs_review=true" in rows_by_title["隨堂練習12"].source_description
