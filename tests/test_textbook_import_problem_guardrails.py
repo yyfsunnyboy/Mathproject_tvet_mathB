@@ -3,7 +3,9 @@ from core.textbook_processor import (
     build_docx_question_formula_context,
     classify_practice_source_bucket,
     classify_non_question_block,
+    is_answer_blank_placeholder_context,
     normalize_fill_blank_artifacts,
+    normalize_probability_event_notation,
     normalize_permutation_combination_notation,
     repair_missing_single_variable_text,
     segment_question_block_text,
@@ -141,3 +143,128 @@ def test_figure_caption_not_treated_as_question_block():
     seg, _ = segment_question_block_text("例題2 試求答案\n▲圖5\n▲圖6", question_title="例題2")
     assert "▲圖5" not in seg
     assert "▲圖6" not in seg
+
+def test_perm_comb_unicode_prefix_normalized_new():
+    fixed, meta = normalize_permutation_combination_notation("⁵P₃")
+    assert fixed == "P^{5}_{3}"
+    assert meta.get("changed") is True
+
+
+def test_perm_comb_unicode_suffix_normalized_new():
+    fixed, _ = normalize_permutation_combination_notation("P₃⁵")
+    assert fixed == "P^{5}_{3}"
+
+
+def test_perm_comb_latex_power_then_subscript_normalized_new():
+    fixed, _ = normalize_permutation_combination_notation("P^5_3")
+    assert fixed == "P^{5}_{3}"
+
+
+def test_perm_comb_latex_subscript_then_power_normalized_new():
+    fixed, _ = normalize_permutation_combination_notation("P_{3}^{5}")
+    assert fixed == "P^{5}_{3}"
+
+
+def test_perm_comb_left_superscript_braced_normalized_new():
+    fixed, _ = normalize_permutation_combination_notation("{}^{5}P_{3}")
+    assert fixed == "P^{5}_{3}"
+
+
+def test_perm_comb_left_superscript_unbraced_normalized_new():
+    fixed, _ = normalize_permutation_combination_notation("{}^5P_3")
+    assert fixed == "P^{5}_{3}"
+
+
+def test_perm_comb_inline_math_left_superscript_normalized_new():
+    fixed, _ = normalize_permutation_combination_notation("\\({}^{5}P_{3}\\)")
+    assert fixed == "\\(P^{5}_{3}\\)"
+
+
+def test_perm_comb_sentence_left_superscript_normalized_new():
+    text = "Compute values: (1) {}^{5}P_{3} (2) {}^{7}P_{2} (3) {}^{4}P_{4}"
+    fixed, _ = normalize_permutation_combination_notation(text)
+    assert fixed == "Compute values: (1) P^{5}_{3} (2) P^{7}_{2} (3) P^{4}_{4}"
+
+
+def test_cp_blank_placeholder_is_answer_blank_context():
+    raw_block = "Example 1 試求下列各式之值：(1) C^{8}_{2} [FORMULA_IMAGE_1] (2) C^{8}_{6} [FORMULA_IMAGE_2]"
+    problem_text = "試求下列各式之值：(1) C^{8}_{2} □□ (2) C^{8}_{6} □□"
+    assert is_answer_blank_placeholder_context(raw_block, problem_text) is True
+    fixed, _ = normalize_fill_blank_artifacts(problem_text)
+    assert "C^{8}_{2}" in fixed and "C^{8}_{6}" in fixed
+    assert "[BLANK]" in fixed
+
+
+def test_cp_missing_formula_stays_missing_protected_context():
+    raw_block = "Example 1 試求下列各式之值：(1) [FORMULA_IMAGE_1] (2) [FORMULA_IMAGE_2]"
+    problem_text = "試求下列各式之值：(1) C^{8}_{2} (2) C^{8}_{6}"
+    assert is_answer_blank_placeholder_context(raw_block, problem_text) is False
+
+
+def test_combination_notation_normalization_variants():
+    fixed1, _ = normalize_permutation_combination_notation("⁸C₂")
+    fixed2, _ = normalize_permutation_combination_notation("C₂⁸")
+    fixed3, _ = normalize_permutation_combination_notation("{}^{8}C_{2}")
+    assert fixed1 == "C^{8}_{2}"
+    assert fixed2 == "C^{8}_{2}"
+    assert fixed3 == "C^{8}_{2}"
+
+
+def test_probability_pa_not_changed():
+    fixed, _ = normalize_permutation_combination_notation("P(A)")
+    assert fixed == "P(A)"
+
+
+def test_probability_union_not_changed():
+    fixed, _ = normalize_permutation_combination_notation("P(A∪B)")
+    assert fixed == "P(A∪B)"
+
+
+def test_probability_conditional_not_changed():
+    fixed, _ = normalize_permutation_combination_notation("P(A|B)")
+    assert fixed == "P(A|B)"
+
+
+def test_permutation_parenthesized_numeric_is_safe():
+    fixed, _ = normalize_permutation_combination_notation("P(5,3)")
+    assert fixed == "P^{5}_{3}"
+
+
+def test_permutation_latex_stays_standard():
+    fixed, _ = normalize_permutation_combination_notation("P^{5}_{3}")
+    assert fixed == "P^{5}_{3}"
+
+
+def test_probability_union_wrapped_inline_math():
+    fixed, _ = normalize_probability_event_notation("P(A \\cup B)")
+    assert fixed == "\\(P(A \\cup B)\\)"
+
+
+def test_probability_intersection_wrapped_inline_math():
+    fixed, _ = normalize_probability_event_notation("P(A \\cap B)")
+    assert fixed == "\\(P(A \\cap B)\\)"
+
+
+def test_probability_complement_wrapped_inline_math():
+    fixed, _ = normalize_probability_event_notation("P(A')")
+    assert fixed == "\\(P(A')\\)"
+
+
+def test_probability_difference_wrapped_inline_math():
+    fixed, _ = normalize_probability_event_notation("P(B - A)")
+    assert fixed in ("\\(P(B - A)\\)", "\\(P(B \\setminus A)\\)")
+
+
+def test_probability_conditional_wrapped_inline_math():
+    fixed, _ = normalize_probability_event_notation("P(A|B)")
+    assert fixed == "\\(P(A | B)\\)"
+
+
+def test_probability_plain_pa_not_permutation():
+    fixed_perm, _ = normalize_permutation_combination_notation("P(A)")
+    assert fixed_perm == "P(A)"
+
+
+def test_permutation_not_affected_by_probability_normalizer():
+    fixed, _ = normalize_probability_event_notation("P^{5}_{3}")
+    assert fixed == "P^{5}_{3}"

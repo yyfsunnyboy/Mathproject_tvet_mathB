@@ -558,6 +558,45 @@
         })();
     </script>
 
+    <script>
+        function typesetMathInDashboard() {
+            if (window.MathJax && window.MathJax.typesetPromise) {
+                window.MathJax.typesetPromise()
+                    .catch(function (err) {
+                        console.warn("[MathJax] dashboard typeset failed:", err);
+                    });
+            }
+        }
+
+        function ensureMathJaxThenTypeset() {
+            // Only target curriculum skill cards; keep other views untouched.
+            if (!document.querySelector(".skill-grid.curriculum-skills")) return;
+
+            if (window.MathJax && window.MathJax.typesetPromise) {
+                typesetMathInDashboard();
+                return;
+            }
+
+            // Avoid duplicate loader injection when base/global already loads MathJax.
+            if (document.querySelector("script[data-dashboard-mathjax-loader='1']")) return;
+
+            var script = document.createElement("script");
+            script.async = true;
+            script.id = "mathjax-dashboard-loader";
+            script.setAttribute("data-dashboard-mathjax-loader", "1");
+            script.src = "https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js";
+            script.onload = function () {
+                typesetMathInDashboard();
+            };
+            document.head.appendChild(script);
+        }
+
+        document.addEventListener("DOMContentLoaded", function () {
+            // Initial load; also covers chapter/volume filter reloads.
+            ensureMathJaxThenTypeset();
+        });
+    </script>
+
     </div>
 </body>
 

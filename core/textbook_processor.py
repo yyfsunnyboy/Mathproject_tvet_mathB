@@ -1629,6 +1629,148 @@ concept_paragraph: 不盡相異物的排列
 3. 題型變化放入 subskill_tag
 4. 不自行把例題主題升格為 skill
 
+【2-1 專用規則：樣本空間與事件】
+
+當 section_title 包含「2-1」或「樣本空間與事件」時，請先依正式小節拆 skill：
+
+1. 若內容屬於 2-1.1 集合的基本概念，concepts 應包含：
+- 集合的基本概念（SetBasicConcepts）
+- 集合運算（SetOperations）
+- 集合元素計數與取捨原理（SetCountingInclusionExclusion）
+
+2. 若內容屬於 2-1.2 樣本空間與事件，concepts 應包含：
+- 樣本空間（SampleSpace）
+- 事件的基本概念（EventConcepts）
+- 事件運算與互斥事件（EventOperations）
+
+3. 題型歸類規則：
+- 問集合、元素、屬於/不屬於、子集、空集合、宇集、文氏圖 → SetBasicConcepts
+- 問聯集、交集、補集、差集、笛摩根定律 → SetOperations
+- 問集合元素個數、有 A 或 B、有兩者、兩者都沒有、2 或 3 的倍數 → SetCountingInclusionExclusion
+- 問樣本空間 S、樣本點、列出所有可能結果 → SampleSpace
+- 問事件、基本事件、全事件、空事件、餘事件 → EventConcepts
+- 問和事件、積事件、互斥事件、A 與 B 是否互斥 → EventOperations
+
+4. 不得把以下題型升格為 skill：
+- 擲骰子、擲硬幣、抽球、文氏圖、早餐飲料、慢跑游泳、倍數問題
+
+5. 若題目中的集合符號或選項缺失（例如只剩「設集合，則下列敘述何者錯誤？(A)(B)(C)」），
+必須標記 needs_review=true、formula_missing=true，不可自行猜集合內容。
+
+【3-1 專用補充：統計的基本概念】
+
+當 section_title 包含「3-1」或「統計的基本概念」時：
+1. 即使原始文字出現「第4章 統計」，本冊本單元仍視為「第3章 統計」。
+2. section_title 應保留為「3-1 統計的基本概念」。
+3. 若教材出現正式小節：
+- 3-1.1 統計的意義
+- 3-1.2 抽樣調查
+請依內容建立下列 concept（不得把例題題型升格為 skill）：
+- 統計的基本概念（StatisticalBasicConcepts）
+- 抽樣調查（SamplingSurvey）
+- 抽樣方法（SamplingMethods）
+
+題目歸類規則：
+- 問統計意義、敘述統計、推論統計 → StatisticalBasicConcepts
+- 問母群體、樣本、母群體數、樣本數、普查、抽查 → SamplingSurvey
+- 問簡單隨機抽樣、系統抽樣、分層隨機抽樣、部落抽樣、抽樣方法判斷 → SamplingMethods
+
+source_type 規則：
+- 例題 → textbook_example
+- 隨堂練習 → in_class_practice
+- 3-1習題 基礎題 → basic_exercise
+- 3-1習題 進階題 → advanced_exercise
+- 統測題 → exam_practice
+- 動動手 → textbook_practice（若格式不完整需 needs_review=true）
+
+【3-1 統計的基本概念匯入規則（高職數學B4）】
+
+當內容包含「3-1 統計的基本概念」、「3-1習題」、「基礎題」、「進階題」時：
+1. 必須完整抽取所有明確題號，不可只挑代表題。
+2. 3-1習題 基礎題需完整保留 1～8 題。
+3. 3-1習題 進階題需完整保留 9～10 題。
+4. source_type：
+- 基礎題 N → basic_exercise
+- 進階題 N → advanced_exercise
+- 統測題 → exam_practice
+- 隨堂練習 → in_class_practice
+- 例題 → textbook_example
+- 動動手 → in_class_practice 或 textbook_practice（必要時 needs_review=true）
+5. 若題目為「請問下圖是何種抽樣法？」即使圖片無法解析，也要建立題目並標記：
+has_image=true、needs_image_review=true、needs_review=true。
+6. 除非題目完全沒有題幹，不可略過 3-1習題明確題號。
+
+【3-2 專用補充：統計資料整理（高職數學B4）】
+
+當內容包含「3-2 統計資料整理」或「3-2習題」時：
+1. 即使原始文字出現「第4章 統計」，本單元仍視為「第3章 統計」。
+2. section_title 保留「3-2 統計資料整理」。
+3. 不可只挑代表題；明確題號必須完整抽取。
+
+建議 concepts：
+- DataOrganizationAndTables
+- FrequencyDistributionGraphs
+- CumulativeFrequencyDistribution
+- StatisticalChartReading
+
+題目歸類規則：
+- 全距/組距/組數/組限/組中點/次數分配表 → DataOrganizationAndTables
+- 直方圖/次數分配折線圖 → FrequencyDistributionGraphs
+- 以下/以上累積次數分配表與折線圖 → CumulativeFrequencyDistribution
+- 依長條圖/圓形圖/折線圖/直方圖判讀人數比例區間 → StatisticalChartReading
+
+source_type：
+- 例題 textbook_example
+- 隨堂練習 in_class_practice
+- 3-2習題 基礎題 basic_exercise
+- 3-2習題 進階題 advanced_exercise
+- 統測題 exam_practice
+
+完整抽題要求：
+- 3-2習題基礎題 1～8
+- 3-2習題進階題 9～10
+除非題幹完全不存在，不可略過明確題號。
+
+表格題處理：
+- 題幹含「次數分配表/累積次數分配表/成績（分）/次數（人）/以下累積次數/以上累積次數/年齡（歲）/體重（kg）」時，
+  必須盡量保留表格資訊；若表格缺失需標記 needs_review=true、needs_table_review=true，不可自行補值。
+
+圖片題處理：
+- 若含「如右/如下圖/長條圖/圓形圖/直方圖/折線圖」且依圖作答，
+  必須建立題目不可略過；圖片缺失需標 has_image=true、missing_docx_image_asset=true、needs_image_review=true、needs_review=true。
+
+【3-3 專用補充：統計量分析（高職數學B4）】
+
+當內容包含「3-3 統計量分析」或「3-3習題」時：
+1. 即使原始文字出現「第4章 統計」，本單元仍視為「第3章 統計」。
+2. section_title 保留「3-3 統計量分析」。
+3. 不可只挑代表題；3-3 習題明確題號必須完整抽取。
+4. 公式主體缺失時不可補猜，保留 placeholder 並標 needs_formula_review=true。
+
+建議 concepts：
+- CentralTendencyMeasures
+- WeightedMean
+- DispersionMeasures
+- VarianceAndStandardDeviation
+- LinearTransformationOfData
+- NormalDistributionAndEmpiricalRule
+- OpinionPollInterpretation
+
+source_type：
+- 例題 textbook_example
+- 隨堂練習 in_class_practice
+- 3-3習題 基礎題 basic_exercise
+- 3-3習題 進階題 advanced_exercise
+- 統測題 exam_practice
+- 動動手/想一想 textbook_practice（不完整需 needs_review=true）
+
+完整抽題要求：
+- 3-3 例題 1～11
+- 3-3 隨堂練習 1～11
+- 3-3習題基礎題 1～8
+- 3-3習題進階題 9～10
+- 統測題 113統測B 應抽取；若選項公式缺失標 needs_formula_review=true。
+
 【二、concept 欄位規則】
 
 每個 concept 必須包含：
@@ -2484,11 +2626,48 @@ def normalize_fill_blank_artifacts(text: str) -> tuple[str, dict]:
     before = out
     for pat in blank_patterns:
         out = re.sub(pat, "[BLANK]", out)
+    out = re.sub(r"(?:\s*\[BLANK\]\s*){2,}", " [BLANK] ", out)
+    out = re.sub(r"\s+", " ", out).strip()
     if out != before:
         log["changed"] = True
         log["reasons"].append("normalized fill blank symbol to [BLANK]")
 
     return out, log
+
+
+def _contains_perm_comb_formula(text: str) -> bool:
+    t = str(text or "")
+    return bool(
+        re.search(
+            r"(?:"
+            r"\{\s*\}\s*\^\s*\{?\s*\d+\s*\}?\s*[PC]\s*_\s*\{?\s*\d+\s*\}?|"
+            r"[PC]\s*\^\s*\{?\s*\d+\s*\}?\s*_\s*\{?\s*\d+\s*\}?|"
+            r"[PC]\s*_\s*\{?\s*\d+\s*\}?\s*\^\s*\{?\s*\d+\s*\}?|"
+            r"[⁰¹²³⁴⁵⁶⁷⁸⁹]+\s*[PC]\s*[₀₁₂₃₄₅₆₇₈₉]+|"
+            r"[PC]\s*[₀₁₂₃₄₅₆₇₈₉]+\s*[⁰¹²³⁴⁵⁶⁷⁸⁹]+"
+            r")",
+            t,
+        )
+    )
+
+
+def is_answer_blank_placeholder_context(raw_block: str, problem_text: str) -> bool:
+    block = str(raw_block or "")
+    text = str(problem_text or "")
+    combined = f"{block}\n{text}"
+    instruction_hit = bool(re.search(r"試求下列各式之值|試填入下列各式|填入下列各式|空格之值", combined))
+    formula_hit = _contains_perm_comb_formula(combined)
+    placeholder_count = len(re.findall(r"\[FORMULA_IMAGE_\d+\]|\[WORD_EQUATION_UNPARSED\]", block))
+    subq_count = len(re.findall(r"\(\s*\d+\s*\)", combined))
+    formula_with_placeholder = bool(
+        re.search(
+            r"(?:[PC].{0,24}(?:\[\s*FORMULA_IMAGE_\d+\]|\[\s*WORD_EQUATION_UNPARSED\])|"
+            r"(?:\[\s*FORMULA_IMAGE_\d+\]|\[\s*WORD_EQUATION_UNPARSED\]).{0,24}[PC])",
+            block,
+        )
+    )
+    placeholder_close_to_subq = bool(subq_count and placeholder_count and abs(placeholder_count - subq_count) <= 1)
+    return bool(instruction_hit and formula_hit and (formula_with_placeholder or placeholder_close_to_subq))
 
 
 def normalize_permutation_combination_notation(text: str) -> tuple[str, dict]:
@@ -2517,9 +2696,79 @@ def normalize_permutation_combination_notation(text: str) -> tuple[str, dict]:
     # e.g., P^7_3 / C^7_3
     out = re.sub(r"\b([PC])\s*\^\s*\{?\s*([0-9]+)\s*\}?\s*_\s*\{?\s*([0-9]+)\s*\}?", r"\1^{\2}_{\3}", out)
 
+    # e.g., P_3^7 / C_3^7
+    out = re.sub(r"\b([PC])\s*_\s*\{?\s*([0-9]+)\s*\}?\s*\^\s*\{?\s*([0-9]+)\s*\}?", r"\1^{\3}_{\2}", out)
+
+    # e.g., {}^{7}P_{3} / {}^7P_3 / { }^{7} P_{3}
+    out = re.sub(
+        r"(?:\{\s*\}\s*)?\^\s*\{?\s*([0-9]+)\s*\}?\s*([PC])\s*_\s*\{?\s*([0-9]+)\s*\}?",
+        r"\2^{\1}_{\3}",
+        out,
+    )
+
+    # e.g., P(5,3) / C(8,2) (numeric params only; keep probability forms like P(A), P(A|B))
+    out = re.sub(r"\b([PC])\s*\(\s*([0-9]+)\s*,\s*([0-9]+)\s*\)", r"\1^{\2}_{\3}", out)
+
     if out != original:
         log["changed"] = True
         log["reasons"].append("normalized permutation notation to P^{n}_{r}/C^{n}_{r}")
+    return out, log
+
+
+def normalize_probability_event_notation(text: str) -> tuple[str, dict]:
+    original = str(text or "")
+    out = original
+    log = {"changed": False, "reasons": []}
+
+    token = r"[A-Za-z](?:'|\\prime)?"
+    inner_re = re.compile(
+        rf"^\s*({token})(?:\s*(\\\\?cup|\\\\?cap|\\\\?setminus|\||-|∪|∩)\s*({token}))?\s*$"
+    )
+    outer_re = re.compile(r"P\s*\(\s*([^()]+?)\s*\)")
+
+    def _canon_token(tok: str) -> str:
+        t = str(tok or "").strip()
+        t = re.sub(r"\s+", "", t)
+        t = t.replace("\\prime", "'")
+        return t
+
+    def _already_inline_math(src: str, start: int, end: int) -> bool:
+        left = src[max(0, start - 8):start]
+        right = src[end:end + 8]
+        return bool(re.search(r"\\\(\s*$", left) and re.search(r"^\s*\\\)", right))
+
+    def _replace(match: re.Match) -> str:
+        nonlocal out
+        start, end = match.span()
+        if _already_inline_math(out, start, end):
+            return match.group(0)
+        inner = match.group(1)
+        m = inner_re.match(inner)
+        if not m:
+            return match.group(0)
+        lhs = _canon_token(m.group(1))
+        op = m.group(2)
+        rhs = _canon_token(m.group(3)) if m.group(3) else None
+        if not op:
+            return rf"\(P({lhs})\)"
+        op_map = {
+            "∪": r"\cup",
+            "∩": r"\cap",
+            r"\cup": r"\cup",
+            r"\\cup": r"\cup",
+            r"\cap": r"\cap",
+            r"\\cap": r"\cap",
+            r"\setminus": r"\setminus",
+            r"\\setminus": r"\setminus",
+        }
+        op_canon = op_map.get(op, op)
+        return rf"\(P({lhs} {op_canon} {rhs})\)"
+
+    out = outer_re.sub(_replace, out)
+
+    if out != original:
+        log["changed"] = True
+        log["reasons"].append("normalized probability event notation to inline LaTeX")
     return out, log
 
 
@@ -2604,6 +2853,19 @@ def validate_problem_block_purity(problem: dict) -> dict:
         logs.append("marked formula_missing due to formula placeholder")
         problem["repair_log"] = logs
 
+    # 集合題若題幹/選項殘缺，必須保留為缺公式，不可猜測內容
+    set_question_hint = bool(re.search(r"設集合|下列敘述何者|何者錯誤|何者正確", text))
+    has_choice_labels = len(re.findall(r"\([A-DＡ-Ｄ]\)", text)) >= 2
+    has_set_notation = bool(re.search(r"[∪∩⊂⊆∈∉U{}]|A\s*[∪∩\\]\s*B|A\s*[-－]\s*B", text))
+    if set_question_hint and has_choice_labels and not has_set_notation:
+        problem["needs_review"] = True
+        problem["formula_missing"] = True
+        logs = problem.get("repair_log", [])
+        if not isinstance(logs, list):
+            logs = [str(logs)]
+        logs.append("marked formula_missing due to missing set notation/options")
+        problem["repair_log"] = logs
+
     if "[BLANK]" in text:
         problem["has_answer_blank"] = True
         problem["question_format"] = "fill_blank"
@@ -2616,6 +2878,30 @@ def validate_problem_block_purity(problem: dict) -> dict:
     if problem.get("skill_id") and problem.get("block_boundary_error"):
         problem["needs_review"] = True
         problem["skill_boundary_mismatch"] = True
+
+    if re.search(r"次數分配表|累積次數分配表|成績（分）|次數（人）|以下累積次數|以上累積次數|年齡（歲）|體重（kg）", text):
+        has_table_payload = bool(re.search(r"\d", text) and re.search(r"[|｜┆╱/]", text))
+        if not has_table_payload and not re.search(r"\[[A-Z_]*TABLE[A-Z_0-9]*\]", text):
+            problem["needs_review"] = True
+            problem["needs_table_review"] = True
+            logs = problem.get("repair_log", [])
+            if not isinstance(logs, list):
+                logs = [str(logs)]
+            logs.append("table-dependent question without enough table content")
+            problem["repair_log"] = logs
+
+    if re.search(r"下圖|如圖|附圖", text) and re.search(r"抽樣法|何種抽樣", text):
+        if not (
+            problem.get("has_image")
+            or "[BLOCK_IMAGE]" in text
+            or "[IMAGE_" in text
+        ):
+            problem["needs_review"] = True
+            logs = problem.get("repair_log", [])
+            if not isinstance(logs, list):
+                logs = [str(logs)]
+            logs.append("image-dependent sampling question without image evidence")
+            problem["repair_log"] = logs
     return problem
 
 
@@ -2649,7 +2935,7 @@ def normalize_source_type_by_title(item: dict, default_source_type: str = "textb
     if "隨堂練習" in title:
         normalized = "in_class_practice"
         reason = "title_contains_隨堂練習"
-    elif "自我評量" in title:
+    elif ("章末自我評量" in title) or ("自我評量" in title) or bool(re.search(r"第\s*\d+\s*章\s*自我評量", title)):
         normalized = "self_assessment"
         reason = "title_contains_自我評量"
     elif any(k in title for k in ("統測補給站", "統測題", "統測")):
@@ -2661,6 +2947,12 @@ def normalize_source_type_by_title(item: dict, default_source_type: str = "textb
     elif "進階題" in title:
         normalized = "advanced_exercise"
         reason = "title_contains_進階題"
+    elif "動動手" in title:
+        normalized = "textbook_practice"
+        reason = "title_contains_動動手"
+    elif "想一想" in title:
+        normalized = "textbook_practice"
+        reason = "title_contains_想一想"
     elif "習題" in title:
         normalized = "chapter_exercise"
         reason = "title_contains_習題"
@@ -2702,6 +2994,7 @@ def _normalize_sub_questions(raw_sub_questions):
             continue
         sq_problem_raw = _first_non_empty_str(item, ("problem_text", "problem", "question"))
         sq_problem, _ = standardize_problem_latex(sq_problem_raw)
+        sq_problem, _ = normalize_probability_event_notation(sq_problem)
         normalized.append(
             {
                 "label": _first_non_empty_str(item, ("label", "index", "no", "number")) or str(idx),
@@ -2886,6 +3179,7 @@ def _normalize_textbook_question_structure(parsed_data, queue=None):
                         qn["page_index"] = q.get("page_index", None)
                         normalized_sa.append(qn)
                     concept["self_assessment_questions"] = normalized_sa
+                    concept["practice_questions"].extend(normalized_sa)
                 if isinstance(concept.get("exercises"), list):
                     normalized_exercises = []
                     for q in concept.get("exercises", []) or []:
@@ -2895,6 +3189,7 @@ def _normalize_textbook_question_structure(parsed_data, queue=None):
                         qn["source_type"] = normalize_source_type_by_title(qn, default_source_type="chapter_exercise")
                         normalized_exercises.append(qn)
                     concept["exercises"] = normalized_exercises
+                    concept["practice_questions"].extend(normalized_exercises)
 
     return parsed_data
 
@@ -3008,6 +3303,285 @@ def remap_mathb_non_skill_examples(section_title, concept_name, clean_en_id, exa
     # 無法判斷時預設歸入乘法原理
     return "MultiplicationPrinciple"
 
+
+def remap_mathb21_non_skill_examples(section_title, concept_name, clean_en_id, example):
+    section = (section_title or "").strip()
+    if "2-1" not in section and "樣本空間與事件" not in section:
+        return None
+    if not is_non_skill_bucket(concept_name, clean_en_id):
+        return None
+
+    text = " ".join(
+        [
+            str(example.get("problem_type", "") or ""),
+            str(example.get("subskill_tag", "") or ""),
+            str(example.get("source_description", "") or ""),
+            str(example.get("problem_text", "") or ""),
+        ]
+    )
+    zh = text
+
+    if re.search(r"和事件|積事件|互斥事件|是否互斥|A與B是否互斥", zh):
+        return "EventOperations"
+    if re.search(r"事件|基本事件|全事件|空事件|餘事件", zh):
+        return "EventConcepts"
+    if re.search(r"樣本空間|樣本點|所有可能結果", zh):
+        return "SampleSpace"
+    if re.search(r"聯集|交集|補集|差集|笛摩根", zh):
+        return "SetOperations"
+    if re.search(r"元素個數|有A或B|有兩者|兩者都沒有|2或3的倍數|2 的倍數|3 的倍數|倍數", zh):
+        return "SetCountingInclusionExclusion"
+    if re.search(r"集合|元素|屬於|不屬於|子集|空集合|宇集|文氏圖", zh):
+        return "SetBasicConcepts"
+
+    # 2-1 無法判斷時保守回到本節主軸 skill
+    return "SampleSpace"
+
+
+def remap_mathb31_non_skill_examples(section_title, concept_name, clean_en_id, example):
+    section = (section_title or "").strip()
+    if "3-1" not in section and "統計的基本概念" not in section:
+        return None
+    if not is_non_skill_bucket(concept_name, clean_en_id):
+        return None
+
+    text = " ".join(
+        [
+            str(example.get("problem_type", "") or ""),
+            str(example.get("subskill_tag", "") or ""),
+            str(example.get("source_description", "") or ""),
+            str(example.get("problem_text", "") or ""),
+        ]
+    )
+    if re.search(r"簡單隨機抽樣|系統抽樣|分層隨機抽樣|部落抽樣|抽樣方法", text):
+        return "SamplingMethods"
+    if re.search(r"母群體|樣本|母群體數|樣本數|普查|抽查|抽樣", text):
+        return "SamplingSurvey"
+    if re.search(r"統計的意義|敘述統計|推論統計|資料蒐集|資料整理|資料分析|統計", text):
+        return "MeaningOfStatistics"
+    return "MeaningOfStatistics"
+
+
+def remap_mathb32_non_skill_examples(section_title, concept_name, clean_en_id, example):
+    section = (section_title or "").strip()
+    if "3-2" not in section and "統計資料整理" not in section:
+        return None
+    if not is_non_skill_bucket(concept_name, clean_en_id):
+        return None
+    text = " ".join(
+        [
+            str(example.get("problem_type", "") or ""),
+            str(example.get("subskill_tag", "") or ""),
+            str(example.get("source_description", "") or ""),
+            str(example.get("problem_text", "") or ""),
+        ]
+    )
+    if re.search(r"以下累積次數|以上累積次數|累積次數分配表|累積次數分配折線圖", text):
+        return "CumulativeFrequencyDistribution"
+    if re.search(r"直方圖|次數分配折線圖|依次數表作圖|畫.*折線圖|畫.*直方圖", text):
+        return "FrequencyDistributionGraphs"
+    if re.search(r"長條圖|圓形圖|折線圖|直方圖|至少幾人|區間人數|比例|判讀", text):
+        return "StatisticalChartReading"
+    if re.search(r"全距|組距|組數|組限|組中點|次數分配表|資料整理", text):
+        return "DataOrganizationAndTables"
+    return "DataOrganizationAndTables"
+
+
+def remap_mathb33_non_skill_examples(section_title, concept_name, clean_en_id, example):
+    section = (section_title or "").strip()
+    if "3-3" not in section and "統計量分析" not in section:
+        return None
+    if not is_non_skill_bucket(concept_name, clean_en_id):
+        return None
+    text = " ".join(
+        [
+            str(example.get("problem_type", "") or ""),
+            str(example.get("subskill_tag", "") or ""),
+            str(example.get("source_description", "") or ""),
+            str(example.get("problem_text", "") or ""),
+        ]
+    )
+    if re.search(r"加權平均|學分|權數|節數|SUMPRODUCT|加權成績", text):
+        return "WeightedMean"
+    if re.search(r"全距|四分位數|四分位距|IQR|Q_1|Q_3", text):
+        return "DispersionMeasures"
+    if re.search(r"變異數|標準差|母體標準差|樣本標準差|離均差|σ|sigma|s\^2|σ\^2", text):
+        return "VarianceAndStandardDeviation"
+    if re.search(r"線性變換|平移|伸縮|調薪|x'|ax\+b|x'_i", text):
+        return "LinearTransformationOfData"
+    if re.search(r"常態分配|常態曲線|68.?95.?99\.?7|一個標準差|兩個標準差|三個標準差", text):
+        return "NormalDistributionAndEmpiricalRule"
+    if re.search(r"民調|信心水準|抽樣誤差|誤差範圍|母體比例", text):
+        return "OpinionPollInterpretation"
+    if re.search(r"平均數|中位數|眾數|\\bar\{x\}|μ|mu|Me|Mo", text):
+        return "CentralTendencyMeasures"
+    return "CentralTendencyMeasures"
+
+
+def extract_self_assessment_section_context(*texts: str) -> str:
+    merged = "\n".join(str(t or "") for t in texts if str(t or "").strip())
+    m = re.search(r"(\d+\s*-\s*\d+)\s*([^\n]*)", merged)
+    if m:
+        sec = re.sub(r"\s+", "", m.group(1))
+        return sec
+    if "直線排列" in merged:
+        return "1-2"
+    if "加法原理與乘法原理" in merged:
+        return "1-1"
+    if "組合的定義與計算" in merged:
+        return "1-4"
+    if "組合" in merged:
+        return "1-3"
+    if "二項式定理" in merged:
+        return "1-5"
+    return ""
+
+
+def infer_mathb4_self_assessment_skill(section_context: str, title: str, problem_text: str) -> dict:
+    sec = str(section_context or "").strip()
+    text = f"{title or ''}\n{problem_text or ''}"
+    result = {
+        "clean_en_id": "",
+        "problem_type": "",
+        "subskill_tag": "",
+        "matched": False,
+    }
+    if not sec:
+        return result
+
+    if sec == "1-1":
+        if re.search(r"共推舉一位|擔任一位|分類選一個|男生.{0,8}女生.{0,8}擔任", text):
+            result.update({"clean_en_id": "AdditionPrinciple", "problem_type": "addition_principle", "subskill_tag": "general", "matched": True})
+            return result
+        if re.search(r"種類|去冰|甜度|是否加|搭配|可能性", text):
+            result.update({"clean_en_id": "MultiplicationPrinciple", "problem_type": "multiplication_principle", "subskill_tag": "mixed_application", "matched": True})
+            return result
+        if re.search(r"分組成\d+對|男女配對|一對一配對|二重唱", text):
+            result.update({"clean_en_id": "MultiplicationPrinciple", "problem_type": "multiplication_principle", "subskill_tag": "role_assignment", "matched": True})
+            return result
+        if re.search(r"三個數字都不相同|百位數|十位數|個位數", text):
+            result.update({"clean_en_id": "MultiplicationPrinciple", "problem_type": "multiplication_principle", "subskill_tag": "number_restriction", "matched": True})
+            return result
+        result.update({"clean_en_id": "MultiplicationPrinciple", "problem_type": "multiplication_principle", "subskill_tag": "mixed_application"})
+        return result
+
+    if sec == "1-2" or "直線排列" in text:
+        if re.search(r"選出三個相異數字|形成三位數|數字不重複", text):
+            result.update({"clean_en_id": "PermutationOfDistinctObjects", "problem_type": "permutation", "subskill_tag": "number_restriction", "matched": True})
+            return result
+        if re.search(r"字母做直線排列|不排首位|必排末位", text):
+            result.update({"clean_en_id": "PermutationOfDistinctObjects", "problem_type": "permutation", "subskill_tag": "number_restriction", "matched": True})
+            return result
+        if re.search(r"巡迴|路線|城市|先完成甲國，再到乙國", text):
+            result.update({"clean_en_id": "PermutationOfDistinctObjects", "problem_type": "permutation", "subskill_tag": "mixed_application", "matched": True})
+            return result
+        result.update({"clean_en_id": "PermutationOfDistinctObjects", "problem_type": "permutation", "subskill_tag": "mixed_application"})
+        return result
+
+    return result
+
+
+def infer_mathb4_ch2_self_assessment_skill(chapter_title: str, section_title: str, title: str, problem_text: str) -> dict:
+    text = f"{chapter_title or ''}\n{section_title or ''}\n{title or ''}\n{problem_text or ''}"
+    result = {
+        "skill_id": "",
+        "problem_type": "",
+        "subskill_tag": "",
+    }
+    if not ((("2" in str(chapter_title or "")) and ("機率" in str(chapter_title or ""))) or ("自我評量" in str(title or ""))):
+        return result
+
+    if re.search(r"條件機率|已知某事件發生|在.{0,12}條件下|P\s*\(\s*[A-Za-z]\s*\|\s*[A-Za-z]\s*\)", text):
+        result.update({"skill_id": "vh_數學B4_ConditionalProbability", "problem_type": "conditional_probability", "subskill_tag": "general"})
+        return result
+    if re.search(r"獨立事件|相互獨立|連續命中|命中率", text):
+        result.update({"skill_id": "vh_數學B4_IndependentEvents", "problem_type": "independent_events", "subskill_tag": "mixed_application"})
+        return result
+    if re.search(r"期望值|期望|獲利期望值|公平|平均獲利", text):
+        if re.search(r"獲利|公平|平均", text):
+            result.update({"skill_id": "vh_數學B4_ApplicationsOfExpectation", "problem_type": "expectation_application", "subskill_tag": "mixed_application"})
+        else:
+            result.update({"skill_id": "vh_數學B4_MathematicalExpectation", "problem_type": "expectation", "subskill_tag": "general"})
+        return result
+    if re.search(r"集合|元素|子集合|子集|\\subset|\\cap|\\cup|空集合|宇集", text) and not re.search(r"P\s*\(", text):
+        result.update({"skill_id": "vh_數學B4_BasicConceptsOfSets", "problem_type": "set_concepts", "subskill_tag": "general"})
+        return result
+    if re.search(r"P\s*\(\s*[A-Za-z](?:'|\\prime)?\s*(?:\\cup|\\cap|∪|∩|\||-|\\setminus)?\s*[A-Za-z]?(?:'|\\prime)?\s*\)|互斥事件機率|加法公式", text):
+        result.update({"skill_id": "vh_數學B4_ProbabilityProperties", "problem_type": "probability_operations", "subskill_tag": "general"})
+        return result
+    if re.search(r"樣本空間|樣本點|事件|互斥|餘事件|和事件|積事件", text):
+        result.update({"skill_id": "vh_數學B4_SampleSpaceAndEvents", "problem_type": "event_operations", "subskill_tag": "general"})
+        return result
+    return result
+
+
+def infer_mathb4_ch3_self_assessment_skill(chapter_title: str, section_title: str, title: str, problem_text: str) -> dict:
+    text = f"{chapter_title or ''}\n{section_title or ''}\n{title or ''}\n{problem_text or ''}"
+    result = {"skill_id": "", "problem_type": "", "subskill_tag": ""}
+    if not ((("3" in str(chapter_title or "")) and ("統計" in str(chapter_title or ""))) or ("自我評量" in str(title or ""))):
+        return result
+
+    if re.search(r"全距|四分位距|IQR|四分位數|Q_1|Q_3", text):
+        result.update({"skill_id": "vh_數學B4_DispersionMeasures", "problem_type": "dispersion_measures", "subskill_tag": "general"})
+        return result
+    if re.search(r"變異數|標準差|母體標準差|樣本標準差|sigma|σ|s\^2|σ\^2", text):
+        result.update({"skill_id": "vh_數學B4_VarianceAndStandardDeviation", "problem_type": "variance_std", "subskill_tag": "general"})
+        return result
+    if re.search(r"線性變換|平移|伸縮|調薪|每筆資料加|每筆資料減|每筆資料乘|x'|ax\+b", text):
+        result.update({"skill_id": "vh_數學B4_LinearTransformationOfData", "problem_type": "linear_transformation", "subskill_tag": "general"})
+        return result
+    return result
+
+
+_MATHB4_CHART_SKILLS = {
+    "vh_數學B4_DataOrganizationAndTables",
+    "vh_數學B4_FrequencyDistributionGraphs",
+    "vh_數學B4_CumulativeFrequencyDistribution",
+    "vh_數學B4_StatisticalChartReading",
+}
+
+
+def _is_mathb4_chart_target(section_title: str, skill_id: str) -> bool:
+    return ("3-2" in str(section_title or "")) or (str(skill_id or "") in _MATHB4_CHART_SKILLS)
+
+
+def _extract_chart_metadata_for_mathb4_32(problem_text: str, raw_block: str = "") -> dict:
+    text = str(problem_text or "")
+    block = str(raw_block or "")
+    merged = f"{text}\n{block}"
+    rows = []
+    for m in re.finditer(r"(\d+(?:\.\d+)?)\s*(?:[-~～]\s*(\d+(?:\.\d+)?))?\s*[:：|｜,\s]+\s*(\d+(?:\.\d+)?)", merged):
+        start = m.group(1)
+        end = m.group(2)
+        val = m.group(3)
+        label = f"{start}-{end}" if end else start
+        try:
+            rows.append((label, float(val)))
+        except Exception:
+            continue
+
+    chart_type = None
+    if re.search(r"以下累積次數|以上累積次數|累積次數分配", merged):
+        chart_type = "cumulative_frequency_distribution"
+    elif re.search(r"直方圖|次數分配折線圖|折線圖", merged):
+        chart_type = "frequency_distribution_graph"
+    elif re.search(r"長條圖|圓形圖", merged):
+        chart_type = "statistical_chart_reading"
+    elif re.search(r"次數分配表|組距|組中點|組限|全距", merged):
+        chart_type = "data_organization_table"
+
+    if chart_type and len(rows) >= 2:
+        return {
+            "requires_chart": True,
+            "chart_type": chart_type,
+            "chart_data": {
+                "labels": [x[0] for x in rows],
+                "values": [x[1] for x in rows],
+            },
+            "chart_renderable": True,
+        }
+    return {}
+
 def save_to_database(parsed_data, curriculum_info, queue, source_file_path=None, content_by_page=None):
     """
     將 AI 分析完的目錄資料寫入資料庫。
@@ -3094,12 +3668,6 @@ def save_to_database(parsed_data, curriculum_info, queue, source_file_path=None,
         }
         return hashlib.sha1(json.dumps(payload, ensure_ascii=False, sort_keys=True).encode("utf-8")).hexdigest()[:16]
 
-    def _contains_perm_comb_formula(text: str) -> bool:
-        t = str(text or "")
-        return bool(
-            re.search(r"(?:\{\}\^\{[^}]+\}[PC]_\{[^}]+\}|[PC]\s*\(|[PC]\s*\^|[PC]_\{?|[⁰¹²³⁴⁵⁶⁷⁸⁹₀₁₂₃₄₅₆₇₈₉]P)", t)
-        )
-
     def validate_problem_formula_not_hallucinated(item_title: str, item: dict, problem_text: str, raw_block: str):
         text = str(problem_text or "")
         block = str(raw_block or "")
@@ -3113,6 +3681,24 @@ def save_to_database(parsed_data, curriculum_info, queue, source_file_path=None,
         if has_placeholder and _contains_perm_comb_formula(text):
             has_ocr_source = bool(item.get("formula_ocr_source"))
             if not has_ocr_source:
+                if is_answer_blank_placeholder_context(block, text):
+                    normalized_text, blank_meta = normalize_fill_blank_artifacts(text)
+                    item["has_answer_blank"] = True
+                    item["question_format"] = "fill_blank"
+                    item["needs_review"] = True
+                    item["needs_formula_review"] = False
+                    item["formula_missing"] = False
+                    item["formula_hallucination_risk"] = False
+                    logs = item.get("repair_log", [])
+                    if not isinstance(logs, list):
+                        logs = [str(logs)]
+                    logs.append("formula placeholders treated as answer blanks")
+                    logs.extend(blank_meta.get("reasons", []))
+                    item["repair_log"] = logs
+                    current_app.logger.info(
+                        f"[DOCX FORMULA BLANK] title={item_title} treat placeholders as answer blank"
+                    )
+                    return normalized_text
                 current_app.logger.warning(f"[DOCX FORMULA WARNING] formula missing before AI title={item_title}")
                 fallback_text = block if block.strip() else text
                 fallback_text = re.sub(r"\[FORMULA_IMAGE_\d+\]", "[FORMULA_MISSING]", fallback_text)
@@ -3176,9 +3762,11 @@ def save_to_database(parsed_data, curriculum_info, queue, source_file_path=None,
                 continue
         return results
 
-    def _build_source_description(title, source_type, linked_example_title=None, needs_review=False, dedupe_hash=""):
+    def _build_source_description(title, source_type, linked_example_title=None, needs_review=False, dedupe_hash="", section_context=None):
         title_text = str(title or "").strip() or "未命名題目"
         parts = [f"source_type={source_type}"]
+        if section_context:
+            parts.append(f"section={section_context}")
         if linked_example_title:
             parts.append(f"linked_example={linked_example_title}")
         if needs_review:
@@ -3425,7 +4013,43 @@ def save_to_database(parsed_data, curriculum_info, queue, source_file_path=None,
 
     def _determine_target_skill_id(base_clean_en_id, section_title, concept_name, example_obj):
         target_clean_en_id = base_clean_en_id
+        if str(target_clean_en_id or "") == "DispersionAndLinearTransformation":
+            target_clean_en_id = "DispersionMeasures"
+        if str(target_clean_en_id or "") == "ProbabilityOperations":
+            target_clean_en_id = "ProbabilityProperties"
         if is_vocational_mathb and is_non_skill_bucket(concept_name, base_clean_en_id):
+            remapped_33_en_id = remap_mathb33_non_skill_examples(
+                section_title=section_title,
+                concept_name=concept_name,
+                clean_en_id=base_clean_en_id,
+                example=example_obj
+            )
+            if remapped_33_en_id:
+                target_clean_en_id = remapped_33_en_id
+            remapped_32_en_id = remap_mathb32_non_skill_examples(
+                section_title=section_title,
+                concept_name=concept_name,
+                clean_en_id=base_clean_en_id,
+                example=example_obj
+            )
+            if remapped_32_en_id:
+                target_clean_en_id = remapped_32_en_id
+            remapped_31_en_id = remap_mathb31_non_skill_examples(
+                section_title=section_title,
+                concept_name=concept_name,
+                clean_en_id=base_clean_en_id,
+                example=example_obj
+            )
+            if remapped_31_en_id:
+                target_clean_en_id = remapped_31_en_id
+            remapped_21_en_id = remap_mathb21_non_skill_examples(
+                section_title=section_title,
+                concept_name=concept_name,
+                clean_en_id=base_clean_en_id,
+                example=example_obj
+            )
+            if remapped_21_en_id:
+                target_clean_en_id = remapped_21_en_id
             remapped_en_id = remap_mathb_non_skill_examples(
                 section_title=section_title,
                 concept_name=concept_name,
@@ -3490,6 +4114,15 @@ def save_to_database(parsed_data, curriculum_info, queue, source_file_path=None,
             
             for section_data in sections:
                 section_title = section_data.get('section_title', '') or ''  # 龍騰版很多是空字串,允許
+                if is_vocational_mathb and (
+                    ("3-1" in str(section_title or ""))
+                    or ("統計的基本概念" in str(section_title or ""))
+                    or ("3-2" in str(section_title or ""))
+                    or ("統計資料整理" in str(section_title or ""))
+                    or ("3-3" in str(section_title or ""))
+                    or ("統計量分析" in str(section_title or ""))
+                ):
+                    chapter_title = chapter_title.replace("第 4 章", "第 3 章").replace("第4章", "第3章")
                 concepts = section_data.get('concepts', [])
                 
                 for concept_order, concept in enumerate(concepts, start=1):
@@ -3498,6 +4131,8 @@ def save_to_database(parsed_data, curriculum_info, queue, source_file_path=None,
                     concept_paragraph = concept.get('concept_paragraph', '未命名').strip()
                     
                     clean_en_id = re.sub(r'[^a-zA-Z0-9]', '', concept_en_id)
+                    if clean_en_id == "DispersionAndLinearTransformation":
+                        clean_en_id = "DispersionMeasures"
                     order_index = concept_order
                     skip_skill_creation = is_non_skill_bucket(concept_name, clean_en_id)
 
@@ -3661,6 +4296,30 @@ def save_to_database(parsed_data, curriculum_info, queue, source_file_path=None,
                             ex["needs_review"] = True
                         db_problem_text_norm = normalize_math_text(db_problem_text_raw)
                         db_problem_text, ex_math_meta = standardize_problem_latex(db_problem_text_norm)
+                        db_problem_text_post, post_perm_meta = normalize_permutation_combination_notation(db_problem_text)
+                        if post_perm_meta.get("changed"):
+                            logs = ex.get("repair_log", [])
+                            if not isinstance(logs, list):
+                                logs = [str(logs)]
+                            logs.extend(post_perm_meta.get("reasons", []))
+                            ex["repair_log"] = logs
+                            current_app.logger.info(
+                                f"[PERM COMB POST NORMALIZE] title={example_title} before={db_problem_text} after={db_problem_text_post}"
+                            )
+                        db_problem_text, post_blank_meta = normalize_fill_blank_artifacts(db_problem_text_post)
+                        if post_blank_meta.get("changed"):
+                            logs = ex.get("repair_log", [])
+                            if not isinstance(logs, list):
+                                logs = [str(logs)]
+                            logs.extend(post_blank_meta.get("reasons", []))
+                            ex["repair_log"] = logs
+                        db_problem_text, prob_meta = normalize_probability_event_notation(db_problem_text)
+                        if prob_meta.get("changed"):
+                            logs = ex.get("repair_log", [])
+                            if not isinstance(logs, list):
+                                logs = [str(logs)]
+                            logs.extend(prob_meta.get("reasons", []))
+                            ex["repair_log"] = logs
                         if re.search(r"P\(|C\(|P\^|C\^|\{\}\^|\{\}\^\{\\\(|\\\(\{\}\^|\\\(\{\}\^\{", str(db_problem_text_raw or "")):
                             current_app.logger.info(f"[LATEX STANDARDIZE] title={example_title} before={db_problem_text_norm}")
                             current_app.logger.info(f"[LATEX STANDARDIZE] title={example_title} after={db_problem_text}")
@@ -3790,6 +4449,16 @@ def save_to_database(parsed_data, curriculum_info, queue, source_file_path=None,
                                 f"[DOCX IMAGE DEBUG] missing_image_candidate title={example_title} source_type={source_type} reason={reason}"
                             )
                         math_meta = _build_math_metadata(db_problem_text_raw, ex_math_meta, needs_review=needs_review)
+                        if _is_mathb4_chart_target(section_title, target_skill_id):
+                            chart_meta = _extract_chart_metadata_for_mathb4_32(db_problem_text, db_problem_text_raw)
+                            if chart_meta:
+                                math_meta.update(chart_meta)
+                            elif re.search(r"如右|如下圖|長條圖|圓形圖|直方圖|折線圖", str(db_problem_text or "")):
+                                ex["has_image"] = True
+                                ex["needs_image_review"] = True
+                                ex["needs_review"] = True
+                                ex["missing_docx_image_asset"] = True
+                                math_meta["needs_review"] = True
                         for k in (
                             "needs_formula_review",
                             "formula_missing",
@@ -3801,6 +4470,9 @@ def save_to_database(parsed_data, curriculum_info, queue, source_file_path=None,
                             "skill_boundary_mismatch",
                             "has_answer_blank",
                             "question_format",
+                            "needs_image_review",
+                            "missing_docx_image_asset",
+                            "needs_table_review",
                             "repair_log",
                         ):
                             if ex.get(k) is not None:
@@ -3831,19 +4503,41 @@ def save_to_database(parsed_data, curriculum_info, queue, source_file_path=None,
                                 practice_questions_needs_review += 1
 
                     # === 隨堂練習/練習題：獨立寫入 ===
+                    self_assessment_section_context = ""
                     for practice_idx, practice in enumerate(concept.get('practice_questions', []) or [], start=1):
                         if not isinstance(practice, dict):
                             continue
+
+                        practice_title = get_question_title(practice) or "隨堂練習"
+                        source_type = normalize_source_type_by_title(practice, default_source_type="in_class_practice")
+                        if source_type == "self_assessment":
+                            context_candidate = extract_self_assessment_section_context(
+                                practice_title,
+                                practice.get("source_description", ""),
+                                practice.get("problem_text", ""),
+                                practice.get("problem", ""),
+                            )
+                            if context_candidate:
+                                self_assessment_section_context = context_candidate
 
                         practice_problem = str(
                             practice.get("problem_text", "") or practice.get("problem", "") or practice.get("question", "")
                         ).strip()
                         if not practice_problem:
-                            continue
+                            if source_type == "self_assessment":
+                                practice_problem = f"{practice_title} 題幹缺失 [FORMULA_MISSING]"
+                                practice["needs_review"] = True
+                                practice["needs_formula_review"] = True
+                                practice["formula_missing"] = True
+                                logs = practice.get("repair_log", [])
+                                if not isinstance(logs, list):
+                                    logs = [str(logs)]
+                                logs.append("preserved self_assessment item with missing stem")
+                                practice["repair_log"] = logs
+                            else:
+                                continue
 
-                        practice_title = get_question_title(practice) or "隨堂練習"
                         detected_titles.append(practice_title)
-                        source_type = normalize_source_type_by_title(practice, default_source_type="in_class_practice")
                         sub_questions = practice.get("sub_questions", []) if isinstance(practice.get("sub_questions", []), list) else []
                         practice_problem_raw = _render_sub_questions_problem(practice_problem, sub_questions)
                         segmented_text, seg_meta = segment_question_block_text(practice_problem_raw, question_title=practice_title)
@@ -3900,6 +4594,42 @@ def save_to_database(parsed_data, curriculum_info, queue, source_file_path=None,
                             practice["needs_review"] = True
                         practice_problem_norm = normalize_math_text(practice_problem_raw)
                         practice_problem, practice_math_meta = standardize_problem_latex(practice_problem_norm)
+                        practice_problem_post, post_perm_meta = normalize_permutation_combination_notation(practice_problem)
+                        if post_perm_meta.get("changed"):
+                            logs = practice.get("repair_log", [])
+                            if not isinstance(logs, list):
+                                logs = [str(logs)]
+                            logs.extend(post_perm_meta.get("reasons", []))
+                            practice["repair_log"] = logs
+                            current_app.logger.info(
+                                f"[PERM COMB POST NORMALIZE] title={practice_title} before={practice_problem} after={practice_problem_post}"
+                            )
+                        practice_problem, post_blank_meta = normalize_fill_blank_artifacts(practice_problem_post)
+                        if post_blank_meta.get("changed"):
+                            logs = practice.get("repair_log", [])
+                            if not isinstance(logs, list):
+                                logs = [str(logs)]
+                            logs.extend(post_blank_meta.get("reasons", []))
+                            practice["repair_log"] = logs
+                        practice_problem, prob_meta = normalize_probability_event_notation(practice_problem)
+                        if prob_meta.get("changed"):
+                            logs = practice.get("repair_log", [])
+                            if not isinstance(logs, list):
+                                logs = [str(logs)]
+                            logs.extend(prob_meta.get("reasons", []))
+                            practice["repair_log"] = logs
+                        if re.search(r"請問下圖是何種抽樣法|下圖.*抽樣法|如圖.*抽樣法", str(practice_problem or "")):
+                            practice["has_image"] = True
+                            practice["needs_image_review"] = True
+                            practice["needs_review"] = True
+                            if "[BLOCK_IMAGE]" not in str(practice_problem_raw or "") and "[IMAGE_" not in str(practice_problem_raw or ""):
+                                practice["missing_docx_image_asset"] = True
+                        if re.search(r"如右|如下圖|長條圖|圓形圖|直方圖|折線圖|常態分配曲線|分布圖", str(practice_problem or "")):
+                            practice["has_image"] = True
+                            if "[BLOCK_IMAGE]" not in str(practice_problem_raw or "") and "[IMAGE_" not in str(practice_problem_raw or ""):
+                                practice["missing_docx_image_asset"] = True
+                                practice["needs_image_review"] = True
+                                practice["needs_review"] = True
                         if re.search(r"P\(|C\(|P\^|C\^|\{\}\^|\{\}\^\{|\\\(\{\}\^|\\\(\{\}\^\{", str(practice_problem_raw or "")):
                             current_app.logger.info(f"[LATEX STANDARDIZE] title={practice_title} before={practice_problem_norm}")
                             current_app.logger.info(f"[LATEX STANDARDIZE] title={practice_title} after={practice_problem}")
@@ -3917,27 +4647,52 @@ def save_to_database(parsed_data, curriculum_info, queue, source_file_path=None,
 
                         target_skill_id = str(practice.get("skill_id", "") or "").strip()
                         if not target_skill_id:
-                            linked_num = _extract_title_number(linked_example_title) if linked_example_title else None
-                            if linked_num is not None and linked_num in saved_example_skill_map:
-                                target_skill_id = saved_example_skill_map[linked_num]
-                            elif len({sid for _, sid in saved_example_order}) == 1 and saved_example_order:
-                                target_skill_id = saved_example_order[0][1]
-                            elif saved_example_order:
-                                target_skill_id = saved_example_order[-1][1]
-                                needs_review = True
-                                warn_msg = (
-                                    f"[PRACTICE IMPORT WARNING] title={practice_title} reason=missing_exact_linked_example"
+                            if source_type == "self_assessment" and is_vocational_mathb and vol_num == 4:
+                                mapped_ch3 = infer_mathb4_ch3_self_assessment_skill(
+                                    chapter_title, section_title, practice_title, practice_problem
                                 )
-                                current_app.logger.warning(warn_msg)
-                                queue.put(f"WARN: {warn_msg}")
+                                sa_section_context = self_assessment_section_context or extract_self_assessment_section_context(section_title)
+                                mapped_ch2 = infer_mathb4_ch2_self_assessment_skill(
+                                    chapter_title, section_title, practice_title, practice_problem
+                                )
+                                if mapped_ch3.get("skill_id"):
+                                    target_skill_id = mapped_ch3.get("skill_id")
+                                    practice["problem_type"] = mapped_ch3.get("problem_type") or practice.get("problem_type", "")
+                                    practice["subskill_tag"] = mapped_ch3.get("subskill_tag") or practice.get("subskill_tag", "")
+                                elif mapped_ch2.get("skill_id"):
+                                    target_skill_id = mapped_ch2.get("skill_id")
+                                    practice["problem_type"] = mapped_ch2.get("problem_type") or practice.get("problem_type", "")
+                                    practice["subskill_tag"] = mapped_ch2.get("subskill_tag") or practice.get("subskill_tag", "")
+                                else:
+                                    mapped = infer_mathb4_self_assessment_skill(sa_section_context, practice_title, practice_problem)
+                                    if mapped.get("clean_en_id"):
+                                        target_skill_id = f"vh_數學B4_{mapped['clean_en_id']}"
+                                        practice["problem_type"] = mapped.get("problem_type") or practice.get("problem_type", "")
+                                        practice["subskill_tag"] = mapped.get("subskill_tag") or practice.get("subskill_tag", "")
+                                    else:
+                                        target_skill_id = _determine_target_skill_id(clean_en_id, section_title, concept_name, practice)
                             else:
-                                target_skill_id = _determine_target_skill_id(clean_en_id, section_title, concept_name, practice)
-                                needs_review = True
-                                warn_msg = (
-                                    f"[PRACTICE IMPORT WARNING] title={practice_title} reason=missing_linked_example"
-                                )
-                                current_app.logger.warning(warn_msg)
-                                queue.put(f"WARN: {warn_msg}")
+                                linked_num = _extract_title_number(linked_example_title) if linked_example_title else None
+                                if linked_num is not None and linked_num in saved_example_skill_map:
+                                    target_skill_id = saved_example_skill_map[linked_num]
+                                elif len({sid for _, sid in saved_example_order}) == 1 and saved_example_order:
+                                    target_skill_id = saved_example_order[0][1]
+                                elif saved_example_order:
+                                    target_skill_id = saved_example_order[-1][1]
+                                    needs_review = True
+                                    warn_msg = (
+                                        f"[PRACTICE IMPORT WARNING] title={practice_title} reason=missing_exact_linked_example"
+                                    )
+                                    current_app.logger.warning(warn_msg)
+                                    queue.put(f"WARN: {warn_msg}")
+                                else:
+                                    target_skill_id = _determine_target_skill_id(clean_en_id, section_title, concept_name, practice)
+                                    needs_review = True
+                                    warn_msg = (
+                                        f"[PRACTICE IMPORT WARNING] title={practice_title} reason=missing_linked_example"
+                                    )
+                                    current_app.logger.warning(warn_msg)
+                                    queue.put(f"WARN: {warn_msg}")
 
                         log_msg = (
                             f"[PRACTICE IMPORT] detected title={practice_title} source_type={source_type} "
@@ -3958,7 +4713,8 @@ def save_to_database(parsed_data, curriculum_info, queue, source_file_path=None,
                             source_type=source_type or "in_class_practice",
                             linked_example_title=linked_example_title,
                             needs_review=needs_review,
-                            dedupe_hash=dedupe_hash
+                            dedupe_hash=dedupe_hash,
+                            section_context=self_assessment_section_context if source_type == "self_assessment" else None,
                         )
 
                         existing_practice = TextbookExample.query.filter_by(
@@ -4056,6 +4812,16 @@ def save_to_database(parsed_data, curriculum_info, queue, source_file_path=None,
                                 f"[DOCX IMAGE DEBUG] missing_image_candidate title={practice_title} source_type={source_type} reason={reason}"
                             )
                         math_meta = _build_math_metadata(practice_problem_raw, practice_math_meta, needs_review=needs_review)
+                        if _is_mathb4_chart_target(section_title, target_skill_id):
+                            chart_meta = _extract_chart_metadata_for_mathb4_32(practice_problem, practice_problem_raw)
+                            if chart_meta:
+                                math_meta.update(chart_meta)
+                            elif re.search(r"如右|如下圖|長條圖|圓形圖|直方圖|折線圖", str(practice_problem or "")):
+                                practice["has_image"] = True
+                                practice["needs_image_review"] = True
+                                practice["needs_review"] = True
+                                practice["missing_docx_image_asset"] = True
+                                math_meta["needs_review"] = True
                         for k in (
                             "needs_formula_review",
                             "formula_missing",
@@ -4067,6 +4833,9 @@ def save_to_database(parsed_data, curriculum_info, queue, source_file_path=None,
                             "skill_boundary_mismatch",
                             "has_answer_blank",
                             "question_format",
+                            "needs_image_review",
+                            "missing_docx_image_asset",
+                            "needs_table_review",
                             "repair_log",
                         ):
                             if practice.get(k) is not None:
