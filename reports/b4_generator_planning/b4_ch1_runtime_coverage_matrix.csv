@@ -1,8 +1,8 @@
 skill_id,skill_ch_name,subskill_id,problem_type_id,problem_type_name,generator_key,has_generator,in_question_router,has_skill_wrapper,web_smoke_tested,coverage_status,next_action,notes
-vh_數學B4_BinomialCoefficientIdentities,二項式係數性質,b4_ch1_binomial_id_01,binomial_coefficient_sum,二項式係數和,b4.binomial.binomial_coefficient_sum,no,no,no,no,planned_only,補 generator,review_required
+vh_數學B4_BinomialCoefficientIdentities,二項式係數性質,b4_ch1_binomial_id_01,binomial_coefficient_sum,二項式係數和,b4.binomial.binomial_coefficient_sum,yes,yes,yes,yes,runtime_ready,維持 / 後續納入 adaptive,Phase 4E-13C；int-answer 最小可用接入
 vh_數學B4_BinomialTheorem,二項式定理,b4_ch1_binomial_expand_01,binomial_expansion_basic,二項式展開,b4.binomial.binomial_expansion_basic,no,no,no,no,planned_only,補 generator,
-vh_數學B4_BinomialTheorem,二項式定理,b4_ch1_binomial_solve_n_03,binomial_equation_solve_n,已知組合數求參數,b4.binomial.binomial_equation_solve_n,no,no,no,no,planned_only,補 generator,review_required
-vh_數學B4_BinomialTheorem,二項式定理,b4_ch1_binomial_coeff_02,binomial_specific_term_coefficient,指定項係數,b4.binomial.binomial_specific_term_coefficient,no,no,no,no,planned_only,補 generator,review_required
+vh_數學B4_BinomialCoefficientIdentities,二項式係數性質,b4_ch1_binomial_solve_n_03,binomial_equation_solve_n,已知組合數求參數,b4.binomial.binomial_equation_solve_n,yes,yes,yes,yes,runtime_ready,維持 / 後續納入 adaptive,Phase 4E-13C；int-answer 最小可用接入
+vh_數學B4_BinomialTheorem,二項式定理,b4_ch1_binomial_coeff_02,binomial_specific_term_coefficient,指定項係數,b4.binomial.binomial_specific_term_coefficient,yes,yes,yes,yes,runtime_ready,維持 / 後續納入 adaptive,Phase 4E-13C；int-answer 最小可用接入
 vh_數學B4_PascalTriangle,巴斯卡三角形,b4_ch1_pascal_tri_01,pascal_triangle_derivation,巴斯卡三角形推導,b4.binomial.pascal_triangle_derivation,no,no,no,no,excluded,暫緩,manual_review
 vh_數學B4_Combination,組合,b4_ch1_comb_basic_01,combination_basic_selection,組合基本選取,b4.combination.combination_basic_selection,yes,yes,yes,yes,runtime_ready,維持 / 後續納入 adaptive,
 vh_數學B4_CombinationDefinition,組合的定義與計算,b4_ch1_comb_def_01,combination_definition_basic,組合定義基本計算,b4.combination.combination_definition_basic,yes,yes,yes,yes,runtime_ready,維持 / 後續納入 adaptive,
@@ -21,8 +21,8 @@ vh_數學B4_MultiplicationPrinciple,乘法原理,b4_ch1_mult_principle_01,mult_p
 vh_數學B4_RepeatedPermutation,重複排列,b4_ch1_rep_perm_assign_02,repeated_permutation_assignment,重複排列分派計數,b4.counting.repeated_permutation_assignment,yes,yes,yes,yes,runtime_ready,維持 / 後續納入 adaptive,Phase 4E-11
 vh_數學B4_RepeatedPermutation,重複排列,b4_ch1_rep_perm_digits_01,repeated_permutation_digits,數字重複排列,b4.counting.repeated_permutation_digits,yes,yes,yes,yes,runtime_ready,維持 / 後續納入 adaptive,
 vh_數學B4_PermutationWithRepetition,重複排列(舊),b4_ch1_repeated_choice_01,repeated_choice_basic,重複選擇基本計數,b4.counting.repeated_choice_basic,yes,yes,yes,yes,runtime_ready,維持 / 後續納入 adaptive,
-vh_數學B4_PermutationOfDistinctObjects,相異物的排列,b4_ch1_perm_adjacent_05,permutation_adjacent_block,相鄰與不相鄰限制排列,b4.permutation.permutation_adjacent_block,no,no,yes,no,planned_only,補 generator,
-vh_數學B4_PermutationOfDistinctObjects,相異物的排列,b4_ch1_perm_digits_04,permutation_digit_parity,數字排列含奇偶限制,b4.permutation.permutation_digit_parity,no,no,yes,no,planned_only,補 generator,
+vh_數學B4_PermutationOfDistinctObjects,相異物的排列,b4_ch1_perm_adjacent_05,permutation_adjacent_block,相鄰與不相鄰限制排列,b4.permutation.permutation_adjacent_block,yes,yes,yes,yes,runtime_ready,維持 / 後續納入 adaptive,Phase 4E-14B
+vh_數學B4_PermutationOfDistinctObjects,相異物的排列,b4_ch1_perm_digits_04,permutation_digit_parity,數字排列含奇偶限制,b4.permutation.permutation_digit_parity,yes,yes,yes,yes,runtime_ready,維持 / 後續納入 adaptive,Phase 4E-14B
 vh_數學B4_PermutationOfDistinctObjects,相異物的排列,b4_ch1_perm_formula_02,permutation_formula_evaluation,"排列記號 P(n,r) 求值",b4.permutation.permutation_formula_evaluation,yes,yes,yes,yes,runtime_ready,維持 / 後續納入 adaptive,
 vh_數學B4_PermutationOfDistinctObjects,相異物的排列,b4_ch1_perm_linear_01,permutation_full_arrangement,相異物全取排列,b4.permutation.permutation_full_arrangement,yes,yes,yes,yes,runtime_ready,維持 / 後續納入 adaptive,Phase 4E-12C
 vh_數學B4_PermutationOfDistinctObjects,相異物的排列,b4_ch1_perm_select_03,permutation_role_assignment,不同職務分配,b4.permutation.permutation_role_assignment,yes,yes,yes,yes,runtime_ready,維持 / 後續納入 adaptive,

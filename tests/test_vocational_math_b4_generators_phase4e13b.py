@@ -132,6 +132,15 @@ def test_binomial_specific_term_coefficient_answer_uses_coefficients():
     assert payload["answer"] == expected
 
 
+def test_binomial_specific_term_coefficient_constant_term_mentions_x0():
+    payload = _payload(binomial_specific_term_coefficient, seed=3)
+    assert payload["parameters"]["k"] == 0
+    assert "常數項" in payload["question_text"]
+    assert "$x^{0}$" in payload["question_text"]
+    assert "常數項" in payload["explanation"]
+    assert "$x^{0}$" in payload["explanation"]
+
+
 def test_binomial_equation_solve_n_answer_uses_combination_for_m():
     payload = _payload(binomial_equation_solve_n, seed=2)
     params = payload["parameters"]
@@ -139,6 +148,21 @@ def test_binomial_equation_solve_n_answer_uses_combination_for_m():
     assert payload["generator_key"] == "b4.binomial.binomial_equation_solve_n"
     assert params["m"] == combination(params["n"], params["r"])
     assert payload["answer"] == params["n"]
+
+
+def test_binomial_equation_solve_n_r1_explanation_has_cn1_equals_n():
+    payload = _payload(binomial_equation_solve_n, seed=1)
+    assert payload["parameters"]["r"] == 1
+    assert "$C^{n}_{1}=n$" in payload["explanation"]
+
+
+def test_binomial_equation_solve_n_r2_explanation_has_formula_and_check():
+    payload = _payload(binomial_equation_solve_n, seed=2)
+    assert payload["parameters"]["r"] == 2
+    assert "$C^{n}_{2}" in payload["explanation"]
+    assert "\\frac{n(n-1)}{2}" in payload["explanation"]
+    assert "$C^{" in payload["explanation"]
+    assert str(payload["answer"]) in payload["explanation"]
 
 
 @pytest.mark.parametrize("generator", GENERATORS)

@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import random
 
+from core.vocational_math_b4.generators import binomial as binomial_generators
 from core.vocational_math_b4.generators import combination as combination_generators
 from core.vocational_math_b4.generators import counting as counting_generators
 from core.vocational_math_b4.generators import permutation as permutation_generators
@@ -158,6 +159,18 @@ _REGISTRY: dict[str, list[dict[str, object]]] = {
             "generator_key": "b4.permutation.permutation_full_arrangement",
             "generator_fn": permutation_generators.permutation_full_arrangement,
         },
+        {
+            "subskill_id": "b4_ch1_perm_adjacent_block_01",
+            "problem_type_id": "permutation_adjacent_block",
+            "generator_key": "b4.permutation.permutation_adjacent_block",
+            "generator_fn": permutation_generators.permutation_adjacent_block,
+        },
+        {
+            "subskill_id": "b4_ch1_perm_digit_parity_01",
+            "problem_type_id": "permutation_digit_parity",
+            "generator_key": "b4.permutation.permutation_digit_parity",
+            "generator_fn": permutation_generators.permutation_digit_parity,
+        },
     ],
     "vh_數學B4_RepeatedPermutation": [
         {
@@ -209,6 +222,46 @@ _REGISTRY: dict[str, list[dict[str, object]]] = {
             "problem_type_id": "repeated_permutation_assignment",
             "generator_key": "b4.counting.repeated_permutation_assignment",
             "generator_fn": _repeated_permutation_assignment,
+        },
+    ],
+    "vh_數學B4_BinomialCoefficientIdentities": [
+        {
+            "subskill_id": "b4_ch1_binomial_coefficient_sum_01",
+            "problem_type_id": "binomial_coefficient_sum",
+            "generator_key": "b4.binomial.binomial_coefficient_sum",
+            "generator_fn": binomial_generators.binomial_coefficient_sum,
+        },
+        {
+            "subskill_id": "b4_ch1_binomial_equation_solve_n_01",
+            "problem_type_id": "binomial_equation_solve_n",
+            "generator_key": "b4.binomial.binomial_equation_solve_n",
+            "generator_fn": binomial_generators.binomial_equation_solve_n,
+        },
+        {
+            "subskill_id": "b4_ch1_binomial_odd_even_coefficient_sum_01",
+            "problem_type_id": "binomial_odd_even_coefficient_sum",
+            "generator_key": "b4.binomial.binomial_odd_even_coefficient_sum",
+            "generator_fn": binomial_generators.binomial_odd_even_coefficient_sum,
+        },
+    ],
+    "vh_數學B4_BinomialTheorem": [
+        {
+            "subskill_id": "b4_ch1_binomial_specific_term_coefficient_01",
+            "problem_type_id": "binomial_specific_term_coefficient",
+            "generator_key": "b4.binomial.binomial_specific_term_coefficient",
+            "generator_fn": binomial_generators.binomial_specific_term_coefficient,
+        },
+        {
+            "subskill_id": "b4_ch1_binomial_middle_term_coefficient_01",
+            "problem_type_id": "binomial_middle_term_coefficient",
+            "generator_key": "b4.binomial.binomial_middle_term_coefficient",
+            "generator_fn": binomial_generators.binomial_middle_term_coefficient,
+        },
+        {
+            "subskill_id": "b4_ch1_binomial_specific_coefficient_negative_01",
+            "problem_type_id": "binomial_specific_coefficient_with_negative_term",
+            "generator_key": "b4.binomial.binomial_specific_coefficient_with_negative_term",
+            "generator_fn": binomial_generators.binomial_specific_coefficient_with_negative_term,
         },
     ],
 }
