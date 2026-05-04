@@ -1,9 +1,8 @@
-"""Minimal B4 question router for deterministic generators (Phase 4D-1)."""
+﻿"""Minimal B4 question router for deterministic generators (Phase 4D-1)."""
 
 from __future__ import annotations
 
 import random
-from typing import Callable
 
 from core.vocational_math_b4.generators import combination as combination_generators
 from core.vocational_math_b4.generators import counting as counting_generators
@@ -25,8 +24,31 @@ def _repeated_permutation_digits(**kwargs) -> dict:
     return fn(**kwargs)
 
 
+def _add_principle_mutually_exclusive_choice(**kwargs) -> dict:
+    fn = getattr(
+        counting_generators,
+        "add_principle_mutually_exclusive_choice",
+        counting_generators.generate,
+    )
+    return fn(**kwargs)
+
+
+def _combination_properties_simplification(**kwargs) -> dict:
+    fn = getattr(
+        combination_generators,
+        "combination_properties_simplification",
+        combination_generators.generate,
+    )
+    return fn(**kwargs)
+
+
+def _repeated_choice_basic(**kwargs) -> dict:
+    fn = getattr(counting_generators, "repeated_choice_basic", counting_generators.generate)
+    return fn(**kwargs)
+
+
 _REGISTRY: dict[str, list[dict[str, object]]] = {
-    "vh_數學B4_CombinationDefinition": [
+    "vh_?詨飛B4_CombinationDefinition": [
         {
             "subskill_id": "b4_ch1_comb_def_01",
             "problem_type_id": "combination_definition_basic",
@@ -34,7 +56,7 @@ _REGISTRY: dict[str, list[dict[str, object]]] = {
             "generator_fn": _combination_definition_basic,
         }
     ],
-    "vh_數學B4_CombinationApplications": [
+    "vh_?詨飛B4_CombinationApplications": [
         {
             "subskill_id": "b4_ch1_comb_app_geom_02",
             "problem_type_id": "combination_polygon_count",
@@ -54,7 +76,7 @@ _REGISTRY: dict[str, list[dict[str, object]]] = {
             "generator_fn": combination_generators.combination_group_selection,
         },
     ],
-    "vh_數學B4_MultiplicationPrinciple": [
+    "vh_?詨飛B4_MultiplicationPrinciple": [
         {
             "subskill_id": "b4_ch1_mult_factors_02",
             "problem_type_id": "divisor_count_prime_factorization",
@@ -62,7 +84,7 @@ _REGISTRY: dict[str, list[dict[str, object]]] = {
             "generator_fn": counting_generators.divisor_count_prime_factorization,
         }
     ],
-    "vh_數學B4_PermutationOfDistinctObjects": [
+    "vh_?詨飛B4_PermutationOfDistinctObjects": [
         {
             "subskill_id": "b4_ch1_perm_select_03",
             "problem_type_id": "permutation_role_assignment",
@@ -70,7 +92,7 @@ _REGISTRY: dict[str, list[dict[str, object]]] = {
             "generator_fn": _permutation_role_assignment,
         }
     ],
-    "vh_數學B4_RepeatedPermutation": [
+    "vh_?詨飛B4_RepeatedPermutation": [
         {
             "subskill_id": "b4_ch1_rep_perm_digits_01",
             "problem_type_id": "repeated_permutation_digits",
@@ -78,7 +100,7 @@ _REGISTRY: dict[str, list[dict[str, object]]] = {
             "generator_fn": _repeated_permutation_digits,
         }
     ],
-    "vh_數學B4_FactorialNotation": [
+    "vh_?詨飛B4_FactorialNotation": [
         {
             "subskill_id": "b4_ch1_factorial_solve_n_02",
             "problem_type_id": "factorial_equation_solve_n",
@@ -86,7 +108,39 @@ _REGISTRY: dict[str, list[dict[str, object]]] = {
             "generator_fn": counting_generators.factorial_equation_solve_n,
         }
     ],
+    "vh_數學B4_AdditionPrinciple": [
+        {
+            "subskill_id": "b4_ch1_add_principle_01",
+            "problem_type_id": "add_principle_mutually_exclusive_choice",
+            "generator_key": "b4.counting.add_principle_mutually_exclusive_choice",
+            "generator_fn": _add_principle_mutually_exclusive_choice,
+        }
+    ],
+    "vh_數學B4_CombinationProperties": [
+        {
+            "subskill_id": "b4_ch1_comb_properties_01",
+            "problem_type_id": "combination_properties_simplification",
+            "generator_key": "b4.combination.combination_properties_simplification",
+            "generator_fn": _combination_properties_simplification,
+        }
+    ],
+    "vh_數學B4_PermutationWithRepetition": [
+        {
+            "subskill_id": "b4_ch1_repeated_choice_01",
+            "problem_type_id": "repeated_choice_basic",
+            "generator_key": "b4.counting.repeated_choice_basic",
+            "generator_fn": _repeated_choice_basic,
+        }
+    ],
 }
+
+# Backward-compatible normalized Chinese skill_id aliases.
+_REGISTRY["vh_數學B4_CombinationDefinition"] = _REGISTRY["vh_?詨飛B4_CombinationDefinition"]
+_REGISTRY["vh_數學B4_CombinationApplications"] = _REGISTRY["vh_?詨飛B4_CombinationApplications"]
+_REGISTRY["vh_數學B4_MultiplicationPrinciple"] = _REGISTRY["vh_?詨飛B4_MultiplicationPrinciple"]
+_REGISTRY["vh_數學B4_PermutationOfDistinctObjects"] = _REGISTRY["vh_?詨飛B4_PermutationOfDistinctObjects"]
+_REGISTRY["vh_數學B4_RepeatedPermutation"] = _REGISTRY["vh_?詨飛B4_RepeatedPermutation"]
+_REGISTRY["vh_數學B4_FactorialNotation"] = _REGISTRY["vh_?詨飛B4_FactorialNotation"]
 
 
 def _select_entry(skill_entries: list[dict[str, object]], seed: int | None, problem_type_id: str | None) -> tuple[dict[str, object], str]:

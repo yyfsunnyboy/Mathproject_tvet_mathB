@@ -409,3 +409,99 @@ def combination_group_selection(
     _validate_and_finalize(payload, multiple_choice)
     seen.add(parameter_tuple)
     return payload
+
+
+def _sample_combination_properties_parameters(rng: random.Random, difficulty: int) -> tuple[int, int, str]:
+    if difficulty <= 1:
+        n = rng.randint(5, 10)
+        r = rng.randint(1, 4)
+    elif difficulty == 2:
+        n = rng.randint(8, 15)
+        r = rng.randint(2, 6)
+    else:
+        n = rng.randint(12, 20)
+        r = rng.randint(3, 8)
+    if r > n:
+        r = n
+
+    variant = rng.choice(["symmetry", "direct"])
+    if variant == "symmetry" and r <= n - r:
+        r = n - rng.randint(1, min(4, n - 1))
+        if r < 0:
+            r = 0
+        if r > n:
+            r = n
+    return n, r, variant
+
+
+def combination_properties_simplification(
+    *,
+    skill_id: str,
+    subskill_id: str,
+    difficulty: int = 1,
+    seed: int | None = None,
+    seen_parameter_tuples: set[tuple] | None = None,
+    multiple_choice: bool = True,
+) -> dict:
+    from core.vocational_math_b4.domain.counting_domain_functions import combination
+
+    rng = random.Random(seed)
+    seen = _ensure_seen_set(seen_parameter_tuples)
+    problem_type_id = "combination_properties_simplification"
+    generator_key = "b4.combination.combination_properties_simplification"
+
+    parameter_tuple: tuple | None = None
+    n = r = 0
+    variant = ""
+    for _ in range(50):
+        n, r, variant = _sample_combination_properties_parameters(rng, difficulty)
+        candidate = (problem_type_id, n, r, variant)
+        if candidate not in seen:
+            parameter_tuple = candidate
+            break
+    if parameter_tuple is None:
+        raise ValueError("Failed to find a new parameter tuple after 50 retries.")
+
+    answer = combination(n, r)
+    if variant == "symmetry":
+        question_text = f"利用組合性質 $C^{{n}}_{{r}}=C^{{n}}_{{n-r}}$，求 $C^{{{n}}}_{{{r}}}$ 的值。"
+        explanation = (
+            f"使用 $C^{{n}}_{{r}}=C^{{n}}_{{n-r}}$，所以 $C^{{{n}}}_{{{r}}}=C^{{{n}}}_{{{n-r}}}={answer}$。"
+        )
+    else:
+        question_text = f"計算組合數 $C^{{{n}}}_{{{r}}}$ 的值。"
+        explanation = (
+            f"使用 $C^{{n}}_{{r}}=\\frac{{n!}}{{r!(n-r)!}}$ 計算，可得 $C^{{{n}}}_{{{r}}}={answer}$。"
+        )
+
+    payload = {
+        "question_text": question_text,
+        "choices": _make_numeric_choices(answer, rng) if multiple_choice else [],
+        "answer": answer,
+        "explanation": explanation,
+        "skill_id": skill_id,
+        "subskill_id": subskill_id,
+        "problem_type_id": problem_type_id,
+        "generator_key": generator_key,
+        "difficulty": difficulty,
+        "diagnosis_tags": [
+            "combination_properties_simplification",
+            "combination",
+            "symmetry_identity",
+        ],
+        "remediation_candidates": [],
+        "source_style_refs": [
+            "tc_comb_properties_simplification_01",
+            "combination_properties_simplification",
+        ],
+        "parameters": {
+            "n": n,
+            "r": r,
+            "variant": variant,
+            "parameter_tuple": parameter_tuple,
+        },
+    }
+
+    _validate_and_finalize(payload, multiple_choice)
+    seen.add(parameter_tuple)
+    return payload

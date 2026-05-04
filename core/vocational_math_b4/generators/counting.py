@@ -298,3 +298,181 @@ def factorial_equation_solve_n(
     _validate_and_finalize(payload, multiple_choice)
     seen.add(parameter_tuple)
     return payload
+
+
+def _sample_addition_parameters(rng: random.Random, difficulty: int) -> tuple[list[str], list[int]]:
+    name_pool = ["球類社團", "音樂社團", "美術社團", "科學社團", "語文社團", "志工社團", "舞蹈社團"]
+    if difficulty <= 1:
+        category_count = rng.choice([2, 3])
+        low, high = 2, 8
+    elif difficulty == 2:
+        category_count = rng.choice([3, 4])
+        low, high = 3, 12
+    else:
+        category_count = rng.choice([4, 5])
+        low, high = 5, 20
+    category_names = rng.sample(name_pool, category_count)
+    counts = [rng.randint(low, high) for _ in range(category_count)]
+    return category_names, counts
+
+
+def add_principle_mutually_exclusive_choice(
+    *,
+    skill_id: str,
+    subskill_id: str,
+    difficulty: int = 1,
+    seed: int | None = None,
+    seen_parameter_tuples: set[tuple] | None = None,
+    multiple_choice: bool = True,
+) -> dict:
+    from core.vocational_math_b4.domain.counting_domain_functions import addition_principle_count
+
+    rng = random.Random(seed)
+    seen = _ensure_seen_set(seen_parameter_tuples)
+    problem_type_id = "add_principle_mutually_exclusive_choice"
+    generator_key = "b4.counting.add_principle_mutually_exclusive_choice"
+
+    parameter_tuple: tuple | None = None
+    category_names: list[str] = []
+    counts: list[int] = []
+    for _ in range(50):
+        category_names, counts = _sample_addition_parameters(rng, difficulty)
+        candidate = (problem_type_id, tuple(category_names), tuple(counts))
+        if candidate not in seen:
+            parameter_tuple = candidate
+            break
+    if parameter_tuple is None:
+        raise ValueError("Failed to find a new parameter tuple after 50 retries.")
+
+    answer = addition_principle_count(counts)
+    parts = [f"{c} 種{name}" for name, c in zip(category_names, counts)]
+    question_text = f"某校社團活動可選擇{'、'.join(parts)}，若只選擇其中一種社團，共有多少種選法？"
+    explanation = f"使用加法原理，互斥分類只選一類，總方法數為各類數量相加，例如：${'+'.join(str(x) for x in counts)}={answer}$。"
+
+    payload = {
+        "question_text": question_text,
+        "choices": _make_numeric_choices(answer, rng) if multiple_choice else [],
+        "answer": answer,
+        "explanation": explanation,
+        "skill_id": skill_id,
+        "subskill_id": subskill_id,
+        "problem_type_id": problem_type_id,
+        "generator_key": generator_key,
+        "difficulty": difficulty,
+        "diagnosis_tags": [
+            "add_principle_mutually_exclusive_choice",
+            "addition_principle",
+            "mutually_exclusive",
+        ],
+        "remediation_candidates": [],
+        "source_style_refs": [
+            "tc_add_principle_mutually_exclusive_choice_01",
+            "add_principle_mutually_exclusive_choice",
+        ],
+        "parameters": {
+            "category_names": category_names,
+            "counts": counts,
+            "parameter_tuple": parameter_tuple,
+        },
+    }
+
+    _validate_and_finalize(payload, multiple_choice)
+    seen.add(parameter_tuple)
+    return payload
+
+
+def _sample_repeated_choice_parameters(rng: random.Random, difficulty: int) -> tuple[int, int]:
+    if difficulty <= 1:
+        choices_per_position = rng.randint(2, 5)
+        positions = rng.randint(2, 4)
+    elif difficulty == 2:
+        choices_per_position = rng.randint(3, 8)
+        positions = rng.randint(3, 5)
+    else:
+        choices_per_position = rng.randint(4, 10)
+        positions = rng.randint(4, 6)
+    return choices_per_position, positions
+
+
+def repeated_choice_basic(
+    *,
+    skill_id: str,
+    subskill_id: str,
+    difficulty: int = 1,
+    seed: int | None = None,
+    seen_parameter_tuples: set[tuple] | None = None,
+    multiple_choice: bool = True,
+) -> dict:
+    from core.vocational_math_b4.domain.counting_domain_functions import repeated_choice_count
+
+    rng = random.Random(seed)
+    seen = _ensure_seen_set(seen_parameter_tuples)
+    problem_type_id = "repeated_choice_basic"
+    generator_key = "b4.counting.repeated_choice_basic"
+
+    parameter_tuple: tuple | None = None
+    choices_per_position = positions = 0
+    if seed is not None:
+        if difficulty <= 1:
+            choices_vals = [2, 3, 4, 5]
+            position_vals = [2, 3, 4]
+        elif difficulty == 2:
+            choices_vals = [3, 4, 5, 6, 7, 8]
+            position_vals = [3, 4, 5]
+        else:
+            choices_vals = [4, 5, 6, 7, 8, 9, 10]
+            position_vals = [4, 5, 6]
+        idx = max(0, seed - 1)
+        choices_per_position = choices_vals[idx % len(choices_vals)]
+        positions = position_vals[(idx // len(choices_vals)) % len(position_vals)]
+        seeded_candidate = (problem_type_id, choices_per_position, positions)
+        if seeded_candidate not in seen:
+            parameter_tuple = seeded_candidate
+
+    for _ in range(50):
+        if parameter_tuple is not None:
+            break
+        choices_per_position, positions = _sample_repeated_choice_parameters(rng, difficulty)
+        candidate = (problem_type_id, choices_per_position, positions)
+        if candidate not in seen:
+            parameter_tuple = candidate
+            break
+    if parameter_tuple is None:
+        raise ValueError("Failed to find a new parameter tuple after 50 retries.")
+
+    answer = repeated_choice_count(choices_per_position, positions)
+    question_text = (
+        f"有 {positions} 位同學，每人可從 {choices_per_position} 種飲料中任選一種，且可重複選擇，共有多少種選法？"
+    )
+    explanation = (
+        f"每個位置都有 $m$ 種選擇，共有 $n$ 個位置，所以總數為 $m^{{n}}$。例如："
+        f"${choices_per_position}^{{{positions}}}={answer}$。"
+    )
+
+    payload = {
+        "question_text": question_text,
+        "choices": _make_numeric_choices(answer, rng) if multiple_choice else [],
+        "answer": answer,
+        "explanation": explanation,
+        "skill_id": skill_id,
+        "subskill_id": subskill_id,
+        "problem_type_id": problem_type_id,
+        "generator_key": generator_key,
+        "difficulty": difficulty,
+        "diagnosis_tags": [
+            "repeated_choice_basic",
+            "repeated_choice",
+            "multiplication_principle",
+        ],
+        "remediation_candidates": [],
+        "source_style_refs": ["tc_repeated_choice_basic_01", "repeated_choice_basic"],
+        "parameters": {
+            "choices_per_position": choices_per_position,
+            "positions": positions,
+            "parameter_tuple": parameter_tuple,
+        },
+    }
+
+    _validate_and_finalize(payload, multiple_choice)
+    seen.add(parameter_tuple)
+    return payload
