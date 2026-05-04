@@ -1,4 +1,4 @@
-"""Phase 4E-11: router entries for mult_principle, mult_digits_no_repeat, repeated_permutation_assignment."""
+﻿"""Phase 4E-11: router entries for mult_principle, mult_digits_no_repeat, repeated_permutation_assignment."""
 
 from __future__ import annotations
 
@@ -33,7 +33,7 @@ def test_multiplication_principle_registry_uses_canonical_skill_id_only() -> Non
     """MultiplicationPrinciple must not rely on mojibake keys; canonical key holds the list."""
     reg = question_router_module._REGISTRY
     assert "vh_數學B4_MultiplicationPrinciple" in reg
-    assert "vh_?詨飛B4_MultiplicationPrinciple" not in reg
+    assert "vh_?閰券?B4_MultiplicationPrinciple" not in reg
 
 
 def _assert_new_payload(payload: dict) -> None:

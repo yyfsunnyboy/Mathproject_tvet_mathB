@@ -12,6 +12,7 @@ from core.vocational_math_b4.domain.b4_validators import (
 )
 from core.vocational_math_b4.domain.counting_domain_functions import (
     combination,
+    permutation,
     polygon_diagonal_count,
     polygon_triangle_count,
 )
@@ -26,6 +27,10 @@ GROUP_SELECTION_PROBLEM_TYPE_ID = "combination_group_selection"
 GROUP_SELECTION_GENERATOR_KEY = "b4.combination.combination_group_selection"
 BASIC_SELECTION_PROBLEM_TYPE_ID = "combination_basic_selection"
 BASIC_SELECTION_GENERATOR_KEY = "b4.combination.combination_basic_selection"
+RESTRICTED_SELECTION_PROBLEM_TYPE_ID = "combination_restricted_selection"
+RESTRICTED_SELECTION_GENERATOR_KEY = "b4.combination.combination_restricted_selection"
+SEAT_ASSIGNMENT_PROBLEM_TYPE_ID = "combination_seat_assignment"
+SEAT_ASSIGNMENT_GENERATOR_KEY = "b4.combination.combination_seat_assignment"
 
 
 def _make_numeric_choices(answer: int, rng: random.Random) -> list[int]:
@@ -587,6 +592,231 @@ def combination_properties_simplification(
             "n": n,
             "r": r,
             "variant": variant,
+            "parameter_tuple": parameter_tuple,
+        },
+    }
+
+    _validate_and_finalize(payload, multiple_choice)
+    seen.add(parameter_tuple)
+    return payload
+
+
+def _sample_restricted_selection_params(
+    rng: random.Random, difficulty: int
+) -> tuple[int, int, int, int, str]:
+    if difficulty <= 1:
+        a = rng.randint(3, 6)
+        b = rng.randint(4, 8)
+        r = rng.randint(2, 4)
+        k = rng.randint(1, min(2, r))
+    elif difficulty == 2:
+        a = rng.randint(4, 8)
+        b = rng.randint(5, 10)
+        r = rng.randint(3, 5)
+        k = rng.randint(1, min(3, r))
+    else:
+        a = rng.randint(5, 10)
+        b = rng.randint(6, 12)
+        r = rng.randint(4, 6)
+        k = rng.randint(1, min(4, r))
+    if r > a + b:
+        r = a + b
+    variant = rng.choice(["at_least_one_from_group", "exactly_k_from_group"])
+    if variant == "exactly_k_from_group":
+        if k > a:
+            k = a
+        if r - k > b:
+            r = min(a + b, b + k)
+    return a, b, r, k, variant
+
+
+def combination_restricted_selection(
+    *,
+    skill_id: str,
+    subskill_id: str,
+    difficulty: int = 1,
+    seed: int | None = None,
+    seen_parameter_tuples: set[tuple] | None = None,
+    multiple_choice: bool = True,
+) -> dict:
+    rng = random.Random(seed)
+    seen = _ensure_seen_set(seen_parameter_tuples)
+
+    parameter_tuple: tuple | None = None
+    a = b = r = k = 0
+    variant = ""
+
+    if seed is not None and 1 <= seed <= 5 and difficulty == 1:
+        preset = [
+            (3, 4, 2, 1, "at_least_one_from_group"),
+            (4, 5, 3, 1, "exactly_k_from_group"),
+            (5, 6, 3, 2, "at_least_one_from_group"),
+            (6, 4, 4, 2, "exactly_k_from_group"),
+            (3, 8, 4, 1, "at_least_one_from_group"),
+        ][seed - 1]
+        a, b, r, k, variant = preset
+        candidate = (RESTRICTED_SELECTION_PROBLEM_TYPE_ID, a, b, r, k, variant)
+        if candidate not in seen:
+            parameter_tuple = candidate
+
+    for _ in range(50):
+        if parameter_tuple is not None:
+            break
+        a, b, r, k, variant = _sample_restricted_selection_params(rng, difficulty)
+        candidate = (RESTRICTED_SELECTION_PROBLEM_TYPE_ID, a, b, r, k, variant)
+        if candidate not in seen:
+            parameter_tuple = candidate
+            break
+    if parameter_tuple is None:
+        raise ValueError("Failed to find a new parameter tuple after 50 retries.")
+
+    if variant == "at_least_one_from_group":
+        total = combination(a + b, r)
+        invalid = combination(b, r) if r <= b else 0
+        answer = total - invalid
+        question_text = (
+            f"甲組有 {a} 人、乙組有 {b} 人，今共選 {r} 人，且至少選 1 位甲組成員，共有多少種選法？"
+        )
+        explanation = (
+            f"先算全部選法 $C^{{{a+b}}}_{{{r}}}$，扣掉沒有甲組成員的情形 "
+            f"$C^{{{b}}}_{{{r}}}$，所以 "
+            f"$C^{{{a+b}}}_{{{r}}}-C^{{{b}}}_{{{r}}}={answer}$。"
+        )
+    else:
+        answer = combination(a, k) * combination(b, r - k)
+        question_text = (
+            f"甲組有 {a} 人、乙組有 {b} 人，今共選 {r} 人，且恰選 {k} 位甲組成員，共有多少種選法？"
+        )
+        explanation = (
+            f"甲組選 ${k}$ 人、乙組選 ${r-k}$ 人，方法數為 "
+            f"$C^{{{a}}}_{{{k}}}\\times C^{{{b}}}_{{{r-k}}}={answer}$。"
+        )
+
+    payload = {
+        "question_text": question_text,
+        "choices": _make_numeric_choices(answer, rng) if multiple_choice else [],
+        "answer": answer,
+        "explanation": explanation,
+        "skill_id": skill_id,
+        "subskill_id": subskill_id,
+        "problem_type_id": RESTRICTED_SELECTION_PROBLEM_TYPE_ID,
+        "generator_key": RESTRICTED_SELECTION_GENERATOR_KEY,
+        "difficulty": difficulty,
+        "diagnosis_tags": [
+            "combination_restricted_selection",
+            "combination",
+            "restricted_selection",
+        ],
+        "remediation_candidates": [],
+        "source_style_refs": [
+            "tc_comb_restricted_selection_01",
+            "combination_restricted_selection",
+        ],
+        "parameters": {
+            "a": a,
+            "b": b,
+            "r": r,
+            "k": k,
+            "variant": variant,
+            "parameter_tuple": parameter_tuple,
+        },
+    }
+
+    _validate_and_finalize(payload, multiple_choice)
+    seen.add(parameter_tuple)
+    return payload
+
+
+def _sample_seat_assignment_params(rng: random.Random, difficulty: int) -> tuple[int, int, str]:
+    if difficulty <= 1:
+        n = rng.randint(5, 8)
+        r = rng.randint(2, 3)
+    elif difficulty == 2:
+        n = rng.randint(7, 10)
+        r = rng.randint(2, 4)
+    else:
+        n = rng.randint(9, 12)
+        r = rng.randint(3, 5)
+    if r > n:
+        r = n
+    context = rng.choice(["seats", "officers", "presentation_order"])
+    return n, r, context
+
+
+def combination_seat_assignment(
+    *,
+    skill_id: str,
+    subskill_id: str,
+    difficulty: int = 1,
+    seed: int | None = None,
+    seen_parameter_tuples: set[tuple] | None = None,
+    multiple_choice: bool = True,
+) -> dict:
+    rng = random.Random(seed)
+    seen = _ensure_seen_set(seen_parameter_tuples)
+
+    parameter_tuple: tuple | None = None
+    n = r = 0
+    context = ""
+
+    if seed is not None and 1 <= seed <= 5 and difficulty == 1:
+        preset = [
+            (5, 2, "seats"),
+            (6, 3, "officers"),
+            (7, 2, "presentation_order"),
+            (8, 3, "seats"),
+            (6, 2, "officers"),
+        ][seed - 1]
+        n, r, context = preset
+        candidate = (SEAT_ASSIGNMENT_PROBLEM_TYPE_ID, n, r, context)
+        if candidate not in seen:
+            parameter_tuple = candidate
+
+    for _ in range(50):
+        if parameter_tuple is not None:
+            break
+        n, r, context = _sample_seat_assignment_params(rng, difficulty)
+        candidate = (SEAT_ASSIGNMENT_PROBLEM_TYPE_ID, n, r, context)
+        if candidate not in seen:
+            parameter_tuple = candidate
+            break
+    if parameter_tuple is None:
+        raise ValueError("Failed to find a new parameter tuple after 50 retries.")
+
+    answer = combination(n, r) * permutation(r, r)
+    if context == "seats":
+        question_text = f"從 {n} 位同學中選出 {r} 位，安排到 {r} 個不同座位，共有多少種安排方式？"
+    elif context == "officers":
+        question_text = f"從 {n} 人中選出 {r} 人擔任 {r} 個不同職務，共有多少種安排方式？"
+    else:
+        question_text = f"從 {n} 人中選出 {r} 人依序上台報告，共有多少種安排方式？"
+    explanation = (
+        f"先從 ${n}$ 人中選 ${r}$ 人，有 $C^{{{n}}}_{{{r}}}$ 種；再將 ${r}$ 人排列，"
+        f"有 ${r}!$ 種，所以 $C^{{{n}}}_{{{r}}}\\times {r}!={answer}$。"
+    )
+
+    payload = {
+        "question_text": question_text,
+        "choices": _make_numeric_choices(answer, rng) if multiple_choice else [],
+        "answer": answer,
+        "explanation": explanation,
+        "skill_id": skill_id,
+        "subskill_id": subskill_id,
+        "problem_type_id": SEAT_ASSIGNMENT_PROBLEM_TYPE_ID,
+        "generator_key": SEAT_ASSIGNMENT_GENERATOR_KEY,
+        "difficulty": difficulty,
+        "diagnosis_tags": [
+            "combination_seat_assignment",
+            "combination",
+            "permutation",
+            "mixed_counting",
+        ],
+        "remediation_candidates": [],
+        "source_style_refs": ["tc_comb_seat_assignment_01", "combination_seat_assignment"],
+        "parameters": {
+            "n": n,
+            "r": r,
+            "context": context,
             "parameter_tuple": parameter_tuple,
         },
     }

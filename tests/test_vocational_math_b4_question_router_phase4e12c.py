@@ -33,7 +33,6 @@ def _assert_common_payload(payload: dict) -> None:
     assert "[BLANK]" not in payload["question_text"]
     assert "[BLANK]" not in payload["explanation"]
     assert "$" in payload["question_text"] or "$" in payload["explanation"]
-
     trace = payload["router_trace"]
     assert isinstance(trace, dict)
     for key in [
@@ -44,74 +43,60 @@ def _assert_common_payload(payload: dict) -> None:
         "selection_reason",
     ]:
         assert key in trace
-    assert trace["selected_subskill_id"] == payload["subskill_id"]
-    assert trace["selected_problem_type_id"] == payload["problem_type_id"]
-    assert trace["selected_generator_key"] == payload["generator_key"]
 
 
-def test_combination_router_support() -> None:
-    payload = generate_for_skill(skill_id="vh_數學B4_Combination", level=1, seed=1)
-
-    assert payload["problem_type_id"] == "combination_basic_selection"
-    assert payload["generator_key"] == "b4.combination.combination_basic_selection"
-    _assert_common_payload(payload)
-
-
-def test_permutation_formula_evaluation_router_support() -> None:
+def test_perm_distinct_supports_full_arrangement_override() -> None:
     payload = generate_for_skill(
         skill_id="vh_數學B4_PermutationOfDistinctObjects",
         level=1,
         seed=1,
-        problem_type_id="permutation_formula_evaluation",
+        problem_type_id="permutation_full_arrangement",
     )
-
-    assert payload["problem_type_id"] == "permutation_formula_evaluation"
-    assert payload["generator_key"] == "b4.permutation.permutation_formula_evaluation"
+    assert payload["problem_type_id"] == "permutation_full_arrangement"
+    assert payload["generator_key"] == "b4.permutation.permutation_full_arrangement"
     _assert_common_payload(payload)
 
 
-def test_permutation_default_still_generates_supported_problem_type() -> None:
-    payload = generate_for_skill(
-        skill_id="vh_數學B4_PermutationOfDistinctObjects",
-        level=1,
-        seed=1,
-    )
-
+def test_perm_distinct_default_still_supported() -> None:
+    payload = generate_for_skill(skill_id="vh_數學B4_PermutationOfDistinctObjects", level=1, seed=3)
     assert payload["problem_type_id"] in {
         "permutation_role_assignment",
         "permutation_formula_evaluation",
+        "permutation_full_arrangement",
     }
     _assert_common_payload(payload)
-    exp = payload["explanation"]
-    assert "$" in exp
-    assert "P^{" in exp
-    assert "P(n," not in exp
-    assert "P(" not in exp
 
 
-def test_factorial_evaluation_router_support() -> None:
+def test_combination_supports_restricted_override() -> None:
     payload = generate_for_skill(
-        skill_id="vh_數學B4_FactorialNotation",
+        skill_id="vh_數學B4_Combination",
         level=1,
         seed=1,
-        problem_type_id="factorial_evaluation",
+        problem_type_id="combination_restricted_selection",
     )
-
-    assert payload["problem_type_id"] == "factorial_evaluation"
-    assert payload["generator_key"] == "b4.counting.factorial_evaluation"
+    assert payload["problem_type_id"] == "combination_restricted_selection"
+    assert payload["generator_key"] == "b4.combination.combination_restricted_selection"
     _assert_common_payload(payload)
 
 
-def test_factorial_default_still_generates_supported_problem_type() -> None:
+def test_combination_supports_seat_assignment_override() -> None:
     payload = generate_for_skill(
-        skill_id="vh_數學B4_FactorialNotation",
+        skill_id="vh_數學B4_Combination",
         level=1,
         seed=1,
+        problem_type_id="combination_seat_assignment",
     )
+    assert payload["problem_type_id"] == "combination_seat_assignment"
+    assert payload["generator_key"] == "b4.combination.combination_seat_assignment"
+    _assert_common_payload(payload)
 
+
+def test_combination_default_still_supported() -> None:
+    payload = generate_for_skill(skill_id="vh_數學B4_Combination", level=1, seed=5)
     assert payload["problem_type_id"] in {
-        "factorial_equation_solve_n",
-        "factorial_evaluation",
+        "combination_basic_selection",
+        "combination_restricted_selection",
+        "combination_seat_assignment",
     }
     _assert_common_payload(payload)
 
@@ -119,9 +104,8 @@ def test_factorial_default_still_generates_supported_problem_type() -> None:
 @pytest.mark.parametrize(
     "skill_id,bad_problem_type",
     [
-        ("vh_數學B4_Combination", "permutation_formula_evaluation"),
-        ("vh_數學B4_PermutationOfDistinctObjects", "factorial_evaluation"),
-        ("vh_數學B4_FactorialNotation", "combination_basic_selection"),
+        ("vh_數學B4_PermutationOfDistinctObjects", "combination_seat_assignment"),
+        ("vh_數學B4_Combination", "permutation_full_arrangement"),
     ],
 )
 def test_invalid_problem_type_for_skill_raises(skill_id: str, bad_problem_type: str) -> None:

@@ -1,4 +1,4 @@
-from __future__ import annotations
+﻿from __future__ import annotations
 
 import pytest
 
@@ -57,7 +57,7 @@ def test_invalid_problem_type_for_skill_raises_value_error() -> None:
 
 
 def test_router_factorial_generate_success() -> None:
-    # 確認成功產題
+    # 蝣箄????ａ?
     payload = generate_for_skill(skill_id="vh_數學B4_FactorialNotation", level=1, seed=1)
     assert payload is not None
     assert payload["skill_id"] == "vh_數學B4_FactorialNotation"

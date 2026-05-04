@@ -16,6 +16,8 @@ PROBLEM_TYPE_ID = "permutation_role_assignment"
 GENERATOR_KEY = "b4.permutation.permutation_role_assignment"
 FORMULA_EVAL_PROBLEM_TYPE_ID = "permutation_formula_evaluation"
 FORMULA_EVAL_GENERATOR_KEY = "b4.permutation.permutation_formula_evaluation"
+FULL_ARRANGEMENT_PROBLEM_TYPE_ID = "permutation_full_arrangement"
+FULL_ARRANGEMENT_GENERATOR_KEY = "b4.permutation.permutation_full_arrangement"
 
 
 def _make_numeric_choices(answer: int, rng: random.Random) -> list[int]:
@@ -207,6 +209,101 @@ def permutation_formula_evaluation(
             "n": n,
             "r": r,
             "variant": variant,
+            "parameter_tuple": parameter_tuple,
+        },
+    }
+
+    validate_problem_payload_contract(payload)
+    validate_no_unfilled_placeholder(payload["question_text"])
+    validate_no_unfilled_placeholder(payload["explanation"])
+    if multiple_choice:
+        validate_choices_unique(payload["choices"])
+        validate_answer_in_choices(payload["answer"], payload["choices"])
+
+    seen.add(parameter_tuple)
+    return payload
+
+
+def _sample_full_arrangement_params(rng: random.Random, difficulty: int) -> tuple[int, str]:
+    if difficulty <= 1:
+        n = rng.randint(3, 6)
+    elif difficulty == 2:
+        n = rng.randint(5, 8)
+    else:
+        n = rng.randint(7, 10)
+    context = rng.choice(["students_line", "books_shelf", "photos_row", "tasks_order"])
+    return n, context
+
+
+def permutation_full_arrangement(
+    *,
+    skill_id: str,
+    subskill_id: str,
+    difficulty: int = 1,
+    seed: int | None = None,
+    seen_parameter_tuples: set[tuple] | None = None,
+    multiple_choice: bool = True,
+) -> dict:
+    from core.vocational_math_b4.domain.counting_domain_functions import factorial
+
+    rng = random.Random(seed)
+    seen = _ensure_seen_set(seen_parameter_tuples)
+
+    parameter_tuple: tuple | None = None
+    n = 0
+    context = ""
+
+    if seed is not None and 1 <= seed <= 5 and difficulty == 1:
+        preset = [
+            (3, "students_line"),
+            (4, "books_shelf"),
+            (5, "photos_row"),
+            (6, "tasks_order"),
+            (4, "students_line"),
+        ][seed - 1]
+        n, context = preset
+        candidate = (FULL_ARRANGEMENT_PROBLEM_TYPE_ID, n, context)
+        if candidate not in seen:
+            parameter_tuple = candidate
+
+    for _ in range(50):
+        if parameter_tuple is not None:
+            break
+        n, context = _sample_full_arrangement_params(rng, difficulty)
+        candidate = (FULL_ARRANGEMENT_PROBLEM_TYPE_ID, n, context)
+        if candidate not in seen:
+            parameter_tuple = candidate
+            break
+    if parameter_tuple is None:
+        raise ValueError("Failed to find a new parameter tuple after 50 retries.")
+
+    answer = factorial(n)
+    if context == "students_line":
+        question_text = f"{n} 位同學排成一列，共有多少種排法？"
+    elif context == "books_shelf":
+        question_text = f"{n} 本不同書排在書架上，共有多少種排法？"
+    elif context == "photos_row":
+        question_text = f"{n} 張不同照片排成一排，共有多少種排法？"
+    else:
+        question_text = f"{n} 件不同任務安排順序，共有多少種排法？"
+    explanation = f"${n}$ 位相異對象全取排列，方法數為 ${n}!={answer}$。"
+
+    payload = {
+        "question_text": question_text,
+        "choices": _make_numeric_choices(answer, rng) if multiple_choice else [],
+        "answer": answer,
+        "explanation": explanation,
+        "skill_id": skill_id,
+        "subskill_id": subskill_id,
+        "problem_type_id": FULL_ARRANGEMENT_PROBLEM_TYPE_ID,
+        "generator_key": FULL_ARRANGEMENT_GENERATOR_KEY,
+        "difficulty": difficulty,
+        "diagnosis_tags": ["permutation_full_arrangement", "permutation", "factorial"],
+        "remediation_candidates": [],
+        "source_style_refs": ["tc_perm_full_arrangement_01", "permutation_full_arrangement"],
+        "parameters": {
+            "n": n,
+            "context": context,
             "parameter_tuple": parameter_tuple,
         },
     }

@@ -6,15 +6,15 @@
 
 ## 2. 統計摘要
 - **problem_type 總數**: 28
-- **runtime_ready 數量**: 17
+- **runtime_ready 數量**: 20
 - **implemented_not_web_tested 數量**: 0
 - **generator_ready_no_wrapper 數量**: 0
-- **planned_only 數量**: 10
+- **planned_only 數量**: 7
 - **excluded 數量**: 1
-- **has_generator=yes 數量**: 17
-- **in_question_router=yes 數量**: 17
-- **has_skill_wrapper=yes 數量**: 22
-- **web_smoke_tested=yes 數量**: 17
+- **has_generator=yes 數量**: 20
+- **in_question_router=yes 數量**: 20
+- **has_skill_wrapper=yes 數量**: 25
+- **web_smoke_tested=yes 數量**: 20
 
 ### Reconciliation notes（Phase 4E-7B, 4E-9, 4E-11）
 - **Phase 4E-7** 初次 freeze 僅將當批 **3** 個 `problem_type` 升級為 `runtime_ready`，矩陣逐列一度為 **runtime_ready 9**、**planned_only 18**（excluded 1）。
@@ -33,6 +33,13 @@
     `/practice/vh_數學B4_MultiplicationPrinciple`
     `/practice/vh_數學B4_PermutationWithRepetition`
   - 因此 coverage 統計更新為 17 / 10 / 1
+- **Phase 4E-12C** 新增 3 個 problem_type 接入 router：
+  - pytest 248 passed
+  - web smoke test 兩頁通過：
+    `/practice/vh_數學B4_PermutationOfDistinctObjects`
+    `/practice/vh_數學B4_Combination`
+  - 未重新引入亂碼 alias
+  - 因此 coverage 統計更新為 20 / 7 / 1
 - **Web smoke 文件依據**：`combination_group_selection` 所屬 skill 之 `/practice/vh_數學B4_CombinationApplications` 通過，見 `b4_phase4d_runtime_wrapper_router_summary.md` §7；`factorial_equation_solve_n` 所屬 `/practice/vh_數學B4_FactorialNotation` 依任務書定之 Phase 4E-4A／後續紀錄。
 
 ## 3. runtime_ready 清單
@@ -54,19 +61,19 @@
 15. `mult_principle_independent_choices` (多階段選擇乘法原理) — Phase 4E-11
 16. `mult_digits_no_repeat` (數字排列無重複) — Phase 4E-11
 17. `repeated_permutation_assignment` (重複排列分派計數) — Phase 4E-11
+18. `permutation_full_arrangement` (相異物全取排列) — Phase 4E-12C
+19. `combination_restricted_selection` (組合特定數量限制選取) — Phase 4E-12C
+20. `combination_seat_assignment` (組合與排列混合排座) — Phase 4E-12C
 
 ## 4. planned_only 清單
-尚未達成端到端 `runtime_ready` 的 problem_type（共 10 個），依 priority（若已知）及題型分類排序：
+尚未達成端到端 `runtime_ready` 的 problem_type（共 7 個），依 priority（若已知）及題型分類排序：
 1. `binomial_expansion_basic` (二項式展開) - high
 2. `permutation_adjacent_block` (相鄰與不相鄰限制排列) - high
 3. `permutation_digit_parity` (數字排列含奇偶限制) - high
 4. `binomial_coefficient_sum` (二項式係數和) - medium
 5. `binomial_equation_solve_n` (已知組合數求參數) - medium
 6. `binomial_specific_term_coefficient` (指定項係數) - medium
-7. `combination_restricted_selection` (組合特定數量限制選取) - medium
-8. `combination_seat_assignment` (組合與排列混合排座) - medium
-9. `permutation_full_arrangement` (相異物全取排列) - medium
-10. `tree_diagram_listing` (樹狀圖列舉) - low
+7. `tree_diagram_listing` (樹狀圖列舉) - low
 
 ## 5. 缺 wrapper 或缺 router 的項目
 目前沒有 `has_generator=yes` 但尚未接入 wrapper/router/web test 的項目（數量為 0）。
