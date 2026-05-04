@@ -47,6 +47,29 @@ def _repeated_choice_basic(**kwargs) -> dict:
     return fn(**kwargs)
 
 
+def _mult_principle_independent_choices(**kwargs) -> dict:
+    fn = getattr(
+        counting_generators,
+        "mult_principle_independent_choices",
+        counting_generators.generate,
+    )
+    return fn(**kwargs)
+
+
+def _mult_digits_no_repeat(**kwargs) -> dict:
+    fn = getattr(counting_generators, "mult_digits_no_repeat", counting_generators.generate)
+    return fn(**kwargs)
+
+
+def _repeated_permutation_assignment(**kwargs) -> dict:
+    fn = getattr(
+        counting_generators,
+        "repeated_permutation_assignment",
+        counting_generators.generate,
+    )
+    return fn(**kwargs)
+
+
 _REGISTRY: dict[str, list[dict[str, object]]] = {
     "vh_?詨飛B4_CombinationDefinition": [
         {
@@ -76,13 +99,33 @@ _REGISTRY: dict[str, list[dict[str, object]]] = {
             "generator_fn": combination_generators.combination_group_selection,
         },
     ],
-    "vh_?詨飛B4_MultiplicationPrinciple": [
+    "vh_數學B4_Combination": [
+        {
+            "subskill_id": "b4_ch1_comb_basic_selection_01",
+            "problem_type_id": "combination_basic_selection",
+            "generator_key": "b4.combination.combination_basic_selection",
+            "generator_fn": combination_generators.combination_basic_selection,
+        }
+    ],
+    "vh_數學B4_MultiplicationPrinciple": [
         {
             "subskill_id": "b4_ch1_mult_factors_02",
             "problem_type_id": "divisor_count_prime_factorization",
             "generator_key": "b4.counting.divisor_count_prime_factorization",
             "generator_fn": counting_generators.divisor_count_prime_factorization,
-        }
+        },
+        {
+            "subskill_id": "b4_ch1_mult_principle_independent_01",
+            "problem_type_id": "mult_principle_independent_choices",
+            "generator_key": "b4.counting.mult_principle_independent_choices",
+            "generator_fn": _mult_principle_independent_choices,
+        },
+        {
+            "subskill_id": "b4_ch1_mult_digits_no_repeat_01",
+            "problem_type_id": "mult_digits_no_repeat",
+            "generator_key": "b4.counting.mult_digits_no_repeat",
+            "generator_fn": _mult_digits_no_repeat,
+        },
     ],
     "vh_?詨飛B4_PermutationOfDistinctObjects": [
         {
@@ -90,6 +133,12 @@ _REGISTRY: dict[str, list[dict[str, object]]] = {
             "problem_type_id": "permutation_role_assignment",
             "generator_key": "b4.permutation.permutation_role_assignment",
             "generator_fn": _permutation_role_assignment,
+        },
+        {
+            "subskill_id": "b4_ch1_perm_formula_eval_01",
+            "problem_type_id": "permutation_formula_evaluation",
+            "generator_key": "b4.permutation.permutation_formula_evaluation",
+            "generator_fn": permutation_generators.permutation_formula_evaluation,
         }
     ],
     "vh_?詨飛B4_RepeatedPermutation": [
@@ -106,6 +155,12 @@ _REGISTRY: dict[str, list[dict[str, object]]] = {
             "problem_type_id": "factorial_equation_solve_n",
             "generator_key": "b4.counting.factorial_equation_solve_n",
             "generator_fn": counting_generators.factorial_equation_solve_n,
+        },
+        {
+            "subskill_id": "b4_ch1_factorial_eval_01",
+            "problem_type_id": "factorial_evaluation",
+            "generator_key": "b4.counting.factorial_evaluation",
+            "generator_fn": counting_generators.factorial_evaluation,
         }
     ],
     "vh_數學B4_AdditionPrinciple": [
@@ -130,14 +185,19 @@ _REGISTRY: dict[str, list[dict[str, object]]] = {
             "problem_type_id": "repeated_choice_basic",
             "generator_key": "b4.counting.repeated_choice_basic",
             "generator_fn": _repeated_choice_basic,
-        }
+        },
+        {
+            "subskill_id": "b4_ch1_rep_perm_assignment_01",
+            "problem_type_id": "repeated_permutation_assignment",
+            "generator_key": "b4.counting.repeated_permutation_assignment",
+            "generator_fn": _repeated_permutation_assignment,
+        },
     ],
 }
 
 # Backward-compatible normalized Chinese skill_id aliases.
 _REGISTRY["vh_數學B4_CombinationDefinition"] = _REGISTRY["vh_?詨飛B4_CombinationDefinition"]
 _REGISTRY["vh_數學B4_CombinationApplications"] = _REGISTRY["vh_?詨飛B4_CombinationApplications"]
-_REGISTRY["vh_數學B4_MultiplicationPrinciple"] = _REGISTRY["vh_?詨飛B4_MultiplicationPrinciple"]
 _REGISTRY["vh_數學B4_PermutationOfDistinctObjects"] = _REGISTRY["vh_?詨飛B4_PermutationOfDistinctObjects"]
 _REGISTRY["vh_數學B4_RepeatedPermutation"] = _REGISTRY["vh_?詨飛B4_RepeatedPermutation"]
 _REGISTRY["vh_數學B4_FactorialNotation"] = _REGISTRY["vh_?詨飛B4_FactorialNotation"]

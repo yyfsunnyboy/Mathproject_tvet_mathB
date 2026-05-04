@@ -53,6 +53,11 @@ def test_permutation_generator_payload_and_answer() -> None:
     assert payload["answer"] == permutation(n, r)
     assert "[FORMULA_MISSING]" not in payload["question_text"]
     assert "[FORMULA_MISSING]" not in payload["explanation"]
+    exp = payload["explanation"]
+    assert "$" in exp
+    assert "P^{" in exp
+    assert "P(n," not in exp
+    assert "P(" not in exp
 
 
 def test_repeated_digits_generator_payload_and_answer() -> None:

@@ -24,6 +24,8 @@ REQ_EXC_PROBLEM_TYPE_ID = "combination_required_excluded_person"
 REQ_EXC_GENERATOR_KEY = "b4.combination.combination_required_excluded_person"
 GROUP_SELECTION_PROBLEM_TYPE_ID = "combination_group_selection"
 GROUP_SELECTION_GENERATOR_KEY = "b4.combination.combination_group_selection"
+BASIC_SELECTION_PROBLEM_TYPE_ID = "combination_basic_selection"
+BASIC_SELECTION_GENERATOR_KEY = "b4.combination.combination_basic_selection"
 
 
 def _make_numeric_choices(answer: int, rng: random.Random) -> list[int]:
@@ -432,6 +434,93 @@ def _sample_combination_properties_parameters(rng: random.Random, difficulty: in
         if r > n:
             r = n
     return n, r, variant
+
+
+def _sample_combination_basic_selection_params(
+    rng: random.Random, difficulty: int
+) -> tuple[int, int, str]:
+    if difficulty <= 1:
+        n = rng.randint(5, 10)
+        r = rng.randint(2, 4)
+    elif difficulty == 2:
+        n = rng.randint(8, 15)
+        r = rng.randint(2, 6)
+    else:
+        n = rng.randint(12, 20)
+        r = rng.randint(3, 8)
+    if r > n:
+        r = n
+    context = rng.choice(["books", "students", "questions", "gifts"])
+    return n, r, context
+
+
+def combination_basic_selection(
+    *,
+    skill_id: str,
+    subskill_id: str,
+    difficulty: int = 1,
+    seed: int | None = None,
+    seen_parameter_tuples: set[tuple] | None = None,
+    multiple_choice: bool = True,
+) -> dict:
+    """Generate deterministic basic combination selection (C(n,r)) problems."""
+    rng = random.Random(seed)
+    if seed is not None:
+        for _ in range(seed * 11):
+            rng.random()
+    seen = _ensure_seen_set(seen_parameter_tuples)
+
+    parameter_tuple: tuple | None = None
+    n = r = 0
+    context = ""
+    for _ in range(50):
+        n, r, context = _sample_combination_basic_selection_params(rng, difficulty)
+        candidate = (BASIC_SELECTION_PROBLEM_TYPE_ID, n, r, context)
+        if candidate not in seen:
+            parameter_tuple = candidate
+            break
+    if parameter_tuple is None:
+        raise ValueError("Failed to find a new parameter tuple after 50 retries.")
+
+    answer = combination(n, r)
+    if context == "books":
+        question_text = f"從 {n} 本不同的書中選出 {r} 本，共有多少種選法？"
+    elif context == "students":
+        question_text = f"從 {n} 位同學中選出 {r} 位，共有多少種選法？"
+    elif context == "questions":
+        question_text = f"從 {n} 題中選出 {r} 題作答，共有多少種選法？"
+    else:
+        question_text = f"從 {n} 件不同禮物中選出 {r} 件，共有多少種選法？"
+
+    explanation = (
+        "不考慮順序，使用 $C^{n}_{r}=\\frac{n!}{r!(n-r)!}$，"
+        f"所以 $C^{{{n}}}_{{{r}}}={answer}$。"
+    )
+
+    payload = {
+        "question_text": question_text,
+        "choices": _make_numeric_choices(answer, rng) if multiple_choice else [],
+        "answer": answer,
+        "explanation": explanation,
+        "skill_id": skill_id,
+        "subskill_id": subskill_id,
+        "problem_type_id": BASIC_SELECTION_PROBLEM_TYPE_ID,
+        "generator_key": BASIC_SELECTION_GENERATOR_KEY,
+        "difficulty": difficulty,
+        "diagnosis_tags": ["combination_basic_selection", "combination", "order_not_matters"],
+        "remediation_candidates": [],
+        "source_style_refs": ["tc_comb_basic_selection_01", "combination_basic_selection"],
+        "parameters": {
+            "n": n,
+            "r": r,
+            "context": context,
+            "parameter_tuple": parameter_tuple,
+        },
+    }
+
+    _validate_and_finalize(payload, multiple_choice)
+    seen.add(parameter_tuple)
+    return payload
 
 
 def combination_properties_simplification(
