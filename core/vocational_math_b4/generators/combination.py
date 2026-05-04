@@ -97,7 +97,7 @@ def generate(
 
     answer = combination(n, r)
     question_text = f"從 {n} 件不同作品中選出 {r} 件展示，共有多少種選法？"
-    explanation = f"此題不計順序，使用 C(n,r)=n!/(r!(n-r)!)，所以 C({n},{r})={answer}。"
+    explanation = f"此題不計順序，使用 $C^{{n}}_{{r}}=\\frac{{n!}}{{r!(n-r)!}}$，所以 $C^{{{n}}}_{{{r}}}={answer}$。"
 
     choices = _make_numeric_choices(answer, rng) if multiple_choice else []
     payload = {
@@ -187,11 +187,11 @@ def combination_polygon_count(
     if question_variant == "diagonal":
         answer = polygon_diagonal_count(n)
         question_text = f"一個正 {n} 邊形共有多少條對角線？"
-        explanation = f"對角線數公式為 C(n,2)-n，所以 C({n},2)-{n}={answer}。"
+        explanation = f"對角線數公式為 $C^{{n}}_{{2}}-n$，所以 $C^{{{n}}}_{{2}}-{n}={answer}$。"
     else:
         answer = polygon_triangle_count(n)
         question_text = f"一個正 {n} 邊形任取 3 個頂點可形成多少個三角形？"
-        explanation = f"三角形數為 C(n,3)，所以 C({n},3)={answer}。"
+        explanation = f"三角形數為 $C^{{n}}_{{3}}$，所以 $C^{{{n}}}_{{3}}={answer}$。"
 
     payload = {
         "question_text": question_text,
@@ -278,7 +278,7 @@ def combination_required_excluded_person(
         )
         explanation = (
             f"必選情況先固定指定人物，再從剩下 {n-k} 人選 {r-k} 人，"
-            f"使用 C(n,r) 得 C({n-k},{r-k})={answer}。"
+            f"使用 $C^{{n}}_{{r}}$ 得 $C^{{{n-k}}}_{{{r-k}}}={answer}$。"
         )
     else:
         answer = combination(n - k, r)
@@ -287,7 +287,7 @@ def combination_required_excluded_person(
         )
         explanation = (
             f"不可選情況先排除指定人物，再從剩下 {n-k} 人選 {r} 人，"
-            f"使用 C(n,r) 得 C({n-k},{r})={answer}。"
+            f"使用 $C^{{n}}_{{r}}$ 得 $C^{{{n-k}}}_{{{r}}}={answer}$。"
         )
 
     payload = {

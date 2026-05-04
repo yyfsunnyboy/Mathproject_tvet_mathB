@@ -1,4 +1,4 @@
-﻿import pytest
+import pytest
 
 from core.vocational_math_b4.domain.counting_domain_functions import (
     combination,
@@ -39,6 +39,10 @@ def test_combination_generator_payload_and_answer() -> None:
     assert payload["answer"] == combination(n, r)
     assert "[BLANK]" not in payload["question_text"]
     assert "[BLANK]" not in payload["explanation"]
+    assert "C(n," not in payload["explanation"]
+    assert "C(" not in payload["explanation"]
+    assert "$" in payload["explanation"]
+    assert "C^{" in payload["explanation"]
 
 
 def test_permutation_generator_payload_and_answer() -> None:

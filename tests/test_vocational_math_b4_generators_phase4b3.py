@@ -71,6 +71,10 @@ def test_combination_polygon_count_payload_and_answer() -> None:
     payload = combination_polygon_count(skill_id="s", subskill_id="ss", difficulty=2, seed=20)
     _assert_mc_contract(payload)
     _assert_placeholder_free(payload)
+    assert "C(n," not in payload["explanation"]
+    assert "C(" not in payload["explanation"]
+    assert "$" in payload["explanation"]
+    assert "C^{" in payload["explanation"]
     n = payload["parameters"]["n"]
     variant = payload["parameters"]["question_variant"]
     if variant == "diagonal":
@@ -83,6 +87,10 @@ def test_combination_required_excluded_person_payload_and_answer() -> None:
     payload = combination_required_excluded_person(skill_id="s", subskill_id="ss", difficulty=3, seed=30)
     _assert_mc_contract(payload)
     _assert_placeholder_free(payload)
+    assert "C(n," not in payload["explanation"]
+    assert "C(" not in payload["explanation"]
+    assert "$" in payload["explanation"]
+    assert "C^{" in payload["explanation"]
     n = payload["parameters"]["n"]
     r = payload["parameters"]["r"]
     k = payload["parameters"]["k"]
