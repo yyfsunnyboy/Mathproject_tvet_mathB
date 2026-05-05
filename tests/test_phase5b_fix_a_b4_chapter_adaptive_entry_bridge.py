@@ -57,7 +57,7 @@ def test_dashboard_b4_chapter_card_uses_chapter_mode_link() -> None:
     resp = client.get("/dashboard?view=curriculum&curriculum=vocational&volume=數學B4")
     assert resp.status_code == 200
     body = resp.get_data(as_text=True)
-    assert "/adaptive_practice?mode=chapter&amp;curriculum=vocational&amp;volume=%E6%95%B8%E5%AD%B8B4&amp;chapter_id=1" in body
+    assert "/adaptive_practice?mode=chapter&amp;curriculum=vocational&amp;volume=%E6%95%B8%E5%AD%B8B4&amp;chapter_id=1&amp;learning_mode=teaching&amp;practice_kind=unit_practice" in body
 
 
 def test_chapter_resolver_returns_allowlist_pool() -> None:
@@ -312,3 +312,172 @@ def test_fix_c_non_b4_empty_catalog_keeps_existing_error(monkeypatch) -> None:
     assert resp.status_code == 400
     body = resp.get_json()
     assert "No catalog entries available for the requested adaptive scope" in str(body.get("error") or "")
+
+
+def test_fix_d_b4_chapter_payload_keeps_teaching_practice_context() -> None:
+    app = create_app()
+    app.config.update(TESTING=True)
+    with app.app_context():
+        user = _make_user()
+        uid = user.id
+
+    client = app.test_client()
+    _login(client, uid)
+    resp = client.get(
+        "/adaptive_practice?mode=chapter&curriculum=vocational&volume=數學B4&chapter_id=1&learning_mode=teaching&practice_kind=unit_practice"
+    )
+    assert resp.status_code == 200
+    body = resp.get_data(as_text=True)
+    assert 'const adaptiveEntryMode = "chapter";' in body
+    assert 'const adaptiveLearningMode = "teaching";' in body
+    assert 'const adaptivePracticeKind = "unit_practice";' in body
+    assert 'const runtimeMode = isB4Chapter1Mode ? "teaching" : adaptiveEntryMode;' in body
+
+
+def test_fix_d_b4_teaching_no_auto_stop_after_5_when_textbook_cfg_missing(monkeypatch) -> None:
+    monkeypatch.setattr("core.adaptive.session_engine.load_textbook_progression", lambda skill_id: None)
+    monkeypatch.setattr(
+        "core.adaptive.session_engine._apply_demo_safe_family_filter",
+        lambda entries, mode, system_skill_id: entries,
+    )
+    monkeypatch.setattr(
+        "core.adaptive.session_engine.choose_next_family",
+        lambda **kwargs: kwargs["entries"][0],
+    )
+    monkeypatch.setattr(
+        "core.adaptive.session_engine.load_catalog",
+        lambda path=None: [
+            _entry("vh_數學B4_AdditionPrinciple", "B4_F1", "加法原理"),
+        ],
+    )
+    app = create_app()
+    app.config.update(TESTING=True)
+    with app.app_context():
+        user = _make_user()
+        uid = user.id
+        response = submit_and_get_next(
+            {
+                "student_id": uid,
+                "step_number": 0,
+                "mode": "teaching",
+                "entry_mode": "chapter",
+                "practice_kind": "unit_practice",
+                "learning_mode": "teaching",
+                "curriculum": "vocational",
+                "volume": "數學B4",
+                "chapter_id": "1",
+                "skill_id": "vh_數學B4_AdditionPrinciple",
+                "target_skill_ids": ["vh_數學B4_AdditionPrinciple"],
+                "skill_ids": ["vh_數學B4_AdditionPrinciple"],
+                "unit_skill_ids": ["vh_數學B4_AdditionPrinciple"],
+            }
+        )
+        for step in range(1, 6):
+            response = submit_and_get_next(
+                {
+                    "student_id": uid,
+                    "session_id": response["session_id"],
+                    "step_number": step,
+                    "mode": "teaching",
+                    "entry_mode": "chapter",
+                    "practice_kind": "unit_practice",
+                    "learning_mode": "main",
+                    "curriculum": "vocational",
+                    "volume": "數學B4",
+                    "chapter_id": "1",
+                    "last_family_id": response.get("target_family_id"),
+                    "last_subskills": response.get("target_subskills", []),
+                    "is_correct": True,
+                }
+            )
+    assert response.get("completed") is False
+    assert response.get("mode") == "teaching"
+
+
+def test_fix_d_assessment_mode_keeps_legacy_stop_behavior_when_textbook_cfg_missing(monkeypatch) -> None:
+    monkeypatch.setattr("core.adaptive.session_engine.load_textbook_progression", lambda skill_id: None)
+    monkeypatch.setattr(
+        "core.adaptive.session_engine._apply_demo_safe_family_filter",
+        lambda entries, mode, system_skill_id: entries,
+    )
+    monkeypatch.setattr(
+        "core.adaptive.session_engine.choose_next_family",
+        lambda **kwargs: kwargs["entries"][0],
+    )
+    monkeypatch.setattr(
+        "core.adaptive.session_engine.load_catalog",
+        lambda path=None: [
+            _entry("vh_數學B4_AdditionPrinciple", "B4_F1", "加法原理"),
+        ],
+    )
+    app = create_app()
+    app.config.update(TESTING=True)
+    with app.app_context():
+        user = _make_user()
+        uid = user.id
+        response = submit_and_get_next(
+            {
+                "student_id": uid,
+                "step_number": 0,
+                "mode": "assessment",
+                "skill_id": "vh_數學B4_AdditionPrinciple",
+                "unit_skill_ids": ["vh_數學B4_AdditionPrinciple"],
+            }
+        )
+        for step in range(1, 6):
+            response = submit_and_get_next(
+                {
+                    "student_id": uid,
+                    "session_id": response["session_id"],
+                    "step_number": step,
+                    "mode": "assessment",
+                    "last_family_id": response.get("target_family_id"),
+                    "last_subskills": response.get("target_subskills", []),
+                    "is_correct": True,
+                }
+            )
+            if response.get("completed"):
+                break
+    assert response.get("completed") is True
+    assert response.get("mode") == "assessment"
+
+
+def test_fix_d_teaching_response_preserves_remediation_backtracking_fields(monkeypatch) -> None:
+    monkeypatch.setattr(
+        "core.adaptive.session_engine._apply_demo_safe_family_filter",
+        lambda entries, mode, system_skill_id: entries,
+    )
+    monkeypatch.setattr(
+        "core.adaptive.session_engine.choose_next_family",
+        lambda **kwargs: kwargs["entries"][0],
+    )
+    monkeypatch.setattr(
+        "core.adaptive.session_engine.load_catalog",
+        lambda path=None: [
+            _entry("vh_數學B4_AdditionPrinciple", "B4_F1", "加法原理"),
+        ],
+    )
+    app = create_app()
+    app.config.update(TESTING=True)
+    with app.app_context():
+        user = _make_user()
+        uid = user.id
+        response = submit_and_get_next(
+            {
+                "student_id": uid,
+                "step_number": 0,
+                "mode": "teaching",
+                "entry_mode": "chapter",
+                "practice_kind": "unit_practice",
+                "learning_mode": "main",
+                "curriculum": "vocational",
+                "volume": "數學B4",
+                "chapter_id": "1",
+                "skill_id": "vh_數學B4_AdditionPrinciple",
+                "unit_skill_ids": ["vh_數學B4_AdditionPrinciple"],
+            }
+        )
+    assert isinstance(response.get("routing_state"), dict)
+    assert "return_to_mainline" in response
+    assert "current_mode" in response
+    assert "post_mode" in response

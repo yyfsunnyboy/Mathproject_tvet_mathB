@@ -297,6 +297,8 @@ def adaptive_submit_and_get_next():
             payload["mode"] = "teaching"
             if "learning_mode" not in payload:
                 payload["learning_mode"] = "main"
+            if "practice_kind" not in payload:
+                payload["practice_kind"] = "unit_practice"
             if not str(payload.get("skill_id") or "").strip():
                 payload["skill_id"] = str(payload.get("starter_skill_id") or "").strip()
             target_skill_ids = _normalize_str_list(payload.get("target_skill_ids"))
@@ -337,6 +339,8 @@ def adaptive_submit_and_get_next():
             payload["mode"] = "teaching"
             if "learning_mode" not in payload:
                 payload["learning_mode"] = "main"
+            if "practice_kind" not in payload:
+                payload["practice_kind"] = "unit_practice"
 
         runtime_store = _adaptive_runtime_store()
         session_id = str(payload.get("session_id") or "")

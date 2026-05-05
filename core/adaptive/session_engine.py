@@ -13,6 +13,8 @@ import uuid
 from pathlib import Path
 from typing import Any
 
+from flask import current_app
+
 from models import AdaptiveLearningLog, db
 
 from core.vocational_math_b4.adaptive import b4_chapter1_deterministic_allowlist as _b4_adaptive_allowlist
@@ -97,6 +99,7 @@ ADAPTIVE_USE_FULL_CATALOG: bool = str(os.getenv("ADAPTIVE_USE_FULL_CATALOG", "0"
     "yes",
     "on",
 }
+B4_BRIDGE_RUNTIME_SUBSKILL = "b4_chapter1_bridge_remediation"
 DEMO_SAFE_FAMILIES_BY_AGENT_SKILL: dict[str, set[str]] = {
     "integer_arithmetic": {"I1", "I2", "I3", "I4", "I5", "I7", "I9", "I10"},
     "fraction_arithmetic": {"F11", "F12", "F13"},
@@ -398,7 +401,7 @@ def _filter_entries_for_agent_and_subskill(
     filtered = [
         entry
         for entry in entries
-        if resolve_agent_skill(entry.skill_id) == selected_agent_skill
+        if _resolve_entry_agent_skill(entry.skill_id) == selected_agent_skill
     ]
     if not filtered:
         return [], False, bool(selected_subskill)
@@ -524,11 +527,26 @@ def _build_b4_synthetic_catalog_entries(payload: dict[str, Any]) -> list[Catalog
                 family_id=f"B4C1_SYN_{idx:02d}",
                 family_name=f"B4 Chapter1 Synthetic Family {idx:02d}",
                 theme="b4_generator_synthetic_catalog",
-                subskill_nodes=["b4_chapter1_synthetic_bootstrap"],
+                subskill_nodes=[
+                    _b4_adaptive_allowlist.synthetic_subskill_for_b4_skill(sid),
+                    "b4_chapter1_synthetic_bootstrap",
+                ],
                 notes="source_type=b4_generator_synthetic_catalog",
             )
         )
     return synthetic_entries
+
+
+def _resolve_entry_agent_skill(skill_id: str) -> str:
+    resolved = resolve_agent_skill(skill_id)
+    if resolved:
+        return resolved
+    if (
+        _b4_adaptive_allowlist.is_b4_vocational_skill_id(skill_id)
+        and skill_id in _b4_adaptive_allowlist.B4_CHAPTER_1_ADAPTIVE_SKILL_ALLOWLIST
+    ):
+        return "polynomial_arithmetic"
+    return ""
 
 
 def _apply_demo_safe_family_filter(
@@ -619,7 +637,7 @@ def _pick_demo_entry(
     for entry in entries:
         if entry.family_id != family_key:
             continue
-        entry_agent_skill = resolve_agent_skill(entry.skill_id)
+        entry_agent_skill = _resolve_entry_agent_skill(entry.skill_id)
         if selected_agent_skill and entry_agent_skill != selected_agent_skill:
             continue
         return entry
@@ -1209,16 +1227,28 @@ def _evaluate_unit_completion(
     last_is_correct: bool | None,
     current_apr: float,
     answered_steps: int,
+    disable_legacy_teaching_autostop: bool = False,
 ) -> dict[str, Any]:
     normalized_mode = _normalize_mode(mode)
     if not textbook_cfg:
-        legacy_completed = bool(
-            answered_steps >= MAX_DIAGNOSIS_STEPS
-            or (answered_steps >= MIN_STEPS_BEFORE_EARLY_PASS and current_apr >= TARGET_APR)
-        )
+        if normalized_mode == "assessment":
+            legacy_completed = bool(
+                answered_steps >= MAX_DIAGNOSIS_STEPS
+                or (answered_steps >= MIN_STEPS_BEFORE_EARLY_PASS and current_apr >= TARGET_APR)
+            )
+            legacy_reason = "legacy_default"
+        elif disable_legacy_teaching_autostop:
+            legacy_completed = False
+            legacy_reason = "teaching_no_legacy_autostop"
+        else:
+            legacy_completed = bool(
+                answered_steps >= MAX_DIAGNOSIS_STEPS
+                or (answered_steps >= MIN_STEPS_BEFORE_EARLY_PASS and current_apr >= TARGET_APR)
+            )
+            legacy_reason = "legacy_default"
         return {
             "unit_completed": legacy_completed,
-            "completion_reason": "legacy_default",
+            "completion_reason": legacy_reason,
             "required_core_families": [],
             "covered_core_families": [],
             "passed_core_families": [],
@@ -1929,6 +1959,9 @@ def submit_and_get_next(payload: dict[str, Any]) -> dict[str, Any]:
 
     routing_session = dict(payload.get("routing_state") or {})
     mode = _normalize_mode(payload.get("mode") or routing_session.get("mode"))
+    disable_legacy_teaching_autostop = bool(
+        mode == "teaching" and _is_b4_chapter1_entry_payload(payload)
+    )
     print(f"[DEBUG] mode={mode}", flush=True)
     system_skill_id = str(payload.get("skill_id", "") or "").strip()
     entries = _apply_demo_safe_family_filter(
@@ -2055,6 +2088,7 @@ def submit_and_get_next(payload: dict[str, Any]) -> dict[str, Any]:
         last_is_correct=last_is_correct,
         current_apr=current_apr,
         answered_steps=answered_steps,
+        disable_legacy_teaching_autostop=disable_legacy_teaching_autostop,
     )
     completion_eval["local_remediation_completed"] = local_remediation_completed
     completion_eval.setdefault("assessment_completed", False)
@@ -2144,6 +2178,18 @@ def submit_and_get_next(payload: dict[str, Any]) -> dict[str, Any]:
             or sign_distribution_signal
         )
     )
+    b4_bridge_review_ready = bool(
+        mode == "teaching"
+        and _is_b4_chapter1_entry_payload(payload)
+        and last_is_correct is False
+        and (
+            consecutive_wrong_on_family >= 2
+            or fail_streak >= 2
+            or frustration_index >= 2
+        )
+    )
+    if b4_bridge_review_ready:
+        remediation_review_ready = True
     remediation_triggered_final = False
     return_rule_ready = False
     return_triggered_final = False
@@ -2428,6 +2474,21 @@ def submit_and_get_next(payload: dict[str, Any]) -> dict[str, Any]:
     current_mode = "mainline"
     post_mode = "mainline"
     assessment_breakpoint_detected = False
+    diagnosis: dict[str, Any] = {}
+    action_mask: dict[str, bool] = {"stay": True, "remediate": False, "return": False}
+    route_policy_debug: dict[str, Any] = {}
+    route_action_raw = ""
+    allowed_actions: list[str] = ["stay"]
+    remediation_mastery_source = "none"
+    routing_reward: dict[str, float] = {
+        "correctness_reward": 0.0,
+        "recovery_reward": 0.0,
+        "return_success_reward": 0.0,
+        "stagnation_penalty": 0.0,
+        "unnecessary_route_penalty": 0.0,
+        "missed_remediation_penalty": 0.0,
+        "final_route_reward": 0.0,
+    }
 
     try:
         family_subskill_map = load_family_subskill_map()
@@ -2458,9 +2519,60 @@ def submit_and_get_next(payload: dict[str, Any]) -> dict[str, Any]:
             frustration_index=frustration_index,
             fail_streak=fail_streak,
         )
-        current_skill = resolve_agent_skill(system_skill_id) or "integer_arithmetic"
+        current_skill = _resolve_entry_agent_skill(system_skill_id) or "integer_arithmetic"
         current_subskill = (last_subskills[0] if last_subskills else "")
+        is_b4_chapter1_payload = _is_b4_chapter1_entry_payload(payload)
+        practice_kind = str(payload.get("practice_kind") or "").strip().lower()
+        b4_chapter_bridge_active = bool(mode == "teaching" and is_b4_chapter1_payload)
+        b4_teaching_unit_practice = bool(b4_chapter_bridge_active and practice_kind == "unit_practice")
+        family_to_skill_id = {
+            _normalize_family_id(entry.family_id): str(entry.skill_id or "").strip()
+            for entry in entries
+            if _normalize_family_id(entry.family_id)
+        }
+        current_b4_skill_id = str(
+            family_to_skill_id.get(last_family_id)
+            or payload.get("skill_id")
+            or system_skill_id
+            or ""
+        ).strip()
+        b4_bridge_targets = (
+            _b4_adaptive_allowlist.get_b4_chapter1_remediation_targets(current_b4_skill_id)
+            if b4_chapter_bridge_active
+            else []
+        )
+        b4_bridge_candidates = [
+            {
+                "code": B4_BRIDGE_RUNTIME_SUBSKILL,
+                "runtime_subskill": B4_BRIDGE_RUNTIME_SUBSKILL,
+                "diagnosis_label": B4_BRIDGE_RUNTIME_SUBSKILL,
+                "prereq_skill": "polynomial_arithmetic",
+                "description": f"B4 Chapter1 bridge remediation target: {target}",
+                "candidate_source": "b4_chapter1_deterministic_bridge",
+                "target_skill_id": target,
+            }
+            for target in b4_bridge_targets
+        ]
+        b4_selected_remediation_skill_id = str(routing_session.get("remediation_skill_id") or "").strip()
+        b4_override_applied = False
+        b4_override_reason = "not_applied"
+        if b4_chapter_bridge_active and last_is_correct is False:
+            current_app.logger.info(
+                "[Phase5B-FixE1][b4_remediation_bridge] current_b4_skill_id=%s current_family_id=%s fail_streak=%s consecutive_wrong_on_family=%s frustration_index=%s candidates=%s selected_remediation_skill=%s reason=%s override_applied=%s",
+                current_b4_skill_id,
+                current_family_for_progression,
+                fail_streak,
+                consecutive_wrong_on_family,
+                frustration_index,
+                b4_bridge_targets,
+                b4_selected_remediation_skill_id,
+                "b4_bridge_candidates_evaluated",
+                False,
+            )
         frustration_norm = max(0.0, min(1.0, float(frustration_index) / 3.0))
+        pre_diag_candidates = list(remediation_candidates)
+        if b4_chapter_bridge_active and last_is_correct is False and b4_bridge_candidates:
+            pre_diag_candidates = list(b4_bridge_candidates)
         diagnosis = rag_diagnose(
             current_skill=current_skill,
             current_subskill=current_subskill,
@@ -2473,7 +2585,7 @@ def submit_and_get_next(payload: dict[str, Any]) -> dict[str, Any]:
             frustration=frustration_norm,
             same_skill_streak=agent_state.get("same_skill_streak", 0),
             routing_session=routing_session,
-            prerequisite_candidates=remediation_candidates,
+            prerequisite_candidates=pre_diag_candidates,
             unit_skill_id=system_skill_id,
             enable_choice_diagnosis=bool((not textbook_cfg) and remediation_review_ready),
         )
@@ -2782,6 +2894,75 @@ def submit_and_get_next(payload: dict[str, Any]) -> dict[str, Any]:
             why_remediate_masked = "ppo_chose_stay"
 
         if (
+            b4_chapter_bridge_active
+            and b4_teaching_unit_practice
+            and current_mode == "mainline"
+            and (not in_remediation)
+            and route_action == "stay"
+            and (
+                fail_streak >= 2
+                or consecutive_wrong_on_family >= 2
+                or frustration_index >= 3
+            )
+            and b4_bridge_candidates
+        ):
+            remediation_review_ready = True
+            route_action = "remediate"
+            why_remediate_masked = "b4_bridge_safety_override"
+            b4_override_applied = True
+            b4_override_reason = "b4_teaching_repeat_wrong_override"
+            b4_selected_remediation_skill_id = str(
+                b4_bridge_candidates[0].get("target_skill_id") or ""
+            ).strip()
+            current_app.logger.info(
+                "[Phase5B-FixE1][b4_remediation_bridge] current_b4_skill_id=%s current_family_id=%s fail_streak=%s consecutive_wrong_on_family=%s frustration_index=%s candidates=%s selected_remediation_skill=%s reason=%s override_applied=%s",
+                current_b4_skill_id,
+                current_family_for_progression,
+                fail_streak,
+                consecutive_wrong_on_family,
+                frustration_index,
+                b4_bridge_targets,
+                b4_selected_remediation_skill_id,
+                b4_override_reason,
+                b4_override_applied,
+            )
+
+        if (
+            b4_chapter_bridge_active
+            and current_mode == "mainline"
+            and route_action == "remediate"
+            and b4_bridge_candidates
+        ):
+            remediation_candidates = list(b4_bridge_candidates)
+            remediation_candidate_labels = [
+                str(item.get("runtime_subskill") or "").strip()
+                for item in remediation_candidates
+                if isinstance(item, dict)
+            ]
+            candidate_source = "b4_chapter1_deterministic_bridge"
+            if not b4_selected_remediation_skill_id:
+                b4_selected_remediation_skill_id = str(
+                    remediation_candidates[0].get("target_skill_id") or ""
+                ).strip()
+            diagnosis["suggested_prereq_skill"] = "polynomial_arithmetic"
+            diagnosis["suggested_prereq_subskill"] = B4_BRIDGE_RUNTIME_SUBSKILL
+            diagnosis["selected_prereq_skill"] = diagnosis.get("selected_prereq_skill") or diagnosis["suggested_prereq_skill"]
+            diagnosis["selected_prereq_subskill"] = diagnosis.get("selected_prereq_subskill") or diagnosis["suggested_prereq_subskill"]
+            diagnosis["remediation_triggered"] = True
+            current_app.logger.info(
+                "[Phase5B-FixE1][b4_remediation_bridge] current_b4_skill_id=%s current_family_id=%s fail_streak=%s consecutive_wrong_on_family=%s frustration_index=%s candidates=%s selected_remediation_skill=%s reason=%s override_applied=%s",
+                current_b4_skill_id,
+                current_family_for_progression,
+                fail_streak,
+                consecutive_wrong_on_family,
+                frustration_index,
+                b4_bridge_targets,
+                b4_selected_remediation_skill_id,
+                "b4_chapter1_repeated_wrong_bridge",
+                b4_override_applied,
+            )
+
+        if (
             textbook_cfg
             and current_mode == "mainline"
             and route_action == "remediate"
@@ -2919,6 +3100,18 @@ def submit_and_get_next(payload: dict[str, Any]) -> dict[str, Any]:
         selected_agent_skill = routed_skill
         route_subskill_override = routed_subskill
         post_in_remediation = bool(routing_session.get("in_remediation", False))
+        if b4_chapter_bridge_active and post_in_remediation:
+            if not b4_selected_remediation_skill_id:
+                b4_selected_remediation_skill_id = str(
+                    routing_session.get("remediation_skill_id") or ""
+                ).strip()
+            if not b4_selected_remediation_skill_id and b4_bridge_candidates:
+                b4_selected_remediation_skill_id = str(
+                    b4_bridge_candidates[0].get("target_skill_id") or ""
+                ).strip()
+            if b4_selected_remediation_skill_id:
+                routing_session["remediation_skill_id"] = b4_selected_remediation_skill_id
+                routing_session["remediation_subskill"] = B4_BRIDGE_RUNTIME_SUBSKILL
         post_mode = "remediation" if post_in_remediation else "mainline"
         post_bridge_remaining = int(routing_session.get("bridge_remaining", 0) or 0)
         entered_remediation = (not bool(in_remediation)) and post_in_remediation
@@ -3207,6 +3400,22 @@ def submit_and_get_next(payload: dict[str, Any]) -> dict[str, Any]:
             route_debug["cross_skill_pool"] = "global_catalog"
         route_debug["subskill_filter_hit"] = subskill_filter_hit
         route_debug["fallback_to_skill_only"] = fallback_to_skill_only
+        active_b4_remediation_skill_id = str(routing_session.get("remediation_skill_id") or "").strip()
+        if (
+            b4_chapter_bridge_active
+            and post_mode == "remediation"
+            and active_b4_remediation_skill_id
+        ):
+            forced_b4_entries = [
+                entry for entry in entries
+                if str(entry.skill_id or "").strip() == active_b4_remediation_skill_id
+            ]
+            if forced_b4_entries:
+                phase1_entries = forced_b4_entries
+                selected_subskill = B4_BRIDGE_RUNTIME_SUBSKILL
+                route_subskill_override = B4_BRIDGE_RUNTIME_SUBSKILL
+                route_debug["b4_forced_remediation_skill_id"] = active_b4_remediation_skill_id
+                route_debug["b4_forced_remediation_entry_count"] = len(forced_b4_entries)
         mapping_candidates = [f"{entry.skill_id}:{entry.family_id}" for entry in phase1_entries]
         decision_trace["mapping_candidates"] = mapping_candidates
         next_entry = None
@@ -3764,6 +3973,11 @@ def submit_and_get_next(payload: dict[str, Any]) -> dict[str, Any]:
         "current_mode": post_mode,
         "mode_before_decision": current_mode,
         "post_mode": post_mode,
+        "in_remediation": bool(routing_session.get("in_remediation", False)),
+        "remediation_skill": str(routing_session.get("remediation_skill_id") or routing_session.get("remediation_skill") or ""),
+        "remediation_subskill": str(routing_session.get("remediation_subskill") or ""),
+        "route_action": route_action,
+        "ppo_action": route_action,
         "remediation_review_ready": remediation_review_ready,
         "sign_distribution_signal": sign_distribution_signal,
         "f2_sign_distribution_signal": sign_distribution_signal,

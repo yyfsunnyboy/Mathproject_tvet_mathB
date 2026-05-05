@@ -63,6 +63,63 @@ B4_CHAPTER_1_ADAPTIVE_STARTER_SKILL_ORDER: tuple[str, ...] = (
     "vh_數學B4_CombinationDefinition",
 )
 
+# Phase 5B-Fix-E:
+# Minimal deterministic remediation bridge for B4 Chapter 1 teaching path.
+# Keep routes inside deterministic allowlist and avoid manual_review/future_ai_judged skills.
+B4_CHAPTER_1_REMEDIATION_BRIDGE: dict[str, tuple[str, ...]] = {
+    "vh_數學B4_AdditionPrinciple": (
+        "vh_數學B4_AdditionPrinciple",
+    ),
+    "vh_數學B4_MultiplicationPrinciple": (
+        "vh_數學B4_AdditionPrinciple",
+        "vh_數學B4_MultiplicationPrinciple",
+    ),
+    "vh_數學B4_FactorialNotation": (
+        "vh_數學B4_MultiplicationPrinciple",
+        "vh_數學B4_FactorialNotation",
+    ),
+    "vh_數學B4_PermutationOfDistinctObjects": (
+        "vh_數學B4_FactorialNotation",
+        "vh_數學B4_MultiplicationPrinciple",
+    ),
+    "vh_數學B4_RepeatedPermutation": (
+        "vh_數學B4_MultiplicationPrinciple",
+        "vh_數學B4_PermutationOfDistinctObjects",
+    ),
+    "vh_數學B4_PermutationWithRepetition": (
+        "vh_數學B4_PermutationOfDistinctObjects",
+        "vh_數學B4_MultiplicationPrinciple",
+    ),
+    "vh_數學B4_PermutationOfNonDistinctObjects": (
+        "vh_數學B4_FactorialNotation",
+        "vh_數學B4_PermutationOfDistinctObjects",
+    ),
+    "vh_數學B4_CombinationDefinition": (
+        "vh_數學B4_MultiplicationPrinciple",
+        "vh_數學B4_AdditionPrinciple",
+    ),
+    "vh_數學B4_CombinationApplications": (
+        "vh_數學B4_CombinationDefinition",
+        "vh_數學B4_MultiplicationPrinciple",
+    ),
+    "vh_數學B4_CombinationProperties": (
+        "vh_數學B4_CombinationDefinition",
+        "vh_數學B4_CombinationApplications",
+    ),
+    "vh_數學B4_Combination": (
+        "vh_數學B4_CombinationDefinition",
+        "vh_數學B4_CombinationProperties",
+    ),
+    "vh_數學B4_BinomialCoefficientIdentities": (
+        "vh_數學B4_CombinationDefinition",
+        "vh_數學B4_CombinationProperties",
+    ),
+    "vh_數學B4_BinomialTheorem": (
+        "vh_數學B4_BinomialCoefficientIdentities",
+        "vh_數學B4_CombinationDefinition",
+    ),
+}
+
 
 def is_b4_vocational_skill_id(skill_id: str) -> bool:
     return isinstance(skill_id, str) and skill_id.startswith(B4_SKILL_PREFIX)
@@ -221,3 +278,22 @@ def starter_b4_candidates(skill_ids: list[str]) -> list[str]:
     pool = set(skill_ids)
     ordered = [sid for sid in B4_CHAPTER_1_ADAPTIVE_STARTER_SKILL_ORDER if sid in pool]
     return ordered
+
+
+def synthetic_subskill_for_b4_skill(skill_id: str) -> str:
+    sid = str(skill_id or "").strip()
+    return f"b4_skill::{sid}" if sid else "b4_chapter1_synthetic_bootstrap"
+
+
+def get_b4_chapter1_remediation_targets(skill_id: str) -> list[str]:
+    sid = str(skill_id or "").strip()
+    targets = list(B4_CHAPTER_1_REMEDIATION_BRIDGE.get(sid) or ())
+    out = [
+        target
+        for target in targets
+        if target in B4_CHAPTER_1_ADAPTIVE_SKILL_ALLOWLIST
+        and target not in B4_MANUAL_REVIEW_OR_UNAVAILABLE_SKILL_IDS
+    ]
+    if not out and sid in B4_CHAPTER_1_ADAPTIVE_SKILL_ALLOWLIST:
+        out = [sid]
+    return out

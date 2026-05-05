@@ -194,6 +194,8 @@ def adaptive_practice_page():
     curriculum = request.args.get('curriculum', '')
     volume = request.args.get('volume', '')
     chapter_id = request.args.get('chapter_id', '')
+    learning_mode = request.args.get('learning_mode', '')
+    practice_kind = request.args.get('practice_kind', '')
 
     chapter_bridge, chapter_bridge_hit = _resolve_b4_chapter_adaptive_entry(
         mode=mode,
@@ -208,6 +210,10 @@ def adaptive_practice_page():
         volume = str(chapter_bridge.get("volume") or volume)
         chapter_id = str(chapter_bridge.get("chapter_id") or chapter_id)
         skill_id = str(chapter_bridge.get("starter_skill_id") or skill_id)
+        if not learning_mode:
+            learning_mode = "teaching"
+        if not practice_kind:
+            practice_kind = "unit_practice"
     
     unit_name = "自適應練習"
     if mode == 'single':
@@ -242,6 +248,8 @@ def adaptive_practice_page():
                            curriculum=curriculum,
                            chapter_id=chapter_id,
                            volume=volume,
+                           learning_mode=learning_mode,
+                           practice_kind=practice_kind,
                            unit_skill_ids=chapter_bridge.get("unit_skill_ids", []) if chapter_bridge_hit else [],
                            bootstrap_unit_skill_ids=chapter_bridge.get("bootstrap_unit_skill_ids", []) if chapter_bridge_hit else [],
                            chapter_bridge_compat_used=bool(chapter_bridge.get("compat_path_used", False)) if chapter_bridge_hit else False)

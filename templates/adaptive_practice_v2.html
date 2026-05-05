@@ -812,6 +812,8 @@
     const adaptiveCurriculum = {{ (curriculum or '')|tojson }};
     const adaptiveVolume = {{ (volume or '')|tojson }};
     const adaptiveChapterId = {{ (chapter_id or '')|tojson }};
+    const adaptiveLearningMode = {{ (learning_mode or '')|tojson }};
+    const adaptivePracticeKind = {{ (practice_kind or '')|tojson }};
     const starterSkillId = {{ (starter_skill_id or '')|tojson }};
     const unitSkillIds = {{ (unit_skill_ids or [])|tojson }};
     const bootstrapUnitSkillIds = {{ (bootstrap_unit_skill_ids or [])|tojson }};
@@ -828,6 +830,8 @@
     if (initialSkillId) basePayload.skill_id = initialSkillId;
     if (runtimeMode) basePayload.mode = runtimeMode;
     if (isB4Chapter1Mode) basePayload.entry_mode = "chapter";
+    if (adaptiveLearningMode) basePayload.learning_mode = adaptiveLearningMode;
+    if (adaptivePracticeKind) basePayload.practice_kind = adaptivePracticeKind;
     if (adaptiveCurriculum) basePayload.curriculum = adaptiveCurriculum;
     if (adaptiveVolume) basePayload.volume = adaptiveVolume;
     if (adaptiveChapterId) basePayload.chapter_id = adaptiveChapterId;
@@ -2569,15 +2573,15 @@
         passed
           ? (state.mode === "teaching" && polyTeachingSkill
             ? (summary?.message || "你已完成本單元多項式教學主線（含 F10 除法原理回推）。")
-            : "你已完成本單元自適應診斷。")
+            : "本輪練習已完成，系統建議你繼續補強或進入下一輪。")
           : (midPolyTeaching
             ? (summary?.message || "主線進行中，請繼續下一個核心題型（長除法 F9 → 反推除法 F10）。")
-            : "本次診斷已完成，請先看補強建議。"),
+            : "本輪練習暫告一段落，系統已整理補強建議。"),
       );
       setText("questionContext", "");
       const subskillsBox = document.getElementById("subskillsBox");
       if (subskillsBox) subskillsBox.innerHTML = "";
-      setStatus(`本次診斷已結束。模式：${toLearningModeLabel(state.learningMode)}`);
+      setStatus(`本輪流程已結束。模式：${toLearningModeLabel(state.learningMode)}`);
       if (state.mode === "assessment" && state.assessmentCompleted && state.assessmentStopReason === "stable_breakpoint_detected") {
         setAssistantBanner("本輪診斷完成，系統已確認你目前的學習斷點，建議切換教學模式補強。", false, "completed");
       } else if (state.mode === "assessment" && state.assessmentCompleted) {
@@ -2657,6 +2661,7 @@
           }
           if (starterSkillId) bootstrapPayload.starter_skill_id = starterSkillId;
           bootstrapPayload.learning_mode = "main";
+          if (!bootstrapPayload.practice_kind) bootstrapPayload.practice_kind = "unit_practice";
         }
         if (!isB4Chapter1Mode && Array.isArray(bootstrapUnitSkillIds) && bootstrapUnitSkillIds.length) {
           bootstrapPayload.unit_skill_ids = bootstrapUnitSkillIds;
