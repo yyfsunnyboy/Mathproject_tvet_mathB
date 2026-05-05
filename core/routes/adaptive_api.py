@@ -74,6 +74,22 @@ def _to_int(value: object, default: int = 0) -> int:
         return int(default)
 
 
+def _normalize_str_list(value: object) -> list[str]:
+    if isinstance(value, list):
+        out: list[str] = []
+        for item in value:
+            text = str(item or "").strip()
+            if text:
+                out.append(text)
+        return out
+    if isinstance(value, str):
+        raw = value.strip()
+        if not raw:
+            return []
+        return [part.strip() for part in raw.replace(",", ";").split(";") if part.strip()]
+    return []
+
+
 def _slim_routing_state(raw: object) -> dict:
     if not isinstance(raw, dict):
         return {}
@@ -255,6 +271,73 @@ def adaptive_submit_and_get_next():
         payload["student_id"] = current_user.id
 
     try:
+        raw_mode = str(payload.get("mode") or "").strip().lower()
+        raw_curriculum = str(payload.get("curriculum") or "").strip().lower()
+        raw_volume = str(payload.get("volume") or "").strip()
+        raw_chapter_id = str(payload.get("chapter_id") or "").strip()
+        raw_entry_mode = str(payload.get("entry_mode") or "").strip().lower()
+        raw_step_number = _to_int(payload.get("step_number"), 0)
+        raw_session_id = str(payload.get("session_id") or "").strip()
+
+        is_b4_chapter_entry = (
+            (raw_entry_mode == "chapter" or raw_mode == "chapter")
+            and raw_curriculum == "vocational"
+            and raw_volume == "數學B4"
+            and raw_chapter_id == "1"
+        )
+        is_b4_chapter_bootstrap = is_b4_chapter_entry and raw_step_number == 0 and not raw_session_id
+
+        if is_b4_chapter_bootstrap:
+            # Bootstrap first-question path: should not be treated as answer-submission path.
+            payload.pop("session_id", None)
+            payload.pop("user_answer", None)
+            payload.pop("is_correct", None)
+            payload.pop("answer_feedback", None)
+            payload["entry_mode"] = "chapter"
+            payload["mode"] = "teaching"
+            if "learning_mode" not in payload:
+                payload["learning_mode"] = "main"
+            if not str(payload.get("skill_id") or "").strip():
+                payload["skill_id"] = str(payload.get("starter_skill_id") or "").strip()
+            target_skill_ids = _normalize_str_list(payload.get("target_skill_ids"))
+            skill_ids = _normalize_str_list(payload.get("skill_ids"))
+            unit_skill_ids = _normalize_str_list(payload.get("unit_skill_ids"))
+            if not target_skill_ids:
+                target_skill_ids = skill_ids or unit_skill_ids
+            if not skill_ids:
+                skill_ids = target_skill_ids or unit_skill_ids
+            if not unit_skill_ids:
+                unit_skill_ids = target_skill_ids or skill_ids
+            payload["target_skill_ids"] = target_skill_ids
+            payload["skill_ids"] = skill_ids
+            payload["unit_skill_ids"] = unit_skill_ids
+            try:
+                current_app.logger.info(
+                    "[Phase5B-FixC][b4_chapter_bootstrap] detected entry_mode=%s mode=%s step_number=%s session_id=%s skill_id=%s target_skill_ids_count=%s unit_skill_ids_count=%s received_keys=%s",
+                    payload.get("entry_mode"),
+                    payload.get("mode"),
+                    payload.get("step_number"),
+                    bool(raw_session_id),
+                    payload.get("skill_id"),
+                    len(target_skill_ids),
+                    len(unit_skill_ids),
+                    sorted(payload.keys()),
+                )
+            except Exception:
+                pass
+
+        if (
+            raw_mode == "chapter"
+            and raw_curriculum == "vocational"
+            and raw_volume == "數學B4"
+            and raw_chapter_id == "1"
+        ):
+            # Payload bridge: keep chapter context fields but normalize runtime mode for session_engine.
+            payload["entry_mode"] = "chapter"
+            payload["mode"] = "teaching"
+            if "learning_mode" not in payload:
+                payload["learning_mode"] = "main"
+
         runtime_store = _adaptive_runtime_store()
         session_id = str(payload.get("session_id") or "")
         runtime = runtime_store.get(session_id, {}) if session_id else {}
@@ -334,7 +417,42 @@ def adaptive_submit_and_get_next():
             pass
         session.modified = True
     except ValueError as exc:
-        return jsonify({"error": str(exc)}), 400
+        required_any_skill_scope = bool(
+            str(payload.get("skill_id") or "").strip()
+            or (isinstance(payload.get("unit_skill_ids"), list) and len(payload.get("unit_skill_ids")) > 0)
+            or (isinstance(payload.get("target_skill_ids"), list) and len(payload.get("target_skill_ids")) > 0)
+            or (isinstance(payload.get("skill_ids"), list) and len(payload.get("skill_ids")) > 0)
+        )
+        missing_fields: list[str] = []
+        if "step_number" not in payload:
+            missing_fields.append("step_number")
+        if "student_id" not in payload:
+            missing_fields.append("student_id")
+        if not required_any_skill_scope:
+            missing_fields.append("skill_scope(skill_id|unit_skill_ids|target_skill_ids|skill_ids)")
+        return jsonify(
+            {
+                "error": str(exc),
+                "received_keys": sorted(payload.keys()),
+                "missing_fields": missing_fields,
+                "mode": str(payload.get("mode") or ""),
+                "entry_mode": str(payload.get("entry_mode") or ""),
+                "step_number": payload.get("step_number"),
+                "skill_id": str(payload.get("skill_id") or ""),
+                "target_skill_ids_count": (
+                    len(payload.get("target_skill_ids"))
+                    if isinstance(payload.get("target_skill_ids"), list)
+                    else 0
+                ),
+                "unit_skill_ids_count": (
+                    len(payload.get("unit_skill_ids"))
+                    if isinstance(payload.get("unit_skill_ids"), list)
+                    else 0
+                ),
+                "internal_exception_type": type(exc).__name__,
+                "internal_exception_message": str(exc),
+            }
+        ), 400
     except Exception as exc:
         return jsonify({"error": f"adaptive engine failure: {exc}"}), 500
     response["demo_route_msg"] = _build_demo_route_msg(response, payload)

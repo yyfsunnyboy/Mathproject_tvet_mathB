@@ -467,6 +467,70 @@ def _select_entries(payload: dict[str, Any]) -> list[CatalogEntry]:
     return entries
 
 
+def _is_b4_chapter1_entry_payload(payload: dict[str, Any]) -> bool:
+    entry_mode = str(payload.get("entry_mode") or "").strip().lower()
+    mode = str(payload.get("mode") or "").strip().lower()
+    curriculum = str(payload.get("curriculum") or "").strip().lower()
+    volume = str(payload.get("volume") or "").strip()
+    chapter_id = str(payload.get("chapter_id") or "").strip()
+    return (
+        (entry_mode == "chapter" or mode == "chapter" or entry_mode == "chapter" and mode == "teaching")
+        and curriculum == "vocational"
+        and volume == "數學B4"
+        and chapter_id == "1"
+    )
+
+
+def _normalize_skill_id_list(raw: Any) -> list[str]:
+    if isinstance(raw, list):
+        out: list[str] = []
+        for item in raw:
+            sid = str(item or "").strip()
+            if sid:
+                out.append(sid)
+        return out
+    if isinstance(raw, str):
+        text = raw.strip()
+        if not text:
+            return []
+        return [part.strip() for part in text.replace(",", ";").split(";") if part.strip()]
+    return []
+
+
+def _build_b4_synthetic_catalog_entries(payload: dict[str, Any]) -> list[CatalogEntry]:
+    requested_ids: list[str] = []
+    for key in ("target_skill_ids", "unit_skill_ids", "skill_ids"):
+        requested_ids.extend(_normalize_skill_id_list(payload.get(key)))
+    starter_sid = str(payload.get("skill_id") or payload.get("starter_skill_id") or "").strip()
+    if starter_sid:
+        requested_ids.insert(0, starter_sid)
+    deduped: list[str] = []
+    seen: set[str] = set()
+    for sid in requested_ids:
+        if sid not in seen:
+            seen.add(sid)
+            deduped.append(sid)
+    allowlisted = [
+        sid
+        for sid in deduped
+        if sid in _b4_adaptive_allowlist.B4_CHAPTER_1_ADAPTIVE_SKILL_ALLOWLIST
+    ]
+    synthetic_entries: list[CatalogEntry] = []
+    for idx, sid in enumerate(allowlisted, start=1):
+        synthetic_entries.append(
+            CatalogEntry(
+                skill_id=sid,
+                skill_name=sid,
+                family_id=f"B4C1_SYN_{idx:02d}",
+                family_name=f"B4 Chapter1 Synthetic Family {idx:02d}",
+                theme="b4_generator_synthetic_catalog",
+                subskill_nodes=["b4_chapter1_synthetic_bootstrap"],
+                notes="source_type=b4_generator_synthetic_catalog",
+            )
+        )
+    return synthetic_entries
+
+
 def _apply_demo_safe_family_filter(
     entries: list[CatalogEntry],
     *,
@@ -738,6 +802,8 @@ def _maybe_finalize_b4_validated_generator_layer(
     raw: dict[str, Any],
     entry: CatalogEntry,
     layer_source: str,
+    *,
+    reject_audits: list[dict[str, Any]] | None = None,
 ) -> dict[str, Any] | None:
     normalized = _normalize_question_payload(raw, entry, layer_source)
     ok, reason = _b4_session_engine_payload_gate(entry, normalized)
@@ -748,6 +814,15 @@ def _maybe_finalize_b4_validated_generator_layer(
             layer_source,
             reason,
         )
+        if isinstance(reject_audits, list):
+            reject_audits.append(
+                {
+                    "skill_id": entry.skill_id,
+                    "family_id": entry.family_id,
+                    "layer": layer_source,
+                    "reason": str(reason or ""),
+                }
+            )
         return None
     if (
         _b4_adaptive_allowlist.is_b4_vocational_skill_id(entry.skill_id)
@@ -872,12 +947,18 @@ def _generate_question_payload(entry: CatalogEntry, *, selected_subskill: str | 
     final_source = "catalog_fallback"
     resolved_generator_key = f"{entry.skill_id}:{entry.family_id}:{entry.family_name}"
     fallback_reason = "none"
+    b4_gate_reject_audits: list[dict[str, Any]] = []
 
     question: dict[str, Any] | None = None
     try:
         question = generate_micro_question(entry)
         if question and not _looks_like_stub_question(question):
-            finalized = _maybe_finalize_b4_validated_generator_layer(question, entry, "micro_generator")
+            finalized = _maybe_finalize_b4_validated_generator_layer(
+                question,
+                entry,
+                "micro_generator",
+                reject_audits=b4_gate_reject_audits,
+            )
             if finalized is not None:
                 micro_status = "success"
                 final_source = "micro_generator"
@@ -920,7 +1001,12 @@ def _generate_question_payload(entry: CatalogEntry, *, selected_subskill: str | 
     if bridge_success:
         question = script_result.get("payload")
         if isinstance(question, dict) and not _looks_like_stub_question(question):
-            finalized = _maybe_finalize_b4_validated_generator_layer(question, entry, "script_dispatch")
+            finalized = _maybe_finalize_b4_validated_generator_layer(
+                question,
+                entry,
+                "script_dispatch",
+                reject_audits=b4_gate_reject_audits,
+            )
             if finalized is not None:
                 script_bridge_status = "success"
                 final_source = "script_dispatch"
@@ -957,7 +1043,12 @@ def _generate_question_payload(entry: CatalogEntry, *, selected_subskill: str | 
     try:
         question = _load_question_from_skill_module(entry.skill_id)
         if question and not _looks_like_stub_question(question):
-            finalized = _maybe_finalize_b4_validated_generator_layer(question, entry, "skill_module")
+            finalized = _maybe_finalize_b4_validated_generator_layer(
+                question,
+                entry,
+                "skill_module",
+                reject_audits=b4_gate_reject_audits,
+            )
             if finalized is not None:
                 skill_module_status = "success"
                 final_source = "skill_module"
@@ -1009,7 +1100,16 @@ def _generate_question_payload(entry: CatalogEntry, *, selected_subskill: str | 
         "catalog_fallback",
         fallback_reason,
     )
-    return _normalize_question_payload(_build_fallback_question(entry), entry, "catalog_fallback")
+    fallback_payload = _normalize_question_payload(_build_fallback_question(entry), entry, "catalog_fallback")
+    if b4_gate_reject_audits:
+        fallback_payload["adaptive_audit"] = {
+            "skill_id": entry.skill_id,
+            "source_type": "session_engine_b4_gate_rejected",
+            "reject_count": len(b4_gate_reject_audits),
+            "reject_audits": b4_gate_reject_audits,
+            "fallback_reason": fallback_reason,
+        }
+    return fallback_payload
 
 
 def _get_previous_log(student_id: int, session_id: str) -> AdaptiveLearningLog | None:
@@ -1841,6 +1941,26 @@ def submit_and_get_next(payload: dict[str, Any]) -> dict[str, Any]:
     )
     if b4_catalog_audit:
         POLICY_LOGGER.info("[b4_session_allowlist] catalog_filter_audit=%s", b4_catalog_audit)
+    if not entries and _is_b4_chapter1_entry_payload(payload):
+        synthetic_entries = _build_b4_synthetic_catalog_entries(payload)
+        synthetic_entries, b4_synth_audit = (
+            _b4_adaptive_allowlist.filter_catalog_entries_for_b4_chapter1_deterministic_adaptive(synthetic_entries)
+        )
+        entries = synthetic_entries
+        POLICY_LOGGER.info(
+            "[Phase5B-FixC][b4_synthetic_catalog] requested_skill_ids_count=%s synthetic_entries_count=%s source_type=%s",
+            len(
+                set(
+                    _normalize_skill_id_list(payload.get("target_skill_ids"))
+                    + _normalize_skill_id_list(payload.get("unit_skill_ids"))
+                    + _normalize_skill_id_list(payload.get("skill_ids"))
+                )
+            ),
+            len(entries),
+            "b4_generator_synthetic_catalog",
+        )
+        if b4_synth_audit:
+            POLICY_LOGGER.info("[Phase5B-FixC][b4_synthetic_catalog] synthetic_filter_audit=%s", b4_synth_audit)
     if not entries:
         raise ValueError("No catalog entries available for the requested adaptive scope")
     family_name_by_id = {
@@ -3422,6 +3542,7 @@ def submit_and_get_next(payload: dict[str, Any]) -> dict[str, Any]:
     raw_question_payload: dict[str, Any] | None = None
     source_hint = "unknown"
     error_hint = ""
+    b4_retry_audit: list[dict[str, Any]] = []
     try:
         raw_question_payload = _generate_question_payload(next_entry, selected_subskill=selected_subskill)
         if isinstance(raw_question_payload, dict):
@@ -3437,12 +3558,83 @@ def submit_and_get_next(payload: dict[str, Any]) -> dict[str, Any]:
             f"[adaptive][question] family={next_entry.family_id} source=question_generation status=error error={exc}",
             flush=True,
         )
+
+    is_b4_allowlisted_entry = (
+        _b4_adaptive_allowlist.is_b4_vocational_skill_id(next_entry.skill_id)
+        and next_entry.skill_id in _b4_adaptive_allowlist.B4_CHAPTER_1_ADAPTIVE_SKILL_ALLOWLIST
+    )
+    reject_audits = []
+    if isinstance(raw_question_payload, dict):
+        reject_audits = list(
+            ((raw_question_payload.get("adaptive_audit") or {}).get("reject_audits") or [])
+        )
+
+    if (
+        is_b4_allowlisted_entry
+        and isinstance(raw_question_payload, dict)
+        and str(raw_question_payload.get("source") or "") == "catalog_fallback"
+        and reject_audits
+    ):
+        b4_retry_audit.append(
+            {
+                "skill_id": next_entry.skill_id,
+                "family_id": next_entry.family_id,
+                "result": "rejected",
+                "reason": "validator_rejected_payload",
+                "reject_audits": reject_audits,
+            }
+        )
+        retry_candidates = [
+            entry
+            for entry in entries
+            if (
+                entry.skill_id != next_entry.skill_id
+                and _b4_adaptive_allowlist.is_b4_vocational_skill_id(entry.skill_id)
+                and entry.skill_id in _b4_adaptive_allowlist.B4_CHAPTER_1_ADAPTIVE_SKILL_ALLOWLIST
+            )
+        ]
+        max_b4_retries = min(2, len(retry_candidates))
+        for retry_idx in range(max_b4_retries):
+            retry_entry = retry_candidates[retry_idx]
+            retry_payload = _generate_question_payload(retry_entry, selected_subskill=selected_subskill)
+            retry_source = str((retry_payload or {}).get("source") or "")
+            retry_reject_audits = list(
+                (((retry_payload or {}).get("adaptive_audit") or {}).get("reject_audits") or [])
+            )
+            if retry_source != "catalog_fallback":
+                b4_retry_audit.append(
+                    {
+                        "skill_id": retry_entry.skill_id,
+                        "family_id": retry_entry.family_id,
+                        "result": "accepted",
+                        "reason": "retry_success",
+                    }
+                )
+                next_entry = retry_entry
+                raw_question_payload = retry_payload
+                source_hint = str(raw_question_payload.get("source") or "generated")
+                break
+            b4_retry_audit.append(
+                {
+                    "skill_id": retry_entry.skill_id,
+                    "family_id": retry_entry.family_id,
+                    "result": "rejected",
+                    "reason": "validator_rejected_payload",
+                    "reject_audits": retry_reject_audits,
+                }
+            )
     question_payload = _ensure_safe_question_payload(
         raw_question_payload,
         entry=next_entry,
         source_hint=source_hint,
         error_hint=error_hint,
     )
+    if b4_retry_audit:
+        adaptive_audit = question_payload.get("adaptive_audit")
+        if not isinstance(adaptive_audit, dict):
+            adaptive_audit = {}
+            question_payload["adaptive_audit"] = adaptive_audit
+        adaptive_audit["b4_retry_attempts"] = b4_retry_audit
     latency_ms = int((time.perf_counter() - started) * 1000)
 
     resolved_target_subskills = list(next_entry.subskill_nodes)

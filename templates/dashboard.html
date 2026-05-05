@@ -452,7 +452,7 @@
                         <h3>{{ ch.display }}</h3>
                     </div>
                 </a>
-                <a href="{{ url_for('practice.adaptive_practice_page', mode='single', skill_ids=ch.raw) }}"
+                <a href="{{ url_for('practice.adaptive_practice_page', mode='chapter', curriculum=curriculum, volume=volume, chapter_id='1') if curriculum == 'vocational' and volume == '數學B4' and ch.display.startswith('1') else url_for('practice.adaptive_practice_page', mode='single', skill_ids=ch.raw) }}"
                     class="btn-practice"
                     style="background-color: #28a745; text-decoration: none; padding: 8px; font-size: 0.9em;">
                     單元練習

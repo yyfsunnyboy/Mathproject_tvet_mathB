@@ -809,10 +809,42 @@
     };
     const skillId = {{ (skill_id or '')|tojson }};
     const adaptiveEntryMode = {{ mode|default('teaching')|tojson }};
+    const adaptiveCurriculum = {{ (curriculum or '')|tojson }};
+    const adaptiveVolume = {{ (volume or '')|tojson }};
+    const adaptiveChapterId = {{ (chapter_id or '')|tojson }};
+    const starterSkillId = {{ (starter_skill_id or '')|tojson }};
+    const unitSkillIds = {{ (unit_skill_ids or [])|tojson }};
+    const bootstrapUnitSkillIds = {{ (bootstrap_unit_skill_ids or [])|tojson }};
+    const chapterBridgeCompatUsed = {{ (chapter_bridge_compat_used or False)|tojson }};
     const basePayload = {};
-    if (skillId) basePayload.skill_id = skillId;
-    if (adaptiveEntryMode) basePayload.mode = adaptiveEntryMode;
-    state.mode = String(adaptiveEntryMode || "teaching").toLowerCase();
+    const isB4Chapter1Mode = (
+      String(adaptiveEntryMode || "").toLowerCase() === "chapter"
+      && String(adaptiveCurriculum || "").toLowerCase() === "vocational"
+      && String(adaptiveVolume || "") === "數學B4"
+      && String(adaptiveChapterId || "") === "1"
+    );
+    const runtimeMode = isB4Chapter1Mode ? "teaching" : adaptiveEntryMode;
+    const initialSkillId = starterSkillId || skillId;
+    if (initialSkillId) basePayload.skill_id = initialSkillId;
+    if (runtimeMode) basePayload.mode = runtimeMode;
+    if (isB4Chapter1Mode) basePayload.entry_mode = "chapter";
+    if (adaptiveCurriculum) basePayload.curriculum = adaptiveCurriculum;
+    if (adaptiveVolume) basePayload.volume = adaptiveVolume;
+    if (adaptiveChapterId) basePayload.chapter_id = adaptiveChapterId;
+    if (Array.isArray(unitSkillIds) && unitSkillIds.length) basePayload.unit_skill_ids = unitSkillIds;
+    state.mode = String(runtimeMode || "teaching").toLowerCase();
+    console.log("[Phase5B-FixA] adaptive bootstrap raw context", {
+      mode: adaptiveEntryMode,
+      runtime_mode: runtimeMode,
+      curriculum: adaptiveCurriculum,
+      volume: adaptiveVolume,
+      chapter_id: adaptiveChapterId,
+      compat_used: chapterBridgeCompatUsed,
+      starter_skill_id: starterSkillId,
+      unit_skill_ids_count: Array.isArray(unitSkillIds) ? unitSkillIds.length : 0,
+      bootstrap_unit_skill_ids_count: Array.isArray(bootstrapUnitSkillIds) ? bootstrapUnitSkillIds.length : 0,
+      skill_id: skillId,
+    });
 
     const canvas = document.getElementById("handwriting-canvas");
     const ctx = canvas.getContext("2d");
@@ -2610,7 +2642,27 @@
         resetChatHistory();
         resetHintBox();
         updateRagScopeBadge("idle");
-        const data = await postAdaptive({ ...basePayload, step_number: 0 });
+        const bootstrapPayload = {
+          ...basePayload,
+          step_number: 0,
+        };
+        if (isB4Chapter1Mode) {
+          const bootstrapIds = (Array.isArray(bootstrapUnitSkillIds) && bootstrapUnitSkillIds.length)
+            ? bootstrapUnitSkillIds
+            : unitSkillIds;
+          if (Array.isArray(bootstrapIds) && bootstrapIds.length) {
+            bootstrapPayload.target_skill_ids = bootstrapIds;
+            bootstrapPayload.skill_ids = bootstrapIds;
+            bootstrapPayload.unit_skill_ids = unitSkillIds;
+          }
+          if (starterSkillId) bootstrapPayload.starter_skill_id = starterSkillId;
+          bootstrapPayload.learning_mode = "main";
+        }
+        if (!isB4Chapter1Mode && Array.isArray(bootstrapUnitSkillIds) && bootstrapUnitSkillIds.length) {
+          bootstrapPayload.unit_skill_ids = bootstrapUnitSkillIds;
+        }
+        console.log("[Phase5B-FixB] start diagnosis payload", bootstrapPayload);
+        const data = await postAdaptive(bootstrapPayload);
         document.getElementById("summaryCard").className = "summary-card";
         renderQuestion(data);
       } catch (err) { setStatus(`啟動失敗：${err.message}`); }

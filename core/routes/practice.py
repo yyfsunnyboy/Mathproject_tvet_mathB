@@ -41,9 +41,11 @@ from config import Config
 
 from core.vocational_math_b4.adaptive.b4_chapter1_deterministic_allowlist import (
     allowlisted_b4_candidates,
+    B4_CHAPTER_1_ADAPTIVE_SKILL_ALLOWLIST,
     filter_skill_pool_for_b4_chapter1_deterministic_adaptive,
     format_adaptive_question_audit_dict,
     is_pure_b4_allowlisted_adaptive_pool,
+    starter_b4_candidates,
     validate_b4_deterministic_adaptive_generator_payload,
 )
 
@@ -84,6 +86,52 @@ def _resolve_adaptive_unit_name(skill_id, requested_unit_name=""):
         "jh_數學2上_FourArithmeticOperationsOfPolynomial": "多項式四則運算",
     }
     return skill_map.get(str(skill_id or "").strip(), requested or "未指定單元")
+
+
+def _resolve_b4_chapter_adaptive_entry(
+    *,
+    mode: str,
+    curriculum: str,
+    volume: str,
+    chapter_id: str,
+    skill_ids: str,
+) -> tuple[dict[str, object], bool]:
+    """
+    Phase 5B-Fix-A bridge:
+    Resolve B4 Chapter 1 chapter-mode entry (and safe legacy alias) to deterministic adaptive pool.
+    """
+    normalized_mode = str(mode or "").strip().lower()
+    normalized_curriculum = str(curriculum or "").strip().lower()
+    normalized_volume = str(volume or "").strip()
+    normalized_chapter_id = str(chapter_id or "").strip()
+    normalized_skill_ids = str(skill_ids or "").strip()
+    legacy_hit = normalized_mode == "single" and normalized_skill_ids == "1 排列組合"
+    chapter_hit = (
+        normalized_mode == "chapter"
+        and normalized_curriculum == "vocational"
+        and normalized_volume == "數學B4"
+        and normalized_chapter_id == "1"
+    )
+    if not (legacy_hit or chapter_hit):
+        return {}, False
+
+    unit_skill_ids = sorted(B4_CHAPTER_1_ADAPTIVE_SKILL_ALLOWLIST)
+    starter_pool = starter_b4_candidates(unit_skill_ids) or unit_skill_ids
+    starter_skill_id = starter_pool[0] if starter_pool else ""
+    return (
+        {
+            "entry_mode": "chapter",
+            "compat_path_used": legacy_hit,
+            "unit_name": "單元練習：1 排列組合",
+            "unit_skill_ids": unit_skill_ids,
+            "bootstrap_unit_skill_ids": starter_pool,
+            "starter_skill_id": starter_skill_id,
+            "chapter_id": "1",
+            "volume": "數學B4",
+            "curriculum": "vocational",
+        },
+        True,
+    )
 
 def update_progress(user_id, skill_id, is_correct):
     """
@@ -144,23 +192,59 @@ def adaptive_practice_page():
     skill_ids = request.args.get('skill_ids', '')
     skill_id = request.args.get('skill_id') or skill_ids
     curriculum = request.args.get('curriculum', '')
+    volume = request.args.get('volume', '')
+    chapter_id = request.args.get('chapter_id', '')
+
+    chapter_bridge, chapter_bridge_hit = _resolve_b4_chapter_adaptive_entry(
+        mode=mode,
+        curriculum=curriculum,
+        volume=volume,
+        chapter_id=chapter_id,
+        skill_ids=skill_ids,
+    )
+    if chapter_bridge_hit:
+        mode = str(chapter_bridge.get("entry_mode") or mode)
+        curriculum = str(chapter_bridge.get("curriculum") or curriculum)
+        volume = str(chapter_bridge.get("volume") or volume)
+        chapter_id = str(chapter_bridge.get("chapter_id") or chapter_id)
+        skill_id = str(chapter_bridge.get("starter_skill_id") or skill_id)
     
     unit_name = "自適應練習"
     if mode == 'single':
         # 在單一模式下，skill_ids 就是章節名稱
         unit_name = f"單元練習：{skill_ids}"
+    elif mode == 'chapter':
+        unit_name = str(chapter_bridge.get("unit_name") or "章節自適應練習")
     elif mode == 'multiple':
         unit_name = "自選組合練習"
     elif mode == 'review':
         curriculum_map = {'general': '普高', 'vocational': '技高', 'junior_high': '國中'}
         unit_name = f"{curriculum_map.get(curriculum, '')} 總複習"
 
+    current_app.logger.info(
+        "[Phase5B-FixA][adaptive_practice_entry] raw_params=%s detected_mode=%s curriculum=%s volume=%s chapter_id=%s compat_used=%s resolved_target_skill_count=%s starter_skill=%s",
+        dict(request.args),
+        mode,
+        curriculum,
+        volume,
+        chapter_id,
+        bool(chapter_bridge.get("compat_path_used", False)),
+        len(chapter_bridge.get("unit_skill_ids", [])) if chapter_bridge_hit else 0,
+        chapter_bridge.get("starter_skill_id", "") if chapter_bridge_hit else "",
+    )
+
     return render_template('adaptive_practice_v2.html', 
                            unit_name=unit_name,
                            mode=mode,
                            skill_ids=skill_ids,
                            skill_id=skill_id,
-                           curriculum=curriculum)
+                           starter_skill_id=str(chapter_bridge.get("starter_skill_id") or "") if chapter_bridge_hit else "",
+                           curriculum=curriculum,
+                           chapter_id=chapter_id,
+                           volume=volume,
+                           unit_skill_ids=chapter_bridge.get("unit_skill_ids", []) if chapter_bridge_hit else [],
+                           bootstrap_unit_skill_ids=chapter_bridge.get("bootstrap_unit_skill_ids", []) if chapter_bridge_hit else [],
+                           chapter_bridge_compat_used=bool(chapter_bridge.get("compat_path_used", False)) if chapter_bridge_hit else False)
 
 
 @practice_bp.route('/adaptive_summative')

@@ -53,6 +53,16 @@ B4_EXCLUDED_DETERMINISTIC_ADAPTIVE_PROBLEM_TYPES: frozenset[str] = frozenset(
     }
 )
 
+# Deterministic Chapter 1 starter order for first adaptive bootstrap only.
+# Keep this list bounded and foundational; no expansion of problem-type coverage.
+B4_CHAPTER_1_ADAPTIVE_STARTER_SKILL_ORDER: tuple[str, ...] = (
+    "vh_數學B4_AdditionPrinciple",
+    "vh_數學B4_MultiplicationPrinciple",
+    "vh_數學B4_FactorialNotation",
+    "vh_數學B4_PermutationOfDistinctObjects",
+    "vh_數學B4_CombinationDefinition",
+)
+
 
 def is_b4_vocational_skill_id(skill_id: str) -> bool:
     return isinstance(skill_id, str) and skill_id.startswith(B4_SKILL_PREFIX)
@@ -202,3 +212,12 @@ def is_pure_b4_allowlisted_adaptive_pool(skill_ids: list[str]) -> bool:
 def allowlisted_b4_candidates(skill_ids: list[str]) -> list[str]:
     """B4 Chapter 1 deterministic candidates present in this pool (post Preflight filter)."""
     return [sid for sid in skill_ids if sid in B4_CHAPTER_1_ADAPTIVE_SKILL_ALLOWLIST]
+
+
+def starter_b4_candidates(skill_ids: list[str]) -> list[str]:
+    """
+    Keep only foundational Chapter 1 starter skills from the current pool, preserving starter order.
+    """
+    pool = set(skill_ids)
+    ordered = [sid for sid in B4_CHAPTER_1_ADAPTIVE_STARTER_SKILL_ORDER if sid in pool]
+    return ordered
