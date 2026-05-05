@@ -80,7 +80,8 @@ def _exhausted_difficulty_one_tuples(generator):
         return {("binomial_coefficient_sum", 1, b, n) for b in range(1, 5) for n in range(2, 6)}
     if generator is binomial_specific_term_coefficient:
         return {
-            ("binomial_specific_term_coefficient", 1, b, n, k)
+            ("binomial_specific_term_coefficient", a, b, n, k)
+            for a in [1, 2]
             for b in range(1, 5)
             for n in range(2, 6)
             for k in range(0, n + 1)

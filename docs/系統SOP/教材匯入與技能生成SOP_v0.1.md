@@ -586,3 +586,249 @@ exporting core table skill_prerequisites
 少數 needs_review 題保留人工複核
 下一步：建立 B4 自適應學習鏈接
 ```
+
+---
+
+## Chapter Runtime 建置流程（Phase 4E 經驗版）
+
+### 一、適用範圍
+
+本流程適用於高職數學 B 冊章節 runtime 建置、deterministic int-answer 一般練習頁，以及 generator、question_router、skill wrapper、web smoke test、freeze report 的標準建置流程。後續 B4 Chapter 2 / Chapter 3，以及 B1～B3 題型建置，應以本節作為 runtime 建置基準。
+
+本流程不包含 adaptive route、future_ai_judged / handwriting checked runtime、free-response 題型、證明 / 推導 / 圖形 / 完整列舉題型。
+
+### 二、核心原則
+
+1. coverage matrix 是進度唯一來源之一。
+2. 不以「感覺已完成」作為完成依據。
+3. 每批最多處理 2～3 個 generator。
+4. generator 先完成 pytest，再做 sample QA。
+5. sample QA 通過後，才接 question_router / wrapper。
+6. router / wrapper 測試通過後，才做 web smoke test。
+7. web smoke test 通過後，才更新 coverage matrix 與 freeze summary。
+8. 不適合 deterministic int-answer runtime 的題型，不硬接。
+9. `list[int]`、`list[str]`、圖形、完整展開、完整列舉、證明、推導、手寫過程題，應標記 manual_review / future_ai_judged。
+10. Chapter closure report 是進入 adaptive route 前的凍結基線。
+
+### 三、標準流程
+
+#### Step 0：建立 coverage matrix
+
+1. 盤點 problem_type。
+2. 標記 priority。
+3. 標記 runtime_ready / planned_only / excluded / manual_review-like。
+4. 明確區分 generator_ready、router_ready、wrapper_ready、web_smoke_tested。
+5. coverage matrix 必須反映實際 runtime 狀態，不得只記錄理論規劃。
+
+#### Step 1：選定一小批 generator
+
+1. 每批最多 2～3 個。
+2. 優先選 int-answer、選擇題、短答案。
+3. 避免先碰 list / free-response / 視覺題。
+
+#### Step 2：實作 deterministic generator
+
+1. 使用 seed。
+2. 支援 `seen_parameter_tuples`。
+3. answer 由 domain function 計算。
+4. output contract 完整。
+5. choices 合法。
+6. LaTeX 合規。
+7. 不讀 DB / session / route / frontend。
+8. 不呼叫 AI / LLM。
+
+#### Step 3：generator pytest
+
+1. 驗 answer 正確。
+2. 驗 choices。
+3. 驗 metadata。
+4. 驗 LaTeX。
+5. 驗 placeholder 不存在。
+6. 驗 seed deterministic。
+7. 驗 seed 1～5 `parameter_tuple` 不重複。
+8. 驗 `seen_parameter_tuples`。
+9. 驗 50 次重抽失敗 raise `ValueError`。
+
+#### Step 4：sample QA report
+
+1. 每個 generator 產生 seed 1～5 共 5 題。
+2. 人工檢查題幹是否像課本。
+3. 檢查 explanation 是否清楚。
+4. 檢查 LaTeX。
+5. 檢查 choices / answer / metadata。
+6. 若 QA 發現問題，先做 QA-Fix，不接 router。
+
+#### Step 5：接入 question_router / wrapper
+
+1. 只在 QA 通過後接入。
+2. 優先使用既有 wrapper。
+3. wrapper 不直接 import generator。
+4. wrapper 不寫題型邏輯。
+5. wrapper check 只做 int / string 比對。
+6. 新 skill 才新增 wrapper。
+7. 不接入 `list[int]` / `list[str]` 題型。
+
+#### Step 6：router / wrapper pytest
+
+1. `generate_for_skill` 指定 `problem_type_id` 可產題。
+2. 不指定 `problem_type_id` 時只會產出該 skill 支援清單。
+3. `correct_answer == answer`。
+4. choices 合法。
+5. router_trace 完整。
+6. canonical `skill_id` 正確。
+7. 不得重新引入亂碼 alias，例如 `vh_?詨飛B4_*`。
+
+#### Step 7：web smoke test
+
+1. 開 practice page。
+2. 可正常產題。
+3. 可判斷答對 / 答錯。
+4. LaTeX 顯示正常。
+5. terminal 無 500 error。
+6. 多按幾次下一題，確認不同 problem_type 有機會出現。
+
+#### Step 8：freeze
+
+1. 更新 coverage matrix。
+2. 更新 coverage summary。
+3. 輸出 phase freeze summary。
+4. 記錄 pytest passed 數量。
+5. 記錄 web smoke test 頁面。
+6. 記錄未修改哪些檔案。
+7. 若只做 depth expansion，不要亂改原始 coverage 分母。
+
+#### Step 9：closure report
+
+1. planned_only 歸零或全部有明確 future path 後產出。
+2. 說明 runtime_ready 數量。
+3. 說明 manual_review / excluded-like 題型。
+4. 說明不代表全教學型態完成。
+5. 作為 adaptive route 前置基線。
+
+### 四、Output Contract 標準
+
+generator payload 必須包含：
+
+1. `question_text`
+2. `choices`
+3. `answer`
+4. `explanation`
+5. `skill_id`
+6. `subskill_id`
+7. `problem_type_id`
+8. `generator_key`
+9. `difficulty`
+10. `diagnosis_tags`
+11. `remediation_candidates`
+12. `source_style_refs`
+13. `parameters`
+
+補充規範：
+
+1. router / wrapper 層可補 `correct_answer`。
+2. `parameters` 必須包含 `parameter_tuple`。
+3. answer 型態原則上為 `int`。
+4. `multiple_choice=True` 時，choices 需 4 個唯一且含 answer。
+5. `multiple_choice=False` 時，`choices == []`。
+6. LaTeX 必須包在 `$...$`。
+7. 不可輸出裸 `2^2`、`C(n,r)`、`P(n,r)`。
+
+### 五、LaTeX 規範
+
+1. 數學式用 `$...$`。
+2. 指數用 `^{...}`。
+3. 乘號用 `\times`。
+4. 組合用 `$C^{n}_{r}$` 或 `$\binom{n}{r}$`。
+5. 排列用 `$P^{n}_{r}$`。
+6. 階乘用 `$n!$`。
+7. 二項式用 `$(ax+b)^{n}$`。
+8. 不允許裸文字 `2^2`。
+9. 不允許裸文字 `C(n,r)`。
+10. 不允許裸文字 `P(n,r)`。
+11. 不允許 explanation 中出現 `5!*2!` 或全形 `×` 未包 LaTeX。
+
+### 六、manual_review / future_ai_judged 判定規則
+
+下列題型不應硬接 deterministic runtime，應改列：
+
+```text
+manual_review / future_ai_judged / future_free_response / normalization_required
+```
+
+適用類型：
+
+1. answer 為 `list[int]` 的完整係數列表題，例如 `binomial_expansion_basic`。
+2. answer 為 `list[str]` 的完整列舉題，例如 `tree_diagram_listing` 若要求列出所有結果。
+3. 視覺化題，例如樹狀圖、圖形作答。
+4. 證明 / 推導題，例如 `pascal_triangle_derivation`。
+5. 手寫過程題，需 AI / OCR / teacher review。
+
+這些題型不是放棄，而是走另一條 runtime：
+
+1. textbox disabled / readonly。
+2. 學生用手寫區或上傳圖片作答。
+3. OCR / vision model 解析學生作答。
+4. AI 助教依 rubric 判斷：
+   - `correct`
+   - `incorrect`
+   - `partially_correct`
+   - `needs_review`
+
+### 七、B4 Chapter 1 實例摘要
+
+| 類別 | 數量 |
+|---|---:|
+| problem_type 總數 | 28 |
+| runtime_ready | 25 |
+| planned_only | 0 |
+| manual_review / excluded-like | 3 |
+
+runtime_ready 包含 Counting / Addition / Multiplication Principle、Permutation、Combination、Factorial、Binomial int-answer。
+
+manual_review / excluded-like：
+
+1. `binomial_expansion_basic`
+2. `tree_diagram_listing`
+3. `pascal_triangle_derivation`
+
+說明：
+
+1. 這代表 deterministic int-answer runtime 實質收尾。
+2. 不代表 Chapter 1 所有教學型態完成。
+3. adaptive route 尚未接入。
+4. future_ai_judged runtime 尚未接入。
+
+### 八、常見錯誤與禁止事項
+
+1. 不要還沒 QA 就接 router。
+2. 不要 web smoke 未測就 freeze。
+3. 不要為了提高 coverage 硬接 `list[int]` / `list[str]`。
+4. 不要把樹狀圖改成假計數題後宣稱完成樹狀圖能力。
+5. 不要把完整展開題硬塞進 int-answer wrapper。
+6. 不要在 wrapper 寫 generator 邏輯。
+7. 不要修改 route / frontend 解決單一題型問題。
+8. 不要重新引入亂碼 `skill_id` alias。
+9. 不要讓 coverage matrix 與實際 router 狀態脫節。
+10. 不要一次大量接入未經 QA 的題型。
+
+### 九、進入 adaptive route 前的條件
+
+進入 Phase 4F adaptive route 前，至少需具備：
+
+1. Chapter deterministic runtime closure report。
+2. coverage matrix planned_only 已歸零，或所有 planned_only 都有明確 future path。
+3. 主要 skill practice page 已 web smoke 通過。
+4. question_router canonical `skill_id` 已清理。
+5. manual_review 題型不混入 deterministic runtime。
+6. 已選定 3～5 個穩定 skill 作為 adaptive 試接候選。
+7. 另建 adaptive coverage matrix，不與 deterministic coverage 混淆。
+
+## 本次更新紀錄
+
+更新日期：2026-05-05。
+
+1. 新增 Chapter Runtime 建置流程。
+2. 納入 B4 Chapter 1 deterministic runtime closure 經驗。
+3. 明確加入 manual_review / future_ai_judged 判定規則。
+4. 明確記錄不適合硬接 int-answer runtime 的題型。
+5. 本次參考文件均已讀取；未缺少指定 reports。

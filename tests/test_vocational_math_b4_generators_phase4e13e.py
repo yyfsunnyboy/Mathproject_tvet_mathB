@@ -208,8 +208,9 @@ def test_seen_parameter_tuples_blocks_duplicates() -> None:
 
 def test_middle_term_raises_after_50_retries_when_space_exhausted() -> None:
     seen = {
-        ("binomial_middle_term_coefficient", 1, b, n)
-        for b in range(1, 5)
+        ("binomial_middle_term_coefficient", a, b, n)
+        for a in [1, 2]
+        for b in list(range(-4, 0)) + list(range(1, 5))
         for n in [2, 4, 6]
     }
     with pytest.raises(ValueError):
@@ -241,7 +242,8 @@ def test_odd_even_raises_after_50_retries_when_space_exhausted() -> None:
 
 def test_specific_negative_raises_after_50_retries_when_space_exhausted() -> None:
     seen = {
-        ("binomial_specific_coefficient_with_negative_term", 1, b, n, k)
+        ("binomial_specific_coefficient_with_negative_term", a, b, n, k)
+        for a in [1, 2]
         for b in range(-4, 0)
         for n in range(2, 6)
         for k in range(0, n + 1)

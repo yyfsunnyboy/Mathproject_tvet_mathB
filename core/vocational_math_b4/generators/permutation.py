@@ -26,6 +26,8 @@ ADJACENT_BLOCK_PROBLEM_TYPE_ID = "permutation_adjacent_block"
 ADJACENT_BLOCK_GENERATOR_KEY = "b4.permutation.permutation_adjacent_block"
 DIGIT_PARITY_PROBLEM_TYPE_ID = "permutation_digit_parity"
 DIGIT_PARITY_GENERATOR_KEY = "b4.permutation.permutation_digit_parity"
+NON_DISTINCT_OBJECTS_PROBLEM_TYPE_ID = "non_distinct_objects_arrangement"
+NON_DISTINCT_OBJECTS_GENERATOR_KEY = "b4.permutation.non_distinct_objects_arrangement"
 
 
 def _make_numeric_choices(answer: int, rng: random.Random) -> list[int]:
@@ -241,6 +243,211 @@ def _sample_full_arrangement_params(rng: random.Random, difficulty: int) -> tupl
         n = rng.randint(7, 10)
     context = rng.choice(["students_line", "books_shelf", "photos_row", "tasks_order"])
     return n, context
+
+
+def _sample_non_distinct_objects_params(rng: random.Random, difficulty: int) -> tuple[int, list[int], int, str]:
+    if difficulty <= 1:
+        duplicate_pool = [[2], [3], [2, 2]]
+        singleton_min, singleton_max = 1, 3
+        answer_limit = 360
+    elif difficulty == 2:
+        duplicate_pool = [[2], [3], [4], [2, 2], [2, 3], [3, 3], [2, 2, 2]]
+        singleton_min, singleton_max = 0, 3
+        answer_limit = 5040
+    else:
+        duplicate_pool = [
+            [2, 2],
+            [2, 3],
+            [2, 4],
+            [3, 3],
+            [2, 2, 2],
+            [2, 2, 3],
+            [2, 3, 3],
+            [2, 2, 2, 2],
+        ]
+        singleton_min, singleton_max = 0, 3
+        answer_limit = 100000
+
+    contexts = ["letters", "colored_balls", "objects"]
+    for _ in range(50):
+        duplicate_counts = list(rng.choice(duplicate_pool))
+        singleton_count = rng.randint(singleton_min, singleton_max)
+        total_count = sum(duplicate_counts) + singleton_count
+        if difficulty <= 1 and not 4 <= total_count <= 6:
+            continue
+        if difficulty == 2 and not 5 <= total_count <= 8:
+            continue
+        if difficulty >= 3 and not 7 <= total_count <= 10:
+            continue
+        denominator = 1
+        for count in duplicate_counts:
+            denominator *= factorial(count)
+        answer = factorial(total_count) // denominator
+        if answer <= answer_limit:
+            return total_count, duplicate_counts, singleton_count, rng.choice(contexts)
+
+    fallback = (4, [2], 2, rng.choice(contexts)) if difficulty <= 1 else (7, [2, 2], 3, rng.choice(contexts))
+    return fallback
+
+
+def _non_distinct_answer(total_count: int, duplicate_counts: list[int]) -> int:
+    denominator = 1
+    for count in duplicate_counts:
+        denominator *= factorial(count)
+    return factorial(total_count) // denominator
+
+
+def _format_factorial_denominator(counts: list[int]) -> str:
+    return "".join(f"{count}!" for count in counts)
+
+
+def _format_letters_question(duplicate_counts: list[int], singleton_count: int, total_count: int) -> str:
+    labels = list("ABCDEFGHIJKLMNOPQRSTUVWXYZ")
+    parts: list[str] = []
+    index = 0
+    for count in duplicate_counts:
+        parts.extend([labels[index]] * count)
+        index += 1
+    for _ in range(singleton_count):
+        parts.append(labels[index])
+        index += 1
+    letters_text = "、".join(parts)
+    return f"用 {letters_text} 共 {total_count} 個字母排成一列，共有多少種不同排列？"
+
+
+def _format_colored_balls_question(duplicate_counts: list[int], singleton_count: int, total_count: int) -> str:
+    duplicate_colors = ["紅球", "白球", "藍球", "黃球"]
+    singleton_colors = ["黑球", "綠球", "紫球"]
+    descriptions = [f"{count} 個{duplicate_colors[idx]}相同" for idx, count in enumerate(duplicate_counts)]
+    descriptions.extend(f"1 個{singleton_colors[idx]}" for idx in range(singleton_count))
+    return f"有 {total_count} 個球，其中 {'、'.join(descriptions)}，排成一列共有多少種不同排列？"
+
+
+def _format_objects_question(duplicate_counts: list[int], singleton_count: int, total_count: int) -> str:
+    if len(duplicate_counts) == 1:
+        duplicate_text = f"{duplicate_counts[0]} 個相同"
+    else:
+        duplicate_text = "、".join(f"一組 {count} 個相同" for count in duplicate_counts)
+    if singleton_count == 0:
+        singleton_text = "沒有其他不同物件"
+    else:
+        singleton_text = f"其餘 {singleton_count} 個都不同"
+    return f"有 {total_count} 個物件，其中 {duplicate_text}，{singleton_text}，排成一列共有多少種不同排列？"
+
+
+def non_distinct_objects_arrangement(
+    *,
+    skill_id: str,
+    subskill_id: str,
+    difficulty: int = 1,
+    seed: int | None = None,
+    seen_parameter_tuples: set[tuple] | None = None,
+    multiple_choice: bool = True,
+) -> dict:
+    """Generate deterministic multiset permutation problems."""
+    rng = random.Random(seed)
+    seen = _ensure_seen_set(seen_parameter_tuples)
+
+    parameter_tuple: tuple | None = None
+    total_count = singleton_count = 0
+    duplicate_counts: list[int] = []
+    context = ""
+
+    if seed is not None and 1 <= seed <= 5 and difficulty <= 1:
+        total_count, duplicate_counts, singleton_count, context = [
+            (4, [2], 2, "letters"),
+            (5, [2], 3, "objects"),
+            (6, [2, 2], 2, "colored_balls"),
+            (6, [3], 3, "letters"),
+            (5, [3], 2, "colored_balls"),
+        ][seed - 1]
+        candidate = (
+            NON_DISTINCT_OBJECTS_PROBLEM_TYPE_ID,
+            total_count,
+            tuple(sorted(duplicate_counts)),
+            singleton_count,
+            context,
+        )
+        if candidate not in seen:
+            parameter_tuple = candidate
+
+    for _ in range(50):
+        if parameter_tuple is not None:
+            break
+        total_count, duplicate_counts, singleton_count, context = _sample_non_distinct_objects_params(rng, difficulty)
+        candidate = (
+            NON_DISTINCT_OBJECTS_PROBLEM_TYPE_ID,
+            total_count,
+            tuple(sorted(duplicate_counts)),
+            singleton_count,
+            context,
+        )
+        if candidate not in seen:
+            parameter_tuple = candidate
+            break
+    if parameter_tuple is None:
+        raise ValueError("Failed to find a new parameter tuple after 50 retries.")
+
+    duplicate_counts = list(sorted(duplicate_counts))
+    answer = _non_distinct_answer(total_count, duplicate_counts)
+    if context == "letters":
+        question_text = _format_letters_question(duplicate_counts, singleton_count, total_count)
+    elif context == "colored_balls":
+        question_text = _format_colored_balls_question(duplicate_counts, singleton_count, total_count)
+    else:
+        question_text = _format_objects_question(duplicate_counts, singleton_count, total_count)
+
+    denominator_counts = duplicate_counts + [1] * singleton_count
+    denominator_text = _format_factorial_denominator(denominator_counts)
+    explanation = (
+        f"若先把所有物件都當作相異，共有 ${total_count}!$ 種排列。"
+        "但相同物互換不產生新排列，所以要除以相同物內部交換數。"
+        f"本題共有 ${total_count}$ 個物件，故不同排列數為 "
+        f"$\\frac{{{total_count}!}}{{{denominator_text}}}={answer}$。"
+    )
+
+    payload = {
+        "question_text": question_text,
+        "choices": _make_numeric_choices(answer, rng) if multiple_choice else [],
+        "answer": answer,
+        "explanation": explanation,
+        "skill_id": skill_id,
+        "subskill_id": subskill_id,
+        "problem_type_id": NON_DISTINCT_OBJECTS_PROBLEM_TYPE_ID,
+        "generator_key": NON_DISTINCT_OBJECTS_GENERATOR_KEY,
+        "difficulty": difficulty,
+        "diagnosis_tags": [
+            "non_distinct_objects_arrangement",
+            "permutation",
+            "multiset_permutation",
+        ],
+        "remediation_candidates": [
+            "factorial_evaluation",
+            "permutation_full_arrangement",
+            "division_by_duplicate_factorials",
+        ],
+        "source_style_refs": [
+            "tc_perm_non_distinct_objects_01",
+            "non_distinct_objects_arrangement",
+        ],
+        "parameters": {
+            "total_count": total_count,
+            "duplicate_counts": duplicate_counts,
+            "singleton_count": singleton_count,
+            "context": context,
+            "parameter_tuple": parameter_tuple,
+        },
+    }
+
+    validate_problem_payload_contract(payload)
+    validate_no_unfilled_placeholder(payload["question_text"])
+    validate_no_unfilled_placeholder(payload["explanation"])
+    if multiple_choice:
+        validate_choices_unique(payload["choices"])
+        validate_answer_in_choices(payload["answer"], payload["choices"])
+
+    seen.add(parameter_tuple)
+    return payload
 
 
 def permutation_full_arrangement(

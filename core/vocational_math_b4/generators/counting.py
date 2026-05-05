@@ -76,6 +76,43 @@ def _sample_parameters(rng: random.Random, difficulty: int) -> tuple[int, int]:
     return digit_count, length
 
 
+_REPEATED_PERM_TEMPLATE_KEYS = (
+    "password",
+    "license_plate",
+    "seat_serial",
+    "color_sequence",
+    "trial_sequence",
+)
+
+
+def _format_repeated_perm_question(template_key: str, digit_count: int, length: int) -> str:
+    """Student-facing wording for repeated-choice counting $digit_count^{length}$."""
+    m = digit_count
+    n = length
+    if template_key == "password":
+        return (
+            f"一組長度為 ${n}$ 的密碼，每位皆自 ${m}$ 個不同數字符號擇一"
+            f"（不同位置可使用同一數字），共有多少種可能？"
+        )
+    if template_key == "license_plate":
+        return (
+            f"車牌後碼共 ${n}$ 格，每格自 ${m}$ 個允許數字擇一（可重複），共有多少種組合？"
+        )
+    if template_key == "seat_serial":
+        return (
+            f"座位編號共 ${n}$ 位，每位由 ${m}$ 個數字擇一（可重複），共有多少種編號？"
+        )
+    if template_key == "color_sequence":
+        return (
+            f"染色序列共 ${n}$ 個位置，每個位置可自 ${m}$ 種顏色編號擇一"
+            f"（同色可於不同位置重複），共有多少種序列？"
+        )
+    # trial_sequence
+    return (
+        f"獨立試驗結果序列共 ${n}$ 步，每步可標記為 ${m}$ 種結果之一（結果可重複），共有多少種序列？"
+    )
+
+
 def generate(
     *,
     skill_id: str,
@@ -109,10 +146,13 @@ def generate(
         allow_leading_zero=True,
         last_digit_filter=None,
     )
-    question_text = (
-        f"有 {digit_count} 個可用數字，每個數字可重複使用，排成 {length} 位數，共有多少種排法？"
+    template_key = rng.choice(_REPEATED_PERM_TEMPLATE_KEYS)
+    question_text = _format_repeated_perm_question(template_key, digit_count, length)
+    explanation = (
+        f"共有 ${length}$ 個位置（每位獨立選擇），每位皆有 ${digit_count}$ 種選擇；"
+        f"依乘法原理，總數為 ${digit_count}^{{{length}}}={answer}$。"
+        "（此為重複選擇計數 $m^n$，不是相同物件互換不重複計數之多重集合排列。）"
     )
-    explanation = f"每一位都有 {digit_count} 種選擇，使用 m^n 得 {digit_count}^{length}={answer}。"
 
     choices = _make_numeric_choices(answer, rng) if multiple_choice else []
     payload = {
@@ -135,6 +175,7 @@ def generate(
         "parameters": {
             "digit_count": digit_count,
             "length": length,
+            "template_context": template_key,
             "parameter_tuple": parameter_tuple,
         },
     }

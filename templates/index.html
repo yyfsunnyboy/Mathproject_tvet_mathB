@@ -248,6 +248,21 @@
             border: 1px solid #f5b7b1;
         }
 
+        .manual-review-unavailable {
+            background: #fff7ed;
+            border: 1px solid #fed7aa;
+            border-radius: 10px;
+            color: #7c2d12;
+            line-height: 1.7;
+            padding: 18px;
+        }
+
+        .manual-review-unavailable strong {
+            display: block;
+            font-size: 1.05em;
+            margin-bottom: 8px;
+        }
+
         .similar-toolbar,
         .similar-meta {
             display: flex;
@@ -1529,7 +1544,7 @@
                 <!-- 新增：難度選擇器 -->
                 <div class="level-selector">
                     <button id="next-question-btn" class="level-button"
-                        style="background-color: #3498db; color: white;">下一題</button>
+                        style="background-color: #3498db; color: white;"{% if manual_review_unavailable %} disabled aria-disabled="true"{% endif %}>下一題</button>
 
 
                     {% if prereq_skills %}
@@ -1571,7 +1586,17 @@
                 <!-- 修改後的版面：問題和示意圖並排 -->
                 <!-- 修改後的版面：問題和示意圖並排 -->
                 <div class="question-content" id="question-container">
-                    <div id="question-text"></div>
+                    <div id="question-text">
+                        {% if manual_review_unavailable %}
+                        <div class="manual-review-unavailable" data-manual-review-unavailable="true">
+                            <strong>{{ manual_review_unavailable.display_name }}：暫緩 / 尚未開放一般自動判分練習</strong>
+                            <p>此題型目前屬於 AI 手寫判分 / 教師審閱候選題型，尚未開放一般自動判分練習。</p>
+                            <p>{{ manual_review_unavailable.reason }}</p>
+                            <p>未來路徑：{{ manual_review_unavailable.future_path }}</p>
+                            <p>未來可透過手寫作答、OCR / Vision、AI 助教判斷 correct / partially_correct / needs_review。</p>
+                        </div>
+                        {% endif %}
+                    </div>
                 </div>
                 {% if is_similar_practice %}
                 <div class="similar-toolbar">
@@ -1583,8 +1608,8 @@
                     <div id="similar-ocr-preview" class="similar-preview-box" style="display:none;"></div>
                 </div>
                 {% endif %}
-                <div class="input-group"><input type="text" id="answer-input" placeholder="輸入答案..."><button
-                        id="submit-button">{{ '檢查答案' if is_similar_practice else '提交' }}</button></div>
+                <div class="input-group"><input type="text" id="answer-input" placeholder="{% if manual_review_unavailable %}此題型尚未開放一般自動判分{% else %}輸入答案...{% endif %}"{% if manual_review_unavailable %} disabled aria-disabled="true"{% endif %}><button
+                        id="submit-button"{% if manual_review_unavailable %} disabled aria-disabled="true"{% endif %}>{{ '檢查答案' if is_similar_practice else '提交' }}</button></div>
                 <div id="result-display"></div>
 
                 <!-- [Phase 6] Prerequisite Suggestion Card -->
@@ -2077,6 +2102,7 @@
 
         // 將後端資料傳給 JS
         const PRACTICE_MODE = {{ (practice_mode or 'standard') | tojson | safe }};
+        const MANUAL_REVIEW_UNAVAILABLE = {{ (true if manual_review_unavailable is defined and manual_review_unavailable else false) | tojson | safe }};
         const PREREQ_SKILLS = {{ prereq_skills | tojson | safe }};
         const SIMILAR_DEFAULT_MODEL = 'qwen3-vl-8b';
         const similarPracticeState = {
@@ -2123,6 +2149,12 @@
             setupImageModal(); // 新增：初始化圖片放大功能
             if (PRACTICE_MODE === 'similar_practice') {
                 initializeSimilarPractice();
+            } else if (MANUAL_REVIEW_UNAVAILABLE) {
+                isInitialQuestionLoaded = true;
+                if (levelIndicator) levelIndicator.textContent = '狀態：暫緩';
+                if (streakCounter) streakCounter.style.display = 'none';
+                if (answerInput) answerInput.disabled = true;
+                if (submitBtn) submitBtn.disabled = true;
             } else {
                 // 修正：不再直接呼叫 loadQuestion()。
                 // MathJax 準備好後會自動呼叫它。

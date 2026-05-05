@@ -61,6 +61,27 @@ def _format_binomial(a: int, b: int) -> str:
     return f"({x_part}{sign}{abs(b)})"
 
 
+def _explain_specific_term_coefficient(a: int, b: int, n: int, k: int, answer: int, poly: str) -> str:
+    r_sel = n - k
+    lead = "常數項即 $x^{0}$ 項。" if k == 0 else ""
+    return (
+        lead
+        + f"將 ${poly}^{{{n}}}$ 視為 $(ax+b)^n$（此處 $a={a}$，$b={b}$）。"
+        f"一般項的第 $r+1$ 項為 $\\binom{{n}}{{r}}(ax)^{{n-r}}b^{{r}}$。"
+        f"欲求 $x^{{{k}}}$ 需 $n-r={k}$，故 $r={r_sel}$。"
+        f"係數為 $\\binom{{{n}}}{{{r_sel}}}({a})^{{{k}}}({b})^{{{r_sel}}}={answer}$。"
+    )
+
+
+def _explain_negative_specific_term(a: int, b: int, n: int, k: int, answer: int, poly: str, target_text: str) -> str:
+    r_sel = n - k
+    return (
+        f"將 ${poly}^{{{n}}}$ 視為 $(ax+b)^n$，其中 $b={b}<0$，符號須保留。"
+        f"{target_text} 對應一般項取 $r={r_sel}$（第 ${r_sel + 1}$ 項），"
+        f"係數為 $\\binom{{{n}}}{{{r_sel}}}({a})^{{{k}}}({b})^{{{r_sel}}}={answer}$。"
+    )
+
+
 def _sample_coefficient_sum_parameters(rng: random.Random, difficulty: int) -> tuple[int, int, int]:
     if difficulty <= 1:
         return 1, rng.randint(1, 4), rng.randint(2, 5)
@@ -76,7 +97,7 @@ def _sample_coefficient_sum_parameters(rng: random.Random, difficulty: int) -> t
 
 def _sample_specific_term_parameters(rng: random.Random, difficulty: int) -> tuple[int, int, int, int]:
     if difficulty <= 1:
-        a = 1
+        a = rng.choice([1, 2])
         b = rng.randint(1, 4)
         n = rng.randint(2, 5)
     elif difficulty == 2:
@@ -117,7 +138,9 @@ def _sample_equation_solve_n_parameters(rng: random.Random, difficulty: int) -> 
 
 def _sample_middle_term_parameters(rng: random.Random, difficulty: int) -> tuple[int, int, int]:
     if difficulty <= 1:
-        return 1, rng.randint(1, 4), rng.choice([2, 4, 6])
+        a = rng.choice([1, 2])
+        b_pool = list(range(-4, 0)) + list(range(1, 5))
+        return a, rng.choice(b_pool), rng.choice([2, 4, 6])
     if difficulty == 2:
         return rng.randint(1, 3), rng.randint(1, 5), rng.choice([4, 6, 8])
     return rng.randint(1, 4), rng.choice([v for v in range(-5, 6) if v != 0]), rng.choice([6, 8, 10])
@@ -138,7 +161,8 @@ def _sample_odd_even_sum_parameters(rng: random.Random, difficulty: int) -> tupl
 
 def _sample_specific_negative_term_parameters(rng: random.Random, difficulty: int) -> tuple[int, int, int, int]:
     if difficulty <= 1:
-        a, b, n = 1, rng.randint(-4, -1), rng.randint(2, 5)
+        a = rng.choice([1, 2])
+        b, n = rng.randint(-4, -1), rng.randint(2, 5)
     elif difficulty == 2:
         a, b, n = rng.randint(1, 3), rng.randint(-5, -1), rng.randint(3, 6)
     else:
@@ -351,7 +375,13 @@ def binomial_specific_term_coefficient(
     a = b = n = k = 0
 
     if seed is not None and 1 <= seed <= 5 and difficulty <= 1:
-        a, b, n, k = [(1, 1, 2, 1), (1, 2, 3, 2), (1, 3, 4, 0), (1, 4, 5, 3), (1, 2, 5, 5)][seed - 1]
+        a, b, n, k = [
+            (2, 1, 3, 2),
+            (1, 2, 3, 2),
+            (1, 3, 4, 0),
+            (3, 1, 4, 2),
+            (2, 3, 5, 4),
+        ][seed - 1]
         candidate = (SPECIFIC_TERM_PROBLEM_TYPE_ID, a, b, n, k)
         if candidate not in seen:
             parameter_tuple = candidate
@@ -371,20 +401,11 @@ def binomial_specific_term_coefficient(
     answer = coefficients[n - k]
     poly = _format_binomial(a, b)
     if k == 0:
-        target_text = "常數項，即 $x^{0}$ 項"
+        target_text = "常數項（指定次方為 $x^{0}$）"
     else:
-        target_text = f"$x^{{{k}}}$ 項"
-    question_text = f"展開 ${poly}^{{{n}}}$ 後，{target_text}係數為多少？"
-    if k == 0:
-        explanation = (
-            f"展開係數依 $x^{{{n}}}$ 到 $x^{{0}}$ 排列，"
-            f"常數項即 $x^{{0}}$ 項，其係數為 ${answer}$。"
-        )
-    else:
-        explanation = (
-            f"展開係數依 $x^{{{n}}}$ 到 $x^{{0}}$ 排列，"
-            f"{target_text}係數為 ${answer}$。"
-        )
+        target_text = f"$x^{{{k}}}$ 項（指定次方係數）"
+    question_text = f"展開 ${poly}^{{{n}}}$ 後，求 {target_text}的係數。"
+    explanation = _explain_specific_term_coefficient(a, b, n, k, answer, poly)
 
     payload = {
         "question_text": question_text,
@@ -512,7 +533,7 @@ def binomial_middle_term_coefficient(
     a = b = n = 0
 
     if seed is not None and 1 <= seed <= 5 and difficulty <= 1:
-        a, b, n = [(1, 1, 2), (1, 2, 4), (1, 3, 6), (1, 4, 2), (1, 2, 6)][seed - 1]
+        a, b, n = [(2, 1, 4), (1, -2, 4), (3, 2, 6), (2, -1, 6), (1, 3, 8)][seed - 1]
         candidate = (MIDDLE_TERM_PROBLEM_TYPE_ID, a, b, n)
         if candidate not in seen:
             parameter_tuple = candidate
@@ -532,10 +553,14 @@ def binomial_middle_term_coefficient(
     middle_power = n // 2
     answer = coefficients[n - middle_power]
     poly = _format_binomial(a, b)
-    question_text = f"展開 ${poly}^{{{n}}}$ 後，中間項，也就是 $x^{{{middle_power}}}$ 項係數為多少？"
+    term_number = n - middle_power + 1
+    question_text = (
+        f"展開 ${poly}^{{{n}}}$ 後，求中間項係數（$n$ 為偶數時唯一的中間項，對應 $x^{{{middle_power}}}$）。"
+    )
     explanation = (
-        f"$n={n}$ 為偶數，唯一中間項為 $x^{{{middle_power}}}$ 項；"
-        f"由 ${poly}^{{{n}}}$ 的展開係數可得其係數為 ${answer}$。"
+        f"$n={n}$ 為偶數，展開式恰有一個中間項：對應 $x^{{{middle_power}}}$，"
+        f"若將 $(ax)^{{n}}$ 視為第 $1$ 項並依降幂往下數，該項為第 ${term_number}$ 項。"
+        f"係數為 ${answer}$。"
     )
 
     payload = {
@@ -664,7 +689,13 @@ def binomial_specific_coefficient_with_negative_term(
     a = b = n = k = 0
 
     if seed is not None and 1 <= seed <= 5 and difficulty <= 1:
-        a, b, n, k = [(1, -1, 2, 1), (1, -2, 3, 2), (1, -3, 4, 0), (1, -4, 5, 3), (1, -2, 5, 5)][seed - 1]
+        a, b, n, k = [
+            (2, -1, 4, 2),
+            (1, -2, 3, 2),
+            (1, -3, 4, 0),
+            (3, -2, 5, 3),
+            (2, -2, 5, 5),
+        ][seed - 1]
         candidate = (SPECIFIC_NEGATIVE_TERM_PROBLEM_TYPE_ID, a, b, n, k)
         if candidate not in seen:
             parameter_tuple = candidate
@@ -683,12 +714,9 @@ def binomial_specific_coefficient_with_negative_term(
     coefficients = binomial_expansion_coefficients(a, b, n)
     answer = coefficients[n - k]
     poly = _format_binomial(a, b)
-    target_text = "常數項，也就是 $x^{0}$ 項" if k == 0 else f"$x^{{{k}}}$ 項"
-    question_text = f"展開 ${poly}^{{{n}}}$ 後，{target_text}係數為多少？"
-    explanation = (
-        "因為二項式中含負項，係數符號需保留；"
-        f"展開後 {target_text} 的係數為 ${answer}$。"
-    )
+    target_text = "常數項（$x^{0}$）" if k == 0 else f"$x^{{{k}}}$ 項"
+    question_text = f"展開 ${poly}^{{{n}}}$ 後，求 {target_text}係數（式中含負常數項）。"
+    explanation = _explain_negative_specific_term(a, b, n, k, answer, poly, target_text)
 
     payload = {
         "question_text": question_text,

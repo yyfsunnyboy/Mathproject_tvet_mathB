@@ -15,6 +15,8 @@ from typing import Any
 
 from models import AdaptiveLearningLog, db
 
+from core.vocational_math_b4.adaptive import b4_chapter1_deterministic_allowlist as _b4_adaptive_allowlist
+
 from .agent_skill_schema import resolve_agent_skill
 from .akt_adapter import bootstrap_local_apr, update_local_apr
 from .catalog_loader import load_catalog
@@ -691,7 +693,7 @@ def _normalize_question_payload(raw: dict[str, Any] | None, entry: CatalogEntry,
     correct_answer = payload.get("correct_answer") or payload.get("answer") or ""
     latex = payload.get("latex") or question_text
 
-    return {
+    normalized: dict[str, Any] = {
         "question": question_text,
         "question_text": question_text,
         "latex": latex,
@@ -709,6 +711,55 @@ def _normalize_question_payload(raw: dict[str, Any] | None, entry: CatalogEntry,
         "subskill_nodes": list(entry.subskill_nodes),
         "source": source,
     }
+    for optional_key in ("problem_type_id", "generator_key", "router_trace", "subskill_id", "adaptive_audit"):
+        if optional_key in payload and payload[optional_key] is not None:
+            normalized[optional_key] = payload[optional_key]
+    return normalized
+
+
+def _b4_session_engine_payload_gate(entry: CatalogEntry, candidate: dict[str, Any]) -> tuple[bool, str | None]:
+    """Deterministic B4 Chapter 1 gate for adaptive v2 payloads (practice-compatible validator)."""
+    sid = entry.skill_id
+    if not _b4_adaptive_allowlist.is_b4_vocational_skill_id(sid):
+        return True, None
+    src = str(candidate.get("source") or "")
+    if src == "catalog_fallback" or src == "ultimate_safe_question" or ":same_family_safe" in src:
+        return True, None
+    if sid not in _b4_adaptive_allowlist.B4_CHAPTER_1_ADAPTIVE_SKILL_ALLOWLIST:
+        return False, "b4_skill_not_in_chapter1_deterministic_allowlist"
+    pid = candidate.get("problem_type_id")
+    if not isinstance(pid, str) or not pid.strip():
+        return False, "missing_problem_type_id_for_b4_deterministic"
+    ok, reason = _b4_adaptive_allowlist.validate_b4_deterministic_adaptive_generator_payload(sid, candidate)
+    return ok, reason
+
+
+def _maybe_finalize_b4_validated_generator_layer(
+    raw: dict[str, Any],
+    entry: CatalogEntry,
+    layer_source: str,
+) -> dict[str, Any] | None:
+    normalized = _normalize_question_payload(raw, entry, layer_source)
+    ok, reason = _b4_session_engine_payload_gate(entry, normalized)
+    if not ok:
+        POLICY_LOGGER.info(
+            "[b4_session_gate] rejected skill=%s layer=%s reason=%s",
+            entry.skill_id,
+            layer_source,
+            reason,
+        )
+        return None
+    if (
+        _b4_adaptive_allowlist.is_b4_vocational_skill_id(entry.skill_id)
+        and entry.skill_id in _b4_adaptive_allowlist.B4_CHAPTER_1_ADAPTIVE_SKILL_ALLOWLIST
+        and layer_source in {"micro_generator", "script_dispatch", "skill_module"}
+    ):
+        normalized["adaptive_audit"] = _b4_adaptive_allowlist.format_adaptive_question_audit_dict(
+            entry.skill_id,
+            raw,
+            source_type=f"session_engine_{layer_source}",
+        )
+    return normalized
 
 
 def _is_valid_question_payload(payload: dict[str, Any] | None) -> bool:
@@ -753,11 +804,17 @@ def _ensure_safe_question_payload(
     # Stage 1: try caller payload first
     candidate = _normalize_question_payload(payload if isinstance(payload, dict) else {}, entry, source_hint)
     if _is_valid_question_payload(candidate):
+        gate_ok, gate_reason = _b4_session_engine_payload_gate(entry, candidate)
+        if gate_ok:
+            print(
+                f"[adaptive][question] family={entry.family_id} source={candidate.get('source') or source_hint} status=ok",
+                flush=True,
+            )
+            return candidate
         print(
-            f"[adaptive][question] family={entry.family_id} source={candidate.get('source') or source_hint} status=ok",
+            f"[adaptive][question] family={entry.family_id} source={source_hint} status=b4_gate_reject reason={gate_reason}",
             flush=True,
         )
-        return candidate
 
     print(
         f"[adaptive][question] family={entry.family_id} source={source_hint} status=error error={error_hint or 'invalid_or_empty_payload'}",
@@ -820,30 +877,36 @@ def _generate_question_payload(entry: CatalogEntry, *, selected_subskill: str | 
     try:
         question = generate_micro_question(entry)
         if question and not _looks_like_stub_question(question):
-            micro_status = "success"
-            final_source = "micro_generator"
-            POLICY_LOGGER.info(
-                "[adaptive_qgen] skill_id=%s family_id=%s selected_subskill=%s family_name=%s resolved_generator_key=%s micro_generator_exists=%s micro_generator=%s resolved_module_path=%s resolved_function_name=%s generator_call_success=%s payload_schema_valid=%s skill_module=%s placeholder_used=%s final_source=%s fallback_reason=%s",
-                entry.skill_id,
-                entry.family_id,
-                str(selected_subskill or ""),
-                entry.family_name,
-                resolved_generator_key,
-                micro_generator_exists,
-                micro_status,
-                resolved_module_path,
-                resolved_function_name,
-                script_bridge_status,
-                payload_schema_valid,
-                skill_module_status,
-                placeholder_used,
-                final_source,
-                fallback_reason,
-            )
-            return _normalize_question_payload(question, entry, final_source)
-        micro_status = "fail"
-        placeholder_used = bool(question)
-        fallback_reason = "micro_generator_returned_stub_or_empty"
+            finalized = _maybe_finalize_b4_validated_generator_layer(question, entry, "micro_generator")
+            if finalized is not None:
+                micro_status = "success"
+                final_source = "micro_generator"
+                POLICY_LOGGER.info(
+                    "[adaptive_qgen] skill_id=%s family_id=%s selected_subskill=%s family_name=%s resolved_generator_key=%s micro_generator_exists=%s micro_generator=%s resolved_module_path=%s resolved_function_name=%s generator_call_success=%s payload_schema_valid=%s skill_module=%s placeholder_used=%s final_source=%s fallback_reason=%s",
+                    entry.skill_id,
+                    entry.family_id,
+                    str(selected_subskill or ""),
+                    entry.family_name,
+                    resolved_generator_key,
+                    micro_generator_exists,
+                    micro_status,
+                    resolved_module_path,
+                    resolved_function_name,
+                    script_bridge_status,
+                    payload_schema_valid,
+                    skill_module_status,
+                    placeholder_used,
+                    final_source,
+                    fallback_reason,
+                )
+                return finalized
+            micro_status = "fail"
+            placeholder_used = bool(question)
+            fallback_reason = "micro_generator_b4_gate_reject_or_invalid"
+        else:
+            micro_status = "fail"
+            placeholder_used = bool(question)
+            fallback_reason = "micro_generator_returned_stub_or_empty"
     except Exception as exc:
         micro_status = f"fail:{str(exc)}"
         fallback_reason = "micro_generator_exception"
@@ -857,30 +920,36 @@ def _generate_question_payload(entry: CatalogEntry, *, selected_subskill: str | 
     if bridge_success:
         question = script_result.get("payload")
         if isinstance(question, dict) and not _looks_like_stub_question(question):
-            script_bridge_status = "success"
-            final_source = "script_dispatch"
-            POLICY_LOGGER.info(
-                "[adaptive_qgen] skill_id=%s family_id=%s selected_subskill=%s family_name=%s resolved_generator_key=%s micro_generator_exists=%s micro_generator=%s resolved_module_path=%s resolved_function_name=%s generator_call_success=%s payload_schema_valid=%s skill_module=%s placeholder_used=%s final_source=%s fallback_reason=%s",
-                entry.skill_id,
-                entry.family_id,
-                str(selected_subskill or ""),
-                entry.family_name,
-                resolved_generator_key,
-                micro_generator_exists,
-                micro_status,
-                resolved_module_path,
-                resolved_function_name,
-                script_bridge_status,
-                payload_schema_valid,
-                skill_module_status,
-                placeholder_used,
-                final_source,
-                fallback_reason,
-            )
-            return _normalize_question_payload(question, entry, final_source)
-        script_bridge_status = "fail"
-        placeholder_used = placeholder_used or bool(question)
-        fallback_reason = "script_dispatch_placeholder_or_invalid_payload"
+            finalized = _maybe_finalize_b4_validated_generator_layer(question, entry, "script_dispatch")
+            if finalized is not None:
+                script_bridge_status = "success"
+                final_source = "script_dispatch"
+                POLICY_LOGGER.info(
+                    "[adaptive_qgen] skill_id=%s family_id=%s selected_subskill=%s family_name=%s resolved_generator_key=%s micro_generator_exists=%s micro_generator=%s resolved_module_path=%s resolved_function_name=%s generator_call_success=%s payload_schema_valid=%s skill_module=%s placeholder_used=%s final_source=%s fallback_reason=%s",
+                    entry.skill_id,
+                    entry.family_id,
+                    str(selected_subskill or ""),
+                    entry.family_name,
+                    resolved_generator_key,
+                    micro_generator_exists,
+                    micro_status,
+                    resolved_module_path,
+                    resolved_function_name,
+                    script_bridge_status,
+                    payload_schema_valid,
+                    skill_module_status,
+                    placeholder_used,
+                    final_source,
+                    fallback_reason,
+                )
+                return finalized
+            script_bridge_status = "fail"
+            placeholder_used = placeholder_used or bool(question)
+            fallback_reason = "script_dispatch_b4_gate_reject_or_invalid"
+        else:
+            script_bridge_status = "fail"
+            placeholder_used = placeholder_used or bool(question)
+            fallback_reason = "script_dispatch_placeholder_or_invalid_payload"
     else:
         script_bridge_status = f"fail:{script_result.get('error') or 'unknown'}"
         fallback_reason = "script_dispatch_error"
@@ -888,30 +957,36 @@ def _generate_question_payload(entry: CatalogEntry, *, selected_subskill: str | 
     try:
         question = _load_question_from_skill_module(entry.skill_id)
         if question and not _looks_like_stub_question(question):
-            skill_module_status = "success"
-            final_source = "skill_module"
-            POLICY_LOGGER.info(
-                "[adaptive_qgen] skill_id=%s family_id=%s selected_subskill=%s family_name=%s resolved_generator_key=%s micro_generator_exists=%s micro_generator=%s resolved_module_path=%s resolved_function_name=%s generator_call_success=%s payload_schema_valid=%s skill_module=%s placeholder_used=%s final_source=%s fallback_reason=%s",
-                entry.skill_id,
-                entry.family_id,
-                str(selected_subskill or ""),
-                entry.family_name,
-                resolved_generator_key,
-                micro_generator_exists,
-                micro_status,
-                resolved_module_path,
-                resolved_function_name,
-                script_bridge_status,
-                payload_schema_valid,
-                skill_module_status,
-                placeholder_used,
-                final_source,
-                fallback_reason,
-            )
-            return _normalize_question_payload(question, entry, final_source)
-        skill_module_status = "fail"
-        placeholder_used = placeholder_used or bool(question)
-        fallback_reason = "skill_module_returned_stub_or_empty"
+            finalized = _maybe_finalize_b4_validated_generator_layer(question, entry, "skill_module")
+            if finalized is not None:
+                skill_module_status = "success"
+                final_source = "skill_module"
+                POLICY_LOGGER.info(
+                    "[adaptive_qgen] skill_id=%s family_id=%s selected_subskill=%s family_name=%s resolved_generator_key=%s micro_generator_exists=%s micro_generator=%s resolved_module_path=%s resolved_function_name=%s generator_call_success=%s payload_schema_valid=%s skill_module=%s placeholder_used=%s final_source=%s fallback_reason=%s",
+                    entry.skill_id,
+                    entry.family_id,
+                    str(selected_subskill or ""),
+                    entry.family_name,
+                    resolved_generator_key,
+                    micro_generator_exists,
+                    micro_status,
+                    resolved_module_path,
+                    resolved_function_name,
+                    script_bridge_status,
+                    payload_schema_valid,
+                    skill_module_status,
+                    placeholder_used,
+                    final_source,
+                    fallback_reason,
+                )
+                return finalized
+            skill_module_status = "fail"
+            placeholder_used = placeholder_used or bool(question)
+            fallback_reason = "skill_module_b4_gate_reject_or_invalid"
+        else:
+            skill_module_status = "fail"
+            placeholder_used = placeholder_used or bool(question)
+            fallback_reason = "skill_module_returned_stub_or_empty"
     except Exception as exc:
         skill_module_status = f"fail:{str(exc)}"
         fallback_reason = "skill_module_exception"
@@ -1761,6 +1836,11 @@ def submit_and_get_next(payload: dict[str, Any]) -> dict[str, Any]:
         mode=mode,
         system_skill_id=system_skill_id,
     )
+    entries, b4_catalog_audit = (
+        _b4_adaptive_allowlist.filter_catalog_entries_for_b4_chapter1_deterministic_adaptive(entries)
+    )
+    if b4_catalog_audit:
+        POLICY_LOGGER.info("[b4_session_allowlist] catalog_filter_audit=%s", b4_catalog_audit)
     if not entries:
         raise ValueError("No catalog entries available for the requested adaptive scope")
     family_name_by_id = {
@@ -3442,6 +3522,7 @@ def submit_and_get_next(payload: dict[str, Any]) -> dict[str, Any]:
         "ppo_strategy": strategy,
         "frustration_index": observability["frustration_index"],
         "execution_latency": latency_ms,
+        "b4_deterministic_catalog_audit": b4_catalog_audit,
         "target_family_id": next_entry.family_id,
         "target_subskills": resolved_target_subskills,
         "new_question_data": question_payload,

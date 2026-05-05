@@ -71,6 +71,11 @@ def _repeated_permutation_assignment(**kwargs) -> dict:
     return fn(**kwargs)
 
 
+def _non_distinct_objects_arrangement(**kwargs) -> dict:
+    fn = getattr(permutation_generators, "non_distinct_objects_arrangement")
+    return fn(**kwargs)
+
+
 _REGISTRY: dict[str, list[dict[str, object]]] = {
     "vh_數學B4_CombinationDefinition": [
         {
@@ -180,6 +185,14 @@ _REGISTRY: dict[str, list[dict[str, object]]] = {
             "generator_fn": _repeated_permutation_digits,
         }
     ],
+    "vh_數學B4_PermutationOfNonDistinctObjects": [
+        {
+            "subskill_id": "b4_ch1_perm_non_distinct_repeated_digits_01",
+            "problem_type_id": "repeated_permutation_digits",
+            "generator_key": "b4.counting.repeated_permutation_digits",
+            "generator_fn": _repeated_permutation_digits,
+        }
+    ],
     "vh_數學B4_FactorialNotation": [
         {
             "subskill_id": "b4_ch1_factorial_solve_n_02",
@@ -266,6 +279,17 @@ _REGISTRY: dict[str, list[dict[str, object]]] = {
     ],
 }
 
+_ENRICHMENT_REGISTRY: dict[str, list[dict[str, object]]] = {
+    "vh_數學B4_PermutationOfNonDistinctObjects": [
+        {
+            "subskill_id": "b4_ch1_perm_non_distinct_objects_01",
+            "problem_type_id": "non_distinct_objects_arrangement",
+            "generator_key": "b4.permutation.non_distinct_objects_arrangement",
+            "generator_fn": _non_distinct_objects_arrangement,
+        }
+    ],
+}
+
 
 def _select_entry(skill_entries: list[dict[str, object]], seed: int | None, problem_type_id: str | None) -> tuple[dict[str, object], str]:
     if problem_type_id is not None:
@@ -294,7 +318,7 @@ def generate_for_skill(
     if skill_id not in _REGISTRY:
         raise ValueError("Unsupported skill_id.")
 
-    entries = _REGISTRY[skill_id]
+    entries = _REGISTRY[skill_id] + _ENRICHMENT_REGISTRY.get(skill_id, [])
     selected_entry, selection_reason = _select_entry(entries, seed, problem_type_id)
 
     generator_fn = selected_entry.get("generator_fn")

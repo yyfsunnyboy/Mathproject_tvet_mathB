@@ -23,6 +23,7 @@ import matplotlib.pyplot as plt
 import re
 import uuid
 import os
+import random
 from datetime import datetime
 
 # 引用 Blueprint
@@ -37,6 +38,27 @@ from core.ai_analyzer import diagnose_error
 from core.irt_engine import update_node_competencies
 from core.ai_settings import get_effective_model_config
 from config import Config
+
+from core.vocational_math_b4.adaptive.b4_chapter1_deterministic_allowlist import (
+    allowlisted_b4_candidates,
+    filter_skill_pool_for_b4_chapter1_deterministic_adaptive,
+    format_adaptive_question_audit_dict,
+    is_pure_b4_allowlisted_adaptive_pool,
+    validate_b4_deterministic_adaptive_generator_payload,
+)
+
+MANUAL_REVIEW_SKILLS = {
+    "vh_數學B4_TreeDiagramCounting": {
+        "display_name": "樹狀圖",
+        "reason": "樹狀圖是視覺化 / 完整列舉能力，目前一般練習頁不支援畫圖或 list[str] 自動判分。",
+        "future_path": "future_ai_judged / handwriting checked / visualization / structured-answer listing",
+    },
+    "vh_數學B4_PascalTriangle": {
+        "display_name": "巴斯卡三角形",
+        "reason": "巴斯卡三角形推導屬於推導 / 證明型內容，目前 deterministic int-answer runtime 不適合自動判分。",
+        "future_path": "future_ai_judged / teacher review / structured derivation",
+    },
+}
 
 # ==========================================
 # Helper Functions (輔助函式)
@@ -181,8 +203,13 @@ def adaptive_learning_entry_page():
 @practice_bp.route('/practice/<skill_id>')
 def practice(skill_id):
     """進入特定技能的練習頁面"""
+    manual_review_info = MANUAL_REVIEW_SKILLS.get(skill_id)
     skill_info = db.session.get(SkillInfo, skill_id)
-    skill_ch_name = skill_info.skill_ch_name if skill_info else "未知技能"
+    skill_ch_name = (
+        manual_review_info["display_name"]
+        if manual_review_info
+        else (skill_info.skill_ch_name if skill_info else "未知技能")
+    )
 
     # 查詢前置技能
     prerequisites = db.session.query(SkillInfo).join(
@@ -201,7 +228,8 @@ def practice(skill_id):
                            skill_ch_name=skill_ch_name,
                            prereq_skills=prereq_skills,
                            tutor_model_name=tutor_model_name,
-                           practice_mode='standard')
+                           practice_mode='standard',
+                           manual_review_unavailable=manual_review_info)
 
 
 @practice_bp.route('/practice/similar_questions')
@@ -280,6 +308,8 @@ def get_adaptive_question():
     
     # 根據不同模式獲取技能列表
     target_skill_ids = []
+    # Review 模式下 weakness routing 會把 target_skill_ids 縮成單一技能；B4 generator fallback 仍需依「整個複習池」挑 allowlisted B4。
+    filtered_review_pool_for_generator_fallback = None
     
     # 調試信息
     current_app.logger.info(f"[Adaptive Question] Mode: {mode}")
@@ -302,6 +332,11 @@ def get_adaptive_question():
                 session.modified = True
 
             pool = session.get('review_skill_pool', [])
+            pool, review_audits = filter_skill_pool_for_b4_chapter1_deterministic_adaptive(pool)
+            filtered_review_pool_for_generator_fallback = pool
+            if review_audits:
+                current_app.logger.info("[B4 Adaptive Preflight] review_pool_audit=%s", review_audits)
+
             stats = session.get('skill_stats', {})
             history = session.get('review_history', [])
             last_skill = history[-1]['skill_id'] if history else None
@@ -331,42 +366,123 @@ def get_adaptive_question():
         
         else:
             return jsonify({"error": f"不支援的模式: {mode}"}), 400
-        
+
+        target_skill_ids, adaptive_audits = filter_skill_pool_for_b4_chapter1_deterministic_adaptive(target_skill_ids)
+        if adaptive_audits:
+            current_app.logger.info("[B4 Adaptive Preflight] adaptive_target_skill_audit=%s", adaptive_audits)
+
         if not target_skill_ids:
             current_app.logger.error(f"[Adaptive Question] No skills found for mode={mode}")
             return jsonify({"error": "找不到符合條件的技能單元"}), 404
-        
-        # 呼叫推薦引擎獲取最佳題目模板
-        question_template = recommend_question(current_user.id, target_skill_ids)
-        if not question_template:
-            return jsonify({"error": "題庫中已無合適的題目可供推薦。"}), 404
-            
-        # 使用 skill.generate() 動態生成具體題目
-        mod = get_skill(question_template.skill_id)
-        if not mod:
-            return jsonify({"error": f"無法載入技能模組 {question_template.skill_id}"}), 500
 
-        data = mod.generate(level=question_template.difficulty_level)
+        # --- Phase 4F-Main-A: B4 Chapter 1 generator-first / generator fallback ---
+        # Pure allowlisted B4 pools skip DB TextbookExample entirely (generator-first).
+        # Mixed pools keep DB-first (RS recommend_question); empty DB falls back to allowlisted B4 generators.
+        # Review mode: fallback candidates come from the full filtered review_skill_pool (not the weakness-narrowed singleton).
+        gen_seed = request.args.get("gen_seed", type=int)
+        pick_rng = random.Random(gen_seed) if gen_seed is not None else random.Random()
+
+        pure_b4 = is_pure_b4_allowlisted_adaptive_pool(target_skill_ids)
+        candidate_pool_for_b4_fallback = (
+            filtered_review_pool_for_generator_fallback
+            if mode == "review" and filtered_review_pool_for_generator_fallback is not None
+            else target_skill_ids
+        )
+        b4_only_candidates = allowlisted_b4_candidates(candidate_pool_for_b4_fallback)
+
+        question_template = None
+        skill_id_for_generate: str | None = None
+        difficulty_level = request.args.get("level", type=int) or 1
+        source_type: str | None = None
+
+        if pure_b4:
+            skill_id_for_generate = pick_rng.choice(target_skill_ids)
+            source_type = "generator_first"
+            current_app.logger.info(
+                "[B4 Adaptive Main-A] generator-first pool=%s skill=%s",
+                target_skill_ids,
+                skill_id_for_generate,
+            )
+        else:
+            question_template = recommend_question(current_user.id, target_skill_ids)
+            if question_template is None and b4_only_candidates:
+                skill_id_for_generate = pick_rng.choice(b4_only_candidates)
+                source_type = "generator_fallback"
+                current_app.logger.info(
+                    "[B4 Adaptive Main-A] generator-fallback after empty DB pool skill=%s",
+                    skill_id_for_generate,
+                )
+            elif question_template is not None:
+                skill_id_for_generate = question_template.skill_id
+                if getattr(question_template, "difficulty_level", None) is not None:
+                    difficulty_level = question_template.difficulty_level
+                source_type = "db_textbook_example"
+            else:
+                return jsonify({"error": "題庫中已無合適的題目可供推薦。"}), 404
+
+        mod = get_skill(skill_id_for_generate)
+        if not mod:
+            return jsonify({"error": f"無法載入技能模組 {skill_id_for_generate}"}), 500
+
+        gen_kwargs: dict = {"level": difficulty_level}
+        if gen_seed is not None:
+            gen_kwargs["seed"] = gen_seed
+        data = mod.generate(**gen_kwargs)
+
+        ok_payload, deny_reason = validate_b4_deterministic_adaptive_generator_payload(
+            skill_id_for_generate,
+            data,
+        )
+        if not ok_payload:
+            audit_blob = format_adaptive_question_audit_dict(
+                skill_id_for_generate,
+                data,
+                source_type="rejected_excluded_problem_type",
+            )
+            audit_blob["reject_detail"] = deny_reason
+            current_app.logger.error(
+                "[B4 Adaptive Preflight] blocked_generated_payload skill=%s reason=%s",
+                skill_id_for_generate,
+                deny_reason,
+            )
+            body = {
+                "error": "題目類型不符合 deterministic adaptive 規範。",
+                "detail": deny_reason,
+            }
+            if request.args.get("adaptive_audit") == "1":
+                body["adaptive_audit"] = audit_blob
+            return jsonify(body), 422
+
+        audit_blob = format_adaptive_question_audit_dict(
+            skill_id_for_generate,
+            data,
+            source_type=source_type,
+        )
+        current_app.logger.info("[B4 Adaptive Preflight] question_audit=%s", audit_blob)
 
         # 準備 Session 資料 (與 next_question 邏輯類似)
         session_data = data.copy()
         for k in ['image', 'fig', 'figure', 'image_base64', 'visuals']:
             if k in session_data: del session_data[k]
-        
-        set_current(question_template.skill_id, session_data)
 
-        # 回傳包含 mode 和 question_id 的 JSON 給前端
-        return jsonify({
-            "question_id": question_template.id, # 重要：回傳 DB 中的題目 ID
-            "skill_id": question_template.skill_id,
+        set_current(skill_id_for_generate, session_data)
+
+        question_db_id = question_template.id if question_template else 0
+
+        payload_out = {
+            "question_id": question_db_id,
+            "skill_id": skill_id_for_generate,
             "mode": "adaptive",
             "new_question_text": data.get("question_text"),
             "correct_answer": data.get("correct_answer"),
             "context_string": data.get("context_string", ""),
-            "image_base64": data.get("image_base64", ""), 
+            "image_base64": data.get("image_base64", ""),
             "visual_aids": data.get("visual_aids", []),
-            "answer_type": "text" # 假設自適應模式皆為文字輸入
-        })
+            "answer_type": "text",
+        }
+        if request.args.get("adaptive_audit") == "1":
+            payload_out["adaptive_audit"] = audit_blob
+        return jsonify(payload_out)
     except Exception as e:
         current_app.logger.error(f"生成自適應題目失敗: {e}")
         import traceback
@@ -412,6 +528,27 @@ def next_question():
             return jsonify({"error": f"無法取得該單元的題型: {str(e)}"}), 500
         if not skill_id:
             return jsonify({"error": "該單元下無可用的題型技能"}), 404
+
+    manual_review_info = MANUAL_REVIEW_SKILLS.get(skill_id)
+    if manual_review_info:
+        return jsonify({
+            "manual_review_unavailable": True,
+            "new_question_text": (
+                f"<strong>{manual_review_info['display_name']}：暫緩 / 尚未開放一般自動判分練習</strong><br>"
+                f"{manual_review_info['reason']}<br><br>"
+                "此題型目前屬於 AI 手寫判分 / 教師審閱候選題型，尚未開放一般自動判分練習。<br>"
+                "未來可透過手寫作答、OCR / Vision、AI 助教判斷 correct / partially_correct / needs_review。"
+            ),
+            "context_string": "",
+            "inequality_string": "",
+            "consecutive_correct": 0,
+            "current_level": "暫緩",
+            "image_base64": "",
+            "visual_aids": [],
+            "answer_type": "unavailable",
+            "reason": manual_review_info["reason"],
+            "future_path": manual_review_info["future_path"],
+        })
 
     skill_info = get_skill_info(skill_id)
     # [單元模式] 允許 pattern skill 僅有檔案、尚無 DB 註冊時仍可出題
