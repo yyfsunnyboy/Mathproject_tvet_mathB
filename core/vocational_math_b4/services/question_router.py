@@ -1,4 +1,4 @@
-﻿"""Minimal B4 question router for deterministic generators (Phase 4D-1)."""
+"""Minimal B4 question router for deterministic generators (Phase 4D-1)."""
 
 from __future__ import annotations
 
@@ -104,6 +104,12 @@ _REGISTRY: dict[str, list[dict[str, object]]] = {
             "generator_key": "b4.combination.combination_group_selection",
             "generator_fn": combination_generators.combination_group_selection,
         },
+        {
+            "subskill_id": "b4_ch1_grid_shortest_path_01",
+            "problem_type_id": "grid_shortest_path_count",
+            "generator_key": "b4.combination.grid_shortest_path_count",
+            "generator_fn": combination_generators.grid_shortest_path_count,
+        },
     ],
     "vh_數學B4_Combination": [
         {
@@ -175,6 +181,12 @@ _REGISTRY: dict[str, list[dict[str, object]]] = {
             "problem_type_id": "permutation_digit_parity",
             "generator_key": "b4.permutation.permutation_digit_parity",
             "generator_fn": permutation_generators.permutation_digit_parity,
+        },
+        {
+            "subskill_id": "b4_ch1_permutation_non_adjacent_01",
+            "problem_type_id": "permutation_non_adjacent_arrangement",
+            "generator_key": "b4.permutation.permutation_non_adjacent_arrangement",
+            "generator_fn": permutation_generators.permutation_non_adjacent_arrangement,
         },
     ],
     "vh_數學B4_RepeatedPermutation": [
@@ -256,6 +268,12 @@ _REGISTRY: dict[str, list[dict[str, object]]] = {
             "generator_key": "b4.binomial.binomial_odd_even_coefficient_sum",
             "generator_fn": binomial_generators.binomial_odd_even_coefficient_sum,
         },
+        {
+            "subskill_id": "b4_ch1_combination_hockey_stick_sum_01",
+            "problem_type_id": "combination_hockey_stick_sum",
+            "generator_key": "b4.binomial.combination_hockey_stick_sum",
+            "generator_fn": binomial_generators.combination_hockey_stick_sum,
+        },
     ],
     "vh_數學B4_BinomialTheorem": [
         {
@@ -276,6 +294,18 @@ _REGISTRY: dict[str, list[dict[str, object]]] = {
             "generator_key": "b4.binomial.binomial_specific_coefficient_with_negative_term",
             "generator_fn": binomial_generators.binomial_specific_coefficient_with_negative_term,
         },
+        {
+            "subskill_id": "b4_ch1_binomial_two_variable_specific_01",
+            "problem_type_id": "binomial_two_variable_specific_coefficient",
+            "generator_key": "b4.binomial.binomial_two_variable_specific_coefficient",
+            "generator_fn": binomial_generators.binomial_two_variable_specific_coefficient,
+        },
+        {
+            "subskill_id": "b4_ch1_binomial_laurent_specific_power_01",
+            "problem_type_id": "binomial_laurent_specific_power_coefficient",
+            "generator_key": "b4.binomial.binomial_laurent_specific_power_coefficient",
+            "generator_fn": binomial_generators.binomial_laurent_specific_power_coefficient,
+        },
     ],
 }
 
@@ -291,7 +321,13 @@ _ENRICHMENT_REGISTRY: dict[str, list[dict[str, object]]] = {
 }
 
 
-def _select_entry(skill_entries: list[dict[str, object]], seed: int | None, problem_type_id: str | None) -> tuple[dict[str, object], str]:
+def _select_entry(
+    skill_entries: list[dict[str, object]],
+    seed: int | None,
+    problem_type_id: str | None,
+    *,
+    skill_id: str | None = None,
+) -> tuple[dict[str, object], str]:
     if problem_type_id is not None:
         for entry in skill_entries:
             if entry["problem_type_id"] == problem_type_id:
@@ -300,6 +336,16 @@ def _select_entry(skill_entries: list[dict[str, object]], seed: int | None, prob
 
     if len(skill_entries) == 1:
         return skill_entries[0], "single_entry"
+
+    # Phase 5C-B4: alternate registry vs enrichment for multiset skill so
+    # `non_distinct_objects_arrangement` is evenly reachable across seeds.
+    if (
+        skill_id == "vh_數學B4_PermutationOfNonDistinctObjects"
+        and seed is not None
+        and len(skill_entries) >= 2
+    ):
+        idx = int(seed) % len(skill_entries)
+        return skill_entries[idx], "seed_mod_router_balance"
 
     rng = random.Random(seed)
     return rng.choice(skill_entries), "seed_based_selection"
@@ -313,13 +359,22 @@ def generate_for_skill(
     seen_parameter_tuples: set[tuple] | None = None,
     multiple_choice: bool = True,
     problem_type_id: str | None = None,
+    excluded_problem_type_ids: set[str] | None = None,
 ) -> dict:
     """Generate a payload for a supported B4 skill via the minimal registry."""
     if skill_id not in _REGISTRY:
         raise ValueError("Unsupported skill_id.")
 
     entries = _REGISTRY[skill_id] + _ENRICHMENT_REGISTRY.get(skill_id, [])
-    selected_entry, selection_reason = _select_entry(entries, seed, problem_type_id)
+    
+    if excluded_problem_type_ids:
+        entries = [e for e in entries if e["problem_type_id"] not in excluded_problem_type_ids]
+        if not entries:
+            raise ValueError(f"No available problem types for skill {skill_id} after exclusions.")
+
+    selected_entry, selection_reason = _select_entry(
+        entries, seed, problem_type_id, skill_id=skill_id
+    )
 
     generator_fn = selected_entry.get("generator_fn")
     if not callable(generator_fn):

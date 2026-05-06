@@ -219,22 +219,29 @@ def test_seen_parameter_tuples_blocks_duplicates(fn) -> None:
 def test_retry_50_failure_raises(fn, monkeypatch) -> None:
     if fn is add_principle_mutually_exclusive_choice:
         def _fixed_addition(_rng, _difficulty):
-            return ["球類社團", "音樂社團"], [3, 4]
+            return ["球類社團", "音樂社團"], [3, 4], "clubs"
 
         monkeypatch.setattr(
             "core.vocational_math_b4.generators.counting._sample_addition_parameters",
             _fixed_addition,
         )
-        seen = {("add_principle_mutually_exclusive_choice", ("球類社團", "音樂社團"), (3, 4))}
+        seen = {
+            (
+                "add_principle_mutually_exclusive_choice",
+                "clubs",
+                ("球類社團", "音樂社團"),
+                (3, 4),
+            )
+        }
     elif fn is combination_properties_simplification:
         def _fixed_comb(_rng, _difficulty):
-            return 10, 8, "symmetry"
+            return "symmetry", 10, 8, None
 
         monkeypatch.setattr(
             "core.vocational_math_b4.generators.combination._sample_combination_properties_parameters",
             _fixed_comb,
         )
-        seen = {("combination_properties_simplification", 10, 8, "symmetry")}
+        seen = {("combination_properties_simplification", "symmetry", 10, 8)}
     else:
         def _fixed_repeat(_rng, _difficulty):
             return 2, 2

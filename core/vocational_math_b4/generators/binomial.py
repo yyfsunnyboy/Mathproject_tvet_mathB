@@ -25,8 +25,16 @@ MIDDLE_TERM_PROBLEM_TYPE_ID = "binomial_middle_term_coefficient"
 MIDDLE_TERM_GENERATOR_KEY = "b4.binomial.binomial_middle_term_coefficient"
 ODD_EVEN_SUM_PROBLEM_TYPE_ID = "binomial_odd_even_coefficient_sum"
 ODD_EVEN_SUM_GENERATOR_KEY = "b4.binomial.binomial_odd_even_coefficient_sum"
+HOCKEY_STICK_SUM_PROBLEM_TYPE_ID = "combination_hockey_stick_sum"
+HOCKEY_STICK_SUM_GENERATOR_KEY = "b4.binomial.combination_hockey_stick_sum"
 SPECIFIC_NEGATIVE_TERM_PROBLEM_TYPE_ID = "binomial_specific_coefficient_with_negative_term"
 SPECIFIC_NEGATIVE_TERM_GENERATOR_KEY = "b4.binomial.binomial_specific_coefficient_with_negative_term"
+TWO_VAR_SPECIFIC_PROBLEM_TYPE_ID = "binomial_two_variable_specific_coefficient"
+TWO_VAR_SPECIFIC_GENERATOR_KEY = "b4.binomial.binomial_two_variable_specific_coefficient"
+LAURENT_SPECIFIC_PROBLEM_TYPE_ID = "binomial_laurent_specific_power_coefficient"
+LAURENT_SPECIFIC_GENERATOR_KEY = "b4.binomial.binomial_laurent_specific_power_coefficient"
+
+_MAX_BINOMIAL_SPECIFIC_ANSWER = 500_000
 
 
 def _make_numeric_choices(answer: int, rng: random.Random) -> list[int]:
@@ -170,6 +178,50 @@ def _sample_specific_negative_term_parameters(rng: random.Random, difficulty: in
     return a, b, n, rng.randint(0, n)
 
 
+def _sample_hockey_stick_parameters(rng: random.Random, difficulty: int) -> tuple[int, int]:
+    if difficulty <= 1:
+        r = rng.randint(0, 2)
+        n = rng.randint(r + 2, r + 5)
+    elif difficulty == 2:
+        r = rng.randint(1, 4)
+        n = rng.randint(r + 3, r + 7)
+    else:
+        r = rng.randint(2, 5)
+        n = rng.randint(r + 4, r + 8)
+    return r, n
+
+
+def format_combination_latex(n: int, r: int, *, wrap_in_dollars: bool = False) -> str:
+    """Format combination in textbook LaTeX style: C^{n}_{r} (optionally wrapped)."""
+    core = rf"C^{{{n}}}_{{{r}}}"
+    return f"${core}$" if wrap_in_dollars else core
+
+
+def _summation_terms_latex(terms: list[str]) -> str:
+    if len(terms) <= 6:
+        return "+".join(terms)
+    return "+".join([terms[0], terms[1], terms[2], r"\cdots", terms[-1]])
+
+
+def _build_hockey_stick_standard_terms_latex(r: int, n: int) -> str:
+    terms = [format_combination_latex(k, r) for k in range(r, n + 1)]
+    return _summation_terms_latex(terms)
+
+
+def _build_hockey_stick_shifted_terms_latex(r: int, n: int) -> str:
+    """Shifted / staggered presentation via symmetry: C^{m}_{m-r} (= C^{m}_{r})."""
+    terms = [format_combination_latex(m, m - r) for m in range(r, n + 1)]
+    return _summation_terms_latex(terms)
+
+
+def _build_hockey_stick_identity_latex(r: int, n: int) -> str:
+    left = (
+        rf"{format_combination_latex(r, r)}+{format_combination_latex(r+1, r)}+\cdots+{format_combination_latex(n, r)}"
+    )
+    right = format_combination_latex(n + 1, r + 1)
+    return rf"{left}={right}"
+
+
 def _ensure_seen_set(seen_parameter_tuples: set[tuple] | None) -> set[tuple]:
     if seen_parameter_tuples is None:
         return set()
@@ -300,32 +352,42 @@ def binomial_coefficient_sum(
     seen = _ensure_seen_set(seen_parameter_tuples)
 
     parameter_tuple: tuple | None = None
-    a = b = n = 0
+    n = 0
 
     if seed is not None and 1 <= seed <= 5 and difficulty <= 1:
-        a, b, n = [(1, 1, 2), (1, 2, 3), (1, 3, 4), (1, 4, 5), (1, 2, 5)][seed - 1]
-        candidate = (COEFFICIENT_SUM_PROBLEM_TYPE_ID, a, b, n)
+        n = [3, 4, 5, 6, 7][seed - 1]
+        candidate = (COEFFICIENT_SUM_PROBLEM_TYPE_ID, n)
         if candidate not in seen:
             parameter_tuple = candidate
 
     for _ in range(50):
         if parameter_tuple is not None:
             break
-        a, b, n = _sample_coefficient_sum_parameters(rng, difficulty)
-        candidate = (COEFFICIENT_SUM_PROBLEM_TYPE_ID, a, b, n)
+        if difficulty <= 1:
+            n = rng.randint(4, 7)
+        elif difficulty == 2:
+            n = rng.randint(6, 10)
+        else:
+            n = rng.randint(9, 14)
+        candidate = (COEFFICIENT_SUM_PROBLEM_TYPE_ID, n)
         if candidate not in seen:
             parameter_tuple = candidate
             break
     if parameter_tuple is None:
         raise ValueError("Failed to find a new parameter tuple after 50 retries.")
 
-    answer = sum(binomial_expansion_coefficients(a, b, n))
-    poly = _format_binomial(a, b)
-    substitution = f"({a}+{b})" if b > 0 else f"({a}-{abs(b)})"
-    question_text = f"展開 ${poly}^{{{n}}}$ 後，所有係數和為多少？"
+    answer = 2 ** n
+    
+    terms_latex = "+".join([rf"C^{{{n}}}_{{{k}}}" for k in range(n + 1)])
+    if terms_latex.count("+") > 4:
+        terms_latex = rf"C^{{{n}}}_{{0}}+C^{{{n}}}_{{1}}+C^{{{n}}}_{{2}}+\cdots+C^{{{n}}}_{{{n}}}"
+    identity_latex = rf"C^{{{n}}}_{{0}}+C^{{{n}}}_{{1}}+C^{{{n}}}_{{2}}+\cdots+C^{{{n}}}_{{{n}}}=2^{{{n}}}"
+
+    question_text = f"求下列組合數和的值：\n${terms_latex}$"
     explanation = (
-        f"係數和可令 $x=1$，所以 ${poly}^{{{n}}}$ 的係數和為 "
-        f"${substitution}^{{{n}}}={answer}$。"
+        f"根據二項式係數和性質：\n"
+        f"${identity_latex}$。\n"
+        f"因此值為 ${answer}$。"
     )
 
     payload = {
@@ -340,15 +402,18 @@ def binomial_coefficient_sum(
         "difficulty": difficulty,
         "diagnosis_tags": [
             "binomial_coefficient_sum",
-            "binomial_theorem",
+            "combination_identity",
             "coefficient_sum",
         ],
         "remediation_candidates": [],
         "source_style_refs": ["tc_binomial_coefficient_sum_01", "binomial_coefficient_sum"],
         "parameters": {
-            "a": a,
-            "b": b,
             "n": n,
+            "parity": "all",
+            "terms_latex": terms_latex,
+            "identity_latex": identity_latex,
+            "answer": answer,
+            "template_context": "pure_combination_sum",
             "parameter_tuple": parameter_tuple,
         },
     }
@@ -517,6 +582,123 @@ def binomial_equation_solve_n(
     return payload
 
 
+def combination_hockey_stick_sum(
+    *,
+    skill_id: str,
+    subskill_id: str,
+    difficulty: int = 1,
+    seed: int | None = None,
+    seen_parameter_tuples: set[tuple] | None = None,
+    multiple_choice: bool = True,
+) -> dict:
+    """Generate deterministic hockey-stick identity sum problems (int answer)."""
+    rng = random.Random(seed)
+    seen = _ensure_seen_set(seen_parameter_tuples)
+
+    parameter_tuple: tuple | None = None
+    r = n = 0
+    variants = ("standard_hockey_stick", "shifted_textbook")
+    if seed is not None:
+        variant = variants[seed % 2]
+    else:
+        variant = rng.choice(variants)
+    template_context = "direct_sum"
+
+    if seed is not None and 1 <= seed <= 5 and difficulty <= 1 and variant == "standard_hockey_stick":
+        presets = [(0, 4), (1, 5), (2, 6), (1, 6), (2, 7)]
+        r, n = presets[seed - 1]
+        candidate = (HOCKEY_STICK_SUM_PROBLEM_TYPE_ID, variant, r, n)
+        if candidate not in seen:
+            parameter_tuple = candidate
+
+    for _ in range(80):
+        if parameter_tuple is not None:
+            break
+        r, n = _sample_hockey_stick_parameters(rng, difficulty)
+        if variant == "shifted_textbook" and r < 2:
+            # Keep shifted variant aligned with common textbook examples (avoid trivial r=0/1 cases).
+            continue
+        answer_try = combination(n + 1, r + 1)
+        if answer_try > 500_000:
+            continue
+        candidate = (HOCKEY_STICK_SUM_PROBLEM_TYPE_ID, variant, r, n)
+        if candidate not in seen:
+            parameter_tuple = candidate
+            break
+    if parameter_tuple is None:
+        raise ValueError("Failed to find a new parameter tuple after 80 retries.")
+
+    term_count = n - r + 1
+    if variant == "standard_hockey_stick":
+        terms_latex = _build_hockey_stick_standard_terms_latex(r, n)
+        normalized_terms_latex = terms_latex
+    else:
+        terms_latex = _build_hockey_stick_shifted_terms_latex(r, n)
+        normalized_terms_latex = _build_hockey_stick_standard_terms_latex(r, n)
+
+    identity_latex = _build_hockey_stick_identity_latex(r, n)
+    answer = combination(n + 1, r + 1)
+    question_text = "利用組合數恆等式，求下列和：" + rf"${terms_latex}$。"
+    if variant == "standard_hockey_stick":
+        explanation = (
+            "根據 hockey-stick identity："
+            + rf"${identity_latex}$。"
+            + rf"因此答案為 ${format_combination_latex(n+1, r+1)}={answer}$。"
+        )
+    else:
+        explanation = (
+            rf"利用 $C^{{m}}_{{m-r}}=C^{{m}}_{{r}}$，可將各項改寫為同一下標 $r$ 的和："
+            + rf"${normalized_terms_latex}$。"
+            + "再由 hockey-stick identity 得："
+            + rf"${identity_latex}$。"
+            + rf"因此答案為 ${format_combination_latex(n+1, r+1)}={answer}$。"
+        )
+
+    payload = {
+        "question_text": question_text,
+        "choices": _make_numeric_choices(answer, rng) if multiple_choice else [],
+        "answer": answer,
+        "explanation": explanation,
+        "skill_id": skill_id,
+        "subskill_id": subskill_id,
+        "problem_type_id": HOCKEY_STICK_SUM_PROBLEM_TYPE_ID,
+        "generator_key": HOCKEY_STICK_SUM_GENERATOR_KEY,
+        "difficulty": difficulty,
+        "diagnosis_tags": [
+            "combination_hockey_stick_sum",
+            "combination_identity",
+            "binomial_coefficient",
+        ],
+        "remediation_candidates": [],
+        "source_style_refs": [
+            "tc_combination_hockey_stick_sum_01",
+            "combination_hockey_stick_sum",
+        ],
+        "parameters": {
+            "variant": variant,
+            "r": r,
+            "n": n,
+            "term_count": term_count,
+            "terms_latex": terms_latex,
+            "normalized_terms_latex": normalized_terms_latex,
+            "identity_latex": identity_latex,
+            "answer": answer,
+            "template_context": template_context,
+            "formula_components": {
+                "left_start_k": r,
+                "left_end_k": n,
+                "right_n": n + 1,
+                "right_r": r + 1,
+            },
+            "parameter_tuple": parameter_tuple,
+        },
+    }
+
+    _validate_and_finalize(payload, multiple_choice)
+    seen.add(parameter_tuple)
+    return payload
+
+
 def binomial_middle_term_coefficient(
     *,
     skill_id: str,
@@ -606,41 +788,58 @@ def binomial_odd_even_coefficient_sum(
     seen = _ensure_seen_set(seen_parameter_tuples)
 
     parameter_tuple: tuple | None = None
-    a = b = n = 0
+    n = 0
     target_parity = "odd"
 
     if seed is not None and 1 <= seed <= 5 and difficulty <= 1:
-        a, b, n, target_parity = [
-            (1, 1, 2, "odd"),
-            (1, 2, 3, "even"),
-            (1, 3, 4, "odd"),
-            (1, 4, 5, "even"),
-            (1, 2, 5, "odd"),
+        n, target_parity = [
+            (3, "odd"),
+            (4, "even"),
+            (5, "odd"),
+            (6, "even"),
+            (7, "odd"),
         ][seed - 1]
-        candidate = (ODD_EVEN_SUM_PROBLEM_TYPE_ID, a, b, n, target_parity)
+        candidate = (ODD_EVEN_SUM_PROBLEM_TYPE_ID, n, target_parity)
         if candidate not in seen:
             parameter_tuple = candidate
 
     for _ in range(50):
         if parameter_tuple is not None:
             break
-        a, b, n, target_parity = _sample_odd_even_sum_parameters(rng, difficulty)
-        candidate = (ODD_EVEN_SUM_PROBLEM_TYPE_ID, a, b, n, target_parity)
+        if difficulty <= 1:
+            n = rng.randint(4, 7)
+        elif difficulty == 2:
+            n = rng.randint(6, 10)
+        else:
+            n = rng.randint(9, 14)
+        target_parity = rng.choice(["odd", "even"])
+        candidate = (ODD_EVEN_SUM_PROBLEM_TYPE_ID, n, target_parity)
         if candidate not in seen:
             parameter_tuple = candidate
             break
     if parameter_tuple is None:
         raise ValueError("Failed to find a new parameter tuple after 50 retries.")
 
-    coefficients = binomial_expansion_coefficients(a, b, n)
-    target_mod = 1 if target_parity == "odd" else 0
-    answer = sum(coefficients[n - k] for k in range(n + 1) if k % 2 == target_mod)
-    poly = _format_binomial(a, b)
-    parity_text = "奇數次項" if target_parity == "odd" else "偶數次項"
-    question_text = f"展開 ${poly}^{{{n}}}$ 後，{parity_text}係數和為多少？"
+    answer = 2 ** (n - 1)
+    
+    if target_parity == "even":
+        terms_latex = "+".join([rf"C^{{{n}}}_{{{k}}}" for k in range(0, n + 1, 2)])
+        if terms_latex.count("+") > 3:
+            terms_latex = rf"C^{{{n}}}_{{0}}+C^{{{n}}}_{{2}}+C^{{{n}}}_{{4}}+\cdots"
+        identity_latex = rf"C^{{{n}}}_{{0}}+C^{{{n}}}_{{2}}+C^{{{n}}}_{{4}}+\cdots=2^{{{n}-1}}"
+        template_context = "even_combination_sum"
+    else:
+        terms_latex = "+".join([rf"C^{{{n}}}_{{{k}}}" for k in range(1, n + 1, 2)])
+        if terms_latex.count("+") > 3:
+            terms_latex = rf"C^{{{n}}}_{{1}}+C^{{{n}}}_{{3}}+C^{{{n}}}_{{5}}+\cdots"
+        identity_latex = rf"C^{{{n}}}_{{1}}+C^{{{n}}}_{{3}}+C^{{{n}}}_{{5}}+\cdots=2^{{{n}-1}}"
+        template_context = "odd_combination_sum"
+
+    question_text = f"求下列組合數和的值：\n${terms_latex}$"
     explanation = (
-        f"依 $x^{{{n}}}$ 到 $x^{{0}}$ 的係數，取出 {parity_text} 對應項後相加；"
-        f"因此係數和為 ${answer}$。"
+        f"根據組合數奇偶項和性質：\n"
+        f"${identity_latex}$。\n"
+        f"因此值為 $2^{{{n}-1}} = {answer}$。"
     )
 
     payload = {
@@ -653,17 +852,19 @@ def binomial_odd_even_coefficient_sum(
         "problem_type_id": ODD_EVEN_SUM_PROBLEM_TYPE_ID,
         "generator_key": ODD_EVEN_SUM_GENERATOR_KEY,
         "difficulty": difficulty,
-        "diagnosis_tags": ["binomial_odd_even_coefficient_sum", "binomial_theorem", "odd_even_terms"],
+        "diagnosis_tags": ["binomial_odd_even_coefficient_sum", "combination_identity", "odd_even_terms"],
         "remediation_candidates": [],
         "source_style_refs": [
             "tc_binomial_odd_even_coefficient_sum_01",
             "binomial_odd_even_coefficient_sum",
         ],
         "parameters": {
-            "a": a,
-            "b": b,
             "n": n,
-            "target_parity": target_parity,
+            "parity": target_parity,
+            "terms_latex": terms_latex,
+            "identity_latex": identity_latex,
+            "answer": answer,
+            "template_context": template_context,
             "parameter_tuple": parameter_tuple,
         },
     }
@@ -743,6 +944,306 @@ def binomial_specific_coefficient_with_negative_term(
             "b": b,
             "n": n,
             "k": k,
+            "parameter_tuple": parameter_tuple,
+        },
+    }
+
+    _validate_and_finalize(payload, multiple_choice)
+    seen.add(parameter_tuple)
+    return payload
+
+
+def _format_two_variable_binomial_latex(a: int, b: int, *, y_plus: bool) -> str:
+    x_part = "x" if a == 1 else f"{a}x"
+    if y_plus:
+        if b == 1:
+            y_part = "+y"
+        else:
+            y_part = f"+{b}y"
+    else:
+        if b == 1:
+            y_part = "-y"
+        else:
+            y_part = f"-{b}y"
+    return f"({x_part}{y_part})"
+
+
+def _two_variable_term_coefficient(a: int, b: int, n: int, q: int, *, y_plus: bool) -> int:
+    p = n - q
+    signed_b = b if y_plus else -b
+    return combination(n, q) * (a**p) * (signed_b**q)
+
+
+def _sample_two_variable_parameters(
+    rng: random.Random, difficulty: int
+) -> tuple[int, int, int, int, bool]:
+    if difficulty <= 1:
+        n = rng.randint(3, 5)
+        a = rng.randint(1, 3)
+        b = rng.randint(1, 3)
+        y_plus = rng.choice([True, True, False])
+    elif difficulty == 2:
+        n = rng.randint(3, 7)
+        a = rng.randint(1, 4)
+        b = rng.randint(1, 5)
+        y_plus = rng.choice([True, False])
+    else:
+        n = rng.randint(4, 7)
+        a = rng.randint(2, 5)
+        b = rng.randint(1, 5)
+        y_plus = rng.choice([True, False])
+    q = rng.randint(0, n)
+    return a, b, n, q, y_plus
+
+
+def _explain_two_variable_coefficient(
+    a: int,
+    b: int,
+    n: int,
+    p: int,
+    q: int,
+    *,
+    y_plus: bool,
+    answer: int,
+    poly: str,
+) -> str:
+    signed_latex = f"{b}" if y_plus else f"(-{b})"
+    return (
+        f"將 ${poly}^{{{n}}}$ 視為 $(ax\\pm by)^n$ 的形式（此處 $a={a}$，$y$ 的係數可寫成 $\\pm {b}$）。"
+        f"指定 $x^{{{p}}}y^{{{q}}}$（$p+q=n$）對應一般項 $\\binom{{{n}}}{{{q}}}(ax)^{{{p}}}(\\pm by)^{{{q}}}$，"
+        f"係數為 $\\binom{{{n}}}{{{q}}}\\cdot {a}^{{{p}}}\\cdot ({signed_latex})^{{{q}}}={answer}$。"
+    )
+
+
+def binomial_two_variable_specific_coefficient(
+    *,
+    skill_id: str,
+    subskill_id: str,
+    difficulty: int = 1,
+    seed: int | None = None,
+    seen_parameter_tuples: set[tuple] | None = None,
+    multiple_choice: bool = True,
+) -> dict:
+    """Coefficient of x^p y^q in (ax ± by)^n with p+q=n (int answer)."""
+    rng = random.Random(seed)
+    seen = _ensure_seen_set(seen_parameter_tuples)
+
+    parameter_tuple: tuple | None = None
+    a = b = n = q = 0
+    y_plus = True
+
+    if seed is not None and 1 <= seed <= 5 and difficulty <= 1:
+        presets = [
+            (2, 3, 4, 2, True),
+            (2, 3, 4, 2, False),
+            (1, 2, 5, 2, False),
+            (3, 1, 5, 1, True),
+            (2, 1, 3, 1, True),
+        ]
+        a, b, n, q, y_plus = presets[seed - 1]
+        candidate = (TWO_VAR_SPECIFIC_PROBLEM_TYPE_ID, a, b, n, q, y_plus)
+        if candidate not in seen:
+            parameter_tuple = candidate
+
+    for _ in range(80):
+        if parameter_tuple is not None:
+            break
+        a, b, n, q, y_plus = _sample_two_variable_parameters(rng, difficulty)
+        ans_try = _two_variable_term_coefficient(a, b, n, q, y_plus=y_plus)
+        if abs(ans_try) > _MAX_BINOMIAL_SPECIFIC_ANSWER:
+            continue
+        candidate = (TWO_VAR_SPECIFIC_PROBLEM_TYPE_ID, a, b, n, q, y_plus)
+        if candidate not in seen:
+            parameter_tuple = candidate
+            break
+
+    if parameter_tuple is None:
+        raise ValueError("Failed to find a new parameter tuple after 80 retries.")
+
+    p = n - q
+    answer = _two_variable_term_coefficient(a, b, n, q, y_plus=y_plus)
+    poly = _format_two_variable_binomial_latex(a, b, y_plus=y_plus)
+    question_text = (
+        f"在 ${poly}^{{{n}}}$ 的展開式中，求 $x^{{{p}}}y^{{{q}}}$ 項的係數（只需係數，不必寫出完整展開式）。"
+    )
+    explanation = _explain_two_variable_coefficient(
+        a, b, n, p, q, y_plus=y_plus, answer=answer, poly=poly
+    )
+
+    payload = {
+        "question_text": question_text,
+        "choices": _make_numeric_choices(answer, rng) if multiple_choice else [],
+        "answer": answer,
+        "explanation": explanation,
+        "skill_id": skill_id,
+        "subskill_id": subskill_id,
+        "problem_type_id": TWO_VAR_SPECIFIC_PROBLEM_TYPE_ID,
+        "generator_key": TWO_VAR_SPECIFIC_GENERATOR_KEY,
+        "difficulty": difficulty,
+        "diagnosis_tags": [
+            "binomial_two_variable_specific_coefficient",
+            "binomial_theorem",
+            "specific_coefficient",
+        ],
+        "remediation_candidates": [],
+        "source_style_refs": [
+            "tc_binomial_two_variable_specific_coefficient_01",
+            "binomial_two_variable_specific_coefficient",
+        ],
+        "parameters": {
+            "a": a,
+            "b": b,
+            "n": n,
+            "p": p,
+            "q": q,
+            "y_plus": y_plus,
+            "parameter_tuple": parameter_tuple,
+        },
+    }
+
+    _validate_and_finalize(payload, multiple_choice)
+    seen.add(parameter_tuple)
+    return payload
+
+
+def _format_laurent_binomial_latex(a: int, b: int, *, term_plus: bool) -> str:
+    x_part = "x" if a == 1 else f"{a}x"
+    frac = f"\\frac{{{b}}}{{x}}"
+    if term_plus:
+        inner = f"{x_part}+{frac}"
+    else:
+        inner = f"{x_part}-{frac}"
+    return f"\\left({inner}\\right)"
+
+
+def _laurent_power_term_coefficient(a: int, b: int, n: int, r: int, *, term_plus: bool) -> int:
+    signed_b = b if term_plus else -b
+    return combination(n, r) * (a ** (n - r)) * (signed_b**r)
+
+
+def _sample_laurent_parameters(
+    rng: random.Random, difficulty: int
+) -> tuple[int, int, int, int, bool]:
+    if difficulty <= 1:
+        n = rng.randint(4, 6)
+        a = rng.randint(1, 2)
+        b = rng.randint(1, 3)
+        term_plus = rng.choice([True, True, False])
+    elif difficulty == 2:
+        n = rng.randint(4, 7)
+        a = rng.randint(1, 3)
+        b = rng.randint(1, 4)
+        term_plus = rng.choice([True, False])
+    else:
+        n = rng.randint(5, 8)
+        a = rng.randint(1, 4)
+        b = rng.randint(1, 4)
+        term_plus = rng.choice([True, False])
+    r = rng.randint(0, n)
+    return a, b, n, r, term_plus
+
+
+def _explain_laurent_coefficient(
+    a: int,
+    b: int,
+    n: int,
+    r: int,
+    k: int,
+    *,
+    term_plus: bool,
+    answer: int,
+    poly: str,
+) -> str:
+    signed_note = f"{b}" if term_plus else f"(-{b})"
+    return (
+        f"將 ${poly}^{{{n}}}$ 的一般項寫成 $\\binom{{{n}}}{{{r}}}(ax)^{{{n-r}}}\\left(\\frac{{\\pm b}}{{x}}\\right)^{{{r}}}$。"
+        f"$x$ 的次方為 $(n-r)-r=n-2r$，令 $n-2r={k}$ 得 $r={r}$。"
+        f"係數為 $\\binom{{{n}}}{{{r}}}\\cdot {a}^{{{n-r}}}\\cdot ({signed_note})^{{{r}}}={answer}$。"
+    )
+
+
+def binomial_laurent_specific_power_coefficient(
+    *,
+    skill_id: str,
+    subskill_id: str,
+    difficulty: int = 1,
+    seed: int | None = None,
+    seen_parameter_tuples: set[tuple] | None = None,
+    multiple_choice: bool = True,
+) -> dict:
+    """Coefficient of x^k in (ax ± b/x)^n with k=n-2r (int answer)."""
+    rng = random.Random(seed)
+    seen = _ensure_seen_set(seen_parameter_tuples)
+
+    parameter_tuple: tuple | None = None
+    a = b = n = r = 0
+    term_plus = True
+
+    if seed is not None and 1 <= seed <= 5 and difficulty <= 1:
+        presets = [
+            (1, 3, 6, 1, True),
+            (1, 2, 6, 2, True),
+            (2, 1, 4, 2, True),
+            (1, 1, 5, 2, False),
+            (2, 2, 5, 1, True),
+        ]
+        a, b, n, r, term_plus = presets[seed - 1]
+        candidate = (LAURENT_SPECIFIC_PROBLEM_TYPE_ID, a, b, n, r, term_plus)
+        if candidate not in seen:
+            parameter_tuple = candidate
+
+    for _ in range(80):
+        if parameter_tuple is not None:
+            break
+        a, b, n, r, term_plus = _sample_laurent_parameters(rng, difficulty)
+        ans_try = _laurent_power_term_coefficient(a, b, n, r, term_plus=term_plus)
+        if abs(ans_try) > _MAX_BINOMIAL_SPECIFIC_ANSWER:
+            continue
+        candidate = (LAURENT_SPECIFIC_PROBLEM_TYPE_ID, a, b, n, r, term_plus)
+        if candidate not in seen:
+            parameter_tuple = candidate
+            break
+
+    if parameter_tuple is None:
+        raise ValueError("Failed to find a new parameter tuple after 80 retries.")
+
+    k = n - 2 * r
+    answer = _laurent_power_term_coefficient(a, b, n, r, term_plus=term_plus)
+    poly = _format_laurent_binomial_latex(a, b, term_plus=term_plus)
+    question_text = (
+        f"在 ${poly}^{{{n}}}$ 的展開式中，求 $x^{{{k}}}$ 項的係數（只需係數，不必寫出完整展開式）。"
+    )
+    explanation = _explain_laurent_coefficient(
+        a, b, n, r, k, term_plus=term_plus, answer=answer, poly=poly
+    )
+
+    payload = {
+        "question_text": question_text,
+        "choices": _make_numeric_choices(answer, rng) if multiple_choice else [],
+        "answer": answer,
+        "explanation": explanation,
+        "skill_id": skill_id,
+        "subskill_id": subskill_id,
+        "problem_type_id": LAURENT_SPECIFIC_PROBLEM_TYPE_ID,
+        "generator_key": LAURENT_SPECIFIC_GENERATOR_KEY,
+        "difficulty": difficulty,
+        "diagnosis_tags": [
+            "binomial_laurent_specific_power_coefficient",
+            "binomial_theorem",
+            "specific_coefficient",
+        ],
+        "remediation_candidates": [],
+        "source_style_refs": [
+            "tc_binomial_laurent_specific_power_coefficient_01",
+            "binomial_laurent_specific_power_coefficient",
+        ],
+        "parameters": {
+            "a": a,
+            "b": b,
+            "n": n,
+            "r": r,
+            "k": k,
+            "term_plus": term_plus,
             "parameter_tuple": parameter_tuple,
         },
     }

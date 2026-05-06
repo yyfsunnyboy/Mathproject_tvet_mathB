@@ -31,6 +31,16 @@ RESTRICTED_SELECTION_PROBLEM_TYPE_ID = "combination_restricted_selection"
 RESTRICTED_SELECTION_GENERATOR_KEY = "b4.combination.combination_restricted_selection"
 SEAT_ASSIGNMENT_PROBLEM_TYPE_ID = "combination_seat_assignment"
 SEAT_ASSIGNMENT_GENERATOR_KEY = "b4.combination.combination_seat_assignment"
+GRID_SHORTEST_PATH_PROBLEM_TYPE_ID = "grid_shortest_path_count"
+GRID_SHORTEST_PATH_GENERATOR_KEY = "b4.combination.grid_shortest_path_count"
+_MAX_GRID_PATH_ANSWER = 500_000
+
+_GRID_PATH_TEMPLATE_CONTEXTS = (
+    "chessboard_roads",
+    "campus_grid",
+    "street_grid",
+    "generic_ab",
+)
 
 
 def _make_numeric_choices(answer: int, rng: random.Random) -> list[int]:
@@ -93,9 +103,18 @@ def generate(
 
     parameter_tuple: tuple | None = None
     n = r = 0
+    template_context = "works_exhibit"
+    context_pool = (
+        "works_exhibit",
+        "exam_pick",
+        "committee",
+        "sample_draw",
+        "delegate_pick",
+    )
     for _ in range(50):
         n, r = _sample_parameters(rng, difficulty)
-        candidate = (PROBLEM_TYPE_ID, n, r)
+        template_context = rng.choice(context_pool)
+        candidate = (PROBLEM_TYPE_ID, n, r, template_context)
         if candidate not in seen:
             parameter_tuple = candidate
             break
@@ -103,8 +122,31 @@ def generate(
         raise ValueError("Failed to find a new parameter tuple after 50 retries.")
 
     answer = combination(n, r)
-    question_text = f"從 {n} 件不同作品中選出 {r} 件展示，共有多少種選法？"
-    explanation = f"此題不計順序，使用 $C^{{n}}_{{r}}=\\frac{{n!}}{{r!(n-r)!}}$，所以 $C^{{{n}}}_{{{r}}}={answer}$。"
+    if template_context == "works_exhibit":
+        question_text = (
+            f"從 ${n}$ 件不同作品中選出 ${r}$ 件展示（不論展示順序），共有多少種選法？"
+        )
+    elif template_context == "exam_pick":
+        question_text = (
+            f"一份測驗共有 ${n}$ 題相異題目，需從中選答 ${r}$ 題（不論作答順序），共有多少種選題組合？"
+        )
+    elif template_context == "committee":
+        question_text = (
+            f"從 ${n}$ 人中選出 ${r}$ 人組成委員會（職務未指定、不計順序），共有多少種組成方式？"
+        )
+    elif template_context == "sample_draw":
+        question_text = (
+            f"從 ${n}$ 份相異樣本中抽出 ${r}$ 份檢驗（不計抽取順序），共有多少種抽法？"
+        )
+    else:
+        question_text = (
+            f"從 ${n}$ 位代表中推選 ${r}$ 人擔任工作小組（不計順序），共有多少種推選結果？"
+        )
+
+    explanation = (
+        "不計順序，故為組合："
+        f"$\\displaystyle C^{{{n}}}_{{{r}}}=\\frac{{{n}!}}{{{r}!({n}-{r})!}}={answer}$。"
+    )
 
     choices = _make_numeric_choices(answer, rng) if multiple_choice else []
     payload = {
@@ -123,6 +165,7 @@ def generate(
         "parameters": {
             "n": n,
             "r": r,
+            "template_context": template_context,
             "parameter_tuple": parameter_tuple,
         },
     }
@@ -418,7 +461,30 @@ def combination_group_selection(
     return payload
 
 
-def _sample_combination_properties_parameters(rng: random.Random, difficulty: int) -> tuple[int, int, str]:
+def _sample_combination_properties_parameters(
+    rng: random.Random, difficulty: int
+) -> tuple[str, int, int, int | None]:
+    """Return (variant, n, r_or_r1, r2_or_none). For two_term_sum: r1, r2 both set; else r2 is None."""
+    variant = rng.choice(["symmetry", "direct", "symmetry_word", "two_term_sum"])
+    if variant == "two_term_sum":
+        if difficulty <= 1:
+            n = rng.randint(8, 12)
+        elif difficulty == 2:
+            n = rng.randint(10, 15)
+        else:
+            n = rng.randint(12, 18)
+        for _ in range(80):
+            r1 = rng.randint(2, max(2, n - 3))
+            r2 = rng.randint(2, max(2, n - 3))
+            if r1 == r2:
+                continue
+            if combination(n, r1) + combination(n, r2) <= 8000:
+                return "two_term_sum", n, r1, r2
+        r1, r2 = 2, 3
+        if n <= r2:
+            n = 8
+        return "two_term_sum", n, r1, r2
+
     if difficulty <= 1:
         n = rng.randint(5, 10)
         r = rng.randint(1, 4)
@@ -431,14 +497,13 @@ def _sample_combination_properties_parameters(rng: random.Random, difficulty: in
     if r > n:
         r = n
 
-    variant = rng.choice(["symmetry", "direct"])
-    if variant == "symmetry" and r <= n - r:
-        r = n - rng.randint(1, min(4, n - 1))
+    if variant in {"symmetry", "symmetry_word"} and r <= n - r:
+        r = n - rng.randint(1, min(4, max(1, n - 1)))
         if r < 0:
             r = 0
         if r > n:
             r = n
-    return n, r, variant
+    return variant, n, r, None
 
 
 def _sample_combination_basic_selection_params(
@@ -545,28 +610,60 @@ def combination_properties_simplification(
     generator_key = "b4.combination.combination_properties_simplification"
 
     parameter_tuple: tuple | None = None
-    n = r = 0
+    n = r = r1 = r2 = 0
     variant = ""
     for _ in range(50):
-        n, r, variant = _sample_combination_properties_parameters(rng, difficulty)
-        candidate = (problem_type_id, n, r, variant)
+        variant, n, r1, r2 = _sample_combination_properties_parameters(rng, difficulty)
+        if variant == "two_term_sum":
+            assert r2 is not None
+            candidate = (problem_type_id, variant, n, r1, r2)
+        else:
+            candidate = (problem_type_id, variant, n, r1)
         if candidate not in seen:
             parameter_tuple = candidate
             break
     if parameter_tuple is None:
         raise ValueError("Failed to find a new parameter tuple after 50 retries.")
 
-    answer = combination(n, r)
-    if variant == "symmetry":
-        question_text = f"利用組合性質 $C^{{n}}_{{r}}=C^{{n}}_{{n-r}}$，求 $C^{{{n}}}_{{{r}}}$ 的值。"
+    if variant == "two_term_sum":
+        assert r2 is not None
+        r = r1
+        c1 = combination(n, r1)
+        c2 = combination(n, r2)
+        answer = c1 + c2
+        question_text = (
+            f"求 $C^{{{n}}}_{{{r1}}}+C^{{{n}}}_{{{r2}}}$ 的值（僅需算出數值）。"
+        )
         explanation = (
-            f"使用 $C^{{n}}_{{r}}=C^{{n}}_{{n-r}}$，所以 $C^{{{n}}}_{{{r}}}=C^{{{n}}}_{{{n-r}}}={answer}$。"
+            f"$C^{{{n}}}_{{{r1}}}={c1}$，$C^{{{n}}}_{{{r2}}}={c2}$，"
+            f"故 $C^{{{n}}}_{{{r1}}}+C^{{{n}}}_{{{r2}}}={c1}+{c2}={answer}$。"
         )
     else:
-        question_text = f"計算組合數 $C^{{{n}}}_{{{r}}}$ 的值。"
-        explanation = (
-            f"使用 $C^{{n}}_{{r}}=\\frac{{n!}}{{r!(n-r)!}}$ 計算，可得 $C^{{{n}}}_{{{r}}}={answer}$。"
-        )
+        r = r1
+        answer = combination(n, r)
+        if variant == "symmetry":
+            question_text = (
+                f"利用組合性質 $C^{{n}}_{{r}}=C^{{n}}_{{n-r}}$，求 $C^{{{n}}}_{{{r}}}$ 的值。"
+            )
+            explanation = (
+                f"使用 $C^{{n}}_{{r}}=C^{{n}}_{{n-r}}$，所以 "
+                f"$C^{{{n}}}_{{{r}}}=C^{{{n}}}_{{{n-r}}}={answer}$。"
+            )
+        elif variant == "symmetry_word":
+            question_text = (
+                f"從 ${n}$ 位候選人中選出 ${r}$ 人與選出 ${n-r}$ 人（不計順序）的方法數相同，"
+                f"求此相同的方法數。"
+            )
+            explanation = (
+                f"由對稱性 $C^{{n}}_{{r}}=C^{{n}}_{{n-r}}$，所求即 $C^{{{n}}}_{{{r}}}$；"
+                f"代入公式得 $C^{{{n}}}_{{{r}}}={answer}$。"
+            )
+        else:
+            question_text = f"計算組合數 $C^{{{n}}}_{{{r}}}$ 的值。"
+            explanation = (
+                f"使用 $C^{{n}}_{{r}}=\\frac{{n!}}{{r!(n-r)!}}$ 計算，"
+                f"可得 $C^{{{n}}}_{{{r}}}={answer}$。"
+            )
 
     payload = {
         "question_text": question_text,
@@ -591,6 +688,7 @@ def combination_properties_simplification(
         "parameters": {
             "n": n,
             "r": r,
+            "r2": r2 if variant == "two_term_sum" else None,
             "variant": variant,
             "parameter_tuple": parameter_tuple,
         },
@@ -817,6 +915,266 @@ def combination_seat_assignment(
             "n": n,
             "r": r,
             "context": context,
+            "parameter_tuple": parameter_tuple,
+        },
+    }
+
+    _validate_and_finalize(payload, multiple_choice)
+    seen.add(parameter_tuple)
+    return payload
+
+
+def _grid_right_up_path_count(dx: int, dy: int) -> int:
+    if dx < 0 or dy < 0:
+        raise ValueError("grid segments must be nonnegative.")
+    return combination(dx + dy, dx)
+
+
+def _sample_grid_shortest_path_core(
+    rng: random.Random, difficulty: int
+) -> tuple[int, int, int, int]:
+    if difficulty <= 1:
+        w = rng.randint(3, 5)
+        h = rng.randint(3, 5)
+    elif difficulty == 2:
+        w = rng.randint(3, 7)
+        h = rng.randint(3, 7)
+    else:
+        w = rng.randint(4, 8)
+        h = rng.randint(4, 8)
+    mid_x = rng.randint(1, w - 1)
+    mid_y = rng.randint(1, h - 1)
+    return w, h, mid_x, mid_y
+
+
+def _grid_path_question_preamble(template_context: str, w: int, h: int) -> str:
+    if template_context == "chessboard_roads":
+        return (
+            f"某棋盤狀方格道路中，從甲地到乙地須向右走 ${w}$ 段、向上走 ${h}$ 段；"
+            f"每一步只能沿邊向右或向上前進一段（最短路徑）。"
+        )
+    if template_context == "campus_grid":
+        return (
+            f"某校園方格步道從甲地到乙地須向右走 ${w}$ 段、向上走 ${h}$ 段；"
+            f"每一步只能沿步道向右或向上前進一段（最短路徑）。"
+        )
+    if template_context == "street_grid":
+        return (
+            f"某地街道路網呈方格狀，從甲地到乙地須向右走 ${w}$ 段、向上走 ${h}$ 段；"
+            f"每一步只能沿道路向右或向上前進一段（最短路徑）。"
+        )
+    return (
+        f"從甲地到乙地的方格路網中，須向右走 ${w}$ 段、向上走 ${h}$ 段；"
+        f"每一步只能向右或向上前進一段（最短路徑）。"
+    )
+
+
+def _grid_path_explanation_basic(w: int, h: int, total: int) -> str:
+    return (
+        "只許向右或向上，最短路徑恰含所有右段與上段各走一次，"
+        f"方法數為 $\\displaystyle C^{{{w}+{h}}}_{{{w}}}={total}$。"
+    )
+
+
+def _grid_path_explanation_via(
+    w: int,
+    h: int,
+    mx: int,
+    my: int,
+    p_to_mid: int,
+    mid_to_end: int,
+    via: int,
+) -> str:
+    a2 = w - mx
+    b2 = h - my
+    return (
+        "必經丙地時，先算甲→丙再算丙→乙，乘法原理："
+        f"$\\displaystyle C^{{{mx}+{my}}}_{{{mx}}}\\times C^{{{a2}+{b2}}}_{{{a2}}}"
+        f"={p_to_mid}\\times {mid_to_end}={via}$。"
+    )
+
+
+def _grid_path_explanation_avoid(
+    w: int,
+    h: int,
+    mx: int,
+    my: int,
+    total: int,
+    p_to_mid: int,
+    mid_to_end: int,
+    via: int,
+    ans: int,
+) -> str:
+    a2 = w - mx
+    b2 = h - my
+    return (
+        "不經過丙地：全部最短路徑扣除必經丙者："
+        f"$\\displaystyle C^{{{w}+{h}}}_{{{w}}}-\\big(C^{{{mx}+{my}}}_{{{mx}}}\\cdot C^{{{a2}+{b2}}}_{{{a2}}}\\big)"
+        f"={total}-{via}={ans}$。"
+    )
+
+
+def grid_shortest_path_count(
+    *,
+    skill_id: str,
+    subskill_id: str,
+    difficulty: int = 1,
+    seed: int | None = None,
+    seen_parameter_tuples: set[tuple] | None = None,
+    multiple_choice: bool = True,
+) -> dict:
+    """Grid shortest paths with only right/up moves; basic, via_point, or avoid_point."""
+    rng = random.Random(seed)
+    seen = _ensure_seen_set(seen_parameter_tuples)
+
+    variants = ("basic", "via_point", "avoid_point")
+    if seed is not None:
+        variant = variants[seed % 3]
+    else:
+        variant = rng.choice(variants)
+
+    parameter_tuple: tuple | None = None
+    w = h = mx = my = 0
+    template_context = "generic_ab"
+
+    if seed is not None and 1 <= seed <= 6 and difficulty <= 1:
+        presets = [
+            ("basic", 4, 4, 2, 2, "street_grid"),
+            ("via_point", 5, 4, 2, 2, "campus_grid"),
+            ("avoid_point", 5, 5, 2, 3, "chessboard_roads"),
+            ("basic", 3, 6, 1, 2, "generic_ab"),
+            ("via_point", 6, 3, 3, 1, "street_grid"),
+            ("avoid_point", 4, 4, 1, 2, "campus_grid"),
+        ]
+        variant, w, h, mx, my, template_context = presets[seed - 1]
+        candidate = (
+            GRID_SHORTEST_PATH_PROBLEM_TYPE_ID,
+            variant,
+            w,
+            h,
+            mx,
+            my,
+            template_context,
+        )
+        if candidate not in seen:
+            parameter_tuple = candidate
+
+    for _ in range(80):
+        if parameter_tuple is not None:
+            break
+        if seed is None:
+            variant = rng.choice(variants)
+        template_context = rng.choice(_GRID_PATH_TEMPLATE_CONTEXTS)
+        w, h, mx, my = _sample_grid_shortest_path_core(rng, difficulty)
+        candidate = (
+            GRID_SHORTEST_PATH_PROBLEM_TYPE_ID,
+            variant,
+            w,
+            h,
+            mx,
+            my,
+            template_context,
+        )
+        if candidate in seen:
+            continue
+        total = _grid_right_up_path_count(w, h)
+        p_to_mid = _grid_right_up_path_count(mx, my)
+        mid_to_end = _grid_right_up_path_count(w - mx, h - my)
+        via = p_to_mid * mid_to_end
+        if variant == "basic":
+            answer = total
+        elif variant == "via_point":
+            answer = via
+        else:
+            answer = total - via
+        if answer <= 0 or answer > _MAX_GRID_PATH_ANSWER:
+            continue
+        parameter_tuple = candidate
+        break
+
+    if parameter_tuple is None:
+        raise ValueError("Failed to find a new grid path parameter tuple after 80 retries.")
+
+    variant = parameter_tuple[1]
+    w, h, mx, my, template_context = (
+        parameter_tuple[2],
+        parameter_tuple[3],
+        parameter_tuple[4],
+        parameter_tuple[5],
+        parameter_tuple[6],
+    )
+
+    total_paths = _grid_right_up_path_count(w, h)
+    p_to_mid = _grid_right_up_path_count(mx, my)
+    mid_to_end = _grid_right_up_path_count(w - mx, h - my)
+    via_paths = p_to_mid * mid_to_end
+
+    if variant == "basic":
+        answer = total_paths
+        via_paths_stored = 0
+        mid_x = mid_y = None
+        preamble = _grid_path_question_preamble(template_context, w, h)
+        question_text = (
+            preamble
+            + "若不考慮繪製路線圖，僅以計數回答，則最短路徑共有幾種？"
+        )
+        explanation = _grid_path_explanation_basic(w, h, total_paths)
+    else:
+        mid_x, mid_y = mx, my
+        a1, b1, a2, b2 = mx, my, w - mx, h - my
+        preamble = _grid_path_question_preamble(template_context, w, h)
+        via_clause = (
+            f"途中有一路口丙；從甲到丙須向右走 ${a1}$ 段、向上走 ${b1}$ 段，"
+            f"從丙到乙須向右走 ${a2}$ 段、向上走 ${b2}$ 段（仍只許每次向右或向上一段）。"
+        )
+        if variant == "via_point":
+            answer = via_paths
+            via_paths_stored = via_paths
+            question_text = preamble + via_clause + "若最短路徑必須經過丙，則共有幾種？"
+            explanation = _grid_path_explanation_via(w, h, mx, my, p_to_mid, mid_to_end, via_paths)
+        else:
+            answer = total_paths - via_paths
+            via_paths_stored = via_paths
+            if answer <= 0:
+                raise ValueError("avoid_point grid path answer must be positive.")
+            question_text = preamble + via_clause + "若最短路徑不得經過丙，則共有幾種？"
+            explanation = _grid_path_explanation_avoid(
+                w, h, mx, my, total_paths, p_to_mid, mid_to_end, via_paths, answer
+            )
+
+    payload = {
+        "question_text": question_text,
+        "choices": _make_numeric_choices(answer, rng) if multiple_choice else [],
+        "answer": answer,
+        "explanation": explanation,
+        "skill_id": skill_id,
+        "subskill_id": subskill_id,
+        "problem_type_id": GRID_SHORTEST_PATH_PROBLEM_TYPE_ID,
+        "generator_key": GRID_SHORTEST_PATH_GENERATOR_KEY,
+        "difficulty": difficulty,
+        "diagnosis_tags": [
+            "grid_shortest_path_count",
+            "combination",
+            "multiplication_principle",
+            variant,
+        ],
+        "remediation_candidates": [],
+        "source_style_refs": [
+            "tc_grid_shortest_path_count_01",
+            "grid_shortest_path_count",
+        ],
+        "parameters": {
+            "variant": variant,
+            "width": w,
+            "height": h,
+            "a": w,
+            "b": h,
+            "mid_x": mid_x,
+            "mid_y": mid_y,
+            "total_paths": total_paths,
+            "via_paths": via_paths_stored,
+            "answer": answer,
+            "template_context": template_context,
             "parameter_tuple": parameter_tuple,
         },
     }

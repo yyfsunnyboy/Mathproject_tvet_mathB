@@ -24,6 +24,7 @@ import re
 import uuid
 import os
 import random
+import hashlib
 from datetime import datetime
 
 # 引用 Blueprint
@@ -132,6 +133,14 @@ def _resolve_b4_chapter_adaptive_entry(
         },
         True,
     )
+
+
+def _stable_b4_inner_seed(skill_id: str, gen_seed: int) -> int:
+    """Derive a deterministic inner seed for B4 router selection."""
+    raw = f"b4-router::{skill_id}::{int(gen_seed)}"
+    digest = hashlib.sha256(raw.encode("utf-8")).hexdigest()
+    # Keep seed bounded to avoid pathological long sampling loops in some generators.
+    return (int(digest[:8], 16) % 1_000_000) + 1
 
 def update_progress(user_id, skill_id, is_correct):
     """
@@ -516,9 +525,15 @@ def get_adaptive_question():
         if not mod:
             return jsonify({"error": f"無法載入技能模組 {skill_id_for_generate}"}), 500
 
+        inner_router_seed = gen_seed
+        seed_derivation = "identity"
+        if pure_b4 and gen_seed is not None:
+            inner_router_seed = _stable_b4_inner_seed(skill_id_for_generate, gen_seed)
+            seed_derivation = "b4_stable_inner_seed"
+
         gen_kwargs: dict = {"level": difficulty_level}
         if gen_seed is not None:
-            gen_kwargs["seed"] = gen_seed
+            gen_kwargs["seed"] = inner_router_seed
         data = mod.generate(**gen_kwargs)
 
         ok_payload, deny_reason = validate_b4_deterministic_adaptive_generator_payload(
@@ -531,6 +546,10 @@ def get_adaptive_question():
                 data,
                 source_type="rejected_excluded_problem_type",
             )
+            if gen_seed is not None:
+                audit_blob["outer_gen_seed"] = gen_seed
+                audit_blob["inner_router_seed"] = inner_router_seed
+                audit_blob["seed_derivation"] = seed_derivation
             audit_blob["reject_detail"] = deny_reason
             current_app.logger.error(
                 "[B4 Adaptive Preflight] blocked_generated_payload skill=%s reason=%s",
@@ -550,6 +569,10 @@ def get_adaptive_question():
             data,
             source_type=source_type,
         )
+        if gen_seed is not None:
+            audit_blob["outer_gen_seed"] = gen_seed
+            audit_blob["inner_router_seed"] = inner_router_seed
+            audit_blob["seed_derivation"] = seed_derivation
         current_app.logger.info("[B4 Adaptive Preflight] question_audit=%s", audit_blob)
 
         # 準備 Session 資料 (與 next_question 邏輯類似)

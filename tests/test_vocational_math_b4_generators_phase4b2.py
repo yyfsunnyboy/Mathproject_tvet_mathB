@@ -110,11 +110,19 @@ def test_invalid_seen_parameter_tuples_raise_value_error() -> None:
 
 
 def test_raise_when_retries_exhausted() -> None:
+    contexts = (
+        "works_exhibit",
+        "exam_pick",
+        "committee",
+        "sample_draw",
+        "delegate_pick",
+    )
     blocked = {
-        ("combination_definition_basic", n, r)
+        ("combination_definition_basic", n, r, ctx)
         for n in range(5, 9)
         for r in range(2, 4)
         if n >= r
+        for ctx in contexts
     }
     with pytest.raises(ValueError):
         comb_gen.generate(skill_id="s", subskill_id="ss", difficulty=1, seed=123, seen_parameter_tuples=blocked)

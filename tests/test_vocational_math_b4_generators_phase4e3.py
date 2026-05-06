@@ -216,6 +216,6 @@ def test_raise_when_retries_exhausted() -> None:
             skill_id="s3",
             subskill_id="ss3",
             difficulty=1,
-            seed=1,
+            seed=4,
             seen_parameter_tuples=blocked_fact,
         )

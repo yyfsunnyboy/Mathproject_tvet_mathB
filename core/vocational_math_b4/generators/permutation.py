@@ -11,6 +11,7 @@ from core.vocational_math_b4.domain.b4_validators import (
     validate_problem_payload_contract,
 )
 from core.vocational_math_b4.domain.counting_domain_functions import (
+    combination,
     factorial,
     multiplication_principle_count,
     permutation,
@@ -28,6 +29,16 @@ DIGIT_PARITY_PROBLEM_TYPE_ID = "permutation_digit_parity"
 DIGIT_PARITY_GENERATOR_KEY = "b4.permutation.permutation_digit_parity"
 NON_DISTINCT_OBJECTS_PROBLEM_TYPE_ID = "non_distinct_objects_arrangement"
 NON_DISTINCT_OBJECTS_GENERATOR_KEY = "b4.permutation.non_distinct_objects_arrangement"
+NON_ADJACENT_ARRANGEMENT_PROBLEM_TYPE_ID = "permutation_non_adjacent_arrangement"
+NON_ADJACENT_ARRANGEMENT_GENERATOR_KEY = "b4.permutation.permutation_non_adjacent_arrangement"
+_MAX_NON_ADJACENT_ANSWER = 5_000_000
+
+_NON_ADJACENT_TEMPLATE_CONTEXTS = (
+    "boys_girls_lineup",
+    "team_a_b_lineup",
+    "color_balls_arrangement",
+    "VIP_general_seating",
+)
 
 
 def _make_numeric_choices(answer: int, rng: random.Random) -> list[int]:
@@ -268,7 +279,7 @@ def _sample_non_distinct_objects_params(rng: random.Random, difficulty: int) -> 
         singleton_min, singleton_max = 0, 3
         answer_limit = 100000
 
-    contexts = ["letters", "colored_balls", "objects"]
+    contexts = ["letters", "colored_balls", "objects", "word_tiles", "badge_strip"]
     for _ in range(50):
         duplicate_counts = list(rng.choice(duplicate_pool))
         singleton_count = rng.randint(singleton_min, singleton_max)
@@ -301,7 +312,7 @@ def _format_factorial_denominator(counts: list[int]) -> str:
     return "".join(f"{count}!" for count in counts)
 
 
-def _format_letters_question(duplicate_counts: list[int], singleton_count: int, total_count: int) -> str:
+def _build_letter_like_labels(duplicate_counts: list[int], singleton_count: int) -> str:
     labels = list("ABCDEFGHIJKLMNOPQRSTUVWXYZ")
     parts: list[str] = []
     index = 0
@@ -311,8 +322,28 @@ def _format_letters_question(duplicate_counts: list[int], singleton_count: int, 
     for _ in range(singleton_count):
         parts.append(labels[index])
         index += 1
-    letters_text = "、".join(parts)
+    return "、".join(parts)
+
+
+def _format_letters_question(duplicate_counts: list[int], singleton_count: int, total_count: int) -> str:
+    letters_text = _build_letter_like_labels(duplicate_counts, singleton_count)
     return f"用 {letters_text} 共 {total_count} 個字母排成一列，共有多少種不同排列？"
+
+
+def _format_word_tiles_question(duplicate_counts: list[int], singleton_count: int, total_count: int) -> str:
+    letters_text = _build_letter_like_labels(duplicate_counts, singleton_count)
+    return (
+        f"拼字遊戲桌上有字卡 {letters_text} 共 {total_count} 張（相同字卡不可辨），"
+        f"全數排成一列，共有多少種不同排法？"
+    )
+
+
+def _format_badge_strip_question(duplicate_counts: list[int], singleton_count: int, total_count: int) -> str:
+    letters_text = _build_letter_like_labels(duplicate_counts, singleton_count)
+    return (
+        f"活動識別帶上需依序排列 {letters_text} 共 {total_count} 個圖樣標誌（相同標誌不可辨），"
+        f"共有多少種不同排法？"
+    )
 
 
 def _format_colored_balls_question(duplicate_counts: list[int], singleton_count: int, total_count: int) -> str:
@@ -392,6 +423,10 @@ def non_distinct_objects_arrangement(
     answer = _non_distinct_answer(total_count, duplicate_counts)
     if context == "letters":
         question_text = _format_letters_question(duplicate_counts, singleton_count, total_count)
+    elif context == "word_tiles":
+        question_text = _format_word_tiles_question(duplicate_counts, singleton_count, total_count)
+    elif context == "badge_strip":
+        question_text = _format_badge_strip_question(duplicate_counts, singleton_count, total_count)
     elif context == "colored_balls":
         question_text = _format_colored_balls_question(duplicate_counts, singleton_count, total_count)
     else:
@@ -767,6 +802,203 @@ def permutation_digit_parity(
             "positions": positions,
             "allow_zero": allow_zero,
             "variant": variant,
+            "parameter_tuple": parameter_tuple,
+        },
+    }
+
+    validate_problem_payload_contract(payload)
+    validate_no_unfilled_placeholder(payload["question_text"])
+    validate_no_unfilled_placeholder(payload["explanation"])
+    if multiple_choice:
+        validate_choices_unique(payload["choices"])
+        validate_answer_in_choices(payload["answer"], payload["choices"])
+
+    seen.add(parameter_tuple)
+    return payload
+
+
+def _non_adjacent_arrangement_count(m: int, k: int) -> int:
+    return factorial(m) * combination(m + 1, k) * factorial(k)
+
+
+def _pick_non_adjacent_template_context(rng: random.Random, seed: int | None) -> str:
+    if seed is not None:
+        return _NON_ADJACENT_TEMPLATE_CONTEXTS[seed % len(_NON_ADJACENT_TEMPLATE_CONTEXTS)]
+    return rng.choice(_NON_ADJACENT_TEMPLATE_CONTEXTS)
+
+
+def _non_adjacent_labels(template_context: str) -> tuple[str, str, str]:
+    """Returns (majority_group_label, minority_group_label, minority_phrase_for_pair_restriction)."""
+    if template_context == "boys_girls_lineup":
+        return ("男生", "女生", "位女生")
+    if template_context == "team_a_b_lineup":
+        return ("甲組學生", "乙組學生", "位乙組學生")
+    if template_context == "color_balls_arrangement":
+        return ("藍球", "紅球", "顆紅球")
+    return ("一般成員", "貴賓", "位貴賓")
+
+
+def _build_non_adjacent_question_text(
+    template_context: str,
+    m: int,
+    k: int,
+    min_pair_phrase: str,
+) -> str:
+    distinct_note = (
+        "（每位／每個皆視為不同，彼此可區分、互不相同）"
+        if template_context != "color_balls_arrangement"
+        else "（各球彼此可辨識、互不相同）"
+    )
+    if template_context == "boys_girls_lineup":
+        opener = f"有 ${m}$ 位男生與 ${k}$ 位女生{distinct_note}，要排成一列。"
+    elif template_context == "team_a_b_lineup":
+        opener = f"有 ${m}$ 位甲組學生與 ${k}$ 位乙組學生{distinct_note}，要排成一列。"
+    elif template_context == "color_balls_arrangement":
+        opener = f"有 ${m}$ 個相異藍球與 ${k}$ 個相異紅球{distinct_note}，要排成一列。"
+    else:
+        opener = f"有 ${m}$ 位一般成員與 ${k}$ 位貴賓{distinct_note}，要排成一列。"
+    restriction = f"若規定任兩{min_pair_phrase}不得相鄰"
+    return (
+        opener
+        + restriction
+        + "，則共有多少種排法？（只需回答方法數，不必列出所有排列。）"
+    )
+
+
+def _build_non_adjacent_explanation(
+    m: int,
+    k: int,
+    maj_label: str,
+    min_label: str,
+    gap_choose: int,
+    maj_fact: int,
+    min_fact: int,
+    answer: int,
+) -> str:
+    return (
+        "插空法：先將 "
+        f"${m}$ 位（個）{maj_label}排成一列，有 $\\displaystyle {m}!={maj_fact}$ 種；"
+        f"形成 ${m}+1={m + 1}$ 個空位。自這 ${m + 1}$ 個空位中選 ${k}$ 個放入 {min_label}，"
+        f"有 $\\displaystyle C^{{{m + 1}}}_{{{k}}}={gap_choose}$ 種；"
+        f"再將 ${k}$ 位（個）{min_label}排列，有 $\\displaystyle {k}!={min_fact}$ 種。"
+        f"故總數為 $\\displaystyle {m}!\\times C^{{{m + 1}}}_{{{k}}}\\times {k}!={answer}$，"
+        f"亦等於 $\\displaystyle {m}!\\times P^{{{m + 1}}}_{{{k}}}$。"
+    )
+
+
+def _sample_non_adjacent_mk(rng: random.Random, difficulty: int) -> tuple[int, int]:
+    if difficulty <= 1:
+        k = 2
+        m = rng.randint(3, 6)
+    elif difficulty == 2:
+        k = rng.choice([2, 3])
+        m = rng.randint(max(3, k), 7)
+    else:
+        k = rng.choice([2, 3])
+        m = rng.randint(max(3, k), 8)
+    if m < k:
+        m = k
+    return m, k
+
+
+def permutation_non_adjacent_arrangement(
+    *,
+    skill_id: str,
+    subskill_id: str,
+    difficulty: int = 1,
+    seed: int | None = None,
+    seen_parameter_tuples: set[tuple] | None = None,
+    multiple_choice: bool = True,
+) -> dict:
+    """Gap method: arrange majority m first, place k minority in m+1 gaps so none adjacent."""
+    rng = random.Random(seed)
+    seen = _ensure_seen_set(seen_parameter_tuples)
+
+    parameter_tuple: tuple | None = None
+    m = k = 0
+    template_context = "boys_girls_lineup"
+
+    if seed is not None and 1 <= seed <= 8 and difficulty <= 1:
+        presets = [
+            (3, 2, "boys_girls_lineup"),
+            (4, 2, "team_a_b_lineup"),
+            (5, 2, "color_balls_arrangement"),
+            (4, 2, "VIP_general_seating"),
+            (5, 2, "boys_girls_lineup"),
+            (6, 2, "team_a_b_lineup"),
+            (4, 3, "color_balls_arrangement"),
+            (6, 3, "VIP_general_seating"),
+        ]
+        m, k, template_context = presets[seed - 1]
+        candidate = (NON_ADJACENT_ARRANGEMENT_PROBLEM_TYPE_ID, m, k, template_context)
+        if candidate not in seen:
+            parameter_tuple = candidate
+
+    for _ in range(80):
+        if parameter_tuple is not None:
+            break
+        template_context = _pick_non_adjacent_template_context(rng, seed)
+        m, k = _sample_non_adjacent_mk(rng, difficulty)
+        candidate = (NON_ADJACENT_ARRANGEMENT_PROBLEM_TYPE_ID, m, k, template_context)
+        if candidate in seen:
+            continue
+        ans_try = _non_adjacent_arrangement_count(m, k)
+        if ans_try <= 0 or ans_try > _MAX_NON_ADJACENT_ANSWER:
+            continue
+        parameter_tuple = candidate
+        break
+
+    if parameter_tuple is None:
+        raise ValueError("Failed to find a new non-adjacent arrangement parameter tuple after 80 retries.")
+
+    m, k, template_context = parameter_tuple[1], parameter_tuple[2], parameter_tuple[3]
+    maj_label, min_label, min_pair_phrase = _non_adjacent_labels(template_context)
+    gap_count = m + 1
+    gap_choose_val = combination(gap_count, k)
+    maj_fact = factorial(m)
+    min_fact = factorial(k)
+    answer = maj_fact * gap_choose_val * min_fact
+
+    question_text = _build_non_adjacent_question_text(template_context, m, k, min_pair_phrase)
+    explanation = _build_non_adjacent_explanation(
+        m, k, maj_label, min_label, gap_choose_val, maj_fact, min_fact, answer
+    )
+
+    payload = {
+        "question_text": question_text,
+        "choices": _make_numeric_choices(answer, rng) if multiple_choice else [],
+        "answer": answer,
+        "explanation": explanation,
+        "skill_id": skill_id,
+        "subskill_id": subskill_id,
+        "problem_type_id": NON_ADJACENT_ARRANGEMENT_PROBLEM_TYPE_ID,
+        "generator_key": NON_ADJACENT_ARRANGEMENT_GENERATOR_KEY,
+        "difficulty": difficulty,
+        "diagnosis_tags": [
+            "permutation_non_adjacent_arrangement",
+            "permutation",
+            "gap_method",
+            "non_adjacent",
+        ],
+        "remediation_candidates": [],
+        "source_style_refs": [
+            "tc_perm_non_adjacent_arrangement_01",
+            "permutation_non_adjacent_arrangement",
+        ],
+        "parameters": {
+            "majority_group_label": maj_label,
+            "minority_group_label": min_label,
+            "majority_count": m,
+            "minority_count": k,
+            "gap_count": gap_count,
+            "chosen_gap_count": k,
+            "template_context": template_context,
+            "formula_components": {
+                "majority_factorial": maj_fact,
+                "gap_choose": gap_choose_val,
+                "minority_factorial": min_fact,
+            },
+            "answer": answer,
             "parameter_tuple": parameter_tuple,
         },
     }

@@ -26,6 +26,13 @@ DIVISOR_PROBLEM_TYPE_ID = "divisor_count_prime_factorization"
 DIVISOR_GENERATOR_KEY = "b4.counting.divisor_count_prime_factorization"
 FACTORIAL_SOLVE_PROBLEM_TYPE_ID = "factorial_equation_solve_n"
 FACTORIAL_SOLVE_GENERATOR_KEY = "b4.counting.factorial_equation_solve_n"
+_MAX_FACTORIAL_EQUATION_ANSWER = 100_000
+_FACTORIAL_EQ_VARIANTS_ORDER = (
+    "ratio_basic",
+    "multiply_factorial_equation",
+    "factorial_sum_linear_equation",
+    "factorial_product_ratio",
+)
 FACTORIAL_EVAL_PROBLEM_TYPE_ID = "factorial_evaluation"
 FACTORIAL_EVAL_GENERATOR_KEY = "b4.counting.factorial_evaluation"
 MULT_PRINCIPLE_INDEPENDENT_PROBLEM_TYPE_ID = "mult_principle_independent_choices"
@@ -82,6 +89,9 @@ _REPEATED_PERM_TEMPLATE_KEYS = (
     "seat_serial",
     "color_sequence",
     "trial_sequence",
+    "set_menu",
+    "badge_pin",
+    "locker_code",
 )
 
 
@@ -106,6 +116,19 @@ def _format_repeated_perm_question(template_key: str, digit_count: int, length: 
         return (
             f"染色序列共 ${n}$ 個位置，每個位置可自 ${m}$ 種顏色編號擇一"
             f"（同色可於不同位置重複），共有多少種序列？"
+        )
+    if template_key == "set_menu":
+        return (
+            f"某餐廳套餐需連續選擇 ${n}$ 道菜，每道菜皆可自 ${m}$ 種品項擇一"
+            f"（可重複點同一品項），共有多少種點餐序列？"
+        )
+    if template_key == "badge_pin":
+        return (
+            f"員工證 PIN 碼共 ${n}$ 位，每位自 ${m}$ 個數字擇一（可重複），共有多少種 PIN？"
+        )
+    if template_key == "locker_code":
+        return (
+            f"置物櫃密碼鎖有 ${n}$ 個轉輪，每輪可停在 ${m}$ 個數字之一（可重複），共有多少組密碼？"
         )
     # trial_sequence
     return (
@@ -291,6 +314,48 @@ def divisor_count_prime_factorization(
     return payload
 
 
+def _factorial_ratio_quotient(a: int, b: int) -> int:
+    return factorial(b) // factorial(a)
+
+
+def _simplified_product_terms(a: int, b: int) -> list[int]:
+    return list(range(a + 1, b + 1))
+
+
+def _product_chain_latex(terms: list[int]) -> str:
+    if not terms:
+        return "1"
+    if len(terms) == 1:
+        return str(terms[0])
+    return "\\times ".join(str(t) for t in terms)
+
+
+def _sample_factorial_ab_gap(rng: random.Random, difficulty: int) -> tuple[int, int, int] | None:
+    if difficulty <= 1:
+        d_pool = [1, 2]
+    elif difficulty == 2:
+        d_pool = [2, 3]
+    else:
+        d_pool = [3, 4]
+    d = rng.choice(d_pool)
+    a = rng.randint(3, 8)
+    b = a + d
+    if b > 12:
+        a = max(3, 12 - d)
+        b = a + d
+    ratio = _factorial_ratio_quotient(a, b)
+    if ratio > _MAX_FACTORIAL_EQUATION_ANSWER or ratio + 1 > _MAX_FACTORIAL_EQUATION_ANSWER:
+        return None
+    return a, b, d
+
+
+def _rng_for_factorial_variant(seed: int | None, variant: str) -> random.Random:
+    if seed is None:
+        return random.Random()
+    idx = _FACTORIAL_EQ_VARIANTS_ORDER.index(variant)
+    return random.Random(seed * 1009 + idx * 17 + 31)
+
+
 def factorial_equation_solve_n(
     *,
     skill_id: str,
@@ -300,34 +365,133 @@ def factorial_equation_solve_n(
     seen_parameter_tuples: set[tuple] | None = None,
     multiple_choice: bool = True,
 ) -> dict:
-    """Generate deterministic factorial-ratio equation problems."""
-    rng = random.Random(seed)
-    if seed is not None:
-        for _ in range(seed * 12):
-            rng.random()
+    """Factorial equations: n!/(n-1)!=k, a!*n=b!, b!+a!=n*a!, or b!=n*a!."""
     seen = _ensure_seen_set(seen_parameter_tuples)
 
-    if difficulty <= 1:
-        low, high = 3, 9
-    elif difficulty == 2:
-        low, high = 6, 15
+    if seed is not None:
+        variant = _FACTORIAL_EQ_VARIANTS_ORDER[seed % 4]
     else:
-        low, high = 10, 20
+        variant = random.choice(_FACTORIAL_EQ_VARIANTS_ORDER)
 
-    parameter_tuple: tuple | None = None
-    k = 0
+    if variant == "ratio_basic":
+        rng = random.Random(seed)
+        if seed is not None:
+            for _ in range(seed * 12):
+                rng.random()
+
+        if difficulty <= 1:
+            low, high = 3, 9
+        elif difficulty == 2:
+            low, high = 6, 15
+        else:
+            low, high = 10, 20
+
+        parameter_tuple: tuple | None = None
+        k = 0
+        for _ in range(50):
+            k = rng.randint(low, high)
+            candidate = (FACTORIAL_SOLVE_PROBLEM_TYPE_ID, k)
+            if candidate not in seen:
+                parameter_tuple = candidate
+                break
+        if parameter_tuple is None:
+            raise ValueError("Failed to find a new parameter tuple after 50 retries.")
+
+        answer = factorial_ratio_solve_n(0, -1, k)
+        equation_latex = f"\\frac{{n!}}{{(n-1)!}}={k}"
+        question_text = f"若 $\\frac{{n!}}{{(n-1)!}}={k}$，求正整數 $n$。"
+        explanation = f"由 $\\frac{{n!}}{{(n-1)!}}=n$，可得 $n={k}$。"
+
+        payload = {
+            "question_text": question_text,
+            "choices": _make_numeric_choices(answer, rng) if multiple_choice else [],
+            "answer": answer,
+            "explanation": explanation,
+            "skill_id": skill_id,
+            "subskill_id": subskill_id,
+            "problem_type_id": FACTORIAL_SOLVE_PROBLEM_TYPE_ID,
+            "generator_key": FACTORIAL_SOLVE_GENERATOR_KEY,
+            "difficulty": difficulty,
+            "diagnosis_tags": ["factorial_equation_solve_n", "factorial", "solve_n", "ratio_basic"],
+            "remediation_candidates": [],
+            "source_style_refs": ["tc_factorial_solve_n_02", "factorial_equation_solve_n"],
+            "parameters": {
+                "variant": "ratio_basic",
+                "k": k,
+                "a": None,
+                "b": None,
+                "gap": None,
+                "template_context": "ratio_equation",
+                "equation_latex": equation_latex,
+                "simplified_product_terms": [],
+                "factorial_ratio_value": None,
+                "formula_components": {"k": k},
+                "parameter_tuple": parameter_tuple,
+            },
+        }
+
+        _validate_and_finalize(payload, multiple_choice)
+        seen.add(parameter_tuple)
+        return payload
+
+    rng = _rng_for_factorial_variant(seed, variant)
+    parameter_tuple = None
+    a = b = d = 0
+    template_context = ""
+    if variant == "multiply_factorial_equation":
+        template_context = "direct_equation"
+    elif variant == "factorial_sum_linear_equation":
+        template_context = "sum_equation"
+    else:
+        template_context = "product_unknown"
+
     for _ in range(50):
-        k = rng.randint(low, high)
-        candidate = (FACTORIAL_SOLVE_PROBLEM_TYPE_ID, k)
-        if candidate not in seen:
-            parameter_tuple = candidate
-            break
+        sampled = _sample_factorial_ab_gap(rng, difficulty)
+        if sampled is None:
+            continue
+        a, b, d = sampled
+        candidate = (FACTORIAL_SOLVE_PROBLEM_TYPE_ID, variant, a, b, template_context)
+        if candidate in seen:
+            continue
+        parameter_tuple = candidate
+        break
+
     if parameter_tuple is None:
         raise ValueError("Failed to find a new parameter tuple after 50 retries.")
 
-    answer = factorial_ratio_solve_n(0, -1, k)
-    question_text = f"若 $\\frac{{n!}}{{(n-1)!}}={k}$，求正整數 $n$。"
-    explanation = f"由 $\\frac{{n!}}{{(n-1)!}}=n$，可得 $n={k}$。"
+    a, b, d = parameter_tuple[2], parameter_tuple[3], parameter_tuple[3] - parameter_tuple[2]
+    terms = _simplified_product_terms(a, b)
+    ratio = _factorial_ratio_quotient(a, b)
+    chain = _product_chain_latex(terms)
+
+    if variant == "factorial_sum_linear_equation":
+        answer = ratio + 1
+        question_text = f"若 ${b}!+{a}!=n\\times {a}!$，求正整數 $n$。"
+        explanation = (
+            f"由 ${b}!+{a}!=n\\times {a}!$，兩邊同除以 ${a}!$ 得 "
+            f"$n=\\frac{{{b}!}}{{{a}!}}+1$。"
+            f"又 $\\frac{{{b}!}}{{{a}!}}={chain}={ratio}$，故 $n={answer}$。"
+        )
+    elif variant == "multiply_factorial_equation":
+        answer = ratio
+        question_text = f"若 ${a}!\\times n={b}!$，求正整數 $n$。"
+        explanation = (
+            f"由 ${a}!\\times n={b}!$，得 $n=\\frac{{{b}!}}{{{a}!}}$。"
+            f"而 $\\frac{{{b}!}}{{{a}!}}={chain}={answer}$。"
+        )
+    else:
+        answer = ratio
+        question_text = f"若 ${b}!=n\\times {a}!$，求正整數 $n$。"
+        explanation = (
+            f"由 ${b}!=n\\times {a}!$，得 $n=\\frac{{{b}!}}{{{a}!}}$。"
+            f"而 $\\frac{{{b}!}}{{{a}!}}={chain}={answer}$。"
+        )
+
+    equation_latex = {
+        "multiply_factorial_equation": f"{a}!\\times n={b}!",
+        "factorial_sum_linear_equation": f"{b}!+{a}!=n\\times {a}!",
+        "factorial_product_ratio": f"{b}!=n\\times {a}!",
+    }[variant]
 
     payload = {
         "question_text": question_text,
@@ -339,11 +503,25 @@ def factorial_equation_solve_n(
         "problem_type_id": FACTORIAL_SOLVE_PROBLEM_TYPE_ID,
         "generator_key": FACTORIAL_SOLVE_GENERATOR_KEY,
         "difficulty": difficulty,
-        "diagnosis_tags": ["factorial_equation_solve_n", "factorial", "solve_n"],
+        "diagnosis_tags": ["factorial_equation_solve_n", "factorial", "solve_n", variant],
         "remediation_candidates": [],
         "source_style_refs": ["tc_factorial_solve_n_02", "factorial_equation_solve_n"],
         "parameters": {
-            "k": k,
+            "variant": variant,
+            "k": None,
+            "a": a,
+            "b": b,
+            "gap": d,
+            "template_context": template_context,
+            "equation_latex": equation_latex,
+            "simplified_product_terms": terms,
+            "factorial_ratio_value": ratio,
+            "formula_components": {
+                "a": a,
+                "b": b,
+                "factorial_ratio_value": ratio,
+                "sum_offset": 1 if variant == "factorial_sum_linear_equation" else 0,
+            },
             "parameter_tuple": parameter_tuple,
         },
     }
@@ -353,8 +531,10 @@ def factorial_equation_solve_n(
     return payload
 
 
-def _sample_addition_parameters(rng: random.Random, difficulty: int) -> tuple[list[str], list[int]]:
-    name_pool = ["球類社團", "音樂社團", "美術社團", "科學社團", "語文社團", "志工社團", "舞蹈社團"]
+def _sample_addition_parameters(
+    rng: random.Random, difficulty: int
+) -> tuple[list[str], list[int], str]:
+    """Returns category labels, mutually exclusive counts, and scenario key for wording."""
     if difficulty <= 1:
         category_count = rng.choice([2, 3])
         low, high = 2, 8
@@ -364,9 +544,26 @@ def _sample_addition_parameters(rng: random.Random, difficulty: int) -> tuple[li
     else:
         category_count = rng.choice([4, 5])
         low, high = 5, 20
-    category_names = rng.sample(name_pool, category_count)
+
+    scenario = rng.choice(["clubs", "bookshelf", "routes", "meal_types", "activity_tracks"])
+    if scenario == "clubs":
+        name_pool = ["球類社團", "音樂社團", "美術社團", "科學社團", "語文社團", "志工社團", "舞蹈社團"]
+        category_names = rng.sample(name_pool, category_count)
+    elif scenario == "bookshelf":
+        name_pool = ["科普新書", "文學小說", "語言學習", "史地專區", "藝術設計", "生活手作"]
+        category_names = rng.sample(name_pool, category_count)
+    elif scenario == "routes":
+        name_pool = ["國道一號替代路", "快速道路支線", "省道快捷", "環市大道", "山區替代道"]
+        category_names = rng.sample(name_pool, category_count)
+    elif scenario == "meal_types":
+        name_pool = ["中式套餐", "日式定食", "西式簡餐", "蔬食輕食", "鍋物", "麵食"]
+        category_names = rng.sample(name_pool, category_count)
+    else:
+        name_pool = ["晨間梯次", "午前梯次", "午後梯次", "傍晚梯次", "假日加開", "線上同步"]
+        category_names = rng.sample(name_pool, category_count)
+
     counts = [rng.randint(low, high) for _ in range(category_count)]
-    return category_names, counts
+    return category_names, counts, scenario
 
 
 def add_principle_mutually_exclusive_choice(
@@ -388,9 +585,10 @@ def add_principle_mutually_exclusive_choice(
     parameter_tuple: tuple | None = None
     category_names: list[str] = []
     counts: list[int] = []
+    scenario = "clubs"
     for _ in range(50):
-        category_names, counts = _sample_addition_parameters(rng, difficulty)
-        candidate = (problem_type_id, tuple(category_names), tuple(counts))
+        category_names, counts, scenario = _sample_addition_parameters(rng, difficulty)
+        candidate = (problem_type_id, scenario, tuple(category_names), tuple(counts))
         if candidate not in seen:
             parameter_tuple = candidate
             break
@@ -399,8 +597,24 @@ def add_principle_mutually_exclusive_choice(
 
     answer = addition_principle_count(counts)
     parts = [f"{c} 種{name}" for name, c in zip(category_names, counts)]
-    question_text = f"某校社團活動可選擇{'、'.join(parts)}，若只選擇其中一種社團，共有多少種選法？"
-    explanation = f"使用加法原理，互斥分類只選一類，總方法數為各類數量相加，例如：${'+'.join(str(x) for x in counts)}={answer}$。"
+    joined = "、".join(parts)
+    if scenario == "clubs":
+        question_text = f"某校社團活動可選擇{joined}，若只選擇其中一種類別，共有多少種選法？"
+    elif scenario == "bookshelf":
+        question_text = f"書展攤位陳列{joined}，讀者只能挑一區借閱一冊（各區互斥），共有多少種起始選擇？"
+    elif scenario == "routes":
+        question_text = f"僅能擇一類路線方案：{joined}（各類互斥），共有多少種選法？"
+    elif scenario == "meal_types":
+        question_text = f"營養午餐僅能選一類：{joined}（互斥），共有多少種選法？"
+    else:
+        question_text = f"研習活動僅能報名一個梯次：{joined}（互斥），共有多少種選法？"
+
+    sum_tex = "+".join(str(x) for x in counts)
+    explanation = (
+        "各類互斥且僅能擇一，使用加法原理："
+        f"$\\displaystyle {sum_tex}={answer}$。"
+        "（未使用乘法原理：沒有多階段連乘條件。）"
+    )
 
     payload = {
         "question_text": question_text,
@@ -425,6 +639,7 @@ def add_principle_mutually_exclusive_choice(
         "parameters": {
             "category_names": category_names,
             "counts": counts,
+            "template_context": scenario,
             "parameter_tuple": parameter_tuple,
         },
     }

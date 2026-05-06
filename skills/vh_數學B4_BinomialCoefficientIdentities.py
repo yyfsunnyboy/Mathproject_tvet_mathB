@@ -1,4 +1,4 @@
-﻿"""Legacy runtime wrapper for B4 binomial coefficient identities skill."""
+"""Legacy runtime wrapper for B4 binomial coefficient identities skill."""
 
 from __future__ import annotations
 
@@ -15,6 +15,7 @@ def generate(level=1, **kwargs):
         seen_parameter_tuples=kwargs.get("seen_parameter_tuples"),
         multiple_choice=True,
         problem_type_id=kwargs.get("problem_type_id"),
+        excluded_problem_type_ids=kwargs.get("excluded_problem_type_ids"),
     )
 
 
