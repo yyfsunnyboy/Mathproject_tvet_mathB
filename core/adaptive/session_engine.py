@@ -476,11 +476,13 @@ def _is_b4_chapter1_entry_payload(payload: dict[str, Any]) -> bool:
     curriculum = str(payload.get("curriculum") or "").strip().lower()
     volume = str(payload.get("volume") or "").strip()
     chapter_id = str(payload.get("chapter_id") or "").strip()
+    chapter_name = str(payload.get("chapter_name") or payload.get("chapter") or "").strip()
+    chapter1_hit = chapter_id == "1" or chapter_name.startswith("1 排列組合")
     return (
         (entry_mode == "chapter" or mode == "chapter" or entry_mode == "chapter" and mode == "teaching")
         and curriculum == "vocational"
         and volume == "數學B4"
-        and chapter_id == "1"
+        and chapter1_hit
     )
 
 
@@ -2489,6 +2491,22 @@ def submit_and_get_next(payload: dict[str, Any]) -> dict[str, Any]:
             ],
             routing_timeline=routing_timeline,
         )
+        completed_adaptive_audit: dict[str, Any] = {}
+        completed_learning_mode = str(payload.get("learning_mode") or "").strip().lower()
+        completed_practice_kind = str(payload.get("practice_kind") or "").strip().lower()
+        if (
+            mode == "teaching"
+            and _is_b4_chapter1_entry_payload(payload)
+            and completed_practice_kind == "unit_practice"
+            and completed_learning_mode in {"", "main", "teaching", "unit_practice"}
+        ):
+            completed_adaptive_audit["ai_judged_free_response_checkpoints"] = (
+                _b4_adaptive_allowlist.build_b4_chapter1_ai_judged_free_response_audit()
+            )
+            completed_adaptive_audit["free_response_candidate_count"] = len(
+                _b4_adaptive_allowlist.B4_CHAPTER_1_AI_JUDGED_FREE_RESPONSE_SKILLS
+            )
+            completed_adaptive_audit["free_response_scoring_policy"] = "deferred_teacher_review"
         return {
             "session_id": session_id,
             "step_number": requested_step,
@@ -2526,6 +2544,7 @@ def submit_and_get_next(payload: dict[str, Any]) -> dict[str, Any]:
             "allowed_actions": [],
             "action_mask": {"stay": True, "remediate": False, "return": False} if mode == "assessment" else {},
             "return_to_mainline": completed_display_state["return_to_mainline"],
+            "adaptive_audit": completed_adaptive_audit,
             **completed_observability,
         }
 
@@ -4034,13 +4053,22 @@ def submit_and_get_next(payload: dict[str, Any]) -> dict[str, Any]:
         observability["selection_debug"]["display_skill"] = display_state["display_skill"]
         observability["selection_debug"]["is_completed"] = False
 
-    ai_judged_free_response_candidates = [
-        {
-            "skill_id": sid,
-            **(_b4_adaptive_allowlist.get_b4_chapter1_ai_judged_free_response_metadata(sid) or {}),
-        }
-        for sid in _b4_adaptive_allowlist.B4_CHAPTER_1_AI_JUDGED_FREE_RESPONSE_SKILLS
-    ]
+    chapter_learning_mode = str(payload.get("learning_mode") or "").strip().lower()
+    b4_chapter1_teaching_flow = bool(
+        mode == "teaching"
+        and _is_b4_chapter1_entry_payload(payload)
+        and practice_kind == "unit_practice"
+        and chapter_learning_mode in {"", "main", "teaching", "unit_practice"}
+    )
+    adaptive_audit_payload: dict[str, Any] = {}
+    if b4_chapter1_teaching_flow:
+        adaptive_audit_payload["ai_judged_free_response_checkpoints"] = (
+            _b4_adaptive_allowlist.build_b4_chapter1_ai_judged_free_response_audit()
+        )
+        adaptive_audit_payload["free_response_candidate_count"] = len(
+            _b4_adaptive_allowlist.B4_CHAPTER_1_AI_JUDGED_FREE_RESPONSE_SKILLS
+        )
+        adaptive_audit_payload["free_response_scoring_policy"] = "deferred_teacher_review"
 
     return {
         "session_id": session_id,
@@ -4088,8 +4116,7 @@ def submit_and_get_next(payload: dict[str, Any]) -> dict[str, Any]:
         "assessment_completed": bool(completion_eval.get("assessment_completed", False)),
         "assessment_stop_reason": str(completion_eval.get("assessment_stop_reason", "")),
         "retrieved_candidates": diagnosis.get("retrieved_candidates", []),
-        "free_response_checkpoint_available": bool(ai_judged_free_response_candidates),
-        "ai_judged_free_response_candidates": ai_judged_free_response_candidates,
+        "adaptive_audit": adaptive_audit_payload,
         "diagnostic_choice": diagnosis.get("diagnostic_choice"),
         "qwen_classifier_choice": diagnosis.get("diagnostic_choice"),
         "diagnostic_confidence": diagnosis.get("diagnostic_confidence"),

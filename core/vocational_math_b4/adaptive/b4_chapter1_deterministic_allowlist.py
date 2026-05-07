@@ -10,6 +10,7 @@ This module MUST NOT import or rewrite `b4_ch1_runtime_coverage_matrix.csv`.
 
 from __future__ import annotations
 
+from urllib.parse import urlencode
 from typing import Iterable, TypeVar
 
 B4_SKILL_PREFIX = "vh_數學B4_"
@@ -208,6 +209,49 @@ def get_b4_chapter1_ai_judged_free_response_metadata(skill_id: str) -> dict[str,
     sid = str(skill_id or "").strip()
     metadata = B4_CHAPTER_1_AI_JUDGED_FREE_RESPONSE_SKILL_METADATA.get(sid)
     return dict(metadata) if isinstance(metadata, dict) else None
+
+
+def build_b4_chapter1_ai_judged_free_response_audit(
+    include_practice_urls: bool = True,
+) -> dict[str, object]:
+    checkpoints: list[dict[str, object]] = []
+    for sid in B4_CHAPTER_1_AI_JUDGED_FREE_RESPONSE_SKILLS:
+        metadata = get_b4_chapter1_ai_judged_free_response_metadata(sid) or {}
+        index_param = str(metadata.get("index_param") or "").strip()
+        default_index = 0
+        checkpoint: dict[str, object] = {
+            "skill_id": sid,
+            "display_name": str(metadata.get("display_name") or ""),
+            "problem_type_id": str(metadata.get("problem_type_id") or ""),
+            "answer_type": str(metadata.get("answer_type") or ""),
+            "grading_mode": str(metadata.get("grading_mode") or ""),
+            "index_param": index_param,
+            "default_index": default_index,
+        }
+        if include_practice_urls:
+            query = {
+                "skill": sid,
+                "problem_type": str(metadata.get("problem_type_id") or ""),
+                "answer_type": str(metadata.get("answer_type") or ""),
+                "grading_mode": str(metadata.get("grading_mode") or ""),
+            }
+            if index_param:
+                query[index_param] = str(default_index)
+            checkpoint["practice_url"] = f"/practice?{urlencode(query)}"
+        checkpoints.append(checkpoint)
+
+    return {
+        "enabled": True,
+        "scope": {
+            "curriculum": "vocational",
+            "volume": "數學B4",
+            "chapter_id": "1",
+            "chapter_name": "1 排列組合",
+        },
+        "scoring_policy": "visibility_only_not_mastery_scored",
+        "adaptive_insertion_policy": "registered_checkpoint_not_auto_scored",
+        "checkpoints": checkpoints,
+    }
 
 
 def get_b4_chapter1_curriculum_progression(include_free_response: bool = False) -> list[str]:

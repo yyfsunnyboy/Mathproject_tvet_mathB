@@ -278,15 +278,17 @@ def adaptive_submit_and_get_next():
         raw_curriculum = str(payload.get("curriculum") or "").strip().lower()
         raw_volume = str(payload.get("volume") or "").strip()
         raw_chapter_id = str(payload.get("chapter_id") or "").strip()
+        raw_chapter_name = str(payload.get("chapter_name") or payload.get("chapter") or "").strip()
         raw_entry_mode = str(payload.get("entry_mode") or "").strip().lower()
         raw_step_number = _to_int(payload.get("step_number"), 0)
         raw_session_id = str(payload.get("session_id") or "").strip()
+        b4_chapter1_hit = raw_chapter_id == "1" or raw_chapter_name.startswith("1 排列組合")
 
         is_b4_chapter_entry = (
             (raw_entry_mode == "chapter" or raw_mode == "chapter")
             and raw_curriculum == "vocational"
             and raw_volume == "數學B4"
-            and raw_chapter_id == "1"
+            and b4_chapter1_hit
         )
         is_b4_chapter_bootstrap = is_b4_chapter_entry and raw_step_number == 0 and not raw_session_id
 
@@ -338,7 +340,7 @@ def adaptive_submit_and_get_next():
             raw_mode == "chapter"
             and raw_curriculum == "vocational"
             and raw_volume == "數學B4"
-            and raw_chapter_id == "1"
+            and b4_chapter1_hit
         ):
             # Payload bridge: keep chapter context fields but normalize runtime mode for session_engine.
             payload["entry_mode"] = "chapter"
