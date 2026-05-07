@@ -2096,6 +2096,9 @@
         let canvasResizeObserver = null;
         let lastCanvasDisplayWidth = 0;
         let lastCanvasDisplayHeight = 0;
+        window.currentProblemTypeId = "";
+        let treeDiagramQuestionIndex = 0;
+        let pascalTriangleQuestionIndex = 0;
 
         // 新增：一個旗標，表示初始題目是否已載入
         let isInitialQuestionLoaded = false;
@@ -2933,7 +2936,8 @@
         function setupLevelSelector() {
             const nextQuestionBtn = document.getElementById('next-question-btn');
             if (nextQuestionBtn) {
-                nextQuestionBtn.addEventListener('click', async () => {
+                nextQuestionBtn.addEventListener('click', async (event) => {
+                    event.preventDefault();
                     if (PRACTICE_MODE === 'similar_practice') {
                         try {
                             await loadNextSimilarQuestion();
@@ -2997,6 +3001,8 @@
             if (PRACTICE_MODE === 'similar_practice' && similarPracticeState.skillId) {
                 return similarPracticeState.skillId;
             }
+            const querySkill = new URLSearchParams(window.location.search).get('skill');
+            if (querySkill) return querySkill;
             // 從 URL 路徑 /practice/skill_id 中提取 skill_id
             const pathParts = window.location.pathname.split('/');
             const skillIdFromPath = pathParts[pathParts.length - 1];
@@ -3057,6 +3063,20 @@
                 resetAIChat();
                 setTimeout(loadQuestion, 500);
             });
+        }
+
+        function enableHandwritingNextQuestion(message) {
+            const nextBtn = document.getElementById('next-question-btn');
+            if (nextBtn) {
+                nextBtn.disabled = false;
+                nextBtn.removeAttribute('aria-disabled');
+                nextBtn.style.display = 'inline-block';
+                nextBtn.dataset.readyForNext = 'true';
+            }
+            if (resultDisplay) {
+                resultDisplay.textContent = message || 'AI 檢查完成，可以按「下一題」繼續練習。';
+                resultDisplay.className = 'correct';
+            }
         }
 
         function resetAIChat() {
@@ -3134,7 +3154,25 @@
             if (questionText) questionText.style.opacity = '0.5';
 
             const safeLevel = getSafeSelectedLevel();
-            fetch(`/get_next_question?skill=${skill}&level=${safeLevel}`)
+            const params = new URLSearchParams();
+            params.set('skill', skill);
+            params.set('level', safeLevel);
+            const currentParams = new URLSearchParams(window.location.search);
+            const problemType = currentParams.get('problem_type') || window.currentProblemTypeId || '';
+            if (problemType === 'tree_diagram_listing') {
+                params.set('problem_type', 'tree_diagram_listing');
+                params.set('answer_type', currentParams.get('answer_type') || 'handwriting');
+                params.set('grading_mode', currentParams.get('grading_mode') || 'ai_judged_free_response');
+                params.set('tree_diagram_index', treeDiagramQuestionIndex);
+                treeDiagramQuestionIndex += 1;
+            } else if (problemType === 'pascal_triangle_handwriting') {
+                params.set('problem_type', 'pascal_triangle_handwriting');
+                params.set('answer_type', currentParams.get('answer_type') || 'handwriting');
+                params.set('grading_mode', currentParams.get('grading_mode') || 'ai_judged_free_response');
+                params.set('pascal_triangle_index', pascalTriangleQuestionIndex);
+                pascalTriangleQuestionIndex += 1;
+            }
+            fetch(`/get_next_question?${params.toString()}`)
                 .then(r => r.json())
                 .then(data => {
                     if (questionText) questionText.style.opacity = '1';
@@ -3227,6 +3265,7 @@
                     levelIndicator.textContent = `等級：${data.current_level}`;
                     currentContext = data.context_string || data.inequality_string || "";
                     window.currentExpectedAnswer = (data.new_question_data && (data.new_question_data.correct_answer || data.new_question_data.expected_answer || data.new_question_data.answer)) || "";
+                    window.currentProblemTypeId = data.problem_type_id || data.problem_type || "";
 
                     // 5. 調整輸入框狀態
                     if (data.answer_type === 'handwriting') {
@@ -3597,9 +3636,17 @@
                             showDynamicSuggestions(data.follow_up_prompts);
                         }
 
+                        const isTreeDiagramFreeResponse = window.currentProblemTypeId === 'tree_diagram_listing';
+                        const isPascalTriangleFreeResponse = window.currentProblemTypeId === 'pascal_triangle_handwriting';
+
                         // 手寫批改：後端在答對時會設 correct=true（並搭配 next_question / auto_next）。
                         // 舊版曾回傳 next_question: "" 導致條件失敗，故以 correct 為準，與 /check_answer 語意一致。
-                        if (data.correct) {
+                        if (isTreeDiagramFreeResponse || isPascalTriangleFreeResponse) {
+                            const status = data.handwriting_status || (data.handwriting_analysis && data.handwriting_analysis.status) || '';
+                            const label = status ? `AI 檢查完成（${status}），可以按「下一題」繼續練習。` : 'AI 檢查完成，可以按「下一題」繼續練習。';
+                            enableHandwritingNextQuestion(label);
+                            updateStreak(data.correct === true);
+                        } else if (data.correct) {
                             // 在題目下方顯示"正確"
                             resultDisplay.textContent = '正確';
                             resultDisplay.className = 'correct';

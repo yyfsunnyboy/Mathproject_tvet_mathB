@@ -513,11 +513,11 @@ def _build_b4_synthetic_catalog_entries(payload: dict[str, Any]) -> list[Catalog
         if sid not in seen:
             seen.add(sid)
             deduped.append(sid)
-    allowlisted = [
+    allowlisted = _b4_adaptive_allowlist.ordered_b4_chapter1_skills([
         sid
         for sid in deduped
         if sid in _b4_adaptive_allowlist.B4_CHAPTER_1_ADAPTIVE_SKILL_ALLOWLIST
-    ]
+    ])
     synthetic_entries: list[CatalogEntry] = []
     for idx, sid in enumerate(allowlisted, start=1):
         synthetic_entries.append(
@@ -535,6 +535,77 @@ def _build_b4_synthetic_catalog_entries(payload: dict[str, Any]) -> list[Catalog
             )
         )
     return synthetic_entries
+
+
+def _pick_b4_guided_progression_entry(
+    entries: list[CatalogEntry],
+    *,
+    payload: dict[str, Any],
+    mode: str,
+    requested_step: int,
+    last_is_correct: bool | None,
+    post_mode: str,
+    routing_session: dict[str, Any],
+) -> tuple[CatalogEntry | None, dict[str, Any]]:
+    practice_kind = str(payload.get("practice_kind") or "").strip().lower()
+    learning_mode = str(payload.get("learning_mode") or "").strip().lower()
+    limit = int(_b4_adaptive_allowlist.B4_CHAPTER_1_GUIDED_PROGRESSION_STEPS)
+    debug: dict[str, Any] = {
+        "progression_mode": "adaptive_mixed",
+        "progression_step": requested_step,
+        "guided_progression_limit": limit,
+        "selected_skill_order_index": None,
+        "selected_skill_id": "",
+        "selection_reason": "b4_adaptive_mixed_after_guided_progression",
+    }
+    if not (
+        mode == "teaching"
+        and _is_b4_chapter1_entry_payload(payload)
+        and practice_kind == "unit_practice"
+        and learning_mode in {"", "main", "teaching"}
+    ):
+        return None, debug
+    if str(post_mode or "").strip().lower() == "remediation":
+        debug["selection_reason"] = "b4_guided_progression_skipped_remediation"
+        return None, debug
+    if last_is_correct is False:
+        debug["selection_reason"] = "b4_guided_progression_skipped_after_wrong_answer"
+        return None, debug
+    if bool(routing_session.get("in_remediation", False)) or str(payload.get("post_mode") or "").strip().lower() == "remediation":
+        debug["selection_reason"] = "b4_guided_progression_skipped_remediation"
+        return None, debug
+    if requested_step < 0 or requested_step >= limit:
+        return None, debug
+
+    available_skill_ids = _b4_adaptive_allowlist.ordered_b4_chapter1_skills(
+        [
+            str(entry.skill_id or "").strip()
+            for entry in entries
+            if str(entry.skill_id or "").strip()
+            in _b4_adaptive_allowlist.B4_CHAPTER_1_ADAPTIVE_SKILL_ALLOWLIST
+        ]
+    )
+    if not available_skill_ids:
+        debug["selection_reason"] = "b4_guided_progression_no_available_skill"
+        return None, debug
+    if set(available_skill_ids) != set(_b4_adaptive_allowlist.B4_CHAPTER_1_CURRICULUM_PROGRESSION_ORDER):
+        debug["selection_reason"] = "b4_guided_progression_skipped_non_full_chapter_pool"
+        return None, debug
+    selected_index = min(requested_step, len(available_skill_ids) - 1)
+    selected_skill_id = available_skill_ids[selected_index]
+    for entry in entries:
+        if str(entry.skill_id or "").strip() == selected_skill_id:
+            debug.update(
+                {
+                    "progression_mode": "guided_progression",
+                    "selected_skill_order_index": selected_index,
+                    "selected_skill_id": selected_skill_id,
+                    "selection_reason": "b4_guided_progression_order",
+                }
+            )
+            return entry, debug
+    debug["selection_reason"] = "b4_guided_progression_selected_skill_missing_entry"
+    return None, debug
 
 
 def _resolve_entry_agent_skill(skill_id: str) -> str:
@@ -2479,6 +2550,7 @@ def submit_and_get_next(payload: dict[str, Any]) -> dict[str, Any]:
     route_policy_debug: dict[str, Any] = {}
     route_action_raw = ""
     allowed_actions: list[str] = ["stay"]
+    b4_guided_progression_debug: dict[str, Any] = {}
     remediation_mastery_source = "none"
     routing_reward: dict[str, float] = {
         "correctness_reward": 0.0,
@@ -3515,6 +3587,32 @@ def submit_and_get_next(payload: dict[str, Any]) -> dict[str, Any]:
             if demo_override_reason:
                 policy_debug["demo_override_reason"] = demo_override_reason
             policy_debug["scenario_stage"] = scenario_stage
+        guided_entry, b4_guided_progression_debug = _pick_b4_guided_progression_entry(
+            entries,
+            payload=payload,
+            mode=mode,
+            requested_step=requested_step,
+            last_is_correct=last_is_correct,
+            post_mode=post_mode,
+            routing_session=routing_session,
+        )
+        if guided_entry is not None:
+            next_entry = guided_entry
+            selection_mode = "b4_guided_progression"
+            fallback_reason = None
+            selected_agent_skill = _resolve_entry_agent_skill(next_entry.skill_id) or selected_agent_skill
+            route_debug["b4_guided_progression"] = b4_guided_progression_debug
+            policy_debug.update(b4_guided_progression_debug)
+            POLICY_LOGGER.info(
+                "[Phase5E-A][b4_guided_progression] step=%s limit=%s skill=%s order_index=%s reason=%s",
+                b4_guided_progression_debug.get("progression_step"),
+                b4_guided_progression_debug.get("guided_progression_limit"),
+                b4_guided_progression_debug.get("selected_skill_id"),
+                b4_guided_progression_debug.get("selected_skill_order_index"),
+                b4_guided_progression_debug.get("selection_reason"),
+            )
+        elif b4_guided_progression_debug:
+            policy_debug.update(b4_guided_progression_debug)
         entry_subskills = list(next_entry.subskill_nodes or [])
         if entry_subskills and (not selected_subskill or selected_subskill not in entry_subskills):
             policy_debug["family_subskill_alignment"] = {
@@ -3746,6 +3844,8 @@ def submit_and_get_next(payload: dict[str, Any]) -> dict[str, Any]:
             assessment_completed=bool(completion_eval.get("assessment_completed", False)),
             assessment_stop_reason=str(completion_eval.get("assessment_stop_reason", "")),
         )
+        if b4_guided_progression_debug:
+            observability["selection_debug"].update(b4_guided_progression_debug)
 
     started = time.perf_counter()
     raw_question_payload: dict[str, Any] | None = None
@@ -3844,6 +3944,24 @@ def submit_and_get_next(payload: dict[str, Any]) -> dict[str, Any]:
             adaptive_audit = {}
             question_payload["adaptive_audit"] = adaptive_audit
         adaptive_audit["b4_retry_attempts"] = b4_retry_audit
+    if b4_guided_progression_debug:
+        adaptive_audit = question_payload.get("adaptive_audit")
+        if not isinstance(adaptive_audit, dict):
+            adaptive_audit = {}
+            question_payload["adaptive_audit"] = adaptive_audit
+        adaptive_audit.update(
+            {
+                key: b4_guided_progression_debug.get(key)
+                for key in (
+                    "progression_mode",
+                    "progression_step",
+                    "guided_progression_limit",
+                    "selected_skill_order_index",
+                    "selected_skill_id",
+                    "selection_reason",
+                )
+            }
+        )
     latency_ms = int((time.perf_counter() - started) * 1000)
 
     resolved_target_subskills = list(next_entry.subskill_nodes)
@@ -3916,6 +4034,14 @@ def submit_and_get_next(payload: dict[str, Any]) -> dict[str, Any]:
         observability["selection_debug"]["display_skill"] = display_state["display_skill"]
         observability["selection_debug"]["is_completed"] = False
 
+    ai_judged_free_response_candidates = [
+        {
+            "skill_id": sid,
+            **(_b4_adaptive_allowlist.get_b4_chapter1_ai_judged_free_response_metadata(sid) or {}),
+        }
+        for sid in _b4_adaptive_allowlist.B4_CHAPTER_1_AI_JUDGED_FREE_RESPONSE_SKILLS
+    ]
+
     return {
         "session_id": session_id,
         "step_number": next_step_number,
@@ -3962,6 +4088,8 @@ def submit_and_get_next(payload: dict[str, Any]) -> dict[str, Any]:
         "assessment_completed": bool(completion_eval.get("assessment_completed", False)),
         "assessment_stop_reason": str(completion_eval.get("assessment_stop_reason", "")),
         "retrieved_candidates": diagnosis.get("retrieved_candidates", []),
+        "free_response_checkpoint_available": bool(ai_judged_free_response_candidates),
+        "ai_judged_free_response_candidates": ai_judged_free_response_candidates,
         "diagnostic_choice": diagnosis.get("diagnostic_choice"),
         "qwen_classifier_choice": diagnosis.get("diagnostic_choice"),
         "diagnostic_confidence": diagnosis.get("diagnostic_confidence"),

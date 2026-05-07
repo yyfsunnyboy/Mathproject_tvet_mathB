@@ -1,0 +1,268 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>B4 Chapter 1 樹狀圖列舉練習</title>
+  <style>
+    :root {
+      --bg: #f3f7fb;
+      --panel: #ffffff;
+      --ink: #203047;
+      --muted: #64748b;
+      --line: #d8e2ee;
+      --accent: #1769aa;
+      --accent-soft: #eaf4ff;
+      --ok: #1c7c4c;
+      --warn: #b36b00;
+      --bad: #b42318;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Microsoft JhengHei", "Noto Sans TC", sans-serif;
+      background: linear-gradient(180deg, #f8fbff 0%, var(--bg) 100%);
+      color: var(--ink);
+    }
+    .shell {
+      max-width: 980px;
+      margin: 0 auto;
+      padding: 28px 18px 44px;
+    }
+    .header {
+      margin-bottom: 18px;
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: end;
+    }
+    h1 {
+      margin: 0 0 6px;
+      font-size: 28px;
+      line-height: 1.25;
+    }
+    .meta {
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.6;
+    }
+    .variant-select {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 9px 10px;
+      background: #fff;
+      color: var(--ink);
+      font: inherit;
+      min-width: 240px;
+    }
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 18px;
+      box-shadow: 0 12px 34px rgba(29, 54, 89, .06);
+      margin-bottom: 14px;
+    }
+    .question-text {
+      white-space: pre-wrap;
+      font-size: 20px;
+      font-weight: 700;
+      line-height: 1.7;
+      margin-bottom: 12px;
+    }
+    .hint {
+      margin: 0;
+      color: #40566f;
+      background: var(--accent-soft);
+      border-left: 4px solid var(--accent);
+      padding: 10px 12px;
+      line-height: 1.65;
+      border-radius: 6px;
+    }
+    textarea {
+      width: 100%;
+      min-height: 180px;
+      resize: vertical;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 13px 14px;
+      font-size: 17px;
+      line-height: 1.7;
+      font-family: inherit;
+      color: var(--ink);
+      background: #fff;
+    }
+    .actions {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      margin-top: 12px;
+      flex-wrap: wrap;
+    }
+    button {
+      border: 0;
+      border-radius: 8px;
+      padding: 11px 18px;
+      font-size: 15px;
+      font-weight: 700;
+      font-family: inherit;
+      cursor: pointer;
+      background: var(--accent);
+      color: #fff;
+    }
+    button:disabled { opacity: .6; cursor: not-allowed; }
+    .status-line { color: var(--muted); font-size: 14px; }
+    .result-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 12px;
+    }
+    .result-item {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 10px 12px;
+      background: #fbfdff;
+      min-height: 64px;
+    }
+    .result-item strong {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+      margin-bottom: 5px;
+    }
+    .status-correct { color: var(--ok); font-weight: 800; }
+    .status-partial { color: var(--warn); font-weight: 800; }
+    .status-incorrect { color: var(--bad); font-weight: 800; }
+    .status-needs_review { color: #6b4e16; font-weight: 800; }
+    .feedback {
+      margin-top: 12px;
+      padding: 12px;
+      border-radius: 8px;
+      background: #f7fafc;
+      border: 1px solid var(--line);
+      line-height: 1.65;
+    }
+    @media (max-width: 720px) {
+      .header { align-items: stretch; flex-direction: column; }
+      .variant-select { width: 100%; min-width: 0; }
+      .result-grid { grid-template-columns: 1fr; }
+      h1 { font-size: 24px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <header class="header">
+      <div>
+        <h1>B4 Chapter 1 樹狀圖列舉練習</h1>
+        <div class="meta">{{ curriculum }} / {{ volume }} / Chapter {{ chapter_id }} / {{ problem_type }}</div>
+      </div>
+      <select id="variantSelect" class="variant-select" aria-label="選擇題型">
+        <option value="early_stopping_game" {% if variant == 'early_stopping_game' %}selected{% endif %}>先贏兩場者勝</option>
+        <option value="fixed_stage_binary_tree" {% if variant == 'fixed_stage_binary_tree' %}selected{% endif %}>硬幣連續三次</option>
+      </select>
+    </header>
+
+    <section class="panel">
+      <div id="questionText" class="question-text">{{ question.question_text }}</div>
+      <p class="hint">請用樹狀圖或完整列舉方式寫出所有可能情形。本版本先使用文字列舉作答。請不要只寫總數。</p>
+    </section>
+
+    <section class="panel">
+      <textarea id="answerText" placeholder=""></textarea>
+      <div class="actions">
+        <button id="submitBtn" type="button">送出答案</button>
+        <span id="statusText" class="status-line">尚未送出</span>
+      </div>
+    </section>
+
+    <section id="resultPanel" class="panel" hidden>
+      <h2>判斷結果</h2>
+      <div class="result-grid">
+        <div class="result-item"><strong>status</strong><span id="resultStatus"></span></div>
+        <div class="result-item"><strong>score</strong><span id="resultScore"></span></div>
+        <div class="result-item"><strong>detected / expected</strong><span id="resultCount"></span></div>
+        <div class="result-item"><strong>count_only_answer</strong><span id="resultCountOnly"></span></div>
+        <div class="result-item"><strong>missing_paths</strong><span id="resultMissing"></span></div>
+        <div class="result-item"><strong>extra_paths</strong><span id="resultExtra"></span></div>
+        <div class="result-item"><strong>duplicated_paths</strong><span id="resultDuplicated"></span></div>
+        <div class="result-item"><strong>teacher_review_needed</strong><span id="resultReview"></span></div>
+      </div>
+      <div id="resultFeedback" class="feedback"></div>
+    </section>
+  </main>
+
+  <script>
+    const initialVariant = {{ variant|tojson }};
+    const placeholders = {
+      early_stopping_game: "甲甲、甲乙甲、甲乙乙、乙甲甲、乙甲乙、乙乙",
+      fixed_stage_binary_tree: "正正正、正正反、正反正、正反反、反正正、反正反、反反正、反反反"
+    };
+    const answerText = document.getElementById("answerText");
+    const submitBtn = document.getElementById("submitBtn");
+    const statusText = document.getElementById("statusText");
+    const variantSelect = document.getElementById("variantSelect");
+    const resultPanel = document.getElementById("resultPanel");
+
+    function setPlaceholder(variant) {
+      answerText.placeholder = placeholders[variant] || placeholders.early_stopping_game;
+    }
+
+    function joinList(value) {
+      return Array.isArray(value) && value.length ? value.join("、") : "無";
+    }
+
+    function renderResult(result) {
+      resultPanel.hidden = false;
+      const statusEl = document.getElementById("resultStatus");
+      statusEl.textContent = result.status || "";
+      statusEl.className = `status-${result.status || ""}`;
+      document.getElementById("resultScore").textContent = String(result.score ?? "");
+      document.getElementById("resultCount").textContent = `${result.detected_count ?? 0} / ${result.expected_count ?? ""}`;
+      document.getElementById("resultCountOnly").textContent = result.count_only_answer ? "true" : "false";
+      document.getElementById("resultMissing").textContent = joinList(result.missing_paths);
+      document.getElementById("resultExtra").textContent = joinList(result.extra_paths);
+      document.getElementById("resultDuplicated").textContent = joinList(result.duplicated_paths);
+      document.getElementById("resultReview").textContent = result.teacher_review_needed ? "true" : "false";
+      document.getElementById("resultFeedback").textContent = result.feedback || result.main_issue || "";
+    }
+
+    async function submitAnswer() {
+      submitBtn.disabled = true;
+      statusText.textContent = "submitting";
+      try {
+        const response = await fetch("/api/free_response/tree_diagram/submit", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            variant: variantSelect.value,
+            answer_text: answerText.value,
+            student_id: null,
+            session_id: null,
+            question_id: null
+          })
+        });
+        const data = await response.json();
+        if (!response.ok || !data.ok) {
+          throw new Error(data.error || "submit_failed");
+        }
+        renderResult(data.result || {});
+        statusText.textContent = "success";
+      } catch (error) {
+        statusText.textContent = `error: ${error.message}`;
+      } finally {
+        submitBtn.disabled = false;
+      }
+    }
+
+    variantSelect.addEventListener("change", () => {
+      const url = new URL(window.location.href);
+      url.searchParams.set("variant", variantSelect.value);
+      window.location.href = url.toString();
+    });
+    submitBtn.addEventListener("click", submitAnswer);
+    setPlaceholder(initialVariant);
+  </script>
+</body>
+</html>

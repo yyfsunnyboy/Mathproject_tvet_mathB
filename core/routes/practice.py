@@ -45,17 +45,13 @@ from core.vocational_math_b4.adaptive.b4_chapter1_deterministic_allowlist import
     B4_CHAPTER_1_ADAPTIVE_SKILL_ALLOWLIST,
     filter_skill_pool_for_b4_chapter1_deterministic_adaptive,
     format_adaptive_question_audit_dict,
+    get_b4_chapter1_curriculum_progression,
     is_pure_b4_allowlisted_adaptive_pool,
     starter_b4_candidates,
     validate_b4_deterministic_adaptive_generator_payload,
 )
 
 MANUAL_REVIEW_SKILLS = {
-    "vh_數學B4_TreeDiagramCounting": {
-        "display_name": "樹狀圖",
-        "reason": "樹狀圖是視覺化 / 完整列舉能力，目前一般練習頁不支援畫圖或 list[str] 自動判分。",
-        "future_path": "future_ai_judged / handwriting checked / visualization / structured-answer listing",
-    },
     "vh_數學B4_PascalTriangle": {
         "display_name": "巴斯卡三角形",
         "reason": "巴斯卡三角形推導屬於推導 / 證明型內容，目前 deterministic int-answer runtime 不適合自動判分。",
@@ -63,12 +59,22 @@ MANUAL_REVIEW_SKILLS = {
     },
 }
 
+B4_TREE_DIAGRAM_FREE_RESPONSE_SKILL_ID = "vh_數學B4_TreeDiagramCounting"
+B4_TREE_DIAGRAM_PROBLEM_TYPE = "tree_diagram_listing"
+B4_TREE_DIAGRAM_DEFAULT_VARIANT = "early_stopping_game"
+B4_TREE_DIAGRAM_VARIANTS = ("early_stopping_game", "fixed_stage_binary_tree")
+B4_PASCAL_TRIANGLE_FREE_RESPONSE_SKILL_ID = "vh_數學B4_PascalTriangle"
+B4_PASCAL_TRIANGLE_PROBLEM_TYPE = "pascal_triangle_handwriting"
+B4_PASCAL_TRIANGLE_VARIANTS = ("pascal_row_listing", "pascal_binomial_expansion")
+
 # ==========================================
 # Helper Functions (輔助函式)
 # ==========================================
 
 def get_skill(skill_id):
     """動態載入技能模組 (skills/xxx.py)"""
+    if skill_id in {"vh_數學B4_TreeDiagramCounting", "vh_數學B4_PascalTriangle"}:
+        return None
     try:
         return importlib.import_module(f"skills.{skill_id}")
     except:
@@ -116,7 +122,7 @@ def _resolve_b4_chapter_adaptive_entry(
     if not (legacy_hit or chapter_hit):
         return {}, False
 
-    unit_skill_ids = sorted(B4_CHAPTER_1_ADAPTIVE_SKILL_ALLOWLIST)
+    unit_skill_ids = get_b4_chapter1_curriculum_progression(include_free_response=False)
     starter_pool = starter_b4_candidates(unit_skill_ids) or unit_skill_ids
     starter_skill_id = starter_pool[0] if starter_pool else ""
     return (
@@ -141,6 +147,82 @@ def _stable_b4_inner_seed(skill_id: str, gen_seed: int) -> int:
     digest = hashlib.sha256(raw.encode("utf-8")).hexdigest()
     # Keep seed bounded to avoid pathological long sampling loops in some generators.
     return (int(digest[:8], 16) % 1_000_000) + 1
+
+
+def _is_b4_tree_diagram_request(skill_id: str | None = None, problem_type: str | None = None) -> bool:
+    return (
+        str(skill_id or "").strip() == B4_TREE_DIAGRAM_FREE_RESPONSE_SKILL_ID
+        or str(problem_type or "").strip() == B4_TREE_DIAGRAM_PROBLEM_TYPE
+    )
+
+
+def _is_b4_pascal_triangle_request(skill_id: str | None = None, problem_type: str | None = None) -> bool:
+    return (
+        str(skill_id or "").strip() == B4_PASCAL_TRIANGLE_FREE_RESPONSE_SKILL_ID
+        or str(problem_type or "").strip() == B4_PASCAL_TRIANGLE_PROBLEM_TYPE
+    )
+
+
+def _resolve_b4_tree_diagram_variant(variant: str | None = None, tree_diagram_index: int | None = None) -> str:
+    if tree_diagram_index is not None:
+        return B4_TREE_DIAGRAM_VARIANTS[tree_diagram_index % len(B4_TREE_DIAGRAM_VARIANTS)]
+    selected_variant = (variant or B4_TREE_DIAGRAM_DEFAULT_VARIANT).strip() or B4_TREE_DIAGRAM_DEFAULT_VARIANT
+    return selected_variant
+
+
+def _resolve_b4_pascal_triangle_variant(pascal_triangle_index: int | None = None) -> str:
+    idx = int(pascal_triangle_index or 0)
+    return B4_PASCAL_TRIANGLE_VARIANTS[idx % len(B4_PASCAL_TRIANGLE_VARIANTS)]
+
+
+def _build_b4_tree_diagram_runtime_payload(
+    variant: str | None = None,
+    tree_diagram_index: int | None = None,
+) -> dict:
+    from core.vocational_math_b4.free_response.tree_diagram_judge import build_tree_diagram_listing_payload
+
+    selected_variant = _resolve_b4_tree_diagram_variant(variant, tree_diagram_index)
+    payload_index = tree_diagram_index // len(B4_TREE_DIAGRAM_VARIANTS) if tree_diagram_index is not None else None
+    payload = build_tree_diagram_listing_payload(selected_variant, index=payload_index)
+    return {
+        "question_text": payload["question_text"],
+        "correct_answer": "",
+        "answer_type": "handwriting",
+        "problem_type": payload["problem_type_id"],
+        "problem_type_id": payload["problem_type_id"],
+        "grading_mode": payload["grading_mode"],
+        "variant": payload["variant"],
+        "expected_count": payload["expected_count"],
+        "expected_paths": payload["expected_paths"],
+        "path_labels": payload.get("path_labels", []),
+        "requires_listing_or_tree": payload.get("requires_listing_or_tree", True),
+        "context_string": "",
+    }
+
+
+def _build_b4_pascal_triangle_runtime_payload(
+    pascal_triangle_index: int | None = None,
+) -> dict:
+    from core.vocational_math_b4.free_response.pascal_triangle_judge import build_pascal_triangle_payload
+
+    idx = int(pascal_triangle_index or 0)
+    selected_variant = _resolve_b4_pascal_triangle_variant(idx)
+    payload_index = idx // len(B4_PASCAL_TRIANGLE_VARIANTS)
+    payload = build_pascal_triangle_payload(selected_variant, index=payload_index)
+    return {
+        "question_text": payload["question_text"],
+        "correct_answer": "",
+        "answer_type": "handwriting",
+        "problem_type": payload["problem_type_id"],
+        "problem_type_id": payload["problem_type_id"],
+        "grading_mode": payload["grading_mode"],
+        "variant": payload["variant"],
+        "n": payload.get("n"),
+        "expected_row": payload.get("expected_row", []),
+        "expected_terms": payload.get("expected_terms", []),
+        "expected_expansion": payload.get("expected_expansion", ""),
+        "context_string": "",
+    }
 
 def update_progress(user_id, skill_id, is_correct):
     """
@@ -301,16 +383,27 @@ def adaptive_learning_entry_page():
     return render_template('adaptive_learning_entry.html', units=units)
 
 
+@practice_bp.route('/practice')
+def practice_query_entry():
+    skill_id = (request.args.get("skill") or "").strip()
+    if not skill_id:
+        return redirect(url_for("dashboard"))
+    return practice(skill_id)
+
+
 @practice_bp.route('/practice/<skill_id>')
 def practice(skill_id):
     """進入特定技能的練習頁面"""
-    manual_review_info = MANUAL_REVIEW_SKILLS.get(skill_id)
+    requested_problem_type = (request.args.get("problem_type") or "").strip()
+    is_pascal_runtime_request = _is_b4_pascal_triangle_request(skill_id, requested_problem_type)
+    manual_review_info = None if is_pascal_runtime_request else MANUAL_REVIEW_SKILLS.get(skill_id)
     skill_info = db.session.get(SkillInfo, skill_id)
-    skill_ch_name = (
-        manual_review_info["display_name"]
-        if manual_review_info
-        else (skill_info.skill_ch_name if skill_info else "未知技能")
-    )
+    if skill_id == B4_TREE_DIAGRAM_FREE_RESPONSE_SKILL_ID:
+        skill_ch_name = skill_info.skill_ch_name if skill_info else "樹狀圖"
+    elif manual_review_info:
+        skill_ch_name = manual_review_info["display_name"]
+    else:
+        skill_ch_name = skill_info.skill_ch_name if skill_info else "未知技能"
 
     # 查詢前置技能
     prerequisites = db.session.query(SkillInfo).join(
@@ -617,6 +710,10 @@ def next_question():
     """
     mode = request.args.get('mode', '')
     skill_id = request.args.get('skill', 'remainder')
+    problem_type = request.args.get('problem_type', '')
+    variant = request.args.get('variant', B4_TREE_DIAGRAM_DEFAULT_VARIANT)
+    tree_diagram_index = request.args.get('tree_diagram_index', type=int)
+    pascal_triangle_index = request.args.get('pascal_triangle_index', type=int)
     requested_level = request.args.get('level', type=int)
 
     # [單元出題] mode=unit：依單元選 pattern skill
@@ -644,7 +741,7 @@ def next_question():
         if not skill_id:
             return jsonify({"error": "該單元下無可用的題型技能"}), 404
 
-    manual_review_info = MANUAL_REVIEW_SKILLS.get(skill_id)
+    manual_review_info = None if _is_b4_pascal_triangle_request(skill_id, problem_type) else MANUAL_REVIEW_SKILLS.get(skill_id)
     if manual_review_info:
         return jsonify({
             "manual_review_unavailable": True,
@@ -668,7 +765,11 @@ def next_question():
     skill_info = get_skill_info(skill_id)
     # [單元模式] 允許 pattern skill 僅有檔案、尚無 DB 註冊時仍可出題
     if not skill_info and skill_id != 'instant_upload':
-        if mode == 'unit':
+        if _is_b4_tree_diagram_request(skill_id, problem_type):
+            skill_info = {"input_type": "handwriting", "skill_id": B4_TREE_DIAGRAM_FREE_RESPONSE_SKILL_ID}
+        elif _is_b4_pascal_triangle_request(skill_id, problem_type):
+            skill_info = {"input_type": "handwriting", "skill_id": B4_PASCAL_TRIANGLE_FREE_RESPONSE_SKILL_ID}
+        elif mode == 'unit':
             skill_info = {"input_type": "text", "skill_id": skill_id}
         else:
             return jsonify({"error": f"技能 {skill_id} 不存在或未啟用"}), 404
@@ -698,10 +799,13 @@ def next_question():
     try:
         # [修正 2] 強制重新載入模組，解決「改了沒反應」的問題
         module_path = f"skills.{skill_id}"
-        if module_path in sys.modules:
-            mod = importlib.reload(sys.modules[module_path])
+        if _is_b4_tree_diagram_request(skill_id, problem_type) or _is_b4_pascal_triangle_request(skill_id, problem_type):
+            mod = None
         else:
-            mod = importlib.import_module(module_path)
+            if module_path in sys.modules:
+                mod = importlib.reload(sys.modules[module_path])
+            else:
+                mod = importlib.import_module(module_path)
         
         # 決定難度等級
         current_curriculum_context = session.get('current_curriculum', 'general')
@@ -737,7 +841,12 @@ def next_question():
         for attempt in range(max_retries):
             try:
                 # [修正 3] 強化自動修復與欄位檢查
-                data = mod.generate(level=difficulty_level)
+                if _is_b4_tree_diagram_request(skill_id, problem_type):
+                    data = _build_b4_tree_diagram_runtime_payload(variant, tree_diagram_index)
+                elif _is_b4_pascal_triangle_request(skill_id, problem_type):
+                    data = _build_b4_pascal_triangle_runtime_payload(pascal_triangle_index)
+                else:
+                    data = mod.generate(level=difficulty_level)
                 
                 # [核心修正] 欄位雙重自動校正 (對齊金標準)
                 if "question" in data and "question_text" not in data:
@@ -775,7 +884,17 @@ def next_question():
             "current_level": difficulty_level, 
             "image_base64": data.get("image_base64", ""), 
             "visual_aids": data.get("visual_aids", []),
-            "answer_type": skill_info.get("input_type", "text") 
+            "answer_type": data.get("answer_type", skill_info.get("input_type", "text")),
+            "problem_type_id": data.get("problem_type_id") or data.get("problem_type"),
+            "grading_mode": data.get("grading_mode", ""),
+            "variant": data.get("variant", ""),
+            "expected_count": data.get("expected_count"),
+            "path_labels": data.get("path_labels", []),
+            "requires_listing_or_tree": data.get("requires_listing_or_tree", False),
+            "n": data.get("n"),
+            "expected_row": data.get("expected_row", []),
+            "expected_terms": data.get("expected_terms", []),
+            "expected_expansion": data.get("expected_expansion", ""),
         })
     except Exception as e:
         return jsonify({"error": f"生成題目失敗: {str(e)}"}), 500

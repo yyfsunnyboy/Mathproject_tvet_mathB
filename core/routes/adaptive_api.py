@@ -9,6 +9,9 @@ from flask_login import current_user, login_required
 from core.adaptive.judge import judge_answer_with_feedback
 from . import practice_bp
 from core.adaptive.session_engine import get_rag_hint, submit_and_get_next
+from core.vocational_math_b4.adaptive.b4_chapter1_deterministic_allowlist import (
+    ordered_b4_chapter1_skills,
+)
 
 
 _MAX_RUNTIME_SESSIONS = 2
@@ -310,6 +313,9 @@ def adaptive_submit_and_get_next():
                 skill_ids = target_skill_ids or unit_skill_ids
             if not unit_skill_ids:
                 unit_skill_ids = target_skill_ids or skill_ids
+            target_skill_ids = ordered_b4_chapter1_skills(target_skill_ids)
+            skill_ids = ordered_b4_chapter1_skills(skill_ids)
+            unit_skill_ids = ordered_b4_chapter1_skills(unit_skill_ids)
             payload["target_skill_ids"] = target_skill_ids
             payload["skill_ids"] = skill_ids
             payload["unit_skill_ids"] = unit_skill_ids

@@ -10,7 +10,7 @@ This module MUST NOT import or rewrite `b4_ch1_runtime_coverage_matrix.csv`.
 
 from __future__ import annotations
 
-from typing import TypeVar
+from typing import Iterable, TypeVar
 
 B4_SKILL_PREFIX = "vh_數學B4_"
 
@@ -52,6 +52,80 @@ B4_EXCLUDED_DETERMINISTIC_ADAPTIVE_PROBLEM_TYPES: frozenset[str] = frozenset(
         "pascal_triangle_derivation",
     }
 )
+
+B4_CHAPTER_1_GUIDED_PROGRESSION_STEPS = 10
+
+B4_CHAPTER_1_CURRICULUM_PROGRESSION_ORDER: tuple[str, ...] = (
+    "vh_數學B4_AdditionPrinciple",
+    "vh_數學B4_MultiplicationPrinciple",
+    "vh_數學B4_FactorialNotation",
+    "vh_數學B4_PermutationOfDistinctObjects",
+    "vh_數學B4_RepeatedPermutation",
+    "vh_數學B4_PermutationWithRepetition",
+    "vh_數學B4_PermutationOfNonDistinctObjects",
+    "vh_數學B4_CombinationDefinition",
+    "vh_數學B4_Combination",
+    "vh_數學B4_CombinationProperties",
+    "vh_數學B4_CombinationApplications",
+    "vh_數學B4_BinomialCoefficientIdentities",
+    "vh_數學B4_BinomialTheorem",
+)
+
+B4_CHAPTER_1_AI_JUDGED_FREE_RESPONSE_SKILLS: tuple[str, ...] = (
+    "vh_數學B4_TreeDiagramCounting",
+    "vh_數學B4_PascalTriangle",
+)
+
+B4_CHAPTER_1_AI_JUDGED_FREE_RESPONSE_SKILL_METADATA: dict[str, dict[str, str]] = {
+    "vh_數學B4_TreeDiagramCounting": {
+        "display_name": "樹狀圖",
+        "problem_type_id": "tree_diagram_listing",
+        "answer_type": "handwriting",
+        "grading_mode": "ai_judged_free_response",
+        "index_param": "tree_diagram_index",
+        "default_variant": "early_stopping_game",
+        "practice_url_mode": "practice_handwriting",
+        "adaptive_role": "free_response_checkpoint",
+        "mastery_scoring": "deferred_teacher_review",
+    },
+    "vh_數學B4_PascalTriangle": {
+        "display_name": "巴斯卡三角形",
+        "problem_type_id": "pascal_triangle_handwriting",
+        "answer_type": "handwriting",
+        "grading_mode": "ai_judged_free_response",
+        "index_param": "pascal_triangle_index",
+        "default_variant": "pascal_row_listing",
+        "practice_url_mode": "practice_handwriting",
+        "adaptive_role": "free_response_checkpoint",
+        "mastery_scoring": "deferred_teacher_review",
+    },
+}
+
+B4_CHAPTER_1_CURRICULUM_PROGRESSION_WITH_FREE_RESPONSE: tuple[str, ...] = (
+    "vh_數學B4_AdditionPrinciple",
+    "vh_數學B4_MultiplicationPrinciple",
+    "vh_數學B4_TreeDiagramCounting",
+    "vh_數學B4_FactorialNotation",
+    "vh_數學B4_PermutationOfDistinctObjects",
+    "vh_數學B4_RepeatedPermutation",
+    "vh_數學B4_PermutationWithRepetition",
+    "vh_數學B4_PermutationOfNonDistinctObjects",
+    "vh_數學B4_CombinationDefinition",
+    "vh_數學B4_Combination",
+    "vh_數學B4_CombinationProperties",
+    "vh_數學B4_CombinationApplications",
+    "vh_數學B4_BinomialCoefficientIdentities",
+    "vh_數學B4_PascalTriangle",
+    "vh_數學B4_BinomialTheorem",
+)
+
+_B4_CH1_FREE_RESPONSE_FALLBACK_INSERT_AFTER: dict[str, str] = {
+    "vh_數學B4_TreeDiagramCounting": "vh_數學B4_MultiplicationPrinciple",
+    "vh_數學B4_PascalTriangle": "vh_數學B4_BinomialCoefficientIdentities",
+}
+_B4_CH1_FREE_RESPONSE_FALLBACK_INSERT_BEFORE: dict[str, str] = {
+    "vh_數學B4_PascalTriangle": "vh_數學B4_BinomialTheorem",
+}
 
 # Deterministic Chapter 1 starter order for first adaptive bootstrap only.
 # Keep this list bounded and foundational; no expansion of problem-type coverage.
@@ -123,6 +197,95 @@ B4_CHAPTER_1_REMEDIATION_BRIDGE: dict[str, tuple[str, ...]] = {
 
 def is_b4_vocational_skill_id(skill_id: str) -> bool:
     return isinstance(skill_id, str) and skill_id.startswith(B4_SKILL_PREFIX)
+
+
+def is_b4_chapter1_ai_judged_free_response_skill(skill_id: str) -> bool:
+    sid = str(skill_id or "").strip()
+    return sid in B4_CHAPTER_1_AI_JUDGED_FREE_RESPONSE_SKILLS
+
+
+def get_b4_chapter1_ai_judged_free_response_metadata(skill_id: str) -> dict[str, str] | None:
+    sid = str(skill_id or "").strip()
+    metadata = B4_CHAPTER_1_AI_JUDGED_FREE_RESPONSE_SKILL_METADATA.get(sid)
+    return dict(metadata) if isinstance(metadata, dict) else None
+
+
+def get_b4_chapter1_curriculum_progression(include_free_response: bool = False) -> list[str]:
+    if include_free_response:
+        return list(B4_CHAPTER_1_CURRICULUM_PROGRESSION_WITH_FREE_RESPONSE)
+    return list(B4_CHAPTER_1_CURRICULUM_PROGRESSION_ORDER)
+
+
+def _fetch_b4_chapter1_db_order_skill_ids() -> list[str]:
+    """Best-effort DB order fetch for vocational/B4/chapter1 skill_ids."""
+    try:
+        from models import SkillCurriculum, db
+    except Exception:
+        return []
+    try:
+        rows = (
+            db.session.query(SkillCurriculum.skill_id)
+            .filter(
+                SkillCurriculum.curriculum == "vocational",
+                SkillCurriculum.volume == "數學B4",
+                SkillCurriculum.chapter.in_(["1 排列組合", "1"]),
+            )
+            .order_by(
+                SkillCurriculum.display_order.asc(),
+                SkillCurriculum.difficulty_level.asc(),
+                SkillCurriculum.id.asc(),
+            )
+            .all()
+        )
+    except Exception:
+        return []
+    out: list[str] = []
+    seen: set[str] = set()
+    for row in rows:
+        sid = str(getattr(row, "skill_id", "") or "").strip()
+        if sid and sid not in seen:
+            seen.add(sid)
+            out.append(sid)
+    return out
+
+
+def _insert_with_fallback_anchor(sequence: list[str], skill_id: str) -> None:
+    if skill_id in sequence:
+        return
+    anchor_after = _B4_CH1_FREE_RESPONSE_FALLBACK_INSERT_AFTER.get(skill_id)
+    if anchor_after and anchor_after in sequence:
+        sequence.insert(sequence.index(anchor_after) + 1, skill_id)
+        return
+    anchor_before = _B4_CH1_FREE_RESPONSE_FALLBACK_INSERT_BEFORE.get(skill_id)
+    if anchor_before and anchor_before in sequence:
+        sequence.insert(sequence.index(anchor_before), skill_id)
+        return
+    sequence.append(skill_id)
+
+
+def get_b4_chapter1_curriculum_progression_from_db_or_fallback(
+    include_free_response: bool = False,
+) -> list[str]:
+    """
+    Prefer DB `skill_curriculum` ordering for B4 Chapter 1; fallback to constants only when unavailable.
+    """
+    db_order = _fetch_b4_chapter1_db_order_skill_ids()
+    deterministic_db_order = [sid for sid in db_order if sid in B4_CHAPTER_1_ADAPTIVE_SKILL_ALLOWLIST]
+    if not deterministic_db_order:
+        return get_b4_chapter1_curriculum_progression(include_free_response=include_free_response)
+
+    if not include_free_response:
+        return deterministic_db_order
+
+    combined_db_order = [
+        sid
+        for sid in db_order
+        if sid in B4_CHAPTER_1_ADAPTIVE_SKILL_ALLOWLIST
+        or sid in B4_CHAPTER_1_AI_JUDGED_FREE_RESPONSE_SKILLS
+    ]
+    for sid in B4_CHAPTER_1_AI_JUDGED_FREE_RESPONSE_SKILLS:
+        _insert_with_fallback_anchor(combined_db_order, sid)
+    return combined_db_order
 
 
 def filter_skill_pool_for_b4_chapter1_deterministic_adaptive(
@@ -271,12 +434,61 @@ def allowlisted_b4_candidates(skill_ids: list[str]) -> list[str]:
     return [sid for sid in skill_ids if sid in B4_CHAPTER_1_ADAPTIVE_SKILL_ALLOWLIST]
 
 
+def ordered_b4_chapter1_skills(skill_ids: Iterable[str]) -> list[str]:
+    """Order a B4 Chapter 1 pool by teacher-designed curriculum progression."""
+    ordered_rank = {
+        sid: idx for idx, sid in enumerate(B4_CHAPTER_1_CURRICULUM_PROGRESSION_ORDER)
+    }
+    seen: set[str] = set()
+    candidates: list[tuple[int, str]] = []
+    for input_idx, raw_sid in enumerate(skill_ids):
+        sid = str(raw_sid or "").strip()
+        if not sid or sid in seen:
+            continue
+        seen.add(sid)
+        if sid in B4_MANUAL_REVIEW_OR_UNAVAILABLE_SKILL_IDS:
+            continue
+        candidates.append((input_idx, sid))
+    candidates.sort(
+        key=lambda item: (
+            ordered_rank.get(item[1], len(ordered_rank)),
+            item[0],
+        )
+    )
+    return [sid for _, sid in candidates]
+
+
+def ordered_b4_chapter1_skills_with_free_response(skill_ids: Iterable[str]) -> list[str]:
+    ordered_rank = {
+        sid: idx for idx, sid in enumerate(B4_CHAPTER_1_CURRICULUM_PROGRESSION_WITH_FREE_RESPONSE)
+    }
+    seen: set[str] = set()
+    candidates: list[tuple[int, str]] = []
+    for input_idx, raw_sid in enumerate(skill_ids):
+        sid = str(raw_sid or "").strip()
+        if not sid or sid in seen:
+            continue
+        seen.add(sid)
+        candidates.append((input_idx, sid))
+    candidates.sort(
+        key=lambda item: (
+            ordered_rank.get(item[1], len(ordered_rank)),
+            item[0],
+        )
+    )
+    return [sid for _, sid in candidates]
+
+
 def starter_b4_candidates(skill_ids: list[str]) -> list[str]:
     """
     Keep only foundational Chapter 1 starter skills from the current pool, preserving starter order.
     """
     pool = set(skill_ids)
-    ordered = [sid for sid in B4_CHAPTER_1_ADAPTIVE_STARTER_SKILL_ORDER if sid in pool]
+    ordered = [
+        sid
+        for sid in ordered_b4_chapter1_skills(B4_CHAPTER_1_ADAPTIVE_STARTER_SKILL_ORDER)
+        if sid in pool
+    ]
     return ordered
 
 

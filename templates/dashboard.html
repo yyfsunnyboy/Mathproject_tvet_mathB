@@ -486,7 +486,27 @@
                         <small>當前等級：{{ skill.current_level }} 級 | 總練習 {{ skill.questions_solved }} 題</small>
                     </div>
 
-                    <a href="{{ url_for('practice.practice', skill_id=skill.skill_id) }}" class="btn-practice">
+                    {% set is_b4_ch1_tree_diagram = (
+                        curriculum == 'vocational'
+                        and volume == '數學B4'
+                        and (chapter_display|string).startswith('1')
+                        and (
+                            skill.skill_id == 'vh_數學B4_TreeDiagramCounting'
+                            or skill.skill_ch_name == '樹狀圖'
+                            or 'TreeDiagramCounting' in (skill.skill_id|string)
+                        )
+                    ) %}
+                    {% set is_b4_ch1_pascal_triangle = (
+                        curriculum == 'vocational'
+                        and volume == '數學B4'
+                        and (chapter_display|string).startswith('1')
+                        and (
+                            skill.skill_id == 'vh_數學B4_PascalTriangle'
+                            or skill.skill_ch_name == '巴斯卡三角形'
+                            or 'PascalTriangle' in (skill.skill_id|string)
+                        )
+                    ) %}
+                    <a href="{{ url_for('practice.practice_query_entry', skill=skill.skill_id, problem_type='tree_diagram_listing', answer_type='handwriting', grading_mode='ai_judged_free_response', variant='early_stopping_game') if is_b4_ch1_tree_diagram else (url_for('practice.practice_query_entry', skill=skill.skill_id, problem_type='pascal_triangle_handwriting', answer_type='handwriting', grading_mode='ai_judged_free_response', pascal_triangle_index=0) if is_b4_ch1_pascal_triangle else url_for('practice.practice', skill_id=skill.skill_id)) }}" class="btn-practice">
                         開始練習
                     </a>
                 </div>
