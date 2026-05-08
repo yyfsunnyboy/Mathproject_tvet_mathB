@@ -399,14 +399,18 @@ class TestPracticeRouteImportSanity:
     def test_chap2_allowlist_imports(self):
         from core.vocational_math_b4.adaptive.b4_chapter2_phase6c1_allowlist import (
             B4_CHAPTER_2_PHASE6C1_ADAPTIVE_SKILL_ALLOWLIST,
+            B4_CHAPTER_2_NOT_ENABLED_PHASE6C1_SKILL_IDS,
             B4_CHAPTER_2_EXCLUDED_DETERMINISTIC_PROBLEM_TYPES,
             is_b4_chapter2_phase6c1_deterministic_skill,
+            is_b4_chapter2_skill_not_enabled_in_phase6c1,
             is_b4_chapter2_excluded_problem_type,
             validate_b4_chap2_phase6c1_generator_payload,
         )
         assert isinstance(B4_CHAPTER_2_PHASE6C1_ADAPTIVE_SKILL_ALLOWLIST, frozenset)
+        assert isinstance(B4_CHAPTER_2_NOT_ENABLED_PHASE6C1_SKILL_IDS, frozenset)
         assert isinstance(B4_CHAPTER_2_EXCLUDED_DETERMINISTIC_PROBLEM_TYPES, frozenset)
         assert callable(is_b4_chapter2_phase6c1_deterministic_skill)
+        assert callable(is_b4_chapter2_skill_not_enabled_in_phase6c1)
         assert callable(is_b4_chapter2_excluded_problem_type)
         assert callable(validate_b4_chap2_phase6c1_generator_payload)
 

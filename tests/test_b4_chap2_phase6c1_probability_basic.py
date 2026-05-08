@@ -412,6 +412,40 @@ class TestSampleSpaceCountNumericGenerator:
             assert "列出" not in q and "列舉" not in q, \
                 f"Question asks for listing: {q}"
 
+    def test_variety_coverage_across_30_seeds(self):
+        seen_contexts = set()
+        for seed in range(1, 31):
+            p = self._gen(seed=seed)
+            context = p.get("context_type") or p["parameters"].get("scenario")
+            seen_contexts.add(context)
+        assert {"coin_tosses", "dice_rolls", "sequential_choices"} <= seen_contexts
+
+    def test_each_context_has_expected_text_features(self):
+        expected = {"coin_tosses": False, "dice_rolls": False, "sequential_choices": False}
+        for seed in range(1, 61):
+            p = self._gen(seed=seed)
+            context = p.get("context_type") or p["parameters"].get("scenario")
+            q = p["question_text"]
+            if context == "coin_tosses":
+                assert "硬幣" in q and "樣本空間" in q
+                expected["coin_tosses"] = True
+            elif context == "dice_rolls":
+                assert "骰子" in q or "面骰" in q
+                assert "樣本空間" in q
+                expected["dice_rolls"] = True
+            elif context == "sequential_choices":
+                assert ("階段" in q or "步驟" in q) and "選擇" in q
+                expected["sequential_choices"] = True
+        assert all(expected.values()), f"missing context text evidence: {expected}"
+
+    def test_variety_questions_have_no_forbidden_tokens(self):
+        forbidden = ["列出", "寫出所有", "sample_space_listing", "[FORMULA_MISSING]", "[BLANK]"]
+        for seed in range(1, 31):
+            p = self._gen(seed=seed)
+            q = p["question_text"]
+            for tok in forbidden:
+                assert tok not in q, f"forbidden token {tok!r} found in question: {q}"
+
 
 # ═══════════════════════════════════════════════════════════════════════════════
 # 5. Router tests (generate_for_chap2_skill)

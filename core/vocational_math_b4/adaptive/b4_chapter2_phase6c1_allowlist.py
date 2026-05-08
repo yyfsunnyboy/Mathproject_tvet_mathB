@@ -53,6 +53,25 @@ B4_CHAPTER_2_PHASE6C1_CURRICULUM_PROGRESSION_ORDER: tuple[str, ...] = (
     "vh_數學B4_ProbabilityProperties",
 )
 
+# Chap2 skills that MUST NOT fallback to legacy `skills.<skill_id>` import in Phase 6C-1R2 — return a clear gate error instead.
+B4_CHAPTER_2_NOT_ENABLED_PHASE6C1_SKILL_IDS: frozenset[str] = frozenset(
+    {
+        "vh_數學B4_BasicConceptsOfSets",
+        "vh_數學B4_ConditionalProbability",
+        "vh_數學B4_IndependentEvents",
+        "vh_數學B4_ProbabilityOperations",
+        "vh_數學B4_MathematicalExpectationDefinition",
+        "vh_數學B4_ApplicationsOfExpectation",
+        "vh_數學B4_MathematicalExpectation",
+    }
+)
+
+
+def is_b4_chapter2_skill_not_enabled_in_phase6c1(skill_id: str) -> bool:
+    """True if Chap2 rollout blocks this skill (no legacy generator import fallback)."""
+    sid = str(skill_id or "").strip()
+    return sid in B4_CHAPTER_2_NOT_ENABLED_PHASE6C1_SKILL_IDS
+
 
 def is_b4_chapter2_phase6c1_deterministic_skill(skill_id: str) -> bool:
     """Return True if skill_id is in the Chap2 Phase 6C-1 deterministic allowlist."""

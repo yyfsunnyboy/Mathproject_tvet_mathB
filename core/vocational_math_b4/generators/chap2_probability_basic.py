@@ -441,66 +441,86 @@ def sample_space_count_numeric(
         n_pool = [3, 4, 5]
         sides_pool = [4, 6, 8]
 
-    scenario = rng.choice(_SAMPLE_SPACE_COUNT_SCENARIOS)
+    if seed is not None:
+        start_idx = abs(int(seed)) % len(_SAMPLE_SPACE_COUNT_SCENARIOS)
+    else:
+        start_idx = rng.randrange(len(_SAMPLE_SPACE_COUNT_SCENARIOS))
+    scenario_cycle = (
+        _SAMPLE_SPACE_COUNT_SCENARIOS[start_idx:]
+        + _SAMPLE_SPACE_COUNT_SCENARIOS[:start_idx]
+    )
+    scenario = scenario_cycle[0]
     parameter_tuple: tuple | None = None
     question_text = explanation = ""
     answer = 0
 
     for _ in range(50):
-        if scenario == "coin_tosses":
-            n = rng.choice(n_pool)
-            candidate = (SAMPLE_SPACE_COUNT_PROBLEM_TYPE_ID, "coin_tosses", n)
-            if candidate in seen:
-                scenario = rng.choice(_SAMPLE_SPACE_COUNT_SCENARIOS)
-                continue
-            answer = 2 ** n
-            question_text = (
-                f"公正的硬幣投擲 ${n}$ 次，樣本空間共有幾個元素？"
-            )
-            explanation = (
-                f"每次投擲有 $2$ 種結果（正面或反面），連續投擲 ${n}$ 次，"
-                f"依乘法原理：$n(S)=2^{{{n}}}={answer}$。"
-            )
-            parameter_tuple = candidate
-            break
+        scenario_found = False
+        for scenario in scenario_cycle:
+            if scenario == "coin_tosses":
+                n = rng.choice(n_pool)
+                candidate = (SAMPLE_SPACE_COUNT_PROBLEM_TYPE_ID, "coin_tosses", n)
+                if candidate in seen:
+                    continue
+                answer = 2 ** n
+                question_text = (
+                    f"公正的硬幣（正面/反面）投擲 ${n}$ 次，樣本空間共有幾個元素？"
+                )
+                explanation = (
+                    f"每次投擲有 $2$ 種結果（正面或反面），連續投擲 ${n}$ 次，"
+                    f"依乘法原理：$n(S)=2^{{{n}}}={answer}$。"
+                )
+                parameter_tuple = candidate
+                scenario_found = True
+                break
 
-        elif scenario == "dice_rolls":
-            sides = rng.choice(sides_pool)
-            n = rng.choice(n_pool)
-            candidate = (SAMPLE_SPACE_COUNT_PROBLEM_TYPE_ID, "dice_rolls", sides, n)
-            if candidate in seen:
-                scenario = rng.choice(_SAMPLE_SPACE_COUNT_SCENARIOS)
-                continue
-            answer = sides ** n
-            die_name = "骰子" if sides == 6 else f"{sides}面骰"
-            question_text = (
-                f"投擲一顆公正的 ${sides}$ 面{die_name} ${n}$ 次，"
-                f"樣本空間共有幾個元素？"
-            )
-            explanation = (
-                f"每次有 ${sides}$ 種結果，連續投擲 ${n}$ 次，"
-                f"$n(S)={sides}^{{{n}}}={answer}$。"
-            )
-            parameter_tuple = candidate
-            break
+            if scenario == "dice_rolls":
+                sides = rng.choice(sides_pool)
+                n = rng.choice(n_pool)
+                candidate = (SAMPLE_SPACE_COUNT_PROBLEM_TYPE_ID, "dice_rolls", sides, n)
+                if candidate in seen:
+                    continue
+                answer = sides ** n
+                if sides == 6 and n == 2:
+                    question_text = "同時擲兩顆公正骰子（點數 1 到 6），樣本空間共有幾個元素？"
+                    explanation = (
+                        "第一顆骰子有 $6$ 種點數結果，第二顆骰子也有 $6$ 種點數結果，"
+                        "依乘法原理：$n(S)=6\\times6=36$。"
+                    )
+                else:
+                    die_name = "骰子" if sides == 6 else f"{sides}面骰"
+                    question_text = (
+                        f"投擲一顆公正的 {die_name} ${n}$ 次，"
+                        f"樣本空間共有幾個元素？"
+                    )
+                    explanation = (
+                        f"每次有 ${sides}$ 種點數結果，連續投擲 ${n}$ 次，"
+                        f"依乘法原理：$n(S)={sides}^{{{n}}}={answer}$。"
+                    )
+                parameter_tuple = candidate
+                scenario_found = True
+                break
 
-        else:  # sequential_choices
+            # sequential_choices
             m = rng.randint(2, 5)
             k = rng.randint(2, 4)
             candidate = (SAMPLE_SPACE_COUNT_PROBLEM_TYPE_ID, "sequential_choices", m, k)
             if candidate in seen:
-                scenario = rng.choice(_SAMPLE_SPACE_COUNT_SCENARIOS)
                 continue
             answer = m ** k
             question_text = (
-                f"某實驗連續進行 ${k}$ 個獨立步驟，每個步驟各有 ${m}$ 種可能結果，"
-                f"則樣本空間共有幾個元素？"
+                f"某流程分成 ${k}$ 個階段，第一階段到第 ${k}$ 階段各有 ${m}$ 種選擇，"
+                "問共有幾種結果？"
             )
             explanation = (
-                f"各步驟獨立，每步有 ${m}$ 種結果，共 ${k}$ 步，"
-                f"依乘法原理：$n(S)={m}^{{{k}}}={answer}$。"
+                f"每一階段都有 ${m}$ 種選擇，共 ${k}$ 個階段，"
+                f"依乘法原理：$n(S)=m\\times m\\times\\cdots\\times m={m}^{{{k}}}={answer}$。"
             )
             parameter_tuple = candidate
+            scenario_found = True
+            break
+
+        if scenario_found:
             break
 
     if parameter_tuple is None:
@@ -534,6 +554,7 @@ def sample_space_count_numeric(
             "answer": answer,
             "parameter_tuple": parameter_tuple,
         },
+        "context_type": scenario,
     }
 
     validate_problem_payload_contract(payload)

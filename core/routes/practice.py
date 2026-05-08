@@ -54,9 +54,8 @@ from core.vocational_math_b4.adaptive.b4_chapter1_deterministic_allowlist import
 
 # Phase 6C-1R: Chap2 deterministic probability integration
 from core.vocational_math_b4.adaptive.b4_chapter2_phase6c1_allowlist import (
-    B4_CHAPTER_2_PHASE6C1_ADAPTIVE_SKILL_ALLOWLIST,
-    B4_CHAPTER_2_EXCLUDED_DETERMINISTIC_PROBLEM_TYPES,
     is_b4_chapter2_phase6c1_deterministic_skill,
+    is_b4_chapter2_skill_not_enabled_in_phase6c1,
     is_b4_chapter2_excluded_problem_type,
     validate_b4_chap2_phase6c1_generator_payload,
 )
@@ -635,9 +634,8 @@ def get_adaptive_question():
             else:
                 return jsonify({"error": "題庫中已無合適的題目可供推薦。"}), 404
 
-        mod = get_skill(skill_id_for_generate)
-        if not mod:
-            return jsonify({"error": f"無法載入技能模組 {skill_id_for_generate}"}), 500
+        if is_b4_chapter2_skill_not_enabled_in_phase6c1(skill_id_for_generate):
+            return jsonify({"error": "Chap2 skill not enabled in Phase 6C-1"}), 422
 
         inner_router_seed = gen_seed
         seed_derivation = "identity"
@@ -648,7 +646,29 @@ def get_adaptive_question():
         gen_kwargs: dict = {"level": difficulty_level}
         if gen_seed is not None:
             gen_kwargs["seed"] = inner_router_seed
-        data = mod.generate(**gen_kwargs)
+
+        if is_b4_chapter2_phase6c1_deterministic_skill(skill_id_for_generate):
+            chap2_seed = inner_router_seed if gen_seed is not None else None
+            chap2_payload = generate_for_chap2_skill(
+                skill_id=skill_id_for_generate,
+                level=difficulty_level,
+                seed=chap2_seed,
+                problem_type_id=None,
+            )
+            ok_p2, deny_p2 = validate_b4_chap2_phase6c1_generator_payload(
+                skill_id_for_generate,
+                chap2_payload,
+            )
+            if not ok_p2:
+                return jsonify({"error": f"Chap2 payload validation failed: {deny_p2}"}), 422
+            data = chap2_payload
+            if "correct_answer" not in data and "answer" in data:
+                data["correct_answer"] = data["answer"]
+        else:
+            mod = get_skill(skill_id_for_generate)
+            if not mod:
+                return jsonify({"error": f"無法載入技能模組 {skill_id_for_generate}"}), 500
+            data = mod.generate(**gen_kwargs)
 
         ok_payload, deny_reason = validate_b4_deterministic_adaptive_generator_payload(
             skill_id_for_generate,
@@ -707,7 +727,7 @@ def get_adaptive_question():
             "context_string": data.get("context_string", ""),
             "image_base64": data.get("image_base64", ""),
             "visual_aids": data.get("visual_aids", []),
-            "answer_type": "text",
+            "answer_type": data.get("answer_type", "text"),
         }
         if request.args.get("adaptive_audit") == "1":
             payload_out["adaptive_audit"] = audit_blob
@@ -784,6 +804,10 @@ def next_question():
             "future_path": manual_review_info["future_path"],
         })
 
+    # Phase 6C-1R2: gated Chap2 skills — clear gate error instead of importing missing skills.<id>
+    if is_b4_chapter2_skill_not_enabled_in_phase6c1(skill_id):
+        return jsonify({"error": "Chap2 skill not enabled in Phase 6C-1"}), 422
+
     skill_info = get_skill_info(skill_id)
     # [單元模式] 允許 pattern skill 僅有檔案、尚無 DB 註冊時仍可出題
     if not skill_info and skill_id != 'instant_upload':
@@ -823,15 +847,17 @@ def next_question():
         })
     
     try:
-        # [修正 2] 強制重新載入模組，解決「改了沒反應」的問題
+        # [Phase 6C-1R2] Chap2 deterministic P0 avoids legacy skills.<skill_id> import entirely.
+        # [修正 2] 強制重新載入模組，解決「改了沒反應」的問題 — 僅適用仍走 skills.<id>.generate() 的路徑。
         module_path = f"skills.{skill_id}"
         if _is_b4_tree_diagram_request(skill_id, problem_type) or _is_b4_pascal_triangle_request(skill_id, problem_type):
             mod = None
+        elif is_b4_chapter2_phase6c1_deterministic_skill(skill_id):
+            mod = None
+        elif module_path in sys.modules:
+            mod = importlib.reload(sys.modules[module_path])
         else:
-            if module_path in sys.modules:
-                mod = importlib.reload(sys.modules[module_path])
-            else:
-                mod = importlib.import_module(module_path)
+            mod = importlib.import_module(module_path)
         
         # 決定難度等級
         current_curriculum_context = session.get('current_curriculum', 'general')
@@ -977,20 +1003,14 @@ def check_answer():
         }
         return jsonify(result)
 
-    mod = get_skill(skill_id)
-
-    # Phase 6C-1R: Chap2 deterministic probability answer checking.
-    # Intercept BEFORE the mod.check() path so checker logic is self-contained.
+    # Phase 6C-1R2: deterministic Chap2 BEFORE legacy skills.<id> import (get_skill loads module).
     if is_b4_chapter2_phase6c1_deterministic_skill(skill_id):
-        problem_type_id = current.get("problem_type_id") or ""
         correct_ans = str(current.get("correct_answer", current.get("answer", ""))).strip()
         is_correct_chap2 = False
         try:
             if current.get("answer_type") == "integer":
-                # sample_space_count_numeric: strict integer check
                 is_correct_chap2 = check_integer_answer(user_ans, int(correct_ans))
             else:
-                # classical_probability_fraction / complement_probability: flexible rational
                 if "/" in correct_ans:
                     num_str, den_str = correct_ans.split("/", 1)
                     exp_num, exp_den = int(num_str), int(den_str)
@@ -1005,8 +1025,9 @@ def check_answer():
                 )
         except Exception as _chap2_check_err:
             current_app.logger.warning(
-                "[Chap2 Phase6C1R] check_answer error skill=%s err=%s",
-                skill_id, _chap2_check_err,
+                "[Chap2 Phase6C1R2] check_answer error skill=%s err=%s",
+                skill_id,
+                _chap2_check_err,
             )
             is_correct_chap2 = False
 
@@ -1014,12 +1035,13 @@ def check_answer():
             "correct": is_correct_chap2,
             "result": "正確！" if is_correct_chap2 else f"答案錯誤。正確答案為：{correct_ans}",
         }
-        # Minimal progress update — do NOT update mastery/APR/remediation (Phase 6C-1R scope)
         try:
             update_progress(current_user.id, skill_id, is_correct_chap2)
         except Exception:
             pass
         return jsonify(result)
+
+    mod = get_skill(skill_id)
 
     if not mod:
         return jsonify({"correct": False, "result": "模組載入錯誤"})
