@@ -419,3 +419,118 @@ def generate_for_skill(
     if missing:
         raise ValueError(f"Router payload missing required keys: {', '.join(missing)}")
     return payload
+
+
+# ─── Phase 6C-1: Chap2 probability minimal router ───────────────────────────
+#
+# Isolated from the Chap1 _REGISTRY above. Only 3 problem types are registered.
+# Handwriting listing types (sample_space_listing, event_set_listing,
+# subset_listing) are NOT registered here.
+
+from core.vocational_math_b4.generators import chap2_probability_basic as _chap2_prob
+
+
+_CHAP2_PHASE6C1_REGISTRY: dict[str, list[dict[str, object]]] = {
+    "vh_數學B4_ProbabilityDefinition": [
+        {
+            "subskill_id": "b4_ch2_prob_def_classical_01",
+            "problem_type_id": "classical_probability_fraction",
+            "generator_key": "b4.chap2.classical_probability_fraction",
+            "generator_fn": _chap2_prob.classical_probability_fraction,
+        }
+    ],
+    "vh_數學B4_ProbabilityProperties": [
+        {
+            "subskill_id": "b4_ch2_prob_prop_complement_01",
+            "problem_type_id": "complement_probability",
+            "generator_key": "b4.chap2.complement_probability",
+            "generator_fn": _chap2_prob.complement_probability,
+        }
+    ],
+    "vh_數學B4_SampleSpaceAndEvents": [
+        {
+            "subskill_id": "b4_ch2_sample_space_count_01",
+            "problem_type_id": "sample_space_count_numeric",
+            "generator_key": "b4.chap2.sample_space_count_numeric",
+            "generator_fn": _chap2_prob.sample_space_count_numeric,
+        }
+    ],
+}
+
+
+def generate_for_chap2_skill(
+    *,
+    skill_id: str,
+    level: int = 1,
+    seed: int | None = None,
+    seen_parameter_tuples: set[tuple] | None = None,
+    multiple_choice: bool = True,
+    problem_type_id: str | None = None,
+) -> dict:
+    """Generate a payload for a supported B4 Chapter 2 Phase 6C-1 skill.
+
+    Only the following skills are supported:
+      - vh_數學B4_ProbabilityDefinition   → classical_probability_fraction
+      - vh_數學B4_ProbabilityProperties   → complement_probability
+      - vh_數學B4_SampleSpaceAndEvents    → sample_space_count_numeric
+
+    Handwriting listing types (sample_space_listing, event_set_listing,
+    subset_listing) are intentionally NOT registered.
+
+    Raises ValueError for unsupported skill_ids.
+    """
+    if skill_id not in _CHAP2_PHASE6C1_REGISTRY:
+        raise ValueError(f"generate_for_chap2_skill: unsupported skill_id '{skill_id}'.")
+
+    entries = _CHAP2_PHASE6C1_REGISTRY[skill_id]
+
+    selected_entry, selection_reason = _select_entry(
+        entries, seed, problem_type_id, skill_id=skill_id
+    )
+
+    generator_fn = selected_entry.get("generator_fn")
+    if not callable(generator_fn):
+        raise ValueError("generate_for_chap2_skill: generator_key could not be resolved.")
+
+    payload = generator_fn(
+        skill_id=skill_id,
+        subskill_id=selected_entry["subskill_id"],
+        difficulty=level,
+        seed=seed,
+        seen_parameter_tuples=seen_parameter_tuples,
+        multiple_choice=multiple_choice,
+    )
+
+    payload["correct_answer"] = payload["answer"]
+    payload["router_trace"] = {
+        "input_skill_id": skill_id,
+        "selected_subskill_id": selected_entry["subskill_id"],
+        "selected_problem_type_id": selected_entry["problem_type_id"],
+        "selected_generator_key": selected_entry["generator_key"],
+        "selection_reason": selection_reason,
+        "router": "chap2_phase6c1",
+    }
+
+    required_keys = [
+        "question_text",
+        "answer",
+        "correct_answer",
+        "choices",
+        "explanation",
+        "skill_id",
+        "subskill_id",
+        "problem_type_id",
+        "generator_key",
+        "difficulty",
+        "diagnosis_tags",
+        "remediation_candidates",
+        "source_style_refs",
+        "parameters",
+        "router_trace",
+    ]
+    missing = [key for key in required_keys if key not in payload]
+    if missing:
+        raise ValueError(
+            f"generate_for_chap2_skill: payload missing required keys: {', '.join(missing)}"
+        )
+    return payload

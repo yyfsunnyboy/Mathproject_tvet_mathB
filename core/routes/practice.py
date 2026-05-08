@@ -11,6 +11,7 @@
 """
 
 from flask import Blueprint, request, jsonify, current_app, render_template, session, url_for, redirect
+from urllib.parse import unquote as _url_unquote
 from flask_login import login_required, current_user
 from werkzeug.utils import secure_filename
 import importlib
@@ -49,6 +50,20 @@ from core.vocational_math_b4.adaptive.b4_chapter1_deterministic_allowlist import
     is_pure_b4_allowlisted_adaptive_pool,
     starter_b4_candidates,
     validate_b4_deterministic_adaptive_generator_payload,
+)
+
+# Phase 6C-1R: Chap2 deterministic probability integration
+from core.vocational_math_b4.adaptive.b4_chapter2_phase6c1_allowlist import (
+    B4_CHAPTER_2_PHASE6C1_ADAPTIVE_SKILL_ALLOWLIST,
+    B4_CHAPTER_2_EXCLUDED_DETERMINISTIC_PROBLEM_TYPES,
+    is_b4_chapter2_phase6c1_deterministic_skill,
+    is_b4_chapter2_excluded_problem_type,
+    validate_b4_chap2_phase6c1_generator_payload,
+)
+from core.vocational_math_b4.services.question_router import generate_for_chap2_skill
+from core.vocational_math_b4.domain.b4_validators import (
+    check_rational_answer,
+    check_integer_answer,
 )
 
 MANUAL_REVIEW_SKILLS = {
@@ -385,14 +400,20 @@ def adaptive_learning_entry_page():
 
 @practice_bp.route('/practice')
 def practice_query_entry():
-    skill_id = (request.args.get("skill") or "").strip()
+    # Phase 6C-1R: URL-decode skill_id so that
+    # vh_%E6%95%B8%E5%AD%B8B4_ProbabilityDefinition → vh_數學B4_ProbabilityDefinition
+    # Already-decoded IDs pass through unchanged (unquote is idempotent).
+    skill_id = _url_unquote((request.args.get("skill") or "").strip())
     if not skill_id:
         return redirect(url_for("dashboard"))
     return practice(skill_id)
 
 
-@practice_bp.route('/practice/<skill_id>')
+@practice_bp.route('/practice/<path:skill_id>')
 def practice(skill_id):
+    # Phase 6C-1R: URL-decode path segment (Flask may or may not decode it
+    # depending on the URL_MAP_STRICT_SLASHES setting; be explicit).
+    skill_id = _url_unquote(skill_id)
     """進入特定技能的練習頁面"""
     requested_problem_type = (request.args.get("problem_type") or "").strip()
     is_pascal_runtime_request = _is_b4_pascal_triangle_request(skill_id, requested_problem_type)
@@ -709,7 +730,8 @@ def next_question():
       需傳 chapter，可選 volume、curriculum；缺省時 curriculum 用 session，volume 可用空字串由 selector 推斷。
     """
     mode = request.args.get('mode', '')
-    skill_id = request.args.get('skill', 'remainder')
+    # Phase 6C-1R: URL-decode so encoded CJK skill_ids are resolved correctly.
+    skill_id = _url_unquote(request.args.get('skill', 'remainder'))
     problem_type = request.args.get('problem_type', '')
     variant = request.args.get('variant', B4_TREE_DIAGRAM_DEFAULT_VARIANT)
     tree_diagram_index = request.args.get('tree_diagram_index', type=int)
@@ -769,6 +791,10 @@ def next_question():
             skill_info = {"input_type": "handwriting", "skill_id": B4_TREE_DIAGRAM_FREE_RESPONSE_SKILL_ID}
         elif _is_b4_pascal_triangle_request(skill_id, problem_type):
             skill_info = {"input_type": "handwriting", "skill_id": B4_PASCAL_TRIANGLE_FREE_RESPONSE_SKILL_ID}
+        elif is_b4_chapter2_phase6c1_deterministic_skill(skill_id):
+            # Phase 6C-1R: Chap2 P0 skills may not have a DB SkillInfo row.
+            # Bypass DB lookup; generator handles everything.
+            skill_info = {"input_type": "text", "skill_id": skill_id}
         elif mode == 'unit':
             skill_info = {"input_type": "text", "skill_id": skill_id}
         else:
@@ -845,9 +871,32 @@ def next_question():
                     data = _build_b4_tree_diagram_runtime_payload(variant, tree_diagram_index)
                 elif _is_b4_pascal_triangle_request(skill_id, problem_type):
                     data = _build_b4_pascal_triangle_runtime_payload(pascal_triangle_index)
+                elif is_b4_chapter2_phase6c1_deterministic_skill(skill_id):
+                    # Phase 6C-1R: Chap2 P0 deterministic generator path.
+                    # Guard: reject handwriting listing problem types immediately.
+                    if problem_type and is_b4_chapter2_excluded_problem_type(problem_type):
+                        return jsonify({
+                            "error": f"problem_type '{problem_type}' 為 handwriting reserved，"
+                                     "不得在 deterministic practice 中使用。"
+                        }), 422
+                    gen_seed = request.args.get("gen_seed", type=int)
+                    chap2_payload = generate_for_chap2_skill(
+                        skill_id=skill_id,
+                        level=difficulty_level,
+                        seed=gen_seed,
+                        problem_type_id=problem_type or None,
+                    )
+                    # Validate through allowlist gate
+                    ok_p, deny_r = validate_b4_chap2_phase6c1_generator_payload(skill_id, chap2_payload)
+                    if not ok_p:
+                        current_app.logger.error(
+                            "[Chap2 Phase6C1R] payload blocked skill=%s reason=%s", skill_id, deny_r
+                        )
+                        return jsonify({"error": f"Chap2 payload validation failed: {deny_r}"}), 422
+                    data = chap2_payload
                 else:
                     data = mod.generate(level=difficulty_level)
-                
+
                 # [核心修正] 欄位雙重自動校正 (對齊金標準)
                 if "question" in data and "question_text" not in data:
                     data["question_text"] = data["question"]
@@ -929,6 +978,49 @@ def check_answer():
         return jsonify(result)
 
     mod = get_skill(skill_id)
+
+    # Phase 6C-1R: Chap2 deterministic probability answer checking.
+    # Intercept BEFORE the mod.check() path so checker logic is self-contained.
+    if is_b4_chapter2_phase6c1_deterministic_skill(skill_id):
+        problem_type_id = current.get("problem_type_id") or ""
+        correct_ans = str(current.get("correct_answer", current.get("answer", ""))).strip()
+        is_correct_chap2 = False
+        try:
+            if current.get("answer_type") == "integer":
+                # sample_space_count_numeric: strict integer check
+                is_correct_chap2 = check_integer_answer(user_ans, int(correct_ans))
+            else:
+                # classical_probability_fraction / complement_probability: flexible rational
+                if "/" in correct_ans:
+                    num_str, den_str = correct_ans.split("/", 1)
+                    exp_num, exp_den = int(num_str), int(den_str)
+                elif correct_ans in ("0", "1"):
+                    exp_num, exp_den = int(correct_ans), 1
+                else:
+                    exp_num, exp_den = int(correct_ans), 1
+                is_correct_chap2 = check_rational_answer(
+                    user_ans, exp_num, exp_den,
+                    allow_decimal=True, allow_percentage=True,
+                    validate_probability_range=True,
+                )
+        except Exception as _chap2_check_err:
+            current_app.logger.warning(
+                "[Chap2 Phase6C1R] check_answer error skill=%s err=%s",
+                skill_id, _chap2_check_err,
+            )
+            is_correct_chap2 = False
+
+        result = {
+            "correct": is_correct_chap2,
+            "result": "正確！" if is_correct_chap2 else f"答案錯誤。正確答案為：{correct_ans}",
+        }
+        # Minimal progress update — do NOT update mastery/APR/remediation (Phase 6C-1R scope)
+        try:
+            update_progress(current_user.id, skill_id, is_correct_chap2)
+        except Exception:
+            pass
+        return jsonify(result)
+
     if not mod:
         return jsonify({"correct": False, "result": "模組載入錯誤"})
 

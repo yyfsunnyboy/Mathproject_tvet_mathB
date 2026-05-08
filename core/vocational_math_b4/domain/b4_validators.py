@@ -1,4 +1,4 @@
-﻿"""Validation helpers for vocational math B4 payloads and values."""
+"""Validation helpers for vocational math B4 payloads and values."""
 
 from __future__ import annotations
 
@@ -132,3 +132,197 @@ def validate_problem_payload_contract(payload: dict) -> bool:
     if missing:
         raise ValueError(f"validate_problem_payload_contract: missing keys: {', '.join(missing)}")
     return True
+
+
+# ─── Phase 6C-1: Student-answer checkers for Chap2 probability ───────────────
+#
+# Naming convention: check_* functions judge student answers at runtime.
+# They are separate from validate_* functions which guard generator payloads.
+#
+# Design follows Phase 6B contract:
+#   - canonical answer stored as reduced fraction string "a/b" or integer
+#   - flexible mode: accepts equivalent decimals and percentages
+#   - strict mode: canonical format only (set strict_fraction=True)
+#   - probability_range guard: 0 <= P <= 1 (enabled by default for prob types)
+
+
+from fractions import Fraction as _Fraction
+
+
+def _normalize_fullwidth(s: str) -> str:
+    """Convert full-width digits/letters to half-width ASCII."""
+    return "".join(
+        chr(ord(c) - 0xFEE0) if 0xFF01 <= ord(c) <= 0xFF5E else c
+        for c in s
+    )
+
+
+def _strip_latex_fraction(s: str) -> str | None:
+    """Extract 'a/b' from LaTeX \\frac{a}{b}, \\dfrac{a}{b}, or $\\frac{a}{b}$."""
+    s = s.strip().lstrip("$").rstrip("$").strip()
+    m = re.fullmatch(r"\\d?frac\{(-?\d+)\}\{(-?\d+)\}", s.replace(" ", ""))
+    if m:
+        return f"{m.group(1)}/{m.group(2)}"
+    return None
+
+
+def _parse_rational(raw: str) -> "_Fraction | None":
+    """Parse a raw student answer string into a Fraction.
+
+    Accepts: plain fraction 'a/b', LaTeX \\frac{a}{b}, integer, decimal, percentage.
+    Returns None on parse failure or division by zero.
+    """
+    s = raw.strip()
+    s = _normalize_fullwidth(s)
+
+    # LaTeX fraction
+    latex_result = _strip_latex_fraction(s)
+    if latex_result is not None:
+        s = latex_result
+
+    # Percentage: remove trailing %
+    is_pct = s.endswith("%")
+    if is_pct:
+        s = s[:-1].strip()
+
+    try:
+        if "/" in s:
+            parts = s.split("/", 1)
+            num = int(parts[0].strip())
+            den = int(parts[1].strip())
+            if den == 0:
+                return None
+            f = _Fraction(num, den)
+        else:
+            f = _Fraction(s)
+    except (ValueError, ZeroDivisionError):
+        return None
+
+    if is_pct:
+        f = f / 100
+
+    return f
+
+
+def check_probability_range(value: object) -> bool:
+    """Return True if value is a number in [0, 1]; raises ValueError otherwise.
+
+    Boundary values 0 and 1 are legal (impossible / certain events).
+    Used as a shared pre-check for all probability-type answers.
+    """
+    try:
+        fv = float(value)  # type: ignore[arg-type]
+    except (TypeError, ValueError):
+        raise ValueError("check_probability_range: value is not numeric.")
+    if fv < 0 or fv > 1:
+        raise ValueError(
+            f"check_probability_range: probability must be between 0 and 1, got {fv}."
+        )
+    return True
+
+
+def check_rational_answer(
+    user_answer: object,
+    expected_numerator: int,
+    expected_denominator: int,
+    *,
+    allow_decimal: bool = True,
+    allow_percentage: bool = True,
+    strict_fraction: bool = False,
+    validate_probability_range: bool = True,
+) -> bool:
+    """Check a student's rational/fraction answer against an expected reduced fraction.
+
+    Parameters
+    ----------
+    user_answer:
+        Raw student input (str, int, or float).
+    expected_numerator, expected_denominator:
+        The correct answer expressed as a reduced fraction.
+    allow_decimal:
+        Flexible mode — accept equivalent decimal (0.5 == 1/2).
+    allow_percentage:
+        Flexible mode — accept equivalent percentage (50% == 1/2).
+    strict_fraction:
+        If True, only accept plain 'a/b' or integer; reject decimal and
+        percentage even if allow_decimal/allow_percentage are True.
+    validate_probability_range:
+        If True, verify the expected answer is in [0, 1].
+
+    Returns True if correct, False if wrong; raises ValueError on bad config.
+    """
+    if expected_denominator <= 0:
+        raise ValueError("check_rational_answer: expected_denominator must be positive.")
+
+    expected_frac = _Fraction(expected_numerator, expected_denominator)
+
+    if validate_probability_range:
+        check_probability_range(expected_frac)
+
+    if user_answer is None:
+        return False
+
+    raw = str(user_answer).strip()
+    if not raw:
+        return False
+
+    if strict_fraction:
+        f = _parse_rational(raw)
+        if f is None:
+            return False
+        plain = _normalize_fullwidth(raw.strip())
+        latex_ex = _strip_latex_fraction(plain)
+        check_str = latex_ex if latex_ex else plain
+        if "%" in check_str or ("." in check_str and "/" not in check_str):
+            return False
+        return f == expected_frac
+
+    parsed = _parse_rational(raw)
+    if parsed is None:
+        return False
+
+    normalized_raw = _normalize_fullwidth(raw.strip())
+    if not allow_percentage and normalized_raw.endswith("%"):
+        return False
+    if not allow_decimal:
+        if "." in normalized_raw and "/" not in normalized_raw and "%" not in normalized_raw:
+            return False
+
+    return parsed == expected_frac
+
+
+def check_integer_answer(
+    user_answer: object,
+    expected: int,
+    *,
+    allow_negative: bool = False,
+) -> bool:
+    """Check a student's integer answer (e.g. sample space count, set size).
+
+    Accepts integer or integer-form string; supports full-width digits.
+    Rejects decimals (36.0), fractions (1/2), percentages (50%), and
+    negative values unless allow_negative=True.
+
+    Returns True if correct, False if wrong or invalid format.
+    """
+    if user_answer is None:
+        return False
+
+    raw = str(user_answer).strip()
+    if not raw:
+        return False
+
+    raw = _normalize_fullwidth(raw)
+
+    if not re.fullmatch(r"-?\d+", raw):
+        return False
+
+    try:
+        user_int = int(raw)
+    except ValueError:
+        return False
+
+    if not allow_negative and user_int < 0:
+        return False
+
+    return user_int == expected
