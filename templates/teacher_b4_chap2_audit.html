@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+
+<head>
+    <meta charset="UTF-8">
+    <title>B4 機率與統計（Ch.2）— 可見性稽核紀錄</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: #f4f6f9;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 24px auto;
+            padding: 0 16px;
+        }
+
+        h1 {
+            font-size: 1.25rem;
+            color: #2c3e50;
+            margin-bottom: 12px;
+        }
+
+        .card {
+            background: #fff;
+            border-radius: 8px;
+            padding: 16px 20px;
+            margin-bottom: 16px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.06);
+        }
+
+        .filters form {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            align-items: flex-end;
+        }
+
+        label {
+            display: flex;
+            flex-direction: column;
+            font-size: 0.85rem;
+            color: #555;
+            gap: 4px;
+        }
+
+        input,
+        select,
+        button {
+            padding: 6px 10px;
+            font-size: 0.9rem;
+        }
+
+        button {
+            cursor: pointer;
+            background: #3498db;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+        }
+
+        button:hover {
+            background: #2980b9;
+        }
+
+        .hint {
+            font-size: 0.8rem;
+            color: #7f8c8d;
+            margin-top: 8px;
+        }
+
+        .empty {
+            padding: 24px;
+            text-align: center;
+            color: #7f8c8d;
+        }
+
+        .table-wrap {
+            overflow-x: auto;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            font-size: 0.8rem;
+        }
+
+        th,
+        td {
+            border: 1px solid #ddd;
+            padding: 6px 8px;
+            vertical-align: top;
+            word-break: break-word;
+            max-width: 220px;
+        }
+
+        th {
+            background: #ecf0f1;
+            text-align: left;
+            position: sticky;
+            top: 0;
+        }
+
+        tr:nth-child(even) {
+            background: #fafafa;
+        }
+
+        .nav {
+            margin-bottom: 12px;
+        }
+
+        .nav a {
+            color: #3498db;
+            text-decoration: none;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="nav"><a href="{{ url_for('teacher_dashboard') }}">← 教師儀表板</a></div>
+        <h1>B4 機率與統計（Ch.2）— 可見性稽核紀錄（唯讀）</h1>
+
+        <div class="card filters">
+            <form method="get" action="{{ url_for('core.teacher_b4_chap2_audit_page') }}">
+                <label>limit
+                    <input name="limit" type="number" min="1" max="200" value="{{ limit }}">
+                </label>
+                <label>record_kind
+                    <select name="record_kind">
+                        <option value="" {% if not filter_record_kind %}selected{% endif %}>（不限）</option>
+                        <option value="deterministic_answer" {% if filter_record_kind == 'deterministic_answer' %}selected{% endif %}>deterministic_answer</option>
+                        <option value="gated" {% if filter_record_kind == 'gated' %}selected{% endif %}>gated</option>
+                    </select>
+                </label>
+                <label>skill_id
+                    <input name="skill_id" type="text" value="{{ filter_skill_id }}"
+                        placeholder="完整 skill_id">
+                </label>
+                <label>problem_type_id
+                    <input name="problem_type_id" type="text" value="{{ filter_problem_type_id }}"
+                        placeholder="完整 problem_type_id">
+                </label>
+                <button type="submit">套用篩選</button>
+            </form>
+            <p class="hint">JSON：<code>/api/teacher/b4-chap2-audit</code>（相同查詢參數）。此頁僅供檢視，不影響學生成績或出題。</p>
+        </div>
+
+        {% if not has_rows %}
+        <div class="card empty">目前尚無 Chap2 audit logs。</div>
+        {% else %}
+        <div class="card table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>timestamp</th>
+                        <th>record_kind</th>
+                        <th>gated_event_type</th>
+                        <th>student_id</th>
+                        <th>session_id</th>
+                        <th>skill_id</th>
+                        <th>problem_type_id</th>
+                        <th>generator_key</th>
+                        <th>answer_type</th>
+                        <th>user_answer</th>
+                        <th>expected_answer</th>
+                        <th>is_correct</th>
+                        <th>checker_name</th>
+                        <th>difficulty</th>
+                        <th>diagnosis_tags</th>
+                        <th>public_message</th>
+                        <th>source_phase</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in rows %}
+                    <tr>
+                        <td>{{ row.created_at.isoformat() if row.created_at else '' }}</td>
+                        <td>{{ row.record_kind or '' }}</td>
+                        <td>{{ row.gated_event_type or '' }}</td>
+                        <td>{{ row.student_id if row.student_id is not none else '' }}</td>
+                        <td>{{ row.session_id or '' }}</td>
+                        <td>{{ row.skill_id or '' }}</td>
+                        <td>{{ row.problem_type_id or '' }}</td>
+                        <td>{{ row.generator_key or '' }}</td>
+                        <td>{{ row.answer_type or '' }}</td>
+                        <td>{{ row.user_answer or '' }}</td>
+                        <td>{{ row.expected_answer or '' }}</td>
+                        <td>{% if row.is_correct is sameas true %}是{% elif row.is_correct is sameas false %}否{% endif %}</td>
+                        <td>{{ row.checker_name or '' }}</td>
+                        <td>{{ row.difficulty if row.difficulty is not none else '' }}</td>
+                        <td>{{ row.diagnosis_tags or '' }}</td>
+                        <td>{{ row.public_message or '' }}</td>
+                        <td>{{ row.source_phase or '' }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% endif %}
+    </div>
+</body>
+
+</html>

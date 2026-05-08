@@ -60,11 +60,52 @@ from core.vocational_math_b4.adaptive.b4_chapter2_phase6c1_allowlist import (
     validate_b4_chap2_phase6c1_generator_payload,
 )
 from core.vocational_math_b4.services.question_router import generate_for_chap2_skill
+from core.vocational_math_b4.services.b4_chap2_visibility_audit import (
+    persist_b4_chap2_deterministic_answer_event,
+    persist_b4_chap2_gated_event,
+)
 from core.vocational_math_b4.domain.b4_validators import (
     check_rational_answer,
     check_integer_answer,
     check_expected_value_answer,
 )
+
+# Phase 6G-0: Chap2 skill / problem-type gates — user-facing messages (SOP §8.1).
+# JSON `error` must not expose internal phase codes, legacy import traces, or URL-encoded skill_id.
+B4_CHAP2_SKILL_NOT_ENABLED_PUBLIC_ERROR = (
+    "此技能尚未開放自動出題。"
+    " Chap2 skill not enabled in current deterministic runtime."
+)
+B4_CHAP2_RESERVED_PROBLEM_TYPE_PUBLIC_ERROR = (
+    "此題型保留為手寫／開放式作答，尚未於自動出題中開放。"
+    " This problem type is reserved for handwriting/free-response review."
+)
+
+
+def _b4_chap2_public_payload_validation_message(deny_reason: str | None) -> str:
+    """Map internal Chap2 allowlist validator codes to student-safe error text."""
+    dr = str(deny_reason or "").strip()
+    if dr.startswith("excluded_handwriting_problem_type:"):
+        return B4_CHAP2_RESERVED_PROBLEM_TYPE_PUBLIC_ERROR
+    if dr.startswith("not_in_phase6c1_allowlist:"):
+        return (
+            "此題型尚未開放自動出題。"
+            " This problem type is not enabled in the current deterministic runtime."
+        )
+    if dr.startswith("skill_not_in_phase6c1_allowlist:"):
+        return (
+            "此技能與題型組合尚未開放自動出題。"
+            " This skill/problem combination is not enabled in the current deterministic runtime."
+        )
+    if dr == "missing_or_invalid_problem_type_id":
+        return "題目類型資料不完整，無法出題。 Question type metadata is incomplete."
+    if dr == "payload_not_dict":
+        return "題目資料格式異常。 Invalid question payload."
+    return (
+        "此題型或題目資料不符合目前自動出題範圍。"
+        " This question does not match the current deterministic runtime scope."
+    )
+
 
 MANUAL_REVIEW_SKILLS = {
     "vh_數學B4_PascalTriangle": {
@@ -636,7 +677,13 @@ def get_adaptive_question():
                 return jsonify({"error": "題庫中已無合適的題目可供推薦。"}), 404
 
         if is_b4_chapter2_skill_not_enabled_in_phase6c1(skill_id_for_generate):
-            return jsonify({"error": "Chap2 skill not enabled in Phase 6C-1"}), 422
+            persist_b4_chap2_gated_event(
+                gated_event_type="not_enabled_skill",
+                skill_id=str(skill_id_for_generate),
+                problem_type_id=None,
+                public_message=B4_CHAP2_SKILL_NOT_ENABLED_PUBLIC_ERROR,
+            )
+            return jsonify({"error": B4_CHAP2_SKILL_NOT_ENABLED_PUBLIC_ERROR}), 422
 
         inner_router_seed = gen_seed
         seed_derivation = "identity"
@@ -661,7 +708,9 @@ def get_adaptive_question():
                 chap2_payload,
             )
             if not ok_p2:
-                return jsonify({"error": f"Chap2 payload validation failed: {deny_p2}"}), 422
+                return jsonify(
+                    {"error": _b4_chap2_public_payload_validation_message(deny_p2)}
+                ), 422
             data = chap2_payload
             if "correct_answer" not in data and "answer" in data:
                 data["correct_answer"] = data["answer"]
@@ -807,7 +856,13 @@ def next_question():
 
     # Phase 6C-1R2: gated Chap2 skills — clear gate error instead of importing missing skills.<id>
     if is_b4_chapter2_skill_not_enabled_in_phase6c1(skill_id):
-        return jsonify({"error": "Chap2 skill not enabled in Phase 6C-1"}), 422
+        persist_b4_chap2_gated_event(
+            gated_event_type="not_enabled_skill",
+            skill_id=str(skill_id),
+            problem_type_id=str(problem_type).strip() if problem_type else None,
+            public_message=B4_CHAP2_SKILL_NOT_ENABLED_PUBLIC_ERROR,
+        )
+        return jsonify({"error": B4_CHAP2_SKILL_NOT_ENABLED_PUBLIC_ERROR}), 422
 
     skill_info = get_skill_info(skill_id)
     # [單元模式] 允許 pattern skill 僅有檔案、尚無 DB 註冊時仍可出題
@@ -902,10 +957,15 @@ def next_question():
                     # Phase 6C-1R: Chap2 P0 deterministic generator path.
                     # Guard: reject handwriting listing problem types immediately.
                     if problem_type and is_b4_chapter2_excluded_problem_type(problem_type):
-                        return jsonify({
-                            "error": f"problem_type '{problem_type}' 為 handwriting reserved，"
-                                     "不得在 deterministic practice 中使用。"
-                        }), 422
+                        persist_b4_chap2_gated_event(
+                            gated_event_type="reserved_problem_type",
+                            skill_id=str(skill_id),
+                            problem_type_id=str(problem_type),
+                            public_message=B4_CHAP2_RESERVED_PROBLEM_TYPE_PUBLIC_ERROR,
+                        )
+                        return jsonify(
+                            {"error": B4_CHAP2_RESERVED_PROBLEM_TYPE_PUBLIC_ERROR}
+                        ), 422
                     gen_seed = request.args.get("gen_seed", type=int)
                     chap2_payload = generate_for_chap2_skill(
                         skill_id=skill_id,
@@ -919,7 +979,9 @@ def next_question():
                         current_app.logger.error(
                             "[Chap2 Phase6C1R] payload blocked skill=%s reason=%s", skill_id, deny_r
                         )
-                        return jsonify({"error": f"Chap2 payload validation failed: {deny_r}"}), 422
+                        return jsonify(
+                            {"error": _b4_chap2_public_payload_validation_message(deny_r)}
+                        ), 422
                     data = chap2_payload
                 else:
                     data = mod.generate(level=difficulty_level)
@@ -1008,12 +1070,16 @@ def check_answer():
     if is_b4_chapter2_phase6c1_deterministic_skill(skill_id):
         correct_ans = str(current.get("correct_answer", current.get("answer", ""))).strip()
         is_correct_chap2 = False
+        chap2_checker_name = "check_rational_answer"
         try:
             if current.get("answer_type") == "integer":
+                chap2_checker_name = "check_integer_answer"
                 is_correct_chap2 = check_integer_answer(user_ans, int(correct_ans))
             elif current.get("answer_type") == "expected_value":
+                chap2_checker_name = "check_expected_value_answer"
                 is_correct_chap2 = check_expected_value_answer(user_ans, correct_ans)
             else:
+                chap2_checker_name = "check_rational_answer"
                 if "/" in correct_ans:
                     num_str, den_str = correct_ans.split("/", 1)
                     exp_num, exp_den = int(num_str), int(den_str)
@@ -1033,6 +1099,18 @@ def check_answer():
                 _chap2_check_err,
             )
             is_correct_chap2 = False
+            chap2_checker_name = "checker_exception"
+
+        try:
+            persist_b4_chap2_deterministic_answer_event(
+                skill_id=skill_id,
+                current_question=current,
+                user_answer=user_ans,
+                is_correct=is_correct_chap2,
+                checker_name=chap2_checker_name,
+            )
+        except Exception:
+            pass
 
         result = {
             "correct": is_correct_chap2,

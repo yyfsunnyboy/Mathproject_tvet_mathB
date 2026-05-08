@@ -14,6 +14,10 @@ import pytest
 
 from app import create_app
 from models import User, db
+from core.routes.practice import (
+    B4_CHAP2_SKILL_NOT_ENABLED_PUBLIC_ERROR,
+    B4_CHAP2_RESERVED_PROBLEM_TYPE_PUBLIC_ERROR,
+)
 
 
 def _login(client, user_id: int) -> None:
@@ -139,7 +143,7 @@ class TestGetNextQuestionChap2GatedSkills:
         r = logged_client.get("/get_next_question?skill=vh_數學B4_BasicConceptsOfSets")
         assert r.status_code == 422
         body = r.get_json()
-        assert body.get("error") == "Chap2 skill not enabled in Phase 6C-1"
+        assert body.get("error") == B4_CHAP2_SKILL_NOT_ENABLED_PUBLIC_ERROR
         raw = r.get_data(as_text=True)
         assert "No module named" not in raw
 
@@ -152,6 +156,8 @@ class TestGetNextQuestionChap2GatedSkills:
             f"/get_next_question?skill=vh_數學B4_SampleSpaceAndEvents&problem_type={pid}"
         )
         assert r.status_code == 422
+        body = r.get_json()
+        assert body.get("error") == B4_CHAP2_RESERVED_PROBLEM_TYPE_PUBLIC_ERROR
         txt = r.get_data(as_text=True)
         assert "handwriting" in txt or "reserved" in txt
 

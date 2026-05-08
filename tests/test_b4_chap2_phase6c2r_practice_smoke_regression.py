@@ -44,21 +44,19 @@ ENCODED_DEF  = "vh_%E6%95%B8%E5%AD%B8B4_ProbabilityDefinition"
 ENCODED_PROP = "vh_%E6%95%B8%E5%AD%B8B4_ProbabilityProperties"
 ENCODED_SSE  = "vh_%E6%95%B8%E5%AD%B8B4_SampleSpaceAndEvents"
 
-# Blocked skills
+# Blocked skills (Chap2 deterministic not-enabled set; must stay in sync with allowlist module)
 BLOCKED_SKILLS = [
     "vh_數學B4_BasicConceptsOfSets",
-    "vh_數學B4_ConditionalProbability",
-    "vh_數學B4_IndependentEvents",
     "vh_數學B4_ProbabilityOperations",
-    "vh_數學B4_MathematicalExpectationDefinition",
     "vh_數學B4_ApplicationsOfExpectation",
     "vh_數學B4_MathematicalExpectation",
 ]
 
 ENCODED_BLOCKED = {
     "vh_%E6%95%B8%E5%AD%B8B4_BasicConceptsOfSets",
-    "vh_%E6%95%B8%E5%AD%B8B4_ConditionalProbability",
-    "vh_%E6%95%B8%E5%AD%B8B4_IndependentEvents",
+    "vh_%E6%95%B8%E5%AD%B8B4_ProbabilityOperations",
+    "vh_%E6%95%B8%E5%AD%B8B4_ApplicationsOfExpectation",
+    "vh_%E6%95%B8%E5%AD%B8B4_MathematicalExpectation",
 }
 
 
@@ -130,8 +128,9 @@ class TestEncodedSkillRecognized:
 
     @pytest.mark.parametrize("encoded", [
         "vh_%E6%95%B8%E5%AD%B8B4_BasicConceptsOfSets",
-        "vh_%E6%95%B8%E5%AD%B8B4_ConditionalProbability",
-        "vh_%E6%95%B8%E5%AD%B8B4_IndependentEvents",
+        "vh_%E6%95%B8%E5%AD%B8B4_ProbabilityOperations",
+        "vh_%E6%95%B8%E5%AD%B8B4_ApplicationsOfExpectation",
+        "vh_%E6%95%B8%E5%AD%B8B4_MathematicalExpectation",
     ])
     def test_decoded_blocked_skills_recognized_as_not_enabled(self, encoded):
         decoded = _url_unquote(encoded)
@@ -212,8 +211,7 @@ class TestNotEnabledGate:
         assert is_b4_chapter2_skill_not_enabled_in_phase6c1(skill_id) is False
 
     def test_blocked_skill_raises_in_router(self):
-        for sid in ["vh_數學B4_ConditionalProbability", "vh_數學B4_IndependentEvents",
-                    "vh_數學B4_BasicConceptsOfSets"]:
+        for sid in BLOCKED_SKILLS:
             with pytest.raises(ValueError, match="unsupported skill_id"):
                 generate_for_chap2_skill(skill_id=sid)
 
@@ -355,11 +353,11 @@ class TestChap1Regression:
             assert p["question_text"].strip()
 
 
-# ═══ H. 6C-1 + 6C-2 problem type allowlist has 5 entries ════════════════════
+# ═══ H. Chap2 mainline allowlist (6C through 6F) ═════════════════════════════
 
 class TestAllowlistIntegrity:
-    def test_5_problem_types_allowed(self):
-        assert len(B4_CHAPTER_2_PHASE6C1_ALLOWED_PROBLEM_TYPES) == 5
+    def test_mainline_problem_types_count(self):
+        assert len(B4_CHAPTER_2_PHASE6C1_ALLOWED_PROBLEM_TYPES) == 11
 
     def test_6c1_types_present(self):
         for pid in ["classical_probability_fraction",
@@ -371,8 +369,20 @@ class TestAllowlistIntegrity:
         for pid in ["union_intersection_probability", "dice_coin_probability_count"]:
             assert pid in B4_CHAPTER_2_PHASE6C1_ALLOWED_PROBLEM_TYPES
 
-    def test_conditional_probability_not_allowed(self):
-        assert "conditional_probability_basic" not in B4_CHAPTER_2_PHASE6C1_ALLOWED_PROBLEM_TYPES
+    def test_6d_conditional_types_present(self):
+        for pid in [
+            "conditional_probability_basic",
+            "without_replacement_conditional_probability",
+        ]:
+            assert pid in B4_CHAPTER_2_PHASE6C1_ALLOWED_PROBLEM_TYPES
 
-    def test_independent_events_not_allowed(self):
-        assert "independent_events_basic" not in B4_CHAPTER_2_PHASE6C1_ALLOWED_PROBLEM_TYPES
+    def test_6e_independent_types_present(self):
+        for pid in [
+            "independent_joint_probability",
+            "independent_at_least_one_probability",
+        ]:
+            assert pid in B4_CHAPTER_2_PHASE6C1_ALLOWED_PROBLEM_TYPES
+
+    def test_6f_expectation_types_present(self):
+        for pid in ["expectation_discrete_basic", "expectation_from_distribution"]:
+            assert pid in B4_CHAPTER_2_PHASE6C1_ALLOWED_PROBLEM_TYPES

@@ -160,6 +160,82 @@
 - 不得因開放某 skill 就讓該 skill 全部 `problem_type` 進 deterministic runtime。
 - handwriting/free-response `problem_type` 必須 hard excluded。
 
+## 8.1 Skill Availability / Not-Enabled UX Rule
+
+### 8.1.1 未開放 skill 是正常狀態，不是系統錯誤
+
+若某個 skill 尚未被 deterministic allowlist 開放，runtime 應回傳清楚、**中性**的訊息，讓學生與教師理解「此能力尚未開放自動出題」，而非「系統壞掉」。
+
+建議對外文案（可擇一或並列中英）：
+
+- 此技能尚未開放自動出題
+- This skill is not enabled in the current deterministic runtime
+
+**不得**在學生端／教師端顯示**過期或內部** phase 名稱，例如：
+
+- `Phase 6C-1`
+- `Phase 6D`
+- `Phase 6E`
+
+phase 名稱屬工程內部流程標籤，不適合作為使用者可讀錯誤訊息；Chap2 已完成 6C／6D／6E／6F deterministic mainline 後，更不得沿用舊 phase 字串造成誤解。
+
+### 8.1.2 錯誤訊息不得暴露內部實作細節
+
+學生端／教師端**不得**出現下列內容：
+
+- `No module named 'skills.vh_數學B4_...'`
+- `Chap2 skill not enabled in Phase 6C-1`（或任何含具體 phase 代號的未開放訊息）
+- raw Python `import` error、完整 traceback
+- **encoded** `skill_id` 原文（例如 `vh_%E6%95%B8...`）
+- **double-encoded** `skill_id`（例如 `vh_%2525E6...`）
+
+應改為 **clear error**（語意對應即可，實作可先中英並列）：
+
+- `此技能尚未開放自動出題`
+- `Chap2 skill not enabled in current deterministic runtime`
+- `This skill is reserved for handwriting/free-response review`（適用於僅保留給手寫／開放式流程者）
+
+### 8.1.3 已開放／未開放／reserved 三種狀態需分離
+
+runtime 或 UI 應能區分下列三類，避免混用為「系統錯誤」：
+
+1. **enabled deterministic skill**
+   - 可進入 `/practice`
+   - 可透過 `/get_next_question` 出題
+   - 可透過 `/check_answer` 批改
+
+2. **not-yet-enabled skill**
+   - 尚未開放自動出題（中性狀態）
+   - **不得** fallback 到 legacy `import skills.<skill_id>`
+   - **不得**被呈現為後端例外或「技能不存在」等系統故障語氣
+
+3. **reserved handwriting / free-response `problem_type`**
+   - 不進 deterministic allowlist
+   - 不更新 mastery／APR／fail_streak／remediation（依既定政策）
+   - 可標記為 future AI-judged／deferred_teacher_review
+
+### 8.1.4 UI 建議
+
+若技能列表包含尚未開放的 skill，建議優先：
+
+- 將該項設為 **disabled**，或
+- 顯示「尚未開放自動出題」
+- 顯示「保留為手寫／開放式題型」（若屬 reserved 路線）
+- 學生點擊後顯示**友善、中性**說明，而非技術錯誤
+
+目標：避免學生誤以為整站或練習功能故障。
+
+### 8.1.5 smoke gate 必測
+
+每個 deterministic batch 的 runtime smoke **須額外**驗證：
+
+- 已開放 skill：正常進入練習並出題、批改
+- **同章未開放 skill**：回傳 **clear not-enabled** 訊息（不含過期 phase、不含 legacy import 字樣、不含 encoded／double-encoded `skill_id`）
+- handwriting reserved `problem_type`：回傳 **reserved／blocked** 類 clear 訊息
+- **不出現** legacy import error
+- **不出現**過期或內部 phase 名稱
+- **不出現** raw traceback 或將 URL 編碼串直接貼給使用者
+
 ## 9. 測試要求
 
 每個 deterministic implementation phase 必須包含：
@@ -218,6 +294,7 @@
 
 - v0.1：由 Chap2 Phase 6C-1 / 6C-1R / 6C-1R2 經驗整理而成，補強 runtime smoke gate、URL decode、legacy fallback guard、handwriting reserved guard。
 - v0.1.1：加入 Section 6.1 frontend double-encoding guard，源自 Chap2 Phase 6C-2R manual smoke regression（2026-05-08）。
+- v0.1.2：新增 Section 8.1 Skill Availability / Not-Enabled UX Rule，要求未開放 skill 回傳中性 clear error，不得顯示過期 phase 名稱、legacy import error、encoded／double-encoded skill_id，並要求 UI／smoke 區分 enabled／not-yet-enabled／reserved 三種狀態。
 
 ## 6.1 Frontend Double-Encoding Guard（v0.1.1 追加）
 

@@ -560,6 +560,38 @@ def init_db(engine):
             FOREIGN KEY (student_id) REFERENCES users (id)
         )
     ''')
+    # Phase 6I: B4 Chap2 deterministic visibility-only audit (no mastery/APR side effects)
+    c.execute('''
+        CREATE TABLE IF NOT EXISTS b4_chap2_visibility_audit_logs (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            record_kind TEXT NOT NULL,
+            gated_event_type TEXT,
+            student_id INTEGER,
+            session_id TEXT,
+            skill_id TEXT NOT NULL,
+            problem_type_id TEXT,
+            generator_key TEXT,
+            answer_type TEXT,
+            expected_answer TEXT,
+            user_answer TEXT,
+            is_correct INTEGER,
+            checker_name TEXT,
+            difficulty INTEGER,
+            diagnosis_tags TEXT,
+            public_message TEXT,
+            source_phase TEXT NOT NULL DEFAULT 'b4_chap2_phase6i',
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (student_id) REFERENCES users (id)
+        )
+    ''')
+    c.execute(
+        "CREATE INDEX IF NOT EXISTS idx_b4_chap2_visibility_skill "
+        "ON b4_chap2_visibility_audit_logs (skill_id)"
+    )
+    c.execute(
+        "CREATE INDEX IF NOT EXISTS idx_b4_chap2_visibility_created "
+        "ON b4_chap2_visibility_audit_logs (created_at)"
+    )
     c.execute('''
         CREATE TABLE IF NOT EXISTS node_competency (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -1160,6 +1192,33 @@ class StudentAbility(db.Model):
 
     user = db.relationship('User', backref=db.backref('student_abilities', lazy=True))
     skill = db.relationship('SkillInfo', backref=db.backref('student_abilities', lazy=True))
+
+
+class B4Chap2VisibilityAuditLog(db.Model):
+    """Phase 6I: visibility-only audit for Chap2 deterministic practice (no mastery scoring)."""
+
+    __tablename__ = 'b4_chap2_visibility_audit_logs'
+
+    id = db.Column(db.Integer, primary_key=True)
+    # deterministic_answer | gated
+    record_kind = db.Column(db.String(32), nullable=False, index=True)
+    # not_enabled_skill | reserved_problem_type (only when record_kind == gated)
+    gated_event_type = db.Column(db.String(64), nullable=True)
+    student_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True, index=True)
+    session_id = db.Column(db.String(128), nullable=True, index=True)
+    skill_id = db.Column(db.String(128), nullable=False, index=True)
+    problem_type_id = db.Column(db.String(128), nullable=True)
+    generator_key = db.Column(db.String(256), nullable=True)
+    answer_type = db.Column(db.String(64), nullable=True)
+    expected_answer = db.Column(db.Text, nullable=True)
+    user_answer = db.Column(db.Text, nullable=True)
+    is_correct = db.Column(db.Boolean, nullable=True)
+    checker_name = db.Column(db.String(64), nullable=True)
+    difficulty = db.Column(db.Integer, nullable=True)
+    diagnosis_tags = db.Column(db.Text, nullable=True)
+    public_message = db.Column(db.Text, nullable=True)
+    source_phase = db.Column(db.String(64), nullable=False, default='b4_chap2_phase6i')
+    created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
 
 
 class AdaptiveLearningLog(db.Model):
