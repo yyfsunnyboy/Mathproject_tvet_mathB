@@ -458,7 +458,10 @@ class TestChap2Router:
         ("vh_數學B4_SampleSpaceAndEvents", "sample_space_count_numeric"),
     ])
     def test_p0_skills_generate_correctly(self, skill_id, expected_pid):
-        payload = generate_for_chap2_skill(skill_id=skill_id, level=1, seed=42)
+        # Pin problem_type_id so 6C-2 registry expansion doesn’t rotate to a new entry.
+        payload = generate_for_chap2_skill(
+            skill_id=skill_id, level=1, seed=42, problem_type_id=expected_pid
+        )
         assert payload["problem_type_id"] == expected_pid
         assert payload["skill_id"] == skill_id
         assert "router_trace" in payload
@@ -466,7 +469,7 @@ class TestChap2Router:
 
     def test_unsupported_skill_raises(self):
         with pytest.raises(ValueError, match="unsupported skill_id"):
-            generate_for_chap2_skill(skill_id="vh_數學B4_ConditionalProbability")
+            generate_for_chap2_skill(skill_id="vh_數學B4_ProbabilityOperations")
 
     def test_chap1_skill_still_works_via_original_router(self):
         from core.vocational_math_b4.services.question_router import generate_for_skill
@@ -502,10 +505,8 @@ class TestChap2AllowlistBoundary:
         ]:
             assert is_b4_chapter2_phase6c1_deterministic_skill(sid), f"{sid} should be in allowlist"
 
-    def test_handwriting_skills_not_in_allowlist(self):
+    def test_non_enabled_skills_not_in_allowlist(self):
         for sid in [
-            "vh_數學B4_ConditionalProbability",
-            "vh_數學B4_IndependentEvents",
             "vh_數學B4_MathematicalExpectation",
         ]:
             assert not is_b4_chapter2_phase6c1_deterministic_skill(sid)
@@ -538,7 +539,7 @@ class TestChap2AllowlistBoundary:
     def test_validate_payload_blocks_unregistered_problem_type(self):
         ok, reason = validate_b4_chap2_phase6c1_generator_payload(
             "vh_數學B4_ProbabilityDefinition",
-            {"problem_type_id": "union_intersection_probability"},
+            {"problem_type_id": "event_operation_probability"},
         )
         assert ok is False
         assert "not_in_phase6c1_allowlist" in reason
@@ -574,11 +575,11 @@ class TestChap2AllowlistBoundary:
 ])
 @pytest.mark.parametrize("seed", [1, 2, 3, 7, 42, 99])
 def test_multi_seed_smoke(skill_id, pid, seed):
-    payload = generate_for_chap2_skill(skill_id=skill_id, level=1, seed=seed)
+    # Pin problem_type_id so 6C-2 expansion doesn’t change which entry is selected.
+    payload = generate_for_chap2_skill(skill_id=skill_id, level=1, seed=seed, problem_type_id=pid)
     assert payload["problem_type_id"] == pid
     assert payload["skill_id"] == skill_id
     assert payload["answer"] is not None
     assert payload["question_text"].strip()
     assert payload["explanation"].strip()
-    # answer_type must not be handwriting
     assert payload.get("answer_type") not in ("handwriting", "ai_judged_free_response")

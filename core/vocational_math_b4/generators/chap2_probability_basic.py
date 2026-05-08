@@ -1,9 +1,13 @@
-"""Deterministic B4 Chapter 2 probability generators – Phase 6C-1 minimal batch.
+"""Deterministic B4 Chapter 2 probability generators – Phase 6C-1 & 6C-2.
 
 Problem types implemented:
-  1. classical_probability_fraction  (vh_數學B4_ProbabilityDefinition)
-  2. complement_probability           (vh_數學B4_ProbabilityProperties)
-  3. sample_space_count_numeric       (vh_數學B4_SampleSpaceAndEvents)
+  Phase 6C-1:
+    1. classical_probability_fraction  (vh_數學B4_ProbabilityDefinition)
+    2. complement_probability           (vh_數學B4_ProbabilityProperties)
+    3. sample_space_count_numeric       (vh_數學B4_SampleSpaceAndEvents)
+  Phase 6C-2:
+    4. union_intersection_probability   (vh_數學B4_ProbabilityProperties)
+    5. dice_coin_probability_count      (vh_數學B4_ProbabilityDefinition)
 
 Deliberately excluded (not_ready / handwriting):
   - sample_space_listing
@@ -11,8 +15,8 @@ Deliberately excluded (not_ready / handwriting):
   - subset_listing
 
 Answer format:
-  - classical / complement → fraction string "a/b" (reduced to lowest terms)
-  - sample_space_count    → integer
+  - rational types → fraction string "a/b" (reduced to lowest terms)
+  - sample_space_count → integer
 """
 
 from __future__ import annotations
@@ -567,6 +571,377 @@ def sample_space_count_numeric(
         )
         validate_choices_unique(choices)
         validate_answer_in_choices(answer, choices)
+
+    if seen_parameter_tuples is not None:
+        seen_parameter_tuples.add(parameter_tuple)
+    return payload
+
+
+# ─── Phase 6C-2 ─────────────────────────────────────────────────────────────
+# union_intersection_probability  (vh_數學B4_ProbabilityProperties)
+# dice_coin_probability_count     (vh_數學B4_ProbabilityDefinition)
+
+UNION_INTERSECTION_PROBLEM_TYPE_ID = "union_intersection_probability"
+UNION_INTERSECTION_GENERATOR_KEY = "b4.chap2.union_intersection_probability"
+
+DICE_COIN_PROBLEM_TYPE_ID = "dice_coin_probability_count"
+DICE_COIN_GENERATOR_KEY = "b4.chap2.dice_coin_probability_count"
+
+
+# ─── union_intersection_probability ──────────────────────────────────────────
+
+def _sample_valid_union_params(rng: random.Random, difficulty: int) -> tuple[int, int, int, int, int, int]:
+    """Sample valid (pa_n,pa_d, pb_n,pb_d, pab_n,pab_d) such that all constraints hold.
+
+    Returns (pa_num, pa_den, pb_num, pb_den, pab_num, pab_den, paub_num, paub_den)
+    — but we use a single denominator for simplicity.
+    All fractions share denominator D; P(A)=a/D, P(B)=b/D, P(A∩B)=c/D.
+    P(A∪B)=(a+b-c)/D; constraints: 0<c<=a, 0<c<=b, a+b-c<=D.
+    """
+    if difficulty <= 1:
+        denoms = [4, 5, 6, 8, 10]
+    elif difficulty == 2:
+        denoms = [6, 8, 10, 12, 15]
+    else:
+        denoms = [10, 12, 15, 20]
+
+    for _ in range(200):
+        D = rng.choice(denoms)
+        # pick a,b in [1,D-1] such that a+b <= D (union can't exceed 1)
+        a = rng.randint(1, D - 1)
+        b = rng.randint(1, D - 1)
+        if a + b > D:
+            continue
+        # c (intersection) must be ≤ min(a,b) and ≥ 1
+        c_max = min(a, b)
+        if c_max < 1:
+            continue
+        c = rng.randint(1, c_max)
+        # P(A∪B) = (a+b-c)/D
+        paub = a + b - c
+        if paub <= 0 or paub > D:
+            continue
+        # avoid trivial cases where answer equals P(A) or P(B)
+        if paub == a or paub == b:
+            continue
+        return D, a, b, c, paub
+    return 0, 0, 0, 0, 0  # fallback sentinel
+
+
+def union_intersection_probability(
+    *,
+    skill_id: str,
+    subskill_id: str,
+    difficulty: int = 1,
+    seed: int | None = None,
+    seen_parameter_tuples: set[tuple] | None = None,
+    multiple_choice: bool = True,
+) -> dict:
+    """Generate a P(A∪B)=P(A)+P(B)-P(A∩B) problem.
+
+    Two sub-types:
+      - ask_union:         given P(A),P(B),P(A∩B), find P(A∪B)
+      - ask_intersection:  given P(A∪B),P(A),P(B),  find P(A∩B)
+
+    Scope (Phase 6C-2):
+      - Direct substitution only; no conditional prob; no 3-event inclusion-exclusion.
+      - No figure/image; no long set-mapping word problems.
+    """
+    rng = random.Random(seed)
+    seen: set[tuple] = seen_parameter_tuples if seen_parameter_tuples is not None else set()
+
+    # Ask type: alternated by seed parity
+    sub_types = ["ask_union", "ask_intersection"]
+    if seed is not None:
+        sub_type = sub_types[abs(int(seed)) % 2]
+    else:
+        sub_type = rng.choice(sub_types)
+
+    parameter_tuple: tuple | None = None
+    question_text = explanation = ""
+    num = den = 0
+
+    for _ in range(80):
+        result = _sample_valid_union_params(rng, difficulty)
+        if result[0] == 0:
+            continue
+        D, a, b, c, paub = result
+
+        pa_str = _fraction_str(a, D)
+        pb_str = _fraction_str(b, D)
+        pab_str = _fraction_str(c, D)
+        paub_str = _fraction_str(paub, D)
+
+        if sub_type == "ask_union":
+            candidate = (UNION_INTERSECTION_PROBLEM_TYPE_ID, "ask_union", D, a, b, c)
+            if candidate in seen:
+                sub_type = "ask_intersection"
+                continue
+            question_text = (
+                f"已知 $P(A)={pa_str}$、$P(B)={pb_str}$、$P(A\\cap B)={pab_str}$，"
+                "求 $P(A\\cup B)$。"
+            )
+            explanation = (
+                "由加法定理：\n"
+                f"$P(A\\cup B)=P(A)+P(B)-P(A\\cap B)"
+                f"={pa_str}+{pb_str}-{pab_str}"
+                f"=\\dfrac{{{a}}}{{{D}}}+\\dfrac{{{b}}}{{{D}}}-\\dfrac{{{c}}}{{{D}}}"
+                f"=\\dfrac{{{paub}}}{{{D}}}={paub_str}$。"
+            )
+            num, den = paub, D
+            parameter_tuple = candidate
+
+        else:  # ask_intersection
+            candidate = (UNION_INTERSECTION_PROBLEM_TYPE_ID, "ask_intersection", D, a, b, paub)
+            if candidate in seen:
+                sub_type = "ask_union"
+                continue
+            question_text = (
+                f"已知 $P(A)={pa_str}$、$P(B)={pb_str}$、$P(A\\cup B)={paub_str}$，"
+                "求 $P(A\\cap B)$。"
+            )
+            explanation = (
+                "由加法定理 $P(A\\cup B)=P(A)+P(B)-P(A\\cap B)$，整理得：\n"
+                f"$P(A\\cap B)=P(A)+P(B)-P(A\\cup B)"
+                f"={pa_str}+{pb_str}-{paub_str}"
+                f"=\\dfrac{{{a}}}{{{D}}}+\\dfrac{{{b}}}{{{D}}}-\\dfrac{{{paub}}}{{{D}}}"
+                f"=\\dfrac{{{c}}}{{{D}}}={pab_str}$。"
+            )
+            num, den = c, D
+            parameter_tuple = candidate
+
+        break
+
+    if parameter_tuple is None:
+        raise ValueError("union_intersection_probability: failed to generate after 80 retries.")
+
+    answer = _fraction_str(num, den)
+    choices = _make_fraction_choices(num, den, rng) if multiple_choice else []
+
+    payload = {
+        "question_text": question_text,
+        "choices": choices,
+        "answer": answer,
+        "explanation": explanation,
+        "skill_id": skill_id,
+        "subskill_id": subskill_id,
+        "problem_type_id": UNION_INTERSECTION_PROBLEM_TYPE_ID,
+        "generator_key": UNION_INTERSECTION_GENERATOR_KEY,
+        "answer_type": "rational_fraction",
+        "difficulty": difficulty,
+        "diagnosis_tags": [
+            "union_intersection_probability",
+            "addition_theorem",
+            "probability_properties",
+        ],
+        "remediation_candidates": ["complement_probability", "classical_probability_fraction"],
+        "source_style_refs": [
+            "tc_b4_ch2_union_intersection_01",
+            "union_intersection_probability",
+        ],
+        "parameters": {
+            "sub_type": sub_type,
+            "D": den,
+            "pa_num": a,
+            "pb_num": b,
+            "pab_num": c,
+            "paub_num": paub,
+            "parameter_tuple": parameter_tuple,
+        },
+    }
+
+    validate_problem_payload_contract(payload)
+    validate_no_unfilled_placeholder(payload["question_text"])
+    validate_no_unfilled_placeholder(payload["explanation"])
+
+    if seen_parameter_tuples is not None:
+        seen_parameter_tuples.add(parameter_tuple)
+    return payload
+
+
+# ─── dice_coin_probability_count ─────────────────────────────────────────────
+
+def _comb(n: int, k: int) -> int:
+    return math.comb(n, k)
+
+
+# single_die_property: condition builders
+def _single_die_event(rng: random.Random) -> tuple[str, int, int]:
+    """Return (condition_text, n_event, n_sample=6)."""
+    N = 6
+    choices_list = [
+        ("偶數（$2,4,6$）", 3),
+        ("奇數（$1,3,5$）", 3),
+        ("大於 $4$（即 $5$ 或 $6$）", 2),
+        ("小於 $3$（即 $1$ 或 $2$）", 2),
+        ("$3$ 的倍數（$3$ 或 $6$）", 2),
+        ("不大於 $2$（即 $1$ 或 $2$）", 2),
+        ("$4$ 以上（$4,5,6$）", 3),
+        ("$1$ 點", 1),
+        ("$6$ 點", 1),
+    ]
+    cond_text, n_event = rng.choice(choices_list)
+    return cond_text, n_event, N
+
+
+def dice_coin_probability_count(
+    *,
+    skill_id: str,
+    subskill_id: str,
+    difficulty: int = 1,
+    seed: int | None = None,
+    seen_parameter_tuples: set[tuple] | None = None,
+    multiple_choice: bool = True,
+) -> dict:
+    """Generate a dice/coin classical probability problem.
+
+    Three contexts (Phase 6C-2):
+      - single_die_property:  one fair die, condition on face value
+      - two_dice_sum:         two fair dice, target sum
+      - coin_exact_heads:     n coins (n=2..4), exact k heads
+
+    No image, no listing, no conditional prob, no multi-step independent events.
+    """
+    rng = random.Random(seed)
+    seen: set[tuple] = seen_parameter_tuples if seen_parameter_tuples is not None else set()
+
+    contexts = ["single_die_property", "two_dice_sum", "coin_exact_heads"]
+    # Rotate context by seed for variety
+    if seed is not None:
+        start = abs(int(seed)) % len(contexts)
+        context_order = contexts[start:] + contexts[:start]
+    else:
+        context_order = list(contexts)
+        rng.shuffle(context_order)
+
+    parameter_tuple: tuple | None = None
+    question_text = explanation = ""
+    num = den = 0
+    context_used = ""
+
+    for _ in range(80):
+        for ctx in context_order:
+
+            if ctx == "single_die_property":
+                cond_text, n_event, N = _single_die_event(rng)
+                candidate = (DICE_COIN_PROBLEM_TYPE_ID, "single_die", cond_text)
+                if candidate in seen:
+                    continue
+                num, den = n_event, N
+                prob_str = _fraction_str(num, den)
+                question_text = (
+                    f"擲一顆公正骰子（$1$ 到 $6$ 點）一次，"
+                    f"點數為{cond_text}的機率為？"
+                )
+                explanation = (
+                    f"樣本空間 $n(S)=6$；"
+                    f"點數為{cond_text}的結果有 $n(A)={n_event}$ 種，\n"
+                    f"故 $P(A)=\\dfrac{{n(A)}}{{n(S)}}="
+                    f"\\dfrac{{{n_event}}}{{6}}={prob_str}$。"
+                )
+                parameter_tuple = candidate
+                context_used = "single_die_property"
+                break
+
+            if ctx == "two_dice_sum":
+                # count pairs (d1,d2) with d1+d2 = target
+                if difficulty <= 1:
+                    targets = [7, 6, 8]
+                elif difficulty == 2:
+                    targets = [7, 5, 9, 6, 8]
+                else:
+                    targets = list(range(2, 13))
+                target = rng.choice(targets)
+                candidate = (DICE_COIN_PROBLEM_TYPE_ID, "two_dice_sum", target)
+                if candidate in seen:
+                    continue
+                count = sum(
+                    1 for d1 in range(1, 7) for d2 in range(1, 7)
+                    if d1 + d2 == target
+                )
+                if count == 0:
+                    continue
+                num, den = count, 36
+                prob_str = _fraction_str(num, den)
+                question_text = (
+                    f"同時擲兩顆公正骰子（各 $1$ 到 $6$ 點），"
+                    f"點數和恰好為 ${target}$ 的機率為？"
+                )
+                explanation = (
+                    f"樣本空間共 $n(S)=6\\times6=36$ 種等可能結果；\n"
+                    f"點數和為 ${target}$ 的有序對共 $n(A)={count}$ 種，\n"
+                    f"故 $P(A)=\\dfrac{{n(A)}}{{n(S)}}="
+                    f"\\dfrac{{{count}}}{{36}}={prob_str}$。"
+                )
+                parameter_tuple = candidate
+                context_used = "two_dice_sum"
+                break
+
+            # coin_exact_heads
+            n = rng.choice([2, 3, 4])
+            k = rng.randint(0, n)
+            candidate = (DICE_COIN_PROBLEM_TYPE_ID, "coin_exact_heads", n, k)
+            if candidate in seen:
+                continue
+            count = _comb(n, k)
+            total = 2 ** n
+            num, den = count, total
+            prob_str = _fraction_str(num, den)
+            heads_str = f"${k}$ 次正面"
+            question_text = (
+                f"將一枚公正硬幣拋擲 ${n}$ 次，恰好出現 ${k}$ 次正面的機率為？"
+            )
+            explanation = (
+                f"樣本空間共 $n(S)=2^{{{n}}}={total}$ 種等可能結果；\n"
+                f"恰好 ${k}$ 次正面的結果數：$n(A)=C_{{{n}}}^{{{k}}}={count}$，\n"
+                f"故 $P(A)=\\dfrac{{n(A)}}{{n(S)}}="
+                f"\\dfrac{{{count}}}{{{total}}}={prob_str}$。"
+            )
+            parameter_tuple = candidate
+            context_used = "coin_exact_heads"
+            break
+
+        if parameter_tuple is not None:
+            break
+
+    if parameter_tuple is None:
+        raise ValueError("dice_coin_probability_count: failed to generate after 80 retries.")
+
+    answer = _fraction_str(num, den)
+    choices = _make_fraction_choices(num, den, rng) if multiple_choice else []
+
+    payload = {
+        "question_text": question_text,
+        "choices": choices,
+        "answer": answer,
+        "explanation": explanation,
+        "skill_id": skill_id,
+        "subskill_id": subskill_id,
+        "problem_type_id": DICE_COIN_PROBLEM_TYPE_ID,
+        "generator_key": DICE_COIN_GENERATOR_KEY,
+        "answer_type": "rational_fraction",
+        "difficulty": difficulty,
+        "diagnosis_tags": [
+            "dice_coin_probability_count",
+            "classical_probability",
+            "sample_space",
+        ],
+        "remediation_candidates": ["classical_probability_fraction", "sample_space_count_numeric"],
+        "source_style_refs": [
+            "tc_b4_ch2_dice_coin_01",
+            "dice_coin_probability_count",
+        ],
+        "parameters": {
+            "context": context_used,
+            "n_event": num,
+            "n_sample": den,
+            "parameter_tuple": parameter_tuple,
+        },
+    }
+
+    validate_problem_payload_contract(payload)
+    validate_no_unfilled_placeholder(payload["question_text"])
+    validate_no_unfilled_placeholder(payload["explanation"])
 
     if seen_parameter_tuples is not None:
         seen_parameter_tuples.add(parameter_tuple)

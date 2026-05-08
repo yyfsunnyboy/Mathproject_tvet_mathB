@@ -80,7 +80,7 @@ class TestGetNextQuestionChap2NoLegacyImport:
     @pytest.mark.parametrize(
         "skill, gen_seed, expect_pid",
         [
-            ("vh_數學B4_ProbabilityDefinition", 11, "classical_probability_fraction"),
+            ("vh_數學B4_ProbabilityDefinition", 11, "dice_coin_probability_count"),
             ("vh_數學B4_ProbabilityProperties", 22, "complement_probability"),
             ("vh_數學B4_SampleSpaceAndEvents", 33, "sample_space_count_numeric"),
         ],
@@ -103,7 +103,7 @@ class TestGetNextQuestionChap2NoLegacyImport:
         enc = "vh_%E6%95%B8%E5%AD%B8B4_ProbabilityDefinition"
         r = logged_client.get(f"/get_next_question?skill={enc}&gen_seed=7&level=1")
         assert r.status_code == 200
-        assert r.get_json().get("problem_type_id") == "classical_probability_fraction"
+        assert r.get_json().get("problem_type_id") == "dice_coin_probability_count"
 
     def test_complement_explicit_problem_type(self, logged_client, monkeypatch) -> None:
         _monkeypatch_forbid_legacy_chap2_p0(monkeypatch)
@@ -162,16 +162,19 @@ class TestCheckAnswerChap2FlowUsesSessionNoLegacyImport:
     def test_rational_equivalents(self, logged_client, monkeypatch) -> None:
         from core.vocational_math_b4.services.question_router import generate_for_chap2_skill
 
-        seed = 9  # yields correct_answer == 1/2 (friendly decimal / percent round-trip)
+        seed = 9
         p = generate_for_chap2_skill(
-            skill_id="vh_數學B4_ProbabilityDefinition", level=1, seed=seed
+            skill_id="vh_數學B4_ProbabilityDefinition",
+            problem_type_id="classical_probability_fraction",
+            level=1,
+            seed=seed,
         )
         ca = str(p["correct_answer"])
 
         _monkeypatch_forbid_legacy_chap2_p0(monkeypatch)
-
         rq = logged_client.get(
-            f"/get_next_question?skill=vh_數學B4_ProbabilityDefinition&gen_seed={seed}&level=1"
+            "/get_next_question?skill=vh_數學B4_ProbabilityDefinition"
+            f"&problem_type=classical_probability_fraction&gen_seed={seed}&level=1"
         )
         assert rq.status_code == 200
 
@@ -182,36 +185,47 @@ class TestCheckAnswerChap2FlowUsesSessionNoLegacyImport:
             num_str, den_str = ca.split("/", 1)
             unreduced = f"{int(num_str) * 2}/{int(den_str) * 2}"
             logged_client.get(
-                f"/get_next_question?skill=vh_數學B4_ProbabilityDefinition&gen_seed={seed}&level=1"
+                "/get_next_question?skill=vh_數學B4_ProbabilityDefinition"
+                f"&problem_type=classical_probability_fraction&gen_seed={seed}&level=1"
             )
             u = logged_client.post("/check_answer", json={"answer": unreduced})
             assert u.get_json().get("correct") is True
 
         logged_client.get(
-            f"/get_next_question?skill=vh_數學B4_ProbabilityDefinition&gen_seed={seed}&level=1"
+            "/get_next_question?skill=vh_數學B4_ProbabilityDefinition"
+            f"&problem_type=classical_probability_fraction&gen_seed={seed}&level=1"
         )
         from fractions import Fraction
 
         num_s, den_s = ca.split("/", 1)
         fra = Fraction(int(num_s), int(den_s))
-        dec_str = f"{float(fra):g}"
-        assert (
-            logged_client.post("/check_answer", json={"answer": dec_str}).get_json()[
-                "correct"
-            ]
-            is True
-        )
+        # Decimal round-trip is exact only for denominators with factors 2/5.
+        tmp_den = fra.denominator
+        while tmp_den % 2 == 0:
+            tmp_den //= 2
+        while tmp_den % 5 == 0:
+            tmp_den //= 5
+        if tmp_den == 1:
+            dec_str = f"{float(fra):g}"
+            assert (
+                logged_client.post("/check_answer", json={"answer": dec_str}).get_json()[
+                    "correct"
+                ]
+                is True
+            )
 
         logged_client.get(
-            f"/get_next_question?skill=vh_數學B4_ProbabilityDefinition&gen_seed={seed}&level=1"
+            "/get_next_question?skill=vh_數學B4_ProbabilityDefinition"
+            f"&problem_type=classical_probability_fraction&gen_seed={seed}&level=1"
         )
-        pct_str = f"{float(fra) * 100:g}%"
-        assert (
-            logged_client.post("/check_answer", json={"answer": pct_str}).get_json()[
-                "correct"
-            ]
-            is True
-        )
+        if tmp_den == 1:
+            pct_str = f"{float(fra) * 100:g}%"
+            assert (
+                logged_client.post("/check_answer", json={"answer": pct_str}).get_json()[
+                    "correct"
+                ]
+                is True
+            )
 
         logged_client.get(
             f"/get_next_question?skill=vh_數學B4_ProbabilityDefinition&gen_seed={seed}&level=1"

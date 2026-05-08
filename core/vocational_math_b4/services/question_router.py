@@ -421,13 +421,17 @@ def generate_for_skill(
     return payload
 
 
-# ─── Phase 6C-1: Chap2 probability minimal router ───────────────────────────
+# ─── Phase 6C through 6F: Chap2 probability / expectation router ────────────
 #
-# Isolated from the Chap1 _REGISTRY above. Only 3 problem types are registered.
+# Isolated from the Chap1 _REGISTRY above.
+# Adds Phase 6D–6F conditional / independent / expectation generators.
 # Handwriting listing types (sample_space_listing, event_set_listing,
 # subset_listing) are NOT registered here.
 
 from core.vocational_math_b4.generators import chap2_probability_basic as _chap2_prob
+from core.vocational_math_b4.generators import chap2_conditional_probability as _chap2_cond
+from core.vocational_math_b4.generators import chap2_independent_events as _chap2_indep
+from core.vocational_math_b4.generators import chap2_expected_value as _chap2_exp
 
 
 _CHAP2_PHASE6C1_REGISTRY: dict[str, list[dict[str, object]]] = {
@@ -437,7 +441,14 @@ _CHAP2_PHASE6C1_REGISTRY: dict[str, list[dict[str, object]]] = {
             "problem_type_id": "classical_probability_fraction",
             "generator_key": "b4.chap2.classical_probability_fraction",
             "generator_fn": _chap2_prob.classical_probability_fraction,
-        }
+        },
+        # Phase 6C-2
+        {
+            "subskill_id": "b4_ch2_prob_def_dice_coin_01",
+            "problem_type_id": "dice_coin_probability_count",
+            "generator_key": "b4.chap2.dice_coin_probability_count",
+            "generator_fn": _chap2_prob.dice_coin_probability_count,
+        },
     ],
     "vh_數學B4_ProbabilityProperties": [
         {
@@ -445,7 +456,14 @@ _CHAP2_PHASE6C1_REGISTRY: dict[str, list[dict[str, object]]] = {
             "problem_type_id": "complement_probability",
             "generator_key": "b4.chap2.complement_probability",
             "generator_fn": _chap2_prob.complement_probability,
-        }
+        },
+        # Phase 6C-2
+        {
+            "subskill_id": "b4_ch2_prob_prop_union_01",
+            "problem_type_id": "union_intersection_probability",
+            "generator_key": "b4.chap2.union_intersection_probability",
+            "generator_fn": _chap2_prob.union_intersection_probability,
+        },
     ],
     "vh_數學B4_SampleSpaceAndEvents": [
         {
@@ -454,6 +472,51 @@ _CHAP2_PHASE6C1_REGISTRY: dict[str, list[dict[str, object]]] = {
             "generator_key": "b4.chap2.sample_space_count_numeric",
             "generator_fn": _chap2_prob.sample_space_count_numeric,
         }
+    ],
+    # Phase 6D: Conditional Probability
+    "vh_數學B4_ConditionalProbability": [
+        {
+            "subskill_id": "b4_ch2_cond_prob_basic_01",
+            "problem_type_id": "conditional_probability_basic",
+            "generator_key": "b4.chap2.conditional_probability_basic",
+            "generator_fn": _chap2_cond.conditional_probability_basic,
+        },
+        {
+            "subskill_id": "b4_ch2_cond_prob_wor_01",
+            "problem_type_id": "without_replacement_conditional_probability",
+            "generator_key": "b4.chap2.without_replacement_conditional_probability",
+            "generator_fn": _chap2_cond.without_replacement_conditional_probability,
+        },
+    ],
+    # Phase 6E: Independent Events
+    "vh_數學B4_IndependentEvents": [
+        {
+            "subskill_id": "b4_ch2_indep_joint_01",
+            "problem_type_id": "independent_joint_probability",
+            "generator_key": "b4.chap2.independent_joint_probability",
+            "generator_fn": _chap2_indep.independent_joint_probability,
+        },
+        {
+            "subskill_id": "b4_ch2_indep_at_least_one_01",
+            "problem_type_id": "independent_at_least_one_probability",
+            "generator_key": "b4.chap2.independent_at_least_one_probability",
+            "generator_fn": _chap2_indep.independent_at_least_one_probability,
+        },
+    ],
+    # Phase 6F: Expected value (definition skill)
+    "vh_數學B4_MathematicalExpectationDefinition": [
+        {
+            "subskill_id": "b4_ch2_exp_disc_01",
+            "problem_type_id": "expectation_discrete_basic",
+            "generator_key": "b4.chap2.expectation_discrete_basic",
+            "generator_fn": _chap2_exp.expectation_discrete_basic,
+        },
+        {
+            "subskill_id": "b4_ch2_exp_table_01",
+            "problem_type_id": "expectation_from_distribution",
+            "generator_key": "b4.chap2.expectation_from_distribution",
+            "generator_fn": _chap2_exp.expectation_from_distribution,
+        },
     ],
 }
 
@@ -467,17 +530,31 @@ def generate_for_chap2_skill(
     multiple_choice: bool = True,
     problem_type_id: str | None = None,
 ) -> dict:
-    """Generate a payload for a supported B4 Chapter 2 Phase 6C-1 skill.
+    """Generate a payload for a supported B4 Chapter 2 skill (Phase 6C through 6F).
 
-    Only the following skills are supported:
-      - vh_數學B4_ProbabilityDefinition   → classical_probability_fraction
-      - vh_數學B4_ProbabilityProperties   → complement_probability
-      - vh_數學B4_SampleSpaceAndEvents    → sample_space_count_numeric
+    Supported skills and problem types:
+      Phase 6C-1:
+        - vh_數學B4_ProbabilityDefinition   → classical_probability_fraction
+        - vh_數學B4_ProbabilityProperties   → complement_probability
+        - vh_數學B4_SampleSpaceAndEvents    → sample_space_count_numeric
+      Phase 6C-2:
+        - vh_數學B4_ProbabilityDefinition   → dice_coin_probability_count
+        - vh_數學B4_ProbabilityProperties   → union_intersection_probability
+      Phase 6D:
+        - vh_數學B4_ConditionalProbability  → conditional_probability_basic
+        - vh_數學B4_ConditionalProbability  → without_replacement_conditional_probability
+      Phase 6E:
+        - vh_數學B4_IndependentEvents       → independent_joint_probability
+        - vh_數學B4_IndependentEvents       → independent_at_least_one_probability
+      Phase 6F:
+        - vh_數學B4_MathematicalExpectationDefinition → expectation_discrete_basic
+        - vh_數學B4_MathematicalExpectationDefinition → expectation_from_distribution
 
     Handwriting listing types (sample_space_listing, event_set_listing,
     subset_listing) are intentionally NOT registered.
 
-    Raises ValueError for unsupported skill_ids.
+    If problem_type_id is specified, only that entry is selected.
+    Raises ValueError for unsupported skill_ids or problem_type_ids.
     """
     if skill_id not in _CHAP2_PHASE6C1_REGISTRY:
         raise ValueError(f"generate_for_chap2_skill: unsupported skill_id '{skill_id}'.")

@@ -151,7 +151,10 @@ class TestChap2RouteGeneratorSmoke:
         from core.vocational_math_b4.adaptive.b4_chapter2_phase6c1_allowlist import (
             validate_b4_chap2_phase6c1_generator_payload,
         )
-        payload = generate_for_chap2_skill(skill_id=skill_id, level=1, seed=77)
+        # Pin problem_type_id to prevent 6C-2 registry expansion from rotating entry.
+        payload = generate_for_chap2_skill(
+            skill_id=skill_id, level=1, seed=77, problem_type_id=expected_pid
+        )
         assert payload["problem_type_id"] == expected_pid
         # Simulate the allowlist gate in practice.py
         ok, reason = validate_b4_chap2_phase6c1_generator_payload(skill_id, payload)

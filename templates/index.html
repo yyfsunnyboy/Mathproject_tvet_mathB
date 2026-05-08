@@ -3001,11 +3001,19 @@
             if (PRACTICE_MODE === 'similar_practice' && similarPracticeState.skillId) {
                 return similarPracticeState.skillId;
             }
-            const querySkill = new URLSearchParams(window.location.search).get('skill');
-            if (querySkill) return querySkill;
+            // Phase 6C-2R: decodeURIComponent() prevents double-encoding of CJK skill_ids.
+            // URLSearchParams.set() will percent-encode the value again, so we must decode
+            // any %-encoded segments first (e.g. vh_%E6%95%B8... → vh_數學B4_...).
+            const rawQuerySkill = new URLSearchParams(window.location.search).get('skill');
+            if (rawQuerySkill) {
+                try { return decodeURIComponent(rawQuerySkill); } catch(e) { return rawQuerySkill; }
+            }
             // 從 URL 路徑 /practice/skill_id 中提取 skill_id
             const pathParts = window.location.pathname.split('/');
-            const skillIdFromPath = pathParts[pathParts.length - 1];
+            const rawSkillIdFromPath = pathParts[pathParts.length - 1];
+            const skillIdFromPath = rawSkillIdFromPath
+                ? (function() { try { return decodeURIComponent(rawSkillIdFromPath); } catch(e) { return rawSkillIdFromPath; } })()
+                : '';
             return skillIdFromPath || '{{ skill_id }}' || 'remainder'; // 優先從路徑獲取
         }
 

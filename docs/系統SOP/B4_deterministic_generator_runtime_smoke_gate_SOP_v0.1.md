@@ -217,3 +217,50 @@
 ## 13. Changelog
 
 - v0.1：由 Chap2 Phase 6C-1 / 6C-1R / 6C-1R2 經驗整理而成，補強 runtime smoke gate、URL decode、legacy fallback guard、handwriting reserved guard。
+- v0.1.1：加入 Section 6.1 frontend double-encoding guard，源自 Chap2 Phase 6C-2R manual smoke regression（2026-05-08）。
+
+## 6.1 Frontend Double-Encoding Guard（v0.1.1 追加）
+
+### 問題背景
+
+後端 `_url_unquote()` 正確後，仍可能發生前端 double-encoding。
+
+當 practice page 以 path-based URL（`/practice/<skill_id>`）開啟，且 `skill_id` 含 CJK 字元（如 `vh_%E6%95%B8%E5%AD%B8B4_ProbabilityDefinition`）：
+
+1. `window.location.pathname.split('/')` 取到的 path segment 仍是 **encoded** 字串
+2. 直接傳入 `URLSearchParams.set('skill', encoded_string)` 時，`%` 被再次 encode 成 `%25`
+3. server 收到雙重 encoded skill_id：`vh_%2525E6%2525958...`
+4. `_url_unquote()` 解一層後仍是 encoded → allowlist 判斷失敗 → 404
+
+### 修正規則
+
+每個從 `window.location.pathname` 或 `window.location.search` 取出的 skill_id，在進 `URLSearchParams.set()` 或任何 API 呼叫前，**一律先 `decodeURIComponent()`**：
+
+```javascript
+// 安全寫法（try/catch 防 URIError on malformed %-sequence）
+function safeDecodeSkillId(raw) {
+    try { return decodeURIComponent(raw); }
+    catch(e) { return raw; }  // fallback: pass as-is, let backend handle
+}
+```
+
+`decodeURIComponent()` 對已 decoded 的純 ASCII/CJK 字串是 idempotent，不會破壞正常值。
+
+### Smoke Gate 補充測試項目
+
+從 v0.1.1 起，每批 deterministic 題型的 manual smoke 必須涵蓋：
+
+- **path-based encoded URL entry**：`/practice/vh_%E6%95%B8%E5%AD%B8B4_<SkillId>` 進入後，按「下一題」能正常出題
+- **query-based encoded URL**：`/practice?skill=vh_%E6%95%B8%E5%AD%B8B4_<SkillId>` 同上
+- 確認前端 `getSkillId()` 或等效函式已加 `decodeURIComponent()`
+- 開發者工具 Network tab 確認：`/get_next_question?skill=` 後的值為 **single-encoded** 或 decoded，不含 `%25`
+
+### 根源確認
+
+此問題在 Phase 6C-2R 發現並修正：
+
+- **修正位置**：`templates/index.html` → `getSkillId()` 函式（line ~3000）
+- **修正日期**：2026-05-08
+- **修正方式**：path/query 取出後先 `decodeURIComponent()`
+- **後端保持不動**：`_url_unquote()` 已在 `practice.py` 各 route 正確位置，不需修改
+

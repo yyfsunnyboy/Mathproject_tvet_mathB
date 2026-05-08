@@ -291,6 +291,29 @@ def check_rational_answer(
     return parsed == expected_frac
 
 
+def check_expected_value_answer(user_answer: object, correct_answer_str: str) -> bool:
+    """Grade E(X) style answers: accept equivalent fractions and decimals; reject percentages.
+
+    correct_answer_str must be a reduced fraction string (e.g. '3/2') or an integer string.
+    """
+    ca = str(correct_answer_str or "").strip()
+    if not ca:
+        return False
+    if "/" in ca:
+        num_str, den_str = ca.split("/", 1)
+        exp_num, exp_den = int(num_str), int(den_str)
+    else:
+        exp_num, exp_den = int(ca), 1
+    return check_rational_answer(
+        user_answer,
+        exp_num,
+        exp_den,
+        allow_decimal=True,
+        allow_percentage=False,
+        validate_probability_range=False,
+    )
+
+
 def check_integer_answer(
     user_answer: object,
     expected: int,

@@ -63,6 +63,7 @@ from core.vocational_math_b4.services.question_router import generate_for_chap2_
 from core.vocational_math_b4.domain.b4_validators import (
     check_rational_answer,
     check_integer_answer,
+    check_expected_value_answer,
 )
 
 MANUAL_REVIEW_SKILLS = {
@@ -1010,6 +1011,8 @@ def check_answer():
         try:
             if current.get("answer_type") == "integer":
                 is_correct_chap2 = check_integer_answer(user_ans, int(correct_ans))
+            elif current.get("answer_type") == "expected_value":
+                is_correct_chap2 = check_expected_value_answer(user_ans, correct_ans)
             else:
                 if "/" in correct_ans:
                     num_str, den_str = correct_ans.split("/", 1)
