@@ -11,7 +11,6 @@ import pytest
 from app import create_app
 from models import User, db
 from core.routes.practice import (
-    B4_CHAP2_SKILL_NOT_ENABLED_PUBLIC_ERROR,
     B4_CHAP2_RESERVED_PROBLEM_TYPE_PUBLIC_ERROR,
 )
 
@@ -98,37 +97,51 @@ class TestEnabledChap2MainlineSkills:
         assert body.get("problem_type_id")
 
 
-class TestNotYetEnabledSkills:
+class TestPhase6KOpenedSkillsNoLegacyImport:
+    """Phase 6K closure: the four formerly not-enabled Chap2 skills are now
+    enabled via deterministic generators. They must respond 200 AND must NOT
+    import the legacy ``skills.<id>`` module path under any circumstance.
+    """
+
     @pytest.mark.parametrize(
-        "skill",
+        "skill, gen_seed",
         [
-            "vh_數學B4_ProbabilityOperations",
-            "vh_數學B4_ApplicationsOfExpectation",
-            "vh_數學B4_MathematicalExpectation",
-            "vh_數學B4_BasicConceptsOfSets",
+            ("vh_數學B4_ProbabilityOperations", 31),
+            ("vh_數學B4_ApplicationsOfExpectation", 32),
+            ("vh_數學B4_MathematicalExpectation", 33),
+            ("vh_數學B4_BasicConceptsOfSets", 34),
         ],
     )
-    def test_clear_not_enabled_no_legacy_import(
-        self, logged_client, monkeypatch: pytest.MonkeyPatch, skill: str
+    def test_phase6k_skills_now_200_no_legacy_import(
+        self,
+        logged_client,
+        monkeypatch: pytest.MonkeyPatch,
+        skill: str,
+        gen_seed: int,
     ) -> None:
         _patch_block_legacy_not_enabled(monkeypatch)
-        r = logged_client.get(f"/get_next_question?skill={skill}&level=1")
-        assert r.status_code == 422
+        r = logged_client.get(
+            f"/get_next_question?skill={skill}&gen_seed={gen_seed}&level=1"
+        )
+        assert r.status_code == 200, r.get_data(as_text=True)
         body = r.get_json() or {}
-        err = body.get("error") or ""
-        assert err == B4_CHAP2_SKILL_NOT_ENABLED_PUBLIC_ERROR
+        assert body.get("new_question_text")
+        assert body.get("problem_type_id")
         raw = r.get_data(as_text=True)
-        _assert_no_forbidden_leaks(raw, err)
+        _assert_no_forbidden_leaks(raw, "")
 
-    def test_encoded_skill_id_not_echoed_in_response(self, logged_client) -> None:
+    def test_encoded_skill_id_resolves_through_deterministic(
+        self, logged_client, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        _patch_block_legacy_not_enabled(monkeypatch)
         enc = "vh_%E6%95%B8%E5%AD%B8B4_ProbabilityOperations"
-        r = logged_client.get(f"/get_next_question?skill={enc}&level=1")
-        assert r.status_code == 422
+        r = logged_client.get(f"/get_next_question?skill={enc}&gen_seed=35&level=1")
+        assert r.status_code == 200, r.get_data(as_text=True)
         body = r.get_json() or {}
-        err = body.get("error") or ""
-        assert err == B4_CHAP2_SKILL_NOT_ENABLED_PUBLIC_ERROR
+        assert body.get("new_question_text")
+        assert body.get("problem_type_id")
         raw = r.get_data(as_text=True)
-        _assert_no_forbidden_leaks(raw, err)
+        _assert_no_forbidden_leaks(raw, "")
 
 
 class TestReservedListingProblemTypes:

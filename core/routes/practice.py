@@ -59,10 +59,21 @@ from core.vocational_math_b4.adaptive.b4_chapter2_phase6c1_allowlist import (
     is_b4_chapter2_excluded_problem_type,
     validate_b4_chap2_phase6c1_generator_payload,
 )
-from core.vocational_math_b4.services.question_router import generate_for_chap2_skill
+# Phase 7B: Chap3 deterministic integration
+from core.vocational_math_b4.adaptive.b4_chapter3_phase7b_allowlist import (
+    is_b4_chapter3_phase7b_deterministic_skill,
+    is_b4_chapter3_skill_not_enabled,
+    validate_b4_chap3_phase7b_generator_payload,
+)
+from core.vocational_math_b4.services.question_router import generate_for_chap2_skill, generate_for_chap3_skill
 from core.vocational_math_b4.services.b4_chap2_visibility_audit import (
     persist_b4_chap2_deterministic_answer_event,
     persist_b4_chap2_gated_event,
+)
+# Phase 6N: Chap2 chapter mode integration
+from core.vocational_math_b4.services.b4_chap2_chapter_mode import (
+    B4_CHAP2_CHAPTER_SKILL_IDS,
+    B4_CHAP2_CHAPTER_DIAGNOSTIC_TOTAL_STEPS,
 )
 from core.vocational_math_b4.domain.b4_validators import (
     check_rational_answer,
@@ -81,6 +92,12 @@ B4_CHAP2_RESERVED_PROBLEM_TYPE_PUBLIC_ERROR = (
     " This problem type is reserved for handwriting/free-response review."
 )
 
+# Phase 7B: Chap3 skill gate
+B4_CHAP3_SKILL_NOT_ENABLED_PUBLIC_ERROR = (
+    "此技能尚未開放自動出題。"
+    " Chap3 skill not enabled in current deterministic runtime."
+)
+
 
 def _b4_chap2_public_payload_validation_message(deny_reason: str | None) -> str:
     """Map internal Chap2 allowlist validator codes to student-safe error text."""
@@ -97,6 +114,18 @@ def _b4_chap2_public_payload_validation_message(deny_reason: str | None) -> str:
             "此技能與題型組合尚未開放自動出題。"
             " This skill/problem combination is not enabled in the current deterministic runtime."
         )
+    if dr == "missing_or_invalid_problem_type_id":
+        return "題目類型資料不完整，無法出題。 Question type metadata is incomplete."
+    if dr == "payload_not_dict":
+        return "題目資料格式異常。 Invalid question payload."
+    return (
+        "此題型或題目資料不符合目前自動出題範圍。"
+        " This question does not match the current deterministic runtime scope."
+    )
+
+def _b4_chap3_public_payload_validation_message(deny_reason: str | None) -> str:
+    """Map internal Chap3 allowlist validator codes to student-safe error text."""
+    dr = str(deny_reason or "").strip()
     if dr == "missing_or_invalid_problem_type_id":
         return "題目類型資料不完整，無法出題。 Question type metadata is incomplete."
     if dr == "payload_not_dict":
@@ -160,41 +189,70 @@ def _resolve_b4_chapter_adaptive_entry(
     skill_ids: str,
 ) -> tuple[dict[str, object], bool]:
     """
-    Phase 5B-Fix-A bridge:
-    Resolve B4 Chapter 1 chapter-mode entry (and safe legacy alias) to deterministic adaptive pool.
+    Phase 5B-Fix-A bridge (extended in Phase 6N for Chap2):
+    Resolve B4 Chapter 1/2 chapter-mode entry to deterministic adaptive pool.
     """
     normalized_mode = str(mode or "").strip().lower()
     normalized_curriculum = str(curriculum or "").strip().lower()
     normalized_volume = str(volume or "").strip()
     normalized_chapter_id = str(chapter_id or "").strip()
     normalized_skill_ids = str(skill_ids or "").strip()
+
+    # --- B4 Chapter 1 (排列組合) ---
     legacy_hit = normalized_mode == "single" and normalized_skill_ids == "1 排列組合"
-    chapter_hit = (
+    chapter1_hit = (
         normalized_mode == "chapter"
         and normalized_curriculum == "vocational"
         and normalized_volume == "數學B4"
         and normalized_chapter_id == "1"
     )
-    if not (legacy_hit or chapter_hit):
-        return {}, False
+    if legacy_hit or chapter1_hit:
+        unit_skill_ids = get_b4_chapter1_curriculum_progression(include_free_response=False)
+        starter_pool = starter_b4_candidates(unit_skill_ids) or unit_skill_ids
+        starter_skill_id = starter_pool[0] if starter_pool else ""
+        return (
+            {
+                "entry_mode": "chapter",
+                "compat_path_used": legacy_hit,
+                "unit_name": "單元練習：1 排列組合",
+                "unit_skill_ids": unit_skill_ids,
+                "bootstrap_unit_skill_ids": starter_pool,
+                "starter_skill_id": starter_skill_id,
+                "chapter_id": "1",
+                "volume": "數學B4",
+                "curriculum": "vocational",
+            },
+            True,
+        )
 
-    unit_skill_ids = get_b4_chapter1_curriculum_progression(include_free_response=False)
-    starter_pool = starter_b4_candidates(unit_skill_ids) or unit_skill_ids
-    starter_skill_id = starter_pool[0] if starter_pool else ""
-    return (
-        {
-            "entry_mode": "chapter",
-            "compat_path_used": legacy_hit,
-            "unit_name": "單元練習：1 排列組合",
-            "unit_skill_ids": unit_skill_ids,
-            "bootstrap_unit_skill_ids": starter_pool,
-            "starter_skill_id": starter_skill_id,
-            "chapter_id": "1",
-            "volume": "數學B4",
-            "curriculum": "vocational",
-        },
-        True,
+    # --- B4 Chapter 2 (機率) — Phase 6N ---
+    chapter2_hit = (
+        normalized_mode == "chapter"
+        and normalized_curriculum == "vocational"
+        and normalized_volume == "數學B4"
+        and normalized_chapter_id == "2"
     )
+    if chapter2_hit:
+        unit_skill_ids = list(B4_CHAP2_CHAPTER_SKILL_IDS)
+        starter_skill_id = unit_skill_ids[0] if unit_skill_ids else ""
+        return (
+            {
+                "entry_mode": "chapter",
+                "compat_path_used": False,
+                "unit_name": "單元練習：2 機率",
+                "unit_skill_ids": unit_skill_ids,
+                "bootstrap_unit_skill_ids": unit_skill_ids,
+                "starter_skill_id": starter_skill_id,
+                "chapter_id": "2",
+                "volume": "數學B4",
+                "curriculum": "vocational",
+                "b4_chap2_chapter_mode": True,
+                "diagnostic_total_steps": B4_CHAP2_CHAPTER_DIAGNOSTIC_TOTAL_STEPS,
+            },
+            True,
+        )
+
+    return {}, False
 
 
 def _stable_b4_inner_seed(skill_id: str, gen_seed: int) -> int:
@@ -864,6 +922,10 @@ def next_question():
         )
         return jsonify({"error": B4_CHAP2_SKILL_NOT_ENABLED_PUBLIC_ERROR}), 422
 
+    # Phase 7B: gated Chap3 skills
+    if is_b4_chapter3_skill_not_enabled(skill_id):
+        return jsonify({"error": B4_CHAP3_SKILL_NOT_ENABLED_PUBLIC_ERROR}), 422
+
     skill_info = get_skill_info(skill_id)
     # [單元模式] 允許 pattern skill 僅有檔案、尚無 DB 註冊時仍可出題
     if not skill_info and skill_id != 'instant_upload':
@@ -874,6 +936,8 @@ def next_question():
         elif is_b4_chapter2_phase6c1_deterministic_skill(skill_id):
             # Phase 6C-1R: Chap2 P0 skills may not have a DB SkillInfo row.
             # Bypass DB lookup; generator handles everything.
+            skill_info = {"input_type": "text", "skill_id": skill_id}
+        elif is_b4_chapter3_phase7b_deterministic_skill(skill_id):
             skill_info = {"input_type": "text", "skill_id": skill_id}
         elif mode == 'unit':
             skill_info = {"input_type": "text", "skill_id": skill_id}
@@ -909,6 +973,8 @@ def next_question():
         if _is_b4_tree_diagram_request(skill_id, problem_type) or _is_b4_pascal_triangle_request(skill_id, problem_type):
             mod = None
         elif is_b4_chapter2_phase6c1_deterministic_skill(skill_id):
+            mod = None
+        elif is_b4_chapter3_phase7b_deterministic_skill(skill_id):
             mod = None
         elif module_path in sys.modules:
             mod = importlib.reload(sys.modules[module_path])
@@ -983,6 +1049,23 @@ def next_question():
                             {"error": _b4_chap2_public_payload_validation_message(deny_r)}
                         ), 422
                     data = chap2_payload
+                elif is_b4_chapter3_phase7b_deterministic_skill(skill_id):
+                    gen_seed = request.args.get("gen_seed", type=int)
+                    chap3_payload = generate_for_chap3_skill(
+                        skill_id=skill_id,
+                        level=difficulty_level,
+                        seed=gen_seed,
+                        problem_type_id=problem_type or None,
+                    )
+                    ok_p, deny_r = validate_b4_chap3_phase7b_generator_payload(skill_id, chap3_payload)
+                    if not ok_p:
+                        current_app.logger.error(
+                            "[Chap3 Phase7B] payload blocked skill=%s reason=%s", skill_id, deny_r
+                        )
+                        return jsonify(
+                            {"error": _b4_chap3_public_payload_validation_message(deny_r)}
+                        ), 422
+                    data = chap3_payload
                 else:
                     data = mod.generate(level=difficulty_level)
 
@@ -1064,6 +1147,38 @@ def check_answer():
             "correct": is_correct,
             "result": "正確！" if is_correct else f"答案錯誤。正確答案為：{correct_ans}"
         }
+        return jsonify(result)
+
+    # Phase 7B: Chap3 deterministic checker logic
+    if is_b4_chapter3_phase7b_deterministic_skill(skill_id):
+        correct_ans = str(current.get("correct_answer", current.get("answer", ""))).strip()
+        is_correct_chap3 = False
+        try:
+            if current.get("answer_type") == "integer":
+                is_correct_chap3 = check_integer_answer(user_ans, int(correct_ans))
+            else:
+                if "/" in correct_ans:
+                    num_str, den_str = correct_ans.split("/", 1)
+                    exp_num, exp_den = int(num_str), int(den_str)
+                else:
+                    exp_num, exp_den = int(correct_ans), 1
+                is_correct_chap3 = check_rational_answer(
+                    user_ans, exp_num, exp_den,
+                    allow_decimal=True, allow_percentage=True,
+                    validate_probability_range=False,
+                )
+        except Exception as _err:
+            current_app.logger.warning("[Chap3 Phase7B] check_answer error skill=%s err=%s", skill_id, _err)
+            is_correct_chap3 = False
+            
+        result = {
+            "correct": is_correct_chap3,
+            "result": "正確！" if is_correct_chap3 else f"答案錯誤。正確答案為：{correct_ans}",
+        }
+        try:
+            update_progress(current_user.id, skill_id, is_correct_chap3)
+        except Exception:
+            pass
         return jsonify(result)
 
     # Phase 6C-1R2: deterministic Chap2 BEFORE legacy skills.<id> import (get_skill loads module).

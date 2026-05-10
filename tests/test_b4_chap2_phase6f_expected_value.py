@@ -186,14 +186,16 @@ class TestRouterAllowlistBoundary:
         for pid in ("sample_space_listing", "event_set_listing", "subset_listing"):
             assert is_b4_chapter2_excluded_problem_type(pid) is True
 
-    def test_applications_legacy_expectation_still_blocked(self):
+    def test_applications_legacy_expectation_now_enabled(self):
+        # Phase 6K closure: previously-blocked Chap2 skills are now enabled.
         for sid in (
             "vh_數學B4_BasicConceptsOfSets",
             "vh_數學B4_MathematicalExpectation",
             "vh_數學B4_ApplicationsOfExpectation",
             "vh_數學B4_ProbabilityOperations",
         ):
-            assert is_b4_chapter2_skill_not_enabled_in_phase6c1(sid) is True
+            assert is_b4_chapter2_skill_not_enabled_in_phase6c1(sid) is False
+            assert is_b4_chapter2_phase6c1_deterministic_skill(sid) is True
 
     def test_expectation_definition_enabled(self):
         assert is_b4_chapter2_phase6c1_deterministic_skill(SKILL_EXP) is True
@@ -240,8 +242,15 @@ class TestRouteIntegration:
             assert check_expected_value_answer(f"{float(frac):g}", ans)
 
     def test_unsupported_skill_no_legacy_import(self, monkeypatch):
+        # Phase 6K: BasicConceptsOfSets is now enabled via deterministic
+        # generator; the legacy skills.<id> module must NOT be imported.
         _monkeypatch_forbid_legacy_skill_import(monkeypatch, "vh_數學B4_BasicConceptsOfSets")
-        assert "vh_數學B4_BasicConceptsOfSets" in B4_CHAPTER_2_NOT_ENABLED_PHASE6C1_SKILL_IDS
+        p = generate_for_chap2_skill(
+            skill_id="vh_數學B4_BasicConceptsOfSets",
+            seed=44,
+        )
+        assert p["skill_id"] == "vh_數學B4_BasicConceptsOfSets"
+        assert "vh_數學B4_BasicConceptsOfSets" not in B4_CHAPTER_2_NOT_ENABLED_PHASE6C1_SKILL_IDS
 
 
 class TestRegressions:

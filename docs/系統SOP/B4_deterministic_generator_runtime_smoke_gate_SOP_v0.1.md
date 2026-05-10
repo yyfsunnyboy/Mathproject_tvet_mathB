@@ -236,6 +236,99 @@ runtime 或 UI 應能區分下列三類，避免混用為「系統錯誤」：
 - **不出現**過期或內部 phase 名稱
 - **不出現** raw traceback 或將 URL 編碼串直接貼給使用者
 
+## 8.2 Adaptive Practice Chapter Mode Entry and UI State Contract
+
+### 8.2.1 Chapter mode entry link must be verified
+
+若某章節已完成 deterministic runtime-ready coverage，dashboard / curriculum view 的「單元練習」連結必須導向 chapter mode：
+
+`/adaptive_practice?mode=chapter&curriculum=vocational&volume=數學B4&chapter_id=<chapter_id>&learning_mode=teaching&practice_kind=unit_practice`
+
+不得導向：
+
+`/adaptive_practice?mode=single&skill_ids=<chapter label>`
+
+例如 Chap2「2 機率」應導向：
+
+`/adaptive_practice?mode=chapter&curriculum=vocational&volume=數學B4&chapter_id=2&learning_mode=teaching&practice_kind=unit_practice`
+
+### 8.2.2 Start diagnosis must not be silent no-op
+
+adaptive_practice chapter mode 按「開始診斷」後，必須驗證：
+
+- 可產生第一題
+- 題目屬於該章 deterministic allowlist / diagnostic sequence
+- 可送答案
+- 可批改
+- 可進下一題
+- 若失敗，必須顯示 friendly error，不得 silent no-op
+
+### 8.2.3 UI state must update, not only question flow
+
+runtime smoke 不得只驗證「有題目」。
+還必須確認前端 UI state 有更新：
+
+- step_number / completed_steps
+- total_steps
+- progress_percent
+- display_mastery_percent 或本次診斷顯示用 mastery
+- current_stage / current_skill
+- next_skill / next_problem_type
+- session_correct_count
+- session_attempt_count
+- session_correct_rate
+- trajectory_points 或等價動態軌跡資料
+
+若此階段尚未接正式 mastery / APR，必須明確區分：
+
+- display_mastery_percent：session-local UI display only
+- formal mastery / APR：不得被本階段修改，除非另有 scoring policy phase 核准
+
+### 8.2.4 Chapter mode should reuse existing chapter pattern
+
+新增章節接入 adaptive_practice 時，應優先沿用已存在的 chapter mode pattern，例如 Chap1：
+
+- chapter mode bootstrap
+- curriculum / volume / chapter_id parsing
+- chapter-specific allowlist / resolver
+- diagnostic sequence
+- get_next_question / check_answer integration
+- audit logging
+
+不得為每章重寫一套完全平行的 adaptive engine。
+
+### 8.2.5 Runtime smoke gate must include chapter mode checks
+
+每個章節接入 adaptive_practice chapter mode 時，manual smoke / automated tests 至少包含：
+
+1. dashboard 單元練習連結正確
+2. chapter mode URL 可進入
+3. 開始診斷有第一題
+4. 答題後可批改
+5. 可進下一題
+6. progress / mastery display 不停在 0%
+7. trajectory / roadmap 有更新
+8. 不出現 silent no-op
+9. 不出現 JS uncaught error
+10. 不破壞既有章節 chapter mode
+11. 不修改正式 mastery / APR / remediation，除非本 phase 明確允許
+
+### 8.2.6 Completion status rule
+
+若 chapter mode 已能出題與批改，但 UI progress / trajectory / mastery display 未更新，狀態不得標為 `MANUAL_SMOKE_PASSED`。
+
+應標為：
+
+`NEEDS_UI_STATE_REPAIR`
+
+## 8.3 Runtime-Ready 定義與階段性驗收
+
+不是「能出題、能批改」就算 runtime-ready。一個 skill 要達到 runtime-ready 必須滿足以下三大原則：
+
+1. **Skill-level textbook coverage（確實盤點題型覆蓋度）**：該 skill 在資料庫題庫與課本 evidence 中出現過的主要題型，都必須被確實盤點並納入 generator 實作範圍。
+2. **Automated scenario diversity check（自動化多樣性防護）**：generator 必須具備實質的題幹與情境變化，不能只換數字。且必須透過自動化測試 (automated tests) 驗證多 seed 下的 scenario 多樣性，不能依賴 manual smoke 去抓「題型太單調」的問題。
+3. **Chapter-level manual smoke（推遲人工驗收時機）**：不再於單一或少數技能完成時就要求 manual smoke。必須等「該章節的全部技能」都完成 runtime-ready 後，才進行少量的最終人工驗收（Chapter-level manual smoke），以降低反覆測試成本。
+
 ## 9. 測試要求
 
 每個 deterministic implementation phase 必須包含：
@@ -295,6 +388,8 @@ runtime 或 UI 應能區分下列三類，避免混用為「系統錯誤」：
 - v0.1：由 Chap2 Phase 6C-1 / 6C-1R / 6C-1R2 經驗整理而成，補強 runtime smoke gate、URL decode、legacy fallback guard、handwriting reserved guard。
 - v0.1.1：加入 Section 6.1 frontend double-encoding guard，源自 Chap2 Phase 6C-2R manual smoke regression（2026-05-08）。
 - v0.1.2：新增 Section 8.1 Skill Availability / Not-Enabled UX Rule，要求未開放 skill 回傳中性 clear error，不得顯示過期 phase 名稱、legacy import error、encoded／double-encoded skill_id，並要求 UI／smoke 區分 enabled／not-yet-enabled／reserved 三種狀態。
+- v0.1.3：新增 Adaptive Practice Chapter Mode Entry and UI State Contract。要求章節單元練習連結必須使用 chapter mode，開始診斷不得 silent no-op，且 runtime smoke 必須驗證 progress / display mastery / trajectory / session state 更新；若只出題但 UI 狀態不更新，應標記 NEEDS_UI_STATE_REPAIR。
+- v0.1.5：新增 Section 8.3 Runtime-Ready 定義與階段性驗收。明確定義 runtime-ready 必須包含 skill-level textbook coverage 與 automated scenario diversity check，並將 manual smoke 的執行時機延後至 chapter-level 全部技能完成後。
 
 ## 6.1 Frontend Double-Encoding Guard（v0.1.1 追加）
 

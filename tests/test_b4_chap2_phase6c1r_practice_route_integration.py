@@ -86,9 +86,9 @@ class TestChap2SkillBypass:
         assert is_b4_chapter2_phase6c1_deterministic_skill(skill_id)
 
     @pytest.mark.parametrize("skill_id", [
-        "vh_數學B4_BasicConceptsOfSets",       # NOT in Phase 6C-1
-        "vh_數學B4_ConditionalProbability",
-        "vh_數學B4_IndependentEvents",
+        # Phase 6K closure: BasicConceptsOfSets, ConditionalProbability,
+        # and IndependentEvents are now all in the Chap2 deterministic
+        # allowlist. The IDs below remain truly non-Chap2-P0 skills.
         "vh_數學B4_AdditionPrinciple",          # Chap1 skill
         "remainder",
         "",
@@ -121,12 +121,14 @@ class TestChap2SkillBypass:
         )
         assert not is_b4_chapter2_excluded_problem_type(problem_type)
 
-    def test_basic_concepts_of_sets_not_in_allowlist(self) -> None:
-        """BasicConceptsOfSets must remain blocked (Phase 6C-1R scope excludes it)."""
+    def test_basic_concepts_of_sets_now_enabled(self) -> None:
+        """Phase 6K closure: BasicConceptsOfSets is now in the Chap2 deterministic allowlist."""
         from core.vocational_math_b4.adaptive.b4_chapter2_phase6c1_allowlist import (
             is_b4_chapter2_phase6c1_deterministic_skill,
         )
-        assert not is_b4_chapter2_phase6c1_deterministic_skill("vh_數學B4_BasicConceptsOfSets")
+        assert is_b4_chapter2_phase6c1_deterministic_skill(
+            "vh_數學B4_BasicConceptsOfSets"
+        ) is True
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -171,9 +173,11 @@ class TestChap2RouteGeneratorSmoke:
         assert p2.get("answer_type") == "rational_fraction"
 
     def test_unsupported_skill_raises(self):
+        # Phase 6K: BasicConceptsOfSets is now enabled via deterministic generator.
+        # Use a placeholder skill id that is genuinely unregistered.
         from core.vocational_math_b4.services.question_router import generate_for_chap2_skill
         with pytest.raises(ValueError, match="unsupported skill_id"):
-            generate_for_chap2_skill(skill_id="vh_數學B4_BasicConceptsOfSets")
+            generate_for_chap2_skill(skill_id="vh_數學B4_NotARealChap2Skill")
 
 
 # ═══════════════════════════════════════════════════════════════════════════════

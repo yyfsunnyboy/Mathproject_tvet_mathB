@@ -432,6 +432,14 @@ from core.vocational_math_b4.generators import chap2_probability_basic as _chap2
 from core.vocational_math_b4.generators import chap2_conditional_probability as _chap2_cond
 from core.vocational_math_b4.generators import chap2_independent_events as _chap2_indep
 from core.vocational_math_b4.generators import chap2_expected_value as _chap2_exp
+# Phase 6K: Chap2 remaining deterministic skill coverage
+from core.vocational_math_b4.generators import chap2_probability_operations as _chap2_prob_ops
+from core.vocational_math_b4.generators import chap2_basic_sets as _chap2_basic_sets
+from core.vocational_math_b4.generators import chap2_expectation_extensions as _chap2_exp_ext
+
+# Phase 7B: Chap3 First Deterministic Runtime-ready Batch
+from core.vocational_math_b4.generators import chap3_statistical_measures as _chap3_stat
+
 
 
 _CHAP2_PHASE6C1_REGISTRY: dict[str, list[dict[str, object]]] = {
@@ -518,6 +526,51 @@ _CHAP2_PHASE6C1_REGISTRY: dict[str, list[dict[str, object]]] = {
             "generator_fn": _chap2_exp.expectation_from_distribution,
         },
     ],
+    # Phase 6K: Chap2 remaining deterministic skill coverage
+    "vh_數學B4_ProbabilityOperations": [
+        {
+            "subskill_id": "b4_ch2_prob_ops_event_op_01",
+            "problem_type_id": "event_operation_probability",
+            "generator_key": "b4.chap2.event_operation_probability",
+            "generator_fn": _chap2_prob_ops.event_operation_probability,
+        },
+        {
+            "subskill_id": "b4_ch2_prob_ops_algebra_mixed_01",
+            "problem_type_id": "probability_algebra_mixed",
+            "generator_key": "b4.chap2.probability_algebra_mixed",
+            "generator_fn": _chap2_prob_ops.probability_algebra_mixed,
+        },
+    ],
+    "vh_數學B4_BasicConceptsOfSets": [
+        {
+            "subskill_id": "b4_ch2_basic_sets_op_count_01",
+            "problem_type_id": "set_operation_count",
+            "generator_key": "b4.chap2.set_operation_count",
+            "generator_fn": _chap2_basic_sets.set_operation_count,
+        },
+        {
+            "subskill_id": "b4_ch2_basic_sets_inex_count_01",
+            "problem_type_id": "inclusion_exclusion_count",
+            "generator_key": "b4.chap2.inclusion_exclusion_count",
+            "generator_fn": _chap2_basic_sets.inclusion_exclusion_count,
+        },
+    ],
+    "vh_數學B4_ApplicationsOfExpectation": [
+        {
+            "subskill_id": "b4_ch2_app_exp_lottery_01",
+            "problem_type_id": "expectation_word_problem_profit_fairness",
+            "generator_key": "b4.chap2.expectation_word_problem_profit_fairness",
+            "generator_fn": _chap2_exp_ext.expectation_word_problem_profit_fairness,
+        },
+    ],
+    "vh_數學B4_MathematicalExpectation": [
+        {
+            "subskill_id": "b4_ch2_math_exp_assess_numeric_01",
+            "problem_type_id": "expectation_assessment_numeric",
+            "generator_key": "b4.chap2.expectation_assessment_numeric",
+            "generator_fn": _chap2_exp_ext.expectation_assessment_numeric,
+        },
+    ],
 }
 
 
@@ -530,7 +583,7 @@ def generate_for_chap2_skill(
     multiple_choice: bool = True,
     problem_type_id: str | None = None,
 ) -> dict:
-    """Generate a payload for a supported B4 Chapter 2 skill (Phase 6C through 6F).
+    """Generate a payload for a supported B4 Chapter 2 skill (Phase 6C through 6K).
 
     Supported skills and problem types:
       Phase 6C-1:
@@ -549,9 +602,16 @@ def generate_for_chap2_skill(
       Phase 6F:
         - vh_數學B4_MathematicalExpectationDefinition → expectation_discrete_basic
         - vh_數學B4_MathematicalExpectationDefinition → expectation_from_distribution
+      Phase 6K (remaining deterministic skill coverage):
+        - vh_數學B4_ProbabilityOperations   → event_operation_probability
+        - vh_數學B4_ProbabilityOperations   → probability_algebra_mixed
+        - vh_數學B4_BasicConceptsOfSets     → set_operation_count
+        - vh_數學B4_BasicConceptsOfSets     → inclusion_exclusion_count
+        - vh_數學B4_ApplicationsOfExpectation → expectation_word_problem_profit_fairness
+        - vh_數學B4_MathematicalExpectation   → expectation_assessment_numeric
 
     Handwriting listing types (sample_space_listing, event_set_listing,
-    subset_listing) are intentionally NOT registered.
+    subset_listing, tree_diagram_listing) are intentionally NOT registered.
 
     If problem_type_id is specified, only that entry is selected.
     Raises ValueError for unsupported skill_ids or problem_type_ids.
@@ -611,3 +671,160 @@ def generate_for_chap2_skill(
             f"generate_for_chap2_skill: payload missing required keys: {', '.join(missing)}"
         )
     return payload
+
+
+# ─── Phase 7B: Chap3 Statistical Measures ────────────
+#
+# Isolated from Chap1 and Chap2 registries.
+
+_CHAP3_PHASE7B_REGISTRY: dict[str, list[dict[str, object]]] = {
+    "vh_數學B4_CentralTendencyMeasures": [
+        {
+            "subskill_id": "b4_ch3_mean_basic_01",
+            "problem_type_id": "mean_basic_numeric",
+            "generator_key": "b4.chap3.mean_basic_numeric",
+            "generator_fn": _chap3_stat.mean_basic_numeric,
+        },
+        {
+            "subskill_id": "b4_ch3_median_basic_01",
+            "problem_type_id": "median_basic_numeric",
+            "generator_key": "b4.chap3.median_basic_numeric",
+            "generator_fn": _chap3_stat.median_basic_numeric,
+        },
+        {
+            "subskill_id": "b4_ch3_mode_basic_01",
+            "problem_type_id": "mode_basic_numeric",
+            "generator_key": "b4.chap3.mode_basic_numeric",
+            "generator_fn": _chap3_stat.mode_basic_numeric,
+        },
+    ],
+    "vh_數學B4_WeightedMean": [
+        {
+            "subskill_id": "b4_ch3_weighted_mean_01",
+            "problem_type_id": "weighted_mean_basic",
+            "generator_key": "b4.chap3.weighted_mean_basic",
+            "generator_fn": _chap3_stat.weighted_mean_basic,
+        },
+    ],
+    "vh_數學B4_VarianceAndStandardDeviation": [
+        {
+            "subskill_id": "b4_ch3_variance_basic_01",
+            "problem_type_id": "variance_basic_numeric",
+            "generator_key": "b4.chap3.variance_basic_numeric",
+            "generator_fn": _chap3_stat.variance_basic_numeric,
+        },
+        {
+            "subskill_id": "b4_ch3_std_dev_basic_01",
+            "problem_type_id": "standard_deviation_basic_numeric",
+            "generator_key": "b4.chap3.standard_deviation_basic_numeric",
+            "generator_fn": _chap3_stat.standard_deviation_basic_numeric,
+        },
+    ],
+    "vh_數學B4_LinearTransformationOfData": [
+        {
+            "subskill_id": "b4_ch3_linear_transform_mean_01",
+            "problem_type_id": "linear_transform_mean",
+            "generator_key": "b4.chap3.linear_transform_mean",
+            "generator_fn": _chap3_stat.linear_transform_mean,
+        },
+        {
+            "subskill_id": "b4_ch3_linear_transform_std_var_01",
+            "problem_type_id": "linear_transform_std_variance",
+            "generator_key": "b4.chap3.linear_transform_std_variance",
+            "generator_fn": _chap3_stat.linear_transform_std_variance,
+        },
+    ],
+    "vh_數學B4_DispersionMeasures": [
+        {
+            "subskill_id": "b4_ch3_dispersion_range_01",
+            "problem_type_id": "range_basic_numeric",
+            "generator_key": "b4.chap3.range_basic_numeric",
+            "generator_fn": _chap3_stat.range_basic_numeric,
+        },
+        {
+            "subskill_id": "b4_ch3_dispersion_percentile_01",
+            "problem_type_id": "percentile_basic_numeric",
+            "generator_key": "b4.chap3.percentile_basic_numeric",
+            "generator_fn": _chap3_stat.percentile_basic_numeric,
+        },
+        {
+            "subskill_id": "b4_ch3_dispersion_quartile_01",
+            "problem_type_id": "quartile_basic_numeric",
+            "generator_key": "b4.chap3.quartile_basic_numeric",
+            "generator_fn": _chap3_stat.quartile_basic_numeric,
+        },
+        {
+            "subskill_id": "b4_ch3_dispersion_iqr_01",
+            "problem_type_id": "interquartile_range_basic",
+            "generator_key": "b4.chap3.interquartile_range_basic",
+            "generator_fn": _chap3_stat.interquartile_range_basic,
+        },
+    ],
+}
+
+def generate_for_chap3_skill(
+    *,
+    skill_id: str,
+    level: int = 1,
+    seed: int | None = None,
+    seen_parameter_tuples: set[tuple] | None = None,
+    multiple_choice: bool = True,
+    problem_type_id: str | None = None,
+) -> dict:
+    """Generate a payload for a supported B4 Chapter 3 skill (Phase 7B)."""
+    if skill_id not in _CHAP3_PHASE7B_REGISTRY:
+        raise ValueError(f"generate_for_chap3_skill: unsupported skill_id '{skill_id}'.")
+
+    entries = _CHAP3_PHASE7B_REGISTRY[skill_id]
+
+    selected_entry, selection_reason = _select_entry(
+        entries, seed, problem_type_id, skill_id=skill_id
+    )
+
+    generator_fn = selected_entry.get("generator_fn")
+    if not callable(generator_fn):
+        raise ValueError("generate_for_chap3_skill: generator_key could not be resolved.")
+
+    payload = generator_fn(
+        skill_id=skill_id,
+        subskill_id=selected_entry["subskill_id"],
+        difficulty=level,
+        seed=seed,
+        seen_parameter_tuples=seen_parameter_tuples,
+        multiple_choice=multiple_choice,
+    )
+
+    payload["correct_answer"] = payload["answer"]
+    payload["router_trace"] = {
+        "input_skill_id": skill_id,
+        "selected_subskill_id": selected_entry["subskill_id"],
+        "selected_problem_type_id": selected_entry["problem_type_id"],
+        "selected_generator_key": selected_entry["generator_key"],
+        "selection_reason": selection_reason,
+        "router": "chap3_phase7b",
+    }
+
+    required_keys = [
+        "question_text",
+        "answer",
+        "correct_answer",
+        "choices",
+        "explanation",
+        "skill_id",
+        "subskill_id",
+        "problem_type_id",
+        "generator_key",
+        "difficulty",
+        "diagnosis_tags",
+        "remediation_candidates",
+        "source_style_refs",
+        "parameters",
+        "router_trace",
+    ]
+    missing = [key for key in required_keys if key not in payload]
+    if missing:
+        raise ValueError(
+            f"generate_for_chap3_skill: payload missing required keys: {', '.join(missing)}"
+        )
+    return payload
+

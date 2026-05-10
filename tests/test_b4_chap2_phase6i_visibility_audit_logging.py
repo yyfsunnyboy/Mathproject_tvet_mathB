@@ -16,7 +16,6 @@ from models import (
     AdaptiveLearningLog,
 )
 from core.routes.practice import (
-    B4_CHAP2_SKILL_NOT_ENABLED_PUBLIC_ERROR,
     B4_CHAP2_RESERVED_PROBLEM_TYPE_PUBLIC_ERROR,
 )
 from core.vocational_math_b4.services.b4_chap2_visibility_audit import (
@@ -108,27 +107,42 @@ class TestChap2AnswerAuditRows:
 
 class TestGatedAuditRows:
     def test_not_enabled_skill_logged(self, logged_client) -> None:
+        # Phase 6K closure: BasicConceptsOfSets is now enabled via deterministic
+        # generator; the not-enabled gated audit path is no longer triggered for
+        # this skill. Assert the inverted state: route returns 200 with NO new
+        # gated `not_enabled_skill` row, and progress / APR remain untouched
+        # (visibility-only mode preserved).
         client, uid = logged_client
         with client.application.app_context():
-            n0 = db.session.query(B4Chap2VisibilityAuditLog).count()
+            gated_n0 = (
+                db.session.query(B4Chap2VisibilityAuditLog)
+                .filter_by(record_kind="gated", gated_event_type="not_enabled_skill")
+                .count()
+            )
             prog_n0 = db.session.query(Progress).filter_by(user_id=uid).count()
             apr_n0 = db.session.query(AdaptiveLearningLog).filter_by(student_id=uid).count()
 
-        r = client.get("/get_next_question?skill=vh_數學B4_BasicConceptsOfSets&level=1")
-        assert r.status_code == 422
-        assert r.get_json().get("error") == B4_CHAP2_SKILL_NOT_ENABLED_PUBLIC_ERROR
+        r = client.get(
+            "/get_next_question?skill=vh_數學B4_BasicConceptsOfSets&gen_seed=29&level=1"
+        )
+        assert r.status_code == 200, r.get_data(as_text=True)
+        body = r.get_json() or {}
+        assert body.get("new_question_text")
 
         with client.application.app_context():
-            assert db.session.query(B4Chap2VisibilityAuditLog).count() == n0 + 1
-            row = _latest_audit()
-            assert row.record_kind == "gated"
-            assert row.gated_event_type == "not_enabled_skill"
-            assert row.skill_id == "vh_數學B4_BasicConceptsOfSets"
-            assert row.is_correct is None
-            assert row.checker_name is None
-            assert row.public_message == B4_CHAP2_SKILL_NOT_ENABLED_PUBLIC_ERROR
+            assert (
+                db.session.query(B4Chap2VisibilityAuditLog)
+                .filter_by(record_kind="gated", gated_event_type="not_enabled_skill")
+                .count()
+                == gated_n0
+            )
             assert db.session.query(Progress).filter_by(user_id=uid).count() == prog_n0
-            assert db.session.query(AdaptiveLearningLog).filter_by(student_id=uid).count() == apr_n0
+            assert (
+                db.session.query(AdaptiveLearningLog)
+                .filter_by(student_id=uid)
+                .count()
+                == apr_n0
+            )
 
     def test_reserved_listing_logged(self, logged_client) -> None:
         client, uid = logged_client

@@ -44,12 +44,16 @@ SKILL_DEF  = "vh_數學B4_ProbabilityDefinition"
 SKILL_PROP = "vh_數學B4_ProbabilityProperties"
 SKILL_SSE  = "vh_數學B4_SampleSpaceAndEvents"
 
-STILL_BLOCKED = [
+# Phase 6K closure: Chap2's not-enabled set is now empty (all 4 historically
+# blocked skills opened via deterministic generators). Kept for inverted
+# parametrization below.
+HISTORICALLY_BLOCKED = [
     "vh_數學B4_BasicConceptsOfSets",
     "vh_數學B4_ProbabilityOperations",
     "vh_數學B4_ApplicationsOfExpectation",
     "vh_數學B4_MathematicalExpectation",
 ]
+STILL_BLOCKED: list[str] = []
 
 
 # ═══ helpers ════════════════════════════════════════════════════════════════
@@ -284,8 +288,10 @@ class TestRouterPhase6D:
         assert len(seen_types) == 2
 
     def test_router_raises_for_unsupported_skill(self):
+        # Phase 6K: ProbabilityOperations is now enabled. Use a placeholder
+        # skill id that is genuinely outside any registered Chap2 mapping.
         with pytest.raises(ValueError, match="unsupported skill_id"):
-            generate_for_chap2_skill(skill_id="vh_數學B4_ProbabilityOperations")
+            generate_for_chap2_skill(skill_id="vh_數學B4_NotARealChap2Skill")
 
     def test_router_raises_for_unsupported_pid(self):
         with pytest.raises(ValueError):
@@ -375,9 +381,11 @@ class TestFrontendDoubleEncoding:
 
 class TestNotEnabledGuard:
 
-    @pytest.mark.parametrize("skill_id", STILL_BLOCKED)
-    def test_still_blocked_skills(self, skill_id):
-        assert is_b4_chapter2_skill_not_enabled_in_phase6c1(skill_id) is True
+    @pytest.mark.parametrize("skill_id", HISTORICALLY_BLOCKED)
+    def test_historically_blocked_skills_now_enabled(self, skill_id):
+        # Phase 6K: previously-blocked skills are no longer in the not-enabled set.
+        assert is_b4_chapter2_skill_not_enabled_in_phase6c1(skill_id) is False
+        assert is_b4_chapter2_phase6c1_deterministic_skill(skill_id) is True
 
     def test_conditional_probability_no_longer_blocked(self):
         assert is_b4_chapter2_skill_not_enabled_in_phase6c1(SKILL_COND) is False
@@ -385,16 +393,20 @@ class TestNotEnabledGuard:
     def test_conditional_probability_in_allowlist(self):
         assert is_b4_chapter2_phase6c1_deterministic_skill(SKILL_COND) is True
 
-    @pytest.mark.parametrize("skill_id", STILL_BLOCKED)
-    def test_blocked_skill_raises_in_router(self, skill_id):
-        with pytest.raises(ValueError, match="unsupported skill_id"):
-            generate_for_chap2_skill(skill_id=skill_id)
+    @pytest.mark.parametrize("skill_id", HISTORICALLY_BLOCKED)
+    def test_historically_blocked_skill_now_generates(self, skill_id):
+        # Phase 6K: router must successfully generate; no ValueError raised.
+        p = generate_for_chap2_skill(skill_id=skill_id, seed=21)
+        assert p["skill_id"] == skill_id
+        assert p["question_text"].strip()
 
-    def test_allowlist_size_is_6(self):
-        assert len(B4_CHAPTER_2_PHASE6C1_ADAPTIVE_SKILL_ALLOWLIST) == 6
+    def test_allowlist_size_is_10(self):
+        # Phase 6K closure: 6 prior + 4 newly opened = 10.
+        assert len(B4_CHAPTER_2_PHASE6C1_ADAPTIVE_SKILL_ALLOWLIST) == 10
 
-    def test_not_enabled_size_is_4(self):
-        assert len(B4_CHAPTER_2_NOT_ENABLED_PHASE6C1_SKILL_IDS) == 4
+    def test_not_enabled_size_is_0(self):
+        # Phase 6K closure: Chap2 has no remaining gated runtime skills.
+        assert len(B4_CHAPTER_2_NOT_ENABLED_PHASE6C1_SKILL_IDS) == 0
 
     def test_conditional_not_in_not_enabled_set(self):
         assert SKILL_COND not in B4_CHAPTER_2_NOT_ENABLED_PHASE6C1_SKILL_IDS
@@ -405,14 +417,22 @@ class TestNotEnabledGuard:
     def test_expectation_definition_not_in_not_enabled_set(self):
         assert "vh_數學B4_MathematicalExpectationDefinition" not in B4_CHAPTER_2_NOT_ENABLED_PHASE6C1_SKILL_IDS
 
-    def test_blocked_encoded_skills_recognized_after_decode(self):
+    def test_basic_concepts_of_sets_not_in_not_enabled_set(self):
+        # Phase 6K: opened.
+        assert "vh_數學B4_BasicConceptsOfSets" not in B4_CHAPTER_2_NOT_ENABLED_PHASE6C1_SKILL_IDS
+
+    def test_historically_blocked_encoded_skills_now_enabled_after_decode(self):
         for encoded, expected in [
             ("vh_%E6%95%B8%E5%AD%B8B4_BasicConceptsOfSets",
              "vh_數學B4_BasicConceptsOfSets"),
+            ("vh_%E6%95%B8%E5%AD%B8B4_ProbabilityOperations",
+             "vh_數學B4_ProbabilityOperations"),
         ]:
             decoded = _url_unquote(encoded)
             assert decoded == expected
-            assert is_b4_chapter2_skill_not_enabled_in_phase6c1(decoded) is True
+            # Phase 6K: now enabled.
+            assert is_b4_chapter2_skill_not_enabled_in_phase6c1(decoded) is False
+            assert is_b4_chapter2_phase6c1_deterministic_skill(decoded) is True
 
 
 # ═══ G. Handwriting reserved blocked ════════════════════════════════════════
@@ -459,8 +479,9 @@ class TestPhase6CRegression:
         assert p["problem_type_id"] == pid
         assert p["skill_id"] == skill_id
 
-    def test_allowlist_has_11_problem_types(self):
-        assert len(B4_CHAPTER_2_PHASE6C1_ALLOWED_PROBLEM_TYPES) == 11
+    def test_allowlist_has_17_problem_types_after_phase6k(self):
+        # Phase 6K closure: 6C-1 (3) + 6C-2 (2) + 6D (2) + 6E (2) + 6F (2) + 6K (6) = 17.
+        assert len(B4_CHAPTER_2_PHASE6C1_ALLOWED_PROBLEM_TYPES) == 17
 
     def test_6d_types_in_allowlist(self):
         assert "conditional_probability_basic" in B4_CHAPTER_2_PHASE6C1_ALLOWED_PROBLEM_TYPES

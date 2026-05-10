@@ -468,8 +468,10 @@ class TestChap2Router:
         assert payload["router_trace"]["router"] == "chap2_phase6c1"
 
     def test_unsupported_skill_raises(self):
+        # Phase 6K: ProbabilityOperations is now enabled. Use a placeholder
+        # skill id that is not registered in any Chap2 generator.
         with pytest.raises(ValueError, match="unsupported skill_id"):
-            generate_for_chap2_skill(skill_id="vh_數學B4_ProbabilityOperations")
+            generate_for_chap2_skill(skill_id="vh_數學B4_NotARealChap2Skill")
 
     def test_chap1_skill_still_works_via_original_router(self):
         from core.vocational_math_b4.services.question_router import generate_for_skill
@@ -506,10 +508,16 @@ class TestChap2AllowlistBoundary:
             assert is_b4_chapter2_phase6c1_deterministic_skill(sid), f"{sid} should be in allowlist"
 
     def test_non_enabled_skills_not_in_allowlist(self):
+        # Phase 6K closure: vh_數學B4_MathematicalExpectation is now enabled.
+        # An unregistered placeholder must remain excluded.
         for sid in [
-            "vh_數學B4_MathematicalExpectation",
+            "vh_數學B4_NotARealChap2Skill",
         ]:
             assert not is_b4_chapter2_phase6c1_deterministic_skill(sid)
+        # Phase 6K skill IS in allowlist now.
+        assert is_b4_chapter2_phase6c1_deterministic_skill(
+            "vh_數學B4_MathematicalExpectation"
+        ) is True
 
     def test_excluded_handwriting_problem_types(self):
         for pid in ["sample_space_listing", "event_set_listing", "subset_listing"]:
@@ -537,9 +545,11 @@ class TestChap2AllowlistBoundary:
         assert "excluded_handwriting" in reason
 
     def test_validate_payload_blocks_unregistered_problem_type(self):
+        # Phase 6K: event_operation_probability is now in the allowlist.
+        # Use a placeholder pid that is genuinely not registered.
         ok, reason = validate_b4_chap2_phase6c1_generator_payload(
             "vh_數學B4_ProbabilityDefinition",
-            {"problem_type_id": "event_operation_probability"},
+            {"problem_type_id": "totally_unregistered_pid_for_test"},
         )
         assert ok is False
         assert "not_in_phase6c1_allowlist" in reason

@@ -15,7 +15,6 @@ import pytest
 from app import create_app
 from models import User, db
 from core.routes.practice import (
-    B4_CHAP2_SKILL_NOT_ENABLED_PUBLIC_ERROR,
     B4_CHAP2_RESERVED_PROBLEM_TYPE_PUBLIC_ERROR,
 )
 
@@ -138,12 +137,18 @@ class TestGetNextQuestionChap2NoLegacyImport:
 
 
 class TestGetNextQuestionChap2GatedSkills:
-    def test_basic_concepts_gate_no_legacy_import(self, logged_client, monkeypatch) -> None:
+    def test_basic_concepts_now_enabled_no_legacy_import(self, logged_client, monkeypatch) -> None:
+        # Phase 6K: BasicConceptsOfSets is now enabled via deterministic
+        # generator. The route must return 200 AND must NOT import the
+        # legacy ``skills.vh_數學B4_BasicConceptsOfSets`` module path.
         _monkeypatch_forbid_basic_concepts(monkeypatch)
-        r = logged_client.get("/get_next_question?skill=vh_數學B4_BasicConceptsOfSets")
-        assert r.status_code == 422
-        body = r.get_json()
-        assert body.get("error") == B4_CHAP2_SKILL_NOT_ENABLED_PUBLIC_ERROR
+        r = logged_client.get(
+            "/get_next_question?skill=vh_數學B4_BasicConceptsOfSets&gen_seed=37&level=1"
+        )
+        assert r.status_code == 200, r.get_data(as_text=True)
+        body = r.get_json() or {}
+        assert body.get("new_question_text")
+        assert body.get("problem_type_id")
         raw = r.get_data(as_text=True)
         assert "No module named" not in raw
 

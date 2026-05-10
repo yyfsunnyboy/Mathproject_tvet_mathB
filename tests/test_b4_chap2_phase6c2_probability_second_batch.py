@@ -347,8 +347,10 @@ class TestAllowlistBoundary:
             assert p["problem_type_id"] == pid
 
     def test_unsupported_skill_raises(self):
+        # Phase 6K: BasicConceptsOfSets is now enabled. Use a placeholder skill
+        # that is genuinely outside any registered Chap2 mapping.
         with pytest.raises(ValueError, match="unsupported skill_id"):
-            generate_for_chap2_skill(skill_id="vh_數學B4_BasicConceptsOfSets")
+            generate_for_chap2_skill(skill_id="vh_數學B4_NotARealChap2Skill")
 
     def test_conditional_probability_blocked(self):
         p = generate_for_chap2_skill(
@@ -375,8 +377,9 @@ class TestAllowlistBoundary:
         assert ok is False
         assert "excluded_handwriting" in reason
 
-    def test_allowed_set_has_eleven_types(self):
-        assert len(B4_CHAPTER_2_PHASE6C1_ALLOWED_PROBLEM_TYPES) == 11
+    def test_allowed_set_has_seventeen_types_after_phase6k(self):
+        # Phase 6C-1 (3) + 6C-2 (2) + 6D (2) + 6E (2) + 6F (2) + 6K (6) = 17.
+        assert len(B4_CHAPTER_2_PHASE6C1_ALLOWED_PROBLEM_TYPES) == 17
 
     def test_validate_passes_new_types(self):
         for sid, pid in [
@@ -388,14 +391,23 @@ class TestAllowlistBoundary:
             assert ok is True, f"Blocked: {reason}"
 
     def test_no_fallback_to_legacy_module_for_blocked_skills(self):
-        """Blocked skills must not silently import legacy skills.xxx module."""
-        for sid in [
+        """Phase 6K closure: previously-blocked Chap2 skills are now enabled via
+        deterministic generators. The not-enabled set is now empty for Chap2;
+        there is no skill that would silently fall back to a legacy
+        ``skills.<id>`` import path.
+        """
+        from core.vocational_math_b4.adaptive.b4_chapter2_phase6c1_allowlist import (
+            B4_CHAPTER_2_NOT_ENABLED_PHASE6C1_SKILL_IDS,
+            is_b4_chapter2_skill_not_enabled_in_phase6c1,
+        )
+        assert B4_CHAPTER_2_NOT_ENABLED_PHASE6C1_SKILL_IDS == frozenset()
+        for sid in (
             "vh_數學B4_BasicConceptsOfSets",
-        ]:
-            from core.vocational_math_b4.adaptive.b4_chapter2_phase6c1_allowlist import (
-                is_b4_chapter2_skill_not_enabled_in_phase6c1,
-            )
-            assert is_b4_chapter2_skill_not_enabled_in_phase6c1(sid) is True
+            "vh_數學B4_ProbabilityOperations",
+            "vh_數學B4_ApplicationsOfExpectation",
+            "vh_數學B4_MathematicalExpectation",
+        ):
+            assert is_b4_chapter2_skill_not_enabled_in_phase6c1(sid) is False
 
 
 # ═══ E. Route integration (URL decode + skill bypass) ════════════════════════

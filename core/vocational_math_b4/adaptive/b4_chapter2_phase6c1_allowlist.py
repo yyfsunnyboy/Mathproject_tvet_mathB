@@ -1,5 +1,5 @@
 """
-B4 Chapter 2 deterministic adaptive allowlist – Phase 6C-1 + 6C-2 + 6D + 6E + 6F.
+B4 Chapter 2 deterministic adaptive allowlist – Phase 6C-1 + 6C-2 + 6D + 6E + 6F + 6K.
 
 Phase 6C-1 (3 problem types):
     1. classical_probability_fraction  → vh_數學B4_ProbabilityDefinition
@@ -22,27 +22,35 @@ Phase 6F (2 additional problem types):
     10. expectation_discrete_basic                    → vh_數學B4_MathematicalExpectationDefinition
     11. expectation_from_distribution                 → vh_數學B4_MathematicalExpectationDefinition
 
+Phase 6K (6 additional problem types — remaining deterministic skill coverage):
+    12. event_operation_probability                   → vh_數學B4_ProbabilityOperations
+    13. probability_algebra_mixed                     → vh_數學B4_ProbabilityOperations
+    14. set_operation_count                           → vh_數學B4_BasicConceptsOfSets
+    15. inclusion_exclusion_count                     → vh_數學B4_BasicConceptsOfSets
+    16. expectation_word_problem_profit_fairness      → vh_數學B4_ApplicationsOfExpectation
+    17. expectation_assessment_numeric                → vh_數學B4_MathematicalExpectation
+
 Explicitly excluded (not_ready / handwriting – must NEVER enter this allowlist):
     - sample_space_listing
     - event_set_listing
     - subset_listing
+    - tree_diagram_listing
 
 Skills NOT enabled in any phase yet (no legacy fallback permitted):
-    - vh_數學B4_BasicConceptsOfSets
-    - vh_數學B4_ProbabilityOperations
-    - vh_數學B4_ApplicationsOfExpectation
-    - vh_數學B4_MathematicalExpectation
+    (After Phase 6K: empty — Chap2 has no remaining gated runtime skills.)
 
-Note: vh_數學B4_ConditionalProbability, vh_數學B4_IndependentEvents, and
-      vh_數學B4_MathematicalExpectationDefinition are ENABLED and not in
-      NOT_ENABLED_SKILL_IDS.
+Note: vh_數學B4_ConditionalProbability, vh_數學B4_IndependentEvents,
+      vh_數學B4_MathematicalExpectationDefinition (Phase 6D/6E/6F) and
+      vh_數學B4_ProbabilityOperations, vh_數學B4_BasicConceptsOfSets,
+      vh_數學B4_ApplicationsOfExpectation, vh_數學B4_MathematicalExpectation
+      (Phase 6K) are ENABLED and not in NOT_ENABLED_SKILL_IDS.
 
 Adaptive scoring / mastery / APR / remediation: NOT modified in any phase so far.
 """
 
 from __future__ import annotations
 
-# ─── Chap2 deterministic skill allowlist (6C-1 + 6C-2 + 6D + 6E + 6F) ─────────
+# ─── Chap2 deterministic skill allowlist (6C-1 + 6C-2 + 6D + 6E + 6F + 6K) ────
 
 B4_CHAPTER_2_PHASE6C1_ADAPTIVE_SKILL_ALLOWLIST: frozenset[str] = frozenset(
     {
@@ -55,10 +63,15 @@ B4_CHAPTER_2_PHASE6C1_ADAPTIVE_SKILL_ALLOWLIST: frozenset[str] = frozenset(
         "vh_數學B4_IndependentEvents",       # independent_joint_probability, independent_at_least_one_probability
         # Phase 6F:
         "vh_數學B4_MathematicalExpectationDefinition",  # expectation_discrete_basic, expectation_from_distribution
+        # Phase 6K:
+        "vh_數學B4_ProbabilityOperations",   # event_operation_probability, probability_algebra_mixed
+        "vh_數學B4_BasicConceptsOfSets",     # set_operation_count, inclusion_exclusion_count
+        "vh_數學B4_ApplicationsOfExpectation",  # expectation_word_problem_profit_fairness
+        "vh_數學B4_MathematicalExpectation",    # expectation_assessment_numeric
     }
 )
 
-# All problem types opened across Phase 6C-1, 6C-2, 6D, 6E, AND 6F
+# All problem types opened across Phase 6C-1, 6C-2, 6D, 6E, 6F, AND 6K
 B4_CHAPTER_2_PHASE6C1_ALLOWED_PROBLEM_TYPES: frozenset[str] = frozenset(
     {
         # Phase 6C-1
@@ -77,6 +90,13 @@ B4_CHAPTER_2_PHASE6C1_ALLOWED_PROBLEM_TYPES: frozenset[str] = frozenset(
         # Phase 6F
         "expectation_discrete_basic",
         "expectation_from_distribution",
+        # Phase 6K
+        "event_operation_probability",
+        "probability_algebra_mixed",
+        "set_operation_count",
+        "inclusion_exclusion_count",
+        "expectation_word_problem_profit_fairness",
+        "expectation_assessment_numeric",
     }
 )
 
@@ -87,30 +107,30 @@ B4_CHAPTER_2_EXCLUDED_DETERMINISTIC_PROBLEM_TYPES: frozenset[str] = frozenset(
         "sample_space_listing",
         "event_set_listing",
         "subset_listing",
+        "tree_diagram_listing",
     }
 )
 
 # Curriculum progression order for Chap2 skills (section order)
 B4_CHAPTER_2_PHASE6C1_CURRICULUM_PROGRESSION_ORDER: tuple[str, ...] = (
+    "vh_數學B4_BasicConceptsOfSets",       # Phase 6K (2-1 集合的基本概念)
     "vh_數學B4_SampleSpaceAndEvents",
     "vh_數學B4_ProbabilityDefinition",
     "vh_數學B4_ProbabilityProperties",
+    "vh_數學B4_ProbabilityOperations",     # Phase 6K (2-2 機率的運算)
     "vh_數學B4_ConditionalProbability",   # Phase 6D
     "vh_數學B4_IndependentEvents",       # Phase 6E
     "vh_數學B4_MathematicalExpectationDefinition",  # Phase 6F
+    "vh_數學B4_ApplicationsOfExpectation",  # Phase 6K (2-3 數學期望值的應用)
+    "vh_數學B4_MathematicalExpectation",    # Phase 6K (2-3 數學期望值 — 自評綜合)
 )
 
 # Chap2 skills that MUST NOT fallback to legacy `skills.<skill_id>` import — return a clear gate error.
-# Note: vh_數學B4_ConditionalProbability / vh_數學B4_IndependentEvents /
-#       vh_數學B4_MathematicalExpectationDefinition are NO LONGER in this set.
-B4_CHAPTER_2_NOT_ENABLED_PHASE6C1_SKILL_IDS: frozenset[str] = frozenset(
-    {
-        "vh_數學B4_BasicConceptsOfSets",
-        "vh_數學B4_ProbabilityOperations",
-        "vh_數學B4_ApplicationsOfExpectation",
-        "vh_數學B4_MathematicalExpectation",
-    }
-)
+# Phase 6K closure: this set is now EMPTY for Chap2; all four previously-gated
+# skills (BasicConceptsOfSets, ProbabilityOperations, ApplicationsOfExpectation,
+# MathematicalExpectation) are now enabled via deterministic generators.
+# The constant name is kept for backward compatibility with imports/tests.
+B4_CHAPTER_2_NOT_ENABLED_PHASE6C1_SKILL_IDS: frozenset[str] = frozenset()
 
 
 def is_b4_chapter2_skill_not_enabled_in_phase6c1(skill_id: str) -> bool:

@@ -44,20 +44,29 @@ ENCODED_DEF  = "vh_%E6%95%B8%E5%AD%B8B4_ProbabilityDefinition"
 ENCODED_PROP = "vh_%E6%95%B8%E5%AD%B8B4_ProbabilityProperties"
 ENCODED_SSE  = "vh_%E6%95%B8%E5%AD%B8B4_SampleSpaceAndEvents"
 
-# Blocked skills (Chap2 deterministic not-enabled set; must stay in sync with allowlist module)
-BLOCKED_SKILLS = [
+# Phase 6K closure: the Chap2 not-enabled set is now empty.
+# These IDs are the historical "blocked" set, kept here only so the
+# parametrized regressions below can re-assert the inverted state
+# (now enabled, no legacy fallback). Direct gating is exercised through
+# B4_CHAPTER_2_NOT_ENABLED_PHASE6C1_SKILL_IDS below.
+HISTORICALLY_BLOCKED_SKILLS = [
     "vh_數學B4_BasicConceptsOfSets",
     "vh_數學B4_ProbabilityOperations",
     "vh_數學B4_ApplicationsOfExpectation",
     "vh_數學B4_MathematicalExpectation",
 ]
 
-ENCODED_BLOCKED = {
+HISTORICALLY_ENCODED_BLOCKED = [
     "vh_%E6%95%B8%E5%AD%B8B4_BasicConceptsOfSets",
     "vh_%E6%95%B8%E5%AD%B8B4_ProbabilityOperations",
     "vh_%E6%95%B8%E5%AD%B8B4_ApplicationsOfExpectation",
     "vh_%E6%95%B8%E5%AD%B8B4_MathematicalExpectation",
-}
+]
+
+# Backward-compatible aliases retained for any downstream test references;
+# both are intentionally empty after Phase 6K opened the remaining 4 skills.
+BLOCKED_SKILLS: list[str] = []
+ENCODED_BLOCKED: set[str] = set()
 
 
 # ═══ A. URL decode round-trip (server-side) ════════════════════════════════
@@ -126,16 +135,13 @@ class TestEncodedSkillRecognized:
         assert decoded == expected_decoded
         assert is_b4_chapter2_phase6c1_deterministic_skill(decoded)
 
-    @pytest.mark.parametrize("encoded", [
-        "vh_%E6%95%B8%E5%AD%B8B4_BasicConceptsOfSets",
-        "vh_%E6%95%B8%E5%AD%B8B4_ProbabilityOperations",
-        "vh_%E6%95%B8%E5%AD%B8B4_ApplicationsOfExpectation",
-        "vh_%E6%95%B8%E5%AD%B8B4_MathematicalExpectation",
-    ])
+    @pytest.mark.parametrize("encoded", HISTORICALLY_ENCODED_BLOCKED)
     def test_decoded_blocked_skills_recognized_as_not_enabled(self, encoded):
+        # Phase 6K: the four historically-blocked Chap2 skills are now
+        # in the deterministic allowlist and no longer in the not-enabled set.
         decoded = _url_unquote(encoded)
-        assert is_b4_chapter2_skill_not_enabled_in_phase6c1(decoded)
-        assert not is_b4_chapter2_phase6c1_deterministic_skill(decoded)
+        assert is_b4_chapter2_skill_not_enabled_in_phase6c1(decoded) is False
+        assert is_b4_chapter2_phase6c1_deterministic_skill(decoded) is True
 
     def test_encoded_skill_not_directly_recognized(self):
         """Without decode, encoded skill_id must NOT pass the allowlist."""
@@ -195,34 +201,51 @@ class TestGeneratorSmoke:
 # ═══ D. Not-enabled skills gate ══════════════════════════════════════════════
 
 class TestNotEnabledGate:
-    """Simulates is_b4_chapter2_skill_not_enabled_in_phase6c1() gate in next_question()."""
+    """Phase 6K: previously-blocked Chap2 skills are now enabled via deterministic generators."""
 
-    @pytest.mark.parametrize("skill_id", BLOCKED_SKILLS)
+    @pytest.mark.parametrize("skill_id", HISTORICALLY_BLOCKED_SKILLS)
     def test_blocked_skills_recognized(self, skill_id):
-        assert is_b4_chapter2_skill_not_enabled_in_phase6c1(skill_id) is True
+        # Phase 6K: now enabled, gate must be False.
+        assert is_b4_chapter2_skill_not_enabled_in_phase6c1(skill_id) is False
+        assert is_b4_chapter2_phase6c1_deterministic_skill(skill_id) is True
 
-    @pytest.mark.parametrize("encoded", list(ENCODED_BLOCKED))
+    @pytest.mark.parametrize("encoded", HISTORICALLY_ENCODED_BLOCKED)
     def test_encoded_blocked_skills_recognized_after_decode(self, encoded):
         decoded = _url_unquote(encoded)
-        assert is_b4_chapter2_skill_not_enabled_in_phase6c1(decoded) is True
+        # Phase 6K: now enabled.
+        assert is_b4_chapter2_skill_not_enabled_in_phase6c1(decoded) is False
+        assert is_b4_chapter2_phase6c1_deterministic_skill(decoded) is True
 
     @pytest.mark.parametrize("skill_id", [SKILL_DEF, SKILL_PROP, SKILL_SSE])
     def test_p0_skills_not_blocked(self, skill_id):
         assert is_b4_chapter2_skill_not_enabled_in_phase6c1(skill_id) is False
 
-    def test_blocked_skill_raises_in_router(self):
-        for sid in BLOCKED_SKILLS:
-            with pytest.raises(ValueError, match="unsupported skill_id"):
-                generate_for_chap2_skill(skill_id=sid)
+    @pytest.mark.parametrize("skill_id", HISTORICALLY_BLOCKED_SKILLS)
+    def test_historically_blocked_skill_now_generates(self, skill_id):
+        """Phase 6K: router must successfully generate for the historically blocked skills."""
+        p = generate_for_chap2_skill(skill_id=skill_id, seed=11)
+        assert p["skill_id"] == skill_id
+        assert p["question_text"].strip()
+        assert p["answer_type"] not in ("handwriting", "ai_judged_free_response")
+
+    def test_chap2_not_enabled_set_is_empty(self):
+        from core.vocational_math_b4.adaptive.b4_chapter2_phase6c1_allowlist import (
+            B4_CHAPTER_2_NOT_ENABLED_PHASE6C1_SKILL_IDS,
+        )
+        assert B4_CHAPTER_2_NOT_ENABLED_PHASE6C1_SKILL_IDS == frozenset()
+
+    def test_truly_unsupported_skill_raises_in_router(self):
+        with pytest.raises(ValueError, match="unsupported skill_id"):
+            generate_for_chap2_skill(skill_id="vh_數學B4_NoSuchSkill")
 
     def test_error_message_uses_decoded_skill_id(self):
-        """Error message must show decoded skill_id, not encoded."""
+        """Error message must show decoded skill_id, not percent-encoded."""
         try:
-            generate_for_chap2_skill(skill_id="vh_數學B4_ConditionalProbability")
+            generate_for_chap2_skill(skill_id="vh_數學B4_NotARealSkill")
         except ValueError as e:
             err_msg = str(e)
             assert "vh_%E6%95%B8%E5%AD%B8B4" not in err_msg
-            assert "ConditionalProbability" in err_msg
+            assert "NotARealSkill" in err_msg
 
 
 # ═══ E. Excluded problem types blocked ═══════════════════════════════════════
@@ -357,7 +380,8 @@ class TestChap1Regression:
 
 class TestAllowlistIntegrity:
     def test_mainline_problem_types_count(self):
-        assert len(B4_CHAPTER_2_PHASE6C1_ALLOWED_PROBLEM_TYPES) == 11
+        # Phase 6K closure: 6C-1 (3) + 6C-2 (2) + 6D (2) + 6E (2) + 6F (2) + 6K (6) = 17.
+        assert len(B4_CHAPTER_2_PHASE6C1_ALLOWED_PROBLEM_TYPES) == 17
 
     def test_6c1_types_present(self):
         for pid in ["classical_probability_fraction",

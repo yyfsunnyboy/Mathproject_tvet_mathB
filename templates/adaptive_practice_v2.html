@@ -825,11 +825,18 @@
       && String(adaptiveVolume || "") === "數學B4"
       && String(adaptiveChapterId || "") === "1"
     );
-    const runtimeMode = isB4Chapter1Mode ? "teaching" : adaptiveEntryMode;
+    // Phase 6N: B4 Chapter 2 chapter mode
+    const isB4Chapter2Mode = (
+      String(adaptiveEntryMode || "").toLowerCase() === "chapter"
+      && String(adaptiveCurriculum || "").toLowerCase() === "vocational"
+      && String(adaptiveVolume || "") === "數學B4"
+      && String(adaptiveChapterId || "") === "2"
+    );
+    const runtimeMode = (isB4Chapter1Mode || isB4Chapter2Mode) ? "teaching" : adaptiveEntryMode;
     const initialSkillId = starterSkillId || skillId;
     if (initialSkillId) basePayload.skill_id = initialSkillId;
     if (runtimeMode) basePayload.mode = runtimeMode;
-    if (isB4Chapter1Mode) basePayload.entry_mode = "chapter";
+    if (isB4Chapter1Mode || isB4Chapter2Mode) basePayload.entry_mode = "chapter";
     if (adaptiveLearningMode) basePayload.learning_mode = adaptiveLearningMode;
     if (adaptivePracticeKind) basePayload.practice_kind = adaptivePracticeKind;
     if (adaptiveCurriculum) basePayload.curriculum = adaptiveCurriculum;
@@ -1538,6 +1545,46 @@
         return;
       }
 
+      // Phase 6N-S/T: B4 Chapter 2 chapter mode — session-local diagnostic progress + remediation
+      if (isB4Chapter2Mode) {
+        const totalSteps = Number(state.chap2TotalSteps || 10);
+        const currentStep = Number(state.stepNumber || 0);
+        const masteryPct = Number(state.chap2DisplayMasteryPercent || 0);
+        const stageName = String(state.chap2StageLabel || "待判定");
+        const nextSkill = String(state.chap2NextSkillId || "");
+        const progressPct = (currentStep / totalSteps * 100).toFixed(1);
+        const completedLike = Boolean(state.unitCompleted || state.isCompleted);
+        const inRemediation = Boolean(state.chap2InRemediation);
+        const returnReady = Boolean(state.chap2ReturnReady);
+        const hasReturnedToMain = Boolean(state.chap2HasReturnedToMain);
+        const failStreak = Number(state.chap2LocalFailStreak || 0);
+        let msg;
+        if (completedLike) {
+          msg = `📍 診斷進度：100.0%（${totalSteps} / ${totalSteps} 題）`;
+          msg += `\n\n目前位置：第二章診斷完成`;
+          msg += `\n掌握度：${masteryPct}%`;
+        } else if (inRemediation) {
+          msg = `📍 診斷進度：${progressPct}%（主線暫停）`;
+          msg += `\n\n⚠ 近側發展區補救中：${stageName}`;
+          msg += `\n掌握度：${masteryPct}%`;
+          if (failStreak > 0) msg += `\n（連續答錯 ${failStreak} 題）`;
+        } else if (hasReturnedToMain) {
+          msg = `📍 診斷進度：${progressPct}%（${currentStep} / ${totalSteps} 題）`;
+          msg += `\n\n✅ 補救完成，返回主線：${stageName}`;
+          msg += `\n掌握度：${masteryPct}%`;
+        } else {
+          msg = `📍 診斷進度：${progressPct}%（${currentStep} / ${totalSteps} 題）`;
+          msg += `\n\n目前位置：${stageName}`;
+          if (nextSkill) {
+            msg += `\n下一站：${nextSkill}`;
+          }
+          msg += `\n掌握度：${masteryPct}%`;
+        }
+        setTextWithFlash(boxId, msg);
+        updateNavProgressBarFromText(msg);
+        return;
+      }
+
       const total = POLY_MAINLINE_SEQUENCE.length;
       const currentCode = getMainlineAnchorFamilyCode();
       const currentIndexRaw = POLY_MAINLINE_SEQUENCE.indexOf(currentCode);
@@ -2132,6 +2179,35 @@
       state.currentApr = response.current_apr;
       state.ppoStrategy = response.ppo_strategy;
       state.frustrationIndex = response.frustration_index;
+      // Phase 6N-S/T: save Chap2 session-local UI state (display only, no formal mastery)
+      if (isB4Chapter2Mode) {
+        state.chap2TotalSteps = Number(response.total_steps || 10);
+        state.chap2CompletedSteps = Number(response.completed_steps || 0);
+        state.chap2StageLabel = String(response.current_stage_label || response.chapter_stage_label || "");
+        state.chap2NextSkillId = String(response.next_skill_id || "");
+        state.chap2NextProblemTypeId = String(response.next_problem_type_id || "");
+        state.chap2DisplayMasteryPercent = Number(response.display_mastery_percent || 0);
+        state.chap2CorrectCount = Number(response.session_correct_count || 0);
+        state.chap2AttemptCount = Number(response.session_attempt_count || 0);
+        // Phase 6N-T: remediation state
+        state.chap2InRemediation = Boolean(response.in_remediation);
+        state.chap2ReturnReady = Boolean(response.return_ready);
+        state.chap2HasReturnedToMain = Boolean(response.has_returned_to_main);
+        state.chap2LocalFailStreak = Number(response.session_local_fail_streak || 0);
+        state.chap2CurrentStrategy = String(response.current_strategy || "主線診斷");
+        state.chap2RemediationReason = String(response.remediation_reason || "");
+        if (response.in_remediation) {
+          state.isRemediationActive = true;
+          state.displayMode = "remediation";
+        } else if (response.has_returned_to_main) {
+          state.isRemediationActive = false;
+          state.displayMode = "mainline";
+          state.hasReturnedToMain = true;
+        } else {
+          state.isRemediationActive = false;
+          state.displayMode = "mainline";
+        }
+      }
       state.selectedFamilyForRender = String(
         response?.selected_family_for_render
         || response?.selected_family
@@ -2663,7 +2739,17 @@
           bootstrapPayload.learning_mode = "main";
           if (!bootstrapPayload.practice_kind) bootstrapPayload.practice_kind = "unit_practice";
         }
-        if (!isB4Chapter1Mode && Array.isArray(bootstrapUnitSkillIds) && bootstrapUnitSkillIds.length) {
+        // Phase 6N: B4 Chapter 2 bootstrap
+        if (isB4Chapter2Mode) {
+          if (Array.isArray(unitSkillIds) && unitSkillIds.length) {
+            bootstrapPayload.unit_skill_ids = unitSkillIds;
+          }
+          if (starterSkillId) bootstrapPayload.starter_skill_id = starterSkillId;
+          bootstrapPayload.learning_mode = "main";
+          if (!bootstrapPayload.practice_kind) bootstrapPayload.practice_kind = "unit_practice";
+          console.log("[Phase6N] B4 Chapter 2 chapter mode bootstrap", bootstrapPayload);
+        }
+        if (!isB4Chapter1Mode && !isB4Chapter2Mode && Array.isArray(bootstrapUnitSkillIds) && bootstrapUnitSkillIds.length) {
           bootstrapPayload.unit_skill_ids = bootstrapUnitSkillIds;
         }
         console.log("[Phase5B-FixB] start diagnosis payload", bootstrapPayload);

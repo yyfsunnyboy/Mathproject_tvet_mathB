@@ -12,6 +12,11 @@ from core.adaptive.session_engine import get_rag_hint, submit_and_get_next
 from core.vocational_math_b4.adaptive.b4_chapter1_deterministic_allowlist import (
     ordered_b4_chapter1_skills,
 )
+# Phase 6N: B4 Chapter 2 chapter-mode handler
+from core.vocational_math_b4.services.b4_chap2_chapter_mode import (
+    build_b4_chap2_chapter_response,
+    build_b4_chap2_chapter_runtime_store_entry,
+)
 
 
 _MAX_RUNTIME_SESSIONS = 2
@@ -283,6 +288,14 @@ def adaptive_submit_and_get_next():
         raw_step_number = _to_int(payload.get("step_number"), 0)
         raw_session_id = str(payload.get("session_id") or "").strip()
         b4_chapter1_hit = raw_chapter_id == "1" or raw_chapter_name.startswith("1 排列組合")
+        # Phase 6N: B4 Chapter 2 chapter-mode detection
+        b4_chapter2_hit = raw_chapter_id == "2" or raw_chapter_name.startswith("2 機率")
+        is_b4_chapter2_entry = (
+            (raw_entry_mode == "chapter" or raw_mode == "chapter")
+            and raw_curriculum == "vocational"
+            and raw_volume == "數學B4"
+            and b4_chapter2_hit
+        )
 
         is_b4_chapter_entry = (
             (raw_entry_mode == "chapter" or raw_mode == "chapter")
@@ -355,6 +368,40 @@ def adaptive_submit_and_get_next():
         runtime = runtime_store.get(session_id, {}) if session_id else {}
 
         grading_analysis = None
+
+        # ── Phase 6N: B4 Chapter 2 chapter mode — lightweight deterministic handler ──
+        if is_b4_chapter2_entry:
+            response = build_b4_chap2_chapter_response(payload, runtime=runtime)
+            grading_analysis = response.get("grading_analysis")
+            if grading_analysis is not None:
+                # grading_analysis already embedded in response; also surface at top level
+                response["grading_analysis"] = grading_analysis
+            next_session_id = response["session_id"]
+            chap2_step_index = int(response.get("chapter_current_step") or 0)
+            if response.get("completed"):
+                runtime_store.pop(next_session_id, None)
+            else:
+                runtime_store[next_session_id] = build_b4_chap2_chapter_runtime_store_entry(
+                    response, chap2_step_index
+                )
+                runtime_store = _prune_runtime_store(runtime_store, current_session_id=next_session_id)
+            session["adaptive_runtime"] = runtime_store
+            session.modified = True
+            try:
+                current_app.logger.info(
+                    "[Phase6N][b4_chap2_chapter_mode] chapter_id=2 step=%s session_id=%s completed=%s stage=%s",
+                    chap2_step_index,
+                    next_session_id,
+                    response.get("completed"),
+                    response.get("chapter_stage"),
+                )
+            except Exception:
+                pass
+            if not str(response.get("demo_route_msg") or "").strip():
+                response["demo_route_msg"] = "B4 第二章診斷進行中。"
+            return jsonify(_response_for_frontend(response))
+        # ── End Phase 6N Chap2 branch ──
+
         if runtime:
             payload["last_family_id"] = runtime.get("family_id", payload.get("last_family_id"))
             payload["last_subskills"] = runtime.get("subskill_nodes", payload.get("last_subskills"))
