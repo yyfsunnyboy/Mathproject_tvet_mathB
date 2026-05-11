@@ -36,6 +36,28 @@ def _build_chart_png_base64(
         plt.close(fig)
 
 
+def _build_table_png_base64(
+    headers: List[str],
+    rows: List[List[str]],
+    *,
+    title: str,
+) -> str:
+    fig, ax = plt.subplots(figsize=(5.8, 3.2), dpi=120)
+    try:
+        ax.axis("off")
+        ax.set_title(title)
+        tbl = ax.table(cellText=rows, colLabels=headers, loc="center", cellLoc="center")
+        tbl.auto_set_font_size(False)
+        tbl.set_fontsize(10)
+        tbl.scale(1.1, 1.5)
+        buf = io.BytesIO()
+        fig.tight_layout()
+        fig.savefig(buf, format="png")
+        return base64.b64encode(buf.getvalue()).decode("ascii")
+    finally:
+        plt.close(fig)
+
+
 def chart_mode_bar_reading(
     skill_id: str,
     subskill_id: str,
@@ -131,6 +153,240 @@ def chart_range_line_reading(
         "runtime_mode": "visual_backed",
         "check_mode": "deterministic_auto_checked",
         "grading_mode": "deterministic_auto_checked",
+    }
+
+
+def frequency_table_mean_reading(
+    skill_id: str,
+    subskill_id: str,
+    difficulty: int = 1,
+    seed: Optional[int] = None,
+    seen_parameter_tuples: Optional[Set[Tuple]] = None,
+    multiple_choice: bool = True,
+) -> Dict[str, Any]:
+    rng = random.Random(seed)
+    scenarios = [
+        ([2, 3, 4, 5], [1, 2, 3, 2]),
+        ([10, 12, 14, 16], [2, 1, 2, 1]),
+        ([6, 7, 8, 9], [1, 3, 2, 2]),
+    ]
+    x_vals, freqs = rng.choice(scenarios)
+    param_tuple = ("frequency_table_mean_reading", tuple(x_vals), tuple(freqs))
+    if seen_parameter_tuples is not None:
+        validate_parameter_tuple_not_seen(param_tuple, seen_parameter_tuples)
+        seen_parameter_tuples.add(param_tuple)
+    total_n = sum(freqs)
+    weighted_sum = sum(x * f for x, f in zip(x_vals, freqs))
+    mean_value = weighted_sum // total_n
+    headers = ["數值", "次數"]
+    table_rows = [[str(x), str(f)] for x, f in zip(x_vals, freqs)]
+    table_title = "次數分配表"
+    image_b64 = _build_table_png_base64(headers, table_rows, title=table_title)
+    return {
+        "question_text": "閱讀下列次數分配表，求資料的算術平均數。",
+        "answer": str(mean_value),
+        "correct_answer": str(mean_value),
+        "choices": [str(mean_value)],
+        "explanation": f"算術平均數 = {weighted_sum} ÷ {total_n} = {mean_value}。",
+        "skill_id": skill_id,
+        "subskill_id": subskill_id,
+        "problem_type_id": "frequency_table_mean_reading",
+        "scenario_family": "frequency_table_mean",
+        "generator_key": "b4.chap3.frequency_table_mean_reading",
+        "answer_type": "integer",
+        "difficulty": difficulty,
+        "diagnosis_tags": ["table_reading", "mean"],
+        "remediation_candidates": ["vh_數學B4_CentralTendencyMeasures"],
+        "source_style_refs": ["B4_Ch3_table"],
+        "parameters": {
+            "scenario_id": "freq_mean",
+            "scenario_family": "frequency_table_mean",
+            "values": x_vals,
+            "frequencies": freqs,
+        },
+        "table_title": table_title,
+        "image_base64": image_b64,
+        "visual_aids": [
+            {
+                "type": "table",
+                "title": table_title,
+                "caption": table_title,
+                "alt_text": table_title,
+                "headers": headers,
+                "rows": table_rows,
+                "table_kind": "frequency",
+            }
+        ],
+        "visual_backed": True,
+        "visual_asset_type": "table",
+        "runtime_mode": "visual_reading_with_short_answer",
+        "check_mode": "deterministic_auto_checked",
+        "grading_mode": "deterministic",
+    }
+
+
+def frequency_table_range_reading(
+    skill_id: str,
+    subskill_id: str,
+    difficulty: int = 1,
+    seed: Optional[int] = None,
+    seen_parameter_tuples: Optional[Set[Tuple]] = None,
+    multiple_choice: bool = True,
+) -> Dict[str, Any]:
+    rng = random.Random(seed)
+    scenarios = [
+        ([4, 5, 6, 7, 8], [1, 2, 1, 3, 1]),
+        ([12, 15, 18, 21], [2, 1, 2, 1]),
+        ([30, 35, 40, 45], [1, 1, 2, 1]),
+    ]
+    x_vals, freqs = rng.choice(scenarios)
+    param_tuple = ("frequency_table_range_reading", tuple(x_vals), tuple(freqs))
+    if seen_parameter_tuples is not None:
+        validate_parameter_tuple_not_seen(param_tuple, seen_parameter_tuples)
+        seen_parameter_tuples.add(param_tuple)
+    expected_range = max(x_vals) - min(x_vals)
+    headers = ["數值", "次數"]
+    table_rows = [[str(x), str(f)] for x, f in zip(x_vals, freqs)]
+    table_title = "次數分配表"
+    image_b64 = _build_table_png_base64(headers, table_rows, title=table_title)
+    return {
+        "question_text": "閱讀下列次數分配表，求資料的全距。",
+        "answer": str(expected_range),
+        "correct_answer": str(expected_range),
+        "choices": [str(expected_range)],
+        "explanation": f"全距 = 最大值 {max(x_vals)} - 最小值 {min(x_vals)} = {expected_range}。",
+        "skill_id": skill_id,
+        "subskill_id": subskill_id,
+        "problem_type_id": "frequency_table_range_reading",
+        "scenario_family": "frequency_table_range",
+        "generator_key": "b4.chap3.frequency_table_range_reading",
+        "answer_type": "integer",
+        "difficulty": difficulty,
+        "diagnosis_tags": ["table_reading", "range"],
+        "remediation_candidates": ["vh_數學B4_DispersionMeasures"],
+        "source_style_refs": ["B4_Ch3_table"],
+        "parameters": {
+            "scenario_id": "freq_range",
+            "scenario_family": "frequency_table_range",
+            "values": x_vals,
+            "frequencies": freqs,
+        },
+        "table_title": table_title,
+        "image_base64": image_b64,
+        "visual_aids": [
+            {
+                "type": "table",
+                "title": table_title,
+                "caption": table_title,
+                "alt_text": table_title,
+                "headers": headers,
+                "rows": table_rows,
+                "table_kind": "frequency",
+            }
+        ],
+        "visual_backed": True,
+        "visual_asset_type": "table",
+        "runtime_mode": "visual_reading_with_short_answer",
+        "check_mode": "deterministic_auto_checked",
+        "grading_mode": "deterministic",
+    }
+
+
+def histogram_reading(
+    skill_id: str,
+    subskill_id: str,
+    difficulty: int = 1,
+    seed: Optional[int] = None,
+    seen_parameter_tuples: Optional[Set[Tuple]] = None,
+    multiple_choice: bool = True,
+) -> Dict[str, Any]:
+    rng = random.Random(seed)
+    scenarios = [
+        {
+            "scenario_id": "histogram_group_frequency",
+            "bins": ["40-49", "50-59", "60-69", "70-79", "80-89"],
+            "freqs": [2, 5, 8, 6, 3],
+            "target_idx": 2,
+            "question_text": "閱讀下列直方圖，求 60-69 分這一組的人數。",
+        },
+        {
+            "scenario_id": "histogram_total_frequency",
+            "bins": ["10-19", "20-29", "30-39", "40-49", "50-59"],
+            "freqs": [3, 4, 7, 5, 1],
+            "target_idx": None,
+            "question_text": "閱讀下列直方圖，求全部資料的總人數。",
+        },
+        {
+            "scenario_id": "histogram_group_frequency_alt",
+            "bins": ["0-9", "10-19", "20-29", "30-39", "40-49"],
+            "freqs": [1, 3, 6, 4, 2],
+            "target_idx": 3,
+            "question_text": "閱讀下列直方圖，求 30-39 組別的次數。",
+        },
+    ]
+    sc = rng.choice(scenarios)
+    bins = sc["bins"]
+    freqs = sc["freqs"]
+    param_tuple = ("histogram_reading", sc["scenario_id"], tuple(bins), tuple(freqs))
+    if seen_parameter_tuples is not None:
+        validate_parameter_tuple_not_seen(param_tuple, seen_parameter_tuples)
+        seen_parameter_tuples.add(param_tuple)
+
+    chart_title = "直方圖"
+    x_label = "分數區間"
+    y_label = "人數"
+    image_b64 = _build_chart_png_base64(bins, freqs, chart_kind="bar", title=chart_title)
+
+    if sc["target_idx"] is None:
+        answer_value = sum(freqs)
+        explanation = f"將各組人數相加：{' + '.join(str(v) for v in freqs)} = {answer_value}。"
+    else:
+        answer_value = freqs[int(sc["target_idx"])]
+        target_bin = bins[int(sc["target_idx"])]
+        explanation = f"由直方圖可讀得 {target_bin} 這一組的人數為 {answer_value}。"
+
+    return {
+        "question_text": sc["question_text"],
+        "answer": str(answer_value),
+        "correct_answer": str(answer_value),
+        "choices": [str(answer_value)],
+        "explanation": explanation,
+        "skill_id": skill_id,
+        "subskill_id": subskill_id,
+        "problem_type_id": "histogram_reading",
+        "scenario_family": "histogram_reading_short_answer",
+        "generator_key": "b4.chap3.histogram_reading",
+        "answer_type": "integer",
+        "difficulty": difficulty,
+        "diagnosis_tags": ["histogram_reading", "chart_reading"],
+        "remediation_candidates": ["vh_數學B4_HistogramsAndFrequencyPolygons"],
+        "source_style_refs": ["B4_Ch3_histogram"],
+        "parameters": {
+            "scenario_id": sc["scenario_id"],
+            "scenario_family": "histogram_reading_short_answer",
+            "bins": bins,
+            "frequencies": freqs,
+            "target_idx": sc["target_idx"],
+        },
+        "chart_title": chart_title,
+        "image_base64": image_b64,
+        "visual_aids": [
+            {
+                "type": "histogram",
+                "title": chart_title,
+                "caption": chart_title,
+                "alt_text": chart_title,
+                "x_label": x_label,
+                "y_label": y_label,
+                "bins": bins,
+                "frequencies": freqs,
+            }
+        ],
+        "visual_backed": True,
+        "visual_asset_type": "histogram",
+        "runtime_mode": "visual_reading_with_short_answer",
+        "check_mode": "deterministic_auto_checked",
+        "grading_mode": "deterministic",
     }
 
 def _generate_perfect_square_variance_dataset(rng: random.Random) -> Tuple[List[int], int, int]:

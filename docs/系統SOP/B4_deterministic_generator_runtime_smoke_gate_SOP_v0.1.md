@@ -544,3 +544,92 @@ Phase B4-Graph-1：
 - 圖形題可先採「看圖短答」方式進入 runtime
 - 不必一開始就完成自由手繪 AI 批改
 - 但 metadata、route、checker guard、tests 必須先齊備
+
+### Visual / Table 題型中文化與本地化規則
+
+1. 學生端文字必須中文化
+- B4 學生端題目不可出現未本地化英文文字，包含但不限於：
+  - `question_text`
+  - `explanation`
+  - `visual_aids.title`
+  - `visual_aids.caption`
+  - `visual_aids.alt_text`
+  - `table_title`
+  - `chart_title`
+  - `axis labels`
+  - `table headers`
+  - `option display text`
+
+2. 圖形 / 表格內文字也必須中文化
+- 表格題應使用：
+  - `次數分配表`
+  - `數值`
+  - `次數`
+  - `相對次數`
+  - `累積次數`
+- 圖表題應使用中文標題與中文軸標籤，例如：
+  - `長條圖`
+  - `折線圖`
+  - `直方圖`
+  - `次數`
+  - `資料值`
+  - `組別`
+  - `分數`
+  - `人數`
+- 不得在學生端出現未處理英文，例如：
+  - `Frequency Table`
+  - `Value`
+  - `Frequency`
+  - `Read the frequency table`
+  - `arithmetic mean`
+  - `range`
+  - `Histogram`
+  - `Cumulative Frequency`
+
+3. Automated localization regression test 必須先於 manual smoke
+- 每批新增 visual / table family 時，必須新增或補強 localization test。
+- 最低檢查：
+  - `question_text` 不含英文模板句
+  - `explanation` 不含英文模板句
+  - visual/table metadata 不含英文 `title/header/caption/alt_text`
+  - visual/table metadata 含必要中文詞
+  - 若 `image_base64` 無法 OCR，至少檢查產圖前的 table spec / chart spec / `visual_aids` metadata
+
+4. Manual smoke 應確認畫面中文化
+- manual smoke 除了確認 runtime 與 `check_answer`，也必須檢查：
+  - 題幹是否中文
+  - 表格標題是否中文
+  - 欄位名稱是否中文
+  - 圖表標題是否中文
+  - 座標軸文字是否中文
+  - AI 檢查 / 上傳 / 手寫區 UI 沒有被圖表擠壓
+
+5. Small repair 標準
+- 若 manual smoke 發現英文殘留：
+  - 狀態應改為 `NEEDS_SMALL_REPAIR`
+  - 先補 automated localization regression test
+  - 再做最小修補
+  - 重跑該 phase tests 與上一批 regression
+  - report 狀態回到 `READY_FOR_MANUAL_SMOKE`
+  - 不可直接標 `MANUAL_SMOKE_PASSED`
+
+6. Phase B4-Graph-2 localization repair 案例
+- manual smoke 曾發現英文殘留：
+  - `Read the frequency table and find the arithmetic mean.`
+  - `Read the frequency table and find the range (max - min).`
+  - `Frequency Table`
+  - `Value`
+  - `Frequency`
+- 修補後改為：
+  - `閱讀下列次數分配表，求資料的算術平均數。`
+  - `閱讀下列次數分配表，求資料的全距。`
+  - `次數分配表`
+  - `數值`
+  - `次數`
+- 新增 regression：
+  - `tests/test_b4_graph2_visual_runtime_closed_loop.py::test_graph2_chinese_text_localization`
+- 測試結果：
+  - `pytest -q tests/test_b4_graph2_visual_runtime_closed_loop.py -> 14 passed`
+  - `pytest -q tests/test_b4_graph1_visual_runtime_first_batch.py -> 8 passed`
+- 狀態：
+  - `READY_FOR_MANUAL_SMOKE`

@@ -703,6 +703,12 @@ _CHAP3_PHASE7B_REGISTRY: dict[str, list[dict[str, object]]] = {
             "generator_key": "b4.chap3.chart_mode_bar_reading",
             "generator_fn": _chap3_stat.chart_mode_bar_reading,
         },
+        {
+            "subskill_id": "b4_ch3_frequency_table_mean_01",
+            "problem_type_id": "frequency_table_mean_reading",
+            "generator_key": "b4.chap3.frequency_table_mean_reading",
+            "generator_fn": _chap3_stat.frequency_table_mean_reading,
+        },
     ],
     "vh_數學B4_WeightedMean": [
         {
@@ -770,6 +776,20 @@ _CHAP3_PHASE7B_REGISTRY: dict[str, list[dict[str, object]]] = {
             "problem_type_id": "chart_range_line_reading",
             "generator_key": "b4.chap3.chart_range_line_reading",
             "generator_fn": _chap3_stat.chart_range_line_reading,
+        },
+        {
+            "subskill_id": "b4_ch3_frequency_table_range_01",
+            "problem_type_id": "frequency_table_range_reading",
+            "generator_key": "b4.chap3.frequency_table_range_reading",
+            "generator_fn": _chap3_stat.frequency_table_range_reading,
+        },
+    ],
+    "vh_數學B4_HistogramsAndFrequencyPolygons": [
+        {
+            "subskill_id": "b4_ch3_histogram_reading_01",
+            "problem_type_id": "histogram_reading",
+            "generator_key": "b4.chap3.histogram_reading",
+            "generator_fn": _chap3_stat.histogram_reading,
         },
     ],
 }

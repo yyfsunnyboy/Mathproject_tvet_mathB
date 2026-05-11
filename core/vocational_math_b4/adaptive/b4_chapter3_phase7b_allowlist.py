@@ -9,10 +9,15 @@ B4_CHAPTER3_PHASE7B_ALLOWLIST = {
     "vh_數學B4_LinearTransformationOfData",
     "vh_數學B4_DispersionMeasures",
 }
+B4_CHAPTER3_PHASE7B_ALLOWLIST.add("vh_??B4_HistogramsAndFrequencyPolygons")
 
 def is_b4_chapter3_phase7b_deterministic_skill(skill_id: str | None) -> bool:
     """Return True if the skill is enabled in Chap3 Phase 7B deterministic routing."""
-    return str(skill_id or "").strip() in B4_CHAPTER3_PHASE7B_ALLOWLIST
+    s = str(skill_id or "").strip()
+    return (
+        s in B4_CHAPTER3_PHASE7B_ALLOWLIST
+        or s.endswith("HistogramsAndFrequencyPolygons")
+    )
 
 def is_b4_chapter3_skill_not_enabled(skill_id: str | None) -> bool:
     """Check if the skill belongs to Chap3 but is not yet enabled."""
@@ -35,6 +40,8 @@ def is_b4_chapter3_skill_not_enabled(skill_id: str | None) -> bool:
         "vh_數學B4_DispersionMeasures",
     }
     s = str(skill_id or "").strip()
+    if s.endswith("HistogramsAndFrequencyPolygons"):
+        return False
     return s in chap3_skills and s not in B4_CHAPTER3_PHASE7B_ALLOWLIST
 
 def validate_b4_chap3_phase7b_generator_payload(skill_id: str, payload: dict) -> tuple[bool, str | None]:
