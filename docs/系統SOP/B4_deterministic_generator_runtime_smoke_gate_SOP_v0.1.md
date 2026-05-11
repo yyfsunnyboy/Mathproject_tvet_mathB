@@ -436,3 +436,111 @@ function safeDecodeSkillId(raw) {
 - **修正方式**：path/query 取出後先 `decodeURIComponent()`
 - **後端保持不動**：`_url_unquote()` 已在 `practice.py` 各 route 正確位置，不需修改
 
+
+## Visual / Handwriting / Review 題型的自動化驗收原則
+
+### Runtime mode 分流
+B4 題型需分三類，且 route/checker 必須明確分流：
+
+1. `deterministic_auto_checked`
+- 適用：純數值、分數、選擇題、可機器批改題型。
+- 驗收：必須通過 `/practice -> /get_next_question -> /check_answer`。
+
+2. `visual_or_handwriting_ai_checked`
+- 適用：圖形、長條圖、折線圖、樹狀圖、數線、表格、手寫過程。
+- 要求：
+  - 題目可進 `practice` 頁。
+  - payload 必須帶 `visual_backed`、`visual_asset_type`、`runtime_mode`、`check_mode`、`grading_mode` metadata。
+  - 不可硬塞進一般 deterministic checker。
+  - 當 `check_mode` 屬於 `ai_judged_free_response` / `visual_ai_checked` / `handwriting_ai_checked` / `review_mode` 時，`/check_answer` 必須 guard，回傳需使用 AI 檢查或教師覆核的 friendly response。
+
+3. `teacher_review` / `visibility_only`
+- 適用：開放式解釋、抽樣設計、民調解讀、完整手寫證明。
+- 要求：可出題、可呈現、可蒐集學生作答；不要求 deterministic 判分。
+
+### 自動化測試優先
+每一批 visual / handwriting 題型完成時，必須先有 automated tests，再進 manual smoke。
+
+最低測試應包含：
+
+1. generator payload test
+- `question payload` 含 `visual_backed`
+- `visual_aids` 或 `image_base64` 存在
+- `runtime_mode` / `check_mode` / `grading_mode` 正確
+- `answer` 格式符合題型
+
+2. router test
+- 指定 `skill` 可抽到新增 family
+- `problem_type` / `scenario_family` / `visual_asset_type` 可被觀察到
+
+3. practice route test
+- `/get_next_question` 可回 visual-backed 題
+- 前端必需欄位不缺失
+- encoded / decoded `skill_id` 正常
+
+4. check_answer guard test
+- `deterministic_auto_checked` 題可正常判對 / 判錯
+- `ai_judged_free_response` / `visual_ai_checked` / `handwriting_ai_checked` / `review_mode` 不可誤走 deterministic checker
+- 應回傳 friendly response
+
+5. regression test
+- 舊 Chap1 / Chap2 / Chap3 deterministic runtime-ready 題型不得壞掉
+- 既有 handwriting payload 路徑不得壞掉
+
+### Scenario diversity 自動化
+visual 題型不得只換數字。測試需檢查至少下列欄位之一：
+- `scenario_id`
+- `scenario_family`
+- `problem_type`
+- `visual_asset_type`
+- `question pattern`
+
+若同一 skill 底下有多個圖形 family，應逐批加入，不得一次大改全部。
+
+### Manual smoke 後移
+manual smoke 只在 automated tests 通過後進行。
+manual smoke 只做少量代表性視覺確認，例如每個新 family 2~3 題。
+
+manual smoke 檢查項目：
+- practice 頁可進入
+- 圖形 / 表格正常顯示
+- 題目文字自然
+- 短答 / 手寫 / 上傳 / AI 檢查 UI 不衝突
+- deterministic 題判分正常
+- review / AI checked 題不誤判
+
+### Small repair 原則
+若 manual smoke 發現問題：
+1. 不得只靠人工反覆測
+2. 必須先新增或補強 automated regression test
+3. 再做最小 code repair
+4. 再跑相關 tests
+5. 更新 report
+
+### Report 狀態標準
+每一批 visual runtime path report 必須標示其中一種狀態：
+- `BLOCKED`
+- `READY_FOR_MANUAL_SMOKE`
+- `MANUAL_SMOKE_PASSED`
+- `ACCEPTED_WITH_KNOWN_LIMITATIONS`
+
+若只有 planning report，沒有 runtime code 與 tests，不得標示 `READY_FOR_MANUAL_SMOKE`。
+
+### Phase B4-Graph-1 範例
+Phase B4-Graph-1：
+
+- report path:
+  `reports/b4_generator_planning/b4_graph1_visual_problem_runtime_first_batch_summary.md`
+
+- 已完成 family：
+  - `vh_數學B4_CentralTendencyMeasures:chart_mode_bar_reading`
+  - `vh_數學B4_DispersionMeasures:chart_range_line_reading`
+
+- 狀態：
+  `MANUAL_SMOKE_PASSED`
+
+此案例代表：
+- `visual_reading_with_short_answer` 可作為 B4 圖形題第一條 runtime path
+- 圖形題可先採「看圖短答」方式進入 runtime
+- 不必一開始就完成自由手繪 AI 批改
+- 但 metadata、route、checker guard、tests 必須先齊備

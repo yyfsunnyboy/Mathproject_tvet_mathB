@@ -118,3 +118,5 @@
 ---
 
 *v0.1：將現有四份系統 SOP 與 Phase prompt templates 串成可重複工作流；細節與強制條文仍以各 SOP 正文為準。*
+
+- 新增索引：`B4_deterministic_generator_runtime_smoke_gate_SOP_v0.1.md` 已補充「Visual / Handwriting / Review 題型的自動化驗收原則」，用於圖形題/表格題/手寫題的 runtime-ready 與 smoke gate 驗收基準。

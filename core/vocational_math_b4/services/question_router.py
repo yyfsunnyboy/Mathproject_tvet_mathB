@@ -697,6 +697,12 @@ _CHAP3_PHASE7B_REGISTRY: dict[str, list[dict[str, object]]] = {
             "generator_key": "b4.chap3.mode_basic_numeric",
             "generator_fn": _chap3_stat.mode_basic_numeric,
         },
+        {
+            "subskill_id": "b4_ch3_chart_mode_bar_01",
+            "problem_type_id": "chart_mode_bar_reading",
+            "generator_key": "b4.chap3.chart_mode_bar_reading",
+            "generator_fn": _chap3_stat.chart_mode_bar_reading,
+        },
     ],
     "vh_數學B4_WeightedMean": [
         {
@@ -758,6 +764,12 @@ _CHAP3_PHASE7B_REGISTRY: dict[str, list[dict[str, object]]] = {
             "problem_type_id": "interquartile_range_basic",
             "generator_key": "b4.chap3.interquartile_range_basic",
             "generator_fn": _chap3_stat.interquartile_range_basic,
+        },
+        {
+            "subskill_id": "b4_ch3_chart_range_line_01",
+            "problem_type_id": "chart_range_line_reading",
+            "generator_key": "b4.chap3.chart_range_line_reading",
+            "generator_fn": _chap3_stat.chart_range_line_reading,
         },
     ],
 }

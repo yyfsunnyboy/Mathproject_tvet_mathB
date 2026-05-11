@@ -1108,6 +1108,14 @@ def next_question():
             "answer_type": data.get("answer_type", skill_info.get("input_type", "text")),
             "problem_type_id": data.get("problem_type_id") or data.get("problem_type"),
             "grading_mode": data.get("grading_mode", ""),
+            "check_mode": data.get("check_mode", ""),
+            "runtime_mode": data.get("runtime_mode", ""),
+            "visual_backed": bool(
+                data.get("visual_backed")
+                or data.get("image_base64")
+                or data.get("visual_aids")
+            ),
+            "visual_asset_type": data.get("visual_asset_type", ""),
             "variant": data.get("variant", ""),
             "expected_count": data.get("expected_count"),
             "path_labels": data.get("path_labels", []),
@@ -1135,6 +1143,22 @@ def check_answer():
         }), 400
 
     skill_id = current['skill']
+    check_mode = str(
+        current.get("check_mode") or current.get("grading_mode") or ""
+    ).strip().lower()
+    if check_mode in {
+        "ai_judged_free_response",
+        "visual_ai_checked",
+        "handwriting_ai_checked",
+        "review_mode",
+    }:
+        return jsonify(
+            {
+                "correct": False,
+                "result": "此題型為 AI/Review 判分路徑，請使用下方 AI 檢查。",
+                "check_mode": check_mode,
+            }
+        )
     
     # [Fix] Instant Upload Special Handling
     if skill_id == 'instant_upload':

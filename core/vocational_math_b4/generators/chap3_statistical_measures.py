@@ -1,10 +1,137 @@
-"""Generators for B4 Chapter 3 Statistical Measures (Phase 7B)."""
+"""Generators for B4 Chapter 3 Statistical Measures (Phase 7B/Graph-1)."""
 
 import random
 import math
+import io
+import base64
 from typing import Dict, Any, Optional, Set, Tuple, List
+import matplotlib.pyplot as plt
 
 from core.vocational_math_b4.domain.b4_validators import validate_parameter_tuple_not_seen
+
+
+def _build_chart_png_base64(
+    x_labels: List[str],
+    y_values: List[int],
+    *,
+    chart_kind: str,
+    title: str,
+) -> str:
+    fig, ax = plt.subplots(figsize=(5.2, 3.2), dpi=120)
+    try:
+        if chart_kind == "line":
+            ax.plot(x_labels, y_values, marker="o", linewidth=2)
+        else:
+            ax.bar(x_labels, y_values)
+        ax.set_title(title)
+        ax.grid(axis="y", linestyle="--", alpha=0.35)
+        ax.set_axisbelow(True)
+        for spine in ("top", "right"):
+            ax.spines[spine].set_visible(False)
+        buf = io.BytesIO()
+        fig.tight_layout()
+        fig.savefig(buf, format="png")
+        return base64.b64encode(buf.getvalue()).decode("ascii")
+    finally:
+        plt.close(fig)
+
+
+def chart_mode_bar_reading(
+    skill_id: str,
+    subskill_id: str,
+    difficulty: int = 1,
+    seed: Optional[int] = None,
+    seen_parameter_tuples: Optional[Set[Tuple]] = None,
+    multiple_choice: bool = True,
+) -> Dict[str, Any]:
+    rng = random.Random(seed)
+    scenarios = [
+        (["甲", "乙", "丙", "丁"], [6, 9, 9, 5], "閱讀長條圖，求眾數值（次數最多的值）"),
+        (["A", "B", "C", "D"], [11, 8, 7, 11], "閱讀長條圖，求眾數值（次數最多的值）"),
+        (["一組", "二組", "三組", "四組"], [4, 10, 6, 10], "閱讀長條圖，求眾數值（次數最多的值）"),
+    ]
+    labels, values, stem = rng.choice(scenarios)
+    param_tuple = ("chart_mode_bar_reading", tuple(labels), tuple(values))
+    if seen_parameter_tuples is not None:
+        validate_parameter_tuple_not_seen(param_tuple, seen_parameter_tuples)
+        seen_parameter_tuples.add(param_tuple)
+    mode_value = max(values)
+    image_b64 = _build_chart_png_base64(labels, values, chart_kind="bar", title="長條圖")
+    return {
+        "question_text": f"{stem}。請輸入對應的次數。",
+        "answer": str(mode_value),
+        "correct_answer": str(mode_value),
+        "choices": [str(mode_value)],
+        "explanation": f"圖中最大次數為 {mode_value}，因此答案為 {mode_value}。",
+        "skill_id": skill_id,
+        "subskill_id": subskill_id,
+        "problem_type_id": "chart_mode_bar_reading",
+        "generator_key": "b4.chap3.chart_mode_bar_reading",
+        "answer_type": "integer",
+        "difficulty": difficulty,
+        "diagnosis_tags": ["chart_reading", "mode"],
+        "remediation_candidates": ["vh_數學B4_CentralTendencyMeasures"],
+        "source_style_refs": ["B4_Ch3_chart"],
+        "parameters": {"scenario": "bar_mode", "labels": labels, "values": values},
+        "image_base64": image_b64,
+        "visual_aids": [
+            {"type": "chart", "chart_kind": "bar", "x_labels": labels, "y_values": values}
+        ],
+        "visual_backed": True,
+        "visual_asset_type": "chart",
+        "runtime_mode": "visual_backed",
+        "check_mode": "deterministic_auto_checked",
+        "grading_mode": "deterministic_auto_checked",
+    }
+
+
+def chart_range_line_reading(
+    skill_id: str,
+    subskill_id: str,
+    difficulty: int = 1,
+    seed: Optional[int] = None,
+    seen_parameter_tuples: Optional[Set[Tuple]] = None,
+    multiple_choice: bool = True,
+) -> Dict[str, Any]:
+    rng = random.Random(seed)
+    scenarios = [
+        (["週一", "週二", "週三", "週四", "週五"], [13, 18, 15, 20, 16]),
+        (["1", "2", "3", "4", "5"], [9, 14, 12, 17, 11]),
+        (["甲", "乙", "丙", "丁", "戊"], [22, 19, 24, 18, 21]),
+    ]
+    labels, values = rng.choice(scenarios)
+    param_tuple = ("chart_range_line_reading", tuple(labels), tuple(values))
+    if seen_parameter_tuples is not None:
+        validate_parameter_tuple_not_seen(param_tuple, seen_parameter_tuples)
+        seen_parameter_tuples.add(param_tuple)
+    expected_range = max(values) - min(values)
+    image_b64 = _build_chart_png_base64(labels, values, chart_kind="line", title="折線圖")
+    return {
+        "question_text": "請看折線圖資料，求最大值與最小值的差（全距）。",
+        "answer": str(expected_range),
+        "correct_answer": str(expected_range),
+        "choices": [str(expected_range)],
+        "explanation": f"最大值為 {max(values)}，最小值為 {min(values)}，全距為 {expected_range}。",
+        "skill_id": skill_id,
+        "subskill_id": subskill_id,
+        "problem_type_id": "chart_range_line_reading",
+        "generator_key": "b4.chap3.chart_range_line_reading",
+        "answer_type": "integer",
+        "difficulty": difficulty,
+        "diagnosis_tags": ["chart_reading", "range"],
+        "remediation_candidates": ["vh_數學B4_DispersionMeasures"],
+        "source_style_refs": ["B4_Ch3_chart"],
+        "parameters": {"scenario": "line_range", "labels": labels, "values": values},
+        "image_base64": image_b64,
+        "visual_aids": [
+            {"type": "chart", "chart_kind": "line", "x_labels": labels, "y_values": values}
+        ],
+        "visual_backed": True,
+        "visual_asset_type": "chart",
+        "runtime_mode": "visual_backed",
+        "check_mode": "deterministic_auto_checked",
+        "grading_mode": "deterministic_auto_checked",
+    }
 
 def _generate_perfect_square_variance_dataset(rng: random.Random) -> Tuple[List[int], int, int]:
     """Generate a small dataset with integer mean and perfect square variance.
