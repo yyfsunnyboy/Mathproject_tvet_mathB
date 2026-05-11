@@ -15,7 +15,7 @@ S_SURVEY = "vh_數學B4_SamplingSurvey"
 S_METHODS = "vh_數學B4_SamplingMethods"
 
 PT_BASIC = "statistical_basic_concepts_choice"
-PT_SURVEY = "sampling_survey_bias_review"
+PT_SURVEY = "sampling_survey_foundation_identification"
 PT_METHODS = "sampling_methods_classification_choice"
 
 

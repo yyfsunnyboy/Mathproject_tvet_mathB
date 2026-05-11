@@ -143,7 +143,7 @@
     "selected_subskill_id": "b4_ch3_cumulative_frequency_review_01",
     "selected_problem_type_id": "cumulative_frequency_table_completion_review",
     "selected_generator_key": "b4.chap3.cumulative_frequency_tables_graphs_review_shell",
-    "selection_reason": "problem_type_id_specified",
+    "selection_reason": "single_entry",
     "router": "chap3_phase7b"
   }
 }

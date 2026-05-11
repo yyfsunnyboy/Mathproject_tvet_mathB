@@ -158,3 +158,28 @@
 
 - æ–°å¢žç´¢å¼•ï¼š`B4_deterministic_generator_runtime_smoke_gate_SOP_v0.1.md` å·²è£œå……ã€ŒVisual / Handwriting / Review é¡Œåž‹çš„è‡ªå‹•åŒ–é©—æ”¶åŽŸå‰‡ã€ï¼Œç”¨æ–¼åœ–å½¢é¡Œ/è¡¨æ ¼é¡Œ/æ‰‹å¯«é¡Œçš„ runtime-ready èˆ‡ smoke gate é©—æ”¶åŸºæº–ã€‚
 - ç´¢å¼•è£œå……ï¼š`B4_deterministic_generator_runtime_smoke_gate_SOP_v0.1.md` å·²æ–°å¢žã€ŒVisual / Table é¡Œåž‹ä¸­æ–‡åŒ–èˆ‡æœ¬åœ°åŒ–è¦å‰‡ã€ï¼Œä½œç‚º visual/table family çš„ä¸­æ–‡åŒ–é©—æ”¶èˆ‡ small-repair é–‰ç’°æº–å‰‡ã€‚
+
+---
+
+## ·s¼W¯Á¤Þ¡GAI ¥XÃD«~½èÀË¬d SOP¡]B4-SOP-QuestionQualityGate¡^
+
+### ·s¼W¤å¥ó
+- [B4_AI¥XÃD«~½èÀË¬dSOP_v0.1](./B4_AI¥XÃD«~½èÀË¬dSOP_v0.1.md)
+
+### ©w¦ì
+- `coverage gate` ¥u¥Nªí skill ¦³ runtime/review path¡C
+- `quality gate` ¤~¥Nªí¾Ç¥ÍºÝ¥i¥Î¡]¥i§@µª¡B¥iµû¤À¡B¥i´è¬V¡B»y¨¥¤@­P¡^¡C
+- ¬yµ{¶¶§Ç¡Gcoverage gate -> quality gate -> release¡C
+
+### «~½è Gate ®Ö¤ß
+1. ¶Kªñ½Ò¥»¨ÒÃD¡]textbook fidelity¡^
+2. ¿ï¾ÜÃD­n¦³¿ï¶µ¡]choice contract¡^
+3. ¹Ïªí/ªí®æÃD­n¦³ payload¡]visual/table payload¡^
+4. ¥þ¤¤¤å¡]localization¡^
+5. ÃD«¬»P¯À§÷¦h¼Ë©Ê¡]diversity¡^
+6. runtime/check_mode ¤@­P©Ê¡]consistency¡^
+
+### B4 / ¸ó¥U­n¨D
+- B4 release «e¥²¶] Chap3 QA gate¡C
+- B1/B2/B3 «áÄòªu¥Î¦P¤@®M QA gate¡C
+- AI judge ÄÝ©ó²Ä¤G¼h¡A¤£¨ú¥N rule-based gate¡C

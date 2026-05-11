@@ -1,26 +1,28 @@
 {
-  "question_text": "某技術高中有學生 1000 人，學校抽出 100 人做健康檢查。若問「樣本數是多少？」應選哪一項？ 請輸入選項代號。",
-  "answer": "2",
-  "correct_answer": "2",
-  "choices": [
-    "1. 1000",
-    "2. 100",
-    "3. 900",
-    "4. 無法判定"
-  ],
-  "explanation": "樣本數是被抽出接受調查的人數，因此為 100。",
+  "question_text": "某候選人為了了解支持度，只在自己的造勢晚會上發放問卷。請說明這個抽樣調查可能有哪些偏誤？",
+  "answer": "",
+  "correct_answer": "",
+  "expected_answer_schema": {
+    "type": "text_explanation",
+    "required_points": [
+      "樣本不具代表性",
+      "取樣偏誤"
+    ]
+  },
+  "choices": [],
+  "explanation": "在造勢晚會上發放問卷，受訪者多半已是支持者，導致樣本不具代表性，產生嚴重的取樣偏誤。",
   "skill_id": "vh_數學B4_SamplingSurvey",
   "subskill_id": "b4_ch3_sampling_survey_review_01",
   "problem_type_id": "sampling_survey_bias_review",
-  "scenario_family": "sampling_survey_foundation_identification",
-  "scenario_id": "population_sample_size_identification",
-  "generator_key": "b4.chap3.sampling_survey_review_shell",
-  "answer_type": "integer",
-  "answer_input_type": "choice",
+  "scenario_family": "sampling_survey_bias_review",
+  "scenario_id": "sampling_survey_bias_explanation",
+  "generator_key": "b4.chap3.sampling_survey_bias_review_shell",
+  "answer_type": "handwriting",
+  "answer_input_type": "handwriting",
   "difficulty": 1,
   "diagnosis_tags": [
     "sampling_survey",
-    "population_sample"
+    "bias"
   ],
   "remediation_candidates": [
     "vh_數學B4_SamplingSurvey"
@@ -28,11 +30,8 @@
   "source_style_refs": [
     "B4_Ch3_sampling_survey"
   ],
-  "source_style_summary": "3-1 抽樣調查：母群體、樣本、母群體數、樣本數、普查與抽查。",
-  "textbook_alignment_note": "採具體情境判斷題，避免抽象名詞定義堆疊。",
   "parameters": {
-    "scenario_id": "population_sample_size_identification",
-    "scenario_family": "sampling_survey_foundation_identification"
+    "scenario_id": "sampling_survey_bias_explanation"
   },
   "visual_backed": false,
   "requires_teacher_review": true,
@@ -43,7 +42,7 @@
     "input_skill_id": "vh_數學B4_SamplingSurvey",
     "selected_subskill_id": "b4_ch3_sampling_survey_review_01",
     "selected_problem_type_id": "sampling_survey_bias_review",
-    "selected_generator_key": "b4.chap3.sampling_survey_review_shell",
+    "selected_generator_key": "b4.chap3.sampling_survey_bias_review_shell",
     "selection_reason": "problem_type_id_specified",
     "router": "chap3_phase7b"
   }

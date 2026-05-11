@@ -116,7 +116,7 @@
     "selected_subskill_id": "b4_ch3_statistical_chart_visibility_01",
     "selected_problem_type_id": "statistical_chart_reading_visibility_review",
     "selected_generator_key": "b4.chap3.statistical_chart_reading_visibility_shell",
-    "selection_reason": "problem_type_id_specified",
+    "selection_reason": "seed_mod_router_balance",
     "router": "chap3_phase7b"
   }
 }

@@ -688,7 +688,7 @@ def frequency_distribution_table_construction_shell(
         "grading_mode": "ai_assisted_review",
     }
 
-def sampling_survey_review_shell(
+def sampling_survey_foundation_choice(
     skill_id: str,
     subskill_id: str,
     difficulty: int = 1,
@@ -736,6 +736,10 @@ def sampling_survey_review_shell(
         ),
     ]
     scenario_id, question_text, answer, choices, explanation = rng.choice(scenarios)
+    param_tuple = ("sampling_survey_foundation_choice", scenario_id)
+    if seen_parameter_tuples is not None:
+        validate_parameter_tuple_not_seen(param_tuple, seen_parameter_tuples)
+        seen_parameter_tuples.add(param_tuple)
     return {
         "question_text": f"{question_text} 請輸入選項代號。",
         "answer": answer,
@@ -744,10 +748,10 @@ def sampling_survey_review_shell(
         "explanation": explanation,
         "skill_id": skill_id,
         "subskill_id": subskill_id,
-        "problem_type_id": "sampling_survey_bias_review",
+        "problem_type_id": "sampling_survey_foundation_identification",
         "scenario_family": "sampling_survey_foundation_identification",
         "scenario_id": scenario_id,
-        "generator_key": "b4.chap3.sampling_survey_review_shell",
+        "generator_key": "b4.chap3.sampling_survey_foundation_choice",
         "answer_type": "integer",
         "answer_input_type": "choice",
         "difficulty": difficulty,
@@ -757,6 +761,45 @@ def sampling_survey_review_shell(
         "source_style_summary": "3-1 抽樣調查：母群體、樣本、母群體數、樣本數、普查與抽查。",
         "textbook_alignment_note": "採具體情境判斷題，避免抽象名詞定義堆疊。",
         "parameters": {"scenario_id": scenario_id, "scenario_family": "sampling_survey_foundation_identification"},
+        "visual_backed": False,
+        "requires_teacher_review": False,
+        "runtime_mode": "deterministic_choice",
+        "check_mode": "deterministic_auto_checked",
+        "grading_mode": "deterministic",
+    }
+
+def sampling_survey_bias_review_shell(
+    skill_id: str,
+    subskill_id: str,
+    difficulty: int = 1,
+    seed: Optional[int] = None,
+    seen_parameter_tuples: Optional[Set[Tuple]] = None,
+    multiple_choice: bool = True,
+) -> Dict[str, Any]:
+    scenario_id = "sampling_survey_bias_explanation"
+    return {
+        "question_text": "某候選人為了了解支持度，只在自己的造勢晚會上發放問卷。請說明這個抽樣調查可能有哪些偏誤？",
+        "answer": "",
+        "correct_answer": "",
+        "expected_answer_schema": {
+            "type": "text_explanation",
+            "required_points": ["樣本不具代表性", "取樣偏誤"],
+        },
+        "choices": [],
+        "explanation": "在造勢晚會上發放問卷，受訪者多半已是支持者，導致樣本不具代表性，產生嚴重的取樣偏誤。",
+        "skill_id": skill_id,
+        "subskill_id": subskill_id,
+        "problem_type_id": "sampling_survey_bias_review",
+        "scenario_family": "sampling_survey_bias_review",
+        "scenario_id": scenario_id,
+        "generator_key": "b4.chap3.sampling_survey_bias_review_shell",
+        "answer_type": "handwriting",
+        "answer_input_type": "handwriting",
+        "difficulty": difficulty,
+        "diagnosis_tags": ["sampling_survey", "bias"],
+        "remediation_candidates": ["vh_數學B4_SamplingSurvey"],
+        "source_style_refs": ["B4_Ch3_sampling_survey"],
+        "parameters": {"scenario_id": scenario_id},
         "visual_backed": False,
         "requires_teacher_review": True,
         "runtime_mode": "teacher_review",
@@ -879,6 +922,314 @@ def data_organization_charts_review_shell(
         "grading_mode": "teacher_review",
     }
 
+def data_organization_chart_type_selection_choice(
+    skill_id: str,
+    subskill_id: str,
+    difficulty: int = 1,
+    seed: Optional[int] = None,
+    seen_parameter_tuples: Optional[Set[Tuple]] = None,
+    multiple_choice: bool = True,
+) -> Dict[str, Any]:
+    rng = random.Random(seed)
+    scenarios = [
+        (
+            "trend_line_chart",
+            "某社團記錄一週每日到課人數，想觀察一週變化趨勢，最適合使用哪一種圖表？請輸入選項代號。",
+            ["1. 折線圖", "2. 圓形圖", "3. 直方圖", "4. 樹狀圖"],
+            "1",
+            "折線圖最適合呈現隨時間變化的趨勢。",
+        ),
+        (
+            "category_comparison_bar_chart",
+            "學校想比較甲乙丙丁四個班參加活動的人數差異，最適合使用哪一種圖表？請輸入選項代號。",
+            ["1. 圓形圖", "2. 長條圖", "3. 折線圖", "4. 直方圖"],
+            "2",
+            "長條圖適合比較不同類別的數量差異。",
+        ),
+        (
+            "proportion_pie_chart",
+            "社團要呈現經費在交通、餐飲、器材與宣傳四項支出所占比例，最適合使用哪一種圖表？請輸入選項代號。",
+            ["1. 直方圖", "2. 長條圖", "3. 圓形圖", "4. 折線圖"],
+            "3",
+            "圓形圖適合呈現各部分占整體的比例。",
+        ),
+        (
+            "distribution_histogram",
+            "要呈現段考分數區間（如 50-59、60-69）的人數分布，最適合使用哪一種圖表？請輸入選項代號。",
+            ["1. 折線圖", "2. 圓形圖", "3. 直方圖", "4. 長條圖"],
+            "3",
+            "直方圖適合呈現連續資料在各區間的分布。",
+        ),
+    ]
+    scenario_id, question_text, choices, answer, explanation = rng.choice(scenarios)
+    param_tuple = ("data_organization_chart_type_selection_choice", scenario_id)
+    if seen_parameter_tuples is not None:
+        validate_parameter_tuple_not_seen(param_tuple, seen_parameter_tuples)
+        seen_parameter_tuples.add(param_tuple)
+    return {
+        "question_text": question_text,
+        "answer": answer,
+        "correct_answer": answer,
+        "choices": choices,
+        "explanation": explanation,
+        "skill_id": skill_id,
+        "subskill_id": subskill_id,
+        "problem_type_id": "chart_type_selection_by_purpose",
+        "scenario_family": "chart_type_selection_by_purpose",
+        "scenario_id": scenario_id,
+        "generator_key": "b4.chap3.data_organization_chart_type_selection_choice",
+        "answer_type": "integer",
+        "answer_input_type": "choice",
+        "difficulty": difficulty,
+        "diagnosis_tags": ["data_organization", "chart_selection", "chart_purpose"],
+        "remediation_candidates": ["vh_數學B4_DataOrganizationAndCharts"],
+        "source_style_refs": ["B4_Ch3_data_organization"],
+        "source_style_summary": "資料整理與圖表編製以情境選圖為核心，優先採課本式四選一。",
+        "textbook_alignment_note": "對齊課本常見的「趨勢/比較/比例/分布」圖表用途判別。",
+        "parameters": {"scenario_id": scenario_id, "scenario_family": "chart_type_selection_by_purpose"},
+        "visual_backed": False,
+        "runtime_mode": "deterministic_choice",
+        "check_mode": "deterministic_auto_checked",
+        "grading_mode": "deterministic",
+    }
+
+def data_organization_first_step_choice(
+    skill_id: str,
+    subskill_id: str,
+    difficulty: int = 1,
+    seed: Optional[int] = None,
+    seen_parameter_tuples: Optional[Set[Tuple]] = None,
+    multiple_choice: bool = True,
+) -> Dict[str, Any]:
+    rng = random.Random(seed)
+    scenarios = [
+        (
+            "commute_category_frequency_table",
+            "某班記錄 40 位學生通勤方式，資料含步行、公車、機車、腳踏車等類別。若要比較各類別人數，應先如何整理？請輸入選項代號。",
+            [
+                "1. 統計各類別出現次數",
+                "2. 直接計算標準差",
+                "3. 畫累積次數折線圖",
+                "4. 先假設資料服從常態分配",
+            ],
+            "1",
+            "要比較類別人數，第一步是先整理成各類別次數（或次數分配）表。",
+        ),
+        (
+            "snack_sales_category_count",
+            "合作社記錄一週零食銷售品項（餅乾、飲料、麵包、飯糰），若要比較哪一類賣得最多，應先如何整理？請輸入選項代號。",
+            [
+                "1. 先求全體平均數",
+                "2. 統計各品項出現次數",
+                "3. 直接畫圓形圖不整理",
+                "4. 先做常態分配檢定",
+            ],
+            "2",
+            "先統計各品項次數，才能正確比較各類別數量。",
+        ),
+    ]
+    scenario_id, question_text, choices, answer, explanation = rng.choice(scenarios)
+    param_tuple = ("data_organization_first_step_choice", scenario_id)
+    if seen_parameter_tuples is not None:
+        validate_parameter_tuple_not_seen(param_tuple, seen_parameter_tuples)
+        seen_parameter_tuples.add(param_tuple)
+    return {
+        "question_text": question_text,
+        "answer": answer,
+        "correct_answer": answer,
+        "choices": choices,
+        "explanation": explanation,
+        "skill_id": skill_id,
+        "subskill_id": subskill_id,
+        "problem_type_id": "data_organization_first_step",
+        "scenario_family": "data_organization_first_step",
+        "scenario_id": scenario_id,
+        "generator_key": "b4.chap3.data_organization_first_step_choice",
+        "answer_type": "integer",
+        "answer_input_type": "choice",
+        "difficulty": difficulty,
+        "diagnosis_tags": ["data_organization", "frequency_table", "chart_preparation"],
+        "remediation_candidates": ["vh_數學B4_DataOrganizationAndCharts"],
+        "source_style_refs": ["B4_Ch3_data_organization"],
+        "source_style_summary": "先整理資料再選圖，採明確可判分的四選一流程題。",
+        "textbook_alignment_note": "對齊課本常見的資料整理第一步：先做類別統計或次數分配。",
+        "parameters": {"scenario_id": scenario_id, "scenario_family": "data_organization_first_step"},
+        "visual_backed": False,
+        "runtime_mode": "deterministic_choice",
+        "check_mode": "deterministic_auto_checked",
+        "grading_mode": "deterministic",
+    }
+
+
+
+def statistical_chart_type_by_purpose_choice(
+    skill_id: str,
+    subskill_id: str,
+    difficulty: int = 1,
+    seed: Optional[int] = None,
+    seen_parameter_tuples: Optional[Set[Tuple]] = None,
+    multiple_choice: bool = True,
+) -> Dict[str, Any]:
+    rng = random.Random(seed)
+    scenarios = [
+        (
+            "chart_type_by_purpose_trend",
+            "?????????????????????????????????????",
+            ["1. ???", "2. ???", "3. ???", "4. ???"],
+            "1",
+            "???????????????????",
+        ),
+        (
+            "chart_match_data_type_class_comparison",
+            "?????????????????????????????????",
+            ["1. ???", "2. ???", "3. ???", "4. ???"],
+            "1",
+            "?????????????????",
+        ),
+        (
+            "chart_type_by_purpose_ratio",
+            "???????????????????????????????????",
+            ["1. ???", "2. ???", "3. ???", "4. ???"],
+            "2",
+            "??????????????????",
+        ),
+    ]
+    scenario_id, question_text, choices, answer, explanation = rng.choice(scenarios)
+    param_tuple = ("statistical_chart_type_by_purpose_choice", scenario_id)
+    if seen_parameter_tuples is not None:
+        validate_parameter_tuple_not_seen(param_tuple, seen_parameter_tuples)
+        seen_parameter_tuples.add(param_tuple)
+    return {
+        "question_text": question_text,
+        "answer": answer,
+        "correct_answer": answer,
+        "choices": choices,
+        "explanation": explanation,
+        "skill_id": skill_id,
+        "subskill_id": subskill_id,
+        "problem_type_id": "chart_type_by_purpose",
+        "scenario_family": "chart_type_by_purpose",
+        "scenario_id": scenario_id,
+        "generator_key": "b4.chap3.statistical_chart_type_by_purpose_choice",
+        "answer_type": "integer",
+        "answer_input_type": "choice",
+        "difficulty": difficulty,
+        "diagnosis_tags": ["chart_reading", "chart_type_selection"],
+        "remediation_candidates": ["vh_??B4_StatisticalChartReading"],
+        "source_style_refs": ["B4_Ch3_statistical_chart_reading"],
+        "source_style_summary": "????????????????????",
+        "textbook_alignment_note": "???????????????????????",
+        "parameters": {"scenario_id": scenario_id, "scenario_family": "chart_type_by_purpose"},
+        "visual_backed": False,
+        "runtime_mode": "deterministic_choice",
+        "check_mode": "deterministic_auto_checked",
+        "grading_mode": "deterministic",
+    }
+
+
+def statistical_chart_interpretation_caution_choice(
+    skill_id: str,
+    subskill_id: str,
+    difficulty: int = 1,
+    seed: Optional[int] = None,
+    seen_parameter_tuples: Optional[Set[Tuple]] = None,
+    multiple_choice: bool = True,
+) -> Dict[str, Any]:
+    scenario_id = "chart_interpretation_caution_axis_scale"
+    param_tuple = ("statistical_chart_interpretation_caution_choice", scenario_id)
+    if seen_parameter_tuples is not None:
+        validate_parameter_tuple_not_seen(param_tuple, seen_parameter_tuples)
+        seen_parameter_tuples.add(param_tuple)
+    return {
+        "question_text": "???????????????????????????",
+        "answer": "1",
+        "correct_answer": "1",
+        "choices": [
+            "1. ?????????????",
+            "2. ????????",
+            "3. ????????",
+            "4. ?????????",
+        ],
+        "explanation": "??????????????????????????????",
+        "skill_id": skill_id,
+        "subskill_id": subskill_id,
+        "problem_type_id": "chart_interpretation_caution",
+        "scenario_family": "chart_interpretation_caution",
+        "scenario_id": scenario_id,
+        "generator_key": "b4.chap3.statistical_chart_interpretation_caution_choice",
+        "answer_type": "integer",
+        "answer_input_type": "choice",
+        "difficulty": difficulty,
+        "diagnosis_tags": ["chart_reading", "interpretation_caution"],
+        "remediation_candidates": ["vh_??B4_StatisticalChartReading"],
+        "source_style_refs": ["B4_Ch3_statistical_chart_reading"],
+        "source_style_summary": "????????????????????",
+        "textbook_alignment_note": "??????????????????",
+        "parameters": {"scenario_id": scenario_id, "scenario_family": "chart_interpretation_caution"},
+        "visual_backed": False,
+        "runtime_mode": "deterministic_choice",
+        "check_mode": "deterministic_auto_checked",
+        "grading_mode": "deterministic",
+    }
+
+
+def statistical_chart_match_data_type_choice(
+    skill_id: str,
+    subskill_id: str,
+    difficulty: int = 1,
+    seed: Optional[int] = None,
+    seen_parameter_tuples: Optional[Set[Tuple]] = None,
+    multiple_choice: bool = True,
+) -> Dict[str, Any]:
+    rng = random.Random(seed)
+    scenarios = [
+        (
+            "chart_match_data_type_class_count",
+            "?????????????????????????????????",
+            ["1. ???", "2. ???", "3. ???", "4. ???"],
+            "1",
+            "???????????????",
+        ),
+        (
+            "chart_match_data_type_distribution",
+            "?????????????????????????????????????",
+            ["1. ???", "2. ???", "3. ???", "4. ???"],
+            "3",
+            "?????????????????",
+        ),
+    ]
+    scenario_id, question_text, choices, answer, explanation = rng.choice(scenarios)
+    param_tuple = ("statistical_chart_match_data_type_choice", scenario_id)
+    if seen_parameter_tuples is not None:
+        validate_parameter_tuple_not_seen(param_tuple, seen_parameter_tuples)
+        seen_parameter_tuples.add(param_tuple)
+    return {
+        "question_text": question_text,
+        "answer": answer,
+        "correct_answer": answer,
+        "choices": choices,
+        "explanation": explanation,
+        "skill_id": skill_id,
+        "subskill_id": subskill_id,
+        "problem_type_id": "chart_match_data_type",
+        "scenario_family": "chart_match_data_type",
+        "scenario_id": scenario_id,
+        "generator_key": "b4.chap3.statistical_chart_match_data_type_choice",
+        "answer_type": "integer",
+        "answer_input_type": "choice",
+        "difficulty": difficulty,
+        "diagnosis_tags": ["chart_reading", "data_type_match"],
+        "remediation_candidates": ["vh_??B4_StatisticalChartReading"],
+        "source_style_refs": ["B4_Ch3_statistical_chart_reading"],
+        "source_style_summary": "??????????????????????",
+        "textbook_alignment_note": "??????????????????",
+        "parameters": {"scenario_id": scenario_id, "scenario_family": "chart_match_data_type"},
+        "visual_backed": False,
+        "runtime_mode": "deterministic_choice",
+        "check_mode": "deterministic_auto_checked",
+        "grading_mode": "deterministic",
+    }
+
 def statistical_chart_reading_visibility_shell(
     skill_id: str,
     subskill_id: str,
@@ -887,40 +1238,67 @@ def statistical_chart_reading_visibility_shell(
     seen_parameter_tuples: Optional[Set[Tuple]] = None,
     multiple_choice: bool = True,
 ) -> Dict[str, Any]:
-    scenario_id = "statistical_chart_reading_visibility_only"
+    scenario_id = "statistical_chart_reading_visibility_review"
+    chart_spec = {
+        "x_labels": ["??", "??", "??", "??", "??"],
+        "attendance": [28, 31, 29, 34, 32],
+        "club_category_labels": ["??", "??", "??", "??"],
+        "club_category_values": [18, 24, 15, 13],
+    }
+    expected_answer_schema = {
+        "type": "chart_reading_open_response",
+        "required_points": ["??????", "????????"],
+        "rubric": {
+            "trend": "????????????????",
+            "caution": "??????????????????",
+        },
+    }
     return {
-        "question_text": "觀察附圖中的兩種統計圖表，請描述一項你看到的資料趨勢，並指出一項解讀時要注意的限制。",
-        "message": "此技能屬於統計圖表判讀與教師覆核題，請依題目圖表作答，系統將保留作答供 AI 檢查或教師覆核。",
+        "question_text": "??????????????????????????????????????????",
+        "message": "????????????? AI/Review ???????????",
         "answer": "",
         "correct_answer": "",
-        "expected_answer_schema": {
-            "type": "chart_reading_open_response",
-            "required_points": ["趨勢描述", "解讀限制"],
-        },
+        "expected_answer_schema": expected_answer_schema,
         "choices": [],
-        "explanation": "此題為混合圖表判讀的開放式說明，先走 visibility/review path。",
+        "explanation": "????????????????? review rubric ???????",
         "skill_id": skill_id,
         "subskill_id": subskill_id,
         "problem_type_id": "statistical_chart_reading_visibility_review",
-        "scenario_family": "statistical_chart_reading_visibility",
+        "scenario_family": "statistical_chart_reading_visibility_review",
         "scenario_id": scenario_id,
         "generator_key": "b4.chap3.statistical_chart_reading_visibility_shell",
         "answer_type": "text",
         "answer_input_type": "text_or_handwriting",
         "difficulty": difficulty,
         "diagnosis_tags": ["chart_reading", "interpretation"],
-        "remediation_candidates": ["vh_數學B4_StatisticalChartReading"],
+        "remediation_candidates": ["vh_??B4_StatisticalChartReading"],
         "source_style_refs": ["B4_Ch3_statistical_chart_reading"],
-        "source_style_summary": "3-2 統計圖表判讀與解釋限制之開放式題型。",
-        "textbook_alignment_note": "此題屬圖表詮釋與覆核題，不進行 deterministic 自動批改。",
-        "parameters": {"scenario_id": scenario_id, "scenario_family": "statistical_chart_reading_visibility"},
+        "source_style_summary": "?????????????????????? rubric?",
+        "textbook_alignment_note": "???????????????? review ?????",
+        "parameters": {"scenario_id": scenario_id, "scenario_family": "statistical_chart_reading_visibility_review"},
         "visual_backed": True,
-        "visual_asset_type": "mixed_chart_prompt",
+        "visual_asset_type": "chart",
+        "chart_spec": chart_spec,
+        "visual_aids": [
+            {
+                "type": "line_chart",
+                "title": "????????",
+                "x_labels": chart_spec["x_labels"],
+                "y_values": chart_spec["attendance"],
+            },
+            {
+                "type": "bar_chart",
+                "title": "?????????",
+                "x_labels": chart_spec["club_category_labels"],
+                "y_values": chart_spec["club_category_values"],
+            },
+        ],
         "requires_teacher_review": True,
         "runtime_mode": "visibility_only",
         "check_mode": "review_mode",
         "grading_mode": "visibility_only",
     }
+
 
 def opinion_poll_interpretation_review_shell(
     skill_id: str,

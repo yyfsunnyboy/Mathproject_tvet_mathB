@@ -1,0 +1,55 @@
+# B4 DataOrganizationAndCharts Runtime Fidelity Repair Summary
+
+## 1. ????
+`vh_??B4_DataOrganizationAndCharts` ????? `data_organization_chart_selection_review`??? runtime ??????? review ?????????????????????????
+
+## 2. Root Cause
+1. `core/vocational_math_b4/services/question_router.py` ? `DataOrganizationAndCharts` ???? review generator entry?
+2. `core/vocational_math_b4/generators/chap3_statistical_measures.py` ?? `data_organization_charts_review_shell`?? deterministic choice family?
+3. ???? scenario + ?? problem_type?`/get_next_question` ??????????
+
+## 3. ??? problem_type / scenario_family
+?? deterministic ???
+1. `chart_type_selection_by_purpose` / `chart_type_selection_by_purpose`
+2. `data_organization_first_step` / `data_organization_first_step`
+
+?? review ???
+1. `data_organization_chart_selection_review` / `data_organization_review`
+
+## 4. deterministic_choice ????
+1. ?????????????????????????????????????
+2. ???????????????????????????????
+3. choice contract?
+- `answer_input_type=choice`
+- `choices` ??? >= 4
+- `answer` ??????
+- `runtime_mode=deterministic_choice`
+- `check_mode=deterministic_auto_checked`
+- `grading_mode=deterministic`
+
+## 5. ????? teacher_review ??
+??`data_organization_chart_selection_review` ????????????/????????
+
+## 6. ????
+1. `core/vocational_math_b4/generators/chap3_statistical_measures.py`
+2. `core/vocational_math_b4/services/question_router.py`
+3. `core/vocational_math_b4/adaptive/b4_chapter3_phase7b_allowlist.py`
+4. `tests/test_b4_data_organization_and_charts_runtime_fidelity_repair.py`
+
+## 7. ?? tests
+1. `tests/test_b4_data_organization_and_charts_runtime_fidelity_repair.py`
+
+## 8. ????
+???????
+1. `py -m pytest -q tests/test_b4_data_organization_and_charts_runtime_fidelity_repair.py` (6 passed)
+2. `py -m pytest -q tests/test_b4_choice_payload_rendering_repair.py` (6 passed)
+3. `py -m pytest -q tests/test_b4_3_1_conceptual_skill_boundary_repair.py` (8 passed)
+4. `py -m pytest -q tests/test_b4_3_2_review_payload_repair.py` (3 passed)
+5. `py -m pytest -q tests/test_b4_fullruntime2_remaining_6_skills_mode_aware_paths.py` (15 passed)
+6. `py -m pytest -q tests/test_b4_final_mode_aware_runtime_coverage_recount.py` (8 passed)
+
+## 9. ???? B4 final coverage count
+??? coverage recount ???`unknown_or_no_runtime_count` ??? 0???? recount regression ????????
+
+## 10. Final Status
+READY_FOR_RECHECK

@@ -776,3 +776,29 @@ Phase B4-Graph-1ï¼š
   - `pytest -q tests/test_b4_graph1_visual_runtime_first_batch.py -> 8 passed`
 - ç‹€æ…‹ï¼š
   - `READY_FOR_MANUAL_SMOKE`
+
+---
+
+## B4-SOP-QuestionQualityGate ¸É¥R¡]v0.1¡^
+
+¥»¤å¥ó¥D¶b¬° deterministic runtime smoke gate¡C¦Û B4-Chap3 QA ¸gÅç°_¡Aµoª©¬yµ{¥²¶·©ú½T¤À¼h¡G
+
+1. `coverage gate`¡G½T»{ skill ¨ã³Æ runtime/review path¡C
+2. `quality gate`¡G½T»{¾Ç¥ÍºÝÃD¥Ø¥i§@µª¥B¥iµû¤À¡C
+
+¥²¶·¥ý³q¹L coverage gate¡A¦A³q¹L quality gate¡A¤~¥i¶i¤J release ­Ô¿ï¡C
+
+### Quality Gate «ü¦V¤å¥ó
+- ¨Ì´`¡G[B4_AI¥XÃD«~½èÀË¬dSOP_v0.1](./B4_AI¥XÃD«~½èÀË¬dSOP_v0.1.md)
+
+### Release ³Ì§C­n¨D¡]·s¼W¡^
+- textbook fidelity gate
+- choice contract gate
+- visual/table payload gate
+- localization gate¡]¥þ¤¤¤å¡^
+- diversity gate¡]ÃD·F»P¹Ïªí¤£±o°ª«×­«½Æ¡^
+- runtime/check_mode consistency gate
+
+### Chap3 ±j¨î³W½d¡]·s¼W¡^
+- B4 release «e¡AChap3 skills ¥²¶] question quality gate¡C
+- µo²{ blocking issue¡]¦p choice µL choices¡Bªþ¹ÏµL¹Ï¡Bdeterministic answer ªÅ¥Õ¡Breview µL rubric¡^»Ý¥ý³Ì¤p­×¸É¨Ã¦^Âk´ú¸Õ¡A¦A¶i release¡C

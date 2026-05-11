@@ -346,6 +346,13 @@ def _select_entry(
     ):
         idx = int(seed) % len(skill_entries)
         return skill_entries[idx], "seed_mod_router_balance"
+    if (
+        str(skill_id).endswith("StatisticalChartReading")
+        and seed is not None
+        and len(skill_entries) >= 2
+    ):
+        idx = int(seed) % len(skill_entries)
+        return skill_entries[idx], "seed_mod_router_balance"
 
     rng = random.Random(seed)
     return rng.choice(skill_entries), "seed_based_selection"
@@ -834,10 +841,16 @@ _CHAP3_PHASE7B_REGISTRY: dict[str, list[dict[str, object]]] = {
     ],
     "vh_數學B4_SamplingSurvey": [
         {
+            "subskill_id": "b4_ch3_sampling_survey_choice_01",
+            "problem_type_id": "sampling_survey_foundation_identification",
+            "generator_key": "b4.chap3.sampling_survey_foundation_choice",
+            "generator_fn": _chap3_stat.sampling_survey_foundation_choice,
+        },
+        {
             "subskill_id": "b4_ch3_sampling_survey_review_01",
             "problem_type_id": "sampling_survey_bias_review",
-            "generator_key": "b4.chap3.sampling_survey_review_shell",
-            "generator_fn": _chap3_stat.sampling_survey_review_shell,
+            "generator_key": "b4.chap3.sampling_survey_bias_review_shell",
+            "generator_fn": _chap3_stat.sampling_survey_bias_review_shell,
         },
     ],
     "vh_數學B4_CumulativeFrequencyTablesAndGraphs": [
@@ -850,13 +863,43 @@ _CHAP3_PHASE7B_REGISTRY: dict[str, list[dict[str, object]]] = {
     ],
     "vh_數學B4_DataOrganizationAndCharts": [
         {
+            "subskill_id": "b4_ch3_data_organization_choice_chart_type_01",
+            "problem_type_id": "chart_type_selection_by_purpose",
+            "generator_key": "b4.chap3.data_organization_chart_type_selection_choice",
+            "generator_fn": _chap3_stat.data_organization_chart_type_selection_choice,
+        },
+        {
+            "subskill_id": "b4_ch3_data_organization_choice_first_step_01",
+            "problem_type_id": "data_organization_first_step",
+            "generator_key": "b4.chap3.data_organization_first_step_choice",
+            "generator_fn": _chap3_stat.data_organization_first_step_choice,
+        },
+        {
             "subskill_id": "b4_ch3_data_organization_review_01",
             "problem_type_id": "data_organization_chart_selection_review",
             "generator_key": "b4.chap3.data_organization_charts_review_shell",
             "generator_fn": _chap3_stat.data_organization_charts_review_shell,
         },
     ],
-    "vh_數學B4_StatisticalChartReading": [
+    "vh_??B4_StatisticalChartReading": [
+        {
+            "subskill_id": "b4_ch3_statistical_chart_choice_type_01",
+            "problem_type_id": "chart_type_by_purpose",
+            "generator_key": "b4.chap3.statistical_chart_type_by_purpose_choice",
+            "generator_fn": _chap3_stat.statistical_chart_type_by_purpose_choice,
+        },
+        {
+            "subskill_id": "b4_ch3_statistical_chart_choice_caution_01",
+            "problem_type_id": "chart_interpretation_caution",
+            "generator_key": "b4.chap3.statistical_chart_interpretation_caution_choice",
+            "generator_fn": _chap3_stat.statistical_chart_interpretation_caution_choice,
+        },
+        {
+            "subskill_id": "b4_ch3_statistical_chart_choice_match_01",
+            "problem_type_id": "chart_match_data_type",
+            "generator_key": "b4.chap3.statistical_chart_match_data_type_choice",
+            "generator_fn": _chap3_stat.statistical_chart_match_data_type_choice,
+        },
         {
             "subskill_id": "b4_ch3_statistical_chart_visibility_01",
             "problem_type_id": "statistical_chart_reading_visibility_review",
@@ -884,6 +927,11 @@ def generate_for_chap3_skill(
     problem_type_id: str | None = None,
 ) -> dict:
     """Generate a payload for a supported B4 Chapter 3 skill (Phase 7B)."""
+    if skill_id not in _CHAP3_PHASE7B_REGISTRY:
+        for k in _CHAP3_PHASE7B_REGISTRY.keys():
+            if str(k).endswith(str(skill_id or "").split("B4_")[-1]):
+                skill_id = str(k)
+                break
     if skill_id not in _CHAP3_PHASE7B_REGISTRY:
         raise ValueError(f"generate_for_chap3_skill: unsupported skill_id '{skill_id}'.")
 
