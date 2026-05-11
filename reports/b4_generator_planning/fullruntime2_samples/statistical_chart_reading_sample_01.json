@@ -1,0 +1,54 @@
+{
+  "question_text": "觀察附圖中的兩種統計圖表，請描述一項你看到的資料趨勢，並指出一項解讀時要注意的限制。",
+  "message": "此技能屬於統計圖表判讀與教師覆核題，請依題目圖表作答，系統將保留作答供 AI 檢查或教師覆核。",
+  "answer": "",
+  "correct_answer": "",
+  "expected_answer_schema": {
+    "type": "chart_reading_open_response",
+    "required_points": [
+      "趨勢描述",
+      "解讀限制"
+    ]
+  },
+  "choices": [],
+  "explanation": "此題為混合圖表判讀的開放式說明，先走 visibility/review path。",
+  "skill_id": "vh_數學B4_StatisticalChartReading",
+  "subskill_id": "b4_ch3_statistical_chart_visibility_01",
+  "problem_type_id": "statistical_chart_reading_visibility_review",
+  "scenario_family": "statistical_chart_reading_visibility",
+  "scenario_id": "statistical_chart_reading_visibility_only",
+  "generator_key": "b4.chap3.statistical_chart_reading_visibility_shell",
+  "answer_type": "text",
+  "answer_input_type": "text_or_handwriting",
+  "difficulty": 1,
+  "diagnosis_tags": [
+    "chart_reading",
+    "interpretation"
+  ],
+  "remediation_candidates": [
+    "vh_數學B4_StatisticalChartReading"
+  ],
+  "source_style_refs": [
+    "B4_Ch3_statistical_chart_reading"
+  ],
+  "source_style_summary": "3-2 統計圖表判讀與解釋限制之開放式題型。",
+  "textbook_alignment_note": "此題屬圖表詮釋與覆核題，不進行 deterministic 自動批改。",
+  "parameters": {
+    "scenario_id": "statistical_chart_reading_visibility_only",
+    "scenario_family": "statistical_chart_reading_visibility"
+  },
+  "visual_backed": true,
+  "visual_asset_type": "mixed_chart_prompt",
+  "requires_teacher_review": true,
+  "runtime_mode": "visibility_only",
+  "check_mode": "review_mode",
+  "grading_mode": "visibility_only",
+  "router_trace": {
+    "input_skill_id": "vh_數學B4_StatisticalChartReading",
+    "selected_subskill_id": "b4_ch3_statistical_chart_visibility_01",
+    "selected_problem_type_id": "statistical_chart_reading_visibility_review",
+    "selected_generator_key": "b4.chap3.statistical_chart_reading_visibility_shell",
+    "selection_reason": "problem_type_id_specified",
+    "router": "chap3_phase7b"
+  }
+}

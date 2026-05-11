@@ -62,6 +62,7 @@ from core.vocational_math_b4.adaptive.b4_chapter2_phase6c1_allowlist import (
 # Phase 7B: Chap3 deterministic integration
 from core.vocational_math_b4.adaptive.b4_chapter3_phase7b_allowlist import (
     is_b4_chapter3_phase7b_deterministic_skill,
+    is_b4_chapter3_phase7b_runtime_skill,
     is_b4_chapter3_skill_not_enabled,
     validate_b4_chap3_phase7b_generator_payload,
 )
@@ -97,6 +98,7 @@ B4_CHAP3_SKILL_NOT_ENABLED_PUBLIC_ERROR = (
     "此技能尚未開放自動出題。"
     " Chap3 skill not enabled in current deterministic runtime."
 )
+B4_CHAP3_REQUIRES_EXPLICIT_PROBLEM_TYPE_SKILLS = set()
 
 
 def _b4_chap2_public_payload_validation_message(deny_reason: str | None) -> str:
@@ -302,14 +304,20 @@ def _build_b4_tree_diagram_runtime_payload(
         "question_text": payload["question_text"],
         "correct_answer": "",
         "answer_type": "handwriting",
+        "answer": "",
         "problem_type": payload["problem_type_id"],
         "problem_type_id": payload["problem_type_id"],
-        "grading_mode": payload["grading_mode"],
+        "runtime_mode": "visual_or_handwriting_ai_checked",
+        "check_mode": "handwriting_ai_checked",
+        "grading_mode": "ai_judged_free_response",
         "variant": payload["variant"],
         "expected_count": payload["expected_count"],
         "expected_paths": payload["expected_paths"],
         "path_labels": payload.get("path_labels", []),
         "requires_listing_or_tree": payload.get("requires_listing_or_tree", True),
+        "requires_handwriting": True,
+        "visual_backed": True,
+        "visual_asset_type": "tree_diagram_template",
         "context_string": "",
     }
 
@@ -327,16 +335,46 @@ def _build_b4_pascal_triangle_runtime_payload(
         "question_text": payload["question_text"],
         "correct_answer": "",
         "answer_type": "handwriting",
+        "answer_input_type": "handwriting",
+        "answer": "",
         "problem_type": payload["problem_type_id"],
         "problem_type_id": payload["problem_type_id"],
-        "grading_mode": payload["grading_mode"],
+        "runtime_mode": "visual_or_handwriting_ai_checked",
+        "check_mode": "handwriting_ai_checked",
+        "grading_mode": "ai_assisted_review",
         "variant": payload["variant"],
         "n": payload.get("n"),
         "expected_row": payload.get("expected_row", []),
         "expected_terms": payload.get("expected_terms", []),
         "expected_expansion": payload.get("expected_expansion", ""),
+        "requires_handwriting": True,
+        "requires_teacher_review": True,
+        "visual_backed": True,
+        "visual_asset_type": "pascal_triangle_template",
         "context_string": "",
     }
+
+def _normalize_choice_alias_answer(user_answer: str, current_question: dict) -> str:
+    """
+    Normalize A/B/C/D style answers to 1/2/3/4 when this question is choice-based.
+    Keeps legacy numeric contracts while allowing alphabetical aliases.
+    """
+    raw = str(user_answer or "").strip()
+    if not raw:
+        return raw
+    answer_input_type = str(current_question.get("answer_input_type", "")).strip().lower()
+    choices = current_question.get("choices") or []
+    if answer_input_type != "choice" and not choices:
+        return raw
+
+    token = raw
+    # Accept patterns like "A", "a", "A.", "a)"
+    if token and token[0].isalpha():
+        alpha = token[0].upper()
+        idx = ord(alpha) - ord("A") + 1
+        if 1 <= idx <= 26:
+            return str(idx)
+    return raw
 
 def update_progress(user_id, skill_id, is_correct):
     """
@@ -925,6 +963,8 @@ def next_question():
     # Phase 7B: gated Chap3 skills
     if is_b4_chapter3_skill_not_enabled(skill_id):
         return jsonify({"error": B4_CHAP3_SKILL_NOT_ENABLED_PUBLIC_ERROR}), 422
+    if skill_id in B4_CHAP3_REQUIRES_EXPLICIT_PROBLEM_TYPE_SKILLS and not str(problem_type or "").strip():
+        return jsonify({"error": B4_CHAP3_SKILL_NOT_ENABLED_PUBLIC_ERROR}), 422
 
     skill_info = get_skill_info(skill_id)
     # [單元模式] 允許 pattern skill 僅有檔案、尚無 DB 註冊時仍可出題
@@ -937,7 +977,7 @@ def next_question():
             # Phase 6C-1R: Chap2 P0 skills may not have a DB SkillInfo row.
             # Bypass DB lookup; generator handles everything.
             skill_info = {"input_type": "text", "skill_id": skill_id}
-        elif is_b4_chapter3_phase7b_deterministic_skill(skill_id):
+        elif is_b4_chapter3_phase7b_runtime_skill(skill_id):
             skill_info = {"input_type": "text", "skill_id": skill_id}
         elif mode == 'unit':
             skill_info = {"input_type": "text", "skill_id": skill_id}
@@ -974,7 +1014,7 @@ def next_question():
             mod = None
         elif is_b4_chapter2_phase6c1_deterministic_skill(skill_id):
             mod = None
-        elif is_b4_chapter3_phase7b_deterministic_skill(skill_id):
+        elif is_b4_chapter3_phase7b_runtime_skill(skill_id):
             mod = None
         elif module_path in sys.modules:
             mod = importlib.reload(sys.modules[module_path])
@@ -1049,7 +1089,7 @@ def next_question():
                             {"error": _b4_chap2_public_payload_validation_message(deny_r)}
                         ), 422
                     data = chap2_payload
-                elif is_b4_chapter3_phase7b_deterministic_skill(skill_id):
+                elif is_b4_chapter3_phase7b_runtime_skill(skill_id):
                     gen_seed = request.args.get("gen_seed", type=int)
                     chap3_payload = generate_for_chap3_skill(
                         skill_id=skill_id,
@@ -1099,13 +1139,19 @@ def next_question():
 
         return jsonify({
             "new_question_text": data["question_text"],
+            "message": data.get("message", ""),
+            "choices": data.get("choices", []),
+            "choices_display": data.get("choices", []),
             "context_string": data.get("context_string", ""),
             "inequality_string": data.get("inequality_string", ""),
             "consecutive_correct": consecutive, 
             "current_level": difficulty_level, 
             "image_base64": data.get("image_base64", ""), 
             "visual_aids": data.get("visual_aids", []),
+            "table": data.get("table", {}),
+            "table_title": data.get("table_title", ""),
             "answer_type": data.get("answer_type", skill_info.get("input_type", "text")),
+            "answer_input_type": data.get("answer_input_type", data.get("answer_type", skill_info.get("input_type", "text"))),
             "problem_type_id": data.get("problem_type_id") or data.get("problem_type"),
             "grading_mode": data.get("grading_mode", ""),
             "check_mode": data.get("check_mode", ""),
@@ -1120,6 +1166,8 @@ def next_question():
             "expected_count": data.get("expected_count"),
             "path_labels": data.get("path_labels", []),
             "requires_listing_or_tree": data.get("requires_listing_or_tree", False),
+            "requires_handwriting": bool(data.get("requires_handwriting", False)),
+            "requires_teacher_review": bool(data.get("requires_teacher_review", False)),
             "n": data.get("n"),
             "expected_row": data.get("expected_row", []),
             "expected_terms": data.get("expected_terms", []),
@@ -1143,6 +1191,7 @@ def check_answer():
         }), 400
 
     skill_id = current['skill']
+    user_ans = _normalize_choice_alias_answer(user_ans, current)
     check_mode = str(
         current.get("check_mode") or current.get("grading_mode") or ""
     ).strip().lower()
@@ -1152,10 +1201,17 @@ def check_answer():
         "handwriting_ai_checked",
         "review_mode",
     }:
+        skill_specific_message = "此題型為 AI/Review 判分路徑，請使用下方 AI 檢查。"
+        if skill_id == "vh_數學B4_StatisticalChartReading":
+            skill_specific_message = (
+                "此技能屬於統計圖表判讀與教師覆核題，請依題目圖表作答，系統將保留作答供 AI/Review 檢查或教師覆核。"
+            )
+        elif skill_id == "vh_數學B4_CumulativeFrequencyTablesAndGraphs":
+            skill_specific_message = "此題需要補表與說明，請使用 AI/Review 檢查或教師覆核。"
         return jsonify(
             {
                 "correct": False,
-                "result": "此題型為 AI/Review 判分路徑，請使用下方 AI 檢查。",
+                "result": skill_specific_message,
                 "check_mode": check_mode,
             }
         )

@@ -1,0 +1,52 @@
+{
+  "question_text": "某社團記錄一週每日到課人數。請說明你會先如何整理資料，並選擇一種最適合呈現趨勢的圖表，簡述理由。",
+  "answer": "",
+  "correct_answer": "",
+  "expected_answer_schema": {
+    "type": "workflow_and_chart_selection",
+    "required_points": [
+      "整理步驟",
+      "圖表選擇",
+      "選擇理由"
+    ]
+  },
+  "choices": [],
+  "explanation": "此題重點在資料整理流程與圖表選擇判斷，需 review 判分。",
+  "skill_id": "vh_數學B4_DataOrganizationAndCharts",
+  "subskill_id": "b4_ch3_data_organization_review_01",
+  "problem_type_id": "data_organization_chart_selection_review",
+  "scenario_family": "data_organization_review",
+  "scenario_id": "data_organization_chart_selection_review",
+  "generator_key": "b4.chap3.data_organization_charts_review_shell",
+  "answer_type": "text",
+  "answer_input_type": "text_or_handwriting",
+  "difficulty": 1,
+  "diagnosis_tags": [
+    "data_organization",
+    "chart_selection"
+  ],
+  "remediation_candidates": [
+    "vh_數學B4_DataOrganizationAndCharts"
+  ],
+  "source_style_refs": [
+    "B4_Ch3_data_organization"
+  ],
+  "parameters": {
+    "scenario_id": "data_organization_chart_selection_review",
+    "scenario_family": "data_organization_review"
+  },
+  "visual_backed": true,
+  "visual_asset_type": "chart_planning_prompt",
+  "requires_teacher_review": true,
+  "runtime_mode": "teacher_review",
+  "check_mode": "review_mode",
+  "grading_mode": "teacher_review",
+  "router_trace": {
+    "input_skill_id": "vh_數學B4_DataOrganizationAndCharts",
+    "selected_subskill_id": "b4_ch3_data_organization_review_01",
+    "selected_problem_type_id": "data_organization_chart_selection_review",
+    "selected_generator_key": "b4.chap3.data_organization_charts_review_shell",
+    "selection_reason": "problem_type_id_specified",
+    "router": "chap3_phase7b"
+  }
+}

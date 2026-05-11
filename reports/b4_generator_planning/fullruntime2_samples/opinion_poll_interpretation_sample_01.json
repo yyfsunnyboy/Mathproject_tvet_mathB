@@ -1,0 +1,55 @@
+{
+  "question_text": "某民調資料如下：樣本數 200、贊成比例 58%、調查方式為網路問卷。請說明此結果可如何解讀，並指出至少一項可能限制。",
+  "answer": "",
+  "correct_answer": "",
+  "expected_answer_schema": {
+    "type": "poll_interpretation_review",
+    "required_points": [
+      "結果解讀",
+      "限制或偏誤"
+    ]
+  },
+  "choices": [],
+  "explanation": "民調解讀需評估樣本代表性與調查方式限制，建議 AI/教師覆核。",
+  "skill_id": "vh_數學B4_OpinionPollInterpretation",
+  "subskill_id": "b4_ch3_opinion_poll_review_01",
+  "problem_type_id": "opinion_poll_interpretation_review",
+  "scenario_family": "opinion_poll_interpretation",
+  "scenario_id": "opinion_poll_interpretation_review",
+  "generator_key": "b4.chap3.opinion_poll_interpretation_review_shell",
+  "answer_type": "text",
+  "answer_input_type": "text_or_handwriting",
+  "difficulty": 1,
+  "diagnosis_tags": [
+    "opinion_poll",
+    "interpretation"
+  ],
+  "remediation_candidates": [
+    "vh_數學B4_OpinionPollInterpretation"
+  ],
+  "source_style_refs": [
+    "B4_Ch3_opinion_poll"
+  ],
+  "parameters": {
+    "scenario_id": "opinion_poll_interpretation_review",
+    "scenario_family": "opinion_poll_interpretation",
+    "poll": {
+      "樣本數": 200,
+      "贊成比例": "58%",
+      "調查方式": "網路問卷"
+    }
+  },
+  "visual_backed": false,
+  "requires_teacher_review": true,
+  "runtime_mode": "teacher_review",
+  "check_mode": "review_mode",
+  "grading_mode": "teacher_review",
+  "router_trace": {
+    "input_skill_id": "vh_數學B4_OpinionPollInterpretation",
+    "selected_subskill_id": "b4_ch3_opinion_poll_review_01",
+    "selected_problem_type_id": "opinion_poll_interpretation_review",
+    "selected_generator_key": "b4.chap3.opinion_poll_interpretation_review_shell",
+    "selection_reason": "problem_type_id_specified",
+    "router": "chap3_phase7b"
+  }
+}

@@ -1,0 +1,52 @@
+{
+  "question_text": "請以樹狀圖列出兩階段事件所有可能路徑，並在手寫區上傳你的作答。",
+  "answer": "",
+  "correct_answer": "",
+  "expected_answer_schema": {
+    "type": "handwriting_tree_diagram",
+    "required_elements": [
+      "分支節點",
+      "完整路徑",
+      "每條路徑標示事件結果"
+    ]
+  },
+  "choices": [],
+  "explanation": "此題為作圖/手寫型，請使用 AI 檢查或教師覆核，不走一般自動比對。",
+  "skill_id": "vh_數學B4_TreeDiagramCounting",
+  "subskill_id": "b4_ch3_tree_diagram_runtime_shell_01",
+  "problem_type_id": "tree_diagram_completion_or_listing",
+  "scenario_family": "tree_diagram_counting",
+  "scenario_id": "tree_diagram_completion_runtime_shell",
+  "generator_key": "b4.chap3.tree_diagram_counting_runtime_shell",
+  "answer_type": "handwriting",
+  "difficulty": 1,
+  "diagnosis_tags": [
+    "tree_diagram",
+    "counting"
+  ],
+  "remediation_candidates": [
+    "vh_數學B4_TreeDiagramCounting"
+  ],
+  "source_style_refs": [
+    "B4_Ch1_tree_diagram"
+  ],
+  "parameters": {
+    "scenario_id": "tree_diagram_completion_runtime_shell",
+    "scenario_family": "tree_diagram_counting"
+  },
+  "visual_backed": true,
+  "visual_asset_type": "tree_diagram_template",
+  "requires_handwriting": true,
+  "requires_teacher_review": false,
+  "runtime_mode": "visual_or_handwriting_ai_checked",
+  "check_mode": "handwriting_ai_checked",
+  "grading_mode": "ai_assisted_review",
+  "router_trace": {
+    "input_skill_id": "vh_數學B4_TreeDiagramCounting",
+    "selected_subskill_id": "b4_ch3_tree_diagram_runtime_shell_01",
+    "selected_problem_type_id": "tree_diagram_completion_or_listing",
+    "selected_generator_key": "b4.chap3.tree_diagram_counting_runtime_shell",
+    "selection_reason": "problem_type_id_specified",
+    "router": "chap3_phase7b"
+  }
+}

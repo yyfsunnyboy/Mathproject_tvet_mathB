@@ -85,6 +85,32 @@
 
 ---
 
+## 5.1 B4 FinalCoverage-Recount（Mode-aware Runtime Coverage）
+
+已完成最終盤點報告：  
+`reports/b4_generator_planning/b4_final_mode_aware_runtime_coverage_recount.md`
+
+核心結論：
+
+- B4 canonical skills：`40`
+- B4 mode-aware runtime coverage：`40/40`
+- `unknown_or_no_runtime_count = 0`
+- primary categories（互斥）：
+  - `DETERMINISTIC_AUTO_CHECKED = 31`
+  - `VISUAL_OR_HANDWRITING_AI_CHECKED = 4`
+  - `TEACHER_REVIEW = 3`
+  - `VISIBILITY_ONLY = 1`
+  - `PARTIAL_RUNTIME = 1`
+
+對應規範已納入 `B4_deterministic_generator_runtime_smoke_gate_SOP_v0.1.md`：
+
+- Mode-aware runtime coverage 定義
+- final recount gate
+- B4 final accepted baseline（40/40）
+- Graph deterministic 邊界（不得硬挖）
+
+---
+
 ## 6. 後續預設流程（與 Template 對應）
 
 | 階段 | 建議 Template | 說明 |
@@ -98,7 +124,17 @@
 
 ## 7. 下一建議 phase（playbook 預設）
 
-**Phase 6J：Chap2 Teacher Audit Visibility Runtime-Ready Batch** — 建議使用 **Template B**。
+**B4 後續主軸（非新增題型）**：
+
+- Admin Coverage Matrix
+- Teacher-facing Runtime Category Display
+- AI-checked / teacher-review UX polishing
+- Final B4 release smoke
+- Coverage matrix 匯出或 dashboard 顯示
+
+> 說明：B4 已完成 final mode-aware coverage recount，後續不建議再以「硬擴 deterministic 題型數量」作為主要目標。
+
+**Phase 6J：Chap2 Teacher Audit Visibility Runtime-Ready Batch** — 建議使用 **Template B**（歷史範例保留）。
 
 - **目的（摘要）：** 讓教師／管理端 **唯讀** 檢視 Chap2 **visibility audit**（例如 `b4_chap2_visibility_audit_logs`），含最小 route／API／模板與測試；**不**改 mastery／APR／fail_streak／remediation／scoring policy。
 - **若 repo 已含 6J 實作與報告：** 本條視為 **已完成路線之範例**；下一動請改依 **`b4_phase6j_*` summary** 與該報告 **Recommended next phase**（常先以 **Template A** 開下一規劃輪）— **不在本索引內啟動實作**。
@@ -112,6 +148,7 @@
 | 是否僅新增流程索引文件 | **是** |
 | 是否新增強制規則條文（凌駕既有 SOP） | **否** |
 | 是否修改 production code / tests / routes / templates / generators / validators / DB / adaptive scoring | **否** |
+| 是否納入 automated visual sample smoke 優先原則與 Graph-3 案例 | **是** |
 | 是否新增題型 | **否** |
 | 是否於本文件內啟動下一 phase 實作 | **否** |
 

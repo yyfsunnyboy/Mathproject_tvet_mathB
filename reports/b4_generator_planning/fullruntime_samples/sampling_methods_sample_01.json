@@ -1,0 +1,49 @@
+{
+  "question_text": "共有 600 名員工，想用系統抽樣抽出 60 人，抽樣間距應為多少？ 請輸入選項代號。",
+  "answer": "2",
+  "correct_answer": "2",
+  "choices": [
+    "1. 抽樣間距為 6",
+    "2. 抽樣間距為 10",
+    "3. 抽樣間距為 12",
+    "4. 抽樣間距為 20"
+  ],
+  "explanation": "系統抽樣間距 = 母群體數 ÷ 樣本數 = 600 ÷ 60 = 10。",
+  "skill_id": "vh_數學B4_SamplingMethods",
+  "subskill_id": "b4_ch3_sampling_methods_classification_01",
+  "problem_type_id": "sampling_methods_classification_choice",
+  "scenario_family": "sampling_methods_boundary_aligned",
+  "scenario_id": "systematic_sampling_interval_or_probability",
+  "generator_key": "b4.chap3.sampling_methods_classification_choice",
+  "answer_type": "integer",
+  "answer_input_type": "choice",
+  "difficulty": 1,
+  "diagnosis_tags": [
+    "sampling_methods",
+    "classification"
+  ],
+  "remediation_candidates": [
+    "vh_數學B4_SamplingMethods"
+  ],
+  "source_style_refs": [
+    "B4_Ch3_sampling"
+  ],
+  "source_style_summary": "3-1 抽樣方法情境判斷與基礎比例計算題型。",
+  "textbook_alignment_note": "對齊 3-1 抽樣方法：簡單隨機、系統、分層隨機、部落抽樣。",
+  "parameters": {
+    "scenario_id": "systematic_sampling_interval_or_probability",
+    "scenario_family": "sampling_methods_boundary_aligned"
+  },
+  "visual_backed": false,
+  "runtime_mode": "deterministic_choice",
+  "check_mode": "deterministic_auto_checked",
+  "grading_mode": "deterministic",
+  "router_trace": {
+    "input_skill_id": "vh_數學B4_SamplingMethods",
+    "selected_subskill_id": "b4_ch3_sampling_methods_classification_01",
+    "selected_problem_type_id": "sampling_methods_classification_choice",
+    "selected_generator_key": "b4.chap3.sampling_methods_classification_choice",
+    "selection_reason": "problem_type_id_specified",
+    "router": "chap3_phase7b"
+  }
+}

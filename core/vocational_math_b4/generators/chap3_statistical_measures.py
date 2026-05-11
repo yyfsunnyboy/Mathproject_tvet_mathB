@@ -389,6 +389,579 @@ def histogram_reading(
         "grading_mode": "deterministic",
     }
 
+def normal_distribution_empirical_rule_basic(
+    skill_id: str,
+    subskill_id: str,
+    difficulty: int = 1,
+    seed: Optional[int] = None,
+    seen_parameter_tuples: Optional[Set[Tuple]] = None,
+    multiple_choice: bool = True,
+) -> Dict[str, Any]:
+    rng = random.Random(seed)
+    scenarios = [
+        ("within_1sigma", "常態分配的經驗法則中，落在平均數正負 1 個標準差內的資料約占百分之幾？", "68"),
+        ("within_2sigma", "常態分配的經驗法則中，落在平均數正負 2 個標準差內的資料約占百分之幾？", "95"),
+        ("within_3sigma", "常態分配的經驗法則中，落在平均數正負 3 個標準差內的資料約占百分之幾（取整數近似）？", "99"),
+    ]
+    scenario_id, question_text, answer = rng.choice(scenarios)
+    param_tuple = ("normal_distribution_empirical_rule_basic", scenario_id)
+    if seen_parameter_tuples is not None:
+        validate_parameter_tuple_not_seen(param_tuple, seen_parameter_tuples)
+        seen_parameter_tuples.add(param_tuple)
+    return {
+        "question_text": question_text,
+        "answer": answer,
+        "correct_answer": answer,
+        "choices": ["68", "95", "99", "50"],
+        "explanation": "經驗法則為 68-95-99.7，分別對應正負 1、2、3 個標準差區間。",
+        "skill_id": skill_id,
+        "subskill_id": subskill_id,
+        "problem_type_id": "empirical_rule_interval_percentage",
+        "scenario_family": "normal_distribution_empirical_rule",
+        "scenario_id": scenario_id,
+        "generator_key": "b4.chap3.empirical_rule_interval_percentage",
+        "answer_type": "rational_fraction",
+        "difficulty": difficulty,
+        "diagnosis_tags": ["normal_distribution", "empirical_rule"],
+        "remediation_candidates": ["vh_數學B4_NormalDistributionAndEmpiricalRule"],
+        "source_style_refs": ["B4_Ch3_normal_distribution"],
+        "parameters": {"scenario_id": scenario_id, "scenario_family": "normal_distribution_empirical_rule"},
+        "visual_backed": False,
+        "runtime_mode": "deterministic_short_answer",
+        "check_mode": "deterministic_auto_checked",
+        "grading_mode": "deterministic",
+    }
+
+def sampling_methods_classification_choice(
+    skill_id: str,
+    subskill_id: str,
+    difficulty: int = 1,
+    seed: Optional[int] = None,
+    seen_parameter_tuples: Optional[Set[Tuple]] = None,
+    multiple_choice: bool = True,
+) -> Dict[str, Any]:
+    rng = random.Random(seed)
+    scenarios = [
+        ("sampling_method_identification_random", "教育局要抽查學生問卷，先把全市學生編號後用抽籤方式抽出 200 人。這屬於哪一種抽樣方法？", "1"),
+        ("sampling_method_identification_systematic", "工廠品管從生產線第 5 件開始，每隔 20 件抽 1 件檢查。這屬於哪一種抽樣方法？", "2"),
+        ("sampling_method_identification_stratified", "調查青年就業時，先按年級分層，再依各層人數比例抽樣。這屬於哪一種抽樣方法？", "3"),
+        ("sampling_method_identification_cluster", "研究者先抽出 4 個社區，再調查這些社區內所有住戶。這屬於哪一種抽樣方法？", "4"),
+        ("systematic_sampling_interval_or_probability", "共有 600 名員工，想用系統抽樣抽出 60 人，抽樣間距應為多少？", "2"),
+        ("stratified_sampling_proportional_allocation", "某校一年級 120 人、二年級 80 人、三年級 100 人，共 300 人。若做分層隨機抽樣共抽 30 人，則一年級應抽幾人？", "3"),
+    ]
+    scenario_id, stem, answer = rng.choice(scenarios)
+    param_tuple = ("sampling_methods_classification_choice", scenario_id)
+    if seen_parameter_tuples is not None:
+        validate_parameter_tuple_not_seen(param_tuple, seen_parameter_tuples)
+        seen_parameter_tuples.add(param_tuple)
+    choices_map = {
+        "sampling_method_identification_random": [
+            "1. 簡單隨機抽樣",
+            "2. 系統抽樣",
+            "3. 分層隨機抽樣",
+            "4. 部落抽樣",
+        ],
+        "sampling_method_identification_systematic": [
+            "1. 簡單隨機抽樣",
+            "2. 系統抽樣",
+            "3. 分層隨機抽樣",
+            "4. 部落抽樣",
+        ],
+        "sampling_method_identification_stratified": [
+            "1. 簡單隨機抽樣",
+            "2. 系統抽樣",
+            "3. 分層隨機抽樣",
+            "4. 部落抽樣",
+        ],
+        "sampling_method_identification_cluster": [
+            "1. 簡單隨機抽樣",
+            "2. 系統抽樣",
+            "3. 分層隨機抽樣",
+            "4. 部落抽樣",
+        ],
+        "systematic_sampling_interval_or_probability": [
+            "1. 抽樣間距為 6",
+            "2. 抽樣間距為 10",
+            "3. 抽樣間距為 12",
+            "4. 抽樣間距為 20",
+        ],
+        "stratified_sampling_proportional_allocation": [
+            "1. 一年級應抽 8 人",
+            "2. 一年級應抽 10 人",
+            "3. 一年級應抽 12 人",
+            "4. 一年級應抽 15 人",
+        ],
+    }
+    explanation_map = {
+        "sampling_method_identification_random": "以抽籤或亂數直接從全體名單抽取，屬於簡單隨機抽樣。",
+        "sampling_method_identification_systematic": "從固定起點後每隔固定件數抽取，屬於系統抽樣。",
+        "sampling_method_identification_stratified": "先分層再依比例抽樣，屬於分層隨機抽樣。",
+        "sampling_method_identification_cluster": "先抽群組（社區/班級）再調查群組內成員，屬於部落抽樣。",
+        "systematic_sampling_interval_or_probability": "系統抽樣間距 = 母群體數 ÷ 樣本數 = 600 ÷ 60 = 10。",
+        "stratified_sampling_proportional_allocation": "一年級比例為 120/300，因此應抽 30 × 120/300 = 12 人。",
+    }
+    return {
+        "question_text": f"{stem} 請輸入選項代號。",
+        "answer": answer,
+        "correct_answer": answer,
+        "choices": choices_map[scenario_id],
+        "explanation": explanation_map.get(scenario_id, "依題意判斷抽樣方法與比例計算。"),
+        "skill_id": skill_id,
+        "subskill_id": subskill_id,
+        "problem_type_id": "sampling_methods_classification_choice",
+        "scenario_family": "sampling_methods_boundary_aligned",
+        "scenario_id": scenario_id,
+        "generator_key": "b4.chap3.sampling_methods_classification_choice",
+        "answer_type": "integer",
+        "answer_input_type": "choice",
+        "difficulty": difficulty,
+        "diagnosis_tags": ["sampling_methods", "classification"],
+        "remediation_candidates": ["vh_數學B4_SamplingMethods"],
+        "source_style_refs": ["B4_Ch3_sampling"],
+        "source_style_summary": "3-1 抽樣方法情境判斷與基礎比例計算題型。",
+        "textbook_alignment_note": "對齊 3-1 抽樣方法：簡單隨機、系統、分層隨機、部落抽樣。",
+        "parameters": {"scenario_id": scenario_id, "scenario_family": "sampling_methods_boundary_aligned"},
+        "visual_backed": False,
+        "runtime_mode": "deterministic_choice",
+        "check_mode": "deterministic_auto_checked",
+        "grading_mode": "deterministic",
+    }
+
+def statistical_basic_concepts_choice(
+    skill_id: str,
+    subskill_id: str,
+    difficulty: int = 1,
+    seed: Optional[int] = None,
+    seen_parameter_tuples: Optional[Set[Tuple]] = None,
+    multiple_choice: bool = True,
+) -> Dict[str, Any]:
+    rng = random.Random(seed)
+    scenarios = [
+        ("descriptive_vs_inferential_statistics", "下列何者屬於敘述統計？", "1"),
+        ("statistics_process_order_or_identification", "統計研究通常包含蒐集、整理、陳示、分析、解釋。下列何者是正確的第一步？", "2"),
+        ("census_vs_sample_survey_basic", "若學校想了解全校學生通勤方式，直接詢問全校每一位學生，這屬於何者？", "3"),
+    ]
+    scenario_id, question_text, answer = rng.choice(scenarios)
+    param_tuple = ("statistical_basic_concepts_choice", scenario_id)
+    if seen_parameter_tuples is not None:
+        validate_parameter_tuple_not_seen(param_tuple, seen_parameter_tuples)
+        seen_parameter_tuples.add(param_tuple)
+    choices_map = {
+        "descriptive_vs_inferential_statistics": [
+            "1. 統計某班本次測驗平均分數並用長條圖呈現",
+            "2. 由樣本推估全市學生身高分布",
+            "3. 依民調推論全國選民支持度",
+            "4. 以樣本預測未來十年人口變化",
+        ],
+        "statistics_process_order_or_identification": [
+            "1. 先解釋結論，再蒐集資料",
+            "2. 先蒐集資料",
+            "3. 先製作圖表，再蒐集資料",
+            "4. 先分析結果，再整理資料",
+        ],
+        "census_vs_sample_survey_basic": [
+            "1. 抽查",
+            "2. 分層隨機抽樣",
+            "3. 普查",
+            "4. 系統抽樣",
+        ],
+    }
+    explanation_map = {
+        "descriptive_vs_inferential_statistics": "敘述統計重點是整理並呈現已蒐集到的資料，不進行母體推論。",
+        "statistics_process_order_or_identification": "統計研究要先蒐集資料，再進行後續整理、陳示、分析與解釋。",
+        "census_vs_sample_survey_basic": "對母群體每一個個體都進行調查，屬於普查。",
+    }
+    return {
+        "question_text": f"{question_text} 請輸入選項代號。",
+        "answer": answer,
+        "correct_answer": answer,
+        "choices": choices_map[scenario_id],
+        "explanation": explanation_map[scenario_id],
+        "skill_id": skill_id,
+        "subskill_id": subskill_id,
+        "problem_type_id": "statistical_basic_concepts_choice",
+        "scenario_family": "statistical_basic_concepts_boundary_aligned",
+        "scenario_id": scenario_id,
+        "generator_key": "b4.chap3.statistical_basic_concepts_choice",
+        "answer_type": "integer",
+        "answer_input_type": "choice",
+        "difficulty": difficulty,
+        "diagnosis_tags": ["statistics_basics", "terminology"],
+        "remediation_candidates": ["vh_數學B4_StatisticalBasicConcepts"],
+        "source_style_refs": ["B4_Ch3_statistical_basics"],
+        "source_style_summary": "3-1 統計基本概念：統計意義、流程、敘述與推論、普查抽查。",
+        "textbook_alignment_note": "避免樣本平均數/母體平均數名詞反覆題，改為 3-1 概念辨識題。",
+        "parameters": {"scenario_id": scenario_id, "scenario_family": "statistical_basic_concepts_boundary_aligned"},
+        "visual_backed": False,
+        "runtime_mode": "deterministic_choice",
+        "check_mode": "deterministic_auto_checked",
+        "grading_mode": "deterministic",
+    }
+
+def tree_diagram_counting_runtime_shell(
+    skill_id: str,
+    subskill_id: str,
+    difficulty: int = 1,
+    seed: Optional[int] = None,
+    seen_parameter_tuples: Optional[Set[Tuple]] = None,
+    multiple_choice: bool = True,
+) -> Dict[str, Any]:
+    scenario_id = "tree_diagram_completion_runtime_shell"
+    return {
+        "question_text": "請以樹狀圖列出兩階段事件所有可能路徑，並在手寫區上傳你的作答。",
+        "answer": "",
+        "correct_answer": "",
+        "expected_answer_schema": {
+            "type": "handwriting_tree_diagram",
+            "required_elements": ["分支節點", "完整路徑", "每條路徑標示事件結果"],
+        },
+        "choices": [],
+        "explanation": "此題為作圖/手寫型，請使用 AI 檢查或教師覆核，不走一般自動比對。",
+        "skill_id": skill_id,
+        "subskill_id": subskill_id,
+        "problem_type_id": "tree_diagram_completion_or_listing",
+        "scenario_family": "tree_diagram_counting",
+        "scenario_id": scenario_id,
+        "generator_key": "b4.chap3.tree_diagram_counting_runtime_shell",
+        "answer_type": "handwriting",
+        "difficulty": difficulty,
+        "diagnosis_tags": ["tree_diagram", "counting"],
+        "remediation_candidates": ["vh_數學B4_TreeDiagramCounting"],
+        "source_style_refs": ["B4_Ch1_tree_diagram"],
+        "parameters": {"scenario_id": scenario_id, "scenario_family": "tree_diagram_counting"},
+        "visual_backed": True,
+        "visual_asset_type": "tree_diagram_template",
+        "requires_handwriting": True,
+        "requires_teacher_review": False,
+        "runtime_mode": "visual_or_handwriting_ai_checked",
+        "check_mode": "handwriting_ai_checked",
+        "grading_mode": "ai_assisted_review",
+    }
+
+def frequency_distribution_table_construction_shell(
+    skill_id: str,
+    subskill_id: str,
+    difficulty: int = 1,
+    seed: Optional[int] = None,
+    seen_parameter_tuples: Optional[Set[Tuple]] = None,
+    multiple_choice: bool = True,
+) -> Dict[str, Any]:
+    rng = random.Random(seed)
+    samples = [12, 15, 18, 18, 19, 20, 20, 21, 23, 24]
+    if rng.randint(0, 1) == 1:
+        samples = [8, 10, 10, 11, 13, 13, 14, 15, 15, 16]
+    scenario_id = "frequency_distribution_table_completion"
+    return {
+        "question_text": f"請將下列資料整理成次數分配表，並在手寫區填入組別與次數：{samples}",
+        "answer": "",
+        "correct_answer": "",
+        "expected_answer_schema": {
+            "type": "frequency_table_completion",
+            "required_columns": ["組別", "次數"],
+            "minimum_rows": 4,
+        },
+        "choices": [],
+        "explanation": "此題為補表/手寫型，請使用 AI 檢查或教師覆核，不走一般自動比對。",
+        "skill_id": skill_id,
+        "subskill_id": subskill_id,
+        "problem_type_id": "table_completion_handwriting",
+        "scenario_family": "frequency_distribution_table_construction",
+        "scenario_id": scenario_id,
+        "generator_key": "b4.chap3.frequency_distribution_table_construction_shell",
+        "answer_type": "handwriting",
+        "answer_input_type": "handwriting",
+        "difficulty": difficulty,
+        "diagnosis_tags": ["frequency_distribution_table", "table_construction"],
+        "remediation_candidates": ["vh_數學B4_FrequencyDistributionTableConstruction"],
+        "source_style_refs": ["B4_Ch3_frequency_table_construction"],
+        "parameters": {
+            "scenario_id": scenario_id,
+            "scenario_family": "frequency_distribution_table_construction",
+            "raw_data": samples,
+        },
+        "visual_backed": True,
+        "visual_asset_type": "table_template",
+        "requires_handwriting": True,
+        "requires_teacher_review": True,
+        "runtime_mode": "visual_or_handwriting_ai_checked",
+        "check_mode": "handwriting_ai_checked",
+        "grading_mode": "ai_assisted_review",
+    }
+
+def sampling_survey_review_shell(
+    skill_id: str,
+    subskill_id: str,
+    difficulty: int = 1,
+    seed: Optional[int] = None,
+    seen_parameter_tuples: Optional[Set[Tuple]] = None,
+    multiple_choice: bool = True,
+) -> Dict[str, Any]:
+    rng = random.Random(seed)
+    scenarios = [
+        (
+            "population_sample_size_identification",
+            "某技術高中有學生 1000 人，學校抽出 100 人做健康檢查。若問「樣本數是多少？」應選哪一項？",
+            "2",
+            [
+                "1. 1000",
+                "2. 100",
+                "3. 900",
+                "4. 無法判定",
+            ],
+            "樣本數是被抽出接受調查的人數，因此為 100。",
+        ),
+        (
+            "population_sample_identification",
+            "某城市共有 5000 位機車族，研究者抽出其中 250 位填寫問卷。下列何者是樣本？",
+            "3",
+            [
+                "1. 全城市 5000 位機車族",
+                "2. 全城市所有交通工具使用者",
+                "3. 被抽出的 250 位機車族",
+                "4. 問卷題目本身",
+            ],
+            "樣本是實際被抽出接受調查的對象，因此是 250 位機車族。",
+        ),
+        (
+            "census_or_sample_survey_identification",
+            "學校只訪問各班 5 位學生了解午餐滿意度，此作法屬於何者？",
+            "4",
+            [
+                "1. 普查",
+                "2. 母群體數",
+                "3. 部落抽樣",
+                "4. 抽查",
+            ],
+            "只調查母群體中的一部分個體，屬於抽查。",
+        ),
+    ]
+    scenario_id, question_text, answer, choices, explanation = rng.choice(scenarios)
+    return {
+        "question_text": f"{question_text} 請輸入選項代號。",
+        "answer": answer,
+        "correct_answer": answer,
+        "choices": choices,
+        "explanation": explanation,
+        "skill_id": skill_id,
+        "subskill_id": subskill_id,
+        "problem_type_id": "sampling_survey_bias_review",
+        "scenario_family": "sampling_survey_foundation_identification",
+        "scenario_id": scenario_id,
+        "generator_key": "b4.chap3.sampling_survey_review_shell",
+        "answer_type": "integer",
+        "answer_input_type": "choice",
+        "difficulty": difficulty,
+        "diagnosis_tags": ["sampling_survey", "population_sample"],
+        "remediation_candidates": ["vh_數學B4_SamplingSurvey"],
+        "source_style_refs": ["B4_Ch3_sampling_survey"],
+        "source_style_summary": "3-1 抽樣調查：母群體、樣本、母群體數、樣本數、普查與抽查。",
+        "textbook_alignment_note": "採具體情境判斷題，避免抽象名詞定義堆疊。",
+        "parameters": {"scenario_id": scenario_id, "scenario_family": "sampling_survey_foundation_identification"},
+        "visual_backed": False,
+        "requires_teacher_review": True,
+        "runtime_mode": "teacher_review",
+        "check_mode": "review_mode",
+        "grading_mode": "teacher_review",
+    }
+
+def cumulative_frequency_tables_graphs_review_shell(
+    skill_id: str,
+    subskill_id: str,
+    difficulty: int = 1,
+    seed: Optional[int] = None,
+    seen_parameter_tuples: Optional[Set[Tuple]] = None,
+    multiple_choice: bool = True,
+) -> Dict[str, Any]:
+    scenario_id = "cumulative_frequency_table_completion_review"
+    headers = ["組別", "次數", "累積次數"]
+    rows = [
+        ["0-9", "3", "3"],
+        ["10-19", "5", "8"],
+        ["20-29", "4", "□"],
+        ["30-39", "2", "□"],
+    ]
+    table_title = "累積次數分配表"
+    image_b64 = _build_table_png_base64(headers, rows, title=table_title)
+    return {
+        "question_text": "請依下表補齊累積次數欄位，並簡述你如何由次數欄推得累積次數。",
+        "answer": "",
+        "correct_answer": "",
+        "expected_answer_schema": {
+            "type": "table_completion_with_reasoning",
+            "required_columns": headers,
+            "minimum_rows": 4,
+            "required_points": ["補齊累積次數", "由上而下累加說明"],
+        },
+        "choices": [],
+        "explanation": "累積次數是由上而下逐列累加次數欄位得到，例如先有 3，再加 5 得 8，後續依序累加即可。",
+        "skill_id": skill_id,
+        "subskill_id": subskill_id,
+        "problem_type_id": "cumulative_frequency_table_completion_review",
+        "scenario_family": "cumulative_frequency_table_completion_review",
+        "scenario_id": scenario_id,
+        "generator_key": "b4.chap3.cumulative_frequency_tables_graphs_review_shell",
+        "answer_type": "handwriting",
+        "answer_input_type": "free_response_or_handwriting",
+        "difficulty": difficulty,
+        "diagnosis_tags": ["cumulative_frequency", "table_completion"],
+        "remediation_candidates": ["vh_數學B4_CumulativeFrequencyTablesAndGraphs"],
+        "source_style_refs": ["B4_Ch3_cumulative_frequency"],
+        "source_style_summary": "3-2 累積次數補表題，需依次數欄位逐列累加。",
+        "textbook_alignment_note": "保留補表與說明作答型態，不轉為 deterministic 單值比對。",
+        "parameters": {
+            "scenario_id": scenario_id,
+            "scenario_family": "cumulative_frequency_table_completion_review",
+            "table_rows": rows,
+        },
+        "visual_backed": True,
+        "visual_asset_type": "table",
+        "table_title": table_title,
+        "table": {
+            "table_title": table_title,
+            "headers": headers,
+            "rows": rows,
+        },
+        "image_base64": image_b64,
+        "visual_aids": [
+            {
+                "type": "table",
+                "title": table_title,
+                "caption": table_title,
+                "alt_text": table_title,
+                "headers": headers,
+                "rows": rows,
+            }
+        ],
+        "requires_handwriting": True,
+        "requires_teacher_review": True,
+        "runtime_mode": "visual_or_handwriting_ai_checked",
+        "check_mode": "review_mode",
+        "grading_mode": "teacher_review",
+    }
+
+def data_organization_charts_review_shell(
+    skill_id: str,
+    subskill_id: str,
+    difficulty: int = 1,
+    seed: Optional[int] = None,
+    seen_parameter_tuples: Optional[Set[Tuple]] = None,
+    multiple_choice: bool = True,
+) -> Dict[str, Any]:
+    scenario_id = "data_organization_chart_selection_review"
+    return {
+        "question_text": "某社團記錄一週每日到課人數。請說明你會先如何整理資料，並選擇一種最適合呈現趨勢的圖表，簡述理由。",
+        "answer": "",
+        "correct_answer": "",
+        "expected_answer_schema": {
+            "type": "workflow_and_chart_selection",
+            "required_points": ["整理步驟", "圖表選擇", "選擇理由"],
+        },
+        "choices": [],
+        "explanation": "此題重點在資料整理流程與圖表選擇判斷，需 review 判分。",
+        "skill_id": skill_id,
+        "subskill_id": subskill_id,
+        "problem_type_id": "data_organization_chart_selection_review",
+        "scenario_family": "data_organization_review",
+        "scenario_id": scenario_id,
+        "generator_key": "b4.chap3.data_organization_charts_review_shell",
+        "answer_type": "text",
+        "answer_input_type": "text_or_handwriting",
+        "difficulty": difficulty,
+        "diagnosis_tags": ["data_organization", "chart_selection"],
+        "remediation_candidates": ["vh_數學B4_DataOrganizationAndCharts"],
+        "source_style_refs": ["B4_Ch3_data_organization"],
+        "parameters": {"scenario_id": scenario_id, "scenario_family": "data_organization_review"},
+        "visual_backed": True,
+        "visual_asset_type": "chart_planning_prompt",
+        "requires_teacher_review": True,
+        "runtime_mode": "teacher_review",
+        "check_mode": "review_mode",
+        "grading_mode": "teacher_review",
+    }
+
+def statistical_chart_reading_visibility_shell(
+    skill_id: str,
+    subskill_id: str,
+    difficulty: int = 1,
+    seed: Optional[int] = None,
+    seen_parameter_tuples: Optional[Set[Tuple]] = None,
+    multiple_choice: bool = True,
+) -> Dict[str, Any]:
+    scenario_id = "statistical_chart_reading_visibility_only"
+    return {
+        "question_text": "觀察附圖中的兩種統計圖表，請描述一項你看到的資料趨勢，並指出一項解讀時要注意的限制。",
+        "message": "此技能屬於統計圖表判讀與教師覆核題，請依題目圖表作答，系統將保留作答供 AI 檢查或教師覆核。",
+        "answer": "",
+        "correct_answer": "",
+        "expected_answer_schema": {
+            "type": "chart_reading_open_response",
+            "required_points": ["趨勢描述", "解讀限制"],
+        },
+        "choices": [],
+        "explanation": "此題為混合圖表判讀的開放式說明，先走 visibility/review path。",
+        "skill_id": skill_id,
+        "subskill_id": subskill_id,
+        "problem_type_id": "statistical_chart_reading_visibility_review",
+        "scenario_family": "statistical_chart_reading_visibility",
+        "scenario_id": scenario_id,
+        "generator_key": "b4.chap3.statistical_chart_reading_visibility_shell",
+        "answer_type": "text",
+        "answer_input_type": "text_or_handwriting",
+        "difficulty": difficulty,
+        "diagnosis_tags": ["chart_reading", "interpretation"],
+        "remediation_candidates": ["vh_數學B4_StatisticalChartReading"],
+        "source_style_refs": ["B4_Ch3_statistical_chart_reading"],
+        "source_style_summary": "3-2 統計圖表判讀與解釋限制之開放式題型。",
+        "textbook_alignment_note": "此題屬圖表詮釋與覆核題，不進行 deterministic 自動批改。",
+        "parameters": {"scenario_id": scenario_id, "scenario_family": "statistical_chart_reading_visibility"},
+        "visual_backed": True,
+        "visual_asset_type": "mixed_chart_prompt",
+        "requires_teacher_review": True,
+        "runtime_mode": "visibility_only",
+        "check_mode": "review_mode",
+        "grading_mode": "visibility_only",
+    }
+
+def opinion_poll_interpretation_review_shell(
+    skill_id: str,
+    subskill_id: str,
+    difficulty: int = 1,
+    seed: Optional[int] = None,
+    seen_parameter_tuples: Optional[Set[Tuple]] = None,
+    multiple_choice: bool = True,
+) -> Dict[str, Any]:
+    scenario_id = "opinion_poll_interpretation_review"
+    poll = {"樣本數": 200, "贊成比例": "58%", "調查方式": "網路問卷"}
+    return {
+        "question_text": "某民調資料如下：樣本數 200、贊成比例 58%、調查方式為網路問卷。請說明此結果可如何解讀，並指出至少一項可能限制。",
+        "answer": "",
+        "correct_answer": "",
+        "expected_answer_schema": {
+            "type": "poll_interpretation_review",
+            "required_points": ["結果解讀", "限制或偏誤"],
+        },
+        "choices": [],
+        "explanation": "民調解讀需評估樣本代表性與調查方式限制，建議 AI/教師覆核。",
+        "skill_id": skill_id,
+        "subskill_id": subskill_id,
+        "problem_type_id": "opinion_poll_interpretation_review",
+        "scenario_family": "opinion_poll_interpretation",
+        "scenario_id": scenario_id,
+        "generator_key": "b4.chap3.opinion_poll_interpretation_review_shell",
+        "answer_type": "text",
+        "answer_input_type": "text_or_handwriting",
+        "difficulty": difficulty,
+        "diagnosis_tags": ["opinion_poll", "interpretation"],
+        "remediation_candidates": ["vh_數學B4_OpinionPollInterpretation"],
+        "source_style_refs": ["B4_Ch3_opinion_poll"],
+        "parameters": {"scenario_id": scenario_id, "scenario_family": "opinion_poll_interpretation", "poll": poll},
+        "visual_backed": False,
+        "requires_teacher_review": True,
+        "runtime_mode": "teacher_review",
+        "check_mode": "review_mode",
+        "grading_mode": "teacher_review",
+    }
+
 def _generate_perfect_square_variance_dataset(rng: random.Random) -> Tuple[List[int], int, int]:
     """Generate a small dataset with integer mean and perfect square variance.
     Returns (dataset, mean, variance).

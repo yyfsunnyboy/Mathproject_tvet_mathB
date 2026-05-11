@@ -1,0 +1,49 @@
+{
+  "question_text": "若學校想了解全校學生通勤方式，直接詢問全校每一位學生，這屬於何者？ 請輸入選項代號。",
+  "answer": "3",
+  "correct_answer": "3",
+  "choices": [
+    "1. 抽查",
+    "2. 分層隨機抽樣",
+    "3. 普查",
+    "4. 系統抽樣"
+  ],
+  "explanation": "對母群體每一個個體都進行調查，屬於普查。",
+  "skill_id": "vh_數學B4_StatisticalBasicConcepts",
+  "subskill_id": "b4_ch3_statistical_basic_concepts_choice_01",
+  "problem_type_id": "statistical_basic_concepts_choice",
+  "scenario_family": "statistical_basic_concepts_boundary_aligned",
+  "scenario_id": "census_vs_sample_survey_basic",
+  "generator_key": "b4.chap3.statistical_basic_concepts_choice",
+  "answer_type": "integer",
+  "answer_input_type": "choice",
+  "difficulty": 1,
+  "diagnosis_tags": [
+    "statistics_basics",
+    "terminology"
+  ],
+  "remediation_candidates": [
+    "vh_數學B4_StatisticalBasicConcepts"
+  ],
+  "source_style_refs": [
+    "B4_Ch3_statistical_basics"
+  ],
+  "source_style_summary": "3-1 統計基本概念：統計意義、流程、敘述與推論、普查抽查。",
+  "textbook_alignment_note": "避免樣本平均數/母體平均數名詞反覆題，改為 3-1 概念辨識題。",
+  "parameters": {
+    "scenario_id": "census_vs_sample_survey_basic",
+    "scenario_family": "statistical_basic_concepts_boundary_aligned"
+  },
+  "visual_backed": false,
+  "runtime_mode": "deterministic_choice",
+  "check_mode": "deterministic_auto_checked",
+  "grading_mode": "deterministic",
+  "router_trace": {
+    "input_skill_id": "vh_數學B4_StatisticalBasicConcepts",
+    "selected_subskill_id": "b4_ch3_statistical_basic_concepts_choice_01",
+    "selected_problem_type_id": "statistical_basic_concepts_choice",
+    "selected_generator_key": "b4.chap3.statistical_basic_concepts_choice",
+    "selection_reason": "problem_type_id_specified",
+    "router": "chap3_phase7b"
+  }
+}

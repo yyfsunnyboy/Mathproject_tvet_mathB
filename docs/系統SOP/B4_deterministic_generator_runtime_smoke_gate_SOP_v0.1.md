@@ -390,6 +390,101 @@ runtime smoke 不得只驗證「有題目」。
 - v0.1.2：新增 Section 8.1 Skill Availability / Not-Enabled UX Rule，要求未開放 skill 回傳中性 clear error，不得顯示過期 phase 名稱、legacy import error、encoded／double-encoded skill_id，並要求 UI／smoke 區分 enabled／not-yet-enabled／reserved 三種狀態。
 - v0.1.3：新增 Adaptive Practice Chapter Mode Entry and UI State Contract。要求章節單元練習連結必須使用 chapter mode，開始診斷不得 silent no-op，且 runtime smoke 必須驗證 progress / display mastery / trajectory / session state 更新；若只出題但 UI 狀態不更新，應標記 NEEDS_UI_STATE_REPAIR。
 - v0.1.5：新增 Section 8.3 Runtime-Ready 定義與階段性驗收。明確定義 runtime-ready 必須包含 skill-level textbook coverage 與 automated scenario diversity check，並將 manual smoke 的執行時機延後至 chapter-level 全部技能完成後。
+- v0.1.6：新增「Mode-aware Runtime Coverage 定義」與「Final Coverage Recount Gate」，並收錄 Phase B4-FinalCoverage-Recount 最終結論（B4 40/40 mode-aware coverage、unknown_or_no_runtime_count = 0）。
+
+## 14. Mode-aware Runtime Coverage 定義（B4 Final）
+
+### 14.1 Runtime-ready 不等於全 deterministic
+
+B4 runtime-ready 的正式定義不再等同於「所有 skill 都 deterministic auto-check」。  
+**正式定義**：每個 canonical skill 都必須有且僅有一個 `primary_runtime_category`：
+
+- `DETERMINISTIC_AUTO_CHECKED`
+- `VISUAL_OR_HANDWRITING_AI_CHECKED`
+- `TEACHER_REVIEW`
+- `VISIBILITY_ONLY`
+- `PARTIAL_RUNTIME`
+
+每個 skill 只能有一個 primary category。
+
+### 14.2 Secondary tags 規範
+
+下列僅能作為 `secondary_tags`，不可與 primary category 重複加總：
+
+- `blocked_by_textbook_fidelity`
+- `future_ai_checked`
+- `handwriting_candidate`
+- `teacher_review_candidate`
+- `visibility_only_candidate`
+- `partial_family_blocked`
+- `deterministic_released`
+- `review_shell_released`
+
+## 15. Final Coverage Recount Gate（全冊 Closure 前必備）
+
+在全冊 closure 前，必須建立 final coverage recount report，並驗證：
+
+1. `total canonical skills count` 正確。
+2. 每個 skill 都有 `primary_runtime_category`。
+3. primary category counts 加總等於 total skills。
+4. `unknown_or_no_runtime_count = 0`。
+5. blocked/fidelity-gated items 不可算 unknown。
+6. partial runtime 必須明列 released family 與 blocked family。
+7. Graph/visual blocked 題型必須附 blocking reason 與 future path。
+
+## 16. B4 Final Accepted Baseline（Phase B4-FinalCoverage-Recount）
+
+report:
+`reports/b4_generator_planning/b4_final_mode_aware_runtime_coverage_recount.md`
+
+Accepted status:
+`B4 full skill mode-aware runtime coverage CLOSED AS COMPLETE`
+
+Coverage count（final）：
+
+- `total_b4_skills = 40`
+- `DETERMINISTIC_AUTO_CHECKED = 31`
+- `VISUAL_OR_HANDWRITING_AI_CHECKED = 4`
+- `TEACHER_REVIEW = 3`
+- `VISIBILITY_ONLY = 1`
+- `PARTIAL_RUNTIME = 1`
+- `sum_primary_categories = 40`
+- `unknown_or_no_runtime_count = 0`
+
+Partial runtime 明確列示：
+
+- `vh_數學B4_HistogramsAndFrequencyPolygons`
+  - released: `histogram_reading`
+  - blocked: `frequency_polygon_reading`（textbook fidelity gate）
+
+Blocked/fidelity-gated but not unknown：
+
+- `frequency_polygon_reading`
+- `cumulative_frequency_graph_reading`
+- `mixed_chart_interpretation`
+
+## 17. Graph 題型 deterministic 邊界（禁止硬挖）
+
+Graph-4 / Graph-5 已證明剩餘圖形題不適合硬轉 deterministic short-answer。  
+若 textbook fidelity gate 判定題型主軸為作圖、補表、多步判讀、開放式說明或 `needs_review`，不得為了增加 runtime 數量硬改為 deterministic。
+
+允許分流：
+
+- `visual_or_handwriting_ai_checked`
+- `teacher_review`
+- `visibility_only`
+- `partial_runtime`
+- `future_ai_checked`
+
+## 18. B4 Release 後建議工作
+
+B4 後續工作主軸不再是新增題型，而是：
+
+- Admin Coverage Matrix
+- Teacher-facing Runtime Category Display
+- AI-checked / teacher-review UX polishing
+- Final B4 release smoke
+- Coverage matrix 匯出或 dashboard 顯示
 
 ## 6.1 Frontend Double-Encoding Guard（v0.1.1 追加）
 
@@ -521,10 +616,58 @@ manual smoke 檢查項目：
 每一批 visual runtime path report 必須標示其中一種狀態：
 - `BLOCKED`
 - `READY_FOR_MANUAL_SMOKE`
+- `AUTO_VISUAL_SMOKE_PASSED`
 - `MANUAL_SMOKE_PASSED`
 - `ACCEPTED_WITH_KNOWN_LIMITATIONS`
 
 若只有 planning report，沒有 runtime code 與 tests，不得標示 `READY_FOR_MANUAL_SMOKE`。
+
+### Automated visual sample smoke 優先原則
+
+visual/table 題型不再預設要求每批人工 manual smoke。每批新增 visual/table family 應先執行 automated visual sample smoke，並以自動化 sample、metadata、localization、answer consistency、`/check_answer` closed-loop 結果作為第一層驗收證據。
+
+automated visual sample smoke 至少需包含：
+- 自動抽樣 2-3 題。
+- 驗證 `visual_backed` / `visual_asset_type` / `runtime_mode` / `check_mode` / `grading_mode`。
+- 驗證 `visual_aids` 或 `image_base64` 存在。
+- 驗證題幹、圖表標題、軸標籤、caption、alt_text、explanation 已中文化。
+- 驗證沒有英文殘留。
+- 驗證答案與圖表/表格資料一致。
+- 驗證 `/check_answer` 正答判對、錯答判錯。
+- 匯出 sample artifacts，例如 png 或 json。
+- 在 report 記錄 sample artifact paths。
+
+只有以下情況才要求人工 manual smoke：
+- automated visual sample smoke 失敗。
+- sample artifact 顯示異常。
+- 新增 UI 或改動 template。
+- 新增 AI grading / handwriting grading / review mode。
+- 上線前全冊代表性抽查。
+
+report 狀態明確允許 `AUTO_VISUAL_SMOKE_PASSED`。此狀態表示 automated visual sample smoke 已通過，sample artifacts 已留存且 report 已記錄 artifact paths；除非符合上述人工 smoke 條件，不必把每批 visual/table family 都升級為 manual smoke gate。
+
+### Phase B4-Graph-3 automated visual sample smoke 案例
+
+Phase B4-Graph-3：
+
+- report path:
+  `reports/b4_generator_planning/b4_graph3_histogram_runtime_closed_loop_summary.md`
+
+- family:
+  - `vh_數學B4_HistogramsAndFrequencyPolygons:histogram_reading`
+
+- automated sample artifacts:
+  - `graph3_histogram_sample_01.png`
+  - `graph3_histogram_sample_02.png`
+  - `graph3_histogram_sample_03.png`
+
+- tests:
+  - `tests/test_b4_graph3_histogram_runtime_closed_loop.py -> 10 passed`
+  - `tests/test_b4_graph2_visual_runtime_closed_loop.py -> 14 passed`
+  - `tests/test_b4_graph1_visual_runtime_first_batch.py -> 8 passed`
+
+- status:
+  `AUTO_VISUAL_SMOKE_PASSED`
 
 ### Phase B4-Graph-1 範例
 Phase B4-Graph-1：

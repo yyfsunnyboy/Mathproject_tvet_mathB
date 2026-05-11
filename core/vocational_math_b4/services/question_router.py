@@ -792,6 +792,86 @@ _CHAP3_PHASE7B_REGISTRY: dict[str, list[dict[str, object]]] = {
             "generator_fn": _chap3_stat.histogram_reading,
         },
     ],
+    "vh_數學B4_NormalDistributionAndEmpiricalRule": [
+        {
+            "subskill_id": "b4_ch3_normal_distribution_empirical_rule_01",
+            "problem_type_id": "empirical_rule_interval_percentage",
+            "generator_key": "b4.chap3.empirical_rule_interval_percentage",
+            "generator_fn": _chap3_stat.normal_distribution_empirical_rule_basic,
+        },
+    ],
+    "vh_數學B4_SamplingMethods": [
+        {
+            "subskill_id": "b4_ch3_sampling_methods_classification_01",
+            "problem_type_id": "sampling_methods_classification_choice",
+            "generator_key": "b4.chap3.sampling_methods_classification_choice",
+            "generator_fn": _chap3_stat.sampling_methods_classification_choice,
+        },
+    ],
+    "vh_數學B4_StatisticalBasicConcepts": [
+        {
+            "subskill_id": "b4_ch3_statistical_basic_concepts_choice_01",
+            "problem_type_id": "statistical_basic_concepts_choice",
+            "generator_key": "b4.chap3.statistical_basic_concepts_choice",
+            "generator_fn": _chap3_stat.statistical_basic_concepts_choice,
+        },
+    ],
+    "vh_數學B4_TreeDiagramCounting": [
+        {
+            "subskill_id": "b4_ch3_tree_diagram_runtime_shell_01",
+            "problem_type_id": "tree_diagram_completion_or_listing",
+            "generator_key": "b4.chap3.tree_diagram_counting_runtime_shell",
+            "generator_fn": _chap3_stat.tree_diagram_counting_runtime_shell,
+        },
+    ],
+    "vh_數學B4_FrequencyDistributionTableConstruction": [
+        {
+            "subskill_id": "b4_ch3_frequency_distribution_table_shell_01",
+            "problem_type_id": "table_completion_handwriting",
+            "generator_key": "b4.chap3.frequency_distribution_table_construction_shell",
+            "generator_fn": _chap3_stat.frequency_distribution_table_construction_shell,
+        },
+    ],
+    "vh_數學B4_SamplingSurvey": [
+        {
+            "subskill_id": "b4_ch3_sampling_survey_review_01",
+            "problem_type_id": "sampling_survey_bias_review",
+            "generator_key": "b4.chap3.sampling_survey_review_shell",
+            "generator_fn": _chap3_stat.sampling_survey_review_shell,
+        },
+    ],
+    "vh_數學B4_CumulativeFrequencyTablesAndGraphs": [
+        {
+            "subskill_id": "b4_ch3_cumulative_frequency_review_01",
+            "problem_type_id": "cumulative_frequency_table_completion_review",
+            "generator_key": "b4.chap3.cumulative_frequency_tables_graphs_review_shell",
+            "generator_fn": _chap3_stat.cumulative_frequency_tables_graphs_review_shell,
+        },
+    ],
+    "vh_數學B4_DataOrganizationAndCharts": [
+        {
+            "subskill_id": "b4_ch3_data_organization_review_01",
+            "problem_type_id": "data_organization_chart_selection_review",
+            "generator_key": "b4.chap3.data_organization_charts_review_shell",
+            "generator_fn": _chap3_stat.data_organization_charts_review_shell,
+        },
+    ],
+    "vh_數學B4_StatisticalChartReading": [
+        {
+            "subskill_id": "b4_ch3_statistical_chart_visibility_01",
+            "problem_type_id": "statistical_chart_reading_visibility_review",
+            "generator_key": "b4.chap3.statistical_chart_reading_visibility_shell",
+            "generator_fn": _chap3_stat.statistical_chart_reading_visibility_shell,
+        },
+    ],
+    "vh_數學B4_OpinionPollInterpretation": [
+        {
+            "subskill_id": "b4_ch3_opinion_poll_review_01",
+            "problem_type_id": "opinion_poll_interpretation_review",
+            "generator_key": "b4.chap3.opinion_poll_interpretation_review_shell",
+            "generator_fn": _chap3_stat.opinion_poll_interpretation_review_shell,
+        },
+    ],
 }
 
 def generate_for_chap3_skill(

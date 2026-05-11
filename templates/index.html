@@ -1597,6 +1597,7 @@
                         </div>
                         {% endif %}
                     </div>
+                    <div id="question-choices" style="margin-top: 10px;"></div>
                 </div>
                 {% if is_similar_practice %}
                 <div class="similar-toolbar">
@@ -2092,7 +2093,7 @@
 
         // DOM 元素
         let canvas, ctx, analyzeBtn, submitBtn, answerInput, resultDisplay;
-        let questionText, chatHistory, streakCounter;
+        let questionText, questionChoices, chatHistory, streakCounter;
         let canvasResizeObserver = null;
         let lastCanvasDisplayWidth = 0;
         let lastCanvasDisplayHeight = 0;
@@ -2127,6 +2128,7 @@
             answerInput = document.getElementById('answer-input');
             resultDisplay = document.getElementById('result-display');
             questionText = document.getElementById('question-text');
+            questionChoices = document.getElementById('question-choices');
             chatHistory = document.getElementById('chat-history');
             streakCounter = document.getElementById('streak-counter');
             levelIndicator = document.getElementById('level-indicator');
@@ -3193,6 +3195,7 @@
                     // 1. 顯示題目文字
                     questionText.innerHTML = data.new_question_text;
                     isInitialQuestionLoaded = true;
+                    renderChoices(data.choices || data.choices_display || []);
 
                     // [V9.5 Debug] 印出後端回傳的所有資料，讓我們看看有沒有圖片
                     console.log("🔍 Backend Data Received:", data);
@@ -3302,8 +3305,29 @@
                 .catch(err => {
                     console.error('出題失敗:', err);
                     questionText.textContent = '出題失敗，請重新整理';
+                    if (questionChoices) questionChoices.innerHTML = '';
                     if (questionText) questionText.style.opacity = '1';
                 });
+        }
+
+        function renderChoices(choices) {
+            if (!questionChoices) return;
+            questionChoices.innerHTML = '';
+            if (!Array.isArray(choices) || choices.length === 0) return;
+            const normalized = choices.map((choice, idx) => {
+                if (typeof choice === 'string') {
+                    return choice;
+                }
+                if (choice && typeof choice === 'object') {
+                    const label = String(choice.label || String.fromCharCode(65 + idx));
+                    const text = String(choice.text || '');
+                    return `${label}. ${text}`.trim();
+                }
+                return String(choice || '');
+            });
+            questionChoices.innerHTML = normalized
+                .map((line) => `<div class="choice-item" style="padding:4px 0;">${line}</div>`)
+                .join('');
         }
 
         // === 提交答案 ===
