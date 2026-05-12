@@ -802,3 +802,333 @@ Phase B4-Graph-1ï¼š
 ### Chap3 ±j¨î³W½d¡]·s¼W¡^
 - B4 release «e¡AChap3 skills ¥²¶] question quality gate¡C
 - µo²{ blocking issue¡]¦p choice µL choices¡Bªş¹ÏµL¹Ï¡Bdeterministic answer ªÅ¥Õ¡Breview µL rubric¡^»İ¥ı³Ì¤p­×¸É¨Ã¦^Âk´ú¸Õ¡A¦A¶i release¡C
+
+---
+
+## B4-SOP-QuestionDiversityGate ¸É¥R¡]v0.1¡^
+
+¥»¤å¥óÄİ runtime smoke gate¡A¦ı deterministic release «e¥²¶·¦P¨Bº¡¨¬ question diversity gate¡A³W«h¦p¤U¡C
+
+### A. ÃD¥Ø¤£¥i­«½Æ©Ê¹L°ª­ì«h
+1. ¦P¤@ skill ¤£¥i¥u¥Î 2~3 ­Ó©T©wÃD·F½ü´À¡C
+2. ¦P¤@ÃD·F¤£¥i³sÄò¥X²{¡C
+3. ¤£¥i¥u´«¼Æ¦r´Nµø¬°¤£¦PÃD«¬¡C
+4. ¤£¥i¥u¦³ question_text §½³¡´À´«¡A¦ı scenario_family / scenario_id / problem_type_id ¤£ÅÜ¡C
+5. ­Y¬Y skill ¦]½Ò¥» fidelity ­­¨î¥u¯à¦³³æ¤@ review shell¡A¥²¶·¦b QA report ¼Ğµù accepted_reason¡A¤£¥iÀq»{³q¹L¡C
+
+### B. ¦Û°Ê©â¼ËªùÂe¡]release «e¡^
+- ¨C skill ¦Ü¤Ö©â¼Ë 20 ÃD¡C
+- unique_question_text_count >= 6¡]³æ¤@ review shell ¥i¨Ò¥~¡^¡C
+- unique_scenario_id_count >= 6¡]³æ¤@ review shell ¥i¨Ò¥~¡^¡C
+- unique_question_pattern_hash_count >= 4¡C
+- repeated_question_text_ratio <= 0.5¡C
+- consecutive_duplicate_count = 0¡C
+- deterministic practice skill ¦Ü¤Ö¨ã³Æ 2 ­Ó¥H¤W scenario_family ©Î 6 ­Ó¥H¤W scenario_id¡C
+
+¥¼¹FªùÂe§P©w¡G
+- deterministic skill -> MAJOR¡]³q±` requires_repair=yes¡^
+- review / visibility shell -> MAJOR ©Î accepted_with_reason
+- ³sÄò¨âÃD§¹¥ş¬Û¦P -> MAJOR
+- ¾Ç¥Íºİ«ö¤U¤@ÃD¤´¤ÏÂĞ¦PÃD -> BLOCKING ©Î MAJOR¡]¨Ì¼vÅTµ{«×¡^
+
+### C. Scenario Metadata ³W«h
+¨CÃD payload À³¥]§t¡G
+- problem_type_id
+- scenario_family
+- scenario_id
+- question_pattern_id¡]©Î¥i¥Ñ question_text hash ±À±o¡^
+- textbook_alignment_note ©Î source_style_summary
+
+­Y¯Ê scenario_id¡AQA gate ¥i¥Î question_pattern_hash ´À¥N¡A¦ı³ø§i»İ¼Ğ¥Ü metadata ¤£¨¬¡C
+
+### D. Route / Session Á×­«³W«h
+­Y route/session ¦³³ÌªñÃD¥Ø¬ö¿ı¡AÀ³Á×§K¡G
+- same question_text
+- same scenario_id
+- same problem_type_id + same scenario_id
+
+­YµL session history¡A¦Ü¤Ö¦b generator ´ú¸Õ«OÃÒÀH¾÷©â¼Ë¤£°ª«×¶°¤¤©ó¦P¤@ÃD¡C
+
+### E. ¹Ï§Î / ªí®æÃD Diversity
+°£¤å¦r¦h¼Ë©Ê¥~¡A¶·ÀË¬d¡G
+- visual_asset_hash
+- chart_spec_hash
+- table_spec_hash
+- visual_asset_type
+- chart title / axis labels
+- data pattern
+
+­n¨D¡G
+1. ¹Ï§Î¤£¥i§¹¥ş¬Û¦P¡C
+2. ¤£¥i¥u´«¼ĞÃD¦ı¹Ï§Î¸ê®Æµ²ºc¬Û¦P¡C
+3. ¦P¤@ visual family ¦Ü¤Ö 2 ºØ data pattern¡C
+4. ­Y¥u¦³³æ¤@¹Ï§Î¼ÒªO¡Areport ¥²¶·»¡©ú¨Ã¦C¬° MAJOR ©Î accepted_with_reason¡C
+
+### F. Chap3 ¬J¦³®×¨Ò¡]StatisticalBasicConcepts¡^
+´¿¥X²{³sÄò©âÃD°ª«×­«½Æ¡G
+- ¡u¤U¦C¦óªÌÄİ©ó±Ô­z²Î­p¡H¡v
+- ¡u­Y¾Ç®Õ·Q¤F¸Ñ¥ş®Õ¾Ç¥Í³q¶Ô¤è¦¡¡Aª½±µ¸ß°İ¥ş®Õ¨C¤@¦ì¾Ç¥Í¡A³oÄİ©ó¦óªÌ¡H¡v
+- ¡u²Î­p¬ã¨s³q±`¥]§t»`¶°¡B¾ã²z¡B³¯¥Ü¡B¤ÀªR¡B¸ÑÄÀ¡C¤U¦C¦óªÌ¬O¥¿½Tªº²Ä¤@¨B¡H¡v
+
+³B²z­ì«h¡G
+- scenario_id ¦Ü¤Ö 8~12 ­Ó
+- ³s©â 20 ÃD unique_question_text_count >= 6
+- ¤£±o³sÄò¨âÃD§¹¥ş¬Û¦P
+- ¤£²Å¦X¤£±o¼Ğ QA_PASSED
+
+### G. QA Report Äæ¦ì¸É±j
+³ø§i»İ¥]§t¡G
+- sampled_count
+- unique_question_text_count
+- unique_scenario_id_count
+- unique_question_pattern_hash_count
+- repeated_question_text_ratio
+- consecutive_duplicate_count
+- diversity_status
+- diversity_issue_severity
+- accepted_reason¡]­Y¦³¡^
+- requires_repair
+
+### H. Final Status ³W«h
+­Y diversity major ©|¥¼Âç²M¡A¤£¥i¼Ğ QA_PASSED¡C
+
+- consecutive_duplicate_count > 0 ¥B skill ¬° deterministic practice -> NEEDS_REPAIR
+- repeated_question_text_ratio > 0.5 ¥BµL accepted_reason -> NEEDS_REPAIR
+- unique_question_text_count < 6 ¥B«D³æ¤@ review shell -> NEEDS_REPAIR
+- ©Ò¦³ diversity major ¬Ò¦³ accepted_reason -> QA_PASSED_WITH_MAJOR_NOTES
+- µL active major/blocking -> QA_PASSED
+
+---
+
+## B4-SOP-ParameterizedDiversityGate ¸É¥R¡]v0.1¡^
+
+¥»¤å¥ó¥D¶b¬° deterministic runtime smoke gate¡F¦ı deterministic release «e¡A¥²¶·¦P¨BÀË¬d¡u°Ñ¼Æ¤Æ¦h¼Ë©Ê¡]¼Æ¦r¤£¥i©T©w¡^¡v¡C
+
+### A. ¼Æ¦r¤£¥i©T©w­ì«h
+1. ÃD¥Ø¤£¥i¥u©T©w¤@²Õ¼Æ¦r¤ÏÂĞ¥X²{¡C
+2. ÃD¥Ø¤£¥i¥u¬O¦P¤@ÃD·F¡B¦P¤@¼Æ¦r¡B¦P¤@µª®×­«½Æ½ü¼½¡C
+3. ¦b textbook fidelity «e´£¤U¡A¼Æ¦r°Ñ¼Æ¡B±¡¹Ò°Ñ¼Æ¡B¿ï¶µ¶¶§Ç¡B¤zÂZ¿ï¶µ»İ¥i±±ÅÜ¤Æ¡C
+4. °Ñ¼Æ¤Æ¤£¬O·s¼W½Ò¥»¥~ÃD«¬¡A¥²¶·ºû«ù½Ò¥»°©¬[¡C
+5. ­Y½Ò¥»¨ÒÃD¶q¤Ö¡A¤´»İ¦b¦P°©¬[¤ºÅÜ¤Æ¡]¤H¼Æ¡B¼Ë¥»¼Æ¡B¶¡¶Z¡B¼h§O¤H¼Æ¡B¤ñ¨Ò¡B³õ´º¡B°İªk¡B¿ï¶µ¶¶§Ç¡Bdistractors¡^¡C
+
+### B. Textbook-bounded Parameterization¡]SamplingMethods¡^
+¤¹³\°©¬[¡G
+- Â²³æÀH¾÷©â¼Ë¡]©âÅÒ/ºN±m¨é/½s¸¹«áÀH¾÷©â¡^
+- ¨t²Î©â¼Ë¡]¨C¹j©T©w¼Æ¶q©â¨ú¡F`k = N / n`¡^
+- ¤À¼hÀH¾÷©â¼Ë¡]¨Ì©Ê§O/¦~¯Å/¦¬¤J/¬ì§O¤ñ¨Ò©â¼Ë¡^
+- ³¡¸¨©â¼Ë¡]©â¯Z¯Å/ªÀ°Ï/«°¥«/³¡ªù¸s²Õ¡^
+
+¸T¤î²V¤J¡G
+- ½Ò¥»¥~·s©_±¡¹Ò
+- `SamplingSurvey` ¥À¸sÅé/¼Ë¥»¿ëÃÑÃD
+- `OpinionPollInterpretation` ¥Á½Õ°¾»~µû½×ÃD
+- ²Î­p¶q­pºâÃD
+
+### C. Parameter Metadata
+°Ñ¼Æ¤ÆÃD payload À³¥]§t¡G
+- `parameter_signature`
+- `parameters.template_id`
+- `parameters.numeric_params`
+- `parameters.context_params`
+
+­YµLªkª½±µ´£¨Ñ `parameters`¡A¦Ü¤Ö¥i±À±o¡G
+- `numeric_tuple`
+- `context_signature`
+- `question_pattern_hash`
+
+### D. ©â¼ËªùÂe¡]¨C­Ó°Ñ¼Æ¤Æ family¡A¦Ü¤Ö 30 ÃD¡^
+¥²ÀË¬d¡G
+- `unique_parameter_signature_count`
+- `unique_numeric_tuple_count`
+- `repeated_parameter_signature_ratio`
+- `consecutive_same_numeric_tuple_count`
+- `consecutive_duplicate_count`
+
+«ØÄ³¼Ğ·Ç¡G
+- `unique_parameter_signature_count >= 15 / 30`
+- `unique_numeric_tuple_count >= 10 / 30`
+- `repeated_parameter_signature_ratio <= 0.5`
+- `consecutive_duplicate_count = 0`
+- `consecutive_same_numeric_tuple_count = 0`
+
+### E. µª®×¤@­P©Ê Gate¡]SamplingMethods¡^
+¨t²Î©â¼Ë¶¡¶ZÃD¡G
+- `N % n == 0`
+- `k = N / n`
+- `answer = k`¡A¥B `choices` ¥]§t `k`
+- `explanation` »¡©ú `k = N / n`
+
+¤À¼h¤ñ¨Ò¤À°tÃD¡G
+- `total = sum(layers)`
+- `answer = sample_total ¡Ñ target_layer_count / total`
+- `answer` À³¬°¾ã¼Æ¡]©ÎÃD·F©ú¥Ü¥i¤À¼Æ/¤p¼Æ¡^
+- `choices` ¥]§t `answer`
+- `explanation` »¡©ú¤ñ¨Ò­pºâ
+
+### F. Chap3 ®×¨Ò¡]SamplingMethods ©T©w¼Æ¦r¡^
+´¿¤ÏÂĞ¥X²{¡G
+- 600 ¦W­û¤u©â 60 ¤H
+- 120/80/100 ¦@ 300 ¤H©â 30 ¤H
+- ²Ä 5 ¥ó¶}©l¨C¹j 20 ¥ó
+
+­×¥¿­ì«h¡G
+- «Ø¥ß `SYSTEMATIC_INTERVAL_NUMERIC_POOL`
+- «Ø¥ß `STRATIFIED_ALLOCATION_NUMERIC_POOL`
+- payload ¸É `parameter_signature`
+- ³s©â 30 ÃDÀË¬d `unique_parameter_signature_count`
+- ¨t²Î©â¼Ë»P¤À¼h©â¼Ëµª®×¥Ñ°Ñ¼Æ¥¿½T­pºâ
+
+### G. Final Status¡]°Ñ¼Æ¤Æ¡^
+- deterministic generator ¼Æ¦r°Ñ¼Æ©T©w¡]µL accepted_reason¡^-> ¤£¥i `QA_PASSED`
+- `consecutive_same_numeric_tuple_count > 0` ¥BµL accepted_reason -> `NEEDS_REPAIR`
+- `unique_parameter_signature_count` ¹L§C¥BµL accepted_reason -> `NEEDS_REPAIR`
+- `answer consistency fail` -> `BLOCKED`
+- `choices` ¥¼¸ò°Ñ¼Æ¦P¨B§ó·s -> `BLOCKED`
+- °Ñ¼Æ¤Æ¶W¥X½Ò¥»°©¬[ -> `NEEDS_REPAIR` ©Î `BLOCKED`
+
+---
+
+## 9. Level 1 Global Consecutive Duplicate Guardï¼ˆæ–°å¢ï¼‰
+
+### 9.1 æ ¸å¿ƒåŸå‰‡
+1. Level 1 bare skill general practice ä¸å¾—é€£çºŒå‡ºç¾ç›¸åŒé¡Œç›®ã€‚
+2. ä¸å¯åªä¾è³´ generator éš¨æ©Ÿï¼Œroute/session å±¤ä¹Ÿå¿…é ˆæä¾›ç›¸é„°é¿é‡æ©Ÿåˆ¶ã€‚
+3. åŒä¸€ skill çš„ä¸‹ä¸€é¡Œï¼Œæ‡‰é¿å…èˆ‡ä¸Šä¸€é¡Œç›¸åŒï¼š
+   - `question_text`
+   - `scenario_id`
+   - `parameter_signature`
+   - `question_pattern_id`
+   - `table_spec_hash`
+   - `chart_spec_hash`
+   - `visual_asset_hash`
+4. è‹¥ä»»ä¸€æ ¸å¿ƒè­˜åˆ¥ç›¸åŒï¼Œroute å±¤æ‡‰é‡æŠ½ï¼Œå»ºè­°æœ€å¤š retry 3 æ¬¡ã€‚
+5. è‹¥ retry å¾Œä»ç„¡æ³•é¿é–‹ï¼Œæ‰å¯ fallbackï¼Œä¸”å¿…é ˆè¨˜éŒ„ fallback reasonã€‚
+6. fallback ä¸å¾—æ”¾å‡º open-ended review é¡Œåˆ° Level 1 default è·¯å¾‘ã€‚
+
+### 9.2 é©ç”¨ç¯„åœ
+- `deterministic_choice`
+- `deterministic_short_answer`
+- `visual_reading_with_short_answer`
+- mixed deterministic/review skill çš„ Level 1 default path
+
+è‡³å°‘åŒ…å« Chap3ï¼š
+- StatisticalBasicConcepts
+- SamplingSurvey
+- SamplingMethods
+- DataOrganizationAndCharts
+- StatisticalChartReading
+- CumulativeFrequencyTablesAndGraphs
+- FrequencyDistributionTableConstruction
+- HistogramsAndFrequencyPolygons
+- CentralTendencyMeasures
+- DispersionMeasures
+- WeightedMean
+- VarianceAndStandardDeviation
+- LinearTransformationOfData
+- NormalDistributionAndEmpiricalRule
+
+ä¸¦è¦æ±‚å¾ŒçºŒ B1/B2/B3 æ²¿ç”¨ã€‚
+
+### 9.3 Metadata æœ€ä½è¦æ±‚ï¼ˆä¾›é¿é‡ä½¿ç”¨ï¼‰
+payload æ‡‰ç›¡é‡æä¾›ï¼š
+- `problem_type_id`
+- `scenario_family`
+- `scenario_id`
+- `parameter_signature`
+- `question_pattern_id`
+- `table_spec_hash`
+- `chart_spec_hash`
+- `visual_asset_hash`
+
+è‹¥ metadata ä¸å®Œæ•´ï¼Œè‡³å°‘å¯ç”± `question_text hash` ä½œç‚º fallback é¿é‡è­˜åˆ¥ã€‚
+
+### 9.4 ä¸å¾—ç ´å£ Level 1 no-open-ended gate
+Level 1 default ä¸å¾—å› é¿é‡å¤±æ•— fallback åˆ°ä¸é©åˆçš„é–‹æ”¾å¼é¡Œã€‚ç¦æ­¢ä¸»å‹•å‡ºç¾ï¼š
+- è«‹èªªæ˜
+- è«‹ç°¡è¿°
+- è«‹è¨è«–
+- ç°¡è¿°ç†ç”±
+- æå‡ºç†ç”±
+- å¯èƒ½æœ‰å“ªäº›åèª¤
+- æ˜¯å¦å…·æœ‰ä»£è¡¨æ€§
+- æå‡ºæ”¹å–„æ–¹å¼
+
+åƒ…åœ¨æ˜ç¢ºæŒ‡å®šä¸‹å¯èµ° review è·¯å¾‘ï¼š
+- `teacher_review`
+- `review_only=true`
+- review `problem_type_id`
+- `handwriting_ai_checked`
+- `visual_ai_checked`
+
+### 9.5 QA æŠ½æ¨£é–€æª»ï¼ˆLevel 1ï¼‰
+æ¯å€‹ Level 1 skill release/repair å¾Œï¼Œè‡³å°‘æŠ½æ¨£ 20 é¡Œä¸¦è¨˜éŒ„ï¼š
+- `consecutive_duplicate_question_text_count`
+- `consecutive_duplicate_scenario_id_count`
+- `consecutive_duplicate_parameter_signature_count`
+- `consecutive_duplicate_table_spec_hash_count`
+- `consecutive_duplicate_chart_spec_hash_count`
+- `fallback_count`
+- `retry_count`
+- `open_ended_default_count`
+
+å»ºè­°é€šéé–€æª»ï¼š
+- `consecutive_duplicate_question_text_count = 0`
+- `consecutive_duplicate_scenario_id_count = 0`ï¼ˆè‹¥æœ‰ scenario_idï¼‰
+- `consecutive_duplicate_parameter_signature_count = 0`ï¼ˆè‹¥æœ‰ parameter_signatureï¼‰
+- deterministic Level 1 practiceï¼š`open_ended_default_count = 0`
+- `fallback_count` å¿…é ˆå¯è¿½æº¯ reasonï¼Œä¸”ä¸å¾— fallback åˆ° open-ended reviewã€‚
+
+### 9.6 Final Status è¦å‰‡è£œå¼·
+- `consecutive_duplicate_question_text_count > 0` ä¸”ç„¡ accepted_reason -> `NEEDS_REPAIR`
+- `consecutive_duplicate_parameter_signature_count > 0` ä¸”ç„¡ accepted_reason -> `NEEDS_REPAIR`
+- é¿é‡ fallback åˆ° open-ended review -> `BLOCKED`
+- ç„¡ active duplicate/no-open-ended/choice/payload å•é¡Œ -> `QA_PASSED`
+
+---
+
+## 10. Fake Diversity / Scenario Family Gateï¼ˆæ–°å¢ï¼‰
+
+### 10.1 æ ¸å¿ƒåŸå‰‡
+1. åªæ›åç¨±ä¸ç®—çœŸæ­£å¤šæ¨£æ€§ã€‚
+2. è‹¥é¡Œå‹éª¨æ¶ç›¸åŒï¼ˆä¾‹å¦‚ A/B èˆ‡ ç”²/ä¹™ èˆ‡ ç´…/è—å…ˆè´å…©å ´ï¼‰ï¼Œæ‡‰è¦–ç‚ºåŒä¸€ `scenario_family`ã€‚
+3. route/generator çš„ runtime smoke ä¸å¾—æŠŠ `context name variation` ç•¶ä½œ `true scenario family variation`ã€‚
+
+### 10.2 scenario_family åˆ¤å®šï¼ˆTreeDiagramCountingï¼‰
+ä»¥ä¸‹çš†æ­¸ `best_of_three_binary_match`ï¼š
+- Aã€B å…©éšŠæ¯å ´ç„¡å¹³æ‰‹ï¼Œå…ˆè´å…©å ´è€…å‹
+- ç”²ã€ä¹™å…©éšŠæ¯å ´ç„¡å¹³æ‰‹ï¼Œå…ˆè´å…©å ´è€…å‹
+- ç´…ã€è—å…©éšŠæ¯å ´ç„¡å¹³æ‰‹ï¼Œå…ˆè´å…©å ´è€…å‹
+
+ä¸å¾—æŠŠä¸Šè¿°ä¸‰è€…ç•¶ä¸‰ç¨® family é€šé diversityã€‚
+
+### 10.3 Metadata è¦æ±‚ï¼ˆä¾› smoke/QAï¼‰
+payload æ‡‰ç›¡é‡æä¾›ï¼š
+- `scenario_family`
+- `scenario_id`
+- `parameter_signature`
+- `context_signature`
+- `outcome_set_signature`
+- `structure_signature`
+- `question_pattern_id`
+
+TreeDiagramCounting å»ºè­°ï¼š
+- `tree_depth`
+- `branch_counts`
+- `outcome_set_signature`
+- `stopping_rule`
+- `listing_expected_count`
+
+### 10.4 QA æŒ‡æ¨™è£œå¼·
+æ–°å¢ï¼š
+- `unique_scenario_family_count`
+- `fake_name_only_variation_count`
+- `unique_structure_signature_count`
+- `unique_outcome_set_signature_count`
+
+è‹¥ `fake_name_only_variation_count > 0` ä¸”æ‹¿ä¾†å……ç•¶ scenario diversityï¼Œæ‡‰åˆ— `MAJOR`ï¼Œä¸å¯ `QA_PASSED`ã€‚
+
+### 10.5 èˆ‡æ—¢æœ‰ Gate é—œä¿‚
+Fake Diversity Gate ç‚º Question Diversity Gate å­è¦å‰‡ï¼Œä¸¦èˆ‡ï¼š
+- Parameterized Diversity Gate
+- Level 1 Global Consecutive Duplicate Guard
+å…±åŒæ§‹æˆ release å‰å“è³ªæª¢æŸ¥ã€‚

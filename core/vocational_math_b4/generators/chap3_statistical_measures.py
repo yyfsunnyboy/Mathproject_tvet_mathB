@@ -4,10 +4,225 @@ import random
 import math
 import io
 import base64
+import json
+import hashlib
 from typing import Dict, Any, Optional, Set, Tuple, List
 import matplotlib.pyplot as plt
 
 from core.vocational_math_b4.domain.b4_validators import validate_parameter_tuple_not_seen
+
+_LAST_SAMPLING_METHODS_PARAMETER_SIGNATURE: Optional[str] = None
+_LAST_STATISTICAL_BASIC_CONCEPT_SCENARIO_ID: Optional[str] = None
+_LAST_SAMPLING_SURVEY_SCENARIO_ID: Optional[str] = None
+_LAST_SAMPLING_SURVEY_PARAMETER_SIGNATURE: Optional[str] = None
+_LAST_DATA_ORG_SCENARIO_ID: Optional[str] = None
+_LAST_DATA_ORG_PARAMETER_SIGNATURE: Optional[str] = None
+_LAST_TREE_DIAGRAM_SCENARIO_ID: Optional[str] = None
+_LAST_TREE_DIAGRAM_PARAMETER_SIGNATURE: Optional[str] = None
+
+SAMPLING_METHODS_CHOICES = [
+    "1. 簡單隨機抽樣",
+    "2. 系統抽樣",
+    "3. 分層隨機抽樣",
+    "4. 部落抽樣",
+]
+
+SAMPLING_METHODS_CLASSIFICATION_CONTEXTS: Dict[str, List[Dict[str, str]]] = {
+    "simple_random": [
+        {
+            "scenario_id": "sampling_method_identification_random_lottery",
+            "template_id": "classification_simple_random_lottery",
+            "stem": "學校要抽查學生問卷，先將全校學生編號後以抽籤方式抽出受訪者。這屬於哪一種抽樣方法？請輸入選項代號。",
+            "answer": "1",
+        },
+        {
+            "scenario_id": "sampling_method_identification_random_ticket_draw",
+            "template_id": "classification_simple_random_ticket_draw",
+            "stem": "活動主辦單位把所有參加者名字放入箱中，隨機摸出若干人做滿意度訪談。這屬於哪一種抽樣方法？請輸入選項代號。",
+            "answer": "1",
+        },
+        {
+            "scenario_id": "sampling_method_identification_random_number_table",
+            "template_id": "classification_simple_random_number_table",
+            "stem": "研究者先將名單編號，再用亂數表抽出樣本。這屬於哪一種抽樣方法？請輸入選項代號。",
+            "answer": "1",
+        },
+    ],
+    "systematic": [
+        {
+            "scenario_id": "sampling_method_identification_systematic_interval",
+            "template_id": "classification_systematic_interval",
+            "stem": "{context}從第 {start} 個開始，每隔 {interval} 個抽 1 個{target}檢查。這屬於哪一種抽樣方法？請輸入選項代號。",
+            "answer": "2",
+        },
+        {
+            "scenario_id": "sampling_method_identification_systematic_page",
+            "template_id": "classification_systematic_page",
+            "stem": "出版社檢查印刷品質時，從第 {start} 本開始，每隔 {interval} 本抽 1 本。這屬於哪一種抽樣方法？請輸入選項代號。",
+            "answer": "2",
+        },
+        {
+            "scenario_id": "sampling_method_identification_systematic_vehicle",
+            "template_id": "classification_systematic_vehicle",
+            "stem": "交通調查時，從第 {start} 輛車開始，每隔 {interval} 輛車攔檢一輛。這屬於哪一種抽樣方法？請輸入選項代號。",
+            "answer": "2",
+        },
+    ],
+    "stratified": [
+        {
+            "scenario_id": "sampling_method_identification_stratified_grade",
+            "template_id": "classification_stratified_grade",
+            "stem": "調查學生升學意向時，先按年級分層，再依各層人數比例抽樣。這屬於哪一種抽樣方法？請輸入選項代號。",
+            "answer": "3",
+        },
+        {
+            "scenario_id": "sampling_method_identification_stratified_gender",
+            "template_id": "classification_stratified_gender",
+            "stem": "調查通勤習慣時，先按性別分層，再依各層比例抽樣。這屬於哪一種抽樣方法？請輸入選項代號。",
+            "answer": "3",
+        },
+        {
+            "scenario_id": "sampling_method_identification_stratified_income",
+            "template_id": "classification_stratified_income",
+            "stem": "調查消費行為時，先按收入層級分層，再做比例抽樣。這屬於哪一種抽樣方法？請輸入選項代號。",
+            "answer": "3",
+        },
+    ],
+    "cluster": [
+        {
+            "scenario_id": "sampling_method_identification_cluster_class",
+            "template_id": "classification_cluster_class",
+            "stem": "研究者先抽出若干班級，再調查被抽中班級內所有學生。這屬於哪一種抽樣方法？請輸入選項代號。",
+            "answer": "4",
+        },
+        {
+            "scenario_id": "sampling_method_identification_cluster_community",
+            "template_id": "classification_cluster_community",
+            "stem": "研究者先抽出若干社區，再調查被抽中社區內所有住戶。這屬於哪一種抽樣方法？請輸入選項代號。",
+            "answer": "4",
+        },
+        {
+            "scenario_id": "sampling_method_identification_cluster_department",
+            "template_id": "classification_cluster_department",
+            "stem": "公司先抽出若干部門，再調查被抽中部門的全部員工。這屬於哪一種抽樣方法？請輸入選項代號。",
+            "answer": "4",
+        },
+    ],
+}
+
+SYSTEMATIC_IDENTIFICATION_CONTEXTS: List[Dict[str, str]] = [
+    {"context": "工廠品管", "target": "產品"},
+    {"context": "出版社抽查", "target": "書本"},
+    {"context": "學校作業抽查", "target": "作業"},
+    {"context": "電話簿調查", "target": "電話號碼"},
+    {"context": "車輛攔檢", "target": "汽車"},
+]
+
+SYSTEMATIC_INTERVAL_NUMERIC_POOL: List[Tuple[int, int]] = [
+    (300, 30),
+    (600, 60),
+    (800, 40),
+    (1000, 50),
+    (1200, 40),
+    (1500, 50),
+    (2000, 100),
+]
+
+STRATIFIED_ALLOCATION_NUMERIC_POOL: List[Dict[str, Any]] = [
+    {"scenario_id": "stratified_allocation_grade_120_80_100", "layers": [("一年級", 120), ("二年級", 80), ("三年級", 100)], "sample_total": 30, "target_idx": 0},
+    {"scenario_id": "stratified_allocation_grade_150_90_60", "layers": [("一年級", 150), ("二年級", 90), ("三年級", 60)], "sample_total": 60, "target_idx": 1},
+    {"scenario_id": "stratified_allocation_gender_180_120", "layers": [("男生", 180), ("女生", 120)], "sample_total": 50, "target_idx": 1},
+    {"scenario_id": "stratified_allocation_department_200_160_140", "layers": [("商業群", 200), ("工業群", 160), ("設計群", 140)], "sample_total": 50, "target_idx": 2},
+    {"scenario_id": "stratified_allocation_income_240_180_180", "layers": [("低收入層", 240), ("中收入層", 180), ("高收入層", 180)], "sample_total": 60, "target_idx": 0},
+    {"scenario_id": "stratified_allocation_region_300_180_120", "layers": [("北區", 300), ("中區", 180), ("南區", 120)], "sample_total": 60, "target_idx": 1},
+]
+
+STATISTICAL_BASIC_CONCEPT_SCENARIOS: List[Dict[str, Any]] = [
+    {
+        "scenario_id": "descriptive_statistics_identification",
+        "question_text": "計算一組資料的平均數、中位數、標準差，用來描述這組資料的特性，屬於何者？請輸入選項代號。",
+        "answer": "1",
+        "choices": ["1. 敘述統計", "2. 推論統計", "3. 普查", "4. 抽查"],
+        "explanation": "題目只在描述已取得資料的特性，沒有由部分資料推估整體，因此屬於敘述統計。",
+    },
+    {
+        "scenario_id": "inferential_statistics_identification",
+        "question_text": "根據抽出的 200 位學生資料，推估全校學生平均身高，這屬於敘述統計或推論統計中的何者？請輸入選項代號。",
+        "answer": "2",
+        "choices": ["1. 敘述統計", "2. 推論統計", "3. 資料陳示", "4. 資料整理"],
+        "explanation": "由部分學生資料推估全校情況，是由部分資料推論整體，屬於推論統計。",
+    },
+    {
+        "scenario_id": "statistics_process_collect_data",
+        "question_text": "統計研究通常包含蒐集、整理、陳示、分析、解釋。取得原始資料屬於哪一步？請輸入選項代號。",
+        "answer": "1",
+        "choices": ["1. 蒐集", "2. 整理", "3. 分析", "4. 解釋"],
+        "explanation": "取得原始資料是統計流程起點，屬於蒐集。",
+    },
+    {
+        "scenario_id": "statistics_process_organize_data",
+        "question_text": "將問卷得到的原始資料分組並整理成一覽資料，屬於統計研究的哪一步？請輸入選項代號。",
+        "answer": "2",
+        "choices": ["1. 蒐集", "2. 整理", "3. 分析", "4. 解釋"],
+        "explanation": "把資料分類、分組、整理，是整理資料。",
+    },
+    {
+        "scenario_id": "statistics_process_present_data",
+        "question_text": "把整理後資料畫成長條圖或折線圖，屬於統計研究的哪一步？請輸入選項代號。",
+        "answer": "3",
+        "choices": ["1. 蒐集", "2. 整理", "3. 陳示", "4. 解釋"],
+        "explanation": "用圖表呈現資料屬於陳示。",
+    },
+    {
+        "scenario_id": "statistics_process_analyze_data",
+        "question_text": "根據平均數與標準差比較兩組資料差異，屬於統計研究的哪一步？請輸入選項代號。",
+        "answer": "3",
+        "choices": ["1. 蒐集", "2. 陳示", "3. 分析", "4. 普查"],
+        "explanation": "利用統計量比較資料特性屬於分析。",
+    },
+    {
+        "scenario_id": "statistics_process_interpret_data",
+        "question_text": "根據分析結果說明可能原因並提出結論，屬於統計研究的哪一步？請輸入選項代號。",
+        "answer": "4",
+        "choices": ["1. 蒐集", "2. 整理", "3. 陳示", "4. 解釋"],
+        "explanation": "對分析結果做判讀並形成結論屬於解釋。",
+    },
+    {
+        "scenario_id": "census_vs_sample_survey_census",
+        "question_text": "若學校想了解全校學生通勤方式，直接詢問每一位學生，這屬於何者？請輸入選項代號。",
+        "answer": "1",
+        "choices": ["1. 普查", "2. 抽查", "3. 推論統計", "4. 陳示資料"],
+        "explanation": "調查全部對象屬於普查。",
+    },
+    {
+        "scenario_id": "census_vs_sample_survey_sample",
+        "question_text": "若學校只訪問部分學生來了解通勤方式，這屬於何者？請輸入選項代號。",
+        "answer": "2",
+        "choices": ["1. 普查", "2. 抽查", "3. 資料整理", "4. 資料陳示"],
+        "explanation": "只調查部分對象屬於抽查。",
+    },
+    {
+        "scenario_id": "statistics_purpose_identification",
+        "question_text": "下列何者最能說明統計研究的主要目的？請輸入選項代號。",
+        "answer": "2",
+        "choices": ["1. 只記錄數字", "2. 從資料整理資訊並協助判斷", "3. 只畫圖不分析", "4. 只背誦公式"],
+        "explanation": "統計重點是整理、分析與解釋資料以協助判斷。",
+    },
+    {
+        "scenario_id": "descriptive_not_generalized",
+        "question_text": "某班把全班成績整理成表格並描述分布情形，主要屬於何者？請輸入選項代號。",
+        "answer": "1",
+        "choices": ["1. 敘述統計", "2. 推論統計", "3. 抽查", "4. 解釋資料"],
+        "explanation": "只描述已知班級資料狀況，屬於敘述統計。",
+    },
+    {
+        "scenario_id": "inferential_generalized_to_population",
+        "question_text": "根據抽訪部分住戶資料推估整個社區支持比例，主要屬於何者？請輸入選項代號。",
+        "answer": "2",
+        "choices": ["1. 敘述統計", "2. 推論統計", "3. 普查", "4. 資料整理"],
+        "explanation": "由部分資料推估整體屬於推論統計。",
+    },
+]
 
 
 def _build_chart_png_base64(
@@ -527,6 +742,191 @@ def sampling_methods_classification_choice(
         "grading_mode": "deterministic",
     }
 
+def sampling_methods_classification_choice(
+    skill_id: str,
+    subskill_id: str,
+    difficulty: int = 1,
+    seed: Optional[int] = None,
+    seen_parameter_tuples: Optional[Set[Tuple]] = None,
+    multiple_choice: bool = True,
+) -> Dict[str, Any]:
+    global _LAST_SAMPLING_METHODS_PARAMETER_SIGNATURE
+    rng = random.Random(seed)
+    seed_val = int(seed) if seed is not None else rng.randint(1, 10_000_000)
+
+    catalog: List[Dict[str, Any]] = []
+    for family in ("simple_random", "systematic", "stratified", "cluster"):
+        for context_tpl in SAMPLING_METHODS_CLASSIFICATION_CONTEXTS[family]:
+            entry = dict(context_tpl)
+            entry["family"] = family
+            catalog.append(entry)
+    catalog.append(
+        {
+            "scenario_id": "systematic_sampling_interval_calculation_parameterized",
+            "template_id": "systematic_interval_calculation",
+            "family": "systematic_interval",
+        }
+    )
+    catalog.append(
+        {
+            "scenario_id": "stratified_sampling_proportional_allocation_parameterized",
+            "template_id": "stratified_allocation_calculation",
+            "family": "stratified_allocation",
+        }
+    )
+
+    if seed is not None:
+        base = catalog[(seed_val - 1) % len(catalog)]
+    else:
+        candidates = [
+            item
+            for item in catalog
+            if f"{item['scenario_id']}::{item.get('template_id','')}"
+            != _LAST_SAMPLING_METHODS_PARAMETER_SIGNATURE
+        ]
+        base = rng.choice(candidates or catalog)
+
+    scenario_id = str(base["scenario_id"])
+    template_id = str(base["template_id"])
+    family = str(base["family"])
+    numeric_params: Dict[str, Any] = {}
+    context_params: Dict[str, Any] = {}
+    question_text = ""
+    answer = ""
+    explanation = ""
+    choices: List[str] = list(SAMPLING_METHODS_CHOICES)
+
+    if family in {"simple_random", "stratified", "cluster"}:
+        question_text = str(base["stem"])
+        answer = str(base["answer"])
+        explanation_map = {
+            "simple_random": "以抽籤、摸彩券或亂數方式直接從全體名單抽取，屬於簡單隨機抽樣。",
+            "stratified": "先依特徵分層，再按各層比例抽樣，屬於分層隨機抽樣。",
+            "cluster": "先抽群組，再調查群組內成員，屬於部落抽樣。",
+        }
+        explanation = explanation_map[family]
+        parameter_signature = f"{template_id}:context={family}"
+    elif family == "systematic":
+        context = SYSTEMATIC_IDENTIFICATION_CONTEXTS[(seed_val - 1) % len(SYSTEMATIC_IDENTIFICATION_CONTEXTS)]
+        start_candidates = [1, 2, 3, 5, 8, 10, 12, 15, 20]
+        interval_candidates = [5, 10, 20, 25, 50, 100]
+        start = start_candidates[(seed_val + 1) % len(start_candidates)]
+        interval = interval_candidates[(seed_val + 2) % len(interval_candidates)]
+        question_text = str(base["stem"]).format(
+            context=context["context"], start=start, interval=interval, target=context["target"]
+        )
+        answer = str(base["answer"])
+        explanation = "先決定起點，再每隔固定件數抽取一次，屬於系統抽樣。"
+        numeric_params = {"start": start, "interval": interval}
+        context_params = {"context": context["context"], "target": context["target"]}
+        parameter_signature = (
+            f"{template_id}:start={start},interval={interval},context={context['context']}"
+        )
+    elif family == "systematic_interval":
+        n_total, sample_n = SYSTEMATIC_INTERVAL_NUMERIC_POOL[
+            (seed_val - 1) % len(SYSTEMATIC_INTERVAL_NUMERIC_POOL)
+        ]
+        k_interval = n_total // sample_n
+        distractors = {max(1, k_interval - 5), max(1, k_interval + 5), max(1, k_interval * 2)}
+        distractors.discard(k_interval)
+        options = [k_interval] + sorted(distractors)[:3]
+        while len(options) < 4:
+            candidate = k_interval + len(options) * 3
+            if candidate not in options:
+                options.append(candidate)
+        options = options[:4]
+        rng.shuffle(options)
+        choices = [f"{i + 1}. 抽樣間距為 {v}" for i, v in enumerate(options)]
+        answer = str(options.index(k_interval) + 1)
+        question_text = (
+            f"共有 {n_total} 名對象，想用系統抽樣抽出 {sample_n} 名，抽樣間距 k 應為多少？請輸入選項代號。"
+        )
+        explanation = f"系統抽樣間距 k = 母體數 ÷ 樣本數 = {n_total} ÷ {sample_n} = {k_interval}。"
+        numeric_params = {"N": n_total, "n": sample_n, "k": k_interval}
+        parameter_signature = f"systematic_interval:N={n_total},n={sample_n},k={k_interval}"
+    else:
+        row = STRATIFIED_ALLOCATION_NUMERIC_POOL[(seed_val - 1) % len(STRATIFIED_ALLOCATION_NUMERIC_POOL)]
+        layers = list(row["layers"])
+        sample_total = int(row["sample_total"])
+        target_idx = int(row["target_idx"])
+        target_name = str(layers[target_idx][0])
+        target_count = int(layers[target_idx][1])
+        total_count = sum(int(x[1]) for x in layers)
+        answer_people = sample_total * target_count // total_count
+        layer_text = "、".join(f"{name} {count} 人" for name, count in layers)
+        distractors = {max(1, answer_people - 2), answer_people + 2, answer_people + 4}
+        distractors.discard(answer_people)
+        options = [answer_people] + sorted(distractors)[:3]
+        while len(options) < 4:
+            candidate = answer_people + len(options)
+            if candidate not in options:
+                options.append(candidate)
+        options = options[:4]
+        rng.shuffle(options)
+        choices = [f"{i + 1}. {target_name}應抽 {v} 人" for i, v in enumerate(options)]
+        answer = str(options.index(answer_people) + 1)
+        question_text = (
+            f"某群體分層人數如下：{layer_text}，共 {total_count} 人。"
+            f"若做分層隨機抽樣共抽 {sample_total} 人，則{target_name}應抽幾人？請輸入選項代號。"
+        )
+        explanation = f"{target_name}應抽人數 = {sample_total} × {target_count}/{total_count} = {answer_people}。"
+        numeric_params = {
+            "sample_total": sample_total,
+            "layer_count": target_count,
+            "population_total": total_count,
+            "answer_people": answer_people,
+        }
+        context_params = {"target_layer": target_name, "layers": layers}
+        scenario_id = str(row["scenario_id"])
+        parameter_signature = (
+            f"stratified_allocation:sample_total={sample_total},"
+            f"layer_count={target_count},total={total_count},target={target_name}"
+        )
+
+    param_tuple = ("sampling_methods_classification_choice", scenario_id, template_id, parameter_signature)
+    if seen_parameter_tuples is not None:
+        validate_parameter_tuple_not_seen(param_tuple, seen_parameter_tuples)
+        seen_parameter_tuples.add(param_tuple)
+
+    _LAST_SAMPLING_METHODS_PARAMETER_SIGNATURE = parameter_signature
+
+    return {
+        "question_text": question_text,
+        "answer": answer,
+        "correct_answer": answer,
+        "choices": choices,
+        "choices_display": choices,
+        "explanation": explanation,
+        "skill_id": skill_id,
+        "subskill_id": subskill_id,
+        "problem_type_id": "sampling_methods_classification_choice",
+        "scenario_family": "sampling_methods_boundary_aligned",
+        "scenario_id": scenario_id,
+        "parameter_signature": parameter_signature,
+        "generator_key": "b4.chap3.sampling_methods_classification_choice",
+        "answer_type": "integer",
+        "answer_input_type": "choice",
+        "difficulty": difficulty,
+        "diagnosis_tags": ["sampling_methods", "classification", family],
+        "remediation_candidates": ["vh_?詨飛B4_SamplingMethods"],
+        "source_style_refs": ["B4_Ch3_sampling"],
+        "source_style_summary": "3-1 抽樣方法：簡單隨機、系統、分層隨機、部落抽樣。",
+        "textbook_alignment_note": "維持 3-1 抽樣方法骨架，僅做題幹參數化，不引入課本外新題型。",
+        "parameters": {
+            "scenario_id": scenario_id,
+            "scenario_family": "sampling_methods_boundary_aligned",
+            "template_id": template_id,
+            "numeric_params": numeric_params,
+            "context_params": context_params,
+            "parameter_signature": parameter_signature,
+        },
+        "visual_backed": False,
+        "runtime_mode": "deterministic_choice",
+        "check_mode": "deterministic_auto_checked",
+        "grading_mode": "deterministic",
+    }
+
+
 def statistical_basic_concepts_choice(
     skill_id: str,
     subskill_id: str,
@@ -597,6 +997,68 @@ def statistical_basic_concepts_choice(
         "check_mode": "deterministic_auto_checked",
         "grading_mode": "deterministic",
     }
+
+def statistical_basic_concepts_choice(
+    skill_id: str,
+    subskill_id: str,
+    difficulty: int = 1,
+    seed: Optional[int] = None,
+    seen_parameter_tuples: Optional[Set[Tuple]] = None,
+    multiple_choice: bool = True,
+) -> Dict[str, Any]:
+    global _LAST_STATISTICAL_BASIC_CONCEPT_SCENARIO_ID
+    scenarios = STATISTICAL_BASIC_CONCEPT_SCENARIOS
+    if seed is not None:
+        scenario = scenarios[(int(seed) - 1) % len(scenarios)]
+    else:
+        rng = random.Random()
+        candidates = [
+            s
+            for s in scenarios
+            if s["scenario_id"] != _LAST_STATISTICAL_BASIC_CONCEPT_SCENARIO_ID
+        ]
+        scenario = rng.choice(candidates or scenarios)
+
+    scenario_id = str(scenario["scenario_id"])
+    param_tuple = ("statistical_basic_concepts_choice", scenario_id)
+    if seen_parameter_tuples is not None:
+        validate_parameter_tuple_not_seen(param_tuple, seen_parameter_tuples)
+        seen_parameter_tuples.add(param_tuple)
+    _LAST_STATISTICAL_BASIC_CONCEPT_SCENARIO_ID = scenario_id
+
+    choices = list(scenario["choices"])
+    answer = str(scenario["answer"])
+    return {
+        "question_text": str(scenario["question_text"]),
+        "answer": answer,
+        "correct_answer": answer,
+        "choices": choices,
+        "choices_display": choices,
+        "explanation": str(scenario["explanation"]),
+        "skill_id": skill_id,
+        "subskill_id": subskill_id,
+        "problem_type_id": "statistical_basic_concepts_choice",
+        "scenario_family": "statistical_basic_concepts_boundary_aligned",
+        "scenario_id": scenario_id,
+        "generator_key": "b4.chap3.statistical_basic_concepts_choice",
+        "answer_type": "integer",
+        "answer_input_type": "choice",
+        "difficulty": difficulty,
+        "diagnosis_tags": ["statistics_basics", "terminology", scenario_id],
+        "remediation_candidates": ["vh_?詨飛B4_StatisticalBasicConcepts"],
+        "source_style_refs": ["B4_Ch3_statistical_basics"],
+        "source_style_summary": "3-1 統計基本概念：統計目的、資料處理流程、敘述統計、推論統計、普查與抽查。",
+        "textbook_alignment_note": "限於 B4 3-1 統計基本概念範圍，不含抽樣方法分類、調查對象數量細節或統計量計算題。",
+        "parameters": {
+            "scenario_id": scenario_id,
+            "scenario_family": "statistical_basic_concepts_boundary_aligned",
+        },
+        "visual_backed": False,
+        "runtime_mode": "deterministic_choice",
+        "check_mode": "deterministic_auto_checked",
+        "grading_mode": "deterministic",
+    }
+
 
 def tree_diagram_counting_runtime_shell(
     skill_id: str,
@@ -2379,4 +2841,746 @@ def interquartile_range_basic(
         }
 
     raise RuntimeError("Failed to generate unique parameters")
+
+
+def _hash_spec(spec: Dict[str, Any]) -> str:
+    return hashlib.sha1(json.dumps(spec, ensure_ascii=False, sort_keys=True).encode("utf-8")).hexdigest()[:12]
+
+
+def cumulative_frequency_tables_graphs_review_shell_v2(
+    skill_id: str,
+    subskill_id: str,
+    difficulty: int = 1,
+    seed: Optional[int] = None,
+    seen_parameter_tuples: Optional[Set[Tuple]] = None,
+    multiple_choice: bool = True,
+) -> Dict[str, Any]:
+    rng = random.Random(seed)
+    contexts = [
+        ("score_band", "分數區間"),
+        ("height_band", "身高區間（公分）"),
+        ("time_band", "時間區間（分鐘）"),
+        ("sales_band", "銷售量區間（件）"),
+    ]
+    context_id, context_label = rng.choice(contexts)
+    n_bins = rng.choice([4, 5, 6])
+    width = rng.choice([5, 10, 20])
+    start = rng.choice([0, 10, 20, 40, 60])
+    freqs = [rng.randint(2, 9) for _ in range(n_bins)]
+
+    bins = [f"{start + i * width}-{start + (i + 1) * width - 1}" for i in range(n_bins)]
+    cumulative_values: List[int] = []
+    run = 0
+    for f in freqs:
+        run += f
+        cumulative_values.append(run)
+
+    rows = []
+    for i, b in enumerate(bins):
+        rows.append([b, freqs[i], "□" if i >= 1 else cumulative_values[i]])
+    headers = ["組別", "次數", "累積次數"]
+    table_title = "累積次數分配表"
+    table_spec = {"headers": headers, "rows": rows, "bins": bins, "frequencies": freqs, "context": context_id}
+    table_spec_hash = _hash_spec(table_spec)
+    scenario_id = f"cumulative_frequency_table_completion_{context_id}_{n_bins}g_w{width}"
+    parameter_signature = (
+        f"cumulative_table:context={context_id},bins={','.join(bins)},"
+        f"freq={','.join(str(v) for v in freqs)},cum={','.join(str(v) for v in cumulative_values)}"
+    )
+    param_tuple = ("cumulative_frequency_tables_graphs_review_shell_v2", scenario_id, parameter_signature)
+    if seen_parameter_tuples is not None:
+        validate_parameter_tuple_not_seen(param_tuple, seen_parameter_tuples)
+        seen_parameter_tuples.add(param_tuple)
+
+    image_b64 = _build_table_png_base64(headers, rows, title=table_title)
+    return {
+        "question_text": f"下表為{context_label}的{table_title}，請補上空格中的累積次數，並簡述你的計算方式。",
+        "answer": "",
+        "correct_answer": "",
+        "expected_answer_schema": {
+            "type": "cumulative_frequency_table_completion",
+            "required_columns": headers,
+            "cumulative_values": cumulative_values,
+            "frequency_values": freqs,
+        },
+        "rubric": {
+            "criteria": ["累積次數填寫正確", "計算步驟合理", "表格完成度"]
+        },
+        "choices": [],
+        "explanation": "累積次數由上而下逐步累加：第 i 列累積次數 = 前一列累積次數 + 本列次數。",
+        "skill_id": skill_id,
+        "subskill_id": subskill_id,
+        "problem_type_id": "cumulative_frequency_table_completion_review",
+        "scenario_family": "cumulative_frequency_table_completion_review",
+        "scenario_id": scenario_id,
+        "parameter_signature": parameter_signature,
+        "table_spec_hash": table_spec_hash,
+        "generator_key": "b4.chap3.cumulative_frequency_tables_graphs_review_shell_v2",
+        "answer_type": "handwriting",
+        "answer_input_type": "free_response_or_handwriting",
+        "difficulty": difficulty,
+        "diagnosis_tags": ["cumulative_frequency", "table_completion"],
+        "remediation_candidates": ["vh_數學B4_CumulativeFrequencyTablesAndGraphs"],
+        "source_style_refs": ["B4_Ch3_cumulative_frequency"],
+        "textbook_alignment_note": "補表題維持 review/手寫檢核，不硬轉 deterministic 多格表。",
+        "parameters": {
+            "scenario_id": scenario_id,
+            "scenario_family": "cumulative_frequency_table_completion_review",
+            "template_id": "cumulative_frequency_table_completion_review",
+            "numeric_params": {"bin_count": n_bins, "width": width, "start": start},
+            "context_params": {"context": context_id},
+            "bins": bins,
+            "frequencies": freqs,
+            "cumulative_values": cumulative_values,
+            "table_spec_hash": table_spec_hash,
+        },
+        "visual_backed": True,
+        "visual_asset_type": "table",
+        "table_title": table_title,
+        "table": {"table_title": table_title, "headers": headers, "rows": rows},
+        "image_base64": image_b64,
+        "visual_aids": [{
+            "type": "table",
+            "title": table_title,
+            "caption": table_title,
+            "alt_text": table_title,
+            "headers": headers,
+            "rows": rows,
+        }],
+        "requires_handwriting": True,
+        "requires_teacher_review": True,
+        "runtime_mode": "visual_or_handwriting_ai_checked",
+        "check_mode": "review_mode",
+        "grading_mode": "teacher_review",
+    }
+
+
+def frequency_distribution_table_construction_shell_v2(
+    skill_id: str,
+    subskill_id: str,
+    difficulty: int = 1,
+    seed: Optional[int] = None,
+    seen_parameter_tuples: Optional[Set[Tuple]] = None,
+    multiple_choice: bool = True,
+) -> Dict[str, Any]:
+    rng = random.Random(seed)
+    contexts = [
+        ("exam_scores", "某班數學小考分數"),
+        ("heights", "某班學生身高（公分）"),
+        ("running_time", "短跑完成時間（秒）"),
+        ("sales_units", "商店每日銷售量（件）"),
+    ]
+    context_id, context_label = rng.choice(contexts)
+    width = rng.choice([5, 10, 20])
+    n_bins = rng.choice([4, 5, 6])
+    start = rng.choice([0, 10, 20, 30, 40])
+    bins: List[Tuple[int, int]] = []
+    for i in range(n_bins):
+        lo = start + i * width
+        bins.append((lo, lo + width - 1))
+
+    frequency_map: Dict[str, int] = {}
+    raw_data: List[int] = []
+    for lo, hi in bins:
+        label = f"{lo}-{hi}"
+        count = rng.randint(3, 8)
+        frequency_map[label] = count
+        raw_data.extend([rng.randint(lo, hi) for _ in range(count)])
+    rng.shuffle(raw_data)
+
+    headers = ["組別", "次數"]
+    rows = [[k, "□"] for k in frequency_map.keys()]
+    table_title = "次數分配表"
+    raw_data_hash = hashlib.sha1(json.dumps(raw_data, ensure_ascii=False).encode("utf-8")).hexdigest()[:12]
+    table_spec_hash = _hash_spec({"headers": headers, "rows": rows, "context": context_id})
+    scenario_id = f"frequency_table_construction_{context_id}_{n_bins}g_w{width}"
+    parameter_signature = (
+        f"frequency_table_construction:context={context_id},groups={n_bins},width={width},"
+        f"start={start},raw_hash={raw_data_hash}"
+    )
+    param_tuple = ("frequency_distribution_table_construction_shell_v2", scenario_id, parameter_signature)
+    if seen_parameter_tuples is not None:
+        validate_parameter_tuple_not_seen(param_tuple, seen_parameter_tuples)
+        seen_parameter_tuples.add(param_tuple)
+
+    return {
+        "question_text": f"下列資料為{context_label}：{raw_data}。請整理成次數分配表並填入各組次數。",
+        "answer": "",
+        "correct_answer": "",
+        "expected_answer_schema": {
+            "type": "frequency_table_construction",
+            "required_columns": headers,
+            "frequency_map": frequency_map,
+            "bin_edges": [list(b) for b in bins],
+        },
+        "rubric": {
+            "criteria": ["分組區間正確", "次數統計正確", "表格完整"]
+        },
+        "choices": [],
+        "explanation": "依各組區間統計原始資料筆數，可得到次數分配表。",
+        "skill_id": skill_id,
+        "subskill_id": subskill_id,
+        "problem_type_id": "frequency_table_construction_review",
+        "scenario_family": "frequency_distribution_table_construction",
+        "scenario_id": scenario_id,
+        "parameter_signature": parameter_signature,
+        "table_spec_hash": table_spec_hash,
+        "generator_key": "b4.chap3.frequency_distribution_table_construction_shell_v2",
+        "answer_type": "handwriting",
+        "answer_input_type": "free_response_or_handwriting",
+        "difficulty": difficulty,
+        "diagnosis_tags": ["frequency_distribution_table", "table_construction"],
+        "remediation_candidates": ["vh_數學B4_FrequencyDistributionTableConstruction"],
+        "source_style_refs": ["B4_Ch3_frequency_table_construction"],
+        "parameters": {
+            "scenario_id": scenario_id,
+            "scenario_family": "frequency_distribution_table_construction",
+            "template_id": "frequency_table_construction_review",
+            "numeric_params": {"group_width": width, "group_count": n_bins, "start": start},
+            "context_params": {"context": context_id},
+            "raw_data": raw_data,
+            "frequency_map": frequency_map,
+            "raw_data_hash": raw_data_hash,
+            "table_spec_hash": table_spec_hash,
+        },
+        "visual_backed": True,
+        "visual_asset_type": "table",
+        "raw_data": raw_data,
+        "table_schema": {"headers": headers, "rows": rows},
+        "table_title": table_title,
+        "table": {"table_title": table_title, "headers": headers, "rows": rows},
+        "visual_aids": [{
+            "type": "table",
+            "title": table_title,
+            "caption": table_title,
+            "alt_text": table_title,
+            "headers": headers,
+            "rows": rows,
+        }],
+        "requires_handwriting": True,
+        "requires_teacher_review": True,
+        "runtime_mode": "visual_or_handwriting_ai_checked",
+        "check_mode": "handwriting_ai_checked",
+        "grading_mode": "ai_assisted_review",
+    }
+
+
+def histogram_reading_v2(
+    skill_id: str,
+    subskill_id: str,
+    difficulty: int = 1,
+    seed: Optional[int] = None,
+    seen_parameter_tuples: Optional[Set[Tuple]] = None,
+    multiple_choice: bool = True,
+) -> Dict[str, Any]:
+    rng = random.Random(seed)
+    contexts = [("score", "分數區間"), ("height", "身高區間（公分）"), ("time", "時間區間（分鐘）")]
+    context_id, x_label = rng.choice(contexts)
+    width = rng.choice([5, 10, 20])
+    n_bins = rng.choice([4, 5, 6])
+    start = rng.choice([0, 10, 20, 30, 40])
+    bins = [f"{start + i * width}-{start + (i + 1) * width - 1}" for i in range(n_bins)]
+    freqs = [rng.randint(2, 12) for _ in range(n_bins)]
+    mode = rng.choice(["group_frequency", "total_frequency", "max_group"])
+
+    if mode == "group_frequency":
+        target_idx = rng.randrange(n_bins)
+        question_text = f"附圖為直方圖，請問 {bins[target_idx]} 這一組的次數是多少？"
+        answer = str(freqs[target_idx])
+        explanation = f"{bins[target_idx]} 這一組柱高對應次數為 {answer}。"
+    elif mode == "total_frequency":
+        target_idx = None
+        total = sum(freqs)
+        question_text = "附圖為直方圖，請問全部資料的總次數是多少？"
+        answer = str(total)
+        explanation = f"總次數為各組次數相加：{' + '.join(str(v) for v in freqs)} = {total}。"
+    else:
+        target_idx = int(max(range(n_bins), key=lambda i: freqs[i]))
+        question_text = "附圖為直方圖，請問哪一組的次數最多？"
+        answer = bins[target_idx]
+        explanation = f"柱高最高的組別為 {answer}。"
+
+    chart_spec = {"type": "histogram", "title": "直方圖", "x_label": x_label, "y_label": "次數", "bins": bins, "frequencies": freqs}
+    chart_spec_hash = _hash_spec(chart_spec)
+    scenario_id = f"histogram_{context_id}_{mode}_{n_bins}g_w{width}"
+    parameter_signature = f"histogram:context={context_id},mode={mode},bins={','.join(bins)},freq={','.join(str(v) for v in freqs)}"
+    param_tuple = ("histogram_reading_v2", scenario_id, parameter_signature)
+    if seen_parameter_tuples is not None:
+        validate_parameter_tuple_not_seen(param_tuple, seen_parameter_tuples)
+        seen_parameter_tuples.add(param_tuple)
+
+    image_b64 = _build_chart_png_base64(bins, freqs, chart_kind="bar", title="直方圖")
+    return {
+        "question_text": question_text,
+        "answer": answer,
+        "correct_answer": answer,
+        "choices": [answer],
+        "explanation": explanation,
+        "skill_id": skill_id,
+        "subskill_id": subskill_id,
+        "problem_type_id": "histogram_reading",
+        "scenario_family": "histogram_reading_short_answer",
+        "scenario_id": scenario_id,
+        "parameter_signature": parameter_signature,
+        "chart_spec_hash": chart_spec_hash,
+        "generator_key": "b4.chap3.histogram_reading_v2",
+        "answer_type": "integer",
+        "difficulty": difficulty,
+        "diagnosis_tags": ["histogram_reading", "chart_reading"],
+        "remediation_candidates": ["vh_數學B4_HistogramsAndFrequencyPolygons"],
+        "source_style_refs": ["B4_Ch3_histogram"],
+        "parameters": {
+            "scenario_id": scenario_id,
+            "scenario_family": "histogram_reading_short_answer",
+            "template_id": "histogram_reading",
+            "numeric_params": {"width": width, "n_bins": n_bins, "start": start},
+            "context_params": {"context": context_id},
+            "bins": bins,
+            "frequencies": freqs,
+            "question_target": mode,
+            "chart_spec_hash": chart_spec_hash,
+        },
+        "chart_spec": chart_spec,
+        "image_base64": image_b64,
+        "visual_aids": [{
+            "type": "histogram",
+            "title": "直方圖",
+            "caption": "直方圖",
+            "alt_text": "直方圖",
+            "x_label": x_label,
+            "y_label": "次數",
+            "bins": bins,
+            "frequencies": freqs,
+        }],
+        "visual_backed": True,
+        "visual_asset_type": "histogram",
+        "runtime_mode": "visual_reading_with_short_answer",
+        "check_mode": "deterministic_auto_checked",
+        "grading_mode": "deterministic",
+    }
+
+
+def sampling_survey_foundation_choice_v2(
+    skill_id: str,
+    subskill_id: str,
+    difficulty: int = 1,
+    seed: Optional[int] = None,
+    seen_parameter_tuples: Optional[Set[Tuple]] = None,
+    multiple_choice: bool = True,
+) -> Dict[str, Any]:
+    global _LAST_SAMPLING_SURVEY_SCENARIO_ID
+    global _LAST_SAMPLING_SURVEY_PARAMETER_SIGNATURE
+    rng = random.Random(seed)
+    scenarios = [
+        (
+            "population_sample_size_identification_city_5000_250",
+            "某城市共有 5000 位機車族，研究者抽出其中 250 位填寫問卷。下列何者是樣本？請輸入選項代號。",
+            "3",
+            [
+                "1. 全城市 5000 位機車族",
+                "2. 全城市所有交通工具使用者",
+                "3. 被抽出的 250 位機車族",
+                "4. 問卷題目本身",
+            ],
+            "樣本是實際被抽出並接受調查的對象，因此是被抽出的 250 位機車族。",
+        ),
+        (
+            "population_identification_school_students",
+            "某校想研究全校學生的早餐習慣，隨機抽出 120 人作答。下列何者是母群體？請輸入選項代號。",
+            "1",
+            [
+                "1. 全校所有學生",
+                "2. 抽出的 120 人",
+                "3. 早餐種類清單",
+                "4. 問卷題目",
+            ],
+            "母群體是研究想要推論的整體，這裡是全校所有學生。",
+        ),
+        (
+            "sample_size_identification_factory_1200_80",
+            "某工廠共有 1200 件產品，品管抽查其中 80 件。下列何者是樣本數？請輸入選項代號。",
+            "2",
+            [
+                "1. 1200",
+                "2. 80",
+                "3. 1120",
+                "4. 無法判斷",
+            ],
+            "樣本數是被抽查的件數，因此為 80。",
+        ),
+        (
+            "population_size_identification_community_3000_150",
+            "某社區共有 3000 位住戶，抽出 150 位進行訪問。下列何者是母群體數？請輸入選項代號。",
+            "1",
+            [
+                "1. 3000",
+                "2. 150",
+                "3. 2850",
+                "4. 3150",
+            ],
+            "母群體數是整體住戶人數，因此為 3000。",
+        ),
+        (
+            "census_or_sample_city_commute",
+            "調查某市通勤方式時，研究者只訪問其中 400 位市民。這屬於下列何者？請輸入選項代號。",
+            "2",
+            [
+                "1. 普查",
+                "2. 抽查",
+                "3. 實驗研究",
+                "4. 無法分類",
+            ],
+            "只調查部分對象屬於抽查。",
+        ),
+        (
+            "census_or_sample_school_all_students",
+            "學校調查午餐滿意度時，訪問全校每一位學生。這屬於下列何者？請輸入選項代號。",
+            "1",
+            [
+                "1. 普查",
+                "2. 抽查",
+                "3. 分層抽樣",
+                "4. 部落抽樣",
+            ],
+            "訪問全體成員屬於普查。",
+        ),
+        (
+            "correct_statement_population_sample_traffic",
+            "關於母群體與樣本，下列敘述何者正確？請輸入選項代號。",
+            "4",
+            [
+                "1. 樣本一定比母群體大",
+                "2. 母群體一定是 100 人",
+                "3. 樣本數等於問卷題數",
+                "4. 樣本是由母群體中抽出的部分對象",
+            ],
+            "樣本是由母群體中抽出的部分個體，這是基本定義。",
+        ),
+        (
+            "population_sample_identification_food_test",
+            "某食品公司從當日生產的 2000 包餅乾中抽出 100 包檢驗。下列何者是樣本？請輸入選項代號。",
+            "2",
+            [
+                "1. 當日全部 2000 包餅乾",
+                "2. 抽出的 100 包餅乾",
+                "3. 生產機器台數",
+                "4. 檢驗標準表",
+            ],
+            "樣本是實際拿來檢驗的 100 包餅乾。",
+        ),
+        (
+            "bias_concert_choice_version",
+            "某候選人為了了解支持度，只在自己的造勢晚會上發放問卷。這個調查最可能產生哪一種問題？請輸入選項代號。",
+            "1",
+            [
+                "1. 樣本可能偏向支持該候選人的族群",
+                "2. 樣本數一定太大",
+                "3. 問卷題目一定太少",
+                "4. 這是標準的普查",
+            ],
+            "只在造勢晚會取樣，樣本來源偏向支持者，代表性不足。",
+        ),
+        (
+            "sample_size_identification_school_1800_90",
+            "某校共有 1800 位學生，研究者抽出 90 位做問卷。下列何者是樣本數？請輸入選項代號。",
+            "3",
+            [
+                "1. 1800",
+                "2. 1710",
+                "3. 90",
+                "4. 1890",
+            ],
+            "樣本數是被抽出的對象數量，因此為 90。",
+        ),
+    ]
+    picked = rng.choice(scenarios)
+    if seed is None and _LAST_SAMPLING_SURVEY_SCENARIO_ID is not None and len(scenarios) > 1:
+        if picked[0] == _LAST_SAMPLING_SURVEY_SCENARIO_ID:
+            cur_idx = scenarios.index(picked)
+            picked = scenarios[(cur_idx + 1) % len(scenarios)]
+
+    scenario_id, question_text, answer, choices, explanation = picked
+    parameter_signature = f"sampling_survey_choice:scenario={scenario_id},answer={answer}"
+    param_tuple = ("sampling_survey_foundation_choice_v2", scenario_id)
+    if seen_parameter_tuples is not None:
+        validate_parameter_tuple_not_seen(param_tuple, seen_parameter_tuples)
+        seen_parameter_tuples.add(param_tuple)
+    _LAST_SAMPLING_SURVEY_SCENARIO_ID = scenario_id
+    _LAST_SAMPLING_SURVEY_PARAMETER_SIGNATURE = parameter_signature
+
+    return {
+        "question_text": question_text,
+        "answer": answer,
+        "correct_answer": answer,
+        "choices": choices,
+        "choices_display": choices,
+        "explanation": explanation,
+        "skill_id": skill_id,
+        "subskill_id": subskill_id,
+        "problem_type_id": "sampling_survey_foundation_identification",
+        "scenario_family": "sampling_survey_foundation_identification",
+        "scenario_id": scenario_id,
+        "parameter_signature": parameter_signature,
+        "generator_key": "b4.chap3.sampling_survey_foundation_choice_v2",
+        "answer_type": "integer",
+        "answer_input_type": "choice",
+        "difficulty": difficulty,
+        "diagnosis_tags": ["sampling_survey", "population_sample"],
+        "remediation_candidates": ["vh_數學B4_SamplingSurvey"],
+        "source_style_refs": ["B4_Ch3_sampling_survey"],
+        "textbook_alignment_note": "聚焦母群體、樣本、母群體數、樣本數與普查/抽查基本概念。",
+        "parameters": {
+            "scenario_id": scenario_id,
+            "scenario_family": "sampling_survey_foundation_identification",
+            "parameter_signature": parameter_signature,
+        },
+        "visual_backed": False,
+        "requires_teacher_review": False,
+        "runtime_mode": "deterministic_choice",
+        "check_mode": "deterministic_auto_checked",
+        "grading_mode": "deterministic",
+    }
+
+
+def data_organization_chart_type_selection_choice_v2(
+    skill_id: str,
+    subskill_id: str,
+    difficulty: int = 1,
+    seed: Optional[int] = None,
+    seen_parameter_tuples: Optional[Set[Tuple]] = None,
+    multiple_choice: bool = True,
+) -> Dict[str, Any]:
+    global _LAST_DATA_ORG_SCENARIO_ID
+    global _LAST_DATA_ORG_PARAMETER_SIGNATURE
+    rng = random.Random(seed)
+    scenarios = [
+        (
+            "trend_weekly_attendance_line_chart",
+            "某社團記錄一週每日到課人數，想觀察一週變化趨勢，最適合使用哪一種圖表？請輸入選項代號。",
+            ["1. 折線圖", "2. 圓形圖", "3. 直方圖", "4. 樹狀圖"],
+            "1",
+            "觀察隨時間變化趨勢，最適合使用折線圖。",
+        ),
+        (
+            "category_transport_bar_chart",
+            "某班記錄學生通勤方式（步行、公車、機車、腳踏車），想比較各類別人數，最適合使用哪一種圖表？請輸入選項代號。",
+            ["1. 長條圖", "2. 折線圖", "3. 散佈圖", "4. 樹狀圖"],
+            "1",
+            "比較不同類別的人數，長條圖最直觀。",
+        ),
+        (
+            "proportion_snack_pie_chart",
+            "班上調查最喜歡的點心種類，想呈現各類別所占比例，最適合使用哪一種圖表？請輸入選項代號。",
+            ["1. 圓形圖", "2. 折線圖", "3. 直方圖", "4. 箱型圖"],
+            "1",
+            "呈現整體比例關係時，圓形圖最合適。",
+        ),
+    ]
+    picked = rng.choice(scenarios)
+    if seed is None and _LAST_DATA_ORG_SCENARIO_ID is not None and len(scenarios) > 1:
+        if picked[0] == _LAST_DATA_ORG_SCENARIO_ID:
+            idx = scenarios.index(picked)
+            picked = scenarios[(idx + 1) % len(scenarios)]
+    scenario_id, question_text, choices, answer, explanation = picked
+    param_sig = f"chart_type_selection_by_purpose:{scenario_id}"
+    param_tuple = ("data_org_chart_type_v2", scenario_id)
+    if seen_parameter_tuples is not None:
+        validate_parameter_tuple_not_seen(param_tuple, seen_parameter_tuples)
+        seen_parameter_tuples.add(param_tuple)
+    _LAST_DATA_ORG_SCENARIO_ID = scenario_id
+    _LAST_DATA_ORG_PARAMETER_SIGNATURE = param_sig
+
+    return {
+        "question_text": question_text,
+        "answer": answer,
+        "correct_answer": answer,
+        "choices": choices,
+        "choices_display": choices,
+        "explanation": explanation,
+        "skill_id": skill_id,
+        "subskill_id": subskill_id,
+        "problem_type_id": "chart_type_selection_by_purpose",
+        "scenario_family": "chart_type_selection_by_purpose",
+        "scenario_id": scenario_id,
+        "parameter_signature": param_sig,
+        "generator_key": "b4.chap3.data_organization_chart_type_selection_choice_v2",
+        "answer_type": "integer",
+        "answer_input_type": "choice",
+        "difficulty": difficulty,
+        "diagnosis_tags": ["data_organization", "chart_selection"],
+        "remediation_candidates": ["vh_數學B4_DataOrganizationAndCharts"],
+        "source_style_refs": ["B4_Ch3_data_organization"],
+        "textbook_alignment_note": "依資料目的選擇圖表，符合課本資料整理與圖表應用主軸。",
+        "parameters": {
+            "scenario_id": scenario_id,
+            "scenario_family": "chart_type_selection_by_purpose",
+            "parameter_signature": param_sig,
+        },
+        "visual_backed": False,
+        "runtime_mode": "deterministic_choice",
+        "check_mode": "deterministic_auto_checked",
+        "grading_mode": "deterministic",
+    }
+
+
+def data_organization_first_step_choice_v2(
+    skill_id: str,
+    subskill_id: str,
+    difficulty: int = 1,
+    seed: Optional[int] = None,
+    seen_parameter_tuples: Optional[Set[Tuple]] = None,
+    multiple_choice: bool = True,
+) -> Dict[str, Any]:
+    global _LAST_DATA_ORG_SCENARIO_ID
+    global _LAST_DATA_ORG_PARAMETER_SIGNATURE
+    rng = random.Random(seed)
+    scenarios = [
+        (
+            "first_step_count_transport_categories",
+            "某班記錄學生通勤方式，資料含步行、公車、機車、腳踏車。若要比較各類別人數，應先如何整理？請輸入選項代號。",
+            ["1. 統計各類別出現次數", "2. 直接計算標準差", "3. 畫累積次數折線圖", "4. 假設資料服從常態分配"],
+            "1",
+            "先做分類計數，才能進一步繪製比較圖表。",
+        ),
+        (
+            "first_step_count_reading_minutes",
+            "某社團記錄社員每日閱讀分鐘數，想先整理成可比較的資料，第一步應為何？請輸入選項代號。",
+            ["1. 分組並統計各組次數", "2. 直接求相關係數", "3. 先畫圓形圖", "4. 先假設資料無誤差"],
+            "1",
+            "先分組並統計次數，才能進行後續圖表呈現。",
+        ),
+        (
+            "first_step_sort_sales_records",
+            "商店記錄一週每日銷售件數，若要觀察資料趨勢，整理資料第一步通常是什麼？請輸入選項代號。",
+            ["1. 依日期排序並整理成表格", "2. 先計算變異係數", "3. 先畫樹狀圖", "4. 先刪除極端值"],
+            "1",
+            "先依時間順序整理成表格，才適合後續趨勢分析。",
+        ),
+    ]
+    picked = rng.choice(scenarios)
+    if seed is None and _LAST_DATA_ORG_SCENARIO_ID is not None and len(scenarios) > 1:
+        if picked[0] == _LAST_DATA_ORG_SCENARIO_ID:
+            idx = scenarios.index(picked)
+            picked = scenarios[(idx + 1) % len(scenarios)]
+    scenario_id, question_text, choices, answer, explanation = picked
+    param_sig = f"data_organization_first_step:{scenario_id}"
+    param_tuple = ("data_org_first_step_v2", scenario_id)
+    if seen_parameter_tuples is not None:
+        validate_parameter_tuple_not_seen(param_tuple, seen_parameter_tuples)
+        seen_parameter_tuples.add(param_tuple)
+    _LAST_DATA_ORG_SCENARIO_ID = scenario_id
+    _LAST_DATA_ORG_PARAMETER_SIGNATURE = param_sig
+
+    return {
+        "question_text": question_text,
+        "answer": answer,
+        "correct_answer": answer,
+        "choices": choices,
+        "choices_display": choices,
+        "explanation": explanation,
+        "skill_id": skill_id,
+        "subskill_id": subskill_id,
+        "problem_type_id": "data_organization_first_step",
+        "scenario_family": "data_organization_first_step",
+        "scenario_id": scenario_id,
+        "parameter_signature": param_sig,
+        "generator_key": "b4.chap3.data_organization_first_step_choice_v2",
+        "answer_type": "integer",
+        "answer_input_type": "choice",
+        "difficulty": difficulty,
+        "diagnosis_tags": ["data_organization", "first_step"],
+        "remediation_candidates": ["vh_數學B4_DataOrganizationAndCharts"],
+        "source_style_refs": ["B4_Ch3_data_organization"],
+        "textbook_alignment_note": "資料整理第一步與圖表前處理，符合課本 3-1 概念題。",
+        "parameters": {
+            "scenario_id": scenario_id,
+            "scenario_family": "data_organization_first_step",
+            "parameter_signature": param_sig,
+        },
+        "visual_backed": False,
+        "runtime_mode": "deterministic_choice",
+        "check_mode": "deterministic_auto_checked",
+        "grading_mode": "deterministic",
+    }
+
+
+def data_organization_chart_usage_identification_choice_v2(
+    skill_id: str,
+    subskill_id: str,
+    difficulty: int = 1,
+    seed: Optional[int] = None,
+    seen_parameter_tuples: Optional[Set[Tuple]] = None,
+    multiple_choice: bool = True,
+) -> Dict[str, Any]:
+    global _LAST_DATA_ORG_SCENARIO_ID
+    global _LAST_DATA_ORG_PARAMETER_SIGNATURE
+    rng = random.Random(seed)
+    scenarios = [
+        (
+            "chart_usage_trend_line",
+            "若資料目的是呈現每日人數隨時間的變化，最常使用哪一種圖表？請輸入選項代號。",
+            ["1. 折線圖", "2. 圓形圖", "3. 象形圖", "4. 樹狀圖"],
+            "1",
+            "時間序列變化通常用折線圖呈現。",
+        ),
+        (
+            "chart_usage_category_bar",
+            "若資料目的是比較不同類別的人數高低，最常使用哪一種圖表？請輸入選項代號。",
+            ["1. 長條圖", "2. 折線圖", "3. 散佈圖", "4. 箱型圖"],
+            "1",
+            "比較類別高低時，長條圖最常見且易讀。",
+        ),
+        (
+            "chart_usage_ratio_pie",
+            "若資料目的是表達各類別在整體中的占比，最常使用哪一種圖表？請輸入選項代號。",
+            ["1. 圓形圖", "2. 直方圖", "3. 折線圖", "4. 雷達圖"],
+            "1",
+            "呈現部分與整體關係時，圓形圖最常用。",
+        ),
+    ]
+    picked = rng.choice(scenarios)
+    if seed is None and _LAST_DATA_ORG_SCENARIO_ID is not None and len(scenarios) > 1:
+        if picked[0] == _LAST_DATA_ORG_SCENARIO_ID:
+            idx = scenarios.index(picked)
+            picked = scenarios[(idx + 1) % len(scenarios)]
+    scenario_id, question_text, choices, answer, explanation = picked
+    param_sig = f"chart_usage_identification:{scenario_id}"
+    param_tuple = ("data_org_chart_usage_v2", scenario_id)
+    if seen_parameter_tuples is not None:
+        validate_parameter_tuple_not_seen(param_tuple, seen_parameter_tuples)
+        seen_parameter_tuples.add(param_tuple)
+    _LAST_DATA_ORG_SCENARIO_ID = scenario_id
+    _LAST_DATA_ORG_PARAMETER_SIGNATURE = param_sig
+
+    return {
+        "question_text": question_text,
+        "answer": answer,
+        "correct_answer": answer,
+        "choices": choices,
+        "choices_display": choices,
+        "explanation": explanation,
+        "skill_id": skill_id,
+        "subskill_id": subskill_id,
+        "problem_type_id": "chart_usage_identification",
+        "scenario_family": "chart_usage_identification",
+        "scenario_id": scenario_id,
+        "parameter_signature": param_sig,
+        "generator_key": "b4.chap3.data_organization_chart_usage_identification_choice_v2",
+        "answer_type": "integer",
+        "answer_input_type": "choice",
+        "difficulty": difficulty,
+        "diagnosis_tags": ["data_organization", "chart_usage"],
+        "remediation_candidates": ["vh_數學B4_DataOrganizationAndCharts"],
+        "source_style_refs": ["B4_Ch3_data_organization"],
+        "textbook_alignment_note": "圖表用途辨識題，對齊課本基礎應用情境。",
+        "parameters": {
+            "scenario_id": scenario_id,
+            "scenario_family": "chart_usage_identification",
+            "parameter_signature": param_sig,
+        },
+        "visual_backed": False,
+        "runtime_mode": "deterministic_choice",
+        "check_mode": "deterministic_auto_checked",
+        "grading_mode": "deterministic",
+    }
 

@@ -795,8 +795,8 @@ _CHAP3_PHASE7B_REGISTRY: dict[str, list[dict[str, object]]] = {
         {
             "subskill_id": "b4_ch3_histogram_reading_01",
             "problem_type_id": "histogram_reading",
-            "generator_key": "b4.chap3.histogram_reading",
-            "generator_fn": _chap3_stat.histogram_reading,
+            "generator_key": "b4.chap3.histogram_reading_v2",
+            "generator_fn": _chap3_stat.histogram_reading_v2,
         },
     ],
     "vh_數學B4_NormalDistributionAndEmpiricalRule": [
@@ -834,17 +834,17 @@ _CHAP3_PHASE7B_REGISTRY: dict[str, list[dict[str, object]]] = {
     "vh_數學B4_FrequencyDistributionTableConstruction": [
         {
             "subskill_id": "b4_ch3_frequency_distribution_table_shell_01",
-            "problem_type_id": "table_completion_handwriting",
-            "generator_key": "b4.chap3.frequency_distribution_table_construction_shell",
-            "generator_fn": _chap3_stat.frequency_distribution_table_construction_shell,
+            "problem_type_id": "frequency_table_construction_review",
+            "generator_key": "b4.chap3.frequency_distribution_table_construction_shell_v2",
+            "generator_fn": _chap3_stat.frequency_distribution_table_construction_shell_v2,
         },
     ],
     "vh_數學B4_SamplingSurvey": [
         {
             "subskill_id": "b4_ch3_sampling_survey_choice_01",
             "problem_type_id": "sampling_survey_foundation_identification",
-            "generator_key": "b4.chap3.sampling_survey_foundation_choice",
-            "generator_fn": _chap3_stat.sampling_survey_foundation_choice,
+            "generator_key": "b4.chap3.sampling_survey_foundation_choice_v2",
+            "generator_fn": _chap3_stat.sampling_survey_foundation_choice_v2,
         },
         {
             "subskill_id": "b4_ch3_sampling_survey_review_01",
@@ -857,22 +857,28 @@ _CHAP3_PHASE7B_REGISTRY: dict[str, list[dict[str, object]]] = {
         {
             "subskill_id": "b4_ch3_cumulative_frequency_review_01",
             "problem_type_id": "cumulative_frequency_table_completion_review",
-            "generator_key": "b4.chap3.cumulative_frequency_tables_graphs_review_shell",
-            "generator_fn": _chap3_stat.cumulative_frequency_tables_graphs_review_shell,
+            "generator_key": "b4.chap3.cumulative_frequency_tables_graphs_review_shell_v2",
+            "generator_fn": _chap3_stat.cumulative_frequency_tables_graphs_review_shell_v2,
         },
     ],
     "vh_數學B4_DataOrganizationAndCharts": [
         {
             "subskill_id": "b4_ch3_data_organization_choice_chart_type_01",
             "problem_type_id": "chart_type_selection_by_purpose",
-            "generator_key": "b4.chap3.data_organization_chart_type_selection_choice",
-            "generator_fn": _chap3_stat.data_organization_chart_type_selection_choice,
+            "generator_key": "b4.chap3.data_organization_chart_type_selection_choice_v2",
+            "generator_fn": _chap3_stat.data_organization_chart_type_selection_choice_v2,
         },
         {
             "subskill_id": "b4_ch3_data_organization_choice_first_step_01",
             "problem_type_id": "data_organization_first_step",
-            "generator_key": "b4.chap3.data_organization_first_step_choice",
-            "generator_fn": _chap3_stat.data_organization_first_step_choice,
+            "generator_key": "b4.chap3.data_organization_first_step_choice_v2",
+            "generator_fn": _chap3_stat.data_organization_first_step_choice_v2,
+        },
+        {
+            "subskill_id": "b4_ch3_data_organization_choice_usage_01",
+            "problem_type_id": "chart_usage_identification",
+            "generator_key": "b4.chap3.data_organization_chart_usage_identification_choice_v2",
+            "generator_fn": _chap3_stat.data_organization_chart_usage_identification_choice_v2,
         },
         {
             "subskill_id": "b4_ch3_data_organization_review_01",
@@ -936,6 +942,35 @@ def generate_for_chap3_skill(
         raise ValueError(f"generate_for_chap3_skill: unsupported skill_id '{skill_id}'.")
 
     entries = _CHAP3_PHASE7B_REGISTRY[skill_id]
+    # SamplingSurvey Level-1 default route should stay deterministic-choice only.
+    if (
+        str(skill_id).endswith("SamplingSurvey")
+        and int(level or 1) <= 1
+        and problem_type_id is None
+    ):
+        entries = [
+            e for e in entries
+            if str(e.get("problem_type_id", "")) != "sampling_survey_bias_review"
+        ] or entries
+    # Chap3 Level-1 global no-open-ended gate for mixed bare-skill default routes.
+    if int(level or 1) <= 1 and problem_type_id is None:
+        mixed_skill_review_blocklist = {
+            "DataOrganizationAndCharts": {
+                "data_organization_chart_selection_review",
+            },
+            "StatisticalChartReading": {
+                "statistical_chart_reading_visibility_review",
+            },
+        }
+        for suffix, blocked_problem_types in mixed_skill_review_blocklist.items():
+            if str(skill_id).endswith(suffix):
+                filtered = [
+                    e for e in entries
+                    if str(e.get("problem_type_id", "")) not in blocked_problem_types
+                ]
+                if filtered:
+                    entries = filtered
+                break
 
     selected_entry, selection_reason = _select_entry(
         entries, seed, problem_type_id, skill_id=skill_id

@@ -102,6 +102,110 @@ def _early_stopping_question_text(labels: list[str]) -> str:
     return f"{first}、{second}兩隊比賽，每場沒有平手，先贏兩場者勝。試問共有多少種勝負情形？請用樹狀圖或完整列舉方式描述所有可能情形。"
 
 
+TREE_DIAGRAM_DIVERSITY_SCENARIOS: tuple[dict[str, Any], ...] = (
+    {
+        "scenario_family": "binary_three_trials",
+        "scenario_id": "coin_toss_three_times",
+        "context_signature": "coin_3_trials",
+        "outcome_set_signature": "H_T",
+        "question_text": "投擲一枚均勻硬幣連續三次，請用樹狀圖或完整列舉方式寫出所有可能結果，並寫出總數。",
+        "stage_options": [["正", "反"], ["正", "反"], ["正", "反"]],
+    },
+    {
+        "scenario_family": "binary_two_trials",
+        "scenario_id": "coin_toss_two_times",
+        "context_signature": "coin_2_trials",
+        "outcome_set_signature": "H_T",
+        "question_text": "投擲一枚均勻硬幣連續兩次，請用樹狀圖或完整列舉方式列出所有可能結果，並寫出總數。",
+        "stage_options": [["正", "反"], ["正", "反"]],
+    },
+    {
+        "scenario_family": "binary_three_trials",
+        "scenario_id": "two_color_three_draws_with_replacement",
+        "context_signature": "red_blue_with_replacement_3",
+        "outcome_set_signature": "red_blue",
+        "question_text": "袋中只有紅、藍兩球，每次抽一球後放回，連續抽三次。請用樹狀圖或完整列舉方式列出所有可能結果。",
+        "stage_options": [["紅", "藍"], ["紅", "藍"], ["紅", "藍"]],
+    },
+    {
+        "scenario_family": "binary_two_trials",
+        "scenario_id": "binary_outcome_two_trials",
+        "context_signature": "success_failure_2",
+        "outcome_set_signature": "success_failure",
+        "question_text": "某實驗每次結果可能為成功或失敗，連續進行兩次。請用樹狀圖或完整列舉方式列出所有可能結果。",
+        "stage_options": [["成", "敗"], ["成", "敗"]],
+    },
+    {
+        "scenario_family": "product_rule_two_stage",
+        "scenario_id": "meal_choice_two_stage",
+        "context_signature": "meal_drink_2x3",
+        "outcome_set_signature": "meal2_drink3",
+        "question_text": "午餐先選主餐（2 種）再選飲料（3 種），請用樹狀圖或完整列舉方式列出所有搭配。",
+        "stage_options": [["主甲", "主乙"], ["飲甲", "飲乙", "飲丙"]],
+    },
+    {
+        "scenario_family": "product_rule_two_stage",
+        "scenario_id": "clothing_choice_two_stage_2x2",
+        "context_signature": "clothing_2x2",
+        "outcome_set_signature": "top2_bottom2",
+        "question_text": "穿搭先選上衣（2 種）再選褲子（2 種），請用樹狀圖或完整列舉方式列出所有搭配。",
+        "stage_options": [["上甲", "上乙"], ["下甲", "下乙"]],
+    },
+    {
+        "scenario_family": "product_rule_two_stage",
+        "scenario_id": "clothing_choice_two_stage_2x3",
+        "context_signature": "clothing_2x3",
+        "outcome_set_signature": "top2_bottom3",
+        "question_text": "穿搭先選上衣（2 種）再選褲子（3 種），請用樹狀圖或完整列舉方式列出所有搭配。",
+        "stage_options": [["上甲", "上乙"], ["下甲", "下乙", "下丙"]],
+    },
+    {
+        "scenario_family": "product_rule_two_stage",
+        "scenario_id": "route_choice_two_stage",
+        "context_signature": "route_2x3",
+        "outcome_set_signature": "route2_route3",
+        "question_text": "從甲地到乙地有 2 條路，乙地到丙地有 3 條路。請用樹狀圖或完整列舉方式列出所有路線。",
+        "stage_options": [["甲路", "乙路"], ["一線", "二線", "三線"]],
+    },
+    {
+        "scenario_family": "product_rule_two_stage",
+        "scenario_id": "digit_or_code_two_stage",
+        "context_signature": "code_3x2",
+        "outcome_set_signature": "digit3_symbol2",
+        "question_text": "代碼第一位可選 1、2、3，第二位可選 A、B。請用樹狀圖或完整列舉方式列出所有代碼。",
+        "stage_options": [["1", "2", "3"], ["A", "B"]],
+    },
+    {
+        "scenario_family": "mixed_outcome_two_stage",
+        "scenario_id": "dice_coin_combination",
+        "context_signature": "coin1_dice1",
+        "outcome_set_signature": "coin2_dice6",
+        "question_text": "擲硬幣一次再擲骰子一次，請用樹狀圖或完整列舉方式列出所有可能結果。",
+        "stage_options": [["正", "反"], ["1", "2", "3", "4", "5", "6"]],
+    },
+    {
+        "scenario_family": "best_of_three_binary_match",
+        "scenario_id": "win_two_games_best_of_three_named_teams",
+        "context_signature": "best_of_three_named",
+        "outcome_set_signature": "two_teams",
+        "question_text": "兩隊比賽每場無平手，先贏兩場者勝。請用樹狀圖或完整列舉方式列出所有可能比賽進程。",
+        "stage_options": [["甲勝", "乙勝"], ["甲勝", "乙勝"], ["甲勝", "乙勝"]],
+    },
+    {
+        "scenario_family": "best_of_three_binary_match",
+        "scenario_id": "win_two_games_best_of_three_ab_teams",
+        "context_signature": "best_of_three_ab",
+        "outcome_set_signature": "two_teams",
+        "question_text": "A、B 兩隊比賽每場無平手，先贏兩場者勝。請用樹狀圖或完整列舉方式列出所有可能比賽進程。",
+        "stage_options": [["A勝", "B勝"], ["A勝", "B勝"], ["A勝", "B勝"]],
+    },
+)
+
+
+def _enumerate_stage_paths(stage_options: list[list[str]]) -> list[str]:
+    return ["、".join(path) for path in product(*stage_options)]
+
+
 def build_tree_diagram_listing_payload(
     variant: str = "early_stopping_game",
     seed: int | None = None,
@@ -109,17 +213,62 @@ def build_tree_diagram_listing_payload(
 ) -> dict[str, Any]:
     normalized_variant = str(variant or "").strip()
     if normalized_variant == "fixed_stage_binary_tree":
-        labels, stages = _pick_indexed(FIXED_STAGE_BINARY_TREE_PARAM_SETS, seed=seed, index=index)
-        expected_paths = _binary_paths(labels, stages)
+        # Keep old indexed behavior for compatibility with existing tests.
+        if index is None or index < len(FIXED_STAGE_BINARY_TREE_PARAM_SETS):
+            labels, stages = _pick_indexed(FIXED_STAGE_BINARY_TREE_PARAM_SETS, seed=seed, index=index)
+            expected_paths = _binary_paths(labels, stages)
+            scenario_id = "fixed_stage_binary_tree_legacy"
+            scenario_family = "binary_fixed_stage_legacy"
+            branch_counts = [len(labels)] * stages
+            parameter_signature = f"legacy_fixed_stage:labels={'-'.join(labels)},stages={stages}"
+            outcome_set_signature = f"{labels[0]}_{labels[1]}"
+            context_signature = "legacy_fixed_stage_binary"
+            question_text = _fixed_stage_question_text(labels, stages)
+        else:
+            scenario = TREE_DIAGRAM_DIVERSITY_SCENARIOS[index % len(TREE_DIAGRAM_DIVERSITY_SCENARIOS)]
+            stage_options = [list(s) for s in scenario.get("stage_options", [])]
+            expected_paths = _enumerate_stage_paths(stage_options)
+            stages = len(stage_options)
+            labels = stage_options[0] if stage_options else []
+            scenario_id = str(scenario.get("scenario_id", "tree_diagram_scenario"))
+            scenario_family = str(scenario.get("scenario_family", "tree_diagram_counting"))
+            outcome_set_signature = str(scenario.get("outcome_set_signature", ""))
+            context_signature = str(scenario.get("context_signature", ""))
+            branch_counts = [len(s) for s in stage_options]
+            parameter_signature = (
+                f"tree:{scenario_id}:depth={stages}:branches={','.join(str(v) for v in branch_counts)}:"
+                f"context={context_signature}:outcomes={outcome_set_signature}"
+            )
+            question_text = str(scenario.get("question_text", "請用樹狀圖或完整列舉方式寫出所有可能情形。"))
         return {
             "problem_type_id": PROBLEM_TYPE_ID,
             "grading_mode": GRADING_MODE,
             "variant": normalized_variant,
-            "question_text": _fixed_stage_question_text(labels, stages),
+            "question_text": question_text,
             "expected_count": len(expected_paths),
             "expected_paths": expected_paths,
             "path_labels": labels,
             "stages": stages,
+            "scenario_family": scenario_family,
+            "scenario_id": scenario_id,
+            "parameter_signature": parameter_signature,
+            "outcome_set_signature": outcome_set_signature,
+            "tree_depth": stages,
+            "branch_counts": branch_counts,
+            "context_signature": context_signature,
+            "expected_answer_schema": {
+                "type": "tree_or_listing",
+                "expected_count": len(expected_paths),
+                "tree_depth": stages,
+                "branch_counts": branch_counts,
+            },
+            "rubric": [
+                "是否列出所有可能情形",
+                "是否沒有重複或遺漏",
+                "是否分支層次合理",
+                "若題目要求總數，是否給出正確總數",
+            ],
+            "textbook_alignment_note": "維持樹狀圖/完整列舉課本骨架，透過情境與參數做可控變化。",
             "accept_text_listing": True,
             "accept_handwriting_tree": False,
             "requires_listing_or_tree": True,
@@ -127,6 +276,11 @@ def build_tree_diagram_listing_payload(
     if normalized_variant == "early_stopping_game":
         labels = _pick_indexed(EARLY_STOPPING_GAME_LABEL_SETS, seed=seed, index=index)
         expected_paths = _early_stopping_paths(labels)
+        scenario_id = (
+            "win_two_games_best_of_three_named_teams"
+            if labels in (["??, "銋?], ["蝝?, "??])
+            else "win_two_games_best_of_three_ab_teams"
+        )
         return {
             "problem_type_id": PROBLEM_TYPE_ID,
             "grading_mode": GRADING_MODE,
@@ -136,6 +290,27 @@ def build_tree_diagram_listing_payload(
             "expected_paths": expected_paths,
             "path_labels": labels,
             "stopping_rule": "first_to_2_wins",
+            "scenario_family": "best_of_three_binary_match",
+            "scenario_id": scenario_id,
+            "parameter_signature": f"best_of_three:labels={'-'.join(labels)}",
+            "outcome_set_signature": "two_teams",
+            "tree_depth": 3,
+            "branch_counts": [2, 2, 2],
+            "context_signature": "sports_match",
+            "expected_answer_schema": {
+                "type": "tree_or_listing",
+                "expected_count": len(expected_paths),
+                "tree_depth": 3,
+                "branch_counts": [2, 2, 2],
+                "stopping_rule": "first_to_2_wins",
+            },
+            "rubric": [
+                "是否列出所有可能情形",
+                "是否沒有重複或遺漏",
+                "是否分支層次合理",
+                "是否正確處理先贏兩場即停止",
+            ],
+            "textbook_alignment_note": "維持先贏兩場的樹狀圖列舉骨架，不以隊伍名稱替換當作有效多樣性。",
             "accept_text_listing": True,
             "accept_handwriting_tree": False,
             "requires_listing_or_tree": True,

@@ -299,11 +299,41 @@ def _build_b4_tree_diagram_runtime_payload(
 
     selected_variant = _resolve_b4_tree_diagram_variant(variant, tree_diagram_index)
     payload_index = tree_diagram_index // len(B4_TREE_DIAGRAM_VARIANTS) if tree_diagram_index is not None else None
-    payload = build_tree_diagram_listing_payload(selected_variant, index=payload_index)
+    if payload_index is None:
+        previous_current = get_current() or {}
+        previous_question_text = str(previous_current.get("question_text") or "")
+        previous_scenario_id = str(previous_current.get("scenario_id") or "")
+        previous_family = str(previous_current.get("scenario_family") or "")
+        previous_param_sig = str(previous_current.get("parameter_signature") or "")
+        previous_outcome_sig = str(previous_current.get("outcome_set_signature") or "")
+        retry_count = 0
+        retry_limit = 3
+        payload = build_tree_diagram_listing_payload(
+            selected_variant,
+            index=random.randint(0, 199),
+        )
+        while retry_count < retry_limit:
+            duplicate_hit = (
+                (str(payload.get("question_text") or "") and str(payload.get("question_text") or "") == previous_question_text)
+                or (str(payload.get("scenario_id") or "") and str(payload.get("scenario_id") or "") == previous_scenario_id)
+                or (str(payload.get("scenario_family") or "") and str(payload.get("scenario_family") or "") == previous_family)
+                or (str(payload.get("parameter_signature") or "") and str(payload.get("parameter_signature") or "") == previous_param_sig)
+                or (str(payload.get("outcome_set_signature") or "") and str(payload.get("outcome_set_signature") or "") == previous_outcome_sig)
+            )
+            if not duplicate_hit:
+                break
+            retry_count += 1
+            payload = build_tree_diagram_listing_payload(
+                selected_variant,
+                index=random.randint(0, 199),
+            )
+    else:
+        payload = build_tree_diagram_listing_payload(selected_variant, index=payload_index)
     return {
         "question_text": payload["question_text"],
         "correct_answer": "",
         "answer_type": "handwriting",
+        "answer_input_type": "handwriting",
         "answer": "",
         "problem_type": payload["problem_type_id"],
         "problem_type_id": payload["problem_type_id"],
@@ -316,6 +346,16 @@ def _build_b4_tree_diagram_runtime_payload(
         "path_labels": payload.get("path_labels", []),
         "requires_listing_or_tree": payload.get("requires_listing_or_tree", True),
         "requires_handwriting": True,
+        "scenario_family": payload.get("scenario_family", "tree_diagram_counting"),
+        "scenario_id": payload.get("scenario_id", ""),
+        "parameter_signature": payload.get("parameter_signature", ""),
+        "outcome_set_signature": payload.get("outcome_set_signature", ""),
+        "tree_depth": payload.get("tree_depth"),
+        "branch_counts": payload.get("branch_counts", []),
+        "context_signature": payload.get("context_signature", ""),
+        "expected_answer_schema": payload.get("expected_answer_schema", {}),
+        "rubric": payload.get("rubric", []),
+        "textbook_alignment_note": payload.get("textbook_alignment_note", ""),
         "visual_backed": True,
         "visual_asset_type": "tree_diagram_template",
         "context_string": "",
@@ -874,6 +914,9 @@ def get_adaptive_question():
             "image_base64": data.get("image_base64", ""),
             "visual_aids": data.get("visual_aids", []),
             "answer_type": data.get("answer_type", "text"),
+            "problem_type_id": data.get("problem_type_id") or data.get("problem_type"),
+            "scenario_id": data.get("scenario_id", ""),
+            "scenario_family": data.get("scenario_family", ""),
         }
         if request.args.get("adaptive_audit") == "1":
             payload_out["adaptive_audit"] = audit_blob
@@ -1091,12 +1134,100 @@ def next_question():
                     data = chap2_payload
                 elif is_b4_chapter3_phase7b_runtime_skill(skill_id):
                     gen_seed = request.args.get("gen_seed", type=int)
+                    previous_current = get_current() or {}
+                    previous_scenario_id = str(previous_current.get("scenario_id") or "")
+                    previous_question_text = str(previous_current.get("question_text") or "")
+                    previous_parameter_signature = str(previous_current.get("parameter_signature") or "")
+                    previous_scenario_family = str(previous_current.get("scenario_family") or "")
+                    previous_outcome_set_signature = str(previous_current.get("outcome_set_signature") or "")
                     chap3_payload = generate_for_chap3_skill(
                         skill_id=skill_id,
                         level=difficulty_level,
                         seed=gen_seed,
                         problem_type_id=problem_type or None,
                     )
+                    # Chap3 Level-1 global consecutive duplicate guard on default route.
+                    if difficulty_level <= 1 and not str(problem_type or "").strip():
+                        deterministic_mixed_suffixes = {
+                            "StatisticalBasicConcepts",
+                            "SamplingSurvey",
+                            "SamplingMethods",
+                            "DataOrganizationAndCharts",
+                            "StatisticalChartReading",
+                            "CumulativeFrequencyTablesAndGraphs",
+                            "FrequencyDistributionTableConstruction",
+                            "HistogramsAndFrequencyPolygons",
+                            "CentralTendencyMeasures",
+                            "DispersionMeasures",
+                            "WeightedMean",
+                            "VarianceAndStandardDeviation",
+                            "LinearTransformationOfData",
+                            "NormalDistributionAndEmpiricalRule",
+                        }
+                        if any(str(skill_id).endswith(sfx) for sfx in deterministic_mixed_suffixes):
+                            retry_count = 0
+                            retry_limit = 3
+                            open_ended_tokens = ["請說明", "請簡述", "請討論", "簡述理由", "提出理由", "可能有哪些偏誤", "是否具有代表性", "提出改善方式"]
+                            while retry_count < retry_limit:
+                                current_question_text = str(chap3_payload.get("question_text") or "")
+                                current_scenario_id = str(chap3_payload.get("scenario_id") or "")
+                                current_parameter_signature = str(chap3_payload.get("parameter_signature") or "")
+                                current_scenario_family = str(chap3_payload.get("scenario_family") or "")
+                                current_outcome_set_signature = str(chap3_payload.get("outcome_set_signature") or "")
+                                current_pattern_id = str(chap3_payload.get("question_pattern_id") or "")
+                                current_table_hash = str(chap3_payload.get("table_spec_hash") or "")
+                                current_chart_hash = str(chap3_payload.get("chart_spec_hash") or "")
+                                current_visual_hash = str(chap3_payload.get("visual_asset_hash") or "")
+                                previous_pattern_id = str(previous_current.get("question_pattern_id") or "")
+                                previous_table_hash = str(previous_current.get("table_spec_hash") or "")
+                                previous_chart_hash = str(previous_current.get("chart_spec_hash") or "")
+                                previous_visual_hash = str(previous_current.get("visual_asset_hash") or "")
+
+                                duplicate_hit = (
+                                    (current_question_text and current_question_text == previous_question_text)
+                                    or (current_scenario_id and current_scenario_id == previous_scenario_id)
+                                    or (current_parameter_signature and current_parameter_signature == previous_parameter_signature)
+                                    or (current_scenario_family and current_scenario_family == previous_scenario_family)
+                                    or (
+                                        current_outcome_set_signature
+                                        and current_outcome_set_signature == previous_outcome_set_signature
+                                    )
+                                    or (current_pattern_id and current_pattern_id == previous_pattern_id)
+                                    or (current_table_hash and current_table_hash == previous_table_hash)
+                                    or (current_chart_hash and current_chart_hash == previous_chart_hash)
+                                    or (current_visual_hash and current_visual_hash == previous_visual_hash)
+                                )
+                                open_ended_hit = any(tok in current_question_text for tok in open_ended_tokens)
+                                if not duplicate_hit and not open_ended_hit:
+                                    break
+                                retry_count += 1
+                                retry_seed = (
+                                    (gen_seed + retry_count + 7000)
+                                    if gen_seed is not None
+                                    else random.randint(1, 10_000_000)
+                                )
+                                chap3_payload = generate_for_chap3_skill(
+                                    skill_id=skill_id,
+                                    level=difficulty_level,
+                                    seed=retry_seed,
+                                    problem_type_id=problem_type or None,
+                                )
+
+                            rt = chap3_payload.get("router_trace") or {}
+                            final_question_text = str(chap3_payload.get("question_text") or "")
+                            final_duplicate = (
+                                (final_question_text and final_question_text == previous_question_text)
+                                or (str(chap3_payload.get("scenario_id") or "") and str(chap3_payload.get("scenario_id") or "") == previous_scenario_id)
+                                or (str(chap3_payload.get("parameter_signature") or "") and str(chap3_payload.get("parameter_signature") or "") == previous_parameter_signature)
+                                or (str(chap3_payload.get("scenario_family") or "") and str(chap3_payload.get("scenario_family") or "") == previous_scenario_family)
+                                or (str(chap3_payload.get("outcome_set_signature") or "") and str(chap3_payload.get("outcome_set_signature") or "") == previous_outcome_set_signature)
+                            )
+                            rt["duplicate_guard_attempted"] = True
+                            rt["duplicate_guard_retry_count"] = retry_count
+                            rt["duplicate_guard_fallback_reason"] = (
+                                "retry_limit_reached" if final_duplicate else ""
+                            )
+                            chap3_payload["router_trace"] = rt
                     ok_p, deny_r = validate_b4_chap3_phase7b_generator_payload(skill_id, chap3_payload)
                     if not ok_p:
                         current_app.logger.error(
@@ -1153,6 +1284,9 @@ def next_question():
             "answer_type": data.get("answer_type", skill_info.get("input_type", "text")),
             "answer_input_type": data.get("answer_input_type", data.get("answer_type", skill_info.get("input_type", "text"))),
             "problem_type_id": data.get("problem_type_id") or data.get("problem_type"),
+            "scenario_id": data.get("scenario_id", ""),
+            "scenario_family": data.get("scenario_family", ""),
+            "parameter_signature": data.get("parameter_signature", ""),
             "grading_mode": data.get("grading_mode", ""),
             "check_mode": data.get("check_mode", ""),
             "runtime_mode": data.get("runtime_mode", ""),
@@ -1215,6 +1349,40 @@ def check_answer():
                 "check_mode": check_mode,
             }
         )
+
+    # Deterministic auto-checked route (including Chap3 runtime skills with mixed review entries).
+    if check_mode == "deterministic_auto_checked":
+        correct_ans = str(current.get("correct_answer", current.get("answer", ""))).strip()
+        is_correct_det = False
+        try:
+            answer_input_type = str(current.get("answer_input_type", "")).strip().lower()
+            if answer_input_type == "choice":
+                is_correct_det = str(user_ans).strip() == correct_ans
+            elif current.get("answer_type") == "integer":
+                is_correct_det = check_integer_answer(user_ans, int(correct_ans))
+            else:
+                if "/" in correct_ans:
+                    num_str, den_str = correct_ans.split("/", 1)
+                    exp_num, exp_den = int(num_str), int(den_str)
+                else:
+                    exp_num, exp_den = int(correct_ans), 1
+                is_correct_det = check_rational_answer(
+                    user_ans, exp_num, exp_den,
+                    allow_decimal=True, allow_percentage=True,
+                    validate_probability_range=False,
+                )
+        except Exception as _det_err:
+            current_app.logger.warning("[DeterministicAutoChecked] check_answer error skill=%s err=%s", skill_id, _det_err)
+            is_correct_det = False
+
+        try:
+            update_progress(current_user.id, skill_id, is_correct_det)
+        except Exception:
+            pass
+        return jsonify({
+            "correct": is_correct_det,
+            "result": "正確" if is_correct_det else f"錯誤，正確答案是：{correct_ans}",
+        })
     
     # [Fix] Instant Upload Special Handling
     if skill_id == 'instant_upload':
