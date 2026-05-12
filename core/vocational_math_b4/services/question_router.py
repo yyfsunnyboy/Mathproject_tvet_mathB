@@ -10,6 +10,54 @@ from core.vocational_math_b4.generators import counting as counting_generators
 from core.vocational_math_b4.generators import permutation as permutation_generators
 
 
+# --- Deterministic Multiple Choice Allowlist ---
+ALLOW_MULTIPLE_CHOICE_PROBLEM_TYPES: set[str] = {
+    # Conceptual / Statistical Sampling / Chart Reading
+    "chart_mode_bar_reading",
+    "frequency_table_mean_reading",
+    "chart_range_line_reading",
+    "frequency_table_range_reading",
+    "histogram_reading",
+    "sampling_methods_classification_choice",
+    "statistical_basic_concepts_choice",
+    "sampling_survey_foundation_identification",
+    "sampling_survey_bias_review",
+    "chart_type_selection_by_purpose",
+    "data_organization_first_step",
+    "chart_usage_identification",
+    "data_organization_chart_selection_review",
+    "chart_type_by_purpose",
+    "chart_interpretation_caution",
+    "chart_match_data_type",
+    "statistical_chart_reading_visibility_review",
+    "opinion_poll_interpretation_review",
+    # NormalDistribution sub-types (choices preserved for 68/95/99 selection)
+    "empirical_rule_within_1sd",
+    "empirical_rule_within_2sd",
+    "empirical_rule_within_3sd",
+    "empirical_rule_interval_percentage",
+    "normal_interval_percentage",
+}
+
+def _normalize_output_payload(payload: dict) -> dict:
+    """Clear choices if the problem_type is deterministic numeric to force input box rendering."""
+    pt_id = str(
+        payload.get("problem_type_id")
+        or payload.get("problem_type")
+        or payload.get("type")
+        or payload.get("generator_key")
+        or ""
+    )
+    
+    if pt_id in ALLOW_MULTIPLE_CHOICE_PROBLEM_TYPES:
+        return payload
+        
+    # 依照要求：除非 problem_type_id 明確列入 ALLOW_MULTIPLE_CHOICE_PROBLEM_TYPES，否則一律清空 choices
+    payload["choices"] = []
+        
+    return payload
+
+
 def _combination_definition_basic(**kwargs) -> dict:
     fn = getattr(combination_generators, "combination_definition_basic", combination_generators.generate)
     return fn(**kwargs)
@@ -425,7 +473,7 @@ def generate_for_skill(
     missing = [key for key in required_keys if key not in payload]
     if missing:
         raise ValueError(f"Router payload missing required keys: {', '.join(missing)}")
-    return payload
+    return _normalize_output_payload(payload)
 
 
 # ─── Phase 6C through 6F: Chap2 probability / expectation router ────────────
@@ -677,7 +725,7 @@ def generate_for_chap2_skill(
         raise ValueError(
             f"generate_for_chap2_skill: payload missing required keys: {', '.join(missing)}"
         )
-    return payload
+    return _normalize_output_payload(payload)
 
 
 # ─── Phase 7B: Chap3 Statistical Measures ────────────
@@ -1021,5 +1069,5 @@ def generate_for_chap3_skill(
         raise ValueError(
             f"generate_for_chap3_skill: payload missing required keys: {', '.join(missing)}"
         )
-    return payload
+    return _normalize_output_payload(payload)
 

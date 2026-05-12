@@ -276,11 +276,8 @@ def build_tree_diagram_listing_payload(
     if normalized_variant == "early_stopping_game":
         labels = _pick_indexed(EARLY_STOPPING_GAME_LABEL_SETS, seed=seed, index=index)
         expected_paths = _early_stopping_paths(labels)
-        scenario_id = (
-            "win_two_games_best_of_three_named_teams"
-            if labels in (["??, "銋?], ["蝝?, "??])
-            else "win_two_games_best_of_three_ab_teams"
-        )
+        # 移除壞掉的亂碼判斷
+        scenario_id = "win_two_games_best_of_three_ab_teams"
         return {
             "problem_type_id": PROBLEM_TYPE_ID,
             "grading_mode": GRADING_MODE,

@@ -613,34 +613,106 @@ def normal_distribution_empirical_rule_basic(
     multiple_choice: bool = True,
 ) -> Dict[str, Any]:
     rng = random.Random(seed)
-    scenarios = [
-        ("within_1sigma", "常態分配的經驗法則中，落在平均數正負 1 個標準差內的資料約占百分之幾？", "68"),
-        ("within_2sigma", "常態分配的經驗法則中，落在平均數正負 2 個標準差內的資料約占百分之幾？", "95"),
-        ("within_3sigma", "常態分配的經驗法則中，落在平均數正負 3 個標準差內的資料約占百分之幾（取整數近似）？", "99"),
+    # Sub-type pool: 5 distinct problem_type_ids
+    all_subtypes = [
+        "empirical_rule_within_1sd",
+        "empirical_rule_within_2sd",
+        "empirical_rule_within_3sd",
+        "normal_interval_identification",
+        "normal_interval_percentage",
     ]
-    scenario_id, question_text, answer = rng.choice(scenarios)
-    param_tuple = ("normal_distribution_empirical_rule_basic", scenario_id)
+    if seed is not None:
+        subtype = all_subtypes[abs(int(seed)) % len(all_subtypes)]
+    else:
+        subtype = rng.choice(all_subtypes)
+
+    param_tuple = ("normal_distribution_empirical_rule_basic", subtype)
     if seen_parameter_tuples is not None:
-        validate_parameter_tuple_not_seen(param_tuple, seen_parameter_tuples)
+        if param_tuple in seen_parameter_tuples:
+            remaining = [s for s in all_subtypes if ("normal_distribution_empirical_rule_basic", s) not in seen_parameter_tuples]
+            subtype = remaining[0] if remaining else rng.choice(all_subtypes)
+            param_tuple = ("normal_distribution_empirical_rule_basic", subtype)
         seen_parameter_tuples.add(param_tuple)
+
+    mu_choices = [60, 65, 70, 75, 100, 170]
+    sd_choices = [5, 8, 10, 12, 15]
+    mu = rng.choice(mu_choices)
+    sd = rng.choice(sd_choices)
+
+    if subtype == "empirical_rule_within_1sd":
+        question_text = "常態分配的經驗法則中，落在平均數正負 1 個標準差內的資料約占百分之幾？"
+        answer = "68"
+        explanation = "依據 68-95-99.7 經驗法則，平均數 ±1 個標準差內約含 68% 的資料。"
+        problem_type_id = "empirical_rule_within_1sd"
+    elif subtype == "empirical_rule_within_2sd":
+        question_text = "常態分配的經驗法則中，落在平均數正負 2 個標準差內的資料約占百分之幾？"
+        answer = "95"
+        explanation = "依據 68-95-99.7 經驗法則，平均數 ±2 個標準差內約含 95% 的資料。"
+        problem_type_id = "empirical_rule_within_2sd"
+    elif subtype == "empirical_rule_within_3sd":
+        question_text = "常態分配的經驗法則中，落在平均數正負 3 個標準差內的資料約占百分之幾（取整數近似）？"
+        answer = "99"
+        explanation = "依據 68-95-99.7 經驗法則，平均數 ±3 個標準差內約含 99.7%（取整數為 99 或 100）的資料。"
+        problem_type_id = "empirical_rule_within_3sd"
+    elif subtype == "normal_interval_identification":
+        sd_count = rng.choice([1, 2, 3])
+        val = mu + sd_count * sd
+        question_text = (
+            f"某資料呈常態分配，平均數為 {mu}，標準差為 {sd}。"
+            f"請問數值 {val} 位於平均數正幾個標準差的位置？"
+        )
+        answer = str(sd_count)
+        explanation = (
+            f"$({val} - {mu}) \\div {sd} = {sd_count}$，"
+            f"故 {val} 位於平均數正 {sd_count} 個標準差的位置。"
+        )
+        problem_type_id = "normal_interval_identification"
+    else:  # normal_interval_percentage
+        sd_count = rng.choice([1, 2, 3])
+        pct_map = {1: "68", 2: "95", 3: "99"}
+        lo = mu - sd_count * sd
+        hi = mu + sd_count * sd
+        answer = pct_map[sd_count]
+        question_text = (
+            f"某資料呈常態分配，平均數為 {mu}，標準差為 {sd}。"
+            f"依經驗法則，落在 {lo} 到 {hi} 之間的資料約占百分之幾？"
+        )
+        explanation = (
+            f"區間 [{lo}, {hi}] = 平均數 ±{sd_count} 個標準差，"
+            f"依 68-95-99.7 法則約占 {answer}%。"
+        )
+        problem_type_id = "normal_interval_percentage"
+
+    choices_map = {
+        "empirical_rule_within_1sd": ["68", "95", "99", "50"],
+        "empirical_rule_within_2sd": ["68", "95", "99", "75"],
+        "empirical_rule_within_3sd": ["68", "95", "99", "100"],
+        "normal_interval_identification": [str(rng.choice([x for x in [1,2,3] if x != int(answer)])), answer, "0", str(rng.choice([x for x in [1,2,3] if x != int(answer)]))],
+        "normal_interval_percentage": ["68", "95", "99", "50"],
+    }
+    choices = list(dict.fromkeys(choices_map.get(subtype, ["68", "95", "99", "50"])))
+    if answer not in choices:
+        choices[0] = answer
+    rng.shuffle(choices)
+
     return {
         "question_text": question_text,
         "answer": answer,
         "correct_answer": answer,
-        "choices": ["68", "95", "99", "50"],
-        "explanation": "經驗法則為 68-95-99.7，分別對應正負 1、2、3 個標準差區間。",
+        "choices": choices,
+        "explanation": explanation,
         "skill_id": skill_id,
         "subskill_id": subskill_id,
-        "problem_type_id": "empirical_rule_interval_percentage",
+        "problem_type_id": problem_type_id,
         "scenario_family": "normal_distribution_empirical_rule",
-        "scenario_id": scenario_id,
+        "scenario_id": subtype,
         "generator_key": "b4.chap3.empirical_rule_interval_percentage",
-        "answer_type": "rational_fraction",
+        "answer_type": "integer",
         "difficulty": difficulty,
         "diagnosis_tags": ["normal_distribution", "empirical_rule"],
         "remediation_candidates": ["vh_數學B4_NormalDistributionAndEmpiricalRule"],
         "source_style_refs": ["B4_Ch3_normal_distribution"],
-        "parameters": {"scenario_id": scenario_id, "scenario_family": "normal_distribution_empirical_rule"},
+        "parameters": {"scenario_id": subtype, "scenario_family": "normal_distribution_empirical_rule", "mu": mu, "sd": sd},
         "visual_backed": False,
         "runtime_mode": "deterministic_short_answer",
         "check_mode": "deterministic_auto_checked",
@@ -1536,24 +1608,31 @@ def statistical_chart_type_by_purpose_choice(
     scenarios = [
         (
             "chart_type_by_purpose_trend",
-            "?????????????????????????????????????",
-            ["1. ???", "2. ???", "3. ???", "4. ???"],
+            "某社團記錄一週每日到課人數，想觀察資料隨時間的變化趨勢，最適合使用哪一種統計圖表？請輸入選項代號。",
+            ["1. 折線圖", "2. 圓形圖", "3. 直方圖", "4. 散佈圖"],
             "1",
-            "???????????????????",
+            "折線圖最適合呈現資料隨時間的變化趨勢，各點連線能清楚顯示走勢。",
         ),
         (
-            "chart_match_data_type_class_comparison",
-            "?????????????????????????????????",
-            ["1. ???", "2. ???", "3. ???", "4. ???"],
-            "1",
-            "?????????????????",
+            "chart_type_by_purpose_comparison",
+            "學校要比較甲、乙、丙三班參加課外活動的人數差異，最適合使用哪一種統計圖表？請輸入選項代號。",
+            ["1. 折線圖", "2. 長條圖", "3. 圓形圖", "4. 直方圖"],
+            "2",
+            "長條圖最適合比較不同類別（班級）的數量差異，條形高低一目了然。",
         ),
         (
             "chart_type_by_purpose_ratio",
-            "???????????????????????????????????",
-            ["1. ???", "2. ???", "3. ???", "4. ???"],
+            "社團要呈現活動經費分配在交通、餐飲、器材三大項目的比例，最適合使用哪一種統計圖表？請輸入選項代號。",
+            ["1. 長條圖", "2. 圓形圖", "3. 折線圖", "4. 直方圖"],
             "2",
-            "??????????????????",
+            "圓形圖最適合呈現各項目占整體的比例關係。",
+        ),
+        (
+            "chart_type_by_purpose_distribution",
+            "老師想呈現全班段考分數在各分數區間（如 60-69、70-79）的人數分布情形，最適合使用哪一種統計圖表？請輸入選項代號。",
+            ["1. 折線圖", "2. 圓形圖", "3. 直方圖", "4. 長條圖"],
+            "3",
+            "直方圖最適合呈現連續資料在各區間的分布，橫軸為數值區間，縱軸為次數。",
         ),
     ]
     scenario_id, question_text, choices, answer, explanation = rng.choice(scenarios)
@@ -1577,10 +1656,10 @@ def statistical_chart_type_by_purpose_choice(
         "answer_input_type": "choice",
         "difficulty": difficulty,
         "diagnosis_tags": ["chart_reading", "chart_type_selection"],
-        "remediation_candidates": ["vh_??B4_StatisticalChartReading"],
+        "remediation_candidates": ["vh_數學B4_StatisticalChartReading"],
         "source_style_refs": ["B4_Ch3_statistical_chart_reading"],
-        "source_style_summary": "????????????????????",
-        "textbook_alignment_note": "???????????????????????",
+        "source_style_summary": "依情境判斷最適統計圖表類型，採四選一選擇題。",
+        "textbook_alignment_note": "對齊課本趨勢/比較/比例/分布的圖表用途判別。",
         "parameters": {"scenario_id": scenario_id, "scenario_family": "chart_type_by_purpose"},
         "visual_backed": False,
         "runtime_mode": "deterministic_choice",
@@ -1602,17 +1681,41 @@ def statistical_chart_interpretation_caution_choice(
     if seen_parameter_tuples is not None:
         validate_parameter_tuple_not_seen(param_tuple, seen_parameter_tuples)
         seen_parameter_tuples.add(param_tuple)
+    rng = random.Random(seed)
+    caution_scenarios = [
+        (
+            "chart_interpretation_caution_axis_scale",
+            "下列哪一項是閱讀折線圖時最應注意的事項？請輸入選項代號。",
+            "1",
+            ["1. 縱軸的起始值是否為零，避免視覺誇大差距", "2. 圖例文字的字體大小", "3. 橫軸標籤是否等距排列", "4. 圖表背景顏色是否美觀"],
+            "閱讀折線圖時，最重要的是注意縱軸起始值，若不從零開始，視覺上差距會被誇大而產生誤導。",
+        ),
+        (
+            "chart_interpretation_caution_sample_size",
+            "某調查只詢問了 10 個人的意見就宣稱『多數人喜歡A品牌』。這個結論最可能存在什麼問題？請輸入選項代號。",
+            "2",
+            ["1. 圖表選擇錯誤", "2. 樣本數太少，不具代表性", "3. 未使用圓形圖呈現比例", "4. 問題的措辭不夠清楚"],
+            "樣本數太少時，結果無法代表母體，容易產生偏差結論。",
+        ),
+        (
+            "chart_interpretation_caution_correlation_causation",
+            "統計圖顯示『冰淇淋銷量』與『溺水人數』在夏季都上升。下列推論何者正確？請輸入選項代號。",
+            "3",
+            ["1. 吃冰淇淋會導致溺水", "2. 溺水多了使人想吃冰淇淋", "3. 兩者有相關性，但不能推論有因果關係", "4. 夏季炎熱是統計數據錯誤的原因"],
+            "相關性不等於因果性，兩者同時上升可能都受第三因素（如夏季氣溫）影響。",
+        ),
+    ]
+    scenario_id, question_text, answer, choices, explanation = rng.choice(caution_scenarios)
+    param_tuple = ("statistical_chart_interpretation_caution_choice", scenario_id)
+    if seen_parameter_tuples is not None:
+        validate_parameter_tuple_not_seen(param_tuple, seen_parameter_tuples)
+        seen_parameter_tuples.add(param_tuple)
     return {
-        "question_text": "???????????????????????????",
-        "answer": "1",
-        "correct_answer": "1",
-        "choices": [
-            "1. ?????????????",
-            "2. ????????",
-            "3. ????????",
-            "4. ?????????",
-        ],
-        "explanation": "??????????????????????????????",
+        "question_text": question_text,
+        "answer": answer,
+        "correct_answer": answer,
+        "choices": choices,
+        "explanation": explanation,
         "skill_id": skill_id,
         "subskill_id": subskill_id,
         "problem_type_id": "chart_interpretation_caution",
@@ -1623,10 +1726,10 @@ def statistical_chart_interpretation_caution_choice(
         "answer_input_type": "choice",
         "difficulty": difficulty,
         "diagnosis_tags": ["chart_reading", "interpretation_caution"],
-        "remediation_candidates": ["vh_??B4_StatisticalChartReading"],
+        "remediation_candidates": ["vh_數學B4_StatisticalChartReading"],
         "source_style_refs": ["B4_Ch3_statistical_chart_reading"],
-        "source_style_summary": "????????????????????",
-        "textbook_alignment_note": "??????????????????",
+        "source_style_summary": "閱讀統計圖時應注意的常見誤區，採四選一選擇題。",
+        "textbook_alignment_note": "對齊課本統計圖判讀注意事項。",
         "parameters": {"scenario_id": scenario_id, "scenario_family": "chart_interpretation_caution"},
         "visual_backed": False,
         "runtime_mode": "deterministic_choice",
@@ -1647,17 +1750,24 @@ def statistical_chart_match_data_type_choice(
     scenarios = [
         (
             "chart_match_data_type_class_count",
-            "?????????????????????????????????",
-            ["1. ???", "2. ???", "3. ???", "4. ???"],
+            "老師記錄各班（甲、乙、丙、丁班）期中考的平均分數，想用圖表呈現各班分數高低的比較。下列哪種圖表最合適？請輸入選項代號。",
+            ["1. 長條圖", "2. 折線圖", "3. 圓形圖", "4. 直方圖"],
             "1",
-            "???????????????",
+            "各班為獨立類別，適合用長條圖比較各類別的數值高低。",
         ),
         (
             "chart_match_data_type_distribution",
-            "?????????????????????????????????????",
-            ["1. ???", "2. ???", "3. ???", "4. ???"],
+            "老師蒐集全班 35 人的數學成績（連續數值），想了解成績分布在各分數段的人數情形。下列哪種圖表最合適？請輸入選項代號。",
+            ["1. 長條圖", "2. 折線圖", "3. 直方圖", "4. 圓形圖"],
             "3",
-            "?????????????????",
+            "連續數值資料的分組分布，最適合用直方圖（橫軸為區間，縱軸為次數）呈現。",
+        ),
+        (
+            "chart_match_data_type_proportion",
+            "學生會統計全校學生最喜愛的社團類型（體育、學術、藝術、服務），想呈現各類型所占的百分比。下列哪種圖表最合適？請輸入選項代號。",
+            ["1. 折線圖", "2. 長條圖", "3. 直方圖", "4. 圓形圖"],
+            "4",
+            "圓形圖適合呈現各類別占整體的比例，能直觀看出各扇形所占大小。",
         ),
     ]
     scenario_id, question_text, choices, answer, explanation = rng.choice(scenarios)
@@ -1770,18 +1880,47 @@ def opinion_poll_interpretation_review_shell(
     seen_parameter_tuples: Optional[Set[Tuple]] = None,
     multiple_choice: bool = True,
 ) -> Dict[str, Any]:
-    scenario_id = "opinion_poll_interpretation_review"
-    poll = {"樣本數": 200, "贊成比例": "58%", "調查方式": "網路問卷"}
+    rng = random.Random(seed)
+    sample_sizes = [80, 120, 150, 200, 300, 500]
+    percentages = [42, 48, 52, 55, 58, 63, 67, 71]
+    methods = ["網路問卷", "街頭攔訪", "電話訪問", "學校問卷", "社群媒體投票"]
+    topics = [
+        ("是否贊成延長上課時間", "教育政策", "母體推論限制"),
+        ("是否支持新建公共設施", "公共政策", "抽樣偏差"),
+        ("是否滿意校園餐廳品質", "校園滿意度", "樣本代表性"),
+        ("是否偏好線上購物", "消費行為", "百分比解讀"),
+        ("是否認為運動習慣足夠", "健康調查", "調查方式偏誤"),
+    ]
+    n = rng.choice(sample_sizes)
+    pct = rng.choice(percentages)
+    method = rng.choice(methods)
+    topic_text, topic_type, focus = rng.choice(topics)
+    scenario_id = f"opinion_poll_{topic_type}_{method}_{n}"
+    param_tuple = ("opinion_poll_interpretation_review_shell", scenario_id)
+    if seen_parameter_tuples is not None:
+        if param_tuple in seen_parameter_tuples:
+            n2 = rng.choice([x for x in sample_sizes if x != n])
+            scenario_id = f"opinion_poll_{topic_type}_{method}_{n2}"
+            param_tuple = ("opinion_poll_interpretation_review_shell", scenario_id)
+            n = n2
+        seen_parameter_tuples.add(param_tuple)
+    poll = {"樣本數": n, "贊成比例": f"{pct}%", "調查方式": method}
+    question_text = (
+        f"某民調針對「{topic_text}」進行調查，以{method}方式訪問了 {n} 人，"
+        f"結果顯示有 {pct}% 的受訪者表示贊成。"
+        f"請說明此結果可如何解讀，並指出至少一項可能的限制（例如：{focus}）。"
+    )
     return {
-        "question_text": "某民調資料如下：樣本數 200、贊成比例 58%、調查方式為網路問卷。請說明此結果可如何解讀，並指出至少一項可能限制。",
+        "question_text": question_text,
         "answer": "",
         "correct_answer": "",
         "expected_answer_schema": {
             "type": "poll_interpretation_review",
             "required_points": ["結果解讀", "限制或偏誤"],
+            "focus_hint": focus,
         },
         "choices": [],
-        "explanation": "民調解讀需評估樣本代表性與調查方式限制，建議 AI/教師覆核。",
+        "explanation": f"民調解讀需評估樣本代表性與調查方式限制（本題重點：{focus}），建議 AI/教師覆核。",
         "skill_id": skill_id,
         "subskill_id": subskill_id,
         "problem_type_id": "opinion_poll_interpretation_review",
@@ -2963,6 +3102,11 @@ def frequency_distribution_table_construction_shell_v2(
     seen_parameter_tuples: Optional[Set[Tuple]] = None,
     multiple_choice: bool = True,
 ) -> Dict[str, Any]:
+    """Deterministic single-group count question.
+
+    完整表格填寫題需要 table input 元件，目前尚未支援。
+    此版本改為：提供資料與明確分組，只問其中一組的次數 (FREE_RESPONSE_OR_TABLE_INPUT_REQUIRED for full table).
+    """
     rng = random.Random(seed)
     contexts = [
         ("exam_scores", "某班數學小考分數"),
@@ -2971,97 +3115,86 @@ def frequency_distribution_table_construction_shell_v2(
         ("sales_units", "商店每日銷售量（件）"),
     ]
     context_id, context_label = rng.choice(contexts)
-    width = rng.choice([5, 10, 20])
-    n_bins = rng.choice([4, 5, 6])
+    width = 10
+    n_bins = 5
     start = rng.choice([0, 10, 20, 30, 40])
-    bins: List[Tuple[int, int]] = []
-    for i in range(n_bins):
-        lo = start + i * width
-        bins.append((lo, lo + width - 1))
+    bins_labels = [f"{start + i * width}-{start + (i + 1) * width - 1}" for i in range(n_bins)]
 
     frequency_map: Dict[str, int] = {}
     raw_data: List[int] = []
-    for lo, hi in bins:
-        label = f"{lo}-{hi}"
-        count = rng.randint(3, 8)
+    for label in bins_labels:
+        lo, hi = int(label.split("-")[0]), int(label.split("-")[1])
+        count = rng.randint(3, 9)
         frequency_map[label] = count
         raw_data.extend([rng.randint(lo, hi) for _ in range(count)])
     rng.shuffle(raw_data)
 
-    headers = ["組別", "次數"]
-    rows = [[k, "□"] for k in frequency_map.keys()]
-    table_title = "次數分配表"
-    raw_data_hash = hashlib.sha1(json.dumps(raw_data, ensure_ascii=False).encode("utf-8")).hexdigest()[:12]
-    table_spec_hash = _hash_spec({"headers": headers, "rows": rows, "context": context_id})
-    scenario_id = f"frequency_table_construction_{context_id}_{n_bins}g_w{width}"
-    parameter_signature = (
-        f"frequency_table_construction:context={context_id},groups={n_bins},width={width},"
-        f"start={start},raw_hash={raw_data_hash}"
+    # Ask about one specific bin
+    target_idx = rng.randint(0, n_bins - 1)
+    target_label = bins_labels[target_idx]
+    answer = frequency_map[target_label]
+
+    raw_data_str = "、".join(str(x) for x in raw_data)
+    question_text = (
+        f"下列資料為{context_label}：{raw_data_str}。"
+        f"若依 {bins_labels[0]}、{bins_labels[1]}、…、{bins_labels[-1]} 各組分組，"
+        f"請問「{target_label}」這一組的次數是多少？"
     )
-    param_tuple = ("frequency_distribution_table_construction_shell_v2", scenario_id, parameter_signature)
+    explanation = (
+        f"統計原始資料中落在 {target_label} 範圍（含兩端點）的個數。\n"
+        f"答案：{answer} 筆。"
+    )
+
+    scenario_id = f"freq_table_single_bin_{context_id}_w{width}_s{start}_t{target_idx}"
+    param_tuple = ("frequency_distribution_table_construction_shell_v2", scenario_id)
     if seen_parameter_tuples is not None:
-        validate_parameter_tuple_not_seen(param_tuple, seen_parameter_tuples)
+        if param_tuple in seen_parameter_tuples:
+            target_idx = (target_idx + 1) % n_bins
+            target_label = bins_labels[target_idx]
+            answer = frequency_map[target_label]
+            scenario_id = f"freq_table_single_bin_{context_id}_w{width}_s{start}_t{target_idx}"
+            param_tuple = ("frequency_distribution_table_construction_shell_v2", scenario_id)
         seen_parameter_tuples.add(param_tuple)
 
+    table_rows = [[lbl, frequency_map[lbl]] for lbl in bins_labels]
+
     return {
-        "question_text": f"下列資料為{context_label}：{raw_data}。請整理成次數分配表並填入各組次數。",
-        "answer": "",
-        "correct_answer": "",
-        "expected_answer_schema": {
-            "type": "frequency_table_construction",
-            "required_columns": headers,
-            "frequency_map": frequency_map,
-            "bin_edges": [list(b) for b in bins],
-        },
-        "rubric": {
-            "criteria": ["分組區間正確", "次數統計正確", "表格完整"]
-        },
+        "question_text": question_text,
+        "answer": str(answer),
+        "correct_answer": str(answer),
         "choices": [],
-        "explanation": "依各組區間統計原始資料筆數，可得到次數分配表。",
+        "explanation": explanation,
         "skill_id": skill_id,
         "subskill_id": subskill_id,
-        "problem_type_id": "frequency_table_construction_review",
+        "problem_type_id": "frequency_table_single_bin_count",
         "scenario_family": "frequency_distribution_table_construction",
         "scenario_id": scenario_id,
-        "parameter_signature": parameter_signature,
-        "table_spec_hash": table_spec_hash,
         "generator_key": "b4.chap3.frequency_distribution_table_construction_shell_v2",
-        "answer_type": "handwriting",
-        "answer_input_type": "free_response_or_handwriting",
+        "answer_type": "integer",
+        "answer_input_type": "numeric_input",
         "difficulty": difficulty,
-        "diagnosis_tags": ["frequency_distribution_table", "table_construction"],
+        "diagnosis_tags": ["frequency_distribution_table", "table_construction", "single_bin_count"],
         "remediation_candidates": ["vh_數學B4_FrequencyDistributionTableConstruction"],
         "source_style_refs": ["B4_Ch3_frequency_table_construction"],
         "parameters": {
             "scenario_id": scenario_id,
-            "scenario_family": "frequency_distribution_table_construction",
-            "template_id": "frequency_table_construction_review",
-            "numeric_params": {"group_width": width, "group_count": n_bins, "start": start},
-            "context_params": {"context": context_id},
-            "raw_data": raw_data,
+            "context": context_id,
+            "bins": bins_labels,
             "frequency_map": frequency_map,
-            "raw_data_hash": raw_data_hash,
-            "table_spec_hash": table_spec_hash,
+            "target_bin": target_label,
+            "answer": answer,
+        },
+        "table_data": {
+            "title": "次數分配表",
+            "headers": ["組別", "次數"],
+            "rows": table_rows,
         },
         "visual_backed": True,
         "visual_asset_type": "table",
-        "raw_data": raw_data,
-        "table_schema": {"headers": headers, "rows": rows},
-        "table_title": table_title,
-        "table": {"table_title": table_title, "headers": headers, "rows": rows},
-        "visual_aids": [{
-            "type": "table",
-            "title": table_title,
-            "caption": table_title,
-            "alt_text": table_title,
-            "headers": headers,
-            "rows": rows,
-        }],
-        "requires_handwriting": True,
-        "requires_teacher_review": True,
-        "runtime_mode": "visual_or_handwriting_ai_checked",
-        "check_mode": "handwriting_ai_checked",
-        "grading_mode": "ai_assisted_review",
+        "runtime_mode": "deterministic_numeric_input",
+        "check_mode": "deterministic_auto_checked",
+        "grading_mode": "deterministic",
+        "full_table_note": "FREE_RESPONSE_OR_TABLE_INPUT_REQUIRED: 完整表格填寫題需要 table input 元件，目前不上線。",
     }
 
 
