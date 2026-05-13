@@ -1,0 +1,35 @@
+# Agent Skill v2: Problem Types Specification Template
+items:
+  - problem_type_id: "basic_calc_01"
+    subskill_id: "b1_ch1_calc_01"
+    display_name: "基礎運算題"
+    generator_key: "b1.ch1.basic_calc_01"
+    answer_type: "numeric"
+    checker_type: "check_integer_answer"
+    allowed_domain_functions: ["gcd", "lcm"]
+    forbidden_patterns: ["eval\\("]
+    difficulty_policy: "level_1_only"
+    output_contract: "validate_problem_payload_contract"
+    status: "candidate"
+    manual_review: false
+    future_ai_judged: false
+    runtime_policy: "deterministic"
+    diagnosis_tags: ["calculation_error", "arithmetic_logic"]
+    remediation_candidates: ["pre_calc_fundamental"]
+
+  - problem_type_id: "graph_reading_01"
+    subskill_id: "b1_ch1_graph_01"
+    display_name: "座標圖形判讀 (手寫)"
+    generator_key: "b1.ch1.graph_reading_01"
+    answer_type: "handwriting"
+    checker_type: null
+    allowed_domain_functions: ["RadicalOps"]
+    forbidden_patterns: []
+    difficulty_policy: "default"
+    output_contract: "validate_problem_payload_contract"
+    status: "manual_review"
+    manual_review: true
+    future_ai_judged: true
+    runtime_policy: "manual"
+    diagnosis_tags: ["spatial_concept", "graph_interpretation"]
+    remediation_candidates: []

@@ -93,7 +93,7 @@ def admin_update_rag_settings():
     except Exception as e:
         return jsonify({'success': False, 'message': str(e)}), 500
 
-def background_processing(file_paths, task_queue, app_context, curriculum_info, skip_code_gen):
+def background_processing(file_paths, task_queue, app_context, curriculum_info, skip_code_gen, **kwargs):
     """背景處理教科書分析任務"""
     with app_context:
         try:
@@ -111,7 +111,8 @@ def background_processing(file_paths, task_queue, app_context, curriculum_info, 
                         file_path, 
                         curriculum_info=curriculum_info, 
                         queue=task_queue, 
-                        skip_code_gen=skip_code_gen
+                        skip_code_gen=skip_code_gen,
+                        **kwargs
                     )
                 except Exception as e:
                     task_queue.put(f"ERROR: 檔案 {filename} 處理失敗: {e}")
@@ -176,11 +177,14 @@ def admin_textbook_importer():
                 'volume': request.form.get('volume')
             }
             skip_code = request.form.get('skip_code_gen') == 'on'
+            outline_only = request.form.get('outline_only') == 'true'
+            toc_pages = int(request.form.get('toc_pages', 5))
 
             app = current_app._get_current_object()
             threading.Thread(
                 target=background_processing,
-                args=(target_files, q, app.app_context(), curriculum_info, skip_code)
+                args=(target_files, q, app.app_context(), curriculum_info, skip_code),
+                kwargs={'outline_only': outline_only, 'toc_pages': toc_pages}
             ).start()
 
             return redirect(url_for('core.importer_status', task_id=task_id))

@@ -1,0 +1,24 @@
+# Agent Skill v2: Verifier & Evaluation Gate Template
+gates:
+  - name: "Minimum Sampling Count"
+    min_sampling_count: 30
+    description: "Ensure the generator is stable over at least 30 random seeds."
+
+  - name: "Performance Guard"
+    timeout_seconds: 5
+    description: "Single generation must complete within 5 seconds."
+
+  - name: "Integrity Checks"
+    require_checker_self_test: true
+    require_wrong_answer_rejection: true
+    require_no_placeholder: true
+    description: "Verify that the checker accepts correct answers and rejects wrong ones, and no [PLACEHOLDER] text exists."
+
+  - name: "Format & Safety"
+    require_latex_safety: true
+    require_contract_compliance: true
+    description: "Validate LaTeX syntax and output payload contract."
+
+promotion_threshold:
+  auto_verified_score: 1.0  # Must pass 100% of gates to be 'verified'
+  manual_promotion_required: true # Even if verified, requires human to reach 'runtime_ready'

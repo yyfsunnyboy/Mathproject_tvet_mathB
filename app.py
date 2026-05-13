@@ -502,14 +502,58 @@ def create_app():
                                      username=current_user.username,
                                      enrolled_classes=enrolled_classes)
             elif curriculum and volume:
-                chapters = get_chapters_by_curriculum_volume(curriculum, volume)
-                chapter_cards = [
-                    {
-                        'raw': ch,
-                        'display': _clean_chapter_display(ch)
-                    }
-                    for ch in chapters
-                ]
+                from core.utils import get_chapters_by_curriculum_volume
+                from models import SkillCurriculum
+                
+                chapters_raw = get_chapters_by_curriculum_volume(curriculum, volume)
+                
+                # [V2.0] 技高數學 B 系列章節卡片編號修正邏輯
+                is_mathb = (curriculum == 'vocational' and 'B' in str(volume))
+                
+                if is_mathb:
+                    # 取得各章節代表性的小節資訊，用於排序與重新編號
+                    chapter_info = []
+                    for ch in chapters_raw:
+                        rep = SkillCurriculum.query.filter_by(
+                            curriculum=curriculum, volume=volume, chapter=ch
+                        ).order_by(SkillCurriculum.display_order).first()
+                        chapter_info.append({
+                            'raw': ch,
+                            'section': rep.section if rep else "",
+                            'display_order': rep.display_order if rep else 999
+                        })
+                    
+                    # 依據 section (1-1, 1-2...) 進行自然排序
+                    def section_sort_key(item):
+                        sec = str(item['section'] or "")
+                        match = re.search(r'(\d+)-(\d+)', sec)
+                        if match:
+                            return (int(match.group(1)), int(match.group(2)))
+                        return (999, 999)
+                    
+                    chapter_info.sort(key=section_sort_key)
+                    
+                    from core.utils import format_vocational_b_section_display
+                    chapter_cards = []
+                    for info in chapter_info:
+                        ch_raw = info['raw']
+                        sec_str = str(info['section'] or "")
+                        
+                        new_display = format_vocational_b_section_display(ch_raw, sec_str)
+                            
+                        chapter_cards.append({
+                            'raw': ch_raw,
+                            'display': new_display
+                        })
+                else:
+                    chapter_cards = [
+                        {
+                            'raw': ch,
+                            'display': _clean_chapter_display(ch)
+                        }
+                        for ch in chapters_raw
+                    ]
+
                 return render_template('dashboard.html',
                                      view_mode='curriculum',
                                      level='chapters',

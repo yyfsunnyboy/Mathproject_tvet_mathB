@@ -1,0 +1,27 @@
+# Agent Skill v2: Domain Functions & Safety Template
+family_id: "algebra"
+allowed_imports:
+  - "math"
+  - "random"
+  - "fractions.Fraction"
+allowed_domain_functions:
+  - "math.gcd"
+  - "core.math.utils.lcm"
+  - "core.math.radical.RadicalOps"
+forbidden_functions:
+  - "eval"
+  - "exec"
+  - "input"
+  - "os.system"
+rendering_helpers:
+  - "core.rendering.latex_engine"
+checker_functions:
+  - "check_integer_answer"
+  - "check_latex_expression"
+validator_functions:
+  - "validate_problem_payload_contract"
+
+safety_rules:
+  - "No external API calls during generation."
+  - "All loops must have a max_iter limit (e.g., 100)."
+  - "Hallucinated mathematical formulas are strictly forbidden."

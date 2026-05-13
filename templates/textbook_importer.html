@@ -249,6 +249,28 @@
                     此為耗時操作，提交後頁面會立即刷新，您可以從伺服器後台日誌查看處理進度。
                 </div>
 
+                <!-- 新增：僅建立目錄架構選項 -->
+                <div class="mb-3 form-check" style="margin-top: 20px;">
+                    <input type="checkbox" class="form-check-input" id="outline_only" name="outline_only"
+                        style="width: auto; cursor: pointer;" value="true">
+                    <label class="form-check-label" for="outline_only"
+                        style="cursor: pointer; font-weight: 500; color: #2980b9;">
+                        <i class="bi bi-list-columns-reverse"></i> 僅建立目錄架構，不匯入題目與技能
+                    </label>
+                    <small class="text-muted" style="display: block; margin-top: 5px; margin-left: 24px;">
+                        勾選後只解析教材目錄或章節結構；不建立技能、不匯入例題與練習題、不執行 AI 題目分析。
+                    </small>
+                </div>
+
+                <div class="form-group" id="toc_pages_group" style="margin-top: 15px; margin-left: 24px;">
+                    <label for="toc_pages" style="font-weight: 500; font-size: 0.9em;">目錄解析頁數 (TOC Pages)</label>
+                    <input type="number" id="toc_pages" name="toc_pages" value="5" min="1" max="10"
+                        style="width: 100px;">
+                    <small class="text-muted" style="display: block; margin-top: 3px;">
+                        指定 PDF 前幾頁包含目錄內容（通常為 2-4 頁）。
+                    </small>
+                </div>
+
                 <!-- 新增：跳過程式碼生成選項 -->
                 <div class="mb-3 form-check" style="margin-top: 20px; margin-bottom: 20px;">
                     <input type="checkbox" class="form-check-input" id="skip_code_gen" name="skip_code_gen"
@@ -293,7 +315,8 @@
                         updateVisibility();
                     });
                 </script>
-                <button type="submit" class="btn-primary" {% if not has_gemini_api_key %}disabled{% endif %}>開始分析與匯入</button>
+                <button type="submit" class="btn-primary" {% if not has_gemini_api_key %}disabled{% endif
+                    %}>開始分析與匯入</button>
                 {% if not has_gemini_api_key %}
                 <small class="text-muted" style="display:block; margin-top:8px;">請先完成 Gemini API Key 設定後再匯入教材。</small>
                 {% endif %}

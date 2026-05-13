@@ -1,0 +1,14 @@
+# Agent Skill v2: Skill Metadata Template
+skill_id: "vh_數學B1_<skill_slug>"
+skill_name: "<skill_display_name>"
+curriculum: "vocational"
+volume: "數學B1"
+chapter: "1"
+section: "1-1"
+family_id: "algebra"
+curriculum_profile: "vocational_standard_v1"
+prerequisite_skills: []
+downstream_skills: []
+source_textbook: "LongTeng_2024_Edition"
+status: "draft"
+notes: "Initial draft for B1 Chapter 1 integration."

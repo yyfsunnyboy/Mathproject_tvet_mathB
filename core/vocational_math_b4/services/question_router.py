@@ -935,7 +935,7 @@ _CHAP3_PHASE7B_REGISTRY: dict[str, list[dict[str, object]]] = {
             "generator_fn": _chap3_stat.data_organization_charts_review_shell,
         },
     ],
-    "vh_??B4_StatisticalChartReading": [
+    "vh_數學B4_StatisticalChartReading": [
         {
             "subskill_id": "b4_ch3_statistical_chart_choice_type_01",
             "problem_type_id": "chart_type_by_purpose",

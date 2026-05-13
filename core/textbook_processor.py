@@ -1,4 +1,4 @@
-﻿# -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 """
 =============================================================================
 模組名稱 (Module Name): core/textbook_processor.py
@@ -56,6 +56,9 @@ from core.question_image_assets import (
     question_needs_image,
     render_pdf_page_to_image,
 )
+from core.textbook_filename_parser import parse_textbook_filename_metadata
+from core.textbook_structure_parser import get_structure_map
+from core.utils import normalize_vocational_math_skill_id
 
 _DOCX_IMPORT_CONTEXT: dict[str, Any] = {}
 
@@ -844,7 +847,7 @@ def sanitize_detailed_solution_text(text, max_chars=500):
     return cleaned.strip()
 
 
-def process_textbook_file(file_path, curriculum_info, queue, skip_code_gen=False):
+def process_textbook_file(file_path, curriculum_info, queue, skip_code_gen=False, outline_only=False, toc_pages=5):
     """
     主流程函式，包含完整的 try...except 錯誤處理。
     
@@ -853,6 +856,8 @@ def process_textbook_file(file_path, curriculum_info, queue, skip_code_gen=False
         curriculum_info: 課綱資訊字典
         queue: 訊息佇列
         skip_code_gen: 若為 True，則跳過自動生成 Python 出題程式碼（預設 False）
+        outline_only: 若為 True，則僅建立目錄架構而不匯入題目 (預設 False)
+        toc_pages: 目錄解析頁數 (預設 5)
     """
 
     try:
@@ -869,7 +874,76 @@ def process_textbook_file(file_path, curriculum_info, queue, skip_code_gen=False
         # ======================================================
 
         # 步驟 1: 從 PDF/Word 提取內容
-        content_by_page = extract_content_from_file(file_path, queue)
+        content_by_page = extract_content_from_file(file_path, queue, max_pages=toc_pages if outline_only else None)
+
+        # [V2.5] 僅建立目錄架構模式
+        if outline_only:
+            volume_val = str(curriculum_info.get('volume', ''))
+            curr_val = str(curriculum_info.get('curriculum', ''))
+            
+            parsed_data = None
+            structure_source = "pdf_toc"
+
+            # 嘗試 AI TOC 解析
+            if content_by_page:
+                toc_json_string = call_gemini_for_toc(content_by_page, curriculum_info, queue)
+                if toc_json_string:
+                    toc_json_string = normalize_json_text_before_parse(toc_json_string)
+                    parsed_data = parse_ai_response(toc_json_string, queue)
+                    if parsed_data and parsed_data.get('chapters'):
+                        message = f"成功透過 AI 從 PDF 解析目錄 (TOC)。"
+                        current_app.logger.info(message)
+                        queue.put(f"SUCCESS: {message}")
+                        
+                        # [V2.6] 移除 OutlinePlaceholder 邏輯，交由專用寫入函式處理
+                        pass
+            
+            # 若 AI 解析失敗，尋找 YAML Fallback
+            if not parsed_data:
+                struct_map = get_structure_map(curr_val, volume_val)
+                if struct_map and struct_map.data:
+                    message = f"AI 解析失敗或無內容，改採 YAML 結構地圖 ({volume_val})..."
+                    current_app.logger.info(message)
+                    queue.put(f"INFO: {message}")
+                    structure_source = "yaml_fallback"
+                    
+                    # 將 YAML 轉換為 parsed_data 格式
+                    yaml_chapters = struct_map.data.get('chapters', [])
+                    parsed_chapters = []
+                    for ch in yaml_chapters:
+                        ch_title = f"{ch.get('index')} {ch.get('title')}"
+                        sections = []
+                        for sec in ch.get('sections', []):
+                            sec_title = f"{sec.get('code')} {sec.get('title')}"
+                            sections.append({
+                                "section_title": sec_title,
+                                "concepts": [] # [V2.6] 不再需要 Placeholder concept
+                            })
+                        parsed_chapters.append({
+                            "chapter_title": ch_title,
+                            "sections": sections
+                        })
+                    parsed_data = {"chapters": parsed_chapters}
+            
+            if parsed_data:
+                result = import_outline_structure_only(
+                    parsed_data,
+                    curriculum_info,
+                    queue,
+                    source_file_path=file_path
+                )
+                return {
+                    "status": "success", 
+                    "message": f"目錄架構建立完成 (來源: {structure_source})", 
+                    "structure_source": structure_source,
+                    "skipped_skills": True,
+                    "skipped_examples": True,
+                    "skipped_practices": True,
+                    "skipped_code_generation": True,
+                    **result
+                }
+            else:
+                return {"status": "error", "message": "無法從 PDF 解析目錄，且找不到對應冊別的 YAML 結構地圖。"}
 
         if not content_by_page:
             message = "檔案內容為空或提取失敗，終止處理。"
@@ -911,6 +985,7 @@ def process_textbook_file(file_path, curriculum_info, queue, skip_code_gen=False
             queue,
             source_file_path=file_path,
             content_by_page=content_by_page,
+            outline_only=outline_only
         )
         try:
             temp_dir = (_DOCX_IMPORT_CONTEXT or {}).get("temp_media_dir")
@@ -989,7 +1064,7 @@ def process_textbook_file(file_path, curriculum_info, queue, skip_code_gen=False
 # --- 向下相容的別名 ---
 process_textbook_pdf = process_textbook_file
 
-def extract_content_from_file(file_path, queue):
+def extract_content_from_file(file_path, queue, max_pages=None):
     """
     從檔案中提取內容，支援 PDF (OCR) 和 Word (Pandoc) 格式。
     (包含防崩潰處理：將所有 Import 與邏輯包覆在 try-except 中)
@@ -1023,6 +1098,8 @@ def extract_content_from_file(file_path, queue):
             tesseract_not_found_error_logged = False
             doc = fitz.open(file_path)
             for i, page in enumerate(doc.pages()):
+                if max_pages and i >= max_pages:
+                    break
                 page_text = page.get_text("text")
 
                 # 偵測大字體標題
@@ -1309,6 +1386,10 @@ def _call_gemini_with_retry(model, analysis_prompt, queue=None, context_message=
 
     for attempt in range(1, max_retries + 1):
         try:
+            if not hasattr(model, "generate_content"):
+                current_app.logger.error(f"[_call_gemini_with_retry] 傳入的 model 物件無效 (型別: {type(model).__name__})。")
+                return None
+
             if queue is not None:
                 queue.put(f"INFO: {context_message}，第 {attempt}/{max_retries} 次呼叫 Gemini。")
 
@@ -1397,6 +1478,54 @@ def _call_gemini_with_retry(model, analysis_prompt, queue=None, context_message=
                 queue.put(f"ERROR: Gemini 呼叫失敗: [{err_type}] {err_msg}")
 
             raise
+
+def call_gemini_for_toc(content_by_page, curriculum_info, queue):
+    """
+    專門用於解析教材目錄 (TOC) 的 AI 流程。
+    """
+    message = "--- 開始 AI 目錄解析流程 ---"
+    current_app.logger.info(message)
+    queue.put(f"INFO: {message}")
+
+    prompt = f"""
+你是一位專業的教材結構分析師。請從提供的課本目錄（TOC）內容中，提取完整的章節與小節架構。
+
+### 1. 識別規則
+- **章 (Chapter)**: 識別如「第一章 標題」、「Chapter 1 標題」、「1 標題」等。
+- **節 (Section)**: 識別如「1-1 標題」、「2-1 標題」、「第一節 標題」等。
+- **支援格式**:
+    - A 格式: "1-1 數線與絕對值 P.02"
+    - B 格式: "P.116 直線的一般式與點到直線的距離 2-3"
+- **排除規則**: 絕對不要建立「答案篇」、「解答」、「索引」等非教學章節。
+
+### 2. 輸出格式
+請輸出嚴格的 JSON 格式，結構如下：
+{{
+  "chapters": [
+    {{
+      "chapter_title": "1 坐標系與函數圖形",
+      "sections": [
+        {{ "section_title": "1-1 數線與絕對值" }},
+        {{ "section_title": "1-2 平面坐標系與線型函數" }}
+      ]
+    }}
+  ]
+}}
+
+### 3. 注意事項
+- 請務必保留編號（如 1-1）。
+- 標題中的 "P.xxx" 頁碼資訊請移除，不要放入標題。
+- 如果標題被拆分到兩行，請合併它們。
+- 若內容包含「自我評量」或「複習」，也請列入該章的 section。
+"""
+    try:
+        from core.ai_analyzer import get_model
+        model = get_model()
+        response = _call_gemini_with_retry(model, prompt + "\n" + content_by_page, queue=queue)
+        return response
+    except Exception as e:
+        current_app.logger.error(f"call_gemini_for_toc failed: {e}")
+        return None
 
 def call_gemini_for_analysis(content_by_page, curriculum_info, queue, page_analysis_payload=None):
     """
@@ -3582,7 +3711,111 @@ def _extract_chart_metadata_for_mathb4_32(problem_text: str, raw_block: str = ""
         }
     return {}
 
-def save_to_database(parsed_data, curriculum_info, queue, source_file_path=None, content_by_page=None):
+def import_outline_structure_only(parsed_data, curriculum_info, queue, source_file_path=None):
+    """
+    [V2.6] 專用於『僅建立目錄架構』模式的資料庫寫入。
+    只更新 SkillCurriculum，絕對不建立 SkillInfo 或題目資料。
+    """
+    try:
+        from models import db, SkillCurriculum
+        current_app.logger.info(" -> [OutlineOnly] 開始建立章節目錄...")
+        
+        # 強制清除 session 中的任何 pending 變更，避免 autoflush 觸發舊有的 SkillInfo 錯誤
+        db.session.rollback()
+        
+        filename_meta = parse_textbook_filename_metadata(source_file_path) if source_file_path else {}
+        volume_val = str(curriculum_info.get('volume', ''))
+        curr_val = str(curriculum_info.get('curriculum', ''))
+        is_vocational_mathb = (curr_val == 'vocational' and 'B' in volume_val)
+        
+        # 取得教材結構地圖備用
+        struct_map_obj = get_structure_map(curr_val, volume_val)
+
+        chapters_created = 0
+        sections_created = 0
+        sections_updated = 0
+        
+        # 用於追蹤已處理的章節，避免重複計算
+        processed_chapters = set()
+
+        chapters = parsed_data.get('chapters', [])
+        for ch_data in chapters:
+            raw_ch_title = ch_data.get('chapter_title', '未命名章節').strip()
+            
+            # 章節名稱處理
+            chapter_title = raw_ch_title
+            
+            sections = ch_data.get('sections', [])
+            for sec_data in sections:
+                sec_title = sec_data.get('section_title', '').strip()
+                
+                # 對齊結構地圖
+                sec_code = ""
+                # 嘗試從小節標題提取 1-1, 1-2 等代碼
+                match_code = re.search(r'(\d+-\d+)', sec_title)
+                if match_code:
+                    sec_code = match_code.group(1)
+                
+                structure_meta = None
+                if struct_map_obj and sec_code:
+                    structure_meta = struct_map_obj.get_metadata(sec_code)
+                
+                # 決定最終章節標題
+                final_ch_title = chapter_title
+                if structure_meta and structure_meta.get('chapter_title'):
+                    final_ch_title = structure_meta['chapter_title']
+                
+                # 決定最終小節標題
+                final_sec_title = sec_title
+                if structure_meta and structure_meta.get('section_title'):
+                    final_sec_title = structure_meta['section_title']
+
+                # 決定 skill_id (僅作為目錄索引，不建立 SkillInfo)
+                # 使用 SectionTitle 產生的 ID，加個 outline 前綴以茲識別
+                clean_sec_title = re.sub(r'[^a-zA-Z0-9]', '', final_sec_title)
+                if not clean_sec_title:
+                    clean_sec_title = "UnknownSection"
+                temp_skill_id = f"outline_{curr_val}_{volume_val}_{clean_sec_title}"
+                
+                # 檢查小節是否存在
+                existing_curr = SkillCurriculum.query.filter_by(
+                    curriculum=curr_val,
+                    volume=volume_val,
+                    chapter=final_ch_title,
+                    section=final_sec_title
+                ).first()
+                
+                if not existing_curr:
+                    new_curr = SkillCurriculum(
+                        skill_id=temp_skill_id,
+                        curriculum=curr_val,
+                        grade=int(curriculum_info.get('grade', 10)),
+                        volume=volume_val,
+                        chapter=final_ch_title,
+                        section=final_sec_title,
+                        display_order=0 
+                    )
+                    db.session.add(new_curr)
+                    sections_created += 1
+                    if final_ch_title not in processed_chapters:
+                        chapters_created += 1
+                        processed_chapters.add(final_ch_title)
+                else:
+                    sections_updated += 1
+        
+        db.session.commit()
+        return {
+            "chapters_created": chapters_created,
+            "sections_created": sections_created,
+            "sections_updated": sections_updated
+        }
+    except Exception as e:
+        db.session.rollback()
+        current_app.logger.error(f"[import_outline_structure_only] 失敗: {e}")
+        raise e
+
+
+def save_to_database(parsed_data, curriculum_info, queue, source_file_path=None, content_by_page=None, outline_only=False):
     """
     將 AI 分析完的目錄資料寫入資料庫。
     """
@@ -3591,6 +3824,10 @@ def save_to_database(parsed_data, curriculum_info, queue, source_file_path=None,
     queue.put(f"INFO: {message}")
     skills_processed = 0
     curriculums_added = 0
+    chapters_created = 0
+    chapters_updated = 0
+    sections_created = 0
+    sections_updated = 0
     examples_added = 0
     practice_questions_imported = 0
     in_class_practices_imported = 0
@@ -3626,6 +3863,27 @@ def save_to_database(parsed_data, curriculum_info, queue, source_file_path=None,
                         f"[DOCX IMAGE DEBUG] attached title={t} source_type=unknown path={a.get('path')}"
                     )
     page_image_cache = {}
+    
+    # [NEW] 檔名解析元數據整合
+    filename_meta = parse_textbook_filename_metadata(source_file_path) if source_file_path else {}
+    
+    # [NEW] 教材結構地圖對齊機制 (Structure Map Alignment)
+    structure_meta = None
+    structure_alignment_failed = False
+    volume_val = str(curriculum_info.get('volume', ''))
+    curr_val = str(curriculum_info.get('curriculum', ''))
+    if filename_meta.get('section_code') and curr_val == 'vocational' and 'B' in volume_val:
+        struct_map = get_structure_map(curr_val, volume_val)
+        if struct_map:
+            structure_meta = struct_map.get_metadata(filename_meta['section_code'])
+            if structure_meta:
+                current_app.logger.info(f"[STRUCTURE_MAP] Aligned to: {structure_meta}")
+            else:
+                current_app.logger.warning(f"[STRUCTURE_MAP] No match for {filename_meta['section_code']}")
+                structure_alignment_failed = True
+    
+    if filename_meta:
+        current_app.logger.info(f"[FILENAME_META] parsed: {filename_meta}")
 
     prefix_map = {
         'junior_high': 'jh_',
@@ -3638,6 +3896,34 @@ def save_to_database(parsed_data, curriculum_info, queue, source_file_path=None,
     is_vocational_math = curriculum == 'vocational' and subject is not None and vol_num is not None
     is_vocational_mathb = is_vocational_math and subject == 'B'
     prefix = prefix_map.get(curriculum, '')
+
+    # [V2.6] 技高數學 B 系列：嚴格對齊既有目錄節點
+    existing_anchor_section = None
+    if is_vocational_mathb and filename_meta.get('section_code') and not outline_only:
+        from models import SkillCurriculum
+        s_code = filename_meta['section_code']
+        # 尋找既有目錄節點 (例如 1-1 xxx)
+        existing_anchor_section = SkillCurriculum.query.filter(
+            SkillCurriculum.curriculum == curriculum,
+            SkillCurriculum.volume == volume,
+            SkillCurriculum.section.like(f"{s_code} %")
+        ).first()
+        
+        if existing_anchor_section:
+            current_app.logger.info(f"[ALIGNMENT] Found existing anchor section: {existing_anchor_section.section}")
+            if not structure_meta:
+                structure_meta = {}
+            # 強制將 structure_meta 補上既有標題資訊，避免後續重複建立或標題不一致
+            structure_meta['chapter_title'] = existing_anchor_section.chapter
+            structure_meta['section_title'] = existing_anchor_section.section
+            # 標記對齊成功，避免後續走入 filename_meta fallback
+            structure_alignment_failed = False
+        else:
+            # 找不到既有節點，標記對齊失敗
+            message = f"找不到既有目錄節點 (Code: {s_code})，請先執行僅建立目錄架構模式。"
+            current_app.logger.warning(f"[ALIGNMENT] {message}")
+            queue.put(f"WARNING: {message}")
+            structure_alignment_failed = True
 
     def _extract_title_number(text):
         if not text:
@@ -4064,9 +4350,7 @@ def save_to_database(parsed_data, curriculum_info, queue, source_file_path=None,
             return explicit_skill_id
 
         if is_vocational_math:
-            if subject == 'B' and vol_num == 4:
-                return f"vh_數學{subject}{vol_num}_{target_clean_en_id}"
-            return f"vh_math{subject}{vol_num}_{target_clean_en_id}"
+            return normalize_vocational_math_skill_id(subject, vol_num, target_clean_en_id)
         return f"{prefix}{target_clean_en_id}"
 
     try:
@@ -4082,15 +4366,27 @@ def save_to_database(parsed_data, curriculum_info, queue, source_file_path=None,
             if match:
                 chapter_num = int(match.group(1))
             else:
-                chapter_num = 999  # ?????????????
+                chapter_num = 999 
+
+            # [V2.2] 優先使用教材結構地圖對齊
+            if structure_meta and structure_meta.get('chapter_index'):
+                chapter_num = structure_meta['chapter_index']
+                chapter_title = structure_meta['chapter_title']
+            elif is_vocational_mathb and filename_meta.get('chapter_index'):
+                chapter_num = filename_meta['chapter_index']
+                chapter_title = filename_meta.get('chapter_title', raw_chapter)
+            else:
+                chapter_title = raw_chapter
 
             if is_vocational_mathb:
-                # ???B?? AI ???????: "1 ????"????? chapter_num ????
-                chapter_title = raw_chapter
+                # 技高數學B系列：優先使用教材結構地圖
+                if structure_meta and structure_meta.get('chapter_title'):
+                    chapter_title = structure_meta['chapter_title']
+                else:
+                    chapter_title = raw_chapter
             elif match:
-                # ?????????????????????????????,?????????
                 clean_title = re.sub(r'^(\u55ae\u5143|Unit|\u7b2c)?\s*\d+\s*(\u55ae\u5143|\u7ae0)?\s*', '', raw_chapter).strip()
-                chapter_title = f"???{chapter_num} {clean_title}" if clean_title else f"???{chapter_num}"
+                chapter_title = f"第{chapter_num}章 {clean_title}" if clean_title else f"第{chapter_num}章"
             else:
                 chapter_title = raw_chapter
 
@@ -4113,7 +4409,34 @@ def save_to_database(parsed_data, curriculum_info, queue, source_file_path=None,
                         pass
             
             for section_data in sections:
-                section_title = section_data.get('section_title', '') or ''  # 龍騰版很多是空字串,允許
+                section_title = section_data.get('section_title', '') or ''
+                
+                # [V2.2] 優先使用教材結構地圖對齊
+                if structure_meta and structure_meta.get('section_title'):
+                    section_title = structure_meta['section_title']
+                
+                # [NEW] 追蹤章節與小節狀態
+                section_exists = SkillCurriculum.query.filter_by(
+                    curriculum=curriculum_info.get('curriculum'),
+                    volume=str(curriculum_info.get('volume', 1)),
+                    chapter=chapter_title,
+                    section=section_title
+                ).first()
+                if not section_exists:
+                    sections_created += 1
+                else:
+                    sections_updated += 1
+                
+                # 簡單追蹤章節 (此處簡化處理，每節都會觸發但我們回報整體)
+                chapter_exists_any = db.session.query(SkillCurriculum.id).filter_by(
+                    curriculum=curriculum_info.get('curriculum'),
+                    volume=str(curriculum_info.get('volume', 1)),
+                    chapter=chapter_title
+                ).first()
+                if not chapter_exists_any:
+                    chapters_created += 1 # 這裡其實是建立了一個包含此章節的新紀錄
+                else:
+                    chapters_updated += 1
                 if is_vocational_mathb and (
                     ("3-1" in str(section_title or ""))
                     or ("統計的基本概念" in str(section_title or ""))
@@ -4150,16 +4473,50 @@ def save_to_database(parsed_data, curriculum_info, queue, source_file_path=None,
                         }
                         order_index = mathb_1_1_order_map.get(clean_en_id, concept_order)
                     if is_vocational_math:
-                        if subject == 'B' and vol_num == 4:
-                            final_skill_id = f"vh_數學{subject}{vol_num}_{clean_en_id}"
-                        else:
-                            final_skill_id = f"vh_math{subject}{vol_num}_{clean_en_id}"
+                        final_skill_id = normalize_vocational_math_skill_id(subject, vol_num, clean_en_id)
                         skill_id_msg = f"INFO: vocational math skill_id = {final_skill_id}"
                         current_app.logger.info(skill_id_msg)
                         queue.put(skill_id_msg)
                     else:
                         final_skill_id = f"{prefix}{clean_en_id}"
                     
+                    # [V2.5] 僅建立目錄架構模式：強制使用 PlaceholderSkill 並跳過題目與技能細節
+                    if outline_only:
+                        final_skill_id = f"{prefix}OutlinePlaceholder"
+                        # 確保 Placeholder SkillInfo 存在
+                        if not SkillInfo.query.get(final_skill_id):
+                            db.session.add(SkillInfo(
+                                skill_id=final_skill_id,
+                                skill_ch_name="[目錄] 待建立單元",
+                                skill_en_name="OutlinePlaceholder",
+                                is_active=False
+                            ))
+                            skills_processed += 1
+                        
+                        if final_skill_id not in processed_skill_ids:
+                            processed_skill_ids.append(final_skill_id)
+                        
+                        # 建立 SkillCurriculum
+                        existing_curr = SkillCurriculum.query.filter_by(
+                            skill_id=final_skill_id,
+                            chapter=chapter_title,
+                            section=section_title
+                        ).first()
+                        if not existing_curr:
+                            new_curr = SkillCurriculum(
+                                skill_id=final_skill_id,
+                                curriculum=curriculum_info.get('curriculum'),
+                                grade=int(curriculum_info.get('grade', 10)),
+                                volume=str(curriculum_info.get('volume', 1)),
+                                chapter=chapter_title,
+                                section=section_title,
+                                paragraph=concept_paragraph,
+                                display_order=(structure_meta.get('display_order_base', chapter_num * 10000) if structure_meta else (chapter_num * 10000 + (filename_meta.get('section_index', 0) * 100))) + concept_order
+                            )
+                            db.session.add(new_curr)
+                            curriculums_added += 1
+                        continue # 跳過後續所有題目匯入與技能更新
+
                     if not skip_skill_creation:
                         # === SkillInfo 新增/更新 (維持原邏輯) ===
                         existing_skill = SkillInfo.query.get(final_skill_id)
@@ -4195,18 +4552,22 @@ def save_to_database(parsed_data, curriculum_info, queue, source_file_path=None,
                         ).first()
                         
                         if not existing_curr:
-                            new_curr = SkillCurriculum(
-                                skill_id=final_skill_id,
-                                curriculum=curriculum_info.get('curriculum'),
-                                grade=int(curriculum_info.get('grade', 10)),
-                                volume=str(curriculum_info.get('volume', 1)),
-                                chapter=chapter_title,
-                                section=section_title,
-                                paragraph=concept_paragraph,
-                                display_order=chapter_num * 10000 + skills_processed  # 10000 倍數確保單元間不會互相干擾
-                            )
-                            db.session.add(new_curr)
-                            curriculums_added += 1
+                            # [V2.6] 若是技高數學B且對齊失敗，禁止建立新目錄節點 (避免 1_- 或 1-1_-)
+                            if is_vocational_mathb and structure_alignment_failed:
+                                current_app.logger.warning(f"[ALIGNMENT] Skip creating new curriculum node for {section_title}")
+                            else:
+                                new_curr = SkillCurriculum(
+                                    skill_id=final_skill_id,
+                                    curriculum=curriculum_info.get('curriculum'),
+                                    grade=int(curriculum_info.get('grade', 10)),
+                                    volume=str(curriculum_info.get('volume', 1)),
+                                    chapter=chapter_title,
+                                    section=section_title,
+                                    paragraph=concept_paragraph,
+                                    display_order=(structure_meta.get('display_order_base', chapter_num * 10000) if structure_meta else (chapter_num * 10000 + (filename_meta.get('section_index', 0) * 100))) + skills_processed
+                                )
+                                db.session.add(new_curr)
+                                curriculums_added += 1
                     else:
                         queue.put(
                             f"INFO: 跳過非技能桶位 concept='{concept_name}' ({clean_en_id})，僅重導 examples。"
@@ -4325,10 +4686,10 @@ def save_to_database(parsed_data, curriculum_info, queue, source_file_path=None,
                             current_app.logger.info(f"[LATEX STANDARDIZE] title={example_title} after={db_problem_text}")
                         db_answer = _render_sub_questions_answer(ex.get('correct_answer', ''), sub_questions)
                         db_solution = _render_sub_questions_solution(ex.get('detailed_solution', ''), sub_questions)
-                        needs_review = bool(ex.get("needs_review", False))
+                        needs_review = bool(ex.get("needs_review", False)) or structure_alignment_failed
                         ex["problem_text"] = db_problem_text
                         ex = validate_problem_block_purity(ex)
-                        needs_review = bool(ex.get("needs_review", False))
+                        needs_review = bool(ex.get("needs_review", False)) or structure_alignment_failed
                         linked_example_title = None
                         if source_type == "in_class_practice":
                             linked_example_title, needs_review = _infer_linked_example_title(
@@ -4385,7 +4746,7 @@ def save_to_database(parsed_data, curriculum_info, queue, source_file_path=None,
                             source_paragraph=concept_name,
                             source_description=source_description,
                             problem_text=db_problem_text,
-                            problem_type=ex.get('problem_type', source_type or 'calculation'),
+                            problem_type=(structure_meta.get('type') if structure_meta and structure_meta.get('type') else ex.get('problem_type', source_type or 'calculation')),
                             correct_answer=db_answer,
                             detailed_solution=sanitize_detailed_solution_text(db_solution, max_chars=500),
                             difficulty_level=difficulty_level
@@ -4899,18 +5260,19 @@ def save_to_database(parsed_data, curriculum_info, queue, source_file_path=None,
                         f"[DOCX IMPORT VALIDATION WARNING] possible missing in_class_practice numbers={miss}"
                     )
         return {
-            'skills_processed': skills_processed, 
+            'skills_processed': skills_processed,
             'curriculums_added': curriculums_added,
+            'chapters_created': chapters_created,
+            'chapters_updated': chapters_updated,
+            'sections_created': sections_created,
+            'sections_updated': sections_updated,
             'examples_added': examples_added,
-            'examples_imported': examples_added,
-            'textbook_examples_imported': examples_added,
             'practice_questions_imported': practice_questions_imported,
             'in_class_practices_imported': in_class_practices_imported,
             'chapter_exercises_imported': chapter_exercises_imported,
             'self_assessments_imported': self_assessments_imported,
             'exam_practices_imported': exam_practices_imported,
             'other_practices_imported': other_practices_imported,
-            'practice_questions_needs_review': practice_questions_needs_review,
             'needs_review_count': practice_questions_needs_review,
             'practice_questions_skipped': practice_questions_skipped,
             'duplicates_skipped': practice_questions_skipped,

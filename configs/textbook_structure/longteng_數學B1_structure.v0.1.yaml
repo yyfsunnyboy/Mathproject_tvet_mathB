@@ -1,0 +1,57 @@
+curriculum: vocational
+volume: 數學B1
+publisher: longteng
+chapters:
+  - index: 1
+    title: 坐標系與函數圖形
+    sections:
+      - code: 1-1
+        title: 數線與絕對值
+        order: 10100
+      - code: 1-2
+        title: 平面坐標系與線型函數
+        order: 10200
+      - code: 1-3
+        title: 二次函數
+        order: 10300
+      - code: 1-4
+        title: 一元二次不等式
+        order: 10400
+      - code: 1-review
+        title: 自我評量
+        order: 19900
+        type: chapter_review
+
+  - index: 2
+    title: 直線方程式
+    sections:
+      - code: 2-1
+        title: 斜率
+        order: 20100
+      - code: 2-2
+        title: 直線方程式
+        order: 20200
+      - code: 2-3
+        title: 直線的一般式與點到直線的距離
+        order: 20300
+      - code: 2-review
+        title: 自我評量
+        order: 29900
+        type: chapter_review
+
+  - index: 3
+    title: 式的運算
+    sections:
+      - code: 3-1
+        title: 多項式的基本概念與四則運算
+        order: 30100
+      - code: 3-2
+        title: 除法原理與餘式定理
+        order: 30200
+      - code: 3-3
+        title: 因式分解與分式
+        order: 30300
+      - code: 3-review
+        title: 自我評量
+        order: 39900
+        type: chapter_review

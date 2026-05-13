@@ -106,6 +106,45 @@ def get_chapters_by_curriculum_volume(curriculum, volume):
     
     return chapters
 
+def normalize_vocational_math_skill_id(subject: str, vol_num: str, clean_en_id: str, prefix: str = "vh_") -> str:
+    """
+    統一技高數學 B 系列的技能 ID 命名規則。
+    格式: vh_數學B1_AbsoluteValue
+    """
+    if subject == 'B':
+        # 強制使用中文冊別，例如 vh_數學B1_...
+        return f"{prefix}數學{subject}{vol_num}_{clean_en_id}"
+    # 其他非 B 系列維持英文 math 前綴
+    return f"{prefix}math{subject}{vol_num}_{clean_en_id}"
+
+def format_vocational_b_section_display(chapter_name, section_name):
+    """
+    技高數學 B 系列專用章節顯示格式化工具。
+    規則：
+    1. 從 section (例如 1-2 xxx) 提取 Y (2) 作為顯示編號。
+    2. 標題移除 chapter 原本的數字前綴。
+    3. 自我評量顯示為「【複習】自我評量」。
+    """
+    if not chapter_name:
+        return ""
+        
+    sec_str = str(section_name or "")
+    # 解析小節序號 (例如 1-2 -> 2)
+    sec_match = re.search(r'(\d+)-(\d+)', sec_str)
+    is_review = 'review' in sec_str.lower() or '自我評量' in sec_str or '1-review' in sec_str
+    
+    # 清理標題：移除既有的前導數字、空格或「第x章」前綴
+    # 例如 "1 數線" -> "數線", "第1章 數線" -> "數線"
+    clean_title = re.sub(r'^(第\s*\d+\s*[章單元]|Unit\s*\d+|Chapter\s*\d+|\d+)\s*', '', chapter_name).strip()
+    
+    if is_review:
+        return f"【複習】{clean_title}" if clean_title != '自我評量' else "自我評量"
+    elif sec_match:
+        # [V2.6修正] 使用 sec_match.group(1) 作為章節編號，並加上「第x章」前綴
+        return f"第{sec_match.group(1)}章 {clean_title}"
+    else:
+        return chapter_name
+
 def get_skills_by_volume_chapter(volume, chapter):
     """取得指定冊、章的所有技能（包含進度）"""
     # 使用 ORM 進行 JOIN 查詢
@@ -270,6 +309,16 @@ def handle_curriculum_filters(request):
     if f_chap != 'all': s_q = s_q.filter(SkillCurriculum.chapter == f_chap)
     filters['sections'] = [r[0] for r in s_q.all()]
 
+    # [V2.0] 技高 B 系列標題格式化映射 (供下拉選單顯示使用)
+    filters['chapter_labels'] = {}
+    if f_curr == 'vocational' and f_vol != 'all' and 'B' in str(f_vol):
+        for ch in filters['chapters']:
+            # 取得各章節代表性的小節資訊，用於顯示
+            rep = SkillCurriculum.query.filter_by(
+                curriculum=f_curr, volume=f_vol, chapter=ch
+            ).order_by(SkillCurriculum.display_order).first()
+            filters['chapter_labels'][ch] = format_vocational_b_section_display(ch, rep.section if rep else "")
+
     selected = {'f_curriculum': f_curr, 'f_grade': f_grade, 'f_volume': f_vol, 'f_chapter': f_chap, 'f_section': f_sec}
     
-    return selected, filters    
+    return selected, filters

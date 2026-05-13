@@ -442,7 +442,8 @@
                             <option value="">-- 請選擇 --</option>
                             {% if filters.chapters %}
                             {% for ch in filters.chapters %}
-                            <option value="{{ ch }}" {% if selected_filters.f_chapter==ch %}selected{% endif %}>{{ ch }}
+                            <option value="{{ ch }}" {% if selected_filters.f_chapter==ch %}selected{% endif %}>
+                                {{ filters.chapter_labels.get(ch, ch) }}
                             </option>
                             {% endfor %}
                             {% endif %}
