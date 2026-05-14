@@ -321,11 +321,27 @@ def convert_omml_to_latex(omml_xml: str) -> str:
 
 
 def _extract_docx_image_placeholder(run_el, paragraph_state):
+    """Return [FORMULA_IMAGE_N] placeholders for every image reference found in *run_el*.
+
+    Handles two embedding mechanisms:
+    - DrawingML  : ``<a:blip>`` inside ``<w:drawing>`` (standard Word inline image).
+    - VML / OLE  : ``<v:imagedata>`` inside ``<w:object>`` / ``<w:pict>``
+                   — used by MathType (Equation.DSMT4) and legacy OLE equations.
+                   Previously these returned ``""`` (silently dropped the formula
+                   position).  Now they produce a ``[FORMULA_IMAGE_N]`` placeholder
+                   so that the paragraph text keeps the formula slot visible to
+                   downstream Gemini parsing.
+    """
     image_blips = run_el.findall(".//{*}blip")
-    if not image_blips:
+    vml_imagedata = run_el.findall(".//{*}imagedata")  # MathType OLE / VML preview
+    if not image_blips and not vml_imagedata:
         return ""
     placeholders = []
     for _ in image_blips:
+        paragraph_state["formula_image_count"] += 1
+        placeholders.append(f"[FORMULA_IMAGE_{paragraph_state['formula_image_count']}]")
+        paragraph_state["needs_formula_review"] = True
+    for _ in vml_imagedata:
         paragraph_state["formula_image_count"] += 1
         placeholders.append(f"[FORMULA_IMAGE_{paragraph_state['formula_image_count']}]")
         paragraph_state["needs_formula_review"] = True
@@ -464,6 +480,9 @@ def _is_question_start_text(text: str) -> bool:
         r"^\s*自我評量",
         r"^\s*(統測補給站|統測題|會考題|學測題|指考題|分科測驗)\s*\d*",
         r"^\s*題目\s*\d+",
+        # Bare-numbered exercises: require an explicit unambiguous question verb.
+        # "5 解下列不等式" ✓  "3. 試求 x" ✓  "1.不等式的運算性質" ✗ (no verb here)
+        r"^\s*\d+[\s\.\)、]\s*(?:解|試解|求|試求|計算|化簡|判斷|寫出|找出|畫出|標出|填入|完成)",
     ]
     return any(re.search(p, t) for p in heading_patterns)
 
@@ -592,6 +611,10 @@ def _extract_question_title_from_text(text: str) -> str:
         m = re.search(pat, t)
         if m:
             return m.group(1).replace(" ", "")
+    # Bare-numbered exercise: "5 解不等式..." / "1. 試求..." → return bare number string
+    m = re.search(r"^(\d+)[\s\.\)、]", t)
+    if m:
+        return m.group(1)
     return (t[:20] or "未命名題目")
 
 
@@ -605,10 +628,212 @@ def _is_image_question_text(text: str) -> bool:
     return any(k in t for k in ("如圖", "右圖", "附圖", "棋盤式街道圖", "著色", "圖形"))
 
 
+_QUESTION_LABEL_RE = re.compile(
+    r"((?:例題|隨堂練習|基礎題|進階題|統測補給站)\s*\d+)"
+)
+
+# Used to validate bare-number exercise blocks vs. concept-heading blocks.
+_QUESTION_VERB_IN_BLOCK_RE = re.compile(
+    r"解|試求|試解|求解|計算|化簡|判斷|寫出|找出|畫出|標出|填入|完成"
+)
+_CONCEPT_CUES_RE = re.compile(
+    r"性質|意義|公式|定義|定理|概念|觀念|原理|說明|運算性"
+)
+
+# Map Gemini label keywords to DOCX key label keywords (must be same type to match).
+_LABEL_TYPE_MAP = {
+    "例題": "例題",
+    "隨堂練習": "隨堂練習",
+    "基礎題": "基礎題",
+    "進階題": "進階題",
+    "統測補給站": "統測補給站",
+}
+
+
+def _is_safe_exercise_block(block_text: str, num: str) -> bool:
+    """Return True only when *block_text* is a genuine bare-numbered exercise.
+
+    A safe exercise block:
+    - Starts with ``N<space>`` (NOT ``N.`` which signals a concept-heading).
+    - Contains at least one unambiguous question verb.
+    - Does NOT read as a pure concept heading (no concept cues without a verb).
+
+    This guard prevents bare-number key "1" from being erroneously paired with
+    concept paragraphs like "1.不等式的運算性質…".
+    """
+    t = str(block_text or "").strip()
+    # Must begin with the exact number followed by a space (not period/comma).
+    if not re.match(rf"^{re.escape(num)}\s", t):
+        return False
+    if not _QUESTION_VERB_IN_BLOCK_RE.search(t):
+        return False
+    return True
+
+
+def _lookup_docx_formula_block(title: str, formula_blocks: dict) -> str:
+    """High-confidence lookup for a raw DOCX formula block by Gemini question title.
+
+    Strategies (all high-confidence):
+    1. Exact match after stripping spaces.
+    2. Strip leading section prefix and match the trailing label token exactly
+       (e.g. "1-1習題 基礎題5" → look up "基礎題5").
+    3. Same-type label number match: trailing number N and same label type
+       (e.g. title "基礎題5" searches only for keys "基礎題5", never "例題5").
+    4. Safe bare-number match: key is bare number N, block content starts with
+       "N " (space, NOT period) and contains a question verb.
+
+    Returns empty string when no high-confidence match is found.
+    Deliberately does NOT perform cross-type number matching or unrestricted
+    bare-number lookup, which caused concept paragraphs to be misassigned.
+    """
+    if not title or not formula_blocks:
+        return ""
+    title_ns = str(title).replace(" ", "")
+
+    # Strategy 1: exact (no-space / with-space)
+    v = formula_blocks.get(title_ns) or formula_blocks.get(str(title))
+    if v:
+        return v
+
+    # Strategy 2: strip section prefix → exact label lookup
+    m = _QUESTION_LABEL_RE.search(title_ns)
+    label_key = m.group(1).replace(" ", "") if m else None
+    if label_key:
+        v = formula_blocks.get(label_key)
+        if v:
+            return v
+
+    # Strategy 3: same-type label + number (only match within the same label type)
+    m2 = re.search(r"(\d+)$", title_ns)
+    if m2:
+        num = m2.group(1)
+        title_label_type = None
+        for kw in _LABEL_TYPE_MAP:
+            if kw in title_ns:
+                title_label_type = kw
+                break
+        if title_label_type:
+            same_type_key = title_label_type + num
+            v = formula_blocks.get(same_type_key)
+            if v:
+                return v
+
+        # Strategy 4: safe bare-number key (N<space> + question verb required)
+        v = formula_blocks.get(num)
+        if v and _is_safe_exercise_block(v, num):
+            return v
+
+    return ""
+
+
+_COORD_GUARD_SECTION_RE = re.compile(r"1\s*-\s*2|平面[坐座]標|[坐座]標系|線型函數")
+_COORD_GUARD_TEXT_RE = re.compile(r"點|[坐座]標|象限|平面|距離|中點|分點|重心|直線")
+
+
+def _is_b1_coordinate_context(volume: str, section_title: str, problem_text: str) -> bool:
+    vol = str(volume or "")
+    sec = str(section_title or "")
+    text = str(problem_text or "")
+    is_b1 = ("B1" in vol.upper()) or ("數學B1" in vol)
+    if not is_b1:
+        return False
+    if _COORD_GUARD_SECTION_RE.search(sec):
+        return True
+    return bool(_COORD_GUARD_TEXT_RE.search(text))
+
+
+def _normalize_coordinate_point_notation(text: str) -> str:
+    """Normalize OCR/LaTeX-mangled coordinate point labels into A(x,y)-style forms."""
+    out = str(text or "")
+    label = r"([ABCPQR])"
+    idx = r"([A-Za-z0-9+\-*/^()]+)"
+    def _coord_sup_sub(lbl: str, sup: str, sub: str) -> str:
+        # B1 regression: C^y_x should map to C(x,y); P^a_b should map to P(a,b).
+        if str(lbl).upper() == "C":
+            return f"{lbl}({sub},{sup})"
+        return f"{lbl}({sup},{sub})"
+    out = re.sub(
+        rf"(?:\{{\s*\}}\s*)?\^\{{\s*{idx}\s*\}}\s*{label}\s*_\{{\s*{idx}\s*\}}",
+        lambda m: f"{m.group(2)}({m.group(1)},{m.group(3)})",
+        out,
+    )
+    out = re.sub(
+        rf"{label}\s*\^\{{\s*{idx}\s*\}}\s*_\{{\s*{idx}\s*\}}",
+        lambda m: _coord_sup_sub(m.group(1), m.group(2), m.group(3)),
+        out,
+    )
+    out = re.sub(
+        rf"{label}\s*_\{{\s*{idx}\s*\}}\s*\^\{{\s*{idx}\s*\}}",
+        lambda m: f"{m.group(1)}({m.group(3)},{m.group(2)})",
+        out,
+    )
+    out = re.sub(
+        rf"{label}\s*\^\s*{idx}\s*_\s*{idx}",
+        lambda m: _coord_sup_sub(m.group(1), m.group(2), m.group(3)),
+        out,
+    )
+    out = re.sub(
+        rf"{label}\s*_\s*{idx}\s*\^\s*{idx}",
+        lambda m: f"{m.group(1)}({m.group(3)},{m.group(2)})",
+        out,
+    )
+    return out
+
+
+def _lookup_docx_question_assets(title: str, q_assets: dict) -> list:
+    """High-confidence lookup for question assets by Gemini question title.
+
+    Mirrors the same four high-confidence strategies as
+    :func:`_lookup_docx_formula_block`.  Cross-type and unrestricted bare-number
+    lookups are intentionally excluded.
+    """
+    if not title or not q_assets:
+        return []
+    title_ns = str(title).replace(" ", "")
+
+    # Strategy 1
+    v = q_assets.get(title_ns) or q_assets.get(str(title))
+    if v:
+        return v
+
+    # Strategy 2: strip section prefix
+    m = _QUESTION_LABEL_RE.search(title_ns)
+    label_key = m.group(1).replace(" ", "") if m else None
+    if label_key:
+        v = q_assets.get(label_key)
+        if v:
+            return v
+
+    # Strategy 3: same-type label + number
+    m2 = re.search(r"(\d+)$", title_ns)
+    if m2:
+        num = m2.group(1)
+        title_label_type = None
+        for kw in _LABEL_TYPE_MAP:
+            if kw in title_ns:
+                title_label_type = kw
+                break
+        if title_label_type:
+            same_type_key = title_label_type + num
+            v = q_assets.get(same_type_key)
+            if v:
+                return v
+
+        # Strategy 4: safe bare-number
+        v = q_assets.get(num)
+        if v and _is_safe_exercise_block(str(v[0].get("block_text", "") if isinstance(v, list) and v else ""), num):
+            return v
+
+    return []
+
+
 def attach_docx_media_to_question_blocks(blocks):
     question_assets: dict[str, list[dict[str, Any]]] = {}
     orphan_images: list[dict[str, Any]] = []
-    image_kw = ["如圖", "右圖", "附圖", "棋盤式街道圖", "著色", "標號"]
+    image_kw = [
+        "如圖", "右圖", "下圖", "附圖", "棋盤式街道圖", "著色", "標號",
+        "數線", "坐標", "座標", "函數圖", "圖形", "如下圖",
+    ]
 
     question_points: list[dict[str, Any]] = []
     image_blocks: list[dict[str, Any]] = []
@@ -647,23 +872,30 @@ def attach_docx_media_to_question_blocks(blocks):
         attached = False
         def _classify_asset(asset_obj, q):
             ext = os.path.splitext(str(asset_obj.get("path") or ""))[1].lower().lstrip(".")
-            if ext in ("wmf", "emf") and q.get("has_formula_kw"):
+            # Treat as formula_asset when:
+            # (a) WMF/EMF image adjacent to a formula-keyword question, OR
+            # (b) image originated from a paragraph that contained [FORMULA_IMAGE_N]
+            is_ole_formula = asset_obj.get("is_formula_placeholder_source", False)
+            if (ext in ("wmf", "emf") and q.get("has_formula_kw")) or is_ole_formula:
                 asset_obj["media_kind"] = "formula_asset"
+                reason = "ole_formula_placeholder_source" if is_ole_formula else "formula_question_block"
                 if has_app_context():
                     current_app.logger.info(
-                        f"[DOCX MEDIA CLASSIFY] rid={asset_obj.get('rid')} kind=formula_asset reason=formula_question_block"
+                        f"[DOCX MEDIA CLASSIFY] rid={asset_obj.get('rid')} kind=formula_asset reason={reason}"
                     )
             else:
                 asset_obj["media_kind"] = "image_asset"
-                reason = "question_contains_附圖" if q.get("has_image_kw") else "default_image_asset"
+                reason = "question_contains_image_kw" if q.get("has_image_kw") else "default_image_asset"
                 if has_app_context():
                     current_app.logger.info(
                         f"[DOCX MEDIA CLASSIFY] rid={asset_obj.get('rid')} kind=image_asset reason={reason}"
                     )
 
-        # Case 1: image before first question; bind to next only when question has image keywords.
+        # Case 1: image before first question; attach when image/formula kw OR OLE formula image.
         if prev_q is None and next_q is not None:
-            if next_q["has_image_kw"] or next_q["has_formula_kw"]:
+            img_ext = os.path.splitext(str(img.get("path") or ""))[1].lower().lstrip(".")
+            is_ole_img = img.get("is_formula_placeholder_source", False)
+            if next_q["has_image_kw"] or next_q["has_formula_kw"] or is_ole_img or img_ext in ("wmf", "emf"):
                 asset = dict(img)
                 asset["image_attach_reason"] = "near_next_question"
                 asset["needs_image_review"] = True
@@ -1198,6 +1430,9 @@ def extract_content_from_file(file_path, queue, max_pages=None):
                             current_app.logger.warning(
                                 f"[DOCX EQUATION WARNING] conversion failed paragraph_index={idx}"
                             )
+                        para_has_formula_placeholder = bool(
+                            re.search(r"\[FORMULA_IMAGE_\d+\]", ptxt or "")
+                        )
                         if ptxt:
                             text_chunks.append(ptxt)
                             ordered_blocks.append({"type": "paragraph", "text": ptxt, "block_index": len(ordered_blocks) + 1})
@@ -1211,6 +1446,9 @@ def extract_content_from_file(file_path, queue, max_pages=None):
                                     "content_type": info.get("content_type", "application/octet-stream"),
                                     "target_ref": info.get("target_ref"),
                                     "block_index": len(ordered_blocks) + 1,
+                                    # Flag: this image is the OLE/VML preview for a formula
+                                    # placeholder produced in the same paragraph.
+                                    "is_formula_placeholder_source": para_has_formula_placeholder,
                                 }
                             )
                     elif block.tag.endswith('}tbl'):
@@ -1730,6 +1968,32 @@ Subskill = 例題題型 / 解題策略 / 應用變化。
 TreeDiagramCounting、AdditionPrinciple、MultiplicationPrinciple、FactorialNotation。
 
 注意：正因數個數不是正式小節，只能歸入 MultiplicationPrinciple 的 examples，subskill_tag 可用 divisor_counting 或 mixed_application。
+
+【B1 1-1 專用補充：數線與絕對值（完整抽題規則）】
+
+當 section_title 包含「數線與絕對值」時（此規則針對高職數學B1，與上方 B4 加法原理規則不衝突）：
+
+1. 必須完整抽取 1-1習題 基礎題 1～10，不可只挑代表題。
+2. 即使題幹中的公式已被 [FORMULA_IMAGE_N] 或 [FORMULA_MISSING] 取代，仍必須建立該題 JSON 物件，不可略過。
+3. 公式缺失的題目必須標記：
+   - needs_review: true
+   - needs_formula_review: true
+   - formula_missing: true
+4. source_type 規則：
+   - 例題 → textbook_example
+   - 隨堂練習 → in_class_practice
+   - 1-1習題 基礎題 → basic_exercise
+   - 1-1習題 進階題 → advanced_exercise
+   - 統測題 → exam_practice
+5. source_description 格式：
+   - 基礎題依序為 "1-1習題 基礎題1"、"1-1習題 基礎題2"、…、"1-1習題 基礎題10"
+6. 除非某題完全沒有任何題幹文字（包括 [FORMULA_IMAGE_N]），否則不得略過 1-1習題 任何明確題號。
+7. 不可自行補猜缺失的數線、絕對值、不等式公式；保留 [FORMULA_MISSING] 作為 problem_text 的一部分。
+8. 絕對值相關 concept 建議：
+   - NumberLine（數線）
+   - AbsoluteValue（絕對值）
+   - AbsoluteValueEquationInequality（絕對值方程式與不等式，可依教材拆分）
+9. 若進階題（11～12 題，如有）同樣出現，需完整保留並標記 source_type: advanced_exercise。
 
 【1-2 專用補充】
 
@@ -2799,10 +3063,19 @@ def is_answer_blank_placeholder_context(raw_block: str, problem_text: str) -> bo
     return bool(instruction_hit and formula_hit and (formula_with_placeholder or placeholder_close_to_subq))
 
 
-def normalize_permutation_combination_notation(text: str) -> tuple[str, dict]:
+def normalize_permutation_combination_notation(
+    text: str, *, volume: str = "", section_title: str = ""
+) -> tuple[str, dict]:
     original = str(text or "")
     out = original
     log = {"changed": False, "reasons": []}
+    coord_guard = _is_b1_coordinate_context(volume=volume, section_title=section_title, problem_text=original)
+    if coord_guard:
+        guarded = _normalize_coordinate_point_notation(out)
+        if guarded != out:
+            log["changed"] = True
+            log["reasons"].append("normalized coordinate point notation in B1 coordinate context")
+            out = guarded
 
     # e.g., ⁷P₃ / ⁷C₃
     def _replace_pre(match):
@@ -2836,7 +3109,9 @@ def normalize_permutation_combination_notation(text: str) -> tuple[str, dict]:
     )
 
     # e.g., P(5,3) / C(8,2) (numeric params only; keep probability forms like P(A), P(A|B))
-    out = re.sub(r"\b([PC])\s*\(\s*([0-9]+)\s*,\s*([0-9]+)\s*\)", r"\1^{\2}_{\3}", out)
+    # In B1 coordinate context, C(1,2)/P(a,b) should remain point notation.
+    if not coord_guard:
+        out = re.sub(r"\b([PC])\s*\(\s*([0-9]+)\s*,\s*([0-9]+)\s*\)", r"\1^{\2}_{\3}", out)
 
     if out != original:
         log["changed"] = True
@@ -3056,10 +3331,53 @@ def get_question_title(item: dict) -> str:
     )
 
 
+_SECTION_EXPOSITION_TITLE_EXACT = frozenset({
+    "課文內容", "課文", "內容", "說明", "定義", "定理", "性質",
+    "課文說明", "內容說明", "概念說明", "公式說明",
+})
+
+_SECTION_EXPOSITION_TITLE_RE = re.compile(
+    r"^(?:課文內容|課文說明|內容說明|概念說明|公式說明|課文\s*\d*|說明\s*\d*)$"
+)
+
+
+def _is_section_exposition_title(title: str) -> bool:
+    """Return True when *title* looks like a section-exposition label (not a real question).
+
+    Catches Gemini-generated source_description values like '課文內容' that represent
+    narrative textbook passages rather than examples, exercises, or practices.
+    These must NOT be saved as textbook_example records.
+    """
+    t = str(title or "").strip()
+    if not t:
+        return False
+    # Exact known exposition labels
+    if t in _SECTION_EXPOSITION_TITLE_EXACT:
+        return True
+    # Regex: starts with exposition keywords, no digits or question-type suffix
+    if _SECTION_EXPOSITION_TITLE_RE.match(t):
+        return True
+    return False
+
+
 def normalize_source_type_by_title(item: dict, default_source_type: str = "textbook_example") -> str:
     title = get_question_title(item)
     raw_source_type = str(item.get("source_type", "") or "").strip().lower() if isinstance(item, dict) else ""
     reason = ""
+
+    # Section exposition titles are not importable question records.
+    if _is_section_exposition_title(title):
+        normalized = "section_exposition"
+        reason = "title_is_section_exposition"
+        if isinstance(item, dict):
+            item["source_type"] = normalized
+            try:
+                current_app.logger.info(
+                    f"[SOURCE TYPE] title={title!r} normalized_source_type={normalized} reason={reason}"
+                )
+            except Exception:
+                pass
+        return normalized
 
     if "隨堂練習" in title:
         normalized = "in_class_practice"
@@ -3711,6 +4029,27 @@ def _extract_chart_metadata_for_mathb4_32(problem_text: str, raw_block: str = ""
         }
     return {}
 
+_REVIEW_SECTION_RE = re.compile(
+    r"review|自我評量|複習|復習|綜合練習|總複習|總復習|回顧",
+    re.IGNORECASE,
+)
+
+
+def _is_review_section_title(section_title: str) -> bool:
+    """Return True when *section_title* represents a review / self-assessment section
+    that should be excluded from the curriculum outline skeleton.
+
+    Rationale: sections like '1-review 自我評量', '2-review 複習' are not formal
+    teaching units.  They must not pollute the outline used for adaptive routing.
+    Self-assessment *questions* (source_type=self_assessment) are unaffected because
+    they are handled inside ``save_to_database``, not here.
+    """
+    t = str(section_title or "").strip()
+    if not t:
+        return False
+    return bool(_REVIEW_SECTION_RE.search(t))
+
+
 def import_outline_structure_only(parsed_data, curriculum_info, queue, source_file_path=None):
     """
     [V2.6] 專用於『僅建立目錄架構』模式的資料庫寫入。
@@ -3748,7 +4087,15 @@ def import_outline_structure_only(parsed_data, curriculum_info, queue, source_fi
             sections = ch_data.get('sections', [])
             for sec_data in sections:
                 sec_title = sec_data.get('section_title', '').strip()
-                
+
+                # Skip review / 自我評量 / 複習 sections — these are not formal teaching
+                # sections and should not appear in the curriculum outline.
+                if _is_review_section_title(sec_title):
+                    current_app.logger.info(
+                        f"[OutlineOnly] skip review section: {sec_title!r}"
+                    )
+                    continue
+
                 # 對齊結構地圖
                 sec_code = ""
                 # 嘗試從小節標題提取 1-1, 1-2 等代碼
@@ -3900,7 +4247,6 @@ def save_to_database(parsed_data, curriculum_info, queue, source_file_path=None,
     # [V2.6] 技高數學 B 系列：嚴格對齊既有目錄節點
     existing_anchor_section = None
     if is_vocational_mathb and filename_meta.get('section_code') and not outline_only:
-        from models import SkillCurriculum
         s_code = filename_meta['section_code']
         # 尋找既有目錄節點 (例如 1-1 xxx)
         existing_anchor_section = SkillCurriculum.query.filter(
@@ -3986,10 +4332,15 @@ def save_to_database(parsed_data, curriculum_info, queue, source_file_path=None,
                     )
                     return normalized_text
                 current_app.logger.warning(f"[DOCX FORMULA WARNING] formula missing before AI title={item_title}")
-                fallback_text = block if block.strip() else text
-                fallback_text = re.sub(r"\[FORMULA_IMAGE_\d+\]", "[FORMULA_MISSING]", fallback_text)
-                fallback_text = re.sub(r"\[WORD_EQUATION_UNPARSED\]", "[FORMULA_MISSING]", fallback_text)
-                fallback_text = re.sub(r"\[UNREADABLE_FORMULA\]", "[FORMULA_MISSING]", fallback_text)
+                fallback_text = text
+                fallback_text = re.sub(
+                    r"(?:\{\s*\}\s*\^\s*\{?\s*\d+\s*\}?\s*[PC]\s*_\s*\{?\s*\d+\s*\}?|"
+                    r"[PC]\s*\^\s*\{?\s*\d+\s*\}?\s*_\s*\{?\s*\d+\s*\}?|"
+                    r"[PC]\s*_\s*\{?\s*\d+\s*\}?\s*\^\s*\{?\s*\d+\s*\}?|"
+                    r"\b[PC]\s*\(\s*\d+\s*,\s*\d+\s*\))",
+                    "[FORMULA_MISSING]",
+                    fallback_text,
+                )
                 item["needs_review"] = True
                 item["needs_formula_review"] = True
                 item["formula_missing"] = True
@@ -3999,9 +4350,9 @@ def save_to_database(parsed_data, curriculum_info, queue, source_file_path=None,
                     item["problem_unusable"] = True
                 return fallback_text
         if has_placeholder and not _contains_perm_comb_formula(text):
-            fallback_text = block if block.strip() else text
-            fallback_text = re.sub(r"\[FORMULA_IMAGE_\d+\]", "[FORMULA_MISSING]", fallback_text)
-            fallback_text = re.sub(r"\[WORD_EQUATION_UNPARSED\]", "[FORMULA_MISSING]", fallback_text)
+            fallback_text = text
+            if "[FORMULA_MISSING]" not in fallback_text:
+                fallback_text = f"{fallback_text} [FORMULA_MISSING]".strip()
             item["needs_review"] = True
             item["needs_formula_review"] = True
             item["formula_missing"] = True
@@ -4017,7 +4368,7 @@ def save_to_database(parsed_data, curriculum_info, queue, source_file_path=None,
             return []
         ctx = _DOCX_IMPORT_CONTEXT or {}
         q_assets = ctx.get("question_assets", {}) if isinstance(ctx, dict) else {}
-        candidates = q_assets.get(str(item_title).replace(" ", ""), []) or q_assets.get(str(item_title), [])
+        candidates = _lookup_docx_question_assets(str(item_title), q_assets)
         results = []
         if not candidates:
             return results
@@ -4181,7 +4532,7 @@ def save_to_database(parsed_data, curriculum_info, queue, source_file_path=None,
     def _build_docx_assets_metadata(question_title, chapter_title, section_title, source_type, question_text=""):
         ctx = _DOCX_IMPORT_CONTEXT or {}
         q_assets = ctx.get("question_assets", {}) if isinstance(ctx, dict) else {}
-        all_candidates = q_assets.get(str(question_title or "").replace(" ", ""), []) or q_assets.get(str(question_title or ""), [])
+        all_candidates = _lookup_docx_question_assets(str(question_title or ""), q_assets)
         candidates = [a for a in (all_candidates or []) if str(a.get("media_kind", "image_asset")) == "image_asset"]
         if not candidates:
             combo = f"{question_title} {question_text}"
@@ -4263,7 +4614,7 @@ def save_to_database(parsed_data, curriculum_info, queue, source_file_path=None,
     def _build_docx_formula_assets_metadata(question_title, question_text=""):
         ctx = _DOCX_IMPORT_CONTEXT or {}
         q_assets = ctx.get("question_assets", {}) if isinstance(ctx, dict) else {}
-        all_candidates = q_assets.get(str(question_title or "").replace(" ", ""), []) or q_assets.get(str(question_title or ""), [])
+        all_candidates = _lookup_docx_question_assets(str(question_title or ""), q_assets)
         formula_candidates = [a for a in (all_candidates or []) if str(a.get("media_kind", "")) == "formula_asset"]
         if not formula_candidates:
             return None
@@ -4428,7 +4779,7 @@ def save_to_database(parsed_data, curriculum_info, queue, source_file_path=None,
                     sections_updated += 1
                 
                 # 簡單追蹤章節 (此處簡化處理，每節都會觸發但我們回報整體)
-                chapter_exists_any = db.session.query(SkillCurriculum.id).filter_by(
+                chapter_exists_any = SkillCurriculum.query.filter_by(
                     curriculum=curriculum_info.get('curriculum'),
                     volume=str(curriculum_info.get('volume', 1)),
                     chapter=chapter_title
@@ -4511,7 +4862,11 @@ def save_to_database(parsed_data, curriculum_info, queue, source_file_path=None,
                                 chapter=chapter_title,
                                 section=section_title,
                                 paragraph=concept_paragraph,
-                                display_order=(structure_meta.get('display_order_base', chapter_num * 10000) if structure_meta else (chapter_num * 10000 + (filename_meta.get('section_index', 0) * 100))) + concept_order
+                                display_order=(
+                                    structure_meta.get('display_order_base', chapter_num * 10000)
+                                    if structure_meta
+                                    else (chapter_num * 10000 + (int(filename_meta.get('section_index') or 0) * 100))
+                                ) + concept_order
                             )
                             db.session.add(new_curr)
                             curriculums_added += 1
@@ -4564,7 +4919,11 @@ def save_to_database(parsed_data, curriculum_info, queue, source_file_path=None,
                                     chapter=chapter_title,
                                     section=section_title,
                                     paragraph=concept_paragraph,
-                                    display_order=(structure_meta.get('display_order_base', chapter_num * 10000) if structure_meta else (chapter_num * 10000 + (filename_meta.get('section_index', 0) * 100))) + skills_processed
+                                    display_order=(
+                                        structure_meta.get('display_order_base', chapter_num * 10000)
+                                        if structure_meta
+                                        else (chapter_num * 10000 + (int(filename_meta.get('section_index') or 0) * 100))
+                                    ) + skills_processed
                                 )
                                 db.session.add(new_curr)
                                 curriculums_added += 1
@@ -4599,6 +4958,14 @@ def save_to_database(parsed_data, curriculum_info, queue, source_file_path=None,
                         example_title = get_question_title(ex) or "例題"
                         detected_titles.append(example_title)
                         source_type = normalize_source_type_by_title(ex, default_source_type="textbook_example")
+
+                        # Skip section exposition entries (e.g. title='課文內容').
+                        if source_type == "section_exposition":
+                            current_app.logger.info(
+                                f"[SKIP] section_exposition title={example_title!r} not saved as textbook_example"
+                            )
+                            continue
+
                         target_skill_id = _determine_target_skill_id(clean_en_id, section_title, concept_name, ex)
 
                         sub_questions = ex.get("sub_questions", []) if isinstance(ex.get("sub_questions", []), list) else []
@@ -4624,7 +4991,11 @@ def save_to_database(parsed_data, curriculum_info, queue, source_file_path=None,
                             )
                             continue
                         blank_norm_text, blank_meta = normalize_fill_blank_artifacts(db_problem_text_raw)
-                        perm_norm_text, perm_meta = normalize_permutation_combination_notation(blank_norm_text)
+                        perm_norm_text, perm_meta = normalize_permutation_combination_notation(
+                            blank_norm_text,
+                            volume=str(curriculum_info.get("volume", "") or ""),
+                            section_title=section_title,
+                        )
                         db_problem_text_raw = perm_norm_text
                         if blank_meta.get("changed") or perm_meta.get("changed"):
                             logs = ex.get("repair_log", [])
@@ -4633,7 +5004,7 @@ def save_to_database(parsed_data, curriculum_info, queue, source_file_path=None,
                             logs.extend(blank_meta.get("reasons", []))
                             logs.extend(perm_meta.get("reasons", []))
                             ex["repair_log"] = logs
-                        raw_formula_block = docx_formula_blocks.get(str(example_title).replace(" ", ""), "") or docx_formula_blocks.get(str(example_title), "")
+                        raw_formula_block = _lookup_docx_formula_block(str(example_title), docx_formula_blocks)
                         if raw_formula_block and re.search(r"\[FORMULA_IMAGE_\d+\]|\[WORD_EQUATION_UNPARSED\]", raw_formula_block):
                             ocr_formulas = extract_formula_images_for_question_block(example_title)
                             if ocr_formulas:
@@ -4657,7 +5028,11 @@ def save_to_database(parsed_data, curriculum_info, queue, source_file_path=None,
                             ex["needs_review"] = True
                         db_problem_text_norm = normalize_math_text(db_problem_text_raw)
                         db_problem_text, ex_math_meta = standardize_problem_latex(db_problem_text_norm)
-                        db_problem_text_post, post_perm_meta = normalize_permutation_combination_notation(db_problem_text)
+                        db_problem_text_post, post_perm_meta = normalize_permutation_combination_notation(
+                            db_problem_text,
+                            volume=str(curriculum_info.get("volume", "") or ""),
+                            section_title=section_title,
+                        )
                         if post_perm_meta.get("changed"):
                             logs = ex.get("repair_log", [])
                             if not isinstance(logs, list):
@@ -4922,7 +5297,11 @@ def save_to_database(parsed_data, curriculum_info, queue, source_file_path=None,
                             )
                             continue
                         blank_norm_text, blank_meta = normalize_fill_blank_artifacts(practice_problem_raw)
-                        perm_norm_text, perm_meta = normalize_permutation_combination_notation(blank_norm_text)
+                        perm_norm_text, perm_meta = normalize_permutation_combination_notation(
+                            blank_norm_text,
+                            volume=str(curriculum_info.get("volume", "") or ""),
+                            section_title=section_title,
+                        )
                         practice_problem_raw = perm_norm_text
                         if blank_meta.get("changed") or perm_meta.get("changed"):
                             logs = practice.get("repair_log", [])
@@ -4931,7 +5310,7 @@ def save_to_database(parsed_data, curriculum_info, queue, source_file_path=None,
                             logs.extend(blank_meta.get("reasons", []))
                             logs.extend(perm_meta.get("reasons", []))
                             practice["repair_log"] = logs
-                        raw_formula_block = docx_formula_blocks.get(str(practice_title).replace(" ", ""), "") or docx_formula_blocks.get(str(practice_title), "")
+                        raw_formula_block = _lookup_docx_formula_block(str(practice_title), docx_formula_blocks)
                         if raw_formula_block and re.search(r"\[FORMULA_IMAGE_\d+\]|\[WORD_EQUATION_UNPARSED\]", raw_formula_block):
                             ocr_formulas = extract_formula_images_for_question_block(practice_title)
                             if ocr_formulas:
@@ -4955,7 +5334,11 @@ def save_to_database(parsed_data, curriculum_info, queue, source_file_path=None,
                             practice["needs_review"] = True
                         practice_problem_norm = normalize_math_text(practice_problem_raw)
                         practice_problem, practice_math_meta = standardize_problem_latex(practice_problem_norm)
-                        practice_problem_post, post_perm_meta = normalize_permutation_combination_notation(practice_problem)
+                        practice_problem_post, post_perm_meta = normalize_permutation_combination_notation(
+                            practice_problem,
+                            volume=str(curriculum_info.get("volume", "") or ""),
+                            section_title=section_title,
+                        )
                         if post_perm_meta.get("changed"):
                             logs = practice.get("repair_log", [])
                             if not isinstance(logs, list):
