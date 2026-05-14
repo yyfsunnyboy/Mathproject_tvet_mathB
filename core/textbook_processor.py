@@ -451,6 +451,22 @@ def _guess_image_content_type(filename: str) -> str:
     }.get(ext, "application/octet-stream")
 
 
+def _docx_image_original_format(path_or_name: str, content_type: str = "") -> str:
+    ext = os.path.splitext(str(path_or_name or ""))[1].lower().lstrip(".")
+    if ext in ("wmf", "emf", "png", "jpg", "jpeg"):
+        return "jpeg" if ext == "jpg" else ext
+    ctype = str(content_type or "").lower()
+    if "wmf" in ctype:
+        return "wmf"
+    if "emf" in ctype:
+        return "emf"
+    if "png" in ctype:
+        return "png"
+    if "jpeg" in ctype or "jpg" in ctype:
+        return "jpeg"
+    return "unknown"
+
+
 def extract_docx_image_rids_from_paragraph(paragraph) -> list[str]:
     rids = []
     p_el = paragraph._p
@@ -1310,22 +1326,20 @@ def extract_content_from_file(file_path, queue, max_pages=None):
     content_by_page = {}
     
     try:
-        # 將可能的危險 Import 移至函式內部，避免 Module Level 崩潰
-        import fitz  # PyMuPDF
-        import pypandoc
-        from PIL import Image
-        import pytesseract
-        
-        # Wand 是一個常見的缺失套件，特別處理
-        try:
-            from wand.image import Image as WandImage
-        except ImportError:
-            WandImage = None
-
         file_extension = os.path.splitext(file_path)[1].lower()
 
         if file_extension == '.pdf':
             # --- PDF 處理邏輯 (維持原樣) ---
+            import fitz  # PyMuPDF
+            from PIL import Image
+            import pytesseract
+            
+            # Wand 是一個常見的缺失套件，特別處理
+            try:
+                from wand.image import Image as WandImage
+            except ImportError:
+                WandImage = None
+
             ocr_import_error_logged = False
             tesseract_not_found_error_logged = False
             doc = fitz.open(file_path)
@@ -1391,6 +1405,10 @@ def extract_content_from_file(file_path, queue, max_pages=None):
                 from docx import Document
                 from docx.table import Table
                 from docx.text.paragraph import Paragraph
+                try:
+                    import pypandoc
+                except ImportError:
+                    pypandoc = None
 
                 doc = Document(file_path)
                 job_id = uuid.uuid4().hex[:12]
@@ -1399,14 +1417,15 @@ def extract_content_from_file(file_path, queue, max_pages=None):
                 media_leaf_rel = os.path.join(media_rel_root, "media")
                 media_leaf_abs = os.path.join(current_app.root_path, media_leaf_rel)
                 os.makedirs(media_leaf_abs, exist_ok=True)
-                try:
-                    pypandoc.convert_file(
-                        file_path,
-                        'markdown',
-                        extra_args=['--wrap=none', f'--extract-media={media_abs_root}']
-                    )
-                except Exception:
-                    pass
+                if pypandoc is not None:
+                    try:
+                        pypandoc.convert_file(
+                            file_path,
+                            'markdown',
+                            extra_args=['--wrap=none', f'--extract-media={media_abs_root}']
+                        )
+                    except Exception:
+                        pass
                 rel_map = build_docx_media_relationship_map(file_path, media_leaf_rel)
                 text_chunks = []
                 ordered_blocks = []
@@ -4193,6 +4212,9 @@ def save_to_database(parsed_data, curriculum_info, queue, source_file_path=None,
     docx_vector_images = 0
     docx_conversion_success = 0
     docx_conversion_failed = 0
+    docx_conversion_pending = 0
+    docx_formula_assets_count = 0
+    docx_formula_needs_review_count = 0
     docx_copied_to_question_assets = 0
     docx_formula_blocks = {}
     is_pdf_source = str(source_file_path or "").lower().endswith(".pdf")
@@ -4362,42 +4384,15 @@ def save_to_database(parsed_data, curriculum_info, queue, source_file_path=None,
         return text
 
     def extract_formula_images_for_question_block(item_title: str):
-        if not bool(current_app.config.get("ENABLE_DOCX_FORMULA_OCR_FALLBACK", False)):
-            return []
-        if not is_docx_source:
-            return []
-        ctx = _DOCX_IMPORT_CONTEXT or {}
-        q_assets = ctx.get("question_assets", {}) if isinstance(ctx, dict) else {}
-        candidates = _lookup_docx_question_assets(str(item_title), q_assets)
-        results = []
-        if not candidates:
-            return results
-        try:
-            from PIL import Image
-            model = get_model("vision_analyzer")
-        except Exception:
-            return results
-        prompt = (
-            "請只轉錄圖片中的數學式。"
-            "不要補題目，不要解題，不要猜不存在的數字。"
-            "若看不清楚，輸出 [UNREADABLE_FORMULA]。"
-        )
-        for asset in candidates:
-            rel = str(asset.get("path") or "")
-            if not rel:
-                continue
-            abs_path = rel if os.path.isabs(rel) else os.path.join(current_app.root_path, rel)
-            if not os.path.exists(abs_path):
-                continue
-            try:
-                img = Image.open(abs_path)
-                resp = model.generate_content([prompt, img], generation_config={"temperature": 0.0, "max_output_tokens": 1024})
-                text = str(getattr(resp, "text", "") or "").strip()
-                if text:
-                    results.append(text)
-            except Exception:
-                continue
-        return results
+        """Legacy hook kept for compatibility; formula OCR is metadata-only now.
+
+        OCR fallback is handled in _build_docx_formula_assets_metadata after the
+        formula asset has a readable png/jpeg display_path or converted_path.
+        This helper intentionally does not return OCR text for problem_text
+        replacement.
+        """
+        _ = item_title
+        return []
 
     def _build_source_description(title, source_type, linked_example_title=None, needs_review=False, dedupe_hash="", section_context=None):
         title_text = str(title or "").strip() or "未命名題目"
@@ -4619,24 +4614,128 @@ def save_to_database(parsed_data, curriculum_info, queue, source_file_path=None,
         if not formula_candidates:
             return None
         current_app.logger.info(f"[DOCX FORMULA ASSET] attached title={question_title} count={len(formula_candidates)}")
+        rel_dir = build_question_asset_dir(
+            curriculum=curriculum_info.get("curriculum", "unknown"),
+            publisher=curriculum_info.get("publisher", "unknown"),
+            volume=curriculum_info.get("volume", "unknown"),
+            chapter_title=chapter_title,
+            section_title=section_title,
+            source_filename=os.path.basename(str(source_file_path or "")),
+        )
+        abs_dir = os.path.join(current_app.root_path, rel_dir)
+        os.makedirs(abs_dir, exist_ok=True)
+        placeholder_tokens = re.findall(r"\[FORMULA_IMAGE_(\d+)\]", str(question_text or ""))
+        raw_block = _lookup_docx_formula_block(str(question_title or ""), docx_formula_blocks)
+        if not placeholder_tokens:
+            placeholder_tokens = re.findall(r"\[FORMULA_IMAGE_(\d+)\]", str(raw_block or ""))
         assets = []
-        for a in formula_candidates:
-            assets.append(
-                {
-                    "asset_type": "word_formula_image",
-                    "source": "docx",
-                    "path": str(a.get("path") or ""),
-                    "content_type": str(a.get("content_type") or ""),
-                    "rid": a.get("rid"),
-                    "image_attach_reason": a.get("image_attach_reason"),
-                }
+        ocr_enabled = bool(current_app.config.get("ENABLE_DOCX_FORMULA_OCR_FALLBACK", False))
+        ocr_model = None
+        for idx, a in enumerate(formula_candidates, start=1):
+            src_rel = str(a.get("path") or "")
+            content_type = str(a.get("content_type") or _guess_image_content_type(src_rel))
+            original_format = _docx_image_original_format(src_rel, content_type)
+            ext = os.path.splitext(src_rel)[1].lower().lstrip(".") or original_format or "bin"
+            if ext == "jpeg":
+                ext = "jpg"
+            problem_key = str(question_title or "") + "|formula|" + str(a.get("block_index") or idx)
+            qhash = hashlib.sha1(problem_key.encode("utf-8")).hexdigest()[:8]
+            filename = build_question_asset_filename(
+                source_type="formula",
+                question_title=question_title,
+                question_id_or_dedupe=qhash,
+                fig_index=idx,
+                ext=ext,
             )
-        meta = {"formula_assets": assets, "formula_placeholders": ["[FORMULA_MISSING]"] * len(assets)}
-        if not _contains_perm_comb_formula(question_text):
-            meta["needs_formula_review"] = True
-            meta["formula_missing"] = True
-            meta["needs_review"] = True
-            current_app.logger.warning(f"[DOCX FORMULA WARNING] formula_asset_without_ocr title={question_title}")
+            copied_abs = _copy_docx_asset_to_question_assets(src_rel, abs_dir, filename)
+            rel_path = os.path.join(rel_dir, filename).replace("\\", "/") if copied_abs else src_rel.replace("\\", "/")
+            display_path = None
+            converted_path = None
+            conversion_status = "pending"
+            conversion_error = None
+            if original_format in ("png", "jpeg"):
+                display_path = rel_path
+                conversion_status = "not_required"
+            elif original_format in ("wmf", "emf") and copied_abs:
+                png_filename = os.path.splitext(filename)[0] + ".png"
+                png_abs = os.path.join(abs_dir, png_filename)
+                png_rel = os.path.join(rel_dir, png_filename).replace("\\", "/")
+                try:
+                    ok, err = convert_vector_image_to_png(copied_abs, png_abs)
+                except Exception as exc:
+                    ok, err = False, str(exc)
+                if ok:
+                    display_path = png_rel
+                    converted_path = png_rel
+                    conversion_status = "success"
+                else:
+                    conversion_status = "failed"
+                    conversion_error = err or "conversion_failed"
+            elif not copied_abs:
+                conversion_status = "failed"
+                conversion_error = "source_asset_not_found"
+
+            token_index = int(placeholder_tokens[idx - 1]) if idx - 1 < len(placeholder_tokens) else idx
+            token = f"[FORMULA_IMAGE_{token_index}]"
+            asset_meta = {
+                "source": "docx",
+                "asset_type": "word_formula_image",
+                "original_path": src_rel.replace("\\", "/"),
+                "path": rel_path,
+                "display_path": display_path,
+                "content_type": content_type,
+                "original_format": original_format,
+                "placeholder_token": token,
+                "placeholder_index": token_index,
+                "conversion_status": conversion_status,
+                "converted_path": converted_path,
+                "rid": a.get("rid"),
+                "image_attach_reason": a.get("image_attach_reason"),
+            }
+            if conversion_error:
+                asset_meta["conversion_error"] = conversion_error
+            if ocr_enabled:
+                ocr_rel = converted_path or display_path
+                if ocr_rel and _docx_image_original_format(ocr_rel, content_type) in ("png", "jpeg"):
+                    try:
+                        from PIL import Image
+                        if ocr_model is None:
+                            ocr_model = get_model("vision_analyzer")
+                        ocr_abs = ocr_rel if os.path.isabs(ocr_rel) else os.path.join(current_app.root_path, ocr_rel)
+                        with Image.open(ocr_abs) as img:
+                            prompt = (
+                                "Transcribe only the math formula visible in this image. "
+                                "Do not solve the problem, do not add explanation, and do not infer or invent missing numbers. "
+                                "If the formula is unreadable, return [UNREADABLE_FORMULA]."
+                            )
+                            resp = ocr_model.generate_content(
+                                [prompt, img],
+                                generation_config={"temperature": 0.0, "max_output_tokens": 512},
+                            )
+                        ocr_text = str(getattr(resp, "text", "") or "").strip()
+                        if ocr_text:
+                            asset_meta["formula_ocr_text"] = ocr_text
+                            asset_meta["formula_ocr_source"] = ocr_rel
+                            asset_meta["formula_ocr_status"] = "success"
+                        else:
+                            asset_meta["formula_ocr_status"] = "failed"
+                    except Exception as exc:
+                        asset_meta["formula_ocr_status"] = "failed"
+                        asset_meta["formula_ocr_error"] = str(exc)
+            assets.append(asset_meta)
+        placeholders = [a["placeholder_token"] for a in assets]
+        meta = {
+            "formula_assets": assets,
+            "formula_placeholders": placeholders,
+            "needs_formula_review": True,
+            "formula_missing": True,
+            "needs_review": True,
+        }
+        if any(a.get("formula_ocr_status") for a in assets):
+            meta["formula_ocr_status"] = "success" if any(a.get("formula_ocr_status") == "success" for a in assets) else "failed"
+            meta["formula_ocr_text"] = [a.get("formula_ocr_text") for a in assets if a.get("formula_ocr_text")]
+            meta["formula_ocr_source"] = [a.get("formula_ocr_source") for a in assets if a.get("formula_ocr_source")]
+        current_app.logger.warning(f"[DOCX FORMULA WARNING] formula_asset_requires_review title={question_title}")
         return meta
 
     def _build_math_metadata(raw_text, standardized_meta, needs_review=False):
@@ -5006,13 +5105,9 @@ def save_to_database(parsed_data, curriculum_info, queue, source_file_path=None,
                             ex["repair_log"] = logs
                         raw_formula_block = _lookup_docx_formula_block(str(example_title), docx_formula_blocks)
                         if raw_formula_block and re.search(r"\[FORMULA_IMAGE_\d+\]|\[WORD_EQUATION_UNPARSED\]", raw_formula_block):
-                            ocr_formulas = extract_formula_images_for_question_block(example_title)
-                            if ocr_formulas:
-                                block_replaced = str(raw_formula_block)
-                                for i, ftxt in enumerate(ocr_formulas, start=1):
-                                    block_replaced = block_replaced.replace(f"[FORMULA_IMAGE_{i}]", ftxt)
-                                ex["formula_ocr_source"] = ocr_formulas
-                                raw_formula_block = block_replaced
+                            ex["needs_review"] = True
+                            ex["needs_formula_review"] = True
+                            ex["formula_missing"] = True
                         db_problem_text_raw = validate_problem_formula_not_hallucinated(
                             example_title, ex, db_problem_text_raw, raw_formula_block
                         )
@@ -5174,6 +5269,18 @@ def save_to_database(parsed_data, curriculum_info, queue, source_file_path=None,
                                             docx_conversion_success += 1
                                         if ia.get("needs_image_conversion") is True and not ia.get("display_path"):
                                             docx_conversion_failed += 1
+                                    formula_assets = image_meta.get("formula_assets", []) if isinstance(image_meta, dict) else []
+                                    if formula_assets:
+                                        docx_formula_assets_count += len(formula_assets)
+                                        if image_meta.get("needs_formula_review"):
+                                            docx_formula_needs_review_count += 1
+                                    for fa in formula_assets:
+                                        if fa.get("conversion_status") == "success":
+                                            docx_conversion_success += 1
+                                        elif fa.get("conversion_status") == "failed":
+                                            docx_conversion_failed += 1
+                                        elif fa.get("conversion_status") == "pending":
+                                            docx_conversion_pending += 1
                             else:
                                 current_app.logger.info(
                                     "[QUESTION IMAGE] detected but no metadata field available table=textbook_examples"
@@ -5312,13 +5419,9 @@ def save_to_database(parsed_data, curriculum_info, queue, source_file_path=None,
                             practice["repair_log"] = logs
                         raw_formula_block = _lookup_docx_formula_block(str(practice_title), docx_formula_blocks)
                         if raw_formula_block and re.search(r"\[FORMULA_IMAGE_\d+\]|\[WORD_EQUATION_UNPARSED\]", raw_formula_block):
-                            ocr_formulas = extract_formula_images_for_question_block(practice_title)
-                            if ocr_formulas:
-                                block_replaced = str(raw_formula_block)
-                                for i, ftxt in enumerate(ocr_formulas, start=1):
-                                    block_replaced = block_replaced.replace(f"[FORMULA_IMAGE_{i}]", ftxt)
-                                practice["formula_ocr_source"] = ocr_formulas
-                                raw_formula_block = block_replaced
+                            practice["needs_review"] = True
+                            practice["needs_formula_review"] = True
+                            practice["formula_missing"] = True
                         practice_problem_raw = validate_problem_formula_not_hallucinated(
                             practice_title, practice, practice_problem_raw, raw_formula_block
                         )
@@ -5545,6 +5648,18 @@ def save_to_database(parsed_data, curriculum_info, queue, source_file_path=None,
                                             docx_conversion_success += 1
                                         if ia.get("needs_image_conversion") is True and not ia.get("display_path"):
                                             docx_conversion_failed += 1
+                                    formula_assets = image_meta.get("formula_assets", []) if isinstance(image_meta, dict) else []
+                                    if formula_assets:
+                                        docx_formula_assets_count += len(formula_assets)
+                                        if image_meta.get("needs_formula_review"):
+                                            docx_formula_needs_review_count += 1
+                                    for fa in formula_assets:
+                                        if fa.get("conversion_status") == "success":
+                                            docx_conversion_success += 1
+                                        elif fa.get("conversion_status") == "failed":
+                                            docx_conversion_failed += 1
+                                        elif fa.get("conversion_status") == "pending":
+                                            docx_conversion_pending += 1
                             else:
                                 current_app.logger.info(
                                     "[QUESTION IMAGE] detected but no metadata field available table=textbook_examples"
@@ -5626,6 +5741,9 @@ def save_to_database(parsed_data, curriculum_info, queue, source_file_path=None,
             current_app.logger.info(f"[DOCX IMAGE SUMMARY] vector_images={docx_vector_images}")
             current_app.logger.info(f"[DOCX IMAGE SUMMARY] conversion_success={docx_conversion_success}")
             current_app.logger.info(f"[DOCX IMAGE SUMMARY] conversion_failed={docx_conversion_failed}")
+            current_app.logger.info(f"[DOCX IMAGE SUMMARY] conversion_pending={docx_conversion_pending}")
+            current_app.logger.info(f"[FORMULA ASSET SUMMARY] formula_assets={docx_formula_assets_count}")
+            current_app.logger.info(f"[FORMULA ASSET SUMMARY] needs_formula_review={docx_formula_needs_review_count}")
             current_app.logger.info(f"[DOCX IMAGE SUMMARY] missing_image_questions={len(missing_image_questions)}")
             for t, s_type, reason in missing_image_questions:
                 current_app.logger.warning(
@@ -5667,3 +5785,4 @@ def save_to_database(parsed_data, curriculum_info, queue, source_file_path=None,
         current_app.logger.error(f"寫入資料庫失敗: {e}\n{tb}")
         queue.put(f"ERROR: 寫入資料庫失敗: {e}")
         return {}
+

@@ -1,12 +1,12 @@
-# -*- coding: utf-8 -*-
+﻿# -*- coding: utf-8 -*-
 """
 =============================================================================
-模組名稱 (Module Name): core/routes/admin.py
-功能說明 (Description): 後台管理核心模組，包含資料庫維護、教科書匯入、技能管理、課程綱要管理、例題管理、Prompt 管理與前置技能管理。
-執行語法 (Usage): 由系統調用
-版本資訊 (Version): V2.0
-更新日期 (Date): 2026-01-13
-維護團隊 (Maintainer): Math AI Project Team
+璅∠??迂 (Module Name): core/routes/admin.py
+?隤芣? (Description): 敺蝞∠??詨?璅∠???怨??澈蝬剛風??蝘?臬???賜恣?玨蝔雇閬恣??憿恣?rompt 蝞∠???蝵格??賜恣??
+?瑁?隤? (Usage): ?梁頂蝯梯矽??
+?? (Version): V2.0
+?湔?交? (Date): 2026-01-13
+蝬剛風?? (Maintainer): Math AI Project Team
 =============================================================================
 """
 
@@ -57,23 +57,284 @@ from core.ai_settings import (
     set_system_setting_value,
 )
 
-# [Fix] 只引用確定存在的函式，避免 ImportError
+# [Fix] ?芸??函Ⅱ摰??函??賢???ImportError
 from core.data_importer import import_excel_to_db, CORE_TABLES, FULL_CONFIRM_TOKEN
 
 from config import Config
-# [Fix] 確保 SkillPrerequisites 被引用
+# [Fix] 箔? SkillPrerequisites 鋡怠???
 from models import db, SkillInfo, SkillCurriculum, User, TextbookExample, Progress, SkillGenCodePrompt, SkillPrerequisites, init_db, StudentUploadedQuestion
 from core.models.prompt_template import PromptTemplate
 
+CORE_CLEAR_CONFIRM_TOKEN = "DELETE_CORE"
+CORE_TEXTBOOK_ONLY_TABLES = ("textbook_examples", "skill_curriculum", "skills_info")
+OUTLINE_SKILL_PREFIX = "outline_"
+
+
+def _is_outline_skill_id(skill_id):
+    return str(skill_id or "").startswith(OUTLINE_SKILL_PREFIX)
+
+
+def _coerce_progress_message(msg):
+    """Normalize queue/SSE messages to UTF-8-safe text."""
+    if isinstance(msg, dict):
+        return json.dumps(msg, ensure_ascii=False)
+    if isinstance(msg, (list, tuple)):
+        return json.dumps(msg, ensure_ascii=False)
+    if isinstance(msg, bytes):
+        return msg.decode("utf-8", errors="replace")
+    return str(msg)
+
+
+def _format_sse_data(msg):
+    text = _coerce_progress_message(msg).replace("\r\n", "\n").replace("\r", "\n")
+    return "".join(f"data: {line}\n" for line in text.split("\n")) + "\n"
+
+
+def _normalize_core_option_value(raw):
+    val = str(raw or "").strip()
+    return "" if val in ("", "all", "None", "null") else val
+
+
+def _collect_core_scope_options(filters=None):
+    filters = dict(filters or {})
+    curriculum = _normalize_core_option_value(filters.get("curriculum"))
+    grade_raw = _normalize_core_option_value(filters.get("grade"))
+    volume = _normalize_core_option_value(filters.get("volume"))
+    chapter = _normalize_core_option_value(filters.get("chapter"))
+    grade = int(grade_raw) if str(grade_raw).isdigit() else None
+
+    q_curr = db.session.query(SkillCurriculum.curriculum).distinct()
+    curricula = sorted({str(r[0]) for r in q_curr.all() if r[0] is not None})
+
+    q_grade = db.session.query(SkillCurriculum.grade)
+    if curriculum:
+        q_grade = q_grade.filter(SkillCurriculum.curriculum == curriculum)
+    grades = sorted({int(r[0]) for r in q_grade.distinct().all() if r[0] is not None})
+
+    q_volume = db.session.query(SkillCurriculum.volume)
+    if curriculum:
+        q_volume = q_volume.filter(SkillCurriculum.curriculum == curriculum)
+    if grade is not None:
+        q_volume = q_volume.filter(SkillCurriculum.grade == grade)
+    volumes = sorted({str(r[0]) for r in q_volume.distinct().all() if r[0] is not None})
+
+    q_chapter = db.session.query(SkillCurriculum.chapter)
+    if curriculum:
+        q_chapter = q_chapter.filter(SkillCurriculum.curriculum == curriculum)
+    if grade is not None:
+        q_chapter = q_chapter.filter(SkillCurriculum.grade == grade)
+    if volume:
+        q_chapter = q_chapter.filter(SkillCurriculum.volume == volume)
+    chapters = sorted({str(r[0]) for r in q_chapter.distinct().all() if r[0] is not None})
+
+    q_section = db.session.query(SkillCurriculum.section)
+    if curriculum:
+        q_section = q_section.filter(SkillCurriculum.curriculum == curriculum)
+    if grade is not None:
+        q_section = q_section.filter(SkillCurriculum.grade == grade)
+    if volume:
+        q_section = q_section.filter(SkillCurriculum.volume == volume)
+    if chapter:
+        q_section = q_section.filter(SkillCurriculum.chapter == chapter)
+    sections = sorted({str(r[0]) for r in q_section.distinct().all() if r[0] is not None})
+
+    return {
+        "curricula": curricula,
+        "grades": grades,
+        "volumes": volumes,
+        "chapters": chapters,
+        "sections": sections,
+    }
+
+
+def _normalize_core_scope_filters(form_data):
+    mode = str(form_data.get("core_scope_mode", "all") or "all").strip().lower()
+    if mode not in ("all", "filtered"):
+        mode = "all"
+
+    def _pick(name):
+        val = str(form_data.get(name, "") or "").strip()
+        return "" if val in ("", "all", "None") else val
+
+    grade_raw = _pick("core_grade")
+    grade = int(grade_raw) if grade_raw.isdigit() else None
+    return {
+        "scope_mode": mode,
+        "curriculum": _pick("core_curriculum"),
+        "grade": grade,
+        "volume": _pick("core_volume"),
+        "chapter": _pick("core_chapter"),
+        "section": _pick("core_section"),
+    }
+
+
+def _clear_core_textbook_data(filters):
+    query = SkillCurriculum.query
+    if filters.get("scope_mode") == "filtered":
+        if filters.get("curriculum"):
+            query = query.filter(SkillCurriculum.curriculum == filters["curriculum"])
+        if filters.get("grade") is not None:
+            query = query.filter(SkillCurriculum.grade == filters["grade"])
+        if filters.get("volume"):
+            query = query.filter(SkillCurriculum.volume == filters["volume"])
+        if filters.get("chapter"):
+            query = query.filter(SkillCurriculum.chapter == filters["chapter"])
+        if filters.get("section"):
+            query = query.filter(SkillCurriculum.section == filters["section"])
+
+    target_rows = query.all()
+    outline_rows = [r for r in target_rows if _is_outline_skill_id(r.skill_id)]
+    if filters.get("scope_mode") == "filtered":
+        deletable_rows = [r for r in target_rows if not _is_outline_skill_id(r.skill_id)]
+    else:
+        deletable_rows = list(target_rows)
+        outline_rows = []
+    target_row_ids = [r.id for r in deletable_rows]
+    target_skill_ids = sorted({str(r.skill_id) for r in deletable_rows if r.skill_id})
+    stats = {
+        "deleted_textbook_examples": 0,
+        "deleted_skill_curriculum": 0,
+        "deleted_orphan_skills_info": 0,
+        "target_skill_count": len(target_skill_ids),
+        "skipped_shared_skill_ids": [],
+        "preserved_outline_curriculum": len(outline_rows),
+    }
+    if not target_row_ids:
+        return stats
+
+    shared_rows = (
+        db.session.query(SkillCurriculum.skill_id)
+        .filter(
+            SkillCurriculum.skill_id.in_(target_skill_ids),
+            ~SkillCurriculum.id.in_(target_row_ids),
+        )
+        .distinct()
+        .all()
+    )
+    skipped_shared = sorted({str(r[0]) for r in shared_rows if r and r[0]})
+    stats["skipped_shared_skill_ids"] = skipped_shared
+    deletable_example_skills = [sid for sid in target_skill_ids if sid not in skipped_shared and not _is_outline_skill_id(sid)]
+
+    try:
+        if deletable_example_skills:
+            stats["deleted_textbook_examples"] = (
+                TextbookExample.query.filter(TextbookExample.skill_id.in_(deletable_example_skills))
+                .delete(synchronize_session=False)
+            )
+
+        stats["deleted_skill_curriculum"] = (
+            SkillCurriculum.query.filter(SkillCurriculum.id.in_(target_row_ids))
+            .delete(synchronize_session=False)
+        )
+
+        orphan_skills = []
+        for sid in target_skill_ids:
+            if _is_outline_skill_id(sid):
+                continue
+            still_in_curriculum = db.session.query(SkillCurriculum.id).filter_by(skill_id=sid).first() is not None
+            still_in_examples = db.session.query(TextbookExample.id).filter_by(skill_id=sid).first() is not None
+            if not still_in_curriculum and not still_in_examples:
+                orphan_skills.append(sid)
+        if orphan_skills:
+            stats["deleted_orphan_skills_info"] = (
+                SkillInfo.query.filter(SkillInfo.skill_id.in_(orphan_skills))
+                .delete(synchronize_session=False)
+            )
+        db.session.commit()
+    except Exception:
+        db.session.rollback()
+        raise
+
+    return stats
+
+
+def _preview_core_textbook_data(filters):
+    query = SkillCurriculum.query
+    if filters.get("scope_mode") == "filtered":
+        if filters.get("curriculum"):
+            query = query.filter(SkillCurriculum.curriculum == filters["curriculum"])
+        if filters.get("grade") is not None:
+            query = query.filter(SkillCurriculum.grade == filters["grade"])
+        if filters.get("volume"):
+            query = query.filter(SkillCurriculum.volume == filters["volume"])
+        if filters.get("chapter"):
+            query = query.filter(SkillCurriculum.chapter == filters["chapter"])
+        if filters.get("section"):
+            query = query.filter(SkillCurriculum.section == filters["section"])
+
+    target_rows = query.all()
+    outline_rows = [r for r in target_rows if _is_outline_skill_id(r.skill_id)]
+    if filters.get("scope_mode") == "filtered":
+        deletable_rows = [r for r in target_rows if not _is_outline_skill_id(r.skill_id)]
+    else:
+        deletable_rows = list(target_rows)
+        outline_rows = []
+    target_row_ids = [r.id for r in deletable_rows]
+    target_skill_ids = sorted({str(r.skill_id) for r in deletable_rows if r.skill_id})
+    if not target_row_ids:
+        return {
+            "deleted_textbook_examples": 0,
+            "deleted_skill_curriculum": 0,
+            "deleted_orphan_skills_info": 0,
+            "target_skill_count": 0,
+            "skipped_shared_skill_ids": [],
+            "preserved_outline_curriculum": len(outline_rows),
+        }
+    shared_rows = (
+        db.session.query(SkillCurriculum.skill_id)
+        .filter(
+            SkillCurriculum.skill_id.in_(target_skill_ids),
+            ~SkillCurriculum.id.in_(target_row_ids),
+        )
+        .distinct()
+        .all()
+    )
+    skipped_shared = sorted({str(r[0]) for r in shared_rows if r and r[0]})
+    deletable_example_skills = [sid for sid in target_skill_ids if sid not in skipped_shared and not _is_outline_skill_id(sid)]
+    preview_deleted_examples = 0
+    if deletable_example_skills:
+        preview_deleted_examples = (
+            db.session.query(TextbookExample.id)
+            .filter(TextbookExample.skill_id.in_(deletable_example_skills))
+            .count()
+        )
+    preview_deleted_curriculum = len(target_row_ids)
+    preview_deleted_orphan_skills = 0
+    for sid in target_skill_ids:
+        if _is_outline_skill_id(sid):
+            continue
+        has_other_curriculum = (
+            db.session.query(SkillCurriculum.id)
+            .filter(
+                SkillCurriculum.skill_id == sid,
+                ~SkillCurriculum.id.in_(target_row_ids),
+            )
+            .first()
+            is not None
+        )
+        if has_other_curriculum:
+            continue
+        has_examples = db.session.query(TextbookExample.id).filter_by(skill_id=sid).first() is not None
+        if not has_examples:
+            preview_deleted_orphan_skills += 1
+    return {
+        "deleted_textbook_examples": preview_deleted_examples,
+        "deleted_skill_curriculum": preview_deleted_curriculum,
+        "deleted_orphan_skills_info": preview_deleted_orphan_skills,
+        "target_skill_count": len(target_skill_ids),
+        "skipped_shared_skill_ids": skipped_shared,
+        "preserved_outline_curriculum": len(outline_rows),
+    }
+
 # ==========================================
-# Background Tasks (背景任務)
+# Background Tasks (?隞餃?)
 # ==========================================
 
 @core_bp.route('/admin/rag_settings/update', methods=['POST'])
 @login_required
 def admin_update_rag_settings():
     if not (current_user.is_admin or current_user.role == 'teacher'):
-        return jsonify({'success': False, 'message': '權限不足'}), 403
+        return jsonify({'success': False, 'message': '甈?銝雲'}), 403
     try:
         data = request.get_json()
         threshold = float(data.get('threshold', 0.40))
@@ -94,7 +355,7 @@ def admin_update_rag_settings():
         return jsonify({'success': False, 'message': str(e)}), 500
 
 def background_processing(file_paths, task_queue, app_context, curriculum_info, skip_code_gen, **kwargs):
-    """背景處理教科書分析任務"""
+    """Background textbook processing worker."""
     with app_context:
         try:
             total_files = len(file_paths)
@@ -123,19 +384,19 @@ def background_processing(file_paths, task_queue, app_context, curriculum_info, 
 
             task_queue.put("SUCCESS: 所有作業完成！")
         except Exception as e:
-            task_queue.put(f"ERROR: 任務執行發生例外: {str(e)}")
+            task_queue.put(f"ERROR: 任務處理發生未預期錯誤: {str(e)}")
         finally:
             task_queue.put("END_OF_STREAM")
 
 # ==========================================
-# Textbook Importer (教科書匯入器)
+# Textbook Importer (???詨?亙)
 # ==========================================
 
 @core_bp.route('/textbook_importer', methods=['GET', 'POST'])
 @login_required
 def admin_textbook_importer():
     if not (current_user.is_admin or current_user.role == 'teacher'):
-        flash('權限不足', 'error')
+        flash('甈?銝雲', 'error')
         return redirect(url_for('dashboard'))
 
     api_key, key_source = resolve_gemini_api_key()
@@ -144,7 +405,7 @@ def admin_textbook_importer():
 
     if request.method == 'POST':
         if not has_gemini_api_key:
-            flash("教材匯入需要 Gemini API Key，請先到 AI 設定頁完成設定。", "danger")
+            flash("資料匯入前請先設定 Gemini API Key。", "danger")
             return redirect(url_for('core.admin_textbook_importer'))
 
         target_files = []
@@ -189,7 +450,7 @@ def admin_textbook_importer():
 
             return redirect(url_for('core.importer_status', task_id=task_id))
         else:
-            flash('請選擇有效檔案', 'warning')
+            flash('請上傳至少一個 PDF 或 DOCX 檔案。', 'warning')
 
     return render_template(
         'textbook_importer.html',
@@ -201,7 +462,7 @@ def admin_textbook_importer():
 @login_required
 def importer_status(task_id):
     if task_id not in TASK_QUEUES:
-        flash('任務已過期或不存在', 'warning')
+        flash('找不到此匯入任務或任務已結束。', 'warning')
         return redirect(url_for('core.admin_textbook_importer'))
     return render_template('importer_status.html', task_id=task_id)
 
@@ -211,18 +472,23 @@ def importer_stream(task_id):
     def event_stream():
         q = TASK_QUEUES.get(task_id)
         if not q:
-            yield "data: END_OF_STREAM\n\n"
+            yield _format_sse_data("END_OF_STREAM")
             return
         while True:
             msg = q.get()
-            yield f"data: {msg}\n\n"
-            if msg == "END_OF_STREAM":
+            normalized = _coerce_progress_message(msg)
+            yield _format_sse_data(normalized)
+            if normalized == "END_OF_STREAM":
                 TASK_QUEUES.pop(task_id, None)
                 break
-    return Response(stream_with_context(event_stream()), mimetype="text/event-stream")
+    return Response(
+        stream_with_context(event_stream()),
+        content_type="text/event-stream; charset=utf-8",
+        headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"},
+    )
 
 # ==========================================
-# Database Maintenance (資料庫維護)
+# Database Maintenance (?怎雁霅?
 # ==========================================
 
 @core_bp.route('/db_maintenance', methods=['GET', 'POST'])
@@ -232,11 +498,11 @@ def db_maintenance():
         if df is None:
             return pd.DataFrame()
 
-        # 將 NaN/NaT 轉成空字串，避免後續字串處理失敗
+        # 撠?NaN/NaT 頧?蝛箏?銝莎??踹?敺?摮葡??憭望?
         df = df.copy()
         df = df.where(pd.notnull(df), "")
 
-        # object 欄位轉字串，但保留 int/float/bool 欄位原樣
+        # object 甈?頧?銝莎?雿???int/float/bool 甈??見
         for col in df.columns:
             if str(df[col].dtype) == "object":
                 df[col] = df[col].apply(lambda x: "" if x is None else str(x))
@@ -257,6 +523,7 @@ def db_maintenance():
         mode = str(request.form.get('mode', 'core')).strip().lower()
         if mode not in ('core', 'full'):
             mode = 'core'
+        core_scope_filters = _normalize_core_scope_filters(request.form)
         confirm_full_clear = str(request.form.get('confirm_full_clear', '')).strip()
 
         if action == 'export_db':
@@ -265,7 +532,7 @@ def db_maintenance():
             inspector = db.inspect(db.engine)
             detected_tables = inspector.get_table_names()
             current_app.logger.info(f"INFO: CORE_TABLES_EXPORT = {list(CORE_TABLES)}")
-            # core 模式強制使用固定核心表，避免被 inspector 結果覆蓋或縮減。
+            # core 璅∪?撘瑕雿輻?箏??詨?銵剁??踹?鋡?inspector 蝯?閬??葬皜?
             if mode == 'core':
                 export_tables = list(CORE_TABLES)
             else:
@@ -273,18 +540,18 @@ def db_maintenance():
 
             for table in export_tables:
                 try:
-                    # 先用 read_sql_table；若失敗，退回 read_sql_query，避免單表讀取異常被靜默跳過。
+                    # ? read_sql_table憭望???read_sql_query?銵刻??撣貉◤??頝喲???
                     try:
                         df = pd.read_sql_table(table, db.engine)
                     except Exception:
                         try:
                             df = pd.read_sql_query(f"SELECT * FROM {table}", db.engine)
                         except Exception:
-                            # 至少保留核心表的空白 Sheet，避免技能主表漏失。
+                            # ?喳?靽??詨?銵函?蝛箇 Sheet???賭蜓銵冽?憭晞?
                             df = pd.DataFrame()
-                            current_app.logger.warning(f"匯出資料表讀取失敗，改輸出空白 Sheet: {table}")
+                            current_app.logger.warning(f"?臬?銵刻??仃???寡撓?箇征??Sheet: {table}")
                     df = sanitize_dataframe_for_excel(df)
-                    # 僅清理 object 欄位中的控制字元，避免 float/bool 欄位觸發 re.sub 型別錯誤。
+                    # ????object 甈?銝剔??批摮???float/bool 甈?閫貊 re.sub ?航炊??
                     for col in df.columns:
                         if str(df[col].dtype) == "object":
                             df[col] = df[col].apply(lambda x: re.sub(r'[\x00-\x1f\x7f-\x9f]', '', x))
@@ -309,7 +576,7 @@ def db_maintenance():
             all_tables = inspector.get_table_names()
             if mode == 'full':
                 if confirm_full_clear != FULL_CONFIRM_TOKEN:
-                    flash('完整清空需要確認字串 YES_DELETE_ALL，已拒絕執行。', 'danger')
+                    flash('清空 full 資料前，請輸入確認字串 YES_DELETE_ALL。', 'danger')
                     return redirect(url_for('core.db_maintenance'))
                 clear_tables = list(reversed(db.metadata.sorted_tables))
                 for table in clear_tables:
@@ -319,26 +586,37 @@ def db_maintenance():
                         current_app.logger.info(f"INFO: clearing full table {table.name}")
                     except Exception as e:
                         db.session.rollback()
-                        current_app.logger.warning(f"清空表 {table.name} 時發生錯誤（可能表不存在）: {e}")
+                        current_app.logger.warning(f"清空資料表 {table.name} 失敗，繼續後續處理: {e}")
                         continue
-                flash('資料庫已完整清空（full 模式）', 'warning')
+                flash('資料庫已完成 full 清除。', 'warning')
             else:
-                current_app.logger.info(f"INFO: CORE_TABLES_CLEAR = {list(CORE_TABLES)}")
-                # 預設安全模式：只清教材核心資料，不動系統設定與 prompt。
-                for table in CORE_TABLES:
-                    if table not in all_tables:
-                        continue
-                    try:
-                        db.session.execute(text(f"DELETE FROM {table}"))
-                        db.session.commit()
-                        current_app.logger.info(f"INFO: clearing core table {table}")
-                    except Exception as e:
-                        db.session.rollback()
-                        current_app.logger.warning(f"清空核心表 {table} 時發生錯誤: {e}")
-                for table in all_tables:
-                    if table not in CORE_TABLES:
-                        current_app.logger.info(f"INFO: preserved table {table}")
-                flash('教材核心資料已清空（core 模式）；系統設定與 prompt 已保留。', 'success')
+                stats = _clear_core_textbook_data(core_scope_filters)
+                flash(
+                    (
+                        "教材 core 清除完成："
+                        f"textbook_examples={stats['deleted_textbook_examples']}, "
+                        f"skill_curriculum={stats['deleted_skill_curriculum']}, "
+                        f"orphan_skills_info={stats['deleted_orphan_skills_info']}, "
+                        f"target_skill_count={stats['target_skill_count']}, "
+                        f"skipped_shared_skill_ids={len(stats['skipped_shared_skill_ids'])}, "
+                        f"preserved_outline_curriculum={stats['preserved_outline_curriculum']}"
+                    ),
+                    'success'
+                )
+        elif action == 'preview_core_clear':
+            stats = _preview_core_textbook_data(core_scope_filters)
+            flash(
+                (
+                    "教材 core 刪除前預覽："
+                    f"textbook_examples={stats['deleted_textbook_examples']}, "
+                    f"skill_curriculum={stats['deleted_skill_curriculum']}, "
+                    f"orphan_skills_info={stats['deleted_orphan_skills_info']}, "
+                    f"target_skill_count={stats['target_skill_count']}, "
+                    f"skipped_shared_skill_ids={len(stats['skipped_shared_skill_ids'])}, "
+                    f"preserved_outline_curriculum={stats['preserved_outline_curriculum']}"
+                ),
+                'warning'
+            )
 
         elif action == 'batch_import_folder':
             files = request.files.getlist('files')
@@ -364,37 +642,56 @@ def db_maintenance():
                         success_count += 1
                     except: error_count += 1
             db.session.commit()
-            flash(f'匯入完成：成功 {success_count}，失敗 {error_count}。', 'success')
+            flash(f'批次匯入完成：成功 {success_count}，失敗 {error_count}。', 'success')
         
         elif table_name and action == 'clear_data':
              try:
                  db.session.execute(text(f"DELETE FROM {table_name}"))
                  db.session.commit()
-                 flash(f'表格 {table_name} 已清空', 'success')
+                 flash(f'資料表 {table_name} 已清空。', 'success')
              except Exception as e:
                  db.session.rollback()
-                 flash(f'錯誤: {e}', 'danger')
+                 flash(f'?航炊: {e}', 'danger')
 
         return redirect(url_for('core.db_maintenance'))
 
     inspector = db.inspect(db.engine)
     tables = sorted(inspector.get_table_names())
-    return render_template('db_maintenance.html', tables=tables)
+    return render_template(
+        'db_maintenance.html',
+        tables=tables,
+        core_scope_options=_collect_core_scope_options(),
+        core_clear_confirm_token=CORE_CLEAR_CONFIRM_TOKEN,
+    )
+
+
+@core_bp.route('/db_maintenance/core_scope_options', methods=['GET'])
+@login_required
+def db_maintenance_core_scope_options():
+    if not (current_user.is_admin or current_user.role == "teacher"):
+        return jsonify({"error": "forbidden"}), 403
+    filters = {
+        "curriculum": request.args.get("curriculum", ""),
+        "grade": request.args.get("grade", ""),
+        "volume": request.args.get("volume", ""),
+        "chapter": request.args.get("chapter", ""),
+    }
+    return jsonify(_collect_core_scope_options(filters))
 
 @core_bp.route('/upload_db', methods=['POST'])
 @login_required
 def upload_db():
     if not (current_user.is_admin or current_user.role == 'teacher'):
-        flash('權限不足', 'danger')
+        flash('甈?銝雲', 'danger')
         return redirect(url_for('core.db_maintenance'))
 
     if 'file' not in request.files:
-        flash('沒有檔案', 'danger')
+        flash('瘝?瑼?', 'danger')
         return redirect(url_for('core.db_maintenance'))
     
     file = request.files['file']
     if file.filename == '':
-        flash('未選擇檔案', 'danger')
+        flash('請先選擇要上傳的檔案。', 'danger')
         return redirect(url_for('core.db_maintenance'))
     
     if file and (file.filename.endswith('.xlsx')):
@@ -417,21 +714,21 @@ def upload_db():
             else:
                 flash(message, 'danger')
         except Exception as e:
-            flash(f'處理錯誤: {str(e)}', 'danger')
+            flash(f'???航炊: {str(e)}', 'danger')
             
         if os.path.exists(filepath):
             os.remove(filepath)
             
         return redirect(url_for('core.db_maintenance'))
     else:
-        flash('格式錯誤，請上傳 .xlsx', 'danger')
+        flash('?澆??航炊?銝 .xlsx', 'danger')
         return redirect(url_for('core.db_maintenance'))
 
 @core_bp.route('/admin/import_textbook_examples', methods=['POST'])
 @login_required
 def import_textbook_examples():
     if not (current_user.is_admin or current_user.role == "teacher"):
-        flash('權限不足', 'danger')
+        flash('甈?銝雲', 'danger')
         return redirect(url_for('core.db_maintenance'))
     
     if 'file' not in request.files: return redirect(url_for('core.db_maintenance'))
@@ -459,12 +756,12 @@ def import_textbook_examples():
             if success: flash(Markup(message.replace('\n', '<br>')), 'success')
             else: flash(message, 'danger')
         except Exception as e:
-            flash(f'匯入失敗: {str(e)}', 'error')
+            flash(f'?臬憭望?: {str(e)}', 'error')
             
     return redirect(url_for('core.db_maintenance'))
 
 # ==========================================
-# Curriculum Management (課程綱要管理)
+# Curriculum Management (隤脩?蝬梯?蝞∠?)
 # ==========================================
 
 @core_bp.route('/curriculum', methods=['GET', 'POST'])
@@ -488,16 +785,16 @@ def admin_curriculum():
             )
             db.session.add(new_curr)
             db.session.commit()
-            flash('新增成功', 'success')
+            flash('?啣???', 'success')
         except Exception as e:
             db.session.rollback()
-            flash(f'新增失敗: {str(e)}', 'error')
+            flash(f'?啣?憭望?: {str(e)}', 'error')
         return redirect(url_for('core.admin_curriculum'))
 
-    # 一行代碼取代原本 50 行的連動與記憶邏輯！
+    # 銝銵誨澆?隞????50 銵???????園?頛荔?
     selected, filters_data = handle_curriculum_filters(request)
     
-    # 主查詢使用 selected 進行過濾
+    # 銝餅閰Ｖ蝙??selected ?脰??蕪
     query = SkillCurriculum.query.join(SkillInfo)
     if selected['f_curriculum'] != 'all': 
         query = query.filter(SkillCurriculum.curriculum == selected['f_curriculum'])
@@ -516,7 +813,12 @@ def admin_curriculum():
 
     items = query.order_by(SkillCurriculum.grade, SkillCurriculum.volume, SkillCurriculum.display_order).limit(200).all()
 
-    curriculum_map = {'junior_high': '國中', 'general': '普高', 'technical': '技高', 'elementary': '國小'}
+    curriculum_map = {
+        'junior_high': '國中',
+        'general': '普通高中',
+        'technical': '技高',
+        'elementary': '國小',
+    }
     grade_map = {str(g): str(g) for g in filters_data['grades']}
 
     return render_template('admin_curriculum.html', 
@@ -543,10 +845,10 @@ def admin_edit_curriculum(id):
         curr.display_order = request.form.get('display_order')
         curr.difficulty_level = request.form.get('difficulty_level')
         db.session.commit()
-        flash('更新成功', 'success')
+        flash('?湔??', 'success')
     except Exception as e:
         db.session.rollback()
-        flash(f'更新失敗: {e}', 'error')
+        flash(f'?湔憭望?: {e}', 'error')
     return redirect(url_for('core.admin_curriculum'))
 
 @core_bp.route('/curriculum/delete/<int:id>', methods=['POST'])
@@ -563,7 +865,7 @@ def admin_delete_curriculum(id):
         return jsonify({'success': False}), 500
 
 # ==========================================
-# Skills Management (技能管理)
+# Skills Management (??賜恣??
 # ==========================================
 
 @core_bp.route('/skills')
@@ -572,22 +874,22 @@ def admin_skills():
     if not (current_user.is_admin or current_user.role == 'teacher'):
         return redirect(url_for('dashboard'))
 
-    # 調用 V2.0 工具取得五層狀態
+    # 隤輻 V2.0 撌亙??鈭惜???
     selected, filters_data = handle_curriculum_filters(request)
     
-    # 建立 JOIN 查詢
+    # 撱箇? JOIN ?亥岷
     query = db.session.query(SkillInfo).join(SkillCurriculum)
     
-    # --- 補齊所有過濾條件 ---
+    # --- 鋆????瞈暹?隞?---
     if selected['f_curriculum'] != 'all': 
         query = query.filter(SkillCurriculum.curriculum == selected['f_curriculum'])
     if selected['f_grade'] != 'all' and str(selected['f_grade']).isdigit(): 
         query = query.filter(SkillCurriculum.grade == int(selected['f_grade']))
     if selected['f_volume'] != 'all':
         query = query.filter(SkillCurriculum.volume == selected['f_volume'])
-    if selected['f_chapter'] != 'all': # 補這行
+    if selected['f_chapter'] != 'all': # 鋆?
         query = query.filter(SkillCurriculum.chapter == selected['f_chapter'])
-    if selected['f_section'] != 'all': # 補這行
+    if selected['f_section'] != 'all': # 鋆?
         query = query.filter(SkillCurriculum.section == selected['f_section'])
     
     skills = query.distinct().order_by(SkillInfo.skill_id).all()
@@ -597,7 +899,7 @@ def admin_skills():
                            filters=filters_data,
                            selected_filters=selected,
                            grade_map={str(g):str(g) for g in filters_data['grades']},
-                           curriculum_map={'junior_high': '國中', 'general': '普高'},
+                           curriculum_map={'junior_high': '?葉', 'general': '?桅?'},
                            username=current_user.username)
 
 @core_bp.route('/skills/add', methods=['POST'])
@@ -605,7 +907,7 @@ def admin_skills():
 def admin_add_skill():
     data = request.form
     if db.session.get(SkillInfo, data['skill_id']):
-        flash('技能 ID 已存在', 'danger')
+        flash('技能 ID 已存在。', 'danger')
         return redirect(url_for('core.admin_skills'))
     try:
         new_skill = SkillInfo(
@@ -622,9 +924,9 @@ def admin_add_skill():
         )
         db.session.add(new_skill)
         db.session.commit()
-        flash('新增成功', 'success')
+        flash('?啣???', 'success')
     except Exception as e:
-        flash(f'錯誤: {e}', 'danger')
+        flash(f'?航炊: {e}', 'danger')
     return redirect(url_for('core.admin_skills'))
 
 @core_bp.route('/skills/edit/<skill_id>', methods=['POST'])
@@ -645,9 +947,9 @@ def admin_edit_skill(skill_id):
         skill.suggested_prompt_2 = data.get('suggested_prompt_2', '')
         skill.suggested_prompt_3 = data.get('suggested_prompt_3', '')
         db.session.commit()
-        flash('更新成功', 'success')
+        flash('?湔??', 'success')
     except Exception as e:
-        flash(f'錯誤: {e}', 'danger')
+        flash(f'?航炊: {e}', 'danger')
     return redirect(url_for('core.admin_skills'))
 
 @core_bp.route('/skills/delete/<skill_id>', methods=['POST'])
@@ -657,10 +959,10 @@ def admin_delete_skill(skill_id):
     try:
         db.session.delete(skill)
         db.session.commit()
-        flash('刪除成功', 'success')
+        flash('?芷??', 'success')
     except Exception as e:
         db.session.rollback()
-        flash(f'刪除失敗 (可能有關聯資料): {e}', 'danger')
+        flash(f'?芷憭望? (?航???航???: {e}', 'danger')
     return redirect(url_for('core.admin_skills'))
 
 
@@ -670,7 +972,7 @@ def admin_toggle_skill(skill_id):
     skill = db.get_or_404(SkillInfo, skill_id)
     skill.is_active = not skill.is_active
     db.session.commit()
-    flash(f'技能已{"啟用" if skill.is_active else "停用"}', 'success')
+    flash(f'??賢歇{"?" if skill.is_active else "?"}', 'success')
     return redirect(url_for('core.admin_skills'))
 
 @core_bp.route('/skills/<skill_id>/regenerate', methods=['POST'])
@@ -678,10 +980,10 @@ def admin_toggle_skill(skill_id):
 def admin_regenerate_skill_code(skill_id):
     try:
         from core.code_generator import auto_generate_skill_code
-        # [修改] 從後台單點重建時，強制刷新 Architect，確保使用最新 Prompt
+        # [靽格] 敺??啣暺?撱箸?撥?嗅??ArchitectⅡ靽蝙?冽???Prompt
         result = auto_generate_skill_code(skill_id, queue=None, force_architect_refresh=True)
         success = result[0] if isinstance(result, tuple) else result
-        return jsonify({"success": success, "message": "生成成功" if success else "失敗"})
+        return jsonify({"success": success, "message": "????" if success else "憭望?"})
     except Exception as e:
         return jsonify({"success": False, "message": str(e)}), 500
 
@@ -711,19 +1013,19 @@ def admin_get_skill_details(skill_id):
 @login_required
 def admin_promote_question():
     if not (current_user.is_admin or current_user.role == 'teacher'):
-        return jsonify({'success': False, 'message': '權限不足'}), 403
+        return jsonify({'success': False, 'message': '甈?銝雲'}), 403
 
     try:
         data = request.get_json()
         question_id = data.get('question_id')
         skill_id = data.get('skill_id')
 
-        # 1. 查找上傳記錄
+        # 1. ?交銝閮?
         upload_entry = db.session.get(StudentUploadedQuestion, question_id)
         if not upload_entry:
-            return jsonify({'success': False, 'message': '找不到題目'}), 404
+            return jsonify({'success': False, 'message': '找不到指定上傳題目'}), 404
 
-        # 2. 建立新例題
+        # 2. 撱箇??唬?憿?
         new_example = TextbookExample(
             skill_id=skill_id,
             source_curriculum="StudentUpload",
@@ -737,13 +1039,13 @@ def admin_promote_question():
         )
         db.session.add(new_example)
 
-        # 3. 更新狀態
+        # 3. ?湔???
         upload_entry.status = 'approved'
         upload_entry.predicted_skill_id = skill_id
 
         db.session.commit()
 
-        # 4. 觸發重生成
+        # 4. 閫貊????
         try:
             # [STEP 1] Force Architect to re-analyze examples and update SkillInfo.gemini_prompt
             print(f"Triggering Architect for {skill_id}...")
@@ -758,14 +1060,14 @@ def admin_promote_question():
             print(f"Auto-generate failed: {e}") 
             # We don't fail the promotion if generation fails, just log it.
 
-        return jsonify({'success': True, 'message': '晉升成功並已觸發重生成'})
+        return jsonify({'success': True, 'message': '已成功加入教材範例並觸發程式碼產生。'})
 
     except Exception as e:
         db.session.rollback()
         return jsonify({'success': False, 'message': str(e)}), 500
 
 # ==========================================
-# Examples Management (例題管理)
+# Examples Management (靘?蝞∠?)
 # ==========================================
 
 @core_bp.route('/examples', methods=['GET'])
@@ -774,11 +1076,11 @@ def admin_examples():
     if not (current_user.is_admin or current_user.role == 'teacher'):
         return redirect(url_for('dashboard'))
     
-    # 調用 V2.0 工具
+    # 隤輻 V2.0 撌亙
     selected, filters_data = handle_curriculum_filters(request)
     page = request.args.get('page', 1, type=int)
     
-    # 建立連接 SkillCurriculum 的查詢以進行過濾
+    # 撱箇??? SkillCurriculum ?閰Ｖ誑?脰??蕪
     query = db.session.query(TextbookExample).join(SkillInfo).join(SkillCurriculum)
     
     if selected['f_curriculum'] != 'all': 
@@ -813,7 +1115,7 @@ def admin_examples():
                            pagination=pagination, 
                            filters=filters_data,
                            selected_filters=selected,
-                           curriculum_map={'junior_high': '國中', 'general': '普高'},
+                           curriculum_map={'junior_high': '?葉', 'general': '?桅?'},
                            grade_map={str(g):str(g) for g in filters_data['grades']}, 
                            skills=SkillInfo.query.all(), 
                            username=current_user.username)
@@ -831,9 +1133,9 @@ def admin_add_example():
         )
         db.session.add(new_ex)
         db.session.commit()
-        flash('例題新增成功', 'success')
+        flash('靘??啣???', 'success')
     except Exception as e:
-        flash(f'新增失敗: {e}', 'danger')
+        flash(f'?啣?憭望?: {e}', 'danger')
     return redirect(url_for('core.admin_examples'))
 
 @core_bp.route('/examples/delete/<int:example_id>', methods=['POST'])
@@ -843,17 +1145,18 @@ def admin_delete_example(example_id):
     if ex:
         db.session.delete(ex)
         db.session.commit()
-        flash('刪除成功', 'success')
+        flash('?芷??', 'success')
     return redirect(url_for('core.admin_examples'))
 
 @core_bp.route('/examples/<int:example_id>/details', methods=['GET'])
 @login_required
 def admin_get_example_details(example_id):
     if not (current_user.is_admin or current_user.role == 'teacher'):
-        return jsonify({'success': False, 'message': '權限不足'}), 403
+        return jsonify({'success': False, 'message': '甈?銝雲'}), 403
     try:
         ex = db.session.get(TextbookExample, example_id)
-        if not ex: return jsonify({'success': False, 'message': '找不到'}), 404
+        if not ex:
+            return jsonify({'success': False, 'message': '找不到教材範例'}), 404
         return jsonify({
             'success': True,
             'data': {
@@ -873,7 +1176,7 @@ def admin_get_example_details(example_id):
 @login_required
 def admin_edit_example(example_id):
     if not (current_user.is_admin or current_user.role == 'teacher'):
-        flash('權限不足', 'error')
+        flash('甈?銝雲', 'error')
         return redirect(url_for('core.admin_examples'))
     try:
         ex = db.session.get(TextbookExample, example_id)
@@ -884,13 +1187,13 @@ def admin_edit_example(example_id):
             ex.detailed_solution = request.form.get('detailed_solution', '')
             ex.difficulty_level = int(request.form.get('difficulty_level', 1))
             db.session.commit()
-            flash('更新成功', 'success')
+            flash('?湔??', 'success')
     except Exception as e:
-        flash(f'更新失敗: {e}', 'danger')
+        flash(f'?湔憭望?: {e}', 'danger')
     return redirect(url_for('core.admin_examples'))
 
 # ==========================================
-# Prompt Management (Prompt 設定)
+# Prompt Management (Prompt 閮剖?)
 # ==========================================
 
 @core_bp.route('/api/skills/<skill_id>/prompts', methods=['GET'])
@@ -932,36 +1235,36 @@ def api_delete_skill_prompt(prompt_id):
         if prompt:
             db.session.delete(prompt)
             db.session.commit()
-        return jsonify({'success': True, 'message': '刪除成功'})
+        return jsonify({'success': True, 'message': '?芷??'})
     except Exception as e:
         db.session.rollback()
         return jsonify({'success': False, 'message': str(e)}), 500
 
 # --------------------------------------------------------
-# 請將以下程式碼接在 api_delete_skill_prompt 之後
+# ?隞乩?蝔?潭??api_delete_skill_prompt 銋?
 # --------------------------------------------------------
 
 # ==========================================
-# Prerequisites Management (前置技能管理)
+# Prerequisites Management (?蔭??賜恣??
 # ==========================================
 
 @core_bp.route('/admin/prerequisites')
 @login_required
 def admin_prerequisites():
     if not (current_user.is_admin or current_user.role == "teacher"):
-        flash('權限不足', 'error')
+        flash('甈?銝雲', 'error')
         return redirect(url_for('dashboard'))
     
-    # --- A. 呼叫 V2.0 模組化工具 ---
-    # 此函式會自動處理 Session 記憶、URL 參數、與動態選單產生
+    # --- A. ?澆 V2.0 璅∠??極??---
+    # 甇文撘??芸??? Session 閮?RL ??????詨?Ｙ?
     selected, filters_data = handle_curriculum_filters(request)
     
-    # --- B. 建立過濾查詢 ---
+    # --- B. 撱箇??蕪?亥岷 ---
     query = db.session.query(SkillInfo, SkillCurriculum).join(
         SkillCurriculum, SkillInfo.skill_id == SkillCurriculum.skill_id
     ).filter(SkillInfo.is_active.is_(True))
     
-    # --- 補齊所有過濾條件 ---
+    # --- 鋆????瞈暹?隞?---
     if selected['f_curriculum'] != 'all': 
         query = query.filter(SkillCurriculum.curriculum == selected['f_curriculum'])
     if selected['f_grade'] != 'all' and str(selected['f_grade']).isdigit(): 
@@ -970,12 +1273,12 @@ def admin_prerequisites():
         query = query.filter(SkillCurriculum.volume == selected['f_volume'])
     if selected['f_chapter'] != 'all': 
         query = query.filter(SkillCurriculum.chapter == selected['f_chapter'])
-    if selected['f_section'] != 'all': # 補這行
+    if selected['f_section'] != 'all': # 鋆?
         query = query.filter(SkillCurriculum.section == selected['f_section'])
     
     results = query.order_by(SkillCurriculum.display_order).all()
     
-    # (中間處理 skills_list 邏輯不變...)
+    # (銝剝??? skills_list ?摩銝?...)
     skills_list = []
     seen_skill_ids = set()
     for skill_info, skill_curriculum in results:
@@ -987,12 +1290,12 @@ def admin_prerequisites():
         skill_info.prereq_count = len(skill_info.prerequisites)
         skills_list.append(skill_info)
 
-    # --- C. 傳遞與組件一致的變數名稱 ---
+    # --- C. ?喲???隞嗡??渡?霈?迂 ---
     return render_template('admin_prerequisites.html',
                            skills=skills_list,
-                           filters=filters_data,             # 統一名稱
-                           selected_filters=selected,        # 解決 UndefinedError
-                           curriculum_map={'junior_high': '國中', 'general': '普高'},
+                           filters=filters_data,             # 蝯曹??迂
+                           selected_filters=selected,        # 閫?捱 UndefinedError
+                           curriculum_map={'junior_high': '?葉', 'general': '?桅?'},
                            grade_map={str(g):str(g) for g in filters_data['grades']},
                            username=current_user.username)
 
@@ -1001,7 +1304,7 @@ def admin_prerequisites():
 def api_get_prerequisites(skill_id):
     try:
         skill = db.session.get(SkillInfo, skill_id)
-        if not skill: return jsonify({"success": False, "message": "技能不存在"}), 404
+        if not skill: return jsonify({"success": False, "message": "??賭?摮"}), 404
         data = [{'skill_id': p.skill_id, 'skill_ch_name': p.skill_ch_name} for p in skill.prerequisites]
         return jsonify({"success": True, "data": data})
     except Exception as e:
@@ -1017,8 +1320,8 @@ def api_add_prerequisite(skill_id):
         target = db.session.get(SkillInfo, skill_id)
         prereq = db.session.get(SkillInfo, prereq_id)
         
-        if not target or not prereq: return jsonify({"success": False, "message": "技能不存在"}), 404
-        if skill_id == prereq_id: return jsonify({"success": False, "message": "不能相依自己"}), 400
+        if not target or not prereq: return jsonify({"success": False, "message": "??賭?摮"}), 404
+        if skill_id == prereq_id: return jsonify({"success": False, "message": "銝?訾??芸楛"}), 400
         
         if prereq not in target.prerequisites:
             target.prerequisites.append(prereq)
@@ -1065,11 +1368,11 @@ def api_search_skills():
 @login_required
 def init_db_route():
     try:
-        # 使用 models 內的 init_db
+        # 雿輻 models ?抒? init_db
         init_db(db.engine)
-        flash('資料庫初始化成功', 'success')
+        flash('?怠?憪???', 'success')
     except Exception as e:
-        flash(f'初始化失敗: {e}', 'error')
+        flash(f'???仃?? {e}', 'error')
     return redirect(url_for('core.db_maintenance'))
 
 @core_bp.route('/admin/import_skills', methods=['POST'])
@@ -1079,7 +1382,7 @@ def import_skills():
     try:
         from core.data_importer import import_skills_from_json
         count = import_skills_from_json()
-        return jsonify({"success": True, "message": f"成功匯入 {count} 個技能"})
+        return jsonify({"success": True, "message": f"成功匯入 {count} 筆技能資料"})
     except Exception as e:
         return jsonify({"success": False, "message": str(e)}), 500
 
@@ -1090,12 +1393,12 @@ def import_curriculum():
     try:
         from core.data_importer import import_curriculum_from_json
         count = import_curriculum_from_json()
-        return jsonify({"success": True, "message": f"成功匯入 {count} 個課綱"})
+        return jsonify({"success": True, "message": f"成功匯入 {count} 筆課綱資料"})
     except Exception as e:
         return jsonify({"success": False, "message": str(e)}), 500
 
 # ==========================================
-# Dropdown APIs (下拉選單連動)
+# Dropdown APIs (銝??詨???)
 # ==========================================
 
 @core_bp.route('/api/get_grades')
@@ -1159,7 +1462,7 @@ def api_get_sections():
     sections = [row[0] for row in query.all()]
     return jsonify(sections)
 
-# API: 檢查幽靈技能檔案
+# API: 瑼Ｘ撟賡???賣?獢?
 @core_bp.route('/api/check_ghost_skills', methods=['GET'])
 @login_required
 def api_check_ghost_skills():
@@ -1176,7 +1479,7 @@ def api_check_ghost_skills():
         return jsonify({'error': str(e)}), 500
 
 # ==========================================
-# AI Prompt Settings (全域 AI Prompt 參數設定)
+# AI Prompt Settings (?典? AI Prompt ?閮剖?)
 # ==========================================
 
 @core_bp.route('/admin/ai_prompt_settings')
@@ -1482,14 +1785,14 @@ def _validate_existing_prompt_key(prompt_key: str):
     template = PromptTemplate.query.filter_by(prompt_key=prompt_key).first()
     if template:
         return template, None
-    # 允許「YAML 有、DB 尚未建立」的單筆同步場景
+    # ?迂?AML ?B 撠撱箇????桃??郊?湔
     try:
         diff = compare_prompt_db_vs_yaml(prompt_key)
         if diff.get("yaml_exists"):
             return None, None
     except Exception:
         pass
-    return None, (jsonify({'success': False, 'message': f'找不到 prompt_key：{prompt_key}'}), 404)
+    return None, (jsonify({'success': False, 'message': f'找不到 prompt_key: {prompt_key}'}), 404)
 
 
 @core_bp.route('/admin/ai_prompt_settings/publish_to_yaml', methods=['POST'])
@@ -1545,7 +1848,7 @@ def ai_prompt_version_check():
     except PromptSyncError as e:
         return jsonify({'success': False, 'message': str(e)}), 500
     except FileNotFoundError:
-        # YAML 檔不存在時仍回 200，僅回報 yaml_exists=False
+        # YAML 瑼?摮????200?? yaml_exists=False
         return jsonify({
             'success': True,
             'prompt_key': prompt_key,
@@ -1599,7 +1902,7 @@ def check_gemini_api_key_status():
 @core_bp.route('/admin/check_api_key', methods=['GET'])
 @login_required
 def admin_check_api_key():
-    """API: 安全回傳 API Key 狀態（僅 masked，不外洩完整值）。"""
+    """API: Return API key status with masked key for safe verification."""
     if not (current_user.is_admin or current_user.role == 'teacher'):
         return jsonify({'success': False, 'message': 'Permission denied'}), 403
     try:
@@ -1755,3 +2058,4 @@ def reset_ai_prompt_setting():
     except Exception as e:
         db.session.rollback()
         return jsonify({'success': False, 'message': str(e)}), 500
+

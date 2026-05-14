@@ -201,20 +201,32 @@ def _prepare_fake_env(monkeypatch, root):
     return ex_rows
 
 
-def _run_docx_asset_save(monkeypatch, app_root, q_assets, convert_ok=True, parsed_override=None, formula_blocks=None):
+def _write_minimal_png(path):
+    import base64
+    png = base64.b64decode(
+        "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+/p9sAAAAASUVORK5CYII="
+    )
+    with open(path, "wb") as f:
+        f.write(png)
+
+
+def _run_docx_asset_save(monkeypatch, app_root, q_assets, convert_ok=True, parsed_override=None, formula_blocks=None, ocr_fallback=False):
     app = Flask(__name__)
     app.root_path = app_root
     os.makedirs(os.path.join(app_root, "uploads", "media", "media"), exist_ok=True)
     for p in ("image_png.png", "image_jpg.jpg", "image_wmf.wmf", "image_emf.emf", "orphan.png"):
-        with open(os.path.join(app_root, "uploads", "media", "media", p), "wb") as f:
-            f.write(b"x")
+        full = os.path.join(app_root, "uploads", "media", "media", p)
+        if p.endswith(".png"):
+            _write_minimal_png(full)
+        else:
+            with open(full, "wb") as f:
+                f.write(b"x")
     ex_rows = _prepare_fake_env(monkeypatch, app_root)
 
     def _fake_convert(inp, out):
         if convert_ok:
             os.makedirs(os.path.dirname(out), exist_ok=True)
-            with open(out, "wb") as f:
-                f.write(b"png")
+            _write_minimal_png(out)
             return True, None
         return False, "converter_unavailable"
 
@@ -242,7 +254,7 @@ def _run_docx_asset_save(monkeypatch, app_root, q_assets, convert_ok=True, parse
         ]
     }
     with app.app_context():
-        app.config["ENABLE_DOCX_FORMULA_OCR_FALLBACK"] = False
+        app.config["ENABLE_DOCX_FORMULA_OCR_FALLBACK"] = bool(ocr_fallback)
         result = processor.save_to_database(
             parsed,
             {"curriculum": "vocational", "publisher": "longteng", "grade": 10, "volume": "數學B4"},
@@ -470,6 +482,100 @@ def test_formula_assets_not_written_to_image_assets(monkeypatch):
     meta = json.loads(ex_rows[0].notes)
     assert meta.get("formula_assets")
     assert meta.get("image_assets", []) == []
+
+
+def test_formula_placeholder_sets_review_flags_and_asset_metadata(monkeypatch):
+    root = os.path.join(os.getcwd(), "tmp_test_formula_placeholder_flags")
+    q_assets = {
+        "靘?2": [
+            {"rid": "rId5", "path": "uploads/media/media/image_png.png", "content_type": "image/png", "media_kind": "formula_asset"}
+        ]
+    }
+    parsed = {
+        "chapters": [{"chapter_title": "1", "sections": [{"section_title": "1-2", "concepts": [{
+            "concept_name": "Perm",
+            "concept_en_id": "Perm",
+            "examples": [{"example_title": "靘?2", "problem_text": "題目 [FORMULA_IMAGE_1]", "source_type": "textbook_example", "skill_id": "vh_?詨飛B4_Perm"}],
+            "practice_questions": []
+        }]}]}]
+    }
+    _, ex_rows = _run_docx_asset_save(monkeypatch, root, q_assets, parsed_override=parsed, formula_blocks={"靘?2": "題目 [FORMULA_IMAGE_1]"})
+    meta = json.loads(ex_rows[0].notes)
+    assert meta["needs_review"] is True
+    assert meta["needs_formula_review"] is True
+    assert meta["formula_missing"] is True
+    asset = meta["formula_assets"][0]
+    assert asset["placeholder_token"] == "[FORMULA_IMAGE_1]"
+    assert asset["placeholder_index"] == 1
+    assert asset["conversion_status"] == "not_required"
+    assert asset["display_path"]
+
+
+def test_formula_wmf_convert_failed_metadata_no_exception(monkeypatch):
+    root = os.path.join(os.getcwd(), "tmp_test_formula_wmf_fail")
+    q_assets = {
+        "例題7": [
+            {"rid": "rId5", "path": "uploads/media/media/image_wmf.wmf", "content_type": "image/x-wmf", "media_kind": "formula_asset"}
+        ]
+    }
+    result, ex_rows = _run_docx_asset_save(monkeypatch, root, q_assets, convert_ok=False, formula_blocks={"例題7": "題目 [FORMULA_IMAGE_1]"})
+    assert result.get("examples_imported", result.get("examples_added")) == 1
+    asset = json.loads(ex_rows[0].notes)["formula_assets"][0]
+    assert asset["conversion_status"] == "failed"
+    assert asset["conversion_error"]
+
+
+def test_formula_wmf_convert_success_metadata(monkeypatch):
+    root = os.path.join(os.getcwd(), "tmp_test_formula_wmf_success")
+    q_assets = {
+        "例題7": [
+            {"rid": "rId5", "path": "uploads/media/media/image_wmf.wmf", "content_type": "image/x-wmf", "media_kind": "formula_asset"}
+        ]
+    }
+    _, ex_rows = _run_docx_asset_save(monkeypatch, root, q_assets, convert_ok=True, formula_blocks={"例題7": "題目 [FORMULA_IMAGE_1]"})
+    asset = json.loads(ex_rows[0].notes)["formula_assets"][0]
+    assert asset["conversion_status"] == "success"
+    assert asset["converted_path"] and asset["display_path"]
+
+
+def test_formula_ocr_disabled_does_not_call_vision(monkeypatch):
+    root = os.path.join(os.getcwd(), "tmp_test_formula_ocr_disabled")
+    called = {"count": 0}
+    monkeypatch.setattr(processor, "get_model", lambda role: called.__setitem__("count", called["count"] + 1))
+    q_assets = {"例題7": [{"path": "uploads/media/media/image_png.png", "content_type": "image/png", "media_kind": "formula_asset"}]}
+    _run_docx_asset_save(monkeypatch, root, q_assets, formula_blocks={"例題7": "題目 [FORMULA_IMAGE_1]"}, ocr_fallback=False)
+    assert called["count"] == 0
+
+
+def test_formula_ocr_enabled_without_readable_png_does_not_call_vision(monkeypatch):
+    root = os.path.join(os.getcwd(), "tmp_test_formula_ocr_no_png")
+    called = {"count": 0}
+    monkeypatch.setattr(processor, "get_model", lambda role: called.__setitem__("count", called["count"] + 1))
+    q_assets = {"例題7": [{"path": "uploads/media/media/image_wmf.wmf", "content_type": "image/x-wmf", "media_kind": "formula_asset"}]}
+    _run_docx_asset_save(monkeypatch, root, q_assets, convert_ok=False, formula_blocks={"例題7": "題目 [FORMULA_IMAGE_1]"}, ocr_fallback=True)
+    assert called["count"] == 0
+
+
+def test_formula_ocr_enabled_with_converted_path_calls_vision_and_keeps_review(monkeypatch):
+    root = os.path.join(os.getcwd(), "tmp_test_formula_ocr_converted")
+    called = {"count": 0}
+
+    class FakeResp:
+        text = "x^2"
+
+    class FakeModel:
+        def generate_content(self, *args, **kwargs):
+            called["count"] += 1
+            return FakeResp()
+
+    monkeypatch.setattr(processor, "get_model", lambda role: FakeModel())
+    q_assets = {"例題7": [{"path": "uploads/media/media/image_wmf.wmf", "content_type": "image/x-wmf", "media_kind": "formula_asset"}]}
+    _, ex_rows = _run_docx_asset_save(monkeypatch, root, q_assets, convert_ok=True, formula_blocks={"例題7": "題目 [FORMULA_IMAGE_1]"}, ocr_fallback=True)
+    meta = json.loads(ex_rows[0].notes)
+    assert called["count"] == 1
+    assert meta["formula_ocr_status"] == "success"
+    assert meta["formula_ocr_text"] == ["x^2"]
+    assert meta["needs_review"] is True
 
 
 def test_docx_no_source_page_1_fallback(monkeypatch):
