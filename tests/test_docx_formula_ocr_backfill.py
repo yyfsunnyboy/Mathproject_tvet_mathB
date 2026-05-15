@@ -83,6 +83,7 @@ def test_dry_run_does_not_write_db_and_returns_preview(tmp_path):
         root_path=tmp_path,
         dry_run=True,
         ocr_enabled=True,
+        titles=[],
         ocr_callable=lambda *_: ("x+1", "fake-vision"),
     )
 
@@ -106,7 +107,9 @@ def test_no_readable_image_marks_skipped_no_readable_image(tmp_path):
     result = process_row(_row(notes), root_path=tmp_path, ocr_enabled=True)
     asset = result["metadata_after"]["formula_assets"][0]
     assert asset["formula_ocr_status"] == "skipped_no_readable_image"
+    assert asset["review_required"] is True
     assert result["summary"]["skipped_count"] == 1
+    assert result["summary"]["skipped_no_readable_image"] == 1
 
 
 def test_ocr_success_writes_metadata_but_problem_text_unchanged(tmp_path):
@@ -130,6 +133,8 @@ def test_ocr_success_writes_metadata_but_problem_text_unchanged(tmp_path):
     asset = result["metadata_after"]["formula_assets"][0]
     assert asset["formula_ocr_status"] == "success"
     assert asset["formula_ocr_text"] == "|x|"
+    assert asset["formula_ocr_source"] == "gemini_vision"
+    assert asset["review_required"] is True
     assert result["problem_text"] == "題目 [FORMULA_IMAGE_1]"
 
 
@@ -175,7 +180,19 @@ def test_report_contains_success_and_failed_statistics(tmp_path):
         "dry_run": True,
         "ocr_enabled": True,
         "question_count": 2,
-        "summary": {"total_assets": 2, "success_count": 1, "failed_count": 1, "skipped_count": 0, "unreadable_count": 0},
+        "summary": {
+            "total_assets": 2,
+            "processed_records": 2,
+            "processed_assets": 2,
+            "readable_assets": 2,
+            "skipped_no_readable_image": 0,
+            "vision_success": 1,
+            "vision_failed": 1,
+            "success_count": 1,
+            "failed_count": 1,
+            "skipped_count": 0,
+            "unreadable_count": 0,
+        },
         "rows": [
             {
                 "asset_summaries": [
@@ -189,6 +206,9 @@ def test_report_contains_success_and_failed_statistics(tmp_path):
                         "conversion_status": "not_required",
                         "formula_ocr_status": "success",
                         "formula_ocr_text": "x+1",
+                        "formula_ocr_source": "gemini_vision",
+                        "formula_ocr_model": "fake-vision",
+                        "review_required": True,
                     },
                     {
                         "id": 2,
@@ -200,13 +220,99 @@ def test_report_contains_success_and_failed_statistics(tmp_path):
                         "conversion_status": "not_required",
                         "formula_ocr_status": "failed",
                         "formula_ocr_error": "vision down",
+                        "formula_ocr_source": "gemini_vision",
+                        "formula_ocr_model": "fake-vision",
+                        "review_required": True,
                     },
                 ]
-            }
+            },
+            {
+                "row_id": 1,
+                "source_description": "例題1 [source_type=textbook_example]",
+                "summary": {"processed_assets": 1, "readable_assets": 1, "skipped_no_readable_image": 0},
+                "asset_summaries": [],
+            },
         ],
     }
     report = render_markdown_report(result)
     assert "- success: 1" in report
     assert "- failed: 1" in report
+    assert "- processed_assets: 2" in report
+    assert "- vision_success: 1" in report
+    assert "- vision_failed: 1" in report
+    assert "- OCR / vision candidates:" in report
     path = write_report(result, tmp_path / "report.md")
     assert path.exists()
+
+
+def test_tesseract_absent_does_not_raise_with_png_and_mock_vision(tmp_path):
+    img = tmp_path / "uploads" / "formula.png"
+    _write_png(img)
+    notes = _meta(
+        {
+            "display_path": "uploads/formula.png",
+            "original_format": "png",
+            "placeholder_token": "[FORMULA_IMAGE_1]",
+        }
+    )
+    result = process_row(
+        _row(notes),
+        root_path=tmp_path,
+        ocr_enabled=True,
+        ocr_callable=lambda *_: ("x^2", "fake-vision"),
+    )
+    assert result["summary"]["vision_success"] == 1
+    assert result["metadata_after"]["formula_assets"][0]["formula_ocr_text"] == "x^2"
+
+
+def test_run_backfill_supports_title_filter(tmp_path):
+    img = tmp_path / "uploads" / "formula.png"
+    _write_png(img)
+    db = tmp_path / "title_filter.sqlite"
+    conn = sqlite3.connect(db)
+    conn.execute(
+        """
+        CREATE TABLE textbook_examples (
+            id INTEGER PRIMARY KEY,
+            source_curriculum TEXT,
+            source_volume TEXT,
+            source_section TEXT,
+            source_description TEXT,
+            problem_text TEXT,
+            notes TEXT
+        )
+        """
+    )
+    notes = json.dumps(_meta({"display_path": "uploads/formula.png", "original_format": "png", "placeholder_token": "[FORMULA_IMAGE_1]"}), ensure_ascii=False)
+    conn.execute(
+        """
+        INSERT INTO textbook_examples
+        (id, source_curriculum, source_volume, source_section, source_description, problem_text, notes)
+        VALUES (1, 'vocational', '數學B1', '1-1 數線與絕對值', '例題1', '題目 [FORMULA_IMAGE_1]', ?)
+        """,
+        (notes,),
+    )
+    conn.execute(
+        """
+        INSERT INTO textbook_examples
+        (id, source_curriculum, source_volume, source_section, source_description, problem_text, notes)
+        VALUES (2, 'vocational', '數學B1', '1-1 數線與絕對值', '例題2', '題目 [FORMULA_IMAGE_1]', ?)
+        """,
+        (notes,),
+    )
+    conn.commit()
+    conn.close()
+
+    result = run_backfill(
+        db_path=db,
+        root_path=tmp_path,
+        curriculum="vocational",
+        volume="數學B1",
+        section="1-1 數線與絕對值",
+        titles=["例題1"],
+        limit=None,
+        dry_run=True,
+        ocr_enabled=True,
+        ocr_callable=lambda *_: ("x+1", "fake-vision"),
+    )
+    assert result["question_count"] == 1

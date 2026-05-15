@@ -244,6 +244,17 @@
 
         {% include '_filter_sidebar.html' %}
 
+        <div class="card" style="padding: 12px 15px; margin-bottom: 12px;">
+            <div style="display:flex; flex-wrap:wrap; gap:8px; align-items:center;">
+                <span style="display:inline-block;padding:3px 8px;border-radius:12px;background:#e9ecef;color:#495057;font-size:12px;">本頁題數={{ (page_formula_stats or {}).get('total', 0) }}</span>
+                <span style="display:inline-block;padding:3px 8px;border-radius:12px;background:#d1ecf1;color:#0c5460;font-size:12px;">formula_assets 題數={{ (page_formula_stats or {}).get('with_formula_assets', 0) }}</span>
+                <span style="display:inline-block;padding:3px 8px;border-radius:12px;background:#d4edda;color:#155724;font-size:12px;">FORMULA_IMAGE 題數={{ (page_formula_stats or {}).get('with_formula_image_placeholder', 0) }}</span>
+                <span style="display:inline-block;padding:3px 8px;border-radius:12px;background:#fff3cd;color:#856404;font-size:12px;">FORMULA_MISSING 題數={{ (page_formula_stats or {}).get('with_formula_missing', 0) }}</span>
+                <span style="display:inline-block;padding:3px 8px;border-radius:12px;background:#f8d7da;color:#721c24;font-size:12px;">image_placeholder_no_asset 題數={{ (page_formula_stats or {}).get('image_placeholder_no_asset', 0) }}</span>
+                <span style="display:inline-block;padding:3px 8px;border-radius:12px;background:#f8d7da;color:#721c24;font-size:12px;">missing_no_asset 題數={{ (page_formula_stats or {}).get('missing_no_asset', 0) }}</span>
+            </div>
+        </div>
+
         <div class="card">
             <table>
                 <thead>
@@ -274,6 +285,27 @@
                             <div><span style="display:inline-block;padding:2px 6px;margin-top:4px;background:#dff0d8;color:#2e7d32;border-radius:4px;font-size:12px;">有附圖</span></div>
                             {% elif example._missing_image_asset %}
                             <div><span style="display:inline-block;padding:2px 6px;margin-top:4px;background:#fff3cd;color:#856404;border-radius:4px;font-size:12px;">附圖待確認</span></div>
+                            {% endif %}
+                            {% if example._formula_assets_count > 0 %}
+                            <div><span style="display:inline-block;padding:2px 6px;margin-top:4px;background:#d1ecf1;color:#0c5460;border-radius:4px;font-size:12px;">formula_assets={{ example._formula_assets_count }}</span></div>
+                            {% endif %}
+                            {% if example._needs_formula_review %}
+                            <div><span style="display:inline-block;padding:2px 6px;margin-top:4px;background:#fff3cd;color:#856404;border-radius:4px;font-size:12px;">needs_formula_review=true</span></div>
+                            {% endif %}
+                            {% if example._formula_status != 'ok' or example._needs_formula_review %}
+                            {% if example._formula_status == 'asset_attached' %}
+                            <div><span style="display:inline-block;padding:2px 6px;margin-top:4px;background:#d1ecf1;color:#0c5460;border-radius:4px;font-size:12px;">formula_status=asset_attached</span></div>
+                            <div><small style="color:#0c5460;">公式圖片已掛載，待 OCR/複核</small></div>
+                            {% elif example._formula_status == 'asset_attached_but_text_missing' %}
+                            <div><span style="display:inline-block;padding:2px 6px;margin-top:4px;background:#fff3cd;color:#856404;border-radius:4px;font-size:12px;">formula_status=asset_attached_but_text_missing</span></div>
+                            <div><small style="color:#856404;">文字缺公式，但已有公式圖片資產，待 OCR/複核</small></div>
+                            {% elif example._formula_status == 'image_placeholder_no_asset' %}
+                            <div><span style="display:inline-block;padding:2px 6px;margin-top:4px;background:#f8d7da;color:#721c24;border-radius:4px;font-size:12px;">formula_status=image_placeholder_no_asset</span></div>
+                            <div><small style="color:#721c24;">文字有公式圖片標記，但未找到對應資產</small></div>
+                            {% elif example._formula_status == 'missing_no_asset' %}
+                            <div><span style="display:inline-block;padding:2px 6px;margin-top:4px;background:#f8d7da;color:#721c24;border-radius:4px;font-size:12px;">formula_status=missing_no_asset</span></div>
+                            <div><small style="color:#721c24;">公式缺失，無可用資產</small></div>
+                            {% endif %}
                             {% endif %}
                         </td>
                         <td>

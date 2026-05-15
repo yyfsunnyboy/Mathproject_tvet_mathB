@@ -378,6 +378,12 @@ def test_admin_examples_no_unicode_perm_conversion():
     assert "subscript" not in tpl
 
 
+def test_admin_examples_template_no_mojibake_tokens():
+    tpl = open("templates/admin_examples.html", "r", encoding="utf-8").read()
+    for token in ["鞈", "摨", "蝣", "隢", "嚗", "", ""]:
+        assert token not in tpl
+
+
 def test_docx_formula_placeholder_not_hallucinated(monkeypatch):
     root = os.path.join(os.getcwd(), "tmp_test_docx_formula_guard")
     parsed = {
@@ -536,6 +542,51 @@ def test_formula_wmf_convert_success_metadata(monkeypatch):
     asset = json.loads(ex_rows[0].notes)["formula_assets"][0]
     assert asset["conversion_status"] == "success"
     assert asset["converted_path"] and asset["display_path"]
+
+
+def test_formula_asset_paths_persist_not_tmp(monkeypatch):
+    root = os.path.join(os.getcwd(), "tmp_test_formula_asset_persist_path")
+    q_assets = {
+        "例題7": [
+            {"rid": "rId5", "path": "uploads/media/media/image_wmf.wmf", "content_type": "image/x-wmf", "media_kind": "formula_asset"}
+        ]
+    }
+    _, ex_rows = _run_docx_asset_save(monkeypatch, root, q_assets, convert_ok=True, formula_blocks={"例題7": "題目 [FORMULA_IMAGE_1]"})
+    asset = json.loads(ex_rows[0].notes)["formula_assets"][0]
+    assert "tmp_docx_media" not in str(asset.get("path", ""))
+    assert "tmp_docx_media" not in str(asset.get("original_path", ""))
+    assert asset.get("persist_status") in ("persisted", "failed")
+    assert asset.get("asset_hash")
+
+
+def test_formula_asset_persist_fail_does_not_interrupt(monkeypatch):
+    root = os.path.join(os.getcwd(), "tmp_test_formula_asset_persist_fail")
+    q_assets = {
+        "例題7": [
+            {"rid": "rId5", "path": "uploads/media/media/not_found.wmf", "content_type": "image/x-wmf", "media_kind": "formula_asset"}
+        ]
+    }
+    result, ex_rows = _run_docx_asset_save(monkeypatch, root, q_assets, convert_ok=True, formula_blocks={"例題7": "題目 [FORMULA_IMAGE_1]"})
+    assert result.get("examples_imported", result.get("examples_added")) == 1
+    meta = json.loads(ex_rows[0].notes)
+    asset = meta["formula_assets"][0]
+    assert asset.get("persist_status") == "failed"
+    assert asset.get("conversion_status") == "failed"
+    assert meta.get("needs_formula_review") is True
+
+
+def test_formula_asset_same_hash_reuse_no_duplicate_copy(monkeypatch):
+    root = os.path.join(os.getcwd(), "tmp_test_formula_asset_hash_reuse")
+    q_assets = {
+        "例題7": [
+            {"rid": "rId5", "path": "uploads/media/media/image_wmf.wmf", "content_type": "image/x-wmf", "media_kind": "formula_asset"},
+            {"rid": "rId6", "path": "uploads/media/media/image_wmf.wmf", "content_type": "image/x-wmf", "media_kind": "formula_asset"},
+        ]
+    }
+    _, ex_rows = _run_docx_asset_save(monkeypatch, root, q_assets, convert_ok=True, formula_blocks={"例題7": "題目 [FORMULA_IMAGE_1] [FORMULA_IMAGE_2]"})
+    assets = json.loads(ex_rows[0].notes)["formula_assets"]
+    assert len(assets) == 2
+    assert assets[0].get("path") == assets[1].get("path")
 
 
 def test_formula_ocr_disabled_does_not_call_vision(monkeypatch):
@@ -830,6 +881,27 @@ def test_lookup_docx_formula_block_exact_nospc():
     assert processor._lookup_docx_formula_block("基礎題5", fb) == "5 解不等式 [FORMULA_IMAGE_1]"
 
 
+def test_lookup_docx_formula_block_alias_liti_short_form():
+    """'例1' should match DOCX key '例題1'."""
+    fb = {"例題1": "例題1 題目 [FORMULA_IMAGE_1]"}
+    result = processor._lookup_docx_formula_block("例1", fb)
+    assert result == "例題1 題目 [FORMULA_IMAGE_1]"
+
+
+def test_lookup_docx_formula_block_alias_liti_spaced_form():
+    """'例題 1' should match DOCX key '例題1'."""
+    fb = {"例題1": "例題1 題目 [FORMULA_IMAGE_1]"}
+    result = processor._lookup_docx_formula_block("例題 1", fb)
+    assert result == "例題1 題目 [FORMULA_IMAGE_1]"
+
+
+def test_lookup_docx_formula_block_alias_practice_spaced_form():
+    """'隨堂練習 1' should match DOCX key '隨堂練習1'."""
+    fb = {"隨堂練習1": "隨堂練習1 題目 [FORMULA_IMAGE_1]"}
+    result = processor._lookup_docx_formula_block("隨堂練習 1", fb)
+    assert result == "隨堂練習1 題目 [FORMULA_IMAGE_1]"
+
+
 def test_lookup_docx_formula_block_prefix_strip():
     """'1-1習題 基礎題5' should resolve to key '基礎題5' after stripping the prefix."""
     fb = {"基礎題5": "5 解不等式 [FORMULA_IMAGE_1]"}
@@ -937,6 +1009,54 @@ def test_lookup_docx_question_assets_prefix_strip():
     q_assets = {"基礎題5": [{"rid": "rId1", "path": "media/img1.wmf", "media_kind": "formula_asset"}]}
     result = processor._lookup_docx_question_assets("1-1習題 基礎題5", q_assets)
     assert result and result[0]["rid"] == "rId1"
+
+
+def test_lookup_docx_question_assets_liti_alias_short_form():
+    """'例1' should resolve to assets stored under key '例題1'."""
+    q_assets = {"例題1": [{"rid": "rId9", "path": "media/img9.wmf", "media_kind": "formula_asset"}]}
+    result = processor._lookup_docx_question_assets("例1", q_assets)
+    assert result and result[0]["rid"] == "rId9"
+
+
+def test_lookup_docx_question_assets_bare_number_fallback():
+    """'1-1習題 基礎題5' should resolve to bare-number key '5' assets."""
+    q_assets = {"5": [{"rid": "rId5", "path": "media/img5.wmf", "media_kind": "formula_asset"}]}
+    result = processor._lookup_docx_question_assets("1-1習題 基礎題5", q_assets)
+    assert result and result[0]["rid"] == "rId5"
+
+
+def test_lookup_docx_question_assets_prefix_match_liti_headline():
+    """key='例1 ...' should match parsed title '例題 1'."""
+    q_assets = {
+        "例1 數線上，若[FORMULA_IMAGE_1]": [
+            {"rid": "rId11", "path": "media/img11.wmf", "media_kind": "formula_asset"}
+        ]
+    }
+    result = processor._lookup_docx_question_assets("例題 1", q_assets)
+    assert result and result[0]["rid"] == "rId11"
+
+
+def test_lookup_docx_question_assets_exercise_section_fallback_mapping_status():
+    """key='1-1習題' should fallback for title '1-1習題 基礎題5'."""
+    q_assets = {
+        "1-1習題": [
+            {"rid": "rId21", "path": "media/img21.wmf", "media_kind": "formula_asset"}
+        ]
+    }
+    result = processor._lookup_docx_question_assets("1-1習題 基礎題5", q_assets)
+    assert result and result[0]["rid"] == "rId21"
+    assert result[0].get("mapping_status") == "exercise_section_fallback"
+
+
+def test_lookup_docx_question_assets_practice_not_cross_match_to_example():
+    """Practice title should not be mapped to example key by number only."""
+    q_assets = {
+        "例1 數線上，若[FORMULA_IMAGE_1]": [
+            {"rid": "rId31", "path": "media/img31.wmf", "media_kind": "formula_asset"}
+        ]
+    }
+    result = processor._lookup_docx_question_assets("隨堂練習 1", q_assets)
+    assert result == []
 
 
 def test_is_question_start_bare_number_with_verb():
@@ -1060,6 +1180,375 @@ def test_attach_docx_media_orphan_logged_not_silently_lost():
     assert len(orphans) == 1, f"Unmatched image must be in orphan list; orphans={orphans}"
     assert orphans[0]["rid"] == "rId99"
 
+
+def test_formula_assets_fallback_without_raw_block_still_written(monkeypatch):
+    """Even if raw_block lookup misses, formula assets must still be written."""
+    root = os.path.join(os.getcwd(), "tmp_test_formula_assets_raw_block_miss")
+    q_assets = {
+        "5": [
+            {"rid": "rId5", "path": "uploads/media/media/image_wmf.wmf", "content_type": "image/x-wmf", "media_kind": "formula_asset"}
+        ]
+    }
+    parsed = {
+        "chapters": [{"chapter_title": "1", "sections": [{"section_title": "1-1", "concepts": [{
+            "concept_name": "x",
+            "concept_en_id": "X",
+            "examples": [],
+            "practice_questions": [{
+                "practice_title": "1-1習題 基礎題5",
+                "problem_text": "解下列不等式",
+                "source_type": "chapter_exercise",
+                "skill_id": "vh_數學B1_X",
+            }],
+        }]}]}]
+    }
+    _, ex_rows = _run_docx_asset_save(
+        monkeypatch,
+        root,
+        q_assets,
+        convert_ok=True,
+        parsed_override=parsed,
+        formula_blocks={},  # force raw_block lookup failure
+    )
+    meta = json.loads(ex_rows[0].notes)
+    assert meta.get("formula_assets"), f"formula_assets should not be empty, meta={meta}"
+    asset = meta["formula_assets"][0]
+    assert asset["placeholder_token"] == "[FORMULA_IMAGE_1]"
+    assert "original_path" in asset and asset["original_path"]
+    assert "original_format" in asset and asset["original_format"]
+    assert "conversion_status" in asset and asset["conversion_status"]
+
+
+def test_formula_asset_classification_metadata_not_lost_after_attach():
+    """Classified formula_asset should keep formula metadata fields after attach."""
+    blocks = [
+        {"type": "paragraph", "text": "例1 數線上，若 [FORMULA_IMAGE_1]，試求絕對值。", "block_index": 1},
+        {"type": "image", "rid": "rId51", "path": "media/img51.wmf", "content_type": "image/x-wmf", "is_formula_placeholder_source": True, "block_index": 2},
+    ]
+    q_assets, _ = processor.attach_docx_media_to_question_blocks(blocks)
+    assets = list(q_assets.values())[0]
+    assert assets
+    a = assets[0]
+    assert a.get("media_kind") == "formula_asset"
+    assert a.get("asset_type") == "word_formula_image"
+    assert a.get("is_formula_placeholder_source") is True
+    assert a.get("placeholder_token") == "[FORMULA_IMAGE_1]"
+    assert a.get("placeholder_index") == 1
+    assert a.get("original_path")
+    assert a.get("original_format") == "wmf"
+    assert a.get("content_type") == "image/x-wmf"
+
+
+def test_formula_assets_global_fallback_when_lookup_miss(monkeypatch):
+    """With [FORMULA_IMAGE_1] and any global formula asset, metadata.formula_assets must not be empty."""
+    root = os.path.join(os.getcwd(), "tmp_test_formula_assets_global_fallback")
+    q_assets = {
+        "例1 數線上，若[FORMULA_IMAGE_1]": [
+            {"rid": "rId61", "path": "uploads/media/media/image_wmf.wmf", "content_type": "image/x-wmf", "media_kind": "formula_asset"}
+        ]
+    }
+    parsed = {
+        "chapters": [{"chapter_title": "1", "sections": [{"section_title": "1-1", "concepts": [{
+            "concept_name": "x",
+            "concept_en_id": "X",
+            "examples": [{
+                "example_title": "例題 9",
+                "problem_text": "題目 [FORMULA_IMAGE_1]",
+                "source_type": "textbook_example",
+                "skill_id": "vh_數學B1_X",
+            }],
+            "practice_questions": [],
+        }]}]}]
+    }
+    _, ex_rows = _run_docx_asset_save(monkeypatch, root, q_assets, convert_ok=True, parsed_override=parsed, formula_blocks={})
+    meta = json.loads(ex_rows[0].notes)
+    assert meta.get("formula_assets"), f"formula_assets should not be empty, meta={meta}"
+    assert any(a.get("mapping_status") == "global_formula_fallback" for a in meta["formula_assets"])
+
+def test_dedupe_formula_image_and_formula_missing_are_same_question(monkeypatch):
+    """[FORMULA_IMAGE_1] and [FORMULA_MISSING] variants should dedupe as one record."""
+    root = os.path.join(os.getcwd(), "tmp_test_formula_dedupe_placeholder_style")
+    parsed = {
+        "chapters": [{"chapter_title": "1", "sections": [{"section_title": "1-1", "concepts": [{
+            "concept_name": "x",
+            "concept_en_id": "X",
+            "examples": [
+                {
+                    "example_title": "例題1",
+                    "problem_text": "解不等式 [FORMULA_IMAGE_1]",
+                    "source_type": "textbook_example",
+                    "skill_id": "vh_數學B1_X",
+                },
+                {
+                    "example_title": "例題1",
+                    "problem_text": "解不等式 [FORMULA_MISSING]",
+                    "source_type": "textbook_example",
+                    "skill_id": "vh_數學B1_X",
+                },
+            ],
+            "practice_questions": [],
+        }]}]}]
+    }
+    result, ex_rows = _run_docx_asset_save(monkeypatch, root, q_assets={}, convert_ok=True, parsed_override=parsed, formula_blocks={})
+    assert result.get("examples_imported", result.get("examples_added")) == 1
+    assert len(ex_rows) == 1
+
+
+def test_duplicate_merge_updates_existing_formula_metadata_instead_of_skip(monkeypatch):
+    root = os.path.join(os.getcwd(), "tmp_test_duplicate_merge_formula_assets")
+    q_assets = {
+        "例題1": [
+            {"rid": "rId91", "path": "uploads/media/media/image_wmf.wmf", "content_type": "image/x-wmf", "media_kind": "formula_asset"}
+        ]
+    }
+    parsed = {
+        "chapters": [{"chapter_title": "1", "sections": [{"section_title": "1-1", "concepts": [{
+            "concept_name": "x",
+            "concept_en_id": "X",
+            "examples": [
+                {
+                    "example_title": "例題1",
+                    "problem_text": "題目 [FORMULA_MISSING]",
+                    "source_type": "textbook_example",
+                    "skill_id": "vh_數學B1_X",
+                },
+                {
+                    "example_title": "例題1",
+                    "problem_text": "題目 [FORMULA_IMAGE_1]",
+                    "source_type": "textbook_example",
+                    "skill_id": "vh_數學B1_X",
+                    "needs_formula_review": True,
+                    "formula_missing": True,
+                    "needs_review": True,
+                },
+            ],
+            "practice_questions": [],
+        }]}]}]
+    }
+    result, ex_rows = _run_docx_asset_save(
+        monkeypatch,
+        root,
+        q_assets=q_assets,
+        convert_ok=True,
+        parsed_override=parsed,
+        formula_blocks={"例題1": "題目 [FORMULA_IMAGE_1]"},
+    )
+    assert len(ex_rows) == 1, "intra-import dedupe should keep one row"
+    assert result.get("intra_import_duplicates_merged", 0) >= 1
+    row = ex_rows[0]
+    assert "[FORMULA_IMAGE_1]" in row.problem_text
+    meta = json.loads(row.notes)
+    assert meta.get("formula_assets"), f"formula_assets should be merged into existing row: {meta}"
+    assert meta.get("needs_review") is True
+    assert meta.get("needs_formula_review") is True
+    assert meta.get("formula_missing") is True
+
+
+def test_duplicate_without_better_metadata_still_skips(monkeypatch):
+    root = os.path.join(os.getcwd(), "tmp_test_duplicate_merge_skip_when_same")
+    parsed = {
+        "chapters": [{"chapter_title": "1", "sections": [{"section_title": "1-1", "concepts": [{
+            "concept_name": "x",
+            "concept_en_id": "X",
+            "examples": [
+                {
+                    "example_title": "例題1",
+                    "problem_text": "題目 [FORMULA_MISSING]",
+                    "source_type": "textbook_example",
+                    "skill_id": "vh_數學B1_X",
+                },
+                {
+                    "example_title": "例題1",
+                    "problem_text": "題目 [FORMULA_MISSING]",
+                    "source_type": "textbook_example",
+                    "skill_id": "vh_數學B1_X",
+                },
+            ],
+            "practice_questions": [],
+        }]}]}]
+    }
+    result, ex_rows = _run_docx_asset_save(monkeypatch, root, q_assets={}, convert_ok=True, parsed_override=parsed, formula_blocks={})
+    assert len(ex_rows) == 1
+    assert result.get("intra_import_duplicates_merged", 0) >= 1
+    assert result.get("updated_duplicates", 0) == 0
+
+
+def test_existing_db_duplicate_merge_updates_metadata(monkeypatch):
+    root = os.path.join(os.getcwd(), "tmp_test_existing_db_duplicate_merge")
+    app = Flask(__name__)
+    app.root_path = root
+    os.makedirs(os.path.join(root, "uploads", "media", "media"), exist_ok=True)
+    for p in ("image_wmf.wmf",):
+        with open(os.path.join(root, "uploads", "media", "media", p), "wb") as f:
+            f.write(b"x")
+    ex_rows = _prepare_fake_env(monkeypatch, root)
+
+    def _fake_convert(inp, out):
+        os.makedirs(os.path.dirname(out), exist_ok=True)
+        _write_minimal_png(out)
+        return True, None
+
+    monkeypatch.setattr(processor, "convert_vector_image_to_png", _fake_convert)
+    old_parsed = {
+        "chapters": [{"chapter_title": "1", "sections": [{"section_title": "1-1", "concepts": [{
+            "concept_name": "x",
+            "concept_en_id": "X",
+            "examples": [{"example_title": "例題1", "problem_text": "題目 [FORMULA_MISSING]", "source_type": "textbook_example", "skill_id": "vh_數學B1_X"}],
+            "practice_questions": [],
+        }]}]}]
+    }
+    new_parsed = {
+        "chapters": [{"chapter_title": "1", "sections": [{"section_title": "1-1", "concepts": [{
+            "concept_name": "x",
+            "concept_en_id": "X",
+            "examples": [{"example_title": "例題1", "problem_text": "題目 [FORMULA_IMAGE_1]", "source_type": "textbook_example", "skill_id": "vh_數學B1_X", "needs_formula_review": True, "formula_missing": True}],
+            "practice_questions": [],
+        }]}]}]
+    }
+    with app.app_context():
+        processor._DOCX_IMPORT_CONTEXT = {"question_assets": {}, "question_formula_blocks": {}}
+        _ = processor.save_to_database(
+            old_parsed,
+            {"curriculum": "vocational", "publisher": "longteng", "grade": 10, "volume": "數學B1"},
+            queue=type("Q", (), {"put": lambda *_: None})(),
+            source_file_path=os.path.join(root, "a.docx"),
+            content_by_page={1: "x"},
+        )
+        processor._DOCX_IMPORT_CONTEXT = {
+            "question_assets": {"例題1": [{"rid": "rId91", "path": "uploads/media/media/image_wmf.wmf", "content_type": "image/x-wmf", "media_kind": "formula_asset"}]},
+            "question_formula_blocks": {"例題1": "題目 [FORMULA_IMAGE_1]"},
+        }
+        result2 = processor.save_to_database(
+            new_parsed,
+            {"curriculum": "vocational", "publisher": "longteng", "grade": 10, "volume": "數學B1"},
+            queue=type("Q", (), {"put": lambda *_: None})(),
+            source_file_path=os.path.join(root, "a.docx"),
+            content_by_page={1: "x"},
+        )
+    assert len(ex_rows) == 1
+    assert result2.get("updated_duplicates", 0) >= 1
+    meta = json.loads(ex_rows[0].notes)
+    assert meta.get("formula_assets")
+    assert "[FORMULA_IMAGE_1]" in ex_rows[0].problem_text
+
+
+def test_existing_db_duplicate_without_better_metadata_still_skips(monkeypatch):
+    root = os.path.join(os.getcwd(), "tmp_test_existing_db_duplicate_skip")
+    app = Flask(__name__)
+    app.root_path = root
+    os.makedirs(os.path.join(root, "uploads", "media", "media"), exist_ok=True)
+    ex_rows = _prepare_fake_env(monkeypatch, root)
+    parsed = {
+        "chapters": [{"chapter_title": "1", "sections": [{"section_title": "1-1", "concepts": [{
+            "concept_name": "x",
+            "concept_en_id": "X",
+            "examples": [{"example_title": "例題1", "problem_text": "題目 [FORMULA_MISSING]", "source_type": "textbook_example", "skill_id": "vh_數學B1_X"}],
+            "practice_questions": [],
+        }]}]}]
+    }
+    with app.app_context():
+        processor._DOCX_IMPORT_CONTEXT = {"question_assets": {}, "question_formula_blocks": {}}
+        _ = processor.save_to_database(
+            parsed,
+            {"curriculum": "vocational", "publisher": "longteng", "grade": 10, "volume": "數學B1"},
+            queue=type("Q", (), {"put": lambda *_: None})(),
+            source_file_path=os.path.join(root, "a.docx"),
+            content_by_page={1: "x"},
+        )
+        processor._DOCX_IMPORT_CONTEXT = {"question_assets": {}, "question_formula_blocks": {}}
+        result2 = processor.save_to_database(
+            parsed,
+            {"curriculum": "vocational", "publisher": "longteng", "grade": 10, "volume": "數學B1"},
+            queue=type("Q", (), {"put": lambda *_: None})(),
+            source_file_path=os.path.join(root, "a.docx"),
+            content_by_page={1: "x"},
+        )
+    assert len(ex_rows) == 1
+    assert result2.get("updated_duplicates", 0) == 0
+    assert result2.get("duplicates_skipped", 0) >= 1
+
+
+def test_intra_import_dedupe_keeps_better_formula_image_item(monkeypatch):
+    root = os.path.join(os.getcwd(), "tmp_test_intra_import_dedupe_best_item")
+    q_assets = {
+        "例題1": [
+            {"rid": "rId101", "path": "uploads/media/media/image_wmf.wmf", "content_type": "image/x-wmf", "media_kind": "formula_asset"}
+        ]
+    }
+    parsed = {
+        "chapters": [{"chapter_title": "1", "sections": [{"section_title": "1-1", "concepts": [{
+            "concept_name": "c1",
+            "concept_en_id": "X1",
+            "examples": [],
+            "practice_questions": [
+                {
+                    "practice_title": "1-1習題 基礎題5",
+                    "problem_text": "題目 [FORMULA_MISSING]",
+                    "source_type": "chapter_exercise",
+                    "skill_id": "vh_數學B1_X",
+                },
+                {
+                    "practice_title": "1-1習題 基礎題5",
+                    "problem_text": "題目 [FORMULA_IMAGE_1]",
+                    "source_type": "chapter_exercise",
+                    "skill_id": "vh_數學B1_X",
+                    "needs_formula_review": True,
+                    "formula_missing": True,
+                },
+            ],
+        }]}]}]
+    }
+    result, ex_rows = _run_docx_asset_save(
+        monkeypatch,
+        root,
+        q_assets=q_assets,
+        convert_ok=True,
+        parsed_override=parsed,
+        formula_blocks={"1-1習題 基礎題5": "題目 [FORMULA_IMAGE_1]"},
+    )
+    assert result.get("intra_import_duplicates_merged", 0) >= 1
+    rows = [r for r in ex_rows if "基礎題5" in str(r.source_description)]
+    assert len(rows) == 1
+    assert "[FORMULA_IMAGE_1]" in rows[0].problem_text
+
+
+def test_intra_import_dedupe_across_two_concepts_keeps_single_record(monkeypatch):
+    root = os.path.join(os.getcwd(), "tmp_test_intra_import_dedupe_two_concepts")
+    parsed = {
+        "chapters": [{"chapter_title": "1", "sections": [{"section_title": "1-1", "concepts": [
+            {
+                "concept_name": "c1",
+                "concept_en_id": "X1",
+                "examples": [],
+                "practice_questions": [
+                    {
+                        "practice_title": "1-1習題 基礎題6",
+                        "problem_text": "題目 [FORMULA_MISSING]",
+                        "source_type": "chapter_exercise",
+                        "skill_id": "vh_數學B1_X",
+                    }
+                ],
+            },
+            {
+                "concept_name": "c2",
+                "concept_en_id": "X2",
+                "examples": [],
+                "practice_questions": [
+                    {
+                        "practice_title": "1-1習題 基礎題6",
+                        "problem_text": "題目 [FORMULA_IMAGE_1]",
+                        "source_type": "chapter_exercise",
+                        "skill_id": "vh_數學B1_X",
+                        "needs_formula_review": True,
+                    }
+                ],
+            },
+        ]}]}]
+    }
+    result, ex_rows = _run_docx_asset_save(monkeypatch, root, q_assets={}, convert_ok=True, parsed_override=parsed, formula_blocks={})
+    assert result.get("intra_import_duplicates_merged", 0) >= 1
+    rows = [r for r in ex_rows if "基礎題6" in str(r.source_description)]
+    assert len(rows) == 1
 
 # ---------------------------------------------------------------------------
 # _is_review_section_title / outline-only review filter tests

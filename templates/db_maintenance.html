@@ -125,8 +125,8 @@
                             <div class="form-group">
                                 <label for="coreScopeMode">清除範圍</label>
                                 <select id="coreScopeMode" name="core_scope_mode">
-                                    <option value="all" selected>全部教材資料</option>
-                                    <option value="filtered">依條件清除</option>
+                                    <option value="all" {% if (core_scope_form_state or {}).get('core_scope_mode', 'all') == 'all' %}selected{% endif %}>全部教材資料</option>
+                                    <option value="filtered" {% if (core_scope_form_state or {}).get('core_scope_mode', 'all') == 'filtered' %}selected{% endif %}>依條件清除</option>
                                 </select>
                             </div>
                             <div id="coreFilteredFields" style="display:none;">
@@ -202,6 +202,8 @@
     <script>
         const CORE_SCOPE_URL = "{{ url_for('core.db_maintenance_core_scope_options') }}";
         const INITIAL_SCOPE_OPTIONS = {{ (core_scope_options or {}) | tojson }};
+        const INITIAL_SCOPE_STATE = {{ (core_scope_form_state or {}) | tojson }};
+        const INITIAL_SCOPE_SUMMARY = {{ (core_scope_summary_text or "") | tojson }};
         let formToSubmit = null;
 
         function showModal(message, form, isDanger = false) {
@@ -356,12 +358,15 @@
             const sectionEl = document.getElementById("coreSection");
 
             await applyOptions(INITIAL_SCOPE_OPTIONS || {}, {
-                curriculum: "all",
-                grade: "all",
-                volume: "all",
-                chapter: "all",
-                section: "all",
+                curriculum: INITIAL_SCOPE_STATE.core_curriculum || "all",
+                grade: INITIAL_SCOPE_STATE.core_grade || "all",
+                volume: INITIAL_SCOPE_STATE.core_volume || "all",
+                chapter: INITIAL_SCOPE_STATE.core_chapter || "all",
+                section: INITIAL_SCOPE_STATE.core_section || "all",
             });
+            if (modeEl) {
+                modeEl.value = INITIAL_SCOPE_STATE.core_scope_mode || modeEl.value || "all";
+            }
 
             modeEl?.addEventListener("change", refreshCoreModeUI);
             curriculumEl?.addEventListener("change", () => reloadFromCurrent("curriculum"));
@@ -371,6 +376,14 @@
             sectionEl?.addEventListener("change", updateScopeSummary);
 
             refreshCoreModeUI();
+            if (INITIAL_SCOPE_SUMMARY && document.getElementById("coreScopeSummary")) {
+                const sum = document.getElementById("coreScopeSummary");
+                if ((INITIAL_SCOPE_STATE.core_scope_mode || "all") === "all") {
+                    sum.textContent = "即將清除：全部教材 core";
+                } else {
+                    sum.textContent = "即將清除：" + INITIAL_SCOPE_SUMMARY.replace(/^mode=filtered\s*/, "");
+                }
+            }
         });
     </script>
 </body>

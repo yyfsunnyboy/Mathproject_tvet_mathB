@@ -298,3 +298,10 @@ def test_ui_can_distinguish_has_image_vs_missing_image_asset():
     assert "_missing_image_asset" in route
     assert "有附圖" in template
     assert "附圖待確認" in template
+    assert "_formula_assets_count" in route
+    assert "_formula_status" in route
+    assert "formula_assets=" in template
+    assert "formula_status=asset_attached" in template
+    assert "formula_status=asset_attached_but_text_missing" in template
+    assert "formula_status=image_placeholder_no_asset" in template
+    assert "formula_status=missing_no_asset" in template

@@ -666,6 +666,98 @@ _LABEL_TYPE_MAP = {
 }
 
 
+def _normalize_docx_question_title_key(title: str) -> str:
+    """Normalize question title key for DOCX mapping lookups."""
+    t = re.sub(r"\s+", "", str(title or "").strip())
+    if not t:
+        return ""
+    # Alias: "例1" and "例題1" are equivalent.
+    t = re.sub(r"^例(?!題)(\d+)$", r"例題\1", t)
+    return t
+
+
+def _build_docx_title_aliases(title: str, *, include_bare_number: bool = False) -> list[str]:
+    """Build ordered alias candidates for title-to-block / title-to-asset matching."""
+    raw = str(title or "").strip()
+    ns = _normalize_docx_question_title_key(raw)
+    aliases: list[str] = []
+
+    def _add(v: str):
+        vv = _normalize_docx_question_title_key(v)
+        if vv and vv not in aliases:
+            aliases.append(vv)
+
+    _add(raw)
+    _add(ns)
+
+    # Prefix stripping alias: "1-1習題 基礎題5" -> "基礎題5"
+    m = _QUESTION_LABEL_RE.search(ns)
+    if m:
+        _add(m.group(1))
+
+    # 例題 / 例 alias
+    m_ex = re.search(r"^例題(\d+)$", ns)
+    if m_ex:
+        _add(f"例{m_ex.group(1)}")
+    m_ex_short = re.search(r"^例(\d+)$", re.sub(r"\s+", "", raw))
+    if m_ex_short:
+        _add(f"例題{m_ex_short.group(1)}")
+
+    if include_bare_number:
+        # Bare number alias for exercise area fallback.
+        m_num = re.search(r"(\d+)$", ns)
+        if m_num:
+            _add(m_num.group(1))
+    return aliases
+
+
+def _extract_label_and_number(title: str) -> tuple[str | None, str | None]:
+    t = _normalize_docx_question_title_key(title)
+    for label in ("例題", "隨堂練習", "基礎題", "進階題", "統測補給站"):
+        m = re.search(rf"^{re.escape(label)}(\d+)$", t)
+        if m:
+            return label, m.group(1)
+    # "例1" alias
+    m = re.search(r"^例(\d+)$", re.sub(r"\s+", "", str(title or "").strip()))
+    if m:
+        return "例題", m.group(1)
+    return None, None
+
+
+def _normalize_docx_key_for_scan(raw_key: str) -> str:
+    return _normalize_docx_question_title_key(str(raw_key or ""))
+
+
+def _find_docx_prefix_match(title: str, source_map: dict):
+    """Find key by normalized-prefix match, preserving label type."""
+    if not isinstance(source_map, dict) or not source_map:
+        return None
+    label, num = _extract_label_and_number(title)
+    if not label or not num:
+        return None
+    expected = f"{label}{num}"
+    expected_short = f"例{num}" if label == "例題" else None
+    for k, v in source_map.items():
+        kn = _normalize_docx_key_for_scan(k)
+        if not kn:
+            continue
+        if kn.startswith(expected):
+            return v
+        if expected_short and kn.startswith(expected_short):
+            return v
+    return None
+
+
+def _find_exercise_section_key(source_map: dict) -> str:
+    if not isinstance(source_map, dict):
+        return ""
+    for k in source_map.keys():
+        kn = _normalize_docx_key_for_scan(k)
+        if kn and re.search(r"(?:\d+-\d+)?習題$", kn):
+            return str(k)
+    return ""
+
+
 def _is_safe_exercise_block(block_text: str, num: str) -> bool:
     """Return True only when *block_text* is a genuine bare-numbered exercise.
 
@@ -704,10 +796,14 @@ def _lookup_docx_formula_block(title: str, formula_blocks: dict) -> str:
     """
     if not title or not formula_blocks:
         return ""
-    title_ns = str(title).replace(" ", "")
+    title_ns = _normalize_docx_question_title_key(title)
 
-    # Strategy 1: exact (no-space / with-space)
-    v = formula_blocks.get(title_ns) or formula_blocks.get(str(title))
+    # Strategy 1: exact + title aliases (例1/例題1/例題 1...)
+    for alias in _build_docx_title_aliases(title, include_bare_number=False):
+        v = formula_blocks.get(alias)
+        if v:
+            return v
+    v = formula_blocks.get(str(title))
     if v:
         return v
 
@@ -718,6 +814,9 @@ def _lookup_docx_formula_block(title: str, formula_blocks: dict) -> str:
         v = formula_blocks.get(label_key)
         if v:
             return v
+    v = _find_docx_prefix_match(title, formula_blocks)
+    if v:
+        return v
 
     # Strategy 3: same-type label + number (only match within the same label type)
     m2 = re.search(r"(\d+)$", title_ns)
@@ -738,6 +837,13 @@ def _lookup_docx_formula_block(title: str, formula_blocks: dict) -> str:
         v = formula_blocks.get(num)
         if v and _is_safe_exercise_block(v, num):
             return v
+
+    # Strategy 5: exercise-section fallback
+    t = _normalize_docx_question_title_key(title)
+    if re.search(r"(?:\d+-\d+)?習題.*(?:基礎題|進階題)\d+$", t):
+        sec_key = _find_exercise_section_key(formula_blocks)
+        if sec_key:
+            return str(formula_blocks.get(sec_key) or "")
 
     return ""
 
@@ -805,10 +911,14 @@ def _lookup_docx_question_assets(title: str, q_assets: dict) -> list:
     """
     if not title or not q_assets:
         return []
-    title_ns = str(title).replace(" ", "")
+    title_ns = _normalize_docx_question_title_key(title)
 
-    # Strategy 1
-    v = q_assets.get(title_ns) or q_assets.get(str(title))
+    # Strategy 1: exact + title aliases
+    for alias in _build_docx_title_aliases(title, include_bare_number=True):
+        v = q_assets.get(alias)
+        if v:
+            return v
+    v = q_assets.get(str(title))
     if v:
         return v
 
@@ -837,8 +947,33 @@ def _lookup_docx_question_assets(title: str, q_assets: dict) -> list:
 
         # Strategy 4: safe bare-number
         v = q_assets.get(num)
-        if v and _is_safe_exercise_block(str(v[0].get("block_text", "") if isinstance(v, list) and v else ""), num):
+        # q_assets keys are produced from detected question starts, so bare-number key
+        # here is already a question-level anchor and can be safely used.
+        if v:
             return v
+
+    # Strategy 5: same-label prefix key (e.g. key="例1 數線上..." for title "例題 1")
+    v = _find_docx_prefix_match(title, q_assets)
+    if v:
+        mapped = []
+        for a in (v or []):
+            aa = dict(a)
+            aa.setdefault("mapping_status", "prefix_match")
+            mapped.append(aa)
+        return mapped
+
+    # Strategy 6: exercise section fallback (e.g. only key="1-1習題")
+    t = _normalize_docx_question_title_key(title)
+    if re.search(r"(?:\d+-\d+)?習題.*(?:基礎題|進階題)\d+$", t):
+        sec_key = _find_exercise_section_key(q_assets)
+        if sec_key:
+            fallback_assets = []
+            for a in (q_assets.get(sec_key) or []):
+                aa = dict(a)
+                aa.setdefault("mapping_status", "exercise_section_fallback")
+                fallback_assets.append(aa)
+            if fallback_assets:
+                return fallback_assets
 
     return []
 
@@ -894,13 +1029,23 @@ def attach_docx_media_to_question_blocks(blocks):
             is_ole_formula = asset_obj.get("is_formula_placeholder_source", False)
             if (ext in ("wmf", "emf") and q.get("has_formula_kw")) or is_ole_formula:
                 asset_obj["media_kind"] = "formula_asset"
+                asset_obj["asset_type"] = "word_formula_image"
                 reason = "ole_formula_placeholder_source" if is_ole_formula else "formula_question_block"
                 if has_app_context():
                     current_app.logger.info(
                         f"[DOCX MEDIA CLASSIFY] rid={asset_obj.get('rid')} kind=formula_asset reason={reason}"
                     )
+                m = re.search(r"\[FORMULA_IMAGE_(\d+)\]", str(q.get("text", "") or ""))
+                if m:
+                    asset_obj["placeholder_index"] = int(m.group(1))
+                    asset_obj["placeholder_token"] = f"[FORMULA_IMAGE_{m.group(1)}]"
+                asset_obj["original_path"] = str(asset_obj.get("path") or "")
+                asset_obj["original_format"] = _docx_image_original_format(
+                    asset_obj.get("path") or "", str(asset_obj.get("content_type") or "")
+                )
             else:
                 asset_obj["media_kind"] = "image_asset"
+                asset_obj["asset_type"] = "word_embedded_image"
                 reason = "question_contains_image_kw" if q.get("has_image_kw") else "default_image_asset"
                 if has_app_context():
                     current_app.logger.info(
@@ -3451,6 +3596,141 @@ def normalize_source_type_by_title(item: dict, default_source_type: str = "textb
     return normalized
 
 
+_SOURCE_TYPE_QUALITY_RANK = {
+    "basic_exercise": 60,
+    "advanced_exercise": 58,
+    "chapter_exercise": 56,
+    "in_class_practice": 54,
+    "exam_practice": 52,
+    "self_assessment": 50,
+    "textbook_example": 48,
+    "textbook_practice": 46,
+}
+
+
+def _normalize_title_for_dedupe(title: str) -> str:
+    t = re.sub(r"\s+", "", str(title or "").strip())
+    t = re.sub(r"^例(?!題)(\d+)$", r"例題\1", t)
+    return t
+
+
+def _build_intra_import_dedupe_key(section_title: str, source_type: str, title: str) -> str:
+    sec = _normalize_title_for_dedupe(section_title)
+    st = str(source_type or "").strip().lower()
+    tt = _normalize_title_for_dedupe(title)
+    return f"{sec}|{st}|{tt}"
+
+
+def _score_intra_import_item(item: dict, source_type: str = "", title: str = "", q_assets: dict | None = None) -> int:
+    st = str(source_type or "").strip().lower()
+    score = _SOURCE_TYPE_QUALITY_RANK.get(st, 0)
+    text = str(item.get("problem_text", "") or item.get("problem", "") or "")
+    if re.search(r"\[FORMULA_IMAGE_\d+\]", text):
+        score += 100
+    if "[FORMULA_MISSING]" in text:
+        score += 10
+    if item.get("needs_formula_review") is True:
+        score += 8
+    score += min(len(text), 400) // 4
+    if isinstance(item.get("formula_assets"), list) and item.get("formula_assets"):
+        score += 80
+    if q_assets:
+        title_assets = _lookup_docx_question_assets(title, q_assets) or []
+        formula_assets = [a for a in title_assets if str(a.get("media_kind", "")) == "formula_asset"]
+        if formula_assets:
+            score += 70 + min(len(formula_assets), 20)
+    return score
+
+
+def _dedupe_intra_import_section_items(section_data: dict, q_assets: dict | None = None) -> int:
+    """Deduplicate repeated questions within one section before DB write.
+
+    Returns merged duplicate count.
+    """
+    concepts = section_data.get("concepts", []) if isinstance(section_data, dict) else []
+    if not isinstance(concepts, list) or not concepts:
+        return 0
+
+    # Gather all candidates with location pointers.
+    all_entries = []
+    for ci, concept in enumerate(concepts):
+        if not isinstance(concept, dict):
+            continue
+        for bucket_name, default_st in (("examples", "textbook_example"), ("practice_questions", "in_class_practice")):
+            arr = concept.get(bucket_name, [])
+            if not isinstance(arr, list):
+                continue
+            for ii, item in enumerate(arr):
+                if not isinstance(item, dict):
+                    continue
+                title = get_question_title(item) or ""
+                source_type = normalize_source_type_by_title(item, default_source_type=default_st)
+                key = _build_intra_import_dedupe_key(
+                    section_data.get("section_title", ""),
+                    source_type,
+                    title,
+                )
+                score = _score_intra_import_item(item, source_type=source_type, title=title, q_assets=q_assets)
+                all_entries.append(
+                    {
+                        "concept_idx": ci,
+                        "bucket": bucket_name,
+                        "item_idx": ii,
+                        "item": item,
+                        "title": title,
+                        "source_type": source_type,
+                        "key": key,
+                        "score": score,
+                    }
+                )
+
+    if not all_entries:
+        return 0
+
+    # Pick winner per dedupe key.
+    best_by_key = {}
+    for e in all_entries:
+        prev = best_by_key.get(e["key"])
+        if prev is None or e["score"] > prev["score"]:
+            best_by_key[e["key"]] = e
+
+    keep_locs = {
+        (e["concept_idx"], e["bucket"], e["item_idx"])
+        for e in best_by_key.values()
+    }
+    removed = 0
+    for ci, concept in enumerate(concepts):
+        if not isinstance(concept, dict):
+            continue
+        for bucket_name in ("examples", "practice_questions"):
+            arr = concept.get(bucket_name, [])
+            if not isinstance(arr, list):
+                continue
+            new_arr = []
+            for ii, item in enumerate(arr):
+                if (ci, bucket_name, ii) in keep_locs:
+                    new_arr.append(item)
+                else:
+                    removed += 1
+            concept[bucket_name] = new_arr
+    return removed
+
+
+def dedupe_intra_import_parsed_data(parsed_data: dict, q_assets: dict | None = None) -> tuple[dict, int]:
+    """Deduplicate duplicate questions within the same AI JSON payload."""
+    if not isinstance(parsed_data, dict):
+        return parsed_data, 0
+    total_removed = 0
+    for chapter in parsed_data.get("chapters", []) or []:
+        if not isinstance(chapter, dict):
+            continue
+        for section in chapter.get("sections", []) or []:
+            if not isinstance(section, dict):
+                continue
+            total_removed += _dedupe_intra_import_section_items(section, q_assets=q_assets)
+    return parsed_data, total_removed
+
+
 def _normalize_sub_questions(raw_sub_questions):
     normalized = []
     if not isinstance(raw_sub_questions, list):
@@ -4203,6 +4483,8 @@ def save_to_database(parsed_data, curriculum_info, queue, source_file_path=None,
     other_practices_imported = 0
     practice_questions_needs_review = 0
     practice_questions_skipped = 0
+    duplicates_skipped_count = 0
+    updated_duplicates = 0
     processed_skill_ids = []
     detected_titles = []
     in_class_nums = []
@@ -4216,6 +4498,7 @@ def save_to_database(parsed_data, curriculum_info, queue, source_file_path=None,
     docx_formula_assets_count = 0
     docx_formula_needs_review_count = 0
     docx_copied_to_question_assets = 0
+    formula_asset_persist_cache: dict[str, str] = {}
     docx_formula_blocks = {}
     is_pdf_source = str(source_file_path or "").lower().endswith(".pdf")
     is_docx_source = str(source_file_path or "").lower().endswith((".docx", ".doc"))
@@ -4229,8 +4512,18 @@ def save_to_database(parsed_data, curriculum_info, queue, source_file_path=None,
             for t, assets in q_assets.items():
                 for a in (assets or []):
                     current_app.logger.info(
-                        f"[DOCX IMAGE DEBUG] attached title={t} source_type=unknown path={a.get('path')}"
+                        f"[DOCX IMAGE DEBUG] attached title={t} source_type={a.get('media_kind', 'unknown')} "
+                        f"asset_type={a.get('asset_type', 'unknown')} path={a.get('path')}"
                     )
+    parsed_data, intra_import_duplicates_merged = dedupe_intra_import_parsed_data(
+        parsed_data,
+        q_assets=q_assets if is_docx_source else None,
+    )
+    if intra_import_duplicates_merged > 0:
+        current_app.logger.info(
+            f"[INTRA IMPORT DEDUPE] merged_duplicates={intra_import_duplicates_merged}"
+        )
+        queue.put(f"INFO: [INTRA IMPORT DEDUPE] merged_duplicates={intra_import_duplicates_merged}")
     page_image_cache = {}
     
     # [NEW] 檔名解析元數據整合
@@ -4301,6 +4594,11 @@ def save_to_database(parsed_data, curriculum_info, queue, source_file_path=None,
 
     def _normalize_problem_hash(problem_text, sub_questions=None, source_type="", title=""):
         normalized = normalize_math_text(str(problem_text or ""))
+        # Treat [FORMULA_IMAGE_N] and [FORMULA_MISSING] as same placeholder class
+        # to prevent duplicate imports caused only by placeholder token style.
+        normalized = re.sub(r"\[FORMULA_IMAGE_\d+\]", "[FORMULA_TOKEN]", normalized)
+        normalized = normalized.replace("[FORMULA_MISSING]", "[FORMULA_TOKEN]")
+        normalized = normalized.replace("[WORD_EQUATION_UNPARSED]", "[FORMULA_TOKEN]")
         normalized = re.sub(r"\s+", " ", normalized).strip()
         sq_norm = []
         for sq in sub_questions or []:
@@ -4309,9 +4607,24 @@ def save_to_database(parsed_data, curriculum_info, queue, source_file_path=None,
             sq_norm.append(
                 {
                     "label": str(sq.get("label", "") or "").strip(),
-                    "problem": re.sub(r"\s+", " ", normalize_math_text(str(sq.get("problem", "") or ""))).strip(),
-                    "answer": re.sub(r"\s+", " ", normalize_math_text(str(sq.get("answer", "") or ""))).strip(),
-                    "solution": re.sub(r"\s+", " ", normalize_math_text(str(sq.get("solution", "") or ""))).strip(),
+                    "problem": re.sub(
+                        r"\s+",
+                        " ",
+                        normalize_math_text(str(sq.get("problem", "") or ""))
+                        .replace("[FORMULA_MISSING]", "[FORMULA_TOKEN]")
+                    ).strip(),
+                    "answer": re.sub(
+                        r"\s+",
+                        " ",
+                        normalize_math_text(str(sq.get("answer", "") or ""))
+                        .replace("[FORMULA_MISSING]", "[FORMULA_TOKEN]")
+                    ).strip(),
+                    "solution": re.sub(
+                        r"\s+",
+                        " ",
+                        normalize_math_text(str(sq.get("solution", "") or ""))
+                        .replace("[FORMULA_MISSING]", "[FORMULA_TOKEN]")
+                    ).strip(),
                 }
             )
         payload = {
@@ -4330,8 +4643,15 @@ def save_to_database(parsed_data, curriculum_info, queue, source_file_path=None,
         )
         if is_docx_source:
             current_app.logger.info(f"[DOCX FORMULA SOURCE] title={item_title} raw_block={block[:240]}")
+        has_problem_placeholder = bool(
+            re.search(r"\[FORMULA_MISSING\]|\[FORMULA_IMAGE_\d+\]|\[WORD_EQUATION_UNPARSED\]|\[UNREADABLE_FORMULA\]", text)
+        )
         if has_placeholder:
             current_app.logger.warning(f"[DOCX FORMULA WARNING] formula placeholder found title={item_title}")
+        if has_placeholder or has_problem_placeholder:
+            item["needs_review"] = True
+            item["needs_formula_review"] = True
+            item["formula_missing"] = True
         if has_placeholder and _contains_perm_comb_formula(text):
             has_ocr_source = bool(item.get("formula_ocr_source"))
             if not has_ocr_source:
@@ -4611,10 +4931,28 @@ def save_to_database(parsed_data, curriculum_info, queue, source_file_path=None,
         q_assets = ctx.get("question_assets", {}) if isinstance(ctx, dict) else {}
         all_candidates = _lookup_docx_question_assets(str(question_title or ""), q_assets)
         formula_candidates = [a for a in (all_candidates or []) if str(a.get("media_kind", "")) == "formula_asset"]
+        has_formula_placeholder = bool(re.search(r"\[FORMULA_IMAGE_\d+\]|\[FORMULA_MISSING\]", str(question_text or "")))
+        if not formula_candidates and has_formula_placeholder:
+            # Global conservative fallback: if this question contains formula placeholder and
+            # DOCX extracted any formula assets, do not leave formula_assets empty.
+            global_formula_candidates = []
+            if isinstance(q_assets, dict):
+                for _k, _arr in q_assets.items():
+                    for _a in (_arr or []):
+                        if str(_a.get("media_kind", "")) == "formula_asset":
+                            aa = dict(_a)
+                            aa.setdefault("mapping_status", "global_formula_fallback")
+                            global_formula_candidates.append(aa)
+                            # keep fallback small and deterministic
+                            if len(global_formula_candidates) >= 3:
+                                break
+                    if len(global_formula_candidates) >= 3:
+                        break
+            formula_candidates = global_formula_candidates
         if not formula_candidates:
             return None
         current_app.logger.info(f"[DOCX FORMULA ASSET] attached title={question_title} count={len(formula_candidates)}")
-        rel_dir = build_question_asset_dir(
+        rel_dir_base = build_question_asset_dir(
             curriculum=curriculum_info.get("curriculum", "unknown"),
             publisher=curriculum_info.get("publisher", "unknown"),
             volume=curriculum_info.get("volume", "unknown"),
@@ -4622,6 +4960,7 @@ def save_to_database(parsed_data, curriculum_info, queue, source_file_path=None,
             section_title=section_title,
             source_filename=os.path.basename(str(source_file_path or "")),
         )
+        rel_dir = os.path.join(rel_dir_base, "formula_assets").replace("\\", "/")
         abs_dir = os.path.join(current_app.root_path, rel_dir)
         os.makedirs(abs_dir, exist_ok=True)
         placeholder_tokens = re.findall(r"\[FORMULA_IMAGE_(\d+)\]", str(question_text or ""))
@@ -4638,25 +4977,41 @@ def save_to_database(parsed_data, curriculum_info, queue, source_file_path=None,
             ext = os.path.splitext(src_rel)[1].lower().lstrip(".") or original_format or "bin"
             if ext == "jpeg":
                 ext = "jpg"
-            problem_key = str(question_title or "") + "|formula|" + str(a.get("block_index") or idx)
-            qhash = hashlib.sha1(problem_key.encode("utf-8")).hexdigest()[:8]
-            filename = build_question_asset_filename(
-                source_type="formula",
-                question_title=question_title,
-                question_id_or_dedupe=qhash,
-                fig_index=idx,
-                ext=ext,
-            )
-            copied_abs = _copy_docx_asset_to_question_assets(src_rel, abs_dir, filename)
-            rel_path = os.path.join(rel_dir, filename).replace("\\", "/") if copied_abs else src_rel.replace("\\", "/")
+            src_abs = src_rel if os.path.isabs(src_rel) else os.path.join(current_app.root_path, src_rel)
+            asset_hash = ""
+            if src_abs and os.path.exists(src_abs):
+                try:
+                    with open(src_abs, "rb") as fsrc:
+                        asset_hash = hashlib.sha1(fsrc.read()).hexdigest()
+                except Exception:
+                    asset_hash = ""
+            if not asset_hash:
+                fallback_key = f"{src_rel}|{a.get('rid')}|{a.get('block_index') or idx}"
+                asset_hash = hashlib.sha1(fallback_key.encode("utf-8")).hexdigest()
+
+            token_index = int(placeholder_tokens[idx - 1]) if idx - 1 < len(placeholder_tokens) else idx
+            section_code = re.sub(r"[^0-9A-Za-z\u4e00-\u9fff_-]+", "", str(section_title or "").strip())[:24] or "section"
+            title_key = _safe_title_for_filename(str(question_title or ""))[:24]
+            original_name = os.path.basename(src_rel) or f"asset_{idx}.{ext}"
+            filename = f"{section_code}_{title_key}_{token_index}_{asset_hash[:8]}_{original_name}"
+            rel_path = formula_asset_persist_cache.get(asset_hash)
+            copied_abs = None
+            if not rel_path:
+                copied_abs = _copy_docx_asset_to_question_assets(src_rel, abs_dir, filename)
+                if copied_abs:
+                    rel_path = os.path.join(rel_dir, filename).replace("\\", "/")
+                    formula_asset_persist_cache[asset_hash] = rel_path
+
             display_path = None
             converted_path = None
-            conversion_status = "pending"
+            conversion_status = "persisted" if rel_path else "failed"
             conversion_error = None
             if original_format in ("png", "jpeg"):
                 display_path = rel_path
-                conversion_status = "not_required"
-            elif original_format in ("wmf", "emf") and copied_abs:
+                if conversion_status != "failed":
+                    conversion_status = "not_required"
+            elif original_format in ("wmf", "emf") and rel_path:
+                copied_abs = copied_abs or os.path.join(current_app.root_path, rel_path)
                 png_filename = os.path.splitext(filename)[0] + ".png"
                 png_abs = os.path.join(abs_dir, png_filename)
                 png_rel = os.path.join(rel_dir, png_filename).replace("\\", "/")
@@ -4671,27 +5026,32 @@ def save_to_database(parsed_data, curriculum_info, queue, source_file_path=None,
                 else:
                     conversion_status = "failed"
                     conversion_error = err or "conversion_failed"
-            elif not copied_abs:
+            elif not rel_path:
                 conversion_status = "failed"
                 conversion_error = "source_asset_not_found"
 
-            token_index = int(placeholder_tokens[idx - 1]) if idx - 1 < len(placeholder_tokens) else idx
             token = f"[FORMULA_IMAGE_{token_index}]"
             asset_meta = {
                 "source": "docx",
-                "asset_type": "word_formula_image",
-                "original_path": src_rel.replace("\\", "/"),
+                "asset_type": str(a.get("asset_type") or "word_formula_image"),
+                "original_path": rel_path,
                 "path": rel_path,
                 "display_path": display_path,
                 "content_type": content_type,
                 "original_format": original_format,
                 "placeholder_token": token,
                 "placeholder_index": token_index,
+                "persist_status": "persisted" if rel_path else "failed",
+                "old_temp_path": src_rel.replace("\\", "/"),
+                "asset_hash": asset_hash,
                 "conversion_status": conversion_status,
                 "converted_path": converted_path,
                 "rid": a.get("rid"),
                 "image_attach_reason": a.get("image_attach_reason"),
+                "is_formula_placeholder_source": bool(a.get("is_formula_placeholder_source", False)),
             }
+            if a.get("mapping_status"):
+                asset_meta["mapping_status"] = a.get("mapping_status")
             if conversion_error:
                 asset_meta["conversion_error"] = conversion_error
             if ocr_enabled:
@@ -4746,6 +5106,132 @@ def save_to_database(parsed_data, curriculum_info, queue, source_file_path=None,
             "needs_review": bool(needs_review or standardized_meta.get("needs_review", False)),
         }
         return meta
+
+    def _load_record_metadata(record_obj):
+        raw = getattr(record_obj, "notes", None)
+        if isinstance(raw, str) and raw.strip():
+            try:
+                parsed = json.loads(raw)
+                if isinstance(parsed, dict):
+                    return parsed
+            except Exception:
+                return {}
+        return {}
+
+    def _dedupe_formula_assets(existing_assets, incoming_assets):
+        merged = []
+        seen = set()
+        for arr in (existing_assets or [], incoming_assets or []):
+            for a in arr or []:
+                if not isinstance(a, dict):
+                    continue
+                key = (
+                    str(a.get("original_path") or ""),
+                    str(a.get("placeholder_token") or ""),
+                    str(a.get("path") or ""),
+                )
+                if key in seen:
+                    continue
+                seen.add(key)
+                merged.append(dict(a))
+        return merged
+
+    def _merge_duplicate_existing_record(existing_record, *, incoming_problem_text="", incoming_meta=None):
+        """Merge richer duplicate payload into existing textbook_examples row.
+
+        Returns (changed: bool, reason: str).
+        """
+        changed = False
+        reasons = []
+        incoming_meta = dict(incoming_meta or {})
+        existing_meta = _load_record_metadata(existing_record)
+
+        existing_formula_assets = existing_meta.get("formula_assets", []) if isinstance(existing_meta, dict) else []
+        incoming_formula_assets = incoming_meta.get("formula_assets", []) if isinstance(incoming_meta, dict) else []
+        merged_formula_assets = _dedupe_formula_assets(existing_formula_assets, incoming_formula_assets)
+        if len(merged_formula_assets) > len(existing_formula_assets):
+            existing_meta["formula_assets"] = merged_formula_assets
+            placeholders = [a.get("placeholder_token") for a in merged_formula_assets if a.get("placeholder_token")]
+            if placeholders:
+                existing_meta["formula_placeholders"] = sorted({str(p) for p in placeholders})
+            changed = True
+            reasons.append("formula_assets")
+
+        for flag in ("needs_review", "needs_formula_review", "formula_missing"):
+            if incoming_meta.get(flag) is True and existing_meta.get(flag) is not True:
+                existing_meta[flag] = True
+                changed = True
+                reasons.append(flag)
+
+        existing_problem_text = str(getattr(existing_record, "problem_text", "") or "")
+        new_problem_text = str(incoming_problem_text or "")
+        if (
+            "[FORMULA_MISSING]" in existing_problem_text
+            and re.search(r"\[FORMULA_IMAGE_\d+\]", new_problem_text)
+        ):
+            existing_record.problem_text = new_problem_text
+            changed = True
+            reasons.append("problem_text_formula_image")
+
+        if changed and existing_meta:
+            attach_image_metadata(existing_record, existing_meta)
+        return changed, ("+".join(sorted(set(reasons))) if reasons else "metadata_merge")
+
+    def _extract_dedupe_from_source_description(source_description_text: str) -> str:
+        m = re.search(r"dedupe=([0-9a-fA-F]+)", str(source_description_text or ""))
+        return str(m.group(1)).lower() if m else ""
+
+    def _extract_title_from_source_description(source_description_text: str) -> str:
+        text = str(source_description_text or "")
+        return text.split(" [", 1)[0].strip()
+
+    def _iter_scope_existing_rows(curriculum, volume, chapter, section):
+        q = TextbookExample.query.filter_by(
+            source_curriculum=curriculum,
+            source_volume=str(volume),
+            source_chapter=chapter,
+            source_section=section,
+        )
+        if hasattr(q, "all"):
+            try:
+                return q.all()
+            except Exception:
+                pass
+        rows = getattr(q, "rows", None)
+        filters = getattr(q, "filters", {})
+        if isinstance(rows, list):
+            out = []
+            for row in rows:
+                if all(getattr(row, k, None) == v for k, v in (filters or {}).items()):
+                    out.append(row)
+            return out
+        return []
+
+    def _find_existing_duplicate_by_dedupe(curriculum, volume, chapter, section, title, dedupe_hash):
+        target_title = str(title or "").strip()
+        target_hash = str(dedupe_hash or "").strip().lower()
+        if not target_hash:
+            for row in _iter_scope_existing_rows(curriculum, volume, chapter, section):
+                sd = str(getattr(row, "source_description", "") or "")
+                if _extract_title_from_source_description(sd) == target_title:
+                    return row
+            return None
+        for row in _iter_scope_existing_rows(curriculum, volume, chapter, section):
+            sd = str(getattr(row, "source_description", "") or "")
+            if _extract_dedupe_from_source_description(sd) != target_hash:
+                continue
+            row_title = _extract_title_from_source_description(sd)
+            if row_title == target_title:
+                return row
+        for row in _iter_scope_existing_rows(curriculum, volume, chapter, section):
+            sd = str(getattr(row, "source_description", "") or "")
+            if _extract_dedupe_from_source_description(sd) == target_hash:
+                return row
+        for row in _iter_scope_existing_rows(curriculum, volume, chapter, section):
+            sd = str(getattr(row, "source_description", "") or "")
+            if _extract_title_from_source_description(sd) == target_title:
+                return row
+        return None
 
     def _determine_target_skill_id(base_clean_en_id, section_title, concept_name, example_obj):
         target_clean_en_id = base_clean_en_id
@@ -5188,6 +5674,23 @@ def save_to_database(parsed_data, curriculum_info, queue, source_file_path=None,
                             source_section=section_title,
                             source_description=source_description
                         ).first()
+                        if not existing_ex:
+                            existing_ex = TextbookExample.query.filter_by(
+                                source_curriculum=curriculum_info.get('curriculum'),
+                                source_volume=str(curriculum_info.get('volume')),
+                                source_chapter=chapter_title,
+                                source_section=section_title,
+                                source_description=source_description
+                            ).first()
+                        if not existing_ex:
+                            existing_ex = _find_existing_duplicate_by_dedupe(
+                                curriculum_info.get('curriculum'),
+                                curriculum_info.get('volume'),
+                                chapter_title,
+                                section_title,
+                                example_title,
+                                dedupe_hash,
+                            )
 
                         if source_type == "textbook_example":
                             title_num = _extract_title_number(example_title)
@@ -5197,9 +5700,33 @@ def save_to_database(parsed_data, curriculum_info, queue, source_file_path=None,
                             saved_example_titles.append(example_title)
 
                         if existing_ex:
-                            current_app.logger.info(
-                                f"[PRACTICE IMPORT] skipped duplicate title={example_title} reason=dedupe_match"
+                            duplicate_meta = {}
+                            duplicate_formula_meta = None
+                            if is_docx_source:
+                                duplicate_formula_meta = _build_docx_formula_assets_metadata(
+                                    example_title, question_text=db_problem_text
+                                )
+                            if duplicate_formula_meta:
+                                duplicate_meta.update(duplicate_formula_meta)
+                            for k in ("needs_review", "needs_formula_review", "formula_missing"):
+                                if ex.get(k) is True:
+                                    duplicate_meta[k] = True
+
+                            changed, _reason = _merge_duplicate_existing_record(
+                                existing_ex,
+                                incoming_problem_text=db_problem_text,
+                                incoming_meta=duplicate_meta,
                             )
+                            if changed:
+                                updated_duplicates += 1
+                                current_app.logger.info(
+                                    f"[PRACTICE IMPORT] updated duplicate title={example_title} reason=metadata_merge"
+                                )
+                            else:
+                                duplicates_skipped_count += 1
+                                current_app.logger.info(
+                                    f"[PRACTICE IMPORT] skipped duplicate title={example_title} reason=dedupe_match"
+                                )
                             continue
 
                         try:
@@ -5572,13 +6099,56 @@ def save_to_database(parsed_data, curriculum_info, queue, source_file_path=None,
                             source_section=section_title,
                             source_description=source_description
                         ).first()
-                        if existing_practice:
-                            practice_questions_skipped += 1
-                            skip_msg = (
-                                f"[PRACTICE IMPORT] skipped duplicate title={practice_title} reason=dedupe_match"
+                        if not existing_practice:
+                            existing_practice = TextbookExample.query.filter_by(
+                                source_curriculum=curriculum_info.get('curriculum'),
+                                source_volume=str(curriculum_info.get('volume')),
+                                source_chapter=chapter_title,
+                                source_section=section_title,
+                                source_description=source_description
+                            ).first()
+                        if not existing_practice:
+                            existing_practice = _find_existing_duplicate_by_dedupe(
+                                curriculum_info.get('curriculum'),
+                                curriculum_info.get('volume'),
+                                chapter_title,
+                                section_title,
+                                practice_title,
+                                dedupe_hash,
                             )
-                            current_app.logger.info(skip_msg)
-                            queue.put(f"INFO: {skip_msg}")
+                        if existing_practice:
+                            duplicate_meta = {}
+                            duplicate_formula_meta = None
+                            if is_docx_source:
+                                duplicate_formula_meta = _build_docx_formula_assets_metadata(
+                                    practice_title, question_text=practice_problem
+                                )
+                            if duplicate_formula_meta:
+                                duplicate_meta.update(duplicate_formula_meta)
+                            for k in ("needs_review", "needs_formula_review", "formula_missing"):
+                                if practice.get(k) is True:
+                                    duplicate_meta[k] = True
+
+                            changed, _reason = _merge_duplicate_existing_record(
+                                existing_practice,
+                                incoming_problem_text=practice_problem,
+                                incoming_meta=duplicate_meta,
+                            )
+                            if changed:
+                                updated_duplicates += 1
+                                update_msg = (
+                                    f"[PRACTICE IMPORT] updated duplicate title={practice_title} reason=metadata_merge"
+                                )
+                                current_app.logger.info(update_msg)
+                                queue.put(f"INFO: {update_msg}")
+                            else:
+                                practice_questions_skipped += 1
+                                duplicates_skipped_count += 1
+                                skip_msg = (
+                                    f"[PRACTICE IMPORT] skipped duplicate title={practice_title} reason=dedupe_match"
+                                )
+                                current_app.logger.info(skip_msg)
+                                queue.put(f"INFO: {skip_msg}")
                             continue
 
                         try:
@@ -5775,8 +6345,10 @@ def save_to_database(parsed_data, curriculum_info, queue, source_file_path=None,
             'exam_practices_imported': exam_practices_imported,
             'other_practices_imported': other_practices_imported,
             'needs_review_count': practice_questions_needs_review,
+            'intra_import_duplicates_merged': intra_import_duplicates_merged,
             'practice_questions_skipped': practice_questions_skipped,
-            'duplicates_skipped': practice_questions_skipped,
+            'duplicates_skipped': duplicates_skipped_count,
+            'updated_duplicates': updated_duplicates,
             'processed_skill_ids': processed_skill_ids
         }
     except Exception as e:

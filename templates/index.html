@@ -1102,6 +1102,48 @@
             background-color: transparent !important;
             border: none !important;
         }
+        /* Practice chat layout guardrails */
+        .chat-area {
+            height: calc(100vh - 120px);
+            min-height: 0;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        #chat-history {
+            flex: 1 1 auto;
+            min-height: 0;
+            overflow-y: auto;
+            overflow-x: hidden;
+            scroll-behavior: smooth;
+            padding-right: 6px;
+        }
+
+        #static-prompts,
+        #dynamic-prompts,
+        .chat-input-area,
+        #rag-mode-btn,
+        #rag-panel {
+            flex: 0 0 auto;
+        }
+
+        #static-prompts,
+        #dynamic-prompts {
+            max-height: 96px;
+            overflow-x: hidden;
+            overflow-y: auto;
+            flex-wrap: wrap;
+            align-content: flex-start;
+        }
+
+        .dynamic-prompt-btn,
+        .prompt-button {
+            max-width: 100%;
+            white-space: normal !important;
+            text-align: left;
+            line-height: 1.35;
+        }
     </style>
 
 
@@ -2045,6 +2087,66 @@
             border: none !important;
         }
     </style>
+    <style>
+        /* Practice chat layout guardrails (final override) */
+        .chat-area {
+            height: calc(100vh - 120px);
+            min-height: 0;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        #chat-history {
+            flex: 1 1 auto;
+            min-height: 0;
+            overflow-y: auto;
+            overflow-x: hidden;
+            scroll-behavior: smooth;
+            padding-right: 6px;
+        }
+
+        #static-prompts,
+        #dynamic-prompts,
+        .chat-input-area,
+        #rag-mode-btn,
+        #rag-panel {
+            flex: 0 0 auto;
+        }
+
+        #static-prompts,
+        #dynamic-prompts {
+            max-height: 48px;
+            overflow-x: auto;
+            overflow-y: hidden;
+        }
+
+        /* === Final override: AI follow-up prompt buttons === */
+        #dynamic-prompts.suggestions-container,
+        #static-prompts.suggestions-container {
+            display: flex !important;
+            flex-direction: column !important;
+            flex-wrap: nowrap !important;
+            gap: 6px !important;
+            max-height: 132px !important;
+            overflow-y: auto !important;
+            overflow-x: hidden !important;
+            padding: 4px 2px 6px 2px !important;
+            scrollbar-width: thin;
+        }
+
+        #dynamic-prompts .dynamic-prompt-btn,
+        #static-prompts .prompt-button {
+            width: 100% !important;
+            max-width: 100% !important;
+            white-space: normal !important;
+            text-align: left !important;
+            line-height: 1.35 !important;
+            flex-shrink: 0 !important;
+            justify-content: flex-start !important;
+            box-sizing: border-box !important;
+        }
+    </style>
 
     <script>
         // === 全域變數 ===
@@ -2463,6 +2565,9 @@
             container.style.display = 'flex'; // 顯示容器
 
             // 生成新按鈕 (使用圓潤泡泡樣式)
+            container.style.display = 'flex';
+            container.style.flexDirection = 'column';
+
             prompts.forEach(promptText => {
                 const btn = document.createElement('button');
                 // 使用 Bootstrap-like 樣式 + 自定義樣式
@@ -2496,8 +2601,7 @@
             renderMathContent(container);
 
             // 確保聊天區域捲動到底部
-            const chatHistory = document.getElementById('chat-history');
-            chatHistory.scrollTop = chatHistory.scrollHeight;
+            scrollAiTutorToBottom();
         }
 
         // === 新增：圖片放大 Modal ===
@@ -3640,7 +3744,7 @@
                             failMsg.style.whiteSpace = 'pre-wrap';
                             failMsg.style.wordBreak = 'break-word';
                             chatHistory.appendChild(failMsg);
-                            chatHistory.scrollTop = chatHistory.scrollHeight;
+                            scrollAiTutorToBottom();
                             resultDisplay.textContent = '';
                             resultDisplay.className = '';
                             const suggestionDivEarly = document.getElementById('prerequisite-suggestion');
@@ -3655,7 +3759,7 @@
                         msg.style.whiteSpace = 'pre-wrap';
                         msg.style.wordBreak = 'break-word';
                         chatHistory.appendChild(msg);
-                        chatHistory.scrollTop = chatHistory.scrollHeight;
+                        scrollAiTutorToBottom();
 
                         // [關鍵修復] 讓 MathJax 渲染剛加入的 LaTeX
                         if (window.MathJax) {
@@ -3718,7 +3822,7 @@
                         msg.className = 'bot-message latest';
                         msg.innerHTML = `AI 連線失敗，請稍後再試`;
                         chatHistory.appendChild(msg);
-                        chatHistory.scrollTop = chatHistory.scrollHeight;
+                        scrollAiTutorToBottom();
 
                         // 顯示錯誤訊息
                         resultDisplay.textContent = 'AI 分析失敗，請稍後再試';
@@ -3780,7 +3884,7 @@
 
                 if (chatHistory) {
                     chatHistory.appendChild(msg);
-                    chatHistory.scrollTop = chatHistory.scrollHeight;
+                    scrollAiTutorToBottom();
                 }
 
                 // 2. [新增] 關鍵：告訴 MathJax 這裡有新訊息，請它幫忙畫出數學公式
@@ -3936,6 +4040,14 @@
             return text.replace(/\\\\/g, '\\');
         }
 
+        function scrollAiTutorToBottom() {
+            const box = document.getElementById("chat-history");
+            if (!box) return;
+            requestAnimationFrame(() => {
+                box.scrollTop = box.scrollHeight;
+            });
+        }
+
         function addBotMessage(text) {
             const chatHistory = document.getElementById('chat-history');
             if (!chatHistory) return;
@@ -3950,7 +4062,7 @@
             messageDiv.style.wordBreak = 'break-word';
 
             chatHistory.appendChild(messageDiv);
-            chatHistory.scrollTop = chatHistory.scrollHeight;
+            scrollAiTutorToBottom();
 
             // [關鍵修復] 通知 MathJax 渲染新加入的數學公式
             if (window.MathJax) {
@@ -4047,8 +4159,15 @@
             if (chatBox) {
                 const observer = new MutationObserver((mutations) => {
                     forceRender();
+                    scrollAiTutorToBottom();
                 });
                 observer.observe(chatBox, { childList: true, subtree: true });
+            }
+
+            const aiBox = document.getElementById("chat-history");
+            if (aiBox) {
+                const observer = new MutationObserver(() => scrollAiTutorToBottom());
+                observer.observe(aiBox, { childList: true, subtree: true });
             }
 
             // 2. 為了保險，每隔 1000ms 檢查一次是否有未渲染的 $ 符號

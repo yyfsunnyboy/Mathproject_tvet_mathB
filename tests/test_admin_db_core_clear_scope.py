@@ -372,6 +372,169 @@ def test_preview_core_clear_does_not_delete_and_uses_same_filters(app_ctx):
         assert TextbookExample.query.filter_by(skill_id=sid).count() == 1
 
 
+def test_preview_core_clear_preserves_form_state_and_filtered_mode(app_ctx):
+    app, admin_id = app_ctx
+    with app.app_context():
+        sid = "vh_preview_state"
+        db.session.add_all([
+            _mk_skill(sid),
+            _mk_curr(skill_id=sid, volume="數學B1", chapter="1 坐標系與函數圖形", section="1-1 數線與絕對值"),
+            _mk_ex(skill_id=sid, volume="數學B1", chapter="1 坐標系與函數圖形", section="1-1 數線與絕對值"),
+        ])
+        db.session.commit()
+        client = app.test_client()
+        _login(client, admin_id)
+        r = client.post(
+            "/db_maintenance",
+            data={
+                "action": "preview_core_clear",
+                "mode": "core",
+                "core_scope_mode": "filtered",
+                "core_curriculum": "vocational",
+                "core_grade": "10",
+                "core_volume": "數學B1",
+                "core_chapter": "1 坐標系與函數圖形",
+                "core_section": "1-1 數線與絕對值",
+            },
+            follow_redirects=True,
+        )
+        text = r.get_data(as_text=True)
+        assert r.status_code == 200
+        assert '"core_scope_mode": "filtered"' in text
+        assert '"core_curriculum": "vocational"' in text
+        assert '"core_grade": "10"' in text
+        assert '"core_volume": "\\u6578\\u5b78B1"' in text
+        assert '"core_chapter": "1 \\u5750\\u6a19\\u7cfb\\u8207\\u51fd\\u6578\\u5716\\u5f62"' in text
+        assert '"core_section": "1-1 \\u6578\\u7dda\\u8207\\u7d55\\u5c0d\\u503c"' in text
+
+
+def test_preview_filtered_with_all_filters_is_rejected_not_all_preview(app_ctx):
+    app, admin_id = app_ctx
+    with app.app_context():
+        s1, s2 = "vh_preview_guard_1", "vh_preview_guard_2"
+        db.session.add_all([
+            _mk_skill(s1),
+            _mk_skill(s2),
+            _mk_curr(skill_id=s1, volume="數學B1", chapter="1 坐標系與函數圖形", section="1-1 數線與絕對值"),
+            _mk_curr(skill_id=s2, volume="數學B2", chapter="1 三角函數", section="1-1 有向角"),
+            _mk_ex(skill_id=s1, volume="數學B1", chapter="1 坐標系與函數圖形", section="1-1 數線與絕對值"),
+            _mk_ex(skill_id=s2, volume="數學B2", chapter="1 三角函數", section="1-1 有向角"),
+        ])
+        db.session.commit()
+        client = app.test_client()
+        _login(client, admin_id)
+        r = client.post(
+            "/db_maintenance",
+            data={
+                "action": "preview_core_clear",
+                "mode": "core",
+                "core_scope_mode": "filtered",
+                "core_curriculum": "all",
+                "core_grade": "all",
+                "core_volume": "all",
+                "core_chapter": "all",
+                "core_section": "all",
+            },
+            follow_redirects=True,
+        )
+        text = r.get_data(as_text=True)
+        assert r.status_code == 200
+        assert "filtered 模式未選擇任何範圍，已取消預覽" in text
+        assert "教材 core 刪除前預覽：mode=all" not in text
+
+
+def test_clear_filtered_with_all_filters_is_rejected_and_keeps_data(app_ctx):
+    app, admin_id = app_ctx
+    with app.app_context():
+        sid = "vh_clear_guard_filtered_all"
+        db.session.add_all([
+            _mk_skill(sid),
+            _mk_curr(skill_id=sid, volume="數學B1", chapter="1 坐標系與函數圖形", section="1-1 數線與絕對值"),
+            _mk_ex(skill_id=sid, volume="數學B1", chapter="1 坐標系與函數圖形", section="1-1 數線與絕對值"),
+        ])
+        db.session.commit()
+        client = app.test_client()
+        _login(client, admin_id)
+        r = client.post(
+            "/db_maintenance",
+            data={
+                "action": "clear_all_data",
+                "mode": "core",
+                "core_scope_mode": "filtered",
+                "core_curriculum": "all",
+                "core_grade": "all",
+                "core_volume": "all",
+                "core_chapter": "all",
+                "core_section": "all",
+            },
+            follow_redirects=True,
+        )
+        text = r.get_data(as_text=True)
+        assert r.status_code == 200
+        assert "filtered 模式未選擇任何範圍，已取消清除" in text
+        assert SkillCurriculum.query.filter_by(skill_id=sid).count() == 1
+        assert TextbookExample.query.filter_by(skill_id=sid).count() == 1
+
+
+def test_all_mode_clear_allowed_and_flash_includes_mode_all(app_ctx):
+    app, admin_id = app_ctx
+    with app.app_context():
+        sid = "vh_clear_all_mode_ok"
+        db.session.add_all([
+            _mk_skill(sid),
+            _mk_curr(skill_id=sid, volume="數學B1", chapter="1 坐標系與函數圖形", section="1-1 數線與絕對值"),
+            _mk_ex(skill_id=sid, volume="數學B1", chapter="1 坐標系與函數圖形", section="1-1 數線與絕對值"),
+        ])
+        db.session.commit()
+        client = app.test_client()
+        _login(client, admin_id)
+        r = client.post(
+            "/db_maintenance",
+            data={"action": "clear_all_data", "mode": "core", "core_scope_mode": "all"},
+            follow_redirects=True,
+        )
+        text = r.get_data(as_text=True)
+        assert r.status_code == 200
+        assert "教材 core 清除完成：mode=all" in text
+        assert SkillCurriculum.query.filter_by(skill_id=sid).count() == 0
+
+
+def test_section_level_clear_preserves_outline_curriculum_in_flash(app_ctx):
+    app, admin_id = app_ctx
+    with app.app_context():
+        outline_sid = "outline_vocational_數學B1_11"
+        normal_sid = "vh_preserve_outline_flash"
+        db.session.add_all([
+            _mk_skill(outline_sid),
+            _mk_skill(normal_sid),
+            _mk_curr(skill_id=outline_sid, volume="數學B1", chapter="1 坐標系與函數圖形", section="1-1 數線與絕對值"),
+            _mk_curr(skill_id=normal_sid, volume="數學B1", chapter="1 坐標系與函數圖形", section="1-1 數線與絕對值"),
+            _mk_ex(skill_id=normal_sid, volume="數學B1", chapter="1 坐標系與函數圖形", section="1-1 數線與絕對值"),
+        ])
+        db.session.commit()
+        client = app.test_client()
+        _login(client, admin_id)
+        r = client.post(
+            "/db_maintenance",
+            data={
+                "action": "clear_all_data",
+                "mode": "core",
+                "core_scope_mode": "filtered",
+                "core_curriculum": "vocational",
+                "core_grade": "10",
+                "core_volume": "數學B1",
+                "core_chapter": "1 坐標系與函數圖形",
+                "core_section": "1-1 數線與絕對值",
+            },
+            follow_redirects=True,
+        )
+        text = r.get_data(as_text=True)
+        assert r.status_code == 200
+        assert "preserved_outline_curriculum=1" in text
+        assert SkillCurriculum.query.filter_by(skill_id=outline_sid).count() == 1
+        assert SkillCurriculum.query.filter_by(skill_id=normal_sid).count() == 0
+
+
 def test_full_clear_guard_still_requires_original_confirmation(app_ctx):
     app, admin_id = app_ctx
     with app.app_context():
@@ -391,6 +554,26 @@ def test_full_clear_guard_still_requires_original_confirmation(app_ctx):
         )
         assert r.status_code == 200
         assert SkillCurriculum.query.filter_by(skill_id=sid).count() == 1
+
+
+def test_full_clear_yes_delete_all_behavior_kept(app_ctx):
+    app, admin_id = app_ctx
+    with app.app_context():
+        sid = "vh_full_yes_delete_all"
+        db.session.add_all([
+            _mk_skill(sid),
+            _mk_curr(skill_id=sid, volume="數學B1", chapter="1 坐標系與函數圖形", section="1-1 數線與絕對值"),
+            _mk_ex(skill_id=sid, volume="數學B1", chapter="1 坐標系與函數圖形", section="1-1 數線與絕對值"),
+        ])
+        db.session.commit()
+        client = app.test_client()
+        _login(client, admin_id)
+        r = client.post(
+            "/db_maintenance",
+            data={"action": "clear_all_data", "mode": "full", "confirm_full_clear": "YES_DELETE_ALL"},
+            follow_redirects=False,
+        )
+        assert r.status_code in (302, 303)
 
 
 def test_template_has_no_mojibake_keywords():

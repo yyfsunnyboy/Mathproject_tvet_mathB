@@ -90,6 +90,21 @@ def _format_sse_data(msg):
     return "".join(f"data: {line}\n" for line in text.split("\n")) + "\n"
 
 
+def _derive_formula_status(*, formula_assets_count, has_formula_image_placeholder, has_formula_missing_placeholder, needs_formula_review):
+    """Derive formula status for admin examples page."""
+    if has_formula_image_placeholder and formula_assets_count > 0:
+        return "asset_attached", "公式圖片已掛載，待 OCR/複核", "info"
+    if has_formula_missing_placeholder and formula_assets_count > 0:
+        return "asset_attached_but_text_missing", "文字缺公式，但已有公式圖片資產，待 OCR/複核", "warning"
+    if has_formula_image_placeholder and formula_assets_count == 0:
+        return "image_placeholder_no_asset", "文字有公式圖片標記，但未找到對應資產", "danger"
+    if has_formula_missing_placeholder and formula_assets_count == 0:
+        return "missing_no_asset", "公式缺失，無可用資產", "danger"
+    if not has_formula_image_placeholder and not has_formula_missing_placeholder and not needs_formula_review:
+        return "ok", "正常", "secondary"
+    return "ok", "正常", "secondary"
+
+
 def _normalize_core_option_value(raw):
     val = str(raw or "").strip()
     return "" if val in ("", "all", "None", "null") else val
@@ -165,6 +180,47 @@ def _normalize_core_scope_filters(form_data):
         "volume": _pick("core_volume"),
         "chapter": _pick("core_chapter"),
         "section": _pick("core_section"),
+    }
+
+
+def _core_scope_has_any_filter(filters):
+    if not isinstance(filters, dict):
+        return False
+    return any(
+        [
+            bool(filters.get("curriculum")),
+            filters.get("grade") is not None,
+            bool(filters.get("volume")),
+            bool(filters.get("chapter")),
+            bool(filters.get("section")),
+        ]
+    )
+
+
+def _core_scope_summary(filters):
+    mode = str((filters or {}).get("scope_mode", "all") or "all").strip().lower()
+    if mode == "all":
+        return "mode=all"
+    parts = []
+    for k in ("curriculum", "grade", "volume", "chapter", "section"):
+        v = (filters or {}).get(k)
+        if v is None or v == "":
+            continue
+        parts.append(f"{k}={v}")
+    if not parts:
+        return "mode=filtered (no_filters)"
+    return "mode=filtered " + " / ".join(parts)
+
+
+def _core_scope_form_state(filters):
+    f = filters or {}
+    return {
+        "core_scope_mode": str(f.get("scope_mode", "all") or "all"),
+        "core_curriculum": str(f.get("curriculum", "") or "all"),
+        "core_grade": str(f.get("grade")) if f.get("grade") is not None else "all",
+        "core_volume": str(f.get("volume", "") or "all"),
+        "core_chapter": str(f.get("chapter", "") or "all"),
+        "core_section": str(f.get("section", "") or "all"),
     }
 
 
@@ -517,6 +573,9 @@ def db_maintenance():
     if not (current_user.is_admin or current_user.role == "teacher"):
         return redirect(url_for('dashboard'))
 
+    core_scope_form_state = _core_scope_form_state({"scope_mode": "all"})
+    core_scope_options = _collect_core_scope_options()
+
     if request.method == 'POST':
         action = request.form.get('action')
         table_name = request.form.get('table_name')
@@ -524,6 +583,15 @@ def db_maintenance():
         if mode not in ('core', 'full'):
             mode = 'core'
         core_scope_filters = _normalize_core_scope_filters(request.form)
+        core_scope_form_state = _core_scope_form_state(core_scope_filters)
+        core_scope_options = _collect_core_scope_options(
+            {
+                "curriculum": core_scope_filters.get("curriculum", ""),
+                "grade": str(core_scope_filters.get("grade")) if core_scope_filters.get("grade") is not None else "",
+                "volume": core_scope_filters.get("volume", ""),
+                "chapter": core_scope_filters.get("chapter", ""),
+            }
+        )
         confirm_full_clear = str(request.form.get('confirm_full_clear', '')).strip()
 
         if action == 'export_db':
@@ -590,10 +658,24 @@ def db_maintenance():
                         continue
                 flash('資料庫已完成 full 清除。', 'warning')
             else:
+                if core_scope_filters.get("scope_mode") == "filtered" and not _core_scope_has_any_filter(core_scope_filters):
+                    flash(
+                        "filtered 模式未選擇任何範圍，已取消清除。若要清空全部教材 core，請明確選擇 all 模式。",
+                        "danger",
+                    )
+                    return render_template(
+                        'db_maintenance.html',
+                        tables=sorted(inspector.get_table_names()),
+                        core_scope_options=core_scope_options,
+                        core_scope_form_state=core_scope_form_state,
+                        core_scope_summary_text=_core_scope_summary(core_scope_filters),
+                        core_clear_confirm_token=CORE_CLEAR_CONFIRM_TOKEN,
+                    )
                 stats = _clear_core_textbook_data(core_scope_filters)
                 flash(
                     (
                         "教材 core 清除完成："
+                        f"{_core_scope_summary(core_scope_filters)}, "
                         f"textbook_examples={stats['deleted_textbook_examples']}, "
                         f"skill_curriculum={stats['deleted_skill_curriculum']}, "
                         f"orphan_skills_info={stats['deleted_orphan_skills_info']}, "
@@ -604,10 +686,24 @@ def db_maintenance():
                     'success'
                 )
         elif action == 'preview_core_clear':
+            if core_scope_filters.get("scope_mode") == "filtered" and not _core_scope_has_any_filter(core_scope_filters):
+                flash(
+                    "filtered 模式未選擇任何範圍，已取消預覽。若要預覽清空全部教材 core，請明確選擇 all 模式。",
+                    "warning",
+                )
+                return render_template(
+                    'db_maintenance.html',
+                    tables=sorted(db.inspect(db.engine).get_table_names()),
+                    core_scope_options=core_scope_options,
+                    core_scope_form_state=core_scope_form_state,
+                    core_scope_summary_text=_core_scope_summary(core_scope_filters),
+                    core_clear_confirm_token=CORE_CLEAR_CONFIRM_TOKEN,
+                )
             stats = _preview_core_textbook_data(core_scope_filters)
             flash(
                 (
                     "教材 core 刪除前預覽："
+                    f"{_core_scope_summary(core_scope_filters)}, "
                     f"textbook_examples={stats['deleted_textbook_examples']}, "
                     f"skill_curriculum={stats['deleted_skill_curriculum']}, "
                     f"orphan_skills_info={stats['deleted_orphan_skills_info']}, "
@@ -616,6 +712,15 @@ def db_maintenance():
                     f"preserved_outline_curriculum={stats['preserved_outline_curriculum']}"
                 ),
                 'warning'
+            )
+            return render_template(
+                'db_maintenance.html',
+                tables=sorted(db.inspect(db.engine).get_table_names()),
+                core_scope_options=core_scope_options,
+                core_scope_form_state=core_scope_form_state,
+                core_scope_summary_text=_core_scope_summary(core_scope_filters),
+                core_preview_stats=stats,
+                core_clear_confirm_token=CORE_CLEAR_CONFIRM_TOKEN,
             )
 
         elif action == 'batch_import_folder':
@@ -655,12 +760,12 @@ def db_maintenance():
 
         return redirect(url_for('core.db_maintenance'))
 
-    inspector = db.inspect(db.engine)
-    tables = sorted(inspector.get_table_names())
     return render_template(
         'db_maintenance.html',
-        tables=tables,
-        core_scope_options=_collect_core_scope_options(),
+        tables=sorted(db.inspect(db.engine).get_table_names()),
+        core_scope_options=core_scope_options,
+        core_scope_form_state=core_scope_form_state,
+        core_scope_summary_text=_core_scope_summary(_normalize_core_scope_filters(core_scope_form_state)),
         core_clear_confirm_token=CORE_CLEAR_CONFIRM_TOKEN,
     )
 
@@ -1095,6 +1200,14 @@ def admin_examples():
         query = query.filter(SkillCurriculum.section == selected['f_section'])
     
     pagination = query.order_by(TextbookExample.id.desc()).paginate(page=page, per_page=50, error_out=False)
+    page_formula_stats = {
+        "total": len(pagination.items),
+        "with_formula_assets": 0,
+        "with_formula_image_placeholder": 0,
+        "with_formula_missing": 0,
+        "missing_no_asset": 0,
+        "image_placeholder_no_asset": 0,
+    }
     for ex in pagination.items:
         meta = {}
         try:
@@ -1110,11 +1223,37 @@ def admin_examples():
             for a in ex._image_assets
         )
         ex._missing_image_asset = ex._has_image and not ex._has_real_image_asset
+        ex._formula_assets = meta.get("formula_assets", []) if isinstance(meta, dict) and isinstance(meta.get("formula_assets"), list) else []
+        ex._formula_assets_count = len(ex._formula_assets)
+        ptxt = str(getattr(ex, "problem_text", "") or "")
+        ex._has_formula_image_placeholder = bool(re.search(r"\[FORMULA_IMAGE_\d+\]", ptxt))
+        ex._has_formula_missing_placeholder = "[FORMULA_MISSING]" in ptxt
+        ex._needs_formula_review = bool(meta.get("needs_formula_review")) if isinstance(meta, dict) else False
+        ex._formula_missing = bool(meta.get("formula_missing")) if isinstance(meta, dict) else False
+        ex._needs_review = bool(meta.get("needs_review")) if isinstance(meta, dict) else False
+        ex._formula_status, ex._formula_status_label, ex._formula_status_badge = _derive_formula_status(
+            formula_assets_count=ex._formula_assets_count,
+            has_formula_image_placeholder=ex._has_formula_image_placeholder,
+            has_formula_missing_placeholder=ex._has_formula_missing_placeholder,
+            needs_formula_review=ex._needs_formula_review,
+        )
+
+        if ex._formula_assets_count > 0:
+            page_formula_stats["with_formula_assets"] += 1
+        if ex._has_formula_image_placeholder:
+            page_formula_stats["with_formula_image_placeholder"] += 1
+        if ex._has_formula_missing_placeholder:
+            page_formula_stats["with_formula_missing"] += 1
+        if ex._formula_status == "missing_no_asset":
+            page_formula_stats["missing_no_asset"] += 1
+        if ex._formula_status == "image_placeholder_no_asset":
+            page_formula_stats["image_placeholder_no_asset"] += 1
     
     return render_template('admin_examples.html', 
                            pagination=pagination, 
                            filters=filters_data,
                            selected_filters=selected,
+                           page_formula_stats=page_formula_stats,
                            curriculum_map={'junior_high': '?葉', 'general': '?桅?'},
                            grade_map={str(g):str(g) for g in filters_data['grades']}, 
                            skills=SkillInfo.query.all(), 
