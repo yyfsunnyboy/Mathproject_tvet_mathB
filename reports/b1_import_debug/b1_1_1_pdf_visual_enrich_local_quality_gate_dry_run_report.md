@@ -1,0 +1,134 @@
+# PDF Visual Enrich Local-only Report
+- requested_volume: `數學B1`
+- requested_section: `1-1 數線與絕對值`
+- safe_output_dir: `E:/Python/Mathproject_tvet_mathB/uploads/question_assets/longteng_mathB1/CH1/1-1_numberline_absolute_value/pdf_visual_enrich`
+- path_encoding_status: `ascii_forced`
+- dry_run: `True`
+- ocr_mode: `local_only`
+- ocr_backend_request: `auto`
+- formula_ocr_backend_request: `none`
+- compare_ocr_backends: `False`
+- formula_only: `False`
+- local_ocr_backend_selected: `pytesseract`
+
+## id=3900 例1 [source_type=textbook_example | needs_review=true | dedupe=a2855fe8f7d62a21]
+- db_problem_text: `數線上，若 [FORMULA_IMAGE_1] = 7，試求 x 之 x 值。 [FORMULA_MISSING]`
+- mapped_page: `9`
+- page_mapping_used: `b1_1-1_fallback_map`
+- page_image_path: `E:/Python/Mathproject_tvet_mathB/uploads/question_assets/longteng_mathB1/CH1/1-1_numberline_absolute_value/pdf_visual_enrich/pages/page_009.png`
+- crop_status: `cropped`
+- crop_path: `E:/Python/Mathproject_tvet_mathB/uploads/question_assets/longteng_mathB1/CH1/1-1_numberline_absolute_value/pdf_visual_enrich/crops/_1_page_009.png`
+- crop_reason: `fixed_crop_例1_page9`
+- local_ocr_backend: `pytesseract`
+- local_ocr_status: `success`
+- preprocess_variants_count: `32`
+- best_preprocess_variant: `upscale_2x`
+- best_tesseract_psm: `6`
+- variant_results: `[{'variant_name': 'original', 'psm': 6, 'text': '1 |x| = 7 表 示 在 數 線上 與 原 點 距離 為 7 的 點 所 代表 的 數 , [1-7 |7|=7 7 6 5 4 3 2-1 0 12 3 4 5 6 7 所 以 x 三 7 或 一 7 1. 數 線上 , 若 |x|=4, 試 求 x 之 值 。 一 一 一 一 一 玫 請 一 一 一 一 -7 -6 -5 -4 -3 -2 -1 0 1 2 3 4 5 6 7', 'confidence': 0.763, 'score': 0.913}, {'variant_name': 'original', 'psm': 7, 'text': '一 由 | -', 'confidence': 0.4125, 'score': 0.5625}, {'variant_name': 'original', 'psm': 11, 'text': '|x| = 7 表 示 在 數 線上 與 原 點 距離 為 7 的 點 所 代表 的 數 , HERE + + un 1. 7 6 -5 -4 3-2-1 0 1 2 3 4 5 所 以 x 三 7 或 一 7 1 數 線上 , 若 |x|=4, 試 求 x 之 值 。 65354232 2', 'confidence': 0.7947, 'score': 0.9447}, {'variant_name': 'original', 'psm': 13, 'text': '區 到', 'confidence': 0.145, 'score': 0.145}, {'variant_name': 'grayscale', 'psm': 6, 'text': '1 數 線上 , 若 |x| 二 7, 試 求 * 之 值 。 |x|= 7 表示 在 數 線上 與 原 點 距離 為 7 的 點 所 代表 的 數 , |-1=7 7-7 一 7 -6 -5 -4 -3 -2 -1 0 1 2 3 4 5 6 7 所 以 x 三 7 或 一 7 隨 堂 練習 1. 數 線上 , 若 |x|=4, 試 求 x 之 值 。 pp pe 7 -6 -5 -4 3 -2 -1 0 1 2 3 4 5 6 7', 'confidence': 0.8201, 'score': 0.9701}, {'variant_name': 'grayscale', 'psm': 7, 'text': '| = z | 由 -', 'confidence': 0.4367, 'score': 0.5867}, {'variant_name': 'grayscale', 'psm': 11, 'text': '@ BARE > Blx|=7 > BRK» Zhe 1 |x| 7 表 示 在 數 線上 與 原 點 距離 為 7 的 點 所 代表 的 數 , |-7|=7 \\7|=7 f 1. -7 -6 -5 -4 3 2 -l 0 1 2 3 4 5 6 7 所 以 x 三 7 或 一 7 1 數 線上 , 若 |x|=4, 試 求 x 之 值 。 7 6 5 -4 -3 -2 -1 0 1 2 3 4 5 6 7', 'confidence': 0.7868, 'score': 0.9368}, {'variant_name': 'grayscale', 'psm': 13, 'text': 'am', 'confidence': 0.43, 'score': 0.43}, {'variant_name': 'upscale_2x', 'psm': 6, 'text': '1 數 線上 , 若 |x| 二 7, 試 求 *x 之 值 。 |x|=7 表 示 在 數 線上 與 原 點 距離 為 7 的 點 所 代表 的 數 , |-7|=7 |7|=7 —7 -6 -5 -4 -3 一 2 一 1 0 1 2 3 4 5 6 7 所 以 x 三 7 或 一 7 1. 數 線上 , 若 |x|=4, 試 求 x 之 值 。 -7 -6 -5 -4 -3 2 -1 0 l 2 3 4 5 6 7', 'confidence': 0.8564, 'score': 1.0064}, {'variant_name': 'upscale_2x', 'psm': 7, 'text': '| = 5 ,。 ,。 ,,。', 'confidence': 0.585, 'score': 0.735}, {'variant_name': 'upscale_2x', 'psm': 11, 'text': '@ 數 線上 , 若 |x|= 三 7, 試 求 x 之 值 。 |x| 二 7 表 示 在 數 線上 與 原 點 距離 為 7 的 點 所 代表 的 數 , |-7|=7 |7|=7 7 一 6 -5 -4 一 3 一 2 -l 0 1 2 3 4 5 6 7 所 以 xx 三 7 或 一 7 eee e eee reer eee ee eee eee eee eeeeeeeeeeereeseeeeeeeeeeeeeeeee 1 試 求 x 之 值 。 一 7 —6 =5 一 4 ~3 —2 -1 0 1 2 3 4 5 6 7', 'confidence': 0.7682, 'score': 0.9182}, {'variant_name': 'upscale_2x', 'psm': 13, 'text': '=', 'confidence': 0.49, 'score': 0.64}, {'variant_name': 'upscale_3x', 'psm': 6, 'text': '1 Rie b> lxl=7 > BR x SA |x|=7 表 示 在 數 線上 與 原 點 距離 為 7 的 點 所 代表 的 數 , |-7|=7 \\7|=7 —7 -6 -5 -4 3 72-1 0 1 2 3 4 5 6 7 所 以 X 三 7 或 一 7 1. 數 線上 , 若 |x| 三 4, 試 求 x 之 值 。 ——_ +++ + $4 + tt Ht tt Ht Ht 一 7 -6 -5 -4 3 72 一 1 0 ] 2 3 4 5 6 7', 'confidence': 0.7448, 'score': 0.8948}, {'variant_name': 'upscale_3x', 'psm': 7, 'text': '', 'confidence': 0.0, 'score': -0.4}, {'variant_name': 'upscale_3x', 'psm': 11, 'text': '@ 數 線上 , 若 |x|==7, 試 求 x 之 值 。 1 lIx|=7 ARAM LB eb ep ae A 7 ADB PAR ey RE |-7|=7 |7|=7 一 7 一 6 5 一 4 一 3 一 2 一 1 0 1 2 3 4 5 6 7 所 以 XX 三 7 或 一 7 隨 堂 Re oeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeereer er ere ewe wee weweeeerer ere eee eee Bik» Glx|=4 試 求 x 之 值 。 一 7 —6 =5 4 —3 一 2 一 1 0 ] 2 3 4 5 6 7', 'confidence': 0.6913, 'score': 0.8413}, {'variant_name': 'upscale_3x', 'psm': 13, 'text': '=', 'confidence': 0.39, 'score': 0.54}, {'variant_name': 'threshold_binary', 'psm': 6, 'text': '全 之 信 。 |x| 7 表示 在 數 線上 與 原 點 距離 為 7 的 點 所 代表 的 數 , 7 -6 -5 -4 -3 -2 -1 0 1 2 3 4 5 6 7 所 以 x 三 7 或 一 7 隨 堂 練習 1. BRE + Blxl=4 + BOR x Zi tt tt ttt ttt tt tH -7 -6 -S -4 -3 -2 -l @ 1 2 3 4 5 6 7', 'confidence': 0.7554, 'score': 0.9054}, {'variant_name': 'threshold_binary', 'psm': 7, 'text': '| = ° | 由 -', 'confidence': 0.53, 'score': 0.68}, {'variant_name': 'threshold_binary', 'psm': 11, 'text': '@ 數 線上 , 若 |x|==7, 試 求 < 之 值 。 1 |x|= 7 表 示 在 數 線上 與 原 點 距離 為 7 的 點 所 代表 的 數 , |-7=7 \\7|=7 f 1. 7 6 -5 +4 -3 2 -]1 0 1 2 3 4 5 6 所 以 x 三 7 或 一 7 1 數 線上 , 若 |z|=4, 試 求 x 之 值 。 -7 -6 -S -4 -3 -2 -1 0 l 2 3 4 5 6 7', 'confidence': 0.8173, 'score': 0.9673}, {'variant_name': 'threshold_binary', 'psm': 13, 'text': 'am', 'confidence': 0.47, 'score': 0.47}, {'variant_name': 'adaptive_threshold', 'psm': 6, 'text': '全 之 人 |x| = 7 表 示 在 數 線上 與 原 點 距離 為 7 的 點 所 代表 的 數 , -7 -6 -5 -4 -3 -2 -1 0 ] 2 3 4 5 6 7 所 以 x 三 7 或 一 7 1. BRE + Blxl=4 + ROR x Zi tt tt tt tt tt tt tH 7-6 -5 -4 -3 -2 -1 0 1 2 3 4 5 6 7', 'confidence': 0.7321, 'score': 0.8821}, {'variant_name': 'adaptive_threshold', 'psm': 7, 'text': '', 'confidence': 0.0, 'score': -0.4}, {'variant_name': 'adaptive_threshold', 'psm': 11, 'text': '@ 數 線上 , 若 |x|=7, 試 求 x 之 值 。 1 |x|= 7 表 示 在 數 線上 與 原 點 距離 為 7 的 點 所 代表 的 數 , |-7=7 |7|=7 f 5 |. 7-6 -5 -4 3 2-1 0 1 2 3 4 6 所 以 x 三 7 或 一 7 練習 1 數 線上 , 若 |x|l=4, 試 求 x 之 值 。 7 -6 -5 -4 -3 ~-2 ~-1 0 1 2 3 4 5 6 7', 'confidence': 0.8027, 'score': 0.9527}, {'variant_name': 'adaptive_threshold', 'psm': 13, 'text': 'am', 'confidence': 0.42, 'score': 0.42}, {'variant_name': 'sharpen', 'psm': 6, 'text': '1 數 線上 , 若 |z| 二 7, 試 求 * 之 值 。 |x|= 7 表 示 在 數 線上 與 原 點 距離 為 7 的 點 所 代表 的 數 , a |7=7 I —7 -6 -5 -4 -3 -2 -1 0 1 2 3 4 5 6 7 所 以 x 三 7 或 一 7 1. 數 線上 , 若 |x|==4, 試 求 x 之 值 。 tt tt tt -7 -6 -5 -4 -3 -2 -1 0 1 2 3 4 5 6 7', 'confidence': 0.8498, 'score': 0.9998}, {'variant_name': 'sharpen', 'psm': 7, 'text': '| = = | 由 -', 'confidence': 0.57, 'score': 0.72}, {'variant_name': 'sharpen', 'psm': 11, 'text': '@ BARE > Blx|=7 > BR» Zhe 1 |x| = 7 表 示 在 數 線上 與 原 點 距離 為 7 的 點 所 代表 的 數 , |-7|=7 \\7|=7 f 1. 7 6 5 4 3 2 -l 0 1 2 3 4 5 6 7 所 以 x 三 7 或 一 7 1 數 線上 , 若 |M|==4, 試 求 x 之 值 。 Vs 43 54 0 1 2 3 4 5 6 7 >', 'confidence': 0.7936, 'score': 0.9436}, {'variant_name': 'sharpen', 'psm': 13, 'text': '=', 'confidence': 0.61, 'score': 0.76}, {'variant_name': 'high_contrast', 'psm': 6, 'text': '1 數 線上 , 若 |x| 二 7, 試 求 之 值 。 |x|= 7 表示 在 數 線上 與 原 點 距離 為 7 的 點 所 代表 的 數 , |-7|=7 17|=7 7 6 5S +4 3 2 -1 0 1 2 3 4 5 6 7 所 以 x 三 7 或 一 7 1. 數 線上 , 若 |x|=4, 試 求 x 之 值 。 一 一 一 一 一 二 一 一 一 一 一 一 一 証 放 瑟 -7 -6 -5 -4 -3 -2 -1 0 1 2 3 4 5 6 7', 'confidence': 0.7818, 'score': 0.9318}, {'variant_name': 'high_contrast', 'psm': 7, 'text': '| = z : 由 | | -', 'confidence': 0.5613, 'score': 0.7113}, {'variant_name': 'high_contrast', 'psm': 11, 'text': '@ Hig b> Blx|=7 > Rx Zhe 1 |x|= 7 表示 在 數 線上 與 原 點 距離 為 7 的 點 所 代表 的 數 , ale? 4 t + 71-7 4 1. 76 5 4 -3 -2 -1 0 1 2 3 4 5 6 7 所 以 x 三 7 或 一 7 1 數 線上 , 若 |x|=4, 試 求 x* 之 值 。 7-6 -5 -4 -3 -2 -1 + 0 1', 'confidence': 0.7857, 'score': 0.9357}, {'variant_name': 'high_contrast', 'psm': 13, 'text': 'am', 'confidence': 0.41, 'score': 0.41}]`
+- selected_local_ocr_text: `1 數 線上 , 若 |x| 二 7, 試 求 *x 之 值 。 |x|=7 表 示 在 數 線上 與 原 點 距離 為 7 的 點 所 代表 的 數 , |-7|=7 |7|=7 —7 -6 -5 -4 -3 一 2 一 1 0 1 2 3 4 5 6 7 所 以 x 三 7 或 一 7 1. 數 線上 , 若 |x|=4, 試 求 x 之 值 。 -7 -6 -5 -4 -3 2 -1 0 l 2 3 4 5 6 7`
+- selected_local_ocr_confidence: `0.8564367816091955`
+- ocr_quality_score: `0.87`
+- ocr_quality_status: `good`
+- has_math_signal: `True`
+- noise_ratio: `0.0`
+- mojibake_detected: `False`
+- placeholder_reduction: `2`
+- proposed_update_blocked_reason: ``
+- pytesseract_text: `1 數 線上 , 若 |x| 二 7, 試 求 *x 之 值 。 |x|=7 表 示 在 數 線上 與 原 點 距離 為 7 的 點 所 代表 的 數 , |-7|=7 |7|=7 —7 -6 -5 -4 -3 一 2 一 1 0 1 2 3 4 5 6 7 所 以 x 三 7 或 一 7 1. 數 線上 , 若 |x|=4, 試 求 x 之 值 。 -7 -6 -5 -4 -3 2 -1 0 l 2 3 4 5 6 7`
+- pytesseract_confidence: `0.8564367816091955`
+- pix2tex_available: `False`
+- pix2tex_latex: ``
+- pix2tex_quality_score: `0.0`
+- selected_backend: `pytesseract`
+- selected_candidate: `1 數 線上 , 若 |x| 二 7, 試 求 *x 之 值 。 |x|=7 表 示 在 數 線上 與 原 點 距離 為 7 的 點 所 代表 的 數 , |-7|=7 |7|=7 —7 -6 -5 -4 -3 一 2 一 1 0 1 2 3 4 5 6 7 所 以 x 三 7 或 一 7 1. 數 線上 , 若 |x|=4, 試 求 x 之 值 。 -7 -6 -5 -4 -3 2 -1 0 l 2 3 4 5 6 7`
+- selected_candidate_quality: `0.87`
+- gemini_called: `0`
+- action: `proposed_update`
+- reason: `quality_gate_passed`
+
+## id=3904 例2 [source_type=textbook_example | needs_review=true | dedupe=b1161f01581d5c2a]
+- db_problem_text: `試求下列不等式之解：(1) [FORMULA_IMAGE_1] < 3 (2) [FORMULA_IMAGE_2] ≥ 4 [FORMULA_MISSING]`
+- mapped_page: `11`
+- page_mapping_used: `b1_1-1_fallback_map`
+- page_image_path: `E:/Python/Mathproject_tvet_mathB/uploads/question_assets/longteng_mathB1/CH1/1-1_numberline_absolute_value/pdf_visual_enrich/pages/page_011.png`
+- crop_status: `cropped`
+- crop_path: `E:/Python/Mathproject_tvet_mathB/uploads/question_assets/longteng_mathB1/CH1/1-1_numberline_absolute_value/pdf_visual_enrich/crops/_2_page_011.png`
+- crop_reason: `fixed_crop_例2_page11`
+- local_ocr_backend: `pytesseract`
+- local_ocr_status: `success`
+- preprocess_variants_count: `32`
+- best_preprocess_variant: `high_contrast`
+- best_tesseract_psm: `6`
+- variant_results: `[{'variant_name': 'original', 'psm': 6, 'text': 'a 0 @ —a 0 a —a 0 a ‧ 有 等 號 實心 ( 含 該 點 ) o 無 等 號 空心 (不 含 該 點 ) Al A 12 A 回 13 () |x|< 3 由 絕對 值 不 等 式 性 質 , 得 一 3<x<3 一 一 (2) |x| 守 4 由 絕對 值 不 等 式 性 質 , 得 x 守 4 或 x 三 一 4 4', 'confidence': 0.7976, 'score': 0.9476}, {'variant_name': 'original', 'psm': 7, 'text': '- + - . |', 'confidence': 0.524, 'score': 0.674}, {'variant_name': 'original', 'psm': 11, 'text': 'a, @ 一 一 一 一 = —a —a 0 ‧ 有 等 號 實 點 ) 0 無 等 號 (不 含 該 點 ) af A 回 12 人 回 13 () |x|< 3 由 絕對 值 不 等 式 性 質 , 得 一 3<x<3 一 -3 3 0 3 3 (2) |xl24 wee GREAED Hxre4Rxs-4 一 一 一 4 一 0 一 4 一 一 一', 'confidence': 0.7419, 'score': 0.8919}, {'variant_name': 'original', 'psm': 13, 'text': '—', 'confidence': 0.68, 'score': 0.68}, {'variant_name': 'grayscale', 'psm': 6, 'text': '|x|<a |x|=a |xl=a |x|>a 1, -, . fe. . £4 -a 0 a -a 0 a -a 0 a ‧ 有 等 號 實心 ( 含 該 點 ) © 無 等 號 空心 (不 含 該 點 ) 人 回 11 條 回 12 條 回 13 2 試 求 下 列 不 等 式 之 解 : (1 |x|< 3 (2)/xlB4 () Ixl<3 由 絕對 值 不 等 式 性 質 , 得 一 3<x<3 30° 3 0 3 3 (2) |x|24 由 絕對 值 不 等 式 性 質 , 得 x 之 4 或 x 三 一 4 4 gE', 'confidence': 0.7536, 'score': 0.9036}, {'variant_name': 'grayscale', 'psm': 7, 'text': '| :', 'confidence': 0.49, 'score': 0.64}, {'variant_name': 'grayscale', 'psm': 11, 'text': '|x|<a |x|=a |x|=a |x|>a@ ————- _._4 ~ —a —a 該 點 ) 等 號 i 和 條 回 11 Ae 圖 12 A 回 13 @ 2 試 求 下 列 不 等 式 之 解 : (1 |x| <3 (2)|x|=4 (1) |xl<3 由 絕對 值 不 等 式 性 質 , 得 一 3<x<3 2S», = -3 3 0 —— (2) |xl24 由 絕對 值 不 等 式 性 質 , 得 x 之 4 或 x 三 一 4 a 一 一 4 一 一 一 一 4 一 一 4', 'confidence': 0.7753, 'score': 0.9253}, {'variant_name': 'grayscale', 'psm': 13, 'text': '—', 'confidence': 0.75, 'score': 0.75}, {'variant_name': 'upscale_2x', 'psm': 6, 'text': '|x|<a |x|=a |x|=a |x|>a Ni ~ 0 a -a 0 a -a 0 a ‧ 有 等 號 實心 ( 含 該 點 ) © 無 等 號 空心 (不 含 該 點 ) A fail A [f@i12 A [@l13 2 試 求 下 列 不 等 式 之 解 : (1 |x|<3 (2)|x|24 (1) |x|< 3 由 絕對 值 不 等 式 性 質 , 得 一 3<x<3 -3 3 0 3 3 (2) |x|=4 由 絕對 值 不 等 式 性 質 , 得 x 之 4 或 X 三 一 4 一', 'confidence': 0.7993, 'score': 0.9493}, {'variant_name': 'upscale_2x', 'psm': 7, 'text': '| : 一', 'confidence': 0.51, 'score': 0.66}, {'variant_name': 'upscale_2x', 'psm': 11, 'text': '|x|<a |x|=a |x|=a |x|>a a a 人 —a a ——_._4= 0 0 a 一 0 a e 有 等 號 實心 ( 含 該 點 ) o 無 等 號 空心 (不 含 該 點 ) A f11 A (12 A [a]13 @ 2 試 求 下 列 不 等 式 之 解 : (1 |x|<3 (2)|x|24 (1) |x|<3 由 絕對 值 不 等 式 性 質 , 得 一 3<x<3 -3 0 (2) |x|=4 由 絕對 值 不 等 式 性 質 , 得 x 之 4 或 X 三 一 4 還 一 一 一 0 主 4 一 一 4 一 一 0 — 4 — 4', 'confidence': 0.7945, 'score': 0.9445}, {'variant_name': 'upscale_2x', 'psm': 13, 'text': '—', 'confidence': 0.75, 'score': 0.75}, {'variant_name': 'upscale_3x', 'psm': 6, 'text': '|x|<a |x|=a |x|=a |x|>a —a 0 a ~a 0 a —a 0 a ‧ 有 等 號 實心 ( 含 該 點 ) o 無 等 號 空心 (不 含 該 點 ) A [11 A [4112 A [2113 4 試 求 下 列 不 等 式 之 解 : (1) |x|<3 = (2) |x|24 (1) |x|<3 由 絕對 值 不 等 式 性 質 , 得 一 3<x<3 -3 30 8 3 (2) |x|>4 由 絕對 值 不 等 式 性 質 , 得 x 之 4 或 XX 三 一 4 -4 一 一 4 一 一 0 一 4 一 一 4', 'confidence': 0.8104, 'score': 0.9604}, {'variant_name': 'upscale_3x', 'psm': 7, 'text': '| | - ;', 'confidence': 0.535, 'score': 0.685}, {'variant_name': 'upscale_3x', 'psm': 11, 'text': '|x|<a |x|=a |x|=a |x|>a —a C6)» oo . (5 —a —a ef 號 實心 ( 合 YEE ) o 無 等 號 Fa Ly (AS 該 點 ) A fli A [8112 A [&]13 @ 4 試 求 下 列 不 等 式 之 解 : (1) |x|<3 = (2) |x|24 (1) |x|<3 由 絕對 值 不 等 式 性 質 , 得 一 3<x<3 “SSS — 3 3 一 一 一 一 一 一 0 =f 一 一 一 3 (2) |x|>4 由 絕對 值 不 等 式 性 質 , 得 x 之 4 或 % 三 一 4 人 一 4 4 0 4 4', 'confidence': 0.7531, 'score': 0.9031}, {'variant_name': 'upscale_3x', 'psm': 13, 'text': '—', 'confidence': 0.7, 'score': 0.7}, {'variant_name': 'threshold_binary', 'psm': 6, 'text': '|x|<a@ |xl=a |xl=a |x|>@ 1.4, . —(.22 oo). 4 回 0 a -a 0 a -a 0 a ‧ 有 等 號 實心 ( 含 該 點 ) ce 無 等 號 空心 (不 含 該 中) 4411 a 回 12 息 回 13 2 試 求 下 列 不 等 式 之 解 :(D |x| <3 (2)|x|>4 (00 lal<3 由 絕對 值 不 等 式 性 質 , 得 ~-3<x<3 (2) |x| 之 4 由 絕對 值 不 等 式 性 質 , 得 x 之 4 或 x 科 一 4', 'confidence': 0.7552, 'score': 0.9052}, {'variant_name': 'threshold_binary', 'psm': 7, 'text': '一', 'confidence': 0.14, 'score': 0.14}, {'variant_name': 'threshold_binary', 'psm': 11, 'text': '|x|<a@ |xl=a |xl=a |x|>@ mie > eb oe a -a —a 0 a 有 等 (不 含蓄 點 ) ai a 回 12 人 回 13 @ 2 試 求 下 列 不 等 式 之 解 :(1D |x| < 3 (2)|x|>4 (0 |x|< 3 由 絕對 值 不 等 式 性 質 , 得 ~-3<x<3 了 AN 全 語 -3 0 —— (2) |xl>4 由 絕對 值 不 等 式 性 質 , 得 x 之 4 或 x 生 一 4 一 一 一 一 一 一 <= 0 一 二 4 一 一 4', 'confidence': 0.7258, 'score': 0.8758}, {'variant_name': 'threshold_binary', 'psm': 13, 'text': '—', 'confidence': 0.43, 'score': 0.43}, {'variant_name': 'adaptive_threshold', 'psm': 6, 'text': '|x|<a@ |xl=a |xl=a@ |x|>e@ se ——__ «a 0 a -a 0 a —a 0 a ‧ 有 等 號 實心 ( 含 該 四) 無 等 號 空心 (不 合 該 四) 4811 4812 a 回 13 2 試 求 下 列 不 等 式 之 解 :(D ll|l<3 (21x|l> 4 (0 |x|< 3 由 絕對 值 不 等 式 性 質 , 得 一 3<x<3 (2) |x| 寥 4 由 絕對 值 不 等 式 性 質 , 得 x 之 4 或 x 科 一 4 Rg Qn gare”', 'confidence': 0.7151, 'score': 0.8651}, {'variant_name': 'adaptive_threshold', 'psm': 7, 'text': '', 'confidence': 0.0, 'score': -0.4}, {'variant_name': 'adaptive_threshold', 'psm': 11, 'text': 'lal=a@ lx|=a |x|<a@ |x|>e@ a -a 0 a 4811 4812 a 回 13 @ 2 試 求 下 列 不 等 式 之 解 :(D ll|l<3 (21x|l> 4 (0 |xl<3 由 絕對 值 不 等 式 性 質 , 得 一 3<x<3 一 3 一 (2) |xl24 由 絕對 值 不 等 式 性 質 , 得 x 之 4 或 x 科 一 4 一 4 > 一 二 4 二 一 二 二 4 二 一', 'confidence': 0.7549, 'score': 0.9049}, {'variant_name': 'adaptive_threshold', 'psm': 13, 'text': '—', 'confidence': 0.32, 'score': 0.32}, {'variant_name': 'sharpen', 'psm': 6, 'text': '|x|<a |x|=a |x|=a |x|>a Ee 0 a -a 0 a —a 0 a ‧ 有 等 號 實心 ( 含 該 點 ) © 無 等 號 空心 (不 含 該 點 ) Affi A 回 12 A 回 13 2 試 求 下 列 不 等 式 之 解 (1) |x| <3 (2)|x|=4 (1) [xl <3 由 絕對 值 不 等 式 性 質 , 得 一 3<x<3 (2) |x|=4 由 絕對 值 不 等 式 性 質 , 得 x 之 4 或 x 三 一 4 一 一 一 一 一 一 一 一 一', 'confidence': 0.7865, 'score': 0.9365}, {'variant_name': 'sharpen', 'psm': 7, 'text': '', 'confidence': 0.0, 'score': -0.4}, {'variant_name': 'sharpen', 'psm': 11, 'text': 'lal=a |xl=a |x|<a |x|>a ~ > 圖 到, o- i —a -a 0 All A 回 12 A 回 13 @ 2 試 求 下 列 不 等 式 之 解 : (0 |r|<3 (|xl>z4 (1) |x|< 3 由 絕對 值 不 等 式 性 質 , 得 一 3<x<3 一 一 @ 一 一 一 3 0 —3—— *S (2) |x|=4 HOH RREAM EG Hx ea kxs-4 1 — 一 一 一 @ 一 一 — £ a 4 — 一 一 — 4', 'confidence': 0.6546, 'score': 0.8046}, {'variant_name': 'sharpen', 'psm': 13, 'text': '—', 'confidence': 0.76, 'score': 0.76}, {'variant_name': 'high_contrast', 'psm': 6, 'text': '|x|<a@ |x|=a |x|=a |x|>a =e 0 a -a 0 a -a 0 a ‧ 有 等 號 實心 ( 含 該 點 ) o 無 等 號 空心 (不 含 該 點 ) Am A 12 A 回 13 2 試 求 下 列 不 等 式 之 解 : (1 |x]<3 |xlB4 (1) |x|< 3 由 絕對 值 不 等 式 性 質 , 得 一 3<x<3 一 一 一 (2) |x|>4 由 絕對 值 不 等 式 性 質 , 得 x 之 4 或 生 一 4 4', 'confidence': 0.8122, 'score': 0.9622}, {'variant_name': 'high_contrast', 'psm': 7, 'text': '| : 一', 'confidence': 0.68, 'score': 0.83}, {'variant_name': 'high_contrast', 'psm': 11, 'text': '|x|<a@ |x|=a |x|=a |x|>a a a —a «=< =o 0 -a ‧ 有 等 號 實 點 ) 0 無 等 號 (不 含 該 點 ) a A 12 A 回 13 @ 2 試 求 下 列 不 等 式 之 解 : (1 |x]<3 |xlB4 (1) [xl<3 由 絕對 值 不 等 式 性 質 , 得 一 3<x<3 ___>_z -3 3 0 3 3 (2) |x|>4 由 絕對 值 不 等 式 性 質 , 得 x 之 4 或 生 一 4 ot 一 一 一 一 一 一 一 一 鋪 誠 說', 'confidence': 0.7485, 'score': 0.8985}, {'variant_name': 'high_contrast', 'psm': 13, 'text': '—', 'confidence': 0.8, 'score': 0.8}]`
+- selected_local_ocr_text: `|x|<a@ |x|=a |x|=a |x|>a =e 0 a -a 0 a -a 0 a ‧ 有 等 號 實心 ( 含 該 點 ) o 無 等 號 空心 (不 含 該 點 ) Am A 12 A 回 13 2 試 求 下 列 不 等 式 之 解 : (1 |x]<3 |xlB4 (1) |x|< 3 由 絕對 值 不 等 式 性 質 , 得 一 3<x<3 一 一 一 (2) |x|>4 由 絕對 值 不 等 式 性 質 , 得 x 之 4 或 生 一 4 4`
+- selected_local_ocr_confidence: `0.8121978021978021`
+- ocr_quality_score: `0.72`
+- ocr_quality_status: `good`
+- has_math_signal: `True`
+- noise_ratio: `0.0`
+- mojibake_detected: `False`
+- placeholder_reduction: `3`
+- proposed_update_blocked_reason: `confidence_below_threshold`
+- pytesseract_text: `|x|<a@ |x|=a |x|=a |x|>a =e 0 a -a 0 a -a 0 a ‧ 有 等 號 實心 ( 含 該 點 ) o 無 等 號 空心 (不 含 該 點 ) Am A 12 A 回 13 2 試 求 下 列 不 等 式 之 解 : (1 |x]<3 |xlB4 (1) |x|< 3 由 絕對 值 不 等 式 性 質 , 得 一 3<x<3 一 一 一 (2) |x|>4 由 絕對 值 不 等 式 性 質 , 得 x 之 4 或 生 一 4 4`
+- pytesseract_confidence: `0.8121978021978021`
+- pix2tex_available: `False`
+- pix2tex_latex: ``
+- pix2tex_quality_score: `0.0`
+- selected_backend: `pytesseract`
+- selected_candidate: `|x|<a@ |x|=a |x|=a |x|>a =e 0 a -a 0 a -a 0 a ‧ 有 等 號 實心 ( 含 該 點 ) o 無 等 號 空心 (不 含 該 點 ) Am A 12 A 回 13 2 試 求 下 列 不 等 式 之 解 : (1 |x]<3 |xlB4 (1) |x|< 3 由 絕對 值 不 等 式 性 質 , 得 一 3<x<3 一 一 一 (2) |x|>4 由 絕對 值 不 等 式 性 質 , 得 x 之 4 或 生 一 4 4`
+- selected_candidate_quality: `0.72`
+- gemini_called: `0`
+- action: `low_confidence`
+- reason: `confidence_below_threshold`
+
+## id=3914 1-1習題 基礎題5 [source_type=basic_exercise | needs_review=true | dedupe=f1b2caf32ae99eef]
+- db_problem_text: `解下列不等式：(1) [FORMULA_IMAGE_1] (2) [FORMULA_IMAGE_2]`
+- mapped_page: `18`
+- page_mapping_used: `b1_1-1_fallback_map`
+- page_image_path: `E:/Python/Mathproject_tvet_mathB/uploads/question_assets/longteng_mathB1/CH1/1-1_numberline_absolute_value/pdf_visual_enrich/pages/page_018.png`
+- crop_status: `cropped`
+- crop_path: `E:/Python/Mathproject_tvet_mathB/uploads/question_assets/longteng_mathB1/CH1/1-1_numberline_absolute_value/pdf_visual_enrich/crops/1-1_5_page_018.png`
+- crop_reason: `fixed_crop_基礎題5_page18`
+- local_ocr_backend: `pytesseract`
+- local_ocr_status: `success`
+- preprocess_variants_count: `32`
+- best_preprocess_variant: `threshold_binary`
+- best_tesseract_psm: `6`
+- variant_results: `[{'variant_name': 'original', 'psm': 6, 'text': '5 解 下 列 不 等 式 : (Dlx-21=4 (2)[x+5]>1 6 解 下 列 不 等 式 : (Dlx-3/< 2 (2)|x+5|24 TD gece lay t1l<6 ©', 'confidence': 0.6162, 'score': 0.7662}, {'variant_name': 'original', 'psm': 7, 'text': ';', 'confidence': 0.21, 'score': 0.21}, {'variant_name': 'original', 'psm': 11, 'text': 'DO 7 WA? // WA” // 5 解 下 列 不 等 式 : (Dlx-2/< 4 (2)|x+5|>1 6 解 下 列 不 等 式 : (Dlx-31<2 ()\\x+5|=4 TD gece lay t1l<6 ©', 'confidence': 0.5556, 'score': 0.7056}, {'variant_name': 'original', 'psm': 13, 'text': '加 還', 'confidence': 0.07, 'score': 0.07}, {'variant_name': 'grayscale', 'psm': 6, 'text': '5 解 下 列 不 等 式 : (Dlx-2|<4 021x 二 51> 1 6 解 下 列 不 等 式 : (Dlx-3/< 2 (2)|x+5]24 TF gece lay t1l<6 ©', 'confidence': 0.6262, 'score': 0.7762}, {'variant_name': 'grayscale', 'psm': 7, 'text': ';', 'confidence': 0.0, 'score': 0.0}, {'variant_name': 'grayscale', 'psm': 11, 'text': 'ie ane ee // 全 心 // 5 解 下 列 不 等 式 : (Dlx-2/< 4 (2)|x+5|>1 6 解 下 列 不 等 式 : (Dlx-31<2 (2)|x 十 5| 守 4 TF gece lay t1l<6 ©', 'confidence': 0.5927, 'score': 0.7427}, {'variant_name': 'grayscale', 'psm': 13, 'text': 'a', 'confidence': 0.0, 'score': 0.0}, {'variant_name': 'upscale_2x', 'psm': 6, 'text': '5 解 下 列 不 等 式 : (D|x~-2|<4 (2)|x+5|>1 6 解 下 列 不 等 式 : (01|x 一 31<2 (2)|x+5|24 TT 全 不 笠 二 [4y+1<6o', 'confidence': 0.6768, 'score': 0.8268}, {'variant_name': 'upscale_2x', 'psm': 7, 'text': '', 'confidence': 0.0, 'score': -0.4}, {'variant_name': 'upscale_2x', 'psm': 11, 'text': 'DP WA? J WA” // 5 ie KIA SES : (D|x 一 2|<4 (2)|x+5|>1 6 解 下 列 不 等 式 : (D|x 一 3|< 2 (2)|x+ 5|> 4 TT 全 不 笠 二 [4y+1<6o', 'confidence': 0.6243, 'score': 0.7743}, {'variant_name': 'upscale_2x', 'psm': 13, 'text': '加 還', 'confidence': 0.04, 'score': 0.04}, {'variant_name': 'upscale_3x', 'psm': 6, 'text': '9 解 下 列 不 等 式 : (D)|x 一 2|<4 (2)|x+ 5|>1 6 解 下 列 不 等 式 : (0D|x-3|<2 (2)|x+5|>4 TT 經 不 笠 二 [4 二 1l<6o', 'confidence': 0.6919, 'score': 0.8419}, {'variant_name': 'upscale_3x', 'psm': 7, 'text': '', 'confidence': 0.0, 'score': -0.4}, {'variant_name': 'upscale_3x', 'psm': 11, 'text': 'ieee aS ae OS ee 9 解 下 列 不 等 式 : (|x~-2|<4 (2)|x+5|>1 6 解 下 列 不 等 式 : (1)|x-3]<2 (2)|x+5|>4 TT wet layt1l<6 .', 'confidence': 0.5824, 'score': 0.7324}, {'variant_name': 'upscale_3x', 'psm': 13, 'text': 'a', 'confidence': 0.0, 'score': 0.0}, {'variant_name': 'threshold_binary', 'psm': 6, 'text': '5 解 下 列 不 等 式 : (Dlx-21<4 09|x+5|>1 6 解 下 列 不 等 式 : (lx-3]< 2 (01x+5|>4 7 wpoxctetlayt1l<6&', 'confidence': 0.7209, 'score': 0.8709}, {'variant_name': 'threshold_binary', 'psm': 7, 'text': '. ;', 'confidence': 0.25, 'score': 0.25}, {'variant_name': 'threshold_binary', 'psm': 11, 'text': '解 下 列 不 等 式 : (D|lx~2|<4 多 |x+5|>1 解 下 列 不 等 式 : (Dlx~-31< 2 (2)|x+5|>4 peatit lay +-11/<6', 'confidence': 0.6435, 'score': 0.7935}, {'variant_name': 'threshold_binary', 'psm': 13, 'text': '=', 'confidence': 0.57, 'score': 0.72}, {'variant_name': 'adaptive_threshold', 'psm': 6, 'text': '解 下 列 不 等 式 : (lx-2|<4 0lx+ 引 >1 解 下 列 不 等 式 : (0Dlx-3<2 01x+ 引 三 4 經 不 伴 上 本 [4 二宮', 'confidence': 0.6733, 'score': 0.8233}, {'variant_name': 'adaptive_threshold', 'psm': 7, 'text': '= ;', 'confidence': 0.31, 'score': 0.46}, {'variant_name': 'adaptive_threshold', 'psm': 11, 'text': '解 下 列 不 等 式 : 0Dlx-2<4 0)|x+ 二 5|>1 解 下 列 不 等 式 : 0Dlk-31<2 (jlx+ 5/24 weatteHlayt1l<6', 'confidence': 0.6405, 'score': 0.7905}, {'variant_name': 'adaptive_threshold', 'psm': 13, 'text': '=', 'confidence': 0.45, 'score': 0.6}, {'variant_name': 'sharpen', 'psm': 6, 'text': '5 解 下 列 不 等 式 : (Dlx-2|/<4 (2|x+5|>1 6 解 下 列 不 等 式 : (Dlx-3|< 2 (|x+5|>4 TD gece layt1l<6 6', 'confidence': 0.6788, 'score': 0.8288}, {'variant_name': 'sharpen', 'psm': 7, 'text': '~', 'confidence': 0.44, 'score': 0.44}, {'variant_name': 'sharpen', 'psm': 11, 'text': 'DO? Jf AD? Jf A? // 5 解 下 列 不 等 式 : (DIx 一 2|<4 (Qla+5|>1 6 解 下 列 不 等 式 : (Nlx-3)<2 (2)|x+5| 守 4 了 gece layt1l<6 6', 'confidence': 0.5788, 'score': 0.7288}, {'variant_name': 'sharpen', 'psm': 13, 'text': '加 還', 'confidence': 0.04, 'score': 0.04}, {'variant_name': 'high_contrast', 'psm': 6, 'text': '5 解 下 列 不 等 式 : (Dlx-2|<4 (2|x+5|>1 6 解 下 列 不 等 式 : (Dlx 一 3 廬 <2 (2)|x+5]24 T west lay + 11<6 ©', 'confidence': 0.6333, 'score': 0.7833}, {'variant_name': 'high_contrast', 'psm': 7, 'text': '~ -', 'confidence': 0.505, 'score': 0.655}, {'variant_name': 'high_contrast', 'psm': 11, 'text': '必 Aa ee ee // 5 解 下 列 不 等 式 : ()|x-2|< 4 Q)|x+5|>1 6 解 下 列 不 等 式 : (Dlx-3|<2 (2)|x+5|>4 T west lay + 11<6 ©', 'confidence': 0.575, 'score': 0.725}, {'variant_name': 'high_contrast', 'psm': 13, 'text': 'a', 'confidence': 0.0, 'score': 0.0}]`
+- selected_local_ocr_text: `5 解 下 列 不 等 式 : (Dlx-21<4 09|x+5|>1 6 解 下 列 不 等 式 : (lx-3]< 2 (01x+5|>4 7 wpoxctetlayt1l<6&`
+- selected_local_ocr_confidence: `0.7208695652173914`
+- ocr_quality_score: `0.87`
+- ocr_quality_status: `good`
+- has_math_signal: `True`
+- noise_ratio: `0.0`
+- mojibake_detected: `False`
+- placeholder_reduction: `2`
+- proposed_update_blocked_reason: `confidence_below_threshold`
+- pytesseract_text: `5 解 下 列 不 等 式 : (Dlx-21<4 09|x+5|>1 6 解 下 列 不 等 式 : (lx-3]< 2 (01x+5|>4 7 wpoxctetlayt1l<6&`
+- pytesseract_confidence: `0.7208695652173914`
+- pix2tex_available: `False`
+- pix2tex_latex: ``
+- pix2tex_quality_score: `0.0`
+- selected_backend: `pytesseract`
+- selected_candidate: `5 解 下 列 不 等 式 : (Dlx-21<4 09|x+5|>1 6 解 下 列 不 等 式 : (lx-3]< 2 (01x+5|>4 7 wpoxctetlayt1l<6&`
+- selected_candidate_quality: `0.87`
+- gemini_called: `0`
+- action: `low_confidence`
+- reason: `confidence_below_threshold`
+
+## Summary
+- requested_volume: `數學B1`
+- requested_section: `1-1 數線與絕對值`
+- safe_output_dir: `E:/Python/Mathproject_tvet_mathB/uploads/question_assets/longteng_mathB1/CH1/1-1_numberline_absolute_value/pdf_visual_enrich`
+- path_encoding_status: `ascii_forced`
+- rendered_pages: `18`
+- crops_created: `3`
+- local_ocr_requests: `3`
+- local_ocr_success: `3`
+- local_ocr_failed: `0`
+- local_ocr_empty: `0`
+- local_ocr_unavailable: `0`
+- gemini_called: `0`
+- proposed_updates: `1`
+- low_confidence: `2`
+- still_missing_formula: `19`

@@ -28,6 +28,7 @@ import hashlib
 import zipfile
 import xml.etree.ElementTree as ET
 import uuid
+import platform
 # import fitz  # PyMuPDF -> Moved to inside function
 import time
 import io
@@ -61,6 +62,84 @@ from core.textbook_structure_parser import get_structure_map
 from core.utils import normalize_vocational_math_skill_id
 
 _DOCX_IMPORT_CONTEXT: dict[str, Any] = {}
+
+FORMULA_PLACEHOLDER_RE = re.compile(r"\[FORMULA_IMAGE_\d+\]|\[FORMULA_MISSING\]|\[WORD_EQUATION_UNPARSED\]")
+TEXT_MOJIBAKE_CHARS = "�蝧蝯葫憿箇鞈摨隢貊詨撠銋嚗暺"
+TEXT_MOJIBAKE_RE = re.compile("[" + re.escape(TEXT_MOJIBAKE_CHARS) + r"]")
+
+
+def _has_text_mojibake(text: str) -> bool:
+    t = str(text or "")
+    if not t:
+        return False
+    if TEXT_MOJIBAKE_RE.search(t):
+        return True
+    if t.count("?") >= 3 and (t.count("?") / max(1, len(t))) > 0.04:
+        return True
+    return any(0xE000 <= ord(ch) <= 0xF8FF for ch in t)
+
+
+def _is_low_value_import_field(value: str) -> bool:
+    t = str(value or "").strip()
+    if not t:
+        return True
+    return t in {"略", "無", "N/A", "n/a", "None", "none", "null", "-"}
+
+
+def score_problem_text_quality(text) -> dict:
+    """Score imported problem text so duplicate merge does not replace good LaTeX with placeholders."""
+    t = str(text or "").strip()
+    placeholder_count = len(FORMULA_PLACEHOLDER_RE.findall(t))
+    formula_image_count = len(re.findall(r"\[FORMULA_IMAGE_\d+\]", t))
+    formula_missing_count = t.count("[FORMULA_MISSING]")
+    mojibake = _has_text_mojibake(t)
+    latex_patterns = [
+        r"\\\(.+?\\\)",
+        r"\$.+?\$",
+        r"\\leq?|\\geq?",
+        r"\\frac",
+        r"\\sqrt",
+        r"\|x\|",
+        r"\|[^|]+\|",
+    ]
+    latex_signal_count = sum(1 for pat in latex_patterns if re.search(pat, t))
+    cjk_count = len(re.findall(r"[\u4e00-\u9fff]", t))
+    only_placeholder = bool(t) and not re.sub(FORMULA_PLACEHOLDER_RE, "", t).strip()
+    too_short = len(t) < 6
+
+    score = 50
+    score += latex_signal_count * 18
+    if placeholder_count == 0:
+        score += 20
+    score += min(cjk_count, 20)
+    if re.search(r"[。？！：，,.;；]", t):
+        score += 4
+    score -= formula_image_count * 35
+    score -= formula_missing_count * 45
+    if mojibake:
+        score -= 60
+    if too_short:
+        score -= 20
+    if only_placeholder:
+        score -= 60
+
+    return {
+        "score": int(score),
+        "placeholder_count": placeholder_count,
+        "formula_image_count": formula_image_count,
+        "formula_missing_count": formula_missing_count,
+        "latex_signal_count": latex_signal_count,
+        "mojibake_detected": mojibake,
+        "too_short": too_short,
+        "only_placeholder": only_placeholder,
+        "length": len(t),
+    }
+
+
+def should_replace_problem_text(existing_text, incoming_text) -> tuple[bool, dict, dict]:
+    existing_quality = score_problem_text_quality(existing_text)
+    incoming_quality = score_problem_text_quality(incoming_text)
+    return incoming_quality["score"] > existing_quality["score"], existing_quality, incoming_quality
 
 # (初始化檢查已移除)
 
@@ -1240,7 +1319,16 @@ def sanitize_detailed_solution_text(text, max_chars=500):
     return cleaned.strip()
 
 
-def process_textbook_file(file_path, curriculum_info, queue, skip_code_gen=False, outline_only=False, toc_pages=5):
+def process_textbook_file(
+    file_path,
+    curriculum_info,
+    queue,
+    skip_code_gen=False,
+    outline_only=False,
+    toc_pages=5,
+    import_policy=None,
+    optional_enrich_pdf_path=None,
+):
     """
     主流程函式，包含完整的 try...except 錯誤處理。
     
@@ -1254,6 +1342,18 @@ def process_textbook_file(file_path, curriculum_info, queue, skip_code_gen=False
     """
 
     try:
+        import_policy = dict(import_policy or {})
+        execution_arch = str(import_policy.get("execution_arch", "native") or "native").strip().lower()
+        if execution_arch in ("x86", "x64"):
+            runtime_arch = "x64" if "64" in str(platform.architecture()[0]) else "x86"
+            if runtime_arch != execution_arch:
+                message = f"正式教材匯入執行架構不符：要求 {execution_arch}，目前 runtime={runtime_arch}。"
+                current_app.logger.error(message)
+                if queue:
+                    queue.put(f"ERROR: {message}")
+                return {"status": "error", "message": message}
+        if optional_enrich_pdf_path and queue:
+            queue.put("INFO: 同版本 PDF 僅作 optional enrich，不會觸發第二次重匯。")
         # ======================================================
         # [NEW] 防呆：檢查是否為 Word 暫存鎖定檔 (以 ~$ 開頭)
         # ======================================================
@@ -1378,7 +1478,9 @@ def process_textbook_file(file_path, curriculum_info, queue, skip_code_gen=False
             queue,
             source_file_path=file_path,
             content_by_page=content_by_page,
-            outline_only=outline_only
+            outline_only=outline_only,
+            import_policy=import_policy,
+            optional_enrich_pdf_path=optional_enrich_pdf_path,
         )
         try:
             temp_dir = (_DOCX_IMPORT_CONTEXT or {}).get("temp_media_dir")
@@ -4461,7 +4563,16 @@ def import_outline_structure_only(parsed_data, curriculum_info, queue, source_fi
         raise e
 
 
-def save_to_database(parsed_data, curriculum_info, queue, source_file_path=None, content_by_page=None, outline_only=False):
+def save_to_database(
+    parsed_data,
+    curriculum_info,
+    queue,
+    source_file_path=None,
+    content_by_page=None,
+    outline_only=False,
+    import_policy=None,
+    optional_enrich_pdf_path=None,
+):
     """
     將 AI 分析完的目錄資料寫入資料庫。
     """
@@ -4525,6 +4636,9 @@ def save_to_database(parsed_data, curriculum_info, queue, source_file_path=None,
         )
         queue.put(f"INFO: [INTRA IMPORT DEDUPE] merged_duplicates={intra_import_duplicates_merged}")
     page_image_cache = {}
+    import_policy = dict(import_policy or {})
+    auto_fill_threshold = float(import_policy.get("auto_fill_confidence_threshold", 0.85) or 0.85)
+    auto_fill_threshold = max(0.0, min(1.0, auto_fill_threshold))
     
     # [NEW] 檔名解析元數據整合
     filename_meta = parse_textbook_filename_metadata(source_file_path) if source_file_path else {}
@@ -5099,11 +5213,33 @@ def save_to_database(parsed_data, curriculum_info, queue, source_file_path=None,
         return meta
 
     def _build_math_metadata(raw_text, standardized_meta, needs_review=False):
+        confidence = 0.9
+        if needs_review or standardized_meta.get("needs_review", False):
+            confidence = 0.4
+        auto_fill_applied = confidence >= auto_fill_threshold
+        review_required = confidence < auto_fill_threshold
         meta = {
             "math_format": "standard_latex",
             "raw_problem_backup": str(raw_text or ""),
             "math_warnings": list(standardized_meta.get("warnings", [])),
-            "needs_review": bool(needs_review or standardized_meta.get("needs_review", False)),
+            "needs_review": bool(needs_review or standardized_meta.get("needs_review", False) or review_required),
+            "import_confidence": confidence,
+            "auto_fill_threshold": auto_fill_threshold,
+            "auto_fill_applied": bool(auto_fill_applied),
+            "review_required_by_confidence": bool(review_required),
+            "import_source_priority": "docx_primary",
+            "optional_enrich_pdf_path": optional_enrich_pdf_path or "",
+            "rollback_metadata": {
+                "preserved": bool(import_policy.get("preserve_rollback_metadata", True)),
+                "policy": {
+                    "execution_arch": import_policy.get("execution_arch", "native"),
+                    "docx_primary": bool(import_policy.get("docx_primary", True)),
+                    "pdf_optional_enrich": bool(import_policy.get("pdf_optional_enrich", True)),
+                    "auto_post_ocr_ai": bool(import_policy.get("auto_post_ocr_ai", True)),
+                    "auto_backfill_high_confidence": bool(import_policy.get("auto_backfill_high_confidence", True)),
+                    "review_low_confidence": bool(import_policy.get("review_low_confidence", True)),
+                },
+            },
         }
         return meta
 
@@ -5136,7 +5272,15 @@ def save_to_database(parsed_data, curriculum_info, queue, source_file_path=None,
                 merged.append(dict(a))
         return merged
 
-    def _merge_duplicate_existing_record(existing_record, *, incoming_problem_text="", incoming_meta=None):
+    def _merge_duplicate_existing_record(
+        existing_record,
+        *,
+        incoming_problem_text="",
+        incoming_meta=None,
+        incoming_correct_answer="",
+        incoming_detailed_solution="",
+        title="",
+    ):
         """Merge richer duplicate payload into existing textbook_examples row.
 
         Returns (changed: bool, reason: str).
@@ -5165,13 +5309,38 @@ def save_to_database(parsed_data, curriculum_info, queue, source_file_path=None,
 
         existing_problem_text = str(getattr(existing_record, "problem_text", "") or "")
         new_problem_text = str(incoming_problem_text or "")
-        if (
-            "[FORMULA_MISSING]" in existing_problem_text
-            and re.search(r"\[FORMULA_IMAGE_\d+\]", new_problem_text)
-        ):
+        replace_problem_text, existing_quality, incoming_quality = should_replace_problem_text(
+            existing_problem_text,
+            new_problem_text,
+        )
+        title_for_log = str(title or getattr(existing_record, "source_description", "") or "").strip()
+        if replace_problem_text and new_problem_text:
             existing_record.problem_text = new_problem_text
             changed = True
-            reasons.append("problem_text_formula_image")
+            reasons.append("problem_text_incoming_better")
+            current_app.logger.info(
+                f"[MERGE GUARD] updated_incoming_better_problem_text title={title_for_log} "
+                f"existing_score={existing_quality['score']} incoming_score={incoming_quality['score']}"
+            )
+        elif new_problem_text and existing_problem_text != new_problem_text:
+            current_app.logger.info(
+                f"[MERGE GUARD] kept_existing_better_problem_text title={title_for_log} "
+                f"existing_score={existing_quality['score']} incoming_score={incoming_quality['score']}"
+            )
+
+        existing_answer = str(getattr(existing_record, "correct_answer", "") or "").strip()
+        incoming_answer = str(incoming_correct_answer or "").strip()
+        if _is_low_value_import_field(existing_answer) and not _is_low_value_import_field(incoming_answer):
+            existing_record.correct_answer = incoming_answer
+            changed = True
+            reasons.append("correct_answer_incoming_nonblank")
+
+        existing_solution = str(getattr(existing_record, "detailed_solution", "") or "").strip()
+        incoming_solution = sanitize_detailed_solution_text(str(incoming_detailed_solution or ""), max_chars=500)
+        if _is_low_value_import_field(existing_solution) and not _is_low_value_import_field(incoming_solution):
+            existing_record.detailed_solution = incoming_solution
+            changed = True
+            reasons.append("detailed_solution_incoming_nonblank")
 
         if changed and existing_meta:
             attach_image_metadata(existing_record, existing_meta)
@@ -5716,6 +5885,9 @@ def save_to_database(parsed_data, curriculum_info, queue, source_file_path=None,
                                 existing_ex,
                                 incoming_problem_text=db_problem_text,
                                 incoming_meta=duplicate_meta,
+                                incoming_correct_answer=db_answer,
+                                incoming_detailed_solution=db_solution,
+                                title=example_title,
                             )
                             if changed:
                                 updated_duplicates += 1
@@ -6133,6 +6305,9 @@ def save_to_database(parsed_data, curriculum_info, queue, source_file_path=None,
                                 existing_practice,
                                 incoming_problem_text=practice_problem,
                                 incoming_meta=duplicate_meta,
+                                incoming_correct_answer=practice_answer,
+                                incoming_detailed_solution=practice_solution,
+                                title=practice_title,
                             )
                             if changed:
                                 updated_duplicates += 1

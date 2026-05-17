@@ -22,6 +22,9 @@ import uuid
 import queue
 import threading
 import traceback
+import subprocess
+import sys
+from collections import defaultdict
 import pandas as pd
 import io
 import re
@@ -37,6 +40,8 @@ from core.services.prompt_sync_service import (
 from . import core_bp
 from core.globals import TASK_QUEUES
 from core import textbook_processor
+from core.textbook_filename_parser import parse_textbook_filename_metadata
+from core.textbook_structure_parser import get_structure_map
 from core.ai_wrapper import resolve_gemini_api_key, mask_api_key
 from core.utils import handle_curriculum_filters
 from core.ai_settings import (
@@ -412,25 +417,207 @@ def admin_update_rag_settings():
 
 def background_processing(file_paths, task_queue, app_context, curriculum_info, skip_code_gen, **kwargs):
     """Background textbook processing worker."""
+    def _safe_report_token(value):
+        token = re.sub(r"\s+", "_", str(value or "").strip())
+        token = re.sub(r"[^\w\-\u4e00-\u9fff]+", "_", token, flags=re.UNICODE)
+        token = re.sub(r"_+", "_", token).strip("_")
+        return token or "unknown"
+
+    def _resolve_canonical_section_title(filename):
+        filename_meta = parse_textbook_filename_metadata(filename)
+        section_code = str((filename_meta or {}).get("section_code") or "").strip()
+        if not section_code:
+            return ""
+
+        curriculum = str(curriculum_info.get("curriculum") or "").strip()
+        volume = str(curriculum_info.get("volume") or "").strip()
+        publisher = str(curriculum_info.get("publisher") or "longteng").strip()
+
+        # Priority 1: anchor section aligned in DB (import result anchor).
+        existing_anchor = SkillCurriculum.query.filter(
+            SkillCurriculum.curriculum == curriculum,
+            SkillCurriculum.volume == volume,
+            SkillCurriculum.section.like(f"{section_code} %"),
+        ).first()
+        if existing_anchor and existing_anchor.section:
+            return str(existing_anchor.section).strip()
+
+        # Priority 2: textbook structure map canonical section_title.
+        struct_map = get_structure_map(curriculum, volume, publisher=publisher)
+        if struct_map:
+            section_meta = struct_map.get_metadata(section_code)
+            if section_meta and section_meta.get("section_title"):
+                return str(section_meta["section_title"]).strip()
+
+        # Priority 3: fallback DB matching section_code (non-anchor query).
+        fallback_row = (
+            db.session.query(SkillCurriculum.section)
+            .filter(
+                SkillCurriculum.curriculum == curriculum,
+                SkillCurriculum.volume == volume,
+                SkillCurriculum.section.like(f"{section_code}%"),
+            )
+            .order_by(SkillCurriculum.id.asc())
+            .first()
+        )
+        if fallback_row and fallback_row[0]:
+            return str(fallback_row[0]).strip()
+        return ""
+
+    def _is_invalid_section_title(section_title):
+        sec = str(section_title or "").strip()
+        if not sec:
+            return True
+        # Example invalid value from filename parse: "1-1_-"
+        if re.fullmatch(r"\d+\s*-\s*\d+[_\-\s]*", sec):
+            return True
+        return False
+
+    def _write_postprocess_skip_report(report_path, *, volume, section, mode, reason, script_name):
+        lines = [
+            "# DOCX Formula Asset Postprocess Skipped Report",
+            f"- volume: `{volume}`",
+            f"- section: `{section}`",
+            f"- mode: `{mode}`",
+            "- dry_run: `True`",
+            f"- postprocess_script: `{script_name}`",
+            f"- postprocess_skipped_reason: `{reason}`",
+            "",
+            "Summary:",
+            "- processed_records=0",
+            "- formula_assets_total=0",
+            "- auto_applied_records=0",
+            "",
+        ]
+        with open(report_path, "w", encoding="utf-8") as f:
+            f.write("\n".join(lines))
+
+    def _group_docx_with_optional_pdf(paths):
+        grouped = []
+        by_stem = defaultdict(list)
+        for p in paths:
+            stem = os.path.splitext(os.path.basename(str(p or "")))[0].lower()
+            by_stem[stem].append(p)
+        consumed = set()
+        for stem, items in by_stem.items():
+            docx = [x for x in items if str(x).lower().endswith((".docx", ".doc"))]
+            pdfs = [x for x in items if str(x).lower().endswith(".pdf")]
+            if docx:
+                for d in docx:
+                    enrich_pdf = pdfs[0] if pdfs else None
+                    grouped.append((d, enrich_pdf))
+                    consumed.add(d)
+                    if enrich_pdf:
+                        consumed.add(enrich_pdf)
+        for p in paths:
+            if p in consumed:
+                continue
+            grouped.append((p, None))
+        return grouped
+
+    import_policy = dict(kwargs.pop("import_policy", {}) or {})
+    enable_formula_postprocess = bool(import_policy.get("enable_formula_postprocess", False))
+    enable_formula_auto_apply = bool(import_policy.get("enable_formula_auto_apply", False))
+    formula_postprocess_mode = str(import_policy.get("formula_postprocess_mode", "convert_only") or "convert_only").strip()
+    enable_formula_detailed_report = bool(import_policy.get("enable_formula_detailed_report", False))
+    confidence_threshold = float(import_policy.get("auto_fill_confidence_threshold", 0.85) or 0.85)
     with app_context:
         try:
-            total_files = len(file_paths)
-            task_queue.put(f"INFO: 開始處理任務，共 {total_files} 個檔案...")
+            grouped_files = _group_docx_with_optional_pdf(file_paths)
+            total_files = len(grouped_files)
+            task_queue.put(f"INFO: 開始處理任務，共 {total_files} 個匯入單位...")
 
-            for idx, file_path in enumerate(file_paths, 1):
+            for idx, (file_path, optional_pdf_path) in enumerate(grouped_files, 1):
                 filename = os.path.basename(file_path)
                 if filename.startswith('~$') or filename.startswith('.'):
                     continue
 
                 task_queue.put(f"INFO: [{idx}/{total_files}] 正在分析: {filename} ...")
+                if optional_pdf_path:
+                    task_queue.put(
+                        f"INFO: [{idx}/{total_files}] 同版本 PDF 將作為 optional enrich，不進行第二次重匯。"
+                    )
                 try:
                     textbook_processor.process_textbook_file(
                         file_path, 
                         curriculum_info=curriculum_info, 
                         queue=task_queue, 
                         skip_code_gen=skip_code_gen,
+                        import_policy=import_policy,
+                        optional_enrich_pdf_path=optional_pdf_path,
                         **kwargs
                     )
+                    if enable_formula_postprocess:
+                        try:
+                            is_docx = str(file_path or "").lower().endswith((".docx", ".doc"))
+                            canonical_volume = str(curriculum_info.get("volume") or "").strip()
+                            canonical_section = _resolve_canonical_section_title(filename) if is_docx else ""
+                            report_dir = os.path.join("reports", "import_debug")
+                            os.makedirs(report_dir, exist_ok=True)
+                            safe_vol = _safe_report_token(canonical_volume or "unknown")
+                            safe_sec = _safe_report_token(canonical_section or "unknown_section")
+                            run_mode = "write" if enable_formula_auto_apply else "dry_run"
+                            report_path = os.path.join(
+                                report_dir,
+                                f"{safe_vol}_{safe_sec}_docx_formula_asset_pool_{run_mode}_report.md",
+                            )
+
+                            if is_docx and formula_postprocess_mode == "convert_only":
+                                task_queue.put("INFO: formula_postprocess_mode=convert_only，略過 OCR 回填。")
+                            elif is_docx and formula_postprocess_mode in ("local_ocr", "local_first_gemini_fallback"):
+                                if _is_invalid_section_title(canonical_section):
+                                    _write_postprocess_skip_report(
+                                        report_path,
+                                        volume=canonical_volume,
+                                        section=str(canonical_section or ""),
+                                        mode=formula_postprocess_mode,
+                                        reason="missing_canonical_section",
+                                        script_name="docx_formula_asset_pix2tex_backfill.py",
+                                    )
+                                    task_queue.put(
+                                        f"WARN: 缺少 canonical section，已略過匯入後公式後處理。report={report_path}"
+                                    )
+                                else:
+                                    script_path = os.path.join(
+                                        current_app.root_path,
+                                        "scripts",
+                                        "docx_formula_asset_pix2tex_backfill.py",
+                                    )
+                                    cmd = [
+                                        sys.executable,
+                                        script_path,
+                                        "--volume",
+                                        canonical_volume,
+                                        "--section",
+                                        canonical_section,
+                                        "--formula-ocr-backend",
+                                        "pix2tex",
+                                        "--confidence-threshold",
+                                        str(confidence_threshold),
+                                        "--report",
+                                        report_path,
+                                    ]
+                                    if enable_formula_auto_apply:
+                                        cmd.append("--write")
+                                    else:
+                                        cmd.append("--dry-run")
+                                    task_queue.put("INFO: 啟動 DOCX 匯入後公式後處理...")
+                                    run = subprocess.run(
+                                        cmd,
+                                        stdout=subprocess.PIPE,
+                                        stderr=subprocess.PIPE,
+                                        text=True,
+                                        cwd=current_app.root_path,
+                                        check=False,
+                                    )
+                                    if run.returncode == 0:
+                                        task_queue.put(f"INFO: 公式後處理完成，report={report_path}")
+                                    else:
+                                        task_queue.put("WARN: 公式後處理執行失敗，已略過。")
+                            else:
+                                task_queue.put("INFO: 非 DOCX 或未支援模式，略過匯入後公式後處理。")
+                        except Exception as post_err:
+                            task_queue.put(f"WARN: 公式後處理啟動失敗: {post_err}")
                 except Exception as e:
                     task_queue.put(f"ERROR: 檔案 {filename} 處理失敗: {e}")
                 
@@ -496,12 +683,39 @@ def admin_textbook_importer():
             skip_code = request.form.get('skip_code_gen') == 'on'
             outline_only = request.form.get('outline_only') == 'true'
             toc_pages = int(request.form.get('toc_pages', 5))
+            execution_arch = str(request.form.get('execution_arch', 'native') or 'native').strip().lower()
+            confidence_threshold_raw = request.form.get('auto_fill_confidence_threshold', '0.85')
+            try:
+                confidence_threshold = float(confidence_threshold_raw)
+            except Exception:
+                confidence_threshold = 0.85
+            confidence_threshold = max(0.0, min(1.0, confidence_threshold))
+            import_policy = {
+                "execution_arch": execution_arch,
+                "docx_primary": True,
+                "pdf_optional_enrich": True,
+                "auto_post_ocr_ai": True,
+                "auto_backfill_high_confidence": True,
+                "review_low_confidence": True,
+                "auto_fill_confidence_threshold": confidence_threshold,
+                "preserve_rollback_metadata": True,
+                "enable_formula_postprocess": request.form.get("enable_formula_postprocess") == "on",
+                "enable_formula_auto_apply": request.form.get("enable_formula_auto_apply") == "on",
+                "enable_formula_detailed_report": request.form.get("enable_formula_detailed_report") == "on",
+                "formula_postprocess_mode": str(
+                    request.form.get("formula_postprocess_mode", "convert_only") or "convert_only"
+                ).strip(),
+            }
 
             app = current_app._get_current_object()
             threading.Thread(
                 target=background_processing,
                 args=(target_files, q, app.app_context(), curriculum_info, skip_code),
-                kwargs={'outline_only': outline_only, 'toc_pages': toc_pages}
+                kwargs={
+                    'outline_only': outline_only,
+                    'toc_pages': toc_pages,
+                    'import_policy': import_policy,
+                }
             ).start()
 
             return redirect(url_for('core.importer_status', task_id=task_id))
