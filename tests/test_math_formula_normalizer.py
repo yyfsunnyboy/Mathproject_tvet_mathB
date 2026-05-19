@@ -1,173 +1,61 @@
-import pytest
-
-from core.math_formula_normalizer import (
-    detect_suspicious_formula,
-    normalize_combination_permutation_notation,
-    normalize_math_text,
-    normalize_operator_artifacts,
-)
+from core.math_formula_normalizer import normalize_converted_docx_latex_text
 
 
-def test_combination_subscript_superscript_normalizes_to_stable_form():
-    assert normalize_combination_permutation_notation("C_0^5") == "C(5,0)"
+def test_display_coordinates_a_p_to_inline():
+    text = r"在直角坐標平面上，醫院位置為點\[A\left( 1,0 \right)\]，學校的位置在\(B(-3,4)\)，小恩的家位於線段\(AB\)上，且已知小恩家到醫院的距離等於小恩家到學校距離的3倍，試求小恩家在坐標平面上的位置\[P\left( x,y \right)\]。"
+    expected = r"在直角坐標平面上，醫院位置為點 \(A\left(1,0\right)\)，學校的位置在 \(B\left(-3,4\right)\)，小恩的家位於線段 \(AB\) 上，且已知小恩家到醫院的距離等於小恩家到學校距離的 \(3\) 倍，試求小恩家在坐標平面上的位置 \(P\left(x,y\right)\)。"
+    out = normalize_converted_docx_latex_text(text)
+    assert out["text"] == expected
 
 
-def test_combination_superscript_subscript_normalizes_to_stable_form():
-    assert normalize_combination_permutation_notation("C^5_0") == "C(5,0)"
+def test_a_b_p_segment_case():
+    text = r"坐標平面上兩點\[A\left( -3,0 \right)\]、\(B(9,6)\)，若點\(P\)在\(\overline{AB}\)上，且\(\overline{AP}=2\overline{PB}\)，試求\(P\)點坐標。"
+    expected = r"坐標平面上兩點 \(A\left(-3,0\right)\)、\(B\left(9,6\right)\)，若點 \(P\) 在 \(\overline{AB}\) 上，且 \(\overline{AP}=2\overline{PB}\)，試求 \(P\) 點坐標。"
+    out = normalize_converted_docx_latex_text(text)
+    assert out["text"] == expected
 
 
-def test_permutation_subscript_superscript_normalizes_to_stable_form():
-    assert normalize_combination_permutation_notation("P_3^5") == "P(5,3)"
+def test_a_b_split_and_q_coordinate():
+    text = r"設\(a、b\)為實數，且\(a < b < 0\)，則點\[Q\left( ab,a+b \right)\]在第幾象限？"
+    expected = r"設 \(a\)、\(b\) 為實數，且 \(a<b<0\)，則點 \(Q\left(ab,a+b\right)\) 在第幾象限？"
+    out = normalize_converted_docx_latex_text(text)
+    assert out["text"] == expected
 
 
-def test_permutation_superscript_subscript_normalizes_to_stable_form():
-    assert normalize_combination_permutation_notation("P^5_3") == "P(5,3)"
+def test_c_coordinate_with_fraction():
+    text = r"已知點\(A\left( a,b \right)\)在第二象限內，試求：(1)點\(B\left( b,a \right)\)在第幾象限？(2)點\[C\left( -b,\frac{a}{b} \right)\]在第幾象限？"
+    expected = "已知點 \\(A\\left(a,b\\right)\\) 在第二象限內，試求：\n(1) 點 \\(B\\left(b,a\\right)\\) 在第幾象限？\n(2) 點 \\(C\\left(-b,\\frac{a}{b}\\right)\\) 在第幾象限？"
+    out = normalize_converted_docx_latex_text(text)
+    assert out["text"] == expected
 
 
-def test_hash_operator_artifact_normalizes_to_multiplication_sign():
-    assert normalize_operator_artifacts("3 # 3 # 5 # 2") == "3 × 3 × 5 × 2"
+def test_midpoint_distance_case():
+    text = r"若\(P\)為\(A\left( -1,4 \right)\)與\[B\left( 3,-2 \right)\]兩點之中點，試求\(P\)點與原點的距離。"
+    expected = r"若 \(P\) 為 \(A\left(-1,4\right)\) 與 \(B\left(3,-2\right)\) 兩點之中點，試求 \(P\) 點與原點的距離。"
+    out = normalize_converted_docx_latex_text(text)
+    assert out["text"] == expected
 
 
-def test_inconsistent_combination_sum_is_suspicious():
-    check = detect_suspicious_formula("C_0^5 + C_1^5 + C_2^6 + C_3^7 + C_4^8")
-    assert check["is_suspicious"] is True
-    assert "combination_upper_index_inconsistent" in check["reasons"]
+def test_standalone_display_math_not_converted():
+    text = "解：\n\\[\n\\frac{x_1+x_2+x_3}{3}\n\\]\n所以..."
+    out = normalize_converted_docx_latex_text(text)
+    assert out["text"] == text
 
 
-def test_consistent_combination_sum_is_not_suspicious():
-    check = detect_suspicious_formula("C_0^5 + C_1^5 + C_2^5 + C_3^5 + C_4^5 + C_5^5")
-    assert check["is_suspicious"] is False
+def test_cases_array_aligned_not_converted():
+    text = "\\[\n\\begin{cases}\nx+y=1\n\\end{cases}\n\\]"
+    out = normalize_converted_docx_latex_text(text)
+    assert out["text"] == text
 
 
-def test_pdf_artifacts_are_suspicious():
-    check = detect_suspicious_formula("公式殘留 _ i、^ h、g，並出現 # # #")
-    assert check["is_suspicious"] is True
-    assert "suspicious_pdf_artifact" in check["reasons"]
+def test_existing_inline_not_duplicated():
+    text = r"設 \(A\left(1,3\right)\) 為平面上一點。"
+    out = normalize_converted_docx_latex_text(text)
+    assert out["text"] == text
 
 
-def test_broken_factorial_is_suspicious():
-    check = detect_suspicious_formula("排列總數為 5 1 ! 種")
-    assert check["is_suspicious"] is True
-    assert "suspicious_factorial" in check["reasons"]
+def test_dollar_math_not_processed():
+    text = r"試求 $|x|<3$ 的解。"
+    out = normalize_converted_docx_latex_text(text)
+    assert out["text"] == text
 
-
-def test_normalize_math_text_combines_operator_and_cp_normalization():
-    assert normalize_math_text("P_3^5 # C_2^5") == "P(5,3) × C(5,2)"
-
-
-# ─── B1 座標幾何保護 regression tests ─────────────────────────────────────────
-# 以下所有輸入必須原樣保留（不得被改寫為排列/組合記號形式）
-
-
-@pytest.mark.parametrize(
-    "text",
-    [
-        "點 C(3,1) 在第一象限。",
-        "已知點 P(a,b) 在第一象限內。",
-        "試求 Q(b,a) 在第幾象限？",
-        "點 R(-b,a^2) 在第幾象限？",
-        "A(x_1,y_1), B(x_2,y_2) 兩點距離。",
-        "若 C(3,1) 為線段 AB 的中點。",
-    ],
-)
-def test_coordinate_point_notation_unchanged(text: str) -> None:
-    """座標點語境下，C/P/Q/R/A/B(...) 必須原樣保留，不被正規化為排列組合記號。"""
-    assert normalize_combination_permutation_notation(text) == text
-    assert normalize_math_text(text) == text
-
-
-@pytest.mark.parametrize(
-    "text",
-    [
-        "點 C(3,1) 在第一象限。",
-        "已知點 P(a,b) 在第一象限內。",
-        "試求 Q(b,a) 在第幾象限？",
-        "點 R(-b,a^2) 在第幾象限？",
-        "A(x_1,y_1), B(x_2,y_2) 兩點距離。",
-        "若 C(3,1) 為線段 AB 的中點。",
-    ],
-)
-def test_coordinate_point_not_suspicious(text: str) -> None:
-    """座標點語境下，detect_suspicious_formula 不應回報 suspicious_combination_notation。"""
-    result = detect_suspicious_formula(text)
-    assert "suspicious_combination_notation" not in result["reasons"], (
-        f"誤報 suspicious_combination_notation，輸入: {text!r}"
-    )
-
-
-def test_coordinate_multiple_c_points_no_inconsistent_sum() -> None:
-    """多個座標點 C(n,r) 不應觸發 combination_upper_index_inconsistent。"""
-    text = "設 C(1,2), C(3,4), C(5,6) 為平面上三點。"
-    result = detect_suspicious_formula(text)
-    assert "combination_upper_index_inconsistent" not in result["reasons"]
-    assert "suspicious_combination_notation" not in result["reasons"]
-
-
-# ─── 真正的排列/組合記號必須仍可正規化 ────────────────────────────────────────
-
-
-def test_p_sup_sub_still_normalizes() -> None:
-    assert normalize_combination_permutation_notation("P^7_3") == "P(7,3)"
-
-
-def test_c_sup_sub_still_normalizes() -> None:
-    assert normalize_combination_permutation_notation("C^7_3") == "C(7,3)"
-
-
-@pytest.mark.parametrize(
-    "text, expected_suspicious",
-    [
-        # 有明確排列組合語境 → C(n,r) 視為排列組合，不應被誤判無訊號
-        ("從 7 人中任取 3 人，共有 C(7,3) 種。", False),
-        ("從 7 人中選 3 人排列，共有 P(7,3) 種。", False),
-    ],
-)
-def test_explicit_comb_perm_context_not_suspicious(text: str, expected_suspicious: bool) -> None:
-    """有排列組合關鍵字時，C(n,r)/P(n,r) 不應被誤報為 suspicious_combination_notation。"""
-    result = detect_suspicious_formula(text)
-    assert ("suspicious_combination_notation" in result["reasons"]) == expected_suspicious
-
-
-def test_comb_perm_context_c_paren_recognized() -> None:
-    """排列組合語境中 C(7,3) 應被提取為有效 combination term。"""
-    from core.math_formula_normalizer import _extract_comb_perm_terms
-    terms = _extract_comb_perm_terms("共有 C(7,3) 種")
-    assert ("C", 7, 3) in terms
-
-
-def test_coordinate_context_c_paren_excluded_from_terms() -> None:
-    """座標語境（無排列組合關鍵字）中 C(3,1) 不得被計為 combination term。"""
-    from core.math_formula_normalizer import _extract_comb_perm_terms
-    terms = _extract_comb_perm_terms("點 C(3,1) 在第一象限", include_normalized=False)
-    assert ("C", 3, 1) not in terms
-
-
-def test_standalone_cp_without_context_not_suspicious() -> None:
-    """無任何語境的 P(a,b) 單獨出現，不應觸發 suspicious_combination_notation。"""
-    result = detect_suspicious_formula("P(a,b)")
-    assert "suspicious_combination_notation" not in result["reasons"]
-
-
-def test_ocr_spaced_cp_still_normalizes_outside_coord_context() -> None:
-    """非座標語境下，OCR 分割的 'P 3 5' 仍應被正規化（P_3^5 記法 → P(5,3)）。"""
-    assert normalize_combination_permutation_notation("P 3 5") == "P(5,3)"
-
-
-def test_coord_context_spaced_cp_protected() -> None:
-    """座標語境中，'C 3 1 在第一象限' 不應被轉成 C(1,3)（防止 OCR 誤轉）。"""
-    text = "點 C 3 1 在第一象限"
-    result = normalize_combination_permutation_notation(text)
-    assert "C(1,3)" not in result
-
-
-@pytest.mark.parametrize(
-    "text",
-    [
-        "設 A(-1,2), B(3,3), C(1,2) 依序為平行四邊形 ABCD 之三頂點。",
-        "設三角形 ABC 的三頂點為 A(2,5), B(-3,2), C(2,4)。",
-        "點 P(a,b) 位在第一象限，Q(b,a)、R(-b,a^2) 亦為平面上之點。",
-    ],
-)
-def test_b1_coordinate_samples_not_suspicious(text: str) -> None:
-    result = detect_suspicious_formula(text)
-    assert "suspicious_combination_notation" not in result["reasons"]

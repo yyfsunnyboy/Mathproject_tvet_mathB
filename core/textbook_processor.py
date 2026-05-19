@@ -41,7 +41,11 @@ from core.ai_analyzer import get_model
 from flask import current_app, has_app_context
 import traceback
 from core.code_generator import auto_generate_skill_code
-from core.math_formula_normalizer import detect_suspicious_formula, normalize_math_text
+from core.math_formula_normalizer import (
+    detect_suspicious_formula,
+    normalize_converted_docx_latex_text,
+    normalize_math_text,
+)
 from core.math_expression_formatter import standardize_problem_latex
 from core.question_image_assets import (
     attach_image_metadata,
@@ -5914,6 +5918,16 @@ def save_to_database(
                             ex["needs_review"] = True
                         db_problem_text_norm = normalize_math_text(db_problem_text_raw)
                         db_problem_text, ex_math_meta = standardize_problem_latex(db_problem_text_norm)
+                        if (
+                            str((_DOCX_IMPORT_CONTEXT or {}).get("docx_formula_source_mode", "") or "").strip()
+                            == "converted_docx_latex"
+                        ):
+                            latex_fix = normalize_converted_docx_latex_text(db_problem_text)
+                            db_problem_text = str(latex_fix.get("text", db_problem_text) or db_problem_text)
+                            if latex_fix.get("changes"):
+                                current_app.logger.info(
+                                    f"[LATEX INLINE NORMALIZE] title={example_title} changes={len(latex_fix.get('changes', []))}"
+                                )
                         db_problem_text_post, post_perm_meta = normalize_permutation_combination_notation(
                             db_problem_text,
                             volume=str(curriculum_info.get("volume", "") or ""),
@@ -6272,6 +6286,16 @@ def save_to_database(
                             practice["needs_review"] = True
                         practice_problem_norm = normalize_math_text(practice_problem_raw)
                         practice_problem, practice_math_meta = standardize_problem_latex(practice_problem_norm)
+                        if (
+                            str((_DOCX_IMPORT_CONTEXT or {}).get("docx_formula_source_mode", "") or "").strip()
+                            == "converted_docx_latex"
+                        ):
+                            latex_fix = normalize_converted_docx_latex_text(practice_problem)
+                            practice_problem = str(latex_fix.get("text", practice_problem) or practice_problem)
+                            if latex_fix.get("changes"):
+                                current_app.logger.info(
+                                    f"[LATEX INLINE NORMALIZE] title={practice_title} changes={len(latex_fix.get('changes', []))}"
+                                )
                         practice_problem_post, post_perm_meta = normalize_permutation_combination_notation(
                             practice_problem,
                             volume=str(curriculum_info.get("volume", "") or ""),
