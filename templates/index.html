@@ -4512,6 +4512,963 @@
             }
         }
     </script>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     UI Skin v3.0 — 教材紙本風 / 淺綠文青 / AI 學習平台
+     Rules: NO id/class rename · NO layout logic touch · CSS-only
+     ═══════════════════════════════════════════════════════════════ -->
+<style id="ui-skin-v3">
+
+/* ─── 1. Design Tokens — 教材紙本風 ──────────────────────────── */
+:root {
+  /* ── 背景層次 (米白 / 紙本) */
+  --bg-base:      #f7f6f2;
+  --bg-surface:   #ffffff;
+  --bg-elevated:  #fcfbf8;
+  --bg-hover:     #f0ede6;
+  --bg-input:     #ffffff;
+
+  /* ── 邊框 (極細 / 教材感) */
+  --border-subtle:  rgba(95, 127, 104, 0.10);
+  --border-default: rgba(95, 127, 104, 0.18);
+  --border-strong:  rgba(95, 127, 104, 0.32);
+
+  /* ── 文字 (深墨綠) */
+  --text-primary:   #2f3a32;
+  --text-secondary: #4a544d;
+  --text-muted:     #7a8a7e;
+
+  /* ── 主色 (鼠尾草綠 / Sage Green) */
+  --green:          #6b8f71;
+  --green-dark:     #5a7a60;
+  --green-light:    #dfe8dc;
+  --green-pale:     #edf3eb;
+  --green-muted:    rgba(107, 143, 113, 0.14);
+  --green-ring:     rgba(107, 143, 113, 0.25);
+
+  /* ── 輔助色 (溫暖琥珀 / 提示用) */
+  --amber:          #b8860b;
+  --amber-bg:       #fdf6e3;
+  --amber-border:   #e8d5a3;
+
+  /* ── 語意色 */
+  --ok:             #4a7c59;
+  --ok-bg:          #edf6f0;
+  --ok-border:      #b8d9c3;
+  --ok-text:        #2f5c3e;
+
+  --err:            #b85450;
+  --err-bg:         #fdf2f2;
+  --err-border:     #e8c0be;
+  --err-text:       #7a2e2c;
+
+  /* ── 圓角 */
+  --r-xs:   3px;
+  --r-sm:   6px;
+  --r-md:   8px;
+  --r-lg:   12px;
+  --r-xl:   16px;
+  --r-full: 999px;
+
+  /* ── 陰影 (極輕 / 教材感) */
+  --sh-xs:  0 1px 3px rgba(47,58,50,0.06);
+  --sh-sm:  0 2px 8px rgba(47,58,50,0.08);
+  --sh-md:  0 4px 16px rgba(47,58,50,0.10);
+  --sh-green: 0 2px 10px rgba(107,143,113,0.18);
+
+  /* ── 動態 */
+  --ease: cubic-bezier(0.4, 0, 0.2, 1);
+  --dur:  0.16s;
+}
+
+/* ─── 2. Global / Body ──────────────────────────────────────────── */
+html, body {
+  background: var(--bg-base) !important;
+  color: var(--text-primary) !important;
+  font-family: "Inter", "Noto Sans TC", -apple-system, BlinkMacSystemFont,
+               "Segoe UI", "Microsoft JhengHei", "PingFang TC", sans-serif !important;
+  -webkit-font-smoothing: antialiased !important;
+  -moz-osx-font-smoothing: grayscale !important;
+  font-size: 15px !important;
+  line-height: 1.7 !important;
+}
+
+/* Scrollbars — 細緻 / 不搶眼 */
+* { scrollbar-width: thin; scrollbar-color: #cdd9ca transparent; }
+*::-webkit-scrollbar { width: 4px; height: 4px; }
+*::-webkit-scrollbar-track { background: transparent; }
+*::-webkit-scrollbar-thumb {
+  background: #cdd9ca;
+  border-radius: 99px;
+}
+*::-webkit-scrollbar-thumb:hover { background: #aec0aa; }
+
+/* ─── 3. Layout Panels ─────────────────────────────────────────── */
+.container {
+  background: var(--bg-base) !important;
+}
+
+.practice-area {
+  background: var(--bg-surface) !important;
+  box-shadow: none !important;
+  border-right: 1px solid var(--border-default) !important;
+}
+
+.practice-top {
+  background: var(--bg-surface) !important;
+  border-bottom: 1px solid var(--border-subtle) !important;
+  padding: 14px 20px !important;
+}
+
+.practice-bottom {
+  background: var(--bg-base) !important;
+  padding: 14px 18px !important;
+}
+
+/* ─── 4. Skill Title & Badges ──────────────────────────────────── */
+.practice-top h1,
+#skill-title {
+  color: var(--text-primary) !important;
+  font-size: 0.95em !important;
+  font-weight: 600 !important;
+  letter-spacing: 0em !important;
+}
+
+#level-indicator {
+  background: var(--green-pale) !important;
+  color: var(--green-dark) !important;
+  border: 1px solid var(--green-light) !important;
+  padding: 3px 11px !important;
+  font-size: 0.70em !important;
+  border-radius: var(--r-full) !important;
+  font-weight: 500 !important;
+  letter-spacing: 0.02em !important;
+  vertical-align: middle !important;
+}
+
+#streak-counter {
+  background: var(--ok-bg) !important;
+  color: var(--ok-text) !important;
+  border: 1px solid var(--ok-border) !important;
+  padding: 4px 13px !important;
+  border-radius: var(--r-full) !important;
+  font-size: 0.78em !important;
+  font-weight: 500 !important;
+  box-shadow: none !important;
+}
+
+/* ─── 5. Level Selector Toolbar ────────────────────────────────── */
+.level-selector {
+  margin-bottom: 12px !important;
+  gap: 7px !important;
+}
+
+.level-button {
+  padding: 7px 15px !important;
+  background: var(--bg-elevated) !important;
+  border: 1px solid var(--border-default) !important;
+  border-radius: var(--r-md) !important;
+  color: var(--text-secondary) !important;
+  font-size: 0.855em !important;
+  font-weight: 500 !important;
+  cursor: pointer !important;
+  transition: background var(--dur) var(--ease),
+              border-color var(--dur) var(--ease),
+              color var(--dur) var(--ease) !important;
+  letter-spacing: 0.01em !important;
+  box-shadow: var(--sh-xs) !important;
+}
+
+.level-button:hover:not(:disabled) {
+  background: var(--green-pale) !important;
+  border-color: var(--green) !important;
+  color: var(--green-dark) !important;
+}
+
+.level-button.active {
+  background: var(--green-muted) !important;
+  color: var(--green-dark) !important;
+  border-color: var(--green) !important;
+  font-weight: 600 !important;
+}
+
+/* Next-question = 主要 CTA */
+button#next-question-btn.level-button {
+  background: var(--green) !important;
+  color: #fff !important;
+  border-color: var(--green-dark) !important;
+  font-weight: 600 !important;
+  box-shadow: var(--sh-green) !important;
+}
+button#next-question-btn.level-button:hover:not(:disabled) {
+  background: var(--green-dark) !important;
+  box-shadow: 0 3px 12px rgba(107,143,113,0.28) !important;
+}
+
+/* Upload question */
+button#upload-question-btn.level-button {
+  background: var(--bg-elevated) !important;
+  color: var(--text-secondary) !important;
+  border-color: var(--border-default) !important;
+}
+button#upload-question-btn.level-button:hover {
+  background: var(--green-pale) !important;
+  border-color: var(--green) !important;
+  color: var(--green-dark) !important;
+}
+
+/* Prereq practice */
+button#practice-prereq-btn.level-button {
+  background: var(--amber-bg) !important;
+  color: var(--amber) !important;
+  border-color: var(--amber-border) !important;
+}
+button#practice-prereq-btn.level-button:hover {
+  background: #fef3c7 !important;
+}
+
+/* Similar practice buttons */
+button#similar-upload-btn.level-button {
+  background: var(--bg-elevated) !important;
+  color: var(--text-secondary) !important;
+}
+button#similar-show-answer-btn.level-button {
+  background: var(--ok-bg) !important;
+  color: var(--ok-text) !important;
+  border-color: var(--ok-border) !important;
+}
+button#similar-reset-btn.level-button {
+  background: var(--bg-elevated) !important;
+  color: var(--text-muted) !important;
+}
+
+/* Prereq dropdown */
+#prereq-skill-select {
+  background: var(--bg-input) !important;
+  border: 1px solid var(--border-default) !important;
+  color: var(--text-secondary) !important;
+  border-radius: var(--r-md) !important;
+  padding: 6px 10px !important;
+  font-size: 0.855em !important;
+  box-shadow: var(--sh-xs) !important;
+}
+#prereq-skill-select:focus {
+  outline: none !important;
+  border-color: var(--green) !important;
+  box-shadow: 0 0 0 3px var(--green-ring) !important;
+}
+#prereq-skill-select option {
+  background: var(--bg-surface) !important;
+  color: var(--text-primary) !important;
+}
+
+/* ─── 6. Question Card ─────────────────────────────────────────── */
+#question-container {
+  background: var(--bg-surface) !important;
+  border: 1px solid var(--border-default) !important;
+  border-radius: var(--r-lg) !important;
+  box-shadow: var(--sh-xs) !important;
+  color: var(--text-primary) !important;
+  padding: 22px 26px !important;
+  line-height: 1.85 !important;
+  font-size: 1.10rem !important;
+  margin-bottom: 14px !important;
+}
+
+#question-text {
+  color: var(--text-primary) !important;
+  background: transparent !important;
+  border: none !important;
+  padding: 0 !important;
+  line-height: 1.85 !important;
+  font-size: 1em !important;
+}
+
+/* Question image */
+#instant-question-image {
+  border: 1px solid var(--border-default) !important;
+  border-radius: var(--r-md) !important;
+}
+
+/* MathJax — 自然融入文字 */
+mjx-container { margin: 0 2px !important; }
+
+/* Diagram container */
+.diagram-container {
+  background: var(--bg-elevated) !important;
+  border: 1px solid var(--border-subtle) !important;
+  border-radius: var(--r-md) !important;
+}
+
+/* Similar practice chips */
+.similar-chip {
+  background: var(--green-pale) !important;
+  color: var(--green-dark) !important;
+  border: 1px solid var(--green-light) !important;
+  border-radius: var(--r-full) !important;
+  padding: 5px 14px !important;
+  font-size: 0.80em !important;
+}
+
+.similar-preview-box {
+  background: var(--bg-elevated) !important;
+  border: 1px solid var(--border-subtle) !important;
+  border-radius: var(--r-md) !important;
+  color: var(--text-secondary) !important;
+  font-size: 0.88em !important;
+  padding: 12px 16px !important;
+}
+
+/* ─── 7. Answer Input Row ──────────────────────────────────────── */
+.input-group { gap: 8px !important; margin-top: 10px !important; }
+
+#answer-input {
+  background: var(--bg-input) !important;
+  border: 1px solid var(--border-default) !important;
+  border-radius: var(--r-md) !important;
+  color: var(--text-primary) !important;
+  padding: 9px 14px !important;
+  font-size: 0.935em !important;
+  box-shadow: var(--sh-xs) !important;
+  transition: border-color var(--dur) var(--ease),
+              box-shadow var(--dur) var(--ease) !important;
+}
+#answer-input::placeholder { color: var(--text-muted) !important; }
+#answer-input:focus {
+  outline: none !important;
+  border-color: var(--green) !important;
+  box-shadow: 0 0 0 3px var(--green-ring) !important;
+}
+#answer-input:disabled { opacity: 0.50 !important; cursor: not-allowed !important; }
+
+#submit-button {
+  background: var(--green) !important;
+  color: #fff !important;
+  border: 1px solid var(--green-dark) !important;
+  border-radius: var(--r-md) !important;
+  padding: 9px 22px !important;
+  font-size: 0.935em !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.02em !important;
+  cursor: pointer !important;
+  box-shadow: var(--sh-green) !important;
+  transition: background var(--dur) var(--ease),
+              box-shadow var(--dur) var(--ease) !important;
+}
+#submit-button:hover:not(:disabled) {
+  background: var(--green-dark) !important;
+  box-shadow: 0 3px 12px rgba(107,143,113,0.28) !important;
+}
+#submit-button:disabled {
+  background: var(--bg-elevated) !important;
+  color: var(--text-muted) !important;
+  border-color: var(--border-subtle) !important;
+  cursor: not-allowed !important;
+  box-shadow: none !important;
+  opacity: 0.60 !important;
+}
+
+/* ─── 8. Result Display ────────────────────────────────────────── */
+#result-display {
+  border-radius: var(--r-md) !important;
+  font-size: 0.875em !important;
+  font-weight: 500 !important;
+  padding: 9px 15px !important;
+  margin-top: 8px !important;
+  transition: all var(--dur) var(--ease) !important;
+}
+#result-display.correct {
+  background: var(--ok-bg) !important;
+  color: var(--ok-text) !important;
+  border: 1px solid var(--ok-border) !important;
+}
+#result-display.incorrect {
+  background: var(--err-bg) !important;
+  color: var(--err-text) !important;
+  border: 1px solid var(--err-border) !important;
+}
+
+/* ─── 9. Misc Practice Notices ─────────────────────────────────── */
+.manual-review-unavailable {
+  background: var(--amber-bg) !important;
+  border: 1px solid var(--amber-border) !important;
+  border-radius: var(--r-md) !important;
+  color: var(--text-secondary) !important;
+  padding: 16px 18px !important;
+  line-height: 1.70 !important;
+}
+.manual-review-unavailable strong { color: var(--amber) !important; }
+
+/* Prerequisite suggestion card */
+.prerequisite-card {
+  background: var(--green-pale) !important;
+  border: 1px solid var(--green-light) !important;
+  border-radius: var(--r-lg) !important;
+  color: var(--green-dark) !important;
+  box-shadow: var(--sh-sm) !important;
+  padding: 18px 20px !important;
+}
+.btn-prerequisite {
+  background: var(--green) !important;
+  color: #fff !important;
+  border: 1px solid var(--green-dark) !important;
+  border-radius: var(--r-md) !important;
+  padding: 10px 22px !important;
+  font-weight: 600 !important;
+  cursor: pointer !important;
+  box-shadow: var(--sh-green) !important;
+  transition: background var(--dur) var(--ease) !important;
+}
+.btn-prerequisite:hover {
+  background: var(--green-dark) !important;
+}
+
+/* ─── 10. Scratchpad Container ─────────────────────────────────── */
+#scratchpad-container {
+  background: var(--bg-surface) !important;
+  border: 1px solid var(--border-default) !important;
+  border-radius: var(--r-lg) !important;
+  box-shadow: var(--sh-xs) !important;
+}
+
+/* ─── 11. Scratchpad Toolbar ───────────────────────────────────── */
+#scratchpad-controls {
+  background: var(--bg-elevated) !important;
+  border-bottom: 1px solid var(--border-subtle) !important;
+  border-radius: var(--r-lg) var(--r-lg) 0 0 !important;
+  box-shadow: none !important;
+  padding: 7px 10px !important;
+  gap: 4px !important;
+}
+
+.tool-btn {
+  background: transparent !important;
+  border: 1px solid transparent !important;
+  border-radius: var(--r-sm) !important;
+  color: var(--text-secondary) !important;
+  padding: 5px 7px !important;
+  cursor: pointer !important;
+  transition: background var(--dur) var(--ease),
+              border-color var(--dur) var(--ease),
+              color var(--dur) var(--ease) !important;
+}
+.tool-btn:hover {
+  background: var(--green-pale) !important;
+  border-color: var(--green-light) !important;
+  color: var(--green-dark) !important;
+  transform: none !important;
+}
+.tool-btn.active {
+  background: var(--green-muted) !important;
+  border-color: var(--green) !important;
+  box-shadow: none !important;
+}
+.tool-btn.eraser-btn:hover,
+.tool-btn.eraser-btn.active {
+  background: var(--err-bg) !important;
+  border-color: var(--err-border) !important;
+  color: var(--err-text) !important;
+  box-shadow: none !important;
+}
+
+/* Width slider */
+#pen-width-label { color: var(--text-muted) !important; font-size: 0.78em !important; }
+input[type="range"] { accent-color: var(--green) !important; }
+
+/* Toolbar divider */
+div[style*="width: 1px"][style*="height: 20px"] {
+  background: var(--border-default) !important;
+  opacity: 0.7 !important;
+}
+span[style*="font-size: 0.8em"][style*="color: #666"] {
+  color: var(--text-muted) !important;
+}
+
+/* Canvas action buttons */
+.canvas-actions button {
+  background: var(--bg-elevated) !important;
+  color: var(--text-secondary) !important;
+  border: 1px solid var(--border-default) !important;
+  border-radius: var(--r-sm) !important;
+  padding: 5px 12px !important;
+  font-size: 0.80em !important;
+  font-weight: 500 !important;
+  cursor: pointer !important;
+  box-shadow: var(--sh-xs) !important;
+  transition: background var(--dur) var(--ease),
+              color var(--dur) var(--ease) !important;
+}
+.canvas-actions button:hover:not(:disabled) {
+  background: var(--green-pale) !important;
+  border-color: var(--green) !important;
+  color: var(--green-dark) !important;
+  box-shadow: none !important;
+}
+.canvas-actions button:disabled { opacity: 0.40 !important; cursor: not-allowed !important; }
+
+#draw-diagram-button {
+  background: var(--ok-bg) !important;
+  color: var(--ok-text) !important;
+  border-color: var(--ok-border) !important;
+}
+#draw-diagram-button:hover {
+  background: #d1ead9 !important;
+  color: var(--ok) !important;
+}
+
+#upload-image-button {
+  background: var(--amber-bg) !important;
+  color: var(--amber) !important;
+  border-color: var(--amber-border) !important;
+}
+#upload-image-button:hover { background: #fef3c7 !important; }
+
+#analyze-handwriting-button {
+  background: var(--green-pale) !important;
+  color: var(--green-dark) !important;
+  border-color: var(--green-light) !important;
+  font-weight: 600 !important;
+}
+#analyze-handwriting-button:hover {
+  background: var(--green-muted) !important;
+  border-color: var(--green) !important;
+}
+
+#clear-canvas-button {
+  background: var(--err-bg) !important;
+  color: var(--err-text) !important;
+  border-color: var(--err-border) !important;
+}
+#clear-canvas-button:hover { background: #f9e0e0 !important; }
+
+/* Canvas 本體 — 保持亮色手寫面 (帶淡點格紙感) */
+#handwriting-canvas {
+  background-color: #fefefe !important;
+  background-image:
+    radial-gradient(circle, #d9e4d6 1px, transparent 1px) !important;
+  background-size: 22px 22px !important;
+  border: none !important;
+  border-radius: 0 0 var(--r-lg) var(--r-lg) !important;
+}
+canvas {
+  background-color: #fefefe !important;
+  border-radius: 0 0 var(--r-lg) var(--r-lg) !important;
+}
+
+/* ─── 12. Chat Area ────────────────────────────────────────────── */
+.chat-area {
+  background: var(--bg-base) !important;
+  border-left: 1px solid var(--border-default) !important;
+  padding: 16px 14px 12px !important;
+}
+
+/* AI Tutor header */
+.chat-area h3,
+#tutor-model-label {
+  color: var(--green-dark) !important;
+  font-size: 0.83em !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.05em !important;
+  text-transform: uppercase !important;
+  text-align: left !important;
+  padding: 0 2px 10px !important;
+  margin: 0 !important;
+  border-bottom: 1px solid var(--border-subtle) !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 7px !important;
+}
+
+/* Chat history panel */
+#chat-history {
+  background: transparent !important;
+  border: none !important;
+  border-radius: 0 !important;
+  padding: 10px 2px 4px !important;
+  margin: 0 !important;
+}
+
+/* ─── 13. Chat Messages ─────────────────────────────────────────── */
+.chat-message {
+  border-radius: var(--r-lg) !important;
+  margin-bottom: 10px !important;
+  line-height: 1.65 !important;
+  font-size: 0.905em !important;
+  padding: 9px 14px !important;
+}
+
+/* 使用者訊息 — 柔和綠 */
+.user-message {
+  background: var(--green) !important;
+  color: #fff !important;
+  border-bottom-right-radius: 3px !important;
+  margin-left: auto !important;
+  box-shadow: var(--sh-green) !important;
+}
+
+/* AI 助教訊息 — 教材淺背景 */
+.bot-message {
+  background: var(--bg-surface) !important;
+  border: 1px solid var(--border-default) !important;
+  border-left: 3px solid var(--green) !important;
+  color: var(--text-primary) !important;
+  border-top-left-radius: 3px !important;
+  border-radius: var(--r-lg) !important;
+  box-shadow: var(--sh-xs) !important;
+  padding: 13px 16px !important;
+  font-size: 0.925em !important;
+  line-height: 1.88 !important;
+  font-family: "Inter", "Noto Sans TC", "Segoe UI", "Microsoft JhengHei", sans-serif !important;
+}
+
+.bot-message.initial-greeting {
+  background: transparent !important;
+  border: none !important;
+  border-left: none !important;
+  box-shadow: none !important;
+  border-radius: 0 !important;
+  padding: 0 0 4px !important;
+  margin: 0 !important;
+}
+.bot-message.initial-greeting .greeting-text {
+  color: var(--text-secondary) !important;
+  font-size: 0.88em !important;
+  font-weight: 500 !important;
+}
+
+/* Code inside bot messages */
+.bot-message code {
+  background: var(--green-pale) !important;
+  color: var(--green-dark) !important;
+  padding: 1px 5px !important;
+  border-radius: 3px !important;
+  font-family: "Menlo", "Consolas", monospace !important;
+  font-size: 0.88em !important;
+}
+.bot-message pre {
+  background: var(--bg-elevated) !important;
+  border: 1px solid var(--border-subtle) !important;
+  border-radius: var(--r-sm) !important;
+  padding: 10px 14px !important;
+  color: var(--text-primary) !important;
+  font-weight: normal !important;
+}
+
+/* ─── 14. Chat Input ────────────────────────────────────────────── */
+.chat-input-area { gap: 7px !important; padding-top: 8px !important; }
+.chat-input-group { gap: 6px !important; }
+
+#chat-input {
+  background: var(--bg-input) !important;
+  border: 1px solid var(--border-default) !important;
+  border-radius: var(--r-md) !important;
+  color: var(--text-primary) !important;
+  padding: 10px 14px !important;
+  font-size: 0.915em !important;
+  box-shadow: var(--sh-xs) !important;
+  transition: border-color var(--dur) var(--ease),
+              box-shadow var(--dur) var(--ease) !important;
+}
+#chat-input::placeholder { color: var(--text-muted) !important; }
+#chat-input:focus {
+  outline: none !important;
+  border-color: var(--green) !important;
+  box-shadow: 0 0 0 3px var(--green-ring) !important;
+}
+
+#chat-send-button {
+  background: var(--green) !important;
+  color: #fff !important;
+  border: 1px solid var(--green-dark) !important;
+  border-radius: var(--r-md) !important;
+  padding: 10px 18px !important;
+  font-weight: 600 !important;
+  font-size: 0.895em !important;
+  letter-spacing: 0.02em !important;
+  cursor: pointer !important;
+  box-shadow: var(--sh-green) !important;
+  transition: background var(--dur) var(--ease),
+              box-shadow var(--dur) var(--ease) !important;
+}
+#chat-send-button:hover {
+  background: var(--green-dark) !important;
+  box-shadow: 0 3px 12px rgba(107,143,113,0.28) !important;
+}
+
+#toggle-math-btn {
+  background: var(--bg-elevated) !important;
+  border: 1px solid var(--border-default) !important;
+  border-radius: var(--r-md) !important;
+  color: var(--text-muted) !important;
+  transition: all var(--dur) var(--ease) !important;
+  box-shadow: var(--sh-xs) !important;
+}
+#toggle-math-btn:hover {
+  background: var(--green-pale) !important;
+  color: var(--green-dark) !important;
+  border-color: var(--green) !important;
+}
+#toggle-math-btn.active {
+  background: var(--green-muted) !important;
+  color: var(--green-dark) !important;
+  border-color: var(--green) !important;
+}
+
+/* ─── 15. Math Symbol Keyboard ─────────────────────────────────── */
+.symbol-buttons {
+  background: var(--bg-elevated) !important;
+  border: 1px solid var(--border-subtle) !important;
+  border-radius: 0 0 var(--r-md) var(--r-md) !important;
+}
+.symbol-button {
+  background: var(--bg-surface) !important;
+  border: 1px solid var(--border-default) !important;
+  border-radius: var(--r-xs) !important;
+  color: var(--text-primary) !important;
+  font-size: 1em !important;
+  padding: 4px 10px !important;
+  cursor: pointer !important;
+  transition: background var(--dur) var(--ease) !important;
+}
+.symbol-button:hover {
+  background: var(--green) !important;
+  color: #fff !important;
+  border-color: var(--green-dark) !important;
+}
+
+/* ─── 16. Prompt Chips ─────────────────────────────────────────── */
+#suggested-prompts-container h4 {
+  color: var(--text-muted) !important;
+  font-size: 0.72em !important;
+  font-weight: 600 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.08em !important;
+}
+
+/* 靜態提示 chips — 教材引導感 */
+.suggestion-btn,
+.prompt-button {
+  background: var(--green-pale) !important;
+  color: var(--green-dark) !important;
+  border: 1px solid var(--green-light) !important;
+  border-radius: var(--r-sm) !important;
+  padding: 6px 13px !important;
+  font-size: 0.82em !important;
+  font-weight: 500 !important;
+  cursor: pointer !important;
+  line-height: 1.40 !important;
+  transition: background var(--dur) var(--ease),
+              border-color var(--dur) var(--ease) !important;
+}
+.suggestion-btn:hover,
+.prompt-button:hover {
+  background: var(--green-muted) !important;
+  border-color: var(--green) !important;
+  color: var(--green-dark) !important;
+}
+
+/* 動態 AI 建議 chips — 溫和琥珀 */
+.dynamic-prompt-btn {
+  background: var(--amber-bg) !important;
+  color: var(--amber) !important;
+  border: 1px solid var(--amber-border) !important;
+  border-radius: var(--r-sm) !important;
+  padding: 6px 13px !important;
+  font-size: 0.82em !important;
+  font-weight: 500 !important;
+  cursor: pointer !important;
+  line-height: 1.40 !important;
+  box-shadow: none !important;
+  transition: background var(--dur) var(--ease) !important;
+}
+.dynamic-prompt-btn:hover {
+  background: #fef3c7 !important;
+  border-color: #d4a820 !important;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+/* ─── 17. RAG Mode Button & Panel ──────────────────────────────── */
+#rag-mode-btn {
+  background: var(--green-pale) !important;
+  border: 1px solid var(--green-light) !important;
+  border-radius: var(--r-lg) !important;
+  color: var(--green-dark) !important;
+  font-weight: 600 !important;
+  box-shadow: var(--sh-xs) !important;
+  margin-top: 6px !important;
+  transition: background var(--dur) var(--ease),
+              border-color var(--dur) var(--ease) !important;
+}
+#rag-mode-btn:hover {
+  background: var(--green-muted) !important;
+  border-color: var(--green) !important;
+  box-shadow: var(--sh-sm) !important;
+}
+
+#rag-panel {
+  background: var(--bg-elevated) !important;
+  border: 1px solid var(--border-default) !important;
+  border-radius: var(--r-lg) !important;
+}
+
+#rag-query-input {
+  background: var(--bg-input) !important;
+  border: 1px solid var(--border-default) !important;
+  border-radius: var(--r-md) !important;
+  color: var(--text-primary) !important;
+  padding: 10px 14px !important;
+  font-size: 0.92em !important;
+  box-shadow: var(--sh-xs) !important;
+}
+#rag-query-input::placeholder { color: var(--text-muted) !important; }
+#rag-query-input:focus {
+  outline: none !important;
+  border-color: var(--green) !important;
+  box-shadow: 0 0 0 3px var(--green-ring) !important;
+}
+
+#rag-search-btn {
+  background: var(--green) !important;
+  border: 1px solid var(--green-dark) !important;
+  border-radius: var(--r-md) !important;
+  color: #fff !important;
+  font-weight: 600 !important;
+  cursor: pointer !important;
+  transition: background var(--dur) var(--ease) !important;
+}
+#rag-search-btn:hover { background: var(--green-dark) !important; }
+
+#rag-loading { color: var(--green) !important; }
+
+#rag-ai-answer {
+  background: var(--bg-surface) !important;
+  border: 1px solid var(--border-subtle) !important;
+  border-radius: var(--r-md) !important;
+  color: var(--text-primary) !important;
+  font-size: 0.87em !important;
+}
+
+/* ─── 18. Modals ────────────────────────────────────────────────── */
+.modal-overlay {
+  background: rgba(47,58,50,0.45) !important;
+  backdrop-filter: blur(4px) !important;
+  -webkit-backdrop-filter: blur(4px) !important;
+}
+.modal-content {
+  background: var(--bg-surface) !important;
+  border: 1px solid var(--border-default) !important;
+  border-radius: var(--r-xl) !important;
+  color: var(--text-primary) !important;
+  box-shadow: var(--sh-md) !important;
+}
+.modal-content p,
+.modal-content h3 { color: var(--text-primary) !important; }
+#prereqSuggestionModal .modal-content h3 { color: var(--amber) !important; }
+
+.modal-button {
+  background: var(--green) !important;
+  border: 1px solid var(--green-dark) !important;
+  border-radius: var(--r-md) !important;
+  color: #fff !important;
+  font-weight: 600 !important;
+  padding: 10px 22px !important;
+  cursor: pointer !important;
+  box-shadow: var(--sh-green) !important;
+  transition: background var(--dur) var(--ease) !important;
+}
+.modal-button:hover { background: var(--green-dark) !important; }
+.modal-button.cancel {
+  background: var(--bg-elevated) !important;
+  color: var(--text-secondary) !important;
+  border: 1px solid var(--border-default) !important;
+  box-shadow: var(--sh-xs) !important;
+}
+.modal-button.cancel:hover {
+  background: var(--bg-hover) !important;
+  color: var(--text-primary) !important;
+}
+
+/* Image modal */
+.image-modal { background: rgba(20,30,22,0.94) !important; }
+
+/* ─── 19. Misc / Responsive border fixes ────────────────────────── */
+@media (max-width: 1180px) {
+  .practice-area { border-right: none !important; }
+  .chat-area {
+    border-left: none !important;
+    border-top: 1px solid var(--border-default) !important;
+  }
+}
+
+/* ─── 20. Subtle entrance animation (不誇張) ───────────────────── */
+.bot-message,
+.user-message {
+  animation: skinFadeIn 0.20s var(--ease) both;
+}
+@keyframes skinFadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to   { opacity: 1; transform: translateY(0);   }
+}
+
+.prerequisite-card {
+  animation: slideIn 0.24s var(--ease) both !important;
+}
+
+/* ─── 21. Extra — 整體排版細節 ─────────────────────────────────── */
+
+/* 題目文字舒適度：段落、MathJax 公式呼吸空間 */
+#question-text p { margin: 0 0 6px !important; }
+#question-text mjx-container { vertical-align: middle !important; }
+
+/* Toolbar label 文字 */
+.canvas-toolbar strong { color: var(--text-secondary) !important; }
+
+/* 工具列粗細標籤 */
+span[style*="粗細"],
+#scratchpad-controls span { color: var(--text-muted) !important; font-size: 0.78em !important; }
+
+/* 題目區圖示顏色修正 */
+#diagram-image {
+  border: 1px solid var(--border-default) !important;
+  border-radius: var(--r-md) !important;
+  opacity: 0.95;
+}
+
+/* 靜態 prompts 區域 */
+#suggested-prompts-container {
+  margin-bottom: 10px !important;
+}
+
+/* RAG 結果標題 */
+#rag-panel [style*="color: #764ba2"] {
+  color: var(--green-dark) !important;
+}
+
+/* 對話框底部留白 */
+.chat-input-area {
+  border-top: 1px solid var(--border-subtle) !important;
+  padding-top: 10px !important;
+  margin-top: 4px !important;
+}
+
+/* Level selector 下拉 / 按鈕列整體背景 */
+.level-selector {
+  background: transparent !important;
+  padding: 0 !important;
+}
+
+/* 選擇器行分隔 */
+.practice-top .input-group {
+  margin-left: 0 !important;
+}
+
+/* 計算紙頂部工具列「粗細」文字 */
+#scratchpad-controls > div > span:first-child {
+  color: var(--text-muted) !important;
+}
+
+</style>
 </body>
 
 </html>

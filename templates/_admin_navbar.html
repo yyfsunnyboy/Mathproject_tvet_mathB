@@ -22,113 +22,180 @@
 {% set admin_active_analysis = (_ep == 'teacher_analysis') or ('/teacher_analysis' in _path) %}
 
 <style>
+/* ── Admin Navbar — 教材紙本風 v3 ── */
 .admin-navbar {
     position: sticky;
     top: 0;
     z-index: 9999;
     width: 100%;
-    background: #2c3e50;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.12);
-    border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+    background: #f3f6ef;
+    border-bottom: 1px solid #dde5d8;
+    box-shadow: 0 1px 6px rgba(68,83,70,0.08);
 }
 .admin-navbar__inner {
     max-width: 1400px;
     margin: 0 auto;
-    padding: 10px 18px;
+    padding: 8px 20px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    gap: 12px;
+    gap: 10px;
     flex-wrap: nowrap;
+    overflow: hidden;
 }
 .admin-navbar__brand {
-    color: #ecf0f1;
+    color: #2f3a32;
     text-decoration: none;
     font-weight: 700;
-    font-size: 0.98rem;
-    letter-spacing: 0.02em;
+    font-size: 0.95rem;
+    letter-spacing: 0.01em;
     line-height: 1.35;
     white-space: nowrap;
     flex: 0 0 auto;
+    font-family: "Inter", "Noto Sans TC", "Microsoft JhengHei", sans-serif;
 }
-.admin-navbar__brand:hover { color: #fff; }
+.admin-navbar__brand strong { color: #5f7f68; }
+.admin-navbar__brand:hover { color: #5f7f68; }
+
 .admin-navbar__menu {
     display: flex;
     flex-wrap: nowrap;
     align-items: center;
     justify-content: flex-end;
-    gap: 6px;
+    gap: 5px;
     min-width: 0;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    padding-bottom: 2px;
 }
+.admin-navbar__menu::-webkit-scrollbar { display: none; }
+
+/* ── 所有 pill 統一樣式 (覆蓋所有 --color 變體) ── */
 .admin-navbar__pill {
     display: inline-flex;
     align-items: center;
-    gap: 6px;
-    min-height: 34px;
-    padding: 0 10px;
-    border-radius: 10px;
+    gap: 5px;
+    min-height: 32px;
+    padding: 0 11px;
+    border-radius: 8px;
     text-decoration: none;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
-    border: 1px solid rgba(0, 0, 0, 0.12);
-    font-size: 0.86rem;
+    border: 1px solid #dde5d8;
+    font-size: 0.83rem;
     font-weight: 600;
     line-height: 1;
-    transition: all 0.2s ease;
     white-space: nowrap;
+    flex-shrink: 0;
+    transition: background 0.15s ease,
+                border-color 0.15s ease,
+                color 0.15s ease;
+    /* 統一：淡白底，深灰綠字 */
+    background: #fbfaf7 !important;
+    color: #4a544d !important;
+    box-shadow: none !important;
+    filter: none !important;
+    transform: none !important;
+    outline: none !important;
 }
+
+/* hover 統一 */
 .admin-navbar__pill:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 4px 10px rgba(0,0,0,0.18);
+    background: #eef4ea !important;
+    color: #2f3a32 !important;
+    border-color: #6b8f71 !important;
+    transform: none !important;
+    box-shadow: none !important;
+    filter: none !important;
 }
-.admin-navbar__pill--home { background: #3498db; color: #fff; }
-.admin-navbar__pill--curriculum { background: #16a085; color: #fff; }
-.admin-navbar__pill--skills { background: #9b59b6; color: #fff; }
-.admin-navbar__pill--prereq { background: #1abc9c; color: #fff; }
-.admin-navbar__pill--examples { background: #e67e22; color: #fff; }
-.admin-navbar__pill--importer { background: #2ecc71; color: #fff; }
-.admin-navbar__pill--db { background: #f1c40f; color: #2c3e50; }
-.admin-navbar__pill--ai { background: #e74c3c; color: #fff; }
-.admin-navbar__pill--analysis { background: #c039b4; color: #fff; }
-.admin-navbar__pill--student { background: #f39c12; color: #fff; }
-.admin-navbar__pill--home,
-.admin-navbar__pill--student {
-    padding: 0 13px;
-    border: 1px solid rgba(255, 255, 255, 0.22);
-    box-shadow: 0 2px 8px rgba(93, 173, 226, 0.22);
-}
-.admin-navbar__pill--logout {
-    background: transparent;
-    color: #aaa;
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    font-weight: 500;
-}
-.admin-navbar__pill--logout:hover {
-    color: #ecf0f1;
-    background: rgba(255, 255, 255, 0.06);
-}
+
+/* active (當前頁面) */
 .admin-navbar__pill--active {
-    outline: 2px solid #fff;
-    outline-offset: 1px;
-    box-shadow:
-        0 0 0 2px rgba(255,255,255,0.55),
-        0 6px 14px rgba(0,0,0,0.28);
-    filter: brightness(1.2);
-    transform: translateY(-1px);
+    background: #5f7f68 !important;
+    color: #ffffff !important;
+    border-color: #55735c !important;
+    box-shadow: none !important;
+    outline: none !important;
+    filter: none !important;
+    transform: none !important;
 }
 .admin-navbar__pill--active:hover {
-    transform: translateY(-1px);
-    filter: brightness(1.2);
+    background: #55735c !important;
+    color: #fff !important;
+    border-color: #4a6452 !important;
 }
-.admin-navbar__pill--curriculum:hover { background: #117a65; }
-.admin-navbar__pill--examples:hover { background: #ca6f1e; }
-.admin-navbar__pill--student:hover { background: #d68910; }
-@media (max-width: 1280px) {
+
+/* 特殊項：教師主頁 (稍微突出) */
+.admin-navbar__pill--home {
+    background: #fbfaf7 !important;
+    color: #4a544d !important;
+    border-color: #c8d8c2 !important;
+    padding: 0 13px !important;
+}
+.admin-navbar__pill--home:hover {
+    background: #eef4ea !important;
+    border-color: #6b8f71 !important;
+}
+.admin-navbar__pill--home.admin-navbar__pill--active {
+    background: #5f7f68 !important;
+    color: #fff !important;
+}
+
+/* 學生模式 (淡沙色，可辨識) */
+.admin-navbar__pill--student {
+    background: #f6f1e8 !important;
+    color: #6b4a10 !important;
+    border-color: #e0c87a !important;
+    padding: 0 13px !important;
+}
+.admin-navbar__pill--student:hover {
+    background: #fef3c7 !important;
+    border-color: #c8a83a !important;
+    color: #5a3c0a !important;
+}
+
+/* 登出 (低調) */
+.admin-navbar__pill--logout {
+    background: transparent !important;
+    color: #7b857d !important;
+    border-color: #c8d4c2 !important;
+    font-weight: 500 !important;
+}
+.admin-navbar__pill--logout:hover {
+    background: #fdeeee !important;
+    color: #9b3a36 !important;
+    border-color: #e8c0be !important;
+}
+
+/* 針對所有 --color 變體：清除高彩度 (保險措施) */
+.admin-navbar__pill--curriculum,
+.admin-navbar__pill--skills,
+.admin-navbar__pill--prereq,
+.admin-navbar__pill--examples,
+.admin-navbar__pill--importer,
+.admin-navbar__pill--db,
+.admin-navbar__pill--ai,
+.admin-navbar__pill--analysis {
+    background: #fbfaf7 !important;
+    color: #4a544d !important;
+    border-color: #dde5d8 !important;
+}
+
+/* 小螢幕：水平捲動，不換行 */
+@media (max-width: 1100px) {
     .admin-navbar__inner {
-        flex-wrap: wrap;
-        gap: 10px;
+        flex-wrap: nowrap;
+        overflow: hidden;
     }
     .admin-navbar__menu {
-        flex-wrap: wrap;
+        gap: 4px;
+        overflow-x: auto;
+        justify-content: flex-start;
+    }
+    .admin-navbar__pill {
+        font-size: 0.78rem;
+        padding: 0 8px;
+        min-height: 30px;
     }
 }
 </style>

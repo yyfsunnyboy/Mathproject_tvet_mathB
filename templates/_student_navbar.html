@@ -23,19 +23,18 @@
 {% set nav_active_upload = (_ep == 'practice.practice' and _skill == 'custom_upload') or ('/practice/custom_upload' in _path) %}
 
 <style>
-/* 學生端 navbar：核心樣式只綁定 student-navbar，避免被頁面 .navbar 覆寫 */
-
+/* ── Student Navbar — 板書風 / 黑板綠 v3 ── */
 .student-navbar {
     position: sticky;
     top: 0;
     z-index: 9999;
     width: 100%;
-    min-height: 56px;
+    min-height: 52px;
     margin: 0 !important;
     box-sizing: border-box;
-    background: #2c3e50;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.2);
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.12);
+    background: #35553a;
+    border-bottom: 2px solid #263f2f;
+    box-shadow: 0 2px 10px rgba(30,60,35,0.25);
 }
 .student-navbar__inner {
     max-width: 1400px;
@@ -44,150 +43,176 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    flex-wrap: wrap;
-    gap: 16px;
-    padding: 10px 20px;
+    flex-wrap: nowrap;
+    gap: 10px;
+    padding: 8px 20px;
+    overflow: hidden;
 }
 .student-navbar__brand {
-    color: #ecf0f1;
+    color: #f2ede0;
     text-decoration: none;
     font-weight: 700;
-    font-size: 1.05rem;
+    font-size: 0.97rem;
     letter-spacing: 0.02em;
-    max-width: min(420px, 38vw);
+    white-space: nowrap;
+    flex-shrink: 0;
     line-height: 1.35;
+    font-family: "Inter", "Noto Sans TC", "Microsoft JhengHei", sans-serif;
 }
+.student-navbar__brand strong { color: #c3dfc9; }
 .student-navbar__brand:hover { color: #fff; }
+
 .student-navbar__menu {
     display: flex;
     align-items: center;
     justify-content: flex-end;
-    flex-wrap: wrap;
-    gap: 8px;
-    row-gap: 10px;
+    flex-wrap: nowrap;
+    gap: 5px;
+    min-width: 0;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    padding-bottom: 2px;
 }
-/* 主功能與「登出」分組：拉開距離，窄螢幕仍可換行 */
+.student-navbar__menu::-webkit-scrollbar { display: none; }
+
 .student-navbar__primary {
     display: flex;
     align-items: center;
-    justify-content: flex-end;
-    flex-wrap: wrap;
-    gap: 8px;
-    row-gap: 10px;
+    gap: 5px;
+    flex-wrap: nowrap;
     min-width: 0;
+    overflow-x: visible;
 }
 .student-navbar__account {
     display: inline-flex;
     align-items: center;
-    margin-left: clamp(10px, 2vw, 28px);
-    padding-left: clamp(12px, 2.2vw, 30px);
-    border-left: 1px solid rgba(255, 255, 255, 0.14);
+    margin-left: 8px;
+    padding-left: 10px;
+    border-left: 1px solid rgba(255,255,255,0.18);
+    flex-shrink: 0;
 }
-/* 膠囊按鈕：inline-flex 對齊 emoji + 文字 */
+
+/* ── 膠囊按鈕：統一淡色紙本風 ── */
 .student-navbar__pill {
-    height: 36px;
+    height: 32px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
     text-decoration: none;
     border-radius: 8px;
-    padding: 0 12px;
+    padding: 0 10px;
     box-sizing: border-box;
-    font-size: 0.92rem;
+    font-size: 0.83rem;
     font-weight: 600;
     line-height: 1;
-    border: 1px solid rgba(0, 0, 0, 0.12);
-    transition:
-        background-color 0.2s ease,
-        color 0.2s ease,
-        transform 0.2s ease,
-        box-shadow 0.2s ease,
-        filter 0.2s ease;
-    will-change: transform;
+    white-space: nowrap;
+    flex-shrink: 0;
+    /* 統一底色：米白 */
+    background: #f2ede0 !important;
+    color: #3a4c3d !important;
+    border: 1px solid rgba(255,255,255,0.28) !important;
+    box-shadow: none !important;
+    filter: none !important;
+    transform: none !important;
+    transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
 }
 .student-navbar__pill-inner {
     display: inline-flex;
     align-items: center;
-    gap: 6px;
+    gap: 5px;
 }
-.student-navbar__pill-icon {
-    font-size: 1.05em;
-    line-height: 1;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-}
+.student-navbar__pill-icon { font-size: 1em; line-height: 1; }
 .student-navbar__pill-text { line-height: 1.2; }
 
-/* 語意色（底色） */
-.student-navbar a.student-navbar__pill { text-decoration: none; }
-.student-navbar a.student-navbar__pill--home    { background-color: #3498db; color: #fff !important; }
-.student-navbar a.student-navbar__pill--exam    { background-color: #e74c3c; color: #fff !important; }
-.student-navbar a.student-navbar__pill--mistake { background-color: #f1c40f; color: #2c3e50 !important; }
-.student-navbar a.student-navbar__pill--learn   { background-color: #8e44ad; color: #fff !important; }
-.student-navbar a.student-navbar__pill--kg      { background-color: #16a085; color: #fff !important; }
-.student-navbar a.student-navbar__pill--sim     { background-color: #27ae60; color: #fff !important; }
-.student-navbar a.student-navbar__pill--upload  { background-color: #6c5ce7; color: #fff !important; }
-.student-navbar a.student-navbar__pill--teacher { background-color: #f39c12; color: #fff !important; }
+/* 所有 --color 變體清除彩色 */
+.student-navbar a.student-navbar__pill,
+.student-navbar a.student-navbar__pill--home,
+.student-navbar a.student-navbar__pill--exam,
+.student-navbar a.student-navbar__pill--mistake,
+.student-navbar a.student-navbar__pill--learn,
+.student-navbar a.student-navbar__pill--kg,
+.student-navbar a.student-navbar__pill--sim,
+.student-navbar a.student-navbar__pill--upload,
 .student-navbar a.student-navbar__pill--teacher {
-    padding: 0 15px;
-    border: 1px solid rgba(255, 255, 255, 0.22);
-    box-shadow: 0 2px 8px rgba(243, 156, 18, 0.28);
+    background: #f2ede0 !important;
+    color: #3a4c3d !important;
+    border: 1px solid rgba(195,220,201,0.55) !important;
+    box-shadow: none !important;
+    filter: none !important;
+    transform: none !important;
 }
 
-/* Hover：略加深 + 上浮 + 陰影 */
-.student-navbar a.student-navbar__pill--home:hover    { background-color: #2980b9 !important; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(52, 152, 219, 0.45); }
-.student-navbar a.student-navbar__pill--exam:hover    { background-color: #c0392b !important; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(231, 76, 60, 0.45); }
-.student-navbar a.student-navbar__pill--mistake:hover { background-color: #d4ac0d !important; color: #1a1a1a !important; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(241, 196, 15, 0.5); }
-.student-navbar a.student-navbar__pill--learn:hover   { background-color: #6c3483 !important; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(142, 68, 173, 0.45); }
-.student-navbar a.student-navbar__pill--kg:hover      { background-color: #117a65 !important; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(22, 160, 133, 0.45); }
-.student-navbar a.student-navbar__pill--sim:hover     { background-color: #1e8449 !important; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(39, 174, 96, 0.45); }
-.student-navbar a.student-navbar__pill--upload:hover  { background-color: #5548c4 !important; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(108, 92, 231, 0.45); }
-.student-navbar a.student-navbar__pill--teacher:hover { background-color: #d68910 !important; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(243, 156, 18, 0.45); }
+/* hover：淡綠提亮 */
+.student-navbar a.student-navbar__pill:hover,
+.student-navbar a.student-navbar__pill--home:hover,
+.student-navbar a.student-navbar__pill--exam:hover,
+.student-navbar a.student-navbar__pill--mistake:hover,
+.student-navbar a.student-navbar__pill--learn:hover,
+.student-navbar a.student-navbar__pill--kg:hover,
+.student-navbar a.student-navbar__pill--sim:hover,
+.student-navbar a.student-navbar__pill--upload:hover,
 .student-navbar a.student-navbar__pill--teacher:hover {
-    background-color: #e29b11 !important;
-    transform: translateY(-2px);
-    box-shadow: 0 6px 14px rgba(243, 156, 18, 0.5);
+    background: #ffffff !important;
+    color: #2f3a32 !important;
+    border-color: rgba(255,255,255,0.7) !important;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15) !important;
+    transform: none !important;
+    filter: none !important;
 }
 
-/* Active：高對比、明顯立體 */
+/* active：暖白底 + 深墨綠字 + 輕微陰影 */
 .student-navbar a.student-navbar__pill.student-navbar__pill--active {
-    outline: 3px solid #ffffff;
-    outline-offset: 1px;
-    box-shadow:
-        0 0 0 3px rgba(255, 255, 255, 0.62),
-        0 7px 16px rgba(0, 0, 0, 0.30);
-    filter: brightness(1.32);
-    transform: translateY(-1px);
+    background: #ffffff !important;
+    color: #2f3a32 !important;
+    border: 1px solid rgba(255,255,255,0.85) !important;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.18), inset 0 0 0 1px rgba(255,255,255,0.5) !important;
+    filter: none !important;
+    transform: none !important;
+    outline: none !important;
 }
-.student-navbar a.student-navbar__pill.student-navbar__pill--active span {
-    font-weight: 600;
-}
+.student-navbar a.student-navbar__pill.student-navbar__pill--active span { font-weight: 700; }
 .student-navbar a.student-navbar__pill.student-navbar__pill--active:hover {
-    transform: translateY(-1px);
-    filter: brightness(1.32);
-}
-/* 首頁 active 再稍微提高辨識度 */
-.student-navbar a.student-navbar__pill--home.student-navbar__pill--active {
-    box-shadow:
-        0 0 0 3px rgba(255, 255, 255, 0.72),
-        0 8px 18px rgba(41, 128, 185, 0.42);
+    background: #fff !important;
+    transform: none !important;
+    filter: none !important;
 }
 
-/* 登出：次要文字連結 */
+/* 教師模式：略帶沙黃 */
+.student-navbar a.student-navbar__pill--teacher {
+    background: #f6eedb !important;
+    color: #5a3e1b !important;
+    border-color: rgba(200,168,80,0.45) !important;
+    padding: 0 13px !important;
+}
+.student-navbar a.student-navbar__pill--teacher:hover {
+    background: #fdf5e1 !important;
+    color: #3d2a0d !important;
+    border-color: rgba(200,168,80,0.7) !important;
+}
+
+/* 登出：低調 */
 .student-navbar a.student-navbar__pill--logout {
     background: transparent !important;
-    color: #aaa !important;
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    font-weight: 500;
-    padding: 0 12px;
-    height: 36px;
+    color: rgba(240,235,220,0.6) !important;
+    border: 1px solid rgba(255,255,255,0.2) !important;
+    font-weight: 500 !important;
+    box-shadow: none !important;
 }
 .student-navbar a.student-navbar__pill--logout:hover {
-    color: #ecf0f1 !important;
-    background: rgba(255, 255, 255, 0.06) !important;
-    transform: translateY(-1px);
-    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+    background: rgba(255,255,255,0.1) !important;
+    color: #f2ede0 !important;
+    border-color: rgba(255,255,255,0.4) !important;
+    transform: none !important;
+    box-shadow: none !important;
+}
+
+/* 小螢幕：水平捲動 */
+@media (max-width: 960px) {
+    .student-navbar__inner { padding: 7px 14px; }
+    .student-navbar__menu { gap: 4px; overflow-x: auto; }
+    .student-navbar__pill { font-size: 0.78rem; padding: 0 8px; height: 30px; }
 }
 </style>
 

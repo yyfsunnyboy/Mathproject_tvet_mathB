@@ -3059,6 +3059,721 @@
     });
 
   </script>
+
+<!-- ═══════════════════════════════════════════════════════════════════
+     adaptive-ui-skin-v3 — 教材紙本風 / 淺綠文青  (Visual-only override)
+     Rules: NO id/class rename · NO JS touch · CSS cascade override only
+     ═══════════════════════════════════════════════════════════════════ -->
+<style id="adaptive-ui-skin-v3">
+
+/* ── 1. Design Tokens (覆蓋舊 :root) ────────────────────────────── */
+:root {
+  /* 背景 */
+  --bg:           #f7f6f2;
+  --panel:        #ffffff;
+  --line:         #dce8d8;
+
+  /* 文字 */
+  --ink:          #2f3a32;
+  --muted:        #6b7d6e;
+
+  /* 主綠 */
+  --accent:       #6b8f71;
+  --accent-dark:  #5a7a60;
+  --accent-soft:  #edf3eb;
+
+  /* 狀態 */
+  --ok:           #4a7c59;
+  --warn:         #b07d30;
+
+  /* 提示框 */
+  --hint-bg:      #faf7ee;
+  --hint-line:    #d8c98a;
+
+  /* Palette extras */
+  --green-light:  #dfe8dc;
+  --green-pale:   #edf3eb;
+  --green-muted:  rgba(107,143,113,0.13);
+  --green-ring:   rgba(107,143,113,0.24);
+  --amber:        #a07020;
+  --amber-bg:     #fdf6e3;
+  --amber-border: #e0c87a;
+  --err-bg:       #fdf2f2;
+  --err-text:     #7a2e2c;
+  --err-border:   #e8c0be;
+
+  /* Radius / shadow */
+  --r-sm: 8px;
+  --r-md: 12px;
+  --r-lg: 16px;
+  --r-xl: 20px;
+  --sh-xs: 0 1px 4px rgba(47,58,50,0.06);
+  --sh-sm: 0 2px 10px rgba(47,58,50,0.08);
+  --sh-md: 0 4px 18px rgba(47,58,50,0.10);
+  --sh-green: 0 2px 10px rgba(107,143,113,0.18);
+  --ease: cubic-bezier(0.4, 0, 0.2, 1);
+  --dur: 0.16s;
+}
+
+/* ── 2. Body & Shell ─────────────────────────────────────────────── */
+body {
+  background: #f7f6f2 !important;
+  background-image: none !important;
+  color: var(--ink) !important;
+  font-family: "Inter", "Noto Sans TC", "Microsoft JhengHei",
+               -apple-system, BlinkMacSystemFont, sans-serif !important;
+  -webkit-font-smoothing: antialiased !important;
+}
+
+/* ── 3. Hero / Page Title ────────────────────────────────────────── */
+.hero {
+  margin-bottom: 18px !important;
+  padding-bottom: 14px !important;
+  border-bottom: 1px solid var(--line) !important;
+}
+.hero h1 {
+  font-size: 22px !important;
+  font-weight: 700 !important;
+  color: var(--ink) !important;
+  margin: 0 0 2px !important;
+  letter-spacing: -0.01em !important;
+}
+.hero p {
+  color: var(--muted) !important;
+  font-size: 13px !important;
+}
+
+/* Mode badge */
+.badge,
+#entryModeText {
+  background: var(--green-pale) !important;
+  border: 1px solid var(--green-light) !important;
+  color: var(--accent-dark) !important;
+  font-size: 12.5px !important;
+  border-radius: 999px !important;
+  padding: 8px 16px !important;
+}
+
+/* ── 4. Panel (所有卡片) ─────────────────────────────────────────── */
+.panel {
+  background: var(--panel) !important;
+  border: 1px solid var(--line) !important;
+  border-radius: var(--r-lg) !important;
+  box-shadow: var(--sh-sm) !important;
+  padding: 18px !important;
+}
+.panel h2 {
+  font-size: 15px !important;
+  font-weight: 700 !important;
+  color: var(--ink) !important;
+  margin: 0 0 14px !important;
+  padding-bottom: 8px !important;
+  border-bottom: 1px solid var(--line) !important;
+}
+
+/* ── 5. Top-grid 三欄卡片 ────────────────────────────────────────── */
+
+/* APR 圓環 — 藍漸層 → 鼠尾草綠 */
+.apr-ring {
+  background: conic-gradient(var(--accent) 0deg, var(--accent) 162deg, #e4ede0 162deg) !important;
+}
+.apr-ring::before {
+  background: #fff !important;
+}
+.apr-core strong {
+  color: var(--accent-dark) !important;
+  font-size: 26px !important;
+}
+.apr-core span { color: var(--muted) !important; }
+
+/* soft-badge */
+.soft-badge {
+  background: var(--green-pale) !important;
+  border: 1px solid var(--green-light) !important;
+  color: var(--accent-dark) !important;
+}
+
+/* KPI 小方塊 */
+.kpi-mini {
+  background: var(--green-pale) !important;
+  border: 1px solid var(--green-light) !important;
+  color: var(--accent-dark) !important;
+  border-radius: 10px !important;
+}
+.kpi-mini span { color: var(--accent-dark) !important; }
+
+.kpi-strategy {
+  background: var(--green-pale) !important;
+  border-color: var(--green-light) !important;
+  color: var(--accent-dark) !important;
+}
+.kpi-strategy.review {
+  background: var(--amber-bg) !important;
+  color: var(--amber) !important;
+  border-color: var(--amber-border) !important;
+}
+
+/* Demo route message */
+.demo-route-msg {
+  background: var(--amber-bg) !important;
+  border: 1px solid var(--amber-border) !important;
+  color: #6b4c10 !important;
+  border-radius: var(--r-md) !important;
+}
+
+/* 軌跡圖 */
+.trajectory-board {
+  background: var(--bg) !important;
+  background-image: none !important;
+  border: 1px solid var(--line) !important;
+  border-radius: var(--r-md) !important;
+}
+.trajectory-board::-webkit-scrollbar-thumb { background: #bdd0b9 !important; }
+
+/* 軌跡進度條 */
+.bar { background: var(--green-light) !important; }
+.fill { background: linear-gradient(90deg, var(--accent) 0%, #7ab87e 100%) !important; }
+.threshold { background: rgba(185,80,80,0.40) !important; }
+
+/* Strategy tags */
+.strategy-tag {
+  background: var(--green-pale) !important;
+  color: var(--accent-dark) !important;
+}
+.review-active {
+  background: var(--amber-bg) !important;
+  color: var(--amber) !important;
+}
+
+/* Mode tags */
+.mode-main {
+  background: var(--green-pale) !important;
+  color: var(--accent-dark) !important;
+  border-color: var(--green-light) !important;
+}
+.mode-remediation {
+  background: var(--amber-bg) !important;
+  color: var(--amber) !important;
+  border-color: var(--amber-border) !important;
+}
+.mode-returned {
+  background: #eef6f0 !important;
+  color: #2f6040 !important;
+  border-color: #b8d9c3 !important;
+}
+
+/* ── 6. Nav Panel ────────────────────────────────────────────────── */
+.nav-panel { background: var(--panel) !important; }
+
+.nav-progress-box {
+  background: var(--green-pale) !important;
+  border: 1px solid var(--green-light) !important;
+  color: var(--accent-dark) !important;
+  border-radius: var(--r-md) !important;
+}
+.nav-progress-box strong { color: var(--accent-dark) !important; }
+.nav-progress-bar { background: var(--green-light) !important; border-radius: 6px !important; }
+#navProgressFill {
+  background: linear-gradient(90deg, var(--accent), #8bbf7e) !important;
+}
+
+.nav-mini-box {
+  background: var(--green-pale) !important;
+  border: 1px solid var(--green-light) !important;
+  color: var(--accent-dark) !important;
+  border-radius: 10px !important;
+}
+.nav-mini-box span { color: var(--accent-dark) !important; font-weight: 700 !important; }
+
+/* ── 7. Chip / Meta ─────────────────────────────────────────────── */
+.chip {
+  background: #fafcf8 !important;
+  border: 1px solid var(--line) !important;
+  border-radius: var(--r-md) !important;
+}
+.chip strong { color: var(--muted) !important; }
+.value { color: var(--accent-dark) !important; }
+
+/* ── 8. Question Card ────────────────────────────────────────────── */
+.question-box {
+  background: #fcfbf8 !important;
+  border: 1px solid var(--line) !important;
+  border-radius: var(--r-md) !important;
+  padding: 18px 20px !important;
+  margin-bottom: 14px !important;
+}
+.question-family { color: var(--muted) !important; }
+.question-text {
+  color: var(--ink) !important;
+  font-size: 19px !important;
+  font-weight: 700 !important;
+  line-height: 1.80 !important;
+}
+.question-context { color: #5a6a5d !important; }
+
+/* Subskill chips */
+.subskills span {
+  background: var(--green-pale) !important;
+  color: var(--accent-dark) !important;
+  border: 1px solid var(--green-light) !important;
+}
+
+/* Answer format box */
+.answer-format-box {
+  background: var(--green-pale) !important;
+  border: 1px solid var(--green-light) !important;
+  color: var(--accent-dark) !important;
+  border-radius: var(--r-md) !important;
+}
+.answer-format-badge {
+  background: #fff !important;
+  border: 1px solid var(--green-light) !important;
+  color: var(--accent-dark) !important;
+}
+.answer-format-example { color: var(--muted) !important; }
+.answer-format-hint {
+  background: var(--amber-bg) !important;
+  border-left: 4px solid var(--amber-border) !important;
+  color: #6b4c10 !important;
+  border-radius: var(--r-sm) !important;
+}
+
+/* ── 9. Input & Buttons ──────────────────────────────────────────── */
+.answer-box input,
+.assistant-input input {
+  border: 1px solid var(--line) !important;
+  border-radius: var(--r-md) !important;
+  background: #fff !important;
+  color: var(--ink) !important;
+  font-size: 15px !important;
+  box-shadow: var(--sh-xs) !important;
+  transition: border-color var(--dur) var(--ease),
+              box-shadow var(--dur) var(--ease) !important;
+}
+.answer-box input:focus,
+.assistant-input input:focus {
+  outline: none !important;
+  border-color: var(--accent) !important;
+  box-shadow: 0 0 0 3px var(--green-ring) !important;
+}
+.answer-box input::placeholder,
+.assistant-input input::placeholder { color: #9aaa9c !important; }
+
+/* Global button reset */
+button {
+  border-radius: var(--r-md) !important;
+  font-family: inherit !important;
+  transition: background var(--dur) var(--ease),
+              box-shadow var(--dur) var(--ease) !important;
+}
+
+/* Primary → 主綠 */
+button.primary,
+.primary {
+  background: var(--accent) !important;
+  color: #fff !important;
+  border: 1px solid var(--accent-dark) !important;
+  box-shadow: var(--sh-green) !important;
+}
+button.primary:hover:not(:disabled),
+.primary:hover:not(:disabled) {
+  background: var(--accent-dark) !important;
+  box-shadow: 0 3px 12px rgba(107,143,113,0.30) !important;
+}
+
+/* Secondary */
+button.secondary,
+.secondary {
+  background: var(--green-pale) !important;
+  color: var(--accent-dark) !important;
+  border: 1px solid var(--green-light) !important;
+}
+button.secondary:hover:not(:disabled),
+.secondary:hover:not(:disabled) {
+  background: var(--green-muted) !important;
+  border-color: var(--accent) !important;
+}
+
+/* Success → 保留綠但更柔和 */
+button.success,
+.success {
+  background: var(--ok) !important;
+  color: #fff !important;
+  border: 1px solid #3a6448 !important;
+}
+button.success:hover:not(:disabled),
+.success:hover:not(:disabled) {
+  background: #3a6448 !important;
+}
+
+/* Warning → 柔和橘 */
+button.warning,
+.warning {
+  background: #c8832a !important;
+  color: #fff !important;
+  border: 1px solid #a8661e !important;
+}
+button.warning:hover:not(:disabled),
+.warning:hover:not(:disabled) {
+  background: #a8661e !important;
+}
+
+/* ── 10. Canvas / Scratchpad ─────────────────────────────────────── */
+.workspace-header h2 { color: var(--ink) !important; }
+.workspace-header p   { color: var(--muted) !important; }
+
+.canvas-tools { gap: 5px !important; }
+
+.tool-btn {
+  background: #f4f7f2 !important;
+  border: 1px solid var(--line) !important;
+  color: var(--ink) !important;
+  border-radius: var(--r-sm) !important;
+  transition: background var(--dur) var(--ease) !important;
+}
+.tool-btn:hover {
+  background: var(--green-pale) !important;
+  border-color: var(--accent) !important;
+  color: var(--accent-dark) !important;
+}
+.tool-btn.active {
+  background: var(--green-muted) !important;
+  border-color: var(--accent) !important;
+  color: var(--accent-dark) !important;
+}
+.tool-sep { background: var(--line) !important; }
+
+.pen-width-wrap {
+  background: #f4f7f2 !important;
+  color: var(--muted) !important;
+  border: 1px solid var(--line) !important;
+  border-radius: var(--r-sm) !important;
+}
+input[type="range"] { accent-color: var(--accent) !important; }
+
+/* Canvas 本體 — 紙本感格點 */
+.canvas-wrap {
+  border: 1px solid var(--line) !important;
+  border-radius: var(--r-lg) !important;
+  background-color: #fefefe !important;
+  background-image:
+    radial-gradient(circle, #c8dac4 1px, transparent 1px) !important;
+  background-size: 22px 22px !important;
+}
+#handwriting-canvas {
+  background: transparent !important;
+}
+
+/* ── 11. Adaptive State Panel ────────────────────────────────────── */
+.adaptive-state-panel {
+  background: var(--panel) !important;
+  background-image: none !important;
+  border-color: var(--line) !important;
+}
+.adaptive-state-item {
+  background: #fafcf8 !important;
+  border: 1px solid var(--line) !important;
+  border-radius: var(--r-md) !important;
+}
+.adaptive-state-item strong { color: var(--muted) !important; }
+.adaptive-state-item div { color: var(--ink) !important; }
+
+/* Milestone chips */
+.milestone-remediation {
+  background: var(--amber-bg) !important;
+  color: var(--amber) !important;
+  border-color: var(--amber-border) !important;
+}
+.milestone-returned {
+  background: #eef6f0 !important;
+  color: #2f6040 !important;
+  border-color: #b8d9c3 !important;
+}
+.milestone-completed {
+  background: var(--green-pale) !important;
+  color: var(--accent-dark) !important;
+  border-color: var(--green-light) !important;
+}
+.milestone-mainline {
+  background: #f0f5ee !important;
+  color: #3a6040 !important;
+  border-color: #c0d9b8 !important;
+}
+
+.return-celebration {
+  background: var(--green-pale) !important;
+  border: 1px solid var(--green-light) !important;
+  color: var(--accent-dark) !important;
+  border-radius: var(--r-md) !important;
+}
+
+.panel-note { color: var(--muted) !important; }
+
+/* ── 12. AI Assistant Panel ──────────────────────────────────────── */
+.ai-assistant-panel {
+  background: #faf9f6 !important;
+  background-image: none !important;
+  border-color: var(--line) !important;
+}
+
+/* AI 助教標題 (取代紫色) */
+.assistant-title {
+  color: var(--accent-dark) !important;
+  font-size: 15px !important;
+  font-weight: 700 !important;
+  text-align: left !important;
+  margin: 0 0 10px !important;
+  padding-bottom: 8px !important;
+  border-bottom: 1px solid var(--line) !important;
+  letter-spacing: 0.03em !important;
+  text-transform: uppercase !important;
+}
+
+/* Assistant summary card — 各狀態統一改成紙本感 */
+.assistant-summary-card {
+  background: #fafcf8 !important;
+  border: 1px solid var(--green-light) !important;
+  border-radius: var(--r-md) !important;
+  box-shadow: var(--sh-xs) !important;
+  color: var(--ink) !important;
+}
+.assistant-summary-card::before { background: var(--accent) !important; }
+.assistant-summary-title { color: var(--accent-dark) !important; }
+.assistant-summary-text { color: var(--ink) !important; }
+
+.assistant-summary-card.neutral {
+  background: #fafcf8 !important;
+  border-color: var(--green-light) !important;
+  color: var(--ink) !important;
+}
+.assistant-summary-card.neutral::before { background: var(--accent) !important; }
+
+.assistant-summary-card.remediation {
+  background: #fdf7f0 !important;
+  border-color: #e8c8a0 !important;
+  color: #6b4010 !important;
+}
+.assistant-summary-card.remediation::before { background: #c8832a !important; }
+
+.assistant-summary-card.bridge {
+  background: #f2f7ef !important;
+  border-color: var(--green-light) !important;
+  color: var(--accent-dark) !important;
+}
+.assistant-summary-card.bridge::before { background: var(--accent) !important; }
+
+.assistant-summary-card.returned {
+  background: #f0f8f2 !important;
+  border-color: #b8d9c3 !important;
+  color: #2f6040 !important;
+}
+.assistant-summary-card.returned::before { background: var(--ok) !important; }
+
+.assistant-summary-card.completed {
+  background: var(--green-pale) !important;
+  border-color: var(--green-light) !important;
+  color: var(--accent-dark) !important;
+}
+.assistant-summary-card.completed::before { background: var(--ok) !important; }
+
+/* ── 13. Chat History & Messages ─────────────────────────────────── */
+.chat-history {
+  background: #fff !important;
+  border: 1px solid var(--line) !important;
+  border-radius: var(--r-md) !important;
+}
+.chat-history::-webkit-scrollbar-thumb { background: #bdd0b9 !important; }
+
+/* User message */
+.msg.user {
+  background: var(--accent) !important;
+  color: #fff !important;
+  align-self: flex-end !important;
+  border-radius: var(--r-md) var(--r-md) 3px var(--r-md) !important;
+}
+
+/* Bot message */
+.msg.bot {
+  background: var(--panel) !important;
+  border: 1px solid var(--green-light) !important;
+  border-left: 3px solid var(--accent) !important;
+  color: var(--ink) !important;
+  box-shadow: var(--sh-xs) !important;
+  border-radius: 3px var(--r-md) var(--r-md) var(--r-md) !important;
+  background-image: none !important;
+}
+
+/* Guide buttons (prompt chips) */
+.guide-buttons button {
+  background: var(--green-pale) !important;
+  color: var(--accent-dark) !important;
+  border: 1px solid var(--green-light) !important;
+  border-radius: 999px !important;
+  font-size: 12.5px !important;
+  padding: 7px 13px !important;
+  transition: background var(--dur) var(--ease) !important;
+}
+.guide-buttons button:hover {
+  background: var(--green-muted) !important;
+  border-color: var(--accent) !important;
+}
+
+/* Send button */
+#assistantSendBtn {
+  background: var(--ok) !important;
+  color: #fff !important;
+  border: 1px solid #3a6448 !important;
+}
+#assistantSendBtn:hover { background: #3a6448 !important; }
+
+/* RAG checkbox label */
+#useRagToggle { accent-color: var(--accent) !important; }
+
+/* RAG results area */
+#adv-rag-results {
+  background: var(--green-pale) !important;
+  border: 1px solid var(--green-light) !important;
+  border-radius: var(--r-md) !important;
+}
+#adv-rag-routing-badge {
+  background: var(--green-pale) !important;
+  color: var(--accent-dark) !important;
+  border-radius: 6px !important;
+}
+#adv-rag-loading { color: var(--accent) !important; }
+
+/* ── 14. Hint Box ────────────────────────────────────────────────── */
+.hint-box {
+  background: var(--hint-bg) !important;
+  border: 1px solid var(--hint-line) !important;
+  border-radius: var(--r-md) !important;
+  color: #5b4516 !important;
+  line-height: 1.78 !important;
+}
+.adaptive-hint .hint-title { color: #7a4c00 !important; }
+.adaptive-hint .hint-chip {
+  background: #fff5d9 !important;
+  border-color: #f0cf7a !important;
+  color: #7a5000 !important;
+}
+.adaptive-hint .hint-section {
+  background: #fffaf0 !important;
+  border-color: #efcf91 !important;
+  border-radius: var(--r-md) !important;
+}
+.adaptive-hint .hint-section-title { color: #7a5000 !important; }
+.hint-focus {
+  background: #fffaf0 !important;
+  border-color: var(--hint-line) !important;
+  color: #7a5000 !important;
+  border-radius: 10px !important;
+}
+
+/* ── 15. Summary / Diagnostic Cards ─────────────────────────────── */
+.summary-card {
+  background: #fcfbf8 !important;
+  border: 1px solid var(--line) !important;
+  border-radius: var(--r-lg) !important;
+  box-shadow: var(--sh-xs) !important;
+}
+.summary-card.pass {
+  background: var(--green-pale) !important;
+  border-color: var(--green-light) !important;
+}
+.summary-card.review {
+  background: var(--amber-bg) !important;
+  border-color: var(--amber-border) !important;
+}
+.summary-card h3 { color: var(--ink) !important; }
+.summary-badges span {
+  background: var(--green-pale) !important;
+  color: var(--accent-dark) !important;
+  border: 1px solid var(--green-light) !important;
+}
+
+/* Diagnostic report */
+.diag-card {
+  background: #fafcf8 !important;
+  border: 1px solid var(--line) !important;
+  border-radius: var(--r-lg) !important;
+  box-shadow: var(--sh-xs) !important;
+}
+.diag-card h4 { color: var(--ink) !important; }
+.diag-summary {
+  background: linear-gradient(135deg, var(--accent), #7ab87e) !important;
+  border: none !important;
+  color: #fff !important;
+}
+.diag-bar { background: var(--green-light) !important; }
+.diag-fill { background: var(--accent) !important; }
+.diag-breakpoint {
+  background: var(--err-bg) !important;
+  border-left-color: #c0392b !important;
+}
+.diag-breakpoint .big { color: #b91c1c !important; }
+.diag-recommend {
+  background: var(--green-pale) !important;
+}
+.diag-recommend p { color: var(--accent-dark) !important; }
+.diag-trajectory { background: #f5f8f4 !important; }
+.traj-step {
+  background: #fff !important;
+  border-color: var(--green-light) !important;
+  color: var(--ink) !important;
+}
+.traj-step small { color: var(--muted) !important; }
+.arrow { color: var(--line) !important; }
+.diag-bar-row .label { color: var(--ink) !important; }
+.diag-bar-row .label small { color: var(--muted) !important; }
+.diag-bar-row .pct { color: var(--muted) !important; }
+.diag-col p { color: var(--ink) !important; }
+
+/* ── 16. Modal (center-msgbox) ────────────────────────────────────── */
+.center-msgbox-overlay {
+  background: rgba(47,58,50,0.42) !important;
+  backdrop-filter: blur(4px) !important;
+  -webkit-backdrop-filter: blur(4px) !important;
+}
+.center-msgbox {
+  background: var(--panel) !important;
+  border: 1px solid var(--line) !important;
+  border-radius: var(--r-xl) !important;
+  box-shadow: var(--sh-md) !important;
+}
+.center-msgbox-title { color: var(--ink) !important; }
+.center-msgbox-text  { color: var(--ink) !important; }
+
+/* ── 17. Scrollbars ───────────────────────────────────────────────── */
+* { scrollbar-width: thin; scrollbar-color: #c0d4bc transparent; }
+*::-webkit-scrollbar { width: 4px; height: 4px; }
+*::-webkit-scrollbar-track { background: transparent; }
+*::-webkit-scrollbar-thumb { background: #c0d4bc; border-radius: 99px; }
+*::-webkit-scrollbar-thumb:hover { background: #a8c4a4; }
+
+/* ── 18. Subtle entrance animation ───────────────────────────────── */
+.msg {
+  animation: msgFadeIn 0.20s var(--ease) both;
+}
+@keyframes msgFadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to   { opacity: 1; transform: translateY(0);   }
+}
+
+/* Flash animation — 改為柔和橘 */
+@keyframes warmFlash {
+  0%   { background: #fff9ed; border-color: #e8c87a; box-shadow: 0 0 0 rgba(200,130,40,0); }
+  40%  { background: #fef3d0; border-color: #d4a836; box-shadow: 0 0 0 3px rgba(200,130,40,0.14); }
+  100% { background: transparent; border-color: inherit; box-shadow: none; }
+}
+
+/* ── 19. Responsive overrides ────────────────────────────────────── */
+@media (max-width: 1080px) {
+  .main-columns { grid-template-columns: 1fr !important; }
+  .top-grid { grid-template-columns: 1fr !important; }
+  .ai-assistant-panel { height: auto !important; }
+}
+
+</style>
 </body>
 </html>
 

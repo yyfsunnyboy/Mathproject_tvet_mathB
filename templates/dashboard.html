@@ -15,291 +15,696 @@
     <meta charset="UTF-8">
     <title>學習儀表板 - 自適應性教學系統</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f7f6;
-            margin: 0;
+        /* ── Design Tokens ─────────────────────────────────────────────── */
+        :root {
+            --paper-bg:      #f7f6f2;
+            --paper-soft:    #fbfaf7;
+            --card-bg:       #ffffff;
+            --card-warm:     #fcfbf8;
+
+            --ink:           #2f3a32;
+            --ink-soft:      #4a544d;
+            --muted:         #7b857d;
+
+            --green-main:    #6b8f71;
+            --green-deep:    #55735c;
+            --green-soft:    #dfe8dc;
+            --green-pale:    #eef4ea;
+            --green-ring:    rgba(107,143,113,0.24);
+
+            --chalkboard:    #31533a;
+            --chalkboard-dk: #263f2f;
+            --chalk:         #f8f7ef;
+            --chalk-dim:     rgba(248,247,239,0.7);
+            --wood:          #9a7448;
+            --wood-soft:     #d7b98e;
+
+            --sand:          #ede6d9;
+            --sand-soft:     #f6f1e8;
+
+            --border:        #dde5d8;
+            --border-soft:   #edf1e8;
+
+            --ok:            #4a7c59;
+            --ok-bg:         #edf6f0;
+
+            --shadow-soft:   0 8px 28px rgba(68,83,70,0.08);
+            --shadow-card:   0 2px 12px rgba(68,83,70,0.07);
+            --shadow-xs:     0 1px 4px rgba(68,83,70,0.06);
+
+            --r-sm: 6px;
+            --r-md: 10px;
+            --r-lg: 14px;
+            --r-xl: 18px;
+            --ease: cubic-bezier(0.4, 0, 0.2, 1);
+            --dur: 0.15s;
         }
 
-        /* Navbar 樣式改由 _student_navbar.html 提供，避免頁面覆寫 */
-
-        .container {
-            max-width: 1400px;
-            margin: 20px auto;
-            padding: 20px;
-            width: 100%;
+        /* ── Base ── */
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        html, body {
+            font-family: "Inter", "Noto Sans TC", -apple-system, BlinkMacSystemFont,
+                         "Segoe UI", "Microsoft JhengHei", sans-serif;
+            background: var(--paper-bg);
+            color: var(--ink);
+            -webkit-font-smoothing: antialiased;
+            font-size: 15px;
+            line-height: 1.65;
         }
 
-        h2 {
-            color: #333;
+        /* Navbar 樣式由 _student_navbar.html 提供 */
+
+        /* ── Dashboard Shell ── */
+        .dashboard-shell {
+            max-width: 1380px;
+            margin: 0 auto;
+            padding: 18px 22px 36px;
         }
 
+        /* ── Flash alerts ── */
         .alert {
-            padding: 15px;
-            margin-bottom: 20px;
-            border-radius: 4px;
-            background-color: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
+            padding: 12px 16px;
+            margin-bottom: 14px;
+            border-radius: var(--r-md);
+            background: var(--ok-bg);
+            color: var(--ok);
+            border: 1px solid #b8d9c3;
+            font-size: 14px;
         }
-
         .alert-warning {
-            background-color: #fff3cd;
-            color: #856404;
-            border-color: #ffeeba;
+            background: #fff8e8;
+            color: #8a5a1f;
+            border-color: #e0c87a;
         }
 
-        /* 麵包屑導航 */
+        /* ── Dashboard Header Row ── */
+        .dashboard-header-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 14px;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        .dashboard-header-row h2 {
+            font-size: 17px;
+            font-weight: 700;
+            color: var(--ink);
+            white-space: nowrap;
+        }
+        .curriculum-pills {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+        .curriculum-pill-wrap {
+            display: inline-flex;
+            border: 1px solid var(--border);
+            border-radius: 22px;
+            overflow: hidden;
+        }
+        .curriculum-pill-wrap a {
+            padding: 6px 14px;
+            font-size: 13px;
+            font-weight: 600;
+            text-decoration: none;
+            line-height: 1;
+            display: inline-flex;
+            align-items: center;
+            transition: background var(--dur) var(--ease), color var(--dur) var(--ease);
+        }
+        .curriculum-pill-wrap a.cpill-name {
+            border-right: 1px solid rgba(255,255,255,0.2);
+        }
+        .curriculum-pill-wrap a.cpill-active {
+            background: var(--green-main);
+            color: #fff;
+        }
+        .curriculum-pill-wrap a.cpill-inactive {
+            background: #91a897;
+            color: #fff;
+        }
+        .curriculum-pill-wrap a:hover {
+            filter: brightness(1.1);
+        }
+        .header-actions {
+            display: flex;
+            gap: 7px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .btn-header {
+            padding: 7px 15px;
+            border-radius: var(--r-md);
+            font-size: 13px;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            white-space: nowrap;
+            transition: background var(--dur) var(--ease), color var(--dur) var(--ease);
+            border: 1px solid var(--border);
+        }
+        .btn-header-primary {
+            background: var(--green-main);
+            color: #fff;
+            border-color: var(--green-deep);
+        }
+        .btn-header-primary:hover { background: var(--green-deep); }
+        .btn-header-muted {
+            background: var(--paper-soft);
+            color: var(--ink-soft);
+        }
+        .btn-header-muted:hover { background: var(--green-pale); color: var(--ink); }
+        .btn-header-active {
+            background: var(--ok-bg);
+            color: var(--ok);
+            border-color: var(--green-soft);
+        }
+
+        /* ── Chalkboard Hero ── */
+        .chalkboard-hero {
+            background: var(--chalkboard);
+            border: 3px solid var(--wood);
+            border-radius: var(--r-lg);
+            padding: 0 32px;
+            margin-bottom: 14px;
+            min-height: 130px;
+            max-height: 162px;
+            display: flex;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(30,60,35,0.22), inset 0 1px 0 rgba(255,255,255,0.06);
+        }
+        /* chalk texture overlay */
+        .chalkboard-hero::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background:
+                repeating-linear-gradient(
+                    0deg,
+                    transparent,
+                    transparent 3px,
+                    rgba(255,255,255,0.012) 3px,
+                    rgba(255,255,255,0.012) 4px
+                );
+            pointer-events: none;
+        }
+        /* decorative left icon */
+        .chalkboard-hero::after {
+            content: "📗";
+            position: absolute;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 64px;
+            opacity: 0.08;
+            pointer-events: none;
+            user-select: none;
+        }
+        /* wood frame top/bottom sheen */
+        .chalkboard-hero-inner {
+            position: relative;
+            z-index: 1;
+            padding: 24px 0;
+        }
+        .chalkboard-hero-inner h3 {
+            font-size: 19px;
+            font-weight: 700;
+            color: var(--chalk);
+            margin-bottom: 6px;
+            letter-spacing: 0.02em;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.3);
+        }
+        .chalkboard-hero-inner p {
+            font-size: 14px;
+            color: var(--chalk-dim);
+            line-height: 1.6;
+        }
+        .chalk-deco {
+            position: absolute;
+            right: 36px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 48px;
+            opacity: 0.09;
+            user-select: none;
+            pointer-events: none;
+        }
+
+        /* ── Student Class Panel ── */
+        .student-class-panel {
+            display: flex;
+            gap: 14px;
+            margin-bottom: 14px;
+            flex-wrap: wrap;
+        }
+        .student-class-panel .class-join-card,
+        .student-class-panel .class-list-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-soft);
+            border-radius: var(--r-lg);
+            padding: 14px 18px;
+            box-shadow: var(--shadow-xs);
+        }
+        .student-class-panel .class-join-card { flex: 1; min-width: 200px; }
+        .student-class-panel .class-list-card { flex: 2; min-width: 260px; }
+        .student-class-panel h4 {
+            font-size: 13.5px;
+            font-weight: 700;
+            color: var(--ink);
+            margin-bottom: 10px;
+        }
+        .class-join-form {
+            display: flex;
+            gap: 8px;
+        }
+        .class-join-input {
+            flex: 1;
+            padding: 7px 10px;
+            border: 1px solid var(--border);
+            border-radius: var(--r-md);
+            font-size: 13px;
+            color: var(--ink);
+            background: var(--paper-soft);
+            font-family: inherit;
+        }
+        .class-join-input:focus {
+            outline: none;
+            border-color: var(--green-main);
+            box-shadow: 0 0 0 3px var(--green-ring);
+        }
+        .class-join-btn {
+            background: var(--green-main);
+            color: #fff;
+            border: 1px solid var(--green-deep);
+            border-radius: var(--r-md);
+            padding: 7px 14px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            white-space: nowrap;
+            font-family: inherit;
+        }
+        .class-join-btn:hover { background: var(--green-deep); }
+        .class-list { list-style: none; padding: 0; }
+        .class-list li { padding: 4px 0; border-bottom: 1px solid var(--border-soft); font-size: 13.5px; color: var(--ink-soft); }
+        .class-list li:last-child { border-bottom: none; }
+
+        /* ── Dev Tools Bar (自選/自適應 - 開發中) ── */
+        .dev-tools-bar {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 14px;
+            padding: 10px 14px;
+            background: var(--sand-soft);
+            border: 1px solid #e2d9c8;
+            border-radius: var(--r-md);
+            flex-wrap: wrap;
+        }
+        .dev-tools-label {
+            font-size: 11.5px;
+            color: var(--muted);
+            font-weight: 500;
+            white-space: nowrap;
+        }
+        /* override btn-practice when inside dev-tools-bar */
+        .dev-tools-bar a.btn-practice,
+        .dev-tools-bar .btn-practice {
+            background: var(--paper-soft) !important;
+            color: var(--ink-soft) !important;
+            border: 1px solid var(--border) !important;
+            border-radius: var(--r-md) !important;
+            padding: 6px 13px !important;
+            font-size: 13px !important;
+            font-weight: 500 !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            gap: 5px !important;
+            text-decoration: none !important;
+            box-shadow: none !important;
+            height: auto !important;
+            min-height: 0 !important;
+            line-height: 1.3 !important;
+            transition: background var(--dur) var(--ease) !important;
+        }
+        .dev-tools-bar a.btn-practice:hover,
+        .dev-tools-bar .btn-practice:hover {
+            background: var(--green-pale) !important;
+            color: var(--ink) !important;
+            border-color: var(--green-main) !important;
+        }
+        .dev-badge {
+            display: inline-block;
+            background: #e8dcc8;
+            color: #7a6040;
+            font-size: 10px;
+            font-weight: 600;
+            border-radius: 4px;
+            padding: 1px 5px;
+            margin-left: 2px;
+            letter-spacing: 0.02em;
+        }
+
+        /* ── Breadcrumb ── */
         .breadcrumb {
             display: flex;
             align-items: center;
-            margin-bottom: 20px;
-            padding: 10px 0;
-            font-size: 0.9em;
+            margin-bottom: 14px;
+            padding: 0;
+            font-size: 13px;
+            gap: 6px;
+            flex-wrap: wrap;
         }
-
         .breadcrumb a {
-            color: #007bff;
+            color: var(--green-main);
             text-decoration: none;
-            margin-right: 5px;
+            font-weight: 500;
         }
+        .breadcrumb a:hover { text-decoration: underline; }
+        .breadcrumb span { color: var(--muted); }
+        .breadcrumb .current { color: var(--ink); font-weight: 600; }
 
-        .breadcrumb a:hover {
-            text-decoration: underline;
+        /* ── Grade Rows (volume list) ── */
+        .grade-section-title {
+            font-size: 13px;
+            color: var(--muted);
+            margin-bottom: 8px;
+            font-weight: 500;
+            letter-spacing: 0.01em;
         }
-
-        .breadcrumb span {
-            margin: 0 8px;
-            color: #666;
-        }
-
-        .breadcrumb .current {
-            color: #333;
-            font-weight: bold;
-        }
-
-        /* 層級卡片樣式 */
-        .level-grid.volumes-grid {
-            /* 冊別網格保持彈性 */
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        /* ── Grade Row — 教材入口卡 ── */
+        .grade-row {
+            display: flex !important;
+            align-items: center !important;
+            margin-bottom: 10px !important;
+            padding: 14px 20px 14px 16px !important;
+            border-bottom: none !important;
+            background: var(--card-bg);
+            border: 1px solid var(--border-soft) !important;
+            border-left: 3px solid var(--green-soft) !important;
+            border-radius: var(--r-md) !important;
+            box-shadow: var(--shadow-card);
             gap: 20px;
+            min-height: 100px;
+            transition: border-left-color var(--dur) var(--ease),
+                        box-shadow var(--dur) var(--ease);
+        }
+        .grade-row:hover {
+            border-left-color: var(--green-main) !important;
+            box-shadow: var(--shadow-soft);
         }
 
+        /* ── Grade Label 左側年級標籤 ── */
+        .grade-label {
+            margin-right: 0 !important;
+            min-width: 84px !important;
+            max-width: 84px;
+            flex-shrink: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+        /* 📘 icon circle */
+        .grade-label::before {
+            content: "📘";
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 38px;
+            height: 38px;
+            background: var(--green-pale);
+            border: 1px solid var(--green-soft);
+            border-radius: 10px;
+            font-size: 18px;
+            line-height: 1;
+        }
+        .grade-label h4 {
+            font-size: 13.5px !important;
+            font-weight: 700 !important;
+            color: var(--ink-soft) !important;
+            white-space: nowrap;
+            background: transparent;
+            border: none;
+            border-radius: 0;
+            padding: 0;
+            text-align: center;
+            letter-spacing: 0.02em;
+        }
+
+        /* ── Volume Grid (separator line) ── */
+        .level-grid.volumes-grid {
+            display: flex !important;
+            flex-wrap: wrap !important;
+            gap: 12px !important;
+            flex-grow: 0 !important;           /* 不撐滿空白 */
+            align-items: center;
+            grid-template-columns: none !important;
+            /* vertical divider from grade-label */
+            padding-left: 20px;
+            border-left: 1px solid var(--border-soft);
+        }
+
+        /* ── Volume Card 冊別入口卡 ── */
+        .level-card.volume-card {
+            width: auto !important;
+            min-width: 160px !important;
+            max-width: 220px !important;
+            height: 70px !important;
+            padding: 0 20px !important;
+            background: var(--card-warm) !important;
+            border: 1.5px solid var(--border) !important;
+            border-radius: var(--r-md) !important;   /* 10px — 卡片感非 pill */
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: flex-start !important;
+            gap: 10px !important;
+            box-shadow: var(--shadow-xs) !important;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            transition: background var(--dur) var(--ease),
+                        border-color var(--dur) var(--ease),
+                        box-shadow var(--dur) var(--ease),
+                        transform var(--dur) var(--ease) !important;
+        }
+        /* 小書本裝飾（左側淡色） */
+        .level-card.volume-card::before {
+            content: "📖";
+            font-size: 22px;
+            opacity: 0.45;
+            flex-shrink: 0;
+            line-height: 1;
+        }
+        .level-card.volume-card:hover {
+            background: var(--green-pale) !important;
+            border-color: var(--green-main) !important;
+            box-shadow: var(--shadow-card) !important;
+            transform: translateY(-2px) !important;
+        }
+        .level-card.volume-card h3 {
+            font-size: 17px !important;
+            font-weight: 700 !important;
+            color: var(--ink) !important;
+            margin: 0 !important;
+            white-space: nowrap;
+            letter-spacing: 0.01em;
+        }
+
+        /* ── Chapter Grid ── */
         .level-grid.chapters-grid {
-            /* 章節網格改為固定四欄 */
             display: grid;
             grid-template-columns: repeat(4, 1fr);
-            /* 固定四欄 */
-            gap: 15px;
-            /* 縮小卡片間距 */
+            gap: 10px;
             grid-auto-rows: 1fr;
-            /* 讓每行卡片等高 */
+        }
+        .level-card.chapter-card {
+            background: var(--card-warm) !important;
+            border: 1px solid var(--border) !important;
+            border-radius: var(--r-md) !important;
+            padding: 0 !important;
+            box-shadow: var(--shadow-xs) !important;
+            transition: background var(--dur) var(--ease),
+                        border-color var(--dur) var(--ease) !important;
+            height: 68px !important;
+        }
+        .level-card.chapter-card:hover {
+            background: var(--green-pale) !important;
+            border-color: var(--green-main) !important;
+            transform: none !important;
+            box-shadow: var(--shadow-card) !important;
+        }
+        .level-card.chapter-card h3 {
+            font-size: 13px !important;
+            color: var(--ink) !important;
+            margin: 0 !important;
         }
 
+        /* ── Categories grid ── */
         .level-grid.categories-grid {
-            /* 技能分類網格改為固定八欄 */
             display: grid;
             grid-template-columns: repeat(8, 1fr);
-            /* 固定八欄 */
-            gap: 10px;
-            /* 進一步縮小卡片間距 */
+            gap: 8px;
             grid-auto-rows: 1fr;
-            /* 讓每行卡片等高 */
         }
 
+        /* base level-card override */
         .level-card {
-            background: #fff;
-            border: 2px solid #ddd;
-            border-radius: 8px;
-            padding: 25px;
+            background: var(--card-warm);
+            border: 1px solid var(--border);
+            border-radius: var(--r-md);
+            padding: 14px;
             text-align: center;
             cursor: pointer;
-            transition: all 0.3s;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+            transition: background var(--dur) var(--ease), border-color var(--dur) var(--ease), transform var(--dur) var(--ease);
+            box-shadow: var(--shadow-xs);
         }
-
         .level-card:hover {
-            border-color: #007bff;
-            transform: translateY(-3px);
-            box-shadow: 0 4px 10px rgba(0, 123, 255, 0.2);
+            border-color: var(--green-main);
+            background: var(--green-pale);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-card);
         }
-
         .level-card h3 {
-            margin: 0 0 10px 0;
-            color: #007bff;
-            font-size: 1.5em;
+            margin: 0;
+            color: var(--green-deep);
+            font-size: 1.1em;
         }
 
-        .level-card.volume-card h3 {
-            color: #28a745;
-            font-size: 2em;
-        }
-
-        .level-card.chapter-card h3 {
-            color: #17a2b8;
-            font-size: 1.0em;
-            /* 再次縮小字體以適應更小的卡片 */
-        }
-
-        /* 僅針對第二層（章節）卡片的美化 */
-        .level-grid .level-card.chapter-card {
-            height: 70px;
-            /* 再次縮小卡片高度 */
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            /* 垂直置中 */
-            align-items: center;
-            /* 水平置中 */
-            overflow: hidden;
-            /* 隱藏溢出內容 */
-            padding: 5px;
-            /* 再次縮小內邊距 */
-            line-height: 1.3;
-            /* 調整行高以容納多行文字 */
-        }
-
-        /* 針對第一層（冊別）卡片的樣式 */
-        .level-card.volume-card h3 {
-            color: #28a745;
-            font-size: 1.4em;
-            /* 縮小字體以適應卡片 */
-        }
-
-        /* 針對冊別卡片的美化，實現固定大小和文字自適應 */
-        .level-card.volume-card {
-            width: 120px;
-            /* 縮小卡片寬度 */
-            height: 80px;
-            /* 縮小卡片高度 */
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            /* 垂直置中 */
-            align-items: center;
-            /* 水平置中 */
-        }
-
-        /* 技能卡片 */
+        /* ── Skill Grid + Cards ── */
         .skill-grid {
             display: grid !important;
             grid-template-columns: repeat(4, 1fr) !important;
-            /* 固定四列 */
-            gap: 20px;
+            gap: 14px;
             width: 100%;
             box-sizing: border-box;
         }
-
-        /* 針對課程模式下的技能網格，確保四列顯示 */
         .skill-grid.curriculum-skills {
             display: grid !important;
             grid-template-columns: repeat(4, 1fr) !important;
             width: 100% !important;
             grid-auto-flow: row !important;
         }
-
         .skill-card {
-            background: #fff;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
-            padding: 15px;
-            /* 縮小卡片內距 */
+            background: var(--card-bg);
+            border: 1px solid var(--border-soft);
+            border-radius: var(--r-md);
+            box-shadow: var(--shadow-xs);
+            padding: 14px;
             display: flex;
             flex-direction: column;
             min-width: 0;
-            /* 防止 grid 項目溢出 */
             box-sizing: border-box;
             width: 100%;
-            /* 確保卡片填滿 grid 單元 */
             max-width: 100%;
         }
-
+        .skill-card:hover {
+            border-color: var(--green-soft);
+            box-shadow: var(--shadow-card);
+        }
         .skill-card h3 {
-            font-size: 1.2em;
-            /* 標題字體大小 */
+            font-size: 14px;
             line-height: 1.3;
-            /* 自動縮放以適應單行 */
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
-        }
-
-        .skill-card h3 {
             margin-top: 0;
-            color: #007bff;
+            margin-bottom: 6px;
+            color: var(--green-deep);
         }
-
         .skill-card p {
-            font-size: 0.85em;
-            /* 縮小描述文字 */
-            color: #555;
+            font-size: 12.5px;
+            color: var(--muted);
             flex-grow: 1;
+            margin-bottom: 8px;
         }
-
         .progress-info {
-            font-size: 0.9em;
-            color: #666;
-            margin-bottom: 15px;
+            font-size: 12px;
+            color: var(--muted);
+            margin-bottom: 10px;
         }
-
         .progress-bar {
             width: 100%;
-            height: 10px;
-            background: #e9ecef;
-            border-radius: 5px;
+            height: 6px;
+            background: var(--green-soft);
+            border-radius: 99px;
             overflow: hidden;
-            margin-bottom: 8px;
-            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+            margin-bottom: 6px;
         }
-
         .progress-fill {
             height: 100%;
-            background: linear-gradient(90deg, #28a745, #20c997);
+            background: linear-gradient(90deg, var(--green-main), var(--ok));
             transition: width 0.5s ease;
-            box-shadow: 0 2px 5px rgba(40, 167, 69, 0.3);
         }
 
+        /* btn-practice: 技能卡片 / 章節「開始練習」「單元練習」按鈕 */
         .btn-practice {
             display: block;
             text-align: center;
-            background-color: #28a745;
-            color: white;
-            padding: 10px;
-            border-radius: 5px;
+            background: var(--green-main);
+            color: #fff;
+            padding: 8px 12px;
+            border-radius: var(--r-md);
             text-decoration: none;
-            font-weight: bold;
-            transition: background-color 0.2s;
+            font-size: 13px;
+            font-weight: 600;
+            transition: background var(--dur) var(--ease);
+            margin-top: auto;
+            border: 1px solid var(--green-deep);
         }
+        .btn-practice:hover { background: var(--green-deep); }
 
-        .btn-practice:hover {
-            background-color: #218838;
-        }
-
-        /* 技能分組（按節、段） */
+        /* ── Skill Section Group ── */
         .skill-section-group {
-            margin-bottom: 15px;
-            /* 縮小組間的下邊距 */
-            margin-top: 20px;
-            /* 縮小組間的上邊距 */
-            padding: 12px;
-            /* 縮小組的內距 */
-            background: #f8f9fa;
-            border-radius: 8px;
-            border-left: 4px solid #007bff;
+            margin-bottom: 12px;
+            margin-top: 16px;
+            padding: 12px 14px;
+            background: var(--card-warm);
+            border-radius: var(--r-md);
+            border-left: 3px solid var(--green-main);
             width: 100%;
         }
-
-        .skill-section-group:first-child {
-            margin-top: 0;
-        }
-
+        .skill-section-group:first-child { margin-top: 0; }
         .skill-section-group h4 {
             margin-top: 0;
-            color: #007bff;
-            margin-bottom: 12px;
-            /* 縮小標題和卡片之間的距離 */
+            color: var(--green-deep);
+            margin-bottom: 10px;
+            font-size: 13.5px;
+            font-weight: 700;
+        }
+
+        /* ── Scrollbar ── */
+        * { scrollbar-width: thin; scrollbar-color: #c0d4bc transparent; }
+        *::-webkit-scrollbar { width: 4px; height: 4px; }
+        *::-webkit-scrollbar-track { background: transparent; }
+        *::-webkit-scrollbar-thumb { background: #c0d4bc; border-radius: 99px; }
+
+        /* ── Responsive ── */
+        @media (max-width: 960px) {
+            .dashboard-shell { padding: 12px 14px 28px; }
+            .skill-grid, .skill-grid.curriculum-skills {
+                grid-template-columns: repeat(2, 1fr) !important;
+            }
+            .level-grid.categories-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+            .level-grid.chapters-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        @media (max-width: 640px) {
+            .chalkboard-hero { min-height: 100px; padding: 0 16px; }
+            .chalkboard-hero-inner h3 { font-size: 16px; }
+            .skill-grid, .skill-grid.curriculum-skills {
+                grid-template-columns: 1fr !important;
+            }
         }
     </style>
 </head>
@@ -307,7 +712,9 @@
 <body>
     {% include '_student_navbar.html' %}
 
-    <div class="container">
+    <div class="dashboard-shell">
+
+        {# ── Flash messages ── #}
         {% with messages = get_flashed_messages(with_categories=true) %}
         {% if messages %}
         {% for category, message in messages %}
@@ -318,77 +725,67 @@
         {% endif %}
         {% endwith %}
 
-        <!-- Join Class and My Classes Section -->
-        {% if current_user.role == 'student' %}
-        <div style="display: flex; gap: 20px; margin-bottom: 20px;">
-            <!-- Join Class Card -->
-            <div
-                style="flex: 1; background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05);">
-                <h4>加入新班級</h4>
-                <form action="{{ url_for('core.join_class') }}" method="POST" style="display: flex; gap: 10px;">
-                    <input type="text" name="class_code" placeholder="請輸入班級代碼" required
-                        style="flex-grow: 1; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
-                    <button type="submit"
-                        style="background: #28a745; color: white; border: none; padding: 8px 15px; border-radius: 4px; cursor: pointer;">
-                        加入
-                    </button>
-                </form>
-            </div>
-            <!-- My Classes Card -->
-            <div
-                style="flex: 2; background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05);">
-                <h4>我加入的班級</h4>
-                {% if enrolled_classes %}
-                <ul style="list-style: none; padding: 0; margin: 0;">
-                    {% for class in enrolled_classes %}
-                    <li style="padding: 5px 0; border-bottom: 1px solid #f0f0f0;">
-                        <strong>{{ class.name }}</strong> (授課老師: {{ class.teacher.username }})
-                    </li>
-                    {% endfor %}
-                </ul>
-                {% else %}
-                <p style="color: #777;">您尚未加入任何班級。</p>
-                {% endif %}
-            </div>
-        </div>
-        {% endif %}
-
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-            <h2 style="margin: 0;">學習儀表板</h2>
-            <!-- 新增：普高/技高/國中 切換按鈕 + 自適應複習模式 -->
-            <div
-                style="flex-grow: 1; text-align: center; display: flex; justify-content: center; align-items: center; gap: 5px;">
+        {# ── Header Row ── #}
+        <div class="dashboard-header-row">
+            <h2>學習儀表板</h2>
+            <div class="curriculum-pills">
                 {% for c, name in [('junior_high', '國中'), ('general', '普高'), ('vocational', '技高')] %}
-                <div
-                    style="display: inline-block; border: 1px solid {{ '#007bff' if curriculum == c else '#6c757d' }}; border-radius: 20px; overflow: hidden;">
+                <div class="curriculum-pill-wrap">
                     <a href="{{ url_for('dashboard', view='curriculum', curriculum=c) }}"
-                        style="padding: 8px 18px; background: {{ '#007bff' if curriculum == c else '#6c757d' }}; color: white; text-decoration: none; font-weight: bold; border-right: 1px solid rgba(255,255,255,0.2);">
+                       class="cpill-name {% if curriculum == c %}cpill-active{% else %}cpill-inactive{% endif %}">
                         {{ name }}
                     </a>
                     <a href="{{ url_for('practice.adaptive_practice_page', mode='review', curriculum=c) }}"
-                        title="{{ name }}總複習"
-                        style="padding: 8px 10px; background: {{ '#007bff' if curriculum == c else '#6c757d' }}; color: white; text-decoration: none; font-size: 0.9em;">
-                        總複習
+                       title="{{ name }}總複習"
+                       class="cpill-review {% if curriculum == c %}cpill-active{% else %}cpill-inactive{% endif %}"
+                       style="font-size:12px; padding:6px 9px;">
+                        複習
                     </a>
                 </div>
                 {% endfor %}
             </div>
-            <div style="display: flex; gap: 8px;">
-                <a href="{{ url_for('adaptive_review') }}"
-                    style="padding: 10px 18px; background: #0066cc; color: white; text-decoration: none; border-radius: 4px; font-weight: 500; cursor: pointer;">
-                    自適應複習
-                </a>
+            <div class="header-actions">
+                <a href="{{ url_for('adaptive_review') }}" class="btn-header btn-header-primary">⚡ 自適應複習</a>
                 <a href="{{ url_for('dashboard', view='all') }}"
-                    style="padding: 8px 16px; margin-left: 2px; background: {{ '#28a745' if view_mode == 'all' else '#6c757d' }}; color: white; text-decoration: none; border-radius: 4px;">
+                   class="btn-header {% if view_mode == 'all' %}btn-header-active{% else %}btn-header-muted{% endif %}">
                     顯示所有
                 </a>
             </div>
         </div>
 
-        <!-- 歡迎區塊 -->
-        <div class="alert">
-            <h3>歡迎回來，{{ current_user.username }}！</h3>
+        {# ── Chalkboard Hero ── #}
+        <section class="chalkboard-hero">
+            <div class="chalkboard-hero-inner">
+                <h3>歡迎回來，{{ current_user.username }}！</h3>
+                <p>今天也要一起穩扎穩打，持續進步！</p>
+            </div>
+            <span class="chalk-deco">💡</span>
+        </section>
+
+        {# ── Join / My Classes (student only) ── #}
+        {% if current_user.role == 'student' %}
+        <div class="student-class-panel">
+            <div class="class-join-card">
+                <h4>加入新班級</h4>
+                <form action="{{ url_for('core.join_class') }}" method="POST" class="class-join-form">
+                    <input type="text" name="class_code" placeholder="請輸入班級代碼" required class="class-join-input">
+                    <button type="submit" class="class-join-btn">加入</button>
+                </form>
+            </div>
+            <div class="class-list-card">
+                <h4>我加入的班級</h4>
+                {% if enrolled_classes %}
+                <ul class="class-list">
+                    {% for class in enrolled_classes %}
+                    <li><strong>{{ class.name }}</strong>（授課老師：{{ class.teacher.username }}）</li>
+                    {% endfor %}
+                </ul>
+                {% else %}
+                <p style="color:#7b857d; font-size:13px;">您尚未加入任何班級。</p>
+                {% endif %}
+            </div>
         </div>
+        {% endif %}
 
         {% if view_mode == 'curriculum' %}
         <!-- 麵包屑導航 -->
@@ -412,23 +809,24 @@
         </div>
 
         {% if level == 'volumes' %}
-        <!-- 顯示冊別 -->
-        <div style="margin-bottom: 20px; padding: 15px; background: #fff; border-radius: 8px; text-align: center;">
-            <a href="{{ url_for('practice.adaptive_selection_page', curriculum=curriculum) }}" class="btn-practice"
-                style="background-color: #e67e22; display: inline-block; padding: 10px 25px; font-size: 1.1em;">
+        <!-- 開發中輔助工具列 -->
+        <div class="dev-tools-bar">
+            <span class="dev-tools-label">🔧 輔助工具</span>
+            <a href="{{ url_for('practice.adaptive_selection_page', curriculum=curriculum) }}" class="btn-practice">
                 <i class="fa fa-check-square"></i> 自選組合練習
+                <span class="dev-badge">開發中</span>
             </a>
+            <!-- 自適應評量按鈕由 JS 在此 a 後方插入 -->
         </div>
         {% set curriculum_map = {'general': '普通高中', 'vocational': '技高', 'junior_high': '國中'} %}
         {% set curriculum_name = curriculum_map.get(curriculum, curriculum) %}
-        <p>{{ curriculum_name }} - 請選擇冊別：</p>
+        <p class="grade-section-title">{{ curriculum_name }} — 請選擇冊別：</p>
         {% for grade, grade_volumes in volumes.items() %}
-        <div class="grade-row"
-            style="display: flex; align-items: center; margin-bottom: 25px; padding-bottom: 25px; border-bottom: 1px solid #e9ecef;">
-            <div class="grade-label" style="margin-right: 20px; min-width: 80px;">
-                <h4 style="font-size: 1.4em; color: #34495e;">{{ grade_map.get(grade, '未知年級') }}</h4>
+        <div class="grade-row">
+            <div class="grade-label">
+                <h4>{{ grade_map.get(grade, '未知年級') }}</h4>
             </div>
-            <div class="level-grid volumes-grid" style="flex-grow: 1; display: flex; flex-wrap: wrap; gap: 20px;">
+            <div class="level-grid volumes-grid">
                 {% for vol in grade_volumes %}
                 <a href="{{ url_for('dashboard', view='curriculum', curriculum=curriculum, volume=vol) }}"
                     style="text-decoration: none;">
@@ -556,8 +954,7 @@
         </div>
         {% endif %}
         {% endif %}
-    </div>
-    </div>
+    </div><!-- /.dashboard-shell -->
 
     <script>
         (function () {
@@ -572,7 +969,7 @@
             adaptiveBtn.style.padding = "10px 25px";
             adaptiveBtn.style.fontSize = "1.1em";
             adaptiveBtn.style.marginLeft = "12px";
-            adaptiveBtn.innerHTML = '<i class="fa fa-sitemap"></i> 自適應評量與教學';
+            adaptiveBtn.innerHTML = '<i class="fa fa-sitemap"></i> 自適應評量與教學 <span class="dev-badge">開發中</span>';
 
             selfPracticeBtn.insertAdjacentElement("afterend", adaptiveBtn);
         })();

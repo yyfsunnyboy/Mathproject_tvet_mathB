@@ -503,8 +503,7 @@ def create_app():
                                      enrolled_classes=enrolled_classes)
             elif curriculum and volume:
                 from core.utils import get_chapters_by_curriculum_volume
-                from models import SkillCurriculum
-                
+
                 chapters_raw = get_chapters_by_curriculum_volume(curriculum, volume)
                 
                 # [V2.0] 技高數學 B 系列章節卡片編號修正邏輯
