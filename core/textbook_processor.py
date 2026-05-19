@@ -492,6 +492,56 @@ def extract_docx_table_with_equations(table) -> str:
     return "\n".join(lines).strip()
 
 
+def extract_converted_latex_docx(file_path: str) -> tuple[dict[int, str], dict[str, Any]]:
+    """Extract DOCX text in document order for pre-converted MathType->LaTeX DOCX."""
+    from docx import Document
+    from docx.table import Table
+    from docx.text.paragraph import Paragraph
+
+    doc = Document(file_path)
+    ordered_chunks: list[str] = []
+    paragraph_count = 0
+    table_count = 0
+
+    for block in doc.element.body.iterchildren():
+        if block.tag.endswith("}p"):
+            para = Paragraph(block, doc)
+            text = str(para.text or "").strip()
+            paragraph_count += 1
+            if text:
+                ordered_chunks.append(text)
+        elif block.tag.endswith("}tbl"):
+            table_count += 1
+            tbl = Table(block, doc)
+            for row in tbl.rows:
+                for cell in row.cells:
+                    for p in cell.paragraphs:
+                        text = str(p.text or "").strip()
+                        if text:
+                            ordered_chunks.append(text)
+    merged = "\n".join(ordered_chunks).strip()
+    return {1: merged} if merged else {}, {
+        "paragraph_count": paragraph_count,
+        "table_count": table_count,
+    }
+
+
+def detect_converted_latex_docx(text: str) -> dict[str, Any]:
+    t = str(text or "")
+    latex_signal_count = 0
+    latex_signal_count += len(re.findall(r"\$[^$\n]+\$", t))
+    latex_signal_count += len(re.findall(r"\\\([^)\n]+\\\)", t))
+    latex_signal_count += len(re.findall(r"\\\[[^\]\n]+\\\]", t))
+    latex_signal_count += len(re.findall(r"\\(?:frac|sqrt|le|ge|binom|times|pm)\b", t))
+    placeholder_count = len(re.findall(r"\[FORMULA_IMAGE_\d+\]|\[FORMULA_MISSING\]", t))
+    is_converted = latex_signal_count >= 3 and placeholder_count <= 1
+    return {
+        "is_converted_latex_docx": bool(is_converted),
+        "latex_signal_count": int(latex_signal_count),
+        "formula_placeholder_count": int(placeholder_count),
+    }
+
+
 def build_docx_media_relationship_map(docx_path: str, extracted_media_dir: str) -> dict[str, dict[str, str]]:
     rel_map: dict[str, dict[str, str]] = {}
     try:
@@ -1367,7 +1417,12 @@ def process_textbook_file(
         # ======================================================
 
         # 步驟 1: 從 PDF/Word 提取內容
-        content_by_page = extract_content_from_file(file_path, queue, max_pages=toc_pages if outline_only else None)
+        content_by_page = extract_content_from_file(
+            file_path,
+            queue,
+            max_pages=toc_pages if outline_only else None,
+            import_policy=import_policy,
+        )
 
         # [V2.5] 僅建立目錄架構模式
         if outline_only:
@@ -1455,7 +1510,11 @@ def process_textbook_file(
 
         # 步驟 2: 呼叫 AI 進行分析
         ai_json_result_string = call_gemini_for_analysis(
-            content_by_page, curriculum_info, queue, page_analysis_payload=page_analysis_payload
+            content_by_page,
+            curriculum_info,
+            queue,
+            page_analysis_payload=page_analysis_payload,
+            import_policy=import_policy,
         )
         # 步驟 3: 解析 AI 回傳的 JSON 字串
         if ai_json_result_string is None:
@@ -1559,7 +1618,7 @@ def process_textbook_file(
 # --- 向下相容的別名 ---
 process_textbook_pdf = process_textbook_file
 
-def extract_content_from_file(file_path, queue, max_pages=None):
+def extract_content_from_file(file_path, queue, max_pages=None, import_policy=None):
     """
     從檔案中提取內容，支援 PDF (OCR) 和 Word (Pandoc) 格式。
     (包含防崩潰處理：將所有 Import 與邏輯包覆在 try-except 中)
@@ -1571,6 +1630,7 @@ def extract_content_from_file(file_path, queue, max_pages=None):
     global _DOCX_IMPORT_CONTEXT
     _DOCX_IMPORT_CONTEXT = {}
     content_by_page = {}
+    import_policy = dict(import_policy or {})
     
     try:
         file_extension = os.path.splitext(file_path)[1].lower()
@@ -1643,6 +1703,31 @@ def extract_content_from_file(file_path, queue, max_pages=None):
             doc.close()
 
         elif file_extension in ['.docx', '.doc']:
+            docx_formula_source_mode = str(import_policy.get("docx_formula_source_mode", "auto_detect") or "auto_detect").strip()
+            if docx_formula_source_mode == "converted_docx_latex":
+                content_by_page, doc_meta = extract_converted_latex_docx(file_path)
+                extracted_text = str((content_by_page or {}).get(1, "") or "")
+                detect_meta = detect_converted_latex_docx(extracted_text)
+                _DOCX_IMPORT_CONTEXT = {
+                    "docx_formula_source_mode": docx_formula_source_mode,
+                    "is_converted_latex_docx": True,
+                    "latex_signal_count": int(detect_meta.get("latex_signal_count", 0)),
+                    "formula_placeholder_count": int(detect_meta.get("formula_placeholder_count", 0)),
+                    "question_assets": {},
+                    "question_formula_blocks": {},
+                    "formula_assets_extraction_skipped": True,
+                    "ocr_skipped": True,
+                    "pix2tex_skipped": True,
+                    "doc_meta": doc_meta,
+                }
+                queue.put("INFO: docx_formula_source_mode=converted_docx_latex")
+                queue.put("INFO: formula_assets_extraction_skipped=true")
+                queue.put("INFO: ocr_skipped=true")
+                queue.put("INFO: pix2tex_skipped=true")
+                queue.put(f"INFO: is_converted_latex_docx={True}")
+                queue.put(f"INFO: latex_signal_count={detect_meta.get('latex_signal_count', 0)}")
+                queue.put(f"INFO: formula_placeholder_count={detect_meta.get('formula_placeholder_count', 0)}")
+                return content_by_page
             # --- Word (.docx) 處理邏輯 ---
             message = "偵測到 Word (.docx) 檔案，啟用段落/公式物件抽取並保留 LaTeX。"
             current_app.logger.info(message)
@@ -1732,6 +1817,7 @@ def extract_content_from_file(file_path, queue, max_pages=None):
                         continue
                     cleaned_chunks.append(c)
                 extracted_text = "\n".join(cleaned_chunks).strip()
+                detect_meta = detect_converted_latex_docx(extracted_text)
                 q_assets, orphan_images = attach_docx_media_to_question_blocks(ordered_blocks)
                 formula_blocks = build_docx_question_formula_context(ordered_blocks)
                 for o in orphan_images:
@@ -1743,6 +1829,13 @@ def extract_content_from_file(file_path, queue, max_pages=None):
                     "question_formula_blocks": formula_blocks,
                     "orphan_images": orphan_images,
                     "temp_media_dir": media_abs_root,
+                    "docx_formula_source_mode": docx_formula_source_mode,
+                    "is_converted_latex_docx": bool(detect_meta.get("is_converted_latex_docx", False)),
+                    "latex_signal_count": int(detect_meta.get("latex_signal_count", 0)),
+                    "formula_placeholder_count": int(detect_meta.get("formula_placeholder_count", 0)),
+                    "formula_assets_extraction_skipped": False,
+                    "ocr_skipped": False,
+                    "pix2tex_skipped": False,
                 }
 
                 if formula_image_count > 0:
@@ -2031,7 +2124,7 @@ def call_gemini_for_toc(content_by_page, curriculum_info, queue):
         current_app.logger.error(f"call_gemini_for_toc failed: {e}")
         return None
 
-def call_gemini_for_analysis(content_by_page, curriculum_info, queue, page_analysis_payload=None):
+def call_gemini_for_analysis(content_by_page, curriculum_info, queue, page_analysis_payload=None, import_policy=None):
     """
     使用 Gemini 分析提取出的文本 (支援 Markdown/LaTeX 格式的數學公式)。
     """
@@ -2792,8 +2885,23 @@ JSON 格式如下：
 }
 """
 
+    import_policy = dict(import_policy or {})
+    docx_formula_source_mode = str(import_policy.get("docx_formula_source_mode", "auto_detect") or "auto_detect").strip()
+    converted_latex_prompt_rules = ""
+    if docx_formula_source_mode == "converted_docx_latex":
+        converted_latex_prompt_rules = """
+converted_docx_latex 規則（必須遵守）：
+1. 公式 LaTeX 已可信，problem_text 與 detailed_solution 必須原樣保留。
+2. 不可改寫為 [FORMULA_IMAGE_N]，不可移除 $...$、\\(...\\)、\\[...\\]。
+3. 不可把 \\le、\\ge 轉為其他奇怪符號。
+4. 只做題型切分：concept / textbook_example / in_class_practice / basic_exercise / exam_practice。
+5. 若題目已有 LaTeX，needs_formula_review=false。
+6. 只有仍有 [FORMULA_MISSING] 或圖形題缺圖時，needs_review=true。
+"""
+
     analysis_prompt = f"""
 {base_prompt}
+{converted_latex_prompt_rules}
 
 圖片標記規則：
 若題目包含「如圖」「下圖」「右圖」「圖」「樹狀圖」「表格」「幾何圖」「圓環圖」「路線圖」「附圖」等字樣，
@@ -4608,6 +4716,8 @@ def save_to_database(
     docx_conversion_pending = 0
     docx_formula_assets_count = 0
     docx_formula_needs_review_count = 0
+    merge_guard_kept_existing = 0
+    merge_guard_updated_incoming = 0
     docx_copied_to_question_assets = 0
     formula_asset_persist_cache: dict[str, str] = {}
     docx_formula_blocks = {}
@@ -4639,6 +4749,29 @@ def save_to_database(
     import_policy = dict(import_policy or {})
     auto_fill_threshold = float(import_policy.get("auto_fill_confidence_threshold", 0.85) or 0.85)
     auto_fill_threshold = max(0.0, min(1.0, auto_fill_threshold))
+    def _count_latex_and_placeholder_records(data):
+        latex_re = re.compile(r"\$[^$\n]+\$|\\\([^)\n]+\\\)|\\\[[^\]\n]+\\\]|\\(?:frac|sqrt|le|ge|binom|times|pm)\b")
+        placeholder_re = re.compile(r"\[FORMULA_IMAGE_\d+\]|\[FORMULA_MISSING\]")
+        latex_count = 0
+        placeholder_count = 0
+        for ch in (data or {}).get("chapters", []) or []:
+            for sec in (ch or {}).get("sections", []) or []:
+                for concept in (sec or {}).get("concepts", []) or []:
+                    for ex in (concept or {}).get("examples", []) or []:
+                        txt = str((ex or {}).get("problem_text", "") or "")
+                        if latex_re.search(txt):
+                            latex_count += 1
+                        if placeholder_re.search(txt):
+                            placeholder_count += 1
+                    for pq in (concept or {}).get("practice_questions", []) or []:
+                        txt = str((pq or {}).get("problem_text", "") or "")
+                        if latex_re.search(txt):
+                            latex_count += 1
+                        if placeholder_re.search(txt):
+                            placeholder_count += 1
+        return latex_count, placeholder_count
+
+    records_with_latex, records_with_placeholder = _count_latex_and_placeholder_records(parsed_data)
     
     # [NEW] 檔名解析元數據整合
     filename_meta = parse_textbook_filename_metadata(source_file_path) if source_file_path else {}
@@ -5285,6 +5418,7 @@ def save_to_database(
 
         Returns (changed: bool, reason: str).
         """
+        nonlocal merge_guard_kept_existing, merge_guard_updated_incoming
         changed = False
         reasons = []
         incoming_meta = dict(incoming_meta or {})
@@ -5322,11 +5456,13 @@ def save_to_database(
                 f"[MERGE GUARD] updated_incoming_better_problem_text title={title_for_log} "
                 f"existing_score={existing_quality['score']} incoming_score={incoming_quality['score']}"
             )
+            merge_guard_updated_incoming += 1
         elif new_problem_text and existing_problem_text != new_problem_text:
             current_app.logger.info(
                 f"[MERGE GUARD] kept_existing_better_problem_text title={title_for_log} "
                 f"existing_score={existing_quality['score']} incoming_score={incoming_quality['score']}"
             )
+            merge_guard_kept_existing += 1
 
         existing_answer = str(getattr(existing_record, "correct_answer", "") or "").strip()
         incoming_answer = str(incoming_correct_answer or "").strip()
@@ -6476,6 +6612,17 @@ def save_to_database(
         db.session.commit()
         if is_docx_source:
             ctx = _DOCX_IMPORT_CONTEXT or {}
+            current_app.logger.info(f"[DOCX MODE] docx_formula_source_mode={ctx.get('docx_formula_source_mode', 'auto_detect')}")
+            current_app.logger.info(f"[DOCX MODE] is_converted_latex_docx={bool(ctx.get('is_converted_latex_docx', False))}")
+            current_app.logger.info(f"[DOCX MODE] latex_signal_count={int(ctx.get('latex_signal_count', 0) or 0)}")
+            current_app.logger.info(f"[DOCX MODE] formula_placeholder_count={int(ctx.get('formula_placeholder_count', 0) or 0)}")
+            current_app.logger.info(f"[DOCX MODE] formula_assets_extraction_skipped={bool(ctx.get('formula_assets_extraction_skipped', False))}")
+            current_app.logger.info(f"[DOCX MODE] ocr_skipped={bool(ctx.get('ocr_skipped', False))}")
+            current_app.logger.info(f"[DOCX MODE] pix2tex_skipped={bool(ctx.get('pix2tex_skipped', False))}")
+            current_app.logger.info(f"[DOCX MODE] records_with_latex={records_with_latex}")
+            current_app.logger.info(f"[DOCX MODE] records_with_placeholder={records_with_placeholder}")
+            current_app.logger.info(f"[DOCX MODE] merge_guard_kept_existing={merge_guard_kept_existing}")
+            current_app.logger.info(f"[DOCX MODE] merge_guard_updated_incoming={merge_guard_updated_incoming}")
             media_total = len((ctx.get("media_rel_map") or {})) if isinstance(ctx, dict) else 0
             orphan_total = len((ctx.get("orphan_images") or [])) if isinstance(ctx, dict) else 0
             current_app.logger.info(f"[DOCX IMAGE SUMMARY] media_total={media_total}")
@@ -6524,7 +6671,11 @@ def save_to_database(
             'practice_questions_skipped': practice_questions_skipped,
             'duplicates_skipped': duplicates_skipped_count,
             'updated_duplicates': updated_duplicates,
-            'processed_skill_ids': processed_skill_ids
+            'processed_skill_ids': processed_skill_ids,
+            'records_with_latex': records_with_latex,
+            'records_with_placeholder': records_with_placeholder,
+            'merge_guard_kept_existing': merge_guard_kept_existing,
+            'merge_guard_updated_incoming': merge_guard_updated_incoming,
         }
     except Exception as e:
         db.session.rollback()

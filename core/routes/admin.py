@@ -519,6 +519,7 @@ def background_processing(file_paths, task_queue, app_context, curriculum_info, 
     enable_formula_postprocess = bool(import_policy.get("enable_formula_postprocess", False))
     enable_formula_auto_apply = bool(import_policy.get("enable_formula_auto_apply", False))
     formula_postprocess_mode = str(import_policy.get("formula_postprocess_mode", "convert_only") or "convert_only").strip()
+    docx_formula_source_mode = str(import_policy.get("docx_formula_source_mode", "auto_detect") or "auto_detect").strip()
     enable_formula_detailed_report = bool(import_policy.get("enable_formula_detailed_report", False))
     confidence_threshold = float(import_policy.get("auto_fill_confidence_threshold", 0.85) or 0.85)
     with app_context:
@@ -547,7 +548,9 @@ def background_processing(file_paths, task_queue, app_context, curriculum_info, 
                         optional_enrich_pdf_path=optional_pdf_path,
                         **kwargs
                     )
-                    if enable_formula_postprocess:
+                    if docx_formula_source_mode == "converted_docx_latex":
+                        task_queue.put("INFO: docx_formula_source_mode=converted_docx_latex，略過 formula_assets/OCR/pix2tex 後處理。")
+                    elif enable_formula_postprocess:
                         try:
                             is_docx = str(file_path or "").lower().endswith((".docx", ".doc"))
                             canonical_volume = str(curriculum_info.get("volume") or "").strip()
@@ -705,7 +708,16 @@ def admin_textbook_importer():
                 "formula_postprocess_mode": str(
                     request.form.get("formula_postprocess_mode", "convert_only") or "convert_only"
                 ).strip(),
+                "docx_formula_source_mode": str(
+                    request.form.get("docx_formula_source_mode", "auto_detect") or "auto_detect"
+                ).strip(),
             }
+            if import_policy["docx_formula_source_mode"] == "converted_docx_latex":
+                import_policy["enable_formula_postprocess"] = False
+                import_policy["enable_formula_auto_apply"] = False
+                import_policy["enable_formula_detailed_report"] = False
+                import_policy["formula_postprocess_mode"] = "convert_only"
+                current_app.logger.info("[IMPORT POLICY] converted_docx_latex_forced_skip_formula_postprocess=true")
 
             app = current_app._get_current_object()
             threading.Thread(
