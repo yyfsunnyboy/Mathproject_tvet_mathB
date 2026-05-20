@@ -1,4 +1,4 @@
-from core.math_formula_normalizer import normalize_converted_docx_latex_text
+from core.math_formula_normalizer import normalize_converted_docx_latex_text, normalize_math_text
 
 
 def test_display_coordinates_a_p_to_inline():
@@ -59,3 +59,29 @@ def test_dollar_math_not_processed():
     out = normalize_converted_docx_latex_text(text)
     assert out["text"] == text
 
+
+def test_converted_latex_text_preserves_readable_inline():
+    text = r"\(y=\frac{1}{2}(x-2)^{2}+1\) 的圖形，是由 \(y=\frac{1}{2}x^{2}\)，水平向①平移②個單位。"
+    out = normalize_converted_docx_latex_text(text)
+    assert r"\frac{1}{2}" in out["text"]
+    assert "f? r? a? c" not in out["text"]
+    assert "? \\? (? y? =?" not in out["text"]
+
+
+def test_safe_fix_display_short_formula_to_inline():
+    text = r"設\[A\left( 1,3 \right)\]為一點"
+    out = normalize_converted_docx_latex_text(text)
+    assert out["text"] == r"設 \(A\left(1,3\right)\) 為一點"
+
+
+def test_legacy_normalize_math_text_corrupts_latex():
+    text = r"\(y=\frac{1}{2}(x-2)^{2}+1\)"
+    corrupted = normalize_math_text(text)
+    assert "f? r? a? c" in corrupted or "? \\? (? y? =?" in corrupted
+
+
+def test_converted_normalizer_preserves_quadratic_latex():
+    text = r"\(y=\frac{1}{2}(x-2)^{2}+1\) 的圖形"
+    out = normalize_converted_docx_latex_text(text)
+    assert r"\frac{1}{2}" in out["text"]
+    assert "f? r? a? c" not in out["text"]

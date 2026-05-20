@@ -304,100 +304,24 @@
                     </small>
                 </div>
 
-                <div class="form-group">
-                    <label for="docx_formula_source_mode">DOCX 公式來源模式</label>
-                    <select id="docx_formula_source_mode" name="docx_formula_source_mode">
-                        <option value="converted_docx_latex" selected>converted_docx_latex</option>
-                        <option value="auto_detect">auto_detect</option>
-                        <option value="raw_docx_with_formula_assets">raw_docx_with_formula_assets</option>
-                    </select>
-                    <small class="text-muted" style="display: block; margin-top: 5px;">
-                        converted_docx_latex：適用於已先用 MathType Convert Equations 將公式轉為 LaTeX 文字的 Word 檔。不抽公式圖片、不做 OCR。
-                    </small>
-                </div>
+                <input type="hidden" name="docx_formula_source_mode" value="converted_docx_latex">
+                <input type="hidden" name="enable_formula_postprocess" value="false">
+                <input type="hidden" name="enable_formula_auto_apply" value="false">
+                <input type="hidden" name="enable_formula_detailed_report" value="false">
+                <input type="hidden" name="formula_postprocess_mode" value="convert_only">
 
-                <div id="formula_advanced_options">
-                <div class="mb-3 form-check" style="margin-top: 10px;">
-                    <input type="checkbox" class="form-check-input" id="enable_formula_postprocess" name="enable_formula_postprocess"
-                        style="width: auto; cursor: pointer;" checked>
-                    <label class="form-check-label" for="enable_formula_postprocess" style="cursor: pointer; font-weight: 500;">
-                        匯入後自動公式後處理
-                    </label>
-                </div>
-                <div class="mb-3 form-check" style="margin-top: 6px;">
-                    <input type="checkbox" class="form-check-input" id="enable_formula_auto_apply" name="enable_formula_auto_apply"
-                        style="width: auto; cursor: pointer;">
-                    <label class="form-check-label" for="enable_formula_auto_apply" style="cursor: pointer; font-weight: 500;">
-                        允許高信心公式自動回填 problem_text
-                    </label>
-                </div>
-                <div class="mb-3 form-check" style="margin-top: 6px; margin-bottom: 10px;">
-                    <input type="checkbox" class="form-check-input" id="enable_formula_detailed_report" name="enable_formula_detailed_report"
-                        style="width: auto; cursor: pointer;" checked>
-                    <label class="form-check-label" for="enable_formula_detailed_report" style="cursor: pointer; font-weight: 500;">
-                        產生詳細公式處理報告
-                    </label>
-                </div>
-                <div class="form-group">
-                    <label for="formula_postprocess_mode">公式處理模式</label>
-                    <select id="formula_postprocess_mode" name="formula_postprocess_mode">
-                        <option value="convert_only">convert_only</option>
-                        <option value="local_ocr">local_ocr</option>
-                        <option value="local_first_gemini_fallback">local_first_gemini_fallback</option>
-                    </select>
-                </div>
-                </div>
-
-                <div id="fallback_mode_warning" class="alert alert-warning" style="display:none; margin-top: 8px;">
-                    此為備援模式，可能需要人工 review，不建議大量正式匯入使用。
-                </div>
-
-                <div id="converted_mode_help_text" class="alert alert-info" style="display:none; margin-top: 8px;">
-                    適用於已用 MathType Convert Equations 轉成 LaTeX 的 DOCX。系統直接讀取 LaTeX 文字，不抽公式圖片、不做 OCR、不跑 pix2tex。
+                <div class="alert alert-info" style="margin-top: 8px;">
+                    請先使用 Word + MathType Convert Equations 將 DOCX 公式轉成 LaTeX 文字，另存為 *_Latex.docx 後再上傳。本系統將直接讀取 LaTeX 文字，不執行 OCR、pix2tex、公式圖片擷取或公式圖片回填。
                 </div>
 
                 <script>
                     document.addEventListener('DOMContentLoaded', function () {
                         const modeSingle = document.getElementById('mode_single');
                         const modeBatch = document.getElementById('mode_batch');
-                        const docxFormulaSourceMode = document.getElementById('docx_formula_source_mode');
                         const singleInputDiv = document.getElementById('single_file_input');
                         const batchInputDiv = document.getElementById('batch_folder_input');
                         const singleInput = document.getElementById('textbook_pdf');
                         const batchInput = document.getElementById('textbook_folder');
-                        const enableFormulaPostprocess = document.getElementById('enable_formula_postprocess');
-                        const enableFormulaAutoApply = document.getElementById('enable_formula_auto_apply');
-                        const enableFormulaDetailedReport = document.getElementById('enable_formula_detailed_report');
-                        const formulaPostprocessMode = document.getElementById('formula_postprocess_mode');
-                        const convertedModeHelpText = document.getElementById('converted_mode_help_text');
-                        const fallbackModeWarning = document.getElementById('fallback_mode_warning');
-                        const formulaAdvancedOptions = document.getElementById('formula_advanced_options');
-
-                        function updateFormulaModeLocks() {
-                            const convertedMode = docxFormulaSourceMode && docxFormulaSourceMode.value === 'converted_docx_latex';
-                            if (!enableFormulaPostprocess || !enableFormulaAutoApply || !enableFormulaDetailedReport || !formulaPostprocessMode) return;
-                            if (convertedMode) {
-                                enableFormulaPostprocess.checked = false;
-                                enableFormulaPostprocess.disabled = true;
-                                enableFormulaAutoApply.checked = false;
-                                enableFormulaAutoApply.disabled = true;
-                                enableFormulaDetailedReport.checked = false;
-                                enableFormulaDetailedReport.disabled = true;
-                                formulaPostprocessMode.value = 'convert_only';
-                                formulaPostprocessMode.disabled = true;
-                                if (convertedModeHelpText) convertedModeHelpText.style.display = 'block';
-                                if (fallbackModeWarning) fallbackModeWarning.style.display = 'none';
-                                if (formulaAdvancedOptions) formulaAdvancedOptions.style.display = 'none';
-                            } else {
-                                enableFormulaPostprocess.disabled = false;
-                                enableFormulaAutoApply.disabled = false;
-                                enableFormulaDetailedReport.disabled = false;
-                                formulaPostprocessMode.disabled = false;
-                                if (convertedModeHelpText) convertedModeHelpText.style.display = 'none';
-                                if (fallbackModeWarning) fallbackModeWarning.style.display = 'block';
-                                if (formulaAdvancedOptions) formulaAdvancedOptions.style.display = 'block';
-                            }
-                        }
 
                         function updateVisibility() {
                             if (modeSingle.checked) {
@@ -405,25 +329,19 @@
                                 batchInputDiv.style.display = 'none';
                                 singleInput.required = true;
                                 batchInput.required = false;
-                                batchInput.value = ''; // 清空另一個輸入
+                                batchInput.value = '';
                             } else {
                                 singleInputDiv.style.display = 'none';
                                 batchInputDiv.style.display = 'block';
                                 singleInput.required = false;
                                 batchInput.required = true;
-                                singleInput.value = ''; // 清空另一個輸入
+                                singleInput.value = '';
                             }
                         }
 
                         modeSingle.addEventListener('change', updateVisibility);
                         modeBatch.addEventListener('change', updateVisibility);
-                        if (docxFormulaSourceMode) {
-                            docxFormulaSourceMode.addEventListener('change', updateFormulaModeLocks);
-                        }
-
-                        // 初始化狀態
                         updateVisibility();
-                        updateFormulaModeLocks();
                     });
                 </script>
                 <button type="submit" class="btn-primary" {% if not has_gemini_api_key %}disabled{% endif

@@ -4,6 +4,7 @@ from docx import Document
 
 from app import app
 from core import textbook_processor as processor
+from core.routes.admin import apply_mathb_import_policy, is_vocational_mathb_volume
 
 
 class _Q:
@@ -63,6 +64,161 @@ def test_converted_mode_skips_assets_ocr_pix2tex(tmp_path: Path):
 
 
 def test_prompt_contains_converted_docx_latex_rules():
-    src = Path("core/textbook_processor.py").read_text(encoding="utf-8")
-    assert "converted_docx_latex 規則（必須遵守）" in src
-    assert "不可改寫為 [FORMULA_IMAGE_N]" in src
+    src = Path("core/textbook_processor.py").read_text(encoding="utf-8-sig")
+    assert "converted_docx_latex rules enabled" in src
+    assert "formula_assets_extraction_skipped" in src
+    assert "[FORMULA NORMALIZE SKIP] converted_docx_latex_preserve_latex=true" in src
+
+def test_converted_mode_skip_legacy_normalize_preserves_text():
+    text = r"\(y=\frac{1}{2}(x-2)^{2}+1\) 的圖形"
+    out, check = processor._normalize_imported_math_value(
+        text,
+        field_name="problem_text",
+        docx_formula_source_mode="converted_docx_latex",
+    )
+    assert out == text
+    assert check is not None
+
+
+def test_converted_mode_suspicious_detector_does_not_rewrite_text():
+    text = "# # C 3 1"
+    out, check = processor._normalize_imported_math_value(
+        text,
+        field_name="problem_text",
+        docx_formula_source_mode="converted_docx_latex",
+    )
+    assert out == text
+    assert check.get("is_suspicious") is True
+
+def test_scan_expected_titles_examples_1_to_8():
+    text = "\n".join([f"例{i}" for i in range(1, 9)])
+    titles = processor.scan_expected_titles_from_converted_text(text)
+    assert all(f"例題{i}" in titles for i in range(1, 9))
+
+
+def test_scan_expected_titles_suithang_1_to_8():
+    text = "\n".join([f"隨堂練習{i}" for i in range(1, 9)])
+    titles = processor.scan_expected_titles_from_converted_text(text)
+    assert all(f"隨堂練習{i}" in titles for i in range(1, 9))
+
+
+def test_scan_expected_titles_section_exercise_basic_advanced():
+    text = (
+        "1-4習題\n"
+        "基礎題\n"
+        "1 a\n2 b\n3 c\n4 d\n5 e\n6 f\n7 g\n8 h\n"
+        "進階題\n"
+        "9 i\n10 j\n"
+    )
+    titles = processor.scan_expected_titles_from_converted_text(text)
+    assert all(f"1-4習題 基礎題{i}" in titles for i in range(1, 9))
+    assert "1-4習題 進階題9" in titles
+    assert "1-4習題 進階題10" in titles
+
+
+def test_scan_expected_titles_exam():
+    text = "〔109統測B〕"
+    titles = processor.scan_expected_titles_from_converted_text(text)
+    assert "109統測B" in titles
+
+
+def test_inventory_missing_titles_detected():
+    expected = [f"例題{i}" for i in range(1, 9)]
+    returned = [f"例題{i}" for i in range(1, 6)]
+    inv = processor.build_title_inventory(expected, returned)
+    assert inv["missing_titles_count"] == 3
+    assert "例題6" in inv["missing_titles_canonical"]
+
+
+def test_inventory_guard_report_only_never_aborts_write():
+    expected = ["例題1", "例題2"]
+    returned = ["例題1"]
+    inv = processor.build_title_inventory(expected, returned)
+    write_aborted = False
+    assert inv.get("missing_titles_count", 0) > 0
+    assert write_aborted is False
+
+
+def test_mathb_volume_detection():
+    assert is_vocational_mathb_volume("數學B1")
+    assert is_vocational_mathb_volume("數學B4")
+    assert not is_vocational_mathb_volume("數學A1")
+
+
+def test_mathb_import_policy_forces_converted_docx_latex_and_vocational():
+    curriculum_info = {"curriculum": "general", "volume": "數學B2"}
+    import_policy = {
+        "docx_formula_source_mode": "auto_detect",
+        "enable_formula_postprocess": True,
+        "enable_formula_auto_apply": True,
+        "enable_formula_detailed_report": True,
+        "formula_postprocess_mode": "local_ocr",
+    }
+    assert apply_mathb_import_policy(curriculum_info, import_policy, filenames=["chapter.docx"]) is True
+    assert curriculum_info["curriculum"] == "vocational"
+    assert import_policy["docx_formula_source_mode"] == "converted_docx_latex"
+    assert import_policy["enable_formula_postprocess"] is False
+    assert import_policy["enable_formula_auto_apply"] is False
+    assert import_policy["enable_formula_detailed_report"] is False
+    assert import_policy["formula_postprocess_mode"] == "convert_only"
+
+
+def test_mathb_import_policy_warns_non_latex_suffix():
+    curriculum_info = {"curriculum": "general", "volume": "數學B3"}
+    import_policy = {"docx_formula_source_mode": "raw_docx_with_formula_assets"}
+    apply_mathb_import_policy(
+        curriculum_info,
+        import_policy,
+        filenames=["1-1_例題_Latex.docx", "1-1_raw.docx"],
+    )
+    assert import_policy["docx_formula_source_mode"] == "converted_docx_latex"
+
+def test_canonicalize_example_titles():
+    assert processor.canonicalize_import_title("例題 1") == "例題1"
+    assert processor.canonicalize_import_title("例 1") == "例題1"
+
+
+def test_canonicalize_suitang_title():
+    assert processor.canonicalize_import_title("隨堂練習 8") == "隨堂練習8"
+
+
+def test_canonicalize_exercise_with_section_code():
+    doc = (
+        "2-1習題\n"
+        "基礎題\n"
+        "1 a\n8 b\n"
+        "進階題\n"
+        "9 c\n10 d\n"
+    )
+    items = processor.scan_docx_title_inventory(doc)
+    assert processor.canonicalize_import_title("習題 1", section_code="2-1", inventory_items=items) == "2-1習題 基礎題1"
+    assert processor.canonicalize_import_title("習題 8", section_code="2-1", inventory_items=items) == "2-1習題 基礎題8"
+    assert processor.canonicalize_import_title("習題 9", section_code="2-1", inventory_items=items) == "2-1習題 進階題9"
+    assert processor.canonicalize_import_title("習題 10", section_code="2-1", inventory_items=items) == "2-1習題 進階題10"
+
+
+def test_inventory_exercise_alignment_no_missing():
+    doc = (
+        "1-4習題\n"
+        "基礎題\n"
+        "1 a\n2 b\n3 c\n4 d\n5 e\n6 f\n7 g\n8 h\n"
+        "進階題\n"
+        "9 i\n10 j\n"
+    )
+    items = processor.scan_docx_title_inventory(doc)
+    expected = sorted({it["canonical_title"] for it in items if it.get("kind") == "chapter_exercise"})
+    returned = [f"習題 {i}" for i in range(1, 11)]
+    inv = processor.build_title_inventory(expected, returned, section_code="1-4", inventory_items=items)
+    assert inv["missing_titles_count"] == 0
+
+
+def test_inventory_examples_suitang_alignment_no_missing():
+    expected = [*[f"例題{i}" for i in range(1, 9)], *[f"隨堂練習{i}" for i in range(1, 9)]]
+    returned = [*[f"例題 {i}" for i in range(1, 9)], *[f"隨堂練習 {i}" for i in range(1, 9)]]
+    inv = processor.build_title_inventory(expected, returned)
+    assert inv["missing_titles_count"] == 0
+
+
+def test_curriculum_volume_warning_general_mathb():
+    warn = processor.detect_curriculum_volume_warning("general", "數學B1", "longteng")
+    assert "vocational mathB import expected" in warn

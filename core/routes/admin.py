@@ -635,8 +635,44 @@ def background_processing(file_paths, task_queue, app_context, curriculum_info, 
             task_queue.put("END_OF_STREAM")
 
 # ==========================================
-# Textbook Importer (???詨?亙)
+# Textbook Importer
 # ==========================================
+
+MATH_B_FORCED_VOLUMES = frozenset({"數學B1", "數學B2", "數學B3", "數學B4"})
+
+
+def is_vocational_mathb_volume(volume: str) -> bool:
+    v = str(volume or "").strip()
+    if v in MATH_B_FORCED_VOLUMES:
+        return True
+    return bool(re.fullmatch(r"數學\s*B\s*[1-4]", v, flags=re.IGNORECASE))
+
+
+def apply_mathb_import_policy(curriculum_info: dict, import_policy: dict, *, filenames=None, logger=None) -> bool:
+    """Force converted_docx_latex import policy for 技高數學 B1–B4."""
+    volume = str((curriculum_info or {}).get("volume", "") or "").strip()
+    if not is_vocational_mathb_volume(volume):
+        return False
+    curriculum_info["curriculum"] = "vocational"
+    import_policy["docx_formula_source_mode"] = "converted_docx_latex"
+    import_policy["enable_formula_postprocess"] = False
+    import_policy["enable_formula_auto_apply"] = False
+    import_policy["enable_formula_detailed_report"] = False
+    import_policy["formula_postprocess_mode"] = "convert_only"
+    log = logger.info if logger is not None else (lambda *_a, **_k: None)
+    log("[IMPORT POLICY] mathB_forced_converted_docx_latex=true")
+    log("[IMPORT POLICY] mathB_forced_curriculum=vocational")
+    log("[IMPORT POLICY] formula_assets_ocr_pix2tex_disabled=true")
+    for fn in filenames or []:
+        name = os.path.basename(str(fn or ""))
+        if name and not name.lower().endswith("_latex.docx"):
+            warn_msg = f"[IMPORT WARNING] converted_docx_latex_expected_latex_suffix=true filename={name}"
+            if logger is not None:
+                logger.warning(warn_msg)
+            else:
+                log(warn_msg)
+    return True
+
 
 @core_bp.route('/textbook_importer', methods=['GET', 'POST'])
 @login_required
@@ -702,14 +738,14 @@ def admin_textbook_importer():
                 "review_low_confidence": True,
                 "auto_fill_confidence_threshold": confidence_threshold,
                 "preserve_rollback_metadata": True,
-                "enable_formula_postprocess": request.form.get("enable_formula_postprocess") == "on",
-                "enable_formula_auto_apply": request.form.get("enable_formula_auto_apply") == "on",
-                "enable_formula_detailed_report": request.form.get("enable_formula_detailed_report") == "on",
+                "enable_formula_postprocess": request.form.get("enable_formula_postprocess") in ("on", "true"),
+                "enable_formula_auto_apply": request.form.get("enable_formula_auto_apply") in ("on", "true"),
+                "enable_formula_detailed_report": request.form.get("enable_formula_detailed_report") in ("on", "true"),
                 "formula_postprocess_mode": str(
                     request.form.get("formula_postprocess_mode", "convert_only") or "convert_only"
                 ).strip(),
                 "docx_formula_source_mode": str(
-                    request.form.get("docx_formula_source_mode", "auto_detect") or "auto_detect"
+                    request.form.get("docx_formula_source_mode", "converted_docx_latex") or "converted_docx_latex"
                 ).strip(),
             }
             if import_policy["docx_formula_source_mode"] == "converted_docx_latex":
@@ -718,6 +754,13 @@ def admin_textbook_importer():
                 import_policy["enable_formula_detailed_report"] = False
                 import_policy["formula_postprocess_mode"] = "convert_only"
                 current_app.logger.info("[IMPORT POLICY] converted_docx_latex_forced_skip_formula_postprocess=true")
+
+            apply_mathb_import_policy(
+                curriculum_info,
+                import_policy,
+                filenames=[os.path.basename(p) for p in target_files],
+                logger=current_app.logger,
+            )
 
             app = current_app._get_current_object()
             threading.Thread(

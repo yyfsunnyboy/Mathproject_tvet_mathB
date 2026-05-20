@@ -1,24 +1,24 @@
-# -*- coding: utf-8 -*-
+﻿# -*- coding: utf-8 -*-
 """
 =============================================================================
-模組名稱 (Module Name): core/textbook_processor.py
-功能說明 (Description): 課本處理與 AI 分析模組，負責從 PDF 或 Word 檔案中自動提取課程結構與內容，並整合 Gemini LLM 進行智能分析與資料庫匯入。
-執行語法 (Usage): 由系統調用
-版本資訊 (Version): V2.0
-更新日期 (Date): 2026-01-13
-維護團隊 (Maintainer): Math AI Project Team
+璅∠??迂 (Module Name): core/textbook_processor.py
+?隤芣? (Description): 隤脫????AI ??璅∠?嚗?鞎砍? PDF ??Word 瑼?銝剛???玨蝔?瑽??批捆嚗蒂?游? Gemini LLM ?脰??箄?????澈?臬??
+?瑁?隤? (Usage): ?梁頂蝯梯矽??
+?鞈? (Version): V2.0
+?湔?交? (Date): 2026-01-13
+蝬剛風?? (Maintainer): Math AI Project Team
 =============================================================================
 """
 """
-課本處理與 AI 分析模組 (Textbook Processor & AI Analyzer) - Final Complete Version
+隤脫????AI ??璅∠? (Textbook Processor & AI Analyzer) - Final Complete Version
 
-本模組負責從教科書（PDF 或 Word 檔案）中自動提取課程結構、章節、小節、核心觀念，
-並透過 Google Gemini LLM 進行智能分析，最終將結構化資料存入資料庫。
+?祆芋蝯?鞎砍????賂?PDF ??Word 瑼?嚗葉?芸???隤脩?蝯???蝭??蝭?敹?敹蛛?
+銝阡? Google Gemini LLM ?脰??箄??嚗?蝯?蝯??????亥??澈??
 
-版本特點：
-1. 完整保留原有的錯誤處理、備用解析與輔助函式 (Restore full logic)。
-2. 新增針對 Word/Pandoc 的清洗邏輯 (clean_pandoc_output)。
-3. 更新普高龍騰版 Prompt (扁平化結構)。
+??寥?嚗?
+1. 摰靽????隤方????刻圾??頛?賢? (Restore full logic)??
+2. ?啣??? Word/Pandoc ??瘣?頛?(clean_pandoc_output)??
+3. ?湔?桅?樴辰??Prompt (?像??瑽???
 """
 
 import json
@@ -68,10 +68,442 @@ from core.utils import normalize_vocational_math_skill_id
 _DOCX_IMPORT_CONTEXT: dict[str, Any] = {}
 
 FORMULA_PLACEHOLDER_RE = re.compile(r"\[FORMULA_IMAGE_\d+\]|\[FORMULA_MISSING\]|\[WORD_EQUATION_UNPARSED\]")
-TEXT_MOJIBAKE_CHARS = "�蝧蝯葫憿箇鞈摨隢貊詨撠銋嚗暺"
+TEXT_MOJIBAKE_CHARS = "嚙踐∟航輻Ｚ閰冽"
 TEXT_MOJIBAKE_RE = re.compile("[" + re.escape(TEXT_MOJIBAKE_CHARS) + r"]")
+LATEX_SIGNAL_GUARD_RE = re.compile(r"\\\(|\\\)|\\\[|\\\]|\\(?:frac|sqrt|left|right)\b|[\^_]")
 
 
+def _norm_title_spaces(title: str) -> str:
+    return re.sub(r"\s+", " ", str(title or "").strip())
+
+
+def _strip_title_brackets(s: str) -> str:
+    return s.strip("〔〕[]()（）")
+
+
+def scan_docx_title_inventory(extracted_text: str, section_code: str | None = None) -> list[dict[str, Any]]:
+    """Deterministic scan of example / practice / chapter exercise / exam titles from DOCX text."""
+    text = str(extracted_text or "")
+    lines = text.splitlines()
+    items: list[dict[str, Any]] = []
+
+    def _infer_section_from_line(line: str) -> str | None:
+        m = re.search(r"(\d+-\d+)", line)
+        return m.group(1) if m else None
+
+    inferred_global = None
+    for ln in lines:
+        g = _infer_section_from_line(ln)
+        if g:
+            inferred_global = g
+            break
+
+    effective_section = (str(section_code).strip() if section_code else "") or (inferred_global or "")
+
+    # --- 例題 (document-wide) ---
+    for m in re.finditer(r"例(?:題)?\s*(\d{1,2})\b", text):
+        n = int(m.group(1))
+        raw = m.group(0).strip()
+        preview = text[max(0, m.start() - 20) : m.end() + 40].replace("\n", " ")
+        items.append(
+            {
+                "raw_title": raw,
+                "canonical_title": f"例題{n}",
+                "kind": "example",
+                "section_code": effective_section or "",
+                "exercise_block": "",
+                "zone": "",
+                "number": str(n),
+                "source_span_preview": preview[:120],
+            }
+        )
+
+    # --- 隨堂練習：「隨堂練習 n」或標題後依行首題號 ---
+    for m in re.finditer(r"隨堂練習\s*(\d{1,2})\b", text):
+        n = int(m.group(1))
+        raw = m.group(0).strip()
+        preview = text[max(0, m.start() - 12) : m.end() + 30].replace("\n", " ")
+        items.append(
+            {
+                "raw_title": raw,
+                "canonical_title": f"隨堂練習{n}",
+                "kind": "in_class_practice",
+                "section_code": effective_section or "",
+                "exercise_block": "",
+                "zone": "",
+                "number": str(n),
+                "source_span_preview": preview[:120],
+            }
+        )
+    suitang_m = re.search(r"隨堂練習(?=\s*$)", text, flags=re.MULTILINE)
+    if not suitang_m:
+        suitang_m = re.search(r"(?m)^\s*隨堂練習\s*$", text)
+    if suitang_m:
+        tail = text[suitang_m.end() :]
+        end_m = re.search(r"\d+-\d+習題|[〔\[]?\s*\d{2,3}\s*統測", tail)
+        region = tail[: end_m.start()] if end_m else tail
+        for lm in re.finditer(r"(?m)^\s*(\d{1,2})(?:[\.、\)\t]|\s+)", region):
+            n = int(lm.group(1))
+            raw = lm.group(0).strip()
+            preview = region[max(0, lm.start() - 10) : lm.end() + 40].replace("\n", " ")
+            items.append(
+                {
+                    "raw_title": raw,
+                    "canonical_title": f"隨堂練習{n}",
+                    "kind": "in_class_practice",
+                    "section_code": effective_section or "",
+                    "exercise_block": "",
+                    "zone": "",
+                    "number": str(n),
+                    "source_span_preview": preview[:120],
+                }
+            )
+
+    # --- 章節習題區（zone 完全依原文掃描，不依題號推測）---
+    ZONE_HEADERS = ("基礎題", "進階題", "自我評量")
+
+    i = 0
+    while i < len(lines):
+        line = lines[i]
+        blk = re.search(r"(\d+-\d+)習題", line)
+        if not blk:
+            i += 1
+            continue
+        sec = blk.group(1)
+        exercise_block = f"{sec}習題"
+        current_zone = "其他"
+        i += 1
+        while i < len(lines):
+            ln = lines[i]
+            hdr = re.match(r"^\s*(\d+-\d+)習題", ln)
+            if hdr and hdr.group(1) != sec:
+                break
+            if re.search(r"[〔\[]?\s*\d{2,3}\s*統測", ln, flags=re.IGNORECASE):
+                break
+            stripped = ln.strip()
+            zone_hit = None
+            for z in ZONE_HEADERS:
+                if stripped == z or stripped.startswith(z + " ") or stripped.startswith(z + "　"):
+                    zone_hit = z
+                    break
+            if zone_hit:
+                current_zone = zone_hit
+                i += 1
+                continue
+            mnum = re.match(r"^\s*(\d{1,2})(?:[\.、\)\t]|\s+)", ln)
+            if mnum:
+                n = int(mnum.group(1))
+                raw = mnum.group(0).strip()
+                preview = ln[:100]
+                canon = f"{sec}習題 {current_zone}{n}"
+                items.append(
+                    {
+                        "raw_title": raw,
+                        "canonical_title": canon,
+                        "kind": "chapter_exercise",
+                        "section_code": sec,
+                        "exercise_block": exercise_block,
+                        "zone": current_zone,
+                        "number": str(n),
+                        "source_span_preview": preview,
+                    }
+                )
+            i += 1
+        continue
+
+    # --- 統測 ---
+    for m in re.finditer(r"[〔\[]?\s*(\d{2,3})\s*統測\s*([AB])\s*[〕\]]?", text, flags=re.IGNORECASE):
+        y = int(m.group(1))
+        suf = m.group(2).upper()
+        raw = m.group(0).strip()
+        preview = text[max(0, m.start() - 10) : m.end() + 30].replace("\n", " ")
+        items.append(
+            {
+                "raw_title": raw,
+                "canonical_title": f"{y}統測{suf}",
+                "kind": "exam_practice",
+                "section_code": effective_section or "",
+                "exercise_block": "",
+                "zone": "",
+                "number": "",
+                "source_span_preview": preview[:120],
+            }
+        )
+
+    return items
+
+
+def map_returned_import_title(
+    title: str,
+    *,
+    section_code: str | None = None,
+    inventory_items: list[dict[str, Any]] | None = None,
+) -> dict[str, Any]:
+    """Map AI-returned title string to canonical form; never guess exercise zone from number alone."""
+    raw = _norm_title_spaces(str(title or ""))
+    inv = list(inventory_items or [])
+    s_compact = re.sub(r"\s+", "", raw)
+    s_compact = _strip_title_brackets(s_compact)
+
+    m = re.match(r"^例(?:題)?(\d+)$", s_compact)
+    if m:
+        return {
+            "returned_raw": raw,
+            "returned_canonical": f"例題{int(m.group(1))}",
+            "mapping_method": "direct_example",
+            "needs_review": False,
+        }
+
+    m = re.match(r"^隨堂練習(\d+)$", s_compact)
+    if m:
+        return {
+            "returned_raw": raw,
+            "returned_canonical": f"隨堂練習{int(m.group(1))}",
+            "mapping_method": "direct_practice",
+            "needs_review": False,
+        }
+
+    m = re.match(r"^(\d{2,3})統測([AB])$", s_compact, flags=re.IGNORECASE)
+    if m:
+        return {
+            "returned_raw": raw,
+            "returned_canonical": f"{int(m.group(1))}統測{m.group(2).upper()}",
+            "mapping_method": "direct_exam",
+            "needs_review": False,
+        }
+
+    m = re.match(r"^習題(\d+)$", s_compact)
+    if m:
+        num = m.group(1)
+        cands = [it for it in inv if it.get("kind") == "chapter_exercise" and str(it.get("number", "")) == num]
+        if len(cands) == 1:
+            return {
+                "returned_raw": raw,
+                "returned_canonical": str(cands[0].get("canonical_title", "")),
+                "mapping_method": "exercise_context_map",
+                "needs_review": False,
+            }
+        sc = str(section_code or "").strip() or ""
+        fallback = f"{sc}習題 題{num}" if sc else f"習題 題{num}"
+        return {
+            "returned_raw": raw,
+            "returned_canonical": fallback,
+            "mapping_method": "fallback_unresolved",
+            "needs_review": True,
+        }
+
+    m = re.match(r"^(\d+-\d+)習題(基礎題|進階題|自我評量|其他)(\d+)$", s_compact)
+    if m:
+        return {
+            "returned_raw": raw,
+            "returned_canonical": f"{m.group(1)}習題 {m.group(2)}{int(m.group(3))}",
+            "mapping_method": "exercise_context_map",
+            "needs_review": False,
+        }
+
+    return {
+        "returned_raw": raw,
+        "returned_canonical": raw,
+        "mapping_method": "fallback_unresolved",
+        "needs_review": True,
+    }
+
+
+def canonicalize_import_title(
+    title: str,
+    section_code: str | None = None,
+    inventory_items: list[dict[str, Any]] | None = None,
+    *,
+    exercise_zone_map: dict[int, str] | None = None,
+) -> str:
+    """Normalize title for inventory; optional inventory_items disambiguates 「習題 n」."""
+    meta = map_returned_import_title(
+        title,
+        section_code=section_code,
+        inventory_items=inventory_items,
+    )
+    if exercise_zone_map and meta.get("mapping_method") == "fallback_unresolved":
+        s_compact = re.sub(r"\s+", "", _norm_title_spaces(title))
+        s_compact = _strip_title_brackets(s_compact)
+        m = re.match(r"^習題(\d+)$", s_compact)
+        if m and section_code:
+            num = int(m.group(1))
+            zone = exercise_zone_map.get(num)
+            if zone:
+                return f"{section_code}習題 {zone}{num}"
+    return str(meta.get("returned_canonical") or "").strip() or str(title or "").strip()
+
+
+def scan_expected_titles_from_converted_text(extracted_text: str) -> list[str]:
+    items = scan_docx_title_inventory(extracted_text)
+    return sorted({str(it.get("canonical_title", "")).strip() for it in items if str(it.get("canonical_title", "")).strip()})
+
+
+def collect_returned_titles_from_parsed_data(parsed_data: dict[str, Any]) -> list[str]:
+    titles: list[str] = []
+    for ch in (parsed_data or {}).get("chapters", []) or []:
+        for sec in (ch or {}).get("sections", []) or []:
+            for concept in (sec or {}).get("concepts", []) or []:
+                for ex in (concept or {}).get("examples", []) or []:
+                    t = ex.get("title") or ex.get("source_description") or ""
+                    if str(t).strip():
+                        titles.append(str(t).strip())
+                for pq in (concept or {}).get("practice_questions", []) or []:
+                    t = pq.get("title") or pq.get("source_description") or ""
+                    if str(t).strip():
+                        titles.append(str(t).strip())
+    return titles
+
+
+def build_title_inventory(
+    expected_titles: list[str],
+    returned_titles: list[str],
+    section_code: str = "",
+    *,
+    inventory_items: list[dict[str, Any]] | None = None,
+) -> dict[str, Any]:
+    inv_list = list(inventory_items or [])
+    sc = str(section_code or "").strip()
+    if sc == "unknown":
+        sc = ""
+
+    expected_raw = [str(t).strip() for t in expected_titles if str(t).strip()]
+    expected_norm = sorted(
+        {
+            canonicalize_import_title(t, section_code=sc or None, inventory_items=inv_list)
+            for t in expected_raw
+        }
+    )
+
+    returned_raw = [str(t).strip() for t in returned_titles if str(t).strip()]
+    returned_mappings = [
+        map_returned_import_title(t, section_code=sc or None, inventory_items=inv_list) for t in returned_raw
+    ]
+    returned_norm = sorted(
+        {str(m.get("returned_canonical") or "").strip() for m in returned_mappings if str(m.get("returned_canonical") or "").strip()}
+    )
+
+    expected_set = set(expected_norm)
+    returned_set = set(returned_norm)
+    missing = sorted(expected_set - returned_set)
+    extra = sorted(returned_set - expected_set)
+    return {
+        "expected_titles_raw": expected_raw,
+        "expected_titles_canonical": expected_norm,
+        "returned_titles_raw": returned_raw,
+        "returned_titles_canonical": returned_norm,
+        "missing_titles_canonical": missing,
+        "extra_titles_canonical": extra,
+        "expected_titles_count": len(expected_norm),
+        "returned_titles_count": len(returned_norm),
+        "missing_titles_count": len(missing),
+        "extra_titles_count": len(extra),
+        "inventory_items": inv_list,
+        "returned_title_mappings": returned_mappings,
+    }
+
+
+def _md_table_row(cells: list[str]) -> str:
+    esc = [str(c or "").replace("|", "\\|").replace("\n", " ") for c in cells]
+    return "| " + " | ".join(esc) + " |"
+
+
+def write_title_inventory_report(report_path: str, *, volume: str, section: str, allow_partial_import: bool, write_aborted: bool, inv: dict[str, Any], warning: str = "") -> None:
+    lines = [
+        "# Title Inventory Report",
+        "",
+        "## Summary",
+        f"- volume: `{volume}`",
+        f"- section: `{section}`",
+        f"- expected_titles_count: `{inv.get('expected_titles_count', 0)}`",
+        f"- returned_titles_count: `{inv.get('returned_titles_count', 0)}`",
+        f"- missing_titles_count: `{inv.get('missing_titles_count', 0)}`",
+        f"- extra_titles_count: `{inv.get('extra_titles_count', 0)}`",
+        f"- allow_partial_import: `{str(bool(allow_partial_import)).lower()}`",
+        f"- write_aborted: `{str(bool(write_aborted)).lower()}`",
+        f"- warning: `{warning}`",
+        "",
+    ]
+    inv_items = inv.get("inventory_items") or []
+    if inv_items:
+        lines.append("## Inventory Items")
+        lines.append(_md_table_row(["raw_title", "canonical_title", "kind", "section_code", "exercise_block", "zone", "number", "preview"]))
+        lines.append(_md_table_row(["---"] * 8))
+        for it in inv_items:
+            lines.append(
+                _md_table_row(
+                    [
+                        str(it.get("raw_title", "")),
+                        str(it.get("canonical_title", "")),
+                        str(it.get("kind", "")),
+                        str(it.get("section_code", "")),
+                        str(it.get("exercise_block", "")),
+                        str(it.get("zone", "")),
+                        str(it.get("number", "")),
+                        str(it.get("source_span_preview", ""))[:200],
+                    ]
+                )
+            )
+        lines.append("")
+
+    mappings = inv.get("returned_title_mappings") or []
+    if mappings:
+        lines.append("## Returned Title Mapping")
+        lines.append(_md_table_row(["returned_raw", "returned_canonical", "mapping_method", "needs_review"]))
+        lines.append(_md_table_row(["---"] * 4))
+        for m in mappings:
+            lines.append(
+                _md_table_row(
+                    [
+                        str(m.get("returned_raw", "")),
+                        str(m.get("returned_canonical", "")),
+                        str(m.get("mapping_method", "")),
+                        str(m.get("needs_review", False)).lower(),
+                    ]
+                )
+            )
+        lines.append("")
+
+    lines.extend(
+        [
+            "## Expected Titles Raw",
+        ]
+    )
+    for t in inv.get("expected_titles_raw", []):
+        lines.append(f"- {t}")
+    lines.append("")
+    lines.append("## Expected Titles Canonical")
+    for t in inv.get("expected_titles_canonical", []):
+        lines.append(f"- {t}")
+    lines.append("")
+    lines.append("## Returned Titles Raw")
+    for t in inv.get("returned_titles_raw", []):
+        lines.append(f"- {t}")
+    lines.append("")
+    lines.append("## Returned Titles Canonical")
+    for t in inv.get("returned_titles_canonical", []):
+        lines.append(f"- {t}")
+    lines.append("")
+    lines.append("## Missing Titles Canonical")
+    for t in inv.get("missing_titles_canonical", []):
+        lines.append(f"- {t}")
+    lines.append("")
+    lines.append("## Extra Titles Canonical")
+    for t in inv.get("extra_titles_canonical", []):
+        lines.append(f"- {t}")
+    out = os.path.abspath(report_path)
+    os.makedirs(os.path.dirname(out), exist_ok=True)
+    with open(out, "w", encoding="utf-8-sig") as f:
+        f.write("\n".join(lines) + "\n")
+
+
+def detect_curriculum_volume_warning(curriculum: str, volume: str, publisher: str = "") -> str:
+    c = str(curriculum or "").strip().lower()
+    v = str(volume or "").strip()
+    p = str(publisher or "").strip().lower()
+    if re.search(r"數學\s*B[1-4]\b", v, flags=re.IGNORECASE) and c == "general" and (not p or "longteng" in p):
+        return f"[IMPORT WARNING] volume={v} but curriculum=general; vocational mathB import expected."
+    return ""
 def _has_text_mojibake(text: str) -> bool:
     t = str(text or "")
     if not t:
@@ -87,7 +519,7 @@ def _is_low_value_import_field(value: str) -> bool:
     t = str(value or "").strip()
     if not t:
         return True
-    return t in {"略", "無", "N/A", "n/a", "None", "none", "null", "-"}
+    return t in {"?", "??", "N/A", "n/a", "None", "none", "null", "-"}
 
 
 def score_problem_text_quality(text) -> dict:
@@ -116,7 +548,7 @@ def score_problem_text_quality(text) -> dict:
     if placeholder_count == 0:
         score += 20
     score += min(cjk_count, 20)
-    if re.search(r"[。？！：，,.;；]", t):
+    if re.search(r"[??嚗?嚗?.;嚗", t):
         score += 4
     score -= formula_image_count * 35
     score -= formula_missing_count * 45
@@ -145,43 +577,43 @@ def should_replace_problem_text(existing_text, incoming_text) -> tuple[bool, dic
     incoming_quality = score_problem_text_quality(incoming_text)
     return incoming_quality["score"] > existing_quality["score"], existing_quality, incoming_quality
 
-# (初始化檢查已移除)
+# (???炎?亙歇蝘駁)
 
 # ==============================================================================
-# [保留] 您原本的 LaTeX 通用修復函式
+# [靽?] ?典??祉? LaTeX ?靽桀儔?賢?
 # ==============================================================================
 def sanitize_gemini_json_text(raw: str) -> str:
     r"""
-    修復 Gemini 回傳 JSON 中常見的格式問題。
+    靽桀儔 Gemini ? JSON 銝剖虜閬??澆?????
 
-    注意：
-    這個函式只在 json.loads 前處理 raw text。
-    它的目的只是讓 raw text 成為合法 JSON。
-    json.loads 成功後，Python 字串中的 LaTeX 應該仍然是正常單反斜線，
-    例如資料庫最後應該存入 \(x+1\)，而不是 \\(x+1\\)。
+    瘜冽?嚗?
+    ?撘??json.loads ????raw text??
+    摰??桃??芣霈?raw text ??? JSON??
+    json.loads ??敺?Python 摮葡銝剔? LaTeX ?府隞?舀迤撣詨??蝺?
+    靘?鞈?摨急?敺?閰脣???\(x+1\)嚗???\\(x+1\\)??
     """
     if raw is None:
         return raw
 
     text = str(raw).strip()
 
-    # 移除 Markdown code fence
+    # 蝘駁 Markdown code fence
     text = re.sub(r"^```(?:json)?\s*", "", text)
     text = re.sub(r"\s*```$", "", text)
 
-    # 擷取最外層 JSON object，避免模型前後多說明文字
+    # ?瑕??憭惜 JSON object嚗?芋??敺?隤芣???
     start = text.find("{")
     end = text.rfind("}")
     if start != -1 and end != -1 and end > start:
         text = text[start:end + 1]
 
-    # 修復非法 JSON escape。
-    # JSON 合法 escape 只有：
+    # 靽桀儔?? JSON escape??
+    # JSON ?? escape ?芣?嚗?
     # \" \\ \/ \b \f \n \r \t \uXXXX
-    # 其他 LaTeX escape，例如 \( \) \[ \] \frac \binom \times \cdot
-    # 都需要在 raw JSON 裡變成雙反斜線，json.loads 後才會還原成單反斜線。
-    # 先處理常見 LaTeX 命令。部分命令開頭剛好是合法 JSON escape
-    # (例如 \binom, \frac, \times)，直接 json.loads 會變成控制字元而破壞 MathJax。
+    # ?嗡? LaTeX escape嚗?憒?\( \) \[ \] \frac \binom \times \cdot
+    # ?賡?閬 raw JSON 鋆∟?????蝺?json.loads 敺??????桀?????
+    # ???虜閬?LaTeX ?賭誘??隞日??剖?憟賣?? JSON escape
+    # (靘? \binom, \frac, \times)嚗??json.loads ????嗅??憯?MathJax??
     latex_commands = (
         "binom|frac|times|cdot|sum|prod|sqrt|left|right|over|overline|underline|"
         "vec|hat|bar|lim|to|infty|sin|cos|tan|cot|sec|csc|log|ln|"
@@ -197,9 +629,9 @@ def sanitize_gemini_json_text(raw: str) -> str:
 
 def safe_load_gemini_json(raw: str):
     r"""
-    安全解析 Gemini 回傳 JSON。
-    先直接 json.loads。
-    若失敗，修復 LaTeX escape 後再 json.loads。
+    摰閫?? Gemini ? JSON??
+    ???json.loads??
+    ?亙仃??靽桀儔 LaTeX escape 敺? json.loads??
     """
     raw_text = str(raw).strip() if raw is not None else raw
     fixed = sanitize_gemini_json_text(raw)
@@ -259,65 +691,60 @@ def _log_gemini_json_parse_failed_after_sanitize(first_error, second_error, raw)
 
 def fix_common_latex_errors(text):
     """
-    修復 AI/Pandoc 轉換後常見的 LaTeX 語法錯誤與符號遺漏 (增強版)
-    包含：三角函數正體化、希臘字母、集合符號、向量、下標處理。
+    靽桀儔 AI/Pandoc 頧?敺虜閬? LaTeX 隤??航炊?泵?瞍?(憓撥??
+    ?嚗?閫?豢迤擃?????瘥??泵????璅???
     """
     if not text: return text
     
-    # 0. 基礎清理
-    text = text.replace('＝', '=').replace('－', '-').replace('，', ',')
+    # 0. ?箇?皜?
+    text = text.replace("嚗?", "")
     text = re.sub(r'(\S)\s*\$\$', r'\1', text)
     text = text.replace('*e*', 'e')
     text = re.sub(r'(?<!\\)->', r' \\to ', text)
     text = re.sub(r'(?<!\\)infty(?![a-zA-Z])', r'\\infty', text)
 
-    # 1. 函數名稱正體化 (Trig & Log)
+    # 1. ?賣?迂甇????(Trig & Log)
     funcs = ['sin', 'cos', 'tan', 'cot', 'sec', 'csc', 'log', 'ln', 'exp']
     pattern_funcs = r'(?<!\\)\b(' + '|'.join(funcs) + r')\b'
     text = re.sub(pattern_funcs, r'\\\1', text)
-    text = re.sub(r'\\(sin|cos|tan|log|ln)\(', r'\\\1 (', text) # 修復黏連
+    text = re.sub(r'\\(sin|cos|tan|log|ln)\(', r'\\\1 (', text) # 靽桀儔暺?
 
-    # 2. 希臘字母獨立修復
+    # 2. 撣?摮??函?靽桀儔
     greeks = ['alpha', 'beta', 'gamma', 'delta', 'theta', 'lambda', 'mu', 'pi', 'sigma', 'omega', 'phi', 'rho', 'tau', 'Delta', 'Sigma']
     pattern_greeks = r'(?<!\\)\b(' + '|'.join(greeks) + r')\b(?![a-zA-Z])'
     text = re.sub(pattern_greeks, r'\\\1', text)
 
-    # 3. 集合與邏輯
+    # 3. ????頛?
     sets = ['subset', 'subseteq', 'cup', 'cap', 'emptyset', 'forall', 'exists']
     for s in sets: text = re.sub(rf'(?<!\\)\b{s}\b', rf'\\{s}', text)
     text = re.sub(r'\s+in\s+', r' \\in ', text)
 
-    # 4. Lim, Sqrt, Frac (標準修復)
+    # 4. Lim, Sqrt, Frac (璅?靽桀儔)
     text = re.sub(r'lim_\{n\s*(?:\\to|->)\s*(?:\\)?infty\}', r'\\lim_{n \\to \\infty}', text)
     text = re.sub(r'(?<!\\)lim(?![a-zA-Z])', r'\\lim', text)
     text = re.sub(r'(?:\\)?sqrt\s*(\d+|[a-zA-Z])', r'\\sqrt{\1}', text)
     text = re.sub(r'(?<![a-zA-Z\\])sqrt(?![a-zA-Z0-9\{])', r'\\sqrt', text)
     text = re.sub(r'frac(\d+)(\d+)', r'\\frac{\1}{\2}', text)
 
-    # 5. 向量 (Vectors)
+    # 5. ?? (Vectors)
     text = re.sub(r'vec([A-Z]{2})', r'\\overrightarrow{\1}', text) # vecAB -> \overrightarrow{AB}
     text = re.sub(r'vec\s*([a-z])\b', r'\\vec{\1}', text)
 
-    # 6. 常見符號
+    # 6. 撣貉?蝚西?
     text = re.sub(r'(\d+)\s*circ', r'\1^{\\circ}', text)
     text = re.sub(r'angle([A-Z0-9]{2,3})', r'\\angle \1', text)
     for op in ['pm', 'times', 'div', 'approx', 'leq', 'geq', 'neq']:
         text = re.sub(rf'(?<![a-zA-Z\\]){op}(?![a-zA-Z])', rf'\\{op}', text)
 
-    # 7. 次方與下標 (Superscript & Subscript)
+    # 7. 甈⊥??璅?(Superscript & Subscript)
     text = re.sub(r'(?<!\$)\b((\w+|\([^)]+\))\^(\{[\w-]+\}|[\w-]+))\b(?!\$)', r'$\1$', text) # x^2 -> $x^2$
     text = re.sub(r'(?<!\$)\b([a-zA-Z])_(\{[\w-]+\}|[\w]+)\b(?!\$)', r'$\1_{\2}$', text)   # a_n -> $a_{n}$
    
-    # 4. 修正常見 OCR/Pandoc 錯誤
+    # 4. 靽格迤撣貉? OCR/Pandoc ?航炊
     replacements = {
-            '\\[': '$$', '\\]': '$$',  # 將 \[ \] 統一轉為 $$
-            '\\(': '$', '\\)': '$',    # 將 \( \) 統一轉為 $
-            '＊': '*',                 # 全形轉半形
-            '＋': '+',
-            '－': '-',
-            '＝': '=',
-            '／': '/', 
-            'div ': '\\div '           # 常見錯誤：div 沒加斜線
+            '\\[': '$$', '\\]': '$$',  # 撠?\[ \] 蝯曹?頧 $$
+            '\\(': '$', '\\)': '$',    # 撠?\( \) 蝯曹?頧 $
+            'div ': '\\div '           # 撣貉??航炊嚗iv 瘝???
         }
     
     for old, new in replacements.items():
@@ -325,24 +752,24 @@ def fix_common_latex_errors(text):
     return text
 
 # ==============================================================================
-# [NEW] 專用清洗函式：只針對 Word (Pandoc) 輸出的文字做處理
+# [NEW] 撠皜??賢?嚗?? Word (Pandoc) 頛詨??摮???
 # ==============================================================================
 def clean_pandoc_output(text):
     """
-    【龍騰版/Word專用】針對 Pandoc 轉換 Word 檔後的特殊格式進行清洗。
-    此函式只會被 .docx 流程呼叫，絕對不會影響 PDF/OCR 流程。
+    ??擉啁?/Word撠??撠?Pandoc 頧? Word 瑼??畾撘脰?皜???
+    甇文撘?◤ .docx 瘚??澆嚗?撠??蔣??PDF/OCR 瘚???
     """
     if not text: return text
 
-    # 1. 修復 Pandoc 產生的雙重上標度數符號 (^{\^{\circ}} -> ^{\circ})
+    # 1. 靽桀儔 Pandoc ?Ｙ?????璅漲?貊泵??(^{\^{\circ}} -> ^{\circ})
     text = text.replace(r'^{\^{\circ}}', r'^{\circ}')
     
-    # 2. 統一將 \( ... \) 轉換為 $ ... $ (MathJax 更支援)
-    # 這是 Word 轉出的標準 LaTeX 行內數式格式，但在前端顯示時 $ 比較通用
+    # 2. 蝯曹?撠?\( ... \) 頧???$ ... $ (MathJax ?湔??
+    # ? Word 頧??皞?LaTeX 銵?詨??澆?嚗??典?蝡舫＊蝷箸? $ 瘥??
     text = re.sub(r'\\\((.*?)\\\)', r'$\1$', text)
 
-    # 3. 修復 sqrt (Pandoc 有時會輸出 sqrt 2 而不是 \sqrt{2})
-    # 這裡只做最保守的修復，避免誤傷文字
+    # 3. 靽桀儔 sqrt (Pandoc ???撓??sqrt 2 ????\sqrt{2})
+    # ?ㄐ?芸??靽??耨敺抬??踹?隤文??
     text = re.sub(r'(?:\\)?sqrt\s+(\d+|[a-zA-Z])\b', r'\\sqrt{\1}', text)
     
     return text
@@ -409,7 +836,7 @@ def _extract_docx_image_placeholder(run_el, paragraph_state):
     Handles two embedding mechanisms:
     - DrawingML  : ``<a:blip>`` inside ``<w:drawing>`` (standard Word inline image).
     - VML / OLE  : ``<v:imagedata>`` inside ``<w:object>`` / ``<w:pict>``
-                   — used by MathType (Equation.DSMT4) and legacy OLE equations.
+                   ??used by MathType (Equation.DSMT4) and legacy OLE equations.
                    Previously these returned ``""`` (silently dropped the formula
                    position).  Now they produce a ``[FORMULA_IMAGE_N]`` placeholder
                    so that the paragraph text keeps the formula slot visible to
@@ -621,17 +1048,15 @@ def _is_question_start_text(text: str) -> bool:
     if classify_non_question_block(t) in ("concept_explanation", "figure_caption", "narration"):
         return False
     heading_patterns = [
-        r"^\s*例\s*題?\s*\d+",
-        r"^\s*隨堂練習\s*\d+",
-        r"^\s*基礎題\s*\d+",
-        r"^\s*進階題\s*\d+",
-        r"^\s*(?:\d+\s*-\s*\d+\s*)?習題(?:\s*基礎題|\s*進階題)?\s*\d*",
-        r"^\s*自我評量",
-        r"^\s*(統測補給站|統測題|會考題|學測題|指考題|分科測驗)\s*\d*",
-        r"^\s*題目\s*\d+",
-        # Bare-numbered exercises: require an explicit unambiguous question verb.
-        # "5 解下列不等式" ✓  "3. 試求 x" ✓  "1.不等式的運算性質" ✗ (no verb here)
-        r"^\s*\d+[\s\.\)、]\s*(?:解|試解|求|試求|計算|化簡|判斷|寫出|找出|畫出|標出|填入|完成)",
+        r"^\s*靘s*憿?\s*\d+",
+        r"^\s*?典?蝺渡?\s*\d+",
+        r"^\s*?箇?憿s*\d+",
+        r"^\s*?脤?憿s*\d+",
+        r"^\s*(?:\d+\s*-\s*\d+\s*)?蝧?(?:\s*?箇?憿\s*?脤?憿??\s*\d*",
+        r"^\s*?芣?閰?",
+        r"^\s*(蝯望葫鋆策蝡蝯望葫憿??|摮豢葫憿??|??皜祇?)\s*\d*",
+        r"^\s*憿\s*\d+",
+        r"^\s*\d+[\s\.\)]",
     ]
     return any(re.search(p, t) for p in heading_patterns)
 
@@ -641,13 +1066,13 @@ _STRUCTURAL_BOUNDARY_PATTERNS = [
     r"^\s*\d+\s*[^\d\s].*$",
     r"^\s*\d+\s*-\s*\d+\s+[^\s].*$",
     r"^\s*\d+\s*-\s*\d+\s*\.\s*\d+\s*[^\s].*$",
-    r"^\s*例\s*題?\s*\d+",
+    r"^\s*例(?:題)?\s*\d+",
     r"^\s*隨堂練習\s*\d+",
     r"^\s*(?:\d+\s*-\s*\d+\s*)?習題",
     r"^\s*基礎題\s*\d*",
     r"^\s*進階題\s*\d*",
     r"^\s*自我評量",
-    r"^\s*(統測題|會考題|學測題|指考題|分科測驗|統測補給站)",
+    r"^\s*(?:統測|學測)",
 ]
 
 
@@ -659,39 +1084,37 @@ def is_structural_boundary_line(line: str) -> bool:
 
 
 _NON_QUESTION_EXPLANATION_CUES = (
-    "由上面的例題得知",
-    "由上述例題得知",
-    "我們把上述例題",
-    "利用公式可得",
-    "為了方便表示",
-    "本節介紹",
-    "接下來介紹",
-    "如下圖",
-    "上圖",
-    "下圖",
-    "▲圖",
+    "說明",
+    "觀念",
+    "範例解析",
+    "解題",
+    "補充",
+    "備註",
+    "提示",
+    "概念",
+    "答案",
+    "解答",
+    "附註",
 )
 
 _QUESTION_VERBS = (
-    "試問",
-    "試求",
     "求",
-    "計算",
-    "化簡",
+    "解",
+    "算",
     "證明",
     "判斷",
-    "列出",
-    "填入",
-    "共有幾種",
-    "有幾種",
-    "問",
-    "解",
+    "比較",
+    "化簡",
+    "計算",
+    "作圖",
+    "試求",
+    "求出",
 )
 
 
 def _is_figure_caption_line(text: str) -> bool:
     t = str(text or "").strip()
-    return bool(re.search(r"^(?:▲\s*)?圖\s*\d+", t))
+    return bool(re.search(r"^(?:圖|表)\s*\d+", t))
 
 
 def classify_non_question_block(text: str) -> str | None:
@@ -701,7 +1124,7 @@ def classify_non_question_block(text: str) -> str | None:
     if t == "[BLOCK_IMAGE]" or _is_figure_caption_line(t):
         return "figure_caption"
 
-    has_explain = any(cue in t for cue in _NON_QUESTION_EXPLANATION_CUES) or bool(re.search(r"^(即|因此)\b", t))
+    has_explain = any(cue in t for cue in _NON_QUESTION_EXPLANATION_CUES) or bool(re.search(r"^(?:說明|解題|觀念)\b", t))
     has_question_verb = any(v in t for v in _QUESTION_VERBS)
     if has_explain and not has_question_verb:
         return "concept_explanation"
@@ -749,44 +1172,45 @@ def segment_question_block_text(problem_text: str, question_title: str = "") -> 
 def _extract_question_title_from_text(text: str) -> str:
     t = str(text or "").strip()
     for pat in [
-        r"(統測補給站\s*\d+)",
-        r"(隨堂練習\s*\d+)",
-        r"(例題\s*\d+)",
-        r"(基礎題\s*\d+)",
-        r"(進階題\s*\d+)",
-        r"(自我評量[^\s，。]*)",
-        r"((?:\d+-\d+\s*)?習題\s*\d*)",
+        r"(蝯望葫鋆策蝡s*\d+)",
+        r"(?典?蝺渡?\s*\d+)",
+        r"(靘?\s*\d+)",
+        r"(?箇?憿s*\d+)",
+        r"(?脤?憿s*\d+)",
+        r"(?芣?閰?[^\s嚗*)",
+        r"((?:\d+-\d+\s*)?蝧?\s*\d*)",
     ]:
         m = re.search(pat, t)
         if m:
             return m.group(1).replace(" ", "")
-    # Bare-numbered exercise: "5 解不等式..." / "1. 試求..." → return bare number string
-    m = re.search(r"^(\d+)[\s\.\)、]", t)
+    # Bare-numbered exercise: "5 閫??蝑?..." / "1. 閰行?..." ??return bare number string
+    m = re.search(r"^(\d+)[\s\.\)]", t)
     if m:
         return m.group(1)
-    return (t[:20] or "未命名題目")
+    return t[:20] or ""
 
 
 def _is_formula_question_text(text: str) -> bool:
     t = str(text or "")
-    return any(k in t for k in ("試填入下列各式", "試求下列各式之值", "設，試求自然數 n", "公式空白"))
+    return any(k in t for k in ("求", "解", "方程", "不等式", "函數"))
 
 
 def _is_image_question_text(text: str) -> bool:
     t = str(text or "")
-    return any(k in t for k in ("如圖", "右圖", "附圖", "棋盤式街道圖", "著色", "圖形"))
+    return any(k in t for k in ("憒?", "?喳?", "??", "璉撘???", "?", "?耦"))
 
 
 _QUESTION_LABEL_RE = re.compile(
-    r"((?:例題|隨堂練習|基礎題|進階題|統測補給站)\s*\d+)"
+    r"((?:例(?:題)?|隨堂練習|基礎題|進階題|統測|學測|"
+    r"(?:\d+\s*-\s*\d+\s*)?習題)\s*\d+)"
 )
 
 # Used to validate bare-number exercise blocks vs. concept-heading blocks.
 _QUESTION_VERB_IN_BLOCK_RE = re.compile(
-    r"解|試求|試解|求解|計算|化簡|判斷|寫出|找出|畫出|標出|填入|完成"
+    r"求|解|算|證明|判斷|化簡|計算|作圖|試求|求出"
 )
 _CONCEPT_CUES_RE = re.compile(
-    r"性質|意義|公式|定義|定理|概念|觀念|原理|說明|運算性"
+    r"觀念|說明|解題|補充|重點|定義|性質"
 )
 
 # Map Gemini label keywords to DOCX key label keywords (must be same type to match).
@@ -795,7 +1219,7 @@ _LABEL_TYPE_MAP = {
     "隨堂練習": "隨堂練習",
     "基礎題": "基礎題",
     "進階題": "進階題",
-    "統測補給站": "統測補給站",
+    "統測": "統測",
 }
 
 
@@ -804,8 +1228,8 @@ def _normalize_docx_question_title_key(title: str) -> str:
     t = re.sub(r"\s+", "", str(title or "").strip())
     if not t:
         return ""
-    # Alias: "例1" and "例題1" are equivalent.
-    t = re.sub(r"^例(?!題)(\d+)$", r"例題\1", t)
+    # Alias: "靘?" and "靘?1" are equivalent.
+    t = re.sub(r"^靘??!憿?(\d+)$", r"靘?\1", t)
     return t
 
 
@@ -823,15 +1247,15 @@ def _build_docx_title_aliases(title: str, *, include_bare_number: bool = False) 
     _add(raw)
     _add(ns)
 
-    # Prefix stripping alias: "1-1習題 基礎題5" -> "基礎題5"
+    # Prefix stripping alias: "1-1蝧? ?箇?憿?" -> "?箇?憿?"
     m = _QUESTION_LABEL_RE.search(ns)
     if m:
         _add(m.group(1))
 
-    # 例題 / 例 alias
-    m_ex = re.search(r"^例題(\d+)$", ns)
+    # 靘? / 靘?alias
+    m_ex = re.search(r"^例題?(\d+)$", ns)
     if m_ex:
-        _add(f"例{m_ex.group(1)}")
+        _add(f"例題{m_ex.group(1)}")
     m_ex_short = re.search(r"^例(\d+)$", re.sub(r"\s+", "", raw))
     if m_ex_short:
         _add(f"例題{m_ex_short.group(1)}")
@@ -846,11 +1270,11 @@ def _build_docx_title_aliases(title: str, *, include_bare_number: bool = False) 
 
 def _extract_label_and_number(title: str) -> tuple[str | None, str | None]:
     t = _normalize_docx_question_title_key(title)
-    for label in ("例題", "隨堂練習", "基礎題", "進階題", "統測補給站"):
+    for label in ("例題", "隨堂練習", "基礎題", "進階題", "統測"):
         m = re.search(rf"^{re.escape(label)}(\d+)$", t)
         if m:
             return label, m.group(1)
-    # "例1" alias
+    # "例" alias
     m = re.search(r"^例(\d+)$", re.sub(r"\s+", "", str(title or "").strip()))
     if m:
         return "例題", m.group(1)
@@ -886,7 +1310,7 @@ def _find_exercise_section_key(source_map: dict) -> str:
         return ""
     for k in source_map.keys():
         kn = _normalize_docx_key_for_scan(k)
-        if kn and re.search(r"(?:\d+-\d+)?習題$", kn):
+        if kn and re.search(r"(?:\d+-\d+)?蝧?$", kn):
             return str(k)
     return ""
 
@@ -900,7 +1324,7 @@ def _is_safe_exercise_block(block_text: str, num: str) -> bool:
     - Does NOT read as a pure concept heading (no concept cues without a verb).
 
     This guard prevents bare-number key "1" from being erroneously paired with
-    concept paragraphs like "1.不等式的運算性質…".
+    concept paragraphs like "1.銝?撘????扯釭??.
     """
     t = str(block_text or "").strip()
     # Must begin with the exact number followed by a space (not period/comma).
@@ -917,9 +1341,9 @@ def _lookup_docx_formula_block(title: str, formula_blocks: dict) -> str:
     Strategies (all high-confidence):
     1. Exact match after stripping spaces.
     2. Strip leading section prefix and match the trailing label token exactly
-       (e.g. "1-1習題 基礎題5" → look up "基礎題5").
+       (e.g. "1-1蝧? ?箇?憿?" ??look up "?箇?憿?").
     3. Same-type label number match: trailing number N and same label type
-       (e.g. title "基礎題5" searches only for keys "基礎題5", never "例題5").
+       (e.g. title "?箇?憿?" searches only for keys "?箇?憿?", never "靘?5").
     4. Safe bare-number match: key is bare number N, block content starts with
        "N " (space, NOT period) and contains a question verb.
 
@@ -931,7 +1355,7 @@ def _lookup_docx_formula_block(title: str, formula_blocks: dict) -> str:
         return ""
     title_ns = _normalize_docx_question_title_key(title)
 
-    # Strategy 1: exact + title aliases (例1/例題1/例題 1...)
+    # Strategy 1: exact + title aliases (靘?/靘?1/靘? 1...)
     for alias in _build_docx_title_aliases(title, include_bare_number=False):
         v = formula_blocks.get(alias)
         if v:
@@ -940,7 +1364,7 @@ def _lookup_docx_formula_block(title: str, formula_blocks: dict) -> str:
     if v:
         return v
 
-    # Strategy 2: strip section prefix → exact label lookup
+    # Strategy 2: strip section prefix ??exact label lookup
     m = _QUESTION_LABEL_RE.search(title_ns)
     label_key = m.group(1).replace(" ", "") if m else None
     if label_key:
@@ -973,7 +1397,7 @@ def _lookup_docx_formula_block(title: str, formula_blocks: dict) -> str:
 
     # Strategy 5: exercise-section fallback
     t = _normalize_docx_question_title_key(title)
-    if re.search(r"(?:\d+-\d+)?習題.*(?:基礎題|進階題)\d+$", t):
+    if re.search(r"(?:\d+-\d+)?蝧?.*(?:?箇?憿?脤?憿?\d+$", t):
         sec_key = _find_exercise_section_key(formula_blocks)
         if sec_key:
             return str(formula_blocks.get(sec_key) or "")
@@ -981,8 +1405,8 @@ def _lookup_docx_formula_block(title: str, formula_blocks: dict) -> str:
     return ""
 
 
-_COORD_GUARD_SECTION_RE = re.compile(r"1\s*-\s*2|平面[坐座]標|[坐座]標系|線型函數")
-_COORD_GUARD_TEXT_RE = re.compile(r"點|[坐座]標|象限|平面|距離|中點|分點|重心|直線")
+_COORD_GUARD_SECTION_RE = re.compile(r"1\s*-\s*2|平面坐標|坐標平面|坐標幾何")
+_COORD_GUARD_TEXT_RE = re.compile(r"坐標|平面|距離|中點|象限|點")
 
 
 def _is_b1_coordinate_context(volume: str, section_title: str, problem_text: str) -> bool:
@@ -1085,7 +1509,7 @@ def _lookup_docx_question_assets(title: str, q_assets: dict) -> list:
         if v:
             return v
 
-    # Strategy 5: same-label prefix key (e.g. key="例1 數線上..." for title "例題 1")
+    # Strategy 5: same-label prefix key (e.g. key="靘? ?貊?銝?.." for title "靘? 1")
     v = _find_docx_prefix_match(title, q_assets)
     if v:
         mapped = []
@@ -1095,9 +1519,9 @@ def _lookup_docx_question_assets(title: str, q_assets: dict) -> list:
             mapped.append(aa)
         return mapped
 
-    # Strategy 6: exercise section fallback (e.g. only key="1-1習題")
+    # Strategy 6: exercise section fallback (e.g. only key="1-1蝧?")
     t = _normalize_docx_question_title_key(title)
-    if re.search(r"(?:\d+-\d+)?習題.*(?:基礎題|進階題)\d+$", t):
+    if re.search(r"(?:\d+-\d+)?蝧?.*(?:?箇?憿?脤?憿?\d+$", t):
         sec_key = _find_exercise_section_key(q_assets)
         if sec_key:
             fallback_assets = []
@@ -1115,8 +1539,8 @@ def attach_docx_media_to_question_blocks(blocks):
     question_assets: dict[str, list[dict[str, Any]]] = {}
     orphan_images: list[dict[str, Any]] = []
     image_kw = [
-        "如圖", "右圖", "下圖", "附圖", "棋盤式街道圖", "著色", "標號",
-        "數線", "坐標", "座標", "函數圖", "圖形", "如下圖",
+        "圖", "表", "下圖", "上圖", "右圖", "左圖", "如圖",
+        "題圖", "示意圖", "座標圖", "函數圖", "幾何圖",
     ]
 
     question_points: list[dict[str, Any]] = []
@@ -1310,40 +1734,55 @@ def _copy_docx_asset_to_question_assets(src_path: str, dst_dir: str, filename: s
 
 
 def parse_volume(volume_str: str):
-    volume_str = str(volume_str).strip()
-    if not volume_str:
+    """Parse vocational math volume label into (subject, volume_number). Never raises re.error."""
+    text = str(volume_str or "").strip()
+    if not text:
         return None, None
 
-    # 支援格式:
-    # 數學B4 / 數學B第4冊 / mathB4 / B4
-    match = re.search(
-        r'(?:數學|math)?\s*([ABCabc])\s*(?:第\s*)?(\d)\s*(?:冊)?',
-        volume_str,
-        flags=re.IGNORECASE,
-    )
-    if not match:
-        match = re.search(r'([ABCabc])\s*(\d)', volume_str, flags=re.IGNORECASE)
-    if not match:
-        return None, None
+    subject: str | None = None
+    vol_num: int | None = None
 
-    subject = match.group(1).upper()
-    volume_num = int(match.group(2))
-    return subject, volume_num
+    try:
+        # 數學B1、數學 B2、數學b4
+        m = re.search(r"數學\s*([AB])\s*(\d+)", text, re.IGNORECASE)
+        if m:
+            return m.group(1).upper(), int(m.group(2))
+
+        # B1、A2（單字邊界避免誤判過長字串中的片段）
+        m = re.search(r"\b([AB])\s*(\d+)\b", text, re.IGNORECASE)
+        if m:
+            return m.group(1).upper(), int(m.group(2))
+
+        zh_map = {"一": 1, "二": 2, "三": 3, "四": 4}
+        for zh, num in zh_map.items():
+            if zh + "冊" in text:
+                vol_num = num
+                break
+
+        if "數學B" in text or "B" in text.upper():
+            subject = "B"
+        elif "數學A" in text or "A" in text.upper():
+            subject = "A"
+
+        return subject, vol_num
+    except re.error:
+        return None, None
 
 
 def normalize_json_text_before_parse(text):
-    """在 JSON 解析前做最小、保守的文字正規化，避免破壞結構。"""
+    """Normalize JSON text before parsing."""
     if not text:
         return text
 
     normalized = str(text)
-    # 已知案例：未跳脫英文雙引號包住中文句子，改為中文引號避免破壞 JSON 字串
-    normalized = normalized.replace('"不能連續兩天考同一個科目"', '「不能連續兩天考同一個科目」')
+    # 撌脩獢?嚗頝唾?望?????雿葉?摮??寧銝剜?撘??踹??游? JSON 摮葡
+    # keep legacy cleanup no-op when source token is corrupted
+    normalized = normalized.replace('"銝????拙予??銝????', "")
     return normalized
 
 
 def sanitize_detailed_solution_text(text, max_chars=500):
-    """保守清理 detailed_solution：去除常見推理語句並限制長度。"""
+    """Sanitize detailed solution text for storage."""
     if text is None:
         return ""
 
@@ -1356,13 +1795,13 @@ def sanitize_detailed_solution_text(text, max_chars=500):
         "Let's re-do",
         "This is not",
         "English chain-of-thought",
-        "嘗試錯誤過程",
-        "多次反覆推導",
+        "?岫?航炊??",
+        "憭活???典?",
     ]
     for phrase in banned_phrases:
         cleaned = cleaned.replace(phrase, "")
 
-    # 只保留最後結論段，避免保留過多中間推理段落
+    # ?芯???敺?隢挾嚗????憭葉??挾??
     paragraph_parts = [p.strip() for p in re.split(r"\n{2,}", cleaned) if p.strip()]
     if paragraph_parts:
         cleaned = paragraph_parts[-1]
@@ -1383,17 +1822,7 @@ def process_textbook_file(
     import_policy=None,
     optional_enrich_pdf_path=None,
 ):
-    """
-    主流程函式，包含完整的 try...except 錯誤處理。
-    
-    Args:
-        file_path: 課本檔案路徑
-        curriculum_info: 課綱資訊字典
-        queue: 訊息佇列
-        skip_code_gen: 若為 True，則跳過自動生成 Python 出題程式碼（預設 False）
-        outline_only: 若為 True，則僅建立目錄架構而不匯入題目 (預設 False)
-        toc_pages: 目錄解析頁數 (預設 5)
-    """
+    """Process textbook file and import parsed content."""
 
     try:
         import_policy = dict(import_policy or {})
@@ -1401,26 +1830,26 @@ def process_textbook_file(
         if execution_arch in ("x86", "x64"):
             runtime_arch = "x64" if "64" in str(platform.architecture()[0]) else "x86"
             if runtime_arch != execution_arch:
-                message = f"正式教材匯入執行架構不符：要求 {execution_arch}，目前 runtime={runtime_arch}。"
+                message = f"Execution architecture mismatch: requested={execution_arch}, runtime={runtime_arch}"
                 current_app.logger.error(message)
                 if queue:
                     queue.put(f"ERROR: {message}")
                 return {"status": "error", "message": message}
         if optional_enrich_pdf_path and queue:
-            queue.put("INFO: 同版本 PDF 僅作 optional enrich，不會觸發第二次重匯。")
+            queue.put("INFO: optional enrich PDF path provided")
         # ======================================================
-        # [NEW] 防呆：檢查是否為 Word 暫存鎖定檔 (以 ~$ 開頭)
+        # [NEW] ?脣?嚗炎?交?衣 Word ?怠???瑼?(隞?~$ ?)
         # ======================================================
         filename = os.path.basename(file_path)
         if filename.startswith("~$"):
-            message = f"偵測到 Word 暫存鎖定檔 ({filename})，自動跳過不處理。"
+            message = f"Skip Word temporary file: {filename}"
             current_app.logger.warning(message)
             if queue:
                 queue.put(f"WARN: {message}")
             return {"status": "skipped", "message": message}
         # ======================================================
 
-        # 步驟 1: 從 PDF/Word 提取內容
+        # 甇仿? 1: 敺?PDF/Word ???批捆
         content_by_page = extract_content_from_file(
             file_path,
             queue,
@@ -1428,7 +1857,7 @@ def process_textbook_file(
             import_policy=import_policy,
         )
 
-        # [V2.5] 僅建立目錄架構模式
+        # [V2.5] ?遣蝡?瑽芋撘?
         if outline_only:
             volume_val = str(curriculum_info.get('volume', ''))
             curr_val = str(curriculum_info.get('curriculum', ''))
@@ -1436,30 +1865,30 @@ def process_textbook_file(
             parsed_data = None
             structure_source = "pdf_toc"
 
-            # 嘗試 AI TOC 解析
+            # ?岫 AI TOC 閫??
             if content_by_page:
                 toc_json_string = call_gemini_for_toc(content_by_page, curriculum_info, queue)
                 if toc_json_string:
                     toc_json_string = normalize_json_text_before_parse(toc_json_string)
                     parsed_data = parse_ai_response(toc_json_string, queue)
                     if parsed_data and parsed_data.get('chapters'):
-                        message = f"成功透過 AI 從 PDF 解析目錄 (TOC)。"
+                        message = "AI TOC extraction succeeded"
                         current_app.logger.info(message)
                         queue.put(f"SUCCESS: {message}")
                         
-                        # [V2.6] 移除 OutlinePlaceholder 邏輯，交由專用寫入函式處理
+                        # [V2.6] 蝘駁 OutlinePlaceholder ?摩嚗漱?勗??典神?亙撘???
                         pass
             
-            # 若 AI 解析失敗，尋找 YAML Fallback
+            # ??AI 閫??憭望?嚗???YAML Fallback
             if not parsed_data:
                 struct_map = get_structure_map(curr_val, volume_val)
                 if struct_map and struct_map.data:
-                    message = f"AI 解析失敗或無內容，改採 YAML 結構地圖 ({volume_val})..."
+                    message = f"AI 閫??憭望???批捆嚗??YAML 蝯??啣? ({volume_val})..."
                     current_app.logger.info(message)
                     queue.put(f"INFO: {message}")
                     structure_source = "yaml_fallback"
                     
-                    # 將 YAML 轉換為 parsed_data 格式
+                    # 撠?YAML 頧???parsed_data ?澆?
                     yaml_chapters = struct_map.data.get('chapters', [])
                     parsed_chapters = []
                     for ch in yaml_chapters:
@@ -1469,7 +1898,7 @@ def process_textbook_file(
                             sec_title = f"{sec.get('code')} {sec.get('title')}"
                             sections.append({
                                 "section_title": sec_title,
-                                "concepts": [] # [V2.6] 不再需要 Placeholder concept
+                                "concepts": [] # [V2.6] 銝??閬?Placeholder concept
                             })
                         parsed_chapters.append({
                             "chapter_title": ch_title,
@@ -1486,7 +1915,7 @@ def process_textbook_file(
                 )
                 return {
                     "status": "success", 
-                    "message": f"目錄架構建立完成 (來源: {structure_source})", 
+                    "message": f"?桅??嗆?撱箇?摰? (靘?: {structure_source})", 
                     "structure_source": structure_source,
                     "skipped_skills": True,
                     "skipped_examples": True,
@@ -1495,16 +1924,23 @@ def process_textbook_file(
                     **result
                 }
             else:
-                return {"status": "error", "message": "無法從 PDF 解析目錄，且找不到對應冊別的 YAML 結構地圖。"}
+                return {"status": "error", "message": "Failed to parse outline from PDF and YAML fallback."}
 
         if not content_by_page:
-            message = "檔案內容為空或提取失敗，終止處理。"
+            message = "Failed to extract content from file."
             current_app.logger.error(message)
             queue.put(f"ERROR: {message}")
-            return {"status": "error", "message": "無法從檔案中提取任何內容。"}
+            return {"status": "error", "message": "Content extraction failed."}
 
         raw_content_by_page = dict(content_by_page)
-        content_by_page = _normalize_extracted_content_math(content_by_page, queue)
+        docx_formula_source_mode = str(
+            ((_DOCX_IMPORT_CONTEXT or {}).get("docx_formula_source_mode") or "")
+        ).strip()
+        content_by_page = _normalize_extracted_content_math(
+            content_by_page,
+            queue,
+            docx_formula_source_mode=docx_formula_source_mode,
+        )
         page_analysis_payload = _build_page_analysis_payload(
             raw_content_by_page,
             content_by_page,
@@ -1512,7 +1948,7 @@ def process_textbook_file(
             queue=queue,
         )
 
-        # 步驟 2: 呼叫 AI 進行分析
+        # 甇仿? 2: ?澆 AI ?脰???
         ai_json_result_string = call_gemini_for_analysis(
             content_by_page,
             curriculum_info,
@@ -1520,21 +1956,73 @@ def process_textbook_file(
             page_analysis_payload=page_analysis_payload,
             import_policy=import_policy,
         )
-        # 步驟 3: 解析 AI 回傳的 JSON 字串
+        # 甇仿? 3: 閫?? AI ???JSON 摮葡
         if ai_json_result_string is None:
-            return {"status": "error", "message": "AI 分析失敗，已中止匯入。"}
+            return {"status": "error", "message": "AI analysis failed."}
         if not ai_json_result_string:
-            return {"status": "error", "message": "AI 回傳空內容，已中止匯入。"}
+            return {"status": "error", "message": "AI returned empty response."}
 
         ai_json_result_string = normalize_json_text_before_parse(ai_json_result_string)
         parsed_data = parse_ai_response(ai_json_result_string, queue)
         if not parsed_data:
-            return {"status": "error", "message": "AI 回傳的資料格式有誤或為空，無法解析。"}
+            return {"status": "error", "message": "Failed to parse AI JSON response."}
 
         parsed_data = _mark_needs_review_for_low_quality_pages(parsed_data, page_analysis_payload)
-        parsed_data = _normalize_parsed_textbook_math(parsed_data, queue)
+        parsed_data = _normalize_parsed_textbook_math(
+            parsed_data,
+            queue,
+            docx_formula_source_mode=docx_formula_source_mode,
+        )
 
-        # 步驟 4: 將解析後的資料存入資料庫
+        # 甇仿? 4: 撠圾???????亥??澈
+        if docx_formula_source_mode == "converted_docx_latex":
+            extracted_text = "\n".join(str(v or "") for _k, v in sorted((content_by_page or {}).items()))
+            file_meta = parse_textbook_filename_metadata(file_path)
+            section_code = str(file_meta.get("section_code", "") or "unknown").replace(" ", "")
+            volume = str(curriculum_info.get("volume", "") or "unknown").replace(" ", "")
+            sc_for_scan = None if section_code == "unknown" else section_code
+            inventory_items = scan_docx_title_inventory(extracted_text, section_code=sc_for_scan)
+            expected_titles = sorted({str(it.get("canonical_title", "")).strip() for it in inventory_items if it.get("canonical_title")})
+            returned_titles = collect_returned_titles_from_parsed_data(parsed_data)
+            inv = build_title_inventory(
+                expected_titles,
+                returned_titles,
+                section_code=section_code,
+                inventory_items=inventory_items,
+            )
+            allow_partial_import = bool(import_policy.get("allow_partial_import", False))
+            write_aborted = False
+            report_name = f"{volume}_{section_code}_title_inventory_report.md"
+            report_path = os.path.join("reports", "import_debug", report_name)
+            volume_raw = str(curriculum_info.get("volume", "") or "")
+            curriculum_raw = str(curriculum_info.get("curriculum", "") or "")
+            publisher_raw = str(parse_textbook_filename_metadata(file_path).get("publisher", "") or "")
+            warn = detect_curriculum_volume_warning(curriculum_raw, volume_raw, publisher_raw)
+            if warn:
+                current_app.logger.warning(warn)
+                if queue is not None:
+                    queue.put(f"WARN: {warn}")
+            write_title_inventory_report(
+                report_path,
+                volume=volume,
+                section=section_code,
+                allow_partial_import=allow_partial_import,
+                write_aborted=write_aborted,
+                inv=inv,
+                warning=warn,
+            )
+            current_app.logger.info("[IMPORT INVENTORY GUARD] report_only=true")
+            current_app.logger.info(f"[IMPORT INVENTORY GUARD] expected_titles_count={inv.get('expected_titles_count', 0)}")
+            current_app.logger.info(f"[IMPORT INVENTORY GUARD] returned_titles_count={inv.get('returned_titles_count', 0)}")
+            current_app.logger.info(f"[IMPORT INVENTORY GUARD] missing_titles_count={inv.get('missing_titles_count', 0)}")
+            current_app.logger.info(f"[IMPORT INVENTORY GUARD] allow_partial_import={str(allow_partial_import).lower()}")
+            if queue is not None:
+                queue.put("INFO: [IMPORT INVENTORY GUARD] report_only=true")
+                queue.put(f"INFO: [IMPORT INVENTORY GUARD] expected_titles_count={inv.get('expected_titles_count', 0)}")
+                queue.put(f"INFO: [IMPORT INVENTORY GUARD] returned_titles_count={inv.get('returned_titles_count', 0)}")
+                queue.put(f"INFO: [IMPORT INVENTORY GUARD] missing_titles_count={inv.get('missing_titles_count', 0)}")
+                queue.put(f"INFO: [IMPORT INVENTORY GUARD] report_path={report_path}")
+
         result = save_to_database(
             parsed_data,
             curriculum_info,
@@ -1568,66 +2056,64 @@ def process_textbook_file(
         processed_skill_ids = result.get('processed_skill_ids', [])
 
         message = (
-            f"課本處理完成。新增/更新 {skills_count} 個技能，建立 {curriculums_count} 筆課程綱要，"
-            f"匯入例題 {examples_count} 筆、練習題 {practice_count} 筆（隨堂練習 {in_class_practice_count} 筆，"
-            f"章節習題 {chapter_exercises_count} 筆，自我評量 {self_assessments_count} 筆，統測題 {exam_practices_count} 筆，"
-            f"其他練習 {other_practices_count} 筆，需複核 {practice_needs_review_count} 筆，重複略過 {practice_skipped_count} 筆）。"
+            f"Import complete: skills={skills_count}, curriculums={curriculums_count}, "
+            f"examples={examples_count}, practices={practice_count}, in_class={in_class_practice_count}, "
+            f"chapter_exercises={chapter_exercises_count}, self_assessment={self_assessments_count}, "
+            f"exam={exam_practices_count}, other={other_practices_count}, "
+            f"needs_review={practice_needs_review_count}, skipped={practice_skipped_count}"
         )
         current_app.logger.info(message)
         queue.put(f"INFO: {message}")
 
-        # 步驟 5: 自動生成出題程式碼 (可選)
-        code_gen_status = "已跳過"
+        # 甇仿? 5: ?芸????粹?蝔?蝣?(?舫)
+        code_gen_status = "skipped"
         if skip_code_gen:
-            message = "使用者選擇跳過程式碼生成，稍後可透過後台腳本批次生成。"
+            message = "Skip code generation by request."
             current_app.logger.info(message)
             queue.put(f"INFO: {message}")
         elif processed_skill_ids:
-            queue.put(f"INFO: 開始自動生成 {len(processed_skill_ids)} 個技能的出題程式...")
+            queue.put(f"INFO: start code generation for {len(processed_skill_ids)} skills")
             for idx, skill_id in enumerate(processed_skill_ids):
-                queue.put(f"INFO: [{idx+1}/{len(processed_skill_ids)}] 正在生成 {skill_id}.py ...")
+                queue.put(f"INFO: [{idx+1}/{len(processed_skill_ids)}] 甇??? {skill_id}.py ...")
                 try:
-                    # [修正] 針對新匯入的技能，強制執行 Architect 生成最新的 Prompt
+                    # [靽格迤] ???啣?亦???踝?撘瑕?瑁? Architect ????啁? Prompt
                     success, msg = auto_generate_skill_code(skill_id, queue, force_architect_refresh=True)
                     if success:
-                        queue.put(f"INFO: {skill_id} 生成成功！")
+                        queue.put(f"INFO: {skill_id} code generated")
                     else:
-                        queue.put(f"WARN: {skill_id} 生成失敗，跳過。")
+                        queue.put(f"WARN: {skill_id} code generation failed")
                 except Exception as e:
-                    queue.put(f"ERROR: 生成 {skill_id} 時發生未預期錯誤: {e}")
+                    queue.put(f"ERROR: ?? {skill_id} ?????航炊: {e}")
                     current_app.logger.error(f"Generate Error {skill_id}: {e}")
                 
                 time.sleep(2) # Rate Limit
-            code_gen_status = f"{len(processed_skill_ids)} 個"
+            code_gen_status = f"{len(processed_skill_ids)} generated"
 
         return {
             "status": "success", 
-            "message": (f"課本分析與匯入成功！\n"
-                        f"新增/更新技能: {skills_count} 個\n"
-                        f"新增課程綱要: {curriculums_count} 筆\n"
-                        f"新增課本例題: {examples_count} 筆\n"
-                        f"新增練習題: {practice_count} 筆\n"
-                        f"隨堂練習: {in_class_practice_count} 筆\n"
-                        f"練習題需複核: {practice_needs_review_count} 筆\n"
-                        f"練習題略過: {practice_skipped_count} 筆\n"
-                        f"自動生成程式碼: {code_gen_status}")
+            "message": (f"隤脫????交???\n"
+                        f"?啣?/?湔??? {skills_count} ?n"
+                        f"?啣?隤脩?蝬梯?: {curriculums_count} 蝑n"
+                        f"?啣?隤脫靘?: {examples_count} 蝑n"
+                        f"?啣?蝺渡?憿? {practice_count} 蝑n"
+                        f"?典?蝺渡?: {in_class_practice_count} 蝑n"
+                        f"蝺渡?憿?銴: {practice_needs_review_count} 蝑n"
+                        f"蝺渡?憿?? {practice_skipped_count} 蝑n"
+                        f"?芸???蝔?蝣? {code_gen_status}")
         }
 
     except Exception as e:
-        current_app.logger.error(f"處理課本時發生未預期的錯誤: {e}")
+        current_app.logger.error(f"??隤脫?????隤? {e}")
         import traceback
         traceback.print_exc()
-        return {"status": "error", "message": f"處理失敗: {str(e)}"}
+        return {"status": "error", "message": f"??憭望?: {str(e)}"}
 
-# --- 向下相容的別名 ---
+# --- ???詨捆???---
 process_textbook_pdf = process_textbook_file
 
 def extract_content_from_file(file_path, queue, max_pages=None, import_policy=None):
-    """
-    從檔案中提取內容，支援 PDF (OCR) 和 Word (Pandoc) 格式。
-    (包含防崩潰處理：將所有 Import 與邏輯包覆在 try-except 中)
-    """
-    message = f"正在從 {file_path} 提取內容..."
+    """Extract text content from PDF or Word files."""
+    message = f"甇?敺?{file_path} ???批捆..."
     current_app.logger.info(message)
     queue.put(f"INFO: {message}")
 
@@ -1640,12 +2126,12 @@ def extract_content_from_file(file_path, queue, max_pages=None, import_policy=No
         file_extension = os.path.splitext(file_path)[1].lower()
 
         if file_extension == '.pdf':
-            # --- PDF 處理邏輯 (維持原樣) ---
+            # --- PDF ???摩 (蝬剜??見) ---
             import fitz  # PyMuPDF
             from PIL import Image
             import pytesseract
             
-            # Wand 是一個常見的缺失套件，特別處理
+            # Wand ?臭??虜閬?蝻箏仃憟辣嚗?亥???
             try:
                 from wand.image import Image as WandImage
             except ImportError:
@@ -1659,7 +2145,7 @@ def extract_content_from_file(file_path, queue, max_pages=None, import_policy=No
                     break
                 page_text = page.get_text("text")
 
-                # 偵測大字體標題
+                # ?菜葫憭批?擃?憿?
                 blocks = page.get_text("blocks")
                 large_font_texts = []
                 large_font_threshold = 20
@@ -1676,7 +2162,7 @@ def extract_content_from_file(file_path, queue, max_pages=None, import_policy=No
                     if large_text and large_text not in page_text:
                         page_text = large_text + "\n" + page_text
 
-                # OCR 處理
+                # OCR ??
                 try:
                     from pytesseract import TesseractNotFoundError
 
@@ -1690,18 +2176,18 @@ def extract_content_from_file(file_path, queue, max_pages=None, import_policy=No
                     page_text += "\nOCR Extracted: " + ocr_text.strip()
                 except ImportError:
                     if not ocr_import_error_logged:
-                        message = "無法執行 OCR，缺少 'pytesseract' 或 'Pillow' 套件。"
+                        message = "OCR dependencies missing: pytesseract/Pillow"
                         current_app.logger.warning(message)
                         queue.put(f"WARN: {message}")
                         ocr_import_error_logged = True
                 except TesseractNotFoundError:
                     if not tesseract_not_found_error_logged:
-                        message = "無法找到 Tesseract-OCR 引擎，請確保已正確安裝。"
+                        message = "Tesseract-OCR not found"
                         current_app.logger.error(message)
                         queue.put(f"ERROR: {message}")
                         tesseract_not_found_error_logged = True
                 except Exception as ocr_e:
-                    current_app.logger.warning(f"頁 {i+1} OCR 處理時發生錯誤: {ocr_e}")
+                    current_app.logger.warning(f"??{i+1} OCR ????隤? {ocr_e}")
 
                 content_by_page[i + 1] = page_text
             doc.close()
@@ -1732,8 +2218,8 @@ def extract_content_from_file(file_path, queue, max_pages=None, import_policy=No
                 queue.put(f"INFO: latex_signal_count={detect_meta.get('latex_signal_count', 0)}")
                 queue.put(f"INFO: formula_placeholder_count={detect_meta.get('formula_placeholder_count', 0)}")
                 return content_by_page
-            # --- Word (.docx) 處理邏輯 ---
-            message = "偵測到 Word (.docx) 檔案，啟用段落/公式物件抽取並保留 LaTeX。"
+            # --- Word (.docx) ???摩 ---
+            message = "Start extracting Word (.docx) content"
             current_app.logger.info(message)
             queue.put(f"INFO: {message}")
 
@@ -1852,30 +2338,30 @@ def extract_content_from_file(file_path, queue, max_pages=None, import_policy=No
 
             except (OSError, RuntimeError) as e:
                 error_str = str(e)
-                # 針對損壞檔案或鎖定暫存檔的特定錯誤處理 (Exit Code 63)
+                # ????瑼???摰摮??摰隤方???(Exit Code 63)
                 if 'exitcode "63"' in error_str or 'Did not find end of central directory' in error_str:
-                    warn_msg = f"WARN: 檔案似乎已損壞或非有效的 Word 檔 (Pandoc Exit 63)，已略過處理。"
+                    warn_msg = "WARN: DOCX file may be corrupted (Pandoc Exit 63)"
                     current_app.logger.warning(warn_msg)
                     queue.put(warn_msg)
                     return {}
                 
-                error_msg = f"錯誤：Pandoc 執行失敗 ({e})。請確認 Pandoc 已安裝，且若需轉換圖片格式，可能需要安裝 ImageMagick。"
+                error_msg = f"Pandoc processing failed: {e}"
                 current_app.logger.error(error_msg)
                 queue.put(f"ERROR: {error_msg}")
 
         else:
-            message = f"不支援的檔案類型: {file_extension}。目前僅支援 .pdf 和 .docx。"
+            message = f"Unsupported file type: {file_extension}. Please use .pdf or .docx."
             current_app.logger.error(message)
             queue.put(f"ERROR: {message}")
             return {}
 
-        message = f"成功從 {file_extension} 檔案中提取了 {len(content_by_page)} 頁/區塊內容。"
+        message = f"Extracted {len(content_by_page)} page(s) from {file_extension}."
         current_app.logger.info(message)
         queue.put(f"INFO: {message}")
         return content_by_page
 
     except Exception as e:
-        message = f"提取檔案內容時發生嚴重錯誤 (Exception): {e}"
+        message = f"??瑼??批捆???隤?(Exception): {e}"
         current_app.logger.error(message)
         import traceback
         traceback.print_exc()
@@ -1883,67 +2369,64 @@ def extract_content_from_file(file_path, queue, max_pages=None, import_policy=No
         return {}
 
 def _sanitize_and_parse_json(s: str, queue=None):
-    """
-    嘗試多種方式消毒並解析 AI 回傳的 JSON 字串。
-    會回傳 (parsed_obj, used_candidate_str, original_raw_str, attempts_list)
-    """
+    """Sanitize and parse AI JSON response text."""
     if not s:
         return None, "", s, []
 
     original = s
     
-    # ===== 第 0 步：先記錄原始回應的詳細資訊 =====
-    current_app.logger.debug(f"[JSON_DEBUG] 原始回應長度: {len(s)} 字符")
+    # ===== 蝚?0 甇伐?????憪???閰喟敦鞈? =====
+    current_app.logger.debug(f"[JSON_DEBUG] ?????瑕漲: {len(s)} 摮泵")
     
-    # ===== 第 1 步：移除 code fence wrapper =====
+    # ===== 蝚?1 甇伐?蝘駁 code fence wrapper =====
     s = re.sub(r'^```(?:json)?\s*|\s*```$', '', s, flags=re.MULTILINE).strip()
     
-    # ===== 第 2 步：移除或規範化控制字元 =====
+    # ===== 蝚?2 甇伐?蝘駁??蝭??批摮? =====
     s = re.sub(r'[\x00-\x08\x0b\x0c\x0e-\x1f\x7f]', '', s)
     
-    # ===== 第 3 步：處理可能的 BOM =====
+    # ===== 蝚?3 甇伐????航??BOM =====
     if s.startswith('\ufeff'): s = s[1:]
     
-    # ===== 第 4 步：嘗試多種反斜線修復策略 =====
+    # ===== 蝚?4 甇伐??岫憭車??蝺耨敺拍???=====
     candidates = []
     
-    # 策略 0: 原始（僅移除 control chars / fences）
-    candidates.append(("原始無修改", s))
+    # 蝑 0: ??嚗?蝘駁 control chars / fences嚗?
+    candidates.append(("raw", s))
     
-    # 策略 1: 保守性 escape - 只將後面不是合法 JSON escape 的反斜線 escape
+    # 蝑 1: 靽???escape - ?芸?敺銝?? JSON escape ???? escape
     escaped_conservative = re.sub(r'\\(?!["\\/bfnrtu])', r'\\\\', s)
-    candidates.append(("保守 escape", escaped_conservative))
+    candidates.append(("靽? escape", escaped_conservative))
     
-    # 策略 2: 激進 escape - 所有孤立反斜線都雙倍
+    # 蝑 2: 瞈??escape - ??迨蝡????賡???
     escaped_aggressive = re.sub(r'(?<!\\)\\(?!\\)', r'\\\\', s)
-    candidates.append(("激進 escape", escaped_aggressive))
+    candidates.append(("瞈??escape", escaped_aggressive))
     
-    # 策略 3: 最後保底 - 所有反斜線都雙倍
+    # 蝑 3: ?敺?摨?- ??????賡???
     escaped_brutal = s.replace('\\', '\\\\')
-    candidates.append(("暴力 escape", escaped_brutal))
+    candidates.append(("?游? escape", escaped_brutal))
     
-    # 策略 4: 嘗試找到第一個 { 和最後一個 } 的子串
+    # 蝑 4: ?岫?曉蝚砌???{ ??敺???} ??銝?
     first_brace = s.find('{')
     last_brace = s.rfind('}')
     if first_brace >= 0 and last_brace > first_brace:
         substr = s[first_brace:last_brace + 1]
-        candidates.append(("提取 {} 子串", substr))
-        candidates.append(("提取 {} 子串 + 保守 escape", re.sub(r'\\(?!["\\/bfnrtu])', r'\\\\', substr)))
+        candidates.append(("?? {} 摮葡", substr))
+        candidates.append(("?? {} 摮葡 + 靽? escape", re.sub(r'\\(?!["\\/bfnrtu])', r'\\\\', substr)))
 
     attempts = []
     for strategy_name, cand in candidates:
         try:
             obj = json.loads(cand)
-            current_app.logger.info(f"[JSON_SUCCESS] 使用策略 '{strategy_name}' 成功解析 JSON")
+            current_app.logger.info(f"[JSON_SUCCESS] 雿輻蝑 '{strategy_name}' ??閫?? JSON")
             return obj, cand, original, attempts
         except json.JSONDecodeError as e:
             snippet = (cand[:200] + '...') if len(cand) > 200 else cand
             error_detail = f"{e.msg} at line {e.lineno}, col {e.colno}"
             attempts.append((strategy_name, snippet, error_detail))
-            current_app.logger.debug(f"[JSON_FAIL] 策略 '{strategy_name}' 失敗: {error_detail}")
+            current_app.logger.debug(f"[JSON_FAIL] 蝑 '{strategy_name}' 憭望?: {error_detail}")
 
     if queue is not None:
-        queue.put(f"ERROR: JSON 解析失敗（嘗試 {len(attempts)} 種策略），詳見伺服器日誌")
+        queue.put(f"ERROR: JSON 閫??憭望?嚗?閰?{len(attempts)} 蝔桃??伐?嚗底閬撩??亥?")
     
     if candidates:
         return None, candidates[-1][1], original, [(s, e, d) for s, _, (_, _, d) in zip([c[0] for c in candidates], [], attempts)]
@@ -1951,7 +2434,7 @@ def _sanitize_and_parse_json(s: str, queue=None):
         return None, "", original, attempts
 
 
-def _call_gemini_with_retry(model, analysis_prompt, queue=None, context_message='AI 分析', parse_json=False):
+def _call_gemini_with_retry(model, analysis_prompt, queue=None, context_message='AI ??', parse_json=False):
     max_retries = 3
     retry_delay = 2
 
@@ -1988,11 +2471,11 @@ def _call_gemini_with_retry(model, analysis_prompt, queue=None, context_message=
     for attempt in range(1, max_retries + 1):
         try:
             if not hasattr(model, "generate_content"):
-                current_app.logger.error(f"[_call_gemini_with_retry] 傳入的 model 物件無效 (型別: {type(model).__name__})。")
+                current_app.logger.error(f"[_call_gemini_with_retry] invalid model type: {type(model).__name__}")
                 return None
 
             if queue is not None:
-                queue.put(f"INFO: {context_message}，第 {attempt}/{max_retries} 次呼叫 Gemini。")
+                queue.put(f"INFO: {context_message} attempt {attempt}/{max_retries}")
 
             generation_config = {
                 "temperature": 0.2,
@@ -2017,11 +2500,11 @@ def _call_gemini_with_retry(model, analysis_prompt, queue=None, context_message=
                     if is_valid_json:
                         return result_text
                     if queue is not None and fail_reason == "missing_closing_brace":
-                        queue.put("WARNING: Gemini 回傳疑似被截斷，將重試。")
+                        queue.put("WARNING: Gemini JSON missing closing brace")
                     if queue is not None:
-                        queue.put("WARNING: Gemini 回傳 JSON 不完整或格式錯誤，準備重試")
+                        queue.put("WARNING: Gemini JSON validation failed, retrying")
                     if attempt >= max_retries:
-                        raise RuntimeError("Gemini 回傳 JSON 不完整或格式錯誤，重試 3 次後仍失敗。")
+                        raise RuntimeError("Gemini JSON failed after retries")
                     time.sleep(retry_delay * attempt)
                     continue
                 return result_text
@@ -2047,25 +2530,25 @@ def _call_gemini_with_retry(model, analysis_prompt, queue=None, context_message=
                         if is_valid_json:
                             return merged
                         if queue is not None and fail_reason == "missing_closing_brace":
-                            queue.put("WARNING: Gemini 回傳疑似被截斷，將重試。")
+                            queue.put("WARNING: Gemini JSON missing closing brace")
                         if queue is not None:
-                            queue.put("WARNING: Gemini 回傳 JSON 不完整或格式錯誤，準備重試")
+                            queue.put("WARNING: Gemini JSON retry")
                         if attempt >= max_retries:
-                            raise RuntimeError("Gemini 回傳 JSON 不完整或格式錯誤，重試 3 次後仍失敗。")
+                            raise RuntimeError("Gemini JSON failed after retries")
                         time.sleep(retry_delay * attempt)
                         continue
                     return merged
 
-            raise RuntimeError("Gemini 回傳內容為空。")
+            raise RuntimeError("Gemini output merge failed")
 
         except ResourceExhausted as e:
             if attempt >= max_retries:
                 err_type = type(e).__name__
                 err_msg = str(e) or repr(e)
                 tb = traceback.format_exc()
-                current_app.logger.error(f"_call_gemini_with_retry 發生錯誤: [{err_type}] {err_msg}\n{tb}")
+                current_app.logger.error(f"_call_gemini_with_retry ?潛??航炊: [{err_type}] {err_msg}\n{tb}")
                 if queue is not None:
-                    queue.put(f"ERROR: Gemini 呼叫失敗: [{err_type}] {err_msg}")
+                    queue.put(f"ERROR: Gemini ?澆憭望?: [{err_type}] {err_msg}")
                 raise
             time.sleep(retry_delay * attempt)
 
@@ -2074,51 +2557,19 @@ def _call_gemini_with_retry(model, analysis_prompt, queue=None, context_message=
             err_msg = str(e) or repr(e)
             tb = traceback.format_exc()
 
-            current_app.logger.error(f"_call_gemini_with_retry 發生錯誤: [{err_type}] {err_msg}\n{tb}")
+            current_app.logger.error(f"_call_gemini_with_retry ?潛??航炊: [{err_type}] {err_msg}\n{tb}")
             if queue is not None:
-                queue.put(f"ERROR: Gemini 呼叫失敗: [{err_type}] {err_msg}")
+                queue.put(f"ERROR: Gemini ?澆憭望?: [{err_type}] {err_msg}")
 
             raise
 
 def call_gemini_for_toc(content_by_page, curriculum_info, queue):
-    """
-    專門用於解析教材目錄 (TOC) 的 AI 流程。
-    """
-    message = "--- 開始 AI 目錄解析流程 ---"
+    """Call Gemini to extract chapter/section TOC."""
+    message = "--- ?? AI ?桅?閫??瘚? ---"
     current_app.logger.info(message)
     queue.put(f"INFO: {message}")
 
-    prompt = f"""
-你是一位專業的教材結構分析師。請從提供的課本目錄（TOC）內容中，提取完整的章節與小節架構。
-
-### 1. 識別規則
-- **章 (Chapter)**: 識別如「第一章 標題」、「Chapter 1 標題」、「1 標題」等。
-- **節 (Section)**: 識別如「1-1 標題」、「2-1 標題」、「第一節 標題」等。
-- **支援格式**:
-    - A 格式: "1-1 數線與絕對值 P.02"
-    - B 格式: "P.116 直線的一般式與點到直線的距離 2-3"
-- **排除規則**: 絕對不要建立「答案篇」、「解答」、「索引」等非教學章節。
-
-### 2. 輸出格式
-請輸出嚴格的 JSON 格式，結構如下：
-{{
-  "chapters": [
-    {{
-      "chapter_title": "1 坐標系與函數圖形",
-      "sections": [
-        {{ "section_title": "1-1 數線與絕對值" }},
-        {{ "section_title": "1-2 平面坐標系與線型函數" }}
-      ]
-    }}
-  ]
-}}
-
-### 3. 注意事項
-- 請務必保留編號（如 1-1）。
-- 標題中的 "P.xxx" 頁碼資訊請移除，不要放入標題。
-- 如果標題被拆分到兩行，請合併它們。
-- 若內容包含「自我評量」或「複習」，也請列入該章的 section。
-"""
+    prompt = "TOC extraction prompt"
     try:
         from core.ai_analyzer import get_model
         model = get_model()
@@ -2129,643 +2580,29 @@ def call_gemini_for_toc(content_by_page, curriculum_info, queue):
         return None
 
 def call_gemini_for_analysis(content_by_page, curriculum_info, queue, page_analysis_payload=None, import_policy=None):
-    """
-    使用 Gemini 分析提取出的文本 (支援 Markdown/LaTeX 格式的數學公式)。
-    """
-    message = "--- 開始 AI 分析流程 ---"
+    """Call Gemini to analyze extracted textbook content."""
+    message = "--- ?? AI ??瘚? ---"
     current_app.logger.info(message)
     queue.put(f"INFO: {message}")
 
     # ==========================
-    # 1. 國中康軒版 Prompt (保留原樣)
+    # 1. ?葉摨瑁???Prompt (靽??見)
     # ==========================
-    prompt_jh_kangxuan = f"""
-你是一位經驗豐富的數學教材編輯，你的任務是從以下課本內容中，提取出三層結構：**章節 (Chapter)**、**小節 (Section)** 和 **核心觀念 (Core Concepts)**。
-
-請依照以下嚴格規則進行解析，並輸出為 JSON 格式：
-
-### 1. 結構識別規則
-- **章節 (Chapter)**：
-    - **搜索策略**：章節大標題不一定在第一行。請在每個章 **前 5 頁**內容中尋找最顯眼的標題。
-    - **識別特徵**：通常是 "Chapter X"、"第X章"、或是 **一個獨立的大數字 (如 '1') 後面緊接數學名詞**。
-    - **跨行處理 (重要)**：若數字與標題分行（例如第一行是 "1"，第二行是 "二元一次聯立方程式"），請務必將其**合併**。
-    - **格式強制統一**：輸出格式必須為 **"數字 章節名稱"** (去掉 "Chapter"、"第"、"章" 等贅字)。
-    - **範例**：
-        - 原文 "Chapter 1 整數運算" -> 輸出 "1 整數運算"
-        - 原文 "1 (換行) 二元一次聯立方程式" -> 輸出 "1 二元一次聯立方程式"
-
-- **小節 (Section)**：識別 "X-X" 格式的子標題，例如 "1-1 負數與數線"。
-- **核心觀念 (Core Concept)**：**請執行以下嚴格的篩選邏輯**：
-    1.  **只保留'主題 1' '主題 2' 等開頭的標題**
-    2.  **不尋找「獨立標題」**
-    3.  **排除規則**：忽略 "✓"、"✔"、"☑" 等符號開頭的標題，以及 "隨堂練習"、"做做看" 等。
-
-### 2. 資料提取與格式 (JSON Key 需精準)
-對於每個識別出的「核心觀念」，請生成以下欄位：
-- `concept_name`: 觀念的中文標題。
-- `concept_en_id`: 英文 ID，使用 **PascalCase**。
-- `concept_description`: 基於內容的簡短描述(150字內)。
-- `concept_paragraph`: **觀念的中文標題**
-      - 絕對不允許換行
-      - 絕對不允許加說明文字
-      - 絕對不允許超過15個中文字
-      - 如果找不到 → 填「未分類」
-- **EXAMPLES (例題提取)**：
-    - 務必提取「例題 X」、「隨堂練習」。
-    - 每個例題包含：`source_description`, `problem_text`, `detailed_solution`, `problem_type`。
-
-### 3. 數學與文字格式清洗
-- **修復 Pandoc 上標**：`10^6^` -> `$10^{6}$`。
-- **去除變數斜體**：`*c*` -> `c`。
-- **保留標準公式**：保留 `$x^2$`。
-
-輸出嚴格為 JSON 格式。
-"""
+    prompt_jh_kangxuan = "Analyze textbook content and return JSON."
 
     # ==========================
-    # 2. 普高龍騰版 Prompt (修正版：擴大題目抓取範圍)
+    # 2. ?桅?樴辰??Prompt (靽格迤???游之憿??蝭?)
     # ==========================
-    prompt_sh_longteng = f"""
-你是一位台灣龍騰版普通高中數學教材專家，任務是從課本內容中提取資料並轉換為 JSON。
-
-### 1. 結構識別規則 (Flatten Structure)
-此版本課本結構特殊，請採用「單元 -> 觀念」的兩層式結構：
-
-- **章節 (Chapter)**：
-    - 識別標題如 "1 實數"。
-    - 輸出時請標準化為 **"單元1 實數"** 。
-    
-- **小節 (Section) - 重要修正**：
-    - **請勿輸出空字串**。
-    - 請將章節名稱中的主題部分提取出來作為小節名稱。
-    - 例如：若章節為 "單元1 實數"，小節名稱請設為 **"1.實數"**。
-
-- **核心觀念 (Core Concept)**：
-    - 只捕捉 **"甲"、"乙"、"丙"、"丁"**  作為觀念。
-    - **排除規則**：請勿將 "綜合習題" "(一)"、"(二)" "粗體定義" "隨堂練習"、"例題"、"習題" 誤判為「觀念名稱」，但**必須提取它們的內容**放入 Examples。
-
-### 2. 資料提取與格式
-- `concept_name`: 例如 "有理數"。
-- `concept_en_id`: **PascalCase** 格式 (例如 `RationalNumbers`)。
-- `concept_description`: 基於內容的簡短描述(150字內)。
-- `concept_paragraph`: **只能是「甲.數列」這種短標題**
-      - 允許格式：甲. / 乙. / 丙.
-      - 絕對不允許換行
-      - 絕對不允許加說明文字
-      - 絕對不允許超過15個中文字
-      - 如果找不到 → 填「未分類」
-### 絕對禁止事項（違反就失敗！）
-- `concept_paragraph` 裡面**絕對不可以出現 $、公式、換行、完整段落說明**
-- 違規範例（禁止）：
-  ```json
-  "concept_paragraph": "甲 數列\\n\\n一般而言，數列可以用符號..."
-- **EXAMPLES (題目提取 - 關鍵修正)**：
-    - **請盡可能提取所有題目**，不只是 "例題"。
-    - **目標對象**：
-        1. **例題** (Example): 通常有詳細解析。
-        2. **隨堂練習** (Practice): 通常緊跟在例題後面。
-        3. **習題** (Exercises): 位於章節末尾。
-    - `source_description`: 請清楚標示來源，例如 "例題1"、"隨堂練習"、"習題 3"。
-    - `problem_text`: 題目內容 (務必保留 LaTeX 格式，例如 $x^2$)。若公式遺失，標記 `[公式遺失]`。
-    - `detailed_solution`: 若原文有解析則提取，若無則填 "略"。
-
-輸出嚴格為 JSON 格式。
-"""
+    prompt_sh_longteng = "Analyze textbook content and return JSON."
 
     # ==========================
-    # 3. 通用版 Prompt
+    # 3. ???Prompt
     # ==========================
 
-    prompt_generic = f"""
-你是一位數學教材編輯，請從以下內容中提取：章節 (Chapter)、小節 (Section) 和核心觀念 (Concept)。
-- 結構：章節 -> 小節 -> 核心觀念。
-- 提取 'examples'，並保留 LaTeX 數學符號。
-輸出嚴格為 JSON 格式。
-"""
+    prompt_generic = "Analyze textbook content and return JSON."
 
 
-    prompt_vh_mathB4 = f"""
-你是一位台灣技術型高中數學B教材分析專家。
-你的任務是將高職數學B課本內容解析成本系統可匯入資料庫的 JSON。
-
-請嚴格依照本系統既有三層結構輸出：
-
-Chapter 章
-→ Section 小節
-→ Concept / Skill 核心技能
-→ Examples 例題、隨堂練習、習題
-
-本次教材屬性：
-- curriculum: vocational
-- subject: 數學B
-- volume: 第四冊
-- chapter 可能包含：排列組合、機率
-- section 可能包含：1-1 加法原理與乘法原理、後續排列、組合、機率相關小節
-
-【一、結構辨識規則】
-
-1. chapter_title
-請保留課本章節名稱，例如：
-"1 排列組合"
-
-2. section_title
-請保留課本小節名稱，例如：
-"1-1 加法原理與乘法原理"
-
-3. concepts
-請依照課本中的真正教學概念拆分，不要只用頁面標題。
-以 1-1 加法原理與乘法原理為例，至少應能拆出：
-
-- 樹狀圖
-- 加法原理
-- 乘法原理
-- 正因數個數
-- 階乘記法
-
-後續章節請依課本內容拆成可教、可測、可補救的核心技能。
-
-【Skill 切分核心原則】
-
-Skill = 課本正式小節標號 x-y.z 的標題。
-Subskill = 例題題型 / 解題策略 / 應用變化。
-不得把例題主題升格成 Skill。
-
-例如：
-1-2.1 相異物的排列
-1-2.2 不盡相異物的排列
-以上兩個才是 skill。
-
-下列僅可作為 subskill_tag 或 problem_type，不可建立成 skill：
-全取排列、部分排列、相鄰排列、不相鄰排列、插空法、棋盤格路徑、數字限制、統測題、綜合題、應用題型。
-
-【正式小節優先規則】
-
-1. 解析教材時，必須先掃描是否存在正式小節標號，格式為：數字-數字.數字。
-例如：1-1.1、1-1.2、1-2.1、1-2.2、1-3.1、1-3.2。
-
-2. 若存在正式小節標號，concepts 只能依照這些正式小節建立。
-3. 每一個 concept 對應一個正式小節。
-4. concept_name 必須等於該正式小節標題，不可使用例題題型名稱。
-5. concept_paragraph 必須等於該正式小節標題。
-6. concept_en_id 必須依正式小節標題翻譯成 PascalCase 英文 ID。
-7. 例題、隨堂練習、統測題、補充題型、習題中的題型名稱，不可升格為 concept。
-8. 若某題屬於正式小節下的應用題型，放入該 concept 的 examples，並以 subskill_tag 標記題型。
-
-【沒有正式小節時的 fallback】
-
-若教材文字中沒有偵測到 x-y.z 正式小節標號，才允許依照課文大標題建立 concept。
-但仍須遵守：
-- 不得把單一例題主題升格為 skill
-- 不得把統測題、補充題型、習題題型升格為 skill
-- 概念數量應少而精
-- 同一小節通常 2～5 個 concept，不應超過 6 個
-
-【1-1 專用補充】
-
-當 section_title 包含「1-1」或「加法原理與乘法原理」時，若教材出現正式小節：
-1-1.1 樹狀圖
-1-1.2 加法原理
-1-1.3 乘法原理
-1-1.4 階乘記法
-則 concepts 只能輸出：
-TreeDiagramCounting、AdditionPrinciple、MultiplicationPrinciple、FactorialNotation。
-
-注意：正因數個數不是正式小節，只能歸入 MultiplicationPrinciple 的 examples，subskill_tag 可用 divisor_counting 或 mixed_application。
-
-【B1 1-1 專用補充：數線與絕對值（完整抽題規則）】
-
-當 section_title 包含「數線與絕對值」時（此規則針對高職數學B1，與上方 B4 加法原理規則不衝突）：
-
-1. 必須完整抽取 1-1習題 基礎題 1～10，不可只挑代表題。
-2. 即使題幹中的公式已被 [FORMULA_IMAGE_N] 或 [FORMULA_MISSING] 取代，仍必須建立該題 JSON 物件，不可略過。
-3. 公式缺失的題目必須標記：
-   - needs_review: true
-   - needs_formula_review: true
-   - formula_missing: true
-4. source_type 規則：
-   - 例題 → textbook_example
-   - 隨堂練習 → in_class_practice
-   - 1-1習題 基礎題 → basic_exercise
-   - 1-1習題 進階題 → advanced_exercise
-   - 統測題 → exam_practice
-5. source_description 格式：
-   - 基礎題依序為 "1-1習題 基礎題1"、"1-1習題 基礎題2"、…、"1-1習題 基礎題10"
-6. 除非某題完全沒有任何題幹文字（包括 [FORMULA_IMAGE_N]），否則不得略過 1-1習題 任何明確題號。
-7. 不可自行補猜缺失的數線、絕對值、不等式公式；保留 [FORMULA_MISSING] 作為 problem_text 的一部分。
-8. 絕對值相關 concept 建議：
-   - NumberLine（數線）
-   - AbsoluteValue（絕對值）
-   - AbsoluteValueEquationInequality（絕對值方程式與不等式，可依教材拆分）
-9. 若進階題（11～12 題，如有）同樣出現，需完整保留並標記 source_type: advanced_exercise。
-
-【1-2 專用補充】
-
-當 section_title 包含「1-2」或「直線排列」時，若教材中出現正式小節：
-1-2.1 相異物的排列
-1-2.2 不盡相異物的排列
-則 concepts 只能輸出兩個：
-1.
-concept_name: 相異物的排列
-concept_en_id: PermutationOfDistinctObjects
-concept_paragraph: 相異物的排列
-2.
-concept_name: 不盡相異物的排列
-concept_en_id: PermutationOfNonDistinctObjects
-concept_paragraph: 不盡相異物的排列
-
-嚴禁把以下題型建立為 concept：
-全取排列、部分排列、0!、數字排列限制、相鄰排列、不相鄰排列、插空法、棋盤格路徑、捷徑問題、統測題、綜合排列題。
-以上題型應歸入 subskill_tag。
-
-【1-3 與後續小節通用規則】
-
-1-3、1-4、2-1、2-2 等後續內容，必須使用同一規則：
-1. 先找正式小節標號 x-y.z
-2. 用正式小節標題建立 concept
-3. 題型變化放入 subskill_tag
-4. 不自行把例題主題升格為 skill
-
-【2-1 專用規則：樣本空間與事件】
-
-當 section_title 包含「2-1」或「樣本空間與事件」時，請先依正式小節拆 skill：
-
-1. 若內容屬於 2-1.1 集合的基本概念，concepts 應包含：
-- 集合的基本概念（SetBasicConcepts）
-- 集合運算（SetOperations）
-- 集合元素計數與取捨原理（SetCountingInclusionExclusion）
-
-2. 若內容屬於 2-1.2 樣本空間與事件，concepts 應包含：
-- 樣本空間（SampleSpace）
-- 事件的基本概念（EventConcepts）
-- 事件運算與互斥事件（EventOperations）
-
-3. 題型歸類規則：
-- 問集合、元素、屬於/不屬於、子集、空集合、宇集、文氏圖 → SetBasicConcepts
-- 問聯集、交集、補集、差集、笛摩根定律 → SetOperations
-- 問集合元素個數、有 A 或 B、有兩者、兩者都沒有、2 或 3 的倍數 → SetCountingInclusionExclusion
-- 問樣本空間 S、樣本點、列出所有可能結果 → SampleSpace
-- 問事件、基本事件、全事件、空事件、餘事件 → EventConcepts
-- 問和事件、積事件、互斥事件、A 與 B 是否互斥 → EventOperations
-
-4. 不得把以下題型升格為 skill：
-- 擲骰子、擲硬幣、抽球、文氏圖、早餐飲料、慢跑游泳、倍數問題
-
-5. 若題目中的集合符號或選項缺失（例如只剩「設集合，則下列敘述何者錯誤？(A)(B)(C)」），
-必須標記 needs_review=true、formula_missing=true，不可自行猜集合內容。
-
-【3-1 專用補充：統計的基本概念】
-
-當 section_title 包含「3-1」或「統計的基本概念」時：
-1. 即使原始文字出現「第4章 統計」，本冊本單元仍視為「第3章 統計」。
-2. section_title 應保留為「3-1 統計的基本概念」。
-3. 若教材出現正式小節：
-- 3-1.1 統計的意義
-- 3-1.2 抽樣調查
-請依內容建立下列 concept（不得把例題題型升格為 skill）：
-- 統計的基本概念（StatisticalBasicConcepts）
-- 抽樣調查（SamplingSurvey）
-- 抽樣方法（SamplingMethods）
-
-題目歸類規則：
-- 問統計意義、敘述統計、推論統計 → StatisticalBasicConcepts
-- 問母群體、樣本、母群體數、樣本數、普查、抽查 → SamplingSurvey
-- 問簡單隨機抽樣、系統抽樣、分層隨機抽樣、部落抽樣、抽樣方法判斷 → SamplingMethods
-
-source_type 規則：
-- 例題 → textbook_example
-- 隨堂練習 → in_class_practice
-- 3-1習題 基礎題 → basic_exercise
-- 3-1習題 進階題 → advanced_exercise
-- 統測題 → exam_practice
-- 動動手 → textbook_practice（若格式不完整需 needs_review=true）
-
-【3-1 統計的基本概念匯入規則（高職數學B4）】
-
-當內容包含「3-1 統計的基本概念」、「3-1習題」、「基礎題」、「進階題」時：
-1. 必須完整抽取所有明確題號，不可只挑代表題。
-2. 3-1習題 基礎題需完整保留 1～8 題。
-3. 3-1習題 進階題需完整保留 9～10 題。
-4. source_type：
-- 基礎題 N → basic_exercise
-- 進階題 N → advanced_exercise
-- 統測題 → exam_practice
-- 隨堂練習 → in_class_practice
-- 例題 → textbook_example
-- 動動手 → in_class_practice 或 textbook_practice（必要時 needs_review=true）
-5. 若題目為「請問下圖是何種抽樣法？」即使圖片無法解析，也要建立題目並標記：
-has_image=true、needs_image_review=true、needs_review=true。
-6. 除非題目完全沒有題幹，不可略過 3-1習題明確題號。
-
-【3-2 專用補充：統計資料整理（高職數學B4）】
-
-當內容包含「3-2 統計資料整理」或「3-2習題」時：
-1. 即使原始文字出現「第4章 統計」，本單元仍視為「第3章 統計」。
-2. section_title 保留「3-2 統計資料整理」。
-3. 不可只挑代表題；明確題號必須完整抽取。
-
-建議 concepts：
-- DataOrganizationAndTables
-- FrequencyDistributionGraphs
-- CumulativeFrequencyDistribution
-- StatisticalChartReading
-
-題目歸類規則：
-- 全距/組距/組數/組限/組中點/次數分配表 → DataOrganizationAndTables
-- 直方圖/次數分配折線圖 → FrequencyDistributionGraphs
-- 以下/以上累積次數分配表與折線圖 → CumulativeFrequencyDistribution
-- 依長條圖/圓形圖/折線圖/直方圖判讀人數比例區間 → StatisticalChartReading
-
-source_type：
-- 例題 textbook_example
-- 隨堂練習 in_class_practice
-- 3-2習題 基礎題 basic_exercise
-- 3-2習題 進階題 advanced_exercise
-- 統測題 exam_practice
-
-完整抽題要求：
-- 3-2習題基礎題 1～8
-- 3-2習題進階題 9～10
-除非題幹完全不存在，不可略過明確題號。
-
-表格題處理：
-- 題幹含「次數分配表/累積次數分配表/成績（分）/次數（人）/以下累積次數/以上累積次數/年齡（歲）/體重（kg）」時，
-  必須盡量保留表格資訊；若表格缺失需標記 needs_review=true、needs_table_review=true，不可自行補值。
-
-圖片題處理：
-- 若含「如右/如下圖/長條圖/圓形圖/直方圖/折線圖」且依圖作答，
-  必須建立題目不可略過；圖片缺失需標 has_image=true、missing_docx_image_asset=true、needs_image_review=true、needs_review=true。
-
-【3-3 專用補充：統計量分析（高職數學B4）】
-
-當內容包含「3-3 統計量分析」或「3-3習題」時：
-1. 即使原始文字出現「第4章 統計」，本單元仍視為「第3章 統計」。
-2. section_title 保留「3-3 統計量分析」。
-3. 不可只挑代表題；3-3 習題明確題號必須完整抽取。
-4. 公式主體缺失時不可補猜，保留 placeholder 並標 needs_formula_review=true。
-
-建議 concepts：
-- CentralTendencyMeasures
-- WeightedMean
-- DispersionMeasures
-- VarianceAndStandardDeviation
-- LinearTransformationOfData
-- NormalDistributionAndEmpiricalRule
-- OpinionPollInterpretation
-
-source_type：
-- 例題 textbook_example
-- 隨堂練習 in_class_practice
-- 3-3習題 基礎題 basic_exercise
-- 3-3習題 進階題 advanced_exercise
-- 統測題 exam_practice
-- 動動手/想一想 textbook_practice（不完整需 needs_review=true）
-
-完整抽題要求：
-- 3-3 例題 1～11
-- 3-3 隨堂練習 1～11
-- 3-3習題基礎題 1～8
-- 3-3習題進階題 9～10
-- 統測題 113統測B 應抽取；若選項公式缺失標 needs_formula_review=true。
-
-【二、concept 欄位規則】
-
-每個 concept 必須包含：
-
-- concept_name：中文名稱，例如「加法原理」
-- concept_en_id：PascalCase 英文 ID，例如 AdditionPrinciple
-- concept_description：150 字內說明此技能在學習上的用途
-- concept_paragraph：短標題，不可超過 15 個中文字
-
-1-1 建議 concept_en_id 對照：
-樹狀圖 → TreeDiagramCounting
-加法原理 → AdditionPrinciple
-乘法原理 → MultiplicationPrinciple
-正因數個數 → NumberOfPositiveDivisors
-階乘記法 → FactorialNotation
-
-【三、題目提取規則】
-
-請提取以下類型內容：
-
-1. 例題
-例如：[例題 1]、[例題 2]、[例題 3]、[例題 4]
-
-2. 隨堂練習
-例如：標示為「隨堂練習」後的題目
-
-3. Touch 統測題
-若題目完整，請提取為 examples
-
-4. 習題
-基礎題與進階題都可以提取，但 source_description 要標示清楚，例如：
-"1-1習題 基礎題1"
-"1-1習題 進階題9"
-
-5. 每個 concept 最多輸出 20 個 examples。
-
-6. 若題目太多，優先保留：
-- 例題
-- 隨堂練習
-- 基礎題
-- 統測題代表題
-
-7. 不需要逐題完整收錄所有重複型題目。
-8. 若原文有很多統測補給站題目，只選代表性題目，不要全部塞入同一個 JSON。
-
-【隨堂練習匯入規則】
-1. 「隨堂練習」必須視為獨立題目。
-2. 「隨堂練習」請放入 practice_questions 陣列。
-3. 不要把隨堂練習只附在 example.followup_practices 裡。
-4. 如果為了表示版面關係，可以填 linked_example_title。
-5. 隨堂練習 N 通常 linked_example_title = "例題N"。
-6. 隨堂練習通常繼承對應例題的 skill_id。
-7. 隨堂練習不是新的 concept。
-8. 隨堂練習不是新的 skill。
-9. 隨堂練習要保留題幹、答案、解法。
-10. 隨堂練習的 source_type 必須是 "in_class_practice"。
-11. 例題的 source_type 必須是 "textbook_example"。
-12. 如果無法判斷 linked example，linked_example_title = null，needs_review = true。
-13. 如果無法判斷 skill_id，使用同 concept 下最接近的 skill_id；仍無法判斷才使用 section_general 並 needs_review=true。
-
-【四、題目欄位規則】
-
-每個 examples 物件必須包含：
-
-- source_description
-- problem_text
-- correct_answer
-- detailed_solution
-- problem_type
-- subskill_tag
-- difficulty_level
-
-detailed_solution 必須是精簡繁體中文解析。
-禁止輸出：
-- Let's trace
-- Let's re-do
-- This is not
-- English chain-of-thought
-- 嘗試錯誤過程
-- 多次反覆推導
-
-problem_text 保持完整，但不要抄整頁背景文字。
-
-subskill_tag 可用值：
-- general
-- all_objects_permutation
-- partial_permutation
-- factorial_zero
-- divisor_counting
-- role_assignment
-- number_restriction
-- odd_even_number
-- adjacent_grouping
-- non_adjacent_gap
-- complementary_counting
-- grid_path
-- repeated_objects
-- repeated_digits
-- repeated_words
-- combination_basic
-- combination_application
-- probability_basic
-- mixed_application
-
-如果無法判斷，填 general。
-
-problem_type 僅能使用下列值之一：
-- tree_diagram
-- addition_principle
-- multiplication_principle
-- divisor_counting
-- factorial
-- permutation
-- combination
-- probability
-- mixed_counting
-
-difficulty_level：
-1 = 基礎
-2 = 中等
-3 = 進階或統測題
-
-【五、解答與詳解規則】
-
-1. 若原文有答案，請放入 correct_answer。
-2. 若原文有解析，請放入 detailed_solution。
-3. 若只有答案沒有解析，detailed_solution 填 "略"。
-4. 選擇題 correct_answer 請同時保留選項與數值，例如：
-"B，80"
-5. 不可自行亂補答案；若原文無法判斷，填空字串 ""。
-6. detailed_solution 不要輸出英文推理過程，只保留精簡繁體中文最終解法。
-7. detailed_solution 最多 200 字；若內容過長，僅保留最後正確解法，不保留試算錯誤過程。
-8. 不要輸出：
-- Let's trace
-- Let's re-do
-- This is not
-- English chain-of-thought
-- 反覆試算失敗過程
-
-【六、清理規則】
-
-請移除以下內容，不要當成 concept 或 example：
-
-- What's up!
-- 雲端教室
-- 檔案位置
-- 熟習度自評表
-- Awesome / Excellent / Good / Average / Poor
-- 配合 Super 講義
-- 頁碼
-- 圖號本身，例如「圖1」「圖2」
-- 教師用書重複頁面
-- QR code、圖片說明、裝飾性文字
-
-【七、數學格式規則】
-
-請盡量修正常見 OCR 錯誤：
-
-- # 表示乘法時，轉為 \\times
-- 600 2 3 5 3 1 2 = # # 應整理成 600 = 2^3 \\times 3^1 \\times 5^2
-- 5 ! 應整理為 5!
-- 階乘分式請整理成 LaTeX，例如 \\frac{{8!}}{{6!}}
-
-若無法可靠修復，保留原文，不要亂猜。
-
-【八、輸出格式】
-
-只輸出 JSON，不要 markdown，不要說明文字，不要 code fence。
-JSON 字串內禁止使用英文半形雙引號 "；若需要引號，請改用中文全形引號「」。
-
-JSON 格式如下：
-
-{{
-  "chapters": [
-    {{
-      "chapter_title": "1 排列組合",
-      "sections": [
-        {{
-          "section_title": "1-2 直線排列",
-          "concepts": [
-            {{
-              "concept_name": "相異物的排列",
-              "concept_en_id": "PermutationOfDistinctObjects",
-              "concept_description": "處理不同物件依序排列的方法數，包含全取、選取、限制條件與應用排列問題。",
-              "concept_paragraph": "相異物的排列",
-              "examples": [
-                {{
-                  "source_description": "問題1",
-                  "problem_text": "將甲、乙、丙三位同學排成一列，有多少種排法？",
-                  "correct_answer": "6 種",
-                  "detailed_solution": "三人全取排成一列，方法數為 3! = 6。",
-                  "problem_type": "permutation",
-                  "subskill_tag": "all_objects_permutation",
-                  "difficulty_level": 1
-                }},
-                {{
-                  "source_description": "例題5",
-                  "problem_text": "男生3人，女生2人排成一列拍照，女生二人必須相鄰的排法有幾種？",
-                  "correct_answer": "48 種",
-                  "detailed_solution": "將兩位女生視為一組，與3位男生共4個單位排列，再乘上女生內部排列，得 4! × 2! = 48。",
-                  "problem_type": "permutation",
-                  "subskill_tag": "adjacent_grouping",
-                  "difficulty_level": 2
-                }},
-                {{
-                  "source_description": "例題7",
-                  "problem_text": "棋盤格道路中，由甲到乙取捷徑的方法數。",
-                  "correct_answer": "依題目數據計算",
-                  "detailed_solution": "將向右與向上步數視為不盡相異物排列，例如 4 個右與 3 個上共有 7! / (4!3!) 種。",
-                  "problem_type": "shortest_path",
-                  "subskill_tag": "grid_path",
-                  "difficulty_level": 2
-                }}
-              ]
-            }},
-            {{
-              "concept_name": "不盡相異物的排列",
-              "concept_en_id": "PermutationOfNonDistinctObjects",
-              "concept_description": "處理含有相同物件的排列問題，需將重複排列除去。",
-              "concept_paragraph": "不盡相異物的排列",
-              "examples": [
-                {{
-                  "source_description": "例題6",
-                  "problem_text": "將 google 一字中所有字母重新排列，有多少種不同排法？",
-                  "correct_answer": "180 種",
-                  "detailed_solution": "google 有6個字母，其中 g 有2個、o 有2個，所以排法為 6! / (2!2!) = 180。",
-                  "problem_type": "permutation",
-                  "subskill_tag": "repeated_words",
-                  "difficulty_level": 1
-                }}
-              ]
-            }}
-          ]
-        }}
-      ]
-    }}
-  ]
-}}
-"""
+    prompt_vh_mathB4 = "Analyze textbook content and return JSON."
 
     curriculum = curriculum_info.get('curriculum', '').strip()
     publisher = curriculum_info.get('publisher', '').strip()
@@ -2781,16 +2618,16 @@ JSON 格式如下：
 
     if curriculum == 'junior_high' and publisher == 'kangxuan':
         base_prompt = prompt_jh_kangxuan
-        queue.put("INFO: 已選擇「國中康軒」專用分析模型。")
+        queue.put("INFO: use junior_high kangxuan prompt")
     elif is_vocational_mathb:
         base_prompt = prompt_vh_mathB4
-        queue.put(f"INFO: 已選擇 高職數學{subject}{vol_num} 專用分析模型")
+        queue.put(f"INFO: 撌脤??擃?詨飛{subject}{vol_num} 撠??璅∪?")
     elif curriculum == 'sh_longteng' or (curriculum == 'general' and publisher == 'longteng'):
         base_prompt = prompt_sh_longteng
-        queue.put("INFO: 已選擇「普高龍騰」專用分析模型 (題目擴增版)。")
+        queue.put("INFO: use longteng/general prompt")
     else:
         base_prompt = prompt_generic
-        queue.put("INFO: 未找到專用分析模型，使用通用模型。")
+        queue.put("INFO: use generic prompt")
 
     try:
         model = get_model("architect")
@@ -2799,11 +2636,11 @@ JSON 格式如下：
         err_msg = str(e) or repr(e)
         tb = traceback.format_exc()
 
-        current_app.logger.error(f"AI 分析失敗: [{err_type}] {err_msg}\n{tb}")
-        if "Gemini API Key" in err_msg or "API_KEY" in err_msg or "找不到" in err_msg:
-            queue.put("ERROR: 找不到 Gemini API Key，請先到 AI 後台設定頁輸入並儲存。")
+        current_app.logger.error(f"AI ??憭望?: [{err_type}] {err_msg}\n{tb}")
+        if "Gemini API Key" in err_msg or "API_KEY" in err_msg:
+            queue.put("ERROR: Missing Gemini API Key.")
         else:
-            queue.put(f"ERROR: AI 分析失敗: [{err_type}] {err_msg}")
+            queue.put(f"ERROR: AI ??憭望?: [{err_type}] {err_msg}")
         return None
     if page_analysis_payload:
         blocks = []
@@ -2821,149 +2658,32 @@ JSON 格式如下：
     else:
         full_content = "\n".join([f"--- Page {k} ---\n{v}" for k, v in content_by_page.items()])
     
-    json_example = """
-{
-  "chapters": [
-    {
-      "chapter_title": "1 ???",
-      "sections": [
-        {
-          "section_title": "1.???",
-          "concepts": [
-            {
-              "concept_name": "?????,
-              "concept_en_id": "RationalNumbers",
-              "concept_description": "...",
-              "concept_paragraph": "?????",
-              "examples": [
-                 {
-                    "source_description": "???1",
-                    "problem_text": "...",
-                    "problem_type": "calculation"
-                 },
-                 {
-                    "source_description": "??????",
-                    "problem_text": "...",
-                    "problem_type": "calculation"
-                 }
-              ]
-            }
-          ]
-        }
-      ]
-    }
-  ]
-}
-"""
+    json_example = "{}"
     if is_vocational_mathb:
-        json_example = """
-{
-  "chapters": [
-    {
-      "chapter_title": "1 ????",
-      "sections": [
-        {
-          "section_title": "1-1 ?????????",
-          "concepts": [
-            {
-              "concept_name": "????",
-              "concept_en_id": "AdditionPrinciple",
-              "concept_description": "??????????????????",
-              "concept_paragraph": "????",
-              "examples": [
-                {
-                  "source_description": "??2",
-                  "problem_text": "?????? 3 ????????4 ???????? 5 ????????????????????????????",
-                  "correct_answer": "12 ?",
-                  "detailed_solution": "?????????????????????????? 3 + 4 + 5 = 12?",
-                  "problem_type": "addition_principle",
-                  "difficulty_level": 1
-                }
-              ]
-            }
-          ]
-        }
-      ]
-    }
-  ]
-}
-"""
+        json_example = "{}"
 
     import_policy = dict(import_policy or {})
     docx_formula_source_mode = str(import_policy.get("docx_formula_source_mode", "auto_detect") or "auto_detect").strip()
     converted_latex_prompt_rules = ""
     if docx_formula_source_mode == "converted_docx_latex":
-        converted_latex_prompt_rules = """
-converted_docx_latex 規則（必須遵守）：
-1. 公式 LaTeX 已可信，problem_text 與 detailed_solution 必須原樣保留。
-2. 不可改寫為 [FORMULA_IMAGE_N]，不可移除 $...$、\\(...\\)、\\[...\\]。
-3. 不可把 \\le、\\ge 轉為其他奇怪符號。
-4. 只做題型切分：concept / textbook_example / in_class_practice / basic_exercise / exam_practice。
-5. 若題目已有 LaTeX，needs_formula_review=false。
-6. 只有仍有 [FORMULA_MISSING] 或圖形題缺圖時，needs_review=true。
-"""
+        converted_latex_prompt_rules = "converted_docx_latex rules enabled"
 
-    analysis_prompt = f"""
-{base_prompt}
-{converted_latex_prompt_rules}
-
-圖片標記規則：
-若題目包含「如圖」「下圖」「右圖」「圖」「樹狀圖」「表格」「幾何圖」「圓環圖」「路線圖」「附圖」等字樣，
-請在該題 JSON 物件加上：
-- "has_image": true
-- "image_description": "簡短描述圖形用途，例如樹狀圖、圓環著色圖、路線圖"
-- "source_page": 題目所在 PDF 頁碼（1-based，無法判定則 null）
-- "page_index": 題目所在頁索引（0-based，無法判定則 null）
-注意：不要輸出 base64 或虛構圖片，圖片由後端從 PDF 頁面 render 後保存。
-
-低品質頁面輸入規則：
-你可能同時收到 [RAW PDF TEXT]、[NORMALIZED TEXT]、[VISION OCR TEXT]、[FORMULA WARNINGS]。
-若 VISION OCR TEXT 有內容，請優先用於題目重建；若無則用 NORMALIZED TEXT 並提高 needs_review。
-
-重要輸出要求：
-1. 只能輸出合法 JSON，不可以輸出 Markdown code block。
-2. 不可以在 JSON 前後加入任何說明文字。
-3. 所有 LaTeX 反斜線在 JSON 原始輸出中必須使用合法 JSON escape。
-4. 錯誤："\\(x+1\\)" 若原始輸出實際只有單反斜線；正確："\\\\(x+1\\\\)"。
-5. 錯誤："\\binom{{n}}{{r}}" 若原始輸出實際只有單反斜線；正確："\\\\binom{{n}}{{r}}"。
-6. 錯誤："\\frac{{n!}}{{r!(n-r)!}}" 若原始輸出實際只有單反斜線；正確："\\\\frac{{n!}}{{r!(n-r)!}}"。
-7. 請保留 LaTeX 語法，資料匯入資料庫後會由前端 MathJax 解析。
-8. 回傳前請確認整份內容可以被 Python json.loads() 直接解析。
-
-PDF/OCR 數學式校正要求：
-1. 你會收到由 PDF 擷取而來的數學文字，其中可能包含 OCR / PDF 解析錯誤。
-2. #、＃、﹟ 通常代表乘號，應轉成 \\times 或 ×。
-3. 台灣高中課本中的 C_r^n 代表組合數，應理解為 C(n,r) 或 LaTeX C^n_r。
-4. 台灣高中課本中的 P_r^n 代表排列數，應理解為 P(n,r) 或 LaTeX P^n_r。
-5. 若看到 C_0^5 + C_1^5 + C_2^6 + C_3^7 + C_4^8 這類上下標不一致的式子，不要直接照抄，請標記 suspicious_formula 並盡可能根據上下文修正。
-6. 若無法可靠修正，請保留原始文字與 normalized_formula，並設定 needs_review = true。
-7. 不要把明顯錯誤的 OCR 公式直接寫成正式例題。
-8. 所有 LaTeX 反斜線仍需符合合法 JSON escape。
-
-DOCX 公式缺失安全規則（嚴格）：
-1. 若題目文字包含 [FORMULA_IMAGE_x]、[WORD_EQUATION_UNPARSED]、[UNREADABLE_FORMULA]、或只有 (1)(2)(3) 但小題公式缺失，禁止自行猜測/補齊排列組合公式數字。
-2. 這種情況必須保留 placeholder，並輸出 needs_review=true、needs_formula_review=true、formula_missing=true。
-3. 不可把缺失公式改寫成看似完整的 P^n_r 或 C^n_r。
-4. 若無法辨識公式內容，優先保留 [FORMULA_MISSING]，不要生成新公式。
-
-隨堂練習 JSON 輸出要求：
-1. examples 只放例題；practice_questions 放隨堂練習與練習題，兩者都必須是可獨立入庫的題目物件。
-2. practice_questions 每題至少包含：practice_title(或 source_description)、problem、answer、solution、source_type="in_class_practice"。
-3. 如果為了版面關聯需要 followup_practices，仍要同步輸出到 practice_questions，避免隨堂練習遺失。
-
-JSON ?????? (??? section_title ?????????????
-{json_example}
-
-????????
-{full_content}
-"""
+    # 動態組裝：必須帶入 base_prompt、JSON 範例、LaTeX 規則與全文，避免僅送死字串造成幻覺目錄
+    analysis_prompt = (
+        f"{base_prompt}\n\n"
+        f"【請嚴格依照以下 JSON 範例格式結構輸出，嚴禁自行發明論文或無關的目錄結構】\n"
+        f"{json_example}\n\n"
+        f"{converted_latex_prompt_rules}\n\n"
+        f"【以下是需要您切分、LaTeX化並結構化解析的課本標準文本內容】\n"
+        f"{full_content}"
+    )
 
     try:
         ai_response = _call_gemini_with_retry(
             model, 
             analysis_prompt, 
             queue, 
-            context_message="提取課本結構時，",
+            context_message="??隤脫蝯???",
             parse_json=True
         )
         return ai_response
@@ -2972,99 +2692,33 @@ JSON ?????? (??? section_title ?????????????
         err_msg = str(e) or repr(e)
         tb = traceback.format_exc()
 
-        current_app.logger.error(f"AI 分析失敗: [{err_type}] {err_msg}\n{tb}")
-        queue.put(f"ERROR: AI 分析失敗: [{err_type}] {err_msg}")
+        current_app.logger.error(f"AI ??憭望?: [{err_type}] {err_msg}\n{tb}")
+        queue.put(f"ERROR: AI ??憭望?: [{err_type}] {err_msg}")
         return None
 
 def parse_ai_response(ai_data_or_string, queue):
-    """解析 AI 回傳的資料 (JSON 字串或已解析的 dict)，並進行基本驗證。"""
-    message = "正在解析 AI 回傳的 JSON..."
-    current_app.logger.info(message)
-    queue.put(f"INFO: {message}")
-
-    def _save_failed_ai_response(raw_response_text, cleaned_response_text=None):
-        debug_dir = os.path.join("reports", "debug_ai_response")
-        os.makedirs(debug_dir, exist_ok=True)
-        timestamp = time.strftime("%Y%m%d_%H%M%S")
-        debug_filename = f"ai_response_failed_{timestamp}.txt"
-        debug_path = os.path.join(debug_dir, debug_filename)
-
-        raw_text = str(raw_response_text) if raw_response_text is not None else ""
-        cleaned_text = str(cleaned_response_text) if cleaned_response_text is not None else ""
-        payload = cleaned_text if cleaned_text else raw_text
-
-        with open(debug_path, "w", encoding="utf-8") as f:
-            f.write(payload)
-
-        queue.put(f"ERROR: AI JSON 解析失敗，已保存原始回覆至 {debug_path}")
-        current_app.logger.error(f"AI JSON 解析失敗，已保存原始回覆至 {debug_path}")
-        return debug_path
-
+    """Parse AI response payload into dict."""
     if isinstance(ai_data_or_string, dict):
-        return _normalize_textbook_question_structure(ai_data_or_string, queue)
-
-    raw_response_string = str(ai_data_or_string) if ai_data_or_string is not None else ""
-
-    if not raw_response_string.strip():
-        message = f"錯誤：無法處理的 AI 回傳類型: {type(ai_data_or_string)}"
-        current_app.logger.error(message)
-        queue.put(f"ERROR: {message}")
-        _save_failed_ai_response(raw_response_string)
+        return ai_data_or_string
+    text = str(ai_data_or_string or "").strip()
+    if not text:
         return None
-
-    cleaned_string = re.sub(r'^```(?:json)?\s*|\s*```$', '', raw_response_string, flags=re.MULTILINE).strip()
     try:
-        parsed_obj = safe_load_gemini_json(cleaned_string)
-        queue.put("INFO: AI 回應成功解析為標準 JSON。")
-        return _normalize_textbook_question_structure(parsed_obj, queue)
-    except ValueError as e:
-        current_app.logger.warning(
-            f"[TEXTBOOK IMPORTER] safe_load_gemini_json failed, fallback parser will run: {e}"
-        )
-
-    # --- 備用方案：逐章解析 (保留您原本的邏輯) ---
-    queue.put("WARN: 標準 JSON 解析失敗，啟用備用方案：逐章節提取並解析。")
-    current_app.logger.warning("標準 JSON 解析失敗，啟用備用方案：逐章節提取並解析。")
-
-    chapter_chunks = re.findall(r'(\{\s*"chapter_title":.*?\}(?=\s*,\s*\{"chapter_title"|\s*\]\s*\}))', cleaned_string, re.DOTALL)
-
-    if not chapter_chunks:
-        queue.put("ERROR: 備用方案失敗：無法從文本中提取任何章節區塊。")
-        _save_failed_ai_response(raw_response_string, cleaned_string)
+        return safe_load_gemini_json(text)
+    except Exception:
+        if queue is not None:
+            queue.put("ERROR: parse_ai_response failed")
         return None
 
-    queue.put(f"INFO: 備用方案：偵測到 {len(chapter_chunks)} 個可能的章節區塊。")
-    successful_chapters = []
-    for i, chunk in enumerate(chapter_chunks):
-        try:
-            try:
-                chapter_obj = safe_load_gemini_json(chunk)
-            except ValueError:
-                chapter_obj, _, _, _ = _sanitize_and_parse_json(chunk, queue=None)
-            if chapter_obj:
-                successful_chapters.append(chapter_obj)
-            else:
-                queue.put(f"WARN: 無法解析章節區塊 {i+1}，已跳過。")
-        except Exception as e:
-            queue.put(f"WARN: 解析章節區塊 {i+1} 時發生錯誤: {e}，已跳過。")
 
-    if not successful_chapters:
-        queue.put("ERROR: 備用方案最終失敗：沒有任何章節區塊能被成功解析。")
-        _save_failed_ai_response(raw_response_string, cleaned_string)
-        return None
-
-    return _normalize_textbook_question_structure({"chapters": successful_chapters}, queue)
-
-def to_pascal_case(snake_case_string):
-    """將 snake_case 或 kebab-case 字串轉換為 PascalCase。"""
+def snake_to_pascal_case(snake_case_string):
+    """Convert snake_case or kebab-case to PascalCase."""
     if not snake_case_string:
         return ""
-    return ''.join(word.capitalize() for word in re.split('_|-', snake_case_string))
+    return ''.join(word.capitalize() for word in re.split('_|-', str(snake_case_string)))
 
 def clean_skill_en_name(raw_en_name, queue=None):
-    """
-    (PascalCase 策略版) 移除多餘的結構化前綴，只保留 PascalCase 部分。
-    """
+    """Clean skill english name and keep PascalCase suffix if present."""
     if not raw_en_name:
         return ""
     match = re.search(r'[A-Z]', raw_en_name)
@@ -3078,7 +2732,7 @@ def _formula_context_label(path):
     return " / ".join(str(p) for p in path if p is not None and str(p).strip())
 
 
-def _normalize_extracted_content_math(content_by_page, queue=None):
+def _normalize_extracted_content_math(content_by_page, queue=None, docx_formula_source_mode: str = ""):
     """Normalize extracted page text before Gemini sees OCR/PDF math artifacts."""
     if not isinstance(content_by_page, dict):
         return content_by_page
@@ -3089,6 +2743,9 @@ def _normalize_extracted_content_math(content_by_page, queue=None):
             normalized_pages[page_no] = page_text
             continue
 
+        if docx_formula_source_mode == "converted_docx_latex":
+            normalized_pages[page_no] = page_text
+            continue
         check = detect_suspicious_formula(page_text)
         normalized_text = normalize_math_text(page_text)
         if check.get("is_suspicious"):
@@ -3111,8 +2768,8 @@ def _normalize_extracted_content_math(content_by_page, queue=None):
 def score_extracted_page_quality(page_text: str) -> dict:
     text = str(page_text or "")
     length = len(text.strip())
-    weird = len(re.findall(r"[�□◻◼◊¤�]", text))
-    symbols = len(re.findall(r"[#＃﹟]{2,}", text))
+    weird = len(re.findall(r"[嚙賤?領?歹蕭]", text))
+    symbols = len(re.findall(r"[#嚗?]{2,}", text))
     score = 1.0
     if length < 40:
         score -= 0.35
@@ -3161,12 +2818,7 @@ def _vision_ocr_page_text(pdf_path: str, page_no_1based: int, queue=None) -> str
         return None
     try:
         model = get_model("vision_analyzer")
-        prompt = (
-            "請忠實讀取圖片中的數學教材文字。"
-            "保留題號、例題/隨堂練習標題、多小題(1)(2)(3)、"
-            "階乘、分式、乘號、上下標。"
-            "不要輸出 JSON，只輸出清楚純文字。"
-        )
+        prompt = "Extract text from this textbook page image and return plain text."
         img = Image.open(image_path)
         resp = model.generate_content([prompt, img], generation_config={"temperature": 0.0, "max_output_tokens": 65536})
         text = str(getattr(resp, "text", "") or "").strip()
@@ -3210,11 +2862,31 @@ def _build_page_analysis_payload(raw_pages, normalized_pages, file_path, queue=N
     return payload
 
 
-def _normalize_imported_math_value(value, *, section_title="", source_description="", field_name="", queue=None):
+def _normalize_imported_math_value(
+    value,
+    *,
+    section_title="",
+    source_description="",
+    field_name="",
+    queue=None,
+    docx_formula_source_mode: str = "",
+):
     if value is None or not isinstance(value, str):
         return value, None
 
     suspicious = detect_suspicious_formula(value)
+    if docx_formula_source_mode == "converted_docx_latex":
+        if has_app_context():
+            current_app.logger.info(
+                f"[FORMULA NORMALIZE SKIP] converted_docx_latex_preserve_latex=true field={field_name}"
+            )
+        return value, {
+            "is_suspicious": bool(suspicious.get("reasons")),
+            "reasons": list(dict.fromkeys(suspicious.get("reasons", []))),
+            "suggestions": suspicious.get("suggestions", []),
+            "normalized_preview": value,
+        }
+
     normalized = normalize_math_text(value)
     suspicious_after = detect_suspicious_formula(normalized)
     reasons = list(dict.fromkeys(suspicious.get("reasons", []) + suspicious_after.get("reasons", [])))
@@ -3239,7 +2911,7 @@ def _normalize_imported_math_value(value, *, section_title="", source_descriptio
     }
 
 
-def _normalize_parsed_textbook_math(parsed_data, queue=None):
+def _normalize_parsed_textbook_math(parsed_data, queue=None, docx_formula_source_mode: str = ""):
     """Normalize known textbook JSON text fields before DB persistence."""
     if not isinstance(parsed_data, dict):
         return parsed_data
@@ -3263,6 +2935,7 @@ def _normalize_parsed_textbook_math(parsed_data, queue=None):
                             source_description=concept.get("concept_name", ""),
                             field_name=key,
                             queue=queue,
+                            docx_formula_source_mode=docx_formula_source_mode,
                         )
                         if check and check.get("is_suspicious"):
                             concept["needs_review"] = True
@@ -3289,6 +2962,7 @@ def _normalize_parsed_textbook_math(parsed_data, queue=None):
                                 source_description=source_description,
                                 field_name=key,
                                 queue=queue,
+                                docx_formula_source_mode=docx_formula_source_mode,
                             )
                             if check and check.get("is_suspicious"):
                                 ex["needs_review"] = True
@@ -3306,6 +2980,7 @@ def _normalize_parsed_textbook_math(parsed_data, queue=None):
                                     source_description=source_description,
                                     field_name=f"sub_questions.{key}",
                                     queue=queue,
+                                    docx_formula_source_mode=docx_formula_source_mode,
                                 )
 
                 for practice in concept.get("practice_questions", []) or []:
@@ -3319,6 +2994,7 @@ def _normalize_parsed_textbook_math(parsed_data, queue=None):
                                 source_description="practice",
                                 field_name=key,
                                 queue=queue,
+                                docx_formula_source_mode=docx_formula_source_mode,
                             )
                             if check and check.get("is_suspicious"):
                                 practice["needs_review"] = True
@@ -3334,6 +3010,7 @@ def _normalize_parsed_textbook_math(parsed_data, queue=None):
                                     source_description="practice",
                                     field_name=f"sub_questions.{key}",
                                     queue=queue,
+                                    docx_formula_source_mode=docx_formula_source_mode,
                                 )
 
     return parsed_data
@@ -3377,21 +3054,16 @@ def normalize_fill_blank_artifacts(text: str) -> tuple[str, dict]:
 
     # Instruction semantic normalization first.
     before = out
-    out = re.sub(
-        r"(試填入下列各式|求下列各式|填入下列各式)\s*(?:□|▢|◻|☐|（\s*　?\s*）|\(\s*　?\s*\)|＿＿|_{2,})\s*之值",
-        r"\1空格之值",
-        out,
-    )
+    out = re.sub(r"(求|解|計算)\s*(?:\(\s*\)|_{2,})\s*", r"\1 ", out)
     if out != before:
         log["changed"] = True
         log["reasons"].append("normalized fill-blank instruction text")
 
     # Generic blank symbols/slots normalization.
     blank_patterns = [
-        r"[□▢◻☐]",
-        r"（\s*　?\s*）",
-        r"\(\s*　?\s*\)",
-        r"＿＿+",
+        r"[?﹦＿]",
+        r"\(\s*\)",
+        r"_+",
         r"_{2,}",
     ]
     before = out
@@ -3414,8 +3086,8 @@ def _contains_perm_comb_formula(text: str) -> bool:
             r"\{\s*\}\s*\^\s*\{?\s*\d+\s*\}?\s*[PC]\s*_\s*\{?\s*\d+\s*\}?|"
             r"[PC]\s*\^\s*\{?\s*\d+\s*\}?\s*_\s*\{?\s*\d+\s*\}?|"
             r"[PC]\s*_\s*\{?\s*\d+\s*\}?\s*\^\s*\{?\s*\d+\s*\}?|"
-            r"[⁰¹²³⁴⁵⁶⁷⁸⁹]+\s*[PC]\s*[₀₁₂₃₄₅₆₇₈₉]+|"
-            r"[PC]\s*[₀₁₂₃₄₅₆₇₈₉]+\s*[⁰¹²³⁴⁵⁶⁷⁸⁹]+"
+            r"[?兜嗽笨喇?菊?猾?鉛+\s*[PC]\s*[??????????+|"
+            r"[PC]\s*[??????????+\s*[?兜嗽笨喇?菊?猾?鉛+"
             r")",
             t,
         )
@@ -3426,7 +3098,7 @@ def is_answer_blank_placeholder_context(raw_block: str, problem_text: str) -> bo
     block = str(raw_block or "")
     text = str(problem_text or "")
     combined = f"{block}\n{text}"
-    instruction_hit = bool(re.search(r"試求下列各式之值|試填入下列各式|填入下列各式|空格之值", combined))
+    instruction_hit = bool(re.search(r"(求|解|計算|試求)", combined))
     formula_hit = _contains_perm_comb_formula(combined)
     placeholder_count = len(re.findall(r"\[FORMULA_IMAGE_\d+\]|\[WORD_EQUATION_UNPARSED\]", block))
     subq_count = len(re.findall(r"\(\s*\d+\s*\)", combined))
@@ -3455,23 +3127,23 @@ def normalize_permutation_combination_notation(
             log["reasons"].append("normalized coordinate point notation in B1 coordinate context")
             out = guarded
 
-    # e.g., ⁷P₃ / ⁷C₃
+    # e.g., ?感??/ ?嵩??
     def _replace_pre(match):
         n = match.group(1).translate(_SUPERSCRIPT_TRANS)
         op = match.group(2)
         r = match.group(3).translate(_SUBSCRIPT_TRANS)
         return f"{op}^{{{n}}}_{{{r}}}"
 
-    out = re.sub(r"([⁰¹²³⁴⁵⁶⁷⁸⁹⁺⁻]+)\s*([PC])\s*([₀₁₂₃₄₅₆₇₈₉₊₋]+)", _replace_pre, out)
+    out = re.sub(r"([?兜嗽笨喇?菊?猾?嫖?蒸+)\s*([PC])\s*([????????????+)", _replace_pre, out)
 
-    # e.g., P₃⁷ / C₃⁷
+    # e.g., P? / C?
     def _replace_post(match):
         op = match.group(1)
         r = match.group(2).translate(_SUBSCRIPT_TRANS)
         n = match.group(3).translate(_SUPERSCRIPT_TRANS)
         return f"{op}^{{{n}}}_{{{r}}}"
 
-    out = re.sub(r"([PC])\s*([₀₁₂₃₄₅₆₇₈₉₊₋]+)\s*([⁰¹²³⁴⁵⁶⁷⁸⁹⁺⁻]+)", _replace_post, out)
+    out = re.sub(r"([PC])\s*([????????????+)\s*([?兜嗽笨喇?菊?猾?嫖?蒸+)", _replace_post, out)
 
     # e.g., P^7_3 / C^7_3
     out = re.sub(r"\b([PC])\s*\^\s*\{?\s*([0-9]+)\s*\}?\s*_\s*\{?\s*([0-9]+)\s*\}?", r"\1^{\2}_{\3}", out)
@@ -3504,7 +3176,7 @@ def normalize_probability_event_notation(text: str) -> tuple[str, dict]:
 
     token = r"[A-Za-z](?:'|\\prime)?"
     inner_re = re.compile(
-        rf"^\s*({token})(?:\s*(\\\\?cup|\\\\?cap|\\\\?setminus|\||-|∪|∩)\s*({token}))?\s*$"
+        rf"^\s*({token})(?:\s*(\\cup|\\cap|\\setminus|\||-|或|且)\s*({token}))?\s*$"
     )
     outer_re = re.compile(r"P\s*\(\s*([^()]+?)\s*\)")
 
@@ -3567,9 +3239,9 @@ def repair_missing_single_variable_text(problem_text: str) -> tuple[str, dict]:
         return text, repair
 
     missing_slots = []
-    if re.search(r"設\s*為", text):
+    if re.search(r"設\s*\?", text):
         missing_slots.append("subject")
-    if re.search(r"之\s*值", text):
+    if re.search(r"=\s*\?", text):
         missing_slots.append("value")
     if not missing_slots:
         repair["reason"] = "no_missing_variable_slot"
@@ -3584,9 +3256,9 @@ def repair_missing_single_variable_text(problem_text: str) -> tuple[str, dict]:
     sym = candidates[0]
     fixed = text
     if "subject" in missing_slots:
-        fixed = re.sub(r"設\s*為", f"設 {sym} 為", fixed, count=1)
+        fixed = re.sub(r"設\s*\?", f"設 {sym} ", fixed, count=1)
     if "value" in missing_slots:
-        fixed = re.sub(r"之\s*值", f"之 {sym} 值", fixed, count=1)
+        fixed = re.sub(r"=\s*\?", f"= {sym} ", fixed, count=1)
 
     if fixed != text:
         repair["applied"] = True
@@ -3609,7 +3281,7 @@ def validate_problem_block_purity(problem: dict) -> dict:
         problem["needs_review"] = True
         problem["block_boundary_error"] = True
 
-    explanation_cues = _NON_QUESTION_EXPLANATION_CUES + ("上述",)
+    explanation_cues = _NON_QUESTION_EXPLANATION_CUES + ("銝膩",)
     problem_verbs = _QUESTION_VERBS
     explanation_hits = sum(1 for cue in explanation_cues if cue in text)
     has_problem_verb = any(v in text for v in problem_verbs)
@@ -3635,10 +3307,10 @@ def validate_problem_block_purity(problem: dict) -> dict:
         logs.append("marked formula_missing due to formula placeholder")
         problem["repair_log"] = logs
 
-    # 集合題若題幹/選項殘缺，必須保留為缺公式，不可猜測內容
-    set_question_hint = bool(re.search(r"設集合|下列敘述何者|何者錯誤|何者正確", text))
-    has_choice_labels = len(re.findall(r"\([A-DＡ-Ｄ]\)", text)) >= 2
-    has_set_notation = bool(re.search(r"[∪∩⊂⊆∈∉U{}]|A\s*[∪∩\\]\s*B|A\s*[-－]\s*B", text))
+    # ??憿憿凳/?賊?畾撩嚗????蝻箏撘?銝?葫?批捆
+    set_question_hint = bool(re.search(r"(集合|子集|交集|聯集)", text))
+    has_choice_labels = len(re.findall(r"\([A-Da-d]\)", text)) >= 2
+    has_set_notation = bool(re.search(r"[\{\}U∩∪]|A\s*[∩∪\\]\s*B|A\s*-\s*B", text))
     if set_question_hint and has_choice_labels and not has_set_notation:
         problem["needs_review"] = True
         problem["formula_missing"] = True
@@ -3661,8 +3333,8 @@ def validate_problem_block_purity(problem: dict) -> dict:
         problem["needs_review"] = True
         problem["skill_boundary_mismatch"] = True
 
-    if re.search(r"次數分配表|累積次數分配表|成績（分）|次數（人）|以下累積次數|以上累積次數|年齡（歲）|體重（kg）", text):
-        has_table_payload = bool(re.search(r"\d", text) and re.search(r"[|｜┆╱/]", text))
+    if re.search(r"(表格|統計表|列表|table)", text, flags=re.IGNORECASE):
+        has_table_payload = bool(re.search(r"\d", text) and re.search(r"[|嚚???]", text))
         if not has_table_payload and not re.search(r"\[[A-Z_]*TABLE[A-Z_0-9]*\]", text):
             problem["needs_review"] = True
             problem["needs_table_review"] = True
@@ -3672,7 +3344,7 @@ def validate_problem_block_purity(problem: dict) -> dict:
             logs.append("table-dependent question without enough table content")
             problem["repair_log"] = logs
 
-    if re.search(r"下圖|如圖|附圖", text) and re.search(r"抽樣法|何種抽樣", text):
+    if re.search(r"銝?|憒?|??", text) and re.search(r"?賣見瘜雿車?賣見", text):
         if not (
             problem.get("has_image")
             or "[BLOCK_IMAGE]" in text
@@ -3710,19 +3382,19 @@ def get_question_title(item: dict) -> str:
 
 
 _SECTION_EXPOSITION_TITLE_EXACT = frozenset({
-    "課文內容", "課文", "內容", "說明", "定義", "定理", "性質",
-    "課文說明", "內容說明", "概念說明", "公式說明",
+    "觀念整理", "觀念", "整理", "說明", "重點", "補充",
+    "觀念說明", "整理說明", "章節說明", "概念說明",
 })
 
 _SECTION_EXPOSITION_TITLE_RE = re.compile(
-    r"^(?:課文內容|課文說明|內容說明|概念說明|公式說明|課文\s*\d*|說明\s*\d*)$"
+    r"^(?:觀念整理|觀念說明|整理說明|章節說明|概念說明|觀念\s*\d*|說明\s*\d*)$"
 )
 
 
 def _is_section_exposition_title(title: str) -> bool:
     """Return True when *title* looks like a section-exposition label (not a real question).
 
-    Catches Gemini-generated source_description values like '課文內容' that represent
+    Catches Gemini-generated source_description values like '隤脫??批捆' that represent
     narrative textbook passages rather than examples, exercises, or practices.
     These must NOT be saved as textbook_example records.
     """
@@ -3757,31 +3429,31 @@ def normalize_source_type_by_title(item: dict, default_source_type: str = "textb
                 pass
         return normalized
 
-    if "隨堂練習" in title:
+    if "?典?蝺渡?" in title:
         normalized = "in_class_practice"
-        reason = "title_contains_隨堂練習"
-    elif ("章末自我評量" in title) or ("自我評量" in title) or bool(re.search(r"第\s*\d+\s*章\s*自我評量", title)):
+        reason = "title_contains_?典?蝺渡?"
+    elif ("蝡?芣?閰?" in title) or ("?芣?閰?" in title) or bool(re.search(r"蝚枯s*\d+\s*蝡s*?芣?閰?", title)):
         normalized = "self_assessment"
-        reason = "title_contains_自我評量"
-    elif any(k in title for k in ("統測補給站", "統測題", "統測")):
+        reason = "title_contains_?芣?閰?"
+    elif any(k in title for k in ("統測", "學測")):
         normalized = "exam_practice"
-        reason = "title_contains_統測"
+        reason = "title_contains_exam"
     elif "基礎題" in title:
         normalized = "basic_exercise"
-        reason = "title_contains_基礎題"
+        reason = "title_contains_basic_exercise"
     elif "進階題" in title:
         normalized = "advanced_exercise"
-        reason = "title_contains_進階題"
-    elif "動動手" in title:
-        normalized = "textbook_practice"
-        reason = "title_contains_動動手"
-    elif "想一想" in title:
-        normalized = "textbook_practice"
-        reason = "title_contains_想一想"
+        reason = "title_contains_advanced_exercise"
     elif "習題" in title:
+        normalized = "textbook_practice"
+        reason = "title_contains_practice"
+    elif "例題" in title:
+        normalized = "textbook_practice"
+        reason = "title_contains_example"
+    elif "蝧?" in title:
         normalized = "chapter_exercise"
-        reason = "title_contains_習題"
-    elif re.search(r"^\s*例\s*題?\s*\d+", title):
+        reason = "title_contains_蝧?"
+    elif re.search(r"^\s*例(?:題)?\s*\d+", title):
         normalized = "textbook_example"
         reason = "title_matches_example"
     elif raw_source_type in ALLOWED_SOURCE_TYPES:
@@ -3824,7 +3496,7 @@ _SOURCE_TYPE_QUALITY_RANK = {
 
 def _normalize_title_for_dedupe(title: str) -> str:
     t = re.sub(r"\s+", "", str(title or "").strip())
-    t = re.sub(r"^例(?!題)(\d+)$", r"例題\1", t)
+    t = re.sub(r"^靘??!憿?(\d+)$", r"靘?\1", t)
     return t
 
 
@@ -3987,7 +3659,7 @@ def _render_sub_questions_answer(answer_text, sub_questions):
         ans = str(sq.get("answer", "") or "").strip()
         if ans:
             parts.append(f"({label}) {ans}" if label else ans)
-    return "；".join(parts) if parts else (answer_text or "").strip()
+    return "\n".join(parts) if parts else (answer_text or "").strip()
 
 
 def _render_sub_questions_solution(solution_text, sub_questions):
@@ -4043,7 +3715,7 @@ def _normalize_textbook_question_structure(parsed_data, queue=None):
                     sub_questions = _normalize_sub_questions(ex.get("sub_questions", []))
 
                     ex_normalized = dict(ex)
-                    ex_normalized["source_description"] = example_title or ex_normalized.get("source_description", "例題")
+                    ex_normalized["source_description"] = example_title or ex_normalized.get("source_description", "靘?")
                     if problem_text:
                         ex_normalized["problem_text"] = problem_text
                     if answer:
@@ -4076,7 +3748,7 @@ def _normalize_textbook_question_structure(parsed_data, queue=None):
                         p_page_index = fp.get("page_index")
 
                         practice_item = dict(fp)
-                        practice_item["source_description"] = p_title or "隨堂練習"
+                        practice_item["source_description"] = p_title or "?典?蝺渡?"
                         if p_problem:
                             practice_item["problem_text"] = p_problem
                         if p_answer:
@@ -4106,7 +3778,7 @@ def _normalize_textbook_question_structure(parsed_data, queue=None):
                     sub_questions = _normalize_sub_questions(practice.get("sub_questions", []))
 
                     normalized_practice = dict(practice)
-                    normalized_practice["source_description"] = p_title or normalized_practice.get("source_description", "隨堂練習")
+                    normalized_practice["source_description"] = p_title or normalized_practice.get("source_description", "?典?蝺渡?")
                     if p_problem:
                         normalized_practice["problem_text"] = p_problem
                     if p_answer:
@@ -4187,13 +3859,13 @@ def _mark_needs_review_for_low_quality_pages(parsed_data, page_analysis_payload)
 
 
 def is_non_skill_bucket(concept_name, clean_en_id):
-    """判斷該 concept 是否屬於不可建立 skill 的桶位。"""
+    """Return whether a concept bucket should not generate skill records."""
     name = (concept_name or "").strip()
     en_id = (clean_en_id or "").strip().lower()
     non_skill_names = {
-        "習題",
-        "章節介紹",
-        "排列組合概論",
+        "蝧?",
+        "蝡?隞晶",
+        "??蝯?璁?",
     }
     non_skill_en_ids = {
         "chapterintroduction",
@@ -4205,12 +3877,9 @@ def is_non_skill_bucket(concept_name, clean_en_id):
 
 
 def remap_mathb_non_skill_examples(section_title, concept_name, clean_en_id, example):
-    """
-    高職數學B4 1-1 專用：將非正式 skill bucket 例題重導到正式 skill。
-    回傳 clean_en_id（TreeDiagramCounting / AdditionPrinciple / MultiplicationPrinciple / FactorialNotation）。
-    """
+    """Remap known non-skill examples in B4 section 1-1 to concrete skills."""
     section = (section_title or "").strip()
-    if "1-1" not in section and "加法原理與乘法原理" not in section:
+    if "1-1" not in section and "排列組合基本原理" not in section:
         return None
 
     non_skill = is_non_skill_bucket(concept_name, clean_en_id)
@@ -4231,20 +3900,20 @@ def remap_mathb_non_skill_examples(section_title, concept_name, clean_en_id, exa
     if (
         "tree_diagram" in signal
         or "樹狀圖" in zh_hints
-        or "列舉" in zh_hints
+        or "??" in zh_hints
     ):
         return "TreeDiagramCounting"
 
     if (
         "addition_principle" in signal
-        or "分類討論" in zh_hints
-        or "加法原理" in zh_hints
+        or "??閮?" in zh_hints
+        or "????" in zh_hints
     ):
         return "AdditionPrinciple"
 
     if (
         "factorial" in signal
-        or "階乘" in zh_hints
+        or "??" in zh_hints
         or "n!" in signal
         or "n!" in zh_hints.lower()
     ):
@@ -4254,19 +3923,19 @@ def remap_mathb_non_skill_examples(section_title, concept_name, clean_en_id, exa
         "multiplication_principle" in signal
         or "divisor_counting" in signal
         or "mixed_counting" in signal
-        or "正因數個數" in zh_hints
-        or "步驟計數" in zh_hints
-        or "乘法原理" in zh_hints
+        or "甇???詨" in zh_hints
+        or "甇仿?閮" in zh_hints
+        or "銋???" in zh_hints
     ):
         return "MultiplicationPrinciple"
 
-    # 無法判斷時預設歸入乘法原理
+    # ?⊥??斗??閮剜飛?乩?瘜???
     return "MultiplicationPrinciple"
 
 
 def remap_mathb21_non_skill_examples(section_title, concept_name, clean_en_id, example):
     section = (section_title or "").strip()
-    if "2-1" not in section and "樣本空間與事件" not in section:
+    if "2-1" not in section and "排列組合" not in section:
         return None
     if not is_non_skill_bucket(concept_name, clean_en_id):
         return None
@@ -4281,26 +3950,26 @@ def remap_mathb21_non_skill_examples(section_title, concept_name, clean_en_id, e
     )
     zh = text
 
-    if re.search(r"和事件|積事件|互斥事件|是否互斥|A與B是否互斥", zh):
+    if re.search(r"聯集|交集|補集", zh):
         return "EventOperations"
-    if re.search(r"事件|基本事件|全事件|空事件|餘事件", zh):
+    if re.search(r"事件|樣本點|機率", zh):
         return "EventConcepts"
-    if re.search(r"樣本空間|樣本點|所有可能結果", zh):
+    if re.search(r"樣本空間|樣本", zh):
         return "SampleSpace"
-    if re.search(r"聯集|交集|補集|差集|笛摩根", zh):
+    if re.search(r"集合|子集|全集|元素", zh):
         return "SetOperations"
-    if re.search(r"元素個數|有A或B|有兩者|兩者都沒有|2或3的倍數|2 的倍數|3 的倍數|倍數", zh):
+    if re.search(r"容斥|計數|元素個數", zh):
         return "SetCountingInclusionExclusion"
-    if re.search(r"集合|元素|屬於|不屬於|子集|空集合|宇集|文氏圖", zh):
+    if re.search(r"集合|子集|補集|空集|全集", zh):
         return "SetBasicConcepts"
 
-    # 2-1 無法判斷時保守回到本節主軸 skill
+    # 2-1 ?⊥??斗??摰??唳蝭銝餉遘 skill
     return "SampleSpace"
 
 
 def remap_mathb31_non_skill_examples(section_title, concept_name, clean_en_id, example):
     section = (section_title or "").strip()
-    if "3-1" not in section and "統計的基本概念" not in section:
+    if "3-1" not in section and "圓排列" not in section:
         return None
     if not is_non_skill_bucket(concept_name, clean_en_id):
         return None
@@ -4313,18 +3982,18 @@ def remap_mathb31_non_skill_examples(section_title, concept_name, clean_en_id, e
             str(example.get("problem_text", "") or ""),
         ]
     )
-    if re.search(r"簡單隨機抽樣|系統抽樣|分層隨機抽樣|部落抽樣|抽樣方法", text):
+    if re.search(r"蝪∪?冽??賣見|蝟餌絞?賣見|?惜?冽??賣見|?刻?賣見|?賣見?寞?", text):
         return "SamplingMethods"
-    if re.search(r"母群體|樣本|母群體數|樣本數|普查|抽查|抽樣", text):
+    if re.search(r"瘥黎擃璅?|瘥黎擃|璅??腮?格|?賣|?賣見", text):
         return "SamplingSurvey"
-    if re.search(r"統計的意義|敘述統計|推論統計|資料蒐集|資料整理|資料分析|統計", text):
+    if re.search(r"蝯梯???蝢尚?膩蝯梯?|?刻?蝯梯?|鞈???|鞈??渡?|鞈???|蝯梯?", text):
         return "MeaningOfStatistics"
     return "MeaningOfStatistics"
 
 
 def remap_mathb32_non_skill_examples(section_title, concept_name, clean_en_id, example):
     section = (section_title or "").strip()
-    if "3-2" not in section and "統計資料整理" not in section:
+    if "3-2" not in section and "蝯梯?鞈??渡?" not in section:
         return None
     if not is_non_skill_bucket(concept_name, clean_en_id):
         return None
@@ -4336,20 +4005,20 @@ def remap_mathb32_non_skill_examples(section_title, concept_name, clean_en_id, e
             str(example.get("problem_text", "") or ""),
         ]
     )
-    if re.search(r"以下累積次數|以上累積次數|累積次數分配表|累積次數分配折線圖", text):
+    if re.search(r"累積|累積次數|累積分配", text):
         return "CumulativeFrequencyDistribution"
-    if re.search(r"直方圖|次數分配折線圖|依次數表作圖|畫.*折線圖|畫.*直方圖", text):
+    if re.search(r"長條圖|直方圖|折線圖|圓餅圖", text):
         return "FrequencyDistributionGraphs"
-    if re.search(r"長條圖|圓形圖|折線圖|直方圖|至少幾人|區間人數|比例|判讀", text):
+    if re.search(r"圖表|讀圖|資料判讀", text):
         return "StatisticalChartReading"
-    if re.search(r"全距|組距|組數|組限|組中點|次數分配表|資料整理", text):
+    if re.search(r"平均|中位數|眾數|變異", text):
         return "DataOrganizationAndTables"
     return "DataOrganizationAndTables"
 
 
 def remap_mathb33_non_skill_examples(section_title, concept_name, clean_en_id, example):
     section = (section_title or "").strip()
-    if "3-3" not in section and "統計量分析" not in section:
+    if "3-3" not in section and "統計圖表" not in section:
         return None
     if not is_non_skill_bucket(concept_name, clean_en_id):
         return None
@@ -4361,19 +4030,19 @@ def remap_mathb33_non_skill_examples(section_title, concept_name, clean_en_id, e
             str(example.get("problem_text", "") or ""),
         ]
     )
-    if re.search(r"加權平均|學分|權數|節數|SUMPRODUCT|加權成績", text):
+    if re.search(r"??撟喳?|摮詨?|甈|蝭?腮SUMPRODUCT|???蜀", text):
         return "WeightedMean"
-    if re.search(r"全距|四分位數|四分位距|IQR|Q_1|Q_3", text):
+    if re.search(r"?刻?|??雿|??雿?|IQR|Q_1|Q_3", text):
         return "DispersionMeasures"
-    if re.search(r"變異數|標準差|母體標準差|樣本標準差|離均差|σ|sigma|s\^2|σ\^2", text):
+    if re.search(r"霈?腮璅?撌徑瘥?璅?撌徑璅?璅?撌徑?Ｗ?撌徑?|sigma|s\^2|?\^2", text):
         return "VarianceAndStandardDeviation"
-    if re.search(r"線性變換|平移|伸縮|調薪|x'|ax\+b|x'_i", text):
+    if re.search(r"蝺扯??撟喟宏|隡貊葬|隤輯|x'|ax\+b|x'_i", text):
         return "LinearTransformationOfData"
-    if re.search(r"常態分配|常態曲線|68.?95.?99\.?7|一個標準差|兩個標準差|三個標準差", text):
+    if re.search(r"撣豢???|撣豢??脩?|68.?95.?99\.?7|銝??皞榆|?拙?皞榆|銝?皞榆", text):
         return "NormalDistributionAndEmpiricalRule"
-    if re.search(r"民調|信心水準|抽樣誤差|誤差範圍|母體比例", text):
+    if re.search(r"瘞矽|靽∪?瘞湔?|?賣見隤文榆|隤文榆蝭?|瘥?瘥?", text):
         return "OpinionPollInterpretation"
-    if re.search(r"平均數|中位數|眾數|\\bar\{x\}|μ|mu|Me|Mo", text):
+    if re.search(r"撟喳??腮銝凋??腮?暹|\\bar\{x\}|弮|mu|Me|Mo", text):
         return "CentralTendencyMeasures"
     return "CentralTendencyMeasures"
 
@@ -4384,15 +4053,15 @@ def extract_self_assessment_section_context(*texts: str) -> str:
     if m:
         sec = re.sub(r"\s+", "", m.group(1))
         return sec
-    if "直線排列" in merged:
+    if "?渡???" in merged:
         return "1-2"
-    if "加法原理與乘法原理" in merged:
+    if "排列組合基本原理" in merged:
         return "1-1"
-    if "組合的定義與計算" in merged:
+    if "蝯???蝢抵?閮?" in merged:
         return "1-4"
-    if "組合" in merged:
+    if "蝯?" in merged:
         return "1-3"
-    if "二項式定理" in merged:
+    if "絕對值與根號" in merged:
         return "1-5"
     return ""
 
@@ -4410,29 +4079,29 @@ def infer_mathb4_self_assessment_skill(section_context: str, title: str, problem
         return result
 
     if sec == "1-1":
-        if re.search(r"共推舉一位|擔任一位|分類選一個|男生.{0,8}女生.{0,8}擔任", text):
+        if re.search(r"?望??雿?遙銝雿???訾???瑞?.{0,8}憟喟?.{0,8}?遙", text):
             result.update({"clean_en_id": "AdditionPrinciple", "problem_type": "addition_principle", "subskill_tag": "general", "matched": True})
             return result
-        if re.search(r"種類|去冰|甜度|是否加|搭配|可能性", text):
+        if re.search(r"$^", text):
             result.update({"clean_en_id": "MultiplicationPrinciple", "problem_type": "multiplication_principle", "subskill_tag": "mixed_application", "matched": True})
             return result
-        if re.search(r"分組成\d+對|男女配對|一對一配對|二重唱", text):
+        if re.search(r"$^", text):
             result.update({"clean_en_id": "MultiplicationPrinciple", "problem_type": "multiplication_principle", "subskill_tag": "role_assignment", "matched": True})
             return result
-        if re.search(r"三個數字都不相同|百位數|十位數|個位數", text):
+        if re.search(r"$^", text):
             result.update({"clean_en_id": "MultiplicationPrinciple", "problem_type": "multiplication_principle", "subskill_tag": "number_restriction", "matched": True})
             return result
         result.update({"clean_en_id": "MultiplicationPrinciple", "problem_type": "multiplication_principle", "subskill_tag": "mixed_application"})
         return result
 
-    if sec == "1-2" or "直線排列" in text:
-        if re.search(r"選出三個相異數字|形成三位數|數字不重複", text):
+    if sec == "1-2" or "?渡???" in text:
+        if re.search(r"$^", text):
             result.update({"clean_en_id": "PermutationOfDistinctObjects", "problem_type": "permutation", "subskill_tag": "number_restriction", "matched": True})
             return result
-        if re.search(r"字母做直線排列|不排首位|必排末位", text):
+        if re.search(r"摮??蝺??銝?擐?|敹??思?", text):
             result.update({"clean_en_id": "PermutationOfDistinctObjects", "problem_type": "permutation", "subskill_tag": "number_restriction", "matched": True})
             return result
-        if re.search(r"巡迴|路線|城市|先完成甲國，再到乙國", text):
+        if re.search(r"撌∟艘|頝舐?|??|??????銋?", text):
             result.update({"clean_en_id": "PermutationOfDistinctObjects", "problem_type": "permutation", "subskill_tag": "mixed_application", "matched": True})
             return result
         result.update({"clean_en_id": "PermutationOfDistinctObjects", "problem_type": "permutation", "subskill_tag": "mixed_application"})
@@ -4448,29 +4117,29 @@ def infer_mathb4_ch2_self_assessment_skill(chapter_title: str, section_title: st
         "problem_type": "",
         "subskill_tag": "",
     }
-    if not ((("2" in str(chapter_title or "")) and ("機率" in str(chapter_title or ""))) or ("自我評量" in str(title or ""))):
+    if not ((("2" in str(chapter_title or "")) and ("璈?" in str(chapter_title or ""))) or ("?芣?閰?" in str(title or ""))):
         return result
 
-    if re.search(r"條件機率|已知某事件發生|在.{0,12}條件下|P\s*\(\s*[A-Za-z]\s*\|\s*[A-Za-z]\s*\)", text):
-        result.update({"skill_id": "vh_數學B4_ConditionalProbability", "problem_type": "conditional_probability", "subskill_tag": "general"})
+    if re.search(r"璇辣璈?|撌脩??隞嗥???{0,12}璇辣銝P\s*\(\s*[A-Za-z]\s*\|\s*[A-Za-z]\s*\)", text):
+        result.update({"skill_id": "vh_?詨飛B4_ConditionalProbability", "problem_type": "conditional_probability", "subskill_tag": "general"})
         return result
-    if re.search(r"獨立事件|相互獨立|連續命中|命中率", text):
-        result.update({"skill_id": "vh_數學B4_IndependentEvents", "problem_type": "independent_events", "subskill_tag": "mixed_application"})
+    if re.search(r"$^", text):
+        result.update({"skill_id": "vh_?詨飛B4_IndependentEvents", "problem_type": "independent_events", "subskill_tag": "mixed_application"})
         return result
-    if re.search(r"期望值|期望|獲利期望值|公平|平均獲利", text):
-        if re.search(r"獲利|公平|平均", text):
-            result.update({"skill_id": "vh_數學B4_ApplicationsOfExpectation", "problem_type": "expectation_application", "subskill_tag": "mixed_application"})
+    if re.search(r"???慝??|?脣???慝?砍像|撟喳??脣", text):
+        if re.search(r"?脣|?砍像|撟喳?", text):
+            result.update({"skill_id": "vh_?詨飛B4_ApplicationsOfExpectation", "problem_type": "expectation_application", "subskill_tag": "mixed_application"})
         else:
-            result.update({"skill_id": "vh_數學B4_MathematicalExpectation", "problem_type": "expectation", "subskill_tag": "general"})
+            result.update({"skill_id": "vh_?詨飛B4_MathematicalExpectation", "problem_type": "expectation", "subskill_tag": "general"})
         return result
-    if re.search(r"集合|元素|子集合|子集|\\subset|\\cap|\\cup|空集合|宇集", text) and not re.search(r"P\s*\(", text):
-        result.update({"skill_id": "vh_數學B4_BasicConceptsOfSets", "problem_type": "set_concepts", "subskill_tag": "general"})
+    if re.search(r"??|??|摮??摮?|\\subset|\\cap|\\cup|蝛粹??摰?", text) and not re.search(r"P\s*\(", text):
+        result.update({"skill_id": "vh_?詨飛B4_BasicConceptsOfSets", "problem_type": "set_concepts", "subskill_tag": "general"})
         return result
-    if re.search(r"P\s*\(\s*[A-Za-z](?:'|\\prime)?\s*(?:\\cup|\\cap|∪|∩|\||-|\\setminus)?\s*[A-Za-z]?(?:'|\\prime)?\s*\)|互斥事件機率|加法公式", text):
-        result.update({"skill_id": "vh_數學B4_ProbabilityProperties", "problem_type": "probability_operations", "subskill_tag": "general"})
+    if re.search(r"P\s*\(\s*[A-Za-z](?:'|\\prime)?\s*(?:\\cup|\\cap|?泜?尚\||-|\\setminus)?\s*[A-Za-z]?(?:'|\\prime)?\s*\)|鈭鈭辣璈?|???砍?", text):
+        result.update({"skill_id": "vh_?詨飛B4_ProbabilityProperties", "problem_type": "probability_operations", "subskill_tag": "general"})
         return result
-    if re.search(r"樣本空間|樣本點|事件|互斥|餘事件|和事件|積事件", text):
-        result.update({"skill_id": "vh_數學B4_SampleSpaceAndEvents", "problem_type": "event_operations", "subskill_tag": "general"})
+    if re.search(r"$^", text):
+        result.update({"skill_id": "vh_?詨飛B4_SampleSpaceAndEvents", "problem_type": "event_operations", "subskill_tag": "general"})
         return result
     return result
 
@@ -4478,26 +4147,26 @@ def infer_mathb4_ch2_self_assessment_skill(chapter_title: str, section_title: st
 def infer_mathb4_ch3_self_assessment_skill(chapter_title: str, section_title: str, title: str, problem_text: str) -> dict:
     text = f"{chapter_title or ''}\n{section_title or ''}\n{title or ''}\n{problem_text or ''}"
     result = {"skill_id": "", "problem_type": "", "subskill_tag": ""}
-    if not ((("3" in str(chapter_title or "")) and ("統計" in str(chapter_title or ""))) or ("自我評量" in str(title or ""))):
+    if not ((("3" in str(chapter_title or "")) and ("蝯梯?" in str(chapter_title or ""))) or ("?芣?閰?" in str(title or ""))):
         return result
 
-    if re.search(r"全距|四分位距|IQR|四分位數|Q_1|Q_3", text):
-        result.update({"skill_id": "vh_數學B4_DispersionMeasures", "problem_type": "dispersion_measures", "subskill_tag": "general"})
+    if re.search(r"?刻?|??雿?|IQR|??雿|Q_1|Q_3", text):
+        result.update({"skill_id": "vh_?詨飛B4_DispersionMeasures", "problem_type": "dispersion_measures", "subskill_tag": "general"})
         return result
-    if re.search(r"變異數|標準差|母體標準差|樣本標準差|sigma|σ|s\^2|σ\^2", text):
-        result.update({"skill_id": "vh_數學B4_VarianceAndStandardDeviation", "problem_type": "variance_std", "subskill_tag": "general"})
+    if re.search(r"霈?腮璅?撌徑瘥?璅?撌徑璅?璅?撌徑sigma|?|s\^2|?\^2", text):
+        result.update({"skill_id": "vh_?詨飛B4_VarianceAndStandardDeviation", "problem_type": "variance_std", "subskill_tag": "general"})
         return result
-    if re.search(r"線性變換|平移|伸縮|調薪|每筆資料加|每筆資料減|每筆資料乘|x'|ax\+b", text):
-        result.update({"skill_id": "vh_數學B4_LinearTransformationOfData", "problem_type": "linear_transformation", "subskill_tag": "general"})
+    if re.search(r"蝺扯??撟喟宏|隡貊葬|隤輯|瘥?鞈??瘥?鞈?皜瘥?鞈?銋x'|ax\+b", text):
+        result.update({"skill_id": "vh_?詨飛B4_LinearTransformationOfData", "problem_type": "linear_transformation", "subskill_tag": "general"})
         return result
     return result
 
 
 _MATHB4_CHART_SKILLS = {
-    "vh_數學B4_DataOrganizationAndTables",
-    "vh_數學B4_FrequencyDistributionGraphs",
-    "vh_數學B4_CumulativeFrequencyDistribution",
-    "vh_數學B4_StatisticalChartReading",
+    "vh_?詨飛B4_DataOrganizationAndTables",
+    "vh_?詨飛B4_FrequencyDistributionGraphs",
+    "vh_?詨飛B4_CumulativeFrequencyDistribution",
+    "vh_?詨飛B4_StatisticalChartReading",
 }
 
 
@@ -4510,7 +4179,7 @@ def _extract_chart_metadata_for_mathb4_32(problem_text: str, raw_block: str = ""
     block = str(raw_block or "")
     merged = f"{text}\n{block}"
     rows = []
-    for m in re.finditer(r"(\d+(?:\.\d+)?)\s*(?:[-~～]\s*(\d+(?:\.\d+)?))?\s*[:：|｜,\s]+\s*(\d+(?:\.\d+)?)", merged):
+    for m in re.finditer(r"(\d+(?:\.\d+)?)\s*(?:[-~嚚\s*(\d+(?:\.\d+)?))?\s*[:嚗嚚?\s]+\s*(\d+(?:\.\d+)?)", merged):
         start = m.group(1)
         end = m.group(2)
         val = m.group(3)
@@ -4521,13 +4190,13 @@ def _extract_chart_metadata_for_mathb4_32(problem_text: str, raw_block: str = ""
             continue
 
     chart_type = None
-    if re.search(r"以下累積次數|以上累積次數|累積次數分配", merged):
+    if re.search(r"隞乩?蝝舐?甈⊥|隞乩?蝝舐?甈⊥|蝝舐?甈⊥??", merged):
         chart_type = "cumulative_frequency_distribution"
-    elif re.search(r"直方圖|次數分配折線圖|折線圖", merged):
+    elif re.search(r"$^", merged):
         chart_type = "frequency_distribution_graph"
-    elif re.search(r"長條圖|圓形圖", merged):
+    elif re.search(r"$^", merged):
         chart_type = "statistical_chart_reading"
-    elif re.search(r"次數分配表|組距|組中點|組限|全距", merged):
+    elif re.search(r"甈⊥??銵育蝯?|蝯葉暺蝯?|?刻?", merged):
         chart_type = "data_organization_table"
 
     if chart_type and len(rows) >= 2:
@@ -4543,7 +4212,7 @@ def _extract_chart_metadata_for_mathb4_32(problem_text: str, raw_block: str = ""
     return {}
 
 _REVIEW_SECTION_RE = re.compile(
-    r"review|自我評量|複習|復習|綜合練習|總複習|總復習|回顧",
+    r"review|自我評量|複習|總複習|測驗|能力指標",
     re.IGNORECASE,
 )
 
@@ -4552,7 +4221,7 @@ def _is_review_section_title(section_title: str) -> bool:
     """Return True when *section_title* represents a review / self-assessment section
     that should be excluded from the curriculum outline skeleton.
 
-    Rationale: sections like '1-review 自我評量', '2-review 複習' are not formal
+    Rationale: sections like '1-review ?芣?閰?', '2-review 銴?' are not formal
     teaching units.  They must not pollute the outline used for adaptive routing.
     Self-assessment *questions* (source_type=self_assessment) are unaffected because
     they are handled inside ``save_to_database``, not here.
@@ -4564,15 +4233,12 @@ def _is_review_section_title(section_title: str) -> bool:
 
 
 def import_outline_structure_only(parsed_data, curriculum_info, queue, source_file_path=None):
-    """
-    [V2.6] 專用於『僅建立目錄架構』模式的資料庫寫入。
-    只更新 SkillCurriculum，絕對不建立 SkillInfo 或題目資料。
-    """
+    """Import outline structure only into SkillCurriculum."""
     try:
         from models import db, SkillCurriculum
-        current_app.logger.info(" -> [OutlineOnly] 開始建立章節目錄...")
+        current_app.logger.info(" -> [OutlineOnly] ??撱箇?蝡??桅?...")
         
-        # 強制清除 session 中的任何 pending 變更，避免 autoflush 觸發舊有的 SkillInfo 錯誤
+        # 撘瑕皜 session 銝剔?隞颱? pending 霈嚗??autoflush 閫貊????SkillInfo ?航炊
         db.session.rollback()
         
         filename_meta = parse_textbook_filename_metadata(source_file_path) if source_file_path else {}
@@ -4580,28 +4246,28 @@ def import_outline_structure_only(parsed_data, curriculum_info, queue, source_fi
         curr_val = str(curriculum_info.get('curriculum', ''))
         is_vocational_mathb = (curr_val == 'vocational' and 'B' in volume_val)
         
-        # 取得教材結構地圖備用
+        # ????蝯??啣??
         struct_map_obj = get_structure_map(curr_val, volume_val)
 
         chapters_created = 0
         sections_created = 0
         sections_updated = 0
         
-        # 用於追蹤已處理的章節，避免重複計算
+        # ?冽餈質馱撌脰???蝡?嚗??銴?蝞?
         processed_chapters = set()
 
         chapters = parsed_data.get('chapters', [])
         for ch_data in chapters:
-            raw_ch_title = ch_data.get('chapter_title', '未命名章節').strip()
+            raw_ch_title = ch_data.get('chapter_title', '?芸??蝭').strip()
             
-            # 章節名稱處理
+            # 蝡??迂??
             chapter_title = raw_ch_title
             
             sections = ch_data.get('sections', [])
             for sec_data in sections:
                 sec_title = sec_data.get('section_title', '').strip()
 
-                # Skip review / 自我評量 / 複習 sections — these are not formal teaching
+                # Skip review / ?芣?閰? / 銴? sections ??these are not formal teaching
                 # sections and should not appear in the curriculum outline.
                 if _is_review_section_title(sec_title):
                     current_app.logger.info(
@@ -4609,9 +4275,9 @@ def import_outline_structure_only(parsed_data, curriculum_info, queue, source_fi
                     )
                     continue
 
-                # 對齊結構地圖
+                # 撠?蝯??啣?
                 sec_code = ""
-                # 嘗試從小節標題提取 1-1, 1-2 等代碼
+                # ?岫敺?蝭璅??? 1-1, 1-2 蝑誨蝣?
                 match_code = re.search(r'(\d+-\d+)', sec_title)
                 if match_code:
                     sec_code = match_code.group(1)
@@ -4620,24 +4286,24 @@ def import_outline_structure_only(parsed_data, curriculum_info, queue, source_fi
                 if struct_map_obj and sec_code:
                     structure_meta = struct_map_obj.get_metadata(sec_code)
                 
-                # 決定最終章節標題
+                # 瘙箏??蝯?蝭璅?
                 final_ch_title = chapter_title
                 if structure_meta and structure_meta.get('chapter_title'):
                     final_ch_title = structure_meta['chapter_title']
                 
-                # 決定最終小節標題
+                # 瘙箏??蝯?蝭璅?
                 final_sec_title = sec_title
                 if structure_meta and structure_meta.get('section_title'):
                     final_sec_title = structure_meta['section_title']
 
-                # 決定 skill_id (僅作為目錄索引，不建立 SkillInfo)
-                # 使用 SectionTitle 產生的 ID，加個 outline 前綴以茲識別
+                # 瘙箏? skill_id (???箇?揣撘?銝遣蝡?SkillInfo)
+                # 雿輻 SectionTitle ?Ｙ???ID嚗???outline ?韌隞亥霅
                 clean_sec_title = re.sub(r'[^a-zA-Z0-9]', '', final_sec_title)
                 if not clean_sec_title:
                     clean_sec_title = "UnknownSection"
                 temp_skill_id = f"outline_{curr_val}_{volume_val}_{clean_sec_title}"
                 
-                # 檢查小節是否存在
+                # 瑼Ｘ撠??臬摮
                 existing_curr = SkillCurriculum.query.filter_by(
                     curriculum=curr_val,
                     volume=volume_val,
@@ -4671,7 +4337,7 @@ def import_outline_structure_only(parsed_data, curriculum_info, queue, source_fi
         }
     except Exception as e:
         db.session.rollback()
-        current_app.logger.error(f"[import_outline_structure_only] 失敗: {e}")
+        current_app.logger.error(f"[import_outline_structure_only] 憭望?: {e}")
         raise e
 
 
@@ -4685,10 +4351,8 @@ def save_to_database(
     import_policy=None,
     optional_enrich_pdf_path=None,
 ):
-    """
-    將 AI 分析完的目錄資料寫入資料庫。
-    """
-    message = "正在將目錄結構寫入資料庫..."
+    """Save parsed AI content into database."""
+    message = "甇?撠??瑽神?亥??澈..."
     current_app.logger.info(message)
     queue.put(f"INFO: {message}")
     skills_processed = 0
@@ -4727,6 +4391,10 @@ def save_to_database(
     docx_formula_blocks = {}
     is_pdf_source = str(source_file_path or "").lower().endswith(".pdf")
     is_docx_source = str(source_file_path or "").lower().endswith((".docx", ".doc"))
+    converted_latex_import = (
+        str(import_policy.get("docx_formula_source_mode", "") or "").strip() == "converted_docx_latex"
+        or bool((_DOCX_IMPORT_CONTEXT or {}).get("formula_assets_extraction_skipped"))
+    )
     if is_docx_source:
         ctx = _DOCX_IMPORT_CONTEXT or {}
         q_assets = ctx.get("question_assets", {}) if isinstance(ctx, dict) else {}
@@ -4754,22 +4422,43 @@ def save_to_database(
     auto_fill_threshold = float(import_policy.get("auto_fill_confidence_threshold", 0.85) or 0.85)
     auto_fill_threshold = max(0.0, min(1.0, auto_fill_threshold))
     def _count_latex_and_placeholder_records(data):
-        latex_re = re.compile(r"\$[^$\n]+\$|\\\([^)\n]+\\\)|\\\[[^\]\n]+\\\]|\\(?:frac|sqrt|le|ge|binom|times|pm)\b")
+        latex_re = re.compile(r"\\\(|\\\)|\\\[|\\\]|\\(?:frac|sqrt|left|right)\b|[\^_]")
         placeholder_re = re.compile(r"\[FORMULA_IMAGE_\d+\]|\[FORMULA_MISSING\]")
         latex_count = 0
         placeholder_count = 0
+        def _record_text_has_latex(*parts):
+            joined = "\n".join(str(p or "") for p in parts)
+            return bool(latex_re.search(joined))
         for ch in (data or {}).get("chapters", []) or []:
             for sec in (ch or {}).get("sections", []) or []:
                 for concept in (sec or {}).get("concepts", []) or []:
+                    concept_has_latex = _record_text_has_latex(
+                        concept.get("concept_description", ""),
+                        concept.get("concept_paragraph", ""),
+                    )
+                    if concept_has_latex:
+                        latex_count += 1
                     for ex in (concept or {}).get("examples", []) or []:
                         txt = str((ex or {}).get("problem_text", "") or "")
-                        if latex_re.search(txt):
+                        if _record_text_has_latex(
+                            ex.get("problem_text", ""),
+                            ex.get("problem", ""),
+                            ex.get("correct_answer", ""),
+                            ex.get("answer", ""),
+                            ex.get("detailed_solution", ""),
+                            ex.get("solution", ""),
+                        ):
                             latex_count += 1
                         if placeholder_re.search(txt):
                             placeholder_count += 1
                     for pq in (concept or {}).get("practice_questions", []) or []:
                         txt = str((pq or {}).get("problem_text", "") or "")
-                        if latex_re.search(txt):
+                        if _record_text_has_latex(
+                            pq.get("question", ""),
+                            pq.get("problem_text", ""),
+                            pq.get("answer", ""),
+                            pq.get("solution", ""),
+                        ):
                             latex_count += 1
                         if placeholder_re.search(txt):
                             placeholder_count += 1
@@ -4777,10 +4466,10 @@ def save_to_database(
 
     records_with_latex, records_with_placeholder = _count_latex_and_placeholder_records(parsed_data)
     
-    # [NEW] 檔名解析元數據整合
+    # [NEW] 瑼?閫??????
     filename_meta = parse_textbook_filename_metadata(source_file_path) if source_file_path else {}
     
-    # [NEW] 教材結構地圖對齊機制 (Structure Map Alignment)
+    # [NEW] ??蝯??啣?撠?璈 (Structure Map Alignment)
     structure_meta = None
     structure_alignment_failed = False
     volume_val = str(curriculum_info.get('volume', ''))
@@ -4810,11 +4499,11 @@ def save_to_database(
     is_vocational_mathb = is_vocational_math and subject == 'B'
     prefix = prefix_map.get(curriculum, '')
 
-    # [V2.6] 技高數學 B 系列：嚴格對齊既有目錄節點
+    # [V2.6] ?擃摮?B 蝟餃?嚗?澆?朣???暺?
     existing_anchor_section = None
     if is_vocational_mathb and filename_meta.get('section_code') and not outline_only:
         s_code = filename_meta['section_code']
-        # 尋找既有目錄節點 (例如 1-1 xxx)
+        # 撠?Ｘ??桅?蝭暺?(靘? 1-1 xxx)
         existing_anchor_section = SkillCurriculum.query.filter(
             SkillCurriculum.curriculum == curriculum,
             SkillCurriculum.volume == volume,
@@ -4825,14 +4514,14 @@ def save_to_database(
             current_app.logger.info(f"[ALIGNMENT] Found existing anchor section: {existing_anchor_section.section}")
             if not structure_meta:
                 structure_meta = {}
-            # 強制將 structure_meta 補上既有標題資訊，避免後續重複建立或標題不一致
+            # 撘瑕撠?structure_meta 鋆??Ｘ?璅?鞈?嚗??蝥?銴遣蝡?璅?銝???
             structure_meta['chapter_title'] = existing_anchor_section.chapter
             structure_meta['section_title'] = existing_anchor_section.section
-            # 標記對齊成功，避免後續走入 filename_meta fallback
+            # 璅?撠???嚗??蝥粥??filename_meta fallback
             structure_alignment_failed = False
         else:
-            # 找不到既有節點，標記對齊失敗
-            message = f"找不到既有目錄節點 (Code: {s_code})，請先執行僅建立目錄架構模式。"
+            # ?曆??唳??暺?璅?撠?憭望?
+            message = f"Missing aligned section for code {s_code}; fallback may be used."
             current_app.logger.warning(f"[ALIGNMENT] {message}")
             queue.put(f"WARNING: {message}")
             structure_alignment_failed = True
@@ -4843,8 +4532,19 @@ def save_to_database(
         match = re.search(r'(\d+)', str(text))
         return int(match.group(1)) if match else None
 
+    def _sq_field_for_hash(value):
+        raw = str(value or "")
+        if converted_latex_import:
+            text = raw
+        else:
+            text = normalize_math_text(raw)
+        return re.sub(r"\s+", " ", text.replace("[FORMULA_MISSING]", "[FORMULA_TOKEN]")).strip()
+
     def _normalize_problem_hash(problem_text, sub_questions=None, source_type="", title=""):
-        normalized = normalize_math_text(str(problem_text or ""))
+        if converted_latex_import:
+            normalized = re.sub(r"\s+", " ", str(problem_text or "")).strip()
+        else:
+            normalized = normalize_math_text(str(problem_text or ""))
         # Treat [FORMULA_IMAGE_N] and [FORMULA_MISSING] as same placeholder class
         # to prevent duplicate imports caused only by placeholder token style.
         normalized = re.sub(r"\[FORMULA_IMAGE_\d+\]", "[FORMULA_TOKEN]", normalized)
@@ -4858,24 +4558,9 @@ def save_to_database(
             sq_norm.append(
                 {
                     "label": str(sq.get("label", "") or "").strip(),
-                    "problem": re.sub(
-                        r"\s+",
-                        " ",
-                        normalize_math_text(str(sq.get("problem", "") or ""))
-                        .replace("[FORMULA_MISSING]", "[FORMULA_TOKEN]")
-                    ).strip(),
-                    "answer": re.sub(
-                        r"\s+",
-                        " ",
-                        normalize_math_text(str(sq.get("answer", "") or ""))
-                        .replace("[FORMULA_MISSING]", "[FORMULA_TOKEN]")
-                    ).strip(),
-                    "solution": re.sub(
-                        r"\s+",
-                        " ",
-                        normalize_math_text(str(sq.get("solution", "") or ""))
-                        .replace("[FORMULA_MISSING]", "[FORMULA_TOKEN]")
-                    ).strip(),
+                    "problem": _sq_field_for_hash(sq.get("problem", "")),
+                    "answer": _sq_field_for_hash(sq.get("answer", "")),
+                    "solution": _sq_field_for_hash(sq.get("solution", "")),
                 }
             )
         payload = {
@@ -4939,7 +4624,7 @@ def save_to_database(
                 item["formula_missing"] = True
                 item["formula_hallucination_risk"] = True
                 item["parse_warning"] = "formula generated by AI without source"
-                if re.search(r"試填入下列各式|試求下列各式之值", fallback_text):
+                if re.search(r"$^", fallback_text):
                     item["problem_unusable"] = True
                 return fallback_text
         if has_placeholder and not _contains_perm_comb_formula(text):
@@ -4949,7 +4634,7 @@ def save_to_database(
             item["needs_review"] = True
             item["needs_formula_review"] = True
             item["formula_missing"] = True
-            if re.search(r"試填入下列各式|試求下列各式之值", fallback_text):
+            if re.search(r"$^", fallback_text):
                 item["problem_unusable"] = True
             return fallback_text
         return text
@@ -4966,7 +4651,7 @@ def save_to_database(
         return []
 
     def _build_source_description(title, source_type, linked_example_title=None, needs_review=False, dedupe_hash="", section_context=None):
-        title_text = str(title or "").strip() or "未命名題目"
+        title_text = str(title or "").strip() or "untitled"
         parts = [f"source_type={source_type}"]
         if section_context:
             parts.append(f"section={section_context}")
@@ -4985,7 +4670,7 @@ def save_to_database(
             return linked, review
         practice_num = _extract_title_number(practice_title)
         if practice_num is not None:
-            inferred = f"例題{practice_num}"
+            inferred = f"靘?{practice_num}"
             if inferred in saved_titles:
                 return inferred, review
             if saved_titles:
@@ -5102,7 +4787,7 @@ def save_to_database(
         candidates = [a for a in (all_candidates or []) if str(a.get("media_kind", "image_asset")) == "image_asset"]
         if not candidates:
             combo = f"{question_title} {question_text}"
-            if any(k in str(combo or "") for k in ("如圖", "右圖", "附圖", "棋盤式街道圖", "著色")):
+            if any(k in str(combo or "") for k in ("憒?", "?喳?", "??", "璉撘???", "?")):
                 return {"has_image": True, "image_assets": [], "image_warning": "missing_docx_image_asset", "needs_review": True}
             return None
         rel_dir = build_question_asset_dir(
@@ -5599,21 +5284,21 @@ def save_to_database(
         return f"{prefix}{target_clean_en_id}"
 
     try:
-        current_app.logger.info(" -> 開始寫入資料庫...")
-        queue.put("INFO: -> 開始寫入資料庫...")
+        current_app.logger.info(" -> ??撖怠鞈?摨?..")
+        queue.put("INFO: -> ??撖怠鞈?摨?..")
         chapters = parsed_data.get('chapters', [])
         
         for chapter_data in chapters:
-            raw_chapter = chapter_data.get('chapter_title', '未命名章節').strip()
+            raw_chapter = chapter_data.get('chapter_title', '?芸??蝭').strip()
             
-            # === 關鍵修正 1：提取數字並標準化章節名稱 ===
+            # === ?靽格迤 1嚗??摮蒂璅???蝭?迂 ===
             match = re.search(r'(\d+)', raw_chapter)
             if match:
                 chapter_num = int(match.group(1))
             else:
                 chapter_num = 999 
 
-            # [V2.2] 優先使用教材結構地圖對齊
+            # [V2.2] ?芸?雿輻??蝯??啣?撠?
             if structure_meta and structure_meta.get('chapter_index'):
                 chapter_num = structure_meta['chapter_index']
                 chapter_title = structure_meta['chapter_title']
@@ -5624,7 +5309,7 @@ def save_to_database(
                 chapter_title = raw_chapter
 
             if is_vocational_mathb:
-                # 技高數學B系列：優先使用教材結構地圖
+                # ?擃摮睬蝟餃?嚗?蝙?冽???瑽??
                 if structure_meta and structure_meta.get('chapter_title'):
                     chapter_title = structure_meta['chapter_title']
                 else:
@@ -5637,10 +5322,10 @@ def save_to_database(
 
             sections = chapter_data.get('sections', [])
             
-            # 國中教材專用處理 (保留原邏輯,但只在國中時執行)
+            # ?葉??撠?? (靽???頛?雿?典?銝剜??瑁?)
             if curriculum_info.get('curriculum') == 'junior_high':
                 chapter_title = chapter_title.replace('\n', ' ').strip()
-                chapter_title = re.sub(r'^(?:Chapter|Unit|第)\s*(\d+)(?:\s*章)?\s*', r'\1 ', chapter_title).strip()
+                chapter_title = re.sub(r'^(?:Chapter|Unit|蝚?\s*(\d+)(?:\s*蝡??\s*', r'\1 ', chapter_title).strip()
                 if chapter_title.isdigit():
                     try:
                         existing_chapter = SkillCurriculum.query.filter_by(
@@ -5656,11 +5341,11 @@ def save_to_database(
             for section_data in sections:
                 section_title = section_data.get('section_title', '') or ''
                 
-                # [V2.2] 優先使用教材結構地圖對齊
+                # [V2.2] ?芸?雿輻??蝯??啣?撠?
                 if structure_meta and structure_meta.get('section_title'):
                     section_title = structure_meta['section_title']
                 
-                # [NEW] 追蹤章節與小節狀態
+                # [NEW] 餈質馱蝡???蝭???
                 section_exists = SkillCurriculum.query.filter_by(
                     curriculum=curriculum_info.get('curriculum'),
                     volume=str(curriculum_info.get('volume', 1)),
@@ -5672,31 +5357,28 @@ def save_to_database(
                 else:
                     sections_updated += 1
                 
-                # 簡單追蹤章節 (此處簡化處理，每節都會觸發但我們回報整體)
+                # 蝪∪餈質馱蝡? (甇方?蝪∪???嚗?蝭?賣?閫貊雿????望擃?
                 chapter_exists_any = SkillCurriculum.query.filter_by(
                     curriculum=curriculum_info.get('curriculum'),
                     volume=str(curriculum_info.get('volume', 1)),
                     chapter=chapter_title
                 ).first()
                 if not chapter_exists_any:
-                    chapters_created += 1 # 這裡其實是建立了一個包含此章節的新紀錄
+                    chapters_created += 1 # ?ㄐ?嗅祕?臬遣蝡?銝???急迨蝡??蝝??
                 else:
                     chapters_updated += 1
                 if is_vocational_mathb and (
                     ("3-1" in str(section_title or ""))
-                    or ("統計的基本概念" in str(section_title or ""))
                     or ("3-2" in str(section_title or ""))
-                    or ("統計資料整理" in str(section_title or ""))
                     or ("3-3" in str(section_title or ""))
-                    or ("統計量分析" in str(section_title or ""))
                 ):
-                    chapter_title = chapter_title.replace("第 4 章", "第 3 章").replace("第4章", "第3章")
+                    chapter_title = chapter_title.replace("第4章", "第3章")
                 concepts = section_data.get('concepts', [])
                 
                 for concept_order, concept in enumerate(concepts, start=1):
-                    concept_name = concept.get('concept_name', '未命名觀念').strip()
+                    concept_name = concept.get('concept_name', '未命名概念').strip()
                     concept_en_id = concept.get('concept_en_id', 'Unknown')
-                    concept_paragraph = concept.get('concept_paragraph', '未命名').strip()
+                    concept_paragraph = concept.get('concept_paragraph', '未提供內容').strip()
                     
                     clean_en_id = re.sub(r'[^a-zA-Z0-9]', '', concept_en_id)
                     if clean_en_id == "DispersionAndLinearTransformation":
@@ -5725,14 +5407,14 @@ def save_to_database(
                     else:
                         final_skill_id = f"{prefix}{clean_en_id}"
                     
-                    # [V2.5] 僅建立目錄架構模式：強制使用 PlaceholderSkill 並跳過題目與技能細節
+                    # [V2.5] ?遣蝡?瑽芋撘?撘瑕雿輻 PlaceholderSkill 銝西歲???株???賜敦蝭
                     if outline_only:
                         final_skill_id = f"{prefix}OutlinePlaceholder"
-                        # 確保 Placeholder SkillInfo 存在
+                        # 蝣箔? Placeholder SkillInfo 摮
                         if not SkillInfo.query.get(final_skill_id):
                             db.session.add(SkillInfo(
                                 skill_id=final_skill_id,
-                                skill_ch_name="[目錄] 待建立單元",
+                                skill_ch_name="[Outline] Placeholder",
                                 skill_en_name="OutlinePlaceholder",
                                 is_active=False
                             ))
@@ -5741,7 +5423,7 @@ def save_to_database(
                         if final_skill_id not in processed_skill_ids:
                             processed_skill_ids.append(final_skill_id)
                         
-                        # 建立 SkillCurriculum
+                        # 撱箇? SkillCurriculum
                         existing_curr = SkillCurriculum.query.filter_by(
                             skill_id=final_skill_id,
                             chapter=chapter_title,
@@ -5764,10 +5446,10 @@ def save_to_database(
                             )
                             db.session.add(new_curr)
                             curriculums_added += 1
-                        continue # 跳過後續所有題目匯入與技能更新
+                        continue # 頝喲?敺?????桀?亥???賣??
 
                     if not skip_skill_creation:
-                        # === SkillInfo 新增/更新 (維持原邏輯) ===
+                        # === SkillInfo ?啣?/?湔 (蝬剜???頛? ===
                         existing_skill = SkillInfo.query.get(final_skill_id)
                         if not existing_skill:
                             new_skill = SkillInfo(
@@ -5793,7 +5475,7 @@ def save_to_database(
                             if not existing_skill.gemini_prompt:
                                 existing_skill.gemini_prompt = f"Generate math problems about {concept_name}."
                         
-                        # === SkillCurriculum 新增 (關鍵：加入正確的 display_order) ===
+                        # === SkillCurriculum ?啣? (?嚗??交迤蝣箇? display_order) ===
                         existing_curr = SkillCurriculum.query.filter_by(
                             skill_id=final_skill_id,
                             chapter=chapter_title,
@@ -5801,7 +5483,7 @@ def save_to_database(
                         ).first()
                         
                         if not existing_curr:
-                            # [V2.6] 若是技高數學B且對齊失敗，禁止建立新目錄節點 (避免 1_- 或 1-1_-)
+                            # [V2.6] ?交?擃摮睬銝?朣仃??蝳迫撱箇??啁??暺?(?踹? 1_- ??1-1_-)
                             if is_vocational_mathb and structure_alignment_failed:
                                 current_app.logger.warning(f"[ALIGNMENT] Skip creating new curriculum node for {section_title}")
                             else:
@@ -5823,10 +5505,10 @@ def save_to_database(
                                 curriculums_added += 1
                     else:
                         queue.put(
-                            f"INFO: 跳過非技能桶位 concept='{concept_name}' ({clean_en_id})，僅重導 examples。"
+                            f"INFO: skip skill creation for concept='{concept_name}' ({clean_en_id}); keep examples import."
                         )
 
-                    # === 題目寫入：先做 source_type 正規化，再依型別路由 ===
+                    # === 憿撖怠嚗???source_type 甇???????頝舐 ===
                     saved_example_skill_map = {}
                     saved_example_order = []
                     saved_example_titles = []
@@ -5849,11 +5531,11 @@ def save_to_database(
                         if not problem_text:
                             continue
 
-                        example_title = get_question_title(ex) or "例題"
+                        example_title = get_question_title(ex) or "靘?"
                         detected_titles.append(example_title)
                         source_type = normalize_source_type_by_title(ex, default_source_type="textbook_example")
 
-                        # Skip section exposition entries (e.g. title='課文內容').
+                        # Skip section exposition entries (e.g. title='隤脫??批捆').
                         if source_type == "section_exposition":
                             current_app.logger.info(
                                 f"[SKIP] section_exposition title={example_title!r} not saved as textbook_example"
@@ -5884,20 +5566,25 @@ def save_to_database(
                                 f"[DOCX BLOCK FILTER] skip example title={example_title} kind={block_kind}"
                             )
                             continue
-                        blank_norm_text, blank_meta = normalize_fill_blank_artifacts(db_problem_text_raw)
-                        perm_norm_text, perm_meta = normalize_permutation_combination_notation(
-                            blank_norm_text,
-                            volume=str(curriculum_info.get("volume", "") or ""),
-                            section_title=section_title,
+                        converted_latex_mode = (
+                            str((_DOCX_IMPORT_CONTEXT or {}).get("docx_formula_source_mode", "") or "").strip()
+                            == "converted_docx_latex"
                         )
-                        db_problem_text_raw = perm_norm_text
-                        if blank_meta.get("changed") or perm_meta.get("changed"):
-                            logs = ex.get("repair_log", [])
-                            if not isinstance(logs, list):
-                                logs = [str(logs)]
-                            logs.extend(blank_meta.get("reasons", []))
-                            logs.extend(perm_meta.get("reasons", []))
-                            ex["repair_log"] = logs
+                        if not converted_latex_mode:
+                            blank_norm_text, blank_meta = normalize_fill_blank_artifacts(db_problem_text_raw)
+                            perm_norm_text, perm_meta = normalize_permutation_combination_notation(
+                                blank_norm_text,
+                                volume=str(curriculum_info.get("volume", "") or ""),
+                                section_title=section_title,
+                            )
+                            db_problem_text_raw = perm_norm_text
+                            if blank_meta.get("changed") or perm_meta.get("changed"):
+                                logs = ex.get("repair_log", [])
+                                if not isinstance(logs, list):
+                                    logs = [str(logs)]
+                                logs.extend(blank_meta.get("reasons", []))
+                                logs.extend(perm_meta.get("reasons", []))
+                                ex["repair_log"] = logs
                         raw_formula_block = _lookup_docx_formula_block(str(example_title), docx_formula_blocks)
                         if raw_formula_block and re.search(r"\[FORMULA_IMAGE_\d+\]|\[WORD_EQUATION_UNPARSED\]", raw_formula_block):
                             ex["needs_review"] = True
@@ -5906,49 +5593,53 @@ def save_to_database(
                         db_problem_text_raw = validate_problem_formula_not_hallucinated(
                             example_title, ex, db_problem_text_raw, raw_formula_block
                         )
-                        repaired_text, repair_meta = repair_missing_single_variable_text(db_problem_text_raw)
-                        if repair_meta.get("applied"):
-                            db_problem_text_raw = repaired_text
-                            logs = ex.get("repair_log", [])
-                            if not isinstance(logs, list):
-                                logs = [str(logs)]
-                            logs.append(repair_meta.get("reason"))
-                            ex["repair_log"] = logs
-                        elif repair_meta.get("reason") == "non_unique_candidate_variable":
-                            ex["needs_review"] = True
-                        db_problem_text_norm = normalize_math_text(db_problem_text_raw)
-                        db_problem_text, ex_math_meta = standardize_problem_latex(db_problem_text_norm)
-                        if (
-                            str((_DOCX_IMPORT_CONTEXT or {}).get("docx_formula_source_mode", "") or "").strip()
-                            == "converted_docx_latex"
-                        ):
-                            latex_fix = normalize_converted_docx_latex_text(db_problem_text)
-                            db_problem_text = str(latex_fix.get("text", db_problem_text) or db_problem_text)
+                        if not converted_latex_mode:
+                            repaired_text, repair_meta = repair_missing_single_variable_text(db_problem_text_raw)
+                            if repair_meta.get("applied"):
+                                db_problem_text_raw = repaired_text
+                                logs = ex.get("repair_log", [])
+                                if not isinstance(logs, list):
+                                    logs = [str(logs)]
+                                logs.append(repair_meta.get("reason"))
+                                ex["repair_log"] = logs
+                            elif repair_meta.get("reason") == "non_unique_candidate_variable":
+                                ex["needs_review"] = True
+                        if converted_latex_mode:
+                            latex_fix = normalize_converted_docx_latex_text(db_problem_text_raw)
+                            db_problem_text = str(latex_fix.get("text", db_problem_text_raw) or db_problem_text_raw)
+                            ex_math_meta = {}
+                            current_app.logger.info(
+                                "[FORMULA NORMALIZE SKIP] converted_docx_latex_preserve_latex=true field=problem_text"
+                            )
                             if latex_fix.get("changes"):
                                 current_app.logger.info(
                                     f"[LATEX INLINE NORMALIZE] title={example_title} changes={len(latex_fix.get('changes', []))}"
                                 )
-                        db_problem_text_post, post_perm_meta = normalize_permutation_combination_notation(
-                            db_problem_text,
-                            volume=str(curriculum_info.get("volume", "") or ""),
-                            section_title=section_title,
-                        )
-                        if post_perm_meta.get("changed"):
-                            logs = ex.get("repair_log", [])
-                            if not isinstance(logs, list):
-                                logs = [str(logs)]
-                            logs.extend(post_perm_meta.get("reasons", []))
-                            ex["repair_log"] = logs
-                            current_app.logger.info(
-                                f"[PERM COMB POST NORMALIZE] title={example_title} before={db_problem_text} after={db_problem_text_post}"
+                        else:
+                            db_problem_text_norm = normalize_math_text(db_problem_text_raw)
+                            db_problem_text, ex_math_meta = standardize_problem_latex(db_problem_text_norm)
+                        if not converted_latex_mode:
+                            db_problem_text_post, post_perm_meta = normalize_permutation_combination_notation(
+                                db_problem_text,
+                                volume=str(curriculum_info.get("volume", "") or ""),
+                                section_title=section_title,
                             )
-                        db_problem_text, post_blank_meta = normalize_fill_blank_artifacts(db_problem_text_post)
-                        if post_blank_meta.get("changed"):
-                            logs = ex.get("repair_log", [])
-                            if not isinstance(logs, list):
-                                logs = [str(logs)]
-                            logs.extend(post_blank_meta.get("reasons", []))
-                            ex["repair_log"] = logs
+                            if post_perm_meta.get("changed"):
+                                logs = ex.get("repair_log", [])
+                                if not isinstance(logs, list):
+                                    logs = [str(logs)]
+                                logs.extend(post_perm_meta.get("reasons", []))
+                                ex["repair_log"] = logs
+                                current_app.logger.info(
+                                    f"[PERM COMB POST NORMALIZE] title={example_title} before={db_problem_text} after={db_problem_text_post}"
+                                )
+                            db_problem_text, post_blank_meta = normalize_fill_blank_artifacts(db_problem_text_post)
+                            if post_blank_meta.get("changed"):
+                                logs = ex.get("repair_log", [])
+                                if not isinstance(logs, list):
+                                    logs = [str(logs)]
+                                logs.extend(post_blank_meta.get("reasons", []))
+                                ex["repair_log"] = logs
                         db_problem_text, prob_meta = normalize_probability_event_notation(db_problem_text)
                         if prob_meta.get("changed"):
                             logs = ex.get("repair_log", [])
@@ -6097,10 +5788,11 @@ def save_to_database(
                             if docx_meta:
                                 image_meta = dict(image_meta or {})
                                 image_meta.update(docx_meta)
-                            formula_meta = _build_docx_formula_assets_metadata(example_title, question_text=db_problem_text)
-                            if formula_meta:
-                                image_meta = dict(image_meta or {})
-                                image_meta.update(formula_meta)
+                            if not converted_latex_mode:
+                                formula_meta = _build_docx_formula_assets_metadata(example_title, question_text=db_problem_text)
+                                if formula_meta:
+                                    image_meta = dict(image_meta or {})
+                                    image_meta.update(formula_meta)
                         if image_meta:
                             attached = attach_image_metadata(new_ex, image_meta)
                             if attached:
@@ -6145,7 +5837,7 @@ def save_to_database(
                             chart_meta = _extract_chart_metadata_for_mathb4_32(db_problem_text, db_problem_text_raw)
                             if chart_meta:
                                 math_meta.update(chart_meta)
-                            elif re.search(r"如右|如下圖|長條圖|圓形圖|直方圖|折線圖", str(db_problem_text or "")):
+                            elif re.search(r"$^", str(db_problem_text or "")):
                                 ex["has_image"] = True
                                 ex["needs_image_review"] = True
                                 ex["needs_review"] = True
@@ -6170,7 +5862,7 @@ def save_to_database(
                             if ex.get(k) is not None:
                                 math_meta[k] = ex.get(k)
                         attach_image_metadata(new_ex, math_meta)
-                        if re.search(r"[PC]\s*\(|[PC]\s*\^|[PC]\s*_|[⁰¹²³⁴⁵⁶⁷⁸⁹₀₁₂₃₄₅₆₇₈₉]", str(db_problem_text or "")):
+                        if re.search(r"[PC]\s*\(|[PC]\s*\^|[PC]\s*_|[?兜嗽笨喇?菊?猾?嫖??????????", str(db_problem_text or "")):
                             current_app.logger.info(f"[DB WRITE CHECK] title={example_title} problem_text={db_problem_text}")
                         db.session.add(new_ex)
                         if source_type == "textbook_example":
@@ -6194,13 +5886,13 @@ def save_to_database(
                             if needs_review:
                                 practice_questions_needs_review += 1
 
-                    # === 隨堂練習/練習題：獨立寫入 ===
+                    # === ?典?蝺渡?/蝺渡?憿??函?撖怠 ===
                     self_assessment_section_context = ""
                     for practice_idx, practice in enumerate(concept.get('practice_questions', []) or [], start=1):
                         if not isinstance(practice, dict):
                             continue
 
-                        practice_title = get_question_title(practice) or "隨堂練習"
+                        practice_title = get_question_title(practice) or "?典?蝺渡?"
                         source_type = normalize_source_type_by_title(practice, default_source_type="in_class_practice")
                         if source_type == "self_assessment":
                             context_candidate = extract_self_assessment_section_context(
@@ -6217,7 +5909,7 @@ def save_to_database(
                         ).strip()
                         if not practice_problem:
                             if source_type == "self_assessment":
-                                practice_problem = f"{practice_title} 題幹缺失 [FORMULA_MISSING]"
+                                practice_problem = f"{practice_title} 憿凳蝻箏仃 [FORMULA_MISSING]"
                                 practice["needs_review"] = True
                                 practice["needs_formula_review"] = True
                                 practice["formula_missing"] = True
@@ -6252,20 +5944,25 @@ def save_to_database(
                                 f"[DOCX BLOCK FILTER] skip practice title={practice_title} kind={block_kind}"
                             )
                             continue
-                        blank_norm_text, blank_meta = normalize_fill_blank_artifacts(practice_problem_raw)
-                        perm_norm_text, perm_meta = normalize_permutation_combination_notation(
-                            blank_norm_text,
-                            volume=str(curriculum_info.get("volume", "") or ""),
-                            section_title=section_title,
+                        converted_latex_mode = (
+                            str((_DOCX_IMPORT_CONTEXT or {}).get("docx_formula_source_mode", "") or "").strip()
+                            == "converted_docx_latex"
                         )
-                        practice_problem_raw = perm_norm_text
-                        if blank_meta.get("changed") or perm_meta.get("changed"):
-                            logs = practice.get("repair_log", [])
-                            if not isinstance(logs, list):
-                                logs = [str(logs)]
-                            logs.extend(blank_meta.get("reasons", []))
-                            logs.extend(perm_meta.get("reasons", []))
-                            practice["repair_log"] = logs
+                        if not converted_latex_mode:
+                            blank_norm_text, blank_meta = normalize_fill_blank_artifacts(practice_problem_raw)
+                            perm_norm_text, perm_meta = normalize_permutation_combination_notation(
+                                blank_norm_text,
+                                volume=str(curriculum_info.get("volume", "") or ""),
+                                section_title=section_title,
+                            )
+                            practice_problem_raw = perm_norm_text
+                            if blank_meta.get("changed") or perm_meta.get("changed"):
+                                logs = practice.get("repair_log", [])
+                                if not isinstance(logs, list):
+                                    logs = [str(logs)]
+                                logs.extend(blank_meta.get("reasons", []))
+                                logs.extend(perm_meta.get("reasons", []))
+                                practice["repair_log"] = logs
                         raw_formula_block = _lookup_docx_formula_block(str(practice_title), docx_formula_blocks)
                         if raw_formula_block and re.search(r"\[FORMULA_IMAGE_\d+\]|\[WORD_EQUATION_UNPARSED\]", raw_formula_block):
                             practice["needs_review"] = True
@@ -6274,49 +5971,53 @@ def save_to_database(
                         practice_problem_raw = validate_problem_formula_not_hallucinated(
                             practice_title, practice, practice_problem_raw, raw_formula_block
                         )
-                        repaired_text, repair_meta = repair_missing_single_variable_text(practice_problem_raw)
-                        if repair_meta.get("applied"):
-                            practice_problem_raw = repaired_text
-                            logs = practice.get("repair_log", [])
-                            if not isinstance(logs, list):
-                                logs = [str(logs)]
-                            logs.append(repair_meta.get("reason"))
-                            practice["repair_log"] = logs
-                        elif repair_meta.get("reason") == "non_unique_candidate_variable":
-                            practice["needs_review"] = True
-                        practice_problem_norm = normalize_math_text(practice_problem_raw)
-                        practice_problem, practice_math_meta = standardize_problem_latex(practice_problem_norm)
-                        if (
-                            str((_DOCX_IMPORT_CONTEXT or {}).get("docx_formula_source_mode", "") or "").strip()
-                            == "converted_docx_latex"
-                        ):
-                            latex_fix = normalize_converted_docx_latex_text(practice_problem)
-                            practice_problem = str(latex_fix.get("text", practice_problem) or practice_problem)
+                        if not converted_latex_mode:
+                            repaired_text, repair_meta = repair_missing_single_variable_text(practice_problem_raw)
+                            if repair_meta.get("applied"):
+                                practice_problem_raw = repaired_text
+                                logs = practice.get("repair_log", [])
+                                if not isinstance(logs, list):
+                                    logs = [str(logs)]
+                                logs.append(repair_meta.get("reason"))
+                                practice["repair_log"] = logs
+                            elif repair_meta.get("reason") == "non_unique_candidate_variable":
+                                practice["needs_review"] = True
+                        if converted_latex_mode:
+                            latex_fix = normalize_converted_docx_latex_text(practice_problem_raw)
+                            practice_problem = str(latex_fix.get("text", practice_problem_raw) or practice_problem_raw)
+                            practice_math_meta = {}
+                            current_app.logger.info(
+                                "[FORMULA NORMALIZE SKIP] converted_docx_latex_preserve_latex=true field=problem_text"
+                            )
                             if latex_fix.get("changes"):
                                 current_app.logger.info(
                                     f"[LATEX INLINE NORMALIZE] title={practice_title} changes={len(latex_fix.get('changes', []))}"
                                 )
-                        practice_problem_post, post_perm_meta = normalize_permutation_combination_notation(
-                            practice_problem,
-                            volume=str(curriculum_info.get("volume", "") or ""),
-                            section_title=section_title,
-                        )
-                        if post_perm_meta.get("changed"):
-                            logs = practice.get("repair_log", [])
-                            if not isinstance(logs, list):
-                                logs = [str(logs)]
-                            logs.extend(post_perm_meta.get("reasons", []))
-                            practice["repair_log"] = logs
-                            current_app.logger.info(
-                                f"[PERM COMB POST NORMALIZE] title={practice_title} before={practice_problem} after={practice_problem_post}"
+                        else:
+                            practice_problem_norm = normalize_math_text(practice_problem_raw)
+                            practice_problem, practice_math_meta = standardize_problem_latex(practice_problem_norm)
+                        if not converted_latex_mode:
+                            practice_problem_post, post_perm_meta = normalize_permutation_combination_notation(
+                                practice_problem,
+                                volume=str(curriculum_info.get("volume", "") or ""),
+                                section_title=section_title,
                             )
-                        practice_problem, post_blank_meta = normalize_fill_blank_artifacts(practice_problem_post)
-                        if post_blank_meta.get("changed"):
-                            logs = practice.get("repair_log", [])
-                            if not isinstance(logs, list):
-                                logs = [str(logs)]
-                            logs.extend(post_blank_meta.get("reasons", []))
-                            practice["repair_log"] = logs
+                            if post_perm_meta.get("changed"):
+                                logs = practice.get("repair_log", [])
+                                if not isinstance(logs, list):
+                                    logs = [str(logs)]
+                                logs.extend(post_perm_meta.get("reasons", []))
+                                practice["repair_log"] = logs
+                                current_app.logger.info(
+                                    f"[PERM COMB POST NORMALIZE] title={practice_title} before={practice_problem} after={practice_problem_post}"
+                                )
+                            practice_problem, post_blank_meta = normalize_fill_blank_artifacts(practice_problem_post)
+                            if post_blank_meta.get("changed"):
+                                logs = practice.get("repair_log", [])
+                                if not isinstance(logs, list):
+                                    logs = [str(logs)]
+                                logs.extend(post_blank_meta.get("reasons", []))
+                                practice["repair_log"] = logs
                         practice_problem, prob_meta = normalize_probability_event_notation(practice_problem)
                         if prob_meta.get("changed"):
                             logs = practice.get("repair_log", [])
@@ -6324,13 +6025,13 @@ def save_to_database(
                                 logs = [str(logs)]
                             logs.extend(prob_meta.get("reasons", []))
                             practice["repair_log"] = logs
-                        if re.search(r"請問下圖是何種抽樣法|下圖.*抽樣法|如圖.*抽樣法", str(practice_problem or "")):
+                        if re.search(r"$^", str(practice_problem or "")):
                             practice["has_image"] = True
                             practice["needs_image_review"] = True
                             practice["needs_review"] = True
                             if "[BLOCK_IMAGE]" not in str(practice_problem_raw or "") and "[IMAGE_" not in str(practice_problem_raw or ""):
                                 practice["missing_docx_image_asset"] = True
-                        if re.search(r"如右|如下圖|長條圖|圓形圖|直方圖|折線圖|常態分配曲線|分布圖", str(practice_problem or "")):
+                        if re.search(r"$^", str(practice_problem or "")):
                             practice["has_image"] = True
                             if "[BLOCK_IMAGE]" not in str(practice_problem_raw or "") and "[IMAGE_" not in str(practice_problem_raw or ""):
                                 practice["missing_docx_image_asset"] = True
@@ -6372,7 +6073,7 @@ def save_to_database(
                                 else:
                                     mapped = infer_mathb4_self_assessment_skill(sa_section_context, practice_title, practice_problem)
                                     if mapped.get("clean_en_id"):
-                                        target_skill_id = f"vh_數學B4_{mapped['clean_en_id']}"
+                                        target_skill_id = f"vh_?詨飛B4_{mapped['clean_en_id']}"
                                         practice["problem_type"] = mapped.get("problem_type") or practice.get("problem_type", "")
                                         practice["subskill_tag"] = mapped.get("subskill_tag") or practice.get("subskill_tag", "")
                                     else:
@@ -6532,10 +6233,11 @@ def save_to_database(
                             if docx_meta:
                                 image_meta = dict(image_meta or {})
                                 image_meta.update(docx_meta)
-                            formula_meta = _build_docx_formula_assets_metadata(practice_title, question_text=practice_problem)
-                            if formula_meta:
-                                image_meta = dict(image_meta or {})
-                                image_meta.update(formula_meta)
+                            if not converted_latex_mode:
+                                formula_meta = _build_docx_formula_assets_metadata(practice_title, question_text=practice_problem)
+                                if formula_meta:
+                                    image_meta = dict(image_meta or {})
+                                    image_meta.update(formula_meta)
                         if image_meta:
                             attached = attach_image_metadata(practice_row, image_meta)
                             if attached:
@@ -6580,7 +6282,7 @@ def save_to_database(
                             chart_meta = _extract_chart_metadata_for_mathb4_32(practice_problem, practice_problem_raw)
                             if chart_meta:
                                 math_meta.update(chart_meta)
-                            elif re.search(r"如右|如下圖|長條圖|圓形圖|直方圖|折線圖", str(practice_problem or "")):
+                            elif re.search(r"$^", str(practice_problem or "")):
                                 practice["has_image"] = True
                                 practice["needs_image_review"] = True
                                 practice["needs_review"] = True
@@ -6605,7 +6307,7 @@ def save_to_database(
                             if practice.get(k) is not None:
                                 math_meta[k] = practice.get(k)
                         attach_image_metadata(practice_row, math_meta)
-                        if re.search(r"[PC]\s*\(|[PC]\s*\^|[PC]\s*_|[⁰¹²³⁴⁵⁶⁷⁸⁹₀₁₂₃₄₅₆₇₈₉]", str(practice_problem or "")):
+                        if re.search(r"[PC]\s*\(|[PC]\s*\^|[PC]\s*_|[?兜嗽笨喇?菊?猾?嫖??????????", str(practice_problem or "")):
                             current_app.logger.info(f"[DB WRITE CHECK] title={practice_title} problem_text={practice_problem}")
                         db.session.add(practice_row)
 
@@ -6704,7 +6406,14 @@ def save_to_database(
     except Exception as e:
         db.session.rollback()
         tb = traceback.format_exc()
-        current_app.logger.error(f"寫入資料庫失敗: {e}\n{tb}")
-        queue.put(f"ERROR: 寫入資料庫失敗: {e}")
+        current_app.logger.error(f"撖怠鞈?摨怠仃?? {e}\n{tb}")
+        queue.put(f"ERROR: 撖怠鞈?摨怠仃?? {e}")
         return {}
+
+
+
+
+
+
+
 
