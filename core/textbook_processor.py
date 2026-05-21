@@ -74,6 +74,26 @@ FORMULA_PLACEHOLDER_RE = re.compile(r"\[FORMULA_IMAGE_\d+\]|\[FORMULA_MISSING\]|
 TEXT_MOJIBAKE_CHARS = "嚗嚙踐□■◆＊"
 TEXT_MOJIBAKE_RE = re.compile("[" + re.escape(TEXT_MOJIBAKE_CHARS) + r"]")
 LATEX_SIGNAL_GUARD_RE = re.compile(r"\\\(|\\\)|\\\[|\\\]|\\(?:frac|sqrt|left|right)\b|[\^_]")
+GARBLE_MARKERS = ("\ufffd", "銝", "憒", "瘜", "\uf010", "", "嚗", "踐", "□", "■", "◆", "＊")
+PERM_COMB_NOTATION_RE = re.compile(
+    r"(?:\bP\s*\(|\bC\s*\(|\bP\s*\^|\bC\s*\^|\bP_|\bC_)",
+    re.IGNORECASE,
+)
+LATEX_DEBUG_SIGNAL_RE = re.compile(
+    r"\\(?:frac|sqrt|left|right|times|leq|geq|binom)\b|\$[^$]+\$"
+)
+
+
+def _safe_regex_search(pattern: str, text: str, flags: int = 0) -> bool:
+    try:
+        return re.search(pattern, str(text or ""), flags) is not None
+    except re.error:
+        try:
+            if has_app_context():
+                current_app.logger.warning(f"[REGEX GUARD] invalid regex skipped: {pattern!r}")
+        except Exception:
+            pass
+        return False
 
 
 def _norm_title_spaces(title: str) -> str:
@@ -237,6 +257,116 @@ def scan_docx_title_inventory(extracted_text: str, section_code: str | None = No
         )
 
     return items
+
+
+CONVERTED_DOCX_LATEX_JSON_RULES = (
+    "【converted_docx_latex metadata-only 模式 — JSON 硬性規則】\n"
+    "1. 本模式題幹由 DOCX 決定性掃描補回；Gemini 只輸出章節結構與題目 metadata。\n"
+    "2. 所有 JSON 字串禁止實際換行；需換行時僅能寫 \\\\n。\n"
+    "3. 反斜線必須 JSON 雙重跳脫（例如 LaTeX 的 \\\\frac 在 JSON 內寫成 \\\\\\\\frac）。\n"
+    "4. problem_text 僅能填與 title 相同的短字串或極短摘要（單行、≤40 字），禁止多行長題幹。\n"
+    "5. correct_answer 與 detailed_solution 請填 \"\"；禁止輸出 null。\n"
+    "6. 每一題仍須包含：title、source_description、source_type、concept_name、concept_en_id、"
+    "problem_text、correct_answer、detailed_solution。\n"
+    "7. title 與 source_description 必須相同，且與題目標題清單一致。\n"
+)
+
+
+def scan_converted_docx_question_blocks(extracted_text: str) -> dict[str, str]:
+    """Deterministic per-title question blocks from converted LaTeX DOCX plain text."""
+    paragraph_blocks = [
+        {"type": "paragraph", "text": str(ln or "").strip()}
+        for ln in str(extracted_text or "").splitlines()
+        if str(ln or "").strip()
+    ]
+    return build_docx_question_formula_context(paragraph_blocks)
+
+
+def build_converted_docx_latex_gemini_outline_payload(
+    extracted_text: str,
+    section_code: str | None = None,
+) -> str:
+    """Compact Gemini input: title inventory + section hints only (no full LaTeX stems)."""
+    items = scan_docx_title_inventory(extracted_text, section_code=section_code)
+    parts = [
+        "【converted_docx_latex metadata-only — 題目標題清單（請逐題輸出對應 metadata，勿重寫題幹）】",
+    ]
+    for it in items:
+        parts.append(
+            f"- canonical_title={it.get('canonical_title')} kind={it.get('kind')} "
+            f"section={it.get('section_code')} zone={it.get('zone')}"
+        )
+    seen_sections: set[str] = set()
+    for m in re.finditer(r"(\d+-\d+)\s+([^\n]{2,48})", str(extracted_text or "")):
+        hint = f"{m.group(1)} {m.group(2).strip()}"
+        if hint not in seen_sections:
+            seen_sections.add(hint)
+            parts.append(f"[SECTION_HINT] {hint[:72]}")
+    if not items:
+        parts.append("(no titles detected — still output JSON skeleton with empty arrays)")
+    return "\n".join(parts)
+
+
+def hydrate_converted_docx_latex_parsed_data(
+    parsed_data: dict,
+    *,
+    extracted_text: str,
+    section_code: str | None = None,
+    inventory_items: list[dict[str, Any]] | None = None,
+    question_blocks: dict[str, str] | None = None,
+) -> tuple[dict, int, int]:
+    """Fill problem_text from DOCX blocks; normalize empty answer/solution fields."""
+    blocks = dict(question_blocks or scan_converted_docx_question_blocks(extracted_text))
+    filled = 0
+    if not isinstance(parsed_data, dict):
+        return parsed_data, 0, len(blocks)
+
+    for chapter in parsed_data.get("chapters", []) or []:
+        if not isinstance(chapter, dict):
+            continue
+        for section in chapter.get("sections", []) or []:
+            if not isinstance(section, dict):
+                continue
+            sec_title = str(section.get("section_title", "") or "")
+            sec_code = section_code
+            if not sec_code:
+                m = re.search(r"(\d+-\d+)", sec_title)
+                sec_code = m.group(1) if m else None
+            for concept in section.get("concepts", []) or []:
+                if not isinstance(concept, dict):
+                    continue
+                for bucket in ("examples", "practice_questions"):
+                    for item in concept.get(bucket, []) or []:
+                        if not isinstance(item, dict):
+                            continue
+                        title = get_question_title(item) or ""
+                        canon = canonicalize_import_title(
+                            title,
+                            section_code=sec_code,
+                            inventory_items=inventory_items,
+                        )
+                        canon_title = str(canon or title or "").strip()
+                        block = _lookup_docx_formula_block(canon_title, blocks) or _lookup_docx_formula_block(
+                            title, blocks
+                        )
+                        if title:
+                            item["title"] = title
+                            item["source_description"] = str(item.get("source_description") or title).strip()
+                        if block:
+                            item["problem_text"] = block
+                            filled += 1
+                        else:
+                            stub = str(item.get("problem_text") or title or "").strip()
+                            item["problem_text"] = title or stub
+                        if item.get("correct_answer") is None:
+                            item["correct_answer"] = ""
+                        else:
+                            item["correct_answer"] = str(item.get("correct_answer") or "")
+                        if item.get("detailed_solution") is None:
+                            item["detailed_solution"] = ""
+                        else:
+                            item["detailed_solution"] = str(item.get("detailed_solution") or "")
+    return parsed_data, filled, len(blocks)
 
 
 def map_returned_import_title(
@@ -560,6 +690,15 @@ def _has_text_mojibake(text: str) -> bool:
     return any(0xE000 <= ord(ch) <= 0xF8FF for ch in t)
 
 
+def _has_garbled_text(text: str) -> bool:
+    t = str(text or "")
+    if not t:
+        return False
+    if any(marker in t for marker in GARBLE_MARKERS):
+        return True
+    return _has_text_mojibake(t)
+
+
 def _is_low_value_import_field(value: str) -> bool:
     t = str(value or "").strip()
     if not t:
@@ -744,7 +883,7 @@ def clean_pandoc_output(text):
     text = text.replace(r'^{\^{\circ}}', r'^{\circ}')
     
     # 2. 將 \( ... \) 替換為 $ ... $
-    text = re.sub(r'\\\((.*?)\\\\)', r'$\1$', text)
+    text = re.sub(r"\\\((.*?)\\\)", r"$\1$", text)
 
     # 3. 修正 sqrt 格式
     text = re.sub(r'(?:\\)?sqrt\s+(\d+|[a-zA-Z])\b', r'\\sqrt{\1}', text)
@@ -1793,6 +1932,8 @@ def process_textbook_file(
         page_analysis_payload = None
 
         # 步驟 2: 呼叫 AI 進行分析
+        file_meta = parse_textbook_filename_metadata(file_path)
+        import_policy["section_code"] = str(file_meta.get("section_code", "") or "").strip()
         ai_json_result_string = call_gemini_for_analysis(
             content_by_page,
             curriculum_info,
@@ -1823,11 +1964,23 @@ def process_textbook_file(
         # 步驟 4: 將解析出來的內容寫入資料庫
         if docx_formula_source_mode == "converted_docx_latex":
             extracted_text = "\n".join(str(v or "") for _k, v in sorted((content_by_page or {}).items()))
-            file_meta = parse_textbook_filename_metadata(file_path)
-            section_code = str(file_meta.get("section_code", "") or "unknown").replace(" ", "")
+            section_code = str(import_policy.get("section_code", "") or "unknown").replace(" ", "")
             volume = str(curriculum_info.get("volume", "") or "unknown").replace(" ", "")
             sc_for_scan = None if section_code == "unknown" else section_code
             inventory_items = scan_docx_title_inventory(extracted_text, section_code=sc_for_scan)
+            ctx_blocks = (_DOCX_IMPORT_CONTEXT or {}).get("question_formula_blocks", {}) if isinstance(_DOCX_IMPORT_CONTEXT, dict) else {}
+            parsed_data, hydrate_filled, hydrate_blocks = hydrate_converted_docx_latex_parsed_data(
+                parsed_data,
+                extracted_text=extracted_text,
+                section_code=sc_for_scan,
+                inventory_items=inventory_items,
+                question_blocks=ctx_blocks if isinstance(ctx_blocks, dict) else None,
+            )
+            current_app.logger.info(
+                f"[DOCX HYDRATE] filled_problem_text={hydrate_filled} scanned_blocks={hydrate_blocks}"
+            )
+            if queue is not None:
+                queue.put(f"INFO: [DOCX HYDRATE] filled_problem_text={hydrate_filled} scanned_blocks={hydrate_blocks}")
             expected_titles = sorted({str(it.get("canonical_title", "")).strip() for it in inventory_items if it.get("canonical_title")})
             returned_titles = collect_returned_titles_from_parsed_data(parsed_data)
             inv = build_title_inventory(
@@ -1977,13 +2130,14 @@ def extract_content_from_file(file_path, queue, max_pages=None, import_policy=No
         content_by_page, doc_meta = extract_converted_latex_docx(file_path)
         extracted_text = str((content_by_page or {}).get(1, "") or "")
         detect_meta = detect_converted_latex_docx(extracted_text)
+        question_blocks = scan_converted_docx_question_blocks(extracted_text)
         _DOCX_IMPORT_CONTEXT = {
             "docx_formula_source_mode": "converted_docx_latex",
             "is_converted_latex_docx": True,
             "latex_signal_count": int(detect_meta.get("latex_signal_count", 0)),
             "formula_placeholder_count": int(detect_meta.get("formula_placeholder_count", 0)),
             "question_assets": {},
-            "question_formula_blocks": {},
+            "question_formula_blocks": question_blocks,
             "formula_assets_extraction_skipped": True,
             "ocr_skipped": True,
             "pix2tex_skipped": True,
@@ -1996,6 +2150,7 @@ def extract_content_from_file(file_path, queue, max_pages=None, import_policy=No
         queue.put(f"INFO: is_converted_latex_docx={True}")
         queue.put(f"INFO: latex_signal_count={detect_meta.get('latex_signal_count', 0)}")
         queue.put(f"INFO: formula_placeholder_count={detect_meta.get('formula_placeholder_count', 0)}")
+        queue.put(f"INFO: [DOCX BLOCK SCAN] question_blocks={len(question_blocks)}")
         return content_by_page
     except Exception as e:
         message = f"提取檔案內容時發生異常 (Exception): {e}"
@@ -2294,6 +2449,48 @@ def call_gemini_for_analysis(content_by_page, curriculum_info, queue, page_analy
   ]
 }
 """
+
+    json_example_vh_mathB_metadata_only = """
+{
+  "chapters": [
+    {
+      "chapter_title": "第1章 坐標系與函數圖形",
+      "sections": [
+        {
+          "section_title": "1-4 一元二次不等式",
+          "concepts": [
+            {
+              "concept_name": "一元二次不等式的解法",
+              "concept_en_id": "QuadraticInequalitiesSolution",
+              "concept_paragraph": "",
+              "examples": [
+                {
+                  "id": "1",
+                  "title": "例題1",
+                  "source_description": "例題1",
+                  "problem_text": "例題1",
+                  "correct_answer": "",
+                  "detailed_solution": ""
+                }
+              ],
+              "practice_questions": [
+                {
+                  "id": "1",
+                  "title": "隨堂練習1",
+                  "source_description": "隨堂練習1",
+                  "problem_text": "隨堂練習1",
+                  "correct_answer": "",
+                  "detailed_solution": ""
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
+"""
     # ==============================================================================
 
     curriculum = curriculum_info.get('curriculum', '').strip()
@@ -2308,7 +2505,19 @@ def call_gemini_for_analysis(content_by_page, curriculum_info, queue, page_analy
     current_app.logger.info(debug_message)
     queue.put(debug_message)
 
-    if curriculum == 'junior_high' and publisher == 'kangxuan':
+    import_policy = dict(import_policy or {})
+    docx_formula_source_mode = str(import_policy.get("docx_formula_source_mode", "auto_detect") or "auto_detect").strip()
+    section_code = str(import_policy.get("section_code", "") or "").strip() or None
+    converted_metadata_only = docx_formula_source_mode == "converted_docx_latex"
+
+    if converted_metadata_only and is_vocational_mathb:
+        base_prompt = (
+            "您是一位技高數學B教材結構分析專家。本批為 converted_docx_latex 匯入："
+            "題幹與 LaTeX 已由 DOCX 決定性掃描補回。您只需輸出章節結構與每題 metadata，"
+            "禁止重寫完整題幹、答案或詳解。"
+        )
+        queue.put("INFO: use vocational mathB converted_docx_latex metadata-only prompt")
+    elif curriculum == 'junior_high' and publisher == 'kangxuan':
         base_prompt = prompt_jh_kangxuan
         queue.put("INFO: use junior_high kangxuan prompt")
     elif is_vocational_mathb:
@@ -2348,35 +2557,37 @@ def call_gemini_for_analysis(content_by_page, curriculum_info, queue, page_analy
             blocks.append(block)
         full_content = "\n".join(blocks)
     else:
-        full_content = "\n".join([f"--- Page {k} ---\n{v}" for k, v in content_by_page.items()])
-    
-    json_example = json_example_vh_mathB if is_vocational_mathb else "{}"
+        raw_extracted = "\n".join(str(v or "") for _k, v in sorted((content_by_page or {}).items()))
+        if converted_metadata_only:
+            full_content = build_converted_docx_latex_gemini_outline_payload(
+                raw_extracted,
+                section_code=section_code,
+            )
+            queue.put("INFO: converted_docx_latex metadata-only Gemini payload (title inventory)")
+        else:
+            full_content = "\n".join([f"--- Page {k} ---\n{v}" for k, v in content_by_page.items()])
 
-    import_policy = dict(import_policy or {})
-    docx_formula_source_mode = str(import_policy.get("docx_formula_source_mode", "auto_detect") or "auto_detect").strip()
+    if converted_metadata_only:
+        json_example = json_example_vh_mathB_metadata_only if is_vocational_mathb else json_example_vh_mathB_metadata_only
+    else:
+        json_example = json_example_vh_mathB if is_vocational_mathb else "{}"
+
     converted_latex_prompt_rules = ""
-    if docx_formula_source_mode == "converted_docx_latex" and is_vocational_mathb:
-        converted_latex_prompt_rules = (
-            "【converted_docx_latex 題目標題硬性規則 — 與 DOCX 原文 inventory 對齊】\n"
-            "1. 每一筆 examples 與 practice_questions 都必須同時填寫 title 與 source_description，"
-            "且兩者必須完全相同，並且必須沿用課本原文可辨識的題目標題，不可改寫、合併或自創。\n"
-            "2. 例題：title 與 source_description 一律為「例題1」「例題2」…（阿拉伯數字、無空格）。\n"
-            "3. 隨堂練習：一律為「隨堂練習1」「隨堂練習2」…（阿拉伯數字、無空格）。\n"
-            "4. 章節習題（基礎題／進階題／自我評量）：必須保留「小節碼＋習題＋區域＋題號」格式，"
-            "例如「1-4習題 基礎題1」「1-4習題 基礎題2」「1-4習題 進階題9」「1-4習題 自我評量1」。"
-            "小節碼（如 1-4）必須與 section_title 一致；區域只能是基礎題、進階題或自我評量。\n"
-            "5. 統測／學測：不可合併成「統測歷屆試題」或任何總稱 bucket；每一題必須拆成原文標題，"
-            "例如「105統測A」「105統測B」（依原文年度與 A/B 卷，無空格）。\n"
-            "6. 禁止將多題合併成一筆；禁止用「練習題」「進階題」「綜合題」「習題區」等泛稱代替具體標題。\n"
-            "7. 課文說明、觀念整理等敘述段落可放在 concept_paragraph，不要當成獨立題目；"
-            "凡原文有題號的例題、隨堂練習、章節習題、統測題，每一題都必須各自一筆 example 或 practice_question。\n"
-            "8. 若原文同時出現例題與隨堂練習、基礎題與進階題，請全部列出，不可遺漏任一題號。\n"
+    if converted_metadata_only:
+        title_rules = (
+            "【題目標題對齊規則】\n"
+            "1. 每一筆 examples / practice_questions 必須同時填 title 與 source_description，且兩者完全相同。\n"
+            "2. 例題：例題1、例題2…；隨堂練習：隨堂練習1…；章節習題：如 1-4習題 基礎題1。\n"
+            "3. 統測題逐題列出（如 105統測A），禁止合併成 bucket。\n"
+            "4. problem_text 僅填與 title 相同之短字串；correct_answer、detailed_solution 填 \"\"。\n"
+            "5. 禁止多行 problem_text；題幹由系統自 DOCX 補回。\n"
         )
-    elif docx_formula_source_mode == "converted_docx_latex":
-        converted_latex_prompt_rules = (
-            "【converted_docx_latex】examples/practice_questions 的 title 與 source_description "
-            "必須沿用原文題目標題，不可改寫或合併。\n"
-        )
+        if is_vocational_mathb:
+            title_rules += (
+                "6. 小節碼須與 section_title 一致；自我評量、基礎題、進階題區域須依原文標題。\n"
+                "7. 課文說明放 concept_paragraph，勿當成獨立題目。\n"
+            )
+        converted_latex_prompt_rules = CONVERTED_DOCX_LATEX_JSON_RULES + "\n" + title_rules
 
     # ==============================================================================
     # 【安全字元防線】修復全形符號、羅馬數字與畸形空白換行，防止 JSON 轉義爆炸
@@ -2416,7 +2627,7 @@ def call_gemini_for_analysis(content_by_page, curriculum_info, queue, page_analy
         f"【請嚴格依照以下 JSON 範例格式結構輸出，嚴禁自行發明論文或無關的目錄結構】\n"
         f"{json_example}\n\n"
         f"{converted_latex_prompt_rules}\n\n"
-        f"【以下是需要您切分、LaTeX化並結構化解析的課本標準文本內容】\n"
+        f"{'【以下為題目標題清單與章節提示（metadata-only，勿重寫題幹）】' if converted_metadata_only else '【以下是需要您切分、LaTeX化並結構化解析的課本標準文本內容】'}\n"
         f"{full_content}"
     )
 
@@ -2978,7 +3189,7 @@ def validate_problem_block_purity(problem: dict) -> dict:
         problem["skill_boundary_mismatch"] = True
 
     if re.search(r"(表格|統計表|列表|table)", text, flags=re.IGNORECASE):
-        has_table_payload = bool(re.search(r"\d", text) and re.search(r"[|嚚???]", text))
+        has_table_payload = bool(re.search(r"\d", text) and re.search(r"[|｜、，,;]", text))
         if not has_table_payload and not re.search(r"\[[A-Z_]*TABLE[A-Z_0-9]*\]", text):
             problem["needs_review"] = True
             problem["needs_table_review"] = True
@@ -2988,18 +3199,6 @@ def validate_problem_block_purity(problem: dict) -> dict:
             logs.append("table-dependent question without enough table content")
             problem["repair_log"] = logs
 
-    if re.search(r"銝?|憒?|??", text) and re.search(r"?賣見瘜雿車?賣見", text):
-        if not (
-            problem.get("has_image")
-            or "[BLOCK_IMAGE]" in text
-            or "[IMAGE_" in text
-        ):
-            problem["needs_review"] = True
-            logs = problem.get("repair_log", [])
-            if not isinstance(logs, list):
-                logs = [str(logs)]
-            logs.append("image-dependent sampling question without image evidence")
-            problem["repair_log"] = logs
     return problem
 
 
@@ -4080,8 +4279,6 @@ def save_to_database(
                 item["formula_missing"] = True
                 item["formula_hallucination_risk"] = True
                 item["parse_warning"] = "formula generated by AI without source"
-                if re.search(r"$^", fallback_text):
-                    item["problem_unusable"] = True
                 return fallback_text
         if has_placeholder and not _contains_perm_comb_formula(text):
             fallback_text = text
@@ -4090,8 +4287,6 @@ def save_to_database(
             item["needs_review"] = True
             item["needs_formula_review"] = True
             item["formula_missing"] = True
-            if re.search(r"$^", fallback_text):
-                item["problem_unusable"] = True
             return fallback_text
         return text
 
@@ -4740,7 +4935,7 @@ def save_to_database(
             # 教材對齊結構 (在此處進行技能綁定)
             if curriculum_info.get('curriculum') == 'junior_high':
                 chapter_title = chapter_title.replace('\n', ' ').strip()
-                chapter_title = re.sub(r'^(?:Chapter|Unit|蝚?\s*(\d+)(?:\s*蝡??\s*', r'\1 ', chapter_title).strip()
+                chapter_title = re.sub(r'^(?:Chapter|Unit|第?\s*(\d+)(?:\s*章)?)\s*', r'\1 ', chapter_title).strip()
                 if chapter_title.isdigit():
                     try:
                         existing_chapter = SkillCurriculum.query.filter_by(
@@ -5022,6 +5217,7 @@ def save_to_database(
                         if converted_latex_mode:
                             latex_fix = normalize_converted_docx_latex_text(db_problem_text_raw)
                             db_problem_text = str(latex_fix.get("text", db_problem_text_raw) or db_problem_text_raw)
+                            db_problem_text_norm = str(db_problem_text or "").strip()
                             ex_math_meta = {}
                             current_app.logger.info(
                                 "[FORMULA NORMALIZE SKIP] converted_docx_latex_preserve_latex=true field=problem_text"
@@ -5031,8 +5227,17 @@ def save_to_database(
                                     f"[LATEX INLINE NORMALIZE] title={example_title} changes={len(latex_fix.get('changes', []))}"
                                 )
                         else:
-                            db_problem_text_norm = normalize_math_text(db_problem_text_raw)
+                            db_problem_text_norm = str(normalize_math_text(db_problem_text_raw) or "").strip()
+                            db_problem_text_before_standardize = db_problem_text_norm
                             db_problem_text, ex_math_meta = standardize_problem_latex(db_problem_text_norm)
+                            if (
+                                db_problem_text != db_problem_text_before_standardize
+                                and LATEX_DEBUG_SIGNAL_RE.search(str(db_problem_text_raw or ""))
+                            ):
+                                current_app.logger.info(
+                                    f"[LATEX STANDARDIZE] title={example_title} "
+                                    f"before={db_problem_text_before_standardize} after={db_problem_text}"
+                                )
                         if not converted_latex_mode:
                             db_problem_text_post, post_perm_meta = normalize_permutation_combination_notation(
                                 db_problem_text,
@@ -5062,9 +5267,6 @@ def save_to_database(
                                 logs = [str(logs)]
                             logs.extend(prob_meta.get("reasons", []))
                             ex["repair_log"] = logs
-                        if re.search(r"P\(|C\(|P\^|C\^|\{\}\^|\{\}\^\{\\\(|\\\(\{\}\^|\\\(\{\}\^\{", str(db_problem_text_raw or "")):
-                            current_app.logger.info(f"[LATEX STANDARDIZE] title={example_title} before={db_problem_text_norm}")
-                            current_app.logger.info(f"[LATEX STANDARDIZE] title={example_title} after={db_problem_text}")
                         db_answer = _render_sub_questions_answer(ex.get('correct_answer', ''), sub_questions)
                         db_solution = _render_sub_questions_solution(ex.get('detailed_solution', ''), sub_questions)
                         needs_review = bool(ex.get("needs_review", False)) or structure_alignment_failed
@@ -5248,16 +5450,6 @@ def save_to_database(
                                 f"[DOCX IMAGE DEBUG] missing_image_candidate title={example_title} source_type={source_type} reason={reason}"
                             )
                         math_meta = _build_math_metadata(db_problem_text_raw, ex_math_meta, needs_review=needs_review)
-                        if _is_mathb4_chart_target(section_title, target_skill_id):
-                            chart_meta = _extract_chart_metadata_for_mathb4_32(db_problem_text, db_problem_text_raw)
-                            if chart_meta:
-                                math_meta.update(chart_meta)
-                            elif re.search(r"$^", str(db_problem_text or "")):
-                                ex["has_image"] = True
-                                ex["needs_image_review"] = True
-                                ex["needs_review"] = True
-                                ex["missing_docx_image_asset"] = True
-                                math_meta["needs_review"] = True
                         for k in (
                             "needs_formula_review",
                             "formula_missing",
@@ -5277,7 +5469,7 @@ def save_to_database(
                             if ex.get(k) is not None:
                                 math_meta[k] = ex.get(k)
                         attach_image_metadata(new_ex, math_meta)
-                        if re.search(r"[PC]\s*\(|[PC]\s*\^|[PC]\s*_|[?兜嗽笨喇?菊?猾?嫖??????????", str(db_problem_text or "")):
+                        if PERM_COMB_NOTATION_RE.search(str(db_problem_text or "")):
                             current_app.logger.info(f"[DB WRITE CHECK] title={example_title} problem_text={db_problem_text}")
                         db.session.add(new_ex)
                         if source_type == "textbook_example":
@@ -5302,23 +5494,12 @@ def save_to_database(
                                 practice_questions_needs_review += 1
 
                     # === 範例題與練習題寫入 ===
-                    self_assessment_section_context = ""
                     for practice_idx, practice in enumerate(concept.get('practice_questions', []) or [], start=1):
                         if not isinstance(practice, dict):
                             continue
 
                         practice_title = get_question_title(practice) or "隨堂練習"
                         source_type = normalize_source_type_by_title(practice, default_source_type="in_class_practice")
-                        if source_type == "self_assessment":
-                            context_candidate = extract_self_assessment_section_context(
-                                practice_title,
-                                practice.get("source_description", ""),
-                                practice.get("problem_text", ""),
-                                practice.get("problem", ""),
-                            )
-                            if context_candidate:
-                                self_assessment_section_context = context_candidate
-
                         practice_problem = str(
                             practice.get("problem_text", "") or practice.get("problem", "") or practice.get("question", "")
                         ).strip()
@@ -5400,6 +5581,7 @@ def save_to_database(
                         if converted_latex_mode:
                             latex_fix = normalize_converted_docx_latex_text(practice_problem_raw)
                             practice_problem = str(latex_fix.get("text", practice_problem_raw) or practice_problem_raw)
+                            practice_problem_norm = str(practice_problem or "").strip()
                             practice_math_meta = {}
                             current_app.logger.info(
                                 "[FORMULA NORMALIZE SKIP] converted_docx_latex_preserve_latex=true field=problem_text"
@@ -5409,8 +5591,17 @@ def save_to_database(
                                     f"[LATEX INLINE NORMALIZE] title={practice_title} changes={len(latex_fix.get('changes', []))}"
                                 )
                         else:
-                            practice_problem_norm = normalize_math_text(practice_problem_raw)
+                            practice_problem_norm = str(normalize_math_text(practice_problem_raw) or "").strip()
+                            practice_problem_before_standardize = practice_problem_norm
                             practice_problem, practice_math_meta = standardize_problem_latex(practice_problem_norm)
+                            if (
+                                practice_problem != practice_problem_before_standardize
+                                and LATEX_DEBUG_SIGNAL_RE.search(str(practice_problem_raw or ""))
+                            ):
+                                current_app.logger.info(
+                                    f"[LATEX STANDARDIZE] title={practice_title} "
+                                    f"before={practice_problem_before_standardize} after={practice_problem}"
+                                )
                         if not converted_latex_mode:
                             practice_problem_post, post_perm_meta = normalize_permutation_combination_notation(
                                 practice_problem,
@@ -5440,21 +5631,6 @@ def save_to_database(
                                 logs = [str(logs)]
                             logs.extend(prob_meta.get("reasons", []))
                             practice["repair_log"] = logs
-                        if re.search(r"$^", str(practice_problem or "")):
-                            practice["has_image"] = True
-                            practice["needs_image_review"] = True
-                            practice["needs_review"] = True
-                            if "[BLOCK_IMAGE]" not in str(practice_problem_raw or "") and "[IMAGE_" not in str(practice_problem_raw or ""):
-                                practice["missing_docx_image_asset"] = True
-                        if re.search(r"$^", str(practice_problem or "")):
-                            practice["has_image"] = True
-                            if "[BLOCK_IMAGE]" not in str(practice_problem_raw or "") and "[IMAGE_" not in str(practice_problem_raw or ""):
-                                practice["missing_docx_image_asset"] = True
-                                practice["needs_image_review"] = True
-                                practice["needs_review"] = True
-                        if re.search(r"P\(|C\(|P\^|C\^|\{\}\^|\{\}\^\{|\\\(\{\}\^|\\\(\{\}\^\{", str(practice_problem_raw or "")):
-                            current_app.logger.info(f"[LATEX STANDARDIZE] title={practice_title} before={practice_problem_norm}")
-                            current_app.logger.info(f"[LATEX STANDARDIZE] title={practice_title} after={practice_problem}")
                         practice_answer = _render_sub_questions_answer(practice.get('correct_answer', ''), sub_questions)
                         practice_solution = _render_sub_questions_solution(practice.get('detailed_solution', ''), sub_questions)
                         linked_example_title = str(practice.get("linked_example_title", "") or "").strip() or None
@@ -5511,7 +5687,7 @@ def save_to_database(
                             linked_example_title=linked_example_title,
                             needs_review=needs_review,
                             dedupe_hash=dedupe_hash,
-                            section_context=self_assessment_section_context if source_type == "self_assessment" else None,
+                            section_context=None,
                         )
 
                         existing_practice = TextbookExample.query.filter_by(
@@ -5668,16 +5844,6 @@ def save_to_database(
                                 f"[DOCX IMAGE DEBUG] missing_image_candidate title={practice_title} source_type={source_type} reason={reason}"
                             )
                         math_meta = _build_math_metadata(practice_problem_raw, practice_math_meta, needs_review=needs_review)
-                        if _is_mathb4_chart_target(section_title, target_skill_id):
-                            chart_meta = _extract_chart_metadata_for_mathb4_32(practice_problem, practice_problem_raw)
-                            if chart_meta:
-                                math_meta.update(chart_meta)
-                            elif re.search(r"$^", str(practice_problem or "")):
-                                practice["has_image"] = True
-                                practice["needs_image_review"] = True
-                                practice["needs_review"] = True
-                                practice["missing_docx_image_asset"] = True
-                                math_meta["needs_review"] = True
                         for k in (
                             "needs_formula_review",
                             "formula_missing",
@@ -5697,7 +5863,7 @@ def save_to_database(
                             if practice.get(k) is not None:
                                 math_meta[k] = practice.get(k)
                         attach_image_metadata(practice_row, math_meta)
-                        if re.search(r"[PC]\s*\(|[PC]\s*\^|[PC]\s*_|[?兜嗽笨喇?菊?猾?嫖??????????", str(practice_problem or "")):
+                        if PERM_COMB_NOTATION_RE.search(str(practice_problem or "")):
                             current_app.logger.info(f"[DB WRITE CHECK] title={practice_title} problem_text={practice_problem}")
                         db.session.add(practice_row)
 

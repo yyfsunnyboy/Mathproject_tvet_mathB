@@ -65,9 +65,53 @@ def test_converted_mode_skips_assets_ocr_pix2tex(tmp_path: Path):
 
 def test_prompt_contains_converted_docx_latex_rules():
     src = Path("core/textbook_processor.py").read_text(encoding="utf-8-sig")
-    assert "converted_docx_latex rules enabled" in src
+    assert "converted_docx_latex metadata-only" in src
+    assert "hydrate_converted_docx_latex_parsed_data" in src
     assert "formula_assets_extraction_skipped" in src
     assert "[FORMULA NORMALIZE SKIP] converted_docx_latex_preserve_latex=true" in src
+
+
+def test_scan_and_hydrate_converted_docx_blocks():
+    text = "例題1 試求 $|x|=1$ 之值。\n隨堂練習1 計算 $2+3$。\n"
+    blocks = processor.scan_converted_docx_question_blocks(text)
+    assert "例題1" in blocks
+    assert "$|x|=1$" in blocks["例題1"]
+    parsed = {
+        "chapters": [
+            {
+                "chapter_title": "第1章",
+                "sections": [
+                    {
+                        "section_title": "1-1 測試",
+                        "concepts": [
+                            {
+                                "concept_name": "測試",
+                                "concept_en_id": "Test",
+                                "examples": [
+                                    {
+                                        "title": "例題1",
+                                        "source_description": "例題1",
+                                        "problem_text": "例題1",
+                                        "correct_answer": None,
+                                        "detailed_solution": None,
+                                    }
+                                ],
+                                "practice_questions": [],
+                            }
+                        ],
+                    }
+                ],
+            }
+        ]
+    }
+    out, filled, _n = processor.hydrate_converted_docx_latex_parsed_data(
+        parsed, extracted_text=text, section_code="1-1"
+    )
+    ex = out["chapters"][0]["sections"][0]["concepts"][0]["examples"][0]
+    assert filled == 1
+    assert "$|x|=1$" in ex["problem_text"]
+    assert ex["correct_answer"] == ""
+    assert ex["detailed_solution"] == ""
 
 def test_converted_mode_skip_legacy_normalize_preserves_text():
     text = r"\(y=\frac{1}{2}(x-2)^{2}+1\) 的圖形"

@@ -40,10 +40,10 @@ def normalize_operator_artifacts(text: str) -> str:
         return text
 
     normalized = str(text)
-    normalized = re.sub(r"\s*[#嚗?]\s*", " ? ", normalized)
-    normalized = re.sub(r"\s*?\s*", " ? ", normalized)
+    normalized = re.sub(r"\s*#\s*", " ? ", normalized)
+    normalized = re.sub(r"\?\s*\?", " ? ", normalized)
     normalized = re.sub(r"\s{2,}", " ", normalized)
-    normalized = re.sub(r"\s+([??嚗?.!?])", r"\1", normalized)
+    normalized = re.sub(r"\s+([?.!?])", r"\1", normalized)
     return normalized.strip()
 
 
@@ -182,7 +182,8 @@ def detect_suspicious_formula(text: str) -> dict[str, Any]:
         suggestions.append("Check whether all C_r^n terms in the sum should share the same upper index n.")
 
     artifact_patterns = [
-        (r"[#嚗?]\s*[#嚗?]", "suspicious_pdf_artifact"),
+        (r"#\s*#", "suspicious_pdf_artifact"),
+        (r"\?\s*\?", "suspicious_pdf_artifact"),
         (r"[_^]\s*[ih]\b", "suspicious_pdf_artifact"),
         (r"\b[CP]\s*(?:\n|\r\n?)\s*\d", "suspicious_combination_notation"),
         (r"\b[CP]\s+\d(?:\s|$)", "suspicious_combination_notation"),
@@ -195,7 +196,9 @@ def detect_suspicious_formula(text: str) -> dict[str, Any]:
         reasons.append("suspicious_factorial")
         suggestions.append("Check if a broken factorial such as '5 1 !' should be '5!'.")
 
-    if re.search(r"\b[gh]\b", raw) and re.search(r"[#嚗?]|[_^]\s*[ih]\b|\b[CP]\s+\d", raw, flags=re.IGNORECASE):
+    if re.search(r"\b[gh]\b", raw) and re.search(
+        r"#|\?|[_^]\s*[ih]\b|\b[CP]\s+\d", raw, flags=re.IGNORECASE
+    ):
         if "suspicious_pdf_artifact" not in reasons:
             reasons.append("suspicious_pdf_artifact")
 
@@ -273,12 +276,12 @@ def _cleanup_inline_latex_spacing(text: str) -> str:
 
     out = re.sub(
         r"\\\(([A-Z])\s*\(\s*([^()\\\n]{1,40})\s*\)\\\)",
-        lambda m: rf"\({m.group(1)}\left({re.sub(r'\s*,\s*', ',', m.group(2).strip())}\right)\)",
+        lambda m: r"\(" + str(m.group(1)) + r"\left(" + str(re.sub(r'\s*,\s*', ',', m.group(2).strip())) + r"\right)\)",
         out,
     )
     out = re.sub(
         r"\\\(([^\\\n]*?)\\\)",
-        lambda m: rf"\({re.sub(r'(?<!\\)\s*(<=|>=|<|>|=)\s*', r'\1', m.group(1).strip())}\)",
+        lambda m: r"\(" + str(re.sub(r'(?<!\\)\s*(<=|>=|<|>|=)\s*', r'\1', m.group(1).strip())) + r"\)",
         out,
     )
     out = re.sub(r"\\\(a、b\\\)", r"\\(a\\)、\\(b\\)", out)

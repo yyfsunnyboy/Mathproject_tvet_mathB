@@ -4,9 +4,9 @@
 - volume: `數學B1`
 - section: `1-4`
 - expected_titles_count: `27`
-- returned_titles_count: `24`
-- missing_titles_count: `11`
-- extra_titles_count: `8`
+- returned_titles_count: `27`
+- missing_titles_count: `0`
+- extra_titles_count: `0`
 - allow_partial_import: `false`
 - write_aborted: `false`
 - warning: ``
@@ -56,19 +56,22 @@
 | 隨堂練習4 | 隨堂練習4 | direct_practice | false |
 | 隨堂練習5 | 隨堂練習5 | direct_practice | false |
 | 例題6 | 例題6 | direct_example | false |
-| 例題7 | 例題7 | direct_example | false |
 | 隨堂練習6 | 隨堂練習6 | direct_practice | false |
-| 隨堂練習7 | 隨堂練習7 | direct_practice | false |
+| 例題7 | 例題7 | direct_example | false |
 | 例題8 | 例題8 | direct_example | false |
+| 隨堂練習7 | 隨堂練習7 | direct_practice | false |
 | 隨堂練習8 | 隨堂練習8 | direct_practice | false |
-| 統測歷屆試題 | 統測歷屆試題 | fallback_unresolved | true |
-| 基礎題1 | 基礎題1 | fallback_unresolved | true |
-| 基礎題2 | 基礎題2 | fallback_unresolved | true |
-| 基礎題3 | 基礎題3 | fallback_unresolved | true |
-| 基礎題4 | 基礎題4 | fallback_unresolved | true |
-| 基礎題5 | 基礎題5 | fallback_unresolved | true |
-| 進階題9 | 進階題9 | fallback_unresolved | true |
-| 進階題10 | 進階題10 | fallback_unresolved | true |
+| 109統測B | 109統測B | direct_exam | false |
+| 1-4習題 基礎題1 | 1-4習題 基礎題1 | exercise_context_map | false |
+| 1-4習題 基礎題2 | 1-4習題 基礎題2 | exercise_context_map | false |
+| 1-4習題 基礎題3 | 1-4習題 基礎題3 | exercise_context_map | false |
+| 1-4習題 基礎題4 | 1-4習題 基礎題4 | exercise_context_map | false |
+| 1-4習題 基礎題5 | 1-4習題 基礎題5 | exercise_context_map | false |
+| 1-4習題 基礎題6 | 1-4習題 基礎題6 | exercise_context_map | false |
+| 1-4習題 基礎題7 | 1-4習題 基礎題7 | exercise_context_map | false |
+| 1-4習題 基礎題8 | 1-4習題 基礎題8 | exercise_context_map | false |
+| 1-4習題 進階題9 | 1-4習題 進階題9 | exercise_context_map | false |
+| 1-4習題 進階題10 | 1-4習題 進階題10 | exercise_context_map | false |
 
 ## Expected Titles Raw
 - 1-4習題 基礎題1
@@ -140,47 +143,24 @@
 - 隨堂練習4
 - 隨堂練習5
 - 例題6
-- 例題7
 - 隨堂練習6
-- 隨堂練習7
+- 例題7
 - 例題8
+- 隨堂練習7
 - 隨堂練習8
-- 統測歷屆試題
-- 基礎題1
-- 基礎題2
-- 基礎題3
-- 基礎題4
-- 基礎題5
-- 進階題9
-- 進階題10
+- 109統測B
+- 1-4習題 基礎題1
+- 1-4習題 基礎題2
+- 1-4習題 基礎題3
+- 1-4習題 基礎題4
+- 1-4習題 基礎題5
+- 1-4習題 基礎題6
+- 1-4習題 基礎題7
+- 1-4習題 基礎題8
+- 1-4習題 進階題9
+- 1-4習題 進階題10
 
 ## Returned Titles Canonical
-- 例題1
-- 例題2
-- 例題3
-- 例題4
-- 例題5
-- 例題6
-- 例題7
-- 例題8
-- 基礎題1
-- 基礎題2
-- 基礎題3
-- 基礎題4
-- 基礎題5
-- 統測歷屆試題
-- 進階題10
-- 進階題9
-- 隨堂練習1
-- 隨堂練習2
-- 隨堂練習3
-- 隨堂練習4
-- 隨堂練習5
-- 隨堂練習6
-- 隨堂練習7
-- 隨堂練習8
-
-## Missing Titles Canonical
 - 1-4習題 基礎題1
 - 1-4習題 基礎題2
 - 1-4習題 基礎題3
@@ -192,13 +172,23 @@
 - 1-4習題 進階題10
 - 1-4習題 進階題9
 - 109統測B
+- 例題1
+- 例題2
+- 例題3
+- 例題4
+- 例題5
+- 例題6
+- 例題7
+- 例題8
+- 隨堂練習1
+- 隨堂練習2
+- 隨堂練習3
+- 隨堂練習4
+- 隨堂練習5
+- 隨堂練習6
+- 隨堂練習7
+- 隨堂練習8
+
+## Missing Titles Canonical
 
 ## Extra Titles Canonical
-- 基礎題1
-- 基礎題2
-- 基礎題3
-- 基礎題4
-- 基礎題5
-- 統測歷屆試題
-- 進階題10
-- 進階題9
