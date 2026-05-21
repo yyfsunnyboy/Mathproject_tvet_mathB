@@ -1,0 +1,41 @@
+74: TEXT_MOJIBAKE_CHARS = "嚗嚙踐□■◆＊"
+516:     if t.count("?") >= 3 and (t.count("?") / max(1, len(t))) > 0.04:
+525:     return t in {"?", "??", "N/A", "n/a", "None", "none", "null", "-"}
+536:         r"\\\(.+?\\\)",
+537:         r"\$.+?\$",
+538:         r"\\leq?|\\geq?",
+865:         r"^\s*(?:\d+\s*-\s*\d+\s*)?習題(?:\s*(?:基礎題|進階題))?\s*\d*",
+867:         r"^\s*(?:統測|學測)\s*\d*",
+879:     r"^\s*例(?:題)?\s*\d+",
+881:     r"^\s*(?:\d+\s*-\s*\d+\s*)?習題",
+885:     r"^\s*(?:統測|學測)",
+985:         r"([〔\[]?\s*\d{2,3}\s*統測\s*[AB]?)",
+991:         r"((?:\d+-\d+\s*)?習題\s*\d*)",
+996:     # Bare-numbered exercise: "5 閫??蝑?..." / "1. 閰行?..." ??return bare number string
+1014:     r"((?:例(?:題)?|隨堂練習|基礎題|進階題|統測|學測|"
+1015:     r"(?:\d+\s*-\s*\d+\s*)?習題)\s*\d+)"
+1060:     # Prefix stripping alias: "1-1蝧? ?箇?憿?" -> "?箇?憿?"
+1137:     concept paragraphs like "1.銝?撘????扯釭??.
+1154:        (e.g. "1-1蝧? ?箇?憿?" ??look up "?箇?憿?").
+1156:        (e.g. title "?箇?憿?" searches only for keys "?箇?憿?", never "靘?5").
+1245:         rf"(?:\{{\s*\}}\s*)?\^\{{\s*{idx}\s*\}}\s*{label}\s*_\{{\s*{idx}\s*\}}",
+1322:     # Strategy 5: same-label prefix key (e.g. key="靘? ?貊?銝?.." for title "靘? 1")
+1332:     # Strategy 6: exercise section fallback (e.g. only key="1-1蝧?")
+1590:     normalized = normalized.replace('"銝????拙予??銝????', "")
+2591:         r"[?﹦＿]",
+2612:             r"(?:"
+2613:             r"\{\s*\}\s*\^\s*\{?\s*\d+\s*\}?\s*[PC]\s*_\s*\{?\s*\d+\s*\}?|"
+2614:             r"[PC]\s*\^\s*\{?\s*\d+\s*\}?\s*_\s*\{?\s*\d+\s*\}?|"
+2615:             r"[PC]\s*_\s*\{?\s*\d+\s*\}?\s*\^\s*\{?\s*\d+\s*\}?|"
+2633:             r"(?:[PC].{0,24}(?:\[\s*FORMULA_IMAGE_\d+\]|\[\s*WORD_EQUATION_UNPARSED\])|"
+2634:             r"(?:\[\s*FORMULA_IMAGE_\d+\]|\[\s*WORD_EQUATION_UNPARSED\]).{0,24}[PC])",
+2682:         r"(?:\{\s*\}\s*)?\^\s*\{?\s*([0-9]+)\s*\}?\s*([PC])\s*_\s*\{?\s*([0-9]+)\s*\}?",
+2703:     token = r"[A-Za-z](?:'|\\prime)?"
+2705:         rf"^\s*({token})(?:\s*(\\cup|\\cap|\\setminus|\||-|或|且)\s*({token}))?\s*$"
+2810:     explanation_cues = _NON_QUESTION_EXPLANATION_CUES + ("銝膩",)
+2917:     r"^(?:觀念整理|觀念說明|整理說明|章節說明|概念說明|課文內容|課文說明|課文|觀念\s*\d*|說明\s*\d*)$"
+3735:                     r"(?:\{\s*\}\s*\^\s*\{?\s*\d+\s*\}?\s*[PC]\s*_\s*\{?\s*\d+\s*\}?|"
+3736:                     r"[PC]\s*\^\s*\{?\s*\d+\s*\}?\s*_\s*\{?\s*\d+\s*\}?|"
+3737:                     r"[PC]\s*_\s*\{?\s*\d+\s*\}?\s*\^\s*\{?\s*\d+\s*\}?|"
+3793:             inferred = f"靘?{practice_num}"
+4617:                         # Skip section exposition entries (e.g. title='隤脫??批捆').

@@ -1,0 +1,152 @@
+76: def _norm_title_spaces(title: str) -> str:
+80: def _strip_title_brackets(s: str) -> str:
+84: def scan_docx_title_inventory(extracted_text: str, section_code: str | None = None) -> list[dict[str, Any]]:
+236: def map_returned_import_title(
+312: def canonicalize_import_title(
+337: def scan_expected_titles_from_converted_text(extracted_text: str) -> list[str]:
+342: def collect_returned_titles_from_parsed_data(parsed_data: dict[str, Any]) -> list[str]:
+351:                 for pq in (concept or {}).get("practice_questions", []) or []:
+358: def build_title_inventory(
+406: def _md_table_row(cells: list[str]) -> str:
+411: def write_title_inventory_report(report_path: str, *, volume: str, section: str, allow_partial_import: bool, write_aborted: bool, inv: dict[str, Any], warning: str = "") -> None:
+500: def detect_curriculum_volume_warning(curriculum: str, volume: str, publisher: str = "") -> str:
+507: def _has_text_mojibake(text: str) -> bool:
+518: def _is_low_value_import_field(value: str) -> bool:
+525: def score_problem_text_quality(text) -> dict:
+575: def should_replace_problem_text(existing_text, incoming_text) -> tuple[bool, dict, dict]:
+585: def sanitize_gemini_json_text(raw: str) -> str:
+630: def safe_load_gemini_json(raw: str):
+682: def _log_gemini_json_parse_failed_after_sanitize(first_error, second_error, raw):
+692: def fix_common_latex_errors(text):
+757: def clean_pandoc_output(text):
+778: def _xml_local_name(tag: str) -> str:
+784: def _omml_node_to_latex(node) -> str:
+819: def _normalize_omml_latex(latex_text: str) -> str:
+827: def convert_omml_to_latex(omml_xml: str) -> str:
+833: def _extract_docx_image_placeholder(run_el, paragraph_state):
+861: def extract_docx_paragraph_with_equations(paragraph) -> str:
+911: def extract_docx_table_with_equations(table) -> str:
+926: def extract_converted_latex_docx(file_path: str) -> tuple[dict[int, str], dict[str, Any]]:
+960: def detect_converted_latex_docx(text: str) -> dict[str, Any]:
+976: def build_docx_media_relationship_map(docx_path: str, extracted_media_dir: str) -> dict[str, dict[str, str]]:
+1000: def _guess_image_content_type(filename: str) -> str:
+1014: def _docx_image_original_format(path_or_name: str, content_type: str = "") -> str:
+1030: def extract_docx_image_rids_from_paragraph(paragraph) -> list[str]:
+1044: def _is_question_start_text(text: str) -> bool:
+1079: def is_structural_boundary_line(line: str) -> bool:
+1115: def _is_figure_caption_line(text: str) -> bool:
+1120: def classify_non_question_block(text: str) -> str | None:
+1136: def segment_question_block_text(problem_text: str, question_title: str = "") -> tuple[str, dict]:
+1172: def _extract_question_title_from_text(text: str) -> str:
+1193: def _is_formula_question_text(text: str) -> bool:
+1198: def _is_image_question_text(text: str) -> bool:
+1226: def _normalize_docx_question_title_key(title: str) -> str:
+1236: def _build_docx_title_aliases(title: str, *, include_bare_number: bool = False) -> list[str]:
+1271: def _extract_label_and_number(title: str) -> tuple[str | None, str | None]:
+1284: def _normalize_docx_key_for_scan(raw_key: str) -> str:
+1288: def _find_docx_prefix_match(title: str, source_map: dict):
+1308: def _find_exercise_section_key(source_map: dict) -> str:
+1318: def _is_safe_exercise_block(block_text: str, num: str) -> bool:
+1338: def _lookup_docx_formula_block(title: str, formula_blocks: dict) -> str:
+1412: def _is_b1_coordinate_context(volume: str, section_title: str, problem_text: str) -> bool:
+1424: def _normalize_coordinate_point_notation(text: str) -> str:
+1462: def _lookup_docx_question_assets(title: str, q_assets: dict) -> list:
+1538: def attach_docx_media_to_question_blocks(blocks):
+1682: def build_docx_question_formula_context(blocks):
+1711: def _safe_title_for_filename(title: str) -> str:
+1717: def _copy_docx_asset_to_question_assets(src_path: str, dst_dir: str, filename: str) -> str | None:
+1736: def parse_volume(volume_str: str):
+1772: def normalize_json_text_before_parse(text):
+1784: def sanitize_detailed_solution_text(text, max_chars=500):
+1815: def process_textbook_file(
+2048:         practice_count = result.get('practice_questions_imported', 0)
+2054:         practice_needs_review_count = result.get('practice_questions_needs_review', 0)
+2055:         practice_skipped_count = result.get('duplicates_skipped', result.get('practice_questions_skipped', 0))
+2114: def extract_content_from_file(file_path, queue, max_pages=None, import_policy=None):
+2371: def _sanitize_and_parse_json(s: str, queue=None):
+2437: def _call_gemini_with_retry(model, analysis_prompt, queue=None, context_message='AI ??', parse_json=False):
+2566: def call_gemini_for_toc(content_by_page, curriculum_info, queue):
+2582: def call_gemini_for_analysis(content_by_page, curriculum_info, queue, page_analysis_payload=None, import_policy=None):
+2725: def parse_ai_response(ai_data_or_string, queue):
+2740: def snake_to_pascal_case(snake_case_string):
+2746: def clean_skill_en_name(raw_en_name, queue=None):
+2757: def _formula_context_label(path):
+2761: def _normalize_extracted_content_math(content_by_page, queue=None, docx_formula_source_mode: str = ""):
+2794: def score_extracted_page_quality(page_text: str) -> dict:
+2816: def _render_page_image_temp(pdf_path: str, page_no_1based: int) -> str | None:
+2837: def _vision_ocr_page_text(pdf_path: str, page_no_1based: int, queue=None) -> str | None:
+2859: def _build_page_analysis_payload(raw_pages, normalized_pages, file_path, queue=None):
+2891: def _normalize_imported_math_value(
+2940: def _normalize_parsed_textbook_math(parsed_data, queue=None, docx_formula_source_mode: str = ""):
+3012:                 for practice in concept.get("practice_questions", []) or []:
+3045: def _first_non_empty_str(mapping, keys):
+3076: def normalize_fill_blank_artifacts(text: str) -> tuple[str, dict]:
+3107: def _contains_perm_comb_formula(text: str) -> bool:
+3123: def is_answer_blank_placeholder_context(raw_block: str, problem_text: str) -> bool:
+3142: def normalize_permutation_combination_notation(
+3198: def normalize_probability_event_notation(text: str) -> tuple[str, dict]:
+3255: def _is_subsection_heading_line(line: str) -> bool:
+3260: def repair_missing_single_variable_text(problem_text: str) -> tuple[str, dict]:
+3298: def validate_problem_block_purity(problem: dict) -> dict:
+3388: def classify_practice_source_bucket(source_type: str) -> str:
+3401: def get_question_title(item: dict) -> str:
+3420: def _is_section_exposition_title(title: str) -> bool:
+3439: def normalize_source_type_by_title(item: dict, default_source_type: str = "textbook_example") -> str:
+3523: def _normalize_title_for_dedupe(title: str) -> str:
+3529: def _build_intra_import_dedupe_key(section_title: str, source_type: str, title: str) -> str:
+3536: def _score_intra_import_item(item: dict, source_type: str = "", title: str = "", q_assets: dict | None = None) -> int:
+3557: def _dedupe_intra_import_section_items(section_data: dict, q_assets: dict | None = None) -> int:
+3571:         for bucket_name, default_st in (("examples", "textbook_example"), ("practice_questions", "in_class_practice")):
+3617:         for bucket_name in ("examples", "practice_questions"):
+3631: def dedupe_intra_import_parsed_data(parsed_data: dict, q_assets: dict | None = None) -> tuple[dict, int]:
+3646: def _normalize_sub_questions(raw_sub_questions):
+3667: def _render_sub_questions_problem(problem_text, sub_questions):
+3679: def _render_sub_questions_answer(answer_text, sub_questions):
+3691: def _render_sub_questions_solution(solution_text, sub_questions):
+3707: def _normalize_textbook_question_structure(parsed_data, queue=None):
+3709:     Normalize AI output structure so examples/practice_questions are consistently separable.
+3711:     - practice_questions: independent in-class practices / exercises
+3712:     - backward compatibility: example.followup_practices -> concept.practice_questions
+3793:                 for practice in (concept.get("practice_questions", []) or []) + extracted_practices:
+3828:                 concept["practice_questions"] = normalized_practices
+3840:                     concept["practice_questions"].extend(normalized_sa)
+3850:                     concept["practice_questions"].extend(normalized_exercises)
+3855: def _mark_needs_review_for_low_quality_pages(parsed_data, page_analysis_payload):
+3870:                 for bucket in ("examples", "practice_questions", "self_assessment_questions"):
+3887: def is_non_skill_bucket(concept_name, clean_en_id):
+3905: def remap_mathb_non_skill_examples(section_title, concept_name, clean_en_id, example):
+3962: def remap_mathb21_non_skill_examples(section_title, concept_name, clean_en_id, example):
+3996: def remap_mathb31_non_skill_examples(section_title, concept_name, clean_en_id, example):
+4020: def remap_mathb32_non_skill_examples(section_title, concept_name, clean_en_id, example):
+4045: def remap_mathb33_non_skill_examples(section_title, concept_name, clean_en_id, example):
+4076: def extract_self_assessment_section_context(*texts: str) -> str:
+4095: def infer_mathb4_self_assessment_skill(section_context: str, title: str, problem_text: str) -> dict:
+4139: def infer_mathb4_ch2_self_assessment_skill(chapter_title: str, section_title: str, title: str, problem_text: str) -> dict:
+4173: def infer_mathb4_ch3_self_assessment_skill(chapter_title: str, section_title: str, title: str, problem_text: str) -> dict:
+4199: def _is_mathb4_chart_target(section_title: str, skill_id: str) -> bool:
+4203: def _extract_chart_metadata_for_mathb4_32(problem_text: str, raw_block: str = "") -> dict:
+4246: def _is_review_section_title(section_title: str) -> bool:
+4261: def import_outline_structure_only(parsed_data, curriculum_info, queue, source_file_path=None):
+4370: def save_to_database(
+4391:     practice_questions_imported = 0
+4397:     practice_questions_needs_review = 0
+4398:     practice_questions_skipped = 0
+4480:                     for pq in (concept or {}).get("practice_questions", []) or []:
+5263:             remapped_33_en_id = remap_mathb33_non_skill_examples(
+5271:             remapped_32_en_id = remap_mathb32_non_skill_examples(
+5279:             remapped_31_en_id = remap_mathb31_non_skill_examples(
+5287:             remapped_21_en_id = remap_mathb21_non_skill_examples(
+5295:             remapped_en_id = remap_mathb_non_skill_examples(
+5542:                     for _bucket in ("examples", "practice_questions"):
+5897:                             practice_questions_imported += 1
+5913:                                 practice_questions_needs_review += 1
+5917:                     for practice_idx, practice in enumerate(concept.get('practice_questions', []) or [], start=1):
+6084:                                 mapped_ch3 = infer_mathb4_ch3_self_assessment_skill(
+6088:                                 mapped_ch2 = infer_mathb4_ch2_self_assessment_skill(
+6100:                                     mapped = infer_mathb4_self_assessment_skill(sa_section_context, practice_title, practice_problem)
+6207:                                 practice_questions_skipped += 1
+6340:                         practice_questions_imported += 1
+6356:                             practice_questions_needs_review += 1
+6415:             'practice_questions_imported': practice_questions_imported,
+6421:             'needs_review_count': practice_questions_needs_review,
+6423:             'practice_questions_skipped': practice_questions_skipped,

@@ -182,6 +182,23 @@ def test_canonicalize_suitang_title():
     assert processor.canonicalize_import_title("隨堂練習 8") == "隨堂練習8"
 
 
+def test_canonicalize_zone_labeled_exercise_titles_with_section_code():
+    assert processor.canonicalize_import_title("基礎題9", section_code="1-4") == "1-4習題 基礎題9"
+    assert processor.canonicalize_import_title("進階題9", section_code="1-4") == "1-4習題 進階題9"
+    assert processor.canonicalize_import_title("自我評量1", section_code="1-4") == "1-4習題 自我評量1"
+    assert processor.canonicalize_import_title("基礎題 2", section_code="1-4") == "1-4習題 基礎題2"
+
+
+def test_merged_exam_bucket_title_needs_review_when_inventory_has_specific_exams():
+    doc = "〔105統測A〕\n〔105統測B〕\n"
+    items = processor.scan_docx_title_inventory(doc)
+    meta = processor.map_returned_import_title("統測歷屆試題", section_code="1-4", inventory_items=items)
+    assert meta["needs_review"] is True
+    assert meta["mapping_method"] == "merged_exam_bucket_rejected"
+    assert meta["returned_canonical"] == "統測歷屆試題"
+    assert "105統測A" in {it["canonical_title"] for it in items}
+
+
 def test_canonicalize_exercise_with_section_code():
     doc = (
         "2-1習題\n"

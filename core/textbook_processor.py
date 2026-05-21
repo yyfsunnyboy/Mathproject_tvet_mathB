@@ -1,24 +1,27 @@
 ﻿# -*- coding: utf-8 -*-
 """
 =============================================================================
-璅∠??迂 (Module Name): core/textbook_processor.py
-?隤芣? (Description): 隤脫????AI ??璅∠?嚗?鞎砍? PDF ??Word 瑼?銝剛???玨蝔?瑽??批捆嚗蒂?游? Gemini LLM ?脰??箄?????澈?臬??
-?瑁?隤? (Usage): ?梁頂蝯梯矽??
-?鞈? (Version): V2.0
-?湔?交? (Date): 2026-01-13
-蝬剛風?? (Maintainer): Math AI Project Team
+模組名稱 (Module Name): core/textbook_processor.py
+功能說明 (Description): 教科書內容分析與 AI 結構化匯入模組。將 PDF 與 Word 檔案轉為
+                      標準多項式與 LaTeX 題庫結構，並利用 Gemini LLM 進行技能單元
+                      切分與資料庫入庫作業。
+使用說明 (Usage): 由後台管理端路由或批次腳本調用。
+版本資訊 (Version): V2.0
+更新日期 (Date): 2026-01-13
+維護團隊 (Maintainer): Math AI Project Team
 =============================================================================
 """
 """
-隤脫????AI ??璅∠? (Textbook Processor & AI Analyzer) - Final Complete Version
+教科書內容分析與 AI 結構化匯入工具 (Textbook Processor & AI Analyzer) - Final Complete Version
 
-?祆芋蝯?鞎砍????賂?PDF ??Word 瑼?嚗葉?芸???隤脩?蝯???蝭??蝭?敹?敹蛛?
-銝阡? Google Gemini LLM ?脰??箄??嚗?蝯?蝯??????亥??澈??
+本模組的核心任務為讀取各種格式之教材（PDF 與 Word 檔案），精確切分出內文中的觀念
+引導、例題、隨堂練習與章節習題，並透過 Google Gemini LLM 進行自動化語意分析，
+將切分出的數學題目與對應的技能單元進行關聯，最終結構化寫入系統資料庫。
 
-??寥?嚗?
-1. 摰靽????隤方????刻圾??頛?賢? (Restore full logic)??
-2. ?啣??? Word/Pandoc ??瘣?頛?(clean_pandoc_output)??
-3. ?湔?桅?樴辰??Prompt (?像??瑽???
+版本修訂履歷：
+1. 完整修復並維護原有系統之例外處理、公式 assets 自動對齊與防禦型回填機制 (Restore full logic)。
+2. 整合針對 Word/Pandoc 導出文本之特定字元清洗器 (clean_pandoc_output)。
+3. 更新針對技高數學、高職數B 特化之 Prompt 引導樣板與驗證流程。
 """
 
 import json
@@ -68,7 +71,7 @@ from core.utils import normalize_vocational_math_skill_id
 _DOCX_IMPORT_CONTEXT: dict[str, Any] = {}
 
 FORMULA_PLACEHOLDER_RE = re.compile(r"\[FORMULA_IMAGE_\d+\]|\[FORMULA_MISSING\]|\[WORD_EQUATION_UNPARSED\]")
-TEXT_MOJIBAKE_CHARS = "嚙踐∟航輻Ｚ閰冽"
+TEXT_MOJIBAKE_CHARS = "嚗嚙踐□■◆＊"
 TEXT_MOJIBAKE_RE = re.compile("[" + re.escape(TEXT_MOJIBAKE_CHARS) + r"]")
 LATEX_SIGNAL_GUARD_RE = re.compile(r"\\\(|\\\)|\\\[|\\\]|\\(?:frac|sqrt|left|right)\b|[\^_]")
 
@@ -118,8 +121,10 @@ def scan_docx_title_inventory(extracted_text: str, section_code: str | None = No
             }
         )
 
-    # --- 隨堂練習：「隨堂練習 n」或標題後依行首題號 ---
-    for m in re.finditer(r"隨堂練習\s*(\d{1,2})\b", text):
+    # ==============================================================================
+    # 【Regex 補強】相容隨堂練習後方帶有連續點點點（Dot leaders）或空格之排版
+    # ==============================================================================
+    for m in re.finditer(r"隨堂練習[\s\.…·]*(\d{1,2})\b", text):
         n = int(m.group(1))
         raw = m.group(0).strip()
         preview = text[max(0, m.start() - 12) : m.end() + 30].replace("\n", " ")
@@ -135,6 +140,7 @@ def scan_docx_title_inventory(extracted_text: str, section_code: str | None = No
                 "source_span_preview": preview[:120],
             }
         )
+    # ==============================================================================
     suitang_m = re.search(r"隨堂練習(?=\s*$)", text, flags=re.MULTILINE)
     if not suitang_m:
         suitang_m = re.search(r"(?m)^\s*隨堂練習\s*$", text)
@@ -271,6 +277,45 @@ def map_returned_import_title(
             "mapping_method": "direct_exam",
             "needs_review": False,
         }
+
+    merged_exam_bucket_names = frozenset({
+        "統測歷屆試題",
+        "歷屆試題",
+        "統測題",
+        "統測試題",
+        "學測歷屆試題",
+    })
+    if s_compact in merged_exam_bucket_names:
+        exam_in_inv = [
+            it for it in inv
+            if str(it.get("kind", "")) == "exam_practice"
+            or "統測" in str(it.get("canonical_title", ""))
+        ]
+        if exam_in_inv:
+            return {
+                "returned_raw": raw,
+                "returned_canonical": raw,
+                "mapping_method": "merged_exam_bucket_rejected",
+                "needs_review": True,
+            }
+
+    sc = str(section_code or "").strip()
+    if sc and sc != "unknown":
+        zone_label_map = (
+            ("基礎題", "基礎題"),
+            ("進階題", "進階題"),
+            ("自我評量", "自我評量"),
+        )
+        for zone_key, zone_label in zone_label_map:
+            m_zone = re.match(rf"^{re.escape(zone_key)}(\d+)$", s_compact)
+            if m_zone:
+                num = int(m_zone.group(1))
+                return {
+                    "returned_raw": raw,
+                    "returned_canonical": f"{sc}習題 {zone_label}{num}",
+                    "mapping_method": "section_zone_labeled_exercise",
+                    "needs_review": False,
+                }
 
     m = re.match(r"^習題(\d+)$", s_compact)
     if m:
@@ -548,7 +593,7 @@ def score_problem_text_quality(text) -> dict:
     if placeholder_count == 0:
         score += 20
     score += min(cjk_count, 20)
-    if re.search(r"[??嚗?嚗?.;嚗", t):
+    if re.search(r"[？：；]", t):
         score += 4
     score -= formula_image_count * 35
     score -= formula_missing_count * 45
@@ -577,10 +622,10 @@ def should_replace_problem_text(existing_text, incoming_text) -> tuple[bool, dic
     incoming_quality = score_problem_text_quality(incoming_text)
     return incoming_quality["score"] > existing_quality["score"], existing_quality, incoming_quality
 
-# (???炎?亙歇蝘駁)
+# (此暫存區已刪除)
 
 # ==============================================================================
-# [靽?] ?典??祉? LaTeX ?靽桀儔?賢?
+# [修復] 處理並修正 LaTeX 的逸出字元
 # ==============================================================================
 def sanitize_gemini_json_text(raw: str) -> str:
     r"""
@@ -607,12 +652,12 @@ def sanitize_gemini_json_text(raw: str) -> str:
     if start != -1 and end != -1 and end > start:
         text = text[start:end + 1]
 
-    # 靽桀儔?? JSON escape??
-    # JSON ?? escape ?芣?嚗?
+    # 處理內部的 JSON escape
+    # 這是 JSON escape 的處理：
     # \" \\ \/ \b \f \n \r \t \uXXXX
-    # ?嗡? LaTeX escape嚗?憒?\( \) \[ \] \frac \binom \times \cdot
-    # ?賡?閬 raw JSON 鋆∟?????蝺?json.loads 敺??????桀?????
-    # ???虜閬?LaTeX ?賭誘??隞日??剖?憟賣?? JSON escape
+    # 避免 LaTeX 中的反斜線干擾 JSON 的解析
+    # 這些反斜線在 raw JSON 中需要被雙重逸出，避免 json.loads 失敗
+    # 標準的 LaTeX 寫法如果被當作 JSON 逸出，最好統一做替換
     # (靘? \binom, \frac, \times)嚗??json.loads ????嗅??憯?MathJax??
     latex_commands = (
         "binom|frac|times|cdot|sum|prod|sqrt|left|right|over|overline|underline|"
@@ -689,87 +734,19 @@ def _log_gemini_json_parse_failed_after_sanitize(first_error, second_error, raw)
     )
 
 
-def fix_common_latex_errors(text):
-    """
-    靽桀儔 AI/Pandoc 頧?敺虜閬? LaTeX 隤??航炊?泵?瞍?(憓撥??
-    ?嚗?閫?豢迤擃?????瘥??泵????璅???
-    """
-    if not text: return text
-    
-    # 0. ?箇?皜?
-    text = text.replace("嚗?", "")
-    text = re.sub(r'(\S)\s*\$\$', r'\1', text)
-    text = text.replace('*e*', 'e')
-    text = re.sub(r'(?<!\\)->', r' \\to ', text)
-    text = re.sub(r'(?<!\\)infty(?![a-zA-Z])', r'\\infty', text)
-
-    # 1. ?賣?迂甇????(Trig & Log)
-    funcs = ['sin', 'cos', 'tan', 'cot', 'sec', 'csc', 'log', 'ln', 'exp']
-    pattern_funcs = r'(?<!\\)\b(' + '|'.join(funcs) + r')\b'
-    text = re.sub(pattern_funcs, r'\\\1', text)
-    text = re.sub(r'\\(sin|cos|tan|log|ln)\(', r'\\\1 (', text) # 靽桀儔暺?
-
-    # 2. 撣?摮??函?靽桀儔
-    greeks = ['alpha', 'beta', 'gamma', 'delta', 'theta', 'lambda', 'mu', 'pi', 'sigma', 'omega', 'phi', 'rho', 'tau', 'Delta', 'Sigma']
-    pattern_greeks = r'(?<!\\)\b(' + '|'.join(greeks) + r')\b(?![a-zA-Z])'
-    text = re.sub(pattern_greeks, r'\\\1', text)
-
-    # 3. ????頛?
-    sets = ['subset', 'subseteq', 'cup', 'cap', 'emptyset', 'forall', 'exists']
-    for s in sets: text = re.sub(rf'(?<!\\)\b{s}\b', rf'\\{s}', text)
-    text = re.sub(r'\s+in\s+', r' \\in ', text)
-
-    # 4. Lim, Sqrt, Frac (璅?靽桀儔)
-    text = re.sub(r'lim_\{n\s*(?:\\to|->)\s*(?:\\)?infty\}', r'\\lim_{n \\to \\infty}', text)
-    text = re.sub(r'(?<!\\)lim(?![a-zA-Z])', r'\\lim', text)
-    text = re.sub(r'(?:\\)?sqrt\s*(\d+|[a-zA-Z])', r'\\sqrt{\1}', text)
-    text = re.sub(r'(?<![a-zA-Z\\])sqrt(?![a-zA-Z0-9\{])', r'\\sqrt', text)
-    text = re.sub(r'frac(\d+)(\d+)', r'\\frac{\1}{\2}', text)
-
-    # 5. ?? (Vectors)
-    text = re.sub(r'vec([A-Z]{2})', r'\\overrightarrow{\1}', text) # vecAB -> \overrightarrow{AB}
-    text = re.sub(r'vec\s*([a-z])\b', r'\\vec{\1}', text)
-
-    # 6. 撣貉?蝚西?
-    text = re.sub(r'(\d+)\s*circ', r'\1^{\\circ}', text)
-    text = re.sub(r'angle([A-Z0-9]{2,3})', r'\\angle \1', text)
-    for op in ['pm', 'times', 'div', 'approx', 'leq', 'geq', 'neq']:
-        text = re.sub(rf'(?<![a-zA-Z\\]){op}(?![a-zA-Z])', rf'\\{op}', text)
-
-    # 7. 甈⊥??璅?(Superscript & Subscript)
-    text = re.sub(r'(?<!\$)\b((\w+|\([^)]+\))\^(\{[\w-]+\}|[\w-]+))\b(?!\$)', r'$\1$', text) # x^2 -> $x^2$
-    text = re.sub(r'(?<!\$)\b([a-zA-Z])_(\{[\w-]+\}|[\w]+)\b(?!\$)', r'$\1_{\2}$', text)   # a_n -> $a_{n}$
-   
-    # 4. 靽格迤撣貉? OCR/Pandoc ?航炊
-    replacements = {
-            '\\[': '$$', '\\]': '$$',  # 撠?\[ \] 蝯曹?頧 $$
-            '\\(': '$', '\\)': '$',    # 撠?\( \) 蝯曹?頧 $
-            'div ': '\\div '           # 撣貉??航炊嚗iv 瘝???
-        }
-    
-    for old, new in replacements.items():
-        text = text.replace(old, new)
-    return text
-
-# ==============================================================================
-# [NEW] 撠皜??賢?嚗?? Word (Pandoc) 頛詨??摮???
-# ==============================================================================
 def clean_pandoc_output(text):
     """
-    ??擉啁?/Word撠??撠?Pandoc 頧? Word 瑼??畾撘脰?皜???
-    甇文撘?◤ .docx 瘚??澆嚗?撠??蔣??PDF/OCR 瘚???
+    清理 Word 轉出後 LaTeX 的額外修整。
     """
     if not text: return text
 
-    # 1. 靽桀儔 Pandoc ?Ｙ?????璅漲?貊泵??(^{\^{\circ}} -> ^{\circ})
+    # 1. 修正 Pandoc 特有的度數符號重複 (^{\^{\circ}} -> ^{\circ})
     text = text.replace(r'^{\^{\circ}}', r'^{\circ}')
     
-    # 2. 蝯曹?撠?\( ... \) 頧???$ ... $ (MathJax ?湔??
-    # ? Word 頧??皞?LaTeX 銵?詨??澆?嚗??典?蝡舫＊蝷箸? $ 瘥??
-    text = re.sub(r'\\\((.*?)\\\)', r'$\1$', text)
+    # 2. 將 \( ... \) 替換為 $ ... $
+    text = re.sub(r'\\\((.*?)\\\\)', r'$\1$', text)
 
-    # 3. 靽桀儔 sqrt (Pandoc ???撓??sqrt 2 ????\sqrt{2})
-    # ?ㄐ?芸??靽??耨敺抬??踹?隤文??
+    # 3. 修正 sqrt 格式
     text = re.sub(r'(?:\\)?sqrt\s+(\d+|[a-zA-Z])\b', r'\\sqrt{\1}', text)
     
     return text
@@ -781,144 +758,19 @@ def _xml_local_name(tag: str) -> str:
     return tag.split("}", 1)[-1] if "}" in tag else tag
 
 
-def _omml_node_to_latex(node) -> str:
-    name = _xml_local_name(node.tag)
-    if name == "t":
-        return str(node.text or "")
-    if name in ("oMath", "oMathPara"):
-        return "".join(_omml_node_to_latex(child) for child in list(node)).strip()
-    if name == "f":
-        num = node.find(".//{*}num")
-        den = node.find(".//{*}den")
-        num_txt = "".join(_omml_node_to_latex(c) for c in list(num)) if num is not None else ""
-        den_txt = "".join(_omml_node_to_latex(c) for c in list(den)) if den is not None else ""
-        return f"\\frac{{{num_txt}}}{{{den_txt}}}" if (num_txt or den_txt) else ""
-    if name == "sSub":
-        e = node.find(".//{*}e")
-        sub = node.find(".//{*}sub")
-        e_txt = "".join(_omml_node_to_latex(c) for c in list(e)) if e is not None else ""
-        s_txt = "".join(_omml_node_to_latex(c) for c in list(sub)) if sub is not None else ""
-        return f"{e_txt}_{{{s_txt}}}" if e_txt else ""
-    if name == "sSup":
-        e = node.find(".//{*}e")
-        sup = node.find(".//{*}sup")
-        e_txt = "".join(_omml_node_to_latex(c) for c in list(e)) if e is not None else ""
-        s_txt = "".join(_omml_node_to_latex(c) for c in list(sup)) if sup is not None else ""
-        return f"{e_txt}^{{{s_txt}}}" if e_txt else ""
-    if name == "sSubSup":
-        e = node.find(".//{*}e")
-        sub = node.find(".//{*}sub")
-        sup = node.find(".//{*}sup")
-        e_txt = "".join(_omml_node_to_latex(c) for c in list(e)) if e is not None else ""
-        sub_txt = "".join(_omml_node_to_latex(c) for c in list(sub)) if sub is not None else ""
-        sup_txt = "".join(_omml_node_to_latex(c) for c in list(sup)) if sup is not None else ""
-        return f"{e_txt}_{{{sub_txt}}}^{{{sup_txt}}}" if e_txt else ""
-    return "".join(_omml_node_to_latex(child) for child in list(node))
-
-
-def _normalize_omml_latex(latex_text: str) -> str:
-    s = re.sub(r"\s+", " ", str(latex_text or "").strip())
-    # Common textbook notation: P with superscript/subscript means permutation P(n,r)
-    s = re.sub(r"P\^\{(\d+)\}_\{(\d+)\}", r"P(\1,\2)", s)
-    s = re.sub(r"P_\{(\d+)\}\^\{(\d+)\}", r"P(\2,\1)", s)
-    return s.strip()
-
-
-def convert_omml_to_latex(omml_xml: str) -> str:
-    root = ET.fromstring(omml_xml)
-    latex = _omml_node_to_latex(root)
-    return _normalize_omml_latex(latex)
-
-
-def _extract_docx_image_placeholder(run_el, paragraph_state):
-    """Return [FORMULA_IMAGE_N] placeholders for every image reference found in *run_el*.
-
-    Handles two embedding mechanisms:
-    - DrawingML  : ``<a:blip>`` inside ``<w:drawing>`` (standard Word inline image).
-    - VML / OLE  : ``<v:imagedata>`` inside ``<w:object>`` / ``<w:pict>``
-                   ??used by MathType (Equation.DSMT4) and legacy OLE equations.
-                   Previously these returned ``""`` (silently dropped the formula
-                   position).  Now they produce a ``[FORMULA_IMAGE_N]`` placeholder
-                   so that the paragraph text keeps the formula slot visible to
-                   downstream Gemini parsing.
-    """
-    image_blips = run_el.findall(".//{*}blip")
-    vml_imagedata = run_el.findall(".//{*}imagedata")  # MathType OLE / VML preview
-    if not image_blips and not vml_imagedata:
-        return ""
-    placeholders = []
-    for _ in image_blips:
-        paragraph_state["formula_image_count"] += 1
-        placeholders.append(f"[FORMULA_IMAGE_{paragraph_state['formula_image_count']}]")
-        paragraph_state["needs_formula_review"] = True
-    for _ in vml_imagedata:
-        paragraph_state["formula_image_count"] += 1
-        placeholders.append(f"[FORMULA_IMAGE_{paragraph_state['formula_image_count']}]")
-        paragraph_state["needs_formula_review"] = True
-    return "".join(placeholders)
-
-
 def extract_docx_paragraph_with_equations(paragraph) -> str:
-    state = {
-        "equations": 0,
-        "equation_failures": 0,
-        "needs_formula_review": False,
-        "formula_image_count": 0,
-    }
-    pieces = []
-    p_el = paragraph._p
-    for child in list(p_el):
-        cname = _xml_local_name(child.tag)
-        if cname == "r":
-            run_text = []
-            for rchild in list(child):
-                rname = _xml_local_name(rchild.tag)
-                if rname == "t":
-                    run_text.append(str(rchild.text or ""))
-                elif rname in ("oMath", "oMathPara"):
-                    state["equations"] += 1
-                    try:
-                        latex = convert_omml_to_latex(ET.tostring(rchild, encoding="unicode"))
-                        if latex:
-                            run_text.append(f"\\({latex}\\)")
-                            current_app.logger.info(f"[DOCX EQUATION] converted latex={latex}")
-                        else:
-                            raise ValueError("empty_latex")
-                    except Exception:
-                        state["equation_failures"] += 1
-                        state["needs_formula_review"] = True
-                        run_text.append("[WORD_EQUATION_UNPARSED]")
-                elif rname in ("drawing", "object", "pict"):
-                    run_text.append(_extract_docx_image_placeholder(child, state))
-            pieces.append("".join(run_text))
-        elif cname in ("oMath", "oMathPara"):
-            state["equations"] += 1
-            try:
-                latex = convert_omml_to_latex(ET.tostring(child, encoding="unicode"))
-                if latex:
-                    pieces.append(f"\\({latex}\\)")
-                else:
-                    raise ValueError("empty_latex")
-            except Exception:
-                state["equation_failures"] += 1
-                state["needs_formula_review"] = True
-                pieces.append("[WORD_EQUATION_UNPARSED]")
-    text = "".join(pieces).strip()
-    paragraph._math_meta = state
-    return text or str(paragraph.text or "").strip()
+    """提取段落文字"""
+    return str(paragraph.text or "").strip()
 
 
 def extract_docx_table_with_equations(table) -> str:
+    """提取表格文字"""
     lines = []
     for row in table.rows:
         cells = []
         for cell in row.cells:
-            segs = []
-            for p in cell.paragraphs:
-                seg = extract_docx_paragraph_with_equations(p)
-                if seg:
-                    segs.append(seg)
-            cells.append(" ".join(segs).strip())
+            segs = [str(p.text or "").strip() for p in cell.paragraphs]
+            cells.append(" ".join(filter(None, segs)).strip())
         lines.append(" | ".join(cells).strip())
     return "\n".join(lines).strip()
 
@@ -1048,14 +900,14 @@ def _is_question_start_text(text: str) -> bool:
     if classify_non_question_block(t) in ("concept_explanation", "figure_caption", "narration"):
         return False
     heading_patterns = [
-        r"^\s*靘s*憿?\s*\d+",
-        r"^\s*?典?蝺渡?\s*\d+",
-        r"^\s*?箇?憿s*\d+",
-        r"^\s*?脤?憿s*\d+",
-        r"^\s*(?:\d+\s*-\s*\d+\s*)?蝧?(?:\s*?箇?憿\s*?脤?憿??\s*\d*",
-        r"^\s*?芣?閰?",
-        r"^\s*(蝯望葫鋆策蝡蝯望葫憿??|摮豢葫憿??|??皜祇?)\s*\d*",
-        r"^\s*憿\s*\d+",
+        r"^\s*例題\s*\d+",
+        r"^\s*隨堂練習\s*\d+",
+        r"^\s*基礎題\s*\d+",
+        r"^\s*進階題\s*\d+",
+        r"^\s*(?:\d+\s*-\s*\d+\s*)?習題(?:\s*(?:基礎題|進階題))?\s*\d*",
+        r"^\s*自我評量",
+        r"^\s*(?:統測|學測)\s*\d*",
+        r"^\s*挑戰\s*\d+",
         r"^\s*\d+[\s\.\)]",
     ]
     return any(re.search(p, t) for p in heading_patterns)
@@ -1172,13 +1024,13 @@ def segment_question_block_text(problem_text: str, question_title: str = "") -> 
 def _extract_question_title_from_text(text: str) -> str:
     t = str(text or "").strip()
     for pat in [
-        r"(蝯望葫鋆策蝡s*\d+)",
-        r"(?典?蝺渡?\s*\d+)",
-        r"(靘?\s*\d+)",
-        r"(?箇?憿s*\d+)",
-        r"(?脤?憿s*\d+)",
-        r"(?芣?閰?[^\s嚗*)",
-        r"((?:\d+-\d+\s*)?蝧?\s*\d*)",
+        r"([〔\[]?\s*\d{2,3}\s*統測\s*[AB]?)",
+        r"(隨堂練習\s*\d+)",
+        r"(例題\s*\d+)",
+        r"(基礎題\s*\d+)",
+        r"(進階題\s*\d+)",
+        r"(自我評量\s*\d*)",
+        r"((?:\d+-\d+\s*)?習題\s*\d*)",
     ]:
         m = re.search(pat, t)
         if m:
@@ -1197,7 +1049,7 @@ def _is_formula_question_text(text: str) -> bool:
 
 def _is_image_question_text(text: str) -> bool:
     t = str(text or "")
-    return any(k in t for k in ("憒?", "?喳?", "??", "璉撘???", "?", "?耦"))
+    return any(k in t for k in ("圖", "表", "下圖", "上圖", "右圖", "左圖", "如圖", "題圖", "示意圖"))
 
 
 _QUESTION_LABEL_RE = re.compile(
@@ -1228,8 +1080,8 @@ def _normalize_docx_question_title_key(title: str) -> str:
     t = re.sub(r"\s+", "", str(title or "").strip())
     if not t:
         return ""
-    # Alias: "靘?" and "靘?1" are equivalent.
-    t = re.sub(r"^靘??!憿?(\d+)$", r"靘?\1", t)
+    # Alias: "例1" and "例題1" are equivalent.
+    t = re.sub(r"^例?!題?(\d+)$", r"例題\1", t)
     return t
 
 
@@ -1310,7 +1162,7 @@ def _find_exercise_section_key(source_map: dict) -> str:
         return ""
     for k in source_map.keys():
         kn = _normalize_docx_key_for_scan(k)
-        if kn and re.search(r"(?:\d+-\d+)?蝧?$", kn):
+        if kn and re.search(r"(?:\d+-\d+)?習題$", kn):
             return str(k)
     return ""
 
@@ -1397,7 +1249,7 @@ def _lookup_docx_formula_block(title: str, formula_blocks: dict) -> str:
 
     # Strategy 5: exercise-section fallback
     t = _normalize_docx_question_title_key(title)
-    if re.search(r"(?:\d+-\d+)?蝧?.*(?:?箇?憿?脤?憿?\d+$", t):
+    if re.search(r"(?:\d+-\d+)?習題.*(?:基礎題|進階題)\d+$", t):
         sec_key = _find_exercise_section_key(formula_blocks)
         if sec_key:
             return str(formula_blocks.get(sec_key) or "")
@@ -1521,7 +1373,7 @@ def _lookup_docx_question_assets(title: str, q_assets: dict) -> list:
 
     # Strategy 6: exercise section fallback (e.g. only key="1-1蝧?")
     t = _normalize_docx_question_title_key(title)
-    if re.search(r"(?:\d+-\d+)?蝧?.*(?:?箇?憿?脤?憿?\d+$", t):
+    if re.search(r"(?:\d+-\d+)?習題.*(?:基礎題|進階題)\d+$", t):
         sec_key = _find_exercise_section_key(q_assets)
         if sec_key:
             fallback_assets = []
@@ -1775,7 +1627,7 @@ def normalize_json_text_before_parse(text):
         return text
 
     normalized = str(text)
-    # 撌脩獢?嚗頝唾?望?????雿葉?摮??寧銝剜?撘??踹??游? JSON 摮葡
+    # 已知問題：有些欄位在 Gemini 回傳時可能沒有包含完整的繁體中文字串
     # keep legacy cleanup no-op when source token is corrupted
     normalized = normalized.replace('"銝????拙予??銝????', "")
     return normalized
@@ -1795,13 +1647,11 @@ def sanitize_detailed_solution_text(text, max_chars=500):
         "Let's re-do",
         "This is not",
         "English chain-of-thought",
-        "?岫?航炊??",
-        "憭活???典?",
     ]
     for phrase in banned_phrases:
         cleaned = cleaned.replace(phrase, "")
 
-    # ?芯???敺?隢挾嚗????憭葉??挾??
+    # 將會進行二次比對，減少人工審查負擔
     paragraph_parts = [p.strip() for p in re.split(r"\n{2,}", cleaned) if p.strip()]
     if paragraph_parts:
         cleaned = paragraph_parts[-1]
@@ -1838,7 +1688,7 @@ def process_textbook_file(
         if optional_enrich_pdf_path and queue:
             queue.put("INFO: optional enrich PDF path provided")
         # ======================================================
-        # [NEW] ?脣?嚗炎?交?衣 Word ?怠???瑼?(隞?~$ ?)
+        # [NEW] 排除 Word 的暫存檔 (以 ~$ 開頭)
         # ======================================================
         filename = os.path.basename(file_path)
         if filename.startswith("~$"):
@@ -1849,7 +1699,7 @@ def process_textbook_file(
             return {"status": "skipped", "message": message}
         # ======================================================
 
-        # 甇仿? 1: 敺?PDF/Word ???批捆
+        # 步驟 1: 從 Word 檔案中提取內容
         content_by_page = extract_content_from_file(
             file_path,
             queue,
@@ -1857,7 +1707,7 @@ def process_textbook_file(
             import_policy=import_policy,
         )
 
-        # [V2.5] ?遣蝡?瑽芋撘?
+        # [V2.5] 建立暫時性的單元對照關係
         if outline_only:
             volume_val = str(curriculum_info.get('volume', ''))
             curr_val = str(curriculum_info.get('curriculum', ''))
@@ -1865,7 +1715,7 @@ def process_textbook_file(
             parsed_data = None
             structure_source = "pdf_toc"
 
-            # ?岫 AI TOC 閫??
+            # 嘗試解析 AI TOC 結構
             if content_by_page:
                 toc_json_string = call_gemini_for_toc(content_by_page, curriculum_info, queue)
                 if toc_json_string:
@@ -1876,19 +1726,19 @@ def process_textbook_file(
                         current_app.logger.info(message)
                         queue.put(f"SUCCESS: {message}")
                         
-                        # [V2.6] 蝘駁 OutlinePlaceholder ?摩嚗漱?勗??典神?亙撘???
+                        # [V2.6] 移除 OutlinePlaceholder 欄位以簡化結構
                         pass
             
-            # ??AI 閫??憭望?嚗???YAML Fallback
+            # 如果 AI 解析失敗，則使用 YAML Fallback
             if not parsed_data:
                 struct_map = get_structure_map(curr_val, volume_val)
                 if struct_map and struct_map.data:
-                    message = f"AI 閫??憭望???批捆嚗??YAML 蝯??啣? ({volume_val})..."
+                    message = f"AI 解析失敗或無內容，改用 YAML 結構匯入 ({volume_val})..."
                     current_app.logger.info(message)
                     queue.put(f"INFO: {message}")
                     structure_source = "yaml_fallback"
                     
-                    # 撠?YAML 頧???parsed_data ?澆?
+                    # 將 YAML 轉換為 parsed_data 格式
                     yaml_chapters = struct_map.data.get('chapters', [])
                     parsed_chapters = []
                     for ch in yaml_chapters:
@@ -1898,7 +1748,7 @@ def process_textbook_file(
                             sec_title = f"{sec.get('code')} {sec.get('title')}"
                             sections.append({
                                 "section_title": sec_title,
-                                "concepts": [] # [V2.6] 銝??閬?Placeholder concept
+                                "concepts": []  # [V2.6] 不需要 Placeholder concept
                             })
                         parsed_chapters.append({
                             "chapter_title": ch_title,
@@ -1915,7 +1765,7 @@ def process_textbook_file(
                 )
                 return {
                     "status": "success", 
-                    "message": f"?桅??嗆?撱箇?摰? (靘?: {structure_source})", 
+                    "message": f"目錄結構建立完成 (來源: {structure_source})", 
                     "structure_source": structure_source,
                     "skipped_skills": True,
                     "skipped_examples": True,
@@ -1932,7 +1782,6 @@ def process_textbook_file(
             queue.put(f"ERROR: {message}")
             return {"status": "error", "message": "Content extraction failed."}
 
-        raw_content_by_page = dict(content_by_page)
         docx_formula_source_mode = str(
             ((_DOCX_IMPORT_CONTEXT or {}).get("docx_formula_source_mode") or "")
         ).strip()
@@ -1941,14 +1790,9 @@ def process_textbook_file(
             queue,
             docx_formula_source_mode=docx_formula_source_mode,
         )
-        page_analysis_payload = _build_page_analysis_payload(
-            raw_content_by_page,
-            content_by_page,
-            file_path=file_path,
-            queue=queue,
-        )
+        page_analysis_payload = None
 
-        # 甇仿? 2: ?澆 AI ?脰???
+        # 步驟 2: 呼叫 AI 進行分析
         ai_json_result_string = call_gemini_for_analysis(
             content_by_page,
             curriculum_info,
@@ -1956,7 +1800,7 @@ def process_textbook_file(
             page_analysis_payload=page_analysis_payload,
             import_policy=import_policy,
         )
-        # 甇仿? 3: 閫?? AI ???JSON 摮葡
+        # 步驟 3: 解析 AI 回傳的 JSON 結構
         if ai_json_result_string is None:
             return {"status": "error", "message": "AI analysis failed."}
         if not ai_json_result_string:
@@ -1967,14 +1811,16 @@ def process_textbook_file(
         if not parsed_data:
             return {"status": "error", "message": "Failed to parse AI JSON response."}
 
-        parsed_data = _mark_needs_review_for_low_quality_pages(parsed_data, page_analysis_payload)
+        # ==============================================================================
+        # 已刪除過時的 _mark_needs_review_for_low_quality_pages 呼叫
+        # ==============================================================================
         parsed_data = _normalize_parsed_textbook_math(
             parsed_data,
             queue,
             docx_formula_source_mode=docx_formula_source_mode,
         )
 
-        # 甇仿? 4: 撠圾???????亥??澈
+        # 步驟 4: 將解析出來的內容寫入資料庫
         if docx_formula_source_mode == "converted_docx_latex":
             extracted_text = "\n".join(str(v or "") for _k, v in sorted((content_by_page or {}).items()))
             file_meta = parse_textbook_filename_metadata(file_path)
@@ -2065,7 +1911,7 @@ def process_textbook_file(
         current_app.logger.info(message)
         queue.put(f"INFO: {message}")
 
-        # 甇仿? 5: ?芸????粹?蝔?蝣?(?舫)
+        # 步驟 5: 產生對應的技能程式碼 (選用)
         code_gen_status = "skipped"
         if skip_code_gen:
             message = "Skip code generation by request."
@@ -2074,16 +1920,16 @@ def process_textbook_file(
         elif processed_skill_ids:
             queue.put(f"INFO: start code generation for {len(processed_skill_ids)} skills")
             for idx, skill_id in enumerate(processed_skill_ids):
-                queue.put(f"INFO: [{idx+1}/{len(processed_skill_ids)}] 甇??? {skill_id}.py ...")
+                queue.put(f"INFO: [{idx+1}/{len(processed_skill_ids)}] 正在寫入 {skill_id}.py ...")
                 try:
-                    # [靽格迤] ???啣?亦???踝?撘瑕?瑁? Architect ????啁? Prompt
+                    # [修正] 強制 Architect 重新載入最新 Prompt
                     success, msg = auto_generate_skill_code(skill_id, queue, force_architect_refresh=True)
                     if success:
                         queue.put(f"INFO: {skill_id} code generated")
                     else:
                         queue.put(f"WARN: {skill_id} code generation failed")
                 except Exception as e:
-                    queue.put(f"ERROR: ?? {skill_id} ?????航炊: {e}")
+                    queue.put(f"ERROR: 技能 {skill_id} 程式碼寫入失敗: {e}")
                     current_app.logger.error(f"Generate Error {skill_id}: {e}")
                 
                 time.sleep(2) # Rate Limit
@@ -2091,282 +1937,72 @@ def process_textbook_file(
 
         return {
             "status": "success", 
-            "message": (f"隤脫????交???\n"
-                        f"?啣?/?湔??? {skills_count} ?n"
-                        f"?啣?隤脩?蝬梯?: {curriculums_count} 蝑n"
-                        f"?啣?隤脫靘?: {examples_count} 蝑n"
-                        f"?啣?蝺渡?憿? {practice_count} 蝑n"
-                        f"?典?蝺渡?: {in_class_practice_count} 蝑n"
-                        f"蝺渡?憿?銴: {practice_needs_review_count} 蝑n"
-                        f"蝺渡?憿?? {practice_skipped_count} 蝑n"
-                        f"?芸???蝔?蝣? {code_gen_status}")
+            "message": (f"教材分析與匯入成功。\n"
+                        f"新增/更新技能 {skills_count} 個\n"
+                        f"新增課程綱要 {curriculums_count} 筆\n"
+                        f"新增課本例題 {examples_count} 筆\n"
+                        f"新增練習題 {practice_count} 筆\n"
+                        f"新增隨堂練習 {in_class_practice_count} 筆\n"
+                        f"練習題需審核 {practice_needs_review_count} 筆\n"
+                        f"練習題跳過 {practice_skipped_count} 筆\n"
+                        f"自動產生程式碼 {code_gen_status}")
         }
 
     except Exception as e:
-        current_app.logger.error(f"??隤脫?????隤? {e}")
+        current_app.logger.error(f"解析教材內容時發生錯誤: {e}")
         import traceback
         traceback.print_exc()
-        return {"status": "error", "message": f"??憭望?: {str(e)}"}
+        return {"status": "error", "message": f"處理失敗: {str(e)}"}
 
-# --- ???詨捆???---
+# --- 教材內容處理 ---
 process_textbook_pdf = process_textbook_file
 
 def extract_content_from_file(file_path, queue, max_pages=None, import_policy=None):
-    """Extract text content from PDF or Word files."""
-    message = f"甇?敺?{file_path} ???批捆..."
+    """Extract text content from pre-converted MathType->LaTeX DOCX."""
+    message = f"正在從 {file_path} 提取內容..."
     current_app.logger.info(message)
     queue.put(f"INFO: {message}")
 
     global _DOCX_IMPORT_CONTEXT
     _DOCX_IMPORT_CONTEXT = {}
-    content_by_page = {}
-    import_policy = dict(import_policy or {})
     
-    try:
-        file_extension = os.path.splitext(file_path)[1].lower()
-
-        if file_extension == '.pdf':
-            # --- PDF ???摩 (蝬剜??見) ---
-            import fitz  # PyMuPDF
-            from PIL import Image
-            import pytesseract
-            
-            # Wand ?臭??虜閬?蝻箏仃憟辣嚗?亥???
-            try:
-                from wand.image import Image as WandImage
-            except ImportError:
-                WandImage = None
-
-            ocr_import_error_logged = False
-            tesseract_not_found_error_logged = False
-            doc = fitz.open(file_path)
-            for i, page in enumerate(doc.pages()):
-                if max_pages and i >= max_pages:
-                    break
-                page_text = page.get_text("text")
-
-                # ?菜葫憭批?擃?憿?
-                blocks = page.get_text("blocks")
-                large_font_texts = []
-                large_font_threshold = 20
-                for b in blocks:
-                    try:
-                        text = b[4]
-                        first_line = page.get_text("dict", clip=b[:4])['blocks'][0]['lines'][0]
-                        font_size = first_line['spans'][0]['size']
-                        if font_size > large_font_threshold:
-                            large_font_texts.append(text.strip())
-                    except (IndexError, KeyError):
-                        continue
-                for large_text in large_font_texts:
-                    if large_text and large_text not in page_text:
-                        page_text = large_text + "\n" + page_text
-
-                # OCR ??
-                try:
-                    from pytesseract import TesseractNotFoundError
-
-                    tesseract_path = current_app.config.get('TESSERACT_CMD')
-                    if tesseract_path:
-                        pytesseract.pytesseract.tesseract_cmd = tesseract_path
-
-                    pix = page.get_pixmap()
-                    img = Image.frombytes("RGB", [pix.width, pix.height], pix.samples)
-                    ocr_text = pytesseract.image_to_string(img, lang='chi_tra')
-                    page_text += "\nOCR Extracted: " + ocr_text.strip()
-                except ImportError:
-                    if not ocr_import_error_logged:
-                        message = "OCR dependencies missing: pytesseract/Pillow"
-                        current_app.logger.warning(message)
-                        queue.put(f"WARN: {message}")
-                        ocr_import_error_logged = True
-                except TesseractNotFoundError:
-                    if not tesseract_not_found_error_logged:
-                        message = "Tesseract-OCR not found"
-                        current_app.logger.error(message)
-                        queue.put(f"ERROR: {message}")
-                        tesseract_not_found_error_logged = True
-                except Exception as ocr_e:
-                    current_app.logger.warning(f"??{i+1} OCR ????隤? {ocr_e}")
-
-                content_by_page[i + 1] = page_text
-            doc.close()
-
-        elif file_extension in ['.docx', '.doc']:
-            docx_formula_source_mode = str(import_policy.get("docx_formula_source_mode", "auto_detect") or "auto_detect").strip()
-            if docx_formula_source_mode == "converted_docx_latex":
-                content_by_page, doc_meta = extract_converted_latex_docx(file_path)
-                extracted_text = str((content_by_page or {}).get(1, "") or "")
-                detect_meta = detect_converted_latex_docx(extracted_text)
-                _DOCX_IMPORT_CONTEXT = {
-                    "docx_formula_source_mode": docx_formula_source_mode,
-                    "is_converted_latex_docx": True,
-                    "latex_signal_count": int(detect_meta.get("latex_signal_count", 0)),
-                    "formula_placeholder_count": int(detect_meta.get("formula_placeholder_count", 0)),
-                    "question_assets": {},
-                    "question_formula_blocks": {},
-                    "formula_assets_extraction_skipped": True,
-                    "ocr_skipped": True,
-                    "pix2tex_skipped": True,
-                    "doc_meta": doc_meta,
-                }
-                queue.put("INFO: docx_formula_source_mode=converted_docx_latex")
-                queue.put("INFO: formula_assets_extraction_skipped=true")
-                queue.put("INFO: ocr_skipped=true")
-                queue.put("INFO: pix2tex_skipped=true")
-                queue.put(f"INFO: is_converted_latex_docx={True}")
-                queue.put(f"INFO: latex_signal_count={detect_meta.get('latex_signal_count', 0)}")
-                queue.put(f"INFO: formula_placeholder_count={detect_meta.get('formula_placeholder_count', 0)}")
-                return content_by_page
-            # --- Word (.docx) ???摩 ---
-            message = "Start extracting Word (.docx) content"
-            current_app.logger.info(message)
-            queue.put(f"INFO: {message}")
-
-            try:
-                from docx import Document
-                from docx.table import Table
-                from docx.text.paragraph import Paragraph
-                try:
-                    import pypandoc
-                except ImportError:
-                    pypandoc = None
-
-                doc = Document(file_path)
-                job_id = uuid.uuid4().hex[:12]
-                media_rel_root = os.path.join("uploads", "tmp_docx_media", job_id)
-                media_abs_root = os.path.join(current_app.root_path, media_rel_root)
-                media_leaf_rel = os.path.join(media_rel_root, "media")
-                media_leaf_abs = os.path.join(current_app.root_path, media_leaf_rel)
-                os.makedirs(media_leaf_abs, exist_ok=True)
-                if pypandoc is not None:
-                    try:
-                        pypandoc.convert_file(
-                            file_path,
-                            'markdown',
-                            extra_args=['--wrap=none', f'--extract-media={media_abs_root}']
-                        )
-                    except Exception:
-                        pass
-                rel_map = build_docx_media_relationship_map(file_path, media_leaf_rel)
-                text_chunks = []
-                ordered_blocks = []
-                paragraphs_count = 0
-                equations_count = 0
-                equation_failures = 0
-                formula_image_count = 0
-
-                for idx, block in enumerate(doc.element.body.iterchildren()):
-                    if block.tag.endswith('}p'):
-                        para = Paragraph(block, doc)
-                        paragraphs_count += 1
-                        ptxt = extract_docx_paragraph_with_equations(para)
-                        meta = getattr(para, "_math_meta", {}) or {}
-                        equations_count += int(meta.get("equations", 0) or 0)
-                        equation_failures += int(meta.get("equation_failures", 0) or 0)
-                        formula_image_count += int(meta.get("formula_image_count", 0) or 0)
-                        if int(meta.get("equations", 0) or 0) > 0:
-                            current_app.logger.info(f"[DOCX EQUATION] detected type=omml paragraph_index={idx}")
-                        if int(meta.get("equation_failures", 0) or 0) > 0:
-                            current_app.logger.warning(
-                                f"[DOCX EQUATION WARNING] conversion failed paragraph_index={idx}"
-                            )
-                        para_has_formula_placeholder = bool(
-                            re.search(r"\[FORMULA_IMAGE_\d+\]", ptxt or "")
-                        )
-                        if ptxt:
-                            text_chunks.append(ptxt)
-                            ordered_blocks.append({"type": "paragraph", "text": ptxt, "block_index": len(ordered_blocks) + 1})
-                        for rid in extract_docx_image_rids_from_paragraph(para):
-                            info = rel_map.get(rid, {})
-                            ordered_blocks.append(
-                                {
-                                    "type": "image",
-                                    "rid": rid,
-                                    "path": info.get("extracted_path"),
-                                    "content_type": info.get("content_type", "application/octet-stream"),
-                                    "target_ref": info.get("target_ref"),
-                                    "block_index": len(ordered_blocks) + 1,
-                                    # Flag: this image is the OLE/VML preview for a formula
-                                    # placeholder produced in the same paragraph.
-                                    "is_formula_placeholder_source": para_has_formula_placeholder,
-                                }
-                            )
-                    elif block.tag.endswith('}tbl'):
-                        table = Table(block, doc)
-                        ttxt = extract_docx_table_with_equations(table)
-                        if ttxt:
-                            text_chunks.append(ttxt)
-                            ordered_blocks.append({"type": "paragraph", "text": ttxt, "block_index": len(ordered_blocks) + 1})
-
-                cleaned_chunks = []
-                for chunk in text_chunks:
-                    c = str(chunk or "")
-                    c_wo = re.sub(r"\[FORMULA_IMAGE_\d+\]", "", c).strip()
-                    if not c_wo:
-                        continue
-                    cleaned_chunks.append(c)
-                extracted_text = "\n".join(cleaned_chunks).strip()
-                detect_meta = detect_converted_latex_docx(extracted_text)
-                q_assets, orphan_images = attach_docx_media_to_question_blocks(ordered_blocks)
-                formula_blocks = build_docx_question_formula_context(ordered_blocks)
-                for o in orphan_images:
-                    current_app.logger.warning(f"[DOCX IMAGE WARNING] orphan image ignored path={o.get('path')}")
-                _DOCX_IMPORT_CONTEXT = {
-                    "media_rel_map": rel_map,
-                    "ordered_blocks": ordered_blocks,
-                    "question_assets": q_assets,
-                    "question_formula_blocks": formula_blocks,
-                    "orphan_images": orphan_images,
-                    "temp_media_dir": media_abs_root,
-                    "docx_formula_source_mode": docx_formula_source_mode,
-                    "is_converted_latex_docx": bool(detect_meta.get("is_converted_latex_docx", False)),
-                    "latex_signal_count": int(detect_meta.get("latex_signal_count", 0)),
-                    "formula_placeholder_count": int(detect_meta.get("formula_placeholder_count", 0)),
-                    "formula_assets_extraction_skipped": False,
-                    "ocr_skipped": False,
-                    "pix2tex_skipped": False,
-                }
-
-                if formula_image_count > 0:
-                    current_app.logger.info(f"[DOCX EQUATION IMAGE] saved path=[FORMULA_IMAGE_*] count={formula_image_count}")
-                current_app.logger.info(
-                    f"[DOCX IMPORT] paragraphs={paragraphs_count} equations={equations_count} equation_failures={equation_failures}"
-                )
-                content_by_page[1] = extracted_text
-
-
-            except (OSError, RuntimeError) as e:
-                error_str = str(e)
-                # ????瑼???摰摮??摰隤方???(Exit Code 63)
-                if 'exitcode "63"' in error_str or 'Did not find end of central directory' in error_str:
-                    warn_msg = "WARN: DOCX file may be corrupted (Pandoc Exit 63)"
-                    current_app.logger.warning(warn_msg)
-                    queue.put(warn_msg)
-                    return {}
-                
-                error_msg = f"Pandoc processing failed: {e}"
-                current_app.logger.error(error_msg)
-                queue.put(f"ERROR: {error_msg}")
-
-        else:
-            message = f"Unsupported file type: {file_extension}. Please use .pdf or .docx."
-            current_app.logger.error(message)
-            queue.put(f"ERROR: {message}")
-            return {}
-
-        message = f"Extracted {len(content_by_page)} page(s) from {file_extension}."
-        current_app.logger.info(message)
-        queue.put(f"INFO: {message}")
-        return content_by_page
-
-    except Exception as e:
-        message = f"??瑼??批捆???隤?(Exception): {e}"
+    file_extension = os.path.splitext(file_path)[1].lower()
+    if file_extension not in ('.docx', '.doc'):
+        message = f"不支援的檔案類型: {file_extension}。請使用 .docx 檔案。"
         current_app.logger.error(message)
-        import traceback
-        traceback.print_exc()
         queue.put(f"ERROR: {message}")
         return {}
+
+    try:
+        content_by_page, doc_meta = extract_converted_latex_docx(file_path)
+        extracted_text = str((content_by_page or {}).get(1, "") or "")
+        detect_meta = detect_converted_latex_docx(extracted_text)
+        _DOCX_IMPORT_CONTEXT = {
+            "docx_formula_source_mode": "converted_docx_latex",
+            "is_converted_latex_docx": True,
+            "latex_signal_count": int(detect_meta.get("latex_signal_count", 0)),
+            "formula_placeholder_count": int(detect_meta.get("formula_placeholder_count", 0)),
+            "question_assets": {},
+            "question_formula_blocks": {},
+            "formula_assets_extraction_skipped": True,
+            "ocr_skipped": True,
+            "pix2tex_skipped": True,
+            "doc_meta": doc_meta,
+        }
+        queue.put("INFO: docx_formula_source_mode=converted_docx_latex")
+        queue.put("INFO: formula_assets_extraction_skipped=true")
+        queue.put("INFO: ocr_skipped=true")
+        queue.put("INFO: pix2tex_skipped=true")
+        queue.put(f"INFO: is_converted_latex_docx={True}")
+        queue.put(f"INFO: latex_signal_count={detect_meta.get('latex_signal_count', 0)}")
+        queue.put(f"INFO: formula_placeholder_count={detect_meta.get('formula_placeholder_count', 0)}")
+        return content_by_page
+    except Exception as e:
+        message = f"提取檔案內容時發生異常 (Exception): {e}"
+        current_app.logger.error(message)
+        queue.put(f"ERROR: {message}")
+        return {}
+
 
 def _sanitize_and_parse_json(s: str, queue=None):
     """Sanitize and parse AI JSON response text."""
@@ -2375,19 +2011,19 @@ def _sanitize_and_parse_json(s: str, queue=None):
 
     original = s
     
-    # ===== 蝚?0 甇伐?????憪???閰喟敦鞈? =====
-    current_app.logger.debug(f"[JSON_DEBUG] ?????瑕漲: {len(s)} 摮泵")
+    # ===== 第 0 步：輸出 JSON 調試資訊 =====
+    current_app.logger.debug(f"[JSON_DEBUG] 原始 JSON 長度: {len(s)} 字元")
     
-    # ===== 蝚?1 甇伐?蝘駁 code fence wrapper =====
+    # ===== 第 1 步：清除 code fence wrapper =====
     s = re.sub(r'^```(?:json)?\s*|\s*```$', '', s, flags=re.MULTILINE).strip()
     
-    # ===== 蝚?2 甇伐?蝘駁??蝭??批摮? =====
+    # ===== 第 2 步：移除前後不合規的字元 =====
     s = re.sub(r'[\x00-\x08\x0b\x0c\x0e-\x1f\x7f]', '', s)
     
-    # ===== 蝚?3 甇伐????航??BOM =====
+    # ===== 第 3 步：過濾潛在的 BOM =====
     if s.startswith('\ufeff'): s = s[1:]
     
-    # ===== 蝚?4 甇伐??岫憭車??蝺耨敺拍???=====
+    # ===== 第 4 步：嘗試使用多種策略進行 JSON 解析 =====
     candidates = []
     
     # 蝑 0: ??嚗?蝘駁 control chars / fences嚗?
@@ -2395,38 +2031,38 @@ def _sanitize_and_parse_json(s: str, queue=None):
     
     # 蝑 1: 靽???escape - ?芸?敺銝?? JSON escape ???? escape
     escaped_conservative = re.sub(r'\\(?!["\\/bfnrtu])', r'\\\\', s)
-    candidates.append(("靽? escape", escaped_conservative))
+    candidates.append(("保守 escape", escaped_conservative))
     
     # 蝑 2: 瞈??escape - ??迨蝡????賡???
     escaped_aggressive = re.sub(r'(?<!\\)\\(?!\\)', r'\\\\', s)
-    candidates.append(("瞈??escape", escaped_aggressive))
+    candidates.append(("積極 escape", escaped_aggressive))
     
     # 蝑 3: ?敺?摨?- ??????賡???
     escaped_brutal = s.replace('\\', '\\\\')
-    candidates.append(("?游? escape", escaped_brutal))
+    candidates.append(("暴力 escape", escaped_brutal))
     
     # 蝑 4: ?岫?曉蝚砌???{ ??敺???} ??銝?
     first_brace = s.find('{')
     last_brace = s.rfind('}')
     if first_brace >= 0 and last_brace > first_brace:
         substr = s[first_brace:last_brace + 1]
-        candidates.append(("?? {} 摮葡", substr))
-        candidates.append(("?? {} 摮葡 + 靽? escape", re.sub(r'\\(?!["\\/bfnrtu])', r'\\\\', substr)))
+        candidates.append(("擷取 {} 字串", substr))
+        candidates.append(("擷取 {} 字串 + 保守 escape", re.sub(r'\\(?!["\\/bfnrtu])', r'\\\\', substr)))
 
     attempts = []
     for strategy_name, cand in candidates:
         try:
             obj = json.loads(cand)
-            current_app.logger.info(f"[JSON_SUCCESS] 雿輻蝑 '{strategy_name}' ??閫?? JSON")
+            current_app.logger.info(f"[JSON_SUCCESS] 策略 '{strategy_name}' 成功解析 JSON")
             return obj, cand, original, attempts
         except json.JSONDecodeError as e:
             snippet = (cand[:200] + '...') if len(cand) > 200 else cand
             error_detail = f"{e.msg} at line {e.lineno}, col {e.colno}"
             attempts.append((strategy_name, snippet, error_detail))
-            current_app.logger.debug(f"[JSON_FAIL] 蝑 '{strategy_name}' 憭望?: {error_detail}")
+            current_app.logger.debug(f"[JSON_FAIL] 策略 '{strategy_name}' 失敗: {error_detail}")
 
     if queue is not None:
-        queue.put(f"ERROR: JSON 閫??憭望?嚗?閰?{len(attempts)} 蝔桃??伐?嚗底閬撩??亥?")
+        queue.put(f"ERROR: JSON 解析失敗（已嘗試 {len(attempts)} 種策略，請檢查原始回應）")
     
     if candidates:
         return None, candidates[-1][1], original, [(s, e, d) for s, _, (_, _, d) in zip([c[0] for c in candidates], [], attempts)]
@@ -2434,17 +2070,18 @@ def _sanitize_and_parse_json(s: str, queue=None):
         return None, "", original, attempts
 
 
-def _call_gemini_with_retry(model, analysis_prompt, queue=None, context_message='AI ??', parse_json=False):
+def _call_gemini_with_retry(model, analysis_prompt, queue=None, context_message='AI 分析', parse_json=False):
     max_retries = 3
     retry_delay = 2
 
     def _validate_json_completeness(text):
         cleaned_text = re.sub(r'^```(?:json)?\s*|\s*```$', '', str(text or ''), flags=re.MULTILINE).strip()
-        if not cleaned_text.startswith("{"):
+        if not (cleaned_text.startswith("{") or cleaned_text.startswith("[")):
             return False, "missing_opening_brace", cleaned_text
-        if not cleaned_text.endswith("}"):
+        if not (cleaned_text.endswith("}") or cleaned_text.endswith("]")):
             return False, "missing_closing_brace", cleaned_text
-        if re.search(r'\]\s*\}\s*$', cleaned_text, flags=re.DOTALL) is None:
+        # 放寬結尾防禦閘門，只要具備標準 JSON 結尾符號 (} 或 ]) 即可通過
+        if re.search(r'(?:\}\s*\]|\s*\}|\]\s*\})\s*$', cleaned_text, flags=re.DOTALL) is None:
             return False, "missing_json_tail", cleaned_text
         fixed_text = sanitize_gemini_json_text(cleaned_text)
         try:
@@ -2546,9 +2183,9 @@ def _call_gemini_with_retry(model, analysis_prompt, queue=None, context_message=
                 err_type = type(e).__name__
                 err_msg = str(e) or repr(e)
                 tb = traceback.format_exc()
-                current_app.logger.error(f"_call_gemini_with_retry ?潛??航炊: [{err_type}] {err_msg}\n{tb}")
+                current_app.logger.error(f"_call_gemini_with_retry 發生錯誤: [{err_type}] {err_msg}\n{tb}")
                 if queue is not None:
-                    queue.put(f"ERROR: Gemini ?澆憭望?: [{err_type}] {err_msg}")
+                    queue.put(f"ERROR: Gemini 呼叫失敗: [{err_type}] {err_msg}")
                 raise
             time.sleep(retry_delay * attempt)
 
@@ -2557,15 +2194,15 @@ def _call_gemini_with_retry(model, analysis_prompt, queue=None, context_message=
             err_msg = str(e) or repr(e)
             tb = traceback.format_exc()
 
-            current_app.logger.error(f"_call_gemini_with_retry ?潛??航炊: [{err_type}] {err_msg}\n{tb}")
+            current_app.logger.error(f"_call_gemini_with_retry 發生錯誤: [{err_type}] {err_msg}\n{tb}")
             if queue is not None:
-                queue.put(f"ERROR: Gemini ?澆憭望?: [{err_type}] {err_msg}")
+                queue.put(f"ERROR: Gemini 呼叫失敗: [{err_type}] {err_msg}")
 
             raise
 
 def call_gemini_for_toc(content_by_page, curriculum_info, queue):
     """Call Gemini to extract chapter/section TOC."""
-    message = "--- ?? AI ?桅?閫??瘚? ---"
+    message = "--- 開始 AI 目錄萃取流程 ---"
     current_app.logger.info(message)
     queue.put(f"INFO: {message}")
 
@@ -2573,7 +2210,12 @@ def call_gemini_for_toc(content_by_page, curriculum_info, queue):
     try:
         from core.ai_analyzer import get_model
         model = get_model()
-        response = _call_gemini_with_retry(model, prompt + "\n" + content_by_page, queue=queue)
+        # ==============================================================================
+        # 【型態解鎖】將 content_by_page 字典中的所有頁面純文字依序串接，防止 TypeError
+        # ==============================================================================
+        full_toc_text = "\n".join(str(v or "") for _k, v in sorted((content_by_page or {}).items()))
+        response = _call_gemini_with_retry(model, prompt + "\n" + full_toc_text, queue=queue)
+        # ==============================================================================
         return response
     except Exception as e:
         current_app.logger.error(f"call_gemini_for_toc failed: {e}")
@@ -2581,28 +2223,78 @@ def call_gemini_for_toc(content_by_page, curriculum_info, queue):
 
 def call_gemini_for_analysis(content_by_page, curriculum_info, queue, page_analysis_payload=None, import_policy=None):
     """Call Gemini to analyze extracted textbook content."""
-    message = "--- ?? AI ??瘚? ---"
+    message = "--- 正在執行 AI 內容解析 ---"
     current_app.logger.info(message)
     queue.put(f"INFO: {message}")
 
     # ==========================
-    # 1. ?葉摨瑁???Prompt (靽??見)
+    # 1. 設定基礎 Prompt
     # ==========================
     prompt_jh_kangxuan = "Analyze textbook content and return JSON."
 
     # ==========================
-    # 2. ?桅?樴辰??Prompt (靽格迤???游之憿??蝭?)
+    # 2. 龍騰/普高專用 Prompt（章節標題規則）
     # ==========================
     prompt_sh_longteng = "Analyze textbook content and return JSON."
 
     # ==========================
-    # 3. ???Prompt
+    # 3. 行內公式與結構 Prompt
     # ==========================
 
     prompt_generic = "Analyze textbook content and return JSON."
 
+    # ==============================================================================
+    # 【結構化合約】技術高中數學B1-B4 特化強型態 Prompt 與標準 JSON 範例
+    # ==============================================================================
+    prompt_vh_mathB4 = (
+        "您是一位精通技術高中（高職）數學教材架構的專家。請分析輸入的課本標準文本內容，"
+        "精確切分出內文中的觀念引導、獨立例題、隨堂練習與進階練習題。"
+        "對於每一道題目，請完整保留其 LaTeX 公式（如 $...$ 或 $$...$$），切勿省略、截斷或自行發明題幹。"
+        "您必須嚴格按照給定的 JSON 結構範例回傳資料，不允許自創任何外層或內層欄位。"
+    )
 
-    prompt_vh_mathB4 = "Analyze textbook content and return JSON."
+    json_example_vh_mathB = """
+{
+  "chapters": [
+    {
+      "chapter_title": "第1章 坐標系與函數圖形",
+      "sections": [
+        {
+          "section_title": "1-4 一元二次不等式",
+          "concepts": [
+            {
+              "concept_name": "一元二次不等式的解法",
+              "concept_en_id": "QuadraticInequalitiesSolution",
+              "concept_paragraph": "探討 ax^2+bx+c > 0 形式的不等式解法與判別式 D 的關係。",
+              "examples": [
+                {
+                  "id": "1",
+                  "title": "例題1",
+                  "source_description": "例題1",
+                  "problem_text": "解不等式 $x^2 - 5x + 6 > 0$。",
+                  "correct_answer": "$x > 3$ 或 $x < 2$",
+                  "detailed_solution": "因式分解得 $(x-2)(x-3) > 0$，故解為 $x > 3$ 或 $x < 2$。"
+                }
+              ],
+              "practice_questions": [
+                {
+                  "id": "1",
+                  "title": "隨堂練習1",
+                  "source_description": "隨堂練習1",
+                  "problem_text": "解不等式 $x^2 - x - 2 \\\\le 0$。",
+                  "correct_answer": "$-1 \\\\le x \\\\le 2$",
+                  "detailed_solution": "因式分解得 $(x-2)(x+1) \\\\le 0$，故解為 $-1 \\\\le x \\\\le 2$。"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
+"""
+    # ==============================================================================
 
     curriculum = curriculum_info.get('curriculum', '').strip()
     publisher = curriculum_info.get('publisher', '').strip()
@@ -2621,7 +2313,7 @@ def call_gemini_for_analysis(content_by_page, curriculum_info, queue, page_analy
         queue.put("INFO: use junior_high kangxuan prompt")
     elif is_vocational_mathb:
         base_prompt = prompt_vh_mathB4
-        queue.put(f"INFO: 撌脤??擃?詨飛{subject}{vol_num} 撠??璅∪?")
+        queue.put(f"INFO: 已載入技高數學{subject}{vol_num} 專用提示詞範本")
     elif curriculum == 'sh_longteng' or (curriculum == 'general' and publisher == 'longteng'):
         base_prompt = prompt_sh_longteng
         queue.put("INFO: use longteng/general prompt")
@@ -2636,11 +2328,11 @@ def call_gemini_for_analysis(content_by_page, curriculum_info, queue, page_analy
         err_msg = str(e) or repr(e)
         tb = traceback.format_exc()
 
-        current_app.logger.error(f"AI ??憭望?: [{err_type}] {err_msg}\n{tb}")
+        current_app.logger.error(f"AI 分析失敗: [{err_type}] {err_msg}\n{tb}")
         if "Gemini API Key" in err_msg or "API_KEY" in err_msg:
             queue.put("ERROR: Missing Gemini API Key.")
         else:
-            queue.put(f"ERROR: AI ??憭望?: [{err_type}] {err_msg}")
+            queue.put(f"ERROR: AI 分析失敗: [{err_type}] {err_msg}")
         return None
     if page_analysis_payload:
         blocks = []
@@ -2658,15 +2350,65 @@ def call_gemini_for_analysis(content_by_page, curriculum_info, queue, page_analy
     else:
         full_content = "\n".join([f"--- Page {k} ---\n{v}" for k, v in content_by_page.items()])
     
-    json_example = "{}"
-    if is_vocational_mathb:
-        json_example = "{}"
+    json_example = json_example_vh_mathB if is_vocational_mathb else "{}"
 
     import_policy = dict(import_policy or {})
     docx_formula_source_mode = str(import_policy.get("docx_formula_source_mode", "auto_detect") or "auto_detect").strip()
     converted_latex_prompt_rules = ""
-    if docx_formula_source_mode == "converted_docx_latex":
-        converted_latex_prompt_rules = "converted_docx_latex rules enabled"
+    if docx_formula_source_mode == "converted_docx_latex" and is_vocational_mathb:
+        converted_latex_prompt_rules = (
+            "【converted_docx_latex 題目標題硬性規則 — 與 DOCX 原文 inventory 對齊】\n"
+            "1. 每一筆 examples 與 practice_questions 都必須同時填寫 title 與 source_description，"
+            "且兩者必須完全相同，並且必須沿用課本原文可辨識的題目標題，不可改寫、合併或自創。\n"
+            "2. 例題：title 與 source_description 一律為「例題1」「例題2」…（阿拉伯數字、無空格）。\n"
+            "3. 隨堂練習：一律為「隨堂練習1」「隨堂練習2」…（阿拉伯數字、無空格）。\n"
+            "4. 章節習題（基礎題／進階題／自我評量）：必須保留「小節碼＋習題＋區域＋題號」格式，"
+            "例如「1-4習題 基礎題1」「1-4習題 基礎題2」「1-4習題 進階題9」「1-4習題 自我評量1」。"
+            "小節碼（如 1-4）必須與 section_title 一致；區域只能是基礎題、進階題或自我評量。\n"
+            "5. 統測／學測：不可合併成「統測歷屆試題」或任何總稱 bucket；每一題必須拆成原文標題，"
+            "例如「105統測A」「105統測B」（依原文年度與 A/B 卷，無空格）。\n"
+            "6. 禁止將多題合併成一筆；禁止用「練習題」「進階題」「綜合題」「習題區」等泛稱代替具體標題。\n"
+            "7. 課文說明、觀念整理等敘述段落可放在 concept_paragraph，不要當成獨立題目；"
+            "凡原文有題號的例題、隨堂練習、章節習題、統測題，每一題都必須各自一筆 example 或 practice_question。\n"
+            "8. 若原文同時出現例題與隨堂練習、基礎題與進階題，請全部列出，不可遺漏任一題號。\n"
+        )
+    elif docx_formula_source_mode == "converted_docx_latex":
+        converted_latex_prompt_rules = (
+            "【converted_docx_latex】examples/practice_questions 的 title 與 source_description "
+            "必須沿用原文題目標題，不可改寫或合併。\n"
+        )
+
+    # ==============================================================================
+    # 【安全字元防線】修復全形符號、羅馬數字與畸形空白換行，防止 JSON 轉義爆炸
+    # ==============================================================================
+    if 'full_content' in locals() and full_content:
+        # 1. 修正全形減號、特殊長橫線、破折號，統一替換為標準半形減號 '-'，防範 LaTeX 轉義語法打架
+        full_content = re.sub(r'[－—―─–]', '-', full_content)
+        
+        # 2. 修正全形引號與全形逗號等高位元組字元，降低 Gemini 封裝 JSON 字串時的轉義負擔
+        full_content = re.sub(r'[“”]', '"', full_content)
+        full_content = re.sub(r'[‘’]', "'", full_content)
+        full_content = re.sub(r'[，]', ',', full_content)
+        
+        # 3. 將常見的羅馬數字字元（Ⅰ, Ⅱ, Ⅲ...）替換為標準英文字母，防止高位元組字元破壞 JSON 閉合
+        roma_map = {
+            'Ⅰ': 'I', 'Ⅱ': 'II', 'Ⅲ': 'III', 'Ⅳ': 'IV', 'Ⅴ': 'V',
+            'Ⅵ': 'VI', 'Ⅶ': 'VII', 'Ⅷ': 'VIII', 'Ⅸ': 'IX', 'Ⅹ': 'X'
+        }
+        for roma, eng in roma_map.items():
+            full_content = full_content.replace(roma, eng)
+            
+        # 4. 修正帶圈數字/序號，替換為帶括號的標準數字 (1), (2), (3)...，確保 Gemini 在生成 keys 時名稱一致
+        circle_map = {
+            '①': '(1)', '②': '(2)', '③': '(3)', '④': '(4)', '⑤': '(5)',
+            '⑥': '(6)', '⑦': '(7)', '⑧': '(8)', '⑨': '(9)', '⑩': '(10)'
+        }
+        for cir, num in circle_map.items():
+            full_content = full_content.replace(cir, num)
+            
+        # 5. 強效清理：消除段落中多餘且畸形的空白與大段空行，壓縮為單一空白，防止 whitespace 溢出造成格式毀損
+        # 這裡我們只壓縮三個以上的換行，保留單/雙換行
+        full_content = re.sub(r'\n{3,}', '\n\n', full_content)
 
     # 動態組裝：必須帶入 base_prompt、JSON 範例、LaTeX 規則與全文，避免僅送死字串造成幻覺目錄
     analysis_prompt = (
@@ -2683,7 +2425,7 @@ def call_gemini_for_analysis(content_by_page, curriculum_info, queue, page_analy
             model, 
             analysis_prompt, 
             queue, 
-            context_message="??隤脫蝯???",
+            context_message="執行教材內容結構化解析作業",
             parse_json=True
         )
         return ai_response
@@ -2692,8 +2434,8 @@ def call_gemini_for_analysis(content_by_page, curriculum_info, queue, page_analy
         err_msg = str(e) or repr(e)
         tb = traceback.format_exc()
 
-        current_app.logger.error(f"AI ??憭望?: [{err_type}] {err_msg}\n{tb}")
-        queue.put(f"ERROR: AI ??憭望?: [{err_type}] {err_msg}")
+        current_app.logger.error(f"AI 分析失敗: [{err_type}] {err_msg}\n{tb}")
+        queue.put(f"ERROR: AI 分析失敗: [{err_type}] {err_msg}")
         return None
 
 def parse_ai_response(ai_data_or_string, queue):
@@ -2763,103 +2505,6 @@ def _normalize_extracted_content_math(content_by_page, queue=None, docx_formula_
         normalized_pages[page_no] = normalized_text
 
     return normalized_pages
-
-
-def score_extracted_page_quality(page_text: str) -> dict:
-    text = str(page_text or "")
-    length = len(text.strip())
-    weird = len(re.findall(r"[嚙賤?領?歹蕭]", text))
-    symbols = len(re.findall(r"[#嚗?]{2,}", text))
-    score = 1.0
-    if length < 40:
-        score -= 0.35
-    if weird > 0:
-        score -= min(0.35, weird * 0.03)
-    if symbols > 0:
-        score -= min(0.25, symbols * 0.05)
-    score = max(0.0, min(1.0, score))
-    return {
-        "score": score,
-        "is_low_quality": score < 0.60,
-        "length": length,
-        "weird_char_count": weird,
-        "artifact_symbol_count": symbols,
-    }
-
-
-def _render_page_image_temp(pdf_path: str, page_no_1based: int) -> str | None:
-    try:
-        import fitz
-    except Exception:
-        return None
-    try:
-        tmp_dir = os.path.join("reports", "tmp_vision_ocr")
-        os.makedirs(tmp_dir, exist_ok=True)
-        out = os.path.join(tmp_dir, f"page_{int(page_no_1based):04d}.png")
-        doc = fitz.open(pdf_path)
-        try:
-            page = doc.load_page(int(page_no_1based) - 1)
-            pix = page.get_pixmap(matrix=fitz.Matrix(2.5, 2.5), alpha=False)
-            pix.save(out)
-        finally:
-            doc.close()
-        return out
-    except Exception:
-        return None
-
-
-def _vision_ocr_page_text(pdf_path: str, page_no_1based: int, queue=None) -> str | None:
-    image_path = _render_page_image_temp(pdf_path, page_no_1based)
-    if not image_path:
-        return None
-    try:
-        from PIL import Image
-    except Exception:
-        return None
-    try:
-        model = get_model("vision_analyzer")
-        prompt = "Extract text from this textbook page image and return plain text."
-        img = Image.open(image_path)
-        resp = model.generate_content([prompt, img], generation_config={"temperature": 0.0, "max_output_tokens": 65536})
-        text = str(getattr(resp, "text", "") or "").strip()
-        if text:
-            return text
-    except Exception as e:
-        if queue is not None:
-            queue.put(f"WARN: Vision OCR failed on page {page_no_1based}: {e}")
-    return None
-
-
-def _build_page_analysis_payload(raw_pages, normalized_pages, file_path, queue=None):
-    payload = {}
-    enable_vision = bool(current_app.config.get("ENABLE_VISION_OCR_FALLBACK", False))
-    is_pdf = str(file_path or "").lower().endswith(".pdf")
-    for page_no, normalized_text in (normalized_pages or {}).items():
-        raw_text = (raw_pages or {}).get(page_no, normalized_text)
-        formula_check = detect_suspicious_formula(raw_text)
-        quality = score_extracted_page_quality(raw_text)
-        reasons = set(formula_check.get("reasons", []))
-        low_quality = bool(quality.get("is_low_quality"))
-        if "suspicious_factorial" in reasons or "suspicious_pdf_artifact" in reasons:
-            low_quality = True
-        vision_text = None
-        needs_review = False
-        if low_quality and enable_vision and is_pdf:
-            vision_text = _vision_ocr_page_text(file_path, int(page_no), queue=queue)
-            if not vision_text:
-                needs_review = True
-        elif low_quality:
-            needs_review = True
-        payload[page_no] = {
-            "raw_text": raw_text,
-            "normalized_text": normalized_text,
-            "vision_ocr_text": vision_text,
-            "formula_warnings": list(reasons),
-            "quality": quality,
-            "is_low_quality": low_quality,
-            "needs_review": needs_review,
-        }
-    return payload
 
 
 def _normalize_imported_math_value(
@@ -3086,13 +2731,12 @@ def _contains_perm_comb_formula(text: str) -> bool:
             r"\{\s*\}\s*\^\s*\{?\s*\d+\s*\}?\s*[PC]\s*_\s*\{?\s*\d+\s*\}?|"
             r"[PC]\s*\^\s*\{?\s*\d+\s*\}?\s*_\s*\{?\s*\d+\s*\}?|"
             r"[PC]\s*_\s*\{?\s*\d+\s*\}?\s*\^\s*\{?\s*\d+\s*\}?|"
-            r"[?兜嗽笨喇?菊?猾?鉛+\s*[PC]\s*[??????????+|"
-            r"[PC]\s*[??????????+\s*[?兜嗽笨喇?菊?猾?鉛+"
+            r"[⁰¹²³⁴⁵⁶⁷⁸⁹⁺⁻]+\s*[PC]\s*[₀₁₂₃₄₅₆₇₈₉₊₋]+|"
+            r"[PC]\s*[₀₁₂₃₄₅₆₇₈₉₊₋]+\s*[⁰¹²³⁴⁵⁶⁷⁸⁹⁺⁻]+"
             r")",
             t,
         )
     )
-
 
 def is_answer_blank_placeholder_context(raw_block: str, problem_text: str) -> bool:
     block = str(raw_block or "")
@@ -3127,23 +2771,23 @@ def normalize_permutation_combination_notation(
             log["reasons"].append("normalized coordinate point notation in B1 coordinate context")
             out = guarded
 
-    # e.g., ?感??/ ?嵩??
+    # e.g., ⁷P₃ / ⁷C₃
     def _replace_pre(match):
         n = match.group(1).translate(_SUPERSCRIPT_TRANS)
         op = match.group(2)
         r = match.group(3).translate(_SUBSCRIPT_TRANS)
         return f"{op}^{{{n}}}_{{{r}}}"
 
-    out = re.sub(r"([?兜嗽笨喇?菊?猾?嫖?蒸+)\s*([PC])\s*([????????????+)", _replace_pre, out)
+    out = re.sub(r"([⁰¹²³⁴⁵⁶⁷⁸⁹⁺⁻]+)\s*([PC])\s*([₀₁₂₃₄₅₆₇₈₉₊₋]+)", _replace_pre, out)
 
-    # e.g., P? / C?
+    # e.g., P₃⁷ / C₃⁷
     def _replace_post(match):
         op = match.group(1)
         r = match.group(2).translate(_SUBSCRIPT_TRANS)
         n = match.group(3).translate(_SUPERSCRIPT_TRANS)
         return f"{op}^{{{n}}}_{{{r}}}"
 
-    out = re.sub(r"([PC])\s*([????????????+)\s*([?兜嗽笨喇?菊?猾?嫖?蒸+)", _replace_post, out)
+    out = re.sub(r"([PC])\s*([₀₁₂₃₄₅₆₇₈₉₊₋]+)\s*([⁰¹²³⁴⁵⁶⁷⁸⁹⁺⁻]+)", _replace_post, out)
 
     # e.g., P^7_3 / C^7_3
     out = re.sub(r"\b([PC])\s*\^\s*\{?\s*([0-9]+)\s*\}?\s*_\s*\{?\s*([0-9]+)\s*\}?", r"\1^{\2}_{\3}", out)
@@ -3281,7 +2925,7 @@ def validate_problem_block_purity(problem: dict) -> dict:
         problem["needs_review"] = True
         problem["block_boundary_error"] = True
 
-    explanation_cues = _NON_QUESTION_EXPLANATION_CUES + ("銝膩",)
+    explanation_cues = _NON_QUESTION_EXPLANATION_CUES + ("補充",)
     problem_verbs = _QUESTION_VERBS
     explanation_hits = sum(1 for cue in explanation_cues if cue in text)
     has_problem_verb = any(v in text for v in problem_verbs)
@@ -3384,17 +3028,18 @@ def get_question_title(item: dict) -> str:
 _SECTION_EXPOSITION_TITLE_EXACT = frozenset({
     "觀念整理", "觀念", "整理", "說明", "重點", "補充",
     "觀念說明", "整理說明", "章節說明", "概念說明",
+    "課文內容", "課文說明", "課文",
 })
 
 _SECTION_EXPOSITION_TITLE_RE = re.compile(
-    r"^(?:觀念整理|觀念說明|整理說明|章節說明|概念說明|觀念\s*\d*|說明\s*\d*)$"
+    r"^(?:觀念整理|觀念說明|整理說明|章節說明|概念說明|課文內容|課文說明|課文|觀念\s*\d*|說明\s*\d*)$"
 )
 
 
 def _is_section_exposition_title(title: str) -> bool:
     """Return True when *title* looks like a section-exposition label (not a real question).
 
-    Catches Gemini-generated source_description values like '隤脫??批捆' that represent
+    Catches Gemini-generated source_description values like '課文內容' that represent
     narrative textbook passages rather than examples, exercises, or practices.
     These must NOT be saved as textbook_example records.
     """
@@ -3408,6 +3053,53 @@ def _is_section_exposition_title(title: str) -> bool:
     if _SECTION_EXPOSITION_TITLE_RE.match(t):
         return True
     return False
+
+
+_NON_SKILL_BUCKET_NAMES = frozenset({
+    "習題",
+    "章節介紹",
+    "排列組合概論",
+    "統測歷屆試題",
+    "歷屆試題",
+    "章節習題",
+    "基礎題",
+    "進階題",
+    "自我評量",
+    "綜合練習",
+    "綜合題",
+    "課文內容",
+    "觀念整理",
+})
+
+_NON_SKILL_BUCKET_EN_IDS = frozenset({
+    "chapterintroduction",
+    "exercises",
+    "practice",
+    "review",
+    "defaultsectionconcept",
+    "unknown",
+    "sectionexercises",
+    "chapterexercises",
+    "basictopic",
+    "advancedtopic",
+    "selfassessment",
+    "comprehensivepractice",
+    "textbookcontent",
+    "conceptsummary",
+    "unifiedexam",
+    "pastexam",
+})
+
+
+def is_non_skill_bucket(concept_name: str, clean_en_id: str) -> bool:
+    """判斷 AI 回傳的 concept 是否為非技能分類容器（不建立 SkillInfo）。"""
+    name = (concept_name or "").strip()
+    name_compact = re.sub(r"\s+", "", name)
+    en_id = re.sub(r"[^a-zA-Z0-9]", "", (clean_en_id or "")).lower()
+
+    if name in _NON_SKILL_BUCKET_NAMES or name_compact in _NON_SKILL_BUCKET_NAMES:
+        return True
+    return en_id in _NON_SKILL_BUCKET_EN_IDS
 
 
 def normalize_source_type_by_title(item: dict, default_source_type: str = "textbook_example") -> str:
@@ -3429,12 +3121,15 @@ def normalize_source_type_by_title(item: dict, default_source_type: str = "textb
                 pass
         return normalized
 
-    if "?典?蝺渡?" in title:
+    if re.search(r"^\s*例(?:題)?\s*\d+", title):
+        normalized = "textbook_example"
+        reason = "title_matches_example"
+    elif "隨堂練習" in title:
         normalized = "in_class_practice"
-        reason = "title_contains_?典?蝺渡?"
-    elif ("蝡?芣?閰?" in title) or ("?芣?閰?" in title) or bool(re.search(r"蝚枯s*\d+\s*蝡s*?芣?閰?", title)):
+        reason = "title_contains_practice"
+    elif ("自我評量" in title) or ("評量" in title) or bool(re.search(r"自我評量\s*\d*", title)):
         normalized = "self_assessment"
-        reason = "title_contains_?芣?閰?"
+        reason = "title_contains_self_assessment"
     elif any(k in title for k in ("統測", "學測")):
         normalized = "exam_practice"
         reason = "title_contains_exam"
@@ -3450,12 +3145,9 @@ def normalize_source_type_by_title(item: dict, default_source_type: str = "textb
     elif "例題" in title:
         normalized = "textbook_practice"
         reason = "title_contains_example"
-    elif "蝧?" in title:
+    elif "綜合題" in title:
         normalized = "chapter_exercise"
-        reason = "title_contains_蝧?"
-    elif re.search(r"^\s*例(?:題)?\s*\d+", title):
-        normalized = "textbook_example"
-        reason = "title_matches_example"
+        reason = "title_contains_chapter_exercise"
     elif raw_source_type in ALLOWED_SOURCE_TYPES:
         normalized = raw_source_type
         reason = "item_source_type_allowed"
@@ -3685,6 +3377,176 @@ def _normalize_textbook_question_structure(parsed_data, queue=None):
     - practice_questions: independent in-class practices / exercises
     - backward compatibility: example.followup_practices -> concept.practice_questions
     """
+    # ==============================================================================
+    # 【完全體原子級型態對齊閘門】相容純文字字串題目的硬核降維重組
+    # ==============================================================================
+    if isinstance(parsed_data, list):
+        parsed_data = {"chapters": parsed_data}
+    elif isinstance(parsed_data, dict):
+        if "chapters" not in parsed_data:
+            if "subsections" in parsed_data and "sections" not in parsed_data:
+                parsed_data["sections"] = parsed_data["subsections"]
+            parsed_data = {
+                "chapters": [
+                    {
+                        "chapter_title": parsed_data.get("chapter_title") or parsed_data.get("section_title") or "預設第一章",
+                        "sections": [parsed_data],
+                    }
+                ]
+            }
+
+    if isinstance(parsed_data, dict):
+        for ch in parsed_data.get("chapters", []) or []:
+            if not isinstance(ch, dict):
+                continue
+
+            ch_title_raw = _first_non_empty_str(ch, ("chapter_title", "chapter", "name", "title"))
+            if ch_title_raw:
+                ch["chapter_title"] = ch_title_raw
+
+            for sec in ch.get("sections", []) or []:
+                if not isinstance(sec, dict):
+                    continue
+
+                sec_title_raw = _first_non_empty_str(sec, ("section_title", "section", "title", "name"))
+                if sec_title_raw:
+                    sec["section_title"] = sec_title_raw
+
+                # 收集所有可能藏在單元內部的子單元塊或內容大雜燴
+                sub_blocks = []
+                for sub_key in ("subsections", "sub_sections", "concepts", "concept_list", "content"):
+                    if sub_key in sec and isinstance(sec[sub_key], list):
+                        sub_blocks.extend(sec[sub_key])
+
+                if not sub_blocks:
+                    sub_blocks.append(sec)
+
+                # 清空並重新構建 concepts 陣列
+                sec["concepts"] = []
+
+                for block in sub_blocks:
+                    if not isinstance(block, dict):
+                        continue
+
+                    c_name = _first_non_empty_str(block, ("concept_name", "title", "concept", "name")) or sec_title_raw or "未命名概念"
+                    c_en_id = _first_non_empty_str(block, ("concept_en_id", "concept_id", "id", "en_id")) or "Unknown"
+
+                    concept_node = {
+                        "concept_name": c_name,
+                        "concept_en_id": c_en_id,
+                        "concept_paragraph": _first_non_empty_str(block, ("concept_paragraph", "paragraph", "description")) or c_name,
+                        "examples": [],
+                        "practice_questions": [],
+                    }
+
+                    # 收集該子區塊中所有潛在的題目來源陣列
+                    raw_examples = []
+                    raw_practices = []
+
+                    for ex_key in ("examples", "example_list", "example_problems", "example"):
+                        if ex_key in block and isinstance(block[ex_key], list):
+                            raw_examples.extend(block[ex_key])
+
+                    for pr_key in (
+                        "practice_questions", "practice_list", "practice_problems", "practice",
+                        "advanced_problems", "advanced_questions", "basic_problems", "basic_questions",
+                        "exercises", "exercise_list", "self_assessment_questions", "self_assessment",
+                        "advanced", "basic", "questions", "question_list",
+                    ):
+                        if pr_key in block and isinstance(block[pr_key], list):
+                            raw_practices.extend(block[pr_key])
+
+                    # exercise_group 僅在無 questions 子陣列時，才把整塊 dict 當單題處理（避免與字串題重複）
+                    if block.get("type") == "exercise_group" and "text" in block:
+                        qlist = block.get("questions")
+                        if not isinstance(qlist, list) or not qlist:
+                            raw_practices.append(block)
+
+                    # ==============================================================================
+                    # 【全局外層題目無差別回收防線】確保丟在最外層的習題、例題 100% 歸流
+                    # ==============================================================================
+                    if block is sub_blocks[-1]:
+                        # 回收外層練習題/進階題/基礎題/習題
+                        for pr_key in (
+                            "advanced", "basic", "exercises", "practice_questions",
+                            "advanced_problems", "advanced_questions", "basic_problems",
+                            "basic_questions", "questions", "question_list", "subsections", "sub_sections",
+                        ):
+                            if pr_key in sec and isinstance(sec[pr_key], list):
+                                # 排除已經變成節點的 sections 本身，其餘純資料陣列全數倒入
+                                if pr_key not in ("sections", "subsections", "sub_sections") or not any(
+                                    isinstance(x, dict) and "section_title" in x for x in sec[pr_key]
+                                ):
+                                    raw_practices.extend(sec[pr_key])
+
+                        # 回收外層漏網的例題變體
+                        for ex_key in ("examples", "example_list", "example_problems", "example"):
+                            if ex_key in sec and isinstance(sec[ex_key], list):
+                                raw_examples.extend(sec[ex_key])
+                    # ==============================================================================
+
+                    # 5. 原子級型態校正：將純字串題目與變體字典統一重組為標準結構
+                    for src_arr, target_bucket in ((raw_examples, "examples"), (raw_practices, "practice_questions")):
+                        for item in src_arr:
+                            standard_item = {}
+
+                            if isinstance(item, str):
+                                # 型態死鎖突破：純文字字串題型處理 (例如 "9. 成本...")
+                                txt_stripped = item.strip()
+                                # 利用正則匹配開頭的題號
+                                match_num = re.match(r"^(\d+)\s*[\.\、\)\t\s]\s*(.*)$", txt_stripped)
+                                if match_num:
+                                    q_id = match_num.group(1)
+                                    q_text = match_num.group(2).strip()
+                                else:
+                                    q_id = "1"
+                                    q_text = txt_stripped
+
+                                label_prefix = "例題" if target_bucket == "examples" else "習題"
+                                standard_item = {
+                                    "problem_text": q_text,
+                                    "title": f"{label_prefix}{q_id}",
+                                    "source_description": f"{label_prefix}{q_id}",
+                                }
+                            elif isinstance(item, dict):
+                                # 常規字典型態校正
+                                prob_raw = _first_non_empty_str(item, ("problem_text", "problem", "question", "question_text", "stem", "text"))
+                                if not prob_raw and "questions" in item and isinstance(item["questions"], list):
+                                    # 處理特殊巢狀結構，如果字典裡又包了一層純字串陣列
+                                    for sub_str in item["questions"]:
+                                        if isinstance(sub_str, str):
+                                            src_arr.append(sub_str)
+                                    continue
+
+                                if not prob_raw:
+                                    continue
+
+                                standard_item = dict(item)
+                                standard_item["problem_text"] = prob_raw
+                                ans_raw = _first_non_empty_str(item, ("correct_answer", "answer", "ans", "right_answer"))
+                                if ans_raw:
+                                    standard_item["correct_answer"] = ans_raw
+                                sol_raw = _first_non_empty_str(item, ("detailed_solution", "solution", "sol", "explanation", "analysis"))
+                                if sol_raw:
+                                    standard_item["detailed_solution"] = sol_raw
+
+                                title_raw = _first_non_empty_str(item, ("title", "source_description", "source_title", "name"))
+                                if not title_raw and "id" in item:
+                                    prefix_label = "例題" if target_bucket == "examples" else "習題"
+                                    title_raw = f"{prefix_label}{item['id']}"
+                                if title_raw:
+                                    standard_item["title"] = title_raw
+                                    standard_item["source_description"] = title_raw
+                            else:
+                                continue
+
+                            concept_node[target_bucket].append(standard_item)
+
+                    if concept_node["examples"] or concept_node["practice_questions"]:
+                        sec["concepts"].append(concept_node)
+
+    # ==============================================================================
+
     if not isinstance(parsed_data, dict):
         return parsed_data
 
@@ -3715,7 +3577,7 @@ def _normalize_textbook_question_structure(parsed_data, queue=None):
                     sub_questions = _normalize_sub_questions(ex.get("sub_questions", []))
 
                     ex_normalized = dict(ex)
-                    ex_normalized["source_description"] = example_title or ex_normalized.get("source_description", "靘?")
+                    ex_normalized["source_description"] = example_title or ex_normalized.get("source_description", "例題")
                     if problem_text:
                         ex_normalized["problem_text"] = problem_text
                     if answer:
@@ -3748,7 +3610,7 @@ def _normalize_textbook_question_structure(parsed_data, queue=None):
                         p_page_index = fp.get("page_index")
 
                         practice_item = dict(fp)
-                        practice_item["source_description"] = p_title or "?典?蝺渡?"
+                        practice_item["source_description"] = p_title or "隨堂練習"
                         if p_problem:
                             practice_item["problem_text"] = p_problem
                         if p_answer:
@@ -3778,7 +3640,7 @@ def _normalize_textbook_question_structure(parsed_data, queue=None):
                     sub_questions = _normalize_sub_questions(practice.get("sub_questions", []))
 
                     normalized_practice = dict(practice)
-                    normalized_practice["source_description"] = p_title or normalized_practice.get("source_description", "?典?蝺渡?")
+                    normalized_practice["source_description"] = p_title or normalized_practice.get("source_description", "隨堂練習")
                     if p_problem:
                         normalized_practice["problem_text"] = p_problem
                     if p_answer:
@@ -3826,417 +3688,11 @@ def _normalize_textbook_question_structure(parsed_data, queue=None):
     return parsed_data
 
 
-def _mark_needs_review_for_low_quality_pages(parsed_data, page_analysis_payload):
-    if not isinstance(parsed_data, dict) or not isinstance(page_analysis_payload, dict):
-        return parsed_data
-    flagged = {int(k) for k, v in page_analysis_payload.items() if isinstance(v, dict) and v.get("needs_review")}
-    if not flagged:
-        return parsed_data
-    for chapter in parsed_data.get("chapters", []) or []:
-        if not isinstance(chapter, dict):
-            continue
-        for section in chapter.get("sections", []) or []:
-            if not isinstance(section, dict):
-                continue
-            for concept in section.get("concepts", []) or []:
-                if not isinstance(concept, dict):
-                    continue
-                for bucket in ("examples", "practice_questions", "self_assessment_questions"):
-                    for q in concept.get(bucket, []) or []:
-                        if not isinstance(q, dict):
-                            continue
-                        sp = q.get("source_page")
-                        try:
-                            sp_int = int(sp) if sp is not None else None
-                        except Exception:
-                            sp_int = None
-                        if sp_int in flagged:
-                            q["needs_review"] = True
-                            prev = str(q.get("parse_warning", "") or "").strip()
-                            extra = "low_quality_page_without_vision_ocr"
-                            q["parse_warning"] = ";".join(filter(None, [prev, extra]))
-    return parsed_data
-
-
-def is_non_skill_bucket(concept_name, clean_en_id):
-    """Return whether a concept bucket should not generate skill records."""
-    name = (concept_name or "").strip()
-    en_id = (clean_en_id or "").strip().lower()
-    non_skill_names = {
-        "蝧?",
-        "蝡?隞晶",
-        "??蝯?璁?",
-    }
-    non_skill_en_ids = {
-        "chapterintroduction",
-        "exercises",
-        "practice",
-        "review",
-    }
-    return name in non_skill_names or en_id in non_skill_en_ids
-
-
-def remap_mathb_non_skill_examples(section_title, concept_name, clean_en_id, example):
-    """Remap known non-skill examples in B4 section 1-1 to concrete skills."""
-    section = (section_title or "").strip()
-    if "1-1" not in section and "排列組合基本原理" not in section:
-        return None
-
-    non_skill = is_non_skill_bucket(concept_name, clean_en_id)
-    if not non_skill:
-        return None
-
-    problem_type = str(example.get("problem_type", "") or "").strip().lower()
-    subskill_tag = str(example.get("subskill_tag", "") or "").strip().lower()
-    source_description = str(example.get("source_description", "") or "").strip().lower()
-    problem_text = str(example.get("problem_text", "") or "").strip().lower()
-
-    zh_hints = "".join([
-        str(example.get("source_description", "") or ""),
-        str(example.get("problem_text", "") or ""),
-    ])
-    signal = " ".join([problem_type, subskill_tag, source_description, problem_text])
-
-    if (
-        "tree_diagram" in signal
-        or "樹狀圖" in zh_hints
-        or "??" in zh_hints
-    ):
-        return "TreeDiagramCounting"
-
-    if (
-        "addition_principle" in signal
-        or "??閮?" in zh_hints
-        or "????" in zh_hints
-    ):
-        return "AdditionPrinciple"
-
-    if (
-        "factorial" in signal
-        or "??" in zh_hints
-        or "n!" in signal
-        or "n!" in zh_hints.lower()
-    ):
-        return "FactorialNotation"
-
-    if (
-        "multiplication_principle" in signal
-        or "divisor_counting" in signal
-        or "mixed_counting" in signal
-        or "甇???詨" in zh_hints
-        or "甇仿?閮" in zh_hints
-        or "銋???" in zh_hints
-    ):
-        return "MultiplicationPrinciple"
-
-    # ?⊥??斗??閮剜飛?乩?瘜???
-    return "MultiplicationPrinciple"
-
-
-def remap_mathb21_non_skill_examples(section_title, concept_name, clean_en_id, example):
-    section = (section_title or "").strip()
-    if "2-1" not in section and "排列組合" not in section:
-        return None
-    if not is_non_skill_bucket(concept_name, clean_en_id):
-        return None
-
-    text = " ".join(
-        [
-            str(example.get("problem_type", "") or ""),
-            str(example.get("subskill_tag", "") or ""),
-            str(example.get("source_description", "") or ""),
-            str(example.get("problem_text", "") or ""),
-        ]
-    )
-    zh = text
-
-    if re.search(r"聯集|交集|補集", zh):
-        return "EventOperations"
-    if re.search(r"事件|樣本點|機率", zh):
-        return "EventConcepts"
-    if re.search(r"樣本空間|樣本", zh):
-        return "SampleSpace"
-    if re.search(r"集合|子集|全集|元素", zh):
-        return "SetOperations"
-    if re.search(r"容斥|計數|元素個數", zh):
-        return "SetCountingInclusionExclusion"
-    if re.search(r"集合|子集|補集|空集|全集", zh):
-        return "SetBasicConcepts"
-
-    # 2-1 ?⊥??斗??摰??唳蝭銝餉遘 skill
-    return "SampleSpace"
-
-
-def remap_mathb31_non_skill_examples(section_title, concept_name, clean_en_id, example):
-    section = (section_title or "").strip()
-    if "3-1" not in section and "圓排列" not in section:
-        return None
-    if not is_non_skill_bucket(concept_name, clean_en_id):
-        return None
-
-    text = " ".join(
-        [
-            str(example.get("problem_type", "") or ""),
-            str(example.get("subskill_tag", "") or ""),
-            str(example.get("source_description", "") or ""),
-            str(example.get("problem_text", "") or ""),
-        ]
-    )
-    if re.search(r"蝪∪?冽??賣見|蝟餌絞?賣見|?惜?冽??賣見|?刻?賣見|?賣見?寞?", text):
-        return "SamplingMethods"
-    if re.search(r"瘥黎擃璅?|瘥黎擃|璅??腮?格|?賣|?賣見", text):
-        return "SamplingSurvey"
-    if re.search(r"蝯梯???蝢尚?膩蝯梯?|?刻?蝯梯?|鞈???|鞈??渡?|鞈???|蝯梯?", text):
-        return "MeaningOfStatistics"
-    return "MeaningOfStatistics"
-
-
-def remap_mathb32_non_skill_examples(section_title, concept_name, clean_en_id, example):
-    section = (section_title or "").strip()
-    if "3-2" not in section and "蝯梯?鞈??渡?" not in section:
-        return None
-    if not is_non_skill_bucket(concept_name, clean_en_id):
-        return None
-    text = " ".join(
-        [
-            str(example.get("problem_type", "") or ""),
-            str(example.get("subskill_tag", "") or ""),
-            str(example.get("source_description", "") or ""),
-            str(example.get("problem_text", "") or ""),
-        ]
-    )
-    if re.search(r"累積|累積次數|累積分配", text):
-        return "CumulativeFrequencyDistribution"
-    if re.search(r"長條圖|直方圖|折線圖|圓餅圖", text):
-        return "FrequencyDistributionGraphs"
-    if re.search(r"圖表|讀圖|資料判讀", text):
-        return "StatisticalChartReading"
-    if re.search(r"平均|中位數|眾數|變異", text):
-        return "DataOrganizationAndTables"
-    return "DataOrganizationAndTables"
-
-
-def remap_mathb33_non_skill_examples(section_title, concept_name, clean_en_id, example):
-    section = (section_title or "").strip()
-    if "3-3" not in section and "統計圖表" not in section:
-        return None
-    if not is_non_skill_bucket(concept_name, clean_en_id):
-        return None
-    text = " ".join(
-        [
-            str(example.get("problem_type", "") or ""),
-            str(example.get("subskill_tag", "") or ""),
-            str(example.get("source_description", "") or ""),
-            str(example.get("problem_text", "") or ""),
-        ]
-    )
-    if re.search(r"??撟喳?|摮詨?|甈|蝭?腮SUMPRODUCT|???蜀", text):
-        return "WeightedMean"
-    if re.search(r"?刻?|??雿|??雿?|IQR|Q_1|Q_3", text):
-        return "DispersionMeasures"
-    if re.search(r"霈?腮璅?撌徑瘥?璅?撌徑璅?璅?撌徑?Ｗ?撌徑?|sigma|s\^2|?\^2", text):
-        return "VarianceAndStandardDeviation"
-    if re.search(r"蝺扯??撟喟宏|隡貊葬|隤輯|x'|ax\+b|x'_i", text):
-        return "LinearTransformationOfData"
-    if re.search(r"撣豢???|撣豢??脩?|68.?95.?99\.?7|銝??皞榆|?拙?皞榆|銝?皞榆", text):
-        return "NormalDistributionAndEmpiricalRule"
-    if re.search(r"瘞矽|靽∪?瘞湔?|?賣見隤文榆|隤文榆蝭?|瘥?瘥?", text):
-        return "OpinionPollInterpretation"
-    if re.search(r"撟喳??腮銝凋??腮?暹|\\bar\{x\}|弮|mu|Me|Mo", text):
-        return "CentralTendencyMeasures"
-    return "CentralTendencyMeasures"
-
-
-def extract_self_assessment_section_context(*texts: str) -> str:
-    merged = "\n".join(str(t or "") for t in texts if str(t or "").strip())
-    m = re.search(r"(\d+\s*-\s*\d+)\s*([^\n]*)", merged)
-    if m:
-        sec = re.sub(r"\s+", "", m.group(1))
-        return sec
-    if "?渡???" in merged:
-        return "1-2"
-    if "排列組合基本原理" in merged:
-        return "1-1"
-    if "蝯???蝢抵?閮?" in merged:
-        return "1-4"
-    if "蝯?" in merged:
-        return "1-3"
-    if "絕對值與根號" in merged:
-        return "1-5"
-    return ""
-
-
-def infer_mathb4_self_assessment_skill(section_context: str, title: str, problem_text: str) -> dict:
-    sec = str(section_context or "").strip()
-    text = f"{title or ''}\n{problem_text or ''}"
-    result = {
-        "clean_en_id": "",
-        "problem_type": "",
-        "subskill_tag": "",
-        "matched": False,
-    }
-    if not sec:
-        return result
-
-    if sec == "1-1":
-        if re.search(r"?望??雿?遙銝雿???訾???瑞?.{0,8}憟喟?.{0,8}?遙", text):
-            result.update({"clean_en_id": "AdditionPrinciple", "problem_type": "addition_principle", "subskill_tag": "general", "matched": True})
-            return result
-        if re.search(r"$^", text):
-            result.update({"clean_en_id": "MultiplicationPrinciple", "problem_type": "multiplication_principle", "subskill_tag": "mixed_application", "matched": True})
-            return result
-        if re.search(r"$^", text):
-            result.update({"clean_en_id": "MultiplicationPrinciple", "problem_type": "multiplication_principle", "subskill_tag": "role_assignment", "matched": True})
-            return result
-        if re.search(r"$^", text):
-            result.update({"clean_en_id": "MultiplicationPrinciple", "problem_type": "multiplication_principle", "subskill_tag": "number_restriction", "matched": True})
-            return result
-        result.update({"clean_en_id": "MultiplicationPrinciple", "problem_type": "multiplication_principle", "subskill_tag": "mixed_application"})
-        return result
-
-    if sec == "1-2" or "?渡???" in text:
-        if re.search(r"$^", text):
-            result.update({"clean_en_id": "PermutationOfDistinctObjects", "problem_type": "permutation", "subskill_tag": "number_restriction", "matched": True})
-            return result
-        if re.search(r"摮??蝺??銝?擐?|敹??思?", text):
-            result.update({"clean_en_id": "PermutationOfDistinctObjects", "problem_type": "permutation", "subskill_tag": "number_restriction", "matched": True})
-            return result
-        if re.search(r"撌∟艘|頝舐?|??|??????銋?", text):
-            result.update({"clean_en_id": "PermutationOfDistinctObjects", "problem_type": "permutation", "subskill_tag": "mixed_application", "matched": True})
-            return result
-        result.update({"clean_en_id": "PermutationOfDistinctObjects", "problem_type": "permutation", "subskill_tag": "mixed_application"})
-        return result
-
-    return result
-
-
-def infer_mathb4_ch2_self_assessment_skill(chapter_title: str, section_title: str, title: str, problem_text: str) -> dict:
-    text = f"{chapter_title or ''}\n{section_title or ''}\n{title or ''}\n{problem_text or ''}"
-    result = {
-        "skill_id": "",
-        "problem_type": "",
-        "subskill_tag": "",
-    }
-    if not ((("2" in str(chapter_title or "")) and ("璈?" in str(chapter_title or ""))) or ("?芣?閰?" in str(title or ""))):
-        return result
-
-    if re.search(r"璇辣璈?|撌脩??隞嗥???{0,12}璇辣銝P\s*\(\s*[A-Za-z]\s*\|\s*[A-Za-z]\s*\)", text):
-        result.update({"skill_id": "vh_?詨飛B4_ConditionalProbability", "problem_type": "conditional_probability", "subskill_tag": "general"})
-        return result
-    if re.search(r"$^", text):
-        result.update({"skill_id": "vh_?詨飛B4_IndependentEvents", "problem_type": "independent_events", "subskill_tag": "mixed_application"})
-        return result
-    if re.search(r"???慝??|?脣???慝?砍像|撟喳??脣", text):
-        if re.search(r"?脣|?砍像|撟喳?", text):
-            result.update({"skill_id": "vh_?詨飛B4_ApplicationsOfExpectation", "problem_type": "expectation_application", "subskill_tag": "mixed_application"})
-        else:
-            result.update({"skill_id": "vh_?詨飛B4_MathematicalExpectation", "problem_type": "expectation", "subskill_tag": "general"})
-        return result
-    if re.search(r"??|??|摮??摮?|\\subset|\\cap|\\cup|蝛粹??摰?", text) and not re.search(r"P\s*\(", text):
-        result.update({"skill_id": "vh_?詨飛B4_BasicConceptsOfSets", "problem_type": "set_concepts", "subskill_tag": "general"})
-        return result
-    if re.search(r"P\s*\(\s*[A-Za-z](?:'|\\prime)?\s*(?:\\cup|\\cap|?泜?尚\||-|\\setminus)?\s*[A-Za-z]?(?:'|\\prime)?\s*\)|鈭鈭辣璈?|???砍?", text):
-        result.update({"skill_id": "vh_?詨飛B4_ProbabilityProperties", "problem_type": "probability_operations", "subskill_tag": "general"})
-        return result
-    if re.search(r"$^", text):
-        result.update({"skill_id": "vh_?詨飛B4_SampleSpaceAndEvents", "problem_type": "event_operations", "subskill_tag": "general"})
-        return result
-    return result
-
-
-def infer_mathb4_ch3_self_assessment_skill(chapter_title: str, section_title: str, title: str, problem_text: str) -> dict:
-    text = f"{chapter_title or ''}\n{section_title or ''}\n{title or ''}\n{problem_text or ''}"
-    result = {"skill_id": "", "problem_type": "", "subskill_tag": ""}
-    if not ((("3" in str(chapter_title or "")) and ("蝯梯?" in str(chapter_title or ""))) or ("?芣?閰?" in str(title or ""))):
-        return result
-
-    if re.search(r"?刻?|??雿?|IQR|??雿|Q_1|Q_3", text):
-        result.update({"skill_id": "vh_?詨飛B4_DispersionMeasures", "problem_type": "dispersion_measures", "subskill_tag": "general"})
-        return result
-    if re.search(r"霈?腮璅?撌徑瘥?璅?撌徑璅?璅?撌徑sigma|?|s\^2|?\^2", text):
-        result.update({"skill_id": "vh_?詨飛B4_VarianceAndStandardDeviation", "problem_type": "variance_std", "subskill_tag": "general"})
-        return result
-    if re.search(r"蝺扯??撟喟宏|隡貊葬|隤輯|瘥?鞈??瘥?鞈?皜瘥?鞈?銋x'|ax\+b", text):
-        result.update({"skill_id": "vh_?詨飛B4_LinearTransformationOfData", "problem_type": "linear_transformation", "subskill_tag": "general"})
-        return result
-    return result
-
-
-_MATHB4_CHART_SKILLS = {
-    "vh_?詨飛B4_DataOrganizationAndTables",
-    "vh_?詨飛B4_FrequencyDistributionGraphs",
-    "vh_?詨飛B4_CumulativeFrequencyDistribution",
-    "vh_?詨飛B4_StatisticalChartReading",
-}
-
-
-def _is_mathb4_chart_target(section_title: str, skill_id: str) -> bool:
-    return ("3-2" in str(section_title or "")) or (str(skill_id or "") in _MATHB4_CHART_SKILLS)
-
-
-def _extract_chart_metadata_for_mathb4_32(problem_text: str, raw_block: str = "") -> dict:
-    text = str(problem_text or "")
-    block = str(raw_block or "")
-    merged = f"{text}\n{block}"
-    rows = []
-    for m in re.finditer(r"(\d+(?:\.\d+)?)\s*(?:[-~嚚\s*(\d+(?:\.\d+)?))?\s*[:嚗嚚?\s]+\s*(\d+(?:\.\d+)?)", merged):
-        start = m.group(1)
-        end = m.group(2)
-        val = m.group(3)
-        label = f"{start}-{end}" if end else start
-        try:
-            rows.append((label, float(val)))
-        except Exception:
-            continue
-
-    chart_type = None
-    if re.search(r"隞乩?蝝舐?甈⊥|隞乩?蝝舐?甈⊥|蝝舐?甈⊥??", merged):
-        chart_type = "cumulative_frequency_distribution"
-    elif re.search(r"$^", merged):
-        chart_type = "frequency_distribution_graph"
-    elif re.search(r"$^", merged):
-        chart_type = "statistical_chart_reading"
-    elif re.search(r"甈⊥??銵育蝯?|蝯葉暺蝯?|?刻?", merged):
-        chart_type = "data_organization_table"
-
-    if chart_type and len(rows) >= 2:
-        return {
-            "requires_chart": True,
-            "chart_type": chart_type,
-            "chart_data": {
-                "labels": [x[0] for x in rows],
-                "values": [x[1] for x in rows],
-            },
-            "chart_renderable": True,
-        }
-    return {}
-
-_REVIEW_SECTION_RE = re.compile(
-    r"review|自我評量|複習|總複習|測驗|能力指標",
-    re.IGNORECASE,
-)
-
-
-def _is_review_section_title(section_title: str) -> bool:
-    """Return True when *section_title* represents a review / self-assessment section
-    that should be excluded from the curriculum outline skeleton.
-
-    Rationale: sections like '1-review ?芣?閰?', '2-review 銴?' are not formal
-    teaching units.  They must not pollute the outline used for adaptive routing.
-    Self-assessment *questions* (source_type=self_assessment) are unaffected because
-    they are handled inside ``save_to_database``, not here.
-    """
-    t = str(section_title or "").strip()
-    if not t:
-        return False
-    return bool(_REVIEW_SECTION_RE.search(t))
-
-
 def import_outline_structure_only(parsed_data, curriculum_info, queue, source_file_path=None):
     """Import outline structure only into SkillCurriculum."""
     try:
         from models import db, SkillCurriculum
-        current_app.logger.info(" -> [OutlineOnly] ??撱箇?蝡??桅?...")
+        current_app.logger.info(" -> [OutlineOnly] 開始建立單元大綱...")
         
         # 撘瑕皜 session 銝剔?隞颱? pending 霈嚗??autoflush 閫貊????SkillInfo ?航炊
         db.session.rollback()
@@ -4246,7 +3702,7 @@ def import_outline_structure_only(parsed_data, curriculum_info, queue, source_fi
         curr_val = str(curriculum_info.get('curriculum', ''))
         is_vocational_mathb = (curr_val == 'vocational' and 'B' in volume_val)
         
-        # ????蝯??啣??
+        # 將結構對照關係儲存
         struct_map_obj = get_structure_map(curr_val, volume_val)
 
         chapters_created = 0
@@ -4258,16 +3714,16 @@ def import_outline_structure_only(parsed_data, curriculum_info, queue, source_fi
 
         chapters = parsed_data.get('chapters', [])
         for ch_data in chapters:
-            raw_ch_title = ch_data.get('chapter_title', '?芸??蝭').strip()
+            raw_ch_title = ch_data.get('chapter_title', '未知章節').strip()
             
-            # 蝡??迂??
+            # 單元大綱解析
             chapter_title = raw_ch_title
             
             sections = ch_data.get('sections', [])
             for sec_data in sections:
                 sec_title = sec_data.get('section_title', '').strip()
 
-                # Skip review / ?芣?閰? / 銴? sections ??these are not formal teaching
+                # Skip review / 自我評量 / 複習等非正式教學單元
                 # sections and should not appear in the curriculum outline.
                 if _is_review_section_title(sec_title):
                     current_app.logger.info(
@@ -4275,7 +3731,7 @@ def import_outline_structure_only(parsed_data, curriculum_info, queue, source_fi
                     )
                     continue
 
-                # 撠?蝯??啣?
+                # 對應到結構大綱
                 sec_code = ""
                 # ?岫敺?蝭璅??? 1-1, 1-2 蝑誨蝣?
                 match_code = re.search(r'(\d+-\d+)', sec_title)
@@ -4303,7 +3759,7 @@ def import_outline_structure_only(parsed_data, curriculum_info, queue, source_fi
                     clean_sec_title = "UnknownSection"
                 temp_skill_id = f"outline_{curr_val}_{volume_val}_{clean_sec_title}"
                 
-                # 瑼Ｘ撠??臬摮
+                # 檢查該技能是否已存在
                 existing_curr = SkillCurriculum.query.filter_by(
                     curriculum=curr_val,
                     volume=volume_val,
@@ -4337,7 +3793,7 @@ def import_outline_structure_only(parsed_data, curriculum_info, queue, source_fi
         }
     except Exception as e:
         db.session.rollback()
-        current_app.logger.error(f"[import_outline_structure_only] 憭望?: {e}")
+        current_app.logger.error(f"[import_outline_structure_only] 失敗: {e}")
         raise e
 
 
@@ -4352,7 +3808,7 @@ def save_to_database(
     optional_enrich_pdf_path=None,
 ):
     """Save parsed AI content into database."""
-    message = "甇?撠??瑽神?亥??澈..."
+    message = "正在將解析結果寫入資料庫..."
     current_app.logger.info(message)
     queue.put(f"INFO: {message}")
     skills_processed = 0
@@ -4466,10 +3922,10 @@ def save_to_database(
 
     records_with_latex, records_with_placeholder = _count_latex_and_placeholder_records(parsed_data)
     
-    # [NEW] 瑼?閫??????
+    # [NEW] 檢驗章節數量與頁數限制
     filename_meta = parse_textbook_filename_metadata(source_file_path) if source_file_path else {}
     
-    # [NEW] ??蝯??啣?撠?璈 (Structure Map Alignment)
+    # [NEW] 教材結構大綱對齊
     structure_meta = None
     structure_alignment_failed = False
     volume_val = str(curriculum_info.get('volume', ''))
@@ -4520,7 +3976,7 @@ def save_to_database(
             # 璅?撠???嚗??蝥粥??filename_meta fallback
             structure_alignment_failed = False
         else:
-            # ?曆??唳??暺?璅?撠?憭望?
+            # 若無任何對應單元，則對齊失敗
             message = f"Missing aligned section for code {s_code}; fallback may be used."
             current_app.logger.warning(f"[ALIGNMENT] {message}")
             queue.put(f"WARNING: {message}")
@@ -4670,7 +4126,7 @@ def save_to_database(
             return linked, review
         practice_num = _extract_title_number(practice_title)
         if practice_num is not None:
-            inferred = f"靘?{practice_num}"
+            inferred = f"例題{practice_num}"
             if inferred in saved_titles:
                 return inferred, review
             if saved_titles:
@@ -4787,7 +4243,7 @@ def save_to_database(
         candidates = [a for a in (all_candidates or []) if str(a.get("media_kind", "image_asset")) == "image_asset"]
         if not candidates:
             combo = f"{question_title} {question_text}"
-            if any(k in str(combo or "") for k in ("憒?", "?喳?", "??", "璉撘???", "?")):
+            if any(k in str(combo or "") for k in ("圖", "表", "下圖", "上圖", "右圖", "左圖", "如圖", "題圖", "示意圖")):
                 return {"has_image": True, "image_assets": [], "image_warning": "missing_docx_image_asset", "needs_review": True}
             return None
         rel_dir = build_question_asset_dir(
@@ -5228,68 +4684,27 @@ def save_to_database(
         return None
 
     def _determine_target_skill_id(base_clean_en_id, section_title, concept_name, example_obj):
+        explicit_skill_id = str(example_obj.get("skill_id", "") or "").strip()
+        if explicit_skill_id:
+            return explicit_skill_id
+
         target_clean_en_id = base_clean_en_id
         if str(target_clean_en_id or "") == "DispersionAndLinearTransformation":
             target_clean_en_id = "DispersionMeasures"
         if str(target_clean_en_id or "") == "ProbabilityOperations":
             target_clean_en_id = "ProbabilityProperties"
-        if is_vocational_mathb and is_non_skill_bucket(concept_name, base_clean_en_id):
-            remapped_33_en_id = remap_mathb33_non_skill_examples(
-                section_title=section_title,
-                concept_name=concept_name,
-                clean_en_id=base_clean_en_id,
-                example=example_obj
-            )
-            if remapped_33_en_id:
-                target_clean_en_id = remapped_33_en_id
-            remapped_32_en_id = remap_mathb32_non_skill_examples(
-                section_title=section_title,
-                concept_name=concept_name,
-                clean_en_id=base_clean_en_id,
-                example=example_obj
-            )
-            if remapped_32_en_id:
-                target_clean_en_id = remapped_32_en_id
-            remapped_31_en_id = remap_mathb31_non_skill_examples(
-                section_title=section_title,
-                concept_name=concept_name,
-                clean_en_id=base_clean_en_id,
-                example=example_obj
-            )
-            if remapped_31_en_id:
-                target_clean_en_id = remapped_31_en_id
-            remapped_21_en_id = remap_mathb21_non_skill_examples(
-                section_title=section_title,
-                concept_name=concept_name,
-                clean_en_id=base_clean_en_id,
-                example=example_obj
-            )
-            if remapped_21_en_id:
-                target_clean_en_id = remapped_21_en_id
-            remapped_en_id = remap_mathb_non_skill_examples(
-                section_title=section_title,
-                concept_name=concept_name,
-                clean_en_id=base_clean_en_id,
-                example=example_obj
-            )
-            if remapped_en_id:
-                target_clean_en_id = remapped_en_id
-
-        explicit_skill_id = str(example_obj.get("skill_id", "") or "").strip()
-        if explicit_skill_id:
-            return explicit_skill_id
 
         if is_vocational_math:
             return normalize_vocational_math_skill_id(subject, vol_num, target_clean_en_id)
         return f"{prefix}{target_clean_en_id}"
 
     try:
-        current_app.logger.info(" -> ??撖怠鞈?摨?..")
-        queue.put("INFO: -> ??撖怠鞈?摨?..")
+        current_app.logger.info(" -> 開始寫入資料庫...")
+        queue.put("INFO: -> 開始寫入資料庫...")
         chapters = parsed_data.get('chapters', [])
         
         for chapter_data in chapters:
-            raw_chapter = chapter_data.get('chapter_title', '?芸??蝭').strip()
+            raw_chapter = chapter_data.get('chapter_title', '未知章節').strip()
             
             # === ?靽格迤 1嚗??摮蒂璅???蝭?迂 ===
             match = re.search(r'(\d+)', raw_chapter)
@@ -5298,7 +4713,7 @@ def save_to_database(
             else:
                 chapter_num = 999 
 
-            # [V2.2] ?芸?雿輻??蝯??啣?撠?
+            # [V2.2] 引入結構大綱映射
             if structure_meta and structure_meta.get('chapter_index'):
                 chapter_num = structure_meta['chapter_index']
                 chapter_title = structure_meta['chapter_title']
@@ -5322,7 +4737,7 @@ def save_to_database(
 
             sections = chapter_data.get('sections', [])
             
-            # ?葉??撠?? (靽???頛?雿?典?銝剜??瑁?)
+            # 教材對齊結構 (在此處進行技能綁定)
             if curriculum_info.get('curriculum') == 'junior_high':
                 chapter_title = chapter_title.replace('\n', ' ').strip()
                 chapter_title = re.sub(r'^(?:Chapter|Unit|蝚?\s*(\d+)(?:\s*蝡??\s*', r'\1 ', chapter_title).strip()
@@ -5341,7 +4756,7 @@ def save_to_database(
             for section_data in sections:
                 section_title = section_data.get('section_title', '') or ''
                 
-                # [V2.2] ?芸?雿輻??蝯??啣?撠?
+                # [V2.2] 引入結構大綱映射
                 if structure_meta and structure_meta.get('section_title'):
                     section_title = structure_meta['section_title']
                 
@@ -5449,7 +4864,7 @@ def save_to_database(
                         continue # 頝喲?敺?????桀?亥???賣??
 
                     if not skip_skill_creation:
-                        # === SkillInfo ?啣?/?湔 (蝬剜???頛? ===
+                        # === SkillInfo 新增/更新 ===
                         existing_skill = SkillInfo.query.get(final_skill_id)
                         if not existing_skill:
                             new_skill = SkillInfo(
@@ -5475,7 +4890,7 @@ def save_to_database(
                             if not existing_skill.gemini_prompt:
                                 existing_skill.gemini_prompt = f"Generate math problems about {concept_name}."
                         
-                        # === SkillCurriculum ?啣? (?嚗??交迤蝣箇? display_order) ===
+                        # === SkillCurriculum 新增 ===
                         existing_curr = SkillCurriculum.query.filter_by(
                             skill_id=final_skill_id,
                             chapter=chapter_title,
@@ -5508,7 +4923,7 @@ def save_to_database(
                             f"INFO: skip skill creation for concept='{concept_name}' ({clean_en_id}); keep examples import."
                         )
 
-                    # === 憿撖怠嚗???source_type 甇???????頝舐 ===
+                    # === 題目寫入：依據 source_type 進行資料分類 ===
                     saved_example_skill_map = {}
                     saved_example_order = []
                     saved_example_titles = []
@@ -5531,11 +4946,11 @@ def save_to_database(
                         if not problem_text:
                             continue
 
-                        example_title = get_question_title(ex) or "靘?"
+                        example_title = get_question_title(ex) or "例題"
                         detected_titles.append(example_title)
                         source_type = normalize_source_type_by_title(ex, default_source_type="textbook_example")
 
-                        # Skip section exposition entries (e.g. title='隤脫??批捆').
+                        # Skip section exposition entries (e.g. title='課文內容').
                         if source_type == "section_exposition":
                             current_app.logger.info(
                                 f"[SKIP] section_exposition title={example_title!r} not saved as textbook_example"
@@ -5886,13 +5301,13 @@ def save_to_database(
                             if needs_review:
                                 practice_questions_needs_review += 1
 
-                    # === ?典?蝺渡?/蝺渡?憿??函?撖怠 ===
+                    # === 範例題與練習題寫入 ===
                     self_assessment_section_context = ""
                     for practice_idx, practice in enumerate(concept.get('practice_questions', []) or [], start=1):
                         if not isinstance(practice, dict):
                             continue
 
-                        practice_title = get_question_title(practice) or "?典?蝺渡?"
+                        practice_title = get_question_title(practice) or "隨堂練習"
                         source_type = normalize_source_type_by_title(practice, default_source_type="in_class_practice")
                         if source_type == "self_assessment":
                             context_candidate = extract_self_assessment_section_context(
@@ -6054,52 +5469,27 @@ def save_to_database(
 
                         target_skill_id = str(practice.get("skill_id", "") or "").strip()
                         if not target_skill_id:
-                            if source_type == "self_assessment" and is_vocational_mathb and vol_num == 4:
-                                mapped_ch3 = infer_mathb4_ch3_self_assessment_skill(
-                                    chapter_title, section_title, practice_title, practice_problem
+                            linked_num = _extract_title_number(linked_example_title) if linked_example_title else None
+                            if linked_num is not None and linked_num in saved_example_skill_map:
+                                target_skill_id = saved_example_skill_map[linked_num]
+                            elif len({sid for _, sid in saved_example_order}) == 1 and saved_example_order:
+                                target_skill_id = saved_example_order[0][1]
+                            elif saved_example_order:
+                                target_skill_id = saved_example_order[-1][1]
+                                needs_review = True
+                                warn_msg = (
+                                    f"[PRACTICE IMPORT WARNING] title={practice_title} reason=missing_exact_linked_example"
                                 )
-                                sa_section_context = self_assessment_section_context or extract_self_assessment_section_context(section_title)
-                                mapped_ch2 = infer_mathb4_ch2_self_assessment_skill(
-                                    chapter_title, section_title, practice_title, practice_problem
-                                )
-                                if mapped_ch3.get("skill_id"):
-                                    target_skill_id = mapped_ch3.get("skill_id")
-                                    practice["problem_type"] = mapped_ch3.get("problem_type") or practice.get("problem_type", "")
-                                    practice["subskill_tag"] = mapped_ch3.get("subskill_tag") or practice.get("subskill_tag", "")
-                                elif mapped_ch2.get("skill_id"):
-                                    target_skill_id = mapped_ch2.get("skill_id")
-                                    practice["problem_type"] = mapped_ch2.get("problem_type") or practice.get("problem_type", "")
-                                    practice["subskill_tag"] = mapped_ch2.get("subskill_tag") or practice.get("subskill_tag", "")
-                                else:
-                                    mapped = infer_mathb4_self_assessment_skill(sa_section_context, practice_title, practice_problem)
-                                    if mapped.get("clean_en_id"):
-                                        target_skill_id = f"vh_?詨飛B4_{mapped['clean_en_id']}"
-                                        practice["problem_type"] = mapped.get("problem_type") or practice.get("problem_type", "")
-                                        practice["subskill_tag"] = mapped.get("subskill_tag") or practice.get("subskill_tag", "")
-                                    else:
-                                        target_skill_id = _determine_target_skill_id(clean_en_id, section_title, concept_name, practice)
+                                current_app.logger.warning(warn_msg)
+                                queue.put(f"WARN: {warn_msg}")
                             else:
-                                linked_num = _extract_title_number(linked_example_title) if linked_example_title else None
-                                if linked_num is not None and linked_num in saved_example_skill_map:
-                                    target_skill_id = saved_example_skill_map[linked_num]
-                                elif len({sid for _, sid in saved_example_order}) == 1 and saved_example_order:
-                                    target_skill_id = saved_example_order[0][1]
-                                elif saved_example_order:
-                                    target_skill_id = saved_example_order[-1][1]
-                                    needs_review = True
-                                    warn_msg = (
-                                        f"[PRACTICE IMPORT WARNING] title={practice_title} reason=missing_exact_linked_example"
-                                    )
-                                    current_app.logger.warning(warn_msg)
-                                    queue.put(f"WARN: {warn_msg}")
-                                else:
-                                    target_skill_id = _determine_target_skill_id(clean_en_id, section_title, concept_name, practice)
-                                    needs_review = True
-                                    warn_msg = (
-                                        f"[PRACTICE IMPORT WARNING] title={practice_title} reason=missing_linked_example"
-                                    )
-                                    current_app.logger.warning(warn_msg)
-                                    queue.put(f"WARN: {warn_msg}")
+                                target_skill_id = _determine_target_skill_id(clean_en_id, section_title, concept_name, practice)
+                                needs_review = True
+                                warn_msg = (
+                                    f"[PRACTICE IMPORT WARNING] title={practice_title} reason=missing_linked_example"
+                                )
+                                current_app.logger.warning(warn_msg)
+                                queue.put(f"WARN: {warn_msg}")
 
                         log_msg = (
                             f"[PRACTICE IMPORT] detected title={practice_title} source_type={source_type} "
@@ -6406,8 +5796,8 @@ def save_to_database(
     except Exception as e:
         db.session.rollback()
         tb = traceback.format_exc()
-        current_app.logger.error(f"撖怠鞈?摨怠仃?? {e}\n{tb}")
-        queue.put(f"ERROR: 撖怠鞈?摨怠仃?? {e}")
+        current_app.logger.error(f"寫入資料庫中斷: {e}\n{tb}")
+        queue.put(f"ERROR: 寫入資料庫中斷: {e}")
         return {}
 
 

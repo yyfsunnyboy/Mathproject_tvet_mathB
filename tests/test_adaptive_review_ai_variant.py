@@ -1,8 +1,12 @@
-# -*- coding: utf-8 -*-
-
+import pytest
 from flask import Flask
 
-import adaptive_review_api as api
+try:
+    import adaptive_review_api as api
+    HAS_TORCH = True
+except ImportError:
+    HAS_TORCH = False
+
 
 
 class _DummyResponse:
@@ -31,6 +35,7 @@ def _seed_question():
     }
 
 
+@pytest.mark.skipif(not HAS_TORCH, reason="torch not installed")
 def test_generate_ai_variant_success(monkeypatch):
     monkeypatch.setattr(api, "get_engine", lambda: object())
     monkeypatch.setattr(api, "_fetch_seed_question_by_item_id", lambda item_id, engine: _seed_question())
@@ -61,6 +66,7 @@ def test_generate_ai_variant_success(monkeypatch):
     assert payload["runtime_log"]["sympy_validation_status"] == "parsed_ok"
 
 
+@pytest.mark.skipif(not HAS_TORCH, reason="torch not installed")
 def test_generate_ai_variant_success_without_latex(monkeypatch):
     monkeypatch.setattr(api, "get_engine", lambda: object())
     monkeypatch.setattr(api, "_fetch_seed_question_by_item_id", lambda item_id, engine: _seed_question())
@@ -88,6 +94,7 @@ def test_generate_ai_variant_success_without_latex(monkeypatch):
     assert payload["runtime_log"]["fallback_used"] is False
 
 
+@pytest.mark.skipif(not HAS_TORCH, reason="torch not installed")
 def test_generate_ai_variant_fallback_on_invalid_json(monkeypatch):
     monkeypatch.setattr(api, "get_engine", lambda: object())
     monkeypatch.setattr(api, "_fetch_seed_question_by_item_id", lambda item_id, engine: _seed_question())
@@ -107,6 +114,7 @@ def test_generate_ai_variant_fallback_on_invalid_json(monkeypatch):
     assert payload["runtime_log"]["fallback_used"] is True
 
 
+@pytest.mark.skipif(not HAS_TORCH, reason="torch not installed")
 def test_adaptive_review_question_route_preserves_frontend_shape(monkeypatch):
     app = Flask(__name__)
     app.register_blueprint(api.adaptive_review_bp)

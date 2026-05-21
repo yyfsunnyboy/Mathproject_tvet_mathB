@@ -1,0 +1,115 @@
+_norm_title_spaces                       Line: 76    End: 77    Doc: 
+_strip_title_brackets                    Line: 80    End: 81    Doc: 
+scan_docx_title_inventory                Line: 84    End: 233   Doc: Deterministic scan of example / practice / chapter exercise / exam titles from DOCX text.
+map_returned_import_title                Line: 236   End: 309   Doc: Map AI-returned title string to canonical form; never guess exercise zone from number alone.
+canonicalize_import_title                Line: 312   End: 334   Doc: Normalize title for inventory; optional inventory_items disambiguates 「習題 n」.
+scan_expected_titles_from_converted_text Line: 337   End: 339   Doc: 
+collect_returned_titles_from_parsed_data Line: 342   End: 355   Doc: 
+build_title_inventory                    Line: 358   End: 403   Doc: 
+_md_table_row                            Line: 406   End: 408   Doc: 
+write_title_inventory_report             Line: 411   End: 497   Doc: 
+detect_curriculum_volume_warning         Line: 500   End: 506   Doc: 
+_has_text_mojibake                       Line: 507   End: 515   Doc: 
+_is_low_value_import_field               Line: 518   End: 522   Doc: 
+score_problem_text_quality               Line: 525   End: 572   Doc: Score imported problem text so duplicate merge does not replace good LaTeX with placeholders.
+should_replace_problem_text              Line: 575   End: 578   Doc: 
+sanitize_gemini_json_text                Line: 585   End: 627   Doc: 靽桀儔 Gemini ? JSON 銝剖虜閬??澆?????
+safe_load_gemini_json                    Line: 630   End: 679   Doc: 摰閫?? Gemini ? JSON??
+_log_gemini_json_parse_failed_after_sanitize Line: 682   End: 689   Doc: 
+fix_common_latex_errors                  Line: 692   End: 752   Doc: 靽桀儔 AI/Pandoc 頧?敺虜閬? LaTeX 隤??航炊?泵?瞍?(憓撥??
+clean_pandoc_output                      Line: 757   End: 775   Doc: ??擉啁?/Word撠??撠?Pandoc 頧? Word 瑼??畾撘脰?皜???
+_xml_local_name                          Line: 778   End: 781   Doc: 
+_omml_node_to_latex                      Line: 784   End: 816   Doc: 
+_normalize_omml_latex                    Line: 819   End: 824   Doc: 
+convert_omml_to_latex                    Line: 827   End: 830   Doc: 
+_extract_docx_image_placeholder          Line: 833   End: 858   Doc: Return [FORMULA_IMAGE_N] placeholders for every image reference found in *run_el*.
+extract_docx_paragraph_with_equations    Line: 861   End: 908   Doc: 
+extract_docx_table_with_equations        Line: 911   End: 923   Doc: 
+extract_converted_latex_docx             Line: 926   End: 957   Doc: Extract DOCX text in document order for pre-converted MathType->LaTeX DOCX.
+detect_converted_latex_docx              Line: 960   End: 973   Doc: 
+build_docx_media_relationship_map        Line: 976   End: 997   Doc: 
+_guess_image_content_type                Line: 1000  End: 1011  Doc: 
+_docx_image_original_format              Line: 1014  End: 1027  Doc: 
+extract_docx_image_rids_from_paragraph   Line: 1030  End: 1041  Doc: 
+_is_question_start_text                  Line: 1044  End: 1061  Doc: 
+is_structural_boundary_line              Line: 1079  End: 1083  Doc: 
+_is_figure_caption_line                  Line: 1115  End: 1117  Doc: 
+classify_non_question_block              Line: 1120  End: 1133  Doc: 
+segment_question_block_text              Line: 1136  End: 1169  Doc: 
+_extract_question_title_from_text        Line: 1172  End: 1190  Doc: 
+_is_formula_question_text                Line: 1193  End: 1195  Doc: 
+_is_image_question_text                  Line: 1198  End: 1200  Doc: 
+_normalize_docx_question_title_key       Line: 1226  End: 1233  Doc: Normalize question title key for DOCX mapping lookups.
+_build_docx_title_aliases                Line: 1236  End: 1268  Doc: Build ordered alias candidates for title-to-block / title-to-asset matching.
+_extract_label_and_number                Line: 1271  End: 1281  Doc: 
+_normalize_docx_key_for_scan             Line: 1284  End: 1285  Doc: 
+_find_docx_prefix_match                  Line: 1288  End: 1305  Doc: Find key by normalized-prefix match, preserving label type.
+_find_exercise_section_key               Line: 1308  End: 1315  Doc: 
+_is_safe_exercise_block                  Line: 1318  End: 1335  Doc: Return True only when *block_text* is a genuine bare-numbered exercise.
+_lookup_docx_formula_block               Line: 1338  End: 1405  Doc: High-confidence lookup for a raw DOCX formula block by Gemini question title.
+_is_b1_coordinate_context                Line: 1412  End: 1421  Doc: 
+_normalize_coordinate_point_notation     Line: 1424  End: 1459  Doc: Normalize OCR/LaTeX-mangled coordinate point labels into A(x,y)-style forms.
+_lookup_docx_question_assets             Line: 1462  End: 1535  Doc: High-confidence lookup for question assets by Gemini question title.
+attach_docx_media_to_question_blocks     Line: 1538  End: 1679  Doc: 
+build_docx_question_formula_context      Line: 1682  End: 1708  Doc: 
+_safe_title_for_filename                 Line: 1711  End: 1714  Doc: 
+_copy_docx_asset_to_question_assets      Line: 1717  End: 1733  Doc: 
+parse_volume                             Line: 1736  End: 1769  Doc: Parse vocational math volume label into (subject, volume_number). Never raises re.error.
+normalize_json_text_before_parse         Line: 1772  End: 1781  Doc: Normalize JSON text before parsing.
+sanitize_detailed_solution_text          Line: 1784  End: 1812  Doc: Sanitize detailed solution text for storage.
+process_textbook_file                    Line: 1815  End: 2109  Doc: Process textbook file and import parsed content.
+extract_content_from_file                Line: 2114  End: 2369  Doc: Extract text content from PDF or Word files.
+_sanitize_and_parse_json                 Line: 2371  End: 2434  Doc: Sanitize and parse AI JSON response text.
+_call_gemini_with_retry                  Line: 2437  End: 2564  Doc: 
+call_gemini_for_toc                      Line: 2566  End: 2580  Doc: Call Gemini to extract chapter/section TOC.
+call_gemini_for_analysis                 Line: 2582  End: 2723  Doc: Call Gemini to analyze extracted textbook content.
+parse_ai_response                        Line: 2725  End: 2737  Doc: Parse AI response payload into dict.
+snake_to_pascal_case                     Line: 2740  End: 2744  Doc: Convert snake_case or kebab-case to PascalCase.
+clean_skill_en_name                      Line: 2746  End: 2754  Doc: Clean skill english name and keep PascalCase suffix if present.
+_formula_context_label                   Line: 2757  End: 2758  Doc: 
+_normalize_extracted_content_math        Line: 2761  End: 2791  Doc: Normalize extracted page text before Gemini sees OCR/PDF math artifacts.
+score_extracted_page_quality             Line: 2794  End: 2813  Doc: 
+_render_page_image_temp                  Line: 2816  End: 2834  Doc: 
+_vision_ocr_page_text                    Line: 2837  End: 2856  Doc: 
+_build_page_analysis_payload             Line: 2859  End: 2888  Doc: 
+_normalize_imported_math_value           Line: 2891  End: 2937  Doc: 
+_normalize_parsed_textbook_math          Line: 2940  End: 3042  Doc: Normalize known textbook JSON text fields before DB persistence.
+_first_non_empty_str                     Line: 3045  End: 3050  Doc: 
+normalize_fill_blank_artifacts           Line: 3076  End: 3104  Doc: 
+_contains_perm_comb_formula              Line: 3107  End: 3120  Doc: 
+is_answer_blank_placeholder_context      Line: 3123  End: 3139  Doc: 
+normalize_permutation_combination_notation Line: 3142  End: 3195  Doc: 
+normalize_probability_event_notation     Line: 3198  End: 3252  Doc: 
+_is_subsection_heading_line              Line: 3255  End: 3257  Doc: 
+repair_missing_single_variable_text      Line: 3260  End: 3295  Doc: 
+validate_problem_block_purity            Line: 3298  End: 3385  Doc: 
+classify_practice_source_bucket          Line: 3388  End: 3398  Doc: 
+get_question_title                       Line: 3401  End: 3407  Doc: 
+_is_section_exposition_title             Line: 3420  End: 3436  Doc: Return True when *title* looks like a section-exposition label (not a real question).
+normalize_source_type_by_title           Line: 3439  End: 3508  Doc: 
+_normalize_title_for_dedupe              Line: 3523  End: 3526  Doc: 
+_build_intra_import_dedupe_key           Line: 3529  End: 3533  Doc: 
+_score_intra_import_item                 Line: 3536  End: 3554  Doc: 
+_dedupe_intra_import_section_items       Line: 3557  End: 3628  Doc: Deduplicate repeated questions within one section before DB write.
+dedupe_intra_import_parsed_data          Line: 3631  End: 3643  Doc: Deduplicate duplicate questions within the same AI JSON payload.
+_normalize_sub_questions                 Line: 3646  End: 3664  Doc: 
+_render_sub_questions_problem            Line: 3667  End: 3676  Doc: 
+_render_sub_questions_answer             Line: 3679  End: 3688  Doc: 
+_render_sub_questions_solution           Line: 3691  End: 3704  Doc: 
+_normalize_textbook_question_structure   Line: 3707  End: 3852  Doc: Normalize AI output structure so examples/practice_questions are consistently separable.
+_mark_needs_review_for_low_quality_pages Line: 3855  End: 3884  Doc: 
+is_non_skill_bucket                      Line: 3887  End: 3902  Doc: Return whether a concept bucket should not generate skill records.
+remap_mathb_non_skill_examples           Line: 3905  End: 3959  Doc: Remap known non-skill examples in B4 section 1-1 to concrete skills.
+remap_mathb21_non_skill_examples         Line: 3962  End: 3993  Doc: 
+remap_mathb31_non_skill_examples         Line: 3996  End: 4017  Doc: 
+remap_mathb32_non_skill_examples         Line: 4020  End: 4042  Doc: 
+remap_mathb33_non_skill_examples         Line: 4045  End: 4073  Doc: 
+extract_self_assessment_section_context  Line: 4076  End: 4092  Doc: 
+infer_mathb4_self_assessment_skill       Line: 4095  End: 4136  Doc: 
+infer_mathb4_ch2_self_assessment_skill   Line: 4139  End: 4170  Doc: 
+infer_mathb4_ch3_self_assessment_skill   Line: 4173  End: 4188  Doc: 
+_is_mathb4_chart_target                  Line: 4199  End: 4200  Doc: 
+_extract_chart_metadata_for_mathb4_32    Line: 4203  End: 4238  Doc: 
+_is_review_section_title                 Line: 4246  End: 4258  Doc: Return True when *section_title* represents a review / self-assessment section
+import_outline_structure_only            Line: 4261  End: 4367  Doc: Import outline structure only into SkillCurriculum.
+save_to_database                         Line: 4370  End: 6437  Doc: Save parsed AI content into database.

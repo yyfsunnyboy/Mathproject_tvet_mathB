@@ -3,10 +3,10 @@
 ## Summary
 - volume: `數學B1`
 - section: `1-4`
-- expected_titles_count: `19`
-- returned_titles_count: `0`
-- missing_titles_count: `19`
-- extra_titles_count: `0`
+- expected_titles_count: `27`
+- returned_titles_count: `24`
+- missing_titles_count: `11`
+- extra_titles_count: `8`
 - allow_partial_import: `false`
 - write_aborted: `false`
 - warning: ``
@@ -22,6 +22,14 @@
 | 例6 | 例題6 | example | 1-4 |  |  | 6 | 利用幾何圖形來輔助同學們對題目的理解。 例6 解下列不等式： (1)${{x}^{2}}-4x+4>0$	(2)${{x}^ |
 | 例7 | 例題7 | example | 1-4 |  |  | 7 | +bx+c\le 0$之解為無實數解。 例7 解下列不等式：(1)${{x}^{2}}+2x+3>0$　(2)$2{{x}^ |
 | 例8 | 例題8 | example | 1-4 |  |  | 8 | 則a < 0且D < 0；反之亦成立。 例8 若\[y=f\left( x \right)=-{{x}^{2}}+2x+k\ |
+| 隨堂練習……………………………………………………………………………… 1 | 隨堂練習1 | in_class_practice | 1-4 |  |  | 1 | ^{2}}+x-15$ 隨堂練習……………………………………………………………………………… 1.	利用十字交乘法分解下列各式： (1)${{x}^{2}} |
+| 隨堂練習……………………………………………………………………………… 2 | 隨堂練習2 | in_class_practice | 1-4 |  |  | 2 | {2}$或x < −3 隨堂練習……………………………………………………………………………… 2.	解下列不等式： (1)$-{{x}^{2}}+6x-5> |
+| 隨堂練習……………………………………………………………………………… 3 | 隨堂練習3 | in_class_practice | 1-4 |  |  | 3 |  = 1，b = −4 隨堂練習……………………………………………………………………………… 3.	設不等式$a{{x}^{2}}+bx-6\le 0$的解 |
+| 隨堂練習……………………………………………………………………………… 4 | 隨堂練習4 | in_class_practice | 1-4 |  |  | 4 | a = 5，b = 7 隨堂練習……………………………………………………………………………… 4.	設不等式$a{{x}^{2}}+x+b>0$的解為x < |
+| 隨堂練習……………………………………………………………………………… 5 | 隨堂練習5 | in_class_practice | 1-4 |  |  | 5 | 41個蛋糕才會開始賺錢 隨堂練習……………………………………………………………………………… 5.	已知某商品銷售x件的利潤函數為$f\left( x \r |
+| 隨堂練習……………………………………………………………………………… 6 | 隨堂練習6 | in_class_practice | 1-4 |  |  | 6 | 0$ 其解為x = 2 隨堂練習……………………………………………………………………………… 6.	解下列不等式： (1)${{x}^{2}}-2x+1>0 |
+| 隨堂練習……………………………………………………………………………… 7 | 隨堂練習7 | in_class_practice | 1-4 |  |  | 7 |  0$ 的解為無實數解 隨堂練習……………………………………………………………………………… 7.	解下列不等式： (1)${{x}^{2}}-2x+5\g |
+| 隨堂練習……………………………………………………………………………… 8 | 隨堂練習8 | in_class_practice | 1-4 |  |  | 8 |  −4 故k < −1 隨堂練習……………………………………………………………………………… 8.	若$y=f\left( x \right)={{x}^{ |
 | 1 | 1-4習題 基礎題1 | chapter_exercise | 1-4 | 1-4習題 | 基礎題 | 1 | 1	利用十字交乘法分解下列各式： |
 | 2 | 1-4習題 基礎題2 | chapter_exercise | 1-4 | 1-4習題 | 基礎題 | 2 | 2	解下列不等式： |
 | 3 | 1-4習題 基礎題3 | chapter_exercise | 1-4 | 1-4習題 | 基礎題 | 3 | 3	已知a、b為實數，若不等式${{x}^{2}}+ax\le b$之解為−4 ≤ x ≤ 3，試求a + b之值。 |
@@ -33,6 +41,34 @@
 | 9 | 1-4習題 進階題9 | chapter_exercise | 1-4 | 1-4習題 | 進階題 | 9 | 9	已知路邊行動咖啡車製作n杯咖啡的成本為n + 50元，而賣出n杯咖啡的收入為${{n}^{2}}-4n$元，試問最少要賣出多少杯咖啡才會開始有利潤？ |
 | 10 | 1-4習題 進階題10 | chapter_exercise | 1-4 | 1-4習題 | 進階題 | 10 | 10	設a、b均為實數，若不等式$a{{x}^{2}}+2x+b\ge 0$的解為$-\frac{1}{3}\le x\le 5$，則a + b之值為何？ |
 | 〔109統測B〕 | 109統測B | exam_practice | 1-4 |  |  |  | x+5\le 0$	〔109統測B〕 KEY (1)	二次不等式：若$\alpha <\beta |
+
+## Returned Title Mapping
+| returned_raw | returned_canonical | mapping_method | needs_review |
+| --- | --- | --- | --- |
+| 例題1 | 例題1 | direct_example | false |
+| 隨堂練習1 | 隨堂練習1 | direct_practice | false |
+| 例題2 | 例題2 | direct_example | false |
+| 例題3 | 例題3 | direct_example | false |
+| 例題4 | 例題4 | direct_example | false |
+| 例題5 | 例題5 | direct_example | false |
+| 隨堂練習2 | 隨堂練習2 | direct_practice | false |
+| 隨堂練習3 | 隨堂練習3 | direct_practice | false |
+| 隨堂練習4 | 隨堂練習4 | direct_practice | false |
+| 隨堂練習5 | 隨堂練習5 | direct_practice | false |
+| 例題6 | 例題6 | direct_example | false |
+| 例題7 | 例題7 | direct_example | false |
+| 隨堂練習6 | 隨堂練習6 | direct_practice | false |
+| 隨堂練習7 | 隨堂練習7 | direct_practice | false |
+| 例題8 | 例題8 | direct_example | false |
+| 隨堂練習8 | 隨堂練習8 | direct_practice | false |
+| 統測歷屆試題 | 統測歷屆試題 | fallback_unresolved | true |
+| 基礎題1 | 基礎題1 | fallback_unresolved | true |
+| 基礎題2 | 基礎題2 | fallback_unresolved | true |
+| 基礎題3 | 基礎題3 | fallback_unresolved | true |
+| 基礎題4 | 基礎題4 | fallback_unresolved | true |
+| 基礎題5 | 基礎題5 | fallback_unresolved | true |
+| 進階題9 | 進階題9 | fallback_unresolved | true |
+| 進階題10 | 進階題10 | fallback_unresolved | true |
 
 ## Expected Titles Raw
 - 1-4習題 基礎題1
@@ -54,6 +90,14 @@
 - 例題6
 - 例題7
 - 例題8
+- 隨堂練習1
+- 隨堂練習2
+- 隨堂練習3
+- 隨堂練習4
+- 隨堂練習5
+- 隨堂練習6
+- 隨堂練習7
+- 隨堂練習8
 
 ## Expected Titles Canonical
 - 1-4習題 基礎題1
@@ -75,10 +119,66 @@
 - 例題6
 - 例題7
 - 例題8
+- 隨堂練習1
+- 隨堂練習2
+- 隨堂練習3
+- 隨堂練習4
+- 隨堂練習5
+- 隨堂練習6
+- 隨堂練習7
+- 隨堂練習8
 
 ## Returned Titles Raw
+- 例題1
+- 隨堂練習1
+- 例題2
+- 例題3
+- 例題4
+- 例題5
+- 隨堂練習2
+- 隨堂練習3
+- 隨堂練習4
+- 隨堂練習5
+- 例題6
+- 例題7
+- 隨堂練習6
+- 隨堂練習7
+- 例題8
+- 隨堂練習8
+- 統測歷屆試題
+- 基礎題1
+- 基礎題2
+- 基礎題3
+- 基礎題4
+- 基礎題5
+- 進階題9
+- 進階題10
 
 ## Returned Titles Canonical
+- 例題1
+- 例題2
+- 例題3
+- 例題4
+- 例題5
+- 例題6
+- 例題7
+- 例題8
+- 基礎題1
+- 基礎題2
+- 基礎題3
+- 基礎題4
+- 基礎題5
+- 統測歷屆試題
+- 進階題10
+- 進階題9
+- 隨堂練習1
+- 隨堂練習2
+- 隨堂練習3
+- 隨堂練習4
+- 隨堂練習5
+- 隨堂練習6
+- 隨堂練習7
+- 隨堂練習8
 
 ## Missing Titles Canonical
 - 1-4習題 基礎題1
@@ -92,13 +192,13 @@
 - 1-4習題 進階題10
 - 1-4習題 進階題9
 - 109統測B
-- 例題1
-- 例題2
-- 例題3
-- 例題4
-- 例題5
-- 例題6
-- 例題7
-- 例題8
 
 ## Extra Titles Canonical
+- 基礎題1
+- 基礎題2
+- 基礎題3
+- 基礎題4
+- 基礎題5
+- 統測歷屆試題
+- 進階題10
+- 進階題9
