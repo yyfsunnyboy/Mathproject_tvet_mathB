@@ -71,6 +71,26 @@ def test_prompt_contains_converted_docx_latex_rules():
     assert "[FORMULA NORMALIZE SKIP] converted_docx_latex_preserve_latex=true" in src
 
 
+def test_scan_example_flushes_before_suithang_header_and_subsection():
+    text = (
+        "例1\n"
+        "例題1內容 $|x|=1$。\n"
+        "隨堂練習……………………………………………\n"
+        "1. 利用十字交乘法因式分解。\n"
+        "1-4.2 一元二次不等式的解\n"
+        "例2\n"
+        "例題2內容。\n"
+    )
+    blocks = processor.scan_converted_docx_question_blocks(text)
+    assert "例題1" in blocks
+    assert "隨堂練習" not in blocks["例題1"]
+    assert "1-4.2" not in blocks["例題1"]
+    assert "$|x|=1$" in blocks["例題1"]
+    assert "隨堂練習1" in blocks
+    assert blocks["隨堂練習1"].strip()
+    assert "十字交乘法" in blocks["隨堂練習1"]
+
+
 def test_scan_and_hydrate_converted_docx_blocks():
     text = "例題1 試求 $|x|=1$ 之值。\n隨堂練習1 計算 $2+3$。\n"
     blocks = processor.scan_converted_docx_question_blocks(text)
@@ -256,6 +276,181 @@ def test_canonicalize_exercise_with_section_code():
     assert processor.canonicalize_import_title("習題 8", section_code="2-1", inventory_items=items) == "2-1習題 基礎題8"
     assert processor.canonicalize_import_title("習題 9", section_code="2-1", inventory_items=items) == "2-1習題 進階題9"
     assert processor.canonicalize_import_title("習題 10", section_code="2-1", inventory_items=items) == "2-1習題 進階題10"
+
+
+def test_scan_converted_docx_blocks_canonical_exercise_and_exam_keys():
+    text = (
+        "1-4習題\n"
+        "基礎題\n"
+        "8\t根據下圖填入判別式\n"
+        "進階題\n"
+        "9\t已知路邊行動咖啡車製作n杯咖啡的成本為n + 50元，而賣出n杯咖啡的收入為${{n}^{2}}-4n$元，試問最少要賣出多少杯咖啡才會開始有利潤？\n"
+        "10\t設a、b均為實數\n"
+        "設 $f(x)$ 之值。\n"
+        "(A) 選項甲\n"
+        "(B) 選項乙\n"
+        "(C) 選項丙\n"
+        "(D) 選項丁\n"
+        "〔109統測B〕\n"
+        "KEY\n"
+        "(1) 解答\n"
+    )
+    blocks = processor.scan_converted_docx_question_blocks(text)
+    assert "1-4習題 進階題9" in blocks
+    assert "咖啡" in blocks["1-4習題 進階題9"]
+    assert "109統測B" in blocks
+    assert "(A)" in blocks["109統測B"]
+    assert "(D)" in blocks["109統測B"]
+    assert "KEY" not in blocks["109統測B"]
+    assert blocks["109統測B"].strip() != "109統測B"
+
+
+def test_hydrate_canonical_exercise_title_finds_block():
+    text = (
+        "1-4習題\n"
+        "進階題\n"
+        "9\t已知路邊行動咖啡車製作n杯咖啡的成本為n + 50元，試問最少要賣出多少杯咖啡才會開始有利潤？\n"
+    )
+    parsed = {
+        "chapters": [
+            {
+                "chapter_title": "第1章",
+                "sections": [
+                    {
+                        "section_title": "1-4 一元二次不等式",
+                        "concepts": [
+                            {
+                                "concept_name": "練習",
+                                "concept_en_id": "Practice",
+                                "examples": [],
+                                "practice_questions": [
+                                    {
+                                        "title": "進階題9",
+                                        "source_description": "進階題9",
+                                        "problem_text": "進階題9",
+                                        "correct_answer": "",
+                                        "detailed_solution": "",
+                                    }
+                                ],
+                            }
+                        ],
+                    }
+                ],
+            }
+        ]
+    }
+    out, filled, n_blocks = processor.hydrate_converted_docx_latex_parsed_data(
+        parsed, extracted_text=text, section_code="1-4"
+    )
+    pq = out["chapters"][0]["sections"][0]["concepts"][0]["practice_questions"][0]
+    assert filled == 1
+    assert "咖啡" in pq["problem_text"]
+    assert n_blocks >= 1
+
+
+def test_chapter_self_assessment_mode_inventory_and_blocks():
+    text = (
+        "第1章 坐標系與函數圖形\n"
+        "CH1自我評量\n"
+        "自我評量\n"
+        "1-1 數線與絕對值\n"
+        "1.\t若 $|x|=3$，則 $x$ 為何？\n"
+        "(A) 3\n"
+        "(B) -3\n"
+        "(C) 3 或 -3\n"
+        "(D) 0\n"
+        "1-2 函數\n"
+        "2.\t設 $f(x)=2x+1$，求 $f(0)$。\n"
+        "1-3 二次函數\n"
+        "11.\t解 $x^2-1>0$。\n"
+        "1-4 一元二次不等式\n"
+        "15.\t已知路邊行動咖啡車製作n杯咖啡的成本為n + 50元，試問最少要賣出多少杯咖啡？\n"
+        "20.\t最後一題。\n"
+        "78\n"
+        "79\n"
+    )
+    items = processor.scan_docx_title_inventory(text)
+    titles = {it["canonical_title"] for it in items}
+    assert all(it.get("kind") == "self_assessment" for it in items)
+    assert "CH1自我評量 題1" in titles
+    assert "CH1自我評量 題15" in titles
+    assert "CH1自我評量 題20" in titles
+    assert len(items) == 5
+    blocks = processor.scan_converted_docx_question_blocks(text)
+    assert len(blocks) == 5
+    assert "咖啡" in blocks["CH1自我評量 題15"]
+    assert "(A)" in blocks["CH1自我評量 題1"]
+    assert "KEY" not in blocks.get("CH1自我評量 題1", "")
+    sec_by_num = {int(it["number"]): it["section_code"] for it in items}
+    assert sec_by_num[1] == "1-1"
+    assert sec_by_num[2] == "1-2"
+    assert sec_by_num[11] == "1-3"
+    assert sec_by_num[15] == "1-4"
+
+
+def test_chapter_self_assessment_hydrate_and_inventory_guard():
+    text = (
+        "CH1自我評量\n"
+        "自我評量\n"
+        "1-1 數線\n"
+        "1.\t第一題 $|x|=1$。\n"
+        "1-2 函數\n"
+        "2.\t第二題 $f(x)=x$。\n"
+    )
+    items = processor.scan_docx_title_inventory(text)
+    expected = sorted({it["canonical_title"] for it in items})
+    parsed = {
+        "chapters": [
+            {
+                "chapter_title": "第1章 坐標系與函數圖形",
+                "sections": [
+                    {
+                        "section_title": "1-1 數線",
+                        "concepts": [
+                            {
+                                "concept_name": "自我評量",
+                                "concept_en_id": "SelfAssessment",
+                                "examples": [
+                                    {
+                                        "title": "題1",
+                                        "source_description": "題1",
+                                        "source_type": "self_assessment",
+                                        "problem_text": "題1",
+                                        "correct_answer": "",
+                                        "detailed_solution": "",
+                                    }
+                                ],
+                                "practice_questions": [],
+                            },
+                            {
+                                "concept_name": "函數",
+                                "concept_en_id": "Functions",
+                                "examples": [
+                                    {
+                                        "title": "題2",
+                                        "source_description": "題2",
+                                        "source_type": "self_assessment",
+                                        "problem_text": "題2",
+                                        "correct_answer": "",
+                                        "detailed_solution": "",
+                                    }
+                                ],
+                                "practice_questions": [],
+                            },
+                        ],
+                    }
+                ],
+            }
+        ]
+    }
+    out, filled, _n = processor.hydrate_converted_docx_latex_parsed_data(
+        parsed, extracted_text=text, inventory_items=items
+    )
+    assert filled == 2
+    assert "$|x|=1$" in out["chapters"][0]["sections"][0]["concepts"][0]["examples"][0]["problem_text"]
+    returned = processor.collect_returned_titles_from_parsed_data(out)
+    inv = processor.build_title_inventory(expected, returned, inventory_items=items)
+    assert inv["missing_titles_count"] == 0
 
 
 def test_inventory_exercise_alignment_no_missing():

@@ -46,22 +46,21 @@
 | returned_raw | returned_canonical | mapping_method | needs_review |
 | --- | --- | --- | --- |
 | 例題1 | 例題1 | direct_example | false |
-| 隨堂練習1 | 隨堂練習1 | direct_practice | false |
 | 例題2 | 例題2 | direct_example | false |
 | 例題3 | 例題3 | direct_example | false |
 | 例題4 | 例題4 | direct_example | false |
 | 例題5 | 例題5 | direct_example | false |
+| 例題6 | 例題6 | direct_example | false |
+| 例題7 | 例題7 | direct_example | false |
+| 例題8 | 例題8 | direct_example | false |
+| 隨堂練習1 | 隨堂練習1 | direct_practice | false |
 | 隨堂練習2 | 隨堂練習2 | direct_practice | false |
 | 隨堂練習3 | 隨堂練習3 | direct_practice | false |
 | 隨堂練習4 | 隨堂練習4 | direct_practice | false |
 | 隨堂練習5 | 隨堂練習5 | direct_practice | false |
-| 例題6 | 例題6 | direct_example | false |
 | 隨堂練習6 | 隨堂練習6 | direct_practice | false |
-| 例題7 | 例題7 | direct_example | false |
-| 例題8 | 例題8 | direct_example | false |
 | 隨堂練習7 | 隨堂練習7 | direct_practice | false |
 | 隨堂練習8 | 隨堂練習8 | direct_practice | false |
-| 109統測B | 109統測B | direct_exam | false |
 | 1-4習題 基礎題1 | 1-4習題 基礎題1 | exercise_context_map | false |
 | 1-4習題 基礎題2 | 1-4習題 基礎題2 | exercise_context_map | false |
 | 1-4習題 基礎題3 | 1-4習題 基礎題3 | exercise_context_map | false |
@@ -72,6 +71,7 @@
 | 1-4習題 基礎題8 | 1-4習題 基礎題8 | exercise_context_map | false |
 | 1-4習題 進階題9 | 1-4習題 進階題9 | exercise_context_map | false |
 | 1-4習題 進階題10 | 1-4習題 進階題10 | exercise_context_map | false |
+| 109統測B | 109統測B | direct_exam | false |
 
 ## Expected Titles Raw
 - 1-4習題 基礎題1
@@ -133,22 +133,21 @@
 
 ## Returned Titles Raw
 - 例題1
-- 隨堂練習1
 - 例題2
 - 例題3
 - 例題4
 - 例題5
+- 例題6
+- 例題7
+- 例題8
+- 隨堂練習1
 - 隨堂練習2
 - 隨堂練習3
 - 隨堂練習4
 - 隨堂練習5
-- 例題6
 - 隨堂練習6
-- 例題7
-- 例題8
 - 隨堂練習7
 - 隨堂練習8
-- 109統測B
 - 1-4習題 基礎題1
 - 1-4習題 基礎題2
 - 1-4習題 基礎題3
@@ -159,6 +158,7 @@
 - 1-4習題 基礎題8
 - 1-4習題 進階題9
 - 1-4習題 進階題10
+- 109統測B
 
 ## Returned Titles Canonical
 - 1-4習題 基礎題1
