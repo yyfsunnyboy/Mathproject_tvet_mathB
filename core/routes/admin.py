@@ -783,6 +783,109 @@ def admin_textbook_importer():
         ai_settings_url='/admin/ai_prompt_settings'
     )
 
+
+def background_processing_v2(file_path, task_queue, app_context, curriculum_info):
+    """Antigravity V2: converted_docx_latex only, no OCR/PDF/pix2tex."""
+    with app_context:
+        try:
+            from core.textbook_processor_v2 import process_textbook_file_v2
+
+            filename = os.path.basename(file_path)
+            task_queue.put(f"INFO: [antigravity] 開始處理 {filename}")
+            result = process_textbook_file_v2(file_path, curriculum_info, task_queue)
+            if result.get("success"):
+                task_queue.put(
+                    "INFO: [antigravity] 匯入完成 "
+                    f"inserted={result.get('inserted', 0)} "
+                    f"updated={result.get('updated', 0)} "
+                    f"total={result.get('total', 0)} "
+                    f"blocks={result.get('blocks', 0)}"
+                )
+            else:
+                task_queue.put(f"ERROR: [antigravity] 匯入未成功: {result.get('error', 'unknown')}")
+        except Exception as exc:
+            err_type = type(exc).__name__
+            task_queue.put(f"ERROR: [antigravity] {err_type}: {exc}")
+            current_app.logger.error(
+                f"[antigravity] background_processing_v2 failed: {exc}\n{traceback.format_exc()}"
+            )
+        finally:
+            task_queue.put("END_OF_STREAM")
+
+
+@core_bp.route('/textbook_importer_v2', methods=['GET', 'POST'])
+@login_required
+def admin_textbook_importer_v2():
+    if not (current_user.is_admin or current_user.role == 'teacher'):
+        flash('權限不足', 'error')
+        return redirect(url_for('dashboard'))
+
+    api_key, key_source = resolve_gemini_api_key()
+    has_gemini_api_key = bool(api_key)
+    current_app.logger.info(f"[AI KEY] source={key_source or 'none'}")
+
+    if request.method == 'POST':
+        if not has_gemini_api_key:
+            flash("資料匯入前請先設定 Gemini API Key。", "danger")
+            return redirect(url_for('core.admin_textbook_importer_v2'))
+
+        docx_file = request.files.get('textbook_docx')
+        if not docx_file or not docx_file.filename:
+            flash('請上傳 LaTeX 規格 Word 檔案 (.docx)。', 'warning')
+            return redirect(url_for('core.admin_textbook_importer_v2'))
+
+        if not str(docx_file.filename).lower().endswith('.docx'):
+            flash('僅支援 .docx 檔案。', 'warning')
+            return redirect(url_for('core.admin_textbook_importer_v2'))
+
+        upload_dir = os.path.join(current_app.root_path, 'uploads')
+        os.makedirs(upload_dir, exist_ok=True)
+        saved_path = os.path.join(upload_dir, secure_filename(os.path.basename(docx_file.filename)))
+        docx_file.save(saved_path)
+
+        filename_meta = parse_textbook_filename_metadata(os.path.basename(saved_path))
+        section_code = str((filename_meta or {}).get('section_code') or '').strip()
+
+        try:
+            grade_val = int(request.form.get('grade', 10))
+        except (TypeError, ValueError):
+            grade_val = 10
+
+        curriculum_info = {
+            'curriculum': request.form.get('curriculum', 'vocational') or 'vocational',
+            'publisher': request.form.get('publisher', 'longteng') or 'longteng',
+            'grade': grade_val,
+            'volume': request.form.get('volume', '數學B1') or '數學B1',
+            'section_code': section_code,
+        }
+        apply_mathb_import_policy(
+            curriculum_info,
+            {},
+            filenames=[os.path.basename(saved_path)],
+            logger=current_app.logger,
+        )
+
+        skip_code_gen = request.form.get('skip_code_gen') == 'on'
+        if skip_code_gen:
+            current_app.logger.info("[antigravity] skip_code_gen=true (V2 線路不觸發出題碼生成)")
+
+        task_id = str(uuid.uuid4())
+        q = queue.Queue()
+        TASK_QUEUES[task_id] = q
+        app = current_app._get_current_object()
+        threading.Thread(
+            target=background_processing_v2,
+            args=(saved_path, q, app.app_context(), curriculum_info),
+        ).start()
+        return redirect(url_for('core.importer_status', task_id=task_id))
+
+    return render_template(
+        'textbook_importer_v2.html',
+        has_gemini_api_key=has_gemini_api_key,
+        ai_settings_url='/admin/ai_prompt_settings',
+    )
+
+
 @core_bp.route('/importer/status/<task_id>')
 @login_required
 def importer_status(task_id):

@@ -16,7 +16,7 @@
 {% set admin_active_skills = (_ep == 'core.admin_skills') %}
 {% set admin_active_prereq = (_ep == 'core.admin_prerequisites') %}
 {% set admin_active_examples = (_ep == 'core.admin_examples') %}
-{% set admin_active_importer = (_ep == 'core.admin_textbook_importer') or ('/importer' in _path) %}
+{% set admin_active_importer = (_ep in ('core.admin_textbook_importer', 'core.admin_textbook_importer_v2')) or ('/importer' in _path) %}
 {% set admin_active_db = (_ep == 'core.db_maintenance') %}
 {% set admin_active_ai = (_ep == 'core.ai_prompt_settings_page') %}
 {% set admin_active_analysis = (_ep == 'teacher_analysis') or ('/teacher_analysis' in _path) %}

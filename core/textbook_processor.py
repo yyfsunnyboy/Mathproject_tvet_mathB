@@ -1917,6 +1917,35 @@ def classify_non_question_block(text: str) -> str | None:
     return None
 
 
+_LEADING_PROBLEM_TITLE_RE = re.compile(
+    r"^\s*(?:"
+    r"例(?:題)?|隨堂練習|習題|基礎題|進階題|自我評量"
+    r")\s*\d{0,3}\s*[\s\.,、，\.：:·…]+",
+    flags=re.UNICODE,
+)
+# 章節習題排版：9\t、10.、6、 — 強分隔符（不含單一空格，避免誤傷「3 是一個奇數」）
+_LEADING_CHAPTER_NUM_STRONG_RE = re.compile(
+    r"^\s*\d{1,2}(?:[\.、\)\t])+\s*",
+    flags=re.UNICODE,
+)
+# 純數字 + 單一空格：僅在後接常見題幹動詞／「已」「設」等時切除（對齊習題掃描語意）
+_LEADING_CHAPTER_NUM_SPACE_RE = re.compile(
+    r"^\s*\d{1,2}\s+(?=已|設|根|若|試|利|知|求|解|計|算|證|判|比|化|作|根據|利用|試問|[（(])",
+    flags=re.UNICODE,
+)
+
+
+def clean_problem_leading_title(text: str) -> str:
+    """Remove a leading question declaration (例/隨堂練習/習題 zone markers, etc.)."""
+    t = str(text or "").strip()
+    if not t:
+        return ""
+    t = re.sub(_LEADING_PROBLEM_TITLE_RE, "", t, count=1).strip()
+    t = re.sub(_LEADING_CHAPTER_NUM_STRONG_RE, "", t, count=1).strip()
+    t = re.sub(_LEADING_CHAPTER_NUM_SPACE_RE, "", t, count=1).strip()
+    return t
+
+
 def segment_question_block_text(problem_text: str, question_title: str = "") -> tuple[str, dict]:
     text = str(problem_text or "")
     lines = [ln for ln in text.splitlines()]
@@ -2508,12 +2537,48 @@ _SCAN_EXAM_MARKER_RE = re.compile(
 _SCAN_KEY_LINE_RE = re.compile(r"^\s*KEY\b", re.IGNORECASE)
 _SCAN_CHAPTER_EX_NUM_RE = re.compile(r"^\s*(\d{1,2})(?:[\.、\)\t]|\s+)")
 _SCAN_EXAMPLE_START_RE = re.compile(r"^\s*例(?:題)?\s*(\d{1,2})\b")
+_SCAN_EXAMPLE_NUM_RE = re.compile(r"例(?:題)?\s*(\d{1,2})\b")
+_EXAMPLE_BOUNDARY_CHARS = "。；;!?）)】]"
+
+
+def _scan_find_example_inline_start(line: str) -> re.Match[str] | None:
+    """Find 例/例題 N when it starts a new block (line head or after sentence boundary)."""
+    for m in _SCAN_EXAMPLE_NUM_RE.finditer(str(line or "")):
+        if m.start() == 0:
+            return m
+        prefix = str(line or "")[: m.start()].rstrip()
+        if not prefix or prefix[-1] in _EXAMPLE_BOUNDARY_CHARS:
+            return m
+    return None
 _SCAN_SUITANG_START_RE = re.compile(r"^\s*隨堂練習[\s\.…·]*(\d{1,2})\b")
 _SCAN_SUITANG_PREFIX_RE = re.compile(r"^\s*隨堂練習")
 _SCAN_SUITANG_NUM_INLINE_RE = re.compile(r"隨堂練習[\s\.…·]*(\d{1,2})\b")
 _SCAN_SUBSECTION_HEADING_RE = re.compile(r"^\s*\d+\s*-\s*\d+(?:\.\d+)?\s+\S")
 _SCAN_MC_OPTION_RE = re.compile(r"^\s*[\(（]\s*([A-DＡ-Ｄa-dａ-ｄ])\s*[\)）]")
 _SCAN_SUBPART_RE = re.compile(r"^\s*[\(（]\s*\d+\s*[\)）]")
+
+
+_SOLUTION_AND_ANSWER_CUES = re.compile(
+    r"可化為|因式分解得|故不等式|的解為|恆大於0|所以不等式|解為|恆成立|當x.*時"
+)
+_CONCEPT_EXPOSITION_CUES = re.compile(
+    r"當判別式|觀察上圖|觀察下圖|二次函數值的|我們稱此|落在x軸下方|落在x軸"
+)
+_SCAN_BUFFER_STOP_CUE_PATTERNS = (_SOLUTION_AND_ANSWER_CUES, _CONCEPT_EXPOSITION_CUES)
+
+
+def _scan_truncate_line_at_solution_cue(line: str) -> tuple[str, bool]:
+    """Return (line_prefix_before_cue, stop_buffering)."""
+    raw = str(line or "")
+    earliest: int | None = None
+    for pat in _SCAN_BUFFER_STOP_CUE_PATTERNS:
+        m = pat.search(raw)
+        if m and (earliest is None or m.start() < earliest):
+            earliest = m.start()
+    if earliest is None:
+        return raw, False
+    head = raw[:earliest].rstrip()
+    return head, True
 
 
 def _scan_is_structure_only_line(line: str) -> bool:
@@ -2552,10 +2617,14 @@ def _scan_finalize_question_buffer(lines: list[str]) -> str:
             break
         if _scan_is_structure_only_line(s):
             continue
-        kept.append(ln)
+        truncated, stop = _scan_truncate_line_at_solution_cue(str(ln or ""))
+        if truncated.strip():
+            kept.append(truncated)
+        if stop:
+            break
     while kept and _scan_is_structure_only_line(str(kept[-1] or "")):
         kept.pop()
-    return "\n".join(kept).strip()
+    return clean_problem_leading_title("\n".join(kept).strip())
 
 
 def _scan_flush_question_block(blocks: dict[str, str], key: str | None, buf: list[str]) -> None:
@@ -2601,7 +2670,8 @@ def _scan_try_start_suithang(line: str, pending_header: bool) -> tuple[str | Non
     """Return (key, first_line, still_pending_header)."""
     m_inline = _SCAN_SUITANG_NUM_INLINE_RE.search(line)
     if m_inline:
-        return f"隨堂練習{int(m_inline.group(1))}", line, False
+        first = clean_problem_leading_title(line[m_inline.start() :])
+        return f"隨堂練習{int(m_inline.group(1))}", first or None, False
     if pending_header and _SCAN_CHAPTER_EX_NUM_RE.match(line):
         n = int(_SCAN_CHAPTER_EX_NUM_RE.match(line).group(1))
         return f"隨堂練習{n}", line, False
@@ -2629,29 +2699,49 @@ def _scan_converted_docx_blocks_from_lines(
     in_chapter_exercise = False
     current_key: str | None = None
     buffer: list[str] = []
+    buffer_stop_extend = False
     pending_exam_lines: list[str] = []
     awaiting_exam = False
     pending_suithang_header = False
 
     def flush() -> None:
-        nonlocal current_key, buffer
+        nonlocal current_key, buffer, buffer_stop_extend
         _scan_flush_question_block(blocks, current_key, buffer)
         current_key = None
         buffer = []
+        buffer_stop_extend = False
+
+    def append_buffer_line(line: str) -> None:
+        nonlocal buffer_stop_extend
+        if buffer_stop_extend:
+            return
+        truncated, stop = _scan_truncate_line_at_solution_cue(line)
+        if truncated.strip():
+            buffer.append(truncated)
+        if stop:
+            buffer_stop_extend = True
 
     def start_key(key: str, first_line: str | None = None) -> None:
-        nonlocal current_key, buffer, awaiting_exam, pending_exam_lines, pending_suithang_header
+        nonlocal current_key, buffer, awaiting_exam, pending_exam_lines, pending_suithang_header, buffer_stop_extend
         flush()
         awaiting_exam = False
         pending_exam_lines = []
         pending_suithang_header = False
+        buffer_stop_extend = False
         current_key = key
-        buffer = [first_line] if first_line else []
+        if first_line:
+            cleaned = clean_problem_leading_title(first_line)
+            buffer = [cleaned] if cleaned else []
+        else:
+            buffer = []
 
     def begin_exam_staging(line: str) -> None:
         nonlocal awaiting_exam, pending_exam_lines, pending_suithang_header
-        flush()
         pending_suithang_header = False
+        if awaiting_exam:
+            pending_exam_lines.append(line)
+            return
+        flush()
         awaiting_exam = True
         pending_exam_lines = [line]
 
@@ -2683,18 +2773,29 @@ def _scan_converted_docx_blocks_from_lines(
         if exam_m:
             exam_key = f"{int(exam_m.group(1))}統測{exam_m.group(2).upper()}"
             before = line[: exam_m.start()].strip()
-            flush()
+            after = line[exam_m.end() :].strip()
             pending_suithang_header = False
-            stem = list(pending_exam_lines)
+
+            stem: list[str] = []
+            if buffer:
+                stem.extend(buffer)
+            if pending_exam_lines:
+                stem.extend(pending_exam_lines)
             if before:
                 stem.append(before)
+
+            prior_key = current_key
+            buffer = []
             pending_exam_lines = []
             awaiting_exam = False
+            buffer_stop_extend = False
+            if prior_key and prior_key != exam_key:
+                _scan_flush_question_block(blocks, prior_key, [])
+
             current_key = exam_key
             buffer = stem
-            after = line[exam_m.end() :].strip()
             if after and not _SCAN_KEY_LINE_RE.match(after):
-                buffer.append(after)
+                append_buffer_line(after)
             continue
 
         if _SCAN_SUBSECTION_HEADING_RE.match(line):
@@ -2725,9 +2826,10 @@ def _scan_converted_docx_blocks_from_lines(
             in_chapter_exercise = bool(section_code)
             continue
 
-        ex_m = _SCAN_EXAMPLE_START_RE.match(line)
+        ex_m = _scan_find_example_inline_start(line)
         if ex_m:
-            start_key(f"例題{int(ex_m.group(1))}", line)
+            body = clean_problem_leading_title(line[ex_m.start() :])
+            start_key(f"例題{int(ex_m.group(1))}", body or None)
             in_chapter_exercise = False
             continue
 
@@ -2752,7 +2854,7 @@ def _scan_converted_docx_blocks_from_lines(
 
             if current_key:
                 if _SCAN_SUBPART_RE.match(line):
-                    buffer.append(line)
+                    append_buffer_line(line)
                     continue
                 if _SCAN_MC_OPTION_RE.match(line) or awaiting_exam:
                     begin_exam_staging(line)
@@ -2760,11 +2862,11 @@ def _scan_converted_docx_blocks_from_lines(
                 if re.match(r"^\s*設\s", line):
                     begin_exam_staging(line)
                     continue
-                buffer.append(line)
+                append_buffer_line(line)
                 continue
 
         if current_key and not in_chapter_exercise:
-            buffer.append(line)
+            append_buffer_line(line)
             continue
 
         if awaiting_exam or pending_exam_lines or _SCAN_MC_OPTION_RE.match(line):

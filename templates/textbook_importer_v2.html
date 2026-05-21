@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI 教材分析與匯入工具 V2 (Antigravity)</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+            background: #f4f6f9;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        .card {
+            border: none;
+            border-radius: 12px;
+            background: #ffffff;
+        }
+
+        .card-header {
+            border-top-left-radius: 12px !important;
+            border-top-right-radius: 12px !important;
+            padding: 20px 30px;
+        }
+
+        .form-label {
+            font-weight: 600;
+            color: #34495e;
+        }
+
+        .form-control:focus, .form-select:focus {
+            border-color: #27ae60;
+            box-shadow: 0 0 0 0.25rem rgba(39, 174, 96, 0.15);
+        }
+
+        .btn-submit {
+            background: #27ae60;
+            border: none;
+            color: white;
+            padding: 14px;
+            font-size: 1.1em;
+            border-radius: 8px;
+            transition: background 0.2s;
+        }
+
+        .btn-submit:hover {
+            background: #219653;
+            color: white;
+        }
+
+        .btn-submit:disabled {
+            background: #95a5a6;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+
+<body>
+    {% include '_admin_navbar.html' %}
+
+    <div class="container">
+        <div class="text-center mb-4">
+            <h1 class="fw-bold text-dark">
+                <i class="bi bi-lightning-charge-fill text-warning"></i> AI 教材匯入系統 V2
+            </h1>
+            <p class="text-secondary mt-2">
+                代號：<span class="badge bg-dark">antigravity</span> 輕量化決定性生產線
+            </p>
+        </div>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        <div class="mb-4">
+            {% for category, message in messages %}
+            <div class="alert alert-{% if category == 'error' %}danger{% else %}{{ category }}{% endif %} alert-dismissible fade show" role="alert">
+                {{ message | replace('\n', '<br>') | safe }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+        {% endwith %}
+
+        {% if not has_gemini_api_key %}
+        <div class="alert alert-danger shadow-sm mb-4" role="alert">
+            <i class="bi bi-exclamation-triangle-fill"></i>
+            <strong>系統核心警告：</strong> 尚未設定 Gemini API Key。請先前往 
+            <a href="{{ ai_settings_url }}" class="alert-link">AI 設定頁</a> 完成金鑰配置。
+        </div>
+        {% endif %}
+
+        <div class="card shadow-sm">
+            <div class="card-header bg-dark text-white d-flex align-items-center">
+                <h5 class="mb-0 fw-bold"><i class="bi bi-file-earmark-word-fill text-primary"></i> LaTeX DOCX 決定性分析解析</h5>
+            </div>
+            <div class="card-body p-4">
+                
+                <div class="alert alert-success bg-opacity-10 text-success border-success border-opacity-25 mb-4">
+                    <h6 class="fw-bold mb-2"><i class="bi bi-shield-check"></i> 反重力線路運作規範：</h6>
+                    <ul class="small mb-0 ps-3">
+                        <li>本線路僅接收事先利用 Word + MathType 將公式全數轉換為 LaTeX 文字的 <code>*_Latex.docx</code> 檔案。</li>
+                        <li>系統將直接讀取 LaTeX 字串，<strong>完全跳過並關閉 OCR、fitz 渲染與 Pix2Tex 辨識</strong>，匯入效率提升 500%。</li>
+                        <li>已內嵌 V2 專用狀態機，會自動洗淨開頭題號（包含純數字習題號），並精確阻斷/凍結隨堂練習後的課文與詳解污染。</li>
+                    </ul>
+                </div>
+
+                <form method="POST" enctype="multipart/form-data">
+                    
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label">課綱 (Curriculum)</label>
+                            <select class="form-select bg-light text-muted" name="curriculum" readonly style="pointer-events: none;">
+                                <option value="vocational" selected>技高 (Vocational)</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">出版社 (Publisher)</label>
+                            <select class="form-select bg-light text-muted" name="publisher" readonly style="pointer-events: none;">
+                                <option value="longteng" selected>龍騰 (Longteng)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-6">
+                            <label class="form-label">年級 (Grade)</label>
+                            <input type="number" class="form-control" name="grade" value="10" min="10" max="12" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">冊別 (Volume)</label>
+                            <input type="text" class="form-control" name="volume" placeholder="例如: 數學B1" value="數學B1" required>
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label">選擇 LaTeX 規格 Word 檔案 (.docx)</label>
+                        <input type="file" class="form-control" id="textbook_docx" name="textbook_docx" accept=".docx" required>
+                        <div class="form-text text-muted mt-2">
+                            * 建議上傳前確認檔案內公式皆已呈現 <code>$x^2-4x+3\le0$</code> 等標準 LaTeX 標記。
+                        </div>
+                    </div>
+
+                    <div class="card bg-light border-0 p-3 mb-4">
+                        <div class="form-check form-switch mb-0">
+                            <input class="form-check-input" type="checkbox" id="skip_code_gen" name="skip_code_gen" checked>
+                            <label class="form-check-label fw-bold text-secondary" for="skip_code_gen">
+                                跳過 Python 出題原始碼自動生成 (僅寫入資料庫，加速匯入)
+                            </label>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-submit w-100 fw-bold shadow-sm" {% if not has_gemini_api_key %}disabled{% endif %}>
+                        <i class="bi bi-cloud-arrow-up-fill"></i> 啟動反重力決定性匯入
+                    </button>
+                    
+                    {% if not has_gemini_api_key %}
+                    <div class="text-center text-danger small mt-2">
+                        <i class="bi bi-x-circle"></i> 請先完成金鑰設定後方能解鎖按鈕。
+                    </div>
+                    {% endif %}
+                </form>
+                
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
