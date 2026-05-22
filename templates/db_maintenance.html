@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>資料庫全域操作</title>
+    <title>資料庫維護</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css" rel="stylesheet">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -49,7 +49,7 @@
     {% include '_admin_navbar.html' %}
     <div class="container">
         <div class="header">
-            <h1><i class="bi bi-database-gear" style="color: #34495e;"></i> 資料庫全域操作</h1>
+            <h1><i class="bi bi-database-gear" style="color: #34495e;"></i> 資料庫維護</h1>
         </div>
 
         {% with messages = get_flashed_messages(with_categories=true) %}
@@ -64,7 +64,7 @@
 
         <div class="card">
             <div class="card-header">
-                <i class="bi bi-tools"></i> 資料庫全域操作 (Database Operations)
+                <i class="bi bi-tools"></i> 資料庫操作（Database Operations）
             </div>
             <div class="card-body">
                 <div class="alert alert-warning" style="margin-bottom: 25px;">
@@ -82,7 +82,7 @@
                                 <label>匯出模式</label>
                                 <select name="mode">
                                     <option value="core" selected>core（教材核心資料）</option>
-                                    <option value="full">full（全部資料）</option>
+                                    <option value="full">full（完整資料庫）</option>
                                 </select>
                             </div>
                             <button type="submit" class="btn btn-primary" style="width: 100%;">
@@ -92,7 +92,7 @@
                     </div>
 
                     <div class="operation-item" style="border-top: 3px solid #f39c12;">
-                        <h3><i class="bi bi-upload" style="color: #f39c12;"></i> 資料匯入（Excel/CSV）</h3>
+                        <h3><i class="bi bi-upload" style="color: #f39c12;"></i> 資料匯入（Excel / CSV）</h3>
                         <form action="{{ url_for('core.upload_db') }}" method="post" enctype="multipart/form-data">
                             <div class="form-group">
                                 <label for="dbFile">選擇檔案（.xlsx / .csv）</label>
@@ -102,7 +102,7 @@
                                 <label>匯入模式</label>
                                 <select id="importMode" name="mode">
                                     <option value="core" selected>core（教材核心資料）</option>
-                                    <option value="full">full（全部資料）</option>
+                                    <option value="full">full（完整資料庫）</option>
                                 </select>
                             </div>
                             <div class="form-group">
@@ -117,22 +117,27 @@
 
                     <div class="operation-item" style="border-top: 3px solid #e74c3c;">
                         <h3><i class="bi bi-trash" style="color: #e74c3c;"></i> 清空教材資料（core）</h3>
-                        <p>只刪除教材核心資料：textbook_examples、skill_curriculum、孤兒 skills_info。</p>
+                        <p>
+                            清除高職數學 B 系列核心教材資料：
+                            textbook_examples、skill_curriculum、skills_info、skill_prerequisites 中符合
+                            vh_數學B% / outline_vocational_數學B% / source_volume=數學B% / vocational 的資料。
+                            保留 users、students、teachers、system_settings、prompt_templates，並保留 jh_數學 bridge。
+                        </p>
                         <form action="{{ url_for('core.db_maintenance') }}" method="POST"
-                              onsubmit="event.preventDefault(); showModal('你確定要清空教材核心資料（core）嗎？\\n\\n此操作不會刪除 users、prompt templates、system settings。', this, false);">
+                              onsubmit="event.preventDefault(); showModal('確認要清空高職數學 B 系列核心教材資料嗎？\n\n此操作會保留 users、prompt templates、system settings。', this, false);">
                             <input type="hidden" name="action" value="clear_all_data" id="coreActionField">
                             <input type="hidden" name="mode" value="core">
                             <div class="form-group">
-                                <label for="coreScopeMode">清除範圍</label>
+                                <label for="coreScopeMode">清空範圍</label>
                                 <select id="coreScopeMode" name="core_scope_mode">
                                     <option value="all" {% if (core_scope_form_state or {}).get('core_scope_mode', 'all') == 'all' %}selected{% endif %}>全部教材資料</option>
-                                    <option value="filtered" {% if (core_scope_form_state or {}).get('core_scope_mode', 'all') == 'filtered' %}selected{% endif %}>依條件清除</option>
+                                    <option value="filtered" {% if (core_scope_form_state or {}).get('core_scope_mode', 'all') == 'filtered' %}selected{% endif %}>依條件篩選（僅預覽）</option>
                                 </select>
                             </div>
                             <div id="coreFilteredFields" style="display:none;">
                                 <div class="core-single-col">
                                     <div class="form-group">
-                                        <label for="coreCurriculum">課綱</label>
+                                        <label for="coreCurriculum">課程別</label>
                                         <select id="coreCurriculum" name="core_curriculum"></select>
                                     </div>
                                     <div class="form-group">
@@ -144,16 +149,20 @@
                                         <select id="coreVolume" name="core_volume"></select>
                                     </div>
                                     <div class="form-group">
-                                        <label for="coreChapter">章</label>
+                                        <label for="coreChapter">章節（Chapter）</label>
                                         <select id="coreChapter" name="core_chapter"></select>
                                     </div>
                                     <div class="form-group">
-                                        <label for="coreSection">節</label>
+                                        <label for="coreSection">小節（Section）</label>
                                         <select id="coreSection" name="core_section"></select>
                                     </div>
                                 </div>
                             </div>
-                            <div class="mode-note" id="coreScopeSummary">即將清除：全部教材 core</div>
+                            <div class="mode-note" id="coreScopeSummary">目前範圍：全部教材資料（core）</div>
+                            <div class="form-group" style="margin-top: 10px;">
+                                <label for="coreClearConfirm">安全確認字串</label>
+                                <input type="text" id="coreClearConfirm" name="core_clear_confirm" placeholder="{{ core_clear_confirm_token or 'DELETE_CORE' }}">
+                            </div>
                             <button type="button" class="btn btn-secondary" onclick="submitCorePreview(this.form)" style="width: 100%; margin-top: 10px;">
                                 <i class="bi bi-search"></i> 刪除前預覽
                             </button>
@@ -167,7 +176,7 @@
                         <h3><i class="bi bi-exclamation-octagon" style="color: #8e44ad;"></i> 清空全部資料（full）</h3>
                         <p>將清空資料庫中所有資料，包含設定、模板與使用者資料。請務必先備份。</p>
                         <form action="{{ url_for('core.db_maintenance') }}" method="POST"
-                              onsubmit="event.preventDefault(); showModal('警告：你即將清空全部資料（full）。\\n\\n請確認你已完成備份，並輸入 YES_DELETE_ALL。', this, true);">
+                              onsubmit="event.preventDefault(); showModal('確認要清空全部資料庫嗎？\n\n請確認已輸入 YES_DELETE_ALL。', this, true);">
                             <input type="hidden" name="action" value="clear_all_data">
                             <input type="hidden" name="mode" value="full">
                             <div class="form-group">
@@ -187,7 +196,7 @@
     <div id="confirmModal" class="modal">
         <div class="modal-content">
             <div class="modal-header-custom">
-                <h3 id="modalTitle">操作確認</h3>
+                <h3 id="modalTitle">確認操作</h3>
             </div>
             <div class="modal-body">
                 <p id="modalMessage" style="color: #555; font-size: 1.1em; line-height: 1.6;"></p>
@@ -212,7 +221,7 @@
             const confirmBtn = document.getElementById("confirmBtn");
             if (isDanger) {
                 confirmBtn.className = "btn btn-danger";
-                confirmBtn.innerHTML = '<i class="bi bi-check-lg"></i> 確認並執行';
+                confirmBtn.innerHTML = '<i class="bi bi-check-lg"></i> 確認執行';
             } else {
                 confirmBtn.className = "btn btn-primary";
                 confirmBtn.innerHTML = '<i class="bi bi-check-lg"></i> 確認';
@@ -272,7 +281,7 @@
             const summaryEl = document.getElementById("coreScopeSummary");
             if (!modeEl || !summaryEl) return;
             if (modeEl.value !== "filtered") {
-                summaryEl.textContent = "即將清除：全部教材 core";
+                summaryEl.textContent = "目前範圍：全部教材資料（core）";
                 return;
             }
             const pairs = [
@@ -284,8 +293,8 @@
             ];
             const selected = pairs.filter((item) => item[1] !== "all").map((item) => item[0] + "=" + item[1]);
             summaryEl.textContent = selected.length
-                ? ("即將清除：" + selected.join(" / "))
-                : "即將清除：依條件模式（目前皆為全部）";
+                ? ("目前範圍（篩選）：" + selected.join(" / "))
+                : "目前範圍（篩選）：尚未選擇條件";
         }
 
         function refreshCoreModeUI() {
@@ -296,7 +305,7 @@
             const isFiltered = modeEl.value === "filtered";
             filteredEl.style.display = isFiltered ? "block" : "none";
             btnEl.innerHTML = isFiltered
-                ? '<i class="bi bi-trash"></i> 清空指定範圍教材資料'
+                ? '<i class="bi bi-trash"></i> 清空教材資料（篩選）'
                 : '<i class="bi bi-trash"></i> 清空教材資料（安全）';
             updateScopeSummary();
         }
@@ -379,9 +388,9 @@
             if (INITIAL_SCOPE_SUMMARY && document.getElementById("coreScopeSummary")) {
                 const sum = document.getElementById("coreScopeSummary");
                 if ((INITIAL_SCOPE_STATE.core_scope_mode || "all") === "all") {
-                    sum.textContent = "即將清除：全部教材 core";
+                    sum.textContent = "目前範圍：全部教材資料（core）";
                 } else {
-                    sum.textContent = "即將清除：" + INITIAL_SCOPE_SUMMARY.replace(/^mode=filtered\s*/, "");
+                    sum.textContent = "目前範圍（篩選）：" + INITIAL_SCOPE_SUMMARY.replace(/^mode=filtered\s*/, "");
                 }
             }
         });

@@ -28,7 +28,11 @@
         <div class="status-card">
             <div class="header">
                 <h1>教材匯入進度</h1>
-                <p>系統正在分析教材內容，請稍候...</p>
+                {% if import_mode == 'pdf_outline' %}
+                <p id="statusHeadline">[antigravity] 正在提取 PDF 目錄前 5 頁並透過 AI 構建標準大綱樹，請稍候...</p>
+                {% else %}
+                <p id="statusHeadline">系統正在分析教材內容，請稍候...</p>
+                {% endif %}
             </div>
 
             <div id="log-container"></div>

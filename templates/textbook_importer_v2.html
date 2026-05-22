@@ -37,7 +37,8 @@
             color: #34495e;
         }
 
-        .form-control:focus, .form-select:focus {
+        .form-control:focus,
+        .form-select:focus {
             border-color: #27ae60;
             box-shadow: 0 0 0 0.25rem rgba(39, 174, 96, 0.15);
         }
@@ -61,10 +62,42 @@
             background: #95a5a6;
             cursor: not-allowed;
         }
+
+        .import-mode-group .btn-outline-primary {
+            border-color: #bdc3c7;
+            color: #2c3e50;
+        }
+
+        .import-mode-group .btn-check:checked + .btn-outline-primary {
+            background-color: #27ae60;
+            border-color: #27ae60;
+            color: #fff;
+        }
+
+        .mode-hint-docx,
+        .mode-hint-pdf {
+            display: none;
+        }
+
+        body[data-import-mode="docx_problems"] .mode-hint-docx {
+            display: block;
+        }
+
+        body[data-import-mode="pdf_outline"] .mode-hint-pdf {
+            display: block;
+        }
+
+        #uploadProgressWrap {
+            display: none;
+        }
+
+        #uploadProgressWrap.is-active {
+            display: block;
+        }
     </style>
 </head>
 
-<body>
+<body data-import-mode="docx_problems">
     {% include '_admin_navbar.html' %}
 
     <div class="container">
@@ -93,38 +126,73 @@
         {% if not has_gemini_api_key %}
         <div class="alert alert-danger shadow-sm mb-4" role="alert">
             <i class="bi bi-exclamation-triangle-fill"></i>
-            <strong>系統核心警告：</strong> 尚未設定 Gemini API Key。請先前往 
+            <strong>系統核心警告：</strong> 尚未設定 Gemini API Key。請先前往
             <a href="{{ ai_settings_url }}" class="alert-link">AI 設定頁</a> 完成金鑰配置。
         </div>
         {% endif %}
 
         <div class="card shadow-sm">
             <div class="card-header bg-dark text-white d-flex align-items-center">
-                <h5 class="mb-0 fw-bold"><i class="bi bi-file-earmark-word-fill text-primary"></i> LaTeX DOCX 決定性分析解析</h5>
+                <h5 class="mb-0 fw-bold" id="cardHeaderTitle">
+                    <i class="bi bi-file-earmark-word-fill text-primary" id="cardHeaderIcon"></i>
+                    <span id="cardHeaderText">LaTeX DOCX 決定性分析解析</span>
+                </h5>
             </div>
             <div class="card-body p-4">
-                
-                <div class="alert alert-success bg-opacity-10 text-success border-success border-opacity-25 mb-4">
-                    <h6 class="fw-bold mb-2"><i class="bi bi-shield-check"></i> 反重力線路運作規範：</h6>
+
+                <div class="alert alert-success bg-opacity-10 text-success border-success border-opacity-25 mb-4 mode-hint-docx">
+                    <h6 class="fw-bold mb-2"><i class="bi bi-shield-check"></i> 反重力線路運作規範（模式一）：</h6>
                     <ul class="small mb-0 ps-3">
                         <li>本線路僅接收事先利用 Word + MathType 將公式全數轉換為 LaTeX 文字的 <code>*_Latex.docx</code> 檔案。</li>
-                        <li>系統將直接讀取 LaTeX 字串，<strong>完全跳過並關閉 OCR、fitz 渲染與 Pix2Tex 辨識</strong>，匯入效率提升 500%。</li>
-                        <li>已內嵌 V2 專用狀態機，會自動洗淨開頭題號（包含純數字習題號），並精確阻斷/凍結隨堂練習後的課文與詳解污染。</li>
+                        <li>系統將直接讀取 LaTeX 字串，<strong>完全跳過並關閉 OCR、fitz 渲染與 Pix2Tex 辨識</strong>。</li>
+                        <li>已內嵌 V2 專用狀態機，會自動洗淨開頭題號，並精確阻斷隨堂練習後的課文與詳解污染。</li>
                     </ul>
                 </div>
 
-                <form method="POST" enctype="multipart/form-data">
-                    
+                <div class="alert alert-info bg-opacity-10 text-info border-info border-opacity-25 mb-4 mode-hint-pdf">
+                    <h6 class="fw-bold mb-2"><i class="bi bi-diagram-3-fill"></i> 整冊大綱建立（模式二）：</h6>
+                    <ul class="small mb-0 ps-3">
+                        <li>上傳課本 PDF，系統<strong>僅讀取前 5 頁</strong>目錄區塊，透過 AI 構建標準 <code>SkillCurriculum</code> 大綱樹。</li>
+                        <li>此模式<strong>不匯入題目</strong>，僅建立章節／小節架構，供後續題目匯入對齊。</li>
+                    </ul>
+                </div>
+
+                <form id="importerV2Form" method="POST" enctype="multipart/form-data"
+                    action="{{ url_for('core.admin_textbook_importer_v2') }}">
+
+                    <div class="mb-4">
+                        <label class="form-label d-block">導入模式 (Import Mode)</label>
+                        <div class="import-mode-group btn-group w-100 flex-wrap" role="group" aria-label="導入模式">
+                            <input type="radio" class="btn-check" name="import_mode" id="mode_docx_problems"
+                                value="docx_problems" autocomplete="off" checked>
+                            <label class="btn btn-outline-primary flex-fill py-3" for="mode_docx_problems">
+                                <i class="bi bi-file-earmark-word d-block fs-4 mb-1"></i>
+                                <span class="fw-bold">模式一</span><br>
+                                <small>解析題目 (Docx / LaTeX)</small>
+                            </label>
+
+                            <input type="radio" class="btn-check" name="import_mode" id="mode_pdf_outline"
+                                value="pdf_outline" autocomplete="off">
+                            <label class="btn btn-outline-primary flex-fill py-3" for="mode_pdf_outline">
+                                <i class="bi bi-file-earmark-pdf d-block fs-4 mb-1"></i>
+                                <span class="fw-bold">模式二</span><br>
+                                <small>建立整冊大綱 (PDF 目錄 · 前 5 頁)</small>
+                            </label>
+                        </div>
+                    </div>
+
                     <div class="row g-3 mb-3">
                         <div class="col-md-6">
                             <label class="form-label">課綱 (Curriculum)</label>
-                            <select class="form-select bg-light text-muted" name="curriculum" readonly style="pointer-events: none;">
+                            <select class="form-select bg-light text-muted" name="curriculum" readonly
+                                style="pointer-events: none;">
                                 <option value="vocational" selected>技高 (Vocational)</option>
                             </select>
                         </div>
                         <div class="col-md-6">
                             <label class="form-label">出版社 (Publisher)</label>
-                            <select class="form-select bg-light text-muted" name="publisher" readonly style="pointer-events: none;">
+                            <select class="form-select bg-light text-muted" name="publisher" readonly
+                                style="pointer-events: none;">
                                 <option value="longteng" selected>龍騰 (Longteng)</option>
                             </select>
                         </div>
@@ -137,42 +205,175 @@
                         </div>
                         <div class="col-md-6">
                             <label class="form-label">冊別 (Volume)</label>
-                            <input type="text" class="form-control" name="volume" placeholder="例如: 數學B1" value="數學B1" required>
+                            <input type="text" class="form-control" name="volume" placeholder="例如: 數學B1"
+                                value="數學B1" required>
                         </div>
                     </div>
 
                     <div class="mb-4">
-                        <label class="form-label">選擇 LaTeX 規格 Word 檔案 (.docx)</label>
-                        <input type="file" class="form-control" id="textbook_docx" name="textbook_docx" accept=".docx" required>
-                        <div class="form-text text-muted mt-2">
+                        <label class="form-label" id="fileInputLabel" for="textbook_file">選擇 LaTeX 規格 Word 檔案 (.docx)</label>
+                        <input type="file" class="form-control" id="textbook_file" name="textbook_file" accept=".docx"
+                            required>
+                        <div class="form-text text-muted mt-2" id="fileInputHelp">
                             * 建議上傳前確認檔案內公式皆已呈現 <code>$x^2-4x+3\le0$</code> 等標準 LaTeX 標記。
                         </div>
                     </div>
 
-                    <div class="card bg-light border-0 p-3 mb-4">
+                    <div class="card bg-light border-0 p-3 mb-4 mode-hint-docx" id="skipCodeGenWrap">
                         <div class="form-check form-switch mb-0">
-                            <input class="form-check-input" type="checkbox" id="skip_code_gen" name="skip_code_gen" checked>
+                            <input class="form-check-input" type="checkbox" id="skip_code_gen" name="skip_code_gen"
+                                checked>
                             <label class="form-check-label fw-bold text-secondary" for="skip_code_gen">
                                 跳過 Python 出題原始碼自動生成 (僅寫入資料庫，加速匯入)
                             </label>
                         </div>
                     </div>
 
-                    <button type="submit" class="btn btn-submit w-100 fw-bold shadow-sm" {% if not has_gemini_api_key %}disabled{% endif %}>
-                        <i class="bi bi-cloud-arrow-up-fill"></i> 啟動反重力決定性匯入
+                    <div id="uploadProgressWrap" class="mb-3">
+                        <p class="fw-semibold text-secondary mb-2" id="uploadProgressMessage">
+                            [antigravity] 正在啟動匯入程序，請稍候...
+                        </p>
+                        <div class="progress" style="height: 8px;">
+                            <div class="progress-bar progress-bar-striped progress-bar-animated bg-success"
+                                role="progressbar" style="width: 100%" aria-valuenow="100" aria-valuemin="0"
+                                aria-valuemax="100"></div>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-submit w-100 fw-bold shadow-sm" id="submitBtn" {% if not
+                        has_gemini_api_key %}disabled{% endif %}>
+                        <i class="bi bi-cloud-arrow-up-fill" id="submitBtnIcon"></i>
+                        <span id="submitBtnText">啟動反重力決定性匯入</span>
                     </button>
-                    
+
                     {% if not has_gemini_api_key %}
                     <div class="text-center text-danger small mt-2">
                         <i class="bi bi-x-circle"></i> 請先完成金鑰設定後方能解鎖按鈕。
                     </div>
                     {% endif %}
                 </form>
-                
+
             </div>
         </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        (function () {
+            const MSG_DOCX = '[antigravity] 正在啟動 DOCX 決定性題目解析，請稍候...';
+            const MSG_PDF = '[antigravity] 正在提取 PDF 目錄前 5 頁並透過 AI 構建標準大綱樹，請稍候...';
+
+            const form = document.getElementById('importerV2Form');
+            const fileInput = document.getElementById('textbook_file');
+            const fileLabel = document.getElementById('fileInputLabel');
+            const fileHelp = document.getElementById('fileInputHelp');
+            const submitBtn = document.getElementById('submitBtn');
+            const submitBtnText = document.getElementById('submitBtnText');
+            const submitBtnIcon = document.getElementById('submitBtnIcon');
+            const progressWrap = document.getElementById('uploadProgressWrap');
+            const progressMessage = document.getElementById('uploadProgressMessage');
+            const skipCodeGenWrap = document.getElementById('skipCodeGenWrap');
+            const cardHeaderIcon = document.getElementById('cardHeaderIcon');
+            const cardHeaderText = document.getElementById('cardHeaderText');
+            const modeRadios = document.querySelectorAll('input[name="import_mode"]');
+
+            function getSelectedMode() {
+                const checked = document.querySelector('input[name="import_mode"]:checked');
+                return checked ? checked.value : 'docx_problems';
+            }
+
+            function applyImportModeUi() {
+                const mode = getSelectedMode();
+                document.body.setAttribute('data-import-mode', mode);
+                const isPdf = mode === 'pdf_outline';
+
+                fileInput.accept = isPdf ? '.pdf' : '.docx';
+                fileInput.value = '';
+
+                if (isPdf) {
+                    fileLabel.textContent = '選擇課本 PDF 檔案 (.pdf)';
+                    fileHelp.innerHTML = '* 系統僅解析 PDF <strong>前 5 頁</strong> 目錄區，用於建立整冊 SkillCurriculum 大綱樹。';
+                    submitBtnText.textContent = '啟動 PDF 大綱樹建立';
+                    submitBtnIcon.className = 'bi bi-diagram-3-fill';
+                    cardHeaderIcon.className = 'bi bi-file-earmark-pdf-fill text-danger';
+                    cardHeaderText.textContent = 'PDF 目錄大綱樹快速建立';
+                    if (skipCodeGenWrap) skipCodeGenWrap.style.display = 'none';
+                } else {
+                    fileLabel.textContent = '選擇 LaTeX 規格 Word 檔案 (.docx)';
+                    fileHelp.innerHTML = '* 建議上傳前確認檔案內公式皆已呈現 <code>$x^2-4x+3\\le0$</code> 等標準 LaTeX 標記。';
+                    submitBtnText.textContent = '啟動反重力決定性匯入';
+                    submitBtnIcon.className = 'bi bi-cloud-arrow-up-fill';
+                    cardHeaderIcon.className = 'bi bi-file-earmark-word-fill text-primary';
+                    cardHeaderText.textContent = 'LaTeX DOCX 決定性分析解析';
+                    if (skipCodeGenWrap) skipCodeGenWrap.style.display = '';
+                }
+            }
+
+            modeRadios.forEach(function (radio) {
+                radio.addEventListener('change', applyImportModeUi);
+            });
+
+            form.addEventListener('submit', function (event) {
+                event.preventDefault();
+
+                const mode = getSelectedMode();
+                const file = fileInput.files && fileInput.files[0];
+                if (!file) {
+                    alert(mode === 'pdf_outline' ? '請選擇 PDF 檔案。' : '請選擇 DOCX 檔案。');
+                    return;
+                }
+
+                const nameLower = file.name.toLowerCase();
+                if (mode === 'pdf_outline' && !nameLower.endsWith('.pdf')) {
+                    alert('模式二僅支援 .pdf 檔案。');
+                    return;
+                }
+                if (mode === 'docx_problems' && !nameLower.endsWith('.docx')) {
+                    alert('模式一僅支援 .docx 檔案。');
+                    return;
+                }
+
+                const formData = new FormData(form);
+                formData.set('import_mode', mode);
+                formData.set('textbook_file', file, file.name);
+
+                progressMessage.textContent = mode === 'pdf_outline' ? MSG_PDF : MSG_DOCX;
+                progressWrap.classList.add('is-active');
+                submitBtn.disabled = true;
+
+                fetch(form.action, {
+                    method: 'POST',
+                    body: formData,
+                    credentials: 'same-origin',
+                    redirect: 'follow',
+                })
+                    .then(function (response) {
+                        if (response.redirected && response.url) {
+                            window.location.href = response.url;
+                            return;
+                        }
+                        if (!response.ok) {
+                            throw new Error('伺服器回應異常 (' + response.status + ')');
+                        }
+                        return response.text();
+                    })
+                    .then(function (html) {
+                        if (html) {
+                            document.open();
+                            document.write(html);
+                            document.close();
+                        }
+                    })
+                    .catch(function (err) {
+                        progressWrap.classList.remove('is-active');
+                        submitBtn.disabled = {% if not has_gemini_api_key %}true{% else %}false{% endif %};
+                        alert('上傳失敗：' + (err && err.message ? err.message : String(err)));
+                    });
+            });
+
+            applyImportModeUi();
+        })();
+    </script>
 </body>
+
 </html>

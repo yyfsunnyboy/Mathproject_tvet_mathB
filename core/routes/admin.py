@@ -1,19 +1,19 @@
 ﻿# -*- coding: utf-8 -*-
 """
 =============================================================================
-璅∠??迂 (Module Name): core/routes/admin.py
-?隤芣? (Description): 敺蝞∠??詨?璅∠???怨??澈蝬剛風??蝘?臬???賜恣?玨蝔雇閬恣??憿恣?rompt 蝞∠???蝵格??賜恣??
-?瑁?隤? (Usage): ?梁頂蝯梯矽??
-?? (Version): V2.0
-?湔?交? (Date): 2026-01-13
-蝬剛風?? (Maintainer): Math AI Project Team
+?????? (Module Name): core/routes/admin.py
+?賹??方? (Description): ?綽?潸????閰??????????謕??砍?憸?蹓??謆??穿?蹓??鞈??蹓曄???蹓賣??蹓??選???蹍ompt ???????菜??鞈???
+????止等? (Usage): ?璇??舀０???
+??秧?? (Version): V2.0
+?皝??鈭? (Date): 2026-01-13
+?砍?憸?謢? (Maintainer): Math AI Project Team
 =============================================================================
 """
 
 from flask import Blueprint, request, jsonify, current_app, redirect, url_for, render_template, flash, session, send_file, Response, stream_with_context
 from flask_login import login_required, current_user
 from werkzeug.utils import secure_filename
-from sqlalchemy import distinct, text
+from sqlalchemy import distinct, text, MetaData, Table, select, func, or_, and_, inspect
 from sqlalchemy.exc import IntegrityError
 from datetime import datetime
 from markupsafe import Markup
@@ -62,17 +62,20 @@ from core.ai_settings import (
     set_system_setting_value,
 )
 
-# [Fix] ?芸??函Ⅱ摰??函??賢???ImportError
+# [Fix] ?????賤?堊城?????鞈??橫???ImportError
 from core.data_importer import import_excel_to_db, CORE_TABLES, FULL_CONFIRM_TOKEN
 
 from config import Config
-# [Fix] 箔? SkillPrerequisites 鋡怠???
+# [Fix] 蝞? SkillPrerequisites ?⊥???
 from models import db, SkillInfo, SkillCurriculum, User, TextbookExample, Progress, SkillGenCodePrompt, SkillPrerequisites, init_db, StudentUploadedQuestion
 from core.models.prompt_template import PromptTemplate
 
 CORE_CLEAR_CONFIRM_TOKEN = "DELETE_CORE"
 CORE_TEXTBOOK_ONLY_TABLES = ("textbook_examples", "skill_curriculum", "skills_info")
 OUTLINE_SKILL_PREFIX = "outline_"
+VOCATIONAL_MATH_B_CONFIRM_TOKEN = "CLEAR_VOCATIONAL_MATH_B"
+VOCATIONAL_MATH_B_PREFIX = "vh_數學B%"
+VOCATIONAL_MATH_B_OUTLINE_PREFIX = "outline_vocational_數學B%"
 
 
 def _is_outline_skill_id(skill_id):
@@ -98,16 +101,16 @@ def _format_sse_data(msg):
 def _derive_formula_status(*, formula_assets_count, has_formula_image_placeholder, has_formula_missing_placeholder, needs_formula_review):
     """Derive formula status for admin examples page."""
     if has_formula_image_placeholder and formula_assets_count > 0:
-        return "asset_attached", "公式圖片已掛載，待 OCR/複核", "info"
+        return "asset_attached", "?砍???撌脫?頛?敺?OCR/銴", "info"
     if has_formula_missing_placeholder and formula_assets_count > 0:
-        return "asset_attached_but_text_missing", "文字缺公式，但已有公式圖片資產，待 OCR/複核", "warning"
+        return "asset_attached_but_text_missing", "??蝻箏撘?雿歇?撘????ｇ?敺?OCR/銴", "warning"
     if has_formula_image_placeholder and formula_assets_count == 0:
-        return "image_placeholder_no_asset", "文字有公式圖片標記，但未找到對應資產", "danger"
+        return "image_placeholder_no_asset", "???撘???閮?雿?曉撠?鞈", "danger"
     if has_formula_missing_placeholder and formula_assets_count == 0:
-        return "missing_no_asset", "公式缺失，無可用資產", "danger"
+        return "missing_no_asset", "?砍?蝻箏仃嚗?舐鞈", "danger"
     if not has_formula_image_placeholder and not has_formula_missing_placeholder and not needs_formula_review:
-        return "ok", "正常", "secondary"
-    return "ok", "正常", "secondary"
+        return "ok", "甇?虜", "secondary"
+    return "ok", "甇?虜", "secondary"
 
 
 def _normalize_core_option_value(raw):
@@ -387,15 +390,194 @@ def _preview_core_textbook_data(filters):
         "preserved_outline_curriculum": len(outline_rows),
     }
 
+
+def _is_admin_or_teacher():
+    return bool(current_user.is_admin or current_user.role == "teacher")
+
+
+def _table_exists(table_name: str) -> bool:
+    return table_name in inspect(db.engine).get_table_names()
+
+
+def _columns_of(table_name: str) -> set[str]:
+    if not _table_exists(table_name):
+        return set()
+    return {c["name"] for c in inspect(db.engine).get_columns(table_name)}
+
+
+def _count_sql(sql: str, params: dict | None = None) -> int:
+    return int(db.session.execute(text(sql), params or {}).scalar() or 0)
+
+
+def _delete_sql(sql: str, params: dict | None = None) -> int:
+    result = db.session.execute(text(sql), params or {})
+    return int(result.rowcount or 0)
+
+
+def _build_like_conditions(columns: set[str], field_names: list[str], alias: str = "") -> list[str]:
+    out = []
+    for f in field_names:
+        if f in columns:
+            col = f"{alias}{f}" if alias else f
+            out.append(f"{col} LIKE :vh_prefix")
+            out.append(f"{col} LIKE :outline_prefix")
+    return out
+
+
+def _hard_clear_vocational_math_b_core(*, execute: bool = False) -> dict:
+    params = {"vh_prefix": VOCATIONAL_MATH_B_PREFIX, "outline_prefix": VOCATIONAL_MATH_B_OUTLINE_PREFIX}
+    deleted: dict[str, int] = {}
+    missing_columns: dict[str, list[str]] = {}
+
+    dependent_tables = [
+        "progress",
+        "student_progress",
+        "student_answers",
+        "practice_records",
+        "wrong_questions",
+        "mistake_logs",
+        "mistake_notebook_entries",
+        "adaptive_sessions",
+        "adaptive_records",
+        "adaptive_review_state",
+        "generated_questions",
+        "questions",
+        "question_bank",
+        "student_abilities",
+        "exam_analysis",
+    ]
+    skill_ref_fields = ["skill_id", "source_skill_id", "target_skill_id", "current_skill_id", "next_skill_id", "predicted_skill_id"]
+
+    plan: list[tuple[str, str]] = []
+
+    for table_name in dependent_tables:
+        if not _table_exists(table_name):
+            continue
+        cols = _columns_of(table_name)
+        missing_columns[table_name] = [x for x in skill_ref_fields + ["volume", "source_volume", "curriculum", "source_curriculum"] if x not in cols]
+        conds = _build_like_conditions(cols, skill_ref_fields)
+        if "volume" in cols:
+            conds.append("volume LIKE '數學B%'")
+        if "source_volume" in cols:
+            conds.append("source_volume LIKE '數學B%'")
+        # Do not use curriculum/source_curriculum alone for dependent tables.
+        if not conds:
+            continue
+        plan.append((table_name, " OR ".join(conds)))
+
+    if _table_exists("textbook_examples"):
+        missing_columns["textbook_examples"] = [x for x in ["source_curriculum", "source_volume", "skill_id"] if x not in _columns_of("textbook_examples")]
+        plan.append((
+            "textbook_examples",
+            "source_curriculum = 'vocational' OR source_volume LIKE '數學B%' OR skill_id LIKE :vh_prefix OR skill_id LIKE :outline_prefix",
+        ))
+
+    if _table_exists("skill_prerequisites"):
+        missing_columns["skill_prerequisites"] = [x for x in ["skill_id", "prerequisite_id"] if x not in _columns_of("skill_prerequisites")]
+        plan.append((
+            "skill_prerequisites",
+            "skill_id LIKE :vh_prefix OR prerequisite_id LIKE :vh_prefix OR skill_id LIKE :outline_prefix OR prerequisite_id LIKE :outline_prefix",
+        ))
+
+    if _table_exists("skill_family_bridge"):
+        cols = _columns_of("skill_family_bridge")
+        missing_columns["skill_family_bridge"] = [x for x in ["skill_id", "source_skill_id", "target_skill_id"] if x not in cols]
+        bridge_conds = _build_like_conditions(cols, ["skill_id", "source_skill_id", "target_skill_id"])
+        if bridge_conds:
+            plan.append(("skill_family_bridge", " OR ".join(bridge_conds)))
+
+    if _table_exists("skill_curriculum"):
+        missing_columns["skill_curriculum"] = [x for x in ["curriculum", "volume", "skill_id"] if x not in _columns_of("skill_curriculum")]
+        plan.append((
+            "skill_curriculum",
+            "curriculum = 'vocational' OR volume LIKE '數學B%' OR skill_id LIKE :vh_prefix OR skill_id LIKE :outline_prefix",
+        ))
+
+    if _table_exists("skills_info"):
+        missing_columns["skills_info"] = [x for x in ["skill_id"] if x not in _columns_of("skills_info")]
+        plan.append((
+            "skills_info",
+            "skill_id LIKE :vh_prefix OR skill_id LIKE :outline_prefix",
+        ))
+
+    for table_name, where_sql in plan:
+        deleted[table_name] = _count_sql(f"SELECT COUNT(*) FROM {table_name} WHERE {where_sql}", params)
+
+    if not execute:
+        return {"deleted": deleted, "missing_columns": missing_columns, "plan": [x[0] for x in plan]}
+
+    try:
+        db.session.execute(text("PRAGMA foreign_keys = OFF"))
+        for table_name, where_sql in plan:
+            deleted[table_name] = _delete_sql(f"DELETE FROM {table_name} WHERE {where_sql}", params)
+        db.session.commit()
+    except Exception:
+        db.session.rollback()
+        raise
+    finally:
+        try:
+            db.session.execute(text("PRAGMA foreign_keys = ON"))
+            db.session.commit()
+        except Exception:
+            db.session.rollback()
+
+    return {"deleted": deleted, "missing_columns": missing_columns, "plan": [x[0] for x in plan]}
+
+
+def _vocational_math_b_remaining_check():
+    checks = {
+        "skills_info_vh_mathB": 0,
+        "textbook_examples_mathB": 0,
+        "skill_curriculum_mathB": 0,
+        "skill_prerequisites_mathB": 0,
+        "skill_family_bridge_mathB": 0,
+    }
+
+    if _table_exists("skills_info"):
+        checks["skills_info_vh_mathB"] = _count_sql(
+            "SELECT COUNT(*) FROM skills_info WHERE skill_id LIKE :vh_prefix OR skill_id LIKE :outline_prefix",
+            {"vh_prefix": VOCATIONAL_MATH_B_PREFIX, "outline_prefix": VOCATIONAL_MATH_B_OUTLINE_PREFIX},
+        )
+    if _table_exists("textbook_examples"):
+        checks["textbook_examples_mathB"] = _count_sql(
+            "SELECT COUNT(*) FROM textbook_examples "
+            "WHERE source_curriculum = 'vocational' OR source_volume LIKE '數學B%' "
+            "OR skill_id LIKE :vh_prefix OR skill_id LIKE :outline_prefix",
+            {"vh_prefix": VOCATIONAL_MATH_B_PREFIX, "outline_prefix": VOCATIONAL_MATH_B_OUTLINE_PREFIX},
+        )
+    if _table_exists("skill_curriculum"):
+        checks["skill_curriculum_mathB"] = _count_sql(
+            "SELECT COUNT(*) FROM skill_curriculum "
+            "WHERE curriculum = 'vocational' OR volume LIKE '數學B%' "
+            "OR skill_id LIKE :vh_prefix OR skill_id LIKE :outline_prefix",
+            {"vh_prefix": VOCATIONAL_MATH_B_PREFIX, "outline_prefix": VOCATIONAL_MATH_B_OUTLINE_PREFIX},
+        )
+    if _table_exists("skill_prerequisites"):
+        checks["skill_prerequisites_mathB"] = _count_sql(
+            "SELECT COUNT(*) FROM skill_prerequisites "
+            "WHERE skill_id LIKE :vh_prefix OR prerequisite_id LIKE :vh_prefix "
+            "OR skill_id LIKE :outline_prefix OR prerequisite_id LIKE :outline_prefix",
+            {"vh_prefix": VOCATIONAL_MATH_B_PREFIX, "outline_prefix": VOCATIONAL_MATH_B_OUTLINE_PREFIX},
+        )
+    if _table_exists("skill_family_bridge"):
+        cols = _columns_of("skill_family_bridge")
+        conds = _build_like_conditions(cols, ["skill_id", "source_skill_id", "target_skill_id"])
+        if conds:
+            checks["skill_family_bridge_mathB"] = _count_sql(
+                f"SELECT COUNT(*) FROM skill_family_bridge WHERE {' OR '.join(conds)}",
+                {"vh_prefix": VOCATIONAL_MATH_B_PREFIX, "outline_prefix": VOCATIONAL_MATH_B_OUTLINE_PREFIX},
+            )
+    return checks
+
 # ==========================================
-# Background Tasks (?隞餃?)
+# Background Tasks (??魂????)
 # ==========================================
 
 @core_bp.route('/admin/rag_settings/update', methods=['POST'])
 @login_required
 def admin_update_rag_settings():
     if not (current_user.is_admin or current_user.role == 'teacher'):
-        return jsonify({'success': False, 'message': '甈?銝雲'}), 403
+        return jsonify({'success': False, 'message': 'Permission denied'}), 403
     try:
         data = request.get_json()
         threshold = float(data.get('threshold', 0.40))
@@ -526,17 +708,17 @@ def background_processing(file_paths, task_queue, app_context, curriculum_info, 
         try:
             grouped_files = _group_docx_with_optional_pdf(file_paths)
             total_files = len(grouped_files)
-            task_queue.put(f"INFO: 開始處理任務，共 {total_files} 個匯入單位...")
+            task_queue.put(f"INFO: ????隞餃?嚗 {total_files} ??亙雿?..")
 
             for idx, (file_path, optional_pdf_path) in enumerate(grouped_files, 1):
                 filename = os.path.basename(file_path)
                 if filename.startswith('~$') or filename.startswith('.'):
                     continue
 
-                task_queue.put(f"INFO: [{idx}/{total_files}] 正在分析: {filename} ...")
+                task_queue.put(f"INFO: [{idx}/{total_files}] 甇???: {filename} ...")
                 if optional_pdf_path:
                     task_queue.put(
-                        f"INFO: [{idx}/{total_files}] 同版本 PDF 將作為 optional enrich，不進行第二次重匯。"
+                        f"INFO: [{idx}/{total_files}] Optional enrich PDF detected and will be used."
                     )
                 try:
                     textbook_processor.process_textbook_file(
@@ -549,7 +731,7 @@ def background_processing(file_paths, task_queue, app_context, curriculum_info, 
                         **kwargs
                     )
                     if docx_formula_source_mode == "converted_docx_latex":
-                        task_queue.put("INFO: docx_formula_source_mode=converted_docx_latex，略過 formula_assets/OCR/pix2tex 後處理。")
+                        task_queue.put("INFO: docx_formula_source_mode=converted_docx_latex, skipping formula asset OCR/pix2tex postprocess.")
                     elif enable_formula_postprocess:
                         try:
                             is_docx = str(file_path or "").lower().endswith((".docx", ".doc"))
@@ -566,7 +748,7 @@ def background_processing(file_paths, task_queue, app_context, curriculum_info, 
                             )
 
                             if is_docx and formula_postprocess_mode == "convert_only":
-                                task_queue.put("INFO: formula_postprocess_mode=convert_only，略過 OCR 回填。")
+                                task_queue.put("INFO: formula_postprocess_mode=convert_only, skipping OCR postprocess.")
                             elif is_docx and formula_postprocess_mode in ("local_ocr", "local_first_gemini_fallback"):
                                 if _is_invalid_section_title(canonical_section):
                                     _write_postprocess_skip_report(
@@ -578,7 +760,7 @@ def background_processing(file_paths, task_queue, app_context, curriculum_info, 
                                         script_name="docx_formula_asset_pix2tex_backfill.py",
                                     )
                                     task_queue.put(
-                                        f"WARN: 缺少 canonical section，已略過匯入後公式後處理。report={report_path}"
+                                        f"WARN: 蝻箏? canonical section嚗歇?仿??臬敺撘????eport={report_path}"
                                     )
                                 else:
                                     script_path = os.path.join(
@@ -604,7 +786,7 @@ def background_processing(file_paths, task_queue, app_context, curriculum_info, 
                                         cmd.append("--write")
                                     else:
                                         cmd.append("--dry-run")
-                                    task_queue.put("INFO: 啟動 DOCX 匯入後公式後處理...")
+                                    task_queue.put("INFO: ?? DOCX ?臬敺撘???...")
                                     run = subprocess.run(
                                         cmd,
                                         stdout=subprocess.PIPE,
@@ -614,23 +796,23 @@ def background_processing(file_paths, task_queue, app_context, curriculum_info, 
                                         check=False,
                                     )
                                     if run.returncode == 0:
-                                        task_queue.put(f"INFO: 公式後處理完成，report={report_path}")
+                                        task_queue.put(f"INFO: ?砍?敺?????report={report_path}")
                                     else:
-                                        task_queue.put("WARN: 公式後處理執行失敗，已略過。")
+                                        task_queue.put("WARN: Formula postprocess failed for this file; continuing.")
                             else:
-                                task_queue.put("INFO: 非 DOCX 或未支援模式，略過匯入後公式後處理。")
+                                task_queue.put("INFO: DOCX source mode does not require formula OCR postprocess.")
                         except Exception as post_err:
-                            task_queue.put(f"WARN: 公式後處理啟動失敗: {post_err}")
+                            task_queue.put(f"WARN: ?砍?敺????仃?? {post_err}")
                 except Exception as e:
-                    task_queue.put(f"ERROR: 檔案 {filename} 處理失敗: {e}")
+                    task_queue.put(f"ERROR: 瑼? {filename} ??憭望?: {e}")
                 
                 if 'uploads' in file_path and os.path.exists(file_path):
                     try: os.remove(file_path)
                     except: pass
 
-            task_queue.put("SUCCESS: 所有作業完成！")
+            task_queue.put("SUCCESS: ???璆剖???")
         except Exception as e:
-            task_queue.put(f"ERROR: 任務處理發生未預期錯誤: {str(e)}")
+            task_queue.put(f"ERROR: 隞餃????潛??芷??隤? {str(e)}")
         finally:
             task_queue.put("END_OF_STREAM")
 
@@ -643,13 +825,19 @@ MATH_B_FORCED_VOLUMES = frozenset({"數學B1", "數學B2", "數學B3", "數學B4
 
 def is_vocational_mathb_volume(volume: str) -> bool:
     v = str(volume or "").strip()
+    if not v:
+        return False
+    v = re.sub(r"\s+", "", v)
     if v in MATH_B_FORCED_VOLUMES:
         return True
-    return bool(re.fullmatch(r"數學\s*B\s*[1-4]", v, flags=re.IGNORECASE))
+    return bool(
+        re.fullmatch(r"數學B[1-4]", v, flags=re.IGNORECASE)
+        or re.fullmatch(r"MathB[1-4]", v, flags=re.IGNORECASE)
+    )
 
 
 def apply_mathb_import_policy(curriculum_info: dict, import_policy: dict, *, filenames=None, logger=None) -> bool:
-    """Force converted_docx_latex import policy for 技高數學 B1–B4."""
+    """Force converted_docx_latex import policy for ?擃摮?B1?4."""
     volume = str((curriculum_info or {}).get("volume", "") or "").strip()
     if not is_vocational_mathb_volume(volume):
         return False
@@ -678,7 +866,7 @@ def apply_mathb_import_policy(curriculum_info: dict, import_policy: dict, *, fil
 @login_required
 def admin_textbook_importer():
     if not (current_user.is_admin or current_user.role == 'teacher'):
-        flash('甈?銝雲', 'error')
+        flash('Permission denied', 'error')
         return redirect(url_for('dashboard'))
 
     api_key, key_source = resolve_gemini_api_key()
@@ -687,7 +875,7 @@ def admin_textbook_importer():
 
     if request.method == 'POST':
         if not has_gemini_api_key:
-            flash("資料匯入前請先設定 Gemini API Key。", "danger")
+            flash("Please configure Gemini API Key before importing.", "danger")
             return redirect(url_for('core.admin_textbook_importer'))
 
         target_files = []
@@ -775,7 +963,7 @@ def admin_textbook_importer():
 
             return redirect(url_for('core.importer_status', task_id=task_id))
         else:
-            flash('請上傳至少一個 PDF 或 DOCX 檔案。', 'warning')
+            flash('Only PDF or DOCX files are allowed.', 'warning')
 
     return render_template(
         'textbook_importer.html',
@@ -791,18 +979,18 @@ def background_processing_v2(file_path, task_queue, app_context, curriculum_info
             from core.textbook_processor_v2 import process_textbook_file_v2
 
             filename = os.path.basename(file_path)
-            task_queue.put(f"INFO: [antigravity] 開始處理 {filename}")
+            task_queue.put(f"INFO: [antigravity] 開始處理 DOCX 題目檔：{filename}")
             result = process_textbook_file_v2(file_path, curriculum_info, task_queue)
             if result.get("success"):
                 task_queue.put(
-                    "INFO: [antigravity] 匯入完成 "
+                    "INFO: [antigravity] DOCX 題目匯入完成 "
                     f"inserted={result.get('inserted', 0)} "
                     f"updated={result.get('updated', 0)} "
                     f"total={result.get('total', 0)} "
                     f"blocks={result.get('blocks', 0)}"
                 )
             else:
-                task_queue.put(f"ERROR: [antigravity] 匯入未成功: {result.get('error', 'unknown')}")
+                task_queue.put(f"ERROR: [antigravity] DOCX 題目匯入失敗：{result.get('error', 'unknown')}")
         except Exception as exc:
             err_type = type(exc).__name__
             task_queue.put(f"ERROR: [antigravity] {err_type}: {exc}")
@@ -813,11 +1001,51 @@ def background_processing_v2(file_path, task_queue, app_context, curriculum_info
             task_queue.put("END_OF_STREAM")
 
 
+def background_processing_v2_pdf_outline(
+    file_path, task_queue, app_context, curriculum_info, *, toc_pages: int = 5
+):
+    """Antigravity V2: parse PDF outline and sync SkillCurriculum via V2 pipeline."""
+    with app_context:
+        try:
+            from core.textbook_processor_v2 import process_pdf_outline_v2
+
+            filename = os.path.basename(file_path)
+            task_queue.put(
+                f"INFO: [antigravity] Starting PDF outline parse with toc_pages={toc_pages}"
+            )
+            task_queue.put(f"INFO: [antigravity] 開始處理 PDF 大綱檔：{filename}")
+            result = process_pdf_outline_v2(
+                file_path,
+                curriculum_info,
+                task_queue,
+                toc_pages=toc_pages,
+            )
+            if result.get("success"):
+                task_queue.put(
+                    "INFO: [antigravity] PDF 大綱同步完成 "
+                    f"sections_created={result.get('sections_created', 0)} "
+                    f"sections_updated={result.get('sections_updated', 0)}"
+                )
+            else:
+                task_queue.put(
+                    f"ERROR: [antigravity] PDF 大綱同步失敗：{result.get('error', 'unknown')}"
+                )
+        except Exception as exc:
+            err_type = type(exc).__name__
+            task_queue.put(f"ERROR: [antigravity] {err_type}: {exc}")
+            current_app.logger.error(
+                f"[antigravity] background_processing_v2_pdf_outline failed: {exc}\n"
+                f"{traceback.format_exc()}"
+            )
+        finally:
+            task_queue.put("END_OF_STREAM")
+
+
 @core_bp.route('/textbook_importer_v2', methods=['GET', 'POST'])
 @login_required
 def admin_textbook_importer_v2():
     if not (current_user.is_admin or current_user.role == 'teacher'):
-        flash('權限不足', 'error')
+        flash('甈?銝雲', 'error')
         return redirect(url_for('dashboard'))
 
     api_key, key_source = resolve_gemini_api_key()
@@ -826,22 +1054,34 @@ def admin_textbook_importer_v2():
 
     if request.method == 'POST':
         if not has_gemini_api_key:
-            flash("資料匯入前請先設定 Gemini API Key。", "danger")
+            flash("Please configure Gemini API Key before importing.", "danger")
             return redirect(url_for('core.admin_textbook_importer_v2'))
 
-        docx_file = request.files.get('textbook_docx')
-        if not docx_file or not docx_file.filename:
-            flash('請上傳 LaTeX 規格 Word 檔案 (.docx)。', 'warning')
+        import_mode = str(request.form.get('import_mode', 'docx_problems') or 'docx_problems').strip()
+        if import_mode not in ('docx_problems', 'pdf_outline'):
+            import_mode = 'docx_problems'
+
+        upload_file = request.files.get('textbook_file') or request.files.get('textbook_docx')
+        if not upload_file or not upload_file.filename:
+            if import_mode == 'pdf_outline':
+                flash('Only PDF files (.pdf) are allowed.', 'warning')
+            else:
+                flash('Only Word files (.docx) are allowed for LaTeX conversion.', 'warning')
             return redirect(url_for('core.admin_textbook_importer_v2'))
 
-        if not str(docx_file.filename).lower().endswith('.docx'):
-            flash('僅支援 .docx 檔案。', 'warning')
+        filename_lower = str(upload_file.filename).lower()
+        if import_mode == 'pdf_outline':
+            if not filename_lower.endswith('.pdf'):
+                flash('Please upload a valid .pdf file.', 'warning')
+                return redirect(url_for('core.admin_textbook_importer_v2'))
+        elif not filename_lower.endswith('.docx'):
+            flash('Please upload a valid .docx file.', 'warning')
             return redirect(url_for('core.admin_textbook_importer_v2'))
 
         upload_dir = os.path.join(current_app.root_path, 'uploads')
         os.makedirs(upload_dir, exist_ok=True)
-        saved_path = os.path.join(upload_dir, secure_filename(os.path.basename(docx_file.filename)))
-        docx_file.save(saved_path)
+        saved_path = os.path.join(upload_dir, secure_filename(os.path.basename(upload_file.filename)))
+        upload_file.save(saved_path)
 
         filename_meta = parse_textbook_filename_metadata(os.path.basename(saved_path))
         section_code = str((filename_meta or {}).get('section_code') or '').strip()
@@ -857,27 +1097,47 @@ def admin_textbook_importer_v2():
             'grade': grade_val,
             'volume': request.form.get('volume', '數學B1') or '數學B1',
             'section_code': section_code,
+            'import_mode': import_mode,
         }
-        apply_mathb_import_policy(
-            curriculum_info,
-            {},
-            filenames=[os.path.basename(saved_path)],
-            logger=current_app.logger,
-        )
-
-        skip_code_gen = request.form.get('skip_code_gen') == 'on'
-        if skip_code_gen:
-            current_app.logger.info("[antigravity] skip_code_gen=true (V2 線路不觸發出題碼生成)")
 
         task_id = str(uuid.uuid4())
         q = queue.Queue()
         TASK_QUEUES[task_id] = q
         app = current_app._get_current_object()
-        threading.Thread(
-            target=background_processing_v2,
-            args=(saved_path, q, app.app_context(), curriculum_info),
-        ).start()
-        return redirect(url_for('core.importer_status', task_id=task_id))
+
+        if import_mode == 'pdf_outline':
+            try:
+                toc_pages = int(request.form.get('toc_pages', 5))
+            except (TypeError, ValueError):
+                toc_pages = 5
+            toc_pages = max(1, min(10, toc_pages))
+            current_app.logger.info(
+                f"[antigravity] import_mode=pdf_outline toc_pages={toc_pages} file={saved_path}"
+            )
+            threading.Thread(
+                target=background_processing_v2_pdf_outline,
+                args=(saved_path, q, app.app_context(), curriculum_info),
+                kwargs={'toc_pages': toc_pages},
+            ).start()
+        else:
+            apply_mathb_import_policy(
+                curriculum_info,
+                {},
+                filenames=[os.path.basename(saved_path)],
+                logger=current_app.logger,
+            )
+            skip_code_gen = request.form.get('skip_code_gen') == 'on'
+            if skip_code_gen:
+                current_app.logger.info("[antigravity] skip_code_gen=true (V2 蝺楝銝孛?澆憿Ⅳ??)")
+            current_app.logger.info(f"[antigravity] import_mode=docx_problems file={saved_path}")
+            threading.Thread(
+                target=background_processing_v2,
+                args=(saved_path, q, app.app_context(), curriculum_info),
+            ).start()
+
+        return redirect(
+            url_for('core.importer_status', task_id=task_id, import_mode=import_mode)
+        )
 
     return render_template(
         'textbook_importer_v2.html',
@@ -890,9 +1150,16 @@ def admin_textbook_importer_v2():
 @login_required
 def importer_status(task_id):
     if task_id not in TASK_QUEUES:
-        flash('找不到此匯入任務或任務已結束。', 'warning')
+        flash('Import completed with warnings. Please review logs.', 'warning')
         return redirect(url_for('core.admin_textbook_importer'))
-    return render_template('importer_status.html', task_id=task_id)
+    import_mode = str(request.args.get('import_mode', 'docx_problems') or 'docx_problems').strip()
+    if import_mode not in ('docx_problems', 'pdf_outline'):
+        import_mode = 'docx_problems'
+    return render_template(
+        'importer_status.html',
+        task_id=task_id,
+        import_mode=import_mode,
+    )
 
 @core_bp.route('/importer/stream/<task_id>')
 @login_required
@@ -916,7 +1183,7 @@ def importer_stream(task_id):
     )
 
 # ==========================================
-# Database Maintenance (?怎雁霅?
+# Database Maintenance (??????
 # ==========================================
 
 @core_bp.route('/db_maintenance', methods=['GET', 'POST'])
@@ -926,11 +1193,11 @@ def db_maintenance():
         if df is None:
             return pd.DataFrame()
 
-        # 撠?NaN/NaT 頧?蝛箏?銝莎??踹?敺?摮葡??憭望?
+        # ??NaN/NaT ?改????????頦??綽??殉??????剜??
         df = df.copy()
         df = df.where(pd.notnull(df), "")
 
-        # object 甈?頧?銝莎?雿???int/float/bool 甈??見
+        # object ????改?????選????int/float/bool ????賹?
         for col in df.columns:
             if str(df[col].dtype) == "object":
                 df[col] = df[col].apply(lambda x: "" if x is None else str(x))
@@ -965,14 +1232,15 @@ def db_maintenance():
             }
         )
         confirm_full_clear = str(request.form.get('confirm_full_clear', '')).strip()
+        core_clear_confirm = str(request.form.get('core_clear_confirm', '')).strip()
 
         if action == 'export_db':
             output = io.BytesIO()
             writer = pd.ExcelWriter(output, engine='xlsxwriter')
-            inspector = db.inspect(db.engine)
+            inspector = inspect(db.engine)
             detected_tables = inspector.get_table_names()
             current_app.logger.info(f"INFO: CORE_TABLES_EXPORT = {list(CORE_TABLES)}")
-            # core 璅∪?撘瑕雿輻?箏??詨?銵剁??踹?鋡?inspector 蝯?閬??葬皜?
+            # core ?????頛魂??蝞??閰??萄???頦???inspector ?荒???穿???謘曇????
             if mode == 'core':
                 export_tables = list(CORE_TABLES)
             else:
@@ -980,18 +1248,18 @@ def db_maintenance():
 
             for table in export_tables:
                 try:
-                    # ? read_sql_table憭望???read_sql_query?銵刻??撣貉◤??頝喲???
+                    # ??? read_sql_table謜??剜???壇???read_sql_query?橫?????萄??謘橫?????謚?????
                     try:
                         df = pd.read_sql_table(table, db.engine)
                     except Exception:
                         try:
                             df = pd.read_sql_query(f"SELECT * FROM {table}", db.engine)
                         except Exception:
-                            # ?喳?靽??詨?銵函?蝛箇 Sheet???賭蜓銵冽?憭晞?
+                            # ????踐???閰??萄???謒?Sheet?橫?????鞈剛??萄??剜???
                             df = pd.DataFrame()
-                            current_app.logger.warning(f"?臬?銵刻??仃???寡撓?箇征??Sheet: {table}")
+                            current_app.logger.warning(f"??穿???萄??謘潔??謅??撖⊥??蝞???Sheet: {table}")
                     df = sanitize_dataframe_for_excel(df)
-                    # ????object 甈?銝剔??批摮???float/bool 甈?閫貊 re.sub ?航炊??
+                    # ?????object ????????對??殉???橫???float/bool ????怨?謒?re.sub ???芰???
                     for col in df.columns:
                         if str(df[col].dtype) == "object":
                             df[col] = df[col].apply(lambda x: re.sub(r'[\x00-\x1f\x7f-\x9f]', '', x))
@@ -1012,27 +1280,73 @@ def db_maintenance():
             return send_file(output, download_name=f"kumon_math_backup_{datetime.now().strftime('%Y%m%d_%H%M')}.xlsx", as_attachment=True)
 
         elif action == 'clear_all_data':
-            inspector = db.inspect(db.engine)
+            inspector = inspect(db.engine)
             all_tables = inspector.get_table_names()
             if mode == 'full':
                 if confirm_full_clear != FULL_CONFIRM_TOKEN:
-                    flash('清空 full 資料前，請輸入確認字串 YES_DELETE_ALL。', 'danger')
+                    flash('Full clear requires confirmation token YES_DELETE_ALL.', 'danger')
                     return redirect(url_for('core.db_maintenance'))
-                clear_tables = list(reversed(db.metadata.sorted_tables))
-                for table in clear_tables:
+                system_tables = {"sqlite_sequence"}
+                clear_tables = [t for t in all_tables if t not in system_tables and not str(t).startswith("sqlite_")]
+                failed_tables = []
+                try:
+                    # SQLite frequently enforces FK ordering; disable checks during full wipe.
+                    db.session.execute(text("PRAGMA foreign_keys = OFF"))
+                    for table_name_to_clear in clear_tables:
+                        try:
+                            db.session.execute(text(f"DELETE FROM \"{table_name_to_clear}\""))
+                            current_app.logger.info(f"INFO: clearing full table {table_name_to_clear}")
+                        except Exception as e:
+                            failed_tables.append((table_name_to_clear, str(e)))
+                            current_app.logger.warning(
+                                f"FULL_CLEAR_FAIL table={table_name_to_clear} error={e}"
+                            )
+                    # Reset autoincrement counters when present.
+                    if "sqlite_sequence" in all_tables:
+                        db.session.execute(text("DELETE FROM sqlite_sequence"))
+                    db.session.commit()
+                except Exception:
+                    db.session.rollback()
+                    raise
+                finally:
                     try:
-                        db.session.execute(text(f"DELETE FROM {table.name}"))
+                        db.session.execute(text("PRAGMA foreign_keys = ON"))
                         db.session.commit()
-                        current_app.logger.info(f"INFO: clearing full table {table.name}")
-                    except Exception as e:
+                    except Exception:
                         db.session.rollback()
-                        current_app.logger.warning(f"清空資料表 {table.name} 失敗，繼續後續處理: {e}")
-                        continue
-                flash('資料庫已完成 full 清除。', 'warning')
+
+                if failed_tables:
+                    failed_names = ", ".join(name for name, _ in failed_tables)
+                    flash(
+                        f"full 清空部分失敗，未清空資料表: {failed_names}。請查看後端 log。",
+                        "danger"
+                    )
+                else:
+                    flash(f"資料庫已完成 full 清空 ({len(clear_tables)} tables)", "warning")
             else:
+                if core_scope_filters.get("scope_mode") != "all":
+                    flash("高職數學 B 硬清除僅支援『全部教材資料』範圍。", "warning")
+                    return render_template(
+                        'db_maintenance.html',
+                        tables=sorted(inspector.get_table_names()),
+                        core_scope_options=core_scope_options,
+                        core_scope_form_state=core_scope_form_state,
+                        core_scope_summary_text=_core_scope_summary(core_scope_filters),
+                        core_clear_confirm_token=CORE_CLEAR_CONFIRM_TOKEN,
+                    )
+                if core_clear_confirm != CORE_CLEAR_CONFIRM_TOKEN:
+                    flash(f"請輸入確認字串 {CORE_CLEAR_CONFIRM_TOKEN} 才能執行清除。", "danger")
+                    return render_template(
+                        'db_maintenance.html',
+                        tables=sorted(inspector.get_table_names()),
+                        core_scope_options=core_scope_options,
+                        core_scope_form_state=core_scope_form_state,
+                        core_scope_summary_text=_core_scope_summary(core_scope_filters),
+                        core_clear_confirm_token=CORE_CLEAR_CONFIRM_TOKEN,
+                    )
                 if core_scope_filters.get("scope_mode") == "filtered" and not _core_scope_has_any_filter(core_scope_filters):
                     flash(
-                        "filtered 模式未選擇任何範圍，已取消清除。若要清空全部教材 core，請明確選擇 all 模式。",
+                        "Filtered mode requires at least one filter; otherwise switch to all scope.",
                         "danger",
                     )
                     return render_template(
@@ -1043,55 +1357,69 @@ def db_maintenance():
                         core_scope_summary_text=_core_scope_summary(core_scope_filters),
                         core_clear_confirm_token=CORE_CLEAR_CONFIRM_TOKEN,
                     )
-                stats = _clear_core_textbook_data(core_scope_filters)
-                flash(
-                    (
-                        "教材 core 清除完成："
-                        f"{_core_scope_summary(core_scope_filters)}, "
-                        f"textbook_examples={stats['deleted_textbook_examples']}, "
-                        f"skill_curriculum={stats['deleted_skill_curriculum']}, "
-                        f"orphan_skills_info={stats['deleted_orphan_skills_info']}, "
-                        f"target_skill_count={stats['target_skill_count']}, "
-                        f"skipped_shared_skill_ids={len(stats['skipped_shared_skill_ids'])}, "
-                        f"preserved_outline_curriculum={stats['preserved_outline_curriculum']}"
-                    ),
-                    'success'
-                )
+                result = _hard_clear_vocational_math_b_core(execute=True)
+                deleted = result.get("deleted", {})
+                remaining = _vocational_math_b_remaining_check()
+                all_clean = all(int(v or 0) == 0 for v in remaining.values())
+                if all_clean:
+                    flash(
+                        "高職數學 B 核心教材資料已清空："
+                        f"textbook_examples={deleted.get('textbook_examples', 0)}, "
+                        f"skills_info={deleted.get('skills_info', 0)}, "
+                        f"skill_curriculum={deleted.get('skill_curriculum', 0)}, "
+                        f"skill_prerequisites={deleted.get('skill_prerequisites', 0)}, "
+                        f"skill_family_bridge={deleted.get('skill_family_bridge', 0)}",
+                        "success",
+                    )
+                else:
+                    flash(f"高職數學 B 清除後仍有殘留：{remaining}", "danger")
         elif action == 'preview_core_clear':
-            if core_scope_filters.get("scope_mode") == "filtered" and not _core_scope_has_any_filter(core_scope_filters):
-                flash(
-                    "filtered 模式未選擇任何範圍，已取消預覽。若要預覽清空全部教材 core，請明確選擇 all 模式。",
-                    "warning",
-                )
+            if core_scope_filters.get("scope_mode") != "all":
+                flash("高職數學 B 硬清除預覽僅支援『全部教材資料』範圍。", "warning")
                 return render_template(
                     'db_maintenance.html',
-                    tables=sorted(db.inspect(db.engine).get_table_names()),
+                    tables=sorted(inspect(db.engine).get_table_names()),
                     core_scope_options=core_scope_options,
                     core_scope_form_state=core_scope_form_state,
                     core_scope_summary_text=_core_scope_summary(core_scope_filters),
                     core_clear_confirm_token=CORE_CLEAR_CONFIRM_TOKEN,
                 )
-            stats = _preview_core_textbook_data(core_scope_filters)
+            if core_scope_filters.get("scope_mode") == "filtered" and not _core_scope_has_any_filter(core_scope_filters):
+                flash(
+                    "Filtered mode requires at least one filter for preview.",
+                    "warning",
+                )
+                return render_template(
+                    'db_maintenance.html',
+                    tables=sorted(inspect(db.engine).get_table_names()),
+                    core_scope_options=core_scope_options,
+                    core_scope_form_state=core_scope_form_state,
+                    core_scope_summary_text=_core_scope_summary(core_scope_filters),
+                    core_clear_confirm_token=CORE_CLEAR_CONFIRM_TOKEN,
+                )
+            result = _hard_clear_vocational_math_b_core(execute=False)
+            deleted = result.get("deleted", {})
+            remaining = _vocational_math_b_remaining_check()
+            all_clean_before = all(int(v or 0) == 0 for v in remaining.values())
             flash(
                 (
-                    "教材 core 刪除前預覽："
-                    f"{_core_scope_summary(core_scope_filters)}, "
-                    f"textbook_examples={stats['deleted_textbook_examples']}, "
-                    f"skill_curriculum={stats['deleted_skill_curriculum']}, "
-                    f"orphan_skills_info={stats['deleted_orphan_skills_info']}, "
-                    f"target_skill_count={stats['target_skill_count']}, "
-                    f"skipped_shared_skill_ids={len(stats['skipped_shared_skill_ids'])}, "
-                    f"preserved_outline_curriculum={stats['preserved_outline_curriculum']}"
+                    "高職數學 B 硬清除預覽："
+                    f"textbook_examples={deleted.get('textbook_examples', 0)}, "
+                    f"skills_info={deleted.get('skills_info', 0)}, "
+                    f"skill_curriculum={deleted.get('skill_curriculum', 0)}, "
+                    f"skill_prerequisites={deleted.get('skill_prerequisites', 0)}, "
+                    f"skill_family_bridge={deleted.get('skill_family_bridge', 0)}, "
+                    f"all_clean_before={str(all_clean_before).lower()}"
                 ),
                 'warning'
             )
             return render_template(
                 'db_maintenance.html',
-                tables=sorted(db.inspect(db.engine).get_table_names()),
+                tables=sorted(inspect(db.engine).get_table_names()),
                 core_scope_options=core_scope_options,
                 core_scope_form_state=core_scope_form_state,
                 core_scope_summary_text=_core_scope_summary(core_scope_filters),
-                core_preview_stats=stats,
+                core_preview_stats=deleted,
                 core_clear_confirm_token=CORE_CLEAR_CONFIRM_TOKEN,
             )
 
@@ -1119,22 +1447,22 @@ def db_maintenance():
                         success_count += 1
                     except: error_count += 1
             db.session.commit()
-            flash(f'批次匯入完成：成功 {success_count}，失敗 {error_count}。', 'success')
+            flash(f'Batch import completed. success={success_count}, error={error_count}', 'success')
         
         elif table_name and action == 'clear_data':
              try:
                  db.session.execute(text(f"DELETE FROM {table_name}"))
                  db.session.commit()
-                 flash(f'資料表 {table_name} 已清空。', 'success')
+                 flash(f'Table {table_name} cleared.', 'success')
              except Exception as e:
                  db.session.rollback()
-                 flash(f'?航炊: {e}', 'danger')
+                 flash(f'??芰?: {e}', 'danger')
 
         return redirect(url_for('core.db_maintenance'))
 
     return render_template(
         'db_maintenance.html',
-        tables=sorted(db.inspect(db.engine).get_table_names()),
+        tables=sorted(inspect(db.engine).get_table_names()),
         core_scope_options=core_scope_options,
         core_scope_form_state=core_scope_form_state,
         core_scope_summary_text=_core_scope_summary(_normalize_core_scope_filters(core_scope_form_state)),
@@ -1155,20 +1483,74 @@ def db_maintenance_core_scope_options():
     }
     return jsonify(_collect_core_scope_options(filters))
 
+
+@core_bp.route('/admin/maintenance/clear_vocational_math_core', methods=['POST'])
+@login_required
+def clear_vocational_math_core():
+    if not _is_admin_or_teacher():
+        return jsonify({"ok": False, "error": "forbidden"}), 403
+
+    payload = request.get_json(silent=True) or request.form
+    mode = str((payload or {}).get("mode", "dry_run")).strip().lower()
+    if mode not in ("dry_run", "execute"):
+        mode = "dry_run"
+
+    confirm_token = str((payload or {}).get("confirm_token", "") or "").strip()
+    if mode == "execute" and confirm_token != VOCATIONAL_MATH_B_CONFIRM_TOKEN:
+        return jsonify(
+            {
+                "ok": False,
+                "mode": mode,
+                "error": "invalid_confirm_token",
+                "required_confirm_token": VOCATIONAL_MATH_B_CONFIRM_TOKEN,
+            }
+        ), 400
+
+    cleanup_result = _hard_clear_vocational_math_b_core(execute=(mode == "execute"))
+    remaining = _vocational_math_b_remaining_check()
+    all_clean = all(int(v or 0) == 0 for v in remaining.values())
+    return jsonify(
+        {
+            "ok": True,
+            "mode": mode,
+            "deleted": cleanup_result["deleted"],
+            "remaining_check": remaining,
+            "planned_tables": cleanup_result["plan"],
+            "missing_columns": cleanup_result["missing_columns"],
+            "confirm_token_required": VOCATIONAL_MATH_B_CONFIRM_TOKEN,
+            "all_clean": all_clean,
+        }
+    )
+
+
+@core_bp.route('/admin/maintenance/verify_vocational_math_clean', methods=['GET'])
+@login_required
+def verify_vocational_math_clean():
+    if not _is_admin_or_teacher():
+        return jsonify({"ok": False, "error": "forbidden"}), 403
+    checks = _vocational_math_b_remaining_check()
+    return jsonify(
+        {
+            "ok": True,
+            "all_zero": all(int(v or 0) == 0 for v in checks.values()),
+            "remaining_check": checks,
+        }
+    )
+
 @core_bp.route('/upload_db', methods=['POST'])
 @login_required
 def upload_db():
     if not (current_user.is_admin or current_user.role == 'teacher'):
-        flash('甈?銝雲', 'danger')
+        flash('Permission denied', 'danger')
         return redirect(url_for('core.db_maintenance'))
 
     if 'file' not in request.files:
-        flash('瘝?瑼?', 'danger')
+        flash('????澗??', 'danger')
         return redirect(url_for('core.db_maintenance'))
     
     file = request.files['file']
     if file.filename == '':
-        flash('請先選擇要上傳的檔案。', 'danger')
+        flash('Please select a file to upload.', 'danger')
         return redirect(url_for('core.db_maintenance'))
     
     if file and (file.filename.endswith('.xlsx')):
@@ -1191,21 +1573,21 @@ def upload_db():
             else:
                 flash(message, 'danger')
         except Exception as e:
-            flash(f'???航炊: {str(e)}', 'danger')
+            flash(f'?????芰?: {str(e)}', 'danger')
             
         if os.path.exists(filepath):
             os.remove(filepath)
             
         return redirect(url_for('core.db_maintenance'))
     else:
-        flash('?澆??航炊?銝 .xlsx', 'danger')
+        flash('?瞉???芰?????蹌?.xlsx', 'danger')
         return redirect(url_for('core.db_maintenance'))
 
 @core_bp.route('/admin/import_textbook_examples', methods=['POST'])
 @login_required
 def import_textbook_examples():
     if not (current_user.is_admin or current_user.role == "teacher"):
-        flash('甈?銝雲', 'danger')
+        flash('Permission denied', 'danger')
         return redirect(url_for('core.db_maintenance'))
     
     if 'file' not in request.files: return redirect(url_for('core.db_maintenance'))
@@ -1233,12 +1615,12 @@ def import_textbook_examples():
             if success: flash(Markup(message.replace('\n', '<br>')), 'success')
             else: flash(message, 'danger')
         except Exception as e:
-            flash(f'?臬憭望?: {str(e)}', 'error')
+            flash(f'??穿?剜??: {str(e)}', 'error')
             
     return redirect(url_for('core.db_maintenance'))
 
 # ==========================================
-# Curriculum Management (隤脩?蝬梯?蝞∠?)
+# Curriculum Management (?方??祆０????)
 # ==========================================
 
 @core_bp.route('/curriculum', methods=['GET', 'POST'])
@@ -1262,16 +1644,16 @@ def admin_curriculum():
             )
             db.session.add(new_curr)
             db.session.commit()
-            flash('?啣???', 'success')
+            flash('??????', 'success')
         except Exception as e:
             db.session.rollback()
-            flash(f'?啣?憭望?: {str(e)}', 'error')
+            flash(f'????剜??: {str(e)}', 'error')
         return redirect(url_for('core.admin_curriculum'))
 
-    # 銝銵誨澆?隞????50 銵???????園?頛荔?
+    # ??蛛隤冽???????50 ?蛛?????????????
     selected, filters_data = handle_curriculum_filters(request)
     
-    # 銝餅閰Ｖ蝙??selected ?脰??蕪
+    # ??貔嚗嗉???selected ?????
     query = SkillCurriculum.query.join(SkillInfo)
     if selected['f_curriculum'] != 'all': 
         query = query.filter(SkillCurriculum.curriculum == selected['f_curriculum'])
@@ -1291,10 +1673,10 @@ def admin_curriculum():
     items = query.order_by(SkillCurriculum.grade, SkillCurriculum.volume, SkillCurriculum.display_order).limit(200).all()
 
     curriculum_map = {
-        'junior_high': '國中',
-        'general': '普通高中',
-        'technical': '技高',
-        'elementary': '國小',
+        'junior_high': 'junior_high',
+        'general': 'general',
+        'technical': 'technical',
+        'elementary': 'elementary',
     }
     grade_map = {str(g): str(g) for g in filters_data['grades']}
 
@@ -1322,10 +1704,10 @@ def admin_edit_curriculum(id):
         curr.display_order = request.form.get('display_order')
         curr.difficulty_level = request.form.get('difficulty_level')
         db.session.commit()
-        flash('?湔??', 'success')
+        flash('?皝????', 'success')
     except Exception as e:
         db.session.rollback()
-        flash(f'?湔憭望?: {e}', 'error')
+        flash(f'?皝??剜??: {e}', 'error')
     return redirect(url_for('core.admin_curriculum'))
 
 @core_bp.route('/curriculum/delete/<int:id>', methods=['POST'])
@@ -1342,7 +1724,7 @@ def admin_delete_curriculum(id):
         return jsonify({'success': False}), 500
 
 # ==========================================
-# Skills Management (??賜恣??
+# Skills Management (???鞈??
 # ==========================================
 
 @core_bp.route('/skills')
@@ -1351,22 +1733,22 @@ def admin_skills():
     if not (current_user.is_admin or current_user.role == 'teacher'):
         return redirect(url_for('dashboard'))
 
-    # 隤輻 V2.0 撌亙??鈭惜???
+    # ?方撒??V2.0 ????謘??叟??????
     selected, filters_data = handle_curriculum_filters(request)
     
-    # 撱箇? JOIN ?亥岷
+    # ?梁?? JOIN ?鈭亙眺
     query = db.session.query(SkillInfo).join(SkillCurriculum)
     
-    # --- 鋆????瞈暹?隞?---
+    # --- ?乾??????????---
     if selected['f_curriculum'] != 'all': 
         query = query.filter(SkillCurriculum.curriculum == selected['f_curriculum'])
     if selected['f_grade'] != 'all' and str(selected['f_grade']).isdigit(): 
         query = query.filter(SkillCurriculum.grade == int(selected['f_grade']))
     if selected['f_volume'] != 'all':
         query = query.filter(SkillCurriculum.volume == selected['f_volume'])
-    if selected['f_chapter'] != 'all': # 鋆?
+    if selected['f_chapter'] != 'all': # ?乾?謕?
         query = query.filter(SkillCurriculum.chapter == selected['f_chapter'])
-    if selected['f_section'] != 'all': # 鋆?
+    if selected['f_section'] != 'all': # ?乾?謕?
         query = query.filter(SkillCurriculum.section == selected['f_section'])
     
     skills = query.distinct().order_by(SkillInfo.skill_id).all()
@@ -1376,7 +1758,7 @@ def admin_skills():
                            filters=filters_data,
                            selected_filters=selected,
                            grade_map={str(g):str(g) for g in filters_data['grades']},
-                           curriculum_map={'junior_high': '?葉', 'general': '?桅?'},
+                           curriculum_map={'junior_high': '???', 'general': '?獢?'},
                            username=current_user.username)
 
 @core_bp.route('/skills/add', methods=['POST'])
@@ -1384,7 +1766,7 @@ def admin_skills():
 def admin_add_skill():
     data = request.form
     if db.session.get(SkillInfo, data['skill_id']):
-        flash('技能 ID 已存在。', 'danger')
+        flash('Invalid skill ID.', 'danger')
         return redirect(url_for('core.admin_skills'))
     try:
         new_skill = SkillInfo(
@@ -1401,9 +1783,9 @@ def admin_add_skill():
         )
         db.session.add(new_skill)
         db.session.commit()
-        flash('?啣???', 'success')
+        flash('??????', 'success')
     except Exception as e:
-        flash(f'?航炊: {e}', 'danger')
+        flash(f'??芰?: {e}', 'danger')
     return redirect(url_for('core.admin_skills'))
 
 @core_bp.route('/skills/edit/<skill_id>', methods=['POST'])
@@ -1424,9 +1806,9 @@ def admin_edit_skill(skill_id):
         skill.suggested_prompt_2 = data.get('suggested_prompt_2', '')
         skill.suggested_prompt_3 = data.get('suggested_prompt_3', '')
         db.session.commit()
-        flash('?湔??', 'success')
+        flash('?皝????', 'success')
     except Exception as e:
-        flash(f'?航炊: {e}', 'danger')
+        flash(f'??芰?: {e}', 'danger')
     return redirect(url_for('core.admin_skills'))
 
 @core_bp.route('/skills/delete/<skill_id>', methods=['POST'])
@@ -1436,10 +1818,10 @@ def admin_delete_skill(skill_id):
     try:
         db.session.delete(skill)
         db.session.commit()
-        flash('?芷??', 'success')
+        flash('??畸????', 'success')
     except Exception as e:
         db.session.rollback()
-        flash(f'?芷憭望? (?航???航???: {e}', 'danger')
+        flash(f'??畸??剜?? (??迎?????????: {e}', 'danger')
     return redirect(url_for('core.admin_skills'))
 
 
@@ -1449,7 +1831,7 @@ def admin_toggle_skill(skill_id):
     skill = db.get_or_404(SkillInfo, skill_id)
     skill.is_active = not skill.is_active
     db.session.commit()
-    flash(f'??賢歇{"?" if skill.is_active else "?"}', 'success')
+    flash(f'???鞈Ｘ?{"?賹?" if skill.is_active else "?謚秋?"}', 'success')
     return redirect(url_for('core.admin_skills'))
 
 @core_bp.route('/skills/<skill_id>/regenerate', methods=['POST'])
@@ -1457,10 +1839,10 @@ def admin_toggle_skill(skill_id):
 def admin_regenerate_skill_code(skill_id):
     try:
         from core.code_generator import auto_generate_skill_code
-        # [靽格] 敺??啣暺?撱箸?撥?嗅??ArchitectⅡ靽蝙?冽???Prompt
+        # [?賣? ?綜竣??????綜筐??梁捂??箸?????Architect?潑?踐???????Prompt
         result = auto_generate_skill_code(skill_id, queue=None, force_architect_refresh=True)
         success = result[0] if isinstance(result, tuple) else result
-        return jsonify({"success": success, "message": "????" if success else "憭望?"})
+        return jsonify({"success": success, "message": "?賹????" if success else "?剜??"})
     except Exception as e:
         return jsonify({"success": False, "message": str(e)}), 500
 
@@ -1490,19 +1872,19 @@ def admin_get_skill_details(skill_id):
 @login_required
 def admin_promote_question():
     if not (current_user.is_admin or current_user.role == 'teacher'):
-        return jsonify({'success': False, 'message': '甈?銝雲'}), 403
+        return jsonify({'success': False, 'message': 'Permission denied'}), 403
 
     try:
         data = request.get_json()
         question_id = data.get('question_id')
         skill_id = data.get('skill_id')
 
-        # 1. ?交銝閮?
+        # 1. ?鈭歹??蹌阡謢?
         upload_entry = db.session.get(StudentUploadedQuestion, question_id)
         if not upload_entry:
-            return jsonify({'success': False, 'message': '找不到指定上傳題目'}), 404
+            return jsonify({'success': False, 'message': 'Target skill not found'}), 404
 
-        # 2. 撱箇??唬?憿?
+        # 2. ?梁???????
         new_example = TextbookExample(
             skill_id=skill_id,
             source_curriculum="StudentUpload",
@@ -1516,13 +1898,13 @@ def admin_promote_question():
         )
         db.session.add(new_example)
 
-        # 3. ?湔???
+        # 3. ?皝?????
         upload_entry.status = 'approved'
         upload_entry.predicted_skill_id = skill_id
 
         db.session.commit()
 
-        # 4. 閫貊????
+        # 4. ?怨?謒?????
         try:
             # [STEP 1] Force Architect to re-analyze examples and update SkillInfo.gemini_prompt
             print(f"Triggering Architect for {skill_id}...")
@@ -1537,14 +1919,14 @@ def admin_promote_question():
             print(f"Auto-generate failed: {e}") 
             # We don't fail the promotion if generation fails, just log it.
 
-        return jsonify({'success': True, 'message': '已成功加入教材範例並觸發程式碼產生。'})
+        return jsonify({'success': True, 'message': 'Prerequisites updated successfully'})
 
     except Exception as e:
         db.session.rollback()
         return jsonify({'success': False, 'message': str(e)}), 500
 
 # ==========================================
-# Examples Management (靘?蝞∠?)
+# Examples Management (?????)
 # ==========================================
 
 @core_bp.route('/examples', methods=['GET'])
@@ -1553,12 +1935,12 @@ def admin_examples():
     if not (current_user.is_admin or current_user.role == 'teacher'):
         return redirect(url_for('dashboard'))
     
-    # 隤輻 V2.0 撌亙
+    # ?方撒??V2.0 ????
     selected, filters_data = handle_curriculum_filters(request)
     page = request.args.get('page', 1, type=int)
     
-    # 撱箇??? SkillCurriculum ?閰Ｖ誑?脰??蕪
-    query = db.session.query(TextbookExample).join(SkillInfo).join(SkillCurriculum)
+    # ?梁??????SkillCurriculum ????堆撰隤?????
+    query = db.session.query(TextbookExample).outerjoin(SkillInfo, TextbookExample.skill_id == SkillInfo.skill_id).join(SkillCurriculum, TextbookExample.skill_id == SkillCurriculum.skill_id)
     
     if selected['f_curriculum'] != 'all': 
         query = query.filter(SkillCurriculum.curriculum == selected['f_curriculum'])
@@ -1626,7 +2008,7 @@ def admin_examples():
                            filters=filters_data,
                            selected_filters=selected,
                            page_formula_stats=page_formula_stats,
-                           curriculum_map={'junior_high': '?葉', 'general': '?桅?'},
+                           curriculum_map={'junior_high': '???', 'general': '?獢?'},
                            grade_map={str(g):str(g) for g in filters_data['grades']}, 
                            skills=SkillInfo.query.all(), 
                            username=current_user.username)
@@ -1644,9 +2026,9 @@ def admin_add_example():
         )
         db.session.add(new_ex)
         db.session.commit()
-        flash('靘??啣???', 'success')
+        flash('????????', 'success')
     except Exception as e:
-        flash(f'?啣?憭望?: {e}', 'danger')
+        flash(f'????剜??: {e}', 'danger')
     return redirect(url_for('core.admin_examples'))
 
 @core_bp.route('/examples/delete/<int:example_id>', methods=['POST'])
@@ -1656,18 +2038,18 @@ def admin_delete_example(example_id):
     if ex:
         db.session.delete(ex)
         db.session.commit()
-        flash('?芷??', 'success')
+        flash('??畸????', 'success')
     return redirect(url_for('core.admin_examples'))
 
 @core_bp.route('/examples/<int:example_id>/details', methods=['GET'])
 @login_required
 def admin_get_example_details(example_id):
     if not (current_user.is_admin or current_user.role == 'teacher'):
-        return jsonify({'success': False, 'message': '甈?銝雲'}), 403
+        return jsonify({'success': False, 'message': 'Permission denied'}), 403
     try:
         ex = db.session.get(TextbookExample, example_id)
         if not ex:
-            return jsonify({'success': False, 'message': '找不到教材範例'}), 404
+            return jsonify({'success': False, 'message': 'Target unit not found'}), 404
         return jsonify({
             'success': True,
             'data': {
@@ -1687,7 +2069,7 @@ def admin_get_example_details(example_id):
 @login_required
 def admin_edit_example(example_id):
     if not (current_user.is_admin or current_user.role == 'teacher'):
-        flash('甈?銝雲', 'error')
+        flash('Permission denied', 'error')
         return redirect(url_for('core.admin_examples'))
     try:
         ex = db.session.get(TextbookExample, example_id)
@@ -1698,13 +2080,13 @@ def admin_edit_example(example_id):
             ex.detailed_solution = request.form.get('detailed_solution', '')
             ex.difficulty_level = int(request.form.get('difficulty_level', 1))
             db.session.commit()
-            flash('?湔??', 'success')
+            flash('?皝????', 'success')
     except Exception as e:
-        flash(f'?湔憭望?: {e}', 'danger')
+        flash(f'?皝??剜??: {e}', 'danger')
     return redirect(url_for('core.admin_examples'))
 
 # ==========================================
-# Prompt Management (Prompt 閮剖?)
+# Prompt Management (Prompt ?桀??)
 # ==========================================
 
 @core_bp.route('/api/skills/<skill_id>/prompts', methods=['GET'])
@@ -1746,36 +2128,36 @@ def api_delete_skill_prompt(prompt_id):
         if prompt:
             db.session.delete(prompt)
             db.session.commit()
-        return jsonify({'success': True, 'message': '?芷??'})
+        return jsonify({'success': True, 'message': '??畸????'})
     except Exception as e:
         db.session.rollback()
         return jsonify({'success': False, 'message': str(e)}), 500
 
 # --------------------------------------------------------
-# ?隞乩?蝔?潭??api_delete_skill_prompt 銋?
+# ???鼎????瞏叟???api_delete_skill_prompt ???
 # --------------------------------------------------------
 
 # ==========================================
-# Prerequisites Management (?蔭??賜恣??
+# Prerequisites Management (?????鞈??
 # ==========================================
 
 @core_bp.route('/admin/prerequisites')
 @login_required
 def admin_prerequisites():
     if not (current_user.is_admin or current_user.role == "teacher"):
-        flash('甈?銝雲', 'error')
+        flash('Permission denied', 'error')
         return redirect(url_for('dashboard'))
     
-    # --- A. ?澆 V2.0 璅∠??極??---
-    # 甇文撘??芸??? Session 閮?RL ??????詨?Ｙ?
+    # --- A. ?瞉 V2.0 ????謘潭扔??---
+    # ?????????? Session ?殉朵??蹍L ??塗?蹓?????閰制??嚗?
     selected, filters_data = handle_curriculum_filters(request)
     
-    # --- B. 撱箇??蕪?亥岷 ---
+    # --- B. ?梁?????鈭亙眺 ---
     query = db.session.query(SkillInfo, SkillCurriculum).join(
         SkillCurriculum, SkillInfo.skill_id == SkillCurriculum.skill_id
     ).filter(SkillInfo.is_active.is_(True))
     
-    # --- 鋆????瞈暹?隞?---
+    # --- ?乾??????????---
     if selected['f_curriculum'] != 'all': 
         query = query.filter(SkillCurriculum.curriculum == selected['f_curriculum'])
     if selected['f_grade'] != 'all' and str(selected['f_grade']).isdigit(): 
@@ -1784,12 +2166,12 @@ def admin_prerequisites():
         query = query.filter(SkillCurriculum.volume == selected['f_volume'])
     if selected['f_chapter'] != 'all': 
         query = query.filter(SkillCurriculum.chapter == selected['f_chapter'])
-    if selected['f_section'] != 'all': # 鋆?
+    if selected['f_section'] != 'all': # ?乾?謕?
         query = query.filter(SkillCurriculum.section == selected['f_section'])
     
     results = query.order_by(SkillCurriculum.display_order).all()
     
-    # (銝剝??? skills_list ?摩銝?...)
+    # (?????? skills_list ??湔???...)
     skills_list = []
     seen_skill_ids = set()
     for skill_info, skill_curriculum in results:
@@ -1801,12 +2183,12 @@ def admin_prerequisites():
         skill_info.prereq_count = len(skill_info.prerequisites)
         skills_list.append(skill_info)
 
-    # --- C. ?喲???隞嗡??渡?霈?迂 ---
+    # --- C. ?????????皜??????? ---
     return render_template('admin_prerequisites.html',
                            skills=skills_list,
-                           filters=filters_data,             # 蝯曹??迂
-                           selected_filters=selected,        # 閫?捱 UndefinedError
-                           curriculum_map={'junior_high': '?葉', 'general': '?桅?'},
+                           filters=filters_data,             # ?舀????
+                           selected_filters=selected,        # ????UndefinedError
+                           curriculum_map={'junior_high': '???', 'general': '?獢?'},
                            grade_map={str(g):str(g) for g in filters_data['grades']},
                            username=current_user.username)
 
@@ -1815,7 +2197,7 @@ def admin_prerequisites():
 def api_get_prerequisites(skill_id):
     try:
         skill = db.session.get(SkillInfo, skill_id)
-        if not skill: return jsonify({"success": False, "message": "??賭?摮"}), 404
+        if not skill: return jsonify({"success": False, "message": "Skill not found"}), 404
         data = [{'skill_id': p.skill_id, 'skill_ch_name': p.skill_ch_name} for p in skill.prerequisites]
         return jsonify({"success": True, "data": data})
     except Exception as e:
@@ -1831,8 +2213,8 @@ def api_add_prerequisite(skill_id):
         target = db.session.get(SkillInfo, skill_id)
         prereq = db.session.get(SkillInfo, prereq_id)
         
-        if not target or not prereq: return jsonify({"success": False, "message": "??賭?摮"}), 404
-        if skill_id == prereq_id: return jsonify({"success": False, "message": "銝?訾??芸楛"}), 400
+        if not target or not prereq: return jsonify({"success": False, "message": "Skill not found"}), 404
+        if skill_id == prereq_id: return jsonify({"success": False, "message": "????閮???豢?"}), 400
         
         if prereq not in target.prerequisites:
             target.prerequisites.append(prereq)
@@ -1879,11 +2261,11 @@ def api_search_skills():
 @login_required
 def init_db_route():
     try:
-        # 雿輻 models ?抒? init_db
+        # ?輯撒??models ??? init_db
         init_db(db.engine)
-        flash('?怠?憪???', 'success')
+        flash('?????迎?????', 'success')
     except Exception as e:
-        flash(f'???仃?? {e}', 'error')
+        flash(f'?豲??謘潔??? {e}', 'error')
     return redirect(url_for('core.db_maintenance'))
 
 @core_bp.route('/admin/import_skills', methods=['POST'])
@@ -1893,7 +2275,7 @@ def import_skills():
     try:
         from core.data_importer import import_skills_from_json
         count = import_skills_from_json()
-        return jsonify({"success": True, "message": f"成功匯入 {count} 筆技能資料"})
+        return jsonify({"success": True, "message": f"Imported {count} skills."})
     except Exception as e:
         return jsonify({"success": False, "message": str(e)}), 500
 
@@ -1904,12 +2286,12 @@ def import_curriculum():
     try:
         from core.data_importer import import_curriculum_from_json
         count = import_curriculum_from_json()
-        return jsonify({"success": True, "message": f"成功匯入 {count} 筆課綱資料"})
+        return jsonify({"success": True, "message": f"Imported {count} curriculum rows."})
     except Exception as e:
         return jsonify({"success": False, "message": str(e)}), 500
 
 # ==========================================
-# Dropdown APIs (銝??詨???)
+# Dropdown APIs (????閰制????)
 # ==========================================
 
 @core_bp.route('/api/get_grades')
@@ -1973,7 +2355,7 @@ def api_get_sections():
     sections = [row[0] for row in query.all()]
     return jsonify(sections)
 
-# API: 瑼Ｘ撟賡???賣?獢?
+# API: ?潘撓貔?鞈????鞈???
 @core_bp.route('/api/check_ghost_skills', methods=['GET'])
 @login_required
 def api_check_ghost_skills():
@@ -1990,7 +2372,7 @@ def api_check_ghost_skills():
         return jsonify({'error': str(e)}), 500
 
 # ==========================================
-# AI Prompt Settings (?典? AI Prompt ?閮剖?)
+# AI Prompt Settings (??? AI Prompt ??塗?桀??)
 # ==========================================
 
 @core_bp.route('/admin/ai_prompt_settings')
@@ -2296,14 +2678,14 @@ def _validate_existing_prompt_key(prompt_key: str):
     template = PromptTemplate.query.filter_by(prompt_key=prompt_key).first()
     if template:
         return template, None
-    # ?迂?AML ?B 撠撱箇????桃??郊?湔
+    # ?蹓曇???ML ??¯蹎劉 ?垮謓舀蝞?????獢???駁??皝?
     try:
         diff = compare_prompt_db_vs_yaml(prompt_key)
         if diff.get("yaml_exists"):
             return None, None
     except Exception:
         pass
-    return None, (jsonify({'success': False, 'message': f'找不到 prompt_key: {prompt_key}'}), 404)
+    return None, (jsonify({'success': False, 'message': f'?曆???prompt_key: {prompt_key}'}), 404)
 
 
 @core_bp.route('/admin/ai_prompt_settings/publish_to_yaml', methods=['POST'])
@@ -2359,7 +2741,7 @@ def ai_prompt_version_check():
     except PromptSyncError as e:
         return jsonify({'success': False, 'message': str(e)}), 500
     except FileNotFoundError:
-        # YAML 瑼?摮????200?? yaml_exists=False
+        # YAML ?澗???殉朱謓?蹇???200???豯止鼓 yaml_exists=False
         return jsonify({
             'success': True,
             'prompt_key': prompt_key,
