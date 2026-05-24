@@ -40,7 +40,10 @@ from core.services.prompt_sync_service import (
 from . import core_bp
 from core.globals import TASK_QUEUES
 from core import textbook_processor
-from core.textbook_filename_parser import parse_textbook_filename_metadata
+from core.textbook_filename_parser import (
+    parse_textbook_filename_metadata,
+    resolve_upload_filenames,
+)
 from core.textbook_structure_parser import get_structure_map
 from core.ai_wrapper import resolve_gemini_api_key, mask_api_key
 from core.utils import handle_curriculum_filters
@@ -987,7 +990,10 @@ def background_processing_v2(file_path, task_queue, app_context, curriculum_info
                     f"inserted={result.get('inserted', 0)} "
                     f"updated={result.get('updated', 0)} "
                     f"total={result.get('total', 0)} "
-                    f"blocks={result.get('blocks', 0)}"
+                    f"blocks={result.get('blocks', 0)} "
+                    f"self_assessment={result.get('self_assessment_imported', 0)} "
+                    f"skills=0 curriculums=0 "
+                    f"needs_review={result.get('needs_review', 0)}"
                 )
             else:
                 task_queue.put(f"ERROR: [antigravity] DOCX 題目匯入失敗：{result.get('error', 'unknown')}")
@@ -1080,11 +1086,43 @@ def admin_textbook_importer_v2():
 
         upload_dir = os.path.join(current_app.root_path, 'uploads')
         os.makedirs(upload_dir, exist_ok=True)
-        saved_path = os.path.join(upload_dir, secure_filename(os.path.basename(upload_file.filename)))
-        upload_file.save(saved_path)
+        original_filename = str(upload_file.filename or "").strip()
+        _, ext = os.path.splitext(original_filename.lower())
+        if import_mode == 'pdf_outline':
+            if ext != '.pdf':
+                if '.pdf' in original_filename.lower():
+                    ext = '.pdf'
+                else:
+                    flash(
+                        '錯誤：解析大綱樹模式 (pdf_outline) 必須上傳真實的 PDF 檔案。',
+                        'danger',
+                    )
+                    return redirect(url_for('core.admin_textbook_importer_v2'))
+        elif ext != '.docx':
+            ext = '.docx'
 
-        filename_meta = parse_textbook_filename_metadata(os.path.basename(saved_path))
+        saved_filename = f"{uuid.uuid4().hex}{ext}"
+        saved_path = os.path.join(upload_dir, saved_filename)
+        upload_file.save(saved_path)
+        current_app.logger.info(
+            f"[UPLOAD_SAVE] import_mode={import_mode!r} ext={ext!r} saved_path={saved_path!r}"
+        )
+
+        upload_names = resolve_upload_filenames(original_filename, saved_filename)
+        current_app.logger.info(
+            f"[UPLOAD_FILENAME] original_filename={upload_names['original_filename']}"
+        )
+        current_app.logger.info(
+            f"[UPLOAD_FILENAME] saved_filename={upload_names['saved_filename']}"
+        )
+        current_app.logger.info(
+            f"[UPLOAD_FILENAME] parse_filename={upload_names['parse_filename']}"
+        )
+
+        filename_meta = parse_textbook_filename_metadata(upload_names['parse_filename'])
         section_code = str((filename_meta or {}).get('section_code') or '').strip()
+        if str((filename_meta or {}).get('source_scope') or '') == 'chapter_self_assessment':
+            section_code = ''
 
         try:
             grade_val = int(request.form.get('grade', 10))
@@ -1098,6 +1136,11 @@ def admin_textbook_importer_v2():
             'volume': request.form.get('volume', '數學B1') or '數學B1',
             'section_code': section_code,
             'import_mode': import_mode,
+            'original_filename': upload_names['original_filename'],
+            'saved_filename': upload_names['saved_filename'],
+            'parse_filename': upload_names['parse_filename'],
+            'chapter_index': (filename_meta or {}).get('chapter_index'),
+            'source_scope': (filename_meta or {}).get('source_scope'),
         }
 
         task_id = str(uuid.uuid4())
@@ -1123,7 +1166,7 @@ def admin_textbook_importer_v2():
             apply_mathb_import_policy(
                 curriculum_info,
                 {},
-                filenames=[os.path.basename(saved_path)],
+                filenames=[upload_names['parse_filename']],
                 logger=current_app.logger,
             )
             skip_code_gen = request.form.get('skip_code_gen') == 'on'

@@ -64,7 +64,10 @@ from core.question_image_assets import (
     question_needs_image,
     render_pdf_page_to_image,
 )
-from core.textbook_filename_parser import parse_textbook_filename_metadata
+from core.textbook_filename_parser import (
+    parse_textbook_filename_metadata,
+    resolve_parse_filename_for_import,
+)
 from core.textbook_structure_parser import get_structure_map
 from core.utils import normalize_vocational_math_skill_id
 
@@ -5352,7 +5355,8 @@ def save_to_database(
     records_with_latex, records_with_placeholder = _count_latex_and_placeholder_records(parsed_data)
     
     # [NEW] 檢驗章節數量與頁數限制
-    filename_meta = parse_textbook_filename_metadata(source_file_path) if source_file_path else {}
+    parse_name = resolve_parse_filename_for_import(source_file_path or "", curriculum_info)
+    filename_meta = parse_textbook_filename_metadata(parse_name) if parse_name else {}
     
     # [NEW] 教材結構大綱對齊
     structure_meta = None
@@ -5373,7 +5377,9 @@ def save_to_database(
         current_app.logger.info(f"[FILENAME_META] parsed: {filename_meta}")
 
     import_scope = str((filename_meta or {}).get("source_scope") or "section_textbook").strip()
-    if (
+    if import_scope in ("chapter_self_assessment", "chapter_review"):
+        import_scope = "chapter_self_assessment"
+    elif (
         import_scope != "section_textbook"
         and (_DOCX_IMPORT_CONTEXT or {}).get("chapter_self_assessment_mode")
     ):

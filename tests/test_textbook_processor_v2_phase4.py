@@ -71,8 +71,17 @@ def test_extract_section_code_from_section_title():
 
 
 def test_mathb1_chapter_title_force():
-    forced = _force_mathb1_chapter_title("第一章 自我評量", enabled=True)
+    from core.textbook_processor_v2 import _force_mathb_chapter_title_if_section_matches
+
+    forced = _force_mathb_chapter_title_if_section_matches(
+        "第一章 坐標系與函數圖形",
+        "1-1",
+    )
     assert forced == MATHB1_CHAPTER1_CANONICAL_TITLE
+    assert (
+        _force_mathb_chapter_title_if_section_matches("2 直線方程式", "2-1")
+        == "2 直線方程式"
+    )
     assert _force_mathb1_chapter_title("自我評量", enabled=False) == "自我評量"
 
 
@@ -385,10 +394,15 @@ def test_phase3_merge_metadata_trees():
     assert "隨堂練習11" in titles
 
 
-def test_resolve_authoritative_section_code_prefers_filename():
+def test_resolve_authoritative_section_code_form_is_last_fallback():
     from core.textbook_processor_v2 import _resolve_authoritative_section_code
 
-    info = {"section_code": "1-1", "volume": "數學B1"}
+    info = {
+        "section_code": "1-4",
+        "form_section_code": "1-4",
+        "volume": "數學B1",
+        "source_scope": "section_textbook",
+    }
     assert (
         _resolve_authoritative_section_code(
             info,
@@ -396,7 +410,16 @@ def test_resolve_authoritative_section_code_prefers_filename():
             gemini_section_code="1-3",
             title="5 解不等式",
         )
-        == "1-1"
+        == "1-3"
+    )
+    assert (
+        _resolve_authoritative_section_code(
+            info,
+            matched_key="隨堂練習5",
+            gemini_section_code="",
+            title="5 解不等式",
+        )
+        == "1-4"
     )
 
 
