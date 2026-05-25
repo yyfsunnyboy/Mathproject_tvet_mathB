@@ -1,15 +1,11 @@
-from __future__ import annotations
+﻿from __future__ import annotations
 
 import importlib.util
-import json
 import re
 from pathlib import Path
 from typing import Any
 
 REGISTRY_PATH = Path("configs/generated_registry/b1_section_1_1_verified_registry.v0.1.yaml")
-PROBLEM_TYPES_PATH = Path(
-    "agent_skills_v2/vocational_math_b1/chapter_1/section_1_1_number_line_absolute_value/problem_types.yaml"
-)
 GENERATED_BASE = Path("generated_candidates/vocational_math_b1/section_1_1")
 REQUIRED_KEYS = {
     "problem_type_id",
@@ -22,9 +18,10 @@ REQUIRED_KEYS = {
     "metadata",
 }
 NOT_ENABLED_MESSAGE = "此技能尚未開放自動出題"
+_LAST_INDEX_BY_SKILL: dict[str, int] = {}
 
 
-def _read_registry_verified_problem_types() -> list[str]:
+def _read_registry_verified_entries() -> list[dict[str, Any]]:
     if not REGISTRY_PATH.exists():
         return []
     text = REGISTRY_PATH.read_text(encoding="utf-8")
@@ -32,59 +29,69 @@ def _read_registry_verified_problem_types() -> list[str]:
         import yaml  # type: ignore
 
         data = yaml.safe_load(text) or {}
-        return list(data.get("verified_problem_types") or [])
+        entries = data.get("verified_problem_types") or []
+        if isinstance(entries, list):
+            out: list[dict[str, Any]] = []
+            for it in entries:
+                if isinstance(it, dict):
+                    out.append(it)
+                elif isinstance(it, str):
+                    out.append({"problem_type_id": it})
+            return out
     except Exception:
         pass
-    m = re.search(r"verified_problem_types:\s*((?:\n\s*-\s*.+)+)", text)
-    if not m:
-        return []
-    return [line.split("-", 1)[1].strip().strip('"').strip("'") for line in m.group(1).splitlines() if "-" in line]
+
+    # fallback for simple yaml-like text
+    blocks = re.split(r"\n\s*-\s*\n", text)
+    out: list[dict[str, Any]] = []
+    for b in blocks:
+        if "problem_type_id:" not in b:
+            continue
+        pt = re.search(r"problem_type_id:\s*\"?([^\n\"]+)\"?", b)
+        sid = re.search(r"skill_id:\s*\"?([^\n\"]+)\"?", b)
+        cp = re.search(r"candidate_path:\s*\"?([^\n\"]+)\"?", b)
+        if pt:
+            out.append(
+                {
+                    "problem_type_id": pt.group(1).strip(),
+                    "skill_id": sid.group(1).strip() if sid else "",
+                    "candidate_path": cp.group(1).strip() if cp else "",
+                    "status": "verified",
+                }
+            )
+    return out
 
 
-def _read_problem_type_skill_map() -> dict[str, str]:
-    if not PROBLEM_TYPES_PATH.exists():
-        return {}
-    text = PROBLEM_TYPES_PATH.read_text(encoding="utf-8")
-    try:
-        import yaml  # type: ignore
-
-        data = yaml.safe_load(text) or {}
-        items = data.get("items") or []
-        return {str(item.get("problem_type_id")): str(item.get("skill_id")) for item in items if item.get("problem_type_id")}
-    except Exception:
-        mapping: dict[str, str] = {}
-        blocks = re.split(r"\n\s*-\s*\n", text)
-        for b in blocks:
-            pt = re.search(r"problem_type_id:\s*\"?([^\n\"]+)\"?", b)
-            sid = re.search(r"skill_id:\s*\"?([^\n\"]+)\"?", b)
-            if pt and sid:
-                mapping[pt.group(1).strip()] = sid.group(1).strip()
-        return mapping
-
-
-def _resolve_latest_candidate(problem_type_id: str) -> Path | None:
-    pdir = GENERATED_BASE / problem_type_id
-    if not pdir.exists():
+def _resolve_candidate(entry: dict[str, Any]) -> Path | None:
+    cp = entry.get("candidate_path")
+    if isinstance(cp, str) and cp.strip():
+        p = Path(cp)
+        if not p.is_absolute():
+            p = Path.cwd() / p
+        if p.exists():
+            return p
+    pt = entry.get("problem_type_id")
+    if not isinstance(pt, str):
         return None
-    candidates = sorted(pdir.glob("candidate_v*.py"))
-    return candidates[-1] if candidates else None
+    pdir = GENERATED_BASE / pt
+    cands = sorted(pdir.glob("candidate_v*.py"))
+    return cands[-1] if cands else None
 
 
 def load_verified_candidates(skill_id: str) -> list[dict[str, Any]]:
-    verified_problem_types = _read_registry_verified_problem_types()
-    pt_skill_map = _read_problem_type_skill_map()
+    entries = _read_registry_verified_entries()
     out: list[dict[str, Any]] = []
-    for pt in verified_problem_types:
-        if pt_skill_map.get(pt) != skill_id:
+    for e in entries:
+        if e.get("skill_id") and e.get("skill_id") != skill_id:
             continue
-        candidate_path = _resolve_latest_candidate(pt)
-        if candidate_path is None:
+        candidate = _resolve_candidate(e)
+        if candidate is None:
             continue
         out.append(
             {
                 "skill_id": skill_id,
-                "problem_type_id": pt,
-                "candidate_path": str(candidate_path),
+                "problem_type_id": str(e.get("problem_type_id", "")),
+                "candidate_path": str(candidate),
                 "status": "verified",
             }
         )
@@ -112,13 +119,11 @@ def _validate_payload(payload: dict[str, Any], expected_skill_id: str) -> None:
 def _adapt_payload(payload: dict[str, Any]) -> dict[str, Any]:
     solution_steps = payload.get("solution_steps") or []
     explanation = "\n".join(str(x) for x in solution_steps) if isinstance(solution_steps, list) else str(solution_steps)
-    answer = payload.get("answer")
     adapted = dict(payload)
     adapted["question"] = payload.get("question_text", "")
-    adapted["correct_answer"] = answer
+    adapted["correct_answer"] = payload.get("answer")
     adapted["explanation"] = explanation
-    if "choices" not in adapted:
-        adapted["choices"] = []
+    adapted.setdefault("choices", [])
     return adapted
 
 
@@ -126,7 +131,10 @@ def generate_from_verified_candidate(skill_id: str, seed=None, difficulty: str =
     candidates = load_verified_candidates(skill_id)
     if not candidates:
         raise RuntimeError(NOT_ENABLED_MESSAGE)
-    selected = candidates[0]
+    idx = _LAST_INDEX_BY_SKILL.get(skill_id, -1)
+    idx = (idx + 1) % len(candidates)
+    _LAST_INDEX_BY_SKILL[skill_id] = idx
+    selected = candidates[idx]
     module = load_candidate_module(selected["candidate_path"])
     if not hasattr(module, "generate"):
         raise RuntimeError("Verified candidate missing generate()")
@@ -135,4 +143,3 @@ def generate_from_verified_candidate(skill_id: str, seed=None, difficulty: str =
         raise ValueError("Candidate generate() must return dict payload")
     _validate_payload(payload, expected_skill_id=skill_id)
     return _adapt_payload(payload)
-

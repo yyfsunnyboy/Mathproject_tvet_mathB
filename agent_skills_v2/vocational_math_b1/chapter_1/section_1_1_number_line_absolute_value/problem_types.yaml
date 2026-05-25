@@ -1,0 +1,53 @@
+items:
+  -
+    problem_type_id: "absolute_value_numeric_evaluation"
+    skill_id: "vh_數學B1_AbsoluteValue"
+    runtime_category: "deterministic"
+    answer_type: "integer"
+    checker_type: "integer_checker"
+    examples_refs:
+      - 4398
+      - 4399
+      - 4408
+      - 4412
+    status: "draft"
+  -
+    problem_type_id: "absolute_value_inequality_greater_than_basic"
+    skill_id: "vh_數學B1_AbsoluteValueInequality"
+    runtime_category: "deterministic"
+    answer_type: "numeric_or_expression"
+    checker_type: "deterministic_checker"
+    examples_refs:
+      - 4400
+      - 4402
+      - 4403
+      - 4404
+      - 4405
+      - 4406
+      - 4407
+      - 4409
+      - 4413
+      - 4499
+    status: "draft"
+  -
+    problem_type_id: "number_line_point_value_reading"
+    skill_id: "vh_數學B1_NumberLine"
+    runtime_category: "deterministic"
+    answer_type: "numeric_or_expression"
+    checker_type: "deterministic_checker"
+    examples_refs:
+      - 4401
+    status: "draft"
+  -
+    problem_type_id: "absolute_value_inequality_interval_interpretation"
+    skill_id: "vh_數學B1_AbsoluteValueInequalityExpansionAndGeometricMeaning"
+    runtime_category: "deterministic"
+    answer_type: "numeric_or_expression"
+    checker_type: "deterministic_checker"
+    examples_refs:
+      - 4410
+      - 4411
+      - 4414
+      - 4415
+      - 4416
+    status: "draft"

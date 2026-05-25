@@ -1,0 +1,41 @@
+examples:
+  -
+    id: 4398
+    title: ""
+    source_type: ""
+    source_chapter: "1 坐標系與函數圖形"
+    source_section: "1-1 數線與絕對值"
+    problem_text_preview: "數線上，若$\\left| x \\right|$= 8，試求x之值。"
+    answer: ""
+    solution: ""
+    skill_id: "vh_數學B1_AbsoluteValue"
+  -
+    id: 4399
+    title: ""
+    source_type: ""
+    source_chapter: "1 坐標系與函數圖形"
+    source_section: "1-1 數線與絕對值"
+    problem_text_preview: "已知數線上兩點$A\\left( -3 \\right)$、$B\\left( 7 \\right)$，試求A、B兩點的距離。"
+    answer: ""
+    solution: ""
+    skill_id: "vh_數學B1_AbsoluteValue"
+  -
+    id: 4408
+    title: ""
+    source_type: ""
+    source_chapter: "1 坐標系與函數圖形"
+    source_section: "1-1 數線與絕對值"
+    problem_text_preview: "數線上，若$\\left| x \\right|$= 7，試求x之值。"
+    answer: ""
+    solution: ""
+    skill_id: "vh_數學B1_AbsoluteValue"
+  -
+    id: 4412
+    title: ""
+    source_type: ""
+    source_chapter: "1 坐標系與函數圖形"
+    source_section: "1-1 數線與絕對值"
+    problem_text_preview: "數線上，若$\\left| x \\right|$= 4，試求x之值。"
+    answer: ""
+    solution: ""
+    skill_id: "vh_數學B1_AbsoluteValue"

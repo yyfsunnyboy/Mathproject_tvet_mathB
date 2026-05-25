@@ -1,0 +1,19 @@
+version: "0.1"
+scope: "vocational_math_b1_section_1_1"
+verified_problem_types:
+  -
+    problem_type_id: "absolute_value_numeric_evaluation"
+    skill_id: "vh_數學B1_AbsoluteValue"
+    subskill_id: "absolute_value_numeric_evaluation"
+    status: "verified"
+    candidate_path: "generated_candidates/vocational_math_b1/section_1_1/absolute_value_numeric_evaluation/candidate_v1.py"
+    function_name: "generate"
+    answer_type: "integer"
+    checker_type: "integer_checker"
+failed_problem_types:
+
+manual_review_problem_types:
+
+future_ai_judged_problem_types:
+
+runtime_ready_auto_publish: false

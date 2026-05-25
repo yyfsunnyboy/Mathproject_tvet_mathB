@@ -1,0 +1,7 @@
+scope: "vocational_math_b1_section_1_1"
+formal_skills:
+  - "vh_數學B1_AbsoluteValue"
+  - "vh_數學B1_AbsoluteValueInequality"
+  - "vh_數學B1_AbsoluteValueInequalityExpansionAndGeometricMeaning"
+  - "vh_數學B1_NumberLine"
+status: "draft"

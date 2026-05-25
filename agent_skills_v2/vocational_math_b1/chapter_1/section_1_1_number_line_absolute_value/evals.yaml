@@ -1,0 +1,7 @@
+gates:
+  - "syntax"
+  - "import"
+  - "contract"
+  - "sampling>=30"
+  - "diversity"
+  - "timeout<=5s"

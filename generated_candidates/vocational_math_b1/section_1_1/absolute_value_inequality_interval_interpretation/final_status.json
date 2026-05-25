@@ -1,0 +1,36 @@
+{
+  "rounds": [
+    {
+      "round": 1,
+      "candidate": "C:\\Python\\Mathproject_tvet_mathB\\generated_candidates\\vocational_math_b1\\section_1_1\\absolute_value_inequality_interval_interpretation\\candidate_v1.py",
+      "report": "C:\\Python\\Mathproject_tvet_mathB\\generated_candidates\\vocational_math_b1\\section_1_1\\absolute_value_inequality_interval_interpretation\\verifier_report_v1.json",
+      "passed": false
+    },
+    {
+      "round": 2,
+      "candidate": "C:\\Python\\Mathproject_tvet_mathB\\generated_candidates\\vocational_math_b1\\section_1_1\\absolute_value_inequality_interval_interpretation\\candidate_v2.py",
+      "report": "C:\\Python\\Mathproject_tvet_mathB\\generated_candidates\\vocational_math_b1\\section_1_1\\absolute_value_inequality_interval_interpretation\\verifier_report_v2.json",
+      "passed": false
+    },
+    {
+      "round": 3,
+      "candidate": "C:\\Python\\Mathproject_tvet_mathB\\generated_candidates\\vocational_math_b1\\section_1_1\\absolute_value_inequality_interval_interpretation\\candidate_v3.py",
+      "report": "C:\\Python\\Mathproject_tvet_mathB\\generated_candidates\\vocational_math_b1\\section_1_1\\absolute_value_inequality_interval_interpretation\\verifier_report_v3.json",
+      "passed": false
+    },
+    {
+      "round": 4,
+      "candidate": "C:\\Python\\Mathproject_tvet_mathB\\generated_candidates\\vocational_math_b1\\section_1_1\\absolute_value_inequality_interval_interpretation\\candidate_v4.py",
+      "report": "C:\\Python\\Mathproject_tvet_mathB\\generated_candidates\\vocational_math_b1\\section_1_1\\absolute_value_inequality_interval_interpretation\\verifier_report_v4.json",
+      "passed": false
+    },
+    {
+      "round": 5,
+      "candidate": "C:\\Python\\Mathproject_tvet_mathB\\generated_candidates\\vocational_math_b1\\section_1_1\\absolute_value_inequality_interval_interpretation\\candidate_v5.py",
+      "report": "C:\\Python\\Mathproject_tvet_mathB\\generated_candidates\\vocational_math_b1\\section_1_1\\absolute_value_inequality_interval_interpretation\\verifier_report_v5.json",
+      "passed": false
+    }
+  ],
+  "final_candidate": "C:\\Python\\Mathproject_tvet_mathB\\generated_candidates\\vocational_math_b1\\section_1_1\\absolute_value_inequality_interval_interpretation\\candidate_v1.py",
+  "status": "failed"
+}

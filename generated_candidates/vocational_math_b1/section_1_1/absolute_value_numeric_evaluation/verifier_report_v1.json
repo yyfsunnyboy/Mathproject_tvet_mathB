@@ -1,0 +1,853 @@
+{
+  "candidate_path": "C:\\Python\\Mathproject_tvet_mathB\\generated_candidates\\vocational_math_b1\\section_1_1\\absolute_value_numeric_evaluation\\candidate_v1.py",
+  "errors": [],
+  "samples": [
+    {
+      "problem_type_id": "absolute_value_numeric_evaluation",
+      "skill_id": "vh_數學B1_AbsoluteValue",
+      "subskill_id": "absolute_value_numeric_evaluation",
+      "question_text": "求 $|-20|$ 的值。",
+      "answer": 20,
+      "answer_type": "integer",
+      "checker_type": "integer_checker",
+      "solution_steps": [
+        "絕對值表示到 0 的距離。",
+        "因此 $|-20|=20$。"
+      ],
+      "metadata": {
+        "scenario_family": "absolute_value_numeric_evaluation",
+        "scenario_id": "s7",
+        "parameter_signature": "absolute_value_numeric_evaluation:n=-20:difficulty=easy",
+        "question_pattern_id": "p4",
+        "diagnosis_tags": [
+          "absolute_value_definition",
+          "sign_error"
+        ],
+        "prerequisite_subskills": []
+      },
+      "question": "求 $|-20|$ 的值。",
+      "correct_answer": 20,
+      "explanation": "絕對值表示到 0 的距離。\n因此 $|-20|=20$。",
+      "choices": []
+    },
+    {
+      "problem_type_id": "absolute_value_numeric_evaluation",
+      "skill_id": "vh_數學B1_AbsoluteValue",
+      "subskill_id": "absolute_value_numeric_evaluation",
+      "question_text": "求 $|-19|$ 的值。",
+      "answer": 19,
+      "answer_type": "integer",
+      "checker_type": "integer_checker",
+      "solution_steps": [
+        "絕對值表示到 0 的距離。",
+        "因此 $|-19|=19$。"
+      ],
+      "metadata": {
+        "scenario_family": "absolute_value_numeric_evaluation",
+        "scenario_id": "s3",
+        "parameter_signature": "absolute_value_numeric_evaluation:n=-19:difficulty=easy",
+        "question_pattern_id": "p1",
+        "diagnosis_tags": [
+          "absolute_value_definition",
+          "sign_error"
+        ],
+        "prerequisite_subskills": []
+      },
+      "question": "求 $|-19|$ 的值。",
+      "correct_answer": 19,
+      "explanation": "絕對值表示到 0 的距離。\n因此 $|-19|=19$。",
+      "choices": []
+    },
+    {
+      "problem_type_id": "absolute_value_numeric_evaluation",
+      "skill_id": "vh_數學B1_AbsoluteValue",
+      "subskill_id": "absolute_value_numeric_evaluation",
+      "question_text": "求 $|-18|$ 的值。",
+      "answer": 18,
+      "answer_type": "integer",
+      "checker_type": "integer_checker",
+      "solution_steps": [
+        "絕對值表示到 0 的距離。",
+        "因此 $|-18|=18$。"
+      ],
+      "metadata": {
+        "scenario_family": "absolute_value_numeric_evaluation",
+        "scenario_id": "s1",
+        "parameter_signature": "absolute_value_numeric_evaluation:n=-18:difficulty=easy",
+        "question_pattern_id": "p1",
+        "diagnosis_tags": [
+          "absolute_value_definition",
+          "sign_error"
+        ],
+        "prerequisite_subskills": []
+      },
+      "question": "求 $|-18|$ 的值。",
+      "correct_answer": 18,
+      "explanation": "絕對值表示到 0 的距離。\n因此 $|-18|=18$。",
+      "choices": []
+    },
+    {
+      "problem_type_id": "absolute_value_numeric_evaluation",
+      "skill_id": "vh_數學B1_AbsoluteValue",
+      "subskill_id": "absolute_value_numeric_evaluation",
+      "question_text": "求 $|-17|$ 的值。",
+      "answer": 17,
+      "answer_type": "integer",
+      "checker_type": "integer_checker",
+      "solution_steps": [
+        "絕對值表示到 0 的距離。",
+        "因此 $|-17|=17$。"
+      ],
+      "metadata": {
+        "scenario_family": "absolute_value_numeric_evaluation",
+        "scenario_id": "s4",
+        "parameter_signature": "absolute_value_numeric_evaluation:n=-17:difficulty=easy",
+        "question_pattern_id": "p2",
+        "diagnosis_tags": [
+          "absolute_value_definition",
+          "sign_error"
+        ],
+        "prerequisite_subskills": []
+      },
+      "question": "求 $|-17|$ 的值。",
+      "correct_answer": 17,
+      "explanation": "絕對值表示到 0 的距離。\n因此 $|-17|=17$。",
+      "choices": []
+    },
+    {
+      "problem_type_id": "absolute_value_numeric_evaluation",
+      "skill_id": "vh_數學B1_AbsoluteValue",
+      "subskill_id": "absolute_value_numeric_evaluation",
+      "question_text": "求 $|-16|$ 的值。",
+      "answer": 16,
+      "answer_type": "integer",
+      "checker_type": "integer_checker",
+      "solution_steps": [
+        "絕對值表示到 0 的距離。",
+        "因此 $|-16|=16$。"
+      ],
+      "metadata": {
+        "scenario_family": "absolute_value_numeric_evaluation",
+        "scenario_id": "s4",
+        "parameter_signature": "absolute_value_numeric_evaluation:n=-16:difficulty=easy",
+        "question_pattern_id": "p3",
+        "diagnosis_tags": [
+          "absolute_value_definition",
+          "sign_error"
+        ],
+        "prerequisite_subskills": []
+      },
+      "question": "求 $|-16|$ 的值。",
+      "correct_answer": 16,
+      "explanation": "絕對值表示到 0 的距離。\n因此 $|-16|=16$。",
+      "choices": []
+    },
+    {
+      "problem_type_id": "absolute_value_numeric_evaluation",
+      "skill_id": "vh_數學B1_AbsoluteValue",
+      "subskill_id": "absolute_value_numeric_evaluation",
+      "question_text": "求 $|-15|$ 的值。",
+      "answer": 15,
+      "answer_type": "integer",
+      "checker_type": "integer_checker",
+      "solution_steps": [
+        "絕對值表示到 0 的距離。",
+        "因此 $|-15|=15$。"
+      ],
+      "metadata": {
+        "scenario_family": "absolute_value_numeric_evaluation",
+        "scenario_id": "s5",
+        "parameter_signature": "absolute_value_numeric_evaluation:n=-15:difficulty=easy",
+        "question_pattern_id": "p3",
+        "diagnosis_tags": [
+          "absolute_value_definition",
+          "sign_error"
+        ],
+        "prerequisite_subskills": []
+      },
+      "question": "求 $|-15|$ 的值。",
+      "correct_answer": 15,
+      "explanation": "絕對值表示到 0 的距離。\n因此 $|-15|=15$。",
+      "choices": []
+    },
+    {
+      "problem_type_id": "absolute_value_numeric_evaluation",
+      "skill_id": "vh_數學B1_AbsoluteValue",
+      "subskill_id": "absolute_value_numeric_evaluation",
+      "question_text": "求 $|-14|$ 的值。",
+      "answer": 14,
+      "answer_type": "integer",
+      "checker_type": "integer_checker",
+      "solution_steps": [
+        "絕對值表示到 0 的距離。",
+        "因此 $|-14|=14$。"
+      ],
+      "metadata": {
+        "scenario_family": "absolute_value_numeric_evaluation",
+        "scenario_id": "s2",
+        "parameter_signature": "absolute_value_numeric_evaluation:n=-14:difficulty=easy",
+        "question_pattern_id": "p4",
+        "diagnosis_tags": [
+          "absolute_value_definition",
+          "sign_error"
+        ],
+        "prerequisite_subskills": []
+      },
+      "question": "求 $|-14|$ 的值。",
+      "correct_answer": 14,
+      "explanation": "絕對值表示到 0 的距離。\n因此 $|-14|=14$。",
+      "choices": []
+    },
+    {
+      "problem_type_id": "absolute_value_numeric_evaluation",
+      "skill_id": "vh_數學B1_AbsoluteValue",
+      "subskill_id": "absolute_value_numeric_evaluation",
+      "question_text": "求 $|-13|$ 的值。",
+      "answer": 13,
+      "answer_type": "integer",
+      "checker_type": "integer_checker",
+      "solution_steps": [
+        "絕對值表示到 0 的距離。",
+        "因此 $|-13|=13$。"
+      ],
+      "metadata": {
+        "scenario_family": "absolute_value_numeric_evaluation",
+        "scenario_id": "s6",
+        "parameter_signature": "absolute_value_numeric_evaluation:n=-13:difficulty=easy",
+        "question_pattern_id": "p2",
+        "diagnosis_tags": [
+          "absolute_value_definition",
+          "sign_error"
+        ],
+        "prerequisite_subskills": []
+      },
+      "question": "求 $|-13|$ 的值。",
+      "correct_answer": 13,
+      "explanation": "絕對值表示到 0 的距離。\n因此 $|-13|=13$。",
+      "choices": []
+    },
+    {
+      "problem_type_id": "absolute_value_numeric_evaluation",
+      "skill_id": "vh_數學B1_AbsoluteValue",
+      "subskill_id": "absolute_value_numeric_evaluation",
+      "question_text": "求 $|-12|$ 的值。",
+      "answer": 12,
+      "answer_type": "integer",
+      "checker_type": "integer_checker",
+      "solution_steps": [
+        "絕對值表示到 0 的距離。",
+        "因此 $|-12|=12$。"
+      ],
+      "metadata": {
+        "scenario_family": "absolute_value_numeric_evaluation",
+        "scenario_id": "s4",
+        "parameter_signature": "absolute_value_numeric_evaluation:n=-12:difficulty=easy",
+        "question_pattern_id": "p3",
+        "diagnosis_tags": [
+          "absolute_value_definition",
+          "sign_error"
+        ],
+        "prerequisite_subskills": []
+      },
+      "question": "求 $|-12|$ 的值。",
+      "correct_answer": 12,
+      "explanation": "絕對值表示到 0 的距離。\n因此 $|-12|=12$。",
+      "choices": []
+    },
+    {
+      "problem_type_id": "absolute_value_numeric_evaluation",
+      "skill_id": "vh_數學B1_AbsoluteValue",
+      "subskill_id": "absolute_value_numeric_evaluation",
+      "question_text": "求 $|-11|$ 的值。",
+      "answer": 11,
+      "answer_type": "integer",
+      "checker_type": "integer_checker",
+      "solution_steps": [
+        "絕對值表示到 0 的距離。",
+        "因此 $|-11|=11$。"
+      ],
+      "metadata": {
+        "scenario_family": "absolute_value_numeric_evaluation",
+        "scenario_id": "s8",
+        "parameter_signature": "absolute_value_numeric_evaluation:n=-11:difficulty=easy",
+        "question_pattern_id": "p3",
+        "diagnosis_tags": [
+          "absolute_value_definition",
+          "sign_error"
+        ],
+        "prerequisite_subskills": []
+      },
+      "question": "求 $|-11|$ 的值。",
+      "correct_answer": 11,
+      "explanation": "絕對值表示到 0 的距離。\n因此 $|-11|=11$。",
+      "choices": []
+    },
+    {
+      "problem_type_id": "absolute_value_numeric_evaluation",
+      "skill_id": "vh_數學B1_AbsoluteValue",
+      "subskill_id": "absolute_value_numeric_evaluation",
+      "question_text": "求 $|-10|$ 的值。",
+      "answer": 10,
+      "answer_type": "integer",
+      "checker_type": "integer_checker",
+      "solution_steps": [
+        "絕對值表示到 0 的距離。",
+        "因此 $|-10|=10$。"
+      ],
+      "metadata": {
+        "scenario_family": "absolute_value_numeric_evaluation",
+        "scenario_id": "s1",
+        "parameter_signature": "absolute_value_numeric_evaluation:n=-10:difficulty=easy",
+        "question_pattern_id": "p4",
+        "diagnosis_tags": [
+          "absolute_value_definition",
+          "sign_error"
+        ],
+        "prerequisite_subskills": []
+      },
+      "question": "求 $|-10|$ 的值。",
+      "correct_answer": 10,
+      "explanation": "絕對值表示到 0 的距離。\n因此 $|-10|=10$。",
+      "choices": []
+    },
+    {
+      "problem_type_id": "absolute_value_numeric_evaluation",
+      "skill_id": "vh_數學B1_AbsoluteValue",
+      "subskill_id": "absolute_value_numeric_evaluation",
+      "question_text": "求 $|-9|$ 的值。",
+      "answer": 9,
+      "answer_type": "integer",
+      "checker_type": "integer_checker",
+      "solution_steps": [
+        "絕對值表示到 0 的距離。",
+        "因此 $|-9|=9$。"
+      ],
+      "metadata": {
+        "scenario_family": "absolute_value_numeric_evaluation",
+        "scenario_id": "s8",
+        "parameter_signature": "absolute_value_numeric_evaluation:n=-9:difficulty=easy",
+        "question_pattern_id": "p4",
+        "diagnosis_tags": [
+          "absolute_value_definition",
+          "sign_error"
+        ],
+        "prerequisite_subskills": []
+      },
+      "question": "求 $|-9|$ 的值。",
+      "correct_answer": 9,
+      "explanation": "絕對值表示到 0 的距離。\n因此 $|-9|=9$。",
+      "choices": []
+    },
+    {
+      "problem_type_id": "absolute_value_numeric_evaluation",
+      "skill_id": "vh_數學B1_AbsoluteValue",
+      "subskill_id": "absolute_value_numeric_evaluation",
+      "question_text": "求 $|-8|$ 的值。",
+      "answer": 8,
+      "answer_type": "integer",
+      "checker_type": "integer_checker",
+      "solution_steps": [
+        "絕對值表示到 0 的距離。",
+        "因此 $|-8|=8$。"
+      ],
+      "metadata": {
+        "scenario_family": "absolute_value_numeric_evaluation",
+        "scenario_id": "s8",
+        "parameter_signature": "absolute_value_numeric_evaluation:n=-8:difficulty=easy",
+        "question_pattern_id": "p3",
+        "diagnosis_tags": [
+          "absolute_value_definition",
+          "sign_error"
+        ],
+        "prerequisite_subskills": []
+      },
+      "question": "求 $|-8|$ 的值。",
+      "correct_answer": 8,
+      "explanation": "絕對值表示到 0 的距離。\n因此 $|-8|=8$。",
+      "choices": []
+    },
+    {
+      "problem_type_id": "absolute_value_numeric_evaluation",
+      "skill_id": "vh_數學B1_AbsoluteValue",
+      "subskill_id": "absolute_value_numeric_evaluation",
+      "question_text": "求 $|-7|$ 的值。",
+      "answer": 7,
+      "answer_type": "integer",
+      "checker_type": "integer_checker",
+      "solution_steps": [
+        "絕對值表示到 0 的距離。",
+        "因此 $|-7|=7$。"
+      ],
+      "metadata": {
+        "scenario_family": "absolute_value_numeric_evaluation",
+        "scenario_id": "s5",
+        "parameter_signature": "absolute_value_numeric_evaluation:n=-7:difficulty=easy",
+        "question_pattern_id": "p3",
+        "diagnosis_tags": [
+          "absolute_value_definition",
+          "sign_error"
+        ],
+        "prerequisite_subskills": []
+      },
+      "question": "求 $|-7|$ 的值。",
+      "correct_answer": 7,
+      "explanation": "絕對值表示到 0 的距離。\n因此 $|-7|=7$。",
+      "choices": []
+    },
+    {
+      "problem_type_id": "absolute_value_numeric_evaluation",
+      "skill_id": "vh_數學B1_AbsoluteValue",
+      "subskill_id": "absolute_value_numeric_evaluation",
+      "question_text": "求 $|-6|$ 的值。",
+      "answer": 6,
+      "answer_type": "integer",
+      "checker_type": "integer_checker",
+      "solution_steps": [
+        "絕對值表示到 0 的距離。",
+        "因此 $|-6|=6$。"
+      ],
+      "metadata": {
+        "scenario_family": "absolute_value_numeric_evaluation",
+        "scenario_id": "s2",
+        "parameter_signature": "absolute_value_numeric_evaluation:n=-6:difficulty=easy",
+        "question_pattern_id": "p2",
+        "diagnosis_tags": [
+          "absolute_value_definition",
+          "sign_error"
+        ],
+        "prerequisite_subskills": []
+      },
+      "question": "求 $|-6|$ 的值。",
+      "correct_answer": 6,
+      "explanation": "絕對值表示到 0 的距離。\n因此 $|-6|=6$。",
+      "choices": []
+    },
+    {
+      "problem_type_id": "absolute_value_numeric_evaluation",
+      "skill_id": "vh_數學B1_AbsoluteValue",
+      "subskill_id": "absolute_value_numeric_evaluation",
+      "question_text": "求 $|-5|$ 的值。",
+      "answer": 5,
+      "answer_type": "integer",
+      "checker_type": "integer_checker",
+      "solution_steps": [
+        "絕對值表示到 0 的距離。",
+        "因此 $|-5|=5$。"
+      ],
+      "metadata": {
+        "scenario_family": "absolute_value_numeric_evaluation",
+        "scenario_id": "s4",
+        "parameter_signature": "absolute_value_numeric_evaluation:n=-5:difficulty=easy",
+        "question_pattern_id": "p1",
+        "diagnosis_tags": [
+          "absolute_value_definition",
+          "sign_error"
+        ],
+        "prerequisite_subskills": []
+      },
+      "question": "求 $|-5|$ 的值。",
+      "correct_answer": 5,
+      "explanation": "絕對值表示到 0 的距離。\n因此 $|-5|=5$。",
+      "choices": []
+    },
+    {
+      "problem_type_id": "absolute_value_numeric_evaluation",
+      "skill_id": "vh_數學B1_AbsoluteValue",
+      "subskill_id": "absolute_value_numeric_evaluation",
+      "question_text": "求 $|-4|$ 的值。",
+      "answer": 4,
+      "answer_type": "integer",
+      "checker_type": "integer_checker",
+      "solution_steps": [
+        "絕對值表示到 0 的距離。",
+        "因此 $|-4|=4$。"
+      ],
+      "metadata": {
+        "scenario_family": "absolute_value_numeric_evaluation",
+        "scenario_id": "s6",
+        "parameter_signature": "absolute_value_numeric_evaluation:n=-4:difficulty=easy",
+        "question_pattern_id": "p4",
+        "diagnosis_tags": [
+          "absolute_value_definition",
+          "sign_error"
+        ],
+        "prerequisite_subskills": []
+      },
+      "question": "求 $|-4|$ 的值。",
+      "correct_answer": 4,
+      "explanation": "絕對值表示到 0 的距離。\n因此 $|-4|=4$。",
+      "choices": []
+    },
+    {
+      "problem_type_id": "absolute_value_numeric_evaluation",
+      "skill_id": "vh_數學B1_AbsoluteValue",
+      "subskill_id": "absolute_value_numeric_evaluation",
+      "question_text": "求 $|-3|$ 的值。",
+      "answer": 3,
+      "answer_type": "integer",
+      "checker_type": "integer_checker",
+      "solution_steps": [
+        "絕對值表示到 0 的距離。",
+        "因此 $|-3|=3$。"
+      ],
+      "metadata": {
+        "scenario_family": "absolute_value_numeric_evaluation",
+        "scenario_id": "s9",
+        "parameter_signature": "absolute_value_numeric_evaluation:n=-3:difficulty=easy",
+        "question_pattern_id": "p4",
+        "diagnosis_tags": [
+          "absolute_value_definition",
+          "sign_error"
+        ],
+        "prerequisite_subskills": []
+      },
+      "question": "求 $|-3|$ 的值。",
+      "correct_answer": 3,
+      "explanation": "絕對值表示到 0 的距離。\n因此 $|-3|=3$。",
+      "choices": []
+    },
+    {
+      "problem_type_id": "absolute_value_numeric_evaluation",
+      "skill_id": "vh_數學B1_AbsoluteValue",
+      "subskill_id": "absolute_value_numeric_evaluation",
+      "question_text": "求 $|-2|$ 的值。",
+      "answer": 2,
+      "answer_type": "integer",
+      "checker_type": "integer_checker",
+      "solution_steps": [
+        "絕對值表示到 0 的距離。",
+        "因此 $|-2|=2$。"
+      ],
+      "metadata": {
+        "scenario_family": "absolute_value_numeric_evaluation",
+        "scenario_id": "s3",
+        "parameter_signature": "absolute_value_numeric_evaluation:n=-2:difficulty=easy",
+        "question_pattern_id": "p1",
+        "diagnosis_tags": [
+          "absolute_value_definition",
+          "sign_error"
+        ],
+        "prerequisite_subskills": []
+      },
+      "question": "求 $|-2|$ 的值。",
+      "correct_answer": 2,
+      "explanation": "絕對值表示到 0 的距離。\n因此 $|-2|=2$。",
+      "choices": []
+    },
+    {
+      "problem_type_id": "absolute_value_numeric_evaluation",
+      "skill_id": "vh_數學B1_AbsoluteValue",
+      "subskill_id": "absolute_value_numeric_evaluation",
+      "question_text": "求 $|-1|$ 的值。",
+      "answer": 1,
+      "answer_type": "integer",
+      "checker_type": "integer_checker",
+      "solution_steps": [
+        "絕對值表示到 0 的距離。",
+        "因此 $|-1|=1$。"
+      ],
+      "metadata": {
+        "scenario_family": "absolute_value_numeric_evaluation",
+        "scenario_id": "s1",
+        "parameter_signature": "absolute_value_numeric_evaluation:n=-1:difficulty=easy",
+        "question_pattern_id": "p1",
+        "diagnosis_tags": [
+          "absolute_value_definition",
+          "sign_error"
+        ],
+        "prerequisite_subskills": []
+      },
+      "question": "求 $|-1|$ 的值。",
+      "correct_answer": 1,
+      "explanation": "絕對值表示到 0 的距離。\n因此 $|-1|=1$。",
+      "choices": []
+    },
+    {
+      "problem_type_id": "absolute_value_numeric_evaluation",
+      "skill_id": "vh_數學B1_AbsoluteValue",
+      "subskill_id": "absolute_value_numeric_evaluation",
+      "question_text": "求 $|0|$ 的值。",
+      "answer": 0,
+      "answer_type": "integer",
+      "checker_type": "integer_checker",
+      "solution_steps": [
+        "絕對值表示到 0 的距離。",
+        "因此 $|0|=0$。"
+      ],
+      "metadata": {
+        "scenario_family": "absolute_value_numeric_evaluation",
+        "scenario_id": "s3",
+        "parameter_signature": "absolute_value_numeric_evaluation:n=0:difficulty=easy",
+        "question_pattern_id": "p3",
+        "diagnosis_tags": [
+          "absolute_value_definition",
+          "sign_error"
+        ],
+        "prerequisite_subskills": []
+      },
+      "question": "求 $|0|$ 的值。",
+      "correct_answer": 0,
+      "explanation": "絕對值表示到 0 的距離。\n因此 $|0|=0$。",
+      "choices": []
+    },
+    {
+      "problem_type_id": "absolute_value_numeric_evaluation",
+      "skill_id": "vh_數學B1_AbsoluteValue",
+      "subskill_id": "absolute_value_numeric_evaluation",
+      "question_text": "求 $|1|$ 的值。",
+      "answer": 1,
+      "answer_type": "integer",
+      "checker_type": "integer_checker",
+      "solution_steps": [
+        "絕對值表示到 0 的距離。",
+        "因此 $|1|=1$。"
+      ],
+      "metadata": {
+        "scenario_family": "absolute_value_numeric_evaluation",
+        "scenario_id": "s3",
+        "parameter_signature": "absolute_value_numeric_evaluation:n=1:difficulty=easy",
+        "question_pattern_id": "p4",
+        "diagnosis_tags": [
+          "absolute_value_definition",
+          "sign_error"
+        ],
+        "prerequisite_subskills": []
+      },
+      "question": "求 $|1|$ 的值。",
+      "correct_answer": 1,
+      "explanation": "絕對值表示到 0 的距離。\n因此 $|1|=1$。",
+      "choices": []
+    },
+    {
+      "problem_type_id": "absolute_value_numeric_evaluation",
+      "skill_id": "vh_數學B1_AbsoluteValue",
+      "subskill_id": "absolute_value_numeric_evaluation",
+      "question_text": "求 $|2|$ 的值。",
+      "answer": 2,
+      "answer_type": "integer",
+      "checker_type": "integer_checker",
+      "solution_steps": [
+        "絕對值表示到 0 的距離。",
+        "因此 $|2|=2$。"
+      ],
+      "metadata": {
+        "scenario_family": "absolute_value_numeric_evaluation",
+        "scenario_id": "s3",
+        "parameter_signature": "absolute_value_numeric_evaluation:n=2:difficulty=easy",
+        "question_pattern_id": "p2",
+        "diagnosis_tags": [
+          "absolute_value_definition",
+          "sign_error"
+        ],
+        "prerequisite_subskills": []
+      },
+      "question": "求 $|2|$ 的值。",
+      "correct_answer": 2,
+      "explanation": "絕對值表示到 0 的距離。\n因此 $|2|=2$。",
+      "choices": []
+    },
+    {
+      "problem_type_id": "absolute_value_numeric_evaluation",
+      "skill_id": "vh_數學B1_AbsoluteValue",
+      "subskill_id": "absolute_value_numeric_evaluation",
+      "question_text": "求 $|3|$ 的值。",
+      "answer": 3,
+      "answer_type": "integer",
+      "checker_type": "integer_checker",
+      "solution_steps": [
+        "絕對值表示到 0 的距離。",
+        "因此 $|3|=3$。"
+      ],
+      "metadata": {
+        "scenario_family": "absolute_value_numeric_evaluation",
+        "scenario_id": "s5",
+        "parameter_signature": "absolute_value_numeric_evaluation:n=3:difficulty=easy",
+        "question_pattern_id": "p1",
+        "diagnosis_tags": [
+          "absolute_value_definition",
+          "sign_error"
+        ],
+        "prerequisite_subskills": []
+      },
+      "question": "求 $|3|$ 的值。",
+      "correct_answer": 3,
+      "explanation": "絕對值表示到 0 的距離。\n因此 $|3|=3$。",
+      "choices": []
+    },
+    {
+      "problem_type_id": "absolute_value_numeric_evaluation",
+      "skill_id": "vh_數學B1_AbsoluteValue",
+      "subskill_id": "absolute_value_numeric_evaluation",
+      "question_text": "求 $|4|$ 的值。",
+      "answer": 4,
+      "answer_type": "integer",
+      "checker_type": "integer_checker",
+      "solution_steps": [
+        "絕對值表示到 0 的距離。",
+        "因此 $|4|=4$。"
+      ],
+      "metadata": {
+        "scenario_family": "absolute_value_numeric_evaluation",
+        "scenario_id": "s7",
+        "parameter_signature": "absolute_value_numeric_evaluation:n=4:difficulty=easy",
+        "question_pattern_id": "p2",
+        "diagnosis_tags": [
+          "absolute_value_definition",
+          "sign_error"
+        ],
+        "prerequisite_subskills": []
+      },
+      "question": "求 $|4|$ 的值。",
+      "correct_answer": 4,
+      "explanation": "絕對值表示到 0 的距離。\n因此 $|4|=4$。",
+      "choices": []
+    },
+    {
+      "problem_type_id": "absolute_value_numeric_evaluation",
+      "skill_id": "vh_數學B1_AbsoluteValue",
+      "subskill_id": "absolute_value_numeric_evaluation",
+      "question_text": "求 $|5|$ 的值。",
+      "answer": 5,
+      "answer_type": "integer",
+      "checker_type": "integer_checker",
+      "solution_steps": [
+        "絕對值表示到 0 的距離。",
+        "因此 $|5|=5$。"
+      ],
+      "metadata": {
+        "scenario_family": "absolute_value_numeric_evaluation",
+        "scenario_id": "s7",
+        "parameter_signature": "absolute_value_numeric_evaluation:n=5:difficulty=easy",
+        "question_pattern_id": "p1",
+        "diagnosis_tags": [
+          "absolute_value_definition",
+          "sign_error"
+        ],
+        "prerequisite_subskills": []
+      },
+      "question": "求 $|5|$ 的值。",
+      "correct_answer": 5,
+      "explanation": "絕對值表示到 0 的距離。\n因此 $|5|=5$。",
+      "choices": []
+    },
+    {
+      "problem_type_id": "absolute_value_numeric_evaluation",
+      "skill_id": "vh_數學B1_AbsoluteValue",
+      "subskill_id": "absolute_value_numeric_evaluation",
+      "question_text": "求 $|6|$ 的值。",
+      "answer": 6,
+      "answer_type": "integer",
+      "checker_type": "integer_checker",
+      "solution_steps": [
+        "絕對值表示到 0 的距離。",
+        "因此 $|6|=6$。"
+      ],
+      "metadata": {
+        "scenario_family": "absolute_value_numeric_evaluation",
+        "scenario_id": "s4",
+        "parameter_signature": "absolute_value_numeric_evaluation:n=6:difficulty=easy",
+        "question_pattern_id": "p2",
+        "diagnosis_tags": [
+          "absolute_value_definition",
+          "sign_error"
+        ],
+        "prerequisite_subskills": []
+      },
+      "question": "求 $|6|$ 的值。",
+      "correct_answer": 6,
+      "explanation": "絕對值表示到 0 的距離。\n因此 $|6|=6$。",
+      "choices": []
+    },
+    {
+      "problem_type_id": "absolute_value_numeric_evaluation",
+      "skill_id": "vh_數學B1_AbsoluteValue",
+      "subskill_id": "absolute_value_numeric_evaluation",
+      "question_text": "求 $|7|$ 的值。",
+      "answer": 7,
+      "answer_type": "integer",
+      "checker_type": "integer_checker",
+      "solution_steps": [
+        "絕對值表示到 0 的距離。",
+        "因此 $|7|=7$。"
+      ],
+      "metadata": {
+        "scenario_family": "absolute_value_numeric_evaluation",
+        "scenario_id": "s8",
+        "parameter_signature": "absolute_value_numeric_evaluation:n=7:difficulty=easy",
+        "question_pattern_id": "p3",
+        "diagnosis_tags": [
+          "absolute_value_definition",
+          "sign_error"
+        ],
+        "prerequisite_subskills": []
+      },
+      "question": "求 $|7|$ 的值。",
+      "correct_answer": 7,
+      "explanation": "絕對值表示到 0 的距離。\n因此 $|7|=7$。",
+      "choices": []
+    },
+    {
+      "problem_type_id": "absolute_value_numeric_evaluation",
+      "skill_id": "vh_數學B1_AbsoluteValue",
+      "subskill_id": "absolute_value_numeric_evaluation",
+      "question_text": "求 $|8|$ 的值。",
+      "answer": 8,
+      "answer_type": "integer",
+      "checker_type": "integer_checker",
+      "solution_steps": [
+        "絕對值表示到 0 的距離。",
+        "因此 $|8|=8$。"
+      ],
+      "metadata": {
+        "scenario_family": "absolute_value_numeric_evaluation",
+        "scenario_id": "s2",
+        "parameter_signature": "absolute_value_numeric_evaluation:n=8:difficulty=easy",
+        "question_pattern_id": "p2",
+        "diagnosis_tags": [
+          "absolute_value_definition",
+          "sign_error"
+        ],
+        "prerequisite_subskills": []
+      },
+      "question": "求 $|8|$ 的值。",
+      "correct_answer": 8,
+      "explanation": "絕對值表示到 0 的距離。\n因此 $|8|=8$。",
+      "choices": []
+    },
+    {
+      "problem_type_id": "absolute_value_numeric_evaluation",
+      "skill_id": "vh_數學B1_AbsoluteValue",
+      "subskill_id": "absolute_value_numeric_evaluation",
+      "question_text": "求 $|9|$ 的值。",
+      "answer": 9,
+      "answer_type": "integer",
+      "checker_type": "integer_checker",
+      "solution_steps": [
+        "絕對值表示到 0 的距離。",
+        "因此 $|9|=9$。"
+      ],
+      "metadata": {
+        "scenario_family": "absolute_value_numeric_evaluation",
+        "scenario_id": "s9",
+        "parameter_signature": "absolute_value_numeric_evaluation:n=9:difficulty=easy",
+        "question_pattern_id": "p1",
+        "diagnosis_tags": [
+          "absolute_value_definition",
+          "sign_error"
+        ],
+        "prerequisite_subskills": []
+      },
+      "question": "求 $|9|$ 的值。",
+      "correct_answer": 9,
+      "explanation": "絕對值表示到 0 的距離。\n因此 $|9|=9$。",
+      "choices": []
+    }
+  ],
+  "passed": true,
+  "diversity": {
+    "consecutive_duplicate_count": 0,
+    "unique_question_text_count": 30,
+    "repeated_question_text_ratio": 0.0,
+    "unique_parameter_signature_count": 30
+  }
+}

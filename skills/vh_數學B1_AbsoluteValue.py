@@ -1,10 +1,8 @@
-"""Thin runtime wrapper for vocational B1 absolute value skill."""
+﻿"""Thin runtime wrapper for vocational B1 absolute value skill."""
 
 from __future__ import annotations
 
-from core.vocational_math_b1.generated_candidate_loader import (
-    generate_from_verified_candidate,
-)
+from core.vocational_math_b1.generated_candidate_loader import generate_from_verified_candidate
 
 SKILL_ID = "vh_數學B1_AbsoluteValue"
 
@@ -29,4 +27,3 @@ def check(user_answer, correct_answer):
     if user_text == correct_text:
         return {"correct": True, "result": "答對了"}
     return {"correct": False, "result": f"答錯了，正確答案是 {correct_answer}"}
-

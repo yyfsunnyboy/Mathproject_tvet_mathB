@@ -1,0 +1,526 @@
+{
+  "candidate_path": "C:\\Python\\Mathproject_tvet_mathB\\generated_candidates\\vocational_math_b1\\section_1_1\\absolute_value_inequality_greater_than_basic\\candidate_v5.py",
+  "errors": [
+    "consecutive_duplicate_count_nonzero",
+    "repeated_question_text_ratio_above_0.5"
+  ],
+  "samples": [
+    {
+      "problem_type_id": "absolute_value_inequality_greater_than_basic",
+      "skill_id": "vh_數學B1_AbsoluteValueInequality",
+      "question_text": "解不等式：$|x|>7$",
+      "answer": "x<-7 或 x>7",
+      "answer_type": "numeric_or_expression",
+      "checker_type": "deterministic_checker",
+      "solution_steps": [
+        "解集為兩側區間聯集。"
+      ],
+      "metadata": {
+        "scenario_family": "absolute_value_inequality_greater_than_basic",
+        "scenario_id": 4,
+        "parameter_signature": "absolute_value_inequality_greater_than_basic:n=7:difficulty=easy",
+        "question_pattern_id": "p4"
+      }
+    },
+    {
+      "problem_type_id": "absolute_value_inequality_greater_than_basic",
+      "skill_id": "vh_數學B1_AbsoluteValueInequality",
+      "question_text": "解不等式：$|x|>10$",
+      "answer": "x<-10 或 x>10",
+      "answer_type": "numeric_or_expression",
+      "checker_type": "deterministic_checker",
+      "solution_steps": [
+        "解集為兩側區間聯集。"
+      ],
+      "metadata": {
+        "scenario_family": "absolute_value_inequality_greater_than_basic",
+        "scenario_id": 2,
+        "parameter_signature": "absolute_value_inequality_greater_than_basic:n=10:difficulty=easy",
+        "question_pattern_id": "p2"
+      }
+    },
+    {
+      "problem_type_id": "absolute_value_inequality_greater_than_basic",
+      "skill_id": "vh_數學B1_AbsoluteValueInequality",
+      "question_text": "解不等式：$|x|>2$",
+      "answer": "x<-2 或 x>2",
+      "answer_type": "numeric_or_expression",
+      "checker_type": "deterministic_checker",
+      "solution_steps": [
+        "解集為兩側區間聯集。"
+      ],
+      "metadata": {
+        "scenario_family": "absolute_value_inequality_greater_than_basic",
+        "scenario_id": 1,
+        "parameter_signature": "absolute_value_inequality_greater_than_basic:n=2:difficulty=easy",
+        "question_pattern_id": "p1"
+      }
+    },
+    {
+      "problem_type_id": "absolute_value_inequality_greater_than_basic",
+      "skill_id": "vh_數學B1_AbsoluteValueInequality",
+      "question_text": "解不等式：$|x|>10$",
+      "answer": "x<-10 或 x>10",
+      "answer_type": "numeric_or_expression",
+      "checker_type": "deterministic_checker",
+      "solution_steps": [
+        "解集為兩側區間聯集。"
+      ],
+      "metadata": {
+        "scenario_family": "absolute_value_inequality_greater_than_basic",
+        "scenario_id": 2,
+        "parameter_signature": "absolute_value_inequality_greater_than_basic:n=10:difficulty=easy",
+        "question_pattern_id": "p2"
+      }
+    },
+    {
+      "problem_type_id": "absolute_value_inequality_greater_than_basic",
+      "skill_id": "vh_數學B1_AbsoluteValueInequality",
+      "question_text": "解不等式：$|x|>5$",
+      "answer": "x<-5 或 x>5",
+      "answer_type": "numeric_or_expression",
+      "checker_type": "deterministic_checker",
+      "solution_steps": [
+        "解集為兩側區間聯集。"
+      ],
+      "metadata": {
+        "scenario_family": "absolute_value_inequality_greater_than_basic",
+        "scenario_id": 2,
+        "parameter_signature": "absolute_value_inequality_greater_than_basic:n=5:difficulty=easy",
+        "question_pattern_id": "p2"
+      }
+    },
+    {
+      "problem_type_id": "absolute_value_inequality_greater_than_basic",
+      "skill_id": "vh_數學B1_AbsoluteValueInequality",
+      "question_text": "解不等式：$|x|>5$",
+      "answer": "x<-5 或 x>5",
+      "answer_type": "numeric_or_expression",
+      "checker_type": "deterministic_checker",
+      "solution_steps": [
+        "解集為兩側區間聯集。"
+      ],
+      "metadata": {
+        "scenario_family": "absolute_value_inequality_greater_than_basic",
+        "scenario_id": 5,
+        "parameter_signature": "absolute_value_inequality_greater_than_basic:n=5:difficulty=easy",
+        "question_pattern_id": "p5"
+      }
+    },
+    {
+      "problem_type_id": "absolute_value_inequality_greater_than_basic",
+      "skill_id": "vh_數學B1_AbsoluteValueInequality",
+      "question_text": "解不等式：$|x|>2$",
+      "answer": "x<-2 或 x>2",
+      "answer_type": "numeric_or_expression",
+      "checker_type": "deterministic_checker",
+      "solution_steps": [
+        "解集為兩側區間聯集。"
+      ],
+      "metadata": {
+        "scenario_family": "absolute_value_inequality_greater_than_basic",
+        "scenario_id": 5,
+        "parameter_signature": "absolute_value_inequality_greater_than_basic:n=2:difficulty=easy",
+        "question_pattern_id": "p5"
+      }
+    },
+    {
+      "problem_type_id": "absolute_value_inequality_greater_than_basic",
+      "skill_id": "vh_數學B1_AbsoluteValueInequality",
+      "question_text": "解不等式：$|x|>3$",
+      "answer": "x<-3 或 x>3",
+      "answer_type": "numeric_or_expression",
+      "checker_type": "deterministic_checker",
+      "solution_steps": [
+        "解集為兩側區間聯集。"
+      ],
+      "metadata": {
+        "scenario_family": "absolute_value_inequality_greater_than_basic",
+        "scenario_id": 3,
+        "parameter_signature": "absolute_value_inequality_greater_than_basic:n=3:difficulty=easy",
+        "question_pattern_id": "p3"
+      }
+    },
+    {
+      "problem_type_id": "absolute_value_inequality_greater_than_basic",
+      "skill_id": "vh_數學B1_AbsoluteValueInequality",
+      "question_text": "解不等式：$|x|>6$",
+      "answer": "x<-6 或 x>6",
+      "answer_type": "numeric_or_expression",
+      "checker_type": "deterministic_checker",
+      "solution_steps": [
+        "解集為兩側區間聯集。"
+      ],
+      "metadata": {
+        "scenario_family": "absolute_value_inequality_greater_than_basic",
+        "scenario_id": 2,
+        "parameter_signature": "absolute_value_inequality_greater_than_basic:n=6:difficulty=easy",
+        "question_pattern_id": "p2"
+      }
+    },
+    {
+      "problem_type_id": "absolute_value_inequality_greater_than_basic",
+      "skill_id": "vh_數學B1_AbsoluteValueInequality",
+      "question_text": "解不等式：$|x|>10$",
+      "answer": "x<-10 或 x>10",
+      "answer_type": "numeric_or_expression",
+      "checker_type": "deterministic_checker",
+      "solution_steps": [
+        "解集為兩側區間聯集。"
+      ],
+      "metadata": {
+        "scenario_family": "absolute_value_inequality_greater_than_basic",
+        "scenario_id": 4,
+        "parameter_signature": "absolute_value_inequality_greater_than_basic:n=10:difficulty=easy",
+        "question_pattern_id": "p4"
+      }
+    },
+    {
+      "problem_type_id": "absolute_value_inequality_greater_than_basic",
+      "skill_id": "vh_數學B1_AbsoluteValueInequality",
+      "question_text": "解不等式：$|x|>1$",
+      "answer": "x<-1 或 x>1",
+      "answer_type": "numeric_or_expression",
+      "checker_type": "deterministic_checker",
+      "solution_steps": [
+        "解集為兩側區間聯集。"
+      ],
+      "metadata": {
+        "scenario_family": "absolute_value_inequality_greater_than_basic",
+        "scenario_id": 5,
+        "parameter_signature": "absolute_value_inequality_greater_than_basic:n=1:difficulty=easy",
+        "question_pattern_id": "p5"
+      }
+    },
+    {
+      "problem_type_id": "absolute_value_inequality_greater_than_basic",
+      "skill_id": "vh_數學B1_AbsoluteValueInequality",
+      "question_text": "解不等式：$|x|>9$",
+      "answer": "x<-9 或 x>9",
+      "answer_type": "numeric_or_expression",
+      "checker_type": "deterministic_checker",
+      "solution_steps": [
+        "解集為兩側區間聯集。"
+      ],
+      "metadata": {
+        "scenario_family": "absolute_value_inequality_greater_than_basic",
+        "scenario_id": 4,
+        "parameter_signature": "absolute_value_inequality_greater_than_basic:n=9:difficulty=easy",
+        "question_pattern_id": "p4"
+      }
+    },
+    {
+      "problem_type_id": "absolute_value_inequality_greater_than_basic",
+      "skill_id": "vh_數學B1_AbsoluteValueInequality",
+      "question_text": "解不等式：$|x|>5$",
+      "answer": "x<-5 或 x>5",
+      "answer_type": "numeric_or_expression",
+      "checker_type": "deterministic_checker",
+      "solution_steps": [
+        "解集為兩側區間聯集。"
+      ],
+      "metadata": {
+        "scenario_family": "absolute_value_inequality_greater_than_basic",
+        "scenario_id": 4,
+        "parameter_signature": "absolute_value_inequality_greater_than_basic:n=5:difficulty=easy",
+        "question_pattern_id": "p4"
+      }
+    },
+    {
+      "problem_type_id": "absolute_value_inequality_greater_than_basic",
+      "skill_id": "vh_數學B1_AbsoluteValueInequality",
+      "question_text": "解不等式：$|x|>5$",
+      "answer": "x<-5 或 x>5",
+      "answer_type": "numeric_or_expression",
+      "checker_type": "deterministic_checker",
+      "solution_steps": [
+        "解集為兩側區間聯集。"
+      ],
+      "metadata": {
+        "scenario_family": "absolute_value_inequality_greater_than_basic",
+        "scenario_id": 3,
+        "parameter_signature": "absolute_value_inequality_greater_than_basic:n=5:difficulty=easy",
+        "question_pattern_id": "p3"
+      }
+    },
+    {
+      "problem_type_id": "absolute_value_inequality_greater_than_basic",
+      "skill_id": "vh_數學B1_AbsoluteValueInequality",
+      "question_text": "解不等式：$|x|>10$",
+      "answer": "x<-10 或 x>10",
+      "answer_type": "numeric_or_expression",
+      "checker_type": "deterministic_checker",
+      "solution_steps": [
+        "解集為兩側區間聯集。"
+      ],
+      "metadata": {
+        "scenario_family": "absolute_value_inequality_greater_than_basic",
+        "scenario_id": 1,
+        "parameter_signature": "absolute_value_inequality_greater_than_basic:n=10:difficulty=easy",
+        "question_pattern_id": "p1"
+      }
+    },
+    {
+      "problem_type_id": "absolute_value_inequality_greater_than_basic",
+      "skill_id": "vh_數學B1_AbsoluteValueInequality",
+      "question_text": "解不等式：$|x|>1$",
+      "answer": "x<-1 或 x>1",
+      "answer_type": "numeric_or_expression",
+      "checker_type": "deterministic_checker",
+      "solution_steps": [
+        "解集為兩側區間聯集。"
+      ],
+      "metadata": {
+        "scenario_family": "absolute_value_inequality_greater_than_basic",
+        "scenario_id": 2,
+        "parameter_signature": "absolute_value_inequality_greater_than_basic:n=1:difficulty=easy",
+        "question_pattern_id": "p2"
+      }
+    },
+    {
+      "problem_type_id": "absolute_value_inequality_greater_than_basic",
+      "skill_id": "vh_數學B1_AbsoluteValueInequality",
+      "question_text": "解不等式：$|x|>8$",
+      "answer": "x<-8 或 x>8",
+      "answer_type": "numeric_or_expression",
+      "checker_type": "deterministic_checker",
+      "solution_steps": [
+        "解集為兩側區間聯集。"
+      ],
+      "metadata": {
+        "scenario_family": "absolute_value_inequality_greater_than_basic",
+        "scenario_id": 3,
+        "parameter_signature": "absolute_value_inequality_greater_than_basic:n=8:difficulty=easy",
+        "question_pattern_id": "p3"
+      }
+    },
+    {
+      "problem_type_id": "absolute_value_inequality_greater_than_basic",
+      "skill_id": "vh_數學B1_AbsoluteValueInequality",
+      "question_text": "解不等式：$|x|>7$",
+      "answer": "x<-7 或 x>7",
+      "answer_type": "numeric_or_expression",
+      "checker_type": "deterministic_checker",
+      "solution_steps": [
+        "解集為兩側區間聯集。"
+      ],
+      "metadata": {
+        "scenario_family": "absolute_value_inequality_greater_than_basic",
+        "scenario_id": 5,
+        "parameter_signature": "absolute_value_inequality_greater_than_basic:n=7:difficulty=easy",
+        "question_pattern_id": "p5"
+      }
+    },
+    {
+      "problem_type_id": "absolute_value_inequality_greater_than_basic",
+      "skill_id": "vh_數學B1_AbsoluteValueInequality",
+      "question_text": "解不等式：$|x|>2$",
+      "answer": "x<-2 或 x>2",
+      "answer_type": "numeric_or_expression",
+      "checker_type": "deterministic_checker",
+      "solution_steps": [
+        "解集為兩側區間聯集。"
+      ],
+      "metadata": {
+        "scenario_family": "absolute_value_inequality_greater_than_basic",
+        "scenario_id": 2,
+        "parameter_signature": "absolute_value_inequality_greater_than_basic:n=2:difficulty=easy",
+        "question_pattern_id": "p2"
+      }
+    },
+    {
+      "problem_type_id": "absolute_value_inequality_greater_than_basic",
+      "skill_id": "vh_數學B1_AbsoluteValueInequality",
+      "question_text": "解不等式：$|x|>9$",
+      "answer": "x<-9 或 x>9",
+      "answer_type": "numeric_or_expression",
+      "checker_type": "deterministic_checker",
+      "solution_steps": [
+        "解集為兩側區間聯集。"
+      ],
+      "metadata": {
+        "scenario_family": "absolute_value_inequality_greater_than_basic",
+        "scenario_id": 1,
+        "parameter_signature": "absolute_value_inequality_greater_than_basic:n=9:difficulty=easy",
+        "question_pattern_id": "p1"
+      }
+    },
+    {
+      "problem_type_id": "absolute_value_inequality_greater_than_basic",
+      "skill_id": "vh_數學B1_AbsoluteValueInequality",
+      "question_text": "解不等式：$|x|>5$",
+      "answer": "x<-5 或 x>5",
+      "answer_type": "numeric_or_expression",
+      "checker_type": "deterministic_checker",
+      "solution_steps": [
+        "解集為兩側區間聯集。"
+      ],
+      "metadata": {
+        "scenario_family": "absolute_value_inequality_greater_than_basic",
+        "scenario_id": 2,
+        "parameter_signature": "absolute_value_inequality_greater_than_basic:n=5:difficulty=easy",
+        "question_pattern_id": "p2"
+      }
+    },
+    {
+      "problem_type_id": "absolute_value_inequality_greater_than_basic",
+      "skill_id": "vh_數學B1_AbsoluteValueInequality",
+      "question_text": "解不等式：$|x|>7$",
+      "answer": "x<-7 或 x>7",
+      "answer_type": "numeric_or_expression",
+      "checker_type": "deterministic_checker",
+      "solution_steps": [
+        "解集為兩側區間聯集。"
+      ],
+      "metadata": {
+        "scenario_family": "absolute_value_inequality_greater_than_basic",
+        "scenario_id": 2,
+        "parameter_signature": "absolute_value_inequality_greater_than_basic:n=7:difficulty=easy",
+        "question_pattern_id": "p2"
+      }
+    },
+    {
+      "problem_type_id": "absolute_value_inequality_greater_than_basic",
+      "skill_id": "vh_數學B1_AbsoluteValueInequality",
+      "question_text": "解不等式：$|x|>4$",
+      "answer": "x<-4 或 x>4",
+      "answer_type": "numeric_or_expression",
+      "checker_type": "deterministic_checker",
+      "solution_steps": [
+        "解集為兩側區間聯集。"
+      ],
+      "metadata": {
+        "scenario_family": "absolute_value_inequality_greater_than_basic",
+        "scenario_id": 2,
+        "parameter_signature": "absolute_value_inequality_greater_than_basic:n=4:difficulty=easy",
+        "question_pattern_id": "p2"
+      }
+    },
+    {
+      "problem_type_id": "absolute_value_inequality_greater_than_basic",
+      "skill_id": "vh_數學B1_AbsoluteValueInequality",
+      "question_text": "解不等式：$|x|>2$",
+      "answer": "x<-2 或 x>2",
+      "answer_type": "numeric_or_expression",
+      "checker_type": "deterministic_checker",
+      "solution_steps": [
+        "解集為兩側區間聯集。"
+      ],
+      "metadata": {
+        "scenario_family": "absolute_value_inequality_greater_than_basic",
+        "scenario_id": 3,
+        "parameter_signature": "absolute_value_inequality_greater_than_basic:n=2:difficulty=easy",
+        "question_pattern_id": "p3"
+      }
+    },
+    {
+      "problem_type_id": "absolute_value_inequality_greater_than_basic",
+      "skill_id": "vh_數學B1_AbsoluteValueInequality",
+      "question_text": "解不等式：$|x|>10$",
+      "answer": "x<-10 或 x>10",
+      "answer_type": "numeric_or_expression",
+      "checker_type": "deterministic_checker",
+      "solution_steps": [
+        "解集為兩側區間聯集。"
+      ],
+      "metadata": {
+        "scenario_family": "absolute_value_inequality_greater_than_basic",
+        "scenario_id": 4,
+        "parameter_signature": "absolute_value_inequality_greater_than_basic:n=10:difficulty=easy",
+        "question_pattern_id": "p4"
+      }
+    },
+    {
+      "problem_type_id": "absolute_value_inequality_greater_than_basic",
+      "skill_id": "vh_數學B1_AbsoluteValueInequality",
+      "question_text": "解不等式：$|x|>1$",
+      "answer": "x<-1 或 x>1",
+      "answer_type": "numeric_or_expression",
+      "checker_type": "deterministic_checker",
+      "solution_steps": [
+        "解集為兩側區間聯集。"
+      ],
+      "metadata": {
+        "scenario_family": "absolute_value_inequality_greater_than_basic",
+        "scenario_id": 4,
+        "parameter_signature": "absolute_value_inequality_greater_than_basic:n=1:difficulty=easy",
+        "question_pattern_id": "p4"
+      }
+    },
+    {
+      "problem_type_id": "absolute_value_inequality_greater_than_basic",
+      "skill_id": "vh_數學B1_AbsoluteValueInequality",
+      "question_text": "解不等式：$|x|>11$",
+      "answer": "x<-11 或 x>11",
+      "answer_type": "numeric_or_expression",
+      "checker_type": "deterministic_checker",
+      "solution_steps": [
+        "解集為兩側區間聯集。"
+      ],
+      "metadata": {
+        "scenario_family": "absolute_value_inequality_greater_than_basic",
+        "scenario_id": 2,
+        "parameter_signature": "absolute_value_inequality_greater_than_basic:n=11:difficulty=easy",
+        "question_pattern_id": "p2"
+      }
+    },
+    {
+      "problem_type_id": "absolute_value_inequality_greater_than_basic",
+      "skill_id": "vh_數學B1_AbsoluteValueInequality",
+      "question_text": "解不等式：$|x|>12$",
+      "answer": "x<-12 或 x>12",
+      "answer_type": "numeric_or_expression",
+      "checker_type": "deterministic_checker",
+      "solution_steps": [
+        "解集為兩側區間聯集。"
+      ],
+      "metadata": {
+        "scenario_family": "absolute_value_inequality_greater_than_basic",
+        "scenario_id": 4,
+        "parameter_signature": "absolute_value_inequality_greater_than_basic:n=12:difficulty=easy",
+        "question_pattern_id": "p4"
+      }
+    },
+    {
+      "problem_type_id": "absolute_value_inequality_greater_than_basic",
+      "skill_id": "vh_數學B1_AbsoluteValueInequality",
+      "question_text": "解不等式：$|x|>12$",
+      "answer": "x<-12 或 x>12",
+      "answer_type": "numeric_or_expression",
+      "checker_type": "deterministic_checker",
+      "solution_steps": [
+        "解集為兩側區間聯集。"
+      ],
+      "metadata": {
+        "scenario_family": "absolute_value_inequality_greater_than_basic",
+        "scenario_id": 1,
+        "parameter_signature": "absolute_value_inequality_greater_than_basic:n=12:difficulty=easy",
+        "question_pattern_id": "p1"
+      }
+    },
+    {
+      "problem_type_id": "absolute_value_inequality_greater_than_basic",
+      "skill_id": "vh_數學B1_AbsoluteValueInequality",
+      "question_text": "解不等式：$|x|>2$",
+      "answer": "x<-2 或 x>2",
+      "answer_type": "numeric_or_expression",
+      "checker_type": "deterministic_checker",
+      "solution_steps": [
+        "解集為兩側區間聯集。"
+      ],
+      "metadata": {
+        "scenario_family": "absolute_value_inequality_greater_than_basic",
+        "scenario_id": 5,
+        "parameter_signature": "absolute_value_inequality_greater_than_basic:n=2:difficulty=easy",
+        "question_pattern_id": "p5"
+      }
+    }
+  ],
+  "passed": false,
+  "diversity": {
+    "consecutive_duplicate_count": 3,
+    "unique_question_text_count": 12,
+    "repeated_question_text_ratio": 0.6,
+    "unique_parameter_signature_count": 12
+  }
+}

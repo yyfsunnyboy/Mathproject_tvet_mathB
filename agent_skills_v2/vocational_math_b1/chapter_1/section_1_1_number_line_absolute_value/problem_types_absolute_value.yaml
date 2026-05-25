@@ -1,0 +1,31 @@
+items:
+  -
+    problem_type_id: "absolute_value_numeric_evaluation"
+    skill_id: "vh_數學B1_AbsoluteValue"
+    subskill_id: "absolute_value_numeric_evaluation"
+    display_name: "absolute value numeric evaluation"
+    runtime_category: "deterministic_numeric"
+    answer_type: "integer"
+    checker_type: "integer_checker"
+    examples_refs:
+      - 4398
+      - 4408
+      - 4412
+    prerequisite_subskills:
+
+    diagnosis_tags:
+      - "absolute_value_definition"
+      - "sign_error"
+    difficulty_policy: "easy_only_v1"
+    output_contract:
+      required_keys:
+        - "problem_type_id"
+        - "skill_id"
+        - "subskill_id"
+        - "question_text"
+        - "answer"
+        - "answer_type"
+        - "checker_type"
+        - "solution_steps"
+        - "metadata"
+    status: "draft"

@@ -1,0 +1,525 @@
+{
+  "candidate_path": "C:\\Python\\Mathproject_tvet_mathB\\generated_candidates\\vocational_math_b1\\section_1_1\\number_line_point_value_reading\\candidate_v3.py",
+  "errors": [
+    "unique_parameter_signature_count_below_6"
+  ],
+  "samples": [
+    {
+      "problem_type_id": "number_line_point_value_reading",
+      "skill_id": "vh_數學B1_NumberLine",
+      "question_text": "數線上點 $P$ 對應到整數 $9$，已知 $P$ 在 $9$，求其數值。",
+      "answer": "9",
+      "answer_type": "numeric_or_expression",
+      "checker_type": "deterministic_checker",
+      "solution_steps": [
+        "直接讀取數線上點的對應整數。"
+      ],
+      "metadata": {
+        "scenario_family": "number_line_point_value_reading",
+        "scenario_id": 4,
+        "parameter_signature": "number_line_point_value_reading:4:easy",
+        "question_pattern_id": "p4"
+      }
+    },
+    {
+      "problem_type_id": "number_line_point_value_reading",
+      "skill_id": "vh_數學B1_NumberLine",
+      "question_text": "數線上點 $P$ 對應到整數 $3$，已知 $P$ 在 $3$，求其數值。",
+      "answer": "3",
+      "answer_type": "numeric_or_expression",
+      "checker_type": "deterministic_checker",
+      "solution_steps": [
+        "直接讀取數線上點的對應整數。"
+      ],
+      "metadata": {
+        "scenario_family": "number_line_point_value_reading",
+        "scenario_id": 2,
+        "parameter_signature": "number_line_point_value_reading:2:easy",
+        "question_pattern_id": "p2"
+      }
+    },
+    {
+      "problem_type_id": "number_line_point_value_reading",
+      "skill_id": "vh_數學B1_NumberLine",
+      "question_text": "數線上點 $P$ 對應到整數 $-13$，已知 $P$ 在 $-13$，求其數值。",
+      "answer": "-13",
+      "answer_type": "numeric_or_expression",
+      "checker_type": "deterministic_checker",
+      "solution_steps": [
+        "直接讀取數線上點的對應整數。"
+      ],
+      "metadata": {
+        "scenario_family": "number_line_point_value_reading",
+        "scenario_id": 1,
+        "parameter_signature": "number_line_point_value_reading:1:easy",
+        "question_pattern_id": "p1"
+      }
+    },
+    {
+      "problem_type_id": "number_line_point_value_reading",
+      "skill_id": "vh_數學B1_NumberLine",
+      "question_text": "數線上點 $P$ 對應到整數 $3$，已知 $P$ 在 $3$，求其數值。",
+      "answer": "3",
+      "answer_type": "numeric_or_expression",
+      "checker_type": "deterministic_checker",
+      "solution_steps": [
+        "直接讀取數線上點的對應整數。"
+      ],
+      "metadata": {
+        "scenario_family": "number_line_point_value_reading",
+        "scenario_id": 2,
+        "parameter_signature": "number_line_point_value_reading:2:easy",
+        "question_pattern_id": "p2"
+      }
+    },
+    {
+      "problem_type_id": "number_line_point_value_reading",
+      "skill_id": "vh_數學B1_NumberLine",
+      "question_text": "數線上點 $P$ 對應到整數 $-6$，已知 $P$ 在 $-6$，求其數值。",
+      "answer": "-6",
+      "answer_type": "numeric_or_expression",
+      "checker_type": "deterministic_checker",
+      "solution_steps": [
+        "直接讀取數線上點的對應整數。"
+      ],
+      "metadata": {
+        "scenario_family": "number_line_point_value_reading",
+        "scenario_id": 2,
+        "parameter_signature": "number_line_point_value_reading:2:easy",
+        "question_pattern_id": "p2"
+      }
+    },
+    {
+      "problem_type_id": "number_line_point_value_reading",
+      "skill_id": "vh_數學B1_NumberLine",
+      "question_text": "數線上點 $P$ 對應到整數 $-7$，已知 $P$ 在 $-7$，求其數值。",
+      "answer": "-7",
+      "answer_type": "numeric_or_expression",
+      "checker_type": "deterministic_checker",
+      "solution_steps": [
+        "直接讀取數線上點的對應整數。"
+      ],
+      "metadata": {
+        "scenario_family": "number_line_point_value_reading",
+        "scenario_id": 5,
+        "parameter_signature": "number_line_point_value_reading:5:easy",
+        "question_pattern_id": "p5"
+      }
+    },
+    {
+      "problem_type_id": "number_line_point_value_reading",
+      "skill_id": "vh_數學B1_NumberLine",
+      "question_text": "數線上點 $P$ 對應到整數 $11$，已知 $P$ 在 $11$，求其數值。",
+      "answer": "11",
+      "answer_type": "numeric_or_expression",
+      "checker_type": "deterministic_checker",
+      "solution_steps": [
+        "直接讀取數線上點的對應整數。"
+      ],
+      "metadata": {
+        "scenario_family": "number_line_point_value_reading",
+        "scenario_id": 5,
+        "parameter_signature": "number_line_point_value_reading:5:easy",
+        "question_pattern_id": "p5"
+      }
+    },
+    {
+      "problem_type_id": "number_line_point_value_reading",
+      "skill_id": "vh_數學B1_NumberLine",
+      "question_text": "數線上點 $P$ 對應到整數 $15$，已知 $P$ 在 $15$，求其數值。",
+      "answer": "15",
+      "answer_type": "numeric_or_expression",
+      "checker_type": "deterministic_checker",
+      "solution_steps": [
+        "直接讀取數線上點的對應整數。"
+      ],
+      "metadata": {
+        "scenario_family": "number_line_point_value_reading",
+        "scenario_id": 3,
+        "parameter_signature": "number_line_point_value_reading:3:easy",
+        "question_pattern_id": "p3"
+      }
+    },
+    {
+      "problem_type_id": "number_line_point_value_reading",
+      "skill_id": "vh_數學B1_NumberLine",
+      "question_text": "數線上點 $P$ 對應到整數 $-4$，已知 $P$ 在 $-4$，求其數值。",
+      "answer": "-4",
+      "answer_type": "numeric_or_expression",
+      "checker_type": "deterministic_checker",
+      "solution_steps": [
+        "直接讀取數線上點的對應整數。"
+      ],
+      "metadata": {
+        "scenario_family": "number_line_point_value_reading",
+        "scenario_id": 2,
+        "parameter_signature": "number_line_point_value_reading:2:easy",
+        "question_pattern_id": "p2"
+      }
+    },
+    {
+      "problem_type_id": "number_line_point_value_reading",
+      "skill_id": "vh_數學B1_NumberLine",
+      "question_text": "數線上點 $P$ 對應到整數 $4$，已知 $P$ 在 $4$，求其數值。",
+      "answer": "4",
+      "answer_type": "numeric_or_expression",
+      "checker_type": "deterministic_checker",
+      "solution_steps": [
+        "直接讀取數線上點的對應整數。"
+      ],
+      "metadata": {
+        "scenario_family": "number_line_point_value_reading",
+        "scenario_id": 4,
+        "parameter_signature": "number_line_point_value_reading:4:easy",
+        "question_pattern_id": "p4"
+      }
+    },
+    {
+      "problem_type_id": "number_line_point_value_reading",
+      "skill_id": "vh_數學B1_NumberLine",
+      "question_text": "數線上點 $P$ 對應到整數 $-14$，已知 $P$ 在 $-14$，求其數值。",
+      "answer": "-14",
+      "answer_type": "numeric_or_expression",
+      "checker_type": "deterministic_checker",
+      "solution_steps": [
+        "直接讀取數線上點的對應整數。"
+      ],
+      "metadata": {
+        "scenario_family": "number_line_point_value_reading",
+        "scenario_id": 5,
+        "parameter_signature": "number_line_point_value_reading:5:easy",
+        "question_pattern_id": "p5"
+      }
+    },
+    {
+      "problem_type_id": "number_line_point_value_reading",
+      "skill_id": "vh_數學B1_NumberLine",
+      "question_text": "數線上點 $P$ 對應到整數 $12$，已知 $P$ 在 $12$，求其數值。",
+      "answer": "12",
+      "answer_type": "numeric_or_expression",
+      "checker_type": "deterministic_checker",
+      "solution_steps": [
+        "直接讀取數線上點的對應整數。"
+      ],
+      "metadata": {
+        "scenario_family": "number_line_point_value_reading",
+        "scenario_id": 4,
+        "parameter_signature": "number_line_point_value_reading:4:easy",
+        "question_pattern_id": "p4"
+      }
+    },
+    {
+      "problem_type_id": "number_line_point_value_reading",
+      "skill_id": "vh_數學B1_NumberLine",
+      "question_text": "數線上點 $P$ 對應到整數 $-7$，已知 $P$ 在 $-7$，求其數值。",
+      "answer": "-7",
+      "answer_type": "numeric_or_expression",
+      "checker_type": "deterministic_checker",
+      "solution_steps": [
+        "直接讀取數線上點的對應整數。"
+      ],
+      "metadata": {
+        "scenario_family": "number_line_point_value_reading",
+        "scenario_id": 4,
+        "parameter_signature": "number_line_point_value_reading:4:easy",
+        "question_pattern_id": "p4"
+      }
+    },
+    {
+      "problem_type_id": "number_line_point_value_reading",
+      "skill_id": "vh_數學B1_NumberLine",
+      "question_text": "數線上點 $P$ 對應到整數 $-6$，已知 $P$ 在 $-6$，求其數值。",
+      "answer": "-6",
+      "answer_type": "numeric_or_expression",
+      "checker_type": "deterministic_checker",
+      "solution_steps": [
+        "直接讀取數線上點的對應整數。"
+      ],
+      "metadata": {
+        "scenario_family": "number_line_point_value_reading",
+        "scenario_id": 3,
+        "parameter_signature": "number_line_point_value_reading:3:easy",
+        "question_pattern_id": "p3"
+      }
+    },
+    {
+      "problem_type_id": "number_line_point_value_reading",
+      "skill_id": "vh_數學B1_NumberLine",
+      "question_text": "數線上點 $P$ 對應到整數 $4$，已知 $P$ 在 $4$，求其數值。",
+      "answer": "4",
+      "answer_type": "numeric_or_expression",
+      "checker_type": "deterministic_checker",
+      "solution_steps": [
+        "直接讀取數線上點的對應整數。"
+      ],
+      "metadata": {
+        "scenario_family": "number_line_point_value_reading",
+        "scenario_id": 1,
+        "parameter_signature": "number_line_point_value_reading:1:easy",
+        "question_pattern_id": "p1"
+      }
+    },
+    {
+      "problem_type_id": "number_line_point_value_reading",
+      "skill_id": "vh_數學B1_NumberLine",
+      "question_text": "數線上點 $P$ 對應到整數 $-15$，已知 $P$ 在 $-15$，求其數值。",
+      "answer": "-15",
+      "answer_type": "numeric_or_expression",
+      "checker_type": "deterministic_checker",
+      "solution_steps": [
+        "直接讀取數線上點的對應整數。"
+      ],
+      "metadata": {
+        "scenario_family": "number_line_point_value_reading",
+        "scenario_id": 2,
+        "parameter_signature": "number_line_point_value_reading:2:easy",
+        "question_pattern_id": "p2"
+      }
+    },
+    {
+      "problem_type_id": "number_line_point_value_reading",
+      "skill_id": "vh_數學B1_NumberLine",
+      "question_text": "數線上點 $P$ 對應到整數 $0$，已知 $P$ 在 $0$，求其數值。",
+      "answer": "0",
+      "answer_type": "numeric_or_expression",
+      "checker_type": "deterministic_checker",
+      "solution_steps": [
+        "直接讀取數線上點的對應整數。"
+      ],
+      "metadata": {
+        "scenario_family": "number_line_point_value_reading",
+        "scenario_id": 3,
+        "parameter_signature": "number_line_point_value_reading:3:easy",
+        "question_pattern_id": "p3"
+      }
+    },
+    {
+      "problem_type_id": "number_line_point_value_reading",
+      "skill_id": "vh_數學B1_NumberLine",
+      "question_text": "數線上點 $P$ 對應到整數 $-2$，已知 $P$ 在 $-2$，求其數值。",
+      "answer": "-2",
+      "answer_type": "numeric_or_expression",
+      "checker_type": "deterministic_checker",
+      "solution_steps": [
+        "直接讀取數線上點的對應整數。"
+      ],
+      "metadata": {
+        "scenario_family": "number_line_point_value_reading",
+        "scenario_id": 5,
+        "parameter_signature": "number_line_point_value_reading:5:easy",
+        "question_pattern_id": "p5"
+      }
+    },
+    {
+      "problem_type_id": "number_line_point_value_reading",
+      "skill_id": "vh_數學B1_NumberLine",
+      "question_text": "數線上點 $P$ 對應到整數 $-12$，已知 $P$ 在 $-12$，求其數值。",
+      "answer": "-12",
+      "answer_type": "numeric_or_expression",
+      "checker_type": "deterministic_checker",
+      "solution_steps": [
+        "直接讀取數線上點的對應整數。"
+      ],
+      "metadata": {
+        "scenario_family": "number_line_point_value_reading",
+        "scenario_id": 2,
+        "parameter_signature": "number_line_point_value_reading:2:easy",
+        "question_pattern_id": "p2"
+      }
+    },
+    {
+      "problem_type_id": "number_line_point_value_reading",
+      "skill_id": "vh_數學B1_NumberLine",
+      "question_text": "數線上點 $P$ 對應到整數 $10$，已知 $P$ 在 $10$，求其數值。",
+      "answer": "10",
+      "answer_type": "numeric_or_expression",
+      "checker_type": "deterministic_checker",
+      "solution_steps": [
+        "直接讀取數線上點的對應整數。"
+      ],
+      "metadata": {
+        "scenario_family": "number_line_point_value_reading",
+        "scenario_id": 1,
+        "parameter_signature": "number_line_point_value_reading:1:easy",
+        "question_pattern_id": "p1"
+      }
+    },
+    {
+      "problem_type_id": "number_line_point_value_reading",
+      "skill_id": "vh_數學B1_NumberLine",
+      "question_text": "數線上點 $P$ 對應到整數 $-7$，已知 $P$ 在 $-7$，求其數值。",
+      "answer": "-7",
+      "answer_type": "numeric_or_expression",
+      "checker_type": "deterministic_checker",
+      "solution_steps": [
+        "直接讀取數線上點的對應整數。"
+      ],
+      "metadata": {
+        "scenario_family": "number_line_point_value_reading",
+        "scenario_id": 2,
+        "parameter_signature": "number_line_point_value_reading:2:easy",
+        "question_pattern_id": "p2"
+      }
+    },
+    {
+      "problem_type_id": "number_line_point_value_reading",
+      "skill_id": "vh_數學B1_NumberLine",
+      "question_text": "數線上點 $P$ 對應到整數 $-2$，已知 $P$ 在 $-2$，求其數值。",
+      "answer": "-2",
+      "answer_type": "numeric_or_expression",
+      "checker_type": "deterministic_checker",
+      "solution_steps": [
+        "直接讀取數線上點的對應整數。"
+      ],
+      "metadata": {
+        "scenario_family": "number_line_point_value_reading",
+        "scenario_id": 2,
+        "parameter_signature": "number_line_point_value_reading:2:easy",
+        "question_pattern_id": "p2"
+      }
+    },
+    {
+      "problem_type_id": "number_line_point_value_reading",
+      "skill_id": "vh_數學B1_NumberLine",
+      "question_text": "數線上點 $P$ 對應到整數 $-8$，已知 $P$ 在 $-8$，求其數值。",
+      "answer": "-8",
+      "answer_type": "numeric_or_expression",
+      "checker_type": "deterministic_checker",
+      "solution_steps": [
+        "直接讀取數線上點的對應整數。"
+      ],
+      "metadata": {
+        "scenario_family": "number_line_point_value_reading",
+        "scenario_id": 2,
+        "parameter_signature": "number_line_point_value_reading:2:easy",
+        "question_pattern_id": "p2"
+      }
+    },
+    {
+      "problem_type_id": "number_line_point_value_reading",
+      "skill_id": "vh_數學B1_NumberLine",
+      "question_text": "數線上點 $P$ 對應到整數 $13$，已知 $P$ 在 $13$，求其數值。",
+      "answer": "13",
+      "answer_type": "numeric_or_expression",
+      "checker_type": "deterministic_checker",
+      "solution_steps": [
+        "直接讀取數線上點的對應整數。"
+      ],
+      "metadata": {
+        "scenario_family": "number_line_point_value_reading",
+        "scenario_id": 3,
+        "parameter_signature": "number_line_point_value_reading:3:easy",
+        "question_pattern_id": "p3"
+      }
+    },
+    {
+      "problem_type_id": "number_line_point_value_reading",
+      "skill_id": "vh_數學B1_NumberLine",
+      "question_text": "數線上點 $P$ 對應到整數 $11$，已知 $P$ 在 $11$，求其數值。",
+      "answer": "11",
+      "answer_type": "numeric_or_expression",
+      "checker_type": "deterministic_checker",
+      "solution_steps": [
+        "直接讀取數線上點的對應整數。"
+      ],
+      "metadata": {
+        "scenario_family": "number_line_point_value_reading",
+        "scenario_id": 4,
+        "parameter_signature": "number_line_point_value_reading:4:easy",
+        "question_pattern_id": "p4"
+      }
+    },
+    {
+      "problem_type_id": "number_line_point_value_reading",
+      "skill_id": "vh_數學B1_NumberLine",
+      "question_text": "數線上點 $P$ 對應到整數 $9$，已知 $P$ 在 $9$，求其數值。",
+      "answer": "9",
+      "answer_type": "numeric_or_expression",
+      "checker_type": "deterministic_checker",
+      "solution_steps": [
+        "直接讀取數線上點的對應整數。"
+      ],
+      "metadata": {
+        "scenario_family": "number_line_point_value_reading",
+        "scenario_id": 4,
+        "parameter_signature": "number_line_point_value_reading:4:easy",
+        "question_pattern_id": "p4"
+      }
+    },
+    {
+      "problem_type_id": "number_line_point_value_reading",
+      "skill_id": "vh_數學B1_NumberLine",
+      "question_text": "數線上點 $P$ 對應到整數 $6$，已知 $P$ 在 $6$，求其數值。",
+      "answer": "6",
+      "answer_type": "numeric_or_expression",
+      "checker_type": "deterministic_checker",
+      "solution_steps": [
+        "直接讀取數線上點的對應整數。"
+      ],
+      "metadata": {
+        "scenario_family": "number_line_point_value_reading",
+        "scenario_id": 2,
+        "parameter_signature": "number_line_point_value_reading:2:easy",
+        "question_pattern_id": "p2"
+      }
+    },
+    {
+      "problem_type_id": "number_line_point_value_reading",
+      "skill_id": "vh_數學B1_NumberLine",
+      "question_text": "數線上點 $P$ 對應到整數 $7$，已知 $P$ 在 $7$，求其數值。",
+      "answer": "7",
+      "answer_type": "numeric_or_expression",
+      "checker_type": "deterministic_checker",
+      "solution_steps": [
+        "直接讀取數線上點的對應整數。"
+      ],
+      "metadata": {
+        "scenario_family": "number_line_point_value_reading",
+        "scenario_id": 4,
+        "parameter_signature": "number_line_point_value_reading:4:easy",
+        "question_pattern_id": "p4"
+      }
+    },
+    {
+      "problem_type_id": "number_line_point_value_reading",
+      "skill_id": "vh_數學B1_NumberLine",
+      "question_text": "數線上點 $P$ 對應到整數 $8$，已知 $P$ 在 $8$，求其數值。",
+      "answer": "8",
+      "answer_type": "numeric_or_expression",
+      "checker_type": "deterministic_checker",
+      "solution_steps": [
+        "直接讀取數線上點的對應整數。"
+      ],
+      "metadata": {
+        "scenario_family": "number_line_point_value_reading",
+        "scenario_id": 1,
+        "parameter_signature": "number_line_point_value_reading:1:easy",
+        "question_pattern_id": "p1"
+      }
+    },
+    {
+      "problem_type_id": "number_line_point_value_reading",
+      "skill_id": "vh_數學B1_NumberLine",
+      "question_text": "數線上點 $P$ 對應到整數 $-13$，已知 $P$ 在 $-13$，求其數值。",
+      "answer": "-13",
+      "answer_type": "numeric_or_expression",
+      "checker_type": "deterministic_checker",
+      "solution_steps": [
+        "直接讀取數線上點的對應整數。"
+      ],
+      "metadata": {
+        "scenario_family": "number_line_point_value_reading",
+        "scenario_id": 5,
+        "parameter_signature": "number_line_point_value_reading:5:easy",
+        "question_pattern_id": "p5"
+      }
+    }
+  ],
+  "passed": false,
+  "diversity": {
+    "consecutive_duplicate_count": 0,
+    "unique_question_text_count": 21,
+    "repeated_question_text_ratio": 0.30000000000000004,
+    "unique_parameter_signature_count": 5
+  }
+}

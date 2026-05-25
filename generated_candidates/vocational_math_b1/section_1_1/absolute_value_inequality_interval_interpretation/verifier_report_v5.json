@@ -1,0 +1,526 @@
+{
+  "candidate_path": "C:\\Python\\Mathproject_tvet_mathB\\generated_candidates\\vocational_math_b1\\section_1_1\\absolute_value_inequality_interval_interpretation\\candidate_v5.py",
+  "errors": [
+    "consecutive_duplicate_count_nonzero",
+    "repeated_question_text_ratio_above_0.5"
+  ],
+  "samples": [
+    {
+      "problem_type_id": "absolute_value_inequality_interval_interpretation",
+      "skill_id": "vh_數學B1_AbsoluteValueInequalityExpansionAndGeometricMeaning",
+      "question_text": "將解集寫成區間：$|x|\\leq 7$",
+      "answer": "[-7,7]",
+      "answer_type": "numeric_or_expression",
+      "checker_type": "deterministic_checker",
+      "solution_steps": [
+        "轉為閉區間。"
+      ],
+      "metadata": {
+        "scenario_family": "absolute_value_inequality_interval_interpretation",
+        "scenario_id": 4,
+        "parameter_signature": "absolute_value_inequality_interval_interpretation:n=7:difficulty=easy",
+        "question_pattern_id": "p4"
+      }
+    },
+    {
+      "problem_type_id": "absolute_value_inequality_interval_interpretation",
+      "skill_id": "vh_數學B1_AbsoluteValueInequalityExpansionAndGeometricMeaning",
+      "question_text": "將解集寫成區間：$|x|\\leq 10$",
+      "answer": "[-10,10]",
+      "answer_type": "numeric_or_expression",
+      "checker_type": "deterministic_checker",
+      "solution_steps": [
+        "轉為閉區間。"
+      ],
+      "metadata": {
+        "scenario_family": "absolute_value_inequality_interval_interpretation",
+        "scenario_id": 2,
+        "parameter_signature": "absolute_value_inequality_interval_interpretation:n=10:difficulty=easy",
+        "question_pattern_id": "p2"
+      }
+    },
+    {
+      "problem_type_id": "absolute_value_inequality_interval_interpretation",
+      "skill_id": "vh_數學B1_AbsoluteValueInequalityExpansionAndGeometricMeaning",
+      "question_text": "將解集寫成區間：$|x|\\leq 2$",
+      "answer": "[-2,2]",
+      "answer_type": "numeric_or_expression",
+      "checker_type": "deterministic_checker",
+      "solution_steps": [
+        "轉為閉區間。"
+      ],
+      "metadata": {
+        "scenario_family": "absolute_value_inequality_interval_interpretation",
+        "scenario_id": 1,
+        "parameter_signature": "absolute_value_inequality_interval_interpretation:n=2:difficulty=easy",
+        "question_pattern_id": "p1"
+      }
+    },
+    {
+      "problem_type_id": "absolute_value_inequality_interval_interpretation",
+      "skill_id": "vh_數學B1_AbsoluteValueInequalityExpansionAndGeometricMeaning",
+      "question_text": "將解集寫成區間：$|x|\\leq 10$",
+      "answer": "[-10,10]",
+      "answer_type": "numeric_or_expression",
+      "checker_type": "deterministic_checker",
+      "solution_steps": [
+        "轉為閉區間。"
+      ],
+      "metadata": {
+        "scenario_family": "absolute_value_inequality_interval_interpretation",
+        "scenario_id": 2,
+        "parameter_signature": "absolute_value_inequality_interval_interpretation:n=10:difficulty=easy",
+        "question_pattern_id": "p2"
+      }
+    },
+    {
+      "problem_type_id": "absolute_value_inequality_interval_interpretation",
+      "skill_id": "vh_數學B1_AbsoluteValueInequalityExpansionAndGeometricMeaning",
+      "question_text": "將解集寫成區間：$|x|\\leq 5$",
+      "answer": "[-5,5]",
+      "answer_type": "numeric_or_expression",
+      "checker_type": "deterministic_checker",
+      "solution_steps": [
+        "轉為閉區間。"
+      ],
+      "metadata": {
+        "scenario_family": "absolute_value_inequality_interval_interpretation",
+        "scenario_id": 2,
+        "parameter_signature": "absolute_value_inequality_interval_interpretation:n=5:difficulty=easy",
+        "question_pattern_id": "p2"
+      }
+    },
+    {
+      "problem_type_id": "absolute_value_inequality_interval_interpretation",
+      "skill_id": "vh_數學B1_AbsoluteValueInequalityExpansionAndGeometricMeaning",
+      "question_text": "將解集寫成區間：$|x|\\leq 5$",
+      "answer": "[-5,5]",
+      "answer_type": "numeric_or_expression",
+      "checker_type": "deterministic_checker",
+      "solution_steps": [
+        "轉為閉區間。"
+      ],
+      "metadata": {
+        "scenario_family": "absolute_value_inequality_interval_interpretation",
+        "scenario_id": 5,
+        "parameter_signature": "absolute_value_inequality_interval_interpretation:n=5:difficulty=easy",
+        "question_pattern_id": "p5"
+      }
+    },
+    {
+      "problem_type_id": "absolute_value_inequality_interval_interpretation",
+      "skill_id": "vh_數學B1_AbsoluteValueInequalityExpansionAndGeometricMeaning",
+      "question_text": "將解集寫成區間：$|x|\\leq 2$",
+      "answer": "[-2,2]",
+      "answer_type": "numeric_or_expression",
+      "checker_type": "deterministic_checker",
+      "solution_steps": [
+        "轉為閉區間。"
+      ],
+      "metadata": {
+        "scenario_family": "absolute_value_inequality_interval_interpretation",
+        "scenario_id": 5,
+        "parameter_signature": "absolute_value_inequality_interval_interpretation:n=2:difficulty=easy",
+        "question_pattern_id": "p5"
+      }
+    },
+    {
+      "problem_type_id": "absolute_value_inequality_interval_interpretation",
+      "skill_id": "vh_數學B1_AbsoluteValueInequalityExpansionAndGeometricMeaning",
+      "question_text": "將解集寫成區間：$|x|\\leq 3$",
+      "answer": "[-3,3]",
+      "answer_type": "numeric_or_expression",
+      "checker_type": "deterministic_checker",
+      "solution_steps": [
+        "轉為閉區間。"
+      ],
+      "metadata": {
+        "scenario_family": "absolute_value_inequality_interval_interpretation",
+        "scenario_id": 3,
+        "parameter_signature": "absolute_value_inequality_interval_interpretation:n=3:difficulty=easy",
+        "question_pattern_id": "p3"
+      }
+    },
+    {
+      "problem_type_id": "absolute_value_inequality_interval_interpretation",
+      "skill_id": "vh_數學B1_AbsoluteValueInequalityExpansionAndGeometricMeaning",
+      "question_text": "將解集寫成區間：$|x|\\leq 6$",
+      "answer": "[-6,6]",
+      "answer_type": "numeric_or_expression",
+      "checker_type": "deterministic_checker",
+      "solution_steps": [
+        "轉為閉區間。"
+      ],
+      "metadata": {
+        "scenario_family": "absolute_value_inequality_interval_interpretation",
+        "scenario_id": 2,
+        "parameter_signature": "absolute_value_inequality_interval_interpretation:n=6:difficulty=easy",
+        "question_pattern_id": "p2"
+      }
+    },
+    {
+      "problem_type_id": "absolute_value_inequality_interval_interpretation",
+      "skill_id": "vh_數學B1_AbsoluteValueInequalityExpansionAndGeometricMeaning",
+      "question_text": "將解集寫成區間：$|x|\\leq 10$",
+      "answer": "[-10,10]",
+      "answer_type": "numeric_or_expression",
+      "checker_type": "deterministic_checker",
+      "solution_steps": [
+        "轉為閉區間。"
+      ],
+      "metadata": {
+        "scenario_family": "absolute_value_inequality_interval_interpretation",
+        "scenario_id": 4,
+        "parameter_signature": "absolute_value_inequality_interval_interpretation:n=10:difficulty=easy",
+        "question_pattern_id": "p4"
+      }
+    },
+    {
+      "problem_type_id": "absolute_value_inequality_interval_interpretation",
+      "skill_id": "vh_數學B1_AbsoluteValueInequalityExpansionAndGeometricMeaning",
+      "question_text": "將解集寫成區間：$|x|\\leq 1$",
+      "answer": "[-1,1]",
+      "answer_type": "numeric_or_expression",
+      "checker_type": "deterministic_checker",
+      "solution_steps": [
+        "轉為閉區間。"
+      ],
+      "metadata": {
+        "scenario_family": "absolute_value_inequality_interval_interpretation",
+        "scenario_id": 5,
+        "parameter_signature": "absolute_value_inequality_interval_interpretation:n=1:difficulty=easy",
+        "question_pattern_id": "p5"
+      }
+    },
+    {
+      "problem_type_id": "absolute_value_inequality_interval_interpretation",
+      "skill_id": "vh_數學B1_AbsoluteValueInequalityExpansionAndGeometricMeaning",
+      "question_text": "將解集寫成區間：$|x|\\leq 9$",
+      "answer": "[-9,9]",
+      "answer_type": "numeric_or_expression",
+      "checker_type": "deterministic_checker",
+      "solution_steps": [
+        "轉為閉區間。"
+      ],
+      "metadata": {
+        "scenario_family": "absolute_value_inequality_interval_interpretation",
+        "scenario_id": 4,
+        "parameter_signature": "absolute_value_inequality_interval_interpretation:n=9:difficulty=easy",
+        "question_pattern_id": "p4"
+      }
+    },
+    {
+      "problem_type_id": "absolute_value_inequality_interval_interpretation",
+      "skill_id": "vh_數學B1_AbsoluteValueInequalityExpansionAndGeometricMeaning",
+      "question_text": "將解集寫成區間：$|x|\\leq 5$",
+      "answer": "[-5,5]",
+      "answer_type": "numeric_or_expression",
+      "checker_type": "deterministic_checker",
+      "solution_steps": [
+        "轉為閉區間。"
+      ],
+      "metadata": {
+        "scenario_family": "absolute_value_inequality_interval_interpretation",
+        "scenario_id": 4,
+        "parameter_signature": "absolute_value_inequality_interval_interpretation:n=5:difficulty=easy",
+        "question_pattern_id": "p4"
+      }
+    },
+    {
+      "problem_type_id": "absolute_value_inequality_interval_interpretation",
+      "skill_id": "vh_數學B1_AbsoluteValueInequalityExpansionAndGeometricMeaning",
+      "question_text": "將解集寫成區間：$|x|\\leq 5$",
+      "answer": "[-5,5]",
+      "answer_type": "numeric_or_expression",
+      "checker_type": "deterministic_checker",
+      "solution_steps": [
+        "轉為閉區間。"
+      ],
+      "metadata": {
+        "scenario_family": "absolute_value_inequality_interval_interpretation",
+        "scenario_id": 3,
+        "parameter_signature": "absolute_value_inequality_interval_interpretation:n=5:difficulty=easy",
+        "question_pattern_id": "p3"
+      }
+    },
+    {
+      "problem_type_id": "absolute_value_inequality_interval_interpretation",
+      "skill_id": "vh_數學B1_AbsoluteValueInequalityExpansionAndGeometricMeaning",
+      "question_text": "將解集寫成區間：$|x|\\leq 10$",
+      "answer": "[-10,10]",
+      "answer_type": "numeric_or_expression",
+      "checker_type": "deterministic_checker",
+      "solution_steps": [
+        "轉為閉區間。"
+      ],
+      "metadata": {
+        "scenario_family": "absolute_value_inequality_interval_interpretation",
+        "scenario_id": 1,
+        "parameter_signature": "absolute_value_inequality_interval_interpretation:n=10:difficulty=easy",
+        "question_pattern_id": "p1"
+      }
+    },
+    {
+      "problem_type_id": "absolute_value_inequality_interval_interpretation",
+      "skill_id": "vh_數學B1_AbsoluteValueInequalityExpansionAndGeometricMeaning",
+      "question_text": "將解集寫成區間：$|x|\\leq 1$",
+      "answer": "[-1,1]",
+      "answer_type": "numeric_or_expression",
+      "checker_type": "deterministic_checker",
+      "solution_steps": [
+        "轉為閉區間。"
+      ],
+      "metadata": {
+        "scenario_family": "absolute_value_inequality_interval_interpretation",
+        "scenario_id": 2,
+        "parameter_signature": "absolute_value_inequality_interval_interpretation:n=1:difficulty=easy",
+        "question_pattern_id": "p2"
+      }
+    },
+    {
+      "problem_type_id": "absolute_value_inequality_interval_interpretation",
+      "skill_id": "vh_數學B1_AbsoluteValueInequalityExpansionAndGeometricMeaning",
+      "question_text": "將解集寫成區間：$|x|\\leq 8$",
+      "answer": "[-8,8]",
+      "answer_type": "numeric_or_expression",
+      "checker_type": "deterministic_checker",
+      "solution_steps": [
+        "轉為閉區間。"
+      ],
+      "metadata": {
+        "scenario_family": "absolute_value_inequality_interval_interpretation",
+        "scenario_id": 3,
+        "parameter_signature": "absolute_value_inequality_interval_interpretation:n=8:difficulty=easy",
+        "question_pattern_id": "p3"
+      }
+    },
+    {
+      "problem_type_id": "absolute_value_inequality_interval_interpretation",
+      "skill_id": "vh_數學B1_AbsoluteValueInequalityExpansionAndGeometricMeaning",
+      "question_text": "將解集寫成區間：$|x|\\leq 7$",
+      "answer": "[-7,7]",
+      "answer_type": "numeric_or_expression",
+      "checker_type": "deterministic_checker",
+      "solution_steps": [
+        "轉為閉區間。"
+      ],
+      "metadata": {
+        "scenario_family": "absolute_value_inequality_interval_interpretation",
+        "scenario_id": 5,
+        "parameter_signature": "absolute_value_inequality_interval_interpretation:n=7:difficulty=easy",
+        "question_pattern_id": "p5"
+      }
+    },
+    {
+      "problem_type_id": "absolute_value_inequality_interval_interpretation",
+      "skill_id": "vh_數學B1_AbsoluteValueInequalityExpansionAndGeometricMeaning",
+      "question_text": "將解集寫成區間：$|x|\\leq 2$",
+      "answer": "[-2,2]",
+      "answer_type": "numeric_or_expression",
+      "checker_type": "deterministic_checker",
+      "solution_steps": [
+        "轉為閉區間。"
+      ],
+      "metadata": {
+        "scenario_family": "absolute_value_inequality_interval_interpretation",
+        "scenario_id": 2,
+        "parameter_signature": "absolute_value_inequality_interval_interpretation:n=2:difficulty=easy",
+        "question_pattern_id": "p2"
+      }
+    },
+    {
+      "problem_type_id": "absolute_value_inequality_interval_interpretation",
+      "skill_id": "vh_數學B1_AbsoluteValueInequalityExpansionAndGeometricMeaning",
+      "question_text": "將解集寫成區間：$|x|\\leq 9$",
+      "answer": "[-9,9]",
+      "answer_type": "numeric_or_expression",
+      "checker_type": "deterministic_checker",
+      "solution_steps": [
+        "轉為閉區間。"
+      ],
+      "metadata": {
+        "scenario_family": "absolute_value_inequality_interval_interpretation",
+        "scenario_id": 1,
+        "parameter_signature": "absolute_value_inequality_interval_interpretation:n=9:difficulty=easy",
+        "question_pattern_id": "p1"
+      }
+    },
+    {
+      "problem_type_id": "absolute_value_inequality_interval_interpretation",
+      "skill_id": "vh_數學B1_AbsoluteValueInequalityExpansionAndGeometricMeaning",
+      "question_text": "將解集寫成區間：$|x|\\leq 5$",
+      "answer": "[-5,5]",
+      "answer_type": "numeric_or_expression",
+      "checker_type": "deterministic_checker",
+      "solution_steps": [
+        "轉為閉區間。"
+      ],
+      "metadata": {
+        "scenario_family": "absolute_value_inequality_interval_interpretation",
+        "scenario_id": 2,
+        "parameter_signature": "absolute_value_inequality_interval_interpretation:n=5:difficulty=easy",
+        "question_pattern_id": "p2"
+      }
+    },
+    {
+      "problem_type_id": "absolute_value_inequality_interval_interpretation",
+      "skill_id": "vh_數學B1_AbsoluteValueInequalityExpansionAndGeometricMeaning",
+      "question_text": "將解集寫成區間：$|x|\\leq 7$",
+      "answer": "[-7,7]",
+      "answer_type": "numeric_or_expression",
+      "checker_type": "deterministic_checker",
+      "solution_steps": [
+        "轉為閉區間。"
+      ],
+      "metadata": {
+        "scenario_family": "absolute_value_inequality_interval_interpretation",
+        "scenario_id": 2,
+        "parameter_signature": "absolute_value_inequality_interval_interpretation:n=7:difficulty=easy",
+        "question_pattern_id": "p2"
+      }
+    },
+    {
+      "problem_type_id": "absolute_value_inequality_interval_interpretation",
+      "skill_id": "vh_數學B1_AbsoluteValueInequalityExpansionAndGeometricMeaning",
+      "question_text": "將解集寫成區間：$|x|\\leq 4$",
+      "answer": "[-4,4]",
+      "answer_type": "numeric_or_expression",
+      "checker_type": "deterministic_checker",
+      "solution_steps": [
+        "轉為閉區間。"
+      ],
+      "metadata": {
+        "scenario_family": "absolute_value_inequality_interval_interpretation",
+        "scenario_id": 2,
+        "parameter_signature": "absolute_value_inequality_interval_interpretation:n=4:difficulty=easy",
+        "question_pattern_id": "p2"
+      }
+    },
+    {
+      "problem_type_id": "absolute_value_inequality_interval_interpretation",
+      "skill_id": "vh_數學B1_AbsoluteValueInequalityExpansionAndGeometricMeaning",
+      "question_text": "將解集寫成區間：$|x|\\leq 2$",
+      "answer": "[-2,2]",
+      "answer_type": "numeric_or_expression",
+      "checker_type": "deterministic_checker",
+      "solution_steps": [
+        "轉為閉區間。"
+      ],
+      "metadata": {
+        "scenario_family": "absolute_value_inequality_interval_interpretation",
+        "scenario_id": 3,
+        "parameter_signature": "absolute_value_inequality_interval_interpretation:n=2:difficulty=easy",
+        "question_pattern_id": "p3"
+      }
+    },
+    {
+      "problem_type_id": "absolute_value_inequality_interval_interpretation",
+      "skill_id": "vh_數學B1_AbsoluteValueInequalityExpansionAndGeometricMeaning",
+      "question_text": "將解集寫成區間：$|x|\\leq 10$",
+      "answer": "[-10,10]",
+      "answer_type": "numeric_or_expression",
+      "checker_type": "deterministic_checker",
+      "solution_steps": [
+        "轉為閉區間。"
+      ],
+      "metadata": {
+        "scenario_family": "absolute_value_inequality_interval_interpretation",
+        "scenario_id": 4,
+        "parameter_signature": "absolute_value_inequality_interval_interpretation:n=10:difficulty=easy",
+        "question_pattern_id": "p4"
+      }
+    },
+    {
+      "problem_type_id": "absolute_value_inequality_interval_interpretation",
+      "skill_id": "vh_數學B1_AbsoluteValueInequalityExpansionAndGeometricMeaning",
+      "question_text": "將解集寫成區間：$|x|\\leq 1$",
+      "answer": "[-1,1]",
+      "answer_type": "numeric_or_expression",
+      "checker_type": "deterministic_checker",
+      "solution_steps": [
+        "轉為閉區間。"
+      ],
+      "metadata": {
+        "scenario_family": "absolute_value_inequality_interval_interpretation",
+        "scenario_id": 4,
+        "parameter_signature": "absolute_value_inequality_interval_interpretation:n=1:difficulty=easy",
+        "question_pattern_id": "p4"
+      }
+    },
+    {
+      "problem_type_id": "absolute_value_inequality_interval_interpretation",
+      "skill_id": "vh_數學B1_AbsoluteValueInequalityExpansionAndGeometricMeaning",
+      "question_text": "將解集寫成區間：$|x|\\leq 11$",
+      "answer": "[-11,11]",
+      "answer_type": "numeric_or_expression",
+      "checker_type": "deterministic_checker",
+      "solution_steps": [
+        "轉為閉區間。"
+      ],
+      "metadata": {
+        "scenario_family": "absolute_value_inequality_interval_interpretation",
+        "scenario_id": 2,
+        "parameter_signature": "absolute_value_inequality_interval_interpretation:n=11:difficulty=easy",
+        "question_pattern_id": "p2"
+      }
+    },
+    {
+      "problem_type_id": "absolute_value_inequality_interval_interpretation",
+      "skill_id": "vh_數學B1_AbsoluteValueInequalityExpansionAndGeometricMeaning",
+      "question_text": "將解集寫成區間：$|x|\\leq 12$",
+      "answer": "[-12,12]",
+      "answer_type": "numeric_or_expression",
+      "checker_type": "deterministic_checker",
+      "solution_steps": [
+        "轉為閉區間。"
+      ],
+      "metadata": {
+        "scenario_family": "absolute_value_inequality_interval_interpretation",
+        "scenario_id": 4,
+        "parameter_signature": "absolute_value_inequality_interval_interpretation:n=12:difficulty=easy",
+        "question_pattern_id": "p4"
+      }
+    },
+    {
+      "problem_type_id": "absolute_value_inequality_interval_interpretation",
+      "skill_id": "vh_數學B1_AbsoluteValueInequalityExpansionAndGeometricMeaning",
+      "question_text": "將解集寫成區間：$|x|\\leq 12$",
+      "answer": "[-12,12]",
+      "answer_type": "numeric_or_expression",
+      "checker_type": "deterministic_checker",
+      "solution_steps": [
+        "轉為閉區間。"
+      ],
+      "metadata": {
+        "scenario_family": "absolute_value_inequality_interval_interpretation",
+        "scenario_id": 1,
+        "parameter_signature": "absolute_value_inequality_interval_interpretation:n=12:difficulty=easy",
+        "question_pattern_id": "p1"
+      }
+    },
+    {
+      "problem_type_id": "absolute_value_inequality_interval_interpretation",
+      "skill_id": "vh_數學B1_AbsoluteValueInequalityExpansionAndGeometricMeaning",
+      "question_text": "將解集寫成區間：$|x|\\leq 2$",
+      "answer": "[-2,2]",
+      "answer_type": "numeric_or_expression",
+      "checker_type": "deterministic_checker",
+      "solution_steps": [
+        "轉為閉區間。"
+      ],
+      "metadata": {
+        "scenario_family": "absolute_value_inequality_interval_interpretation",
+        "scenario_id": 5,
+        "parameter_signature": "absolute_value_inequality_interval_interpretation:n=2:difficulty=easy",
+        "question_pattern_id": "p5"
+      }
+    }
+  ],
+  "passed": false,
+  "diversity": {
+    "consecutive_duplicate_count": 3,
+    "unique_question_text_count": 12,
+    "repeated_question_text_ratio": 0.6,
+    "unique_parameter_signature_count": 12
+  }
+}
