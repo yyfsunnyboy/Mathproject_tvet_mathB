@@ -175,3 +175,83 @@ Registry å¿…é ˆå®Œæ•´ä¿ç•™ä»¥ä¸‹å¾Œç«¯èˆ‡ Wrapper èª¿ç”¨æ‰€éœ€çš„å…ƒæ•¸æ“šï¼Œä¸
 ---
 *æ–‡ä»¶æ—¥æœŸ: 2026-05-25*
 *ç‰ˆæœ¬: v0.1.1 (SOP ç¶“é©—æ›´æ–°ç‰ˆ)*
+
+---
+
+## 11. Final Coverage Gate / Skill Closure Gate
+
+### 11.1 ¥Øªº
+¦b generator¡Bregistry¡Bwrapper ÅçÃÒ§¹¦¨«á¡A¹ï³æ¤@ skill ¶i¦æ³Ì²×§¹¦¨«×§P©w¡AÁ×§K¶È baseline ÃD«¬³q¹L´N»~§P¬° full skill ready¡C
+
+### 11.2 ¿é¤J
+- DB examples count
+- `examples_map.yaml`
+- `problem_types.yaml`
+- generated registry
+- `verify_skill_gencode.py` report
+- `run_skill_gencode_pipeline.py` report
+
+### 11.3 ¿é¥X
+- `coverage_status`
+- `full_skill_coverage`
+- `final_status` (`PASS` / `PARTIAL` / `FAIL`)
+- `blocking_reasons`
+
+### 11.4 PASS ±ø¥ó
+- `examples_map` ²[»\¥ş³¡ DB examples
+- ¨Cµ§ example ¨ã³Æ¡G`subskill_id` / `problem_type_id` / `runtime_category` / `classification_reason`
+- ©Ò¦³ observed deterministic `problem_type` ³£¤w verified
+- `pending_implementation = []`
+- `failed_problem_types = []`
+- `manual_review` / `visual_or_handwriting` ­Y¦s¦b¡A§¡¦³©ú½T reason
+- `verify_skill_gencode.py success = true`
+- registry ¤¤ verified candidate ¥i³Q wrapper ¥¿±`¨Ï¥Î
+
+### 11.5 PARTIAL ±ø¥ó
+- ¦Ü¤Ö¤@­Ó `problem_type` verified
+- ¦ı¤´¦³ `pending_implementation` / `failed` / unresolved `manual_review`
+- ©Î `examples_map` Äæ¦ì¤£§¹¾ã
+- ©Î¶È baseline coverage¡]¥¼¹F observed coverage closure¡^
+
+### 11.6 FAIL ±ø¥ó
+- ¨S¦³¥ô¦ó verified `problem_type`
+- ©Î inventory failed
+- ©Î `verify_skill_gencode.py` failed
+- ©Î registry / wrapper ¤£¥i¥Î
+
+### 11.7 Blocking Reasons¡]«ØÄ³¼Ğ·ÇÁä¡^
+- `missing_examples_map_fields`
+- `unverified_observed_problem_type`
+- `pending_implementation_not_empty`
+- `manual_review_not_resolved`
+- `skill_verify_failed`
+- `inventory_failed`
+- `registry_wrapper_unavailable`
+
+### 11.8 ¼Ğ·Ç¬y¤ô½u¡]Closure¡^
+`skill_id`
+¡÷ DB examples inventory
+¡÷ examples_map §¹¾ã¤ÀÃş
+¡÷ subskills / problem_types / prerequisites YAML
+¡÷ problem_type closed loop
+¡÷ verifier / healer
+¡÷ non-destructive registry merge
+¡÷ wrapper verify
+¡÷ Final Coverage Gate
+¡÷ PASS / PARTIAL / FAIL
+¡÷ pipeline report
+
+### 11.9 B1 AbsoluteValue ¦¨¥\®×¨Ò
+- `skill_id = vh_¼Æ¾ÇB1_AbsoluteValue`
+- `verified_problem_types`:
+  - `absolute_value_numeric_evaluation`
+  - `absolute_value_equation_basic`
+  - `absolute_value_distance_from_zero`
+- `coverage_status = FULL_OBSERVED_COVERAGE`
+- `full_skill_coverage = true`
+- `final_status = PASS`
+- `pending_implementation = []`
+- `failed_problem_types = []`
+- `blocking_reasons = []`
+
+¦¹®×¨Ò½T»{¡G³æ¤@ skill ¥i¦b observed examples ½d³ò¤º¡A±q examples_map¡Bproblem_type closed loop¡Bregistry merge¡Bwrapper verify ¨ì Final Coverage Gate §¹¾ã³¬Àô¡C

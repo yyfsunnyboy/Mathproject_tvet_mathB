@@ -1,29 +1,10 @@
 items:
   -
-    subskill_id: "absolute_value_numeric_evaluation"
+    subskill_id: "absolute_value_distance_between_two_points"
     prerequisite_subskills:
-
-  -
-    subskill_id: "absolute_value_distance_from_zero"
-    prerequisite_subskills:
-      - "absolute_value_numeric_evaluation"
-  -
-    subskill_id: "absolute_value_expression_evaluation"
-    prerequisite_subskills:
-      - "absolute_value_numeric_evaluation"
-  -
-    subskill_id: "absolute_value_compare_or_order"
-    prerequisite_subskills:
+      - "number_line_basic_position"
       - "absolute_value_numeric_evaluation"
   -
     subskill_id: "absolute_value_equation_basic"
     prerequisite_subskills:
       - "absolute_value_numeric_evaluation"
-  -
-    subskill_id: "absolute_value_simplification_by_sign"
-    prerequisite_subskills:
-      - "absolute_value_numeric_evaluation"
-  -
-    subskill_id: "absolute_value_definition_choice"
-    prerequisite_subskills:
-

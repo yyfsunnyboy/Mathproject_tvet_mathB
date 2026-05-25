@@ -1,5 +1,5 @@
 {
-  "candidate_path": "C:\\Python\\Mathproject_tvet_mathB\\generated_candidates\\vocational_math_b1\\section_1_1\\absolute_value_numeric_evaluation\\candidate_v1.py",
+  "candidate_path": "E:\\Python\\Mathproject_tvet_mathB\\generated_candidates\\vocational_math_b1\\section_1_1\\absolute_value_numeric_evaluation\\candidate_v1.py",
   "errors": [],
   "samples": [
     {
@@ -11,8 +11,8 @@
       "answer_type": "integer",
       "checker_type": "integer_checker",
       "solution_steps": [
-        "絕對值表示到 0 的距離。",
-        "因此 $|-20|=20$。"
+        "絕對值表示與 0 的距離。",
+        "$|-20|=20$。"
       ],
       "metadata": {
         "scenario_family": "absolute_value_numeric_evaluation",
@@ -27,7 +27,7 @@
       },
       "question": "求 $|-20|$ 的值。",
       "correct_answer": 20,
-      "explanation": "絕對值表示到 0 的距離。\n因此 $|-20|=20$。",
+      "explanation": "絕對值表示與 0 的距離。\n$|-20|=20$。",
       "choices": []
     },
     {
@@ -39,8 +39,8 @@
       "answer_type": "integer",
       "checker_type": "integer_checker",
       "solution_steps": [
-        "絕對值表示到 0 的距離。",
-        "因此 $|-19|=19$。"
+        "絕對值表示與 0 的距離。",
+        "$|-19|=19$。"
       ],
       "metadata": {
         "scenario_family": "absolute_value_numeric_evaluation",
@@ -55,7 +55,7 @@
       },
       "question": "求 $|-19|$ 的值。",
       "correct_answer": 19,
-      "explanation": "絕對值表示到 0 的距離。\n因此 $|-19|=19$。",
+      "explanation": "絕對值表示與 0 的距離。\n$|-19|=19$。",
       "choices": []
     },
     {
@@ -67,8 +67,8 @@
       "answer_type": "integer",
       "checker_type": "integer_checker",
       "solution_steps": [
-        "絕對值表示到 0 的距離。",
-        "因此 $|-18|=18$。"
+        "絕對值表示與 0 的距離。",
+        "$|-18|=18$。"
       ],
       "metadata": {
         "scenario_family": "absolute_value_numeric_evaluation",
@@ -83,7 +83,7 @@
       },
       "question": "求 $|-18|$ 的值。",
       "correct_answer": 18,
-      "explanation": "絕對值表示到 0 的距離。\n因此 $|-18|=18$。",
+      "explanation": "絕對值表示與 0 的距離。\n$|-18|=18$。",
       "choices": []
     },
     {
@@ -95,8 +95,8 @@
       "answer_type": "integer",
       "checker_type": "integer_checker",
       "solution_steps": [
-        "絕對值表示到 0 的距離。",
-        "因此 $|-17|=17$。"
+        "絕對值表示與 0 的距離。",
+        "$|-17|=17$。"
       ],
       "metadata": {
         "scenario_family": "absolute_value_numeric_evaluation",
@@ -111,7 +111,7 @@
       },
       "question": "求 $|-17|$ 的值。",
       "correct_answer": 17,
-      "explanation": "絕對值表示到 0 的距離。\n因此 $|-17|=17$。",
+      "explanation": "絕對值表示與 0 的距離。\n$|-17|=17$。",
       "choices": []
     },
     {
@@ -123,8 +123,8 @@
       "answer_type": "integer",
       "checker_type": "integer_checker",
       "solution_steps": [
-        "絕對值表示到 0 的距離。",
-        "因此 $|-16|=16$。"
+        "絕對值表示與 0 的距離。",
+        "$|-16|=16$。"
       ],
       "metadata": {
         "scenario_family": "absolute_value_numeric_evaluation",
@@ -139,7 +139,7 @@
       },
       "question": "求 $|-16|$ 的值。",
       "correct_answer": 16,
-      "explanation": "絕對值表示到 0 的距離。\n因此 $|-16|=16$。",
+      "explanation": "絕對值表示與 0 的距離。\n$|-16|=16$。",
       "choices": []
     },
     {
@@ -151,8 +151,8 @@
       "answer_type": "integer",
       "checker_type": "integer_checker",
       "solution_steps": [
-        "絕對值表示到 0 的距離。",
-        "因此 $|-15|=15$。"
+        "絕對值表示與 0 的距離。",
+        "$|-15|=15$。"
       ],
       "metadata": {
         "scenario_family": "absolute_value_numeric_evaluation",
@@ -167,7 +167,7 @@
       },
       "question": "求 $|-15|$ 的值。",
       "correct_answer": 15,
-      "explanation": "絕對值表示到 0 的距離。\n因此 $|-15|=15$。",
+      "explanation": "絕對值表示與 0 的距離。\n$|-15|=15$。",
       "choices": []
     },
     {
@@ -179,8 +179,8 @@
       "answer_type": "integer",
       "checker_type": "integer_checker",
       "solution_steps": [
-        "絕對值表示到 0 的距離。",
-        "因此 $|-14|=14$。"
+        "絕對值表示與 0 的距離。",
+        "$|-14|=14$。"
       ],
       "metadata": {
         "scenario_family": "absolute_value_numeric_evaluation",
@@ -195,7 +195,7 @@
       },
       "question": "求 $|-14|$ 的值。",
       "correct_answer": 14,
-      "explanation": "絕對值表示到 0 的距離。\n因此 $|-14|=14$。",
+      "explanation": "絕對值表示與 0 的距離。\n$|-14|=14$。",
       "choices": []
     },
     {
@@ -207,8 +207,8 @@
       "answer_type": "integer",
       "checker_type": "integer_checker",
       "solution_steps": [
-        "絕對值表示到 0 的距離。",
-        "因此 $|-13|=13$。"
+        "絕對值表示與 0 的距離。",
+        "$|-13|=13$。"
       ],
       "metadata": {
         "scenario_family": "absolute_value_numeric_evaluation",
@@ -223,7 +223,7 @@
       },
       "question": "求 $|-13|$ 的值。",
       "correct_answer": 13,
-      "explanation": "絕對值表示到 0 的距離。\n因此 $|-13|=13$。",
+      "explanation": "絕對值表示與 0 的距離。\n$|-13|=13$。",
       "choices": []
     },
     {
@@ -235,8 +235,8 @@
       "answer_type": "integer",
       "checker_type": "integer_checker",
       "solution_steps": [
-        "絕對值表示到 0 的距離。",
-        "因此 $|-12|=12$。"
+        "絕對值表示與 0 的距離。",
+        "$|-12|=12$。"
       ],
       "metadata": {
         "scenario_family": "absolute_value_numeric_evaluation",
@@ -251,7 +251,7 @@
       },
       "question": "求 $|-12|$ 的值。",
       "correct_answer": 12,
-      "explanation": "絕對值表示到 0 的距離。\n因此 $|-12|=12$。",
+      "explanation": "絕對值表示與 0 的距離。\n$|-12|=12$。",
       "choices": []
     },
     {
@@ -263,8 +263,8 @@
       "answer_type": "integer",
       "checker_type": "integer_checker",
       "solution_steps": [
-        "絕對值表示到 0 的距離。",
-        "因此 $|-11|=11$。"
+        "絕對值表示與 0 的距離。",
+        "$|-11|=11$。"
       ],
       "metadata": {
         "scenario_family": "absolute_value_numeric_evaluation",
@@ -279,7 +279,7 @@
       },
       "question": "求 $|-11|$ 的值。",
       "correct_answer": 11,
-      "explanation": "絕對值表示到 0 的距離。\n因此 $|-11|=11$。",
+      "explanation": "絕對值表示與 0 的距離。\n$|-11|=11$。",
       "choices": []
     },
     {
@@ -291,8 +291,8 @@
       "answer_type": "integer",
       "checker_type": "integer_checker",
       "solution_steps": [
-        "絕對值表示到 0 的距離。",
-        "因此 $|-10|=10$。"
+        "絕對值表示與 0 的距離。",
+        "$|-10|=10$。"
       ],
       "metadata": {
         "scenario_family": "absolute_value_numeric_evaluation",
@@ -307,7 +307,7 @@
       },
       "question": "求 $|-10|$ 的值。",
       "correct_answer": 10,
-      "explanation": "絕對值表示到 0 的距離。\n因此 $|-10|=10$。",
+      "explanation": "絕對值表示與 0 的距離。\n$|-10|=10$。",
       "choices": []
     },
     {
@@ -319,8 +319,8 @@
       "answer_type": "integer",
       "checker_type": "integer_checker",
       "solution_steps": [
-        "絕對值表示到 0 的距離。",
-        "因此 $|-9|=9$。"
+        "絕對值表示與 0 的距離。",
+        "$|-9|=9$。"
       ],
       "metadata": {
         "scenario_family": "absolute_value_numeric_evaluation",
@@ -335,7 +335,7 @@
       },
       "question": "求 $|-9|$ 的值。",
       "correct_answer": 9,
-      "explanation": "絕對值表示到 0 的距離。\n因此 $|-9|=9$。",
+      "explanation": "絕對值表示與 0 的距離。\n$|-9|=9$。",
       "choices": []
     },
     {
@@ -347,8 +347,8 @@
       "answer_type": "integer",
       "checker_type": "integer_checker",
       "solution_steps": [
-        "絕對值表示到 0 的距離。",
-        "因此 $|-8|=8$。"
+        "絕對值表示與 0 的距離。",
+        "$|-8|=8$。"
       ],
       "metadata": {
         "scenario_family": "absolute_value_numeric_evaluation",
@@ -363,7 +363,7 @@
       },
       "question": "求 $|-8|$ 的值。",
       "correct_answer": 8,
-      "explanation": "絕對值表示到 0 的距離。\n因此 $|-8|=8$。",
+      "explanation": "絕對值表示與 0 的距離。\n$|-8|=8$。",
       "choices": []
     },
     {
@@ -375,8 +375,8 @@
       "answer_type": "integer",
       "checker_type": "integer_checker",
       "solution_steps": [
-        "絕對值表示到 0 的距離。",
-        "因此 $|-7|=7$。"
+        "絕對值表示與 0 的距離。",
+        "$|-7|=7$。"
       ],
       "metadata": {
         "scenario_family": "absolute_value_numeric_evaluation",
@@ -391,7 +391,7 @@
       },
       "question": "求 $|-7|$ 的值。",
       "correct_answer": 7,
-      "explanation": "絕對值表示到 0 的距離。\n因此 $|-7|=7$。",
+      "explanation": "絕對值表示與 0 的距離。\n$|-7|=7$。",
       "choices": []
     },
     {
@@ -403,8 +403,8 @@
       "answer_type": "integer",
       "checker_type": "integer_checker",
       "solution_steps": [
-        "絕對值表示到 0 的距離。",
-        "因此 $|-6|=6$。"
+        "絕對值表示與 0 的距離。",
+        "$|-6|=6$。"
       ],
       "metadata": {
         "scenario_family": "absolute_value_numeric_evaluation",
@@ -419,7 +419,7 @@
       },
       "question": "求 $|-6|$ 的值。",
       "correct_answer": 6,
-      "explanation": "絕對值表示到 0 的距離。\n因此 $|-6|=6$。",
+      "explanation": "絕對值表示與 0 的距離。\n$|-6|=6$。",
       "choices": []
     },
     {
@@ -431,8 +431,8 @@
       "answer_type": "integer",
       "checker_type": "integer_checker",
       "solution_steps": [
-        "絕對值表示到 0 的距離。",
-        "因此 $|-5|=5$。"
+        "絕對值表示與 0 的距離。",
+        "$|-5|=5$。"
       ],
       "metadata": {
         "scenario_family": "absolute_value_numeric_evaluation",
@@ -447,7 +447,7 @@
       },
       "question": "求 $|-5|$ 的值。",
       "correct_answer": 5,
-      "explanation": "絕對值表示到 0 的距離。\n因此 $|-5|=5$。",
+      "explanation": "絕對值表示與 0 的距離。\n$|-5|=5$。",
       "choices": []
     },
     {
@@ -459,8 +459,8 @@
       "answer_type": "integer",
       "checker_type": "integer_checker",
       "solution_steps": [
-        "絕對值表示到 0 的距離。",
-        "因此 $|-4|=4$。"
+        "絕對值表示與 0 的距離。",
+        "$|-4|=4$。"
       ],
       "metadata": {
         "scenario_family": "absolute_value_numeric_evaluation",
@@ -475,7 +475,7 @@
       },
       "question": "求 $|-4|$ 的值。",
       "correct_answer": 4,
-      "explanation": "絕對值表示到 0 的距離。\n因此 $|-4|=4$。",
+      "explanation": "絕對值表示與 0 的距離。\n$|-4|=4$。",
       "choices": []
     },
     {
@@ -487,8 +487,8 @@
       "answer_type": "integer",
       "checker_type": "integer_checker",
       "solution_steps": [
-        "絕對值表示到 0 的距離。",
-        "因此 $|-3|=3$。"
+        "絕對值表示與 0 的距離。",
+        "$|-3|=3$。"
       ],
       "metadata": {
         "scenario_family": "absolute_value_numeric_evaluation",
@@ -503,7 +503,7 @@
       },
       "question": "求 $|-3|$ 的值。",
       "correct_answer": 3,
-      "explanation": "絕對值表示到 0 的距離。\n因此 $|-3|=3$。",
+      "explanation": "絕對值表示與 0 的距離。\n$|-3|=3$。",
       "choices": []
     },
     {
@@ -515,8 +515,8 @@
       "answer_type": "integer",
       "checker_type": "integer_checker",
       "solution_steps": [
-        "絕對值表示到 0 的距離。",
-        "因此 $|-2|=2$。"
+        "絕對值表示與 0 的距離。",
+        "$|-2|=2$。"
       ],
       "metadata": {
         "scenario_family": "absolute_value_numeric_evaluation",
@@ -531,7 +531,7 @@
       },
       "question": "求 $|-2|$ 的值。",
       "correct_answer": 2,
-      "explanation": "絕對值表示到 0 的距離。\n因此 $|-2|=2$。",
+      "explanation": "絕對值表示與 0 的距離。\n$|-2|=2$。",
       "choices": []
     },
     {
@@ -543,8 +543,8 @@
       "answer_type": "integer",
       "checker_type": "integer_checker",
       "solution_steps": [
-        "絕對值表示到 0 的距離。",
-        "因此 $|-1|=1$。"
+        "絕對值表示與 0 的距離。",
+        "$|-1|=1$。"
       ],
       "metadata": {
         "scenario_family": "absolute_value_numeric_evaluation",
@@ -559,7 +559,7 @@
       },
       "question": "求 $|-1|$ 的值。",
       "correct_answer": 1,
-      "explanation": "絕對值表示到 0 的距離。\n因此 $|-1|=1$。",
+      "explanation": "絕對值表示與 0 的距離。\n$|-1|=1$。",
       "choices": []
     },
     {
@@ -571,8 +571,8 @@
       "answer_type": "integer",
       "checker_type": "integer_checker",
       "solution_steps": [
-        "絕對值表示到 0 的距離。",
-        "因此 $|0|=0$。"
+        "絕對值表示與 0 的距離。",
+        "$|0|=0$。"
       ],
       "metadata": {
         "scenario_family": "absolute_value_numeric_evaluation",
@@ -587,7 +587,7 @@
       },
       "question": "求 $|0|$ 的值。",
       "correct_answer": 0,
-      "explanation": "絕對值表示到 0 的距離。\n因此 $|0|=0$。",
+      "explanation": "絕對值表示與 0 的距離。\n$|0|=0$。",
       "choices": []
     },
     {
@@ -599,8 +599,8 @@
       "answer_type": "integer",
       "checker_type": "integer_checker",
       "solution_steps": [
-        "絕對值表示到 0 的距離。",
-        "因此 $|1|=1$。"
+        "絕對值表示與 0 的距離。",
+        "$|1|=1$。"
       ],
       "metadata": {
         "scenario_family": "absolute_value_numeric_evaluation",
@@ -615,7 +615,7 @@
       },
       "question": "求 $|1|$ 的值。",
       "correct_answer": 1,
-      "explanation": "絕對值表示到 0 的距離。\n因此 $|1|=1$。",
+      "explanation": "絕對值表示與 0 的距離。\n$|1|=1$。",
       "choices": []
     },
     {
@@ -627,8 +627,8 @@
       "answer_type": "integer",
       "checker_type": "integer_checker",
       "solution_steps": [
-        "絕對值表示到 0 的距離。",
-        "因此 $|2|=2$。"
+        "絕對值表示與 0 的距離。",
+        "$|2|=2$。"
       ],
       "metadata": {
         "scenario_family": "absolute_value_numeric_evaluation",
@@ -643,7 +643,7 @@
       },
       "question": "求 $|2|$ 的值。",
       "correct_answer": 2,
-      "explanation": "絕對值表示到 0 的距離。\n因此 $|2|=2$。",
+      "explanation": "絕對值表示與 0 的距離。\n$|2|=2$。",
       "choices": []
     },
     {
@@ -655,8 +655,8 @@
       "answer_type": "integer",
       "checker_type": "integer_checker",
       "solution_steps": [
-        "絕對值表示到 0 的距離。",
-        "因此 $|3|=3$。"
+        "絕對值表示與 0 的距離。",
+        "$|3|=3$。"
       ],
       "metadata": {
         "scenario_family": "absolute_value_numeric_evaluation",
@@ -671,7 +671,7 @@
       },
       "question": "求 $|3|$ 的值。",
       "correct_answer": 3,
-      "explanation": "絕對值表示到 0 的距離。\n因此 $|3|=3$。",
+      "explanation": "絕對值表示與 0 的距離。\n$|3|=3$。",
       "choices": []
     },
     {
@@ -683,8 +683,8 @@
       "answer_type": "integer",
       "checker_type": "integer_checker",
       "solution_steps": [
-        "絕對值表示到 0 的距離。",
-        "因此 $|4|=4$。"
+        "絕對值表示與 0 的距離。",
+        "$|4|=4$。"
       ],
       "metadata": {
         "scenario_family": "absolute_value_numeric_evaluation",
@@ -699,7 +699,7 @@
       },
       "question": "求 $|4|$ 的值。",
       "correct_answer": 4,
-      "explanation": "絕對值表示到 0 的距離。\n因此 $|4|=4$。",
+      "explanation": "絕對值表示與 0 的距離。\n$|4|=4$。",
       "choices": []
     },
     {
@@ -711,8 +711,8 @@
       "answer_type": "integer",
       "checker_type": "integer_checker",
       "solution_steps": [
-        "絕對值表示到 0 的距離。",
-        "因此 $|5|=5$。"
+        "絕對值表示與 0 的距離。",
+        "$|5|=5$。"
       ],
       "metadata": {
         "scenario_family": "absolute_value_numeric_evaluation",
@@ -727,7 +727,7 @@
       },
       "question": "求 $|5|$ 的值。",
       "correct_answer": 5,
-      "explanation": "絕對值表示到 0 的距離。\n因此 $|5|=5$。",
+      "explanation": "絕對值表示與 0 的距離。\n$|5|=5$。",
       "choices": []
     },
     {
@@ -739,8 +739,8 @@
       "answer_type": "integer",
       "checker_type": "integer_checker",
       "solution_steps": [
-        "絕對值表示到 0 的距離。",
-        "因此 $|6|=6$。"
+        "絕對值表示與 0 的距離。",
+        "$|6|=6$。"
       ],
       "metadata": {
         "scenario_family": "absolute_value_numeric_evaluation",
@@ -755,7 +755,7 @@
       },
       "question": "求 $|6|$ 的值。",
       "correct_answer": 6,
-      "explanation": "絕對值表示到 0 的距離。\n因此 $|6|=6$。",
+      "explanation": "絕對值表示與 0 的距離。\n$|6|=6$。",
       "choices": []
     },
     {
@@ -767,8 +767,8 @@
       "answer_type": "integer",
       "checker_type": "integer_checker",
       "solution_steps": [
-        "絕對值表示到 0 的距離。",
-        "因此 $|7|=7$。"
+        "絕對值表示與 0 的距離。",
+        "$|7|=7$。"
       ],
       "metadata": {
         "scenario_family": "absolute_value_numeric_evaluation",
@@ -783,7 +783,7 @@
       },
       "question": "求 $|7|$ 的值。",
       "correct_answer": 7,
-      "explanation": "絕對值表示到 0 的距離。\n因此 $|7|=7$。",
+      "explanation": "絕對值表示與 0 的距離。\n$|7|=7$。",
       "choices": []
     },
     {
@@ -795,8 +795,8 @@
       "answer_type": "integer",
       "checker_type": "integer_checker",
       "solution_steps": [
-        "絕對值表示到 0 的距離。",
-        "因此 $|8|=8$。"
+        "絕對值表示與 0 的距離。",
+        "$|8|=8$。"
       ],
       "metadata": {
         "scenario_family": "absolute_value_numeric_evaluation",
@@ -811,7 +811,7 @@
       },
       "question": "求 $|8|$ 的值。",
       "correct_answer": 8,
-      "explanation": "絕對值表示到 0 的距離。\n因此 $|8|=8$。",
+      "explanation": "絕對值表示與 0 的距離。\n$|8|=8$。",
       "choices": []
     },
     {
@@ -823,8 +823,8 @@
       "answer_type": "integer",
       "checker_type": "integer_checker",
       "solution_steps": [
-        "絕對值表示到 0 的距離。",
-        "因此 $|9|=9$。"
+        "絕對值表示與 0 的距離。",
+        "$|9|=9$。"
       ],
       "metadata": {
         "scenario_family": "absolute_value_numeric_evaluation",
@@ -839,7 +839,7 @@
       },
       "question": "求 $|9|$ 的值。",
       "correct_answer": 9,
-      "explanation": "絕對值表示到 0 的距離。\n因此 $|9|=9$。",
+      "explanation": "絕對值表示與 0 的距離。\n$|9|=9$。",
       "choices": []
     }
   ],

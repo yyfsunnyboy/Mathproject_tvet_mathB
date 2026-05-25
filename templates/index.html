@@ -881,7 +881,7 @@
         /* === 新增：問題與示意圖排版 === */
         .question-content {
             display: flex;
-            flex-direction: row;
+            flex-direction: column;
             gap: 15px;
             flex: 1;
             /* 讓此容器填滿剩餘空間 */
@@ -930,7 +930,7 @@
 
             /* [Layout] Flexbox for row layout */
             display: flex;
-            flex-direction: row;
+            flex-direction: column;
             gap: 15px;
 
             /* [新增] 高度限制與捲軸 */
@@ -961,6 +961,46 @@
         }
 
         /* 2. 計算紙區域容器：限制高度 + 捲軸 */
+        .choice-list {
+            width: 100%;
+            margin-top: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            align-items: stretch;
+        }
+
+        .choice-option {
+            width: 100%;
+            max-width: none;
+            display: flex;
+            align-items: flex-start;
+            justify-content: flex-start;
+            min-height: 38px;
+            padding: 8px 12px;
+            border: 1px solid #d8e2dc;
+            border-radius: 10px;
+            background: #fff;
+            font-size: 1rem;
+            line-height: 1.45;
+            text-align: left;
+            cursor: pointer;
+        }
+
+        .choice-option.selected {
+            border-color: #6f9b78;
+            background: #eef7f0;
+        }
+
+        .choice-label {
+            margin-right: 8px;
+            font-weight: 700;
+        }
+
+        .choice-text {
+            flex: 1;
+        }
+
         #scratchpad-container {
             width: 100%;
             height: clamp(320px, 50vh, 650px);
@@ -1210,7 +1250,7 @@
 
         #question-container {
             display: flex;
-            flex-direction: row;
+            flex-direction: column;
             gap: 15px;
             align-items: stretch;
             max-height: clamp(190px, 32vh, 380px);
@@ -1224,6 +1264,10 @@
             max-width: 100%;
             overflow-wrap: anywhere;
             word-break: break-word;
+        }
+
+        #question-choices {
+            width: 100%;
         }
 
         #scratchpad-container {
@@ -3297,9 +3341,8 @@
                     }
 
                     // 1. 顯示題目文字
-                    questionText.innerHTML = data.new_question_text;
+                    const questionMainText = renderQuestion(data);
                     isInitialQuestionLoaded = true;
-                    renderChoices(data.choices || data.choices_display || []);
 
                     // [V9.5 Debug] 印出後端回傳的所有資料，讓我們看看有沒有圖片
                     console.log("🔍 Backend Data Received:", data);
@@ -3358,7 +3401,7 @@
 
                     typesetPromise().then(() => {
                         // [V9.9 Font Upgrade] 根據題目長度自動調整字體級距
-                        const qLen = data.new_question_text.length;
+                        const qLen = questionMainText.length;
                         if (qLen > 200) {
                             questionText.style.fontSize = "1.05rem"; // 題目太長，字體縮小一點
                         } else if (qLen > 100) {
@@ -3414,24 +3457,89 @@
                 });
         }
 
-        function renderChoices(choices) {
+        function getChoiceItems(payload) {
+            const choices = payload && payload.choices;
+            if (Array.isArray(choices) && choices.length > 0) return choices;
+            const options = payload && payload.options;
+            if (Array.isArray(options) && options.length > 0) return options;
+            const choicesDisplay = payload && payload.choices_display;
+            if (Array.isArray(choicesDisplay) && choicesDisplay.length > 0) return choicesDisplay;
+            return [];
+        }
+
+        function choiceLabelAt(index) {
+            return String.fromCharCode(65 + index);
+        }
+
+        function choiceHasOwnLabel(text) {
+            return /^[\s\u3000]*[\(\uff08]?[A-Za-z][\)\uff09\.\u3001\s]/.test(String(text || ''));
+        }
+
+        function extractChoiceText(choice) {
+            if (typeof choice === 'string') return choice;
+            if (choice && typeof choice === 'object') return String(choice.text || choice.value || '');
+            return String(choice || '');
+        }
+
+        function isChoiceQuestionPayload(payload) {
+            const choices = getChoiceItems(payload);
+            const answerType = String((payload && payload.answer_type) || '').toLowerCase();
+            const checkerType = String((payload && payload.checker_type) || '').toLowerCase();
+            const questionType = String((payload && payload.question_type) || '').toLowerCase();
+            return (Array.isArray(choices) && choices.length > 0)
+                || answerType === 'choice'
+                || checkerType.includes('choice')
+                || questionType === 'multiple_choice';
+        }
+
+        function renderChoiceText(choiceText, index) {
+            const rawText = String(choiceText || '').trim();
+            if (choiceHasOwnLabel(rawText)) {
+                return `<span class="choice-text">${rawText}</span>`;
+            }
+            return `<span class="choice-label">(${choiceLabelAt(index)})</span><span class="choice-text">${rawText}</span>`;
+        }
+
+        function renderChoices(payload) {
             if (!questionChoices) return;
             questionChoices.innerHTML = '';
-            if (!Array.isArray(choices) || choices.length === 0) return;
-            const normalized = choices.map((choice, idx) => {
-                if (typeof choice === 'string') {
-                    return choice;
-                }
-                if (choice && typeof choice === 'object') {
-                    const label = String(choice.label || String.fromCharCode(65 + idx));
-                    const text = String(choice.text || '');
-                    return `${label}. ${text}`.trim();
-                }
-                return String(choice || '');
+            const choices = getChoiceItems(payload);
+            if (!isChoiceQuestionPayload(payload) || !Array.isArray(choices) || choices.length === 0) {
+                questionChoices.style.display = 'none';
+                return;
+            }
+            questionChoices.style.display = 'flex';
+            questionChoices.classList.add('choice-list');
+            choices.forEach((choice, idx) => {
+                const rawText = extractChoiceText(choice).trim();
+                const label = choiceLabelAt(idx);
+                const button = document.createElement('button');
+                button.type = 'button';
+                button.className = 'choice-option';
+                button.innerHTML = renderChoiceText(rawText, idx);
+                button.addEventListener('click', () => {
+                    if (answerInput) answerInput.value = label;
+                    Array.from(questionChoices.querySelectorAll('.choice-option')).forEach((node) => node.classList.remove('selected'));
+                    button.classList.add('selected');
+                    if (!isProcessing && submitBtn && !submitBtn.disabled && typeof submitBtn.onclick === 'function') {
+                        submitBtn.onclick();
+                    }
+                });
+                questionChoices.appendChild(button);
             });
-            questionChoices.innerHTML = normalized
-                .map((line) => `<div class="choice-item" style="padding:4px 0;">${line}</div>`)
-                .join('');
+        }
+
+        function renderQuestion(payload) {
+            const questionMainText = (payload && (payload.new_question_text || payload.question_text || payload.question || payload.prompt || payload.text)) || '';
+            if (questionText) {
+                questionText.innerHTML = questionMainText;
+            }
+            renderChoices(payload);
+            renderMathContent(questionText);
+            if (questionChoices && questionChoices.style.display !== 'none') {
+                renderMathContent(questionChoices);
+            }
+            return questionMainText;
         }
 
         // === 提交答案 ===

@@ -1,0 +1,1063 @@
+{
+  "candidate_path": "E:\\Python\\Mathproject_tvet_mathB\\generated_candidates\\vocational_math_b1\\section_1_1\\absolute_value_distance_from_zero\\candidate_v1.py",
+  "errors": [],
+  "samples": [
+    {
+      "problem_type_id": "absolute_value_distance_from_zero",
+      "skill_id": "vh_數學B1_AbsoluteValue",
+      "subskill_id": "absolute_value_distance_from_zero",
+      "question_text": "下列哪一項是 $|-1|$ 的正確意義？",
+      "choices": [
+        "數線上 $-1$ 到 $0$ 的距離",
+        "數線上 $1$ 到 $-1$ 的距離",
+        "$-1$ 本身",
+        "一個負數"
+      ],
+      "answer": "數線上 $-1$ 到 $0$ 的距離",
+      "answer_type": "choice",
+      "checker_type": "choice_checker",
+      "solution_steps": [
+        "絕對值表示數線上該數到 $0$ 的距離。",
+        "因此 $|-1|$ 表示 $-1$ 到 $0$ 的距離。"
+      ],
+      "metadata": {
+        "scenario_family": "absolute_value_distance_from_zero",
+        "scenario_id": "s7",
+        "parameter_signature": "absolute_value_distance_from_zero:n=-1:pattern=meaning",
+        "question_pattern_id": "p4",
+        "diagnosis_tags": [
+          "absolute_value_meaning",
+          "distance_from_zero"
+        ],
+        "prerequisite_subskills": [
+          "number_line_basic_position"
+        ]
+      },
+      "question": "下列哪一項是 $|-1|$ 的正確意義？",
+      "correct_answer": "數線上 $-1$ 到 $0$ 的距離",
+      "explanation": "絕對值表示數線上該數到 $0$ 的距離。\n因此 $|-1|$ 表示 $-1$ 到 $0$ 的距離。"
+    },
+    {
+      "problem_type_id": "absolute_value_distance_from_zero",
+      "skill_id": "vh_數學B1_AbsoluteValue",
+      "subskill_id": "absolute_value_distance_from_zero",
+      "question_text": "下列哪一項是 $|-2|$ 的正確意義？",
+      "choices": [
+        "數線上 $-2$ 到 $0$ 的距離",
+        "數線上 $2$ 到 $-2$ 的距離",
+        "$-2$ 本身",
+        "一個負數"
+      ],
+      "answer": "數線上 $-2$ 到 $0$ 的距離",
+      "answer_type": "choice",
+      "checker_type": "choice_checker",
+      "solution_steps": [
+        "絕對值表示數線上該數到 $0$ 的距離。",
+        "因此 $|-2|$ 表示 $-2$ 到 $0$ 的距離。"
+      ],
+      "metadata": {
+        "scenario_family": "absolute_value_distance_from_zero",
+        "scenario_id": "s3",
+        "parameter_signature": "absolute_value_distance_from_zero:n=-2:pattern=meaning",
+        "question_pattern_id": "p1",
+        "diagnosis_tags": [
+          "absolute_value_meaning",
+          "distance_from_zero"
+        ],
+        "prerequisite_subskills": [
+          "number_line_basic_position"
+        ]
+      },
+      "question": "下列哪一項是 $|-2|$ 的正確意義？",
+      "correct_answer": "數線上 $-2$ 到 $0$ 的距離",
+      "explanation": "絕對值表示數線上該數到 $0$ 的距離。\n因此 $|-2|$ 表示 $-2$ 到 $0$ 的距離。"
+    },
+    {
+      "problem_type_id": "absolute_value_distance_from_zero",
+      "skill_id": "vh_數學B1_AbsoluteValue",
+      "subskill_id": "absolute_value_distance_from_zero",
+      "question_text": "下列哪一項是 $|-3|$ 的正確意義？",
+      "choices": [
+        "數線上 $-3$ 到 $0$ 的距離",
+        "數線上 $3$ 到 $-3$ 的距離",
+        "$-3$ 本身",
+        "一個負數"
+      ],
+      "answer": "數線上 $-3$ 到 $0$ 的距離",
+      "answer_type": "choice",
+      "checker_type": "choice_checker",
+      "solution_steps": [
+        "絕對值表示數線上該數到 $0$ 的距離。",
+        "因此 $|-3|$ 表示 $-3$ 到 $0$ 的距離。"
+      ],
+      "metadata": {
+        "scenario_family": "absolute_value_distance_from_zero",
+        "scenario_id": "s1",
+        "parameter_signature": "absolute_value_distance_from_zero:n=-3:pattern=meaning",
+        "question_pattern_id": "p1",
+        "diagnosis_tags": [
+          "absolute_value_meaning",
+          "distance_from_zero"
+        ],
+        "prerequisite_subskills": [
+          "number_line_basic_position"
+        ]
+      },
+      "question": "下列哪一項是 $|-3|$ 的正確意義？",
+      "correct_answer": "數線上 $-3$ 到 $0$ 的距離",
+      "explanation": "絕對值表示數線上該數到 $0$ 的距離。\n因此 $|-3|$ 表示 $-3$ 到 $0$ 的距離。"
+    },
+    {
+      "problem_type_id": "absolute_value_distance_from_zero",
+      "skill_id": "vh_數學B1_AbsoluteValue",
+      "subskill_id": "absolute_value_distance_from_zero",
+      "question_text": "下列哪一項是 $|-4|$ 的正確意義？",
+      "choices": [
+        "數線上 $-4$ 到 $0$ 的距離",
+        "數線上 $4$ 到 $-4$ 的距離",
+        "$-4$ 本身",
+        "一個負數"
+      ],
+      "answer": "數線上 $-4$ 到 $0$ 的距離",
+      "answer_type": "choice",
+      "checker_type": "choice_checker",
+      "solution_steps": [
+        "絕對值表示數線上該數到 $0$ 的距離。",
+        "因此 $|-4|$ 表示 $-4$ 到 $0$ 的距離。"
+      ],
+      "metadata": {
+        "scenario_family": "absolute_value_distance_from_zero",
+        "scenario_id": "s4",
+        "parameter_signature": "absolute_value_distance_from_zero:n=-4:pattern=meaning",
+        "question_pattern_id": "p2",
+        "diagnosis_tags": [
+          "absolute_value_meaning",
+          "distance_from_zero"
+        ],
+        "prerequisite_subskills": [
+          "number_line_basic_position"
+        ]
+      },
+      "question": "下列哪一項是 $|-4|$ 的正確意義？",
+      "correct_answer": "數線上 $-4$ 到 $0$ 的距離",
+      "explanation": "絕對值表示數線上該數到 $0$ 的距離。\n因此 $|-4|$ 表示 $-4$ 到 $0$ 的距離。"
+    },
+    {
+      "problem_type_id": "absolute_value_distance_from_zero",
+      "skill_id": "vh_數學B1_AbsoluteValue",
+      "subskill_id": "absolute_value_distance_from_zero",
+      "question_text": "下列哪一項是 $|-5|$ 的正確意義？",
+      "choices": [
+        "數線上 $-5$ 到 $0$ 的距離",
+        "數線上 $5$ 到 $-5$ 的距離",
+        "$-5$ 本身",
+        "一個負數"
+      ],
+      "answer": "數線上 $-5$ 到 $0$ 的距離",
+      "answer_type": "choice",
+      "checker_type": "choice_checker",
+      "solution_steps": [
+        "絕對值表示數線上該數到 $0$ 的距離。",
+        "因此 $|-5|$ 表示 $-5$ 到 $0$ 的距離。"
+      ],
+      "metadata": {
+        "scenario_family": "absolute_value_distance_from_zero",
+        "scenario_id": "s4",
+        "parameter_signature": "absolute_value_distance_from_zero:n=-5:pattern=meaning",
+        "question_pattern_id": "p3",
+        "diagnosis_tags": [
+          "absolute_value_meaning",
+          "distance_from_zero"
+        ],
+        "prerequisite_subskills": [
+          "number_line_basic_position"
+        ]
+      },
+      "question": "下列哪一項是 $|-5|$ 的正確意義？",
+      "correct_answer": "數線上 $-5$ 到 $0$ 的距離",
+      "explanation": "絕對值表示數線上該數到 $0$ 的距離。\n因此 $|-5|$ 表示 $-5$ 到 $0$ 的距離。"
+    },
+    {
+      "problem_type_id": "absolute_value_distance_from_zero",
+      "skill_id": "vh_數學B1_AbsoluteValue",
+      "subskill_id": "absolute_value_distance_from_zero",
+      "question_text": "下列哪一項是 $|-6|$ 的正確意義？",
+      "choices": [
+        "數線上 $-6$ 到 $0$ 的距離",
+        "數線上 $6$ 到 $-6$ 的距離",
+        "$-6$ 本身",
+        "一個負數"
+      ],
+      "answer": "數線上 $-6$ 到 $0$ 的距離",
+      "answer_type": "choice",
+      "checker_type": "choice_checker",
+      "solution_steps": [
+        "絕對值表示數線上該數到 $0$ 的距離。",
+        "因此 $|-6|$ 表示 $-6$ 到 $0$ 的距離。"
+      ],
+      "metadata": {
+        "scenario_family": "absolute_value_distance_from_zero",
+        "scenario_id": "s5",
+        "parameter_signature": "absolute_value_distance_from_zero:n=-6:pattern=meaning",
+        "question_pattern_id": "p3",
+        "diagnosis_tags": [
+          "absolute_value_meaning",
+          "distance_from_zero"
+        ],
+        "prerequisite_subskills": [
+          "number_line_basic_position"
+        ]
+      },
+      "question": "下列哪一項是 $|-6|$ 的正確意義？",
+      "correct_answer": "數線上 $-6$ 到 $0$ 的距離",
+      "explanation": "絕對值表示數線上該數到 $0$ 的距離。\n因此 $|-6|$ 表示 $-6$ 到 $0$ 的距離。"
+    },
+    {
+      "problem_type_id": "absolute_value_distance_from_zero",
+      "skill_id": "vh_數學B1_AbsoluteValue",
+      "subskill_id": "absolute_value_distance_from_zero",
+      "question_text": "下列哪一項是 $|-7|$ 的正確意義？",
+      "choices": [
+        "數線上 $-7$ 到 $0$ 的距離",
+        "數線上 $7$ 到 $-7$ 的距離",
+        "$-7$ 本身",
+        "一個負數"
+      ],
+      "answer": "數線上 $-7$ 到 $0$ 的距離",
+      "answer_type": "choice",
+      "checker_type": "choice_checker",
+      "solution_steps": [
+        "絕對值表示數線上該數到 $0$ 的距離。",
+        "因此 $|-7|$ 表示 $-7$ 到 $0$ 的距離。"
+      ],
+      "metadata": {
+        "scenario_family": "absolute_value_distance_from_zero",
+        "scenario_id": "s2",
+        "parameter_signature": "absolute_value_distance_from_zero:n=-7:pattern=meaning",
+        "question_pattern_id": "p4",
+        "diagnosis_tags": [
+          "absolute_value_meaning",
+          "distance_from_zero"
+        ],
+        "prerequisite_subskills": [
+          "number_line_basic_position"
+        ]
+      },
+      "question": "下列哪一項是 $|-7|$ 的正確意義？",
+      "correct_answer": "數線上 $-7$ 到 $0$ 的距離",
+      "explanation": "絕對值表示數線上該數到 $0$ 的距離。\n因此 $|-7|$ 表示 $-7$ 到 $0$ 的距離。"
+    },
+    {
+      "problem_type_id": "absolute_value_distance_from_zero",
+      "skill_id": "vh_數學B1_AbsoluteValue",
+      "subskill_id": "absolute_value_distance_from_zero",
+      "question_text": "下列哪一項是 $|-8|$ 的正確意義？",
+      "choices": [
+        "數線上 $-8$ 到 $0$ 的距離",
+        "數線上 $8$ 到 $-8$ 的距離",
+        "$-8$ 本身",
+        "一個負數"
+      ],
+      "answer": "數線上 $-8$ 到 $0$ 的距離",
+      "answer_type": "choice",
+      "checker_type": "choice_checker",
+      "solution_steps": [
+        "絕對值表示數線上該數到 $0$ 的距離。",
+        "因此 $|-8|$ 表示 $-8$ 到 $0$ 的距離。"
+      ],
+      "metadata": {
+        "scenario_family": "absolute_value_distance_from_zero",
+        "scenario_id": "s6",
+        "parameter_signature": "absolute_value_distance_from_zero:n=-8:pattern=meaning",
+        "question_pattern_id": "p2",
+        "diagnosis_tags": [
+          "absolute_value_meaning",
+          "distance_from_zero"
+        ],
+        "prerequisite_subskills": [
+          "number_line_basic_position"
+        ]
+      },
+      "question": "下列哪一項是 $|-8|$ 的正確意義？",
+      "correct_answer": "數線上 $-8$ 到 $0$ 的距離",
+      "explanation": "絕對值表示數線上該數到 $0$ 的距離。\n因此 $|-8|$ 表示 $-8$ 到 $0$ 的距離。"
+    },
+    {
+      "problem_type_id": "absolute_value_distance_from_zero",
+      "skill_id": "vh_數學B1_AbsoluteValue",
+      "subskill_id": "absolute_value_distance_from_zero",
+      "question_text": "下列哪一項是 $|-9|$ 的正確意義？",
+      "choices": [
+        "數線上 $-9$ 到 $0$ 的距離",
+        "數線上 $9$ 到 $-9$ 的距離",
+        "$-9$ 本身",
+        "一個負數"
+      ],
+      "answer": "數線上 $-9$ 到 $0$ 的距離",
+      "answer_type": "choice",
+      "checker_type": "choice_checker",
+      "solution_steps": [
+        "絕對值表示數線上該數到 $0$ 的距離。",
+        "因此 $|-9|$ 表示 $-9$ 到 $0$ 的距離。"
+      ],
+      "metadata": {
+        "scenario_family": "absolute_value_distance_from_zero",
+        "scenario_id": "s4",
+        "parameter_signature": "absolute_value_distance_from_zero:n=-9:pattern=meaning",
+        "question_pattern_id": "p3",
+        "diagnosis_tags": [
+          "absolute_value_meaning",
+          "distance_from_zero"
+        ],
+        "prerequisite_subskills": [
+          "number_line_basic_position"
+        ]
+      },
+      "question": "下列哪一項是 $|-9|$ 的正確意義？",
+      "correct_answer": "數線上 $-9$ 到 $0$ 的距離",
+      "explanation": "絕對值表示數線上該數到 $0$ 的距離。\n因此 $|-9|$ 表示 $-9$ 到 $0$ 的距離。"
+    },
+    {
+      "problem_type_id": "absolute_value_distance_from_zero",
+      "skill_id": "vh_數學B1_AbsoluteValue",
+      "subskill_id": "absolute_value_distance_from_zero",
+      "question_text": "下列哪一項是 $|-10|$ 的正確意義？",
+      "choices": [
+        "數線上 $-10$ 到 $0$ 的距離",
+        "數線上 $10$ 到 $-10$ 的距離",
+        "$-10$ 本身",
+        "一個負數"
+      ],
+      "answer": "數線上 $-10$ 到 $0$ 的距離",
+      "answer_type": "choice",
+      "checker_type": "choice_checker",
+      "solution_steps": [
+        "絕對值表示數線上該數到 $0$ 的距離。",
+        "因此 $|-10|$ 表示 $-10$ 到 $0$ 的距離。"
+      ],
+      "metadata": {
+        "scenario_family": "absolute_value_distance_from_zero",
+        "scenario_id": "s8",
+        "parameter_signature": "absolute_value_distance_from_zero:n=-10:pattern=meaning",
+        "question_pattern_id": "p3",
+        "diagnosis_tags": [
+          "absolute_value_meaning",
+          "distance_from_zero"
+        ],
+        "prerequisite_subskills": [
+          "number_line_basic_position"
+        ]
+      },
+      "question": "下列哪一項是 $|-10|$ 的正確意義？",
+      "correct_answer": "數線上 $-10$ 到 $0$ 的距離",
+      "explanation": "絕對值表示數線上該數到 $0$ 的距離。\n因此 $|-10|$ 表示 $-10$ 到 $0$ 的距離。"
+    },
+    {
+      "problem_type_id": "absolute_value_distance_from_zero",
+      "skill_id": "vh_數學B1_AbsoluteValue",
+      "subskill_id": "absolute_value_distance_from_zero",
+      "question_text": "下列哪一項是 $|-11|$ 的正確意義？",
+      "choices": [
+        "數線上 $-11$ 到 $0$ 的距離",
+        "數線上 $11$ 到 $-11$ 的距離",
+        "$-11$ 本身",
+        "一個負數"
+      ],
+      "answer": "數線上 $-11$ 到 $0$ 的距離",
+      "answer_type": "choice",
+      "checker_type": "choice_checker",
+      "solution_steps": [
+        "絕對值表示數線上該數到 $0$ 的距離。",
+        "因此 $|-11|$ 表示 $-11$ 到 $0$ 的距離。"
+      ],
+      "metadata": {
+        "scenario_family": "absolute_value_distance_from_zero",
+        "scenario_id": "s1",
+        "parameter_signature": "absolute_value_distance_from_zero:n=-11:pattern=meaning",
+        "question_pattern_id": "p4",
+        "diagnosis_tags": [
+          "absolute_value_meaning",
+          "distance_from_zero"
+        ],
+        "prerequisite_subskills": [
+          "number_line_basic_position"
+        ]
+      },
+      "question": "下列哪一項是 $|-11|$ 的正確意義？",
+      "correct_answer": "數線上 $-11$ 到 $0$ 的距離",
+      "explanation": "絕對值表示數線上該數到 $0$ 的距離。\n因此 $|-11|$ 表示 $-11$ 到 $0$ 的距離。"
+    },
+    {
+      "problem_type_id": "absolute_value_distance_from_zero",
+      "skill_id": "vh_數學B1_AbsoluteValue",
+      "subskill_id": "absolute_value_distance_from_zero",
+      "question_text": "下列哪一項是 $|-12|$ 的正確意義？",
+      "choices": [
+        "數線上 $-12$ 到 $0$ 的距離",
+        "數線上 $12$ 到 $-12$ 的距離",
+        "$-12$ 本身",
+        "一個負數"
+      ],
+      "answer": "數線上 $-12$ 到 $0$ 的距離",
+      "answer_type": "choice",
+      "checker_type": "choice_checker",
+      "solution_steps": [
+        "絕對值表示數線上該數到 $0$ 的距離。",
+        "因此 $|-12|$ 表示 $-12$ 到 $0$ 的距離。"
+      ],
+      "metadata": {
+        "scenario_family": "absolute_value_distance_from_zero",
+        "scenario_id": "s8",
+        "parameter_signature": "absolute_value_distance_from_zero:n=-12:pattern=meaning",
+        "question_pattern_id": "p4",
+        "diagnosis_tags": [
+          "absolute_value_meaning",
+          "distance_from_zero"
+        ],
+        "prerequisite_subskills": [
+          "number_line_basic_position"
+        ]
+      },
+      "question": "下列哪一項是 $|-12|$ 的正確意義？",
+      "correct_answer": "數線上 $-12$ 到 $0$ 的距離",
+      "explanation": "絕對值表示數線上該數到 $0$ 的距離。\n因此 $|-12|$ 表示 $-12$ 到 $0$ 的距離。"
+    },
+    {
+      "problem_type_id": "absolute_value_distance_from_zero",
+      "skill_id": "vh_數學B1_AbsoluteValue",
+      "subskill_id": "absolute_value_distance_from_zero",
+      "question_text": "下列哪一項是 $|-13|$ 的正確意義？",
+      "choices": [
+        "數線上 $-13$ 到 $0$ 的距離",
+        "數線上 $13$ 到 $-13$ 的距離",
+        "$-13$ 本身",
+        "一個負數"
+      ],
+      "answer": "數線上 $-13$ 到 $0$ 的距離",
+      "answer_type": "choice",
+      "checker_type": "choice_checker",
+      "solution_steps": [
+        "絕對值表示數線上該數到 $0$ 的距離。",
+        "因此 $|-13|$ 表示 $-13$ 到 $0$ 的距離。"
+      ],
+      "metadata": {
+        "scenario_family": "absolute_value_distance_from_zero",
+        "scenario_id": "s8",
+        "parameter_signature": "absolute_value_distance_from_zero:n=-13:pattern=meaning",
+        "question_pattern_id": "p3",
+        "diagnosis_tags": [
+          "absolute_value_meaning",
+          "distance_from_zero"
+        ],
+        "prerequisite_subskills": [
+          "number_line_basic_position"
+        ]
+      },
+      "question": "下列哪一項是 $|-13|$ 的正確意義？",
+      "correct_answer": "數線上 $-13$ 到 $0$ 的距離",
+      "explanation": "絕對值表示數線上該數到 $0$ 的距離。\n因此 $|-13|$ 表示 $-13$ 到 $0$ 的距離。"
+    },
+    {
+      "problem_type_id": "absolute_value_distance_from_zero",
+      "skill_id": "vh_數學B1_AbsoluteValue",
+      "subskill_id": "absolute_value_distance_from_zero",
+      "question_text": "下列哪一項是 $|-14|$ 的正確意義？",
+      "choices": [
+        "數線上 $-14$ 到 $0$ 的距離",
+        "數線上 $14$ 到 $-14$ 的距離",
+        "$-14$ 本身",
+        "一個負數"
+      ],
+      "answer": "數線上 $-14$ 到 $0$ 的距離",
+      "answer_type": "choice",
+      "checker_type": "choice_checker",
+      "solution_steps": [
+        "絕對值表示數線上該數到 $0$ 的距離。",
+        "因此 $|-14|$ 表示 $-14$ 到 $0$ 的距離。"
+      ],
+      "metadata": {
+        "scenario_family": "absolute_value_distance_from_zero",
+        "scenario_id": "s5",
+        "parameter_signature": "absolute_value_distance_from_zero:n=-14:pattern=meaning",
+        "question_pattern_id": "p3",
+        "diagnosis_tags": [
+          "absolute_value_meaning",
+          "distance_from_zero"
+        ],
+        "prerequisite_subskills": [
+          "number_line_basic_position"
+        ]
+      },
+      "question": "下列哪一項是 $|-14|$ 的正確意義？",
+      "correct_answer": "數線上 $-14$ 到 $0$ 的距離",
+      "explanation": "絕對值表示數線上該數到 $0$ 的距離。\n因此 $|-14|$ 表示 $-14$ 到 $0$ 的距離。"
+    },
+    {
+      "problem_type_id": "absolute_value_distance_from_zero",
+      "skill_id": "vh_數學B1_AbsoluteValue",
+      "subskill_id": "absolute_value_distance_from_zero",
+      "question_text": "下列哪一項是 $|-15|$ 的正確意義？",
+      "choices": [
+        "數線上 $-15$ 到 $0$ 的距離",
+        "數線上 $15$ 到 $-15$ 的距離",
+        "$-15$ 本身",
+        "一個負數"
+      ],
+      "answer": "數線上 $-15$ 到 $0$ 的距離",
+      "answer_type": "choice",
+      "checker_type": "choice_checker",
+      "solution_steps": [
+        "絕對值表示數線上該數到 $0$ 的距離。",
+        "因此 $|-15|$ 表示 $-15$ 到 $0$ 的距離。"
+      ],
+      "metadata": {
+        "scenario_family": "absolute_value_distance_from_zero",
+        "scenario_id": "s2",
+        "parameter_signature": "absolute_value_distance_from_zero:n=-15:pattern=meaning",
+        "question_pattern_id": "p2",
+        "diagnosis_tags": [
+          "absolute_value_meaning",
+          "distance_from_zero"
+        ],
+        "prerequisite_subskills": [
+          "number_line_basic_position"
+        ]
+      },
+      "question": "下列哪一項是 $|-15|$ 的正確意義？",
+      "correct_answer": "數線上 $-15$ 到 $0$ 的距離",
+      "explanation": "絕對值表示數線上該數到 $0$ 的距離。\n因此 $|-15|$ 表示 $-15$ 到 $0$ 的距離。"
+    },
+    {
+      "problem_type_id": "absolute_value_distance_from_zero",
+      "skill_id": "vh_數學B1_AbsoluteValue",
+      "subskill_id": "absolute_value_distance_from_zero",
+      "question_text": "下列哪一項是 $|-16|$ 的正確意義？",
+      "choices": [
+        "數線上 $-16$ 到 $0$ 的距離",
+        "數線上 $16$ 到 $-16$ 的距離",
+        "$-16$ 本身",
+        "一個負數"
+      ],
+      "answer": "數線上 $-16$ 到 $0$ 的距離",
+      "answer_type": "choice",
+      "checker_type": "choice_checker",
+      "solution_steps": [
+        "絕對值表示數線上該數到 $0$ 的距離。",
+        "因此 $|-16|$ 表示 $-16$ 到 $0$ 的距離。"
+      ],
+      "metadata": {
+        "scenario_family": "absolute_value_distance_from_zero",
+        "scenario_id": "s4",
+        "parameter_signature": "absolute_value_distance_from_zero:n=-16:pattern=meaning",
+        "question_pattern_id": "p1",
+        "diagnosis_tags": [
+          "absolute_value_meaning",
+          "distance_from_zero"
+        ],
+        "prerequisite_subskills": [
+          "number_line_basic_position"
+        ]
+      },
+      "question": "下列哪一項是 $|-16|$ 的正確意義？",
+      "correct_answer": "數線上 $-16$ 到 $0$ 的距離",
+      "explanation": "絕對值表示數線上該數到 $0$ 的距離。\n因此 $|-16|$ 表示 $-16$ 到 $0$ 的距離。"
+    },
+    {
+      "problem_type_id": "absolute_value_distance_from_zero",
+      "skill_id": "vh_數學B1_AbsoluteValue",
+      "subskill_id": "absolute_value_distance_from_zero",
+      "question_text": "下列哪一項是 $|-17|$ 的正確意義？",
+      "choices": [
+        "數線上 $-17$ 到 $0$ 的距離",
+        "數線上 $17$ 到 $-17$ 的距離",
+        "$-17$ 本身",
+        "一個負數"
+      ],
+      "answer": "數線上 $-17$ 到 $0$ 的距離",
+      "answer_type": "choice",
+      "checker_type": "choice_checker",
+      "solution_steps": [
+        "絕對值表示數線上該數到 $0$ 的距離。",
+        "因此 $|-17|$ 表示 $-17$ 到 $0$ 的距離。"
+      ],
+      "metadata": {
+        "scenario_family": "absolute_value_distance_from_zero",
+        "scenario_id": "s6",
+        "parameter_signature": "absolute_value_distance_from_zero:n=-17:pattern=meaning",
+        "question_pattern_id": "p4",
+        "diagnosis_tags": [
+          "absolute_value_meaning",
+          "distance_from_zero"
+        ],
+        "prerequisite_subskills": [
+          "number_line_basic_position"
+        ]
+      },
+      "question": "下列哪一項是 $|-17|$ 的正確意義？",
+      "correct_answer": "數線上 $-17$ 到 $0$ 的距離",
+      "explanation": "絕對值表示數線上該數到 $0$ 的距離。\n因此 $|-17|$ 表示 $-17$ 到 $0$ 的距離。"
+    },
+    {
+      "problem_type_id": "absolute_value_distance_from_zero",
+      "skill_id": "vh_數學B1_AbsoluteValue",
+      "subskill_id": "absolute_value_distance_from_zero",
+      "question_text": "下列哪一項是 $|-18|$ 的正確意義？",
+      "choices": [
+        "數線上 $-18$ 到 $0$ 的距離",
+        "數線上 $18$ 到 $-18$ 的距離",
+        "$-18$ 本身",
+        "一個負數"
+      ],
+      "answer": "數線上 $-18$ 到 $0$ 的距離",
+      "answer_type": "choice",
+      "checker_type": "choice_checker",
+      "solution_steps": [
+        "絕對值表示數線上該數到 $0$ 的距離。",
+        "因此 $|-18|$ 表示 $-18$ 到 $0$ 的距離。"
+      ],
+      "metadata": {
+        "scenario_family": "absolute_value_distance_from_zero",
+        "scenario_id": "s9",
+        "parameter_signature": "absolute_value_distance_from_zero:n=-18:pattern=meaning",
+        "question_pattern_id": "p4",
+        "diagnosis_tags": [
+          "absolute_value_meaning",
+          "distance_from_zero"
+        ],
+        "prerequisite_subskills": [
+          "number_line_basic_position"
+        ]
+      },
+      "question": "下列哪一項是 $|-18|$ 的正確意義？",
+      "correct_answer": "數線上 $-18$ 到 $0$ 的距離",
+      "explanation": "絕對值表示數線上該數到 $0$ 的距離。\n因此 $|-18|$ 表示 $-18$ 到 $0$ 的距離。"
+    },
+    {
+      "problem_type_id": "absolute_value_distance_from_zero",
+      "skill_id": "vh_數學B1_AbsoluteValue",
+      "subskill_id": "absolute_value_distance_from_zero",
+      "question_text": "下列哪一項是 $|-19|$ 的正確意義？",
+      "choices": [
+        "數線上 $-19$ 到 $0$ 的距離",
+        "數線上 $19$ 到 $-19$ 的距離",
+        "$-19$ 本身",
+        "一個負數"
+      ],
+      "answer": "數線上 $-19$ 到 $0$ 的距離",
+      "answer_type": "choice",
+      "checker_type": "choice_checker",
+      "solution_steps": [
+        "絕對值表示數線上該數到 $0$ 的距離。",
+        "因此 $|-19|$ 表示 $-19$ 到 $0$ 的距離。"
+      ],
+      "metadata": {
+        "scenario_family": "absolute_value_distance_from_zero",
+        "scenario_id": "s3",
+        "parameter_signature": "absolute_value_distance_from_zero:n=-19:pattern=meaning",
+        "question_pattern_id": "p1",
+        "diagnosis_tags": [
+          "absolute_value_meaning",
+          "distance_from_zero"
+        ],
+        "prerequisite_subskills": [
+          "number_line_basic_position"
+        ]
+      },
+      "question": "下列哪一項是 $|-19|$ 的正確意義？",
+      "correct_answer": "數線上 $-19$ 到 $0$ 的距離",
+      "explanation": "絕對值表示數線上該數到 $0$ 的距離。\n因此 $|-19|$ 表示 $-19$ 到 $0$ 的距離。"
+    },
+    {
+      "problem_type_id": "absolute_value_distance_from_zero",
+      "skill_id": "vh_數學B1_AbsoluteValue",
+      "subskill_id": "absolute_value_distance_from_zero",
+      "question_text": "下列哪一項是 $|-20|$ 的正確意義？",
+      "choices": [
+        "數線上 $-20$ 到 $0$ 的距離",
+        "數線上 $20$ 到 $-20$ 的距離",
+        "$-20$ 本身",
+        "一個負數"
+      ],
+      "answer": "數線上 $-20$ 到 $0$ 的距離",
+      "answer_type": "choice",
+      "checker_type": "choice_checker",
+      "solution_steps": [
+        "絕對值表示數線上該數到 $0$ 的距離。",
+        "因此 $|-20|$ 表示 $-20$ 到 $0$ 的距離。"
+      ],
+      "metadata": {
+        "scenario_family": "absolute_value_distance_from_zero",
+        "scenario_id": "s1",
+        "parameter_signature": "absolute_value_distance_from_zero:n=-20:pattern=meaning",
+        "question_pattern_id": "p1",
+        "diagnosis_tags": [
+          "absolute_value_meaning",
+          "distance_from_zero"
+        ],
+        "prerequisite_subskills": [
+          "number_line_basic_position"
+        ]
+      },
+      "question": "下列哪一項是 $|-20|$ 的正確意義？",
+      "correct_answer": "數線上 $-20$ 到 $0$ 的距離",
+      "explanation": "絕對值表示數線上該數到 $0$ 的距離。\n因此 $|-20|$ 表示 $-20$ 到 $0$ 的距離。"
+    },
+    {
+      "problem_type_id": "absolute_value_distance_from_zero",
+      "skill_id": "vh_數學B1_AbsoluteValue",
+      "subskill_id": "absolute_value_distance_from_zero",
+      "question_text": "下列哪一項是 $|-1|$ 的正確意義？",
+      "choices": [
+        "數線上 $-1$ 到 $0$ 的距離",
+        "數線上 $1$ 到 $-1$ 的距離",
+        "$-1$ 本身",
+        "一個負數"
+      ],
+      "answer": "數線上 $-1$ 到 $0$ 的距離",
+      "answer_type": "choice",
+      "checker_type": "choice_checker",
+      "solution_steps": [
+        "絕對值表示數線上該數到 $0$ 的距離。",
+        "因此 $|-1|$ 表示 $-1$ 到 $0$ 的距離。"
+      ],
+      "metadata": {
+        "scenario_family": "absolute_value_distance_from_zero",
+        "scenario_id": "s3",
+        "parameter_signature": "absolute_value_distance_from_zero:n=-1:pattern=meaning",
+        "question_pattern_id": "p3",
+        "diagnosis_tags": [
+          "absolute_value_meaning",
+          "distance_from_zero"
+        ],
+        "prerequisite_subskills": [
+          "number_line_basic_position"
+        ]
+      },
+      "question": "下列哪一項是 $|-1|$ 的正確意義？",
+      "correct_answer": "數線上 $-1$ 到 $0$ 的距離",
+      "explanation": "絕對值表示數線上該數到 $0$ 的距離。\n因此 $|-1|$ 表示 $-1$ 到 $0$ 的距離。"
+    },
+    {
+      "problem_type_id": "absolute_value_distance_from_zero",
+      "skill_id": "vh_數學B1_AbsoluteValue",
+      "subskill_id": "absolute_value_distance_from_zero",
+      "question_text": "下列哪一項是 $|-2|$ 的正確意義？",
+      "choices": [
+        "數線上 $-2$ 到 $0$ 的距離",
+        "數線上 $2$ 到 $-2$ 的距離",
+        "$-2$ 本身",
+        "一個負數"
+      ],
+      "answer": "數線上 $-2$ 到 $0$ 的距離",
+      "answer_type": "choice",
+      "checker_type": "choice_checker",
+      "solution_steps": [
+        "絕對值表示數線上該數到 $0$ 的距離。",
+        "因此 $|-2|$ 表示 $-2$ 到 $0$ 的距離。"
+      ],
+      "metadata": {
+        "scenario_family": "absolute_value_distance_from_zero",
+        "scenario_id": "s3",
+        "parameter_signature": "absolute_value_distance_from_zero:n=-2:pattern=meaning",
+        "question_pattern_id": "p4",
+        "diagnosis_tags": [
+          "absolute_value_meaning",
+          "distance_from_zero"
+        ],
+        "prerequisite_subskills": [
+          "number_line_basic_position"
+        ]
+      },
+      "question": "下列哪一項是 $|-2|$ 的正確意義？",
+      "correct_answer": "數線上 $-2$ 到 $0$ 的距離",
+      "explanation": "絕對值表示數線上該數到 $0$ 的距離。\n因此 $|-2|$ 表示 $-2$ 到 $0$ 的距離。"
+    },
+    {
+      "problem_type_id": "absolute_value_distance_from_zero",
+      "skill_id": "vh_數學B1_AbsoluteValue",
+      "subskill_id": "absolute_value_distance_from_zero",
+      "question_text": "下列哪一項是 $|-3|$ 的正確意義？",
+      "choices": [
+        "數線上 $-3$ 到 $0$ 的距離",
+        "數線上 $3$ 到 $-3$ 的距離",
+        "$-3$ 本身",
+        "一個負數"
+      ],
+      "answer": "數線上 $-3$ 到 $0$ 的距離",
+      "answer_type": "choice",
+      "checker_type": "choice_checker",
+      "solution_steps": [
+        "絕對值表示數線上該數到 $0$ 的距離。",
+        "因此 $|-3|$ 表示 $-3$ 到 $0$ 的距離。"
+      ],
+      "metadata": {
+        "scenario_family": "absolute_value_distance_from_zero",
+        "scenario_id": "s3",
+        "parameter_signature": "absolute_value_distance_from_zero:n=-3:pattern=meaning",
+        "question_pattern_id": "p2",
+        "diagnosis_tags": [
+          "absolute_value_meaning",
+          "distance_from_zero"
+        ],
+        "prerequisite_subskills": [
+          "number_line_basic_position"
+        ]
+      },
+      "question": "下列哪一項是 $|-3|$ 的正確意義？",
+      "correct_answer": "數線上 $-3$ 到 $0$ 的距離",
+      "explanation": "絕對值表示數線上該數到 $0$ 的距離。\n因此 $|-3|$ 表示 $-3$ 到 $0$ 的距離。"
+    },
+    {
+      "problem_type_id": "absolute_value_distance_from_zero",
+      "skill_id": "vh_數學B1_AbsoluteValue",
+      "subskill_id": "absolute_value_distance_from_zero",
+      "question_text": "下列哪一項是 $|-4|$ 的正確意義？",
+      "choices": [
+        "數線上 $-4$ 到 $0$ 的距離",
+        "數線上 $4$ 到 $-4$ 的距離",
+        "$-4$ 本身",
+        "一個負數"
+      ],
+      "answer": "數線上 $-4$ 到 $0$ 的距離",
+      "answer_type": "choice",
+      "checker_type": "choice_checker",
+      "solution_steps": [
+        "絕對值表示數線上該數到 $0$ 的距離。",
+        "因此 $|-4|$ 表示 $-4$ 到 $0$ 的距離。"
+      ],
+      "metadata": {
+        "scenario_family": "absolute_value_distance_from_zero",
+        "scenario_id": "s5",
+        "parameter_signature": "absolute_value_distance_from_zero:n=-4:pattern=meaning",
+        "question_pattern_id": "p1",
+        "diagnosis_tags": [
+          "absolute_value_meaning",
+          "distance_from_zero"
+        ],
+        "prerequisite_subskills": [
+          "number_line_basic_position"
+        ]
+      },
+      "question": "下列哪一項是 $|-4|$ 的正確意義？",
+      "correct_answer": "數線上 $-4$ 到 $0$ 的距離",
+      "explanation": "絕對值表示數線上該數到 $0$ 的距離。\n因此 $|-4|$ 表示 $-4$ 到 $0$ 的距離。"
+    },
+    {
+      "problem_type_id": "absolute_value_distance_from_zero",
+      "skill_id": "vh_數學B1_AbsoluteValue",
+      "subskill_id": "absolute_value_distance_from_zero",
+      "question_text": "下列哪一項是 $|-5|$ 的正確意義？",
+      "choices": [
+        "數線上 $-5$ 到 $0$ 的距離",
+        "數線上 $5$ 到 $-5$ 的距離",
+        "$-5$ 本身",
+        "一個負數"
+      ],
+      "answer": "數線上 $-5$ 到 $0$ 的距離",
+      "answer_type": "choice",
+      "checker_type": "choice_checker",
+      "solution_steps": [
+        "絕對值表示數線上該數到 $0$ 的距離。",
+        "因此 $|-5|$ 表示 $-5$ 到 $0$ 的距離。"
+      ],
+      "metadata": {
+        "scenario_family": "absolute_value_distance_from_zero",
+        "scenario_id": "s7",
+        "parameter_signature": "absolute_value_distance_from_zero:n=-5:pattern=meaning",
+        "question_pattern_id": "p2",
+        "diagnosis_tags": [
+          "absolute_value_meaning",
+          "distance_from_zero"
+        ],
+        "prerequisite_subskills": [
+          "number_line_basic_position"
+        ]
+      },
+      "question": "下列哪一項是 $|-5|$ 的正確意義？",
+      "correct_answer": "數線上 $-5$ 到 $0$ 的距離",
+      "explanation": "絕對值表示數線上該數到 $0$ 的距離。\n因此 $|-5|$ 表示 $-5$ 到 $0$ 的距離。"
+    },
+    {
+      "problem_type_id": "absolute_value_distance_from_zero",
+      "skill_id": "vh_數學B1_AbsoluteValue",
+      "subskill_id": "absolute_value_distance_from_zero",
+      "question_text": "下列哪一項是 $|-6|$ 的正確意義？",
+      "choices": [
+        "數線上 $-6$ 到 $0$ 的距離",
+        "數線上 $6$ 到 $-6$ 的距離",
+        "$-6$ 本身",
+        "一個負數"
+      ],
+      "answer": "數線上 $-6$ 到 $0$ 的距離",
+      "answer_type": "choice",
+      "checker_type": "choice_checker",
+      "solution_steps": [
+        "絕對值表示數線上該數到 $0$ 的距離。",
+        "因此 $|-6|$ 表示 $-6$ 到 $0$ 的距離。"
+      ],
+      "metadata": {
+        "scenario_family": "absolute_value_distance_from_zero",
+        "scenario_id": "s7",
+        "parameter_signature": "absolute_value_distance_from_zero:n=-6:pattern=meaning",
+        "question_pattern_id": "p1",
+        "diagnosis_tags": [
+          "absolute_value_meaning",
+          "distance_from_zero"
+        ],
+        "prerequisite_subskills": [
+          "number_line_basic_position"
+        ]
+      },
+      "question": "下列哪一項是 $|-6|$ 的正確意義？",
+      "correct_answer": "數線上 $-6$ 到 $0$ 的距離",
+      "explanation": "絕對值表示數線上該數到 $0$ 的距離。\n因此 $|-6|$ 表示 $-6$ 到 $0$ 的距離。"
+    },
+    {
+      "problem_type_id": "absolute_value_distance_from_zero",
+      "skill_id": "vh_數學B1_AbsoluteValue",
+      "subskill_id": "absolute_value_distance_from_zero",
+      "question_text": "下列哪一項是 $|-7|$ 的正確意義？",
+      "choices": [
+        "數線上 $-7$ 到 $0$ 的距離",
+        "數線上 $7$ 到 $-7$ 的距離",
+        "$-7$ 本身",
+        "一個負數"
+      ],
+      "answer": "數線上 $-7$ 到 $0$ 的距離",
+      "answer_type": "choice",
+      "checker_type": "choice_checker",
+      "solution_steps": [
+        "絕對值表示數線上該數到 $0$ 的距離。",
+        "因此 $|-7|$ 表示 $-7$ 到 $0$ 的距離。"
+      ],
+      "metadata": {
+        "scenario_family": "absolute_value_distance_from_zero",
+        "scenario_id": "s4",
+        "parameter_signature": "absolute_value_distance_from_zero:n=-7:pattern=meaning",
+        "question_pattern_id": "p2",
+        "diagnosis_tags": [
+          "absolute_value_meaning",
+          "distance_from_zero"
+        ],
+        "prerequisite_subskills": [
+          "number_line_basic_position"
+        ]
+      },
+      "question": "下列哪一項是 $|-7|$ 的正確意義？",
+      "correct_answer": "數線上 $-7$ 到 $0$ 的距離",
+      "explanation": "絕對值表示數線上該數到 $0$ 的距離。\n因此 $|-7|$ 表示 $-7$ 到 $0$ 的距離。"
+    },
+    {
+      "problem_type_id": "absolute_value_distance_from_zero",
+      "skill_id": "vh_數學B1_AbsoluteValue",
+      "subskill_id": "absolute_value_distance_from_zero",
+      "question_text": "下列哪一項是 $|-8|$ 的正確意義？",
+      "choices": [
+        "數線上 $-8$ 到 $0$ 的距離",
+        "數線上 $8$ 到 $-8$ 的距離",
+        "$-8$ 本身",
+        "一個負數"
+      ],
+      "answer": "數線上 $-8$ 到 $0$ 的距離",
+      "answer_type": "choice",
+      "checker_type": "choice_checker",
+      "solution_steps": [
+        "絕對值表示數線上該數到 $0$ 的距離。",
+        "因此 $|-8|$ 表示 $-8$ 到 $0$ 的距離。"
+      ],
+      "metadata": {
+        "scenario_family": "absolute_value_distance_from_zero",
+        "scenario_id": "s8",
+        "parameter_signature": "absolute_value_distance_from_zero:n=-8:pattern=meaning",
+        "question_pattern_id": "p3",
+        "diagnosis_tags": [
+          "absolute_value_meaning",
+          "distance_from_zero"
+        ],
+        "prerequisite_subskills": [
+          "number_line_basic_position"
+        ]
+      },
+      "question": "下列哪一項是 $|-8|$ 的正確意義？",
+      "correct_answer": "數線上 $-8$ 到 $0$ 的距離",
+      "explanation": "絕對值表示數線上該數到 $0$ 的距離。\n因此 $|-8|$ 表示 $-8$ 到 $0$ 的距離。"
+    },
+    {
+      "problem_type_id": "absolute_value_distance_from_zero",
+      "skill_id": "vh_數學B1_AbsoluteValue",
+      "subskill_id": "absolute_value_distance_from_zero",
+      "question_text": "下列哪一項是 $|-9|$ 的正確意義？",
+      "choices": [
+        "數線上 $-9$ 到 $0$ 的距離",
+        "數線上 $9$ 到 $-9$ 的距離",
+        "$-9$ 本身",
+        "一個負數"
+      ],
+      "answer": "數線上 $-9$ 到 $0$ 的距離",
+      "answer_type": "choice",
+      "checker_type": "choice_checker",
+      "solution_steps": [
+        "絕對值表示數線上該數到 $0$ 的距離。",
+        "因此 $|-9|$ 表示 $-9$ 到 $0$ 的距離。"
+      ],
+      "metadata": {
+        "scenario_family": "absolute_value_distance_from_zero",
+        "scenario_id": "s2",
+        "parameter_signature": "absolute_value_distance_from_zero:n=-9:pattern=meaning",
+        "question_pattern_id": "p2",
+        "diagnosis_tags": [
+          "absolute_value_meaning",
+          "distance_from_zero"
+        ],
+        "prerequisite_subskills": [
+          "number_line_basic_position"
+        ]
+      },
+      "question": "下列哪一項是 $|-9|$ 的正確意義？",
+      "correct_answer": "數線上 $-9$ 到 $0$ 的距離",
+      "explanation": "絕對值表示數線上該數到 $0$ 的距離。\n因此 $|-9|$ 表示 $-9$ 到 $0$ 的距離。"
+    },
+    {
+      "problem_type_id": "absolute_value_distance_from_zero",
+      "skill_id": "vh_數學B1_AbsoluteValue",
+      "subskill_id": "absolute_value_distance_from_zero",
+      "question_text": "下列哪一項是 $|-10|$ 的正確意義？",
+      "choices": [
+        "數線上 $-10$ 到 $0$ 的距離",
+        "數線上 $10$ 到 $-10$ 的距離",
+        "$-10$ 本身",
+        "一個負數"
+      ],
+      "answer": "數線上 $-10$ 到 $0$ 的距離",
+      "answer_type": "choice",
+      "checker_type": "choice_checker",
+      "solution_steps": [
+        "絕對值表示數線上該數到 $0$ 的距離。",
+        "因此 $|-10|$ 表示 $-10$ 到 $0$ 的距離。"
+      ],
+      "metadata": {
+        "scenario_family": "absolute_value_distance_from_zero",
+        "scenario_id": "s9",
+        "parameter_signature": "absolute_value_distance_from_zero:n=-10:pattern=meaning",
+        "question_pattern_id": "p1",
+        "diagnosis_tags": [
+          "absolute_value_meaning",
+          "distance_from_zero"
+        ],
+        "prerequisite_subskills": [
+          "number_line_basic_position"
+        ]
+      },
+      "question": "下列哪一項是 $|-10|$ 的正確意義？",
+      "correct_answer": "數線上 $-10$ 到 $0$ 的距離",
+      "explanation": "絕對值表示數線上該數到 $0$ 的距離。\n因此 $|-10|$ 表示 $-10$ 到 $0$ 的距離。"
+    }
+  ],
+  "passed": true,
+  "diversity": {
+    "consecutive_duplicate_count": 0,
+    "unique_question_text_count": 20,
+    "repeated_question_text_ratio": 0.33333333333333337,
+    "unique_parameter_signature_count": 20
+  }
+}

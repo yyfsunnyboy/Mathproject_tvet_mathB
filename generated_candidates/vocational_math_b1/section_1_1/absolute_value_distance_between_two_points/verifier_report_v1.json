@@ -1,0 +1,1003 @@
+{
+  "candidate_path": "E:\\Python\\Mathproject_tvet_mathB\\generated_candidates\\vocational_math_b1\\section_1_1\\absolute_value_distance_between_two_points\\candidate_v1.py",
+  "errors": [],
+  "samples": [
+    {
+      "problem_type_id": "absolute_value_distance_between_two_points",
+      "skill_id": "vh_數學B1_AbsoluteValue",
+      "subskill_id": "absolute_value_distance_between_two_points",
+      "question_text": "已知數線上兩點 $A(-10)$、$B(-5)$，試求 A、B 兩點的距離。",
+      "answer": 5,
+      "answer_type": "integer",
+      "checker_type": "integer_checker",
+      "solution_steps": [
+        "數線上兩點距離等於兩坐標差的絕對值。",
+        "$|-5-(-10)|=|5|=5$。",
+        "所以 A、B 兩點的距離為 $5$。"
+      ],
+      "metadata": {
+        "scenario_family": "absolute_value_distance_between_two_points",
+        "scenario_id": "s7",
+        "parameter_signature": "absolute_value_distance_between_two_points:a=-10:b=-5:difficulty=easy",
+        "question_pattern_id": "p4",
+        "diagnosis_tags": [
+          "absolute_value_distance",
+          "number_line_distance",
+          "coordinate_difference"
+        ],
+        "prerequisite_subskills": [
+          "number_line_basic_position",
+          "absolute_value_numeric_evaluation"
+        ]
+      },
+      "question": "已知數線上兩點 $A(-10)$、$B(-5)$，試求 A、B 兩點的距離。",
+      "correct_answer": 5,
+      "explanation": "數線上兩點距離等於兩坐標差的絕對值。\n$|-5-(-10)|=|5|=5$。\n所以 A、B 兩點的距離為 $5$。",
+      "choices": []
+    },
+    {
+      "problem_type_id": "absolute_value_distance_between_two_points",
+      "skill_id": "vh_數學B1_AbsoluteValue",
+      "subskill_id": "absolute_value_distance_between_two_points",
+      "question_text": "已知數線上兩點 $A(-9)$、$B(-2)$，試求 A、B 兩點的距離。",
+      "answer": 7,
+      "answer_type": "integer",
+      "checker_type": "integer_checker",
+      "solution_steps": [
+        "數線上兩點距離等於兩坐標差的絕對值。",
+        "$|-2-(-9)|=|7|=7$。",
+        "所以 A、B 兩點的距離為 $7$。"
+      ],
+      "metadata": {
+        "scenario_family": "absolute_value_distance_between_two_points",
+        "scenario_id": "s3",
+        "parameter_signature": "absolute_value_distance_between_two_points:a=-9:b=-2:difficulty=easy",
+        "question_pattern_id": "p1",
+        "diagnosis_tags": [
+          "absolute_value_distance",
+          "number_line_distance",
+          "coordinate_difference"
+        ],
+        "prerequisite_subskills": [
+          "number_line_basic_position",
+          "absolute_value_numeric_evaluation"
+        ]
+      },
+      "question": "已知數線上兩點 $A(-9)$、$B(-2)$，試求 A、B 兩點的距離。",
+      "correct_answer": 7,
+      "explanation": "數線上兩點距離等於兩坐標差的絕對值。\n$|-2-(-9)|=|7|=7$。\n所以 A、B 兩點的距離為 $7$。",
+      "choices": []
+    },
+    {
+      "problem_type_id": "absolute_value_distance_between_two_points",
+      "skill_id": "vh_數學B1_AbsoluteValue",
+      "subskill_id": "absolute_value_distance_between_two_points",
+      "question_text": "已知數線上兩點 $A(-8)$、$B(1)$，試求 A、B 兩點的距離。",
+      "answer": 9,
+      "answer_type": "integer",
+      "checker_type": "integer_checker",
+      "solution_steps": [
+        "數線上兩點距離等於兩坐標差的絕對值。",
+        "$|1-(-8)|=|9|=9$。",
+        "所以 A、B 兩點的距離為 $9$。"
+      ],
+      "metadata": {
+        "scenario_family": "absolute_value_distance_between_two_points",
+        "scenario_id": "s1",
+        "parameter_signature": "absolute_value_distance_between_two_points:a=-8:b=1:difficulty=easy",
+        "question_pattern_id": "p1",
+        "diagnosis_tags": [
+          "absolute_value_distance",
+          "number_line_distance",
+          "coordinate_difference"
+        ],
+        "prerequisite_subskills": [
+          "number_line_basic_position",
+          "absolute_value_numeric_evaluation"
+        ]
+      },
+      "question": "已知數線上兩點 $A(-8)$、$B(1)$，試求 A、B 兩點的距離。",
+      "correct_answer": 9,
+      "explanation": "數線上兩點距離等於兩坐標差的絕對值。\n$|1-(-8)|=|9|=9$。\n所以 A、B 兩點的距離為 $9$。",
+      "choices": []
+    },
+    {
+      "problem_type_id": "absolute_value_distance_between_two_points",
+      "skill_id": "vh_數學B1_AbsoluteValue",
+      "subskill_id": "absolute_value_distance_between_two_points",
+      "question_text": "已知數線上兩點 $A(-7)$、$B(4)$，試求 A、B 兩點的距離。",
+      "answer": 11,
+      "answer_type": "integer",
+      "checker_type": "integer_checker",
+      "solution_steps": [
+        "數線上兩點距離等於兩坐標差的絕對值。",
+        "$|4-(-7)|=|11|=11$。",
+        "所以 A、B 兩點的距離為 $11$。"
+      ],
+      "metadata": {
+        "scenario_family": "absolute_value_distance_between_two_points",
+        "scenario_id": "s4",
+        "parameter_signature": "absolute_value_distance_between_two_points:a=-7:b=4:difficulty=easy",
+        "question_pattern_id": "p2",
+        "diagnosis_tags": [
+          "absolute_value_distance",
+          "number_line_distance",
+          "coordinate_difference"
+        ],
+        "prerequisite_subskills": [
+          "number_line_basic_position",
+          "absolute_value_numeric_evaluation"
+        ]
+      },
+      "question": "已知數線上兩點 $A(-7)$、$B(4)$，試求 A、B 兩點的距離。",
+      "correct_answer": 11,
+      "explanation": "數線上兩點距離等於兩坐標差的絕對值。\n$|4-(-7)|=|11|=11$。\n所以 A、B 兩點的距離為 $11$。",
+      "choices": []
+    },
+    {
+      "problem_type_id": "absolute_value_distance_between_two_points",
+      "skill_id": "vh_數學B1_AbsoluteValue",
+      "subskill_id": "absolute_value_distance_between_two_points",
+      "question_text": "已知數線上兩點 $A(-6)$、$B(7)$，試求 A、B 兩點的距離。",
+      "answer": 13,
+      "answer_type": "integer",
+      "checker_type": "integer_checker",
+      "solution_steps": [
+        "數線上兩點距離等於兩坐標差的絕對值。",
+        "$|7-(-6)|=|13|=13$。",
+        "所以 A、B 兩點的距離為 $13$。"
+      ],
+      "metadata": {
+        "scenario_family": "absolute_value_distance_between_two_points",
+        "scenario_id": "s4",
+        "parameter_signature": "absolute_value_distance_between_two_points:a=-6:b=7:difficulty=easy",
+        "question_pattern_id": "p3",
+        "diagnosis_tags": [
+          "absolute_value_distance",
+          "number_line_distance",
+          "coordinate_difference"
+        ],
+        "prerequisite_subskills": [
+          "number_line_basic_position",
+          "absolute_value_numeric_evaluation"
+        ]
+      },
+      "question": "已知數線上兩點 $A(-6)$、$B(7)$，試求 A、B 兩點的距離。",
+      "correct_answer": 13,
+      "explanation": "數線上兩點距離等於兩坐標差的絕對值。\n$|7-(-6)|=|13|=13$。\n所以 A、B 兩點的距離為 $13$。",
+      "choices": []
+    },
+    {
+      "problem_type_id": "absolute_value_distance_between_two_points",
+      "skill_id": "vh_數學B1_AbsoluteValue",
+      "subskill_id": "absolute_value_distance_between_two_points",
+      "question_text": "已知數線上兩點 $A(-5)$、$B(10)$，試求 A、B 兩點的距離。",
+      "answer": 15,
+      "answer_type": "integer",
+      "checker_type": "integer_checker",
+      "solution_steps": [
+        "數線上兩點距離等於兩坐標差的絕對值。",
+        "$|10-(-5)|=|15|=15$。",
+        "所以 A、B 兩點的距離為 $15$。"
+      ],
+      "metadata": {
+        "scenario_family": "absolute_value_distance_between_two_points",
+        "scenario_id": "s5",
+        "parameter_signature": "absolute_value_distance_between_two_points:a=-5:b=10:difficulty=easy",
+        "question_pattern_id": "p3",
+        "diagnosis_tags": [
+          "absolute_value_distance",
+          "number_line_distance",
+          "coordinate_difference"
+        ],
+        "prerequisite_subskills": [
+          "number_line_basic_position",
+          "absolute_value_numeric_evaluation"
+        ]
+      },
+      "question": "已知數線上兩點 $A(-5)$、$B(10)$，試求 A、B 兩點的距離。",
+      "correct_answer": 15,
+      "explanation": "數線上兩點距離等於兩坐標差的絕對值。\n$|10-(-5)|=|15|=15$。\n所以 A、B 兩點的距離為 $15$。",
+      "choices": []
+    },
+    {
+      "problem_type_id": "absolute_value_distance_between_two_points",
+      "skill_id": "vh_數學B1_AbsoluteValue",
+      "subskill_id": "absolute_value_distance_between_two_points",
+      "question_text": "已知數線上兩點 $A(-4)$、$B(-8)$，試求 A、B 兩點的距離。",
+      "answer": 4,
+      "answer_type": "integer",
+      "checker_type": "integer_checker",
+      "solution_steps": [
+        "數線上兩點距離等於兩坐標差的絕對值。",
+        "$|-8-(-4)|=|-4|=4$。",
+        "所以 A、B 兩點的距離為 $4$。"
+      ],
+      "metadata": {
+        "scenario_family": "absolute_value_distance_between_two_points",
+        "scenario_id": "s2",
+        "parameter_signature": "absolute_value_distance_between_two_points:a=-4:b=-8:difficulty=easy",
+        "question_pattern_id": "p4",
+        "diagnosis_tags": [
+          "absolute_value_distance",
+          "number_line_distance",
+          "coordinate_difference"
+        ],
+        "prerequisite_subskills": [
+          "number_line_basic_position",
+          "absolute_value_numeric_evaluation"
+        ]
+      },
+      "question": "已知數線上兩點 $A(-4)$、$B(-8)$，試求 A、B 兩點的距離。",
+      "correct_answer": 4,
+      "explanation": "數線上兩點距離等於兩坐標差的絕對值。\n$|-8-(-4)|=|-4|=4$。\n所以 A、B 兩點的距離為 $4$。",
+      "choices": []
+    },
+    {
+      "problem_type_id": "absolute_value_distance_between_two_points",
+      "skill_id": "vh_數學B1_AbsoluteValue",
+      "subskill_id": "absolute_value_distance_between_two_points",
+      "question_text": "已知數線上兩點 $A(-3)$、$B(-5)$，試求 A、B 兩點的距離。",
+      "answer": 2,
+      "answer_type": "integer",
+      "checker_type": "integer_checker",
+      "solution_steps": [
+        "數線上兩點距離等於兩坐標差的絕對值。",
+        "$|-5-(-3)|=|-2|=2$。",
+        "所以 A、B 兩點的距離為 $2$。"
+      ],
+      "metadata": {
+        "scenario_family": "absolute_value_distance_between_two_points",
+        "scenario_id": "s6",
+        "parameter_signature": "absolute_value_distance_between_two_points:a=-3:b=-5:difficulty=easy",
+        "question_pattern_id": "p2",
+        "diagnosis_tags": [
+          "absolute_value_distance",
+          "number_line_distance",
+          "coordinate_difference"
+        ],
+        "prerequisite_subskills": [
+          "number_line_basic_position",
+          "absolute_value_numeric_evaluation"
+        ]
+      },
+      "question": "已知數線上兩點 $A(-3)$、$B(-5)$，試求 A、B 兩點的距離。",
+      "correct_answer": 2,
+      "explanation": "數線上兩點距離等於兩坐標差的絕對值。\n$|-5-(-3)|=|-2|=2$。\n所以 A、B 兩點的距離為 $2$。",
+      "choices": []
+    },
+    {
+      "problem_type_id": "absolute_value_distance_between_two_points",
+      "skill_id": "vh_數學B1_AbsoluteValue",
+      "subskill_id": "absolute_value_distance_between_two_points",
+      "question_text": "已知數線上兩點 $A(-2)$、$B(10)$，試求 A、B 兩點的距離。",
+      "answer": 12,
+      "answer_type": "integer",
+      "checker_type": "integer_checker",
+      "solution_steps": [
+        "數線上兩點距離等於兩坐標差的絕對值。",
+        "$|10-(-2)|=|12|=12$。",
+        "所以 A、B 兩點的距離為 $12$。"
+      ],
+      "metadata": {
+        "scenario_family": "absolute_value_distance_between_two_points",
+        "scenario_id": "s4",
+        "parameter_signature": "absolute_value_distance_between_two_points:a=-2:b=10:difficulty=easy",
+        "question_pattern_id": "p3",
+        "diagnosis_tags": [
+          "absolute_value_distance",
+          "number_line_distance",
+          "coordinate_difference"
+        ],
+        "prerequisite_subskills": [
+          "number_line_basic_position",
+          "absolute_value_numeric_evaluation"
+        ]
+      },
+      "question": "已知數線上兩點 $A(-2)$、$B(10)$，試求 A、B 兩點的距離。",
+      "correct_answer": 12,
+      "explanation": "數線上兩點距離等於兩坐標差的絕對值。\n$|10-(-2)|=|12|=12$。\n所以 A、B 兩點的距離為 $12$。",
+      "choices": []
+    },
+    {
+      "problem_type_id": "absolute_value_distance_between_two_points",
+      "skill_id": "vh_數學B1_AbsoluteValue",
+      "subskill_id": "absolute_value_distance_between_two_points",
+      "question_text": "已知數線上兩點 $A(-1)$、$B(1)$，試求 A、B 兩點的距離。",
+      "answer": 2,
+      "answer_type": "integer",
+      "checker_type": "integer_checker",
+      "solution_steps": [
+        "數線上兩點距離等於兩坐標差的絕對值。",
+        "$|1-(-1)|=|2|=2$。",
+        "所以 A、B 兩點的距離為 $2$。"
+      ],
+      "metadata": {
+        "scenario_family": "absolute_value_distance_between_two_points",
+        "scenario_id": "s8",
+        "parameter_signature": "absolute_value_distance_between_two_points:a=-1:b=1:difficulty=easy",
+        "question_pattern_id": "p3",
+        "diagnosis_tags": [
+          "absolute_value_distance",
+          "number_line_distance",
+          "coordinate_difference"
+        ],
+        "prerequisite_subskills": [
+          "number_line_basic_position",
+          "absolute_value_numeric_evaluation"
+        ]
+      },
+      "question": "已知數線上兩點 $A(-1)$、$B(1)$，試求 A、B 兩點的距離。",
+      "correct_answer": 2,
+      "explanation": "數線上兩點距離等於兩坐標差的絕對值。\n$|1-(-1)|=|2|=2$。\n所以 A、B 兩點的距離為 $2$。",
+      "choices": []
+    },
+    {
+      "problem_type_id": "absolute_value_distance_between_two_points",
+      "skill_id": "vh_數學B1_AbsoluteValue",
+      "subskill_id": "absolute_value_distance_between_two_points",
+      "question_text": "已知數線上兩點 $A(0)$、$B(4)$，試求 A、B 兩點的距離。",
+      "answer": 4,
+      "answer_type": "integer",
+      "checker_type": "integer_checker",
+      "solution_steps": [
+        "數線上兩點距離等於兩坐標差的絕對值。",
+        "$|4-(0)|=|4|=4$。",
+        "所以 A、B 兩點的距離為 $4$。"
+      ],
+      "metadata": {
+        "scenario_family": "absolute_value_distance_between_two_points",
+        "scenario_id": "s1",
+        "parameter_signature": "absolute_value_distance_between_two_points:a=0:b=4:difficulty=easy",
+        "question_pattern_id": "p4",
+        "diagnosis_tags": [
+          "absolute_value_distance",
+          "number_line_distance",
+          "coordinate_difference"
+        ],
+        "prerequisite_subskills": [
+          "number_line_basic_position",
+          "absolute_value_numeric_evaluation"
+        ]
+      },
+      "question": "已知數線上兩點 $A(0)$、$B(4)$，試求 A、B 兩點的距離。",
+      "correct_answer": 4,
+      "explanation": "數線上兩點距離等於兩坐標差的絕對值。\n$|4-(0)|=|4|=4$。\n所以 A、B 兩點的距離為 $4$。",
+      "choices": []
+    },
+    {
+      "problem_type_id": "absolute_value_distance_between_two_points",
+      "skill_id": "vh_數學B1_AbsoluteValue",
+      "subskill_id": "absolute_value_distance_between_two_points",
+      "question_text": "已知數線上兩點 $A(1)$、$B(7)$，試求 A、B 兩點的距離。",
+      "answer": 6,
+      "answer_type": "integer",
+      "checker_type": "integer_checker",
+      "solution_steps": [
+        "數線上兩點距離等於兩坐標差的絕對值。",
+        "$|7-(1)|=|6|=6$。",
+        "所以 A、B 兩點的距離為 $6$。"
+      ],
+      "metadata": {
+        "scenario_family": "absolute_value_distance_between_two_points",
+        "scenario_id": "s8",
+        "parameter_signature": "absolute_value_distance_between_two_points:a=1:b=7:difficulty=easy",
+        "question_pattern_id": "p4",
+        "diagnosis_tags": [
+          "absolute_value_distance",
+          "number_line_distance",
+          "coordinate_difference"
+        ],
+        "prerequisite_subskills": [
+          "number_line_basic_position",
+          "absolute_value_numeric_evaluation"
+        ]
+      },
+      "question": "已知數線上兩點 $A(1)$、$B(7)$，試求 A、B 兩點的距離。",
+      "correct_answer": 6,
+      "explanation": "數線上兩點距離等於兩坐標差的絕對值。\n$|7-(1)|=|6|=6$。\n所以 A、B 兩點的距離為 $6$。",
+      "choices": []
+    },
+    {
+      "problem_type_id": "absolute_value_distance_between_two_points",
+      "skill_id": "vh_數學B1_AbsoluteValue",
+      "subskill_id": "absolute_value_distance_between_two_points",
+      "question_text": "已知數線上兩點 $A(2)$、$B(10)$，試求 A、B 兩點的距離。",
+      "answer": 8,
+      "answer_type": "integer",
+      "checker_type": "integer_checker",
+      "solution_steps": [
+        "數線上兩點距離等於兩坐標差的絕對值。",
+        "$|10-(2)|=|8|=8$。",
+        "所以 A、B 兩點的距離為 $8$。"
+      ],
+      "metadata": {
+        "scenario_family": "absolute_value_distance_between_two_points",
+        "scenario_id": "s8",
+        "parameter_signature": "absolute_value_distance_between_two_points:a=2:b=10:difficulty=easy",
+        "question_pattern_id": "p3",
+        "diagnosis_tags": [
+          "absolute_value_distance",
+          "number_line_distance",
+          "coordinate_difference"
+        ],
+        "prerequisite_subskills": [
+          "number_line_basic_position",
+          "absolute_value_numeric_evaluation"
+        ]
+      },
+      "question": "已知數線上兩點 $A(2)$、$B(10)$，試求 A、B 兩點的距離。",
+      "correct_answer": 8,
+      "explanation": "數線上兩點距離等於兩坐標差的絕對值。\n$|10-(2)|=|8|=8$。\n所以 A、B 兩點的距離為 $8$。",
+      "choices": []
+    },
+    {
+      "problem_type_id": "absolute_value_distance_between_two_points",
+      "skill_id": "vh_數學B1_AbsoluteValue",
+      "subskill_id": "absolute_value_distance_between_two_points",
+      "question_text": "已知數線上兩點 $A(3)$、$B(-8)$，試求 A、B 兩點的距離。",
+      "answer": 11,
+      "answer_type": "integer",
+      "checker_type": "integer_checker",
+      "solution_steps": [
+        "數線上兩點距離等於兩坐標差的絕對值。",
+        "$|-8-(3)|=|-11|=11$。",
+        "所以 A、B 兩點的距離為 $11$。"
+      ],
+      "metadata": {
+        "scenario_family": "absolute_value_distance_between_two_points",
+        "scenario_id": "s5",
+        "parameter_signature": "absolute_value_distance_between_two_points:a=3:b=-8:difficulty=easy",
+        "question_pattern_id": "p3",
+        "diagnosis_tags": [
+          "absolute_value_distance",
+          "number_line_distance",
+          "coordinate_difference"
+        ],
+        "prerequisite_subskills": [
+          "number_line_basic_position",
+          "absolute_value_numeric_evaluation"
+        ]
+      },
+      "question": "已知數線上兩點 $A(3)$、$B(-8)$，試求 A、B 兩點的距離。",
+      "correct_answer": 11,
+      "explanation": "數線上兩點距離等於兩坐標差的絕對值。\n$|-8-(3)|=|-11|=11$。\n所以 A、B 兩點的距離為 $11$。",
+      "choices": []
+    },
+    {
+      "problem_type_id": "absolute_value_distance_between_two_points",
+      "skill_id": "vh_數學B1_AbsoluteValue",
+      "subskill_id": "absolute_value_distance_between_two_points",
+      "question_text": "已知數線上兩點 $A(4)$、$B(-5)$，試求 A、B 兩點的距離。",
+      "answer": 9,
+      "answer_type": "integer",
+      "checker_type": "integer_checker",
+      "solution_steps": [
+        "數線上兩點距離等於兩坐標差的絕對值。",
+        "$|-5-(4)|=|-9|=9$。",
+        "所以 A、B 兩點的距離為 $9$。"
+      ],
+      "metadata": {
+        "scenario_family": "absolute_value_distance_between_two_points",
+        "scenario_id": "s2",
+        "parameter_signature": "absolute_value_distance_between_two_points:a=4:b=-5:difficulty=easy",
+        "question_pattern_id": "p2",
+        "diagnosis_tags": [
+          "absolute_value_distance",
+          "number_line_distance",
+          "coordinate_difference"
+        ],
+        "prerequisite_subskills": [
+          "number_line_basic_position",
+          "absolute_value_numeric_evaluation"
+        ]
+      },
+      "question": "已知數線上兩點 $A(4)$、$B(-5)$，試求 A、B 兩點的距離。",
+      "correct_answer": 9,
+      "explanation": "數線上兩點距離等於兩坐標差的絕對值。\n$|-5-(4)|=|-9|=9$。\n所以 A、B 兩點的距離為 $9$。",
+      "choices": []
+    },
+    {
+      "problem_type_id": "absolute_value_distance_between_two_points",
+      "skill_id": "vh_數學B1_AbsoluteValue",
+      "subskill_id": "absolute_value_distance_between_two_points",
+      "question_text": "已知數線上兩點 $A(5)$、$B(-2)$，試求 A、B 兩點的距離。",
+      "answer": 7,
+      "answer_type": "integer",
+      "checker_type": "integer_checker",
+      "solution_steps": [
+        "數線上兩點距離等於兩坐標差的絕對值。",
+        "$|-2-(5)|=|-7|=7$。",
+        "所以 A、B 兩點的距離為 $7$。"
+      ],
+      "metadata": {
+        "scenario_family": "absolute_value_distance_between_two_points",
+        "scenario_id": "s4",
+        "parameter_signature": "absolute_value_distance_between_two_points:a=5:b=-2:difficulty=easy",
+        "question_pattern_id": "p1",
+        "diagnosis_tags": [
+          "absolute_value_distance",
+          "number_line_distance",
+          "coordinate_difference"
+        ],
+        "prerequisite_subskills": [
+          "number_line_basic_position",
+          "absolute_value_numeric_evaluation"
+        ]
+      },
+      "question": "已知數線上兩點 $A(5)$、$B(-2)$，試求 A、B 兩點的距離。",
+      "correct_answer": 7,
+      "explanation": "數線上兩點距離等於兩坐標差的絕對值。\n$|-2-(5)|=|-7|=7$。\n所以 A、B 兩點的距離為 $7$。",
+      "choices": []
+    },
+    {
+      "problem_type_id": "absolute_value_distance_between_two_points",
+      "skill_id": "vh_數學B1_AbsoluteValue",
+      "subskill_id": "absolute_value_distance_between_two_points",
+      "question_text": "已知數線上兩點 $A(6)$、$B(1)$，試求 A、B 兩點的距離。",
+      "answer": 5,
+      "answer_type": "integer",
+      "checker_type": "integer_checker",
+      "solution_steps": [
+        "數線上兩點距離等於兩坐標差的絕對值。",
+        "$|1-(6)|=|-5|=5$。",
+        "所以 A、B 兩點的距離為 $5$。"
+      ],
+      "metadata": {
+        "scenario_family": "absolute_value_distance_between_two_points",
+        "scenario_id": "s6",
+        "parameter_signature": "absolute_value_distance_between_two_points:a=6:b=1:difficulty=easy",
+        "question_pattern_id": "p4",
+        "diagnosis_tags": [
+          "absolute_value_distance",
+          "number_line_distance",
+          "coordinate_difference"
+        ],
+        "prerequisite_subskills": [
+          "number_line_basic_position",
+          "absolute_value_numeric_evaluation"
+        ]
+      },
+      "question": "已知數線上兩點 $A(6)$、$B(1)$，試求 A、B 兩點的距離。",
+      "correct_answer": 5,
+      "explanation": "數線上兩點距離等於兩坐標差的絕對值。\n$|1-(6)|=|-5|=5$。\n所以 A、B 兩點的距離為 $5$。",
+      "choices": []
+    },
+    {
+      "problem_type_id": "absolute_value_distance_between_two_points",
+      "skill_id": "vh_數學B1_AbsoluteValue",
+      "subskill_id": "absolute_value_distance_between_two_points",
+      "question_text": "已知數線上兩點 $A(7)$、$B(4)$，試求 A、B 兩點的距離。",
+      "answer": 3,
+      "answer_type": "integer",
+      "checker_type": "integer_checker",
+      "solution_steps": [
+        "數線上兩點距離等於兩坐標差的絕對值。",
+        "$|4-(7)|=|-3|=3$。",
+        "所以 A、B 兩點的距離為 $3$。"
+      ],
+      "metadata": {
+        "scenario_family": "absolute_value_distance_between_two_points",
+        "scenario_id": "s9",
+        "parameter_signature": "absolute_value_distance_between_two_points:a=7:b=4:difficulty=easy",
+        "question_pattern_id": "p4",
+        "diagnosis_tags": [
+          "absolute_value_distance",
+          "number_line_distance",
+          "coordinate_difference"
+        ],
+        "prerequisite_subskills": [
+          "number_line_basic_position",
+          "absolute_value_numeric_evaluation"
+        ]
+      },
+      "question": "已知數線上兩點 $A(7)$、$B(4)$，試求 A、B 兩點的距離。",
+      "correct_answer": 3,
+      "explanation": "數線上兩點距離等於兩坐標差的絕對值。\n$|4-(7)|=|-3|=3$。\n所以 A、B 兩點的距離為 $3$。",
+      "choices": []
+    },
+    {
+      "problem_type_id": "absolute_value_distance_between_two_points",
+      "skill_id": "vh_數學B1_AbsoluteValue",
+      "subskill_id": "absolute_value_distance_between_two_points",
+      "question_text": "已知數線上兩點 $A(8)$、$B(7)$，試求 A、B 兩點的距離。",
+      "answer": 1,
+      "answer_type": "integer",
+      "checker_type": "integer_checker",
+      "solution_steps": [
+        "數線上兩點距離等於兩坐標差的絕對值。",
+        "$|7-(8)|=|-1|=1$。",
+        "所以 A、B 兩點的距離為 $1$。"
+      ],
+      "metadata": {
+        "scenario_family": "absolute_value_distance_between_two_points",
+        "scenario_id": "s3",
+        "parameter_signature": "absolute_value_distance_between_two_points:a=8:b=7:difficulty=easy",
+        "question_pattern_id": "p1",
+        "diagnosis_tags": [
+          "absolute_value_distance",
+          "number_line_distance",
+          "coordinate_difference"
+        ],
+        "prerequisite_subskills": [
+          "number_line_basic_position",
+          "absolute_value_numeric_evaluation"
+        ]
+      },
+      "question": "已知數線上兩點 $A(8)$、$B(7)$，試求 A、B 兩點的距離。",
+      "correct_answer": 1,
+      "explanation": "數線上兩點距離等於兩坐標差的絕對值。\n$|7-(8)|=|-1|=1$。\n所以 A、B 兩點的距離為 $1$。",
+      "choices": []
+    },
+    {
+      "problem_type_id": "absolute_value_distance_between_two_points",
+      "skill_id": "vh_數學B1_AbsoluteValue",
+      "subskill_id": "absolute_value_distance_between_two_points",
+      "question_text": "已知數線上兩點 $A(9)$、$B(10)$，試求 A、B 兩點的距離。",
+      "answer": 1,
+      "answer_type": "integer",
+      "checker_type": "integer_checker",
+      "solution_steps": [
+        "數線上兩點距離等於兩坐標差的絕對值。",
+        "$|10-(9)|=|1|=1$。",
+        "所以 A、B 兩點的距離為 $1$。"
+      ],
+      "metadata": {
+        "scenario_family": "absolute_value_distance_between_two_points",
+        "scenario_id": "s1",
+        "parameter_signature": "absolute_value_distance_between_two_points:a=9:b=10:difficulty=easy",
+        "question_pattern_id": "p1",
+        "diagnosis_tags": [
+          "absolute_value_distance",
+          "number_line_distance",
+          "coordinate_difference"
+        ],
+        "prerequisite_subskills": [
+          "number_line_basic_position",
+          "absolute_value_numeric_evaluation"
+        ]
+      },
+      "question": "已知數線上兩點 $A(9)$、$B(10)$，試求 A、B 兩點的距離。",
+      "correct_answer": 1,
+      "explanation": "數線上兩點距離等於兩坐標差的絕對值。\n$|10-(9)|=|1|=1$。\n所以 A、B 兩點的距離為 $1$。",
+      "choices": []
+    },
+    {
+      "problem_type_id": "absolute_value_distance_between_two_points",
+      "skill_id": "vh_數學B1_AbsoluteValue",
+      "subskill_id": "absolute_value_distance_between_two_points",
+      "question_text": "已知數線上兩點 $A(10)$、$B(-8)$，試求 A、B 兩點的距離。",
+      "answer": 18,
+      "answer_type": "integer",
+      "checker_type": "integer_checker",
+      "solution_steps": [
+        "數線上兩點距離等於兩坐標差的絕對值。",
+        "$|-8-(10)|=|-18|=18$。",
+        "所以 A、B 兩點的距離為 $18$。"
+      ],
+      "metadata": {
+        "scenario_family": "absolute_value_distance_between_two_points",
+        "scenario_id": "s3",
+        "parameter_signature": "absolute_value_distance_between_two_points:a=10:b=-8:difficulty=easy",
+        "question_pattern_id": "p3",
+        "diagnosis_tags": [
+          "absolute_value_distance",
+          "number_line_distance",
+          "coordinate_difference"
+        ],
+        "prerequisite_subskills": [
+          "number_line_basic_position",
+          "absolute_value_numeric_evaluation"
+        ]
+      },
+      "question": "已知數線上兩點 $A(10)$、$B(-8)$，試求 A、B 兩點的距離。",
+      "correct_answer": 18,
+      "explanation": "數線上兩點距離等於兩坐標差的絕對值。\n$|-8-(10)|=|-18|=18$。\n所以 A、B 兩點的距離為 $18$。",
+      "choices": []
+    },
+    {
+      "problem_type_id": "absolute_value_distance_between_two_points",
+      "skill_id": "vh_數學B1_AbsoluteValue",
+      "subskill_id": "absolute_value_distance_between_two_points",
+      "question_text": "已知數線上兩點 $A(-10)$、$B(-5)$，試求 A、B 兩點的距離。",
+      "answer": 5,
+      "answer_type": "integer",
+      "checker_type": "integer_checker",
+      "solution_steps": [
+        "數線上兩點距離等於兩坐標差的絕對值。",
+        "$|-5-(-10)|=|5|=5$。",
+        "所以 A、B 兩點的距離為 $5$。"
+      ],
+      "metadata": {
+        "scenario_family": "absolute_value_distance_between_two_points",
+        "scenario_id": "s3",
+        "parameter_signature": "absolute_value_distance_between_two_points:a=-10:b=-5:difficulty=easy",
+        "question_pattern_id": "p4",
+        "diagnosis_tags": [
+          "absolute_value_distance",
+          "number_line_distance",
+          "coordinate_difference"
+        ],
+        "prerequisite_subskills": [
+          "number_line_basic_position",
+          "absolute_value_numeric_evaluation"
+        ]
+      },
+      "question": "已知數線上兩點 $A(-10)$、$B(-5)$，試求 A、B 兩點的距離。",
+      "correct_answer": 5,
+      "explanation": "數線上兩點距離等於兩坐標差的絕對值。\n$|-5-(-10)|=|5|=5$。\n所以 A、B 兩點的距離為 $5$。",
+      "choices": []
+    },
+    {
+      "problem_type_id": "absolute_value_distance_between_two_points",
+      "skill_id": "vh_數學B1_AbsoluteValue",
+      "subskill_id": "absolute_value_distance_between_two_points",
+      "question_text": "已知數線上兩點 $A(-9)$、$B(-2)$，試求 A、B 兩點的距離。",
+      "answer": 7,
+      "answer_type": "integer",
+      "checker_type": "integer_checker",
+      "solution_steps": [
+        "數線上兩點距離等於兩坐標差的絕對值。",
+        "$|-2-(-9)|=|7|=7$。",
+        "所以 A、B 兩點的距離為 $7$。"
+      ],
+      "metadata": {
+        "scenario_family": "absolute_value_distance_between_two_points",
+        "scenario_id": "s3",
+        "parameter_signature": "absolute_value_distance_between_two_points:a=-9:b=-2:difficulty=easy",
+        "question_pattern_id": "p2",
+        "diagnosis_tags": [
+          "absolute_value_distance",
+          "number_line_distance",
+          "coordinate_difference"
+        ],
+        "prerequisite_subskills": [
+          "number_line_basic_position",
+          "absolute_value_numeric_evaluation"
+        ]
+      },
+      "question": "已知數線上兩點 $A(-9)$、$B(-2)$，試求 A、B 兩點的距離。",
+      "correct_answer": 7,
+      "explanation": "數線上兩點距離等於兩坐標差的絕對值。\n$|-2-(-9)|=|7|=7$。\n所以 A、B 兩點的距離為 $7$。",
+      "choices": []
+    },
+    {
+      "problem_type_id": "absolute_value_distance_between_two_points",
+      "skill_id": "vh_數學B1_AbsoluteValue",
+      "subskill_id": "absolute_value_distance_between_two_points",
+      "question_text": "已知數線上兩點 $A(-8)$、$B(1)$，試求 A、B 兩點的距離。",
+      "answer": 9,
+      "answer_type": "integer",
+      "checker_type": "integer_checker",
+      "solution_steps": [
+        "數線上兩點距離等於兩坐標差的絕對值。",
+        "$|1-(-8)|=|9|=9$。",
+        "所以 A、B 兩點的距離為 $9$。"
+      ],
+      "metadata": {
+        "scenario_family": "absolute_value_distance_between_two_points",
+        "scenario_id": "s5",
+        "parameter_signature": "absolute_value_distance_between_two_points:a=-8:b=1:difficulty=easy",
+        "question_pattern_id": "p1",
+        "diagnosis_tags": [
+          "absolute_value_distance",
+          "number_line_distance",
+          "coordinate_difference"
+        ],
+        "prerequisite_subskills": [
+          "number_line_basic_position",
+          "absolute_value_numeric_evaluation"
+        ]
+      },
+      "question": "已知數線上兩點 $A(-8)$、$B(1)$，試求 A、B 兩點的距離。",
+      "correct_answer": 9,
+      "explanation": "數線上兩點距離等於兩坐標差的絕對值。\n$|1-(-8)|=|9|=9$。\n所以 A、B 兩點的距離為 $9$。",
+      "choices": []
+    },
+    {
+      "problem_type_id": "absolute_value_distance_between_two_points",
+      "skill_id": "vh_數學B1_AbsoluteValue",
+      "subskill_id": "absolute_value_distance_between_two_points",
+      "question_text": "已知數線上兩點 $A(-7)$、$B(4)$，試求 A、B 兩點的距離。",
+      "answer": 11,
+      "answer_type": "integer",
+      "checker_type": "integer_checker",
+      "solution_steps": [
+        "數線上兩點距離等於兩坐標差的絕對值。",
+        "$|4-(-7)|=|11|=11$。",
+        "所以 A、B 兩點的距離為 $11$。"
+      ],
+      "metadata": {
+        "scenario_family": "absolute_value_distance_between_two_points",
+        "scenario_id": "s7",
+        "parameter_signature": "absolute_value_distance_between_two_points:a=-7:b=4:difficulty=easy",
+        "question_pattern_id": "p2",
+        "diagnosis_tags": [
+          "absolute_value_distance",
+          "number_line_distance",
+          "coordinate_difference"
+        ],
+        "prerequisite_subskills": [
+          "number_line_basic_position",
+          "absolute_value_numeric_evaluation"
+        ]
+      },
+      "question": "已知數線上兩點 $A(-7)$、$B(4)$，試求 A、B 兩點的距離。",
+      "correct_answer": 11,
+      "explanation": "數線上兩點距離等於兩坐標差的絕對值。\n$|4-(-7)|=|11|=11$。\n所以 A、B 兩點的距離為 $11$。",
+      "choices": []
+    },
+    {
+      "problem_type_id": "absolute_value_distance_between_two_points",
+      "skill_id": "vh_數學B1_AbsoluteValue",
+      "subskill_id": "absolute_value_distance_between_two_points",
+      "question_text": "已知數線上兩點 $A(-6)$、$B(7)$，試求 A、B 兩點的距離。",
+      "answer": 13,
+      "answer_type": "integer",
+      "checker_type": "integer_checker",
+      "solution_steps": [
+        "數線上兩點距離等於兩坐標差的絕對值。",
+        "$|7-(-6)|=|13|=13$。",
+        "所以 A、B 兩點的距離為 $13$。"
+      ],
+      "metadata": {
+        "scenario_family": "absolute_value_distance_between_two_points",
+        "scenario_id": "s7",
+        "parameter_signature": "absolute_value_distance_between_two_points:a=-6:b=7:difficulty=easy",
+        "question_pattern_id": "p1",
+        "diagnosis_tags": [
+          "absolute_value_distance",
+          "number_line_distance",
+          "coordinate_difference"
+        ],
+        "prerequisite_subskills": [
+          "number_line_basic_position",
+          "absolute_value_numeric_evaluation"
+        ]
+      },
+      "question": "已知數線上兩點 $A(-6)$、$B(7)$，試求 A、B 兩點的距離。",
+      "correct_answer": 13,
+      "explanation": "數線上兩點距離等於兩坐標差的絕對值。\n$|7-(-6)|=|13|=13$。\n所以 A、B 兩點的距離為 $13$。",
+      "choices": []
+    },
+    {
+      "problem_type_id": "absolute_value_distance_between_two_points",
+      "skill_id": "vh_數學B1_AbsoluteValue",
+      "subskill_id": "absolute_value_distance_between_two_points",
+      "question_text": "已知數線上兩點 $A(-5)$、$B(10)$，試求 A、B 兩點的距離。",
+      "answer": 15,
+      "answer_type": "integer",
+      "checker_type": "integer_checker",
+      "solution_steps": [
+        "數線上兩點距離等於兩坐標差的絕對值。",
+        "$|10-(-5)|=|15|=15$。",
+        "所以 A、B 兩點的距離為 $15$。"
+      ],
+      "metadata": {
+        "scenario_family": "absolute_value_distance_between_two_points",
+        "scenario_id": "s4",
+        "parameter_signature": "absolute_value_distance_between_two_points:a=-5:b=10:difficulty=easy",
+        "question_pattern_id": "p2",
+        "diagnosis_tags": [
+          "absolute_value_distance",
+          "number_line_distance",
+          "coordinate_difference"
+        ],
+        "prerequisite_subskills": [
+          "number_line_basic_position",
+          "absolute_value_numeric_evaluation"
+        ]
+      },
+      "question": "已知數線上兩點 $A(-5)$、$B(10)$，試求 A、B 兩點的距離。",
+      "correct_answer": 15,
+      "explanation": "數線上兩點距離等於兩坐標差的絕對值。\n$|10-(-5)|=|15|=15$。\n所以 A、B 兩點的距離為 $15$。",
+      "choices": []
+    },
+    {
+      "problem_type_id": "absolute_value_distance_between_two_points",
+      "skill_id": "vh_數學B1_AbsoluteValue",
+      "subskill_id": "absolute_value_distance_between_two_points",
+      "question_text": "已知數線上兩點 $A(-4)$、$B(-8)$，試求 A、B 兩點的距離。",
+      "answer": 4,
+      "answer_type": "integer",
+      "checker_type": "integer_checker",
+      "solution_steps": [
+        "數線上兩點距離等於兩坐標差的絕對值。",
+        "$|-8-(-4)|=|-4|=4$。",
+        "所以 A、B 兩點的距離為 $4$。"
+      ],
+      "metadata": {
+        "scenario_family": "absolute_value_distance_between_two_points",
+        "scenario_id": "s8",
+        "parameter_signature": "absolute_value_distance_between_two_points:a=-4:b=-8:difficulty=easy",
+        "question_pattern_id": "p3",
+        "diagnosis_tags": [
+          "absolute_value_distance",
+          "number_line_distance",
+          "coordinate_difference"
+        ],
+        "prerequisite_subskills": [
+          "number_line_basic_position",
+          "absolute_value_numeric_evaluation"
+        ]
+      },
+      "question": "已知數線上兩點 $A(-4)$、$B(-8)$，試求 A、B 兩點的距離。",
+      "correct_answer": 4,
+      "explanation": "數線上兩點距離等於兩坐標差的絕對值。\n$|-8-(-4)|=|-4|=4$。\n所以 A、B 兩點的距離為 $4$。",
+      "choices": []
+    },
+    {
+      "problem_type_id": "absolute_value_distance_between_two_points",
+      "skill_id": "vh_數學B1_AbsoluteValue",
+      "subskill_id": "absolute_value_distance_between_two_points",
+      "question_text": "已知數線上兩點 $A(-3)$、$B(-5)$，試求 A、B 兩點的距離。",
+      "answer": 2,
+      "answer_type": "integer",
+      "checker_type": "integer_checker",
+      "solution_steps": [
+        "數線上兩點距離等於兩坐標差的絕對值。",
+        "$|-5-(-3)|=|-2|=2$。",
+        "所以 A、B 兩點的距離為 $2$。"
+      ],
+      "metadata": {
+        "scenario_family": "absolute_value_distance_between_two_points",
+        "scenario_id": "s2",
+        "parameter_signature": "absolute_value_distance_between_two_points:a=-3:b=-5:difficulty=easy",
+        "question_pattern_id": "p2",
+        "diagnosis_tags": [
+          "absolute_value_distance",
+          "number_line_distance",
+          "coordinate_difference"
+        ],
+        "prerequisite_subskills": [
+          "number_line_basic_position",
+          "absolute_value_numeric_evaluation"
+        ]
+      },
+      "question": "已知數線上兩點 $A(-3)$、$B(-5)$，試求 A、B 兩點的距離。",
+      "correct_answer": 2,
+      "explanation": "數線上兩點距離等於兩坐標差的絕對值。\n$|-5-(-3)|=|-2|=2$。\n所以 A、B 兩點的距離為 $2$。",
+      "choices": []
+    },
+    {
+      "problem_type_id": "absolute_value_distance_between_two_points",
+      "skill_id": "vh_數學B1_AbsoluteValue",
+      "subskill_id": "absolute_value_distance_between_two_points",
+      "question_text": "已知數線上兩點 $A(-2)$、$B(10)$，試求 A、B 兩點的距離。",
+      "answer": 12,
+      "answer_type": "integer",
+      "checker_type": "integer_checker",
+      "solution_steps": [
+        "數線上兩點距離等於兩坐標差的絕對值。",
+        "$|10-(-2)|=|12|=12$。",
+        "所以 A、B 兩點的距離為 $12$。"
+      ],
+      "metadata": {
+        "scenario_family": "absolute_value_distance_between_two_points",
+        "scenario_id": "s9",
+        "parameter_signature": "absolute_value_distance_between_two_points:a=-2:b=10:difficulty=easy",
+        "question_pattern_id": "p1",
+        "diagnosis_tags": [
+          "absolute_value_distance",
+          "number_line_distance",
+          "coordinate_difference"
+        ],
+        "prerequisite_subskills": [
+          "number_line_basic_position",
+          "absolute_value_numeric_evaluation"
+        ]
+      },
+      "question": "已知數線上兩點 $A(-2)$、$B(10)$，試求 A、B 兩點的距離。",
+      "correct_answer": 12,
+      "explanation": "數線上兩點距離等於兩坐標差的絕對值。\n$|10-(-2)|=|12|=12$。\n所以 A、B 兩點的距離為 $12$。",
+      "choices": []
+    }
+  ],
+  "passed": true,
+  "diversity": {
+    "consecutive_duplicate_count": 0,
+    "unique_question_text_count": 21,
+    "repeated_question_text_ratio": 0.30000000000000004,
+    "unique_parameter_signature_count": 21
+  }
+}

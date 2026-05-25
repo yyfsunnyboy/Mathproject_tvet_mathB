@@ -358,6 +358,48 @@ def _parse_quotient_remainder_f9_tolerant(value: object) -> tuple[str, str] | No
     return None
 
 
+def _strip_choice_leading_label(text: str) -> str:
+    s = str(text or "").strip()
+    s = re.sub(r"^\s*[（(]\s*([A-Za-z])\s*[)）]\s*", "", s)
+    s = re.sub(r"^\s*([A-Za-z])\s*[.)．、]\s*", "", s)
+    return s.strip()
+
+
+def _choice_alias_to_index(token: str) -> int | None:
+    t = str(token or "").strip()
+    if not t:
+        return None
+    t = t.replace("（", "(").replace("）", ")")
+    m = re.match(r"^\(?\s*([A-Za-z])\s*\)?[.)．、]?$", t)
+    if m:
+        ch = m.group(1).upper()
+        idx = ord(ch) - ord("A")
+        return idx if 0 <= idx <= 25 else None
+    m = re.match(r"^([1-9]\d*)$", t)
+    if m:
+        return int(m.group(1)) - 1
+    return None
+
+
+def _normalize_choice_for_compare(value: object, choices: list) -> str:
+    raw = str(value or "").strip()
+    if not raw:
+        return ""
+    idx = _choice_alias_to_index(raw)
+    if idx is not None and 0 <= idx < len(choices):
+        return _strip_choice_leading_label(str(choices[idx]))
+    raw_no_label = _strip_choice_leading_label(raw)
+    for i, ch in enumerate(choices):
+        ch_text = _strip_choice_leading_label(str(ch))
+        if raw_no_label == ch_text:
+            return ch_text
+        if raw_no_label.upper() == chr(ord("A") + i):
+            return ch_text
+        if raw_no_label == str(i + 1):
+            return ch_text
+    return raw_no_label
+
+
 def _extract_divisor_from_question(question_text: object) -> str:
     text = _normalize_qr_input(question_text)
     if not text:
@@ -375,6 +417,9 @@ def judge_answer_with_feedback(
     *,
     question_text: object = "",
     family_id: object = None,
+    choices: object = None,
+    answer_type: object = None,
+    checker_type: object = None,
 ) -> dict[str, Any]:
     result: dict[str, Any] = {
         "is_correct": False,
@@ -383,6 +428,10 @@ def judge_answer_with_feedback(
     }
 
     fid = str(family_id or "").strip()
+    answer_type_norm = str(answer_type or "").strip().lower()
+    checker_type_norm = str(checker_type or "").strip().lower()
+    choices_list = choices if isinstance(choices, list) else []
+    is_choice_mode = bool(choices_list) or answer_type_norm == "choice" or checker_type_norm == "choice_checker"
     f9_family = fid in ("F9", "poly_div_poly_qr")
     if _should_reject_user_input_early(user_answer):
         result["is_correct"] = False
@@ -394,6 +443,15 @@ def judge_answer_with_feedback(
     _ = _extract_divisor_from_question(question_text)
 
     try:
+        if is_choice_mode:
+            norm_user = _normalize_choice_for_compare(user_answer, choices_list)
+            norm_correct = _normalize_choice_for_compare(correct_answer, choices_list)
+            result["is_correct"] = bool(norm_user) and bool(norm_correct) and (norm_user == norm_correct)
+            if not result["is_correct"]:
+                result["feedback"] = "蝑??澆??⊥??文?嚗??炎?乩?甈～?"
+            result["analysis_source"] = "choice_normalized_judge"
+            return result
+
         correct_qr = _parse_quotient_remainder(correct_answer)
         user_qr = _parse_quotient_remainder(user_answer)
         if f9_family and correct_qr and not user_qr:

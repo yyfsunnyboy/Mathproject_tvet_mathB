@@ -1,0 +1,913 @@
+{
+  "candidate_path": "E:\\Python\\Mathproject_tvet_mathB\\generated_candidates\\vocational_math_b1\\section_1_1\\absolute_value_equation_basic\\candidate_v1.py",
+  "errors": [],
+  "samples": [
+    {
+      "problem_type_id": "absolute_value_equation_basic",
+      "skill_id": "vh_數學B1_AbsoluteValue",
+      "subskill_id": "absolute_value_equation_basic",
+      "question_text": "解方程式 $|x|=1$。",
+      "answer": "x=-1 或 x=1",
+      "answer_type": "text",
+      "checker_type": "exact_string_checker",
+      "solution_steps": [
+        "$|x|=1$ 表示 $x$ 到 $0$ 的距離為 $1$。",
+        "因此 $x=-1$ 或 $x=1$。"
+      ],
+      "metadata": {
+        "scenario_family": "absolute_value_equation_basic",
+        "scenario_id": "s7",
+        "parameter_signature": "absolute_value_equation_basic:n=1:difficulty=easy",
+        "question_pattern_id": "p4",
+        "diagnosis_tags": [
+          "absolute_value_equation",
+          "two_solutions"
+        ],
+        "prerequisite_subskills": [
+          "absolute_value_numeric_evaluation"
+        ]
+      },
+      "question": "解方程式 $|x|=1$。",
+      "correct_answer": "x=-1 或 x=1",
+      "explanation": "$|x|=1$ 表示 $x$ 到 $0$ 的距離為 $1$。\n因此 $x=-1$ 或 $x=1$。",
+      "choices": []
+    },
+    {
+      "problem_type_id": "absolute_value_equation_basic",
+      "skill_id": "vh_數學B1_AbsoluteValue",
+      "subskill_id": "absolute_value_equation_basic",
+      "question_text": "解方程式 $|x|=2$。",
+      "answer": "x=-2 或 x=2",
+      "answer_type": "text",
+      "checker_type": "exact_string_checker",
+      "solution_steps": [
+        "$|x|=2$ 表示 $x$ 到 $0$ 的距離為 $2$。",
+        "因此 $x=-2$ 或 $x=2$。"
+      ],
+      "metadata": {
+        "scenario_family": "absolute_value_equation_basic",
+        "scenario_id": "s3",
+        "parameter_signature": "absolute_value_equation_basic:n=2:difficulty=easy",
+        "question_pattern_id": "p1",
+        "diagnosis_tags": [
+          "absolute_value_equation",
+          "two_solutions"
+        ],
+        "prerequisite_subskills": [
+          "absolute_value_numeric_evaluation"
+        ]
+      },
+      "question": "解方程式 $|x|=2$。",
+      "correct_answer": "x=-2 或 x=2",
+      "explanation": "$|x|=2$ 表示 $x$ 到 $0$ 的距離為 $2$。\n因此 $x=-2$ 或 $x=2$。",
+      "choices": []
+    },
+    {
+      "problem_type_id": "absolute_value_equation_basic",
+      "skill_id": "vh_數學B1_AbsoluteValue",
+      "subskill_id": "absolute_value_equation_basic",
+      "question_text": "解方程式 $|x|=3$。",
+      "answer": "x=-3 或 x=3",
+      "answer_type": "text",
+      "checker_type": "exact_string_checker",
+      "solution_steps": [
+        "$|x|=3$ 表示 $x$ 到 $0$ 的距離為 $3$。",
+        "因此 $x=-3$ 或 $x=3$。"
+      ],
+      "metadata": {
+        "scenario_family": "absolute_value_equation_basic",
+        "scenario_id": "s1",
+        "parameter_signature": "absolute_value_equation_basic:n=3:difficulty=easy",
+        "question_pattern_id": "p1",
+        "diagnosis_tags": [
+          "absolute_value_equation",
+          "two_solutions"
+        ],
+        "prerequisite_subskills": [
+          "absolute_value_numeric_evaluation"
+        ]
+      },
+      "question": "解方程式 $|x|=3$。",
+      "correct_answer": "x=-3 或 x=3",
+      "explanation": "$|x|=3$ 表示 $x$ 到 $0$ 的距離為 $3$。\n因此 $x=-3$ 或 $x=3$。",
+      "choices": []
+    },
+    {
+      "problem_type_id": "absolute_value_equation_basic",
+      "skill_id": "vh_數學B1_AbsoluteValue",
+      "subskill_id": "absolute_value_equation_basic",
+      "question_text": "解方程式 $|x|=4$。",
+      "answer": "x=-4 或 x=4",
+      "answer_type": "text",
+      "checker_type": "exact_string_checker",
+      "solution_steps": [
+        "$|x|=4$ 表示 $x$ 到 $0$ 的距離為 $4$。",
+        "因此 $x=-4$ 或 $x=4$。"
+      ],
+      "metadata": {
+        "scenario_family": "absolute_value_equation_basic",
+        "scenario_id": "s4",
+        "parameter_signature": "absolute_value_equation_basic:n=4:difficulty=easy",
+        "question_pattern_id": "p2",
+        "diagnosis_tags": [
+          "absolute_value_equation",
+          "two_solutions"
+        ],
+        "prerequisite_subskills": [
+          "absolute_value_numeric_evaluation"
+        ]
+      },
+      "question": "解方程式 $|x|=4$。",
+      "correct_answer": "x=-4 或 x=4",
+      "explanation": "$|x|=4$ 表示 $x$ 到 $0$ 的距離為 $4$。\n因此 $x=-4$ 或 $x=4$。",
+      "choices": []
+    },
+    {
+      "problem_type_id": "absolute_value_equation_basic",
+      "skill_id": "vh_數學B1_AbsoluteValue",
+      "subskill_id": "absolute_value_equation_basic",
+      "question_text": "解方程式 $|x|=5$。",
+      "answer": "x=-5 或 x=5",
+      "answer_type": "text",
+      "checker_type": "exact_string_checker",
+      "solution_steps": [
+        "$|x|=5$ 表示 $x$ 到 $0$ 的距離為 $5$。",
+        "因此 $x=-5$ 或 $x=5$。"
+      ],
+      "metadata": {
+        "scenario_family": "absolute_value_equation_basic",
+        "scenario_id": "s4",
+        "parameter_signature": "absolute_value_equation_basic:n=5:difficulty=easy",
+        "question_pattern_id": "p3",
+        "diagnosis_tags": [
+          "absolute_value_equation",
+          "two_solutions"
+        ],
+        "prerequisite_subskills": [
+          "absolute_value_numeric_evaluation"
+        ]
+      },
+      "question": "解方程式 $|x|=5$。",
+      "correct_answer": "x=-5 或 x=5",
+      "explanation": "$|x|=5$ 表示 $x$ 到 $0$ 的距離為 $5$。\n因此 $x=-5$ 或 $x=5$。",
+      "choices": []
+    },
+    {
+      "problem_type_id": "absolute_value_equation_basic",
+      "skill_id": "vh_數學B1_AbsoluteValue",
+      "subskill_id": "absolute_value_equation_basic",
+      "question_text": "解方程式 $|x|=6$。",
+      "answer": "x=-6 或 x=6",
+      "answer_type": "text",
+      "checker_type": "exact_string_checker",
+      "solution_steps": [
+        "$|x|=6$ 表示 $x$ 到 $0$ 的距離為 $6$。",
+        "因此 $x=-6$ 或 $x=6$。"
+      ],
+      "metadata": {
+        "scenario_family": "absolute_value_equation_basic",
+        "scenario_id": "s5",
+        "parameter_signature": "absolute_value_equation_basic:n=6:difficulty=easy",
+        "question_pattern_id": "p3",
+        "diagnosis_tags": [
+          "absolute_value_equation",
+          "two_solutions"
+        ],
+        "prerequisite_subskills": [
+          "absolute_value_numeric_evaluation"
+        ]
+      },
+      "question": "解方程式 $|x|=6$。",
+      "correct_answer": "x=-6 或 x=6",
+      "explanation": "$|x|=6$ 表示 $x$ 到 $0$ 的距離為 $6$。\n因此 $x=-6$ 或 $x=6$。",
+      "choices": []
+    },
+    {
+      "problem_type_id": "absolute_value_equation_basic",
+      "skill_id": "vh_數學B1_AbsoluteValue",
+      "subskill_id": "absolute_value_equation_basic",
+      "question_text": "解方程式 $|x|=7$。",
+      "answer": "x=-7 或 x=7",
+      "answer_type": "text",
+      "checker_type": "exact_string_checker",
+      "solution_steps": [
+        "$|x|=7$ 表示 $x$ 到 $0$ 的距離為 $7$。",
+        "因此 $x=-7$ 或 $x=7$。"
+      ],
+      "metadata": {
+        "scenario_family": "absolute_value_equation_basic",
+        "scenario_id": "s2",
+        "parameter_signature": "absolute_value_equation_basic:n=7:difficulty=easy",
+        "question_pattern_id": "p4",
+        "diagnosis_tags": [
+          "absolute_value_equation",
+          "two_solutions"
+        ],
+        "prerequisite_subskills": [
+          "absolute_value_numeric_evaluation"
+        ]
+      },
+      "question": "解方程式 $|x|=7$。",
+      "correct_answer": "x=-7 或 x=7",
+      "explanation": "$|x|=7$ 表示 $x$ 到 $0$ 的距離為 $7$。\n因此 $x=-7$ 或 $x=7$。",
+      "choices": []
+    },
+    {
+      "problem_type_id": "absolute_value_equation_basic",
+      "skill_id": "vh_數學B1_AbsoluteValue",
+      "subskill_id": "absolute_value_equation_basic",
+      "question_text": "解方程式 $|x|=8$。",
+      "answer": "x=-8 或 x=8",
+      "answer_type": "text",
+      "checker_type": "exact_string_checker",
+      "solution_steps": [
+        "$|x|=8$ 表示 $x$ 到 $0$ 的距離為 $8$。",
+        "因此 $x=-8$ 或 $x=8$。"
+      ],
+      "metadata": {
+        "scenario_family": "absolute_value_equation_basic",
+        "scenario_id": "s6",
+        "parameter_signature": "absolute_value_equation_basic:n=8:difficulty=easy",
+        "question_pattern_id": "p2",
+        "diagnosis_tags": [
+          "absolute_value_equation",
+          "two_solutions"
+        ],
+        "prerequisite_subskills": [
+          "absolute_value_numeric_evaluation"
+        ]
+      },
+      "question": "解方程式 $|x|=8$。",
+      "correct_answer": "x=-8 或 x=8",
+      "explanation": "$|x|=8$ 表示 $x$ 到 $0$ 的距離為 $8$。\n因此 $x=-8$ 或 $x=8$。",
+      "choices": []
+    },
+    {
+      "problem_type_id": "absolute_value_equation_basic",
+      "skill_id": "vh_數學B1_AbsoluteValue",
+      "subskill_id": "absolute_value_equation_basic",
+      "question_text": "解方程式 $|x|=9$。",
+      "answer": "x=-9 或 x=9",
+      "answer_type": "text",
+      "checker_type": "exact_string_checker",
+      "solution_steps": [
+        "$|x|=9$ 表示 $x$ 到 $0$ 的距離為 $9$。",
+        "因此 $x=-9$ 或 $x=9$。"
+      ],
+      "metadata": {
+        "scenario_family": "absolute_value_equation_basic",
+        "scenario_id": "s4",
+        "parameter_signature": "absolute_value_equation_basic:n=9:difficulty=easy",
+        "question_pattern_id": "p3",
+        "diagnosis_tags": [
+          "absolute_value_equation",
+          "two_solutions"
+        ],
+        "prerequisite_subskills": [
+          "absolute_value_numeric_evaluation"
+        ]
+      },
+      "question": "解方程式 $|x|=9$。",
+      "correct_answer": "x=-9 或 x=9",
+      "explanation": "$|x|=9$ 表示 $x$ 到 $0$ 的距離為 $9$。\n因此 $x=-9$ 或 $x=9$。",
+      "choices": []
+    },
+    {
+      "problem_type_id": "absolute_value_equation_basic",
+      "skill_id": "vh_數學B1_AbsoluteValue",
+      "subskill_id": "absolute_value_equation_basic",
+      "question_text": "解方程式 $|x|=10$。",
+      "answer": "x=-10 或 x=10",
+      "answer_type": "text",
+      "checker_type": "exact_string_checker",
+      "solution_steps": [
+        "$|x|=10$ 表示 $x$ 到 $0$ 的距離為 $10$。",
+        "因此 $x=-10$ 或 $x=10$。"
+      ],
+      "metadata": {
+        "scenario_family": "absolute_value_equation_basic",
+        "scenario_id": "s8",
+        "parameter_signature": "absolute_value_equation_basic:n=10:difficulty=easy",
+        "question_pattern_id": "p3",
+        "diagnosis_tags": [
+          "absolute_value_equation",
+          "two_solutions"
+        ],
+        "prerequisite_subskills": [
+          "absolute_value_numeric_evaluation"
+        ]
+      },
+      "question": "解方程式 $|x|=10$。",
+      "correct_answer": "x=-10 或 x=10",
+      "explanation": "$|x|=10$ 表示 $x$ 到 $0$ 的距離為 $10$。\n因此 $x=-10$ 或 $x=10$。",
+      "choices": []
+    },
+    {
+      "problem_type_id": "absolute_value_equation_basic",
+      "skill_id": "vh_數學B1_AbsoluteValue",
+      "subskill_id": "absolute_value_equation_basic",
+      "question_text": "解方程式 $|x|=11$。",
+      "answer": "x=-11 或 x=11",
+      "answer_type": "text",
+      "checker_type": "exact_string_checker",
+      "solution_steps": [
+        "$|x|=11$ 表示 $x$ 到 $0$ 的距離為 $11$。",
+        "因此 $x=-11$ 或 $x=11$。"
+      ],
+      "metadata": {
+        "scenario_family": "absolute_value_equation_basic",
+        "scenario_id": "s1",
+        "parameter_signature": "absolute_value_equation_basic:n=11:difficulty=easy",
+        "question_pattern_id": "p4",
+        "diagnosis_tags": [
+          "absolute_value_equation",
+          "two_solutions"
+        ],
+        "prerequisite_subskills": [
+          "absolute_value_numeric_evaluation"
+        ]
+      },
+      "question": "解方程式 $|x|=11$。",
+      "correct_answer": "x=-11 或 x=11",
+      "explanation": "$|x|=11$ 表示 $x$ 到 $0$ 的距離為 $11$。\n因此 $x=-11$ 或 $x=11$。",
+      "choices": []
+    },
+    {
+      "problem_type_id": "absolute_value_equation_basic",
+      "skill_id": "vh_數學B1_AbsoluteValue",
+      "subskill_id": "absolute_value_equation_basic",
+      "question_text": "解方程式 $|x|=12$。",
+      "answer": "x=-12 或 x=12",
+      "answer_type": "text",
+      "checker_type": "exact_string_checker",
+      "solution_steps": [
+        "$|x|=12$ 表示 $x$ 到 $0$ 的距離為 $12$。",
+        "因此 $x=-12$ 或 $x=12$。"
+      ],
+      "metadata": {
+        "scenario_family": "absolute_value_equation_basic",
+        "scenario_id": "s8",
+        "parameter_signature": "absolute_value_equation_basic:n=12:difficulty=easy",
+        "question_pattern_id": "p4",
+        "diagnosis_tags": [
+          "absolute_value_equation",
+          "two_solutions"
+        ],
+        "prerequisite_subskills": [
+          "absolute_value_numeric_evaluation"
+        ]
+      },
+      "question": "解方程式 $|x|=12$。",
+      "correct_answer": "x=-12 或 x=12",
+      "explanation": "$|x|=12$ 表示 $x$ 到 $0$ 的距離為 $12$。\n因此 $x=-12$ 或 $x=12$。",
+      "choices": []
+    },
+    {
+      "problem_type_id": "absolute_value_equation_basic",
+      "skill_id": "vh_數學B1_AbsoluteValue",
+      "subskill_id": "absolute_value_equation_basic",
+      "question_text": "解方程式 $|x|=13$。",
+      "answer": "x=-13 或 x=13",
+      "answer_type": "text",
+      "checker_type": "exact_string_checker",
+      "solution_steps": [
+        "$|x|=13$ 表示 $x$ 到 $0$ 的距離為 $13$。",
+        "因此 $x=-13$ 或 $x=13$。"
+      ],
+      "metadata": {
+        "scenario_family": "absolute_value_equation_basic",
+        "scenario_id": "s8",
+        "parameter_signature": "absolute_value_equation_basic:n=13:difficulty=easy",
+        "question_pattern_id": "p3",
+        "diagnosis_tags": [
+          "absolute_value_equation",
+          "two_solutions"
+        ],
+        "prerequisite_subskills": [
+          "absolute_value_numeric_evaluation"
+        ]
+      },
+      "question": "解方程式 $|x|=13$。",
+      "correct_answer": "x=-13 或 x=13",
+      "explanation": "$|x|=13$ 表示 $x$ 到 $0$ 的距離為 $13$。\n因此 $x=-13$ 或 $x=13$。",
+      "choices": []
+    },
+    {
+      "problem_type_id": "absolute_value_equation_basic",
+      "skill_id": "vh_數學B1_AbsoluteValue",
+      "subskill_id": "absolute_value_equation_basic",
+      "question_text": "解方程式 $|x|=14$。",
+      "answer": "x=-14 或 x=14",
+      "answer_type": "text",
+      "checker_type": "exact_string_checker",
+      "solution_steps": [
+        "$|x|=14$ 表示 $x$ 到 $0$ 的距離為 $14$。",
+        "因此 $x=-14$ 或 $x=14$。"
+      ],
+      "metadata": {
+        "scenario_family": "absolute_value_equation_basic",
+        "scenario_id": "s5",
+        "parameter_signature": "absolute_value_equation_basic:n=14:difficulty=easy",
+        "question_pattern_id": "p3",
+        "diagnosis_tags": [
+          "absolute_value_equation",
+          "two_solutions"
+        ],
+        "prerequisite_subskills": [
+          "absolute_value_numeric_evaluation"
+        ]
+      },
+      "question": "解方程式 $|x|=14$。",
+      "correct_answer": "x=-14 或 x=14",
+      "explanation": "$|x|=14$ 表示 $x$ 到 $0$ 的距離為 $14$。\n因此 $x=-14$ 或 $x=14$。",
+      "choices": []
+    },
+    {
+      "problem_type_id": "absolute_value_equation_basic",
+      "skill_id": "vh_數學B1_AbsoluteValue",
+      "subskill_id": "absolute_value_equation_basic",
+      "question_text": "解方程式 $|x|=15$。",
+      "answer": "x=-15 或 x=15",
+      "answer_type": "text",
+      "checker_type": "exact_string_checker",
+      "solution_steps": [
+        "$|x|=15$ 表示 $x$ 到 $0$ 的距離為 $15$。",
+        "因此 $x=-15$ 或 $x=15$。"
+      ],
+      "metadata": {
+        "scenario_family": "absolute_value_equation_basic",
+        "scenario_id": "s2",
+        "parameter_signature": "absolute_value_equation_basic:n=15:difficulty=easy",
+        "question_pattern_id": "p2",
+        "diagnosis_tags": [
+          "absolute_value_equation",
+          "two_solutions"
+        ],
+        "prerequisite_subskills": [
+          "absolute_value_numeric_evaluation"
+        ]
+      },
+      "question": "解方程式 $|x|=15$。",
+      "correct_answer": "x=-15 或 x=15",
+      "explanation": "$|x|=15$ 表示 $x$ 到 $0$ 的距離為 $15$。\n因此 $x=-15$ 或 $x=15$。",
+      "choices": []
+    },
+    {
+      "problem_type_id": "absolute_value_equation_basic",
+      "skill_id": "vh_數學B1_AbsoluteValue",
+      "subskill_id": "absolute_value_equation_basic",
+      "question_text": "解方程式 $|x|=16$。",
+      "answer": "x=-16 或 x=16",
+      "answer_type": "text",
+      "checker_type": "exact_string_checker",
+      "solution_steps": [
+        "$|x|=16$ 表示 $x$ 到 $0$ 的距離為 $16$。",
+        "因此 $x=-16$ 或 $x=16$。"
+      ],
+      "metadata": {
+        "scenario_family": "absolute_value_equation_basic",
+        "scenario_id": "s4",
+        "parameter_signature": "absolute_value_equation_basic:n=16:difficulty=easy",
+        "question_pattern_id": "p1",
+        "diagnosis_tags": [
+          "absolute_value_equation",
+          "two_solutions"
+        ],
+        "prerequisite_subskills": [
+          "absolute_value_numeric_evaluation"
+        ]
+      },
+      "question": "解方程式 $|x|=16$。",
+      "correct_answer": "x=-16 或 x=16",
+      "explanation": "$|x|=16$ 表示 $x$ 到 $0$ 的距離為 $16$。\n因此 $x=-16$ 或 $x=16$。",
+      "choices": []
+    },
+    {
+      "problem_type_id": "absolute_value_equation_basic",
+      "skill_id": "vh_數學B1_AbsoluteValue",
+      "subskill_id": "absolute_value_equation_basic",
+      "question_text": "解方程式 $|x|=17$。",
+      "answer": "x=-17 或 x=17",
+      "answer_type": "text",
+      "checker_type": "exact_string_checker",
+      "solution_steps": [
+        "$|x|=17$ 表示 $x$ 到 $0$ 的距離為 $17$。",
+        "因此 $x=-17$ 或 $x=17$。"
+      ],
+      "metadata": {
+        "scenario_family": "absolute_value_equation_basic",
+        "scenario_id": "s6",
+        "parameter_signature": "absolute_value_equation_basic:n=17:difficulty=easy",
+        "question_pattern_id": "p4",
+        "diagnosis_tags": [
+          "absolute_value_equation",
+          "two_solutions"
+        ],
+        "prerequisite_subskills": [
+          "absolute_value_numeric_evaluation"
+        ]
+      },
+      "question": "解方程式 $|x|=17$。",
+      "correct_answer": "x=-17 或 x=17",
+      "explanation": "$|x|=17$ 表示 $x$ 到 $0$ 的距離為 $17$。\n因此 $x=-17$ 或 $x=17$。",
+      "choices": []
+    },
+    {
+      "problem_type_id": "absolute_value_equation_basic",
+      "skill_id": "vh_數學B1_AbsoluteValue",
+      "subskill_id": "absolute_value_equation_basic",
+      "question_text": "解方程式 $|x|=18$。",
+      "answer": "x=-18 或 x=18",
+      "answer_type": "text",
+      "checker_type": "exact_string_checker",
+      "solution_steps": [
+        "$|x|=18$ 表示 $x$ 到 $0$ 的距離為 $18$。",
+        "因此 $x=-18$ 或 $x=18$。"
+      ],
+      "metadata": {
+        "scenario_family": "absolute_value_equation_basic",
+        "scenario_id": "s9",
+        "parameter_signature": "absolute_value_equation_basic:n=18:difficulty=easy",
+        "question_pattern_id": "p4",
+        "diagnosis_tags": [
+          "absolute_value_equation",
+          "two_solutions"
+        ],
+        "prerequisite_subskills": [
+          "absolute_value_numeric_evaluation"
+        ]
+      },
+      "question": "解方程式 $|x|=18$。",
+      "correct_answer": "x=-18 或 x=18",
+      "explanation": "$|x|=18$ 表示 $x$ 到 $0$ 的距離為 $18$。\n因此 $x=-18$ 或 $x=18$。",
+      "choices": []
+    },
+    {
+      "problem_type_id": "absolute_value_equation_basic",
+      "skill_id": "vh_數學B1_AbsoluteValue",
+      "subskill_id": "absolute_value_equation_basic",
+      "question_text": "解方程式 $|x|=19$。",
+      "answer": "x=-19 或 x=19",
+      "answer_type": "text",
+      "checker_type": "exact_string_checker",
+      "solution_steps": [
+        "$|x|=19$ 表示 $x$ 到 $0$ 的距離為 $19$。",
+        "因此 $x=-19$ 或 $x=19$。"
+      ],
+      "metadata": {
+        "scenario_family": "absolute_value_equation_basic",
+        "scenario_id": "s3",
+        "parameter_signature": "absolute_value_equation_basic:n=19:difficulty=easy",
+        "question_pattern_id": "p1",
+        "diagnosis_tags": [
+          "absolute_value_equation",
+          "two_solutions"
+        ],
+        "prerequisite_subskills": [
+          "absolute_value_numeric_evaluation"
+        ]
+      },
+      "question": "解方程式 $|x|=19$。",
+      "correct_answer": "x=-19 或 x=19",
+      "explanation": "$|x|=19$ 表示 $x$ 到 $0$ 的距離為 $19$。\n因此 $x=-19$ 或 $x=19$。",
+      "choices": []
+    },
+    {
+      "problem_type_id": "absolute_value_equation_basic",
+      "skill_id": "vh_數學B1_AbsoluteValue",
+      "subskill_id": "absolute_value_equation_basic",
+      "question_text": "解方程式 $|x|=20$。",
+      "answer": "x=-20 或 x=20",
+      "answer_type": "text",
+      "checker_type": "exact_string_checker",
+      "solution_steps": [
+        "$|x|=20$ 表示 $x$ 到 $0$ 的距離為 $20$。",
+        "因此 $x=-20$ 或 $x=20$。"
+      ],
+      "metadata": {
+        "scenario_family": "absolute_value_equation_basic",
+        "scenario_id": "s1",
+        "parameter_signature": "absolute_value_equation_basic:n=20:difficulty=easy",
+        "question_pattern_id": "p1",
+        "diagnosis_tags": [
+          "absolute_value_equation",
+          "two_solutions"
+        ],
+        "prerequisite_subskills": [
+          "absolute_value_numeric_evaluation"
+        ]
+      },
+      "question": "解方程式 $|x|=20$。",
+      "correct_answer": "x=-20 或 x=20",
+      "explanation": "$|x|=20$ 表示 $x$ 到 $0$ 的距離為 $20$。\n因此 $x=-20$ 或 $x=20$。",
+      "choices": []
+    },
+    {
+      "problem_type_id": "absolute_value_equation_basic",
+      "skill_id": "vh_數學B1_AbsoluteValue",
+      "subskill_id": "absolute_value_equation_basic",
+      "question_text": "解方程式 $|x|=1$。",
+      "answer": "x=-1 或 x=1",
+      "answer_type": "text",
+      "checker_type": "exact_string_checker",
+      "solution_steps": [
+        "$|x|=1$ 表示 $x$ 到 $0$ 的距離為 $1$。",
+        "因此 $x=-1$ 或 $x=1$。"
+      ],
+      "metadata": {
+        "scenario_family": "absolute_value_equation_basic",
+        "scenario_id": "s3",
+        "parameter_signature": "absolute_value_equation_basic:n=1:difficulty=easy",
+        "question_pattern_id": "p3",
+        "diagnosis_tags": [
+          "absolute_value_equation",
+          "two_solutions"
+        ],
+        "prerequisite_subskills": [
+          "absolute_value_numeric_evaluation"
+        ]
+      },
+      "question": "解方程式 $|x|=1$。",
+      "correct_answer": "x=-1 或 x=1",
+      "explanation": "$|x|=1$ 表示 $x$ 到 $0$ 的距離為 $1$。\n因此 $x=-1$ 或 $x=1$。",
+      "choices": []
+    },
+    {
+      "problem_type_id": "absolute_value_equation_basic",
+      "skill_id": "vh_數學B1_AbsoluteValue",
+      "subskill_id": "absolute_value_equation_basic",
+      "question_text": "解方程式 $|x|=2$。",
+      "answer": "x=-2 或 x=2",
+      "answer_type": "text",
+      "checker_type": "exact_string_checker",
+      "solution_steps": [
+        "$|x|=2$ 表示 $x$ 到 $0$ 的距離為 $2$。",
+        "因此 $x=-2$ 或 $x=2$。"
+      ],
+      "metadata": {
+        "scenario_family": "absolute_value_equation_basic",
+        "scenario_id": "s3",
+        "parameter_signature": "absolute_value_equation_basic:n=2:difficulty=easy",
+        "question_pattern_id": "p4",
+        "diagnosis_tags": [
+          "absolute_value_equation",
+          "two_solutions"
+        ],
+        "prerequisite_subskills": [
+          "absolute_value_numeric_evaluation"
+        ]
+      },
+      "question": "解方程式 $|x|=2$。",
+      "correct_answer": "x=-2 或 x=2",
+      "explanation": "$|x|=2$ 表示 $x$ 到 $0$ 的距離為 $2$。\n因此 $x=-2$ 或 $x=2$。",
+      "choices": []
+    },
+    {
+      "problem_type_id": "absolute_value_equation_basic",
+      "skill_id": "vh_數學B1_AbsoluteValue",
+      "subskill_id": "absolute_value_equation_basic",
+      "question_text": "解方程式 $|x|=3$。",
+      "answer": "x=-3 或 x=3",
+      "answer_type": "text",
+      "checker_type": "exact_string_checker",
+      "solution_steps": [
+        "$|x|=3$ 表示 $x$ 到 $0$ 的距離為 $3$。",
+        "因此 $x=-3$ 或 $x=3$。"
+      ],
+      "metadata": {
+        "scenario_family": "absolute_value_equation_basic",
+        "scenario_id": "s3",
+        "parameter_signature": "absolute_value_equation_basic:n=3:difficulty=easy",
+        "question_pattern_id": "p2",
+        "diagnosis_tags": [
+          "absolute_value_equation",
+          "two_solutions"
+        ],
+        "prerequisite_subskills": [
+          "absolute_value_numeric_evaluation"
+        ]
+      },
+      "question": "解方程式 $|x|=3$。",
+      "correct_answer": "x=-3 或 x=3",
+      "explanation": "$|x|=3$ 表示 $x$ 到 $0$ 的距離為 $3$。\n因此 $x=-3$ 或 $x=3$。",
+      "choices": []
+    },
+    {
+      "problem_type_id": "absolute_value_equation_basic",
+      "skill_id": "vh_數學B1_AbsoluteValue",
+      "subskill_id": "absolute_value_equation_basic",
+      "question_text": "解方程式 $|x|=4$。",
+      "answer": "x=-4 或 x=4",
+      "answer_type": "text",
+      "checker_type": "exact_string_checker",
+      "solution_steps": [
+        "$|x|=4$ 表示 $x$ 到 $0$ 的距離為 $4$。",
+        "因此 $x=-4$ 或 $x=4$。"
+      ],
+      "metadata": {
+        "scenario_family": "absolute_value_equation_basic",
+        "scenario_id": "s5",
+        "parameter_signature": "absolute_value_equation_basic:n=4:difficulty=easy",
+        "question_pattern_id": "p1",
+        "diagnosis_tags": [
+          "absolute_value_equation",
+          "two_solutions"
+        ],
+        "prerequisite_subskills": [
+          "absolute_value_numeric_evaluation"
+        ]
+      },
+      "question": "解方程式 $|x|=4$。",
+      "correct_answer": "x=-4 或 x=4",
+      "explanation": "$|x|=4$ 表示 $x$ 到 $0$ 的距離為 $4$。\n因此 $x=-4$ 或 $x=4$。",
+      "choices": []
+    },
+    {
+      "problem_type_id": "absolute_value_equation_basic",
+      "skill_id": "vh_數學B1_AbsoluteValue",
+      "subskill_id": "absolute_value_equation_basic",
+      "question_text": "解方程式 $|x|=5$。",
+      "answer": "x=-5 或 x=5",
+      "answer_type": "text",
+      "checker_type": "exact_string_checker",
+      "solution_steps": [
+        "$|x|=5$ 表示 $x$ 到 $0$ 的距離為 $5$。",
+        "因此 $x=-5$ 或 $x=5$。"
+      ],
+      "metadata": {
+        "scenario_family": "absolute_value_equation_basic",
+        "scenario_id": "s7",
+        "parameter_signature": "absolute_value_equation_basic:n=5:difficulty=easy",
+        "question_pattern_id": "p2",
+        "diagnosis_tags": [
+          "absolute_value_equation",
+          "two_solutions"
+        ],
+        "prerequisite_subskills": [
+          "absolute_value_numeric_evaluation"
+        ]
+      },
+      "question": "解方程式 $|x|=5$。",
+      "correct_answer": "x=-5 或 x=5",
+      "explanation": "$|x|=5$ 表示 $x$ 到 $0$ 的距離為 $5$。\n因此 $x=-5$ 或 $x=5$。",
+      "choices": []
+    },
+    {
+      "problem_type_id": "absolute_value_equation_basic",
+      "skill_id": "vh_數學B1_AbsoluteValue",
+      "subskill_id": "absolute_value_equation_basic",
+      "question_text": "解方程式 $|x|=6$。",
+      "answer": "x=-6 或 x=6",
+      "answer_type": "text",
+      "checker_type": "exact_string_checker",
+      "solution_steps": [
+        "$|x|=6$ 表示 $x$ 到 $0$ 的距離為 $6$。",
+        "因此 $x=-6$ 或 $x=6$。"
+      ],
+      "metadata": {
+        "scenario_family": "absolute_value_equation_basic",
+        "scenario_id": "s7",
+        "parameter_signature": "absolute_value_equation_basic:n=6:difficulty=easy",
+        "question_pattern_id": "p1",
+        "diagnosis_tags": [
+          "absolute_value_equation",
+          "two_solutions"
+        ],
+        "prerequisite_subskills": [
+          "absolute_value_numeric_evaluation"
+        ]
+      },
+      "question": "解方程式 $|x|=6$。",
+      "correct_answer": "x=-6 或 x=6",
+      "explanation": "$|x|=6$ 表示 $x$ 到 $0$ 的距離為 $6$。\n因此 $x=-6$ 或 $x=6$。",
+      "choices": []
+    },
+    {
+      "problem_type_id": "absolute_value_equation_basic",
+      "skill_id": "vh_數學B1_AbsoluteValue",
+      "subskill_id": "absolute_value_equation_basic",
+      "question_text": "解方程式 $|x|=7$。",
+      "answer": "x=-7 或 x=7",
+      "answer_type": "text",
+      "checker_type": "exact_string_checker",
+      "solution_steps": [
+        "$|x|=7$ 表示 $x$ 到 $0$ 的距離為 $7$。",
+        "因此 $x=-7$ 或 $x=7$。"
+      ],
+      "metadata": {
+        "scenario_family": "absolute_value_equation_basic",
+        "scenario_id": "s4",
+        "parameter_signature": "absolute_value_equation_basic:n=7:difficulty=easy",
+        "question_pattern_id": "p2",
+        "diagnosis_tags": [
+          "absolute_value_equation",
+          "two_solutions"
+        ],
+        "prerequisite_subskills": [
+          "absolute_value_numeric_evaluation"
+        ]
+      },
+      "question": "解方程式 $|x|=7$。",
+      "correct_answer": "x=-7 或 x=7",
+      "explanation": "$|x|=7$ 表示 $x$ 到 $0$ 的距離為 $7$。\n因此 $x=-7$ 或 $x=7$。",
+      "choices": []
+    },
+    {
+      "problem_type_id": "absolute_value_equation_basic",
+      "skill_id": "vh_數學B1_AbsoluteValue",
+      "subskill_id": "absolute_value_equation_basic",
+      "question_text": "解方程式 $|x|=8$。",
+      "answer": "x=-8 或 x=8",
+      "answer_type": "text",
+      "checker_type": "exact_string_checker",
+      "solution_steps": [
+        "$|x|=8$ 表示 $x$ 到 $0$ 的距離為 $8$。",
+        "因此 $x=-8$ 或 $x=8$。"
+      ],
+      "metadata": {
+        "scenario_family": "absolute_value_equation_basic",
+        "scenario_id": "s8",
+        "parameter_signature": "absolute_value_equation_basic:n=8:difficulty=easy",
+        "question_pattern_id": "p3",
+        "diagnosis_tags": [
+          "absolute_value_equation",
+          "two_solutions"
+        ],
+        "prerequisite_subskills": [
+          "absolute_value_numeric_evaluation"
+        ]
+      },
+      "question": "解方程式 $|x|=8$。",
+      "correct_answer": "x=-8 或 x=8",
+      "explanation": "$|x|=8$ 表示 $x$ 到 $0$ 的距離為 $8$。\n因此 $x=-8$ 或 $x=8$。",
+      "choices": []
+    },
+    {
+      "problem_type_id": "absolute_value_equation_basic",
+      "skill_id": "vh_數學B1_AbsoluteValue",
+      "subskill_id": "absolute_value_equation_basic",
+      "question_text": "解方程式 $|x|=9$。",
+      "answer": "x=-9 或 x=9",
+      "answer_type": "text",
+      "checker_type": "exact_string_checker",
+      "solution_steps": [
+        "$|x|=9$ 表示 $x$ 到 $0$ 的距離為 $9$。",
+        "因此 $x=-9$ 或 $x=9$。"
+      ],
+      "metadata": {
+        "scenario_family": "absolute_value_equation_basic",
+        "scenario_id": "s2",
+        "parameter_signature": "absolute_value_equation_basic:n=9:difficulty=easy",
+        "question_pattern_id": "p2",
+        "diagnosis_tags": [
+          "absolute_value_equation",
+          "two_solutions"
+        ],
+        "prerequisite_subskills": [
+          "absolute_value_numeric_evaluation"
+        ]
+      },
+      "question": "解方程式 $|x|=9$。",
+      "correct_answer": "x=-9 或 x=9",
+      "explanation": "$|x|=9$ 表示 $x$ 到 $0$ 的距離為 $9$。\n因此 $x=-9$ 或 $x=9$。",
+      "choices": []
+    },
+    {
+      "problem_type_id": "absolute_value_equation_basic",
+      "skill_id": "vh_數學B1_AbsoluteValue",
+      "subskill_id": "absolute_value_equation_basic",
+      "question_text": "解方程式 $|x|=10$。",
+      "answer": "x=-10 或 x=10",
+      "answer_type": "text",
+      "checker_type": "exact_string_checker",
+      "solution_steps": [
+        "$|x|=10$ 表示 $x$ 到 $0$ 的距離為 $10$。",
+        "因此 $x=-10$ 或 $x=10$。"
+      ],
+      "metadata": {
+        "scenario_family": "absolute_value_equation_basic",
+        "scenario_id": "s9",
+        "parameter_signature": "absolute_value_equation_basic:n=10:difficulty=easy",
+        "question_pattern_id": "p1",
+        "diagnosis_tags": [
+          "absolute_value_equation",
+          "two_solutions"
+        ],
+        "prerequisite_subskills": [
+          "absolute_value_numeric_evaluation"
+        ]
+      },
+      "question": "解方程式 $|x|=10$。",
+      "correct_answer": "x=-10 或 x=10",
+      "explanation": "$|x|=10$ 表示 $x$ 到 $0$ 的距離為 $10$。\n因此 $x=-10$ 或 $x=10$。",
+      "choices": []
+    }
+  ],
+  "passed": true,
+  "diversity": {
+    "consecutive_duplicate_count": 0,
+    "unique_question_text_count": 20,
+    "repeated_question_text_ratio": 0.33333333333333337,
+    "unique_parameter_signature_count": 20
+  }
+}

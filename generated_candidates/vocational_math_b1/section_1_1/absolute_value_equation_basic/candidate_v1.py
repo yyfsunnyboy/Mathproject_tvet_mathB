@@ -1,25 +1,20 @@
 import random
-
-PROBLEM_TYPE_ID = "absolute_value_numeric_evaluation"
+PROBLEM_TYPE_ID = "absolute_value_equation_basic"
 SKILL_ID = "vh_數學B1_AbsoluteValue"
-SUBSKILL_ID = "absolute_value_numeric_evaluation"
-
+SUBSKILL_ID = "absolute_value_equation_basic"
 def generate(seed: int | None = None, difficulty: str = "easy") -> dict:
     rng = random.Random(seed)
-    n = ((int(seed) % 41) - 20) if seed is not None else rng.randint(-20, 20)
-    answer = abs(n)
-    question_text = f"求 $|{n}|$ 的值。"
-    solution_steps = [
-        "絕對值表示與 0 的距離。",
-        f"$|{n}|={answer}$。",
-    ]
+    n = ((int(seed) % 20) + 1) if seed is not None else rng.randint(1, 20)
+    question_text = f"解方程式 $|x|={n}$。"
+    answer = f"x=-{n} 或 x={n}"
+    solution_steps = [f"$|x|={n}$ 表示 $x$ 到 $0$ 的距離為 ${n}$。", f"因此 $x=-{n}$ 或 $x={n}$。"]
     metadata = {
         "scenario_family": PROBLEM_TYPE_ID,
         "scenario_id": f"s{rng.randint(1, 9)}",
-        "parameter_signature": f"absolute_value_numeric_evaluation:n={n}:difficulty={difficulty}",
+        "parameter_signature": f"absolute_value_equation_basic:n={n}:difficulty={difficulty}",
         "question_pattern_id": f"p{rng.randint(1, 4)}",
-        "diagnosis_tags": ["absolute_value_definition", "sign_error"],
-        "prerequisite_subskills": [],
+        "diagnosis_tags": ["absolute_value_equation", "two_solutions"],
+        "prerequisite_subskills": ["absolute_value_numeric_evaluation"],
     }
     return {
         "problem_type_id": PROBLEM_TYPE_ID,
@@ -27,8 +22,8 @@ def generate(seed: int | None = None, difficulty: str = "easy") -> dict:
         "subskill_id": SUBSKILL_ID,
         "question_text": question_text,
         "answer": answer,
-        "answer_type": "integer",
-        "checker_type": "integer_checker",
+        "answer_type": "text",
+        "checker_type": "exact_string_checker",
         "solution_steps": solution_steps,
         "metadata": metadata,
         "question": question_text,

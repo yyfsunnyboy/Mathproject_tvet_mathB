@@ -203,3 +203,68 @@ Candidate ç”Ÿæˆæ¨¡çµ„æ‰€å°å‡ºçš„ `generate()` å‡½æ•¸ï¼Œå›å‚³çš„å­—å…¸ (dict) 
 ---
 *æ–‡ä»¶æ—¥æœŸ: 2026-05-25*
 *ç‰ˆæœ¬: v0.1.1 (SOP è¦æ ¼åŒ…æ›´æ–°ç‰ˆ)*
+
+---
+
+## 10. Closure ­n¨D¡]examples_map / problem_types / registry¡^
+
+### 10.1 examples_map ¨Cµ§ example ¥²³ÆÄæ¦ì
+- `example_id`
+- `title`
+- `source_type`
+- `source_section`
+- `problem_preview`
+- `skill_id`
+- `subskill_id`
+- `problem_type_id`
+- `runtime_category`
+- `classification_reason`
+- `generator_status`
+
+### 10.2 problem_types.yaml ¨C­Ó problem_type ¥²³ÆÄæ¦ì
+- `problem_type_id`
+- `skill_id`
+- `subskill_id`
+- `runtime_category`
+- `answer_type`
+- `checker_type`
+- `examples_refs`
+- `prerequisite_subskills`
+- `diagnosis_tags`
+- `status`
+
+### 10.3 registry verified_problem_types µ²ºc­n¨D
+`verified_problem_types` ¥²¶·¬° dict list¡A¥B¨Cµ§¥]§t¡G
+- `problem_type_id`
+- `skill_id`
+- `subskill_id`
+- `status`
+- `candidate_path`
+- `function_name`
+- `answer_type`
+- `checker_type`
+
+### 10.4 Final Coverage Gate ¹ï±µ
+Skill Closure §P©wÀ³°ò©ó¡G
+- examples_map ÂĞ»\§¹¾ã©Ê»PÄæ¦ì§¹¾ã©Ê
+- observed deterministic problem_types verified §¹¾ã©Ê
+- registry ¥i¥Î©Ê¡]wrapper ¥i¸ü¤J verified candidate¡^
+- verify report¡]`verify_skill_gencode.py`¡^
+
+¿é¥X¦Ü¤Ö¥]§t¡G
+- `coverage_status`
+- `full_skill_coverage`
+- `final_status` (`PASS` / `PARTIAL` / `FAIL`)
+- `blocking_reasons`
+
+### 10.5 B1 AbsoluteValue ¦¨¥\®×¨Ò
+- `skill_id = vh_¼Æ¾ÇB1_AbsoluteValue`
+- `verified_problem_types`:
+  - `absolute_value_numeric_evaluation`
+  - `absolute_value_equation_basic`
+  - `absolute_value_distance_from_zero`
+- `coverage_status = FULL_OBSERVED_COVERAGE`
+- `full_skill_coverage = true`
+- `final_status = PASS`
+
+»¡©ú¡G¦¹®×¨Ò½T»{³æ¤@ skill ±q examples_map¡Bproblem_type closed loop¡Bregistry merge¡Bwrapper verify ¨ì Final Coverage Gate ªº§¹¾ã¬yµ{¡C

@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import json
+import re
 
 from flask import jsonify, request, session, current_app
 from flask_login import current_user, login_required
@@ -96,6 +97,40 @@ def _normalize_str_list(value: object) -> list[str]:
             return []
         return [part.strip() for part in raw.replace(",", ";").split(";") if part.strip()]
     return []
+
+
+def _strip_choice_leading_label(text: str) -> str:
+    s = str(text or "").strip()
+    s = re.sub(r"^\s*[（(]\s*([A-Za-z])\s*[)）]\s*", "", s)
+    s = re.sub(r"^\s*([A-Za-z])\s*[.)．、]\s*", "", s)
+    return s.strip()
+
+
+def _choice_alias_to_index(token: str) -> int | None:
+    t = str(token or "").strip()
+    if not t:
+        return None
+    t = t.replace("（", "(").replace("）", ")")
+    m = re.match(r"^\(?\s*([A-Za-z])\s*\)?[.)．、]?$", t)
+    if m:
+        return ord(m.group(1).upper()) - ord("A")
+    m = re.match(r"^([1-9]\d*)$", t)
+    if m:
+        return int(m.group(1)) - 1
+    return None
+
+
+def _choice_display_label_and_text(correct_value: object, choices: list) -> str:
+    idx = _choice_alias_to_index(str(correct_value or ""))
+    if idx is not None and 0 <= idx < len(choices):
+        text = _strip_choice_leading_label(str(choices[idx]))
+        return f"({chr(ord('A') + idx)}) {text}"
+    raw = _strip_choice_leading_label(str(correct_value or ""))
+    for i, ch in enumerate(choices):
+        text = _strip_choice_leading_label(str(ch))
+        if raw == text:
+            return f"({chr(ord('A') + i)}) {text}"
+    return str(correct_value or "").strip()
 
 
 def _slim_routing_state(raw: object) -> dict:
@@ -414,9 +449,17 @@ def adaptive_submit_and_get_next():
                     runtime.get("correct_answer"),
                     question_text=runtime.get("question_text", ""),
                     family_id=runtime.get("family_id"),
+                    choices=runtime.get("choices", []),
+                    answer_type=runtime.get("answer_type", ""),
+                    checker_type=runtime.get("checker_type", ""),
                 )
                 payload["is_correct"] = bool(judged.get("is_correct", False))
                 payload["answer_feedback"] = str(judged.get("feedback") or "")
+                choices = list(runtime.get("choices") or [])
+                answer_type = str(runtime.get("answer_type") or "").strip().lower()
+                checker_type = str(runtime.get("checker_type") or "").strip().lower()
+                if (not payload["is_correct"]) and choices and (answer_type == "choice" or checker_type == "choice_checker"):
+                    payload["answer_feedback"] = f"答錯了，正確答案是 {_choice_display_label_and_text(runtime.get('correct_answer'), choices)}"
                 fam = _trim_text(runtime.get("family_id"), max_len=24)
                 grading_analysis = {
                     "family_id": fam,
@@ -462,6 +505,9 @@ def adaptive_submit_and_get_next():
                     response["new_question_data"].get("question_text") or response["new_question_data"].get("question") or "",
                     max_len=_MAX_TEXT_LEN,
                 ),
+                "choices": list(response["new_question_data"].get("choices") or []),
+                "answer_type": str(response["new_question_data"].get("answer_type") or ""),
+                "checker_type": str(response["new_question_data"].get("checker_type") or ""),
                 "routing_state": _slim_routing_state(response.get("routing_state", {})),
             }
             runtime_store = _prune_runtime_store(runtime_store, current_session_id=next_session_id)

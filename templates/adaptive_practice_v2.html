@@ -129,6 +129,24 @@
     .question-family { margin-bottom:10px; font-size:14px; color:var(--muted); }
     .question-text { white-space:pre-wrap; line-height:1.65; font-size:21px; font-weight:700; }
     .question-text .mjx-container { font-size: 1.02em !important; }
+    .choice-list { margin-top:12px; display:none; grid-template-columns:repeat(2, minmax(0, 1fr)); gap:8px; }
+    .choice-list.show { display:grid; }
+    .choice-item {
+      width:100%;
+      text-align:left;
+      border:1px solid #cfe0f5;
+      border-radius:12px;
+      padding:10px 12px;
+      background:#f8fbff;
+      color:#1f2a44;
+      font-size:1rem;
+      font-weight:600;
+      line-height:1.5;
+      cursor:pointer;
+    }
+    .choice-item:hover { border-color:#9fc1ec; background:#f0f6ff; }
+    .choice-item.selected { border-color:#1565c0; background:#eaf2ff; box-shadow:0 0 0 2px rgba(21, 101, 192, .12); }
+    .choice-label { display:inline-block; min-width:32px; color:#0f4e96; font-weight:800; }
     .question-context { margin-top:10px; font-size:14px; color:#60708c; }
     .subskills { display:flex; flex-wrap:wrap; gap:8px; margin:12px 0 0; }
     .subskills span { padding:6px 10px; border-radius:999px; font-size:13px; background:#edf5ff; color:#245ea5; }
@@ -486,7 +504,7 @@
         transform: none !important;
       }
     }
-    @media (max-width:760px) { .meta { grid-template-columns:repeat(2, minmax(0,1fr)); } .answer-box, .assistant-input { grid-template-columns:1fr; } #handwriting-canvas { height:280px; } }
+    @media (max-width:760px) { .meta { grid-template-columns:repeat(2, minmax(0,1fr)); } .answer-box, .assistant-input, .choice-list { grid-template-columns:1fr; } #handwriting-canvas { height:280px; } }
     /* Navbar 樣式改由 _student_navbar.html 提供，避免頁面覆寫 */
   </style>
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
@@ -573,6 +591,7 @@
             </div>
             <div class="question-box">
               <div class="question-text" id="questionText">按下「開始診斷」後載入第一題。</div>
+              <div class="choice-list" id="choiceList"></div>
               <div class="question-context" id="questionContext"></div>
               <div class="subskills" id="subskillsBox"></div>
             </div>
@@ -861,6 +880,7 @@
     const ctx = canvas.getContext("2d");
     const answerInput = document.getElementById("answerInput");
     const submitBtn = document.getElementById("submitBtn");
+    const choiceList = document.getElementById("choiceList");
     const bootstrapBtn = document.getElementById("bootstrapBtn");
     const hintBtn = document.getElementById("hintBtn");
     const analyzeCanvasBtn = document.getElementById("analyzeCanvasBtn");
@@ -1971,6 +1991,49 @@
       }
     }
 
+    const CHOICE_LABELS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
+    function choiceLabelAt(index) {
+      return CHOICE_LABELS[index] || String(index + 1);
+    }
+    function choiceHasOwnLabel(text) {
+      return /^\s*[(（]?[A-Za-z][)）.\s]/.test(String(text || ""));
+    }
+    function renderChoiceText(choiceText, index) {
+      if (choiceHasOwnLabel(choiceText)) return String(choiceText || "");
+      return `(${choiceLabelAt(index)}) ${String(choiceText || "")}`;
+    }
+    function clearChoiceSelection() {
+      if (!choiceList) return;
+      choiceList.querySelectorAll(".choice-item.selected").forEach((el) => el.classList.remove("selected"));
+    }
+    async function renderChoiceOptions(choices) {
+      if (!choiceList) return;
+      const items = Array.isArray(choices) ? choices.filter((x) => String(x || "").trim() !== "") : [];
+      if (!items.length) {
+        choiceList.classList.remove("show");
+        choiceList.innerHTML = "";
+        return;
+      }
+      choiceList.classList.add("show");
+      choiceList.innerHTML = items
+        .map((choice, idx) => {
+          const safeChoice = escapeHtml(String(choice || ""));
+          const rendered = escapeHtml(renderChoiceText(choice, idx));
+          return `<button type="button" class="choice-item" data-choice-index="${idx}" data-choice-text="${safeChoice}"><span class="choice-label">(${choiceLabelAt(idx)})</span><span class="choice-content">${rendered.replace(/^(\([A-Za-z]\)\s*)/, "")}</span></button>`;
+        })
+        .join("");
+      choiceList.querySelectorAll(".choice-item").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          clearChoiceSelection();
+          btn.classList.add("selected");
+          const idx = Number(btn.dataset.choiceIndex || 0);
+          answerInput.value = choiceLabelAt(idx);
+          answerInput.focus();
+        });
+      });
+      await typesetMath(choiceList);
+    }
+
     function renderTrajectory() {
       const box = document.getElementById("trajectoryBox");
       if (!state.history.length) {
@@ -2334,6 +2397,8 @@
       updateAnswerFormatHint(state.mainSkill || skillId, state.currentFamilyId, q.family_name || state.familyNameEn);
       const questionEl = document.getElementById("questionText");
       questionEl.textContent = state.currentQuestionText || "(no question)";
+      const choices = Array.isArray(q.choices) ? q.choices : [];
+      renderChoiceOptions(choices);
       setText("questionContext", state.currentContext);
       const subskillsBox = document.getElementById("subskillsBox");
       if (subskillsBox) {

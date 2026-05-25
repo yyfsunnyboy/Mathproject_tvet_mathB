@@ -394,27 +394,80 @@ def _build_b4_pascal_triangle_runtime_payload(
         "context_string": "",
     }
 
-def _normalize_choice_alias_answer(user_answer: str, current_question: dict) -> str:
-    """
-    Normalize A/B/C/D style answers to 1/2/3/4 when this question is choice-based.
-    Keeps legacy numeric contracts while allowing alphabetical aliases.
-    """
-    raw = str(user_answer or "").strip()
-    if not raw:
-        return raw
+def _is_choice_question(current_question: dict) -> bool:
     answer_input_type = str(current_question.get("answer_input_type", "")).strip().lower()
-    choices = current_question.get("choices") or []
-    if answer_input_type != "choice" and not choices:
-        return raw
+    answer_type = str(current_question.get("answer_type", "")).strip().lower()
+    checker_type = str(current_question.get("checker_type", "")).strip().lower()
+    question_type = str(current_question.get("question_type", "")).strip().lower()
+    choices = current_question.get("choices") or current_question.get("options") or []
+    return bool(choices) or answer_input_type == "choice" or answer_type == "choice" or ("choice" in checker_type) or question_type == "multiple_choice"
 
-    token = raw
-    # Accept patterns like "A", "a", "A.", "a)"
-    if token and token[0].isalpha():
-        alpha = token[0].upper()
-        idx = ord(alpha) - ord("A") + 1
-        if 1 <= idx <= 26:
-            return str(idx)
-    return raw
+
+def _strip_choice_leading_label(text: str) -> str:
+    s = str(text or "").strip()
+    s = s.replace("（", "(").replace("）", ")")
+    s = re.sub(r"^\s*\(\s*([A-Za-z])\s*\)\s*", "", s)
+    s = re.sub(r"^\s*([A-Za-z])\s*[.)、]\s*", "", s)
+    s = re.sub(r"\s+", " ", s)
+    return s.strip()
+
+
+def _choice_alias_to_index(token: str) -> int | None:
+    t = str(token or "").strip()
+    if not t:
+        return None
+    t = t.replace("（", "(").replace("）", ")")
+    m = re.match(r"^\(?\s*([A-Za-z])\s*\)?[.)、]?$", t)
+    if m:
+        idx = ord(m.group(1).upper()) - ord("A")
+        return idx if 0 <= idx <= 25 else None
+    m = re.match(r"^([1-9]\d*)$", t)
+    if m:
+        return int(m.group(1)) - 1
+    return None
+
+
+def _normalize_choice_for_compare(value: object, choices: list) -> str:
+    raw = str(value or "").strip()
+    if not raw:
+        return ""
+    idx = _choice_alias_to_index(raw)
+    if idx is not None and 0 <= idx < len(choices):
+        return _strip_choice_leading_label(str(choices[idx]))
+    raw_no_label = _strip_choice_leading_label(raw)
+    for i, ch in enumerate(choices):
+        ch_text = _strip_choice_leading_label(str(ch))
+        if raw_no_label == ch_text:
+            return ch_text
+        if raw_no_label.upper() == chr(ord("A") + i):
+            return ch_text
+        if raw_no_label == str(i + 1):
+            return ch_text
+    return raw_no_label
+
+
+def _choice_value_to_label(value: object, choices: list) -> str:
+    raw = str(value or "").strip()
+    if not raw:
+        return ""
+    idx = _choice_alias_to_index(raw)
+    if idx is not None and 0 <= idx < len(choices):
+        return chr(ord("A") + idx)
+    normalized = _normalize_choice_for_compare(raw, choices)
+    for i, ch in enumerate(choices):
+        if _strip_choice_leading_label(str(ch)) == normalized:
+            return chr(ord("A") + i)
+    return ""
+
+
+def _choice_display_label_and_text(correct_value: object, choices: list) -> str:
+    label = _choice_value_to_label(correct_value, choices)
+    if label:
+        i = ord(label) - ord("A")
+        if 0 <= i < len(choices):
+            ch_text = _strip_choice_leading_label(str(choices[i]))
+            return f"({label}) {ch_text}"
+    return str(correct_value or "").strip()
 
 def update_progress(user_id, skill_id, is_correct):
     """
