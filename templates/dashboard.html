@@ -97,6 +97,10 @@
             color: #8a5a1f;
             border-color: #e0c87a;
         }
+        .skill-card mjx-container {
+            max-width: 100%;
+            overflow-x: auto;
+        }
 
         /* ── Dashboard Header Row ── */
         .dashboard-header-row {
@@ -1006,41 +1010,62 @@
     </script>
 
     <script>
-        function typesetMathInDashboard() {
+        window.MathJax = window.MathJax || {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']],
+                processEscapes: true
+            },
+            svg: { fontCache: 'global' }
+        };
+
+        function renderMathInElement(el) {
+            if (!el) return;
             if (window.MathJax && window.MathJax.typesetPromise) {
-                window.MathJax.typesetPromise()
-                    .catch(function (err) {
-                        console.warn("[MathJax] dashboard typeset failed:", err);
-                    });
+                window.MathJax.typesetPromise([el]).catch(function (err) {
+                    console.warn('MathJax render error:', err);
+                });
             }
         }
 
+        function skillCardMathContainer() {
+            return document.querySelector('.skills-grid')
+                || document.querySelector('.skill-grid.curriculum-skills')
+                || document.querySelector('.skill-grid')
+                || document.querySelector('.dashboard-shell')
+                || document.body;
+        }
+
         function ensureMathJaxThenTypeset() {
-            // Only target curriculum skill cards; keep other views untouched.
-            if (!document.querySelector(".skill-grid.curriculum-skills")) return;
+            var container = skillCardMathContainer();
+            if (!container) return;
 
             if (window.MathJax && window.MathJax.typesetPromise) {
-                typesetMathInDashboard();
+                renderMathInElement(container);
                 return;
             }
 
-            // Avoid duplicate loader injection when base/global already loads MathJax.
             if (document.querySelector("script[data-dashboard-mathjax-loader='1']")) return;
 
             var script = document.createElement("script");
-            script.async = true;
+            script.defer = true;
             script.id = "mathjax-dashboard-loader";
             script.setAttribute("data-dashboard-mathjax-loader", "1");
-            script.src = "https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js";
+            script.src = "https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js";
             script.onload = function () {
-                typesetMathInDashboard();
+                renderMathInElement(container);
             };
             document.head.appendChild(script);
         }
 
         document.addEventListener("DOMContentLoaded", function () {
-            // Initial load; also covers chapter/volume filter reloads.
             ensureMathJaxThenTypeset();
+            var container = skillCardMathContainer();
+            if (!container || typeof MutationObserver === 'undefined') return;
+            var observer = new MutationObserver(function () {
+                renderMathInElement(container);
+            });
+            observer.observe(container, { childList: true, subtree: true });
         });
     </script>
 

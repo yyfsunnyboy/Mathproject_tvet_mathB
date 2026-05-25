@@ -317,8 +317,38 @@ def _list_mathb_volume_formal_skill_ids(
 
 
 def _is_docx_concept_heading_code(concept_code: str) -> bool:
-    """True for numbered A-B.C 或 plain scoped pseudo code（3-2::名稱）。"""
+    """True only for numbered A-B.C heading concept code."""
     return is_persistable_concept_code(concept_code)
+
+
+def _find_existing_skill_id_by_section_and_ch_name(
+    *,
+    curriculum_info: dict | None,
+    section_code: str,
+    concept_name: str,
+) -> str:
+    sec = str(section_code or "").strip()
+    ch = str(concept_name or "").strip()
+    if not curriculum_info or not sec or not ch:
+        return ""
+    outline = _lookup_outline_section_curriculum_row(curriculum_info, sec)
+    if outline is None:
+        return ""
+    auth = _curriculum_authority_coords(outline)
+    row = (
+        SkillCurriculum.query.join(SkillInfo, SkillInfo.skill_id == SkillCurriculum.skill_id)
+        .filter(
+            SkillCurriculum.curriculum == auth["curriculum"],
+            SkillCurriculum.volume == auth["volume"],
+            SkillCurriculum.chapter == auth["chapter_title"],
+            SkillCurriculum.section == auth["section_title"],
+            SkillInfo.skill_ch_name == ch,
+            SkillInfo.skill_id.startswith("vh_"),
+        )
+        .order_by(SkillCurriculum.id.asc())
+        .first()
+    )
+    return str(getattr(row, "skill_id", "") or "").strip()
 
 
 def _fallback_en_id_from_concept_code(concept_code: str) -> str:
@@ -665,7 +695,84 @@ def _ensure_formal_skill_info_and_curriculum_v2(
     sec_code = str(section_code or "").strip() or extract_section_code_from_title(sec_title)
     ch_title = str(chapter_title or "").strip()
 
+    def _is_path_like_description(desc: str) -> bool:
+        d = str(desc or "").strip()
+        if not d:
+            return True
+        flat = re.sub(r"\s+", " ", d)
+        return bool(re.match(rf"^{re.escape(volume)}\s+{re.escape(ch_title)}\s+{re.escape(sec_title)}\s*-\s*.+$", flat))
+
+    def _fallback_description() -> str:
+        return f"理解「{ch_name}」的基本概念與常見題型，並能應用於「{sec_title}」相關問題。"
+
+    def _generate_student_description() -> tuple[str, str]:
+        try:
+            model = get_model("architect")
+            prompt = (
+                "請為技術型高中數學B技能產生學生看得懂的簡短概念說明。"
+                "限制：1到2句、30到80字、繁體中文、可含LaTeX數學式、不得寫章節路徑或空泛語。"
+                f"\n技能中文名：{ch_name}\n小節：{sec_title}\n章：{ch_title}\n冊別：{volume}\n"
+                "僅輸出說明文字本身。"
+            )
+            raw = _call_gemini_with_retry(
+                model, prompt, queue=None, context_message="skill description", parse_json=False
+            )
+            text = str(raw or "").strip()
+            text = re.sub(r"^```(?:text)?|```$", "", text, flags=re.MULTILINE).strip()
+            if text and len(text) <= 180 and not _is_path_like_description(text):
+                return text, "ai"
+        except Exception:
+            pass
+        return _fallback_description(), "fallback"
+
+    def _build_tutor_prompt(desc: str) -> str:
+        d = str(desc or "").strip()
+        if d:
+            return (
+                f"你正在協助學生學習技術型高中數學B「{ch_name}」。\n"
+                f"本技能屬於「{sec_title}」。\n"
+                f"技能重點：{d}\n"
+                "請根據此技能範圍回答學生問題，使用繁體中文，優先給提示與分步引導，不要一開始就直接給完整答案。"
+                "若學生要求解題，請先說明觀念與下一步；數學式請使用 LaTeX。"
+            )
+        return (
+            f"你正在協助學生學習技術型高中數學B「{ch_name}」。\n"
+            f"本技能屬於「{sec_title}」。\n"
+            "請根據此技能範圍回答學生問題，使用繁體中文，優先給提示與分步引導，不要一開始就直接給完整答案。"
+            "若涉及數學式，請使用 LaTeX。"
+        )
+
+    def _order_index_for_skill() -> int:
+        sid_low = sid.lower()
+        if sid_low.startswith("outline_"):
+            return 9999
+        m = re.match(r"^\d+-\d+\.(\d+)$", str(concept_code or "").strip())
+        if m:
+            return int(m.group(1))
+        if int(display_order or 0) > 0:
+            return int(display_order)
+        row = (
+            SkillCurriculum.query.filter_by(
+                curriculum=curriculum,
+                volume=volume,
+                chapter=ch_title,
+                section=sec_title,
+                skill_id=sid,
+            )
+            .order_by(SkillCurriculum.id.asc())
+            .first()
+        )
+        if row and int(getattr(row, "display_order", 0) or 0) > 0:
+            return int(getattr(row, "display_order", 0) or 0)
+        return 1
+
     with db.session.no_autoflush:
+        final_order_index = _order_index_for_skill()
+        desc_text, desc_source = _generate_student_description()
+        _log_info(
+            f"[SKILL_DESCRIPTION_GENERATED] skill_id={sid} source={desc_source} description={desc_text}"
+        )
+        tutor_prompt = _build_tutor_prompt(desc_text)
         skill_info = db.session.get(SkillInfo, sid)
         if skill_info is None:
             skill_info = SkillInfo(
@@ -673,23 +780,23 @@ def _ensure_formal_skill_info_and_curriculum_v2(
                 skill_en_name=en_name,
                 skill_ch_name=ch_name,
                 category=sec_title,
-                description=f"{volume} {ch_title} {sec_title} - {ch_name}".strip(),
+                description=desc_text,
                 input_type="text",
-                gemini_prompt="",
+                gemini_prompt=tutor_prompt,
                 consecutive_correct_required=3,
                 is_active=True,
-                order_index=int(display_order or 0),
+                order_index=final_order_index,
+                importance=1,
             )
             db.session.add(skill_info)
             _log_info(
                 "[SECTION_TEXTBOOK_SKILL_CREATE] "
-                f"skill_id={sid!r} chapter={ch_title!r} section={sec_title!r} "
-                f"concept_code={str(concept_code or '').strip()!r} concept_name={ch_name!r}"
+                f"skill_id={sid!r} skill_ch_name={ch_name!r} category={sec_title!r} order_index={final_order_index}"
             )
         else:
             _log_info(
                 "[SECTION_TEXTBOOK_SKILL_REUSE] "
-                f"skill_id={sid!r} chapter={ch_title!r} section={sec_title!r}"
+                f"skill_id={sid!r} skill_ch_name={ch_name!r} category={sec_title!r} order_index={final_order_index}"
             )
             existing_ch = str(getattr(skill_info, "skill_ch_name", "") or "").strip()
             if not existing_ch:
@@ -703,14 +810,31 @@ def _ensure_formal_skill_info_and_curriculum_v2(
                 skill_info.skill_en_name = en_name
             if not str(getattr(skill_info, "category", "") or "").strip():
                 skill_info.category = sec_title
-            if not str(getattr(skill_info, "description", "") or "").strip():
-                skill_info.description = f"{volume} {ch_title} {sec_title} - {ch_name}".strip()
+            old_desc = str(getattr(skill_info, "description", "") or "").strip()
+            if not old_desc or _is_path_like_description(old_desc):
+                skill_info.description = desc_text
             if getattr(skill_info, "input_type", None) in (None, ""):
                 skill_info.input_type = "text"
-            if getattr(skill_info, "gemini_prompt", None) is None:
-                skill_info.gemini_prompt = ""
+            old_prompt = str(getattr(skill_info, "gemini_prompt", "") or "").strip()
+            if (
+                not old_prompt
+                or old_prompt.lower().startswith("generate math problems about")
+                or "你正在協助學生學習技術型高中數學B" not in old_prompt
+            ):
+                skill_info.gemini_prompt = _build_tutor_prompt(
+                    str(getattr(skill_info, "description", "") or "").strip()
+                )
             if getattr(skill_info, "is_active", None) is None:
                 skill_info.is_active = True
+            if int(getattr(skill_info, "order_index", 0) or 0) <= 0:
+                skill_info.order_index = final_order_index
+            if getattr(skill_info, "consecutive_correct_required", None) in (None, 0):
+                skill_info.consecutive_correct_required = 3
+            if getattr(skill_info, "importance", None) in (None, 0):
+                skill_info.importance = 1
+        _log_info(
+            f"[SKILL_INFO_DEFAULTS_APPLIED] skill_id={sid} gemini_prompt={'set' if str(getattr(skill_info,'gemini_prompt','') or '').strip() else 'empty'} order_index={int(getattr(skill_info,'order_index',0) or 0)}"
+        )
 
         curriculum_row = (
             SkillCurriculum.query.filter_by(
@@ -1177,6 +1301,7 @@ def _persist_formal_skill_from_docx_heading(
         f"section_code={sec_code!r} chapter={auth['chapter_title']!r} "
         f"section={auth['section_title']!r} source=outline"
     )
+    existed = db.session.get(SkillInfo, formal_skill_id) is not None
     _ensure_formal_skill_info_and_curriculum_v2(
         formal_skill_id=formal_skill_id,
         concept_name=concept_name,
@@ -1189,6 +1314,14 @@ def _persist_formal_skill_from_docx_heading(
         paragraph=concept_name,
         section_code=sec_code,
         concept_code=concept_code,
+    )
+    _log_info(
+        (
+            "[SECTION_TEXTBOOK_SKILL_REUSE] "
+            if existed
+            else "[SECTION_TEXTBOOK_SKILL_CREATE] "
+        )
+        + f"source=numbered_heading concept_code={concept_code} concept_name={concept_name} skill_id={formal_skill_id}"
     )
 
 
@@ -1361,6 +1494,29 @@ def _build_anchor_blocks_v2(
                 continue
             ch_title = str((curriculum_info or {}).get("chapter") or "").strip()
             vol_label = str((curriculum_info or {}).get("volume") or "").strip()
+            existing_sid = _find_existing_skill_id_by_section_and_ch_name(
+                curriculum_info=curriculum_info,
+                section_code=active_section_code,
+                concept_name=docx_concept_name,
+            )
+            if existing_sid:
+                current_concept_code = concept_code
+                current_concept_name = docx_concept_name
+                current_formal_skill_id = existing_sid
+                si = db.session.get(SkillInfo, existing_sid)
+                current_concept_en_id = str(getattr(si, "skill_en_name", "") or "").strip()
+                _log_info(
+                    "[SECTION_TEXTBOOK_SKILL_REUSE] "
+                    f"source=numbered_heading concept_code={concept_code} concept_name={docx_concept_name} skill_id={existing_sid}"
+                )
+                _register_mathb_section_concept(
+                    section_code=active_section_code,
+                    concept_code=concept_code,
+                    concept_name=docx_concept_name,
+                    concept_en_id=current_concept_en_id,
+                    formal_skill_id=existing_sid,
+                )
+                continue
             nearby = "\n".join(recent_context_lines[-6:] + [line]).strip()
             resolved = _resolve_formal_concept_en_id_v2(
                 concept_name=docx_concept_name,
@@ -4208,7 +4364,11 @@ def _phase4_resolve_mathb_formal_binding(
         concept_code=docx_concept_code,
     )
     final_ch = docx_concept_name or concept_name
-    bind_source = "current_concept" if str(block_meta.get("formal_skill_id") or "").strip() else "ai_select_from_section_candidates"
+    bind_source = (
+        "current_numbered_concept"
+        if str(block_meta.get("formal_skill_id") or "").strip()
+        else "ai_select_from_section_candidates"
+    )
     _log_info(
         "[SECTION_TEXTBOOK_QUESTION_BIND] "
         f"title={anchor!r} source_type={source_type!r} section_code={sec_code!r} "
