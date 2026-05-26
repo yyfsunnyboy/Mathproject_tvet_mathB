@@ -1,12 +1,12 @@
-# -*- coding: utf-8 -*-
+﻿# -*- coding: utf-8 -*-
 """
 =============================================================================
-模組名稱 (Module Name): core/routes/practice.py
-功能說明 (Description): 學生練習區核心路由模組，處理題目生成 (Generator)、答案批改 (Checker) 與 Matplotlib 繪圖輔助，並管理練習 Session。
-執行語法 (Usage): 由系統調用
-版本資訊 (Version): V2.0
-更新日期 (Date): 2026-01-13
-維護團隊 (Maintainer): Math AI Project Team
+璅∠??迂 (Module Name): core/routes/practice.py
+?隤芣? (Description): 摮貊?蝺渡???詨?頝舐璅∠?嚗????桃???(Generator)??獢??(Checker) ??Matplotlib 蝜芸?頛嚗蒂蝞∠?蝺渡? Session??
+?瑁?隤? (Usage): ?梁頂蝯梯矽??
+?鞈? (Version): V2.0
+?湔?交? (Date): 2026-01-13
+蝬剛風?? (Maintainer): Math AI Project Team
 =============================================================================
 """
 
@@ -15,10 +15,10 @@ from urllib.parse import unquote as _url_unquote
 from flask_login import login_required, current_user
 from werkzeug.utils import secure_filename
 import importlib
-import sys # [修正 2] 導入 sys 以便檢查模組狀態
+import sys # [靽格迤 2] 撠 sys 隞乩噶瑼Ｘ璅∠????
 import numpy as np
 import matplotlib
-# [CRITICAL] 設定 Matplotlib 為非互動模式，避免 Server 端 GUI 錯誤
+# [CRITICAL] 閮剖? Matplotlib ?粹?鈭?璅∪?嚗??Server 蝡?GUI ?航炊
 matplotlib.use('Agg') 
 import matplotlib.pyplot as plt
 import re
@@ -28,10 +28,10 @@ import random
 import hashlib
 from datetime import datetime
 
-# 引用 Blueprint
+# 撘 Blueprint
 from . import practice_bp
 
-# 資料庫模型
+# 鞈?摨急芋??
 from models import db, SkillInfo, SkillPrerequisites, SkillCurriculum, Progress, MistakeNotebookEntry
 from core.utils import get_skill_info
 from core.session import get_current, set_current
@@ -82,21 +82,18 @@ from core.vocational_math_b4.domain.b4_validators import (
     check_expected_value_answer,
 )
 
-# Phase 6G-0: Chap2 skill / problem-type gates — user-facing messages (SOP §8.1).
+# Phase 6G-0: Chap2 skill / problem-type gates ??user-facing messages (SOP 禮8.1).
 # JSON `error` must not expose internal phase codes, legacy import traces, or URL-encoded skill_id.
 B4_CHAP2_SKILL_NOT_ENABLED_PUBLIC_ERROR = (
-    "此技能尚未開放自動出題。"
-    " Chap2 skill not enabled in current deterministic runtime."
+    "This Chap2 skill is not enabled in the current deterministic runtime."
 )
 B4_CHAP2_RESERVED_PROBLEM_TYPE_PUBLIC_ERROR = (
-    "此題型保留為手寫／開放式作答，尚未於自動出題中開放。"
-    " This problem type is reserved for handwriting/free-response review."
+    "This problem type is reserved for handwriting/free-response review."
 )
 
 # Phase 7B: Chap3 skill gate
 B4_CHAP3_SKILL_NOT_ENABLED_PUBLIC_ERROR = (
-    "此技能尚未開放自動出題。"
-    " Chap3 skill not enabled in current deterministic runtime."
+    "This Chap3 skill is not enabled in the current deterministic runtime."
 )
 B4_CHAP3_REQUIRES_EXPLICIT_PROBLEM_TYPE_SKILLS = set()
 
@@ -108,59 +105,55 @@ def _b4_chap2_public_payload_validation_message(deny_reason: str | None) -> str:
         return B4_CHAP2_RESERVED_PROBLEM_TYPE_PUBLIC_ERROR
     if dr.startswith("not_in_phase6c1_allowlist:"):
         return (
-            "此題型尚未開放自動出題。"
-            " This problem type is not enabled in the current deterministic runtime."
+            "This problem type is not enabled in the current deterministic runtime."
         )
     if dr.startswith("skill_not_in_phase6c1_allowlist:"):
         return (
-            "此技能與題型組合尚未開放自動出題。"
-            " This skill/problem combination is not enabled in the current deterministic runtime."
+            "This skill/problem combination is not enabled in the current deterministic runtime."
         )
     if dr == "missing_or_invalid_problem_type_id":
-        return "題目類型資料不完整，無法出題。 Question type metadata is incomplete."
+        return "Question type metadata is incomplete."
     if dr == "payload_not_dict":
-        return "題目資料格式異常。 Invalid question payload."
+        return "Invalid question payload."
     return (
-        "此題型或題目資料不符合目前自動出題範圍。"
-        " This question does not match the current deterministic runtime scope."
+        "This question does not match the current deterministic runtime scope."
     )
 
 def _b4_chap3_public_payload_validation_message(deny_reason: str | None) -> str:
     """Map internal Chap3 allowlist validator codes to student-safe error text."""
     dr = str(deny_reason or "").strip()
     if dr == "missing_or_invalid_problem_type_id":
-        return "題目類型資料不完整，無法出題。 Question type metadata is incomplete."
+        return "Question type metadata is incomplete."
     if dr == "payload_not_dict":
-        return "題目資料格式異常。 Invalid question payload."
+        return "Invalid question payload."
     return (
-        "此題型或題目資料不符合目前自動出題範圍。"
-        " This question does not match the current deterministic runtime scope."
+        "This question does not match the current deterministic runtime scope."
     )
 
 
 MANUAL_REVIEW_SKILLS = {
-    "vh_數學B4_PascalTriangle": {
-        "display_name": "巴斯卡三角形",
-        "reason": "巴斯卡三角形推導屬於推導 / 證明型內容，目前 deterministic int-answer runtime 不適合自動判分。",
+    "vh_?詨飛B4_PascalTriangle": {
+        "display_name": "撌湔?∩?閫耦",
+        "reason": "Pascal triangle items require handwriting/free-response review and are excluded from deterministic int-answer runtime.",
         "future_path": "future_ai_judged / teacher review / structured derivation",
     },
 }
 
-B4_TREE_DIAGRAM_FREE_RESPONSE_SKILL_ID = "vh_數學B4_TreeDiagramCounting"
+B4_TREE_DIAGRAM_FREE_RESPONSE_SKILL_ID = "vh_?詨飛B4_TreeDiagramCounting"
 B4_TREE_DIAGRAM_PROBLEM_TYPE = "tree_diagram_listing"
 B4_TREE_DIAGRAM_DEFAULT_VARIANT = "early_stopping_game"
 B4_TREE_DIAGRAM_VARIANTS = ("early_stopping_game", "fixed_stage_binary_tree")
-B4_PASCAL_TRIANGLE_FREE_RESPONSE_SKILL_ID = "vh_數學B4_PascalTriangle"
+B4_PASCAL_TRIANGLE_FREE_RESPONSE_SKILL_ID = "vh_?詨飛B4_PascalTriangle"
 B4_PASCAL_TRIANGLE_PROBLEM_TYPE = "pascal_triangle_handwriting"
 B4_PASCAL_TRIANGLE_VARIANTS = ("pascal_row_listing", "pascal_binomial_expansion")
 
 # ==========================================
-# Helper Functions (輔助函式)
+# Helper Functions (頛?賢?)
 # ==========================================
 
 def get_skill(skill_id):
-    """動態載入技能模組 (skills/xxx.py)"""
-    if skill_id in {"vh_數學B4_TreeDiagramCounting", "vh_數學B4_PascalTriangle"}:
+    """??頛??賣芋蝯?(skills/xxx.py)"""
+    if skill_id in {"vh_?詨飛B4_TreeDiagramCounting", "vh_?詨飛B4_PascalTriangle"}:
         return None
     try:
         return importlib.import_module(f"skills.{skill_id}")
@@ -170,16 +163,16 @@ def get_skill(skill_id):
 
 def _resolve_adaptive_unit_name(skill_id, requested_unit_name=""):
     requested = str(requested_unit_name or "").strip()
-    if requested and requested != "本單元自適應學習（總結性診斷）":
+    if requested and requested != "?砍??拇?摮貊?嚗蜇蝯扯那?瘀?":
         return requested
     skill_map = {
-        "jh_數學1上_FourArithmeticOperationsOfIntegers": "整數四則運算",
-        "jh_數學1上_FourArithmeticOperationsOfNumbers": "分數四則運算",
-        "jh_數學2上_FourOperationsOfRadicals": "根式四則運算",
-        "jh_數學1上_OperationsOnLinearExpressions": "一元一次式",
-        "jh_數學2上_FourArithmeticOperationsOfPolynomial": "多項式四則運算",
+        "jh_?詨飛1銝FourArithmeticOperationsOfIntegers": "?湔????",
+        "jh_?詨飛1銝FourArithmeticOperationsOfNumbers": "?????",
+        "jh_?詨飛2銝FourOperationsOfRadicals": "?孵?????",
+        "jh_?詨飛1銝OperationsOnLinearExpressions": "銝??甈∪?",
+        "jh_?詨飛2銝FourArithmeticOperationsOfPolynomial": "憭?撘???蝞?",
     }
-    return skill_map.get(str(skill_id or "").strip(), requested or "未指定單元")
+    return skill_map.get(str(skill_id or "").strip(), requested or "?芣?摰??")
 
 
 def _resolve_b4_chapter_adaptive_entry(
@@ -200,12 +193,12 @@ def _resolve_b4_chapter_adaptive_entry(
     normalized_chapter_id = str(chapter_id or "").strip()
     normalized_skill_ids = str(skill_ids or "").strip()
 
-    # --- B4 Chapter 1 (排列組合) ---
-    legacy_hit = normalized_mode == "single" and normalized_skill_ids == "1 排列組合"
+    # --- B4 Chapter 1 (??蝯?) ---
+    legacy_hit = normalized_mode == "single" and normalized_skill_ids == "1 ??蝯?"
     chapter1_hit = (
         normalized_mode == "chapter"
         and normalized_curriculum == "vocational"
-        and normalized_volume == "數學B4"
+        and normalized_volume == "?詨飛B4"
         and normalized_chapter_id == "1"
     )
     if legacy_hit or chapter1_hit:
@@ -216,22 +209,22 @@ def _resolve_b4_chapter_adaptive_entry(
             {
                 "entry_mode": "chapter",
                 "compat_path_used": legacy_hit,
-                "unit_name": "單元練習：1 排列組合",
+                "unit_name": "?桀?蝺渡?嚗? ??蝯?",
                 "unit_skill_ids": unit_skill_ids,
                 "bootstrap_unit_skill_ids": starter_pool,
                 "starter_skill_id": starter_skill_id,
                 "chapter_id": "1",
-                "volume": "數學B4",
+                "volume": "?詨飛B4",
                 "curriculum": "vocational",
             },
             True,
         )
 
-    # --- B4 Chapter 2 (機率) — Phase 6N ---
+    # --- B4 Chapter 2 (璈?) ??Phase 6N ---
     chapter2_hit = (
         normalized_mode == "chapter"
         and normalized_curriculum == "vocational"
-        and normalized_volume == "數學B4"
+        and normalized_volume == "?詨飛B4"
         and normalized_chapter_id == "2"
     )
     if chapter2_hit:
@@ -241,12 +234,12 @@ def _resolve_b4_chapter_adaptive_entry(
             {
                 "entry_mode": "chapter",
                 "compat_path_used": False,
-                "unit_name": "單元練習：2 機率",
+                "unit_name": "?桀?蝺渡?嚗? 璈?",
                 "unit_skill_ids": unit_skill_ids,
                 "bootstrap_unit_skill_ids": unit_skill_ids,
                 "starter_skill_id": starter_skill_id,
                 "chapter_id": "2",
-                "volume": "數學B4",
+                "volume": "?詨飛B4",
                 "curriculum": "vocational",
                 "b4_chap2_chapter_mode": True,
                 "diagnostic_total_steps": B4_CHAP2_CHAPTER_DIAGNOSTIC_TOTAL_STEPS,
@@ -407,7 +400,7 @@ def _strip_choice_leading_label(text: str) -> str:
     s = str(text or "").strip()
     s = s.replace("（", "(").replace("）", ")")
     s = re.sub(r"^\s*\(\s*([A-Za-z])\s*\)\s*", "", s)
-    s = re.sub(r"^\s*([A-Za-z])\s*[.)、]\s*", "", s)
+    s = re.sub(r"^\s*([A-Za-z])\s*[.)]\s*", "", s)
     s = re.sub(r"\s+", " ", s)
     return s.strip()
 
@@ -417,7 +410,7 @@ def _choice_alias_to_index(token: str) -> int | None:
     if not t:
         return None
     t = t.replace("（", "(").replace("）", ")")
-    m = re.match(r"^\(?\s*([A-Za-z])\s*\)?[.)、]?$", t)
+    m = re.match(r"^\(?\s*([A-Za-z])\s*\)?[.)]?$", t)
     if m:
         idx = ord(m.group(1).upper()) - ord("A")
         return idx if 0 <= idx <= 25 else None
@@ -460,6 +453,15 @@ def _choice_value_to_label(value: object, choices: list) -> str:
     return ""
 
 
+def _normalize_choice_alias_answer(value: str, current_question: dict) -> str:
+    raw = str(value or "").strip()
+    if not raw:
+        return ""
+    choices = current_question.get("choices") or current_question.get("options") or []
+    label = _choice_value_to_label(raw, choices if isinstance(choices, list) else [])
+    return label or raw
+
+
 def _choice_display_label_and_text(correct_value: object, choices: list) -> str:
     label = _choice_value_to_label(correct_value, choices)
     if label:
@@ -471,8 +473,8 @@ def _choice_display_label_and_text(correct_value: object, choices: list) -> str:
 
 def update_progress(user_id, skill_id, is_correct):
     """
-    更新用戶進度 (Progress)
-    V2.0 更新：不再動態調整等級，僅記錄連續答對/錯次數與練習時間
+    ?湔?冽?脣漲 (Progress)
+    V2.0 ?湔嚗????矽?渡?蝝??????蝑?/?舀活?貉?蝺渡???
     """
     progress = db.session.query(Progress).filter_by(user_id=user_id, skill_id=skill_id).first()
     now_time = datetime.now()
@@ -501,29 +503,29 @@ def update_progress(user_id, skill_id, is_correct):
     db.session.commit()
 
 # ==========================================
-# Routes (路由)
+# Routes (頝舐)
 # ==========================================
 
 @practice_bp.route('/adaptive_selection')
 @login_required
 def adaptive_selection_page():
-    """顯示多單元自選組合的頁面。"""
+    """Adaptive selection page."""
     curriculum = request.args.get('curriculum', 'general')
-    curriculum_map = {'general': '普通高中', 'vocational': '技術型高中', 'junior_high': '國民中學'}
+    curriculum_map = {'general': 'general', 'vocational': 'vocational', 'junior_high': 'junior_high'}
     
-    # 查詢該學程下的所有章節
+    # ?亥岷閰脣飛蝔?????蝭
     chapters = db.session.query(SkillCurriculum.chapter).filter_by(curriculum=curriculum).distinct().order_by(SkillCurriculum.chapter).all()
     chapter_list = [c[0] for c in chapters]
 
     return render_template('adaptive_selection.html', 
                            chapters=chapter_list, 
                            curriculum=curriculum,
-                           curriculum_name=curriculum_map.get(curriculum, '未知'))
+                           curriculum_name=curriculum_map.get(curriculum, '?芰'))
 
 @practice_bp.route('/adaptive_practice')
 @login_required
 def adaptive_practice_page():
-    """自適應練習的主頁面。"""
+    """Adaptive practice page."""
     mode = request.args.get('mode', 'single')
     skill_ids = request.args.get('skill_ids', '')
     skill_id = request.args.get('skill_id') or skill_ids
@@ -551,17 +553,17 @@ def adaptive_practice_page():
         if not practice_kind:
             practice_kind = "unit_practice"
     
-    unit_name = "自適應練習"
+    unit_name = "?芷?毀蝧?"
     if mode == 'single':
-        # 在單一模式下，skill_ids 就是章節名稱
-        unit_name = f"單元練習：{skill_ids}"
+        # ?典銝璅∪?銝?skill_ids 撠望蝡??迂
+        unit_name = f"?桀?蝺渡?嚗{skill_ids}"
     elif mode == 'chapter':
-        unit_name = str(chapter_bridge.get("unit_name") or "章節自適應練習")
+        unit_name = str(chapter_bridge.get("unit_name") or "蝡??芷?毀蝧?")
     elif mode == 'multiple':
-        unit_name = "自選組合練習"
+        unit_name = "?芷蝯?蝺渡?"
     elif mode == 'review':
-        curriculum_map = {'general': '普高', 'vocational': '技高', 'junior_high': '國中'}
-        unit_name = f"{curriculum_map.get(curriculum, '')} 總複習"
+        curriculum_map = {'general': '?桅?', 'vocational': '?擃?', 'junior_high': '?葉'}
+        unit_name = f"{curriculum_map.get(curriculum, '')} 蝮質?蝧?"
 
     current_app.logger.info(
         "[Phase5B-FixA][adaptive_practice_entry] raw_params=%s detected_mode=%s curriculum=%s volume=%s chapter_id=%s compat_used=%s resolved_target_skill_count=%s starter_skill=%s",
@@ -603,7 +605,7 @@ def adaptive_summative_page():
         mode = 'teaching'
     unit_name = _resolve_adaptive_unit_name(
         skill_id,
-        request.args.get('unit_name', '本單元自適應學習（總結性診斷）').strip(),
+        request.args.get('unit_name', '?砍??拇?摮貊?嚗蜇蝯扯那?瘀?').strip(),
     )
     return render_template(
         'adaptive_practice_v2.html',
@@ -617,13 +619,13 @@ def adaptive_summative_page():
 @practice_bp.route('/adaptive_learning_entry')
 @login_required
 def adaptive_learning_entry_page():
-    """學生端「自適應評量與教學」入口頁。"""
+    """Adaptive learning entry page."""
     units = [
-        {"label": "整數四則運算", "skill_id": "jh_數學1上_FourArithmeticOperationsOfIntegers"},
-        {"label": "分數四則運算", "skill_id": "jh_數學1上_FourArithmeticOperationsOfNumbers"},
-        {"label": "根式四則運算", "skill_id": "jh_數學2上_FourOperationsOfRadicals"},
-        {"label": "一元一次式", "skill_id": "jh_數學1上_OperationsOnLinearExpressions"},
-        {"label": "多項式四則運算", "skill_id": "jh_數學2上_FourArithmeticOperationsOfPolynomial"},
+        {"label": "?湔????", "skill_id": "jh_?詨飛1銝FourArithmeticOperationsOfIntegers"},
+        {"label": "?????", "skill_id": "jh_?詨飛1銝FourArithmeticOperationsOfNumbers"},
+        {"label": "?孵?????", "skill_id": "jh_?詨飛2銝FourOperationsOfRadicals"},
+        {"label": "銝??甈∪?", "skill_id": "jh_?詨飛1銝OperationsOnLinearExpressions"},
+        {"label": "憭?撘???蝞?", "skill_id": "jh_?詨飛2銝FourArithmeticOperationsOfPolynomial"},
     ]
     return render_template('adaptive_learning_entry.html', units=units)
 
@@ -631,7 +633,7 @@ def adaptive_learning_entry_page():
 @practice_bp.route('/practice')
 def practice_query_entry():
     # Phase 6C-1R: URL-decode skill_id so that
-    # vh_%E6%95%B8%E5%AD%B8B4_ProbabilityDefinition → vh_數學B4_ProbabilityDefinition
+    # vh_%E6%95%B8%E5%AD%B8B4_ProbabilityDefinition ??vh_?詨飛B4_ProbabilityDefinition
     # Already-decoded IDs pass through unchanged (unquote is idempotent).
     skill_id = _url_unquote((request.args.get("skill") or "").strip())
     if not skill_id:
@@ -644,19 +646,19 @@ def practice(skill_id):
     # Phase 6C-1R: URL-decode path segment (Flask may or may not decode it
     # depending on the URL_MAP_STRICT_SLASHES setting; be explicit).
     skill_id = _url_unquote(skill_id)
-    """進入特定技能的練習頁面"""
+    """?脣?孵???賜?蝺渡??"""
     requested_problem_type = (request.args.get("problem_type") or "").strip()
     is_pascal_runtime_request = _is_b4_pascal_triangle_request(skill_id, requested_problem_type)
     manual_review_info = None if is_pascal_runtime_request else MANUAL_REVIEW_SKILLS.get(skill_id)
     skill_info = db.session.get(SkillInfo, skill_id)
     if skill_id == B4_TREE_DIAGRAM_FREE_RESPONSE_SKILL_ID:
-        skill_ch_name = skill_info.skill_ch_name if skill_info else "樹狀圖"
+        skill_ch_name = skill_info.skill_ch_name if skill_info else "璅寧???"
     elif manual_review_info:
         skill_ch_name = manual_review_info["display_name"]
     else:
-        skill_ch_name = skill_info.skill_ch_name if skill_info else "未知技能"
+        skill_ch_name = skill_info.skill_ch_name if skill_info else "?芰???"
 
-    # 查詢前置技能
+    # ?亥岷?蔭???
     prerequisites = db.session.query(SkillInfo).join(
         SkillPrerequisites, SkillInfo.skill_id == SkillPrerequisites.prerequisite_id
     ).filter(
@@ -680,14 +682,14 @@ def practice(skill_id):
 @practice_bp.route('/practice/similar_questions')
 @login_required
 def similar_questions():
-    """進入類題練習模式，保留既有 index 版型與聊天/手寫互動。"""
+    """Render similar questions practice page."""
     tutor_config = get_effective_model_config('tutor')
     tutor_model_name = tutor_config.get('model', 'unknown')
 
     return render_template(
         'index.html',
         skill_id='similar_questions',
-        skill_ch_name='類題練習',
+        skill_ch_name='憿?蝺渡?',
         prereq_skills=[],
         tutor_model_name=tutor_model_name,
         practice_mode='similar_practice',
@@ -697,7 +699,7 @@ def similar_questions():
 @login_required
 def runtime_ai_status():
     """
-    API: 取回實際 runtime tutor model 的狀態
+    API: ??撖阡? runtime tutor model ????
     """
     from core.ai_settings import get_ai_settings_snapshot, get_google_model_label
     
@@ -723,7 +725,7 @@ def runtime_ai_status():
     if tutor_model == 'unknown':
         display_name = 'unknown'
     
-    # 簡潔 log
+    # 蝪⊥? log
     current_app.logger.info(
         f"[RUNTIME AI STATUS] mode={ai_mode} provider={provider} "
         f"tutor_model={tutor_model} architect_model={architect_model} vision_analyzer_model={vision_model}"
@@ -742,30 +744,24 @@ def runtime_ai_status():
 @practice_bp.route('/get_adaptive_question', methods=['GET'])
 @login_required
 def get_adaptive_question():
-    """
-    API: [Phase 4] 獲取下一道自適應推薦題目
-    支援三種模式：
-    - single: 單一章節練習 (需要 skill_ids 參數，為章節名稱)
-    - multiple: 多章節組合練習 (需要 skill_ids 參數，為逗號分隔的章節列表)
-    - review: 課程總複習 (需要 curriculum 參數)
-    """
+    """Return adaptive question payload for single/multiple/review modes."""
     mode = request.args.get('mode', 'single')
     
-    # 根據不同模式獲取技能列表
+    # ?寞?銝?璅∪??脣???賢?銵?
     target_skill_ids = []
-    # Review 模式下 weakness routing 會把 target_skill_ids 縮成單一技能；B4 generator fallback 仍需依「整個複習池」挑 allowlisted B4。
+    # Review 璅∪?銝?weakness routing ?? target_skill_ids 蝮格??桐???踝?B4 generator fallback 隞?靘??蝧??? allowlisted B4??
     filtered_review_pool_for_generator_fallback = None
     
-    # 調試信息
+    # 隤輯岫靽⊥
     current_app.logger.info(f"[Adaptive Question] Mode: {mode}")
     current_app.logger.info(f"[Adaptive Question] Request args: {request.args}")
     
     try:
         if mode == 'review':
-            # Phase 8: 總複習模式：弱點優先與關聯導航 RAG Skill Routing
+            # Phase 8: 蝮質?蝧芋撘?撘梢??芸????臬???RAG Skill Routing
             curriculum = request.args.get('curriculum')
             if not curriculum:
-                return jsonify({"error": "總複習模式需要 curriculum 參數"}), 400
+                return jsonify({"error": "蝮質?蝧芋撘?閬?curriculum ?"}), 400
             
             if 'review_skill_pool' not in session or not session['review_skill_pool']:
                 current_app.logger.info(f"[Review Mode] Initializing skill pool for Curriculum: {curriculum}")
@@ -793,12 +789,12 @@ def get_adaptive_question():
             current_app.logger.info(f"[Review Mode] Selected Skill via Weakness Routing: {selected_skill}")
             
         elif mode in ['single', 'multiple']:
-            # 單一或多章節模式：根據章節名稱獲取技能
+            # ?桐???蝡?璅∪?嚗??蝭?迂?脣????
             skill_ids_param = request.args.get('skill_ids', '')
             if not skill_ids_param:
-                return jsonify({"error": f"{mode} 模式需要 skill_ids 參數"}), 400
+                return jsonify({"error": f"{mode} 璅∪??閬?skill_ids ?"}), 400
             
-            # skill_ids 可能是單一章節名或逗號分隔的章節列表
+            # skill_ids ?航?臬銝蝡?????????蝭?”
             chapter_names = [ch.strip() for ch in skill_ids_param.split(',')]
             current_app.logger.info(f"[{mode.upper()} Mode] Chapter names: {chapter_names}")
             
@@ -810,7 +806,7 @@ def get_adaptive_question():
             current_app.logger.info(f"[{mode.upper()} Mode] Found {len(target_skill_ids)} skills: {target_skill_ids[:5]}")
         
         else:
-            return jsonify({"error": f"不支援的模式: {mode}"}), 400
+            return jsonify({"error": f"銝?渡?璅∪?: {mode}"}), 400
 
         target_skill_ids, adaptive_audits = filter_skill_pool_for_b4_chapter1_deterministic_adaptive(target_skill_ids)
         if adaptive_audits:
@@ -818,7 +814,7 @@ def get_adaptive_question():
 
         if not target_skill_ids:
             current_app.logger.error(f"[Adaptive Question] No skills found for mode={mode}")
-            return jsonify({"error": "找不到符合條件的技能單元"}), 404
+            return jsonify({"error": "?曆??啁泵??隞嗥???賢??"}), 404
 
         # --- Phase 4F-Main-A: B4 Chapter 1 generator-first / generator fallback ---
         # Pure allowlisted B4 pools skip DB TextbookExample entirely (generator-first).
@@ -863,7 +859,7 @@ def get_adaptive_question():
                     difficulty_level = question_template.difficulty_level
                 source_type = "db_textbook_example"
             else:
-                return jsonify({"error": "題庫中已無合適的題目可供推薦。"}), 404
+                return jsonify({"error": "憿澈銝剖歇?∪??拍?憿?臭??刻??"}), 404
 
         if is_b4_chapter2_skill_not_enabled_in_phase6c1(skill_id_for_generate):
             persist_b4_chap2_gated_event(
@@ -906,7 +902,7 @@ def get_adaptive_question():
         else:
             mod = get_skill(skill_id_for_generate)
             if not mod:
-                return jsonify({"error": f"無法載入技能模組 {skill_id_for_generate}"}), 500
+                return jsonify({"error": f"?⊥?頛??賣芋蝯?{skill_id_for_generate}"}), 500
             data = mod.generate(**gen_kwargs)
 
         ok_payload, deny_reason = validate_b4_deterministic_adaptive_generator_payload(
@@ -930,7 +926,7 @@ def get_adaptive_question():
                 deny_reason,
             )
             body = {
-                "error": "題目類型不符合 deterministic adaptive 規範。",
+                "error": "Generated question is outside deterministic adaptive scope.",
                 "detail": deny_reason,
             }
             if request.args.get("adaptive_audit") == "1":
@@ -948,7 +944,7 @@ def get_adaptive_question():
             audit_blob["seed_derivation"] = seed_derivation
         current_app.logger.info("[B4 Adaptive Preflight] question_audit=%s", audit_blob)
 
-        # 準備 Session 資料 (與 next_question 邏輯類似)
+        # 皞? Session 鞈? (??next_question ?摩憿撮)
         session_data = data.copy()
         for k in ['image', 'fig', 'figure', 'image_base64', 'visuals']:
             if k in session_data: del session_data[k]
@@ -975,21 +971,21 @@ def get_adaptive_question():
             payload_out["adaptive_audit"] = audit_blob
         return jsonify(payload_out)
     except Exception as e:
-        current_app.logger.error(f"生成自適應題目失敗: {e}")
+        current_app.logger.error(f"???芷???桀仃?? {e}")
         import traceback
         traceback.print_exc()
-        return jsonify({"error": f"生成自適應題目時發生內部錯誤: {str(e)}"}), 500
+        return jsonify({"error": f"???芷???格??潛??折?航炊: {str(e)}"}), 500
 
 
 @practice_bp.route('/get_next_question')
 @login_required
 def next_question():
-    """API: 生成下一題
+    """API: ??銝?憿?
     
-    支援 mode 參數：
-    - 未帶 mode 或 mode≠unit：沿用舊行為，skill 指定單一 skill_id 出題
-    - mode=unit：以單元出題，依 (curriculum, volume, chapter) 選擇 pattern skill 後出題。
-      需傳 chapter，可選 volume、curriculum；缺省時 curriculum 用 session，volume 可用空字串由 selector 推斷。
+    ?舀 mode ?嚗?
+    - ?芸葆 mode ??mode?nit嚗窒?刻?銵嚗kill ???桐? skill_id ?粹?
+    - mode=unit嚗誑?桀??粹?嚗? (curriculum, volume, chapter) ?豢? pattern skill 敺憿?
+      ???chapter嚗??volume?urriculum嚗撩?? curriculum ??session嚗olume ?舐蝛箏?銝脩 selector ?冽??
     """
     mode = request.args.get('mode', '')
     # Phase 6C-1R: URL-decode so encoded CJK skill_ids are resolved correctly.
@@ -1000,13 +996,13 @@ def next_question():
     pascal_triangle_index = request.args.get('pascal_triangle_index', type=int)
     requested_level = request.args.get('level', type=int)
 
-    # [單元出題] mode=unit：依單元選 pattern skill
+    # [?桀??粹?] mode=unit嚗??桀???pattern skill
     if mode == 'unit':
         chapter = request.args.get('chapter', '').strip()
         volume = request.args.get('volume', '').strip()
         curriculum = request.args.get('curriculum') or session.get('current_curriculum', 'junior_high')
         if not chapter:
-            return jsonify({"error": "單元模式需傳 chapter 參數"}), 400
+            return jsonify({"error": "?桀?璅∪????chapter ?"}), 400
         if not volume:
             vols = db.session.query(SkillCurriculum.volume).filter(
                 SkillCurriculum.curriculum == curriculum,
@@ -1014,31 +1010,31 @@ def next_question():
             ).distinct().all()
             vols = [v[0] for v in vols if v[0]]
             if len(vols) != 1:
-                return jsonify({"error": "單元模式需傳 volume 參數（該 chapter 對應多個或無 volume）"}), 400
+                return jsonify({"error": "?桀?璅∪????volume ?嚗府 chapter 撠?憭???volume嚗?"}), 400
             volume = vols[0]
         try:
             from core.unit_selector import select_pattern_skill_for_unit
             skill_id = select_pattern_skill_for_unit(curriculum, volume, chapter)
         except Exception as e:
-            current_app.logger.error(f"單元 selector 失敗: {e}")
-            return jsonify({"error": f"無法取得該單元的題型: {str(e)}"}), 500
+            current_app.logger.error(f"?桀? selector 憭望?: {e}")
+            return jsonify({"error": f"?⊥???閰脣??憿?: {str(e)}"}), 500
         if not skill_id:
-            return jsonify({"error": "該單元下無可用的題型技能"}), 404
+            return jsonify({"error": "閰脣???∪?函?憿????"}), 404
 
     manual_review_info = None if _is_b4_pascal_triangle_request(skill_id, problem_type) else MANUAL_REVIEW_SKILLS.get(skill_id)
     if manual_review_info:
         return jsonify({
             "manual_review_unavailable": True,
             "new_question_text": (
-                f"<strong>{manual_review_info['display_name']}：暫緩 / 尚未開放一般自動判分練習</strong><br>"
+                f"<strong>{manual_review_info['display_name']}嚗蝺?/ 撠?銝?祈??毀蝧?/strong><br>"
                 f"{manual_review_info['reason']}<br><br>"
-                "此題型目前屬於 AI 手寫判分 / 教師審閱候選題型，尚未開放一般自動判分練習。<br>"
-                "未來可透過手寫作答、OCR / Vision、AI 助教判斷 correct / partially_correct / needs_review。"
+                "甇日???惇??AI ?神?文? / ?葦撖拚?憿?嚗??芷??曆??祈??毀蝧?br>"
+                "?芯??舫??神雿??CR / Vision?I ?拇??斗 correct / partially_correct / needs_review??"
             ),
             "context_string": "",
             "inequality_string": "",
             "consecutive_correct": 0,
-            "current_level": "暫緩",
+            "current_level": "?怎楨",
             "image_base64": "",
             "visual_aids": [],
             "answer_type": "unavailable",
@@ -1046,7 +1042,7 @@ def next_question():
             "future_path": manual_review_info["future_path"],
         })
 
-    # Phase 6C-1R2: gated Chap2 skills — clear gate error instead of importing missing skills.<id>
+    # Phase 6C-1R2: gated Chap2 skills ??clear gate error instead of importing missing skills.<id>
     if is_b4_chapter2_skill_not_enabled_in_phase6c1(skill_id):
         persist_b4_chap2_gated_event(
             gated_event_type="not_enabled_skill",
@@ -1063,7 +1059,7 @@ def next_question():
         return jsonify({"error": B4_CHAP3_SKILL_NOT_ENABLED_PUBLIC_ERROR}), 422
 
     skill_info = get_skill_info(skill_id)
-    # [單元模式] 允許 pattern skill 僅有檔案、尚無 DB 註冊時仍可出題
+    # [?桀?璅∪?] ?迂 pattern skill ??瑼?????DB 閮餃????臬憿?
     if not skill_info and skill_id != 'instant_upload':
         if _is_b4_tree_diagram_request(skill_id, problem_type):
             skill_info = {"input_type": "handwriting", "skill_id": B4_TREE_DIAGRAM_FREE_RESPONSE_SKILL_ID}
@@ -1078,7 +1074,7 @@ def next_question():
         elif mode == 'unit':
             skill_info = {"input_type": "text", "skill_id": skill_id}
         else:
-            return jsonify({"error": f"技能 {skill_id} 不存在或未啟用"}), 404
+            return jsonify({"error": f"???{skill_id} 銝??冽??芸???"}), 404
         
     # [Feature] Instant Practice Mode (Short Loop)
     if skill_id == 'instant_upload':
@@ -1104,7 +1100,7 @@ def next_question():
     
     try:
         # [Phase 6C-1R2] Chap2 deterministic P0 avoids legacy skills.<skill_id> import entirely.
-        # [修正 2] 強制重新載入模組，解決「改了沒反應」的問題 — 僅適用仍走 skills.<id>.generate() 的路徑。
+        # [靽格迤 2] 撘瑕?頛璅∠?嚗圾瘙箝鈭??????? ????其?韏?skills.<id>.generate() ?楝敺?
         module_path = f"skills.{skill_id}"
         if _is_b4_tree_diagram_request(skill_id, problem_type) or _is_b4_pascal_triangle_request(skill_id, problem_type):
             mod = None
@@ -1117,7 +1113,7 @@ def next_question():
         else:
             mod = importlib.import_module(module_path)
         
-        # 決定難度等級
+        # 瘙箏???漲蝑?
         current_curriculum_context = session.get('current_curriculum', 'general')
         curriculum_entry = db.session.query(SkillCurriculum).filter_by(
             skill_id=skill_id,
@@ -1134,7 +1130,7 @@ def next_question():
         progress = db.session.query(Progress).filter_by(user_id=current_user.id, skill_id=skill_id).first()
         consecutive = progress.consecutive_correct if progress else 0
 
-        # 準備前置技能資訊供 AI 使用
+        # 皞??蔭??質?閮? AI 雿輻
         prereq_query = db.session.query(SkillInfo).join(
             SkillPrerequisites, SkillInfo.skill_id == SkillPrerequisites.prerequisite_id
         ).filter(
@@ -1144,13 +1140,13 @@ def next_question():
         
         prereq_info_for_ai = [{'id': p.skill_id, 'name': p.skill_ch_name} for p in prereq_query]
 
-        # [Safety] 自動重試機制 (解決偶發的 AI 生成錯誤)
+        # [Safety] ?芸??岫璈 (閫?捱?嗥??AI ???航炊)
         max_retries = 5
         data = None
         
         for attempt in range(max_retries):
             try:
-                # [修正 3] 強化自動修復與欄位檢查
+                # [靽格迤 3] 撘瑕??芸?靽桀儔??雿炎??
                 if _is_b4_tree_diagram_request(skill_id, problem_type):
                     data = _build_b4_tree_diagram_runtime_payload(variant, tree_diagram_index)
                 elif _is_b4_pascal_triangle_request(skill_id, problem_type):
@@ -1220,7 +1216,7 @@ def next_question():
                         if any(str(skill_id).endswith(sfx) for sfx in deterministic_mixed_suffixes):
                             retry_count = 0
                             retry_limit = 3
-                            open_ended_tokens = ["請說明", "請簡述", "請討論", "簡述理由", "提出理由", "可能有哪些偏誤", "是否具有代表性", "提出改善方式"]
+                            open_ended_tokens = ["請", "說明", "理由", "解釋", "作答", "回答", "證明", "計算過程"]
                             while retry_count < retry_limit:
                                 current_question_text = str(chap3_payload.get("question_text") or "")
                                 current_scenario_id = str(chap3_payload.get("scenario_id") or "")
@@ -1293,25 +1289,25 @@ def next_question():
                 else:
                     data = mod.generate(level=difficulty_level)
 
-                # [核心修正] 欄位雙重自動校正 (對齊金標準)
+                # [?詨?靽格迤] 甈????芸??⊥迤 (撠???皞?
                 if "question" in data and "question_text" not in data:
                     data["question_text"] = data["question"]
                 if "answer" in data and "correct_answer" not in data:
-                    data["correct_answer"] = data["answer"] # 確保批改時找得到答案
+                    data["correct_answer"] = data["answer"] # 蝣箔??寞?敺蝑?
 
                 if data and "question_text" in data and "correct_answer" in data:
                     break
             except Exception as e:
-                current_app.logger.warning(f"題目生成重試 ({attempt+1}/{max_retries}): {e}")
+                current_app.logger.warning(f"憿???岫 ({attempt+1}/{max_retries}): {e}")
                 if attempt == max_retries - 1: raise e
         
-        # 準備 Session 資料
+        # 皞? Session 鞈?
         data['context_string'] = data.get('context_string', data.get('inequality_string', ''))
         data['prereq_skills'] = prereq_info_for_ai
         
-        # [核心防禦] 清理 Session，確保所有存入內容皆可 JSON 序列化
+        # [?詨??脩戌] 皜? Session嚗Ⅱ靽????亙摰寧???JSON 摨???
         session_data = data.copy()
-        # 務必包含 'image' 與 'Figure' 相關鍵值
+        # ??? 'image' ??'Figure' ?賊??萄?
         for k in ['image', 'fig', 'figure', 'image_base64', 'visuals']:
             if k in session_data: del session_data[k]
         
@@ -1361,19 +1357,19 @@ def next_question():
             "expected_expansion": data.get("expected_expansion", ""),
         })
     except Exception as e:
-        return jsonify({"error": f"生成題目失敗: {str(e)}"}), 500
+        return jsonify({"error": f"??憿憭望?: {str(e)}"}), 500
 
 @practice_bp.route('/check_answer', methods=['POST'])
 def check_answer():
-    """API: 檢查答案"""
+    """API: 瑼Ｘ蝑?"""
     user_ans = request.json.get('answer', '').strip()
     current = get_current()
 
-    # 安全檢查：Session 遺失
+    # 摰瑼Ｘ嚗ession ?箏仃
     if not current or 'skill' not in current:
         return jsonify({
             "correct": False,
-            "result": "連線逾時或伺服器已重啟，請重新整理頁面。",
+            "result": "Session state lost. Please reload and try again.",
             "state_lost": True
         }), 400
 
@@ -1388,13 +1384,13 @@ def check_answer():
         "handwriting_ai_checked",
         "review_mode",
     }:
-        skill_specific_message = "此題型為 AI/Review 判分路徑，請使用下方 AI 檢查。"
-        if skill_id == "vh_數學B4_StatisticalChartReading":
+        skill_specific_message = "This item is in AI/Review mode and cannot be checked by deterministic grading."
+        if skill_id == "vh_?詨飛B4_StatisticalChartReading":
             skill_specific_message = (
-                "此技能屬於統計圖表判讀與教師覆核題，請依題目圖表作答，系統將保留作答供 AI/Review 檢查或教師覆核。"
+                "This chart-reading item requires AI/Review workflow for checking."
             )
-        elif skill_id == "vh_數學B4_CumulativeFrequencyTablesAndGraphs":
-            skill_specific_message = "此題需要補表與說明，請使用 AI/Review 檢查或教師覆核。"
+        elif skill_id == "vh_?詨飛B4_CumulativeFrequencyTablesAndGraphs":
+            skill_specific_message = "This cumulative-frequency item requires AI/Review workflow for checking."
         return jsonify(
             {
                 "correct": False,
@@ -1402,6 +1398,33 @@ def check_answer():
                 "check_mode": check_mode,
             }
         )
+
+    # Choice questions are graded by normalized label (A/B/C/...), not raw string.
+    if _is_choice_question(current):
+        choices = current.get("choices") or current.get("options") or []
+        choices = choices if isinstance(choices, list) else []
+        expected_answer = str(current.get("answer", "")).strip()
+        user_label = _choice_value_to_label(user_ans, choices)
+        correct_raw = current.get("correct_answer") or current.get("answer") or expected_answer
+        correct_label = _choice_value_to_label(correct_raw, choices)
+        is_correct_choice = (
+            user_label is not None
+            and correct_label is not None
+            and user_label != ""
+            and correct_label != ""
+            and user_label == correct_label
+        )
+        correct_display = _choice_display_label_and_text(correct_raw, choices)
+        if not correct_display:
+            correct_display = correct_label or str(correct_raw or "").strip()
+        try:
+            update_progress(current_user.id, skill_id, is_correct_choice)
+        except Exception:
+            pass
+        return jsonify({
+            "correct": is_correct_choice,
+            "result": "答對了！" if is_correct_choice else f"答錯了，正確答案是 {correct_display}",
+        })
 
     # Deterministic auto-checked route (including Chap3 runtime skills with mixed review entries).
     if check_mode == "deterministic_auto_checked":
@@ -1434,7 +1457,7 @@ def check_answer():
             pass
         return jsonify({
             "correct": is_correct_det,
-            "result": "正確" if is_correct_det else f"錯誤，正確答案是：{correct_ans}",
+            "result": "甇?Ⅱ" if is_correct_det else f"?航炊嚗迤蝣箇?獢嚗{correct_ans}",
         })
     
     # [Fix] Instant Upload Special Handling
@@ -1446,7 +1469,7 @@ def check_answer():
         
         result = {
             "correct": is_correct,
-            "result": "正確！" if is_correct else f"答案錯誤。正確答案為：{correct_ans}"
+            "result": "甇?Ⅱ嚗?" if is_correct else f"蝑??航炊?迤蝣箇?獢嚗{correct_ans}"
         }
         return jsonify(result)
 
@@ -1474,7 +1497,7 @@ def check_answer():
             
         result = {
             "correct": is_correct_chap3,
-            "result": "正確！" if is_correct_chap3 else f"答案錯誤。正確答案為：{correct_ans}",
+            "result": "甇?Ⅱ嚗?" if is_correct_chap3 else f"蝑??航炊?迤蝣箇?獢嚗{correct_ans}",
         }
         try:
             update_progress(current_user.id, skill_id, is_correct_chap3)
@@ -1530,7 +1553,7 @@ def check_answer():
 
         result = {
             "correct": is_correct_chap2,
-            "result": "正確！" if is_correct_chap2 else f"答案錯誤。正確答案為：{correct_ans}",
+            "result": "甇?Ⅱ嚗?" if is_correct_chap2 else f"蝑??航炊?迤蝣箇?獢嚗{correct_ans}",
         }
         try:
             update_progress(current_user.id, skill_id, is_correct_chap2)
@@ -1541,20 +1564,20 @@ def check_answer():
     mod = get_skill(skill_id)
 
     if not mod:
-        return jsonify({"correct": False, "result": "模組載入錯誤"})
+        return jsonify({"correct": False, "result": "璅∠?頛?航炊"})
 
-    # 特殊處理：圖形題
+    # ?寞???嚗?敶ａ?
     if current.get('correct_answer') == "graph":
         return jsonify({
             "correct": False,
-            "result": "請畫完可行域後，點「AI 檢查」",
+            "result": "Graph answers require AI-based checking.",
             "next_question": False
         })
 
-    # 執行批改
+    # ?瑁??寞
     result = mod.check(user_ans, current['answer'])
     
-    # [V10.1 Repair] 強制轉型：若模組回傳 bool，自動封裝為 dict
+    # [V10.1 Repair] 撘瑕頧?嚗璅∠?? bool嚗??鋆 dict
     if isinstance(result, bool):
         result = {
             "correct": result,
@@ -1582,15 +1605,15 @@ def check_answer():
     session['skill_stats'] = stats
     session.modified = True
 
-    # --- [Phase 2 & 5] 自適應學習模式整合 ---
+    # --- [Phase 2 & 5] ?芷?飛蝧芋撘??---
     is_adaptive_mode = request.json.get('mode') == 'adaptive'
     if is_adaptive_mode:
         try:
             question_id = request.json.get('question_id')
-            time_taken = request.json.get('time_taken', 60.0) # 預設 60 秒
+            time_taken = request.json.get('time_taken', 60.0) # ?身 60 蝘?
             
             if question_id:
-                # 不論對錯，先更新能力（答對會加分，答錯在此階段不變）
+                # 銝?撠嚗??湔?賢?嚗?撠???嚗??臬甇日?畾萎?霈?
                 update_student_ability(
                     user_id=current_user.id,
                     skill_id=skill_id,
@@ -1599,12 +1622,12 @@ def check_answer():
                     time_taken_seconds=float(time_taken)
                 )
 
-                # 如果答錯，啟動錯誤分析與懲罰（僅限自適應模式）
+                # 憒?蝑嚗??隤文????脩蔑嚗???拇?璅∪?嚗?
                 if not is_correct:
                     question_text = current.get('question_text', '')
                     correct_answer = current.get('correct_answer', '')
                     
-                    # 收集前置單元資訊
+                    # ?園??蔭?桀?鞈?
                     from models import SkillInfo
                     skill_info = db.session.get(SkillInfo, skill_id)
                     prerequisite_units = []
@@ -1614,10 +1637,10 @@ def check_answer():
                             for prereq in skill_info.prerequisites
                         ]
                     
-                    # 收集對話歷史（如果有的話）
+                    # ?園?撠店甇瑕嚗????店嚗?
                     conversation_history = session.get('conversation_history', [])
                     
-                    # 呼叫增強版 AI 診斷
+                    # ?澆憓撥??AI 閮箸
                     error_diagnosis = diagnose_error(
                         question_text, 
                         correct_answer, 
@@ -1628,7 +1651,7 @@ def check_answer():
                     
                     error_type = error_diagnosis.get("error_type", "unknown")
                     
-                    # 應用懲罰（僅自適應模式）
+                    # ??脩蔑嚗??芷?芋撘?
                     if error_type != "unknown":
                         apply_error_penalty(
                             user_id=current_user.id,
@@ -1637,7 +1660,7 @@ def check_answer():
                             error_type=error_type
                         )
                     
-                    # [Phase 6] 如果有相關的前置單元推薦，加入回應中
+                    # [Phase 6] 憒?????蔭?桀??刻嚗??亙??葉
                     if error_diagnosis.get("related_prerequisite_id"):
                         prereq_id = error_diagnosis["related_prerequisite_id"]
                         prereq_skill = db.session.get(SkillInfo, prereq_id)
@@ -1645,21 +1668,21 @@ def check_answer():
                             result["suggested_prerequisite"] = {
                                 "id": prereq_id,
                                 "name": prereq_skill.skill_ch_name,
-                                "reason": error_diagnosis.get("prerequisite_explanation", "建議複習此單元")
+                                "reason": error_diagnosis.get("prerequisite_explanation", "請先補強前置概念。")
                             }
 
         except Exception as e:
-            current_app.logger.error(f"自適應引擎處理失敗: {e}")
+            current_app.logger.error(f"?芷?????仃?? {e}")
     
-    # [Phase 6] 普通模式的錯誤診斷與前置單元推薦
+    # [Phase 6] ?桅芋撘??航炊閮箸??蝵桀???
     if not is_adaptive_mode and not is_correct:
         try:
             question_text = current.get('question_text', '')
             correct_answer = current.get('correct_answer', '')
             
-            current_app.logger.info(f"[前置單元推薦] 開始診斷 - 技能: {skill_id}")
+            current_app.logger.info(f"[?蔭?桀??刻] ??閮箸 - ??? {skill_id}")
             
-            # 收集前置單元資訊
+            # ?園??蔭?桀?鞈?
             from models import SkillInfo
             skill_info = db.session.get(SkillInfo, skill_id)
             prerequisite_units = []
@@ -1669,16 +1692,16 @@ def check_answer():
                     for prereq in skill_info.prerequisites
                 ]
             
-            current_app.logger.info(f"[前置單元推薦] 找到 {len(prerequisite_units)} 個前置單元")
+            current_app.logger.info(f"[Prerequisite Suggestion] found {len(prerequisite_units)} units")
             
-            # 只有當有前置單元時才進行診斷（節省 API 成本）
+            # ?芣??嗆??蔭?桀????脰?閮箸嚗???API ?嚗?
             if prerequisite_units:
-                # 收集對話歷史
+                # ?園?撠店甇瑕
                 conversation_history = session.get('conversation_history', [])
                 
-                current_app.logger.info(f"[前置單元推薦] 呼叫 AI 診斷...")
+                current_app.logger.info(f"[?蔭?桀??刻] ?澆 AI 閮箸...")
                 
-                # 呼叫 AI 診斷
+                # ?澆 AI 閮箸
                 error_diagnosis = diagnose_error(
                     question_text, 
                     correct_answer, 
@@ -1687,9 +1710,9 @@ def check_answer():
                     conversation_history=conversation_history
                 )
                 
-                current_app.logger.info(f"[前置單元推薦] AI 診斷結果: {error_diagnosis}")
+                current_app.logger.info(f"[?蔭?桀??刻] AI 閮箸蝯?: {error_diagnosis}")
                 
-                # 如果有相關的前置單元推薦，加入回應中
+                # 憒?????蔭?桀??刻嚗??亙??葉
                 if error_diagnosis.get("related_prerequisite_id"):
                     prereq_id = error_diagnosis["related_prerequisite_id"]
                     prereq_skill = db.session.get(SkillInfo, prereq_id)
@@ -1697,32 +1720,32 @@ def check_answer():
                         result["suggested_prerequisite"] = {
                             "id": prereq_id,
                             "name": prereq_skill.skill_ch_name,
-                            "reason": error_diagnosis.get("prerequisite_explanation", "建議複習此單元")
+                            "reason": error_diagnosis.get("prerequisite_explanation", "請先補強前置概念。")
                         }
-                        current_app.logger.info(f"[前置單元推薦] 推薦單元: {prereq_skill.skill_ch_name}")
+                        current_app.logger.info(f"[?蔭?桀??刻] ?刻?桀?: {prereq_skill.skill_ch_name}")
                     else:
-                        current_app.logger.warning(f"[前置單元推薦] 找不到前置單元: {prereq_id}")
+                        current_app.logger.warning(f"[?蔭?桀??刻] ?曆??啣?蝵桀?? {prereq_id}")
                 else:
-                    current_app.logger.info(f"[前置單元推薦] AI 判斷與前置單元無關")
+                    current_app.logger.info("[Prerequisite Suggestion] AI did not return a prerequisite.")
             else:
-                current_app.logger.info(f"[前置單元推薦] 此技能無前置單元，跳過診斷")
+                current_app.logger.info("[Prerequisite Suggestion] no prerequisite units available.")
         except Exception as e:
-            current_app.logger.error(f"前置單元推薦失敗: {e}")
+            current_app.logger.error(f"?蔭?桀??刻憭望?: {e}")
             import traceback
             traceback.print_exc()
     
-    # 更新一般進度
+    # ?湔銝?祇脣漲
     update_progress(current_user.id, skill_id, is_correct)
 
-    # [IRT] 動態更新對應知識圖譜微節點能力質
+    # [IRT] ???湔撠??亥???敺桃?暺?釭
     try:
         difficulty = current.get('current_level', 1)
         q_text = current.get('question_text', '')
         update_node_competencies(current_user.id, skill_id, q_text, is_correct, difficulty)
     except Exception as e:
-        current_app.logger.error(f"IRT 更新節點能力失敗: {e}")
+        current_app.logger.error(f"IRT ?湔蝭暺?仃?? {e}")
 
-    # 若答錯，自動記錄到錯題本
+    # ?亦??荔??芸?閮??圈憿
     if not is_correct:
         try:
             q_text = current.get('question_text')
@@ -1736,12 +1759,12 @@ def check_answer():
                     student_id=current_user.id,
                     skill_id=skill_id,
                     question_data={'type': 'system_question', 'text': q_text},
-                    notes='系統練習題自動記錄'
+                    notes='蝟餌絞蝺渡?憿????'
                 )
                 db.session.add(new_entry)
                 db.session.commit()
         except Exception as e:
-            current_app.logger.error(f"自動記錄錯題失敗: {e}")
+            current_app.logger.error(f"?芸?閮??舫?憭望?: {e}")
             db.session.rollback()
     
     return jsonify(result)
@@ -1749,39 +1772,34 @@ def check_answer():
 
 @practice_bp.route('/draw_diagram', methods=['POST'])
 def draw_diagram():
-    """
-    API: AI 輔助繪圖功能
-    機制：使用 Thread-Safe 的 Figure 物件模式，避免多執行緒繪圖衝突
-    """
+    """Draw a diagram with AI and return image data."""
     try:
         import google.generativeai as genai
         data = request.get_json()
         question_text = data.get('question_text')
 
         if not question_text:
-            return jsonify({"success": False, "message": "無題目文字"}), 400
+            return jsonify({"success": False, "message": "Missing question_text."}), 400
 
-        # 1. 呼叫 Gemini 提取方程式
+        # 1. ?澆 Gemini ???寧?撘?
         api_key = current_app.config['GEMINI_API_KEY']
         genai.configure(api_key=api_key)
         model = genai.GenerativeModel(current_app.config.get('GEMINI_MODEL_NAME', 'gemini-1.5-flash'))
         
-        prompt = f"""
-        從以下數學題目中提取出所有可以用來繪製2D圖形的方程式或不等式。
-        - 請只回傳方程式/不等式，每個一行。
-        - 將 '^' 轉換為 '**'。
-        - 如果找不到，回傳 "No equation found"。
-        題目：{question_text}
-        """
+        prompt = (
+            "Extract a 2D equation from this math question. "
+            "Return only a Python-friendly equation string, or 'No equation found'.\n"
+            f"Question: {question_text}"
+        )
         
         response = model.generate_content(prompt)
         equations_text = response.text.strip()
 
         if "No equation found" in equations_text or not equations_text:
-            return jsonify({"success": False, "message": "AI 無法識別可繪製的方程式。"}), 400
+            return jsonify({"success": False, "message": "AI could not extract an equation."}), 400
 
-        # 2. 開始繪圖 (Thread-Safe Pattern)
-        # 關鍵：明確建立 figure 物件，而不使用全域 plt
+        # 2. ??蝜芸? (Thread-Safe Pattern)
+        # ?嚗?蝣箏遣蝡?figure ?拐辣嚗?雿輻?典? plt
         fig = plt.figure(figsize=(6, 6))
         
         x = np.linspace(-10, 10, 400)
@@ -1790,7 +1808,7 @@ def draw_diagram():
 
         eval_context = {
             'np': np, 'x': x, 'y': y,
-            'a': 2, 'b': 3, 'c': 4 # 預設參數避免報錯
+            'a': 2, 'b': 3, 'c': 4 # ?身??踹??梢
         }
 
         has_plot = False
@@ -1798,17 +1816,17 @@ def draw_diagram():
             line = line.strip()
             if not line: continue
             
-            # 簡易清理
+            # 蝪⊥?皜?
             line = line.strip('$').replace('sqrt', 'np.sqrt').replace('^', '**')
             
             try:
-                # 等式處理
+                # 蝑???
                 if '=' in line and '==' not in line and '>' not in line and '<' not in line:
                     parts = line.split('=')
                     expr = f"({parts[0].strip()}) - ({parts[1].strip()})"
                     plt.contour(x, y, eval(expr, eval_context), levels=[0], colors='b')
                     has_plot = True
-                # 不等式處理
+                # 銝?撘???
                 elif '>' in line or '<' in line:
                     plt.contourf(x, y, eval(line, eval_context), levels=[0, np.inf], colors=['#3498db'], alpha=0.3)
                     has_plot = True
@@ -1816,15 +1834,15 @@ def draw_diagram():
                 continue
         
         if not has_plot:
-            plt.close(fig) # 釋放資源
-            return jsonify({"success": False, "message": "無法繪製任何有效圖形。"}), 400
+            plt.close(fig) # ?鞈?
+            return jsonify({"success": False, "message": "No valid equation could be plotted."}), 400
 
         plt.grid(True, linestyle='--', alpha=0.6)
         plt.axhline(0, color='black', linewidth=0.5)
         plt.axvline(0, color='black', linewidth=0.5)
         plt.gca().set_aspect('equal')
 
-        # 3. 儲存圖片
+        # 3. ?脣???
         static_dir = os.path.join(current_app.static_folder)
         if not os.path.exists(static_dir): os.makedirs(static_dir)
             
@@ -1832,7 +1850,7 @@ def draw_diagram():
         image_path = os.path.join(static_dir, unique_filename)
         
         plt.savefig(image_path, format='svg')
-        plt.close(fig) # [CRITICAL] 務必關閉 figure 以釋放記憶體
+        plt.close(fig) # [CRITICAL] ???? figure 隞仿??曇??園?
 
         return jsonify({
             "success": True,
@@ -1840,12 +1858,12 @@ def draw_diagram():
         })
 
     except Exception as e:
-        plt.close('all') # 發生錯誤時的保險機制
-        current_app.logger.error(f"繪圖錯誤: {e}")
-        return jsonify({"success": False, "message": f"伺服器錯誤: {e}"}), 500
+        plt.close('all') # ?潛??航炊??靽璈
+        current_app.logger.error(f"蝜芸??航炊: {e}")
+        return jsonify({"success": False, "message": f"隡箸??券隤? {e}"}), 500
 
 # ==========================================
-# [遺漏補齊] Advanced Practice Features (進階練習功能)
+# [?箸?鋆?] Advanced Practice Features (?脤?蝺渡??)
 # ==========================================
 
 @practice_bp.route('/similar-questions-page')
@@ -1864,7 +1882,7 @@ def generate_similar_questions():
     skill_ids = identify_skills_from_problem(problem_text)
 
     if not skill_ids:
-        return jsonify({"questions": [], "message": "AI 無法識別相關技能。"})
+        return jsonify({"questions": [], "message": "AI could not identify target skills."})
 
     generated_questions = []
     for skill_id in skill_ids:
@@ -1874,7 +1892,7 @@ def generate_similar_questions():
                 new_question = mod.generate(level=1)
                 skill_info = get_skill_info(skill_id)
                 new_question['skill_id'] = skill_id
-                new_question['skill_ch_name'] = skill_info.skill_ch_name if skill_info else "未知"
+                new_question['skill_ch_name'] = skill_info.skill_ch_name if skill_info else "?芰"
                 generated_questions.append(new_question)
         except: pass
 
@@ -1907,7 +1925,7 @@ def generate_quiz_from_image():
 @practice_bp.route('/get_suggested_prompts/<skill_id>')
 @login_required
 def get_suggested_prompts(skill_id):
-    """取得技能的建議提問 (Suggested Prompts)"""
+    """????賜?撱箄降?? (Suggested Prompts)"""
     skill_info = db.session.get(SkillInfo, skill_id)
     prompts = []
     if skill_info:

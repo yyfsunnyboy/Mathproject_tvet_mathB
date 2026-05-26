@@ -1603,7 +1603,7 @@
                 padding: 12px 14px;
             }
         }
-    
+    </style>
 
 </head>
 
@@ -3500,6 +3500,16 @@
             return `<span class="choice-label">(${choiceLabelAt(index)})</span><span class="choice-text">${rawText}</span>`;
         }
 
+        function resetQuestionScroll() {
+            const container = document.getElementById('question-container');
+            if (container) {
+                container.scrollTop = 0;
+            }
+            if (questionText) {
+                questionText.scrollTop = 0;
+            }
+        }
+
         function renderChoices(payload) {
             if (!questionChoices) return;
             questionChoices.innerHTML = '';
@@ -3521,6 +3531,8 @@
                     if (answerInput) answerInput.value = label;
                     Array.from(questionChoices.querySelectorAll('.choice-option')).forEach((node) => node.classList.remove('selected'));
                     button.classList.add('selected');
+                    button.blur();
+                    resetQuestionScroll();
                     if (!isProcessing && submitBtn && !submitBtn.disabled && typeof submitBtn.onclick === 'function') {
                         submitBtn.onclick();
                     }
@@ -3529,16 +3541,53 @@
             });
         }
 
+        function resolveQuestionText(payload) {
+            if (!payload || typeof payload !== 'object') return '';
+
+            const sources = [
+                payload,
+                payload.data,
+                payload.raw,
+                payload.new_question_data,
+                payload.current_question,
+                payload.item
+            ].filter(src => src && typeof src === 'object');
+
+            console.debug("[practice render] question sources", sources);
+
+            for (const src of sources) {
+                const candidates = [
+                    src.question_text,
+                    src.new_question_text,
+                    src.question,
+                    src.prompt,
+                    src.text
+                ];
+                for (const value of candidates) {
+                    const text = String(value == null ? '' : value).trim();
+                    if (text) return text;
+                }
+            }
+
+            console.warn("[practice render] missing question stem", payload);
+            return '';
+        }
+
         function renderQuestion(payload) {
-            const questionMainText = (payload && (payload.new_question_text || payload.question_text || payload.question || payload.prompt || payload.text)) || '';
+            const questionMainText = resolveQuestionText(payload);
             if (questionText) {
                 questionText.innerHTML = questionMainText;
             }
+            resetQuestionScroll();
             renderChoices(payload);
+            resetQuestionScroll();
             renderMathContent(questionText);
             if (questionChoices && questionChoices.style.display !== 'none') {
                 renderMathContent(questionChoices);
             }
+            setTimeout(resetQuestionScroll, 0);
+            setTimeout(resetQuestionScroll, 80);
+            setTimeout(resetQuestionScroll, 250);
             return questionMainText;
         }
 
@@ -4885,11 +4934,16 @@ button#similar-reset-btn.level-button {
 
 #question-text {
   color: var(--text-primary) !important;
+  flex: 0 0 auto !important;
   background: transparent !important;
   border: none !important;
   padding: 0 !important;
   line-height: 1.85 !important;
   font-size: 1em !important;
+}
+
+#question-choices {
+  flex: 0 0 auto !important;
 }
 
 /* Question image */

@@ -1,7 +1,7 @@
 # Verify Report: vh_數學B1_AbsoluteValue
 
-- python: C:\Python314\python.exe
-- registry: E:\Python\Mathproject_tvet_mathB\configs\generated_registry\b1_section_1_1_verified_registry.v0.1.yaml
+- python: C:\Users\yehiv\AppData\Local\Programs\Python\Python311\python.exe
+- registry: C:\Python\Mathproject_tvet_mathB\configs\generated_registry\b1_section_1_1_verified_registry.v0.1.yaml
 - registry_verified_count: 4
 - pytest_exit_code: 0
 - unique_problem_type_count: 4
@@ -76,8 +76,8 @@
 
 ## Pytest Output
 ```text
-...                                                                      [100%]
-3 passed in 0.20s
+.....                                                                    [100%]
+5 passed in 0.14s
 ```
 
 ## Samples
@@ -87,280 +87,28 @@
     "problem_type_id": "absolute_value_numeric_evaluation",
     "skill_id": "vh_數學B1_AbsoluteValue",
     "subskill_id": "absolute_value_numeric_evaluation",
-    "question_text": "求 $|4|$ 的值。",
-    "answer": 4,
+    "question_text": "求 $|13|$ 的值。",
+    "answer": 13,
     "answer_type": "integer",
     "checker_type": "integer_checker",
     "solution_steps": [
       "絕對值表示與 0 的距離。",
-      "$|4|=4$。"
+      "$|13|=13$。"
     ],
     "metadata": {
       "scenario_family": "absolute_value_numeric_evaluation",
-      "scenario_id": "s2",
-      "parameter_signature": "absolute_value_numeric_evaluation:n=4:difficulty=easy",
-      "question_pattern_id": "p4",
-      "diagnosis_tags": [
-        "absolute_value_definition",
-        "sign_error"
-      ],
-      "prerequisite_subskills": []
-    },
-    "question": "求 $|4|$ 的值。",
-    "correct_answer": 4,
-    "explanation": "絕對值表示與 0 的距離。\n$|4|=4$。",
-    "choices": []
-  },
-  {
-    "problem_type_id": "absolute_value_distance_from_zero",
-    "skill_id": "vh_數學B1_AbsoluteValue",
-    "subskill_id": "absolute_value_distance_from_zero",
-    "question_text": "下列哪一項是 $|-6|$ 的正確意義？",
-    "choices": [
-      "數線上 $-6$ 到 $0$ 的距離",
-      "數線上 $6$ 到 $-6$ 的距離",
-      "$-6$ 本身",
-      "一個負數"
-    ],
-    "answer": "數線上 $-6$ 到 $0$ 的距離",
-    "answer_type": "choice",
-    "checker_type": "choice_checker",
-    "solution_steps": [
-      "絕對值表示數線上該數到 $0$ 的距離。",
-      "因此 $|-6|$ 表示 $-6$ 到 $0$ 的距離。"
-    ],
-    "metadata": {
-      "scenario_family": "absolute_value_distance_from_zero",
-      "scenario_id": "s2",
-      "parameter_signature": "absolute_value_distance_from_zero:n=-6:pattern=meaning",
-      "question_pattern_id": "p2",
-      "diagnosis_tags": [
-        "absolute_value_meaning",
-        "distance_from_zero"
-      ],
-      "prerequisite_subskills": [
-        "number_line_basic_position"
-      ]
-    },
-    "question": "下列哪一項是 $|-6|$ 的正確意義？",
-    "correct_answer": "數線上 $-6$ 到 $0$ 的距離",
-    "explanation": "絕對值表示數線上該數到 $0$ 的距離。\n因此 $|-6|$ 表示 $-6$ 到 $0$ 的距離。"
-  },
-  {
-    "problem_type_id": "absolute_value_distance_between_two_points",
-    "skill_id": "vh_數學B1_AbsoluteValue",
-    "subskill_id": "absolute_value_distance_between_two_points",
-    "question_text": "已知數線上兩點 $A(8)$、$B(7)$，試求 A、B 兩點的距離。",
-    "answer": 1,
-    "answer_type": "integer",
-    "checker_type": "integer_checker",
-    "solution_steps": [
-      "數線上兩點距離等於兩坐標差的絕對值。",
-      "$|7-(8)|=|-1|=1$。",
-      "所以 A、B 兩點的距離為 $1$。"
-    ],
-    "metadata": {
-      "scenario_family": "absolute_value_distance_between_two_points",
-      "scenario_id": "s3",
-      "parameter_signature": "absolute_value_distance_between_two_points:a=8:b=7:difficulty=easy",
-      "question_pattern_id": "p4",
-      "diagnosis_tags": [
-        "absolute_value_distance",
-        "number_line_distance",
-        "coordinate_difference"
-      ],
-      "prerequisite_subskills": [
-        "number_line_basic_position",
-        "absolute_value_numeric_evaluation"
-      ]
-    },
-    "question": "已知數線上兩點 $A(8)$、$B(7)$，試求 A、B 兩點的距離。",
-    "correct_answer": 1,
-    "explanation": "數線上兩點距離等於兩坐標差的絕對值。\n$|7-(8)|=|-1|=1$。\n所以 A、B 兩點的距離為 $1$。",
-    "choices": []
-  },
-  {
-    "problem_type_id": "absolute_value_equation_basic",
-    "skill_id": "vh_數學B1_AbsoluteValue",
-    "subskill_id": "absolute_value_equation_basic",
-    "question_text": "解方程式 $|x|=15$。",
-    "answer": "x=-15 或 x=15",
-    "answer_type": "text",
-    "checker_type": "exact_string_checker",
-    "solution_steps": [
-      "$|x|=15$ 表示 $x$ 到 $0$ 的距離為 $15$。",
-      "因此 $x=-15$ 或 $x=15$。"
-    ],
-    "metadata": {
-      "scenario_family": "absolute_value_equation_basic",
-      "scenario_id": "s8",
-      "parameter_signature": "absolute_value_equation_basic:n=15:difficulty=easy",
-      "question_pattern_id": "p2",
-      "diagnosis_tags": [
-        "absolute_value_equation",
-        "two_solutions"
-      ],
-      "prerequisite_subskills": [
-        "absolute_value_numeric_evaluation"
-      ]
-    },
-    "question": "解方程式 $|x|=15$。",
-    "correct_answer": "x=-15 或 x=15",
-    "explanation": "$|x|=15$ 表示 $x$ 到 $0$ 的距離為 $15$。\n因此 $x=-15$ 或 $x=15$。",
-    "choices": []
-  },
-  {
-    "problem_type_id": "absolute_value_numeric_evaluation",
-    "skill_id": "vh_數學B1_AbsoluteValue",
-    "subskill_id": "absolute_value_numeric_evaluation",
-    "question_text": "求 $|-4|$ 的值。",
-    "answer": 4,
-    "answer_type": "integer",
-    "checker_type": "integer_checker",
-    "solution_steps": [
-      "絕對值表示與 0 的距離。",
-      "$|-4|=4$。"
-    ],
-    "metadata": {
-      "scenario_family": "absolute_value_numeric_evaluation",
-      "scenario_id": "s3",
-      "parameter_signature": "absolute_value_numeric_evaluation:n=-4:difficulty=easy",
-      "question_pattern_id": "p4",
-      "diagnosis_tags": [
-        "absolute_value_definition",
-        "sign_error"
-      ],
-      "prerequisite_subskills": []
-    },
-    "question": "求 $|-4|$ 的值。",
-    "correct_answer": 4,
-    "explanation": "絕對值表示與 0 的距離。\n$|-4|=4$。",
-    "choices": []
-  },
-  {
-    "problem_type_id": "absolute_value_distance_from_zero",
-    "skill_id": "vh_數學B1_AbsoluteValue",
-    "subskill_id": "absolute_value_distance_from_zero",
-    "question_text": "下列哪一項是 $|-19|$ 的正確意義？",
-    "choices": [
-      "數線上 $-19$ 到 $0$ 的距離",
-      "數線上 $19$ 到 $-19$ 的距離",
-      "$-19$ 本身",
-      "一個負數"
-    ],
-    "answer": "數線上 $-19$ 到 $0$ 的距離",
-    "answer_type": "choice",
-    "checker_type": "choice_checker",
-    "solution_steps": [
-      "絕對值表示數線上該數到 $0$ 的距離。",
-      "因此 $|-19|$ 表示 $-19$ 到 $0$ 的距離。"
-    ],
-    "metadata": {
-      "scenario_family": "absolute_value_distance_from_zero",
-      "scenario_id": "s3",
-      "parameter_signature": "absolute_value_distance_from_zero:n=-19:pattern=meaning",
-      "question_pattern_id": "p2",
-      "diagnosis_tags": [
-        "absolute_value_meaning",
-        "distance_from_zero"
-      ],
-      "prerequisite_subskills": [
-        "number_line_basic_position"
-      ]
-    },
-    "question": "下列哪一項是 $|-19|$ 的正確意義？",
-    "correct_answer": "數線上 $-19$ 到 $0$ 的距離",
-    "explanation": "絕對值表示數線上該數到 $0$ 的距離。\n因此 $|-19|$ 表示 $-19$ 到 $0$ 的距離。"
-  },
-  {
-    "problem_type_id": "absolute_value_distance_between_two_points",
-    "skill_id": "vh_數學B1_AbsoluteValue",
-    "subskill_id": "absolute_value_distance_between_two_points",
-    "question_text": "已知數線上兩點 $A(6)$、$B(4)$，試求 A、B 兩點的距離。",
-    "answer": 2,
-    "answer_type": "integer",
-    "checker_type": "integer_checker",
-    "solution_steps": [
-      "數線上兩點距離等於兩坐標差的絕對值。",
-      "$|4-(6)|=|-2|=2$。",
-      "所以 A、B 兩點的距離為 $2$。"
-    ],
-    "metadata": {
-      "scenario_family": "absolute_value_distance_between_two_points",
-      "scenario_id": "s4",
-      "parameter_signature": "absolute_value_distance_between_two_points:a=6:b=4:difficulty=easy",
+      "scenario_id": "s1",
+      "parameter_signature": "absolute_value_numeric_evaluation:n=13:difficulty=easy",
       "question_pattern_id": "p3",
       "diagnosis_tags": [
-        "absolute_value_distance",
-        "number_line_distance",
-        "coordinate_difference"
-      ],
-      "prerequisite_subskills": [
-        "number_line_basic_position",
-        "absolute_value_numeric_evaluation"
-      ]
-    },
-    "question": "已知數線上兩點 $A(6)$、$B(4)$，試求 A、B 兩點的距離。",
-    "correct_answer": 2,
-    "explanation": "數線上兩點距離等於兩坐標差的絕對值。\n$|4-(6)|=|-2|=2$。\n所以 A、B 兩點的距離為 $2$。",
-    "choices": []
-  },
-  {
-    "problem_type_id": "absolute_value_equation_basic",
-    "skill_id": "vh_數學B1_AbsoluteValue",
-    "subskill_id": "absolute_value_equation_basic",
-    "question_text": "解方程式 $|x|=2$。",
-    "answer": "x=-2 或 x=2",
-    "answer_type": "text",
-    "checker_type": "exact_string_checker",
-    "solution_steps": [
-      "$|x|=2$ 表示 $x$ 到 $0$ 的距離為 $2$。",
-      "因此 $x=-2$ 或 $x=2$。"
-    ],
-    "metadata": {
-      "scenario_family": "absolute_value_equation_basic",
-      "scenario_id": "s6",
-      "parameter_signature": "absolute_value_equation_basic:n=2:difficulty=easy",
-      "question_pattern_id": "p1",
-      "diagnosis_tags": [
-        "absolute_value_equation",
-        "two_solutions"
-      ],
-      "prerequisite_subskills": [
-        "absolute_value_numeric_evaluation"
-      ]
-    },
-    "question": "解方程式 $|x|=2$。",
-    "correct_answer": "x=-2 或 x=2",
-    "explanation": "$|x|=2$ 表示 $x$ 到 $0$ 的距離為 $2$。\n因此 $x=-2$ 或 $x=2$。",
-    "choices": []
-  },
-  {
-    "problem_type_id": "absolute_value_numeric_evaluation",
-    "skill_id": "vh_數學B1_AbsoluteValue",
-    "subskill_id": "absolute_value_numeric_evaluation",
-    "question_text": "求 $|-5|$ 的值。",
-    "answer": 5,
-    "answer_type": "integer",
-    "checker_type": "integer_checker",
-    "solution_steps": [
-      "絕對值表示與 0 的距離。",
-      "$|-5|=5$。"
-    ],
-    "metadata": {
-      "scenario_family": "absolute_value_numeric_evaluation",
-      "scenario_id": "s3",
-      "parameter_signature": "absolute_value_numeric_evaluation:n=-5:difficulty=easy",
-      "question_pattern_id": "p2",
-      "diagnosis_tags": [
         "absolute_value_definition",
         "sign_error"
       ],
       "prerequisite_subskills": []
     },
-    "question": "求 $|-5|$ 的值。",
-    "correct_answer": 5,
-    "explanation": "絕對值表示與 0 的距離。\n$|-5|=5$。",
+    "question": "求 $|13|$ 的值。",
+    "correct_answer": 13,
+    "explanation": "絕對值表示與 0 的距離。\n$|13|=13$。",
     "choices": []
   },
   {
@@ -383,9 +131,9 @@
     ],
     "metadata": {
       "scenario_family": "absolute_value_distance_from_zero",
-      "scenario_id": "s5",
+      "scenario_id": "s9",
       "parameter_signature": "absolute_value_distance_from_zero:n=-13:pattern=meaning",
-      "question_pattern_id": "p2",
+      "question_pattern_id": "p4",
       "diagnosis_tags": [
         "absolute_value_meaning",
         "distance_from_zero"
@@ -402,20 +150,20 @@
     "problem_type_id": "absolute_value_distance_between_two_points",
     "skill_id": "vh_數學B1_AbsoluteValue",
     "subskill_id": "absolute_value_distance_between_two_points",
-    "question_text": "已知數線上兩點 $A(6)$、$B(-7)$，試求 A、B 兩點的距離。",
-    "answer": 13,
+    "question_text": "已知數線上兩點 $A(-2)$、$B(0)$，試求 A、B 兩點的距離。",
+    "answer": 2,
     "answer_type": "integer",
     "checker_type": "integer_checker",
     "solution_steps": [
       "數線上兩點距離等於兩坐標差的絕對值。",
-      "$|-7-(6)|=|-13|=13$。",
-      "所以 A、B 兩點的距離為 $13$。"
+      "$|0-(-2)|=|2|=2$。",
+      "所以 A、B 兩點的距離為 $2$。"
     ],
     "metadata": {
       "scenario_family": "absolute_value_distance_between_two_points",
       "scenario_id": "s5",
-      "parameter_signature": "absolute_value_distance_between_two_points:a=6:b=-7:difficulty=easy",
-      "question_pattern_id": "p4",
+      "parameter_signature": "absolute_value_distance_between_two_points:a=-2:b=0:difficulty=easy",
+      "question_pattern_id": "p2",
       "diagnosis_tags": [
         "absolute_value_distance",
         "number_line_distance",
@@ -426,27 +174,153 @@
         "absolute_value_numeric_evaluation"
       ]
     },
-    "question": "已知數線上兩點 $A(6)$、$B(-7)$，試求 A、B 兩點的距離。",
-    "correct_answer": 13,
-    "explanation": "數線上兩點距離等於兩坐標差的絕對值。\n$|-7-(6)|=|-13|=13$。\n所以 A、B 兩點的距離為 $13$。",
+    "question": "已知數線上兩點 $A(-2)$、$B(0)$，試求 A、B 兩點的距離。",
+    "correct_answer": 2,
+    "explanation": "數線上兩點距離等於兩坐標差的絕對值。\n$|0-(-2)|=|2|=2$。\n所以 A、B 兩點的距離為 $2$。",
     "choices": []
   },
   {
     "problem_type_id": "absolute_value_equation_basic",
     "skill_id": "vh_數學B1_AbsoluteValue",
     "subskill_id": "absolute_value_equation_basic",
-    "question_text": "解方程式 $|x|=14$。",
-    "answer": "x=-14 或 x=14",
+    "question_text": "解方程式 $|x|=16$。",
+    "answer": "x=-16 或 x=16",
     "answer_type": "text",
     "checker_type": "exact_string_checker",
     "solution_steps": [
-      "$|x|=14$ 表示 $x$ 到 $0$ 的距離為 $14$。",
-      "因此 $x=-14$ 或 $x=14$。"
+      "$|x|=16$ 表示 $x$ 到 $0$ 的距離為 $16$。",
+      "因此 $x=-16$ 或 $x=16$。"
     ],
     "metadata": {
       "scenario_family": "absolute_value_equation_basic",
+      "scenario_id": "s8",
+      "parameter_signature": "absolute_value_equation_basic:n=16:difficulty=easy",
+      "question_pattern_id": "p4",
+      "diagnosis_tags": [
+        "absolute_value_equation",
+        "two_solutions"
+      ],
+      "prerequisite_subskills": [
+        "absolute_value_numeric_evaluation"
+      ]
+    },
+    "question": "解方程式 $|x|=16$。",
+    "correct_answer": "x=-16 或 x=16",
+    "explanation": "$|x|=16$ 表示 $x$ 到 $0$ 的距離為 $16$。\n因此 $x=-16$ 或 $x=16$。",
+    "choices": []
+  },
+  {
+    "problem_type_id": "absolute_value_numeric_evaluation",
+    "skill_id": "vh_數學B1_AbsoluteValue",
+    "subskill_id": "absolute_value_numeric_evaluation",
+    "question_text": "求 $|12|$ 的值。",
+    "answer": 12,
+    "answer_type": "integer",
+    "checker_type": "integer_checker",
+    "solution_steps": [
+      "絕對值表示與 0 的距離。",
+      "$|12|=12$。"
+    ],
+    "metadata": {
+      "scenario_family": "absolute_value_numeric_evaluation",
       "scenario_id": "s4",
-      "parameter_signature": "absolute_value_equation_basic:n=14:difficulty=easy",
+      "parameter_signature": "absolute_value_numeric_evaluation:n=12:difficulty=easy",
+      "question_pattern_id": "p4",
+      "diagnosis_tags": [
+        "absolute_value_definition",
+        "sign_error"
+      ],
+      "prerequisite_subskills": []
+    },
+    "question": "求 $|12|$ 的值。",
+    "correct_answer": 12,
+    "explanation": "絕對值表示與 0 的距離。\n$|12|=12$。",
+    "choices": []
+  },
+  {
+    "problem_type_id": "absolute_value_distance_from_zero",
+    "skill_id": "vh_數學B1_AbsoluteValue",
+    "subskill_id": "absolute_value_distance_from_zero",
+    "question_text": "下列哪一項是 $|-5|$ 的正確意義？",
+    "choices": [
+      "數線上 $-5$ 到 $0$ 的距離",
+      "數線上 $5$ 到 $-5$ 的距離",
+      "$-5$ 本身",
+      "一個負數"
+    ],
+    "answer": "數線上 $-5$ 到 $0$ 的距離",
+    "answer_type": "choice",
+    "checker_type": "choice_checker",
+    "solution_steps": [
+      "絕對值表示數線上該數到 $0$ 的距離。",
+      "因此 $|-5|$ 表示 $-5$ 到 $0$ 的距離。"
+    ],
+    "metadata": {
+      "scenario_family": "absolute_value_distance_from_zero",
+      "scenario_id": "s3",
+      "parameter_signature": "absolute_value_distance_from_zero:n=-5:pattern=meaning",
+      "question_pattern_id": "p2",
+      "diagnosis_tags": [
+        "absolute_value_meaning",
+        "distance_from_zero"
+      ],
+      "prerequisite_subskills": [
+        "number_line_basic_position"
+      ]
+    },
+    "question": "下列哪一項是 $|-5|$ 的正確意義？",
+    "correct_answer": "數線上 $-5$ 到 $0$ 的距離",
+    "explanation": "絕對值表示數線上該數到 $0$ 的距離。\n因此 $|-5|$ 表示 $-5$ 到 $0$ 的距離。"
+  },
+  {
+    "problem_type_id": "absolute_value_distance_between_two_points",
+    "skill_id": "vh_數學B1_AbsoluteValue",
+    "subskill_id": "absolute_value_distance_between_two_points",
+    "question_text": "已知數線上兩點 $A(4)$、$B(-9)$，試求 A、B 兩點的距離。",
+    "answer": 13,
+    "answer_type": "integer",
+    "checker_type": "integer_checker",
+    "solution_steps": [
+      "數線上兩點距離等於兩坐標差的絕對值。",
+      "$|-9-(4)|=|-13|=13$。",
+      "所以 A、B 兩點的距離為 $13$。"
+    ],
+    "metadata": {
+      "scenario_family": "absolute_value_distance_between_two_points",
+      "scenario_id": "s3",
+      "parameter_signature": "absolute_value_distance_between_two_points:a=4:b=-9:difficulty=easy",
+      "question_pattern_id": "p3",
+      "diagnosis_tags": [
+        "absolute_value_distance",
+        "number_line_distance",
+        "coordinate_difference"
+      ],
+      "prerequisite_subskills": [
+        "number_line_basic_position",
+        "absolute_value_numeric_evaluation"
+      ]
+    },
+    "question": "已知數線上兩點 $A(4)$、$B(-9)$，試求 A、B 兩點的距離。",
+    "correct_answer": 13,
+    "explanation": "數線上兩點距離等於兩坐標差的絕對值。\n$|-9-(4)|=|-13|=13$。\n所以 A、B 兩點的距離為 $13$。",
+    "choices": []
+  },
+  {
+    "problem_type_id": "absolute_value_equation_basic",
+    "skill_id": "vh_數學B1_AbsoluteValue",
+    "subskill_id": "absolute_value_equation_basic",
+    "question_text": "解方程式 $|x|=9$。",
+    "answer": "x=-9 或 x=9",
+    "answer_type": "text",
+    "checker_type": "exact_string_checker",
+    "solution_steps": [
+      "$|x|=9$ 表示 $x$ 到 $0$ 的距離為 $9$。",
+      "因此 $x=-9$ 或 $x=9$。"
+    ],
+    "metadata": {
+      "scenario_family": "absolute_value_equation_basic",
+      "scenario_id": "s5",
+      "parameter_signature": "absolute_value_equation_basic:n=9:difficulty=easy",
       "question_pattern_id": "p1",
       "diagnosis_tags": [
         "absolute_value_equation",
@@ -456,27 +330,27 @@
         "absolute_value_numeric_evaluation"
       ]
     },
-    "question": "解方程式 $|x|=14$。",
-    "correct_answer": "x=-14 或 x=14",
-    "explanation": "$|x|=14$ 表示 $x$ 到 $0$ 的距離為 $14$。\n因此 $x=-14$ 或 $x=14$。",
+    "question": "解方程式 $|x|=9$。",
+    "correct_answer": "x=-9 或 x=9",
+    "explanation": "$|x|=9$ 表示 $x$ 到 $0$ 的距離為 $9$。\n因此 $x=-9$ 或 $x=9$。",
     "choices": []
   },
   {
     "problem_type_id": "absolute_value_numeric_evaluation",
     "skill_id": "vh_數學B1_AbsoluteValue",
     "subskill_id": "absolute_value_numeric_evaluation",
-    "question_text": "求 $|-1|$ 的值。",
-    "answer": 1,
+    "question_text": "求 $|6|$ 的值。",
+    "answer": 6,
     "answer_type": "integer",
     "checker_type": "integer_checker",
     "solution_steps": [
       "絕對值表示與 0 的距離。",
-      "$|-1|=1$。"
+      "$|6|=6$。"
     ],
     "metadata": {
       "scenario_family": "absolute_value_numeric_evaluation",
-      "scenario_id": "s6",
-      "parameter_signature": "absolute_value_numeric_evaluation:n=-1:difficulty=easy",
+      "scenario_id": "s1",
+      "parameter_signature": "absolute_value_numeric_evaluation:n=6:difficulty=easy",
       "question_pattern_id": "p4",
       "diagnosis_tags": [
         "absolute_value_definition",
@@ -484,34 +358,34 @@
       ],
       "prerequisite_subskills": []
     },
-    "question": "求 $|-1|$ 的值。",
-    "correct_answer": 1,
-    "explanation": "絕對值表示與 0 的距離。\n$|-1|=1$。",
+    "question": "求 $|6|$ 的值。",
+    "correct_answer": 6,
+    "explanation": "絕對值表示與 0 的距離。\n$|6|=6$。",
     "choices": []
   },
   {
     "problem_type_id": "absolute_value_distance_from_zero",
     "skill_id": "vh_數學B1_AbsoluteValue",
     "subskill_id": "absolute_value_distance_from_zero",
-    "question_text": "下列哪一項是 $|-6|$ 的正確意義？",
+    "question_text": "下列哪一項是 $|-7|$ 的正確意義？",
     "choices": [
-      "數線上 $-6$ 到 $0$ 的距離",
-      "數線上 $6$ 到 $-6$ 的距離",
-      "$-6$ 本身",
+      "數線上 $-7$ 到 $0$ 的距離",
+      "數線上 $7$ 到 $-7$ 的距離",
+      "$-7$ 本身",
       "一個負數"
     ],
-    "answer": "數線上 $-6$ 到 $0$ 的距離",
+    "answer": "數線上 $-7$ 到 $0$ 的距離",
     "answer_type": "choice",
     "checker_type": "choice_checker",
     "solution_steps": [
       "絕對值表示數線上該數到 $0$ 的距離。",
-      "因此 $|-6|$ 表示 $-6$ 到 $0$ 的距離。"
+      "因此 $|-7|$ 表示 $-7$ 到 $0$ 的距離。"
     ],
     "metadata": {
       "scenario_family": "absolute_value_distance_from_zero",
-      "scenario_id": "s5",
-      "parameter_signature": "absolute_value_distance_from_zero:n=-6:pattern=meaning",
-      "question_pattern_id": "p3",
+      "scenario_id": "s2",
+      "parameter_signature": "absolute_value_distance_from_zero:n=-7:pattern=meaning",
+      "question_pattern_id": "p2",
       "diagnosis_tags": [
         "absolute_value_meaning",
         "distance_from_zero"
@@ -520,28 +394,28 @@
         "number_line_basic_position"
       ]
     },
-    "question": "下列哪一項是 $|-6|$ 的正確意義？",
-    "correct_answer": "數線上 $-6$ 到 $0$ 的距離",
-    "explanation": "絕對值表示數線上該數到 $0$ 的距離。\n因此 $|-6|$ 表示 $-6$ 到 $0$ 的距離。"
+    "question": "下列哪一項是 $|-7|$ 的正確意義？",
+    "correct_answer": "數線上 $-7$ 到 $0$ 的距離",
+    "explanation": "絕對值表示數線上該數到 $0$ 的距離。\n因此 $|-7|$ 表示 $-7$ 到 $0$ 的距離。"
   },
   {
     "problem_type_id": "absolute_value_distance_between_two_points",
     "skill_id": "vh_數學B1_AbsoluteValue",
     "subskill_id": "absolute_value_distance_between_two_points",
-    "question_text": "已知數線上兩點 $A(-5)$、$B(0)$，試求 A、B 兩點的距離。",
-    "answer": 5,
+    "question_text": "已知數線上兩點 $A(-4)$、$B(-10)$，試求 A、B 兩點的距離。",
+    "answer": 6,
     "answer_type": "integer",
     "checker_type": "integer_checker",
     "solution_steps": [
       "數線上兩點距離等於兩坐標差的絕對值。",
-      "$|0-(-5)|=|5|=5$。",
-      "所以 A、B 兩點的距離為 $5$。"
+      "$|-10-(-4)|=|-6|=6$。",
+      "所以 A、B 兩點的距離為 $6$。"
     ],
     "metadata": {
       "scenario_family": "absolute_value_distance_between_two_points",
       "scenario_id": "s1",
-      "parameter_signature": "absolute_value_distance_between_two_points:a=-5:b=0:difficulty=easy",
-      "question_pattern_id": "p1",
+      "parameter_signature": "absolute_value_distance_between_two_points:a=-4:b=-10:difficulty=easy",
+      "question_pattern_id": "p2",
       "diagnosis_tags": [
         "absolute_value_distance",
         "number_line_distance",
@@ -552,9 +426,261 @@
         "absolute_value_numeric_evaluation"
       ]
     },
-    "question": "已知數線上兩點 $A(-5)$、$B(0)$，試求 A、B 兩點的距離。",
+    "question": "已知數線上兩點 $A(-4)$、$B(-10)$，試求 A、B 兩點的距離。",
+    "correct_answer": 6,
+    "explanation": "數線上兩點距離等於兩坐標差的絕對值。\n$|-10-(-4)|=|-6|=6$。\n所以 A、B 兩點的距離為 $6$。",
+    "choices": []
+  },
+  {
+    "problem_type_id": "absolute_value_equation_basic",
+    "skill_id": "vh_數學B1_AbsoluteValue",
+    "subskill_id": "absolute_value_equation_basic",
+    "question_text": "解方程式 $|x|=18$。",
+    "answer": "x=-18 或 x=18",
+    "answer_type": "text",
+    "checker_type": "exact_string_checker",
+    "solution_steps": [
+      "$|x|=18$ 表示 $x$ 到 $0$ 的距離為 $18$。",
+      "因此 $x=-18$ 或 $x=18$。"
+    ],
+    "metadata": {
+      "scenario_family": "absolute_value_equation_basic",
+      "scenario_id": "s4",
+      "parameter_signature": "absolute_value_equation_basic:n=18:difficulty=easy",
+      "question_pattern_id": "p3",
+      "diagnosis_tags": [
+        "absolute_value_equation",
+        "two_solutions"
+      ],
+      "prerequisite_subskills": [
+        "absolute_value_numeric_evaluation"
+      ]
+    },
+    "question": "解方程式 $|x|=18$。",
+    "correct_answer": "x=-18 或 x=18",
+    "explanation": "$|x|=18$ 表示 $x$ 到 $0$ 的距離為 $18$。\n因此 $x=-18$ 或 $x=18$。",
+    "choices": []
+  },
+  {
+    "problem_type_id": "absolute_value_numeric_evaluation",
+    "skill_id": "vh_數學B1_AbsoluteValue",
+    "subskill_id": "absolute_value_numeric_evaluation",
+    "question_text": "求 $|-15|$ 的值。",
+    "answer": 15,
+    "answer_type": "integer",
+    "checker_type": "integer_checker",
+    "solution_steps": [
+      "絕對值表示與 0 的距離。",
+      "$|-15|=15$。"
+    ],
+    "metadata": {
+      "scenario_family": "absolute_value_numeric_evaluation",
+      "scenario_id": "s6",
+      "parameter_signature": "absolute_value_numeric_evaluation:n=-15:difficulty=easy",
+      "question_pattern_id": "p4",
+      "diagnosis_tags": [
+        "absolute_value_definition",
+        "sign_error"
+      ],
+      "prerequisite_subskills": []
+    },
+    "question": "求 $|-15|$ 的值。",
+    "correct_answer": 15,
+    "explanation": "絕對值表示與 0 的距離。\n$|-15|=15$。",
+    "choices": []
+  },
+  {
+    "problem_type_id": "absolute_value_distance_from_zero",
+    "skill_id": "vh_數學B1_AbsoluteValue",
+    "subskill_id": "absolute_value_distance_from_zero",
+    "question_text": "下列哪一項是 $|-4|$ 的正確意義？",
+    "choices": [
+      "數線上 $-4$ 到 $0$ 的距離",
+      "數線上 $4$ 到 $-4$ 的距離",
+      "$-4$ 本身",
+      "一個負數"
+    ],
+    "answer": "數線上 $-4$ 到 $0$ 的距離",
+    "answer_type": "choice",
+    "checker_type": "choice_checker",
+    "solution_steps": [
+      "絕對值表示數線上該數到 $0$ 的距離。",
+      "因此 $|-4|$ 表示 $-4$ 到 $0$ 的距離。"
+    ],
+    "metadata": {
+      "scenario_family": "absolute_value_distance_from_zero",
+      "scenario_id": "s5",
+      "parameter_signature": "absolute_value_distance_from_zero:n=-4:pattern=meaning",
+      "question_pattern_id": "p4",
+      "diagnosis_tags": [
+        "absolute_value_meaning",
+        "distance_from_zero"
+      ],
+      "prerequisite_subskills": [
+        "number_line_basic_position"
+      ]
+    },
+    "question": "下列哪一項是 $|-4|$ 的正確意義？",
+    "correct_answer": "數線上 $-4$ 到 $0$ 的距離",
+    "explanation": "絕對值表示數線上該數到 $0$ 的距離。\n因此 $|-4|$ 表示 $-4$ 到 $0$ 的距離。"
+  },
+  {
+    "problem_type_id": "absolute_value_distance_between_two_points",
+    "skill_id": "vh_數學B1_AbsoluteValue",
+    "subskill_id": "absolute_value_distance_between_two_points",
+    "question_text": "已知數線上兩點 $A(-4)$、$B(-1)$，試求 A、B 兩點的距離。",
+    "answer": 3,
+    "answer_type": "integer",
+    "checker_type": "integer_checker",
+    "solution_steps": [
+      "數線上兩點距離等於兩坐標差的絕對值。",
+      "$|-1-(-4)|=|3|=3$。",
+      "所以 A、B 兩點的距離為 $3$。"
+    ],
+    "metadata": {
+      "scenario_family": "absolute_value_distance_between_two_points",
+      "scenario_id": "s1",
+      "parameter_signature": "absolute_value_distance_between_two_points:a=-4:b=-1:difficulty=easy",
+      "question_pattern_id": "p3",
+      "diagnosis_tags": [
+        "absolute_value_distance",
+        "number_line_distance",
+        "coordinate_difference"
+      ],
+      "prerequisite_subskills": [
+        "number_line_basic_position",
+        "absolute_value_numeric_evaluation"
+      ]
+    },
+    "question": "已知數線上兩點 $A(-4)$、$B(-1)$，試求 A、B 兩點的距離。",
+    "correct_answer": 3,
+    "explanation": "數線上兩點距離等於兩坐標差的絕對值。\n$|-1-(-4)|=|3|=3$。\n所以 A、B 兩點的距離為 $3$。",
+    "choices": []
+  },
+  {
+    "problem_type_id": "absolute_value_equation_basic",
+    "skill_id": "vh_數學B1_AbsoluteValue",
+    "subskill_id": "absolute_value_equation_basic",
+    "question_text": "解方程式 $|x|=10$。",
+    "answer": "x=-10 或 x=10",
+    "answer_type": "text",
+    "checker_type": "exact_string_checker",
+    "solution_steps": [
+      "$|x|=10$ 表示 $x$ 到 $0$ 的距離為 $10$。",
+      "因此 $x=-10$ 或 $x=10$。"
+    ],
+    "metadata": {
+      "scenario_family": "absolute_value_equation_basic",
+      "scenario_id": "s5",
+      "parameter_signature": "absolute_value_equation_basic:n=10:difficulty=easy",
+      "question_pattern_id": "p3",
+      "diagnosis_tags": [
+        "absolute_value_equation",
+        "two_solutions"
+      ],
+      "prerequisite_subskills": [
+        "absolute_value_numeric_evaluation"
+      ]
+    },
+    "question": "解方程式 $|x|=10$。",
+    "correct_answer": "x=-10 或 x=10",
+    "explanation": "$|x|=10$ 表示 $x$ 到 $0$ 的距離為 $10$。\n因此 $x=-10$ 或 $x=10$。",
+    "choices": []
+  },
+  {
+    "problem_type_id": "absolute_value_numeric_evaluation",
+    "skill_id": "vh_數學B1_AbsoluteValue",
+    "subskill_id": "absolute_value_numeric_evaluation",
+    "question_text": "求 $|2|$ 的值。",
+    "answer": 2,
+    "answer_type": "integer",
+    "checker_type": "integer_checker",
+    "solution_steps": [
+      "絕對值表示與 0 的距離。",
+      "$|2|=2$。"
+    ],
+    "metadata": {
+      "scenario_family": "absolute_value_numeric_evaluation",
+      "scenario_id": "s9",
+      "parameter_signature": "absolute_value_numeric_evaluation:n=2:difficulty=easy",
+      "question_pattern_id": "p4",
+      "diagnosis_tags": [
+        "absolute_value_definition",
+        "sign_error"
+      ],
+      "prerequisite_subskills": []
+    },
+    "question": "求 $|2|$ 的值。",
+    "correct_answer": 2,
+    "explanation": "絕對值表示與 0 的距離。\n$|2|=2$。",
+    "choices": []
+  },
+  {
+    "problem_type_id": "absolute_value_distance_from_zero",
+    "skill_id": "vh_數學B1_AbsoluteValue",
+    "subskill_id": "absolute_value_distance_from_zero",
+    "question_text": "下列哪一項是 $|-9|$ 的正確意義？",
+    "choices": [
+      "數線上 $-9$ 到 $0$ 的距離",
+      "數線上 $9$ 到 $-9$ 的距離",
+      "$-9$ 本身",
+      "一個負數"
+    ],
+    "answer": "數線上 $-9$ 到 $0$ 的距離",
+    "answer_type": "choice",
+    "checker_type": "choice_checker",
+    "solution_steps": [
+      "絕對值表示數線上該數到 $0$ 的距離。",
+      "因此 $|-9|$ 表示 $-9$ 到 $0$ 的距離。"
+    ],
+    "metadata": {
+      "scenario_family": "absolute_value_distance_from_zero",
+      "scenario_id": "s9",
+      "parameter_signature": "absolute_value_distance_from_zero:n=-9:pattern=meaning",
+      "question_pattern_id": "p3",
+      "diagnosis_tags": [
+        "absolute_value_meaning",
+        "distance_from_zero"
+      ],
+      "prerequisite_subskills": [
+        "number_line_basic_position"
+      ]
+    },
+    "question": "下列哪一項是 $|-9|$ 的正確意義？",
+    "correct_answer": "數線上 $-9$ 到 $0$ 的距離",
+    "explanation": "絕對值表示數線上該數到 $0$ 的距離。\n因此 $|-9|$ 表示 $-9$ 到 $0$ 的距離。"
+  },
+  {
+    "problem_type_id": "absolute_value_distance_between_two_points",
+    "skill_id": "vh_數學B1_AbsoluteValue",
+    "subskill_id": "absolute_value_distance_between_two_points",
+    "question_text": "已知數線上兩點 $A(-5)$、$B(-10)$，試求 A、B 兩點的距離。",
+    "answer": 5,
+    "answer_type": "integer",
+    "checker_type": "integer_checker",
+    "solution_steps": [
+      "數線上兩點距離等於兩坐標差的絕對值。",
+      "$|-10-(-5)|=|-5|=5$。",
+      "所以 A、B 兩點的距離為 $5$。"
+    ],
+    "metadata": {
+      "scenario_family": "absolute_value_distance_between_two_points",
+      "scenario_id": "s3",
+      "parameter_signature": "absolute_value_distance_between_two_points:a=-5:b=-10:difficulty=easy",
+      "question_pattern_id": "p3",
+      "diagnosis_tags": [
+        "absolute_value_distance",
+        "number_line_distance",
+        "coordinate_difference"
+      ],
+      "prerequisite_subskills": [
+        "number_line_basic_position",
+        "absolute_value_numeric_evaluation"
+      ]
+    },
+    "question": "已知數線上兩點 $A(-5)$、$B(-10)$，試求 A、B 兩點的距離。",
     "correct_answer": 5,
-    "explanation": "數線上兩點距離等於兩坐標差的絕對值。\n$|0-(-5)|=|5|=5$。\n所以 A、B 兩點的距離為 $5$。",
+    "explanation": "數線上兩點距離等於兩坐標差的絕對值。\n$|-10-(-5)|=|-5|=5$。\n所以 A、B 兩點的距離為 $5$。",
     "choices": []
   },
   {
@@ -571,9 +697,9 @@
     ],
     "metadata": {
       "scenario_family": "absolute_value_equation_basic",
-      "scenario_id": "s9",
+      "scenario_id": "s5",
       "parameter_signature": "absolute_value_equation_basic:n=8:difficulty=easy",
-      "question_pattern_id": "p3",
+      "question_pattern_id": "p4",
       "diagnosis_tags": [
         "absolute_value_equation",
         "two_solutions"
@@ -591,53 +717,53 @@
     "problem_type_id": "absolute_value_numeric_evaluation",
     "skill_id": "vh_數學B1_AbsoluteValue",
     "subskill_id": "absolute_value_numeric_evaluation",
-    "question_text": "求 $|-10|$ 的值。",
-    "answer": 10,
+    "question_text": "求 $|6|$ 的值。",
+    "answer": 6,
     "answer_type": "integer",
     "checker_type": "integer_checker",
     "solution_steps": [
       "絕對值表示與 0 的距離。",
-      "$|-10|=10$。"
+      "$|6|=6$。"
     ],
     "metadata": {
       "scenario_family": "absolute_value_numeric_evaluation",
-      "scenario_id": "s7",
-      "parameter_signature": "absolute_value_numeric_evaluation:n=-10:difficulty=easy",
-      "question_pattern_id": "p3",
+      "scenario_id": "s6",
+      "parameter_signature": "absolute_value_numeric_evaluation:n=6:difficulty=easy",
+      "question_pattern_id": "p4",
       "diagnosis_tags": [
         "absolute_value_definition",
         "sign_error"
       ],
       "prerequisite_subskills": []
     },
-    "question": "求 $|-10|$ 的值。",
-    "correct_answer": 10,
-    "explanation": "絕對值表示與 0 的距離。\n$|-10|=10$。",
+    "question": "求 $|6|$ 的值。",
+    "correct_answer": 6,
+    "explanation": "絕對值表示與 0 的距離。\n$|6|=6$。",
     "choices": []
   },
   {
     "problem_type_id": "absolute_value_distance_from_zero",
     "skill_id": "vh_數學B1_AbsoluteValue",
     "subskill_id": "absolute_value_distance_from_zero",
-    "question_text": "下列哪一項是 $|-17|$ 的正確意義？",
+    "question_text": "下列哪一項是 $|-18|$ 的正確意義？",
     "choices": [
-      "數線上 $-17$ 到 $0$ 的距離",
-      "數線上 $17$ 到 $-17$ 的距離",
-      "$-17$ 本身",
+      "數線上 $-18$ 到 $0$ 的距離",
+      "數線上 $18$ 到 $-18$ 的距離",
+      "$-18$ 本身",
       "一個負數"
     ],
-    "answer": "數線上 $-17$ 到 $0$ 的距離",
+    "answer": "數線上 $-18$ 到 $0$ 的距離",
     "answer_type": "choice",
     "checker_type": "choice_checker",
     "solution_steps": [
       "絕對值表示數線上該數到 $0$ 的距離。",
-      "因此 $|-17|$ 表示 $-17$ 到 $0$ 的距離。"
+      "因此 $|-18|$ 表示 $-18$ 到 $0$ 的距離。"
     ],
     "metadata": {
       "scenario_family": "absolute_value_distance_from_zero",
-      "scenario_id": "s5",
-      "parameter_signature": "absolute_value_distance_from_zero:n=-17:pattern=meaning",
-      "question_pattern_id": "p4",
+      "scenario_id": "s1",
+      "parameter_signature": "absolute_value_distance_from_zero:n=-18:pattern=meaning",
+      "question_pattern_id": "p1",
       "diagnosis_tags": [
         "absolute_value_meaning",
         "distance_from_zero"
@@ -646,28 +772,28 @@
         "number_line_basic_position"
       ]
     },
-    "question": "下列哪一項是 $|-17|$ 的正確意義？",
-    "correct_answer": "數線上 $-17$ 到 $0$ 的距離",
-    "explanation": "絕對值表示數線上該數到 $0$ 的距離。\n因此 $|-17|$ 表示 $-17$ 到 $0$ 的距離。"
+    "question": "下列哪一項是 $|-18|$ 的正確意義？",
+    "correct_answer": "數線上 $-18$ 到 $0$ 的距離",
+    "explanation": "絕對值表示數線上該數到 $0$ 的距離。\n因此 $|-18|$ 表示 $-18$ 到 $0$ 的距離。"
   },
   {
     "problem_type_id": "absolute_value_distance_between_two_points",
     "skill_id": "vh_數學B1_AbsoluteValue",
     "subskill_id": "absolute_value_distance_between_two_points",
-    "question_text": "已知數線上兩點 $A(-5)$、$B(2)$，試求 A、B 兩點的距離。",
-    "answer": 7,
+    "question_text": "已知數線上兩點 $A(2)$、$B(10)$，試求 A、B 兩點的距離。",
+    "answer": 8,
     "answer_type": "integer",
     "checker_type": "integer_checker",
     "solution_steps": [
       "數線上兩點距離等於兩坐標差的絕對值。",
-      "$|2-(-5)|=|7|=7$。",
-      "所以 A、B 兩點的距離為 $7$。"
+      "$|10-(2)|=|8|=8$。",
+      "所以 A、B 兩點的距離為 $8$。"
     ],
     "metadata": {
       "scenario_family": "absolute_value_distance_between_two_points",
-      "scenario_id": "s6",
-      "parameter_signature": "absolute_value_distance_between_two_points:a=-5:b=2:difficulty=easy",
-      "question_pattern_id": "p2",
+      "scenario_id": "s8",
+      "parameter_signature": "absolute_value_distance_between_two_points:a=2:b=10:difficulty=easy",
+      "question_pattern_id": "p3",
       "diagnosis_tags": [
         "absolute_value_distance",
         "number_line_distance",
@@ -678,9 +804,9 @@
         "absolute_value_numeric_evaluation"
       ]
     },
-    "question": "已知數線上兩點 $A(-5)$、$B(2)$，試求 A、B 兩點的距離。",
-    "correct_answer": 7,
-    "explanation": "數線上兩點距離等於兩坐標差的絕對值。\n$|2-(-5)|=|7|=7$。\n所以 A、B 兩點的距離為 $7$。",
+    "question": "已知數線上兩點 $A(2)$、$B(10)$，試求 A、B 兩點的距離。",
+    "correct_answer": 8,
+    "explanation": "數線上兩點距離等於兩坐標差的絕對值。\n$|10-(2)|=|8|=8$。\n所以 A、B 兩點的距離為 $8$。",
     "choices": []
   },
   {
@@ -697,7 +823,7 @@
     ],
     "metadata": {
       "scenario_family": "absolute_value_equation_basic",
-      "scenario_id": "s2",
+      "scenario_id": "s3",
       "parameter_signature": "absolute_value_equation_basic:n=3:difficulty=easy",
       "question_pattern_id": "p1",
       "diagnosis_tags": [
@@ -717,52 +843,52 @@
     "problem_type_id": "absolute_value_numeric_evaluation",
     "skill_id": "vh_數學B1_AbsoluteValue",
     "subskill_id": "absolute_value_numeric_evaluation",
-    "question_text": "求 $|-19|$ 的值。",
-    "answer": 19,
+    "question_text": "求 $|0|$ 的值。",
+    "answer": 0,
     "answer_type": "integer",
     "checker_type": "integer_checker",
     "solution_steps": [
       "絕對值表示與 0 的距離。",
-      "$|-19|=19$。"
+      "$|0|=0$。"
     ],
     "metadata": {
       "scenario_family": "absolute_value_numeric_evaluation",
-      "scenario_id": "s5",
-      "parameter_signature": "absolute_value_numeric_evaluation:n=-19:difficulty=easy",
-      "question_pattern_id": "p2",
+      "scenario_id": "s6",
+      "parameter_signature": "absolute_value_numeric_evaluation:n=0:difficulty=easy",
+      "question_pattern_id": "p3",
       "diagnosis_tags": [
         "absolute_value_definition",
         "sign_error"
       ],
       "prerequisite_subskills": []
     },
-    "question": "求 $|-19|$ 的值。",
-    "correct_answer": 19,
-    "explanation": "絕對值表示與 0 的距離。\n$|-19|=19$。",
+    "question": "求 $|0|$ 的值。",
+    "correct_answer": 0,
+    "explanation": "絕對值表示與 0 的距離。\n$|0|=0$。",
     "choices": []
   },
   {
     "problem_type_id": "absolute_value_distance_from_zero",
     "skill_id": "vh_數學B1_AbsoluteValue",
     "subskill_id": "absolute_value_distance_from_zero",
-    "question_text": "下列哪一項是 $|-12|$ 的正確意義？",
+    "question_text": "下列哪一項是 $|-15|$ 的正確意義？",
     "choices": [
-      "數線上 $-12$ 到 $0$ 的距離",
-      "數線上 $12$ 到 $-12$ 的距離",
-      "$-12$ 本身",
+      "數線上 $-15$ 到 $0$ 的距離",
+      "數線上 $15$ 到 $-15$ 的距離",
+      "$-15$ 本身",
       "一個負數"
     ],
-    "answer": "數線上 $-12$ 到 $0$ 的距離",
+    "answer": "數線上 $-15$ 到 $0$ 的距離",
     "answer_type": "choice",
     "checker_type": "choice_checker",
     "solution_steps": [
       "絕對值表示數線上該數到 $0$ 的距離。",
-      "因此 $|-12|$ 表示 $-12$ 到 $0$ 的距離。"
+      "因此 $|-15|$ 表示 $-15$ 到 $0$ 的距離。"
     ],
     "metadata": {
       "scenario_family": "absolute_value_distance_from_zero",
       "scenario_id": "s1",
-      "parameter_signature": "absolute_value_distance_from_zero:n=-12:pattern=meaning",
+      "parameter_signature": "absolute_value_distance_from_zero:n=-15:pattern=meaning",
       "question_pattern_id": "p4",
       "diagnosis_tags": [
         "absolute_value_meaning",
@@ -772,153 +898,27 @@
         "number_line_basic_position"
       ]
     },
-    "question": "下列哪一項是 $|-12|$ 的正確意義？",
-    "correct_answer": "數線上 $-12$ 到 $0$ 的距離",
-    "explanation": "絕對值表示數線上該數到 $0$ 的距離。\n因此 $|-12|$ 表示 $-12$ 到 $0$ 的距離。"
+    "question": "下列哪一項是 $|-15|$ 的正確意義？",
+    "correct_answer": "數線上 $-15$ 到 $0$ 的距離",
+    "explanation": "絕對值表示數線上該數到 $0$ 的距離。\n因此 $|-15|$ 表示 $-15$ 到 $0$ 的距離。"
   },
   {
     "problem_type_id": "absolute_value_distance_between_two_points",
     "skill_id": "vh_數學B1_AbsoluteValue",
     "subskill_id": "absolute_value_distance_between_two_points",
-    "question_text": "已知數線上兩點 $A(1)$、$B(7)$，試求 A、B 兩點的距離。",
-    "answer": 6,
+    "question_text": "已知數線上兩點 $A(-5)$、$B(-3)$，試求 A、B 兩點的距離。",
+    "answer": 2,
     "answer_type": "integer",
     "checker_type": "integer_checker",
     "solution_steps": [
       "數線上兩點距離等於兩坐標差的絕對值。",
-      "$|7-(1)|=|6|=6$。",
-      "所以 A、B 兩點的距離為 $6$。"
+      "$|-3-(-5)|=|2|=2$。",
+      "所以 A、B 兩點的距離為 $2$。"
     ],
     "metadata": {
       "scenario_family": "absolute_value_distance_between_two_points",
-      "scenario_id": "s4",
-      "parameter_signature": "absolute_value_distance_between_two_points:a=1:b=7:difficulty=easy",
-      "question_pattern_id": "p3",
-      "diagnosis_tags": [
-        "absolute_value_distance",
-        "number_line_distance",
-        "coordinate_difference"
-      ],
-      "prerequisite_subskills": [
-        "number_line_basic_position",
-        "absolute_value_numeric_evaluation"
-      ]
-    },
-    "question": "已知數線上兩點 $A(1)$、$B(7)$，試求 A、B 兩點的距離。",
-    "correct_answer": 6,
-    "explanation": "數線上兩點距離等於兩坐標差的絕對值。\n$|7-(1)|=|6|=6$。\n所以 A、B 兩點的距離為 $6$。",
-    "choices": []
-  },
-  {
-    "problem_type_id": "absolute_value_equation_basic",
-    "skill_id": "vh_數學B1_AbsoluteValue",
-    "subskill_id": "absolute_value_equation_basic",
-    "question_text": "解方程式 $|x|=5$。",
-    "answer": "x=-5 或 x=5",
-    "answer_type": "text",
-    "checker_type": "exact_string_checker",
-    "solution_steps": [
-      "$|x|=5$ 表示 $x$ 到 $0$ 的距離為 $5$。",
-      "因此 $x=-5$ 或 $x=5$。"
-    ],
-    "metadata": {
-      "scenario_family": "absolute_value_equation_basic",
-      "scenario_id": "s9",
-      "parameter_signature": "absolute_value_equation_basic:n=5:difficulty=easy",
-      "question_pattern_id": "p3",
-      "diagnosis_tags": [
-        "absolute_value_equation",
-        "two_solutions"
-      ],
-      "prerequisite_subskills": [
-        "absolute_value_numeric_evaluation"
-      ]
-    },
-    "question": "解方程式 $|x|=5$。",
-    "correct_answer": "x=-5 或 x=5",
-    "explanation": "$|x|=5$ 表示 $x$ 到 $0$ 的距離為 $5$。\n因此 $x=-5$ 或 $x=5$。",
-    "choices": []
-  },
-  {
-    "problem_type_id": "absolute_value_numeric_evaluation",
-    "skill_id": "vh_數學B1_AbsoluteValue",
-    "subskill_id": "absolute_value_numeric_evaluation",
-    "question_text": "求 $|3|$ 的值。",
-    "answer": 3,
-    "answer_type": "integer",
-    "checker_type": "integer_checker",
-    "solution_steps": [
-      "絕對值表示與 0 的距離。",
-      "$|3|=3$。"
-    ],
-    "metadata": {
-      "scenario_family": "absolute_value_numeric_evaluation",
-      "scenario_id": "s9",
-      "parameter_signature": "absolute_value_numeric_evaluation:n=3:difficulty=easy",
-      "question_pattern_id": "p1",
-      "diagnosis_tags": [
-        "absolute_value_definition",
-        "sign_error"
-      ],
-      "prerequisite_subskills": []
-    },
-    "question": "求 $|3|$ 的值。",
-    "correct_answer": 3,
-    "explanation": "絕對值表示與 0 的距離。\n$|3|=3$。",
-    "choices": []
-  },
-  {
-    "problem_type_id": "absolute_value_distance_from_zero",
-    "skill_id": "vh_數學B1_AbsoluteValue",
-    "subskill_id": "absolute_value_distance_from_zero",
-    "question_text": "下列哪一項是 $|-19|$ 的正確意義？",
-    "choices": [
-      "數線上 $-19$ 到 $0$ 的距離",
-      "數線上 $19$ 到 $-19$ 的距離",
-      "$-19$ 本身",
-      "一個負數"
-    ],
-    "answer": "數線上 $-19$ 到 $0$ 的距離",
-    "answer_type": "choice",
-    "checker_type": "choice_checker",
-    "solution_steps": [
-      "絕對值表示數線上該數到 $0$ 的距離。",
-      "因此 $|-19|$ 表示 $-19$ 到 $0$ 的距離。"
-    ],
-    "metadata": {
-      "scenario_family": "absolute_value_distance_from_zero",
-      "scenario_id": "s8",
-      "parameter_signature": "absolute_value_distance_from_zero:n=-19:pattern=meaning",
-      "question_pattern_id": "p1",
-      "diagnosis_tags": [
-        "absolute_value_meaning",
-        "distance_from_zero"
-      ],
-      "prerequisite_subskills": [
-        "number_line_basic_position"
-      ]
-    },
-    "question": "下列哪一項是 $|-19|$ 的正確意義？",
-    "correct_answer": "數線上 $-19$ 到 $0$ 的距離",
-    "explanation": "絕對值表示數線上該數到 $0$ 的距離。\n因此 $|-19|$ 表示 $-19$ 到 $0$ 的距離。"
-  },
-  {
-    "problem_type_id": "absolute_value_distance_between_two_points",
-    "skill_id": "vh_數學B1_AbsoluteValue",
-    "subskill_id": "absolute_value_distance_between_two_points",
-    "question_text": "已知數線上兩點 $A(0)$、$B(6)$，試求 A、B 兩點的距離。",
-    "answer": 6,
-    "answer_type": "integer",
-    "checker_type": "integer_checker",
-    "solution_steps": [
-      "數線上兩點距離等於兩坐標差的絕對值。",
-      "$|6-(0)|=|6|=6$。",
-      "所以 A、B 兩點的距離為 $6$。"
-    ],
-    "metadata": {
-      "scenario_family": "absolute_value_distance_between_two_points",
-      "scenario_id": "s7",
-      "parameter_signature": "absolute_value_distance_between_two_points:a=0:b=6:difficulty=easy",
+      "scenario_id": "s2",
+      "parameter_signature": "absolute_value_distance_between_two_points:a=-5:b=-3:difficulty=easy",
       "question_pattern_id": "p1",
       "diagnosis_tags": [
         "absolute_value_distance",
@@ -930,28 +930,28 @@
         "absolute_value_numeric_evaluation"
       ]
     },
-    "question": "已知數線上兩點 $A(0)$、$B(6)$，試求 A、B 兩點的距離。",
-    "correct_answer": 6,
-    "explanation": "數線上兩點距離等於兩坐標差的絕對值。\n$|6-(0)|=|6|=6$。\n所以 A、B 兩點的距離為 $6$。",
+    "question": "已知數線上兩點 $A(-5)$、$B(-3)$，試求 A、B 兩點的距離。",
+    "correct_answer": 2,
+    "explanation": "數線上兩點距離等於兩坐標差的絕對值。\n$|-3-(-5)|=|2|=2$。\n所以 A、B 兩點的距離為 $2$。",
     "choices": []
   },
   {
     "problem_type_id": "absolute_value_equation_basic",
     "skill_id": "vh_數學B1_AbsoluteValue",
     "subskill_id": "absolute_value_equation_basic",
-    "question_text": "解方程式 $|x|=8$。",
-    "answer": "x=-8 或 x=8",
+    "question_text": "解方程式 $|x|=14$。",
+    "answer": "x=-14 或 x=14",
     "answer_type": "text",
     "checker_type": "exact_string_checker",
     "solution_steps": [
-      "$|x|=8$ 表示 $x$ 到 $0$ 的距離為 $8$。",
-      "因此 $x=-8$ 或 $x=8$。"
+      "$|x|=14$ 表示 $x$ 到 $0$ 的距離為 $14$。",
+      "因此 $x=-14$ 或 $x=14$。"
     ],
     "metadata": {
       "scenario_family": "absolute_value_equation_basic",
       "scenario_id": "s4",
-      "parameter_signature": "absolute_value_equation_basic:n=8:difficulty=easy",
-      "question_pattern_id": "p3",
+      "parameter_signature": "absolute_value_equation_basic:n=14:difficulty=easy",
+      "question_pattern_id": "p4",
       "diagnosis_tags": [
         "absolute_value_equation",
         "two_solutions"
@@ -960,63 +960,63 @@
         "absolute_value_numeric_evaluation"
       ]
     },
-    "question": "解方程式 $|x|=8$。",
-    "correct_answer": "x=-8 或 x=8",
-    "explanation": "$|x|=8$ 表示 $x$ 到 $0$ 的距離為 $8$。\n因此 $x=-8$ 或 $x=8$。",
+    "question": "解方程式 $|x|=14$。",
+    "correct_answer": "x=-14 或 x=14",
+    "explanation": "$|x|=14$ 表示 $x$ 到 $0$ 的距離為 $14$。\n因此 $x=-14$ 或 $x=14$。",
     "choices": []
   },
   {
     "problem_type_id": "absolute_value_numeric_evaluation",
     "skill_id": "vh_數學B1_AbsoluteValue",
     "subskill_id": "absolute_value_numeric_evaluation",
-    "question_text": "求 $|-9|$ 的值。",
-    "answer": 9,
+    "question_text": "求 $|-17|$ 的值。",
+    "answer": 17,
     "answer_type": "integer",
     "checker_type": "integer_checker",
     "solution_steps": [
       "絕對值表示與 0 的距離。",
-      "$|-9|=9$。"
+      "$|-17|=17$。"
     ],
     "metadata": {
       "scenario_family": "absolute_value_numeric_evaluation",
       "scenario_id": "s7",
-      "parameter_signature": "absolute_value_numeric_evaluation:n=-9:difficulty=easy",
-      "question_pattern_id": "p4",
-      "diagnosis_tags": [
-        "absolute_value_definition",
-        "sign_error"
-      ],
-      "prerequisite_subskills": []
-    },
-    "question": "求 $|-9|$ 的值。",
-    "correct_answer": 9,
-    "explanation": "絕對值表示與 0 的距離。\n$|-9|=9$。",
-    "choices": []
-  },
-  {
-    "problem_type_id": "absolute_value_distance_from_zero",
-    "skill_id": "vh_數學B1_AbsoluteValue",
-    "subskill_id": "absolute_value_distance_from_zero",
-    "question_text": "下列哪一項是 $|-11|$ 的正確意義？",
-    "choices": [
-      "數線上 $-11$ 到 $0$ 的距離",
-      "數線上 $11$ 到 $-11$ 的距離",
-      "$-11$ 本身",
-      "一個負數"
-    ],
-    "answer": "數線上 $-11$ 到 $0$ 的距離",
-    "answer_type": "choice",
-    "checker_type": "choice_checker",
-    "solution_steps": [
-      "絕對值表示數線上該數到 $0$ 的距離。",
-      "因此 $|-11|$ 表示 $-11$ 到 $0$ 的距離。"
-    ],
-    "metadata": {
-      "scenario_family": "absolute_value_distance_from_zero",
-      "scenario_id": "s6",
-      "parameter_signature": "absolute_value_distance_from_zero:n=-11:pattern=meaning",
+      "parameter_signature": "absolute_value_numeric_evaluation:n=-17:difficulty=easy",
       "question_pattern_id": "p2",
       "diagnosis_tags": [
+        "absolute_value_definition",
+        "sign_error"
+      ],
+      "prerequisite_subskills": []
+    },
+    "question": "求 $|-17|$ 的值。",
+    "correct_answer": 17,
+    "explanation": "絕對值表示與 0 的距離。\n$|-17|=17$。",
+    "choices": []
+  },
+  {
+    "problem_type_id": "absolute_value_distance_from_zero",
+    "skill_id": "vh_數學B1_AbsoluteValue",
+    "subskill_id": "absolute_value_distance_from_zero",
+    "question_text": "下列哪一項是 $|-7|$ 的正確意義？",
+    "choices": [
+      "數線上 $-7$ 到 $0$ 的距離",
+      "數線上 $7$ 到 $-7$ 的距離",
+      "$-7$ 本身",
+      "一個負數"
+    ],
+    "answer": "數線上 $-7$ 到 $0$ 的距離",
+    "answer_type": "choice",
+    "checker_type": "choice_checker",
+    "solution_steps": [
+      "絕對值表示數線上該數到 $0$ 的距離。",
+      "因此 $|-7|$ 表示 $-7$ 到 $0$ 的距離。"
+    ],
+    "metadata": {
+      "scenario_family": "absolute_value_distance_from_zero",
+      "scenario_id": "s9",
+      "parameter_signature": "absolute_value_distance_from_zero:n=-7:pattern=meaning",
+      "question_pattern_id": "p1",
+      "diagnosis_tags": [
         "absolute_value_meaning",
         "distance_from_zero"
       ],
@@ -1024,9 +1024,9 @@
         "number_line_basic_position"
       ]
     },
-    "question": "下列哪一項是 $|-11|$ 的正確意義？",
-    "correct_answer": "數線上 $-11$ 到 $0$ 的距離",
-    "explanation": "絕對值表示數線上該數到 $0$ 的距離。\n因此 $|-11|$ 表示 $-11$ 到 $0$ 的距離。"
+    "question": "下列哪一項是 $|-7|$ 的正確意義？",
+    "correct_answer": "數線上 $-7$ 到 $0$ 的距離",
+    "explanation": "絕對值表示數線上該數到 $0$ 的距離。\n因此 $|-7|$ 表示 $-7$ 到 $0$ 的距離。"
   }
 ]
 ```

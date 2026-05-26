@@ -13,6 +13,58 @@ from core.gencode.classifiers.base import DETERMINISTIC_RUNTIME_CATEGORIES, REQU
 
 REPORT_DIR = PROJECT_ROOT / "reports" / "gencode_closed_loop"
 PENDING_REASON = "closed_loop_generator_not_implemented"
+EQUIVALENCE_TYPE_WHITELIST = {
+    "exact_string",
+    "numeric_exact",
+    "rational_equivalent",
+    "choice_label",
+    "unordered_solution_set",
+    "interval_set",
+    "algebraic_equivalent",
+    "manual_review_or_ai_judged",
+}
+BOOTSTRAP_ONLY_SKILLS: dict[str, dict[str, str]] = {
+    "vh_數學B1_NumberLine": {
+        "bootstrap_source_skill_id": "jh_數學1上_NumberLine",
+        "source_coverage_status": "INSUFFICIENT_OR_MISALIGNED_DB_EXAMPLES",
+    }
+}
+ANSWER_CONTRACT_DEFAULTS: dict[str, dict[str, dict[str, Any]]] = {
+    "vh_數學B1_AbsoluteValue": {
+        "absolute_value_numeric_evaluation": {
+            "answer_type": "integer",
+            "equivalence_type": "numeric_exact",
+            "checker_key": "integer_checker",
+            "order_matters": True,
+            "accepted_format_notes": ["single integer answer"],
+            "canonical_answer_schema": "int",
+        },
+        "absolute_value_distance_from_zero": {
+            "answer_type": "choice",
+            "equivalence_type": "choice_label",
+            "checker_key": "choice_label_checker",
+            "order_matters": True,
+            "accepted_format_notes": ["A/a/(A)/A./1/choice text aliases accepted by label checker"],
+            "canonical_answer_schema": "choice_label",
+        },
+        "absolute_value_distance_between_two_points": {
+            "answer_type": "integer",
+            "equivalence_type": "numeric_exact",
+            "checker_key": "integer_checker",
+            "order_matters": True,
+            "accepted_format_notes": ["single integer distance"],
+            "canonical_answer_schema": "int",
+        },
+        "absolute_value_equation_basic": {
+            "answer_type": "solution_set",
+            "equivalence_type": "unordered_solution_set",
+            "checker_key": "solution_set_checker",
+            "order_matters": False,
+            "accepted_format_notes": ["17,-17", "-17,17", "x=17 或 x=-17", "x=-17 或 x=17", "±17"],
+            "canonical_answer_schema": "set[int]",
+        },
+    }
+}
 
 
 def _run_cmd(cmd: list[str], timeout: int = 600) -> tuple[int, str, str]:
@@ -140,6 +192,7 @@ def _build_report(
     inventory_json: dict[str, Any],
     verify_json: dict[str, Any],
     runtime_coverage: dict[str, Any],
+    answer_contract_summary: dict[str, Any],
 ) -> None:
     lines = [
         f"# Skill Gencode Pipeline Report: {skill_id}",
@@ -160,6 +213,11 @@ def _build_report(
         lines.append(f"- {x['problem_type_id']}: status={x['status']}" + (f", reason={x['reason']}" if x.get("reason") else ""))
     lines += [
         "",
+        "## Answer Contract Coverage",
+        "```json",
+        json.dumps(answer_contract_summary, ensure_ascii=False, indent=2),
+        "```",
+        "",
         "## Runtime ProblemType Coverage",
         "```json",
         json.dumps(runtime_coverage, ensure_ascii=False, indent=2),
@@ -177,6 +235,23 @@ def _build_report(
     ]
     report_path.parent.mkdir(parents=True, exist_ok=True)
     report_path.write_text("\n".join(lines) + "\n", encoding="utf-8")
+
+
+def _bootstrap_runtime_probe(skill_id: str) -> bool:
+    try:
+        mod = __import__(f"skills.{skill_id}", fromlist=["*"])
+        p1 = mod.generate(level=1)
+        p2 = mod.generate(level=2)
+        if not isinstance(p1, dict) or not isinstance(p2, dict):
+            return False
+        required = {"skill_id", "question_text", "answer", "correct_answer", "problem_type_id", "answer_contract"}
+        if not required.issubset(set(p1.keys())):
+            return False
+        if not required.issubset(set(p2.keys())):
+            return False
+        return str(p1.get("skill_id", "")) == skill_id and str(p2.get("skill_id", "")) == skill_id
+    except Exception:
+        return False
 
 
 def main() -> None:
@@ -209,7 +284,24 @@ def main() -> None:
             "runtime_problem_type_coverage": {"status": "fail"},
             "report": str(report_path),
         }
-        _build_report(report_path, skill_id, final, {}, [], {"stdout": inv_out, "stderr": inv_err, "parsed": inv_json}, {}, {"status": "fail"})
+        _build_report(
+            report_path,
+            skill_id,
+            final,
+            {},
+            [],
+            {"stdout": inv_out, "stderr": inv_err, "parsed": inv_json},
+            {},
+            {"status": "fail"},
+            {
+                "equivalence_type_whitelist": sorted(EQUIVALENCE_TYPE_WHITELIST),
+                "observed_problem_type_answer_contracts": {},
+                "missing_answer_contract_problem_types": [],
+                "missing_checker_key_problem_types": [],
+                "invalid_equivalence_type_problem_types": [],
+                "equivalence_test_required_problem_types": [],
+            },
+        )
         print(json.dumps(final, ensure_ascii=False))
         return
 
@@ -261,6 +353,35 @@ def main() -> None:
         if isinstance(x, dict) and str(x.get("runtime_category", "")).strip() in DETERMINISTIC_RUNTIME_CATEGORIES
     }
     deterministic_pts = sorted(set(deterministic_pts) | {p for p in declared_pts if p})
+    pt_map = {
+        str(x.get("problem_type_id", "")).strip(): x
+        for x in problem_types
+        if isinstance(x, dict) and str(x.get("problem_type_id", "")).strip()
+    }
+
+    observed_answer_contracts: dict[str, Any] = {}
+    missing_answer_contract_problem_types: list[str] = []
+    missing_checker_key_problem_types: list[str] = []
+    invalid_equivalence_type_problem_types: list[str] = []
+    equivalence_test_required_problem_types: list[str] = []
+    for pt in deterministic_pts:
+        row = pt_map.get(pt, {})
+        contract = row.get("answer_contract") if isinstance(row, dict) else None
+        if not isinstance(contract, dict):
+            contract = (ANSWER_CONTRACT_DEFAULTS.get(skill_id, {}) or {}).get(pt)
+        if not isinstance(contract, dict):
+            missing_answer_contract_problem_types.append(pt)
+            observed_answer_contracts[pt] = None
+            continue
+        observed_answer_contracts[pt] = contract
+        checker_key = str(contract.get("checker_key", "")).strip()
+        if not checker_key:
+            missing_checker_key_problem_types.append(pt)
+        eq_type = str(contract.get("equivalence_type", "")).strip()
+        if eq_type and eq_type not in EQUIVALENCE_TYPE_WHITELIST:
+            invalid_equivalence_type_problem_types.append(pt)
+        if eq_type not in {"exact_string", "numeric_exact"}:
+            equivalence_test_required_problem_types.append(pt)
 
     per_pt_results: list[dict[str, Any]] = []
     verified_problem_types = _load_registry_verified_problem_types(skill_id)
@@ -313,6 +434,35 @@ def main() -> None:
     if runtime_coverage["status"] not in {"pass", "fail"}:
         runtime_coverage["status"] = "pass" if verify_ok else "fail"
 
+    contract_target_pts = sorted(
+        set(deterministic_pts)
+        | set(runtime_coverage.get("expected_problem_types", []) or [])
+        | set(runtime_coverage.get("observed_problem_types", []) or [])
+    )
+    observed_answer_contracts = {}
+    missing_answer_contract_problem_types = []
+    missing_checker_key_problem_types = []
+    invalid_equivalence_type_problem_types = []
+    equivalence_test_required_problem_types = []
+    for pt in contract_target_pts:
+        row = pt_map.get(pt, {})
+        contract = row.get("answer_contract") if isinstance(row, dict) else None
+        if not isinstance(contract, dict):
+            contract = (ANSWER_CONTRACT_DEFAULTS.get(skill_id, {}) or {}).get(pt)
+        if not isinstance(contract, dict):
+            missing_answer_contract_problem_types.append(pt)
+            observed_answer_contracts[pt] = None
+            continue
+        observed_answer_contracts[pt] = contract
+        checker_key = str(contract.get("checker_key", "")).strip()
+        if not checker_key:
+            missing_checker_key_problem_types.append(pt)
+        eq_type = str(contract.get("equivalence_type", "")).strip()
+        if eq_type and eq_type not in EQUIVALENCE_TYPE_WHITELIST:
+            invalid_equivalence_type_problem_types.append(pt)
+        if eq_type not in {"exact_string", "numeric_exact"}:
+            equivalence_test_required_problem_types.append(pt)
+
     all_observed_deterministic_verified = set(deterministic_pts).issubset(set(verified_problem_types))
 
     semantic_audit_summary = {
@@ -323,6 +473,12 @@ def main() -> None:
         "audit_review_required_count": audit_review_required_count,
         "examples_with_risk_flags": examples_with_risk_flags,
         "possible_missing_problem_types": possible_missing_problem_types,
+        "answer_contract_equivalence_type_whitelist": sorted(EQUIVALENCE_TYPE_WHITELIST),
+        "observed_problem_type_answer_contracts": observed_answer_contracts,
+        "missing_answer_contract_problem_types": sorted(missing_answer_contract_problem_types),
+        "missing_checker_key_problem_types": sorted(missing_checker_key_problem_types),
+        "invalid_equivalence_type_problem_types": sorted(invalid_equivalence_type_problem_types),
+        "equivalence_test_required_problem_types": sorted(equivalence_test_required_problem_types),
     }
 
     blocking_reasons: list[str] = []
@@ -334,6 +490,12 @@ def main() -> None:
         blocking_reasons.append("manual_review_not_resolved")
     if possible_missing_problem_types:
         blocking_reasons.append("possible_missing_problem_type")
+    if missing_answer_contract_problem_types:
+        blocking_reasons.append("missing_answer_contract_problem_types")
+    if missing_checker_key_problem_types:
+        blocking_reasons.append("missing_checker_key_problem_types")
+    if invalid_equivalence_type_problem_types:
+        blocking_reasons.append("invalid_equivalence_type_problem_types")
     if not all_observed_deterministic_verified:
         blocking_reasons.append("unverified_observed_problem_type")
     if pending_implementation:
@@ -352,6 +514,9 @@ def main() -> None:
         and missing_required_fields_count == 0
         and audit_review_required_count == 0
         and len(possible_missing_problem_types) == 0
+        and not missing_answer_contract_problem_types
+        and not missing_checker_key_problem_types
+        and not invalid_equivalence_type_problem_types
         and all_observed_deterministic_verified
         and not pending_implementation
         and not failed_problem_types
@@ -361,7 +526,12 @@ def main() -> None:
         and runtime_coverage.get("status") == "pass"
     )
 
-    if (not inventory_ok) or (not verify_ok) or (len(verified_problem_types) == 0):
+    bootstrap_cfg = BOOTSTRAP_ONLY_SKILLS.get(skill_id)
+    bootstrap_runtime_ok = _bootstrap_runtime_probe(skill_id) if bootstrap_cfg else False
+
+    if bootstrap_cfg and bootstrap_runtime_ok:
+        final_status = "PASS_BOOTSTRAP_ONLY"
+    elif (not inventory_ok) or (not verify_ok) or (len(verified_problem_types) == 0):
         final_status = "FAIL"
     elif coverage_ready:
         final_status = "PASS"
@@ -369,7 +539,7 @@ def main() -> None:
         final_status = "PARTIAL"
 
     final = {
-        "success": final_status in {"PASS", "PARTIAL"},
+        "success": final_status in {"PASS", "PARTIAL", "PASS_BOOTSTRAP_ONLY"},
         "final_status": final_status,
         "verified_problem_types": sorted(verified_problem_types),
         "pending_implementation": sorted(pending_implementation),
@@ -379,10 +549,24 @@ def main() -> None:
         "blocking_reasons": sorted(set(blocking_reasons)),
         "coverage_status": "FULL_OBSERVED_COVERAGE" if coverage_ready else "INCOMPLETE_PROBLEM_TYPE_COVERAGE",
         "full_skill_coverage": coverage_ready,
+        "full_observed_coverage": coverage_ready,
         "semantic_audit_summary": semantic_audit_summary,
         "runtime_problem_type_coverage": runtime_coverage,
         "report": str(report_path),
     }
+    if bootstrap_cfg:
+        final["bootstrap_summary"] = {
+            "bootstrap_mode": True,
+            "bootstrap_source_skill_id": bootstrap_cfg["bootstrap_source_skill_id"],
+            "bootstrap_runtime_status": "PASS" if bootstrap_runtime_ok else "FAIL",
+            "source_coverage_status": bootstrap_cfg["source_coverage_status"],
+            "full_observed_coverage": False,
+            "warning": "Bootstrap-only runtime ready; not full DB observed textbook coverage.",
+        }
+        final["bootstrap_mode"] = True
+        final["bootstrap_source_skill_id"] = bootstrap_cfg["bootstrap_source_skill_id"]
+        final["bootstrap_runtime_status"] = "PASS" if bootstrap_runtime_ok else "FAIL"
+        final["source_coverage_status"] = bootstrap_cfg["source_coverage_status"]
 
     _build_report(
         report_path=report_path,
@@ -393,6 +577,14 @@ def main() -> None:
         inventory_json={"stdout": inv_out, "stderr": inv_err, "parsed": inv_json},
         verify_json={"stdout": v_out, "stderr": v_err, "parsed": v_json},
         runtime_coverage=runtime_coverage,
+        answer_contract_summary={
+            "equivalence_type_whitelist": sorted(EQUIVALENCE_TYPE_WHITELIST),
+            "observed_problem_type_answer_contracts": observed_answer_contracts,
+            "missing_answer_contract_problem_types": sorted(missing_answer_contract_problem_types),
+            "missing_checker_key_problem_types": sorted(missing_checker_key_problem_types),
+            "invalid_equivalence_type_problem_types": sorted(invalid_equivalence_type_problem_types),
+            "equivalence_test_required_problem_types": sorted(equivalence_test_required_problem_types),
+        },
     )
     print(json.dumps(final, ensure_ascii=False))
 

@@ -1,0 +1,152 @@
+{
+  "skill_id": "vh_數學B1_AbsoluteValueInequality",
+  "proposed_problem_types": [
+    "absolute_value_inequality_integer_solution_count_choice",
+    "absolute_value_inequality_linear_expression_basic",
+    "absolute_value_inequality_malformed_source_review",
+    "absolute_value_inequality_shifted_basic",
+    "absolute_value_inequality_zero_center_basic"
+  ],
+  "proposed_example_map": [
+    {
+      "example_id": 4400,
+      "proposed_problem_type_id": "absolute_value_inequality_zero_center_basic",
+      "reason": "heuristic_pattern_match",
+      "problem_preview": "試求下列不等式之解：\n(1)$| x |$<= 8 (2)$| x |$> 10 (3)$| x |$< 7 (4)$| x |$>= 12"
+    },
+    {
+      "example_id": 4402,
+      "proposed_problem_type_id": "absolute_value_inequality_shifted_basic",
+      "reason": "heuristic_pattern_match",
+      "problem_preview": "解下列不等式：\n(1)$| x-2 |<= 4$ (2)$| x+5 |>1$"
+    },
+    {
+      "example_id": 4403,
+      "proposed_problem_type_id": "absolute_value_inequality_shifted_basic",
+      "reason": "heuristic_pattern_match",
+      "problem_preview": "解下列不等式：\n(1)$| x-3 |<2$ (2)$| x+5 |>= 4$"
+    },
+    {
+      "example_id": 4404,
+      "proposed_problem_type_id": "absolute_value_inequality_linear_expression_basic",
+      "reason": "heuristic_pattern_match",
+      "problem_preview": "解不等式$| 4x+1 |<= 6$。"
+    },
+    {
+      "example_id": 4405,
+      "proposed_problem_type_id": "absolute_value_inequality_linear_expression_basic",
+      "reason": "heuristic_pattern_match",
+      "problem_preview": "解不等式$| 2x-3 |>1$。"
+    },
+    {
+      "example_id": 4406,
+      "proposed_problem_type_id": "absolute_value_inequality_linear_expression_basic",
+      "reason": "heuristic_pattern_match",
+      "problem_preview": "解不等式$| 3x-1 |>= 7$。"
+    },
+    {
+      "example_id": 4407,
+      "proposed_problem_type_id": "absolute_value_inequality_linear_expression_basic",
+      "reason": "heuristic_pattern_match",
+      "problem_preview": "解不等式$| 5x+3 |<7$。"
+    },
+    {
+      "example_id": 4409,
+      "proposed_problem_type_id": "absolute_value_inequality_malformed_source_review",
+      "reason": "heuristic_pattern_match",
+      "problem_preview": "試求下列不等式之解：(1)$| x |$3 (2) $| x |$ >= 4"
+    },
+    {
+      "example_id": 4413,
+      "proposed_problem_type_id": "absolute_value_inequality_zero_center_basic",
+      "reason": "heuristic_pattern_match",
+      "problem_preview": "試求下列不等式之解：(1) $| x |$ <= 6 (2) $| x |$> 5"
+    },
+    {
+      "example_id": 4499,
+      "proposed_problem_type_id": "absolute_value_inequality_integer_solution_count_choice",
+      "reason": "heuristic_pattern_match",
+      "problem_preview": "試求滿足不等式$| 3x-2 |<= 8$的整數x共有多少個？ (A) 4 (B) 5 (C) 6 (D) 7。"
+    }
+  ],
+  "proposed_answer_contracts": {
+    "absolute_value_inequality_integer_solution_count_choice": {
+      "answer_type": "choice",
+      "equivalence_type": "choice_label",
+      "checker_key": "choice_label_checker",
+      "order_matters": true,
+      "accepted_format_notes": [
+        "A/B/C/D labels"
+      ],
+      "canonical_answer_schema": {
+        "type": "choice_label"
+      }
+    },
+    "absolute_value_inequality_linear_expression_basic": {
+      "answer_type": "interval_set",
+      "equivalence_type": "interval_set",
+      "checker_key": "interval_checker",
+      "order_matters": false,
+      "accepted_format_notes": [
+        "x > a",
+        "x < a",
+        "x ≤ a",
+        "x ≥ a",
+        "interval notation"
+      ],
+      "canonical_answer_schema": {
+        "type": "interval_set"
+      }
+    },
+    "absolute_value_inequality_malformed_source_review": {
+      "answer_type": "manual_review",
+      "equivalence_type": "manual_review_or_ai_judged",
+      "checker_key": "manual_review_checker",
+      "order_matters": false,
+      "accepted_format_notes": [
+        "requires source text correction before deterministic generation"
+      ],
+      "canonical_answer_schema": {
+        "type": "manual_review"
+      }
+    },
+    "absolute_value_inequality_shifted_basic": {
+      "answer_type": "interval_set",
+      "equivalence_type": "interval_set",
+      "checker_key": "interval_checker",
+      "order_matters": false,
+      "accepted_format_notes": [
+        "x > a",
+        "x < a",
+        "x ≤ a",
+        "x ≥ a",
+        "interval notation"
+      ],
+      "canonical_answer_schema": {
+        "type": "interval_set"
+      }
+    },
+    "absolute_value_inequality_zero_center_basic": {
+      "answer_type": "interval_set",
+      "equivalence_type": "interval_set",
+      "checker_key": "interval_checker",
+      "order_matters": false,
+      "accepted_format_notes": [
+        "x > a",
+        "x < a",
+        "x ≤ a",
+        "x ≥ a",
+        "interval notation"
+      ],
+      "canonical_answer_schema": {
+        "type": "interval_set"
+      }
+    }
+  },
+  "manual_review_candidates": [
+    4409
+  ],
+  "risk_flags": [
+    "contains_malformed_or_unclassified_examples"
+  ]
+}

@@ -1,0 +1,10 @@
+vh_數學B1_NumberLine:
+  bootstrap_mode: true
+  bootstrap_source_skill_id: jh_數學1上_NumberLine
+  source_coverage_status: INSUFFICIENT_OR_MISALIGNED_DB_EXAMPLES
+  allowed_problem_types:
+    - number_line_point_value_reading
+    - number_line_distance_between_points
+  final_status_when_runtime_pass: PASS_BOOTSTRAP_ONLY
+  warning: "Bootstrap-only runtime ready; not full DB observed textbook coverage."
+

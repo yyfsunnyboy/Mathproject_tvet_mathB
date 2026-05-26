@@ -1,0 +1,148 @@
+# Phase1 Audit: vh_數學B1_AbsoluteValue
+
+## summary
+```json
+{
+  "skill_id": "vh_數學B1_AbsoluteValue",
+  "phase": "phase1_audit",
+  "final_status": "AUDIT_PASS",
+  "examples_total": 4,
+  "examples_covered": 4,
+  "examples_map": [
+    {
+      "example_id": 4398,
+      "title": "",
+      "source_type": "textbook_example",
+      "source_chapter": "chapter_1",
+      "source_section": "section_1_1_number_line_absolute_value",
+      "problem_preview": "數線上，若$\\left| x \\right|$= 8，試求x之值。",
+      "problem_text_hash": "b06403702eeb6efad7d945c6888bad25496047a6",
+      "skill_id": "vh_數學B1_AbsoluteValue",
+      "subskill_id": "absolute_value_equation_basic",
+      "problem_type_id": "absolute_value_equation_basic",
+      "runtime_category": "deterministic_expression",
+      "classification_rule_id": "absv.rule.equation_basic",
+      "classification_reason": "題目要求解 $|x|=a$ 的基本絕對值方程。",
+      "classifier_confidence": "high",
+      "semantic_risk_flags": null,
+      "semantic_audit_status": "pass",
+      "generator_status": "supported_deterministic",
+      "manual_review_reason": ""
+    },
+    {
+      "example_id": 4399,
+      "title": "",
+      "source_type": "textbook_example",
+      "source_chapter": "chapter_1",
+      "source_section": "section_1_1_number_line_absolute_value",
+      "problem_preview": "已知數線上兩點$A\\left( -3 \\right)$、$B\\left( 7 \\right)$，試求A、B兩點的距離。",
+      "problem_text_hash": "f42b4f977da732a7c39070e6bfb390d4acc099f5",
+      "skill_id": "vh_數學B1_AbsoluteValue",
+      "subskill_id": "absolute_value_distance_between_two_points",
+      "problem_type_id": "absolute_value_distance_between_two_points",
+      "runtime_category": "deterministic_numeric",
+      "classification_rule_id": "absv.rule.distance_between_points",
+      "classification_reason": "題目要求求數線上兩點距離，可用兩坐標差的絕對值計算。",
+      "classifier_confidence": "high",
+      "semantic_risk_flags": null,
+      "semantic_audit_status": "pass",
+      "generator_status": "supported_deterministic",
+      "manual_review_reason": ""
+    },
+    {
+      "example_id": 4408,
+      "title": "",
+      "source_type": "textbook_example",
+      "source_chapter": "chapter_1",
+      "source_section": "section_1_1_number_line_absolute_value",
+      "problem_preview": "數線上，若$\\left| x \\right|$= 7，試求x之值。",
+      "problem_text_hash": "932371dbcfc1c35c2cbc7604b9fb7b45a2da71fd",
+      "skill_id": "vh_數學B1_AbsoluteValue",
+      "subskill_id": "absolute_value_equation_basic",
+      "problem_type_id": "absolute_value_equation_basic",
+      "runtime_category": "deterministic_expression",
+      "classification_rule_id": "absv.rule.equation_basic",
+      "classification_reason": "題目要求解 $|x|=a$ 的基本絕對值方程。",
+      "classifier_confidence": "high",
+      "semantic_risk_flags": null,
+      "semantic_audit_status": "pass",
+      "generator_status": "supported_deterministic",
+      "manual_review_reason": ""
+    },
+    {
+      "example_id": 4412,
+      "title": "",
+      "source_type": "textbook_example",
+      "source_chapter": "chapter_1",
+      "source_section": "section_1_1_number_line_absolute_value",
+      "problem_preview": "數線上，若$\\left| x \\right|$= 4，試求x之值。",
+      "problem_text_hash": "6174eaa2bea538ecdfc29bcb6a21e8181de3b363",
+      "skill_id": "vh_數學B1_AbsoluteValue",
+      "subskill_id": "absolute_value_equation_basic",
+      "problem_type_id": "absolute_value_equation_basic",
+      "runtime_category": "deterministic_expression",
+      "classification_rule_id": "absv.rule.equation_basic",
+      "classification_reason": "題目要求解 $|x|=a$ 的基本絕對值方程。",
+      "classifier_confidence": "high",
+      "semantic_risk_flags": null,
+      "semantic_audit_status": "pass",
+      "generator_status": "supported_deterministic",
+      "manual_review_reason": ""
+    }
+  ],
+  "observed_problem_types": [
+    "absolute_value_distance_between_two_points",
+    "absolute_value_equation_basic"
+  ],
+  "source_coverage_status": "FULL_OBSERVED_COVERAGE_CANDIDATE",
+  "bootstrap_summary": {
+    "bootstrap_mode": false,
+    "bootstrap_source_skill_id": "",
+    "source_coverage_status": "",
+    "allowed_problem_types": []
+  },
+  "answer_contract_summary": {
+    "absolute_value_distance_between_two_points": {
+      "answer_type": "integer",
+      "equivalence_type": "numeric_exact",
+      "checker_key": "integer_checker",
+      "order_matters": true,
+      "accepted_format_notes": [
+        "single integer distance"
+      ],
+      "canonical_answer_schema": "int"
+    },
+    "absolute_value_equation_basic": {
+      "answer_type": "solution_set",
+      "equivalence_type": "unordered_solution_set",
+      "checker_key": "solution_set_checker",
+      "order_matters": false,
+      "accepted_format_notes": [
+        "17,-17",
+        "-17,17",
+        "x=17 或 x=-17",
+        "x=-17 或 x=17",
+        "±17"
+      ],
+      "canonical_answer_schema": "set[int]"
+    }
+  },
+  "missing_answer_contract_problem_types": [],
+  "missing_checker_key_problem_types": [],
+  "equivalence_test_required_problem_types": [
+    "absolute_value_equation_basic"
+  ],
+  "manual_review_problem_types": [],
+  "future_ai_judged_problem_types": [],
+  "risk_flags": [],
+  "recommended_next_phase": "phase2_build",
+  "blocking_reasons": [],
+  "warnings": [],
+  "artifact_paths": {
+    "phase1_json": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_AbsoluteValue_phase1_audit.json",
+    "phase1_md": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_AbsoluteValue_phase1_audit.md",
+    "inventory_report": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_AbsoluteValue_inventory_report.md"
+  },
+  "timestamp": "2026-05-26T04:14:04.691145+00:00"
+}
+```

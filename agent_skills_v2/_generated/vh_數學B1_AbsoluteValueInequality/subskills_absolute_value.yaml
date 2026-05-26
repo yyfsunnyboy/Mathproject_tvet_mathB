@@ -1,0 +1,67 @@
+skill_id: "vh_數學B1_AbsoluteValueInequality"
+subskills:
+  -
+    subskill_id: "absolute_value_inequality_integer_solution_count_choice"
+    observed: true
+    supporting_example_ids:
+      - 4499
+    suggested_problem_types:
+      - "absolute_value_inequality_integer_solution_count_choice"
+    runtime_category: "deterministic_choice"
+    prerequisite_subskills:
+      - "absolute_value_numeric_evaluation"
+    diagnosis_tags:
+      - "absolute_value"
+  -
+    subskill_id: "absolute_value_inequality_linear_expression_basic"
+    observed: true
+    supporting_example_ids:
+      - 4404
+      - 4405
+      - 4406
+      - 4407
+    suggested_problem_types:
+      - "absolute_value_inequality_linear_expression_basic"
+    runtime_category: "deterministic_expression"
+    prerequisite_subskills:
+      - "absolute_value_numeric_evaluation"
+    diagnosis_tags:
+      - "absolute_value"
+  -
+    subskill_id: "absolute_value_inequality_malformed_source_review"
+    observed: true
+    supporting_example_ids:
+      - 4409
+    suggested_problem_types:
+      - "absolute_value_inequality_malformed_source_review"
+    runtime_category: "manual_review"
+    prerequisite_subskills:
+      - "absolute_value_numeric_evaluation"
+    diagnosis_tags:
+      - "absolute_value"
+  -
+    subskill_id: "absolute_value_inequality_shifted_basic"
+    observed: true
+    supporting_example_ids:
+      - 4402
+      - 4403
+    suggested_problem_types:
+      - "absolute_value_inequality_shifted_basic"
+    runtime_category: "deterministic_expression"
+    prerequisite_subskills:
+      - "absolute_value_numeric_evaluation"
+    diagnosis_tags:
+      - "absolute_value"
+  -
+    subskill_id: "absolute_value_inequality_zero_center_basic"
+    observed: true
+    supporting_example_ids:
+      - 4400
+      - 4413
+    suggested_problem_types:
+      - "absolute_value_inequality_zero_center_basic"
+    runtime_category: "deterministic_expression"
+    prerequisite_subskills:
+      - "absolute_value_numeric_evaluation"
+    diagnosis_tags:
+      - "absolute_value"

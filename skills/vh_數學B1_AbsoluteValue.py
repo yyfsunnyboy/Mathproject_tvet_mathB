@@ -2,6 +2,9 @@
 
 from __future__ import annotations
 
+import re
+
+from core.checkers.solution_set_checker import check_solution_set_answer, parse_solution_set_answer
 from core.vocational_math_b1.generated_candidate_loader import generate_from_verified_candidate
 
 SKILL_ID = "vh_數學B1_AbsoluteValue"
@@ -21,9 +24,25 @@ def get_question(*args, **kwargs):
     return generate(**kwargs)
 
 
+def _is_absolute_value_equation_solution_format(text: object) -> bool:
+    s = str(text or "")
+    if not s.strip():
+        return False
+    parsed = parse_solution_set_answer(s)
+    if len(parsed) != 2:
+        return False
+    vals = sorted(parsed)
+    if vals[0] + vals[1] != 0:
+        return False
+    return bool(re.search(r"[xX]|±|\+\-|或|\{|\}|,|，", s))
+
+
 def check(user_answer, correct_answer):
     user_text = str(user_answer).strip()
     correct_text = str(correct_answer).strip()
+    if _is_absolute_value_equation_solution_format(correct_text):
+        if check_solution_set_answer(user_text, correct_text):
+            return {"correct": True, "result": "答對了"}
     if user_text == correct_text:
         return {"correct": True, "result": "答對了"}
     return {"correct": False, "result": f"答錯了，正確答案是 {correct_answer}"}

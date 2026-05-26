@@ -1,0 +1,2 @@
+"""Shared checker helpers."""
+

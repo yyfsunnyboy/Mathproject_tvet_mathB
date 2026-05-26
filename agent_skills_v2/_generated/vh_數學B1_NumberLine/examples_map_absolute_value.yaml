@@ -1,0 +1,22 @@
+examples:
+  -
+    example_id: 4401
+    title: ""
+    source_type: "textbook_example"
+    source_chapter: "unknown"
+    source_section: "unknown"
+    problem_preview: "已知10 > −5，完成下列表格。\n10 > −5\n不等式左邊\n不等式右邊\n比較大小\n兩邊同乘以5\n①\n②\n③\n兩邊同乘以$\\left( -5 \\right)$\n④\n⑤\n⑥\n兩邊同除以5\n⑦\n⑧\n⑨\n兩邊同除以$\\left( -5 \\right)$\n⑩\n⑪\n⑫"
+    problem_text_hash: "2aa528a9c9a45957945551892857408243647edf"
+    skill_id: "vh_數學B1_NumberLine"
+    subskill_id: "unknown"
+    problem_type_id: "unknown"
+    runtime_category: "manual_review"
+    classification_rule_id: "fallback.unknown"
+    classification_reason: "No skill-specific classifier found; fallback classifier routes to manual review."
+    classifier_confidence: "low"
+    semantic_risk_flags:
+      - "possible_missing_problem_type"
+      - "weak_classifier_match"
+    semantic_audit_status: "review_required"
+    generator_status: "manual_review"
+    manual_review_reason: "Skill-specific classifier/rule pack is missing."

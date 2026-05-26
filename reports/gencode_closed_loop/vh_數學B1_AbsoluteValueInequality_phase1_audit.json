@@ -1,0 +1,344 @@
+{
+  "skill_id": "vh_數學B1_AbsoluteValueInequality",
+  "phase": "phase1_audit",
+  "final_status": "AUDIT_PARTIAL",
+  "examples_total": 10,
+  "examples_covered": 10,
+  "examples_map": [
+    {
+      "example_id": 4400,
+      "title": "",
+      "source_type": "textbook_example",
+      "source_chapter": "unknown",
+      "source_section": "unknown",
+      "problem_preview": "試求下列不等式之解：\n(1)$| x |$<= 8 (2)$| x |$> 10 (3)$| x |$< 7 (4)$| x |$>= 12",
+      "problem_text_hash": "5034e92b89964a520ce550c86a073519859d5acf",
+      "skill_id": "vh_數學B1_AbsoluteValueInequality",
+      "subskill_id": "absolute_value_inequality_zero_center_basic",
+      "problem_type_id": "absolute_value_inequality_zero_center_basic",
+      "runtime_category": "deterministic_expression",
+      "classification_rule_id": "absi.rule.zero_center_basic",
+      "classification_reason": "|x| 型不等式。",
+      "classifier_confidence": "high",
+      "semantic_risk_flags": null,
+      "semantic_audit_status": "pass",
+      "generator_status": "supported_deterministic",
+      "manual_review_reason": ""
+    },
+    {
+      "example_id": 4402,
+      "title": "",
+      "source_type": "textbook_example",
+      "source_chapter": "unknown",
+      "source_section": "unknown",
+      "problem_preview": "解下列不等式：\n(1)$| x-2 |<= 4$ (2)$| x+5 |>1$",
+      "problem_text_hash": "e7df2d6a9ca82a4ca5bd765c9a161880187f5710",
+      "skill_id": "vh_數學B1_AbsoluteValueInequality",
+      "subskill_id": "absolute_value_inequality_shifted_basic",
+      "problem_type_id": "absolute_value_inequality_shifted_basic",
+      "runtime_category": "deterministic_expression",
+      "classification_rule_id": "absi.rule.shifted_basic",
+      "classification_reason": "|x-a| / |x+a| 型不等式。",
+      "classifier_confidence": "high",
+      "semantic_risk_flags": null,
+      "semantic_audit_status": "pass",
+      "generator_status": "supported_deterministic",
+      "manual_review_reason": ""
+    },
+    {
+      "example_id": 4403,
+      "title": "",
+      "source_type": "textbook_example",
+      "source_chapter": "unknown",
+      "source_section": "unknown",
+      "problem_preview": "解下列不等式：\n(1)$| x-3 |<2$ (2)$| x+5 |>= 4$",
+      "problem_text_hash": "e32650392a61a1bf13d8985c7dc6e009acc48533",
+      "skill_id": "vh_數學B1_AbsoluteValueInequality",
+      "subskill_id": "absolute_value_inequality_shifted_basic",
+      "problem_type_id": "absolute_value_inequality_shifted_basic",
+      "runtime_category": "deterministic_expression",
+      "classification_rule_id": "absi.rule.shifted_basic",
+      "classification_reason": "|x-a| / |x+a| 型不等式。",
+      "classifier_confidence": "high",
+      "semantic_risk_flags": null,
+      "semantic_audit_status": "pass",
+      "generator_status": "supported_deterministic",
+      "manual_review_reason": ""
+    },
+    {
+      "example_id": 4404,
+      "title": "",
+      "source_type": "textbook_example",
+      "source_chapter": "unknown",
+      "source_section": "unknown",
+      "problem_preview": "解不等式$| 4x+1 |<= 6$。",
+      "problem_text_hash": "9d3e0a1f8302636a5e1ae2081922bf4d61aaa5fa",
+      "skill_id": "vh_數學B1_AbsoluteValueInequality",
+      "subskill_id": "absolute_value_inequality_linear_expression_basic",
+      "problem_type_id": "absolute_value_inequality_linear_expression_basic",
+      "runtime_category": "deterministic_expression",
+      "classification_rule_id": "absi.rule.linear_expression_basic",
+      "classification_reason": "|ax+b| 不等式（a 非 1）",
+      "classifier_confidence": "high",
+      "semantic_risk_flags": null,
+      "semantic_audit_status": "pass",
+      "generator_status": "supported_deterministic",
+      "manual_review_reason": ""
+    },
+    {
+      "example_id": 4405,
+      "title": "",
+      "source_type": "textbook_example",
+      "source_chapter": "unknown",
+      "source_section": "unknown",
+      "problem_preview": "解不等式$| 2x-3 |>1$。",
+      "problem_text_hash": "32ed1d97f162b2623d91cb4dffa3a244c99c4ab0",
+      "skill_id": "vh_數學B1_AbsoluteValueInequality",
+      "subskill_id": "absolute_value_inequality_linear_expression_basic",
+      "problem_type_id": "absolute_value_inequality_linear_expression_basic",
+      "runtime_category": "deterministic_expression",
+      "classification_rule_id": "absi.rule.linear_expression_basic",
+      "classification_reason": "|ax+b| 不等式（a 非 1）",
+      "classifier_confidence": "high",
+      "semantic_risk_flags": null,
+      "semantic_audit_status": "pass",
+      "generator_status": "supported_deterministic",
+      "manual_review_reason": ""
+    },
+    {
+      "example_id": 4406,
+      "title": "",
+      "source_type": "textbook_example",
+      "source_chapter": "unknown",
+      "source_section": "unknown",
+      "problem_preview": "解不等式$| 3x-1 |>= 7$。",
+      "problem_text_hash": "f3116732a3667451816b044388177d253a2b5f7a",
+      "skill_id": "vh_數學B1_AbsoluteValueInequality",
+      "subskill_id": "absolute_value_inequality_linear_expression_basic",
+      "problem_type_id": "absolute_value_inequality_linear_expression_basic",
+      "runtime_category": "deterministic_expression",
+      "classification_rule_id": "absi.rule.linear_expression_basic",
+      "classification_reason": "|ax+b| 不等式（a 非 1）",
+      "classifier_confidence": "high",
+      "semantic_risk_flags": null,
+      "semantic_audit_status": "pass",
+      "generator_status": "supported_deterministic",
+      "manual_review_reason": ""
+    },
+    {
+      "example_id": 4407,
+      "title": "",
+      "source_type": "textbook_example",
+      "source_chapter": "unknown",
+      "source_section": "unknown",
+      "problem_preview": "解不等式$| 5x+3 |<7$。",
+      "problem_text_hash": "01450509681b8f4bda1ac29bd6f9c1d962192921",
+      "skill_id": "vh_數學B1_AbsoluteValueInequality",
+      "subskill_id": "absolute_value_inequality_linear_expression_basic",
+      "problem_type_id": "absolute_value_inequality_linear_expression_basic",
+      "runtime_category": "deterministic_expression",
+      "classification_rule_id": "absi.rule.linear_expression_basic",
+      "classification_reason": "|ax+b| 不等式（a 非 1）",
+      "classifier_confidence": "high",
+      "semantic_risk_flags": null,
+      "semantic_audit_status": "pass",
+      "generator_status": "supported_deterministic",
+      "manual_review_reason": ""
+    },
+    {
+      "example_id": 4409,
+      "title": "",
+      "source_type": "textbook_example",
+      "source_chapter": "unknown",
+      "source_section": "unknown",
+      "problem_preview": "試求下列不等式之解：(1)$| x |$3 (2) $| x |$ >= 4",
+      "problem_text_hash": "ded1a4b705a42521b9de8e116431c681ec73bb5e",
+      "skill_id": "vh_數學B1_AbsoluteValueInequality",
+      "subskill_id": "absolute_value_inequality_malformed_source_review",
+      "problem_type_id": "absolute_value_inequality_malformed_source_review",
+      "runtime_category": "manual_review",
+      "classification_rule_id": "absi.rule.malformed_source_review",
+      "classification_reason": "題幹疑似缺漏或格式錯誤，需人工審查。",
+      "classifier_confidence": "medium",
+      "semantic_risk_flags": [
+        "source_text_malformed",
+        "needs_import_review"
+      ],
+      "semantic_audit_status": "review_required",
+      "generator_status": "manual_review",
+      "manual_review_reason": "Malformed absolute value inequality source text."
+    },
+    {
+      "example_id": 4413,
+      "title": "",
+      "source_type": "textbook_example",
+      "source_chapter": "unknown",
+      "source_section": "unknown",
+      "problem_preview": "試求下列不等式之解：(1) $| x |$ <= 6 (2) $| x |$> 5",
+      "problem_text_hash": "677395353276b8f49e3a56cb115a31562f2e7af7",
+      "skill_id": "vh_數學B1_AbsoluteValueInequality",
+      "subskill_id": "absolute_value_inequality_zero_center_basic",
+      "problem_type_id": "absolute_value_inequality_zero_center_basic",
+      "runtime_category": "deterministic_expression",
+      "classification_rule_id": "absi.rule.zero_center_basic",
+      "classification_reason": "|x| 型不等式。",
+      "classifier_confidence": "high",
+      "semantic_risk_flags": null,
+      "semantic_audit_status": "pass",
+      "generator_status": "supported_deterministic",
+      "manual_review_reason": ""
+    },
+    {
+      "example_id": 4499,
+      "title": "",
+      "source_type": "textbook_example",
+      "source_chapter": "unknown",
+      "source_section": "unknown",
+      "problem_preview": "試求滿足不等式$| 3x-2 |<= 8$的整數x共有多少個？ (A) 4 (B) 5 (C) 6 (D) 7。",
+      "problem_text_hash": "5cba656a8b6ae30004bf9bcaed601564b5ba7c6b",
+      "skill_id": "vh_數學B1_AbsoluteValueInequality",
+      "subskill_id": "absolute_value_inequality_integer_solution_count_choice",
+      "problem_type_id": "absolute_value_inequality_integer_solution_count_choice",
+      "runtime_category": "deterministic_choice",
+      "classification_rule_id": "absi.rule.integer_solution_count_choice",
+      "classification_reason": "整數解個數選擇題。",
+      "classifier_confidence": "high",
+      "semantic_risk_flags": null,
+      "semantic_audit_status": "pass",
+      "generator_status": "supported_deterministic",
+      "manual_review_reason": ""
+    }
+  ],
+  "observed_problem_types": [
+    "absolute_value_inequality_integer_solution_count_choice",
+    "absolute_value_inequality_linear_expression_basic",
+    "absolute_value_inequality_malformed_source_review",
+    "absolute_value_inequality_shifted_basic",
+    "absolute_value_inequality_zero_center_basic"
+  ],
+  "source_coverage_status": "INSUFFICIENT_SOURCE_EXAMPLES",
+  "bootstrap_summary": {
+    "bootstrap_mode": false,
+    "bootstrap_source_skill_id": "",
+    "source_coverage_status": "",
+    "allowed_problem_types": []
+  },
+  "answer_contract_summary": {
+    "absolute_value_inequality_integer_solution_count_choice": {
+      "answer_type": "choice",
+      "equivalence_type": "choice_label",
+      "checker_key": "choice_label_checker",
+      "order_matters": false,
+      "accepted_format_notes": [
+        "A/B/C/D labels"
+      ],
+      "canonical_answer_schema": {
+        "type": "choice_label"
+      }
+    },
+    "absolute_value_inequality_linear_expression_basic": {
+      "answer_type": "interval_set",
+      "equivalence_type": "interval_set",
+      "checker_key": "interval_checker",
+      "order_matters": false,
+      "accepted_format_notes": [
+        "x > a",
+        "x < a",
+        "x ≤ a",
+        "x ≥ a",
+        "interval notation"
+      ],
+      "canonical_answer_schema": {
+        "type": "interval_set"
+      }
+    },
+    "absolute_value_inequality_malformed_source_review": {
+      "answer_type": "manual_review",
+      "equivalence_type": "manual_review_or_ai_judged",
+      "checker_key": "manual_review_checker",
+      "order_matters": false,
+      "accepted_format_notes": [
+        "requires source text correction before deterministic generation"
+      ],
+      "canonical_answer_schema": {
+        "type": "manual_review"
+      }
+    },
+    "absolute_value_inequality_shifted_basic": {
+      "answer_type": "interval_set",
+      "equivalence_type": "interval_set",
+      "checker_key": "interval_checker",
+      "order_matters": false,
+      "accepted_format_notes": [
+        "x > a",
+        "x < a",
+        "x ≤ a",
+        "x ≥ a",
+        "interval notation"
+      ],
+      "canonical_answer_schema": {
+        "type": "interval_set"
+      }
+    },
+    "absolute_value_inequality_zero_center_basic": {
+      "answer_type": "interval_set",
+      "equivalence_type": "interval_set",
+      "checker_key": "interval_checker",
+      "order_matters": false,
+      "accepted_format_notes": [
+        "x > a",
+        "x < a",
+        "x ≤ a",
+        "x ≥ a",
+        "interval notation"
+      ],
+      "canonical_answer_schema": {
+        "type": "interval_set"
+      }
+    }
+  },
+  "missing_answer_contract_problem_types": [],
+  "missing_checker_key_problem_types": [],
+  "equivalence_test_required_problem_types": [
+    "absolute_value_inequality_integer_solution_count_choice",
+    "absolute_value_inequality_linear_expression_basic",
+    "absolute_value_inequality_malformed_source_review",
+    "absolute_value_inequality_shifted_basic",
+    "absolute_value_inequality_zero_center_basic"
+  ],
+  "manual_review_problem_types": [
+    "absolute_value_inequality_malformed_source_review"
+  ],
+  "future_ai_judged_problem_types": [],
+  "classifier_proposal": {
+    "enabled": false,
+    "reason": "",
+    "proposal_status": "SKIPPED",
+    "proposed_problem_types": [],
+    "proposed_example_map": [],
+    "proposed_answer_contracts": {},
+    "manual_review_candidates": [],
+    "risk_flags": [],
+    "proposal_path": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_AbsoluteValueInequality_classifier_proposal.json",
+    "promote_ready": false,
+    "promote_command_suggestion": "python scripts\\gencode_promote_classifier_proposal.py --skill-id vh_數學B1_AbsoluteValueInequality"
+  },
+  "risk_flags": [
+    "needs_import_review",
+    "source_text_malformed"
+  ],
+  "recommended_next_phase": "phase2_build",
+  "blocking_reasons": [],
+  "warnings": [
+    "manual_review_problem_types_present",
+    "risk_flags_present"
+  ],
+  "artifact_paths": {
+    "phase1_json": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_AbsoluteValueInequality_phase1_audit.json",
+    "phase1_md": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_AbsoluteValueInequality_phase1_audit.md",
+    "inventory_report": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_AbsoluteValueInequality_inventory_report.md",
+    "classifier_proposal_json": "",
+    "classifier_proposal_md": ""
+  },
+  "timestamp": "2026-05-26T04:59:22.695009+00:00"
+}

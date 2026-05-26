@@ -37,20 +37,6 @@ def generate(seed=None, difficulty="easy"):
 
 
 def _prepare_verified_env(tmp_path: Path) -> None:
-    registry = tmp_path / "configs" / "generated_registry" / "b1_section_1_1_verified_registry.v0.1.yaml"
-    registry.parent.mkdir(parents=True, exist_ok=True)
-    registry.write_text(
-        "verified_problem_types:\n"
-        "  -\n"
-        "    problem_type_id: absolute_value_numeric_evaluation\n"
-        f"    skill_id: {SKILL_ID}\n"
-        "    status: verified\n"
-        "    candidate_path: generated_candidates/vocational_math_b1/section_1_1/absolute_value_numeric_evaluation/candidate_v1.py\n"
-        "    function_name: generate\n"
-        "    answer_type: integer\n"
-        "    checker_type: integer_checker\n",
-        encoding="utf-8",
-    )
     candidate = (
         tmp_path
         / "generated_candidates"
@@ -61,11 +47,27 @@ def _prepare_verified_env(tmp_path: Path) -> None:
     )
     _write_candidate(candidate)
 
+    registry = tmp_path / "configs" / "generated_registry" / "b1_section_1_1_verified_registry.v0.1.yaml"
+    registry.parent.mkdir(parents=True, exist_ok=True)
+    registry.write_text(
+        "verified_problem_types:\n"
+        "  -\n"
+        "    problem_type_id: absolute_value_numeric_evaluation\n"
+        f"    skill_id: {SKILL_ID}\n"
+        "    status: verified\n"
+        f"    candidate_path: {candidate.as_posix()}\n"
+        "    function_name: generate\n"
+        "    answer_type: integer\n"
+        "    checker_type: integer_checker\n",
+        encoding="utf-8",
+    )
+
 
 def test_wrapper_module_importable() -> None:
     module = importlib.import_module(SKILL_MODULE)
     assert hasattr(module, "generate")
     assert hasattr(module, "generate_question")
+    assert hasattr(module, "check")
 
 
 def test_wrapper_generate_from_verified_candidate(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
@@ -86,8 +88,8 @@ def test_wrapper_generate_from_verified_candidate(monkeypatch: pytest.MonkeyPatc
 
     assert payload["question_text"]
     assert payload["question"]
-    assert payload["answer"]
-    assert payload["correct_answer"]
+    assert payload["answer"] == "3"
+    assert payload["correct_answer"] == "3"
     assert payload["problem_type_id"] == "absolute_value_numeric_evaluation"
     assert payload["skill_id"] == SKILL_ID
 
@@ -107,5 +109,30 @@ def test_wrapper_clear_error_when_no_verified_candidate(monkeypatch: pytest.Monk
     module = importlib.import_module(SKILL_MODULE)
     with pytest.raises(RuntimeError) as exc:
         module.generate(seed=1)
-    assert "此技能尚未開放自動出題" in str(exc.value)
+    assert "尚未開放" in str(exc.value)
 
+
+def test_solution_set_equivalence_for_absolute_value_equation_basic() -> None:
+    module = importlib.import_module(SKILL_MODULE)
+    correct_answer = "x=-17 或 x=17"
+
+    assert module.check("17,-17", correct_answer)["correct"] is True
+    assert module.check("-17,17", correct_answer)["correct"] is True
+    assert module.check("17，-17", correct_answer)["correct"] is True
+    assert module.check("x=17 或 x=-17", correct_answer)["correct"] is True
+    assert module.check("x = 17 或 x = -17", correct_answer)["correct"] is True
+    assert module.check("{17,-17}", correct_answer)["correct"] is True
+    assert module.check("±17", correct_answer)["correct"] is True
+    assert module.check("+-17", correct_answer)["correct"] is True
+
+    assert module.check("17", correct_answer)["correct"] is False
+    assert module.check("17,-16", correct_answer)["correct"] is False
+    assert module.check("x=17", correct_answer)["correct"] is False
+
+
+def test_non_equation_cases_unchanged() -> None:
+    module = importlib.import_module(SKILL_MODULE)
+
+    assert module.check("3", "3")["correct"] is True
+    assert module.check("A", "A")["correct"] is True
+    assert module.check("A", "B")["correct"] is False
