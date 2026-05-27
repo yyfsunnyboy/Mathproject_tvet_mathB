@@ -1,0 +1,18 @@
+﻿python : Traceback (most recent call last):
+位於 C:\Users\yehiv\AppData\Local\Temp\ps-script-530d56e3-769b-4f3a-8d15-f88d72eed9c5.ps1:81 字元:50
++ Set-Location "e:\Python\Mathproject_tvet_mathB"; python -c "
++                                                  ~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (Traceback (most recent call last)::String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+  File "<string>", line 37, in <module>
+    print(i, line[:120])
+    ~~~~~^^^^^^^^^^^^^^^
+UnicodeEncodeError: 'cp950' codec can't encode character '\xe6' in position 18: illegal multibyte sequence
+whole after 826
+技能 in whole 6
+執行 Phase in whole 9
+line after 157
+技能 in line 22
+執行 Phase in line 9
+25 
