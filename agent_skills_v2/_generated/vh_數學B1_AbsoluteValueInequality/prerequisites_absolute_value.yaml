@@ -8,10 +8,6 @@ items:
     prerequisite_subskills:
       - "absolute_value_numeric_evaluation"
   -
-    subskill_id: "absolute_value_inequality_malformed_source_review"
-    prerequisite_subskills:
-      - "absolute_value_numeric_evaluation"
-  -
     subskill_id: "absolute_value_inequality_shifted_basic"
     prerequisite_subskills:
       - "absolute_value_numeric_evaluation"

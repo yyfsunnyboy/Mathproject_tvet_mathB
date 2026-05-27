@@ -160,6 +160,10 @@ def get_skill(skill_id):
     except:
         return None
 
+def _has_runtime_skill_module(skill_id):
+    """Return True when a runtime skill module can be imported from skills/<skill_id>.py."""
+    return get_skill(skill_id) is not None
+
 
 def _resolve_adaptive_unit_name(skill_id, requested_unit_name=""):
     requested = str(requested_unit_name or "").strip()
@@ -990,6 +994,8 @@ def next_question():
     mode = request.args.get('mode', '')
     # Phase 6C-1R: URL-decode so encoded CJK skill_ids are resolved correctly.
     skill_id = _url_unquote(request.args.get('skill', 'remainder'))
+    current_app.logger.info("[GENCODE WEB RUNTIME] skill_id=%s", request.args.get('skill', ''))
+    current_app.logger.info("[GENCODE WEB RUNTIME] decoded_skill_id=%s", skill_id)
     problem_type = request.args.get('problem_type', '')
     variant = request.args.get('variant', B4_TREE_DIAGRAM_DEFAULT_VARIANT)
     tree_diagram_index = request.args.get('tree_diagram_index', type=int)
@@ -1073,6 +1079,9 @@ def next_question():
             skill_info = {"input_type": "text", "skill_id": skill_id}
         elif mode == 'unit':
             skill_info = {"input_type": "text", "skill_id": skill_id}
+        elif _has_runtime_skill_module(skill_id):
+            # Gencode-published skills may be available before a SkillInfo row is provisioned.
+            skill_info = {"input_type": "text", "skill_id": skill_id}
         else:
             return jsonify({"error": f"???{skill_id} 銝??冽??芸???"}), 404
         
@@ -1102,6 +1111,9 @@ def next_question():
         # [Phase 6C-1R2] Chap2 deterministic P0 avoids legacy skills.<skill_id> import entirely.
         # [靽格迤 2] 撘瑕?頛璅∠?嚗圾瘙箝鈭??????? ????其?韏?skills.<id>.generate() ?楝敺?
         module_path = f"skills.{skill_id}"
+        wrapper_loaded = False
+        wrapper_path = ""
+        route_source = "legacy"
         if _is_b4_tree_diagram_request(skill_id, problem_type) or _is_b4_pascal_triangle_request(skill_id, problem_type):
             mod = None
         elif is_b4_chapter2_phase6c1_deterministic_skill(skill_id):
@@ -1109,9 +1121,18 @@ def next_question():
         elif is_b4_chapter3_phase7b_runtime_skill(skill_id):
             mod = None
         elif module_path in sys.modules:
-            mod = importlib.reload(sys.modules[module_path])
+            mod = sys.modules[module_path]
+            wrapper_loaded = bool(mod is not None and hasattr(mod, "generate"))
+            wrapper_path = module_path
+            route_source = "gencode_wrapper" if wrapper_loaded else "legacy"
         else:
             mod = importlib.import_module(module_path)
+            wrapper_loaded = bool(mod is not None and hasattr(mod, "generate"))
+            wrapper_path = module_path
+            route_source = "gencode_wrapper" if wrapper_loaded else "legacy"
+        current_app.logger.info("[GENCODE WEB RUNTIME] wrapper_loaded=%s", str(wrapper_loaded).lower())
+        current_app.logger.info("[GENCODE WEB RUNTIME] wrapper_path=%s", wrapper_path)
+        current_app.logger.info("[GENCODE WEB RUNTIME] route_source=%s", route_source)
         
         # 瘙箏???漲蝑?
         current_curriculum_context = session.get('current_curriculum', 'general')
@@ -1288,6 +1309,7 @@ def next_question():
                     data = chap3_payload
                 else:
                     data = mod.generate(level=difficulty_level)
+                    route_source = "gencode_wrapper" if wrapper_loaded else "legacy"
 
                 # [?詨?靽格迤] 甈????芸??⊥迤 (撠???皞?
                 if "question" in data and "question_text" not in data:
@@ -1316,6 +1338,7 @@ def next_question():
         # [HW DEBUG]
         current_app.logger.info(f"[HW DEBUG] generated question: {data.get('question_text')}")
         current_app.logger.info(f"[HW DEBUG] generated expected_answer: {data.get('correct_answer')}")
+        current_app.logger.info("[GENCODE WEB RUNTIME] problem_type_id=%s", data.get("problem_type_id") or data.get("problem_type"))
 
         return jsonify({
             "new_question_text": data["question_text"],
@@ -1333,6 +1356,9 @@ def next_question():
             "answer_type": data.get("answer_type", skill_info.get("input_type", "text")),
             "answer_input_type": data.get("answer_input_type", data.get("answer_type", skill_info.get("input_type", "text"))),
             "problem_type_id": data.get("problem_type_id") or data.get("problem_type"),
+            "source": data.get("source", route_source),
+            "route_source": route_source,
+            "question_source": data.get("question_source", route_source),
             "scenario_id": data.get("scenario_id", ""),
             "scenario_family": data.get("scenario_family", ""),
             "parameter_signature": data.get("parameter_signature", ""),

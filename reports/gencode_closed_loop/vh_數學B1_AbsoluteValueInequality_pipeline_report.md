@@ -75,7 +75,7 @@
     "sample_count": 30,
     "status": "fail"
   },
-  "report": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_AbsoluteValueInequality_pipeline_report.md"
+  "report": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_AbsoluteValueInequality_pipeline_report.md"
 }
 ```
 
@@ -176,13 +176,13 @@
 ## Inventory
 ```json
 {
-  "stdout": "{\"success\": true, \"examples_count\": 10, \"report\": \"C:\\\\Python\\\\Mathproject_tvet_mathB\\\\reports\\\\gencode_closed_loop\\\\vh_數學B1_AbsoluteValueInequality_inventory_report.md\", \"package_dir\": \"C:\\\\Python\\\\Mathproject_tvet_mathB\\\\agent_skills_v2\\\\_generated\\\\vh_數學B1_AbsoluteValueInequality\"}\n",
+  "stdout": "{\"success\": true, \"examples_count\": 10, \"report\": \"D:\\\\Python\\\\Mathproject_tvet_mathB\\\\reports\\\\gencode_closed_loop\\\\vh_數學B1_AbsoluteValueInequality_inventory_report.md\", \"package_dir\": \"D:\\\\Python\\\\Mathproject_tvet_mathB\\\\agent_skills_v2\\\\_generated\\\\vh_數學B1_AbsoluteValueInequality\"}\n",
   "stderr": "",
   "parsed": {
     "success": true,
     "examples_count": 10,
-    "report": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_AbsoluteValueInequality_inventory_report.md",
-    "package_dir": "C:\\Python\\Mathproject_tvet_mathB\\agent_skills_v2\\_generated\\vh_數學B1_AbsoluteValueInequality"
+    "report": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_AbsoluteValueInequality_inventory_report.md",
+    "package_dir": "D:\\Python\\Mathproject_tvet_mathB\\agent_skills_v2\\_generated\\vh_數學B1_AbsoluteValueInequality"
   }
 }
 ```
@@ -190,11 +190,11 @@
 ## Verify
 ```json
 {
-  "stdout": "{\"success\": false, \"report\": \"C:\\\\Python\\\\Mathproject_tvet_mathB\\\\reports\\\\gencode_closed_loop\\\\vh_數學B1_AbsoluteValueInequality_verify_report.md\", \"first_error\": \"registry has no verified candidate for skill\", \"runtime_problem_type_coverage\": {\"expected_problem_types\": [], \"observed_problem_types\": [], \"missing_problem_types\": [], \"sample_count\": 30, \"status\": \"fail\"}}\n",
+  "stdout": "{\"success\": false, \"report\": \"D:\\\\Python\\\\Mathproject_tvet_mathB\\\\reports\\\\gencode_closed_loop\\\\vh_數學B1_AbsoluteValueInequality_verify_report.md\", \"first_error\": \"registry has no verified candidate for skill\", \"runtime_problem_type_coverage\": {\"expected_problem_types\": [], \"observed_problem_types\": [], \"missing_problem_types\": [], \"sample_count\": 30, \"status\": \"fail\"}}\n",
   "stderr": "",
   "parsed": {
     "success": false,
-    "report": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_AbsoluteValueInequality_verify_report.md",
+    "report": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_AbsoluteValueInequality_verify_report.md",
     "first_error": "registry has no verified candidate for skill",
     "runtime_problem_type_coverage": {
       "expected_problem_types": [],

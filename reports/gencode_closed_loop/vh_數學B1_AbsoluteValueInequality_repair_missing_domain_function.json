@@ -1,0 +1,52 @@
+{
+  "skill_id": "vh_數學B1_AbsoluteValueInequality",
+  "gap": "missing_domain_function",
+  "repair_status": "PASS",
+  "checked_domain_functions": [
+    "choices_unique_validator",
+    "interval_domain_function",
+    "interval_formatter"
+  ],
+  "created_domain_files": [],
+  "existing_domain_functions": [
+    "choices_unique_validator",
+    "interval_domain_function",
+    "interval_formatter"
+  ],
+  "unsupported_domain_functions": [],
+  "missing_domain_functions_before_repair": [
+    "choices_unique_validator",
+    "interval_domain_function",
+    "interval_formatter"
+  ],
+  "missing_domain_functions_after_repair": [],
+  "tests_run": [
+    "py_compile domain modules",
+    "pytest tests/test_choice_domain.py -q",
+    "pytest tests/test_interval_domain.py -q",
+    "phase2_build vh_數學B1_AbsoluteValueInequality"
+  ],
+  "py_compile_results": {
+    "core/domain/choices_unique_validator.py": true,
+    "core/domain/interval_domain_function.py": true,
+    "core/domain/interval_formatter.py": true
+  },
+  "pytest_results": {
+    "tests/test_choice_domain.py": {
+      "passed": true,
+      "output": ".....                                                                    [100%]\n============================== warnings summary ===============================\nC:\\Users\\Owner\\anaconda3\\Lib\\site-packages\\_pytest\\cacheprovider.py:451\n  C:\\Users\\Owner\\anaconda3\\Lib\\site-packages\\_pytest\\cacheprovider.py:451: PytestCacheWarning: cache could not write path D:\\Python\\Mathproject_tvet_mathB\\.pytest_cache\\v\\cache\\nodeids: [Errno 13] Permission denied: 'D:\\\\Python\\\\Mathproject_tvet_mathB\\\\.pytest_cache\\\\v\\\\cache\\\\nodeids'\n    config.cache.set(\"cache/nodeids\", sorted(self.cached_nodeids))\n\nC:\\Users\\Owner\\anaconda3\\Lib\\site-packages\\_pytest\\stepwise.py:56\n  C:\\Users\\Owner\\anaconda3\\Lib\\site-packages\\_pytest\\stepwise.py:56: PytestCacheWarning: cache could not write path D:\\Python\\Mathproject_tvet_mathB\\.pytest_cache\\v\\cache\\stepwise: [Errno 13] Permission denied: 'D:\\\\Python\\\\Mathproject_tvet_mathB\\\\.pytest_cache\\\\v\\\\cache\\\\stepwise'\n    session.config.cache.set(STEPWISE_CACHE_DIR, [])\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n5 passed, 2 warnings in 0.01s"
+    },
+    "tests/test_interval_domain.py": {
+      "passed": true,
+      "output": ".....                                                                    [100%]\n============================== warnings summary ===============================\nC:\\Users\\Owner\\anaconda3\\Lib\\site-packages\\_pytest\\cacheprovider.py:451\n  C:\\Users\\Owner\\anaconda3\\Lib\\site-packages\\_pytest\\cacheprovider.py:451: PytestCacheWarning: cache could not write path D:\\Python\\Mathproject_tvet_mathB\\.pytest_cache\\v\\cache\\nodeids: [Errno 13] Permission denied: 'D:\\\\Python\\\\Mathproject_tvet_mathB\\\\.pytest_cache\\\\v\\\\cache\\\\nodeids'\n    config.cache.set(\"cache/nodeids\", sorted(self.cached_nodeids))\n\nC:\\Users\\Owner\\anaconda3\\Lib\\site-packages\\_pytest\\stepwise.py:56\n  C:\\Users\\Owner\\anaconda3\\Lib\\site-packages\\_pytest\\stepwise.py:56: PytestCacheWarning: cache could not write path D:\\Python\\Mathproject_tvet_mathB\\.pytest_cache\\v\\cache\\stepwise: [Errno 13] Permission denied: 'D:\\\\Python\\\\Mathproject_tvet_mathB\\\\.pytest_cache\\\\v\\\\cache\\\\stepwise'\n    session.config.cache.set(STEPWISE_CACHE_DIR, [])\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n5 passed, 2 warnings in 0.01s"
+    }
+  },
+  "blocking_reasons": [],
+  "warnings": [],
+  "artifact_paths": {
+    "repair_json": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_AbsoluteValueInequality_repair_missing_domain_function.json",
+    "repair_md": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_AbsoluteValueInequality_repair_missing_domain_function.md",
+    "phase2_json": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_AbsoluteValueInequality_phase2_build.json"
+  },
+  "timestamp": "2026-05-27T01:21:32.587831+00:00"
+}

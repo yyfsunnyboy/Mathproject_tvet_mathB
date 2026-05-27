@@ -1,0 +1,110 @@
+{
+  "skill_id": "vh_數學B1_AbsoluteValueInequality",
+  "samples": 50,
+  "expected_problem_types": [
+    "absolute_value_inequality_integer_solution_count_choice",
+    "absolute_value_inequality_linear_expression_basic",
+    "absolute_value_inequality_shifted_basic",
+    "absolute_value_inequality_zero_center_basic"
+  ],
+  "observed_problem_types": [
+    "absolute_value_inequality_integer_solution_count_choice",
+    "absolute_value_inequality_linear_expression_basic",
+    "absolute_value_inequality_shifted_basic",
+    "absolute_value_inequality_zero_center_basic"
+  ],
+  "distribution_counts": {
+    "absolute_value_inequality_integer_solution_count_choice": 13,
+    "absolute_value_inequality_linear_expression_basic": 13,
+    "absolute_value_inequality_shifted_basic": 12,
+    "absolute_value_inequality_zero_center_basic": 12
+  },
+  "missing_problem_types": [],
+  "unexpected_problem_types": [],
+  "route_sources": {
+    "gencode_wrapper": 50
+  },
+  "wrapper_loaded_count": 50,
+  "db_fallback_count": 0,
+  "legacy_count": 0,
+  "choice_question_count": 13,
+  "missing_problem_type_id_count": 0,
+  "answer_type_counts": {
+    "choice_label": 13,
+    "interval_set": 37
+  },
+  "sample_previews": [
+    {
+      "problem_type_id": "absolute_value_inequality_integer_solution_count_choice",
+      "route_source": "gencode_wrapper",
+      "answer_type": "choice_label",
+      "has_choices": true,
+      "question_text_preview": "若 $\\left| 3x - 5 \\right| \\le 9$，滿足的整數 $x$ 有幾個？"
+    },
+    {
+      "problem_type_id": "absolute_value_inequality_linear_expression_basic",
+      "route_source": "gencode_wrapper",
+      "answer_type": "interval_set",
+      "has_choices": false,
+      "question_text_preview": "解不等式：$\\left| -1x + 0 \\right| < 7$。"
+    },
+    {
+      "problem_type_id": "absolute_value_inequality_shifted_basic",
+      "route_source": "gencode_wrapper",
+      "answer_type": "interval_set",
+      "has_choices": false,
+      "question_text_preview": "解不等式：$\\left| x + 8 \\right| <= 6$。"
+    },
+    {
+      "problem_type_id": "absolute_value_inequality_zero_center_basic",
+      "route_source": "gencode_wrapper",
+      "answer_type": "interval_set",
+      "has_choices": false,
+      "question_text_preview": "解不等式：$\\left| x \\right| < 9$。"
+    },
+    {
+      "problem_type_id": "absolute_value_inequality_integer_solution_count_choice",
+      "route_source": "gencode_wrapper",
+      "answer_type": "choice_label",
+      "has_choices": true,
+      "question_text_preview": "若 $\\left| 1x - 2 \\right| \\le 8$，滿足的整數 $x$ 有幾個？"
+    },
+    {
+      "problem_type_id": "absolute_value_inequality_linear_expression_basic",
+      "route_source": "gencode_wrapper",
+      "answer_type": "interval_set",
+      "has_choices": false,
+      "question_text_preview": "解不等式：$\\left| -2x + 3 \\right| > 3$。"
+    },
+    {
+      "problem_type_id": "absolute_value_inequality_shifted_basic",
+      "route_source": "gencode_wrapper",
+      "answer_type": "interval_set",
+      "has_choices": false,
+      "question_text_preview": "解不等式：$\\left| x + 2 \\right| <= 7$。"
+    },
+    {
+      "problem_type_id": "absolute_value_inequality_zero_center_basic",
+      "route_source": "gencode_wrapper",
+      "answer_type": "interval_set",
+      "has_choices": false,
+      "question_text_preview": "解不等式：$\\left| x \\right| >= 9$。"
+    },
+    {
+      "problem_type_id": "absolute_value_inequality_integer_solution_count_choice",
+      "route_source": "gencode_wrapper",
+      "answer_type": "choice_label",
+      "has_choices": true,
+      "question_text_preview": "若 $\\left| 2x + 4 \\right| \\le 9$，滿足的整數 $x$ 有幾個？"
+    },
+    {
+      "problem_type_id": "absolute_value_inequality_linear_expression_basic",
+      "route_source": "gencode_wrapper",
+      "answer_type": "interval_set",
+      "has_choices": false,
+      "question_text_preview": "解不等式：$\\left| 2x + 4 \\right| <= 8$。"
+    }
+  ],
+  "status": "PASS",
+  "blocking_reasons": []
+}

@@ -24,12 +24,21 @@ import threading
 import traceback
 import subprocess
 import sys
+from pathlib import Path
 from collections import defaultdict
 import pandas as pd
 import io
 import re
 import importlib
 import json
+from core.gencode.pipeline_orchestrator import (
+    run_gencode_auto_pipeline,
+    run_gencode_phase1,
+    run_gencode_phase2,
+    run_gencode_phase3_package,
+    run_gencode_publish_check,
+    publish_gencode_draft_skill,
+)
 from core.services.prompt_sync_service import (
     PromptSyncError,
     compare_prompt_db_vs_yaml,
@@ -1795,9 +1804,66 @@ def admin_skills():
         query = query.filter(SkillCurriculum.section == selected['f_section'])
     
     skills = query.distinct().order_by(SkillInfo.skill_id).all()
+    gencode_status_map = {}
+    root_candidates = [
+        Path(current_app.root_path),
+        Path(current_app.root_path).parent,
+        Path(current_app.root_path).parent.parent,
+    ]
+    project_root = next(
+        (p for p in root_candidates if (p / "skills").exists()),
+        Path(current_app.root_path),
+    )
+    skills_dir = project_root / "skills"
+    drafts_dir = project_root / "reports" / "gencode_closed_loop" / "drafts"
+    for s in skills:
+        sid = str(s.skill_id)
+        formal_rel = f"skills/{sid}.py"
+        draft_rel = f"reports/gencode_closed_loop/drafts/{sid}.py"
+        formal_abs = skills_dir / f"{sid}.py"
+        draft_abs = drafts_dir / f"{sid}.py"
+        formal_exists = formal_abs.exists()
+        draft_exists = draft_abs.exists()
+        if formal_exists:
+            gencode_status_map[sid] = {
+                "status": "generated",
+                "label": "已產生",
+                "button_label": "重新產生",
+                "formal_exists": True,
+                "draft_exists": draft_exists,
+                "formal_path": formal_rel,
+                "draft_path": draft_rel if draft_exists else "",
+                "formal_abs_path": str(formal_abs),
+                "draft_abs_path": str(draft_abs) if draft_exists else "",
+            }
+        elif draft_exists:
+            gencode_status_map[sid] = {
+                "status": "draft",
+                "label": "草稿中",
+                "button_label": "繼續",
+                "formal_exists": False,
+                "draft_exists": True,
+                "formal_path": formal_rel,
+                "draft_path": draft_rel,
+                "formal_abs_path": str(formal_abs),
+                "draft_abs_path": str(draft_abs),
+            }
+        else:
+            gencode_status_map[sid] = {
+                "status": "missing",
+                "label": "未產生",
+                "button_label": "AI 產生",
+                "formal_exists": False,
+                "draft_exists": False,
+                "formal_path": formal_rel,
+                "draft_path": draft_rel,
+                "formal_abs_path": str(formal_abs),
+                "draft_abs_path": str(draft_abs),
+            }
 
     return render_template('admin_skills.html', 
                            skills=skills,
+                           gencode_status_map=gencode_status_map,
                            filters=filters_data,
                            selected_filters=selected,
                            grade_map={str(g):str(g) for g in filters_data['grades']},
@@ -1910,6 +1976,116 @@ def admin_get_skill_details(skill_id):
             'suggested_prompt_3': skill.suggested_prompt_3
         }
     })
+
+
+@core_bp.route('/admin/gencode/skills/<skill_id>/run-auto-pipeline', methods=['POST'])
+@login_required
+def admin_run_gencode_auto_pipeline(skill_id):
+    if not (current_user.is_admin or current_user.role == 'teacher'):
+        return jsonify({"ok": False, "error": "forbidden"}), 403
+    payload = request.get_json(silent=True) or {}
+    dry_run = bool(payload.get("dry_run", True))
+    allow_runtime_ready = bool(payload.get("allow_runtime_ready", False))
+    try:
+        result = run_gencode_auto_pipeline(
+            skill_id=skill_id,
+            dry_run=dry_run,
+            allow_runtime_ready=allow_runtime_ready,
+            write_pending_files=True,
+        )
+        result["ok"] = bool(result.get("ok", True))
+        return jsonify(result), 200
+    except Exception as e:
+        return jsonify({"ok": False, "skill_id": skill_id, "error": str(e)}), 500
+
+
+@core_bp.route('/admin/gencode/skills/<skill_id>/phase1', methods=['POST'])
+@login_required
+def admin_run_gencode_phase1(skill_id):
+    if not (current_user.is_admin or current_user.role == 'teacher'):
+        return jsonify({"ok": False, "error": "forbidden"}), 403
+    payload = request.get_json(silent=True) or {}
+    dry_run = bool(payload.get("dry_run", True))
+    try:
+        result = run_gencode_phase1(skill_id=skill_id, dry_run=dry_run)
+        return jsonify(result), 200
+    except Exception as e:
+        return jsonify({"ok": False, "phase": "phase1", "skill_id": skill_id, "error": str(e)}), 500
+
+
+@core_bp.route('/admin/gencode/skills/<skill_id>/phase2', methods=['POST'])
+@login_required
+def admin_run_gencode_phase2(skill_id):
+    if not (current_user.is_admin or current_user.role == 'teacher'):
+        return jsonify({"ok": False, "error": "forbidden"}), 403
+    payload = request.get_json(silent=True) or {}
+    dry_run = bool(payload.get("dry_run", True))
+    accepted_problem_types = payload.get("accepted_problem_types", [])
+    excluded_example_ids = payload.get("excluded_example_ids", [])
+    try:
+        result = run_gencode_phase2(
+            skill_id=skill_id,
+            accepted_problem_types=accepted_problem_types if isinstance(accepted_problem_types, list) else [],
+            excluded_example_ids=excluded_example_ids if isinstance(excluded_example_ids, list) else [],
+            dry_run=dry_run,
+        )
+        return jsonify(result), 200
+    except Exception as e:
+        return jsonify({"ok": False, "phase": "phase2", "skill_id": skill_id, "error": str(e)}), 500
+
+
+@core_bp.route('/admin/gencode/skills/<skill_id>/phase3', methods=['POST'])
+@login_required
+def admin_run_gencode_phase3(skill_id):
+    if not (current_user.is_admin or current_user.role == 'teacher'):
+        return jsonify({"ok": False, "error": "forbidden"}), 403
+    payload = request.get_json(silent=True) or {}
+    dry_run = bool(payload.get("dry_run", True))
+    accepted_generator_keys = payload.get("accepted_generator_keys", [])
+    try:
+        result = run_gencode_phase3_package(
+            skill_id=skill_id,
+            accepted_generator_keys=accepted_generator_keys if isinstance(accepted_generator_keys, list) else [],
+            dry_run=dry_run,
+        )
+        return jsonify(result), 200
+    except Exception as e:
+        return jsonify({"ok": False, "phase": "phase3", "skill_id": skill_id, "error": str(e)}), 500
+
+
+@core_bp.route('/admin/gencode/skills/<skill_id>/publish-check', methods=['POST'])
+@login_required
+def admin_run_gencode_publish_check(skill_id):
+    # Debug-only endpoint. Official workflow remains Phase 1/2/3 and
+    # publish-check is embedded inside Phase 3 response.
+    if not (current_user.is_admin or current_user.role == 'teacher'):
+        return jsonify({"ok": False, "error": "forbidden"}), 403
+    payload = request.get_json(silent=True) or {}
+    dry_run = bool(payload.get("dry_run", True))
+    try:
+        result = run_gencode_publish_check(skill_id=skill_id, dry_run=dry_run)
+        return jsonify(result), 200
+    except Exception as e:
+        return jsonify({"ok": False, "phase": "publish_check", "skill_id": skill_id, "error": str(e)}), 500
+
+
+@core_bp.route('/admin/gencode/skills/<skill_id>/publish-draft', methods=['POST'])
+@login_required
+def admin_publish_gencode_draft(skill_id):
+    if not (current_user.is_admin or current_user.role == 'teacher'):
+        return jsonify({"ok": False, "error": "forbidden"}), 403
+    payload = request.get_json(silent=True) or {}
+    confirm = bool(payload.get("confirm", False))
+    allow_runtime_ready = bool(payload.get("allow_runtime_ready", False))
+    try:
+        result = publish_gencode_draft_skill(
+            skill_id=skill_id,
+            confirm=confirm,
+            allow_runtime_ready=allow_runtime_ready,
+        )
+        return jsonify(result), 200
+    except Exception as e:
+        return jsonify({"ok": False, "phase": "publish", "skill_id": skill_id, "error": str(e)}), 500
 
 @core_bp.route('/api/promote_question', methods=['POST'])
 @login_required

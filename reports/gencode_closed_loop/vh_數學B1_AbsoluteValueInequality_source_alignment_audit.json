@@ -1,0 +1,161 @@
+{
+  "skill_id": "vh_數學B1_AbsoluteValueInequality",
+  "examples_total": 10,
+  "examples_checked": 10,
+  "source_form_counts": {
+    "multi_part_abs_ineq_solving": 5,
+    "single_linear_abs_ineq": 5
+  },
+  "problem_type_counts": {
+    "absolute_value_inequality_zero_center_basic": 3,
+    "absolute_value_inequality_shifted_basic": 2,
+    "absolute_value_inequality_linear_expression_basic": 4,
+    "absolute_value_inequality_integer_solution_count_choice": 1
+  },
+  "alignment_status_counts": {
+    "PARTIAL": 6,
+    "PASS": 4
+  },
+  "missing_source_aligned_problem_types": [
+    "multi_part_abs_ineq_solving",
+    "single_linear_abs_ineq"
+  ],
+  "possible_classifier_misclassifications": [],
+  "underrepresented_runtime_forms": [
+    "multi_part_abs_ineq_solving"
+  ],
+  "manual_review_recheck_needed": [],
+  "recommendations": [
+    "新增或擴充 multi-part 絕對值不等式生成能力，避免僅用 single-form 覆蓋。",
+    "對 underrepresented source form 建立 source-aligned generator 或 wrapper 出題策略。"
+  ],
+  "example_alignment_table": [
+    {
+      "example_id": 4400,
+      "source_preview": "試求下列不等式之解：\n(1)$| x |$<= 8 (2)$| x |$> 10 (3)$| x |$< 7 (4)$| x |$>= 12",
+      "classifier_problem_type_id": "absolute_value_inequality_zero_center_basic",
+      "problem_type_id": "absolute_value_inequality_zero_center_basic",
+      "runtime_category": "deterministic_expression",
+      "manual_review_reason": "",
+      "verified_generator_exists": true,
+      "source_form_category": "multi_part_abs_ineq_solving",
+      "alignment_status": "PARTIAL",
+      "runtime_observed": true
+    },
+    {
+      "example_id": 4402,
+      "source_preview": "解下列不等式：\n(1)$| x-2 |<= 4$ (2)$| x+5 |>1$",
+      "classifier_problem_type_id": "absolute_value_inequality_shifted_basic",
+      "problem_type_id": "absolute_value_inequality_shifted_basic",
+      "runtime_category": "deterministic_expression",
+      "manual_review_reason": "",
+      "verified_generator_exists": true,
+      "source_form_category": "multi_part_abs_ineq_solving",
+      "alignment_status": "PARTIAL",
+      "runtime_observed": true
+    },
+    {
+      "example_id": 4403,
+      "source_preview": "解下列不等式：\n(1)$| x-3 |<2$ (2)$| x+5 |>= 4$",
+      "classifier_problem_type_id": "absolute_value_inequality_shifted_basic",
+      "problem_type_id": "absolute_value_inequality_shifted_basic",
+      "runtime_category": "deterministic_expression",
+      "manual_review_reason": "",
+      "verified_generator_exists": true,
+      "source_form_category": "multi_part_abs_ineq_solving",
+      "alignment_status": "PARTIAL",
+      "runtime_observed": true
+    },
+    {
+      "example_id": 4404,
+      "source_preview": "解不等式$| 4x+1 |<= 6$。",
+      "classifier_problem_type_id": "absolute_value_inequality_linear_expression_basic",
+      "problem_type_id": "absolute_value_inequality_linear_expression_basic",
+      "runtime_category": "deterministic_expression",
+      "manual_review_reason": "",
+      "verified_generator_exists": true,
+      "source_form_category": "single_linear_abs_ineq",
+      "alignment_status": "PASS",
+      "runtime_observed": true
+    },
+    {
+      "example_id": 4405,
+      "source_preview": "解不等式$| 2x-3 |>1$。",
+      "classifier_problem_type_id": "absolute_value_inequality_linear_expression_basic",
+      "problem_type_id": "absolute_value_inequality_linear_expression_basic",
+      "runtime_category": "deterministic_expression",
+      "manual_review_reason": "",
+      "verified_generator_exists": true,
+      "source_form_category": "single_linear_abs_ineq",
+      "alignment_status": "PASS",
+      "runtime_observed": true
+    },
+    {
+      "example_id": 4406,
+      "source_preview": "解不等式$| 3x-1 |>= 7$。",
+      "classifier_problem_type_id": "absolute_value_inequality_linear_expression_basic",
+      "problem_type_id": "absolute_value_inequality_linear_expression_basic",
+      "runtime_category": "deterministic_expression",
+      "manual_review_reason": "",
+      "verified_generator_exists": true,
+      "source_form_category": "single_linear_abs_ineq",
+      "alignment_status": "PASS",
+      "runtime_observed": true
+    },
+    {
+      "example_id": 4407,
+      "source_preview": "解不等式$| 5x+3 |<7$。",
+      "classifier_problem_type_id": "absolute_value_inequality_linear_expression_basic",
+      "problem_type_id": "absolute_value_inequality_linear_expression_basic",
+      "runtime_category": "deterministic_expression",
+      "manual_review_reason": "",
+      "verified_generator_exists": true,
+      "source_form_category": "single_linear_abs_ineq",
+      "alignment_status": "PASS",
+      "runtime_observed": true
+    },
+    {
+      "example_id": 4409,
+      "source_preview": "試求下列不等式之解：(1)$| x |$ <= 3 (2) $| x |$ >= 4",
+      "classifier_problem_type_id": "absolute_value_inequality_zero_center_basic",
+      "problem_type_id": "absolute_value_inequality_zero_center_basic",
+      "runtime_category": "deterministic_expression",
+      "manual_review_reason": "",
+      "verified_generator_exists": true,
+      "source_form_category": "multi_part_abs_ineq_solving",
+      "alignment_status": "PARTIAL",
+      "runtime_observed": true
+    },
+    {
+      "example_id": 4413,
+      "source_preview": "試求下列不等式之解：(1) $| x |$ <= 6 (2) $| x |$> 5",
+      "classifier_problem_type_id": "absolute_value_inequality_zero_center_basic",
+      "problem_type_id": "absolute_value_inequality_zero_center_basic",
+      "runtime_category": "deterministic_expression",
+      "manual_review_reason": "",
+      "verified_generator_exists": true,
+      "source_form_category": "multi_part_abs_ineq_solving",
+      "alignment_status": "PARTIAL",
+      "runtime_observed": true
+    },
+    {
+      "example_id": 4499,
+      "source_preview": "試求滿足不等式$| 3x-2 |<= 8$的整數x共有多少個？ (A) 4 (B) 5 (C) 6 (D) 7。",
+      "classifier_problem_type_id": "absolute_value_inequality_integer_solution_count_choice",
+      "problem_type_id": "absolute_value_inequality_integer_solution_count_choice",
+      "runtime_category": "deterministic_choice",
+      "manual_review_reason": "",
+      "verified_generator_exists": true,
+      "source_form_category": "single_linear_abs_ineq",
+      "alignment_status": "PARTIAL",
+      "runtime_observed": true
+    }
+  ],
+  "artifact_inputs": {
+    "phase1_report": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_AbsoluteValueInequality_phase1_audit.json",
+    "phase2_report": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_AbsoluteValueInequality_phase2_build.json",
+    "phase3_report": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_AbsoluteValueInequality_pipeline_final.json",
+    "runtime_distribution_report": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_AbsoluteValueInequality_runtime_distribution_audit.json"
+  },
+  "timestamp": "2026-05-27T03:55:47.543732+00:00"
+}

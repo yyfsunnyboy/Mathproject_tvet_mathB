@@ -130,14 +130,29 @@
   ],
   "manual_review_problem_types": [],
   "future_ai_judged_problem_types": [],
+  "classifier_proposal": {
+    "enabled": false,
+    "reason": "",
+    "proposal_status": "SKIPPED",
+    "proposed_problem_types": [],
+    "proposed_example_map": [],
+    "proposed_answer_contracts": {},
+    "manual_review_candidates": [],
+    "risk_flags": [],
+    "proposal_path": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_AbsoluteValue_classifier_proposal.json",
+    "promote_ready": false,
+    "promote_command_suggestion": "python scripts\\gencode_promote_classifier_proposal.py --skill-id vh_數學B1_AbsoluteValue"
+  },
   "risk_flags": [],
   "recommended_next_phase": "phase2_build",
   "blocking_reasons": [],
   "warnings": [],
   "artifact_paths": {
-    "phase1_json": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_AbsoluteValue_phase1_audit.json",
-    "phase1_md": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_AbsoluteValue_phase1_audit.md",
-    "inventory_report": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_AbsoluteValue_inventory_report.md"
+    "phase1_json": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_AbsoluteValue_phase1_audit.json",
+    "phase1_md": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_AbsoluteValue_phase1_audit.md",
+    "inventory_report": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_AbsoluteValue_inventory_report.md",
+    "classifier_proposal_json": "",
+    "classifier_proposal_md": ""
   },
-  "timestamp": "2026-05-26T04:14:04.691145+00:00"
+  "timestamp": "2026-05-27T04:54:58.392154+00:00"
 }

@@ -1,11 +1,21 @@
 {
   "skill_id": "vh_數學B1_AbsoluteValueInequality",
   "phase": "phase2_build",
-  "final_status": "FOUNDATION_REPAIR_REQUIRED",
-  "input_phase1_report": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_AbsoluteValueInequality_phase1_audit.json",
+  "final_status": "BUILD_PASS",
+  "input_phase1_report": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_AbsoluteValueInequality_phase1_audit.json",
   "build_mode": "normal",
-  "generated_problem_types": [],
-  "verified_problem_types": [],
+  "generated_problem_types": [
+    "absolute_value_inequality_integer_solution_count_choice",
+    "absolute_value_inequality_linear_expression_basic",
+    "absolute_value_inequality_shifted_basic",
+    "absolute_value_inequality_zero_center_basic"
+  ],
+  "verified_problem_types": [
+    "absolute_value_inequality_integer_solution_count_choice",
+    "absolute_value_inequality_linear_expression_basic",
+    "absolute_value_inequality_shifted_basic",
+    "absolute_value_inequality_zero_center_basic"
+  ],
   "failed_problem_types": [],
   "pending_implementation": [],
   "manual_review_problem_types": [
@@ -91,26 +101,28 @@
   },
   "registry_merge_summary": {
     "mode": "non_destructive",
-    "updated": false
+    "updated": true
   },
-  "wrapper_summary": {},
+  "wrapper_summary": {
+    "pipeline_invoked": false,
+    "pipeline_return_code": 0,
+    "pipeline_final_status": "BOUND_BY_RUNTIME_REPAIR"
+  },
   "bootstrap_summary": {
     "bootstrap_mode": false,
     "bootstrap_source_skill_id": "",
     "source_coverage_status": "",
     "allowed_problem_types": []
   },
-  "blocking_reasons": [
-    "foundation_missing_components"
-  ],
+  "blocking_reasons": [],
   "warnings": [],
   "artifact_paths": {
-    "phase2_json": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_AbsoluteValueInequality_phase2_build.json",
-    "phase2_md": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_AbsoluteValueInequality_phase2_build.md"
+    "phase2_json": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_AbsoluteValueInequality_phase2_build.json",
+    "phase2_md": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_AbsoluteValueInequality_phase2_build.md"
   },
-  "timestamp": "2026-05-26T06:51:17.459444+00:00",
+  "timestamp": "2026-05-27T01:44:58.438863+00:00",
   "build_dependency_plan": {
-    "foundation_ready": false,
+    "foundation_ready": true,
     "required_checkers": [
       "choice_label_checker",
       "interval_checker"
@@ -135,23 +147,14 @@
       "interval_domain_function",
       "interval_formatter"
     ],
-    "missing_domain_functions": [
-      "choices_unique_validator",
-      "interval_domain_function",
-      "interval_formatter"
-    ],
+    "missing_domain_functions": [],
     "required_generators": [
       "absolute_value_inequality_integer_solution_count_choice",
       "absolute_value_inequality_linear_expression_basic",
       "absolute_value_inequality_shifted_basic",
       "absolute_value_inequality_zero_center_basic"
     ],
-    "missing_generators": [
-      "absolute_value_inequality_integer_solution_count_choice",
-      "absolute_value_inequality_linear_expression_basic",
-      "absolute_value_inequality_shifted_basic",
-      "absolute_value_inequality_zero_center_basic"
-    ],
+    "missing_generators": [],
     "excluded_manual_review_problem_types": [
       "absolute_value_inequality_malformed_source_review"
     ],
@@ -164,55 +167,60 @@
     "blocked_problem_types": [
       "absolute_value_inequality_malformed_source_review"
     ],
-    "preflight_status": "REPAIR_REQUIRED"
+    "preflight_status": "PASS"
   },
-  "preflight_status": "REPAIR_REQUIRED",
-  "build_execution_status": "SKIPPED",
+  "preflight_status": "PASS",
+  "build_execution_status": "EXECUTED",
+  "candidate_discovery_summary": {
+    "discovered_candidates": [
+      {
+        "problem_type_id": "absolute_value_inequality_integer_solution_count_choice",
+        "module_path": "generated_candidates/vocational_math_b1/section_1_1/absolute_value_inequality_integer_solution_count_choice/candidate_v1.py"
+      },
+      {
+        "problem_type_id": "absolute_value_inequality_linear_expression_basic",
+        "module_path": "generated_candidates/vocational_math_b1/section_1_1/absolute_value_inequality_linear_expression_basic/candidate_v1.py"
+      },
+      {
+        "problem_type_id": "absolute_value_inequality_shifted_basic",
+        "module_path": "generated_candidates/vocational_math_b1/section_1_1/absolute_value_inequality_shifted_basic/candidate_v1.py"
+      },
+      {
+        "problem_type_id": "absolute_value_inequality_zero_center_basic",
+        "module_path": "generated_candidates/vocational_math_b1/section_1_1/absolute_value_inequality_zero_center_basic/candidate_v1.py"
+      }
+    ],
+    "missing_candidate_files": [],
+    "unsupported_candidate_problem_types": [],
+    "verified_candidates": [
+      "absolute_value_inequality_integer_solution_count_choice",
+      "absolute_value_inequality_linear_expression_basic",
+      "absolute_value_inequality_shifted_basic",
+      "absolute_value_inequality_zero_center_basic"
+    ],
+    "failed_candidates": [],
+    "candidate_failure_reasons": {},
+    "sample_count": 44
+  },
+  "build_execution_summary": {
+    "execution_attempted": true,
+    "execution_status": "PASS",
+    "verified_problem_types": [
+      "absolute_value_inequality_integer_solution_count_choice",
+      "absolute_value_inequality_linear_expression_basic",
+      "absolute_value_inequality_shifted_basic",
+      "absolute_value_inequality_zero_center_basic"
+    ],
+    "failed_problem_types": [],
+    "pending_problem_types": [],
+    "failure_reasons": []
+  },
   "build_gap_summary": {
     "has_build_gaps": true,
     "gap_types": [
-      "manual_review_unresolved",
-      "missing_domain_function",
-      "missing_generator"
+      "manual_review_unresolved"
     ],
     "problem_type_gaps": {
-      "absolute_value_inequality_integer_solution_count_choice": {
-        "answer_type": "choice",
-        "equivalence_type": "choice_label",
-        "checker_key": "choice_label_checker",
-        "gap_types": [
-          "missing_generator"
-        ],
-        "recommended_components": [
-          "choice_label_checker",
-          "choice_verifier",
-          "choices_unique_validator"
-        ],
-        "suggested_next_actions": [
-          "建立 deterministic generator"
-        ],
-        "severity": "high"
-      },
-      "absolute_value_inequality_linear_expression_basic": {
-        "answer_type": "interval_set",
-        "equivalence_type": "interval_set",
-        "checker_key": "interval_checker",
-        "gap_types": [
-          "missing_domain_function",
-          "missing_generator"
-        ],
-        "recommended_components": [
-          "interval_checker",
-          "interval_verifier",
-          "interval_domain_function",
-          "interval_formatter"
-        ],
-        "suggested_next_actions": [
-          "建立 deterministic generator",
-          "建立 domain solver / formatter"
-        ],
-        "severity": "high"
-      },
       "absolute_value_inequality_malformed_source_review": {
         "answer_type": "manual_review",
         "equivalence_type": "manual_review_or_ai_judged",
@@ -228,46 +236,6 @@
           "保留 manual_review 或先修正來源題庫"
         ],
         "severity": "medium"
-      },
-      "absolute_value_inequality_shifted_basic": {
-        "answer_type": "interval_set",
-        "equivalence_type": "interval_set",
-        "checker_key": "interval_checker",
-        "gap_types": [
-          "missing_domain_function",
-          "missing_generator"
-        ],
-        "recommended_components": [
-          "interval_checker",
-          "interval_verifier",
-          "interval_domain_function",
-          "interval_formatter"
-        ],
-        "suggested_next_actions": [
-          "建立 deterministic generator",
-          "建立 domain solver / formatter"
-        ],
-        "severity": "high"
-      },
-      "absolute_value_inequality_zero_center_basic": {
-        "answer_type": "interval_set",
-        "equivalence_type": "interval_set",
-        "checker_key": "interval_checker",
-        "gap_types": [
-          "missing_domain_function",
-          "missing_generator"
-        ],
-        "recommended_components": [
-          "interval_checker",
-          "interval_verifier",
-          "interval_domain_function",
-          "interval_formatter"
-        ],
-        "suggested_next_actions": [
-          "建立 deterministic generator",
-          "建立 domain solver / formatter"
-        ],
-        "severity": "high"
       }
     }
   },
@@ -335,5 +303,13 @@
       }
     ]
   },
-  "repair_plan_status": "GENERATED"
+  "repair_plan_status": "GENERATED",
+  "next_action": {
+    "next_action_type": "phase3_publish_gate",
+    "gap": "",
+    "command": "python scripts\\gencode_pipeline_phase3_publish_gate.py --skill-id vh_數學B1_AbsoluteValueInequality",
+    "reason": "No blocking build dependency gaps detected and phase2 status is publish-gate eligible.",
+    "should_run_phase3": true,
+    "requires_human_review": false
+  }
 }

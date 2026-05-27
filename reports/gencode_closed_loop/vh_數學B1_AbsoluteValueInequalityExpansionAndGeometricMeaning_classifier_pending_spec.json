@@ -1,0 +1,134 @@
+{
+  "skill_id": "vh_數學B1_AbsoluteValueInequalityExpansionAndGeometricMeaning",
+  "candidate_problem_types": [
+    {
+      "problem_type_id": "absolute_value_inequality_linear_expression_basic",
+      "proposed_problem_type_id": "absolute_value_inequality_linear_expression_basic",
+      "matched_example_ids": [
+        4411,
+        4415
+      ],
+      "matched_example_count": 2,
+      "unmatched_example_ids": [
+        4416
+      ],
+      "representative_example_id": 4411,
+      "structural_features": [
+        "interval_set"
+      ],
+      "answer_contract_proposal": {
+        "answer_type": "interval_set",
+        "equivalence_type": "interval_set",
+        "checker_key": "interval_checker",
+        "order_matters": false,
+        "accepted_format_notes": [
+          "x > a",
+          "x < a",
+          "x ≤ a",
+          "x ≥ a",
+          "interval notation"
+        ],
+        "canonical_answer_schema": {
+          "type": "interval_set"
+        }
+      },
+      "checker_key_proposal": "interval_checker",
+      "equivalence_type_proposal": "interval_set",
+      "answer_shape": "interval_set",
+      "confidence": "medium",
+      "promote_recommendation": "conservative_hold_for_that_candidate",
+      "promote_blockers": [
+        "insufficient_examples_for_safe_promote"
+      ],
+      "risk_flags": []
+    },
+    {
+      "problem_type_id": "absolute_value_inequality_geometric_meaning",
+      "proposed_problem_type_id": "absolute_value_inequality_geometric_meaning",
+      "matched_example_ids": [
+        4416
+      ],
+      "matched_example_count": 1,
+      "unmatched_example_ids": [
+        4411,
+        4415
+      ],
+      "representative_example_id": 4416,
+      "structural_features": [
+        "choice_label"
+      ],
+      "answer_contract_proposal": {
+        "answer_type": "choice",
+        "equivalence_type": "choice_label",
+        "checker_key": "choice_label_checker",
+        "order_matters": true,
+        "accepted_format_notes": [
+          "A/B/C/D labels"
+        ],
+        "canonical_answer_schema": {
+          "type": "choice_label"
+        }
+      },
+      "checker_key_proposal": "choice_label_checker",
+      "equivalence_type_proposal": "choice_label",
+      "answer_shape": "choice_label",
+      "confidence": "medium",
+      "promote_recommendation": "conservative_hold_for_that_candidate",
+      "promote_blockers": [
+        "insufficient_examples_for_safe_promote"
+      ],
+      "risk_flags": []
+    }
+  ],
+  "per_example_classification": [
+    {
+      "example_id": 4411,
+      "detected_problem_type_id": "absolute_value_inequality_linear_expression_basic",
+      "answer_shape": "interval_set",
+      "classification_confidence": "medium",
+      "classification_reason": "classifier_or_proposal_mapping",
+      "risk_flags": [
+        "possible_missing_problem_type",
+        "weak_classifier_match"
+      ],
+      "title_or_source_label": "textbook_example"
+    },
+    {
+      "example_id": 4415,
+      "detected_problem_type_id": "absolute_value_inequality_linear_expression_basic",
+      "answer_shape": "interval_set",
+      "classification_confidence": "medium",
+      "classification_reason": "classifier_or_proposal_mapping",
+      "risk_flags": [
+        "possible_missing_problem_type",
+        "weak_classifier_match"
+      ],
+      "title_or_source_label": "textbook_example"
+    },
+    {
+      "example_id": 4416,
+      "detected_problem_type_id": "absolute_value_inequality_geometric_meaning",
+      "answer_shape": "choice_label",
+      "classification_confidence": "medium",
+      "classification_reason": "classifier_or_proposal_mapping",
+      "risk_flags": [
+        "possible_missing_problem_type",
+        "weak_classifier_match"
+      ],
+      "title_or_source_label": "textbook_example"
+    }
+  ],
+  "split_or_merge_recommendation": "recommend_split_problem_types",
+  "classifier_gate": {
+    "status": "classifier_auto_pending_promote_with_warning",
+    "allowed": true,
+    "warnings": [
+      "insufficient_examples"
+    ]
+  },
+  "exception_review_gate": {
+    "required": false,
+    "reasons": []
+  },
+  "timestamp": "2026-05-27T06:19:09.118169+00:00"
+}

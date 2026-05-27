@@ -1,0 +1,39 @@
+{
+  "skill_id": "vh_數學B1_AbsoluteValueInequality",
+  "samples": 200,
+  "expected_problem_types": [
+    "absolute_value_inequality_integer_solution_count_choice",
+    "absolute_value_inequality_linear_expression_basic",
+    "absolute_value_inequality_shifted_basic",
+    "absolute_value_inequality_zero_center_basic"
+  ],
+  "observed_problem_types": [
+    "absolute_value_inequality_integer_solution_count_choice",
+    "absolute_value_inequality_linear_expression_basic",
+    "absolute_value_inequality_shifted_basic",
+    "absolute_value_inequality_zero_center_basic"
+  ],
+  "distribution_counts": {
+    "absolute_value_inequality_integer_solution_count_choice": 50,
+    "absolute_value_inequality_linear_expression_basic": 50,
+    "absolute_value_inequality_shifted_basic": 50,
+    "absolute_value_inequality_zero_center_basic": 50
+  },
+  "missing_problem_types": [],
+  "unexpected_problem_types": [],
+  "manual_review_exclusions": [],
+  "manual_review_leaked": [],
+  "choice_question_count": 50,
+  "choice_answer_label_counts": {
+    "D": 10,
+    "C": 17,
+    "A": 15,
+    "B": 8
+  },
+  "choice_answer_label_distribution_status": "PASS",
+  "choice_answer_fixed_label_detected": false,
+  "status": "PASS",
+  "blocking_reasons": [],
+  "warnings": [],
+  "timestamp": ""
+}

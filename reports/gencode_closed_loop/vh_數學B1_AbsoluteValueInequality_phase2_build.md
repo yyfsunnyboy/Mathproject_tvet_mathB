@@ -1,41 +1,58 @@
-# Gencode 第二階段建置報告
+# Gencode Phase 2 Build Report
 
-## 1. 摘要
+## 1. Overview
 - skill_id: vh_數學B1_AbsoluteValueInequality
-- final_status: FOUNDATION_REPAIR_REQUIRED
+- final_status: BUILD_PASS
 - build_mode: normal
-- input_phase1_report: C:\Python\Mathproject_tvet_mathB\reports\gencode_closed_loop\vh_數學B1_AbsoluteValueInequality_phase1_audit.json
+- input_phase1_report: D:\Python\Mathproject_tvet_mathB\reports\gencode_closed_loop\vh_數學B1_AbsoluteValueInequality_phase1_audit.json
 
 ## 2. Build Dependency Plan
-- foundation_ready: false
+- foundation_ready: true
 - required_checkers: choice_label_checker, interval_checker
-- missing_checkers: 無
+- missing_checkers: -
 - required_verifiers: choice_verifier, interval_verifier
-- missing_verifiers: 無
+- missing_verifiers: -
 - required_domain_functions: choices_unique_validator, interval_domain_function, interval_formatter
-- missing_domain_functions: choices_unique_validator, interval_domain_function, interval_formatter
+- missing_domain_functions: -
 - required_generators: absolute_value_inequality_integer_solution_count_choice, absolute_value_inequality_linear_expression_basic, absolute_value_inequality_shifted_basic, absolute_value_inequality_zero_center_basic
-- missing_generators: absolute_value_inequality_integer_solution_count_choice, absolute_value_inequality_linear_expression_basic, absolute_value_inequality_shifted_basic, absolute_value_inequality_zero_center_basic
+- missing_generators: -
 - excluded_manual_review_problem_types: absolute_value_inequality_malformed_source_review
 
 ## 3. Preflight Result
-- preflight_status: REPAIR_REQUIRED
+- preflight_status: PASS
 
 ## 4. Build Execution Status
-- build_execution_status: SKIPPED
+- build_execution_status: EXECUTED
 
-## 8. 建置缺口分析
+## 4.1 Candidate Discovery
+- discovered_candidates: absolute_value_inequality_integer_solution_count_choice, absolute_value_inequality_linear_expression_basic, absolute_value_inequality_shifted_basic, absolute_value_inequality_zero_center_basic
+- missing_candidate_files: -
+- unsupported_candidate_problem_types: -
+- verified_candidates: absolute_value_inequality_integer_solution_count_choice, absolute_value_inequality_linear_expression_basic, absolute_value_inequality_shifted_basic, absolute_value_inequality_zero_center_basic
+- failed_candidates: -
+- sample_count: 44
+
+## 4.2 Build Execution Summary
+- execution_attempted: true
+- execution_status: PASS
+- verified_problem_types: absolute_value_inequality_integer_solution_count_choice, absolute_value_inequality_linear_expression_basic, absolute_value_inequality_shifted_basic, absolute_value_inequality_zero_center_basic
+- failed_problem_types: -
+- pending_problem_types: -
+- failure_reasons: -
+
+## 5. Build Gap Summary
 - has_build_gaps: true
-- gap_types: manual_review_unresolved, missing_domain_function, missing_generator
+- gap_types: manual_review_unresolved
 
-## 9. 修復計畫
+## 6. Problem Type Gaps
 
 | problem_type_id | gap_types | recommended_components | suggested_next_actions | severity |
 | --- | --- | --- | --- | --- |
-| absolute_value_inequality_integer_solution_count_choice | missing_generator | choice_label_checker, choice_verifier, choices_unique_validator | 建立 deterministic generator | high |
-| absolute_value_inequality_linear_expression_basic | missing_domain_function, missing_generator | interval_checker, interval_verifier, interval_domain_function, interval_formatter | 建立 deterministic generator, 建立 domain solver / formatter | high |
 | absolute_value_inequality_malformed_source_review | manual_review_unresolved | manual_review_marker, future_ai_judged_path | 保留 manual_review 或先修正來源題庫 | medium |
-| absolute_value_inequality_shifted_basic | missing_domain_function, missing_generator | interval_checker, interval_verifier, interval_domain_function, interval_formatter | 建立 deterministic generator, 建立 domain solver / formatter | high |
-| absolute_value_inequality_zero_center_basic | missing_domain_function, missing_generator | interval_checker, interval_verifier, interval_domain_function, interval_formatter | 建立 deterministic generator, 建立 domain solver / formatter | high |
 
-本輪未執行 generator build，因 foundation 缺口尚未修復。
+## 下一步建議
+- next_action_type: phase3_publish_gate
+- gap: 
+- reason: No blocking build dependency gaps detected and phase2 status is publish-gate eligible.
+- command: python scripts\gencode_pipeline_phase3_publish_gate.py --skill-id vh_數學B1_AbsoluteValueInequality
+- should_run_phase3: true

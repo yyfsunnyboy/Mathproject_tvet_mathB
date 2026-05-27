@@ -1,0 +1,145 @@
+{
+  "skill_id": "vh_數學B1_AbsoluteValueInequalityExpansionAndGeometry",
+  "phase": "phase1_audit",
+  "final_status": "AUDIT_FAIL",
+  "blocking_reasons": [
+    "inventory_failed"
+  ],
+  "inventory_failed_reason": "RuntimeError: textbook_examples count is 0; cannot build inventory",
+  "skill_exists": false,
+  "skill_profile": {},
+  "exact_example_count": 0,
+  "nearby_skill_candidates": [
+    {
+      "skill_id": "vh_數學B1_QuadraticInequalitySolution",
+      "example_count": 29
+    },
+    {
+      "skill_id": "vh_數學B1_RemainderTheorem",
+      "example_count": 25
+    },
+    {
+      "skill_id": "vh_數學B1_PolynomialArithmeticOperations",
+      "example_count": 23
+    },
+    {
+      "skill_id": "vh_數學B1_PolynomialFactorization",
+      "example_count": 18
+    },
+    {
+      "skill_id": "vh_數學B1_GeneralFormOfLinearEquation",
+      "example_count": 17
+    },
+    {
+      "skill_id": "vh_數學B1_FactorTheorem",
+      "example_count": 15
+    },
+    {
+      "skill_id": "vh_數學B1_LinearFunction",
+      "example_count": 15
+    },
+    {
+      "skill_id": "vh_數學B1_PointSlopeForm",
+      "example_count": 14
+    },
+    {
+      "skill_id": "vh_數學B1_RationalEquation",
+      "example_count": 14
+    },
+    {
+      "skill_id": "vh_數學B1_QuadraticFunctionExtremum",
+      "example_count": 13
+    },
+    {
+      "skill_id": "vh_數學B1_SlopeOfALine",
+      "example_count": 13
+    },
+    {
+      "skill_id": "vh_數學B1_DistanceBetweenTwoParallelLines",
+      "example_count": 11
+    },
+    {
+      "skill_id": "vh_數學B1_AbsoluteValueInequality",
+      "example_count": 10
+    },
+    {
+      "skill_id": "vh_數學B1_MidpointCoordinates",
+      "example_count": 10
+    },
+    {
+      "skill_id": "vh_數學B1_PolynomialBasicConcepts",
+      "example_count": 8
+    },
+    {
+      "skill_id": "vh_數學B1_PropertiesOfPerpendicularLines",
+      "example_count": 8
+    },
+    {
+      "skill_id": "vh_數學B1_RationalExpressionArithmeticOperations",
+      "example_count": 8
+    },
+    {
+      "skill_id": "vh_數學B1_DistanceBetweenPointAndLine",
+      "example_count": 7
+    },
+    {
+      "skill_id": "vh_數學B1_DivisionPointCoordinates",
+      "example_count": 7
+    },
+    {
+      "skill_id": "vh_數學B1_InterceptForm",
+      "example_count": 7
+    },
+    {
+      "skill_id": "vh_數學B1_VertexFormOfQuadraticFunction",
+      "example_count": 7
+    },
+    {
+      "skill_id": "vh_數學B1_AbsoluteValueInequalityExpansionAndGeometricMeaning",
+      "example_count": 5
+    },
+    {
+      "skill_id": "vh_數學B1_DivisionAlgorithm",
+      "example_count": 5
+    },
+    {
+      "skill_id": "vh_數學B1_SlopeInterceptForm",
+      "example_count": 5
+    },
+    {
+      "skill_id": "vh_數學B1_CartesianCoordinateSystemEstablishment",
+      "example_count": 4
+    },
+    {
+      "skill_id": "vh_數學B1_DistanceBetweenTwoPointsInPlane",
+      "example_count": 4
+    },
+    {
+      "skill_id": "vh_數學B1_HorizontalAndVerticalLineEquations",
+      "example_count": 4
+    },
+    {
+      "skill_id": "vh_數學B1_PolynomialEquality",
+      "example_count": 4
+    },
+    {
+      "skill_id": "vh_數學B1_PropertiesOfParallelLines",
+      "example_count": 4
+    },
+    {
+      "skill_id": "vh_數學B1_QuadraticFunctionGraph",
+      "example_count": 4
+    }
+  ],
+  "nearby_example_candidates": [],
+  "outline_example_candidates": [],
+  "recommended_action": "skill_id 不存在：請先修正 skill_id 或技能建立流程。",
+  "warnings": [],
+  "artifact_paths": {
+    "phase1_json": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_AbsoluteValueInequalityExpansionAndGeometry_phase1_audit.json",
+    "phase1_md": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_AbsoluteValueInequalityExpansionAndGeometry_phase1_audit.md"
+  },
+  "timestamp": "2026-05-27T04:54:58.374148+00:00",
+  "raw_inventory_stdout": "",
+  "raw_inventory_stderr": "Traceback (most recent call last):\n  File \"D:\\Python\\Mathproject_tvet_mathB\\scripts\\gencode_skill_inventory.py\", line 214, in <module>\n    main()\n  File \"D:\\Python\\Mathproject_tvet_mathB\\scripts\\gencode_skill_inventory.py\", line 171, in main\n    raise RuntimeError(\"textbook_examples count is 0; cannot build inventory\")\nRuntimeError: textbook_examples count is 0; cannot build inventory\n"
+}

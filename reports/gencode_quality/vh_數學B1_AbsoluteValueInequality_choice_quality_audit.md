@@ -1,0 +1,182 @@
+# Choice Quality Audit
+
+- status: PASS
+- samples: 100
+- audited_modules: 28
+- modules_with_choice_questions: 2
+- blocking_reasons: []
+
+## skills.vh_數學B1_AbsoluteValueInequality
+- choice_question_count: 26
+- choice_answer_label_counts: {'B': 9, 'A': 6, 'D': 8, 'C': 3}
+- fixed_label_detected: False
+- warnings: []
+- issues: []
+
+## generated_candidates/vocational_math_b1/section_1_1/absolute_value_distance_between_two_points/candidate_v1.py
+- choice_question_count: 0
+- choice_answer_label_counts: {}
+- fixed_label_detected: False
+- warnings: ['insufficient_choice_samples_for_label_distribution']
+- issues: ["generate_failed:generate() got an unexpected keyword argument 'level'"]
+
+## generated_candidates/vocational_math_b1/section_1_1/absolute_value_distance_from_zero/candidate_v1.py
+- choice_question_count: 0
+- choice_answer_label_counts: {}
+- fixed_label_detected: False
+- warnings: ['insufficient_choice_samples_for_label_distribution']
+- issues: ["generate_failed:generate() got an unexpected keyword argument 'level'"]
+
+## generated_candidates/vocational_math_b1/section_1_1/absolute_value_equation_basic/candidate_v1.py
+- choice_question_count: 0
+- choice_answer_label_counts: {}
+- fixed_label_detected: False
+- warnings: ['insufficient_choice_samples_for_label_distribution']
+- issues: ["generate_failed:generate() got an unexpected keyword argument 'level'"]
+
+## generated_candidates/vocational_math_b1/section_1_1/absolute_value_inequality_greater_than_basic/candidate_v1.py
+- choice_question_count: 0
+- choice_answer_label_counts: {}
+- fixed_label_detected: False
+- warnings: ['insufficient_choice_samples_for_label_distribution']
+- issues: ["generate_failed:generate() got an unexpected keyword argument 'level'"]
+
+## generated_candidates/vocational_math_b1/section_1_1/absolute_value_inequality_greater_than_basic/candidate_v2.py
+- choice_question_count: 0
+- choice_answer_label_counts: {}
+- fixed_label_detected: False
+- warnings: ['insufficient_choice_samples_for_label_distribution']
+- issues: ["generate_failed:generate() got an unexpected keyword argument 'level'"]
+
+## generated_candidates/vocational_math_b1/section_1_1/absolute_value_inequality_greater_than_basic/candidate_v3.py
+- choice_question_count: 0
+- choice_answer_label_counts: {}
+- fixed_label_detected: False
+- warnings: ['insufficient_choice_samples_for_label_distribution']
+- issues: ["generate_failed:generate() got an unexpected keyword argument 'level'"]
+
+## generated_candidates/vocational_math_b1/section_1_1/absolute_value_inequality_greater_than_basic/candidate_v4.py
+- choice_question_count: 0
+- choice_answer_label_counts: {}
+- fixed_label_detected: False
+- warnings: ['insufficient_choice_samples_for_label_distribution']
+- issues: ["generate_failed:generate() got an unexpected keyword argument 'level'"]
+
+## generated_candidates/vocational_math_b1/section_1_1/absolute_value_inequality_greater_than_basic/candidate_v5.py
+- choice_question_count: 0
+- choice_answer_label_counts: {}
+- fixed_label_detected: False
+- warnings: ['insufficient_choice_samples_for_label_distribution']
+- issues: ["generate_failed:generate() got an unexpected keyword argument 'level'"]
+
+## generated_candidates/vocational_math_b1/section_1_1/absolute_value_inequality_integer_solution_count_choice/candidate_v1.py
+- choice_question_count: 100
+- choice_answer_label_counts: {'C': 20, 'B': 25, 'A': 23, 'D': 32}
+- fixed_label_detected: False
+- warnings: []
+- issues: []
+
+## generated_candidates/vocational_math_b1/section_1_1/absolute_value_inequality_interval_interpretation/candidate_v1.py
+- choice_question_count: 0
+- choice_answer_label_counts: {}
+- fixed_label_detected: False
+- warnings: ['insufficient_choice_samples_for_label_distribution']
+- issues: ["generate_failed:generate() got an unexpected keyword argument 'level'"]
+
+## generated_candidates/vocational_math_b1/section_1_1/absolute_value_inequality_interval_interpretation/candidate_v2.py
+- choice_question_count: 0
+- choice_answer_label_counts: {}
+- fixed_label_detected: False
+- warnings: ['insufficient_choice_samples_for_label_distribution']
+- issues: ["generate_failed:generate() got an unexpected keyword argument 'level'"]
+
+## generated_candidates/vocational_math_b1/section_1_1/absolute_value_inequality_interval_interpretation/candidate_v3.py
+- choice_question_count: 0
+- choice_answer_label_counts: {}
+- fixed_label_detected: False
+- warnings: ['insufficient_choice_samples_for_label_distribution']
+- issues: ["generate_failed:generate() got an unexpected keyword argument 'level'"]
+
+## generated_candidates/vocational_math_b1/section_1_1/absolute_value_inequality_interval_interpretation/candidate_v4.py
+- choice_question_count: 0
+- choice_answer_label_counts: {}
+- fixed_label_detected: False
+- warnings: ['insufficient_choice_samples_for_label_distribution']
+- issues: ["generate_failed:generate() got an unexpected keyword argument 'level'"]
+
+## generated_candidates/vocational_math_b1/section_1_1/absolute_value_inequality_interval_interpretation/candidate_v5.py
+- choice_question_count: 0
+- choice_answer_label_counts: {}
+- fixed_label_detected: False
+- warnings: ['insufficient_choice_samples_for_label_distribution']
+- issues: ["generate_failed:generate() got an unexpected keyword argument 'level'"]
+
+## generated_candidates/vocational_math_b1/section_1_1/absolute_value_numeric_evaluation/candidate_v1.py
+- choice_question_count: 0
+- choice_answer_label_counts: {}
+- fixed_label_detected: False
+- warnings: ['insufficient_choice_samples_for_label_distribution']
+- issues: ["generate_failed:generate() got an unexpected keyword argument 'level'"]
+
+## generated_candidates/vocational_math_b1/section_1_1/absolute_value_numeric_evaluation/candidate_v2.py
+- choice_question_count: 0
+- choice_answer_label_counts: {}
+- fixed_label_detected: False
+- warnings: ['insufficient_choice_samples_for_label_distribution']
+- issues: ["generate_failed:generate() got an unexpected keyword argument 'level'"]
+
+## generated_candidates/vocational_math_b1/section_1_1/absolute_value_numeric_evaluation/candidate_v3.py
+- choice_question_count: 0
+- choice_answer_label_counts: {}
+- fixed_label_detected: False
+- warnings: ['insufficient_choice_samples_for_label_distribution']
+- issues: ["generate_failed:generate() got an unexpected keyword argument 'level'"]
+
+## generated_candidates/vocational_math_b1/section_1_1/absolute_value_numeric_evaluation/candidate_v4.py
+- choice_question_count: 0
+- choice_answer_label_counts: {}
+- fixed_label_detected: False
+- warnings: ['insufficient_choice_samples_for_label_distribution']
+- issues: ["generate_failed:generate() got an unexpected keyword argument 'level'"]
+
+## generated_candidates/vocational_math_b1/section_1_1/absolute_value_numeric_evaluation/candidate_v5.py
+- choice_question_count: 0
+- choice_answer_label_counts: {}
+- fixed_label_detected: False
+- warnings: ['insufficient_choice_samples_for_label_distribution']
+- issues: ["generate_failed:generate() got an unexpected keyword argument 'level'"]
+
+## generated_candidates/vocational_math_b1/section_1_1/number_line_point_value_reading/candidate_v1.py
+- choice_question_count: 0
+- choice_answer_label_counts: {}
+- fixed_label_detected: False
+- warnings: ['insufficient_choice_samples_for_label_distribution']
+- issues: ["generate_failed:generate() got an unexpected keyword argument 'level'"]
+
+## generated_candidates/vocational_math_b1/section_1_1/number_line_point_value_reading/candidate_v2.py
+- choice_question_count: 0
+- choice_answer_label_counts: {}
+- fixed_label_detected: False
+- warnings: ['insufficient_choice_samples_for_label_distribution']
+- issues: ["generate_failed:generate() got an unexpected keyword argument 'level'"]
+
+## generated_candidates/vocational_math_b1/section_1_1/number_line_point_value_reading/candidate_v3.py
+- choice_question_count: 0
+- choice_answer_label_counts: {}
+- fixed_label_detected: False
+- warnings: ['insufficient_choice_samples_for_label_distribution']
+- issues: ["generate_failed:generate() got an unexpected keyword argument 'level'"]
+
+## generated_candidates/vocational_math_b1/section_1_1/number_line_point_value_reading/candidate_v4.py
+- choice_question_count: 0
+- choice_answer_label_counts: {}
+- fixed_label_detected: False
+- warnings: ['insufficient_choice_samples_for_label_distribution']
+- issues: ["generate_failed:generate() got an unexpected keyword argument 'level'"]
+
+## generated_candidates/vocational_math_b1/section_1_1/number_line_point_value_reading/candidate_v5.py
+- choice_question_count: 0
+- choice_answer_label_counts: {}
+- fixed_label_detected: False
+- warnings: ['insufficient_choice_samples_for_label_distribution']
+- issues: ["generate_failed:generate() got an unexpected keyword argument 'level'"]

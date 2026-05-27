@@ -1,0 +1,29 @@
+{
+  "skill_id": "B1_AbsoluteValueInequalityExpansionAndGeometricMeaning",
+  "phase": "phase1_audit",
+  "final_status": "AUDIT_FAIL",
+  "blocking_reasons": [
+    "inventory_failed"
+  ],
+  "inventory_failed_reason": "RuntimeError: textbook_examples count is 0; cannot build inventory",
+  "skill_exists": false,
+  "skill_profile": {},
+  "exact_example_count": 0,
+  "nearby_skill_candidates": [
+    {
+      "skill_id": "vh_數學B1_AbsoluteValueInequalityExpansionAndGeometricMeaning",
+      "example_count": 3
+    }
+  ],
+  "nearby_example_candidates": [],
+  "outline_example_candidates": [],
+  "recommended_action": "skill_id 不存在：請先修正 skill_id 或技能建立流程。",
+  "warnings": [],
+  "artifact_paths": {
+    "phase1_json": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\B1_AbsoluteValueInequalityExpansionAndGeometricMeaning_phase1_audit.json",
+    "phase1_md": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\B1_AbsoluteValueInequalityExpansionAndGeometricMeaning_phase1_audit.md"
+  },
+  "timestamp": "2026-05-27T05:22:26.353540+00:00",
+  "raw_inventory_stdout": "",
+  "raw_inventory_stderr": "Traceback (most recent call last):\n  File \"D:\\Python\\Mathproject_tvet_mathB\\scripts\\gencode_skill_inventory.py\", line 214, in <module>\n    main()\n  File \"D:\\Python\\Mathproject_tvet_mathB\\scripts\\gencode_skill_inventory.py\", line 171, in main\n    raise RuntimeError(\"textbook_examples count is 0; cannot build inventory\")\nRuntimeError: textbook_examples count is 0; cannot build inventory\n"
+}

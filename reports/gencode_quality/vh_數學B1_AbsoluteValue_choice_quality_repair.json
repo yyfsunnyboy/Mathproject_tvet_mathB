@@ -1,0 +1,51 @@
+{
+  "skill_id": "vh_數學B1_AbsoluteValue",
+  "samples": 100,
+  "repair_status": "PASS",
+  "source_files_checked": [
+    "D:\\Python\\Mathproject_tvet_mathB\\skills\\vh_數學B1_AbsoluteValue.py"
+  ],
+  "source_files_modified": [
+    "D:\\Python\\Mathproject_tvet_mathB\\skills\\vh_數學B1_AbsoluteValue.py"
+  ],
+  "issues_before": [
+    "choice_answer_fixed_label_detected"
+  ],
+  "issues_after": [
+    "generate_failed"
+  ],
+  "fixed_issues": [
+    "choice_answer_fixed_label_detected"
+  ],
+  "requires_manual_repair": [],
+  "choice_answer_label_counts_before": {
+    "skills.vh_數學B1_AbsoluteValue": {
+      "A": 25
+    }
+  },
+  "choice_answer_label_counts_after": {
+    "skills.vh_數學B1_AbsoluteValue": {
+      "B": 6,
+      "A": 10,
+      "C": 3,
+      "D": 6
+    }
+  },
+  "audit_status_before": "FAIL",
+  "audit_status_after": "PASS",
+  "py_compile_results": {
+    "D:\\Python\\Mathproject_tvet_mathB\\skills\\vh_數學B1_AbsoluteValue.py": "PASS"
+  },
+  "pytest_results": {},
+  "blocking_reasons": [],
+  "warnings": [
+    "insufficient_choice_samples_for_label_distribution"
+  ],
+  "artifact_paths": {
+    "audit_before": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_quality\\vh_數學B1_AbsoluteValue_choice_quality_audit.json",
+    "audit_after": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_quality\\vh_數學B1_AbsoluteValue_choice_quality_audit.json",
+    "repair_json": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_quality\\vh_數學B1_AbsoluteValue_choice_quality_repair.json",
+    "repair_md": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_quality\\vh_數學B1_AbsoluteValue_choice_quality_repair.md"
+  },
+  "timestamp": "2026-05-27T03:19:24.341112+00:00"
+}

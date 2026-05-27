@@ -1,0 +1,16 @@
+skill_id: "vh_數學B1_AbsoluteValueInequalityExpansionAndGeometricMeaning"
+subskills:
+  -
+    subskill_id: "unknown"
+    observed: true
+    supporting_example_ids:
+      - 4411
+      - 4415
+      - 4416
+    suggested_problem_types:
+      - "unknown"
+    runtime_category: "manual_review"
+    prerequisite_subskills:
+      - "absolute_value_numeric_evaluation"
+    diagnosis_tags:
+      - "absolute_value"

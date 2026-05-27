@@ -1,0 +1,2349 @@
+{
+  "skill_id": "",
+  "samples": 100,
+  "audited_modules": 189,
+  "modules_with_choice_questions": 3,
+  "status": "FAIL",
+  "blocking_reasons": [
+    "choice_answer_fixed_label_detected"
+  ],
+  "warnings": [
+    "insufficient_choice_samples_for_label_distribution"
+  ],
+  "results": [
+    {
+      "module": "skills.custom_upload",
+      "path": "D:\\Python\\Mathproject_tvet_mathB\\skills\\custom_upload.py",
+      "skill_id": "",
+      "choice_question_count": 0,
+      "choice_answer_label_counts": {},
+      "fixed_label_detected": false,
+      "warnings": [
+        "insufficient_choice_samples_for_label_distribution"
+      ],
+      "issues": [
+        "generate_failed:generate() got an unexpected keyword argument 'seed'"
+      ]
+    },
+    {
+      "module": "skills.Example_Program",
+      "path": "D:\\Python\\Mathproject_tvet_mathB\\skills\\Example_Program.py",
+      "skill_id": "",
+      "choice_question_count": 0,
+      "choice_answer_label_counts": {},
+      "fixed_label_detected": false,
+      "warnings": [
+        "insufficient_choice_samples_for_label_distribution"
+      ],
+      "issues": [
+        "generate_failed:generate() got an unexpected keyword argument 'seed'"
+      ]
+    },
+    {
+      "module": "skills.gh_AntiderivativeOfPolynomialFunctions",
+      "path": "D:\\Python\\Mathproject_tvet_mathB\\skills\\gh_AntiderivativeOfPolynomialFunctions.py",
+      "skill_id": "",
+      "choice_question_count": 0,
+      "choice_answer_label_counts": {},
+      "fixed_label_detected": false,
+      "warnings": [
+        "insufficient_choice_samples_for_label_distribution"
+      ],
+      "issues": [
+        "generate_failed:generate() got an unexpected keyword argument 'seed'"
+      ]
+    },
+    {
+      "module": "skills.gh_ApplicationsOfDerivatives",
+      "path": "D:\\Python\\Mathproject_tvet_mathB\\skills\\gh_ApplicationsOfDerivatives.py",
+      "skill_id": "",
+      "choice_question_count": 0,
+      "choice_answer_label_counts": {},
+      "fixed_label_detected": false,
+      "warnings": [
+        "insufficient_choice_samples_for_label_distribution"
+      ],
+      "issues": [
+        "generate_failed:generate() got an unexpected keyword argument 'seed'"
+      ]
+    },
+    {
+      "module": "skills.gh_AreaUnderFunctionGraph",
+      "path": "D:\\Python\\Mathproject_tvet_mathB\\skills\\gh_AreaUnderFunctionGraph.py",
+      "skill_id": "",
+      "choice_question_count": 0,
+      "choice_answer_label_counts": {},
+      "fixed_label_detected": false,
+      "warnings": [
+        "insufficient_choice_samples_for_label_distribution"
+      ],
+      "issues": [
+        "generate_failed:generate() got an unexpected keyword argument 'seed'"
+      ]
+    },
+    {
+      "module": "skills.gh_AverageValueOfContinuousFunctions",
+      "path": "D:\\Python\\Mathproject_tvet_mathB\\skills\\gh_AverageValueOfContinuousFunctions.py",
+      "skill_id": "",
+      "choice_question_count": 0,
+      "choice_answer_label_counts": {},
+      "fixed_label_detected": false,
+      "warnings": [
+        "insufficient_choice_samples_for_label_distribution"
+      ],
+      "issues": [
+        "generate_failed:generate() got an unexpected keyword argument 'seed'"
+      ]
+    },
+    {
+      "module": "skills.gh_DefiniteIntegral",
+      "path": "D:\\Python\\Mathproject_tvet_mathB\\skills\\gh_DefiniteIntegral.py",
+      "skill_id": "",
+      "choice_question_count": 0,
+      "choice_answer_label_counts": {},
+      "fixed_label_detected": false,
+      "warnings": [],
+      "issues": [
+        "import_failed:unexpected indent (gh_DefiniteIntegral.py, line 272)"
+      ]
+    },
+    {
+      "module": "skills.gh_DefiniteIntegralAndArea",
+      "path": "D:\\Python\\Mathproject_tvet_mathB\\skills\\gh_DefiniteIntegralAndArea.py",
+      "skill_id": "",
+      "choice_question_count": 0,
+      "choice_answer_label_counts": {},
+      "fixed_label_detected": false,
+      "warnings": [
+        "insufficient_choice_samples_for_label_distribution"
+      ],
+      "issues": [
+        "generate_failed:generate() got an unexpected keyword argument 'seed'"
+      ]
+    },
+    {
+      "module": "skills.gh_DefinitionOfRadianMeasure",
+      "path": "D:\\Python\\Mathproject_tvet_mathB\\skills\\gh_DefinitionOfRadianMeasure.py",
+      "skill_id": "",
+      "choice_question_count": 0,
+      "choice_answer_label_counts": {},
+      "fixed_label_detected": false,
+      "warnings": [
+        "insufficient_choice_samples_for_label_distribution"
+      ],
+      "issues": [
+        "generate_failed:generate() got an unexpected keyword argument 'seed'"
+      ]
+    },
+    {
+      "module": "skills.gh_FundamentalTheoremOfCalculus",
+      "path": "D:\\Python\\Mathproject_tvet_mathB\\skills\\gh_FundamentalTheoremOfCalculus.py",
+      "skill_id": "",
+      "choice_question_count": 0,
+      "choice_answer_label_counts": {},
+      "fixed_label_detected": false,
+      "warnings": [
+        "insufficient_choice_samples_for_label_distribution"
+      ],
+      "issues": [
+        "generate_failed:generate() got an unexpected keyword argument 'seed'"
+      ]
+    },
+    {
+      "module": "skills.jh_數學1上_AgeProblems",
+      "path": "D:\\Python\\Mathproject_tvet_mathB\\skills\\jh_數學1上_AgeProblems.py",
+      "skill_id": "",
+      "choice_question_count": 0,
+      "choice_answer_label_counts": {},
+      "fixed_label_detected": false,
+      "warnings": [
+        "insufficient_choice_samples_for_label_distribution"
+      ],
+      "issues": [
+        "generate_failed:generate() got an unexpected keyword argument 'seed'"
+      ]
+    },
+    {
+      "module": "skills.jh_數學1上_ApplicationProblems",
+      "path": "D:\\Python\\Mathproject_tvet_mathB\\skills\\jh_數學1上_ApplicationProblems.py",
+      "skill_id": "",
+      "choice_question_count": 0,
+      "choice_answer_label_counts": {},
+      "fixed_label_detected": false,
+      "warnings": [
+        "insufficient_choice_samples_for_label_distribution"
+      ],
+      "issues": [
+        "generate_failed:generate() got an unexpected keyword argument 'seed'"
+      ]
+    },
+    {
+      "module": "skills.jh_數學1上_ApplicationProblems_v2",
+      "path": "D:\\Python\\Mathproject_tvet_mathB\\skills\\jh_數學1上_ApplicationProblems_v2.py",
+      "skill_id": "",
+      "choice_question_count": 0,
+      "choice_answer_label_counts": {},
+      "fixed_label_detected": false,
+      "warnings": [
+        "insufficient_choice_samples_for_label_distribution"
+      ],
+      "issues": [
+        "generate_failed:generate() got an unexpected keyword argument 'seed'"
+      ]
+    },
+    {
+      "module": "skills.jh_數學1上_CommonDivisibilityRules",
+      "path": "D:\\Python\\Mathproject_tvet_mathB\\skills\\jh_數學1上_CommonDivisibilityRules.py",
+      "skill_id": "",
+      "choice_question_count": 0,
+      "choice_answer_label_counts": {},
+      "fixed_label_detected": false,
+      "warnings": [
+        "insufficient_choice_samples_for_label_distribution"
+      ],
+      "issues": [
+        "generate_failed:generate() got an unexpected keyword argument 'seed'"
+      ]
+    },
+    {
+      "module": "skills.jh_數學1上_CommonDivisorAndGreatestCommonDivisor",
+      "path": "D:\\Python\\Mathproject_tvet_mathB\\skills\\jh_數學1上_CommonDivisorAndGreatestCommonDivisor.py",
+      "skill_id": "",
+      "choice_question_count": 0,
+      "choice_answer_label_counts": {},
+      "fixed_label_detected": false,
+      "warnings": [
+        "insufficient_choice_samples_for_label_distribution"
+      ],
+      "issues": [
+        "generate_failed:generate() got an unexpected keyword argument 'seed'"
+      ]
+    },
+    {
+      "module": "skills.jh_數學1上_CommonMultipleAndLeastCommonMultiple",
+      "path": "D:\\Python\\Mathproject_tvet_mathB\\skills\\jh_數學1上_CommonMultipleAndLeastCommonMultiple.py",
+      "skill_id": "",
+      "choice_question_count": 0,
+      "choice_answer_label_counts": {},
+      "fixed_label_detected": false,
+      "warnings": [
+        "insufficient_choice_samples_for_label_distribution"
+      ],
+      "issues": [
+        "generate_failed:generate() got an unexpected keyword argument 'seed'"
+      ]
+    },
+    {
+      "module": "skills.jh_數學1上_ComparingNumbers",
+      "path": "D:\\Python\\Mathproject_tvet_mathB\\skills\\jh_數學1上_ComparingNumbers.py",
+      "skill_id": "",
+      "choice_question_count": 0,
+      "choice_answer_label_counts": {},
+      "fixed_label_detected": false,
+      "warnings": [
+        "insufficient_choice_samples_for_label_distribution"
+      ],
+      "issues": [
+        "generate_failed:generate() got an unexpected keyword argument 'seed'"
+      ]
+    },
+    {
+      "module": "skills.jh_數學1上_CostProblems",
+      "path": "D:\\Python\\Mathproject_tvet_mathB\\skills\\jh_數學1上_CostProblems.py",
+      "skill_id": "",
+      "choice_question_count": 0,
+      "choice_answer_label_counts": {},
+      "fixed_label_detected": false,
+      "warnings": [
+        "insufficient_choice_samples_for_label_distribution"
+      ],
+      "issues": [
+        "generate_failed:generate() got an unexpected keyword argument 'seed'"
+      ]
+    },
+    {
+      "module": "skills.jh_數學1上_DiscountProblems",
+      "path": "D:\\Python\\Mathproject_tvet_mathB\\skills\\jh_數學1上_DiscountProblems.py",
+      "skill_id": "",
+      "choice_question_count": 0,
+      "choice_answer_label_counts": {},
+      "fixed_label_detected": false,
+      "warnings": [
+        "insufficient_choice_samples_for_label_distribution"
+      ],
+      "issues": [
+        "generate_failed:generate() got an unexpected keyword argument 'seed'"
+      ]
+    },
+    {
+      "module": "skills.jh_數學1上_DistanceBetweenTwoPointsOnNumberLine",
+      "path": "D:\\Python\\Mathproject_tvet_mathB\\skills\\jh_數學1上_DistanceBetweenTwoPointsOnNumberLine.py",
+      "skill_id": "",
+      "choice_question_count": 0,
+      "choice_answer_label_counts": {},
+      "fixed_label_detected": false,
+      "warnings": [
+        "insufficient_choice_samples_for_label_distribution"
+      ],
+      "issues": [
+        "generate_failed:generate() got an unexpected keyword argument 'seed'"
+      ]
+    },
+    {
+      "module": "skills.jh_數學1上_DistributionProblems",
+      "path": "D:\\Python\\Mathproject_tvet_mathB\\skills\\jh_數學1上_DistributionProblems.py",
+      "skill_id": "",
+      "choice_question_count": 0,
+      "choice_answer_label_counts": {},
+      "fixed_label_detected": false,
+      "warnings": [
+        "insufficient_choice_samples_for_label_distribution"
+      ],
+      "issues": [
+        "generate_failed:generate() got an unexpected keyword argument 'seed'"
+      ]
+    },
+    {
+      "module": "skills.jh_數學1上_EvaluatingAlgebraicExpressions",
+      "path": "D:\\Python\\Mathproject_tvet_mathB\\skills\\jh_數學1上_EvaluatingAlgebraicExpressions.py",
+      "skill_id": "",
+      "choice_question_count": 0,
+      "choice_answer_label_counts": {},
+      "fixed_label_detected": false,
+      "warnings": [
+        "insufficient_choice_samples_for_label_distribution"
+      ],
+      "issues": [
+        "generate_failed:generate() got an unexpected keyword argument 'seed'"
+      ]
+    },
+    {
+      "module": "skills.jh_數學1上_FactorsAndMultiples",
+      "path": "D:\\Python\\Mathproject_tvet_mathB\\skills\\jh_數學1上_FactorsAndMultiples.py",
+      "skill_id": "",
+      "choice_question_count": 0,
+      "choice_answer_label_counts": {},
+      "fixed_label_detected": false,
+      "warnings": [
+        "insufficient_choice_samples_for_label_distribution"
+      ],
+      "issues": [
+        "generate_failed:generate() got an unexpected keyword argument 'seed'"
+      ]
+    },
+    {
+      "module": "skills.jh_數學1上_FormulatingOneVariableLinearEquations",
+      "path": "D:\\Python\\Mathproject_tvet_mathB\\skills\\jh_數學1上_FormulatingOneVariableLinearEquations.py",
+      "skill_id": "",
+      "choice_question_count": 0,
+      "choice_answer_label_counts": {},
+      "fixed_label_detected": false,
+      "warnings": [
+        "insufficient_choice_samples_for_label_distribution"
+      ],
+      "issues": [
+        "generate_failed:generate() got an unexpected keyword argument 'seed'"
+      ]
+    },
+    {
+      "module": "skills.jh_數學1上_FourArithmeticOperationsOfIntegers",
+      "path": "D:\\Python\\Mathproject_tvet_mathB\\skills\\jh_數學1上_FourArithmeticOperationsOfIntegers.py",
+      "skill_id": "",
+      "choice_question_count": 0,
+      "choice_answer_label_counts": {},
+      "fixed_label_detected": false,
+      "warnings": [
+        "insufficient_choice_samples_for_label_distribution"
+      ],
+      "issues": [
+        "generate_failed:generate() got an unexpected keyword argument 'seed'"
+      ]
+    },
+    {
+      "module": "skills.jh_數學1上_FourArithmeticOperationsOfNumbers",
+      "path": "D:\\Python\\Mathproject_tvet_mathB\\skills\\jh_數學1上_FourArithmeticOperationsOfNumbers.py",
+      "skill_id": "",
+      "choice_question_count": 0,
+      "choice_answer_label_counts": {},
+      "fixed_label_detected": false,
+      "warnings": [
+        "insufficient_choice_samples_for_label_distribution"
+      ],
+      "issues": [
+        "generate_failed:generate() got an unexpected keyword argument 'seed'"
+      ]
+    },
+    {
+      "module": "skills.jh_數學1上_FractionAdditionAndSubtraction",
+      "path": "D:\\Python\\Mathproject_tvet_mathB\\skills\\jh_數學1上_FractionAdditionAndSubtraction.py",
+      "skill_id": "",
+      "choice_question_count": 0,
+      "choice_answer_label_counts": {},
+      "fixed_label_detected": false,
+      "warnings": [
+        "insufficient_choice_samples_for_label_distribution"
+      ],
+      "issues": [
+        "generate_failed:generate() got an unexpected keyword argument 'seed'"
+      ]
+    },
+    {
+      "module": "skills.jh_數學1上_FractionDivision",
+      "path": "D:\\Python\\Mathproject_tvet_mathB\\skills\\jh_數學1上_FractionDivision.py",
+      "skill_id": "",
+      "choice_question_count": 0,
+      "choice_answer_label_counts": {},
+      "fixed_label_detected": false,
+      "warnings": [
+        "insufficient_choice_samples_for_label_distribution"
+      ],
+      "issues": [
+        "generate_failed:generate() got an unexpected keyword argument 'seed'"
+      ]
+    },
+    {
+      "module": "skills.jh_數學1上_FractionMultiplication",
+      "path": "D:\\Python\\Mathproject_tvet_mathB\\skills\\jh_數學1上_FractionMultiplication.py",
+      "skill_id": "",
+      "choice_question_count": 0,
+      "choice_answer_label_counts": {},
+      "fixed_label_detected": false,
+      "warnings": [
+        "insufficient_choice_samples_for_label_distribution"
+      ],
+      "issues": [
+        "generate_failed:generate() got an unexpected keyword argument 'seed'"
+      ]
+    },
+    {
+      "module": "skills.jh_數學1上_GeometryProblems",
+      "path": "D:\\Python\\Mathproject_tvet_mathB\\skills\\jh_數學1上_GeometryProblems.py",
+      "skill_id": "",
+      "choice_question_count": 0,
+      "choice_answer_label_counts": {},
+      "fixed_label_detected": false,
+      "warnings": [
+        "insufficient_choice_samples_for_label_distribution"
+      ],
+      "issues": [
+        "generate_failed:generate() got an unexpected keyword argument 'seed'"
+      ]
+    },
+    {
+      "module": "skills.jh_數學1上_IntegerAdditionOperation",
+      "path": "D:\\Python\\Mathproject_tvet_mathB\\skills\\jh_數學1上_IntegerAdditionOperation.py",
+      "skill_id": "",
+      "choice_question_count": 0,
+      "choice_answer_label_counts": {},
+      "fixed_label_detected": false,
+      "warnings": [
+        "insufficient_choice_samples_for_label_distribution"
+      ],
+      "issues": [
+        "generate_failed:generate() got an unexpected keyword argument 'seed'"
+      ]
+    },
+    {
+      "module": "skills.jh_數學1上_IntegerDivision",
+      "path": "D:\\Python\\Mathproject_tvet_mathB\\skills\\jh_數學1上_IntegerDivision.py",
+      "skill_id": "",
+      "choice_question_count": 0,
+      "choice_answer_label_counts": {},
+      "fixed_label_detected": false,
+      "warnings": [
+        "insufficient_choice_samples_for_label_distribution"
+      ],
+      "issues": [
+        "generate_failed:generate() got an unexpected keyword argument 'seed'"
+      ]
+    },
+    {
+      "module": "skills.jh_數學1上_IntegerMultiplication",
+      "path": "D:\\Python\\Mathproject_tvet_mathB\\skills\\jh_數學1上_IntegerMultiplication.py",
+      "skill_id": "",
+      "choice_question_count": 0,
+      "choice_answer_label_counts": {},
+      "fixed_label_detected": false,
+      "warnings": [
+        "insufficient_choice_samples_for_label_distribution"
+      ],
+      "issues": [
+        "generate_failed:generate() got an unexpected keyword argument 'seed'"
+      ]
+    },
+    {
+      "module": "skills.jh_數學1上_IntegerSubtractionOperation",
+      "path": "D:\\Python\\Mathproject_tvet_mathB\\skills\\jh_數學1上_IntegerSubtractionOperation.py",
+      "skill_id": "",
+      "choice_question_count": 0,
+      "choice_answer_label_counts": {},
+      "fixed_label_detected": false,
+      "warnings": [
+        "insufficient_choice_samples_for_label_distribution"
+      ],
+      "issues": [
+        "generate_failed:generate() got an unexpected keyword argument 'seed'"
+      ]
+    },
+    {
+      "module": "skills.jh_數學1上_LawsOfExponents",
+      "path": "D:\\Python\\Mathproject_tvet_mathB\\skills\\jh_數學1上_LawsOfExponents.py",
+      "skill_id": "",
+      "choice_question_count": 0,
+      "choice_answer_label_counts": {},
+      "fixed_label_detected": false,
+      "warnings": [
+        "insufficient_choice_samples_for_label_distribution"
+      ],
+      "issues": [
+        "generate_failed:generate() got an unexpected keyword argument 'seed'"
+      ]
+    },
+    {
+      "module": "skills.jh_數學1上_MixedIntegerAdditionAndSubtraction",
+      "path": "D:\\Python\\Mathproject_tvet_mathB\\skills\\jh_數學1上_MixedIntegerAdditionAndSubtraction.py",
+      "skill_id": "",
+      "choice_question_count": 0,
+      "choice_answer_label_counts": {},
+      "fixed_label_detected": false,
+      "warnings": [
+        "insufficient_choice_samples_for_label_distribution"
+      ],
+      "issues": [
+        "generate_failed:generate() got an unexpected keyword argument 'seed'"
+      ]
+    },
+    {
+      "module": "skills.jh_數學1上_NumberLine",
+      "path": "D:\\Python\\Mathproject_tvet_mathB\\skills\\jh_數學1上_NumberLine.py",
+      "skill_id": "",
+      "choice_question_count": 0,
+      "choice_answer_label_counts": {},
+      "fixed_label_detected": false,
+      "warnings": [
+        "insufficient_choice_samples_for_label_distribution"
+      ],
+      "issues": [
+        "generate_failed:generate() got an unexpected keyword argument 'seed'"
+      ]
+    },
+    {
+      "module": "skills.jh_數學1上_NumberProblems",
+      "path": "D:\\Python\\Mathproject_tvet_mathB\\skills\\jh_數學1上_NumberProblems.py",
+      "skill_id": "",
+      "choice_question_count": 0,
+      "choice_answer_label_counts": {},
+      "fixed_label_detected": false,
+      "warnings": [
+        "insufficient_choice_samples_for_label_distribution"
+      ],
+      "issues": [
+        "generate_failed:generate() got an unexpected keyword argument 'seed'"
+      ]
+    },
+    {
+      "module": "skills.jh_數學1上_OperationsOfLinearExpressionsInOneVariable",
+      "path": "D:\\Python\\Mathproject_tvet_mathB\\skills\\jh_數學1上_OperationsOfLinearExpressionsInOneVariable.py",
+      "skill_id": "",
+      "choice_question_count": 0,
+      "choice_answer_label_counts": {},
+      "fixed_label_detected": false,
+      "warnings": [
+        "insufficient_choice_samples_for_label_distribution"
+      ],
+      "issues": [
+        "generate_failed:generate() got an unexpected keyword argument 'seed'"
+      ]
+    },
+    {
+      "module": "skills.jh_數學1上_OppositesAndAbsoluteValue",
+      "path": "D:\\Python\\Mathproject_tvet_mathB\\skills\\jh_數學1上_OppositesAndAbsoluteValue.py",
+      "skill_id": "",
+      "choice_question_count": 0,
+      "choice_answer_label_counts": {},
+      "fixed_label_detected": false,
+      "warnings": [
+        "insufficient_choice_samples_for_label_distribution"
+      ],
+      "issues": [
+        "generate_failed:generate() got an unexpected keyword argument 'seed'"
+      ]
+    },
+    {
+      "module": "skills.jh_數學1上_PositiveAndNegativeNumbers",
+      "path": "D:\\Python\\Mathproject_tvet_mathB\\skills\\jh_數學1上_PositiveAndNegativeNumbers.py",
+      "skill_id": "",
+      "choice_question_count": 0,
+      "choice_answer_label_counts": {},
+      "fixed_label_detected": false,
+      "warnings": [
+        "insufficient_choice_samples_for_label_distribution"
+      ],
+      "issues": [
+        "generate_failed:generate() got an unexpected keyword argument 'seed'"
+      ]
+    },
+    {
+      "module": "skills.jh_數學1上_PowersOfTen",
+      "path": "D:\\Python\\Mathproject_tvet_mathB\\skills\\jh_數學1上_PowersOfTen.py",
+      "skill_id": "",
+      "choice_question_count": 0,
+      "choice_answer_label_counts": {},
+      "fixed_label_detected": false,
+      "warnings": [
+        "insufficient_choice_samples_for_label_distribution"
+      ],
+      "issues": [
+        "generate_failed:generate() got an unexpected keyword argument 'seed'"
+      ]
+    },
+    {
+      "module": "skills.jh_數學1上_PrimeNumbersAndPrimeFactorization",
+      "path": "D:\\Python\\Mathproject_tvet_mathB\\skills\\jh_數學1上_PrimeNumbersAndPrimeFactorization.py",
+      "skill_id": "",
+      "choice_question_count": 0,
+      "choice_answer_label_counts": {},
+      "fixed_label_detected": false,
+      "warnings": [
+        "insufficient_choice_samples_for_label_distribution"
+      ],
+      "issues": [
+        "generate_failed:generate() got an unexpected keyword argument 'seed'"
+      ]
+    },
+    {
+      "module": "skills.jh_數學1上_RateProblems",
+      "path": "D:\\Python\\Mathproject_tvet_mathB\\skills\\jh_數學1上_RateProblems.py",
+      "skill_id": "",
+      "choice_question_count": 0,
+      "choice_answer_label_counts": {},
+      "fixed_label_detected": false,
+      "warnings": [
+        "insufficient_choice_samples_for_label_distribution"
+      ],
+      "issues": [
+        "generate_failed:generate() got an unexpected keyword argument 'seed'"
+      ]
+    },
+    {
+      "module": "skills.jh_數學1上_RepresentingQuantitiesWithAlgebraicExpressions",
+      "path": "D:\\Python\\Mathproject_tvet_mathB\\skills\\jh_數學1上_RepresentingQuantitiesWithAlgebraicExpressions.py",
+      "skill_id": "",
+      "choice_question_count": 0,
+      "choice_answer_label_counts": {},
+      "fixed_label_detected": false,
+      "warnings": [
+        "insufficient_choice_samples_for_label_distribution"
+      ],
+      "issues": [
+        "generate_failed:generate() got an unexpected keyword argument 'seed'"
+      ]
+    },
+    {
+      "module": "skills.jh_數學1上_ScientificNotation",
+      "path": "D:\\Python\\Mathproject_tvet_mathB\\skills\\jh_數學1上_ScientificNotation.py",
+      "skill_id": "",
+      "choice_question_count": 0,
+      "choice_answer_label_counts": {},
+      "fixed_label_detected": false,
+      "warnings": [
+        "insufficient_choice_samples_for_label_distribution"
+      ],
+      "issues": [
+        "generate_failed:generate() got an unexpected keyword argument 'seed'"
+      ]
+    },
+    {
+      "module": "skills.jh_數學1上_SimplestFraction",
+      "path": "D:\\Python\\Mathproject_tvet_mathB\\skills\\jh_數學1上_SimplestFraction.py",
+      "skill_id": "",
+      "choice_question_count": 0,
+      "choice_answer_label_counts": {},
+      "fixed_label_detected": false,
+      "warnings": [
+        "insufficient_choice_samples_for_label_distribution"
+      ],
+      "issues": [
+        "generate_failed:generate() got an unexpected keyword argument 'seed'"
+      ]
+    },
+    {
+      "module": "skills.jh_數學1上_SolutionReasonableness",
+      "path": "D:\\Python\\Mathproject_tvet_mathB\\skills\\jh_數學1上_SolutionReasonableness.py",
+      "skill_id": "",
+      "choice_question_count": 0,
+      "choice_answer_label_counts": {},
+      "fixed_label_detected": false,
+      "warnings": [
+        "insufficient_choice_samples_for_label_distribution"
+      ],
+      "issues": [
+        "generate_failed:generate() got an unexpected keyword argument 'seed'"
+      ]
+    },
+    {
+      "module": "skills.jh_數學1上_SolvingOneVariableLinearEquations",
+      "path": "D:\\Python\\Mathproject_tvet_mathB\\skills\\jh_數學1上_SolvingOneVariableLinearEquations.py",
+      "skill_id": "",
+      "choice_question_count": 0,
+      "choice_answer_label_counts": {},
+      "fixed_label_detected": false,
+      "warnings": [
+        "insufficient_choice_samples_for_label_distribution"
+      ],
+      "issues": [
+        "generate_failed:generate() got an unexpected keyword argument 'seed'"
+      ]
+    },
+    {
+      "module": "skills.jh_數學1下_ApplicationProblems",
+      "path": "D:\\Python\\Mathproject_tvet_mathB\\skills\\jh_數學1下_ApplicationProblems.py",
+      "skill_id": "",
+      "choice_question_count": 0,
+      "choice_answer_label_counts": {},
+      "fixed_label_detected": false,
+      "warnings": [
+        "insufficient_choice_samples_for_label_distribution"
+      ],
+      "issues": [
+        "generate_failed:generate() got an unexpected keyword argument 'seed'"
+      ]
+    },
+    {
+      "module": "skills.jh_數學1下_ApplicationProblems_v2",
+      "path": "D:\\Python\\Mathproject_tvet_mathB\\skills\\jh_數學1下_ApplicationProblems_v2.py",
+      "skill_id": "",
+      "choice_question_count": 0,
+      "choice_answer_label_counts": {},
+      "fixed_label_detected": false,
+      "warnings": [
+        "insufficient_choice_samples_for_label_distribution"
+      ],
+      "issues": [
+        "generate_failed:generate() got an unexpected keyword argument 'seed'"
+      ]
+    },
+    {
+      "module": "skills.jh_數學1下_DirectProportion",
+      "path": "D:\\Python\\Mathproject_tvet_mathB\\skills\\jh_數學1下_DirectProportion.py",
+      "skill_id": "",
+      "choice_question_count": 0,
+      "choice_answer_label_counts": {},
+      "fixed_label_detected": false,
+      "warnings": [
+        "insufficient_choice_samples_for_label_distribution"
+      ],
+      "issues": [
+        "generate_failed:generate() got an unexpected keyword argument 'seed'"
+      ]
+    },
+    {
+      "module": "skills.jh_數學1下_DrawingGraphsOfTwoVariableLinearEquations",
+      "path": "D:\\Python\\Mathproject_tvet_mathB\\skills\\jh_數學1下_DrawingGraphsOfTwoVariableLinearEquations.py",
+      "skill_id": "",
+      "choice_question_count": 0,
+      "choice_answer_label_counts": {},
+      "fixed_label_detected": false,
+      "warnings": [
+        "insufficient_choice_samples_for_label_distribution"
+      ],
+      "issues": [
+        "generate_failed:generate() got an unexpected keyword argument 'seed'"
+      ]
+    },
+    {
+      "module": "skills.jh_數學1下_EliminationMethod",
+      "path": "D:\\Python\\Mathproject_tvet_mathB\\skills\\jh_數學1下_EliminationMethod.py",
+      "skill_id": "",
+      "choice_question_count": 0,
+      "choice_answer_label_counts": {},
+      "fixed_label_detected": false,
+      "warnings": [
+        "insufficient_choice_samples_for_label_distribution"
+      ],
+      "issues": [
+        "generate_failed:generate() got an unexpected keyword argument 'seed'"
+      ]
+    },
+    {
+      "module": "skills.jh_數學1下_GeometricMeaningOfSystemOfTwoVariableLinearEquations",
+      "path": "D:\\Python\\Mathproject_tvet_mathB\\skills\\jh_數學1下_GeometricMeaningOfSystemOfTwoVariableLinearEquations.py",
+      "skill_id": "",
+      "choice_question_count": 0,
+      "choice_answer_label_counts": {},
+      "fixed_label_detected": false,
+      "warnings": [
+        "insufficient_choice_samples_for_label_distribution"
+      ],
+      "issues": [
+        "generate_failed:generate() got an unexpected keyword argument 'seed'"
+      ]
+    },
+    {
+      "module": "skills.jh_數學1下_GraphOfTwoVariableLinearEquation",
+      "path": "D:\\Python\\Mathproject_tvet_mathB\\skills\\jh_數學1下_GraphOfTwoVariableLinearEquation.py",
+      "skill_id": "",
+      "choice_question_count": 0,
+      "choice_answer_label_counts": {},
+      "fixed_label_detected": false,
+      "warnings": [
+        "insufficient_choice_samples_for_label_distribution"
+      ],
+      "issues": [
+        "generate_failed:generate() got an unexpected keyword argument 'seed'"
+      ]
+    },
+    {
+      "module": "skills.jh_數學1下_GroupedFrequencyDistributionAndCharts",
+      "path": "D:\\Python\\Mathproject_tvet_mathB\\skills\\jh_數學1下_GroupedFrequencyDistributionAndCharts.py",
+      "skill_id": "",
+      "choice_question_count": 0,
+      "choice_answer_label_counts": {},
+      "fixed_label_detected": false,
+      "warnings": [
+        "insufficient_choice_samples_for_label_distribution"
+      ],
+      "issues": [
+        "generate_failed:generate() got an unexpected keyword argument 'seed'"
+      ]
+    },
+    {
+      "module": "skills.jh_數學1下_IntroductionToOneVariableLinearInequalities",
+      "path": "D:\\Python\\Mathproject_tvet_mathB\\skills\\jh_數學1下_IntroductionToOneVariableLinearInequalities.py",
+      "skill_id": "",
+      "choice_question_count": 0,
+      "choice_answer_label_counts": {},
+      "fixed_label_detected": false,
+      "warnings": [
+        "insufficient_choice_samples_for_label_distribution"
+      ],
+      "issues": [
+        "generate_failed:generate() got an unexpected keyword argument 'seed'"
+      ]
+    },
+    {
+      "module": "skills.jh_數學1下_InverseProportion",
+      "path": "D:\\Python\\Mathproject_tvet_mathB\\skills\\jh_數學1下_InverseProportion.py",
+      "skill_id": "",
+      "choice_question_count": 0,
+      "choice_answer_label_counts": {},
+      "fixed_label_detected": false,
+      "warnings": [
+        "insufficient_choice_samples_for_label_distribution"
+      ],
+      "issues": [
+        "generate_failed:generate() got an unexpected keyword argument 'seed'"
+      ]
+    },
+    {
+      "module": "skills.jh_數學1下_LinearEquationInTwoVariables",
+      "path": "D:\\Python\\Mathproject_tvet_mathB\\skills\\jh_數學1下_LinearEquationInTwoVariables.py",
+      "skill_id": "",
+      "choice_question_count": 0,
+      "choice_answer_label_counts": {},
+      "fixed_label_detected": false,
+      "warnings": [
+        "insufficient_choice_samples_for_label_distribution"
+      ],
+      "issues": [
+        "generate_failed:generate() got an unexpected keyword argument 'seed'"
+      ]
+    },
+    {
+      "module": "skills.jh_數學1下_LinearExpressionInTwoVariables",
+      "path": "D:\\Python\\Mathproject_tvet_mathB\\skills\\jh_數學1下_LinearExpressionInTwoVariables.py",
+      "skill_id": "",
+      "choice_question_count": 0,
+      "choice_answer_label_counts": {},
+      "fixed_label_detected": false,
+      "warnings": [
+        "insufficient_choice_samples_for_label_distribution"
+      ],
+      "issues": [
+        "generate_failed:generate() got an unexpected keyword argument 'seed'"
+      ]
+    },
+    {
+      "module": "skills.jh_數學1下_MeanMedianAndMode",
+      "path": "D:\\Python\\Mathproject_tvet_mathB\\skills\\jh_數學1下_MeanMedianAndMode.py",
+      "skill_id": "",
+      "choice_question_count": 0,
+      "choice_answer_label_counts": {},
+      "fixed_label_detected": false,
+      "warnings": [
+        "insufficient_choice_samples_for_label_distribution"
+      ],
+      "issues": [
+        "generate_failed:generate() got an unexpected keyword argument 'seed'"
+      ]
+    },
+    {
+      "module": "skills.jh_數學1下_PerpendicularBisectorsAndLineSymmetricFigures",
+      "path": "D:\\Python\\Mathproject_tvet_mathB\\skills\\jh_數學1下_PerpendicularBisectorsAndLineSymmetricFigures.py",
+      "skill_id": "",
+      "choice_question_count": 0,
+      "choice_answer_label_counts": {},
+      "fixed_label_detected": false,
+      "warnings": [
+        "insufficient_choice_samples_for_label_distribution"
+      ],
+      "issues": [
+        "generate_failed:generate() got an unexpected keyword argument 'seed'"
+      ]
+    },
+    {
+      "module": "skills.jh_數學1下_PointsLinesAnglesAndNotation",
+      "path": "D:\\Python\\Mathproject_tvet_mathB\\skills\\jh_數學1下_PointsLinesAnglesAndNotation.py",
+      "skill_id": "",
+      "choice_question_count": 0,
+      "choice_answer_label_counts": {},
+      "fixed_label_detected": false,
+      "warnings": [
+        "insufficient_choice_samples_for_label_distribution"
+      ],
+      "issues": [
+        "generate_failed:generate() got an unexpected keyword argument 'seed'"
+      ]
+    },
+    {
+      "module": "skills.jh_數學1下_Polygons",
+      "path": "D:\\Python\\Mathproject_tvet_mathB\\skills\\jh_數學1下_Polygons.py",
+      "skill_id": "",
+      "choice_question_count": 0,
+      "choice_answer_label_counts": {},
+      "fixed_label_detected": false,
+      "warnings": [
+        "insufficient_choice_samples_for_label_distribution"
+      ],
+      "issues": [
+        "generate_failed:generate() got an unexpected keyword argument 'seed'"
+      ]
+    },
+    {
+      "module": "skills.jh_數學1下_PropertiesOfInequalities",
+      "path": "D:\\Python\\Mathproject_tvet_mathB\\skills\\jh_數學1下_PropertiesOfInequalities.py",
+      "skill_id": "",
+      "choice_question_count": 0,
+      "choice_answer_label_counts": {},
+      "fixed_label_detected": false,
+      "warnings": [
+        "insufficient_choice_samples_for_label_distribution"
+      ],
+      "issues": [
+        "generate_failed:generate() got an unexpected keyword argument 'seed'"
+      ]
+    },
+    {
+      "module": "skills.jh_數學1下_Proportion",
+      "path": "D:\\Python\\Mathproject_tvet_mathB\\skills\\jh_數學1下_Proportion.py",
+      "skill_id": "",
+      "choice_question_count": 0,
+      "choice_answer_label_counts": {},
+      "fixed_label_detected": false,
+      "warnings": [
+        "insufficient_choice_samples_for_label_distribution"
+      ],
+      "issues": [
+        "generate_failed:generate() got an unexpected keyword argument 'seed'"
+      ]
+    },
+    {
+      "module": "skills.jh_數學1下_QuadrantsOnTheCoordinatePlane",
+      "path": "D:\\Python\\Mathproject_tvet_mathB\\skills\\jh_數學1下_QuadrantsOnTheCoordinatePlane.py",
+      "skill_id": "",
+      "choice_question_count": 0,
+      "choice_answer_label_counts": {},
+      "fixed_label_detected": false,
+      "warnings": [
+        "insufficient_choice_samples_for_label_distribution"
+      ],
+      "issues": [
+        "generate_failed:generate() got an unexpected keyword argument 'seed'"
+      ]
+    },
+    {
+      "module": "skills.jh_數學1下_RatioAndRatioValue",
+      "path": "D:\\Python\\Mathproject_tvet_mathB\\skills\\jh_數學1下_RatioAndRatioValue.py",
+      "skill_id": "",
+      "choice_question_count": 0,
+      "choice_answer_label_counts": {},
+      "fixed_label_detected": false,
+      "warnings": [
+        "insufficient_choice_samples_for_label_distribution"
+      ],
+      "issues": [
+        "generate_failed:generate() got an unexpected keyword argument 'seed'"
+      ]
+    },
+    {
+      "module": "skills.jh_數學1下_RectangularCoordinatePlaneAndCoordinateRepresentation",
+      "path": "D:\\Python\\Mathproject_tvet_mathB\\skills\\jh_數學1下_RectangularCoordinatePlaneAndCoordinateRepresentation.py",
+      "skill_id": "",
+      "choice_question_count": 0,
+      "choice_answer_label_counts": {},
+      "fixed_label_detected": false,
+      "warnings": [
+        "insufficient_choice_samples_for_label_distribution"
+      ],
+      "issues": [
+        "generate_failed:generate() got an unexpected keyword argument 'seed'"
+      ]
+    },
+    {
+      "module": "skills.jh_數學1下_SolutionsAndGraphicalRepresentationOfOneVariableLinearInequalities",
+      "path": "D:\\Python\\Mathproject_tvet_mathB\\skills\\jh_數學1下_SolutionsAndGraphicalRepresentationOfOneVariableLinearInequalities.py",
+      "skill_id": "",
+      "choice_question_count": 0,
+      "choice_answer_label_counts": {},
+      "fixed_label_detected": false,
+      "warnings": [
+        "insufficient_choice_samples_for_label_distribution"
+      ],
+      "issues": [
+        "generate_failed:generate() got an unexpected keyword argument 'seed'"
+      ]
+    },
+    {
+      "module": "skills.jh_數學1下_StatisticalChartsInDailyLife",
+      "path": "D:\\Python\\Mathproject_tvet_mathB\\skills\\jh_數學1下_StatisticalChartsInDailyLife.py",
+      "skill_id": "",
+      "choice_question_count": 0,
+      "choice_answer_label_counts": {},
+      "fixed_label_detected": false,
+      "warnings": [
+        "insufficient_choice_samples_for_label_distribution"
+      ],
+      "issues": [
+        "generate_failed:generate() got an unexpected keyword argument 'seed'"
+      ]
+    },
+    {
+      "module": "skills.jh_數學1下_SubstitutionMethod",
+      "path": "D:\\Python\\Mathproject_tvet_mathB\\skills\\jh_數學1下_SubstitutionMethod.py",
+      "skill_id": "",
+      "choice_question_count": 0,
+      "choice_answer_label_counts": {},
+      "fixed_label_detected": false,
+      "warnings": [
+        "insufficient_choice_samples_for_label_distribution"
+      ],
+      "issues": [
+        "generate_failed:generate() got an unexpected keyword argument 'seed'"
+      ]
+    },
+    {
+      "module": "skills.jh_數學1下_SystemOfLinearEquationsInTwoVariables",
+      "path": "D:\\Python\\Mathproject_tvet_mathB\\skills\\jh_數學1下_SystemOfLinearEquationsInTwoVariables.py",
+      "skill_id": "",
+      "choice_question_count": 0,
+      "choice_answer_label_counts": {},
+      "fixed_label_detected": false,
+      "warnings": [
+        "insufficient_choice_samples_for_label_distribution"
+      ],
+      "issues": [
+        "generate_failed:generate() got an unexpected keyword argument 'seed'"
+      ]
+    },
+    {
+      "module": "skills.jh_數學1下_ThreeViewDrawings",
+      "path": "D:\\Python\\Mathproject_tvet_mathB\\skills\\jh_數學1下_ThreeViewDrawings.py",
+      "skill_id": "",
+      "choice_question_count": 0,
+      "choice_answer_label_counts": {},
+      "fixed_label_detected": false,
+      "warnings": [
+        "insufficient_choice_samples_for_label_distribution"
+      ],
+      "issues": [
+        "generate_failed:operands could not be broadcast together with remapped shapes [original->remapped]: (2,)  and requested shape (3,2,3)"
+      ]
+    },
+    {
+      "module": "skills.jh_數學1下_WordProblems",
+      "path": "D:\\Python\\Mathproject_tvet_mathB\\skills\\jh_數學1下_WordProblems.py",
+      "skill_id": "",
+      "choice_question_count": 0,
+      "choice_answer_label_counts": {},
+      "fixed_label_detected": false,
+      "warnings": [
+        "insufficient_choice_samples_for_label_distribution"
+      ],
+      "issues": [
+        "generate_failed:generate() got an unexpected keyword argument 'seed'"
+      ]
+    },
+    {
+      "module": "skills.jh_數學2上_ApplicationsOfPythagoreanTheorem",
+      "path": "D:\\Python\\Mathproject_tvet_mathB\\skills\\jh_數學2上_ApplicationsOfPythagoreanTheorem.py",
+      "skill_id": "",
+      "choice_question_count": 0,
+      "choice_answer_label_counts": {},
+      "fixed_label_detected": false,
+      "warnings": [
+        "insufficient_choice_samples_for_label_distribution"
+      ],
+      "issues": [
+        "generate_failed:generate() got an unexpected keyword argument 'seed'"
+      ]
+    },
+    {
+      "module": "skills.jh_數學2上_BasicPropertiesOfRadicalOperations",
+      "path": "D:\\Python\\Mathproject_tvet_mathB\\skills\\jh_數學2上_BasicPropertiesOfRadicalOperations.py",
+      "skill_id": "",
+      "choice_question_count": 0,
+      "choice_answer_label_counts": {},
+      "fixed_label_detected": false,
+      "warnings": [
+        "insufficient_choice_samples_for_label_distribution"
+      ],
+      "issues": [
+        "generate_failed:generate() got an unexpected keyword argument 'seed'"
+      ]
+    },
+    {
+      "module": "skills.jh_數學2上_ComprehensiveApplications_v2",
+      "path": "D:\\Python\\Mathproject_tvet_mathB\\skills\\jh_數學2上_ComprehensiveApplications_v2.py",
+      "skill_id": "",
+      "choice_question_count": 0,
+      "choice_answer_label_counts": {},
+      "fixed_label_detected": false,
+      "warnings": [
+        "insufficient_choice_samples_for_label_distribution"
+      ],
+      "issues": [
+        "generate_failed:generate() got an unexpected keyword argument 'seed'"
+      ]
+    },
+    {
+      "module": "skills.jh_數學2上_ComprehensiveApplications_v3",
+      "path": "D:\\Python\\Mathproject_tvet_mathB\\skills\\jh_數學2上_ComprehensiveApplications_v3.py",
+      "skill_id": "",
+      "choice_question_count": 0,
+      "choice_answer_label_counts": {},
+      "fixed_label_detected": false,
+      "warnings": [
+        "insufficient_choice_samples_for_label_distribution"
+      ],
+      "issues": [
+        "generate_failed:generate() got an unexpected keyword argument 'seed'"
+      ]
+    },
+    {
+      "module": "skills.jh_數學2上_ComprehensiveApplications_v4",
+      "path": "D:\\Python\\Mathproject_tvet_mathB\\skills\\jh_數學2上_ComprehensiveApplications_v4.py",
+      "skill_id": "",
+      "choice_question_count": 0,
+      "choice_answer_label_counts": {},
+      "fixed_label_detected": false,
+      "warnings": [
+        "insufficient_choice_samples_for_label_distribution"
+      ],
+      "issues": [
+        "generate_failed:generate() got an unexpected keyword argument 'seed'"
+      ]
+    },
+    {
+      "module": "skills.jh_數學2上_CumulativeFrequencyDistributionAndLineChart",
+      "path": "D:\\Python\\Mathproject_tvet_mathB\\skills\\jh_數學2上_CumulativeFrequencyDistributionAndLineChart.py",
+      "skill_id": "",
+      "choice_question_count": 0,
+      "choice_answer_label_counts": {},
+      "fixed_label_detected": false,
+      "warnings": [
+        "insufficient_choice_samples_for_label_distribution"
+      ],
+      "issues": [
+        "generate_failed:generate() got an unexpected keyword argument 'seed'"
+      ]
+    },
+    {
+      "module": "skills.jh_數學2上_DifferenceOfSquaresFormula",
+      "path": "D:\\Python\\Mathproject_tvet_mathB\\skills\\jh_數學2上_DifferenceOfSquaresFormula.py",
+      "skill_id": "",
+      "choice_question_count": 0,
+      "choice_answer_label_counts": {},
+      "fixed_label_detected": false,
+      "warnings": [
+        "insufficient_choice_samples_for_label_distribution"
+      ],
+      "issues": [
+        "generate_failed:generate() got an unexpected keyword argument 'seed'"
+      ]
+    },
+    {
+      "module": "skills.jh_數學2上_DistanceFormulaOnCartesianPlane",
+      "path": "D:\\Python\\Mathproject_tvet_mathB\\skills\\jh_數學2上_DistanceFormulaOnCartesianPlane.py",
+      "skill_id": "",
+      "choice_question_count": 0,
+      "choice_answer_label_counts": {},
+      "fixed_label_detected": false,
+      "warnings": [
+        "insufficient_choice_samples_for_label_distribution"
+      ],
+      "issues": [
+        "generate_failed:generate() got an unexpected keyword argument 'seed'"
+      ]
+    },
+    {
+      "module": "skills.jh_數學2上_DistributiveProperty",
+      "path": "D:\\Python\\Mathproject_tvet_mathB\\skills\\jh_數學2上_DistributiveProperty.py",
+      "skill_id": "",
+      "choice_question_count": 0,
+      "choice_answer_label_counts": {},
+      "fixed_label_detected": false,
+      "warnings": [
+        "insufficient_choice_samples_for_label_distribution"
+      ],
+      "issues": [
+        "generate_failed:generate() got an unexpected keyword argument 'seed'"
+      ]
+    },
+    {
+      "module": "skills.jh_數學2上_FactoringQuadraticsWithLeadingCoefficientNotOne",
+      "path": "D:\\Python\\Mathproject_tvet_mathB\\skills\\jh_數學2上_FactoringQuadraticsWithLeadingCoefficientNotOne.py",
+      "skill_id": "",
+      "choice_question_count": 0,
+      "choice_answer_label_counts": {},
+      "fixed_label_detected": false,
+      "warnings": [
+        "insufficient_choice_samples_for_label_distribution"
+      ],
+      "issues": [
+        "generate_failed:generate() got an unexpected keyword argument 'seed'"
+      ]
+    },
+    {
+      "module": "skills.jh_數學2上_FactoringQuadraticsWithLeadingCoefficientOne",
+      "path": "D:\\Python\\Mathproject_tvet_mathB\\skills\\jh_數學2上_FactoringQuadraticsWithLeadingCoefficientOne.py",
+      "skill_id": "",
+      "choice_question_count": 0,
+      "choice_answer_label_counts": {},
+      "fixed_label_detected": false,
+      "warnings": [
+        "insufficient_choice_samples_for_label_distribution"
+      ],
+      "issues": [
+        "generate_failed:generate() got an unexpected keyword argument 'seed'"
+      ]
+    },
+    {
+      "module": "skills.jh_數學2上_FactorizationByMultiplicationFormulas",
+      "path": "D:\\Python\\Mathproject_tvet_mathB\\skills\\jh_數學2上_FactorizationByMultiplicationFormulas.py",
+      "skill_id": "",
+      "choice_question_count": 0,
+      "choice_answer_label_counts": {},
+      "fixed_label_detected": false,
+      "warnings": [
+        "insufficient_choice_samples_for_label_distribution"
+      ],
+      "issues": [
+        "generate_failed:generate() got an unexpected keyword argument 'seed'"
+      ]
+    },
+    {
+      "module": "skills.jh_數學2上_FactorizationByTakingCommonFactors",
+      "path": "D:\\Python\\Mathproject_tvet_mathB\\skills\\jh_數學2上_FactorizationByTakingCommonFactors.py",
+      "skill_id": "",
+      "choice_question_count": 0,
+      "choice_answer_label_counts": {},
+      "fixed_label_detected": false,
+      "warnings": [
+        "insufficient_choice_samples_for_label_distribution"
+      ],
+      "issues": [
+        "generate_failed:generate() got an unexpected keyword argument 'seed'"
+      ]
+    },
+    {
+      "module": "skills.jh_數學2上_FourOperationsOfRadicals",
+      "path": "D:\\Python\\Mathproject_tvet_mathB\\skills\\jh_數學2上_FourOperationsOfRadicals.py",
+      "skill_id": "",
+      "choice_question_count": 0,
+      "choice_answer_label_counts": {},
+      "fixed_label_detected": false,
+      "warnings": [
+        "insufficient_choice_samples_for_label_distribution"
+      ],
+      "issues": [
+        "generate_failed:generate() got an unexpected keyword argument 'seed'"
+      ]
+    },
+    {
+      "module": "skills.jh_數學2上_MeaningOfQuadraticEquation",
+      "path": "D:\\Python\\Mathproject_tvet_mathB\\skills\\jh_數學2上_MeaningOfQuadraticEquation.py",
+      "skill_id": "",
+      "choice_question_count": 0,
+      "choice_answer_label_counts": {},
+      "fixed_label_detected": false,
+      "warnings": [
+        "insufficient_choice_samples_for_label_distribution"
+      ],
+      "issues": [
+        "generate_failed:generate() got an unexpected keyword argument 'seed'"
+      ]
+    },
+    {
+      "module": "skills.jh_數學2上_MeaningOfSquareRoots",
+      "path": "D:\\Python\\Mathproject_tvet_mathB\\skills\\jh_數學2上_MeaningOfSquareRoots.py",
+      "skill_id": "",
+      "choice_question_count": 0,
+      "choice_answer_label_counts": {},
+      "fixed_label_detected": false,
+      "warnings": [
+        "insufficient_choice_samples_for_label_distribution"
+      ],
+      "issues": [
+        "generate_failed:generate() got an unexpected keyword argument 'seed'"
+      ]
+    },
+    {
+      "module": "skills.jh_數學2上_MeaningOfSquareRootSymbol",
+      "path": "D:\\Python\\Mathproject_tvet_mathB\\skills\\jh_數學2上_MeaningOfSquareRootSymbol.py",
+      "skill_id": "",
+      "choice_question_count": 0,
+      "choice_answer_label_counts": {},
+      "fixed_label_detected": false,
+      "warnings": [
+        "insufficient_choice_samples_for_label_distribution"
+      ],
+      "issues": [
+        "generate_failed:generate() got an unexpected keyword argument 'seed'"
+      ]
+    },
+    {
+      "module": "skills.jh_數學2上_PolynomialAdditionAndSubtraction",
+      "path": "D:\\Python\\Mathproject_tvet_mathB\\skills\\jh_數學2上_PolynomialAdditionAndSubtraction.py",
+      "skill_id": "",
+      "choice_question_count": 0,
+      "choice_answer_label_counts": {},
+      "fixed_label_detected": false,
+      "warnings": [
+        "insufficient_choice_samples_for_label_distribution"
+      ],
+      "issues": [
+        "generate_failed:generate() got an unexpected keyword argument 'seed'"
+      ]
+    },
+    {
+      "module": "skills.jh_數學2上_PolynomialDefinitionAndTerms",
+      "path": "D:\\Python\\Mathproject_tvet_mathB\\skills\\jh_數學2上_PolynomialDefinitionAndTerms.py",
+      "skill_id": "",
+      "choice_question_count": 0,
+      "choice_answer_label_counts": {},
+      "fixed_label_detected": false,
+      "warnings": [
+        "insufficient_choice_samples_for_label_distribution"
+      ],
+      "issues": [
+        "generate_failed:generate() got an unexpected keyword argument 'seed'"
+      ]
+    },
+    {
+      "module": "skills.jh_數學2上_PolynomialDivision",
+      "path": "D:\\Python\\Mathproject_tvet_mathB\\skills\\jh_數學2上_PolynomialDivision.py",
+      "skill_id": "",
+      "choice_question_count": 0,
+      "choice_answer_label_counts": {},
+      "fixed_label_detected": false,
+      "warnings": [
+        "insufficient_choice_samples_for_label_distribution"
+      ],
+      "issues": [
+        "generate_failed:generate() got an unexpected keyword argument 'seed'"
+      ]
+    },
+    {
+      "module": "skills.jh_數學2上_PolynomialFactorAndMultiple",
+      "path": "D:\\Python\\Mathproject_tvet_mathB\\skills\\jh_數學2上_PolynomialFactorAndMultiple.py",
+      "skill_id": "",
+      "choice_question_count": 0,
+      "choice_answer_label_counts": {},
+      "fixed_label_detected": false,
+      "warnings": [
+        "insufficient_choice_samples_for_label_distribution"
+      ],
+      "issues": [
+        "generate_failed:generate() got an unexpected keyword argument 'seed'"
+      ]
+    },
+    {
+      "module": "skills.jh_數學2上_PolynomialFactorization",
+      "path": "D:\\Python\\Mathproject_tvet_mathB\\skills\\jh_數學2上_PolynomialFactorization.py",
+      "skill_id": "",
+      "choice_question_count": 0,
+      "choice_answer_label_counts": {},
+      "fixed_label_detected": false,
+      "warnings": [
+        "insufficient_choice_samples_for_label_distribution"
+      ],
+      "issues": [
+        "generate_failed:generate() got an unexpected keyword argument 'seed'"
+      ]
+    },
+    {
+      "module": "skills.jh_數學2上_PolynomialMultiplication",
+      "path": "D:\\Python\\Mathproject_tvet_mathB\\skills\\jh_數學2上_PolynomialMultiplication.py",
+      "skill_id": "",
+      "choice_question_count": 0,
+      "choice_answer_label_counts": {},
+      "fixed_label_detected": false,
+      "warnings": [
+        "insufficient_choice_samples_for_label_distribution"
+      ],
+      "issues": [
+        "generate_failed:generate() got an unexpected keyword argument 'seed'"
+      ]
+    },
+    {
+      "module": "skills.jh_數學2上_RadicalAddSub",
+      "path": "D:\\Python\\Mathproject_tvet_mathB\\skills\\jh_數學2上_RadicalAddSub.py",
+      "skill_id": "",
+      "choice_question_count": 0,
+      "choice_answer_label_counts": {},
+      "fixed_label_detected": false,
+      "warnings": [
+        "insufficient_choice_samples_for_label_distribution"
+      ],
+      "issues": [
+        "generate_failed:generate() got an unexpected keyword argument 'seed'"
+      ]
+    },
+    {
+      "module": "skills.jh_數學2上_RadicalMultiply",
+      "path": "D:\\Python\\Mathproject_tvet_mathB\\skills\\jh_數學2上_RadicalMultiply.py",
+      "skill_id": "",
+      "choice_question_count": 0,
+      "choice_answer_label_counts": {},
+      "fixed_label_detected": false,
+      "warnings": [
+        "insufficient_choice_samples_for_label_distribution"
+      ],
+      "issues": [
+        "generate_failed:generate() got an unexpected keyword argument 'seed'"
+      ]
+    },
+    {
+      "module": "skills.jh_數學2上_RadicalSimplify",
+      "path": "D:\\Python\\Mathproject_tvet_mathB\\skills\\jh_數學2上_RadicalSimplify.py",
+      "skill_id": "",
+      "choice_question_count": 0,
+      "choice_answer_label_counts": {},
+      "fixed_label_detected": false,
+      "warnings": [
+        "insufficient_choice_samples_for_label_distribution"
+      ],
+      "issues": [
+        "generate_failed:generate() got an unexpected keyword argument 'seed'"
+      ]
+    },
+    {
+      "module": "skills.jh_數學2上_RelativeAndCumulativeRelativeFrequencyDistributionAndLineChart",
+      "path": "D:\\Python\\Mathproject_tvet_mathB\\skills\\jh_數學2上_RelativeAndCumulativeRelativeFrequencyDistributionAndLineChart.py",
+      "skill_id": "",
+      "choice_question_count": 0,
+      "choice_answer_label_counts": {},
+      "fixed_label_detected": false,
+      "warnings": [
+        "insufficient_choice_samples_for_label_distribution"
+      ],
+      "issues": [
+        "generate_failed:generate() got an unexpected keyword argument 'seed'"
+      ]
+    },
+    {
+      "module": "skills.jh_數學2上_SolvingEquationsUsingSquareRootConcept",
+      "path": "D:\\Python\\Mathproject_tvet_mathB\\skills\\jh_數學2上_SolvingEquationsUsingSquareRootConcept.py",
+      "skill_id": "",
+      "choice_question_count": 0,
+      "choice_answer_label_counts": {},
+      "fixed_label_detected": false,
+      "warnings": [
+        "insufficient_choice_samples_for_label_distribution"
+      ],
+      "issues": [
+        "generate_failed:generate() got an unexpected keyword argument 'seed'"
+      ]
+    },
+    {
+      "module": "skills.jh_數學2上_SolvingQuadraticEquationsByCompletingTheSquare",
+      "path": "D:\\Python\\Mathproject_tvet_mathB\\skills\\jh_數學2上_SolvingQuadraticEquationsByCompletingTheSquare.py",
+      "skill_id": "",
+      "choice_question_count": 0,
+      "choice_answer_label_counts": {},
+      "fixed_label_detected": false,
+      "warnings": [
+        "insufficient_choice_samples_for_label_distribution"
+      ],
+      "issues": [
+        "generate_failed:generate() got an unexpected keyword argument 'seed'"
+      ]
+    },
+    {
+      "module": "skills.jh_數學2上_SolvingQuadraticEquationsByFactoring",
+      "path": "D:\\Python\\Mathproject_tvet_mathB\\skills\\jh_數學2上_SolvingQuadraticEquationsByFactoring.py",
+      "skill_id": "",
+      "choice_question_count": 0,
+      "choice_answer_label_counts": {},
+      "fixed_label_detected": false,
+      "warnings": [
+        "insufficient_choice_samples_for_label_distribution"
+      ],
+      "issues": [
+        "generate_failed:generate() got an unexpected keyword argument 'seed'"
+      ]
+    },
+    {
+      "module": "skills.jh_數學2上_SquareOfDifferenceFormula",
+      "path": "D:\\Python\\Mathproject_tvet_mathB\\skills\\jh_數學2上_SquareOfDifferenceFormula.py",
+      "skill_id": "",
+      "choice_question_count": 0,
+      "choice_answer_label_counts": {},
+      "fixed_label_detected": false,
+      "warnings": [
+        "insufficient_choice_samples_for_label_distribution"
+      ],
+      "issues": [
+        "generate_failed:generate() got an unexpected keyword argument 'seed'"
+      ]
+    },
+    {
+      "module": "skills.jh_數學2上_SquareOfSumFormula",
+      "path": "D:\\Python\\Mathproject_tvet_mathB\\skills\\jh_數學2上_SquareOfSumFormula.py",
+      "skill_id": "",
+      "choice_question_count": 0,
+      "choice_answer_label_counts": {},
+      "fixed_label_detected": false,
+      "warnings": [
+        "insufficient_choice_samples_for_label_distribution"
+      ],
+      "issues": [
+        "generate_failed:generate() got an unexpected keyword argument 'seed'"
+      ]
+    },
+    {
+      "module": "skills.jh_數學2上_TheQuadraticFormula",
+      "path": "D:\\Python\\Mathproject_tvet_mathB\\skills\\jh_數學2上_TheQuadraticFormula.py",
+      "skill_id": "",
+      "choice_question_count": 0,
+      "choice_answer_label_counts": {},
+      "fixed_label_detected": false,
+      "warnings": [
+        "insufficient_choice_samples_for_label_distribution"
+      ],
+      "issues": [
+        "generate_failed:generate() got an unexpected keyword argument 'seed'"
+      ]
+    },
+    {
+      "module": "skills.jh_數學2上_ValueOfSquareRootA",
+      "path": "D:\\Python\\Mathproject_tvet_mathB\\skills\\jh_數學2上_ValueOfSquareRootA.py",
+      "skill_id": "",
+      "choice_question_count": 0,
+      "choice_answer_label_counts": {},
+      "fixed_label_detected": false,
+      "warnings": [
+        "insufficient_choice_samples_for_label_distribution"
+      ],
+      "issues": [
+        "generate_failed:generate() got an unexpected keyword argument 'seed'"
+      ]
+    },
+    {
+      "module": "skills.jh_數學2上_WordProblems",
+      "path": "D:\\Python\\Mathproject_tvet_mathB\\skills\\jh_數學2上_WordProblems.py",
+      "skill_id": "",
+      "choice_question_count": 0,
+      "choice_answer_label_counts": {},
+      "fixed_label_detected": false,
+      "warnings": [
+        "insufficient_choice_samples_for_label_distribution"
+      ],
+      "issues": [
+        "generate_failed:generate() got an unexpected keyword argument 'seed'"
+      ]
+    },
+    {
+      "module": "skills.jh_數學2下_AngleClassificationAndRelationships",
+      "path": "D:\\Python\\Mathproject_tvet_mathB\\skills\\jh_數學2下_AngleClassificationAndRelationships.py",
+      "skill_id": "",
+      "choice_question_count": 0,
+      "choice_answer_label_counts": {},
+      "fixed_label_detected": false,
+      "warnings": [
+        "insufficient_choice_samples_for_label_distribution"
+      ],
+      "issues": [
+        "generate_failed:generate() got an unexpected keyword argument 'seed'"
+      ]
+    },
+    {
+      "module": "skills.jh_數學2下_ArithmeticMean",
+      "path": "D:\\Python\\Mathproject_tvet_mathB\\skills\\jh_數學2下_ArithmeticMean.py",
+      "skill_id": "",
+      "choice_question_count": 0,
+      "choice_answer_label_counts": {},
+      "fixed_label_detected": false,
+      "warnings": [
+        "insufficient_choice_samples_for_label_distribution"
+      ],
+      "issues": [
+        "generate_failed:generate() got an unexpected keyword argument 'seed'"
+      ]
+    },
+    {
+      "module": "skills.jh_數學2下_ArithmeticSequences",
+      "path": "D:\\Python\\Mathproject_tvet_mathB\\skills\\jh_數學2下_ArithmeticSequences.py",
+      "skill_id": "",
+      "choice_question_count": 0,
+      "choice_answer_label_counts": {},
+      "fixed_label_detected": false,
+      "warnings": [
+        "insufficient_choice_samples_for_label_distribution"
+      ],
+      "issues": [
+        "generate_failed:generate() got an unexpected keyword argument 'seed'"
+      ]
+    },
+    {
+      "module": "skills.jh_數學2下_EqualLineSegmentAndAngleConstruction",
+      "path": "D:\\Python\\Mathproject_tvet_mathB\\skills\\jh_數學2下_EqualLineSegmentAndAngleConstruction.py",
+      "skill_id": "",
+      "choice_question_count": 0,
+      "choice_answer_label_counts": {},
+      "fixed_label_detected": false,
+      "warnings": [
+        "insufficient_choice_samples_for_label_distribution"
+      ],
+      "issues": [
+        "generate_failed:generate() got an unexpected keyword argument 'seed'"
+      ]
+    },
+    {
+      "module": "skills.jh_數學2下_FunctionGraph",
+      "path": "D:\\Python\\Mathproject_tvet_mathB\\skills\\jh_數學2下_FunctionGraph.py",
+      "skill_id": "",
+      "choice_question_count": 0,
+      "choice_answer_label_counts": {},
+      "fixed_label_detected": false,
+      "warnings": [
+        "insufficient_choice_samples_for_label_distribution"
+      ],
+      "issues": [
+        "generate_failed:generate() got an unexpected keyword argument 'seed'"
+      ]
+    },
+    {
+      "module": "skills.jh_數學2下_FunctionValue",
+      "path": "D:\\Python\\Mathproject_tvet_mathB\\skills\\jh_數學2下_FunctionValue.py",
+      "skill_id": "",
+      "choice_question_count": 0,
+      "choice_answer_label_counts": {},
+      "fixed_label_detected": false,
+      "warnings": [
+        "insufficient_choice_samples_for_label_distribution"
+      ],
+      "issues": [
+        "generate_failed:generate() got an unexpected keyword argument 'seed'"
+      ]
+    },
+    {
+      "module": "skills.jh_數學2下_GeometricMean",
+      "path": "D:\\Python\\Mathproject_tvet_mathB\\skills\\jh_數學2下_GeometricMean.py",
+      "skill_id": "",
+      "choice_question_count": 0,
+      "choice_answer_label_counts": {},
+      "fixed_label_detected": false,
+      "warnings": [
+        "insufficient_choice_samples_for_label_distribution"
+      ],
+      "issues": [
+        "generate_failed:generate() got an unexpected keyword argument 'seed'"
+      ]
+    },
+    {
+      "module": "skills.jh_數學2下_GeometricSequence",
+      "path": "D:\\Python\\Mathproject_tvet_mathB\\skills\\jh_數學2下_GeometricSequence.py",
+      "skill_id": "",
+      "choice_question_count": 0,
+      "choice_answer_label_counts": {},
+      "fixed_label_detected": false,
+      "warnings": [
+        "insufficient_choice_samples_for_label_distribution"
+      ],
+      "issues": [
+        "generate_failed:generate() got an unexpected keyword argument 'seed'"
+      ]
+    },
+    {
+      "module": "skills.jh_數學2下_IdentifyingAndConstructingParallelLines",
+      "path": "D:\\Python\\Mathproject_tvet_mathB\\skills\\jh_數學2下_IdentifyingAndConstructingParallelLines.py",
+      "skill_id": "",
+      "choice_question_count": 0,
+      "choice_answer_label_counts": {},
+      "fixed_label_detected": false,
+      "warnings": [
+        "insufficient_choice_samples_for_label_distribution"
+      ],
+      "issues": [
+        "generate_failed:generate() got an unexpected keyword argument 'seed'"
+      ]
+    },
+    {
+      "module": "skills.jh_數學2下_IdentifyingAndConstructingParallelograms",
+      "path": "D:\\Python\\Mathproject_tvet_mathB\\skills\\jh_數學2下_IdentifyingAndConstructingParallelograms.py",
+      "skill_id": "",
+      "choice_question_count": 0,
+      "choice_answer_label_counts": {},
+      "fixed_label_detected": false,
+      "warnings": [
+        "insufficient_choice_samples_for_label_distribution"
+      ],
+      "issues": [
+        "generate_failed:generate() got an unexpected keyword argument 'seed'"
+      ]
+    },
+    {
+      "module": "skills.jh_數學2下_MeaningAndPropertiesOfParallelograms",
+      "path": "D:\\Python\\Mathproject_tvet_mathB\\skills\\jh_數學2下_MeaningAndPropertiesOfParallelograms.py",
+      "skill_id": "",
+      "choice_question_count": 0,
+      "choice_answer_label_counts": {},
+      "fixed_label_detected": false,
+      "warnings": [
+        "insufficient_choice_samples_for_label_distribution"
+      ],
+      "issues": [
+        "generate_failed:generate() got an unexpected keyword argument 'seed'"
+      ]
+    },
+    {
+      "module": "skills.jh_數學2下_MeaningOfParallelLines",
+      "path": "D:\\Python\\Mathproject_tvet_mathB\\skills\\jh_數學2下_MeaningOfParallelLines.py",
+      "skill_id": "",
+      "choice_question_count": 0,
+      "choice_answer_label_counts": {},
+      "fixed_label_detected": false,
+      "warnings": [
+        "insufficient_choice_samples_for_label_distribution"
+      ],
+      "issues": [
+        "generate_failed:generate() got an unexpected keyword argument 'seed'"
+      ]
+    },
+    {
+      "module": "skills.jh_數學2下_MeaningOfTriangleCongruence",
+      "path": "D:\\Python\\Mathproject_tvet_mathB\\skills\\jh_數學2下_MeaningOfTriangleCongruence.py",
+      "skill_id": "",
+      "choice_question_count": 0,
+      "choice_answer_label_counts": {},
+      "fixed_label_detected": false,
+      "warnings": [
+        "insufficient_choice_samples_for_label_distribution"
+      ],
+      "issues": [
+        "generate_failed:generate() got an unexpected keyword argument 'seed'"
+      ]
+    },
+    {
+      "module": "skills.jh_數學2下_NSidedPolygonInteriorAndExteriorAngles",
+      "path": "D:\\Python\\Mathproject_tvet_mathB\\skills\\jh_數學2下_NSidedPolygonInteriorAndExteriorAngles.py",
+      "skill_id": "",
+      "choice_question_count": 0,
+      "choice_answer_label_counts": {},
+      "fixed_label_detected": false,
+      "warnings": [
+        "insufficient_choice_samples_for_label_distribution"
+      ],
+      "issues": [
+        "generate_failed:generate() got an unexpected keyword argument 'seed'"
+      ]
+    },
+    {
+      "module": "skills.jh_數學2下_NthTermOfArithmeticSequence",
+      "path": "D:\\Python\\Mathproject_tvet_mathB\\skills\\jh_數學2下_NthTermOfArithmeticSequence.py",
+      "skill_id": "",
+      "choice_question_count": 0,
+      "choice_answer_label_counts": {},
+      "fixed_label_detected": false,
+      "warnings": [
+        "insufficient_choice_samples_for_label_distribution"
+      ],
+      "issues": [
+        "generate_failed:generate() got an unexpected keyword argument 'seed'"
+      ]
+    },
+    {
+      "module": "skills.jh_數學2下_NthTermOfGeometricSequence",
+      "path": "D:\\Python\\Mathproject_tvet_mathB\\skills\\jh_數學2下_NthTermOfGeometricSequence.py",
+      "skill_id": "",
+      "choice_question_count": 0,
+      "choice_answer_label_counts": {},
+      "fixed_label_detected": false,
+      "warnings": [
+        "insufficient_choice_samples_for_label_distribution"
+      ],
+      "issues": [
+        "generate_failed:generate() got an unexpected keyword argument 'seed'"
+      ]
+    },
+    {
+      "module": "skills.jh_數學2下_PerpendicularBisectorAndAngleBisectorConstruction",
+      "path": "D:\\Python\\Mathproject_tvet_mathB\\skills\\jh_數學2下_PerpendicularBisectorAndAngleBisectorConstruction.py",
+      "skill_id": "",
+      "choice_question_count": 0,
+      "choice_answer_label_counts": {},
+      "fixed_label_detected": false,
+      "warnings": [
+        "insufficient_choice_samples_for_label_distribution"
+      ],
+      "issues": [
+        "generate_failed:generate() got an unexpected keyword argument 'seed'"
+      ]
+    },
+    {
+      "module": "skills.jh_數學2下_PropertiesOfRectanglesRhombusesKitesAndSquares",
+      "path": "D:\\Python\\Mathproject_tvet_mathB\\skills\\jh_數學2下_PropertiesOfRectanglesRhombusesKitesAndSquares.py",
+      "skill_id": "",
+      "choice_question_count": 0,
+      "choice_answer_label_counts": {},
+      "fixed_label_detected": false,
+      "warnings": [
+        "insufficient_choice_samples_for_label_distribution"
+      ],
+      "issues": [
+        "generate_failed:generate() got an unexpected keyword argument 'seed'"
+      ]
+    },
+    {
+      "module": "skills.jh_數學2下_RecognizingFunctions",
+      "path": "D:\\Python\\Mathproject_tvet_mathB\\skills\\jh_數學2下_RecognizingFunctions.py",
+      "skill_id": "",
+      "choice_question_count": 0,
+      "choice_answer_label_counts": {},
+      "fixed_label_detected": false,
+      "warnings": [
+        "insufficient_choice_samples_for_label_distribution"
+      ],
+      "issues": [
+        "generate_failed:generate() got an unexpected keyword argument 'seed'"
+      ]
+    },
+    {
+      "module": "skills.jh_數學2下_SumOfArithmeticSeries",
+      "path": "D:\\Python\\Mathproject_tvet_mathB\\skills\\jh_數學2下_SumOfArithmeticSeries.py",
+      "skill_id": "",
+      "choice_question_count": 0,
+      "choice_answer_label_counts": {},
+      "fixed_label_detected": false,
+      "warnings": [
+        "insufficient_choice_samples_for_label_distribution"
+      ],
+      "issues": [
+        "generate_failed:generate() got an unexpected keyword argument 'seed'"
+      ]
+    },
+    {
+      "module": "skills.jh_數學2下_Topic2ComprehensiveApplication",
+      "path": "D:\\Python\\Mathproject_tvet_mathB\\skills\\jh_數學2下_Topic2ComprehensiveApplication.py",
+      "skill_id": "",
+      "choice_question_count": 0,
+      "choice_answer_label_counts": {},
+      "fixed_label_detected": false,
+      "warnings": [
+        "insufficient_choice_samples_for_label_distribution"
+      ],
+      "issues": [
+        "generate_failed:generate() got an unexpected keyword argument 'seed'"
+      ]
+    },
+    {
+      "module": "skills.jh_數學2下_TransversalsAndAngles",
+      "path": "D:\\Python\\Mathproject_tvet_mathB\\skills\\jh_數學2下_TransversalsAndAngles.py",
+      "skill_id": "",
+      "choice_question_count": 0,
+      "choice_answer_label_counts": {},
+      "fixed_label_detected": false,
+      "warnings": [
+        "insufficient_choice_samples_for_label_distribution"
+      ],
+      "issues": [
+        "generate_failed:generate() got an unexpected keyword argument 'seed'"
+      ]
+    },
+    {
+      "module": "skills.jh_數學2下_TriangleCongruenceProperties",
+      "path": "D:\\Python\\Mathproject_tvet_mathB\\skills\\jh_數學2下_TriangleCongruenceProperties.py",
+      "skill_id": "",
+      "choice_question_count": 0,
+      "choice_answer_label_counts": {},
+      "fixed_label_detected": false,
+      "warnings": [
+        "insufficient_choice_samples_for_label_distribution"
+      ],
+      "issues": [
+        "generate_failed:generate() got an unexpected keyword argument 'seed'"
+      ]
+    },
+    {
+      "module": "skills.jh_數學2下_TriangleInteriorAndExteriorAngles",
+      "path": "D:\\Python\\Mathproject_tvet_mathB\\skills\\jh_數學2下_TriangleInteriorAndExteriorAngles.py",
+      "skill_id": "",
+      "choice_question_count": 0,
+      "choice_answer_label_counts": {},
+      "fixed_label_detected": false,
+      "warnings": [
+        "insufficient_choice_samples_for_label_distribution"
+      ],
+      "issues": [
+        "generate_failed:generate() got an unexpected keyword argument 'seed'"
+      ]
+    },
+    {
+      "module": "skills.jh_數學2下_TriangleSideRelationships",
+      "path": "D:\\Python\\Mathproject_tvet_mathB\\skills\\jh_數學2下_TriangleSideRelationships.py",
+      "skill_id": "",
+      "choice_question_count": 0,
+      "choice_answer_label_counts": {},
+      "fixed_label_detected": false,
+      "warnings": [
+        "insufficient_choice_samples_for_label_distribution"
+      ],
+      "issues": [
+        "generate_failed:generate() got an unexpected keyword argument 'seed'"
+      ]
+    },
+    {
+      "module": "skills.jh_數學2下_UnderstandingSequences",
+      "path": "D:\\Python\\Mathproject_tvet_mathB\\skills\\jh_數學2下_UnderstandingSequences.py",
+      "skill_id": "",
+      "choice_question_count": 0,
+      "choice_answer_label_counts": {},
+      "fixed_label_detected": false,
+      "warnings": [
+        "insufficient_choice_samples_for_label_distribution"
+      ],
+      "issues": [
+        "generate_failed:generate() got an unexpected keyword argument 'seed'"
+      ]
+    },
+    {
+      "module": "skills.jh_數學2下_WordProblemsOfArithmeticSeries",
+      "path": "D:\\Python\\Mathproject_tvet_mathB\\skills\\jh_數學2下_WordProblemsOfArithmeticSeries.py",
+      "skill_id": "",
+      "choice_question_count": 0,
+      "choice_answer_label_counts": {},
+      "fixed_label_detected": false,
+      "warnings": [
+        "insufficient_choice_samples_for_label_distribution"
+      ],
+      "issues": [
+        "generate_failed:generate() got an unexpected keyword argument 'seed'"
+      ]
+    },
+    {
+      "module": "skills.test_variant_gen",
+      "path": "D:\\Python\\Mathproject_tvet_mathB\\skills\\test_variant_gen.py",
+      "skill_id": "",
+      "choice_question_count": 0,
+      "choice_answer_label_counts": {},
+      "fixed_label_detected": false,
+      "warnings": [
+        "insufficient_choice_samples_for_label_distribution"
+      ],
+      "issues": [
+        "generate_failed:generate() got an unexpected keyword argument 'seed'"
+      ]
+    },
+    {
+      "module": "skills.verify_radicals",
+      "path": "D:\\Python\\Mathproject_tvet_mathB\\skills\\verify_radicals.py",
+      "skill_id": "",
+      "choice_question_count": 0,
+      "choice_answer_label_counts": {},
+      "fixed_label_detected": false,
+      "warnings": [],
+      "issues": [
+        "missing_generate"
+      ]
+    },
+    {
+      "module": "skills.verify_visual",
+      "path": "D:\\Python\\Mathproject_tvet_mathB\\skills\\verify_visual.py",
+      "skill_id": "",
+      "choice_question_count": 0,
+      "choice_answer_label_counts": {},
+      "fixed_label_detected": false,
+      "warnings": [],
+      "issues": [
+        "missing_generate"
+      ]
+    },
+    {
+      "module": "skills.vh_數學B1_AbsoluteValue",
+      "path": "D:\\Python\\Mathproject_tvet_mathB\\skills\\vh_數學B1_AbsoluteValue.py",
+      "skill_id": "vh_數學B1_AbsoluteValue",
+      "choice_question_count": 25,
+      "choice_answer_label_counts": {
+        "A": 25
+      },
+      "fixed_label_detected": true,
+      "warnings": [],
+      "issues": [
+        "choice_answer_fixed_label_detected"
+      ]
+    },
+    {
+      "module": "skills.vh_數學B1_AbsoluteValueInequality",
+      "path": "D:\\Python\\Mathproject_tvet_mathB\\skills\\vh_數學B1_AbsoluteValueInequality.py",
+      "skill_id": "vh_數學B1_AbsoluteValueInequality",
+      "choice_question_count": 26,
+      "choice_answer_label_counts": {
+        "B": 9,
+        "A": 6,
+        "D": 8,
+        "C": 3
+      },
+      "fixed_label_detected": false,
+      "warnings": [],
+      "issues": []
+    },
+    {
+      "module": "generated_candidates/vocational_math_b1/section_1_1/absolute_value_distance_between_two_points/candidate_v1.py",
+      "path": "D:\\Python\\Mathproject_tvet_mathB\\generated_candidates\\vocational_math_b1\\section_1_1\\absolute_value_distance_between_two_points\\candidate_v1.py",
+      "skill_id": "",
+      "choice_question_count": 0,
+      "choice_answer_label_counts": {},
+      "fixed_label_detected": false,
+      "warnings": [
+        "insufficient_choice_samples_for_label_distribution"
+      ],
+      "issues": [
+        "generate_failed:generate() got an unexpected keyword argument 'level'"
+      ]
+    },
+    {
+      "module": "generated_candidates/vocational_math_b1/section_1_1/absolute_value_distance_from_zero/candidate_v1.py",
+      "path": "D:\\Python\\Mathproject_tvet_mathB\\generated_candidates\\vocational_math_b1\\section_1_1\\absolute_value_distance_from_zero\\candidate_v1.py",
+      "skill_id": "",
+      "choice_question_count": 0,
+      "choice_answer_label_counts": {},
+      "fixed_label_detected": false,
+      "warnings": [
+        "insufficient_choice_samples_for_label_distribution"
+      ],
+      "issues": [
+        "generate_failed:generate() got an unexpected keyword argument 'level'"
+      ]
+    },
+    {
+      "module": "generated_candidates/vocational_math_b1/section_1_1/absolute_value_equation_basic/candidate_v1.py",
+      "path": "D:\\Python\\Mathproject_tvet_mathB\\generated_candidates\\vocational_math_b1\\section_1_1\\absolute_value_equation_basic\\candidate_v1.py",
+      "skill_id": "",
+      "choice_question_count": 0,
+      "choice_answer_label_counts": {},
+      "fixed_label_detected": false,
+      "warnings": [
+        "insufficient_choice_samples_for_label_distribution"
+      ],
+      "issues": [
+        "generate_failed:generate() got an unexpected keyword argument 'level'"
+      ]
+    },
+    {
+      "module": "generated_candidates/vocational_math_b1/section_1_1/absolute_value_inequality_greater_than_basic/candidate_v1.py",
+      "path": "D:\\Python\\Mathproject_tvet_mathB\\generated_candidates\\vocational_math_b1\\section_1_1\\absolute_value_inequality_greater_than_basic\\candidate_v1.py",
+      "skill_id": "",
+      "choice_question_count": 0,
+      "choice_answer_label_counts": {},
+      "fixed_label_detected": false,
+      "warnings": [
+        "insufficient_choice_samples_for_label_distribution"
+      ],
+      "issues": [
+        "generate_failed:generate() got an unexpected keyword argument 'level'"
+      ]
+    },
+    {
+      "module": "generated_candidates/vocational_math_b1/section_1_1/absolute_value_inequality_greater_than_basic/candidate_v2.py",
+      "path": "D:\\Python\\Mathproject_tvet_mathB\\generated_candidates\\vocational_math_b1\\section_1_1\\absolute_value_inequality_greater_than_basic\\candidate_v2.py",
+      "skill_id": "",
+      "choice_question_count": 0,
+      "choice_answer_label_counts": {},
+      "fixed_label_detected": false,
+      "warnings": [
+        "insufficient_choice_samples_for_label_distribution"
+      ],
+      "issues": [
+        "generate_failed:generate() got an unexpected keyword argument 'level'"
+      ]
+    },
+    {
+      "module": "generated_candidates/vocational_math_b1/section_1_1/absolute_value_inequality_greater_than_basic/candidate_v3.py",
+      "path": "D:\\Python\\Mathproject_tvet_mathB\\generated_candidates\\vocational_math_b1\\section_1_1\\absolute_value_inequality_greater_than_basic\\candidate_v3.py",
+      "skill_id": "",
+      "choice_question_count": 0,
+      "choice_answer_label_counts": {},
+      "fixed_label_detected": false,
+      "warnings": [
+        "insufficient_choice_samples_for_label_distribution"
+      ],
+      "issues": [
+        "generate_failed:generate() got an unexpected keyword argument 'level'"
+      ]
+    },
+    {
+      "module": "generated_candidates/vocational_math_b1/section_1_1/absolute_value_inequality_greater_than_basic/candidate_v4.py",
+      "path": "D:\\Python\\Mathproject_tvet_mathB\\generated_candidates\\vocational_math_b1\\section_1_1\\absolute_value_inequality_greater_than_basic\\candidate_v4.py",
+      "skill_id": "",
+      "choice_question_count": 0,
+      "choice_answer_label_counts": {},
+      "fixed_label_detected": false,
+      "warnings": [
+        "insufficient_choice_samples_for_label_distribution"
+      ],
+      "issues": [
+        "generate_failed:generate() got an unexpected keyword argument 'level'"
+      ]
+    },
+    {
+      "module": "generated_candidates/vocational_math_b1/section_1_1/absolute_value_inequality_greater_than_basic/candidate_v5.py",
+      "path": "D:\\Python\\Mathproject_tvet_mathB\\generated_candidates\\vocational_math_b1\\section_1_1\\absolute_value_inequality_greater_than_basic\\candidate_v5.py",
+      "skill_id": "",
+      "choice_question_count": 0,
+      "choice_answer_label_counts": {},
+      "fixed_label_detected": false,
+      "warnings": [
+        "insufficient_choice_samples_for_label_distribution"
+      ],
+      "issues": [
+        "generate_failed:generate() got an unexpected keyword argument 'level'"
+      ]
+    },
+    {
+      "module": "generated_candidates/vocational_math_b1/section_1_1/absolute_value_inequality_integer_solution_count_choice/candidate_v1.py",
+      "path": "D:\\Python\\Mathproject_tvet_mathB\\generated_candidates\\vocational_math_b1\\section_1_1\\absolute_value_inequality_integer_solution_count_choice\\candidate_v1.py",
+      "skill_id": "vh_數學B1_AbsoluteValueInequality",
+      "choice_question_count": 100,
+      "choice_answer_label_counts": {
+        "C": 20,
+        "B": 25,
+        "A": 23,
+        "D": 32
+      },
+      "fixed_label_detected": false,
+      "warnings": [],
+      "issues": []
+    },
+    {
+      "module": "generated_candidates/vocational_math_b1/section_1_1/absolute_value_inequality_interval_interpretation/candidate_v1.py",
+      "path": "D:\\Python\\Mathproject_tvet_mathB\\generated_candidates\\vocational_math_b1\\section_1_1\\absolute_value_inequality_interval_interpretation\\candidate_v1.py",
+      "skill_id": "",
+      "choice_question_count": 0,
+      "choice_answer_label_counts": {},
+      "fixed_label_detected": false,
+      "warnings": [
+        "insufficient_choice_samples_for_label_distribution"
+      ],
+      "issues": [
+        "generate_failed:generate() got an unexpected keyword argument 'level'"
+      ]
+    },
+    {
+      "module": "generated_candidates/vocational_math_b1/section_1_1/absolute_value_inequality_interval_interpretation/candidate_v2.py",
+      "path": "D:\\Python\\Mathproject_tvet_mathB\\generated_candidates\\vocational_math_b1\\section_1_1\\absolute_value_inequality_interval_interpretation\\candidate_v2.py",
+      "skill_id": "",
+      "choice_question_count": 0,
+      "choice_answer_label_counts": {},
+      "fixed_label_detected": false,
+      "warnings": [
+        "insufficient_choice_samples_for_label_distribution"
+      ],
+      "issues": [
+        "generate_failed:generate() got an unexpected keyword argument 'level'"
+      ]
+    },
+    {
+      "module": "generated_candidates/vocational_math_b1/section_1_1/absolute_value_inequality_interval_interpretation/candidate_v3.py",
+      "path": "D:\\Python\\Mathproject_tvet_mathB\\generated_candidates\\vocational_math_b1\\section_1_1\\absolute_value_inequality_interval_interpretation\\candidate_v3.py",
+      "skill_id": "",
+      "choice_question_count": 0,
+      "choice_answer_label_counts": {},
+      "fixed_label_detected": false,
+      "warnings": [
+        "insufficient_choice_samples_for_label_distribution"
+      ],
+      "issues": [
+        "generate_failed:generate() got an unexpected keyword argument 'level'"
+      ]
+    },
+    {
+      "module": "generated_candidates/vocational_math_b1/section_1_1/absolute_value_inequality_interval_interpretation/candidate_v4.py",
+      "path": "D:\\Python\\Mathproject_tvet_mathB\\generated_candidates\\vocational_math_b1\\section_1_1\\absolute_value_inequality_interval_interpretation\\candidate_v4.py",
+      "skill_id": "",
+      "choice_question_count": 0,
+      "choice_answer_label_counts": {},
+      "fixed_label_detected": false,
+      "warnings": [
+        "insufficient_choice_samples_for_label_distribution"
+      ],
+      "issues": [
+        "generate_failed:generate() got an unexpected keyword argument 'level'"
+      ]
+    },
+    {
+      "module": "generated_candidates/vocational_math_b1/section_1_1/absolute_value_inequality_interval_interpretation/candidate_v5.py",
+      "path": "D:\\Python\\Mathproject_tvet_mathB\\generated_candidates\\vocational_math_b1\\section_1_1\\absolute_value_inequality_interval_interpretation\\candidate_v5.py",
+      "skill_id": "",
+      "choice_question_count": 0,
+      "choice_answer_label_counts": {},
+      "fixed_label_detected": false,
+      "warnings": [
+        "insufficient_choice_samples_for_label_distribution"
+      ],
+      "issues": [
+        "generate_failed:generate() got an unexpected keyword argument 'level'"
+      ]
+    },
+    {
+      "module": "generated_candidates/vocational_math_b1/section_1_1/absolute_value_numeric_evaluation/candidate_v1.py",
+      "path": "D:\\Python\\Mathproject_tvet_mathB\\generated_candidates\\vocational_math_b1\\section_1_1\\absolute_value_numeric_evaluation\\candidate_v1.py",
+      "skill_id": "",
+      "choice_question_count": 0,
+      "choice_answer_label_counts": {},
+      "fixed_label_detected": false,
+      "warnings": [
+        "insufficient_choice_samples_for_label_distribution"
+      ],
+      "issues": [
+        "generate_failed:generate() got an unexpected keyword argument 'level'"
+      ]
+    },
+    {
+      "module": "generated_candidates/vocational_math_b1/section_1_1/absolute_value_numeric_evaluation/candidate_v2.py",
+      "path": "D:\\Python\\Mathproject_tvet_mathB\\generated_candidates\\vocational_math_b1\\section_1_1\\absolute_value_numeric_evaluation\\candidate_v2.py",
+      "skill_id": "",
+      "choice_question_count": 0,
+      "choice_answer_label_counts": {},
+      "fixed_label_detected": false,
+      "warnings": [
+        "insufficient_choice_samples_for_label_distribution"
+      ],
+      "issues": [
+        "generate_failed:generate() got an unexpected keyword argument 'level'"
+      ]
+    },
+    {
+      "module": "generated_candidates/vocational_math_b1/section_1_1/absolute_value_numeric_evaluation/candidate_v3.py",
+      "path": "D:\\Python\\Mathproject_tvet_mathB\\generated_candidates\\vocational_math_b1\\section_1_1\\absolute_value_numeric_evaluation\\candidate_v3.py",
+      "skill_id": "",
+      "choice_question_count": 0,
+      "choice_answer_label_counts": {},
+      "fixed_label_detected": false,
+      "warnings": [
+        "insufficient_choice_samples_for_label_distribution"
+      ],
+      "issues": [
+        "generate_failed:generate() got an unexpected keyword argument 'level'"
+      ]
+    },
+    {
+      "module": "generated_candidates/vocational_math_b1/section_1_1/absolute_value_numeric_evaluation/candidate_v4.py",
+      "path": "D:\\Python\\Mathproject_tvet_mathB\\generated_candidates\\vocational_math_b1\\section_1_1\\absolute_value_numeric_evaluation\\candidate_v4.py",
+      "skill_id": "",
+      "choice_question_count": 0,
+      "choice_answer_label_counts": {},
+      "fixed_label_detected": false,
+      "warnings": [
+        "insufficient_choice_samples_for_label_distribution"
+      ],
+      "issues": [
+        "generate_failed:generate() got an unexpected keyword argument 'level'"
+      ]
+    },
+    {
+      "module": "generated_candidates/vocational_math_b1/section_1_1/absolute_value_numeric_evaluation/candidate_v5.py",
+      "path": "D:\\Python\\Mathproject_tvet_mathB\\generated_candidates\\vocational_math_b1\\section_1_1\\absolute_value_numeric_evaluation\\candidate_v5.py",
+      "skill_id": "",
+      "choice_question_count": 0,
+      "choice_answer_label_counts": {},
+      "fixed_label_detected": false,
+      "warnings": [
+        "insufficient_choice_samples_for_label_distribution"
+      ],
+      "issues": [
+        "generate_failed:generate() got an unexpected keyword argument 'level'"
+      ]
+    },
+    {
+      "module": "generated_candidates/vocational_math_b1/section_1_1/number_line_point_value_reading/candidate_v1.py",
+      "path": "D:\\Python\\Mathproject_tvet_mathB\\generated_candidates\\vocational_math_b1\\section_1_1\\number_line_point_value_reading\\candidate_v1.py",
+      "skill_id": "",
+      "choice_question_count": 0,
+      "choice_answer_label_counts": {},
+      "fixed_label_detected": false,
+      "warnings": [
+        "insufficient_choice_samples_for_label_distribution"
+      ],
+      "issues": [
+        "generate_failed:generate() got an unexpected keyword argument 'level'"
+      ]
+    },
+    {
+      "module": "generated_candidates/vocational_math_b1/section_1_1/number_line_point_value_reading/candidate_v2.py",
+      "path": "D:\\Python\\Mathproject_tvet_mathB\\generated_candidates\\vocational_math_b1\\section_1_1\\number_line_point_value_reading\\candidate_v2.py",
+      "skill_id": "",
+      "choice_question_count": 0,
+      "choice_answer_label_counts": {},
+      "fixed_label_detected": false,
+      "warnings": [
+        "insufficient_choice_samples_for_label_distribution"
+      ],
+      "issues": [
+        "generate_failed:generate() got an unexpected keyword argument 'level'"
+      ]
+    },
+    {
+      "module": "generated_candidates/vocational_math_b1/section_1_1/number_line_point_value_reading/candidate_v3.py",
+      "path": "D:\\Python\\Mathproject_tvet_mathB\\generated_candidates\\vocational_math_b1\\section_1_1\\number_line_point_value_reading\\candidate_v3.py",
+      "skill_id": "",
+      "choice_question_count": 0,
+      "choice_answer_label_counts": {},
+      "fixed_label_detected": false,
+      "warnings": [
+        "insufficient_choice_samples_for_label_distribution"
+      ],
+      "issues": [
+        "generate_failed:generate() got an unexpected keyword argument 'level'"
+      ]
+    },
+    {
+      "module": "generated_candidates/vocational_math_b1/section_1_1/number_line_point_value_reading/candidate_v4.py",
+      "path": "D:\\Python\\Mathproject_tvet_mathB\\generated_candidates\\vocational_math_b1\\section_1_1\\number_line_point_value_reading\\candidate_v4.py",
+      "skill_id": "",
+      "choice_question_count": 0,
+      "choice_answer_label_counts": {},
+      "fixed_label_detected": false,
+      "warnings": [
+        "insufficient_choice_samples_for_label_distribution"
+      ],
+      "issues": [
+        "generate_failed:generate() got an unexpected keyword argument 'level'"
+      ]
+    },
+    {
+      "module": "generated_candidates/vocational_math_b1/section_1_1/number_line_point_value_reading/candidate_v5.py",
+      "path": "D:\\Python\\Mathproject_tvet_mathB\\generated_candidates\\vocational_math_b1\\section_1_1\\number_line_point_value_reading\\candidate_v5.py",
+      "skill_id": "",
+      "choice_question_count": 0,
+      "choice_answer_label_counts": {},
+      "fixed_label_detected": false,
+      "warnings": [
+        "insufficient_choice_samples_for_label_distribution"
+      ],
+      "issues": [
+        "generate_failed:generate() got an unexpected keyword argument 'level'"
+      ]
+    }
+  ]
+}

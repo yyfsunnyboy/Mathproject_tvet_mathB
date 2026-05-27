@@ -1,0 +1,337 @@
+{
+  "skill_id": "vh_數學B1_AbsoluteValueInequalityExpansionAndGeometricMeaning",
+  "phase": "phase1_audit",
+  "final_status": "AUDIT_PARTIAL",
+  "examples_total": 3,
+  "examples_covered": 3,
+  "examples_map": [
+    {
+      "example_id": 4411,
+      "title": "",
+      "source_type": "textbook_example",
+      "source_chapter": "unknown",
+      "source_section": "unknown",
+      "problem_preview": "解下列不等式：\n(1)$\\left| x-2 \\right|<3$ (2)$\\left| 4x-1 \\right|\\ge 7$",
+      "problem_text_hash": "2748b5d1dee44e1ca102eb1d6dbdac260b117363",
+      "skill_id": "vh_數學B1_AbsoluteValueInequalityExpansionAndGeometricMeaning",
+      "subskill_id": "unknown",
+      "problem_type_id": "unknown",
+      "runtime_category": "manual_review",
+      "classification_rule_id": "fallback.unknown",
+      "classification_reason": "No skill-specific classifier found; fallback classifier routes to manual review.",
+      "classifier_confidence": "low",
+      "semantic_risk_flags": [
+        "possible_missing_problem_type",
+        "weak_classifier_match"
+      ],
+      "semantic_audit_status": "review_required",
+      "generator_status": "manual_review",
+      "manual_review_reason": "Skill-specific classifier/rule pack is missing."
+    },
+    {
+      "example_id": 4415,
+      "title": "",
+      "source_type": "textbook_example",
+      "source_chapter": "unknown",
+      "source_section": "unknown",
+      "problem_preview": "解下列不等式：\n(1)$\\left| x-5 \\right|>3$ (2)$\\left| 2x-5 \\right|\\le 3$",
+      "problem_text_hash": "c153cab8581f7acb06ae9cf601dac74261238425",
+      "skill_id": "vh_數學B1_AbsoluteValueInequalityExpansionAndGeometricMeaning",
+      "subskill_id": "unknown",
+      "problem_type_id": "unknown",
+      "runtime_category": "manual_review",
+      "classification_rule_id": "fallback.unknown",
+      "classification_reason": "No skill-specific classifier found; fallback classifier routes to manual review.",
+      "classifier_confidence": "low",
+      "semantic_risk_flags": [
+        "possible_missing_problem_type",
+        "weak_classifier_match"
+      ],
+      "semantic_audit_status": "review_required",
+      "generator_status": "manual_review",
+      "manual_review_reason": "Skill-specific classifier/rule pack is missing."
+    },
+    {
+      "example_id": 4416,
+      "title": "",
+      "source_type": "textbook_example",
+      "source_chapter": "unknown",
+      "source_section": "unknown",
+      "problem_preview": "若不等式$\\left| 7x-a \\right|<28$之解為$b<x<5$，則點$\\left( b,a \\right)$屬於哪一象限？ \n(A)第一象限 \n(B)第二象限 \n(C)第三象限 \n(D)第四象限 〔111統測B〕",
+      "problem_text_hash": "ade1e10d15b094d4a82e6f79ccc9176bcba3679a",
+      "skill_id": "vh_數學B1_AbsoluteValueInequalityExpansionAndGeometricMeaning",
+      "subskill_id": "unknown",
+      "problem_type_id": "unknown",
+      "runtime_category": "manual_review",
+      "classification_rule_id": "fallback.unknown",
+      "classification_reason": "No skill-specific classifier found; fallback classifier routes to manual review.",
+      "classifier_confidence": "low",
+      "semantic_risk_flags": [
+        "possible_missing_problem_type",
+        "weak_classifier_match"
+      ],
+      "semantic_audit_status": "review_required",
+      "generator_status": "manual_review",
+      "manual_review_reason": "Skill-specific classifier/rule pack is missing."
+    }
+  ],
+  "auto_review_summary": {
+    "skill_id": "vh_數學B1_AbsoluteValueInequalityExpansionAndGeometricMeaning",
+    "candidate_problem_types": [
+      {
+        "problem_type_id": "absolute_value_inequality_linear_expression_basic",
+        "proposed_problem_type_id": "absolute_value_inequality_linear_expression_basic",
+        "matched_example_ids": [
+          4411,
+          4415
+        ],
+        "matched_example_count": 2,
+        "unmatched_example_ids": [
+          4416
+        ],
+        "representative_example_id": 4411,
+        "structural_features": [
+          "interval_set"
+        ],
+        "answer_contract_proposal": {
+          "answer_type": "interval_set",
+          "equivalence_type": "interval_set",
+          "checker_key": "interval_checker",
+          "order_matters": false,
+          "accepted_format_notes": [
+            "x > a",
+            "x < a",
+            "x ≤ a",
+            "x ≥ a",
+            "interval notation"
+          ],
+          "canonical_answer_schema": {
+            "type": "interval_set"
+          }
+        },
+        "checker_key_proposal": "interval_checker",
+        "equivalence_type_proposal": "interval_set",
+        "answer_shape": "interval_set",
+        "confidence": "medium",
+        "promote_recommendation": "conservative_hold_for_that_candidate",
+        "promote_blockers": [
+          "insufficient_examples_for_safe_promote"
+        ],
+        "risk_flags": []
+      },
+      {
+        "problem_type_id": "absolute_value_inequality_geometric_meaning",
+        "proposed_problem_type_id": "absolute_value_inequality_geometric_meaning",
+        "matched_example_ids": [
+          4416
+        ],
+        "matched_example_count": 1,
+        "unmatched_example_ids": [
+          4411,
+          4415
+        ],
+        "representative_example_id": 4416,
+        "structural_features": [
+          "choice_label"
+        ],
+        "answer_contract_proposal": {
+          "answer_type": "choice",
+          "equivalence_type": "choice_label",
+          "checker_key": "choice_label_checker",
+          "order_matters": true,
+          "accepted_format_notes": [
+            "A/B/C/D labels"
+          ],
+          "canonical_answer_schema": {
+            "type": "choice_label"
+          }
+        },
+        "checker_key_proposal": "choice_label_checker",
+        "equivalence_type_proposal": "choice_label",
+        "answer_shape": "choice_label",
+        "confidence": "medium",
+        "promote_recommendation": "conservative_hold_for_that_candidate",
+        "promote_blockers": [
+          "insufficient_examples_for_safe_promote"
+        ],
+        "risk_flags": []
+      }
+    ],
+    "proposal_items": [
+      {
+        "problem_type_id": "absolute_value_inequality_linear_expression_basic",
+        "proposed_problem_type_id": "absolute_value_inequality_linear_expression_basic",
+        "matched_example_ids": [
+          4411,
+          4415
+        ],
+        "matched_example_count": 2,
+        "unmatched_example_ids": [
+          4416
+        ],
+        "representative_example_id": 4411,
+        "structural_features": [
+          "interval_set"
+        ],
+        "answer_contract_proposal": {
+          "answer_type": "interval_set",
+          "equivalence_type": "interval_set",
+          "checker_key": "interval_checker",
+          "order_matters": false,
+          "accepted_format_notes": [
+            "x > a",
+            "x < a",
+            "x ≤ a",
+            "x ≥ a",
+            "interval notation"
+          ],
+          "canonical_answer_schema": {
+            "type": "interval_set"
+          }
+        },
+        "checker_key_proposal": "interval_checker",
+        "equivalence_type_proposal": "interval_set",
+        "answer_shape": "interval_set",
+        "confidence": "medium",
+        "promote_recommendation": "conservative_hold_for_that_candidate",
+        "promote_blockers": [
+          "insufficient_examples_for_safe_promote"
+        ],
+        "risk_flags": []
+      },
+      {
+        "problem_type_id": "absolute_value_inequality_geometric_meaning",
+        "proposed_problem_type_id": "absolute_value_inequality_geometric_meaning",
+        "matched_example_ids": [
+          4416
+        ],
+        "matched_example_count": 1,
+        "unmatched_example_ids": [
+          4411,
+          4415
+        ],
+        "representative_example_id": 4416,
+        "structural_features": [
+          "choice_label"
+        ],
+        "answer_contract_proposal": {
+          "answer_type": "choice",
+          "equivalence_type": "choice_label",
+          "checker_key": "choice_label_checker",
+          "order_matters": true,
+          "accepted_format_notes": [
+            "A/B/C/D labels"
+          ],
+          "canonical_answer_schema": {
+            "type": "choice_label"
+          }
+        },
+        "checker_key_proposal": "choice_label_checker",
+        "equivalence_type_proposal": "choice_label",
+        "answer_shape": "choice_label",
+        "confidence": "medium",
+        "promote_recommendation": "conservative_hold_for_that_candidate",
+        "promote_blockers": [
+          "insufficient_examples_for_safe_promote"
+        ],
+        "risk_flags": []
+      }
+    ],
+    "per_example_classification": [
+      {
+        "example_id": 4411,
+        "detected_problem_type_id": "absolute_value_inequality_linear_expression_basic",
+        "answer_shape": "interval_set",
+        "classification_confidence": "medium",
+        "classification_reason": "classifier_or_proposal_mapping",
+        "risk_flags": [
+          "possible_missing_problem_type",
+          "weak_classifier_match"
+        ],
+        "title_or_source_label": "textbook_example"
+      },
+      {
+        "example_id": 4415,
+        "detected_problem_type_id": "absolute_value_inequality_linear_expression_basic",
+        "answer_shape": "interval_set",
+        "classification_confidence": "medium",
+        "classification_reason": "classifier_or_proposal_mapping",
+        "risk_flags": [
+          "possible_missing_problem_type",
+          "weak_classifier_match"
+        ],
+        "title_or_source_label": "textbook_example"
+      },
+      {
+        "example_id": 4416,
+        "detected_problem_type_id": "absolute_value_inequality_geometric_meaning",
+        "answer_shape": "choice_label",
+        "classification_confidence": "medium",
+        "classification_reason": "classifier_or_proposal_mapping",
+        "risk_flags": [
+          "possible_missing_problem_type",
+          "weak_classifier_match"
+        ],
+        "title_or_source_label": "textbook_example"
+      }
+    ],
+    "split_or_merge_recommendation": "recommend_split_problem_types",
+    "per_candidate_promote_gate": [
+      {
+        "problem_type_id": "absolute_value_inequality_linear_expression_basic",
+        "promote_recommendation": "conservative_hold_for_that_candidate",
+        "promote_blockers": [
+          "insufficient_examples_for_safe_promote"
+        ]
+      },
+      {
+        "problem_type_id": "absolute_value_inequality_geometric_meaning",
+        "promote_recommendation": "conservative_hold_for_that_candidate",
+        "promote_blockers": [
+          "insufficient_examples_for_safe_promote"
+        ]
+      }
+    ],
+    "next_action": "prepare_split_problem_types_then_promote_candidates",
+    "classifier_gate": {
+      "status": "classifier_auto_pending_promote_with_warning",
+      "allowed": true,
+      "warnings": [
+        "insufficient_examples"
+      ]
+    },
+    "generator_draft_gate": {
+      "status": "generator_draft_allowed_with_low_source_warning",
+      "allowed": true,
+      "warnings": [
+        "low_source_examples"
+      ]
+    },
+    "runtime_ready_gate": {
+      "status": "blocked_insufficient_examples",
+      "allowed": false,
+      "blockers": [
+        "blocked_insufficient_examples"
+      ]
+    },
+    "exception_review_gate": {
+      "required": false,
+      "reasons": []
+    }
+  },
+  "recommended_next_phase": "review_classifier_proposal",
+  "blocking_reasons": [],
+  "warnings": [
+    "insufficient_examples",
+    "low_source_examples"
+  ],
+  "artifact_paths": {
+    "auto_pipeline_summary_json": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_AbsoluteValueInequalityExpansionAndGeometricMeaning_auto_pipeline_summary.json",
+    "auto_pipeline_summary_md": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_AbsoluteValueInequalityExpansionAndGeometricMeaning_auto_pipeline_summary.md",
+    "classifier_pending_spec_json": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_AbsoluteValueInequalityExpansionAndGeometricMeaning_classifier_pending_spec.json",
+    "generator_draft_spec_json": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_AbsoluteValueInequalityExpansionAndGeometricMeaning_generator_draft_spec.json",
+    "phase1_json": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_AbsoluteValueInequalityExpansionAndGeometricMeaning_phase1_audit.json",
+    "phase1_md": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_AbsoluteValueInequalityExpansionAndGeometricMeaning_phase1_audit.md"
+  },
+  "timestamp": "2026-05-27T06:19:09.119168+00:00"
+}

@@ -1,0 +1,64 @@
+# Classifier Proposal: vh_數學B1_AbsoluteValueInequalityExpansionAndGeometricMeaning
+
+## proposal
+```json
+{
+  "skill_id": "vh_數學B1_AbsoluteValueInequalityExpansionAndGeometricMeaning",
+  "proposed_problem_types": [
+    "absolute_value_inequality_geometric_meaning",
+    "absolute_value_inequality_linear_expression_basic"
+  ],
+  "proposed_example_map": [
+    {
+      "example_id": 4411,
+      "proposed_problem_type_id": "absolute_value_inequality_linear_expression_basic",
+      "reason": "heuristic_pattern_match",
+      "problem_preview": "解下列不等式：\n(1)$| x-2 |<3$ (2)$| 4x-1 |>= 7$"
+    },
+    {
+      "example_id": 4415,
+      "proposed_problem_type_id": "absolute_value_inequality_linear_expression_basic",
+      "reason": "heuristic_pattern_match",
+      "problem_preview": "解下列不等式：\n(1)$| x-5 |>3$ (2)$| 2x-5 |<= 3$"
+    },
+    {
+      "example_id": 4416,
+      "proposed_problem_type_id": "absolute_value_inequality_geometric_meaning",
+      "reason": "heuristic_pattern_match",
+      "problem_preview": "若不等式$| 7x-a |<28$之解為$b<x<5$，則點$<=ft( b,a \\right)$屬於哪一象限？ \n(A)第一象限 \n(B)第二象限 \n(C)第三象限 \n(D)第四象限 〔111統測B〕"
+    }
+  ],
+  "proposed_answer_contracts": {
+    "absolute_value_inequality_geometric_meaning": {
+      "answer_type": "choice",
+      "equivalence_type": "choice_label",
+      "checker_key": "choice_label_checker",
+      "order_matters": true,
+      "accepted_format_notes": [
+        "A/B/C/D labels"
+      ],
+      "canonical_answer_schema": {
+        "type": "choice_label"
+      }
+    },
+    "absolute_value_inequality_linear_expression_basic": {
+      "answer_type": "interval_set",
+      "equivalence_type": "interval_set",
+      "checker_key": "interval_checker",
+      "order_matters": false,
+      "accepted_format_notes": [
+        "x > a",
+        "x < a",
+        "x ≤ a",
+        "x ≥ a",
+        "interval notation"
+      ],
+      "canonical_answer_schema": {
+        "type": "interval_set"
+      }
+    }
+  },
+  "manual_review_candidates": [],
+  "risk_flags": []
+}
+```

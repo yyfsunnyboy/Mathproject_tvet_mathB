@@ -28,18 +28,6 @@ subskills:
     diagnosis_tags:
       - "absolute_value"
   -
-    subskill_id: "absolute_value_inequality_malformed_source_review"
-    observed: true
-    supporting_example_ids:
-      - 4409
-    suggested_problem_types:
-      - "absolute_value_inequality_malformed_source_review"
-    runtime_category: "manual_review"
-    prerequisite_subskills:
-      - "absolute_value_numeric_evaluation"
-    diagnosis_tags:
-      - "absolute_value"
-  -
     subskill_id: "absolute_value_inequality_shifted_basic"
     observed: true
     supporting_example_ids:
@@ -57,6 +45,7 @@ subskills:
     observed: true
     supporting_example_ids:
       - 4400
+      - 4409
       - 4413
     suggested_problem_types:
       - "absolute_value_inequality_zero_center_basic"
