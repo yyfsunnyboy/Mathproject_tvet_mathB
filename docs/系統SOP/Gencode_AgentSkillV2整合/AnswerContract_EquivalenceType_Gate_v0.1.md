@@ -263,3 +263,12 @@ vh_數學B1_NumberLine:
 
 此 skill 的 B1 DB examples 只有 1 筆，且不代表完整數線技能，因此允許使用國一數線 generator 作為 bootstrap source。
 但此狀態不得宣稱為完整 gencode closed-loop `PASS`。
+
+## Phase 2 Build Planning / Foundation Preflight
+
+1. Phase 2 必須先做 dependency planning，再決定是否執行 build。  
+2. 若缺 checker / verifier / domain function / generator foundation，不應直接 `BUILD_FAIL`。  
+3. 此類可修復缺口應回傳 `FOUNDATION_REPAIR_REQUIRED`，並附上 `repair_plan`。  
+4. 只有 `foundation_ready = true` 時，才可進入 generator build。  
+5. Phase 3 僅可在 `BUILD_PASS` 或 `BUILD_BOOTSTRAP_PASS` 後執行。  
+6. `repair_plan` 是後台頁面與自動修復 script 的接口。  

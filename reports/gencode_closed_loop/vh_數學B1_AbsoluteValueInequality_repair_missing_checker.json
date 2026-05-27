@@ -1,0 +1,46 @@
+{
+  "skill_id": "vh_數學B1_AbsoluteValueInequality",
+  "gap": "missing_checker",
+  "repair_status": "PASS",
+  "checked_checker_keys": [
+    "interval_checker"
+  ],
+  "created_checker_files": [],
+  "existing_checker_keys": [
+    "choice_checker",
+    "choice_label_checker",
+    "exact_string_checker",
+    "integer_checker",
+    "interval_checker",
+    "numeric_checker",
+    "solution_set_checker"
+  ],
+  "missing_checker_keys_before_repair": [
+    "interval_checker"
+  ],
+  "missing_checker_keys_after_repair": [],
+  "tests_run": [
+    "py_compile",
+    "pytest tests/test_interval_checker.py -q",
+    "phase2_build vh_數學B1_AbsoluteValueInequality"
+  ],
+  "py_compile_results": {
+    "scripts/gencode_repair_build_gap.py": true,
+    "core/checkers/interval_checker.py": true,
+    "core/checkers/__init__.py": true
+  },
+  "pytest_results": {
+    "passed": true,
+    "output": ".                                                                        [100%]\n1 passed in 0.08s"
+  },
+  "blocking_reasons": [],
+  "warnings": [
+    "interval_checker_already_exists"
+  ],
+  "artifact_paths": {
+    "repair_json": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_AbsoluteValueInequality_repair_missing_checker.json",
+    "repair_md": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_AbsoluteValueInequality_repair_missing_checker.md",
+    "phase2_json": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_AbsoluteValueInequality_phase2_build.json"
+  },
+  "timestamp": "2026-05-26T06:29:23.326891+00:00"
+}
