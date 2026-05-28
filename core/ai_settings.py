@@ -366,6 +366,9 @@ def get_effective_model_config(role: str) -> dict[str, Any]:
                 f"provider={provider} model={model_name}"
             )
             
+        cfg["_resolved_source"] = source
+        cfg["_resolved_role"] = role
+        cfg["_resolved_mode"] = ai_mode
         return cfg
 
     # Extreme fallback
@@ -377,7 +380,11 @@ def get_effective_model_config(role: str) -> dict[str, Any]:
             f"provider={base.get('provider', 'unknown')} model={base.get('model', 'unknown')}"
         )
         
-    return dict(base)
+    out = dict(base)
+    out["_resolved_source"] = "extreme_fallback"
+    out["_resolved_role"] = role
+    out["_resolved_mode"] = ai_mode
+    return out
 
 
 def apply_ai_runtime_settings() -> None:

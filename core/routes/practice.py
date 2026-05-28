@@ -409,6 +409,14 @@ def _strip_choice_leading_label(text: str) -> str:
     return s.strip()
 
 
+def _choice_item_label_text(choice: object, index: int) -> tuple[str, str]:
+    if isinstance(choice, dict):
+        label = str(choice.get("label", "")).strip().upper() or chr(ord("A") + index)
+        text = str(choice.get("text") or choice.get("content") or choice.get("value") or "").strip()
+        return label, text
+    return chr(ord("A") + index), str(choice or "").strip()
+
+
 def _choice_alias_to_index(token: str) -> int | None:
     t = str(token or "").strip()
     if not t:
@@ -430,13 +438,16 @@ def _normalize_choice_for_compare(value: object, choices: list) -> str:
         return ""
     idx = _choice_alias_to_index(raw)
     if idx is not None and 0 <= idx < len(choices):
-        return _strip_choice_leading_label(str(choices[idx]))
+        _, choice_text = _choice_item_label_text(choices[idx], idx)
+        return _strip_choice_leading_label(choice_text)
     raw_no_label = _strip_choice_leading_label(raw)
     for i, ch in enumerate(choices):
-        ch_text = _strip_choice_leading_label(str(ch))
+        _, choice_text = _choice_item_label_text(ch, i)
+        ch_text = _strip_choice_leading_label(choice_text)
         if raw_no_label == ch_text:
             return ch_text
-        if raw_no_label.upper() == chr(ord("A") + i):
+        label, _ = _choice_item_label_text(ch, i)
+        if raw_no_label.upper() == label:
             return ch_text
         if raw_no_label == str(i + 1):
             return ch_text
@@ -449,11 +460,13 @@ def _choice_value_to_label(value: object, choices: list) -> str:
         return ""
     idx = _choice_alias_to_index(raw)
     if idx is not None and 0 <= idx < len(choices):
-        return chr(ord("A") + idx)
+        label, _ = _choice_item_label_text(choices[idx], idx)
+        return label
     normalized = _normalize_choice_for_compare(raw, choices)
     for i, ch in enumerate(choices):
-        if _strip_choice_leading_label(str(ch)) == normalized:
-            return chr(ord("A") + i)
+        label, choice_text = _choice_item_label_text(ch, i)
+        if _strip_choice_leading_label(choice_text) == normalized:
+            return label
     return ""
 
 
@@ -469,10 +482,11 @@ def _normalize_choice_alias_answer(value: str, current_question: dict) -> str:
 def _choice_display_label_and_text(correct_value: object, choices: list) -> str:
     label = _choice_value_to_label(correct_value, choices)
     if label:
-        i = ord(label) - ord("A")
-        if 0 <= i < len(choices):
-            ch_text = _strip_choice_leading_label(str(choices[i]))
-            return f"({label}) {ch_text}"
+        for i, ch in enumerate(choices):
+            ch_label, ch_text_raw = _choice_item_label_text(ch, i)
+            if ch_label == label:
+                ch_text = _strip_choice_leading_label(ch_text_raw)
+                return f"({label}) {ch_text}"
     return str(correct_value or "").strip()
 
 def update_progress(user_id, skill_id, is_correct):
@@ -1355,6 +1369,9 @@ def next_question():
             "table_title": data.get("table_title", ""),
             "answer_type": data.get("answer_type", skill_info.get("input_type", "text")),
             "answer_input_type": data.get("answer_input_type", data.get("answer_type", skill_info.get("input_type", "text"))),
+            "question_type": data.get("question_type", ""),
+            "checker": data.get("checker", data.get("checker_type", "")),
+            "checker_type": data.get("checker_type", data.get("checker", "")),
             "problem_type_id": data.get("problem_type_id") or data.get("problem_type"),
             "source": data.get("source", route_source),
             "route_source": route_source,

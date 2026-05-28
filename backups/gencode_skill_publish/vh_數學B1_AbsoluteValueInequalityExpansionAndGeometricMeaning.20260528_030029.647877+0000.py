@@ -43,10 +43,6 @@ def _gen_interval_problem(pt: str) -> dict[str, Any]:
         'question': q,
         'answer': ans,
         'correct_answer': ans,
-        'answer_type': 'text',
-        'question_type': 'text',
-        'checker': 'interval_checker',
-        'checker_type': 'interval_checker',
         'explanation': '依絕對值不等式轉為區間表示。',
         'source': 'gencode_phase3_template',
     }
@@ -57,48 +53,21 @@ def _gen_choice_problem(pt: str) -> dict[str, Any]:
     op = random.choice(['<', '>'])
     if op == '<':
         stem = f'不等式 $|x-{a}|<{r}$ 的幾何意義，下列何者正確？'
-        correct_text = f'x 與 {a} 的距離小於 {r}'
-        wrong = [
-            f'x 與 {a} 的距離大於 {r}',
-            f'x = {a + r}',
-            f'x = {a - r}',
-        ]
+        options = ['A. x 與 a 的距離小於 r', 'B. x 與 a 的距離大於 r', 'C. x 等於 a+r', 'D. x 等於 a-r']
+        ans = 'A'
     else:
         stem = f'不等式 $|x-{a}|>{r}$ 的幾何意義，下列何者正確？'
-        correct_text = f'x 與 {a} 的距離大於 {r}'
-        wrong = [
-            f'x 與 {a} 的距離小於 {r}',
-            f'x = {a + r}',
-            f'x = {a - r}',
-        ]
-    option_pool = [
-        {'is_correct': True, 'text': correct_text},
-        {'is_correct': False, 'text': wrong[0]},
-        {'is_correct': False, 'text': wrong[1]},
-        {'is_correct': False, 'text': wrong[2]},
-    ]
-    random.shuffle(option_pool)
-    choices = []
-    ans = 'A'
-    for i, opt in enumerate(option_pool):
-        label = chr(ord('A') + i)
-        choices.append({'label': label, 'text': str(opt.get('text', ''))})
-        if opt.get('is_correct'):
-            ans = label
-    q = stem + '\n' + '\n'.join([f"({c['label']}) {c['text']}" for c in choices])
+        options = ['A. x 與 a 的距離小於 r', 'B. x 與 a 的距離大於 r', 'C. x 等於 a+r', 'D. x 等於 a-r']
+        ans = 'B'
+    q = stem + '\n' + '\n'.join(options)
     return {
         'skill_id': SKILL_ID,
         'problem_type_id': pt,
         'question_text': q,
         'question': q,
-        'choices': choices,
-        'options': [f"({c['label']}) {c['text']}" for c in choices],
+        'options': options,
         'answer': ans,
         'correct_answer': ans,
-        'answer_type': 'choice',
-        'question_type': 'choice',
-        'checker': 'choice_label_checker',
-        'checker_type': 'choice_label_checker',
         'explanation': '幾何意義為點到 a 的距離與 r 的比較。',
         'source': 'gencode_phase3_template',
     }

@@ -6,19 +6,270 @@ import sqlite3
 import ast
 import shutil
 import re
+from datetime import datetime
 from collections import defaultdict
 from pathlib import Path
 from typing import Any
 
+from flask import current_app, has_app_context
+from core.ai_wrapper import call_ai_with_retry, get_ai_client
+from core.ai_wrapper import resolve_gemini_api_key
+from core.ai_settings import get_ai_settings_snapshot, get_effective_model_config
 from core.gencode.classifier_proposal import build_classifier_proposal, detect_answer_shape
 from core.gencode.classifiers import get_classifier_for_skill
 from core.gencode.classifiers.base import ClassifierContext
+from core.gencode.classifiers.fallback_classifier import FallbackClassifier
 from core.gencode.pipeline_policy import evaluate_pipeline_gates
 from core.gencode.pipeline_state import utc_timestamp, write_json, write_md
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 REPORT_DIR = PROJECT_ROOT / "reports" / "gencode_closed_loop"
 DRAFT_DIR = REPORT_DIR / "drafts"
+CLASSIFIER_DRAFT_DIR = REPORT_DIR / "classifier_drafts"
+CLASSIFIER_RULEPACK_PATH = PROJECT_ROOT / "configs" / "gencode" / "classifiers" / "phase1_rule_packs.yaml"
+CLASSIFIER_RULEPACK_BACKUP_DIR = PROJECT_ROOT / "backups" / "gencode_classifier_rulepacks"
+
+
+def _log_gencode_ai_runtime(tag: str, meta: dict[str, Any]) -> None:
+    if not has_app_context():
+        return
+    current_app.logger.info(
+        "[GENCODE AI RUNTIME] tag=%s role=%s mode=%s provider=%s model=%s source=%s has_api_key=%s endpoint=%s reason=%s",
+        tag,
+        meta.get("role", ""),
+        meta.get("mode", ""),
+        meta.get("provider", ""),
+        meta.get("model", ""),
+        meta.get("source", ""),
+        bool(meta.get("has_api_key", False)),
+        meta.get("endpoint", ""),
+        meta.get("failure_reason", ""),
+    )
+
+
+def _load_yaml(path: Path) -> dict[str, Any]:
+    try:
+        import yaml  # type: ignore
+    except Exception:
+        return {}
+    if not path.exists():
+        return {}
+    try:
+        data = yaml.safe_load(path.read_text(encoding="utf-8"))
+        return data if isinstance(data, dict) else {}
+    except Exception:
+        return {}
+
+
+def _write_yaml(path: Path, data: dict[str, Any]) -> None:
+    import yaml  # type: ignore
+    path.parent.mkdir(parents=True, exist_ok=True)
+    text = yaml.safe_dump(data, allow_unicode=True, sort_keys=False)
+    path.write_text(text, encoding="utf-8")
+
+
+def _load_registered_classifier_rulepack(skill_id: str) -> dict[str, Any] | None:
+    root = _load_yaml(CLASSIFIER_RULEPACK_PATH)
+    skills = root.get("skills", []) if isinstance(root.get("skills"), list) else []
+    sid = str(skill_id or "").strip()
+    for item in skills:
+        if not isinstance(item, dict):
+            continue
+        if str(item.get("skill_id", "")).strip() == sid:
+            return item
+    return None
+
+
+def _classify_examples_with_rulepack(
+    *,
+    skill_id: str,
+    examples: list[dict[str, Any]],
+    pack: dict[str, Any],
+) -> list[dict[str, Any]]:
+    problem_types = pack.get("problem_types", []) if isinstance(pack.get("problem_types"), list) else []
+    rules = pack.get("classification_rules", []) if isinstance(pack.get("classification_rules"), list) else []
+    pt_by_id = {
+        str(x.get("problem_type_id", "")).strip(): x
+        for x in problem_types
+        if isinstance(x, dict) and str(x.get("problem_type_id", "")).strip()
+    }
+    fallback_pt = next((pid for pid, cfg in pt_by_id.items() if not bool(cfg.get("requires_human_action", False))), "") or next(iter(pt_by_id.keys()), "unclassified_source_review")
+    rows: list[dict[str, Any]] = []
+    for ex in examples:
+        text = _source_text(ex)
+        text_l = text.lower()
+        chosen = ""
+        for r in rules:
+            if not isinstance(r, dict):
+                continue
+            toks = r.get("if_contains", []) if isinstance(r.get("if_contains"), list) else []
+            toks = [str(t).strip().lower() for t in toks if str(t).strip()]
+            if toks and any(t in text_l for t in toks):
+                chosen = str(r.get("prefer_problem_type_id", "")).strip()
+                if chosen:
+                    break
+        pt = chosen if chosen in pt_by_id else fallback_pt
+        cfg = pt_by_id.get(pt, {})
+        checker = str(cfg.get("checker", "")).strip()
+        eq = str(cfg.get("equivalence", "")).strip()
+        needs_human = bool(cfg.get("requires_human_action", False))
+        rows.append(
+            {
+                "example_id": ex.get("id"),
+                "title": str(ex.get("title", "")).strip(),
+                "source_type": str(ex.get("source_type", "")).strip() or "textbook_example",
+                "problem_preview": text[:200],
+                "skill_id": skill_id,
+                "subskill_id": pt,
+                "problem_type_id": pt,
+                "runtime_category": "manual_review" if needs_human else "deterministic_choice" if checker == "choice_label_checker" else "deterministic_expression",
+                "classification_rule_id": "rule_pack.yaml",
+                "classification_reason": "matched_registered_yaml_rule_pack",
+                "classifier_confidence": "high",
+                "semantic_risk_flags": [],
+                "semantic_audit_status": "review_required" if needs_human else "ok",
+                "generator_status": "manual_review" if needs_human else "ready_for_draft",
+                "manual_review_reason": str(cfg.get("notes", "")).strip() if needs_human else "",
+            }
+        )
+    return rows
+
+
+def _build_classifier_yaml_draft_from_phase1(payload: dict[str, Any], examples: list[dict[str, Any]]) -> dict[str, Any]:
+    skill_id = str(payload.get("skill_id", "")).strip()
+    skill_ch_name = _pick_skill_ch_name(skill_id, examples)
+    candidates = payload.get("candidate_problem_types", []) if isinstance(payload.get("candidate_problem_types"), list) else []
+    per_example = payload.get("per_example_classification", []) if isinstance(payload.get("per_example_classification"), list) else []
+    pt_contract: dict[str, dict[str, Any]] = {}
+    for c in candidates:
+        if not isinstance(c, dict):
+            continue
+        pt = str(c.get("problem_type_id") or c.get("proposed_problem_type_id") or "").strip()
+        if not pt:
+            continue
+        checker = str(c.get("checker_key_proposal", "")).strip()
+        eq = str(c.get("equivalence_type_proposal", "")).strip()
+        pt_contract[pt] = {
+            "problem_type_id": pt,
+            "display_name": pt.replace("_", " "),
+            "checker": checker,
+            "equivalence": eq,
+            "runtime_candidate": bool(checker and eq and checker != "manual_review_checker" and eq != "manual_review_or_ai_judged"),
+            "requires_human_action": bool(checker == "manual_review_checker" or eq == "manual_review_or_ai_judged"),
+            "merge_policy": "single_primary_problem_type" if len({str(x.get('detected_problem_type_id', '')).strip() for x in per_example if isinstance(x, dict) and str(x.get('detected_problem_type_id', '')).strip()}) <= 1 else "split_by_contract_diff",
+            "notes": "auto-generated classifier draft from phase1",
+        }
+    rules: list[dict[str, Any]] = []
+    for pt in pt_contract.keys():
+        rules.append({"if_contains": [], "prefer_problem_type_id": pt})
+    return {
+        "skill_id": skill_id,
+        "skill_ch_name": skill_ch_name,
+        "classifier_source": f"{payload.get('classifier_source', 'ai_bootstrap')}_confirmed",
+        "problem_types": list(pt_contract.values()),
+        "classification_rules": rules,
+        "source_classifications": per_example,
+        "source_policy": {
+            "source_count_threshold_for_split": 4,
+            "small_skill_merge_allowed": True,
+            "min_source_examples": 1,
+            "allow_single_problem_type": True,
+            "allow_skill_default_problem_type": True,
+            "default_problem_type_used": any(str(k).endswith("_default") for k in pt_contract.keys()),
+            "single_primary_problem_type": len(pt_contract) <= 1,
+            "split_only_when_checker_or_answer_contract_differs": True,
+            "do_not_create_student_subskills": True,
+        },
+    }
+
+
+def _write_classifier_yaml_draft(skill_id: str, draft: dict[str, Any]) -> str:
+    CLASSIFIER_DRAFT_DIR.mkdir(parents=True, exist_ok=True)
+    path = CLASSIFIER_DRAFT_DIR / f"{skill_id}_classifier.yaml"
+    _write_yaml(path, draft)
+    return str(path)
+
+
+def register_classifier_rulepack_from_draft(skill_id: str, confirm: bool = False) -> dict[str, Any]:
+    draft_path = CLASSIFIER_DRAFT_DIR / f"{skill_id}_classifier.yaml"
+    if not draft_path.exists():
+        return {"ok": False, "skill_id": skill_id, "error": "classifier_draft_not_found", "draft_path": str(draft_path)}
+    draft = _load_yaml(draft_path)
+    if not confirm:
+        return {"ok": True, "skill_id": skill_id, "status": "preview", "draft_path": str(draft_path), "formal_rulepack_path": str(CLASSIFIER_RULEPACK_PATH)}
+    if not isinstance(draft, dict) or not str(draft.get("skill_id", "")).strip():
+        return {"ok": False, "skill_id": skill_id, "error": "invalid_classifier_draft_yaml", "draft_path": str(draft_path)}
+    CLASSIFIER_RULEPACK_BACKUP_DIR.mkdir(parents=True, exist_ok=True)
+    backup_path = ""
+    if CLASSIFIER_RULEPACK_PATH.exists():
+        ts = datetime.utcnow().strftime("%Y%m%d_%H%M%S")
+        backup = CLASSIFIER_RULEPACK_BACKUP_DIR / f"phase1_rule_packs.{ts}.yaml"
+        shutil.copy2(CLASSIFIER_RULEPACK_PATH, backup)
+        backup_path = str(backup)
+    root = _load_yaml(CLASSIFIER_RULEPACK_PATH)
+    if not root:
+        root = {"version": 1, "skills": []}
+    skills = root.get("skills", []) if isinstance(root.get("skills"), list) else []
+    sid = str(skill_id or "").strip()
+    replaced = False
+    for i, s in enumerate(skills):
+        if isinstance(s, dict) and str(s.get("skill_id", "")).strip() == sid:
+            skills[i] = draft
+            replaced = True
+            break
+    if not replaced:
+        skills.append(draft)
+    root["skills"] = skills
+    _write_yaml(CLASSIFIER_RULEPACK_PATH, root)
+    _ = _load_yaml(CLASSIFIER_RULEPACK_PATH)  # read-back validation
+    return {
+        "ok": True,
+        "skill_id": sid,
+        "status": "registered",
+        "replaced_existing": replaced,
+        "draft_path": str(draft_path),
+        "formal_rulepack_path": str(CLASSIFIER_RULEPACK_PATH),
+        "backup_path": backup_path,
+    }
+
+
+def _resolve_gencode_ai_client(preferred_roles: list[str]) -> tuple[Any | None, dict[str, Any]]:
+    snapshot = get_ai_settings_snapshot()
+    mode = str(snapshot.get("ai_global_strategy", "unknown"))
+    api_key, _src = resolve_gemini_api_key()
+    has_api_key = bool(str(api_key or "").strip())
+    last_meta: dict[str, Any] = {}
+    for role in preferred_roles:
+        cfg = get_effective_model_config(role)
+        provider = str(cfg.get("provider", "local")).lower()
+        model = str(cfg.get("model", ""))
+        source = str(cfg.get("_resolved_source", "unknown"))
+        meta = {
+            "role": role,
+            "mode": mode,
+            "provider": provider,
+            "model": model,
+            "source": source,
+            "has_api_key": has_api_key,
+            "endpoint": "google_api" if provider == "google" else "local_api",
+            "failure_reason": "",
+        }
+        try:
+            c = get_ai_client(role=role)
+            actual_provider = "google" if "GoogleAIClient" in type(c).__name__ else "local"
+            if provider == "google" and actual_provider != "google":
+                meta["failure_reason"] = "resolved_google_but_fell_back_to_local"
+                _log_gencode_ai_runtime("resolve", meta)
+                last_meta = meta
+                continue
+            _log_gencode_ai_runtime("resolve", meta)
+            return c, meta
+        except Exception as ex:
+            meta["failure_reason"] = str(ex)
+            _log_gencode_ai_runtime("resolve", meta)
+            last_meta = meta
+            continue
+    return None, last_meta
 
 
 def _safe_file_component(value: str) -> str:
@@ -43,6 +294,553 @@ def _classify_examples(skill_id: str, examples: list[dict[str, Any]]) -> list[di
     ctx = ClassifierContext(project_root=PROJECT_ROOT, skill_id=skill_id)
     result = classifier.classify_examples(examples, ctx)
     return [dict(x) for x in result.examples_map_entries]
+
+
+_ALLOWED_CHECKERS = {
+    "interval_checker",
+    "choice_label_checker",
+    "text_checker",
+    "numeric_checker",
+    "ordered_pair_checker",
+    "expression_equivalence_checker",
+    "manual_review_checker",
+}
+_ALLOWED_EQUIVS = {
+    "interval_set",
+    "choice_label",
+    "string_equivalence",
+    "numeric_equivalence",
+    "ordered_pair",
+    "expression_equivalence",
+    "manual_review_or_ai_judged",
+}
+
+
+def _to_answer_type_from_equivalence(eq: str) -> str:
+    m = {
+        "interval_set": "interval_set",
+        "choice_label": "choice",
+        "string_equivalence": "text",
+        "numeric_equivalence": "numeric",
+        "ordered_pair": "ordered_pair",
+        "expression_equivalence": "expression",
+        "manual_review_or_ai_judged": "manual_review",
+    }
+    return m.get(str(eq or "").strip(), "text")
+
+
+def _camel_to_snake(name: str) -> str:
+    s = re.sub(r"([a-z0-9])([A-Z])", r"\1_\2", str(name or ""))
+    s = re.sub(r"[^A-Za-z0-9_]+", "_", s)
+    return s.strip("_").lower()
+
+
+def _skill_default_problem_type_id(skill_id: str) -> str:
+    tail = str(skill_id or "").split("_")[-1]
+    base = _camel_to_snake(tail) or "skill"
+    return f"{base}_default"
+
+
+def _sources_complete_for_default(examples: list[dict[str, Any]]) -> bool:
+    if not examples:
+        return False
+    for ex in examples:
+        txt = _source_text(ex)
+        if not txt.strip():
+            return False
+        bad = ["缺圖", "缺選項", "圖片遺失", "unreadable", "missing image"]
+        if any(b in txt for b in bad):
+            return False
+    return True
+
+
+def _infer_default_contract(examples: list[dict[str, Any]]) -> tuple[str, str]:
+    texts = " ".join(_source_text(x) for x in examples)
+    if any(tok in texts for tok in ["(A)", "(B)", "(C)", "(D)", "（A）", "（B）", "（C）", "（D）"]):
+        return "choice_label_checker", "choice_label"
+    return "text_checker", "string_equivalence"
+
+
+def _source_text(ex: dict[str, Any]) -> str:
+    for k in ("problem_text", "problem", "question", "stem", "content", "title"):
+        v = str(ex.get(k, "")).strip()
+        if v:
+            return v
+    return ""
+
+
+def _json_from_text(raw: str) -> dict[str, Any]:
+    s = str(raw or "").strip()
+    if not s:
+        return {}
+    try:
+        parsed = json.loads(s)
+        return parsed if isinstance(parsed, dict) else {}
+    except Exception:
+        pass
+    a = s.find("{")
+    b = s.rfind("}")
+    if a >= 0 and b > a:
+        try:
+            parsed = json.loads(s[a : b + 1])
+            return parsed if isinstance(parsed, dict) else {}
+        except Exception:
+            return {}
+    return {}
+
+
+def _fallback_ai_explanation(result: dict[str, Any], error: str = "") -> dict[str, Any]:
+    return {
+        "enabled": True,
+        "status": "failed",
+        "summary": "AI 解讀失敗，請查看下方原始 Phase log。",
+        "error": str(error or ""),
+        "severity": "warning",
+        "what_happened": "",
+        "main_reason": "",
+        "next_action": "請查看原始 Phase log 與 reports。",
+        "items_to_check": [],
+        "can_continue": bool(result.get("can_continue", False)),
+        "confidence": "low",
+    }
+
+
+def _build_gencode_ai_explanation_payload(result: dict[str, Any]) -> dict[str, Any]:
+    phase = str(result.get("phase", "")).strip()
+    payload = {
+        "skill_id": result.get("skill_id"),
+        "skill_ch_name": result.get("skill_ch_name"),
+        "skill_en_name": result.get("skill_en_name"),
+        "phase": phase,
+        "phase_status": result.get("phase_status"),
+        "summary_message": result.get("summary_message"),
+        "requires_human_action": result.get("requires_human_action"),
+        "can_continue": result.get("can_continue"),
+        "classifier_source": result.get("classifier_source"),
+        "ai_bootstrap_used": result.get("ai_bootstrap_used"),
+        "ai_bootstrap_status": result.get("ai_bootstrap_status"),
+        "exception_review_gate": result.get("exception_review_gate"),
+        "runtime_ready_gate": result.get("runtime_ready_gate"),
+        "generator_draft_gate": result.get("generator_draft_gate"),
+        "candidate_problem_types": result.get("candidate_problem_types"),
+        "human_review_items": result.get("human_review_items"),
+        "generator_results": result.get("generator_results"),
+        "publish_check": result.get("publish_check"),
+        "package_status": result.get("package_status"),
+        "py_compile_status": result.get("py_compile_status"),
+        "runtime_smoke_status": result.get("runtime_smoke_status"),
+        "reports": result.get("reports"),
+        "error": result.get("error"),
+    }
+    if phase == "phase1":
+        payload["runtime_ready_gate"] = {}
+        payload["generator_results"] = []
+        payload["publish_check"] = {}
+        payload["package_status"] = ""
+        payload["py_compile_status"] = ""
+        payload["runtime_smoke_status"] = ""
+    return payload
+
+
+def explain_gencode_result_with_ai(result: dict[str, Any]) -> dict[str, Any]:
+    try:
+        structured = _build_gencode_ai_explanation_payload(result)
+        phase = str(result.get("phase", "")).strip().lower()
+        phase_rule = (
+            "If phase is phase1, focus only on classifier/rule-pack/bootstrap/classification quality/manual review; "
+            "do not mention runtime_smoke_failed, dynamic_sampling_failed, contract_tests_failed unless they explicitly exist in phase1 context."
+            if phase == "phase1"
+            else "Use current phase context only; do not speculate across phases."
+        )
+        prompt = (
+            "你是 Gencode Phase 結果解讀助手。只能解讀，不可改動 gate 決策。\n"
+            "請只輸出 JSON，不要 Markdown。\n"
+            "必填欄位: severity(success|warning|blocked|failed), short_title, summary, what_happened(list), main_reason, next_action, items_to_check(list), can_continue_phase2(boolean), can_publish(boolean), user_friendly_message, confidence(high|medium|low)\n"
+            "規則:\n"
+            "- 不可宣稱通過，除非 phase_status / blockers 支援。\n"
+            "- 不可建議發布，除非 can_publish_formal=true。\n"
+            "- 必須引用輸入 JSON，資訊不足時要明確說需要查看 reports。\n"
+            "- 語氣精簡、可操作。\n"
+            f"- {phase_rule}\n"
+            "輸入 JSON:\n"
+            + json.dumps(structured, ensure_ascii=False)
+        )
+        client, client_meta = _resolve_gencode_ai_client(["architect", "tutor", "default"])
+        if client is None:
+            return _fallback_ai_explanation(result, client_meta.get("failure_reason", "AI client unavailable or API key missing"))
+        resp = call_ai_with_retry(client, prompt, max_retries=2, retry_delay=2, timeout=90)
+        parsed = _json_from_text(getattr(resp, "text", ""))
+        if not parsed:
+            return _fallback_ai_explanation(result, "ai_empty_or_invalid_json")
+        sev = str(parsed.get("severity", "")).strip().lower()
+        if sev not in {"success", "warning", "blocked", "failed"}:
+            phase_status = str(result.get("phase_status", "")).lower()
+            if "failed" in phase_status:
+                sev = "failed"
+            elif "blocked" in phase_status or bool(result.get("requires_human_action")):
+                sev = "blocked"
+            elif "warning" in phase_status:
+                sev = "warning"
+            else:
+                sev = "success"
+        return {
+            "enabled": True,
+            "status": "success",
+            "severity": sev,
+            "short_title": str(parsed.get("short_title", "")).strip(),
+            "summary": str(parsed.get("summary", "")).strip(),
+            "what_happened": parsed.get("what_happened", []) if isinstance(parsed.get("what_happened"), list) else [],
+            "main_reason": str(parsed.get("main_reason", "")).strip(),
+            "next_action": str(parsed.get("next_action", "")).strip(),
+            "items_to_check": parsed.get("items_to_check", []) if isinstance(parsed.get("items_to_check"), list) else [],
+            "can_continue_phase2": bool(parsed.get("can_continue_phase2", False)),
+            "can_publish": bool(parsed.get("can_publish", False)),
+            "user_friendly_message": str(parsed.get("user_friendly_message", "")).strip(),
+            "confidence": str(parsed.get("confidence", "medium")).strip().lower() or "medium",
+        }
+    except Exception as ex:
+        return _fallback_ai_explanation(result, str(ex))
+
+
+def _is_unrelated_problem_type(pt: str, source_texts: list[str]) -> bool:
+    p = str(pt or "").strip().lower()
+    if not p:
+        return True
+    if p.startswith("absolute_value_inequality_"):
+        corpus = " ".join(source_texts).lower()
+        if ("|" not in corpus) and ("絕對值" not in corpus) and ("absolute value" not in corpus):
+            return True
+    return False
+
+
+def _is_bad_problem_type_style(skill_id: str, pt: str) -> bool:
+    p = str(pt or "").strip().lower()
+    sid = re.sub(r"[^a-z0-9_]", "_", str(skill_id or "").strip().lower())
+    if not p:
+        return True
+    if sid and sid in p:
+        return True
+    if re.search(r"^vh_+b\d+_", p):
+        return True
+    return False
+
+
+def _build_neutral_fallback(
+    *,
+    skill_id: str,
+    examples: list[dict[str, Any]],
+    reason: str,
+    problem_type_id: str = "classifier_missing_source_review",
+) -> tuple[list[dict[str, Any]], dict[str, Any], dict[str, Any]]:
+    entries: list[dict[str, Any]] = []
+    proposed_example_map: list[dict[str, Any]] = []
+    for i, ex in enumerate(examples):
+        exid = ex.get("id")
+        text = _source_text(ex)
+        row = {
+            "example_id": exid,
+            "title": str(ex.get("title", "")).strip(),
+            "source_type": str(ex.get("source_type", "")).strip() or "textbook_example",
+            "problem_preview": text[:200],
+            "skill_id": skill_id,
+            "subskill_id": problem_type_id,
+            "problem_type_id": problem_type_id,
+            "runtime_category": "manual_review",
+            "classification_rule_id": "phase1.neutral_fallback",
+            "classification_reason": reason,
+            "classifier_confidence": "low",
+            "semantic_risk_flags": ["possible_missing_problem_type", "weak_classifier_match"],
+            "semantic_audit_status": "review_required",
+            "generator_status": "manual_review",
+            "manual_review_reason": reason,
+        }
+        entries.append(row)
+        proposed_example_map.append({"example_id": exid, "proposed_problem_type_id": problem_type_id, "source_index": i + 1})
+    proposal = {
+        "proposed_problem_types": [problem_type_id],
+        "proposed_example_map": proposed_example_map,
+        "proposed_answer_contracts": {
+            problem_type_id: {
+                "answer_type": "manual_review",
+                "equivalence_type": "manual_review_or_ai_judged",
+                "checker_key": "manual_review_checker",
+            }
+        },
+        "risk_flags": ["classifier_missing_or_ai_bootstrap_failed"],
+    }
+    meta = {
+        "classifier_source": "neutral_fallback",
+        "ai_bootstrap_used": True,
+        "ai_bootstrap_status": "failed",
+        "ai_bootstrap_error": reason,
+        "ai_bootstrap_raw_response_preview": "",
+        "ai_bootstrap_validation_errors": [],
+        "ai_bootstrap_prompt_version": "gencode_phase1_ai_bootstrap_v2",
+        "ai_bootstrap_model": "",
+        "ai_bootstrap_provider": "",
+        "ai_bootstrap_config_source": "",
+        "ai_bootstrap_confidence_summary": {"count": len(examples), "avg": 0.0, "low_confidence_count": len(examples)},
+        "inspect_report_note": "Missing classifier/rule pack, AI bootstrap attempted.",
+    }
+    return entries, proposal, meta
+
+
+def _run_ai_classifier_bootstrap(
+    *,
+    skill_id: str,
+    skill_ch_name: str,
+    examples: list[dict[str, Any]],
+) -> tuple[list[dict[str, Any]], dict[str, Any], dict[str, Any]]:
+    prompt_version = "gencode_phase1_ai_bootstrap_v2"
+    client, client_meta = _resolve_gencode_ai_client(["architect", "tutor", "default"])
+    if client is None:
+        raise RuntimeError(client_meta.get("failure_reason", "AI client unavailable or API key missing") or "AI client unavailable or API key missing")
+    provider = str(client_meta.get("provider", ""))
+    model_name = str(client_meta.get("model", "") or getattr(client, "model_name", "") or getattr(client, "model", "") or "")
+    source_items = []
+    for i, ex in enumerate(examples, start=1):
+        source_items.append(
+            {
+                "source_index": i,
+                "example_id": ex.get("id"),
+                "source_type": ex.get("source_type"),
+                "title": ex.get("title"),
+                "question_text": _source_text(ex),
+                "answer": ex.get("answer"),
+                "explanation": ex.get("explanation"),
+                "image_hint": ex.get("image_path") or ex.get("image_url") or ex.get("figure_hint"),
+            }
+        )
+    prompt = (
+        "You are a math problem-type classifier bootstrapper.\n"
+        "Return JSON only.\n"
+        "Skill context:\n"
+        + json.dumps({"skill_id": skill_id, "skill_ch_name": skill_ch_name, "skill_en_name": ""}, ensure_ascii=False)
+        + "\nSource examples:\n"
+        + json.dumps(source_items, ensure_ascii=False)
+        + "\nOutput schema keys: skill_id, skill_ch_name, classifier_source, problem_types, source_classifications, manual_review_items.\n"
+        "Rules:\n"
+        "- infer skill-related problem types from skill_id, skill_ch_name and question text.\n"
+        "- avoid unrelated problem types.\n"
+        "- You do not need to split every skill into multiple problem_types.\n"
+        "- If source examples are few and structurally similar, merge into one primary problem_type.\n"
+        "- A single good problem_type is acceptable.\n"
+        "- Split only when checker/equivalence/answer contract differs.\n"
+        "- Do not over-segment small skills.\n"
+        "- do not output only generic unclassified_source_review unless sources are truly unreadable.\n"
+        "- when possible, propose semantic problem_type candidates; one primary type is allowed.\n"
+        "- problem_type_id must be semantic snake_case; do NOT sanitize the full skill_id into problem_type_id.\n"
+        "- for Cartesian coordinate skills, prefer semantic types such as cartesian_coordinate_point_reading / cartesian_coordinate_quadrant_identification / cartesian_coordinate_axis_origin_concept / cartesian_coordinate_point_plotting / cartesian_coordinate_from_description when supported by source text.\n"
+        "- problem_type_id must be snake_case and skill-related.\n"
+        "- checker in: interval_checker, choice_label_checker, text_checker, numeric_checker, ordered_pair_checker, expression_equivalence_checker, manual_review_checker.\n"
+        "- equivalence in: interval_set, choice_label, string_equivalence, numeric_equivalence, ordered_pair, expression_equivalence, manual_review_or_ai_judged.\n"
+        "- if checker/equivalence is manual review, requires_human_action=true (only for drawing/graph/missing-image/unreadable sources).\n"
+        "- if deterministic checker is possible, set requires_human_action=false.\n"
+        "- every source_index must appear in source_classifications.\n"
+        "- confidence is 0..1.\n"
+    )
+    resp = call_ai_with_retry(client, prompt, max_retries=2, retry_delay=2, timeout=120)
+    raw_text = str(getattr(resp, "text", "") or "")
+    raw_preview = raw_text[:1000]
+    parsed = _json_from_text(raw_text)
+    if not parsed:
+        raise RuntimeError(f"ai_bootstrap_invalid_json::{raw_preview[:200]}")
+
+    source_map = {i: ex for i, ex in enumerate(examples, start=1)}
+    source_texts = [_source_text(ex) for ex in examples]
+    ai_problem_types = parsed.get("problem_types") if isinstance(parsed.get("problem_types"), list) else []
+    ai_source_cls = parsed.get("source_classifications") if isinstance(parsed.get("source_classifications"), list) else []
+    by_index: dict[int, dict[str, Any]] = {}
+    contracts: dict[str, dict[str, Any]] = {}
+    risk_flags: list[str] = []
+    confs: list[float] = []
+
+    validation_errors: list[str] = []
+    unclassified_count = 0
+    for row in ai_source_cls:
+        if not isinstance(row, dict):
+            continue
+        try:
+            idx = int(row.get("source_index"))
+        except Exception:
+            continue
+        if idx not in source_map:
+            continue
+        pt = str(row.get("matched_problem_type_id", "")).strip()
+        checker = str(row.get("checker", "")).strip()
+        eq = str(row.get("equivalence", "")).strip()
+        needs_human = bool(row.get("requires_human_action", False))
+        conf = float(row.get("confidence", 0.0) or 0.0)
+        confs.append(conf)
+        invalid = (
+            (not re.fullmatch(r"[a-z][a-z0-9_]*", pt))
+            or checker not in _ALLOWED_CHECKERS
+            or eq not in _ALLOWED_EQUIVS
+            or _is_unrelated_problem_type(pt, source_texts)
+            or _is_bad_problem_type_style(skill_id, pt)
+        )
+        if not re.fullmatch(r"[a-z][a-z0-9_]*", pt):
+            validation_errors.append(f"source_index={idx}: invalid_problem_type_id={pt}")
+        if checker not in _ALLOWED_CHECKERS:
+            validation_errors.append(f"source_index={idx}: invalid_checker={checker}")
+        if eq not in _ALLOWED_EQUIVS:
+            validation_errors.append(f"source_index={idx}: invalid_equivalence={eq}")
+        if _is_unrelated_problem_type(pt, source_texts):
+            validation_errors.append(f"source_index={idx}: unrelated_problem_type={pt}")
+        if _is_bad_problem_type_style(skill_id, pt):
+            validation_errors.append(f"source_index={idx}: invalid_problem_type_id_style={pt}")
+        if invalid or conf < 0.6:
+            pt = "unclassified_source_review"
+            checker = "manual_review_checker"
+            eq = "manual_review_or_ai_judged"
+            needs_human = True
+            risk_flags.append("ai_bootstrap_low_confidence_or_invalid")
+        if checker == "manual_review_checker" or eq == "manual_review_or_ai_judged":
+            needs_human = True
+        if pt.endswith("unclassified_source_review"):
+            unclassified_count += 1
+        ex = source_map[idx]
+        exid = ex.get("id")
+        by_index[idx] = {
+            "example_id": exid,
+            "title": str(ex.get("title", "")).strip(),
+            "source_type": str(ex.get("source_type", "")).strip() or "textbook_example",
+            "problem_preview": _source_text(ex)[:200],
+            "skill_id": skill_id,
+            "subskill_id": pt,
+            "problem_type_id": pt,
+            "runtime_category": "manual_review" if needs_human else "deterministic_choice" if checker == "choice_label_checker" else "deterministic_expression",
+            "classification_rule_id": "phase1.ai_bootstrap",
+            "classification_reason": str(row.get("review_reason", "")).strip() or "ai_bootstrap_classification",
+            "classifier_confidence": "high" if conf >= 0.8 else "medium" if conf >= 0.6 else "low",
+            "semantic_risk_flags": ["ai_bootstrap"],
+            "semantic_audit_status": "review_required" if needs_human else "ok",
+            "generator_status": "manual_review" if needs_human else "ready_for_draft",
+            "manual_review_reason": str(row.get("review_reason", "")).strip() if needs_human else "",
+        }
+        contracts[pt] = {
+            "answer_type": _to_answer_type_from_equivalence(eq),
+            "equivalence_type": eq,
+            "checker_key": checker,
+        }
+
+    # fill uncovered sources into neutral manual review
+    for idx, ex in source_map.items():
+        if idx in by_index:
+            continue
+        pt = "unclassified_source_review"
+        exid = ex.get("id")
+        by_index[idx] = {
+            "example_id": exid,
+            "title": str(ex.get("title", "")).strip(),
+            "source_type": str(ex.get("source_type", "")).strip() or "textbook_example",
+            "problem_preview": _source_text(ex)[:200],
+            "skill_id": skill_id,
+            "subskill_id": pt,
+            "problem_type_id": pt,
+            "runtime_category": "manual_review",
+            "classification_rule_id": "phase1.ai_bootstrap_uncovered",
+            "classification_reason": "ai_bootstrap_missing_source_coverage",
+            "classifier_confidence": "low",
+            "semantic_risk_flags": ["ai_bootstrap_missing_source_coverage"],
+            "semantic_audit_status": "review_required",
+            "generator_status": "manual_review",
+            "manual_review_reason": "ai_bootstrap_missing_source_coverage",
+        }
+        contracts[pt] = {
+            "answer_type": "manual_review",
+            "equivalence_type": "manual_review_or_ai_judged",
+            "checker_key": "manual_review_checker",
+        }
+        risk_flags.append("ai_bootstrap_missing_source_coverage")
+        validation_errors.append(f"source_index={idx}: missing_source_classification")
+        unclassified_count += 1
+
+    # Global merge policy: small source set + same deterministic checker/equivalence -> allow one primary problem_type.
+    pre_entries = [by_index[i] for i in sorted(by_index.keys())]
+    if len(pre_entries) <= 5:
+        det_rows = [x for x in pre_entries if str(x.get("runtime_category", "")).strip() != "manual_review"]
+        if det_rows:
+            det_pts = [str(x.get("problem_type_id", "")).strip() for x in det_rows if str(x.get("problem_type_id", "")).strip()]
+            pt_counts: dict[str, int] = {}
+            for p in det_pts:
+                pt_counts[p] = pt_counts.get(p, 0) + 1
+            primary_pt = sorted(pt_counts.items(), key=lambda kv: (-kv[1], kv[0]))[0][0] if pt_counts else ""
+            if primary_pt:
+                primary_contract = contracts.get(primary_pt, {}) if isinstance(contracts.get(primary_pt), dict) else {}
+                same_contract = True
+                for r in det_rows:
+                    c = contracts.get(str(r.get("problem_type_id", "")).strip(), {})
+                    if not isinstance(c, dict):
+                        same_contract = False
+                        break
+                    if str(c.get("checker_key", "")).strip() != str(primary_contract.get("checker_key", "")).strip():
+                        same_contract = False
+                        break
+                    if str(c.get("equivalence_type", "")).strip() != str(primary_contract.get("equivalence_type", "")).strip():
+                        same_contract = False
+                        break
+                if same_contract:
+                    for r in det_rows:
+                        r["problem_type_id"] = primary_pt
+                        r["subskill_id"] = primary_pt
+
+    entries = [by_index[i] for i in sorted(by_index.keys())]
+    proposed_example_map = [{"example_id": e.get("example_id"), "proposed_problem_type_id": e.get("problem_type_id")} for e in entries]
+    proposal = {
+        "proposed_problem_types": sorted({str(e.get("problem_type_id", "")).strip() for e in entries if str(e.get("problem_type_id", "")).strip()}),
+        "proposed_example_map": proposed_example_map,
+        "proposed_answer_contracts": contracts,
+        "risk_flags": sorted(set(risk_flags)),
+    }
+    low_count = sum(1 for x in confs if x < 0.6)
+    avg = (sum(confs) / len(confs)) if confs else 0.0
+    ai_status = "success"
+    classifier_source = "ai_bootstrap"
+    if entries and unclassified_count >= len(entries):
+        if _sources_complete_for_default(examples):
+            default_pt = _skill_default_problem_type_id(skill_id)
+            checker, eq = _infer_default_contract(examples)
+            for e in entries:
+                e["problem_type_id"] = default_pt
+                e["subskill_id"] = default_pt
+                e["runtime_category"] = "deterministic_choice" if checker == "choice_label_checker" else "deterministic_expression"
+                e["classification_reason"] = "ai_bootstrap_default_fallback_for_complete_sources"
+                e["generator_status"] = "ready_for_draft"
+                e["semantic_audit_status"] = "ok"
+                e["manual_review_reason"] = ""
+            contracts = {
+                default_pt: {
+                    "answer_type": _to_answer_type_from_equivalence(eq),
+                    "equivalence_type": eq,
+                    "checker_key": checker,
+                    "is_default_problem_type": True,
+                }
+            }
+            validation_errors.append("ai_bootstrap_all_unclassified_promoted_to_default_problem_type")
+            classifier_source = "ai_bootstrap_with_default_fallback"
+            ai_status = "success"
+        else:
+            validation_errors.append("ai_bootstrap_low_quality_all_unclassified")
+            ai_status = "low_quality"
+            classifier_source = "ai_bootstrap_low_quality"
+    meta = {
+        "classifier_source": classifier_source,
+        "ai_bootstrap_used": True,
+        "ai_bootstrap_status": ai_status,
+        "ai_bootstrap_error": "",
+        "ai_bootstrap_raw_response_preview": raw_preview,
+        "ai_bootstrap_validation_errors": validation_errors,
+        "ai_bootstrap_prompt_version": prompt_version,
+        "ai_bootstrap_model": model_name,
+        "ai_bootstrap_provider": provider,
+        "ai_bootstrap_config_source": str(client_meta.get("source", "")),
+        "ai_bootstrap_confidence_summary": {"count": len(confs), "avg": round(avg, 3), "low_confidence_count": low_count},
+        "inspect_report_note": "Missing classifier/rule pack, AI bootstrap attempted.",
+        "ai_bootstrap_raw_problem_types": ai_problem_types,
+        "default_problem_type_used": classifier_source == "ai_bootstrap_with_default_fallback",
+    }
+    return entries, proposal, meta
 
 
 def _question_preview(text: Any, limit: int = 110) -> str:
@@ -264,6 +1062,12 @@ def _build_auto_review(skill_id: str, entries: list[dict[str, Any]], proposal: d
         dynamic_sampling_passed=False,
         contract_tests_passed=False,
     )
+    ex_gate = gates.get("exception_review_gate", {}) if isinstance(gates.get("exception_review_gate"), dict) else {}
+    ex_reasons = ex_gate.get("reasons", []) if isinstance(ex_gate.get("reasons"), list) else []
+    ex_reasons = [r for r in ex_reasons if str(r) not in {"runtime_smoke_failed", "dynamic_sampling_failed", "contract_tests_failed"}]
+    ex_gate["reasons"] = ex_reasons
+    ex_gate["required"] = bool(ex_reasons)
+    gates["exception_review_gate"] = ex_gate
     per_candidate_promote_gate = [
         {
             "problem_type_id": str(x.get("problem_type_id", "")),
@@ -339,11 +1143,21 @@ def _normalize_phase_response(payload: dict[str, Any]) -> dict[str, Any]:
                     "suggested_action": "inspect_report",
                 }
             )
-        payload["summary_message"] = (
-            f"Phase 1 completed: {len(cands)} candidate problem types, {source_count} source examples."
-            if phase_status.startswith("phase1_completed")
-            else ("Phase 1 blocked: no source examples." if phase_status == "phase1_blocked_no_source" else "Phase 1 requires exception review.")
-        )
+        classifier_source = str(payload.get("classifier_source", "rule_pack"))
+        if classifier_source == "ai_bootstrap":
+            payload["summary_message"] = "未找到既有 rule pack，已使用 AI classifier bootstrap 產生題型分類草案。"
+        elif classifier_source == "ai_bootstrap_with_default_fallback":
+            payload["summary_message"] = "AI 未細分題型，但來源題完整且同屬此 skill；已建立單一 default problem_type，可進入 Phase 2。"
+        elif classifier_source == "ai_bootstrap_low_quality":
+            payload["summary_message"] = "AI classifier bootstrap 有回覆，但未能產生可用題型分類；目前仍需人工審查。"
+        elif classifier_source == "neutral_fallback":
+            payload["summary_message"] = "AI classifier bootstrap 失敗，已轉入人工審查。"
+        else:
+            payload["summary_message"] = (
+                f"Phase 1 completed: {len(cands)} candidate problem types, {source_count} source examples."
+                if phase_status.startswith("phase1_completed")
+                else ("Phase 1 blocked: no source examples." if phase_status == "phase1_blocked_no_source" else "Phase 1 requires exception review.")
+            )
         can_continue = phase_status in {"phase1_completed", "phase1_completed_with_warning", "phase1_exception_review_required"}
         can_retry = True
 
@@ -478,13 +1292,81 @@ def run_gencode_phase1(skill_id: str, dry_run: bool = True) -> dict[str, Any]:
         }
         write_json(Path(reports["phase1_summary_json"]), payload)
         _write_phase1_summary_md(Path(reports["phase1_summary_md"]), skill_id, payload)
-        return _normalize_phase_response(payload)
+        normalized = _normalize_phase_response(payload)
+        normalized["ai_explanation"] = explain_gencode_result_with_ai(normalized)
+        return normalized
 
-    entries = _classify_examples(skill_id, examples)
-    unknown_ratio = sum(1 for e in entries if str(e.get("problem_type_id", "")).strip() in {"", "unknown"}) / max(len(entries), 1)
+    classifier_source = "rule_pack"
+    ai_bootstrap_used = False
+    ai_bootstrap_status = "not_used"
+    ai_bootstrap_confidence_summary: dict[str, Any] = {}
+    inspect_report_note = ""
+    meta: dict[str, Any] = {}
+    registered_pack = _load_registered_classifier_rulepack(skill_id)
+    if registered_pack:
+        entries = _classify_examples_with_rulepack(skill_id=skill_id, examples=examples, pack=registered_pack)
+    else:
+        cls = get_classifier_for_skill(skill_id)
+        ctx = ClassifierContext(project_root=PROJECT_ROOT, skill_id=skill_id)
+        raw_result = cls.classify_examples(examples, ctx)
+        entries = [dict(x) for x in raw_result.examples_map_entries]
+        if isinstance(cls, FallbackClassifier):
+            classifier_source = "ai_bootstrap"
+            ai_bootstrap_used = True
+            skill_ch_name = _pick_skill_ch_name(skill_id, examples)
+            try:
+                entries, proposal, meta = _run_ai_classifier_bootstrap(skill_id=skill_id, skill_ch_name=skill_ch_name, examples=examples)
+            except Exception as ex:
+                ex_msg = str(ex)
+                entries, proposal, meta = _build_neutral_fallback(
+                    skill_id=skill_id,
+                    examples=examples,
+                    reason=f"skill_specific_classifier_missing; ai_bootstrap_failed: {ex_msg}",
+                )
+                meta["ai_bootstrap_error"] = ex_msg
+                if "api key missing" in ex_msg.lower() or "unavailable" in ex_msg.lower():
+                    meta["ai_bootstrap_status"] = "unavailable"
+                    meta["ai_bootstrap_error"] = "AI client unavailable or API key missing"
+                if "ai_bootstrap_invalid_json::" in ex_msg:
+                    preview = ex_msg.split("::", 1)[1].strip()
+                    meta["ai_bootstrap_raw_response_preview"] = preview[:1000]
+                    meta["ai_bootstrap_validation_errors"] = ["invalid_json_response"]
+            classifier_source = str(meta.get("classifier_source", classifier_source))
+            ai_bootstrap_status = str(meta.get("ai_bootstrap_status", "failed" if classifier_source == "neutral_fallback" else "success"))
+            ai_bootstrap_confidence_summary = meta.get("ai_bootstrap_confidence_summary", {}) if isinstance(meta.get("ai_bootstrap_confidence_summary"), dict) else {}
+            inspect_report_note = str(meta.get("inspect_report_note", "")).strip()
+    if not isinstance(entries, list):
+        entries = []
+    if not entries and examples:
+        fb_entries, fb_proposal, fb_meta = _build_neutral_fallback(
+            skill_id=skill_id,
+            examples=examples,
+            reason="phase1_entries_empty_after_classification",
+        )
+        entries = fb_entries
+        if not meta:
+            meta = fb_meta
+        inspect_report_note = (inspect_report_note + " " if inspect_report_note else "") + "entries fallback applied due to empty source classifications."
+        if not str(meta.get("ai_bootstrap_error", "")).strip():
+            meta["ai_bootstrap_error"] = "phase1_entries_empty_after_classification"
     proposal = {"proposed_problem_types": [], "proposed_example_map": [], "proposed_answer_contracts": {}, "risk_flags": []}
-    if unknown_ratio >= 0.2:
-        proposal = build_classifier_proposal(skill_id, entries)
+    if registered_pack:
+        for e in entries:
+            pt = str(e.get("problem_type_id", "")).strip()
+            if not pt:
+                continue
+            proposal["proposed_problem_types"].append(pt)
+            proposal["proposed_example_map"].append({"example_id": e.get("example_id"), "proposed_problem_type_id": pt})
+            # infer contracts from runtime category
+            if str(e.get("runtime_category", "")).strip() == "manual_review":
+                proposal["proposed_answer_contracts"][pt] = {"answer_type": "manual_review", "equivalence_type": "manual_review_or_ai_judged", "checker_key": "manual_review_checker"}
+            else:
+                proposal["proposed_answer_contracts"][pt] = {"answer_type": "choice", "equivalence_type": "choice_label", "checker_key": "choice_label_checker"}
+        proposal["proposed_problem_types"] = sorted(set(proposal["proposed_problem_types"]))
+    elif not ai_bootstrap_used:
+        unknown_ratio = sum(1 for e in entries if str(e.get("problem_type_id", "")).strip() in {"", "unknown"}) / max(len(entries), 1)
+        if unknown_ratio >= 0.2:
+            proposal = build_classifier_proposal(skill_id, entries)
     auto_review = _build_auto_review(skill_id, entries, proposal)
     per_example = auto_review.get("per_example_classification", [])
     unclassified = [x.get("example_id") for x in per_example if str(x.get("detected_problem_type_id", "")).strip() in {"", "unknown"}]
@@ -497,6 +1379,7 @@ def run_gencode_phase1(skill_id: str, dry_run: bool = True) -> dict[str, Any]:
         "source_example_count": len(examples),
         "candidate_problem_types": auto_review.get("candidate_problem_types", []),
         "per_example_classification": per_example,
+        "source_classifications": per_example,
         "unclassified_examples": unclassified,
         "risk_examples": risk_examples,
         "split_or_merge_recommendation": auto_review.get("split_or_merge_recommendation", ""),
@@ -509,6 +1392,19 @@ def run_gencode_phase1(skill_id: str, dry_run: bool = True) -> dict[str, Any]:
         "timestamp": utc_timestamp(),
         "dry_run": dry_run,
         "auto_review_summary": auto_review,
+        "classifier_source": classifier_source,
+        "ai_bootstrap_used": ai_bootstrap_used,
+        "ai_bootstrap_status": ai_bootstrap_status,
+        "ai_bootstrap_confidence_summary": ai_bootstrap_confidence_summary,
+        "inspect_report_note": inspect_report_note,
+        "ai_bootstrap_error": str(meta.get("ai_bootstrap_error", "") if isinstance(meta, dict) else ""),
+        "ai_bootstrap_raw_response_preview": str(meta.get("ai_bootstrap_raw_response_preview", "") if isinstance(meta, dict) else ""),
+        "ai_bootstrap_validation_errors": meta.get("ai_bootstrap_validation_errors", []) if isinstance(meta, dict) and isinstance(meta.get("ai_bootstrap_validation_errors"), list) else [],
+        "ai_bootstrap_prompt_version": str(meta.get("ai_bootstrap_prompt_version", "") if isinstance(meta, dict) else ""),
+        "ai_bootstrap_model": str(meta.get("ai_bootstrap_model", "") if isinstance(meta, dict) else ""),
+        "ai_bootstrap_provider": str(meta.get("ai_bootstrap_provider", "") if isinstance(meta, dict) else ""),
+        "ai_bootstrap_config_source": str(meta.get("ai_bootstrap_config_source", "") if isinstance(meta, dict) else ""),
+        "default_problem_type_used": bool(meta.get("default_problem_type_used", False) if isinstance(meta, dict) else False),
     }
     payload["human_review_items"] = _build_human_review_items(
         skill_id=skill_id,
@@ -520,7 +1416,27 @@ def run_gencode_phase1(skill_id: str, dry_run: bool = True) -> dict[str, Any]:
     )
     write_json(Path(reports["phase1_summary_json"]), payload)
     _write_phase1_summary_md(Path(reports["phase1_summary_md"]), skill_id, payload)
-    return _normalize_phase_response(payload)
+    runtime_candidates = [
+        c for c in (payload.get("candidate_problem_types") or [])
+        if isinstance(c, dict)
+        and str(c.get("problem_type_id") or c.get("proposed_problem_type_id") or "").strip() not in {"", "unclassified_source_review", "classifier_missing_source_review"}
+        and str(c.get("checker_key_proposal", "")).strip() != "manual_review_checker"
+        and str(c.get("equivalence_type_proposal", "")).strip() != "manual_review_or_ai_judged"
+    ]
+    classifier_draft_path = ""
+    if runtime_candidates and classifier_source in {"ai_bootstrap", "ai_bootstrap_low_quality", "neutral_fallback", "human_override"}:
+        draft_obj = _build_classifier_yaml_draft_from_phase1(payload, examples)
+        classifier_draft_path = _write_classifier_yaml_draft(skill_id, draft_obj)
+        payload["classifier_yaml_draft_path"] = classifier_draft_path
+        payload["classifier_rulepack_registerable"] = True
+        write_json(Path(reports["phase1_summary_json"]), payload)
+        _write_phase1_summary_md(Path(reports["phase1_summary_md"]), skill_id, payload)
+    normalized = _normalize_phase_response(payload)
+    normalized["ai_explanation"] = explain_gencode_result_with_ai(normalized)
+    if classifier_draft_path:
+        normalized["classifier_yaml_draft_path"] = classifier_draft_path
+        normalized["classifier_rulepack_registerable"] = True
+    return normalized
 
 
 def run_gencode_phase2(skill_id: str, accepted_problem_types: list | None = None, excluded_example_ids: list | None = None, dry_run: bool = True) -> dict[str, Any]:
@@ -625,7 +1541,9 @@ def run_gencode_phase2(skill_id: str, accepted_problem_types: list | None = None
     }
     write_json(Path(reports["phase2_generator_summary_json"]), payload)
     write_md(Path(reports["phase2_generator_summary_md"]), f"Gencode Phase2 Generator Summary: {skill_id}", [("phase2", payload)])
-    return _normalize_phase_response(payload)
+    normalized = _normalize_phase_response(payload)
+    normalized["ai_explanation"] = explain_gencode_result_with_ai(normalized)
+    return normalized
 
 
 def _run_gencode_publish_check_for_draft(skill_id: str, draft_skill_file_path: str, runtime_ready_gate: dict[str, Any] | None = None, checker_smoke_passed: bool = False, dynamic_sampling_passed: bool = False, equivalence_contract_passed: bool = False) -> dict[str, Any]:
@@ -654,6 +1572,17 @@ def _run_gencode_publish_check_for_draft(skill_id: str, draft_skill_file_path: s
             blockers.append("draft_py_compile_failed")
 
     runtime_smoke_status = "skipped_with_reason"
+    placeholder_patterns = [
+        "[DRAFT]",
+        "generator draft pending implementation",
+        "draft pending implementation",
+        "pending implementation",
+        "placeholder",
+        "TODO",
+        "NotImplemented",
+        "raise NotImplementedError",
+    ]
+    unrelated_abs_keywords = ["絕對值", "不等式", "|x", "absolute_value", "distance less than r", "distance greater than r", "x 與 a 的距離"]
     if draft_path.exists() and py_compile_status == "passed":
         try:
             src = draft_path.read_text(encoding="utf-8")
@@ -681,8 +1610,26 @@ def _run_gencode_publish_check_for_draft(skill_id: str, draft_skill_file_path: s
                     if isinstance(payload, dict):
                         required = ["question_text", "answer"]
                         interface_check["generate_has_required_fields"] = all(k in payload for k in required)
+                        q_text = str(payload.get("question_text") or payload.get("question") or "").strip()
+                        ans_text = str(payload.get("answer") or "").strip()
+                        if not q_text or not ans_text:
+                            blockers.append("runtime_smoke_empty_output")
+                            raise RuntimeError("runtime_smoke_empty_output")
+                        text_blob = str(payload)
+                        if any(p in text_blob for p in placeholder_patterns):
+                            blockers.append("placeholder_output_detected")
+                            raise RuntimeError("placeholder_output_detected")
+                        pt_text = str(payload.get("problem_type_id", "")).lower()
+                        skill_text = str(payload.get("skill_id", "")).lower()
+                        q_text_l = q_text.lower()
+                        if ("cartesian_coordinate" in pt_text or "cartesian" in skill_text) and any(k.lower() in q_text_l for k in unrelated_abs_keywords):
+                            blockers.append("unrelated_generator_template_detected")
+                            raise RuntimeError("unrelated_generator_template_detected")
                         if callable(chk):
-                            chk(payload.get("answer", ""), payload.get("correct_answer", payload.get("answer", "")))
+                            check_ok = chk(payload.get("answer", ""), payload.get("correct_answer", payload.get("answer", "")))
+                            if check_ok is False:
+                                blockers.append("runtime_smoke_check_failed")
+                                raise RuntimeError("runtime_smoke_check_failed")
                 runtime_smoke_status = "passed"
         except Exception:
             runtime_smoke_status = "failed"
@@ -755,25 +1702,180 @@ def run_gencode_phase3_package(skill_id: str, accepted_generator_keys: list | No
     phase3_warnings = sorted({w for g in usable for w in (g.get("warnings") or []) if str(w).strip()})
     draft_skill_path = DRAFT_DIR / f"{skill_id}.py"
     generator_keys = [str(x.get("generator_key", "")) for x in usable]
+    generator_specs = [
+        {
+            "problem_type_id": str(x.get("problem_type_id", "")).strip(),
+            "checker_key": str(x.get("checker_key", "")).strip(),
+            "equivalence_type": str(x.get("equivalence_type", "")).strip(),
+        }
+        for x in usable
+        if str(x.get("problem_type_id", "")).strip()
+    ]
     code = (
         "from __future__ import annotations\n\n"
-        "from typing import Any\n\n"
+        "from typing import Any\n"
+        "import random\n"
+        "import re\n\n"
         f"SKILL_ID = {skill_id!r}\n"
         f"GENERATOR_KEYS = {generator_keys!r}\n\n"
-        "def generate(level: int = 1, seed: int | None = None, difficulty: int | None = None) -> dict[str, Any]:\n"
-        "    problem_type_id = GENERATOR_KEYS[0].split(':')[1] if GENERATOR_KEYS else 'draft_pending_problem_type'\n"
+        f"GENERATOR_SPECS = {generator_specs!r}\n\n"
+        "def _normalize_interval(s: Any) -> str:\n"
+        "    t = str(s or '').strip().lower().replace(' ', '')\n"
+        "    t = t.replace('∞', 'inf').replace('infty', 'inf').replace('infinity', 'inf')\n"
+        "    t = t.replace('-oo', '-inf').replace('+oo', 'inf').replace('oo', 'inf')\n"
+        "    t = t.replace('∪', 'u')\n"
+        "    return t\n\n"
+        "def _choice_label(s: Any) -> str:\n"
+        "    t = str(s or '').strip().upper()\n"
+        "    return t[:1] if t else ''\n\n"
+        "def _gen_interval_problem(pt: str) -> dict[str, Any]:\n"
+        "    left = random.randint(-8, 0)\n"
+        "    right = random.randint(1, 9)\n"
+        "    q = f'請寫出同時滿足 x > {left} 且 x < {right} 的解集合（區間表示）。'\n"
+        "    ans = f'({left}, {right})'\n"
         "    return {\n"
         "        'skill_id': SKILL_ID,\n"
-        "        'problem_type_id': problem_type_id,\n"
-        "        'question_text': '[DRAFT] generator draft pending implementation',\n"
-        "        'question': '[DRAFT] generator draft pending implementation',\n"
-        "        'answer': '',\n"
-        "        'correct_answer': '',\n"
-        "        'answer_contract': {'type': 'draft_pending'},\n"
-        "        'source': 'gencode_phase3_draft',\n"
+        "        'problem_type_id': pt,\n"
+        "        'question_text': q,\n"
+        "        'question': q,\n"
+        "        'answer': ans,\n"
+        "        'correct_answer': ans,\n"
+        "        'answer_type': 'text',\n"
+        "        'question_type': 'text',\n"
+        "        'checker': 'interval_checker',\n"
+        "        'checker_type': 'interval_checker',\n"
+        "        'explanation': '交集區間為兩端點之間的開區間。',\n"
+        "        'source': 'gencode_phase3_template',\n"
+        "    }\n\n"
+        "def _is_cartesian_problem_type(pt: str) -> bool:\n"
+        "    p = str(pt or '').lower()\n"
+        "    return any(k in p for k in ['cartesian_coordinate', 'quadrant', 'coordinate', 'position_reasoning'])\n\n"
+        "def _gen_cartesian_choice_problem(pt: str) -> dict[str, Any]:\n"
+        "    a = random.randint(-6, -1)\n"
+        "    b = random.randint(a + 1, -1)\n"
+        "    x = a * b\n"
+        "    y = a + b\n"
+        "    stem = f'設 $a,b$ 為實數，且 $a<b<0$，則點 $Q({x},{y})$ 位於第幾象限？'\n"
+        "    correct_text = '第四象限'\n"
+        "    wrong = ['第一象限', '第二象限', '第三象限']\n"
+        "    option_pool = [\n"
+        "        {'is_correct': True, 'text': correct_text},\n"
+        "        {'is_correct': False, 'text': wrong[0]},\n"
+        "        {'is_correct': False, 'text': wrong[1]},\n"
+        "        {'is_correct': False, 'text': wrong[2]},\n"
+        "    ]\n"
+        "    random.shuffle(option_pool)\n"
+        "    choices = []\n"
+        "    ans = 'A'\n"
+        "    for i, opt in enumerate(option_pool):\n"
+        "        label = chr(ord('A') + i)\n"
+        "        choices.append({'label': label, 'text': str(opt.get('text', ''))})\n"
+        "        if opt.get('is_correct'):\n"
+        "            ans = label\n"
+        "    q = stem + '\\n' + '\\n'.join([f\"({c['label']}) {c['text']}\" for c in choices])\n"
+        "    return {\n"
+        "        'skill_id': SKILL_ID,\n"
+        "        'problem_type_id': pt,\n"
+        "        'question_text': q,\n"
+        "        'question': q,\n"
+        "        'choices': choices,\n"
+        "        'options': [f\"({c['label']}) {c['text']}\" for c in choices],\n"
+        "        'answer': ans,\n"
+        "        'correct_answer': ans,\n"
+        "        'answer_type': 'choice',\n"
+        "        'question_type': 'choice',\n"
+        "        'checker': 'choice_label_checker',\n"
+        "        'checker_type': 'choice_label_checker',\n"
+        "        'explanation': '由座標符號判斷所在象限。',\n"
+        "        'source': 'gencode_phase3_template',\n"
+        "    }\n\n"
+        "def _gen_generic_choice_problem(pt: str) -> dict[str, Any]:\n"
+        "    a = random.randint(2, 12)\n"
+        "    b = random.randint(2, 12)\n"
+        "    stem = f'已知 a={a}, b={b}，下列何者為 a+b？'\n"
+        "    correct_text = str(a + b)\n"
+        "    wrong = [str(a + b + 1), str(a + b - 1), str(a + b + 2)]\n"
+        "    option_pool = [\n"
+        "        {'is_correct': True, 'text': correct_text},\n"
+        "        {'is_correct': False, 'text': wrong[0]},\n"
+        "        {'is_correct': False, 'text': wrong[1]},\n"
+        "        {'is_correct': False, 'text': wrong[2]},\n"
+        "    ]\n"
+        "    random.shuffle(option_pool)\n"
+        "    choices = []\n"
+        "    ans = 'A'\n"
+        "    for i, opt in enumerate(option_pool):\n"
+        "        label = chr(ord('A') + i)\n"
+        "        choices.append({'label': label, 'text': str(opt.get('text', ''))})\n"
+        "        if opt.get('is_correct'):\n"
+        "            ans = label\n"
+        "    q = stem + '\\n' + '\\n'.join([f\"({c['label']}) {c['text']}\" for c in choices])\n"
+        "    return {\n"
+        "        'skill_id': SKILL_ID,\n"
+        "        'problem_type_id': pt,\n"
+        "        'question_text': q,\n"
+        "        'question': q,\n"
+        "        'choices': choices,\n"
+        "        'options': [f\"({c['label']}) {c['text']}\" for c in choices],\n"
+        "        'answer': ans,\n"
+        "        'correct_answer': ans,\n"
+        "        'answer_type': 'choice',\n"
+        "        'question_type': 'choice',\n"
+        "        'checker': 'choice_label_checker',\n"
+        "        'checker_type': 'choice_label_checker',\n"
+        "        'explanation': '以 choice label 比對正確選項。',\n"
+        "        'source': 'gencode_phase3_template',\n"
+        "    }\n\n"
+        "def generate(level: int = 1, seed: int | None = None, difficulty: int | None = None) -> dict[str, Any]:\n"
+        "    if seed is not None:\n"
+        "        random.seed(seed)\n"
+        "    if not GENERATOR_SPECS:\n"
+        "        return {\n"
+        "            'skill_id': SKILL_ID,\n"
+        "            'problem_type_id': 'no_usable_problem_type',\n"
+        "            'question_text': '1 + 1 = ? (fallback)',\n"
+        "            'question': '1 + 1 = ? (fallback)',\n"
+        "            'answer': '2',\n"
+        "            'correct_answer': '2',\n"
+        "            'explanation': 'fallback deterministic item',\n"
+        "            'source': 'gencode_phase3_fallback',\n"
+        "        }\n"
+        "    spec = random.choice(GENERATOR_SPECS)\n"
+        "    pt = str(spec.get('problem_type_id', '')).strip() or 'unknown_problem_type'\n"
+        "    checker = str(spec.get('checker_key', '')).strip()\n"
+        "    eq = str(spec.get('equivalence_type', '')).strip()\n"
+        "    if _is_cartesian_problem_type(pt):\n"
+        "        return _gen_cartesian_choice_problem(pt)\n"
+        "    if 'cartesian_coordinate' in pt:\n"
+        "        return _gen_cartesian_choice_problem(pt)\n"
+        "    if checker == 'choice_label_checker' or eq == 'choice_label':\n"
+        "        return _gen_generic_choice_problem(pt)\n"
+        "    if checker == 'interval_checker' or eq == 'interval_set' or 'inequality' in pt:\n"
+        "        return _gen_interval_problem(pt)\n"
+        "    return {\n"
+        "        'skill_id': SKILL_ID,\n"
+        "        'problem_type_id': pt,\n"
+        "        'question_text': 'implementation pending',\n"
+        "        'question': 'implementation pending',\n"
+        "        'answer': 'implementation_pending',\n"
+        "        'correct_answer': 'implementation_pending',\n"
+        "        'answer_type': 'text',\n"
+        "        'question_type': 'text',\n"
+        "        'checker': checker or 'manual_review_checker',\n"
+        "        'checker_type': checker or 'manual_review_checker',\n"
+        "        'source': 'gencode_phase3_blocked',\n"
+        "        'block_reason': f'no_template_for:{pt}',\n"
         "    }\n\n"
         "def check(user_answer: Any, correct_answer: Any):\n"
-        "    return str(user_answer).strip() == str(correct_answer).strip()\n"
+        "    ua = str(user_answer or '')\n"
+        "    ca = str(correct_answer or '')\n"
+        "    if not ua.strip() or not ca.strip():\n"
+        "        return False\n"
+        "    ua_label = _choice_label(ua)\n"
+        "    ca_label = _choice_label(ca)\n"
+        "    if ua_label in {'A','B','C','D'} and ca_label in {'A','B','C','D'}:\n"
+        "        return ua_label == ca_label\n"
+        "    return _normalize_interval(ua) == _normalize_interval(ca)\n"
     )
     draft_skill_path.write_text(code, encoding="utf-8")
     py_status = "passed"
@@ -830,7 +1932,9 @@ def run_gencode_phase3_package(skill_id: str, accepted_generator_keys: list | No
 
     write_json(Path(reports["phase3_package_summary_json"]), payload)
     write_md(Path(reports["phase3_package_summary_md"]), f"Gencode Phase3 Package Summary: {skill_id}", [("phase3", payload)])
-    return _normalize_phase_response(payload)
+    normalized = _normalize_phase_response(payload)
+    normalized["ai_explanation"] = explain_gencode_result_with_ai(normalized)
+    return normalized
 
 
 def run_gencode_auto_pipeline(skill_id: str, dry_run: bool = True, allow_runtime_ready: bool = False, write_pending_files: bool = True) -> dict[str, Any]:

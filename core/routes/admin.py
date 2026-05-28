@@ -38,6 +38,7 @@ from core.gencode.pipeline_orchestrator import (
     run_gencode_phase3_package,
     run_gencode_publish_check,
     publish_gencode_draft_skill,
+    register_classifier_rulepack_from_draft,
 )
 from core.services.prompt_sync_service import (
     PromptSyncError,
@@ -2086,6 +2087,62 @@ def admin_publish_gencode_draft(skill_id):
         return jsonify(result), 200
     except Exception as e:
         return jsonify({"ok": False, "phase": "publish", "skill_id": skill_id, "error": str(e)}), 500
+
+
+@core_bp.route('/admin/gencode/classifier/register', methods=['POST'])
+@login_required
+def admin_register_gencode_classifier_rulepack():
+    if not (current_user.is_admin or current_user.role == 'teacher'):
+        return jsonify({"success": False, "register_status": "failed", "error": "forbidden"}), 403
+    payload = request.get_json(silent=True) or {}
+    skill_id = str(payload.get("skill_id", "")).strip()
+    confirm = bool(payload.get("confirm", False))
+    if not skill_id:
+        return jsonify({
+            "success": False,
+            "register_status": "failed",
+            "skill_id": "",
+            "summary_message": "缺少 skill_id。",
+            "warnings": [],
+            "blockers": ["missing_skill_id"],
+            "validation_errors": ["missing_skill_id"],
+        }), 400
+    try:
+        result = register_classifier_rulepack_from_draft(skill_id=skill_id, confirm=confirm)
+        ok = bool(result.get("ok", False))
+        status = str(result.get("status", "failed"))
+        success = ok and status in {"preview", "registered"}
+        summary = ""
+        if status == "preview" and success:
+            summary = "預覽完成：可以註冊 classifier rule pack。尚未覆寫正式 YAML。"
+        elif status == "registered" and success:
+            summary = "註冊成功：classifier rule pack 已更新。下次 Phase 1 將使用 rule_pack。"
+        else:
+            summary = str(result.get("error", "")).strip() or "註冊失敗。"
+        return jsonify({
+            "success": success,
+            "register_status": "registered" if status == "registered" and success else ("preview" if status == "preview" and success else "failed"),
+            "skill_id": skill_id,
+            "draft_path": str(result.get("draft_path", "")).strip(),
+            "formal_yaml_path": str(result.get("formal_rulepack_path", "")).strip(),
+            "backup_path": str(result.get("backup_path", "")).strip(),
+            "summary_message": summary,
+            "warnings": [],
+            "blockers": [] if success else [str(result.get("error", "register_failed")).strip() or "register_failed"],
+            "validation_errors": [] if success else [str(result.get("error", "register_failed")).strip() or "register_failed"],
+            "classifier_source_after_register": "rule_pack" if (success and status == "registered") else None,
+        }), (200 if success else 400)
+    except Exception as e:
+        return jsonify({
+            "success": False,
+            "register_status": "failed",
+            "skill_id": skill_id,
+            "summary_message": "註冊失敗。",
+            "warnings": [],
+            "blockers": [str(e)],
+            "validation_errors": [str(e)],
+            "classifier_source_after_register": None,
+        }), 500
 
 @core_bp.route('/api/promote_question', methods=['POST'])
 @login_required

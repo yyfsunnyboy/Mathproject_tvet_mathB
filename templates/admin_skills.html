@@ -623,9 +623,9 @@
                             {% if gc.status == 'generated' %}
                             <div class="small text-muted" title="{{ gc.formal_abs_path }}">{{ gc.formal_path }}</div>
                             {% elif gc.status == 'draft' %}
-                            <div class="small text-muted" title="{{ gc.draft_abs_path }}">{{ gc.draft_path }}</div>
+                            <div class="small text-muted" title="{{ gc.draft_abs_path }}">已有 draft，尚未發布正式技能檔</div>
                             {% else %}
-                            <div class="small text-muted">?? skill.py</div>
+                            <div class="small text-muted">尚未產生 skill.py</div>
                             {% endif %}
                         </td>
                         <td>
@@ -846,6 +846,7 @@
             </div>
             <div class="card-body">
                 <div><b>skill_id:</b> <code id="gencodeSkillId"></code></div>
+                <div id="gencodeAiExplanation" class="gencode-result-box" style="margin-top:8px;">AI 解讀摘要：尚未產生</div>
                 <div class="gencode-phase-card">
                     <h3>Phase 1:來源盤點與題型分類 <span id="phase1StatusBadge" class="phase-status-badge">尚未執行</span></h3>
                     <button id="gencodePhase1Btn" type="button" class="btn btn-secondary" onclick="runGencodePhase1()">執行 Phase 1</button>
@@ -900,12 +901,70 @@
             return `<div><b>requires_human_action:</b> true<ul>${items.map((x) => `<li>[${_escapeHtml(x.type)}] ${_escapeHtml(x.message)} (${_escapeHtml(x.suggested_action)})</li>`).join('')}</ul></div>`;
         }
 
+        function _renderClassifierRegisterPanel(data) {
+            const registerable = !!data?.classifier_rulepack_registerable;
+            const draftPath = String(data?.classifier_yaml_draft_path || '').trim();
+            const hasDraft = !!draftPath;
+            if (!hasDraft && !registerable) {
+                return '<div class="gencode-phase-card"><h4>Classifier Rule Pack 註冊</h4><div>尚無可註冊 classifier draft。</div></div>';
+            }
+            const disabledConfirm = registerable ? '' : 'disabled aria-disabled="true"';
+            const reason = registerable ? '' : '<div style="margin-top:6px;color:#92400e;">目前尚不可註冊：classifier_rulepack_registerable=false</div>';
+            return `
+                <div class="gencode-phase-card" style="margin-top:10px;">
+                    <h4>Classifier Rule Pack 註冊</h4>
+                    <div><b>draft path:</b> <code>${_escapeHtml(draftPath || '(none)')}</code></div>
+                    <div><b>formal YAML:</b> <code>configs/gencode/classifiers/phase1_rule_packs.yaml</code></div>
+                    <div><b>classifier_source:</b> ${_escapeHtml(data?.classifier_source || '')}</div>
+                    <div style="margin-top:6px;">註冊後，下次 Phase 1 將優先使用 rule_pack，不再重新 AI bootstrap。</div>
+                    ${reason}
+                    <div style="margin-top:8px; display:flex; gap:8px;">
+                        <button id="gencodeClassifierPreviewBtn" type="button" class="btn btn-secondary" onclick="runClassifierRegister(false)" ${hasDraft ? '' : 'disabled aria-disabled="true"'}>預覽註冊 classifier</button>
+                        <button id="gencodeClassifierConfirmBtn" type="button" class="btn btn-secondary" onclick="runClassifierRegister(true)" ${hasDraft ? disabledConfirm : 'disabled aria-disabled="true"'}>確認註冊 classifier</button>
+                    </div>
+                    <div id="gencodeClassifierRegisterError" style="margin-top:8px; color:#b91c1c;"></div>
+                    <div id="gencodeClassifierRegisterResult" class="gencode-result-box" style="margin-top:8px;">尚未執行 classifier 註冊</div>
+                </div>
+            `;
+        }
+
+        function _renderAiExplanation(ai) {
+            if (!ai || typeof ai !== 'object') {
+                return '<div><b>AI 解讀摘要</b><div>AI 解讀暫時不可用，請查看下方詳細 log。</div></div>';
+            }
+            const sev = String(ai.severity || 'warning').toLowerCase();
+            const badgeColor = sev === 'success' ? '#166534' : (sev === 'failed' ? '#b91c1c' : (sev === 'blocked' ? '#b45309' : '#1d4ed8'));
+            const items = Array.isArray(ai.items_to_check) ? ai.items_to_check : [];
+            const happened = Array.isArray(ai.what_happened) ? ai.what_happened : [];
+            const title = _escapeHtml(ai.short_title || 'AI 解讀摘要');
+            const msg = _escapeHtml(ai.user_friendly_message || ai.summary || 'AI 解讀暫時不可用，請查看下方詳細 log。');
+            const next = _escapeHtml(ai.next_action || '');
+            const itemHtml = items.length ? `<ul>${items.map((x) => `<li>${_escapeHtml(x)}</li>`).join('')}</ul>` : '<div>(none)</div>';
+            const happenedHtml = happened.length ? `<ul>${happened.map((x) => `<li>${_escapeHtml(x)}</li>`).join('')}</ul>` : '';
+            return `
+                <div><b>AI 解讀摘要</b> <span style="display:inline-block;padding:2px 8px;border-radius:999px;background:#eef2ff;color:${badgeColor};font-size:12px;">${_escapeHtml(sev)}</span></div>
+                <div style="margin-top:6px;"><b>${title}</b></div>
+                <div style="margin-top:6px;">${msg}</div>
+                ${happenedHtml}
+                <div style="margin-top:6px;"><b>下一步</b>：${next || '(none)'}</div>
+                <div style="margin-top:6px;"><b>建議檢查</b>${itemHtml}</div>
+            `;
+        }
+
+        function _updateAiExplanation(data) {
+            const el = document.getElementById('gencodeAiExplanation');
+            if (!el) return;
+            const ai = data && data.ai_explanation ? data.ai_explanation : null;
+            el.innerHTML = _renderAiExplanation(ai);
+        }
+
         function openGencodeWizard(skillId) {
             currentGencodeSkillId = skillId;
             document.getElementById('gencodeSkillId').textContent = skillId;
             document.getElementById('gencodePhase1Result').textContent = '尚未執行 Phase 1';
             document.getElementById('gencodePhase2Result').textContent = '尚未執行 Phase 2';
             document.getElementById('gencodePhase3Result').textContent = '尚未執行 Phase 3';
+            document.getElementById('gencodeAiExplanation').textContent = 'AI 解讀摘要：尚未產生';
             _setPhaseStatus('phase1', '尚未執行');
             _setPhaseStatus('phase2', '尚未執行');
             _setPhaseStatus('phase3', '尚未執行');
@@ -929,6 +988,7 @@
                 const data = await resp.json();
                 if (!resp.ok || !data.ok) throw new Error(data.error || data.summary_message || `HTTP ${resp.status}`);
                 _setPhaseStatus('phase1', data.phase_status || '完成');
+                _updateAiExplanation(data);
                 const candidates = Array.isArray(data.candidate_problem_types) ? data.candidate_problem_types : [];
                 const rows = candidates.map((c) => `<tr><td>${_escapeHtml(c.problem_type_id || c.proposed_problem_type_id || '')}</td><td>${_escapeHtml(c.matched_example_count ?? 0)}</td><td>${_escapeHtml(c.checker_key_proposal || '')}</td><td>${_escapeHtml(c.equivalence_type_proposal || '')}</td></tr>`).join('');
                 box.innerHTML = `
@@ -937,6 +997,7 @@
                     <table><thead><tr><th>problem_type_id</th><th>matched</th><th>checker</th><th>equivalence</th></tr></thead><tbody>${rows || '<tr><td colspan="4">(none)</td></tr>'}</tbody></table>
                     ${_renderHumanActions(data)}
                     ${_renderReportsList(data.reports)}
+                    ${_renderClassifierRegisterPanel(data)}
                 `;
                 document.getElementById('gencodePhase2Btn').disabled = !data.can_continue;
             } catch (e) {
@@ -944,6 +1005,72 @@
                 box.innerHTML = `<div style="color:#b91c1c;"><b>錯誤:</b> ${_escapeHtml(e.message || String(e))}</div>`;
                 Swal.fire('Phase 1 錯誤', String(e.message || e), 'error');
             } finally { btn.disabled = false; }
+        }
+
+        async function runClassifierRegister(confirmRegister) {
+            if (!currentGencodeSkillId) return;
+            if (confirmRegister) {
+                const decision = await Swal.fire({
+                    title: '確認註冊 classifier',
+                    text: '確認要將此 classifier draft 註冊為正式 rule pack？系統會先備份正式 YAML。',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: '確認註冊',
+                    cancelButtonText: '取消'
+                });
+                if (!decision.isConfirmed) return;
+            }
+            const previewBtn = document.getElementById('gencodeClassifierPreviewBtn');
+            const confirmBtn = document.getElementById('gencodeClassifierConfirmBtn');
+            const errEl = document.getElementById('gencodeClassifierRegisterError');
+            const resultEl = document.getElementById('gencodeClassifierRegisterResult');
+            if (previewBtn) previewBtn.disabled = true;
+            if (confirmBtn) confirmBtn.disabled = true;
+            if (errEl) errEl.textContent = '';
+            if (resultEl) resultEl.textContent = '執行中...';
+            try {
+                const resp = await fetch('/admin/gencode/classifier/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ skill_id: currentGencodeSkillId, confirm: !!confirmRegister })
+                });
+                const data = await resp.json();
+                const success = !!data?.success;
+                const status = String(data?.register_status || '');
+                const blockers = Array.isArray(data?.blockers) ? data.blockers : [];
+                const validation = Array.isArray(data?.validation_errors) ? data.validation_errors : [];
+                if (resultEl) {
+                    resultEl.innerHTML = `
+                        <table><tbody>
+                            <tr><th>register_status</th><td>${_escapeHtml(status)}</td></tr>
+                            <tr><th>skill_id</th><td>${_escapeHtml(data?.skill_id || '')}</td></tr>
+                            <tr><th>draft_path</th><td><code>${_escapeHtml(data?.draft_path || '')}</code></td></tr>
+                            <tr><th>formal_yaml_path</th><td><code>${_escapeHtml(data?.formal_yaml_path || '')}</code></td></tr>
+                            <tr><th>backup_path</th><td><code>${_escapeHtml(data?.backup_path || '')}</code></td></tr>
+                            <tr><th>summary_message</th><td>${_escapeHtml(data?.summary_message || '')}</td></tr>
+                            <tr><th>blockers</th><td>${_escapeHtml(blockers.join(', ') || '(none)')}</td></tr>
+                            <tr><th>validation_errors</th><td>${_escapeHtml(validation.join(', ') || '(none)')}</td></tr>
+                        </tbody></table>
+                    `;
+                }
+                if (success && status === 'preview') {
+                    Swal.fire('預覽完成', '預覽完成：可以註冊 classifier rule pack。尚未覆寫正式 YAML。', 'info');
+                } else if (success && status === 'registered') {
+                    Swal.fire('註冊成功', '註冊成功：classifier rule pack 已更新。下次 Phase 1 將使用 rule_pack。', 'success');
+                } else {
+                    const msg = `註冊失敗：${data?.summary_message || blockers.join(', ') || validation.join(', ') || '未知錯誤'}`;
+                    if (errEl) errEl.textContent = msg;
+                    Swal.fire('註冊失敗', msg, 'error');
+                }
+            } catch (e) {
+                const msg = `註冊失敗：網路或伺服器錯誤。${e.message || String(e)}`;
+                if (errEl) errEl.textContent = msg;
+                if (resultEl) resultEl.innerHTML = `<div style="color:#b91c1c;"><b>錯誤:</b> ${_escapeHtml(msg)}</div>`;
+                Swal.fire('註冊失敗', msg, 'error');
+            } finally {
+                if (previewBtn) previewBtn.disabled = false;
+                if (confirmBtn) confirmBtn.disabled = false;
+            }
         }
 
         async function runGencodePhase2() {
@@ -960,6 +1087,7 @@
                 const data = await resp.json();
                 if (!resp.ok || !data.ok) throw new Error(data.error || data.summary_message || `HTTP ${resp.status}`);
                 _setPhaseStatus('phase2', data.phase_status || '完成');
+                _updateAiExplanation(data);
                 const results = Array.isArray(data.generator_results) ? data.generator_results : [];
                 const rows = results.map((r) => `<tr><td>${_escapeHtml(r.problem_type_id || '')}</td><td>${_escapeHtml(r.generator_key || '')}</td><td>${_escapeHtml(r.generator_status || '')}</td><td>${_escapeHtml(r.checker_smoke_status || '')}</td><td>${_escapeHtml(r.dynamic_sampling_status || '')}</td><td>${_escapeHtml((r.warnings || []).join(','))}</td><td>${_escapeHtml((r.blockers || []).join(','))}</td></tr>`).join('');
                 box.innerHTML = `
@@ -990,6 +1118,7 @@
                 const data = await resp.json();
                 if (!resp.ok || !data.ok) throw new Error(data.error || data.summary_message || `HTTP ${resp.status}`);
                 _setPhaseStatus('phase3', data.phase_status || '完成');
+                _updateAiExplanation(data);
                 const pc = data.publish_check || {};
                 const draftPassMsg = pc.draft_check_passed ? '<div class="gencode-summary">Draft 已通過檢查，可進入發布流程。</div>' : '';
                 const runtimeBlockMsg = pc.can_mark_runtime_ready === false ? '<div class="gencode-summary">目前尚未標記 runtime-ready（不影響本次 Phase 3 draft 產出）。</div>' : '';

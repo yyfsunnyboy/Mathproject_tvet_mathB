@@ -283,6 +283,101 @@
       "title_or_source_label": "textbook_example"
     }
   ],
+  "source_classifications": [
+    {
+      "example_id": 4400,
+      "detected_problem_type_id": "absolute_value_inequality_zero_center_basic",
+      "answer_shape": "expression",
+      "classification_confidence": "medium",
+      "classification_reason": "classifier_or_proposal_mapping",
+      "risk_flags": [],
+      "title_or_source_label": "textbook_example"
+    },
+    {
+      "example_id": 4402,
+      "detected_problem_type_id": "absolute_value_inequality_shifted_basic",
+      "answer_shape": "expression",
+      "classification_confidence": "medium",
+      "classification_reason": "classifier_or_proposal_mapping",
+      "risk_flags": [],
+      "title_or_source_label": "textbook_example"
+    },
+    {
+      "example_id": 4403,
+      "detected_problem_type_id": "absolute_value_inequality_shifted_basic",
+      "answer_shape": "expression",
+      "classification_confidence": "medium",
+      "classification_reason": "classifier_or_proposal_mapping",
+      "risk_flags": [],
+      "title_or_source_label": "textbook_example"
+    },
+    {
+      "example_id": 4404,
+      "detected_problem_type_id": "absolute_value_inequality_linear_expression_basic",
+      "answer_shape": "expression",
+      "classification_confidence": "medium",
+      "classification_reason": "classifier_or_proposal_mapping",
+      "risk_flags": [],
+      "title_or_source_label": "textbook_example"
+    },
+    {
+      "example_id": 4405,
+      "detected_problem_type_id": "absolute_value_inequality_linear_expression_basic",
+      "answer_shape": "expression",
+      "classification_confidence": "medium",
+      "classification_reason": "classifier_or_proposal_mapping",
+      "risk_flags": [],
+      "title_or_source_label": "textbook_example"
+    },
+    {
+      "example_id": 4406,
+      "detected_problem_type_id": "absolute_value_inequality_linear_expression_basic",
+      "answer_shape": "expression",
+      "classification_confidence": "medium",
+      "classification_reason": "classifier_or_proposal_mapping",
+      "risk_flags": [],
+      "title_or_source_label": "textbook_example"
+    },
+    {
+      "example_id": 4407,
+      "detected_problem_type_id": "absolute_value_inequality_linear_expression_basic",
+      "answer_shape": "expression",
+      "classification_confidence": "medium",
+      "classification_reason": "classifier_or_proposal_mapping",
+      "risk_flags": [],
+      "title_or_source_label": "textbook_example"
+    },
+    {
+      "example_id": 4409,
+      "detected_problem_type_id": "absolute_value_inequality_malformed_source_review",
+      "answer_shape": "manual_review_or_free_response",
+      "classification_confidence": "medium",
+      "classification_reason": "classifier_or_proposal_mapping",
+      "risk_flags": [
+        "source_text_malformed",
+        "needs_import_review"
+      ],
+      "title_or_source_label": "textbook_example"
+    },
+    {
+      "example_id": 4413,
+      "detected_problem_type_id": "absolute_value_inequality_zero_center_basic",
+      "answer_shape": "expression",
+      "classification_confidence": "medium",
+      "classification_reason": "classifier_or_proposal_mapping",
+      "risk_flags": [],
+      "title_or_source_label": "textbook_example"
+    },
+    {
+      "example_id": 4499,
+      "detected_problem_type_id": "absolute_value_inequality_integer_solution_count_choice",
+      "answer_shape": "choice_label",
+      "classification_confidence": "medium",
+      "classification_reason": "classifier_or_proposal_mapping",
+      "risk_flags": [],
+      "title_or_source_label": "textbook_example"
+    }
+  ],
   "unclassified_examples": [],
   "risk_examples": [
     4409
@@ -320,7 +415,7 @@
     "phase1_summary_md": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_AbsoluteValueInequality_phase1_summary.md"
   },
   "next_action": "prepare_split_problem_types_then_promote_candidates",
-  "timestamp": "2026-05-28T01:40:27.971801+00:00",
+  "timestamp": "2026-05-28T03:40:20.674445+00:00",
   "dry_run": true,
   "auto_review_summary": {
     "skill_id": "vh_數學B1_AbsoluteValueInequality",
@@ -854,6 +949,11 @@
       ]
     }
   },
+  "classifier_source": "rule_pack",
+  "ai_bootstrap_used": false,
+  "ai_bootstrap_status": "not_used",
+  "ai_bootstrap_confidence_summary": {},
+  "inspect_report_note": "",
   "human_review_items": [
     {
       "source_index": 7,

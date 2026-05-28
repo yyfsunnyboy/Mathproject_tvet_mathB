@@ -2002,13 +2002,21 @@
       if (choiceHasOwnLabel(choiceText)) return String(choiceText || "");
       return `(${choiceLabelAt(index)}) ${String(choiceText || "")}`;
     }
+    function normalizeChoiceItem(choice, index) {
+      if (choice && typeof choice === "object" && !Array.isArray(choice)) {
+        const label = String(choice.label || choiceLabelAt(index)).trim().toUpperCase() || choiceLabelAt(index);
+        const text = String(choice.text || choice.content || choice.value || "").trim();
+        return { label, text: text || String(choice || "").trim() };
+      }
+      return { label: choiceLabelAt(index), text: String(choice || "").trim() };
+    }
     function clearChoiceSelection() {
       if (!choiceList) return;
       choiceList.querySelectorAll(".choice-item.selected").forEach((el) => el.classList.remove("selected"));
     }
     async function renderChoiceOptions(choices) {
       if (!choiceList) return;
-      const items = Array.isArray(choices) ? choices.filter((x) => String(x || "").trim() !== "") : [];
+      const items = Array.isArray(choices) ? choices.map((x, i) => normalizeChoiceItem(x, i)).filter((x) => String(x.text || "").trim() !== "") : [];
       if (!items.length) {
         choiceList.classList.remove("show");
         choiceList.innerHTML = "";
@@ -2017,17 +2025,17 @@
       choiceList.classList.add("show");
       choiceList.innerHTML = items
         .map((choice, idx) => {
-          const safeChoice = escapeHtml(String(choice || ""));
-          const rendered = escapeHtml(renderChoiceText(choice, idx));
-          return `<button type="button" class="choice-item" data-choice-index="${idx}" data-choice-text="${safeChoice}"><span class="choice-label">(${choiceLabelAt(idx)})</span><span class="choice-content">${rendered.replace(/^(\([A-Za-z]\)\s*)/, "")}</span></button>`;
+          const safeChoice = escapeHtml(String(choice.text || ""));
+          const label = escapeHtml(String(choice.label || choiceLabelAt(idx)));
+          const rendered = escapeHtml(renderChoiceText(`(${choice.label}) ${choice.text}`, idx));
+          return `<button type="button" class="choice-item" data-choice-index="${idx}" data-choice-label="${label}" data-choice-text="${safeChoice}"><span class="choice-label">(${label})</span><span class="choice-content">${rendered.replace(/^(\([A-Za-z]\)\s*)/, "")}</span></button>`;
         })
         .join("");
       choiceList.querySelectorAll(".choice-item").forEach((btn) => {
         btn.addEventListener("click", () => {
           clearChoiceSelection();
           btn.classList.add("selected");
-          const idx = Number(btn.dataset.choiceIndex || 0);
-          answerInput.value = choiceLabelAt(idx);
+          answerInput.value = String(btn.dataset.choiceLabel || "").trim().toUpperCase() || "";
           answerInput.focus();
         });
       });

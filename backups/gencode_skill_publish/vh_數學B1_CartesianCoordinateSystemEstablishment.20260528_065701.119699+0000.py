@@ -4,10 +4,10 @@ from typing import Any
 import random
 import re
 
-SKILL_ID = 'vh_數學B1_AbsoluteValueInequalityExpansionAndGeometricMeaning'
-GENERATOR_KEYS = ['vh_數學B1_AbsoluteValueInequalityExpansionAndGeometricMeaning:absolute_value_inequality_linear_expression_basic:draft_v1', 'vh_數學B1_AbsoluteValueInequalityExpansionAndGeometricMeaning:absolute_value_inequality_geometric_meaning:draft_v1']
+SKILL_ID = 'vh_數學B1_CartesianCoordinateSystemEstablishment'
+GENERATOR_KEYS = ['vh_數學B1_CartesianCoordinateSystemEstablishment:cartesian_coordinate_quadrant_symbol_reasoning:draft_v1']
 
-GENERATOR_SPECS = [{'problem_type_id': 'absolute_value_inequality_linear_expression_basic', 'checker_key': 'interval_checker', 'equivalence_type': 'interval_set'}, {'problem_type_id': 'absolute_value_inequality_geometric_meaning', 'checker_key': 'choice_label_checker', 'equivalence_type': 'choice_label'}]
+GENERATOR_SPECS = [{'problem_type_id': 'cartesian_coordinate_quadrant_symbol_reasoning', 'checker_key': 'choice_label_checker', 'equivalence_type': 'choice_label'}]
 
 def _normalize_interval(s: Any) -> str:
     t = str(s or '').strip().lower().replace(' ', '')
@@ -21,21 +21,8 @@ def _choice_label(s: Any) -> str:
     return t[:1] if t else ''
 
 def _gen_interval_problem(pt: str) -> dict[str, Any]:
-    a = random.randint(-5, 5)
-    r = random.randint(1, 6)
-    op = random.choice(['<', '<=', '>', '>='])
-    left = a - r
-    right = a + r
-    if op == '<':
-        ans = f'({left}, {right})'
-    elif op == '<=':
-        ans = f'[{left}, {right}]'
-    elif op == '>':
-        ans = f'(-∞, {left}) ∪ ({right}, ∞)'
-    else:
-        ans = f'(-∞, {left}] ∪ [{right}, ∞)'
-    expr = f'|x - ({a})|' if a < 0 else f'|x - {a}|'
-    q = f'解不等式 ${expr} {op} {r}$。'
+    q = '設點 A 的座標為 (4, -3)，則 A 位於第幾象限？'
+    ans = '第四象限'
     return {
         'skill_id': SKILL_ID,
         'problem_type_id': pt,
@@ -43,34 +30,32 @@ def _gen_interval_problem(pt: str) -> dict[str, Any]:
         'question': q,
         'answer': ans,
         'correct_answer': ans,
-        'answer_type': 'text',
-        'question_type': 'text',
-        'checker': 'interval_checker',
-        'checker_type': 'interval_checker',
-        'explanation': '依絕對值不等式轉為區間表示。',
+        'answer_type': 'choice',
+        'question_type': 'choice',
+        'checker': 'choice_label_checker',
+        'checker_type': 'choice_label_checker',
+        'choices': [
+            {'label': 'A', 'text': '第一象限'},
+            {'label': 'B', 'text': '第二象限'},
+            {'label': 'C', 'text': '第三象限'},
+            {'label': 'D', 'text': '第四象限'},
+        ],
+        'explanation': '依座標符號判斷所在象限。',
         'source': 'gencode_phase3_template',
     }
 
+def _is_cartesian_problem_type(pt: str) -> bool:
+    p = str(pt or '').lower()
+    return any(k in p for k in ['cartesian_coordinate', 'quadrant', 'coordinate', 'position_reasoning'])
+
 def _gen_choice_problem(pt: str) -> dict[str, Any]:
-    a = random.randint(-5, 5)
-    r = random.randint(1, 6)
-    op = random.choice(['<', '>'])
-    if op == '<':
-        stem = f'不等式 $|x-{a}|<{r}$ 的幾何意義，下列何者正確？'
-        correct_text = f'x 與 {a} 的距離小於 {r}'
-        wrong = [
-            f'x 與 {a} 的距離大於 {r}',
-            f'x = {a + r}',
-            f'x = {a - r}',
-        ]
-    else:
-        stem = f'不等式 $|x-{a}|>{r}$ 的幾何意義，下列何者正確？'
-        correct_text = f'x 與 {a} 的距離大於 {r}'
-        wrong = [
-            f'x 與 {a} 的距離小於 {r}',
-            f'x = {a + r}',
-            f'x = {a - r}',
-        ]
+    a = random.randint(-6, -1)
+    b = random.randint(a + 1, -1)
+    x = a * b
+    y = a + b
+    stem = f'設 $a,b$ 為實數，且 $a<b<0$，則點 $Q({x},{y})$ 位於第幾象限？'
+    correct_text = '第四象限'
+    wrong = ['第一象限', '第二象限', '第三象限']
     option_pool = [
         {'is_correct': True, 'text': correct_text},
         {'is_correct': False, 'text': wrong[0]},
@@ -99,7 +84,7 @@ def _gen_choice_problem(pt: str) -> dict[str, Any]:
         'question_type': 'choice',
         'checker': 'choice_label_checker',
         'checker_type': 'choice_label_checker',
-        'explanation': '幾何意義為點到 a 的距離與 r 的比較。',
+        'explanation': '由座標符號判斷所在象限。',
         'source': 'gencode_phase3_template',
     }
 
@@ -121,6 +106,8 @@ def generate(level: int = 1, seed: int | None = None, difficulty: int | None = N
     pt = str(spec.get('problem_type_id', '')).strip() or 'unknown_problem_type'
     checker = str(spec.get('checker_key', '')).strip()
     eq = str(spec.get('equivalence_type', '')).strip()
+    if _is_cartesian_problem_type(pt):
+        return _gen_choice_problem(pt)
     if checker == 'choice_label_checker' or eq == 'choice_label' or 'geometric_meaning' in pt:
         return _gen_choice_problem(pt)
     if checker == 'interval_checker' or eq == 'interval_set' or 'inequality' in pt:

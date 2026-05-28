@@ -1253,8 +1253,8 @@
             flex-direction: column;
             gap: 15px;
             align-items: stretch;
-            max-height: clamp(190px, 32vh, 380px);
-            overflow-y: auto;
+            max-height: none;
+            overflow-y: visible;
             overflow-x: hidden;
             padding: 20px;
         }
@@ -1262,6 +1262,9 @@
         #question-text {
             width: 100%;
             max-width: 100%;
+            white-space: normal;
+            line-height: 1.75;
+            overflow: visible;
             overflow-wrap: anywhere;
             word-break: break-word;
         }
@@ -3481,14 +3484,25 @@
             return String(choice || '');
         }
 
+        function extractChoiceLabel(choice, index) {
+            if (choice && typeof choice === 'object') {
+                const label = String(choice.label || '').trim().toUpperCase();
+                if (/^[A-Z]$/.test(label)) return label;
+            }
+            return choiceLabelAt(index);
+        }
+
         function isChoiceQuestionPayload(payload) {
             const choices = getChoiceItems(payload);
             const answerType = String((payload && payload.answer_type) || '').toLowerCase();
+            const checker = String((payload && payload.checker) || '').toLowerCase();
             const checkerType = String((payload && payload.checker_type) || '').toLowerCase();
             const questionType = String((payload && payload.question_type) || '').toLowerCase();
             return (Array.isArray(choices) && choices.length > 0)
                 || answerType === 'choice'
+                || questionType === 'choice'
                 || checkerType.includes('choice')
+                || checker.includes('choice')
                 || questionType === 'multiple_choice';
         }
 
@@ -3522,20 +3536,17 @@
             questionChoices.classList.add('choice-list');
             choices.forEach((choice, idx) => {
                 const rawText = extractChoiceText(choice).trim();
-                const label = choiceLabelAt(idx);
+                const label = extractChoiceLabel(choice, idx);
                 const button = document.createElement('button');
                 button.type = 'button';
                 button.className = 'choice-option';
-                button.innerHTML = renderChoiceText(rawText, idx);
+                button.innerHTML = renderChoiceText(`(${label}) ${rawText}`, idx);
                 button.addEventListener('click', () => {
                     if (answerInput) answerInput.value = label;
                     Array.from(questionChoices.querySelectorAll('.choice-option')).forEach((node) => node.classList.remove('selected'));
                     button.classList.add('selected');
                     button.blur();
                     resetQuestionScroll();
-                    if (!isProcessing && submitBtn && !submitBtn.disabled && typeof submitBtn.onclick === 'function') {
-                        submitBtn.onclick();
-                    }
                 });
                 questionChoices.appendChild(button);
             });
@@ -3576,7 +3587,7 @@
         function renderQuestion(payload) {
             const questionMainText = resolveQuestionText(payload);
             if (questionText) {
-                questionText.innerHTML = questionMainText;
+                questionText.textContent = questionMainText;
             }
             resetQuestionScroll();
             renderChoices(payload);
