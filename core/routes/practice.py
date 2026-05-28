@@ -1322,7 +1322,10 @@ def next_question():
                         ), 422
                     data = chap3_payload
                 else:
-                    data = mod.generate(level=difficulty_level)
+                    gen_seed = request.args.get("gen_seed", type=int)
+                    if gen_seed is None:
+                        gen_seed = random.randint(0, 10_000_000)
+                    data = mod.generate(level=difficulty_level, seed=gen_seed)
                     route_source = "gencode_wrapper" if wrapper_loaded else "legacy"
 
                 # [?詨?靽格迤] 甈????芸??⊥迤 (撠???皞?

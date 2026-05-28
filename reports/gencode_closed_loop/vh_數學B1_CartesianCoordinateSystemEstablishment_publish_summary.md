@@ -8,9 +8,9 @@
   "skill_id": "vh_數學B1_CartesianCoordinateSystemEstablishment",
   "phase": "publish",
   "publish_status": "published",
-  "draft_skill_file_path": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\drafts\\vh_數學B1_CartesianCoordinateSystemEstablishment.py",
-  "formal_skill_file_path": "C:\\Python\\Mathproject_tvet_mathB\\skills\\vh_數學B1_CartesianCoordinateSystemEstablishment.py",
-  "backup_path": "C:\\Python\\Mathproject_tvet_mathB\\backups\\gencode_skill_publish\\vh_數學B1_CartesianCoordinateSystemEstablishment.20260528_065701.119699+0000.py",
+  "draft_skill_file_path": "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\drafts\\vh_數學B1_CartesianCoordinateSystemEstablishment.py",
+  "formal_skill_file_path": "E:\\Python\\Mathproject_tvet_mathB\\skills\\vh_數學B1_CartesianCoordinateSystemEstablishment.py",
+  "backup_path": "E:\\Python\\Mathproject_tvet_mathB\\backups\\gencode_skill_publish\\vh_數學B1_CartesianCoordinateSystemEstablishment.20260528_152553.710889+0000.py",
   "backup_status": "backed_up",
   "py_compile_status": "passed",
   "runtime_smoke_status": "passed",
@@ -22,10 +22,10 @@
   ],
   "summary_message": "Formal skill file published successfully; if runtime-ready gate is not passed, run /practice smoke tests before marking runtime-ready.",
   "reports": {
-    "phase3_package_summary_json": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_CartesianCoordinateSystemEstablishment_phase3_package_summary.json",
-    "publish_summary_json": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_CartesianCoordinateSystemEstablishment_publish_summary.json",
-    "publish_summary_md": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_CartesianCoordinateSystemEstablishment_publish_summary.md"
+    "phase3_package_summary_json": "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_CartesianCoordinateSystemEstablishment_phase3_package_summary.json",
+    "publish_summary_json": "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_CartesianCoordinateSystemEstablishment_publish_summary.json",
+    "publish_summary_md": "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_CartesianCoordinateSystemEstablishment_publish_summary.md"
   },
-  "timestamp": "2026-05-28T06:57:01.133279+00:00"
+  "timestamp": "2026-05-28T15:25:53.718354+00:00"
 }
 ```

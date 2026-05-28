@@ -19,8 +19,12 @@ from core.gencode.classifier_proposal import build_classifier_proposal, detect_a
 from core.gencode.classifiers import get_classifier_for_skill
 from core.gencode.classifiers.base import ClassifierContext
 from core.gencode.classifiers.fallback_classifier import FallbackClassifier
+from core.gencode.phase3_skill_codegen import build_generator_specs_for_phase3, build_phase3_skill_module_code
 from core.gencode.pipeline_policy import evaluate_pipeline_gates
 from core.gencode.pipeline_state import utc_timestamp, write_json, write_md
+from core.gencode.runtime_smoke import run_draft_runtime_smoke
+from core.gencode.problem_type_induction import apply_spec_mode, induce_problem_types_from_examples
+from core.gencode.problem_type_spec import save_induced_problem_type_specs
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 REPORT_DIR = PROJECT_ROOT / "reports" / "gencode_closed_loop"
@@ -630,7 +634,7 @@ def _run_ai_classifier_bootstrap(
         "- do not output only generic unclassified_source_review unless sources are truly unreadable.\n"
         "- when possible, propose semantic problem_type candidates; one primary type is allowed.\n"
         "- problem_type_id must be semantic snake_case; do NOT sanitize the full skill_id into problem_type_id.\n"
-        "- for Cartesian coordinate skills, prefer semantic types such as cartesian_coordinate_point_reading / cartesian_coordinate_quadrant_identification / cartesian_coordinate_axis_origin_concept / cartesian_coordinate_point_plotting / cartesian_coordinate_from_description when supported by source text.\n"
+        "- prefer semantic snake_case problem_type_id derived from source math objects (not skill_id echo).\n"
         "- problem_type_id must be snake_case and skill-related.\n"
         "- checker in: interval_checker, choice_label_checker, text_checker, numeric_checker, ordered_pair_checker, expression_equivalence_checker, manual_review_checker.\n"
         "- equivalence in: interval_set, choice_label, string_equivalence, numeric_equivalence, ordered_pair, expression_equivalence, manual_review_or_ai_judged.\n"
@@ -638,6 +642,9 @@ def _run_ai_classifier_bootstrap(
         "- if deterministic checker is possible, set requires_human_action=false.\n"
         "- every source_index must appear in source_classifications.\n"
         "- confidence is 0..1.\n"
+        "- output must be contract-first: define problem_type_id, answer_contract, semantic_contract before proposing generator code.\n"
+        "- generated payload for deterministic runtime must include metadata.givens, metadata.target, metadata.derivation.\n"
+        "- for single-choice, do not embed options in question_text; keep options only in choices.\n"
     )
     resp = call_ai_with_retry(client, prompt, max_retries=2, retry_delay=2, timeout=120)
     raw_text = str(getattr(resp, "text", "") or "")
@@ -942,7 +949,60 @@ def _build_human_review_items(
 
 
 def _write_phase1_summary_md(path: Path, skill_id: str, payload: dict[str, Any]) -> None:
-    lines = [f"# Gencode Phase1 Summary: {skill_id}", "", "## phase1", "```json", json.dumps(payload, ensure_ascii=False, indent=2), "```", ""]
+    lines = [f"# Gencode Phase1 Summary: {skill_id}", ""]
+    spec_mode = str(payload.get("spec_mode", "")).strip()
+    if spec_mode:
+        lines.extend([f"- spec_mode: `{spec_mode}`", ""])
+    auto = payload.get("auto_review_summary") if isinstance(payload.get("auto_review_summary"), dict) else {}
+    features = auto.get("example_features") if isinstance(auto.get("example_features"), list) else []
+    if features:
+        lines.extend(["## Example features", "", "| example_id | answer_type | target_task | has_choices | stem_embeds_choices | math_objects |", "| --- | --- | --- | --- | --- | --- |"])
+        for f in features:
+            if not isinstance(f, dict):
+                continue
+            lines.append(
+                "| {ex} | {at} | {tt} | {hc} | {se} | {mo} |".format(
+                    ex=f.get("source_example_id", ""),
+                    at=f.get("answer_type", ""),
+                    tt=f.get("target_task", ""),
+                    hc=f.get("has_choices", ""),
+                    se=f.get("stem_embeds_choices", ""),
+                    mo=", ".join(f.get("math_objects", []) or []),
+                )
+            )
+        lines.append("")
+    clusters = auto.get("induction_clusters") if isinstance(auto.get("induction_clusters"), list) else []
+    if clusters:
+        lines.extend(["## Induction clusters", ""])
+        for i, c in enumerate(clusters, 1):
+            if not isinstance(c, dict):
+                continue
+            lines.append(
+                f"### Cluster {i}\n- answer_type: `{c.get('answer_type', '')}`\n"
+                f"- source_example_ids: {c.get('source_example_ids', [])}\n"
+                f"- grouping_reason: {c.get('grouping_reason', '')}\n"
+                f"- feature_signature: `{c.get('feature_signature', [])}`\n"
+            )
+        lines.append("")
+    cands = payload.get("candidate_problem_types") if isinstance(payload.get("candidate_problem_types"), list) else []
+    if cands:
+        lines.extend(["## Candidate problem types", "", "| problem_type_id | display_name | answer_type | source_examples | grouping_reason |", "| --- | --- | --- | --- | --- |"])
+        for c in cands:
+            if not isinstance(c, dict):
+                continue
+            draft = c.get("problem_type_spec_draft") if isinstance(c.get("problem_type_spec_draft"), dict) else {}
+            ac = draft.get("answer_contract") if isinstance(draft.get("answer_contract"), dict) else {}
+            lines.append(
+                "| {pt} | {dn} | {at} | {ex} | {gr} |".format(
+                    pt=c.get("problem_type_id", ""),
+                    dn=c.get("display_name", ""),
+                    at=ac.get("answer_type", ""),
+                    ex=c.get("matched_example_ids", []),
+                    gr=c.get("grouping_reason", ""),
+                )
+            )
+        lines.append("")
+    lines.extend(["## phase1", "```json", json.dumps(payload, ensure_ascii=False, indent=2), "```", ""])
     items = payload.get("human_review_items") if isinstance(payload.get("human_review_items"), list) else []
     if items:
         lines.extend(
@@ -1262,7 +1322,7 @@ def _normalize_phase_response(payload: dict[str, Any]) -> dict[str, Any]:
     return payload
 
 
-def run_gencode_phase1(skill_id: str, dry_run: bool = True) -> dict[str, Any]:
+def run_gencode_phase1(skill_id: str, dry_run: bool = True, spec_mode: str = "induce_from_sources") -> dict[str, Any]:
     REPORT_DIR.mkdir(parents=True, exist_ok=True)
     examples = _load_examples(skill_id)
     reports = {
@@ -1367,7 +1427,22 @@ def run_gencode_phase1(skill_id: str, dry_run: bool = True) -> dict[str, Any]:
         unknown_ratio = sum(1 for e in entries if str(e.get("problem_type_id", "")).strip() in {"", "unknown"}) / max(len(entries), 1)
         if unknown_ratio >= 0.2:
             proposal = build_classifier_proposal(skill_id, entries)
-    auto_review = _build_auto_review(skill_id, entries, proposal)
+    auto_review_legacy = _build_auto_review(skill_id, entries, proposal)
+    examples_for_induction = []
+    for ex in examples:
+        row = dict(ex)
+        if "example_id" not in row and row.get("id") is not None:
+            row["example_id"] = row["id"]
+        examples_for_induction.append(row)
+    induced = induce_problem_types_from_examples(skill_id, examples_for_induction)
+    auto_review = apply_spec_mode(skill_id, induced, auto_review_legacy, entries, spec_mode)
+    if str(spec_mode or "").strip() == "induce_from_sources":
+        induced_specs = auto_review.get("induced_problem_type_specs", [])
+        if isinstance(induced_specs, list) and induced_specs:
+            save_induced_problem_type_specs(skill_id, induced_specs)
+            classifier_source = f"{classifier_source}+phase1_induction"
+    elif auto_review.get("spec_defined_problem_type_ids"):
+        classifier_source = f"{classifier_source}+problem_type_specs"
     per_example = auto_review.get("per_example_classification", [])
     unclassified = [x.get("example_id") for x in per_example if str(x.get("detected_problem_type_id", "")).strip() in {"", "unknown"}]
     risk_examples = [x.get("example_id") for x in per_example if x.get("risk_flags")]
@@ -1405,6 +1480,11 @@ def run_gencode_phase1(skill_id: str, dry_run: bool = True) -> dict[str, Any]:
         "ai_bootstrap_provider": str(meta.get("ai_bootstrap_provider", "") if isinstance(meta, dict) else ""),
         "ai_bootstrap_config_source": str(meta.get("ai_bootstrap_config_source", "") if isinstance(meta, dict) else ""),
         "default_problem_type_used": bool(meta.get("default_problem_type_used", False) if isinstance(meta, dict) else False),
+        "problem_type_spec_first": bool(auto_review.get("problem_type_spec_first", False)),
+        "spec_defined_problem_type_ids": auto_review.get("spec_defined_problem_type_ids", []),
+        "spec_mode": str(auto_review.get("spec_mode", spec_mode)).strip(),
+        "induced_problem_type_specs": auto_review.get("induced_problem_type_specs", []),
+        "induction_clusters": auto_review.get("induction_clusters", []),
     }
     payload["human_review_items"] = _build_human_review_items(
         skill_id=skill_id,
@@ -1466,13 +1546,31 @@ def run_gencode_phase2(skill_id: str, accepted_problem_types: list | None = None
         warnings: list[str] = []
         status = "draft_planned"
         matched_count = int(c.get("matched_example_count", 0))
+        spec_source = str(c.get("spec_source", "")).strip()
+        generator_readiness = str(c.get("generator_readiness", "")).strip()
         is_manual_or_malformed = (
             checker_key == "manual_review_checker"
             or eq == "manual_review_or_ai_judged"
             or "malformed_source_review" in pt
             or phase1_requires_human_action
         )
-        if matched_count == 0 or not src_ids:
+        if spec_source in {"problem_type_specs.v1.json", "phase1_induced_draft"}:
+            draft_spec = c.get("problem_type_spec_draft") if isinstance(c.get("problem_type_spec_draft"), dict) else {}
+            if draft_spec:
+                from core.gencode.spec_phase1_merge import slot_generator_readiness
+
+                generator_readiness = slot_generator_readiness(draft_spec)
+            if matched_count == 0:
+                warnings.append("no_matched_source_examples")
+            if generator_readiness == "pending_template":
+                status = "pending_template"
+                blockers.append("slot_generator_not_registered")
+            elif generator_readiness == "generator_not_ready":
+                status = "generator_not_ready"
+                blockers.append("generator_not_ready")
+            elif generator_readiness == "runtime_ready" and status in {"", "draft_planned"}:
+                status = "runtime_ready"
+        elif matched_count == 0 or not src_ids:
             status = "blocked"
             blockers.append("no_source_examples")
         if is_manual_or_malformed:
@@ -1489,13 +1587,13 @@ def run_gencode_phase2(skill_id: str, accepted_problem_types: list | None = None
             checker_smoke_status = "skipped_with_blockers"
             dynamic_sampling_status = "skipped_with_blockers"
         else:
-            # Global rule: matched >= 1 should continue smoke/sampling.
             checker_smoke_status = "passed"
             dynamic_sampling_status = "passed"
-            if "low_source_examples" in warnings:
-                status = "limited_runtime_ready"
-            else:
-                status = "runtime_ready"
+            if status in {"", "draft_planned"}:
+                if "low_source_examples" in warnings or "no_matched_source_examples" in warnings:
+                    status = "limited_runtime_ready"
+                else:
+                    status = "runtime_ready"
         if checker_smoke_status != "passed" or dynamic_sampling_status != "passed":
             if not blockers:
                 status = "validation_failed"
@@ -1548,103 +1646,21 @@ def run_gencode_phase2(skill_id: str, accepted_problem_types: list | None = None
 
 def _run_gencode_publish_check_for_draft(skill_id: str, draft_skill_file_path: str, runtime_ready_gate: dict[str, Any] | None = None, checker_smoke_passed: bool = False, dynamic_sampling_passed: bool = False, equivalence_contract_passed: bool = False) -> dict[str, Any]:
     draft_path = Path(draft_skill_file_path)
-    blockers: list[str] = []
     warnings: list[str] = []
-    interface_check = {
-        "generate_exists": False,
-        "check_exists": False,
-        "generate_returns_dict": False,
-        "generate_has_required_fields": False,
-        "check_callable": False,
-        "check_accepts_two_args": False,
-    }
-
-    if not draft_path.exists():
-        blockers.append("draft_skill_file_missing")
-
-    py_compile_status = "not_run"
-    if draft_path.exists():
-        try:
-            py_compile.compile(str(draft_path), doraise=True)
-            py_compile_status = "passed"
-        except Exception:
-            py_compile_status = "failed"
-            blockers.append("draft_py_compile_failed")
-
-    runtime_smoke_status = "skipped_with_reason"
-    placeholder_patterns = [
-        "[DRAFT]",
-        "generator draft pending implementation",
-        "draft pending implementation",
-        "pending implementation",
-        "placeholder",
-        "TODO",
-        "NotImplemented",
-        "raise NotImplementedError",
-    ]
-    unrelated_abs_keywords = ["絕對值", "不等式", "|x", "absolute_value", "distance less than r", "distance greater than r", "x 與 a 的距離"]
-    if draft_path.exists() and py_compile_status == "passed":
-        try:
-            src = draft_path.read_text(encoding="utf-8")
-            tree = ast.parse(src)
-            fn_names = {node.name: node for node in tree.body if isinstance(node, ast.FunctionDef)}
-            interface_check["generate_exists"] = "generate" in fn_names
-            interface_check["check_exists"] = "check" in fn_names
-            if "check" in fn_names:
-                interface_check["check_accepts_two_args"] = len(fn_names["check"].args.args) >= 2
-            if not interface_check["generate_exists"] or not interface_check["check_exists"]:
-                blockers.append("runtime_interface_missing")
-            else:
-                import importlib.util
-                spec = importlib.util.spec_from_file_location(f"_draft_{skill_id}", str(draft_path))
-                if not spec or not spec.loader:
-                    raise RuntimeError("unable_to_create_import_spec")
-                mod = importlib.util.module_from_spec(spec)
-                spec.loader.exec_module(mod)
-                gen = getattr(mod, "generate", None)
-                chk = getattr(mod, "check", None)
-                interface_check["check_callable"] = callable(chk)
-                if callable(gen):
-                    payload = gen(level=1)
-                    interface_check["generate_returns_dict"] = isinstance(payload, dict)
-                    if isinstance(payload, dict):
-                        required = ["question_text", "answer"]
-                        interface_check["generate_has_required_fields"] = all(k in payload for k in required)
-                        q_text = str(payload.get("question_text") or payload.get("question") or "").strip()
-                        ans_text = str(payload.get("answer") or "").strip()
-                        if not q_text or not ans_text:
-                            blockers.append("runtime_smoke_empty_output")
-                            raise RuntimeError("runtime_smoke_empty_output")
-                        text_blob = str(payload)
-                        if any(p in text_blob for p in placeholder_patterns):
-                            blockers.append("placeholder_output_detected")
-                            raise RuntimeError("placeholder_output_detected")
-                        pt_text = str(payload.get("problem_type_id", "")).lower()
-                        skill_text = str(payload.get("skill_id", "")).lower()
-                        q_text_l = q_text.lower()
-                        if ("cartesian_coordinate" in pt_text or "cartesian" in skill_text) and any(k.lower() in q_text_l for k in unrelated_abs_keywords):
-                            blockers.append("unrelated_generator_template_detected")
-                            raise RuntimeError("unrelated_generator_template_detected")
-                        if callable(chk):
-                            check_ok = chk(payload.get("answer", ""), payload.get("correct_answer", payload.get("answer", "")))
-                            if check_ok is False:
-                                blockers.append("runtime_smoke_check_failed")
-                                raise RuntimeError("runtime_smoke_check_failed")
-                runtime_smoke_status = "passed"
-        except Exception:
-            runtime_smoke_status = "failed"
-            blockers.append("runtime_smoke_failed")
+    runtime_smoke_raw = run_draft_runtime_smoke(skill_id, draft_skill_file_path)
+    runtime_smoke_status = str(runtime_smoke_raw.get("status", "failed"))
+    blockers = list(runtime_smoke_raw.get("blockers", [])) if isinstance(runtime_smoke_raw.get("blockers"), list) else []
+    py_compile_status = str(runtime_smoke_raw.get("py_compile_status", "not_run"))
+    interface_check = runtime_smoke_raw.get("interface_check", {}) if isinstance(runtime_smoke_raw.get("interface_check"), dict) else {}
 
     draft_check_passed = bool(
         draft_path.exists()
         and py_compile_status == "passed"
-        and interface_check["generate_exists"]
-        and interface_check["check_exists"]
-        and runtime_smoke_status in {"passed", "skipped_with_reason"}
-        and "runtime_interface_missing" not in blockers
+        and runtime_smoke_status == "passed"
+        and not blockers
     )
 
-    can_publish_draft = draft_check_passed and not any(b in blockers for b in ["draft_py_compile_failed", "runtime_interface_missing", "runtime_smoke_failed"]) 
+    can_publish_draft = draft_check_passed
     can_publish_formal = can_publish_draft
     formal_publish_blockers: list[str] = []
     if not can_publish_formal:
@@ -1676,6 +1692,7 @@ def _run_gencode_publish_check_for_draft(skill_id: str, draft_skill_file_path: s
         "py_compile_status": py_compile_status,
         "interface_check": interface_check,
         "runtime_smoke_status": runtime_smoke_status,
+        "runtime_smoke_raw": runtime_smoke_raw,
         "summary_message": summary_message,
     }
 
@@ -1689,194 +1706,17 @@ def run_gencode_phase3_package(skill_id: str, accepted_generator_keys: list | No
     generators = [x for x in (phase2.get("generator_results") or []) if isinstance(x, dict)]
     if accepted:
         generators = [x for x in generators if str(x.get("generator_key", "")) in accepted]
-    phase3_allowed_statuses = {"runtime_ready", "limited_runtime_ready", "runtime_ready_with_warning"}
+    phase3_allowed_statuses = {"runtime_ready", "limited_runtime_ready", "runtime_ready_with_warning", "pending_template", "generator_not_ready"}
     usable = [
         x
         for x in generators
-        if (not x.get("blockers"))
-        and str(x.get("generator_status", "")).strip() in phase3_allowed_statuses
+        if str(x.get("generator_status", "")).strip() in phase3_allowed_statuses
         and not bool(x.get("requires_human_action", False))
-        and str(x.get("checker_smoke_status", "")).strip() == "passed"
-        and str(x.get("dynamic_sampling_status", "")).strip() == "passed"
     ]
     phase3_warnings = sorted({w for g in usable for w in (g.get("warnings") or []) if str(w).strip()})
     draft_skill_path = DRAFT_DIR / f"{skill_id}.py"
-    generator_keys = [str(x.get("generator_key", "")) for x in usable]
-    generator_specs = [
-        {
-            "problem_type_id": str(x.get("problem_type_id", "")).strip(),
-            "checker_key": str(x.get("checker_key", "")).strip(),
-            "equivalence_type": str(x.get("equivalence_type", "")).strip(),
-        }
-        for x in usable
-        if str(x.get("problem_type_id", "")).strip()
-    ]
-    code = (
-        "from __future__ import annotations\n\n"
-        "from typing import Any\n"
-        "import random\n"
-        "import re\n\n"
-        f"SKILL_ID = {skill_id!r}\n"
-        f"GENERATOR_KEYS = {generator_keys!r}\n\n"
-        f"GENERATOR_SPECS = {generator_specs!r}\n\n"
-        "def _normalize_interval(s: Any) -> str:\n"
-        "    t = str(s or '').strip().lower().replace(' ', '')\n"
-        "    t = t.replace('∞', 'inf').replace('infty', 'inf').replace('infinity', 'inf')\n"
-        "    t = t.replace('-oo', '-inf').replace('+oo', 'inf').replace('oo', 'inf')\n"
-        "    t = t.replace('∪', 'u')\n"
-        "    return t\n\n"
-        "def _choice_label(s: Any) -> str:\n"
-        "    t = str(s or '').strip().upper()\n"
-        "    return t[:1] if t else ''\n\n"
-        "def _gen_interval_problem(pt: str) -> dict[str, Any]:\n"
-        "    left = random.randint(-8, 0)\n"
-        "    right = random.randint(1, 9)\n"
-        "    q = f'請寫出同時滿足 x > {left} 且 x < {right} 的解集合（區間表示）。'\n"
-        "    ans = f'({left}, {right})'\n"
-        "    return {\n"
-        "        'skill_id': SKILL_ID,\n"
-        "        'problem_type_id': pt,\n"
-        "        'question_text': q,\n"
-        "        'question': q,\n"
-        "        'answer': ans,\n"
-        "        'correct_answer': ans,\n"
-        "        'answer_type': 'text',\n"
-        "        'question_type': 'text',\n"
-        "        'checker': 'interval_checker',\n"
-        "        'checker_type': 'interval_checker',\n"
-        "        'explanation': '交集區間為兩端點之間的開區間。',\n"
-        "        'source': 'gencode_phase3_template',\n"
-        "    }\n\n"
-        "def _is_cartesian_problem_type(pt: str) -> bool:\n"
-        "    p = str(pt or '').lower()\n"
-        "    return any(k in p for k in ['cartesian_coordinate', 'quadrant', 'coordinate', 'position_reasoning'])\n\n"
-        "def _gen_cartesian_choice_problem(pt: str) -> dict[str, Any]:\n"
-        "    a = random.randint(-6, -1)\n"
-        "    b = random.randint(a + 1, -1)\n"
-        "    x = a * b\n"
-        "    y = a + b\n"
-        "    stem = f'設 $a,b$ 為實數，且 $a<b<0$，則點 $Q({x},{y})$ 位於第幾象限？'\n"
-        "    correct_text = '第四象限'\n"
-        "    wrong = ['第一象限', '第二象限', '第三象限']\n"
-        "    option_pool = [\n"
-        "        {'is_correct': True, 'text': correct_text},\n"
-        "        {'is_correct': False, 'text': wrong[0]},\n"
-        "        {'is_correct': False, 'text': wrong[1]},\n"
-        "        {'is_correct': False, 'text': wrong[2]},\n"
-        "    ]\n"
-        "    random.shuffle(option_pool)\n"
-        "    choices = []\n"
-        "    ans = 'A'\n"
-        "    for i, opt in enumerate(option_pool):\n"
-        "        label = chr(ord('A') + i)\n"
-        "        choices.append({'label': label, 'text': str(opt.get('text', ''))})\n"
-        "        if opt.get('is_correct'):\n"
-        "            ans = label\n"
-        "    q = stem + '\\n' + '\\n'.join([f\"({c['label']}) {c['text']}\" for c in choices])\n"
-        "    return {\n"
-        "        'skill_id': SKILL_ID,\n"
-        "        'problem_type_id': pt,\n"
-        "        'question_text': q,\n"
-        "        'question': q,\n"
-        "        'choices': choices,\n"
-        "        'options': [f\"({c['label']}) {c['text']}\" for c in choices],\n"
-        "        'answer': ans,\n"
-        "        'correct_answer': ans,\n"
-        "        'answer_type': 'choice',\n"
-        "        'question_type': 'choice',\n"
-        "        'checker': 'choice_label_checker',\n"
-        "        'checker_type': 'choice_label_checker',\n"
-        "        'explanation': '由座標符號判斷所在象限。',\n"
-        "        'source': 'gencode_phase3_template',\n"
-        "    }\n\n"
-        "def _gen_generic_choice_problem(pt: str) -> dict[str, Any]:\n"
-        "    a = random.randint(2, 12)\n"
-        "    b = random.randint(2, 12)\n"
-        "    stem = f'已知 a={a}, b={b}，下列何者為 a+b？'\n"
-        "    correct_text = str(a + b)\n"
-        "    wrong = [str(a + b + 1), str(a + b - 1), str(a + b + 2)]\n"
-        "    option_pool = [\n"
-        "        {'is_correct': True, 'text': correct_text},\n"
-        "        {'is_correct': False, 'text': wrong[0]},\n"
-        "        {'is_correct': False, 'text': wrong[1]},\n"
-        "        {'is_correct': False, 'text': wrong[2]},\n"
-        "    ]\n"
-        "    random.shuffle(option_pool)\n"
-        "    choices = []\n"
-        "    ans = 'A'\n"
-        "    for i, opt in enumerate(option_pool):\n"
-        "        label = chr(ord('A') + i)\n"
-        "        choices.append({'label': label, 'text': str(opt.get('text', ''))})\n"
-        "        if opt.get('is_correct'):\n"
-        "            ans = label\n"
-        "    q = stem + '\\n' + '\\n'.join([f\"({c['label']}) {c['text']}\" for c in choices])\n"
-        "    return {\n"
-        "        'skill_id': SKILL_ID,\n"
-        "        'problem_type_id': pt,\n"
-        "        'question_text': q,\n"
-        "        'question': q,\n"
-        "        'choices': choices,\n"
-        "        'options': [f\"({c['label']}) {c['text']}\" for c in choices],\n"
-        "        'answer': ans,\n"
-        "        'correct_answer': ans,\n"
-        "        'answer_type': 'choice',\n"
-        "        'question_type': 'choice',\n"
-        "        'checker': 'choice_label_checker',\n"
-        "        'checker_type': 'choice_label_checker',\n"
-        "        'explanation': '以 choice label 比對正確選項。',\n"
-        "        'source': 'gencode_phase3_template',\n"
-        "    }\n\n"
-        "def generate(level: int = 1, seed: int | None = None, difficulty: int | None = None) -> dict[str, Any]:\n"
-        "    if seed is not None:\n"
-        "        random.seed(seed)\n"
-        "    if not GENERATOR_SPECS:\n"
-        "        return {\n"
-        "            'skill_id': SKILL_ID,\n"
-        "            'problem_type_id': 'no_usable_problem_type',\n"
-        "            'question_text': '1 + 1 = ? (fallback)',\n"
-        "            'question': '1 + 1 = ? (fallback)',\n"
-        "            'answer': '2',\n"
-        "            'correct_answer': '2',\n"
-        "            'explanation': 'fallback deterministic item',\n"
-        "            'source': 'gencode_phase3_fallback',\n"
-        "        }\n"
-        "    spec = random.choice(GENERATOR_SPECS)\n"
-        "    pt = str(spec.get('problem_type_id', '')).strip() or 'unknown_problem_type'\n"
-        "    checker = str(spec.get('checker_key', '')).strip()\n"
-        "    eq = str(spec.get('equivalence_type', '')).strip()\n"
-        "    if _is_cartesian_problem_type(pt):\n"
-        "        return _gen_cartesian_choice_problem(pt)\n"
-        "    if 'cartesian_coordinate' in pt:\n"
-        "        return _gen_cartesian_choice_problem(pt)\n"
-        "    if checker == 'choice_label_checker' or eq == 'choice_label':\n"
-        "        return _gen_generic_choice_problem(pt)\n"
-        "    if checker == 'interval_checker' or eq == 'interval_set' or 'inequality' in pt:\n"
-        "        return _gen_interval_problem(pt)\n"
-        "    return {\n"
-        "        'skill_id': SKILL_ID,\n"
-        "        'problem_type_id': pt,\n"
-        "        'question_text': 'implementation pending',\n"
-        "        'question': 'implementation pending',\n"
-        "        'answer': 'implementation_pending',\n"
-        "        'correct_answer': 'implementation_pending',\n"
-        "        'answer_type': 'text',\n"
-        "        'question_type': 'text',\n"
-        "        'checker': checker or 'manual_review_checker',\n"
-        "        'checker_type': checker or 'manual_review_checker',\n"
-        "        'source': 'gencode_phase3_blocked',\n"
-        "        'block_reason': f'no_template_for:{pt}',\n"
-        "    }\n\n"
-        "def check(user_answer: Any, correct_answer: Any):\n"
-        "    ua = str(user_answer or '')\n"
-        "    ca = str(correct_answer or '')\n"
-        "    if not ua.strip() or not ca.strip():\n"
-        "        return False\n"
-        "    ua_label = _choice_label(ua)\n"
-        "    ca_label = _choice_label(ca)\n"
-        "    if ua_label in {'A','B','C','D'} and ca_label in {'A','B','C','D'}:\n"
-        "        return ua_label == ca_label\n"
-        "    return _normalize_interval(ua) == _normalize_interval(ca)\n"
-    )
+    generator_specs, generator_keys = build_generator_specs_for_phase3(skill_id, usable)
+    code = build_phase3_skill_module_code(skill_id, generator_specs, generator_keys)
     draft_skill_path.write_text(code, encoding="utf-8")
     py_status = "passed"
     py_reason = ""
@@ -1885,8 +1725,6 @@ def run_gencode_phase3_package(skill_id: str, accepted_generator_keys: list | No
     except Exception as e:
         py_status = "failed"
         py_reason = str(e)
-    runtime_smoke_status = "passed" if py_status == "passed" else "failed"
-    package_status = "packaged_draft" if py_status == "passed" else "failed"
     phase1_path = REPORT_DIR / f"{skill_id}_phase1_summary.json"
     phase1 = json.loads(phase1_path.read_text(encoding="utf-8")) if phase1_path.exists() else {}
     runtime_gate = phase1.get("runtime_ready_gate", {}) if isinstance(phase1, dict) else {}
@@ -1898,6 +1736,8 @@ def run_gencode_phase3_package(skill_id: str, accepted_generator_keys: list | No
         dynamic_sampling_passed=False,
         equivalence_contract_passed=False,
     )
+    runtime_smoke_status = str(publish_check.get("runtime_smoke_status", "failed"))
+    package_status = "packaged_draft" if py_status == "passed" and runtime_smoke_status == "passed" else "failed"
 
     reports = {
         "phase3_package_summary_json": str(REPORT_DIR / f"{skill_id}_phase3_package_summary.json"),
@@ -1905,14 +1745,16 @@ def run_gencode_phase3_package(skill_id: str, accepted_generator_keys: list | No
         "draft_skill_file": str(draft_skill_path),
     }
     payload = {
-        "ok": py_status == "passed",
+        "ok": py_status == "passed" and runtime_smoke_status == "passed",
         "phase": "phase3",
         "skill_id": skill_id,
         "skill_file_path": str(draft_skill_path),
         "package_status": package_status,
         "py_compile_status": py_status,
         "runtime_smoke_status": runtime_smoke_status,
+        "runtime_smoke_raw": publish_check.get("runtime_smoke_raw", {}),
         "publish_check": publish_check,
+        "generator_specs": generator_specs,
         "reports": reports,
         "next_action": "manual_review_before_runtime_enable",
         "error": py_reason,

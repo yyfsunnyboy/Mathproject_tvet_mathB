@@ -849,6 +849,14 @@
                 <div id="gencodeAiExplanation" class="gencode-result-box" style="margin-top:8px;">AI 解讀摘要：尚未產生</div>
                 <div class="gencode-phase-card">
                     <h3>Phase 1:來源盤點與題型分類 <span id="phase1StatusBadge" class="phase-status-badge">尚未執行</span></h3>
+                    <div style="margin:6px 0;">
+                        <label for="gencodeSpecMode"><b>spec_mode</b></label>
+                        <select id="gencodeSpecMode" style="margin-left:8px;">
+                            <option value="induce_from_sources" selected>induce_from_sources（來源自動歸納）</option>
+                            <option value="hybrid">hybrid（歸納後比對 curated）</option>
+                            <option value="curated_first">curated_first（優先 curated spec）</option>
+                        </select>
+                    </div>
                     <button id="gencodePhase1Btn" type="button" class="btn btn-secondary" onclick="runGencodePhase1()">執行 Phase 1</button>
                     <div id="gencodePhase1Result" class="gencode-result-box">尚未執行 Phase 1</div>
                 </div>
@@ -958,6 +966,35 @@
             el.innerHTML = _renderAiExplanation(ai);
         }
 
+        function _renderPhase1InductionDetails(data) {
+            const auto = data?.auto_review_summary && typeof data.auto_review_summary === 'object' ? data.auto_review_summary : {};
+            const features = Array.isArray(auto.example_features) ? auto.example_features : [];
+            const clusters = Array.isArray(auto.induction_clusters) ? auto.induction_clusters : (Array.isArray(data.induction_clusters) ? data.induction_clusters : []);
+            if (!features.length && !clusters.length) return '';
+            const featRows = features.map((f) => `<tr>
+                <td>${_escapeHtml(f.source_example_id ?? '')}</td>
+                <td>${_escapeHtml(f.answer_type ?? '')}</td>
+                <td>${_escapeHtml(f.target_task ?? '')}</td>
+                <td>${_escapeHtml(f.has_choices ?? '')}</td>
+                <td>${_escapeHtml(f.stem_embeds_choices ?? '')}</td>
+                <td>${_escapeHtml((f.math_objects || []).join(', '))}</td>
+            </tr>`).join('');
+            const clusterBlocks = clusters.map((c, i) => `
+                <div style="margin-top:8px;"><b>分群 ${i + 1}</b>
+                <div>answer_type: ${_escapeHtml(c.answer_type || '')}</div>
+                <div>source_example_ids: ${_escapeHtml((c.source_example_ids || []).join(', '))}</div>
+                <div>grouping_reason: ${_escapeHtml(c.grouping_reason || '')}</div>
+                <div>feature_signature: ${_escapeHtml(JSON.stringify(c.feature_signature || []))}</div></div>
+            `).join('');
+            return `
+                <div style="margin-top:10px;"><b>spec_mode:</b> ${_escapeHtml(data.spec_mode || '')}</div>
+                <div style="margin-top:8px;"><b>ExampleFeature</b></div>
+                <table><thead><tr><th>example_id</th><th>answer_type</th><th>target_task</th><th>has_choices</th><th>stem_embeds</th><th>math_objects</th></tr></thead>
+                <tbody>${featRows || '<tr><td colspan="6">(none)</td></tr>'}</tbody></table>
+                <div style="margin-top:8px;"><b>分群結果</b>${clusterBlocks || '<div>(none)</div>'}</div>
+            `;
+        }
+
         function openGencodeWizard(skillId) {
             currentGencodeSkillId = skillId;
             document.getElementById('gencodeSkillId').textContent = skillId;
@@ -982,19 +1019,22 @@
             box.textContent = '執行中...';
             _setPhaseStatus('phase1', '執行中');
             try {
+                const specModeEl = document.getElementById('gencodeSpecMode');
+                const spec_mode = specModeEl ? String(specModeEl.value || 'induce_from_sources') : 'induce_from_sources';
                 const resp = await fetch(`/admin/gencode/skills/${encodeURIComponent(currentGencodeSkillId)}/phase1`, {
-                    method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ dry_run: true })
+                    method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ dry_run: true, spec_mode })
                 });
                 const data = await resp.json();
                 if (!resp.ok || !data.ok) throw new Error(data.error || data.summary_message || `HTTP ${resp.status}`);
                 _setPhaseStatus('phase1', data.phase_status || '完成');
                 _updateAiExplanation(data);
                 const candidates = Array.isArray(data.candidate_problem_types) ? data.candidate_problem_types : [];
-                const rows = candidates.map((c) => `<tr><td>${_escapeHtml(c.problem_type_id || c.proposed_problem_type_id || '')}</td><td>${_escapeHtml(c.matched_example_count ?? 0)}</td><td>${_escapeHtml(c.checker_key_proposal || '')}</td><td>${_escapeHtml(c.equivalence_type_proposal || '')}</td></tr>`).join('');
+                const rows = candidates.map((c) => `<tr><td>${_escapeHtml(c.problem_type_id || c.proposed_problem_type_id || '')}</td><td>${_escapeHtml(c.display_name || '')}</td><td>${_escapeHtml(c.matched_example_count ?? 0)}</td><td>${_escapeHtml(c.grouping_reason || '')}</td><td>${_escapeHtml(c.checker_key_proposal || '')}</td><td>${_escapeHtml(c.equivalence_type_proposal || '')}</td></tr>`).join('');
                 box.innerHTML = `
                     <div class="gencode-summary">${_escapeHtml(data.summary_message || '')}</div>
                     <div><b>來源題數:</b> ${_escapeHtml(data.source_example_count ?? 0)};<b>候選題型數:</b> ${candidates.length}</div>
-                    <table><thead><tr><th>problem_type_id</th><th>matched</th><th>checker</th><th>equivalence</th></tr></thead><tbody>${rows || '<tr><td colspan="4">(none)</td></tr>'}</tbody></table>
+                    ${_renderPhase1InductionDetails(data)}
+                    <table><thead><tr><th>problem_type_id</th><th>display_name</th><th>matched</th><th>grouping_reason</th><th>checker</th><th>equivalence</th></tr></thead><tbody>${rows || '<tr><td colspan="6">(none)</td></tr>'}</tbody></table>
                     ${_renderHumanActions(data)}
                     ${_renderReportsList(data.reports)}
                     ${_renderClassifierRegisterPanel(data)}
@@ -1123,17 +1163,34 @@
                 const draftPassMsg = pc.draft_check_passed ? '<div class="gencode-summary">Draft 已通過檢查，可進入發布流程。</div>' : '';
                 const runtimeBlockMsg = pc.can_mark_runtime_ready === false ? '<div class="gencode-summary">目前尚未標記 runtime-ready（不影響本次 Phase 3 draft 產出）。</div>' : '';
                 const formalCandidateMsg = (pc.can_publish_formal && data.dry_run) ? '<div class="gencode-summary">目前為 dry-run。可先預覽發布，再按確認發布正式覆寫技能檔。</div>' : '';
+                const draftPath = data.skill_file_path || (data.reports && data.reports.draft_skill_file) || '';
+                const phase3Md = (data.reports && data.reports.phase3_package_summary_md) || '';
+                const smokeRaw = pc.runtime_smoke_raw || data.runtime_smoke_raw || {};
                 const publishControls = pc.can_publish_formal ? `
                     <div style="margin-top:10px; border-top:1px solid #e5e7eb; padding-top:10px;">
                       <div><b>發布操作</b>：可先預覽，確認後再正式發布。</div>
-                      <div style="margin-top:8px; display:flex; gap:8px;">
+                      <div style="margin-top:8px; display:flex; gap:8px; flex-wrap:wrap;">
                         <button id="gencodePublishPreviewBtn" type="button" class="btn btn-secondary" onclick="runGencodePublishDraft(false)">預覽發布</button>
                         <button id="gencodePublishConfirmBtn" type="button" class="btn btn-secondary" onclick="runGencodePublishDraft(true)">確認發布</button>
                       </div>
                       <div id="gencodePublishError" style="margin-top:8px; color:#b91c1c;"></div>
                       <div id="gencodePublishResult" class="gencode-result-box" style="margin-top:8px;">尚未執行發布</div>
                     </div>
-                ` : '';
+                ` : `
+                    <div style="margin-top:10px; border-top:1px solid #e5e7eb; padding-top:10px;">
+                      <div><b>正式發布尚未開放</b>：${_escapeHtml((pc.formal_publish_blockers || pc.blockers || []).join(', ') || '請先修正 publish_check blockers')}</div>
+                      <div style="margin-top:8px; display:flex; gap:8px; flex-wrap:wrap;">
+                        <button type="button" class="btn btn-secondary" onclick="runGencodePhase3()">重新執行 Phase 3</button>
+                        <button type="button" class="btn btn-secondary" onclick="runGencodePhase1()">重新執行 Phase 1</button>
+                        <button type="button" class="btn btn-secondary" onclick="runGencodeAutoPipeline()">重新執行 Phase 1–3</button>
+                      </div>
+                      <div style="margin-top:8px; display:flex; gap:8px; flex-wrap:wrap;">
+                        ${draftPath ? `<a class="btn btn-secondary" href="file:///${String(draftPath).replace(/\\\\/g, '/')}" target="_blank" rel="noopener">查看草稿</a>` : ''}
+                        ${phase3Md ? `<a class="btn btn-secondary" href="file:///${String(phase3Md).replace(/\\\\/g, '/')}" target="_blank" rel="noopener">Phase3 報告 MD</a>` : ''}
+                      </div>
+                      <pre class="gencode-result-box" style="margin-top:8px; max-height:180px; overflow:auto;">runtime_smoke_raw: ${_escapeHtml(JSON.stringify(smokeRaw, null, 2))}</pre>
+                    </div>
+                `;
                 box.innerHTML = `
                     <div class="gencode-summary">${_escapeHtml(data.summary_message || '')}</div>
                     <table><tbody>
@@ -1142,6 +1199,7 @@
                         <tr><th>package_status</th><td>${_escapeHtml(data.package_status || '')}</td></tr>
                         <tr><th>py_compile_status</th><td>${_escapeHtml(data.py_compile_status || '')}</td></tr>
                         <tr><th>runtime_smoke_status</th><td>${_escapeHtml(data.runtime_smoke_status || '')}</td></tr>
+                        <tr><th>publish_check.runtime_smoke_status</th><td>${_escapeHtml(pc.runtime_smoke_status || '')}</td></tr>
                         <tr><th>next_action</th><td>${_escapeHtml(data.next_action || '')}</td></tr>
                     </tbody></table>
                     <h4>publish_check</h4>
@@ -1167,6 +1225,23 @@
                 box.innerHTML = `<div style="color:#b91c1c;"><b>錯誤:</b> ${_escapeHtml(e.message || String(e))}</div>`;
                 Swal.fire('Phase 3 錯誤', String(e.message || e), 'error');
             } finally { btn.disabled = false; }
+        }
+
+        async function runGencodeAutoPipeline() {
+            if (!currentGencodeSkillId) return;
+            try {
+                const resp = await fetch(`/admin/gencode/skills/${encodeURIComponent(currentGencodeSkillId)}/run-auto-pipeline`, {
+                    method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ dry_run: true })
+                });
+                const data = await resp.json();
+                if (!resp.ok || !data.ok) throw new Error(data.error || data.pipeline_status || `HTTP ${resp.status}`);
+                await runGencodePhase1();
+                await runGencodePhase2();
+                await runGencodePhase3();
+                Swal.fire('Phase 1–3 完成', data.pipeline_status || 'auto pipeline finished', 'success');
+            } catch (e) {
+                Swal.fire('Auto Pipeline 錯誤', String(e.message || e), 'error');
+            }
         }
 
         async function runGencodePublishDraft(confirmPublish) {

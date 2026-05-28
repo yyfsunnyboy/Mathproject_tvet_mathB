@@ -174,8 +174,10 @@ def detect_answer_shape(answer_contract: dict[str, Any] | None) -> str:
         return "equation"
     if answer_type in {"solution_set", "set"} or eq == "unordered_solution_set":
         return "set"
-    if answer_type in {"text", "text_short"}:
+    if answer_type in {"text", "text_short", "short_answer"}:
         return "text_short"
+    if answer_type in {"single_choice", "multi_choice"}:
+        return "choice_label"
     if answer_type in {"manual_review"} or eq in {"manual_review_or_ai_judged"}:
         return "manual_review_or_free_response"
     return "unknown_answer_shape"

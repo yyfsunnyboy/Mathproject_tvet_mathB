@@ -1,6 +1,7 @@
 # Agent Skill v2: Problem Types Specification Template
 items:
   - problem_type_id: "basic_calc_01"
+    skill_id: "vh_數學B1_CoordinateSystem"
     subskill_id: "b1_ch1_calc_01"
     display_name: "基礎運算題"
     generator_key: "b1.ch1.basic_calc_01"
@@ -16,6 +17,35 @@ items:
     runtime_policy: "deterministic"
     diagnosis_tags: ["calculation_error", "arithmetic_logic"]
     remediation_candidates: ["pre_calc_fundamental"]
+    answer_contract:
+      answer_type: "numeric"
+      choices_required: false
+      choice_count: null
+      correct_choice_count: null
+      answer_equivalence: "numeric_equal"
+      frontend_render_choices: false
+    stem_contract:
+      stem_must_not_embed_choices: true
+      allowed_math_objects: ["integer_expression"]
+      required_math_objects: ["integer_expression"]
+      forbidden_patterns: ["\\(A\\)", "\\(B\\)", "\\(C\\)", "\\(D\\)"]
+    dependency_contract:
+      givens_must_be_used: true
+      target_answer_must_depend_on_givens: true
+      variables_in_conditions_must_appear_in_target: false
+    semantic_contract:
+      reasoning_type: ["arithmetic_reasoning"]
+      reject_if: ["ambiguous_answer"]
+    generator_contract:
+      parameter_ranges: {}
+      template_slots: {}
+      derivation_steps_required: true
+      use_domain_functions: true
+      avoid_llm_freeform_math: true
+    validator_contract:
+      static_checks: ["answer_contract_checks"]
+      semantic_checks: ["dependency_checks"]
+      runtime_smoke_count: 30
 
   - problem_type_id: "graph_reading_01"
     subskill_id: "b1_ch1_graph_01"

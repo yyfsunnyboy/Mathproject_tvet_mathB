@@ -4,34 +4,195 @@
   "skill_id": "vh_數學B1_CartesianCoordinateSystemEstablishment",
   "generator_results": [
     {
-      "problem_type_id": "cartesian_coordinate_quadrant_symbol_reasoning",
-      "source_example_count": 4,
+      "problem_type_id": "short_answer_classify_quadrant_symbolic_condition_coordinate_point",
+      "source_example_count": 2,
       "answer_contract": {
-        "answer_type": "choice",
-        "equivalence_type": "choice_label",
-        "checker_key": "choice_label_checker"
+        "answer_type": "short_answer",
+        "choices_required": false,
+        "choice_count": null,
+        "correct_choice_count": null,
+        "answer_equivalence": "exact_text",
+        "frontend_render_choices": false,
+        "checker_key": "text_checker",
+        "equivalence_type": "exact_string",
+        "stem_contract": {
+          "stem_must_not_embed_choices": true,
+          "allowed_math_objects": [
+            "coordinate_point",
+            "symbolic_condition"
+          ],
+          "required_math_objects": [
+            "symbolic_condition",
+            "coordinate_point"
+          ],
+          "forbidden_patterns": [
+            "\\(A\\)",
+            "\\(B\\)",
+            "\\(C\\)",
+            "\\(D\\)"
+          ]
+        },
+        "dependency_contract": {
+          "givens_must_be_used": true,
+          "target_answer_must_depend_on_givens": true,
+          "variables_in_conditions_must_appear_in_target": true
+        },
+        "semantic_contract": {
+          "reasoning_type": [
+            "sign_reasoning"
+          ],
+          "reject_if": [
+            "unused_condition",
+            "ambiguous_answer",
+            "answer_not_derivable",
+            "duplicated_choices",
+            "no_correct_choice",
+            "multiple_correct_choices_when_single_choice"
+          ]
+        },
+        "generator_contract": {
+          "template_families": [
+            "classify_quadrant"
+          ],
+          "parameter_slots": {
+            "seed": "integer",
+            "difficulty": "easy"
+          },
+          "randomization_rules": {
+            "shuffle_choices": false
+          },
+          "avoid_llm_freeform_math": true,
+          "use_domain_functions": true,
+          "derivation_steps_required": true,
+          "template_slots": {
+            "stem": "symbolic_quadrant"
+          }
+        },
+        "validator_contract": {
+          "static_checks": [
+            "answer_contract_checks",
+            "choices_policy"
+          ],
+          "semantic_checks": [
+            "givens_to_target_dependency"
+          ],
+          "runtime_smoke_count": 30
+        }
       },
-      "checker_key": "choice_label_checker",
-      "equivalence_type": "choice_label",
-      "generator_key": "vh_數學B1_CartesianCoordinateSystemEstablishment:cartesian_coordinate_quadrant_symbol_reasoning:draft_v1",
+      "checker_key": "text_checker",
+      "equivalence_type": "exact_string",
+      "generator_key": "vh_數學B1_CartesianCoordinateSystemEstablishment:short_answer_classify_quadrant_symbolic_condition_coordinate_point:draft_v1",
       "generator_status": "runtime_ready",
       "checker_smoke_status": "passed",
       "dynamic_sampling_status": "passed",
       "requires_human_action": false,
       "blockers": [],
-      "warnings": []
+      "warnings": [
+        "low_source_examples"
+      ]
+    },
+    {
+      "problem_type_id": "single_choice_choose_correct_statement_axis_distance_coordinate_point",
+      "source_example_count": 2,
+      "answer_contract": {
+        "answer_type": "single_choice",
+        "choices_required": true,
+        "choice_count": 4,
+        "correct_choice_count": 1,
+        "answer_equivalence": "choice_label",
+        "frontend_render_choices": true,
+        "checker_key": "choice_label_checker",
+        "equivalence_type": "choice_label",
+        "stem_contract": {
+          "stem_must_not_embed_choices": true,
+          "allowed_math_objects": [
+            "axis_distance",
+            "coordinate_point"
+          ],
+          "required_math_objects": [
+            "axis_distance",
+            "coordinate_point"
+          ],
+          "forbidden_patterns": [
+            "\\(A\\)",
+            "\\(B\\)",
+            "\\(C\\)",
+            "\\(D\\)"
+          ]
+        },
+        "dependency_contract": {
+          "givens_must_be_used": true,
+          "target_answer_must_depend_on_givens": true,
+          "variables_in_conditions_must_appear_in_target": false
+        },
+        "semantic_contract": {
+          "reasoning_type": [
+            "axis_distance_reasoning",
+            "sign_reasoning"
+          ],
+          "reject_if": [
+            "unused_condition",
+            "ambiguous_answer",
+            "answer_not_derivable",
+            "duplicated_choices",
+            "no_correct_choice",
+            "multiple_correct_choices_when_single_choice"
+          ]
+        },
+        "generator_contract": {
+          "template_families": [
+            "choose_correct_statement",
+            "choose_possible_coordinate"
+          ],
+          "parameter_slots": {
+            "seed": "integer",
+            "difficulty": "easy"
+          },
+          "randomization_rules": {
+            "shuffle_choices": true
+          },
+          "avoid_llm_freeform_math": true,
+          "use_domain_functions": true,
+          "derivation_steps_required": true,
+          "template_slots": {
+            "stem": "axis_distance_choice"
+          }
+        },
+        "validator_contract": {
+          "static_checks": [
+            "answer_contract_checks",
+            "choices_policy"
+          ],
+          "semantic_checks": [
+            "givens_to_target_dependency"
+          ],
+          "runtime_smoke_count": 30
+        }
+      },
+      "checker_key": "choice_label_checker",
+      "equivalence_type": "choice_label",
+      "generator_key": "vh_數學B1_CartesianCoordinateSystemEstablishment:single_choice_choose_correct_statement_axis_distance_coordinate_point:draft_v1",
+      "generator_status": "runtime_ready",
+      "checker_smoke_status": "passed",
+      "dynamic_sampling_status": "passed",
+      "requires_human_action": false,
+      "blockers": [],
+      "warnings": [
+        "low_source_examples"
+      ]
     }
   ],
   "failed_generators": [],
   "accepted_generators": [
-    "vh_數學B1_CartesianCoordinateSystemEstablishment:cartesian_coordinate_quadrant_symbol_reasoning:draft_v1"
+    "vh_數學B1_CartesianCoordinateSystemEstablishment:short_answer_classify_quadrant_symbolic_condition_coordinate_point:draft_v1",
+    "vh_數學B1_CartesianCoordinateSystemEstablishment:single_choice_choose_correct_statement_axis_distance_coordinate_point:draft_v1"
   ],
   "reports": {
-    "phase2_generator_summary_json": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_CartesianCoordinateSystemEstablishment_phase2_generator_summary.json",
-    "phase2_generator_summary_md": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_CartesianCoordinateSystemEstablishment_phase2_generator_summary.md",
-    "generator_draft_spec_json": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\drafts\\vh_數學B1_CartesianCoordinateSystemEstablishment_generator_draft_spec.json"
+    "phase2_generator_summary_json": "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_CartesianCoordinateSystemEstablishment_phase2_generator_summary.json",
+    "phase2_generator_summary_md": "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_CartesianCoordinateSystemEstablishment_phase2_generator_summary.md",
+    "generator_draft_spec_json": "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\drafts\\vh_數學B1_CartesianCoordinateSystemEstablishment_generator_draft_spec.json"
   },
   "next_action": "phase3_package_draft",
-  "timestamp": "2026-05-28T06:56:42.608963+00:00",
+  "timestamp": "2026-05-28T15:25:33.406402+00:00",
   "dry_run": true
 }

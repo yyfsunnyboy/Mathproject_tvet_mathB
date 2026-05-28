@@ -5,6 +5,9 @@ import re
 from pathlib import Path
 from typing import Any
 
+from core.gencode.problem_type_spec import load_problem_type_spec
+from core.gencode.validators import validate_generator_payload
+
 REGISTRY_PATH = Path("configs/generated_registry/b1_section_1_1_verified_registry.v0.1.yaml")
 GENERATED_BASE = Path("generated_candidates/vocational_math_b1/section_1_1")
 REQUIRED_KEYS = {
@@ -114,6 +117,12 @@ def _validate_payload(payload: dict[str, Any], expected_skill_id: str) -> None:
         raise ValueError(f"Generated payload missing keys: {', '.join(missing)}")
     if payload.get("skill_id") != expected_skill_id:
         raise ValueError("Generated payload skill_id mismatch")
+    pt = str(payload.get("problem_type_id", "")).strip()
+    spec = load_problem_type_spec(expected_skill_id, pt)
+    if spec:
+        errors = validate_generator_payload(payload, problem_type_spec=spec)
+        if errors:
+            raise ValueError(f"ProblemType contract validation failed: {','.join(errors)}")
 
 
 def _adapt_payload(payload: dict[str, Any]) -> dict[str, Any]:
