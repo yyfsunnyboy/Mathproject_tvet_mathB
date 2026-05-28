@@ -4,27 +4,28 @@
 ```json
 {
   "ok": true,
+  "success": false,
   "skill_id": "vh_數學B1_AbsoluteValueInequalityExpansionAndGeometricMeaning",
   "phase": "publish",
-  "publish_status": "published",
-  "draft_skill_file_path": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\drafts\\vh_數學B1_AbsoluteValueInequalityExpansionAndGeometricMeaning.py",
-  "formal_skill_file_path": "D:\\Python\\Mathproject_tvet_mathB\\skills\\vh_數學B1_AbsoluteValueInequalityExpansionAndGeometricMeaning.py",
-  "backup_path": "D:\\Python\\Mathproject_tvet_mathB\\backups\\gencode_skill_publish\\vh_數學B1_AbsoluteValueInequalityExpansionAndGeometricMeaning.20260527_080818.319357+0000.py",
-  "backup_status": "backed_up",
-  "py_compile_status": "passed",
-  "runtime_smoke_status": "passed",
+  "publish_status": "publish_preview",
+  "draft_skill_file_path": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\drafts\\vh_數學B1_AbsoluteValueInequalityExpansionAndGeometricMeaning.py",
+  "formal_skill_file_path": "C:\\Python\\Mathproject_tvet_mathB\\skills\\vh_數學B1_AbsoluteValueInequalityExpansionAndGeometricMeaning.py",
+  "backup_path": "",
+  "backup_status": "preview_only",
+  "py_compile_status": "preview_only",
+  "runtime_smoke_status": "preview_only",
   "runtime_ready_marked": false,
   "can_mark_runtime_ready": false,
   "blockers": [],
   "warnings": [
-    "published_but_not_runtime_ready"
+    "confirm_required_for_publish"
   ],
-  "summary_message": "已發布技能檔，但尚未 runtime-ready。",
+  "summary_message": "Preview complete: no formal file was overwritten. Click confirm to publish formally.",
   "reports": {
-    "phase3_package_summary_json": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_AbsoluteValueInequalityExpansionAndGeometricMeaning_phase3_package_summary.json",
-    "publish_summary_json": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_AbsoluteValueInequalityExpansionAndGeometricMeaning_publish_summary.json",
-    "publish_summary_md": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_AbsoluteValueInequalityExpansionAndGeometricMeaning_publish_summary.md"
+    "phase3_package_summary_json": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_AbsoluteValueInequalityExpansionAndGeometricMeaning_phase3_package_summary.json",
+    "publish_summary_json": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_AbsoluteValueInequalityExpansionAndGeometricMeaning_publish_summary.json",
+    "publish_summary_md": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_AbsoluteValueInequalityExpansionAndGeometricMeaning_publish_summary.md"
   },
-  "timestamp": "2026-05-27T08:08:18.321357+00:00"
+  "timestamp": "2026-05-28T02:11:37.480438+00:00"
 }
 ```

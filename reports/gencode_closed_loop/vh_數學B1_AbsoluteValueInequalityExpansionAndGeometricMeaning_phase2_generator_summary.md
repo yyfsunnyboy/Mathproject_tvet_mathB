@@ -29,9 +29,10 @@
       "checker_key": "interval_checker",
       "equivalence_type": "interval_set",
       "generator_key": "vh_數學B1_AbsoluteValueInequalityExpansionAndGeometricMeaning:absolute_value_inequality_linear_expression_basic:draft_v1",
-      "generator_status": "draft_planned",
-      "checker_smoke_status": "pending",
-      "dynamic_sampling_status": "pending",
+      "generator_status": "limited_runtime_ready",
+      "checker_smoke_status": "passed",
+      "dynamic_sampling_status": "passed",
+      "requires_human_action": false,
       "blockers": [],
       "warnings": [
         "low_source_examples"
@@ -55,9 +56,10 @@
       "checker_key": "choice_label_checker",
       "equivalence_type": "choice_label",
       "generator_key": "vh_數學B1_AbsoluteValueInequalityExpansionAndGeometricMeaning:absolute_value_inequality_geometric_meaning:draft_v1",
-      "generator_status": "draft_planned",
-      "checker_smoke_status": "pending",
-      "dynamic_sampling_status": "pending",
+      "generator_status": "limited_runtime_ready",
+      "checker_smoke_status": "passed",
+      "dynamic_sampling_status": "passed",
+      "requires_human_action": false,
       "blockers": [],
       "warnings": [
         "low_source_examples"
@@ -70,12 +72,12 @@
     "vh_數學B1_AbsoluteValueInequalityExpansionAndGeometricMeaning:absolute_value_inequality_geometric_meaning:draft_v1"
   ],
   "reports": {
-    "phase2_generator_summary_json": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_AbsoluteValueInequalityExpansionAndGeometricMeaning_phase2_generator_summary.json",
-    "phase2_generator_summary_md": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_AbsoluteValueInequalityExpansionAndGeometricMeaning_phase2_generator_summary.md",
-    "generator_draft_spec_json": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\drafts\\vh_數學B1_AbsoluteValueInequalityExpansionAndGeometricMeaning_generator_draft_spec.json"
+    "phase2_generator_summary_json": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_AbsoluteValueInequalityExpansionAndGeometricMeaning_phase2_generator_summary.json",
+    "phase2_generator_summary_md": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_AbsoluteValueInequalityExpansionAndGeometricMeaning_phase2_generator_summary.md",
+    "generator_draft_spec_json": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\drafts\\vh_數學B1_AbsoluteValueInequalityExpansionAndGeometricMeaning_generator_draft_spec.json"
   },
   "next_action": "phase3_package_draft",
-  "timestamp": "2026-05-27T07:57:12.147884+00:00",
+  "timestamp": "2026-05-28T02:11:37.427920+00:00",
   "dry_run": true
 }
 ```

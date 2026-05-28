@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="zh-TW">
 
 <head>
@@ -145,6 +145,29 @@
 
         tr:hover {
             background-color: #f8f9fa;
+        }
+
+        th.skill-id-col,
+        td.skill-id-col {
+            min-width: 360px;
+            max-width: 420px;
+            white-space: normal;
+            word-break: keep-all;
+            overflow-wrap: anywhere;
+        }
+
+        .skill-id-cell code {
+            font-size: 0.9rem;
+            word-break: break-all;
+        }
+
+        .skill-id-cell .skill-subline {
+            display: block;
+            margin-top: 4px;
+            color: #6c757d;
+            font-size: 0.85rem;
+            line-height: 1.35;
+            white-space: normal;
         }
 
         /* Status Badge */
@@ -565,8 +588,7 @@
                 <thead>
                     <tr>
                         <th>排序</th>
-                        <th style="width: 20%;">技能 ID / 英文名稱</th>
-                        <th>中文名稱</th>
+                        <th class="skill-id-col">技能 ID / 英文名稱 / 中文名稱</th>
                         <th style="width: 15%;">類別</th>
                         <th>作答</th>
                         <th>晉級門檻</th>
@@ -579,9 +601,13 @@
                     {% for skill in skills %}
                     <tr>
                         <td>{{ skill.order_index }}</td>
-                        <td><code>{{ skill.skill_id }}</code><br><small style="color: #6c757d;">{{ skill.skill_en_name
-                                }}</small></td>
-                        <td><strong>{{ skill.skill_ch_name }}</strong></td>
+                        <td class="skill-id-col">
+                            <div class="skill-id-cell">
+                                <code>{{ skill.skill_id }}</code>
+                                <small class="skill-subline">{{ skill.skill_en_name }}</small>
+                                <small class="skill-subline">{{ skill.skill_ch_name }}</small>
+                            </div>
+                        </td>
                         <td>{{ skill.category }}</td>
                         <td>{{ '手寫' if skill.input_type == 'handwriting' else '文字' }}</td>
                         <td>{{ skill.consecutive_correct_required }} 題</td>
@@ -965,17 +991,18 @@
                 if (!resp.ok || !data.ok) throw new Error(data.error || data.summary_message || `HTTP ${resp.status}`);
                 _setPhaseStatus('phase3', data.phase_status || '完成');
                 const pc = data.publish_check || {};
-                const draftPassMsg = pc.draft_check_passed ? '<div class="gencode-summary">draft 已產生,尚未覆寫正式技能程式</div>' : '';
-                const runtimeBlockMsg = pc.can_mark_runtime_ready === false ? '<div class="gencode-summary">尚未 runtime-ready,不可直接開放學生端</div>' : '';
-                const formalCandidateMsg = (pc.can_publish_formal && data.dry_run) ? '<div class="gencode-summary">可作為正式發布候選,但本次 dry-run 未覆寫正式技能程式</div>' : '';
+                const draftPassMsg = pc.draft_check_passed ? '<div class="gencode-summary">Draft 已通過檢查，可進入發布流程。</div>' : '';
+                const runtimeBlockMsg = pc.can_mark_runtime_ready === false ? '<div class="gencode-summary">目前尚未標記 runtime-ready（不影響本次 Phase 3 draft 產出）。</div>' : '';
+                const formalCandidateMsg = (pc.can_publish_formal && data.dry_run) ? '<div class="gencode-summary">目前為 dry-run。可先預覽發布，再按確認發布正式覆寫技能檔。</div>' : '';
                 const publishControls = pc.can_publish_formal ? `
                     <div style="margin-top:10px; border-top:1px solid #e5e7eb; padding-top:10px;">
-                      <div><b>正式發布</b>:draft 已通過檢查,可發布為正式技能檔。發布前會自動備份舊檔。</div>
+                      <div><b>發布操作</b>：可先預覽，確認後再正式發布。</div>
                       <div style="margin-top:8px; display:flex; gap:8px;">
-                        <button type="button" class="btn btn-secondary" onclick="runGencodePublishDraft(false)">預覽發布</button>
-                        <button type="button" class="btn btn-secondary" onclick="runGencodePublishDraft(true)">確認發布</button>
+                        <button id="gencodePublishPreviewBtn" type="button" class="btn btn-secondary" onclick="runGencodePublishDraft(false)">預覽發布</button>
+                        <button id="gencodePublishConfirmBtn" type="button" class="btn btn-secondary" onclick="runGencodePublishDraft(true)">確認發布</button>
                       </div>
-                      <div id="gencodePublishResult" class="gencode-result-box" style="margin-top:8px;">尚未執行發布動作</div>
+                      <div id="gencodePublishError" style="margin-top:8px; color:#b91c1c;"></div>
+                      <div id="gencodePublishResult" class="gencode-result-box" style="margin-top:8px;">尚未執行發布</div>
                     </div>
                 ` : '';
                 box.innerHTML = `
@@ -1017,8 +1044,8 @@
             if (!currentGencodeSkillId) return;
             if (confirmPublish) {
                 const result = await Swal.fire({
-                    title: '確認正式發布',
-                    text: '將把 draft 技能檔發布到 skills/{skill_id}.py,並先建立備份。',
+                    title: '確認發布',
+                    text: '將把 draft 覆寫到正式技能檔，是否繼續？',
                     icon: 'warning',
                     showCancelButton: true,
                     confirmButtonText: '確認發布',
@@ -1027,6 +1054,12 @@
                 if (!result.isConfirmed) return;
             }
             const target = document.getElementById('gencodePublishResult');
+            const errEl = document.getElementById('gencodePublishError');
+            const previewBtn = document.getElementById('gencodePublishPreviewBtn');
+            const confirmBtn = document.getElementById('gencodePublishConfirmBtn');
+            if (previewBtn) previewBtn.disabled = true;
+            if (confirmBtn) confirmBtn.disabled = true;
+            if (errEl) errEl.textContent = '';
             if (target) target.textContent = '執行中...';
             try {
                 const resp = await fetch(`/admin/gencode/skills/${encodeURIComponent(currentGencodeSkillId)}/publish-draft`, {
@@ -1035,8 +1068,29 @@
                     body: JSON.stringify({ confirm: !!confirmPublish, allow_runtime_ready: false })
                 });
                 const data = await resp.json();
-                if (!resp.ok || !data.ok) throw new Error(data.error || data.summary_message || `HTTP ${resp.status}`);
-                const runtimeMsg = data.runtime_ready_marked ? '已標記 runtime-ready。' : '已發布技能檔,但尚未 runtime-ready。';
+                const blockers = Array.isArray(data?.blockers) ? data.blockers : [];
+                const isPreview = data?.publish_status === 'publish_preview' || data?.backup_status === 'preview_only';
+                const isSuccess = !isPreview && !!resp.ok && (
+                    data?.success === true
+                    || data?.publish_status === 'formal_published'
+                    || data?.publish_status === 'published'
+                    || (!!data?.ok && !!data?.formal_skill_file_path && String(data?.py_compile_status || '') === 'passed' && blockers.length === 0)
+                );
+                const isFailure = !isPreview && (
+                    data?.success === false
+                    || data?.publish_status === 'failed'
+                    || data?.publish_status === 'publish_failed'
+                    || !!data?.error
+                    || blockers.length > 0
+                    || String(data?.py_compile_status || '') === 'failed'
+                    || String(data?.runtime_smoke_status || '') === 'failed'
+                    || !resp.ok
+                );
+                const failReason = data?.error
+                    || data?.summary_message
+                    || (blockers.length ? blockers.join(', ') : '')
+                    || `py_compile=${data?.py_compile_status || 'unknown'}, runtime_smoke=${data?.runtime_smoke_status || 'unknown'}`
+                    || '發布失敗，但後端未提供詳細原因，請查看 Phase 3 report。';
                 if (target) {
                     target.innerHTML = `
                         <table><tbody>
@@ -1049,12 +1103,40 @@
                             <tr><th>runtime_ready_marked</th><td>${_escapeHtml(data.runtime_ready_marked)}</td></tr>
                             <tr><th>summary_message</th><td>${_escapeHtml(data.summary_message || '')}</td></tr>
                         </tbody></table>
-                        <div class="gencode-summary">${_escapeHtml(runtimeMsg)}</div>
                     `;
                 }
+                if (isPreview) {
+                    const msg = '發布預覽完成：尚未覆寫正式技能檔。按下確認發布後才會正式發布。';
+                    if (errEl) errEl.textContent = msg;
+                    Swal.fire('發布預覽完成', msg, 'info');
+                } else if (isSuccess) {
+                    if (errEl) errEl.textContent = '';
+                    const backupMsg = data?.backup_path || '無舊檔需備份';
+                    const runtimeHint = data?.can_mark_runtime_ready
+                        ? '發布成功：正式技能檔已更新，並已通過 runtime-ready gate。'
+                        : '尚未標記 runtime-ready，請先到 /practice 測試後再開放學生端。';
+                    Swal.fire(
+                        '發布成功',
+                        `發布成功：正式技能檔已更新。\n檔案：${data?.formal_skill_file_path || ''}\n備份：${backupMsg}\npy_compile：${data?.py_compile_status || ''}\nruntime_smoke：${data?.runtime_smoke_status || ''}\n提醒：${runtimeHint}`,
+                        'success'
+                    );
+                } else if (isFailure) {
+                    const msg = `發布失敗：${failReason}\n正式技能檔未更新，請修正後再重試。`;
+                    if (errEl) errEl.textContent = msg;
+                    Swal.fire('發布失敗', msg, 'error');
+                } else {
+                    const msg = `發布失敗：${failReason}\n正式技能檔未更新，請修正後再重試。`;
+                    if (errEl) errEl.textContent = msg;
+                    Swal.fire('發布失敗', msg, 'error');
+                }
             } catch (e) {
-                if (target) target.innerHTML = `<div style="color:#b91c1c;"><b>錯誤:</b> ${_escapeHtml(e.message || String(e))}</div>`;
-                Swal.fire('錯誤', String(e.message || e), 'error');
+                const msg = `發布失敗：網路或伺服器錯誤。${e.message || String(e)}`;
+                if (errEl) errEl.textContent = msg;
+                if (target) target.innerHTML = `<div style="color:#b91c1c;"><b>錯誤:</b> ${_escapeHtml(msg)}</div>`;
+                Swal.fire('發布失敗', msg, 'error');
+            } finally {
+                if (previewBtn) previewBtn.disabled = false;
+                if (confirmBtn) confirmBtn.disabled = false;
             }
         }
 

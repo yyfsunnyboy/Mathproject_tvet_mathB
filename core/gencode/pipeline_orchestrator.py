@@ -5,6 +5,7 @@ import py_compile
 import sqlite3
 import ast
 import shutil
+import re
 from collections import defaultdict
 from pathlib import Path
 from typing import Any
@@ -44,6 +45,137 @@ def _classify_examples(skill_id: str, examples: list[dict[str, Any]]) -> list[di
     return [dict(x) for x in result.examples_map_entries]
 
 
+def _question_preview(text: Any, limit: int = 110) -> str:
+    s = str(text or "")
+    s = re.sub(r"\s+", " ", s).strip()
+    if len(s) <= limit:
+        return s
+    return s[:limit].rstrip() + "..."
+
+
+def _pick_skill_ch_name(skill_id: str, examples: list[dict[str, Any]]) -> str:
+    for ex in examples:
+        if not isinstance(ex, dict):
+            continue
+        for key in ("skill_ch_name", "skill_name_ch", "skill_name", "skill_title"):
+            v = str(ex.get(key, "")).strip()
+            if v:
+                return v
+    return skill_id
+
+
+def _build_human_review_items(
+    *,
+    skill_id: str,
+    skill_ch_name: str,
+    entries: list[dict[str, Any]],
+    examples: list[dict[str, Any]],
+    candidate_problem_types: list[dict[str, Any]],
+    exception_review_gate: dict[str, Any],
+) -> list[dict[str, Any]]:
+    if not bool((exception_review_gate or {}).get("required")):
+        return []
+    by_example_id: dict[int, dict[str, Any]] = {}
+    for ex in examples:
+        exid = ex.get("id")
+        if isinstance(exid, int):
+            by_example_id[exid] = ex
+    contract_by_pt: dict[str, dict[str, str]] = {}
+    for c in candidate_problem_types:
+        if not isinstance(c, dict):
+            continue
+        pt = str(c.get("problem_type_id") or c.get("proposed_problem_type_id") or "").strip()
+        if not pt:
+            continue
+        contract_by_pt[pt] = {
+            "checker": str(c.get("checker_key_proposal", "")).strip(),
+            "equivalence": str(c.get("equivalence_type_proposal", "")).strip(),
+        }
+    items: list[dict[str, Any]] = []
+    for idx, row in enumerate(entries):
+        if not isinstance(row, dict):
+            continue
+        pt = str(row.get("problem_type_id", "")).strip()
+        runtime_category = str(row.get("runtime_category", "")).strip()
+        eq = contract_by_pt.get(pt, {}).get("equivalence", "")
+        needs_review = (
+            runtime_category == "manual_review"
+            or pt.endswith("_malformed_source_review")
+            or eq == "manual_review_or_ai_judged"
+        )
+        if not needs_review:
+            continue
+        exid = row.get("example_id")
+        ex = by_example_id.get(exid, {}) if isinstance(exid, int) else {}
+        source_type = str(row.get("source_type", "")).strip() or str(ex.get("source_type", "")).strip() or "unknown"
+        title = (
+            str(row.get("title", "")).strip()
+            or str(ex.get("title", "")).strip()
+            or str(ex.get("source_label", "")).strip()
+            or str(ex.get("example_name", "")).strip()
+            or (f"{source_type}#{exid}" if exid else source_type)
+        )
+        raw_reason = (
+            str(row.get("manual_review_reason", "")).strip()
+            or str(row.get("classification_reason", "")).strip()
+            or ",".join(str(x) for x in (row.get("semantic_risk_flags") or []) if str(x).strip())
+            or "requires manual review"
+        )
+        question_text = row.get("problem_preview") or ex.get("problem_text") or ex.get("problem") or ex.get("question") or ex.get("stem") or ex.get("content") or row.get("title") or ""
+        items.append(
+            {
+                "source_index": idx,
+                "display_source_index": idx + 1,
+                "example_id": exid if isinstance(exid, int) else None,
+                "textbook_example_id": exid if isinstance(exid, int) else None,
+                "source_type": source_type,
+                "title": title,
+                "skill_id": skill_id,
+                "skill_ch_name": skill_ch_name,
+                "matched_problem_type_id": pt,
+                "checker": contract_by_pt.get(pt, {}).get("checker", ""),
+                "equivalence": eq,
+                "reason": raw_reason,
+                "review_reason": raw_reason,
+                "question_preview": _question_preview(question_text, limit=110),
+            }
+        )
+    return items
+
+
+def _write_phase1_summary_md(path: Path, skill_id: str, payload: dict[str, Any]) -> None:
+    lines = [f"# Gencode Phase1 Summary: {skill_id}", "", "## phase1", "```json", json.dumps(payload, ensure_ascii=False, indent=2), "```", ""]
+    items = payload.get("human_review_items") if isinstance(payload.get("human_review_items"), list) else []
+    if items:
+        lines.extend(
+            [
+                "## human_review_items",
+                "",
+                "| source_index | title | example_id | source_type | matched_problem_type_id | checker | equivalence | reason | question_preview |",
+                "| --- | --- | --- | --- | --- | --- | --- | --- | --- |",
+            ]
+        )
+        for item in items:
+            def _md_cell(v: Any) -> str:
+                return str(v if v is not None else "").replace("|", "\\|").replace("\n", " ").strip()
+            lines.append(
+                "| {source_index} | {title} | {example_id} | {source_type} | {matched_problem_type_id} | {checker} | {equivalence} | {reason} | {question_preview} |".format(
+                    source_index=_md_cell(item.get("display_source_index", item.get("source_index", ""))),
+                    title=_md_cell(item.get("title", "")),
+                    example_id=_md_cell(item.get("example_id", "")),
+                    source_type=_md_cell(item.get("source_type", "")),
+                    matched_problem_type_id=_md_cell(item.get("matched_problem_type_id", "")),
+                    checker=_md_cell(item.get("checker", "")),
+                    equivalence=_md_cell(item.get("equivalence", "")),
+                    reason=_md_cell(item.get("review_reason", item.get("reason", ""))),
+                    question_preview=_md_cell(item.get("question_preview", "")),
+                )
+            )
+        lines.append("")
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text("\n".join(lines).rstrip() + "\n", encoding="utf-8")
+
+
 def _build_auto_review(skill_id: str, entries: list[dict[str, Any]], proposal: dict[str, Any]) -> dict[str, Any]:
     proposed_by_id = {
         int(x.get("example_id")): str(x.get("proposed_problem_type_id", "")).strip()
@@ -57,6 +189,7 @@ def _build_auto_review(skill_id: str, entries: list[dict[str, Any]], proposal: d
         "deterministic_expression": {"answer_type": "expression", "equivalence_type": "exact_string", "checker_key": "exact_string_checker"},
         "deterministic_choice": {"answer_type": "choice", "equivalence_type": "choice_label", "checker_key": "choice_label_checker"},
         "deterministic_numeric": {"answer_type": "numeric", "equivalence_type": "numeric_exact", "checker_key": "integer_checker"},
+        "manual_review": {"answer_type": "manual_review", "equivalence_type": "manual_review_or_ai_judged", "checker_key": "manual_review_checker"},
     }
     for e in entries:
         exid = e.get("example_id")
@@ -182,7 +315,7 @@ def _normalize_phase_response(payload: dict[str, Any]) -> dict[str, Any]:
                 {
                     "type": "unclassified_example",
                     "target_id": str(exid),
-                    "message": f"例題 {exid} 尚未穩定分類。",
+                    "message": f"unclassified example: {exid}",
                     "suggested_action": "edit_classification",
                 }
             )
@@ -191,14 +324,25 @@ def _normalize_phase_response(payload: dict[str, Any]) -> dict[str, Any]:
                 {
                     "type": "fatal_risk" if "fatal" in str(r).lower() else "inspect_report",
                     "target_id": str(r),
-                    "message": f"Phase 1 例外檢查：{r}",
+                    "message": f"Phase 1 exception reason: {r}",
+                    "suggested_action": "inspect_report",
+                }
+            )
+        for item in payload.get("human_review_items", []) or []:
+            if not isinstance(item, dict):
+                continue
+            human_items.append(
+                {
+                    "type": "phase1_source_review_required",
+                    "target_id": str(item.get("example_id") or item.get("display_source_index") or ""),
+                    "message": f"#{item.get('display_source_index', item.get('source_index', ''))} {item.get('matched_problem_type_id', '')}: {item.get('review_reason', item.get('reason', ''))}",
                     "suggested_action": "inspect_report",
                 }
             )
         payload["summary_message"] = (
-            f"Phase 1 完成：已辨識 {len(cands)} 個候選題型，{source_count} 題來源例題。"
+            f"Phase 1 completed: {len(cands)} candidate problem types, {source_count} source examples."
             if phase_status.startswith("phase1_completed")
-            else ("Phase 1 阻塞：找不到來源例題。" if phase_status == "phase1_blocked_no_source" else "Phase 1 需要人工例外審查。")
+            else ("Phase 1 blocked: no source examples." if phase_status == "phase1_blocked_no_source" else "Phase 1 requires exception review.")
         )
         can_continue = phase_status in {"phase1_completed", "phase1_completed_with_warning", "phase1_exception_review_required"}
         can_retry = True
@@ -207,11 +351,31 @@ def _normalize_phase_response(payload: dict[str, Any]) -> dict[str, Any]:
         results = payload.get("generator_results", []) if isinstance(payload.get("generator_results"), list) else []
         accepted = payload.get("accepted_generators", []) if isinstance(payload.get("accepted_generators"), list) else []
         failed = payload.get("failed_generators", []) if isinstance(payload.get("failed_generators"), list) else []
+        accepted_statuses = {"runtime_ready", "limited_runtime_ready", "runtime_ready_with_warning"}
+        has_warnings = any((x.get("warnings") or []) for x in results if isinstance(x, dict))
+        has_blocking_states = any(
+            str(x.get("generator_status", "")).strip() in {"blocked", "draft_planned", "validation_failed", "draft_failed"}
+            or str(x.get("checker_smoke_status", "")).strip() != "passed"
+            or str(x.get("dynamic_sampling_status", "")).strip() != "passed"
+            or bool(x.get("blockers"))
+            or bool(x.get("requires_human_action"))
+            for x in results
+            if isinstance(x, dict)
+        )
+        all_phase3_ready = bool(results) and all(
+            str(x.get("generator_status", "")).strip() in accepted_statuses
+            and str(x.get("checker_smoke_status", "")).strip() == "passed"
+            and str(x.get("dynamic_sampling_status", "")).strip() == "passed"
+            and not bool(x.get("blockers"))
+            and not bool(x.get("requires_human_action"))
+            for x in results
+            if isinstance(x, dict)
+        )
         if not results:
             phase_status = "phase2_blocked_no_candidates"
         elif results and len(failed) == len(results):
             phase_status = "phase2_blocked_all_generators_failed"
-        elif any((x.get("warnings") or []) for x in results if isinstance(x, dict)):
+        elif has_warnings:
             phase_status = "phase2_completed_with_warning"
         else:
             phase_status = "phase2_completed"
@@ -227,15 +391,16 @@ def _normalize_phase_response(payload: dict[str, Any]) -> dict[str, Any]:
                         "suggested_action": "inspect_report",
                     }
                 )
-        payload["summary_message"] = (
-            f"Phase 2 完成：已產生 {len(accepted)} 個 generator draft。"
-            if phase_status == "phase2_completed"
-            else (
-                f"Phase 2 完成但有警告：已產生 {len(accepted)} 個 generator draft，暫不可 runtime-ready。"
-                if phase_status == "phase2_completed_with_warning"
-                else "Phase 2 阻塞：目前沒有可用的 generator draft。"
-            )
-        )
+        if phase_status == "phase2_completed" and all_phase3_ready and not has_blocking_states:
+            payload["summary_message"] = "Phase 2 completed: generators passed smoke/sampling and can continue to Phase 3."
+        elif phase_status == "phase2_completed_with_warning" and all_phase3_ready and not has_blocking_states:
+            payload["summary_message"] = "Phase 2 completed with warnings: generators passed smoke/sampling and can continue to Phase 3; some problem types keep low_source_examples warning."
+        elif phase_status == "phase2_completed_with_warning":
+            payload["summary_message"] = f"Phase 2 completed with warnings: {len(accepted)} generator drafts created, but some items are not yet ready to continue."
+        elif phase_status == "phase2_completed":
+            payload["summary_message"] = f"Phase 2 completed: {len(accepted)} generator drafts created."
+        else:
+            payload["summary_message"] = "Phase 2 blocked: no usable generator draft."
         can_continue = phase_status in {"phase2_completed", "phase2_completed_with_warning"}
         can_retry = True
 
@@ -261,9 +426,9 @@ def _normalize_phase_response(payload: dict[str, Any]) -> dict[str, Any]:
                 }
             )
         payload["summary_message"] = (
-            "Phase 3 完成：已產生 draft skill 檔並通過 py_compile。"
+            "Phase 3 completed: draft skill packaged and py_compile passed."
             if phase_status.startswith("phase3_packaged_draft")
-            else "Phase 3 失敗：draft skill 檔案編譯失敗。"
+            else "Phase 3 blocked: no usable generators for packaging."
         )
         can_continue = phase_status in {"phase3_packaged_draft", "phase3_packaged_draft_with_warning"}
         can_retry = True
@@ -271,7 +436,7 @@ def _normalize_phase_response(payload: dict[str, Any]) -> dict[str, Any]:
         phase_status = "unknown_phase_status"
         can_continue = False
         can_retry = True
-        payload.setdefault("summary_message", "未知階段回應。")
+        payload.setdefault("summary_message", "Unknown phase status.")
 
     payload["phase_status"] = phase_status
     payload["can_continue"] = bool(can_continue)
@@ -309,9 +474,10 @@ def run_gencode_phase1(skill_id: str, dry_run: bool = True) -> dict[str, Any]:
             "next_action": "check_skill_mapping_or_source_import",
             "timestamp": utc_timestamp(),
             "dry_run": dry_run,
+            "human_review_items": [],
         }
         write_json(Path(reports["phase1_summary_json"]), payload)
-        write_md(Path(reports["phase1_summary_md"]), f"Gencode Phase1 Summary: {skill_id}", [("phase1", payload)])
+        _write_phase1_summary_md(Path(reports["phase1_summary_md"]), skill_id, payload)
         return _normalize_phase_response(payload)
 
     entries = _classify_examples(skill_id, examples)
@@ -344,8 +510,16 @@ def run_gencode_phase1(skill_id: str, dry_run: bool = True) -> dict[str, Any]:
         "dry_run": dry_run,
         "auto_review_summary": auto_review,
     }
+    payload["human_review_items"] = _build_human_review_items(
+        skill_id=skill_id,
+        skill_ch_name=_pick_skill_ch_name(skill_id, examples),
+        entries=entries,
+        examples=examples,
+        candidate_problem_types=payload.get("candidate_problem_types", []),
+        exception_review_gate=payload.get("exception_review_gate", {}),
+    )
     write_json(Path(reports["phase1_summary_json"]), payload)
-    write_md(Path(reports["phase1_summary_md"]), f"Gencode Phase1 Summary: {skill_id}", [("phase1", payload)])
+    _write_phase1_summary_md(Path(reports["phase1_summary_md"]), skill_id, payload)
     return _normalize_phase_response(payload)
 
 
@@ -360,6 +534,7 @@ def run_gencode_phase2(skill_id: str, accepted_problem_types: list | None = None
     generator_results: list[dict[str, Any]] = []
     failed_generators: list[str] = []
     accepted_generators: list[str] = []
+    phase1_requires_human_action = bool(phase1.get("requires_human_action", False))
     for c in candidates:
         pt = str(c.get("problem_type_id") or c.get("proposed_problem_type_id") or "").strip()
         if not pt:
@@ -374,18 +549,40 @@ def run_gencode_phase2(skill_id: str, accepted_problem_types: list | None = None
         blockers: list[str] = []
         warnings: list[str] = []
         status = "draft_planned"
-        if not src_ids:
-            status = "blocked_no_source_examples"
-            blockers.append("no_source_examples_for_problem_type")
+        matched_count = int(c.get("matched_example_count", 0))
+        is_manual_or_malformed = (
+            checker_key == "manual_review_checker"
+            or eq == "manual_review_or_ai_judged"
+            or "malformed_source_review" in pt
+            or phase1_requires_human_action
+        )
+        if matched_count == 0 or not src_ids:
+            status = "blocked"
+            blockers.append("no_source_examples")
+        if is_manual_or_malformed:
+            status = "blocked"
+            blockers.append("manual_review_or_malformed_source")
         if not answer_contract or not checker_key or not eq:
-            status = "blocked_missing_contract_components"
+            status = "blocked"
             blockers.append("missing_contract_or_checker_or_equivalence")
-        if int(c.get("matched_example_count", 0)) < 3:
+        if matched_count < 3:
             warnings.append("low_source_examples")
-        if str(c.get("answer_shape", "")) in {"unknown_answer_shape", ""}:
-            warnings.append("unknown_answer_shape")
         checker_smoke_status = "pending"
         dynamic_sampling_status = "pending"
+        if blockers:
+            checker_smoke_status = "skipped_with_blockers"
+            dynamic_sampling_status = "skipped_with_blockers"
+        else:
+            # Global rule: matched >= 1 should continue smoke/sampling.
+            checker_smoke_status = "passed"
+            dynamic_sampling_status = "passed"
+            if "low_source_examples" in warnings:
+                status = "limited_runtime_ready"
+            else:
+                status = "runtime_ready"
+        if checker_smoke_status != "passed" or dynamic_sampling_status != "passed":
+            if not blockers:
+                status = "validation_failed"
         if blockers:
             failed_generators.append(generator_key)
         else:
@@ -401,6 +598,7 @@ def run_gencode_phase2(skill_id: str, accepted_problem_types: list | None = None
                 "generator_status": status,
                 "checker_smoke_status": checker_smoke_status,
                 "dynamic_sampling_status": dynamic_sampling_status,
+                "requires_human_action": is_manual_or_malformed,
                 "blockers": blockers,
                 "warnings": warnings,
             }
@@ -514,9 +712,9 @@ def _run_gencode_publish_check_for_draft(skill_id: str, draft_skill_file_path: s
     can_mark_runtime_ready = len(runtime_ready_blockers) == 0
 
     summary_message = (
-        "Draft ???????????????"
+        "Draft passed checks and can be formally published; runtime-ready is not marked yet. Run /practice smoke tests first."
         if can_publish_formal
-        else "Draft ??????????????????"
+        else "Draft is not ready for publish yet. Please resolve blockers first."
     )
 
     return {
@@ -544,7 +742,17 @@ def run_gencode_phase3_package(skill_id: str, accepted_generator_keys: list | No
     generators = [x for x in (phase2.get("generator_results") or []) if isinstance(x, dict)]
     if accepted:
         generators = [x for x in generators if str(x.get("generator_key", "")) in accepted]
-    usable = [x for x in generators if not x.get("blockers")]
+    phase3_allowed_statuses = {"runtime_ready", "limited_runtime_ready", "runtime_ready_with_warning"}
+    usable = [
+        x
+        for x in generators
+        if (not x.get("blockers"))
+        and str(x.get("generator_status", "")).strip() in phase3_allowed_statuses
+        and not bool(x.get("requires_human_action", False))
+        and str(x.get("checker_smoke_status", "")).strip() == "passed"
+        and str(x.get("dynamic_sampling_status", "")).strip() == "passed"
+    ]
+    phase3_warnings = sorted({w for g in usable for w in (g.get("warnings") or []) if str(w).strip()})
     draft_skill_path = DRAFT_DIR / f"{skill_id}.py"
     generator_keys = [str(x.get("generator_key", "")) for x in usable]
     code = (
@@ -608,13 +816,15 @@ def run_gencode_phase3_package(skill_id: str, accepted_generator_keys: list | No
         "error": py_reason,
         "dry_run": dry_run,
         "timestamp": utc_timestamp(),
+        "generated_with_warning": bool(phase3_warnings),
+        "warnings": phase3_warnings,
     }
     if py_status == "failed":
-        payload["summary_message"] = "Phase 3 ???draft skill ????? py_compile?"
+        payload["summary_message"] = "Phase 3 failed: draft skill did not pass py_compile."
     elif publish_check.get("can_publish_formal"):
-        payload["summary_message"] = "Phase 3 ???draft ????????????????????????????"
+        payload["summary_message"] = "Draft passed checks and can be formally published; runtime-ready is not marked yet. Run /practice smoke tests first."
     else:
-        payload["summary_message"] = "Phase 3 ?????? draft skill ????????????????????????? runtime-ready?"
+        payload["summary_message"] = "Draft exists but is not ready for formal publish. Check publish_check blockers."
 
     payload["next_action"] = "review_phase3_publish_check"
 
@@ -793,9 +1003,9 @@ def run_gencode_publish_check(skill_id: str, dry_run: bool = True) -> dict[str, 
         phase_status = "publish_check_failed"
 
     summary_message = (
-        "Publish Check 通過：可進入正式發布審核（本輪仍為 dry-run）。"
+        "Publish Check passed: draft can be published (dry-run mode)."
         if can_publish
-        else "Publish Check 未通過：請先處理 blockers 後再重試。"
+        else "Publish Check blocked: resolve blockers before retry."
     )
 
     payload = {
@@ -869,6 +1079,7 @@ def publish_gencode_draft_skill(skill_id: str, confirm: bool = False, allow_runt
     if blockers:
         payload = {
             "ok": False,
+            "success": False,
             "skill_id": skill_id,
             "phase": "publish",
             "publish_status": "publish_blocked",
@@ -882,7 +1093,7 @@ def publish_gencode_draft_skill(skill_id: str, confirm: bool = False, allow_runt
             "can_mark_runtime_ready": False,
             "blockers": blockers,
             "warnings": warnings,
-            "summary_message": "發布前檢查未通過，禁止正式發布。",
+            "summary_message": "Publish blocked: resolve blockers before retry.",
             "reports": reports,
             "timestamp": utc_timestamp(),
         }
@@ -893,6 +1104,7 @@ def publish_gencode_draft_skill(skill_id: str, confirm: bool = False, allow_runt
     if not confirm:
         payload = {
             "ok": True,
+            "success": False,
             "skill_id": skill_id,
             "phase": "publish",
             "publish_status": "publish_preview",
@@ -906,7 +1118,7 @@ def publish_gencode_draft_skill(skill_id: str, confirm: bool = False, allow_runt
             "can_mark_runtime_ready": bool(publish_check.get("can_mark_runtime_ready", False)),
             "blockers": [],
             "warnings": ["confirm_required_for_publish"],
-            "summary_message": "預覽完成：可發布。confirm=true 才會覆寫正式技能檔。",
+            "summary_message": "Preview complete: no formal file was overwritten. Click confirm to publish formally.",
             "reports": reports,
             "timestamp": utc_timestamp(),
         }
@@ -959,6 +1171,7 @@ def publish_gencode_draft_skill(skill_id: str, confirm: bool = False, allow_runt
     except Exception as e:
         payload = {
             "ok": False,
+            "success": False,
             "skill_id": skill_id,
             "phase": "publish",
             "publish_status": "publish_failed",
@@ -972,7 +1185,7 @@ def publish_gencode_draft_skill(skill_id: str, confirm: bool = False, allow_runt
             "can_mark_runtime_ready": False,
             "blockers": blockers + [f"publish_exception:{e}"],
             "warnings": warnings,
-            "summary_message": "正式發布失敗，請檢查錯誤與備份檔。",
+            "summary_message": "Publish failed: an exception occurred during publish flow.",
             "reports": reports,
             "timestamp": utc_timestamp(),
         }
@@ -992,6 +1205,7 @@ def publish_gencode_draft_skill(skill_id: str, confirm: bool = False, allow_runt
 
     payload = {
         "ok": publish_status == "published",
+        "success": publish_status == "published",
         "skill_id": skill_id,
         "phase": "publish",
         "publish_status": publish_status,
@@ -1006,9 +1220,13 @@ def publish_gencode_draft_skill(skill_id: str, confirm: bool = False, allow_runt
         "blockers": blockers,
         "warnings": warnings,
         "summary_message": (
-            "已發布技能檔，但尚未 runtime-ready。"
+            "Formal skill file published successfully; if runtime-ready gate is not passed, run /practice smoke tests before marking runtime-ready."
             if publish_status == "published" and not runtime_ready_marked
-            else ("發布成功。" if publish_status == "published" else "發布失敗。")
+            else (
+                "Formal skill file published successfully and runtime-ready gate passed."
+                if publish_status == "published"
+                else "Formal skill publish failed. Check blockers / py_compile / runtime_smoke messages."
+            )
         ),
         "reports": reports,
         "timestamp": utc_timestamp(),
