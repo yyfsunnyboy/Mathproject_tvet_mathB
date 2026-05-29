@@ -1,0 +1,221 @@
+{
+  "skill_id": "vh_數學B1_DistanceBetweenTwoPointsInPlane",
+  "spec_source": "phase1_induced_draft",
+  "items": [
+    {
+      "problem_type_id": "short_answer_solve_unknown_coordinate_from_two_point_distance_coordinate_point_d_2",
+      "skill_id": "vh_數學B1_DistanceBetweenTwoPointsInPlane",
+      "target_task": "solve_unknown_coordinate_from_two_point_distance",
+      "task_family": "distance_between_two_points_family",
+      "display_name": "兩點距離反求座標",
+      "source_example_ids": [
+        4419,
+        4432,
+        4437
+      ],
+      "answer_contract": {
+        "choices_required": false,
+        "choice_count": null,
+        "correct_choice_count": null,
+        "frontend_render_choices": false,
+        "answer_type": "solution_set",
+        "answer_shape": "unordered_set",
+        "answer_equivalence": "unordered_solution_set",
+        "checker": "solution_set_checker",
+        "accepted_formats": [
+          "-3, 7",
+          "7, -3",
+          "{-3, 7}",
+          "k=-3 或 k=7",
+          "-3 或 7"
+        ]
+      },
+      "stem_contract": {
+        "stem_must_not_embed_choices": true,
+        "allowed_math_objects": [
+          "coordinate_point",
+          "distance_formula",
+          "parameter",
+          "segment_length",
+          "two_coordinate_points",
+          "unknown_coordinate"
+        ],
+        "required_math_objects": [
+          "coordinate_point",
+          "distance_formula"
+        ],
+        "forbidden_patterns": [
+          "\\(A\\)",
+          "\\(B\\)",
+          "\\(C\\)",
+          "\\(D\\)"
+        ]
+      },
+      "dependency_contract": {
+        "givens_must_be_used": true,
+        "target_answer_must_depend_on_givens": true,
+        "variables_in_conditions_must_appear_in_target": false
+      },
+      "semantic_contract": {
+        "reasoning_type": [
+          "distance_formula_reasoning"
+        ],
+        "reject_if": [
+          "unused_condition",
+          "ambiguous_answer",
+          "answer_not_derivable",
+          "duplicated_choices",
+          "no_correct_choice",
+          "multiple_correct_choices_when_single_choice"
+        ]
+      },
+      "generator_contract": {
+        "template_families": [
+          "solve_unknown_coordinate_from_two_point_distance"
+        ],
+        "parameter_slots": {
+          "seed": "integer",
+          "difficulty": "easy"
+        },
+        "randomization_rules": {
+          "shuffle_choices": false
+        },
+        "avoid_llm_freeform_math": true,
+        "use_domain_functions": true,
+        "derivation_steps_required": true,
+        "template_slots": {
+          "stem": "point_quadrant"
+        }
+      },
+      "validator_contract": {
+        "static_checks": [
+          "answer_contract_checks",
+          "choices_policy"
+        ],
+        "semantic_checks": [
+          "givens_to_target_dependency"
+        ],
+        "runtime_smoke_count": 30
+      },
+      "spec_source": "phase1_induced_draft",
+      "grouping_reason": "split_by_feature_signature",
+      "feature_signature": [
+        "short_answer",
+        "solve_unknown_coordinate_from_two_point_distance",
+        [
+          "distance_formula_reasoning"
+        ],
+        [
+          "coordinate_point",
+          "distance_formula"
+        ]
+      ]
+    },
+    {
+      "problem_type_id": "short_answer_compute_distance_between_two_points_coordinate_point_distance_formu_2",
+      "skill_id": "vh_數學B1_DistanceBetweenTwoPointsInPlane",
+      "target_task": "compute_distance_between_two_points",
+      "task_family": "distance_between_two_points_family",
+      "display_name": "兩點距離計算",
+      "source_example_ids": [
+        4436
+      ],
+      "answer_contract": {
+        "choices_required": false,
+        "choice_count": null,
+        "correct_choice_count": null,
+        "frontend_render_choices": false,
+        "answer_type": "numeric_or_radical",
+        "answer_shape": "scalar",
+        "answer_equivalence": "math_expression_equivalence",
+        "checker": "expression_equivalence_checker",
+        "accepted_formats": [
+          "5",
+          "5.0",
+          "\\sqrt{13}",
+          "sqrt(13)",
+          "2\\sqrt{5}",
+          "2√5"
+        ]
+      },
+      "stem_contract": {
+        "stem_must_not_embed_choices": true,
+        "allowed_math_objects": [
+          "coordinate_point",
+          "distance_formula",
+          "segment_length",
+          "two_coordinate_points"
+        ],
+        "required_math_objects": [
+          "coordinate_point",
+          "distance_formula"
+        ],
+        "forbidden_patterns": [
+          "\\(A\\)",
+          "\\(B\\)",
+          "\\(C\\)",
+          "\\(D\\)"
+        ]
+      },
+      "dependency_contract": {
+        "givens_must_be_used": true,
+        "target_answer_must_depend_on_givens": true,
+        "variables_in_conditions_must_appear_in_target": false
+      },
+      "semantic_contract": {
+        "reasoning_type": [
+          "distance_formula_reasoning"
+        ],
+        "reject_if": [
+          "unused_condition",
+          "ambiguous_answer",
+          "answer_not_derivable",
+          "duplicated_choices",
+          "no_correct_choice",
+          "multiple_correct_choices_when_single_choice"
+        ]
+      },
+      "generator_contract": {
+        "template_families": [
+          "compute_distance_between_two_points"
+        ],
+        "parameter_slots": {
+          "seed": "integer",
+          "difficulty": "easy"
+        },
+        "randomization_rules": {
+          "shuffle_choices": false
+        },
+        "avoid_llm_freeform_math": true,
+        "use_domain_functions": true,
+        "derivation_steps_required": true,
+        "template_slots": {
+          "stem": "point_quadrant"
+        }
+      },
+      "validator_contract": {
+        "static_checks": [
+          "answer_contract_checks",
+          "choices_policy"
+        ],
+        "semantic_checks": [
+          "givens_to_target_dependency"
+        ],
+        "runtime_smoke_count": 30
+      },
+      "spec_source": "phase1_induced_draft",
+      "grouping_reason": "split_by_feature_signature",
+      "feature_signature": [
+        "short_answer",
+        "compute_distance_between_two_points",
+        [
+          "distance_formula_reasoning"
+        ],
+        [
+          "coordinate_point",
+          "distance_formula"
+        ]
+      ]
+    }
+  ]
+}

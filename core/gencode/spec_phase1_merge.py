@@ -55,6 +55,16 @@ def spec_to_answer_contract_proposal(spec: dict[str, Any]) -> dict[str, Any]:
 
 
 def slot_generator_readiness(spec: dict[str, Any]) -> str:
+    from core.gencode.checker_registry import validate_answer_contract_capability
+    from core.gencode.task_families import answer_contract_supports_task
+
+    ac = get_answer_contract(spec)
+    cap = validate_answer_contract_capability(ac)
+    if cap.get("checker_capability_status") == "blocked":
+        return "answer_contract_not_supported"
+    contract_ok, _ = answer_contract_supports_task(spec)
+    if not contract_ok:
+        return "answer_contract_not_supported"
     slot = get_template_slot(spec)
     if slot and slot in SLOT_REGISTRY:
         return "runtime_ready"

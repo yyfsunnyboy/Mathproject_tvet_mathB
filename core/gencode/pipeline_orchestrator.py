@@ -286,11 +286,20 @@ def _safe_file_component(value: str) -> str:
 
 
 def _load_examples(skill_id: str, db_path: str = "instance/kumon_math.db") -> list[dict[str, Any]]:
+    """Load textbook examples strictly by skill_id (no chapter/section cross-skill merge)."""
     con = sqlite3.connect(str(PROJECT_ROOT / db_path))
     con.row_factory = sqlite3.Row
     rows = [dict(r) for r in con.execute("SELECT * FROM textbook_examples WHERE skill_id=? ORDER BY rowid", (skill_id,)).fetchall()]
     con.close()
-    return rows
+    validated: list[dict[str, Any]] = []
+    for row in rows:
+        ex_sid = str(row.get("skill_id") or "").strip()
+        if not ex_sid:
+            continue
+        if ex_sid != skill_id:
+            continue
+        validated.append(row)
+    return validated
 
 
 def _classify_examples(skill_id: str, examples: list[dict[str, Any]]) -> list[dict[str, Any]]:
@@ -953,8 +962,63 @@ def _write_phase1_summary_md(path: Path, skill_id: str, payload: dict[str, Any])
     spec_mode = str(payload.get("spec_mode", "")).strip()
     if spec_mode:
         lines.extend([f"- spec_mode: `{spec_mode}`", ""])
+    anchor = payload.get("main_skill_anchor") if isinstance(payload.get("main_skill_anchor"), dict) else {}
+    if anchor:
+        lines.extend(
+            [
+                "## Main skill anchor",
+                "",
+                f"- skill_ch_name: `{anchor.get('skill_ch_name', '')}`",
+                f"- expected_task_families: {anchor.get('expected_task_families', [])}",
+                f"- expected_subskill_candidates: {anchor.get('expected_subskill_candidates', [])}",
+                f"- observed_source_family_distribution: {payload.get('source_family_distribution', {})}",
+                "",
+            ]
+        )
+        dist = payload.get("source_family_distribution") or {}
+        expected = set(anchor.get("expected_task_families") or [])
+        if dist and expected:
+            top = max(dist, key=dist.get)
+            if top not in expected:
+                lines.append(
+                    "> 來源題多數與目前技能語意不一致，疑似 skill mapping 錯誤；請先檢查來源題歸屬，不建議進 Phase 2。"
+                )
+                lines.append("")
     auto = payload.get("auto_review_summary") if isinstance(payload.get("auto_review_summary"), dict) else {}
+    align_rows = payload.get("source_example_alignment") if isinstance(payload.get("source_example_alignment"), list) else []
+    if align_rows:
+        lines.extend(
+            [
+                "## Source alignment",
+                "",
+                f"- source_alignment_status: `{payload.get('source_alignment_status', '')}`",
+                f"- skill_problem_type_alignment_status: `{payload.get('skill_problem_type_alignment_status', '')}`",
+                f"- alignment_score: `{payload.get('alignment_score', '')}`",
+                f"- alignment_blockers: {payload.get('alignment_blockers', [])}",
+                f"- alignment_warnings: {payload.get('alignment_warnings', [])}",
+                "",
+                "| example_id | target_task | task_family | alignment_score | included | exclude_reason | stem_preview |",
+                "| --- | --- | --- | --- | --- | --- | --- |",
+            ]
+        )
+        for row in align_rows:
+            if not isinstance(row, dict):
+                continue
+            lines.append(
+                "| {ex} | {tt} | {tf} | {sc} | {inc} | {er} | {pv} |".format(
+                    ex=row.get("example_id", ""),
+                    tt=row.get("target_task", ""),
+                    tf=row.get("task_family", ""),
+                    sc=row.get("alignment_score", ""),
+                    inc=row.get("included_in_phase1", ""),
+                    er=row.get("exclude_reason", ""),
+                    pv=str(row.get("title_stem_preview", "")).replace("|", "\\|")[:60],
+                )
+            )
+        lines.append("")
     features = auto.get("example_features") if isinstance(auto.get("example_features"), list) else []
+    if not features:
+        features = payload.get("source_example_alignment") if isinstance(payload.get("source_example_alignment"), list) else []
     if features:
         lines.extend(["## Example features", "", "| example_id | answer_type | target_task | has_choices | stem_embeds_choices | math_objects |", "| --- | --- | --- | --- | --- | --- |"])
         for f in features:
@@ -1164,8 +1228,11 @@ def _normalize_phase_response(payload: dict[str, Any]) -> dict[str, Any]:
         cands = payload.get("candidate_problem_types", []) if isinstance(payload.get("candidate_problem_types"), list) else []
         ex_gate = payload.get("exception_review_gate", {}) if isinstance(payload.get("exception_review_gate"), dict) else {}
         reasons = ex_gate.get("reasons", []) if isinstance(ex_gate.get("reasons"), list) else []
+        alignment_blockers = payload.get("alignment_blockers", []) if isinstance(payload.get("alignment_blockers"), list) else []
         if source_count <= 0:
             phase_status = "phase1_blocked_no_source"
+        elif str(payload.get("source_alignment_status", "")).strip() == "block" or alignment_blockers:
+            phase_status = "phase1_blocked_semantic_alignment"
         elif any("fatal" in str(x).lower() for x in reasons):
             phase_status = "phase1_blocked_fatal_risk"
         elif ex_gate.get("required"):
@@ -1220,6 +1287,18 @@ def _normalize_phase_response(payload: dict[str, Any]) -> dict[str, Any]:
             )
         can_continue = phase_status in {"phase1_completed", "phase1_completed_with_warning", "phase1_exception_review_required"}
         can_retry = True
+        if phase_status == "phase1_blocked_semantic_alignment":
+            payload["summary_message"] = (
+                "來源題型與技能名稱/語意不一致，請檢查來源例題或 skill mapping。"
+                f" blockers={alignment_blockers}"
+            )
+            low_ids = [
+                str(x.get("example_id"))
+                for x in (payload.get("source_example_alignment") or [])
+                if isinstance(x, dict) and not x.get("aligned_with_skill", True)
+            ]
+            if low_ids:
+                payload["summary_message"] += f" 低對齊 example_id: {', '.join(low_ids[:12])}"
 
     elif phase == "phase2":
         results = payload.get("generator_results", []) if isinstance(payload.get("generator_results"), list) else []
@@ -1236,6 +1315,11 @@ def _normalize_phase_response(payload: dict[str, Any]) -> dict[str, Any]:
             for x in results
             if isinstance(x, dict)
         )
+        from core.gencode.packaging_policy import is_generator_usable_for_packaging
+
+        packaging_usable_count = sum(
+            1 for x in results if isinstance(x, dict) and is_generator_usable_for_packaging(x)[0]
+        )
         all_phase3_ready = bool(results) and all(
             str(x.get("generator_status", "")).strip() in accepted_statuses
             and str(x.get("checker_smoke_status", "")).strip() == "passed"
@@ -1245,6 +1329,7 @@ def _normalize_phase_response(payload: dict[str, Any]) -> dict[str, Any]:
             for x in results
             if isinstance(x, dict)
         )
+        any_phase3_ready = packaging_usable_count > 0
         if not results:
             phase_status = "phase2_blocked_no_candidates"
         elif results and len(failed) == len(results):
@@ -1265,31 +1350,43 @@ def _normalize_phase_response(payload: dict[str, Any]) -> dict[str, Any]:
                         "suggested_action": "inspect_report",
                     }
                 )
-        if phase_status == "phase2_completed" and all_phase3_ready and not has_blocking_states:
+        payload["packaging_usable_count"] = packaging_usable_count
+        if phase_status == "phase2_completed" and any_phase3_ready and not has_blocking_states:
             payload["summary_message"] = "Phase 2 completed: generators passed smoke/sampling and can continue to Phase 3."
-        elif phase_status == "phase2_completed_with_warning" and all_phase3_ready and not has_blocking_states:
-            payload["summary_message"] = "Phase 2 completed with warnings: generators passed smoke/sampling and can continue to Phase 3; some problem types keep low_source_examples warning."
+        elif phase_status == "phase2_completed_with_warning" and any_phase3_ready and not has_blocking_states:
+            payload["summary_message"] = (
+                "Phase 2 completed with warnings: at least one generator is usable for Phase 3 packaging "
+                f"({packaging_usable_count} usable); warnings such as low_source_examples do not block packaging."
+            )
+        elif phase_status == "phase2_completed_with_warning" and any_phase3_ready:
+            payload["summary_message"] = (
+                f"Phase 2 completed with warnings: {packaging_usable_count} generator(s) usable for Phase 3."
+            )
         elif phase_status == "phase2_completed_with_warning":
-            payload["summary_message"] = f"Phase 2 completed with warnings: {len(accepted)} generator drafts created, but some items are not yet ready to continue."
+            payload["summary_message"] = f"Phase 2 completed with warnings: {len(accepted)} generator drafts created, but none are usable for Phase 3 yet."
         elif phase_status == "phase2_completed":
             payload["summary_message"] = f"Phase 2 completed: {len(accepted)} generator drafts created."
         else:
             payload["summary_message"] = "Phase 2 blocked: no usable generator draft."
-        can_continue = phase_status in {"phase2_completed", "phase2_completed_with_warning"}
+        can_continue = phase_status in {"phase2_completed", "phase2_completed_with_warning"} and any_phase3_ready
         can_retry = True
 
     elif phase == "phase3":
         py_status = str(payload.get("py_compile_status", "")).strip()
         pkg = str(payload.get("package_status", "")).strip()
-        if py_status == "failed":
+        usable_n = int(payload.get("packaging_usable_count", 0))
+        if usable_n == 0 or pkg == "blocked_no_usable_generators":
+            phase_status = "phase3_blocked_no_usable_generators"
+        elif py_status == "failed":
             phase_status = "phase3_failed_compile"
-        elif pkg == "packaged_draft":
-            # no runtime-ready promotion in this round, always draft-level
-            phase_status = "phase3_packaged_draft_with_warning"
-        elif pkg:
-            phase_status = "phase3_blocked_no_successful_generators"
+        elif pkg == "packaged_draft" and str(payload.get("runtime_smoke_status", "")) == "passed":
+            phase_status = "phase3_packaged_draft_with_warning" if payload.get("generated_with_warning") else "phase3_packaged_draft"
+        elif pkg == "packaged_draft" or (py_status == "passed" and usable_n > 0):
+            phase_status = "phase3_packaged_draft_smoke_failed"
+        elif pkg == "failed":
+            phase_status = "phase3_packaged_draft_smoke_failed"
         else:
-            phase_status = "phase3_blocked_no_successful_generators"
+            phase_status = "phase3_blocked_no_usable_generators"
         if py_status == "failed":
             human_items.append(
                 {
@@ -1299,12 +1396,20 @@ def _normalize_phase_response(payload: dict[str, Any]) -> dict[str, Any]:
                     "suggested_action": "retry",
                 }
             )
-        payload["summary_message"] = (
-            "Phase 3 completed: draft skill packaged and py_compile passed."
-            if phase_status.startswith("phase3_packaged_draft")
-            else "Phase 3 blocked: no usable generators for packaging."
-        )
-        can_continue = phase_status in {"phase3_packaged_draft", "phase3_packaged_draft_with_warning"}
+        if not payload.get("summary_message"):
+            payload["summary_message"] = (
+                "Phase 3 completed: draft skill packaged and py_compile passed."
+                if phase_status.startswith("phase3_packaged_draft") and phase_status != "phase3_packaged_draft_smoke_failed"
+                else (
+                    payload.get("packaging_diagnostic_message")
+                    or "Phase 3 blocked: no usable generators for packaging."
+                )
+            )
+        can_continue = phase_status in {
+            "phase3_packaged_draft",
+            "phase3_packaged_draft_with_warning",
+            "phase3_packaged_draft_smoke_failed",
+        }
         can_retry = True
     else:
         phase_status = "unknown_phase_status"
@@ -1436,9 +1541,10 @@ def run_gencode_phase1(skill_id: str, dry_run: bool = True, spec_mode: str = "in
         examples_for_induction.append(row)
     induced = induce_problem_types_from_examples(skill_id, examples_for_induction)
     auto_review = apply_spec_mode(skill_id, induced, auto_review_legacy, entries, spec_mode)
+    alignment_blocked = str(auto_review.get("source_alignment_status", "")).strip() == "block"
     if str(spec_mode or "").strip() == "induce_from_sources":
         induced_specs = auto_review.get("induced_problem_type_specs", [])
-        if isinstance(induced_specs, list) and induced_specs:
+        if isinstance(induced_specs, list) and induced_specs and not alignment_blocked:
             save_induced_problem_type_specs(skill_id, induced_specs)
             classifier_source = f"{classifier_source}+phase1_induction"
     elif auto_review.get("spec_defined_problem_type_ids"):
@@ -1448,10 +1554,22 @@ def run_gencode_phase1(skill_id: str, dry_run: bool = True, spec_mode: str = "in
     risk_examples = [x.get("example_id") for x in per_example if x.get("risk_flags")]
 
     payload = {
-        "ok": True,
+        "ok": not alignment_blocked,
         "phase": "phase1",
         "skill_id": skill_id,
+        "main_skill_anchor": auto_review.get("main_skill_anchor", {}),
         "source_example_count": len(examples),
+        "source_alignment_status": auto_review.get("source_alignment_status", "pass"),
+        "skill_problem_type_alignment_status": auto_review.get("skill_problem_type_alignment_status", "pass"),
+        "alignment_score": auto_review.get("alignment_score", 1.0),
+        "alignment_warnings": auto_review.get("alignment_warnings", []),
+        "alignment_blockers": auto_review.get("alignment_blockers", []),
+        "semantic_alignment": auto_review.get("semantic_alignment", {}),
+        "source_family_distribution": auto_review.get("source_family_distribution", {}),
+        "candidate_problem_type_families": auto_review.get("candidate_problem_type_families", []),
+        "expected_skill_families": auto_review.get("expected_skill_families", []),
+        "excluded_source_examples": auto_review.get("excluded_source_examples", []),
+        "source_example_alignment": auto_review.get("source_example_alignment", []),
         "candidate_problem_types": auto_review.get("candidate_problem_types", []),
         "per_example_classification": per_example,
         "source_classifications": per_example,
@@ -1524,6 +1642,10 @@ def run_gencode_phase2(skill_id: str, accepted_problem_types: list | None = None
     DRAFT_DIR.mkdir(parents=True, exist_ok=True)
     phase1_path = REPORT_DIR / f"{skill_id}_phase1_summary.json"
     phase1 = json.loads(phase1_path.read_text(encoding="utf-8")) if phase1_path.exists() else run_gencode_phase1(skill_id, dry_run=dry_run)
+    phase1_alignment_blocked = (
+        str(phase1.get("source_alignment_status", "")).strip() == "block"
+        or bool(phase1.get("alignment_blockers"))
+    )
     candidates = phase1.get("candidate_problem_types", []) if isinstance(phase1.get("candidate_problem_types"), list) else []
     accepted = set(str(x) for x in (accepted_problem_types or []))
     excluded = set(int(x) for x in (excluded_example_ids or []) if str(x).isdigit())
@@ -1531,6 +1653,8 @@ def run_gencode_phase2(skill_id: str, accepted_problem_types: list | None = None
     failed_generators: list[str] = []
     accepted_generators: list[str] = []
     phase1_requires_human_action = bool(phase1.get("requires_human_action", False))
+    if phase1_alignment_blocked:
+        phase1_requires_human_action = True
     for c in candidates:
         pt = str(c.get("problem_type_id") or c.get("proposed_problem_type_id") or "").strip()
         if not pt:
@@ -1568,17 +1692,44 @@ def run_gencode_phase2(skill_id: str, accepted_problem_types: list | None = None
             elif generator_readiness == "generator_not_ready":
                 status = "generator_not_ready"
                 blockers.append("generator_not_ready")
-            elif generator_readiness == "runtime_ready" and status in {"", "draft_planned"}:
+            elif generator_readiness == "runtime_ready" and status in {"", "draft_planned"} and not phase1_alignment_blocked:
                 status = "runtime_ready"
+            elif generator_readiness == "alignment_blocked":
+                status = "blocked"
+                blockers.append("semantic_alignment_blocked")
+            elif generator_readiness == "answer_contract_not_supported":
+                status = "blocked"
+                blockers.append("answer_contract_not_supported")
+                blockers.append("checker_contract_missing")
         elif matched_count == 0 or not src_ids:
             status = "blocked"
             blockers.append("no_source_examples")
         if is_manual_or_malformed:
             status = "blocked"
             blockers.append("manual_review_or_malformed_source")
+        if phase1_alignment_blocked:
+            status = "blocked"
+            for b in phase1.get("alignment_blockers", []) or []:
+                if b and b not in blockers:
+                    blockers.append(str(b))
+            if "phase1_semantic_alignment_blocked" not in blockers:
+                blockers.append("phase1_semantic_alignment_blocked")
         if not answer_contract or not checker_key or not eq:
             status = "blocked"
             blockers.append("missing_contract_or_checker_or_equivalence")
+        from core.gencode.checker_registry import validate_answer_contract_capability
+
+        checker_cap = validate_answer_contract_capability(answer_contract)
+        if checker_cap.get("checker_capability_status") == "blocked":
+            status = "blocked"
+            for b in checker_cap.get("checker_contract_blockers", []) or []:
+                if b and b not in blockers:
+                    blockers.append(str(b))
+        if str(checker_key) == "text_checker" and str(eq) in {"exact_string", "exact_text"}:
+            at = str(answer_contract.get("answer_type", "")).strip()
+            if at in {"numeric", "numeric_or_radical", "set", "solution_set", "interval"}:
+                status = "blocked"
+                blockers.append("answer_contract_not_supported")
         if matched_count < 3:
             warnings.append("low_source_examples")
         checker_smoke_status = "pending"
@@ -1589,11 +1740,13 @@ def run_gencode_phase2(skill_id: str, accepted_problem_types: list | None = None
         else:
             checker_smoke_status = "passed"
             dynamic_sampling_status = "passed"
-            if status in {"", "draft_planned"}:
+            if status in {"", "draft_planned"} and not phase1_alignment_blocked:
                 if "low_source_examples" in warnings or "no_matched_source_examples" in warnings:
                     status = "limited_runtime_ready"
                 else:
                     status = "runtime_ready"
+            elif phase1_alignment_blocked:
+                status = "blocked"
         if checker_smoke_status != "passed" or dynamic_sampling_status != "passed":
             if not blockers:
                 status = "validation_failed"
@@ -1606,8 +1759,14 @@ def run_gencode_phase2(skill_id: str, accepted_problem_types: list | None = None
                 "problem_type_id": pt,
                 "source_example_count": len(src_ids),
                 "answer_contract": answer_contract,
-                "checker_key": checker_key,
+                "answer_type": answer_contract.get("answer_type", ""),
+                "answer_shape": answer_contract.get("answer_shape", ""),
                 "equivalence_type": eq,
+                "selected_checker": checker_key,
+                "checker_key": checker_key,
+                "checker_capability_status": checker_cap.get("checker_capability_status", "ok"),
+                "checker_contract_blockers": checker_cap.get("checker_contract_blockers", []),
+                "checker_contract_warnings": checker_cap.get("checker_contract_warnings", []),
                 "generator_key": generator_key,
                 "generator_status": status,
                 "checker_smoke_status": checker_smoke_status,
@@ -1626,9 +1785,11 @@ def run_gencode_phase2(skill_id: str, accepted_problem_types: list | None = None
         "generator_draft_spec_json": str(draft_spec_path),
     }
     payload = {
-        "ok": bool(generator_results),
+        "ok": bool(generator_results) and not phase1_alignment_blocked,
         "phase": "phase2",
         "skill_id": skill_id,
+        "phase1_alignment_blocked": phase1_alignment_blocked,
+        "alignment_blockers": phase1.get("alignment_blockers", []),
         "generator_results": generator_results,
         "failed_generators": failed_generators,
         "accepted_generators": accepted_generators,
@@ -1698,26 +1859,30 @@ def _run_gencode_publish_check_for_draft(skill_id: str, draft_skill_file_path: s
 
 
 def run_gencode_phase3_package(skill_id: str, accepted_generator_keys: list | None = None, dry_run: bool = True) -> dict[str, Any]:
+    from core.gencode.packaging_policy import format_packaging_blocked_message, select_generators_for_packaging
+
     REPORT_DIR.mkdir(parents=True, exist_ok=True)
     DRAFT_DIR.mkdir(parents=True, exist_ok=True)
     phase2_path = REPORT_DIR / f"{skill_id}_phase2_generator_summary.json"
+    draft_spec_path = DRAFT_DIR / f"{skill_id}_generator_draft_spec.json"
     phase2 = json.loads(phase2_path.read_text(encoding="utf-8")) if phase2_path.exists() else run_gencode_phase2(skill_id, dry_run=dry_run)
-    accepted = set(str(x) for x in (accepted_generator_keys or []))
-    generators = [x for x in (phase2.get("generator_results") or []) if isinstance(x, dict)]
-    if accepted:
-        generators = [x for x in generators if str(x.get("generator_key", "")) in accepted]
-    phase3_allowed_statuses = {"runtime_ready", "limited_runtime_ready", "runtime_ready_with_warning", "pending_template", "generator_not_ready"}
-    usable = [
-        x
-        for x in generators
-        if str(x.get("generator_status", "")).strip() in phase3_allowed_statuses
-        and not bool(x.get("requires_human_action", False))
-    ]
+    draft_spec = json.loads(draft_spec_path.read_text(encoding="utf-8")) if draft_spec_path.exists() else {}
+    accepted = {str(x) for x in (accepted_generator_keys or []) if str(x).strip()}
+    usable, packaging_diag = select_generators_for_packaging(
+        phase2 if isinstance(phase2, dict) else {},
+        draft_spec if isinstance(draft_spec, dict) else {},
+        accepted_generator_keys=accepted or None,
+    )
+    packaging_diag["phase2_generator_summary_json"] = str(phase2_path)
+    packaging_diag["generator_draft_spec_json"] = str(draft_spec_path)
     phase3_warnings = sorted({w for g in usable for w in (g.get("warnings") or []) if str(w).strip()})
     draft_skill_path = DRAFT_DIR / f"{skill_id}.py"
-    generator_specs, generator_keys = build_generator_specs_for_phase3(skill_id, usable)
-    code = build_phase3_skill_module_code(skill_id, generator_specs, generator_keys)
-    draft_skill_path.write_text(code, encoding="utf-8")
+    generator_specs: list[dict[str, Any]] = []
+    generator_keys: list[str] = []
+    if usable:
+        generator_specs, generator_keys = build_generator_specs_for_phase3(skill_id, usable)
+        code = build_phase3_skill_module_code(skill_id, generator_specs, generator_keys)
+        draft_skill_path.write_text(code, encoding="utf-8")
     py_status = "passed"
     py_reason = ""
     try:
@@ -1744,8 +1909,10 @@ def run_gencode_phase3_package(skill_id: str, accepted_generator_keys: list | No
         "phase3_package_summary_md": str(REPORT_DIR / f"{skill_id}_phase3_package_summary.md"),
         "draft_skill_file": str(draft_skill_path),
     }
+    packaging_usable_count = len(usable)
+    draft_packaged = py_status == "passed" and packaging_usable_count > 0
     payload = {
-        "ok": py_status == "passed" and runtime_smoke_status == "passed",
+        "ok": draft_packaged and runtime_smoke_status == "passed",
         "phase": "phase3",
         "skill_id": skill_id,
         "skill_file_path": str(draft_skill_path),
@@ -1755,6 +1922,8 @@ def run_gencode_phase3_package(skill_id: str, accepted_generator_keys: list | No
         "runtime_smoke_raw": publish_check.get("runtime_smoke_raw", {}),
         "publish_check": publish_check,
         "generator_specs": generator_specs,
+        "packaging_usable_count": packaging_usable_count,
+        "packaging_diagnostics": packaging_diag,
         "reports": reports,
         "next_action": "manual_review_before_runtime_enable",
         "error": py_reason,
@@ -1763,14 +1932,30 @@ def run_gencode_phase3_package(skill_id: str, accepted_generator_keys: list | No
         "generated_with_warning": bool(phase3_warnings),
         "warnings": phase3_warnings,
     }
-    if py_status == "failed":
+    if packaging_usable_count == 0:
+        payload["ok"] = False
+        payload["package_status"] = "blocked_no_usable_generators"
+        payload["summary_message"] = format_packaging_blocked_message(packaging_diag)
+        payload["packaging_diagnostic_message"] = payload["summary_message"]
+    elif py_status == "failed":
         payload["summary_message"] = "Phase 3 failed: draft skill did not pass py_compile."
+    elif draft_packaged and runtime_smoke_status != "passed":
+        payload["ok"] = bool(draft_packaged)
+        payload["summary_message"] = (
+            "Phase 3 packaged draft skill file, but draft runtime smoke did not pass. "
+            f"See publish_check / runtime_smoke_raw. usable_generators={packaging_usable_count}."
+        )
     elif publish_check.get("can_publish_formal"):
         payload["summary_message"] = "Draft passed checks and can be formally published; runtime-ready is not marked yet. Run /practice smoke tests first."
+    elif draft_packaged:
+        payload["summary_message"] = (
+            f"Phase 3 packaged draft with {packaging_usable_count} usable generator(s). "
+            "Review publish_check before formal publish."
+        )
     else:
         payload["summary_message"] = "Draft exists but is not ready for formal publish. Check publish_check blockers."
 
-    payload["next_action"] = "review_phase3_publish_check"
+    payload["next_action"] = "review_phase3_publish_check" if packaging_usable_count else "review_phase2_blockers_before_phase3"
 
     write_json(Path(reports["phase3_package_summary_json"]), payload)
     write_md(Path(reports["phase3_package_summary_md"]), f"Gencode Phase3 Package Summary: {skill_id}", [("phase3", payload)])

@@ -966,11 +966,42 @@
             el.innerHTML = _renderAiExplanation(ai);
         }
 
+        function _renderPhase1AlignmentDetails(data) {
+            const status = String(data?.source_alignment_status || '');
+            const blockers = Array.isArray(data?.alignment_blockers) ? data.alignment_blockers : [];
+            const rows = Array.isArray(data?.source_example_alignment) ? data.source_example_alignment : [];
+            if (!status && !blockers.length && !rows.length) return '';
+            const blocked = status === 'block' || blockers.length > 0;
+            const alignRows = rows.map((r) => `<tr>
+                <td>${_escapeHtml(r.example_id ?? '')}</td>
+                <td>${_escapeHtml(r.target_task ?? '')}</td>
+                <td>${_escapeHtml(r.task_family ?? '')}</td>
+                <td>${_escapeHtml(r.alignment_score ?? '')}</td>
+                <td>${_escapeHtml(r.included_in_phase1 ?? '')}</td>
+                <td>${_escapeHtml(r.exclude_reason ?? '')}</td>
+            </tr>`).join('');
+            const warnHtml = blocked
+                ? `<div style="margin-top:8px;color:#b91c1c;"><b>語意對齊未通過：</b>來源題型與技能名稱/語意不一致，請檢查來源例題或 skill mapping。 blockers=${_escapeHtml(blockers.join(', '))}</div>`
+                : '';
+            const famDist = data.source_family_distribution && typeof data.source_family_distribution === 'object'
+                ? JSON.stringify(data.source_family_distribution) : '';
+            const candFam = Array.isArray(data.candidate_problem_type_families)
+                ? data.candidate_problem_type_families.join(', ') : '';
+            return `${warnHtml}
+                <div style="margin-top:8px;"><b>alignment_score:</b> ${_escapeHtml(data.alignment_score ?? '')};
+                <b>source_alignment_status:</b> ${_escapeHtml(status)}</div>
+                <div><b>source_family_distribution:</b> ${_escapeHtml(famDist)}</div>
+                <div><b>candidate_problem_type_families:</b> ${_escapeHtml(candFam)}</div>
+                <table><thead><tr><th>example_id</th><th>target_task</th><th>task_family</th><th>score</th><th>included</th><th>exclude_reason</th></tr></thead>
+                <tbody>${alignRows || '<tr><td colspan="5">(none)</td></tr>'}</tbody></table>`;
+        }
+
         function _renderPhase1InductionDetails(data) {
             const auto = data?.auto_review_summary && typeof data.auto_review_summary === 'object' ? data.auto_review_summary : {};
             const features = Array.isArray(auto.example_features) ? auto.example_features : [];
             const clusters = Array.isArray(auto.induction_clusters) ? auto.induction_clusters : (Array.isArray(data.induction_clusters) ? data.induction_clusters : []);
-            if (!features.length && !clusters.length) return '';
+            const alignHtml = _renderPhase1AlignmentDetails(data);
+            if (!features.length && !clusters.length) return alignHtml;
             const featRows = features.map((f) => `<tr>
                 <td>${_escapeHtml(f.source_example_id ?? '')}</td>
                 <td>${_escapeHtml(f.answer_type ?? '')}</td>
@@ -986,7 +1017,7 @@
                 <div>grouping_reason: ${_escapeHtml(c.grouping_reason || '')}</div>
                 <div>feature_signature: ${_escapeHtml(JSON.stringify(c.feature_signature || []))}</div></div>
             `).join('');
-            return `
+            return `${alignHtml}
                 <div style="margin-top:10px;"><b>spec_mode:</b> ${_escapeHtml(data.spec_mode || '')}</div>
                 <div style="margin-top:8px;"><b>ExampleFeature</b></div>
                 <table><thead><tr><th>example_id</th><th>answer_type</th><th>target_task</th><th>has_choices</th><th>stem_embeds</th><th>math_objects</th></tr></thead>
@@ -1039,7 +1070,9 @@
                     ${_renderReportsList(data.reports)}
                     ${_renderClassifierRegisterPanel(data)}
                 `;
-                document.getElementById('gencodePhase2Btn').disabled = !data.can_continue;
+                                const phaseBlocked = String(data.phase_status || '').includes('blocked_semantic_alignment')
+                    || String(data.source_alignment_status || '') === 'block';
+                document.getElementById('gencodePhase2Btn').disabled = !data.can_continue || phaseBlocked;
             } catch (e) {
                 _setPhaseStatus('phase1', '錯誤');
                 box.innerHTML = `<div style="color:#b91c1c;"><b>錯誤:</b> ${_escapeHtml(e.message || String(e))}</div>`;
@@ -1136,7 +1169,7 @@
                     ${_renderHumanActions(data)}
                     ${_renderReportsList(data.reports)}
                 `;
-                document.getElementById('gencodePhase3Btn').disabled = !data.can_continue;
+                document.getElementById('gencodePhase3Btn').disabled = !(data.can_continue || (data.packaging_usable_count > 0));
             } catch (e) {
                 _setPhaseStatus('phase2', '錯誤');
                 box.innerHTML = `<div style="color:#b91c1c;"><b>錯誤:</b> ${_escapeHtml(e.message || String(e))}</div>`;
@@ -1161,6 +1194,9 @@
                 _updateAiExplanation(data);
                 const pc = data.publish_check || {};
                 const draftPassMsg = pc.draft_check_passed ? '<div class="gencode-summary">Draft 已通過檢查，可進入發布流程。</div>' : '';
+                                const packDiag = data.packaging_diagnostics && typeof data.packaging_diagnostics === 'object' ? data.packaging_diagnostics : null;
+                const packDiagHtml = packDiag ? `<div class="gencode-summary" style="margin-top:8px;"><b>Packaging:</b> candidates=${_escapeHtml(packDiag.candidate_count ?? 0)}, included=${_escapeHtml(packDiag.included_count ?? 0)}, excluded=${_escapeHtml(packDiag.excluded_count ?? 0)}</div>` : '';
+                const packUsable = data.packaging_usable_count != null ? `<div><b>packaging_usable_count:</b> ${_escapeHtml(data.packaging_usable_count)}</div>` : '';
                 const runtimeBlockMsg = pc.can_mark_runtime_ready === false ? '<div class="gencode-summary">目前尚未標記 runtime-ready（不影響本次 Phase 3 draft 產出）。</div>' : '';
                 const formalCandidateMsg = (pc.can_publish_formal && data.dry_run) ? '<div class="gencode-summary">目前為 dry-run。可先預覽發布，再按確認發布正式覆寫技能檔。</div>' : '';
                 const draftPath = data.skill_file_path || (data.reports && data.reports.draft_skill_file) || '';
@@ -1215,7 +1251,7 @@
                         <tr><th>summary_message</th><td>${_escapeHtml(pc.summary_message || '')}</td></tr>
                     </tbody></table>
                     ${draftPassMsg}
-                    ${runtimeBlockMsg}
+                    ${packUsable}${packDiagHtml}${runtimeBlockMsg}
                     ${formalCandidateMsg}
                     ${_renderReportsList(data.reports)}
                     ${publishControls}

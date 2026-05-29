@@ -5,14 +5,38 @@ from collections import defaultdict
 from typing import Any
 
 from core.gencode.answer_contract_bridge import legacy_fields_from_answer_contract
+from core.gencode.answer_contract_policy import infer_answer_contract_from_problem_context
+from core.gencode.checker_registry import validate_answer_contract_capability
 from core.gencode.classifier_proposal import detect_answer_shape
 from core.gencode.example_feature_extractor import extract_example_feature
 from core.gencode.pipeline_policy import evaluate_pipeline_gates
 from core.gencode.problem_type_spec import get_template_slot, list_problem_types_for_skill
+from core.gencode.main_skill_anchor import build_main_skill_anchor
+from core.gencode.semantic_alignment import (
+    apply_alignment_gate_to_candidates,
+    build_source_example_alignment_report,
+    evaluate_semantic_alignment,
+    evaluate_source_example_alignment,
+    extract_skill_terms,
+    load_skill_metadata_from_db,
+    merge_alignment_into_gates,
+)
+from core.gencode.task_families import DIVISION_POINT_COORDINATES_FAMILY
 from core.gencode.spec_phase1_merge import slot_generator_readiness
+from core.gencode.task_families import (
+    SOLVE_UNKNOWN_COORDINATE_TASKS,
+    answer_contract_supports_task,
+    task_family_for_task,
+)
 
 _DISPLAY_NAME = {
     ("short_answer", "classify_quadrant"): "象限判斷短答",
+    ("short_answer", "solve_unknown_coordinate_from_two_point_distance"): "兩點距離反求座標",
+    ("short_answer", "compute_distance_between_two_points"): "兩點距離計算",
+    ("short_answer", "compute_centroid_coordinates"): "三角形重心坐標",
+    ("short_answer", "compute_midpoint_coordinates"): "兩點中點坐標",
+    ("short_answer", "compute_internal_division_point_coordinates"): "內分點坐標",
+    ("short_answer", "compute_external_division_point_coordinates"): "外分點坐標",
     ("single_choice", "choose_correct_statement"): "象限敘述選擇",
     ("single_choice", "choose_possible_coordinate"): "座標選擇",
 }
@@ -139,33 +163,32 @@ def _infer_template_slot(answer_type: str, target_task: str, math_objects: list[
     return ""
 
 
-def _build_answer_contract(answer_type: str) -> dict[str, Any]:
-    if answer_type == "single_choice":
-        return {
-            "answer_type": "single_choice",
-            "choices_required": True,
-            "choice_count": 4,
-            "correct_choice_count": 1,
-            "answer_equivalence": "choice_label",
-            "frontend_render_choices": True,
-        }
-    if answer_type == "numeric":
-        return {
-            "answer_type": "numeric",
-            "choices_required": False,
-            "choice_count": None,
-            "correct_choice_count": None,
-            "answer_equivalence": "numeric_equal",
-            "frontend_render_choices": False,
-        }
-    return {
-        "answer_type": "short_answer",
-        "choices_required": False,
-        "choice_count": None,
-        "correct_choice_count": None,
-        "answer_equivalence": "exact_text",
-        "frontend_render_choices": False,
-    }
+def _build_answer_contract(
+    answer_type: str,
+    cluster_features: list[dict[str, Any]] | None = None,
+    *,
+    target_task: str = "",
+    task_family: str = "",
+    math_objects: list[str] | None = None,
+) -> dict[str, Any]:
+    features = cluster_features or []
+    has_choices = any(f.get("has_choices") for f in features if isinstance(f, dict))
+    tasks = {str(f.get("target_task", "")).strip() for f in features if isinstance(f, dict)}
+    resolved_task = str(target_task or (next(iter(tasks)) if len(tasks) == 1 else "")).strip()
+    mos = list(math_objects or [])
+    for f in features:
+        if isinstance(f, dict):
+            for m in f.get("math_objects", []) or []:
+                if m not in mos:
+                    mos.append(m)
+    return infer_answer_contract_from_problem_context(
+        answer_type=answer_type,
+        target_task=resolved_task,
+        task_family=task_family,
+        math_objects=mos,
+        cluster_features=features,
+        has_choices=has_choices,
+    )
 
 
 def _build_problem_type_spec_draft(skill_id: str, cluster: dict[str, Any], existing_ids: set[str]) -> dict[str, Any]:
@@ -195,7 +218,15 @@ def _build_problem_type_spec_draft(skill_id: str, cluster: dict[str, Any], exist
 
     template_families = tasks if len(tasks) > 1 else [target_task]
     slot = _infer_template_slot(answer_type, target_task if target_task != "multi_task" else (tasks[0] if tasks else ""), math_union)
-    ac = _build_answer_contract(answer_type)
+    resolved_target_task = target_task if target_task != "multi_task" else (tasks[0] if tasks else "")
+    task_family = task_family_for_task(resolved_target_task)
+    ac = _build_answer_contract(
+        answer_type,
+        features,
+        target_task=resolved_target_task,
+        task_family=task_family,
+        math_objects=math_union,
+    )
     legacy = legacy_fields_from_answer_contract(ac)
     display_key = (answer_type, tasks[0] if tasks else target_task)
     display_name = _DISPLAY_NAME.get(display_key, f"{answer_type} / {target_task}")
@@ -214,6 +245,8 @@ def _build_problem_type_spec_draft(skill_id: str, cluster: dict[str, Any], exist
     spec = {
         "problem_type_id": pt_id,
         "skill_id": skill_id,
+        "target_task": resolved_target_task,
+        "task_family": task_family,
         "display_name": display_name,
         "source_example_ids": sorted(
             {int(f.get("source_example_id")) for f in features if isinstance(f.get("source_example_id"), int)}
@@ -254,9 +287,26 @@ def _build_problem_type_spec_draft(skill_id: str, cluster: dict[str, Any], exist
     return spec, legacy
 
 
+def _spec_in_expected_families(spec: dict[str, Any], expected_families: set[str]) -> bool:
+    if not expected_families:
+        return True
+    fam = str(spec.get("task_family", "")).strip() or task_family_for_task(str(spec.get("target_task", "")))
+    return fam in expected_families
+
+
 def induce_problem_types_from_examples(skill_id: str, examples: list[dict[str, Any]]) -> dict[str, Any]:
+    skill_metadata = load_skill_metadata_from_db(skill_id)
+    main_skill_anchor = build_main_skill_anchor(skill_id, skill_metadata)
+    expected_families = set(main_skill_anchor.get("expected_task_families") or [])
     features = [extract_example_feature(ex) for ex in examples if isinstance(ex, dict)]
-    clusters = _cluster_features(features)
+    features_for_induction, excluded_source_examples = build_source_example_alignment_report(
+        skill_id,
+        skill_metadata,
+        features,
+        examples=examples,
+        main_skill_anchor=main_skill_anchor,
+    )
+    clusters = _cluster_features(features_for_induction)
     existing_ids = {str(s.get("problem_type_id", "")).strip() for s in list_problem_types_for_skill(skill_id)}
     induced_specs: list[dict[str, Any]] = []
     candidates: list[dict[str, Any]] = []
@@ -272,10 +322,16 @@ def induce_problem_types_from_examples(skill_id: str, examples: list[dict[str, A
             if isinstance(ex_id, int):
                 cluster_by_ex[ex_id] = pt
         ac_proposal = dict(spec.get("answer_contract", {}))
+        checker_cap = validate_answer_contract_capability(ac_proposal)
         ac_proposal.update(
             {
                 "checker_key": legacy["checker_key"],
                 "equivalence_type": legacy["equivalence_type"],
+                "answer_shape": legacy.get("answer_shape", ""),
+                "selected_checker": legacy.get("selected_checker", legacy["checker_key"]),
+                "checker_capability_status": checker_cap.get("checker_capability_status", "ok"),
+                "checker_contract_blockers": checker_cap.get("checker_contract_blockers", []),
+                "checker_contract_warnings": checker_cap.get("checker_contract_warnings", []),
                 "stem_contract": spec.get("stem_contract"),
                 "dependency_contract": spec.get("dependency_contract"),
                 "semantic_contract": spec.get("semantic_contract"),
@@ -285,6 +341,11 @@ def induce_problem_types_from_examples(skill_id: str, examples: list[dict[str, A
         )
         answer_shape = detect_answer_shape(ac_proposal)
         readiness = slot_generator_readiness(spec)
+        contract_ok, contract_blockers = answer_contract_supports_task(spec)
+        if checker_cap.get("checker_capability_status") == "blocked":
+            readiness = "answer_contract_not_supported"
+        elif not contract_ok:
+            readiness = "answer_contract_not_supported"
         candidates.append(
             {
                 "problem_type_id": pt,
@@ -302,7 +363,12 @@ def induce_problem_types_from_examples(skill_id: str, examples: list[dict[str, A
                 "confidence": "high",
                 "promote_recommendation": "recommend_promote_for_that_candidate",
                 "promote_blockers": [],
-                "risk_flags": [],
+                "risk_flags": sorted(
+                    set(list(contract_blockers) + list(checker_cap.get("checker_contract_blockers", []) or []))
+                )
+                if not contract_ok or checker_cap.get("checker_capability_status") == "blocked"
+                else [],
+                "checker_contract_warnings": checker_cap.get("checker_contract_warnings", []),
                 "spec_source": "phase1_induced_draft",
                 "grouping_reason": spec.get("grouping_reason", ""),
                 "feature_signature": spec.get("feature_signature", []),
@@ -327,23 +393,74 @@ def induce_problem_types_from_examples(skill_id: str, examples: list[dict[str, A
             }
         )
 
+    if expected_families:
+        induced_specs = [s for s in induced_specs if _spec_in_expected_families(s, expected_families)]
+        candidates = [c for c in candidates if _spec_in_expected_families(c.get("problem_type_spec_draft", c), expected_families)]
+
+    semantic_alignment = evaluate_semantic_alignment(
+        skill_id,
+        skill_metadata=skill_metadata,
+        source_features=features,
+        candidate_specs=induced_specs,
+        main_skill_anchor=main_skill_anchor,
+    )
+    if not features_for_induction and features:
+        semantic_alignment = dict(semantic_alignment)
+        semantic_alignment["decision"] = "block"
+        blockers = list(semantic_alignment.get("blockers", []) or [])
+        if "source_examples_mismatch" not in blockers:
+            blockers.append("source_examples_mismatch")
+        semantic_alignment["blockers"] = sorted(set(blockers))
+
+    candidates = apply_alignment_gate_to_candidates(candidates, semantic_alignment)
+
     gates = evaluate_pipeline_gates(
         candidates,
         source_examples_count=len(examples),
         checker_smoke_passed=False,
         dynamic_sampling_passed=False,
         contract_tests_passed=True,
+        semantic_alignment_blocked=semantic_alignment.get("decision") == "block",
     )
+    gates = merge_alignment_into_gates(gates, semantic_alignment)
     ex_gate = gates.get("exception_review_gate", {}) if isinstance(gates.get("exception_review_gate"), dict) else {}
     ex_reasons = [r for r in (ex_gate.get("reasons") or []) if str(r) not in {"runtime_smoke_failed", "dynamic_sampling_failed"}]
-    ex_gate["reasons"] = ex_reasons
-    ex_gate["required"] = bool(ex_reasons)
+    if semantic_alignment.get("examples_outside_expected_family"):
+        ex_reasons.extend(["mixed_source_families", "requires_human_action"])
+    ex_gate["reasons"] = sorted(set(ex_reasons))
+    ex_gate["required"] = bool(ex_gate["reasons"])
     gates["exception_review_gate"] = ex_gate
+
+    alignment_score = min(
+        float(semantic_alignment.get("skill_source_score", 0.0)),
+        float(semantic_alignment.get("skill_problem_type_score", 0.0)),
+    )
+    skill_terms = extract_skill_terms(skill_id, skill_metadata)
+    source_example_alignment = []
+    for feat in features:
+        if not isinstance(feat, dict):
+            continue
+        row = evaluate_source_example_alignment(skill_terms, feat, main_skill_anchor=main_skill_anchor)
+        row["skill_id"] = skill_id
+        row["title_stem_preview"] = str(feat.get("question_text", ""))[:80]
+        source_example_alignment.append(row)
 
     return {
         "skill_id": skill_id,
+        "main_skill_anchor": main_skill_anchor,
         "spec_mode": "induce_from_sources",
         "example_features": features,
+        "semantic_alignment": semantic_alignment,
+        "source_alignment_status": semantic_alignment.get("decision", "pass"),
+        "skill_problem_type_alignment_status": semantic_alignment.get("decision", "pass"),
+        "alignment_score": alignment_score,
+        "alignment_warnings": list(semantic_alignment.get("warnings", []) or []),
+        "alignment_blockers": list(semantic_alignment.get("blockers", []) or []),
+        "source_family_distribution": semantic_alignment.get("source_family_distribution", {}),
+        "candidate_problem_type_families": semantic_alignment.get("candidate_problem_type_families", []),
+        "expected_skill_families": semantic_alignment.get("expected_skill_families", []),
+        "excluded_source_examples": excluded_source_examples,
+        "source_example_alignment": source_example_alignment,
         "induction_clusters": [
             {
                 "grouping_reason": c.get("merge_reason"),

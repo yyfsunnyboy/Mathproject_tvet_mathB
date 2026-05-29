@@ -1375,6 +1375,8 @@ def next_question():
             "question_type": data.get("question_type", ""),
             "checker": data.get("checker", data.get("checker_type", "")),
             "checker_type": data.get("checker_type", data.get("checker", "")),
+            "answer_contract": data.get("answer_contract", {}),
+            "equivalence": data.get("equivalence", ""),
             "problem_type_id": data.get("problem_type_id") or data.get("problem_type"),
             "source": data.get("source", route_source),
             "route_source": route_source,
@@ -1607,11 +1609,6 @@ def check_answer():
             pass
         return jsonify(result)
 
-    mod = get_skill(skill_id)
-
-    if not mod:
-        return jsonify({"correct": False, "result": "璅∠?頛?航炊"})
-
     # ?寞???嚗?敶ａ?
     if current.get('correct_answer') == "graph":
         return jsonify({
@@ -1620,8 +1617,51 @@ def check_answer():
             "next_question": False
         })
 
-    # ?瑁??寞
-    result = mod.check(user_ans, current['answer'])
+    from core.gencode.answer_grading import grade_answer_for_current_question
+
+    contract_result = grade_answer_for_current_question(
+        user_ans, current, skill_id, log=current_app.logger
+    )
+    if contract_result is not None:
+        result = contract_result
+        is_correct = bool(result.get("correct", False))
+        import time
+        history = session.get('review_history', [])
+        history.append({'skill_id': skill_id, 'correct': is_correct, 'timestamp': time.time()})
+        session['review_history'] = history[-50:]
+        stats = session.get('skill_stats', {})
+        st = stats.get(skill_id, {'attempts': 0, 'correct': 0, 'wrong': 0, 'fail_streak': 0})
+        st['attempts'] += 1
+        if is_correct:
+            st['correct'] += 1
+            st['fail_streak'] = 0
+        else:
+            st['wrong'] += 1
+            st['fail_streak'] += 1
+        stats[skill_id] = st
+        session['skill_stats'] = stats
+        session.modified = True
+        update_progress(current_user.id, skill_id, is_correct)
+        return jsonify(result)
+
+    mod = get_skill(skill_id)
+
+    if not mod:
+        return jsonify({"correct": False, "result": "璅∠?頛?航炊"})
+
+    correct_for_check = current.get("correct_answer", current.get("answer"))
+    grading_payload = {
+        "skill_id": skill_id,
+        "problem_type_id": current.get("problem_type_id", ""),
+        "answer_contract": current.get("answer_contract"),
+        "checker": current.get("checker", current.get("checker_type", "")),
+        "equivalence": current.get("equivalence", current.get("equivalence_type", "")),
+        "answer_type": current.get("answer_type", ""),
+    }
+    try:
+        result = mod.check(user_ans, correct_for_check, question_payload=grading_payload)
+    except TypeError:
+        result = mod.check(user_ans, correct_for_check)
     
     # [V10.1 Repair] 撘瑕頧?嚗璅∠?? bool嚗??鋆 dict
     if isinstance(result, bool):

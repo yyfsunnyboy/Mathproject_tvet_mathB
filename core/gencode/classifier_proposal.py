@@ -166,10 +166,21 @@ def detect_answer_shape(answer_contract: dict[str, Any] | None) -> str:
         return "interval_set"
     if answer_type in {"choice", "choice_label"} or eq == "choice_label":
         return "choice_label"
-    if answer_type in {"integer", "number", "numeric"} or eq in {"numeric_exact", "rational_equivalent"}:
+    if answer_type in {"integer", "number", "numeric", "numeric_or_radical", "decimal"} or eq in {
+        "numeric_exact",
+        "rational_equivalent",
+        "numeric_equivalence",
+    }:
         return "numeric"
-    if answer_type in {"expression"} or eq == "algebraic_equivalent":
+    if answer_type in {"expression", "math_expression", "radical_number"} or eq in {
+        "algebraic_equivalent",
+        "expression_equivalence",
+        "math_expression_equivalence",
+        "radical_equivalence",
+    }:
         return "expression"
+    if answer_type in {"classification", "quadrant_label", "text_label", "category"}:
+        return "text_short"
     if "equation" in answer_type:
         return "equation"
     if answer_type in {"solution_set", "set"} or eq == "unordered_solution_set":

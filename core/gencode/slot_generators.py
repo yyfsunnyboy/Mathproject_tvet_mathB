@@ -1,8 +1,10 @@
 from __future__ import annotations
 
+import math
 import random
 from typing import Any, Callable
 
+from core.gencode.answer_payload import answer_type_family
 from core.gencode.problem_type_spec import get_answer_contract, get_stem_contract
 from core.gencode.symbolic_coordinate_templates import (
     SYMBOLIC_QUADRANT_SHORT_ANSWER_TEMPLATES,
@@ -179,11 +181,23 @@ def _slot_axis_distance_choice(skill_id: str, pt: str, spec: dict[str, Any], see
     rng = random.Random(seed)
     x = rng.choice([i for i in range(-9, 10) if i != 0])
     y = rng.choice([i for i in range(-9, 10) if i != 0])
-    target = abs(y)
-    stem = f"點 P({x},{y}) 到 x 軸的距離為何？"
+    axis = rng.choice(["x_axis", "y_axis"])
+    if axis == "x_axis":
+        target = abs(y)
+        axis_label = "x 軸"
+        derivation = f"到 x 軸距離為 |y|=|{y}|={target}"
+        explanation = f"點 P({x},{y}) 到 x 軸的距離為 y 座標的絕對值 |y|={target}。"
+        wrong_axis_value = abs(x)
+    else:
+        target = abs(x)
+        axis_label = "y 軸"
+        derivation = f"到 y 軸距離為 |x|=|{x}|={target}"
+        explanation = f"點 P({x},{y}) 到 y 軸的距離為 x 座標的絕對值 |x|={target}。"
+        wrong_axis_value = abs(y)
+    stem = f"點 P({x},{y}) 到 {axis_label}的距離為何？"
     correct = str(target)
     distractors: list[str] = []
-    for candidate in (target + 1, abs(x), max(1, target - 1), target + 2, abs(x) + 1):
+    for candidate in (wrong_axis_value, target + 1, max(1, target - 1), target + 2, wrong_axis_value + 1):
         text = str(candidate)
         if text != correct and text not in distractors:
             distractors.append(text)
@@ -213,13 +227,13 @@ def _slot_axis_distance_choice(skill_id: str, pt: str, spec: dict[str, Any], see
                 "x_expr": str(x),
                 "y_expr": str(y),
                 "variables": [],
-                "distance_to": "x_axis",
+                "distance_to": axis,
                 "value": correct,
             },
-            "derivation": [f"到 x 軸距離為 |y|=|{y}|={target}"],
+            "derivation": [derivation],
         },
         diagnosis_tags=["axis_distance"],
-        explanation="到 x 軸距離為 |y|。",
+        explanation=explanation,
         seed=seed,
     )
 
@@ -297,6 +311,86 @@ def _slot_generic_short_answer(skill_id: str, pt: str, spec: dict[str, Any], see
     }
 
 
+def _slot_two_point_distance_solution_set(
+    skill_id: str, pt: str, spec: dict[str, Any], seed: int | None
+) -> dict[str, Any]:
+    rng = random.Random(seed)
+    for _ in range(80):
+        mid = rng.randint(-4, 8)
+        t = rng.randint(2, 6)
+        dx = rng.choice([4, 6, 8])
+        d2 = dx * dx + t * t
+        d = math.isqrt(d2)
+        if d * d != d2:
+            continue
+        x1, x2 = 3, 3 + dx
+        y2 = mid
+        k1, k2 = mid - t, mid + t
+        solutions = sorted({k1, k2})
+        q = f"已知 A({x1}, k)、B({x2}, {y2})，且 AB={d}，求 k 的所有可能值。"
+        ac = get_answer_contract(spec)
+        return {
+            "skill_id": skill_id,
+            "problem_type_id": pt,
+            "question_text": q,
+            "question": q,
+            "choices": [],
+            "answer": solutions,
+            "correct_answer": solutions,
+            "answer_type": str(ac.get("answer_type", "solution_set")),
+            "checker_type": str(ac.get("checker", "solution_set_checker")),
+            "explanation": f"由距離公式得 (k-{y2})^2+{dx}^2={d}^2，解得 k={solutions[0]} 或 k={solutions[1]}。",
+            "diagnosis_tags": ["distance_formula_reasoning"],
+            "metadata": {
+                "givens": [f"A=({x1},k)", f"B=({x2},{y2})", f"AB={d}"],
+                "target": "k",
+                "derivation": [f"(k-{y2})^2+{dx}^2={d}^2", f"k∈{solutions}"],
+            },
+            "source": "gencode_slot_generator",
+        }
+    raise RuntimeError("two_point_distance_solution_set_generation_failed")
+
+
+def _slot_two_point_distance_compute(
+    skill_id: str, pt: str, spec: dict[str, Any], seed: int | None
+) -> dict[str, Any]:
+    rng = random.Random(seed)
+    for _ in range(80):
+        x1, y1 = rng.randint(-6, 6), rng.randint(-6, 6)
+        x2, y2 = rng.randint(-6, 6), rng.randint(-6, 6)
+        dx, dy = x2 - x1, y2 - y1
+        d2 = dx * dx + dy * dy
+        if d2 <= 0:
+            continue
+        d = math.isqrt(d2)
+        if d * d == d2:
+            ans = str(d)
+        else:
+            ans = f"\\sqrt{{{d2}}}"
+        q = f"求 A({x1},{y1}) 與 B({x2},{y2}) 的距離。"
+        ac = get_answer_contract(spec)
+        return {
+            "skill_id": skill_id,
+            "problem_type_id": pt,
+            "question_text": q,
+            "question": q,
+            "choices": [],
+            "answer": ans,
+            "correct_answer": ans,
+            "answer_type": str(ac.get("answer_type", "numeric_or_radical")),
+            "checker_type": str(ac.get("checker", "expression_equivalence_checker")),
+            "explanation": f"AB=\\sqrt{{({dx})^2+({dy})^2}}={ans}。",
+            "diagnosis_tags": ["distance_formula_reasoning"],
+            "metadata": {
+                "givens": [f"A=({x1},{y1})", f"B=({x2},{y2})"],
+                "target": "AB",
+                "derivation": [f"dx={dx}", f"dy={dy}", f"AB={ans}"],
+            },
+            "source": "gencode_slot_generator",
+        }
+    raise RuntimeError("two_point_distance_compute_generation_failed")
+
+
 SLOT_REGISTRY: dict[str, GeneratorFn] = {
     "point_quadrant": _slot_point_quadrant,
     "point_quadrant_choice": _slot_point_quadrant_choice,
@@ -304,6 +398,8 @@ SLOT_REGISTRY: dict[str, GeneratorFn] = {
     "symbolic_quadrant_choice": _slot_symbolic_quadrant_choice,
     "axis_distance_choice": _slot_axis_distance_choice,
     "symbolic_quadrant_statement_choice": _slot_symbolic_quadrant_statement_choice,
+    "two_point_distance_solution_set": _slot_two_point_distance_solution_set,
+    "two_point_distance_compute": _slot_two_point_distance_compute,
 }
 
 
@@ -325,6 +421,10 @@ def generate_from_problem_type_spec(
             fn = _slot_generic_single_choice
         elif at == "short_answer":
             fn = _slot_generic_short_answer
+        elif answer_type_family(at) == "solution_set":
+            fn = _slot_two_point_distance_solution_set
+        elif answer_type_family(at) in {"numeric_or_radical", "numeric"}:
+            fn = _slot_two_point_distance_compute
         else:
             raise RuntimeError(f"slot_generator_not_registered:{slot or at}")
     payload = fn(skill_id, pt, problem_type_spec, seed)

@@ -1,24 +1,129 @@
 from __future__ import annotations
 
+import logging
 import random
+import re
 from typing import Any
 
-from core.gencode.problem_type_spec import list_problem_types_for_skill, load_problem_type_spec
+from core.gencode.answer_payload import answer_type_family, coerce_correct_answer, finalize_generator_payload
+from core.gencode.problem_type_spec import get_answer_contract, list_problem_types_for_skill, load_problem_type_spec
 from core.gencode.slot_generators import generate_from_problem_type_spec
 from core.gencode.validators import validate_generator_payload
+from core.checkers.quadrant_checker import check_quadrant_answer
 
 try:
     from core.vocational_math_b1.generated_candidate_loader import generate_from_verified_candidate
 except Exception:  # pragma: no cover
     generate_from_verified_candidate = None  # type: ignore
 
+logger = logging.getLogger(__name__)
 
-def _pick_problem_type_id(generator_specs: list[dict[str, Any]], seed: int | None) -> str:
-    if not generator_specs:
-        return ""
-    rng = random.Random(seed)
-    spec_row = rng.choice(generator_specs)
-    return str(spec_row.get("problem_type_id", "")).strip()
+_BLOCKED_READINESS = frozenset({"blocked", "disabled", "pending", "not_ready"})
+_PT_SUFFIX = re.compile(r"_\d+$")
+
+
+def _normalize_problem_type_id(problem_type_id: str) -> str:
+    return _PT_SUFFIX.sub("", str(problem_type_id or "").strip())
+
+
+def _dispatch_rng(seed: int | None, *scope: str) -> random.Random:
+    if seed is None:
+        return random.Random()
+    return random.Random("|".join([str(seed), *scope]))
+
+
+def _is_runtime_ready(row: dict[str, Any]) -> bool:
+    readiness = str(row.get("generator_readiness", "runtime_ready")).strip().lower()
+    return readiness not in _BLOCKED_READINESS
+
+
+def _level_allowed(spec: dict[str, Any] | None, level: int) -> bool:
+    if not spec:
+        return True
+    gc = spec.get("generator_contract")
+    if not isinstance(gc, dict):
+        return True
+    min_level = gc.get("min_level")
+    max_level = gc.get("max_level")
+    if min_level is not None and level < int(min_level):
+        return False
+    if max_level is not None and level > int(max_level):
+        return False
+    return True
+
+
+def collect_available_runtime_problem_types(
+    skill_id: str,
+    generator_specs: list[dict[str, Any]],
+    *,
+    level: int = 1,
+) -> list[dict[str, Any]]:
+    """Merge skill GENERATOR_SPECS with induced/curated registry entries."""
+    merged: dict[str, dict[str, Any]] = {}
+
+    def _add(row: dict[str, Any], source: str) -> None:
+        pt = str(row.get("problem_type_id", "")).strip()
+        if not pt or not _is_runtime_ready(row):
+            return
+        spec = load_problem_type_spec(skill_id, pt, prefer="auto")
+        if spec is None or not _level_allowed(spec, level):
+            return
+        key = _normalize_problem_type_id(pt)
+        canonical_pt = str(spec.get("problem_type_id", pt)).strip() or pt
+        if key not in merged:
+            merged[key] = {
+                "problem_type_id": canonical_pt,
+                "source": source,
+                "generator_readiness": row.get("generator_readiness", "runtime_ready"),
+            }
+
+    for row in generator_specs:
+        if isinstance(row, dict):
+            _add(row, "generator_specs")
+
+    for spec in list_problem_types_for_skill(skill_id, prefer="auto"):
+        if isinstance(spec, dict):
+            _add(
+                {
+                    "problem_type_id": spec.get("problem_type_id", ""),
+                    "generator_readiness": "runtime_ready",
+                },
+                "problem_type_registry",
+            )
+
+    return list(merged.values())
+
+
+def dispatch_problem_type(
+    skill_id: str,
+    generator_specs: list[dict[str, Any]],
+    *,
+    level: int = 1,
+    seed: int | None = None,
+) -> tuple[str, str, list[str]]:
+    available = collect_available_runtime_problem_types(
+        skill_id,
+        generator_specs,
+        level=level,
+    )
+    available_ids = [str(row.get("problem_type_id", "")).strip() for row in available if str(row.get("problem_type_id", "")).strip()]
+    strategy = "uniform_random"
+    if not available:
+        return "", strategy, []
+    picked = _dispatch_rng(seed, skill_id, "problem_type_dispatch").choice(available)
+    return str(picked.get("problem_type_id", "")).strip(), strategy, available_ids
+
+
+def _log_dispatch(
+    skill_id: str,
+    available_ids: list[str],
+    selected_problem_type_id: str,
+    selection_strategy: str,
+) -> None:
+    logger.info("[GENCODE DISPATCH] skill_id=%s", skill_id)
+    logger.info("[GENCODE DISPATCH] available_problem_type_ids=%s", available_ids)
+    logger.info("[GENCODE DISPATCH] selected_problem_type_id=%s", selected_problem_type_id)
+    logger.info("[GENCODE DISPATCH] selection_strategy=%s", selection_strategy)
 
 
 def generate_for_skill(
@@ -43,7 +148,13 @@ def generate_for_skill(
         except RuntimeError:
             pass
 
-    pt = _pick_problem_type_id(generator_specs, seed)
+    pt, strategy, available_ids = dispatch_problem_type(
+        skill_id,
+        generator_specs,
+        level=level,
+        seed=seed,
+    )
+    _log_dispatch(skill_id, available_ids, pt, strategy)
     if not pt:
         raise RuntimeError("generator_spec_not_found:empty_problem_type_id")
 
@@ -51,7 +162,8 @@ def generate_for_skill(
     if not problem_type_spec:
         raise RuntimeError(f"generator_spec_not_found:{pt}")
 
-    payload = generate_from_problem_type_spec(skill_id, problem_type_spec, seed=seed)
+    generation_seed = seed
+    payload = generate_from_problem_type_spec(skill_id, problem_type_spec, seed=generation_seed)
     if str(payload.get("block_reason", "")).strip():
         raise RuntimeError(str(payload.get("block_reason")))
 
@@ -62,6 +174,10 @@ def generate_for_skill(
     payload.setdefault("explanation", payload.get("explanation", ""))
     payload.setdefault("metadata", payload.get("metadata") if isinstance(payload.get("metadata"), dict) else {})
 
+    answer_contract = get_answer_contract(problem_type_spec)
+    if answer_contract:
+        payload = finalize_generator_payload(payload, answer_contract)
+
     errors = validate_generator_payload(payload, problem_type_spec=problem_type_spec)
     if errors:
         raise RuntimeError(f"contract_validation_failed:{','.join(errors)}")
@@ -69,7 +185,90 @@ def generate_for_skill(
     return payload
 
 
-def check_answer(user_answer: Any, correct_answer: Any) -> bool:
+def _resolve_answer_contract(
+    *,
+    payload: dict[str, Any] | None = None,
+    answer_contract: dict[str, Any] | None = None,
+    skill_id: str = "",
+) -> dict[str, Any]:
+    if isinstance(answer_contract, dict) and answer_contract.get("answer_type"):
+        return answer_contract
+    if isinstance(payload, dict):
+        embedded = payload.get("answer_contract")
+        if isinstance(embedded, dict) and embedded.get("answer_type"):
+            return embedded
+        pt = str(payload.get("problem_type_id", "")).strip()
+        sid = str(payload.get("skill_id", skill_id)).strip()
+        if sid and pt:
+            spec = load_problem_type_spec(sid, pt, prefer="auto")
+            if spec:
+                return get_answer_contract(spec)
+    return {}
+
+
+def check_answer(
+    user_answer: Any,
+    correct_answer: Any,
+    *,
+    payload: dict[str, Any] | None = None,
+    answer_contract: dict[str, Any] | None = None,
+    skill_id: str = "",
+) -> bool:
+    correct_answer = coerce_correct_answer(correct_answer)
+    ac = _resolve_answer_contract(payload=payload, answer_contract=answer_contract, skill_id=skill_id)
+    checker = str(ac.get("checker") or (payload or {}).get("checker") or (payload or {}).get("checker_type") or "").strip()
+    family = answer_type_family(str(ac.get("answer_type", "")))
+    equiv = str(
+        ac.get("answer_equivalence")
+        or (payload or {}).get("equivalence")
+        or (payload or {}).get("equivalence_type")
+        or ""
+    ).strip()
+
+    if (
+        checker == "solution_set_checker"
+        or family == "solution_set"
+        or equiv == "unordered_solution_set"
+        or isinstance(correct_answer, (list, tuple, set))
+    ):
+        from core.checkers.solution_set_checker import check_solution_set_answer
+
+        return check_solution_set_answer(user_answer, correct_answer)
+
+    if checker == "interval_checker" or family == "interval":
+        from core.checkers.interval_checker import check_interval_answer
+
+        return check_interval_answer(user_answer, correct_answer)
+
+    if checker == "coordinate_pair_checker" or str(ac.get("answer_type", "")) in {"ordered_pair", "coordinate_pair"}:
+        from core.checkers.coordinate_pair_checker import check_coordinate_pair_answer
+
+        return check_coordinate_pair_answer(user_answer, correct_answer)
+
+    if checker in {"quadrant_checker", "classification_checker"} or family == "classification":
+        quadrant_result = check_quadrant_answer(user_answer, correct_answer)
+        if quadrant_result is not None:
+            return quadrant_result
+        return str(user_answer or "").strip() == str(correct_answer or "").strip()
+
+    expression_equivs = {
+        "expression_equivalence",
+        "math_expression_equivalence",
+        "radical_equivalence",
+    }
+    if (
+        checker == "expression_equivalence_checker"
+        or family == "numeric_or_radical"
+        or equiv in expression_equivs
+    ):
+        from core.checkers.expression_equivalence_checker import check_expression_equivalence_answer
+
+        return check_expression_equivalence_answer(user_answer, correct_answer)
+
+    quadrant_result = check_quadrant_answer(user_answer, correct_answer)
+    if quadrant_result is not None:
+        return quadrant_result
+
     ua = str(user_answer or "").strip().upper()
     ca = str(correct_answer or "").strip().upper()
     if not ua or not ca:

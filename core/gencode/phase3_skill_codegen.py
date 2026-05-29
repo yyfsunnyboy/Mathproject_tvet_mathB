@@ -76,6 +76,6 @@ def build_phase3_skill_module_code(skill_id: str, generator_specs: list[dict[str
         f"GENERATOR_SPECS = {generator_specs!r}\n\n"
         "def generate(level: int = 1, seed: int | None = None, difficulty: int | str | None = None, **kwargs) -> dict[str, Any]:\n"
         "    return generate_for_skill(SKILL_ID, GENERATOR_SPECS, level=level, seed=seed, difficulty=difficulty)\n\n"
-        "def check(user_answer: Any, correct_answer: Any):\n"
-        "    return check_answer(user_answer, correct_answer)\n"
+        "def check(user_answer: Any, correct_answer: Any, question_payload: dict[str, Any] | None = None):\n"
+        "    return check_answer(user_answer, correct_answer, payload=question_payload)\n"
     )

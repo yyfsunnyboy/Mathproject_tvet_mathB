@@ -3524,6 +3524,13 @@
             }
         }
 
+        function setChoiceOptionsDisabled(disabled) {
+            if (!questionChoices) return;
+            questionChoices.querySelectorAll('.choice-option').forEach((node) => {
+                node.disabled = Boolean(disabled);
+            });
+        }
+
         function renderChoices(payload) {
             if (!questionChoices) return;
             questionChoices.innerHTML = '';
@@ -3542,11 +3549,17 @@
                 button.className = 'choice-option';
                 button.innerHTML = renderChoiceText(`(${label}) ${rawText}`, idx);
                 button.addEventListener('click', () => {
-                    if (answerInput) answerInput.value = label;
+                    if (isProcessing) return;
+                    if (answerInput && !answerInput.disabled) {
+                        answerInput.value = label;
+                    }
                     Array.from(questionChoices.querySelectorAll('.choice-option')).forEach((node) => node.classList.remove('selected'));
                     button.classList.add('selected');
                     button.blur();
                     resetQuestionScroll();
+                    if (submitBtn && !submitBtn.disabled && typeof submitBtn.onclick === 'function') {
+                        submitBtn.onclick();
+                    }
                 });
                 questionChoices.appendChild(button);
             });
@@ -3659,6 +3672,7 @@
                 if (isProcessing) return;
                 isProcessing = true;
                 submitBtn.disabled = true;
+                setChoiceOptionsDisabled(true);
 
                 // 顯示動態載入訊息
                 showLoadingMessage();
@@ -3720,6 +3734,7 @@
                     .finally(() => {
                         isProcessing = false;
                         submitBtn.disabled = false;
+                        setChoiceOptionsDisabled(false);
                     });
             };
         }
