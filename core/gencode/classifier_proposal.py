@@ -160,8 +160,16 @@ def build_classifier_proposal(skill_id: str, examples_map: list[dict[str, Any]])
 
 def detect_answer_shape(answer_contract: dict[str, Any] | None) -> str:
     c = answer_contract if isinstance(answer_contract, dict) else {}
+    explicit_shape = str(c.get("answer_shape", "")).strip()
+    if explicit_shape and explicit_shape not in {"", "unknown_answer_shape"}:
+        return explicit_shape
     answer_type = str(c.get("answer_type", "")).strip().lower()
     eq = str(c.get("equivalence_type", "")).strip().lower()
+    if answer_type in {"ordered_pair", "coordinate_pair"} or eq in {
+        "coordinate_pair_equivalence",
+        "ordered_pair",
+    }:
+        return "coordinate_pair"
     if answer_type in {"interval_set"} or eq == "interval_set":
         return "interval_set"
     if answer_type in {"choice", "choice_label"} or eq == "choice_label":

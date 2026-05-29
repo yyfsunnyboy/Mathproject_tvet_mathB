@@ -2247,6 +2247,9 @@
         let lastCanvasDisplayWidth = 0;
         let lastCanvasDisplayHeight = 0;
         window.currentProblemTypeId = "";
+        let currentQuestion = null;
+        let practiceQuestionEpoch = 0;
+        let practiceCheckLoadingInterval = null;
         let treeDiagramQuestionIndex = 0;
         let pascalTriangleQuestionIndex = 0;
 
@@ -3307,9 +3310,120 @@
                 });
         }
 
+        function stopPracticeCheckLoading() {
+            if (practiceCheckLoadingInterval) {
+                clearInterval(practiceCheckLoadingInterval);
+                practiceCheckLoadingInterval = null;
+            }
+        }
+
+        function clearPracticeFeedback() {
+            stopPracticeCheckLoading();
+            if (resultDisplay) {
+                resultDisplay.textContent = '';
+                resultDisplay.className = '';
+                resultDisplay.style.background = '';
+                resultDisplay.style.color = '';
+                resultDisplay.style.border = '';
+            }
+            const prereqSuggestion = document.getElementById('prerequisite-suggestion');
+            if (prereqSuggestion) {
+                prereqSuggestion.style.display = 'none';
+            }
+            const suggestions = document.getElementById('suggestions');
+            if (suggestions) {
+                suggestions.innerHTML = '';
+            }
+        }
+
+        function snapshotPracticeQuestion(payload) {
+            if (!payload || typeof payload !== 'object') {
+                return null;
+            }
+            const choices = getChoiceItems(payload);
+            const questionTextValue = resolveQuestionText(payload);
+            const skillId = payload.skill_id || getSkillId() || '';
+            return {
+                skill_id: skillId,
+                question_uid: payload.question_uid || '',
+                question_text_hash: payload.question_text_hash || '',
+                question_text: questionTextValue,
+                problem_type_id: payload.problem_type_id || payload.problem_type || '',
+                answer: payload.answer,
+                correct_answer: payload.correct_answer ?? payload.display_answer ?? payload.answer ?? '',
+                display_answer: payload.display_answer || '',
+                answer_contract: payload.answer_contract || {},
+                checker: payload.checker || payload.checker_type || '',
+                equivalence: payload.equivalence || '',
+                choices: Array.isArray(choices) ? choices.slice() : [],
+                answer_type: payload.answer_type || '',
+            };
+        }
+
+        function buildCheckAnswerPayload(userAnswer) {
+            const cq = currentQuestion || {};
+            return {
+                skill_id: cq.skill_id || getSkillId() || '',
+                question_uid: cq.question_uid || '',
+                problem_type_id: cq.problem_type_id || window.currentProblemTypeId || '',
+                answer: userAnswer,
+            };
+        }
+
+        function shouldIgnoreCheckAnswerResponse(data, submitEpoch, submitQuestionUid) {
+            if (submitEpoch !== practiceQuestionEpoch) {
+                return true;
+            }
+            const respUid = data && data.question_uid ? String(data.question_uid) : '';
+            const activeUid = submitQuestionUid || (currentQuestion && currentQuestion.question_uid) || '';
+            if (respUid && activeUid && respUid !== activeUid) {
+                return true;
+            }
+            return false;
+        }
+
+        function applyCurrentQuestion(payload) {
+            currentQuestion = snapshotPracticeQuestion(payload);
+            window.currentProblemTypeId = currentQuestion ? currentQuestion.problem_type_id : '';
+            window.currentExpectedAnswer = currentQuestion
+                ? String(currentQuestion.display_answer || currentQuestion.correct_answer || '')
+                : '';
+        }
+
+        function logPracticeNewQuestionDebug(payload) {
+            const cq = snapshotPracticeQuestion(payload);
+            console.log('[FRONTEND PRACTICE] new question received');
+            console.log('[FRONTEND PRACTICE] question_text', cq && cq.question_text);
+            console.log('[FRONTEND PRACTICE] problem_type_id', cq && cq.problem_type_id);
+            console.log('[FRONTEND PRACTICE] checker', cq && cq.checker);
+            console.log('[FRONTEND PRACTICE] answer_contract', cq && cq.answer_contract);
+            console.log('[FRONTEND PRACTICE] choices length', cq && cq.choices ? cq.choices.length : 0);
+        }
+
+        function logPracticeSubmitDebug(userAnswer) {
+            console.log('[FRONTEND PRACTICE] submit currentQuestion', currentQuestion);
+            console.log('[FRONTEND PRACTICE] skill_id', currentQuestion && currentQuestion.skill_id);
+            console.log('[FRONTEND PRACTICE] question_uid', currentQuestion && currentQuestion.question_uid);
+            console.log('[FRONTEND PRACTICE] question_text', currentQuestion && currentQuestion.question_text);
+            console.log('[FRONTEND PRACTICE] problem_type_id', currentQuestion && currentQuestion.problem_type_id);
+            console.log('[FRONTEND PRACTICE] user_answer', userAnswer);
+        }
+
         function loadQuestion() {
             const skill = getSkillId();
             updateSuggestedPrompts(skill);
+
+            practiceQuestionEpoch += 1;
+            const loadEpoch = practiceQuestionEpoch;
+            currentQuestion = null;
+            clearPracticeFeedback();
+            if (answerInput) {
+                answerInput.value = '';
+            }
+            if (questionChoices) {
+                questionChoices.innerHTML = '';
+                questionChoices.style.display = 'none';
+            }
 
             // 顯示載入中...
             if (questionText) questionText.style.opacity = '0.5';
@@ -3336,12 +3450,18 @@
             fetch(`/get_next_question?${params.toString()}`)
                 .then(r => r.json())
                 .then(data => {
+                    if (loadEpoch !== practiceQuestionEpoch) {
+                        return;
+                    }
                     if (questionText) questionText.style.opacity = '1';
 
                     if (data.error) {
                         questionText.textContent = `錯誤：${data.error}`;
                         return;
                     }
+
+                    applyCurrentQuestion(data);
+                    logPracticeNewQuestionDebug(data);
 
                     // 1. 顯示題目文字
                     const questionMainText = renderQuestion(data);
@@ -3425,8 +3545,6 @@
 
                     levelIndicator.textContent = `等級：${data.current_level}`;
                     currentContext = data.context_string || data.inequality_string || "";
-                    window.currentExpectedAnswer = (data.new_question_data && (data.new_question_data.correct_answer || data.new_question_data.expected_answer || data.new_question_data.answer)) || "";
-                    window.currentProblemTypeId = data.problem_type_id || data.problem_type || "";
 
                     // 5. 調整輸入框狀態
                     if (data.answer_type === 'handwriting') {
@@ -3439,10 +3557,7 @@
                         submitBtn.disabled = false;
                     }
 
-                    // 6. 重置介面
-                    answerInput.value = '';
-                    resultDisplay.textContent = '';
-                    resultDisplay.className = '';
+                    // 6. 重置介面（renderQuestion 已清空回饋與答案欄）
                     ctx.fillStyle = 'white';
                     /* 移除重複的清空與重置邏輯，避免蓋掉剛畫好的圖 */
                     /*
@@ -3598,13 +3713,23 @@
         }
 
         function renderQuestion(payload) {
+            clearPracticeFeedback();
+            applyCurrentQuestion(payload);
             const questionMainText = resolveQuestionText(payload);
             if (questionText) {
                 questionText.textContent = questionMainText;
             }
+            if (answerInput) {
+                answerInput.value = '';
+            }
             resetQuestionScroll();
             renderChoices(payload);
             resetQuestionScroll();
+            if (questionText && window.MathJax && typeof window.MathJax.typesetClear === 'function') {
+                try {
+                    window.MathJax.typesetClear([questionText]);
+                } catch (e) { /* ignore */ }
+            }
             renderMathContent(questionText);
             if (questionChoices && questionChoices.style.display !== 'none') {
                 renderMathContent(questionChoices);
@@ -3623,15 +3748,15 @@
             }
 
             // 動態載入訊息效果（三個點動畫）
-            let loadingInterval = null;
             function showLoadingMessage() {
                 let dots = 0;
+                stopPracticeCheckLoading();
                 resultDisplay.className = '';
                 resultDisplay.style.background = '#fff3cd';
                 resultDisplay.style.color = '#856404';
                 resultDisplay.style.border = '1px solid #ffeaa7';
 
-                loadingInterval = setInterval(() => {
+                practiceCheckLoadingInterval = setInterval(() => {
                     dots = (dots + 1) % 4;
                     const dotString = '.'.repeat(dots);
                     resultDisplay.textContent = `正在檢查答案${dotString}`;
@@ -3639,10 +3764,7 @@
             }
 
             function stopLoadingMessage() {
-                if (loadingInterval) {
-                    clearInterval(loadingInterval);
-                    loadingInterval = null;
-                }
+                stopPracticeCheckLoading();
             }
 
             submitBtn.onclick = () => {
@@ -3670,6 +3792,13 @@
                 }
 
                 if (isProcessing) return;
+                const submitEpoch = practiceQuestionEpoch;
+                const submitQuestionUid = currentQuestion && currentQuestion.question_uid
+                    ? String(currentQuestion.question_uid)
+                    : '';
+                const userAnswer = (answerInput && answerInput.value) ? answerInput.value : '';
+                logPracticeSubmitDebug(userAnswer);
+
                 isProcessing = true;
                 submitBtn.disabled = true;
                 setChoiceOptionsDisabled(true);
@@ -3680,12 +3809,39 @@
                 fetch('/check_answer', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ answer: answerInput.value })
+                    body: JSON.stringify(buildCheckAnswerPayload(userAnswer))
                 })
                     .then(r => r.json())
                     .then(data => {
                         // 停止載入訊息
                         stopLoadingMessage();
+
+                        if (shouldIgnoreCheckAnswerResponse(data, submitEpoch, submitQuestionUid)) {
+                            console.warn(
+                                '[FRONTEND PRACTICE] stale check_answer response ignored',
+                                {
+                                    submitEpoch,
+                                    currentEpoch: practiceQuestionEpoch,
+                                    submitQuestionUid,
+                                    responseQuestionUid: data && data.question_uid,
+                                }
+                            );
+                            return;
+                        }
+
+                        if (data.duplicate_submission) {
+                            resultDisplay.textContent = data.message || data.result || '此題已批改過。';
+                            resultDisplay.className = data.correct ? 'correct' : 'incorrect';
+                            return;
+                        }
+
+                        if (data.state_lost || data.stale_question || data.stale_question_requires_reload || data.error === 'question_expired') {
+                            clearPracticeFeedback();
+                            resultDisplay.textContent = data.message || '題目已更新，請重新載入題目';
+                            resultDisplay.className = 'incorrect';
+                            loadQuestion();
+                            return;
+                        }
 
                         resultDisplay.textContent = data.result || (data.correct ? '正確！' : '錯誤');
                         resultDisplay.className = data.correct ? 'correct' : 'incorrect';

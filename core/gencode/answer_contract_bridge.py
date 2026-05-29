@@ -23,6 +23,7 @@ _EQUIVALENCE_TO_LEGACY = {
     "normalized_label": "string_equivalence",
     "interval_equivalence": "interval_set",
     "inequality_solution_equivalence": "interval_set",
+    "coordinate_pair_equivalence": "coordinate_pair_equivalence",
 }
 
 

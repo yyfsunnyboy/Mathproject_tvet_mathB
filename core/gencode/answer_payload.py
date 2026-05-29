@@ -11,6 +11,7 @@ CLASSIFICATION_TYPES = frozenset({"classification", "quadrant_label", "text_labe
 NUMERIC_TYPES = frozenset({"numeric", "integer", "decimal", "number"})
 RADICAL_TYPES = frozenset({"numeric_or_radical", "math_expression", "radical_number", "expression"})
 CHOICE_TYPES = frozenset({"single_choice", "multi_choice", "choice", "choice_label"})
+COORDINATE_PAIR_TYPES = frozenset({"coordinate_pair", "ordered_pair"})
 
 ANSWER_TYPE_ALIASES: dict[str, str] = {
     "integer": "numeric",
@@ -26,6 +27,7 @@ ANSWER_TYPE_ALIASES: dict[str, str] = {
     "radical_number": "numeric_or_radical",
     "choice": "single_choice",
     "choice_label": "single_choice",
+    "ordered_pair": "coordinate_pair",
 }
 
 VALID_ANSWER_TYPES = frozenset(
@@ -50,21 +52,154 @@ VALID_ANSWER_TYPES = frozenset(
     | NUMERIC_TYPES
     | RADICAL_TYPES
     | CHOICE_TYPES
+    | COORDINATE_PAIR_TYPES
 )
 
 _RADICAL_TOKEN = re.compile(r"\\sqrt|sqrt\s*\(|√", re.I)
 
 
-def coerce_correct_answer(value: Any) -> Any:
+def is_coordinate_pair_contract(answer_contract: dict[str, Any] | None) -> bool:
+    ac = answer_contract if isinstance(answer_contract, dict) else {}
+    if str(ac.get("answer_shape", "")).strip() == "coordinate_pair":
+        return True
+    if str(ac.get("semantic_answer_shape", "")).strip() == "coordinate_pair":
+        return True
+    if str(ac.get("checker", "")).strip() == "coordinate_pair_checker":
+        return True
+    if str(ac.get("answer_equivalence", ac.get("equivalence_type", ""))).strip() == "coordinate_pair_equivalence":
+        return True
+    return answer_type_family(str(ac.get("answer_type", ""))) == "coordinate_pair"
+
+
+def is_coordinate_pair_runtime_payload(payload: dict[str, Any]) -> bool:
+    """Detect coordinate_pair grading from payload fields (not only embedded answer_contract)."""
+    if not isinstance(payload, dict):
+        return False
+    ac = payload.get("answer_contract") if isinstance(payload.get("answer_contract"), dict) else {}
+    if is_coordinate_pair_contract(ac):
+        return True
+    if str(payload.get("checker") or payload.get("checker_type") or "").strip() == "coordinate_pair_checker":
+        return True
+    if str(payload.get("equivalence") or payload.get("equivalence_type") or "").strip() == "coordinate_pair_equivalence":
+        return True
+    meta = payload.get("metadata") if isinstance(payload.get("metadata"), dict) else {}
+    if (
+        str(meta.get("presentation_mode", "")).strip() == "short_answer"
+        and str(meta.get("semantic_answer_shape", "")).strip() == "coordinate_pair"
+    ):
+        return True
+    if str(meta.get("presentation_mode", "")).strip() == "short_answer":
+        from core.checkers.coordinate_pair_checker import parse_coordinate_pair_answer
+
+        if parse_coordinate_pair_answer(meta.get("semantic_answer")) is not None:
+            return True
+    return False
+
+
+def resolve_answer_contract_for_runtime(
+    payload: dict[str, Any],
+    *,
+    skill_id: str = "",
+) -> dict[str, Any]:
+    """Merge answer_contract from payload, checker, equivalence, metadata, or problem_type spec."""
+    if not isinstance(payload, dict):
+        return {}
+    ac = payload.get("answer_contract") if isinstance(payload.get("answer_contract"), dict) else {}
+    if is_coordinate_pair_contract(ac):
+        return dict(ac)
+    if answer_type_family(str(ac.get("answer_type", ""))) == "solution_set":
+        return dict(ac)
+    if is_coordinate_pair_runtime_payload(payload):
+        merged = dict(ac)
+        merged.setdefault("answer_type", "ordered_pair")
+        merged.setdefault("answer_shape", "coordinate_pair")
+        merged.setdefault("answer_equivalence", "coordinate_pair_equivalence")
+        merged.setdefault("checker", "coordinate_pair_checker")
+        return merged
+    sid = str(skill_id or payload.get("skill_id", payload.get("skill", ""))).strip()
+    pt = str(payload.get("problem_type_id", "")).strip()
+    if sid and pt:
+        from core.gencode.problem_type_spec import get_answer_contract, load_problem_type_spec
+
+        spec = load_problem_type_spec(sid, pt, prefer="auto")
+        if spec:
+            return dict(get_answer_contract(spec))
+    return dict(ac)
+
+
+def refresh_runtime_question_session(payload: dict[str, Any], *, skill_id: str = "") -> dict[str, Any]:
+    """Normalize practice session payload: contract resolution + coordinate_pair string answers."""
+    if not isinstance(payload, dict):
+        return payload
+    out = dict(payload)
+    sid = str(skill_id or out.get("skill_id", out.get("skill", ""))).strip()
+    ac = resolve_answer_contract_for_runtime(out, skill_id=sid)
+    if ac:
+        out["answer_contract"] = ac
+        if ac.get("answer_type"):
+            out["answer_type"] = str(ac.get("answer_type"))
+        checker_name = str(ac.get("checker", "")).strip()
+        if checker_name:
+            out["checker"] = checker_name
+            out.setdefault("checker_type", checker_name)
+        if ac.get("answer_equivalence"):
+            out["equivalence"] = str(ac.get("answer_equivalence"))
+    if is_coordinate_pair_contract(ac) or is_coordinate_pair_runtime_payload(out):
+        out = apply_coordinate_pair_runtime_fields(out, ac or {"answer_shape": "coordinate_pair"})
+    return out
+
+
+def format_coordinate_pair_display(value: Any) -> str:
+    from core.checkers.coordinate_pair_checker import parse_coordinate_pair_answer
+
+    parsed = parse_coordinate_pair_answer(value)
+    if parsed is None:
+        return ""
+    x, y = parsed
+
+    def _fmt_num(n: float) -> str:
+        if isinstance(n, float) and n.is_integer():
+            return str(int(n))
+        text = f"{n:.6g}"
+        return text
+
+    return f"({_fmt_num(x)},{_fmt_num(y)})"
+
+
+def coerce_correct_answer(value: Any, answer_contract: dict[str, Any] | None = None) -> Any:
     """Preserve list/tuple/set; parse JSON-like list strings from session."""
-    if isinstance(value, (list, tuple, set)):
-        return list(value) if isinstance(value, set) else value
+    ac = answer_contract if isinstance(answer_contract, dict) else {}
+    coord_contract = is_coordinate_pair_contract(ac)
+
+    if isinstance(value, (list, tuple)) and len(value) == 2 and coord_contract:
+        text = format_coordinate_pair_display(value)
+        return text or value
+    if isinstance(value, set):
+        return sorted(value)
+
     if not isinstance(value, str):
         return value
     text = value.strip()
     if not text:
         return value
-    if text.startswith("[") or text.startswith("(") or text.startswith("{"):
+
+    if coord_contract:
+        if format_coordinate_pair_display(text):
+            return text
+
+    family = answer_type_family(str(ac.get("answer_type", "")))
+    if family == "solution_set" and text.startswith(("[", "(", "{")):
+        try:
+            parsed = ast.literal_eval(text)
+            if isinstance(parsed, set):
+                return sorted(parsed)
+            if isinstance(parsed, (list, tuple)):
+                return list(parsed)
+        except Exception:
+            pass
+        return value
+
+    if not coord_contract and family != "coordinate_pair" and text.startswith(("[", "(", "{")):
         try:
             parsed = ast.literal_eval(text)
             if isinstance(parsed, set):
@@ -74,6 +209,20 @@ def coerce_correct_answer(value: Any) -> Any:
         except Exception:
             pass
     return value
+
+
+def apply_coordinate_pair_runtime_fields(payload: dict[str, Any], answer_contract: dict[str, Any]) -> dict[str, Any]:
+    """Normalize coordinate_pair answers for session / practice feedback."""
+    if not is_coordinate_pair_contract(answer_contract):
+        return payload
+    out = dict(payload)
+    raw = out.get("correct_answer", out.get("answer"))
+    canon = format_coordinate_pair_display(raw) or str(raw or "").strip()
+    if canon:
+        out["correct_answer"] = canon
+        out["answer"] = canon
+        out["display_answer"] = canon
+    return out
 
 
 def canonical_answer_type(answer_type: str) -> str:
@@ -97,6 +246,8 @@ def answer_type_family(answer_type: str) -> str:
         return "numeric_or_radical"
     if canon in NUMERIC_TYPES:
         return "numeric"
+    if canon in COORDINATE_PAIR_TYPES:
+        return "coordinate_pair"
     return canon
 
 
@@ -136,6 +287,9 @@ def normalize_correct_answer_for_contract(value: Any, answer_contract: dict[str,
     family = answer_type_family(str(ac.get("answer_type", "")))
     if family == "solution_set":
         return normalize_solution_set_value(value)
+    if family == "coordinate_pair":
+        text = format_coordinate_pair_display(value)
+        return text or (str(value).strip() if value is not None else "")
     if family == "numeric_or_radical":
         return str(value).strip() if value is not None else ""
     if family in {"numeric", "fraction"}:
@@ -183,6 +337,12 @@ def is_valid_answer_payload(value: Any, answer_contract: dict[str, Any]) -> tupl
             return True, ""
         except Exception:
             return False, "fraction_invalid"
+    if family == "coordinate_pair":
+        from core.checkers.coordinate_pair_checker import parse_coordinate_pair_answer
+
+        if parse_coordinate_pair_answer(value) is not None:
+            return True, ""
+        return False, "coordinate_pair_invalid"
     return bool(str(value).strip()), "answer_empty"
 
 
@@ -199,6 +359,7 @@ def expected_answer_shape_hint(answer_contract: dict[str, Any]) -> str:
         "numeric_or_radical": "numeric_or_radical allows int/float/expression string",
         "fraction": "fraction allows fraction string or numeric",
         "short_answer": "short_answer allows non-empty string",
+        "coordinate_pair": "coordinate_pair allows (x,y) string or equivalent formats",
     }
     base = hints.get(family, f"{family} allows non-empty answer per contract")
     if shape:
@@ -281,6 +442,12 @@ def finalize_generator_payload(payload: dict[str, Any], answer_contract: dict[st
         out["answer"] = canon
         if canon:
             out["display_answer"] = " 或 ".join(str(x) for x in canon)
+    elif family == "coordinate_pair" and raw_answer is not None:
+        canon = normalize_correct_answer_for_contract(raw_answer, ac)
+        if canon:
+            out["correct_answer"] = canon
+            out["answer"] = canon
+            out["display_answer"] = canon
     elif family == "numeric_or_radical" and raw_answer is not None:
         text = str(raw_answer).strip()
         out["correct_answer"] = text

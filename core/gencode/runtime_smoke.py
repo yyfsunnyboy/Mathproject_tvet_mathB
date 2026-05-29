@@ -4,6 +4,7 @@ import ast
 import importlib.util
 import py_compile
 import re
+import traceback
 from pathlib import Path
 from typing import Any
 
@@ -13,7 +14,7 @@ from core.gencode.answer_payload import (
     validate_generated_answer_shape,
 )
 from core.gencode.problem_type_spec import get_answer_contract, load_problem_type_spec
-from core.gencode.runtime_skill_wrapper import check_answer
+from core.gencode.runtime_skill_wrapper import check_answer, dispatch_problem_type
 from core.gencode.validators import validate_generator_payload
 
 _REQUIRED_PAYLOAD_KEYS = (
@@ -240,15 +241,34 @@ def run_draft_runtime_smoke(
         all_blockers: list[str] = []
         last_payload: dict[str, Any] = {}
         last_diagnostics: dict[str, Any] = {}
+        generator_specs = getattr(mod, "GENERATOR_SPECS", None)
+        if not isinstance(generator_specs, list):
+            generator_specs = []
         for seed in range(max(1, int(sample_count))):
+            dispatched_pt = ""
+            if generator_specs:
+                try:
+                    dispatched_pt, _, _ = dispatch_problem_type(skill_id, generator_specs, level=1, seed=seed)
+                except Exception:
+                    dispatched_pt = ""
             try:
                 payload = gen(level=1, seed=seed)
             except Exception as gen_ex:
                 all_blockers.append("runtime_smoke_generate_exception")
                 raw["error"] = str(gen_ex)
                 raw["failed_seed"] = seed
+                tb_text = traceback.format_exc()
+                raw["runtime_smoke_raw"] = {
+                    "exception_type": type(gen_ex).__name__,
+                    "exception_message": str(gen_ex),
+                    "traceback_preview": tb_text[-1200:],
+                    "problem_type_id": dispatched_pt or None,
+                    "seed": seed,
+                }
                 if "invalid_answer_type" in str(gen_ex) or "generator_semantically_unsafe" in str(gen_ex):
                     raw["failed_validator_name"] = "slot_generators.validate_generator_payload"
+                elif "contract_validation_failed" in str(gen_ex):
+                    raw["failed_validator_name"] = "runtime_skill_wrapper.validate_generator_payload"
                 interface_check["generate_returns_dict"] = False
                 break
             if not isinstance(payload, dict):

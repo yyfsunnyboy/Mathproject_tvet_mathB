@@ -1,0 +1,765 @@
+{
+  "ok": true,
+  "phase": "phase2",
+  "skill_id": "vh_數學B1_DivisionPointCoordinates",
+  "phase1_alignment_blocked": false,
+  "alignment_blockers": [],
+  "generator_results": [
+    {
+      "problem_type_id": "ordered_pair_compute_internal_division_point_coordinates_short_answer_two_coordi",
+      "source_example_count": 4,
+      "answer_contract": {
+        "choices_required": false,
+        "choice_count": null,
+        "correct_choice_count": null,
+        "frontend_render_choices": false,
+        "answer_type": "ordered_pair",
+        "answer_shape": "coordinate_pair",
+        "answer_semantics": "coordinate_pair",
+        "answer_equivalence": "coordinate_pair_equivalence",
+        "checker": "coordinate_pair_checker",
+        "presentation_mode": "short_answer",
+        "source_has_choices": false,
+        "selected_checker": "coordinate_pair_checker",
+        "checker_selection_reason": "coordinate_pair_semantic",
+        "accepted_formats": [
+          "(0,-2)",
+          "0,-2",
+          "（0，-2）",
+          "x=0,y=-2",
+          "(0, -2)",
+          "P(0,-2)"
+        ],
+        "checker_key": "coordinate_pair_checker",
+        "equivalence_type": "coordinate_pair_equivalence",
+        "checker_capability_status": "ok",
+        "checker_contract_blockers": [],
+        "checker_contract_warnings": [],
+        "stem_contract": {
+          "stem_must_not_embed_choices": true,
+          "allowed_math_objects": [
+            "two_coordinate_points",
+            "section_ratio"
+          ],
+          "required_math_objects": [
+            "two_coordinate_points",
+            "section_ratio"
+          ],
+          "forbidden_patterns": [
+            "\\(A\\)",
+            "\\(B\\)",
+            "\\(C\\)",
+            "\\(D\\)"
+          ]
+        },
+        "dependency_contract": {
+          "givens_must_be_used": true,
+          "target_answer_must_depend_on_givens": true,
+          "variables_in_conditions_must_appear_in_target": false
+        },
+        "semantic_contract": {
+          "reasoning_type": [
+            "distance_formula_reasoning"
+          ],
+          "reject_if": [
+            "unused_condition",
+            "ambiguous_answer",
+            "answer_not_derivable",
+            "duplicated_choices",
+            "no_correct_choice",
+            "multiple_correct_choices_when_single_choice"
+          ]
+        },
+        "generator_contract": {
+          "template_variants": [
+            {
+              "id": "ratio_colon_form",
+              "label": "AP:PB=m:n",
+              "stem_pattern": "已知 {A}({ax},{ay})、{B}({bx},{by})，{P} 在 {AB} 上，且 {AP}:{PB}={m}:{n}，求 {P} 坐標。",
+              "weight": 1.0,
+              "enabled": true
+            },
+            {
+              "id": "multiple_form",
+              "label": "AP=k·PB",
+              "stem_pattern": "已知 {A}({ax},{ay})、{B}({bx},{by})，{P} 在 {AB} 上，且 {AP}={k}{PB}，求 {P} 坐標。",
+              "weight": 1.0,
+              "enabled": true
+            },
+            {
+              "id": "linear_relation_form",
+              "label": "mAP=nPB",
+              "stem_pattern": "已知 {A}({ax},{ay})、{B}({bx},{by})，{P} 在 {AB} 上，且 {m}{AP}={n}{PB}，求 {P} 坐標。",
+              "weight": 1.0,
+              "enabled": true
+            },
+            {
+              "id": "word_context_form",
+              "label": "距離倍數語境",
+              "stem_pattern": "甲地與乙地在坐標平面上，某點位於兩地連線上，且到甲地距離為到乙地的 {k} 倍，求該點坐標。",
+              "weight": 1.0,
+              "enabled": true
+            }
+          ],
+          "parameter_schema": {
+            "point_names": {
+              "choices": [
+                [
+                  "A",
+                  "B",
+                  "P"
+                ],
+                [
+                  "P",
+                  "Q",
+                  "R"
+                ],
+                [
+                  "M",
+                  "N",
+                  "T"
+                ],
+                [
+                  "C",
+                  "D",
+                  "E"
+                ]
+              ],
+              "randomize": true
+            },
+            "coordinate_range": {
+              "x_min": -10,
+              "x_max": 10,
+              "y_min": -10,
+              "y_max": 10,
+              "exclude_zero_probability": 0.2
+            },
+            "ratio": {
+              "m_min": 1,
+              "m_max": 5,
+              "n_min": 1,
+              "n_max": 5,
+              "require_coprime": true,
+              "allow_equal_ratio": false
+            },
+            "answer_type_mode": {
+              "choices": [
+                "integer_coordinate",
+                "rational_coordinate"
+              ],
+              "weights": [
+                0.7,
+                0.3
+              ]
+            }
+          },
+          "variation_dimensions": [
+            "point_names",
+            "coordinate_sign_pattern",
+            "ratio_form",
+            "ratio_values",
+            "answer_integer_or_fraction",
+            "direct_formula_or_word_context",
+            "internal_or_external",
+            "ask_target"
+          ],
+          "difficulty_controls": {
+            "level_1": {
+              "coordinate_range": [
+                -5,
+                5
+              ],
+              "integer_answer_only": true,
+              "simple_ratio_only": true,
+              "template_variants": [
+                "ratio_colon_form",
+                "direct_midpoint"
+              ]
+            },
+            "level_2": {
+              "coordinate_range": [
+                -10,
+                10
+              ],
+              "allow_negative_coordinates": true,
+              "allow_rational_answer": true
+            },
+            "level_3": {
+              "word_context_enabled": true,
+              "missing_endpoint_enabled": true,
+              "external_division_enabled": true
+            }
+          },
+          "anti_repetition_rules": {
+            "avoid_same_template_consecutive": true,
+            "avoid_same_ratio_consecutive": true,
+            "avoid_same_point_names_consecutive": true,
+            "avoid_same_answer_consecutive": true,
+            "recent_history_window": 5,
+            "signature_fields": [
+              "problem_type_id",
+              "template_variant",
+              "ratio_form",
+              "ratio_values",
+              "coordinate_pattern",
+              "answer"
+            ]
+          },
+          "validity_constraints": [
+            "A != B",
+            "m, n positive integers",
+            "denominator != 0",
+            "internal point lies between A and B",
+            "coordinate answer matches ratio relation",
+            "no ambiguous wording"
+          ],
+          "answer_shape": "coordinate_pair",
+          "explanation_variants": [
+            "section_formula_stepwise",
+            "ratio_substitution_short"
+          ],
+          "sampling_strategy": "weighted_random",
+          "template_families": [
+            "compute_internal_division_point_coordinates"
+          ],
+          "parameter_slots": {
+            "seed": "integer",
+            "difficulty": "easy"
+          },
+          "randomization_rules": {
+            "shuffle_choices": false
+          },
+          "avoid_llm_freeform_math": true,
+          "use_domain_functions": true,
+          "derivation_steps_required": true,
+          "template_slots": {
+            "stem": "division_point_coordinates"
+          },
+          "problem_type_id": "ordered_pair_compute_internal_division_point_coordinates_short_answer_two_coordi",
+          "contract_validation_blockers": [],
+          "contract_validation_warnings": []
+        },
+        "validator_contract": {
+          "static_checks": [
+            "answer_contract_checks",
+            "choices_policy"
+          ],
+          "semantic_checks": [
+            "givens_to_target_dependency"
+          ],
+          "runtime_smoke_count": 30
+        }
+      },
+      "answer_type": "ordered_pair",
+      "answer_shape": "coordinate_pair",
+      "equivalence_type": "coordinate_pair_equivalence",
+      "selected_checker": "coordinate_pair_checker",
+      "checker_key": "coordinate_pair_checker",
+      "checker_capability_status": "ok",
+      "checker_contract_blockers": [],
+      "checker_contract_warnings": [],
+      "generator_key": "vh_數學B1_DivisionPointCoordinates:ordered_pair_compute_internal_division_point_coordinates_short_answer_two_coordi:draft_v1",
+      "generator_status": "runtime_ready",
+      "checker_smoke_status": "passed",
+      "dynamic_sampling_status": "passed",
+      "diversity_sampling": {
+        "diversity_sampling_status": "passed",
+        "diversity_healthy": true,
+        "sample_count": 30,
+        "unique_signature_count": 30,
+        "unique_question_text_count": 30,
+        "template_variant_distribution": {
+          "word_context_form": 9,
+          "multiple_form": 8,
+          "linear_relation_form": 8,
+          "ratio_colon_form": 5
+        },
+        "answer_shape_distribution": {
+          "(-2,3)": 1,
+          "(1,3)": 2,
+          "(-6,-9)": 1,
+          "(5,6)": 1,
+          "(-5,-9)": 1,
+          "(3,10)": 1,
+          "(-2,-5)": 1,
+          "(-7,7)": 1,
+          "(-2,6)": 1,
+          "(9,5)": 1,
+          "(3,-10)": 1,
+          "(-9,-1)": 1,
+          "(7,9)": 1,
+          "(-6,-2)": 1,
+          "(8,7)": 1,
+          "(-1,-3)": 1,
+          "(-3,8)": 1,
+          "(-10,-5)": 1,
+          "(0,9)": 1,
+          "(-6,2)": 1,
+          "(-3,6)": 1,
+          "(-2,4)": 1,
+          "(-3,7)": 1,
+          "(3,-1)": 1,
+          "(-8,-7)": 1,
+          "(10,-9)": 1,
+          "(-5,0)": 1,
+          "(0,-3)": 1,
+          "(-4,-9)": 1
+        },
+        "variable_coverage_report": {
+          "ratio_forms": [
+            "1AP=2PB",
+            "2AP=1PB",
+            "3AP=1PB",
+            "3AP=2PB",
+            "3AP=5PB",
+            "5AP=4PB",
+            "AP:PB=1:2",
+            "AP:PB=1:3",
+            "AP:PB=1:4",
+            "AP:PB=2:1",
+            "AP:PB=3:1",
+            "AP:PB=3:4",
+            "AP:PB=3:5",
+            "AP:PB=4:1",
+            "AP=1PB",
+            "AP=2PB",
+            "AP=3PB",
+            "AP=4PB"
+          ],
+          "coordinate_patterns": [
+            "++",
+            "+-",
+            "-+",
+            "--"
+          ],
+          "answer_type_modes": [
+            ""
+          ]
+        },
+        "repetition_warnings": [],
+        "diversity_blockers": [],
+        "max_consecutive_same_template": 3,
+        "generation_errors": [],
+        "sampling_mode": "live"
+      },
+      "unique_signature_count": 30,
+      "template_variant_distribution": {
+        "word_context_form": 9,
+        "multiple_form": 8,
+        "linear_relation_form": 8,
+        "ratio_colon_form": 5
+      },
+      "variable_coverage_report": {
+        "ratio_forms": [
+          "1AP=2PB",
+          "2AP=1PB",
+          "3AP=1PB",
+          "3AP=2PB",
+          "3AP=5PB",
+          "5AP=4PB",
+          "AP:PB=1:2",
+          "AP:PB=1:3",
+          "AP:PB=1:4",
+          "AP:PB=2:1",
+          "AP:PB=3:1",
+          "AP:PB=3:4",
+          "AP:PB=3:5",
+          "AP:PB=4:1",
+          "AP=1PB",
+          "AP=2PB",
+          "AP=3PB",
+          "AP=4PB"
+        ],
+        "coordinate_patterns": [
+          "++",
+          "+-",
+          "-+",
+          "--"
+        ],
+        "answer_type_modes": [
+          ""
+        ]
+      },
+      "repetition_warnings": [],
+      "requires_human_action": false,
+      "blockers": [],
+      "warnings": [],
+      "usable_for_phase3": true
+    },
+    {
+      "problem_type_id": "single_choice_compute_internal_division_point_coordinates_two_coordinate_points_",
+      "source_example_count": 2,
+      "answer_contract": {
+        "choices_required": true,
+        "choice_count": 4,
+        "correct_choice_count": 1,
+        "frontend_render_choices": true,
+        "answer_type": "single_choice",
+        "answer_shape": "choice_label",
+        "answer_semantics": "choice_label",
+        "answer_equivalence": "choice_label",
+        "checker": "choice_label_checker",
+        "presentation_mode": "single_choice",
+        "source_has_choices": true,
+        "selected_checker": "choice_label_checker",
+        "checker_selection_reason": "coordinate_pair_semantic",
+        "accepted_formats": [
+          "A",
+          "B",
+          "C",
+          "D"
+        ],
+        "checker_key": "choice_label_checker",
+        "equivalence_type": "choice_label",
+        "checker_capability_status": "ok",
+        "checker_contract_blockers": [],
+        "checker_contract_warnings": [],
+        "stem_contract": {
+          "stem_must_not_embed_choices": true,
+          "allowed_math_objects": [
+            "two_coordinate_points",
+            "section_ratio"
+          ],
+          "required_math_objects": [
+            "two_coordinate_points",
+            "section_ratio"
+          ],
+          "forbidden_patterns": [
+            "\\(A\\)",
+            "\\(B\\)",
+            "\\(C\\)",
+            "\\(D\\)"
+          ]
+        },
+        "dependency_contract": {
+          "givens_must_be_used": true,
+          "target_answer_must_depend_on_givens": true,
+          "variables_in_conditions_must_appear_in_target": false
+        },
+        "semantic_contract": {
+          "reasoning_type": [
+            "distance_formula_reasoning"
+          ],
+          "reject_if": [
+            "unused_condition",
+            "ambiguous_answer",
+            "answer_not_derivable",
+            "duplicated_choices",
+            "no_correct_choice",
+            "multiple_correct_choices_when_single_choice"
+          ]
+        },
+        "generator_contract": {
+          "template_variants": [
+            {
+              "id": "ratio_colon_form",
+              "label": "AP:PB=m:n",
+              "stem_pattern": "已知 {A}({ax},{ay})、{B}({bx},{by})，{P} 在 {AB} 上，且 {AP}:{PB}={m}:{n}，求 {P} 坐標。",
+              "weight": 1.0,
+              "enabled": true
+            },
+            {
+              "id": "multiple_form",
+              "label": "AP=k·PB",
+              "stem_pattern": "已知 {A}({ax},{ay})、{B}({bx},{by})，{P} 在 {AB} 上，且 {AP}={k}{PB}，求 {P} 坐標。",
+              "weight": 1.0,
+              "enabled": true
+            },
+            {
+              "id": "linear_relation_form",
+              "label": "mAP=nPB",
+              "stem_pattern": "已知 {A}({ax},{ay})、{B}({bx},{by})，{P} 在 {AB} 上，且 {m}{AP}={n}{PB}，求 {P} 坐標。",
+              "weight": 1.0,
+              "enabled": true
+            },
+            {
+              "id": "word_context_form",
+              "label": "距離倍數語境",
+              "stem_pattern": "甲地與乙地在坐標平面上，某點位於兩地連線上，且到甲地距離為到乙地的 {k} 倍，求該點坐標。",
+              "weight": 1.0,
+              "enabled": true
+            }
+          ],
+          "parameter_schema": {
+            "point_names": {
+              "choices": [
+                [
+                  "A",
+                  "B",
+                  "P"
+                ],
+                [
+                  "P",
+                  "Q",
+                  "R"
+                ],
+                [
+                  "M",
+                  "N",
+                  "T"
+                ],
+                [
+                  "C",
+                  "D",
+                  "E"
+                ]
+              ],
+              "randomize": true
+            },
+            "coordinate_range": {
+              "x_min": -10,
+              "x_max": 10,
+              "y_min": -10,
+              "y_max": 10,
+              "exclude_zero_probability": 0.2
+            },
+            "ratio": {
+              "m_min": 1,
+              "m_max": 5,
+              "n_min": 1,
+              "n_max": 5,
+              "require_coprime": true,
+              "allow_equal_ratio": false
+            },
+            "answer_type_mode": {
+              "choices": [
+                "integer_coordinate",
+                "rational_coordinate"
+              ],
+              "weights": [
+                0.7,
+                0.3
+              ]
+            }
+          },
+          "variation_dimensions": [
+            "point_names",
+            "coordinate_sign_pattern",
+            "ratio_form",
+            "ratio_values",
+            "answer_integer_or_fraction",
+            "direct_formula_or_word_context",
+            "internal_or_external",
+            "ask_target"
+          ],
+          "difficulty_controls": {
+            "level_1": {
+              "coordinate_range": [
+                -5,
+                5
+              ],
+              "integer_answer_only": true,
+              "simple_ratio_only": true,
+              "template_variants": [
+                "ratio_colon_form",
+                "direct_midpoint"
+              ]
+            },
+            "level_2": {
+              "coordinate_range": [
+                -10,
+                10
+              ],
+              "allow_negative_coordinates": true,
+              "allow_rational_answer": true
+            },
+            "level_3": {
+              "word_context_enabled": true,
+              "missing_endpoint_enabled": true,
+              "external_division_enabled": true
+            }
+          },
+          "anti_repetition_rules": {
+            "avoid_same_template_consecutive": true,
+            "avoid_same_ratio_consecutive": true,
+            "avoid_same_point_names_consecutive": true,
+            "avoid_same_answer_consecutive": true,
+            "recent_history_window": 5,
+            "signature_fields": [
+              "problem_type_id",
+              "template_variant",
+              "ratio_form",
+              "ratio_values",
+              "coordinate_pattern",
+              "answer"
+            ]
+          },
+          "validity_constraints": [
+            "A != B",
+            "m, n positive integers",
+            "denominator != 0",
+            "internal point lies between A and B",
+            "coordinate answer matches ratio relation",
+            "no ambiguous wording"
+          ],
+          "answer_shape": "coordinate_pair",
+          "explanation_variants": [
+            "section_formula_stepwise",
+            "ratio_substitution_short"
+          ],
+          "sampling_strategy": "weighted_random",
+          "template_families": [
+            "compute_internal_division_point_coordinates"
+          ],
+          "parameter_slots": {
+            "seed": "integer",
+            "difficulty": "easy"
+          },
+          "randomization_rules": {
+            "shuffle_choices": true
+          },
+          "avoid_llm_freeform_math": true,
+          "use_domain_functions": true,
+          "derivation_steps_required": true,
+          "template_slots": {
+            "stem": "division_point_coordinates"
+          },
+          "problem_type_id": "single_choice_compute_internal_division_point_coordinates_two_coordinate_points_",
+          "contract_validation_blockers": [],
+          "contract_validation_warnings": []
+        },
+        "validator_contract": {
+          "static_checks": [
+            "answer_contract_checks",
+            "choices_policy"
+          ],
+          "semantic_checks": [
+            "givens_to_target_dependency"
+          ],
+          "runtime_smoke_count": 30
+        }
+      },
+      "answer_type": "single_choice",
+      "answer_shape": "choice_label",
+      "equivalence_type": "choice_label",
+      "selected_checker": "choice_label_checker",
+      "checker_key": "choice_label_checker",
+      "checker_capability_status": "ok",
+      "checker_contract_blockers": [],
+      "checker_contract_warnings": [],
+      "generator_key": "vh_數學B1_DivisionPointCoordinates:single_choice_compute_internal_division_point_coordinates_two_coordinate_points_:draft_v1",
+      "generator_status": "runtime_ready_with_warning",
+      "checker_smoke_status": "passed",
+      "dynamic_sampling_status": "passed",
+      "diversity_sampling": {
+        "diversity_sampling_status": "passed",
+        "diversity_healthy": true,
+        "sample_count": 30,
+        "unique_signature_count": 29,
+        "unique_question_text_count": 30,
+        "template_variant_distribution": {
+          "ratio_colon_form": 11,
+          "multiple_form": 7,
+          "word_context_form": 6,
+          "linear_relation_form": 6
+        },
+        "answer_shape_distribution": {
+          "A": 5,
+          "C": 8,
+          "B": 10,
+          "D": 7
+        },
+        "variable_coverage_report": {
+          "ratio_forms": [
+            "1AP=2PB",
+            "1AP=4PB",
+            "2AP=1PB",
+            "3AP=5PB",
+            "4AP=3PB",
+            "4AP=5PB",
+            "AP:PB=1:2",
+            "AP:PB=1:3",
+            "AP:PB=1:4",
+            "AP:PB=1:5",
+            "AP:PB=2:3",
+            "AP:PB=2:5",
+            "AP:PB=3:2",
+            "AP:PB=4:3",
+            "AP:PB=5:2",
+            "AP:PB=5:3",
+            "AP:PB=5:4",
+            "AP=1PB",
+            "AP=2PB",
+            "AP=3PB"
+          ],
+          "coordinate_patterns": [
+            "++",
+            "+-",
+            "-+",
+            "--"
+          ],
+          "answer_type_modes": [
+            ""
+          ]
+        },
+        "repetition_warnings": [],
+        "diversity_blockers": [],
+        "max_consecutive_same_template": 2,
+        "generation_errors": [],
+        "sampling_mode": "live"
+      },
+      "unique_signature_count": 29,
+      "template_variant_distribution": {
+        "ratio_colon_form": 11,
+        "multiple_form": 7,
+        "word_context_form": 6,
+        "linear_relation_form": 6
+      },
+      "variable_coverage_report": {
+        "ratio_forms": [
+          "1AP=2PB",
+          "1AP=4PB",
+          "2AP=1PB",
+          "3AP=5PB",
+          "4AP=3PB",
+          "4AP=5PB",
+          "AP:PB=1:2",
+          "AP:PB=1:3",
+          "AP:PB=1:4",
+          "AP:PB=1:5",
+          "AP:PB=2:3",
+          "AP:PB=2:5",
+          "AP:PB=3:2",
+          "AP:PB=4:3",
+          "AP:PB=5:2",
+          "AP:PB=5:3",
+          "AP:PB=5:4",
+          "AP=1PB",
+          "AP=2PB",
+          "AP=3PB"
+        ],
+        "coordinate_patterns": [
+          "++",
+          "+-",
+          "-+",
+          "--"
+        ],
+        "answer_type_modes": [
+          ""
+        ]
+      },
+      "repetition_warnings": [
+        "low_source_examples"
+      ],
+      "requires_human_action": false,
+      "blockers": [],
+      "warnings": [
+        "low_source_examples"
+      ],
+      "usable_for_phase3": true
+    }
+  ],
+  "failed_generators": [],
+  "accepted_generators": [
+    "vh_數學B1_DivisionPointCoordinates:ordered_pair_compute_internal_division_point_coordinates_short_answer_two_coordi:draft_v1",
+    "vh_數學B1_DivisionPointCoordinates:single_choice_compute_internal_division_point_coordinates_two_coordinate_points_:draft_v1"
+  ],
+  "reports": {
+    "phase2_generator_summary_json": "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_DivisionPointCoordinates_phase2_generator_summary.json",
+    "phase2_generator_summary_md": "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_DivisionPointCoordinates_phase2_generator_summary.md",
+    "generator_draft_spec_json": "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\drafts\\vh_數學B1_DivisionPointCoordinates_generator_draft_spec.json"
+  },
+  "next_action": "phase3_package_draft",
+  "timestamp": "2026-05-29T15:47:06.965169+00:00",
+  "dry_run": true
+}

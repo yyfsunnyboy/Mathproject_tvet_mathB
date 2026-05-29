@@ -24,6 +24,13 @@
       "generator_status": "blocked",
       "checker_smoke_status": "skipped_with_blockers",
       "dynamic_sampling_status": "skipped_with_blockers",
+      "diversity_sampling": {},
+      "unique_signature_count": "",
+      "template_variant_distribution": {},
+      "variable_coverage_report": {},
+      "repetition_warnings": [
+        "low_source_examples"
+      ],
       "requires_human_action": false,
       "blockers": [
         "answer_contract_not_supported",
@@ -38,6 +45,6 @@
   "failed_generators": [
     "mock_radical_block:short_answer_numeric_or_radical:draft_v1"
   ],
-  "timestamp": "2026-05-29T08:28:04.694413+00:00",
+  "timestamp": "2026-05-29T13:41:04.900851+00:00",
   "dry_run": true
 }

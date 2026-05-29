@@ -3,11 +3,11 @@
   "spec_source": "phase1_induced_draft",
   "items": [
     {
-      "problem_type_id": "short_answer_compute_distance_between_two_points_coordinate_point_distance_formu",
+      "problem_type_id": "ordered_pair_compute_internal_division_point_coordinates_short_answer_two_coordi",
       "skill_id": "vh_數學B1_DivisionPointCoordinates",
-      "target_task": "compute_distance_between_two_points",
-      "task_family": "distance_between_two_points_family",
-      "display_name": "兩點距離計算",
+      "target_task": "compute_internal_division_point_coordinates",
+      "task_family": "division_point_coordinates_family",
+      "display_name": "ordered_pair / compute_internal_division_point_coordinates",
       "source_example_ids": [
         4420,
         4421,
@@ -19,30 +19,33 @@
         "choice_count": null,
         "correct_choice_count": null,
         "frontend_render_choices": false,
-        "answer_type": "numeric_or_radical",
-        "answer_shape": "scalar",
-        "answer_equivalence": "math_expression_equivalence",
-        "checker": "expression_equivalence_checker",
+        "answer_type": "ordered_pair",
+        "answer_shape": "coordinate_pair",
+        "answer_semantics": "coordinate_pair",
+        "answer_equivalence": "coordinate_pair_equivalence",
+        "checker": "coordinate_pair_checker",
+        "presentation_mode": "short_answer",
+        "source_has_choices": false,
+        "selected_checker": "coordinate_pair_checker",
+        "checker_selection_reason": "coordinate_pair_semantic",
         "accepted_formats": [
-          "5",
-          "5.0",
-          "\\sqrt{13}",
-          "sqrt(13)",
-          "2\\sqrt{5}",
-          "2√5"
+          "(0,-2)",
+          "0,-2",
+          "（0，-2）",
+          "x=0,y=-2",
+          "(0, -2)",
+          "P(0,-2)"
         ]
       },
       "stem_contract": {
         "stem_must_not_embed_choices": true,
         "allowed_math_objects": [
-          "coordinate_point",
-          "distance_formula",
-          "segment_length",
-          "two_coordinate_points"
+          "two_coordinate_points",
+          "section_ratio"
         ],
         "required_math_objects": [
-          "coordinate_point",
-          "distance_formula"
+          "two_coordinate_points",
+          "section_ratio"
         ],
         "forbidden_patterns": [
           "\\(A\\)",
@@ -70,8 +73,156 @@
         ]
       },
       "generator_contract": {
+        "template_variants": [
+          {
+            "id": "ratio_colon_form",
+            "label": "AP:PB=m:n",
+            "stem_pattern": "已知 {A}({ax},{ay})、{B}({bx},{by})，{P} 在 {AB} 上，且 {AP}:{PB}={m}:{n}，求 {P} 坐標。",
+            "weight": 1.0,
+            "enabled": true
+          },
+          {
+            "id": "multiple_form",
+            "label": "AP=k·PB",
+            "stem_pattern": "已知 {A}({ax},{ay})、{B}({bx},{by})，{P} 在 {AB} 上，且 {AP}={k}{PB}，求 {P} 坐標。",
+            "weight": 1.0,
+            "enabled": true
+          },
+          {
+            "id": "linear_relation_form",
+            "label": "mAP=nPB",
+            "stem_pattern": "已知 {A}({ax},{ay})、{B}({bx},{by})，{P} 在 {AB} 上，且 {m}{AP}={n}{PB}，求 {P} 坐標。",
+            "weight": 1.0,
+            "enabled": true
+          },
+          {
+            "id": "word_context_form",
+            "label": "距離倍數語境",
+            "stem_pattern": "甲地與乙地在坐標平面上，某點位於兩地連線上，且到甲地距離為到乙地的 {k} 倍，求該點坐標。",
+            "weight": 1.0,
+            "enabled": true
+          }
+        ],
+        "parameter_schema": {
+          "point_names": {
+            "choices": [
+              [
+                "A",
+                "B",
+                "P"
+              ],
+              [
+                "P",
+                "Q",
+                "R"
+              ],
+              [
+                "M",
+                "N",
+                "T"
+              ],
+              [
+                "C",
+                "D",
+                "E"
+              ]
+            ],
+            "randomize": true
+          },
+          "coordinate_range": {
+            "x_min": -10,
+            "x_max": 10,
+            "y_min": -10,
+            "y_max": 10,
+            "exclude_zero_probability": 0.2
+          },
+          "ratio": {
+            "m_min": 1,
+            "m_max": 5,
+            "n_min": 1,
+            "n_max": 5,
+            "require_coprime": true,
+            "allow_equal_ratio": false
+          },
+          "answer_type_mode": {
+            "choices": [
+              "integer_coordinate",
+              "rational_coordinate"
+            ],
+            "weights": [
+              0.7,
+              0.3
+            ]
+          }
+        },
+        "variation_dimensions": [
+          "point_names",
+          "coordinate_sign_pattern",
+          "ratio_form",
+          "ratio_values",
+          "answer_integer_or_fraction",
+          "direct_formula_or_word_context",
+          "internal_or_external",
+          "ask_target"
+        ],
+        "difficulty_controls": {
+          "level_1": {
+            "coordinate_range": [
+              -5,
+              5
+            ],
+            "integer_answer_only": true,
+            "simple_ratio_only": true,
+            "template_variants": [
+              "ratio_colon_form",
+              "direct_midpoint"
+            ]
+          },
+          "level_2": {
+            "coordinate_range": [
+              -10,
+              10
+            ],
+            "allow_negative_coordinates": true,
+            "allow_rational_answer": true
+          },
+          "level_3": {
+            "word_context_enabled": true,
+            "missing_endpoint_enabled": true,
+            "external_division_enabled": true
+          }
+        },
+        "anti_repetition_rules": {
+          "avoid_same_template_consecutive": true,
+          "avoid_same_ratio_consecutive": true,
+          "avoid_same_point_names_consecutive": true,
+          "avoid_same_answer_consecutive": true,
+          "recent_history_window": 5,
+          "signature_fields": [
+            "problem_type_id",
+            "template_variant",
+            "ratio_form",
+            "ratio_values",
+            "coordinate_pattern",
+            "answer"
+          ]
+        },
+        "validity_constraints": [
+          "A != B",
+          "m, n positive integers",
+          "denominator != 0",
+          "internal point lies between A and B",
+          "coordinate answer matches ratio relation",
+          "no ambiguous wording"
+        ],
+        "answer_shape": "coordinate_pair",
+        "explanation_variants": [
+          "section_formula_stepwise",
+          "ratio_substitution_short"
+        ],
+        "sampling_strategy": "weighted_random",
         "template_families": [
-          "compute_distance_between_two_points"
+          "compute_internal_division_point_coordinates"
         ],
         "parameter_slots": {
           "seed": "integer",
@@ -84,8 +235,11 @@
         "use_domain_functions": true,
         "derivation_steps_required": true,
         "template_slots": {
-          "stem": "point_quadrant"
-        }
+          "stem": "division_point_coordinates"
+        },
+        "problem_type_id": "ordered_pair_compute_internal_division_point_coordinates_short_answer_two_coordi",
+        "contract_validation_blockers": [],
+        "contract_validation_warnings": []
       },
       "validator_contract": {
         "static_checks": [
@@ -100,23 +254,24 @@
       "spec_source": "phase1_induced_draft",
       "grouping_reason": "single_signature_group",
       "feature_signature": [
+        "ordered_pair",
+        "compute_internal_division_point_coordinates",
         "short_answer",
-        "compute_distance_between_two_points",
         [
           "distance_formula_reasoning"
         ],
         [
-          "coordinate_point",
-          "distance_formula"
+          "two_coordinate_points",
+          "section_ratio"
         ]
       ]
     },
     {
-      "problem_type_id": "single_choice_compute_distance_between_two_points_coordinate_point_distance_form",
+      "problem_type_id": "single_choice_compute_internal_division_point_coordinates_two_coordinate_points_",
       "skill_id": "vh_數學B1_DivisionPointCoordinates",
-      "target_task": "compute_distance_between_two_points",
-      "task_family": "distance_between_two_points_family",
-      "display_name": "single_choice / compute_distance_between_two_points",
+      "target_task": "compute_internal_division_point_coordinates",
+      "task_family": "division_point_coordinates_family",
+      "display_name": "single_choice / compute_internal_division_point_coordinates",
       "source_example_ids": [
         4512,
         4513
@@ -128,8 +283,13 @@
         "frontend_render_choices": true,
         "answer_type": "single_choice",
         "answer_shape": "choice_label",
+        "answer_semantics": "choice_label",
         "answer_equivalence": "choice_label",
         "checker": "choice_label_checker",
+        "presentation_mode": "single_choice",
+        "source_has_choices": true,
+        "selected_checker": "choice_label_checker",
+        "checker_selection_reason": "coordinate_pair_semantic",
         "accepted_formats": [
           "A",
           "B",
@@ -140,14 +300,12 @@
       "stem_contract": {
         "stem_must_not_embed_choices": true,
         "allowed_math_objects": [
-          "coordinate_point",
-          "distance_formula",
-          "segment_length",
-          "two_coordinate_points"
+          "two_coordinate_points",
+          "section_ratio"
         ],
         "required_math_objects": [
-          "coordinate_point",
-          "distance_formula"
+          "two_coordinate_points",
+          "section_ratio"
         ],
         "forbidden_patterns": [
           "\\(A\\)",
@@ -175,8 +333,156 @@
         ]
       },
       "generator_contract": {
+        "template_variants": [
+          {
+            "id": "ratio_colon_form",
+            "label": "AP:PB=m:n",
+            "stem_pattern": "已知 {A}({ax},{ay})、{B}({bx},{by})，{P} 在 {AB} 上，且 {AP}:{PB}={m}:{n}，求 {P} 坐標。",
+            "weight": 1.0,
+            "enabled": true
+          },
+          {
+            "id": "multiple_form",
+            "label": "AP=k·PB",
+            "stem_pattern": "已知 {A}({ax},{ay})、{B}({bx},{by})，{P} 在 {AB} 上，且 {AP}={k}{PB}，求 {P} 坐標。",
+            "weight": 1.0,
+            "enabled": true
+          },
+          {
+            "id": "linear_relation_form",
+            "label": "mAP=nPB",
+            "stem_pattern": "已知 {A}({ax},{ay})、{B}({bx},{by})，{P} 在 {AB} 上，且 {m}{AP}={n}{PB}，求 {P} 坐標。",
+            "weight": 1.0,
+            "enabled": true
+          },
+          {
+            "id": "word_context_form",
+            "label": "距離倍數語境",
+            "stem_pattern": "甲地與乙地在坐標平面上，某點位於兩地連線上，且到甲地距離為到乙地的 {k} 倍，求該點坐標。",
+            "weight": 1.0,
+            "enabled": true
+          }
+        ],
+        "parameter_schema": {
+          "point_names": {
+            "choices": [
+              [
+                "A",
+                "B",
+                "P"
+              ],
+              [
+                "P",
+                "Q",
+                "R"
+              ],
+              [
+                "M",
+                "N",
+                "T"
+              ],
+              [
+                "C",
+                "D",
+                "E"
+              ]
+            ],
+            "randomize": true
+          },
+          "coordinate_range": {
+            "x_min": -10,
+            "x_max": 10,
+            "y_min": -10,
+            "y_max": 10,
+            "exclude_zero_probability": 0.2
+          },
+          "ratio": {
+            "m_min": 1,
+            "m_max": 5,
+            "n_min": 1,
+            "n_max": 5,
+            "require_coprime": true,
+            "allow_equal_ratio": false
+          },
+          "answer_type_mode": {
+            "choices": [
+              "integer_coordinate",
+              "rational_coordinate"
+            ],
+            "weights": [
+              0.7,
+              0.3
+            ]
+          }
+        },
+        "variation_dimensions": [
+          "point_names",
+          "coordinate_sign_pattern",
+          "ratio_form",
+          "ratio_values",
+          "answer_integer_or_fraction",
+          "direct_formula_or_word_context",
+          "internal_or_external",
+          "ask_target"
+        ],
+        "difficulty_controls": {
+          "level_1": {
+            "coordinate_range": [
+              -5,
+              5
+            ],
+            "integer_answer_only": true,
+            "simple_ratio_only": true,
+            "template_variants": [
+              "ratio_colon_form",
+              "direct_midpoint"
+            ]
+          },
+          "level_2": {
+            "coordinate_range": [
+              -10,
+              10
+            ],
+            "allow_negative_coordinates": true,
+            "allow_rational_answer": true
+          },
+          "level_3": {
+            "word_context_enabled": true,
+            "missing_endpoint_enabled": true,
+            "external_division_enabled": true
+          }
+        },
+        "anti_repetition_rules": {
+          "avoid_same_template_consecutive": true,
+          "avoid_same_ratio_consecutive": true,
+          "avoid_same_point_names_consecutive": true,
+          "avoid_same_answer_consecutive": true,
+          "recent_history_window": 5,
+          "signature_fields": [
+            "problem_type_id",
+            "template_variant",
+            "ratio_form",
+            "ratio_values",
+            "coordinate_pattern",
+            "answer"
+          ]
+        },
+        "validity_constraints": [
+          "A != B",
+          "m, n positive integers",
+          "denominator != 0",
+          "internal point lies between A and B",
+          "coordinate answer matches ratio relation",
+          "no ambiguous wording"
+        ],
+        "answer_shape": "coordinate_pair",
+        "explanation_variants": [
+          "section_formula_stepwise",
+          "ratio_substitution_short"
+        ],
+        "sampling_strategy": "weighted_random",
         "template_families": [
-          "compute_distance_between_two_points"
+          "compute_internal_division_point_coordinates"
         ],
         "parameter_slots": {
           "seed": "integer",
@@ -189,8 +495,11 @@
         "use_domain_functions": true,
         "derivation_steps_required": true,
         "template_slots": {
-          "stem": "point_quadrant_choice"
-        }
+          "stem": "division_point_coordinates"
+        },
+        "problem_type_id": "single_choice_compute_internal_division_point_coordinates_two_coordinate_points_",
+        "contract_validation_blockers": [],
+        "contract_validation_warnings": []
       },
       "validator_contract": {
         "static_checks": [
@@ -206,13 +515,14 @@
       "grouping_reason": "single_signature_group",
       "feature_signature": [
         "single_choice",
-        "compute_distance_between_two_points",
+        "compute_internal_division_point_coordinates",
+        "single_choice",
         [
           "distance_formula_reasoning"
         ],
         [
-          "coordinate_point",
-          "distance_formula"
+          "two_coordinate_points",
+          "section_ratio"
         ]
       ]
     }

@@ -4,13 +4,18 @@ import math
 import random
 from typing import Any, Callable
 
-from core.gencode.answer_payload import answer_type_family
+from core.gencode.answer_payload import answer_type_family, apply_coordinate_pair_runtime_fields
 from core.gencode.problem_type_spec import get_answer_contract, get_stem_contract
 from core.gencode.symbolic_coordinate_templates import (
     SYMBOLIC_QUADRANT_SHORT_ANSWER_TEMPLATES,
     SYMBOLIC_STATEMENT_CHOICE_TEMPLATES,
     build_symbolic_quadrant_metadata,
     build_symbolic_quadrant_question_text,
+)
+from core.gencode.division_point_slot_engine import (
+    DIVISION_POINT_SLOT,
+    generate_division_point_payload,
+    is_division_point_target_task,
 )
 from core.gencode.template_slot_resolver import resolve_template_slot
 from core.gencode.validators import validate_generator_payload
@@ -391,6 +396,15 @@ def _slot_two_point_distance_compute(
     raise RuntimeError("two_point_distance_compute_generation_failed")
 
 
+def _slot_division_point_coordinates(
+    skill_id: str, pt: str, spec: dict[str, Any], seed: int | None
+) -> dict[str, Any]:
+    target = str(spec.get("target_task", "")).strip()
+    if not is_division_point_target_task(target):
+        raise RuntimeError(f"division_point_slot_unsupported_target:{target}")
+    return generate_division_point_payload(skill_id, pt, spec, seed)
+
+
 SLOT_REGISTRY: dict[str, GeneratorFn] = {
     "point_quadrant": _slot_point_quadrant,
     "point_quadrant_choice": _slot_point_quadrant_choice,
@@ -400,6 +414,7 @@ SLOT_REGISTRY: dict[str, GeneratorFn] = {
     "symbolic_quadrant_statement_choice": _slot_symbolic_quadrant_statement_choice,
     "two_point_distance_solution_set": _slot_two_point_distance_solution_set,
     "two_point_distance_compute": _slot_two_point_distance_compute,
+    DIVISION_POINT_SLOT: _slot_division_point_coordinates,
 }
 
 
@@ -428,6 +443,8 @@ def generate_from_problem_type_spec(
         else:
             raise RuntimeError(f"slot_generator_not_registered:{slot or at}")
     payload = fn(skill_id, pt, problem_type_spec, seed)
+    ac = get_answer_contract(problem_type_spec)
+    payload = apply_coordinate_pair_runtime_fields(payload, ac)
     errors = validate_generator_payload(payload, skill_id=skill_id, problem_type_spec=problem_type_spec)
     if errors:
         raise RuntimeError(f"generator_semantically_unsafe:{','.join(errors)}")

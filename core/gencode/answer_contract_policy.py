@@ -75,6 +75,58 @@ def _answers_suggest_numeric_only(features: list[dict[str, Any]] | None) -> bool
     return bool(answers) and all(_NUMERIC_ANSWER.match(a) for a in answers)
 
 
+def is_coordinate_pair_semantic(
+    *,
+    answer_type: str = "",
+    target_task: str = "",
+    task_family: str = "",
+    answer_shape: str = "",
+) -> bool:
+    at = str(answer_type or "").strip()
+    shape = str(answer_shape or "").strip()
+    task = str(target_task or "").strip()
+    family = str(task_family or task_family_for_task(task)).strip()
+    return (
+        at in {"ordered_pair", "coordinate_pair"}
+        or shape == "coordinate_pair"
+        or task in DIVISION_POINT_COORDINATES_TASKS
+        or family == DIVISION_POINT_COORDINATES_FAMILY
+    )
+
+
+def presentation_mode_for_features(
+    answer_type: str,
+    cluster_features: list[dict[str, Any]] | None,
+) -> str:
+    at = str(answer_type or "").strip()
+    if at == "single_choice":
+        return "single_choice"
+    if cluster_features and any(f.get("has_choices") for f in cluster_features if isinstance(f, dict)):
+        return "single_choice"
+    return "short_answer"
+
+
+def checker_selection_reason(
+    *,
+    answer_type: str,
+    target_task: str,
+    task_family: str,
+    has_choices: bool,
+    answer_shape: str = "",
+) -> str:
+    if is_coordinate_pair_semantic(
+        answer_type=answer_type, target_task=target_task, task_family=task_family, answer_shape=answer_shape
+    ):
+        if has_choices and str(answer_type or "").strip() not in {"single_choice", "multi_choice"}:
+            return "coordinate_pair_semantic_source_has_choices_not_overriding_checker"
+        return "coordinate_pair_semantic"
+    if str(answer_type or "").strip() == "single_choice" or (
+        has_choices and str(answer_type or "").strip() in {"single_choice", "multi_choice", "choice", "choice_label"}
+    ):
+        return "explicit_single_choice"
+    return "task_family_default"
+
+
 def infer_answer_contract_from_problem_context(
     *,
     answer_type: str,
@@ -103,14 +155,25 @@ def infer_answer_contract_from_problem_context(
         "correct_choice_count": None,
         "frontend_render_choices": False,
     }
+    presentation = presentation_mode_for_features(at, cluster_features)
+    source_has_choices = bool(has_choices)
 
-    if has_choices or at == "single_choice":
+    if at == "single_choice" or (
+        has_choices and at in {"single_choice", "multi_choice", "choice", "choice_label"}
+    ):
         return {
             **base,
             "answer_type": "single_choice",
             "answer_shape": "choice_label",
+            "answer_semantics": "choice_label",
             "answer_equivalence": "choice_label",
             "checker": "choice_label_checker",
+            "presentation_mode": "single_choice",
+            "source_has_choices": True,
+            "selected_checker": "choice_label_checker",
+            "checker_selection_reason": checker_selection_reason(
+                answer_type=at, target_task=task, task_family=family, has_choices=True
+            ),
             "choices_required": True,
             "choice_count": 4,
             "correct_choice_count": 1,
@@ -118,14 +181,26 @@ def infer_answer_contract_from_problem_context(
             "accepted_formats": ["A", "B", "C", "D"],
         }
 
-    if task in DIVISION_POINT_COORDINATES_TASKS or family == DIVISION_POINT_COORDINATES_FAMILY or at == "ordered_pair":
+    if is_coordinate_pair_semantic(answer_type=at, target_task=task, task_family=family):
+        reason = checker_selection_reason(
+            answer_type=at,
+            target_task=task,
+            task_family=family,
+            has_choices=source_has_choices,
+            answer_shape="coordinate_pair",
+        )
         return {
             **base,
             "answer_type": "ordered_pair",
             "answer_shape": "coordinate_pair",
+            "answer_semantics": "coordinate_pair",
             "answer_equivalence": "coordinate_pair_equivalence",
             "checker": "coordinate_pair_checker",
-            "accepted_formats": ["(0,-2)", "0,-2", "（0，-2）", "x=0,y=-2", "(0, -2)"],
+            "presentation_mode": presentation,
+            "source_has_choices": source_has_choices,
+            "selected_checker": "coordinate_pair_checker",
+            "checker_selection_reason": reason,
+            "accepted_formats": ["(0,-2)", "0,-2", "（0，-2）", "x=0,y=-2", "(0, -2)", "P(0,-2)"],
         }
 
     if task in SOLVE_UNKNOWN_COORDINATE_TASKS or at == "set":

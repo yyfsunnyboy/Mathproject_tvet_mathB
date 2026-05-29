@@ -2,49 +2,40 @@
 """
 =============================================================================
 模組名稱 (Module Name): core/session.py
-功能說明 (Description): 負責管理使用者在練習過程中的 Session 資料，提供安全存取、設定與清除當前題目、答案及相關技能資訊的介面。
-執行語法 (Usage): 由系統調用
-版本資訊 (Version): V2.0
-更新日期 (Date): 2026-01-13
-維護團隊 (Maintainer): Math AI Project Team
+功能說明 (Description): 練習 session：cookie 僅存指標，完整題目存 server-side store。
 =============================================================================
 """
-"""此模組負責管理使用者在練習過程中的 Session 資料，提供安全存取、設定與清除當前題目、答案及相關技能資訊的函式。"""
-# core/session.py
-from flask import session
 
-def set_current(skill, data):
-    """
-    安全儲存當前題目資料，將所有資料整合到一個字典中
-    """
-    # 建立副本以確保不影響原始資料
-    saved_data = data.copy()
-    
-    # 確保寫入 skill_id
-    saved_data['skill'] = skill
-    
-    # 兼容性處理：舊版代碼可能預期 'question' 鍵
-    if 'question_text' in saved_data:
-        saved_data['question'] = saved_data['question_text']
-        
-    # 兼容性處理：舊版代碼可能預期 'inequality' 鍵
-    if 'inequality_string' in saved_data:
-        saved_data['inequality'] = saved_data['inequality_string']
+from __future__ import annotations
 
-    # 將整個字典存入 Session (注意：routes.py 已經先過濾掉圖片了)
-    session['current_data'] = saved_data
+from typing import Any
 
-def get_current():
-    """
-    安全取得當前題目資料，直接回傳整合的字典
-    """
-    return session.get('current_data', {})
+from core.practice_question_store import (
+    clear_practice_state,
+    load_current_question,
+    persist_current_question,
+)
 
-def clear():
-    """
-    清除所有 current 資料
-    """
-    keys = ['current_skill', 'current_question', 'current_answer', 'current_prereq_skills',
-            'current_inequality', 'current_correct_answer']
-    for k in keys:
-        session.pop(k, None)
+
+def set_current(skill: str, data: dict[str, Any]) -> None:
+    """Store generated question in server-side store; cookie keeps uid pointers only."""
+    if not isinstance(data, dict):
+        return
+    saved_data = dict(data)
+    saved_data["skill"] = str(skill).strip()
+    saved_data["skill_id"] = str(skill).strip()
+    if "question_text" in saved_data:
+        saved_data["question"] = saved_data["question_text"]
+    if "inequality_string" in saved_data:
+        saved_data["inequality"] = saved_data["inequality_string"]
+    persist_current_question(str(skill).strip(), saved_data)
+
+
+def get_current() -> dict[str, Any]:
+    """Load current question payload by session.current_question_uid from server store."""
+    return load_current_question()
+
+
+def clear() -> None:
+    """Clear practice pointers and server-side store for this owner."""
+    clear_practice_state()

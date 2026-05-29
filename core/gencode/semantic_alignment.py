@@ -4,6 +4,7 @@ import re
 from collections import Counter
 from typing import Any
 
+from core.gencode.classification_policy import apply_final_classification_to_features
 from core.gencode.main_skill_anchor import build_main_skill_anchor, example_skill_id_mismatch
 from core.gencode.task_families import (
     DISTANCE_BETWEEN_TWO_POINTS_FAMILY,
@@ -199,17 +200,19 @@ def extract_problem_type_terms(spec: dict[str, Any]) -> set[str]:
 
 
 def infer_expected_tasks(skill_terms: set[str]) -> set[str]:
-    expected: set[str] = set()
+    """Task-level expectations from skill terms (delegates to main_skill_anchor subskill inference)."""
+    from core.gencode.main_skill_anchor import infer_expected_subskill_candidates
+
+    skill_families = infer_skill_families_from_terms(skill_terms)
+    candidates, _scope = infer_expected_subskill_candidates(skill_terms, skill_families)
+    tasks = {c for c in candidates if not str(c).endswith("_family")}
+    if tasks:
+        return tasks
     for task, aliases in TASK_TAXONOMY.items():
         alias_tokens = {task, *_tokenize(" ".join(aliases))}
         if skill_terms & alias_tokens:
-            expected.add(task)
-    skill_families = infer_skill_families_from_terms(skill_terms)
-    if DIVISION_POINT_COORDINATES_FAMILY in skill_families:
-        expected |= set(DIVISION_POINT_COORDINATES_TASKS)
-    if DISTANCE_BETWEEN_TWO_POINTS_FAMILY in skill_families:
-        expected |= set(DISTANCE_BETWEEN_TWO_POINTS_TASKS)
-    return expected
+            tasks.add(task)
+    return tasks
 
 
 def infer_tasks_from_problem_type_spec(spec: dict[str, Any]) -> set[str]:
@@ -271,36 +274,89 @@ def evaluate_source_example_alignment(
     main_skill_anchor: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     anchor = main_skill_anchor if isinstance(main_skill_anchor, dict) else {}
+    sc = feature.get("semantic_classification") if isinstance(feature.get("semantic_classification"), dict) else {}
     ex_terms = extract_source_terms_from_features([feature])
     score = _overlap_score(skill_terms, ex_terms)
     expected_families = set(anchor.get("expected_task_families") or []) or infer_skill_families_from_terms(skill_terms)
-    task = str(feature.get("target_task", "")).strip()
-    family = str(feature.get("task_family") or task_family_for_task(task)).strip()
-    expected_tasks = set(anchor.get("expected_subskill_candidates") or []) or infer_expected_tasks(skill_terms)
+    task = str(sc.get("final_target_task") or feature.get("target_task", "")).strip()
+    family = str(
+        sc.get("final_task_family") or feature.get("task_family") or task_family_for_task(task)
+    ).strip()
+    raw_expected = anchor.get("expected_subskill_candidates") or []
+    expected_tasks = {t for t in raw_expected if t and not str(t).endswith("_family")}
+    if not expected_tasks:
+        expected_tasks = infer_expected_tasks(skill_terms)
+    scope = str(anchor.get("skill_anchor_scope", "default")).strip() or "default"
+    cand_src = str(sc.get("candidate_source", "")).strip()
+    skill_scope_trusted = bool(sc.get("skill_scope_trusted", True))
+
     exclude_reason = ""
+    alignment_kind = ""
     aligned = False
-    if not task or task == "compute_numeric":
+    included_in_phase1 = False
+    pass_with_warning = False
+    requires_human_action = bool(sc.get("requires_human_action", False))
+    task_family_match = bool(expected_families and family and family in expected_families)
+    subskill_match = bool(expected_tasks and task and task in expected_tasks)
+
+    if cand_src == "needs_review" or str(sc.get("ai_best_candidate_id", "")).strip() == "needs_review":
+        alignment_kind = "needs_review"
+        aligned = False
+        included_in_phase1 = True
+        requires_human_action = True
+        exclude_reason = ""
+    elif cand_src == "outsider" or sc.get("classifier_source") == "ai_outsider_candidate":
+        alignment_kind = "outsider_candidate_warning"
+        aligned = True
+        included_in_phase1 = True
+        pass_with_warning = True
+        requires_human_action = True
+        task_family_match = False
+    elif not task or task == "compute_numeric":
         exclude_reason = "unclassified_low_confidence"
-    elif expected_families and family and family not in expected_families:
-        exclude_reason = "expected_family_mismatch"
-    elif expected_tasks and task and task not in expected_tasks and family not in expected_families:
-        exclude_reason = "task_family_mismatch"
-    elif family and expected_families and family in expected_families:
+        alignment_kind = "unclassified_low_confidence"
+    elif subskill_match or (skill_scope_trusted and task_family_match):
+        alignment_kind = "anchor_subskill_match"
         aligned = True
-    elif task and task in expected_tasks:
+        included_in_phase1 = True
+        subskill_match = bool(subskill_match or task in expected_tasks)
+    elif task_family_match and expected_tasks and task and task not in expected_tasks:
+        exclude_reason = ""
+        alignment_kind = "same_family_subskill_mismatch"
+        subskill_match = False
         aligned = True
+        included_in_phase1 = True
+        if scope == "narrow":
+            requires_human_action = True
+        else:
+            pass_with_warning = True
     elif not expected_families and not expected_tasks:
+        alignment_kind = "same_family_match"
         aligned = True
+        included_in_phase1 = True
     else:
-        exclude_reason = "unclassified_low_confidence"
+        if skill_scope_trusted and cand_src in {"anchor", "structure", "rule"}:
+            alignment_kind = "anchor_subskill_match"
+            aligned = True
+            included_in_phase1 = True
+        else:
+            exclude_reason = "unclassified_low_confidence"
+            alignment_kind = "unclassified_low_confidence"
+
     return {
         "example_id": feature.get("source_example_id"),
         "target_task": task,
         "task_family": family,
         "alignment_score": round(score, 4),
         "aligned_with_skill": aligned,
-        "included_in_phase1": aligned,
+        "included_in_phase1": included_in_phase1,
         "exclude_reason": exclude_reason,
+        "alignment_kind": alignment_kind,
+        "skill_id_match": True,
+        "task_family_match": task_family_match,
+        "subskill_match": subskill_match,
+        "pass_with_warning": pass_with_warning,
+        "requires_human_action": requires_human_action,
     }
 
 
@@ -312,10 +368,15 @@ def evaluate_semantic_alignment(
     candidate_specs: list[dict[str, Any]],
     min_examples_block: int = 4,
     main_skill_anchor: dict[str, Any] | None = None,
+    ai_semantic_status: str = "",
+    examples: list[dict[str, Any]] | None = None,
 ) -> dict[str, Any]:
     anchor = main_skill_anchor if isinstance(main_skill_anchor, dict) else build_main_skill_anchor(
         skill_id, skill_metadata
     )
+    source_features = apply_final_classification_to_features(source_features)
+    ai_status = str(ai_semantic_status or "").strip()
+    rule_fallback_only = ai_status == "unavailable"
     skill_terms = extract_skill_terms(skill_id, skill_metadata)
     source_terms = extract_source_terms_from_features(source_features)
     expected_tasks = set(anchor.get("expected_subskill_candidates") or []) or infer_expected_tasks(skill_terms)
@@ -330,6 +391,16 @@ def evaluate_semantic_alignment(
     candidate_families: set[str] = set()
     blockers: list[str] = []
     warnings: list[str] = []
+
+    skill_id_mismatch_examples: list[int] = []
+    for ex in examples or []:
+        if isinstance(ex, dict) and example_skill_id_mismatch(ex, skill_id):
+            eid = ex.get("id") or ex.get("example_id")
+            if isinstance(eid, int):
+                skill_id_mismatch_examples.append(eid)
+    if skill_id_mismatch_examples:
+        blockers.append("skill_id_mismatch")
+        warnings.append("source_example_skill_id_mismatch")
 
     for spec in candidate_specs:
         if not isinstance(spec, dict):
@@ -375,16 +446,48 @@ def evaluate_semantic_alignment(
     skill_problem_type_score = min(spec_task_scores) if spec_task_scores else 0.0
     source_problem_type_score = max((x.get("source_problem_type_score", 0.0) for x in per_spec_scores), default=0.0)
 
+    needs_review_count = 0
+    outsider_count = 0
+    anchor_scoped_count = 0
+    for feat in source_features:
+        if not isinstance(feat, dict):
+            continue
+        sc = feat.get("semantic_classification") if isinstance(feat.get("semantic_classification"), dict) else {}
+        src = str(sc.get("candidate_source", "")).strip()
+        if src == "needs_review" or str(sc.get("ai_best_candidate_id", "")).strip() == "needs_review":
+            needs_review_count += 1
+        elif src == "outsider":
+            outsider_count += 1
+        elif sc.get("in_anchor_scope") or src in {"anchor", "structure", "rule"}:
+            anchor_scoped_count += 1
+
+    skill_scope_trusted = anchor_scoped_count > 0 or rule_fallback_only
+    in_scope_families = {
+        str(
+            (f.get("semantic_classification") or {}).get("final_task_family")
+            or f.get("task_family")
+            or task_family_for_task(str(f.get("target_task", "")))
+        ).strip()
+        for f in source_features
+        if isinstance(f, dict)
+    }
+    in_scope_families.discard("")
+
     if source_families and not families_compatible(source_families):
-        blockers.append("mixed_source_families")
-        blockers.append("source_examples_mismatch")
+        if rule_fallback_only:
+            warnings.append("ai_semantic_classifier_unavailable")
+            warnings.append("rule_fallback_may_cause_false_mixed_source_families")
+        elif skill_scope_trusted and (in_scope_families <= expected_families or in_scope_families & expected_families):
+            warnings.append("multiple_subskills_in_skill_scope")
+        else:
+            blockers.append("mixed_source_families")
+            blockers.append("source_examples_mismatch")
     elif expected_families and source_families and not (source_families <= expected_families or source_families & expected_families):
-        if dom_family_ratio >= 0.75:
+        if not skill_scope_trusted and dom_family_ratio >= 0.75:
             blockers.append("source_examples_mismatch")
     elif expected_families and dom_families and not (dom_families & expected_families):
-        if dom_family_ratio >= 0.75:
+        if not skill_scope_trusted and dom_family_ratio >= 0.75:
             blockers.append("source_examples_mismatch")
-            blockers.append("expected_family_mismatch")
             warnings.append(
                 "來源題多數與目前技能語意不一致，疑似 skill mapping 錯誤；請先檢查來源題歸屬，不建議進 Phase 2。"
             )
@@ -393,13 +496,40 @@ def evaluate_semantic_alignment(
         f
         for f in source_features
         if isinstance(f, dict)
-        and str(f.get("task_family") or task_family_for_task(str(f.get("target_task", "")))).strip()
-        not in expected_families
-        and expected_families
+        and str(
+            (f.get("semantic_classification") or {}).get("candidate_source", "")
+        ).strip()
+        == "outsider"
     ]
-    if expected_families and len(outside_expected) >= max(1, len(source_features) // 2):
-        blockers.append("mixed_source_families")
-        warnings.append("majority_source_family_conflicts_with_skill_anchor")
+    task_dist = Counter(
+        str(f.get("target_task", "")).strip()
+        for f in source_features
+        if isinstance(f, dict) and str(f.get("target_task", "")).strip()
+    )
+    subskill_mismatch_rows: list[dict[str, Any]] = []
+    examples_outside_subskills: list[int] = []
+    for feat in source_features:
+        if not isinstance(feat, dict):
+            continue
+        row = evaluate_source_example_alignment(skill_terms, feat, main_skill_anchor=anchor)
+        if row.get("alignment_kind") == "same_family_subskill_mismatch":
+            subskill_mismatch_rows.append(row)
+            ex_id = feat.get("source_example_id")
+            if isinstance(ex_id, int):
+                examples_outside_subskills.append(ex_id)
+    if subskill_mismatch_rows:
+        warnings.append("same_family_subskill_mismatch")
+        narrow_scope = str(anchor.get("skill_anchor_scope", "")).strip() == "narrow"
+        if narrow_scope or any(r.get("requires_human_action") for r in subskill_mismatch_rows):
+            warnings.append(
+                "來源題與技能屬於同一大類，但子技能不同；請確認是否要放在此技能底下。"
+            )
+    if outsider_count >= max(1, len(source_features) // 2):
+        warnings.append("majority_outsider_candidates_within_skill")
+
+    if needs_review_count >= max(1, len(source_features) // 2):
+        blockers.append("majority_needs_review")
+        warnings.append("majority_sources_need_human_subskill_review")
 
     if (
         expected_families
@@ -407,17 +537,31 @@ def evaluate_semantic_alignment(
         and dom_family_ratio >= 0.9
         and dom_families
         and not (dom_families & expected_families)
+        and not skill_scope_trusted
     ):
         blockers.append("low_alignment_score")
 
-    # Multiple problem types in the same family is allowed.
     if candidate_families and source_families and not families_compatible(candidate_families | source_families):
-        blockers.append("mixed_source_families")
+        if not skill_scope_trusted and not rule_fallback_only:
+            warnings.append("candidate_family_span_outside_skill_scope")
 
     unique_blockers = sorted(set(blockers))
+    if skill_scope_trusted or rule_fallback_only:
+        unique_blockers = [
+            b
+            for b in unique_blockers
+            if b not in {"mixed_source_families", "source_examples_mismatch", "expected_family_mismatch"}
+        ]
+    if rule_fallback_only:
+        warnings.append("ai_first_mode_fell_back_to_rule_only")
+    suggested_action = ""
+    if subskill_mismatch_rows and not unique_blockers:
+        suggested_action = "review_source_mapping_or_skill_scope"
+    elif unique_blockers:
+        suggested_action = "fix_skill_mapping_or_exclude_out_of_family_examples"
     if unique_blockers:
         decision = "block"
-    elif warnings or skill_source_score < 0.25:
+    elif subskill_mismatch_rows or warnings or skill_source_score < 0.25:
         decision = "warn"
         if skill_source_score < 0.25:
             warnings.append("alignment_score_below_recommended_threshold")
@@ -426,8 +570,14 @@ def evaluate_semantic_alignment(
 
     return {
         "main_skill_anchor": anchor,
+        "ai_semantic_status": ai_status,
         "skill_terms": sorted(skill_terms),
         "source_terms": sorted(source_terms),
+        "expected_subskill_candidates": sorted(expected_tasks),
+        "observed_target_task_distribution": dict(task_dist),
+        "same_family_subskill_mismatch_examples": subskill_mismatch_rows,
+        "examples_outside_expected_subskills": sorted(set(examples_outside_subskills)),
+        "suggested_action": suggested_action,
         "examples_outside_expected_family": [
             int(f.get("source_example_id"))
             for f in outside_expected

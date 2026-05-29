@@ -5,7 +5,15 @@ import random
 import re
 from typing import Any
 
-from core.gencode.answer_payload import answer_type_family, coerce_correct_answer, finalize_generator_payload
+from core.gencode.answer_payload import (
+    answer_type_family,
+    apply_coordinate_pair_runtime_fields,
+    coerce_correct_answer,
+    finalize_generator_payload,
+    is_coordinate_pair_contract,
+    is_coordinate_pair_runtime_payload,
+    resolve_answer_contract_for_runtime,
+)
 from core.gencode.problem_type_spec import get_answer_contract, list_problem_types_for_skill, load_problem_type_spec
 from core.gencode.slot_generators import generate_from_problem_type_spec
 from core.gencode.validators import validate_generator_payload
@@ -177,10 +185,11 @@ def generate_for_skill(
     answer_contract = get_answer_contract(problem_type_spec)
     if answer_contract:
         payload = finalize_generator_payload(payload, answer_contract)
+        payload = apply_coordinate_pair_runtime_fields(payload, answer_contract)
 
     errors = validate_generator_payload(payload, problem_type_spec=problem_type_spec)
     if errors:
-        raise RuntimeError(f"contract_validation_failed:{','.join(errors)}")
+        raise RuntimeError(f"generator_semantically_unsafe:{','.join(errors)}")
 
     return payload
 
@@ -214,8 +223,14 @@ def check_answer(
     answer_contract: dict[str, Any] | None = None,
     skill_id: str = "",
 ) -> bool:
-    correct_answer = coerce_correct_answer(correct_answer)
-    ac = _resolve_answer_contract(payload=payload, answer_contract=answer_contract, skill_id=skill_id)
+    base = dict(payload) if isinstance(payload, dict) else {}
+    ac = resolve_answer_contract_for_runtime(
+        {**base, **({"answer_contract": answer_contract} if isinstance(answer_contract, dict) else {})},
+        skill_id=skill_id or str(base.get("skill_id", "")).strip(),
+    )
+    if not ac:
+        ac = _resolve_answer_contract(payload=payload, answer_contract=answer_contract, skill_id=skill_id)
+    correct_answer = coerce_correct_answer(correct_answer, ac)
     checker = str(ac.get("checker") or (payload or {}).get("checker") or (payload or {}).get("checker_type") or "").strip()
     family = answer_type_family(str(ac.get("answer_type", "")))
     equiv = str(
@@ -224,12 +239,19 @@ def check_answer(
         or (payload or {}).get("equivalence_type")
         or ""
     ).strip()
+    coord_ctx = is_coordinate_pair_contract(ac) or (
+        isinstance(payload, dict) and is_coordinate_pair_runtime_payload(payload)
+    )
 
-    if (
+    if checker == "coordinate_pair_checker" or family == "coordinate_pair" or coord_ctx:
+        from core.checkers.coordinate_pair_checker import check_coordinate_pair_answer
+
+        return check_coordinate_pair_answer(user_answer, correct_answer)
+
+    if not coord_ctx and (
         checker == "solution_set_checker"
         or family == "solution_set"
         or equiv == "unordered_solution_set"
-        or isinstance(correct_answer, (list, tuple, set))
     ):
         from core.checkers.solution_set_checker import check_solution_set_answer
 
@@ -239,11 +261,6 @@ def check_answer(
         from core.checkers.interval_checker import check_interval_answer
 
         return check_interval_answer(user_answer, correct_answer)
-
-    if checker == "coordinate_pair_checker" or str(ac.get("answer_type", "")) in {"ordered_pair", "coordinate_pair"}:
-        from core.checkers.coordinate_pair_checker import check_coordinate_pair_answer
-
-        return check_coordinate_pair_answer(user_answer, correct_answer)
 
     if checker in {"quadrant_checker", "classification_checker"} or family == "classification":
         quadrant_result = check_quadrant_answer(user_answer, correct_answer)

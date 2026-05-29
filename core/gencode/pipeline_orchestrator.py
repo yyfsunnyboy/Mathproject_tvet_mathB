@@ -971,10 +971,21 @@ def _write_phase1_summary_md(path: Path, skill_id: str, payload: dict[str, Any])
                 f"- skill_ch_name: `{anchor.get('skill_ch_name', '')}`",
                 f"- expected_task_families: {anchor.get('expected_task_families', [])}",
                 f"- expected_subskill_candidates: {anchor.get('expected_subskill_candidates', [])}",
+                f"- skill_anchor_scope: `{anchor.get('skill_anchor_scope', '')}`",
                 f"- observed_source_family_distribution: {payload.get('source_family_distribution', {})}",
+                f"- observed_target_task_distribution: {payload.get('observed_target_task_distribution', {})}",
+                f"- same_family_subskill_mismatch_examples: {len(payload.get('same_family_subskill_mismatch_examples') or [])}",
+                f"- examples_outside_expected_subskills: {payload.get('examples_outside_expected_subskills', [])}",
+                f"- suggested_action: `{payload.get('suggested_action', '')}`",
                 "",
             ]
         )
+        sub_mismatch = payload.get("same_family_subskill_mismatch_examples") or []
+        if sub_mismatch:
+            lines.append(
+                "> 來源題與技能屬於同一大類，但子技能不同；請確認是否要放在此技能底下。"
+            )
+            lines.append("")
         dist = payload.get("source_family_distribution") or {}
         expected = set(anchor.get("expected_task_families") or [])
         if dist and expected:
@@ -997,25 +1008,103 @@ def _write_phase1_summary_md(path: Path, skill_id: str, payload: dict[str, Any])
                 f"- alignment_blockers: {payload.get('alignment_blockers', [])}",
                 f"- alignment_warnings: {payload.get('alignment_warnings', [])}",
                 "",
-                "| example_id | target_task | task_family | alignment_score | included | exclude_reason | stem_preview |",
-                "| --- | --- | --- | --- | --- | --- | --- |",
+                "| example_id | target_task | task_family | alignment_kind | subskill_match | included | exclude_reason | stem_preview |",
+                "| --- | --- | --- | --- | --- | --- | --- | --- |",
             ]
         )
         for row in align_rows:
             if not isinstance(row, dict):
                 continue
             lines.append(
-                "| {ex} | {tt} | {tf} | {sc} | {inc} | {er} | {pv} |".format(
+                "| {ex} | {tt} | {tf} | {ak} | {sm} | {inc} | {er} | {pv} |".format(
                     ex=row.get("example_id", ""),
                     tt=row.get("target_task", ""),
                     tf=row.get("task_family", ""),
-                    sc=row.get("alignment_score", ""),
+                    ak=row.get("alignment_kind", ""),
+                    sm=row.get("subskill_match", ""),
                     inc=row.get("included_in_phase1", ""),
                     er=row.get("exclude_reason", ""),
                     pv=str(row.get("title_stem_preview", "")).replace("|", "\\|")[:60],
                 )
             )
         lines.append("")
+    sem_rows = payload.get("semantic_classifications") if isinstance(payload.get("semantic_classifications"), list) else []
+    ai_status = str(payload.get("ai_semantic_status", "")).strip()
+    if sem_rows or ai_status:
+        lines.extend(
+            [
+                "## AI semantic classification",
+                "",
+                f"- ai_semantic_status: `{ai_status or 'not_used'}`",
+                "",
+                "| example_id | ai_task | ai_family | ai_conf | rule_task | rule_family | final_task | final_family | source | conflict | human |",
+                "| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |",
+            ]
+        )
+        for row in sem_rows:
+            if not isinstance(row, dict):
+                continue
+            lines.append(
+                "| {ex} | {at} | {af} | {ac} | {rt} | {rf} | {ft} | {ff} | {src} | {cr} | {hu} |".format(
+                    ex=row.get("example_id", ""),
+                    at=row.get("ai_target_task", ""),
+                    af=row.get("ai_task_family", ""),
+                    ac=row.get("ai_confidence", ""),
+                    rt=row.get("rule_target_task", ""),
+                    rf=row.get("rule_task_family", ""),
+                    ft=row.get("final_target_task", ""),
+                    ff=row.get("final_task_family", ""),
+                    src=row.get("classifier_source", ""),
+                    cr=str(row.get("conflict_reason", "")).replace("|", "\\|")[:40],
+                    hu=row.get("requires_human_action", ""),
+                )
+            )
+        if ai_status == "unavailable":
+            lines.append("")
+            reason = str(payload.get("ai_semantic_unavailable_reason", "")).strip()
+            lines.append(
+                f"> AI 語意分類未執行：{reason or 'unknown'}。已退回 rule fallback，請先設定 AI key 後重新執行 Phase 1。"
+            )
+    diag_rows = payload.get("classification_diagnostics") if isinstance(payload.get("classification_diagnostics"), list) else []
+    if diag_rows:
+        lines.extend(
+            [
+                "## Classification diagnostics (per example)",
+                "",
+                "| id | rule_task/family | AI task/family | conf | source | final task/family | align | excluded |",
+                "| --- | --- | --- | --- | --- | --- | --- | --- |",
+            ]
+        )
+        for d in diag_rows:
+            if not isinstance(d, dict):
+                continue
+            lines.append(
+                "| {id} | {rt}/{rf} | {at}/{af} | {ac} | {src} | {ft}/{ff} | {ak} | {ex} |".format(
+                    id=d.get("example_id", ""),
+                    rt=d.get("rule_target_task", ""),
+                    rf=d.get("rule_task_family", ""),
+                    at=d.get("ai_target_task", ""),
+                    af=d.get("ai_task_family", ""),
+                    ac=d.get("ai_confidence", ""),
+                    src=d.get("classifier_source", ""),
+                    ft=d.get("final_target_task", ""),
+                    ff=d.get("final_task_family", ""),
+                    ak=d.get("alignment_kind", ""),
+                    ex=d.get("exclude_reason", ""),
+                )
+            )
+        lines.append("")
+        struct_note = payload.get("structure_mismatch_examples") or []
+        if struct_note:
+            lines.append("")
+            lines.append("> 教材結構：部分隨堂練習與對應例題子技能不一致，請人工確認。")
+        lines.append("")
+    link_map = payload.get("example_practice_link_map") or []
+    if link_map:
+        lines.extend(["## Example / practice links", "", f"{link_map}", ""])
+    fam_dist = payload.get("same_section_family_distribution") or {}
+    if fam_dist:
+        lines.extend(["## Same-section family distribution", "", f"{fam_dist}", ""])
     features = auto.get("example_features") if isinstance(auto.get("example_features"), list) else []
     if not features:
         features = payload.get("source_example_alignment") if isinstance(payload.get("source_example_alignment"), list) else []
@@ -1306,12 +1395,14 @@ def _normalize_phase_response(payload: dict[str, Any]) -> dict[str, Any]:
         failed = payload.get("failed_generators", []) if isinstance(payload.get("failed_generators"), list) else []
         accepted_statuses = {"runtime_ready", "limited_runtime_ready", "runtime_ready_with_warning"}
         has_warnings = any((x.get("warnings") or []) for x in results if isinstance(x, dict))
+        from core.gencode.packaging_policy import DIVERSITY_SAMPLING_OK_STATUSES
+
         has_blocking_states = any(
-            str(x.get("generator_status", "")).strip() in {"blocked", "draft_planned", "validation_failed", "draft_failed"}
-            or str(x.get("checker_smoke_status", "")).strip() != "passed"
-            or str(x.get("dynamic_sampling_status", "")).strip() != "passed"
+            str(x.get("generator_status", "")).strip()
+            in {"blocked", "draft_planned", "validation_failed", "draft_failed", "generator_not_ready", "pending_template"}
             or bool(x.get("blockers"))
             or bool(x.get("requires_human_action"))
+            or x.get("usable_for_phase3") is False
             for x in results
             if isinstance(x, dict)
         )
@@ -1322,10 +1413,11 @@ def _normalize_phase_response(payload: dict[str, Any]) -> dict[str, Any]:
         )
         all_phase3_ready = bool(results) and all(
             str(x.get("generator_status", "")).strip() in accepted_statuses
-            and str(x.get("checker_smoke_status", "")).strip() == "passed"
-            and str(x.get("dynamic_sampling_status", "")).strip() == "passed"
+            and str(x.get("checker_smoke_status", "")).strip() in {"", "passed"}
+            and str(x.get("dynamic_sampling_status", "")).strip() in {"", "passed", *DIVERSITY_SAMPLING_OK_STATUSES}
             and not bool(x.get("blockers"))
             and not bool(x.get("requires_human_action"))
+            and x.get("usable_for_phase3") is not False
             for x in results
             if isinstance(x, dict)
         )
@@ -1427,7 +1519,7 @@ def _normalize_phase_response(payload: dict[str, Any]) -> dict[str, Any]:
     return payload
 
 
-def run_gencode_phase1(skill_id: str, dry_run: bool = True, spec_mode: str = "induce_from_sources") -> dict[str, Any]:
+def run_gencode_phase1(skill_id: str, dry_run: bool = True, spec_mode: str = "ai_first_induce_from_sources") -> dict[str, Any]:
     REPORT_DIR.mkdir(parents=True, exist_ok=True)
     examples = _load_examples(skill_id)
     reports = {
@@ -1539,10 +1631,16 @@ def run_gencode_phase1(skill_id: str, dry_run: bool = True, spec_mode: str = "in
         if "example_id" not in row and row.get("id") is not None:
             row["example_id"] = row["id"]
         examples_for_induction.append(row)
-    induced = induce_problem_types_from_examples(skill_id, examples_for_induction)
+    induced = induce_problem_types_from_examples(skill_id, examples_for_induction, spec_mode=spec_mode)
     auto_review = apply_spec_mode(skill_id, induced, auto_review_legacy, entries, spec_mode)
     alignment_blocked = str(auto_review.get("source_alignment_status", "")).strip() == "block"
-    if str(spec_mode or "").strip() == "induce_from_sources":
+    _induce_modes_save = {
+        "induce_from_sources",
+        "ai_first_induce_from_sources",
+        "rule_first_induce_from_sources",
+        "hybrid_ai_rule_validate",
+    }
+    if str(spec_mode or "").strip() in _induce_modes_save:
         induced_specs = auto_review.get("induced_problem_type_specs", [])
         if isinstance(induced_specs, list) and induced_specs and not alignment_blocked:
             save_induced_problem_type_specs(skill_id, induced_specs)
@@ -1568,6 +1666,24 @@ def run_gencode_phase1(skill_id: str, dry_run: bool = True, spec_mode: str = "in
         "source_family_distribution": auto_review.get("source_family_distribution", {}),
         "candidate_problem_type_families": auto_review.get("candidate_problem_type_families", []),
         "expected_skill_families": auto_review.get("expected_skill_families", []),
+        "expected_subskill_candidates": auto_review.get(
+            "expected_subskill_candidates",
+            (auto_review.get("main_skill_anchor") or {}).get("expected_subskill_candidates", []),
+        ),
+        "observed_target_task_distribution": auto_review.get("observed_target_task_distribution", {}),
+        "same_family_subskill_mismatch_examples": auto_review.get("same_family_subskill_mismatch_examples", []),
+        "examples_outside_expected_subskills": auto_review.get("examples_outside_expected_subskills", []),
+        "suggested_action": auto_review.get("suggested_action", ""),
+        "requires_human_action": bool(auto_review.get("requires_human_action", False)),
+        "semantic_classifications": auto_review.get("semantic_classifications", []),
+        "ai_semantic_status": auto_review.get("ai_semantic_status", "not_used"),
+        "source_type_distribution": auto_review.get("source_type_distribution", {}),
+        "example_practice_link_map": auto_review.get("example_practice_link_map", []),
+        "structure_mismatch_examples": auto_review.get("structure_mismatch_examples", []),
+        "same_section_family_distribution": auto_review.get("same_section_family_distribution", {}),
+        "source_structure_report": auto_review.get("source_structure_report", {}),
+        "classification_diagnostics": auto_review.get("classification_diagnostics", []),
+        "ai_semantic_unavailable_reason": auto_review.get("ai_semantic_unavailable_reason", ""),
         "excluded_source_examples": auto_review.get("excluded_source_examples", []),
         "source_example_alignment": auto_review.get("source_example_alignment", []),
         "candidate_problem_types": auto_review.get("candidate_problem_types", []),
@@ -1734,26 +1850,51 @@ def run_gencode_phase2(skill_id: str, accepted_problem_types: list | None = None
             warnings.append("low_source_examples")
         checker_smoke_status = "pending"
         dynamic_sampling_status = "pending"
+        diversity_report: dict[str, Any] = {}
         if blockers:
             checker_smoke_status = "skipped_with_blockers"
             dynamic_sampling_status = "skipped_with_blockers"
         else:
             checker_smoke_status = "passed"
             dynamic_sampling_status = "passed"
-            if status in {"", "draft_planned"} and not phase1_alignment_blocked:
-                if "low_source_examples" in warnings or "no_matched_source_examples" in warnings:
-                    status = "limited_runtime_ready"
-                else:
-                    status = "runtime_ready"
+            draft_spec = c.get("problem_type_spec_draft") if isinstance(c.get("problem_type_spec_draft"), dict) else {}
+            if draft_spec:
+                try:
+                    from core.gencode.generator_diversity_sampling import run_diversity_sampling
+
+                    diversity_report = run_diversity_sampling(skill_id, draft_spec)
+                    dynamic_sampling_status = str(
+                        diversity_report.get("diversity_sampling_status", "passed")
+                    ).strip() or "passed"
+                except Exception as ex:
+                    dynamic_sampling_status = "runtime_ready_with_diversity_warning"
+                    diversity_report = {
+                        "diversity_sampling_status": dynamic_sampling_status,
+                        "repetition_warnings": [f"diversity_sampling_error:{str(ex)[:80]}"],
+                    }
             elif phase1_alignment_blocked:
                 status = "blocked"
-        if checker_smoke_status != "passed" or dynamic_sampling_status != "passed":
-            if not blockers:
-                status = "validation_failed"
+        merged_blockers = sorted(
+            set(list(blockers) + list(diversity_report.get("diversity_blockers") or []))
+        )
+        merged_warnings = sorted(
+            set(list(warnings) + list(diversity_report.get("repetition_warnings") or []))
+        )
+        from core.gencode.packaging_policy import resolve_phase2_generator_status
+
+        status, usable_for_phase3 = resolve_phase2_generator_status(
+            blockers=merged_blockers,
+            warnings=merged_warnings,
+            checker_smoke_status=checker_smoke_status,
+            dynamic_sampling_status=dynamic_sampling_status,
+            base_status=status,
+        )
         if blockers:
             failed_generators.append(generator_key)
-        else:
+        elif usable_for_phase3:
             accepted_generators.append(generator_key)
+        else:
+            failed_generators.append(generator_key)
         generator_results.append(
             {
                 "problem_type_id": pt,
@@ -1771,9 +1912,15 @@ def run_gencode_phase2(skill_id: str, accepted_problem_types: list | None = None
                 "generator_status": status,
                 "checker_smoke_status": checker_smoke_status,
                 "dynamic_sampling_status": dynamic_sampling_status,
+                "diversity_sampling": diversity_report,
+                "unique_signature_count": diversity_report.get("unique_signature_count", ""),
+                "template_variant_distribution": diversity_report.get("template_variant_distribution", {}),
+                "variable_coverage_report": diversity_report.get("variable_coverage_report", {}),
+                "repetition_warnings": merged_warnings,
                 "requires_human_action": is_manual_or_malformed,
-                "blockers": blockers,
-                "warnings": warnings,
+                "blockers": merged_blockers,
+                "warnings": merged_warnings,
+                "usable_for_phase3": usable_for_phase3,
             }
         )
 

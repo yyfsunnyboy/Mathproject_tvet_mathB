@@ -291,7 +291,8 @@ def _infer_reasoning_type(text: str, math_objects: list[str], target_task: str) 
     return sorted(set(types))
 
 
-def extract_example_feature(ex: dict[str, Any]) -> dict[str, Any]:
+def extract_example_feature_rule_only(ex: dict[str, Any]) -> dict[str, Any]:
+    """Rule-based feature extraction (fallback / validator only; not AI-first)."""
     ex_id = ex.get("id") or ex.get("example_id")
     question_text = _source_text(ex)
     answer = _source_answer(ex)
@@ -337,4 +338,10 @@ def extract_example_feature(ex: dict[str, Any]) -> dict[str, Any]:
         "variables": variables,
         "givens": givens,
         "target": target_task,
+        "classifier_source": "rule_only",
     }
+
+
+def extract_example_feature(ex: dict[str, Any]) -> dict[str, Any]:
+    """Backward-compatible alias: rule-only extraction (use build_classified_example_feature for AI-first)."""
+    return extract_example_feature_rule_only(ex)

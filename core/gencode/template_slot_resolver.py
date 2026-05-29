@@ -5,6 +5,7 @@ import random
 from typing import Any
 
 from core.gencode.answer_payload import answer_type_family
+from core.gencode.division_point_slot_engine import DIVISION_POINT_SLOT, is_division_point_target_task
 from core.gencode.problem_type_spec import get_answer_contract, get_generator_contract, get_template_slot
 
 logger = logging.getLogger(__name__)
@@ -19,6 +20,10 @@ TASK_FAMILY_TO_SLOT: dict[str, str] = {
     "read_table": "point_quadrant_choice",
     "solve_unknown_coordinate_from_two_point_distance": "two_point_distance_solution_set",
     "compute_distance_between_two_points": "two_point_distance_compute",
+    "compute_internal_division_point_coordinates": DIVISION_POINT_SLOT,
+    "compute_centroid_coordinates": DIVISION_POINT_SLOT,
+    "compute_midpoint_coordinates": DIVISION_POINT_SLOT,
+    "solve_point_from_section_ratio": DIVISION_POINT_SLOT,
 }
 
 SLOT_COMPATIBLE_FAMILIES: dict[str, frozenset[str]] = {
@@ -28,6 +33,7 @@ SLOT_COMPATIBLE_FAMILIES: dict[str, frozenset[str]] = {
     "symbolic_quadrant_choice": frozenset({"single_choice"}),
     "two_point_distance_solution_set": frozenset({"solution_set"}),
     "two_point_distance_compute": frozenset({"numeric_or_radical", "numeric"}),
+    DIVISION_POINT_SLOT: frozenset({"ordered_pair", "coordinate_pair"}),
 }
 
 
@@ -64,6 +70,15 @@ def _slot_rng(seed: int | None, problem_type_id: str) -> random.Random:
 def resolve_template_slot(problem_type_spec: dict[str, Any], seed: int | None = None) -> str:
     """Pick slot from template_families when multiple families are induced for one problem_type."""
     pt = str(problem_type_spec.get("problem_type_id", "")).strip()
+    target_task = str(problem_type_spec.get("target_task", "")).strip()
+    if is_division_point_target_task(target_task):
+        slot = TASK_FAMILY_TO_SLOT.get(target_task, DIVISION_POINT_SLOT)
+        logger.info(
+            "[GENCODE DISPATCH] template_slot problem_type_id=%s selected_slot=%s selection_strategy=target_task",
+            pt,
+            slot,
+        )
+        return slot
     gc = get_generator_contract(problem_type_spec)
     families = gc.get("template_families")
     strategy = "template_slots.stem"

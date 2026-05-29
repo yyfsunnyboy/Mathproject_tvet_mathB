@@ -3,7 +3,15 @@ from __future__ import annotations
 import logging
 from typing import Any
 
-from core.gencode.answer_payload import answer_type_family, coerce_correct_answer
+from core.gencode.answer_payload import (
+    answer_type_family,
+    coerce_correct_answer,
+    format_coordinate_pair_display,
+    is_coordinate_pair_contract,
+    is_coordinate_pair_runtime_payload,
+    refresh_runtime_question_session,
+    resolve_answer_contract_for_runtime,
+)
 from core.gencode.problem_type_spec import get_answer_contract, load_problem_type_spec
 from core.gencode.runtime_skill_wrapper import check_answer
 
@@ -17,6 +25,7 @@ _CONTRACT_CHECKERS = frozenset(
         "classification_checker",
         "expression_equivalence_checker",
         "choice_label_checker",
+        "coordinate_pair_checker",
     }
 )
 
@@ -44,34 +53,50 @@ def build_grading_payload(current: dict[str, Any], skill_id: str) -> dict[str, A
 
 
 def should_use_contract_aware_grading(current: dict[str, Any]) -> bool:
-    ac = current.get("answer_contract")
+    skill_id = str(current.get("skill", current.get("skill_id", ""))).strip()
+    refreshed = refresh_runtime_question_session(current, skill_id=skill_id)
+    ac = resolve_answer_contract_for_runtime(refreshed, skill_id=skill_id)
     if isinstance(ac, dict) and ac.get("answer_type"):
         return True
-    checker = str(current.get("checker") or current.get("checker_type") or "").strip()
+    checker = str(refreshed.get("checker") or refreshed.get("checker_type") or "").strip()
     if checker in _CONTRACT_CHECKERS:
         return True
-    equiv = str(current.get("equivalence") or current.get("equivalence_type") or "").strip()
+    equiv = str(refreshed.get("equivalence") or refreshed.get("equivalence_type") or "").strip()
     if equiv in {
         "unordered_solution_set",
         "interval_set",
         "math_expression_equivalence",
         "expression_equivalence",
         "radical_equivalence",
+        "coordinate_pair_equivalence",
     }:
         return True
-    family = answer_type_family(str(current.get("answer_type", "")))
-    if family in {"solution_set", "interval", "classification", "numeric_or_radical"}:
+    if is_coordinate_pair_contract(ac) or is_coordinate_pair_runtime_payload(refreshed):
         return True
-    ca = coerce_correct_answer(current.get("correct_answer", current.get("answer")))
-    if isinstance(ca, (list, tuple, set)):
+    family = answer_type_family(str(refreshed.get("answer_type", "")))
+    if family in {"solution_set", "interval", "classification", "numeric_or_radical", "coordinate_pair"}:
+        return True
+    ca = coerce_correct_answer(refreshed.get("correct_answer", refreshed.get("answer")), ac)
+    if isinstance(ca, (list, tuple, set)) and not is_coordinate_pair_contract(ac):
         return True
     return False
 
 
 def format_correct_answer_display(correct_answer: Any, current: dict[str, Any]) -> str:
-    display = current.get("display_answer")
+    skill_id = str(current.get("skill", current.get("skill_id", ""))).strip()
+    ctx = refresh_runtime_question_session(current, skill_id=skill_id)
+    display = ctx.get("display_answer")
     if display:
         return str(display)
+    ac = resolve_answer_contract_for_runtime(ctx, skill_id=skill_id)
+    if is_coordinate_pair_contract(ac) or is_coordinate_pair_runtime_payload(ctx):
+        text = format_coordinate_pair_display(correct_answer)
+        if text:
+            return text
+    if answer_type_family(str(ac.get("answer_type", ""))) == "solution_set":
+        if isinstance(correct_answer, (list, tuple, set)):
+            return " 或 ".join(str(x) for x in correct_answer)
+        return str(correct_answer)
     if isinstance(correct_answer, (list, tuple, set)):
         return " 或 ".join(str(x) for x in correct_answer)
     return str(correct_answer)
@@ -128,9 +153,15 @@ def grade_answer_for_current_question(
     """Contract-aware grading for session current question. Returns None if not applicable."""
     if not should_use_contract_aware_grading(current):
         return None
-    payload = build_grading_payload(current, skill_id)
-    ac = payload.get("answer_contract") if isinstance(payload.get("answer_contract"), dict) else {}
-    correct_answer = coerce_correct_answer(current.get("correct_answer", current.get("answer")))
+    refreshed = refresh_runtime_question_session(current, skill_id=skill_id)
+    payload = build_grading_payload(refreshed, skill_id)
+    ac = resolve_answer_contract_for_runtime(payload, skill_id=skill_id)
+    if ac:
+        payload["answer_contract"] = ac
+    correct_answer = coerce_correct_answer(
+        refreshed.get("correct_answer", refreshed.get("answer")),
+        ac if isinstance(ac, dict) else None,
+    )
     checker = str(
         ac.get("checker") or payload.get("checker") or payload.get("checker_type") or ""
     ).strip()
@@ -160,7 +191,7 @@ def grade_answer_for_current_question(
         log=log,
         extra=expr_debug,
     )
-    display = format_correct_answer_display(correct_answer, current)
+    display = format_correct_answer_display(correct_answer, payload)
     return {
         "correct": is_correct,
         "result": "答對了！" if is_correct else f"答錯了，正確答案是 {display}",

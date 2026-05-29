@@ -92,7 +92,7 @@ def test_mixed_distance_and_quadrant_block():
     ]
     meta = {"skill_ch_name": "平面上兩點間的距離", "skill_en_name": "Distance Between Two Points"}
     with patch("core.gencode.problem_type_induction.load_skill_metadata_from_db", return_value=meta):
-        out = induce_problem_types_from_examples(skill_id, examples)
+        out = induce_problem_types_from_examples(skill_id, examples, spec_mode="rule_first_induce_from_sources")
     assert str(out.get("source_alignment_status")) == "block"
     blockers = out.get("alignment_blockers") or []
     assert "mixed_source_families" in blockers or "source_examples_mismatch" in blockers
@@ -121,7 +121,7 @@ def test_distance_skill_quadrant_sources_blocked():
     ]
     meta = {"skill_ch_name": "平面上兩點間的距離", "skill_en_name": "Two Point Distance"}
     with patch("core.gencode.problem_type_induction.load_skill_metadata_from_db", return_value=meta):
-        out = induce_problem_types_from_examples(skill_id, examples)
+        out = induce_problem_types_from_examples(skill_id, examples, spec_mode="rule_first_induce_from_sources")
     assert str(out.get("source_alignment_status")) == "block"
 
 

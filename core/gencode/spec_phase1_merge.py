@@ -31,6 +31,8 @@ _CHECKER_MAP = {
     "numeric": ("integer_checker", "numeric_exact"),
     "fraction": ("fraction_checker", "rational_equivalent"),
     "expression": ("expression_equivalence_checker", "expression_equivalence"),
+    "ordered_pair": ("coordinate_pair_checker", "coordinate_pair_equivalence"),
+    "coordinate_pair": ("coordinate_pair_checker", "coordinate_pair_equivalence"),
 }
 
 
@@ -38,9 +40,15 @@ def spec_to_answer_contract_proposal(spec: dict[str, Any]) -> dict[str, Any]:
     ac = get_answer_contract(spec)
     answer_type = str(ac.get("answer_type", "")).strip()
     equivalence = str(ac.get("answer_equivalence", "")).strip()
-    checker_key, eq_default = _CHECKER_MAP.get(answer_type, ("text_checker", "exact_string"))
+    answer_shape = str(ac.get("answer_shape", "")).strip()
+    checker_key = str(ac.get("checker") or ac.get("checker_key") or "").strip()
+    if checker_key:
+        eq_default = equivalence
+    else:
+        checker_key, eq_default = _CHECKER_MAP.get(answer_type, ("text_checker", "exact_string"))
     return {
         "answer_type": answer_type,
+        "answer_shape": answer_shape,
         "equivalence_type": _EQUIVALENCE_MAP.get(equivalence, eq_default),
         "checker_key": checker_key,
         "order_matters": answer_type not in {"set", "multi_choice"},

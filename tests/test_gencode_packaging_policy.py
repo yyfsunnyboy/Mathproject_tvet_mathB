@@ -68,6 +68,19 @@ def test_dynamic_sampling_failed():
     assert ok is False
 
 
+def test_dynamic_sampling_diversity_warning_still_usable():
+    ok, reasons = is_generator_usable_for_packaging(
+        _row(
+            generator_status="runtime_ready_with_warning",
+            dynamic_sampling_status="runtime_ready_with_diversity_warning",
+            warnings=["consecutive_same_template_variant", "low_source_examples"],
+            usable_for_phase3=True,
+        )
+    )
+    assert ok is True
+    assert reasons == []
+
+
 def test_merge_status_from_phase2_and_contract_from_draft():
     phase2 = {
         "generator_results": [

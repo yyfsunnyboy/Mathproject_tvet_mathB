@@ -15,6 +15,13 @@ PACKAGING_READY_STATUSES = frozenset(
     }
 )
 
+DIVERSITY_SAMPLING_OK_STATUSES = frozenset(
+    {
+        "passed",
+        "runtime_ready_with_diversity_warning",
+    }
+)
+
 _STATUS_KEYS = ("generator_status", "status", "readiness_status")
 _SMOKE_KEYS = (("checker_smoke_status", "checker_smoke"), ("dynamic_sampling_status", "dynamic_sampling"))
 
@@ -35,7 +42,46 @@ def _passed_flag(record: dict[str, Any], primary: str, alt: str) -> bool:
         raw = record.get(alt)
     if isinstance(raw, bool):
         return raw
-    return str(raw or "").strip().lower() == "passed"
+    val = str(raw or "").strip().lower()
+    if val == "passed":
+        return True
+    if primary == "dynamic_sampling_status" and val in DIVERSITY_SAMPLING_OK_STATUSES:
+        return True
+    return False
+
+
+def resolve_phase2_generator_status(
+    *,
+    blockers: list[str],
+    warnings: list[str],
+    checker_smoke_status: str = "passed",
+    dynamic_sampling_status: str = "passed",
+    base_status: str = "",
+) -> tuple[str, bool]:
+    """
+    Map Phase 2 smoke/diversity outcome to generator_status and Phase 3 usability.
+    Only non-empty blockers cause validation_failed; warnings yield runtime_ready_with_warning.
+    """
+    merged_blockers = sorted({str(b).strip() for b in blockers if str(b).strip()})
+    merged_warnings = sorted({str(w).strip() for w in warnings if str(w).strip()})
+    smoke = str(checker_smoke_status or "").strip().lower()
+    dynamic = str(dynamic_sampling_status or "").strip().lower()
+
+    if merged_blockers:
+        return "validation_failed", False
+    if smoke not in {"", "passed", "skipped_with_blockers"}:
+        return "validation_failed", False
+    if dynamic not in {"", "passed", "skipped_with_blockers"} and dynamic not in DIVERSITY_SAMPLING_OK_STATUSES:
+        if dynamic in {"failed", "generator_diversity_blocked"}:
+            return "validation_failed", False
+    if merged_warnings:
+        return "runtime_ready_with_warning", True
+    normalized = str(base_status or "").strip()
+    if normalized in PACKAGING_READY_STATUSES:
+        return normalized, True
+    if normalized in {"draft_planned", ""}:
+        return "runtime_ready", True
+    return normalized or "runtime_ready", normalized in PACKAGING_READY_STATUSES
 
 
 def is_generator_usable_for_packaging(record: dict[str, Any]) -> tuple[bool, list[str]]:
@@ -57,7 +103,9 @@ def is_generator_usable_for_packaging(record: dict[str, Any]) -> tuple[bool, lis
         exclude.append(f"checker_capability_{cap or 'missing'}")
     if bool(record.get("requires_human_action")):
         exclude.append("requires_human_action")
-  # warnings alone (e.g. low_source_examples) do not block packaging
+    # warnings alone (e.g. low_source_examples) do not block packaging
+    if record.get("usable_for_phase3") is False:
+        exclude.append("usable_for_phase3_false")
     return len(exclude) == 0, exclude
 
 
