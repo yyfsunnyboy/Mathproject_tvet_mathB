@@ -19,7 +19,7 @@
       ],
       "checker_contract_warnings": [],
       "generator_key": "mock_phase2_block:short_answer_classify_quadrant_coordinate_point:draft_v1",
-      "generator_status": "blocked",
+      "generator_status": "validation_failed",
       "checker_smoke_status": "skipped_with_blockers",
       "dynamic_sampling_status": "skipped_with_blockers",
       "diversity_sampling": {},
@@ -35,13 +35,14 @@
         "mixed_source_families",
         "phase1_semantic_alignment_blocked"
       ],
-      "warnings": []
+      "warnings": [],
+      "usable_for_phase3": false
     }
   ],
   "accepted_generators": [],
   "failed_generators": [
     "mock_phase2_block:short_answer_classify_quadrant_coordinate_point:draft_v1"
   ],
-  "timestamp": "2026-05-29T13:36:18.254734+00:00",
+  "timestamp": "2026-05-30T04:24:56.477251+00:00",
   "dry_run": true
 }

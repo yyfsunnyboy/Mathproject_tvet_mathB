@@ -17,7 +17,32 @@ from core.gencode.task_families import (
     infer_skill_families,
     infer_skill_families_from_terms,
     source_family_distribution,
+    same_family_extension_allowed,
     task_family_for_task,
+)
+
+_NON_SEMANTIC_REVIEW_CANDIDATE_SOURCES = frozenset(
+    {
+        "ai_needs_review",
+        "rule_fallback_ai_unavailable",
+        "needs_review",
+        "partial_unavailable",
+        "unclassified",
+        "low_confidence_ai",
+    }
+)
+
+_NON_BLOCKING_ALIGNMENT_KINDS = frozenset(
+    {
+        "anchor_subskill_match",
+        "rule_fallback_same_family",
+        "same_as_main_skill",
+        "same_family_extension",
+        "section_scope_subskill_extension",
+        "inherited_from_previous_context",
+        "enrichment_source",
+        "source_quality_reject",
+    }
 )
 
 # Canonical task taxonomy -> indicative tokens (generic, not skill-specific).
@@ -90,6 +115,11 @@ TASK_TAXONOMY: dict[str, tuple[str, ...]] = {
         "interval",
         "區間",
     ),
+    "judge_function_relation": ("是否為函數", "是否为函数", "對應關係", "对应关系", "function relation"),
+    "judge_function_from_mapping": ("箭頭圖", "箭头图", "表格", "集合", "mapping", "arrow diagram"),
+    "evaluate_function_value": ("函數值", "函数值", "代入", "f(", "g("),
+    "interpret_function_notation": ("函數記號", "函数记号", "f\\left", "函數的定義", "函数的定义"),
+    "judge_domain_range_basic": ("定義域", "定义域", "值域", "domain", "range"),
     "compute_slope": ("slope", "斜率", "gradient"),
     "find_intercepts": ("intercept", "截距", "x_intercept", "y_intercept"),
     "choose_correct_statement": ("choose_correct_statement", "敘述", "下列何者"),
@@ -272,6 +302,7 @@ def evaluate_source_example_alignment(
     feature: dict[str, Any],
     *,
     main_skill_anchor: dict[str, Any] | None = None,
+    for_core_induction: bool = True,
 ) -> dict[str, Any]:
     anchor = main_skill_anchor if isinstance(main_skill_anchor, dict) else {}
     sc = feature.get("semantic_classification") if isinstance(feature.get("semantic_classification"), dict) else {}
@@ -288,7 +319,11 @@ def evaluate_source_example_alignment(
         expected_tasks = infer_expected_tasks(skill_terms)
     scope = str(anchor.get("skill_anchor_scope", "default")).strip() or "default"
     cand_src = str(sc.get("candidate_source", "")).strip()
+    classifier_source = str(sc.get("classifier_source", "")).strip()
     skill_scope_trusted = bool(sc.get("skill_scope_trusted", True))
+    rule_task = str(sc.get("rule_target_task", "")).strip()
+    rule_family = str(sc.get("rule_task_family", "")).strip() or task_family_for_task(rule_task)
+    ai_status = str(sc.get("ai_semantic_status", "")).strip()
 
     exclude_reason = ""
     alignment_kind = ""
@@ -299,12 +334,52 @@ def evaluate_source_example_alignment(
     task_family_match = bool(expected_families and family and family in expected_families)
     subskill_match = bool(expected_tasks and task and task in expected_tasks)
 
-    if cand_src == "needs_review" or str(sc.get("ai_best_candidate_id", "")).strip() == "needs_review":
-        alignment_kind = "needs_review"
+    induction_tier = str(feature.get("induction_tier", "core")).strip() or "core"
+    if bool(feature.get("source_quality_reject")):
+        alignment_kind = "source_quality_reject"
         aligned = False
-        included_in_phase1 = True
+        included_in_phase1 = False
         requires_human_action = True
-        exclude_reason = ""
+        exclude_reason = "source_quality_reject"
+    elif induction_tier == "enrichment":
+        alignment_kind = "enrichment_source"
+        aligned = False
+        included_in_phase1 = False
+        requires_human_action = False
+        exclude_reason = "enrichment_not_core_induction"
+    elif cand_src == "needs_review" or str(sc.get("ai_best_candidate_id", "")).strip() == "needs_review":
+        non_semantic_needs_review = (
+            classifier_source in _NON_SEMANTIC_REVIEW_CANDIDATE_SOURCES
+            or ai_status in {"partial_unavailable", "unavailable"}
+        )
+        rule_task_family_match = bool(expected_families and rule_family and rule_family in expected_families)
+        rule_task_subskill_match = bool(expected_tasks and rule_task and rule_task in expected_tasks)
+        if non_semantic_needs_review and (rule_task_family_match or rule_task_subskill_match):
+            if rule_task_subskill_match:
+                task = rule_task
+            if rule_task_family_match:
+                family = rule_family
+            alignment_kind = "rule_fallback_same_family"
+            aligned = True
+            included_in_phase1 = bool(for_core_induction)
+            pass_with_warning = True
+            requires_human_action = bool(sc.get("requires_human_action", False))
+            subskill_match = bool(task and task in expected_tasks)
+            task_family_match = bool(expected_families and family and family in expected_families)
+            exclude_reason = ""
+        elif non_semantic_needs_review and bool(anchor.get("source_belongs_to_current_skill_by_default", False)):
+            alignment_kind = "same_as_main_skill"
+            aligned = True
+            included_in_phase1 = bool(for_core_induction)
+            pass_with_warning = True
+            requires_human_action = bool(sc.get("requires_human_action", False))
+            exclude_reason = ""
+        else:
+            alignment_kind = "needs_review"
+            aligned = False
+            included_in_phase1 = bool(for_core_induction)
+            requires_human_action = True
+            exclude_reason = ""
     elif cand_src == "outsider" or sc.get("classifier_source") == "ai_outsider_candidate":
         alignment_kind = "outsider_candidate_warning"
         aligned = True
@@ -322,7 +397,11 @@ def evaluate_source_example_alignment(
         subskill_match = bool(subskill_match or task in expected_tasks)
     elif task_family_match and expected_tasks and task and task not in expected_tasks:
         exclude_reason = ""
-        alignment_kind = "same_family_subskill_mismatch"
+        if scope in {"medium", "broad"}:
+            alignment_kind = "section_scope_subskill_extension"
+            pass_with_warning = True
+        else:
+            alignment_kind = "same_family_subskill_mismatch"
         subskill_match = False
         aligned = True
         included_in_phase1 = True
@@ -335,7 +414,12 @@ def evaluate_source_example_alignment(
         aligned = True
         included_in_phase1 = True
     else:
-        if skill_scope_trusted and cand_src in {"anchor", "structure", "rule"}:
+        if same_family_extension_allowed(expected_families, family, scope=scope):
+            alignment_kind = "same_family_extension"
+            aligned = True
+            included_in_phase1 = True
+            pass_with_warning = True
+        elif skill_scope_trusted and cand_src in {"anchor", "structure", "rule"}:
             alignment_kind = "anchor_subskill_match"
             aligned = True
             included_in_phase1 = True
@@ -357,7 +441,31 @@ def evaluate_source_example_alignment(
         "subskill_match": subskill_match,
         "pass_with_warning": pass_with_warning,
         "requires_human_action": requires_human_action,
+        "induction_tier": induction_tier,
+        "included_in_core_induction": induction_tier == "core" and bool(included_in_phase1),
+        "enrichment_reasons": list(feature.get("enrichment_reasons") or []),
+        "source_quality_issues": list(feature.get("source_quality_issues") or []),
+        "source_quality_reject": bool(feature.get("source_quality_reject")),
+        "candidate_only": bool(feature.get("candidate_only")),
     }
+
+
+def _features_for_alignment_blockers(source_features: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """Use core-tier examples for induction blockers; fall back when tiers are not annotated."""
+    if not source_features:
+        return []
+    has_tier = any(
+        isinstance(f, dict) and str(f.get("induction_tier", "")).strip()
+        for f in source_features
+    )
+    if not has_tier:
+        return list(source_features)
+    core = [
+        f
+        for f in source_features
+        if isinstance(f, dict) and str(f.get("induction_tier", "core")).strip() != "enrichment"
+    ]
+    return core
 
 
 def evaluate_semantic_alignment(
@@ -370,21 +478,25 @@ def evaluate_semantic_alignment(
     main_skill_anchor: dict[str, Any] | None = None,
     ai_semantic_status: str = "",
     examples: list[dict[str, Any]] | None = None,
+    induction_source_report: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     anchor = main_skill_anchor if isinstance(main_skill_anchor, dict) else build_main_skill_anchor(
         skill_id, skill_metadata
     )
     source_features = apply_final_classification_to_features(source_features)
+    blocker_features = _features_for_alignment_blockers(source_features)
+    enrichment_count = int((induction_source_report or {}).get("enrichment_example_count", 0) or 0)
+    core_count = int((induction_source_report or {}).get("core_example_count", len(blocker_features)) or 0)
     ai_status = str(ai_semantic_status or "").strip()
     rule_fallback_only = ai_status == "unavailable"
     skill_terms = extract_skill_terms(skill_id, skill_metadata)
-    source_terms = extract_source_terms_from_features(source_features)
+    source_terms = extract_source_terms_from_features(blocker_features or source_features)
     expected_tasks = set(anchor.get("expected_subskill_candidates") or []) or infer_expected_tasks(skill_terms)
     expected_families = set(anchor.get("expected_task_families") or []) or infer_skill_families_from_terms(skill_terms)
-    dominant_task, dominant_ratio = _dominant_source_task(source_features)
-    src_family_dist = source_family_distribution(source_features)
+    dominant_task, dominant_ratio = _dominant_source_task(blocker_features or source_features)
+    src_family_dist = source_family_distribution(blocker_features or source_features)
     source_families = set(src_family_dist.keys())
-    dom_families, dom_family_ratio = dominant_source_families(source_features)
+    dom_families, dom_family_ratio = dominant_source_families(blocker_features or source_features)
 
     per_spec_scores: list[dict[str, Any]] = []
     spec_task_scores: list[float] = []
@@ -393,11 +505,19 @@ def evaluate_semantic_alignment(
     warnings: list[str] = []
 
     skill_id_mismatch_examples: list[int] = []
+    source_quality_reject_examples: list[int] = []
     for ex in examples or []:
         if isinstance(ex, dict) and example_skill_id_mismatch(ex, skill_id):
             eid = ex.get("id") or ex.get("example_id")
             if isinstance(eid, int):
                 skill_id_mismatch_examples.append(eid)
+    for feat in source_features:
+        if not isinstance(feat, dict):
+            continue
+        if feat.get("source_quality_reject") and isinstance(feat.get("source_example_id"), int):
+            source_quality_reject_examples.append(int(feat.get("source_example_id")))
+    if source_quality_reject_examples:
+        warnings.append("source_quality_reject_examples_present")
     if skill_id_mismatch_examples:
         blockers.append("skill_id_mismatch")
         warnings.append("source_example_skill_id_mismatch")
@@ -449,13 +569,34 @@ def evaluate_semantic_alignment(
     needs_review_count = 0
     outsider_count = 0
     anchor_scoped_count = 0
-    for feat in source_features:
+    fallback_same_main_count = 0
+    source_belongs_default = bool(anchor.get("source_belongs_to_current_skill_by_default", False))
+    for feat in blocker_features:
         if not isinstance(feat, dict):
+            continue
+        if feat.get("source_quality_reject"):
             continue
         sc = feat.get("semantic_classification") if isinstance(feat.get("semantic_classification"), dict) else {}
         src = str(sc.get("candidate_source", "")).strip()
-        if src == "needs_review" or str(sc.get("ai_best_candidate_id", "")).strip() == "needs_review":
-            needs_review_count += 1
+        ai_status_row = str(sc.get("ai_semantic_status", "")).strip()
+        ai_best = str(sc.get("ai_best_candidate_id", "")).strip()
+        rule_task = str(sc.get("rule_target_task", "")).strip()
+        rule_family = str(sc.get("rule_task_family") or task_family_for_task(rule_task) or feat.get("task_family") or "").strip()
+        explicit_remap = str(sc.get("source_mapping_warning", "")).strip() in {"expected_family_mismatch"}
+        has_outside_family_evidence = bool(rule_family and expected_families and rule_family not in expected_families)
+        non_semantic_needs_review = (
+            src in _NON_SEMANTIC_REVIEW_CANDIDATE_SOURCES
+            or ai_status_row in {"partial_unavailable", "unavailable"}
+        )
+        if src == "needs_review" or ai_best == "needs_review":
+            if non_semantic_needs_review and source_belongs_default and not has_outside_family_evidence and not explicit_remap:
+                fallback_same_main_count += 1
+                warnings.append("ai_unavailable_fallback_to_same_as_main")
+                anchor_scoped_count += 1
+                if rule_task and rule_task in expected_tasks:
+                    warnings.append("rule_fallback_same_family_examples")
+            else:
+                needs_review_count += 1
         elif src == "outsider":
             outsider_count += 1
         elif sc.get("in_anchor_scope") or src in {"anchor", "structure", "rule"}:
@@ -468,7 +609,7 @@ def evaluate_semantic_alignment(
             or f.get("task_family")
             or task_family_for_task(str(f.get("target_task", "")))
         ).strip()
-        for f in source_features
+        for f in blocker_features
         if isinstance(f, dict)
     }
     in_scope_families.discard("")
@@ -494,7 +635,7 @@ def evaluate_semantic_alignment(
 
     outside_expected = [
         f
-        for f in source_features
+        for f in blocker_features
         if isinstance(f, dict)
         and str(
             (f.get("semantic_classification") or {}).get("candidate_source", "")
@@ -503,20 +644,41 @@ def evaluate_semantic_alignment(
     ]
     task_dist = Counter(
         str(f.get("target_task", "")).strip()
-        for f in source_features
+        for f in blocker_features
         if isinstance(f, dict) and str(f.get("target_task", "")).strip()
     )
     subskill_mismatch_rows: list[dict[str, Any]] = []
+    unresolved_review_rows: list[dict[str, Any]] = []
     examples_outside_subskills: list[int] = []
-    for feat in source_features:
+    for feat in blocker_features:
         if not isinstance(feat, dict):
             continue
         row = evaluate_source_example_alignment(skill_terms, feat, main_skill_anchor=anchor)
-        if row.get("alignment_kind") == "same_family_subskill_mismatch":
+        kind = str(row.get("alignment_kind", "")).strip()
+        fam = str(row.get("task_family", "")).strip()
+        if kind == "same_family_subskill_mismatch":
             subskill_mismatch_rows.append(row)
             ex_id = feat.get("source_example_id")
             if isinstance(ex_id, int):
                 examples_outside_subskills.append(ex_id)
+        if kind in _NON_BLOCKING_ALIGNMENT_KINDS:
+            continue
+        if kind in {"needs_review", "outside_family", "semantic_mismatch", "suspected_wrong_skill", "needs_remap", "explicit_wrong_skill", "unresolved_needs_review"}:
+            unresolved_review_rows.append(row)
+            continue
+        if kind == "outsider_candidate_warning":
+            # outside-family warning without same-family fallback should still count as unresolved.
+            if fam and expected_families and fam in expected_families:
+                continue
+            unresolved_review_rows.append(row)
+            continue
+        if kind == "unclassified_low_confidence":
+            unresolved_review_rows.append(row)
+            continue
+
+    # Final blocker counting must follow final row-level alignment kinds, not raw candidate_source.
+    needs_review_count = len(unresolved_review_rows)
+    outsider_count = sum(1 for r in unresolved_review_rows if str(r.get("alignment_kind", "")).strip() == "outsider_candidate_warning")
     if subskill_mismatch_rows:
         warnings.append("same_family_subskill_mismatch")
         narrow_scope = str(anchor.get("skill_anchor_scope", "")).strip() == "narrow"
@@ -524,16 +686,27 @@ def evaluate_semantic_alignment(
             warnings.append(
                 "來源題與技能屬於同一大類，但子技能不同；請確認是否要放在此技能底下。"
             )
-    if outsider_count >= max(1, len(source_features) // 2):
+    blocker_denominator = len(blocker_features) if blocker_features else len(source_features)
+    if outsider_count >= max(1, blocker_denominator // 2) and blocker_denominator:
         warnings.append("majority_outsider_candidates_within_skill")
 
-    if needs_review_count >= max(1, len(source_features) // 2):
+    effective_core_count = sum(
+        1
+        for f in blocker_features
+        if isinstance(f, dict) and not f.get("source_quality_reject")
+    )
+    if core_count == 0 and enrichment_count > 0:
+        blockers.append("low_core_source_examples")
+        warnings.append("only_enrichment_examples_available_for_induction")
+    elif effective_core_count < 3 and blocker_denominator > 0:
+        warnings.append("low_source_examples")
+    elif needs_review_count >= max(1, blocker_denominator // 2) and blocker_denominator:
         blockers.append("majority_needs_review")
         warnings.append("majority_sources_need_human_subskill_review")
 
     if (
         expected_families
-        and len(source_features) <= min_examples_block
+        and blocker_denominator <= min_examples_block
         and dom_family_ratio >= 0.9
         and dom_families
         and not (dom_families & expected_families)
@@ -602,6 +775,9 @@ def evaluate_semantic_alignment(
         "decision": decision,
         "blockers": unique_blockers,
         "warnings": sorted(set(warnings)),
+        "induction_core_example_count": core_count,
+        "induction_enrichment_example_count": enrichment_count,
+        "source_quality_reject_examples": sorted(set(source_quality_reject_examples)),
     }
 
 

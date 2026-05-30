@@ -969,11 +969,251 @@
             el.innerHTML = _renderAiExplanation(ai);
         }
 
+        function _isPhase1LowCoreOnly(data) {
+            const st = String(data?.phase_status || '');
+            if (st === 'phase1_blocked_low_core_sources') return true;
+            const kind = String(data?.alignment_display_kind || '');
+            if (kind === 'low_core_sources') return true;
+            const blockers = Array.isArray(data?.alignment_blockers) ? data.alignment_blockers : [];
+            if (!blockers.length) return false;
+            return blockers.every((b) => {
+                const s = String(b || '').trim();
+                return s === 'low_core_source_examples' || s === 'semantic_alignment_blocked';
+            }) && blockers.some((b) => String(b || '').trim() === 'low_core_source_examples');
+        }
+
+        function _phase1WarningMessage(key) {
+            const k = String(key || '').trim();
+            if (!k) return '';
+            if (k === 'ai_first_mode_fell_back_to_rule_only') {
+                return 'AI 引導分類未成功，已改用規則分類。請檢查題型分群是否合理。';
+            }
+            if (k === 'alignment_score_below_recommended_threshold') {
+                return '語意分數偏低：目前分數仍偏字面 token overlap，若題族與子技能已對齊且無 blocker，僅作提醒。';
+            }
+            if (k === 'source_quality_reject_examples_present') {
+                return '部分來源題疑似品質問題，建議人工檢查；若剩餘 core 題足夠，仍可繼續。';
+            }
+            if (k === 'fallback_subskill_used') {
+                return '部分題目已放入主技能同名子技能 same_as_main_skill。';
+            }
+            if (k === 'same_family_extension') {
+                return '同一題族內的延伸題型，保留於目前 skill。';
+            }
+            if (k === 'section_scope_subskill_extension') {
+                return '同一小節脈絡下的延伸子技能，保留於目前 skill。';
+            }
+            if (k === 'same_as_main_skill') {
+                return '無法細分者已放入主技能同名子技能。';
+            }
+            if (k === 'inherited_from_previous_context') {
+                return '承接前文脈絡題型，保留於目前 skill。';
+            }
+            if (k === 'low_source_examples') {
+                return '樣本數不足，題型先列為候選。';
+            }
+            return '';
+        }
+
+        function _isPhase1CanContinueWarning(data) {
+            const blockers = Array.isArray(data?.alignment_blockers) ? data.alignment_blockers : [];
+            const semanticMismatchExamples = Array.isArray(data?.semantic_mismatch_examples) ? data.semantic_mismatch_examples : [];
+            const hasWarnings = (Array.isArray(data?.alignment_warnings) && data.alignment_warnings.length > 0)
+                || !!data?.fallback_subskill_used
+                || (Array.isArray(data?.same_family_extension_examples) && data.same_family_extension_examples.length > 0)
+                || (Array.isArray(data?.section_scope_subskill_extension_examples) && data.section_scope_subskill_extension_examples.length > 0)
+                || (Array.isArray(data?.same_as_main_skill_examples) && data.same_as_main_skill_examples.length > 0)
+                || (Array.isArray(data?.inherited_from_previous_context_examples) && data.inherited_from_previous_context_examples.length > 0)
+                || (Array.isArray(data?.low_source_examples) && data.low_source_examples.length > 0);
+            return !!data?.can_continue
+                && String(data?.phase_status || '') === 'phase1_completed_with_warning'
+                && !blockers.length
+                && !semanticMismatchExamples.length
+                && hasWarnings;
+        }
+
+        function _isPhase1CanContinueByFallbackSignal(data) {
+            const summary = String(data?.summary_message || '');
+            const classifierSource = String(data?.classifier_source || '');
+            const phaseStatus = String(data?.phase_status || '');
+            const warnings = Array.isArray(data?.alignment_warnings) ? data.alignment_warnings : [];
+            const hasDefaultPtSignal = classifierSource === 'ai_bootstrap_with_default_fallback'
+                || classifierSource === 'fallback_default_problem_type'
+                || !!data?.default_problem_type_used
+                || warnings.includes('default_problem_type_created')
+                || summary.includes('AI 未細分題型')
+                || summary.includes('default problem_type')
+                || summary.includes('default_problem_type');
+            const hasFallbackSignal = !!data?.fallback_subskill_used
+                || warnings.includes('fallback_subskill_used')
+                || warnings.includes('same_as_main_skill')
+                || summary.includes('same_as_main_skill');
+            const canByPhase = phaseStatus === 'phase1_completed' || phaseStatus === 'phase1_completed_with_warning';
+            const canByText = summary.includes('可進入 Phase 2');
+            return hasDefaultPtSignal || hasFallbackSignal || canByPhase || canByText;
+        }
+
+        function _renderPhase1WarningSummary(data) {
+            const warnings = Array.isArray(data?.alignment_warnings) ? data.alignment_warnings : [];
+            const infos = [];
+            for (const w of warnings) {
+                const m = _phase1WarningMessage(w);
+                if (m) infos.push({ key: w, msg: m });
+            }
+            if (data?.fallback_subskill_used) {
+                const m = _phase1WarningMessage('fallback_subskill_used');
+                if (m && !infos.find((x) => x.key === 'fallback_subskill_used')) infos.push({ key: 'fallback_subskill_used', msg: m });
+            }
+            const sameFamilyN = Number((data?.same_family_extension_examples || []).length) + Number((data?.section_scope_subskill_extension_examples || []).length);
+            if (sameFamilyN > 0 && !infos.find((x) => x.key === 'same_family_extension')) {
+                const m = _phase1WarningMessage('same_family_extension');
+                if (m) infos.push({ key: 'same_family_extension', msg: m });
+            }
+            if (Array.isArray(data?.same_as_main_skill_examples) && data.same_as_main_skill_examples.length > 0 && !infos.find((x) => x.key === 'same_as_main_skill')) {
+                const m = _phase1WarningMessage('same_as_main_skill');
+                if (m) infos.push({ key: 'same_as_main_skill', msg: m });
+            }
+            if (Array.isArray(data?.inherited_from_previous_context_examples) && data.inherited_from_previous_context_examples.length > 0 && !infos.find((x) => x.key === 'inherited_from_previous_context')) {
+                const m = _phase1WarningMessage('inherited_from_previous_context');
+                if (m) infos.push({ key: 'inherited_from_previous_context', msg: m });
+            }
+            const hasWarnings = infos.length > 0;
+            const summaryTitle = hasWarnings ? 'Phase 1 完成但有提醒' : 'Phase 1 完成';
+            const badgeColor = hasWarnings ? '#b45309' : '#166534';
+            const subskills = Array.isArray(data?.subskills) ? data.subskills : [];
+            const subskillLine = subskills.length ? `<div style="margin-top:6px;"><b>subskills:</b> ${_escapeHtml(subskills.join(', '))}</div>` : '';
+            if (!hasWarnings && !subskillLine) return '';
+            return `<div style="margin-top:8px;padding:8px;border-radius:6px;background:#f8fafc;">
+                <div style="color:${badgeColor};"><b>${summaryTitle}</b>${data?.can_continue ? '（可進入 Phase 2）' : ''}</div>
+                ${hasWarnings ? `<ul style="margin-top:6px;">${infos.map((x) => `<li>${_escapeHtml(x.msg)}</li>`).join('')}</ul>` : ''}
+                ${subskillLine}
+            </div>`;
+        }
+
+        function _renderPhase1SourceQualitySection(data) {
+            const rejected = Array.isArray(data?.rejected_source_examples) ? data.rejected_source_examples : [];
+            const issues = Array.isArray(data?.source_quality_issues) ? data.source_quality_issues : [];
+            const fromSemantic = data?.semantic_alignment?.source_quality_reject_examples;
+            const sourceQualityRejectExamples = Array.isArray(fromSemantic)
+                ? fromSemantic
+                : (Array.isArray(data?.source_quality_reject_examples) ? data.source_quality_reject_examples : []);
+            if (!rejected.length && !issues.length && !sourceQualityRejectExamples.length) return '';
+            const rows = [];
+            const seen = new Set();
+            const pushRow = (exampleId, issueType, reason) => {
+                const eid = String(exampleId || '').trim() || '(unknown)';
+                const typ = String(issueType || '').trim() || 'source_quality_reject';
+                const rsn = String(reason || '').trim() || '';
+                const key = `${eid}::${typ}::${rsn}`;
+                if (seen.has(key)) return;
+                seen.add(key);
+                rows.push(`<tr><td>${_escapeHtml(eid)}</td><td>${_escapeHtml(typ)}</td><td>${_escapeHtml(rsn)}</td></tr>`);
+            };
+            rejected.forEach((r) => {
+                const issueText = Array.isArray(r?.issues) ? r.issues.join(', ') : '';
+                pushRow(r?.example_id, r?.reason || 'source_quality_reject', issueText);
+            });
+            issues.forEach((r) => {
+                if (typeof r === 'string') {
+                    pushRow('', 'source_quality_issue', r);
+                    return;
+                }
+                pushRow(
+                    r?.example_id || r?.id || '',
+                    r?.issue_type || r?.issue || r?.reason || 'source_quality_issue',
+                    r?.reason || r?.message || r?.detail || '',
+                );
+            });
+            sourceQualityRejectExamples.forEach((r) => {
+                if (typeof r === 'string') {
+                    pushRow(r, 'source_quality_reject', '');
+                    return;
+                }
+                pushRow(
+                    r?.example_id || r?.id || '',
+                    r?.issue_type || r?.issue || 'source_quality_reject',
+                    r?.reason || r?.message || '',
+                );
+            });
+            return `<div style="margin-top:8px;padding:8px;background:#f8fafc;border-radius:6px;font-size:12px;">
+                <div><b>來源品質檢查</b></div>
+                <div style="margin-top:4px;">以下來源題可能有題幹、答案、LaTeX、選項或 OCR 問題，建議人工檢查。若仍有足夠可用 core 題，Phase 1 可繼續。</div>
+                <div style="margin-top:4px;"><b>rejected_source_examples:</b> ${_escapeHtml(rejected.map((x) => x?.example_id || '').filter(Boolean).join(', ') || '(none)')}</div>
+                <div><b>source_quality_issues:</b> ${_escapeHtml(issues.length ? String(issues.length) : '(none)')}</div>
+                <div style="margin-top:4px;"><b>source_quality_reject_examples:</b> ${_escapeHtml(
+                    sourceQualityRejectExamples
+                        .map((x) => (typeof x === 'string' ? x : (x?.example_id || x?.id || '')))
+                        .filter(Boolean)
+                        .join(', ') || '(none)'
+                )}</div>
+                <table style="margin-top:6px;"><thead><tr><th>example_id</th><th>issue type</th><th>簡短原因</th></tr></thead>
+                <tbody>${rows.join('') || '<tr><td colspan="3">(none)</td></tr>'}</tbody></table>
+            </div>`;
+        }
+
+        function _renderPhase1InductionSourceSummary(data) {
+            const summary = data?.phase1_induction_summary && typeof data.phase1_induction_summary === 'object'
+                ? data.phase1_induction_summary
+                : {};
+            const coreCount = data?.core_example_count ?? summary.core_example_count ?? '';
+            const enrichCount = data?.enrichment_example_count ?? summary.enrichment_example_count ?? '';
+            const blockers = Array.isArray(data?.alignment_blockers) ? data.alignment_blockers
+                : (Array.isArray(summary.blockers) ? summary.blockers : []);
+            const skipped = Array.isArray(data?.skipped_enrichment_examples) ? data.skipped_enrichment_examples
+                : (Array.isArray(summary.skipped_enrichment_examples) ? summary.skipped_enrichment_examples : []);
+            const futureAi = Array.isArray(data?.future_ai_judged_candidates) ? data.future_ai_judged_candidates
+                : (Array.isArray(summary.future_ai_judged_candidates) ? summary.future_ai_judged_candidates : []);
+            const contextual = Array.isArray(data?.contextual_application_sources) ? data.contextual_application_sources
+                : (Array.isArray(summary.contextual_application_sources) ? summary.contextual_application_sources : []);
+            const sameFamilyExt = Array.isArray(data?.same_family_extension_examples) ? data.same_family_extension_examples
+                : (Array.isArray(summary.same_family_extension_examples) ? summary.same_family_extension_examples : []);
+            const secScopeExt = Array.isArray(data?.section_scope_subskill_extension_examples) ? data.section_scope_subskill_extension_examples
+                : (Array.isArray(summary.section_scope_subskill_extension_examples) ? summary.section_scope_subskill_extension_examples : []);
+            const sameMain = Array.isArray(data?.same_as_main_skill_examples) ? data.same_as_main_skill_examples
+                : (Array.isArray(summary.same_as_main_skill_examples) ? summary.same_as_main_skill_examples : []);
+            const inherited = Array.isArray(data?.inherited_from_previous_context_examples) ? data.inherited_from_previous_context_examples
+                : (Array.isArray(summary.inherited_from_previous_context_examples) ? summary.inherited_from_previous_context_examples : []);
+            const lowSource = Array.isArray(data?.low_source_examples) ? data.low_source_examples
+                : (Array.isArray(summary.low_source_examples) ? summary.low_source_examples : []);
+            const candidateOnly = Array.isArray(data?.candidate_only_problem_types) ? data.candidate_only_problem_types
+                : (Array.isArray(summary.candidate_only_problem_types) ? summary.candidate_only_problem_types : []);
+            const fmtIds = (rows) => (rows || []).map((r) => _escapeHtml(r?.example_id ?? '')).filter(Boolean).join(', ') || '(none)';
+            if (coreCount === '' && enrichCount === '' && !blockers.length && !skipped.length) return '';
+            return `<div style="margin-top:8px;padding:8px;background:#f8fafc;border-radius:6px;font-size:12px;">
+                <div><b>Phase 1 來源分層</b></div>
+                <div><b>core_example_count:</b> ${_escapeHtml(coreCount)}; <b>enrichment_example_count:</b> ${_escapeHtml(enrichCount)}</div>
+                <div><b>blockers:</b> ${_escapeHtml(blockers.join(', ') || '(none)')}</div>
+                <div><b>skipped_enrichment_examples:</b> ${fmtIds(skipped)}</div>
+                <div><b>future_ai_judged_candidates:</b> ${fmtIds(futureAi)}</div>
+                <div><b>contextual_application_sources:</b> ${fmtIds(contextual)}</div>
+                <div><b>same_family_extension_examples:</b> ${fmtIds(sameFamilyExt)}</div>
+                <div><b>section_scope_subskill_extension_examples:</b> ${fmtIds(secScopeExt)}</div>
+                <div><b>same_as_main_skill_examples:</b> ${fmtIds(sameMain)}</div>
+                <div><b>inherited_from_previous_context_examples:</b> ${fmtIds(inherited)}</div>
+                <div><b>low_source_examples:</b> ${_escapeHtml((lowSource || []).map((x) => x?.problem_type_id || '').filter(Boolean).join(', ') || '(none)')}</div>
+                <div><b>candidate_only_problem_types:</b> ${_escapeHtml((candidateOnly || []).map((x) => x?.example_id || '').filter(Boolean).join(', ') || '(none)')}</div>
+            </div>`;
+        }
+
         function _renderPhase1AlignmentDetails(data) {
             const status = String(data?.source_alignment_status || '');
             const blockers = Array.isArray(data?.alignment_blockers) ? data.alignment_blockers : [];
             const rows = Array.isArray(data?.source_example_alignment) ? data.source_example_alignment : [];
             if (!status && !blockers.length && !rows.length) return '';
+            const lowCoreOnly = _isPhase1LowCoreOnly(data);
+            const displayKind = String(data?.alignment_display_kind || '');
+            const userMsg = String(data?.alignment_user_message || '').trim();
+            const exampleNote = String(data?.example_ids_note || '').trim();
+            const statusLabel = String(data?.alignment_status_label || '').trim();
+            const phaseStatus = String(data?.phase_status || '');
+            const canContinue = !!data?.can_continue;
+            const semanticMismatchExamples = Array.isArray(data?.semantic_mismatch_examples) ? data.semantic_mismatch_examples : [];
+            const semanticBlocked = displayKind === 'semantic_mismatch'
+                || blockers.includes('majority_needs_review')
+                || semanticMismatchExamples.length > 0;
+            const sourceQualityBlocked = displayKind === 'source_quality_reject'
+                || blockers.includes('source_quality_reject')
+                || blockers.includes('no_usable_core_examples');
             const aiUnavailable = String(data?.ai_semantic_status || '') === 'unavailable';
             const aiReason = String(data?.ai_semantic_unavailable_reason || '').trim();
             const ruleFallbackBanner = aiUnavailable
@@ -981,7 +1221,7 @@
                 + (aiReason ? `（AI 語意分類未執行：${_escapeHtml(aiReason)}）` : '（AI 語意分類未執行）')
                 + '</div>'
                 : '';
-            const blocked = !aiUnavailable && (status === 'block' || blockers.length > 0);
+            const blocked = !aiUnavailable && !canContinue && (status === 'block' || phaseStatus.includes('blocked') || blockers.length > 0);
             const alignRows = rows.map((r) => `<tr>
                 <td>${_escapeHtml(r.example_id ?? '')}</td>
                 <td>${_escapeHtml(r.target_task ?? '')}</td>
@@ -992,11 +1232,29 @@
                 <td>${_escapeHtml(r.included_in_phase1 ?? '')}</td>
                 <td>${_escapeHtml(r.exclude_reason ?? '')}</td>
             </tr>`).join('');
-            const warnHtml = blocked
-                ? `<div style="margin-top:8px;color:#b91c1c;"><b>語意對齊未通過：</b>來源題型與技能名稱/語意不一致，請檢查來源例題或 skill mapping。 blockers=${_escapeHtml(blockers.join(', '))}</div>`
-                : (aiUnavailable && blockers.length
-                    ? `<div style="margin-top:6px;color:#64748b;font-size:12px;">rule fallback 診斷（非 AI-first 結論）：blockers=${_escapeHtml(blockers.join(', '))}</div>`
-                    : '');
+            const phase1CanContinueWarning = _isPhase1CanContinueWarning(data);
+            let warnHtml = '';
+            if (blocked && (semanticBlocked || sourceQualityBlocked || lowCoreOnly)) {
+                const body = semanticBlocked
+                    ? (userMsg || '來源題疑似錯分或來源題品質不可用')
+                    : (sourceQualityBlocked
+                        ? '來源題疑似錯分或來源題品質不可用'
+                        : (userMsg || '來源題疑似錯分或來源題品質不可用'));
+                warnHtml = `<div style="margin-top:8px;color:#b91c1c;"><b>Phase 1 阻擋</b>：${_escapeHtml(body)} blockers=${_escapeHtml(blockers.join(', ') || '(none)')}</div>`;
+                if (exampleNote) {
+                    warnHtml += `<div style="margin-top:4px;color:#64748b;font-size:12px;">${_escapeHtml(exampleNote)}</div>`;
+                }
+            } else if (blocked) {
+                const body = userMsg || '來源題疑似錯分或來源題品質不可用';
+                warnHtml = `<div style="margin-top:8px;color:#b91c1c;"><b>Phase 1 阻擋</b>：${ _escapeHtml(body) } blockers=${ _escapeHtml(blockers.join(', ') || '(none)') }</div>`;
+                if (exampleNote) {
+                    warnHtml += `<div style="margin-top:4px;color:#64748b;font-size:12px;">${_escapeHtml(exampleNote)}</div>`;
+                }
+            } else if (aiUnavailable && blockers.length) {
+                warnHtml = `<div style="margin-top:6px;color:#64748b;font-size:12px;">rule fallback 診斷（非 AI-first 結論）：blockers=${_escapeHtml(blockers.join(', '))}</div>`;
+            } else if (phase1CanContinueWarning) {
+                warnHtml = `<div style="margin-top:8px;color:#b45309;"><b>Phase 1 完成但有提醒</b>：可進入 Phase 2，但建議先檢查以下項目。</div>`;
+            }
             const subMismatch = Array.isArray(data.same_family_subskill_mismatch_examples)
                 ? data.same_family_subskill_mismatch_examples : [];
             const subWarnHtml = subMismatch.length
@@ -1012,7 +1270,7 @@
             const expectedSub = Array.isArray(data.expected_subskill_candidates)
                 ? data.expected_subskill_candidates.join(', ')
                 : (Array.isArray(anchor.expected_subskill_candidates) ? anchor.expected_subskill_candidates.join(', ') : '');
-            return `${ruleFallbackBanner}${warnHtml}${subWarnHtml}
+            return `${ruleFallbackBanner}${warnHtml}${_renderPhase1WarningSummary(data)}${_renderPhase1InductionSourceSummary(data)}${_renderPhase1SourceQualitySection(data)}${subWarnHtml}
                 <div style="margin-top:8px;"><b>alignment_score:</b> ${_escapeHtml(data.alignment_score ?? '')};
                 <b>source_alignment_status:</b> ${_escapeHtml(status)}</div>
                 <div><b>expected_subskill_candidates:</b> ${_escapeHtml(expectedSub)}</div>
@@ -1165,8 +1423,18 @@
                     method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ dry_run: true, spec_mode })
                 });
                 const data = await resp.json();
-                if (!resp.ok || !data.ok) throw new Error(data.error || data.summary_message || `HTTP ${resp.status}`);
-                _setPhaseStatus('phase1', data.phase_status || '完成');
+                const lowCoreOnly = _isPhase1LowCoreOnly(data);
+                const canContinueWarning = _isPhase1CanContinueWarning(data);
+                const canContinueByFallbackSignal = _isPhase1CanContinueByFallbackSignal(data);
+                const phaseCanContinue = !!data?.can_continue || canContinueWarning || canContinueByFallbackSignal;
+                if ((!resp.ok || !data.ok) && !lowCoreOnly && !phaseCanContinue) {
+                    throw new Error(data.error || data.summary_message || `HTTP ${resp.status}`);
+                }
+                const phaseBlocked = !phaseCanContinue;
+                const phase1StatusText = phaseBlocked
+                    ? 'Phase 1 阻擋'
+                    : ((canContinueWarning || canContinueByFallbackSignal) ? '完成但有提醒' : (data.phase_status || '完成'));
+                _setPhaseStatus('phase1', phase1StatusText);
                 _updateAiExplanation(data);
                 const candidates = Array.isArray(data.candidate_problem_types) ? data.candidate_problem_types : [];
                 const rows = candidates.map((c) => {
@@ -1188,8 +1456,10 @@
                         <td>${note ? _escapeHtml(note) : ''}</td>
                     </tr>`;
                 }).join('');
+                const summaryClass = lowCoreOnly ? 'gencode-summary' : 'gencode-summary';
+                const summaryStyle = lowCoreOnly ? 'color:#b45309;' : '';
                 box.innerHTML = `
-                    <div class="gencode-summary">${_escapeHtml(data.summary_message || '')}</div>
+                    <div class="${summaryClass}" style="${summaryStyle}">${_escapeHtml(data.summary_message || data.alignment_user_message || '')}</div>
                     <div><b>來源題數:</b> ${_escapeHtml(data.source_example_count ?? 0)};<b>候選題型數:</b> ${candidates.length}</div>
                     ${_renderPhase1InductionDetails(data)}
                     <table><thead><tr><th>problem_type_id</th><th>display_name</th><th>matched</th><th>grouping_reason</th><th>checker</th><th>equivalence</th><th>answer_contract</th><th>note</th></tr></thead><tbody>${rows || '<tr><td colspan="8">(none)</td></tr>'}</tbody></table>
@@ -1197,9 +1467,13 @@
                     ${_renderReportsList(data.reports)}
                     ${_renderClassifierRegisterPanel(data)}
                 `;
-                                const phaseBlocked = String(data.phase_status || '').includes('blocked_semantic_alignment')
-                    || String(data.source_alignment_status || '') === 'block';
-                document.getElementById('gencodePhase2Btn').disabled = !data.can_continue || phaseBlocked;
+                const phaseBlockedByPolicy = !phaseCanContinue;
+                document.getElementById('gencodePhase2Btn').disabled = phaseBlocked;
+                if (phaseBlockedByPolicy) {
+                    Swal.fire('Phase 1 阻擋', data.alignment_user_message || data.summary_message || '來源題疑似錯分或來源題品質不可用。', 'error');
+                } else if (canContinueWarning || canContinueByFallbackSignal) {
+                    Swal.fire('Phase 1 完成但有提醒', '可進入 Phase 2，但建議先檢查提醒項目。', 'warning');
+                }
             } catch (e) {
                 _setPhaseStatus('phase1', '錯誤');
                 box.innerHTML = `<div style="color:#b91c1c;"><b>錯誤:</b> ${_escapeHtml(e.message || String(e))}</div>`;

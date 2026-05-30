@@ -1,0 +1,164 @@
+{
+  "skill_id": "vh_數學B1_LinearFunction",
+  "spec_source": "phase1_induced_draft",
+  "items": [
+    {
+      "problem_type_id": "numeric_evaluate_function_value_short_answer",
+      "skill_id": "vh_數學B1_LinearFunction",
+      "target_task": "evaluate_function_value",
+      "task_family": "function_concept_family",
+      "display_name": "numeric / evaluate_function_value",
+      "source_example_ids": [
+        4425,
+        4442,
+        4445
+      ],
+      "answer_contract": {
+        "choices_required": false,
+        "choice_count": null,
+        "correct_choice_count": null,
+        "frontend_render_choices": false,
+        "answer_type": "numeric",
+        "answer_shape": "scalar",
+        "answer_equivalence": "numeric_equivalence",
+        "checker": "numeric_checker",
+        "accepted_formats": [
+          "5",
+          "5.0",
+          "-3"
+        ]
+      },
+      "stem_contract": {
+        "stem_must_not_embed_choices": true,
+        "allowed_math_objects": [],
+        "required_math_objects": [],
+        "forbidden_patterns": [
+          "\\(A\\)",
+          "\\(B\\)",
+          "\\(C\\)",
+          "\\(D\\)"
+        ]
+      },
+      "dependency_contract": {
+        "givens_must_be_used": true,
+        "target_answer_must_depend_on_givens": true,
+        "variables_in_conditions_must_appear_in_target": false
+      },
+      "semantic_contract": {
+        "reasoning_type": [
+          "numeric_computation"
+        ],
+        "reject_if": [
+          "unused_condition",
+          "ambiguous_answer",
+          "answer_not_derivable",
+          "duplicated_choices",
+          "no_correct_choice",
+          "multiple_correct_choices_when_single_choice"
+        ]
+      },
+      "generator_contract": {
+        "template_variants": [
+          {
+            "id": "default",
+            "label": "default",
+            "stem_pattern": "依題意求解：{stem_hint}。",
+            "weight": 1.0,
+            "enabled": true
+          }
+        ],
+        "parameter_schema": {
+          "seed": {
+            "type": "integer",
+            "randomize": true
+          },
+          "difficulty_level": {
+            "choices": [
+              "level_1",
+              "level_2",
+              "level_3"
+            ],
+            "weights": [
+              0.4,
+              0.4,
+              0.2
+            ]
+          }
+        },
+        "variation_dimensions": [
+          "seed",
+          "difficulty_level",
+          "context_style"
+        ],
+        "difficulty_controls": {
+          "level_1": {},
+          "level_2": {},
+          "level_3": {}
+        },
+        "anti_repetition_rules": {
+          "avoid_same_template_consecutive": true,
+          "avoid_same_ratio_consecutive": true,
+          "avoid_same_point_names_consecutive": true,
+          "avoid_same_answer_consecutive": true,
+          "recent_history_window": 5,
+          "signature_fields": [
+            "problem_type_id",
+            "template_variant",
+            "ratio_form",
+            "ratio_values",
+            "coordinate_pattern",
+            "answer"
+          ]
+        },
+        "validity_constraints": [
+          "answer derivable from givens"
+        ],
+        "answer_shape": "numeric",
+        "explanation_variants": [
+          "stepwise"
+        ],
+        "sampling_strategy": "weighted_random",
+        "template_families": [
+          "evaluate_function_value"
+        ],
+        "parameter_slots": {
+          "seed": "integer",
+          "difficulty": "easy"
+        },
+        "randomization_rules": {
+          "shuffle_choices": false
+        },
+        "avoid_llm_freeform_math": true,
+        "use_domain_functions": true,
+        "derivation_steps_required": true,
+        "problem_type_id": "numeric_evaluate_function_value_short_answer",
+        "contract_validation_blockers": [],
+        "contract_validation_warnings": [
+          "single_template_variant_only",
+          "variation_dimensions_below_recommended_minimum"
+        ]
+      },
+      "validator_contract": {
+        "static_checks": [
+          "answer_contract_checks",
+          "choices_policy"
+        ],
+        "semantic_checks": [
+          "givens_to_target_dependency"
+        ],
+        "runtime_smoke_count": 30
+      },
+      "spec_source": "phase1_induced_draft",
+      "grouping_reason": "single_signature_group",
+      "feature_signature": [
+        "numeric",
+        "evaluate_function_value",
+        "short_answer",
+        [
+          "numeric_computation"
+        ],
+        []
+      ]
+    }
+  ]
+}

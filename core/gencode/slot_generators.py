@@ -405,6 +405,53 @@ def _slot_division_point_coordinates(
     return generate_division_point_payload(skill_id, pt, spec, seed)
 
 
+def _slot_function_value_numeric(skill_id: str, pt: str, spec: dict[str, Any], seed: int | None) -> dict[str, Any]:
+    rng = random.Random(seed)
+    a = rng.choice([i for i in range(-5, 6) if i not in {0}])
+    b = rng.randint(-8, 8)
+    c = rng.randint(-6, 6)
+    fn_name = rng.choice(["f", "g", "h"])
+    use_note = rng.random() < 0.35
+
+    value = a * c + b
+    sign_b = "+" if b >= 0 else "-"
+    abs_b = abs(b)
+    if abs_b == 0:
+        fx_latex = f"${fn_name}(x)={a}x$"
+        substitute = f"{a}\\times {c}"
+    else:
+        fx_latex = f"${fn_name}(x)={a}x{sign_b}{abs_b}$"
+        substitute = f"{a}\\times {c}{sign_b}{abs_b}"
+
+    if use_note:
+        stem = f"已知 {fx_latex}，則 ${fn_name}({c})$ 的值為何？"
+    else:
+        stem = f"若 {fx_latex}，求 ${fn_name}({c})$。"
+
+    explanation = f"${fn_name}({c})={substitute}={value}$"
+    return {
+        "skill_id": skill_id,
+        "problem_type_id": pt,
+        "question_text": stem,
+        "question": stem,
+        "choices": [],
+        "answer": str(value),
+        "correct_answer": str(value),
+        "answer_type": "numeric",
+        "checker_type": "numeric_checker",
+        "explanation": explanation,
+        "diagnosis_tags": ["function_value_substitution", "linear_function_evaluation"],
+        "metadata": {
+            "givens": [f"{fn_name}(x)={a}x{sign_b}{abs_b}", f"x={c}"],
+            "target": f"{fn_name}({c})",
+            "derivation": [f"{fn_name}({c})={substitute}", f"{fn_name}({c})={value}"],
+            "problem_type_id": pt,
+            "template_slot": "function_value_numeric",
+        },
+        "source": "gencode_slot_generator",
+    }
+
+
 SLOT_REGISTRY: dict[str, GeneratorFn] = {
     "point_quadrant": _slot_point_quadrant,
     "point_quadrant_choice": _slot_point_quadrant_choice,
@@ -414,6 +461,7 @@ SLOT_REGISTRY: dict[str, GeneratorFn] = {
     "symbolic_quadrant_statement_choice": _slot_symbolic_quadrant_statement_choice,
     "two_point_distance_solution_set": _slot_two_point_distance_solution_set,
     "two_point_distance_compute": _slot_two_point_distance_compute,
+    "function_value_numeric": _slot_function_value_numeric,
     DIVISION_POINT_SLOT: _slot_division_point_coordinates,
 }
 

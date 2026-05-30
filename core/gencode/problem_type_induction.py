@@ -25,6 +25,7 @@ from core.gencode.source_structure_context import (
     update_structure_report,
 )
 from core.gencode.example_feature_extractor import extract_example_feature, extract_example_feature_rule_only
+from core.gencode.example_feature_extractor import _detect_math_objects
 from core.gencode.generator_contract_schema import enrich_spec_generator_contract
 from core.gencode.pipeline_policy import evaluate_pipeline_gates
 from core.gencode.problem_type_spec import get_template_slot, list_problem_types_for_skill
@@ -39,6 +40,10 @@ from core.gencode.semantic_alignment import (
     merge_alignment_into_gates,
 )
 from core.gencode.task_families import DIVISION_POINT_COORDINATES_FAMILY
+from core.gencode.induction_source_policy import (
+    annotate_features_with_induction_tier,
+    split_induction_source_features,
+)
 from core.gencode.spec_phase1_merge import slot_generator_readiness
 from core.gencode.task_families import (
     SOLVE_UNKNOWN_COORDINATE_TASKS,
@@ -119,6 +124,9 @@ def _cluster_features(features: list[dict[str, Any]]) -> list[dict[str, Any]]:
 
     clusters: list[dict[str, Any]] = []
     for answer_type, group in sorted(by_answer.items()):
+        group = [g for g in group if isinstance(g, dict) and not g.get("source_quality_reject")]
+        if not group:
+            continue
         sub: dict[tuple[Any, ...], list[dict[str, Any]]] = defaultdict(list)
         for f in group:
             sig = _feature_signature(f)
@@ -186,7 +194,27 @@ def _slugify_problem_type_id(
     return base[:80] or f"{answer_type}_general"
 
 
+def _canonical_problem_type_base(answer_type: str, target_task: str, presentation_mode: str = "") -> str:
+    task = str(target_task or "").strip()
+    if task in {"compute_midpoint_coordinates", "compute_centroid_coordinates"}:
+        mode = str(presentation_mode or "").strip()
+        if mode in {"single_choice", "short_answer"}:
+            return f"{mode}_{task}"
+        return f"{answer_type}_{task}"
+    if task:
+        mode = str(presentation_mode or "").strip()
+        if mode:
+            return f"{answer_type}_{task}_{mode}"
+        return f"{answer_type}_{task}"
+    return ""
+
+
 def _infer_template_slot(answer_type: str, target_task: str, math_objects: list[str]) -> str:
+    if target_task in {"evaluate_function_value", "interpret_function_notation"} and answer_type in {
+        "numeric",
+        "short_answer",
+    }:
+        return "function_value_numeric"
     if answer_type == "short_answer":
         if "symbolic_condition" in math_objects:
             return "symbolic_quadrant"
@@ -252,11 +280,19 @@ def _build_problem_type_spec_draft(skill_id: str, cluster: dict[str, Any], exist
         primary_math,
         presentation_mode=presentation_mode if presentation_mode != answer_type else "",
     )
+    resolved_target_task = target_task if target_task != "multi_task" else (tasks[0] if tasks else "")
+    canonical = _canonical_problem_type_base(answer_type, resolved_target_task, presentation_mode=presentation_mode)
+    if canonical:
+        pt_id = canonical
     suffix = 2
     original = pt_id
-    while pt_id in existing_ids:
-        pt_id = f"{original}_{suffix}"
-        suffix += 1
+    if canonical:
+        # Canonical ids should be stable across runs and can reuse existing catalog ids.
+        pass
+    else:
+        while pt_id in existing_ids:
+            pt_id = f"{original}_{suffix}"
+            suffix += 1
     existing_ids.add(pt_id)
 
     reasoning_union: list[str] = []
@@ -266,7 +302,6 @@ def _build_problem_type_spec_draft(skill_id: str, cluster: dict[str, Any], exist
                 reasoning_union.append(r)
 
     template_families = tasks if len(tasks) > 1 else [target_task]
-    resolved_target_task = target_task if target_task != "multi_task" else (tasks[0] if tasks else "")
     slot = _infer_template_slot(answer_type, resolved_target_task, math_union)
     from core.gencode.division_point_slot_engine import DIVISION_POINT_SLOT, is_division_point_target_task
 
@@ -351,6 +386,72 @@ def _build_problem_type_spec_draft(skill_id: str, cluster: dict[str, Any], exist
     return spec, legacy
 
 
+def _cluster_contract_canonical_key(cluster: dict[str, Any]) -> tuple[Any, ...]:
+    features: list[dict[str, Any]] = list(cluster.get("features") or [])
+    answer_type = str(cluster.get("answer_type", "")).strip()
+    tasks = sorted(
+        {
+            str(f.get("target_task", "")).strip()
+            for f in features
+            if isinstance(f, dict) and str(f.get("target_task", "")).strip()
+        }
+    )
+    target_task = tasks[0] if len(tasks) == 1 else ("multi_task" if tasks else "")
+    resolved_target_task = target_task if target_task != "multi_task" else (tasks[0] if tasks else "")
+    presentation_mode = presentation_mode_for_features(answer_type, features)
+    task_family = task_family_for_task(resolved_target_task)
+    ac = _build_answer_contract(
+        answer_type,
+        features,
+        target_task=resolved_target_task,
+        task_family=task_family,
+    )
+    legacy = legacy_fields_from_answer_contract(ac)
+    answer_shape = str(legacy.get("answer_shape", "")).strip() or detect_answer_shape(ac)
+    template_families = tuple(tasks if len(tasks) > 1 else ([target_task] if target_task else []))
+    return (
+        resolved_target_task,
+        answer_type,
+        presentation_mode,
+        str(legacy.get("checker_key", "")).strip(),
+        str(legacy.get("equivalence_type", "")).strip(),
+        answer_shape,
+        template_families,
+    )
+
+
+def _canonicalize_induction_clusters(clusters: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    merged_by_key: dict[tuple[Any, ...], dict[str, Any]] = {}
+    ordered_keys: list[tuple[Any, ...]] = []
+    for cluster in clusters:
+        if not isinstance(cluster, dict):
+            continue
+        key = _cluster_contract_canonical_key(cluster)
+        if key not in merged_by_key:
+            merged_by_key[key] = {
+                "answer_type": cluster.get("answer_type"),
+                "features": list(cluster.get("features") or []),
+                "signature": cluster.get("signature"),
+                "merge_reason": cluster.get("merge_reason", ""),
+            }
+            ordered_keys.append(key)
+            continue
+        existing = merged_by_key[key]
+        combined = list(existing.get("features") or []) + list(cluster.get("features") or [])
+        by_exid: dict[Any, dict[str, Any]] = {}
+        for f in combined:
+            if not isinstance(f, dict):
+                continue
+            exid = f.get("source_example_id")
+            if exid is None:
+                exid = id(f)
+            by_exid[exid] = f
+        existing["features"] = list(by_exid.values())
+        existing["merge_reason"] = "merged_by_canonical_contract"
+        existing["signature"] = ("canonical_contract_merge", key[0], key[1], key[2])
+    return [merged_by_key[k] for k in ordered_keys]
+
+
 def _spec_in_expected_families(spec: dict[str, Any], expected_families: set[str]) -> bool:
     if not expected_families:
         return True
@@ -372,6 +473,8 @@ def induce_problem_types_from_examples(
         for t in (main_skill_anchor.get("expected_subskill_candidates") or [])
         if t and not str(t).endswith("_family")
     }
+    fallback_subskill = (main_skill_anchor.get("fallback_subskill") or {}) if isinstance(main_skill_anchor, dict) else {}
+    fallback_subskill_id = str(fallback_subskill.get("subskill_id", "same_as_main_skill")).strip() or "same_as_main_skill"
     enriched_examples, structure_report = enrich_examples_with_structure_context(
         [ex for ex in examples if isinstance(ex, dict)]
     )
@@ -420,6 +523,36 @@ def induce_problem_types_from_examples(
         else:
             ai_semantic_status = "ok"
     features = apply_final_classification_to_features(features)
+    # Recompute math_objects after final task is chosen to avoid stale rule-only objects.
+    for feat in features:
+        if not isinstance(feat, dict):
+            continue
+        txt = str(feat.get("question_text", "")).strip()
+        task = str(feat.get("target_task", "")).strip()
+        if txt and task:
+            feat["math_objects"] = _detect_math_objects(txt, task)
+    features = annotate_features_with_induction_tier(features, examples=examples)
+    _core_features, induction_source_report = split_induction_source_features(features, examples=examples)
+    rejected_source_examples: list[dict[str, Any]] = []
+    source_quality_issues: list[dict[str, Any]] = []
+    for f in features:
+        if not isinstance(f, dict):
+            continue
+        if not f.get("source_quality_reject"):
+            continue
+        rejected_source_examples.append(
+            {
+                "example_id": f.get("source_example_id"),
+                "reason": "source_quality_reject",
+                "issues": list(f.get("source_quality_issues") or []),
+            }
+        )
+        source_quality_issues.append(
+            {
+                "example_id": f.get("source_example_id"),
+                "issues": list(f.get("source_quality_issues") or []),
+            }
+        )
     features_for_induction, excluded_source_examples = build_source_example_alignment_report(
         skill_id,
         skill_metadata,
@@ -427,7 +560,16 @@ def induce_problem_types_from_examples(
         examples=examples,
         main_skill_anchor=main_skill_anchor,
     )
-    clusters = _cluster_features(features_for_induction)
+    # Candidate-only examples (composite exercises) stay in same_as_main_skill bucket and do not force split.
+    candidate_only_examples = [
+        f for f in features_for_induction
+        if isinstance(f, dict) and bool(f.get("candidate_only"))
+    ]
+    stable_features_for_clusters = [
+        f for f in features_for_induction
+        if isinstance(f, dict) and not bool(f.get("candidate_only"))
+    ]
+    clusters = _canonicalize_induction_clusters(_cluster_features(stable_features_for_clusters))
     existing_ids = {str(s.get("problem_type_id", "")).strip() for s in list_problem_types_for_skill(skill_id)}
     induced_specs: list[dict[str, Any]] = []
     candidates: list[dict[str, Any]] = []
@@ -476,7 +618,11 @@ def induce_problem_types_from_examples(
             and cand_target not in expected_subskills
             and cand_family in expected_families
         ):
-            subskill_risk.append("subskill_mismatch_warning")
+            scope = str(main_skill_anchor.get("skill_anchor_scope", "")).strip()
+            if scope in {"medium", "broad"}:
+                subskill_risk.append("same_family_extension")
+            else:
+                subskill_risk.append("subskill_mismatch_warning")
         coord_sem = is_coordinate_pair_semantic(
             answer_type=str(ac_proposal.get("answer_type", "")),
             target_task=cand_target,
@@ -542,6 +688,7 @@ def induce_problem_types_from_examples(
                 "problem_type_spec_draft": spec,
                 "generator_readiness": readiness,
                 "template_slot": get_template_slot(spec),
+                "subskill_id": cand_target or fallback_subskill_id,
             }
         )
 
@@ -558,6 +705,11 @@ def induce_problem_types_from_examples(
             risk_flags.append(str(sem["source_mapping_warning"]))
         if sem.get("requires_human_action"):
             risk_flags.append("requires_human_action")
+        subskill_id = str(f.get("target_task", "")).strip() or fallback_subskill_id
+        if bool(f.get("candidate_only")):
+            subskill_id = fallback_subskill_id
+            if "candidate_only" not in risk_flags:
+                risk_flags.append("candidate_only")
         per_example.append(
             {
                 "example_id": ex_id,
@@ -568,6 +720,7 @@ def induce_problem_types_from_examples(
                 "classification_reason": str(f.get("classifier_source", "feature_signature_induction")),
                 "risk_flags": risk_flags,
                 "semantic_classification": sem,
+                "subskill_id": subskill_id,
             }
         )
 
@@ -583,12 +736,21 @@ def induce_problem_types_from_examples(
         main_skill_anchor=main_skill_anchor,
         ai_semantic_status=ai_semantic_status,
         examples=examples,
+        induction_source_report=induction_source_report,
     )
     if not features_for_induction and features:
         semantic_alignment = dict(semantic_alignment)
         semantic_alignment["decision"] = "block"
         blockers = list(semantic_alignment.get("blockers", []) or [])
-        if "source_examples_mismatch" not in blockers:
+        if int(induction_source_report.get("enrichment_example_count", 0) or 0) > 0:
+            if "low_core_source_examples" not in blockers:
+                blockers.append("low_core_source_examples")
+            blockers = [
+                b
+                for b in blockers
+                if b not in {"source_examples_mismatch", "majority_needs_review"}
+            ]
+        elif "source_examples_mismatch" not in blockers:
             blockers.append("source_examples_mismatch")
         semantic_alignment["blockers"] = sorted(set(blockers))
 
@@ -652,6 +814,56 @@ def induce_problem_types_from_examples(
             )
         )
 
+    semantic_mismatch_examples = [
+        x for x in source_example_alignment
+        if isinstance(x, dict)
+        and str(x.get("alignment_kind", "")).strip() in {"needs_review", "outsider_candidate_warning"}
+        and (
+            str(x.get("task_family", "")).strip()
+            and str(x.get("task_family", "")).strip() not in set(main_skill_anchor.get("expected_task_families") or [])
+        )
+    ]
+    same_family_extension_examples = [
+        x for x in source_example_alignment
+        if isinstance(x, dict) and str(x.get("alignment_kind", "")).strip() == "same_family_extension"
+    ]
+    section_scope_subskill_extension_examples = [
+        x for x in source_example_alignment
+        if isinstance(x, dict) and str(x.get("alignment_kind", "")).strip() == "section_scope_subskill_extension"
+    ]
+    same_as_main_skill_examples = [
+        {"example_id": x.get("example_id"), "reason": "fallback_subskill"}
+        for x in per_example
+        if isinstance(x, dict) and str(x.get("subskill_id", "")).strip() == fallback_subskill_id
+    ]
+    inherited_from_previous_context_examples = [
+        {
+            "example_id": d.get("example_id"),
+            "linked_example_id": d.get("linked_example_id"),
+            "reason": "linked_example_consistent_boost",
+        }
+        for d in classification_diagnostics
+        if isinstance(d, dict) and "linked_example_consistent_boost" in str(d.get("confidence_adjustment_reason", ""))
+    ]
+    low_source_examples = [
+        {"problem_type_id": c.get("problem_type_id"), "matched_example_count": c.get("matched_example_count")}
+        for c in candidates
+        if isinstance(c, dict) and int(c.get("matched_example_count", 0) or 0) < 3
+    ]
+    candidate_only_problem_types = [
+        {"example_id": f.get("source_example_id"), "subskill_id": fallback_subskill_id}
+        for f in candidate_only_examples
+        if isinstance(f, dict)
+    ]
+    subskills = sorted(
+        {
+            str(x.get("subskill_id", "")).strip()
+            for x in per_example
+            if isinstance(x, dict) and str(x.get("subskill_id", "")).strip()
+        }
+        | {fallback_subskill_id}
+    )
+
     return {
         "skill_id": skill_id,
         "main_skill_anchor": main_skill_anchor,
@@ -702,6 +914,25 @@ def induce_problem_types_from_examples(
         "suggested_action": semantic_alignment.get("suggested_action", ""),
         "requires_human_action": requires_human_action,
         "excluded_source_examples": excluded_source_examples,
+        "rejected_source_examples": rejected_source_examples,
+        "source_quality_issues": source_quality_issues,
+        "semantic_mismatch_examples": semantic_mismatch_examples,
+        "suspected_wrong_skill_examples": semantic_alignment.get("examples_outside_expected_family", []),
+        "same_family_extension_examples": same_family_extension_examples,
+        "section_scope_subskill_extension_examples": section_scope_subskill_extension_examples,
+        "same_as_main_skill_examples": same_as_main_skill_examples,
+        "inherited_from_previous_context_examples": inherited_from_previous_context_examples,
+        "low_source_examples": low_source_examples,
+        "candidate_only_problem_types": candidate_only_problem_types,
+        "subskills": subskills,
+        "fallback_subskill_used": any(str(s) == fallback_subskill_id for s in subskills),
+        "source_belongs_to_current_skill_by_default_count": len(features) - len(semantic_alignment.get("source_quality_reject_examples", [])),
+        "induction_source_selection": induction_source_report,
+        "skipped_enrichment_examples": induction_source_report.get("skipped_enrichment_examples", []),
+        "future_ai_judged_candidates": induction_source_report.get("future_ai_judged_candidates", []),
+        "contextual_application_sources": induction_source_report.get("contextual_application_sources", []),
+        "core_example_count": induction_source_report.get("core_example_count", 0),
+        "enrichment_example_count": induction_source_report.get("enrichment_example_count", 0),
         "source_example_alignment": source_example_alignment,
         "induction_clusters": [
             {

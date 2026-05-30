@@ -11,7 +11,18 @@ CLASSIFY_QUADRANT_FAMILY = "classify_quadrant_family"
 COORDINATE_SYSTEM_FAMILY = "coordinate_system_family"
 ABSOLUTE_VALUE_INEQUALITY_FAMILY = "absolute_value_inequality_family"
 AXIS_DISTANCE_FAMILY = "axis_distance_family"
+FUNCTION_CONCEPT_FAMILY = "function_concept_family"
 GENERIC_NUMERIC_FAMILY = "generic_numeric_family"
+
+FUNCTION_CONCEPT_TASKS = frozenset(
+    {
+        "judge_function_relation",
+        "judge_function_from_mapping",
+        "evaluate_function_value",
+        "interpret_function_notation",
+        "judge_domain_range_basic",
+    }
+)
 
 DIVISION_POINT_COORDINATES_TASKS = frozenset(
     {
@@ -58,10 +69,33 @@ TASK_TO_FAMILY: dict[str, str] = {
     "solve_absolute_value_inequality": ABSOLUTE_VALUE_INEQUALITY_FAMILY,
     "expand_absolute_value_inequality": ABSOLUTE_VALUE_INEQUALITY_FAMILY,
     "compute_axis_distance": AXIS_DISTANCE_FAMILY,
+    "judge_function_relation": FUNCTION_CONCEPT_FAMILY,
+    "judge_function_from_mapping": FUNCTION_CONCEPT_FAMILY,
+    "evaluate_function_value": FUNCTION_CONCEPT_FAMILY,
+    "interpret_function_notation": FUNCTION_CONCEPT_FAMILY,
+    "judge_domain_range_basic": FUNCTION_CONCEPT_FAMILY,
 }
 
 # Higher score wins when multiple families match skill terms (not generator availability).
 FAMILY_SKILL_HINTS_SCORED: list[tuple[str, tuple[str, ...], int]] = [
+    (
+        FUNCTION_CONCEPT_FAMILY,
+        (
+            "函數的概念",
+            "函数的概念",
+            "functionconcept",
+            "function concept",
+            "函數概念",
+            "函数概念",
+            "線型函數",
+            "线型函数",
+            "一次函數",
+            "一次函数",
+            "linear function",
+            "linearfunction",
+        ),
+        130,
+    ),
     (
         DIVISION_POINT_COORDINATES_FAMILY,
         (
@@ -190,6 +224,22 @@ SOLVE_UNKNOWN_COORDINATE_TASKS = frozenset(
 _PARAM_NAME = re.compile(r"(?i)\b(k|m|n|a|b|t|x|y)\b")
 
 
+def same_family_extension_allowed(
+    expected_families: set[str],
+    observed_family: str,
+    *,
+    scope: str = "default",
+) -> bool:
+    fam = str(observed_family or "").strip()
+    if not fam:
+        return False
+    if fam in expected_families:
+        return True
+    if scope in {"medium", "broad"} and DIVISION_POINT_COORDINATES_FAMILY in expected_families:
+        return fam == DIVISION_POINT_COORDINATES_FAMILY
+    return False
+
+
 def task_family_for_task(target_task: str) -> str:
     task = str(target_task or "").strip()
     if not task:
@@ -207,18 +257,25 @@ def task_family_for_task(target_task: str) -> str:
         return DISTANCE_BETWEEN_TWO_POINTS_FAMILY
     if "distance" in task or "距離" in task or "距离" in task:
         return DISTANCE_BETWEEN_TWO_POINTS_FAMILY
+    if task in FUNCTION_CONCEPT_TASKS or "function" in task:
+        return FUNCTION_CONCEPT_FAMILY
     return GENERIC_NUMERIC_FAMILY
 
 
 def infer_skill_families_from_terms(skill_terms: set[str]) -> set[str]:
     norm = " ".join(sorted(skill_terms)).lower()
+    if "functionconcept" in skill_terms or "function concept" in norm or "函數的概念" in norm or "函数的概念" in norm:
+        return {FUNCTION_CONCEPT_FAMILY}
     scored: list[tuple[int, str]] = []
     for family, hints, weight in FAMILY_SKILL_HINTS_SCORED:
         hits = sum(1 for h in hints if h.lower() in norm)
         if hits:
             scored.append((hits * weight, family))
     if not scored:
-        return infer_skill_families(skill_terms)
+        families: set[str] = set()
+        if "classify_quadrant" in skill_terms:
+            families.add(CLASSIFY_QUADRANT_FAMILY)
+        return families
     scored.sort(reverse=True)
     top_score = scored[0][0]
     return {fam for score, fam in scored if score >= top_score * 0.5}

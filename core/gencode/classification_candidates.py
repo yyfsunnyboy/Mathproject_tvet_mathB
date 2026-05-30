@@ -52,12 +52,12 @@ def build_parameter_schema(generator_contract: dict[str, Any]) -> dict[str, Any]
 
 def _default_answer_fields(target_task: str) -> tuple[str, str, list[str]]:
     task = str(target_task or "").strip()
-    if task in DIVISION_POINT_COORDINATES_TASKS or task_family_for_task(task) == DIVISION_POINT_COORDINATES_FAMILY:
-        return "ordered_pair", "coordinate_pair", ["two_coordinate_points", "section_ratio"]
     if task == "compute_centroid_coordinates":
-        return "ordered_pair", "coordinate_pair", ["triangle", "three_coordinate_points", "centroid"]
+        return "ordered_pair", "coordinate_pair", ["three_coordinate_points", "triangle_vertices", "coordinate_average_reasoning"]
     if task == "compute_midpoint_coordinates":
         return "ordered_pair", "coordinate_pair", ["two_coordinate_points", "midpoint"]
+    if task in DIVISION_POINT_COORDINATES_TASKS or task_family_for_task(task) == DIVISION_POINT_COORDINATES_FAMILY:
+        return "ordered_pair", "coordinate_pair", ["two_coordinate_points", "section_ratio"]
     if task == "classify_quadrant":
         return "single_choice", "choice_label", ["coordinate_point"]
     return "numeric", "numeric", []

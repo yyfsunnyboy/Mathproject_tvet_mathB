@@ -1,0 +1,467 @@
+{
+  "skill_id": "vh_數學B1_MidpointCoordinates",
+  "spec_source": "phase1_induced_draft",
+  "items": [
+    {
+      "problem_type_id": "short_answer_compute_midpoint_coordinates_2",
+      "skill_id": "vh_數學B1_MidpointCoordinates",
+      "target_task": "compute_midpoint_coordinates",
+      "task_family": "division_point_coordinates_family",
+      "display_name": "ordered_pair / compute_midpoint_coordinates",
+      "source_example_ids": [
+        4418,
+        4428,
+        4439
+      ],
+      "answer_contract": {
+        "choices_required": false,
+        "choice_count": null,
+        "correct_choice_count": null,
+        "frontend_render_choices": false,
+        "answer_type": "ordered_pair",
+        "answer_shape": "coordinate_pair",
+        "answer_semantics": "coordinate_pair",
+        "answer_equivalence": "coordinate_pair_equivalence",
+        "checker": "coordinate_pair_checker",
+        "presentation_mode": "short_answer",
+        "source_has_choices": false,
+        "selected_checker": "coordinate_pair_checker",
+        "checker_selection_reason": "coordinate_pair_semantic",
+        "accepted_formats": [
+          "(0,-2)",
+          "0,-2",
+          "（0，-2）",
+          "x=0,y=-2",
+          "(0, -2)",
+          "P(0,-2)"
+        ]
+      },
+      "stem_contract": {
+        "stem_must_not_embed_choices": true,
+        "allowed_math_objects": [
+          "coordinate_point",
+          "midpoint",
+          "two_coordinate_points",
+          "three_coordinate_points",
+          "triangle"
+        ],
+        "required_math_objects": [
+          "coordinate_point",
+          "midpoint"
+        ],
+        "forbidden_patterns": [
+          "\\(A\\)",
+          "\\(B\\)",
+          "\\(C\\)",
+          "\\(D\\)"
+        ]
+      },
+      "dependency_contract": {
+        "givens_must_be_used": true,
+        "target_answer_must_depend_on_givens": true,
+        "variables_in_conditions_must_appear_in_target": false
+      },
+      "semantic_contract": {
+        "reasoning_type": [
+          "coordinate_average_reasoning"
+        ],
+        "reject_if": [
+          "unused_condition",
+          "ambiguous_answer",
+          "answer_not_derivable",
+          "duplicated_choices",
+          "no_correct_choice",
+          "multiple_correct_choices_when_single_choice"
+        ]
+      },
+      "generator_contract": {
+        "template_variants": [
+          {
+            "id": "direct_midpoint",
+            "label": "直接求中點",
+            "stem_pattern": "求 {A}({ax},{ay}) 與 {B}({bx},{by}) 的中點坐標。",
+            "weight": 1.0,
+            "enabled": true
+          },
+          {
+            "id": "word_context_midpoint",
+            "label": "語境中點",
+            "stem_pattern": "兩地中間位置為 {M}，求其中點坐標。",
+            "weight": 1.0,
+            "enabled": true
+          }
+        ],
+        "parameter_schema": {
+          "point_names": {
+            "choices": [
+              [
+                "A",
+                "B",
+                "P"
+              ],
+              [
+                "P",
+                "Q",
+                "R"
+              ],
+              [
+                "M",
+                "N",
+                "T"
+              ],
+              [
+                "C",
+                "D",
+                "E"
+              ]
+            ],
+            "randomize": true
+          },
+          "coordinate_range": {
+            "x_min": -10,
+            "x_max": 10,
+            "y_min": -10,
+            "y_max": 10,
+            "exclude_zero_probability": 0.2
+          },
+          "answer_type_mode": {
+            "choices": [
+              "integer_midpoint",
+              "rational_midpoint"
+            ],
+            "weights": [
+              0.75,
+              0.25
+            ]
+          }
+        },
+        "variation_dimensions": [
+          "point_names",
+          "coordinate_sign_pattern",
+          "answer_integer_or_fraction",
+          "word_context",
+          "ask_target"
+        ],
+        "difficulty_controls": {
+          "level_1": {
+            "coordinate_range": [
+              -5,
+              5
+            ],
+            "integer_midpoint": true
+          },
+          "level_2": {
+            "coordinate_range": [
+              -10,
+              10
+            ],
+            "allow_rational_answer": true
+          },
+          "level_3": {
+            "missing_endpoint_enabled": true,
+            "word_context_enabled": true
+          }
+        },
+        "anti_repetition_rules": {
+          "avoid_same_template_consecutive": true,
+          "avoid_same_ratio_consecutive": true,
+          "avoid_same_point_names_consecutive": true,
+          "avoid_same_answer_consecutive": true,
+          "recent_history_window": 5,
+          "signature_fields": [
+            "problem_type_id",
+            "template_variant",
+            "ratio_form",
+            "ratio_values",
+            "coordinate_pattern",
+            "answer"
+          ]
+        },
+        "validity_constraints": [
+          "A != B",
+          "midpoint formula consistent with endpoints"
+        ],
+        "answer_shape": "coordinate_pair",
+        "explanation_variants": [
+          "midpoint_formula"
+        ],
+        "sampling_strategy": "weighted_random",
+        "template_families": [
+          "compute_midpoint_coordinates"
+        ],
+        "parameter_slots": {
+          "seed": "integer",
+          "difficulty": "easy"
+        },
+        "randomization_rules": {
+          "shuffle_choices": false
+        },
+        "avoid_llm_freeform_math": true,
+        "use_domain_functions": true,
+        "derivation_steps_required": true,
+        "template_slots": {
+          "stem": "division_point_coordinates"
+        },
+        "problem_type_id": "short_answer_compute_midpoint_coordinates_2",
+        "contract_validation_blockers": [],
+        "contract_validation_warnings": []
+      },
+      "validator_contract": {
+        "static_checks": [
+          "answer_contract_checks",
+          "choices_policy"
+        ],
+        "semantic_checks": [
+          "givens_to_target_dependency"
+        ],
+        "runtime_smoke_count": 30
+      },
+      "spec_source": "phase1_induced_draft",
+      "grouping_reason": "split_by_feature_signature",
+      "feature_signature": [
+        "ordered_pair",
+        "compute_midpoint_coordinates",
+        "short_answer",
+        [
+          "coordinate_average_reasoning"
+        ],
+        [
+          "coordinate_point",
+          "midpoint"
+        ]
+      ]
+    },
+    {
+      "problem_type_id": "short_answer_compute_centroid_coordinates_2",
+      "skill_id": "vh_數學B1_MidpointCoordinates",
+      "target_task": "compute_centroid_coordinates",
+      "task_family": "division_point_coordinates_family",
+      "display_name": "ordered_pair / compute_centroid_coordinates",
+      "source_example_ids": [
+        4423,
+        4443,
+        4447,
+        4514
+      ],
+      "answer_contract": {
+        "choices_required": false,
+        "choice_count": null,
+        "correct_choice_count": null,
+        "frontend_render_choices": false,
+        "answer_type": "ordered_pair",
+        "answer_shape": "coordinate_pair",
+        "answer_semantics": "coordinate_pair",
+        "answer_equivalence": "coordinate_pair_equivalence",
+        "checker": "coordinate_pair_checker",
+        "presentation_mode": "short_answer",
+        "source_has_choices": false,
+        "selected_checker": "coordinate_pair_checker",
+        "checker_selection_reason": "coordinate_pair_semantic",
+        "accepted_formats": [
+          "(0,-2)",
+          "0,-2",
+          "（0，-2）",
+          "x=0,y=-2",
+          "(0, -2)",
+          "P(0,-2)"
+        ]
+      },
+      "stem_contract": {
+        "stem_must_not_embed_choices": true,
+        "allowed_math_objects": [
+          "centroid",
+          "coordinate_average_reasoning",
+          "coordinate_point",
+          "three_coordinate_points",
+          "triangle",
+          "triangle_vertices"
+        ],
+        "required_math_objects": [
+          "coordinate_point",
+          "centroid"
+        ],
+        "forbidden_patterns": [
+          "\\(A\\)",
+          "\\(B\\)",
+          "\\(C\\)",
+          "\\(D\\)"
+        ]
+      },
+      "dependency_contract": {
+        "givens_must_be_used": true,
+        "target_answer_must_depend_on_givens": true,
+        "variables_in_conditions_must_appear_in_target": false
+      },
+      "semantic_contract": {
+        "reasoning_type": [
+          "coordinate_average_reasoning"
+        ],
+        "reject_if": [
+          "unused_condition",
+          "ambiguous_answer",
+          "answer_not_derivable",
+          "duplicated_choices",
+          "no_correct_choice",
+          "multiple_correct_choices_when_single_choice"
+        ]
+      },
+      "generator_contract": {
+        "template_variants": [
+          {
+            "id": "direct_triangle_centroid",
+            "label": "直接求重心",
+            "stem_pattern": "已知 {A}({ax},{ay})、{B}({bx},{by})、{C}({cx},{cy})，求 △{ABC} 重心坐標。",
+            "weight": 1.0,
+            "enabled": true
+          },
+          {
+            "id": "worded_triangle_centroid",
+            "label": "文字敘述三角形重心",
+            "stem_pattern": "三角形三頂點坐標如下，求其重心坐標。",
+            "weight": 1.0,
+            "enabled": true
+          }
+        ],
+        "parameter_schema": {
+          "point_names": {
+            "choices": [
+              [
+                "A",
+                "B",
+                "C"
+              ],
+              [
+                "P",
+                "Q",
+                "R"
+              ],
+              [
+                "X",
+                "Y",
+                "Z"
+              ]
+            ],
+            "randomize": true
+          },
+          "coordinate_range": {
+            "x_min": -10,
+            "x_max": 10,
+            "y_min": -10,
+            "y_max": 10,
+            "exclude_zero_probability": 0.2
+          },
+          "point_count": {
+            "fixed": 3
+          },
+          "answer_type_mode": {
+            "choices": [
+              "integer_centroid",
+              "rational_centroid"
+            ],
+            "weights": [
+              0.65,
+              0.35
+            ]
+          }
+        },
+        "variation_dimensions": [
+          "point_names",
+          "coordinate_sign_pattern",
+          "vertex_count",
+          "answer_integer_or_rational",
+          "word_context",
+          "ask_target"
+        ],
+        "difficulty_controls": {
+          "level_1": {
+            "coordinate_range": [
+              -5,
+              5
+            ],
+            "integer_centroid": true
+          },
+          "level_2": {
+            "coordinate_range": [
+              -9,
+              9
+            ],
+            "allow_negative_coordinates": true
+          },
+          "level_3": {
+            "missing_vertex_from_centroid": true,
+            "word_context_enabled": true
+          }
+        },
+        "anti_repetition_rules": {
+          "avoid_same_template_consecutive": true,
+          "avoid_same_ratio_consecutive": true,
+          "avoid_same_point_names_consecutive": true,
+          "avoid_same_answer_consecutive": true,
+          "recent_history_window": 5,
+          "signature_fields": [
+            "problem_type_id",
+            "template_variant",
+            "ratio_form",
+            "ratio_values",
+            "coordinate_pattern",
+            "answer"
+          ]
+        },
+        "validity_constraints": [
+          "three vertices not all identical",
+          "centroid computed by coordinate average",
+          "if integer answer required, sum of coordinates divisible by 3"
+        ],
+        "answer_shape": "coordinate_pair",
+        "explanation_variants": [
+          "average_formula",
+          "component_wise_average"
+        ],
+        "sampling_strategy": "weighted_random",
+        "template_families": [
+          "compute_centroid_coordinates"
+        ],
+        "parameter_slots": {
+          "seed": "integer",
+          "difficulty": "easy"
+        },
+        "randomization_rules": {
+          "shuffle_choices": false
+        },
+        "avoid_llm_freeform_math": true,
+        "use_domain_functions": true,
+        "derivation_steps_required": true,
+        "template_slots": {
+          "stem": "division_point_coordinates"
+        },
+        "problem_type_id": "short_answer_compute_centroid_coordinates_2",
+        "contract_validation_blockers": [],
+        "contract_validation_warnings": []
+      },
+      "validator_contract": {
+        "static_checks": [
+          "answer_contract_checks",
+          "choices_policy"
+        ],
+        "semantic_checks": [
+          "givens_to_target_dependency"
+        ],
+        "runtime_smoke_count": 30
+      },
+      "spec_source": "phase1_induced_draft",
+      "grouping_reason": "split_by_feature_signature",
+      "feature_signature": [
+        "ordered_pair",
+        "compute_centroid_coordinates",
+        "short_answer",
+        [
+          "coordinate_average_reasoning"
+        ],
+        [
+          "coordinate_point",
+          "centroid"
+        ]
+      ]
+    }
+  ]
+}

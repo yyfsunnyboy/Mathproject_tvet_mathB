@@ -1318,18 +1318,30 @@ def _normalize_phase_response(payload: dict[str, Any]) -> dict[str, Any]:
         ex_gate = payload.get("exception_review_gate", {}) if isinstance(payload.get("exception_review_gate"), dict) else {}
         reasons = ex_gate.get("reasons", []) if isinstance(ex_gate.get("reasons"), list) else []
         alignment_blockers = payload.get("alignment_blockers", []) if isinstance(payload.get("alignment_blockers"), list) else []
-        if source_count <= 0:
-            phase_status = "phase1_blocked_no_source"
-        elif str(payload.get("source_alignment_status", "")).strip() == "block" or alignment_blockers:
-            phase_status = "phase1_blocked_semantic_alignment"
-        elif any("fatal" in str(x).lower() for x in reasons):
-            phase_status = "phase1_blocked_fatal_risk"
-        elif ex_gate.get("required"):
-            phase_status = "phase1_exception_review_required"
-        elif payload.get("risk_examples"):
-            phase_status = "phase1_completed_with_warning"
+        final_alignment_blockers = [str(x).strip() for x in alignment_blockers if str(x).strip()]
+        if final_alignment_blockers:
+            reasons = [r for r in reasons if str(r).strip() not in {"majority_needs_review", "semantic_alignment_blocked"}]
+            for b in final_alignment_blockers:
+                if b not in reasons:
+                    reasons.append(b)
+            ex_gate["reasons"] = reasons
+            ex_gate["required"] = bool(reasons)
+            payload["exception_review_gate"] = ex_gate
         else:
-            phase_status = "phase1_completed"
+            reasons = [r for r in reasons if str(r).strip() not in {"majority_needs_review", "semantic_alignment_blocked"}]
+            ex_gate["reasons"] = reasons
+            ex_gate["required"] = bool(reasons)
+            payload["exception_review_gate"] = ex_gate
+        from core.gencode.phase1_result_messages import apply_phase1_display_fields, resolve_phase1_phase_status
+
+        phase_status = resolve_phase1_phase_status(
+            source_count=source_count,
+            source_alignment_status=str(payload.get("source_alignment_status", "")).strip(),
+            alignment_blockers=alignment_blockers,
+            ex_gate_required=bool(ex_gate.get("required")),
+            has_fatal=any("fatal" in str(x).lower() for x in reasons),
+            has_risk_examples=bool(payload.get("risk_examples")),
+        )
         for exid in payload.get("unclassified_examples", []) or []:
             human_items.append(
                 {
@@ -1360,10 +1372,40 @@ def _normalize_phase_response(payload: dict[str, Any]) -> dict[str, Any]:
                 }
             )
         classifier_source = str(payload.get("classifier_source", "rule_pack"))
+        can_continue = phase_status in {"phase1_completed", "phase1_completed_with_warning", "phase1_exception_review_required"}
+        induced_specs = payload.get("induced_problem_type_specs", []) if isinstance(payload.get("induced_problem_type_specs"), list) else []
+        cands_with_pt = [
+            x for x in cands
+            if isinstance(x, dict) and str(x.get("problem_type_id") or x.get("proposed_problem_type_id") or "").strip()
+        ]
+        default_pt_ids = [
+            str(x.get("problem_type_id") or x.get("proposed_problem_type_id") or "").strip()
+            for x in cands_with_pt
+            if isinstance(x, dict) and (
+                bool((x.get("answer_contract_proposal") or {}).get("is_default_problem_type"))
+                or str(x.get("problem_type_id") or x.get("proposed_problem_type_id") or "").strip().endswith("_default")
+            )
+        ]
+        has_blocking_alignment = bool(alignment_blockers)
+        has_final_problem_types = bool(induced_specs) or bool(cands_with_pt)
+        default_pt_consistent_for_continue = (
+            can_continue
+            and phase_status in {"phase1_completed", "phase1_completed_with_warning"}
+            and not has_blocking_alignment
+            and bool(payload.get("default_problem_type_used"))
+            and has_final_problem_types
+        )
         if classifier_source == "ai_bootstrap":
             payload["summary_message"] = "未找到既有 rule pack，已使用 AI classifier bootstrap 產生題型分類草案。"
         elif classifier_source == "ai_bootstrap_with_default_fallback":
-            payload["summary_message"] = "AI 未細分題型，但來源題完整且同屬此 skill；已建立單一 default problem_type，可進入 Phase 2。"
+            if default_pt_consistent_for_continue:
+                payload["summary_message"] = "AI 未細分題型，但來源題完整且同屬此 skill；已建立單一 default problem_type，可進入 Phase 2。"
+            else:
+                payload["summary_message"] = "曾啟用 default problem_type fallback，但最終語意對齊或來源品質檢查未通過，需人工確認。"
+                warnings = payload.get("alignment_warnings", []) if isinstance(payload.get("alignment_warnings"), list) else []
+                if "default_problem_type_inconsistent_with_final_specs" not in warnings:
+                    warnings.append("default_problem_type_inconsistent_with_final_specs")
+                payload["alignment_warnings"] = warnings
         elif classifier_source == "ai_bootstrap_low_quality":
             payload["summary_message"] = "AI classifier bootstrap 有回覆，但未能產生可用題型分類；目前仍需人工審查。"
         elif classifier_source == "neutral_fallback":
@@ -1374,20 +1416,10 @@ def _normalize_phase_response(payload: dict[str, Any]) -> dict[str, Any]:
                 if phase_status.startswith("phase1_completed")
                 else ("Phase 1 blocked: no source examples." if phase_status == "phase1_blocked_no_source" else "Phase 1 requires exception review.")
             )
-        can_continue = phase_status in {"phase1_completed", "phase1_completed_with_warning", "phase1_exception_review_required"}
         can_retry = True
-        if phase_status == "phase1_blocked_semantic_alignment":
-            payload["summary_message"] = (
-                "來源題型與技能名稱/語意不一致，請檢查來源例題或 skill mapping。"
-                f" blockers={alignment_blockers}"
-            )
-            low_ids = [
-                str(x.get("example_id"))
-                for x in (payload.get("source_example_alignment") or [])
-                if isinstance(x, dict) and not x.get("aligned_with_skill", True)
-            ]
-            if low_ids:
-                payload["summary_message"] += f" 低對齊 example_id: {', '.join(low_ids[:12])}"
+        if phase_status in {"phase1_blocked_semantic_alignment", "phase1_blocked_low_core_sources"}:
+            apply_phase1_display_fields(payload)
+        payload["phase_status"] = phase_status
 
     elif phase == "phase2":
         results = payload.get("generator_results", []) if isinstance(payload.get("generator_results"), list) else []
@@ -1685,6 +1717,25 @@ def run_gencode_phase1(skill_id: str, dry_run: bool = True, spec_mode: str = "ai
         "classification_diagnostics": auto_review.get("classification_diagnostics", []),
         "ai_semantic_unavailable_reason": auto_review.get("ai_semantic_unavailable_reason", ""),
         "excluded_source_examples": auto_review.get("excluded_source_examples", []),
+        "induction_source_selection": auto_review.get("induction_source_selection", {}),
+        "skipped_enrichment_examples": auto_review.get("skipped_enrichment_examples", []),
+        "future_ai_judged_candidates": auto_review.get("future_ai_judged_candidates", []),
+        "contextual_application_sources": auto_review.get("contextual_application_sources", []),
+        "core_example_count": auto_review.get("core_example_count", 0),
+        "enrichment_example_count": auto_review.get("enrichment_example_count", 0),
+        "rejected_source_examples": auto_review.get("rejected_source_examples", []),
+        "source_quality_issues": auto_review.get("source_quality_issues", []),
+        "semantic_mismatch_examples": auto_review.get("semantic_mismatch_examples", []),
+        "suspected_wrong_skill_examples": auto_review.get("suspected_wrong_skill_examples", []),
+        "same_family_extension_examples": auto_review.get("same_family_extension_examples", []),
+        "section_scope_subskill_extension_examples": auto_review.get("section_scope_subskill_extension_examples", []),
+        "same_as_main_skill_examples": auto_review.get("same_as_main_skill_examples", []),
+        "inherited_from_previous_context_examples": auto_review.get("inherited_from_previous_context_examples", []),
+        "low_source_examples": auto_review.get("low_source_examples", []),
+        "candidate_only_problem_types": auto_review.get("candidate_only_problem_types", []),
+        "subskills": auto_review.get("subskills", []),
+        "fallback_subskill_used": bool(auto_review.get("fallback_subskill_used", False)),
+        "source_belongs_to_current_skill_by_default_count": int(auto_review.get("source_belongs_to_current_skill_by_default_count", 0) or 0),
         "source_example_alignment": auto_review.get("source_example_alignment", []),
         "candidate_problem_types": auto_review.get("candidate_problem_types", []),
         "per_example_classification": per_example,
@@ -1765,19 +1816,28 @@ def run_gencode_phase2(skill_id: str, accepted_problem_types: list | None = None
     candidates = phase1.get("candidate_problem_types", []) if isinstance(phase1.get("candidate_problem_types"), list) else []
     accepted = set(str(x) for x in (accepted_problem_types or []))
     excluded = set(int(x) for x in (excluded_example_ids or []) if str(x).isdigit())
+    reject_ids_from_sem = set(
+        int(x)
+        for x in (((phase1.get("semantic_alignment") or {}).get("source_quality_reject_examples") or []))
+        if str(x).isdigit()
+    )
+    reject_ids_from_rows = {
+        int(x.get("example_id"))
+        for x in (phase1.get("rejected_source_examples") or [])
+        if isinstance(x, dict) and str(x.get("example_id", "")).isdigit()
+    }
+    rejected_source_ids = reject_ids_from_sem | reject_ids_from_rows
     generator_results: list[dict[str, Any]] = []
     failed_generators: list[str] = []
     accepted_generators: list[str] = []
-    phase1_requires_human_action = bool(phase1.get("requires_human_action", False))
-    if phase1_alignment_blocked:
-        phase1_requires_human_action = True
     for c in candidates:
         pt = str(c.get("problem_type_id") or c.get("proposed_problem_type_id") or "").strip()
         if not pt:
             continue
         if accepted and pt not in accepted:
             continue
-        src_ids = [x for x in (c.get("matched_example_ids") or []) if isinstance(x, int) and x not in excluded]
+        raw_src_ids = [x for x in (c.get("matched_example_ids") or []) if isinstance(x, int) and x not in excluded]
+        src_ids = [x for x in raw_src_ids if x not in rejected_source_ids]
         answer_contract = c.get("answer_contract_proposal", {}) if isinstance(c.get("answer_contract_proposal"), dict) else {}
         checker_key = str(c.get("checker_key_proposal", "")).strip()
         eq = str(c.get("equivalence_type_proposal", "")).strip()
@@ -1788,11 +1848,15 @@ def run_gencode_phase2(skill_id: str, accepted_problem_types: list | None = None
         matched_count = int(c.get("matched_example_count", 0))
         spec_source = str(c.get("spec_source", "")).strip()
         generator_readiness = str(c.get("generator_readiness", "")).strip()
+        pt_requires_human_action = bool(c.get("requires_human_action", False))
+        no_usable_source_for_pt = not bool(src_ids)
+        all_sources_rejected_for_pt = bool(raw_src_ids) and not bool(src_ids)
         is_manual_or_malformed = (
             checker_key == "manual_review_checker"
             or eq == "manual_review_or_ai_judged"
             or "malformed_source_review" in pt
-            or phase1_requires_human_action
+            or all_sources_rejected_for_pt
+            or (pt_requires_human_action and no_usable_source_for_pt)
         )
         if spec_source in {"problem_type_specs.v1.json", "phase1_induced_draft"}:
             draft_spec = c.get("problem_type_spec_draft") if isinstance(c.get("problem_type_spec_draft"), dict) else {}

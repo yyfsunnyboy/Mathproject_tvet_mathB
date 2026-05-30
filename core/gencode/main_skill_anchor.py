@@ -12,10 +12,20 @@ from core.gencode.task_families import (
     DIVISION_POINT_COORDINATES_TASKS,
     DISTANCE_BETWEEN_TWO_POINTS_FAMILY,
     DISTANCE_BETWEEN_TWO_POINTS_TASKS,
+    FUNCTION_CONCEPT_FAMILY,
+    FUNCTION_CONCEPT_TASKS,
     infer_skill_families_from_terms,
 )
 
 _CAMEL_SPLIT = re.compile(r"(?<=[a-z0-9])(?=[A-Z])|(?<=[A-Za-z])(?=[0-9])")
+_LINEAR_FUNCTION_HINTS: tuple[str, ...] = (
+    "linearfunction",
+    "linear function",
+    "線型函數",
+    "线型函数",
+    "一次函數",
+    "一次函数",
+)
 
 # Exclusive skill titles → single subskill (narrow scope).
 _EXCLUSIVE_SKILL_TITLE_PATTERNS: tuple[tuple[str, tuple[str, ...]], ...] = (
@@ -66,6 +76,11 @@ def _terms_blob(skill_terms: set[str]) -> str:
     return " ".join(sorted(skill_terms)).lower()
 
 
+def _is_linear_function_skill(skill_terms: set[str]) -> bool:
+    blob = _terms_blob(skill_terms)
+    return any(h.lower() in blob for h in _LINEAR_FUNCTION_HINTS)
+
+
 def _phrase_in_skill_terms(phrase: str, skill_terms: set[str]) -> bool:
     p = str(phrase or "").strip().lower()
     if not p:
@@ -102,6 +117,12 @@ def infer_skill_anchor_scope(skill_terms: set[str], expected_families: set[str])
         return "broad"
     div_narrow = infer_narrow_subskills_from_skill_terms(skill_terms) & set(DIVISION_POINT_COORDINATES_TASKS)
     if len(div_narrow) == 1:
+        blob = _terms_blob(skill_terms)
+        # Explicit midpoint/centroid title remains narrow; generic section names use medium.
+        if "中點坐標" in blob or "中点坐标" in blob or "重心坐標" in blob or "重心坐标" in blob:
+            return "narrow"
+        if DIVISION_POINT_COORDINATES_FAMILY in expected_families:
+            return "medium"
         return "narrow"
     if len(div_narrow) > 1:
         return "broad"
@@ -109,6 +130,8 @@ def infer_skill_anchor_scope(skill_terms: set[str], expected_families: set[str])
         blob = _terms_blob(skill_terms)
         if any(h in blob for _, hints in _DIVISION_SUBSKILL_HINTS for h in hints):
             return "narrow"
+    if DIVISION_POINT_COORDINATES_FAMILY in expected_families:
+        return "medium"
     return "default"
 
 
@@ -123,6 +146,11 @@ def infer_expected_subskill_candidates(
 
     if scope == "narrow" and narrow:
         candidates |= narrow
+    elif scope == "medium":
+        # Section-scope: keep main hint while allowing same-family extension.
+        candidates |= narrow
+        if DIVISION_POINT_COORDINATES_FAMILY in expected_families:
+            candidates |= {"compute_midpoint_coordinates", "compute_centroid_coordinates"}
     elif scope == "broad":
         if DIVISION_POINT_COORDINATES_FAMILY in expected_families:
             candidates |= set(DIVISION_POINT_COORDINATES_TASKS)
@@ -141,8 +169,10 @@ def infer_expected_subskill_candidates(
         candidates.add("classify_quadrant")
     if AXIS_DISTANCE_FAMILY in expected_families:
         candidates.add("choose_possible_coordinate")
-    if COORDINATE_SYSTEM_FAMILY in expected_families:
+    if COORDINATE_SYSTEM_FAMILY in expected_families and FUNCTION_CONCEPT_FAMILY not in expected_families:
         candidates |= {"classify_quadrant", "choose_possible_coordinate", "compute_axis_distance"}
+    if FUNCTION_CONCEPT_FAMILY in expected_families:
+        candidates |= set(FUNCTION_CONCEPT_TASKS)
 
     if not candidates and expected_families:
         for fam in expected_families:
@@ -169,6 +199,10 @@ def build_main_skill_anchor(skill_id: str, skill_metadata: dict[str, Any] | None
         skill_terms |= _split_skill_id(str(ch))
 
     expected_families = infer_skill_families_from_terms(skill_terms)
+    if _is_linear_function_skill(skill_terms):
+        expected_families.add(FUNCTION_CONCEPT_FAMILY)
+        # For clear function skills, avoid coordinate-system background term hijacking.
+        expected_families.discard(COORDINATE_SYSTEM_FAMILY)
     subskill_candidates, skill_anchor_scope = infer_expected_subskill_candidates(skill_terms, expected_families)
 
     return {
@@ -182,6 +216,13 @@ def build_main_skill_anchor(skill_id: str, skill_metadata: dict[str, Any] | None
         "expected_math_objects": _expected_math_objects(expected_families),
         "expected_subskill_candidates": subskill_candidates,
         "skill_anchor_scope": skill_anchor_scope,
+        "fallback_subskill": {
+            "subskill_id": "same_as_main_skill",
+            "subskill_name": str(meta.get("skill_ch_name", "")).strip() or str(skill_id or "").strip(),
+            "subskill_scope": "fallback",
+            "display_note": "此子技能為 fallback，用於收納未細分或綜合題",
+        },
+        "source_belongs_to_current_skill_by_default": True,
     }
 
 

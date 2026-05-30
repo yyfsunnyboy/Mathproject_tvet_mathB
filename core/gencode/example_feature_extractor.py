@@ -49,9 +49,19 @@ _PROB = re.compile(r"機率|樣本空間|probability", re.I)
 _COMB = re.compile(r"排列|組合|選法|permutation|combination", re.I)
 _STATS = re.compile(r"平均數|中位數|標準差|mean|median|std", re.I)
 _GRAPH = re.compile(r"函數圖形|座標圖|graph", re.I)
+_FUNCTION_RELATION = re.compile(r"是否為函數|是否为函数|對應關係|对应关系|一對一|一对一|多對一|多对一", re.I)
+_FUNCTION_MAPPING = re.compile(r"箭頭圖|箭头图|對應圖|对应图|表格.{0,12}對應|集合.{0,8}對應", re.I)
+_FUNCTION_VALUE = re.compile(r"函數值|函数值|代入|求\s*f\s*\(|求\s*g\s*\(", re.I)
+_FUNCTION_NOTATION = re.compile(r"函數記號|函数记号|f\\left\s*\(|函數的定義|函数的定义", re.I)
+_DOMAIN_RANGE = re.compile(r"定義域|定义域|值域", re.I)
 _TABLE = re.compile(r"表格|table", re.I)
 _VAR = re.compile(r"\b[a-zA-Z]\b")
 _UNKNOWN_IN_COORD = re.compile(r"(?<![a-zA-Z])([kambntxyz])(?![a-zA-Z])", re.I)
+_MOJIBAKE = re.compile(r"�|Ã|æ|ç|銝|嚙")
+_BROKEN_FRAC = re.compile(r"\\frac(?!\{)")
+_BROKEN_LEFT_RIGHT = re.compile(r"\\left(?!\s*[\(\[\{])|\\right(?!\s*[\)\]\}])")
+_BROKEN_LATEX_BRACE = re.compile(r"\\(frac|sqrt|begin|end)\{[^}]*$")
+_COMPOSITE_EXERCISE = re.compile(r"綜合|综合|章末|統測|统测|基礎題|基础题", re.I)
 
 
 def _source_text(ex: dict[str, Any]) -> str:
@@ -177,7 +187,9 @@ def _detect_math_objects(text: str, target_task: str) -> list[str]:
     if len(points) >= 2:
         objs.append("two_coordinate_points")
     if target_task == "compute_centroid_coordinates":
-        objs.extend(["centroid", "coordinate_average"])
+        objs.extend(["centroid", "triangle_vertices", "coordinate_average_reasoning"])
+        # Centroid uses 3-point average; avoid midpoint/section tags.
+        objs = [x for x in objs if x not in {"two_coordinate_points", "section_ratio"}]
     if target_task == "compute_midpoint_coordinates":
         objs.append("midpoint")
     if target_task in {
@@ -241,6 +253,16 @@ def _infer_target_task(text: str, math_objects: list[str], answer_type: str) -> 
         return "count_arrangements"
     if _STATS.search(text):
         return "read_table"
+    if _FUNCTION_RELATION.search(text):
+        return "judge_function_relation"
+    if _FUNCTION_MAPPING.search(text):
+        return "judge_function_from_mapping"
+    if _FUNCTION_VALUE.search(text):
+        return "evaluate_function_value"
+    if _DOMAIN_RANGE.search(text):
+        return "judge_domain_range_basic"
+    if _FUNCTION_NOTATION.search(text) or re.search(r"\\frac\{1\}\{2\}g.*t\^2|f\s*\(\s*x\s*\)\s*=", text):
+        return "interpret_function_notation"
     if _GRAPH.search(text):
         return "read_graph"
     if _TABLE.search(text):
@@ -315,6 +337,24 @@ def extract_example_feature_rule_only(ex: dict[str, Any]) -> dict[str, Any]:
     target_task = _infer_target_task(question_text, math_objects, answer_type)
     task_family = task_family_for_task(target_task)
     reasoning_type = _infer_reasoning_type(question_text, math_objects, target_task)
+    if target_task == "compute_centroid_coordinates" and "coordinate_average_reasoning" not in reasoning_type:
+        reasoning_type.append("coordinate_average_reasoning")
+    reasoning_type = sorted(set(reasoning_type))
+    source_quality_issues: list[str] = []
+    if not question_text:
+        source_quality_issues.append("missing_question_text")
+    if _MOJIBAKE.search(question_text):
+        source_quality_issues.append("ocr_or_mojibake_pollution")
+    if _BROKEN_FRAC.search(question_text) or _BROKEN_LATEX_BRACE.search(question_text):
+        source_quality_issues.append("broken_latex_fraction")
+    if _BROKEN_LEFT_RIGHT.search(question_text):
+        source_quality_issues.append("broken_latex_left_right")
+    if answer_type == "single_choice" and has_choices and answer and answer not in choices_list and not LABEL_ONLY_PATTERN.match(answer):
+        source_quality_issues.append("choice_answer_not_in_options")
+    if not answer and answer_type not in {"short_answer"}:
+        source_quality_issues.append("missing_answer")
+    source_quality_reject = bool(source_quality_issues)
+    candidate_only = bool(_COMPOSITE_EXERCISE.search(question_text))
     variables = sorted(set(_VAR.findall(question_text)))
     givens = [v for v in variables if v.isalpha()]
     eq = "set_equal" if answer_type == "set" else ("choice_label" if answer_type == "single_choice" else "exact_text")
@@ -335,6 +375,9 @@ def extract_example_feature_rule_only(ex: dict[str, Any]) -> dict[str, Any]:
         "task_family": task_family,
         "reasoning_type": reasoning_type,
         "required_derivation": True,
+        "source_quality_issues": source_quality_issues,
+        "source_quality_reject": source_quality_reject,
+        "candidate_only": candidate_only,
         "variables": variables,
         "givens": givens,
         "target": target_task,
