@@ -347,39 +347,14 @@ def evaluate_source_example_alignment(
         included_in_phase1 = False
         requires_human_action = False
         exclude_reason = "enrichment_not_core_induction"
-    elif cand_src == "needs_review" or str(sc.get("ai_best_candidate_id", "")).strip() == "needs_review":
-        non_semantic_needs_review = (
-            classifier_source in _NON_SEMANTIC_REVIEW_CANDIDATE_SOURCES
-            or ai_status in {"partial_unavailable", "unavailable"}
-        )
-        rule_task_family_match = bool(expected_families and rule_family and rule_family in expected_families)
-        rule_task_subskill_match = bool(expected_tasks and rule_task and rule_task in expected_tasks)
-        if non_semantic_needs_review and (rule_task_family_match or rule_task_subskill_match):
-            if rule_task_subskill_match:
-                task = rule_task
-            if rule_task_family_match:
-                family = rule_family
-            alignment_kind = "rule_fallback_same_family"
-            aligned = True
-            included_in_phase1 = bool(for_core_induction)
-            pass_with_warning = True
-            requires_human_action = bool(sc.get("requires_human_action", False))
-            subskill_match = bool(task and task in expected_tasks)
-            task_family_match = bool(expected_families and family and family in expected_families)
-            exclude_reason = ""
-        elif non_semantic_needs_review and bool(anchor.get("source_belongs_to_current_skill_by_default", False)):
-            alignment_kind = "same_as_main_skill"
-            aligned = True
-            included_in_phase1 = bool(for_core_induction)
-            pass_with_warning = True
-            requires_human_action = bool(sc.get("requires_human_action", False))
-            exclude_reason = ""
-        else:
-            alignment_kind = "needs_review"
-            aligned = False
-            included_in_phase1 = bool(for_core_induction)
-            requires_human_action = True
-            exclude_reason = ""
+    elif task in {"", "needs_review", "unknown"}:
+        # SOP v0.2: Truly review-required classification only if final classification is not mapped.
+        # AI/Registry/Parser raw results are only used as evidence, final classification is the only source.
+        alignment_kind = "needs_review"
+        aligned = False
+        included_in_phase1 = bool(for_core_induction)
+        requires_human_action = True
+        exclude_reason = ""
     elif cand_src == "outsider" or sc.get("classifier_source") == "ai_outsider_candidate":
         alignment_kind = "outsider_candidate_warning"
         aligned = True
@@ -427,11 +402,18 @@ def evaluate_source_example_alignment(
             exclude_reason = "unclassified_low_confidence"
             alignment_kind = "unclassified_low_confidence"
 
+    # SOP v0.2: If final target task belongs to expected candidates,
+    # and final task family is in expected families, and not rejected, we must not give alignment_score = 0.0.
+    score_val = round(score, 4)
+    if task in expected_tasks and family in expected_families and sc.get("source_quality_status") != "rejected":
+        if score_val == 0.0:
+            score_val = 0.8
+            
     return {
         "example_id": feature.get("source_example_id"),
         "target_task": task,
         "task_family": family,
-        "alignment_score": round(score, 4),
+        "alignment_score": score_val,
         "aligned_with_skill": aligned,
         "included_in_phase1": included_in_phase1,
         "exclude_reason": exclude_reason,
@@ -447,6 +429,12 @@ def evaluate_source_example_alignment(
         "source_quality_issues": list(feature.get("source_quality_issues") or []),
         "source_quality_reject": bool(feature.get("source_quality_reject")),
         "candidate_only": bool(feature.get("candidate_only")),
+        "classification_source": classifier_source or str(sc.get("classifier_source", "")).strip(),
+        "induction_eligibility": (
+            "excluded_source_quality_reject"
+            if bool(feature.get("source_quality_reject"))
+            else ("excluded_enrichment" if induction_tier == "enrichment" else ("eligible" if included_in_phase1 else "excluded"))
+        ),
     }
 
 

@@ -3,32 +3,38 @@
   "phase": "phase2",
   "generator_results": [
     {
-      "problem_type_id": "numeric_evaluate_function_value_short_answer",
-      "source_example_count": 3,
+      "problem_type_id": "integer_numeric_evaluate_function_notation",
+      "source_example_count": 8,
       "answer_contract": {
         "choices_required": false,
         "choice_count": null,
         "correct_choice_count": null,
         "frontend_render_choices": false,
-        "answer_type": "numeric",
+        "answer_type": "integer",
         "answer_shape": "scalar",
-        "answer_equivalence": "numeric_equivalence",
-        "checker": "numeric_checker",
+        "answer_equivalence": "numeric_exact",
+        "checker": "integer_checker",
         "accepted_formats": [
           "5",
           "5.0",
           "-3"
         ],
-        "checker_key": "numeric_checker",
-        "equivalence_type": "numeric_equivalence",
+        "checker_key": "integer_checker",
+        "equivalence_type": "numeric_exact",
         "selected_checker": "numeric_checker",
         "checker_capability_status": "ok",
         "checker_contract_blockers": [],
         "checker_contract_warnings": [],
         "stem_contract": {
           "stem_must_not_embed_choices": true,
-          "allowed_math_objects": [],
-          "required_math_objects": [],
+          "allowed_math_objects": [
+            "coordinate_point",
+            "two_coordinate_points"
+          ],
+          "required_math_objects": [
+            "coordinate_point",
+            "two_coordinate_points"
+          ],
           "forbidden_patterns": [
             "\\(A\\)",
             "\\(B\\)",
@@ -116,7 +122,7 @@
           ],
           "sampling_strategy": "weighted_random",
           "template_families": [
-            "evaluate_function_value"
+            "numeric_evaluate_function_notation"
           ],
           "parameter_slots": {
             "seed": "integer",
@@ -128,7 +134,7 @@
           "avoid_llm_freeform_math": true,
           "use_domain_functions": true,
           "derivation_steps_required": true,
-          "problem_type_id": "numeric_evaluate_function_value_short_answer",
+          "problem_type_id": "numeric_numeric_evaluate_function_notation_short_answer",
           "contract_validation_blockers": [],
           "contract_validation_warnings": [
             "single_template_variant_only",
@@ -144,17 +150,21 @@
             "givens_to_target_dependency"
           ],
           "runtime_smoke_count": 30
-        }
+        },
+        "order_matters": true,
+        "accepted_format_notes": [],
+        "canonical_answer_schema": "numeric",
+        "presentation_mode": ""
       },
-      "answer_type": "numeric",
+      "answer_type": "integer",
       "answer_shape": "scalar",
-      "equivalence_type": "numeric_equivalence",
-      "selected_checker": "numeric_checker",
-      "checker_key": "numeric_checker",
+      "equivalence_type": "numeric_exact",
+      "selected_checker": "integer_checker",
+      "checker_key": "integer_checker",
       "checker_capability_status": "ok",
       "checker_contract_blockers": [],
       "checker_contract_warnings": [],
-      "generator_key": "vh_數學B1_LinearFunction:numeric_evaluate_function_value_short_answer:draft_v1",
+      "generator_key": "vh_數學B1_LinearFunction:integer_numeric_evaluate_function_notation:draft_v1",
       "generator_status": "validation_failed",
       "checker_smoke_status": "skipped_with_blockers",
       "dynamic_sampling_status": "skipped_with_blockers",
@@ -173,8 +183,8 @@
   ],
   "accepted_generators": [],
   "failed_generators": [
-    "vh_數學B1_LinearFunction:numeric_evaluate_function_value_short_answer:draft_v1"
+    "vh_數學B1_LinearFunction:integer_numeric_evaluate_function_notation:draft_v1"
   ],
-  "timestamp": "2026-05-30T16:02:23.908515+00:00",
+  "timestamp": "2026-05-31T16:08:03.529933+00:00",
   "dry_run": true
 }

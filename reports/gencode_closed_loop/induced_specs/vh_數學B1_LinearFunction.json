@@ -3,15 +3,20 @@
   "spec_source": "phase1_induced_draft",
   "items": [
     {
-      "problem_type_id": "numeric_evaluate_function_value_short_answer",
+      "problem_type_id": "numeric_numeric_evaluate_function_notation_short_answer",
       "skill_id": "vh_數學B1_LinearFunction",
-      "target_task": "evaluate_function_value",
+      "target_task": "numeric_evaluate_function_notation",
       "task_family": "function_concept_family",
-      "display_name": "numeric / evaluate_function_value",
+      "display_name": "numeric / numeric_evaluate_function_notation",
       "source_example_ids": [
-        4425,
-        4442,
-        4445
+        4424,
+        4433,
+        4434,
+        4441,
+        4444,
+        4448,
+        4449,
+        4516
       ],
       "answer_contract": {
         "choices_required": false,
@@ -30,8 +35,14 @@
       },
       "stem_contract": {
         "stem_must_not_embed_choices": true,
-        "allowed_math_objects": [],
-        "required_math_objects": [],
+        "allowed_math_objects": [
+          "coordinate_point",
+          "two_coordinate_points"
+        ],
+        "required_math_objects": [
+          "coordinate_point",
+          "two_coordinate_points"
+        ],
         "forbidden_patterns": [
           "\\(A\\)",
           "\\(B\\)",
@@ -119,7 +130,7 @@
         ],
         "sampling_strategy": "weighted_random",
         "template_families": [
-          "evaluate_function_value"
+          "numeric_evaluate_function_notation"
         ],
         "parameter_slots": {
           "seed": "integer",
@@ -131,7 +142,7 @@
         "avoid_llm_freeform_math": true,
         "use_domain_functions": true,
         "derivation_steps_required": true,
-        "problem_type_id": "numeric_evaluate_function_value_short_answer",
+        "problem_type_id": "numeric_numeric_evaluate_function_notation_short_answer",
         "contract_validation_blockers": [],
         "contract_validation_warnings": [
           "single_template_variant_only",
@@ -149,15 +160,12 @@
         "runtime_smoke_count": 30
       },
       "spec_source": "phase1_induced_draft",
-      "grouping_reason": "single_signature_group",
+      "grouping_reason": "merged_by_canonical_contract",
       "feature_signature": [
+        "canonical_contract_merge",
+        "numeric_evaluate_function_notation",
         "numeric",
-        "evaluate_function_value",
-        "short_answer",
-        [
-          "numeric_computation"
-        ],
-        []
+        "short_answer"
       ]
     }
   ]

@@ -15,13 +15,19 @@ from core.gencode.problem_type_spec import (
 from core.gencode.slot_generators import SLOT_REGISTRY
 from core.gencode.classifier_proposal import detect_answer_shape
 from core.gencode.pipeline_policy import evaluate_pipeline_gates
+from core.gencode.answer_contract_gate import apply_runtime_gate_to_candidate
 
 _EQUIVALENCE_MAP = {
     "exact_text": "exact_string",
+    "string_equivalence": "exact_string",
     "numeric_equal": "numeric_exact",
+    "numeric_equivalence": "numeric_exact",
     "fraction_equal": "rational_equivalent",
     "algebraic_equivalent": "algebraic_equivalent",
+    "expression_equivalence": "algebraic_equivalent",
     "set_equal": "unordered_solution_set",
+    "interval_equivalence": "interval_set",
+    "inequality_solution_equivalence": "interval_set",
 }
 
 _CHECKER_MAP = {
@@ -30,7 +36,7 @@ _CHECKER_MAP = {
     "multi_choice": ("choice_label_checker", "choice_label"),
     "numeric": ("integer_checker", "numeric_exact"),
     "fraction": ("fraction_checker", "rational_equivalent"),
-    "expression": ("expression_equivalence_checker", "expression_equivalence"),
+    "expression": ("expression_equivalence_checker", "algebraic_equivalent"),
     "ordered_pair": ("coordinate_pair_checker", "coordinate_pair_equivalence"),
     "coordinate_pair": ("coordinate_pair_checker", "coordinate_pair_equivalence"),
 }
@@ -39,7 +45,7 @@ _CHECKER_MAP = {
 def spec_to_answer_contract_proposal(spec: dict[str, Any]) -> dict[str, Any]:
     ac = get_answer_contract(spec)
     answer_type = str(ac.get("answer_type", "")).strip()
-    equivalence = str(ac.get("answer_equivalence", "")).strip()
+    equivalence = str(ac.get("answer_equivalence") or ac.get("equivalence_type") or "").strip()
     answer_shape = str(ac.get("answer_shape", "")).strip()
     checker_key = str(ac.get("checker") or ac.get("checker_key") or "").strip()
     if checker_key:
@@ -74,6 +80,20 @@ def slot_generator_readiness(spec: dict[str, Any]) -> str:
     if not contract_ok:
         return "answer_contract_not_supported"
     slot = get_template_slot(spec)
+    target_task = str(spec.get("target_task", "")).strip()
+    checker = str(ac.get("checker") or ac.get("checker_key") or "").strip()
+    equivalence = str(ac.get("answer_equivalence", "")).strip()
+    answer_shape = str(ac.get("answer_shape", "")).strip()
+    if (
+        not slot
+        and target_task in {"evaluate_function_value", "interpret_function_notation"}
+        and str(ac.get("answer_type", "")).strip() in {"numeric", "short_answer"}
+        and checker == "numeric_checker"
+        and equivalence in {"numeric_equal", "numeric_equivalence"}
+        and answer_shape in {"", "scalar"}
+        and "function_value_numeric" in SLOT_REGISTRY
+    ):
+        return "runtime_ready"
     if slot and slot in SLOT_REGISTRY:
         return "runtime_ready"
     ac = get_answer_contract(spec)
@@ -153,6 +173,7 @@ def merge_phase1_with_problem_type_specs(
                 "template_slot": get_template_slot(spec),
             }
         )
+        candidates[-1] = apply_runtime_gate_to_candidate(candidates[-1])
 
     out = dict(auto_review)
     out["candidate_problem_types"] = candidates

@@ -45,6 +45,7 @@ from core.gencode.induction_source_policy import (
     split_induction_source_features,
 )
 from core.gencode.spec_phase1_merge import slot_generator_readiness
+from core.gencode.answer_contract_gate import apply_runtime_gate_to_candidate
 from core.gencode.task_families import (
     SOLVE_UNKNOWN_COORDINATE_TASKS,
     answer_contract_supports_task,
@@ -560,7 +561,7 @@ def induce_problem_types_from_examples(
         examples=examples,
         main_skill_anchor=main_skill_anchor,
     )
-    # Candidate-only examples (composite exercises) stay in same_as_main_skill bucket and do not force split.
+    # Candidate-only examples (composite exercises) are tracked separately and must not pollute fallback buckets.
     candidate_only_examples = [
         f for f in features_for_induction
         if isinstance(f, dict) and bool(f.get("candidate_only"))
@@ -692,6 +693,17 @@ def induce_problem_types_from_examples(
             }
         )
 
+    non_runtime_supported_problem_type_ids = {
+        str(c.get("problem_type_id", "")).strip()
+        for c in candidates
+        if isinstance(c, dict) and str(c.get("generator_readiness", "")).strip() != "runtime_ready"
+    }
+    candidate_only_problem_type_example_ids = {
+        int(ex_id)
+        for ex_id, pt in cluster_by_ex.items()
+        if isinstance(ex_id, int) and str(pt).strip() in non_runtime_supported_problem_type_ids
+    }
+
     for f in features:
         ex_id = f.get("source_example_id")
         pt = cluster_by_ex.get(ex_id, "unknown")
@@ -710,6 +722,9 @@ def induce_problem_types_from_examples(
             subskill_id = fallback_subskill_id
             if "candidate_only" not in risk_flags:
                 risk_flags.append("candidate_only")
+        if isinstance(ex_id, int) and ex_id in candidate_only_problem_type_example_ids and str(f.get("target_task", "")).strip():
+            if "candidate_only_problem_type" not in risk_flags:
+                risk_flags.append("candidate_only_problem_type")
         per_example.append(
             {
                 "example_id": ex_id,
@@ -721,12 +736,15 @@ def induce_problem_types_from_examples(
                 "risk_flags": risk_flags,
                 "semantic_classification": sem,
                 "subskill_id": subskill_id,
+                "classification_source": str(sem.get("classifier_source", "")).strip() or str(f.get("classifier_source", "")).strip(),
             }
         )
 
     if expected_families:
         induced_specs = [s for s in induced_specs if _spec_in_expected_families(s, expected_families)]
         candidates = [c for c in candidates if _spec_in_expected_families(c.get("problem_type_spec_draft", c), expected_families)]
+
+    candidates = [apply_runtime_gate_to_candidate(c) for c in candidates if isinstance(c, dict)]
 
     semantic_alignment = evaluate_semantic_alignment(
         skill_id,
@@ -813,6 +831,14 @@ def induce_problem_types_from_examples(
                 alignment_row=row,
             )
         )
+    for row in per_example:
+        if not isinstance(row, dict):
+            continue
+        ex_id = row.get("example_id")
+        if isinstance(ex_id, int) and isinstance(align_by_id.get(ex_id), dict):
+            row["induction_eligibility"] = str(align_by_id[ex_id].get("induction_eligibility", "")).strip()
+        else:
+            row["induction_eligibility"] = "unknown"
 
     semantic_mismatch_examples = [
         x for x in source_example_alignment
@@ -834,7 +860,10 @@ def induce_problem_types_from_examples(
     same_as_main_skill_examples = [
         {"example_id": x.get("example_id"), "reason": "fallback_subskill"}
         for x in per_example
-        if isinstance(x, dict) and str(x.get("subskill_id", "")).strip() == fallback_subskill_id
+        if isinstance(x, dict)
+        and str(x.get("subskill_id", "")).strip() == fallback_subskill_id
+        and "candidate_only" not in (x.get("risk_flags") or [])
+        and "candidate_only_problem_type" not in (x.get("risk_flags") or [])
     ]
     inherited_from_previous_context_examples = [
         {
@@ -851,10 +880,17 @@ def induce_problem_types_from_examples(
         if isinstance(c, dict) and int(c.get("matched_example_count", 0) or 0) < 3
     ]
     candidate_only_problem_types = [
-        {"example_id": f.get("source_example_id"), "subskill_id": fallback_subskill_id}
+        {"example_id": f.get("source_example_id"), "subskill_id": fallback_subskill_id, "reason": "candidate_only_source"}
         for f in candidate_only_examples
         if isinstance(f, dict)
     ]
+    candidate_only_problem_types.extend(
+        [
+            {"example_id": x.get("example_id"), "problem_type_id": x.get("detected_problem_type_id"), "reason": "runtime_not_supported"}
+            for x in per_example
+            if isinstance(x, dict) and "candidate_only_problem_type" in (x.get("risk_flags") or [])
+        ]
+    )
     subskills = sorted(
         {
             str(x.get("subskill_id", "")).strip()
@@ -924,6 +960,15 @@ def induce_problem_types_from_examples(
         "inherited_from_previous_context_examples": inherited_from_previous_context_examples,
         "low_source_examples": low_source_examples,
         "candidate_only_problem_types": candidate_only_problem_types,
+        "candidate_only_count": len(candidate_only_problem_types),
+        "same_as_main_skill_count": len(same_as_main_skill_examples),
+        "rule_only_classification_count": sum(
+            1
+            for x in per_example
+            if isinstance(x, dict)
+            and str(x.get("classification_source", "")).strip() in {"rule_only", "registry_rule"}
+        ),
+        "hybrid_resolved_count": sum(1 for x in per_example if isinstance(x, dict) and str(x.get("classification_source", "")).strip() == "hybrid_resolved"),
         "subskills": subskills,
         "fallback_subskill_used": any(str(s) == fallback_subskill_id for s in subskills),
         "source_belongs_to_current_skill_by_default_count": len(features) - len(semantic_alignment.get("source_quality_reject_examples", [])),

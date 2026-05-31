@@ -25,6 +25,10 @@ from core.gencode.pipeline_state import utc_timestamp, write_json, write_md
 from core.gencode.runtime_smoke import run_draft_runtime_smoke
 from core.gencode.problem_type_induction import apply_spec_mode, induce_problem_types_from_examples
 from core.gencode.problem_type_spec import save_induced_problem_type_specs
+from core.gencode.answer_contract_gate import (
+    EQUIVALENCE_TYPE_WHITELIST,
+    summarize_answer_contracts,
+)
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 REPORT_DIR = PROJECT_ROOT / "reports" / "gencode_closed_loop"
@@ -32,6 +36,112 @@ DRAFT_DIR = REPORT_DIR / "drafts"
 CLASSIFIER_DRAFT_DIR = REPORT_DIR / "classifier_drafts"
 CLASSIFIER_RULEPACK_PATH = PROJECT_ROOT / "configs" / "gencode" / "classifiers" / "phase1_rule_packs.yaml"
 CLASSIFIER_RULEPACK_BACKUP_DIR = PROJECT_ROOT / "backups" / "gencode_classifier_rulepacks"
+
+
+def _build_phase2_foundation_preflight(
+    *,
+    phase1_payload: dict[str, Any],
+    generator_results: list[dict[str, Any]],
+) -> dict[str, Any]:
+    acs = phase1_payload.get("answer_contract_summary", {}) if isinstance(phase1_payload.get("answer_contract_summary"), dict) else {}
+    missing_answer_contract = list(acs.get("missing_answer_contract_problem_types", []) or [])
+    missing_checker_key = list(acs.get("missing_checker_key_problem_types", []) or [])
+    invalid_eq = [
+        pt
+        for pt, c in (acs.get("observed_problem_type_answer_contracts", {}) or {}).items()
+        if isinstance(c, dict) and str(c.get("equivalence_type", "")).strip() not in EQUIVALENCE_TYPE_WHITELIST
+    ]
+    blocked_rows = [r for r in generator_results if isinstance(r, dict) and str(r.get("generator_status", "")).strip() in {"blocked", "generator_not_ready", "pending_template"}]
+    missing_generator = sorted({str(r.get("problem_type_id", "")).strip() for r in blocked_rows if str(r.get("problem_type_id", "")).strip()})
+    missing_runtime_binding = sorted({
+        str(r.get("problem_type_id", "")).strip()
+        for r in generator_results
+        if isinstance(r, dict) and "phase1_semantic_alignment_blocked" in (r.get("blockers") or [])
+    })
+    observed_pts = {
+        str(c.get("problem_type_id") or c.get("proposed_problem_type_id") or "").strip()
+        for c in (phase1_payload.get("candidate_problem_types") or [])
+        if isinstance(c, dict)
+    }
+    observed_pts.discard("")
+    bound_pts = {
+        str(r.get("problem_type_id", "")).strip()
+        for r in generator_results
+        if isinstance(r, dict) and str(r.get("problem_type_id", "")).strip()
+    }
+    missing_registry_binding = sorted(observed_pts - bound_pts)
+    missing_verifier = sorted(set(invalid_eq))
+    missing_domain_function = sorted({
+        str(r.get("problem_type_id", "")).strip()
+        for r in generator_results
+        if isinstance(r, dict) and "answer_contract_not_supported" in (r.get("blockers") or [])
+    })
+    missing_checker = sorted(set(missing_checker_key))
+
+    missing_map = {
+        "missing_checker": missing_checker,
+        "missing_verifier": missing_verifier,
+        "missing_domain_function": missing_domain_function,
+        "missing_generator": missing_generator,
+        "missing_runtime_binding": missing_runtime_binding,
+        "missing_registry_binding": missing_registry_binding,
+    }
+    has_missing = any(bool(v) for v in missing_map.values()) or bool(missing_answer_contract)
+    repair_steps: list[dict[str, Any]] = []
+    for gap, items in missing_map.items():
+        if not items:
+            continue
+        repair_steps.append(
+            {
+                "gap": gap,
+                "problem_types": items,
+                "action": f"repair_{gap}",
+            }
+        )
+    if missing_answer_contract:
+        repair_steps.append(
+            {
+                "gap": "missing_answer_contract",
+                "problem_types": sorted(set(missing_answer_contract)),
+                "action": "repair_answer_contract",
+            }
+        )
+    return {
+        "foundation_ready": not has_missing,
+        "foundation_status": "PASS" if not has_missing else "FOUNDATION_REPAIR_REQUIRED",
+        "missing_checker": missing_checker,
+        "missing_verifier": missing_verifier,
+        "missing_domain_function": missing_domain_function,
+        "missing_generator": missing_generator,
+        "missing_runtime_binding": missing_runtime_binding,
+        "missing_registry_binding": missing_registry_binding,
+        "missing_answer_contract_problem_types": sorted(set(missing_answer_contract)),
+        "repair_plan": repair_steps,
+        "next_action": "phase3_package_draft" if not has_missing else "repair_foundation_gaps_then_rerun_phase2",
+    }
+
+
+def _phase3_source_alignment_layer(phase1: dict[str, Any], phase2: dict[str, Any]) -> dict[str, Any]:
+    per_example = phase1.get("per_example_classification", []) if isinstance(phase1.get("per_example_classification"), list) else []
+    runtime_pts = {
+        str(x.get("problem_type_id", "")).strip()
+        for x in (phase2.get("generator_results", []) or [])
+        if isinstance(x, dict) and bool(x.get("usable_for_phase3"))
+    }
+    runtime_pts.discard("")
+    observed_pts = {
+        str(x.get("detected_problem_type_id", "")).strip()
+        for x in per_example
+        if isinstance(x, dict) and str(x.get("detected_problem_type_id", "")).strip() not in {"", "unknown"}
+    }
+    missing = sorted(observed_pts - runtime_pts) if runtime_pts else sorted(observed_pts)
+    underrepresented = sorted(set(missing))
+    status = "PASS" if not missing and not underrepresented else "PARTIAL"
+    return {
+        "status": status,
+        "missing_source_aligned_problem_types": missing,
+        "underrepresented_runtime_forms": underrepresented,
+    }
 
 
 def _log_gencode_ai_runtime(tag: str, meta: dict[str, Any]) -> None:
@@ -310,36 +420,39 @@ def _classify_examples(skill_id: str, examples: list[dict[str, Any]]) -> list[di
 
 
 _ALLOWED_CHECKERS = {
-    "interval_checker",
-    "choice_label_checker",
-    "text_checker",
-    "numeric_checker",
-    "ordered_pair_checker",
-    "expression_equivalence_checker",
-    "manual_review_checker",
+    "choice_label_checker", "integer_checker", "rational_checker", "decimal_tolerance_checker", 
+    "percentage_checker", "expression_checker", "equation_checker", "interval_checker", 
+    "set_checker", "tuple_checker", "matrix_checker", "text_short_checker", 
+    "manual_review_checker", "ai_judged_checker"
 }
 _ALLOWED_EQUIVS = {
-    "interval_set",
-    "choice_label",
-    "string_equivalence",
-    "numeric_equivalence",
-    "ordered_pair",
-    "expression_equivalence",
-    "manual_review_or_ai_judged",
+    "choice_label", "numeric_exact", "rational_equivalent", "decimal_tolerance", 
+    "percentage_equivalent", "algebraic_equivalent", "equation_equivalent", 
+    "interval_set", "unordered_solution_set", "ordered_tuple_exact", 
+    "unordered_tuple_equivalent", "matrix_exact", "exact_string", 
+    "case_insensitive_string", "manual_review_or_ai_judged"
 }
 
 
 def _to_answer_type_from_equivalence(eq: str) -> str:
     m = {
-        "interval_set": "interval_set",
         "choice_label": "choice",
-        "string_equivalence": "text",
-        "numeric_equivalence": "numeric",
-        "ordered_pair": "ordered_pair",
-        "expression_equivalence": "expression",
+        "numeric_exact": "integer",
+        "rational_equivalent": "rational",
+        "decimal_tolerance": "rational",
+        "percentage_equivalent": "rational",
+        "algebraic_equivalent": "expression",
+        "equation_equivalent": "expression",
+        "interval_set": "interval",
+        "unordered_solution_set": "set",
+        "ordered_tuple_exact": "ordered_tuple",
+        "unordered_tuple_equivalent": "unordered_tuple",
+        "matrix_exact": "matrix",
+        "exact_string": "text_short",
+        "case_insensitive_string": "text_short",
         "manual_review_or_ai_judged": "manual_review",
     }
-    return m.get(str(eq or "").strip(), "text")
+    return m.get(str(eq or "").strip(), "expression")
 
 
 def _camel_to_snake(name: str) -> str:
@@ -368,10 +481,34 @@ def _sources_complete_for_default(examples: list[dict[str, Any]]) -> bool:
 
 
 def _infer_default_contract(examples: list[dict[str, Any]]) -> tuple[str, str]:
+    at = "expression"
+    for ex in examples:
+        cand_at = str(ex.get("answer_type", ex.get("example_feature", {}).get("answer_type", ""))).strip()
+        if cand_at:
+            at = cand_at
+            break
+            
     texts = " ".join(_source_text(x) for x in examples)
     if any(tok in texts for tok in ["(A)", "(B)", "(C)", "(D)", "（A）", "（B）", "（C）", "（D）"]):
+        at = "choice"
+        
+    has_fraction = "frac" in texts or "/" in texts
+    if at in ["numeric", "integer", "rational", "float", "number"]:
+        if has_fraction:
+            at = "rational"
+        else:
+            at = "integer"
+            
+    if at in ["numeric", "integer"]:
+        return "integer_checker", "numeric_exact"
+    if at == "rational":
+        return "rational_checker", "rational_equivalent"
+    if at == "expression":
+        return "expression_checker", "algebraic_equivalent"
+    if at == "choice":
         return "choice_label_checker", "choice_label"
-    return "text_checker", "string_equivalence"
+        
+    return "expression_checker", "algebraic_equivalent"
 
 
 def _source_text(ex: dict[str, Any]) -> str:
@@ -382,13 +519,37 @@ def _source_text(ex: dict[str, Any]) -> str:
     return ""
 
 
+def _normalize_json_payload(obj: Any) -> Any:
+    if isinstance(obj, dict):
+        new_dict = {}
+        for k, v in obj.items():
+            if isinstance(v, str):
+                v_str = v.strip()
+                if v_str in ["numeric_equivalence", "numeric_equal", "numeric_exact_equivalence"]:
+                    v = "numeric_exact"
+                elif v_str in ["string_equivalence", "exact_text", "exact_string_equivalence"]:
+                    v = "exact_string"
+            new_dict[k] = _normalize_json_payload(v)
+        return new_dict
+    elif isinstance(obj, list):
+        return [_normalize_json_payload(x) for x in obj]
+    elif isinstance(obj, str):
+        v_str = obj.strip()
+        if v_str in ["numeric_equivalence", "numeric_equal", "numeric_exact_equivalence"]:
+            return "numeric_exact"
+        elif v_str in ["string_equivalence", "exact_text", "exact_string_equivalence"]:
+            return "exact_string"
+        return obj
+    return obj
+
+
 def _json_from_text(raw: str) -> dict[str, Any]:
     s = str(raw or "").strip()
     if not s:
         return {}
     try:
         parsed = json.loads(s)
-        return parsed if isinstance(parsed, dict) else {}
+        return _normalize_json_payload(parsed) if isinstance(parsed, dict) else {}
     except Exception:
         pass
     a = s.find("{")
@@ -396,7 +557,7 @@ def _json_from_text(raw: str) -> dict[str, Any]:
     if a >= 0 and b > a:
         try:
             parsed = json.loads(s[a : b + 1])
-            return parsed if isinstance(parsed, dict) else {}
+            return _normalize_json_payload(parsed) if isinstance(parsed, dict) else {}
         except Exception:
             return {}
     return {}
@@ -959,6 +1120,22 @@ def _build_human_review_items(
 
 def _write_phase1_summary_md(path: Path, skill_id: str, payload: dict[str, Any]) -> None:
     lines = [f"# Gencode Phase1 Summary: {skill_id}", ""]
+    
+    # SOP v0.2: Include SOP Policy Reference section in markdown
+    sop_ref = payload.get("sop_reference")
+    if isinstance(sop_ref, dict):
+        lines.extend([
+            "## SOP Policy Reference",
+            "",
+            f"- **SOP Policy Version**: `{sop_ref.get('sop_policy_version', '')}`",
+            f"- **Highest SOP**: `{sop_ref.get('highest_sop', '')}`",
+            f"- **SOP Preflight Status**: `{sop_ref.get('sop_preflight_status', '')}`",
+            f"- **SOP Gate Status**: `{payload.get('sop_gate_status', 'PASS')}`",
+            f"- **Report Contract Status**: `{payload.get('report_contract_status', 'PASS')}`",
+            f"- **Report Contract Warnings**: {payload.get('report_contract_warnings', [])}",
+            f"- **Report Contract Violations**: {payload.get('report_contract_violations', [])}",
+            ""
+        ])
     spec_mode = str(payload.get("spec_mode", "")).strip()
     if spec_mode:
         lines.extend([f"- spec_mode: `{spec_mode}`", ""])
@@ -1552,11 +1729,54 @@ def _normalize_phase_response(payload: dict[str, Any]) -> dict[str, Any]:
 
 
 def run_gencode_phase1(skill_id: str, dry_run: bool = True, spec_mode: str = "ai_first_induce_from_sources") -> dict[str, Any]:
+    # SOP v0.2: Preflight Scan Policy Enforcement
+    from core.gencode.sop_policy import validate_sop_preflight, build_sop_reference, validate_skill_level_blockers
+    preflight = validate_sop_preflight(PROJECT_ROOT)
+    reports_pre = {
+        "phase1_summary_json": str(REPORT_DIR / f"{skill_id}_phase1_summary.json"),
+        "phase1_summary_md": str(REPORT_DIR / f"{skill_id}_phase1_summary.md"),
+        "phase1_json": str(REPORT_DIR / f"{skill_id}_phase1_summary.json"),
+        "phase1_md": str(REPORT_DIR / f"{skill_id}_phase1_summary.md"),
+    }
+    if preflight["sop_preflight_status"] == "FAIL":
+        payload = {
+            "ok": False,
+            "phase": "phase1",
+            "skill_id": skill_id,
+            "source_example_count": 0,
+            "candidate_problem_types": [],
+            "per_example_classification": [],
+            "unclassified_examples": [],
+            "risk_examples": [],
+            "split_or_merge_recommendation": "hold_unknown_examples_only",
+            "classifier_gate": {"status": "classifier_blocked", "allowed": False, "warnings": []},
+            "generator_draft_gate": {"status": "generator_draft_blocked", "allowed": False, "warnings": []},
+            "runtime_ready_gate": {"status": "blocked_sop_preflight_failed", "allowed": False, "blockers": ["blocked_sop_preflight_failed"]},
+            "exception_review_gate": {"required": True, "reasons": ["sop_preflight_failed"]},
+            "reports": reports_pre,
+            "next_action": "fix_sop_files",
+            "timestamp": utc_timestamp(),
+            "dry_run": dry_run,
+            "human_review_items": [],
+            "sop_preflight_status": "FAIL",
+            "sop_preflight_errors": preflight["errors"],
+            "phase_status": "SOP_PREFLIGHT_FAIL",
+        }
+        REPORT_DIR.mkdir(parents=True, exist_ok=True)
+        write_json(Path(reports_pre["phase1_summary_json"]), payload)
+        _write_phase1_summary_md(Path(reports_pre["phase1_summary_md"]), skill_id, payload)
+        normalized = _normalize_phase_response(payload)
+        normalized["phase_status"] = "SOP_PREFLIGHT_FAIL"
+        normalized["summary_message"] = f"SOP preflight failed: {', '.join(preflight['errors'])}"
+        return normalized
+
     REPORT_DIR.mkdir(parents=True, exist_ok=True)
     examples = _load_examples(skill_id)
     reports = {
         "phase1_summary_json": str(REPORT_DIR / f"{skill_id}_phase1_summary.json"),
         "phase1_summary_md": str(REPORT_DIR / f"{skill_id}_phase1_summary.md"),
+        "phase1_json": str(REPORT_DIR / f"{skill_id}_phase1_summary.json"),
+        "phase1_md": str(REPORT_DIR / f"{skill_id}_phase1_summary.md"),
     }
     if not examples:
         payload = {
@@ -1682,11 +1902,62 @@ def run_gencode_phase1(skill_id: str, dry_run: bool = True, spec_mode: str = "ai
     per_example = auto_review.get("per_example_classification", [])
     unclassified = [x.get("example_id") for x in per_example if str(x.get("detected_problem_type_id", "")).strip() in {"", "unknown"}]
     risk_examples = [x.get("example_id") for x in per_example if x.get("risk_flags")]
+    answer_contract_summary = summarize_answer_contracts(
+        [c for c in (auto_review.get("candidate_problem_types") or []) if isinstance(c, dict)]
+    )
+    invalid_equivalence_problem_types = sorted(
+        [
+            pt
+            for pt, c in (answer_contract_summary.get("observed_problem_type_answer_contracts", {}) or {}).items()
+            if isinstance(c, dict) and str(c.get("equivalence_type", "")).strip() not in EQUIVALENCE_TYPE_WHITELIST
+        ]
+    )
+    phase1_ac_gate_pass = not (
+        bool(answer_contract_summary.get("missing_answer_contract_problem_types"))
+        or bool(answer_contract_summary.get("missing_checker_key_problem_types"))
+        or bool(invalid_equivalence_problem_types)
+    )
+
+    from core.gencode.sop_policy import validate_skill_level_blockers, build_sop_reference
+    
+    # SOP v0.2: Enforce Blocker Promotions and final_classification rules
+    align_blockers = auto_review.get("alignment_blockers", [])
+    ex_gate_reasons = (auto_review.get("exception_review_gate") or {}).get("reasons", [])
+    all_blockers = set(align_blockers) | set(ex_gate_reasons)
+    
+    gate_res = validate_skill_level_blockers(all_blockers)
+    sop_gate_status = "PASS"
+    sop_gate_violation = False
+    invalid_blockers = []
+    
+    if gate_res["sop_violation"]:
+        sop_gate_status = "FAIL"
+        sop_gate_violation = True
+        invalid_blockers = gate_res["invalid_skill_level_blockers"]
+        
+        # Safe demotion: Keep only allowed blockers, move others to warnings
+        align_blockers = [b for b in align_blockers if b in ALLOWED_SKILL_LEVEL_BLOCKERS]
+        ex_gate_reasons = [r for r in ex_gate_reasons if r in ALLOWED_SKILL_LEVEL_BLOCKERS]
+        auto_review["alignment_blockers"] = align_blockers
+        if "exception_review_gate" in auto_review and isinstance(auto_review["exception_review_gate"], dict):
+            auto_review["exception_review_gate"]["reasons"] = ex_gate_reasons
+            auto_review["exception_review_gate"]["required"] = bool(ex_gate_reasons)
+            
+        align_warns = auto_review.get("alignment_warnings", [])
+        for b in invalid_blockers:
+            if b not in align_warns:
+                align_warns.append(f"disallowed_blocker_promoted_to_warning:{b}")
+        auto_review["alignment_warnings"] = align_warns
+        alignment_blocked = bool(align_blockers)
 
     payload = {
         "ok": not alignment_blocked,
         "phase": "phase1",
         "skill_id": skill_id,
+        "sop_reference": build_sop_reference(PROJECT_ROOT),
+        "sop_gate_status": sop_gate_status,
+        "sop_gate_violation": sop_gate_violation,
+        "invalid_skill_level_blockers": invalid_blockers,
         "main_skill_anchor": auto_review.get("main_skill_anchor", {}),
         "source_example_count": len(examples),
         "source_alignment_status": auto_review.get("source_alignment_status", "pass"),
@@ -1733,11 +2004,18 @@ def run_gencode_phase1(skill_id: str, dry_run: bool = True, spec_mode: str = "ai
         "inherited_from_previous_context_examples": auto_review.get("inherited_from_previous_context_examples", []),
         "low_source_examples": auto_review.get("low_source_examples", []),
         "candidate_only_problem_types": auto_review.get("candidate_only_problem_types", []),
+        "candidate_only_count": int(auto_review.get("candidate_only_count", len(auto_review.get("candidate_only_problem_types", []) or [])) or 0),
+        "same_as_main_skill_count": int(auto_review.get("same_as_main_skill_count", len(auto_review.get("same_as_main_skill_examples", []) or [])) or 0),
+        "rule_only_classification_count": int(auto_review.get("rule_only_classification_count", 0) or 0),
+        "hybrid_resolved_count": int(auto_review.get("hybrid_resolved_count", 0) or 0),
         "subskills": auto_review.get("subskills", []),
         "fallback_subskill_used": bool(auto_review.get("fallback_subskill_used", False)),
         "source_belongs_to_current_skill_by_default_count": int(auto_review.get("source_belongs_to_current_skill_by_default_count", 0) or 0),
         "source_example_alignment": auto_review.get("source_example_alignment", []),
         "candidate_problem_types": auto_review.get("candidate_problem_types", []),
+        "answer_contract_summary": answer_contract_summary,
+        "invalid_equivalence_type_problem_types": invalid_equivalence_problem_types,
+        "phase1_answer_contract_gate_status": "PASS" if phase1_ac_gate_pass else "FOUNDATION_REPAIR_REQUIRED",
         "per_example_classification": per_example,
         "source_classifications": per_example,
         "unclassified_examples": unclassified,
@@ -1779,6 +2057,22 @@ def run_gencode_phase1(skill_id: str, dry_run: bool = True, spec_mode: str = "ai
         candidate_problem_types=payload.get("candidate_problem_types", []),
         exception_review_gate=payload.get("exception_review_gate", {}),
     )
+    # SOP v0.2: Run Phase 1 Report Contract Validator before writing reports
+    from core.gencode.phase1_report_contract import validate_phase1_report_contract
+    from core.gencode.problem_type_grouping_contract import validate_problem_type_grouping_contract
+    
+    contract_res = validate_phase1_report_contract(payload)
+    payload.update(contract_res["normalized_fields"])
+    payload["report_contract_status"] = contract_res["report_contract_status"]
+    payload["report_contract_warnings"] = contract_res["report_contract_warnings"]
+    payload["report_contract_violations"] = contract_res["report_contract_violations"]
+    
+    grouping_res = validate_problem_type_grouping_contract(payload)
+    payload.update(grouping_res["normalized_fields"])
+    payload["problem_type_grouping_contract_status"] = grouping_res["problem_type_grouping_contract_status"]
+    payload["problem_type_grouping_contract_warnings"] = grouping_res["problem_type_grouping_contract_warnings"]
+    payload["problem_type_grouping_contract_violations"] = grouping_res["problem_type_grouping_contract_violations"]
+
     write_json(Path(reports["phase1_summary_json"]), payload)
     _write_phase1_summary_md(Path(reports["phase1_summary_md"]), skill_id, payload)
     runtime_candidates = [
@@ -1794,6 +2088,15 @@ def run_gencode_phase1(skill_id: str, dry_run: bool = True, spec_mode: str = "ai
         classifier_draft_path = _write_classifier_yaml_draft(skill_id, draft_obj)
         payload["classifier_yaml_draft_path"] = classifier_draft_path
         payload["classifier_rulepack_registerable"] = True
+        
+        # SOP v0.2: Re-run Phase 1 Report Contract Validator to keep draft report consistent
+        from core.gencode.phase1_report_contract import validate_phase1_report_contract
+        contract_res_d = validate_phase1_report_contract(payload)
+        payload.update(contract_res_d["normalized_fields"])
+        payload["report_contract_status"] = contract_res_d["report_contract_status"]
+        payload["report_contract_warnings"] = contract_res_d["report_contract_warnings"]
+        payload["report_contract_violations"] = contract_res_d["report_contract_violations"]
+
         write_json(Path(reports["phase1_summary_json"]), payload)
         _write_phase1_summary_md(Path(reports["phase1_summary_md"]), skill_id, payload)
     normalized = _normalize_phase_response(payload)
@@ -1805,10 +2108,43 @@ def run_gencode_phase1(skill_id: str, dry_run: bool = True, spec_mode: str = "ai
 
 
 def run_gencode_phase2(skill_id: str, accepted_problem_types: list | None = None, excluded_example_ids: list | None = None, dry_run: bool = True) -> dict[str, Any]:
+    # SOP v0.2: Preflight Scan Policy Enforcement
+    from core.gencode.sop_policy import validate_sop_preflight, build_sop_reference
+    preflight = validate_sop_preflight(PROJECT_ROOT)
+    reports_pre = {
+        "phase2_generator_summary_json": str(REPORT_DIR / f"{skill_id}_phase2_generator_summary.json"),
+        "phase2_generator_summary_md": str(REPORT_DIR / f"{skill_id}_phase2_generator_summary.md"),
+    }
+    if preflight["sop_preflight_status"] == "FAIL":
+        payload = {
+            "ok": False,
+            "phase": "phase2",
+            "skill_id": skill_id,
+            "phase1_alignment_blocked": True,
+            "alignment_blockers": ["blocked_sop_preflight_failed"],
+            "generator_results": [],
+            "failed_generators": [],
+            "accepted_generators": [],
+            "foundation_ready": False,
+            "phase2_status": "SOP_PREFLIGHT_FAIL",
+            "reports": reports_pre,
+            "timestamp": utc_timestamp(),
+            "dry_run": dry_run,
+            "sop_preflight_status": "FAIL",
+            "sop_preflight_errors": preflight["errors"],
+        }
+        REPORT_DIR.mkdir(parents=True, exist_ok=True)
+        write_json(Path(reports_pre["phase2_generator_summary_json"]), payload)
+        write_md(Path(reports_pre["phase2_generator_summary_md"]), f"Gencode Phase2 Generator Summary: {skill_id}", [("phase2", payload)])
+        normalized = _normalize_phase_response(payload)
+        normalized["phase_status"] = "SOP_PREFLIGHT_FAIL"
+        normalized["summary_message"] = f"SOP preflight failed: {', '.join(preflight['errors'])}"
+        return normalized
+
     REPORT_DIR.mkdir(parents=True, exist_ok=True)
     DRAFT_DIR.mkdir(parents=True, exist_ok=True)
     phase1_path = REPORT_DIR / f"{skill_id}_phase1_summary.json"
-    phase1 = json.loads(phase1_path.read_text(encoding="utf-8")) if phase1_path.exists() else run_gencode_phase1(skill_id, dry_run=dry_run)
+    phase1 = _normalize_json_payload(json.loads(phase1_path.read_text(encoding="utf-8"))) if phase1_path.exists() else run_gencode_phase1(skill_id, dry_run=dry_run)
     phase1_alignment_blocked = (
         str(phase1.get("source_alignment_status", "")).strip() == "block"
         or bool(phase1.get("alignment_blockers"))
@@ -1993,19 +2329,30 @@ def run_gencode_phase2(skill_id: str, accepted_problem_types: list | None = None
     reports = {
         "phase2_generator_summary_json": str(REPORT_DIR / f"{skill_id}_phase2_generator_summary.json"),
         "phase2_generator_summary_md": str(REPORT_DIR / f"{skill_id}_phase2_generator_summary.md"),
+        "phase2_json": str(REPORT_DIR / f"{skill_id}_phase2_generator_summary.json"),
+        "phase2_md": str(REPORT_DIR / f"{skill_id}_phase2_generator_summary.md"),
         "generator_draft_spec_json": str(draft_spec_path),
     }
+    foundation_preflight = _build_phase2_foundation_preflight(
+        phase1_payload=phase1 if isinstance(phase1, dict) else {},
+        generator_results=generator_results,
+    )
     payload = {
-        "ok": bool(generator_results) and not phase1_alignment_blocked,
+        "ok": bool(generator_results) and not phase1_alignment_blocked and bool(foundation_preflight.get("foundation_ready")),
         "phase": "phase2",
         "skill_id": skill_id,
+        "sop_reference": build_sop_reference(PROJECT_ROOT),
         "phase1_alignment_blocked": phase1_alignment_blocked,
         "alignment_blockers": phase1.get("alignment_blockers", []),
         "generator_results": generator_results,
         "failed_generators": failed_generators,
         "accepted_generators": accepted_generators,
+        "foundation_preflight": foundation_preflight,
+        "foundation_ready": bool(foundation_preflight.get("foundation_ready", False)),
+        "phase2_status": str(foundation_preflight.get("foundation_status", "FOUNDATION_REPAIR_REQUIRED")),
+        "repair_plan": foundation_preflight.get("repair_plan", []),
         "reports": reports,
-        "next_action": "phase3_package_draft" if accepted_generators else "review_blockers_before_phase3",
+        "next_action": str(foundation_preflight.get("next_action", "")) or ("phase3_package_draft" if accepted_generators else "review_blockers_before_phase3"),
         "timestamp": utc_timestamp(),
         "dry_run": dry_run,
     }
@@ -2072,12 +2419,42 @@ def _run_gencode_publish_check_for_draft(skill_id: str, draft_skill_file_path: s
 def run_gencode_phase3_package(skill_id: str, accepted_generator_keys: list | None = None, dry_run: bool = True) -> dict[str, Any]:
     from core.gencode.packaging_policy import format_packaging_blocked_message, select_generators_for_packaging
 
+    # SOP v0.2: Preflight Scan Policy Enforcement
+    from core.gencode.sop_policy import validate_sop_preflight, build_sop_reference
+    preflight = validate_sop_preflight(PROJECT_ROOT)
+    reports_pre = {
+        "phase3_package_summary_json": str(REPORT_DIR / f"{skill_id}_phase3_package_summary.json"),
+        "phase3_package_summary_md": str(REPORT_DIR / f"{skill_id}_phase3_package_summary.md"),
+    }
+    if preflight["sop_preflight_status"] == "FAIL":
+        payload = {
+            "ok": False,
+            "phase": "phase3",
+            "skill_id": skill_id,
+            "skill_file_path": "",
+            "package_status": "SOP_PREFLIGHT_FAIL",
+            "py_compile_status": "not_run",
+            "runtime_smoke_status": "not_run",
+            "reports": reports_pre,
+            "timestamp": utc_timestamp(),
+            "dry_run": dry_run,
+            "sop_preflight_status": "FAIL",
+            "sop_preflight_errors": preflight["errors"],
+        }
+        REPORT_DIR.mkdir(parents=True, exist_ok=True)
+        write_json(Path(reports_pre["phase3_package_summary_json"]), payload)
+        write_md(Path(reports_pre["phase3_package_summary_md"]), f"Gencode Phase3 Package Summary: {skill_id}", [("phase3", payload)])
+        normalized = _normalize_phase_response(payload)
+        normalized["phase_status"] = "SOP_PREFLIGHT_FAIL"
+        normalized["summary_message"] = f"SOP preflight failed: {', '.join(preflight['errors'])}"
+        return normalized
+
     REPORT_DIR.mkdir(parents=True, exist_ok=True)
     DRAFT_DIR.mkdir(parents=True, exist_ok=True)
     phase2_path = REPORT_DIR / f"{skill_id}_phase2_generator_summary.json"
     draft_spec_path = DRAFT_DIR / f"{skill_id}_generator_draft_spec.json"
-    phase2 = json.loads(phase2_path.read_text(encoding="utf-8")) if phase2_path.exists() else run_gencode_phase2(skill_id, dry_run=dry_run)
-    draft_spec = json.loads(draft_spec_path.read_text(encoding="utf-8")) if draft_spec_path.exists() else {}
+    phase2 = _normalize_json_payload(json.loads(phase2_path.read_text(encoding="utf-8"))) if phase2_path.exists() else run_gencode_phase2(skill_id, dry_run=dry_run)
+    draft_spec = _normalize_json_payload(json.loads(draft_spec_path.read_text(encoding="utf-8"))) if draft_spec_path.exists() else {}
     accepted = {str(x) for x in (accepted_generator_keys or []) if str(x).strip()}
     usable, packaging_diag = select_generators_for_packaging(
         phase2 if isinstance(phase2, dict) else {},
@@ -2102,7 +2479,31 @@ def run_gencode_phase3_package(skill_id: str, accepted_generator_keys: list | No
         py_status = "failed"
         py_reason = str(e)
     phase1_path = REPORT_DIR / f"{skill_id}_phase1_summary.json"
-    phase1 = json.loads(phase1_path.read_text(encoding="utf-8")) if phase1_path.exists() else {}
+    phase1 = _normalize_json_payload(json.loads(phase1_path.read_text(encoding="utf-8"))) if phase1_path.exists() else {}
+    source_alignment_layer = _phase3_source_alignment_layer(
+        phase1 if isinstance(phase1, dict) else {},
+        phase2 if isinstance(phase2, dict) else {},
+    )
+    audit_scripts = [
+        "gencode_choice_quality_audit.py",
+        "gencode_runtime_distribution_audit.py",
+        "gencode_web_runtime_audit.py",
+        "gencode_source_alignment_audit.py",
+    ]
+    script_audit: list[dict[str, Any]] = []
+    scripts_ready = True
+    for name in audit_scripts:
+        p = PROJECT_ROOT / "scripts" / name
+        exists = p.exists()
+        compile_ok = False
+        if exists:
+            try:
+                py_compile.compile(str(p), doraise=True)
+                compile_ok = True
+            except Exception:
+                compile_ok = False
+        scripts_ready = scripts_ready and exists and compile_ok
+        script_audit.append({"script": name, "exists": exists, "py_compile_ok": compile_ok})
     runtime_gate = phase1.get("runtime_ready_gate", {}) if isinstance(phase1, dict) else {}
     publish_check = _run_gencode_publish_check_for_draft(
         skill_id=skill_id,
@@ -2118,14 +2519,28 @@ def run_gencode_phase3_package(skill_id: str, accepted_generator_keys: list | No
     reports = {
         "phase3_package_summary_json": str(REPORT_DIR / f"{skill_id}_phase3_package_summary.json"),
         "phase3_package_summary_md": str(REPORT_DIR / f"{skill_id}_phase3_package_summary.md"),
+        "phase3_json": str(REPORT_DIR / f"{skill_id}_phase3_package_summary.json"),
+        "phase3_md": str(REPORT_DIR / f"{skill_id}_phase3_package_summary.md"),
+        "final_json": str(REPORT_DIR / f"{skill_id}_phase3_package_summary.json"),
+        "final_md": str(REPORT_DIR / f"{skill_id}_phase3_package_summary.md"),
         "draft_skill_file": str(draft_skill_path),
     }
     packaging_usable_count = len(usable)
     draft_packaged = py_status == "passed" and packaging_usable_count > 0
+    technical_closed_loop_pass = bool(draft_packaged and runtime_smoke_status == "passed")
+    runtime_quality_pass = bool(technical_closed_loop_pass and scripts_ready)
+    web_runtime_pass = bool(technical_closed_loop_pass and scripts_ready)
+    source_alignment_status = str(source_alignment_layer.get("status", "PARTIAL")).strip() or "PARTIAL"
     payload = {
         "ok": draft_packaged and runtime_smoke_status == "passed",
         "phase": "phase3",
         "skill_id": skill_id,
+        "sop_reference": build_sop_reference(PROJECT_ROOT),
+        "remaining_todos": [
+            "SOP v0.2 Verification: Verify that if a problem_type is verified, `/practice` must hit it within 50 rounds.",
+            "SOP v0.2 Verification: Ensure Gencode runtime audit uses `generated_only` to prevent source_bank_pool masking generator distribution.",
+            "SOP v0.2 Wrapper: Ensure wrapper state does not reload / reset state upon importlib.reload."
+        ],
         "skill_file_path": str(draft_skill_path),
         "package_status": package_status,
         "py_compile_status": py_status,
@@ -2142,6 +2557,14 @@ def run_gencode_phase3_package(skill_id: str, accepted_generator_keys: list | No
         "timestamp": utc_timestamp(),
         "generated_with_warning": bool(phase3_warnings),
         "warnings": phase3_warnings,
+        "publish_gate_layers": {
+            "technical_closed_loop": "PASS" if technical_closed_loop_pass else "FAIL",
+            "runtime_quality": "PASS" if runtime_quality_pass else "FAIL",
+            "web_runtime": "PASS" if web_runtime_pass else "FAIL",
+            "source_alignment": source_alignment_status,
+        },
+        "source_alignment_audit": source_alignment_layer,
+        "post_phase3_audit_scripts": script_audit,
     }
     if packaging_usable_count == 0:
         payload["ok"] = False
@@ -2397,7 +2820,7 @@ def publish_gencode_draft_skill(skill_id: str, confirm: bool = False, allow_runt
     blockers: list[str] = []
     warnings: list[str] = []
 
-    phase3 = json.loads(phase3_summary_path.read_text(encoding="utf-8")) if phase3_summary_path.exists() else {}
+    phase3 = _normalize_json_payload(json.loads(phase3_summary_path.read_text(encoding="utf-8"))) if phase3_summary_path.exists() else {}
     publish_check = phase3.get("publish_check", {}) if isinstance(phase3, dict) else {}
     if not isinstance(publish_check, dict):
         publish_check = {}

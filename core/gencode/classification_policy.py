@@ -94,8 +94,8 @@ def build_classification_diagnostic(
         "ai_unavailable_reason": ai_reason,
         "ai_invalid_response_reason": trace.get("ai_invalid_response_reason", ""),
         "parser_error": trace.get("parser_error", ""),
-        "raw_response_preview": trace.get("raw_response_preview", ""),
-        "sanitized_response_preview": trace.get("sanitized_response_preview", ""),
+        "raw_response_preview": str(trace.get("raw_response_preview", "")),
+        "sanitized_response_preview": str(trace.get("sanitized_response_preview", "")),
         "failed_stage": trace.get("failed_stage", ""),
         "classifier_source": trace.get("classifier_source", ""),
         "final_target_task": trace.get("final_target_task", feat.get("target_task", "")),
@@ -170,10 +170,22 @@ def merge_skill_scoped_classification(
     main_skill_anchor: dict[str, Any] | None = None,
     *,
     skill_scoped_candidates: list[dict[str, Any]] | None = None,
+    ex: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     """
     Skill-scoped merge: AI picks candidate_id within anchor; rule never overrides anchor AI.
     """
+    # 1. Universal Self-Pollution Guard BEFORE merging traces
+    pt_id_ai = ai_result.get("target_task") or ""
+    pt_id_rule = rule_result.get("target_task") or ""
+    problem_type_id = pt_id_ai or pt_id_rule
+
+    if problem_type_id:
+        if ai_result.get("equivalence_type") == problem_type_id:
+            ai_result["equivalence_type"] = ""
+        if rule_result.get("equivalence_type") == problem_type_id:
+            rule_result["equivalence_type"] = ""
+
     anchor = main_skill_anchor if isinstance(main_skill_anchor, dict) else {}
     expected_families = set(anchor.get("expected_task_families") or [])
     candidates = skill_scoped_candidates or list(ai_result.get("skill_scoped_candidates") or [])
@@ -201,6 +213,20 @@ def merge_skill_scoped_classification(
     classifier_source = ""
     source_mapping_warning = ""
 
+    # Determine if there's a severe defect
+    has_severe_defect = False
+    for k in ["broken_latex", "missing_answer", "severe_ocr_noise"]:
+        if (
+            (ex and bool(ex.get(k))) or
+            bool(ai_result.get(k)) or
+            bool(rule_result.get(k))
+        ):
+            has_severe_defect = True
+            break
+
+    expected_subskills = set(anchor.get("expected_subskill_candidates") or [])
+    is_valid_task = (rule_task in expected_subskills) or (rule_family in expected_families)
+
     def _final_from_ai() -> dict[str, Any]:
         return {
             "target_task": ai_task,
@@ -213,27 +239,49 @@ def merge_skill_scoped_classification(
     if ai_semantic_status == "invalid_response" or ai_invalid_reason:
         classifier_source = "ai_invalid_response_needs_review"
         final = {
-            "target_task": "",
-            "task_family": "",
-            "math_objects": [],
-            "answer_type": "",
-            "answer_shape": "",
+            "target_task": rule_task,
+            "task_family": rule_family,
+            "math_objects": list(rule_result.get("math_objects") or []),
+            "answer_type": str(rule_result.get("answer_type", "")).strip(),
+            "answer_shape": str(rule_result.get("answer_shape", "")).strip(),
         }
-        requires_human_action = True
+        if rule_task and is_valid_task:
+            classifier_source = "registry_rule"
+            if not has_severe_defect:
+                requires_human_action = False
+                best_cid = rule_task
+                cand_src = "rule"
+            else:
+                requires_human_action = True
+                best_cid = NEEDS_REVIEW_ID
+                cand_src = "needs_review"
+        else:
+            requires_human_action = True
+            best_cid = NEEDS_REVIEW_ID
+            cand_src = "needs_review"
         conflict_reason = ai_invalid_reason or str(ai_result.get("error", "invalid_response"))
-        best_cid = NEEDS_REVIEW_ID
-        cand_src = "needs_review"
+
     elif best_cid == NEEDS_REVIEW_ID or cand_src == "needs_review":
-        classifier_source = "ai_needs_review"
         final = _final_from_ai() if ai_task else {
-            "target_task": "",
-            "task_family": "",
-            "math_objects": [],
-            "answer_type": "",
-            "answer_shape": "",
+            "target_task": rule_task,
+            "task_family": rule_family,
+            "math_objects": list(rule_result.get("math_objects") or []),
+            "answer_type": str(rule_result.get("answer_type", "")).strip(),
+            "answer_shape": str(rule_result.get("answer_shape", "")).strip(),
         }
-        requires_human_action = True
+        classifier_source = "ai_needs_review"
+        if not ai_task and rule_task and is_valid_task:
+            classifier_source = "registry_rule"
+            if not has_severe_defect:
+                requires_human_action = False
+                best_cid = rule_task
+                cand_src = "rule"
+            else:
+                requires_human_action = True
+        else:
+            requires_human_action = True
         conflict_reason = "needs_review"
+
     elif not ai_available:
         fb = rule_fallback_candidate_selection(
             candidates,
@@ -242,19 +290,35 @@ def merge_skill_scoped_classification(
             ai_error=str(ai_result.get("error", "")),
         )
         classifier_source = "rule_fallback_ai_unavailable"
+        fb_task = str(fb.get("target_task", "")).strip()
+        fb_family = str(fb.get("task_family", "")).strip()
         final = {
-            "target_task": str(fb.get("target_task", "")).strip(),
-            "task_family": str(fb.get("task_family", "")).strip(),
-            "math_objects": list(fb.get("math_objects") or []),
-            "answer_type": str(fb.get("answer_type", "")).strip(),
-            "answer_shape": str(fb.get("answer_shape", "")).strip(),
+            "target_task": fb_task or rule_task,
+            "task_family": fb_family or rule_family,
+            "math_objects": list(fb.get("math_objects") or rule_result.get("math_objects") or []),
+            "answer_type": str(fb.get("answer_type", "")).strip() or str(rule_result.get("answer_type", "")).strip(),
+            "answer_shape": str(fb.get("answer_shape", "")).strip() or str(rule_result.get("answer_shape", "")).strip(),
         }
+        if not fb_task and rule_task and is_valid_task:
+            classifier_source = "registry_rule"
+
         cand_src = str(fb.get("candidate_source", "")).strip()
         best_cid = str(fb.get("best_candidate_id", "")).strip()
         ai_conf = float(fb.get("confidence", 0.0) or 0.0)
-        if fb.get("requires_human_action"):
-            requires_human_action = True
+
+        # Honor Rulepack Authority
+        is_rule = classifier_source in ("registry_rule", "rule_fallback_ai_unavailable")
+        if is_rule and classifier_source == "registry_rule" and not has_severe_defect:
+            requires_human_action = False
+            if best_cid == NEEDS_REVIEW_ID:
+                best_cid = final["target_task"]
+                cand_src = "rule"
+        else:
+            if fb.get("requires_human_action"):
+                requires_human_action = True
+
         conflict_reason = str(ai_result.get("error", "ai_unavailable"))
+
     elif cand_src == "outsider":
         classifier_source = "ai_outsider_candidate"
         final = _final_from_ai()
@@ -262,41 +326,87 @@ def merge_skill_scoped_classification(
         requires_human_action = True
         if rule_family and rule_family != ai_family and rule_conf >= 0.35:
             conflict_reason = f"rule_family={rule_family}; ai_outsider={ai_family}"
+
     elif ai_conf >= AI_HIGH_CONFIDENCE:
         final = _final_from_ai()
         classifier_source = "ai"
         if rule_family and ai_family and rule_family != ai_family and rule_conf >= 0.35:
             classifier_source = "ai_overrode_rule"
             conflict_reason = f"rule_family={rule_family}; ai_subskill={ai_task}"
+
     elif ai_conf >= AI_MED_CONFIDENCE and cand_src in {"anchor", "structure", "rule"}:
         final = _final_from_ai()
         classifier_source = "ai_rule_agree_family" if ai_family == rule_family else "ai_subskill_selected"
+        if ai_task and rule_task and ai_task == rule_task:
+            classifier_source = "hybrid_resolved"
         if ai_family and rule_family and ai_family != rule_family:
             conflict_reason = f"rule_family={rule_family}; ai_subskill={ai_task}"
+
     else:
         fb = rule_fallback_candidate_selection(candidates, rule_result, ai_unavailable=False, ai_error="low_ai_confidence")
         if fb.get("in_anchor_scope") and float(fb.get("confidence", 0) or 0) >= RULE_LOW_CONFIDENCE:
             classifier_source = "rule_fallback_low_ai_confidence"
+            fb_task = str(fb.get("target_task", "")).strip()
+            fb_family = str(fb.get("task_family", "")).strip()
             final = {
-                "target_task": str(fb.get("target_task", "")).strip(),
-                "task_family": str(fb.get("task_family", "")).strip(),
-                "math_objects": list(fb.get("math_objects") or []),
-                "answer_type": str(fb.get("answer_type", "")).strip(),
-                "answer_shape": str(fb.get("answer_shape", "")).strip(),
+                "target_task": fb_task or rule_task,
+                "task_family": fb_family or rule_family,
+                "math_objects": list(fb.get("math_objects") or rule_result.get("math_objects") or []),
+                "answer_type": str(fb.get("answer_type", "")).strip() or str(rule_result.get("answer_type", "")).strip(),
+                "answer_shape": str(fb.get("answer_shape", "")).strip() or str(rule_result.get("answer_shape", "")).strip(),
             }
+            if not fb_task and rule_task and is_valid_task:
+                classifier_source = "registry_rule"
             cand_src = str(fb.get("candidate_source", "")).strip()
             best_cid = str(fb.get("best_candidate_id", "")).strip()
+
+            # Honor Rulepack Authority
+            is_rule = classifier_source in ("registry_rule", "rule_fallback_low_ai_confidence")
+            if is_rule and classifier_source == "registry_rule" and not has_severe_defect:
+                requires_human_action = False
+                if best_cid == NEEDS_REVIEW_ID:
+                    best_cid = final["target_task"]
+                    cand_src = "rule"
+
         else:
-            final = _final_from_ai() if ai_task else {
-                "target_task": str(fb.get("target_task", "")).strip(),
-                "task_family": str(fb.get("task_family", "")).strip(),
-                "math_objects": list(fb.get("math_objects") or []),
-                "answer_type": str(fb.get("answer_type", "")).strip(),
-                "answer_shape": str(fb.get("answer_shape", "")).strip(),
-            }
-            classifier_source = "ai_low_confidence_review"
-            requires_human_action = True
-            conflict_reason = "low_ai_confidence"
+            if rule_task and is_valid_task:
+                classifier_source = "registry_rule"
+                final = {
+                    "target_task": rule_task,
+                    "task_family": rule_family,
+                    "math_objects": list(rule_result.get("math_objects") or []),
+                    "answer_type": str(rule_result.get("answer_type", "")).strip(),
+                    "answer_shape": str(rule_result.get("answer_shape", "")).strip(),
+                }
+                if not has_severe_defect:
+                    requires_human_action = False
+                    best_cid = rule_task
+                    cand_src = "rule"
+                else:
+                    requires_human_action = True
+                    best_cid = NEEDS_REVIEW_ID
+                    cand_src = "needs_review"
+            else:
+                final = _final_from_ai() if ai_task else {
+                    "target_task": str(fb.get("target_task", "")).strip(),
+                    "task_family": str(fb.get("task_family", "")).strip(),
+                    "math_objects": list(fb.get("math_objects") or []),
+                    "answer_type": str(fb.get("answer_type", "")).strip(),
+                    "answer_shape": str(fb.get("answer_shape", "")).strip(),
+                }
+                classifier_source = "ai_low_confidence_review"
+                requires_human_action = True
+                conflict_reason = "low_ai_confidence"
+
+    # 2. Honor Rulepack Authority (Fix over-blocking leaks)
+    is_rule_source = (classifier_source == "registry_rule")
+    if is_rule_source and not has_severe_defect:
+        requires_human_action = False
+        conflict_reason = ""
+        if best_cid == NEEDS_REVIEW_ID or best_cid == "":
+            best_cid = final["target_task"]
+        if cand_src == "needs_review" or cand_src == "":
+            cand_src = "rule"
 
     gc = dict(ai_result.get("generator_contract") or {})
     param_schema = dict(ai_result.get("parameter_schema") or {})
@@ -360,6 +470,17 @@ def merge_ai_and_rule_classification(
     Merge AI and rule classifications. Rule never overrides high-confidence AI.
     Returns trace fields for Phase 1 summary plus final feature fields.
     """
+    # Universal Self-Pollution Guard BEFORE merging traces
+    pt_id_ai = ai_result.get("target_task") or ""
+    pt_id_rule = rule_result.get("target_task") or ""
+    problem_type_id = pt_id_ai or pt_id_rule
+
+    if problem_type_id:
+        if ai_result.get("equivalence_type") == problem_type_id:
+            ai_result["equivalence_type"] = ""
+        if rule_result.get("equivalence_type") == problem_type_id:
+            rule_result["equivalence_type"] = ""
+
     anchor = main_skill_anchor if isinstance(main_skill_anchor, dict) else {}
     expected_families = set(anchor.get("expected_task_families") or [])
 
@@ -376,6 +497,16 @@ def merge_ai_and_rule_classification(
     requires_human_action = bool(ai_result.get("requires_human_action", False))
     classifier_source = ""
     source_mapping_warning = ""
+
+    # Determine if there's a severe defect
+    has_severe_defect = False
+    for k in ["broken_latex", "missing_answer", "severe_ocr_noise"]:
+        if (
+            bool(ai_result.get(k)) or
+            bool(rule_result.get(k))
+        ):
+            has_severe_defect = True
+            break
 
     def _final_from_ai() -> dict[str, Any]:
         return {
@@ -422,6 +553,15 @@ def merge_ai_and_rule_classification(
             requires_human_action = True
             conflict_reason = "low_ai_and_rule_confidence"
 
+    # 2. Honor Rulepack Authority (Fix over-blocking leaks)
+    expected_subskills = set(anchor.get("expected_subskill_candidates") or [])
+    is_valid_task = (rule_task in expected_subskills) or (rule_family in expected_families)
+    is_rule_source = (classifier_source == "registry_rule") and is_valid_task
+
+    if is_rule_source and not has_severe_defect:
+        requires_human_action = False
+        conflict_reason = ""
+
     if expected_families and final.get("task_family") and final["task_family"] not in expected_families:
         source_mapping_warning = "expected_family_mismatch"
         if ai_conf >= AI_HIGH_CONFIDENCE:
@@ -460,6 +600,7 @@ def _attach_structure_fields(
     ai_result: SemanticClassification,
     *,
     classifications_by_id: dict[int, dict[str, Any]] | None = None,
+    main_skill_anchor: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     ctx = ex.get("source_structure_context") if isinstance(ex.get("source_structure_context"), dict) else {}
     seq_used = bool(ctx.get("same_section_sequence") or ctx.get("linked_worked_example"))
@@ -508,6 +649,29 @@ def _attach_structure_fields(
         requires_human = True
     if possible_mixed and not requires_human and float(trace.get("ai_confidence", 0) or 0) < AI_HIGH_CONFIDENCE:
         requires_human = True
+
+    # Honor Rulepack Authority: do not force requires_human to True
+    anchor = main_skill_anchor if isinstance(main_skill_anchor, dict) else {}
+    expected_families = set(anchor.get("expected_task_families") or [])
+    expected_subskills = set(anchor.get("expected_subskill_candidates") or [])
+    
+    final_task = str(trace.get("final_target_task", "")).strip()
+    final_family = str(trace.get("final_task_family", "")).strip()
+    is_valid_task = (final_task in expected_subskills) or (final_family in expected_families)
+
+    is_rule_source = (trace.get("classifier_source") == "registry_rule") and is_valid_task
+    if is_rule_source and trace.get("final_target_task"):
+        has_severe_defect = False
+        for k in ["broken_latex", "missing_answer", "severe_ocr_noise"]:
+            if (
+                bool(ex.get(k)) or
+                bool(ai_result.get(k)) or
+                bool(trace.get(k))
+            ):
+                has_severe_defect = True
+                break
+        if not has_severe_defect:
+            requires_human = False
 
     trace.update(
         {
@@ -563,7 +727,7 @@ def build_classified_example_feature(
             main_skill_anchor,
         )
         trace["classifier_source"] = "rule_first_mode"
-        trace = _attach_structure_fields(trace, ex, {}, classifications_by_id=classifications_by_id)
+        trace = _attach_structure_fields(trace, ex, {}, classifications_by_id=classifications_by_id, main_skill_anchor=main_skill_anchor)
         feat = dict(rule_feat)
         feat["classifier_source"] = trace["classifier_source"]
         feat["semantic_classification"] = trace
@@ -603,12 +767,14 @@ def build_classified_example_feature(
         rule_snapshot,
         main_skill_anchor,
         skill_scoped_candidates=candidates,
+        ex=ex,
     )
     merged = _attach_structure_fields(
         merged,
         ex,
         ai_result,
         classifications_by_id=classifications_by_id,
+        main_skill_anchor=main_skill_anchor,
     )
     feat = dict(rule_feat)
     feat["target_task"] = merged["final_target_task"]
@@ -623,6 +789,45 @@ def build_classified_example_feature(
     feat["classifier_source"] = merged["classifier_source"]
     feat["semantic_classification"] = merged
     feat["source_structure_context"] = ex.get("source_structure_context", {})
+
+    # 3. Multi-Modal Signature Splitting Guard
+    ans_type = str(merged.get("answer_type") or feat.get("answer_type", "")).strip().lower()
+    is_numeric_sig = ans_type in ("numeric", "integer", "rational", "decimal_tolerance", "percentage_equivalent")
+    is_symbolic_sig = ans_type in ("expression", "text_short", "exact_string", "case_insensitive_string", "manual_review_or_ai_judged")
+
+    curr_task = str(merged.get("final_target_task") or feat.get("target_task", "")).strip()
+    if curr_task:
+        if is_numeric_sig:
+            # Numeric evaluation signature
+            if "interpret" in curr_task:
+                new_task = curr_task.replace("interpret", "evaluate")
+                if "numeric" not in new_task:
+                    new_task = "numeric_" + new_task
+                merged["final_target_task"] = new_task
+                feat["target_task"] = new_task
+                feat["target"] = new_task
+            elif "symbolic" in curr_task:
+                new_task = curr_task.replace("symbolic", "numeric")
+                merged["final_target_task"] = new_task
+                feat["target_task"] = new_task
+                feat["target"] = new_task
+        elif is_symbolic_sig:
+            # Symbolic notation signature
+            if "numeric" in curr_task:
+                new_task = curr_task.replace("numeric_", "").replace("numeric", "")
+                if "symbolic" not in new_task:
+                    new_task = "symbolic_" + new_task
+                merged["final_target_task"] = new_task
+                feat["target_task"] = new_task
+                feat["target"] = new_task
+            elif "evaluate" in curr_task:
+                new_task = curr_task.replace("evaluate", "interpret")
+                if "symbolic" not in new_task:
+                    new_task = "symbolic_" + new_task
+                merged["final_target_task"] = new_task
+                feat["target_task"] = new_task
+                feat["target"] = new_task
+
     feat = apply_final_classification_to_feature(feat)
     ex_id = feat.get("source_example_id")
     if classifications_by_id is not None and ex_id is not None:
