@@ -11,6 +11,7 @@ def evaluate_pipeline_gates(
     dynamic_sampling_passed: bool = False,
     contract_tests_passed: bool = False,
     min_examples_runtime_ready: int = 3,
+    semantic_alignment_blocked: bool = False,
 ) -> dict[str, Any]:
     candidates = [x for x in candidate_problem_types if isinstance(x, dict)]
     fatal_risk = any(any("fatal" in str(r).lower() for r in (x.get("risk_flags") or [])) for x in candidates)
@@ -45,9 +46,18 @@ def evaluate_pipeline_gates(
         generator_status = "generator_draft_allowed"
 
     runtime_foundation = classifier_ok and all(int(x.get("matched_example_count", 0)) >= min_examples_runtime_ready for x in candidates)
-    runtime_allowed = runtime_foundation and checker_smoke_passed and dynamic_sampling_passed and contract_tests_passed and (not fatal_risk)
+    runtime_allowed = (
+        runtime_foundation
+        and checker_smoke_passed
+        and dynamic_sampling_passed
+        and contract_tests_passed
+        and (not fatal_risk)
+        and (not semantic_alignment_blocked)
+    )
     runtime_status = "runtime_ready_allowed" if runtime_allowed else "blocked_insufficient_examples"
     runtime_blockers: list[str] = []
+    if semantic_alignment_blocked:
+        runtime_blockers.append("semantic_alignment_blocked")
     if not runtime_foundation:
         runtime_blockers.append("blocked_insufficient_examples")
     if runtime_foundation and not checker_smoke_passed:
@@ -61,6 +71,8 @@ def evaluate_pipeline_gates(
         runtime_blockers.append("fatal_risk")
 
     exception_reasons: list[str] = []
+    if semantic_alignment_blocked:
+        exception_reasons.append("semantic_alignment_blocked")
     if fatal_risk:
         exception_reasons.append("fatal_risk")
     if source_examples_count < 1:

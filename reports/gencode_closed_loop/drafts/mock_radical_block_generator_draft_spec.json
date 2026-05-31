@@ -1,0 +1,50 @@
+{
+  "skill_id": "mock_radical_block",
+  "phase": "phase2",
+  "generator_results": [
+    {
+      "problem_type_id": "short_answer_numeric_or_radical",
+      "source_example_count": 0,
+      "answer_contract": {
+        "answer_type": "numeric_or_radical",
+        "checker": "radical_equivalence_checker",
+        "answer_equivalence": "radical_equivalence"
+      },
+      "answer_type": "numeric_or_radical",
+      "answer_shape": "",
+      "equivalence_type": "radical_equivalence",
+      "selected_checker": "radical_equivalence_checker",
+      "checker_key": "radical_equivalence_checker",
+      "checker_capability_status": "blocked",
+      "checker_contract_blockers": [
+        "checker_contract_missing"
+      ],
+      "checker_contract_warnings": [],
+      "generator_key": "mock_radical_block:short_answer_numeric_or_radical:draft_v1",
+      "generator_status": "blocked",
+      "checker_smoke_status": "skipped_with_blockers",
+      "dynamic_sampling_status": "skipped_with_blockers",
+      "diversity_sampling": {},
+      "unique_signature_count": "",
+      "template_variant_distribution": {},
+      "variable_coverage_report": {},
+      "repetition_warnings": [
+        "low_source_examples"
+      ],
+      "requires_human_action": false,
+      "blockers": [
+        "answer_contract_not_supported",
+        "checker_contract_missing"
+      ],
+      "warnings": [
+        "low_source_examples"
+      ]
+    }
+  ],
+  "accepted_generators": [],
+  "failed_generators": [
+    "mock_radical_block:short_answer_numeric_or_radical:draft_v1"
+  ],
+  "timestamp": "2026-05-29T13:41:04.900851+00:00",
+  "dry_run": true
+}

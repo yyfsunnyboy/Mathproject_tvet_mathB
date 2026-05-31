@@ -1,0 +1,245 @@
+{
+  "version": "1.0",
+  "items": [
+    {
+      "problem_type_id": "coordinate_quadrant_short_answer",
+      "skill_id": "vh_數學B1_CartesianCoordinateSystemEstablishment",
+      "display_name": "座標象限判斷短答",
+      "answer_contract": {
+        "answer_type": "short_answer",
+        "choices_required": false,
+        "choice_count": null,
+        "correct_choice_count": null,
+        "answer_equivalence": "exact_text",
+        "frontend_render_choices": false
+      },
+      "stem_contract": {
+        "stem_must_not_embed_choices": true,
+        "allowed_math_objects": ["point", "quadrant"],
+        "required_math_objects": ["point"],
+        "forbidden_patterns": ["\\(A\\)", "\\(B\\)", "\\(C\\)", "\\(D\\)"]
+      },
+      "dependency_contract": {
+        "givens_must_be_used": true,
+        "target_answer_must_depend_on_givens": true,
+        "variables_in_conditions_must_appear_in_target": false
+      },
+      "semantic_contract": {
+        "reasoning_type": ["sign_reasoning", "quadrant_mapping"],
+        "reject_if": ["ambiguous_answer"]
+      },
+      "generator_contract": {
+        "parameter_ranges": {"x": [-9, 9], "y": [-9, 9]},
+        "template_slots": {"stem": "point_quadrant"},
+        "derivation_steps_required": true,
+        "use_domain_functions": false,
+        "avoid_llm_freeform_math": true
+      },
+      "validator_contract": {
+        "static_checks": ["question_answer_consistency"],
+        "semantic_checks": ["givens_to_target_dependency"],
+        "runtime_smoke_count": 30
+      }
+    },
+    {
+      "problem_type_id": "coordinate_quadrant_single_choice",
+      "skill_id": "vh_數學B1_CartesianCoordinateSystemEstablishment",
+      "display_name": "座標象限判斷選擇",
+      "answer_contract": {
+        "answer_type": "single_choice",
+        "choices_required": true,
+        "choice_count": 4,
+        "correct_choice_count": 1,
+        "answer_equivalence": "exact_text",
+        "frontend_render_choices": true
+      },
+      "stem_contract": {
+        "stem_must_not_embed_choices": true,
+        "allowed_math_objects": ["point", "quadrant"],
+        "required_math_objects": ["point"],
+        "forbidden_patterns": ["\\(A\\)", "\\(B\\)", "\\(C\\)", "\\(D\\)"]
+      },
+      "dependency_contract": {
+        "givens_must_be_used": true,
+        "target_answer_must_depend_on_givens": true,
+        "variables_in_conditions_must_appear_in_target": false
+      },
+      "semantic_contract": {
+        "reasoning_type": ["sign_reasoning", "quadrant_mapping"],
+        "reject_if": ["multiple_correct_choices_when_single_choice", "no_correct_choice", "ambiguous_answer"]
+      },
+      "generator_contract": {
+        "parameter_ranges": {"x": [-9, 9], "y": [-9, 9]},
+        "template_slots": {"stem": "point_quadrant_choice"},
+        "derivation_steps_required": true,
+        "use_domain_functions": false,
+        "avoid_llm_freeform_math": true
+      },
+      "validator_contract": {
+        "static_checks": ["choice_uniqueness", "answer_alignment"],
+        "semantic_checks": ["givens_to_target_dependency"],
+        "runtime_smoke_count": 30
+      }
+    },
+    {
+      "problem_type_id": "symbolic_expression_quadrant_short_answer",
+      "skill_id": "vh_數學B1_CartesianCoordinateSystemEstablishment",
+      "display_name": "符號條件象限短答",
+      "answer_contract": {
+        "answer_type": "short_answer",
+        "choices_required": false,
+        "choice_count": null,
+        "correct_choice_count": null,
+        "answer_equivalence": "exact_text",
+        "frontend_render_choices": false
+      },
+      "stem_contract": {
+        "stem_must_not_embed_choices": true,
+        "allowed_math_objects": ["symbolic_condition", "quadrant"],
+        "required_math_objects": ["symbolic_condition"],
+        "forbidden_patterns": ["\\(A\\)", "\\(B\\)", "\\(C\\)", "\\(D\\)"]
+      },
+      "dependency_contract": {
+        "givens_must_be_used": true,
+        "target_answer_must_depend_on_givens": true,
+        "variables_in_conditions_must_appear_in_target": true
+      },
+      "semantic_contract": {
+        "reasoning_type": ["symbol_sign_reasoning", "quadrant_mapping"],
+        "reject_if": ["ambiguous_answer", "condition_unused_by_target"]
+      },
+      "generator_contract": {
+        "parameter_ranges": {"a": [-9, -1], "b": [-9, -1]},
+        "template_slots": {"stem": "symbolic_quadrant"},
+        "derivation_steps_required": true,
+        "use_domain_functions": false,
+        "avoid_llm_freeform_math": true
+      },
+      "validator_contract": {
+        "static_checks": ["symbolic_target_alignment"],
+        "semantic_checks": ["condition_usage_check"],
+        "runtime_smoke_count": 30
+      }
+    },
+    {
+      "problem_type_id": "symbolic_expression_quadrant_single_choice",
+      "skill_id": "vh_數學B1_CartesianCoordinateSystemEstablishment",
+      "display_name": "符號條件象限選擇",
+      "answer_contract": {
+        "answer_type": "single_choice",
+        "choices_required": true,
+        "choice_count": 4,
+        "correct_choice_count": 1,
+        "answer_equivalence": "exact_text",
+        "frontend_render_choices": true
+      },
+      "stem_contract": {
+        "stem_must_not_embed_choices": true,
+        "allowed_math_objects": ["symbolic_condition", "quadrant"],
+        "required_math_objects": ["symbolic_condition"],
+        "forbidden_patterns": ["\\(A\\)", "\\(B\\)", "\\(C\\)", "\\(D\\)"]
+      },
+      "dependency_contract": {
+        "givens_must_be_used": true,
+        "target_answer_must_depend_on_givens": true,
+        "variables_in_conditions_must_appear_in_target": true
+      },
+      "semantic_contract": {
+        "reasoning_type": ["symbol_sign_reasoning", "quadrant_mapping"],
+        "reject_if": ["multiple_correct_choices_when_single_choice", "no_correct_choice", "ambiguous_answer"]
+      },
+      "generator_contract": {
+        "parameter_ranges": {"a": [-9, -1], "b": [-9, -1]},
+        "template_slots": {"stem": "symbolic_quadrant_choice"},
+        "derivation_steps_required": true,
+        "use_domain_functions": false,
+        "avoid_llm_freeform_math": true
+      },
+      "validator_contract": {
+        "static_checks": ["choice_uniqueness", "answer_alignment"],
+        "semantic_checks": ["condition_usage_check"],
+        "runtime_smoke_count": 30
+      }
+    },
+    {
+      "problem_type_id": "axis_distance_coordinate_single_choice",
+      "skill_id": "vh_數學B1_CartesianCoordinateSystemEstablishment",
+      "display_name": "座標軸距離選擇",
+      "answer_contract": {
+        "answer_type": "single_choice",
+        "choices_required": true,
+        "choice_count": 4,
+        "correct_choice_count": 1,
+        "answer_equivalence": "numeric_equal",
+        "frontend_render_choices": true
+      },
+      "stem_contract": {
+        "stem_must_not_embed_choices": true,
+        "allowed_math_objects": ["point", "distance_to_axis"],
+        "required_math_objects": ["point", "distance_to_axis"],
+        "forbidden_patterns": ["\\(A\\)", "\\(B\\)", "\\(C\\)", "\\(D\\)"]
+      },
+      "dependency_contract": {
+        "givens_must_be_used": true,
+        "target_answer_must_depend_on_givens": true,
+        "variables_in_conditions_must_appear_in_target": false
+      },
+      "semantic_contract": {
+        "reasoning_type": ["distance_to_axis_reasoning"],
+        "reject_if": ["multiple_correct_choices_when_single_choice", "no_correct_choice"]
+      },
+      "generator_contract": {
+        "parameter_ranges": {"x": [-9, 9], "y": [-9, 9]},
+        "template_slots": {"stem": "axis_distance_choice"},
+        "derivation_steps_required": true,
+        "use_domain_functions": false,
+        "avoid_llm_freeform_math": true
+      },
+      "validator_contract": {
+        "static_checks": ["choice_uniqueness", "answer_alignment"],
+        "semantic_checks": ["givens_to_target_dependency"],
+        "runtime_smoke_count": 30
+      }
+    },
+    {
+      "problem_type_id": "symbolic_quadrant_statement_single_choice",
+      "skill_id": "vh_數學B1_CartesianCoordinateSystemEstablishment",
+      "display_name": "符號象限敘述判斷",
+      "answer_contract": {
+        "answer_type": "single_choice",
+        "choices_required": true,
+        "choice_count": 4,
+        "correct_choice_count": 1,
+        "answer_equivalence": "exact_text",
+        "frontend_render_choices": true
+      },
+      "stem_contract": {
+        "stem_must_not_embed_choices": true,
+        "allowed_math_objects": ["symbolic_condition", "quadrant_statement"],
+        "required_math_objects": ["symbolic_condition"],
+        "forbidden_patterns": ["\\(A\\)", "\\(B\\)", "\\(C\\)", "\\(D\\)"]
+      },
+      "dependency_contract": {
+        "givens_must_be_used": true,
+        "target_answer_must_depend_on_givens": true,
+        "variables_in_conditions_must_appear_in_target": true
+      },
+      "semantic_contract": {
+        "reasoning_type": ["statement_truth_reasoning", "quadrant_mapping"],
+        "reject_if": ["multiple_correct_choices_when_single_choice", "no_correct_choice", "ambiguous_answer"]
+      },
+      "generator_contract": {
+        "parameter_ranges": {"a": [-9, -1], "b": [-9, -1]},
+        "template_slots": {"stem": "symbolic_quadrant_statement_choice"},
+        "derivation_steps_required": true,
+        "use_domain_functions": false,
+        "avoid_llm_freeform_math": true
+      },
+      "validator_contract": {
+        "static_checks": ["choice_uniqueness", "answer_alignment"],
+        "semantic_checks": ["condition_usage_check"],
+        "runtime_smoke_count": 30
+      }
+    }
+  ]
+}

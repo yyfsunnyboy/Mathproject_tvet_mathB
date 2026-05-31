@@ -1,0 +1,47 @@
+{
+  "skill_id": "mock_phase2_block",
+  "phase": "phase2",
+  "generator_results": [
+    {
+      "problem_type_id": "short_answer_classify_quadrant_coordinate_point",
+      "source_example_count": 0,
+      "answer_contract": {
+        "answer_type": "short_answer"
+      },
+      "answer_type": "short_answer",
+      "answer_shape": "",
+      "equivalence_type": "string_equivalence",
+      "selected_checker": "text_checker",
+      "checker_key": "text_checker",
+      "checker_capability_status": "blocked",
+      "checker_contract_blockers": [
+        "checker_contract_missing"
+      ],
+      "checker_contract_warnings": [],
+      "generator_key": "mock_phase2_block:short_answer_classify_quadrant_coordinate_point:draft_v1",
+      "generator_status": "blocked",
+      "checker_smoke_status": "skipped_with_blockers",
+      "dynamic_sampling_status": "skipped_with_blockers",
+      "diversity_sampling": {},
+      "unique_signature_count": "",
+      "template_variant_distribution": {},
+      "variable_coverage_report": {},
+      "repetition_warnings": [],
+      "requires_human_action": true,
+      "blockers": [
+        "answer_contract_not_supported",
+        "checker_contract_missing",
+        "manual_review_or_malformed_source",
+        "mixed_source_families",
+        "phase1_semantic_alignment_blocked"
+      ],
+      "warnings": []
+    }
+  ],
+  "accepted_generators": [],
+  "failed_generators": [
+    "mock_phase2_block:short_answer_classify_quadrant_coordinate_point:draft_v1"
+  ],
+  "timestamp": "2026-05-29T13:36:18.254734+00:00",
+  "dry_run": true
+}

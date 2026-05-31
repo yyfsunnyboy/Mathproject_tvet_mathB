@@ -7,6 +7,9 @@ import time
 from pathlib import Path
 from typing import Any
 
+from core.gencode.problem_type_spec import load_problem_type_spec
+from core.gencode.validators import validate_generator_payload
+
 TARGET_SKILL = "vh_數學B1_AbsoluteValue"
 PLACEHOLDERS = ("[BLANK]", "[FORMULA_MISSING]", "TODO", "placeholder")
 
@@ -304,6 +307,10 @@ def _run_verifier(path: Path, problem_type_id: str, rounds: int = 30) -> dict[st
             rep["errors"].append("answer_type_invalid")
         if payload.get("checker_type") != spec["checker_type"]:
             rep["errors"].append("checker_type_invalid")
+
+        contract_spec = load_problem_type_spec(str(payload.get("skill_id", "")), problem_type_id)
+        if contract_spec:
+            rep["errors"].extend(validate_generator_payload(payload, problem_type_spec=contract_spec))
 
         q = str(payload.get("question_text", ""))
         if "$" not in q:

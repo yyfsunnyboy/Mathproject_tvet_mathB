@@ -1,0 +1,154 @@
+skill_id: vh_數學B1_DistanceBetweenTwoPointsInPlane
+skill_ch_name: vh_數學B1_DistanceBetweenTwoPointsInPlane
+classifier_source: neutral_fallback_confirmed
+problem_types:
+- problem_type_id: short_answer_compute_distance_coordinate_point
+  display_name: short answer compute distance coordinate point
+  checker: text_checker
+  equivalence: exact_string
+  runtime_candidate: true
+  requires_human_action: false
+  merge_policy: split_by_contract_diff
+  notes: auto-generated classifier draft from phase1
+classification_rules:
+- if_contains: []
+  prefer_problem_type_id: short_answer_compute_distance_coordinate_point
+source_classifications:
+- example_id: 4419
+  detected_problem_type_id: unknown
+  example_feature:
+    source_example_id: 4419
+    question_text: 設$A\left( k,-5 \right)$、$B\left( 2,7 \right)$為坐標平面上兩點，且$\overline{AB}=13$，試求k值。
+    answer: ''
+    choices: []
+    has_choices: false
+    stem_embeds_choices: false
+    answer_type: short_answer
+    answer_shape: text_short
+    checker: text_checker
+    equivalence: exact_string
+    math_objects:
+    - coordinate_point
+    target_task: compute_numeric
+    reasoning_type:
+    - numeric_computation
+    required_derivation: true
+    variables:
+    - A
+    - B
+    - k
+    givens:
+    - A
+    - B
+    - k
+    target: compute_numeric
+  answer_shape: text_short
+  classification_confidence: low
+  classification_reason: feature_signature_induction
+  risk_flags: []
+- example_id: 4432
+  detected_problem_type_id: unknown
+  example_feature:
+    source_example_id: 4432
+    question_text: 設$P\left( 2,-3 \right)$、$Q\left( 6,k \right)$為坐標平面上兩點，且$\overline{PQ}=5$，試求k值。
+    answer: ''
+    choices: []
+    has_choices: false
+    stem_embeds_choices: false
+    answer_type: short_answer
+    answer_shape: text_short
+    checker: text_checker
+    equivalence: exact_string
+    math_objects:
+    - coordinate_point
+    target_task: compute_numeric
+    reasoning_type:
+    - numeric_computation
+    required_derivation: true
+    variables:
+    - P
+    - Q
+    - k
+    givens:
+    - P
+    - Q
+    - k
+    target: compute_numeric
+  answer_shape: text_short
+  classification_confidence: low
+  classification_reason: feature_signature_induction
+  risk_flags: []
+- example_id: 4436
+  detected_problem_type_id: short_answer_compute_distance_coordinate_point
+  example_feature:
+    source_example_id: 4436
+    question_text: '試求坐標平面上$A\left( 3,-1 \right)$、$B(4,2)$
+
+      兩點間的距離。'
+    answer: ''
+    choices: []
+    has_choices: false
+    stem_embeds_choices: false
+    answer_type: short_answer
+    answer_shape: text_short
+    checker: text_checker
+    equivalence: exact_string
+    math_objects:
+    - coordinate_point
+    target_task: compute_distance
+    reasoning_type:
+    - numeric_computation
+    required_derivation: true
+    variables:
+    - A
+    - B
+    givens:
+    - A
+    - B
+    target: compute_distance
+  answer_shape: text_short
+  classification_confidence: high
+  classification_reason: feature_signature_induction
+  risk_flags: []
+- example_id: 4437
+  detected_problem_type_id: unknown
+  example_feature:
+    source_example_id: 4437
+    question_text: 設$A\left( -2,-6 \right)$、$B\left( k,2 \right)$為坐標平面上兩點，且$\overline{AB}=10$，試求k值。
+    answer: ''
+    choices: []
+    has_choices: false
+    stem_embeds_choices: false
+    answer_type: short_answer
+    answer_shape: text_short
+    checker: text_checker
+    equivalence: exact_string
+    math_objects:
+    - coordinate_point
+    target_task: compute_numeric
+    reasoning_type:
+    - numeric_computation
+    required_derivation: true
+    variables:
+    - A
+    - B
+    - k
+    givens:
+    - A
+    - B
+    - k
+    target: compute_numeric
+  answer_shape: text_short
+  classification_confidence: low
+  classification_reason: feature_signature_induction
+  risk_flags: []
+source_policy:
+  source_count_threshold_for_split: 4
+  small_skill_merge_allowed: true
+  min_source_examples: 1
+  allow_single_problem_type: true
+  allow_skill_default_problem_type: true
+  default_problem_type_used: false
+  single_primary_problem_type: true
+  split_only_when_checker_or_answer_contract_differs: true
+  do_not_create_student_subskills: true

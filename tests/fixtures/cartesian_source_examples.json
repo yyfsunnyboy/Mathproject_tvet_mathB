@@ -1,0 +1,22 @@
+[
+  {
+    "id": 4417,
+    "problem_text": "若點$P\\left( a,b \\right)$在第一象限且$a < b$，則$Q\\left( a-b,{{a}^{2}}b \\right)$在第幾象限？",
+    "correct_answer": ""
+  },
+  {
+    "id": 4435,
+    "problem_text": "設a、b為負數，且$a < b < 0$，則點$Q\\left( ab,a+b \\right)$在第幾象限？",
+    "correct_answer": ""
+  },
+  {
+    "id": 4509,
+    "problem_text": "若A點在坐標平面上某一點，且A點到x軸與y軸的距離分別是3和4，則下列何者可為A點坐標？　(A)$\\left( -4,-3 \\right)$　(B)$\\left( -3,4 \\right)$　(C)$\\left( 4,-3 \\right)$　(D)$\\left( 3,4 \\right)$",
+    "correct_answer": ""
+  },
+  {
+    "id": 4510,
+    "problem_text": "已知點$P\\left( a-b,ab \\right)$在坐標平面的第四象限，則下列敘述何者正確？\r\n(A)$A\\left( -a,b \\right)$在第一象限　(B)$B\\left( \\left| a \\right|,b \\right)$在第二象限",
+    "correct_answer": ""
+  }
+]

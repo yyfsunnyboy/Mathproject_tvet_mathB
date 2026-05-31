@@ -3,16 +3,48 @@ from __future__ import annotations
 import re
 
 
+def _parse_numeric_token(token: str) -> int | None:
+    token = str(token).strip()
+    if not token:
+        return None
+    try:
+        num = float(token)
+        return int(num) if num.is_integer() else int(num)
+    except Exception:
+        return None
+
+
 def parse_solution_set_answer(text: object) -> set[int]:
+    if isinstance(text, set):
+        text = list(text)
+    if isinstance(text, (list, tuple)):
+        results: set[int] = set()
+        for item in text:
+            if isinstance(item, bool):
+                continue
+            if isinstance(item, int):
+                results.add(item)
+                continue
+            if isinstance(item, float) and item.is_integer():
+                results.add(int(item))
+                continue
+            parsed = _parse_numeric_token(str(item))
+            if parsed is not None:
+                results.add(parsed)
+        if results:
+            return results
+
     raw = str(text or "")
     if not raw.strip():
         return set()
 
     normalized = raw
     normalized = normalized.replace("，", ",").replace("；", ";").replace("、", ",")
+    normalized = re.sub(r"\bor\b", ",", normalized, flags=re.IGNORECASE)
     normalized = normalized.replace("或是", ",").replace("或", ",")
     normalized = normalized.replace("＝", "=")
     normalized = re.sub(r"\s+", "", normalized)
+    normalized = re.sub(r"[kK]\s*=", "", normalized)
     normalized = re.sub(r"[xX]\s*=", "", normalized)
     normalized = normalized.replace("{", "").replace("}", "")
 

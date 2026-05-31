@@ -2007,8 +2007,10 @@ def admin_run_gencode_phase1(skill_id):
         return jsonify({"ok": False, "error": "forbidden"}), 403
     payload = request.get_json(silent=True) or {}
     dry_run = bool(payload.get("dry_run", True))
+    spec_mode = str(payload.get("spec_mode", "ai_first_induce_from_sources")).strip() or "ai_first_induce_from_sources"
     try:
-        result = run_gencode_phase1(skill_id=skill_id, dry_run=dry_run)
+        apply_ai_runtime_settings()
+        result = run_gencode_phase1(skill_id=skill_id, dry_run=dry_run, spec_mode=spec_mode)
         return jsonify(result), 200
     except Exception as e:
         return jsonify({"ok": False, "phase": "phase1", "skill_id": skill_id, "error": str(e)}), 500

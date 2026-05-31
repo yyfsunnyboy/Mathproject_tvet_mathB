@@ -160,22 +160,43 @@ def build_classifier_proposal(skill_id: str, examples_map: list[dict[str, Any]])
 
 def detect_answer_shape(answer_contract: dict[str, Any] | None) -> str:
     c = answer_contract if isinstance(answer_contract, dict) else {}
+    explicit_shape = str(c.get("answer_shape", "")).strip()
+    if explicit_shape and explicit_shape not in {"", "unknown_answer_shape"}:
+        return explicit_shape
     answer_type = str(c.get("answer_type", "")).strip().lower()
     eq = str(c.get("equivalence_type", "")).strip().lower()
+    if answer_type in {"ordered_pair", "coordinate_pair"} or eq in {
+        "coordinate_pair_equivalence",
+        "ordered_pair",
+    }:
+        return "coordinate_pair"
     if answer_type in {"interval_set"} or eq == "interval_set":
         return "interval_set"
     if answer_type in {"choice", "choice_label"} or eq == "choice_label":
         return "choice_label"
-    if answer_type in {"integer", "number", "numeric"} or eq in {"numeric_exact", "rational_equivalent"}:
+    if answer_type in {"integer", "number", "numeric", "numeric_or_radical", "decimal"} or eq in {
+        "numeric_exact",
+        "rational_equivalent",
+        "numeric_equivalence",
+    }:
         return "numeric"
-    if answer_type in {"expression"} or eq == "algebraic_equivalent":
+    if answer_type in {"expression", "math_expression", "radical_number"} or eq in {
+        "algebraic_equivalent",
+        "expression_equivalence",
+        "math_expression_equivalence",
+        "radical_equivalence",
+    }:
         return "expression"
+    if answer_type in {"classification", "quadrant_label", "text_label", "category"}:
+        return "text_short"
     if "equation" in answer_type:
         return "equation"
     if answer_type in {"solution_set", "set"} or eq == "unordered_solution_set":
         return "set"
-    if answer_type in {"text", "text_short"}:
+    if answer_type in {"text", "text_short", "short_answer"}:
         return "text_short"
+    if answer_type in {"single_choice", "multi_choice"}:
+        return "choice_label"
     if answer_type in {"manual_review"} or eq in {"manual_review_or_ai_judged"}:
         return "manual_review_or_free_response"
     return "unknown_answer_shape"

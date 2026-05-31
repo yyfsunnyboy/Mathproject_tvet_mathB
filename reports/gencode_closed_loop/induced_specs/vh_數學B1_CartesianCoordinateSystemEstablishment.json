@@ -1,0 +1,191 @@
+{
+  "skill_id": "vh_數學B1_CartesianCoordinateSystemEstablishment",
+  "spec_source": "phase1_induced_draft",
+  "items": [
+    {
+      "problem_type_id": "short_answer_classify_quadrant_symbolic_condition_coordinate_point_2",
+      "skill_id": "vh_數學B1_CartesianCoordinateSystemEstablishment",
+      "display_name": "象限判斷短答",
+      "source_example_ids": [
+        4417,
+        4435
+      ],
+      "answer_contract": {
+        "answer_type": "short_answer",
+        "choices_required": false,
+        "choice_count": null,
+        "correct_choice_count": null,
+        "answer_equivalence": "exact_text",
+        "frontend_render_choices": false
+      },
+      "stem_contract": {
+        "stem_must_not_embed_choices": true,
+        "allowed_math_objects": [
+          "coordinate_point",
+          "symbolic_condition"
+        ],
+        "required_math_objects": [
+          "symbolic_condition",
+          "coordinate_point"
+        ],
+        "forbidden_patterns": [
+          "\\(A\\)",
+          "\\(B\\)",
+          "\\(C\\)",
+          "\\(D\\)"
+        ]
+      },
+      "dependency_contract": {
+        "givens_must_be_used": true,
+        "target_answer_must_depend_on_givens": true,
+        "variables_in_conditions_must_appear_in_target": true
+      },
+      "semantic_contract": {
+        "reasoning_type": [
+          "sign_reasoning"
+        ],
+        "reject_if": [
+          "unused_condition",
+          "ambiguous_answer",
+          "answer_not_derivable",
+          "duplicated_choices",
+          "no_correct_choice",
+          "multiple_correct_choices_when_single_choice"
+        ]
+      },
+      "generator_contract": {
+        "template_families": [
+          "classify_quadrant"
+        ],
+        "parameter_slots": {
+          "seed": "integer",
+          "difficulty": "easy"
+        },
+        "randomization_rules": {
+          "shuffle_choices": false
+        },
+        "avoid_llm_freeform_math": true,
+        "use_domain_functions": true,
+        "derivation_steps_required": true,
+        "template_slots": {
+          "stem": "symbolic_quadrant"
+        }
+      },
+      "validator_contract": {
+        "static_checks": [
+          "answer_contract_checks",
+          "choices_policy"
+        ],
+        "semantic_checks": [
+          "givens_to_target_dependency"
+        ],
+        "runtime_smoke_count": 30
+      },
+      "spec_source": "phase1_induced_draft",
+      "grouping_reason": "single_signature_group",
+      "feature_signature": [
+        "short_answer",
+        "classify_quadrant",
+        [
+          "sign_reasoning"
+        ],
+        [
+          "symbolic_condition",
+          "coordinate_point"
+        ]
+      ]
+    },
+    {
+      "problem_type_id": "single_choice_choose_correct_statement_axis_distance_coordinate_point_2",
+      "skill_id": "vh_數學B1_CartesianCoordinateSystemEstablishment",
+      "display_name": "象限敘述選擇",
+      "source_example_ids": [
+        4509,
+        4510
+      ],
+      "answer_contract": {
+        "answer_type": "single_choice",
+        "choices_required": true,
+        "choice_count": 4,
+        "correct_choice_count": 1,
+        "answer_equivalence": "choice_label",
+        "frontend_render_choices": true
+      },
+      "stem_contract": {
+        "stem_must_not_embed_choices": true,
+        "allowed_math_objects": [
+          "axis_distance",
+          "coordinate_point"
+        ],
+        "required_math_objects": [
+          "axis_distance",
+          "coordinate_point"
+        ],
+        "forbidden_patterns": [
+          "\\(A\\)",
+          "\\(B\\)",
+          "\\(C\\)",
+          "\\(D\\)"
+        ]
+      },
+      "dependency_contract": {
+        "givens_must_be_used": true,
+        "target_answer_must_depend_on_givens": true,
+        "variables_in_conditions_must_appear_in_target": false
+      },
+      "semantic_contract": {
+        "reasoning_type": [
+          "axis_distance_reasoning",
+          "sign_reasoning"
+        ],
+        "reject_if": [
+          "unused_condition",
+          "ambiguous_answer",
+          "answer_not_derivable",
+          "duplicated_choices",
+          "no_correct_choice",
+          "multiple_correct_choices_when_single_choice"
+        ]
+      },
+      "generator_contract": {
+        "template_families": [
+          "choose_correct_statement",
+          "choose_possible_coordinate"
+        ],
+        "parameter_slots": {
+          "seed": "integer",
+          "difficulty": "easy"
+        },
+        "randomization_rules": {
+          "shuffle_choices": true
+        },
+        "avoid_llm_freeform_math": true,
+        "use_domain_functions": true,
+        "derivation_steps_required": true,
+        "template_slots": {
+          "stem": "axis_distance_choice"
+        }
+      },
+      "validator_contract": {
+        "static_checks": [
+          "answer_contract_checks",
+          "choices_policy"
+        ],
+        "semantic_checks": [
+          "givens_to_target_dependency"
+        ],
+        "runtime_smoke_count": 30
+      },
+      "spec_source": "phase1_induced_draft",
+      "grouping_reason": "merged_compatible_single_choice_tasks_with_template_families",
+      "feature_signature": [
+        "merged_single_choice",
+        "single_choice",
+        [
+          "choose_correct_statement",
+          "choose_possible_coordinate"
+        ]
+      ]
+    }
+  ]
+}

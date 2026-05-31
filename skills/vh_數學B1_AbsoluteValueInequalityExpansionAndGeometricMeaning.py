@@ -2,7 +2,11 @@ from __future__ import annotations
 
 from typing import Any
 import random
-import re
+
+from core.gencode.absolute_value_latex import (
+    format_abs_inequality_op,
+    format_linear_abs_expr,
+)
 
 SKILL_ID = 'vh_數學B1_AbsoluteValueInequalityExpansionAndGeometricMeaning'
 GENERATOR_KEYS = ['vh_數學B1_AbsoluteValueInequalityExpansionAndGeometricMeaning:absolute_value_inequality_linear_expression_basic:draft_v1', 'vh_數學B1_AbsoluteValueInequalityExpansionAndGeometricMeaning:absolute_value_inequality_geometric_meaning:draft_v1']
@@ -34,8 +38,9 @@ def _gen_interval_problem(pt: str) -> dict[str, Any]:
         ans = f'(-∞, {left}) ∪ ({right}, ∞)'
     else:
         ans = f'(-∞, {left}] ∪ [{right}, ∞)'
-    expr = f'|x - ({a})|' if a < 0 else f'|x - {a}|'
-    q = f'解不等式 ${expr} {op} {r}$。'
+    expr = format_linear_abs_expr(a)
+    op_latex = format_abs_inequality_op(op)
+    q = f'解不等式 ${expr} {op_latex} {r}$。'
     return {
         'skill_id': SKILL_ID,
         'problem_type_id': pt,
@@ -47,7 +52,7 @@ def _gen_interval_problem(pt: str) -> dict[str, Any]:
         'question_type': 'text',
         'checker': 'interval_checker',
         'checker_type': 'interval_checker',
-        'explanation': '依絕對值不等式轉為區間表示。',
+        'explanation': f'${expr} {op_latex} {r}$ 表示 x 與 {a} 的距離，解集為 {ans}。',
         'source': 'gencode_phase3_template',
     }
 
@@ -55,8 +60,10 @@ def _gen_choice_problem(pt: str) -> dict[str, Any]:
     a = random.randint(-5, 5)
     r = random.randint(1, 6)
     op = random.choice(['<', '>'])
+    expr = format_linear_abs_expr(a)
+    op_latex = format_abs_inequality_op(op)
     if op == '<':
-        stem = f'不等式 $|x-{a}|<{r}$ 的幾何意義，下列何者正確？'
+        stem = f'不等式 ${expr} {op_latex} {r}$ 的幾何意義，下列何者正確？'
         correct_text = f'x 與 {a} 的距離小於 {r}'
         wrong = [
             f'x 與 {a} 的距離大於 {r}',
@@ -64,7 +71,7 @@ def _gen_choice_problem(pt: str) -> dict[str, Any]:
             f'x = {a - r}',
         ]
     else:
-        stem = f'不等式 $|x-{a}|>{r}$ 的幾何意義，下列何者正確？'
+        stem = f'不等式 ${expr} {op_latex} {r}$ 的幾何意義，下列何者正確？'
         correct_text = f'x 與 {a} 的距離大於 {r}'
         wrong = [
             f'x 與 {a} 的距離小於 {r}',
@@ -99,7 +106,7 @@ def _gen_choice_problem(pt: str) -> dict[str, Any]:
         'question_type': 'choice',
         'checker': 'choice_label_checker',
         'checker_type': 'choice_label_checker',
-        'explanation': '幾何意義為點到 a 的距離與 r 的比較。',
+        'explanation': f'${expr} {op_latex} {r}$ 的幾何意義為點 x 與 {a} 的距離與 {r} 的比較。',
         'source': 'gencode_phase3_template',
     }
 
