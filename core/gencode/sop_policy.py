@@ -3,12 +3,12 @@ import os
 import re
 from pathlib import Path
 
-SOP_POLICY_VERSION = "v0.2"
+SOP_POLICY_VERSION = "v0.3"
 
 REQUIRED_SOP_PATHS = [
-    Path("docs") / "系統SOP" / "Gencode_AgentSkillV2整合" / "Gencode與AgentSkillV2整合總體設計_v0.2.md",
-    Path("docs") / "系統SOP" / "Gencode_AgentSkillV2整合" / "AgentSkillV2_ProblemType規格包設計_v0.2.md",
-    Path("docs") / "系統SOP" / "Gencode_AgentSkillV2整合" / "AnswerContract_EquivalenceType_Gate_v0.2.md"
+    Path("docs") / "系統SOP" / "Gencode_AgentSkillV2整合" / "Gencode與AgentSkillV2整合總體設計_v0.3.md",
+    Path("docs") / "系統SOP" / "Gencode_AgentSkillV2整合" / "AgentSkillV2_ProblemType規格包設計_v0.3.md",
+    Path("docs") / "系統SOP" / "Gencode_AgentSkillV2整合" / "AnswerContract_EquivalenceType_Gate_v0.3.md",
 ]
 
 ALLOWED_SKILL_LEVEL_BLOCKERS = {
@@ -97,7 +97,7 @@ def build_sop_reference(project_root: str) -> dict:
     preflight = validate_sop_preflight(project_root)
     return {
         "sop_policy_version": SOP_POLICY_VERSION,
-        "highest_sop": (Path("docs") / "系統SOP" / "Gencode_AgentSkillV2整合" / "Gencode與AgentSkillV2整合總體設計_v0.2.md").as_posix(),
+        "highest_sop": (Path("docs") / "系統SOP" / "Gencode_AgentSkillV2整合" / "Gencode與AgentSkillV2整合總體設計_v0.3.md").as_posix(),
         "required_sop_files": preflight["required_sop_files"],
         "sop_preflight_status": preflight["sop_preflight_status"]
     }

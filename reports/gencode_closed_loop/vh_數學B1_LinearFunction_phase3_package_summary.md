@@ -36,7 +36,7 @@
     "SOP v0.2 Verification: Ensure Gencode runtime audit uses `generated_only` to prevent source_bank_pool masking generator distribution.",
     "SOP v0.2 Wrapper: Ensure wrapper state does not reload / reset state upon importlib.reload."
   ],
-  "skill_file_path": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\drafts\\vh_數學B1_LinearFunction.py",
+  "skill_file_path": "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\drafts\\vh_數學B1_LinearFunction.py",
   "package_status": "packaged_draft",
   "py_compile_status": "passed",
   "runtime_smoke_status": "passed",
@@ -260,8 +260,8 @@
     "excluded": [],
     "phase2_summary_exists": true,
     "generator_draft_spec_exists": true,
-    "phase2_generator_summary_json": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_LinearFunction_phase2_generator_summary.json",
-    "generator_draft_spec_json": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\drafts\\vh_數學B1_LinearFunction_generator_draft_spec.json",
+    "phase2_generator_summary_json": "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_LinearFunction_phase2_generator_summary.json",
+    "generator_draft_spec_json": "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\drafts\\vh_數學B1_LinearFunction_generator_draft_spec.json",
     "runtime_spec_alignment": {
       "status": "synced",
       "synced_spec_count": 3,
@@ -287,18 +287,18 @@
     }
   },
   "reports": {
-    "phase3_package_summary_json": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_LinearFunction_phase3_package_summary.json",
-    "phase3_package_summary_md": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_LinearFunction_phase3_package_summary.md",
-    "phase3_json": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_LinearFunction_phase3_package_summary.json",
-    "phase3_md": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_LinearFunction_phase3_package_summary.md",
-    "final_json": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_LinearFunction_phase3_package_summary.json",
-    "final_md": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_LinearFunction_phase3_package_summary.md",
-    "draft_skill_file": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\drafts\\vh_數學B1_LinearFunction.py"
+    "phase3_package_summary_json": "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_LinearFunction_phase3_package_summary.json",
+    "phase3_package_summary_md": "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_LinearFunction_phase3_package_summary.md",
+    "phase3_json": "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_LinearFunction_phase3_package_summary.json",
+    "phase3_md": "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_LinearFunction_phase3_package_summary.md",
+    "final_json": "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_LinearFunction_phase3_package_summary.json",
+    "final_md": "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_LinearFunction_phase3_package_summary.md",
+    "draft_skill_file": "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\drafts\\vh_數學B1_LinearFunction.py"
   },
   "next_action": "review_phase3_publish_check",
   "error": "",
   "dry_run": true,
-  "timestamp": "2026-06-01T08:41:08.757864+00:00",
+  "timestamp": "2026-06-01T14:16:43.707339+00:00",
   "generated_with_warning": true,
   "warnings": [
     "consecutive_same_template_variant",

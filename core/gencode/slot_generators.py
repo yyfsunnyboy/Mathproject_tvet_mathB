@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import math
 import random
+from fractions import Fraction
 from typing import Any, Callable
 
 from core.gencode.answer_payload import answer_type_family, apply_coordinate_pair_runtime_fields
@@ -405,7 +406,275 @@ def _slot_division_point_coordinates(
     return generate_division_point_payload(skill_id, pt, spec, seed)
 
 
+def _slot_linear_triangle_median_compute(
+    skill_id: str, pt: str, spec: dict[str, Any], seed: int | None
+) -> dict[str, Any]:
+    rng = random.Random(f"{seed}|triangle_median|{pt}")
+    ac = get_answer_contract(spec)
+    answer_family = answer_type_family(str(ac.get("answer_type", "")))
+
+    def _fmt_fraction(value: Fraction) -> str:
+        return str(value.numerator) if value.denominator == 1 else f"{value.numerator}/{value.denominator}"
+
+    def _sqrt_fraction(value: Fraction) -> tuple[str, bool]:
+        numerator_root = math.isqrt(value.numerator)
+        denominator_root = math.isqrt(value.denominator)
+        if numerator_root * numerator_root == value.numerator and denominator_root * denominator_root == value.denominator:
+            return _fmt_fraction(Fraction(numerator_root, denominator_root)), True
+        return f"\\sqrt{{{_fmt_fraction(value)}}}", False
+
+    for _ in range(200):
+        ax, ay = rng.randint(-8, 8), rng.randint(-8, 8)
+        bx, by = rng.randint(-8, 8), rng.randint(-8, 8)
+        cx, cy = rng.randint(-8, 8), rng.randint(-8, 8)
+        determinant = (bx - ax) * (cy - ay) - (cx - ax) * (by - ay)
+        if determinant == 0:
+            continue
+        mx = Fraction(bx + cx, 2)
+        my = Fraction(by + cy, 2)
+        dx = mx - ax
+        dy = my - ay
+        distance_squared = dx * dx + dy * dy
+        answer, is_rational = _sqrt_fraction(distance_squared)
+        if answer_family == "numeric" and (not is_rational or "/" in answer):
+            continue
+        break
+    else:
+        raise RuntimeError("triangle_median_generation_failed")
+
+    question = (
+        "在平面直角坐標系中，已知三角形 ABC 的三個頂點坐標分別為 "
+        f"$A({ax},{ay})$、$B({bx},{by})$、$C({cx},{cy})$。"
+        "若 $M$ 為線段 $BC$ 的中點，請先使用中點公式，再求頂點 $A$ 到對邊中點 "
+        "$M$ 的中線線段 $\\overline{AM}$ 長度。"
+    )
+    explanation = (
+        f"由中點公式得 $M=({_fmt_fraction(mx)},{_fmt_fraction(my)})$。"
+        f"再由兩點距離公式得 $\\overline{{AM}}={answer}$。"
+    )
+    checker = str(ac.get("checker") or ac.get("checker_key") or "expression_equivalence_checker").strip()
+    return {
+        "skill_id": skill_id,
+        "problem_type_id": pt,
+        "question_text": question,
+        "question": question,
+        "choices": [],
+        "answer": answer,
+        "correct_answer": answer,
+        "answer_type": str(ac.get("answer_type") or "numeric_or_radical"),
+        "checker_type": checker,
+        "checker": checker,
+        "explanation": explanation,
+        "diagnosis_tags": ["midpoint_coordinates", "triangle_median", "distance_formula"],
+        "metadata": {
+            "givens": [
+                {"type": "coordinate_point", "text": f"A({ax},{ay})", "variables": []},
+                {"type": "coordinate_point", "text": f"B({bx},{by})", "variables": []},
+                {"type": "coordinate_point", "text": f"C({cx},{cy})", "variables": []},
+            ],
+            "target": "median_length",
+            "derivation": [
+                f"M=({_fmt_fraction(mx)},{_fmt_fraction(my)})",
+                f"AM^2={_fmt_fraction(distance_squared)}",
+                f"AM={answer}",
+            ],
+            "problem_type_id": pt,
+            "template_slot": "linear_triangle_median_compute",
+        },
+        "source": "gencode_slot_generator",
+    }
+
+
+def _linear_expression(slope: int, intercept: int, variable: str = "x") -> str:
+    slope_term = variable if slope == 1 else f"-{variable}" if slope == -1 else f"{slope}{variable}"
+    if intercept == 0:
+        return slope_term
+    sign = "+" if intercept > 0 else "-"
+    return f"{slope_term}{sign}{abs(intercept)}"
+
+
+def _function_value_choice_requested(spec: dict[str, Any], ac: dict[str, Any]) -> bool:
+    gc = spec.get("generator_contract") if isinstance(spec.get("generator_contract"), dict) else {}
+    pt_key = str(spec.get("problem_type_id", "")).strip().lower()
+    target_task = str(spec.get("target_task", "")).strip().lower()
+    answer_type = str(ac.get("answer_type", "")).strip()
+    return bool(
+        answer_type_family(answer_type) == "single_choice"
+        or "choice" in pt_key
+        or target_task == "interpret_function_notation"
+        or bool(ac.get("source_has_choices"))
+        or bool(gc.get("has_choices"))
+    )
+
+
+def _function_value_application_requested(spec: dict[str, Any], ac: dict[str, Any]) -> bool:
+    gc = spec.get("generator_contract") if isinstance(spec.get("generator_contract"), dict) else {}
+    pt_key = str(spec.get("problem_type_id", "")).strip().lower()
+    target_task = str(spec.get("target_task", "")).strip().lower()
+    answer_type = str(ac.get("answer_type", "")).strip()
+    checker = str(ac.get("checker") or ac.get("checker_key") or "").strip()
+    return bool(
+        "application" in pt_key
+        or "word_problem" in pt_key
+        or pt_key.startswith("expression_evaluate_function_value")
+        or (
+            target_task == "evaluate_function_value"
+            and bool(gc.get("contextual_application"))
+            and (answer_type == "expression" or checker == "expression_checker")
+        )
+    )
+
+
+def _slot_linear_function_two_point_choice(
+    skill_id: str, pt: str, spec: dict[str, Any], seed: int | None
+) -> dict[str, Any]:
+    rng = random.Random(seed)
+    ac = get_answer_contract(spec)
+    slope = rng.choice([i for i in range(-5, 6) if i != 0])
+    intercept = rng.randint(-8, 8)
+    x1 = rng.randint(-5, 2)
+    x2 = rng.randint(x1 + 1, 7)
+    y1 = slope * x1 + intercept
+    y2 = slope * x2 + intercept
+    correct = f"f(x)={_linear_expression(slope, intercept)}"
+    wrong_candidates = [
+        f"f(x)={_linear_expression(-slope, intercept)}",
+        f"f(x)={_linear_expression(slope, intercept + 1)}",
+        f"f(x)={_linear_expression(slope, intercept - 1)}",
+        f"f(x)={_linear_expression(slope + 1 if slope != -1 else slope - 1, intercept)}",
+    ]
+    wrongs: list[str] = []
+    for candidate in wrong_candidates:
+        if candidate != correct and candidate not in wrongs:
+            wrongs.append(candidate)
+    choice_contract = dict(ac)
+    choice_contract.update(
+        {
+            "answer_type": "single_choice",
+            "answer_shape": "choice_label",
+            "answer_equivalence": "choice_label",
+            "equivalence_type": "choice_label",
+            "checker": "choice_label_checker",
+            "checker_key": "choice_label_checker",
+            "choices_required": True,
+            "choice_count": 4,
+            "correct_choice_count": 1,
+            "frontend_render_choices": True,
+        }
+    )
+    spec["answer_contract"] = choice_contract
+    payload = _build_choice_payload(
+        skill_id,
+        pt,
+        (
+            f"已知線型函數 $f(x)=ax+b$ 的圖形通過點 $({x1},{y1})$ 與點 $({x2},{y2})$，"
+            "請利用兩點條件聯立求出斜率與截距，並選出正確的函數關係式。"
+        ),
+        correct,
+        wrongs,
+        answer_type="single_choice",
+        checker_type="choice_label_checker",
+        metadata={
+            "givens": [f"f({x1})={y1}", f"f({x2})={y2}"],
+            "target": "f(x)=ax+b",
+            "derivation": [
+                f"{slope}=({y2}-{y1})/({x2}-{x1})",
+                f"{intercept}={y1}-{slope}*({x1})",
+                correct,
+            ],
+            "problem_type_id": pt,
+            "template_slot": "linear_function_two_point_choice",
+            "scenario": "two_point_linear_function_choice",
+        },
+        diagnosis_tags=["linear_function_two_point_system", "slope_intercept_reasoning"],
+        explanation=f"由兩點可得斜率為 {slope}，再代回任一點得到截距為 {intercept}，所以 {correct}。",
+        seed=seed,
+    )
+    payload["answer_contract"] = choice_contract
+    payload["checker"] = "choice_label_checker"
+    return payload
+
+
+def _slot_linear_function_contextual_word_problem(
+    skill_id: str, pt: str, spec: dict[str, Any], seed: int | None
+) -> dict[str, Any]:
+    rng = random.Random(seed)
+    ac = get_answer_contract(spec)
+    answer_type = str(ac.get("answer_type", "")).strip()
+    checker = str(ac.get("checker") or ac.get("checker_key") or "").strip()
+    scenario = rng.choice(["fuel_remaining", "mobile_plan", "mileage_subscription"])
+    expression_answer = answer_type == "expression" or checker == "expression_checker"
+    if scenario == "fuel_remaining":
+        initial = rng.randint(45, 75)
+        rate = rng.randint(1, 4)
+        query_x = rng.randint(4, 10)
+        expression = _linear_expression(-rate, initial)
+        evaluated = initial - rate * query_x
+        stem = (
+            f"某輛汽車油箱原有 {initial} 公升汽油，之後每行駛 10 公里固定消耗 {rate} 公升。"
+            f"若以 $x$ 表示已行駛的 10 公里數，$f(x)$ 表示剩餘油量，"
+            + ("請寫出線型函數 $f(x)$ 的關係式。" if expression_answer else f"請求行駛 {query_x * 10} 公里後的剩餘油量。")
+        )
+        givens = [f"initial={initial}", f"rate={rate}", f"x={query_x}"]
+    elif scenario == "mobile_plan":
+        base_fee = rng.choice([199, 299, 399, 499])
+        unit_fee = rng.randint(2, 6)
+        query_x = rng.randint(10, 40)
+        expression = _linear_expression(unit_fee, base_fee)
+        evaluated = base_fee + unit_fee * query_x
+        stem = (
+            f"某手機方案每月基本費為 {base_fee} 元，超過基本額度後每增加 1 分鐘需加收 {unit_fee} 元。"
+            f"若以 $x$ 表示超額分鐘數，$f(x)$ 表示當月總費用，"
+            + ("請寫出線型函數 $f(x)$ 的關係式。" if expression_answer else f"請求超額使用 {query_x} 分鐘時的總費用。")
+        )
+        givens = [f"base_fee={base_fee}", f"unit_fee={unit_fee}", f"x={query_x}"]
+    else:
+        base_mileage = rng.randint(80, 150)
+        per_km = rng.randint(2, 5)
+        query_x = rng.randint(20, 120)
+        expression = _linear_expression(per_km, base_mileage)
+        evaluated = base_mileage + per_km * query_x
+        stem = (
+            f"某訂閱制租車方案每月含 {base_mileage} 公里基本里程，超額後每公里加收 {per_km} 元。"
+            f"若以 $x$ 表示超額公里數，$f(x)$ 表示當月額外里程費用，"
+            + ("請寫出線型函數 $f(x)$ 的關係式。" if expression_answer else f"請求超額行駛 {query_x} 公里時的額外費用。")
+        )
+        givens = [f"base_mileage={base_mileage}", f"per_km={per_km}", f"x={query_x}"]
+    answer = expression if expression_answer else str(evaluated)
+    checker_type = "expression_checker" if expression_answer else "numeric_checker"
+    return {
+        "skill_id": skill_id,
+        "problem_type_id": pt,
+        "question_text": stem,
+        "question": stem,
+        "choices": [],
+        "answer": answer,
+        "correct_answer": answer,
+        "answer_type": "expression" if expression_answer else "numeric",
+        "checker_type": checker_type,
+        "checker": checker_type,
+        "answer_contract": dict(ac),
+        "explanation": f"依題意建立線型函數 $f(x)={expression}$。",
+        "diagnosis_tags": ["linear_function_contextual_application", scenario],
+        "metadata": {
+            "givens": givens,
+            "target": "f(x)" if expression_answer else f"f({query_x})",
+            "derivation": [f"f(x)={expression}", f"f({query_x})={evaluated}"],
+            "problem_type_id": pt,
+            "template_slot": "linear_function_contextual_word_problem",
+            "scenario": scenario,
+        },
+        "source": "gencode_slot_generator",
+    }
+
+
 def _slot_function_value_numeric(skill_id: str, pt: str, spec: dict[str, Any], seed: int | None) -> dict[str, Any]:
+    ac = get_answer_contract(spec)
+    if _function_value_choice_requested(spec, ac):
+        return _slot_linear_function_two_point_choice(skill_id, pt, spec, seed)
+    if _function_value_application_requested(spec, ac):
+        return _slot_linear_function_contextual_word_problem(skill_id, pt, spec, seed)
+
     rng = random.Random(seed)
     a = rng.choice([i for i in range(-5, 6) if i not in {0}])
     b = rng.randint(-8, 8)
@@ -461,7 +730,10 @@ SLOT_REGISTRY: dict[str, GeneratorFn] = {
     "symbolic_quadrant_statement_choice": _slot_symbolic_quadrant_statement_choice,
     "two_point_distance_solution_set": _slot_two_point_distance_solution_set,
     "two_point_distance_compute": _slot_two_point_distance_compute,
+    "linear_triangle_median_compute": _slot_linear_triangle_median_compute,
     "function_value_numeric": _slot_function_value_numeric,
+    "linear_function_two_point_choice": _slot_linear_function_two_point_choice,
+    "linear_function_contextual_word_problem": _slot_linear_function_contextual_word_problem,
     DIVISION_POINT_SLOT: _slot_division_point_coordinates,
 }
 

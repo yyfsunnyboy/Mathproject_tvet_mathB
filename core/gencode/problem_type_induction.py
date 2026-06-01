@@ -211,11 +211,16 @@ def _canonical_problem_type_base(answer_type: str, target_task: str, presentatio
 
 
 def _infer_template_slot(answer_type: str, target_task: str, math_objects: list[str]) -> str:
-    if target_task in {"evaluate_function_value", "interpret_function_notation"} and answer_type in {
-        "numeric",
-        "short_answer",
-    }:
+    if target_task == "interpret_function_notation":
+        if answer_type == "single_choice":
+            return "linear_function_two_point_choice"
         return "function_value_numeric"
+    if target_task in {"contextual_application", "word_problem"}:
+        return "linear_function_contextual_word_problem"
+    if target_task == "evaluate_function_value" and answer_type in {"numeric", "short_answer"}:
+        return "function_value_numeric"
+    if target_task == "evaluate_function_value" and answer_type == "expression":
+        return "linear_function_contextual_word_problem"
     if answer_type == "short_answer":
         if "symbolic_condition" in math_objects:
             return "symbolic_quadrant"

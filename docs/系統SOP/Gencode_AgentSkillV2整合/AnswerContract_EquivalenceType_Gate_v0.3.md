@@ -1,4 +1,4 @@
-# AnswerContract EquivalenceType Gate v0.2
+# AnswerContract EquivalenceType Gate v0.3
 
 ## 0. 文件目的
 本文件定義答案型態、等價判定與批改（checker）的核心白名單與防線規則。所有 Gencode 生成題型的答案檢核、以及題庫原題批改，均須遵循本契約，嚴格防止使用生硬的 raw string compare 導致學生端判定出錯。
@@ -97,6 +97,52 @@ answer_contract:
 - **選擇題標籤**：前台輸入與正確答案均必須 normalize 為 `A`, `B`, `C`, `D` 單一字元，嚴禁包含括號或完整選項內容（如 `(A)` 或 `A. 5`）直接與 raw string 比對。
 - **畫圖、證明與開放說明**：**絕對不可**使用 `exact_string` 企圖矇混自動批改，此類題型之 `auto_checkable` 必須標記為 `false`，且將 `equivalence_type` 設為 `manual_review_or_ai_judged`。
 
+### 4.3 執行期展現型態強制作戰原則（Runtime Presentation Mode Coercion）
+
+本節為 v0.3 增量法規，**不刪除、不更名** v0.2 之 `answer_contract` 欄位；在 Phase 3 序列化封裝層以記憶體覆寫方式校正「展現型態」，防止歷史幽靈快取造成前台題型錯位。
+
+#### 4.3.1 觸發時機與讀取來源
+
+在 Phase 3 啟動序列化封裝的**第一毫秒**，全域管線（`pipeline_orchestrator` / `phase3_skill_codegen`）必須同步讀取：
+
+1. 當前題型之 **canonical `problem_type_id` 前綴**（如 `expression_`、`integer_`、`single_choice_`）。
+2. `answer_contract.answer_type` 與 `answer_contract` 內之選項特徵旗標（`choices_required`、`source_has_choices`、`choice_count` 等 Contract Token）。
+
+上述 Token **僅作資料驅動判定**，禁止以 skill_id 或章節名稱寫死分支。
+
+#### 4.3.2 選擇題型強制作戰（Single Choice Coercion）
+
+若 Contract Token 顯示該題型屬於選擇題契約，或具備可辨識之選項特徵，管線必須在記憶體中**強制覆寫**下列執行期配置（寫回 induced spec 與 generator payload 前均須一致）：
+
+| 欄位 | 強制值 |
+|------|--------|
+| `presentation_mode` | `"single_choice"` |
+| `answer_type` | `"single_choice"`（或與前台相容之 choice 家族） |
+| `checker` / `checker_key` | `"choice_label_checker"` |
+| `answer_equivalence` / `equivalence_type` | `"choice_label"` |
+| `choices_required` | `true` |
+| `frontend_render_choices` | `true` |
+
+並**實體隔離**隨機選項池：四選項須由確定性數學干擾項演算法產生，經 shuffle 後綁定 A/B/C/D 標籤；`question_text` 內不得嵌入 `(A)(B)(C)(D)` 字面，與 §4.2 一致。
+
+**禁止**：在選擇題路徑殘留 `expression_checker` 或 `numeric_checker` 作為最終批改器（除非 Spec Gate 明確標記 `blocked` 並停止發布）。
+
+#### 4.3.3 簡答題型強制作戰（Short Answer / Expression Coercion）
+
+若 Contract Token 顯示該題型屬於代數式、整數或數值計算應用（非選擇題家族），管線必須在**編譯前夕**自動校正為 `presentation_mode: "short_answer"`，並依 `problem_type_id` 前綴對齊 checker 鏈：
+
+| 前綴 Token | `answer_type` 校正 | `checker_key` 剛性綁定 |
+|------------|-------------------|------------------------|
+| `expression_` | `expression` | `expression_checker` + `algebraic_equivalent` |
+| `integer_` | `integer` | `integer_checker` + `numeric_exact` |
+| `numeric_` | `numeric` | `integer_checker` 或 `numeric_checker` + `numeric_exact` |
+
+**洗淨義務**：凡從歷史 induced cache、draft spec 或 Phase 1 幽靈列繼承之 `choice_label`、`source_has_choices`、`choices_required: true` 等 Choice 殘留合約，必須在 `_sync_phase3_runtime_specs_from_draft` 與 `_reinforce_canonical_answer_contract` 階段清除或降級為 `source_bank_only`，不得帶入 Runtime Generation。
+
+#### 4.3.4 與 LLM 的邊界
+
+展現型態強制作戰屬**確定性管線責任**；LLM 僅可於 Phase 3 Codegen 建議題幹，**不得**於 runtime 判斷「這題是不是選擇題」。最終 checker 以本節覆寫後之 `answer_contract` 為準。
+
 ---
 
 ## 5. 版本紀錄
@@ -104,7 +150,8 @@ answer_contract:
 |---|---|---|---|
 | 2026-05-25 | v0.1 | 首版答案契約定義，內含過多流程性描述 | Codex |
 | 2026-05-31 | v0.2 | 重整 v0.2，將 Phase 1/2 流程與品質稽核工具移出，專注於 answer_type、equivalence_type 白名單、legacy 對應表、污染防線與結構化比對防護，確保 100% 乾淨 UTF-8 | Antigravity |
+| 2026-06-01 | v0.3 | 增量新增 §4.3 執行期展現型態強制作戰；完整保留 v0.2 白名單與 Schema | 首席系統架構師 |
 
-*本文件職責：定義答案判定契約、比對 whitelist、legacy canonical mapping 與精確批改防禦規則。*
+*本文件職責：定義答案判定契約、比對 whitelist、legacy canonical mapping、精確批改防禦規則，以及 Phase 3 展現型態強制校正。*
 *不負責事項：不定義 ProblemType 規格包與資料結構、亦不定義 pipeline 各階段流程。*
-*應參考的其他 SOP：[Gencode與AgentSkillV2整合總體設計_v0.2.md](file:///e:/Python/Mathproject_tvet_mathB/docs/系統SOP/Gencode_AgentSkillV2整合/Gencode與AgentSkillV2整合總體設計_v0.2.md)、[AgentSkillV2_ProblemType規格包設計_v0.2.md](file:///e:/Python/Mathproject_tvet_mathB/docs/系統SOP/Gencode_AgentSkillV2整合/AgentSkillV2_ProblemType規格包設計_v0.2.md)。*
+*應參考的其他 SOP：[Gencode與AgentSkillV2整合總體設計_v0.3.md](Gencode與AgentSkillV2整合總體設計_v0.3.md)、[AgentSkillV2_ProblemType規格包設計_v0.3.md](AgentSkillV2_ProblemType規格包設計_v0.3.md)。*

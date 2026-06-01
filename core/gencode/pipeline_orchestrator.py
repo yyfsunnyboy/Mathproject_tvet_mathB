@@ -57,6 +57,22 @@ def _reinforce_derivation_contract(draft: dict[str, Any], problem_type_id: str) 
     gc["contextual_application"] = True
 
 
+def _has_zombie_problem_type_id(problem_type_id: str) -> bool:
+    pt = str(problem_type_id or "").strip().lower()
+    if not pt:
+        return False
+    zombie_markers = (
+        "_ghost",
+        "_legacy",
+        "_orphan",
+        ":draft",
+        "__",
+        "_short_answer_single_choice",
+        "_single_choice_short_answer",
+    )
+    return any(marker in pt for marker in zombie_markers) or pt.endswith("_draft_v1")
+
+
 def _canonicalize_nested_problem_type_ids(node: Any, canonical_problem_type_id: str) -> None:
     if isinstance(node, dict):
         for key, value in node.items():
@@ -69,8 +85,12 @@ def _canonicalize_nested_problem_type_ids(node: Any, canonical_problem_type_id: 
             _canonicalize_nested_problem_type_ids(value, canonical_problem_type_id)
 
 
-def _reinforce_canonical_answer_contract(spec: dict[str, Any], problem_type_id: str) -> None:
-    pt = str(problem_type_id or "").strip()
+def _reinforce_canonical_answer_contract(
+    spec: dict[str, Any], problem_type_id: str = ""
+) -> dict[str, Any]:
+    pt = str(problem_type_id or spec.get("problem_type_id", "")).strip()
+    pt_key = pt.lower()
+    target_task = str(spec.get("target_task", "")).strip().lower()
     ac = spec.get("answer_contract")
     if not isinstance(ac, dict):
         ac = {}
@@ -89,15 +109,120 @@ def _reinforce_canonical_answer_contract(spec: dict[str, Any], problem_type_id: 
         checker = "integer_checker"
         equivalence = "numeric_exact"
     else:
-        return
+        answer_type = ""
+        checker = ""
+        equivalence = ""
 
-    ac["answer_type"] = answer_type
-    ac["checker"] = checker
-    ac["checker_key"] = checker
-    ac["answer_equivalence"] = equivalence
-    ac["equivalence_type"] = equivalence
-    ac["choices_required"] = False
-    ac["frontend_render_choices"] = False
+    if answer_type:
+        ac["answer_type"] = answer_type
+        ac["checker"] = checker
+        ac["checker_key"] = checker
+        ac["answer_equivalence"] = equivalence
+        ac["equivalence_type"] = equivalence
+        ac["choices_required"] = False
+        ac["frontend_render_choices"] = False
+
+    if (
+        ("linear_function" in pt_key or "evaluate_function" in target_task)
+        and str(ac.get("answer_type", "")).strip() == "expression"
+    ):
+        ac["answer_equivalence"] = "algebraic_equivalent"
+        ac["equivalence_type"] = "algebraic_equivalent"
+        ac["checker"] = "expression_checker"
+        ac["checker_key"] = "expression_checker"
+
+    if (
+        "choice" in pt_key
+        or "single_choice" in target_task
+        or str(ac.get("answer_shape", "")).strip() == "choice_label"
+    ):
+        ac["answer_type"] = "single_choice"
+        ac["answer_shape"] = "choice_label"
+        ac["answer_equivalence"] = "choice_label"
+        ac["equivalence_type"] = "choice_label"
+        ac["checker"] = "choice_label_checker"
+        ac["checker_key"] = "choice_label_checker"
+        ac["presentation_mode"] = "single_choice"
+        ac["choices_required"] = True
+        ac["frontend_render_choices"] = True
+
+    spec["answer_contract"] = ac
+    return spec
+
+
+def _sanitize_coordinate_pair_answer_contract(spec: dict[str, Any], problem_type_id: str) -> bool:
+    """Repair coordinate-pair semantics after AI draft induction without skill-specific rules."""
+    pt = str(problem_type_id or "").strip().lower()
+    target_task = str(spec.get("target_task", "")).strip().lower()
+    task_family = str(spec.get("task_family", "")).strip().lower()
+    ac = spec.get("answer_contract")
+    if not isinstance(ac, dict):
+        ac = {}
+        spec["answer_contract"] = ac
+
+    semantic_values = {
+        str(ac.get("answer_type", "")).strip().lower(),
+        str(ac.get("answer_shape", "")).strip().lower(),
+        str(ac.get("semantics", "")).strip().lower(),
+        str(ac.get("answer_semantics", "")).strip().lower(),
+        str(ac.get("semantic_answer_shape", "")).strip().lower(),
+        str(spec.get("answer_semantics", "")).strip().lower(),
+    }
+    coordinate_semantic = "coordinate_pair" in semantic_values or "ordered_pair" in semantic_values
+    coordinate_markers = ("midpoint", "centroid", "division_point")
+    marker_match = any(marker in pt or marker in target_task for marker in coordinate_markers)
+    median_coordinate_match = (
+        ("median" in pt or "median" in target_task)
+        and coordinate_semantic
+    )
+    if not (coordinate_semantic or marker_match or median_coordinate_match or task_family == "division_point_coordinates_family"):
+        return False
+
+    for key in (
+        "fallback_checker",
+        "fallback_checker_key",
+        "fallback_equivalence_type",
+        "text_checker",
+    ):
+        ac.pop(key, None)
+
+    single_choice = "single_choice" in pt or str(ac.get("presentation_mode", "")).strip() == "single_choice"
+    if single_choice:
+        ac.update(
+            {
+                "answer_type": "single_choice",
+                "answer_shape": "choice_label",
+                "answer_semantics": "coordinate_pair",
+                "semantic_answer_shape": "coordinate_pair",
+                "answer_equivalence": "choice_label",
+                "equivalence_type": "choice_label",
+                "checker": "choice_label_checker",
+                "checker_key": "choice_label_checker",
+                "presentation_mode": "single_choice",
+                "choices_required": True,
+                "choice_count": 4,
+                "correct_choice_count": 1,
+                "frontend_render_choices": True,
+            }
+        )
+        return True
+
+    ac.update(
+        {
+            "answer_type": "coordinate_pair",
+            "answer_shape": "coordinate_pair",
+            "answer_semantics": "coordinate_pair",
+            "semantic_answer_shape": "coordinate_pair",
+            "answer_equivalence": "ordered_tuple_exact",
+            "equivalence_type": "ordered_tuple_exact",
+            "checker": "coordinate_pair_checker",
+            "checker_key": "coordinate_pair_checker",
+            "presentation_mode": "short_answer",
+            "choices_required": False,
+            "frontend_render_choices": False,
+        }
+    )
+    return True
 
 
 def _build_phase2_foundation_preflight(
@@ -2639,13 +2764,7 @@ def run_gencode_phase2(skill_id: str, accepted_problem_types: list | None = None
             set(list(warnings) + list(diversity_report.get("repetition_warnings") or []))
         )
         low_sample_diversity_tolerated = (
-            matched_count < 3
-            and "low_source_examples" in merged_warnings
-            and (
-                "generator_diversity_blocked" in merged_blockers
-                or "low_unique_signature_count" in merged_warnings
-                or dynamic_sampling_status == "generator_diversity_blocked"
-            )
+            matched_count < 3 and "low_source_examples" in merged_warnings
         )
         if low_sample_diversity_tolerated:
             diversity_only_blockers = {
@@ -2654,11 +2773,7 @@ def run_gencode_phase2(skill_id: str, accepted_problem_types: list | None = None
                 "consecutive_template_diversity_blocked",
             }
             merged_blockers = [
-                blocker
-                for blocker in merged_blockers
-                if blocker not in diversity_only_blockers
-                and "diversity" not in blocker
-                and "repetition" not in blocker
+                blocker for blocker in merged_blockers if blocker not in diversity_only_blockers
             ]
             dynamic_sampling_status = "runtime_ready_with_diversity_warning"
             merged_warnings = sorted(
@@ -2673,12 +2788,22 @@ def run_gencode_phase2(skill_id: str, accepted_problem_types: list | None = None
             dynamic_sampling_status=dynamic_sampling_status,
             base_status=status,
         )
-        if low_sample_diversity_tolerated and not merged_blockers:
-            status = "runtime_ready_with_warning"
-            usable_for_phase3 = True
-        if blockers:
-            failed_generators.append(generator_key)
-        elif usable_for_phase3:
+        if low_sample_diversity_tolerated:
+            repetition_only_blockers = {
+                "generator_diversity_blocked",
+                "no_template_variant_used",
+                "consecutive_template_diversity_blocked",
+                "model_repetition_blocked",
+            }
+            fatal_semantic_blockers = [
+                blocker
+                for blocker in merged_blockers
+                if blocker not in repetition_only_blockers
+            ]
+            if not fatal_semantic_blockers:
+                status = "runtime_ready_with_warning"
+                usable_for_phase3 = True
+        if usable_for_phase3:
             accepted_generators.append(generator_key)
         else:
             failed_generators.append(generator_key)
@@ -2886,15 +3011,17 @@ def _sync_phase3_runtime_specs_from_draft(
             if not isinstance(row, dict):
                 continue
             pt = str(row.get("problem_type_id", "")).strip()
-            if pt and pt not in canonical_problem_types:
+            zombie_row = _has_zombie_problem_type_id(pt)
+            non_canonical = bool(pt and pt not in canonical_problem_types)
+            if non_canonical or zombie_row:
                 row["generator_readiness"] = "source_bank_only"
                 row["usable_for_phase3"] = False
-                row["warnings"] = sorted(
-                    set(
-                        list(row.get("warnings") or [])
-                        + ["phase3_historical_problem_type_downgraded"]
-                    )
+                warning_code = (
+                    "phase3_zombie_problem_type_downgraded"
+                    if zombie_row
+                    else "phase3_historical_problem_type_downgraded"
                 )
+                row["warnings"] = sorted(set(list(row.get("warnings") or []) + [warning_code]))
                 downgraded_historical_problem_type_ids.append(pt)
     usable_problem_types = {
         str(row.get("problem_type_id", "")).strip()
@@ -2929,6 +3056,7 @@ def _sync_phase3_runtime_specs_from_draft(
         aligned.pop("generator_readiness", None)
         _canonicalize_nested_problem_type_ids(aligned, pt)
         _reinforce_canonical_answer_contract(aligned, pt)
+        _sanitize_coordinate_pair_answer_contract(aligned, pt)
         _reinforce_derivation_contract(aligned, aligned["problem_type_id"])
         aligned_specs_by_problem_type[pt] = aligned
 

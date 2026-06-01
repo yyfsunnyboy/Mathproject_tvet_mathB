@@ -7,7 +7,7 @@
 - **SOP Preflight Status**: `PASS`
 - **SOP Gate Status**: `PASS`
 - **Report Contract Status**: `PASS_WITH_WARNINGS`
-- **Report Contract Warnings**: ['per_example_alignment_score_corrected:4433', 'per_example_alignment_score_corrected:4434', 'per_example_alignment_score_corrected:4444', 'per_example_alignment_score_corrected:4445', 'per_example_alignment_score_corrected:4424', 'per_example_alignment_score_corrected:4425', 'per_example_alignment_score_corrected:4441', 'per_example_alignment_score_corrected:4442', 'per_example_alignment_score_corrected:4448', 'per_example_alignment_score_corrected:4449', 'per_example_alignment_score_corrected:4515', 'per_example_alignment_score_corrected:4516', 'aggregate_alignment_score_normalized', 'candidate_problem_type_count_synchronized']
+- **Report Contract Warnings**: ['source_quality_reject_examples_normalized:4431', 'per_example_alignment_score_corrected:4433', 'per_example_alignment_score_corrected:4434', 'per_example_alignment_score_corrected:4444', 'per_example_alignment_score_corrected:4445', 'per_example_alignment_score_corrected:4424', 'per_example_alignment_score_corrected:4425', 'per_example_alignment_score_corrected:4441', 'per_example_alignment_score_corrected:4442', 'per_example_alignment_score_corrected:4446', 'per_example_alignment_score_corrected:4448', 'per_example_alignment_score_corrected:4449', 'per_example_alignment_score_corrected:4515', 'per_example_alignment_score_corrected:4516', 'aggregate_alignment_score_normalized', 'candidate_problem_type_count_synchronized']
 - **Report Contract Violations**: []
 
 - spec_mode: `ai_first_induce_from_sources`
@@ -18,7 +18,7 @@
 - expected_task_families: ['function_concept_family']
 - expected_subskill_candidates: ['evaluate_function_value', 'interpret_function_notation', 'judge_domain_range_basic', 'judge_function_from_mapping', 'judge_function_relation']
 - skill_anchor_scope: `default`
-- observed_source_family_distribution: {'function_concept_family': 12, 'generic_numeric_family': 3}
+- observed_source_family_distribution: {'function_concept_family': 13, 'generic_numeric_family': 2}
 - observed_target_task_distribution: {'interpret_function_notation': 9, 'evaluate_function_value': 6}
 - same_family_subskill_mismatch_examples: 0
 - examples_outside_expected_subskills: []
@@ -28,13 +28,14 @@
 
 - source_alignment_status: `warn`
 - skill_problem_type_alignment_status: `warn`
-- alignment_score: `0.64`
+- alignment_score: `0.6933`
 - alignment_blockers: []
-- alignment_warnings: ['alignment_score_below_recommended_threshold']
+- alignment_warnings: ['alignment_score_below_recommended_threshold', 'source_quality_reject_examples_present']
 
 | example_id | target_task | task_family | alignment_kind | subskill_match | included | exclude_reason | stem_preview |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | 4430 | judge_function_relation | function_concept_family | enrichment_source | True | False | enrichment_not_core_induction | 伽利略（Galileo，1564−1642）研究自由落體運動發現自由落體公式：$S\left( t \right)=\f |
+| 4431 | evaluate_function_value | function_concept_family | source_quality_reject | True | False | source_quality_reject | 英國科學家虎克（Robert Hooke，1635−1703）於1678年發現虎克定律：$F\left( x \righ |
 | 4433 | interpret_function_notation | function_concept_family | anchor_subskill_match | True | True |  | 試在坐標平面上畫出$y=f\left( x \right)=-2$的圖形。 |
 | 4434 | interpret_function_notation | function_concept_family | anchor_subskill_match | True | True |  | 試在坐標平面上畫出函數$y=f\left( x \right)=3x-6$的圖形。 |
 | 4444 | interpret_function_notation | function_concept_family | anchor_subskill_match | True | True |  | 下圖為函數$y=f\left( x \right)=ax+b$的圖形。
@@ -51,7 +52,7 @@
 (1) 試求直線的x截距與y截距。
 (2) 試求 |
 | 4442 | evaluate_function_value | function_concept_family | anchor_subskill_match | True | True |  | 高老師搭乘某廉價航空，他的行李托運費用是850元，若行李托運費用與重量是成線型函數的關係，如圖所示，試求高老師托運的行李 |
-| 4446 | evaluate_function_value | generic_numeric_family | anchor_subskill_match | True | True |  | 公司給小虹最多50萬元的預算來採買$x$、$y$兩種貨品。但小虹一時疏忽，無法確定$x$貨品跟$y$貨品的單價哪一個是1 |
+| 4446 | evaluate_function_value | function_concept_family | anchor_subskill_match | True | True |  | 公司給小虹最多50萬元的預算來採買$x$、$y$兩種貨品。但小虹一時疏忽，無法確定$x$貨品跟$y$貨品的單價哪一個是1 |
 | 4448 | interpret_function_notation | function_concept_family | anchor_subskill_match | True | True |  | 試在坐標平面上畫出$y=f\left( x \right)=3$的圖形。 |
 | 4449 | interpret_function_notation | function_concept_family | anchor_subskill_match | True | True |  | 試在坐標平面上畫出函數$y=f\left( x \right)=-2x+4$的圖形。 |
 | 4500 | evaluate_function_value | generic_numeric_family | anchor_subskill_match | True | True |  | 阿偉的汽車加滿油後開始行駛，其行駛距離x公里與剩餘油量y公升的關係為線型函數，其圖形如右圖所示，則x與y的關係式為 |
@@ -65,16 +66,17 @@
 | example_id | ai_task | ai_family | ai_conf | rule_task | rule_family | final_task | final_family | source | conflict | human |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | 4430 | judge_function_relation | function_concept_family | 0.9 | compute_numeric | generic_numeric_family | judge_function_relation | function_concept_family | ai |  | False |
+| 4431 | evaluate_function_value | function_concept_family | 1.0 | evaluate_function_value | function_concept_family | evaluate_function_value | function_concept_family | ai |  | False |
 | 4433 |  |  | 0.0 | interpret_function_notation | function_concept_family | interpret_function_notation | function_concept_family | registry_rule |  | False |
 | 4434 |  |  | 0.0 | interpret_function_notation | function_concept_family | interpret_function_notation | function_concept_family | registry_rule |  | False |
 | 4444 |  |  | 0.0 | interpret_function_notation | function_concept_family | interpret_function_notation | function_concept_family | registry_rule |  | False |
-| 4445 | evaluate_function_value | function_concept_family | 0.9 | compute_numeric | generic_numeric_family | evaluate_function_value | function_concept_family | ai |  | False |
+| 4445 | evaluate_function_value | function_concept_family | 0.95 | compute_numeric | generic_numeric_family | evaluate_function_value | function_concept_family | ai |  | False |
 | 4424 |  |  | 0.0 | interpret_function_notation | function_concept_family | interpret_function_notation | function_concept_family | registry_rule |  | False |
 | 4425 | evaluate_function_value | function_concept_family | 0.9 | compute_numeric | generic_numeric_family | evaluate_function_value | function_concept_family | ai |  | False |
 | 4426 |  |  | 0.0 | compute_numeric | generic_numeric_family | compute_numeric | generic_numeric_family | ai_needs_review | needs_review | True |
 | 4441 |  |  | 0.0 | interpret_function_notation | function_concept_family | interpret_function_notation | function_concept_family | registry_rule |  | False |
-| 4442 | evaluate_function_value | function_concept_family | 0.95 | compute_numeric | generic_numeric_family | evaluate_function_value | function_concept_family | ai |  | False |
-| 4446 |  |  | 0.0 | compute_numeric | generic_numeric_family | compute_numeric | generic_numeric_family | ai_needs_review | needs_review | True |
+| 4442 | evaluate_function_value | function_concept_family | 0.9 | compute_numeric | generic_numeric_family | evaluate_function_value | function_concept_family | ai |  | False |
+| 4446 | evaluate_function_value | function_concept_family | 0.8 | compute_numeric | generic_numeric_family | evaluate_function_value | function_concept_family | ai |  | False |
 | 4448 |  |  | 0.0 | interpret_function_notation | function_concept_family | interpret_function_notation | function_concept_family | registry_rule |  | False |
 | 4449 |  |  | 0.0 | interpret_function_notation | function_concept_family | interpret_function_notation | function_concept_family | registry_rule |  | False |
 | 4500 |  |  | 0.0 | compute_numeric | generic_numeric_family | compute_numeric | generic_numeric_family | ai_needs_review | needs_review | True |
@@ -85,16 +87,17 @@
 | id | rule_task/family | AI task/family | conf | source | final task/family | align | excluded |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | 4430 | compute_numeric/generic_numeric_family | judge_function_relation/function_concept_family | 0.9 | ai | judge_function_relation/function_concept_family | enrichment_source | enrichment_not_core_induction |
+| 4431 | evaluate_function_value/function_concept_family | evaluate_function_value/function_concept_family | 1.0 | ai | evaluate_function_value/function_concept_family | source_quality_reject | source_quality_reject |
 | 4433 | interpret_function_notation/function_concept_family | / | 0.0 | registry_rule | interpret_function_notation/function_concept_family | anchor_subskill_match |  |
 | 4434 | interpret_function_notation/function_concept_family | / | 0.0 | registry_rule | interpret_function_notation/function_concept_family | anchor_subskill_match |  |
 | 4444 | interpret_function_notation/function_concept_family | / | 0.0 | registry_rule | interpret_function_notation/function_concept_family | anchor_subskill_match |  |
-| 4445 | compute_numeric/generic_numeric_family | evaluate_function_value/function_concept_family | 0.9 | ai | evaluate_function_value/function_concept_family | anchor_subskill_match |  |
+| 4445 | compute_numeric/generic_numeric_family | evaluate_function_value/function_concept_family | 0.95 | ai | evaluate_function_value/function_concept_family | anchor_subskill_match |  |
 | 4424 | interpret_function_notation/function_concept_family | / | 0.0 | registry_rule | interpret_function_notation/function_concept_family | anchor_subskill_match |  |
 | 4425 | compute_numeric/generic_numeric_family | evaluate_function_value/function_concept_family | 0.9 | ai | evaluate_function_value/function_concept_family | anchor_subskill_match |  |
 | 4426 | compute_numeric/generic_numeric_family | / | 0.0 | fallback_application_induct | evaluate_function_value/generic_numeric_family | anchor_subskill_match |  |
 | 4441 | interpret_function_notation/function_concept_family | / | 0.0 | registry_rule | interpret_function_notation/function_concept_family | anchor_subskill_match |  |
-| 4442 | compute_numeric/generic_numeric_family | evaluate_function_value/function_concept_family | 0.95 | ai | evaluate_function_value/function_concept_family | anchor_subskill_match |  |
-| 4446 | compute_numeric/generic_numeric_family | / | 0.0 | fallback_application_induct | evaluate_function_value/generic_numeric_family | anchor_subskill_match |  |
+| 4442 | compute_numeric/generic_numeric_family | evaluate_function_value/function_concept_family | 0.9 | ai | evaluate_function_value/function_concept_family | anchor_subskill_match |  |
+| 4446 | compute_numeric/generic_numeric_family | evaluate_function_value/function_concept_family | 0.8 | ai | evaluate_function_value/function_concept_family | anchor_subskill_match |  |
 | 4448 | interpret_function_notation/function_concept_family | / | 0.0 | registry_rule | interpret_function_notation/function_concept_family | anchor_subskill_match |  |
 | 4449 | interpret_function_notation/function_concept_family | / | 0.0 | registry_rule | interpret_function_notation/function_concept_family | anchor_subskill_match |  |
 | 4500 | compute_numeric/generic_numeric_family | / | 0.0 | fallback_application_induct | evaluate_function_value/generic_numeric_family | anchor_subskill_match |  |
@@ -104,13 +107,14 @@
 
 ## Same-section family distribution
 
-{'function_concept_family': 13, 'generic_numeric_family': 3}
+{'function_concept_family': 15, 'generic_numeric_family': 2}
 
 ## Example features
 
 | example_id | answer_type | target_task | has_choices | stem_embeds_choices | math_objects |
 | --- | --- | --- | --- | --- | --- |
 | 4430 | rational | judge_function_relation | False | False | coordinate_point |
+| 4431 | rational | evaluate_function_value | False | False | coordinate_point, three_coordinate_points, triangle, two_coordinate_points |
 | 4433 | expression | interpret_function_notation | False | False | coordinate_point |
 | 4434 | expression | interpret_function_notation | False | False | coordinate_point |
 | 4444 | expression | interpret_function_notation | False | False | coordinate_point, two_coordinate_points |
@@ -120,7 +124,7 @@
 | 4426 | expression | evaluate_function_value | False | False | coordinate_point, three_coordinate_points, triangle, two_coordinate_points |
 | 4441 | expression | interpret_function_notation | False | False | coordinate_point, two_coordinate_points |
 | 4442 | integer | evaluate_function_value | False | False |  |
-| 4446 | expression | evaluate_function_value | True | True | coordinate_point, three_coordinate_points, triangle, two_coordinate_points |
+| 4446 | integer | evaluate_function_value | True | True | coordinate_point, three_coordinate_points, triangle, two_coordinate_points |
 | 4448 | expression | interpret_function_notation | False | False | coordinate_point |
 | 4449 | expression | interpret_function_notation | False | False | coordinate_point |
 | 4500 | expression | evaluate_function_value | False | False |  |
@@ -237,12 +241,13 @@
     },
     "source_belongs_to_current_skill_by_default": true
   },
-  "source_example_count": 16,
+  "source_example_count": 17,
   "source_alignment_status": "warn",
   "skill_problem_type_alignment_status": "warn",
-  "alignment_score": 0.64,
+  "alignment_score": 0.6933,
   "alignment_warnings": [
-    "alignment_score_below_recommended_threshold"
+    "alignment_score_below_recommended_threshold",
+    "source_quality_reject_examples_present"
   ],
   "alignment_blockers": [],
   "semantic_alignment": {
@@ -440,12 +445,12 @@
       "function_concept_family"
     ],
     "observed_source_family_distribution": {
-      "function_concept_family": 12,
-      "generic_numeric_family": 3
+      "function_concept_family": 13,
+      "generic_numeric_family": 2
     },
     "source_family_distribution": {
-      "function_concept_family": 12,
-      "generic_numeric_family": 3
+      "function_concept_family": 13,
+      "generic_numeric_family": 2
     },
     "candidate_problem_type_families": [
       "function_concept_family"
@@ -455,7 +460,7 @@
     "dominant_source_family": [
       "function_concept_family"
     ],
-    "dominant_source_family_ratio": 0.8,
+    "dominant_source_family_ratio": 0.8667,
     "skill_source_score": 0.0,
     "skill_problem_type_score": 0.0385,
     "source_problem_type_score": 0.0326,
@@ -516,15 +521,18 @@
     "decision": "warn",
     "blockers": [],
     "warnings": [
-      "alignment_score_below_recommended_threshold"
+      "alignment_score_below_recommended_threshold",
+      "source_quality_reject_examples_present"
     ],
     "induction_core_example_count": 15,
-    "induction_enrichment_example_count": 1,
-    "source_quality_reject_examples": []
+    "induction_enrichment_example_count": 2,
+    "source_quality_reject_examples": [
+      4431
+    ]
   },
   "source_family_distribution": {
-    "function_concept_family": 12,
-    "generic_numeric_family": 3
+    "function_concept_family": 13,
+    "generic_numeric_family": 2
   },
   "candidate_problem_type_families": [
     "function_concept_family"
@@ -555,14 +563,15 @@
       "ai_confidence": 0.9,
       "ai_best_candidate_id": "C5",
       "ai_evidence": [
-        "The text describes how the falling distance S depends on the time t.",
-        "It explicitly concludes that distance S is a function of time t based on their relationship.",
-        "This aligns with the subskill of judging or identifying a function relation between variables."
+        "題目描述了距離 S 隨時間 t 變化的關係。",
+        "題目最後明確指出「距離 S 是時間 t 的函數」。",
+        "這屬於判斷或理解兩個變數之間是否構成函數關係的範疇。"
       ],
       "ai_rejected_candidates": {
-        "C1": "The text does not ask to calculate a specific value for S given a value for t.",
-        "C2": "While function notation S(t) is used, the primary purpose of the text is to explain the relationship itself.",
-        "C4": "The problem does not use mapping diagrams to define the function."
+        "C1": "題目中沒有要求計算具體的函數值。",
+        "C2": "雖然使用了函數符號，但重點在於解釋函數關係的建立而非符號本身的解讀。",
+        "C3": "題目未涉及定義域或值域的判斷。",
+        "C4": "題目並非透過集合映射圖來判斷函數。"
       },
       "ai_available": true,
       "ai_error": "",
@@ -582,7 +591,7 @@
       "conflict_reason": "",
       "source_mapping_warning": "",
       "requires_human_action": false,
-      "ai_notes": "The example provides a real-world context to introduce the concept of a function relationship between two variables.",
+      "ai_notes": "此題為函數概念的引入例題，旨在說明變數間的依賴關係如何構成函數，最符合 judge_function_relation。",
       "skill_scoped_candidates": [
         {
           "candidate_id": "C1",
@@ -1297,6 +1306,659 @@
       "possible_mixed_source_context": false
     },
     {
+      "example_id": 4431,
+      "ai_target_task": "evaluate_function_value",
+      "ai_task_family": "function_concept_family",
+      "ai_confidence": 1.0,
+      "ai_best_candidate_id": "C1",
+      "ai_evidence": [
+        "The problem provides a piecewise function f(x) representing electricity costs based on usage x.",
+        "The task requires calculating the cost for specific values of x (800 and 600).",
+        "The solution involves substituting these values into the appropriate parts of the function to find the function values."
+      ],
+      "ai_rejected_candidates": {
+        "C2": "While function notation is used, the primary task is the calculation of values rather than explaining the notation itself.",
+        "C3": "The problem does not ask to identify the domain or range of the function.",
+        "C4": "The problem assumes the relation is a function and does not ask for verification of mapping properties.",
+        "C5": "The problem focuses on specific value evaluation rather than judging the general relationship between variables."
+      },
+      "ai_available": true,
+      "ai_error": "",
+      "ai_unavailable_reason": "",
+      "ai_semantic_status": "ok",
+      "ai_invalid_response_reason": "",
+      "parser_error": "",
+      "raw_response_preview": "",
+      "sanitized_response_preview": "",
+      "failed_stage": "",
+      "rule_target_task": "evaluate_function_value",
+      "rule_task_family": "function_concept_family",
+      "rule_confidence": 0.5,
+      "final_target_task": "evaluate_function_value",
+      "final_task_family": "function_concept_family",
+      "classifier_source": "ai",
+      "conflict_reason": "",
+      "source_mapping_warning": "",
+      "requires_human_action": false,
+      "ai_notes": "The example is a practical application of evaluating a piecewise linear function at specific input points.",
+      "skill_scoped_candidates": [
+        {
+          "candidate_id": "C1",
+          "target_task": "evaluate_function_value",
+          "task_family": "function_concept_family",
+          "problem_type_id": "evaluate_function_value",
+          "label": "evaluate_function_value",
+          "candidate_source": "anchor",
+          "in_anchor_scope": true,
+          "answer_type": "numeric",
+          "answer_shape": "numeric",
+          "math_objects": [],
+          "checker_key": "numeric_checker",
+          "equivalence_type": "numeric_equivalence",
+          "generator_contract": {
+            "template_variants": [
+              {
+                "id": "default",
+                "label": "default",
+                "stem_pattern": "依題意求解：{stem_hint}。",
+                "weight": 1.0,
+                "enabled": true
+              }
+            ],
+            "parameter_schema": {
+              "seed": {
+                "type": "integer",
+                "randomize": true
+              },
+              "difficulty_level": {
+                "choices": [
+                  "level_1",
+                  "level_2",
+                  "level_3"
+                ],
+                "weights": [
+                  0.4,
+                  0.4,
+                  0.2
+                ]
+              }
+            },
+            "variation_dimensions": [
+              "seed",
+              "difficulty_level",
+              "context_style"
+            ],
+            "difficulty_controls": {
+              "level_1": {},
+              "level_2": {},
+              "level_3": {}
+            },
+            "anti_repetition_rules": {
+              "avoid_same_template_consecutive": true,
+              "avoid_same_ratio_consecutive": true,
+              "avoid_same_point_names_consecutive": true,
+              "avoid_same_answer_consecutive": true,
+              "recent_history_window": 5,
+              "signature_fields": [
+                "problem_type_id",
+                "template_variant",
+                "ratio_form",
+                "ratio_values",
+                "coordinate_pattern",
+                "answer"
+              ]
+            },
+            "validity_constraints": [
+              "answer derivable from givens"
+            ],
+            "answer_shape": "numeric",
+            "explanation_variants": [
+              "stepwise"
+            ],
+            "sampling_strategy": "weighted_random",
+            "template_families": [
+              "evaluate_function_value"
+            ]
+          },
+          "parameter_schema": {
+            "seed": {
+              "type": "integer",
+              "randomize": true
+            },
+            "difficulty_level": {
+              "choices": [
+                "level_1",
+                "level_2",
+                "level_3"
+              ],
+              "weights": [
+                0.4,
+                0.4,
+                0.2
+              ]
+            }
+          }
+        },
+        {
+          "candidate_id": "C2",
+          "target_task": "interpret_function_notation",
+          "task_family": "function_concept_family",
+          "problem_type_id": "interpret_function_notation",
+          "label": "interpret_function_notation",
+          "candidate_source": "anchor",
+          "in_anchor_scope": true,
+          "answer_type": "numeric",
+          "answer_shape": "numeric",
+          "math_objects": [],
+          "checker_key": "numeric_checker",
+          "equivalence_type": "numeric_equivalence",
+          "generator_contract": {
+            "template_variants": [
+              {
+                "id": "default",
+                "label": "default",
+                "stem_pattern": "依題意求解：{stem_hint}。",
+                "weight": 1.0,
+                "enabled": true
+              }
+            ],
+            "parameter_schema": {
+              "seed": {
+                "type": "integer",
+                "randomize": true
+              },
+              "difficulty_level": {
+                "choices": [
+                  "level_1",
+                  "level_2",
+                  "level_3"
+                ],
+                "weights": [
+                  0.4,
+                  0.4,
+                  0.2
+                ]
+              }
+            },
+            "variation_dimensions": [
+              "seed",
+              "difficulty_level",
+              "context_style"
+            ],
+            "difficulty_controls": {
+              "level_1": {},
+              "level_2": {},
+              "level_3": {}
+            },
+            "anti_repetition_rules": {
+              "avoid_same_template_consecutive": true,
+              "avoid_same_ratio_consecutive": true,
+              "avoid_same_point_names_consecutive": true,
+              "avoid_same_answer_consecutive": true,
+              "recent_history_window": 5,
+              "signature_fields": [
+                "problem_type_id",
+                "template_variant",
+                "ratio_form",
+                "ratio_values",
+                "coordinate_pattern",
+                "answer"
+              ]
+            },
+            "validity_constraints": [
+              "answer derivable from givens"
+            ],
+            "answer_shape": "numeric",
+            "explanation_variants": [
+              "stepwise"
+            ],
+            "sampling_strategy": "weighted_random",
+            "template_families": [
+              "interpret_function_notation"
+            ]
+          },
+          "parameter_schema": {
+            "seed": {
+              "type": "integer",
+              "randomize": true
+            },
+            "difficulty_level": {
+              "choices": [
+                "level_1",
+                "level_2",
+                "level_3"
+              ],
+              "weights": [
+                0.4,
+                0.4,
+                0.2
+              ]
+            }
+          }
+        },
+        {
+          "candidate_id": "C3",
+          "target_task": "judge_domain_range_basic",
+          "task_family": "function_concept_family",
+          "problem_type_id": "judge_domain_range_basic",
+          "label": "judge_domain_range_basic",
+          "candidate_source": "anchor",
+          "in_anchor_scope": true,
+          "answer_type": "numeric",
+          "answer_shape": "numeric",
+          "math_objects": [],
+          "checker_key": "numeric_checker",
+          "equivalence_type": "numeric_equivalence",
+          "generator_contract": {
+            "template_variants": [
+              {
+                "id": "default",
+                "label": "default",
+                "stem_pattern": "依題意求解：{stem_hint}。",
+                "weight": 1.0,
+                "enabled": true
+              }
+            ],
+            "parameter_schema": {
+              "seed": {
+                "type": "integer",
+                "randomize": true
+              },
+              "difficulty_level": {
+                "choices": [
+                  "level_1",
+                  "level_2",
+                  "level_3"
+                ],
+                "weights": [
+                  0.4,
+                  0.4,
+                  0.2
+                ]
+              }
+            },
+            "variation_dimensions": [
+              "seed",
+              "difficulty_level",
+              "context_style"
+            ],
+            "difficulty_controls": {
+              "level_1": {},
+              "level_2": {},
+              "level_3": {}
+            },
+            "anti_repetition_rules": {
+              "avoid_same_template_consecutive": true,
+              "avoid_same_ratio_consecutive": true,
+              "avoid_same_point_names_consecutive": true,
+              "avoid_same_answer_consecutive": true,
+              "recent_history_window": 5,
+              "signature_fields": [
+                "problem_type_id",
+                "template_variant",
+                "ratio_form",
+                "ratio_values",
+                "coordinate_pattern",
+                "answer"
+              ]
+            },
+            "validity_constraints": [
+              "answer derivable from givens"
+            ],
+            "answer_shape": "numeric",
+            "explanation_variants": [
+              "stepwise"
+            ],
+            "sampling_strategy": "weighted_random",
+            "template_families": [
+              "judge_domain_range_basic"
+            ]
+          },
+          "parameter_schema": {
+            "seed": {
+              "type": "integer",
+              "randomize": true
+            },
+            "difficulty_level": {
+              "choices": [
+                "level_1",
+                "level_2",
+                "level_3"
+              ],
+              "weights": [
+                0.4,
+                0.4,
+                0.2
+              ]
+            }
+          }
+        },
+        {
+          "candidate_id": "C4",
+          "target_task": "judge_function_from_mapping",
+          "task_family": "function_concept_family",
+          "problem_type_id": "judge_function_from_mapping",
+          "label": "judge_function_from_mapping",
+          "candidate_source": "anchor",
+          "in_anchor_scope": true,
+          "answer_type": "numeric",
+          "answer_shape": "numeric",
+          "math_objects": [],
+          "checker_key": "numeric_checker",
+          "equivalence_type": "numeric_equivalence",
+          "generator_contract": {
+            "template_variants": [
+              {
+                "id": "default",
+                "label": "default",
+                "stem_pattern": "依題意求解：{stem_hint}。",
+                "weight": 1.0,
+                "enabled": true
+              }
+            ],
+            "parameter_schema": {
+              "seed": {
+                "type": "integer",
+                "randomize": true
+              },
+              "difficulty_level": {
+                "choices": [
+                  "level_1",
+                  "level_2",
+                  "level_3"
+                ],
+                "weights": [
+                  0.4,
+                  0.4,
+                  0.2
+                ]
+              }
+            },
+            "variation_dimensions": [
+              "seed",
+              "difficulty_level",
+              "context_style"
+            ],
+            "difficulty_controls": {
+              "level_1": {},
+              "level_2": {},
+              "level_3": {}
+            },
+            "anti_repetition_rules": {
+              "avoid_same_template_consecutive": true,
+              "avoid_same_ratio_consecutive": true,
+              "avoid_same_point_names_consecutive": true,
+              "avoid_same_answer_consecutive": true,
+              "recent_history_window": 5,
+              "signature_fields": [
+                "problem_type_id",
+                "template_variant",
+                "ratio_form",
+                "ratio_values",
+                "coordinate_pattern",
+                "answer"
+              ]
+            },
+            "validity_constraints": [
+              "answer derivable from givens"
+            ],
+            "answer_shape": "numeric",
+            "explanation_variants": [
+              "stepwise"
+            ],
+            "sampling_strategy": "weighted_random",
+            "template_families": [
+              "judge_function_from_mapping"
+            ]
+          },
+          "parameter_schema": {
+            "seed": {
+              "type": "integer",
+              "randomize": true
+            },
+            "difficulty_level": {
+              "choices": [
+                "level_1",
+                "level_2",
+                "level_3"
+              ],
+              "weights": [
+                0.4,
+                0.4,
+                0.2
+              ]
+            }
+          }
+        },
+        {
+          "candidate_id": "C5",
+          "target_task": "judge_function_relation",
+          "task_family": "function_concept_family",
+          "problem_type_id": "judge_function_relation",
+          "label": "judge_function_relation",
+          "candidate_source": "anchor",
+          "in_anchor_scope": true,
+          "answer_type": "numeric",
+          "answer_shape": "numeric",
+          "math_objects": [],
+          "checker_key": "numeric_checker",
+          "equivalence_type": "numeric_equivalence",
+          "generator_contract": {
+            "template_variants": [
+              {
+                "id": "default",
+                "label": "default",
+                "stem_pattern": "依題意求解：{stem_hint}。",
+                "weight": 1.0,
+                "enabled": true
+              }
+            ],
+            "parameter_schema": {
+              "seed": {
+                "type": "integer",
+                "randomize": true
+              },
+              "difficulty_level": {
+                "choices": [
+                  "level_1",
+                  "level_2",
+                  "level_3"
+                ],
+                "weights": [
+                  0.4,
+                  0.4,
+                  0.2
+                ]
+              }
+            },
+            "variation_dimensions": [
+              "seed",
+              "difficulty_level",
+              "context_style"
+            ],
+            "difficulty_controls": {
+              "level_1": {},
+              "level_2": {},
+              "level_3": {}
+            },
+            "anti_repetition_rules": {
+              "avoid_same_template_consecutive": true,
+              "avoid_same_ratio_consecutive": true,
+              "avoid_same_point_names_consecutive": true,
+              "avoid_same_answer_consecutive": true,
+              "recent_history_window": 5,
+              "signature_fields": [
+                "problem_type_id",
+                "template_variant",
+                "ratio_form",
+                "ratio_values",
+                "coordinate_pattern",
+                "answer"
+              ]
+            },
+            "validity_constraints": [
+              "answer derivable from givens"
+            ],
+            "answer_shape": "numeric",
+            "explanation_variants": [
+              "stepwise"
+            ],
+            "sampling_strategy": "weighted_random",
+            "template_families": [
+              "judge_function_relation"
+            ]
+          },
+          "parameter_schema": {
+            "seed": {
+              "type": "integer",
+              "randomize": true
+            },
+            "difficulty_level": {
+              "choices": [
+                "level_1",
+                "level_2",
+                "level_3"
+              ],
+              "weights": [
+                0.4,
+                0.4,
+                0.2
+              ]
+            }
+          }
+        },
+        {
+          "candidate_id": "needs_review",
+          "target_task": "",
+          "task_family": "",
+          "problem_type_id": "needs_review",
+          "label": "needs_review",
+          "candidate_source": "needs_review",
+          "in_anchor_scope": false,
+          "answer_type": "",
+          "answer_shape": "",
+          "math_objects": [],
+          "checker_key": "manual_review_checker",
+          "equivalence_type": "manual_review_or_ai_judged",
+          "generator_contract": {},
+          "parameter_schema": {}
+        }
+      ],
+      "outsider_candidates": [],
+      "selected_subskill": "evaluate_function_value",
+      "selected_problem_type": "evaluate_function_value",
+      "candidate_source": "anchor",
+      "selected_generator_contract": {
+        "template_variants": [
+          {
+            "id": "default",
+            "label": "default",
+            "stem_pattern": "依題意求解：{stem_hint}。",
+            "weight": 1.0,
+            "enabled": true
+          }
+        ],
+        "parameter_schema": {
+          "seed": {
+            "type": "integer",
+            "randomize": true
+          },
+          "difficulty_level": {
+            "choices": [
+              "level_1",
+              "level_2",
+              "level_3"
+            ],
+            "weights": [
+              0.4,
+              0.4,
+              0.2
+            ]
+          }
+        },
+        "variation_dimensions": [
+          "seed",
+          "difficulty_level",
+          "context_style"
+        ],
+        "difficulty_controls": {
+          "level_1": {},
+          "level_2": {},
+          "level_3": {}
+        },
+        "anti_repetition_rules": {
+          "avoid_same_template_consecutive": true,
+          "avoid_same_ratio_consecutive": true,
+          "avoid_same_point_names_consecutive": true,
+          "avoid_same_answer_consecutive": true,
+          "recent_history_window": 5,
+          "signature_fields": [
+            "problem_type_id",
+            "template_variant",
+            "ratio_form",
+            "ratio_values",
+            "coordinate_pattern",
+            "answer"
+          ]
+        },
+        "validity_constraints": [
+          "answer derivable from givens"
+        ],
+        "answer_shape": "numeric",
+        "explanation_variants": [
+          "stepwise"
+        ],
+        "sampling_strategy": "weighted_random",
+        "template_families": [
+          "evaluate_function_value"
+        ]
+      },
+      "parameter_schema": {
+        "seed": {
+          "type": "integer",
+          "randomize": true
+        },
+        "difficulty_level": {
+          "choices": [
+            "level_1",
+            "level_2",
+            "level_3"
+          ],
+          "weights": [
+            0.4,
+            0.4,
+            0.2
+          ]
+        }
+      },
+      "variable_randomization_notes": [],
+      "checker_key": "numeric_checker",
+      "equivalence_type": "numeric_equivalence",
+      "skill_scope_trusted": true,
+      "target_task": "evaluate_function_value",
+      "task_family": "function_concept_family",
+      "math_objects": [
+        "coordinate_point",
+        "three_coordinate_points",
+        "triangle",
+        "two_coordinate_points"
+      ],
+      "answer_type": "numeric",
+      "answer_shape": "numeric",
+      "source_type": "worked_example",
+      "example_label": "例題2",
+      "practice_label": "",
+      "linked_example": "",
+      "linked_example_id": null,
+      "linked_example_task_family": "",
+      "structure_consistency": "not_applicable",
+      "sequence_context_used": true,
+      "structure_context_used": true,
+      "confidence_adjustment_reason": "sequence_context_used",
+      "possible_structure_mismatch": false,
+      "possible_mixed_source_context": false
+    },
+    {
       "example_id": 4433,
       "ai_target_task": "",
       "ai_task_family": "",
@@ -1304,15 +1966,15 @@
       "ai_best_candidate_id": "interpret_function_notation",
       "ai_evidence": [
         "題目要求在坐標平面上畫出常數函數 y = f(x) = -2 的圖形。",
-        "提供的候選子技能（C1-C5）皆屬於函數概念家族（function_concept_family），包含求值、符號辨識、定義域值域、映射判斷及函數關係判斷。",
-        "候選清單中缺乏與「繪製圖形」或「線型函數圖形」相關的子技能。"
+        "提供的候選子技能 (C1-C5) 均屬於函數概念家族 (function_concept_family)，包含求值、符號辨釋、定義域值域、映射判斷及函數關係判斷。",
+        "候選清單中缺乏「描繪函數圖形」或「線性函數圖形」相關的子技能。"
       ],
       "ai_rejected_candidates": {
-        "C1": "此題為作圖題，非單純求函數值。",
-        "C2": "此題重點在於圖形繪製，而非僅僅理解函數符號的意義。",
+        "C1": "此題為繪圖題，而非單純求特定點的函數值。",
+        "C2": "此題涉及函數符號，但核心任務是繪圖而非僅僅是辨釋符號意義。",
         "C3": "此題未要求判斷定義域或值域。",
         "C4": "此題非判斷映射是否為函數。",
-        "C5": "此題非判斷變數間的函數關係。"
+        "C5": "此題非判斷變數間是否構成函數關係。"
       },
       "ai_available": false,
       "ai_error": "",
@@ -1332,7 +1994,7 @@
       "conflict_reason": "",
       "source_mapping_warning": "",
       "requires_human_action": false,
-      "ai_notes": "題目要求畫出常數函數的圖形，但提供的候選子技能僅限於函數的基本概念（如求值、符號、定義域等），不包含線型函數的圖形特徵或作圖。建議增加與圖形繪製相關的子技能。",
+      "ai_notes": "題目任務為「描繪常數函數圖形」，但候選清單僅包含函數基本概念（求值、定義、符號等），缺乏繪圖相關的子技能（如 graph_linear_function 或 graph_constant_function）。",
       "skill_scoped_candidates": [
         {
           "candidate_id": "C1",
@@ -1873,16 +2535,16 @@
       "ai_confidence": 0.0,
       "ai_best_candidate_id": "interpret_function_notation",
       "ai_evidence": [
-        "題目要求在坐標平面上畫出一次函數 y=3x-6 的圖形。",
-        "提供的候選子技能 (C1-C5) 皆屬於函數概念家族 (function_concept_family)，包含求值、符號辨釋、定義域值域、映射判斷及函數關係判斷。",
-        "目前的候選清單中缺乏「描繪函數圖形」或「一次函數圖形」相關的子技能。"
+        "The question asks to draw the graph of the linear function y=f(x)=3x-6 on a coordinate plane.",
+        "The provided candidates are evaluate_function_value, interpret_function_notation, judge_domain_range_basic, judge_function_from_mapping, and judge_function_relation.",
+        "None of the available candidates cover the task of graphing or plotting a linear function."
       ],
       "ai_rejected_candidates": {
-        "C1": "求函數值僅為描繪圖形的其中一個步驟，並非此題目的核心任務。",
-        "C2": "此題重點在於繪圖而非辨識函數符號的意義。",
-        "C3": "此題未涉及定義域或值域的判斷。",
-        "C4": "此題並非判斷是否為函數映射。",
-        "C5": "此題並非判斷變數間是否構成函數關係。"
+        "C1": "Evaluating function values is a necessary step for graphing, but the primary task is the construction of the graph itself.",
+        "C2": "While the problem uses function notation, the objective is to draw a graph, not just interpret the notation.",
+        "C3": "The problem does not ask to determine the domain or range.",
+        "C4": "The problem is not about identifying a function from a mapping diagram.",
+        "C5": "The problem is not about judging whether a relation is a function."
       },
       "ai_available": false,
       "ai_error": "",
@@ -1902,7 +2564,7 @@
       "conflict_reason": "",
       "source_mapping_warning": "",
       "requires_human_action": false,
-      "ai_notes": "題目核心為「描繪一次函數圖形」，但提供的候選子技能僅限於函數基本概念（求值、定義、映射等），不包含圖形繪製，故選擇 needs_review。",
+      "ai_notes": "The specific subskill for graphing linear functions (e.g., graph_linear_function) is missing from the candidate list. Since the task is to draw a graph, none of the concept-based subskills are a perfect fit.",
       "skill_scoped_candidates": [
         {
           "candidate_id": "C1",
@@ -2444,15 +3106,15 @@
       "ai_best_candidate_id": "interpret_function_notation",
       "ai_evidence": [
         "題目要求從圖形中求出直線的 x 截距、y 截距以及函數 f(x) 的解析式。",
-        "提供的候選子技能（evaluate_function_value, interpret_function_notation, judge_domain_range_basic, judge_function_from_mapping, judge_function_relation）皆屬於函數的基本概念（function_concept_family）。",
-        "「由圖形求線性函數解析式」或「求截距」屬於線性函數的圖形性質或方程式判定，不屬於上述基本概念子技能的範疇。"
+        "候選子技能清單僅包含函數的基本概念（求值、符號辨識、定義域值域、映射判斷、關係判斷）。",
+        "清單中缺乏「求線型函數解析式」或「判讀圖形截距」等相關子技能。"
       ],
       "ai_rejected_candidates": {
-        "C1": "此題並非單純給定 x 求 f(x) 的函數值評估。",
-        "C2": "此題並非解釋函數符號的意義。",
-        "C3": "此題不涉及定義域或值域的判斷。",
-        "C4": "此題不涉及判斷是否為函數的對應關係。",
-        "C5": "此題不涉及判斷變數間的函數關係。"
+        "C1": "evaluate_function_value 僅涉及給定 x 求 f(x)，而本題重點在於求出函數解析式本身。",
+        "C2": "interpret_function_notation 涉及對函數符號的理解，而非從圖形推導函數。",
+        "C3": "judge_domain_range_basic 涉及定義域與值域，本題未要求。",
+        "C4": "judge_function_from_mapping 涉及映射圖判斷，與本題座標系圖形無關。",
+        "C5": "judge_function_relation 涉及判斷關係是否為函數，本題已給定是函數。"
       },
       "ai_available": false,
       "ai_error": "",
@@ -2472,7 +3134,7 @@
       "conflict_reason": "",
       "source_mapping_warning": "",
       "requires_human_action": false,
-      "ai_notes": "題目核心為「由圖形求線性函數方程式」及「求截距」，這在數學課程中通常對應到線性函數的圖形特徵或待定係數法，而提供的候選清單僅限於函數的基本概念（如定義、符號、求值），因此無合適選項。",
+      "ai_notes": "本題屬於「求線型函數解析式」或「線型函數的圖形特徵（截距）」，目前的候選清單中沒有對應的子技能，建議新增相關標籤。",
       "skill_scoped_candidates": [
         {
           "candidate_id": "C1",
@@ -3011,17 +3673,18 @@
       "example_id": 4445,
       "ai_target_task": "evaluate_function_value",
       "ai_task_family": "function_concept_family",
-      "ai_confidence": 0.9,
+      "ai_confidence": 0.95,
       "ai_best_candidate_id": "C1",
       "ai_evidence": [
-        "題目要求根據線型函數關係求出特定時間下的手機費用，這屬於求函數值的範疇。",
-        "第一小題要求基本費用 m，即為函數的起始值或特定點的值；第二小題要求 120 分鐘的費用，即為給定自變數求應變數的值。",
-        "此題型符合 function_concept_family 中的 evaluate_function_value 任務。"
+        "題目要求找出基本費 m 以及通話 120 分鐘的總費用。",
+        "這涉及在已知線型函數關係的情況下，計算特定自變數（時間）對應的應變數（費用）數值。",
+        "屬於函數值的求值計算。"
       ],
       "ai_rejected_candidates": {
-        "C2": "題目並未強調函數符號 f(x) 的解讀，而是著重於實際數值的計算。",
-        "C5": "題目已明確指出通話費與時間為線型函數關係，不需判斷是否為函數關係。",
-        "C6": "雖然涉及數值計算，但題目背景明確為線型函數，應優先選擇 anchor 範圍內的 evaluate_function_value。"
+        "C2": "並非著重於函數符號的解讀。",
+        "C3": "並非判斷定義域或值域。",
+        "C4": "並非判斷對應關係是否為函數。",
+        "C5": "題目已給定為線型函數，重點在於求值而非判斷關係。"
       },
       "ai_available": true,
       "ai_error": "",
@@ -3041,7 +3704,7 @@
       "conflict_reason": "",
       "source_mapping_warning": "",
       "requires_human_action": false,
-      "ai_notes": "此題為典型的線型函數應用題，透過圖形或已知條件求出函數關係後計算特定點的函數值。",
+      "ai_notes": "此題為典型的應用題，透過圖形或描述建立線型函數後求特定點的函數值。",
       "skill_scoped_candidates": [
         {
           "candidate_id": "C1",
@@ -3760,16 +4423,15 @@
       "ai_confidence": 0.0,
       "ai_best_candidate_id": "interpret_function_notation",
       "ai_evidence": [
-        "題目要求從函數圖形求出 x 截距、y 截距以及函數解析式 f(x) = ax + b。",
-        "候選清單中的 subskills (evaluate_function_value, interpret_function_notation, judge_domain_range_basic, judge_function_from_mapping, judge_function_relation) 皆不包含「求截距」或「求線型函數解析式」等核心任務。",
-        "此題屬於「由圖形求線型函數」或「線型函數的截距」，在提供的候選清單中無對應項。"
+        "題目要求從圖形中求出直線的 x 截距、y 截距以及函數 f(x) = ax + b 的解析式。",
+        "提供的候選子技能（求函數值、解釋函數符號、判斷定義域值域、由對應關係判斷函數、判斷函數關係）皆不包含「從圖形求一次函數解析式」或「求截距」的任務。"
       ],
       "ai_rejected_candidates": {
-        "C1": "evaluate_function_value 通常指已知函數求特定點的值，而非求函數解析式或截距。",
-        "C2": "interpret_function_notation 涉及對函數符號意義的理解，不涵蓋求解析式的計算過程。",
-        "C3": "judge_domain_range_basic 涉及定義域與值域，與本題求解析式無關。",
-        "C4": "judge_function_from_mapping 涉及映射圖判斷，與本題無關。",
-        "C5": "judge_function_relation 涉及判斷關係是否為函數，與本題無關。"
+        "C1": "此子技能通常指給定 x 求 f(x) 的值，而非求出函數解析式本身。",
+        "C2": "此子技能涉及對函數符號意義的理解，不涵蓋從圖形推導函數解析式的計算過程。",
+        "C3": "題目未涉及定義域或值域的判斷。",
+        "C4": "題目並非透過對應圖（如箭號圖）來判斷函數。",
+        "C5": "題目並非判斷一個關係是否為函數。"
       },
       "ai_available": false,
       "ai_error": "",
@@ -3789,7 +4451,7 @@
       "conflict_reason": "",
       "source_mapping_warning": "",
       "requires_human_action": false,
-      "ai_notes": "該題目涉及從圖形資訊（截距）推導線型函數解析式，這屬於線型函數的核心技能，但目前提供的候選清單僅限於函數的基本概念（如定義、符號、求值、定義域），缺乏「求線型函數解析式」或「線型函數圖形特徵」相關的 subskill。",
+      "ai_notes": "目前的候選子技能清單僅限於函數的基本概念（function_concept_family），而本題屬於一次函數的圖形與解析式求法，建議增加如「從圖形求一次函數解析式」或「一次函數的截距」等子技能。",
       "skill_scoped_candidates": [
         {
           "candidate_id": "C1",
@@ -4331,14 +4993,16 @@
       "ai_confidence": 0.9,
       "ai_best_candidate_id": "C1",
       "ai_evidence": [
-        "題目要求計算特定通話時間（1500秒）下的費用，這屬於求函數值的範疇 (evaluate_function_value)。",
-        "題目明確提到通話時間與費用成線型函數關係。",
-        "第一題要求基本費用，即在特定區間（300秒以內）的函數值。"
+        "題目描述通話時間與費用之間存在線型函數關係",
+        "第二小題要求計算通話 1500 秒時的費用，這屬於給定自變數求應變數的函數值計算",
+        "第一題要求基本費用，即為函數在特定區間或起始點的輸出值"
       ],
       "ai_rejected_candidates": {
-        "C2": "雖然題目涉及對情境的理解，但核心任務是計算具體的數值而非解釋函數符號的含義。",
-        "C5": "題目已經給定函數關係，不需要判斷是否為函數關係。",
-        "C6": "C6 是外部候選者 (outsider)，在有合適的錨點候選者 (anchor) C1 的情況下，應優先選擇 C1。"
+        "C2": "題目並未著重於函數符號 f(x) 的解讀，而是具體數值的計算",
+        "C3": "題目並非要求判斷定義域或值域",
+        "C4": "題目並非判斷是否為函數映射關係",
+        "C5": "題目已給定為線型函數關係，不需判斷關係類型",
+        "C6": "雖然涉及計算，但題目背景明確屬於線型函數範疇，應優先選擇 anchor 內的子技能"
       },
       "ai_available": true,
       "ai_error": "",
@@ -4358,7 +5022,7 @@
       "conflict_reason": "",
       "source_mapping_warning": "",
       "requires_human_action": false,
-      "ai_notes": "此題為線型函數的應用，透過給定的條件（或圖形）求出函數關係後，計算特定自變數下的應變數值，符合 evaluate_function_value 的定義。",
+      "ai_notes": "此題為線型函數的應用題，核心任務是根據給定的函數關係（圖形或文字描述）求出特定點的函數值（費用）。",
       "skill_scoped_candidates": [
         {
           "candidate_id": "C1",
@@ -5077,17 +5741,17 @@
       "ai_confidence": 0.0,
       "ai_best_candidate_id": "needs_review",
       "ai_evidence": [
-        "題目要求計算線段三等分點的坐標，屬於分點公式（division point formula）的應用。",
-        "提供的候選子技能（C1-C5）皆屬於函數概念家族（function_concept_family），如函數值求值、符號辨釋、定義域值域、映射判斷等。",
-        "此題目不涉及函數映射、函數符號或函數值的計算，與現有的函數概念子技能不符。"
+        "題目要求找出將線段 AD 三等分的點 C 之坐標，這屬於解析幾何中的分點公式問題。",
+        "候選子技能 C1 至 C5 皆屬於函數概念（如函數值計算、符號辨識、定義域值域、映射判斷等），與分點公式或坐標幾何計算不符。",
+        "雖然題目涉及計算，但 C6 (compute_numeric) 過於籠統，且不屬於該技能錨點 (Linear Function) 的預期任務家族。"
       ],
       "ai_rejected_candidates": {
-        "C1": "此題並非給定函數 f(x) 並要求計算特定 x 的函數值。",
-        "C2": "此題未出現函數符號 f(x) 或其相關表示法。",
-        "C3": "此題不涉及函數的定義域或值域判斷。",
-        "C4": "此題並非判斷一組對應關係是否為函數。",
+        "C1": "此題並非給定函數 f(x) 並要求計算特定輸入的函數值。",
+        "C2": "此題不涉及函數符號的解讀。",
+        "C3": "此題不涉及判斷函數的定義域或值域。",
+        "C4": "此題不涉及判斷映射關係是否為函數。",
         "C5": "此題不涉及判斷兩個變量之間的函數關係。",
-        "C6": "雖然涉及數值計算，但此題具有明確的幾何分點公式特徵，不應僅歸類為一般數值計算。"
+        "C6": "雖然涉及數值計算，但此題核心為分點公式，且 C6 為 outsider 類別，在沒有合適錨點子技能時應優先考慮 needs_review。"
       },
       "ai_available": false,
       "ai_error": "",
@@ -5107,7 +5771,7 @@
       "conflict_reason": "needs_review",
       "source_mapping_warning": "",
       "requires_human_action": true,
-      "ai_notes": "題目內容為坐標幾何中的分點公式（三等分點），而提供的候選子技能全數屬於函數概念範疇，兩者不匹配。建議將此題歸類至坐標系或分點公式相關技能。",
+      "ai_notes": "題目為典型的分點公式應用（三等分點），但提供的子技能清單僅限於函數概念（function_concept_family），缺乏坐標幾何或分點公式相關的選項。因此選擇 needs_review。",
       "skill_scoped_candidates": [
         {
           "candidate_id": "C1",
@@ -5750,16 +6414,16 @@
       "ai_confidence": 0.0,
       "ai_best_candidate_id": "interpret_function_notation",
       "ai_evidence": [
-        "題目要求從圖形中求出直線的 x 截距與 y 截距，並求出函數 f(x) 的解析式。",
-        "提供的候選子技能（evaluate_function_value, interpret_function_notation, judge_domain_range_basic, judge_function_from_mapping, judge_function_relation）皆屬於函數概念家族，側重於函數定義、符號、定義域值域及對應關係。",
-        "目前候選清單中缺乏「由圖形求線型函數解析式」或「求直線截距」等具體針對線型函數運算的子技能。"
+        "題目要求從圖形中求出直線的 x 截距、y 截距以及函數 f(x) 的解析式。",
+        "候選子技能列表僅包含函數概念（求值、符號辨釋、定義域值域、映射判斷、函數關係判斷）。",
+        "題目核心在於「求一次函數解析式」與「截距概念」，現有子技能中無一符合此特定任務。"
       ],
       "ai_rejected_candidates": {
-        "C1": "此題並非給定 x 求 f(x) 的值，而是要先求出函數解析式。",
-        "C2": "此題涉及函數符號的使用，但核心任務是求出函數解析式，而非僅僅解釋符號意義。",
+        "C1": "此題並非單純給定 x 求 f(x) 的值，而是要求出整個函數解析式。",
+        "C2": "此題涉及函數符號的使用，但核心任務是求出函數式與截距，而非僅僅辨識符號意義。",
         "C3": "題目未涉及定義域或值域的判斷。",
-        "C4": "題目並非判斷對應圖表是否為函數。",
-        "C5": "題目並非判斷兩個變量之間的函數關係。"
+        "C4": "題目未涉及映射圖或判斷是否為函數。",
+        "C5": "題目未涉及判斷變數間是否構成函數關係。"
       },
       "ai_available": false,
       "ai_error": "",
@@ -5779,7 +6443,7 @@
       "conflict_reason": "",
       "source_mapping_warning": "",
       "requires_human_action": false,
-      "ai_notes": "該題目屬於「由圖形求線型函數」或「直線的截距」，在目前的候選清單中沒有完全符合的子技能，建議新增相關子技能或檢查技能錨點範圍。",
+      "ai_notes": "該題目屬於「求一次函數解析式」或「一次函數的圖形特徵（截距）」，但提供的候選子技能僅限於「函數概念」家族。建議新增與一次函數（Linear Function）具體性質相關的子技能，如「從圖形求一次函數式」或「求一次函數的截距」。",
       "skill_scoped_candidates": [
         {
           "candidate_id": "C1",
@@ -6318,17 +6982,17 @@
       "example_id": 4442,
       "ai_target_task": "evaluate_function_value",
       "ai_task_family": "function_concept_family",
-      "ai_confidence": 0.95,
+      "ai_confidence": 0.9,
       "ai_best_candidate_id": "C1",
       "ai_evidence": [
-        "題目要求在已知托運費用（函數值）的情況下，求出對應的行李重量（自變數）。",
-        "這屬於線型函數中求特定數值的應用，符合 evaluate_function_value 的定義。"
+        "題目描述行李費用與重量成線型函數關係，並給出特定費用（函數值）要求回推重量（自變數）。",
+        "此類已知函數值求自變數或已知自變數求函數值的計算，屬於 evaluate_function_value 的範疇。",
+        "該候選項目位於 anchor 範圍內且符合 function_concept_family。"
       ],
       "ai_rejected_candidates": {
-        "C2": "題目並非著重於函數符號 f(x) 的解讀。",
-        "C3": "題目並非要求判斷定義域或值域。",
-        "C4": "題目並非判斷映射是否為函數。",
-        "C5": "題目並非判斷兩個變數之間是否具備函數關係。"
+        "C2": "題目並非著重於函數符號（如 f(x)）的意義解釋，而是具體的數值計算。",
+        "C5": "題目已明確指出是線型函數關係，不需要判斷兩變數是否構成函數。",
+        "C6": "雖然涉及計算，但 C1 更符合線型函數技能的學科特定分類。"
       },
       "ai_available": true,
       "ai_error": "",
@@ -6348,7 +7012,7 @@
       "conflict_reason": "",
       "source_mapping_warning": "",
       "requires_human_action": false,
-      "ai_notes": "此題為線型函數的應用題，透過給定的函數值（費用 850 元）回推自變數（重量），屬於函數值的計算範疇。",
+      "ai_notes": "題目給定 y = 850 並要求透過線型函數關係求 x，這屬於函數求值與應用的標準題型。",
       "skill_scoped_candidates": [
         {
           "candidate_id": "C1",
@@ -7062,26 +7726,24 @@
     },
     {
       "example_id": 4446,
-      "ai_target_task": "",
-      "ai_task_family": "",
-      "ai_confidence": 0.0,
-      "ai_best_candidate_id": "needs_review",
+      "ai_target_task": "evaluate_function_value",
+      "ai_task_family": "function_concept_family",
+      "ai_confidence": 0.8,
+      "ai_best_candidate_id": "C1",
       "ai_evidence": [
-        "The problem is a word problem involving linear inequalities in two variables: 100x + 200y <= 500,000 and 200x + 100y <= 500,000.",
-        "The provided subskills are restricted to the 'function_concept_family', which focuses on the definition, notation, and basic properties (domain/range) of functions.",
-        "The problem does not use function notation (e.g., f(x)), nor does it involve mapping diagrams or determining if a relation is a function.",
-        "The required action is to verify which coordinate pair satisfies a set of linear constraints, which is an application of linear inequalities rather than a basic function concept evaluation.",
-        "The skill anchor 'vh_數學B1_LinearFunction' usually covers one-variable linear functions (f(x) = ax + b), whereas this problem involves two variables and inequalities."
+        "The problem requires calculating the total cost for specific pairs of (x, y) to check if they exceed a budget of 500,000.",
+        "This process involves substituting numerical values into linear expressions (100x + 200y and 200x + 100y), which is the core action of evaluating a function value.",
+        "Among the anchor-scoped candidates in the function_concept_family, evaluate_function_value is the only one that matches the task of plugging in values to find a result."
       ],
       "ai_rejected_candidates": {
-        "C1": "While it involves calculation, 'evaluate_function_value' typically refers to finding f(a) given a function f(x), which is not the case here.",
-        "C2": "The problem does not use or require the interpretation of function notation like f(x).",
-        "C3": "The problem is not asking for the domain or range of a function.",
-        "C4": "The problem does not involve determining if a mapping or set of pairs constitutes a function.",
-        "C5": "The problem does not involve judging the relationship between variables in a functional context (e.g., is y a function of x?).",
-        "C6": "Although the problem involves arithmetic, 'compute_numeric' is an outsider candidate and the problem is a structured word problem rather than a pure numeric calculation."
+        "C2": "The problem does not involve interpreting function notation like f(x).",
+        "C3": "The problem is not about determining the domain or range of a function.",
+        "C4": "The problem does not involve identifying whether a mapping is a function.",
+        "C5": "The problem does not ask to determine the relationship between variables in a functional sense (e.g., whether y is a function of x).",
+        "C6": "While the problem involves arithmetic, C1 is an anchor-scoped candidate and is preferred over the outsider candidate C6 according to the rules.",
+        "needs_review": "The problem fits the 'evaluate' task well enough within the context of linear functions and expressions to avoid a needs_review tag."
       },
-      "ai_available": false,
+      "ai_available": true,
       "ai_error": "",
       "ai_unavailable_reason": "",
       "ai_semantic_status": "ok",
@@ -7093,13 +7755,13 @@
       "rule_target_task": "compute_numeric",
       "rule_task_family": "generic_numeric_family",
       "rule_confidence": 0.2,
-      "final_target_task": "compute_numeric",
-      "final_task_family": "generic_numeric_family",
-      "classifier_source": "ai_needs_review",
-      "conflict_reason": "needs_review",
+      "final_target_task": "evaluate_function_value",
+      "final_task_family": "function_concept_family",
+      "classifier_source": "ai",
+      "conflict_reason": "",
       "source_mapping_warning": "",
-      "requires_human_action": true,
-      "ai_notes": "The problem is a 112 Unified Entrance Exam (統測B) question that involves modeling and solving linear inequalities in two variables. This does not align with the provided subskills, which are focused on the conceptual foundations of functions (mapping, notation, domain/range). A subskill related to 'Linear Inequalities' or 'Linear Function Applications' would be more appropriate.",
+      "requires_human_action": false,
+      "ai_notes": "The problem asks to verify which coordinate pair satisfies a budget constraint under two possible price scenarios. This is mathematically equivalent to evaluating a cost function at specific points and comparing the output to a threshold.",
       "skill_scoped_candidates": [
         {
           "candidate_id": "C1",
@@ -7703,25 +8365,106 @@
       "outsider_candidates": [
         "C6"
       ],
-      "selected_subskill": "compute_numeric",
-      "selected_problem_type": "compute_numeric",
-      "candidate_source": "needs_review",
-      "selected_generator_contract": {},
-      "parameter_schema": {},
+      "selected_subskill": "evaluate_function_value",
+      "selected_problem_type": "evaluate_function_value",
+      "candidate_source": "anchor",
+      "selected_generator_contract": {
+        "template_variants": [
+          {
+            "id": "default",
+            "label": "default",
+            "stem_pattern": "依題意求解：{stem_hint}。",
+            "weight": 1.0,
+            "enabled": true
+          }
+        ],
+        "parameter_schema": {
+          "seed": {
+            "type": "integer",
+            "randomize": true
+          },
+          "difficulty_level": {
+            "choices": [
+              "level_1",
+              "level_2",
+              "level_3"
+            ],
+            "weights": [
+              0.4,
+              0.4,
+              0.2
+            ]
+          }
+        },
+        "variation_dimensions": [
+          "seed",
+          "difficulty_level",
+          "context_style"
+        ],
+        "difficulty_controls": {
+          "level_1": {},
+          "level_2": {},
+          "level_3": {}
+        },
+        "anti_repetition_rules": {
+          "avoid_same_template_consecutive": true,
+          "avoid_same_ratio_consecutive": true,
+          "avoid_same_point_names_consecutive": true,
+          "avoid_same_answer_consecutive": true,
+          "recent_history_window": 5,
+          "signature_fields": [
+            "problem_type_id",
+            "template_variant",
+            "ratio_form",
+            "ratio_values",
+            "coordinate_pattern",
+            "answer"
+          ]
+        },
+        "validity_constraints": [
+          "answer derivable from givens"
+        ],
+        "answer_shape": "numeric",
+        "explanation_variants": [
+          "stepwise"
+        ],
+        "sampling_strategy": "weighted_random",
+        "template_families": [
+          "evaluate_function_value"
+        ]
+      },
+      "parameter_schema": {
+        "seed": {
+          "type": "integer",
+          "randomize": true
+        },
+        "difficulty_level": {
+          "choices": [
+            "level_1",
+            "level_2",
+            "level_3"
+          ],
+          "weights": [
+            0.4,
+            0.4,
+            0.2
+          ]
+        }
+      },
       "variable_randomization_notes": [],
-      "checker_key": "manual_review_checker",
-      "equivalence_type": "manual_review_or_ai_judged",
+      "checker_key": "numeric_checker",
+      "equivalence_type": "numeric_equivalence",
       "skill_scope_trusted": true,
-      "target_task": "compute_numeric",
-      "task_family": "generic_numeric_family",
+      "target_task": "evaluate_function_value",
+      "task_family": "function_concept_family",
       "math_objects": [
         "coordinate_point",
         "three_coordinate_points",
         "triangle",
         "two_coordinate_points"
       ],
-      "answer_type": "single_choice",
-      "answer_shape": "choice_label",
+      "answer_type": "numeric",
+      "answer_shape": "numeric",
       "source_type": "unknown",
       "example_label": "",
       "practice_label": "",
@@ -7731,9 +8474,9 @@
       "structure_consistency": "not_applicable",
       "sequence_context_used": true,
       "structure_context_used": true,
-      "confidence_adjustment_reason": "possible_structure_mismatch_penalty; sequence_context_used",
-      "possible_structure_mismatch": true,
-      "possible_mixed_source_context": true
+      "confidence_adjustment_reason": "sequence_context_used",
+      "possible_structure_mismatch": false,
+      "possible_mixed_source_context": false
     },
     {
       "example_id": 4448,
@@ -7742,16 +8485,16 @@
       "ai_confidence": 0.0,
       "ai_best_candidate_id": "interpret_function_notation",
       "ai_evidence": [
-        "題目要求在坐標平面上畫出函數 y=f(x)=3 的圖形。",
-        "候選清單 (C1-C5) 主要涵蓋函數的概念性任務，如求值、符號辨釋、定義域值域、映射判斷及函數關係判斷。",
-        "清單中缺乏「描繪函數圖形」或「常數函數圖形」相關的子技能。"
+        "題目要求在坐標平面上畫出常數函數 y=f(x)=3 的圖形。",
+        "候選子技能包含：求函數值、解釋函數符號、判斷定義域值域、從對應關係判斷函數、判斷函數關係。",
+        "現有的候選子技能中沒有任何一項對應到「繪製函數圖形」或「函數圖形的幾何表示」。"
       ],
       "ai_rejected_candidates": {
-        "C1": "求函數值僅為描圖過程中的一個可能步驟，並非此題的主要任務。",
-        "C2": "符號辨釋涉及理解 f(x) 的含義，但此題核心在於繪圖。",
-        "C3": "此題並未要求判斷定義域或值域。",
-        "C4": "此題與映射圖無關。",
-        "C5": "此題並非要求判斷 y 是否為 x 的函數。"
+        "C1": "求函數值是指計算特定點的數值，而非繪製完整圖形。",
+        "C2": "解釋函數符號通常涉及理解 y=f(x) 的意義，雖然與圖形有關，但不足以涵蓋繪圖任務。",
+        "C3": "判斷定義域與值域是函數的性質分析，而非繪圖動作。",
+        "C4": "從對應關係判斷函數通常涉及集合間的映射圖，而非坐標平面上的圖形繪製。",
+        "C5": "判斷函數關係是辨識一個關係是否為函數，而非繪圖。"
       },
       "ai_available": false,
       "ai_error": "",
@@ -7771,7 +8514,7 @@
       "conflict_reason": "",
       "source_mapping_warning": "",
       "requires_human_action": false,
-      "ai_notes": "此題目屬於「描繪線型函數圖形」或「常數函數的圖形」，但在提供的 anchor 候選清單中僅包含函數概念相關的子技能，建議新增與圖形繪製相關的子技能。",
+      "ai_notes": "題目要求繪製常數函數圖形，但提供的候選子技能（屬於 function_concept_family）皆不包含「繪圖」相關任務。建議新增「繪製線型函數圖形」或「函數圖形的幾何特徵」等子技能。",
       "skill_scoped_candidates": [
         {
           "candidate_id": "C1",
@@ -8312,16 +9055,15 @@
       "ai_confidence": 0.0,
       "ai_best_candidate_id": "interpret_function_notation",
       "ai_evidence": [
-        "題目要求在坐標平面上畫出函數 y = f(x) = -2x + 4 的圖形。",
-        "候選清單中的子技能（C1-C5）皆屬於函數概念家族（function_concept_family），包含求值、符號辨釋、定義域值域、映射判斷及函數關係判斷。",
-        "清單中缺乏「描繪函數圖形」或「一次函數圖形」相關的子技能。"
+        "題目要求在坐標平面上畫出一次函數 y = -2x + 4 的圖形。",
+        "候選清單中的 C1 至 C5 分別為求函數值、函數符號意義、判斷定義域值域、由對應關係判斷函數、判斷函數關係，皆不包含「繪製函數圖形」的任務。"
       ],
       "ai_rejected_candidates": {
-        "C1": "求函數值僅為描點過程中的一個步驟，並非此題「畫出圖形」的核心任務。",
-        "C2": "此題重點在於繪圖，而非單純辨識或解釋函數符號的意義。",
-        "C3": "題目未要求判斷定義域或值域。",
-        "C4": "題目未涉及映射圖或判斷是否為函數。",
-        "C5": "題目未要求判斷變數間是否構成函數關係。"
+        "C1": "求函數值僅為描點繪圖的過程之一，並非繪圖任務本身。",
+        "C2": "此題並非在解釋函數符號的意義。",
+        "C3": "此題並非在判斷定義域或值域。",
+        "C4": "此題並非由對應圖判斷是否為函數。",
+        "C5": "此題並非判斷兩個變數之間是否具備函數關係。"
       },
       "ai_available": false,
       "ai_error": "",
@@ -8341,7 +9083,7 @@
       "conflict_reason": "",
       "source_mapping_warning": "",
       "requires_human_action": false,
-      "ai_notes": "題目核心任務為「描繪一次函數圖形」，但候選清單中僅包含函數基本概念的子技能，建議新增「描繪一次函數圖形」或「一次函數的圖形」相關子技能。",
+      "ai_notes": "題目任務為「繪製一次函數圖形」，但提供的候選子技能皆屬於函數基本觀念（如求值、定義、符號等），缺乏繪圖相關的子技能，因此選擇 needs_review。",
       "skill_scoped_candidates": [
         {
           "candidate_id": "C1",
@@ -8882,17 +9624,13 @@
       "ai_confidence": 0.0,
       "ai_best_candidate_id": "needs_review",
       "ai_evidence": [
-        "題目要求根據圖形求出線型函數的關係式（即求出 y = ax + b 的方程式）。",
-        "候選子技能（C1-C5）主要集中在函數的概念性理解，如求函數值、符號辨釋、定義域值域、判斷是否為函數等。",
-        "目前清單中缺乏「求線型函數解析式」或「求直線方程式」這類程序性運算的子技能。"
+        "題目要求根據圖形求出線型函數的關係式（即 y = ax + b）。",
+        "提供的候選子技能（C1-C5）主要集中在函數的概念（如：求函數值、符號辨識、定義域值域、判斷是否為函數）。",
+        "候選清單中缺乏「求線型函數解析式」或「由圖形求函數關係式」等相關子技能。"
       ],
       "ai_rejected_candidates": {
-        "C1": "此題是要求出整個關係式，而非給定 x 求單一函數值。",
-        "C2": "此題涉及函數的建立而非單純對函數符號的解釋。",
-        "C3": "此題未要求判斷定義域或值域。",
-        "C4": "此題並非判斷對應關係是否構成函數。",
-        "C5": "此題要求具體的關係式，而非僅僅判斷變數間是否存在函數關係。",
-        "C6": "此為外部技能且過於籠統，無法精確描述「求函數關係式」的數學任務。"
+        "C1": "此子技能為求特定點的函數值，而本題要求的是整體的關係式。",
+        "C5": "此子技能為判斷變數間是否構成函數關係，而非求出其具體的代數表達式。"
       },
       "ai_available": false,
       "ai_error": "",
@@ -8912,7 +9650,7 @@
       "conflict_reason": "needs_review",
       "source_mapping_warning": "",
       "requires_human_action": true,
-      "ai_notes": "該題目屬於「求線型函數的關係式」，但在提供的 anchor 範圍內（function_concept_family）僅包含概念判斷與求值，建議增加「求線型函數解析式」相關的子技能。",
+      "ai_notes": "本題的核心任務是「求線型函數的關係式」，但目前的候選清單僅包含函數概念（function_concept_family）相關的子技能，建議增加如「求線型函數解析式」之類的子技能。",
       "skill_scoped_candidates": [
         {
           "candidate_id": "C1",
@@ -9550,17 +10288,16 @@
       "ai_confidence": 0.0,
       "ai_best_candidate_id": "interpret_function_notation",
       "ai_evidence": [
-        "題目要求根據兩個已知點 (-2, 4) 與 (1, 1) 求出線型函數 f(x) = ax + b 的解析式。",
-        "這屬於「求線型函數解析式」或「待定係數法求函數」的題型。",
-        "提供的候選子技能包括：計算函數值 (evaluate_function_value)、理解函數符號 (interpret_function_notation)、判斷定義域值域 (judge_domain_range_basic)、從對應關係判斷函數 (judge_function_from_mapping) 以及判斷函數關係 (judge_function_relation)。",
-        "這些候選子技能多屬於「函數概念 (function_concept_family)」的基礎認知，缺乏「求線型函數解析式」這一具體的運算型子技能。"
+        "題目要求根據通過的兩點 (-2, 4) 與 (1, 1) 求出線型函數 f(x) = ax + b 的解析式。",
+        "候選子技能列表包含：求函數值 (evaluate_function_value)、理解函數符號 (interpret_function_notation)、判斷定義域值域 (judge_domain_range_basic)、由對應關係判斷函數 (judge_function_from_mapping) 以及判斷函數關係 (judge_function_relation)。",
+        "現有的候選子技能中，沒有一個直接對應到「給定兩點求線型函數解析式」這一特定任務。"
       ],
       "ai_rejected_candidates": {
-        "C1": "evaluate_function_value 通常指已知函數式求特定輸入的輸出值，而非求函數式本身。",
-        "C2": "interpret_function_notation 涉及理解 f(x) 的含義，雖然解題第一步需將點座標轉化為 f(-2)=4，但核心任務是求解係數，該項不足以涵蓋完整過程。",
-        "C3": "題目未涉及定義域或值域的判斷。",
-        "C4": "題目未涉及對應圖表或映射關係的函數判定。",
-        "C5": "題目未涉及函數關係的性質判定（如是否為函數）。"
+        "C1": "此題並非單純求特定點的函數值，而是要求出整個函數的表達式。",
+        "C2": "此題涉及函數符號的應用，但核心任務是解聯立方程式求係數，而非僅僅是解釋符號意義。",
+        "C3": "此題不涉及定義域或值域的判斷。",
+        "C4": "此題並非判斷給定的對應圖或集合是否構成函數。",
+        "C5": "此題已明示為線型函數，不需判斷是否為函數關係。"
       },
       "ai_available": false,
       "ai_error": "",
@@ -9580,7 +10317,7 @@
       "conflict_reason": "",
       "source_mapping_warning": "",
       "requires_human_action": false,
-      "ai_notes": "該題目為「已知兩點求線型函數」，在現有的候選清單中缺乏對應的子技能（如 determine_linear_function_from_points）。建議新增此類子技能或將其歸類至更合適的技能架構下。",
+      "ai_notes": "該題目屬於「給定兩點求一次函數（線型函數）解析式」，在目前的候選清單中缺乏對應的子技能。建議新增如 'determine_linear_function_from_points' 類型的子技能。",
       "skill_scoped_candidates": [
         {
           "candidate_id": "C1",
@@ -10124,14 +10861,14 @@
       "ai_confidence": 0.0,
       "ai_best_candidate_id": "interpret_function_notation",
       "ai_evidence": [
-        "題目要求利用截距定義判斷函數 y=f(x)=ax-3 的圖形，屬於線型函數圖形特徵的辨識。",
-        "提供的候選子技能（C1-C5）均屬於『函數觀念 (function_concept_family)』，如求值、符號、定義域、映射判斷等。",
-        "候選清單中缺乏與『線型函數圖形』、『截距』或『斜率』直接相關的子技能。",
-        "根據規則，若候選清單中沒有合適的子技能，應選擇 needs_review。"
+        "題目要求利用截距定義判斷函數 y=ax-3 的圖形，這涉及線性函數的圖形特徵（如 y 截距為 -3）與參數 a 對圖形的影響。",
+        "提供的候選子技能（evaluate_function_value, interpret_function_notation, judge_domain_range_basic, judge_function_from_mapping, judge_function_relation）皆屬於函數基本概念（function_concept_family），而非線性函數圖形的具體判別。",
+        "題目核心在於線性函數的圖形性質（截距與斜率），現有選項中缺乏『線性函數圖形』或『截距與斜率的應用』等相關子技能。"
       ],
       "ai_rejected_candidates": {
-        "C1": "evaluate_function_value 雖然涉及計算 f(0)=-3，但本題核心在於圖形截距的幾何意義，而非單純代值計算。",
-        "C5": "judge_function_relation 通常用於判斷變數間是否為函數關係或區分常數與一次函數，不足以涵蓋根據截距判斷圖形的任務。"
+        "C1": "evaluate_function_value 僅涉及計算特定點的函數值，不足以涵蓋判斷整個圖形可能性的任務。",
+        "C2": "interpret_function_notation 涉及對 f(x) 符號的理解，而非圖形判別。",
+        "C5": "judge_function_relation 通常用於判斷一個關係是否為函數，而非判斷特定線性函數的圖形。"
       },
       "ai_available": false,
       "ai_error": "",
@@ -10151,7 +10888,7 @@
       "conflict_reason": "",
       "source_mapping_warning": "",
       "requires_human_action": false,
-      "ai_notes": "The current example focuses on the graphical representation and intercepts of a linear function, which is not covered by the provided subskill candidates in the 'function_concept_family'. A subskill such as 'identify_linear_function_graph' or 'understand_intercepts' would be more appropriate.",
+      "ai_notes": "本題屬於線性函數圖形的判別，特別是截距的應用。然而，候選清單中的子技能僅限於函數的基本概念（如定義、符號、定義域值域），缺乏針對線性函數圖形性質（如斜率、截距、圖形平移）的對應選項，因此選擇 needs_review。",
       "skill_scoped_candidates": [
         {
           "candidate_id": "C1",
@@ -10689,26 +11426,26 @@
   "ai_semantic_status": "ok",
   "source_type_distribution": {
     "unknown": 7,
-    "worked_example": 5,
+    "worked_example": 6,
     "in_class_practice": 4
   },
   "example_practice_link_map": [],
   "structure_mismatch_examples": [],
   "same_section_family_distribution": {
-    "function_concept_family": 13,
-    "generic_numeric_family": 3
+    "function_concept_family": 15,
+    "generic_numeric_family": 2
   },
   "source_structure_report": {
     "source_type_distribution": {
       "unknown": 7,
-      "worked_example": 5,
+      "worked_example": 6,
       "in_class_practice": 4
     },
     "example_practice_link_map": [],
     "structure_mismatch_examples": [],
     "same_section_family_distribution": {
-      "function_concept_family": 13,
-      "generic_numeric_family": 3
+      "function_concept_family": 15,
+      "generic_numeric_family": 2
     }
   },
   "classification_diagnostics": [
@@ -11443,6 +12180,637 @@
       "variable_randomization_notes": []
     },
     {
+      "example_id": 4431,
+      "rule_target_task": "evaluate_function_value",
+      "rule_task_family": "function_concept_family",
+      "rule_confidence": 0.5,
+      "ai_target_task": "evaluate_function_value",
+      "ai_task_family": "function_concept_family",
+      "ai_confidence": 1.0,
+      "ai_semantic_status": "ok",
+      "ai_available": true,
+      "ai_error": "",
+      "ai_unavailable_reason": "",
+      "ai_invalid_response_reason": "",
+      "parser_error": "",
+      "raw_response_preview": "",
+      "sanitized_response_preview": "",
+      "failed_stage": "",
+      "classifier_source": "ai",
+      "final_target_task": "evaluate_function_value",
+      "final_task_family": "function_concept_family",
+      "expected_task_families": [
+        "function_concept_family"
+      ],
+      "expected_subskill_candidates": [
+        "evaluate_function_value",
+        "interpret_function_notation",
+        "judge_domain_range_basic",
+        "judge_function_from_mapping",
+        "judge_function_relation"
+      ],
+      "structure_context_used": true,
+      "sequence_context_used": true,
+      "alignment_kind": "source_quality_reject",
+      "exclude_reason": "source_quality_reject",
+      "included_in_phase1": false,
+      "conflict_reason": "",
+      "source_mapping_warning": "",
+      "skill_anchor_scope": "default",
+      "skill_scoped_candidates": [
+        {
+          "candidate_id": "C1",
+          "target_task": "evaluate_function_value",
+          "task_family": "function_concept_family",
+          "problem_type_id": "evaluate_function_value",
+          "label": "evaluate_function_value",
+          "candidate_source": "anchor",
+          "in_anchor_scope": true,
+          "answer_type": "numeric",
+          "answer_shape": "numeric",
+          "math_objects": [],
+          "checker_key": "numeric_checker",
+          "equivalence_type": "numeric_equivalence",
+          "generator_contract": {
+            "template_variants": [
+              {
+                "id": "default",
+                "label": "default",
+                "stem_pattern": "依題意求解：{stem_hint}。",
+                "weight": 1.0,
+                "enabled": true
+              }
+            ],
+            "parameter_schema": {
+              "seed": {
+                "type": "integer",
+                "randomize": true
+              },
+              "difficulty_level": {
+                "choices": [
+                  "level_1",
+                  "level_2",
+                  "level_3"
+                ],
+                "weights": [
+                  0.4,
+                  0.4,
+                  0.2
+                ]
+              }
+            },
+            "variation_dimensions": [
+              "seed",
+              "difficulty_level",
+              "context_style"
+            ],
+            "difficulty_controls": {
+              "level_1": {},
+              "level_2": {},
+              "level_3": {}
+            },
+            "anti_repetition_rules": {
+              "avoid_same_template_consecutive": true,
+              "avoid_same_ratio_consecutive": true,
+              "avoid_same_point_names_consecutive": true,
+              "avoid_same_answer_consecutive": true,
+              "recent_history_window": 5,
+              "signature_fields": [
+                "problem_type_id",
+                "template_variant",
+                "ratio_form",
+                "ratio_values",
+                "coordinate_pattern",
+                "answer"
+              ]
+            },
+            "validity_constraints": [
+              "answer derivable from givens"
+            ],
+            "answer_shape": "numeric",
+            "explanation_variants": [
+              "stepwise"
+            ],
+            "sampling_strategy": "weighted_random",
+            "template_families": [
+              "evaluate_function_value"
+            ]
+          },
+          "parameter_schema": {
+            "seed": {
+              "type": "integer",
+              "randomize": true
+            },
+            "difficulty_level": {
+              "choices": [
+                "level_1",
+                "level_2",
+                "level_3"
+              ],
+              "weights": [
+                0.4,
+                0.4,
+                0.2
+              ]
+            }
+          }
+        },
+        {
+          "candidate_id": "C2",
+          "target_task": "interpret_function_notation",
+          "task_family": "function_concept_family",
+          "problem_type_id": "interpret_function_notation",
+          "label": "interpret_function_notation",
+          "candidate_source": "anchor",
+          "in_anchor_scope": true,
+          "answer_type": "numeric",
+          "answer_shape": "numeric",
+          "math_objects": [],
+          "checker_key": "numeric_checker",
+          "equivalence_type": "numeric_equivalence",
+          "generator_contract": {
+            "template_variants": [
+              {
+                "id": "default",
+                "label": "default",
+                "stem_pattern": "依題意求解：{stem_hint}。",
+                "weight": 1.0,
+                "enabled": true
+              }
+            ],
+            "parameter_schema": {
+              "seed": {
+                "type": "integer",
+                "randomize": true
+              },
+              "difficulty_level": {
+                "choices": [
+                  "level_1",
+                  "level_2",
+                  "level_3"
+                ],
+                "weights": [
+                  0.4,
+                  0.4,
+                  0.2
+                ]
+              }
+            },
+            "variation_dimensions": [
+              "seed",
+              "difficulty_level",
+              "context_style"
+            ],
+            "difficulty_controls": {
+              "level_1": {},
+              "level_2": {},
+              "level_3": {}
+            },
+            "anti_repetition_rules": {
+              "avoid_same_template_consecutive": true,
+              "avoid_same_ratio_consecutive": true,
+              "avoid_same_point_names_consecutive": true,
+              "avoid_same_answer_consecutive": true,
+              "recent_history_window": 5,
+              "signature_fields": [
+                "problem_type_id",
+                "template_variant",
+                "ratio_form",
+                "ratio_values",
+                "coordinate_pattern",
+                "answer"
+              ]
+            },
+            "validity_constraints": [
+              "answer derivable from givens"
+            ],
+            "answer_shape": "numeric",
+            "explanation_variants": [
+              "stepwise"
+            ],
+            "sampling_strategy": "weighted_random",
+            "template_families": [
+              "interpret_function_notation"
+            ]
+          },
+          "parameter_schema": {
+            "seed": {
+              "type": "integer",
+              "randomize": true
+            },
+            "difficulty_level": {
+              "choices": [
+                "level_1",
+                "level_2",
+                "level_3"
+              ],
+              "weights": [
+                0.4,
+                0.4,
+                0.2
+              ]
+            }
+          }
+        },
+        {
+          "candidate_id": "C3",
+          "target_task": "judge_domain_range_basic",
+          "task_family": "function_concept_family",
+          "problem_type_id": "judge_domain_range_basic",
+          "label": "judge_domain_range_basic",
+          "candidate_source": "anchor",
+          "in_anchor_scope": true,
+          "answer_type": "numeric",
+          "answer_shape": "numeric",
+          "math_objects": [],
+          "checker_key": "numeric_checker",
+          "equivalence_type": "numeric_equivalence",
+          "generator_contract": {
+            "template_variants": [
+              {
+                "id": "default",
+                "label": "default",
+                "stem_pattern": "依題意求解：{stem_hint}。",
+                "weight": 1.0,
+                "enabled": true
+              }
+            ],
+            "parameter_schema": {
+              "seed": {
+                "type": "integer",
+                "randomize": true
+              },
+              "difficulty_level": {
+                "choices": [
+                  "level_1",
+                  "level_2",
+                  "level_3"
+                ],
+                "weights": [
+                  0.4,
+                  0.4,
+                  0.2
+                ]
+              }
+            },
+            "variation_dimensions": [
+              "seed",
+              "difficulty_level",
+              "context_style"
+            ],
+            "difficulty_controls": {
+              "level_1": {},
+              "level_2": {},
+              "level_3": {}
+            },
+            "anti_repetition_rules": {
+              "avoid_same_template_consecutive": true,
+              "avoid_same_ratio_consecutive": true,
+              "avoid_same_point_names_consecutive": true,
+              "avoid_same_answer_consecutive": true,
+              "recent_history_window": 5,
+              "signature_fields": [
+                "problem_type_id",
+                "template_variant",
+                "ratio_form",
+                "ratio_values",
+                "coordinate_pattern",
+                "answer"
+              ]
+            },
+            "validity_constraints": [
+              "answer derivable from givens"
+            ],
+            "answer_shape": "numeric",
+            "explanation_variants": [
+              "stepwise"
+            ],
+            "sampling_strategy": "weighted_random",
+            "template_families": [
+              "judge_domain_range_basic"
+            ]
+          },
+          "parameter_schema": {
+            "seed": {
+              "type": "integer",
+              "randomize": true
+            },
+            "difficulty_level": {
+              "choices": [
+                "level_1",
+                "level_2",
+                "level_3"
+              ],
+              "weights": [
+                0.4,
+                0.4,
+                0.2
+              ]
+            }
+          }
+        },
+        {
+          "candidate_id": "C4",
+          "target_task": "judge_function_from_mapping",
+          "task_family": "function_concept_family",
+          "problem_type_id": "judge_function_from_mapping",
+          "label": "judge_function_from_mapping",
+          "candidate_source": "anchor",
+          "in_anchor_scope": true,
+          "answer_type": "numeric",
+          "answer_shape": "numeric",
+          "math_objects": [],
+          "checker_key": "numeric_checker",
+          "equivalence_type": "numeric_equivalence",
+          "generator_contract": {
+            "template_variants": [
+              {
+                "id": "default",
+                "label": "default",
+                "stem_pattern": "依題意求解：{stem_hint}。",
+                "weight": 1.0,
+                "enabled": true
+              }
+            ],
+            "parameter_schema": {
+              "seed": {
+                "type": "integer",
+                "randomize": true
+              },
+              "difficulty_level": {
+                "choices": [
+                  "level_1",
+                  "level_2",
+                  "level_3"
+                ],
+                "weights": [
+                  0.4,
+                  0.4,
+                  0.2
+                ]
+              }
+            },
+            "variation_dimensions": [
+              "seed",
+              "difficulty_level",
+              "context_style"
+            ],
+            "difficulty_controls": {
+              "level_1": {},
+              "level_2": {},
+              "level_3": {}
+            },
+            "anti_repetition_rules": {
+              "avoid_same_template_consecutive": true,
+              "avoid_same_ratio_consecutive": true,
+              "avoid_same_point_names_consecutive": true,
+              "avoid_same_answer_consecutive": true,
+              "recent_history_window": 5,
+              "signature_fields": [
+                "problem_type_id",
+                "template_variant",
+                "ratio_form",
+                "ratio_values",
+                "coordinate_pattern",
+                "answer"
+              ]
+            },
+            "validity_constraints": [
+              "answer derivable from givens"
+            ],
+            "answer_shape": "numeric",
+            "explanation_variants": [
+              "stepwise"
+            ],
+            "sampling_strategy": "weighted_random",
+            "template_families": [
+              "judge_function_from_mapping"
+            ]
+          },
+          "parameter_schema": {
+            "seed": {
+              "type": "integer",
+              "randomize": true
+            },
+            "difficulty_level": {
+              "choices": [
+                "level_1",
+                "level_2",
+                "level_3"
+              ],
+              "weights": [
+                0.4,
+                0.4,
+                0.2
+              ]
+            }
+          }
+        },
+        {
+          "candidate_id": "C5",
+          "target_task": "judge_function_relation",
+          "task_family": "function_concept_family",
+          "problem_type_id": "judge_function_relation",
+          "label": "judge_function_relation",
+          "candidate_source": "anchor",
+          "in_anchor_scope": true,
+          "answer_type": "numeric",
+          "answer_shape": "numeric",
+          "math_objects": [],
+          "checker_key": "numeric_checker",
+          "equivalence_type": "numeric_equivalence",
+          "generator_contract": {
+            "template_variants": [
+              {
+                "id": "default",
+                "label": "default",
+                "stem_pattern": "依題意求解：{stem_hint}。",
+                "weight": 1.0,
+                "enabled": true
+              }
+            ],
+            "parameter_schema": {
+              "seed": {
+                "type": "integer",
+                "randomize": true
+              },
+              "difficulty_level": {
+                "choices": [
+                  "level_1",
+                  "level_2",
+                  "level_3"
+                ],
+                "weights": [
+                  0.4,
+                  0.4,
+                  0.2
+                ]
+              }
+            },
+            "variation_dimensions": [
+              "seed",
+              "difficulty_level",
+              "context_style"
+            ],
+            "difficulty_controls": {
+              "level_1": {},
+              "level_2": {},
+              "level_3": {}
+            },
+            "anti_repetition_rules": {
+              "avoid_same_template_consecutive": true,
+              "avoid_same_ratio_consecutive": true,
+              "avoid_same_point_names_consecutive": true,
+              "avoid_same_answer_consecutive": true,
+              "recent_history_window": 5,
+              "signature_fields": [
+                "problem_type_id",
+                "template_variant",
+                "ratio_form",
+                "ratio_values",
+                "coordinate_pattern",
+                "answer"
+              ]
+            },
+            "validity_constraints": [
+              "answer derivable from givens"
+            ],
+            "answer_shape": "numeric",
+            "explanation_variants": [
+              "stepwise"
+            ],
+            "sampling_strategy": "weighted_random",
+            "template_families": [
+              "judge_function_relation"
+            ]
+          },
+          "parameter_schema": {
+            "seed": {
+              "type": "integer",
+              "randomize": true
+            },
+            "difficulty_level": {
+              "choices": [
+                "level_1",
+                "level_2",
+                "level_3"
+              ],
+              "weights": [
+                0.4,
+                0.4,
+                0.2
+              ]
+            }
+          }
+        },
+        {
+          "candidate_id": "needs_review",
+          "target_task": "",
+          "task_family": "",
+          "problem_type_id": "needs_review",
+          "label": "needs_review",
+          "candidate_source": "needs_review",
+          "in_anchor_scope": false,
+          "answer_type": "",
+          "answer_shape": "",
+          "math_objects": [],
+          "checker_key": "manual_review_checker",
+          "equivalence_type": "manual_review_or_ai_judged",
+          "generator_contract": {},
+          "parameter_schema": {}
+        }
+      ],
+      "ai_best_candidate_id": "C1",
+      "selected_subskill": "evaluate_function_value",
+      "selected_problem_type": "evaluate_function_value",
+      "candidate_source": "anchor",
+      "outsider_candidates": [],
+      "selected_generator_contract": {
+        "template_variants": [
+          {
+            "id": "default",
+            "label": "default",
+            "stem_pattern": "依題意求解：{stem_hint}。",
+            "weight": 1.0,
+            "enabled": true
+          }
+        ],
+        "parameter_schema": {
+          "seed": {
+            "type": "integer",
+            "randomize": true
+          },
+          "difficulty_level": {
+            "choices": [
+              "level_1",
+              "level_2",
+              "level_3"
+            ],
+            "weights": [
+              0.4,
+              0.4,
+              0.2
+            ]
+          }
+        },
+        "variation_dimensions": [
+          "seed",
+          "difficulty_level",
+          "context_style"
+        ],
+        "difficulty_controls": {
+          "level_1": {},
+          "level_2": {},
+          "level_3": {}
+        },
+        "anti_repetition_rules": {
+          "avoid_same_template_consecutive": true,
+          "avoid_same_ratio_consecutive": true,
+          "avoid_same_point_names_consecutive": true,
+          "avoid_same_answer_consecutive": true,
+          "recent_history_window": 5,
+          "signature_fields": [
+            "problem_type_id",
+            "template_variant",
+            "ratio_form",
+            "ratio_values",
+            "coordinate_pattern",
+            "answer"
+          ]
+        },
+        "validity_constraints": [
+          "answer derivable from givens"
+        ],
+        "answer_shape": "numeric",
+        "explanation_variants": [
+          "stepwise"
+        ],
+        "sampling_strategy": "weighted_random",
+        "template_families": [
+          "evaluate_function_value"
+        ]
+      },
+      "parameter_schema": {
+        "seed": {
+          "type": "integer",
+          "randomize": true
+        },
+        "difficulty_level": {
+          "choices": [
+            "level_1",
+            "level_2",
+            "level_3"
+          ],
+          "weights": [
+            0.4,
+            0.4,
+            0.2
+          ]
+        }
+      },
+      "variable_randomization_notes": []
+    },
+    {
       "example_id": 4433,
       "rule_target_task": "interpret_function_notation",
       "rule_task_family": "function_concept_family",
@@ -13099,7 +14467,7 @@
       "rule_confidence": 0.2,
       "ai_target_task": "evaluate_function_value",
       "ai_task_family": "function_concept_family",
-      "ai_confidence": 0.9,
+      "ai_confidence": 0.95,
       "ai_semantic_status": "ok",
       "ai_available": true,
       "ai_error": "",
@@ -16308,7 +17676,7 @@
       "rule_confidence": 0.2,
       "ai_target_task": "evaluate_function_value",
       "ai_task_family": "function_concept_family",
-      "ai_confidence": 0.95,
+      "ai_confidence": 0.9,
       "ai_semantic_status": "ok",
       "ai_available": true,
       "ai_error": "",
@@ -17036,11 +18404,11 @@
       "rule_target_task": "compute_numeric",
       "rule_task_family": "generic_numeric_family",
       "rule_confidence": 0.2,
-      "ai_target_task": "",
-      "ai_task_family": "",
-      "ai_confidence": 0.0,
+      "ai_target_task": "evaluate_function_value",
+      "ai_task_family": "function_concept_family",
+      "ai_confidence": 0.8,
       "ai_semantic_status": "ok",
-      "ai_available": false,
+      "ai_available": true,
       "ai_error": "",
       "ai_unavailable_reason": "",
       "ai_invalid_response_reason": "",
@@ -17048,9 +18416,9 @@
       "raw_response_preview": "",
       "sanitized_response_preview": "",
       "failed_stage": "",
-      "classifier_source": "fallback_application_induct",
+      "classifier_source": "ai",
       "final_target_task": "evaluate_function_value",
-      "final_task_family": "generic_numeric_family",
+      "final_task_family": "function_concept_family",
       "expected_task_families": [
         "function_concept_family"
       ],
@@ -17066,7 +18434,7 @@
       "alignment_kind": "anchor_subskill_match",
       "exclude_reason": "",
       "included_in_phase1": true,
-      "conflict_reason": "needs_review",
+      "conflict_reason": "",
       "source_mapping_warning": "",
       "skill_anchor_scope": "default",
       "skill_scoped_candidates": [
@@ -17669,15 +19037,96 @@
           "parameter_schema": {}
         }
       ],
-      "ai_best_candidate_id": "needs_review",
-      "selected_subskill": "compute_numeric",
-      "selected_problem_type": "compute_numeric",
-      "candidate_source": "fallback_application",
+      "ai_best_candidate_id": "C1",
+      "selected_subskill": "evaluate_function_value",
+      "selected_problem_type": "evaluate_function_value",
+      "candidate_source": "anchor",
       "outsider_candidates": [
         "C6"
       ],
-      "selected_generator_contract": {},
-      "parameter_schema": {},
+      "selected_generator_contract": {
+        "template_variants": [
+          {
+            "id": "default",
+            "label": "default",
+            "stem_pattern": "依題意求解：{stem_hint}。",
+            "weight": 1.0,
+            "enabled": true
+          }
+        ],
+        "parameter_schema": {
+          "seed": {
+            "type": "integer",
+            "randomize": true
+          },
+          "difficulty_level": {
+            "choices": [
+              "level_1",
+              "level_2",
+              "level_3"
+            ],
+            "weights": [
+              0.4,
+              0.4,
+              0.2
+            ]
+          }
+        },
+        "variation_dimensions": [
+          "seed",
+          "difficulty_level",
+          "context_style"
+        ],
+        "difficulty_controls": {
+          "level_1": {},
+          "level_2": {},
+          "level_3": {}
+        },
+        "anti_repetition_rules": {
+          "avoid_same_template_consecutive": true,
+          "avoid_same_ratio_consecutive": true,
+          "avoid_same_point_names_consecutive": true,
+          "avoid_same_answer_consecutive": true,
+          "recent_history_window": 5,
+          "signature_fields": [
+            "problem_type_id",
+            "template_variant",
+            "ratio_form",
+            "ratio_values",
+            "coordinate_pattern",
+            "answer"
+          ]
+        },
+        "validity_constraints": [
+          "answer derivable from givens"
+        ],
+        "answer_shape": "numeric",
+        "explanation_variants": [
+          "stepwise"
+        ],
+        "sampling_strategy": "weighted_random",
+        "template_families": [
+          "evaluate_function_value"
+        ]
+      },
+      "parameter_schema": {
+        "seed": {
+          "type": "integer",
+          "randomize": true
+        },
+        "difficulty_level": {
+          "choices": [
+            "level_1",
+            "level_2",
+            "level_3"
+          ],
+          "weights": [
+            0.4,
+            0.4,
+            0.2
+          ]
+        }
+      },
       "variable_randomization_notes": []
     },
     {
@@ -20559,11 +22008,47 @@
       "induction_eligibility": "excluded_enrichment",
       "skill_id": "vh_數學B1_LinearFunction",
       "title_stem_preview": "伽利略（Galileo，1564−1642）研究自由落體運動發現自由落體公式：$S\\left( t \\right)=\\frac{1}{2}g{{t}^{2}}$..."
+    },
+    {
+      "example_id": 4431,
+      "target_task": "evaluate_function_value",
+      "task_family": "function_concept_family",
+      "alignment_score": 0.8,
+      "aligned_with_skill": false,
+      "included_in_phase1": false,
+      "exclude_reason": "source_quality_reject",
+      "alignment_kind": "source_quality_reject",
+      "skill_id_match": true,
+      "task_family_match": true,
+      "subskill_match": true,
+      "pass_with_warning": false,
+      "requires_human_action": true,
+      "induction_tier": "enrichment",
+      "included_in_core_induction": false,
+      "enrichment_reasons": [
+        "applied_context",
+        "figure_mixed",
+        "historical_narrative",
+        "long_stem",
+        "math_file",
+        "mixed_unrelated_context",
+        "piecewise_application",
+        "sdgs"
+      ],
+      "source_quality_issues": [
+        "broken_latex_left_right"
+      ],
+      "source_quality_reject": true,
+      "candidate_only": false,
+      "classification_source": "ai",
+      "induction_eligibility": "excluded_source_quality_reject",
+      "skill_id": "vh_數學B1_LinearFunction",
+      "title_stem_preview": "英國科學家虎克（Robert Hooke，1635−1703）於1678年發現虎克定律：$F\\left( x \\right)=kx$，k為力常數，即在彈性限度內..."
     }
   ],
   "induction_source_selection": {
     "core_example_count": 15,
-    "enrichment_example_count": 1,
+    "enrichment_example_count": 2,
     "skipped_enrichment_examples": [
       {
         "example_id": 4430,
@@ -20573,9 +22058,40 @@
           "historical_narrative"
         ],
         "stem_length": 161
+      },
+      {
+        "example_id": 4431,
+        "induction_tier": "enrichment",
+        "enrichment_reasons": [
+          "applied_context",
+          "figure_mixed",
+          "historical_narrative",
+          "long_stem",
+          "math_file",
+          "mixed_unrelated_context",
+          "piecewise_application",
+          "sdgs"
+        ],
+        "stem_length": 1116
       }
     ],
-    "future_ai_judged_candidates": [],
+    "future_ai_judged_candidates": [
+      {
+        "example_id": 4431,
+        "induction_tier": "enrichment",
+        "enrichment_reasons": [
+          "applied_context",
+          "figure_mixed",
+          "historical_narrative",
+          "long_stem",
+          "math_file",
+          "mixed_unrelated_context",
+          "piecewise_application",
+          "sdgs"
+        ],
+        "stem_length": 1116
+      }
+    ],
     "contextual_application_sources": [
       {
         "example_id": 4430,
@@ -20585,6 +22101,21 @@
           "historical_narrative"
         ],
         "stem_length": 161
+      },
+      {
+        "example_id": 4431,
+        "induction_tier": "enrichment",
+        "enrichment_reasons": [
+          "applied_context",
+          "figure_mixed",
+          "historical_narrative",
+          "long_stem",
+          "math_file",
+          "mixed_unrelated_context",
+          "piecewise_application",
+          "sdgs"
+        ],
+        "stem_length": 1116
       }
     ],
     "min_core_examples_for_induction": 2,
@@ -20599,9 +22130,40 @@
         "historical_narrative"
       ],
       "stem_length": 161
+    },
+    {
+      "example_id": 4431,
+      "induction_tier": "enrichment",
+      "enrichment_reasons": [
+        "applied_context",
+        "figure_mixed",
+        "historical_narrative",
+        "long_stem",
+        "math_file",
+        "mixed_unrelated_context",
+        "piecewise_application",
+        "sdgs"
+      ],
+      "stem_length": 1116
     }
   ],
-  "future_ai_judged_candidates": [],
+  "future_ai_judged_candidates": [
+    {
+      "example_id": 4431,
+      "induction_tier": "enrichment",
+      "enrichment_reasons": [
+        "applied_context",
+        "figure_mixed",
+        "historical_narrative",
+        "long_stem",
+        "math_file",
+        "mixed_unrelated_context",
+        "piecewise_application",
+        "sdgs"
+      ],
+      "stem_length": 1116
+    }
+  ],
   "contextual_application_sources": [
     {
       "example_id": 4430,
@@ -20611,12 +22173,42 @@
         "historical_narrative"
       ],
       "stem_length": 161
+    },
+    {
+      "example_id": 4431,
+      "induction_tier": "enrichment",
+      "enrichment_reasons": [
+        "applied_context",
+        "figure_mixed",
+        "historical_narrative",
+        "long_stem",
+        "math_file",
+        "mixed_unrelated_context",
+        "piecewise_application",
+        "sdgs"
+      ],
+      "stem_length": 1116
     }
   ],
   "core_example_count": 15,
-  "enrichment_example_count": 1,
-  "rejected_source_examples": [],
-  "source_quality_issues": [],
+  "enrichment_example_count": 2,
+  "rejected_source_examples": [
+    {
+      "example_id": 4431,
+      "reason": "source_quality_reject",
+      "issues": [
+        "broken_latex_left_right"
+      ]
+    }
+  ],
+  "source_quality_issues": [
+    {
+      "example_id": 4431,
+      "issues": [
+        "broken_latex_left_right"
+      ]
+    }
+  ],
   "semantic_mismatch_examples": [],
   "suspected_wrong_skill_examples": [],
   "same_family_extension_examples": [],
@@ -20680,6 +22272,42 @@
       "induction_eligibility": "excluded_enrichment",
       "skill_id": "vh_數學B1_LinearFunction",
       "title_stem_preview": "伽利略（Galileo，1564−1642）研究自由落體運動發現自由落體公式：$S\\left( t \\right)=\\frac{1}{2}g{{t}^{2}}$"
+    },
+    {
+      "example_id": 4431,
+      "target_task": "evaluate_function_value",
+      "task_family": "function_concept_family",
+      "alignment_score": 0.8,
+      "aligned_with_skill": false,
+      "included_in_phase1": false,
+      "exclude_reason": "source_quality_reject",
+      "alignment_kind": "source_quality_reject",
+      "skill_id_match": true,
+      "task_family_match": true,
+      "subskill_match": true,
+      "pass_with_warning": false,
+      "requires_human_action": true,
+      "induction_tier": "enrichment",
+      "included_in_core_induction": false,
+      "enrichment_reasons": [
+        "applied_context",
+        "figure_mixed",
+        "historical_narrative",
+        "long_stem",
+        "math_file",
+        "mixed_unrelated_context",
+        "piecewise_application",
+        "sdgs"
+      ],
+      "source_quality_issues": [
+        "broken_latex_left_right"
+      ],
+      "source_quality_reject": true,
+      "candidate_only": false,
+      "classification_source": "ai",
+      "induction_eligibility": "excluded_source_quality_reject",
+      "skill_id": "vh_數學B1_LinearFunction",
+      "title_stem_preview": "英國科學家虎克（Robert Hooke，1635−1703）於1678年發現虎克定律：$F\\left( x \\right)=kx$，k為力常數，即在彈性限度內"
     },
     {
       "example_id": 4433,
@@ -20909,14 +22537,14 @@
     {
       "example_id": 4446,
       "target_task": "evaluate_function_value",
-      "task_family": "generic_numeric_family",
-      "alignment_score": 0.0,
+      "task_family": "function_concept_family",
+      "alignment_score": 0.8,
       "aligned_with_skill": true,
       "included_in_phase1": true,
       "exclude_reason": "",
       "alignment_kind": "anchor_subskill_match",
       "skill_id_match": true,
-      "task_family_match": false,
+      "task_family_match": true,
       "subskill_match": true,
       "pass_with_warning": false,
       "requires_human_action": false,
@@ -20926,7 +22554,7 @@
       "source_quality_issues": [],
       "source_quality_reject": false,
       "candidate_only": true,
-      "classification_source": "fallback_application_induct",
+      "classification_source": "ai",
       "induction_eligibility": "eligible",
       "skill_id": "vh_數學B1_LinearFunction",
       "title_stem_preview": "公司給小虹最多50萬元的預算來採買$x$、$y$兩種貨品。但小虹一時疏忽，無法確定$x$貨品跟$y$貨品的單價哪一個是100元、哪一個是200元。下列數對($x"
@@ -21236,7 +22864,8 @@
       "promote_recommendation": "recommend_promote_for_that_candidate",
       "promote_blockers": [],
       "risk_flags": [
-        "alignment_score_below_recommended_threshold"
+        "alignment_score_below_recommended_threshold",
+        "source_quality_reject_examples_present"
       ],
       "checker_contract_warnings": [
         "equivalence_type_mismatch"
@@ -21608,7 +23237,8 @@
       "promote_recommendation": "recommend_promote_for_that_candidate",
       "promote_blockers": [],
       "risk_flags": [
-        "alignment_score_below_recommended_threshold"
+        "alignment_score_below_recommended_threshold",
+        "source_quality_reject_examples_present"
       ],
       "checker_contract_warnings": [],
       "spec_source": "phase1_induced_draft",
@@ -21982,7 +23612,8 @@
       "promote_recommendation": "recommend_promote_for_that_candidate",
       "promote_blockers": [],
       "risk_flags": [
-        "alignment_score_below_recommended_threshold"
+        "alignment_score_below_recommended_threshold",
+        "source_quality_reject_examples_present"
       ],
       "checker_contract_warnings": [
         "equivalence_type_mismatch"
@@ -22359,7 +23990,8 @@
       "promote_recommendation": "recommend_promote_for_that_candidate",
       "promote_blockers": [],
       "risk_flags": [
-        "alignment_score_below_recommended_threshold"
+        "alignment_score_below_recommended_threshold",
+        "source_quality_reject_examples_present"
       ],
       "checker_contract_warnings": [],
       "spec_source": "phase1_induced_draft",
@@ -22669,14 +24301,15 @@
           "ai_confidence": 0.9,
           "ai_best_candidate_id": "C5",
           "ai_evidence": [
-            "The text describes how the falling distance S depends on the time t.",
-            "It explicitly concludes that distance S is a function of time t based on their relationship.",
-            "This aligns with the subskill of judging or identifying a function relation between variables."
+            "題目描述了距離 S 隨時間 t 變化的關係。",
+            "題目最後明確指出「距離 S 是時間 t 的函數」。",
+            "這屬於判斷或理解兩個變數之間是否構成函數關係的範疇。"
           ],
           "ai_rejected_candidates": {
-            "C1": "The text does not ask to calculate a specific value for S given a value for t.",
-            "C2": "While function notation S(t) is used, the primary purpose of the text is to explain the relationship itself.",
-            "C4": "The problem does not use mapping diagrams to define the function."
+            "C1": "題目中沒有要求計算具體的函數值。",
+            "C2": "雖然使用了函數符號，但重點在於解釋函數關係的建立而非符號本身的解讀。",
+            "C3": "題目未涉及定義域或值域的判斷。",
+            "C4": "題目並非透過集合映射圖來判斷函數。"
           },
           "ai_available": true,
           "ai_error": "",
@@ -22696,7 +24329,7 @@
           "conflict_reason": "",
           "source_mapping_warning": "",
           "requires_human_action": false,
-          "ai_notes": "The example provides a real-world context to introduce the concept of a function relationship between two variables.",
+          "ai_notes": "此題為函數概念的引入例題，旨在說明變數間的依賴關係如何構成函數，最符合 judge_function_relation。",
           "skill_scoped_candidates": [
             {
               "candidate_id": "C1",
@@ -23420,6 +25053,14 @@
           "practice_number": null,
           "nearby_worked_examples": [
             {
+              "example_id": 4431,
+              "source_type": "worked_example",
+              "example_label": "例題2",
+              "practice_label": "",
+              "section_order": 0,
+              "title_head": "例2"
+            },
+            {
               "example_id": 4433,
               "source_type": "worked_example",
               "example_label": "例題8",
@@ -23486,6 +25127,14 @@
               "practice_label": "",
               "section_order": 0,
               "title_head": "例1"
+            },
+            {
+              "example_id": 4431,
+              "source_type": "worked_example",
+              "example_label": "例題2",
+              "practice_label": "",
+              "section_order": 0,
+              "title_head": "例2"
             },
             {
               "example_id": 4433,
@@ -23604,14 +25253,15 @@
         "ai_confidence": 0.9,
         "ai_best_candidate_id": "C5",
         "ai_evidence": [
-          "The text describes how the falling distance S depends on the time t.",
-          "It explicitly concludes that distance S is a function of time t based on their relationship.",
-          "This aligns with the subskill of judging or identifying a function relation between variables."
+          "題目描述了距離 S 隨時間 t 變化的關係。",
+          "題目最後明確指出「距離 S 是時間 t 的函數」。",
+          "這屬於判斷或理解兩個變數之間是否構成函數關係的範疇。"
         ],
         "ai_rejected_candidates": {
-          "C1": "The text does not ask to calculate a specific value for S given a value for t.",
-          "C2": "While function notation S(t) is used, the primary purpose of the text is to explain the relationship itself.",
-          "C4": "The problem does not use mapping diagrams to define the function."
+          "C1": "題目中沒有要求計算具體的函數值。",
+          "C2": "雖然使用了函數符號，但重點在於解釋函數關係的建立而非符號本身的解讀。",
+          "C3": "題目未涉及定義域或值域的判斷。",
+          "C4": "題目並非透過集合映射圖來判斷函數。"
         },
         "ai_available": true,
         "ai_error": "",
@@ -23631,7 +25281,7 @@
         "conflict_reason": "",
         "source_mapping_warning": "",
         "requires_human_action": false,
-        "ai_notes": "The example provides a real-world context to introduce the concept of a function relationship between two variables.",
+        "ai_notes": "此題為函數概念的引入例題，旨在說明變數間的依賴關係如何構成函數，最符合 judge_function_relation。",
         "skill_scoped_candidates": [
           {
             "candidate_id": "C1",
@@ -24353,6 +26003,1570 @@
       "checker_key": "rational_checker"
     },
     {
+      "example_id": 4431,
+      "detected_problem_type_id": "unknown",
+      "example_feature": {
+        "source_example_id": 4431,
+        "question_text": "英國科學家虎克（Robert Hooke，1635−1703）於1678年發現虎克定律：$F\\left( x \\right)=kx$，k為力常數，即在彈性限度內，彈簧所受的外力F與伸長量x有成正比的關係，所以外力F是伸長量x的函數（如圖22）。\r\n▲圖21 ▲圖22\r\n數學\r\n檔案\r\n尤拉（Leonhard Euler，1707-1783），瑞士數學家。\r\n他是最早使用函數記號「$f\\left( x \\right)$」的數學家。\r\nSDG 7可負擔的潔淨能源─供需曲線圖\r\n「一度電」就是耗電量 1,000 瓦特的電器，連續使用 1 小時所消耗的總電量。電費分為「夏季電費」（6 / 1～9 / 30）和「非夏季電費」（10 / 1～5 / 31），已知202年4月電費調漲，調漲後，若計費度數為x度，且一般住家的夏季電費（單位：元）滿足函數\r\n$f\\left( x \\right)=\\left\\{ \\begin{align}\r\n& 1.63x,x\\le 120 \\\\\r\n& 2.38x-90,120<x<330 \\\\\r\n& 3.52x-466.2,330<x\\le 500 \\\\\r\n& 4.8x-1106.2,500<x\\le 700 \\\\\r\n& 5.83x-1827.2,700<x\\le 1000 \\\\\r\n& 7.69x-368.7,x>1000 \\\\\r\n\\end{align} \\right.$\r\n若小蕙發現8 月用電為 800 度，花費太多，及時更換老舊電器，9月節能省電，用電為600度，試求小蕙的電費9月比8月省下多少元？\r\n8月電費為800度，將$x=800$代入$5.83x-1827.2$\r\n9月電費為600度，將$x=600$代入$4.8x-1106.2$\r\n得$\\left( 5.83\\times 800-1827.2 \\right)-\\left( 4.8\\times 600-1106.2 \\right)$ \r\n $=\\left( 4664-1827.2 \\right)-\\left( 2880-1106.2 \\right)=1063$（元）\r\nSDGS-------------------------------------------------------------------------------------------------------------------\r\n2023 年4 月的電費調漲，選購能源效率分級級數較低的產品，不單是能為個人省錢，亦能夠實踐節能減碳，臺灣近年來時常出現缺水及限電危機，為了讓我們能在地球上永續生存，力行「綠色生活」營造一個低碳的生活環境是重要的。",
+        "answer": "",
+        "choices": [],
+        "has_choices": false,
+        "stem_embeds_choices": false,
+        "answer_type": "rational",
+        "answer_shape": "numeric",
+        "checker": "rational_checker",
+        "equivalence": "rational_equivalent",
+        "math_objects": [
+          "coordinate_point",
+          "three_coordinate_points",
+          "triangle",
+          "two_coordinate_points"
+        ],
+        "target_task": "evaluate_function_value",
+        "task_family": "function_concept_family",
+        "reasoning_type": [
+          "numeric_computation"
+        ],
+        "required_derivation": true,
+        "source_quality_issues": [
+          "broken_latex_left_right"
+        ],
+        "source_quality_reject": true,
+        "candidate_only": false,
+        "variables": [
+          "F",
+          "f",
+          "x"
+        ],
+        "givens": [
+          "F",
+          "f",
+          "x"
+        ],
+        "target": "evaluate_function_value",
+        "classifier_source": "ai",
+        "semantic_classification": {
+          "ai_target_task": "evaluate_function_value",
+          "ai_task_family": "function_concept_family",
+          "ai_confidence": 1.0,
+          "ai_best_candidate_id": "C1",
+          "ai_evidence": [
+            "The problem provides a piecewise function f(x) representing electricity costs based on usage x.",
+            "The task requires calculating the cost for specific values of x (800 and 600).",
+            "The solution involves substituting these values into the appropriate parts of the function to find the function values."
+          ],
+          "ai_rejected_candidates": {
+            "C2": "While function notation is used, the primary task is the calculation of values rather than explaining the notation itself.",
+            "C3": "The problem does not ask to identify the domain or range of the function.",
+            "C4": "The problem assumes the relation is a function and does not ask for verification of mapping properties.",
+            "C5": "The problem focuses on specific value evaluation rather than judging the general relationship between variables."
+          },
+          "ai_available": true,
+          "ai_error": "",
+          "ai_unavailable_reason": "",
+          "ai_semantic_status": "ok",
+          "ai_invalid_response_reason": "",
+          "parser_error": "",
+          "raw_response_preview": "",
+          "sanitized_response_preview": "",
+          "failed_stage": "",
+          "rule_target_task": "evaluate_function_value",
+          "rule_task_family": "function_concept_family",
+          "rule_confidence": 0.5,
+          "final_target_task": "evaluate_function_value",
+          "final_task_family": "function_concept_family",
+          "classifier_source": "ai",
+          "conflict_reason": "",
+          "source_mapping_warning": "",
+          "requires_human_action": false,
+          "ai_notes": "The example is a practical application of evaluating a piecewise linear function at specific input points.",
+          "skill_scoped_candidates": [
+            {
+              "candidate_id": "C1",
+              "target_task": "evaluate_function_value",
+              "task_family": "function_concept_family",
+              "problem_type_id": "evaluate_function_value",
+              "label": "evaluate_function_value",
+              "candidate_source": "anchor",
+              "in_anchor_scope": true,
+              "answer_type": "numeric",
+              "answer_shape": "numeric",
+              "math_objects": [],
+              "checker_key": "numeric_checker",
+              "equivalence_type": "numeric_equivalence",
+              "generator_contract": {
+                "template_variants": [
+                  {
+                    "id": "default",
+                    "label": "default",
+                    "stem_pattern": "依題意求解：{stem_hint}。",
+                    "weight": 1.0,
+                    "enabled": true
+                  }
+                ],
+                "parameter_schema": {
+                  "seed": {
+                    "type": "integer",
+                    "randomize": true
+                  },
+                  "difficulty_level": {
+                    "choices": [
+                      "level_1",
+                      "level_2",
+                      "level_3"
+                    ],
+                    "weights": [
+                      0.4,
+                      0.4,
+                      0.2
+                    ]
+                  }
+                },
+                "variation_dimensions": [
+                  "seed",
+                  "difficulty_level",
+                  "context_style"
+                ],
+                "difficulty_controls": {
+                  "level_1": {},
+                  "level_2": {},
+                  "level_3": {}
+                },
+                "anti_repetition_rules": {
+                  "avoid_same_template_consecutive": true,
+                  "avoid_same_ratio_consecutive": true,
+                  "avoid_same_point_names_consecutive": true,
+                  "avoid_same_answer_consecutive": true,
+                  "recent_history_window": 5,
+                  "signature_fields": [
+                    "problem_type_id",
+                    "template_variant",
+                    "ratio_form",
+                    "ratio_values",
+                    "coordinate_pattern",
+                    "answer"
+                  ]
+                },
+                "validity_constraints": [
+                  "answer derivable from givens"
+                ],
+                "answer_shape": "numeric",
+                "explanation_variants": [
+                  "stepwise"
+                ],
+                "sampling_strategy": "weighted_random",
+                "template_families": [
+                  "evaluate_function_value"
+                ]
+              },
+              "parameter_schema": {
+                "seed": {
+                  "type": "integer",
+                  "randomize": true
+                },
+                "difficulty_level": {
+                  "choices": [
+                    "level_1",
+                    "level_2",
+                    "level_3"
+                  ],
+                  "weights": [
+                    0.4,
+                    0.4,
+                    0.2
+                  ]
+                }
+              }
+            },
+            {
+              "candidate_id": "C2",
+              "target_task": "interpret_function_notation",
+              "task_family": "function_concept_family",
+              "problem_type_id": "interpret_function_notation",
+              "label": "interpret_function_notation",
+              "candidate_source": "anchor",
+              "in_anchor_scope": true,
+              "answer_type": "numeric",
+              "answer_shape": "numeric",
+              "math_objects": [],
+              "checker_key": "numeric_checker",
+              "equivalence_type": "numeric_equivalence",
+              "generator_contract": {
+                "template_variants": [
+                  {
+                    "id": "default",
+                    "label": "default",
+                    "stem_pattern": "依題意求解：{stem_hint}。",
+                    "weight": 1.0,
+                    "enabled": true
+                  }
+                ],
+                "parameter_schema": {
+                  "seed": {
+                    "type": "integer",
+                    "randomize": true
+                  },
+                  "difficulty_level": {
+                    "choices": [
+                      "level_1",
+                      "level_2",
+                      "level_3"
+                    ],
+                    "weights": [
+                      0.4,
+                      0.4,
+                      0.2
+                    ]
+                  }
+                },
+                "variation_dimensions": [
+                  "seed",
+                  "difficulty_level",
+                  "context_style"
+                ],
+                "difficulty_controls": {
+                  "level_1": {},
+                  "level_2": {},
+                  "level_3": {}
+                },
+                "anti_repetition_rules": {
+                  "avoid_same_template_consecutive": true,
+                  "avoid_same_ratio_consecutive": true,
+                  "avoid_same_point_names_consecutive": true,
+                  "avoid_same_answer_consecutive": true,
+                  "recent_history_window": 5,
+                  "signature_fields": [
+                    "problem_type_id",
+                    "template_variant",
+                    "ratio_form",
+                    "ratio_values",
+                    "coordinate_pattern",
+                    "answer"
+                  ]
+                },
+                "validity_constraints": [
+                  "answer derivable from givens"
+                ],
+                "answer_shape": "numeric",
+                "explanation_variants": [
+                  "stepwise"
+                ],
+                "sampling_strategy": "weighted_random",
+                "template_families": [
+                  "interpret_function_notation"
+                ]
+              },
+              "parameter_schema": {
+                "seed": {
+                  "type": "integer",
+                  "randomize": true
+                },
+                "difficulty_level": {
+                  "choices": [
+                    "level_1",
+                    "level_2",
+                    "level_3"
+                  ],
+                  "weights": [
+                    0.4,
+                    0.4,
+                    0.2
+                  ]
+                }
+              }
+            },
+            {
+              "candidate_id": "C3",
+              "target_task": "judge_domain_range_basic",
+              "task_family": "function_concept_family",
+              "problem_type_id": "judge_domain_range_basic",
+              "label": "judge_domain_range_basic",
+              "candidate_source": "anchor",
+              "in_anchor_scope": true,
+              "answer_type": "numeric",
+              "answer_shape": "numeric",
+              "math_objects": [],
+              "checker_key": "numeric_checker",
+              "equivalence_type": "numeric_equivalence",
+              "generator_contract": {
+                "template_variants": [
+                  {
+                    "id": "default",
+                    "label": "default",
+                    "stem_pattern": "依題意求解：{stem_hint}。",
+                    "weight": 1.0,
+                    "enabled": true
+                  }
+                ],
+                "parameter_schema": {
+                  "seed": {
+                    "type": "integer",
+                    "randomize": true
+                  },
+                  "difficulty_level": {
+                    "choices": [
+                      "level_1",
+                      "level_2",
+                      "level_3"
+                    ],
+                    "weights": [
+                      0.4,
+                      0.4,
+                      0.2
+                    ]
+                  }
+                },
+                "variation_dimensions": [
+                  "seed",
+                  "difficulty_level",
+                  "context_style"
+                ],
+                "difficulty_controls": {
+                  "level_1": {},
+                  "level_2": {},
+                  "level_3": {}
+                },
+                "anti_repetition_rules": {
+                  "avoid_same_template_consecutive": true,
+                  "avoid_same_ratio_consecutive": true,
+                  "avoid_same_point_names_consecutive": true,
+                  "avoid_same_answer_consecutive": true,
+                  "recent_history_window": 5,
+                  "signature_fields": [
+                    "problem_type_id",
+                    "template_variant",
+                    "ratio_form",
+                    "ratio_values",
+                    "coordinate_pattern",
+                    "answer"
+                  ]
+                },
+                "validity_constraints": [
+                  "answer derivable from givens"
+                ],
+                "answer_shape": "numeric",
+                "explanation_variants": [
+                  "stepwise"
+                ],
+                "sampling_strategy": "weighted_random",
+                "template_families": [
+                  "judge_domain_range_basic"
+                ]
+              },
+              "parameter_schema": {
+                "seed": {
+                  "type": "integer",
+                  "randomize": true
+                },
+                "difficulty_level": {
+                  "choices": [
+                    "level_1",
+                    "level_2",
+                    "level_3"
+                  ],
+                  "weights": [
+                    0.4,
+                    0.4,
+                    0.2
+                  ]
+                }
+              }
+            },
+            {
+              "candidate_id": "C4",
+              "target_task": "judge_function_from_mapping",
+              "task_family": "function_concept_family",
+              "problem_type_id": "judge_function_from_mapping",
+              "label": "judge_function_from_mapping",
+              "candidate_source": "anchor",
+              "in_anchor_scope": true,
+              "answer_type": "numeric",
+              "answer_shape": "numeric",
+              "math_objects": [],
+              "checker_key": "numeric_checker",
+              "equivalence_type": "numeric_equivalence",
+              "generator_contract": {
+                "template_variants": [
+                  {
+                    "id": "default",
+                    "label": "default",
+                    "stem_pattern": "依題意求解：{stem_hint}。",
+                    "weight": 1.0,
+                    "enabled": true
+                  }
+                ],
+                "parameter_schema": {
+                  "seed": {
+                    "type": "integer",
+                    "randomize": true
+                  },
+                  "difficulty_level": {
+                    "choices": [
+                      "level_1",
+                      "level_2",
+                      "level_3"
+                    ],
+                    "weights": [
+                      0.4,
+                      0.4,
+                      0.2
+                    ]
+                  }
+                },
+                "variation_dimensions": [
+                  "seed",
+                  "difficulty_level",
+                  "context_style"
+                ],
+                "difficulty_controls": {
+                  "level_1": {},
+                  "level_2": {},
+                  "level_3": {}
+                },
+                "anti_repetition_rules": {
+                  "avoid_same_template_consecutive": true,
+                  "avoid_same_ratio_consecutive": true,
+                  "avoid_same_point_names_consecutive": true,
+                  "avoid_same_answer_consecutive": true,
+                  "recent_history_window": 5,
+                  "signature_fields": [
+                    "problem_type_id",
+                    "template_variant",
+                    "ratio_form",
+                    "ratio_values",
+                    "coordinate_pattern",
+                    "answer"
+                  ]
+                },
+                "validity_constraints": [
+                  "answer derivable from givens"
+                ],
+                "answer_shape": "numeric",
+                "explanation_variants": [
+                  "stepwise"
+                ],
+                "sampling_strategy": "weighted_random",
+                "template_families": [
+                  "judge_function_from_mapping"
+                ]
+              },
+              "parameter_schema": {
+                "seed": {
+                  "type": "integer",
+                  "randomize": true
+                },
+                "difficulty_level": {
+                  "choices": [
+                    "level_1",
+                    "level_2",
+                    "level_3"
+                  ],
+                  "weights": [
+                    0.4,
+                    0.4,
+                    0.2
+                  ]
+                }
+              }
+            },
+            {
+              "candidate_id": "C5",
+              "target_task": "judge_function_relation",
+              "task_family": "function_concept_family",
+              "problem_type_id": "judge_function_relation",
+              "label": "judge_function_relation",
+              "candidate_source": "anchor",
+              "in_anchor_scope": true,
+              "answer_type": "numeric",
+              "answer_shape": "numeric",
+              "math_objects": [],
+              "checker_key": "numeric_checker",
+              "equivalence_type": "numeric_equivalence",
+              "generator_contract": {
+                "template_variants": [
+                  {
+                    "id": "default",
+                    "label": "default",
+                    "stem_pattern": "依題意求解：{stem_hint}。",
+                    "weight": 1.0,
+                    "enabled": true
+                  }
+                ],
+                "parameter_schema": {
+                  "seed": {
+                    "type": "integer",
+                    "randomize": true
+                  },
+                  "difficulty_level": {
+                    "choices": [
+                      "level_1",
+                      "level_2",
+                      "level_3"
+                    ],
+                    "weights": [
+                      0.4,
+                      0.4,
+                      0.2
+                    ]
+                  }
+                },
+                "variation_dimensions": [
+                  "seed",
+                  "difficulty_level",
+                  "context_style"
+                ],
+                "difficulty_controls": {
+                  "level_1": {},
+                  "level_2": {},
+                  "level_3": {}
+                },
+                "anti_repetition_rules": {
+                  "avoid_same_template_consecutive": true,
+                  "avoid_same_ratio_consecutive": true,
+                  "avoid_same_point_names_consecutive": true,
+                  "avoid_same_answer_consecutive": true,
+                  "recent_history_window": 5,
+                  "signature_fields": [
+                    "problem_type_id",
+                    "template_variant",
+                    "ratio_form",
+                    "ratio_values",
+                    "coordinate_pattern",
+                    "answer"
+                  ]
+                },
+                "validity_constraints": [
+                  "answer derivable from givens"
+                ],
+                "answer_shape": "numeric",
+                "explanation_variants": [
+                  "stepwise"
+                ],
+                "sampling_strategy": "weighted_random",
+                "template_families": [
+                  "judge_function_relation"
+                ]
+              },
+              "parameter_schema": {
+                "seed": {
+                  "type": "integer",
+                  "randomize": true
+                },
+                "difficulty_level": {
+                  "choices": [
+                    "level_1",
+                    "level_2",
+                    "level_3"
+                  ],
+                  "weights": [
+                    0.4,
+                    0.4,
+                    0.2
+                  ]
+                }
+              }
+            },
+            {
+              "candidate_id": "needs_review",
+              "target_task": "",
+              "task_family": "",
+              "problem_type_id": "needs_review",
+              "label": "needs_review",
+              "candidate_source": "needs_review",
+              "in_anchor_scope": false,
+              "answer_type": "",
+              "answer_shape": "",
+              "math_objects": [],
+              "checker_key": "manual_review_checker",
+              "equivalence_type": "manual_review_or_ai_judged",
+              "generator_contract": {},
+              "parameter_schema": {}
+            }
+          ],
+          "outsider_candidates": [],
+          "selected_subskill": "evaluate_function_value",
+          "selected_problem_type": "evaluate_function_value",
+          "candidate_source": "anchor",
+          "selected_generator_contract": {
+            "template_variants": [
+              {
+                "id": "default",
+                "label": "default",
+                "stem_pattern": "依題意求解：{stem_hint}。",
+                "weight": 1.0,
+                "enabled": true
+              }
+            ],
+            "parameter_schema": {
+              "seed": {
+                "type": "integer",
+                "randomize": true
+              },
+              "difficulty_level": {
+                "choices": [
+                  "level_1",
+                  "level_2",
+                  "level_3"
+                ],
+                "weights": [
+                  0.4,
+                  0.4,
+                  0.2
+                ]
+              }
+            },
+            "variation_dimensions": [
+              "seed",
+              "difficulty_level",
+              "context_style"
+            ],
+            "difficulty_controls": {
+              "level_1": {},
+              "level_2": {},
+              "level_3": {}
+            },
+            "anti_repetition_rules": {
+              "avoid_same_template_consecutive": true,
+              "avoid_same_ratio_consecutive": true,
+              "avoid_same_point_names_consecutive": true,
+              "avoid_same_answer_consecutive": true,
+              "recent_history_window": 5,
+              "signature_fields": [
+                "problem_type_id",
+                "template_variant",
+                "ratio_form",
+                "ratio_values",
+                "coordinate_pattern",
+                "answer"
+              ]
+            },
+            "validity_constraints": [
+              "answer derivable from givens"
+            ],
+            "answer_shape": "numeric",
+            "explanation_variants": [
+              "stepwise"
+            ],
+            "sampling_strategy": "weighted_random",
+            "template_families": [
+              "evaluate_function_value"
+            ]
+          },
+          "parameter_schema": {
+            "seed": {
+              "type": "integer",
+              "randomize": true
+            },
+            "difficulty_level": {
+              "choices": [
+                "level_1",
+                "level_2",
+                "level_3"
+              ],
+              "weights": [
+                0.4,
+                0.4,
+                0.2
+              ]
+            }
+          },
+          "variable_randomization_notes": [],
+          "checker_key": "numeric_checker",
+          "equivalence_type": "numeric_equivalence",
+          "skill_scope_trusted": true,
+          "target_task": "evaluate_function_value",
+          "task_family": "function_concept_family",
+          "math_objects": [
+            "coordinate_point",
+            "three_coordinate_points",
+            "triangle",
+            "two_coordinate_points"
+          ],
+          "answer_type": "numeric",
+          "answer_shape": "numeric",
+          "source_type": "worked_example",
+          "example_label": "例題2",
+          "practice_label": "",
+          "linked_example": "",
+          "linked_example_id": null,
+          "linked_example_task_family": "",
+          "structure_consistency": "not_applicable",
+          "sequence_context_used": true,
+          "structure_context_used": true,
+          "confidence_adjustment_reason": "sequence_context_used",
+          "possible_structure_mismatch": false,
+          "possible_mixed_source_context": false
+        },
+        "source_structure_context": {
+          "source_type": "worked_example",
+          "example_label": "例題2",
+          "practice_label": "",
+          "linked_example": "",
+          "section_order": 0,
+          "example_number": 2,
+          "practice_number": null,
+          "nearby_worked_examples": [
+            {
+              "example_id": 4430,
+              "source_type": "worked_example",
+              "example_label": "例題1",
+              "practice_label": "",
+              "section_order": 0,
+              "title_head": "例1"
+            },
+            {
+              "example_id": 4433,
+              "source_type": "worked_example",
+              "example_label": "例題8",
+              "practice_label": "",
+              "section_order": 0,
+              "title_head": "例8"
+            },
+            {
+              "example_id": 4434,
+              "source_type": "worked_example",
+              "example_label": "例題9",
+              "practice_label": "",
+              "section_order": 0,
+              "title_head": "例9"
+            },
+            {
+              "example_id": 4444,
+              "source_type": "worked_example",
+              "example_label": "例題10",
+              "practice_label": "",
+              "section_order": 0,
+              "title_head": "例10"
+            },
+            {
+              "example_id": 4445,
+              "source_type": "worked_example",
+              "example_label": "例題11",
+              "practice_label": "",
+              "section_order": 0,
+              "title_head": "例11"
+            }
+          ],
+          "linked_worked_example": null,
+          "linked_practices": [],
+          "same_section_sequence": [
+            {
+              "example_id": 4424,
+              "source_type": "unknown",
+              "example_label": "",
+              "practice_label": "",
+              "section_order": 0,
+              "title_head": "1-2習題 基礎題 8"
+            },
+            {
+              "example_id": 4425,
+              "source_type": "unknown",
+              "example_label": "",
+              "practice_label": "",
+              "section_order": 0,
+              "title_head": "1-2習題 進階題 9"
+            },
+            {
+              "example_id": 4426,
+              "source_type": "unknown",
+              "example_label": "",
+              "practice_label": "",
+              "section_order": 0,
+              "title_head": "1-2習題 進階題 10"
+            },
+            {
+              "example_id": 4430,
+              "source_type": "worked_example",
+              "example_label": "例題1",
+              "practice_label": "",
+              "section_order": 0,
+              "title_head": "例1"
+            },
+            {
+              "example_id": 4431,
+              "source_type": "worked_example",
+              "example_label": "例題2",
+              "practice_label": "",
+              "section_order": 0,
+              "title_head": "例2"
+            },
+            {
+              "example_id": 4433,
+              "source_type": "worked_example",
+              "example_label": "例題8",
+              "practice_label": "",
+              "section_order": 0,
+              "title_head": "例8"
+            },
+            {
+              "example_id": 4434,
+              "source_type": "worked_example",
+              "example_label": "例題9",
+              "practice_label": "",
+              "section_order": 0,
+              "title_head": "例9"
+            },
+            {
+              "example_id": 4441,
+              "source_type": "in_class_practice",
+              "example_label": "",
+              "practice_label": "隨堂練習10",
+              "section_order": 0,
+              "title_head": "隨堂練習10"
+            },
+            {
+              "example_id": 4442,
+              "source_type": "in_class_practice",
+              "example_label": "",
+              "practice_label": "隨堂練習11",
+              "section_order": 0,
+              "title_head": "隨堂練習11"
+            },
+            {
+              "example_id": 4444,
+              "source_type": "worked_example",
+              "example_label": "例題10",
+              "practice_label": "",
+              "section_order": 0,
+              "title_head": "例10"
+            },
+            {
+              "example_id": 4445,
+              "source_type": "worked_example",
+              "example_label": "例題11",
+              "practice_label": "",
+              "section_order": 0,
+              "title_head": "例11"
+            },
+            {
+              "example_id": 4446,
+              "source_type": "unknown",
+              "example_label": "",
+              "practice_label": "",
+              "section_order": 0,
+              "title_head": "112統測B"
+            },
+            {
+              "example_id": 4448,
+              "source_type": "in_class_practice",
+              "example_label": "",
+              "practice_label": "隨堂練習8",
+              "section_order": 0,
+              "title_head": "隨堂練習8"
+            },
+            {
+              "example_id": 4449,
+              "source_type": "in_class_practice",
+              "example_label": "",
+              "practice_label": "隨堂練習9",
+              "section_order": 0,
+              "title_head": "隨堂練習9"
+            },
+            {
+              "example_id": 4500,
+              "source_type": "unknown",
+              "example_label": "",
+              "practice_label": "",
+              "section_order": 0,
+              "title_head": "CH1自我評量 題10"
+            },
+            {
+              "example_id": 4515,
+              "source_type": "unknown",
+              "example_label": "",
+              "practice_label": "",
+              "section_order": 0,
+              "title_head": "CH1自我評量 題8"
+            },
+            {
+              "example_id": 4516,
+              "source_type": "unknown",
+              "example_label": "",
+              "practice_label": "",
+              "section_order": 0,
+              "title_head": "CH1自我評量 題9"
+            }
+          ]
+        },
+        "induction_tier": "enrichment",
+        "enrichment_reasons": [
+          "applied_context",
+          "figure_mixed",
+          "historical_narrative",
+          "long_stem",
+          "math_file",
+          "mixed_unrelated_context",
+          "piecewise_application",
+          "sdgs"
+        ],
+        "included_in_core_induction": false,
+        "equivalence_type": "rational_equivalent",
+        "checker_key": "rational_checker"
+      },
+      "answer_shape": "numeric",
+      "classification_confidence": "low",
+      "classification_reason": "ai",
+      "risk_flags": [],
+      "semantic_classification": {
+        "ai_target_task": "evaluate_function_value",
+        "ai_task_family": "function_concept_family",
+        "ai_confidence": 1.0,
+        "ai_best_candidate_id": "C1",
+        "ai_evidence": [
+          "The problem provides a piecewise function f(x) representing electricity costs based on usage x.",
+          "The task requires calculating the cost for specific values of x (800 and 600).",
+          "The solution involves substituting these values into the appropriate parts of the function to find the function values."
+        ],
+        "ai_rejected_candidates": {
+          "C2": "While function notation is used, the primary task is the calculation of values rather than explaining the notation itself.",
+          "C3": "The problem does not ask to identify the domain or range of the function.",
+          "C4": "The problem assumes the relation is a function and does not ask for verification of mapping properties.",
+          "C5": "The problem focuses on specific value evaluation rather than judging the general relationship between variables."
+        },
+        "ai_available": true,
+        "ai_error": "",
+        "ai_unavailable_reason": "",
+        "ai_semantic_status": "ok",
+        "ai_invalid_response_reason": "",
+        "parser_error": "",
+        "raw_response_preview": "",
+        "sanitized_response_preview": "",
+        "failed_stage": "",
+        "rule_target_task": "evaluate_function_value",
+        "rule_task_family": "function_concept_family",
+        "rule_confidence": 0.5,
+        "final_target_task": "evaluate_function_value",
+        "final_task_family": "function_concept_family",
+        "classifier_source": "ai",
+        "conflict_reason": "",
+        "source_mapping_warning": "",
+        "requires_human_action": false,
+        "ai_notes": "The example is a practical application of evaluating a piecewise linear function at specific input points.",
+        "skill_scoped_candidates": [
+          {
+            "candidate_id": "C1",
+            "target_task": "evaluate_function_value",
+            "task_family": "function_concept_family",
+            "problem_type_id": "evaluate_function_value",
+            "label": "evaluate_function_value",
+            "candidate_source": "anchor",
+            "in_anchor_scope": true,
+            "answer_type": "numeric",
+            "answer_shape": "numeric",
+            "math_objects": [],
+            "checker_key": "numeric_checker",
+            "equivalence_type": "numeric_equivalence",
+            "generator_contract": {
+              "template_variants": [
+                {
+                  "id": "default",
+                  "label": "default",
+                  "stem_pattern": "依題意求解：{stem_hint}。",
+                  "weight": 1.0,
+                  "enabled": true
+                }
+              ],
+              "parameter_schema": {
+                "seed": {
+                  "type": "integer",
+                  "randomize": true
+                },
+                "difficulty_level": {
+                  "choices": [
+                    "level_1",
+                    "level_2",
+                    "level_3"
+                  ],
+                  "weights": [
+                    0.4,
+                    0.4,
+                    0.2
+                  ]
+                }
+              },
+              "variation_dimensions": [
+                "seed",
+                "difficulty_level",
+                "context_style"
+              ],
+              "difficulty_controls": {
+                "level_1": {},
+                "level_2": {},
+                "level_3": {}
+              },
+              "anti_repetition_rules": {
+                "avoid_same_template_consecutive": true,
+                "avoid_same_ratio_consecutive": true,
+                "avoid_same_point_names_consecutive": true,
+                "avoid_same_answer_consecutive": true,
+                "recent_history_window": 5,
+                "signature_fields": [
+                  "problem_type_id",
+                  "template_variant",
+                  "ratio_form",
+                  "ratio_values",
+                  "coordinate_pattern",
+                  "answer"
+                ]
+              },
+              "validity_constraints": [
+                "answer derivable from givens"
+              ],
+              "answer_shape": "numeric",
+              "explanation_variants": [
+                "stepwise"
+              ],
+              "sampling_strategy": "weighted_random",
+              "template_families": [
+                "evaluate_function_value"
+              ]
+            },
+            "parameter_schema": {
+              "seed": {
+                "type": "integer",
+                "randomize": true
+              },
+              "difficulty_level": {
+                "choices": [
+                  "level_1",
+                  "level_2",
+                  "level_3"
+                ],
+                "weights": [
+                  0.4,
+                  0.4,
+                  0.2
+                ]
+              }
+            }
+          },
+          {
+            "candidate_id": "C2",
+            "target_task": "interpret_function_notation",
+            "task_family": "function_concept_family",
+            "problem_type_id": "interpret_function_notation",
+            "label": "interpret_function_notation",
+            "candidate_source": "anchor",
+            "in_anchor_scope": true,
+            "answer_type": "numeric",
+            "answer_shape": "numeric",
+            "math_objects": [],
+            "checker_key": "numeric_checker",
+            "equivalence_type": "numeric_equivalence",
+            "generator_contract": {
+              "template_variants": [
+                {
+                  "id": "default",
+                  "label": "default",
+                  "stem_pattern": "依題意求解：{stem_hint}。",
+                  "weight": 1.0,
+                  "enabled": true
+                }
+              ],
+              "parameter_schema": {
+                "seed": {
+                  "type": "integer",
+                  "randomize": true
+                },
+                "difficulty_level": {
+                  "choices": [
+                    "level_1",
+                    "level_2",
+                    "level_3"
+                  ],
+                  "weights": [
+                    0.4,
+                    0.4,
+                    0.2
+                  ]
+                }
+              },
+              "variation_dimensions": [
+                "seed",
+                "difficulty_level",
+                "context_style"
+              ],
+              "difficulty_controls": {
+                "level_1": {},
+                "level_2": {},
+                "level_3": {}
+              },
+              "anti_repetition_rules": {
+                "avoid_same_template_consecutive": true,
+                "avoid_same_ratio_consecutive": true,
+                "avoid_same_point_names_consecutive": true,
+                "avoid_same_answer_consecutive": true,
+                "recent_history_window": 5,
+                "signature_fields": [
+                  "problem_type_id",
+                  "template_variant",
+                  "ratio_form",
+                  "ratio_values",
+                  "coordinate_pattern",
+                  "answer"
+                ]
+              },
+              "validity_constraints": [
+                "answer derivable from givens"
+              ],
+              "answer_shape": "numeric",
+              "explanation_variants": [
+                "stepwise"
+              ],
+              "sampling_strategy": "weighted_random",
+              "template_families": [
+                "interpret_function_notation"
+              ]
+            },
+            "parameter_schema": {
+              "seed": {
+                "type": "integer",
+                "randomize": true
+              },
+              "difficulty_level": {
+                "choices": [
+                  "level_1",
+                  "level_2",
+                  "level_3"
+                ],
+                "weights": [
+                  0.4,
+                  0.4,
+                  0.2
+                ]
+              }
+            }
+          },
+          {
+            "candidate_id": "C3",
+            "target_task": "judge_domain_range_basic",
+            "task_family": "function_concept_family",
+            "problem_type_id": "judge_domain_range_basic",
+            "label": "judge_domain_range_basic",
+            "candidate_source": "anchor",
+            "in_anchor_scope": true,
+            "answer_type": "numeric",
+            "answer_shape": "numeric",
+            "math_objects": [],
+            "checker_key": "numeric_checker",
+            "equivalence_type": "numeric_equivalence",
+            "generator_contract": {
+              "template_variants": [
+                {
+                  "id": "default",
+                  "label": "default",
+                  "stem_pattern": "依題意求解：{stem_hint}。",
+                  "weight": 1.0,
+                  "enabled": true
+                }
+              ],
+              "parameter_schema": {
+                "seed": {
+                  "type": "integer",
+                  "randomize": true
+                },
+                "difficulty_level": {
+                  "choices": [
+                    "level_1",
+                    "level_2",
+                    "level_3"
+                  ],
+                  "weights": [
+                    0.4,
+                    0.4,
+                    0.2
+                  ]
+                }
+              },
+              "variation_dimensions": [
+                "seed",
+                "difficulty_level",
+                "context_style"
+              ],
+              "difficulty_controls": {
+                "level_1": {},
+                "level_2": {},
+                "level_3": {}
+              },
+              "anti_repetition_rules": {
+                "avoid_same_template_consecutive": true,
+                "avoid_same_ratio_consecutive": true,
+                "avoid_same_point_names_consecutive": true,
+                "avoid_same_answer_consecutive": true,
+                "recent_history_window": 5,
+                "signature_fields": [
+                  "problem_type_id",
+                  "template_variant",
+                  "ratio_form",
+                  "ratio_values",
+                  "coordinate_pattern",
+                  "answer"
+                ]
+              },
+              "validity_constraints": [
+                "answer derivable from givens"
+              ],
+              "answer_shape": "numeric",
+              "explanation_variants": [
+                "stepwise"
+              ],
+              "sampling_strategy": "weighted_random",
+              "template_families": [
+                "judge_domain_range_basic"
+              ]
+            },
+            "parameter_schema": {
+              "seed": {
+                "type": "integer",
+                "randomize": true
+              },
+              "difficulty_level": {
+                "choices": [
+                  "level_1",
+                  "level_2",
+                  "level_3"
+                ],
+                "weights": [
+                  0.4,
+                  0.4,
+                  0.2
+                ]
+              }
+            }
+          },
+          {
+            "candidate_id": "C4",
+            "target_task": "judge_function_from_mapping",
+            "task_family": "function_concept_family",
+            "problem_type_id": "judge_function_from_mapping",
+            "label": "judge_function_from_mapping",
+            "candidate_source": "anchor",
+            "in_anchor_scope": true,
+            "answer_type": "numeric",
+            "answer_shape": "numeric",
+            "math_objects": [],
+            "checker_key": "numeric_checker",
+            "equivalence_type": "numeric_equivalence",
+            "generator_contract": {
+              "template_variants": [
+                {
+                  "id": "default",
+                  "label": "default",
+                  "stem_pattern": "依題意求解：{stem_hint}。",
+                  "weight": 1.0,
+                  "enabled": true
+                }
+              ],
+              "parameter_schema": {
+                "seed": {
+                  "type": "integer",
+                  "randomize": true
+                },
+                "difficulty_level": {
+                  "choices": [
+                    "level_1",
+                    "level_2",
+                    "level_3"
+                  ],
+                  "weights": [
+                    0.4,
+                    0.4,
+                    0.2
+                  ]
+                }
+              },
+              "variation_dimensions": [
+                "seed",
+                "difficulty_level",
+                "context_style"
+              ],
+              "difficulty_controls": {
+                "level_1": {},
+                "level_2": {},
+                "level_3": {}
+              },
+              "anti_repetition_rules": {
+                "avoid_same_template_consecutive": true,
+                "avoid_same_ratio_consecutive": true,
+                "avoid_same_point_names_consecutive": true,
+                "avoid_same_answer_consecutive": true,
+                "recent_history_window": 5,
+                "signature_fields": [
+                  "problem_type_id",
+                  "template_variant",
+                  "ratio_form",
+                  "ratio_values",
+                  "coordinate_pattern",
+                  "answer"
+                ]
+              },
+              "validity_constraints": [
+                "answer derivable from givens"
+              ],
+              "answer_shape": "numeric",
+              "explanation_variants": [
+                "stepwise"
+              ],
+              "sampling_strategy": "weighted_random",
+              "template_families": [
+                "judge_function_from_mapping"
+              ]
+            },
+            "parameter_schema": {
+              "seed": {
+                "type": "integer",
+                "randomize": true
+              },
+              "difficulty_level": {
+                "choices": [
+                  "level_1",
+                  "level_2",
+                  "level_3"
+                ],
+                "weights": [
+                  0.4,
+                  0.4,
+                  0.2
+                ]
+              }
+            }
+          },
+          {
+            "candidate_id": "C5",
+            "target_task": "judge_function_relation",
+            "task_family": "function_concept_family",
+            "problem_type_id": "judge_function_relation",
+            "label": "judge_function_relation",
+            "candidate_source": "anchor",
+            "in_anchor_scope": true,
+            "answer_type": "numeric",
+            "answer_shape": "numeric",
+            "math_objects": [],
+            "checker_key": "numeric_checker",
+            "equivalence_type": "numeric_equivalence",
+            "generator_contract": {
+              "template_variants": [
+                {
+                  "id": "default",
+                  "label": "default",
+                  "stem_pattern": "依題意求解：{stem_hint}。",
+                  "weight": 1.0,
+                  "enabled": true
+                }
+              ],
+              "parameter_schema": {
+                "seed": {
+                  "type": "integer",
+                  "randomize": true
+                },
+                "difficulty_level": {
+                  "choices": [
+                    "level_1",
+                    "level_2",
+                    "level_3"
+                  ],
+                  "weights": [
+                    0.4,
+                    0.4,
+                    0.2
+                  ]
+                }
+              },
+              "variation_dimensions": [
+                "seed",
+                "difficulty_level",
+                "context_style"
+              ],
+              "difficulty_controls": {
+                "level_1": {},
+                "level_2": {},
+                "level_3": {}
+              },
+              "anti_repetition_rules": {
+                "avoid_same_template_consecutive": true,
+                "avoid_same_ratio_consecutive": true,
+                "avoid_same_point_names_consecutive": true,
+                "avoid_same_answer_consecutive": true,
+                "recent_history_window": 5,
+                "signature_fields": [
+                  "problem_type_id",
+                  "template_variant",
+                  "ratio_form",
+                  "ratio_values",
+                  "coordinate_pattern",
+                  "answer"
+                ]
+              },
+              "validity_constraints": [
+                "answer derivable from givens"
+              ],
+              "answer_shape": "numeric",
+              "explanation_variants": [
+                "stepwise"
+              ],
+              "sampling_strategy": "weighted_random",
+              "template_families": [
+                "judge_function_relation"
+              ]
+            },
+            "parameter_schema": {
+              "seed": {
+                "type": "integer",
+                "randomize": true
+              },
+              "difficulty_level": {
+                "choices": [
+                  "level_1",
+                  "level_2",
+                  "level_3"
+                ],
+                "weights": [
+                  0.4,
+                  0.4,
+                  0.2
+                ]
+              }
+            }
+          },
+          {
+            "candidate_id": "needs_review",
+            "target_task": "",
+            "task_family": "",
+            "problem_type_id": "needs_review",
+            "label": "needs_review",
+            "candidate_source": "needs_review",
+            "in_anchor_scope": false,
+            "answer_type": "",
+            "answer_shape": "",
+            "math_objects": [],
+            "checker_key": "manual_review_checker",
+            "equivalence_type": "manual_review_or_ai_judged",
+            "generator_contract": {},
+            "parameter_schema": {}
+          }
+        ],
+        "outsider_candidates": [],
+        "selected_subskill": "evaluate_function_value",
+        "selected_problem_type": "evaluate_function_value",
+        "candidate_source": "anchor",
+        "selected_generator_contract": {
+          "template_variants": [
+            {
+              "id": "default",
+              "label": "default",
+              "stem_pattern": "依題意求解：{stem_hint}。",
+              "weight": 1.0,
+              "enabled": true
+            }
+          ],
+          "parameter_schema": {
+            "seed": {
+              "type": "integer",
+              "randomize": true
+            },
+            "difficulty_level": {
+              "choices": [
+                "level_1",
+                "level_2",
+                "level_3"
+              ],
+              "weights": [
+                0.4,
+                0.4,
+                0.2
+              ]
+            }
+          },
+          "variation_dimensions": [
+            "seed",
+            "difficulty_level",
+            "context_style"
+          ],
+          "difficulty_controls": {
+            "level_1": {},
+            "level_2": {},
+            "level_3": {}
+          },
+          "anti_repetition_rules": {
+            "avoid_same_template_consecutive": true,
+            "avoid_same_ratio_consecutive": true,
+            "avoid_same_point_names_consecutive": true,
+            "avoid_same_answer_consecutive": true,
+            "recent_history_window": 5,
+            "signature_fields": [
+              "problem_type_id",
+              "template_variant",
+              "ratio_form",
+              "ratio_values",
+              "coordinate_pattern",
+              "answer"
+            ]
+          },
+          "validity_constraints": [
+            "answer derivable from givens"
+          ],
+          "answer_shape": "numeric",
+          "explanation_variants": [
+            "stepwise"
+          ],
+          "sampling_strategy": "weighted_random",
+          "template_families": [
+            "evaluate_function_value"
+          ]
+        },
+        "parameter_schema": {
+          "seed": {
+            "type": "integer",
+            "randomize": true
+          },
+          "difficulty_level": {
+            "choices": [
+              "level_1",
+              "level_2",
+              "level_3"
+            ],
+            "weights": [
+              0.4,
+              0.4,
+              0.2
+            ]
+          }
+        },
+        "variable_randomization_notes": [],
+        "checker_key": "numeric_checker",
+        "equivalence_type": "numeric_equivalence",
+        "skill_scope_trusted": true,
+        "target_task": "evaluate_function_value",
+        "task_family": "function_concept_family",
+        "math_objects": [
+          "coordinate_point",
+          "three_coordinate_points",
+          "triangle",
+          "two_coordinate_points"
+        ],
+        "answer_type": "numeric",
+        "answer_shape": "numeric",
+        "source_type": "worked_example",
+        "example_label": "例題2",
+        "practice_label": "",
+        "linked_example": "",
+        "linked_example_id": null,
+        "linked_example_task_family": "",
+        "structure_consistency": "not_applicable",
+        "sequence_context_used": true,
+        "structure_context_used": true,
+        "confidence_adjustment_reason": "sequence_context_used",
+        "possible_structure_mismatch": false,
+        "possible_mixed_source_context": false
+      },
+      "subskill_id": "evaluate_function_value",
+      "classification_source": "ai",
+      "induction_eligibility": "excluded_source_quality_reject",
+      "answer_type": "rational",
+      "equivalence_type": "rational_equivalent",
+      "checker_key": "rational_checker"
+    },
+    {
       "example_id": 4433,
       "detected_problem_type_id": "short_answer_interpret_function_notation_short_answer",
       "example_feature": {
@@ -24397,15 +27611,15 @@
           "ai_best_candidate_id": "interpret_function_notation",
           "ai_evidence": [
             "題目要求在坐標平面上畫出常數函數 y = f(x) = -2 的圖形。",
-            "提供的候選子技能（C1-C5）皆屬於函數概念家族（function_concept_family），包含求值、符號辨識、定義域值域、映射判斷及函數關係判斷。",
-            "候選清單中缺乏與「繪製圖形」或「線型函數圖形」相關的子技能。"
+            "提供的候選子技能 (C1-C5) 均屬於函數概念家族 (function_concept_family)，包含求值、符號辨釋、定義域值域、映射判斷及函數關係判斷。",
+            "候選清單中缺乏「描繪函數圖形」或「線性函數圖形」相關的子技能。"
           ],
           "ai_rejected_candidates": {
-            "C1": "此題為作圖題，非單純求函數值。",
-            "C2": "此題重點在於圖形繪製，而非僅僅理解函數符號的意義。",
+            "C1": "此題為繪圖題，而非單純求特定點的函數值。",
+            "C2": "此題涉及函數符號，但核心任務是繪圖而非僅僅是辨釋符號意義。",
             "C3": "此題未要求判斷定義域或值域。",
             "C4": "此題非判斷映射是否為函數。",
-            "C5": "此題非判斷變數間的函數關係。"
+            "C5": "此題非判斷變數間是否構成函數關係。"
           },
           "ai_available": false,
           "ai_error": "",
@@ -24425,7 +27639,7 @@
           "conflict_reason": "",
           "source_mapping_warning": "",
           "requires_human_action": false,
-          "ai_notes": "題目要求畫出常數函數的圖形，但提供的候選子技能僅限於函數的基本概念（如求值、符號、定義域等），不包含線型函數的圖形特徵或作圖。建議增加與圖形繪製相關的子技能。",
+          "ai_notes": "題目任務為「描繪常數函數圖形」，但候選清單僅包含函數基本概念（求值、定義、符號等），缺乏繪圖相關的子技能（如 graph_linear_function 或 graph_constant_function）。",
           "skill_scoped_candidates": [
             {
               "candidate_id": "C1",
@@ -24977,6 +28191,14 @@
               "title_head": "例1"
             },
             {
+              "example_id": 4431,
+              "source_type": "worked_example",
+              "example_label": "例題2",
+              "practice_label": "",
+              "section_order": 0,
+              "title_head": "例2"
+            },
+            {
               "example_id": 4434,
               "source_type": "worked_example",
               "example_label": "例題9",
@@ -25035,6 +28257,14 @@
               "practice_label": "",
               "section_order": 0,
               "title_head": "例1"
+            },
+            {
+              "example_id": 4431,
+              "source_type": "worked_example",
+              "example_label": "例題2",
+              "practice_label": "",
+              "section_order": 0,
+              "title_head": "例2"
             },
             {
               "example_id": 4433,
@@ -25152,15 +28382,15 @@
         "ai_best_candidate_id": "interpret_function_notation",
         "ai_evidence": [
           "題目要求在坐標平面上畫出常數函數 y = f(x) = -2 的圖形。",
-          "提供的候選子技能（C1-C5）皆屬於函數概念家族（function_concept_family），包含求值、符號辨識、定義域值域、映射判斷及函數關係判斷。",
-          "候選清單中缺乏與「繪製圖形」或「線型函數圖形」相關的子技能。"
+          "提供的候選子技能 (C1-C5) 均屬於函數概念家族 (function_concept_family)，包含求值、符號辨釋、定義域值域、映射判斷及函數關係判斷。",
+          "候選清單中缺乏「描繪函數圖形」或「線性函數圖形」相關的子技能。"
         ],
         "ai_rejected_candidates": {
-          "C1": "此題為作圖題，非單純求函數值。",
-          "C2": "此題重點在於圖形繪製，而非僅僅理解函數符號的意義。",
+          "C1": "此題為繪圖題，而非單純求特定點的函數值。",
+          "C2": "此題涉及函數符號，但核心任務是繪圖而非僅僅是辨釋符號意義。",
           "C3": "此題未要求判斷定義域或值域。",
           "C4": "此題非判斷映射是否為函數。",
-          "C5": "此題非判斷變數間的函數關係。"
+          "C5": "此題非判斷變數間是否構成函數關係。"
         },
         "ai_available": false,
         "ai_error": "",
@@ -25180,7 +28410,7 @@
         "conflict_reason": "",
         "source_mapping_warning": "",
         "requires_human_action": false,
-        "ai_notes": "題目要求畫出常數函數的圖形，但提供的候選子技能僅限於函數的基本概念（如求值、符號、定義域等），不包含線型函數的圖形特徵或作圖。建議增加與圖形繪製相關的子技能。",
+        "ai_notes": "題目任務為「描繪常數函數圖形」，但候選清單僅包含函數基本概念（求值、定義、符號等），缺乏繪圖相關的子技能（如 graph_linear_function 或 graph_constant_function）。",
         "skill_scoped_candidates": [
           {
             "candidate_id": "C1",
@@ -25767,16 +28997,16 @@
           "ai_confidence": 0.0,
           "ai_best_candidate_id": "interpret_function_notation",
           "ai_evidence": [
-            "題目要求在坐標平面上畫出一次函數 y=3x-6 的圖形。",
-            "提供的候選子技能 (C1-C5) 皆屬於函數概念家族 (function_concept_family)，包含求值、符號辨釋、定義域值域、映射判斷及函數關係判斷。",
-            "目前的候選清單中缺乏「描繪函數圖形」或「一次函數圖形」相關的子技能。"
+            "The question asks to draw the graph of the linear function y=f(x)=3x-6 on a coordinate plane.",
+            "The provided candidates are evaluate_function_value, interpret_function_notation, judge_domain_range_basic, judge_function_from_mapping, and judge_function_relation.",
+            "None of the available candidates cover the task of graphing or plotting a linear function."
           ],
           "ai_rejected_candidates": {
-            "C1": "求函數值僅為描繪圖形的其中一個步驟，並非此題目的核心任務。",
-            "C2": "此題重點在於繪圖而非辨識函數符號的意義。",
-            "C3": "此題未涉及定義域或值域的判斷。",
-            "C4": "此題並非判斷是否為函數映射。",
-            "C5": "此題並非判斷變數間是否構成函數關係。"
+            "C1": "Evaluating function values is a necessary step for graphing, but the primary task is the construction of the graph itself.",
+            "C2": "While the problem uses function notation, the objective is to draw a graph, not just interpret the notation.",
+            "C3": "The problem does not ask to determine the domain or range.",
+            "C4": "The problem is not about identifying a function from a mapping diagram.",
+            "C5": "The problem is not about judging whether a relation is a function."
           },
           "ai_available": false,
           "ai_error": "",
@@ -25796,7 +29026,7 @@
           "conflict_reason": "",
           "source_mapping_warning": "",
           "requires_human_action": false,
-          "ai_notes": "題目核心為「描繪一次函數圖形」，但提供的候選子技能僅限於函數基本概念（求值、定義、映射等），不包含圖形繪製，故選擇 needs_review。",
+          "ai_notes": "The specific subskill for graphing linear functions (e.g., graph_linear_function) is missing from the candidate list. Since the task is to draw a graph, none of the concept-based subskills are a perfect fit.",
           "skill_scoped_candidates": [
             {
               "candidate_id": "C1",
@@ -26348,6 +29578,14 @@
               "title_head": "例1"
             },
             {
+              "example_id": 4431,
+              "source_type": "worked_example",
+              "example_label": "例題2",
+              "practice_label": "",
+              "section_order": 0,
+              "title_head": "例2"
+            },
+            {
               "example_id": 4433,
               "source_type": "worked_example",
               "example_label": "例題8",
@@ -26406,6 +29644,14 @@
               "practice_label": "",
               "section_order": 0,
               "title_head": "例1"
+            },
+            {
+              "example_id": 4431,
+              "source_type": "worked_example",
+              "example_label": "例題2",
+              "practice_label": "",
+              "section_order": 0,
+              "title_head": "例2"
             },
             {
               "example_id": 4433,
@@ -26522,16 +29768,16 @@
         "ai_confidence": 0.0,
         "ai_best_candidate_id": "interpret_function_notation",
         "ai_evidence": [
-          "題目要求在坐標平面上畫出一次函數 y=3x-6 的圖形。",
-          "提供的候選子技能 (C1-C5) 皆屬於函數概念家族 (function_concept_family)，包含求值、符號辨釋、定義域值域、映射判斷及函數關係判斷。",
-          "目前的候選清單中缺乏「描繪函數圖形」或「一次函數圖形」相關的子技能。"
+          "The question asks to draw the graph of the linear function y=f(x)=3x-6 on a coordinate plane.",
+          "The provided candidates are evaluate_function_value, interpret_function_notation, judge_domain_range_basic, judge_function_from_mapping, and judge_function_relation.",
+          "None of the available candidates cover the task of graphing or plotting a linear function."
         ],
         "ai_rejected_candidates": {
-          "C1": "求函數值僅為描繪圖形的其中一個步驟，並非此題目的核心任務。",
-          "C2": "此題重點在於繪圖而非辨識函數符號的意義。",
-          "C3": "此題未涉及定義域或值域的判斷。",
-          "C4": "此題並非判斷是否為函數映射。",
-          "C5": "此題並非判斷變數間是否構成函數關係。"
+          "C1": "Evaluating function values is a necessary step for graphing, but the primary task is the construction of the graph itself.",
+          "C2": "While the problem uses function notation, the objective is to draw a graph, not just interpret the notation.",
+          "C3": "The problem does not ask to determine the domain or range.",
+          "C4": "The problem is not about identifying a function from a mapping diagram.",
+          "C5": "The problem is not about judging whether a relation is a function."
         },
         "ai_available": false,
         "ai_error": "",
@@ -26551,7 +29797,7 @@
         "conflict_reason": "",
         "source_mapping_warning": "",
         "requires_human_action": false,
-        "ai_notes": "題目核心為「描繪一次函數圖形」，但提供的候選子技能僅限於函數基本概念（求值、定義、映射等），不包含圖形繪製，故選擇 needs_review。",
+        "ai_notes": "The specific subskill for graphing linear functions (e.g., graph_linear_function) is missing from the candidate list. Since the task is to draw a graph, none of the concept-based subskills are a perfect fit.",
         "skill_scoped_candidates": [
           {
             "candidate_id": "C1",
@@ -27142,15 +30388,15 @@
           "ai_best_candidate_id": "interpret_function_notation",
           "ai_evidence": [
             "題目要求從圖形中求出直線的 x 截距、y 截距以及函數 f(x) 的解析式。",
-            "提供的候選子技能（evaluate_function_value, interpret_function_notation, judge_domain_range_basic, judge_function_from_mapping, judge_function_relation）皆屬於函數的基本概念（function_concept_family）。",
-            "「由圖形求線性函數解析式」或「求截距」屬於線性函數的圖形性質或方程式判定，不屬於上述基本概念子技能的範疇。"
+            "候選子技能清單僅包含函數的基本概念（求值、符號辨識、定義域值域、映射判斷、關係判斷）。",
+            "清單中缺乏「求線型函數解析式」或「判讀圖形截距」等相關子技能。"
           ],
           "ai_rejected_candidates": {
-            "C1": "此題並非單純給定 x 求 f(x) 的函數值評估。",
-            "C2": "此題並非解釋函數符號的意義。",
-            "C3": "此題不涉及定義域或值域的判斷。",
-            "C4": "此題不涉及判斷是否為函數的對應關係。",
-            "C5": "此題不涉及判斷變數間的函數關係。"
+            "C1": "evaluate_function_value 僅涉及給定 x 求 f(x)，而本題重點在於求出函數解析式本身。",
+            "C2": "interpret_function_notation 涉及對函數符號的理解，而非從圖形推導函數。",
+            "C3": "judge_domain_range_basic 涉及定義域與值域，本題未要求。",
+            "C4": "judge_function_from_mapping 涉及映射圖判斷，與本題座標系圖形無關。",
+            "C5": "judge_function_relation 涉及判斷關係是否為函數，本題已給定是函數。"
           },
           "ai_available": false,
           "ai_error": "",
@@ -27170,7 +30416,7 @@
           "conflict_reason": "",
           "source_mapping_warning": "",
           "requires_human_action": false,
-          "ai_notes": "題目核心為「由圖形求線性函數方程式」及「求截距」，這在數學課程中通常對應到線性函數的圖形特徵或待定係數法，而提供的候選清單僅限於函數的基本概念（如定義、符號、求值），因此無合適選項。",
+          "ai_notes": "本題屬於「求線型函數解析式」或「線型函數的圖形特徵（截距）」，目前的候選清單中沒有對應的子技能，建議新增相關標籤。",
           "skill_scoped_candidates": [
             {
               "candidate_id": "C1",
@@ -27723,6 +30969,14 @@
               "title_head": "例1"
             },
             {
+              "example_id": 4431,
+              "source_type": "worked_example",
+              "example_label": "例題2",
+              "practice_label": "",
+              "section_order": 0,
+              "title_head": "例2"
+            },
+            {
               "example_id": 4433,
               "source_type": "worked_example",
               "example_label": "例題8",
@@ -27781,6 +31035,14 @@
               "practice_label": "",
               "section_order": 0,
               "title_head": "例1"
+            },
+            {
+              "example_id": 4431,
+              "source_type": "worked_example",
+              "example_label": "例題2",
+              "practice_label": "",
+              "section_order": 0,
+              "title_head": "例2"
             },
             {
               "example_id": 4433,
@@ -27898,15 +31160,15 @@
         "ai_best_candidate_id": "interpret_function_notation",
         "ai_evidence": [
           "題目要求從圖形中求出直線的 x 截距、y 截距以及函數 f(x) 的解析式。",
-          "提供的候選子技能（evaluate_function_value, interpret_function_notation, judge_domain_range_basic, judge_function_from_mapping, judge_function_relation）皆屬於函數的基本概念（function_concept_family）。",
-          "「由圖形求線性函數解析式」或「求截距」屬於線性函數的圖形性質或方程式判定，不屬於上述基本概念子技能的範疇。"
+          "候選子技能清單僅包含函數的基本概念（求值、符號辨識、定義域值域、映射判斷、關係判斷）。",
+          "清單中缺乏「求線型函數解析式」或「判讀圖形截距」等相關子技能。"
         ],
         "ai_rejected_candidates": {
-          "C1": "此題並非單純給定 x 求 f(x) 的函數值評估。",
-          "C2": "此題並非解釋函數符號的意義。",
-          "C3": "此題不涉及定義域或值域的判斷。",
-          "C4": "此題不涉及判斷是否為函數的對應關係。",
-          "C5": "此題不涉及判斷變數間的函數關係。"
+          "C1": "evaluate_function_value 僅涉及給定 x 求 f(x)，而本題重點在於求出函數解析式本身。",
+          "C2": "interpret_function_notation 涉及對函數符號的理解，而非從圖形推導函數。",
+          "C3": "judge_domain_range_basic 涉及定義域與值域，本題未要求。",
+          "C4": "judge_function_from_mapping 涉及映射圖判斷，與本題座標系圖形無關。",
+          "C5": "judge_function_relation 涉及判斷關係是否為函數，本題已給定是函數。"
         },
         "ai_available": false,
         "ai_error": "",
@@ -27926,7 +31188,7 @@
         "conflict_reason": "",
         "source_mapping_warning": "",
         "requires_human_action": false,
-        "ai_notes": "題目核心為「由圖形求線性函數方程式」及「求截距」，這在數學課程中通常對應到線性函數的圖形特徵或待定係數法，而提供的候選清單僅限於函數的基本概念（如定義、符號、求值），因此無合適選項。",
+        "ai_notes": "本題屬於「求線型函數解析式」或「線型函數的圖形特徵（截距）」，目前的候選清單中沒有對應的子技能，建議新增相關標籤。",
         "skill_scoped_candidates": [
           {
             "candidate_id": "C1",
@@ -28501,17 +31763,18 @@
         "semantic_classification": {
           "ai_target_task": "evaluate_function_value",
           "ai_task_family": "function_concept_family",
-          "ai_confidence": 0.9,
+          "ai_confidence": 0.95,
           "ai_best_candidate_id": "C1",
           "ai_evidence": [
-            "題目要求根據線型函數關係求出特定時間下的手機費用，這屬於求函數值的範疇。",
-            "第一小題要求基本費用 m，即為函數的起始值或特定點的值；第二小題要求 120 分鐘的費用，即為給定自變數求應變數的值。",
-            "此題型符合 function_concept_family 中的 evaluate_function_value 任務。"
+            "題目要求找出基本費 m 以及通話 120 分鐘的總費用。",
+            "這涉及在已知線型函數關係的情況下，計算特定自變數（時間）對應的應變數（費用）數值。",
+            "屬於函數值的求值計算。"
           ],
           "ai_rejected_candidates": {
-            "C2": "題目並未強調函數符號 f(x) 的解讀，而是著重於實際數值的計算。",
-            "C5": "題目已明確指出通話費與時間為線型函數關係，不需判斷是否為函數關係。",
-            "C6": "雖然涉及數值計算，但題目背景明確為線型函數，應優先選擇 anchor 範圍內的 evaluate_function_value。"
+            "C2": "並非著重於函數符號的解讀。",
+            "C3": "並非判斷定義域或值域。",
+            "C4": "並非判斷對應關係是否為函數。",
+            "C5": "題目已給定為線型函數，重點在於求值而非判斷關係。"
           },
           "ai_available": true,
           "ai_error": "",
@@ -28531,7 +31794,7 @@
           "conflict_reason": "",
           "source_mapping_warning": "",
           "requires_human_action": false,
-          "ai_notes": "此題為典型的線型函數應用題，透過圖形或已知條件求出函數關係後計算特定點的函數值。",
+          "ai_notes": "此題為典型的應用題，透過圖形或描述建立線型函數後求特定點的函數值。",
           "skill_scoped_candidates": [
             {
               "candidate_id": "C1",
@@ -29261,6 +32524,14 @@
               "title_head": "例1"
             },
             {
+              "example_id": 4431,
+              "source_type": "worked_example",
+              "example_label": "例題2",
+              "practice_label": "",
+              "section_order": 0,
+              "title_head": "例2"
+            },
+            {
               "example_id": 4433,
               "source_type": "worked_example",
               "example_label": "例題8",
@@ -29319,6 +32590,14 @@
               "practice_label": "",
               "section_order": 0,
               "title_head": "例1"
+            },
+            {
+              "example_id": 4431,
+              "source_type": "worked_example",
+              "example_label": "例題2",
+              "practice_label": "",
+              "section_order": 0,
+              "title_head": "例2"
             },
             {
               "example_id": 4433,
@@ -29431,17 +32710,18 @@
       "semantic_classification": {
         "ai_target_task": "evaluate_function_value",
         "ai_task_family": "function_concept_family",
-        "ai_confidence": 0.9,
+        "ai_confidence": 0.95,
         "ai_best_candidate_id": "C1",
         "ai_evidence": [
-          "題目要求根據線型函數關係求出特定時間下的手機費用，這屬於求函數值的範疇。",
-          "第一小題要求基本費用 m，即為函數的起始值或特定點的值；第二小題要求 120 分鐘的費用，即為給定自變數求應變數的值。",
-          "此題型符合 function_concept_family 中的 evaluate_function_value 任務。"
+          "題目要求找出基本費 m 以及通話 120 分鐘的總費用。",
+          "這涉及在已知線型函數關係的情況下，計算特定自變數（時間）對應的應變數（費用）數值。",
+          "屬於函數值的求值計算。"
         ],
         "ai_rejected_candidates": {
-          "C2": "題目並未強調函數符號 f(x) 的解讀，而是著重於實際數值的計算。",
-          "C5": "題目已明確指出通話費與時間為線型函數關係，不需判斷是否為函數關係。",
-          "C6": "雖然涉及數值計算，但題目背景明確為線型函數，應優先選擇 anchor 範圍內的 evaluate_function_value。"
+          "C2": "並非著重於函數符號的解讀。",
+          "C3": "並非判斷定義域或值域。",
+          "C4": "並非判斷對應關係是否為函數。",
+          "C5": "題目已給定為線型函數，重點在於求值而非判斷關係。"
         },
         "ai_available": true,
         "ai_error": "",
@@ -29461,7 +32741,7 @@
         "conflict_reason": "",
         "source_mapping_warning": "",
         "requires_human_action": false,
-        "ai_notes": "此題為典型的線型函數應用題，透過圖形或已知條件求出函數關係後計算特定點的函數值。",
+        "ai_notes": "此題為典型的應用題，透過圖形或描述建立線型函數後求特定點的函數值。",
         "skill_scoped_candidates": [
           {
             "candidate_id": "C1",
@@ -30228,16 +33508,15 @@
           "ai_confidence": 0.0,
           "ai_best_candidate_id": "interpret_function_notation",
           "ai_evidence": [
-            "題目要求從函數圖形求出 x 截距、y 截距以及函數解析式 f(x) = ax + b。",
-            "候選清單中的 subskills (evaluate_function_value, interpret_function_notation, judge_domain_range_basic, judge_function_from_mapping, judge_function_relation) 皆不包含「求截距」或「求線型函數解析式」等核心任務。",
-            "此題屬於「由圖形求線型函數」或「線型函數的截距」，在提供的候選清單中無對應項。"
+            "題目要求從圖形中求出直線的 x 截距、y 截距以及函數 f(x) = ax + b 的解析式。",
+            "提供的候選子技能（求函數值、解釋函數符號、判斷定義域值域、由對應關係判斷函數、判斷函數關係）皆不包含「從圖形求一次函數解析式」或「求截距」的任務。"
           ],
           "ai_rejected_candidates": {
-            "C1": "evaluate_function_value 通常指已知函數求特定點的值，而非求函數解析式或截距。",
-            "C2": "interpret_function_notation 涉及對函數符號意義的理解，不涵蓋求解析式的計算過程。",
-            "C3": "judge_domain_range_basic 涉及定義域與值域，與本題求解析式無關。",
-            "C4": "judge_function_from_mapping 涉及映射圖判斷，與本題無關。",
-            "C5": "judge_function_relation 涉及判斷關係是否為函數，與本題無關。"
+            "C1": "此子技能通常指給定 x 求 f(x) 的值，而非求出函數解析式本身。",
+            "C2": "此子技能涉及對函數符號意義的理解，不涵蓋從圖形推導函數解析式的計算過程。",
+            "C3": "題目未涉及定義域或值域的判斷。",
+            "C4": "題目並非透過對應圖（如箭號圖）來判斷函數。",
+            "C5": "題目並非判斷一個關係是否為函數。"
           },
           "ai_available": false,
           "ai_error": "",
@@ -30257,7 +33536,7 @@
           "conflict_reason": "",
           "source_mapping_warning": "",
           "requires_human_action": false,
-          "ai_notes": "該題目涉及從圖形資訊（截距）推導線型函數解析式，這屬於線型函數的核心技能，但目前提供的候選清單僅限於函數的基本概念（如定義、符號、求值、定義域），缺乏「求線型函數解析式」或「線型函數圖形特徵」相關的 subskill。",
+          "ai_notes": "目前的候選子技能清單僅限於函數的基本概念（function_concept_family），而本題屬於一次函數的圖形與解析式求法，建議增加如「從圖形求一次函數解析式」或「一次函數的截距」等子技能。",
           "skill_scoped_candidates": [
             {
               "candidate_id": "C1",
@@ -30802,12 +34081,12 @@
           "practice_number": null,
           "nearby_worked_examples": [
             {
-              "example_id": 4430,
+              "example_id": 4431,
               "source_type": "worked_example",
-              "example_label": "例題1",
+              "example_label": "例題2",
               "practice_label": "",
               "section_order": 0,
-              "title_head": "例1"
+              "title_head": "例2"
             },
             {
               "example_id": 4433,
@@ -30876,6 +34155,14 @@
               "practice_label": "",
               "section_order": 0,
               "title_head": "例1"
+            },
+            {
+              "example_id": 4431,
+              "source_type": "worked_example",
+              "example_label": "例題2",
+              "practice_label": "",
+              "section_order": 0,
+              "title_head": "例2"
             },
             {
               "example_id": 4433,
@@ -30992,16 +34279,15 @@
         "ai_confidence": 0.0,
         "ai_best_candidate_id": "interpret_function_notation",
         "ai_evidence": [
-          "題目要求從函數圖形求出 x 截距、y 截距以及函數解析式 f(x) = ax + b。",
-          "候選清單中的 subskills (evaluate_function_value, interpret_function_notation, judge_domain_range_basic, judge_function_from_mapping, judge_function_relation) 皆不包含「求截距」或「求線型函數解析式」等核心任務。",
-          "此題屬於「由圖形求線型函數」或「線型函數的截距」，在提供的候選清單中無對應項。"
+          "題目要求從圖形中求出直線的 x 截距、y 截距以及函數 f(x) = ax + b 的解析式。",
+          "提供的候選子技能（求函數值、解釋函數符號、判斷定義域值域、由對應關係判斷函數、判斷函數關係）皆不包含「從圖形求一次函數解析式」或「求截距」的任務。"
         ],
         "ai_rejected_candidates": {
-          "C1": "evaluate_function_value 通常指已知函數求特定點的值，而非求函數解析式或截距。",
-          "C2": "interpret_function_notation 涉及對函數符號意義的理解，不涵蓋求解析式的計算過程。",
-          "C3": "judge_domain_range_basic 涉及定義域與值域，與本題求解析式無關。",
-          "C4": "judge_function_from_mapping 涉及映射圖判斷，與本題無關。",
-          "C5": "judge_function_relation 涉及判斷關係是否為函數，與本題無關。"
+          "C1": "此子技能通常指給定 x 求 f(x) 的值，而非求出函數解析式本身。",
+          "C2": "此子技能涉及對函數符號意義的理解，不涵蓋從圖形推導函數解析式的計算過程。",
+          "C3": "題目未涉及定義域或值域的判斷。",
+          "C4": "題目並非透過對應圖（如箭號圖）來判斷函數。",
+          "C5": "題目並非判斷一個關係是否為函數。"
         },
         "ai_available": false,
         "ai_error": "",
@@ -31021,7 +34307,7 @@
         "conflict_reason": "",
         "source_mapping_warning": "",
         "requires_human_action": false,
-        "ai_notes": "該題目涉及從圖形資訊（截距）推導線型函數解析式，這屬於線型函數的核心技能，但目前提供的候選清單僅限於函數的基本概念（如定義、符號、求值、定義域），缺乏「求線型函數解析式」或「線型函數圖形特徵」相關的 subskill。",
+        "ai_notes": "目前的候選子技能清單僅限於函數的基本概念（function_concept_family），而本題屬於一次函數的圖形與解析式求法，建議增加如「從圖形求一次函數解析式」或「一次函數的截距」等子技能。",
         "skill_scoped_candidates": [
           {
             "candidate_id": "C1",
@@ -31599,14 +34885,16 @@
           "ai_confidence": 0.9,
           "ai_best_candidate_id": "C1",
           "ai_evidence": [
-            "題目要求計算特定通話時間（1500秒）下的費用，這屬於求函數值的範疇 (evaluate_function_value)。",
-            "題目明確提到通話時間與費用成線型函數關係。",
-            "第一題要求基本費用，即在特定區間（300秒以內）的函數值。"
+            "題目描述通話時間與費用之間存在線型函數關係",
+            "第二小題要求計算通話 1500 秒時的費用，這屬於給定自變數求應變數的函數值計算",
+            "第一題要求基本費用，即為函數在特定區間或起始點的輸出值"
           ],
           "ai_rejected_candidates": {
-            "C2": "雖然題目涉及對情境的理解，但核心任務是計算具體的數值而非解釋函數符號的含義。",
-            "C5": "題目已經給定函數關係，不需要判斷是否為函數關係。",
-            "C6": "C6 是外部候選者 (outsider)，在有合適的錨點候選者 (anchor) C1 的情況下，應優先選擇 C1。"
+            "C2": "題目並未著重於函數符號 f(x) 的解讀，而是具體數值的計算",
+            "C3": "題目並非要求判斷定義域或值域",
+            "C4": "題目並非判斷是否為函數映射關係",
+            "C5": "題目已給定為線型函數關係，不需判斷關係類型",
+            "C6": "雖然涉及計算，但題目背景明確屬於線型函數範疇，應優先選擇 anchor 內的子技能"
           },
           "ai_available": true,
           "ai_error": "",
@@ -31626,7 +34914,7 @@
           "conflict_reason": "",
           "source_mapping_warning": "",
           "requires_human_action": false,
-          "ai_notes": "此題為線型函數的應用，透過給定的條件（或圖形）求出函數關係後，計算特定自變數下的應變數值，符合 evaluate_function_value 的定義。",
+          "ai_notes": "此題為線型函數的應用題，核心任務是根據給定的函數關係（圖形或文字描述）求出特定點的函數值（費用）。",
           "skill_scoped_candidates": [
             {
               "candidate_id": "C1",
@@ -32348,12 +35636,12 @@
           "practice_number": null,
           "nearby_worked_examples": [
             {
-              "example_id": 4430,
+              "example_id": 4431,
               "source_type": "worked_example",
-              "example_label": "例題1",
+              "example_label": "例題2",
               "practice_label": "",
               "section_order": 0,
-              "title_head": "例1"
+              "title_head": "例2"
             },
             {
               "example_id": 4433,
@@ -32422,6 +35710,14 @@
               "practice_label": "",
               "section_order": 0,
               "title_head": "例1"
+            },
+            {
+              "example_id": 4431,
+              "source_type": "worked_example",
+              "example_label": "例題2",
+              "practice_label": "",
+              "section_order": 0,
+              "title_head": "例2"
             },
             {
               "example_id": 4433,
@@ -32537,14 +35833,16 @@
         "ai_confidence": 0.9,
         "ai_best_candidate_id": "C1",
         "ai_evidence": [
-          "題目要求計算特定通話時間（1500秒）下的費用，這屬於求函數值的範疇 (evaluate_function_value)。",
-          "題目明確提到通話時間與費用成線型函數關係。",
-          "第一題要求基本費用，即在特定區間（300秒以內）的函數值。"
+          "題目描述通話時間與費用之間存在線型函數關係",
+          "第二小題要求計算通話 1500 秒時的費用，這屬於給定自變數求應變數的函數值計算",
+          "第一題要求基本費用，即為函數在特定區間或起始點的輸出值"
         ],
         "ai_rejected_candidates": {
-          "C2": "雖然題目涉及對情境的理解，但核心任務是計算具體的數值而非解釋函數符號的含義。",
-          "C5": "題目已經給定函數關係，不需要判斷是否為函數關係。",
-          "C6": "C6 是外部候選者 (outsider)，在有合適的錨點候選者 (anchor) C1 的情況下，應優先選擇 C1。"
+          "C2": "題目並未著重於函數符號 f(x) 的解讀，而是具體數值的計算",
+          "C3": "題目並非要求判斷定義域或值域",
+          "C4": "題目並非判斷是否為函數映射關係",
+          "C5": "題目已給定為線型函數關係，不需判斷關係類型",
+          "C6": "雖然涉及計算，但題目背景明確屬於線型函數範疇，應優先選擇 anchor 內的子技能"
         },
         "ai_available": true,
         "ai_error": "",
@@ -32564,7 +35862,7 @@
         "conflict_reason": "",
         "source_mapping_warning": "",
         "requires_human_action": false,
-        "ai_notes": "此題為線型函數的應用，透過給定的條件（或圖形）求出函數關係後，計算特定自變數下的應變數值，符合 evaluate_function_value 的定義。",
+        "ai_notes": "此題為線型函數的應用題，核心任務是根據給定的函數關係（圖形或文字描述）求出特定點的函數值（費用）。",
         "skill_scoped_candidates": [
           {
             "candidate_id": "C1",
@@ -33337,17 +36635,17 @@
           "ai_confidence": 0.0,
           "ai_best_candidate_id": "needs_review",
           "ai_evidence": [
-            "題目要求計算線段三等分點的坐標，屬於分點公式（division point formula）的應用。",
-            "提供的候選子技能（C1-C5）皆屬於函數概念家族（function_concept_family），如函數值求值、符號辨釋、定義域值域、映射判斷等。",
-            "此題目不涉及函數映射、函數符號或函數值的計算，與現有的函數概念子技能不符。"
+            "題目要求找出將線段 AD 三等分的點 C 之坐標，這屬於解析幾何中的分點公式問題。",
+            "候選子技能 C1 至 C5 皆屬於函數概念（如函數值計算、符號辨識、定義域值域、映射判斷等），與分點公式或坐標幾何計算不符。",
+            "雖然題目涉及計算，但 C6 (compute_numeric) 過於籠統，且不屬於該技能錨點 (Linear Function) 的預期任務家族。"
           ],
           "ai_rejected_candidates": {
-            "C1": "此題並非給定函數 f(x) 並要求計算特定 x 的函數值。",
-            "C2": "此題未出現函數符號 f(x) 或其相關表示法。",
-            "C3": "此題不涉及函數的定義域或值域判斷。",
-            "C4": "此題並非判斷一組對應關係是否為函數。",
+            "C1": "此題並非給定函數 f(x) 並要求計算特定輸入的函數值。",
+            "C2": "此題不涉及函數符號的解讀。",
+            "C3": "此題不涉及判斷函數的定義域或值域。",
+            "C4": "此題不涉及判斷映射關係是否為函數。",
             "C5": "此題不涉及判斷兩個變量之間的函數關係。",
-            "C6": "雖然涉及數值計算，但此題具有明確的幾何分點公式特徵，不應僅歸類為一般數值計算。"
+            "C6": "雖然涉及數值計算，但此題核心為分點公式，且 C6 為 outsider 類別，在沒有合適錨點子技能時應優先考慮 needs_review。"
           },
           "ai_available": false,
           "ai_error": "",
@@ -33367,7 +36665,7 @@
           "conflict_reason": "needs_review",
           "source_mapping_warning": "",
           "requires_human_action": false,
-          "ai_notes": "題目內容為坐標幾何中的分點公式（三等分點），而提供的候選子技能全數屬於函數概念範疇，兩者不匹配。建議將此題歸類至坐標系或分點公式相關技能。",
+          "ai_notes": "題目為典型的分點公式應用（三等分點），但提供的子技能清單僅限於函數概念（function_concept_family），缺乏坐標幾何或分點公式相關的選項。因此選擇 needs_review。",
           "skill_scoped_candidates": [
             {
               "candidate_id": "C1",
@@ -34013,12 +37311,12 @@
           "practice_number": null,
           "nearby_worked_examples": [
             {
-              "example_id": 4430,
+              "example_id": 4431,
               "source_type": "worked_example",
-              "example_label": "例題1",
+              "example_label": "例題2",
               "practice_label": "",
               "section_order": 0,
-              "title_head": "例1"
+              "title_head": "例2"
             },
             {
               "example_id": 4433,
@@ -34087,6 +37385,14 @@
               "practice_label": "",
               "section_order": 0,
               "title_head": "例1"
+            },
+            {
+              "example_id": 4431,
+              "source_type": "worked_example",
+              "example_label": "例題2",
+              "practice_label": "",
+              "section_order": 0,
+              "title_head": "例2"
             },
             {
               "example_id": 4433,
@@ -34203,17 +37509,17 @@
         "ai_confidence": 0.0,
         "ai_best_candidate_id": "needs_review",
         "ai_evidence": [
-          "題目要求計算線段三等分點的坐標，屬於分點公式（division point formula）的應用。",
-          "提供的候選子技能（C1-C5）皆屬於函數概念家族（function_concept_family），如函數值求值、符號辨釋、定義域值域、映射判斷等。",
-          "此題目不涉及函數映射、函數符號或函數值的計算，與現有的函數概念子技能不符。"
+          "題目要求找出將線段 AD 三等分的點 C 之坐標，這屬於解析幾何中的分點公式問題。",
+          "候選子技能 C1 至 C5 皆屬於函數概念（如函數值計算、符號辨識、定義域值域、映射判斷等），與分點公式或坐標幾何計算不符。",
+          "雖然題目涉及計算，但 C6 (compute_numeric) 過於籠統，且不屬於該技能錨點 (Linear Function) 的預期任務家族。"
         ],
         "ai_rejected_candidates": {
-          "C1": "此題並非給定函數 f(x) 並要求計算特定 x 的函數值。",
-          "C2": "此題未出現函數符號 f(x) 或其相關表示法。",
-          "C3": "此題不涉及函數的定義域或值域判斷。",
-          "C4": "此題並非判斷一組對應關係是否為函數。",
+          "C1": "此題並非給定函數 f(x) 並要求計算特定輸入的函數值。",
+          "C2": "此題不涉及函數符號的解讀。",
+          "C3": "此題不涉及判斷函數的定義域或值域。",
+          "C4": "此題不涉及判斷映射關係是否為函數。",
           "C5": "此題不涉及判斷兩個變量之間的函數關係。",
-          "C6": "雖然涉及數值計算，但此題具有明確的幾何分點公式特徵，不應僅歸類為一般數值計算。"
+          "C6": "雖然涉及數值計算，但此題核心為分點公式，且 C6 為 outsider 類別，在沒有合適錨點子技能時應優先考慮 needs_review。"
         },
         "ai_available": false,
         "ai_error": "",
@@ -34233,7 +37539,7 @@
         "conflict_reason": "needs_review",
         "source_mapping_warning": "",
         "requires_human_action": false,
-        "ai_notes": "題目內容為坐標幾何中的分點公式（三等分點），而提供的候選子技能全數屬於函數概念範疇，兩者不匹配。建議將此題歸類至坐標系或分點公式相關技能。",
+        "ai_notes": "題目為典型的分點公式應用（三等分點），但提供的子技能清單僅限於函數概念（function_concept_family），缺乏坐標幾何或分點公式相關的選項。因此選擇 needs_review。",
         "skill_scoped_candidates": [
           {
             "candidate_id": "C1",
@@ -34923,16 +38229,16 @@
           "ai_confidence": 0.0,
           "ai_best_candidate_id": "interpret_function_notation",
           "ai_evidence": [
-            "題目要求從圖形中求出直線的 x 截距與 y 截距，並求出函數 f(x) 的解析式。",
-            "提供的候選子技能（evaluate_function_value, interpret_function_notation, judge_domain_range_basic, judge_function_from_mapping, judge_function_relation）皆屬於函數概念家族，側重於函數定義、符號、定義域值域及對應關係。",
-            "目前候選清單中缺乏「由圖形求線型函數解析式」或「求直線截距」等具體針對線型函數運算的子技能。"
+            "題目要求從圖形中求出直線的 x 截距、y 截距以及函數 f(x) 的解析式。",
+            "候選子技能列表僅包含函數概念（求值、符號辨釋、定義域值域、映射判斷、函數關係判斷）。",
+            "題目核心在於「求一次函數解析式」與「截距概念」，現有子技能中無一符合此特定任務。"
           ],
           "ai_rejected_candidates": {
-            "C1": "此題並非給定 x 求 f(x) 的值，而是要先求出函數解析式。",
-            "C2": "此題涉及函數符號的使用，但核心任務是求出函數解析式，而非僅僅解釋符號意義。",
+            "C1": "此題並非單純給定 x 求 f(x) 的值，而是要求出整個函數解析式。",
+            "C2": "此題涉及函數符號的使用，但核心任務是求出函數式與截距，而非僅僅辨識符號意義。",
             "C3": "題目未涉及定義域或值域的判斷。",
-            "C4": "題目並非判斷對應圖表是否為函數。",
-            "C5": "題目並非判斷兩個變量之間的函數關係。"
+            "C4": "題目未涉及映射圖或判斷是否為函數。",
+            "C5": "題目未涉及判斷變數間是否構成函數關係。"
           },
           "ai_available": false,
           "ai_error": "",
@@ -34952,7 +38258,7 @@
           "conflict_reason": "",
           "source_mapping_warning": "",
           "requires_human_action": false,
-          "ai_notes": "該題目屬於「由圖形求線型函數」或「直線的截距」，在目前的候選清單中沒有完全符合的子技能，建議新增相關子技能或檢查技能錨點範圍。",
+          "ai_notes": "該題目屬於「求一次函數解析式」或「一次函數的圖形特徵（截距）」，但提供的候選子技能僅限於「函數概念」家族。建議新增與一次函數（Linear Function）具體性質相關的子技能，如「從圖形求一次函數式」或「求一次函數的截距」。",
           "skill_scoped_candidates": [
             {
               "candidate_id": "C1",
@@ -35497,12 +38803,12 @@
           "practice_number": 10,
           "nearby_worked_examples": [
             {
-              "example_id": 4430,
+              "example_id": 4431,
               "source_type": "worked_example",
-              "example_label": "例題1",
+              "example_label": "例題2",
               "practice_label": "",
               "section_order": 0,
-              "title_head": "例1"
+              "title_head": "例2"
             },
             {
               "example_id": 4433,
@@ -35571,6 +38877,14 @@
               "practice_label": "",
               "section_order": 0,
               "title_head": "例1"
+            },
+            {
+              "example_id": 4431,
+              "source_type": "worked_example",
+              "example_label": "例題2",
+              "practice_label": "",
+              "section_order": 0,
+              "title_head": "例2"
             },
             {
               "example_id": 4433,
@@ -35687,16 +39001,16 @@
         "ai_confidence": 0.0,
         "ai_best_candidate_id": "interpret_function_notation",
         "ai_evidence": [
-          "題目要求從圖形中求出直線的 x 截距與 y 截距，並求出函數 f(x) 的解析式。",
-          "提供的候選子技能（evaluate_function_value, interpret_function_notation, judge_domain_range_basic, judge_function_from_mapping, judge_function_relation）皆屬於函數概念家族，側重於函數定義、符號、定義域值域及對應關係。",
-          "目前候選清單中缺乏「由圖形求線型函數解析式」或「求直線截距」等具體針對線型函數運算的子技能。"
+          "題目要求從圖形中求出直線的 x 截距、y 截距以及函數 f(x) 的解析式。",
+          "候選子技能列表僅包含函數概念（求值、符號辨釋、定義域值域、映射判斷、函數關係判斷）。",
+          "題目核心在於「求一次函數解析式」與「截距概念」，現有子技能中無一符合此特定任務。"
         ],
         "ai_rejected_candidates": {
-          "C1": "此題並非給定 x 求 f(x) 的值，而是要先求出函數解析式。",
-          "C2": "此題涉及函數符號的使用，但核心任務是求出函數解析式，而非僅僅解釋符號意義。",
+          "C1": "此題並非單純給定 x 求 f(x) 的值，而是要求出整個函數解析式。",
+          "C2": "此題涉及函數符號的使用，但核心任務是求出函數式與截距，而非僅僅辨識符號意義。",
           "C3": "題目未涉及定義域或值域的判斷。",
-          "C4": "題目並非判斷對應圖表是否為函數。",
-          "C5": "題目並非判斷兩個變量之間的函數關係。"
+          "C4": "題目未涉及映射圖或判斷是否為函數。",
+          "C5": "題目未涉及判斷變數間是否構成函數關係。"
         },
         "ai_available": false,
         "ai_error": "",
@@ -35716,7 +39030,7 @@
         "conflict_reason": "",
         "source_mapping_warning": "",
         "requires_human_action": false,
-        "ai_notes": "該題目屬於「由圖形求線型函數」或「直線的截距」，在目前的候選清單中沒有完全符合的子技能，建議新增相關子技能或檢查技能錨點範圍。",
+        "ai_notes": "該題目屬於「求一次函數解析式」或「一次函數的圖形特徵（截距）」，但提供的候選子技能僅限於「函數概念」家族。建議新增與一次函數（Linear Function）具體性質相關的子技能，如「從圖形求一次函數式」或「求一次函數的截距」。",
         "skill_scoped_candidates": [
           {
             "candidate_id": "C1",
@@ -36291,17 +39605,17 @@
         "semantic_classification": {
           "ai_target_task": "evaluate_function_value",
           "ai_task_family": "function_concept_family",
-          "ai_confidence": 0.95,
+          "ai_confidence": 0.9,
           "ai_best_candidate_id": "C1",
           "ai_evidence": [
-            "題目要求在已知托運費用（函數值）的情況下，求出對應的行李重量（自變數）。",
-            "這屬於線型函數中求特定數值的應用，符合 evaluate_function_value 的定義。"
+            "題目描述行李費用與重量成線型函數關係，並給出特定費用（函數值）要求回推重量（自變數）。",
+            "此類已知函數值求自變數或已知自變數求函數值的計算，屬於 evaluate_function_value 的範疇。",
+            "該候選項目位於 anchor 範圍內且符合 function_concept_family。"
           ],
           "ai_rejected_candidates": {
-            "C2": "題目並非著重於函數符號 f(x) 的解讀。",
-            "C3": "題目並非要求判斷定義域或值域。",
-            "C4": "題目並非判斷映射是否為函數。",
-            "C5": "題目並非判斷兩個變數之間是否具備函數關係。"
+            "C2": "題目並非著重於函數符號（如 f(x)）的意義解釋，而是具體的數值計算。",
+            "C5": "題目已明確指出是線型函數關係，不需要判斷兩變數是否構成函數。",
+            "C6": "雖然涉及計算，但 C1 更符合線型函數技能的學科特定分類。"
           },
           "ai_available": true,
           "ai_error": "",
@@ -36321,7 +39635,7 @@
           "conflict_reason": "",
           "source_mapping_warning": "",
           "requires_human_action": false,
-          "ai_notes": "此題為線型函數的應用題，透過給定的函數值（費用 850 元）回推自變數（重量），屬於函數值的計算範疇。",
+          "ai_notes": "題目給定 y = 850 並要求透過線型函數關係求 x，這屬於函數求值與應用的標準題型。",
           "skill_scoped_candidates": [
             {
               "candidate_id": "C1",
@@ -37043,12 +40357,12 @@
           "practice_number": 11,
           "nearby_worked_examples": [
             {
-              "example_id": 4430,
+              "example_id": 4431,
               "source_type": "worked_example",
-              "example_label": "例題1",
+              "example_label": "例題2",
               "practice_label": "",
               "section_order": 0,
-              "title_head": "例1"
+              "title_head": "例2"
             },
             {
               "example_id": 4433,
@@ -37117,6 +40431,14 @@
               "practice_label": "",
               "section_order": 0,
               "title_head": "例1"
+            },
+            {
+              "example_id": 4431,
+              "source_type": "worked_example",
+              "example_label": "例題2",
+              "practice_label": "",
+              "section_order": 0,
+              "title_head": "例2"
             },
             {
               "example_id": 4433,
@@ -37229,17 +40551,17 @@
       "semantic_classification": {
         "ai_target_task": "evaluate_function_value",
         "ai_task_family": "function_concept_family",
-        "ai_confidence": 0.95,
+        "ai_confidence": 0.9,
         "ai_best_candidate_id": "C1",
         "ai_evidence": [
-          "題目要求在已知托運費用（函數值）的情況下，求出對應的行李重量（自變數）。",
-          "這屬於線型函數中求特定數值的應用，符合 evaluate_function_value 的定義。"
+          "題目描述行李費用與重量成線型函數關係，並給出特定費用（函數值）要求回推重量（自變數）。",
+          "此類已知函數值求自變數或已知自變數求函數值的計算，屬於 evaluate_function_value 的範疇。",
+          "該候選項目位於 anchor 範圍內且符合 function_concept_family。"
         ],
         "ai_rejected_candidates": {
-          "C2": "題目並非著重於函數符號 f(x) 的解讀。",
-          "C3": "題目並非要求判斷定義域或值域。",
-          "C4": "題目並非判斷映射是否為函數。",
-          "C5": "題目並非判斷兩個變數之間是否具備函數關係。"
+          "C2": "題目並非著重於函數符號（如 f(x)）的意義解釋，而是具體的數值計算。",
+          "C5": "題目已明確指出是線型函數關係，不需要判斷兩變數是否構成函數。",
+          "C6": "雖然涉及計算，但 C1 更符合線型函數技能的學科特定分類。"
         },
         "ai_available": true,
         "ai_error": "",
@@ -37259,7 +40581,7 @@
         "conflict_reason": "",
         "source_mapping_warning": "",
         "requires_human_action": false,
-        "ai_notes": "此題為線型函數的應用題，透過給定的函數值（費用 850 元）回推自變數（重量），屬於函數值的計算範疇。",
+        "ai_notes": "題目給定 y = 850 並要求透過線型函數關係求 x，這屬於函數求值與應用的標準題型。",
         "skill_scoped_candidates": [
           {
             "candidate_id": "C1",
@@ -37994,8 +41316,8 @@
         ],
         "has_choices": true,
         "stem_embeds_choices": true,
-        "answer_type": "expression",
-        "answer_shape": "choice_label",
+        "answer_type": "integer",
+        "answer_shape": "numeric",
         "checker": "choice_label_checker",
         "equivalence": "choice_label",
         "math_objects": [
@@ -38005,7 +41327,7 @@
           "two_coordinate_points"
         ],
         "target_task": "evaluate_function_value",
-        "task_family": "generic_numeric_family",
+        "task_family": "function_concept_family",
         "reasoning_type": [
           "numeric_computation"
         ],
@@ -38030,28 +41352,26 @@
           "y"
         ],
         "target": "evaluate_function_value",
-        "classifier_source": "ai_needs_review",
+        "classifier_source": "ai",
         "semantic_classification": {
-          "ai_target_task": "",
-          "ai_task_family": "",
-          "ai_confidence": 0.0,
-          "ai_best_candidate_id": "needs_review",
+          "ai_target_task": "evaluate_function_value",
+          "ai_task_family": "function_concept_family",
+          "ai_confidence": 0.8,
+          "ai_best_candidate_id": "C1",
           "ai_evidence": [
-            "The problem is a word problem involving linear inequalities in two variables: 100x + 200y <= 500,000 and 200x + 100y <= 500,000.",
-            "The provided subskills are restricted to the 'function_concept_family', which focuses on the definition, notation, and basic properties (domain/range) of functions.",
-            "The problem does not use function notation (e.g., f(x)), nor does it involve mapping diagrams or determining if a relation is a function.",
-            "The required action is to verify which coordinate pair satisfies a set of linear constraints, which is an application of linear inequalities rather than a basic function concept evaluation.",
-            "The skill anchor 'vh_數學B1_LinearFunction' usually covers one-variable linear functions (f(x) = ax + b), whereas this problem involves two variables and inequalities."
+            "The problem requires calculating the total cost for specific pairs of (x, y) to check if they exceed a budget of 500,000.",
+            "This process involves substituting numerical values into linear expressions (100x + 200y and 200x + 100y), which is the core action of evaluating a function value.",
+            "Among the anchor-scoped candidates in the function_concept_family, evaluate_function_value is the only one that matches the task of plugging in values to find a result."
           ],
           "ai_rejected_candidates": {
-            "C1": "While it involves calculation, 'evaluate_function_value' typically refers to finding f(a) given a function f(x), which is not the case here.",
-            "C2": "The problem does not use or require the interpretation of function notation like f(x).",
-            "C3": "The problem is not asking for the domain or range of a function.",
-            "C4": "The problem does not involve determining if a mapping or set of pairs constitutes a function.",
-            "C5": "The problem does not involve judging the relationship between variables in a functional context (e.g., is y a function of x?).",
-            "C6": "Although the problem involves arithmetic, 'compute_numeric' is an outsider candidate and the problem is a structured word problem rather than a pure numeric calculation."
+            "C2": "The problem does not involve interpreting function notation like f(x).",
+            "C3": "The problem is not about determining the domain or range of a function.",
+            "C4": "The problem does not involve identifying whether a mapping is a function.",
+            "C5": "The problem does not ask to determine the relationship between variables in a functional sense (e.g., whether y is a function of x).",
+            "C6": "While the problem involves arithmetic, C1 is an anchor-scoped candidate and is preferred over the outsider candidate C6 according to the rules.",
+            "needs_review": "The problem fits the 'evaluate' task well enough within the context of linear functions and expressions to avoid a needs_review tag."
           },
-          "ai_available": false,
+          "ai_available": true,
           "ai_error": "",
           "ai_unavailable_reason": "",
           "ai_semantic_status": "ok",
@@ -38064,12 +41384,12 @@
           "rule_task_family": "generic_numeric_family",
           "rule_confidence": 0.2,
           "final_target_task": "evaluate_function_value",
-          "final_task_family": "generic_numeric_family",
-          "classifier_source": "fallback_application_induct",
-          "conflict_reason": "needs_review",
+          "final_task_family": "function_concept_family",
+          "classifier_source": "ai",
+          "conflict_reason": "",
           "source_mapping_warning": "",
           "requires_human_action": false,
-          "ai_notes": "The problem is a 112 Unified Entrance Exam (統測B) question that involves modeling and solving linear inequalities in two variables. This does not align with the provided subskills, which are focused on the conceptual foundations of functions (mapping, notation, domain/range). A subskill related to 'Linear Inequalities' or 'Linear Function Applications' would be more appropriate.",
+          "ai_notes": "The problem asks to verify which coordinate pair satisfies a budget constraint under two possible price scenarios. This is mathematically equivalent to evaluating a cost function at specific points and comparing the output to a threshold.",
           "skill_scoped_candidates": [
             {
               "candidate_id": "C1",
@@ -38673,25 +41993,106 @@
           "outsider_candidates": [
             "C6"
           ],
-          "selected_subskill": "compute_numeric",
-          "selected_problem_type": "compute_numeric",
-          "candidate_source": "fallback_application",
-          "selected_generator_contract": {},
-          "parameter_schema": {},
+          "selected_subskill": "evaluate_function_value",
+          "selected_problem_type": "evaluate_function_value",
+          "candidate_source": "anchor",
+          "selected_generator_contract": {
+            "template_variants": [
+              {
+                "id": "default",
+                "label": "default",
+                "stem_pattern": "依題意求解：{stem_hint}。",
+                "weight": 1.0,
+                "enabled": true
+              }
+            ],
+            "parameter_schema": {
+              "seed": {
+                "type": "integer",
+                "randomize": true
+              },
+              "difficulty_level": {
+                "choices": [
+                  "level_1",
+                  "level_2",
+                  "level_3"
+                ],
+                "weights": [
+                  0.4,
+                  0.4,
+                  0.2
+                ]
+              }
+            },
+            "variation_dimensions": [
+              "seed",
+              "difficulty_level",
+              "context_style"
+            ],
+            "difficulty_controls": {
+              "level_1": {},
+              "level_2": {},
+              "level_3": {}
+            },
+            "anti_repetition_rules": {
+              "avoid_same_template_consecutive": true,
+              "avoid_same_ratio_consecutive": true,
+              "avoid_same_point_names_consecutive": true,
+              "avoid_same_answer_consecutive": true,
+              "recent_history_window": 5,
+              "signature_fields": [
+                "problem_type_id",
+                "template_variant",
+                "ratio_form",
+                "ratio_values",
+                "coordinate_pattern",
+                "answer"
+              ]
+            },
+            "validity_constraints": [
+              "answer derivable from givens"
+            ],
+            "answer_shape": "numeric",
+            "explanation_variants": [
+              "stepwise"
+            ],
+            "sampling_strategy": "weighted_random",
+            "template_families": [
+              "evaluate_function_value"
+            ]
+          },
+          "parameter_schema": {
+            "seed": {
+              "type": "integer",
+              "randomize": true
+            },
+            "difficulty_level": {
+              "choices": [
+                "level_1",
+                "level_2",
+                "level_3"
+              ],
+              "weights": [
+                0.4,
+                0.4,
+                0.2
+              ]
+            }
+          },
           "variable_randomization_notes": [],
-          "checker_key": "manual_review_checker",
-          "equivalence_type": "manual_review_or_ai_judged",
+          "checker_key": "numeric_checker",
+          "equivalence_type": "numeric_equivalence",
           "skill_scope_trusted": true,
-          "target_task": "compute_numeric",
-          "task_family": "generic_numeric_family",
+          "target_task": "evaluate_function_value",
+          "task_family": "function_concept_family",
           "math_objects": [
             "coordinate_point",
             "three_coordinate_points",
             "triangle",
             "two_coordinate_points"
           ],
-          "answer_type": "single_choice",
-          "answer_shape": "choice_label",
+          "answer_type": "numeric",
+          "answer_shape": "numeric",
           "source_type": "unknown",
           "example_label": "",
           "practice_label": "",
@@ -38701,9 +42102,9 @@
           "structure_consistency": "not_applicable",
           "sequence_context_used": true,
           "structure_context_used": true,
-          "confidence_adjustment_reason": "possible_structure_mismatch_penalty; sequence_context_used",
-          "possible_structure_mismatch": true,
-          "possible_mixed_source_context": true,
+          "confidence_adjustment_reason": "sequence_context_used",
+          "possible_structure_mismatch": false,
+          "possible_mixed_source_context": false,
           "source_quality_reject": false,
           "source_quality_status": "FORCE_ALLOWED_FOR_INDUCTION"
         },
@@ -38717,12 +42118,12 @@
           "practice_number": null,
           "nearby_worked_examples": [
             {
-              "example_id": 4430,
+              "example_id": 4431,
               "source_type": "worked_example",
-              "example_label": "例題1",
+              "example_label": "例題2",
               "practice_label": "",
               "section_order": 0,
-              "title_head": "例1"
+              "title_head": "例2"
             },
             {
               "example_id": 4433,
@@ -38791,6 +42192,14 @@
               "practice_label": "",
               "section_order": 0,
               "title_head": "例1"
+            },
+            {
+              "example_id": 4431,
+              "source_type": "worked_example",
+              "example_label": "例題2",
+              "practice_label": "",
+              "section_order": 0,
+              "title_head": "例2"
             },
             {
               "example_id": 4433,
@@ -38895,38 +42304,35 @@
         "induction_tier": "core",
         "enrichment_reasons": [],
         "included_in_core_induction": true,
-        "problem_type_id": "single_choice_evaluate_function_value_fallback_application",
         "equivalence_type": "choice_label",
         "checker_key": "choice_label_checker"
       },
-      "answer_shape": "choice_label",
+      "answer_shape": "numeric",
       "classification_confidence": "low",
-      "classification_reason": "ai_needs_review",
+      "classification_reason": "ai",
       "risk_flags": [
         "stem_embeds_choices",
         "candidate_only"
       ],
       "semantic_classification": {
-        "ai_target_task": "",
-        "ai_task_family": "",
-        "ai_confidence": 0.0,
-        "ai_best_candidate_id": "needs_review",
+        "ai_target_task": "evaluate_function_value",
+        "ai_task_family": "function_concept_family",
+        "ai_confidence": 0.8,
+        "ai_best_candidate_id": "C1",
         "ai_evidence": [
-          "The problem is a word problem involving linear inequalities in two variables: 100x + 200y <= 500,000 and 200x + 100y <= 500,000.",
-          "The provided subskills are restricted to the 'function_concept_family', which focuses on the definition, notation, and basic properties (domain/range) of functions.",
-          "The problem does not use function notation (e.g., f(x)), nor does it involve mapping diagrams or determining if a relation is a function.",
-          "The required action is to verify which coordinate pair satisfies a set of linear constraints, which is an application of linear inequalities rather than a basic function concept evaluation.",
-          "The skill anchor 'vh_數學B1_LinearFunction' usually covers one-variable linear functions (f(x) = ax + b), whereas this problem involves two variables and inequalities."
+          "The problem requires calculating the total cost for specific pairs of (x, y) to check if they exceed a budget of 500,000.",
+          "This process involves substituting numerical values into linear expressions (100x + 200y and 200x + 100y), which is the core action of evaluating a function value.",
+          "Among the anchor-scoped candidates in the function_concept_family, evaluate_function_value is the only one that matches the task of plugging in values to find a result."
         ],
         "ai_rejected_candidates": {
-          "C1": "While it involves calculation, 'evaluate_function_value' typically refers to finding f(a) given a function f(x), which is not the case here.",
-          "C2": "The problem does not use or require the interpretation of function notation like f(x).",
-          "C3": "The problem is not asking for the domain or range of a function.",
-          "C4": "The problem does not involve determining if a mapping or set of pairs constitutes a function.",
-          "C5": "The problem does not involve judging the relationship between variables in a functional context (e.g., is y a function of x?).",
-          "C6": "Although the problem involves arithmetic, 'compute_numeric' is an outsider candidate and the problem is a structured word problem rather than a pure numeric calculation."
+          "C2": "The problem does not involve interpreting function notation like f(x).",
+          "C3": "The problem is not about determining the domain or range of a function.",
+          "C4": "The problem does not involve identifying whether a mapping is a function.",
+          "C5": "The problem does not ask to determine the relationship between variables in a functional sense (e.g., whether y is a function of x).",
+          "C6": "While the problem involves arithmetic, C1 is an anchor-scoped candidate and is preferred over the outsider candidate C6 according to the rules.",
+          "needs_review": "The problem fits the 'evaluate' task well enough within the context of linear functions and expressions to avoid a needs_review tag."
         },
-        "ai_available": false,
+        "ai_available": true,
         "ai_error": "",
         "ai_unavailable_reason": "",
         "ai_semantic_status": "ok",
@@ -38939,12 +42345,12 @@
         "rule_task_family": "generic_numeric_family",
         "rule_confidence": 0.2,
         "final_target_task": "evaluate_function_value",
-        "final_task_family": "generic_numeric_family",
-        "classifier_source": "fallback_application_induct",
-        "conflict_reason": "needs_review",
+        "final_task_family": "function_concept_family",
+        "classifier_source": "ai",
+        "conflict_reason": "",
         "source_mapping_warning": "",
         "requires_human_action": false,
-        "ai_notes": "The problem is a 112 Unified Entrance Exam (統測B) question that involves modeling and solving linear inequalities in two variables. This does not align with the provided subskills, which are focused on the conceptual foundations of functions (mapping, notation, domain/range). A subskill related to 'Linear Inequalities' or 'Linear Function Applications' would be more appropriate.",
+        "ai_notes": "The problem asks to verify which coordinate pair satisfies a budget constraint under two possible price scenarios. This is mathematically equivalent to evaluating a cost function at specific points and comparing the output to a threshold.",
         "skill_scoped_candidates": [
           {
             "candidate_id": "C1",
@@ -39548,25 +42954,106 @@
         "outsider_candidates": [
           "C6"
         ],
-        "selected_subskill": "compute_numeric",
-        "selected_problem_type": "compute_numeric",
-        "candidate_source": "fallback_application",
-        "selected_generator_contract": {},
-        "parameter_schema": {},
+        "selected_subskill": "evaluate_function_value",
+        "selected_problem_type": "evaluate_function_value",
+        "candidate_source": "anchor",
+        "selected_generator_contract": {
+          "template_variants": [
+            {
+              "id": "default",
+              "label": "default",
+              "stem_pattern": "依題意求解：{stem_hint}。",
+              "weight": 1.0,
+              "enabled": true
+            }
+          ],
+          "parameter_schema": {
+            "seed": {
+              "type": "integer",
+              "randomize": true
+            },
+            "difficulty_level": {
+              "choices": [
+                "level_1",
+                "level_2",
+                "level_3"
+              ],
+              "weights": [
+                0.4,
+                0.4,
+                0.2
+              ]
+            }
+          },
+          "variation_dimensions": [
+            "seed",
+            "difficulty_level",
+            "context_style"
+          ],
+          "difficulty_controls": {
+            "level_1": {},
+            "level_2": {},
+            "level_3": {}
+          },
+          "anti_repetition_rules": {
+            "avoid_same_template_consecutive": true,
+            "avoid_same_ratio_consecutive": true,
+            "avoid_same_point_names_consecutive": true,
+            "avoid_same_answer_consecutive": true,
+            "recent_history_window": 5,
+            "signature_fields": [
+              "problem_type_id",
+              "template_variant",
+              "ratio_form",
+              "ratio_values",
+              "coordinate_pattern",
+              "answer"
+            ]
+          },
+          "validity_constraints": [
+            "answer derivable from givens"
+          ],
+          "answer_shape": "numeric",
+          "explanation_variants": [
+            "stepwise"
+          ],
+          "sampling_strategy": "weighted_random",
+          "template_families": [
+            "evaluate_function_value"
+          ]
+        },
+        "parameter_schema": {
+          "seed": {
+            "type": "integer",
+            "randomize": true
+          },
+          "difficulty_level": {
+            "choices": [
+              "level_1",
+              "level_2",
+              "level_3"
+            ],
+            "weights": [
+              0.4,
+              0.4,
+              0.2
+            ]
+          }
+        },
         "variable_randomization_notes": [],
-        "checker_key": "manual_review_checker",
-        "equivalence_type": "manual_review_or_ai_judged",
+        "checker_key": "numeric_checker",
+        "equivalence_type": "numeric_equivalence",
         "skill_scope_trusted": true,
-        "target_task": "compute_numeric",
-        "task_family": "generic_numeric_family",
+        "target_task": "evaluate_function_value",
+        "task_family": "function_concept_family",
         "math_objects": [
           "coordinate_point",
           "three_coordinate_points",
           "triangle",
           "two_coordinate_points"
         ],
-        "answer_type": "single_choice",
-        "answer_shape": "choice_label",
+        "answer_type": "numeric",
+        "answer_shape": "numeric",
         "source_type": "unknown",
         "example_label": "",
         "practice_label": "",
@@ -39576,18 +43063,19 @@
         "structure_consistency": "not_applicable",
         "sequence_context_used": true,
         "structure_context_used": true,
-        "confidence_adjustment_reason": "possible_structure_mismatch_penalty; sequence_context_used",
-        "possible_structure_mismatch": true,
-        "possible_mixed_source_context": true,
+        "confidence_adjustment_reason": "sequence_context_used",
+        "possible_structure_mismatch": false,
+        "possible_mixed_source_context": false,
         "source_quality_reject": false,
         "source_quality_status": "FORCE_ALLOWED_FOR_INDUCTION"
       },
       "subskill_id": "same_as_main_skill",
-      "classification_source": "fallback_application_induct",
+      "classification_source": "ai",
       "induction_eligibility": "eligible",
-      "answer_type": "expression",
+      "answer_type": "integer",
       "equivalence_type": "choice_label",
-      "checker_key": "choice_label_checker"
+      "checker_key": "choice_label_checker",
+      "alignment_score": 0.8
     },
     {
       "example_id": 4448,
@@ -39633,16 +43121,16 @@
           "ai_confidence": 0.0,
           "ai_best_candidate_id": "interpret_function_notation",
           "ai_evidence": [
-            "題目要求在坐標平面上畫出函數 y=f(x)=3 的圖形。",
-            "候選清單 (C1-C5) 主要涵蓋函數的概念性任務，如求值、符號辨釋、定義域值域、映射判斷及函數關係判斷。",
-            "清單中缺乏「描繪函數圖形」或「常數函數圖形」相關的子技能。"
+            "題目要求在坐標平面上畫出常數函數 y=f(x)=3 的圖形。",
+            "候選子技能包含：求函數值、解釋函數符號、判斷定義域值域、從對應關係判斷函數、判斷函數關係。",
+            "現有的候選子技能中沒有任何一項對應到「繪製函數圖形」或「函數圖形的幾何表示」。"
           ],
           "ai_rejected_candidates": {
-            "C1": "求函數值僅為描圖過程中的一個可能步驟，並非此題的主要任務。",
-            "C2": "符號辨釋涉及理解 f(x) 的含義，但此題核心在於繪圖。",
-            "C3": "此題並未要求判斷定義域或值域。",
-            "C4": "此題與映射圖無關。",
-            "C5": "此題並非要求判斷 y 是否為 x 的函數。"
+            "C1": "求函數值是指計算特定點的數值，而非繪製完整圖形。",
+            "C2": "解釋函數符號通常涉及理解 y=f(x) 的意義，雖然與圖形有關，但不足以涵蓋繪圖任務。",
+            "C3": "判斷定義域與值域是函數的性質分析，而非繪圖動作。",
+            "C4": "從對應關係判斷函數通常涉及集合間的映射圖，而非坐標平面上的圖形繪製。",
+            "C5": "判斷函數關係是辨識一個關係是否為函數，而非繪圖。"
           },
           "ai_available": false,
           "ai_error": "",
@@ -39662,7 +43150,7 @@
           "conflict_reason": "",
           "source_mapping_warning": "",
           "requires_human_action": false,
-          "ai_notes": "此題目屬於「描繪線型函數圖形」或「常數函數的圖形」，但在提供的 anchor 候選清單中僅包含函數概念相關的子技能，建議新增與圖形繪製相關的子技能。",
+          "ai_notes": "題目要求繪製常數函數圖形，但提供的候選子技能（屬於 function_concept_family）皆不包含「繪圖」相關任務。建議新增「繪製線型函數圖形」或「函數圖形的幾何特徵」等子技能。",
           "skill_scoped_candidates": [
             {
               "candidate_id": "C1",
@@ -40206,12 +43694,12 @@
           "practice_number": 8,
           "nearby_worked_examples": [
             {
-              "example_id": 4430,
+              "example_id": 4431,
               "source_type": "worked_example",
-              "example_label": "例題1",
+              "example_label": "例題2",
               "practice_label": "",
               "section_order": 0,
-              "title_head": "例1"
+              "title_head": "例2"
             },
             {
               "example_id": 4433,
@@ -40280,6 +43768,14 @@
               "practice_label": "",
               "section_order": 0,
               "title_head": "例1"
+            },
+            {
+              "example_id": 4431,
+              "source_type": "worked_example",
+              "example_label": "例題2",
+              "practice_label": "",
+              "section_order": 0,
+              "title_head": "例2"
             },
             {
               "example_id": 4433,
@@ -40396,16 +43892,16 @@
         "ai_confidence": 0.0,
         "ai_best_candidate_id": "interpret_function_notation",
         "ai_evidence": [
-          "題目要求在坐標平面上畫出函數 y=f(x)=3 的圖形。",
-          "候選清單 (C1-C5) 主要涵蓋函數的概念性任務，如求值、符號辨釋、定義域值域、映射判斷及函數關係判斷。",
-          "清單中缺乏「描繪函數圖形」或「常數函數圖形」相關的子技能。"
+          "題目要求在坐標平面上畫出常數函數 y=f(x)=3 的圖形。",
+          "候選子技能包含：求函數值、解釋函數符號、判斷定義域值域、從對應關係判斷函數、判斷函數關係。",
+          "現有的候選子技能中沒有任何一項對應到「繪製函數圖形」或「函數圖形的幾何表示」。"
         ],
         "ai_rejected_candidates": {
-          "C1": "求函數值僅為描圖過程中的一個可能步驟，並非此題的主要任務。",
-          "C2": "符號辨釋涉及理解 f(x) 的含義，但此題核心在於繪圖。",
-          "C3": "此題並未要求判斷定義域或值域。",
-          "C4": "此題與映射圖無關。",
-          "C5": "此題並非要求判斷 y 是否為 x 的函數。"
+          "C1": "求函數值是指計算特定點的數值，而非繪製完整圖形。",
+          "C2": "解釋函數符號通常涉及理解 y=f(x) 的意義，雖然與圖形有關，但不足以涵蓋繪圖任務。",
+          "C3": "判斷定義域與值域是函數的性質分析，而非繪圖動作。",
+          "C4": "從對應關係判斷函數通常涉及集合間的映射圖，而非坐標平面上的圖形繪製。",
+          "C5": "判斷函數關係是辨識一個關係是否為函數，而非繪圖。"
         },
         "ai_available": false,
         "ai_error": "",
@@ -40425,7 +43921,7 @@
         "conflict_reason": "",
         "source_mapping_warning": "",
         "requires_human_action": false,
-        "ai_notes": "此題目屬於「描繪線型函數圖形」或「常數函數的圖形」，但在提供的 anchor 候選清單中僅包含函數概念相關的子技能，建議新增與圖形繪製相關的子技能。",
+        "ai_notes": "題目要求繪製常數函數圖形，但提供的候選子技能（屬於 function_concept_family）皆不包含「繪圖」相關任務。建議新增「繪製線型函數圖形」或「函數圖形的幾何特徵」等子技能。",
         "skill_scoped_candidates": [
           {
             "candidate_id": "C1",
@@ -41012,16 +44508,15 @@
           "ai_confidence": 0.0,
           "ai_best_candidate_id": "interpret_function_notation",
           "ai_evidence": [
-            "題目要求在坐標平面上畫出函數 y = f(x) = -2x + 4 的圖形。",
-            "候選清單中的子技能（C1-C5）皆屬於函數概念家族（function_concept_family），包含求值、符號辨釋、定義域值域、映射判斷及函數關係判斷。",
-            "清單中缺乏「描繪函數圖形」或「一次函數圖形」相關的子技能。"
+            "題目要求在坐標平面上畫出一次函數 y = -2x + 4 的圖形。",
+            "候選清單中的 C1 至 C5 分別為求函數值、函數符號意義、判斷定義域值域、由對應關係判斷函數、判斷函數關係，皆不包含「繪製函數圖形」的任務。"
           ],
           "ai_rejected_candidates": {
-            "C1": "求函數值僅為描點過程中的一個步驟，並非此題「畫出圖形」的核心任務。",
-            "C2": "此題重點在於繪圖，而非單純辨識或解釋函數符號的意義。",
-            "C3": "題目未要求判斷定義域或值域。",
-            "C4": "題目未涉及映射圖或判斷是否為函數。",
-            "C5": "題目未要求判斷變數間是否構成函數關係。"
+            "C1": "求函數值僅為描點繪圖的過程之一，並非繪圖任務本身。",
+            "C2": "此題並非在解釋函數符號的意義。",
+            "C3": "此題並非在判斷定義域或值域。",
+            "C4": "此題並非由對應圖判斷是否為函數。",
+            "C5": "此題並非判斷兩個變數之間是否具備函數關係。"
           },
           "ai_available": false,
           "ai_error": "",
@@ -41041,7 +44536,7 @@
           "conflict_reason": "",
           "source_mapping_warning": "",
           "requires_human_action": false,
-          "ai_notes": "題目核心任務為「描繪一次函數圖形」，但候選清單中僅包含函數基本概念的子技能，建議新增「描繪一次函數圖形」或「一次函數的圖形」相關子技能。",
+          "ai_notes": "題目任務為「繪製一次函數圖形」，但提供的候選子技能皆屬於函數基本觀念（如求值、定義、符號等），缺乏繪圖相關的子技能，因此選擇 needs_review。",
           "skill_scoped_candidates": [
             {
               "candidate_id": "C1",
@@ -41585,12 +45080,12 @@
           "practice_number": 9,
           "nearby_worked_examples": [
             {
-              "example_id": 4430,
+              "example_id": 4431,
               "source_type": "worked_example",
-              "example_label": "例題1",
+              "example_label": "例題2",
               "practice_label": "",
               "section_order": 0,
-              "title_head": "例1"
+              "title_head": "例2"
             },
             {
               "example_id": 4433,
@@ -41659,6 +45154,14 @@
               "practice_label": "",
               "section_order": 0,
               "title_head": "例1"
+            },
+            {
+              "example_id": 4431,
+              "source_type": "worked_example",
+              "example_label": "例題2",
+              "practice_label": "",
+              "section_order": 0,
+              "title_head": "例2"
             },
             {
               "example_id": 4433,
@@ -41775,16 +45278,15 @@
         "ai_confidence": 0.0,
         "ai_best_candidate_id": "interpret_function_notation",
         "ai_evidence": [
-          "題目要求在坐標平面上畫出函數 y = f(x) = -2x + 4 的圖形。",
-          "候選清單中的子技能（C1-C5）皆屬於函數概念家族（function_concept_family），包含求值、符號辨釋、定義域值域、映射判斷及函數關係判斷。",
-          "清單中缺乏「描繪函數圖形」或「一次函數圖形」相關的子技能。"
+          "題目要求在坐標平面上畫出一次函數 y = -2x + 4 的圖形。",
+          "候選清單中的 C1 至 C5 分別為求函數值、函數符號意義、判斷定義域值域、由對應關係判斷函數、判斷函數關係，皆不包含「繪製函數圖形」的任務。"
         ],
         "ai_rejected_candidates": {
-          "C1": "求函數值僅為描點過程中的一個步驟，並非此題「畫出圖形」的核心任務。",
-          "C2": "此題重點在於繪圖，而非單純辨識或解釋函數符號的意義。",
-          "C3": "題目未要求判斷定義域或值域。",
-          "C4": "題目未涉及映射圖或判斷是否為函數。",
-          "C5": "題目未要求判斷變數間是否構成函數關係。"
+          "C1": "求函數值僅為描點繪圖的過程之一，並非繪圖任務本身。",
+          "C2": "此題並非在解釋函數符號的意義。",
+          "C3": "此題並非在判斷定義域或值域。",
+          "C4": "此題並非由對應圖判斷是否為函數。",
+          "C5": "此題並非判斷兩個變數之間是否具備函數關係。"
         },
         "ai_available": false,
         "ai_error": "",
@@ -41804,7 +45306,7 @@
         "conflict_reason": "",
         "source_mapping_warning": "",
         "requires_human_action": false,
-        "ai_notes": "題目核心任務為「描繪一次函數圖形」，但候選清單中僅包含函數基本概念的子技能，建議新增「描繪一次函數圖形」或「一次函數的圖形」相關子技能。",
+        "ai_notes": "題目任務為「繪製一次函數圖形」，但提供的候選子技能皆屬於函數基本觀念（如求值、定義、符號等），缺乏繪圖相關的子技能，因此選擇 needs_review。",
         "skill_scoped_candidates": [
           {
             "candidate_id": "C1",
@@ -42381,17 +45883,13 @@
           "ai_confidence": 0.0,
           "ai_best_candidate_id": "needs_review",
           "ai_evidence": [
-            "題目要求根據圖形求出線型函數的關係式（即求出 y = ax + b 的方程式）。",
-            "候選子技能（C1-C5）主要集中在函數的概念性理解，如求函數值、符號辨釋、定義域值域、判斷是否為函數等。",
-            "目前清單中缺乏「求線型函數解析式」或「求直線方程式」這類程序性運算的子技能。"
+            "題目要求根據圖形求出線型函數的關係式（即 y = ax + b）。",
+            "提供的候選子技能（C1-C5）主要集中在函數的概念（如：求函數值、符號辨識、定義域值域、判斷是否為函數）。",
+            "候選清單中缺乏「求線型函數解析式」或「由圖形求函數關係式」等相關子技能。"
           ],
           "ai_rejected_candidates": {
-            "C1": "此題是要求出整個關係式，而非給定 x 求單一函數值。",
-            "C2": "此題涉及函數的建立而非單純對函數符號的解釋。",
-            "C3": "此題未要求判斷定義域或值域。",
-            "C4": "此題並非判斷對應關係是否構成函數。",
-            "C5": "此題要求具體的關係式，而非僅僅判斷變數間是否存在函數關係。",
-            "C6": "此為外部技能且過於籠統，無法精確描述「求函數關係式」的數學任務。"
+            "C1": "此子技能為求特定點的函數值，而本題要求的是整體的關係式。",
+            "C5": "此子技能為判斷變數間是否構成函數關係，而非求出其具體的代數表達式。"
           },
           "ai_available": false,
           "ai_error": "",
@@ -42411,7 +45909,7 @@
           "conflict_reason": "needs_review",
           "source_mapping_warning": "",
           "requires_human_action": false,
-          "ai_notes": "該題目屬於「求線型函數的關係式」，但在提供的 anchor 範圍內（function_concept_family）僅包含概念判斷與求值，建議增加「求線型函數解析式」相關的子技能。",
+          "ai_notes": "本題的核心任務是「求線型函數的關係式」，但目前的候選清單僅包含函數概念（function_concept_family）相關的子技能，建議增加如「求線型函數解析式」之類的子技能。",
           "skill_scoped_candidates": [
             {
               "candidate_id": "C1",
@@ -43052,12 +46550,12 @@
           "practice_number": null,
           "nearby_worked_examples": [
             {
-              "example_id": 4430,
+              "example_id": 4431,
               "source_type": "worked_example",
-              "example_label": "例題1",
+              "example_label": "例題2",
               "practice_label": "",
               "section_order": 0,
-              "title_head": "例1"
+              "title_head": "例2"
             },
             {
               "example_id": 4433,
@@ -43126,6 +46624,14 @@
               "practice_label": "",
               "section_order": 0,
               "title_head": "例1"
+            },
+            {
+              "example_id": 4431,
+              "source_type": "worked_example",
+              "example_label": "例題2",
+              "practice_label": "",
+              "section_order": 0,
+              "title_head": "例2"
             },
             {
               "example_id": 4433,
@@ -43242,17 +46748,13 @@
         "ai_confidence": 0.0,
         "ai_best_candidate_id": "needs_review",
         "ai_evidence": [
-          "題目要求根據圖形求出線型函數的關係式（即求出 y = ax + b 的方程式）。",
-          "候選子技能（C1-C5）主要集中在函數的概念性理解，如求函數值、符號辨釋、定義域值域、判斷是否為函數等。",
-          "目前清單中缺乏「求線型函數解析式」或「求直線方程式」這類程序性運算的子技能。"
+          "題目要求根據圖形求出線型函數的關係式（即 y = ax + b）。",
+          "提供的候選子技能（C1-C5）主要集中在函數的概念（如：求函數值、符號辨識、定義域值域、判斷是否為函數）。",
+          "候選清單中缺乏「求線型函數解析式」或「由圖形求函數關係式」等相關子技能。"
         ],
         "ai_rejected_candidates": {
-          "C1": "此題是要求出整個關係式，而非給定 x 求單一函數值。",
-          "C2": "此題涉及函數的建立而非單純對函數符號的解釋。",
-          "C3": "此題未要求判斷定義域或值域。",
-          "C4": "此題並非判斷對應關係是否構成函數。",
-          "C5": "此題要求具體的關係式，而非僅僅判斷變數間是否存在函數關係。",
-          "C6": "此為外部技能且過於籠統，無法精確描述「求函數關係式」的數學任務。"
+          "C1": "此子技能為求特定點的函數值，而本題要求的是整體的關係式。",
+          "C5": "此子技能為判斷變數間是否構成函數關係，而非求出其具體的代數表達式。"
         },
         "ai_available": false,
         "ai_error": "",
@@ -43272,7 +46774,7 @@
         "conflict_reason": "needs_review",
         "source_mapping_warning": "",
         "requires_human_action": false,
-        "ai_notes": "該題目屬於「求線型函數的關係式」，但在提供的 anchor 範圍內（function_concept_family）僅包含概念判斷與求值，建議增加「求線型函數解析式」相關的子技能。",
+        "ai_notes": "本題的核心任務是「求線型函數的關係式」，但目前的候選清單僅包含函數概念（function_concept_family）相關的子技能，建議增加如「求線型函數解析式」之類的子技能。",
         "skill_scoped_candidates": [
           {
             "candidate_id": "C1",
@@ -43970,17 +47472,16 @@
           "ai_confidence": 0.0,
           "ai_best_candidate_id": "interpret_function_notation",
           "ai_evidence": [
-            "題目要求根據兩個已知點 (-2, 4) 與 (1, 1) 求出線型函數 f(x) = ax + b 的解析式。",
-            "這屬於「求線型函數解析式」或「待定係數法求函數」的題型。",
-            "提供的候選子技能包括：計算函數值 (evaluate_function_value)、理解函數符號 (interpret_function_notation)、判斷定義域值域 (judge_domain_range_basic)、從對應關係判斷函數 (judge_function_from_mapping) 以及判斷函數關係 (judge_function_relation)。",
-            "這些候選子技能多屬於「函數概念 (function_concept_family)」的基礎認知，缺乏「求線型函數解析式」這一具體的運算型子技能。"
+            "題目要求根據通過的兩點 (-2, 4) 與 (1, 1) 求出線型函數 f(x) = ax + b 的解析式。",
+            "候選子技能列表包含：求函數值 (evaluate_function_value)、理解函數符號 (interpret_function_notation)、判斷定義域值域 (judge_domain_range_basic)、由對應關係判斷函數 (judge_function_from_mapping) 以及判斷函數關係 (judge_function_relation)。",
+            "現有的候選子技能中，沒有一個直接對應到「給定兩點求線型函數解析式」這一特定任務。"
           ],
           "ai_rejected_candidates": {
-            "C1": "evaluate_function_value 通常指已知函數式求特定輸入的輸出值，而非求函數式本身。",
-            "C2": "interpret_function_notation 涉及理解 f(x) 的含義，雖然解題第一步需將點座標轉化為 f(-2)=4，但核心任務是求解係數，該項不足以涵蓋完整過程。",
-            "C3": "題目未涉及定義域或值域的判斷。",
-            "C4": "題目未涉及對應圖表或映射關係的函數判定。",
-            "C5": "題目未涉及函數關係的性質判定（如是否為函數）。"
+            "C1": "此題並非單純求特定點的函數值，而是要求出整個函數的表達式。",
+            "C2": "此題涉及函數符號的應用，但核心任務是解聯立方程式求係數，而非僅僅是解釋符號意義。",
+            "C3": "此題不涉及定義域或值域的判斷。",
+            "C4": "此題並非判斷給定的對應圖或集合是否構成函數。",
+            "C5": "此題已明示為線型函數，不需判斷是否為函數關係。"
           },
           "ai_available": false,
           "ai_error": "",
@@ -44000,7 +47501,7 @@
           "conflict_reason": "",
           "source_mapping_warning": "",
           "requires_human_action": false,
-          "ai_notes": "該題目為「已知兩點求線型函數」，在現有的候選清單中缺乏對應的子技能（如 determine_linear_function_from_points）。建議新增此類子技能或將其歸類至更合適的技能架構下。",
+          "ai_notes": "該題目屬於「給定兩點求一次函數（線型函數）解析式」，在目前的候選清單中缺乏對應的子技能。建議新增如 'determine_linear_function_from_points' 類型的子技能。",
           "skill_scoped_candidates": [
             {
               "candidate_id": "C1",
@@ -44549,12 +48050,12 @@
           "practice_number": null,
           "nearby_worked_examples": [
             {
-              "example_id": 4430,
+              "example_id": 4431,
               "source_type": "worked_example",
-              "example_label": "例題1",
+              "example_label": "例題2",
               "practice_label": "",
               "section_order": 0,
-              "title_head": "例1"
+              "title_head": "例2"
             },
             {
               "example_id": 4433,
@@ -44623,6 +48124,14 @@
               "practice_label": "",
               "section_order": 0,
               "title_head": "例1"
+            },
+            {
+              "example_id": 4431,
+              "source_type": "worked_example",
+              "example_label": "例題2",
+              "practice_label": "",
+              "section_order": 0,
+              "title_head": "例2"
             },
             {
               "example_id": 4433,
@@ -44743,17 +48252,16 @@
         "ai_confidence": 0.0,
         "ai_best_candidate_id": "interpret_function_notation",
         "ai_evidence": [
-          "題目要求根據兩個已知點 (-2, 4) 與 (1, 1) 求出線型函數 f(x) = ax + b 的解析式。",
-          "這屬於「求線型函數解析式」或「待定係數法求函數」的題型。",
-          "提供的候選子技能包括：計算函數值 (evaluate_function_value)、理解函數符號 (interpret_function_notation)、判斷定義域值域 (judge_domain_range_basic)、從對應關係判斷函數 (judge_function_from_mapping) 以及判斷函數關係 (judge_function_relation)。",
-          "這些候選子技能多屬於「函數概念 (function_concept_family)」的基礎認知，缺乏「求線型函數解析式」這一具體的運算型子技能。"
+          "題目要求根據通過的兩點 (-2, 4) 與 (1, 1) 求出線型函數 f(x) = ax + b 的解析式。",
+          "候選子技能列表包含：求函數值 (evaluate_function_value)、理解函數符號 (interpret_function_notation)、判斷定義域值域 (judge_domain_range_basic)、由對應關係判斷函數 (judge_function_from_mapping) 以及判斷函數關係 (judge_function_relation)。",
+          "現有的候選子技能中，沒有一個直接對應到「給定兩點求線型函數解析式」這一特定任務。"
         ],
         "ai_rejected_candidates": {
-          "C1": "evaluate_function_value 通常指已知函數式求特定輸入的輸出值，而非求函數式本身。",
-          "C2": "interpret_function_notation 涉及理解 f(x) 的含義，雖然解題第一步需將點座標轉化為 f(-2)=4，但核心任務是求解係數，該項不足以涵蓋完整過程。",
-          "C3": "題目未涉及定義域或值域的判斷。",
-          "C4": "題目未涉及對應圖表或映射關係的函數判定。",
-          "C5": "題目未涉及函數關係的性質判定（如是否為函數）。"
+          "C1": "此題並非單純求特定點的函數值，而是要求出整個函數的表達式。",
+          "C2": "此題涉及函數符號的應用，但核心任務是解聯立方程式求係數，而非僅僅是解釋符號意義。",
+          "C3": "此題不涉及定義域或值域的判斷。",
+          "C4": "此題並非判斷給定的對應圖或集合是否構成函數。",
+          "C5": "此題已明示為線型函數，不需判斷是否為函數關係。"
         },
         "ai_available": false,
         "ai_error": "",
@@ -44773,7 +48281,7 @@
         "conflict_reason": "",
         "source_mapping_warning": "",
         "requires_human_action": false,
-        "ai_notes": "該題目為「已知兩點求線型函數」，在現有的候選清單中缺乏對應的子技能（如 determine_linear_function_from_points）。建議新增此類子技能或將其歸類至更合適的技能架構下。",
+        "ai_notes": "該題目屬於「給定兩點求一次函數（線型函數）解析式」，在目前的候選清單中缺乏對應的子技能。建議新增如 'determine_linear_function_from_points' 類型的子技能。",
         "skill_scoped_candidates": [
           {
             "candidate_id": "C1",
@@ -45365,14 +48873,14 @@
           "ai_confidence": 0.0,
           "ai_best_candidate_id": "interpret_function_notation",
           "ai_evidence": [
-            "題目要求利用截距定義判斷函數 y=f(x)=ax-3 的圖形，屬於線型函數圖形特徵的辨識。",
-            "提供的候選子技能（C1-C5）均屬於『函數觀念 (function_concept_family)』，如求值、符號、定義域、映射判斷等。",
-            "候選清單中缺乏與『線型函數圖形』、『截距』或『斜率』直接相關的子技能。",
-            "根據規則，若候選清單中沒有合適的子技能，應選擇 needs_review。"
+            "題目要求利用截距定義判斷函數 y=ax-3 的圖形，這涉及線性函數的圖形特徵（如 y 截距為 -3）與參數 a 對圖形的影響。",
+            "提供的候選子技能（evaluate_function_value, interpret_function_notation, judge_domain_range_basic, judge_function_from_mapping, judge_function_relation）皆屬於函數基本概念（function_concept_family），而非線性函數圖形的具體判別。",
+            "題目核心在於線性函數的圖形性質（截距與斜率），現有選項中缺乏『線性函數圖形』或『截距與斜率的應用』等相關子技能。"
           ],
           "ai_rejected_candidates": {
-            "C1": "evaluate_function_value 雖然涉及計算 f(0)=-3，但本題核心在於圖形截距的幾何意義，而非單純代值計算。",
-            "C5": "judge_function_relation 通常用於判斷變數間是否為函數關係或區分常數與一次函數，不足以涵蓋根據截距判斷圖形的任務。"
+            "C1": "evaluate_function_value 僅涉及計算特定點的函數值，不足以涵蓋判斷整個圖形可能性的任務。",
+            "C2": "interpret_function_notation 涉及對 f(x) 符號的理解，而非圖形判別。",
+            "C5": "judge_function_relation 通常用於判斷一個關係是否為函數，而非判斷特定線性函數的圖形。"
           },
           "ai_available": false,
           "ai_error": "",
@@ -45392,7 +48900,7 @@
           "conflict_reason": "",
           "source_mapping_warning": "",
           "requires_human_action": false,
-          "ai_notes": "The current example focuses on the graphical representation and intercepts of a linear function, which is not covered by the provided subskill candidates in the 'function_concept_family'. A subskill such as 'identify_linear_function_graph' or 'understand_intercepts' would be more appropriate.",
+          "ai_notes": "本題屬於線性函數圖形的判別，特別是截距的應用。然而，候選清單中的子技能僅限於函數的基本概念（如定義、符號、定義域值域），缺乏針對線性函數圖形性質（如斜率、截距、圖形平移）的對應選項，因此選擇 needs_review。",
           "skill_scoped_candidates": [
             {
               "candidate_id": "C1",
@@ -45936,12 +49444,12 @@
           "practice_number": null,
           "nearby_worked_examples": [
             {
-              "example_id": 4430,
+              "example_id": 4431,
               "source_type": "worked_example",
-              "example_label": "例題1",
+              "example_label": "例題2",
               "practice_label": "",
               "section_order": 0,
-              "title_head": "例1"
+              "title_head": "例2"
             },
             {
               "example_id": 4433,
@@ -46010,6 +49518,14 @@
               "practice_label": "",
               "section_order": 0,
               "title_head": "例1"
+            },
+            {
+              "example_id": 4431,
+              "source_type": "worked_example",
+              "example_label": "例題2",
+              "practice_label": "",
+              "section_order": 0,
+              "title_head": "例2"
             },
             {
               "example_id": 4433,
@@ -46126,14 +49642,14 @@
         "ai_confidence": 0.0,
         "ai_best_candidate_id": "interpret_function_notation",
         "ai_evidence": [
-          "題目要求利用截距定義判斷函數 y=f(x)=ax-3 的圖形，屬於線型函數圖形特徵的辨識。",
-          "提供的候選子技能（C1-C5）均屬於『函數觀念 (function_concept_family)』，如求值、符號、定義域、映射判斷等。",
-          "候選清單中缺乏與『線型函數圖形』、『截距』或『斜率』直接相關的子技能。",
-          "根據規則，若候選清單中沒有合適的子技能，應選擇 needs_review。"
+          "題目要求利用截距定義判斷函數 y=ax-3 的圖形，這涉及線性函數的圖形特徵（如 y 截距為 -3）與參數 a 對圖形的影響。",
+          "提供的候選子技能（evaluate_function_value, interpret_function_notation, judge_domain_range_basic, judge_function_from_mapping, judge_function_relation）皆屬於函數基本概念（function_concept_family），而非線性函數圖形的具體判別。",
+          "題目核心在於線性函數的圖形性質（截距與斜率），現有選項中缺乏『線性函數圖形』或『截距與斜率的應用』等相關子技能。"
         ],
         "ai_rejected_candidates": {
-          "C1": "evaluate_function_value 雖然涉及計算 f(0)=-3，但本題核心在於圖形截距的幾何意義，而非單純代值計算。",
-          "C5": "judge_function_relation 通常用於判斷變數間是否為函數關係或區分常數與一次函數，不足以涵蓋根據截距判斷圖形的任務。"
+          "C1": "evaluate_function_value 僅涉及計算特定點的函數值，不足以涵蓋判斷整個圖形可能性的任務。",
+          "C2": "interpret_function_notation 涉及對 f(x) 符號的理解，而非圖形判別。",
+          "C5": "judge_function_relation 通常用於判斷一個關係是否為函數，而非判斷特定線性函數的圖形。"
         },
         "ai_available": false,
         "ai_error": "",
@@ -46153,7 +49669,7 @@
         "conflict_reason": "",
         "source_mapping_warning": "",
         "requires_human_action": false,
-        "ai_notes": "The current example focuses on the graphical representation and intercepts of a linear function, which is not covered by the provided subskill candidates in the 'function_concept_family'. A subskill such as 'identify_linear_function_graph' or 'understand_intercepts' would be more appropriate.",
+        "ai_notes": "本題屬於線性函數圖形的判別，特別是截距的應用。然而，候選清單中的子技能僅限於函數的基本概念（如定義、符號、定義域值域），缺乏針對線性函數圖形性質（如斜率、截距、圖形平移）的對應選項，因此選擇 needs_review。",
         "skill_scoped_candidates": [
           {
             "candidate_id": "C1",
@@ -46742,14 +50258,15 @@
           "ai_confidence": 0.9,
           "ai_best_candidate_id": "C5",
           "ai_evidence": [
-            "The text describes how the falling distance S depends on the time t.",
-            "It explicitly concludes that distance S is a function of time t based on their relationship.",
-            "This aligns with the subskill of judging or identifying a function relation between variables."
+            "題目描述了距離 S 隨時間 t 變化的關係。",
+            "題目最後明確指出「距離 S 是時間 t 的函數」。",
+            "這屬於判斷或理解兩個變數之間是否構成函數關係的範疇。"
           ],
           "ai_rejected_candidates": {
-            "C1": "The text does not ask to calculate a specific value for S given a value for t.",
-            "C2": "While function notation S(t) is used, the primary purpose of the text is to explain the relationship itself.",
-            "C4": "The problem does not use mapping diagrams to define the function."
+            "C1": "題目中沒有要求計算具體的函數值。",
+            "C2": "雖然使用了函數符號，但重點在於解釋函數關係的建立而非符號本身的解讀。",
+            "C3": "題目未涉及定義域或值域的判斷。",
+            "C4": "題目並非透過集合映射圖來判斷函數。"
           },
           "ai_available": true,
           "ai_error": "",
@@ -46769,7 +50286,7 @@
           "conflict_reason": "",
           "source_mapping_warning": "",
           "requires_human_action": false,
-          "ai_notes": "The example provides a real-world context to introduce the concept of a function relationship between two variables.",
+          "ai_notes": "此題為函數概念的引入例題，旨在說明變數間的依賴關係如何構成函數，最符合 judge_function_relation。",
           "skill_scoped_candidates": [
             {
               "candidate_id": "C1",
@@ -47493,6 +51010,14 @@
           "practice_number": null,
           "nearby_worked_examples": [
             {
+              "example_id": 4431,
+              "source_type": "worked_example",
+              "example_label": "例題2",
+              "practice_label": "",
+              "section_order": 0,
+              "title_head": "例2"
+            },
+            {
               "example_id": 4433,
               "source_type": "worked_example",
               "example_label": "例題8",
@@ -47559,6 +51084,14 @@
               "practice_label": "",
               "section_order": 0,
               "title_head": "例1"
+            },
+            {
+              "example_id": 4431,
+              "source_type": "worked_example",
+              "example_label": "例題2",
+              "practice_label": "",
+              "section_order": 0,
+              "title_head": "例2"
             },
             {
               "example_id": 4433,
@@ -47677,14 +51210,15 @@
         "ai_confidence": 0.9,
         "ai_best_candidate_id": "C5",
         "ai_evidence": [
-          "The text describes how the falling distance S depends on the time t.",
-          "It explicitly concludes that distance S is a function of time t based on their relationship.",
-          "This aligns with the subskill of judging or identifying a function relation between variables."
+          "題目描述了距離 S 隨時間 t 變化的關係。",
+          "題目最後明確指出「距離 S 是時間 t 的函數」。",
+          "這屬於判斷或理解兩個變數之間是否構成函數關係的範疇。"
         ],
         "ai_rejected_candidates": {
-          "C1": "The text does not ask to calculate a specific value for S given a value for t.",
-          "C2": "While function notation S(t) is used, the primary purpose of the text is to explain the relationship itself.",
-          "C4": "The problem does not use mapping diagrams to define the function."
+          "C1": "題目中沒有要求計算具體的函數值。",
+          "C2": "雖然使用了函數符號，但重點在於解釋函數關係的建立而非符號本身的解讀。",
+          "C3": "題目未涉及定義域或值域的判斷。",
+          "C4": "題目並非透過集合映射圖來判斷函數。"
         },
         "ai_available": true,
         "ai_error": "",
@@ -47704,7 +51238,7 @@
         "conflict_reason": "",
         "source_mapping_warning": "",
         "requires_human_action": false,
-        "ai_notes": "The example provides a real-world context to introduce the concept of a function relationship between two variables.",
+        "ai_notes": "此題為函數概念的引入例題，旨在說明變數間的依賴關係如何構成函數，最符合 judge_function_relation。",
         "skill_scoped_candidates": [
           {
             "candidate_id": "C1",
@@ -48426,6 +51960,1570 @@
       "checker_key": "rational_checker"
     },
     {
+      "example_id": 4431,
+      "detected_problem_type_id": "unknown",
+      "example_feature": {
+        "source_example_id": 4431,
+        "question_text": "英國科學家虎克（Robert Hooke，1635−1703）於1678年發現虎克定律：$F\\left( x \\right)=kx$，k為力常數，即在彈性限度內，彈簧所受的外力F與伸長量x有成正比的關係，所以外力F是伸長量x的函數（如圖22）。\r\n▲圖21 ▲圖22\r\n數學\r\n檔案\r\n尤拉（Leonhard Euler，1707-1783），瑞士數學家。\r\n他是最早使用函數記號「$f\\left( x \\right)$」的數學家。\r\nSDG 7可負擔的潔淨能源─供需曲線圖\r\n「一度電」就是耗電量 1,000 瓦特的電器，連續使用 1 小時所消耗的總電量。電費分為「夏季電費」（6 / 1～9 / 30）和「非夏季電費」（10 / 1～5 / 31），已知202年4月電費調漲，調漲後，若計費度數為x度，且一般住家的夏季電費（單位：元）滿足函數\r\n$f\\left( x \\right)=\\left\\{ \\begin{align}\r\n& 1.63x,x\\le 120 \\\\\r\n& 2.38x-90,120<x<330 \\\\\r\n& 3.52x-466.2,330<x\\le 500 \\\\\r\n& 4.8x-1106.2,500<x\\le 700 \\\\\r\n& 5.83x-1827.2,700<x\\le 1000 \\\\\r\n& 7.69x-368.7,x>1000 \\\\\r\n\\end{align} \\right.$\r\n若小蕙發現8 月用電為 800 度，花費太多，及時更換老舊電器，9月節能省電，用電為600度，試求小蕙的電費9月比8月省下多少元？\r\n8月電費為800度，將$x=800$代入$5.83x-1827.2$\r\n9月電費為600度，將$x=600$代入$4.8x-1106.2$\r\n得$\\left( 5.83\\times 800-1827.2 \\right)-\\left( 4.8\\times 600-1106.2 \\right)$ \r\n $=\\left( 4664-1827.2 \\right)-\\left( 2880-1106.2 \\right)=1063$（元）\r\nSDGS-------------------------------------------------------------------------------------------------------------------\r\n2023 年4 月的電費調漲，選購能源效率分級級數較低的產品，不單是能為個人省錢，亦能夠實踐節能減碳，臺灣近年來時常出現缺水及限電危機，為了讓我們能在地球上永續生存，力行「綠色生活」營造一個低碳的生活環境是重要的。",
+        "answer": "",
+        "choices": [],
+        "has_choices": false,
+        "stem_embeds_choices": false,
+        "answer_type": "rational",
+        "answer_shape": "numeric",
+        "checker": "rational_checker",
+        "equivalence": "rational_equivalent",
+        "math_objects": [
+          "coordinate_point",
+          "three_coordinate_points",
+          "triangle",
+          "two_coordinate_points"
+        ],
+        "target_task": "evaluate_function_value",
+        "task_family": "function_concept_family",
+        "reasoning_type": [
+          "numeric_computation"
+        ],
+        "required_derivation": true,
+        "source_quality_issues": [
+          "broken_latex_left_right"
+        ],
+        "source_quality_reject": true,
+        "candidate_only": false,
+        "variables": [
+          "F",
+          "f",
+          "x"
+        ],
+        "givens": [
+          "F",
+          "f",
+          "x"
+        ],
+        "target": "evaluate_function_value",
+        "classifier_source": "ai",
+        "semantic_classification": {
+          "ai_target_task": "evaluate_function_value",
+          "ai_task_family": "function_concept_family",
+          "ai_confidence": 1.0,
+          "ai_best_candidate_id": "C1",
+          "ai_evidence": [
+            "The problem provides a piecewise function f(x) representing electricity costs based on usage x.",
+            "The task requires calculating the cost for specific values of x (800 and 600).",
+            "The solution involves substituting these values into the appropriate parts of the function to find the function values."
+          ],
+          "ai_rejected_candidates": {
+            "C2": "While function notation is used, the primary task is the calculation of values rather than explaining the notation itself.",
+            "C3": "The problem does not ask to identify the domain or range of the function.",
+            "C4": "The problem assumes the relation is a function and does not ask for verification of mapping properties.",
+            "C5": "The problem focuses on specific value evaluation rather than judging the general relationship between variables."
+          },
+          "ai_available": true,
+          "ai_error": "",
+          "ai_unavailable_reason": "",
+          "ai_semantic_status": "ok",
+          "ai_invalid_response_reason": "",
+          "parser_error": "",
+          "raw_response_preview": "",
+          "sanitized_response_preview": "",
+          "failed_stage": "",
+          "rule_target_task": "evaluate_function_value",
+          "rule_task_family": "function_concept_family",
+          "rule_confidence": 0.5,
+          "final_target_task": "evaluate_function_value",
+          "final_task_family": "function_concept_family",
+          "classifier_source": "ai",
+          "conflict_reason": "",
+          "source_mapping_warning": "",
+          "requires_human_action": false,
+          "ai_notes": "The example is a practical application of evaluating a piecewise linear function at specific input points.",
+          "skill_scoped_candidates": [
+            {
+              "candidate_id": "C1",
+              "target_task": "evaluate_function_value",
+              "task_family": "function_concept_family",
+              "problem_type_id": "evaluate_function_value",
+              "label": "evaluate_function_value",
+              "candidate_source": "anchor",
+              "in_anchor_scope": true,
+              "answer_type": "numeric",
+              "answer_shape": "numeric",
+              "math_objects": [],
+              "checker_key": "numeric_checker",
+              "equivalence_type": "numeric_equivalence",
+              "generator_contract": {
+                "template_variants": [
+                  {
+                    "id": "default",
+                    "label": "default",
+                    "stem_pattern": "依題意求解：{stem_hint}。",
+                    "weight": 1.0,
+                    "enabled": true
+                  }
+                ],
+                "parameter_schema": {
+                  "seed": {
+                    "type": "integer",
+                    "randomize": true
+                  },
+                  "difficulty_level": {
+                    "choices": [
+                      "level_1",
+                      "level_2",
+                      "level_3"
+                    ],
+                    "weights": [
+                      0.4,
+                      0.4,
+                      0.2
+                    ]
+                  }
+                },
+                "variation_dimensions": [
+                  "seed",
+                  "difficulty_level",
+                  "context_style"
+                ],
+                "difficulty_controls": {
+                  "level_1": {},
+                  "level_2": {},
+                  "level_3": {}
+                },
+                "anti_repetition_rules": {
+                  "avoid_same_template_consecutive": true,
+                  "avoid_same_ratio_consecutive": true,
+                  "avoid_same_point_names_consecutive": true,
+                  "avoid_same_answer_consecutive": true,
+                  "recent_history_window": 5,
+                  "signature_fields": [
+                    "problem_type_id",
+                    "template_variant",
+                    "ratio_form",
+                    "ratio_values",
+                    "coordinate_pattern",
+                    "answer"
+                  ]
+                },
+                "validity_constraints": [
+                  "answer derivable from givens"
+                ],
+                "answer_shape": "numeric",
+                "explanation_variants": [
+                  "stepwise"
+                ],
+                "sampling_strategy": "weighted_random",
+                "template_families": [
+                  "evaluate_function_value"
+                ]
+              },
+              "parameter_schema": {
+                "seed": {
+                  "type": "integer",
+                  "randomize": true
+                },
+                "difficulty_level": {
+                  "choices": [
+                    "level_1",
+                    "level_2",
+                    "level_3"
+                  ],
+                  "weights": [
+                    0.4,
+                    0.4,
+                    0.2
+                  ]
+                }
+              }
+            },
+            {
+              "candidate_id": "C2",
+              "target_task": "interpret_function_notation",
+              "task_family": "function_concept_family",
+              "problem_type_id": "interpret_function_notation",
+              "label": "interpret_function_notation",
+              "candidate_source": "anchor",
+              "in_anchor_scope": true,
+              "answer_type": "numeric",
+              "answer_shape": "numeric",
+              "math_objects": [],
+              "checker_key": "numeric_checker",
+              "equivalence_type": "numeric_equivalence",
+              "generator_contract": {
+                "template_variants": [
+                  {
+                    "id": "default",
+                    "label": "default",
+                    "stem_pattern": "依題意求解：{stem_hint}。",
+                    "weight": 1.0,
+                    "enabled": true
+                  }
+                ],
+                "parameter_schema": {
+                  "seed": {
+                    "type": "integer",
+                    "randomize": true
+                  },
+                  "difficulty_level": {
+                    "choices": [
+                      "level_1",
+                      "level_2",
+                      "level_3"
+                    ],
+                    "weights": [
+                      0.4,
+                      0.4,
+                      0.2
+                    ]
+                  }
+                },
+                "variation_dimensions": [
+                  "seed",
+                  "difficulty_level",
+                  "context_style"
+                ],
+                "difficulty_controls": {
+                  "level_1": {},
+                  "level_2": {},
+                  "level_3": {}
+                },
+                "anti_repetition_rules": {
+                  "avoid_same_template_consecutive": true,
+                  "avoid_same_ratio_consecutive": true,
+                  "avoid_same_point_names_consecutive": true,
+                  "avoid_same_answer_consecutive": true,
+                  "recent_history_window": 5,
+                  "signature_fields": [
+                    "problem_type_id",
+                    "template_variant",
+                    "ratio_form",
+                    "ratio_values",
+                    "coordinate_pattern",
+                    "answer"
+                  ]
+                },
+                "validity_constraints": [
+                  "answer derivable from givens"
+                ],
+                "answer_shape": "numeric",
+                "explanation_variants": [
+                  "stepwise"
+                ],
+                "sampling_strategy": "weighted_random",
+                "template_families": [
+                  "interpret_function_notation"
+                ]
+              },
+              "parameter_schema": {
+                "seed": {
+                  "type": "integer",
+                  "randomize": true
+                },
+                "difficulty_level": {
+                  "choices": [
+                    "level_1",
+                    "level_2",
+                    "level_3"
+                  ],
+                  "weights": [
+                    0.4,
+                    0.4,
+                    0.2
+                  ]
+                }
+              }
+            },
+            {
+              "candidate_id": "C3",
+              "target_task": "judge_domain_range_basic",
+              "task_family": "function_concept_family",
+              "problem_type_id": "judge_domain_range_basic",
+              "label": "judge_domain_range_basic",
+              "candidate_source": "anchor",
+              "in_anchor_scope": true,
+              "answer_type": "numeric",
+              "answer_shape": "numeric",
+              "math_objects": [],
+              "checker_key": "numeric_checker",
+              "equivalence_type": "numeric_equivalence",
+              "generator_contract": {
+                "template_variants": [
+                  {
+                    "id": "default",
+                    "label": "default",
+                    "stem_pattern": "依題意求解：{stem_hint}。",
+                    "weight": 1.0,
+                    "enabled": true
+                  }
+                ],
+                "parameter_schema": {
+                  "seed": {
+                    "type": "integer",
+                    "randomize": true
+                  },
+                  "difficulty_level": {
+                    "choices": [
+                      "level_1",
+                      "level_2",
+                      "level_3"
+                    ],
+                    "weights": [
+                      0.4,
+                      0.4,
+                      0.2
+                    ]
+                  }
+                },
+                "variation_dimensions": [
+                  "seed",
+                  "difficulty_level",
+                  "context_style"
+                ],
+                "difficulty_controls": {
+                  "level_1": {},
+                  "level_2": {},
+                  "level_3": {}
+                },
+                "anti_repetition_rules": {
+                  "avoid_same_template_consecutive": true,
+                  "avoid_same_ratio_consecutive": true,
+                  "avoid_same_point_names_consecutive": true,
+                  "avoid_same_answer_consecutive": true,
+                  "recent_history_window": 5,
+                  "signature_fields": [
+                    "problem_type_id",
+                    "template_variant",
+                    "ratio_form",
+                    "ratio_values",
+                    "coordinate_pattern",
+                    "answer"
+                  ]
+                },
+                "validity_constraints": [
+                  "answer derivable from givens"
+                ],
+                "answer_shape": "numeric",
+                "explanation_variants": [
+                  "stepwise"
+                ],
+                "sampling_strategy": "weighted_random",
+                "template_families": [
+                  "judge_domain_range_basic"
+                ]
+              },
+              "parameter_schema": {
+                "seed": {
+                  "type": "integer",
+                  "randomize": true
+                },
+                "difficulty_level": {
+                  "choices": [
+                    "level_1",
+                    "level_2",
+                    "level_3"
+                  ],
+                  "weights": [
+                    0.4,
+                    0.4,
+                    0.2
+                  ]
+                }
+              }
+            },
+            {
+              "candidate_id": "C4",
+              "target_task": "judge_function_from_mapping",
+              "task_family": "function_concept_family",
+              "problem_type_id": "judge_function_from_mapping",
+              "label": "judge_function_from_mapping",
+              "candidate_source": "anchor",
+              "in_anchor_scope": true,
+              "answer_type": "numeric",
+              "answer_shape": "numeric",
+              "math_objects": [],
+              "checker_key": "numeric_checker",
+              "equivalence_type": "numeric_equivalence",
+              "generator_contract": {
+                "template_variants": [
+                  {
+                    "id": "default",
+                    "label": "default",
+                    "stem_pattern": "依題意求解：{stem_hint}。",
+                    "weight": 1.0,
+                    "enabled": true
+                  }
+                ],
+                "parameter_schema": {
+                  "seed": {
+                    "type": "integer",
+                    "randomize": true
+                  },
+                  "difficulty_level": {
+                    "choices": [
+                      "level_1",
+                      "level_2",
+                      "level_3"
+                    ],
+                    "weights": [
+                      0.4,
+                      0.4,
+                      0.2
+                    ]
+                  }
+                },
+                "variation_dimensions": [
+                  "seed",
+                  "difficulty_level",
+                  "context_style"
+                ],
+                "difficulty_controls": {
+                  "level_1": {},
+                  "level_2": {},
+                  "level_3": {}
+                },
+                "anti_repetition_rules": {
+                  "avoid_same_template_consecutive": true,
+                  "avoid_same_ratio_consecutive": true,
+                  "avoid_same_point_names_consecutive": true,
+                  "avoid_same_answer_consecutive": true,
+                  "recent_history_window": 5,
+                  "signature_fields": [
+                    "problem_type_id",
+                    "template_variant",
+                    "ratio_form",
+                    "ratio_values",
+                    "coordinate_pattern",
+                    "answer"
+                  ]
+                },
+                "validity_constraints": [
+                  "answer derivable from givens"
+                ],
+                "answer_shape": "numeric",
+                "explanation_variants": [
+                  "stepwise"
+                ],
+                "sampling_strategy": "weighted_random",
+                "template_families": [
+                  "judge_function_from_mapping"
+                ]
+              },
+              "parameter_schema": {
+                "seed": {
+                  "type": "integer",
+                  "randomize": true
+                },
+                "difficulty_level": {
+                  "choices": [
+                    "level_1",
+                    "level_2",
+                    "level_3"
+                  ],
+                  "weights": [
+                    0.4,
+                    0.4,
+                    0.2
+                  ]
+                }
+              }
+            },
+            {
+              "candidate_id": "C5",
+              "target_task": "judge_function_relation",
+              "task_family": "function_concept_family",
+              "problem_type_id": "judge_function_relation",
+              "label": "judge_function_relation",
+              "candidate_source": "anchor",
+              "in_anchor_scope": true,
+              "answer_type": "numeric",
+              "answer_shape": "numeric",
+              "math_objects": [],
+              "checker_key": "numeric_checker",
+              "equivalence_type": "numeric_equivalence",
+              "generator_contract": {
+                "template_variants": [
+                  {
+                    "id": "default",
+                    "label": "default",
+                    "stem_pattern": "依題意求解：{stem_hint}。",
+                    "weight": 1.0,
+                    "enabled": true
+                  }
+                ],
+                "parameter_schema": {
+                  "seed": {
+                    "type": "integer",
+                    "randomize": true
+                  },
+                  "difficulty_level": {
+                    "choices": [
+                      "level_1",
+                      "level_2",
+                      "level_3"
+                    ],
+                    "weights": [
+                      0.4,
+                      0.4,
+                      0.2
+                    ]
+                  }
+                },
+                "variation_dimensions": [
+                  "seed",
+                  "difficulty_level",
+                  "context_style"
+                ],
+                "difficulty_controls": {
+                  "level_1": {},
+                  "level_2": {},
+                  "level_3": {}
+                },
+                "anti_repetition_rules": {
+                  "avoid_same_template_consecutive": true,
+                  "avoid_same_ratio_consecutive": true,
+                  "avoid_same_point_names_consecutive": true,
+                  "avoid_same_answer_consecutive": true,
+                  "recent_history_window": 5,
+                  "signature_fields": [
+                    "problem_type_id",
+                    "template_variant",
+                    "ratio_form",
+                    "ratio_values",
+                    "coordinate_pattern",
+                    "answer"
+                  ]
+                },
+                "validity_constraints": [
+                  "answer derivable from givens"
+                ],
+                "answer_shape": "numeric",
+                "explanation_variants": [
+                  "stepwise"
+                ],
+                "sampling_strategy": "weighted_random",
+                "template_families": [
+                  "judge_function_relation"
+                ]
+              },
+              "parameter_schema": {
+                "seed": {
+                  "type": "integer",
+                  "randomize": true
+                },
+                "difficulty_level": {
+                  "choices": [
+                    "level_1",
+                    "level_2",
+                    "level_3"
+                  ],
+                  "weights": [
+                    0.4,
+                    0.4,
+                    0.2
+                  ]
+                }
+              }
+            },
+            {
+              "candidate_id": "needs_review",
+              "target_task": "",
+              "task_family": "",
+              "problem_type_id": "needs_review",
+              "label": "needs_review",
+              "candidate_source": "needs_review",
+              "in_anchor_scope": false,
+              "answer_type": "",
+              "answer_shape": "",
+              "math_objects": [],
+              "checker_key": "manual_review_checker",
+              "equivalence_type": "manual_review_or_ai_judged",
+              "generator_contract": {},
+              "parameter_schema": {}
+            }
+          ],
+          "outsider_candidates": [],
+          "selected_subskill": "evaluate_function_value",
+          "selected_problem_type": "evaluate_function_value",
+          "candidate_source": "anchor",
+          "selected_generator_contract": {
+            "template_variants": [
+              {
+                "id": "default",
+                "label": "default",
+                "stem_pattern": "依題意求解：{stem_hint}。",
+                "weight": 1.0,
+                "enabled": true
+              }
+            ],
+            "parameter_schema": {
+              "seed": {
+                "type": "integer",
+                "randomize": true
+              },
+              "difficulty_level": {
+                "choices": [
+                  "level_1",
+                  "level_2",
+                  "level_3"
+                ],
+                "weights": [
+                  0.4,
+                  0.4,
+                  0.2
+                ]
+              }
+            },
+            "variation_dimensions": [
+              "seed",
+              "difficulty_level",
+              "context_style"
+            ],
+            "difficulty_controls": {
+              "level_1": {},
+              "level_2": {},
+              "level_3": {}
+            },
+            "anti_repetition_rules": {
+              "avoid_same_template_consecutive": true,
+              "avoid_same_ratio_consecutive": true,
+              "avoid_same_point_names_consecutive": true,
+              "avoid_same_answer_consecutive": true,
+              "recent_history_window": 5,
+              "signature_fields": [
+                "problem_type_id",
+                "template_variant",
+                "ratio_form",
+                "ratio_values",
+                "coordinate_pattern",
+                "answer"
+              ]
+            },
+            "validity_constraints": [
+              "answer derivable from givens"
+            ],
+            "answer_shape": "numeric",
+            "explanation_variants": [
+              "stepwise"
+            ],
+            "sampling_strategy": "weighted_random",
+            "template_families": [
+              "evaluate_function_value"
+            ]
+          },
+          "parameter_schema": {
+            "seed": {
+              "type": "integer",
+              "randomize": true
+            },
+            "difficulty_level": {
+              "choices": [
+                "level_1",
+                "level_2",
+                "level_3"
+              ],
+              "weights": [
+                0.4,
+                0.4,
+                0.2
+              ]
+            }
+          },
+          "variable_randomization_notes": [],
+          "checker_key": "numeric_checker",
+          "equivalence_type": "numeric_equivalence",
+          "skill_scope_trusted": true,
+          "target_task": "evaluate_function_value",
+          "task_family": "function_concept_family",
+          "math_objects": [
+            "coordinate_point",
+            "three_coordinate_points",
+            "triangle",
+            "two_coordinate_points"
+          ],
+          "answer_type": "numeric",
+          "answer_shape": "numeric",
+          "source_type": "worked_example",
+          "example_label": "例題2",
+          "practice_label": "",
+          "linked_example": "",
+          "linked_example_id": null,
+          "linked_example_task_family": "",
+          "structure_consistency": "not_applicable",
+          "sequence_context_used": true,
+          "structure_context_used": true,
+          "confidence_adjustment_reason": "sequence_context_used",
+          "possible_structure_mismatch": false,
+          "possible_mixed_source_context": false
+        },
+        "source_structure_context": {
+          "source_type": "worked_example",
+          "example_label": "例題2",
+          "practice_label": "",
+          "linked_example": "",
+          "section_order": 0,
+          "example_number": 2,
+          "practice_number": null,
+          "nearby_worked_examples": [
+            {
+              "example_id": 4430,
+              "source_type": "worked_example",
+              "example_label": "例題1",
+              "practice_label": "",
+              "section_order": 0,
+              "title_head": "例1"
+            },
+            {
+              "example_id": 4433,
+              "source_type": "worked_example",
+              "example_label": "例題8",
+              "practice_label": "",
+              "section_order": 0,
+              "title_head": "例8"
+            },
+            {
+              "example_id": 4434,
+              "source_type": "worked_example",
+              "example_label": "例題9",
+              "practice_label": "",
+              "section_order": 0,
+              "title_head": "例9"
+            },
+            {
+              "example_id": 4444,
+              "source_type": "worked_example",
+              "example_label": "例題10",
+              "practice_label": "",
+              "section_order": 0,
+              "title_head": "例10"
+            },
+            {
+              "example_id": 4445,
+              "source_type": "worked_example",
+              "example_label": "例題11",
+              "practice_label": "",
+              "section_order": 0,
+              "title_head": "例11"
+            }
+          ],
+          "linked_worked_example": null,
+          "linked_practices": [],
+          "same_section_sequence": [
+            {
+              "example_id": 4424,
+              "source_type": "unknown",
+              "example_label": "",
+              "practice_label": "",
+              "section_order": 0,
+              "title_head": "1-2習題 基礎題 8"
+            },
+            {
+              "example_id": 4425,
+              "source_type": "unknown",
+              "example_label": "",
+              "practice_label": "",
+              "section_order": 0,
+              "title_head": "1-2習題 進階題 9"
+            },
+            {
+              "example_id": 4426,
+              "source_type": "unknown",
+              "example_label": "",
+              "practice_label": "",
+              "section_order": 0,
+              "title_head": "1-2習題 進階題 10"
+            },
+            {
+              "example_id": 4430,
+              "source_type": "worked_example",
+              "example_label": "例題1",
+              "practice_label": "",
+              "section_order": 0,
+              "title_head": "例1"
+            },
+            {
+              "example_id": 4431,
+              "source_type": "worked_example",
+              "example_label": "例題2",
+              "practice_label": "",
+              "section_order": 0,
+              "title_head": "例2"
+            },
+            {
+              "example_id": 4433,
+              "source_type": "worked_example",
+              "example_label": "例題8",
+              "practice_label": "",
+              "section_order": 0,
+              "title_head": "例8"
+            },
+            {
+              "example_id": 4434,
+              "source_type": "worked_example",
+              "example_label": "例題9",
+              "practice_label": "",
+              "section_order": 0,
+              "title_head": "例9"
+            },
+            {
+              "example_id": 4441,
+              "source_type": "in_class_practice",
+              "example_label": "",
+              "practice_label": "隨堂練習10",
+              "section_order": 0,
+              "title_head": "隨堂練習10"
+            },
+            {
+              "example_id": 4442,
+              "source_type": "in_class_practice",
+              "example_label": "",
+              "practice_label": "隨堂練習11",
+              "section_order": 0,
+              "title_head": "隨堂練習11"
+            },
+            {
+              "example_id": 4444,
+              "source_type": "worked_example",
+              "example_label": "例題10",
+              "practice_label": "",
+              "section_order": 0,
+              "title_head": "例10"
+            },
+            {
+              "example_id": 4445,
+              "source_type": "worked_example",
+              "example_label": "例題11",
+              "practice_label": "",
+              "section_order": 0,
+              "title_head": "例11"
+            },
+            {
+              "example_id": 4446,
+              "source_type": "unknown",
+              "example_label": "",
+              "practice_label": "",
+              "section_order": 0,
+              "title_head": "112統測B"
+            },
+            {
+              "example_id": 4448,
+              "source_type": "in_class_practice",
+              "example_label": "",
+              "practice_label": "隨堂練習8",
+              "section_order": 0,
+              "title_head": "隨堂練習8"
+            },
+            {
+              "example_id": 4449,
+              "source_type": "in_class_practice",
+              "example_label": "",
+              "practice_label": "隨堂練習9",
+              "section_order": 0,
+              "title_head": "隨堂練習9"
+            },
+            {
+              "example_id": 4500,
+              "source_type": "unknown",
+              "example_label": "",
+              "practice_label": "",
+              "section_order": 0,
+              "title_head": "CH1自我評量 題10"
+            },
+            {
+              "example_id": 4515,
+              "source_type": "unknown",
+              "example_label": "",
+              "practice_label": "",
+              "section_order": 0,
+              "title_head": "CH1自我評量 題8"
+            },
+            {
+              "example_id": 4516,
+              "source_type": "unknown",
+              "example_label": "",
+              "practice_label": "",
+              "section_order": 0,
+              "title_head": "CH1自我評量 題9"
+            }
+          ]
+        },
+        "induction_tier": "enrichment",
+        "enrichment_reasons": [
+          "applied_context",
+          "figure_mixed",
+          "historical_narrative",
+          "long_stem",
+          "math_file",
+          "mixed_unrelated_context",
+          "piecewise_application",
+          "sdgs"
+        ],
+        "included_in_core_induction": false,
+        "equivalence_type": "rational_equivalent",
+        "checker_key": "rational_checker"
+      },
+      "answer_shape": "numeric",
+      "classification_confidence": "low",
+      "classification_reason": "ai",
+      "risk_flags": [],
+      "semantic_classification": {
+        "ai_target_task": "evaluate_function_value",
+        "ai_task_family": "function_concept_family",
+        "ai_confidence": 1.0,
+        "ai_best_candidate_id": "C1",
+        "ai_evidence": [
+          "The problem provides a piecewise function f(x) representing electricity costs based on usage x.",
+          "The task requires calculating the cost for specific values of x (800 and 600).",
+          "The solution involves substituting these values into the appropriate parts of the function to find the function values."
+        ],
+        "ai_rejected_candidates": {
+          "C2": "While function notation is used, the primary task is the calculation of values rather than explaining the notation itself.",
+          "C3": "The problem does not ask to identify the domain or range of the function.",
+          "C4": "The problem assumes the relation is a function and does not ask for verification of mapping properties.",
+          "C5": "The problem focuses on specific value evaluation rather than judging the general relationship between variables."
+        },
+        "ai_available": true,
+        "ai_error": "",
+        "ai_unavailable_reason": "",
+        "ai_semantic_status": "ok",
+        "ai_invalid_response_reason": "",
+        "parser_error": "",
+        "raw_response_preview": "",
+        "sanitized_response_preview": "",
+        "failed_stage": "",
+        "rule_target_task": "evaluate_function_value",
+        "rule_task_family": "function_concept_family",
+        "rule_confidence": 0.5,
+        "final_target_task": "evaluate_function_value",
+        "final_task_family": "function_concept_family",
+        "classifier_source": "ai",
+        "conflict_reason": "",
+        "source_mapping_warning": "",
+        "requires_human_action": false,
+        "ai_notes": "The example is a practical application of evaluating a piecewise linear function at specific input points.",
+        "skill_scoped_candidates": [
+          {
+            "candidate_id": "C1",
+            "target_task": "evaluate_function_value",
+            "task_family": "function_concept_family",
+            "problem_type_id": "evaluate_function_value",
+            "label": "evaluate_function_value",
+            "candidate_source": "anchor",
+            "in_anchor_scope": true,
+            "answer_type": "numeric",
+            "answer_shape": "numeric",
+            "math_objects": [],
+            "checker_key": "numeric_checker",
+            "equivalence_type": "numeric_equivalence",
+            "generator_contract": {
+              "template_variants": [
+                {
+                  "id": "default",
+                  "label": "default",
+                  "stem_pattern": "依題意求解：{stem_hint}。",
+                  "weight": 1.0,
+                  "enabled": true
+                }
+              ],
+              "parameter_schema": {
+                "seed": {
+                  "type": "integer",
+                  "randomize": true
+                },
+                "difficulty_level": {
+                  "choices": [
+                    "level_1",
+                    "level_2",
+                    "level_3"
+                  ],
+                  "weights": [
+                    0.4,
+                    0.4,
+                    0.2
+                  ]
+                }
+              },
+              "variation_dimensions": [
+                "seed",
+                "difficulty_level",
+                "context_style"
+              ],
+              "difficulty_controls": {
+                "level_1": {},
+                "level_2": {},
+                "level_3": {}
+              },
+              "anti_repetition_rules": {
+                "avoid_same_template_consecutive": true,
+                "avoid_same_ratio_consecutive": true,
+                "avoid_same_point_names_consecutive": true,
+                "avoid_same_answer_consecutive": true,
+                "recent_history_window": 5,
+                "signature_fields": [
+                  "problem_type_id",
+                  "template_variant",
+                  "ratio_form",
+                  "ratio_values",
+                  "coordinate_pattern",
+                  "answer"
+                ]
+              },
+              "validity_constraints": [
+                "answer derivable from givens"
+              ],
+              "answer_shape": "numeric",
+              "explanation_variants": [
+                "stepwise"
+              ],
+              "sampling_strategy": "weighted_random",
+              "template_families": [
+                "evaluate_function_value"
+              ]
+            },
+            "parameter_schema": {
+              "seed": {
+                "type": "integer",
+                "randomize": true
+              },
+              "difficulty_level": {
+                "choices": [
+                  "level_1",
+                  "level_2",
+                  "level_3"
+                ],
+                "weights": [
+                  0.4,
+                  0.4,
+                  0.2
+                ]
+              }
+            }
+          },
+          {
+            "candidate_id": "C2",
+            "target_task": "interpret_function_notation",
+            "task_family": "function_concept_family",
+            "problem_type_id": "interpret_function_notation",
+            "label": "interpret_function_notation",
+            "candidate_source": "anchor",
+            "in_anchor_scope": true,
+            "answer_type": "numeric",
+            "answer_shape": "numeric",
+            "math_objects": [],
+            "checker_key": "numeric_checker",
+            "equivalence_type": "numeric_equivalence",
+            "generator_contract": {
+              "template_variants": [
+                {
+                  "id": "default",
+                  "label": "default",
+                  "stem_pattern": "依題意求解：{stem_hint}。",
+                  "weight": 1.0,
+                  "enabled": true
+                }
+              ],
+              "parameter_schema": {
+                "seed": {
+                  "type": "integer",
+                  "randomize": true
+                },
+                "difficulty_level": {
+                  "choices": [
+                    "level_1",
+                    "level_2",
+                    "level_3"
+                  ],
+                  "weights": [
+                    0.4,
+                    0.4,
+                    0.2
+                  ]
+                }
+              },
+              "variation_dimensions": [
+                "seed",
+                "difficulty_level",
+                "context_style"
+              ],
+              "difficulty_controls": {
+                "level_1": {},
+                "level_2": {},
+                "level_3": {}
+              },
+              "anti_repetition_rules": {
+                "avoid_same_template_consecutive": true,
+                "avoid_same_ratio_consecutive": true,
+                "avoid_same_point_names_consecutive": true,
+                "avoid_same_answer_consecutive": true,
+                "recent_history_window": 5,
+                "signature_fields": [
+                  "problem_type_id",
+                  "template_variant",
+                  "ratio_form",
+                  "ratio_values",
+                  "coordinate_pattern",
+                  "answer"
+                ]
+              },
+              "validity_constraints": [
+                "answer derivable from givens"
+              ],
+              "answer_shape": "numeric",
+              "explanation_variants": [
+                "stepwise"
+              ],
+              "sampling_strategy": "weighted_random",
+              "template_families": [
+                "interpret_function_notation"
+              ]
+            },
+            "parameter_schema": {
+              "seed": {
+                "type": "integer",
+                "randomize": true
+              },
+              "difficulty_level": {
+                "choices": [
+                  "level_1",
+                  "level_2",
+                  "level_3"
+                ],
+                "weights": [
+                  0.4,
+                  0.4,
+                  0.2
+                ]
+              }
+            }
+          },
+          {
+            "candidate_id": "C3",
+            "target_task": "judge_domain_range_basic",
+            "task_family": "function_concept_family",
+            "problem_type_id": "judge_domain_range_basic",
+            "label": "judge_domain_range_basic",
+            "candidate_source": "anchor",
+            "in_anchor_scope": true,
+            "answer_type": "numeric",
+            "answer_shape": "numeric",
+            "math_objects": [],
+            "checker_key": "numeric_checker",
+            "equivalence_type": "numeric_equivalence",
+            "generator_contract": {
+              "template_variants": [
+                {
+                  "id": "default",
+                  "label": "default",
+                  "stem_pattern": "依題意求解：{stem_hint}。",
+                  "weight": 1.0,
+                  "enabled": true
+                }
+              ],
+              "parameter_schema": {
+                "seed": {
+                  "type": "integer",
+                  "randomize": true
+                },
+                "difficulty_level": {
+                  "choices": [
+                    "level_1",
+                    "level_2",
+                    "level_3"
+                  ],
+                  "weights": [
+                    0.4,
+                    0.4,
+                    0.2
+                  ]
+                }
+              },
+              "variation_dimensions": [
+                "seed",
+                "difficulty_level",
+                "context_style"
+              ],
+              "difficulty_controls": {
+                "level_1": {},
+                "level_2": {},
+                "level_3": {}
+              },
+              "anti_repetition_rules": {
+                "avoid_same_template_consecutive": true,
+                "avoid_same_ratio_consecutive": true,
+                "avoid_same_point_names_consecutive": true,
+                "avoid_same_answer_consecutive": true,
+                "recent_history_window": 5,
+                "signature_fields": [
+                  "problem_type_id",
+                  "template_variant",
+                  "ratio_form",
+                  "ratio_values",
+                  "coordinate_pattern",
+                  "answer"
+                ]
+              },
+              "validity_constraints": [
+                "answer derivable from givens"
+              ],
+              "answer_shape": "numeric",
+              "explanation_variants": [
+                "stepwise"
+              ],
+              "sampling_strategy": "weighted_random",
+              "template_families": [
+                "judge_domain_range_basic"
+              ]
+            },
+            "parameter_schema": {
+              "seed": {
+                "type": "integer",
+                "randomize": true
+              },
+              "difficulty_level": {
+                "choices": [
+                  "level_1",
+                  "level_2",
+                  "level_3"
+                ],
+                "weights": [
+                  0.4,
+                  0.4,
+                  0.2
+                ]
+              }
+            }
+          },
+          {
+            "candidate_id": "C4",
+            "target_task": "judge_function_from_mapping",
+            "task_family": "function_concept_family",
+            "problem_type_id": "judge_function_from_mapping",
+            "label": "judge_function_from_mapping",
+            "candidate_source": "anchor",
+            "in_anchor_scope": true,
+            "answer_type": "numeric",
+            "answer_shape": "numeric",
+            "math_objects": [],
+            "checker_key": "numeric_checker",
+            "equivalence_type": "numeric_equivalence",
+            "generator_contract": {
+              "template_variants": [
+                {
+                  "id": "default",
+                  "label": "default",
+                  "stem_pattern": "依題意求解：{stem_hint}。",
+                  "weight": 1.0,
+                  "enabled": true
+                }
+              ],
+              "parameter_schema": {
+                "seed": {
+                  "type": "integer",
+                  "randomize": true
+                },
+                "difficulty_level": {
+                  "choices": [
+                    "level_1",
+                    "level_2",
+                    "level_3"
+                  ],
+                  "weights": [
+                    0.4,
+                    0.4,
+                    0.2
+                  ]
+                }
+              },
+              "variation_dimensions": [
+                "seed",
+                "difficulty_level",
+                "context_style"
+              ],
+              "difficulty_controls": {
+                "level_1": {},
+                "level_2": {},
+                "level_3": {}
+              },
+              "anti_repetition_rules": {
+                "avoid_same_template_consecutive": true,
+                "avoid_same_ratio_consecutive": true,
+                "avoid_same_point_names_consecutive": true,
+                "avoid_same_answer_consecutive": true,
+                "recent_history_window": 5,
+                "signature_fields": [
+                  "problem_type_id",
+                  "template_variant",
+                  "ratio_form",
+                  "ratio_values",
+                  "coordinate_pattern",
+                  "answer"
+                ]
+              },
+              "validity_constraints": [
+                "answer derivable from givens"
+              ],
+              "answer_shape": "numeric",
+              "explanation_variants": [
+                "stepwise"
+              ],
+              "sampling_strategy": "weighted_random",
+              "template_families": [
+                "judge_function_from_mapping"
+              ]
+            },
+            "parameter_schema": {
+              "seed": {
+                "type": "integer",
+                "randomize": true
+              },
+              "difficulty_level": {
+                "choices": [
+                  "level_1",
+                  "level_2",
+                  "level_3"
+                ],
+                "weights": [
+                  0.4,
+                  0.4,
+                  0.2
+                ]
+              }
+            }
+          },
+          {
+            "candidate_id": "C5",
+            "target_task": "judge_function_relation",
+            "task_family": "function_concept_family",
+            "problem_type_id": "judge_function_relation",
+            "label": "judge_function_relation",
+            "candidate_source": "anchor",
+            "in_anchor_scope": true,
+            "answer_type": "numeric",
+            "answer_shape": "numeric",
+            "math_objects": [],
+            "checker_key": "numeric_checker",
+            "equivalence_type": "numeric_equivalence",
+            "generator_contract": {
+              "template_variants": [
+                {
+                  "id": "default",
+                  "label": "default",
+                  "stem_pattern": "依題意求解：{stem_hint}。",
+                  "weight": 1.0,
+                  "enabled": true
+                }
+              ],
+              "parameter_schema": {
+                "seed": {
+                  "type": "integer",
+                  "randomize": true
+                },
+                "difficulty_level": {
+                  "choices": [
+                    "level_1",
+                    "level_2",
+                    "level_3"
+                  ],
+                  "weights": [
+                    0.4,
+                    0.4,
+                    0.2
+                  ]
+                }
+              },
+              "variation_dimensions": [
+                "seed",
+                "difficulty_level",
+                "context_style"
+              ],
+              "difficulty_controls": {
+                "level_1": {},
+                "level_2": {},
+                "level_3": {}
+              },
+              "anti_repetition_rules": {
+                "avoid_same_template_consecutive": true,
+                "avoid_same_ratio_consecutive": true,
+                "avoid_same_point_names_consecutive": true,
+                "avoid_same_answer_consecutive": true,
+                "recent_history_window": 5,
+                "signature_fields": [
+                  "problem_type_id",
+                  "template_variant",
+                  "ratio_form",
+                  "ratio_values",
+                  "coordinate_pattern",
+                  "answer"
+                ]
+              },
+              "validity_constraints": [
+                "answer derivable from givens"
+              ],
+              "answer_shape": "numeric",
+              "explanation_variants": [
+                "stepwise"
+              ],
+              "sampling_strategy": "weighted_random",
+              "template_families": [
+                "judge_function_relation"
+              ]
+            },
+            "parameter_schema": {
+              "seed": {
+                "type": "integer",
+                "randomize": true
+              },
+              "difficulty_level": {
+                "choices": [
+                  "level_1",
+                  "level_2",
+                  "level_3"
+                ],
+                "weights": [
+                  0.4,
+                  0.4,
+                  0.2
+                ]
+              }
+            }
+          },
+          {
+            "candidate_id": "needs_review",
+            "target_task": "",
+            "task_family": "",
+            "problem_type_id": "needs_review",
+            "label": "needs_review",
+            "candidate_source": "needs_review",
+            "in_anchor_scope": false,
+            "answer_type": "",
+            "answer_shape": "",
+            "math_objects": [],
+            "checker_key": "manual_review_checker",
+            "equivalence_type": "manual_review_or_ai_judged",
+            "generator_contract": {},
+            "parameter_schema": {}
+          }
+        ],
+        "outsider_candidates": [],
+        "selected_subskill": "evaluate_function_value",
+        "selected_problem_type": "evaluate_function_value",
+        "candidate_source": "anchor",
+        "selected_generator_contract": {
+          "template_variants": [
+            {
+              "id": "default",
+              "label": "default",
+              "stem_pattern": "依題意求解：{stem_hint}。",
+              "weight": 1.0,
+              "enabled": true
+            }
+          ],
+          "parameter_schema": {
+            "seed": {
+              "type": "integer",
+              "randomize": true
+            },
+            "difficulty_level": {
+              "choices": [
+                "level_1",
+                "level_2",
+                "level_3"
+              ],
+              "weights": [
+                0.4,
+                0.4,
+                0.2
+              ]
+            }
+          },
+          "variation_dimensions": [
+            "seed",
+            "difficulty_level",
+            "context_style"
+          ],
+          "difficulty_controls": {
+            "level_1": {},
+            "level_2": {},
+            "level_3": {}
+          },
+          "anti_repetition_rules": {
+            "avoid_same_template_consecutive": true,
+            "avoid_same_ratio_consecutive": true,
+            "avoid_same_point_names_consecutive": true,
+            "avoid_same_answer_consecutive": true,
+            "recent_history_window": 5,
+            "signature_fields": [
+              "problem_type_id",
+              "template_variant",
+              "ratio_form",
+              "ratio_values",
+              "coordinate_pattern",
+              "answer"
+            ]
+          },
+          "validity_constraints": [
+            "answer derivable from givens"
+          ],
+          "answer_shape": "numeric",
+          "explanation_variants": [
+            "stepwise"
+          ],
+          "sampling_strategy": "weighted_random",
+          "template_families": [
+            "evaluate_function_value"
+          ]
+        },
+        "parameter_schema": {
+          "seed": {
+            "type": "integer",
+            "randomize": true
+          },
+          "difficulty_level": {
+            "choices": [
+              "level_1",
+              "level_2",
+              "level_3"
+            ],
+            "weights": [
+              0.4,
+              0.4,
+              0.2
+            ]
+          }
+        },
+        "variable_randomization_notes": [],
+        "checker_key": "numeric_checker",
+        "equivalence_type": "numeric_equivalence",
+        "skill_scope_trusted": true,
+        "target_task": "evaluate_function_value",
+        "task_family": "function_concept_family",
+        "math_objects": [
+          "coordinate_point",
+          "three_coordinate_points",
+          "triangle",
+          "two_coordinate_points"
+        ],
+        "answer_type": "numeric",
+        "answer_shape": "numeric",
+        "source_type": "worked_example",
+        "example_label": "例題2",
+        "practice_label": "",
+        "linked_example": "",
+        "linked_example_id": null,
+        "linked_example_task_family": "",
+        "structure_consistency": "not_applicable",
+        "sequence_context_used": true,
+        "structure_context_used": true,
+        "confidence_adjustment_reason": "sequence_context_used",
+        "possible_structure_mismatch": false,
+        "possible_mixed_source_context": false
+      },
+      "subskill_id": "evaluate_function_value",
+      "classification_source": "ai",
+      "induction_eligibility": "excluded_source_quality_reject",
+      "answer_type": "rational",
+      "equivalence_type": "rational_equivalent",
+      "checker_key": "rational_checker"
+    },
+    {
       "example_id": 4433,
       "detected_problem_type_id": "short_answer_interpret_function_notation_short_answer",
       "example_feature": {
@@ -48470,15 +53568,15 @@
           "ai_best_candidate_id": "interpret_function_notation",
           "ai_evidence": [
             "題目要求在坐標平面上畫出常數函數 y = f(x) = -2 的圖形。",
-            "提供的候選子技能（C1-C5）皆屬於函數概念家族（function_concept_family），包含求值、符號辨識、定義域值域、映射判斷及函數關係判斷。",
-            "候選清單中缺乏與「繪製圖形」或「線型函數圖形」相關的子技能。"
+            "提供的候選子技能 (C1-C5) 均屬於函數概念家族 (function_concept_family)，包含求值、符號辨釋、定義域值域、映射判斷及函數關係判斷。",
+            "候選清單中缺乏「描繪函數圖形」或「線性函數圖形」相關的子技能。"
           ],
           "ai_rejected_candidates": {
-            "C1": "此題為作圖題，非單純求函數值。",
-            "C2": "此題重點在於圖形繪製，而非僅僅理解函數符號的意義。",
+            "C1": "此題為繪圖題，而非單純求特定點的函數值。",
+            "C2": "此題涉及函數符號，但核心任務是繪圖而非僅僅是辨釋符號意義。",
             "C3": "此題未要求判斷定義域或值域。",
             "C4": "此題非判斷映射是否為函數。",
-            "C5": "此題非判斷變數間的函數關係。"
+            "C5": "此題非判斷變數間是否構成函數關係。"
           },
           "ai_available": false,
           "ai_error": "",
@@ -48498,7 +53596,7 @@
           "conflict_reason": "",
           "source_mapping_warning": "",
           "requires_human_action": false,
-          "ai_notes": "題目要求畫出常數函數的圖形，但提供的候選子技能僅限於函數的基本概念（如求值、符號、定義域等），不包含線型函數的圖形特徵或作圖。建議增加與圖形繪製相關的子技能。",
+          "ai_notes": "題目任務為「描繪常數函數圖形」，但候選清單僅包含函數基本概念（求值、定義、符號等），缺乏繪圖相關的子技能（如 graph_linear_function 或 graph_constant_function）。",
           "skill_scoped_candidates": [
             {
               "candidate_id": "C1",
@@ -49050,6 +54148,14 @@
               "title_head": "例1"
             },
             {
+              "example_id": 4431,
+              "source_type": "worked_example",
+              "example_label": "例題2",
+              "practice_label": "",
+              "section_order": 0,
+              "title_head": "例2"
+            },
+            {
               "example_id": 4434,
               "source_type": "worked_example",
               "example_label": "例題9",
@@ -49108,6 +54214,14 @@
               "practice_label": "",
               "section_order": 0,
               "title_head": "例1"
+            },
+            {
+              "example_id": 4431,
+              "source_type": "worked_example",
+              "example_label": "例題2",
+              "practice_label": "",
+              "section_order": 0,
+              "title_head": "例2"
             },
             {
               "example_id": 4433,
@@ -49225,15 +54339,15 @@
         "ai_best_candidate_id": "interpret_function_notation",
         "ai_evidence": [
           "題目要求在坐標平面上畫出常數函數 y = f(x) = -2 的圖形。",
-          "提供的候選子技能（C1-C5）皆屬於函數概念家族（function_concept_family），包含求值、符號辨識、定義域值域、映射判斷及函數關係判斷。",
-          "候選清單中缺乏與「繪製圖形」或「線型函數圖形」相關的子技能。"
+          "提供的候選子技能 (C1-C5) 均屬於函數概念家族 (function_concept_family)，包含求值、符號辨釋、定義域值域、映射判斷及函數關係判斷。",
+          "候選清單中缺乏「描繪函數圖形」或「線性函數圖形」相關的子技能。"
         ],
         "ai_rejected_candidates": {
-          "C1": "此題為作圖題，非單純求函數值。",
-          "C2": "此題重點在於圖形繪製，而非僅僅理解函數符號的意義。",
+          "C1": "此題為繪圖題，而非單純求特定點的函數值。",
+          "C2": "此題涉及函數符號，但核心任務是繪圖而非僅僅是辨釋符號意義。",
           "C3": "此題未要求判斷定義域或值域。",
           "C4": "此題非判斷映射是否為函數。",
-          "C5": "此題非判斷變數間的函數關係。"
+          "C5": "此題非判斷變數間是否構成函數關係。"
         },
         "ai_available": false,
         "ai_error": "",
@@ -49253,7 +54367,7 @@
         "conflict_reason": "",
         "source_mapping_warning": "",
         "requires_human_action": false,
-        "ai_notes": "題目要求畫出常數函數的圖形，但提供的候選子技能僅限於函數的基本概念（如求值、符號、定義域等），不包含線型函數的圖形特徵或作圖。建議增加與圖形繪製相關的子技能。",
+        "ai_notes": "題目任務為「描繪常數函數圖形」，但候選清單僅包含函數基本概念（求值、定義、符號等），缺乏繪圖相關的子技能（如 graph_linear_function 或 graph_constant_function）。",
         "skill_scoped_candidates": [
           {
             "candidate_id": "C1",
@@ -49840,16 +54954,16 @@
           "ai_confidence": 0.0,
           "ai_best_candidate_id": "interpret_function_notation",
           "ai_evidence": [
-            "題目要求在坐標平面上畫出一次函數 y=3x-6 的圖形。",
-            "提供的候選子技能 (C1-C5) 皆屬於函數概念家族 (function_concept_family)，包含求值、符號辨釋、定義域值域、映射判斷及函數關係判斷。",
-            "目前的候選清單中缺乏「描繪函數圖形」或「一次函數圖形」相關的子技能。"
+            "The question asks to draw the graph of the linear function y=f(x)=3x-6 on a coordinate plane.",
+            "The provided candidates are evaluate_function_value, interpret_function_notation, judge_domain_range_basic, judge_function_from_mapping, and judge_function_relation.",
+            "None of the available candidates cover the task of graphing or plotting a linear function."
           ],
           "ai_rejected_candidates": {
-            "C1": "求函數值僅為描繪圖形的其中一個步驟，並非此題目的核心任務。",
-            "C2": "此題重點在於繪圖而非辨識函數符號的意義。",
-            "C3": "此題未涉及定義域或值域的判斷。",
-            "C4": "此題並非判斷是否為函數映射。",
-            "C5": "此題並非判斷變數間是否構成函數關係。"
+            "C1": "Evaluating function values is a necessary step for graphing, but the primary task is the construction of the graph itself.",
+            "C2": "While the problem uses function notation, the objective is to draw a graph, not just interpret the notation.",
+            "C3": "The problem does not ask to determine the domain or range.",
+            "C4": "The problem is not about identifying a function from a mapping diagram.",
+            "C5": "The problem is not about judging whether a relation is a function."
           },
           "ai_available": false,
           "ai_error": "",
@@ -49869,7 +54983,7 @@
           "conflict_reason": "",
           "source_mapping_warning": "",
           "requires_human_action": false,
-          "ai_notes": "題目核心為「描繪一次函數圖形」，但提供的候選子技能僅限於函數基本概念（求值、定義、映射等），不包含圖形繪製，故選擇 needs_review。",
+          "ai_notes": "The specific subskill for graphing linear functions (e.g., graph_linear_function) is missing from the candidate list. Since the task is to draw a graph, none of the concept-based subskills are a perfect fit.",
           "skill_scoped_candidates": [
             {
               "candidate_id": "C1",
@@ -50421,6 +55535,14 @@
               "title_head": "例1"
             },
             {
+              "example_id": 4431,
+              "source_type": "worked_example",
+              "example_label": "例題2",
+              "practice_label": "",
+              "section_order": 0,
+              "title_head": "例2"
+            },
+            {
               "example_id": 4433,
               "source_type": "worked_example",
               "example_label": "例題8",
@@ -50479,6 +55601,14 @@
               "practice_label": "",
               "section_order": 0,
               "title_head": "例1"
+            },
+            {
+              "example_id": 4431,
+              "source_type": "worked_example",
+              "example_label": "例題2",
+              "practice_label": "",
+              "section_order": 0,
+              "title_head": "例2"
             },
             {
               "example_id": 4433,
@@ -50595,16 +55725,16 @@
         "ai_confidence": 0.0,
         "ai_best_candidate_id": "interpret_function_notation",
         "ai_evidence": [
-          "題目要求在坐標平面上畫出一次函數 y=3x-6 的圖形。",
-          "提供的候選子技能 (C1-C5) 皆屬於函數概念家族 (function_concept_family)，包含求值、符號辨釋、定義域值域、映射判斷及函數關係判斷。",
-          "目前的候選清單中缺乏「描繪函數圖形」或「一次函數圖形」相關的子技能。"
+          "The question asks to draw the graph of the linear function y=f(x)=3x-6 on a coordinate plane.",
+          "The provided candidates are evaluate_function_value, interpret_function_notation, judge_domain_range_basic, judge_function_from_mapping, and judge_function_relation.",
+          "None of the available candidates cover the task of graphing or plotting a linear function."
         ],
         "ai_rejected_candidates": {
-          "C1": "求函數值僅為描繪圖形的其中一個步驟，並非此題目的核心任務。",
-          "C2": "此題重點在於繪圖而非辨識函數符號的意義。",
-          "C3": "此題未涉及定義域或值域的判斷。",
-          "C4": "此題並非判斷是否為函數映射。",
-          "C5": "此題並非判斷變數間是否構成函數關係。"
+          "C1": "Evaluating function values is a necessary step for graphing, but the primary task is the construction of the graph itself.",
+          "C2": "While the problem uses function notation, the objective is to draw a graph, not just interpret the notation.",
+          "C3": "The problem does not ask to determine the domain or range.",
+          "C4": "The problem is not about identifying a function from a mapping diagram.",
+          "C5": "The problem is not about judging whether a relation is a function."
         },
         "ai_available": false,
         "ai_error": "",
@@ -50624,7 +55754,7 @@
         "conflict_reason": "",
         "source_mapping_warning": "",
         "requires_human_action": false,
-        "ai_notes": "題目核心為「描繪一次函數圖形」，但提供的候選子技能僅限於函數基本概念（求值、定義、映射等），不包含圖形繪製，故選擇 needs_review。",
+        "ai_notes": "The specific subskill for graphing linear functions (e.g., graph_linear_function) is missing from the candidate list. Since the task is to draw a graph, none of the concept-based subskills are a perfect fit.",
         "skill_scoped_candidates": [
           {
             "candidate_id": "C1",
@@ -51215,15 +56345,15 @@
           "ai_best_candidate_id": "interpret_function_notation",
           "ai_evidence": [
             "題目要求從圖形中求出直線的 x 截距、y 截距以及函數 f(x) 的解析式。",
-            "提供的候選子技能（evaluate_function_value, interpret_function_notation, judge_domain_range_basic, judge_function_from_mapping, judge_function_relation）皆屬於函數的基本概念（function_concept_family）。",
-            "「由圖形求線性函數解析式」或「求截距」屬於線性函數的圖形性質或方程式判定，不屬於上述基本概念子技能的範疇。"
+            "候選子技能清單僅包含函數的基本概念（求值、符號辨識、定義域值域、映射判斷、關係判斷）。",
+            "清單中缺乏「求線型函數解析式」或「判讀圖形截距」等相關子技能。"
           ],
           "ai_rejected_candidates": {
-            "C1": "此題並非單純給定 x 求 f(x) 的函數值評估。",
-            "C2": "此題並非解釋函數符號的意義。",
-            "C3": "此題不涉及定義域或值域的判斷。",
-            "C4": "此題不涉及判斷是否為函數的對應關係。",
-            "C5": "此題不涉及判斷變數間的函數關係。"
+            "C1": "evaluate_function_value 僅涉及給定 x 求 f(x)，而本題重點在於求出函數解析式本身。",
+            "C2": "interpret_function_notation 涉及對函數符號的理解，而非從圖形推導函數。",
+            "C3": "judge_domain_range_basic 涉及定義域與值域，本題未要求。",
+            "C4": "judge_function_from_mapping 涉及映射圖判斷，與本題座標系圖形無關。",
+            "C5": "judge_function_relation 涉及判斷關係是否為函數，本題已給定是函數。"
           },
           "ai_available": false,
           "ai_error": "",
@@ -51243,7 +56373,7 @@
           "conflict_reason": "",
           "source_mapping_warning": "",
           "requires_human_action": false,
-          "ai_notes": "題目核心為「由圖形求線性函數方程式」及「求截距」，這在數學課程中通常對應到線性函數的圖形特徵或待定係數法，而提供的候選清單僅限於函數的基本概念（如定義、符號、求值），因此無合適選項。",
+          "ai_notes": "本題屬於「求線型函數解析式」或「線型函數的圖形特徵（截距）」，目前的候選清單中沒有對應的子技能，建議新增相關標籤。",
           "skill_scoped_candidates": [
             {
               "candidate_id": "C1",
@@ -51796,6 +56926,14 @@
               "title_head": "例1"
             },
             {
+              "example_id": 4431,
+              "source_type": "worked_example",
+              "example_label": "例題2",
+              "practice_label": "",
+              "section_order": 0,
+              "title_head": "例2"
+            },
+            {
               "example_id": 4433,
               "source_type": "worked_example",
               "example_label": "例題8",
@@ -51854,6 +56992,14 @@
               "practice_label": "",
               "section_order": 0,
               "title_head": "例1"
+            },
+            {
+              "example_id": 4431,
+              "source_type": "worked_example",
+              "example_label": "例題2",
+              "practice_label": "",
+              "section_order": 0,
+              "title_head": "例2"
             },
             {
               "example_id": 4433,
@@ -51971,15 +57117,15 @@
         "ai_best_candidate_id": "interpret_function_notation",
         "ai_evidence": [
           "題目要求從圖形中求出直線的 x 截距、y 截距以及函數 f(x) 的解析式。",
-          "提供的候選子技能（evaluate_function_value, interpret_function_notation, judge_domain_range_basic, judge_function_from_mapping, judge_function_relation）皆屬於函數的基本概念（function_concept_family）。",
-          "「由圖形求線性函數解析式」或「求截距」屬於線性函數的圖形性質或方程式判定，不屬於上述基本概念子技能的範疇。"
+          "候選子技能清單僅包含函數的基本概念（求值、符號辨識、定義域值域、映射判斷、關係判斷）。",
+          "清單中缺乏「求線型函數解析式」或「判讀圖形截距」等相關子技能。"
         ],
         "ai_rejected_candidates": {
-          "C1": "此題並非單純給定 x 求 f(x) 的函數值評估。",
-          "C2": "此題並非解釋函數符號的意義。",
-          "C3": "此題不涉及定義域或值域的判斷。",
-          "C4": "此題不涉及判斷是否為函數的對應關係。",
-          "C5": "此題不涉及判斷變數間的函數關係。"
+          "C1": "evaluate_function_value 僅涉及給定 x 求 f(x)，而本題重點在於求出函數解析式本身。",
+          "C2": "interpret_function_notation 涉及對函數符號的理解，而非從圖形推導函數。",
+          "C3": "judge_domain_range_basic 涉及定義域與值域，本題未要求。",
+          "C4": "judge_function_from_mapping 涉及映射圖判斷，與本題座標系圖形無關。",
+          "C5": "judge_function_relation 涉及判斷關係是否為函數，本題已給定是函數。"
         },
         "ai_available": false,
         "ai_error": "",
@@ -51999,7 +57145,7 @@
         "conflict_reason": "",
         "source_mapping_warning": "",
         "requires_human_action": false,
-        "ai_notes": "題目核心為「由圖形求線性函數方程式」及「求截距」，這在數學課程中通常對應到線性函數的圖形特徵或待定係數法，而提供的候選清單僅限於函數的基本概念（如定義、符號、求值），因此無合適選項。",
+        "ai_notes": "本題屬於「求線型函數解析式」或「線型函數的圖形特徵（截距）」，目前的候選清單中沒有對應的子技能，建議新增相關標籤。",
         "skill_scoped_candidates": [
           {
             "candidate_id": "C1",
@@ -52574,17 +57720,18 @@
         "semantic_classification": {
           "ai_target_task": "evaluate_function_value",
           "ai_task_family": "function_concept_family",
-          "ai_confidence": 0.9,
+          "ai_confidence": 0.95,
           "ai_best_candidate_id": "C1",
           "ai_evidence": [
-            "題目要求根據線型函數關係求出特定時間下的手機費用，這屬於求函數值的範疇。",
-            "第一小題要求基本費用 m，即為函數的起始值或特定點的值；第二小題要求 120 分鐘的費用，即為給定自變數求應變數的值。",
-            "此題型符合 function_concept_family 中的 evaluate_function_value 任務。"
+            "題目要求找出基本費 m 以及通話 120 分鐘的總費用。",
+            "這涉及在已知線型函數關係的情況下，計算特定自變數（時間）對應的應變數（費用）數值。",
+            "屬於函數值的求值計算。"
           ],
           "ai_rejected_candidates": {
-            "C2": "題目並未強調函數符號 f(x) 的解讀，而是著重於實際數值的計算。",
-            "C5": "題目已明確指出通話費與時間為線型函數關係，不需判斷是否為函數關係。",
-            "C6": "雖然涉及數值計算，但題目背景明確為線型函數，應優先選擇 anchor 範圍內的 evaluate_function_value。"
+            "C2": "並非著重於函數符號的解讀。",
+            "C3": "並非判斷定義域或值域。",
+            "C4": "並非判斷對應關係是否為函數。",
+            "C5": "題目已給定為線型函數，重點在於求值而非判斷關係。"
           },
           "ai_available": true,
           "ai_error": "",
@@ -52604,7 +57751,7 @@
           "conflict_reason": "",
           "source_mapping_warning": "",
           "requires_human_action": false,
-          "ai_notes": "此題為典型的線型函數應用題，透過圖形或已知條件求出函數關係後計算特定點的函數值。",
+          "ai_notes": "此題為典型的應用題，透過圖形或描述建立線型函數後求特定點的函數值。",
           "skill_scoped_candidates": [
             {
               "candidate_id": "C1",
@@ -53334,6 +58481,14 @@
               "title_head": "例1"
             },
             {
+              "example_id": 4431,
+              "source_type": "worked_example",
+              "example_label": "例題2",
+              "practice_label": "",
+              "section_order": 0,
+              "title_head": "例2"
+            },
+            {
               "example_id": 4433,
               "source_type": "worked_example",
               "example_label": "例題8",
@@ -53392,6 +58547,14 @@
               "practice_label": "",
               "section_order": 0,
               "title_head": "例1"
+            },
+            {
+              "example_id": 4431,
+              "source_type": "worked_example",
+              "example_label": "例題2",
+              "practice_label": "",
+              "section_order": 0,
+              "title_head": "例2"
             },
             {
               "example_id": 4433,
@@ -53504,17 +58667,18 @@
       "semantic_classification": {
         "ai_target_task": "evaluate_function_value",
         "ai_task_family": "function_concept_family",
-        "ai_confidence": 0.9,
+        "ai_confidence": 0.95,
         "ai_best_candidate_id": "C1",
         "ai_evidence": [
-          "題目要求根據線型函數關係求出特定時間下的手機費用，這屬於求函數值的範疇。",
-          "第一小題要求基本費用 m，即為函數的起始值或特定點的值；第二小題要求 120 分鐘的費用，即為給定自變數求應變數的值。",
-          "此題型符合 function_concept_family 中的 evaluate_function_value 任務。"
+          "題目要求找出基本費 m 以及通話 120 分鐘的總費用。",
+          "這涉及在已知線型函數關係的情況下，計算特定自變數（時間）對應的應變數（費用）數值。",
+          "屬於函數值的求值計算。"
         ],
         "ai_rejected_candidates": {
-          "C2": "題目並未強調函數符號 f(x) 的解讀，而是著重於實際數值的計算。",
-          "C5": "題目已明確指出通話費與時間為線型函數關係，不需判斷是否為函數關係。",
-          "C6": "雖然涉及數值計算，但題目背景明確為線型函數，應優先選擇 anchor 範圍內的 evaluate_function_value。"
+          "C2": "並非著重於函數符號的解讀。",
+          "C3": "並非判斷定義域或值域。",
+          "C4": "並非判斷對應關係是否為函數。",
+          "C5": "題目已給定為線型函數，重點在於求值而非判斷關係。"
         },
         "ai_available": true,
         "ai_error": "",
@@ -53534,7 +58698,7 @@
         "conflict_reason": "",
         "source_mapping_warning": "",
         "requires_human_action": false,
-        "ai_notes": "此題為典型的線型函數應用題，透過圖形或已知條件求出函數關係後計算特定點的函數值。",
+        "ai_notes": "此題為典型的應用題，透過圖形或描述建立線型函數後求特定點的函數值。",
         "skill_scoped_candidates": [
           {
             "candidate_id": "C1",
@@ -54301,16 +59465,15 @@
           "ai_confidence": 0.0,
           "ai_best_candidate_id": "interpret_function_notation",
           "ai_evidence": [
-            "題目要求從函數圖形求出 x 截距、y 截距以及函數解析式 f(x) = ax + b。",
-            "候選清單中的 subskills (evaluate_function_value, interpret_function_notation, judge_domain_range_basic, judge_function_from_mapping, judge_function_relation) 皆不包含「求截距」或「求線型函數解析式」等核心任務。",
-            "此題屬於「由圖形求線型函數」或「線型函數的截距」，在提供的候選清單中無對應項。"
+            "題目要求從圖形中求出直線的 x 截距、y 截距以及函數 f(x) = ax + b 的解析式。",
+            "提供的候選子技能（求函數值、解釋函數符號、判斷定義域值域、由對應關係判斷函數、判斷函數關係）皆不包含「從圖形求一次函數解析式」或「求截距」的任務。"
           ],
           "ai_rejected_candidates": {
-            "C1": "evaluate_function_value 通常指已知函數求特定點的值，而非求函數解析式或截距。",
-            "C2": "interpret_function_notation 涉及對函數符號意義的理解，不涵蓋求解析式的計算過程。",
-            "C3": "judge_domain_range_basic 涉及定義域與值域，與本題求解析式無關。",
-            "C4": "judge_function_from_mapping 涉及映射圖判斷，與本題無關。",
-            "C5": "judge_function_relation 涉及判斷關係是否為函數，與本題無關。"
+            "C1": "此子技能通常指給定 x 求 f(x) 的值，而非求出函數解析式本身。",
+            "C2": "此子技能涉及對函數符號意義的理解，不涵蓋從圖形推導函數解析式的計算過程。",
+            "C3": "題目未涉及定義域或值域的判斷。",
+            "C4": "題目並非透過對應圖（如箭號圖）來判斷函數。",
+            "C5": "題目並非判斷一個關係是否為函數。"
           },
           "ai_available": false,
           "ai_error": "",
@@ -54330,7 +59493,7 @@
           "conflict_reason": "",
           "source_mapping_warning": "",
           "requires_human_action": false,
-          "ai_notes": "該題目涉及從圖形資訊（截距）推導線型函數解析式，這屬於線型函數的核心技能，但目前提供的候選清單僅限於函數的基本概念（如定義、符號、求值、定義域），缺乏「求線型函數解析式」或「線型函數圖形特徵」相關的 subskill。",
+          "ai_notes": "目前的候選子技能清單僅限於函數的基本概念（function_concept_family），而本題屬於一次函數的圖形與解析式求法，建議增加如「從圖形求一次函數解析式」或「一次函數的截距」等子技能。",
           "skill_scoped_candidates": [
             {
               "candidate_id": "C1",
@@ -54875,12 +60038,12 @@
           "practice_number": null,
           "nearby_worked_examples": [
             {
-              "example_id": 4430,
+              "example_id": 4431,
               "source_type": "worked_example",
-              "example_label": "例題1",
+              "example_label": "例題2",
               "practice_label": "",
               "section_order": 0,
-              "title_head": "例1"
+              "title_head": "例2"
             },
             {
               "example_id": 4433,
@@ -54949,6 +60112,14 @@
               "practice_label": "",
               "section_order": 0,
               "title_head": "例1"
+            },
+            {
+              "example_id": 4431,
+              "source_type": "worked_example",
+              "example_label": "例題2",
+              "practice_label": "",
+              "section_order": 0,
+              "title_head": "例2"
             },
             {
               "example_id": 4433,
@@ -55065,16 +60236,15 @@
         "ai_confidence": 0.0,
         "ai_best_candidate_id": "interpret_function_notation",
         "ai_evidence": [
-          "題目要求從函數圖形求出 x 截距、y 截距以及函數解析式 f(x) = ax + b。",
-          "候選清單中的 subskills (evaluate_function_value, interpret_function_notation, judge_domain_range_basic, judge_function_from_mapping, judge_function_relation) 皆不包含「求截距」或「求線型函數解析式」等核心任務。",
-          "此題屬於「由圖形求線型函數」或「線型函數的截距」，在提供的候選清單中無對應項。"
+          "題目要求從圖形中求出直線的 x 截距、y 截距以及函數 f(x) = ax + b 的解析式。",
+          "提供的候選子技能（求函數值、解釋函數符號、判斷定義域值域、由對應關係判斷函數、判斷函數關係）皆不包含「從圖形求一次函數解析式」或「求截距」的任務。"
         ],
         "ai_rejected_candidates": {
-          "C1": "evaluate_function_value 通常指已知函數求特定點的值，而非求函數解析式或截距。",
-          "C2": "interpret_function_notation 涉及對函數符號意義的理解，不涵蓋求解析式的計算過程。",
-          "C3": "judge_domain_range_basic 涉及定義域與值域，與本題求解析式無關。",
-          "C4": "judge_function_from_mapping 涉及映射圖判斷，與本題無關。",
-          "C5": "judge_function_relation 涉及判斷關係是否為函數，與本題無關。"
+          "C1": "此子技能通常指給定 x 求 f(x) 的值，而非求出函數解析式本身。",
+          "C2": "此子技能涉及對函數符號意義的理解，不涵蓋從圖形推導函數解析式的計算過程。",
+          "C3": "題目未涉及定義域或值域的判斷。",
+          "C4": "題目並非透過對應圖（如箭號圖）來判斷函數。",
+          "C5": "題目並非判斷一個關係是否為函數。"
         },
         "ai_available": false,
         "ai_error": "",
@@ -55094,7 +60264,7 @@
         "conflict_reason": "",
         "source_mapping_warning": "",
         "requires_human_action": false,
-        "ai_notes": "該題目涉及從圖形資訊（截距）推導線型函數解析式，這屬於線型函數的核心技能，但目前提供的候選清單僅限於函數的基本概念（如定義、符號、求值、定義域），缺乏「求線型函數解析式」或「線型函數圖形特徵」相關的 subskill。",
+        "ai_notes": "目前的候選子技能清單僅限於函數的基本概念（function_concept_family），而本題屬於一次函數的圖形與解析式求法，建議增加如「從圖形求一次函數解析式」或「一次函數的截距」等子技能。",
         "skill_scoped_candidates": [
           {
             "candidate_id": "C1",
@@ -55672,14 +60842,16 @@
           "ai_confidence": 0.9,
           "ai_best_candidate_id": "C1",
           "ai_evidence": [
-            "題目要求計算特定通話時間（1500秒）下的費用，這屬於求函數值的範疇 (evaluate_function_value)。",
-            "題目明確提到通話時間與費用成線型函數關係。",
-            "第一題要求基本費用，即在特定區間（300秒以內）的函數值。"
+            "題目描述通話時間與費用之間存在線型函數關係",
+            "第二小題要求計算通話 1500 秒時的費用，這屬於給定自變數求應變數的函數值計算",
+            "第一題要求基本費用，即為函數在特定區間或起始點的輸出值"
           ],
           "ai_rejected_candidates": {
-            "C2": "雖然題目涉及對情境的理解，但核心任務是計算具體的數值而非解釋函數符號的含義。",
-            "C5": "題目已經給定函數關係，不需要判斷是否為函數關係。",
-            "C6": "C6 是外部候選者 (outsider)，在有合適的錨點候選者 (anchor) C1 的情況下，應優先選擇 C1。"
+            "C2": "題目並未著重於函數符號 f(x) 的解讀，而是具體數值的計算",
+            "C3": "題目並非要求判斷定義域或值域",
+            "C4": "題目並非判斷是否為函數映射關係",
+            "C5": "題目已給定為線型函數關係，不需判斷關係類型",
+            "C6": "雖然涉及計算，但題目背景明確屬於線型函數範疇，應優先選擇 anchor 內的子技能"
           },
           "ai_available": true,
           "ai_error": "",
@@ -55699,7 +60871,7 @@
           "conflict_reason": "",
           "source_mapping_warning": "",
           "requires_human_action": false,
-          "ai_notes": "此題為線型函數的應用，透過給定的條件（或圖形）求出函數關係後，計算特定自變數下的應變數值，符合 evaluate_function_value 的定義。",
+          "ai_notes": "此題為線型函數的應用題，核心任務是根據給定的函數關係（圖形或文字描述）求出特定點的函數值（費用）。",
           "skill_scoped_candidates": [
             {
               "candidate_id": "C1",
@@ -56421,12 +61593,12 @@
           "practice_number": null,
           "nearby_worked_examples": [
             {
-              "example_id": 4430,
+              "example_id": 4431,
               "source_type": "worked_example",
-              "example_label": "例題1",
+              "example_label": "例題2",
               "practice_label": "",
               "section_order": 0,
-              "title_head": "例1"
+              "title_head": "例2"
             },
             {
               "example_id": 4433,
@@ -56495,6 +61667,14 @@
               "practice_label": "",
               "section_order": 0,
               "title_head": "例1"
+            },
+            {
+              "example_id": 4431,
+              "source_type": "worked_example",
+              "example_label": "例題2",
+              "practice_label": "",
+              "section_order": 0,
+              "title_head": "例2"
             },
             {
               "example_id": 4433,
@@ -56610,14 +61790,16 @@
         "ai_confidence": 0.9,
         "ai_best_candidate_id": "C1",
         "ai_evidence": [
-          "題目要求計算特定通話時間（1500秒）下的費用，這屬於求函數值的範疇 (evaluate_function_value)。",
-          "題目明確提到通話時間與費用成線型函數關係。",
-          "第一題要求基本費用，即在特定區間（300秒以內）的函數值。"
+          "題目描述通話時間與費用之間存在線型函數關係",
+          "第二小題要求計算通話 1500 秒時的費用，這屬於給定自變數求應變數的函數值計算",
+          "第一題要求基本費用，即為函數在特定區間或起始點的輸出值"
         ],
         "ai_rejected_candidates": {
-          "C2": "雖然題目涉及對情境的理解，但核心任務是計算具體的數值而非解釋函數符號的含義。",
-          "C5": "題目已經給定函數關係，不需要判斷是否為函數關係。",
-          "C6": "C6 是外部候選者 (outsider)，在有合適的錨點候選者 (anchor) C1 的情況下，應優先選擇 C1。"
+          "C2": "題目並未著重於函數符號 f(x) 的解讀，而是具體數值的計算",
+          "C3": "題目並非要求判斷定義域或值域",
+          "C4": "題目並非判斷是否為函數映射關係",
+          "C5": "題目已給定為線型函數關係，不需判斷關係類型",
+          "C6": "雖然涉及計算，但題目背景明確屬於線型函數範疇，應優先選擇 anchor 內的子技能"
         },
         "ai_available": true,
         "ai_error": "",
@@ -56637,7 +61819,7 @@
         "conflict_reason": "",
         "source_mapping_warning": "",
         "requires_human_action": false,
-        "ai_notes": "此題為線型函數的應用，透過給定的條件（或圖形）求出函數關係後，計算特定自變數下的應變數值，符合 evaluate_function_value 的定義。",
+        "ai_notes": "此題為線型函數的應用題，核心任務是根據給定的函數關係（圖形或文字描述）求出特定點的函數值（費用）。",
         "skill_scoped_candidates": [
           {
             "candidate_id": "C1",
@@ -57410,17 +62592,17 @@
           "ai_confidence": 0.0,
           "ai_best_candidate_id": "needs_review",
           "ai_evidence": [
-            "題目要求計算線段三等分點的坐標，屬於分點公式（division point formula）的應用。",
-            "提供的候選子技能（C1-C5）皆屬於函數概念家族（function_concept_family），如函數值求值、符號辨釋、定義域值域、映射判斷等。",
-            "此題目不涉及函數映射、函數符號或函數值的計算，與現有的函數概念子技能不符。"
+            "題目要求找出將線段 AD 三等分的點 C 之坐標，這屬於解析幾何中的分點公式問題。",
+            "候選子技能 C1 至 C5 皆屬於函數概念（如函數值計算、符號辨識、定義域值域、映射判斷等），與分點公式或坐標幾何計算不符。",
+            "雖然題目涉及計算，但 C6 (compute_numeric) 過於籠統，且不屬於該技能錨點 (Linear Function) 的預期任務家族。"
           ],
           "ai_rejected_candidates": {
-            "C1": "此題並非給定函數 f(x) 並要求計算特定 x 的函數值。",
-            "C2": "此題未出現函數符號 f(x) 或其相關表示法。",
-            "C3": "此題不涉及函數的定義域或值域判斷。",
-            "C4": "此題並非判斷一組對應關係是否為函數。",
+            "C1": "此題並非給定函數 f(x) 並要求計算特定輸入的函數值。",
+            "C2": "此題不涉及函數符號的解讀。",
+            "C3": "此題不涉及判斷函數的定義域或值域。",
+            "C4": "此題不涉及判斷映射關係是否為函數。",
             "C5": "此題不涉及判斷兩個變量之間的函數關係。",
-            "C6": "雖然涉及數值計算，但此題具有明確的幾何分點公式特徵，不應僅歸類為一般數值計算。"
+            "C6": "雖然涉及數值計算，但此題核心為分點公式，且 C6 為 outsider 類別，在沒有合適錨點子技能時應優先考慮 needs_review。"
           },
           "ai_available": false,
           "ai_error": "",
@@ -57440,7 +62622,7 @@
           "conflict_reason": "needs_review",
           "source_mapping_warning": "",
           "requires_human_action": false,
-          "ai_notes": "題目內容為坐標幾何中的分點公式（三等分點），而提供的候選子技能全數屬於函數概念範疇，兩者不匹配。建議將此題歸類至坐標系或分點公式相關技能。",
+          "ai_notes": "題目為典型的分點公式應用（三等分點），但提供的子技能清單僅限於函數概念（function_concept_family），缺乏坐標幾何或分點公式相關的選項。因此選擇 needs_review。",
           "skill_scoped_candidates": [
             {
               "candidate_id": "C1",
@@ -58086,12 +63268,12 @@
           "practice_number": null,
           "nearby_worked_examples": [
             {
-              "example_id": 4430,
+              "example_id": 4431,
               "source_type": "worked_example",
-              "example_label": "例題1",
+              "example_label": "例題2",
               "practice_label": "",
               "section_order": 0,
-              "title_head": "例1"
+              "title_head": "例2"
             },
             {
               "example_id": 4433,
@@ -58160,6 +63342,14 @@
               "practice_label": "",
               "section_order": 0,
               "title_head": "例1"
+            },
+            {
+              "example_id": 4431,
+              "source_type": "worked_example",
+              "example_label": "例題2",
+              "practice_label": "",
+              "section_order": 0,
+              "title_head": "例2"
             },
             {
               "example_id": 4433,
@@ -58276,17 +63466,17 @@
         "ai_confidence": 0.0,
         "ai_best_candidate_id": "needs_review",
         "ai_evidence": [
-          "題目要求計算線段三等分點的坐標，屬於分點公式（division point formula）的應用。",
-          "提供的候選子技能（C1-C5）皆屬於函數概念家族（function_concept_family），如函數值求值、符號辨釋、定義域值域、映射判斷等。",
-          "此題目不涉及函數映射、函數符號或函數值的計算，與現有的函數概念子技能不符。"
+          "題目要求找出將線段 AD 三等分的點 C 之坐標，這屬於解析幾何中的分點公式問題。",
+          "候選子技能 C1 至 C5 皆屬於函數概念（如函數值計算、符號辨識、定義域值域、映射判斷等），與分點公式或坐標幾何計算不符。",
+          "雖然題目涉及計算，但 C6 (compute_numeric) 過於籠統，且不屬於該技能錨點 (Linear Function) 的預期任務家族。"
         ],
         "ai_rejected_candidates": {
-          "C1": "此題並非給定函數 f(x) 並要求計算特定 x 的函數值。",
-          "C2": "此題未出現函數符號 f(x) 或其相關表示法。",
-          "C3": "此題不涉及函數的定義域或值域判斷。",
-          "C4": "此題並非判斷一組對應關係是否為函數。",
+          "C1": "此題並非給定函數 f(x) 並要求計算特定輸入的函數值。",
+          "C2": "此題不涉及函數符號的解讀。",
+          "C3": "此題不涉及判斷函數的定義域或值域。",
+          "C4": "此題不涉及判斷映射關係是否為函數。",
           "C5": "此題不涉及判斷兩個變量之間的函數關係。",
-          "C6": "雖然涉及數值計算，但此題具有明確的幾何分點公式特徵，不應僅歸類為一般數值計算。"
+          "C6": "雖然涉及數值計算，但此題核心為分點公式，且 C6 為 outsider 類別，在沒有合適錨點子技能時應優先考慮 needs_review。"
         },
         "ai_available": false,
         "ai_error": "",
@@ -58306,7 +63496,7 @@
         "conflict_reason": "needs_review",
         "source_mapping_warning": "",
         "requires_human_action": false,
-        "ai_notes": "題目內容為坐標幾何中的分點公式（三等分點），而提供的候選子技能全數屬於函數概念範疇，兩者不匹配。建議將此題歸類至坐標系或分點公式相關技能。",
+        "ai_notes": "題目為典型的分點公式應用（三等分點），但提供的子技能清單僅限於函數概念（function_concept_family），缺乏坐標幾何或分點公式相關的選項。因此選擇 needs_review。",
         "skill_scoped_candidates": [
           {
             "candidate_id": "C1",
@@ -58996,16 +64186,16 @@
           "ai_confidence": 0.0,
           "ai_best_candidate_id": "interpret_function_notation",
           "ai_evidence": [
-            "題目要求從圖形中求出直線的 x 截距與 y 截距，並求出函數 f(x) 的解析式。",
-            "提供的候選子技能（evaluate_function_value, interpret_function_notation, judge_domain_range_basic, judge_function_from_mapping, judge_function_relation）皆屬於函數概念家族，側重於函數定義、符號、定義域值域及對應關係。",
-            "目前候選清單中缺乏「由圖形求線型函數解析式」或「求直線截距」等具體針對線型函數運算的子技能。"
+            "題目要求從圖形中求出直線的 x 截距、y 截距以及函數 f(x) 的解析式。",
+            "候選子技能列表僅包含函數概念（求值、符號辨釋、定義域值域、映射判斷、函數關係判斷）。",
+            "題目核心在於「求一次函數解析式」與「截距概念」，現有子技能中無一符合此特定任務。"
           ],
           "ai_rejected_candidates": {
-            "C1": "此題並非給定 x 求 f(x) 的值，而是要先求出函數解析式。",
-            "C2": "此題涉及函數符號的使用，但核心任務是求出函數解析式，而非僅僅解釋符號意義。",
+            "C1": "此題並非單純給定 x 求 f(x) 的值，而是要求出整個函數解析式。",
+            "C2": "此題涉及函數符號的使用，但核心任務是求出函數式與截距，而非僅僅辨識符號意義。",
             "C3": "題目未涉及定義域或值域的判斷。",
-            "C4": "題目並非判斷對應圖表是否為函數。",
-            "C5": "題目並非判斷兩個變量之間的函數關係。"
+            "C4": "題目未涉及映射圖或判斷是否為函數。",
+            "C5": "題目未涉及判斷變數間是否構成函數關係。"
           },
           "ai_available": false,
           "ai_error": "",
@@ -59025,7 +64215,7 @@
           "conflict_reason": "",
           "source_mapping_warning": "",
           "requires_human_action": false,
-          "ai_notes": "該題目屬於「由圖形求線型函數」或「直線的截距」，在目前的候選清單中沒有完全符合的子技能，建議新增相關子技能或檢查技能錨點範圍。",
+          "ai_notes": "該題目屬於「求一次函數解析式」或「一次函數的圖形特徵（截距）」，但提供的候選子技能僅限於「函數概念」家族。建議新增與一次函數（Linear Function）具體性質相關的子技能，如「從圖形求一次函數式」或「求一次函數的截距」。",
           "skill_scoped_candidates": [
             {
               "candidate_id": "C1",
@@ -59570,12 +64760,12 @@
           "practice_number": 10,
           "nearby_worked_examples": [
             {
-              "example_id": 4430,
+              "example_id": 4431,
               "source_type": "worked_example",
-              "example_label": "例題1",
+              "example_label": "例題2",
               "practice_label": "",
               "section_order": 0,
-              "title_head": "例1"
+              "title_head": "例2"
             },
             {
               "example_id": 4433,
@@ -59644,6 +64834,14 @@
               "practice_label": "",
               "section_order": 0,
               "title_head": "例1"
+            },
+            {
+              "example_id": 4431,
+              "source_type": "worked_example",
+              "example_label": "例題2",
+              "practice_label": "",
+              "section_order": 0,
+              "title_head": "例2"
             },
             {
               "example_id": 4433,
@@ -59760,16 +64958,16 @@
         "ai_confidence": 0.0,
         "ai_best_candidate_id": "interpret_function_notation",
         "ai_evidence": [
-          "題目要求從圖形中求出直線的 x 截距與 y 截距，並求出函數 f(x) 的解析式。",
-          "提供的候選子技能（evaluate_function_value, interpret_function_notation, judge_domain_range_basic, judge_function_from_mapping, judge_function_relation）皆屬於函數概念家族，側重於函數定義、符號、定義域值域及對應關係。",
-          "目前候選清單中缺乏「由圖形求線型函數解析式」或「求直線截距」等具體針對線型函數運算的子技能。"
+          "題目要求從圖形中求出直線的 x 截距、y 截距以及函數 f(x) 的解析式。",
+          "候選子技能列表僅包含函數概念（求值、符號辨釋、定義域值域、映射判斷、函數關係判斷）。",
+          "題目核心在於「求一次函數解析式」與「截距概念」，現有子技能中無一符合此特定任務。"
         ],
         "ai_rejected_candidates": {
-          "C1": "此題並非給定 x 求 f(x) 的值，而是要先求出函數解析式。",
-          "C2": "此題涉及函數符號的使用，但核心任務是求出函數解析式，而非僅僅解釋符號意義。",
+          "C1": "此題並非單純給定 x 求 f(x) 的值，而是要求出整個函數解析式。",
+          "C2": "此題涉及函數符號的使用，但核心任務是求出函數式與截距，而非僅僅辨識符號意義。",
           "C3": "題目未涉及定義域或值域的判斷。",
-          "C4": "題目並非判斷對應圖表是否為函數。",
-          "C5": "題目並非判斷兩個變量之間的函數關係。"
+          "C4": "題目未涉及映射圖或判斷是否為函數。",
+          "C5": "題目未涉及判斷變數間是否構成函數關係。"
         },
         "ai_available": false,
         "ai_error": "",
@@ -59789,7 +64987,7 @@
         "conflict_reason": "",
         "source_mapping_warning": "",
         "requires_human_action": false,
-        "ai_notes": "該題目屬於「由圖形求線型函數」或「直線的截距」，在目前的候選清單中沒有完全符合的子技能，建議新增相關子技能或檢查技能錨點範圍。",
+        "ai_notes": "該題目屬於「求一次函數解析式」或「一次函數的圖形特徵（截距）」，但提供的候選子技能僅限於「函數概念」家族。建議新增與一次函數（Linear Function）具體性質相關的子技能，如「從圖形求一次函數式」或「求一次函數的截距」。",
         "skill_scoped_candidates": [
           {
             "candidate_id": "C1",
@@ -60364,17 +65562,17 @@
         "semantic_classification": {
           "ai_target_task": "evaluate_function_value",
           "ai_task_family": "function_concept_family",
-          "ai_confidence": 0.95,
+          "ai_confidence": 0.9,
           "ai_best_candidate_id": "C1",
           "ai_evidence": [
-            "題目要求在已知托運費用（函數值）的情況下，求出對應的行李重量（自變數）。",
-            "這屬於線型函數中求特定數值的應用，符合 evaluate_function_value 的定義。"
+            "題目描述行李費用與重量成線型函數關係，並給出特定費用（函數值）要求回推重量（自變數）。",
+            "此類已知函數值求自變數或已知自變數求函數值的計算，屬於 evaluate_function_value 的範疇。",
+            "該候選項目位於 anchor 範圍內且符合 function_concept_family。"
           ],
           "ai_rejected_candidates": {
-            "C2": "題目並非著重於函數符號 f(x) 的解讀。",
-            "C3": "題目並非要求判斷定義域或值域。",
-            "C4": "題目並非判斷映射是否為函數。",
-            "C5": "題目並非判斷兩個變數之間是否具備函數關係。"
+            "C2": "題目並非著重於函數符號（如 f(x)）的意義解釋，而是具體的數值計算。",
+            "C5": "題目已明確指出是線型函數關係，不需要判斷兩變數是否構成函數。",
+            "C6": "雖然涉及計算，但 C1 更符合線型函數技能的學科特定分類。"
           },
           "ai_available": true,
           "ai_error": "",
@@ -60394,7 +65592,7 @@
           "conflict_reason": "",
           "source_mapping_warning": "",
           "requires_human_action": false,
-          "ai_notes": "此題為線型函數的應用題，透過給定的函數值（費用 850 元）回推自變數（重量），屬於函數值的計算範疇。",
+          "ai_notes": "題目給定 y = 850 並要求透過線型函數關係求 x，這屬於函數求值與應用的標準題型。",
           "skill_scoped_candidates": [
             {
               "candidate_id": "C1",
@@ -61116,12 +66314,12 @@
           "practice_number": 11,
           "nearby_worked_examples": [
             {
-              "example_id": 4430,
+              "example_id": 4431,
               "source_type": "worked_example",
-              "example_label": "例題1",
+              "example_label": "例題2",
               "practice_label": "",
               "section_order": 0,
-              "title_head": "例1"
+              "title_head": "例2"
             },
             {
               "example_id": 4433,
@@ -61190,6 +66388,14 @@
               "practice_label": "",
               "section_order": 0,
               "title_head": "例1"
+            },
+            {
+              "example_id": 4431,
+              "source_type": "worked_example",
+              "example_label": "例題2",
+              "practice_label": "",
+              "section_order": 0,
+              "title_head": "例2"
             },
             {
               "example_id": 4433,
@@ -61302,17 +66508,17 @@
       "semantic_classification": {
         "ai_target_task": "evaluate_function_value",
         "ai_task_family": "function_concept_family",
-        "ai_confidence": 0.95,
+        "ai_confidence": 0.9,
         "ai_best_candidate_id": "C1",
         "ai_evidence": [
-          "題目要求在已知托運費用（函數值）的情況下，求出對應的行李重量（自變數）。",
-          "這屬於線型函數中求特定數值的應用，符合 evaluate_function_value 的定義。"
+          "題目描述行李費用與重量成線型函數關係，並給出特定費用（函數值）要求回推重量（自變數）。",
+          "此類已知函數值求自變數或已知自變數求函數值的計算，屬於 evaluate_function_value 的範疇。",
+          "該候選項目位於 anchor 範圍內且符合 function_concept_family。"
         ],
         "ai_rejected_candidates": {
-          "C2": "題目並非著重於函數符號 f(x) 的解讀。",
-          "C3": "題目並非要求判斷定義域或值域。",
-          "C4": "題目並非判斷映射是否為函數。",
-          "C5": "題目並非判斷兩個變數之間是否具備函數關係。"
+          "C2": "題目並非著重於函數符號（如 f(x)）的意義解釋，而是具體的數值計算。",
+          "C5": "題目已明確指出是線型函數關係，不需要判斷兩變數是否構成函數。",
+          "C6": "雖然涉及計算，但 C1 更符合線型函數技能的學科特定分類。"
         },
         "ai_available": true,
         "ai_error": "",
@@ -61332,7 +66538,7 @@
         "conflict_reason": "",
         "source_mapping_warning": "",
         "requires_human_action": false,
-        "ai_notes": "此題為線型函數的應用題，透過給定的函數值（費用 850 元）回推自變數（重量），屬於函數值的計算範疇。",
+        "ai_notes": "題目給定 y = 850 並要求透過線型函數關係求 x，這屬於函數求值與應用的標準題型。",
         "skill_scoped_candidates": [
           {
             "candidate_id": "C1",
@@ -62067,8 +67273,8 @@
         ],
         "has_choices": true,
         "stem_embeds_choices": true,
-        "answer_type": "expression",
-        "answer_shape": "choice_label",
+        "answer_type": "integer",
+        "answer_shape": "numeric",
         "checker": "choice_label_checker",
         "equivalence": "choice_label",
         "math_objects": [
@@ -62078,7 +67284,7 @@
           "two_coordinate_points"
         ],
         "target_task": "evaluate_function_value",
-        "task_family": "generic_numeric_family",
+        "task_family": "function_concept_family",
         "reasoning_type": [
           "numeric_computation"
         ],
@@ -62103,28 +67309,26 @@
           "y"
         ],
         "target": "evaluate_function_value",
-        "classifier_source": "ai_needs_review",
+        "classifier_source": "ai",
         "semantic_classification": {
-          "ai_target_task": "",
-          "ai_task_family": "",
-          "ai_confidence": 0.0,
-          "ai_best_candidate_id": "needs_review",
+          "ai_target_task": "evaluate_function_value",
+          "ai_task_family": "function_concept_family",
+          "ai_confidence": 0.8,
+          "ai_best_candidate_id": "C1",
           "ai_evidence": [
-            "The problem is a word problem involving linear inequalities in two variables: 100x + 200y <= 500,000 and 200x + 100y <= 500,000.",
-            "The provided subskills are restricted to the 'function_concept_family', which focuses on the definition, notation, and basic properties (domain/range) of functions.",
-            "The problem does not use function notation (e.g., f(x)), nor does it involve mapping diagrams or determining if a relation is a function.",
-            "The required action is to verify which coordinate pair satisfies a set of linear constraints, which is an application of linear inequalities rather than a basic function concept evaluation.",
-            "The skill anchor 'vh_數學B1_LinearFunction' usually covers one-variable linear functions (f(x) = ax + b), whereas this problem involves two variables and inequalities."
+            "The problem requires calculating the total cost for specific pairs of (x, y) to check if they exceed a budget of 500,000.",
+            "This process involves substituting numerical values into linear expressions (100x + 200y and 200x + 100y), which is the core action of evaluating a function value.",
+            "Among the anchor-scoped candidates in the function_concept_family, evaluate_function_value is the only one that matches the task of plugging in values to find a result."
           ],
           "ai_rejected_candidates": {
-            "C1": "While it involves calculation, 'evaluate_function_value' typically refers to finding f(a) given a function f(x), which is not the case here.",
-            "C2": "The problem does not use or require the interpretation of function notation like f(x).",
-            "C3": "The problem is not asking for the domain or range of a function.",
-            "C4": "The problem does not involve determining if a mapping or set of pairs constitutes a function.",
-            "C5": "The problem does not involve judging the relationship between variables in a functional context (e.g., is y a function of x?).",
-            "C6": "Although the problem involves arithmetic, 'compute_numeric' is an outsider candidate and the problem is a structured word problem rather than a pure numeric calculation."
+            "C2": "The problem does not involve interpreting function notation like f(x).",
+            "C3": "The problem is not about determining the domain or range of a function.",
+            "C4": "The problem does not involve identifying whether a mapping is a function.",
+            "C5": "The problem does not ask to determine the relationship between variables in a functional sense (e.g., whether y is a function of x).",
+            "C6": "While the problem involves arithmetic, C1 is an anchor-scoped candidate and is preferred over the outsider candidate C6 according to the rules.",
+            "needs_review": "The problem fits the 'evaluate' task well enough within the context of linear functions and expressions to avoid a needs_review tag."
           },
-          "ai_available": false,
+          "ai_available": true,
           "ai_error": "",
           "ai_unavailable_reason": "",
           "ai_semantic_status": "ok",
@@ -62137,12 +67341,12 @@
           "rule_task_family": "generic_numeric_family",
           "rule_confidence": 0.2,
           "final_target_task": "evaluate_function_value",
-          "final_task_family": "generic_numeric_family",
-          "classifier_source": "fallback_application_induct",
-          "conflict_reason": "needs_review",
+          "final_task_family": "function_concept_family",
+          "classifier_source": "ai",
+          "conflict_reason": "",
           "source_mapping_warning": "",
           "requires_human_action": false,
-          "ai_notes": "The problem is a 112 Unified Entrance Exam (統測B) question that involves modeling and solving linear inequalities in two variables. This does not align with the provided subskills, which are focused on the conceptual foundations of functions (mapping, notation, domain/range). A subskill related to 'Linear Inequalities' or 'Linear Function Applications' would be more appropriate.",
+          "ai_notes": "The problem asks to verify which coordinate pair satisfies a budget constraint under two possible price scenarios. This is mathematically equivalent to evaluating a cost function at specific points and comparing the output to a threshold.",
           "skill_scoped_candidates": [
             {
               "candidate_id": "C1",
@@ -62746,25 +67950,106 @@
           "outsider_candidates": [
             "C6"
           ],
-          "selected_subskill": "compute_numeric",
-          "selected_problem_type": "compute_numeric",
-          "candidate_source": "fallback_application",
-          "selected_generator_contract": {},
-          "parameter_schema": {},
+          "selected_subskill": "evaluate_function_value",
+          "selected_problem_type": "evaluate_function_value",
+          "candidate_source": "anchor",
+          "selected_generator_contract": {
+            "template_variants": [
+              {
+                "id": "default",
+                "label": "default",
+                "stem_pattern": "依題意求解：{stem_hint}。",
+                "weight": 1.0,
+                "enabled": true
+              }
+            ],
+            "parameter_schema": {
+              "seed": {
+                "type": "integer",
+                "randomize": true
+              },
+              "difficulty_level": {
+                "choices": [
+                  "level_1",
+                  "level_2",
+                  "level_3"
+                ],
+                "weights": [
+                  0.4,
+                  0.4,
+                  0.2
+                ]
+              }
+            },
+            "variation_dimensions": [
+              "seed",
+              "difficulty_level",
+              "context_style"
+            ],
+            "difficulty_controls": {
+              "level_1": {},
+              "level_2": {},
+              "level_3": {}
+            },
+            "anti_repetition_rules": {
+              "avoid_same_template_consecutive": true,
+              "avoid_same_ratio_consecutive": true,
+              "avoid_same_point_names_consecutive": true,
+              "avoid_same_answer_consecutive": true,
+              "recent_history_window": 5,
+              "signature_fields": [
+                "problem_type_id",
+                "template_variant",
+                "ratio_form",
+                "ratio_values",
+                "coordinate_pattern",
+                "answer"
+              ]
+            },
+            "validity_constraints": [
+              "answer derivable from givens"
+            ],
+            "answer_shape": "numeric",
+            "explanation_variants": [
+              "stepwise"
+            ],
+            "sampling_strategy": "weighted_random",
+            "template_families": [
+              "evaluate_function_value"
+            ]
+          },
+          "parameter_schema": {
+            "seed": {
+              "type": "integer",
+              "randomize": true
+            },
+            "difficulty_level": {
+              "choices": [
+                "level_1",
+                "level_2",
+                "level_3"
+              ],
+              "weights": [
+                0.4,
+                0.4,
+                0.2
+              ]
+            }
+          },
           "variable_randomization_notes": [],
-          "checker_key": "manual_review_checker",
-          "equivalence_type": "manual_review_or_ai_judged",
+          "checker_key": "numeric_checker",
+          "equivalence_type": "numeric_equivalence",
           "skill_scope_trusted": true,
-          "target_task": "compute_numeric",
-          "task_family": "generic_numeric_family",
+          "target_task": "evaluate_function_value",
+          "task_family": "function_concept_family",
           "math_objects": [
             "coordinate_point",
             "three_coordinate_points",
             "triangle",
             "two_coordinate_points"
           ],
-          "answer_type": "single_choice",
-          "answer_shape": "choice_label",
+          "answer_type": "numeric",
+          "answer_shape": "numeric",
           "source_type": "unknown",
           "example_label": "",
           "practice_label": "",
@@ -62774,9 +68059,9 @@
           "structure_consistency": "not_applicable",
           "sequence_context_used": true,
           "structure_context_used": true,
-          "confidence_adjustment_reason": "possible_structure_mismatch_penalty; sequence_context_used",
-          "possible_structure_mismatch": true,
-          "possible_mixed_source_context": true,
+          "confidence_adjustment_reason": "sequence_context_used",
+          "possible_structure_mismatch": false,
+          "possible_mixed_source_context": false,
           "source_quality_reject": false,
           "source_quality_status": "FORCE_ALLOWED_FOR_INDUCTION"
         },
@@ -62790,12 +68075,12 @@
           "practice_number": null,
           "nearby_worked_examples": [
             {
-              "example_id": 4430,
+              "example_id": 4431,
               "source_type": "worked_example",
-              "example_label": "例題1",
+              "example_label": "例題2",
               "practice_label": "",
               "section_order": 0,
-              "title_head": "例1"
+              "title_head": "例2"
             },
             {
               "example_id": 4433,
@@ -62864,6 +68149,14 @@
               "practice_label": "",
               "section_order": 0,
               "title_head": "例1"
+            },
+            {
+              "example_id": 4431,
+              "source_type": "worked_example",
+              "example_label": "例題2",
+              "practice_label": "",
+              "section_order": 0,
+              "title_head": "例2"
             },
             {
               "example_id": 4433,
@@ -62968,38 +68261,35 @@
         "induction_tier": "core",
         "enrichment_reasons": [],
         "included_in_core_induction": true,
-        "problem_type_id": "single_choice_evaluate_function_value_fallback_application",
         "equivalence_type": "choice_label",
         "checker_key": "choice_label_checker"
       },
-      "answer_shape": "choice_label",
+      "answer_shape": "numeric",
       "classification_confidence": "low",
-      "classification_reason": "ai_needs_review",
+      "classification_reason": "ai",
       "risk_flags": [
         "stem_embeds_choices",
         "candidate_only"
       ],
       "semantic_classification": {
-        "ai_target_task": "",
-        "ai_task_family": "",
-        "ai_confidence": 0.0,
-        "ai_best_candidate_id": "needs_review",
+        "ai_target_task": "evaluate_function_value",
+        "ai_task_family": "function_concept_family",
+        "ai_confidence": 0.8,
+        "ai_best_candidate_id": "C1",
         "ai_evidence": [
-          "The problem is a word problem involving linear inequalities in two variables: 100x + 200y <= 500,000 and 200x + 100y <= 500,000.",
-          "The provided subskills are restricted to the 'function_concept_family', which focuses on the definition, notation, and basic properties (domain/range) of functions.",
-          "The problem does not use function notation (e.g., f(x)), nor does it involve mapping diagrams or determining if a relation is a function.",
-          "The required action is to verify which coordinate pair satisfies a set of linear constraints, which is an application of linear inequalities rather than a basic function concept evaluation.",
-          "The skill anchor 'vh_數學B1_LinearFunction' usually covers one-variable linear functions (f(x) = ax + b), whereas this problem involves two variables and inequalities."
+          "The problem requires calculating the total cost for specific pairs of (x, y) to check if they exceed a budget of 500,000.",
+          "This process involves substituting numerical values into linear expressions (100x + 200y and 200x + 100y), which is the core action of evaluating a function value.",
+          "Among the anchor-scoped candidates in the function_concept_family, evaluate_function_value is the only one that matches the task of plugging in values to find a result."
         ],
         "ai_rejected_candidates": {
-          "C1": "While it involves calculation, 'evaluate_function_value' typically refers to finding f(a) given a function f(x), which is not the case here.",
-          "C2": "The problem does not use or require the interpretation of function notation like f(x).",
-          "C3": "The problem is not asking for the domain or range of a function.",
-          "C4": "The problem does not involve determining if a mapping or set of pairs constitutes a function.",
-          "C5": "The problem does not involve judging the relationship between variables in a functional context (e.g., is y a function of x?).",
-          "C6": "Although the problem involves arithmetic, 'compute_numeric' is an outsider candidate and the problem is a structured word problem rather than a pure numeric calculation."
+          "C2": "The problem does not involve interpreting function notation like f(x).",
+          "C3": "The problem is not about determining the domain or range of a function.",
+          "C4": "The problem does not involve identifying whether a mapping is a function.",
+          "C5": "The problem does not ask to determine the relationship between variables in a functional sense (e.g., whether y is a function of x).",
+          "C6": "While the problem involves arithmetic, C1 is an anchor-scoped candidate and is preferred over the outsider candidate C6 according to the rules.",
+          "needs_review": "The problem fits the 'evaluate' task well enough within the context of linear functions and expressions to avoid a needs_review tag."
         },
-        "ai_available": false,
+        "ai_available": true,
         "ai_error": "",
         "ai_unavailable_reason": "",
         "ai_semantic_status": "ok",
@@ -63012,12 +68302,12 @@
         "rule_task_family": "generic_numeric_family",
         "rule_confidence": 0.2,
         "final_target_task": "evaluate_function_value",
-        "final_task_family": "generic_numeric_family",
-        "classifier_source": "fallback_application_induct",
-        "conflict_reason": "needs_review",
+        "final_task_family": "function_concept_family",
+        "classifier_source": "ai",
+        "conflict_reason": "",
         "source_mapping_warning": "",
         "requires_human_action": false,
-        "ai_notes": "The problem is a 112 Unified Entrance Exam (統測B) question that involves modeling and solving linear inequalities in two variables. This does not align with the provided subskills, which are focused on the conceptual foundations of functions (mapping, notation, domain/range). A subskill related to 'Linear Inequalities' or 'Linear Function Applications' would be more appropriate.",
+        "ai_notes": "The problem asks to verify which coordinate pair satisfies a budget constraint under two possible price scenarios. This is mathematically equivalent to evaluating a cost function at specific points and comparing the output to a threshold.",
         "skill_scoped_candidates": [
           {
             "candidate_id": "C1",
@@ -63621,25 +68911,106 @@
         "outsider_candidates": [
           "C6"
         ],
-        "selected_subskill": "compute_numeric",
-        "selected_problem_type": "compute_numeric",
-        "candidate_source": "fallback_application",
-        "selected_generator_contract": {},
-        "parameter_schema": {},
+        "selected_subskill": "evaluate_function_value",
+        "selected_problem_type": "evaluate_function_value",
+        "candidate_source": "anchor",
+        "selected_generator_contract": {
+          "template_variants": [
+            {
+              "id": "default",
+              "label": "default",
+              "stem_pattern": "依題意求解：{stem_hint}。",
+              "weight": 1.0,
+              "enabled": true
+            }
+          ],
+          "parameter_schema": {
+            "seed": {
+              "type": "integer",
+              "randomize": true
+            },
+            "difficulty_level": {
+              "choices": [
+                "level_1",
+                "level_2",
+                "level_3"
+              ],
+              "weights": [
+                0.4,
+                0.4,
+                0.2
+              ]
+            }
+          },
+          "variation_dimensions": [
+            "seed",
+            "difficulty_level",
+            "context_style"
+          ],
+          "difficulty_controls": {
+            "level_1": {},
+            "level_2": {},
+            "level_3": {}
+          },
+          "anti_repetition_rules": {
+            "avoid_same_template_consecutive": true,
+            "avoid_same_ratio_consecutive": true,
+            "avoid_same_point_names_consecutive": true,
+            "avoid_same_answer_consecutive": true,
+            "recent_history_window": 5,
+            "signature_fields": [
+              "problem_type_id",
+              "template_variant",
+              "ratio_form",
+              "ratio_values",
+              "coordinate_pattern",
+              "answer"
+            ]
+          },
+          "validity_constraints": [
+            "answer derivable from givens"
+          ],
+          "answer_shape": "numeric",
+          "explanation_variants": [
+            "stepwise"
+          ],
+          "sampling_strategy": "weighted_random",
+          "template_families": [
+            "evaluate_function_value"
+          ]
+        },
+        "parameter_schema": {
+          "seed": {
+            "type": "integer",
+            "randomize": true
+          },
+          "difficulty_level": {
+            "choices": [
+              "level_1",
+              "level_2",
+              "level_3"
+            ],
+            "weights": [
+              0.4,
+              0.4,
+              0.2
+            ]
+          }
+        },
         "variable_randomization_notes": [],
-        "checker_key": "manual_review_checker",
-        "equivalence_type": "manual_review_or_ai_judged",
+        "checker_key": "numeric_checker",
+        "equivalence_type": "numeric_equivalence",
         "skill_scope_trusted": true,
-        "target_task": "compute_numeric",
-        "task_family": "generic_numeric_family",
+        "target_task": "evaluate_function_value",
+        "task_family": "function_concept_family",
         "math_objects": [
           "coordinate_point",
           "three_coordinate_points",
           "triangle",
           "two_coordinate_points"
         ],
-        "answer_type": "single_choice",
-        "answer_shape": "choice_label",
+        "answer_type": "numeric",
+        "answer_shape": "numeric",
         "source_type": "unknown",
         "example_label": "",
         "practice_label": "",
@@ -63649,18 +69020,19 @@
         "structure_consistency": "not_applicable",
         "sequence_context_used": true,
         "structure_context_used": true,
-        "confidence_adjustment_reason": "possible_structure_mismatch_penalty; sequence_context_used",
-        "possible_structure_mismatch": true,
-        "possible_mixed_source_context": true,
+        "confidence_adjustment_reason": "sequence_context_used",
+        "possible_structure_mismatch": false,
+        "possible_mixed_source_context": false,
         "source_quality_reject": false,
         "source_quality_status": "FORCE_ALLOWED_FOR_INDUCTION"
       },
       "subskill_id": "same_as_main_skill",
-      "classification_source": "fallback_application_induct",
+      "classification_source": "ai",
       "induction_eligibility": "eligible",
-      "answer_type": "expression",
+      "answer_type": "integer",
       "equivalence_type": "choice_label",
-      "checker_key": "choice_label_checker"
+      "checker_key": "choice_label_checker",
+      "alignment_score": 0.8
     },
     {
       "example_id": 4448,
@@ -63706,16 +69078,16 @@
           "ai_confidence": 0.0,
           "ai_best_candidate_id": "interpret_function_notation",
           "ai_evidence": [
-            "題目要求在坐標平面上畫出函數 y=f(x)=3 的圖形。",
-            "候選清單 (C1-C5) 主要涵蓋函數的概念性任務，如求值、符號辨釋、定義域值域、映射判斷及函數關係判斷。",
-            "清單中缺乏「描繪函數圖形」或「常數函數圖形」相關的子技能。"
+            "題目要求在坐標平面上畫出常數函數 y=f(x)=3 的圖形。",
+            "候選子技能包含：求函數值、解釋函數符號、判斷定義域值域、從對應關係判斷函數、判斷函數關係。",
+            "現有的候選子技能中沒有任何一項對應到「繪製函數圖形」或「函數圖形的幾何表示」。"
           ],
           "ai_rejected_candidates": {
-            "C1": "求函數值僅為描圖過程中的一個可能步驟，並非此題的主要任務。",
-            "C2": "符號辨釋涉及理解 f(x) 的含義，但此題核心在於繪圖。",
-            "C3": "此題並未要求判斷定義域或值域。",
-            "C4": "此題與映射圖無關。",
-            "C5": "此題並非要求判斷 y 是否為 x 的函數。"
+            "C1": "求函數值是指計算特定點的數值，而非繪製完整圖形。",
+            "C2": "解釋函數符號通常涉及理解 y=f(x) 的意義，雖然與圖形有關，但不足以涵蓋繪圖任務。",
+            "C3": "判斷定義域與值域是函數的性質分析，而非繪圖動作。",
+            "C4": "從對應關係判斷函數通常涉及集合間的映射圖，而非坐標平面上的圖形繪製。",
+            "C5": "判斷函數關係是辨識一個關係是否為函數，而非繪圖。"
           },
           "ai_available": false,
           "ai_error": "",
@@ -63735,7 +69107,7 @@
           "conflict_reason": "",
           "source_mapping_warning": "",
           "requires_human_action": false,
-          "ai_notes": "此題目屬於「描繪線型函數圖形」或「常數函數的圖形」，但在提供的 anchor 候選清單中僅包含函數概念相關的子技能，建議新增與圖形繪製相關的子技能。",
+          "ai_notes": "題目要求繪製常數函數圖形，但提供的候選子技能（屬於 function_concept_family）皆不包含「繪圖」相關任務。建議新增「繪製線型函數圖形」或「函數圖形的幾何特徵」等子技能。",
           "skill_scoped_candidates": [
             {
               "candidate_id": "C1",
@@ -64279,12 +69651,12 @@
           "practice_number": 8,
           "nearby_worked_examples": [
             {
-              "example_id": 4430,
+              "example_id": 4431,
               "source_type": "worked_example",
-              "example_label": "例題1",
+              "example_label": "例題2",
               "practice_label": "",
               "section_order": 0,
-              "title_head": "例1"
+              "title_head": "例2"
             },
             {
               "example_id": 4433,
@@ -64353,6 +69725,14 @@
               "practice_label": "",
               "section_order": 0,
               "title_head": "例1"
+            },
+            {
+              "example_id": 4431,
+              "source_type": "worked_example",
+              "example_label": "例題2",
+              "practice_label": "",
+              "section_order": 0,
+              "title_head": "例2"
             },
             {
               "example_id": 4433,
@@ -64469,16 +69849,16 @@
         "ai_confidence": 0.0,
         "ai_best_candidate_id": "interpret_function_notation",
         "ai_evidence": [
-          "題目要求在坐標平面上畫出函數 y=f(x)=3 的圖形。",
-          "候選清單 (C1-C5) 主要涵蓋函數的概念性任務，如求值、符號辨釋、定義域值域、映射判斷及函數關係判斷。",
-          "清單中缺乏「描繪函數圖形」或「常數函數圖形」相關的子技能。"
+          "題目要求在坐標平面上畫出常數函數 y=f(x)=3 的圖形。",
+          "候選子技能包含：求函數值、解釋函數符號、判斷定義域值域、從對應關係判斷函數、判斷函數關係。",
+          "現有的候選子技能中沒有任何一項對應到「繪製函數圖形」或「函數圖形的幾何表示」。"
         ],
         "ai_rejected_candidates": {
-          "C1": "求函數值僅為描圖過程中的一個可能步驟，並非此題的主要任務。",
-          "C2": "符號辨釋涉及理解 f(x) 的含義，但此題核心在於繪圖。",
-          "C3": "此題並未要求判斷定義域或值域。",
-          "C4": "此題與映射圖無關。",
-          "C5": "此題並非要求判斷 y 是否為 x 的函數。"
+          "C1": "求函數值是指計算特定點的數值，而非繪製完整圖形。",
+          "C2": "解釋函數符號通常涉及理解 y=f(x) 的意義，雖然與圖形有關，但不足以涵蓋繪圖任務。",
+          "C3": "判斷定義域與值域是函數的性質分析，而非繪圖動作。",
+          "C4": "從對應關係判斷函數通常涉及集合間的映射圖，而非坐標平面上的圖形繪製。",
+          "C5": "判斷函數關係是辨識一個關係是否為函數，而非繪圖。"
         },
         "ai_available": false,
         "ai_error": "",
@@ -64498,7 +69878,7 @@
         "conflict_reason": "",
         "source_mapping_warning": "",
         "requires_human_action": false,
-        "ai_notes": "此題目屬於「描繪線型函數圖形」或「常數函數的圖形」，但在提供的 anchor 候選清單中僅包含函數概念相關的子技能，建議新增與圖形繪製相關的子技能。",
+        "ai_notes": "題目要求繪製常數函數圖形，但提供的候選子技能（屬於 function_concept_family）皆不包含「繪圖」相關任務。建議新增「繪製線型函數圖形」或「函數圖形的幾何特徵」等子技能。",
         "skill_scoped_candidates": [
           {
             "candidate_id": "C1",
@@ -65085,16 +70465,15 @@
           "ai_confidence": 0.0,
           "ai_best_candidate_id": "interpret_function_notation",
           "ai_evidence": [
-            "題目要求在坐標平面上畫出函數 y = f(x) = -2x + 4 的圖形。",
-            "候選清單中的子技能（C1-C5）皆屬於函數概念家族（function_concept_family），包含求值、符號辨釋、定義域值域、映射判斷及函數關係判斷。",
-            "清單中缺乏「描繪函數圖形」或「一次函數圖形」相關的子技能。"
+            "題目要求在坐標平面上畫出一次函數 y = -2x + 4 的圖形。",
+            "候選清單中的 C1 至 C5 分別為求函數值、函數符號意義、判斷定義域值域、由對應關係判斷函數、判斷函數關係，皆不包含「繪製函數圖形」的任務。"
           ],
           "ai_rejected_candidates": {
-            "C1": "求函數值僅為描點過程中的一個步驟，並非此題「畫出圖形」的核心任務。",
-            "C2": "此題重點在於繪圖，而非單純辨識或解釋函數符號的意義。",
-            "C3": "題目未要求判斷定義域或值域。",
-            "C4": "題目未涉及映射圖或判斷是否為函數。",
-            "C5": "題目未要求判斷變數間是否構成函數關係。"
+            "C1": "求函數值僅為描點繪圖的過程之一，並非繪圖任務本身。",
+            "C2": "此題並非在解釋函數符號的意義。",
+            "C3": "此題並非在判斷定義域或值域。",
+            "C4": "此題並非由對應圖判斷是否為函數。",
+            "C5": "此題並非判斷兩個變數之間是否具備函數關係。"
           },
           "ai_available": false,
           "ai_error": "",
@@ -65114,7 +70493,7 @@
           "conflict_reason": "",
           "source_mapping_warning": "",
           "requires_human_action": false,
-          "ai_notes": "題目核心任務為「描繪一次函數圖形」，但候選清單中僅包含函數基本概念的子技能，建議新增「描繪一次函數圖形」或「一次函數的圖形」相關子技能。",
+          "ai_notes": "題目任務為「繪製一次函數圖形」，但提供的候選子技能皆屬於函數基本觀念（如求值、定義、符號等），缺乏繪圖相關的子技能，因此選擇 needs_review。",
           "skill_scoped_candidates": [
             {
               "candidate_id": "C1",
@@ -65658,12 +71037,12 @@
           "practice_number": 9,
           "nearby_worked_examples": [
             {
-              "example_id": 4430,
+              "example_id": 4431,
               "source_type": "worked_example",
-              "example_label": "例題1",
+              "example_label": "例題2",
               "practice_label": "",
               "section_order": 0,
-              "title_head": "例1"
+              "title_head": "例2"
             },
             {
               "example_id": 4433,
@@ -65732,6 +71111,14 @@
               "practice_label": "",
               "section_order": 0,
               "title_head": "例1"
+            },
+            {
+              "example_id": 4431,
+              "source_type": "worked_example",
+              "example_label": "例題2",
+              "practice_label": "",
+              "section_order": 0,
+              "title_head": "例2"
             },
             {
               "example_id": 4433,
@@ -65848,16 +71235,15 @@
         "ai_confidence": 0.0,
         "ai_best_candidate_id": "interpret_function_notation",
         "ai_evidence": [
-          "題目要求在坐標平面上畫出函數 y = f(x) = -2x + 4 的圖形。",
-          "候選清單中的子技能（C1-C5）皆屬於函數概念家族（function_concept_family），包含求值、符號辨釋、定義域值域、映射判斷及函數關係判斷。",
-          "清單中缺乏「描繪函數圖形」或「一次函數圖形」相關的子技能。"
+          "題目要求在坐標平面上畫出一次函數 y = -2x + 4 的圖形。",
+          "候選清單中的 C1 至 C5 分別為求函數值、函數符號意義、判斷定義域值域、由對應關係判斷函數、判斷函數關係，皆不包含「繪製函數圖形」的任務。"
         ],
         "ai_rejected_candidates": {
-          "C1": "求函數值僅為描點過程中的一個步驟，並非此題「畫出圖形」的核心任務。",
-          "C2": "此題重點在於繪圖，而非單純辨識或解釋函數符號的意義。",
-          "C3": "題目未要求判斷定義域或值域。",
-          "C4": "題目未涉及映射圖或判斷是否為函數。",
-          "C5": "題目未要求判斷變數間是否構成函數關係。"
+          "C1": "求函數值僅為描點繪圖的過程之一，並非繪圖任務本身。",
+          "C2": "此題並非在解釋函數符號的意義。",
+          "C3": "此題並非在判斷定義域或值域。",
+          "C4": "此題並非由對應圖判斷是否為函數。",
+          "C5": "此題並非判斷兩個變數之間是否具備函數關係。"
         },
         "ai_available": false,
         "ai_error": "",
@@ -65877,7 +71263,7 @@
         "conflict_reason": "",
         "source_mapping_warning": "",
         "requires_human_action": false,
-        "ai_notes": "題目核心任務為「描繪一次函數圖形」，但候選清單中僅包含函數基本概念的子技能，建議新增「描繪一次函數圖形」或「一次函數的圖形」相關子技能。",
+        "ai_notes": "題目任務為「繪製一次函數圖形」，但提供的候選子技能皆屬於函數基本觀念（如求值、定義、符號等），缺乏繪圖相關的子技能，因此選擇 needs_review。",
         "skill_scoped_candidates": [
           {
             "candidate_id": "C1",
@@ -66454,17 +71840,13 @@
           "ai_confidence": 0.0,
           "ai_best_candidate_id": "needs_review",
           "ai_evidence": [
-            "題目要求根據圖形求出線型函數的關係式（即求出 y = ax + b 的方程式）。",
-            "候選子技能（C1-C5）主要集中在函數的概念性理解，如求函數值、符號辨釋、定義域值域、判斷是否為函數等。",
-            "目前清單中缺乏「求線型函數解析式」或「求直線方程式」這類程序性運算的子技能。"
+            "題目要求根據圖形求出線型函數的關係式（即 y = ax + b）。",
+            "提供的候選子技能（C1-C5）主要集中在函數的概念（如：求函數值、符號辨識、定義域值域、判斷是否為函數）。",
+            "候選清單中缺乏「求線型函數解析式」或「由圖形求函數關係式」等相關子技能。"
           ],
           "ai_rejected_candidates": {
-            "C1": "此題是要求出整個關係式，而非給定 x 求單一函數值。",
-            "C2": "此題涉及函數的建立而非單純對函數符號的解釋。",
-            "C3": "此題未要求判斷定義域或值域。",
-            "C4": "此題並非判斷對應關係是否構成函數。",
-            "C5": "此題要求具體的關係式，而非僅僅判斷變數間是否存在函數關係。",
-            "C6": "此為外部技能且過於籠統，無法精確描述「求函數關係式」的數學任務。"
+            "C1": "此子技能為求特定點的函數值，而本題要求的是整體的關係式。",
+            "C5": "此子技能為判斷變數間是否構成函數關係，而非求出其具體的代數表達式。"
           },
           "ai_available": false,
           "ai_error": "",
@@ -66484,7 +71866,7 @@
           "conflict_reason": "needs_review",
           "source_mapping_warning": "",
           "requires_human_action": false,
-          "ai_notes": "該題目屬於「求線型函數的關係式」，但在提供的 anchor 範圍內（function_concept_family）僅包含概念判斷與求值，建議增加「求線型函數解析式」相關的子技能。",
+          "ai_notes": "本題的核心任務是「求線型函數的關係式」，但目前的候選清單僅包含函數概念（function_concept_family）相關的子技能，建議增加如「求線型函數解析式」之類的子技能。",
           "skill_scoped_candidates": [
             {
               "candidate_id": "C1",
@@ -67125,12 +72507,12 @@
           "practice_number": null,
           "nearby_worked_examples": [
             {
-              "example_id": 4430,
+              "example_id": 4431,
               "source_type": "worked_example",
-              "example_label": "例題1",
+              "example_label": "例題2",
               "practice_label": "",
               "section_order": 0,
-              "title_head": "例1"
+              "title_head": "例2"
             },
             {
               "example_id": 4433,
@@ -67199,6 +72581,14 @@
               "practice_label": "",
               "section_order": 0,
               "title_head": "例1"
+            },
+            {
+              "example_id": 4431,
+              "source_type": "worked_example",
+              "example_label": "例題2",
+              "practice_label": "",
+              "section_order": 0,
+              "title_head": "例2"
             },
             {
               "example_id": 4433,
@@ -67315,17 +72705,13 @@
         "ai_confidence": 0.0,
         "ai_best_candidate_id": "needs_review",
         "ai_evidence": [
-          "題目要求根據圖形求出線型函數的關係式（即求出 y = ax + b 的方程式）。",
-          "候選子技能（C1-C5）主要集中在函數的概念性理解，如求函數值、符號辨釋、定義域值域、判斷是否為函數等。",
-          "目前清單中缺乏「求線型函數解析式」或「求直線方程式」這類程序性運算的子技能。"
+          "題目要求根據圖形求出線型函數的關係式（即 y = ax + b）。",
+          "提供的候選子技能（C1-C5）主要集中在函數的概念（如：求函數值、符號辨識、定義域值域、判斷是否為函數）。",
+          "候選清單中缺乏「求線型函數解析式」或「由圖形求函數關係式」等相關子技能。"
         ],
         "ai_rejected_candidates": {
-          "C1": "此題是要求出整個關係式，而非給定 x 求單一函數值。",
-          "C2": "此題涉及函數的建立而非單純對函數符號的解釋。",
-          "C3": "此題未要求判斷定義域或值域。",
-          "C4": "此題並非判斷對應關係是否構成函數。",
-          "C5": "此題要求具體的關係式，而非僅僅判斷變數間是否存在函數關係。",
-          "C6": "此為外部技能且過於籠統，無法精確描述「求函數關係式」的數學任務。"
+          "C1": "此子技能為求特定點的函數值，而本題要求的是整體的關係式。",
+          "C5": "此子技能為判斷變數間是否構成函數關係，而非求出其具體的代數表達式。"
         },
         "ai_available": false,
         "ai_error": "",
@@ -67345,7 +72731,7 @@
         "conflict_reason": "needs_review",
         "source_mapping_warning": "",
         "requires_human_action": false,
-        "ai_notes": "該題目屬於「求線型函數的關係式」，但在提供的 anchor 範圍內（function_concept_family）僅包含概念判斷與求值，建議增加「求線型函數解析式」相關的子技能。",
+        "ai_notes": "本題的核心任務是「求線型函數的關係式」，但目前的候選清單僅包含函數概念（function_concept_family）相關的子技能，建議增加如「求線型函數解析式」之類的子技能。",
         "skill_scoped_candidates": [
           {
             "candidate_id": "C1",
@@ -68043,17 +73429,16 @@
           "ai_confidence": 0.0,
           "ai_best_candidate_id": "interpret_function_notation",
           "ai_evidence": [
-            "題目要求根據兩個已知點 (-2, 4) 與 (1, 1) 求出線型函數 f(x) = ax + b 的解析式。",
-            "這屬於「求線型函數解析式」或「待定係數法求函數」的題型。",
-            "提供的候選子技能包括：計算函數值 (evaluate_function_value)、理解函數符號 (interpret_function_notation)、判斷定義域值域 (judge_domain_range_basic)、從對應關係判斷函數 (judge_function_from_mapping) 以及判斷函數關係 (judge_function_relation)。",
-            "這些候選子技能多屬於「函數概念 (function_concept_family)」的基礎認知，缺乏「求線型函數解析式」這一具體的運算型子技能。"
+            "題目要求根據通過的兩點 (-2, 4) 與 (1, 1) 求出線型函數 f(x) = ax + b 的解析式。",
+            "候選子技能列表包含：求函數值 (evaluate_function_value)、理解函數符號 (interpret_function_notation)、判斷定義域值域 (judge_domain_range_basic)、由對應關係判斷函數 (judge_function_from_mapping) 以及判斷函數關係 (judge_function_relation)。",
+            "現有的候選子技能中，沒有一個直接對應到「給定兩點求線型函數解析式」這一特定任務。"
           ],
           "ai_rejected_candidates": {
-            "C1": "evaluate_function_value 通常指已知函數式求特定輸入的輸出值，而非求函數式本身。",
-            "C2": "interpret_function_notation 涉及理解 f(x) 的含義，雖然解題第一步需將點座標轉化為 f(-2)=4，但核心任務是求解係數，該項不足以涵蓋完整過程。",
-            "C3": "題目未涉及定義域或值域的判斷。",
-            "C4": "題目未涉及對應圖表或映射關係的函數判定。",
-            "C5": "題目未涉及函數關係的性質判定（如是否為函數）。"
+            "C1": "此題並非單純求特定點的函數值，而是要求出整個函數的表達式。",
+            "C2": "此題涉及函數符號的應用，但核心任務是解聯立方程式求係數，而非僅僅是解釋符號意義。",
+            "C3": "此題不涉及定義域或值域的判斷。",
+            "C4": "此題並非判斷給定的對應圖或集合是否構成函數。",
+            "C5": "此題已明示為線型函數，不需判斷是否為函數關係。"
           },
           "ai_available": false,
           "ai_error": "",
@@ -68073,7 +73458,7 @@
           "conflict_reason": "",
           "source_mapping_warning": "",
           "requires_human_action": false,
-          "ai_notes": "該題目為「已知兩點求線型函數」，在現有的候選清單中缺乏對應的子技能（如 determine_linear_function_from_points）。建議新增此類子技能或將其歸類至更合適的技能架構下。",
+          "ai_notes": "該題目屬於「給定兩點求一次函數（線型函數）解析式」，在目前的候選清單中缺乏對應的子技能。建議新增如 'determine_linear_function_from_points' 類型的子技能。",
           "skill_scoped_candidates": [
             {
               "candidate_id": "C1",
@@ -68622,12 +74007,12 @@
           "practice_number": null,
           "nearby_worked_examples": [
             {
-              "example_id": 4430,
+              "example_id": 4431,
               "source_type": "worked_example",
-              "example_label": "例題1",
+              "example_label": "例題2",
               "practice_label": "",
               "section_order": 0,
-              "title_head": "例1"
+              "title_head": "例2"
             },
             {
               "example_id": 4433,
@@ -68696,6 +74081,14 @@
               "practice_label": "",
               "section_order": 0,
               "title_head": "例1"
+            },
+            {
+              "example_id": 4431,
+              "source_type": "worked_example",
+              "example_label": "例題2",
+              "practice_label": "",
+              "section_order": 0,
+              "title_head": "例2"
             },
             {
               "example_id": 4433,
@@ -68816,17 +74209,16 @@
         "ai_confidence": 0.0,
         "ai_best_candidate_id": "interpret_function_notation",
         "ai_evidence": [
-          "題目要求根據兩個已知點 (-2, 4) 與 (1, 1) 求出線型函數 f(x) = ax + b 的解析式。",
-          "這屬於「求線型函數解析式」或「待定係數法求函數」的題型。",
-          "提供的候選子技能包括：計算函數值 (evaluate_function_value)、理解函數符號 (interpret_function_notation)、判斷定義域值域 (judge_domain_range_basic)、從對應關係判斷函數 (judge_function_from_mapping) 以及判斷函數關係 (judge_function_relation)。",
-          "這些候選子技能多屬於「函數概念 (function_concept_family)」的基礎認知，缺乏「求線型函數解析式」這一具體的運算型子技能。"
+          "題目要求根據通過的兩點 (-2, 4) 與 (1, 1) 求出線型函數 f(x) = ax + b 的解析式。",
+          "候選子技能列表包含：求函數值 (evaluate_function_value)、理解函數符號 (interpret_function_notation)、判斷定義域值域 (judge_domain_range_basic)、由對應關係判斷函數 (judge_function_from_mapping) 以及判斷函數關係 (judge_function_relation)。",
+          "現有的候選子技能中，沒有一個直接對應到「給定兩點求線型函數解析式」這一特定任務。"
         ],
         "ai_rejected_candidates": {
-          "C1": "evaluate_function_value 通常指已知函數式求特定輸入的輸出值，而非求函數式本身。",
-          "C2": "interpret_function_notation 涉及理解 f(x) 的含義，雖然解題第一步需將點座標轉化為 f(-2)=4，但核心任務是求解係數，該項不足以涵蓋完整過程。",
-          "C3": "題目未涉及定義域或值域的判斷。",
-          "C4": "題目未涉及對應圖表或映射關係的函數判定。",
-          "C5": "題目未涉及函數關係的性質判定（如是否為函數）。"
+          "C1": "此題並非單純求特定點的函數值，而是要求出整個函數的表達式。",
+          "C2": "此題涉及函數符號的應用，但核心任務是解聯立方程式求係數，而非僅僅是解釋符號意義。",
+          "C3": "此題不涉及定義域或值域的判斷。",
+          "C4": "此題並非判斷給定的對應圖或集合是否構成函數。",
+          "C5": "此題已明示為線型函數，不需判斷是否為函數關係。"
         },
         "ai_available": false,
         "ai_error": "",
@@ -68846,7 +74238,7 @@
         "conflict_reason": "",
         "source_mapping_warning": "",
         "requires_human_action": false,
-        "ai_notes": "該題目為「已知兩點求線型函數」，在現有的候選清單中缺乏對應的子技能（如 determine_linear_function_from_points）。建議新增此類子技能或將其歸類至更合適的技能架構下。",
+        "ai_notes": "該題目屬於「給定兩點求一次函數（線型函數）解析式」，在目前的候選清單中缺乏對應的子技能。建議新增如 'determine_linear_function_from_points' 類型的子技能。",
         "skill_scoped_candidates": [
           {
             "candidate_id": "C1",
@@ -69438,14 +74830,14 @@
           "ai_confidence": 0.0,
           "ai_best_candidate_id": "interpret_function_notation",
           "ai_evidence": [
-            "題目要求利用截距定義判斷函數 y=f(x)=ax-3 的圖形，屬於線型函數圖形特徵的辨識。",
-            "提供的候選子技能（C1-C5）均屬於『函數觀念 (function_concept_family)』，如求值、符號、定義域、映射判斷等。",
-            "候選清單中缺乏與『線型函數圖形』、『截距』或『斜率』直接相關的子技能。",
-            "根據規則，若候選清單中沒有合適的子技能，應選擇 needs_review。"
+            "題目要求利用截距定義判斷函數 y=ax-3 的圖形，這涉及線性函數的圖形特徵（如 y 截距為 -3）與參數 a 對圖形的影響。",
+            "提供的候選子技能（evaluate_function_value, interpret_function_notation, judge_domain_range_basic, judge_function_from_mapping, judge_function_relation）皆屬於函數基本概念（function_concept_family），而非線性函數圖形的具體判別。",
+            "題目核心在於線性函數的圖形性質（截距與斜率），現有選項中缺乏『線性函數圖形』或『截距與斜率的應用』等相關子技能。"
           ],
           "ai_rejected_candidates": {
-            "C1": "evaluate_function_value 雖然涉及計算 f(0)=-3，但本題核心在於圖形截距的幾何意義，而非單純代值計算。",
-            "C5": "judge_function_relation 通常用於判斷變數間是否為函數關係或區分常數與一次函數，不足以涵蓋根據截距判斷圖形的任務。"
+            "C1": "evaluate_function_value 僅涉及計算特定點的函數值，不足以涵蓋判斷整個圖形可能性的任務。",
+            "C2": "interpret_function_notation 涉及對 f(x) 符號的理解，而非圖形判別。",
+            "C5": "judge_function_relation 通常用於判斷一個關係是否為函數，而非判斷特定線性函數的圖形。"
           },
           "ai_available": false,
           "ai_error": "",
@@ -69465,7 +74857,7 @@
           "conflict_reason": "",
           "source_mapping_warning": "",
           "requires_human_action": false,
-          "ai_notes": "The current example focuses on the graphical representation and intercepts of a linear function, which is not covered by the provided subskill candidates in the 'function_concept_family'. A subskill such as 'identify_linear_function_graph' or 'understand_intercepts' would be more appropriate.",
+          "ai_notes": "本題屬於線性函數圖形的判別，特別是截距的應用。然而，候選清單中的子技能僅限於函數的基本概念（如定義、符號、定義域值域），缺乏針對線性函數圖形性質（如斜率、截距、圖形平移）的對應選項，因此選擇 needs_review。",
           "skill_scoped_candidates": [
             {
               "candidate_id": "C1",
@@ -70009,12 +75401,12 @@
           "practice_number": null,
           "nearby_worked_examples": [
             {
-              "example_id": 4430,
+              "example_id": 4431,
               "source_type": "worked_example",
-              "example_label": "例題1",
+              "example_label": "例題2",
               "practice_label": "",
               "section_order": 0,
-              "title_head": "例1"
+              "title_head": "例2"
             },
             {
               "example_id": 4433,
@@ -70083,6 +75475,14 @@
               "practice_label": "",
               "section_order": 0,
               "title_head": "例1"
+            },
+            {
+              "example_id": 4431,
+              "source_type": "worked_example",
+              "example_label": "例題2",
+              "practice_label": "",
+              "section_order": 0,
+              "title_head": "例2"
             },
             {
               "example_id": 4433,
@@ -70199,14 +75599,14 @@
         "ai_confidence": 0.0,
         "ai_best_candidate_id": "interpret_function_notation",
         "ai_evidence": [
-          "題目要求利用截距定義判斷函數 y=f(x)=ax-3 的圖形，屬於線型函數圖形特徵的辨識。",
-          "提供的候選子技能（C1-C5）均屬於『函數觀念 (function_concept_family)』，如求值、符號、定義域、映射判斷等。",
-          "候選清單中缺乏與『線型函數圖形』、『截距』或『斜率』直接相關的子技能。",
-          "根據規則，若候選清單中沒有合適的子技能，應選擇 needs_review。"
+          "題目要求利用截距定義判斷函數 y=ax-3 的圖形，這涉及線性函數的圖形特徵（如 y 截距為 -3）與參數 a 對圖形的影響。",
+          "提供的候選子技能（evaluate_function_value, interpret_function_notation, judge_domain_range_basic, judge_function_from_mapping, judge_function_relation）皆屬於函數基本概念（function_concept_family），而非線性函數圖形的具體判別。",
+          "題目核心在於線性函數的圖形性質（截距與斜率），現有選項中缺乏『線性函數圖形』或『截距與斜率的應用』等相關子技能。"
         ],
         "ai_rejected_candidates": {
-          "C1": "evaluate_function_value 雖然涉及計算 f(0)=-3，但本題核心在於圖形截距的幾何意義，而非單純代值計算。",
-          "C5": "judge_function_relation 通常用於判斷變數間是否為函數關係或區分常數與一次函數，不足以涵蓋根據截距判斷圖形的任務。"
+          "C1": "evaluate_function_value 僅涉及計算特定點的函數值，不足以涵蓋判斷整個圖形可能性的任務。",
+          "C2": "interpret_function_notation 涉及對 f(x) 符號的理解，而非圖形判別。",
+          "C5": "judge_function_relation 通常用於判斷一個關係是否為函數，而非判斷特定線性函數的圖形。"
         },
         "ai_available": false,
         "ai_error": "",
@@ -70226,7 +75626,7 @@
         "conflict_reason": "",
         "source_mapping_warning": "",
         "requires_human_action": false,
-        "ai_notes": "The current example focuses on the graphical representation and intercepts of a linear function, which is not covered by the provided subskill candidates in the 'function_concept_family'. A subskill such as 'identify_linear_function_graph' or 'understand_intercepts' would be more appropriate.",
+        "ai_notes": "本題屬於線性函數圖形的判別，特別是截距的應用。然而，候選清單中的子技能僅限於函數的基本概念（如定義、符號、定義域值域），缺乏針對線性函數圖形性質（如斜率、截距、圖形平移）的對應選項，因此選擇 needs_review。",
         "skill_scoped_candidates": [
           {
             "candidate_id": "C1",
@@ -70772,6 +76172,7 @@
   ],
   "unclassified_examples": [
     4430,
+    4431,
     4446
   ],
   "risk_examples": [
@@ -70784,7 +76185,8 @@
     "allowed": true,
     "warnings": [
       "insufficient_examples",
-      "alignment_score_below_recommended_threshold"
+      "alignment_score_below_recommended_threshold",
+      "source_quality_reject_examples_present"
     ]
   },
   "generator_draft_gate": {
@@ -70792,7 +76194,8 @@
     "allowed": true,
     "warnings": [
       "low_source_examples",
-      "alignment_score_below_recommended_threshold"
+      "alignment_score_below_recommended_threshold",
+      "source_quality_reject_examples_present"
     ]
   },
   "runtime_ready_gate": {
@@ -70803,7 +76206,8 @@
       "dynamic_sampling_failed"
     ],
     "warnings": [
-      "alignment_score_below_recommended_threshold"
+      "alignment_score_below_recommended_threshold",
+      "source_quality_reject_examples_present"
     ]
   },
   "exception_review_gate": {
@@ -70811,13 +76215,13 @@
     "reasons": []
   },
   "reports": {
-    "phase1_summary_json": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_LinearFunction_phase1_summary.json",
-    "phase1_summary_md": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_LinearFunction_phase1_summary.md",
-    "phase1_json": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_LinearFunction_phase1_summary.json",
-    "phase1_md": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_LinearFunction_phase1_summary.md"
+    "phase1_summary_json": "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_LinearFunction_phase1_summary.json",
+    "phase1_summary_md": "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_LinearFunction_phase1_summary.md",
+    "phase1_json": "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_LinearFunction_phase1_summary.json",
+    "phase1_md": "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_LinearFunction_phase1_summary.md"
   },
   "next_action": "phase2_generate_from_induced_specs",
-  "timestamp": "2026-06-01T08:25:29.652096+00:00",
+  "timestamp": "2026-06-01T14:13:54.609694+00:00",
   "dry_run": true,
   "auto_review_summary": {
     "skill_id": "vh_數學B1_LinearFunction",
@@ -70870,14 +76274,15 @@
         "ai_confidence": 0.9,
         "ai_best_candidate_id": "C5",
         "ai_evidence": [
-          "The text describes how the falling distance S depends on the time t.",
-          "It explicitly concludes that distance S is a function of time t based on their relationship.",
-          "This aligns with the subskill of judging or identifying a function relation between variables."
+          "題目描述了距離 S 隨時間 t 變化的關係。",
+          "題目最後明確指出「距離 S 是時間 t 的函數」。",
+          "這屬於判斷或理解兩個變數之間是否構成函數關係的範疇。"
         ],
         "ai_rejected_candidates": {
-          "C1": "The text does not ask to calculate a specific value for S given a value for t.",
-          "C2": "While function notation S(t) is used, the primary purpose of the text is to explain the relationship itself.",
-          "C4": "The problem does not use mapping diagrams to define the function."
+          "C1": "題目中沒有要求計算具體的函數值。",
+          "C2": "雖然使用了函數符號，但重點在於解釋函數關係的建立而非符號本身的解讀。",
+          "C3": "題目未涉及定義域或值域的判斷。",
+          "C4": "題目並非透過集合映射圖來判斷函數。"
         },
         "ai_available": true,
         "ai_error": "",
@@ -70897,7 +76302,7 @@
         "conflict_reason": "",
         "source_mapping_warning": "",
         "requires_human_action": false,
-        "ai_notes": "The example provides a real-world context to introduce the concept of a function relationship between two variables.",
+        "ai_notes": "此題為函數概念的引入例題，旨在說明變數間的依賴關係如何構成函數，最符合 judge_function_relation。",
         "skill_scoped_candidates": [
           {
             "candidate_id": "C1",
@@ -71612,6 +77017,659 @@
         "possible_mixed_source_context": false
       },
       {
+        "example_id": 4431,
+        "ai_target_task": "evaluate_function_value",
+        "ai_task_family": "function_concept_family",
+        "ai_confidence": 1.0,
+        "ai_best_candidate_id": "C1",
+        "ai_evidence": [
+          "The problem provides a piecewise function f(x) representing electricity costs based on usage x.",
+          "The task requires calculating the cost for specific values of x (800 and 600).",
+          "The solution involves substituting these values into the appropriate parts of the function to find the function values."
+        ],
+        "ai_rejected_candidates": {
+          "C2": "While function notation is used, the primary task is the calculation of values rather than explaining the notation itself.",
+          "C3": "The problem does not ask to identify the domain or range of the function.",
+          "C4": "The problem assumes the relation is a function and does not ask for verification of mapping properties.",
+          "C5": "The problem focuses on specific value evaluation rather than judging the general relationship between variables."
+        },
+        "ai_available": true,
+        "ai_error": "",
+        "ai_unavailable_reason": "",
+        "ai_semantic_status": "ok",
+        "ai_invalid_response_reason": "",
+        "parser_error": "",
+        "raw_response_preview": "",
+        "sanitized_response_preview": "",
+        "failed_stage": "",
+        "rule_target_task": "evaluate_function_value",
+        "rule_task_family": "function_concept_family",
+        "rule_confidence": 0.5,
+        "final_target_task": "evaluate_function_value",
+        "final_task_family": "function_concept_family",
+        "classifier_source": "ai",
+        "conflict_reason": "",
+        "source_mapping_warning": "",
+        "requires_human_action": false,
+        "ai_notes": "The example is a practical application of evaluating a piecewise linear function at specific input points.",
+        "skill_scoped_candidates": [
+          {
+            "candidate_id": "C1",
+            "target_task": "evaluate_function_value",
+            "task_family": "function_concept_family",
+            "problem_type_id": "evaluate_function_value",
+            "label": "evaluate_function_value",
+            "candidate_source": "anchor",
+            "in_anchor_scope": true,
+            "answer_type": "numeric",
+            "answer_shape": "numeric",
+            "math_objects": [],
+            "checker_key": "numeric_checker",
+            "equivalence_type": "numeric_equivalence",
+            "generator_contract": {
+              "template_variants": [
+                {
+                  "id": "default",
+                  "label": "default",
+                  "stem_pattern": "依題意求解：{stem_hint}。",
+                  "weight": 1.0,
+                  "enabled": true
+                }
+              ],
+              "parameter_schema": {
+                "seed": {
+                  "type": "integer",
+                  "randomize": true
+                },
+                "difficulty_level": {
+                  "choices": [
+                    "level_1",
+                    "level_2",
+                    "level_3"
+                  ],
+                  "weights": [
+                    0.4,
+                    0.4,
+                    0.2
+                  ]
+                }
+              },
+              "variation_dimensions": [
+                "seed",
+                "difficulty_level",
+                "context_style"
+              ],
+              "difficulty_controls": {
+                "level_1": {},
+                "level_2": {},
+                "level_3": {}
+              },
+              "anti_repetition_rules": {
+                "avoid_same_template_consecutive": true,
+                "avoid_same_ratio_consecutive": true,
+                "avoid_same_point_names_consecutive": true,
+                "avoid_same_answer_consecutive": true,
+                "recent_history_window": 5,
+                "signature_fields": [
+                  "problem_type_id",
+                  "template_variant",
+                  "ratio_form",
+                  "ratio_values",
+                  "coordinate_pattern",
+                  "answer"
+                ]
+              },
+              "validity_constraints": [
+                "answer derivable from givens"
+              ],
+              "answer_shape": "numeric",
+              "explanation_variants": [
+                "stepwise"
+              ],
+              "sampling_strategy": "weighted_random",
+              "template_families": [
+                "evaluate_function_value"
+              ]
+            },
+            "parameter_schema": {
+              "seed": {
+                "type": "integer",
+                "randomize": true
+              },
+              "difficulty_level": {
+                "choices": [
+                  "level_1",
+                  "level_2",
+                  "level_3"
+                ],
+                "weights": [
+                  0.4,
+                  0.4,
+                  0.2
+                ]
+              }
+            }
+          },
+          {
+            "candidate_id": "C2",
+            "target_task": "interpret_function_notation",
+            "task_family": "function_concept_family",
+            "problem_type_id": "interpret_function_notation",
+            "label": "interpret_function_notation",
+            "candidate_source": "anchor",
+            "in_anchor_scope": true,
+            "answer_type": "numeric",
+            "answer_shape": "numeric",
+            "math_objects": [],
+            "checker_key": "numeric_checker",
+            "equivalence_type": "numeric_equivalence",
+            "generator_contract": {
+              "template_variants": [
+                {
+                  "id": "default",
+                  "label": "default",
+                  "stem_pattern": "依題意求解：{stem_hint}。",
+                  "weight": 1.0,
+                  "enabled": true
+                }
+              ],
+              "parameter_schema": {
+                "seed": {
+                  "type": "integer",
+                  "randomize": true
+                },
+                "difficulty_level": {
+                  "choices": [
+                    "level_1",
+                    "level_2",
+                    "level_3"
+                  ],
+                  "weights": [
+                    0.4,
+                    0.4,
+                    0.2
+                  ]
+                }
+              },
+              "variation_dimensions": [
+                "seed",
+                "difficulty_level",
+                "context_style"
+              ],
+              "difficulty_controls": {
+                "level_1": {},
+                "level_2": {},
+                "level_3": {}
+              },
+              "anti_repetition_rules": {
+                "avoid_same_template_consecutive": true,
+                "avoid_same_ratio_consecutive": true,
+                "avoid_same_point_names_consecutive": true,
+                "avoid_same_answer_consecutive": true,
+                "recent_history_window": 5,
+                "signature_fields": [
+                  "problem_type_id",
+                  "template_variant",
+                  "ratio_form",
+                  "ratio_values",
+                  "coordinate_pattern",
+                  "answer"
+                ]
+              },
+              "validity_constraints": [
+                "answer derivable from givens"
+              ],
+              "answer_shape": "numeric",
+              "explanation_variants": [
+                "stepwise"
+              ],
+              "sampling_strategy": "weighted_random",
+              "template_families": [
+                "interpret_function_notation"
+              ]
+            },
+            "parameter_schema": {
+              "seed": {
+                "type": "integer",
+                "randomize": true
+              },
+              "difficulty_level": {
+                "choices": [
+                  "level_1",
+                  "level_2",
+                  "level_3"
+                ],
+                "weights": [
+                  0.4,
+                  0.4,
+                  0.2
+                ]
+              }
+            }
+          },
+          {
+            "candidate_id": "C3",
+            "target_task": "judge_domain_range_basic",
+            "task_family": "function_concept_family",
+            "problem_type_id": "judge_domain_range_basic",
+            "label": "judge_domain_range_basic",
+            "candidate_source": "anchor",
+            "in_anchor_scope": true,
+            "answer_type": "numeric",
+            "answer_shape": "numeric",
+            "math_objects": [],
+            "checker_key": "numeric_checker",
+            "equivalence_type": "numeric_equivalence",
+            "generator_contract": {
+              "template_variants": [
+                {
+                  "id": "default",
+                  "label": "default",
+                  "stem_pattern": "依題意求解：{stem_hint}。",
+                  "weight": 1.0,
+                  "enabled": true
+                }
+              ],
+              "parameter_schema": {
+                "seed": {
+                  "type": "integer",
+                  "randomize": true
+                },
+                "difficulty_level": {
+                  "choices": [
+                    "level_1",
+                    "level_2",
+                    "level_3"
+                  ],
+                  "weights": [
+                    0.4,
+                    0.4,
+                    0.2
+                  ]
+                }
+              },
+              "variation_dimensions": [
+                "seed",
+                "difficulty_level",
+                "context_style"
+              ],
+              "difficulty_controls": {
+                "level_1": {},
+                "level_2": {},
+                "level_3": {}
+              },
+              "anti_repetition_rules": {
+                "avoid_same_template_consecutive": true,
+                "avoid_same_ratio_consecutive": true,
+                "avoid_same_point_names_consecutive": true,
+                "avoid_same_answer_consecutive": true,
+                "recent_history_window": 5,
+                "signature_fields": [
+                  "problem_type_id",
+                  "template_variant",
+                  "ratio_form",
+                  "ratio_values",
+                  "coordinate_pattern",
+                  "answer"
+                ]
+              },
+              "validity_constraints": [
+                "answer derivable from givens"
+              ],
+              "answer_shape": "numeric",
+              "explanation_variants": [
+                "stepwise"
+              ],
+              "sampling_strategy": "weighted_random",
+              "template_families": [
+                "judge_domain_range_basic"
+              ]
+            },
+            "parameter_schema": {
+              "seed": {
+                "type": "integer",
+                "randomize": true
+              },
+              "difficulty_level": {
+                "choices": [
+                  "level_1",
+                  "level_2",
+                  "level_3"
+                ],
+                "weights": [
+                  0.4,
+                  0.4,
+                  0.2
+                ]
+              }
+            }
+          },
+          {
+            "candidate_id": "C4",
+            "target_task": "judge_function_from_mapping",
+            "task_family": "function_concept_family",
+            "problem_type_id": "judge_function_from_mapping",
+            "label": "judge_function_from_mapping",
+            "candidate_source": "anchor",
+            "in_anchor_scope": true,
+            "answer_type": "numeric",
+            "answer_shape": "numeric",
+            "math_objects": [],
+            "checker_key": "numeric_checker",
+            "equivalence_type": "numeric_equivalence",
+            "generator_contract": {
+              "template_variants": [
+                {
+                  "id": "default",
+                  "label": "default",
+                  "stem_pattern": "依題意求解：{stem_hint}。",
+                  "weight": 1.0,
+                  "enabled": true
+                }
+              ],
+              "parameter_schema": {
+                "seed": {
+                  "type": "integer",
+                  "randomize": true
+                },
+                "difficulty_level": {
+                  "choices": [
+                    "level_1",
+                    "level_2",
+                    "level_3"
+                  ],
+                  "weights": [
+                    0.4,
+                    0.4,
+                    0.2
+                  ]
+                }
+              },
+              "variation_dimensions": [
+                "seed",
+                "difficulty_level",
+                "context_style"
+              ],
+              "difficulty_controls": {
+                "level_1": {},
+                "level_2": {},
+                "level_3": {}
+              },
+              "anti_repetition_rules": {
+                "avoid_same_template_consecutive": true,
+                "avoid_same_ratio_consecutive": true,
+                "avoid_same_point_names_consecutive": true,
+                "avoid_same_answer_consecutive": true,
+                "recent_history_window": 5,
+                "signature_fields": [
+                  "problem_type_id",
+                  "template_variant",
+                  "ratio_form",
+                  "ratio_values",
+                  "coordinate_pattern",
+                  "answer"
+                ]
+              },
+              "validity_constraints": [
+                "answer derivable from givens"
+              ],
+              "answer_shape": "numeric",
+              "explanation_variants": [
+                "stepwise"
+              ],
+              "sampling_strategy": "weighted_random",
+              "template_families": [
+                "judge_function_from_mapping"
+              ]
+            },
+            "parameter_schema": {
+              "seed": {
+                "type": "integer",
+                "randomize": true
+              },
+              "difficulty_level": {
+                "choices": [
+                  "level_1",
+                  "level_2",
+                  "level_3"
+                ],
+                "weights": [
+                  0.4,
+                  0.4,
+                  0.2
+                ]
+              }
+            }
+          },
+          {
+            "candidate_id": "C5",
+            "target_task": "judge_function_relation",
+            "task_family": "function_concept_family",
+            "problem_type_id": "judge_function_relation",
+            "label": "judge_function_relation",
+            "candidate_source": "anchor",
+            "in_anchor_scope": true,
+            "answer_type": "numeric",
+            "answer_shape": "numeric",
+            "math_objects": [],
+            "checker_key": "numeric_checker",
+            "equivalence_type": "numeric_equivalence",
+            "generator_contract": {
+              "template_variants": [
+                {
+                  "id": "default",
+                  "label": "default",
+                  "stem_pattern": "依題意求解：{stem_hint}。",
+                  "weight": 1.0,
+                  "enabled": true
+                }
+              ],
+              "parameter_schema": {
+                "seed": {
+                  "type": "integer",
+                  "randomize": true
+                },
+                "difficulty_level": {
+                  "choices": [
+                    "level_1",
+                    "level_2",
+                    "level_3"
+                  ],
+                  "weights": [
+                    0.4,
+                    0.4,
+                    0.2
+                  ]
+                }
+              },
+              "variation_dimensions": [
+                "seed",
+                "difficulty_level",
+                "context_style"
+              ],
+              "difficulty_controls": {
+                "level_1": {},
+                "level_2": {},
+                "level_3": {}
+              },
+              "anti_repetition_rules": {
+                "avoid_same_template_consecutive": true,
+                "avoid_same_ratio_consecutive": true,
+                "avoid_same_point_names_consecutive": true,
+                "avoid_same_answer_consecutive": true,
+                "recent_history_window": 5,
+                "signature_fields": [
+                  "problem_type_id",
+                  "template_variant",
+                  "ratio_form",
+                  "ratio_values",
+                  "coordinate_pattern",
+                  "answer"
+                ]
+              },
+              "validity_constraints": [
+                "answer derivable from givens"
+              ],
+              "answer_shape": "numeric",
+              "explanation_variants": [
+                "stepwise"
+              ],
+              "sampling_strategy": "weighted_random",
+              "template_families": [
+                "judge_function_relation"
+              ]
+            },
+            "parameter_schema": {
+              "seed": {
+                "type": "integer",
+                "randomize": true
+              },
+              "difficulty_level": {
+                "choices": [
+                  "level_1",
+                  "level_2",
+                  "level_3"
+                ],
+                "weights": [
+                  0.4,
+                  0.4,
+                  0.2
+                ]
+              }
+            }
+          },
+          {
+            "candidate_id": "needs_review",
+            "target_task": "",
+            "task_family": "",
+            "problem_type_id": "needs_review",
+            "label": "needs_review",
+            "candidate_source": "needs_review",
+            "in_anchor_scope": false,
+            "answer_type": "",
+            "answer_shape": "",
+            "math_objects": [],
+            "checker_key": "manual_review_checker",
+            "equivalence_type": "manual_review_or_ai_judged",
+            "generator_contract": {},
+            "parameter_schema": {}
+          }
+        ],
+        "outsider_candidates": [],
+        "selected_subskill": "evaluate_function_value",
+        "selected_problem_type": "evaluate_function_value",
+        "candidate_source": "anchor",
+        "selected_generator_contract": {
+          "template_variants": [
+            {
+              "id": "default",
+              "label": "default",
+              "stem_pattern": "依題意求解：{stem_hint}。",
+              "weight": 1.0,
+              "enabled": true
+            }
+          ],
+          "parameter_schema": {
+            "seed": {
+              "type": "integer",
+              "randomize": true
+            },
+            "difficulty_level": {
+              "choices": [
+                "level_1",
+                "level_2",
+                "level_3"
+              ],
+              "weights": [
+                0.4,
+                0.4,
+                0.2
+              ]
+            }
+          },
+          "variation_dimensions": [
+            "seed",
+            "difficulty_level",
+            "context_style"
+          ],
+          "difficulty_controls": {
+            "level_1": {},
+            "level_2": {},
+            "level_3": {}
+          },
+          "anti_repetition_rules": {
+            "avoid_same_template_consecutive": true,
+            "avoid_same_ratio_consecutive": true,
+            "avoid_same_point_names_consecutive": true,
+            "avoid_same_answer_consecutive": true,
+            "recent_history_window": 5,
+            "signature_fields": [
+              "problem_type_id",
+              "template_variant",
+              "ratio_form",
+              "ratio_values",
+              "coordinate_pattern",
+              "answer"
+            ]
+          },
+          "validity_constraints": [
+            "answer derivable from givens"
+          ],
+          "answer_shape": "numeric",
+          "explanation_variants": [
+            "stepwise"
+          ],
+          "sampling_strategy": "weighted_random",
+          "template_families": [
+            "evaluate_function_value"
+          ]
+        },
+        "parameter_schema": {
+          "seed": {
+            "type": "integer",
+            "randomize": true
+          },
+          "difficulty_level": {
+            "choices": [
+              "level_1",
+              "level_2",
+              "level_3"
+            ],
+            "weights": [
+              0.4,
+              0.4,
+              0.2
+            ]
+          }
+        },
+        "variable_randomization_notes": [],
+        "checker_key": "numeric_checker",
+        "equivalence_type": "numeric_equivalence",
+        "skill_scope_trusted": true,
+        "target_task": "evaluate_function_value",
+        "task_family": "function_concept_family",
+        "math_objects": [
+          "coordinate_point",
+          "three_coordinate_points",
+          "triangle",
+          "two_coordinate_points"
+        ],
+        "answer_type": "numeric",
+        "answer_shape": "numeric",
+        "source_type": "worked_example",
+        "example_label": "例題2",
+        "practice_label": "",
+        "linked_example": "",
+        "linked_example_id": null,
+        "linked_example_task_family": "",
+        "structure_consistency": "not_applicable",
+        "sequence_context_used": true,
+        "structure_context_used": true,
+        "confidence_adjustment_reason": "sequence_context_used",
+        "possible_structure_mismatch": false,
+        "possible_mixed_source_context": false
+      },
+      {
         "example_id": 4433,
         "ai_target_task": "",
         "ai_task_family": "",
@@ -71619,15 +77677,15 @@
         "ai_best_candidate_id": "interpret_function_notation",
         "ai_evidence": [
           "題目要求在坐標平面上畫出常數函數 y = f(x) = -2 的圖形。",
-          "提供的候選子技能（C1-C5）皆屬於函數概念家族（function_concept_family），包含求值、符號辨識、定義域值域、映射判斷及函數關係判斷。",
-          "候選清單中缺乏與「繪製圖形」或「線型函數圖形」相關的子技能。"
+          "提供的候選子技能 (C1-C5) 均屬於函數概念家族 (function_concept_family)，包含求值、符號辨釋、定義域值域、映射判斷及函數關係判斷。",
+          "候選清單中缺乏「描繪函數圖形」或「線性函數圖形」相關的子技能。"
         ],
         "ai_rejected_candidates": {
-          "C1": "此題為作圖題，非單純求函數值。",
-          "C2": "此題重點在於圖形繪製，而非僅僅理解函數符號的意義。",
+          "C1": "此題為繪圖題，而非單純求特定點的函數值。",
+          "C2": "此題涉及函數符號，但核心任務是繪圖而非僅僅是辨釋符號意義。",
           "C3": "此題未要求判斷定義域或值域。",
           "C4": "此題非判斷映射是否為函數。",
-          "C5": "此題非判斷變數間的函數關係。"
+          "C5": "此題非判斷變數間是否構成函數關係。"
         },
         "ai_available": false,
         "ai_error": "",
@@ -71647,7 +77705,7 @@
         "conflict_reason": "",
         "source_mapping_warning": "",
         "requires_human_action": false,
-        "ai_notes": "題目要求畫出常數函數的圖形，但提供的候選子技能僅限於函數的基本概念（如求值、符號、定義域等），不包含線型函數的圖形特徵或作圖。建議增加與圖形繪製相關的子技能。",
+        "ai_notes": "題目任務為「描繪常數函數圖形」，但候選清單僅包含函數基本概念（求值、定義、符號等），缺乏繪圖相關的子技能（如 graph_linear_function 或 graph_constant_function）。",
         "skill_scoped_candidates": [
           {
             "candidate_id": "C1",
@@ -72188,16 +78246,16 @@
         "ai_confidence": 0.0,
         "ai_best_candidate_id": "interpret_function_notation",
         "ai_evidence": [
-          "題目要求在坐標平面上畫出一次函數 y=3x-6 的圖形。",
-          "提供的候選子技能 (C1-C5) 皆屬於函數概念家族 (function_concept_family)，包含求值、符號辨釋、定義域值域、映射判斷及函數關係判斷。",
-          "目前的候選清單中缺乏「描繪函數圖形」或「一次函數圖形」相關的子技能。"
+          "The question asks to draw the graph of the linear function y=f(x)=3x-6 on a coordinate plane.",
+          "The provided candidates are evaluate_function_value, interpret_function_notation, judge_domain_range_basic, judge_function_from_mapping, and judge_function_relation.",
+          "None of the available candidates cover the task of graphing or plotting a linear function."
         ],
         "ai_rejected_candidates": {
-          "C1": "求函數值僅為描繪圖形的其中一個步驟，並非此題目的核心任務。",
-          "C2": "此題重點在於繪圖而非辨識函數符號的意義。",
-          "C3": "此題未涉及定義域或值域的判斷。",
-          "C4": "此題並非判斷是否為函數映射。",
-          "C5": "此題並非判斷變數間是否構成函數關係。"
+          "C1": "Evaluating function values is a necessary step for graphing, but the primary task is the construction of the graph itself.",
+          "C2": "While the problem uses function notation, the objective is to draw a graph, not just interpret the notation.",
+          "C3": "The problem does not ask to determine the domain or range.",
+          "C4": "The problem is not about identifying a function from a mapping diagram.",
+          "C5": "The problem is not about judging whether a relation is a function."
         },
         "ai_available": false,
         "ai_error": "",
@@ -72217,7 +78275,7 @@
         "conflict_reason": "",
         "source_mapping_warning": "",
         "requires_human_action": false,
-        "ai_notes": "題目核心為「描繪一次函數圖形」，但提供的候選子技能僅限於函數基本概念（求值、定義、映射等），不包含圖形繪製，故選擇 needs_review。",
+        "ai_notes": "The specific subskill for graphing linear functions (e.g., graph_linear_function) is missing from the candidate list. Since the task is to draw a graph, none of the concept-based subskills are a perfect fit.",
         "skill_scoped_candidates": [
           {
             "candidate_id": "C1",
@@ -72759,15 +78817,15 @@
         "ai_best_candidate_id": "interpret_function_notation",
         "ai_evidence": [
           "題目要求從圖形中求出直線的 x 截距、y 截距以及函數 f(x) 的解析式。",
-          "提供的候選子技能（evaluate_function_value, interpret_function_notation, judge_domain_range_basic, judge_function_from_mapping, judge_function_relation）皆屬於函數的基本概念（function_concept_family）。",
-          "「由圖形求線性函數解析式」或「求截距」屬於線性函數的圖形性質或方程式判定，不屬於上述基本概念子技能的範疇。"
+          "候選子技能清單僅包含函數的基本概念（求值、符號辨識、定義域值域、映射判斷、關係判斷）。",
+          "清單中缺乏「求線型函數解析式」或「判讀圖形截距」等相關子技能。"
         ],
         "ai_rejected_candidates": {
-          "C1": "此題並非單純給定 x 求 f(x) 的函數值評估。",
-          "C2": "此題並非解釋函數符號的意義。",
-          "C3": "此題不涉及定義域或值域的判斷。",
-          "C4": "此題不涉及判斷是否為函數的對應關係。",
-          "C5": "此題不涉及判斷變數間的函數關係。"
+          "C1": "evaluate_function_value 僅涉及給定 x 求 f(x)，而本題重點在於求出函數解析式本身。",
+          "C2": "interpret_function_notation 涉及對函數符號的理解，而非從圖形推導函數。",
+          "C3": "judge_domain_range_basic 涉及定義域與值域，本題未要求。",
+          "C4": "judge_function_from_mapping 涉及映射圖判斷，與本題座標系圖形無關。",
+          "C5": "judge_function_relation 涉及判斷關係是否為函數，本題已給定是函數。"
         },
         "ai_available": false,
         "ai_error": "",
@@ -72787,7 +78845,7 @@
         "conflict_reason": "",
         "source_mapping_warning": "",
         "requires_human_action": false,
-        "ai_notes": "題目核心為「由圖形求線性函數方程式」及「求截距」，這在數學課程中通常對應到線性函數的圖形特徵或待定係數法，而提供的候選清單僅限於函數的基本概念（如定義、符號、求值），因此無合適選項。",
+        "ai_notes": "本題屬於「求線型函數解析式」或「線型函數的圖形特徵（截距）」，目前的候選清單中沒有對應的子技能，建議新增相關標籤。",
         "skill_scoped_candidates": [
           {
             "candidate_id": "C1",
@@ -73326,17 +79384,18 @@
         "example_id": 4445,
         "ai_target_task": "evaluate_function_value",
         "ai_task_family": "function_concept_family",
-        "ai_confidence": 0.9,
+        "ai_confidence": 0.95,
         "ai_best_candidate_id": "C1",
         "ai_evidence": [
-          "題目要求根據線型函數關係求出特定時間下的手機費用，這屬於求函數值的範疇。",
-          "第一小題要求基本費用 m，即為函數的起始值或特定點的值；第二小題要求 120 分鐘的費用，即為給定自變數求應變數的值。",
-          "此題型符合 function_concept_family 中的 evaluate_function_value 任務。"
+          "題目要求找出基本費 m 以及通話 120 分鐘的總費用。",
+          "這涉及在已知線型函數關係的情況下，計算特定自變數（時間）對應的應變數（費用）數值。",
+          "屬於函數值的求值計算。"
         ],
         "ai_rejected_candidates": {
-          "C2": "題目並未強調函數符號 f(x) 的解讀，而是著重於實際數值的計算。",
-          "C5": "題目已明確指出通話費與時間為線型函數關係，不需判斷是否為函數關係。",
-          "C6": "雖然涉及數值計算，但題目背景明確為線型函數，應優先選擇 anchor 範圍內的 evaluate_function_value。"
+          "C2": "並非著重於函數符號的解讀。",
+          "C3": "並非判斷定義域或值域。",
+          "C4": "並非判斷對應關係是否為函數。",
+          "C5": "題目已給定為線型函數，重點在於求值而非判斷關係。"
         },
         "ai_available": true,
         "ai_error": "",
@@ -73356,7 +79415,7 @@
         "conflict_reason": "",
         "source_mapping_warning": "",
         "requires_human_action": false,
-        "ai_notes": "此題為典型的線型函數應用題，透過圖形或已知條件求出函數關係後計算特定點的函數值。",
+        "ai_notes": "此題為典型的應用題，透過圖形或描述建立線型函數後求特定點的函數值。",
         "skill_scoped_candidates": [
           {
             "candidate_id": "C1",
@@ -74075,16 +80134,15 @@
         "ai_confidence": 0.0,
         "ai_best_candidate_id": "interpret_function_notation",
         "ai_evidence": [
-          "題目要求從函數圖形求出 x 截距、y 截距以及函數解析式 f(x) = ax + b。",
-          "候選清單中的 subskills (evaluate_function_value, interpret_function_notation, judge_domain_range_basic, judge_function_from_mapping, judge_function_relation) 皆不包含「求截距」或「求線型函數解析式」等核心任務。",
-          "此題屬於「由圖形求線型函數」或「線型函數的截距」，在提供的候選清單中無對應項。"
+          "題目要求從圖形中求出直線的 x 截距、y 截距以及函數 f(x) = ax + b 的解析式。",
+          "提供的候選子技能（求函數值、解釋函數符號、判斷定義域值域、由對應關係判斷函數、判斷函數關係）皆不包含「從圖形求一次函數解析式」或「求截距」的任務。"
         ],
         "ai_rejected_candidates": {
-          "C1": "evaluate_function_value 通常指已知函數求特定點的值，而非求函數解析式或截距。",
-          "C2": "interpret_function_notation 涉及對函數符號意義的理解，不涵蓋求解析式的計算過程。",
-          "C3": "judge_domain_range_basic 涉及定義域與值域，與本題求解析式無關。",
-          "C4": "judge_function_from_mapping 涉及映射圖判斷，與本題無關。",
-          "C5": "judge_function_relation 涉及判斷關係是否為函數，與本題無關。"
+          "C1": "此子技能通常指給定 x 求 f(x) 的值，而非求出函數解析式本身。",
+          "C2": "此子技能涉及對函數符號意義的理解，不涵蓋從圖形推導函數解析式的計算過程。",
+          "C3": "題目未涉及定義域或值域的判斷。",
+          "C4": "題目並非透過對應圖（如箭號圖）來判斷函數。",
+          "C5": "題目並非判斷一個關係是否為函數。"
         },
         "ai_available": false,
         "ai_error": "",
@@ -74104,7 +80162,7 @@
         "conflict_reason": "",
         "source_mapping_warning": "",
         "requires_human_action": false,
-        "ai_notes": "該題目涉及從圖形資訊（截距）推導線型函數解析式，這屬於線型函數的核心技能，但目前提供的候選清單僅限於函數的基本概念（如定義、符號、求值、定義域），缺乏「求線型函數解析式」或「線型函數圖形特徵」相關的 subskill。",
+        "ai_notes": "目前的候選子技能清單僅限於函數的基本概念（function_concept_family），而本題屬於一次函數的圖形與解析式求法，建議增加如「從圖形求一次函數解析式」或「一次函數的截距」等子技能。",
         "skill_scoped_candidates": [
           {
             "candidate_id": "C1",
@@ -74646,14 +80704,16 @@
         "ai_confidence": 0.9,
         "ai_best_candidate_id": "C1",
         "ai_evidence": [
-          "題目要求計算特定通話時間（1500秒）下的費用，這屬於求函數值的範疇 (evaluate_function_value)。",
-          "題目明確提到通話時間與費用成線型函數關係。",
-          "第一題要求基本費用，即在特定區間（300秒以內）的函數值。"
+          "題目描述通話時間與費用之間存在線型函數關係",
+          "第二小題要求計算通話 1500 秒時的費用，這屬於給定自變數求應變數的函數值計算",
+          "第一題要求基本費用，即為函數在特定區間或起始點的輸出值"
         ],
         "ai_rejected_candidates": {
-          "C2": "雖然題目涉及對情境的理解，但核心任務是計算具體的數值而非解釋函數符號的含義。",
-          "C5": "題目已經給定函數關係，不需要判斷是否為函數關係。",
-          "C6": "C6 是外部候選者 (outsider)，在有合適的錨點候選者 (anchor) C1 的情況下，應優先選擇 C1。"
+          "C2": "題目並未著重於函數符號 f(x) 的解讀，而是具體數值的計算",
+          "C3": "題目並非要求判斷定義域或值域",
+          "C4": "題目並非判斷是否為函數映射關係",
+          "C5": "題目已給定為線型函數關係，不需判斷關係類型",
+          "C6": "雖然涉及計算，但題目背景明確屬於線型函數範疇，應優先選擇 anchor 內的子技能"
         },
         "ai_available": true,
         "ai_error": "",
@@ -74673,7 +80733,7 @@
         "conflict_reason": "",
         "source_mapping_warning": "",
         "requires_human_action": false,
-        "ai_notes": "此題為線型函數的應用，透過給定的條件（或圖形）求出函數關係後，計算特定自變數下的應變數值，符合 evaluate_function_value 的定義。",
+        "ai_notes": "此題為線型函數的應用題，核心任務是根據給定的函數關係（圖形或文字描述）求出特定點的函數值（費用）。",
         "skill_scoped_candidates": [
           {
             "candidate_id": "C1",
@@ -75392,17 +81452,17 @@
         "ai_confidence": 0.0,
         "ai_best_candidate_id": "needs_review",
         "ai_evidence": [
-          "題目要求計算線段三等分點的坐標，屬於分點公式（division point formula）的應用。",
-          "提供的候選子技能（C1-C5）皆屬於函數概念家族（function_concept_family），如函數值求值、符號辨釋、定義域值域、映射判斷等。",
-          "此題目不涉及函數映射、函數符號或函數值的計算，與現有的函數概念子技能不符。"
+          "題目要求找出將線段 AD 三等分的點 C 之坐標，這屬於解析幾何中的分點公式問題。",
+          "候選子技能 C1 至 C5 皆屬於函數概念（如函數值計算、符號辨識、定義域值域、映射判斷等），與分點公式或坐標幾何計算不符。",
+          "雖然題目涉及計算，但 C6 (compute_numeric) 過於籠統，且不屬於該技能錨點 (Linear Function) 的預期任務家族。"
         ],
         "ai_rejected_candidates": {
-          "C1": "此題並非給定函數 f(x) 並要求計算特定 x 的函數值。",
-          "C2": "此題未出現函數符號 f(x) 或其相關表示法。",
-          "C3": "此題不涉及函數的定義域或值域判斷。",
-          "C4": "此題並非判斷一組對應關係是否為函數。",
+          "C1": "此題並非給定函數 f(x) 並要求計算特定輸入的函數值。",
+          "C2": "此題不涉及函數符號的解讀。",
+          "C3": "此題不涉及判斷函數的定義域或值域。",
+          "C4": "此題不涉及判斷映射關係是否為函數。",
           "C5": "此題不涉及判斷兩個變量之間的函數關係。",
-          "C6": "雖然涉及數值計算，但此題具有明確的幾何分點公式特徵，不應僅歸類為一般數值計算。"
+          "C6": "雖然涉及數值計算，但此題核心為分點公式，且 C6 為 outsider 類別，在沒有合適錨點子技能時應優先考慮 needs_review。"
         },
         "ai_available": false,
         "ai_error": "",
@@ -75422,7 +81482,7 @@
         "conflict_reason": "needs_review",
         "source_mapping_warning": "",
         "requires_human_action": true,
-        "ai_notes": "題目內容為坐標幾何中的分點公式（三等分點），而提供的候選子技能全數屬於函數概念範疇，兩者不匹配。建議將此題歸類至坐標系或分點公式相關技能。",
+        "ai_notes": "題目為典型的分點公式應用（三等分點），但提供的子技能清單僅限於函數概念（function_concept_family），缺乏坐標幾何或分點公式相關的選項。因此選擇 needs_review。",
         "skill_scoped_candidates": [
           {
             "candidate_id": "C1",
@@ -76065,16 +82125,16 @@
         "ai_confidence": 0.0,
         "ai_best_candidate_id": "interpret_function_notation",
         "ai_evidence": [
-          "題目要求從圖形中求出直線的 x 截距與 y 截距，並求出函數 f(x) 的解析式。",
-          "提供的候選子技能（evaluate_function_value, interpret_function_notation, judge_domain_range_basic, judge_function_from_mapping, judge_function_relation）皆屬於函數概念家族，側重於函數定義、符號、定義域值域及對應關係。",
-          "目前候選清單中缺乏「由圖形求線型函數解析式」或「求直線截距」等具體針對線型函數運算的子技能。"
+          "題目要求從圖形中求出直線的 x 截距、y 截距以及函數 f(x) 的解析式。",
+          "候選子技能列表僅包含函數概念（求值、符號辨釋、定義域值域、映射判斷、函數關係判斷）。",
+          "題目核心在於「求一次函數解析式」與「截距概念」，現有子技能中無一符合此特定任務。"
         ],
         "ai_rejected_candidates": {
-          "C1": "此題並非給定 x 求 f(x) 的值，而是要先求出函數解析式。",
-          "C2": "此題涉及函數符號的使用，但核心任務是求出函數解析式，而非僅僅解釋符號意義。",
+          "C1": "此題並非單純給定 x 求 f(x) 的值，而是要求出整個函數解析式。",
+          "C2": "此題涉及函數符號的使用，但核心任務是求出函數式與截距，而非僅僅辨識符號意義。",
           "C3": "題目未涉及定義域或值域的判斷。",
-          "C4": "題目並非判斷對應圖表是否為函數。",
-          "C5": "題目並非判斷兩個變量之間的函數關係。"
+          "C4": "題目未涉及映射圖或判斷是否為函數。",
+          "C5": "題目未涉及判斷變數間是否構成函數關係。"
         },
         "ai_available": false,
         "ai_error": "",
@@ -76094,7 +82154,7 @@
         "conflict_reason": "",
         "source_mapping_warning": "",
         "requires_human_action": false,
-        "ai_notes": "該題目屬於「由圖形求線型函數」或「直線的截距」，在目前的候選清單中沒有完全符合的子技能，建議新增相關子技能或檢查技能錨點範圍。",
+        "ai_notes": "該題目屬於「求一次函數解析式」或「一次函數的圖形特徵（截距）」，但提供的候選子技能僅限於「函數概念」家族。建議新增與一次函數（Linear Function）具體性質相關的子技能，如「從圖形求一次函數式」或「求一次函數的截距」。",
         "skill_scoped_candidates": [
           {
             "candidate_id": "C1",
@@ -76633,17 +82693,17 @@
         "example_id": 4442,
         "ai_target_task": "evaluate_function_value",
         "ai_task_family": "function_concept_family",
-        "ai_confidence": 0.95,
+        "ai_confidence": 0.9,
         "ai_best_candidate_id": "C1",
         "ai_evidence": [
-          "題目要求在已知托運費用（函數值）的情況下，求出對應的行李重量（自變數）。",
-          "這屬於線型函數中求特定數值的應用，符合 evaluate_function_value 的定義。"
+          "題目描述行李費用與重量成線型函數關係，並給出特定費用（函數值）要求回推重量（自變數）。",
+          "此類已知函數值求自變數或已知自變數求函數值的計算，屬於 evaluate_function_value 的範疇。",
+          "該候選項目位於 anchor 範圍內且符合 function_concept_family。"
         ],
         "ai_rejected_candidates": {
-          "C2": "題目並非著重於函數符號 f(x) 的解讀。",
-          "C3": "題目並非要求判斷定義域或值域。",
-          "C4": "題目並非判斷映射是否為函數。",
-          "C5": "題目並非判斷兩個變數之間是否具備函數關係。"
+          "C2": "題目並非著重於函數符號（如 f(x)）的意義解釋，而是具體的數值計算。",
+          "C5": "題目已明確指出是線型函數關係，不需要判斷兩變數是否構成函數。",
+          "C6": "雖然涉及計算，但 C1 更符合線型函數技能的學科特定分類。"
         },
         "ai_available": true,
         "ai_error": "",
@@ -76663,7 +82723,7 @@
         "conflict_reason": "",
         "source_mapping_warning": "",
         "requires_human_action": false,
-        "ai_notes": "此題為線型函數的應用題，透過給定的函數值（費用 850 元）回推自變數（重量），屬於函數值的計算範疇。",
+        "ai_notes": "題目給定 y = 850 並要求透過線型函數關係求 x，這屬於函數求值與應用的標準題型。",
         "skill_scoped_candidates": [
           {
             "candidate_id": "C1",
@@ -77377,26 +83437,24 @@
       },
       {
         "example_id": 4446,
-        "ai_target_task": "",
-        "ai_task_family": "",
-        "ai_confidence": 0.0,
-        "ai_best_candidate_id": "needs_review",
+        "ai_target_task": "evaluate_function_value",
+        "ai_task_family": "function_concept_family",
+        "ai_confidence": 0.8,
+        "ai_best_candidate_id": "C1",
         "ai_evidence": [
-          "The problem is a word problem involving linear inequalities in two variables: 100x + 200y <= 500,000 and 200x + 100y <= 500,000.",
-          "The provided subskills are restricted to the 'function_concept_family', which focuses on the definition, notation, and basic properties (domain/range) of functions.",
-          "The problem does not use function notation (e.g., f(x)), nor does it involve mapping diagrams or determining if a relation is a function.",
-          "The required action is to verify which coordinate pair satisfies a set of linear constraints, which is an application of linear inequalities rather than a basic function concept evaluation.",
-          "The skill anchor 'vh_數學B1_LinearFunction' usually covers one-variable linear functions (f(x) = ax + b), whereas this problem involves two variables and inequalities."
+          "The problem requires calculating the total cost for specific pairs of (x, y) to check if they exceed a budget of 500,000.",
+          "This process involves substituting numerical values into linear expressions (100x + 200y and 200x + 100y), which is the core action of evaluating a function value.",
+          "Among the anchor-scoped candidates in the function_concept_family, evaluate_function_value is the only one that matches the task of plugging in values to find a result."
         ],
         "ai_rejected_candidates": {
-          "C1": "While it involves calculation, 'evaluate_function_value' typically refers to finding f(a) given a function f(x), which is not the case here.",
-          "C2": "The problem does not use or require the interpretation of function notation like f(x).",
-          "C3": "The problem is not asking for the domain or range of a function.",
-          "C4": "The problem does not involve determining if a mapping or set of pairs constitutes a function.",
-          "C5": "The problem does not involve judging the relationship between variables in a functional context (e.g., is y a function of x?).",
-          "C6": "Although the problem involves arithmetic, 'compute_numeric' is an outsider candidate and the problem is a structured word problem rather than a pure numeric calculation."
+          "C2": "The problem does not involve interpreting function notation like f(x).",
+          "C3": "The problem is not about determining the domain or range of a function.",
+          "C4": "The problem does not involve identifying whether a mapping is a function.",
+          "C5": "The problem does not ask to determine the relationship between variables in a functional sense (e.g., whether y is a function of x).",
+          "C6": "While the problem involves arithmetic, C1 is an anchor-scoped candidate and is preferred over the outsider candidate C6 according to the rules.",
+          "needs_review": "The problem fits the 'evaluate' task well enough within the context of linear functions and expressions to avoid a needs_review tag."
         },
-        "ai_available": false,
+        "ai_available": true,
         "ai_error": "",
         "ai_unavailable_reason": "",
         "ai_semantic_status": "ok",
@@ -77408,13 +83466,13 @@
         "rule_target_task": "compute_numeric",
         "rule_task_family": "generic_numeric_family",
         "rule_confidence": 0.2,
-        "final_target_task": "compute_numeric",
-        "final_task_family": "generic_numeric_family",
-        "classifier_source": "ai_needs_review",
-        "conflict_reason": "needs_review",
+        "final_target_task": "evaluate_function_value",
+        "final_task_family": "function_concept_family",
+        "classifier_source": "ai",
+        "conflict_reason": "",
         "source_mapping_warning": "",
-        "requires_human_action": true,
-        "ai_notes": "The problem is a 112 Unified Entrance Exam (統測B) question that involves modeling and solving linear inequalities in two variables. This does not align with the provided subskills, which are focused on the conceptual foundations of functions (mapping, notation, domain/range). A subskill related to 'Linear Inequalities' or 'Linear Function Applications' would be more appropriate.",
+        "requires_human_action": false,
+        "ai_notes": "The problem asks to verify which coordinate pair satisfies a budget constraint under two possible price scenarios. This is mathematically equivalent to evaluating a cost function at specific points and comparing the output to a threshold.",
         "skill_scoped_candidates": [
           {
             "candidate_id": "C1",
@@ -78018,25 +84076,106 @@
         "outsider_candidates": [
           "C6"
         ],
-        "selected_subskill": "compute_numeric",
-        "selected_problem_type": "compute_numeric",
-        "candidate_source": "needs_review",
-        "selected_generator_contract": {},
-        "parameter_schema": {},
+        "selected_subskill": "evaluate_function_value",
+        "selected_problem_type": "evaluate_function_value",
+        "candidate_source": "anchor",
+        "selected_generator_contract": {
+          "template_variants": [
+            {
+              "id": "default",
+              "label": "default",
+              "stem_pattern": "依題意求解：{stem_hint}。",
+              "weight": 1.0,
+              "enabled": true
+            }
+          ],
+          "parameter_schema": {
+            "seed": {
+              "type": "integer",
+              "randomize": true
+            },
+            "difficulty_level": {
+              "choices": [
+                "level_1",
+                "level_2",
+                "level_3"
+              ],
+              "weights": [
+                0.4,
+                0.4,
+                0.2
+              ]
+            }
+          },
+          "variation_dimensions": [
+            "seed",
+            "difficulty_level",
+            "context_style"
+          ],
+          "difficulty_controls": {
+            "level_1": {},
+            "level_2": {},
+            "level_3": {}
+          },
+          "anti_repetition_rules": {
+            "avoid_same_template_consecutive": true,
+            "avoid_same_ratio_consecutive": true,
+            "avoid_same_point_names_consecutive": true,
+            "avoid_same_answer_consecutive": true,
+            "recent_history_window": 5,
+            "signature_fields": [
+              "problem_type_id",
+              "template_variant",
+              "ratio_form",
+              "ratio_values",
+              "coordinate_pattern",
+              "answer"
+            ]
+          },
+          "validity_constraints": [
+            "answer derivable from givens"
+          ],
+          "answer_shape": "numeric",
+          "explanation_variants": [
+            "stepwise"
+          ],
+          "sampling_strategy": "weighted_random",
+          "template_families": [
+            "evaluate_function_value"
+          ]
+        },
+        "parameter_schema": {
+          "seed": {
+            "type": "integer",
+            "randomize": true
+          },
+          "difficulty_level": {
+            "choices": [
+              "level_1",
+              "level_2",
+              "level_3"
+            ],
+            "weights": [
+              0.4,
+              0.4,
+              0.2
+            ]
+          }
+        },
         "variable_randomization_notes": [],
-        "checker_key": "manual_review_checker",
-        "equivalence_type": "manual_review_or_ai_judged",
+        "checker_key": "numeric_checker",
+        "equivalence_type": "numeric_equivalence",
         "skill_scope_trusted": true,
-        "target_task": "compute_numeric",
-        "task_family": "generic_numeric_family",
+        "target_task": "evaluate_function_value",
+        "task_family": "function_concept_family",
         "math_objects": [
           "coordinate_point",
           "three_coordinate_points",
           "triangle",
           "two_coordinate_points"
         ],
-        "answer_type": "single_choice",
-        "answer_shape": "choice_label",
+        "answer_type": "numeric",
+        "answer_shape": "numeric",
         "source_type": "unknown",
         "example_label": "",
         "practice_label": "",
@@ -78046,9 +84185,9 @@
         "structure_consistency": "not_applicable",
         "sequence_context_used": true,
         "structure_context_used": true,
-        "confidence_adjustment_reason": "possible_structure_mismatch_penalty; sequence_context_used",
-        "possible_structure_mismatch": true,
-        "possible_mixed_source_context": true
+        "confidence_adjustment_reason": "sequence_context_used",
+        "possible_structure_mismatch": false,
+        "possible_mixed_source_context": false
       },
       {
         "example_id": 4448,
@@ -78057,16 +84196,16 @@
         "ai_confidence": 0.0,
         "ai_best_candidate_id": "interpret_function_notation",
         "ai_evidence": [
-          "題目要求在坐標平面上畫出函數 y=f(x)=3 的圖形。",
-          "候選清單 (C1-C5) 主要涵蓋函數的概念性任務，如求值、符號辨釋、定義域值域、映射判斷及函數關係判斷。",
-          "清單中缺乏「描繪函數圖形」或「常數函數圖形」相關的子技能。"
+          "題目要求在坐標平面上畫出常數函數 y=f(x)=3 的圖形。",
+          "候選子技能包含：求函數值、解釋函數符號、判斷定義域值域、從對應關係判斷函數、判斷函數關係。",
+          "現有的候選子技能中沒有任何一項對應到「繪製函數圖形」或「函數圖形的幾何表示」。"
         ],
         "ai_rejected_candidates": {
-          "C1": "求函數值僅為描圖過程中的一個可能步驟，並非此題的主要任務。",
-          "C2": "符號辨釋涉及理解 f(x) 的含義，但此題核心在於繪圖。",
-          "C3": "此題並未要求判斷定義域或值域。",
-          "C4": "此題與映射圖無關。",
-          "C5": "此題並非要求判斷 y 是否為 x 的函數。"
+          "C1": "求函數值是指計算特定點的數值，而非繪製完整圖形。",
+          "C2": "解釋函數符號通常涉及理解 y=f(x) 的意義，雖然與圖形有關，但不足以涵蓋繪圖任務。",
+          "C3": "判斷定義域與值域是函數的性質分析，而非繪圖動作。",
+          "C4": "從對應關係判斷函數通常涉及集合間的映射圖，而非坐標平面上的圖形繪製。",
+          "C5": "判斷函數關係是辨識一個關係是否為函數，而非繪圖。"
         },
         "ai_available": false,
         "ai_error": "",
@@ -78086,7 +84225,7 @@
         "conflict_reason": "",
         "source_mapping_warning": "",
         "requires_human_action": false,
-        "ai_notes": "此題目屬於「描繪線型函數圖形」或「常數函數的圖形」，但在提供的 anchor 候選清單中僅包含函數概念相關的子技能，建議新增與圖形繪製相關的子技能。",
+        "ai_notes": "題目要求繪製常數函數圖形，但提供的候選子技能（屬於 function_concept_family）皆不包含「繪圖」相關任務。建議新增「繪製線型函數圖形」或「函數圖形的幾何特徵」等子技能。",
         "skill_scoped_candidates": [
           {
             "candidate_id": "C1",
@@ -78627,16 +84766,15 @@
         "ai_confidence": 0.0,
         "ai_best_candidate_id": "interpret_function_notation",
         "ai_evidence": [
-          "題目要求在坐標平面上畫出函數 y = f(x) = -2x + 4 的圖形。",
-          "候選清單中的子技能（C1-C5）皆屬於函數概念家族（function_concept_family），包含求值、符號辨釋、定義域值域、映射判斷及函數關係判斷。",
-          "清單中缺乏「描繪函數圖形」或「一次函數圖形」相關的子技能。"
+          "題目要求在坐標平面上畫出一次函數 y = -2x + 4 的圖形。",
+          "候選清單中的 C1 至 C5 分別為求函數值、函數符號意義、判斷定義域值域、由對應關係判斷函數、判斷函數關係，皆不包含「繪製函數圖形」的任務。"
         ],
         "ai_rejected_candidates": {
-          "C1": "求函數值僅為描點過程中的一個步驟，並非此題「畫出圖形」的核心任務。",
-          "C2": "此題重點在於繪圖，而非單純辨識或解釋函數符號的意義。",
-          "C3": "題目未要求判斷定義域或值域。",
-          "C4": "題目未涉及映射圖或判斷是否為函數。",
-          "C5": "題目未要求判斷變數間是否構成函數關係。"
+          "C1": "求函數值僅為描點繪圖的過程之一，並非繪圖任務本身。",
+          "C2": "此題並非在解釋函數符號的意義。",
+          "C3": "此題並非在判斷定義域或值域。",
+          "C4": "此題並非由對應圖判斷是否為函數。",
+          "C5": "此題並非判斷兩個變數之間是否具備函數關係。"
         },
         "ai_available": false,
         "ai_error": "",
@@ -78656,7 +84794,7 @@
         "conflict_reason": "",
         "source_mapping_warning": "",
         "requires_human_action": false,
-        "ai_notes": "題目核心任務為「描繪一次函數圖形」，但候選清單中僅包含函數基本概念的子技能，建議新增「描繪一次函數圖形」或「一次函數的圖形」相關子技能。",
+        "ai_notes": "題目任務為「繪製一次函數圖形」，但提供的候選子技能皆屬於函數基本觀念（如求值、定義、符號等），缺乏繪圖相關的子技能，因此選擇 needs_review。",
         "skill_scoped_candidates": [
           {
             "candidate_id": "C1",
@@ -79197,17 +85335,13 @@
         "ai_confidence": 0.0,
         "ai_best_candidate_id": "needs_review",
         "ai_evidence": [
-          "題目要求根據圖形求出線型函數的關係式（即求出 y = ax + b 的方程式）。",
-          "候選子技能（C1-C5）主要集中在函數的概念性理解，如求函數值、符號辨釋、定義域值域、判斷是否為函數等。",
-          "目前清單中缺乏「求線型函數解析式」或「求直線方程式」這類程序性運算的子技能。"
+          "題目要求根據圖形求出線型函數的關係式（即 y = ax + b）。",
+          "提供的候選子技能（C1-C5）主要集中在函數的概念（如：求函數值、符號辨識、定義域值域、判斷是否為函數）。",
+          "候選清單中缺乏「求線型函數解析式」或「由圖形求函數關係式」等相關子技能。"
         ],
         "ai_rejected_candidates": {
-          "C1": "此題是要求出整個關係式，而非給定 x 求單一函數值。",
-          "C2": "此題涉及函數的建立而非單純對函數符號的解釋。",
-          "C3": "此題未要求判斷定義域或值域。",
-          "C4": "此題並非判斷對應關係是否構成函數。",
-          "C5": "此題要求具體的關係式，而非僅僅判斷變數間是否存在函數關係。",
-          "C6": "此為外部技能且過於籠統，無法精確描述「求函數關係式」的數學任務。"
+          "C1": "此子技能為求特定點的函數值，而本題要求的是整體的關係式。",
+          "C5": "此子技能為判斷變數間是否構成函數關係，而非求出其具體的代數表達式。"
         },
         "ai_available": false,
         "ai_error": "",
@@ -79227,7 +85361,7 @@
         "conflict_reason": "needs_review",
         "source_mapping_warning": "",
         "requires_human_action": true,
-        "ai_notes": "該題目屬於「求線型函數的關係式」，但在提供的 anchor 範圍內（function_concept_family）僅包含概念判斷與求值，建議增加「求線型函數解析式」相關的子技能。",
+        "ai_notes": "本題的核心任務是「求線型函數的關係式」，但目前的候選清單僅包含函數概念（function_concept_family）相關的子技能，建議增加如「求線型函數解析式」之類的子技能。",
         "skill_scoped_candidates": [
           {
             "candidate_id": "C1",
@@ -79865,17 +85999,16 @@
         "ai_confidence": 0.0,
         "ai_best_candidate_id": "interpret_function_notation",
         "ai_evidence": [
-          "題目要求根據兩個已知點 (-2, 4) 與 (1, 1) 求出線型函數 f(x) = ax + b 的解析式。",
-          "這屬於「求線型函數解析式」或「待定係數法求函數」的題型。",
-          "提供的候選子技能包括：計算函數值 (evaluate_function_value)、理解函數符號 (interpret_function_notation)、判斷定義域值域 (judge_domain_range_basic)、從對應關係判斷函數 (judge_function_from_mapping) 以及判斷函數關係 (judge_function_relation)。",
-          "這些候選子技能多屬於「函數概念 (function_concept_family)」的基礎認知，缺乏「求線型函數解析式」這一具體的運算型子技能。"
+          "題目要求根據通過的兩點 (-2, 4) 與 (1, 1) 求出線型函數 f(x) = ax + b 的解析式。",
+          "候選子技能列表包含：求函數值 (evaluate_function_value)、理解函數符號 (interpret_function_notation)、判斷定義域值域 (judge_domain_range_basic)、由對應關係判斷函數 (judge_function_from_mapping) 以及判斷函數關係 (judge_function_relation)。",
+          "現有的候選子技能中，沒有一個直接對應到「給定兩點求線型函數解析式」這一特定任務。"
         ],
         "ai_rejected_candidates": {
-          "C1": "evaluate_function_value 通常指已知函數式求特定輸入的輸出值，而非求函數式本身。",
-          "C2": "interpret_function_notation 涉及理解 f(x) 的含義，雖然解題第一步需將點座標轉化為 f(-2)=4，但核心任務是求解係數，該項不足以涵蓋完整過程。",
-          "C3": "題目未涉及定義域或值域的判斷。",
-          "C4": "題目未涉及對應圖表或映射關係的函數判定。",
-          "C5": "題目未涉及函數關係的性質判定（如是否為函數）。"
+          "C1": "此題並非單純求特定點的函數值，而是要求出整個函數的表達式。",
+          "C2": "此題涉及函數符號的應用，但核心任務是解聯立方程式求係數，而非僅僅是解釋符號意義。",
+          "C3": "此題不涉及定義域或值域的判斷。",
+          "C4": "此題並非判斷給定的對應圖或集合是否構成函數。",
+          "C5": "此題已明示為線型函數，不需判斷是否為函數關係。"
         },
         "ai_available": false,
         "ai_error": "",
@@ -79895,7 +86028,7 @@
         "conflict_reason": "",
         "source_mapping_warning": "",
         "requires_human_action": false,
-        "ai_notes": "該題目為「已知兩點求線型函數」，在現有的候選清單中缺乏對應的子技能（如 determine_linear_function_from_points）。建議新增此類子技能或將其歸類至更合適的技能架構下。",
+        "ai_notes": "該題目屬於「給定兩點求一次函數（線型函數）解析式」，在目前的候選清單中缺乏對應的子技能。建議新增如 'determine_linear_function_from_points' 類型的子技能。",
         "skill_scoped_candidates": [
           {
             "candidate_id": "C1",
@@ -80439,14 +86572,14 @@
         "ai_confidence": 0.0,
         "ai_best_candidate_id": "interpret_function_notation",
         "ai_evidence": [
-          "題目要求利用截距定義判斷函數 y=f(x)=ax-3 的圖形，屬於線型函數圖形特徵的辨識。",
-          "提供的候選子技能（C1-C5）均屬於『函數觀念 (function_concept_family)』，如求值、符號、定義域、映射判斷等。",
-          "候選清單中缺乏與『線型函數圖形』、『截距』或『斜率』直接相關的子技能。",
-          "根據規則，若候選清單中沒有合適的子技能，應選擇 needs_review。"
+          "題目要求利用截距定義判斷函數 y=ax-3 的圖形，這涉及線性函數的圖形特徵（如 y 截距為 -3）與參數 a 對圖形的影響。",
+          "提供的候選子技能（evaluate_function_value, interpret_function_notation, judge_domain_range_basic, judge_function_from_mapping, judge_function_relation）皆屬於函數基本概念（function_concept_family），而非線性函數圖形的具體判別。",
+          "題目核心在於線性函數的圖形性質（截距與斜率），現有選項中缺乏『線性函數圖形』或『截距與斜率的應用』等相關子技能。"
         ],
         "ai_rejected_candidates": {
-          "C1": "evaluate_function_value 雖然涉及計算 f(0)=-3，但本題核心在於圖形截距的幾何意義，而非單純代值計算。",
-          "C5": "judge_function_relation 通常用於判斷變數間是否為函數關係或區分常數與一次函數，不足以涵蓋根據截距判斷圖形的任務。"
+          "C1": "evaluate_function_value 僅涉及計算特定點的函數值，不足以涵蓋判斷整個圖形可能性的任務。",
+          "C2": "interpret_function_notation 涉及對 f(x) 符號的理解，而非圖形判別。",
+          "C5": "judge_function_relation 通常用於判斷一個關係是否為函數，而非判斷特定線性函數的圖形。"
         },
         "ai_available": false,
         "ai_error": "",
@@ -80466,7 +86599,7 @@
         "conflict_reason": "",
         "source_mapping_warning": "",
         "requires_human_action": false,
-        "ai_notes": "The current example focuses on the graphical representation and intercepts of a linear function, which is not covered by the provided subskill candidates in the 'function_concept_family'. A subskill such as 'identify_linear_function_graph' or 'understand_intercepts' would be more appropriate.",
+        "ai_notes": "本題屬於線性函數圖形的判別，特別是截距的應用。然而，候選清單中的子技能僅限於函數的基本概念（如定義、符號、定義域值域），缺乏針對線性函數圖形性質（如斜率、截距、圖形平移）的對應選項，因此選擇 needs_review。",
         "skill_scoped_candidates": [
           {
             "candidate_id": "C1",
@@ -81733,6 +87866,637 @@
         "variable_randomization_notes": []
       },
       {
+        "example_id": 4431,
+        "rule_target_task": "evaluate_function_value",
+        "rule_task_family": "function_concept_family",
+        "rule_confidence": 0.5,
+        "ai_target_task": "evaluate_function_value",
+        "ai_task_family": "function_concept_family",
+        "ai_confidence": 1.0,
+        "ai_semantic_status": "ok",
+        "ai_available": true,
+        "ai_error": "",
+        "ai_unavailable_reason": "",
+        "ai_invalid_response_reason": "",
+        "parser_error": "",
+        "raw_response_preview": "",
+        "sanitized_response_preview": "",
+        "failed_stage": "",
+        "classifier_source": "ai",
+        "final_target_task": "evaluate_function_value",
+        "final_task_family": "function_concept_family",
+        "expected_task_families": [
+          "function_concept_family"
+        ],
+        "expected_subskill_candidates": [
+          "evaluate_function_value",
+          "interpret_function_notation",
+          "judge_domain_range_basic",
+          "judge_function_from_mapping",
+          "judge_function_relation"
+        ],
+        "structure_context_used": true,
+        "sequence_context_used": true,
+        "alignment_kind": "source_quality_reject",
+        "exclude_reason": "source_quality_reject",
+        "included_in_phase1": false,
+        "conflict_reason": "",
+        "source_mapping_warning": "",
+        "skill_anchor_scope": "default",
+        "skill_scoped_candidates": [
+          {
+            "candidate_id": "C1",
+            "target_task": "evaluate_function_value",
+            "task_family": "function_concept_family",
+            "problem_type_id": "evaluate_function_value",
+            "label": "evaluate_function_value",
+            "candidate_source": "anchor",
+            "in_anchor_scope": true,
+            "answer_type": "numeric",
+            "answer_shape": "numeric",
+            "math_objects": [],
+            "checker_key": "numeric_checker",
+            "equivalence_type": "numeric_equivalence",
+            "generator_contract": {
+              "template_variants": [
+                {
+                  "id": "default",
+                  "label": "default",
+                  "stem_pattern": "依題意求解：{stem_hint}。",
+                  "weight": 1.0,
+                  "enabled": true
+                }
+              ],
+              "parameter_schema": {
+                "seed": {
+                  "type": "integer",
+                  "randomize": true
+                },
+                "difficulty_level": {
+                  "choices": [
+                    "level_1",
+                    "level_2",
+                    "level_3"
+                  ],
+                  "weights": [
+                    0.4,
+                    0.4,
+                    0.2
+                  ]
+                }
+              },
+              "variation_dimensions": [
+                "seed",
+                "difficulty_level",
+                "context_style"
+              ],
+              "difficulty_controls": {
+                "level_1": {},
+                "level_2": {},
+                "level_3": {}
+              },
+              "anti_repetition_rules": {
+                "avoid_same_template_consecutive": true,
+                "avoid_same_ratio_consecutive": true,
+                "avoid_same_point_names_consecutive": true,
+                "avoid_same_answer_consecutive": true,
+                "recent_history_window": 5,
+                "signature_fields": [
+                  "problem_type_id",
+                  "template_variant",
+                  "ratio_form",
+                  "ratio_values",
+                  "coordinate_pattern",
+                  "answer"
+                ]
+              },
+              "validity_constraints": [
+                "answer derivable from givens"
+              ],
+              "answer_shape": "numeric",
+              "explanation_variants": [
+                "stepwise"
+              ],
+              "sampling_strategy": "weighted_random",
+              "template_families": [
+                "evaluate_function_value"
+              ]
+            },
+            "parameter_schema": {
+              "seed": {
+                "type": "integer",
+                "randomize": true
+              },
+              "difficulty_level": {
+                "choices": [
+                  "level_1",
+                  "level_2",
+                  "level_3"
+                ],
+                "weights": [
+                  0.4,
+                  0.4,
+                  0.2
+                ]
+              }
+            }
+          },
+          {
+            "candidate_id": "C2",
+            "target_task": "interpret_function_notation",
+            "task_family": "function_concept_family",
+            "problem_type_id": "interpret_function_notation",
+            "label": "interpret_function_notation",
+            "candidate_source": "anchor",
+            "in_anchor_scope": true,
+            "answer_type": "numeric",
+            "answer_shape": "numeric",
+            "math_objects": [],
+            "checker_key": "numeric_checker",
+            "equivalence_type": "numeric_equivalence",
+            "generator_contract": {
+              "template_variants": [
+                {
+                  "id": "default",
+                  "label": "default",
+                  "stem_pattern": "依題意求解：{stem_hint}。",
+                  "weight": 1.0,
+                  "enabled": true
+                }
+              ],
+              "parameter_schema": {
+                "seed": {
+                  "type": "integer",
+                  "randomize": true
+                },
+                "difficulty_level": {
+                  "choices": [
+                    "level_1",
+                    "level_2",
+                    "level_3"
+                  ],
+                  "weights": [
+                    0.4,
+                    0.4,
+                    0.2
+                  ]
+                }
+              },
+              "variation_dimensions": [
+                "seed",
+                "difficulty_level",
+                "context_style"
+              ],
+              "difficulty_controls": {
+                "level_1": {},
+                "level_2": {},
+                "level_3": {}
+              },
+              "anti_repetition_rules": {
+                "avoid_same_template_consecutive": true,
+                "avoid_same_ratio_consecutive": true,
+                "avoid_same_point_names_consecutive": true,
+                "avoid_same_answer_consecutive": true,
+                "recent_history_window": 5,
+                "signature_fields": [
+                  "problem_type_id",
+                  "template_variant",
+                  "ratio_form",
+                  "ratio_values",
+                  "coordinate_pattern",
+                  "answer"
+                ]
+              },
+              "validity_constraints": [
+                "answer derivable from givens"
+              ],
+              "answer_shape": "numeric",
+              "explanation_variants": [
+                "stepwise"
+              ],
+              "sampling_strategy": "weighted_random",
+              "template_families": [
+                "interpret_function_notation"
+              ]
+            },
+            "parameter_schema": {
+              "seed": {
+                "type": "integer",
+                "randomize": true
+              },
+              "difficulty_level": {
+                "choices": [
+                  "level_1",
+                  "level_2",
+                  "level_3"
+                ],
+                "weights": [
+                  0.4,
+                  0.4,
+                  0.2
+                ]
+              }
+            }
+          },
+          {
+            "candidate_id": "C3",
+            "target_task": "judge_domain_range_basic",
+            "task_family": "function_concept_family",
+            "problem_type_id": "judge_domain_range_basic",
+            "label": "judge_domain_range_basic",
+            "candidate_source": "anchor",
+            "in_anchor_scope": true,
+            "answer_type": "numeric",
+            "answer_shape": "numeric",
+            "math_objects": [],
+            "checker_key": "numeric_checker",
+            "equivalence_type": "numeric_equivalence",
+            "generator_contract": {
+              "template_variants": [
+                {
+                  "id": "default",
+                  "label": "default",
+                  "stem_pattern": "依題意求解：{stem_hint}。",
+                  "weight": 1.0,
+                  "enabled": true
+                }
+              ],
+              "parameter_schema": {
+                "seed": {
+                  "type": "integer",
+                  "randomize": true
+                },
+                "difficulty_level": {
+                  "choices": [
+                    "level_1",
+                    "level_2",
+                    "level_3"
+                  ],
+                  "weights": [
+                    0.4,
+                    0.4,
+                    0.2
+                  ]
+                }
+              },
+              "variation_dimensions": [
+                "seed",
+                "difficulty_level",
+                "context_style"
+              ],
+              "difficulty_controls": {
+                "level_1": {},
+                "level_2": {},
+                "level_3": {}
+              },
+              "anti_repetition_rules": {
+                "avoid_same_template_consecutive": true,
+                "avoid_same_ratio_consecutive": true,
+                "avoid_same_point_names_consecutive": true,
+                "avoid_same_answer_consecutive": true,
+                "recent_history_window": 5,
+                "signature_fields": [
+                  "problem_type_id",
+                  "template_variant",
+                  "ratio_form",
+                  "ratio_values",
+                  "coordinate_pattern",
+                  "answer"
+                ]
+              },
+              "validity_constraints": [
+                "answer derivable from givens"
+              ],
+              "answer_shape": "numeric",
+              "explanation_variants": [
+                "stepwise"
+              ],
+              "sampling_strategy": "weighted_random",
+              "template_families": [
+                "judge_domain_range_basic"
+              ]
+            },
+            "parameter_schema": {
+              "seed": {
+                "type": "integer",
+                "randomize": true
+              },
+              "difficulty_level": {
+                "choices": [
+                  "level_1",
+                  "level_2",
+                  "level_3"
+                ],
+                "weights": [
+                  0.4,
+                  0.4,
+                  0.2
+                ]
+              }
+            }
+          },
+          {
+            "candidate_id": "C4",
+            "target_task": "judge_function_from_mapping",
+            "task_family": "function_concept_family",
+            "problem_type_id": "judge_function_from_mapping",
+            "label": "judge_function_from_mapping",
+            "candidate_source": "anchor",
+            "in_anchor_scope": true,
+            "answer_type": "numeric",
+            "answer_shape": "numeric",
+            "math_objects": [],
+            "checker_key": "numeric_checker",
+            "equivalence_type": "numeric_equivalence",
+            "generator_contract": {
+              "template_variants": [
+                {
+                  "id": "default",
+                  "label": "default",
+                  "stem_pattern": "依題意求解：{stem_hint}。",
+                  "weight": 1.0,
+                  "enabled": true
+                }
+              ],
+              "parameter_schema": {
+                "seed": {
+                  "type": "integer",
+                  "randomize": true
+                },
+                "difficulty_level": {
+                  "choices": [
+                    "level_1",
+                    "level_2",
+                    "level_3"
+                  ],
+                  "weights": [
+                    0.4,
+                    0.4,
+                    0.2
+                  ]
+                }
+              },
+              "variation_dimensions": [
+                "seed",
+                "difficulty_level",
+                "context_style"
+              ],
+              "difficulty_controls": {
+                "level_1": {},
+                "level_2": {},
+                "level_3": {}
+              },
+              "anti_repetition_rules": {
+                "avoid_same_template_consecutive": true,
+                "avoid_same_ratio_consecutive": true,
+                "avoid_same_point_names_consecutive": true,
+                "avoid_same_answer_consecutive": true,
+                "recent_history_window": 5,
+                "signature_fields": [
+                  "problem_type_id",
+                  "template_variant",
+                  "ratio_form",
+                  "ratio_values",
+                  "coordinate_pattern",
+                  "answer"
+                ]
+              },
+              "validity_constraints": [
+                "answer derivable from givens"
+              ],
+              "answer_shape": "numeric",
+              "explanation_variants": [
+                "stepwise"
+              ],
+              "sampling_strategy": "weighted_random",
+              "template_families": [
+                "judge_function_from_mapping"
+              ]
+            },
+            "parameter_schema": {
+              "seed": {
+                "type": "integer",
+                "randomize": true
+              },
+              "difficulty_level": {
+                "choices": [
+                  "level_1",
+                  "level_2",
+                  "level_3"
+                ],
+                "weights": [
+                  0.4,
+                  0.4,
+                  0.2
+                ]
+              }
+            }
+          },
+          {
+            "candidate_id": "C5",
+            "target_task": "judge_function_relation",
+            "task_family": "function_concept_family",
+            "problem_type_id": "judge_function_relation",
+            "label": "judge_function_relation",
+            "candidate_source": "anchor",
+            "in_anchor_scope": true,
+            "answer_type": "numeric",
+            "answer_shape": "numeric",
+            "math_objects": [],
+            "checker_key": "numeric_checker",
+            "equivalence_type": "numeric_equivalence",
+            "generator_contract": {
+              "template_variants": [
+                {
+                  "id": "default",
+                  "label": "default",
+                  "stem_pattern": "依題意求解：{stem_hint}。",
+                  "weight": 1.0,
+                  "enabled": true
+                }
+              ],
+              "parameter_schema": {
+                "seed": {
+                  "type": "integer",
+                  "randomize": true
+                },
+                "difficulty_level": {
+                  "choices": [
+                    "level_1",
+                    "level_2",
+                    "level_3"
+                  ],
+                  "weights": [
+                    0.4,
+                    0.4,
+                    0.2
+                  ]
+                }
+              },
+              "variation_dimensions": [
+                "seed",
+                "difficulty_level",
+                "context_style"
+              ],
+              "difficulty_controls": {
+                "level_1": {},
+                "level_2": {},
+                "level_3": {}
+              },
+              "anti_repetition_rules": {
+                "avoid_same_template_consecutive": true,
+                "avoid_same_ratio_consecutive": true,
+                "avoid_same_point_names_consecutive": true,
+                "avoid_same_answer_consecutive": true,
+                "recent_history_window": 5,
+                "signature_fields": [
+                  "problem_type_id",
+                  "template_variant",
+                  "ratio_form",
+                  "ratio_values",
+                  "coordinate_pattern",
+                  "answer"
+                ]
+              },
+              "validity_constraints": [
+                "answer derivable from givens"
+              ],
+              "answer_shape": "numeric",
+              "explanation_variants": [
+                "stepwise"
+              ],
+              "sampling_strategy": "weighted_random",
+              "template_families": [
+                "judge_function_relation"
+              ]
+            },
+            "parameter_schema": {
+              "seed": {
+                "type": "integer",
+                "randomize": true
+              },
+              "difficulty_level": {
+                "choices": [
+                  "level_1",
+                  "level_2",
+                  "level_3"
+                ],
+                "weights": [
+                  0.4,
+                  0.4,
+                  0.2
+                ]
+              }
+            }
+          },
+          {
+            "candidate_id": "needs_review",
+            "target_task": "",
+            "task_family": "",
+            "problem_type_id": "needs_review",
+            "label": "needs_review",
+            "candidate_source": "needs_review",
+            "in_anchor_scope": false,
+            "answer_type": "",
+            "answer_shape": "",
+            "math_objects": [],
+            "checker_key": "manual_review_checker",
+            "equivalence_type": "manual_review_or_ai_judged",
+            "generator_contract": {},
+            "parameter_schema": {}
+          }
+        ],
+        "ai_best_candidate_id": "C1",
+        "selected_subskill": "evaluate_function_value",
+        "selected_problem_type": "evaluate_function_value",
+        "candidate_source": "anchor",
+        "outsider_candidates": [],
+        "selected_generator_contract": {
+          "template_variants": [
+            {
+              "id": "default",
+              "label": "default",
+              "stem_pattern": "依題意求解：{stem_hint}。",
+              "weight": 1.0,
+              "enabled": true
+            }
+          ],
+          "parameter_schema": {
+            "seed": {
+              "type": "integer",
+              "randomize": true
+            },
+            "difficulty_level": {
+              "choices": [
+                "level_1",
+                "level_2",
+                "level_3"
+              ],
+              "weights": [
+                0.4,
+                0.4,
+                0.2
+              ]
+            }
+          },
+          "variation_dimensions": [
+            "seed",
+            "difficulty_level",
+            "context_style"
+          ],
+          "difficulty_controls": {
+            "level_1": {},
+            "level_2": {},
+            "level_3": {}
+          },
+          "anti_repetition_rules": {
+            "avoid_same_template_consecutive": true,
+            "avoid_same_ratio_consecutive": true,
+            "avoid_same_point_names_consecutive": true,
+            "avoid_same_answer_consecutive": true,
+            "recent_history_window": 5,
+            "signature_fields": [
+              "problem_type_id",
+              "template_variant",
+              "ratio_form",
+              "ratio_values",
+              "coordinate_pattern",
+              "answer"
+            ]
+          },
+          "validity_constraints": [
+            "answer derivable from givens"
+          ],
+          "answer_shape": "numeric",
+          "explanation_variants": [
+            "stepwise"
+          ],
+          "sampling_strategy": "weighted_random",
+          "template_families": [
+            "evaluate_function_value"
+          ]
+        },
+        "parameter_schema": {
+          "seed": {
+            "type": "integer",
+            "randomize": true
+          },
+          "difficulty_level": {
+            "choices": [
+              "level_1",
+              "level_2",
+              "level_3"
+            ],
+            "weights": [
+              0.4,
+              0.4,
+              0.2
+            ]
+          }
+        },
+        "variable_randomization_notes": []
+      },
+      {
         "example_id": 4433,
         "rule_target_task": "interpret_function_notation",
         "rule_task_family": "function_concept_family",
@@ -83389,7 +90153,7 @@
         "rule_confidence": 0.2,
         "ai_target_task": "evaluate_function_value",
         "ai_task_family": "function_concept_family",
-        "ai_confidence": 0.9,
+        "ai_confidence": 0.95,
         "ai_semantic_status": "ok",
         "ai_available": true,
         "ai_error": "",
@@ -86598,7 +93362,7 @@
         "rule_confidence": 0.2,
         "ai_target_task": "evaluate_function_value",
         "ai_task_family": "function_concept_family",
-        "ai_confidence": 0.95,
+        "ai_confidence": 0.9,
         "ai_semantic_status": "ok",
         "ai_available": true,
         "ai_error": "",
@@ -87326,11 +94090,11 @@
         "rule_target_task": "compute_numeric",
         "rule_task_family": "generic_numeric_family",
         "rule_confidence": 0.2,
-        "ai_target_task": "",
-        "ai_task_family": "",
-        "ai_confidence": 0.0,
+        "ai_target_task": "evaluate_function_value",
+        "ai_task_family": "function_concept_family",
+        "ai_confidence": 0.8,
         "ai_semantic_status": "ok",
-        "ai_available": false,
+        "ai_available": true,
         "ai_error": "",
         "ai_unavailable_reason": "",
         "ai_invalid_response_reason": "",
@@ -87338,9 +94102,9 @@
         "raw_response_preview": "",
         "sanitized_response_preview": "",
         "failed_stage": "",
-        "classifier_source": "fallback_application_induct",
+        "classifier_source": "ai",
         "final_target_task": "evaluate_function_value",
-        "final_task_family": "generic_numeric_family",
+        "final_task_family": "function_concept_family",
         "expected_task_families": [
           "function_concept_family"
         ],
@@ -87356,7 +94120,7 @@
         "alignment_kind": "anchor_subskill_match",
         "exclude_reason": "",
         "included_in_phase1": true,
-        "conflict_reason": "needs_review",
+        "conflict_reason": "",
         "source_mapping_warning": "",
         "skill_anchor_scope": "default",
         "skill_scoped_candidates": [
@@ -87959,15 +94723,96 @@
             "parameter_schema": {}
           }
         ],
-        "ai_best_candidate_id": "needs_review",
-        "selected_subskill": "compute_numeric",
-        "selected_problem_type": "compute_numeric",
-        "candidate_source": "fallback_application",
+        "ai_best_candidate_id": "C1",
+        "selected_subskill": "evaluate_function_value",
+        "selected_problem_type": "evaluate_function_value",
+        "candidate_source": "anchor",
         "outsider_candidates": [
           "C6"
         ],
-        "selected_generator_contract": {},
-        "parameter_schema": {},
+        "selected_generator_contract": {
+          "template_variants": [
+            {
+              "id": "default",
+              "label": "default",
+              "stem_pattern": "依題意求解：{stem_hint}。",
+              "weight": 1.0,
+              "enabled": true
+            }
+          ],
+          "parameter_schema": {
+            "seed": {
+              "type": "integer",
+              "randomize": true
+            },
+            "difficulty_level": {
+              "choices": [
+                "level_1",
+                "level_2",
+                "level_3"
+              ],
+              "weights": [
+                0.4,
+                0.4,
+                0.2
+              ]
+            }
+          },
+          "variation_dimensions": [
+            "seed",
+            "difficulty_level",
+            "context_style"
+          ],
+          "difficulty_controls": {
+            "level_1": {},
+            "level_2": {},
+            "level_3": {}
+          },
+          "anti_repetition_rules": {
+            "avoid_same_template_consecutive": true,
+            "avoid_same_ratio_consecutive": true,
+            "avoid_same_point_names_consecutive": true,
+            "avoid_same_answer_consecutive": true,
+            "recent_history_window": 5,
+            "signature_fields": [
+              "problem_type_id",
+              "template_variant",
+              "ratio_form",
+              "ratio_values",
+              "coordinate_pattern",
+              "answer"
+            ]
+          },
+          "validity_constraints": [
+            "answer derivable from givens"
+          ],
+          "answer_shape": "numeric",
+          "explanation_variants": [
+            "stepwise"
+          ],
+          "sampling_strategy": "weighted_random",
+          "template_families": [
+            "evaluate_function_value"
+          ]
+        },
+        "parameter_schema": {
+          "seed": {
+            "type": "integer",
+            "randomize": true
+          },
+          "difficulty_level": {
+            "choices": [
+              "level_1",
+              "level_2",
+              "level_3"
+            ],
+            "weights": [
+              0.4,
+              0.4,
+              0.2
+            ]
+          }
+        },
         "variable_randomization_notes": []
       },
       {
@@ -90826,26 +97671,26 @@
     "source_structure_report": {
       "source_type_distribution": {
         "unknown": 7,
-        "worked_example": 5,
+        "worked_example": 6,
         "in_class_practice": 4
       },
       "example_practice_link_map": [],
       "structure_mismatch_examples": [],
       "same_section_family_distribution": {
-        "function_concept_family": 13,
-        "generic_numeric_family": 3
+        "function_concept_family": 15,
+        "generic_numeric_family": 2
       }
     },
     "source_type_distribution": {
       "unknown": 7,
-      "worked_example": 5,
+      "worked_example": 6,
       "in_class_practice": 4
     },
     "example_practice_link_map": [],
     "structure_mismatch_examples": [],
     "same_section_family_distribution": {
-      "function_concept_family": 13,
-      "generic_numeric_family": 3
+      "function_concept_family": 15,
+      "generic_numeric_family": 2
     },
     "example_features": [
       {
@@ -90889,14 +97734,15 @@
           "ai_confidence": 0.9,
           "ai_best_candidate_id": "C5",
           "ai_evidence": [
-            "The text describes how the falling distance S depends on the time t.",
-            "It explicitly concludes that distance S is a function of time t based on their relationship.",
-            "This aligns with the subskill of judging or identifying a function relation between variables."
+            "題目描述了距離 S 隨時間 t 變化的關係。",
+            "題目最後明確指出「距離 S 是時間 t 的函數」。",
+            "這屬於判斷或理解兩個變數之間是否構成函數關係的範疇。"
           ],
           "ai_rejected_candidates": {
-            "C1": "The text does not ask to calculate a specific value for S given a value for t.",
-            "C2": "While function notation S(t) is used, the primary purpose of the text is to explain the relationship itself.",
-            "C4": "The problem does not use mapping diagrams to define the function."
+            "C1": "題目中沒有要求計算具體的函數值。",
+            "C2": "雖然使用了函數符號，但重點在於解釋函數關係的建立而非符號本身的解讀。",
+            "C3": "題目未涉及定義域或值域的判斷。",
+            "C4": "題目並非透過集合映射圖來判斷函數。"
           },
           "ai_available": true,
           "ai_error": "",
@@ -90916,7 +97762,7 @@
           "conflict_reason": "",
           "source_mapping_warning": "",
           "requires_human_action": false,
-          "ai_notes": "The example provides a real-world context to introduce the concept of a function relationship between two variables.",
+          "ai_notes": "此題為函數概念的引入例題，旨在說明變數間的依賴關係如何構成函數，最符合 judge_function_relation。",
           "skill_scoped_candidates": [
             {
               "candidate_id": "C1",
@@ -91640,6 +98486,14 @@
           "practice_number": null,
           "nearby_worked_examples": [
             {
+              "example_id": 4431,
+              "source_type": "worked_example",
+              "example_label": "例題2",
+              "practice_label": "",
+              "section_order": 0,
+              "title_head": "例2"
+            },
+            {
               "example_id": 4433,
               "source_type": "worked_example",
               "example_label": "例題8",
@@ -91706,6 +98560,14 @@
               "practice_label": "",
               "section_order": 0,
               "title_head": "例1"
+            },
+            {
+              "example_id": 4431,
+              "source_type": "worked_example",
+              "example_label": "例題2",
+              "practice_label": "",
+              "section_order": 0,
+              "title_head": "例2"
             },
             {
               "example_id": 4433,
@@ -91815,6 +98677,904 @@
         "checker_key": "rational_checker"
       },
       {
+        "source_example_id": 4431,
+        "question_text": "英國科學家虎克（Robert Hooke，1635−1703）於1678年發現虎克定律：$F\\left( x \\right)=kx$，k為力常數，即在彈性限度內，彈簧所受的外力F與伸長量x有成正比的關係，所以外力F是伸長量x的函數（如圖22）。\r\n▲圖21 ▲圖22\r\n數學\r\n檔案\r\n尤拉（Leonhard Euler，1707-1783），瑞士數學家。\r\n他是最早使用函數記號「$f\\left( x \\right)$」的數學家。\r\nSDG 7可負擔的潔淨能源─供需曲線圖\r\n「一度電」就是耗電量 1,000 瓦特的電器，連續使用 1 小時所消耗的總電量。電費分為「夏季電費」（6 / 1～9 / 30）和「非夏季電費」（10 / 1～5 / 31），已知202年4月電費調漲，調漲後，若計費度數為x度，且一般住家的夏季電費（單位：元）滿足函數\r\n$f\\left( x \\right)=\\left\\{ \\begin{align}\r\n& 1.63x,x\\le 120 \\\\\r\n& 2.38x-90,120<x<330 \\\\\r\n& 3.52x-466.2,330<x\\le 500 \\\\\r\n& 4.8x-1106.2,500<x\\le 700 \\\\\r\n& 5.83x-1827.2,700<x\\le 1000 \\\\\r\n& 7.69x-368.7,x>1000 \\\\\r\n\\end{align} \\right.$\r\n若小蕙發現8 月用電為 800 度，花費太多，及時更換老舊電器，9月節能省電，用電為600度，試求小蕙的電費9月比8月省下多少元？\r\n8月電費為800度，將$x=800$代入$5.83x-1827.2$\r\n9月電費為600度，將$x=600$代入$4.8x-1106.2$\r\n得$\\left( 5.83\\times 800-1827.2 \\right)-\\left( 4.8\\times 600-1106.2 \\right)$ \r\n $=\\left( 4664-1827.2 \\right)-\\left( 2880-1106.2 \\right)=1063$（元）\r\nSDGS-------------------------------------------------------------------------------------------------------------------\r\n2023 年4 月的電費調漲，選購能源效率分級級數較低的產品，不單是能為個人省錢，亦能夠實踐節能減碳，臺灣近年來時常出現缺水及限電危機，為了讓我們能在地球上永續生存，力行「綠色生活」營造一個低碳的生活環境是重要的。",
+        "answer": "",
+        "choices": [],
+        "has_choices": false,
+        "stem_embeds_choices": false,
+        "answer_type": "rational",
+        "answer_shape": "numeric",
+        "checker": "rational_checker",
+        "equivalence": "rational_equivalent",
+        "math_objects": [
+          "coordinate_point",
+          "three_coordinate_points",
+          "triangle",
+          "two_coordinate_points"
+        ],
+        "target_task": "evaluate_function_value",
+        "task_family": "function_concept_family",
+        "reasoning_type": [
+          "numeric_computation"
+        ],
+        "required_derivation": true,
+        "source_quality_issues": [
+          "broken_latex_left_right"
+        ],
+        "source_quality_reject": true,
+        "candidate_only": false,
+        "variables": [
+          "F",
+          "f",
+          "x"
+        ],
+        "givens": [
+          "F",
+          "f",
+          "x"
+        ],
+        "target": "evaluate_function_value",
+        "classifier_source": "ai",
+        "semantic_classification": {
+          "ai_target_task": "evaluate_function_value",
+          "ai_task_family": "function_concept_family",
+          "ai_confidence": 1.0,
+          "ai_best_candidate_id": "C1",
+          "ai_evidence": [
+            "The problem provides a piecewise function f(x) representing electricity costs based on usage x.",
+            "The task requires calculating the cost for specific values of x (800 and 600).",
+            "The solution involves substituting these values into the appropriate parts of the function to find the function values."
+          ],
+          "ai_rejected_candidates": {
+            "C2": "While function notation is used, the primary task is the calculation of values rather than explaining the notation itself.",
+            "C3": "The problem does not ask to identify the domain or range of the function.",
+            "C4": "The problem assumes the relation is a function and does not ask for verification of mapping properties.",
+            "C5": "The problem focuses on specific value evaluation rather than judging the general relationship between variables."
+          },
+          "ai_available": true,
+          "ai_error": "",
+          "ai_unavailable_reason": "",
+          "ai_semantic_status": "ok",
+          "ai_invalid_response_reason": "",
+          "parser_error": "",
+          "raw_response_preview": "",
+          "sanitized_response_preview": "",
+          "failed_stage": "",
+          "rule_target_task": "evaluate_function_value",
+          "rule_task_family": "function_concept_family",
+          "rule_confidence": 0.5,
+          "final_target_task": "evaluate_function_value",
+          "final_task_family": "function_concept_family",
+          "classifier_source": "ai",
+          "conflict_reason": "",
+          "source_mapping_warning": "",
+          "requires_human_action": false,
+          "ai_notes": "The example is a practical application of evaluating a piecewise linear function at specific input points.",
+          "skill_scoped_candidates": [
+            {
+              "candidate_id": "C1",
+              "target_task": "evaluate_function_value",
+              "task_family": "function_concept_family",
+              "problem_type_id": "evaluate_function_value",
+              "label": "evaluate_function_value",
+              "candidate_source": "anchor",
+              "in_anchor_scope": true,
+              "answer_type": "numeric",
+              "answer_shape": "numeric",
+              "math_objects": [],
+              "checker_key": "numeric_checker",
+              "equivalence_type": "numeric_equivalence",
+              "generator_contract": {
+                "template_variants": [
+                  {
+                    "id": "default",
+                    "label": "default",
+                    "stem_pattern": "依題意求解：{stem_hint}。",
+                    "weight": 1.0,
+                    "enabled": true
+                  }
+                ],
+                "parameter_schema": {
+                  "seed": {
+                    "type": "integer",
+                    "randomize": true
+                  },
+                  "difficulty_level": {
+                    "choices": [
+                      "level_1",
+                      "level_2",
+                      "level_3"
+                    ],
+                    "weights": [
+                      0.4,
+                      0.4,
+                      0.2
+                    ]
+                  }
+                },
+                "variation_dimensions": [
+                  "seed",
+                  "difficulty_level",
+                  "context_style"
+                ],
+                "difficulty_controls": {
+                  "level_1": {},
+                  "level_2": {},
+                  "level_3": {}
+                },
+                "anti_repetition_rules": {
+                  "avoid_same_template_consecutive": true,
+                  "avoid_same_ratio_consecutive": true,
+                  "avoid_same_point_names_consecutive": true,
+                  "avoid_same_answer_consecutive": true,
+                  "recent_history_window": 5,
+                  "signature_fields": [
+                    "problem_type_id",
+                    "template_variant",
+                    "ratio_form",
+                    "ratio_values",
+                    "coordinate_pattern",
+                    "answer"
+                  ]
+                },
+                "validity_constraints": [
+                  "answer derivable from givens"
+                ],
+                "answer_shape": "numeric",
+                "explanation_variants": [
+                  "stepwise"
+                ],
+                "sampling_strategy": "weighted_random",
+                "template_families": [
+                  "evaluate_function_value"
+                ]
+              },
+              "parameter_schema": {
+                "seed": {
+                  "type": "integer",
+                  "randomize": true
+                },
+                "difficulty_level": {
+                  "choices": [
+                    "level_1",
+                    "level_2",
+                    "level_3"
+                  ],
+                  "weights": [
+                    0.4,
+                    0.4,
+                    0.2
+                  ]
+                }
+              }
+            },
+            {
+              "candidate_id": "C2",
+              "target_task": "interpret_function_notation",
+              "task_family": "function_concept_family",
+              "problem_type_id": "interpret_function_notation",
+              "label": "interpret_function_notation",
+              "candidate_source": "anchor",
+              "in_anchor_scope": true,
+              "answer_type": "numeric",
+              "answer_shape": "numeric",
+              "math_objects": [],
+              "checker_key": "numeric_checker",
+              "equivalence_type": "numeric_equivalence",
+              "generator_contract": {
+                "template_variants": [
+                  {
+                    "id": "default",
+                    "label": "default",
+                    "stem_pattern": "依題意求解：{stem_hint}。",
+                    "weight": 1.0,
+                    "enabled": true
+                  }
+                ],
+                "parameter_schema": {
+                  "seed": {
+                    "type": "integer",
+                    "randomize": true
+                  },
+                  "difficulty_level": {
+                    "choices": [
+                      "level_1",
+                      "level_2",
+                      "level_3"
+                    ],
+                    "weights": [
+                      0.4,
+                      0.4,
+                      0.2
+                    ]
+                  }
+                },
+                "variation_dimensions": [
+                  "seed",
+                  "difficulty_level",
+                  "context_style"
+                ],
+                "difficulty_controls": {
+                  "level_1": {},
+                  "level_2": {},
+                  "level_3": {}
+                },
+                "anti_repetition_rules": {
+                  "avoid_same_template_consecutive": true,
+                  "avoid_same_ratio_consecutive": true,
+                  "avoid_same_point_names_consecutive": true,
+                  "avoid_same_answer_consecutive": true,
+                  "recent_history_window": 5,
+                  "signature_fields": [
+                    "problem_type_id",
+                    "template_variant",
+                    "ratio_form",
+                    "ratio_values",
+                    "coordinate_pattern",
+                    "answer"
+                  ]
+                },
+                "validity_constraints": [
+                  "answer derivable from givens"
+                ],
+                "answer_shape": "numeric",
+                "explanation_variants": [
+                  "stepwise"
+                ],
+                "sampling_strategy": "weighted_random",
+                "template_families": [
+                  "interpret_function_notation"
+                ]
+              },
+              "parameter_schema": {
+                "seed": {
+                  "type": "integer",
+                  "randomize": true
+                },
+                "difficulty_level": {
+                  "choices": [
+                    "level_1",
+                    "level_2",
+                    "level_3"
+                  ],
+                  "weights": [
+                    0.4,
+                    0.4,
+                    0.2
+                  ]
+                }
+              }
+            },
+            {
+              "candidate_id": "C3",
+              "target_task": "judge_domain_range_basic",
+              "task_family": "function_concept_family",
+              "problem_type_id": "judge_domain_range_basic",
+              "label": "judge_domain_range_basic",
+              "candidate_source": "anchor",
+              "in_anchor_scope": true,
+              "answer_type": "numeric",
+              "answer_shape": "numeric",
+              "math_objects": [],
+              "checker_key": "numeric_checker",
+              "equivalence_type": "numeric_equivalence",
+              "generator_contract": {
+                "template_variants": [
+                  {
+                    "id": "default",
+                    "label": "default",
+                    "stem_pattern": "依題意求解：{stem_hint}。",
+                    "weight": 1.0,
+                    "enabled": true
+                  }
+                ],
+                "parameter_schema": {
+                  "seed": {
+                    "type": "integer",
+                    "randomize": true
+                  },
+                  "difficulty_level": {
+                    "choices": [
+                      "level_1",
+                      "level_2",
+                      "level_3"
+                    ],
+                    "weights": [
+                      0.4,
+                      0.4,
+                      0.2
+                    ]
+                  }
+                },
+                "variation_dimensions": [
+                  "seed",
+                  "difficulty_level",
+                  "context_style"
+                ],
+                "difficulty_controls": {
+                  "level_1": {},
+                  "level_2": {},
+                  "level_3": {}
+                },
+                "anti_repetition_rules": {
+                  "avoid_same_template_consecutive": true,
+                  "avoid_same_ratio_consecutive": true,
+                  "avoid_same_point_names_consecutive": true,
+                  "avoid_same_answer_consecutive": true,
+                  "recent_history_window": 5,
+                  "signature_fields": [
+                    "problem_type_id",
+                    "template_variant",
+                    "ratio_form",
+                    "ratio_values",
+                    "coordinate_pattern",
+                    "answer"
+                  ]
+                },
+                "validity_constraints": [
+                  "answer derivable from givens"
+                ],
+                "answer_shape": "numeric",
+                "explanation_variants": [
+                  "stepwise"
+                ],
+                "sampling_strategy": "weighted_random",
+                "template_families": [
+                  "judge_domain_range_basic"
+                ]
+              },
+              "parameter_schema": {
+                "seed": {
+                  "type": "integer",
+                  "randomize": true
+                },
+                "difficulty_level": {
+                  "choices": [
+                    "level_1",
+                    "level_2",
+                    "level_3"
+                  ],
+                  "weights": [
+                    0.4,
+                    0.4,
+                    0.2
+                  ]
+                }
+              }
+            },
+            {
+              "candidate_id": "C4",
+              "target_task": "judge_function_from_mapping",
+              "task_family": "function_concept_family",
+              "problem_type_id": "judge_function_from_mapping",
+              "label": "judge_function_from_mapping",
+              "candidate_source": "anchor",
+              "in_anchor_scope": true,
+              "answer_type": "numeric",
+              "answer_shape": "numeric",
+              "math_objects": [],
+              "checker_key": "numeric_checker",
+              "equivalence_type": "numeric_equivalence",
+              "generator_contract": {
+                "template_variants": [
+                  {
+                    "id": "default",
+                    "label": "default",
+                    "stem_pattern": "依題意求解：{stem_hint}。",
+                    "weight": 1.0,
+                    "enabled": true
+                  }
+                ],
+                "parameter_schema": {
+                  "seed": {
+                    "type": "integer",
+                    "randomize": true
+                  },
+                  "difficulty_level": {
+                    "choices": [
+                      "level_1",
+                      "level_2",
+                      "level_3"
+                    ],
+                    "weights": [
+                      0.4,
+                      0.4,
+                      0.2
+                    ]
+                  }
+                },
+                "variation_dimensions": [
+                  "seed",
+                  "difficulty_level",
+                  "context_style"
+                ],
+                "difficulty_controls": {
+                  "level_1": {},
+                  "level_2": {},
+                  "level_3": {}
+                },
+                "anti_repetition_rules": {
+                  "avoid_same_template_consecutive": true,
+                  "avoid_same_ratio_consecutive": true,
+                  "avoid_same_point_names_consecutive": true,
+                  "avoid_same_answer_consecutive": true,
+                  "recent_history_window": 5,
+                  "signature_fields": [
+                    "problem_type_id",
+                    "template_variant",
+                    "ratio_form",
+                    "ratio_values",
+                    "coordinate_pattern",
+                    "answer"
+                  ]
+                },
+                "validity_constraints": [
+                  "answer derivable from givens"
+                ],
+                "answer_shape": "numeric",
+                "explanation_variants": [
+                  "stepwise"
+                ],
+                "sampling_strategy": "weighted_random",
+                "template_families": [
+                  "judge_function_from_mapping"
+                ]
+              },
+              "parameter_schema": {
+                "seed": {
+                  "type": "integer",
+                  "randomize": true
+                },
+                "difficulty_level": {
+                  "choices": [
+                    "level_1",
+                    "level_2",
+                    "level_3"
+                  ],
+                  "weights": [
+                    0.4,
+                    0.4,
+                    0.2
+                  ]
+                }
+              }
+            },
+            {
+              "candidate_id": "C5",
+              "target_task": "judge_function_relation",
+              "task_family": "function_concept_family",
+              "problem_type_id": "judge_function_relation",
+              "label": "judge_function_relation",
+              "candidate_source": "anchor",
+              "in_anchor_scope": true,
+              "answer_type": "numeric",
+              "answer_shape": "numeric",
+              "math_objects": [],
+              "checker_key": "numeric_checker",
+              "equivalence_type": "numeric_equivalence",
+              "generator_contract": {
+                "template_variants": [
+                  {
+                    "id": "default",
+                    "label": "default",
+                    "stem_pattern": "依題意求解：{stem_hint}。",
+                    "weight": 1.0,
+                    "enabled": true
+                  }
+                ],
+                "parameter_schema": {
+                  "seed": {
+                    "type": "integer",
+                    "randomize": true
+                  },
+                  "difficulty_level": {
+                    "choices": [
+                      "level_1",
+                      "level_2",
+                      "level_3"
+                    ],
+                    "weights": [
+                      0.4,
+                      0.4,
+                      0.2
+                    ]
+                  }
+                },
+                "variation_dimensions": [
+                  "seed",
+                  "difficulty_level",
+                  "context_style"
+                ],
+                "difficulty_controls": {
+                  "level_1": {},
+                  "level_2": {},
+                  "level_3": {}
+                },
+                "anti_repetition_rules": {
+                  "avoid_same_template_consecutive": true,
+                  "avoid_same_ratio_consecutive": true,
+                  "avoid_same_point_names_consecutive": true,
+                  "avoid_same_answer_consecutive": true,
+                  "recent_history_window": 5,
+                  "signature_fields": [
+                    "problem_type_id",
+                    "template_variant",
+                    "ratio_form",
+                    "ratio_values",
+                    "coordinate_pattern",
+                    "answer"
+                  ]
+                },
+                "validity_constraints": [
+                  "answer derivable from givens"
+                ],
+                "answer_shape": "numeric",
+                "explanation_variants": [
+                  "stepwise"
+                ],
+                "sampling_strategy": "weighted_random",
+                "template_families": [
+                  "judge_function_relation"
+                ]
+              },
+              "parameter_schema": {
+                "seed": {
+                  "type": "integer",
+                  "randomize": true
+                },
+                "difficulty_level": {
+                  "choices": [
+                    "level_1",
+                    "level_2",
+                    "level_3"
+                  ],
+                  "weights": [
+                    0.4,
+                    0.4,
+                    0.2
+                  ]
+                }
+              }
+            },
+            {
+              "candidate_id": "needs_review",
+              "target_task": "",
+              "task_family": "",
+              "problem_type_id": "needs_review",
+              "label": "needs_review",
+              "candidate_source": "needs_review",
+              "in_anchor_scope": false,
+              "answer_type": "",
+              "answer_shape": "",
+              "math_objects": [],
+              "checker_key": "manual_review_checker",
+              "equivalence_type": "manual_review_or_ai_judged",
+              "generator_contract": {},
+              "parameter_schema": {}
+            }
+          ],
+          "outsider_candidates": [],
+          "selected_subskill": "evaluate_function_value",
+          "selected_problem_type": "evaluate_function_value",
+          "candidate_source": "anchor",
+          "selected_generator_contract": {
+            "template_variants": [
+              {
+                "id": "default",
+                "label": "default",
+                "stem_pattern": "依題意求解：{stem_hint}。",
+                "weight": 1.0,
+                "enabled": true
+              }
+            ],
+            "parameter_schema": {
+              "seed": {
+                "type": "integer",
+                "randomize": true
+              },
+              "difficulty_level": {
+                "choices": [
+                  "level_1",
+                  "level_2",
+                  "level_3"
+                ],
+                "weights": [
+                  0.4,
+                  0.4,
+                  0.2
+                ]
+              }
+            },
+            "variation_dimensions": [
+              "seed",
+              "difficulty_level",
+              "context_style"
+            ],
+            "difficulty_controls": {
+              "level_1": {},
+              "level_2": {},
+              "level_3": {}
+            },
+            "anti_repetition_rules": {
+              "avoid_same_template_consecutive": true,
+              "avoid_same_ratio_consecutive": true,
+              "avoid_same_point_names_consecutive": true,
+              "avoid_same_answer_consecutive": true,
+              "recent_history_window": 5,
+              "signature_fields": [
+                "problem_type_id",
+                "template_variant",
+                "ratio_form",
+                "ratio_values",
+                "coordinate_pattern",
+                "answer"
+              ]
+            },
+            "validity_constraints": [
+              "answer derivable from givens"
+            ],
+            "answer_shape": "numeric",
+            "explanation_variants": [
+              "stepwise"
+            ],
+            "sampling_strategy": "weighted_random",
+            "template_families": [
+              "evaluate_function_value"
+            ]
+          },
+          "parameter_schema": {
+            "seed": {
+              "type": "integer",
+              "randomize": true
+            },
+            "difficulty_level": {
+              "choices": [
+                "level_1",
+                "level_2",
+                "level_3"
+              ],
+              "weights": [
+                0.4,
+                0.4,
+                0.2
+              ]
+            }
+          },
+          "variable_randomization_notes": [],
+          "checker_key": "numeric_checker",
+          "equivalence_type": "numeric_equivalence",
+          "skill_scope_trusted": true,
+          "target_task": "evaluate_function_value",
+          "task_family": "function_concept_family",
+          "math_objects": [
+            "coordinate_point",
+            "three_coordinate_points",
+            "triangle",
+            "two_coordinate_points"
+          ],
+          "answer_type": "numeric",
+          "answer_shape": "numeric",
+          "source_type": "worked_example",
+          "example_label": "例題2",
+          "practice_label": "",
+          "linked_example": "",
+          "linked_example_id": null,
+          "linked_example_task_family": "",
+          "structure_consistency": "not_applicable",
+          "sequence_context_used": true,
+          "structure_context_used": true,
+          "confidence_adjustment_reason": "sequence_context_used",
+          "possible_structure_mismatch": false,
+          "possible_mixed_source_context": false
+        },
+        "source_structure_context": {
+          "source_type": "worked_example",
+          "example_label": "例題2",
+          "practice_label": "",
+          "linked_example": "",
+          "section_order": 0,
+          "example_number": 2,
+          "practice_number": null,
+          "nearby_worked_examples": [
+            {
+              "example_id": 4430,
+              "source_type": "worked_example",
+              "example_label": "例題1",
+              "practice_label": "",
+              "section_order": 0,
+              "title_head": "例1"
+            },
+            {
+              "example_id": 4433,
+              "source_type": "worked_example",
+              "example_label": "例題8",
+              "practice_label": "",
+              "section_order": 0,
+              "title_head": "例8"
+            },
+            {
+              "example_id": 4434,
+              "source_type": "worked_example",
+              "example_label": "例題9",
+              "practice_label": "",
+              "section_order": 0,
+              "title_head": "例9"
+            },
+            {
+              "example_id": 4444,
+              "source_type": "worked_example",
+              "example_label": "例題10",
+              "practice_label": "",
+              "section_order": 0,
+              "title_head": "例10"
+            },
+            {
+              "example_id": 4445,
+              "source_type": "worked_example",
+              "example_label": "例題11",
+              "practice_label": "",
+              "section_order": 0,
+              "title_head": "例11"
+            }
+          ],
+          "linked_worked_example": null,
+          "linked_practices": [],
+          "same_section_sequence": [
+            {
+              "example_id": 4424,
+              "source_type": "unknown",
+              "example_label": "",
+              "practice_label": "",
+              "section_order": 0,
+              "title_head": "1-2習題 基礎題 8"
+            },
+            {
+              "example_id": 4425,
+              "source_type": "unknown",
+              "example_label": "",
+              "practice_label": "",
+              "section_order": 0,
+              "title_head": "1-2習題 進階題 9"
+            },
+            {
+              "example_id": 4426,
+              "source_type": "unknown",
+              "example_label": "",
+              "practice_label": "",
+              "section_order": 0,
+              "title_head": "1-2習題 進階題 10"
+            },
+            {
+              "example_id": 4430,
+              "source_type": "worked_example",
+              "example_label": "例題1",
+              "practice_label": "",
+              "section_order": 0,
+              "title_head": "例1"
+            },
+            {
+              "example_id": 4431,
+              "source_type": "worked_example",
+              "example_label": "例題2",
+              "practice_label": "",
+              "section_order": 0,
+              "title_head": "例2"
+            },
+            {
+              "example_id": 4433,
+              "source_type": "worked_example",
+              "example_label": "例題8",
+              "practice_label": "",
+              "section_order": 0,
+              "title_head": "例8"
+            },
+            {
+              "example_id": 4434,
+              "source_type": "worked_example",
+              "example_label": "例題9",
+              "practice_label": "",
+              "section_order": 0,
+              "title_head": "例9"
+            },
+            {
+              "example_id": 4441,
+              "source_type": "in_class_practice",
+              "example_label": "",
+              "practice_label": "隨堂練習10",
+              "section_order": 0,
+              "title_head": "隨堂練習10"
+            },
+            {
+              "example_id": 4442,
+              "source_type": "in_class_practice",
+              "example_label": "",
+              "practice_label": "隨堂練習11",
+              "section_order": 0,
+              "title_head": "隨堂練習11"
+            },
+            {
+              "example_id": 4444,
+              "source_type": "worked_example",
+              "example_label": "例題10",
+              "practice_label": "",
+              "section_order": 0,
+              "title_head": "例10"
+            },
+            {
+              "example_id": 4445,
+              "source_type": "worked_example",
+              "example_label": "例題11",
+              "practice_label": "",
+              "section_order": 0,
+              "title_head": "例11"
+            },
+            {
+              "example_id": 4446,
+              "source_type": "unknown",
+              "example_label": "",
+              "practice_label": "",
+              "section_order": 0,
+              "title_head": "112統測B"
+            },
+            {
+              "example_id": 4448,
+              "source_type": "in_class_practice",
+              "example_label": "",
+              "practice_label": "隨堂練習8",
+              "section_order": 0,
+              "title_head": "隨堂練習8"
+            },
+            {
+              "example_id": 4449,
+              "source_type": "in_class_practice",
+              "example_label": "",
+              "practice_label": "隨堂練習9",
+              "section_order": 0,
+              "title_head": "隨堂練習9"
+            },
+            {
+              "example_id": 4500,
+              "source_type": "unknown",
+              "example_label": "",
+              "practice_label": "",
+              "section_order": 0,
+              "title_head": "CH1自我評量 題10"
+            },
+            {
+              "example_id": 4515,
+              "source_type": "unknown",
+              "example_label": "",
+              "practice_label": "",
+              "section_order": 0,
+              "title_head": "CH1自我評量 題8"
+            },
+            {
+              "example_id": 4516,
+              "source_type": "unknown",
+              "example_label": "",
+              "practice_label": "",
+              "section_order": 0,
+              "title_head": "CH1自我評量 題9"
+            }
+          ]
+        },
+        "induction_tier": "enrichment",
+        "enrichment_reasons": [
+          "applied_context",
+          "figure_mixed",
+          "historical_narrative",
+          "long_stem",
+          "math_file",
+          "mixed_unrelated_context",
+          "piecewise_application",
+          "sdgs"
+        ],
+        "included_in_core_induction": false,
+        "equivalence_type": "rational_equivalent",
+        "checker_key": "rational_checker"
+      },
+      {
         "source_example_id": 4433,
         "question_text": "試在坐標平面上畫出$y=f\\left( x \\right)=-2$的圖形。",
         "answer": "",
@@ -91856,15 +99616,15 @@
           "ai_best_candidate_id": "interpret_function_notation",
           "ai_evidence": [
             "題目要求在坐標平面上畫出常數函數 y = f(x) = -2 的圖形。",
-            "提供的候選子技能（C1-C5）皆屬於函數概念家族（function_concept_family），包含求值、符號辨識、定義域值域、映射判斷及函數關係判斷。",
-            "候選清單中缺乏與「繪製圖形」或「線型函數圖形」相關的子技能。"
+            "提供的候選子技能 (C1-C5) 均屬於函數概念家族 (function_concept_family)，包含求值、符號辨釋、定義域值域、映射判斷及函數關係判斷。",
+            "候選清單中缺乏「描繪函數圖形」或「線性函數圖形」相關的子技能。"
           ],
           "ai_rejected_candidates": {
-            "C1": "此題為作圖題，非單純求函數值。",
-            "C2": "此題重點在於圖形繪製，而非僅僅理解函數符號的意義。",
+            "C1": "此題為繪圖題，而非單純求特定點的函數值。",
+            "C2": "此題涉及函數符號，但核心任務是繪圖而非僅僅是辨釋符號意義。",
             "C3": "此題未要求判斷定義域或值域。",
             "C4": "此題非判斷映射是否為函數。",
-            "C5": "此題非判斷變數間的函數關係。"
+            "C5": "此題非判斷變數間是否構成函數關係。"
           },
           "ai_available": false,
           "ai_error": "",
@@ -91884,7 +99644,7 @@
           "conflict_reason": "",
           "source_mapping_warning": "",
           "requires_human_action": false,
-          "ai_notes": "題目要求畫出常數函數的圖形，但提供的候選子技能僅限於函數的基本概念（如求值、符號、定義域等），不包含線型函數的圖形特徵或作圖。建議增加與圖形繪製相關的子技能。",
+          "ai_notes": "題目任務為「描繪常數函數圖形」，但候選清單僅包含函數基本概念（求值、定義、符號等），缺乏繪圖相關的子技能（如 graph_linear_function 或 graph_constant_function）。",
           "skill_scoped_candidates": [
             {
               "candidate_id": "C1",
@@ -92436,6 +100196,14 @@
               "title_head": "例1"
             },
             {
+              "example_id": 4431,
+              "source_type": "worked_example",
+              "example_label": "例題2",
+              "practice_label": "",
+              "section_order": 0,
+              "title_head": "例2"
+            },
+            {
               "example_id": 4434,
               "source_type": "worked_example",
               "example_label": "例題9",
@@ -92494,6 +100262,14 @@
               "practice_label": "",
               "section_order": 0,
               "title_head": "例1"
+            },
+            {
+              "example_id": 4431,
+              "source_type": "worked_example",
+              "example_label": "例題2",
+              "practice_label": "",
+              "section_order": 0,
+              "title_head": "例2"
             },
             {
               "example_id": 4433,
@@ -92641,16 +100417,16 @@
           "ai_confidence": 0.0,
           "ai_best_candidate_id": "interpret_function_notation",
           "ai_evidence": [
-            "題目要求在坐標平面上畫出一次函數 y=3x-6 的圖形。",
-            "提供的候選子技能 (C1-C5) 皆屬於函數概念家族 (function_concept_family)，包含求值、符號辨釋、定義域值域、映射判斷及函數關係判斷。",
-            "目前的候選清單中缺乏「描繪函數圖形」或「一次函數圖形」相關的子技能。"
+            "The question asks to draw the graph of the linear function y=f(x)=3x-6 on a coordinate plane.",
+            "The provided candidates are evaluate_function_value, interpret_function_notation, judge_domain_range_basic, judge_function_from_mapping, and judge_function_relation.",
+            "None of the available candidates cover the task of graphing or plotting a linear function."
           ],
           "ai_rejected_candidates": {
-            "C1": "求函數值僅為描繪圖形的其中一個步驟，並非此題目的核心任務。",
-            "C2": "此題重點在於繪圖而非辨識函數符號的意義。",
-            "C3": "此題未涉及定義域或值域的判斷。",
-            "C4": "此題並非判斷是否為函數映射。",
-            "C5": "此題並非判斷變數間是否構成函數關係。"
+            "C1": "Evaluating function values is a necessary step for graphing, but the primary task is the construction of the graph itself.",
+            "C2": "While the problem uses function notation, the objective is to draw a graph, not just interpret the notation.",
+            "C3": "The problem does not ask to determine the domain or range.",
+            "C4": "The problem is not about identifying a function from a mapping diagram.",
+            "C5": "The problem is not about judging whether a relation is a function."
           },
           "ai_available": false,
           "ai_error": "",
@@ -92670,7 +100446,7 @@
           "conflict_reason": "",
           "source_mapping_warning": "",
           "requires_human_action": false,
-          "ai_notes": "題目核心為「描繪一次函數圖形」，但提供的候選子技能僅限於函數基本概念（求值、定義、映射等），不包含圖形繪製，故選擇 needs_review。",
+          "ai_notes": "The specific subskill for graphing linear functions (e.g., graph_linear_function) is missing from the candidate list. Since the task is to draw a graph, none of the concept-based subskills are a perfect fit.",
           "skill_scoped_candidates": [
             {
               "candidate_id": "C1",
@@ -93222,6 +100998,14 @@
               "title_head": "例1"
             },
             {
+              "example_id": 4431,
+              "source_type": "worked_example",
+              "example_label": "例題2",
+              "practice_label": "",
+              "section_order": 0,
+              "title_head": "例2"
+            },
+            {
               "example_id": 4433,
               "source_type": "worked_example",
               "example_label": "例題8",
@@ -93280,6 +101064,14 @@
               "practice_label": "",
               "section_order": 0,
               "title_head": "例1"
+            },
+            {
+              "example_id": 4431,
+              "source_type": "worked_example",
+              "example_label": "例題2",
+              "practice_label": "",
+              "section_order": 0,
+              "title_head": "例2"
             },
             {
               "example_id": 4433,
@@ -93431,15 +101223,15 @@
           "ai_best_candidate_id": "interpret_function_notation",
           "ai_evidence": [
             "題目要求從圖形中求出直線的 x 截距、y 截距以及函數 f(x) 的解析式。",
-            "提供的候選子技能（evaluate_function_value, interpret_function_notation, judge_domain_range_basic, judge_function_from_mapping, judge_function_relation）皆屬於函數的基本概念（function_concept_family）。",
-            "「由圖形求線性函數解析式」或「求截距」屬於線性函數的圖形性質或方程式判定，不屬於上述基本概念子技能的範疇。"
+            "候選子技能清單僅包含函數的基本概念（求值、符號辨識、定義域值域、映射判斷、關係判斷）。",
+            "清單中缺乏「求線型函數解析式」或「判讀圖形截距」等相關子技能。"
           ],
           "ai_rejected_candidates": {
-            "C1": "此題並非單純給定 x 求 f(x) 的函數值評估。",
-            "C2": "此題並非解釋函數符號的意義。",
-            "C3": "此題不涉及定義域或值域的判斷。",
-            "C4": "此題不涉及判斷是否為函數的對應關係。",
-            "C5": "此題不涉及判斷變數間的函數關係。"
+            "C1": "evaluate_function_value 僅涉及給定 x 求 f(x)，而本題重點在於求出函數解析式本身。",
+            "C2": "interpret_function_notation 涉及對函數符號的理解，而非從圖形推導函數。",
+            "C3": "judge_domain_range_basic 涉及定義域與值域，本題未要求。",
+            "C4": "judge_function_from_mapping 涉及映射圖判斷，與本題座標系圖形無關。",
+            "C5": "judge_function_relation 涉及判斷關係是否為函數，本題已給定是函數。"
           },
           "ai_available": false,
           "ai_error": "",
@@ -93459,7 +101251,7 @@
           "conflict_reason": "",
           "source_mapping_warning": "",
           "requires_human_action": false,
-          "ai_notes": "題目核心為「由圖形求線性函數方程式」及「求截距」，這在數學課程中通常對應到線性函數的圖形特徵或待定係數法，而提供的候選清單僅限於函數的基本概念（如定義、符號、求值），因此無合適選項。",
+          "ai_notes": "本題屬於「求線型函數解析式」或「線型函數的圖形特徵（截距）」，目前的候選清單中沒有對應的子技能，建議新增相關標籤。",
           "skill_scoped_candidates": [
             {
               "candidate_id": "C1",
@@ -94012,6 +101804,14 @@
               "title_head": "例1"
             },
             {
+              "example_id": 4431,
+              "source_type": "worked_example",
+              "example_label": "例題2",
+              "practice_label": "",
+              "section_order": 0,
+              "title_head": "例2"
+            },
+            {
               "example_id": 4433,
               "source_type": "worked_example",
               "example_label": "例題8",
@@ -94070,6 +101870,14 @@
               "practice_label": "",
               "section_order": 0,
               "title_head": "例1"
+            },
+            {
+              "example_id": 4431,
+              "source_type": "worked_example",
+              "example_label": "例題2",
+              "practice_label": "",
+              "section_order": 0,
+              "title_head": "例2"
             },
             {
               "example_id": 4433,
@@ -94204,17 +102012,18 @@
         "semantic_classification": {
           "ai_target_task": "evaluate_function_value",
           "ai_task_family": "function_concept_family",
-          "ai_confidence": 0.9,
+          "ai_confidence": 0.95,
           "ai_best_candidate_id": "C1",
           "ai_evidence": [
-            "題目要求根據線型函數關係求出特定時間下的手機費用，這屬於求函數值的範疇。",
-            "第一小題要求基本費用 m，即為函數的起始值或特定點的值；第二小題要求 120 分鐘的費用，即為給定自變數求應變數的值。",
-            "此題型符合 function_concept_family 中的 evaluate_function_value 任務。"
+            "題目要求找出基本費 m 以及通話 120 分鐘的總費用。",
+            "這涉及在已知線型函數關係的情況下，計算特定自變數（時間）對應的應變數（費用）數值。",
+            "屬於函數值的求值計算。"
           ],
           "ai_rejected_candidates": {
-            "C2": "題目並未強調函數符號 f(x) 的解讀，而是著重於實際數值的計算。",
-            "C5": "題目已明確指出通話費與時間為線型函數關係，不需判斷是否為函數關係。",
-            "C6": "雖然涉及數值計算，但題目背景明確為線型函數，應優先選擇 anchor 範圍內的 evaluate_function_value。"
+            "C2": "並非著重於函數符號的解讀。",
+            "C3": "並非判斷定義域或值域。",
+            "C4": "並非判斷對應關係是否為函數。",
+            "C5": "題目已給定為線型函數，重點在於求值而非判斷關係。"
           },
           "ai_available": true,
           "ai_error": "",
@@ -94234,7 +102043,7 @@
           "conflict_reason": "",
           "source_mapping_warning": "",
           "requires_human_action": false,
-          "ai_notes": "此題為典型的線型函數應用題，透過圖形或已知條件求出函數關係後計算特定點的函數值。",
+          "ai_notes": "此題為典型的應用題，透過圖形或描述建立線型函數後求特定點的函數值。",
           "skill_scoped_candidates": [
             {
               "candidate_id": "C1",
@@ -94964,6 +102773,14 @@
               "title_head": "例1"
             },
             {
+              "example_id": 4431,
+              "source_type": "worked_example",
+              "example_label": "例題2",
+              "practice_label": "",
+              "section_order": 0,
+              "title_head": "例2"
+            },
+            {
               "example_id": 4433,
               "source_type": "worked_example",
               "example_label": "例題8",
@@ -95022,6 +102839,14 @@
               "practice_label": "",
               "section_order": 0,
               "title_head": "例1"
+            },
+            {
+              "example_id": 4431,
+              "source_type": "worked_example",
+              "example_label": "例題2",
+              "practice_label": "",
+              "section_order": 0,
+              "title_head": "例2"
             },
             {
               "example_id": 4433,
@@ -95171,16 +102996,15 @@
           "ai_confidence": 0.0,
           "ai_best_candidate_id": "interpret_function_notation",
           "ai_evidence": [
-            "題目要求從函數圖形求出 x 截距、y 截距以及函數解析式 f(x) = ax + b。",
-            "候選清單中的 subskills (evaluate_function_value, interpret_function_notation, judge_domain_range_basic, judge_function_from_mapping, judge_function_relation) 皆不包含「求截距」或「求線型函數解析式」等核心任務。",
-            "此題屬於「由圖形求線型函數」或「線型函數的截距」，在提供的候選清單中無對應項。"
+            "題目要求從圖形中求出直線的 x 截距、y 截距以及函數 f(x) = ax + b 的解析式。",
+            "提供的候選子技能（求函數值、解釋函數符號、判斷定義域值域、由對應關係判斷函數、判斷函數關係）皆不包含「從圖形求一次函數解析式」或「求截距」的任務。"
           ],
           "ai_rejected_candidates": {
-            "C1": "evaluate_function_value 通常指已知函數求特定點的值，而非求函數解析式或截距。",
-            "C2": "interpret_function_notation 涉及對函數符號意義的理解，不涵蓋求解析式的計算過程。",
-            "C3": "judge_domain_range_basic 涉及定義域與值域，與本題求解析式無關。",
-            "C4": "judge_function_from_mapping 涉及映射圖判斷，與本題無關。",
-            "C5": "judge_function_relation 涉及判斷關係是否為函數，與本題無關。"
+            "C1": "此子技能通常指給定 x 求 f(x) 的值，而非求出函數解析式本身。",
+            "C2": "此子技能涉及對函數符號意義的理解，不涵蓋從圖形推導函數解析式的計算過程。",
+            "C3": "題目未涉及定義域或值域的判斷。",
+            "C4": "題目並非透過對應圖（如箭號圖）來判斷函數。",
+            "C5": "題目並非判斷一個關係是否為函數。"
           },
           "ai_available": false,
           "ai_error": "",
@@ -95200,7 +103024,7 @@
           "conflict_reason": "",
           "source_mapping_warning": "",
           "requires_human_action": false,
-          "ai_notes": "該題目涉及從圖形資訊（截距）推導線型函數解析式，這屬於線型函數的核心技能，但目前提供的候選清單僅限於函數的基本概念（如定義、符號、求值、定義域），缺乏「求線型函數解析式」或「線型函數圖形特徵」相關的 subskill。",
+          "ai_notes": "目前的候選子技能清單僅限於函數的基本概念（function_concept_family），而本題屬於一次函數的圖形與解析式求法，建議增加如「從圖形求一次函數解析式」或「一次函數的截距」等子技能。",
           "skill_scoped_candidates": [
             {
               "candidate_id": "C1",
@@ -95745,12 +103569,12 @@
           "practice_number": null,
           "nearby_worked_examples": [
             {
-              "example_id": 4430,
+              "example_id": 4431,
               "source_type": "worked_example",
-              "example_label": "例題1",
+              "example_label": "例題2",
               "practice_label": "",
               "section_order": 0,
-              "title_head": "例1"
+              "title_head": "例2"
             },
             {
               "example_id": 4433,
@@ -95819,6 +103643,14 @@
               "practice_label": "",
               "section_order": 0,
               "title_head": "例1"
+            },
+            {
+              "example_id": 4431,
+              "source_type": "worked_example",
+              "example_label": "例題2",
+              "practice_label": "",
+              "section_order": 0,
+              "title_head": "例2"
             },
             {
               "example_id": 4433,
@@ -95956,14 +103788,16 @@
           "ai_confidence": 0.9,
           "ai_best_candidate_id": "C1",
           "ai_evidence": [
-            "題目要求計算特定通話時間（1500秒）下的費用，這屬於求函數值的範疇 (evaluate_function_value)。",
-            "題目明確提到通話時間與費用成線型函數關係。",
-            "第一題要求基本費用，即在特定區間（300秒以內）的函數值。"
+            "題目描述通話時間與費用之間存在線型函數關係",
+            "第二小題要求計算通話 1500 秒時的費用，這屬於給定自變數求應變數的函數值計算",
+            "第一題要求基本費用，即為函數在特定區間或起始點的輸出值"
           ],
           "ai_rejected_candidates": {
-            "C2": "雖然題目涉及對情境的理解，但核心任務是計算具體的數值而非解釋函數符號的含義。",
-            "C5": "題目已經給定函數關係，不需要判斷是否為函數關係。",
-            "C6": "C6 是外部候選者 (outsider)，在有合適的錨點候選者 (anchor) C1 的情況下，應優先選擇 C1。"
+            "C2": "題目並未著重於函數符號 f(x) 的解讀，而是具體數值的計算",
+            "C3": "題目並非要求判斷定義域或值域",
+            "C4": "題目並非判斷是否為函數映射關係",
+            "C5": "題目已給定為線型函數關係，不需判斷關係類型",
+            "C6": "雖然涉及計算，但題目背景明確屬於線型函數範疇，應優先選擇 anchor 內的子技能"
           },
           "ai_available": true,
           "ai_error": "",
@@ -95983,7 +103817,7 @@
           "conflict_reason": "",
           "source_mapping_warning": "",
           "requires_human_action": false,
-          "ai_notes": "此題為線型函數的應用，透過給定的條件（或圖形）求出函數關係後，計算特定自變數下的應變數值，符合 evaluate_function_value 的定義。",
+          "ai_notes": "此題為線型函數的應用題，核心任務是根據給定的函數關係（圖形或文字描述）求出特定點的函數值（費用）。",
           "skill_scoped_candidates": [
             {
               "candidate_id": "C1",
@@ -96705,12 +104539,12 @@
           "practice_number": null,
           "nearby_worked_examples": [
             {
-              "example_id": 4430,
+              "example_id": 4431,
               "source_type": "worked_example",
-              "example_label": "例題1",
+              "example_label": "例題2",
               "practice_label": "",
               "section_order": 0,
-              "title_head": "例1"
+              "title_head": "例2"
             },
             {
               "example_id": 4433,
@@ -96779,6 +104613,14 @@
               "practice_label": "",
               "section_order": 0,
               "title_head": "例1"
+            },
+            {
+              "example_id": 4431,
+              "source_type": "worked_example",
+              "example_label": "例題2",
+              "practice_label": "",
+              "section_order": 0,
+              "title_head": "例2"
             },
             {
               "example_id": 4433,
@@ -96934,17 +104776,17 @@
           "ai_confidence": 0.0,
           "ai_best_candidate_id": "needs_review",
           "ai_evidence": [
-            "題目要求計算線段三等分點的坐標，屬於分點公式（division point formula）的應用。",
-            "提供的候選子技能（C1-C5）皆屬於函數概念家族（function_concept_family），如函數值求值、符號辨釋、定義域值域、映射判斷等。",
-            "此題目不涉及函數映射、函數符號或函數值的計算，與現有的函數概念子技能不符。"
+            "題目要求找出將線段 AD 三等分的點 C 之坐標，這屬於解析幾何中的分點公式問題。",
+            "候選子技能 C1 至 C5 皆屬於函數概念（如函數值計算、符號辨識、定義域值域、映射判斷等），與分點公式或坐標幾何計算不符。",
+            "雖然題目涉及計算，但 C6 (compute_numeric) 過於籠統，且不屬於該技能錨點 (Linear Function) 的預期任務家族。"
           ],
           "ai_rejected_candidates": {
-            "C1": "此題並非給定函數 f(x) 並要求計算特定 x 的函數值。",
-            "C2": "此題未出現函數符號 f(x) 或其相關表示法。",
-            "C3": "此題不涉及函數的定義域或值域判斷。",
-            "C4": "此題並非判斷一組對應關係是否為函數。",
+            "C1": "此題並非給定函數 f(x) 並要求計算特定輸入的函數值。",
+            "C2": "此題不涉及函數符號的解讀。",
+            "C3": "此題不涉及判斷函數的定義域或值域。",
+            "C4": "此題不涉及判斷映射關係是否為函數。",
             "C5": "此題不涉及判斷兩個變量之間的函數關係。",
-            "C6": "雖然涉及數值計算，但此題具有明確的幾何分點公式特徵，不應僅歸類為一般數值計算。"
+            "C6": "雖然涉及數值計算，但此題核心為分點公式，且 C6 為 outsider 類別，在沒有合適錨點子技能時應優先考慮 needs_review。"
           },
           "ai_available": false,
           "ai_error": "",
@@ -96964,7 +104806,7 @@
           "conflict_reason": "needs_review",
           "source_mapping_warning": "",
           "requires_human_action": false,
-          "ai_notes": "題目內容為坐標幾何中的分點公式（三等分點），而提供的候選子技能全數屬於函數概念範疇，兩者不匹配。建議將此題歸類至坐標系或分點公式相關技能。",
+          "ai_notes": "題目為典型的分點公式應用（三等分點），但提供的子技能清單僅限於函數概念（function_concept_family），缺乏坐標幾何或分點公式相關的選項。因此選擇 needs_review。",
           "skill_scoped_candidates": [
             {
               "candidate_id": "C1",
@@ -97610,12 +105452,12 @@
           "practice_number": null,
           "nearby_worked_examples": [
             {
-              "example_id": 4430,
+              "example_id": 4431,
               "source_type": "worked_example",
-              "example_label": "例題1",
+              "example_label": "例題2",
               "practice_label": "",
               "section_order": 0,
-              "title_head": "例1"
+              "title_head": "例2"
             },
             {
               "example_id": 4433,
@@ -97684,6 +105526,14 @@
               "practice_label": "",
               "section_order": 0,
               "title_head": "例1"
+            },
+            {
+              "example_id": 4431,
+              "source_type": "worked_example",
+              "example_label": "例題2",
+              "practice_label": "",
+              "section_order": 0,
+              "title_head": "例2"
             },
             {
               "example_id": 4433,
@@ -97834,16 +105684,16 @@
           "ai_confidence": 0.0,
           "ai_best_candidate_id": "interpret_function_notation",
           "ai_evidence": [
-            "題目要求從圖形中求出直線的 x 截距與 y 截距，並求出函數 f(x) 的解析式。",
-            "提供的候選子技能（evaluate_function_value, interpret_function_notation, judge_domain_range_basic, judge_function_from_mapping, judge_function_relation）皆屬於函數概念家族，側重於函數定義、符號、定義域值域及對應關係。",
-            "目前候選清單中缺乏「由圖形求線型函數解析式」或「求直線截距」等具體針對線型函數運算的子技能。"
+            "題目要求從圖形中求出直線的 x 截距、y 截距以及函數 f(x) 的解析式。",
+            "候選子技能列表僅包含函數概念（求值、符號辨釋、定義域值域、映射判斷、函數關係判斷）。",
+            "題目核心在於「求一次函數解析式」與「截距概念」，現有子技能中無一符合此特定任務。"
           ],
           "ai_rejected_candidates": {
-            "C1": "此題並非給定 x 求 f(x) 的值，而是要先求出函數解析式。",
-            "C2": "此題涉及函數符號的使用，但核心任務是求出函數解析式，而非僅僅解釋符號意義。",
+            "C1": "此題並非單純給定 x 求 f(x) 的值，而是要求出整個函數解析式。",
+            "C2": "此題涉及函數符號的使用，但核心任務是求出函數式與截距，而非僅僅辨識符號意義。",
             "C3": "題目未涉及定義域或值域的判斷。",
-            "C4": "題目並非判斷對應圖表是否為函數。",
-            "C5": "題目並非判斷兩個變量之間的函數關係。"
+            "C4": "題目未涉及映射圖或判斷是否為函數。",
+            "C5": "題目未涉及判斷變數間是否構成函數關係。"
           },
           "ai_available": false,
           "ai_error": "",
@@ -97863,7 +105713,7 @@
           "conflict_reason": "",
           "source_mapping_warning": "",
           "requires_human_action": false,
-          "ai_notes": "該題目屬於「由圖形求線型函數」或「直線的截距」，在目前的候選清單中沒有完全符合的子技能，建議新增相關子技能或檢查技能錨點範圍。",
+          "ai_notes": "該題目屬於「求一次函數解析式」或「一次函數的圖形特徵（截距）」，但提供的候選子技能僅限於「函數概念」家族。建議新增與一次函數（Linear Function）具體性質相關的子技能，如「從圖形求一次函數式」或「求一次函數的截距」。",
           "skill_scoped_candidates": [
             {
               "candidate_id": "C1",
@@ -98408,12 +106258,12 @@
           "practice_number": 10,
           "nearby_worked_examples": [
             {
-              "example_id": 4430,
+              "example_id": 4431,
               "source_type": "worked_example",
-              "example_label": "例題1",
+              "example_label": "例題2",
               "practice_label": "",
               "section_order": 0,
-              "title_head": "例1"
+              "title_head": "例2"
             },
             {
               "example_id": 4433,
@@ -98482,6 +106332,14 @@
               "practice_label": "",
               "section_order": 0,
               "title_head": "例1"
+            },
+            {
+              "example_id": 4431,
+              "source_type": "worked_example",
+              "example_label": "例題2",
+              "practice_label": "",
+              "section_order": 0,
+              "title_head": "例2"
             },
             {
               "example_id": 4433,
@@ -98616,17 +106474,17 @@
         "semantic_classification": {
           "ai_target_task": "evaluate_function_value",
           "ai_task_family": "function_concept_family",
-          "ai_confidence": 0.95,
+          "ai_confidence": 0.9,
           "ai_best_candidate_id": "C1",
           "ai_evidence": [
-            "題目要求在已知托運費用（函數值）的情況下，求出對應的行李重量（自變數）。",
-            "這屬於線型函數中求特定數值的應用，符合 evaluate_function_value 的定義。"
+            "題目描述行李費用與重量成線型函數關係，並給出特定費用（函數值）要求回推重量（自變數）。",
+            "此類已知函數值求自變數或已知自變數求函數值的計算，屬於 evaluate_function_value 的範疇。",
+            "該候選項目位於 anchor 範圍內且符合 function_concept_family。"
           ],
           "ai_rejected_candidates": {
-            "C2": "題目並非著重於函數符號 f(x) 的解讀。",
-            "C3": "題目並非要求判斷定義域或值域。",
-            "C4": "題目並非判斷映射是否為函數。",
-            "C5": "題目並非判斷兩個變數之間是否具備函數關係。"
+            "C2": "題目並非著重於函數符號（如 f(x)）的意義解釋，而是具體的數值計算。",
+            "C5": "題目已明確指出是線型函數關係，不需要判斷兩變數是否構成函數。",
+            "C6": "雖然涉及計算，但 C1 更符合線型函數技能的學科特定分類。"
           },
           "ai_available": true,
           "ai_error": "",
@@ -98646,7 +106504,7 @@
           "conflict_reason": "",
           "source_mapping_warning": "",
           "requires_human_action": false,
-          "ai_notes": "此題為線型函數的應用題，透過給定的函數值（費用 850 元）回推自變數（重量），屬於函數值的計算範疇。",
+          "ai_notes": "題目給定 y = 850 並要求透過線型函數關係求 x，這屬於函數求值與應用的標準題型。",
           "skill_scoped_candidates": [
             {
               "candidate_id": "C1",
@@ -99368,12 +107226,12 @@
           "practice_number": 11,
           "nearby_worked_examples": [
             {
-              "example_id": 4430,
+              "example_id": 4431,
               "source_type": "worked_example",
-              "example_label": "例題1",
+              "example_label": "例題2",
               "practice_label": "",
               "section_order": 0,
-              "title_head": "例1"
+              "title_head": "例2"
             },
             {
               "example_id": 4433,
@@ -99442,6 +107300,14 @@
               "practice_label": "",
               "section_order": 0,
               "title_head": "例1"
+            },
+            {
+              "example_id": 4431,
+              "source_type": "worked_example",
+              "example_label": "例題2",
+              "practice_label": "",
+              "section_order": 0,
+              "title_head": "例2"
             },
             {
               "example_id": 4433,
@@ -99559,8 +107425,8 @@
         ],
         "has_choices": true,
         "stem_embeds_choices": true,
-        "answer_type": "expression",
-        "answer_shape": "choice_label",
+        "answer_type": "integer",
+        "answer_shape": "numeric",
         "checker": "choice_label_checker",
         "equivalence": "choice_label",
         "math_objects": [
@@ -99570,7 +107436,7 @@
           "two_coordinate_points"
         ],
         "target_task": "evaluate_function_value",
-        "task_family": "generic_numeric_family",
+        "task_family": "function_concept_family",
         "reasoning_type": [
           "numeric_computation"
         ],
@@ -99595,28 +107461,26 @@
           "y"
         ],
         "target": "evaluate_function_value",
-        "classifier_source": "ai_needs_review",
+        "classifier_source": "ai",
         "semantic_classification": {
-          "ai_target_task": "",
-          "ai_task_family": "",
-          "ai_confidence": 0.0,
-          "ai_best_candidate_id": "needs_review",
+          "ai_target_task": "evaluate_function_value",
+          "ai_task_family": "function_concept_family",
+          "ai_confidence": 0.8,
+          "ai_best_candidate_id": "C1",
           "ai_evidence": [
-            "The problem is a word problem involving linear inequalities in two variables: 100x + 200y <= 500,000 and 200x + 100y <= 500,000.",
-            "The provided subskills are restricted to the 'function_concept_family', which focuses on the definition, notation, and basic properties (domain/range) of functions.",
-            "The problem does not use function notation (e.g., f(x)), nor does it involve mapping diagrams or determining if a relation is a function.",
-            "The required action is to verify which coordinate pair satisfies a set of linear constraints, which is an application of linear inequalities rather than a basic function concept evaluation.",
-            "The skill anchor 'vh_數學B1_LinearFunction' usually covers one-variable linear functions (f(x) = ax + b), whereas this problem involves two variables and inequalities."
+            "The problem requires calculating the total cost for specific pairs of (x, y) to check if they exceed a budget of 500,000.",
+            "This process involves substituting numerical values into linear expressions (100x + 200y and 200x + 100y), which is the core action of evaluating a function value.",
+            "Among the anchor-scoped candidates in the function_concept_family, evaluate_function_value is the only one that matches the task of plugging in values to find a result."
           ],
           "ai_rejected_candidates": {
-            "C1": "While it involves calculation, 'evaluate_function_value' typically refers to finding f(a) given a function f(x), which is not the case here.",
-            "C2": "The problem does not use or require the interpretation of function notation like f(x).",
-            "C3": "The problem is not asking for the domain or range of a function.",
-            "C4": "The problem does not involve determining if a mapping or set of pairs constitutes a function.",
-            "C5": "The problem does not involve judging the relationship between variables in a functional context (e.g., is y a function of x?).",
-            "C6": "Although the problem involves arithmetic, 'compute_numeric' is an outsider candidate and the problem is a structured word problem rather than a pure numeric calculation."
+            "C2": "The problem does not involve interpreting function notation like f(x).",
+            "C3": "The problem is not about determining the domain or range of a function.",
+            "C4": "The problem does not involve identifying whether a mapping is a function.",
+            "C5": "The problem does not ask to determine the relationship between variables in a functional sense (e.g., whether y is a function of x).",
+            "C6": "While the problem involves arithmetic, C1 is an anchor-scoped candidate and is preferred over the outsider candidate C6 according to the rules.",
+            "needs_review": "The problem fits the 'evaluate' task well enough within the context of linear functions and expressions to avoid a needs_review tag."
           },
-          "ai_available": false,
+          "ai_available": true,
           "ai_error": "",
           "ai_unavailable_reason": "",
           "ai_semantic_status": "ok",
@@ -99629,12 +107493,12 @@
           "rule_task_family": "generic_numeric_family",
           "rule_confidence": 0.2,
           "final_target_task": "evaluate_function_value",
-          "final_task_family": "generic_numeric_family",
-          "classifier_source": "fallback_application_induct",
-          "conflict_reason": "needs_review",
+          "final_task_family": "function_concept_family",
+          "classifier_source": "ai",
+          "conflict_reason": "",
           "source_mapping_warning": "",
           "requires_human_action": false,
-          "ai_notes": "The problem is a 112 Unified Entrance Exam (統測B) question that involves modeling and solving linear inequalities in two variables. This does not align with the provided subskills, which are focused on the conceptual foundations of functions (mapping, notation, domain/range). A subskill related to 'Linear Inequalities' or 'Linear Function Applications' would be more appropriate.",
+          "ai_notes": "The problem asks to verify which coordinate pair satisfies a budget constraint under two possible price scenarios. This is mathematically equivalent to evaluating a cost function at specific points and comparing the output to a threshold.",
           "skill_scoped_candidates": [
             {
               "candidate_id": "C1",
@@ -100238,25 +108102,106 @@
           "outsider_candidates": [
             "C6"
           ],
-          "selected_subskill": "compute_numeric",
-          "selected_problem_type": "compute_numeric",
-          "candidate_source": "fallback_application",
-          "selected_generator_contract": {},
-          "parameter_schema": {},
+          "selected_subskill": "evaluate_function_value",
+          "selected_problem_type": "evaluate_function_value",
+          "candidate_source": "anchor",
+          "selected_generator_contract": {
+            "template_variants": [
+              {
+                "id": "default",
+                "label": "default",
+                "stem_pattern": "依題意求解：{stem_hint}。",
+                "weight": 1.0,
+                "enabled": true
+              }
+            ],
+            "parameter_schema": {
+              "seed": {
+                "type": "integer",
+                "randomize": true
+              },
+              "difficulty_level": {
+                "choices": [
+                  "level_1",
+                  "level_2",
+                  "level_3"
+                ],
+                "weights": [
+                  0.4,
+                  0.4,
+                  0.2
+                ]
+              }
+            },
+            "variation_dimensions": [
+              "seed",
+              "difficulty_level",
+              "context_style"
+            ],
+            "difficulty_controls": {
+              "level_1": {},
+              "level_2": {},
+              "level_3": {}
+            },
+            "anti_repetition_rules": {
+              "avoid_same_template_consecutive": true,
+              "avoid_same_ratio_consecutive": true,
+              "avoid_same_point_names_consecutive": true,
+              "avoid_same_answer_consecutive": true,
+              "recent_history_window": 5,
+              "signature_fields": [
+                "problem_type_id",
+                "template_variant",
+                "ratio_form",
+                "ratio_values",
+                "coordinate_pattern",
+                "answer"
+              ]
+            },
+            "validity_constraints": [
+              "answer derivable from givens"
+            ],
+            "answer_shape": "numeric",
+            "explanation_variants": [
+              "stepwise"
+            ],
+            "sampling_strategy": "weighted_random",
+            "template_families": [
+              "evaluate_function_value"
+            ]
+          },
+          "parameter_schema": {
+            "seed": {
+              "type": "integer",
+              "randomize": true
+            },
+            "difficulty_level": {
+              "choices": [
+                "level_1",
+                "level_2",
+                "level_3"
+              ],
+              "weights": [
+                0.4,
+                0.4,
+                0.2
+              ]
+            }
+          },
           "variable_randomization_notes": [],
-          "checker_key": "manual_review_checker",
-          "equivalence_type": "manual_review_or_ai_judged",
+          "checker_key": "numeric_checker",
+          "equivalence_type": "numeric_equivalence",
           "skill_scope_trusted": true,
-          "target_task": "compute_numeric",
-          "task_family": "generic_numeric_family",
+          "target_task": "evaluate_function_value",
+          "task_family": "function_concept_family",
           "math_objects": [
             "coordinate_point",
             "three_coordinate_points",
             "triangle",
             "two_coordinate_points"
           ],
-          "answer_type": "single_choice",
-          "answer_shape": "choice_label",
+          "answer_type": "numeric",
+          "answer_shape": "numeric",
           "source_type": "unknown",
           "example_label": "",
           "practice_label": "",
@@ -100266,9 +108211,9 @@
           "structure_consistency": "not_applicable",
           "sequence_context_used": true,
           "structure_context_used": true,
-          "confidence_adjustment_reason": "possible_structure_mismatch_penalty; sequence_context_used",
-          "possible_structure_mismatch": true,
-          "possible_mixed_source_context": true,
+          "confidence_adjustment_reason": "sequence_context_used",
+          "possible_structure_mismatch": false,
+          "possible_mixed_source_context": false,
           "source_quality_reject": false,
           "source_quality_status": "FORCE_ALLOWED_FOR_INDUCTION"
         },
@@ -100282,12 +108227,12 @@
           "practice_number": null,
           "nearby_worked_examples": [
             {
-              "example_id": 4430,
+              "example_id": 4431,
               "source_type": "worked_example",
-              "example_label": "例題1",
+              "example_label": "例題2",
               "practice_label": "",
               "section_order": 0,
-              "title_head": "例1"
+              "title_head": "例2"
             },
             {
               "example_id": 4433,
@@ -100356,6 +108301,14 @@
               "practice_label": "",
               "section_order": 0,
               "title_head": "例1"
+            },
+            {
+              "example_id": 4431,
+              "source_type": "worked_example",
+              "example_label": "例題2",
+              "practice_label": "",
+              "section_order": 0,
+              "title_head": "例2"
             },
             {
               "example_id": 4433,
@@ -100460,7 +108413,6 @@
         "induction_tier": "core",
         "enrichment_reasons": [],
         "included_in_core_induction": true,
-        "problem_type_id": "single_choice_evaluate_function_value_fallback_application",
         "equivalence_type": "choice_label",
         "checker_key": "choice_label_checker"
       },
@@ -100505,16 +108457,16 @@
           "ai_confidence": 0.0,
           "ai_best_candidate_id": "interpret_function_notation",
           "ai_evidence": [
-            "題目要求在坐標平面上畫出函數 y=f(x)=3 的圖形。",
-            "候選清單 (C1-C5) 主要涵蓋函數的概念性任務，如求值、符號辨釋、定義域值域、映射判斷及函數關係判斷。",
-            "清單中缺乏「描繪函數圖形」或「常數函數圖形」相關的子技能。"
+            "題目要求在坐標平面上畫出常數函數 y=f(x)=3 的圖形。",
+            "候選子技能包含：求函數值、解釋函數符號、判斷定義域值域、從對應關係判斷函數、判斷函數關係。",
+            "現有的候選子技能中沒有任何一項對應到「繪製函數圖形」或「函數圖形的幾何表示」。"
           ],
           "ai_rejected_candidates": {
-            "C1": "求函數值僅為描圖過程中的一個可能步驟，並非此題的主要任務。",
-            "C2": "符號辨釋涉及理解 f(x) 的含義，但此題核心在於繪圖。",
-            "C3": "此題並未要求判斷定義域或值域。",
-            "C4": "此題與映射圖無關。",
-            "C5": "此題並非要求判斷 y 是否為 x 的函數。"
+            "C1": "求函數值是指計算特定點的數值，而非繪製完整圖形。",
+            "C2": "解釋函數符號通常涉及理解 y=f(x) 的意義，雖然與圖形有關，但不足以涵蓋繪圖任務。",
+            "C3": "判斷定義域與值域是函數的性質分析，而非繪圖動作。",
+            "C4": "從對應關係判斷函數通常涉及集合間的映射圖，而非坐標平面上的圖形繪製。",
+            "C5": "判斷函數關係是辨識一個關係是否為函數，而非繪圖。"
           },
           "ai_available": false,
           "ai_error": "",
@@ -100534,7 +108486,7 @@
           "conflict_reason": "",
           "source_mapping_warning": "",
           "requires_human_action": false,
-          "ai_notes": "此題目屬於「描繪線型函數圖形」或「常數函數的圖形」，但在提供的 anchor 候選清單中僅包含函數概念相關的子技能，建議新增與圖形繪製相關的子技能。",
+          "ai_notes": "題目要求繪製常數函數圖形，但提供的候選子技能（屬於 function_concept_family）皆不包含「繪圖」相關任務。建議新增「繪製線型函數圖形」或「函數圖形的幾何特徵」等子技能。",
           "skill_scoped_candidates": [
             {
               "candidate_id": "C1",
@@ -101078,12 +109030,12 @@
           "practice_number": 8,
           "nearby_worked_examples": [
             {
-              "example_id": 4430,
+              "example_id": 4431,
               "source_type": "worked_example",
-              "example_label": "例題1",
+              "example_label": "例題2",
               "practice_label": "",
               "section_order": 0,
-              "title_head": "例1"
+              "title_head": "例2"
             },
             {
               "example_id": 4433,
@@ -101152,6 +109104,14 @@
               "practice_label": "",
               "section_order": 0,
               "title_head": "例1"
+            },
+            {
+              "example_id": 4431,
+              "source_type": "worked_example",
+              "example_label": "例題2",
+              "practice_label": "",
+              "section_order": 0,
+              "title_head": "例2"
             },
             {
               "example_id": 4433,
@@ -101299,16 +109259,15 @@
           "ai_confidence": 0.0,
           "ai_best_candidate_id": "interpret_function_notation",
           "ai_evidence": [
-            "題目要求在坐標平面上畫出函數 y = f(x) = -2x + 4 的圖形。",
-            "候選清單中的子技能（C1-C5）皆屬於函數概念家族（function_concept_family），包含求值、符號辨釋、定義域值域、映射判斷及函數關係判斷。",
-            "清單中缺乏「描繪函數圖形」或「一次函數圖形」相關的子技能。"
+            "題目要求在坐標平面上畫出一次函數 y = -2x + 4 的圖形。",
+            "候選清單中的 C1 至 C5 分別為求函數值、函數符號意義、判斷定義域值域、由對應關係判斷函數、判斷函數關係，皆不包含「繪製函數圖形」的任務。"
           ],
           "ai_rejected_candidates": {
-            "C1": "求函數值僅為描點過程中的一個步驟，並非此題「畫出圖形」的核心任務。",
-            "C2": "此題重點在於繪圖，而非單純辨識或解釋函數符號的意義。",
-            "C3": "題目未要求判斷定義域或值域。",
-            "C4": "題目未涉及映射圖或判斷是否為函數。",
-            "C5": "題目未要求判斷變數間是否構成函數關係。"
+            "C1": "求函數值僅為描點繪圖的過程之一，並非繪圖任務本身。",
+            "C2": "此題並非在解釋函數符號的意義。",
+            "C3": "此題並非在判斷定義域或值域。",
+            "C4": "此題並非由對應圖判斷是否為函數。",
+            "C5": "此題並非判斷兩個變數之間是否具備函數關係。"
           },
           "ai_available": false,
           "ai_error": "",
@@ -101328,7 +109287,7 @@
           "conflict_reason": "",
           "source_mapping_warning": "",
           "requires_human_action": false,
-          "ai_notes": "題目核心任務為「描繪一次函數圖形」，但候選清單中僅包含函數基本概念的子技能，建議新增「描繪一次函數圖形」或「一次函數的圖形」相關子技能。",
+          "ai_notes": "題目任務為「繪製一次函數圖形」，但提供的候選子技能皆屬於函數基本觀念（如求值、定義、符號等），缺乏繪圖相關的子技能，因此選擇 needs_review。",
           "skill_scoped_candidates": [
             {
               "candidate_id": "C1",
@@ -101872,12 +109831,12 @@
           "practice_number": 9,
           "nearby_worked_examples": [
             {
-              "example_id": 4430,
+              "example_id": 4431,
               "source_type": "worked_example",
-              "example_label": "例題1",
+              "example_label": "例題2",
               "practice_label": "",
               "section_order": 0,
-              "title_head": "例1"
+              "title_head": "例2"
             },
             {
               "example_id": 4433,
@@ -101946,6 +109905,14 @@
               "practice_label": "",
               "section_order": 0,
               "title_head": "例1"
+            },
+            {
+              "example_id": 4431,
+              "source_type": "worked_example",
+              "example_label": "例題2",
+              "practice_label": "",
+              "section_order": 0,
+              "title_head": "例2"
             },
             {
               "example_id": 4433,
@@ -102083,17 +110050,13 @@
           "ai_confidence": 0.0,
           "ai_best_candidate_id": "needs_review",
           "ai_evidence": [
-            "題目要求根據圖形求出線型函數的關係式（即求出 y = ax + b 的方程式）。",
-            "候選子技能（C1-C5）主要集中在函數的概念性理解，如求函數值、符號辨釋、定義域值域、判斷是否為函數等。",
-            "目前清單中缺乏「求線型函數解析式」或「求直線方程式」這類程序性運算的子技能。"
+            "題目要求根據圖形求出線型函數的關係式（即 y = ax + b）。",
+            "提供的候選子技能（C1-C5）主要集中在函數的概念（如：求函數值、符號辨識、定義域值域、判斷是否為函數）。",
+            "候選清單中缺乏「求線型函數解析式」或「由圖形求函數關係式」等相關子技能。"
           ],
           "ai_rejected_candidates": {
-            "C1": "此題是要求出整個關係式，而非給定 x 求單一函數值。",
-            "C2": "此題涉及函數的建立而非單純對函數符號的解釋。",
-            "C3": "此題未要求判斷定義域或值域。",
-            "C4": "此題並非判斷對應關係是否構成函數。",
-            "C5": "此題要求具體的關係式，而非僅僅判斷變數間是否存在函數關係。",
-            "C6": "此為外部技能且過於籠統，無法精確描述「求函數關係式」的數學任務。"
+            "C1": "此子技能為求特定點的函數值，而本題要求的是整體的關係式。",
+            "C5": "此子技能為判斷變數間是否構成函數關係，而非求出其具體的代數表達式。"
           },
           "ai_available": false,
           "ai_error": "",
@@ -102113,7 +110076,7 @@
           "conflict_reason": "needs_review",
           "source_mapping_warning": "",
           "requires_human_action": false,
-          "ai_notes": "該題目屬於「求線型函數的關係式」，但在提供的 anchor 範圍內（function_concept_family）僅包含概念判斷與求值，建議增加「求線型函數解析式」相關的子技能。",
+          "ai_notes": "本題的核心任務是「求線型函數的關係式」，但目前的候選清單僅包含函數概念（function_concept_family）相關的子技能，建議增加如「求線型函數解析式」之類的子技能。",
           "skill_scoped_candidates": [
             {
               "candidate_id": "C1",
@@ -102754,12 +110717,12 @@
           "practice_number": null,
           "nearby_worked_examples": [
             {
-              "example_id": 4430,
+              "example_id": 4431,
               "source_type": "worked_example",
-              "example_label": "例題1",
+              "example_label": "例題2",
               "practice_label": "",
               "section_order": 0,
-              "title_head": "例1"
+              "title_head": "例2"
             },
             {
               "example_id": 4433,
@@ -102828,6 +110791,14 @@
               "practice_label": "",
               "section_order": 0,
               "title_head": "例1"
+            },
+            {
+              "example_id": 4431,
+              "source_type": "worked_example",
+              "example_label": "例題2",
+              "practice_label": "",
+              "section_order": 0,
+              "title_head": "例2"
             },
             {
               "example_id": 4433,
@@ -102991,17 +110962,16 @@
           "ai_confidence": 0.0,
           "ai_best_candidate_id": "interpret_function_notation",
           "ai_evidence": [
-            "題目要求根據兩個已知點 (-2, 4) 與 (1, 1) 求出線型函數 f(x) = ax + b 的解析式。",
-            "這屬於「求線型函數解析式」或「待定係數法求函數」的題型。",
-            "提供的候選子技能包括：計算函數值 (evaluate_function_value)、理解函數符號 (interpret_function_notation)、判斷定義域值域 (judge_domain_range_basic)、從對應關係判斷函數 (judge_function_from_mapping) 以及判斷函數關係 (judge_function_relation)。",
-            "這些候選子技能多屬於「函數概念 (function_concept_family)」的基礎認知，缺乏「求線型函數解析式」這一具體的運算型子技能。"
+            "題目要求根據通過的兩點 (-2, 4) 與 (1, 1) 求出線型函數 f(x) = ax + b 的解析式。",
+            "候選子技能列表包含：求函數值 (evaluate_function_value)、理解函數符號 (interpret_function_notation)、判斷定義域值域 (judge_domain_range_basic)、由對應關係判斷函數 (judge_function_from_mapping) 以及判斷函數關係 (judge_function_relation)。",
+            "現有的候選子技能中，沒有一個直接對應到「給定兩點求線型函數解析式」這一特定任務。"
           ],
           "ai_rejected_candidates": {
-            "C1": "evaluate_function_value 通常指已知函數式求特定輸入的輸出值，而非求函數式本身。",
-            "C2": "interpret_function_notation 涉及理解 f(x) 的含義，雖然解題第一步需將點座標轉化為 f(-2)=4，但核心任務是求解係數，該項不足以涵蓋完整過程。",
-            "C3": "題目未涉及定義域或值域的判斷。",
-            "C4": "題目未涉及對應圖表或映射關係的函數判定。",
-            "C5": "題目未涉及函數關係的性質判定（如是否為函數）。"
+            "C1": "此題並非單純求特定點的函數值，而是要求出整個函數的表達式。",
+            "C2": "此題涉及函數符號的應用，但核心任務是解聯立方程式求係數，而非僅僅是解釋符號意義。",
+            "C3": "此題不涉及定義域或值域的判斷。",
+            "C4": "此題並非判斷給定的對應圖或集合是否構成函數。",
+            "C5": "此題已明示為線型函數，不需判斷是否為函數關係。"
           },
           "ai_available": false,
           "ai_error": "",
@@ -103021,7 +110991,7 @@
           "conflict_reason": "",
           "source_mapping_warning": "",
           "requires_human_action": false,
-          "ai_notes": "該題目為「已知兩點求線型函數」，在現有的候選清單中缺乏對應的子技能（如 determine_linear_function_from_points）。建議新增此類子技能或將其歸類至更合適的技能架構下。",
+          "ai_notes": "該題目屬於「給定兩點求一次函數（線型函數）解析式」，在目前的候選清單中缺乏對應的子技能。建議新增如 'determine_linear_function_from_points' 類型的子技能。",
           "skill_scoped_candidates": [
             {
               "candidate_id": "C1",
@@ -103570,12 +111540,12 @@
           "practice_number": null,
           "nearby_worked_examples": [
             {
-              "example_id": 4430,
+              "example_id": 4431,
               "source_type": "worked_example",
-              "example_label": "例題1",
+              "example_label": "例題2",
               "practice_label": "",
               "section_order": 0,
-              "title_head": "例1"
+              "title_head": "例2"
             },
             {
               "example_id": 4433,
@@ -103644,6 +111614,14 @@
               "practice_label": "",
               "section_order": 0,
               "title_head": "例1"
+            },
+            {
+              "example_id": 4431,
+              "source_type": "worked_example",
+              "example_label": "例題2",
+              "practice_label": "",
+              "section_order": 0,
+              "title_head": "例2"
             },
             {
               "example_id": 4433,
@@ -103793,14 +111771,14 @@
           "ai_confidence": 0.0,
           "ai_best_candidate_id": "interpret_function_notation",
           "ai_evidence": [
-            "題目要求利用截距定義判斷函數 y=f(x)=ax-3 的圖形，屬於線型函數圖形特徵的辨識。",
-            "提供的候選子技能（C1-C5）均屬於『函數觀念 (function_concept_family)』，如求值、符號、定義域、映射判斷等。",
-            "候選清單中缺乏與『線型函數圖形』、『截距』或『斜率』直接相關的子技能。",
-            "根據規則，若候選清單中沒有合適的子技能，應選擇 needs_review。"
+            "題目要求利用截距定義判斷函數 y=ax-3 的圖形，這涉及線性函數的圖形特徵（如 y 截距為 -3）與參數 a 對圖形的影響。",
+            "提供的候選子技能（evaluate_function_value, interpret_function_notation, judge_domain_range_basic, judge_function_from_mapping, judge_function_relation）皆屬於函數基本概念（function_concept_family），而非線性函數圖形的具體判別。",
+            "題目核心在於線性函數的圖形性質（截距與斜率），現有選項中缺乏『線性函數圖形』或『截距與斜率的應用』等相關子技能。"
           ],
           "ai_rejected_candidates": {
-            "C1": "evaluate_function_value 雖然涉及計算 f(0)=-3，但本題核心在於圖形截距的幾何意義，而非單純代值計算。",
-            "C5": "judge_function_relation 通常用於判斷變數間是否為函數關係或區分常數與一次函數，不足以涵蓋根據截距判斷圖形的任務。"
+            "C1": "evaluate_function_value 僅涉及計算特定點的函數值，不足以涵蓋判斷整個圖形可能性的任務。",
+            "C2": "interpret_function_notation 涉及對 f(x) 符號的理解，而非圖形判別。",
+            "C5": "judge_function_relation 通常用於判斷一個關係是否為函數，而非判斷特定線性函數的圖形。"
           },
           "ai_available": false,
           "ai_error": "",
@@ -103820,7 +111798,7 @@
           "conflict_reason": "",
           "source_mapping_warning": "",
           "requires_human_action": false,
-          "ai_notes": "The current example focuses on the graphical representation and intercepts of a linear function, which is not covered by the provided subskill candidates in the 'function_concept_family'. A subskill such as 'identify_linear_function_graph' or 'understand_intercepts' would be more appropriate.",
+          "ai_notes": "本題屬於線性函數圖形的判別，特別是截距的應用。然而，候選清單中的子技能僅限於函數的基本概念（如定義、符號、定義域值域），缺乏針對線性函數圖形性質（如斜率、截距、圖形平移）的對應選項，因此選擇 needs_review。",
           "skill_scoped_candidates": [
             {
               "candidate_id": "C1",
@@ -104364,12 +112342,12 @@
           "practice_number": null,
           "nearby_worked_examples": [
             {
-              "example_id": 4430,
+              "example_id": 4431,
               "source_type": "worked_example",
-              "example_label": "例題1",
+              "example_label": "例題2",
               "practice_label": "",
               "section_order": 0,
-              "title_head": "例1"
+              "title_head": "例2"
             },
             {
               "example_id": 4433,
@@ -104438,6 +112416,14 @@
               "practice_label": "",
               "section_order": 0,
               "title_head": "例1"
+            },
+            {
+              "example_id": 4431,
+              "source_type": "worked_example",
+              "example_label": "例題2",
+              "practice_label": "",
+              "section_order": 0,
+              "title_head": "例2"
             },
             {
               "example_id": 4433,
@@ -104740,12 +112726,12 @@
         "function_concept_family"
       ],
       "observed_source_family_distribution": {
-        "function_concept_family": 12,
-        "generic_numeric_family": 3
+        "function_concept_family": 13,
+        "generic_numeric_family": 2
       },
       "source_family_distribution": {
-        "function_concept_family": 12,
-        "generic_numeric_family": 3
+        "function_concept_family": 13,
+        "generic_numeric_family": 2
       },
       "candidate_problem_type_families": [
         "function_concept_family"
@@ -104755,7 +112741,7 @@
       "dominant_source_family": [
         "function_concept_family"
       ],
-      "dominant_source_family_ratio": 0.8,
+      "dominant_source_family_ratio": 0.8667,
       "skill_source_score": 0.0,
       "skill_problem_type_score": 0.0385,
       "source_problem_type_score": 0.0326,
@@ -104816,22 +112802,26 @@
       "decision": "warn",
       "blockers": [],
       "warnings": [
-        "alignment_score_below_recommended_threshold"
+        "alignment_score_below_recommended_threshold",
+        "source_quality_reject_examples_present"
       ],
       "induction_core_example_count": 15,
-      "induction_enrichment_example_count": 1,
-      "source_quality_reject_examples": []
+      "induction_enrichment_example_count": 2,
+      "source_quality_reject_examples": [
+        4431
+      ]
     },
     "source_alignment_status": "warn",
     "skill_problem_type_alignment_status": "warn",
     "alignment_score": 0.0,
     "alignment_warnings": [
-      "alignment_score_below_recommended_threshold"
+      "alignment_score_below_recommended_threshold",
+      "source_quality_reject_examples_present"
     ],
     "alignment_blockers": [],
     "source_family_distribution": {
-      "function_concept_family": 12,
-      "generic_numeric_family": 3
+      "function_concept_family": 13,
+      "generic_numeric_family": 2
     },
     "candidate_problem_type_families": [
       "function_concept_family"
@@ -104882,10 +112872,61 @@
         "induction_eligibility": "excluded_enrichment",
         "skill_id": "vh_數學B1_LinearFunction",
         "title_stem_preview": "伽利略（Galileo，1564−1642）研究自由落體運動發現自由落體公式：$S\\left( t \\right)=\\frac{1}{2}g{{t}^{2}}$..."
+      },
+      {
+        "example_id": 4431,
+        "target_task": "evaluate_function_value",
+        "task_family": "function_concept_family",
+        "alignment_score": 0.8,
+        "aligned_with_skill": false,
+        "included_in_phase1": false,
+        "exclude_reason": "source_quality_reject",
+        "alignment_kind": "source_quality_reject",
+        "skill_id_match": true,
+        "task_family_match": true,
+        "subskill_match": true,
+        "pass_with_warning": false,
+        "requires_human_action": true,
+        "induction_tier": "enrichment",
+        "included_in_core_induction": false,
+        "enrichment_reasons": [
+          "applied_context",
+          "figure_mixed",
+          "historical_narrative",
+          "long_stem",
+          "math_file",
+          "mixed_unrelated_context",
+          "piecewise_application",
+          "sdgs"
+        ],
+        "source_quality_issues": [
+          "broken_latex_left_right"
+        ],
+        "source_quality_reject": true,
+        "candidate_only": false,
+        "classification_source": "ai",
+        "induction_eligibility": "excluded_source_quality_reject",
+        "skill_id": "vh_數學B1_LinearFunction",
+        "title_stem_preview": "英國科學家虎克（Robert Hooke，1635−1703）於1678年發現虎克定律：$F\\left( x \\right)=kx$，k為力常數，即在彈性限度內..."
       }
     ],
-    "rejected_source_examples": [],
-    "source_quality_issues": [],
+    "rejected_source_examples": [
+      {
+        "example_id": 4431,
+        "reason": "source_quality_reject",
+        "issues": [
+          "broken_latex_left_right"
+        ]
+      }
+    ],
+    "source_quality_issues": [
+      {
+        "example_id": 4431,
+        "issues": [
+          "broken_latex_left_right"
+        ]
+      }
+    ],
     "semantic_mismatch_examples": [],
     "suspected_wrong_skill_examples": [],
     "same_family_extension_examples": [],
@@ -104923,7 +112964,7 @@
     "source_belongs_to_current_skill_by_default_count": 16,
     "induction_source_selection": {
       "core_example_count": 15,
-      "enrichment_example_count": 1,
+      "enrichment_example_count": 2,
       "skipped_enrichment_examples": [
         {
           "example_id": 4430,
@@ -104933,9 +112974,40 @@
             "historical_narrative"
           ],
           "stem_length": 161
+        },
+        {
+          "example_id": 4431,
+          "induction_tier": "enrichment",
+          "enrichment_reasons": [
+            "applied_context",
+            "figure_mixed",
+            "historical_narrative",
+            "long_stem",
+            "math_file",
+            "mixed_unrelated_context",
+            "piecewise_application",
+            "sdgs"
+          ],
+          "stem_length": 1116
         }
       ],
-      "future_ai_judged_candidates": [],
+      "future_ai_judged_candidates": [
+        {
+          "example_id": 4431,
+          "induction_tier": "enrichment",
+          "enrichment_reasons": [
+            "applied_context",
+            "figure_mixed",
+            "historical_narrative",
+            "long_stem",
+            "math_file",
+            "mixed_unrelated_context",
+            "piecewise_application",
+            "sdgs"
+          ],
+          "stem_length": 1116
+        }
+      ],
       "contextual_application_sources": [
         {
           "example_id": 4430,
@@ -104945,6 +113017,21 @@
             "historical_narrative"
           ],
           "stem_length": 161
+        },
+        {
+          "example_id": 4431,
+          "induction_tier": "enrichment",
+          "enrichment_reasons": [
+            "applied_context",
+            "figure_mixed",
+            "historical_narrative",
+            "long_stem",
+            "math_file",
+            "mixed_unrelated_context",
+            "piecewise_application",
+            "sdgs"
+          ],
+          "stem_length": 1116
         }
       ],
       "min_core_examples_for_induction": 2,
@@ -104959,9 +113046,40 @@
           "historical_narrative"
         ],
         "stem_length": 161
+      },
+      {
+        "example_id": 4431,
+        "induction_tier": "enrichment",
+        "enrichment_reasons": [
+          "applied_context",
+          "figure_mixed",
+          "historical_narrative",
+          "long_stem",
+          "math_file",
+          "mixed_unrelated_context",
+          "piecewise_application",
+          "sdgs"
+        ],
+        "stem_length": 1116
       }
     ],
-    "future_ai_judged_candidates": [],
+    "future_ai_judged_candidates": [
+      {
+        "example_id": 4431,
+        "induction_tier": "enrichment",
+        "enrichment_reasons": [
+          "applied_context",
+          "figure_mixed",
+          "historical_narrative",
+          "long_stem",
+          "math_file",
+          "mixed_unrelated_context",
+          "piecewise_application",
+          "sdgs"
+        ],
+        "stem_length": 1116
+      }
+    ],
     "contextual_application_sources": [
       {
         "example_id": 4430,
@@ -104971,10 +113089,25 @@
           "historical_narrative"
         ],
         "stem_length": 161
+      },
+      {
+        "example_id": 4431,
+        "induction_tier": "enrichment",
+        "enrichment_reasons": [
+          "applied_context",
+          "figure_mixed",
+          "historical_narrative",
+          "long_stem",
+          "math_file",
+          "mixed_unrelated_context",
+          "piecewise_application",
+          "sdgs"
+        ],
+        "stem_length": 1116
       }
     ],
     "core_example_count": 15,
-    "enrichment_example_count": 1,
+    "enrichment_example_count": 2,
     "source_example_alignment": [
       {
         "example_id": 4430,
@@ -105003,6 +113136,42 @@
         "induction_eligibility": "excluded_enrichment",
         "skill_id": "vh_數學B1_LinearFunction",
         "title_stem_preview": "伽利略（Galileo，1564−1642）研究自由落體運動發現自由落體公式：$S\\left( t \\right)=\\frac{1}{2}g{{t}^{2}}$"
+      },
+      {
+        "example_id": 4431,
+        "target_task": "evaluate_function_value",
+        "task_family": "function_concept_family",
+        "alignment_score": 0.8,
+        "aligned_with_skill": false,
+        "included_in_phase1": false,
+        "exclude_reason": "source_quality_reject",
+        "alignment_kind": "source_quality_reject",
+        "skill_id_match": true,
+        "task_family_match": true,
+        "subskill_match": true,
+        "pass_with_warning": false,
+        "requires_human_action": true,
+        "induction_tier": "enrichment",
+        "included_in_core_induction": false,
+        "enrichment_reasons": [
+          "applied_context",
+          "figure_mixed",
+          "historical_narrative",
+          "long_stem",
+          "math_file",
+          "mixed_unrelated_context",
+          "piecewise_application",
+          "sdgs"
+        ],
+        "source_quality_issues": [
+          "broken_latex_left_right"
+        ],
+        "source_quality_reject": true,
+        "candidate_only": false,
+        "classification_source": "ai",
+        "induction_eligibility": "excluded_source_quality_reject",
+        "skill_id": "vh_數學B1_LinearFunction",
+        "title_stem_preview": "英國科學家虎克（Robert Hooke，1635−1703）於1678年發現虎克定律：$F\\left( x \\right)=kx$，k為力常數，即在彈性限度內"
       },
       {
         "example_id": 4433,
@@ -105232,14 +113401,14 @@
       {
         "example_id": 4446,
         "target_task": "evaluate_function_value",
-        "task_family": "generic_numeric_family",
-        "alignment_score": 0.0,
+        "task_family": "function_concept_family",
+        "alignment_score": 0.8,
         "aligned_with_skill": true,
         "included_in_phase1": true,
         "exclude_reason": "",
         "alignment_kind": "anchor_subskill_match",
         "skill_id_match": true,
-        "task_family_match": false,
+        "task_family_match": true,
         "subskill_match": true,
         "pass_with_warning": false,
         "requires_human_action": false,
@@ -105249,7 +113418,7 @@
         "source_quality_issues": [],
         "source_quality_reject": false,
         "candidate_only": true,
-        "classification_source": "fallback_application_induct",
+        "classification_source": "ai",
         "induction_eligibility": "eligible",
         "skill_id": "vh_數學B1_LinearFunction",
         "title_stem_preview": "公司給小虹最多50萬元的預算來採買$x$、$y$兩種貨品。但小虹一時疏忽，無法確定$x$貨品跟$y$貨品的單價哪一個是100元、哪一個是200元。下列數對($x"
@@ -106309,7 +114478,8 @@
         "promote_recommendation": "recommend_promote_for_that_candidate",
         "promote_blockers": [],
         "risk_flags": [
-          "alignment_score_below_recommended_threshold"
+          "alignment_score_below_recommended_threshold",
+          "source_quality_reject_examples_present"
         ],
         "checker_contract_warnings": [
           "equivalence_type_mismatch"
@@ -106679,7 +114849,8 @@
         "promote_recommendation": "recommend_promote_for_that_candidate",
         "promote_blockers": [],
         "risk_flags": [
-          "alignment_score_below_recommended_threshold"
+          "alignment_score_below_recommended_threshold",
+          "source_quality_reject_examples_present"
         ],
         "checker_contract_warnings": [],
         "spec_source": "phase1_induced_draft",
@@ -107051,7 +115222,8 @@
         "promote_recommendation": "recommend_promote_for_that_candidate",
         "promote_blockers": [],
         "risk_flags": [
-          "alignment_score_below_recommended_threshold"
+          "alignment_score_below_recommended_threshold",
+          "source_quality_reject_examples_present"
         ],
         "checker_contract_warnings": [
           "equivalence_type_mismatch"
@@ -107427,7 +115599,8 @@
         "promote_recommendation": "recommend_promote_for_that_candidate",
         "promote_blockers": [],
         "risk_flags": [
-          "alignment_score_below_recommended_threshold"
+          "alignment_score_below_recommended_threshold",
+          "source_quality_reject_examples_present"
         ],
         "checker_contract_warnings": [],
         "spec_source": "phase1_induced_draft",
@@ -107677,14 +115850,15 @@
             "ai_confidence": 0.9,
             "ai_best_candidate_id": "C5",
             "ai_evidence": [
-              "The text describes how the falling distance S depends on the time t.",
-              "It explicitly concludes that distance S is a function of time t based on their relationship.",
-              "This aligns with the subskill of judging or identifying a function relation between variables."
+              "題目描述了距離 S 隨時間 t 變化的關係。",
+              "題目最後明確指出「距離 S 是時間 t 的函數」。",
+              "這屬於判斷或理解兩個變數之間是否構成函數關係的範疇。"
             ],
             "ai_rejected_candidates": {
-              "C1": "The text does not ask to calculate a specific value for S given a value for t.",
-              "C2": "While function notation S(t) is used, the primary purpose of the text is to explain the relationship itself.",
-              "C4": "The problem does not use mapping diagrams to define the function."
+              "C1": "題目中沒有要求計算具體的函數值。",
+              "C2": "雖然使用了函數符號，但重點在於解釋函數關係的建立而非符號本身的解讀。",
+              "C3": "題目未涉及定義域或值域的判斷。",
+              "C4": "題目並非透過集合映射圖來判斷函數。"
             },
             "ai_available": true,
             "ai_error": "",
@@ -107704,7 +115878,7 @@
             "conflict_reason": "",
             "source_mapping_warning": "",
             "requires_human_action": false,
-            "ai_notes": "The example provides a real-world context to introduce the concept of a function relationship between two variables.",
+            "ai_notes": "此題為函數概念的引入例題，旨在說明變數間的依賴關係如何構成函數，最符合 judge_function_relation。",
             "skill_scoped_candidates": [
               {
                 "candidate_id": "C1",
@@ -108428,6 +116602,14 @@
             "practice_number": null,
             "nearby_worked_examples": [
               {
+                "example_id": 4431,
+                "source_type": "worked_example",
+                "example_label": "例題2",
+                "practice_label": "",
+                "section_order": 0,
+                "title_head": "例2"
+              },
+              {
                 "example_id": 4433,
                 "source_type": "worked_example",
                 "example_label": "例題8",
@@ -108494,6 +116676,14 @@
                 "practice_label": "",
                 "section_order": 0,
                 "title_head": "例1"
+              },
+              {
+                "example_id": 4431,
+                "source_type": "worked_example",
+                "example_label": "例題2",
+                "practice_label": "",
+                "section_order": 0,
+                "title_head": "例2"
               },
               {
                 "example_id": 4433,
@@ -108612,14 +116802,15 @@
           "ai_confidence": 0.9,
           "ai_best_candidate_id": "C5",
           "ai_evidence": [
-            "The text describes how the falling distance S depends on the time t.",
-            "It explicitly concludes that distance S is a function of time t based on their relationship.",
-            "This aligns with the subskill of judging or identifying a function relation between variables."
+            "題目描述了距離 S 隨時間 t 變化的關係。",
+            "題目最後明確指出「距離 S 是時間 t 的函數」。",
+            "這屬於判斷或理解兩個變數之間是否構成函數關係的範疇。"
           ],
           "ai_rejected_candidates": {
-            "C1": "The text does not ask to calculate a specific value for S given a value for t.",
-            "C2": "While function notation S(t) is used, the primary purpose of the text is to explain the relationship itself.",
-            "C4": "The problem does not use mapping diagrams to define the function."
+            "C1": "題目中沒有要求計算具體的函數值。",
+            "C2": "雖然使用了函數符號，但重點在於解釋函數關係的建立而非符號本身的解讀。",
+            "C3": "題目未涉及定義域或值域的判斷。",
+            "C4": "題目並非透過集合映射圖來判斷函數。"
           },
           "ai_available": true,
           "ai_error": "",
@@ -108639,7 +116830,7 @@
           "conflict_reason": "",
           "source_mapping_warning": "",
           "requires_human_action": false,
-          "ai_notes": "The example provides a real-world context to introduce the concept of a function relationship between two variables.",
+          "ai_notes": "此題為函數概念的引入例題，旨在說明變數間的依賴關係如何構成函數，最符合 judge_function_relation。",
           "skill_scoped_candidates": [
             {
               "candidate_id": "C1",
@@ -109358,6 +117549,1567 @@
         "induction_eligibility": "excluded_enrichment"
       },
       {
+        "example_id": 4431,
+        "detected_problem_type_id": "unknown",
+        "example_feature": {
+          "source_example_id": 4431,
+          "question_text": "英國科學家虎克（Robert Hooke，1635−1703）於1678年發現虎克定律：$F\\left( x \\right)=kx$，k為力常數，即在彈性限度內，彈簧所受的外力F與伸長量x有成正比的關係，所以外力F是伸長量x的函數（如圖22）。\r\n▲圖21 ▲圖22\r\n數學\r\n檔案\r\n尤拉（Leonhard Euler，1707-1783），瑞士數學家。\r\n他是最早使用函數記號「$f\\left( x \\right)$」的數學家。\r\nSDG 7可負擔的潔淨能源─供需曲線圖\r\n「一度電」就是耗電量 1,000 瓦特的電器，連續使用 1 小時所消耗的總電量。電費分為「夏季電費」（6 / 1～9 / 30）和「非夏季電費」（10 / 1～5 / 31），已知202年4月電費調漲，調漲後，若計費度數為x度，且一般住家的夏季電費（單位：元）滿足函數\r\n$f\\left( x \\right)=\\left\\{ \\begin{align}\r\n& 1.63x,x\\le 120 \\\\\r\n& 2.38x-90,120<x<330 \\\\\r\n& 3.52x-466.2,330<x\\le 500 \\\\\r\n& 4.8x-1106.2,500<x\\le 700 \\\\\r\n& 5.83x-1827.2,700<x\\le 1000 \\\\\r\n& 7.69x-368.7,x>1000 \\\\\r\n\\end{align} \\right.$\r\n若小蕙發現8 月用電為 800 度，花費太多，及時更換老舊電器，9月節能省電，用電為600度，試求小蕙的電費9月比8月省下多少元？\r\n8月電費為800度，將$x=800$代入$5.83x-1827.2$\r\n9月電費為600度，將$x=600$代入$4.8x-1106.2$\r\n得$\\left( 5.83\\times 800-1827.2 \\right)-\\left( 4.8\\times 600-1106.2 \\right)$ \r\n $=\\left( 4664-1827.2 \\right)-\\left( 2880-1106.2 \\right)=1063$（元）\r\nSDGS-------------------------------------------------------------------------------------------------------------------\r\n2023 年4 月的電費調漲，選購能源效率分級級數較低的產品，不單是能為個人省錢，亦能夠實踐節能減碳，臺灣近年來時常出現缺水及限電危機，為了讓我們能在地球上永續生存，力行「綠色生活」營造一個低碳的生活環境是重要的。",
+          "answer": "",
+          "choices": [],
+          "has_choices": false,
+          "stem_embeds_choices": false,
+          "answer_type": "rational",
+          "answer_shape": "numeric",
+          "checker": "rational_checker",
+          "equivalence": "rational_equivalent",
+          "math_objects": [
+            "coordinate_point",
+            "three_coordinate_points",
+            "triangle",
+            "two_coordinate_points"
+          ],
+          "target_task": "evaluate_function_value",
+          "task_family": "function_concept_family",
+          "reasoning_type": [
+            "numeric_computation"
+          ],
+          "required_derivation": true,
+          "source_quality_issues": [
+            "broken_latex_left_right"
+          ],
+          "source_quality_reject": true,
+          "candidate_only": false,
+          "variables": [
+            "F",
+            "f",
+            "x"
+          ],
+          "givens": [
+            "F",
+            "f",
+            "x"
+          ],
+          "target": "evaluate_function_value",
+          "classifier_source": "ai",
+          "semantic_classification": {
+            "ai_target_task": "evaluate_function_value",
+            "ai_task_family": "function_concept_family",
+            "ai_confidence": 1.0,
+            "ai_best_candidate_id": "C1",
+            "ai_evidence": [
+              "The problem provides a piecewise function f(x) representing electricity costs based on usage x.",
+              "The task requires calculating the cost for specific values of x (800 and 600).",
+              "The solution involves substituting these values into the appropriate parts of the function to find the function values."
+            ],
+            "ai_rejected_candidates": {
+              "C2": "While function notation is used, the primary task is the calculation of values rather than explaining the notation itself.",
+              "C3": "The problem does not ask to identify the domain or range of the function.",
+              "C4": "The problem assumes the relation is a function and does not ask for verification of mapping properties.",
+              "C5": "The problem focuses on specific value evaluation rather than judging the general relationship between variables."
+            },
+            "ai_available": true,
+            "ai_error": "",
+            "ai_unavailable_reason": "",
+            "ai_semantic_status": "ok",
+            "ai_invalid_response_reason": "",
+            "parser_error": "",
+            "raw_response_preview": "",
+            "sanitized_response_preview": "",
+            "failed_stage": "",
+            "rule_target_task": "evaluate_function_value",
+            "rule_task_family": "function_concept_family",
+            "rule_confidence": 0.5,
+            "final_target_task": "evaluate_function_value",
+            "final_task_family": "function_concept_family",
+            "classifier_source": "ai",
+            "conflict_reason": "",
+            "source_mapping_warning": "",
+            "requires_human_action": false,
+            "ai_notes": "The example is a practical application of evaluating a piecewise linear function at specific input points.",
+            "skill_scoped_candidates": [
+              {
+                "candidate_id": "C1",
+                "target_task": "evaluate_function_value",
+                "task_family": "function_concept_family",
+                "problem_type_id": "evaluate_function_value",
+                "label": "evaluate_function_value",
+                "candidate_source": "anchor",
+                "in_anchor_scope": true,
+                "answer_type": "numeric",
+                "answer_shape": "numeric",
+                "math_objects": [],
+                "checker_key": "numeric_checker",
+                "equivalence_type": "numeric_equivalence",
+                "generator_contract": {
+                  "template_variants": [
+                    {
+                      "id": "default",
+                      "label": "default",
+                      "stem_pattern": "依題意求解：{stem_hint}。",
+                      "weight": 1.0,
+                      "enabled": true
+                    }
+                  ],
+                  "parameter_schema": {
+                    "seed": {
+                      "type": "integer",
+                      "randomize": true
+                    },
+                    "difficulty_level": {
+                      "choices": [
+                        "level_1",
+                        "level_2",
+                        "level_3"
+                      ],
+                      "weights": [
+                        0.4,
+                        0.4,
+                        0.2
+                      ]
+                    }
+                  },
+                  "variation_dimensions": [
+                    "seed",
+                    "difficulty_level",
+                    "context_style"
+                  ],
+                  "difficulty_controls": {
+                    "level_1": {},
+                    "level_2": {},
+                    "level_3": {}
+                  },
+                  "anti_repetition_rules": {
+                    "avoid_same_template_consecutive": true,
+                    "avoid_same_ratio_consecutive": true,
+                    "avoid_same_point_names_consecutive": true,
+                    "avoid_same_answer_consecutive": true,
+                    "recent_history_window": 5,
+                    "signature_fields": [
+                      "problem_type_id",
+                      "template_variant",
+                      "ratio_form",
+                      "ratio_values",
+                      "coordinate_pattern",
+                      "answer"
+                    ]
+                  },
+                  "validity_constraints": [
+                    "answer derivable from givens"
+                  ],
+                  "answer_shape": "numeric",
+                  "explanation_variants": [
+                    "stepwise"
+                  ],
+                  "sampling_strategy": "weighted_random",
+                  "template_families": [
+                    "evaluate_function_value"
+                  ]
+                },
+                "parameter_schema": {
+                  "seed": {
+                    "type": "integer",
+                    "randomize": true
+                  },
+                  "difficulty_level": {
+                    "choices": [
+                      "level_1",
+                      "level_2",
+                      "level_3"
+                    ],
+                    "weights": [
+                      0.4,
+                      0.4,
+                      0.2
+                    ]
+                  }
+                }
+              },
+              {
+                "candidate_id": "C2",
+                "target_task": "interpret_function_notation",
+                "task_family": "function_concept_family",
+                "problem_type_id": "interpret_function_notation",
+                "label": "interpret_function_notation",
+                "candidate_source": "anchor",
+                "in_anchor_scope": true,
+                "answer_type": "numeric",
+                "answer_shape": "numeric",
+                "math_objects": [],
+                "checker_key": "numeric_checker",
+                "equivalence_type": "numeric_equivalence",
+                "generator_contract": {
+                  "template_variants": [
+                    {
+                      "id": "default",
+                      "label": "default",
+                      "stem_pattern": "依題意求解：{stem_hint}。",
+                      "weight": 1.0,
+                      "enabled": true
+                    }
+                  ],
+                  "parameter_schema": {
+                    "seed": {
+                      "type": "integer",
+                      "randomize": true
+                    },
+                    "difficulty_level": {
+                      "choices": [
+                        "level_1",
+                        "level_2",
+                        "level_3"
+                      ],
+                      "weights": [
+                        0.4,
+                        0.4,
+                        0.2
+                      ]
+                    }
+                  },
+                  "variation_dimensions": [
+                    "seed",
+                    "difficulty_level",
+                    "context_style"
+                  ],
+                  "difficulty_controls": {
+                    "level_1": {},
+                    "level_2": {},
+                    "level_3": {}
+                  },
+                  "anti_repetition_rules": {
+                    "avoid_same_template_consecutive": true,
+                    "avoid_same_ratio_consecutive": true,
+                    "avoid_same_point_names_consecutive": true,
+                    "avoid_same_answer_consecutive": true,
+                    "recent_history_window": 5,
+                    "signature_fields": [
+                      "problem_type_id",
+                      "template_variant",
+                      "ratio_form",
+                      "ratio_values",
+                      "coordinate_pattern",
+                      "answer"
+                    ]
+                  },
+                  "validity_constraints": [
+                    "answer derivable from givens"
+                  ],
+                  "answer_shape": "numeric",
+                  "explanation_variants": [
+                    "stepwise"
+                  ],
+                  "sampling_strategy": "weighted_random",
+                  "template_families": [
+                    "interpret_function_notation"
+                  ]
+                },
+                "parameter_schema": {
+                  "seed": {
+                    "type": "integer",
+                    "randomize": true
+                  },
+                  "difficulty_level": {
+                    "choices": [
+                      "level_1",
+                      "level_2",
+                      "level_3"
+                    ],
+                    "weights": [
+                      0.4,
+                      0.4,
+                      0.2
+                    ]
+                  }
+                }
+              },
+              {
+                "candidate_id": "C3",
+                "target_task": "judge_domain_range_basic",
+                "task_family": "function_concept_family",
+                "problem_type_id": "judge_domain_range_basic",
+                "label": "judge_domain_range_basic",
+                "candidate_source": "anchor",
+                "in_anchor_scope": true,
+                "answer_type": "numeric",
+                "answer_shape": "numeric",
+                "math_objects": [],
+                "checker_key": "numeric_checker",
+                "equivalence_type": "numeric_equivalence",
+                "generator_contract": {
+                  "template_variants": [
+                    {
+                      "id": "default",
+                      "label": "default",
+                      "stem_pattern": "依題意求解：{stem_hint}。",
+                      "weight": 1.0,
+                      "enabled": true
+                    }
+                  ],
+                  "parameter_schema": {
+                    "seed": {
+                      "type": "integer",
+                      "randomize": true
+                    },
+                    "difficulty_level": {
+                      "choices": [
+                        "level_1",
+                        "level_2",
+                        "level_3"
+                      ],
+                      "weights": [
+                        0.4,
+                        0.4,
+                        0.2
+                      ]
+                    }
+                  },
+                  "variation_dimensions": [
+                    "seed",
+                    "difficulty_level",
+                    "context_style"
+                  ],
+                  "difficulty_controls": {
+                    "level_1": {},
+                    "level_2": {},
+                    "level_3": {}
+                  },
+                  "anti_repetition_rules": {
+                    "avoid_same_template_consecutive": true,
+                    "avoid_same_ratio_consecutive": true,
+                    "avoid_same_point_names_consecutive": true,
+                    "avoid_same_answer_consecutive": true,
+                    "recent_history_window": 5,
+                    "signature_fields": [
+                      "problem_type_id",
+                      "template_variant",
+                      "ratio_form",
+                      "ratio_values",
+                      "coordinate_pattern",
+                      "answer"
+                    ]
+                  },
+                  "validity_constraints": [
+                    "answer derivable from givens"
+                  ],
+                  "answer_shape": "numeric",
+                  "explanation_variants": [
+                    "stepwise"
+                  ],
+                  "sampling_strategy": "weighted_random",
+                  "template_families": [
+                    "judge_domain_range_basic"
+                  ]
+                },
+                "parameter_schema": {
+                  "seed": {
+                    "type": "integer",
+                    "randomize": true
+                  },
+                  "difficulty_level": {
+                    "choices": [
+                      "level_1",
+                      "level_2",
+                      "level_3"
+                    ],
+                    "weights": [
+                      0.4,
+                      0.4,
+                      0.2
+                    ]
+                  }
+                }
+              },
+              {
+                "candidate_id": "C4",
+                "target_task": "judge_function_from_mapping",
+                "task_family": "function_concept_family",
+                "problem_type_id": "judge_function_from_mapping",
+                "label": "judge_function_from_mapping",
+                "candidate_source": "anchor",
+                "in_anchor_scope": true,
+                "answer_type": "numeric",
+                "answer_shape": "numeric",
+                "math_objects": [],
+                "checker_key": "numeric_checker",
+                "equivalence_type": "numeric_equivalence",
+                "generator_contract": {
+                  "template_variants": [
+                    {
+                      "id": "default",
+                      "label": "default",
+                      "stem_pattern": "依題意求解：{stem_hint}。",
+                      "weight": 1.0,
+                      "enabled": true
+                    }
+                  ],
+                  "parameter_schema": {
+                    "seed": {
+                      "type": "integer",
+                      "randomize": true
+                    },
+                    "difficulty_level": {
+                      "choices": [
+                        "level_1",
+                        "level_2",
+                        "level_3"
+                      ],
+                      "weights": [
+                        0.4,
+                        0.4,
+                        0.2
+                      ]
+                    }
+                  },
+                  "variation_dimensions": [
+                    "seed",
+                    "difficulty_level",
+                    "context_style"
+                  ],
+                  "difficulty_controls": {
+                    "level_1": {},
+                    "level_2": {},
+                    "level_3": {}
+                  },
+                  "anti_repetition_rules": {
+                    "avoid_same_template_consecutive": true,
+                    "avoid_same_ratio_consecutive": true,
+                    "avoid_same_point_names_consecutive": true,
+                    "avoid_same_answer_consecutive": true,
+                    "recent_history_window": 5,
+                    "signature_fields": [
+                      "problem_type_id",
+                      "template_variant",
+                      "ratio_form",
+                      "ratio_values",
+                      "coordinate_pattern",
+                      "answer"
+                    ]
+                  },
+                  "validity_constraints": [
+                    "answer derivable from givens"
+                  ],
+                  "answer_shape": "numeric",
+                  "explanation_variants": [
+                    "stepwise"
+                  ],
+                  "sampling_strategy": "weighted_random",
+                  "template_families": [
+                    "judge_function_from_mapping"
+                  ]
+                },
+                "parameter_schema": {
+                  "seed": {
+                    "type": "integer",
+                    "randomize": true
+                  },
+                  "difficulty_level": {
+                    "choices": [
+                      "level_1",
+                      "level_2",
+                      "level_3"
+                    ],
+                    "weights": [
+                      0.4,
+                      0.4,
+                      0.2
+                    ]
+                  }
+                }
+              },
+              {
+                "candidate_id": "C5",
+                "target_task": "judge_function_relation",
+                "task_family": "function_concept_family",
+                "problem_type_id": "judge_function_relation",
+                "label": "judge_function_relation",
+                "candidate_source": "anchor",
+                "in_anchor_scope": true,
+                "answer_type": "numeric",
+                "answer_shape": "numeric",
+                "math_objects": [],
+                "checker_key": "numeric_checker",
+                "equivalence_type": "numeric_equivalence",
+                "generator_contract": {
+                  "template_variants": [
+                    {
+                      "id": "default",
+                      "label": "default",
+                      "stem_pattern": "依題意求解：{stem_hint}。",
+                      "weight": 1.0,
+                      "enabled": true
+                    }
+                  ],
+                  "parameter_schema": {
+                    "seed": {
+                      "type": "integer",
+                      "randomize": true
+                    },
+                    "difficulty_level": {
+                      "choices": [
+                        "level_1",
+                        "level_2",
+                        "level_3"
+                      ],
+                      "weights": [
+                        0.4,
+                        0.4,
+                        0.2
+                      ]
+                    }
+                  },
+                  "variation_dimensions": [
+                    "seed",
+                    "difficulty_level",
+                    "context_style"
+                  ],
+                  "difficulty_controls": {
+                    "level_1": {},
+                    "level_2": {},
+                    "level_3": {}
+                  },
+                  "anti_repetition_rules": {
+                    "avoid_same_template_consecutive": true,
+                    "avoid_same_ratio_consecutive": true,
+                    "avoid_same_point_names_consecutive": true,
+                    "avoid_same_answer_consecutive": true,
+                    "recent_history_window": 5,
+                    "signature_fields": [
+                      "problem_type_id",
+                      "template_variant",
+                      "ratio_form",
+                      "ratio_values",
+                      "coordinate_pattern",
+                      "answer"
+                    ]
+                  },
+                  "validity_constraints": [
+                    "answer derivable from givens"
+                  ],
+                  "answer_shape": "numeric",
+                  "explanation_variants": [
+                    "stepwise"
+                  ],
+                  "sampling_strategy": "weighted_random",
+                  "template_families": [
+                    "judge_function_relation"
+                  ]
+                },
+                "parameter_schema": {
+                  "seed": {
+                    "type": "integer",
+                    "randomize": true
+                  },
+                  "difficulty_level": {
+                    "choices": [
+                      "level_1",
+                      "level_2",
+                      "level_3"
+                    ],
+                    "weights": [
+                      0.4,
+                      0.4,
+                      0.2
+                    ]
+                  }
+                }
+              },
+              {
+                "candidate_id": "needs_review",
+                "target_task": "",
+                "task_family": "",
+                "problem_type_id": "needs_review",
+                "label": "needs_review",
+                "candidate_source": "needs_review",
+                "in_anchor_scope": false,
+                "answer_type": "",
+                "answer_shape": "",
+                "math_objects": [],
+                "checker_key": "manual_review_checker",
+                "equivalence_type": "manual_review_or_ai_judged",
+                "generator_contract": {},
+                "parameter_schema": {}
+              }
+            ],
+            "outsider_candidates": [],
+            "selected_subskill": "evaluate_function_value",
+            "selected_problem_type": "evaluate_function_value",
+            "candidate_source": "anchor",
+            "selected_generator_contract": {
+              "template_variants": [
+                {
+                  "id": "default",
+                  "label": "default",
+                  "stem_pattern": "依題意求解：{stem_hint}。",
+                  "weight": 1.0,
+                  "enabled": true
+                }
+              ],
+              "parameter_schema": {
+                "seed": {
+                  "type": "integer",
+                  "randomize": true
+                },
+                "difficulty_level": {
+                  "choices": [
+                    "level_1",
+                    "level_2",
+                    "level_3"
+                  ],
+                  "weights": [
+                    0.4,
+                    0.4,
+                    0.2
+                  ]
+                }
+              },
+              "variation_dimensions": [
+                "seed",
+                "difficulty_level",
+                "context_style"
+              ],
+              "difficulty_controls": {
+                "level_1": {},
+                "level_2": {},
+                "level_3": {}
+              },
+              "anti_repetition_rules": {
+                "avoid_same_template_consecutive": true,
+                "avoid_same_ratio_consecutive": true,
+                "avoid_same_point_names_consecutive": true,
+                "avoid_same_answer_consecutive": true,
+                "recent_history_window": 5,
+                "signature_fields": [
+                  "problem_type_id",
+                  "template_variant",
+                  "ratio_form",
+                  "ratio_values",
+                  "coordinate_pattern",
+                  "answer"
+                ]
+              },
+              "validity_constraints": [
+                "answer derivable from givens"
+              ],
+              "answer_shape": "numeric",
+              "explanation_variants": [
+                "stepwise"
+              ],
+              "sampling_strategy": "weighted_random",
+              "template_families": [
+                "evaluate_function_value"
+              ]
+            },
+            "parameter_schema": {
+              "seed": {
+                "type": "integer",
+                "randomize": true
+              },
+              "difficulty_level": {
+                "choices": [
+                  "level_1",
+                  "level_2",
+                  "level_3"
+                ],
+                "weights": [
+                  0.4,
+                  0.4,
+                  0.2
+                ]
+              }
+            },
+            "variable_randomization_notes": [],
+            "checker_key": "numeric_checker",
+            "equivalence_type": "numeric_equivalence",
+            "skill_scope_trusted": true,
+            "target_task": "evaluate_function_value",
+            "task_family": "function_concept_family",
+            "math_objects": [
+              "coordinate_point",
+              "three_coordinate_points",
+              "triangle",
+              "two_coordinate_points"
+            ],
+            "answer_type": "numeric",
+            "answer_shape": "numeric",
+            "source_type": "worked_example",
+            "example_label": "例題2",
+            "practice_label": "",
+            "linked_example": "",
+            "linked_example_id": null,
+            "linked_example_task_family": "",
+            "structure_consistency": "not_applicable",
+            "sequence_context_used": true,
+            "structure_context_used": true,
+            "confidence_adjustment_reason": "sequence_context_used",
+            "possible_structure_mismatch": false,
+            "possible_mixed_source_context": false
+          },
+          "source_structure_context": {
+            "source_type": "worked_example",
+            "example_label": "例題2",
+            "practice_label": "",
+            "linked_example": "",
+            "section_order": 0,
+            "example_number": 2,
+            "practice_number": null,
+            "nearby_worked_examples": [
+              {
+                "example_id": 4430,
+                "source_type": "worked_example",
+                "example_label": "例題1",
+                "practice_label": "",
+                "section_order": 0,
+                "title_head": "例1"
+              },
+              {
+                "example_id": 4433,
+                "source_type": "worked_example",
+                "example_label": "例題8",
+                "practice_label": "",
+                "section_order": 0,
+                "title_head": "例8"
+              },
+              {
+                "example_id": 4434,
+                "source_type": "worked_example",
+                "example_label": "例題9",
+                "practice_label": "",
+                "section_order": 0,
+                "title_head": "例9"
+              },
+              {
+                "example_id": 4444,
+                "source_type": "worked_example",
+                "example_label": "例題10",
+                "practice_label": "",
+                "section_order": 0,
+                "title_head": "例10"
+              },
+              {
+                "example_id": 4445,
+                "source_type": "worked_example",
+                "example_label": "例題11",
+                "practice_label": "",
+                "section_order": 0,
+                "title_head": "例11"
+              }
+            ],
+            "linked_worked_example": null,
+            "linked_practices": [],
+            "same_section_sequence": [
+              {
+                "example_id": 4424,
+                "source_type": "unknown",
+                "example_label": "",
+                "practice_label": "",
+                "section_order": 0,
+                "title_head": "1-2習題 基礎題 8"
+              },
+              {
+                "example_id": 4425,
+                "source_type": "unknown",
+                "example_label": "",
+                "practice_label": "",
+                "section_order": 0,
+                "title_head": "1-2習題 進階題 9"
+              },
+              {
+                "example_id": 4426,
+                "source_type": "unknown",
+                "example_label": "",
+                "practice_label": "",
+                "section_order": 0,
+                "title_head": "1-2習題 進階題 10"
+              },
+              {
+                "example_id": 4430,
+                "source_type": "worked_example",
+                "example_label": "例題1",
+                "practice_label": "",
+                "section_order": 0,
+                "title_head": "例1"
+              },
+              {
+                "example_id": 4431,
+                "source_type": "worked_example",
+                "example_label": "例題2",
+                "practice_label": "",
+                "section_order": 0,
+                "title_head": "例2"
+              },
+              {
+                "example_id": 4433,
+                "source_type": "worked_example",
+                "example_label": "例題8",
+                "practice_label": "",
+                "section_order": 0,
+                "title_head": "例8"
+              },
+              {
+                "example_id": 4434,
+                "source_type": "worked_example",
+                "example_label": "例題9",
+                "practice_label": "",
+                "section_order": 0,
+                "title_head": "例9"
+              },
+              {
+                "example_id": 4441,
+                "source_type": "in_class_practice",
+                "example_label": "",
+                "practice_label": "隨堂練習10",
+                "section_order": 0,
+                "title_head": "隨堂練習10"
+              },
+              {
+                "example_id": 4442,
+                "source_type": "in_class_practice",
+                "example_label": "",
+                "practice_label": "隨堂練習11",
+                "section_order": 0,
+                "title_head": "隨堂練習11"
+              },
+              {
+                "example_id": 4444,
+                "source_type": "worked_example",
+                "example_label": "例題10",
+                "practice_label": "",
+                "section_order": 0,
+                "title_head": "例10"
+              },
+              {
+                "example_id": 4445,
+                "source_type": "worked_example",
+                "example_label": "例題11",
+                "practice_label": "",
+                "section_order": 0,
+                "title_head": "例11"
+              },
+              {
+                "example_id": 4446,
+                "source_type": "unknown",
+                "example_label": "",
+                "practice_label": "",
+                "section_order": 0,
+                "title_head": "112統測B"
+              },
+              {
+                "example_id": 4448,
+                "source_type": "in_class_practice",
+                "example_label": "",
+                "practice_label": "隨堂練習8",
+                "section_order": 0,
+                "title_head": "隨堂練習8"
+              },
+              {
+                "example_id": 4449,
+                "source_type": "in_class_practice",
+                "example_label": "",
+                "practice_label": "隨堂練習9",
+                "section_order": 0,
+                "title_head": "隨堂練習9"
+              },
+              {
+                "example_id": 4500,
+                "source_type": "unknown",
+                "example_label": "",
+                "practice_label": "",
+                "section_order": 0,
+                "title_head": "CH1自我評量 題10"
+              },
+              {
+                "example_id": 4515,
+                "source_type": "unknown",
+                "example_label": "",
+                "practice_label": "",
+                "section_order": 0,
+                "title_head": "CH1自我評量 題8"
+              },
+              {
+                "example_id": 4516,
+                "source_type": "unknown",
+                "example_label": "",
+                "practice_label": "",
+                "section_order": 0,
+                "title_head": "CH1自我評量 題9"
+              }
+            ]
+          },
+          "induction_tier": "enrichment",
+          "enrichment_reasons": [
+            "applied_context",
+            "figure_mixed",
+            "historical_narrative",
+            "long_stem",
+            "math_file",
+            "mixed_unrelated_context",
+            "piecewise_application",
+            "sdgs"
+          ],
+          "included_in_core_induction": false,
+          "equivalence_type": "rational_equivalent",
+          "checker_key": "rational_checker"
+        },
+        "answer_shape": "numeric",
+        "classification_confidence": "low",
+        "classification_reason": "ai",
+        "risk_flags": [],
+        "semantic_classification": {
+          "ai_target_task": "evaluate_function_value",
+          "ai_task_family": "function_concept_family",
+          "ai_confidence": 1.0,
+          "ai_best_candidate_id": "C1",
+          "ai_evidence": [
+            "The problem provides a piecewise function f(x) representing electricity costs based on usage x.",
+            "The task requires calculating the cost for specific values of x (800 and 600).",
+            "The solution involves substituting these values into the appropriate parts of the function to find the function values."
+          ],
+          "ai_rejected_candidates": {
+            "C2": "While function notation is used, the primary task is the calculation of values rather than explaining the notation itself.",
+            "C3": "The problem does not ask to identify the domain or range of the function.",
+            "C4": "The problem assumes the relation is a function and does not ask for verification of mapping properties.",
+            "C5": "The problem focuses on specific value evaluation rather than judging the general relationship between variables."
+          },
+          "ai_available": true,
+          "ai_error": "",
+          "ai_unavailable_reason": "",
+          "ai_semantic_status": "ok",
+          "ai_invalid_response_reason": "",
+          "parser_error": "",
+          "raw_response_preview": "",
+          "sanitized_response_preview": "",
+          "failed_stage": "",
+          "rule_target_task": "evaluate_function_value",
+          "rule_task_family": "function_concept_family",
+          "rule_confidence": 0.5,
+          "final_target_task": "evaluate_function_value",
+          "final_task_family": "function_concept_family",
+          "classifier_source": "ai",
+          "conflict_reason": "",
+          "source_mapping_warning": "",
+          "requires_human_action": false,
+          "ai_notes": "The example is a practical application of evaluating a piecewise linear function at specific input points.",
+          "skill_scoped_candidates": [
+            {
+              "candidate_id": "C1",
+              "target_task": "evaluate_function_value",
+              "task_family": "function_concept_family",
+              "problem_type_id": "evaluate_function_value",
+              "label": "evaluate_function_value",
+              "candidate_source": "anchor",
+              "in_anchor_scope": true,
+              "answer_type": "numeric",
+              "answer_shape": "numeric",
+              "math_objects": [],
+              "checker_key": "numeric_checker",
+              "equivalence_type": "numeric_equivalence",
+              "generator_contract": {
+                "template_variants": [
+                  {
+                    "id": "default",
+                    "label": "default",
+                    "stem_pattern": "依題意求解：{stem_hint}。",
+                    "weight": 1.0,
+                    "enabled": true
+                  }
+                ],
+                "parameter_schema": {
+                  "seed": {
+                    "type": "integer",
+                    "randomize": true
+                  },
+                  "difficulty_level": {
+                    "choices": [
+                      "level_1",
+                      "level_2",
+                      "level_3"
+                    ],
+                    "weights": [
+                      0.4,
+                      0.4,
+                      0.2
+                    ]
+                  }
+                },
+                "variation_dimensions": [
+                  "seed",
+                  "difficulty_level",
+                  "context_style"
+                ],
+                "difficulty_controls": {
+                  "level_1": {},
+                  "level_2": {},
+                  "level_3": {}
+                },
+                "anti_repetition_rules": {
+                  "avoid_same_template_consecutive": true,
+                  "avoid_same_ratio_consecutive": true,
+                  "avoid_same_point_names_consecutive": true,
+                  "avoid_same_answer_consecutive": true,
+                  "recent_history_window": 5,
+                  "signature_fields": [
+                    "problem_type_id",
+                    "template_variant",
+                    "ratio_form",
+                    "ratio_values",
+                    "coordinate_pattern",
+                    "answer"
+                  ]
+                },
+                "validity_constraints": [
+                  "answer derivable from givens"
+                ],
+                "answer_shape": "numeric",
+                "explanation_variants": [
+                  "stepwise"
+                ],
+                "sampling_strategy": "weighted_random",
+                "template_families": [
+                  "evaluate_function_value"
+                ]
+              },
+              "parameter_schema": {
+                "seed": {
+                  "type": "integer",
+                  "randomize": true
+                },
+                "difficulty_level": {
+                  "choices": [
+                    "level_1",
+                    "level_2",
+                    "level_3"
+                  ],
+                  "weights": [
+                    0.4,
+                    0.4,
+                    0.2
+                  ]
+                }
+              }
+            },
+            {
+              "candidate_id": "C2",
+              "target_task": "interpret_function_notation",
+              "task_family": "function_concept_family",
+              "problem_type_id": "interpret_function_notation",
+              "label": "interpret_function_notation",
+              "candidate_source": "anchor",
+              "in_anchor_scope": true,
+              "answer_type": "numeric",
+              "answer_shape": "numeric",
+              "math_objects": [],
+              "checker_key": "numeric_checker",
+              "equivalence_type": "numeric_equivalence",
+              "generator_contract": {
+                "template_variants": [
+                  {
+                    "id": "default",
+                    "label": "default",
+                    "stem_pattern": "依題意求解：{stem_hint}。",
+                    "weight": 1.0,
+                    "enabled": true
+                  }
+                ],
+                "parameter_schema": {
+                  "seed": {
+                    "type": "integer",
+                    "randomize": true
+                  },
+                  "difficulty_level": {
+                    "choices": [
+                      "level_1",
+                      "level_2",
+                      "level_3"
+                    ],
+                    "weights": [
+                      0.4,
+                      0.4,
+                      0.2
+                    ]
+                  }
+                },
+                "variation_dimensions": [
+                  "seed",
+                  "difficulty_level",
+                  "context_style"
+                ],
+                "difficulty_controls": {
+                  "level_1": {},
+                  "level_2": {},
+                  "level_3": {}
+                },
+                "anti_repetition_rules": {
+                  "avoid_same_template_consecutive": true,
+                  "avoid_same_ratio_consecutive": true,
+                  "avoid_same_point_names_consecutive": true,
+                  "avoid_same_answer_consecutive": true,
+                  "recent_history_window": 5,
+                  "signature_fields": [
+                    "problem_type_id",
+                    "template_variant",
+                    "ratio_form",
+                    "ratio_values",
+                    "coordinate_pattern",
+                    "answer"
+                  ]
+                },
+                "validity_constraints": [
+                  "answer derivable from givens"
+                ],
+                "answer_shape": "numeric",
+                "explanation_variants": [
+                  "stepwise"
+                ],
+                "sampling_strategy": "weighted_random",
+                "template_families": [
+                  "interpret_function_notation"
+                ]
+              },
+              "parameter_schema": {
+                "seed": {
+                  "type": "integer",
+                  "randomize": true
+                },
+                "difficulty_level": {
+                  "choices": [
+                    "level_1",
+                    "level_2",
+                    "level_3"
+                  ],
+                  "weights": [
+                    0.4,
+                    0.4,
+                    0.2
+                  ]
+                }
+              }
+            },
+            {
+              "candidate_id": "C3",
+              "target_task": "judge_domain_range_basic",
+              "task_family": "function_concept_family",
+              "problem_type_id": "judge_domain_range_basic",
+              "label": "judge_domain_range_basic",
+              "candidate_source": "anchor",
+              "in_anchor_scope": true,
+              "answer_type": "numeric",
+              "answer_shape": "numeric",
+              "math_objects": [],
+              "checker_key": "numeric_checker",
+              "equivalence_type": "numeric_equivalence",
+              "generator_contract": {
+                "template_variants": [
+                  {
+                    "id": "default",
+                    "label": "default",
+                    "stem_pattern": "依題意求解：{stem_hint}。",
+                    "weight": 1.0,
+                    "enabled": true
+                  }
+                ],
+                "parameter_schema": {
+                  "seed": {
+                    "type": "integer",
+                    "randomize": true
+                  },
+                  "difficulty_level": {
+                    "choices": [
+                      "level_1",
+                      "level_2",
+                      "level_3"
+                    ],
+                    "weights": [
+                      0.4,
+                      0.4,
+                      0.2
+                    ]
+                  }
+                },
+                "variation_dimensions": [
+                  "seed",
+                  "difficulty_level",
+                  "context_style"
+                ],
+                "difficulty_controls": {
+                  "level_1": {},
+                  "level_2": {},
+                  "level_3": {}
+                },
+                "anti_repetition_rules": {
+                  "avoid_same_template_consecutive": true,
+                  "avoid_same_ratio_consecutive": true,
+                  "avoid_same_point_names_consecutive": true,
+                  "avoid_same_answer_consecutive": true,
+                  "recent_history_window": 5,
+                  "signature_fields": [
+                    "problem_type_id",
+                    "template_variant",
+                    "ratio_form",
+                    "ratio_values",
+                    "coordinate_pattern",
+                    "answer"
+                  ]
+                },
+                "validity_constraints": [
+                  "answer derivable from givens"
+                ],
+                "answer_shape": "numeric",
+                "explanation_variants": [
+                  "stepwise"
+                ],
+                "sampling_strategy": "weighted_random",
+                "template_families": [
+                  "judge_domain_range_basic"
+                ]
+              },
+              "parameter_schema": {
+                "seed": {
+                  "type": "integer",
+                  "randomize": true
+                },
+                "difficulty_level": {
+                  "choices": [
+                    "level_1",
+                    "level_2",
+                    "level_3"
+                  ],
+                  "weights": [
+                    0.4,
+                    0.4,
+                    0.2
+                  ]
+                }
+              }
+            },
+            {
+              "candidate_id": "C4",
+              "target_task": "judge_function_from_mapping",
+              "task_family": "function_concept_family",
+              "problem_type_id": "judge_function_from_mapping",
+              "label": "judge_function_from_mapping",
+              "candidate_source": "anchor",
+              "in_anchor_scope": true,
+              "answer_type": "numeric",
+              "answer_shape": "numeric",
+              "math_objects": [],
+              "checker_key": "numeric_checker",
+              "equivalence_type": "numeric_equivalence",
+              "generator_contract": {
+                "template_variants": [
+                  {
+                    "id": "default",
+                    "label": "default",
+                    "stem_pattern": "依題意求解：{stem_hint}。",
+                    "weight": 1.0,
+                    "enabled": true
+                  }
+                ],
+                "parameter_schema": {
+                  "seed": {
+                    "type": "integer",
+                    "randomize": true
+                  },
+                  "difficulty_level": {
+                    "choices": [
+                      "level_1",
+                      "level_2",
+                      "level_3"
+                    ],
+                    "weights": [
+                      0.4,
+                      0.4,
+                      0.2
+                    ]
+                  }
+                },
+                "variation_dimensions": [
+                  "seed",
+                  "difficulty_level",
+                  "context_style"
+                ],
+                "difficulty_controls": {
+                  "level_1": {},
+                  "level_2": {},
+                  "level_3": {}
+                },
+                "anti_repetition_rules": {
+                  "avoid_same_template_consecutive": true,
+                  "avoid_same_ratio_consecutive": true,
+                  "avoid_same_point_names_consecutive": true,
+                  "avoid_same_answer_consecutive": true,
+                  "recent_history_window": 5,
+                  "signature_fields": [
+                    "problem_type_id",
+                    "template_variant",
+                    "ratio_form",
+                    "ratio_values",
+                    "coordinate_pattern",
+                    "answer"
+                  ]
+                },
+                "validity_constraints": [
+                  "answer derivable from givens"
+                ],
+                "answer_shape": "numeric",
+                "explanation_variants": [
+                  "stepwise"
+                ],
+                "sampling_strategy": "weighted_random",
+                "template_families": [
+                  "judge_function_from_mapping"
+                ]
+              },
+              "parameter_schema": {
+                "seed": {
+                  "type": "integer",
+                  "randomize": true
+                },
+                "difficulty_level": {
+                  "choices": [
+                    "level_1",
+                    "level_2",
+                    "level_3"
+                  ],
+                  "weights": [
+                    0.4,
+                    0.4,
+                    0.2
+                  ]
+                }
+              }
+            },
+            {
+              "candidate_id": "C5",
+              "target_task": "judge_function_relation",
+              "task_family": "function_concept_family",
+              "problem_type_id": "judge_function_relation",
+              "label": "judge_function_relation",
+              "candidate_source": "anchor",
+              "in_anchor_scope": true,
+              "answer_type": "numeric",
+              "answer_shape": "numeric",
+              "math_objects": [],
+              "checker_key": "numeric_checker",
+              "equivalence_type": "numeric_equivalence",
+              "generator_contract": {
+                "template_variants": [
+                  {
+                    "id": "default",
+                    "label": "default",
+                    "stem_pattern": "依題意求解：{stem_hint}。",
+                    "weight": 1.0,
+                    "enabled": true
+                  }
+                ],
+                "parameter_schema": {
+                  "seed": {
+                    "type": "integer",
+                    "randomize": true
+                  },
+                  "difficulty_level": {
+                    "choices": [
+                      "level_1",
+                      "level_2",
+                      "level_3"
+                    ],
+                    "weights": [
+                      0.4,
+                      0.4,
+                      0.2
+                    ]
+                  }
+                },
+                "variation_dimensions": [
+                  "seed",
+                  "difficulty_level",
+                  "context_style"
+                ],
+                "difficulty_controls": {
+                  "level_1": {},
+                  "level_2": {},
+                  "level_3": {}
+                },
+                "anti_repetition_rules": {
+                  "avoid_same_template_consecutive": true,
+                  "avoid_same_ratio_consecutive": true,
+                  "avoid_same_point_names_consecutive": true,
+                  "avoid_same_answer_consecutive": true,
+                  "recent_history_window": 5,
+                  "signature_fields": [
+                    "problem_type_id",
+                    "template_variant",
+                    "ratio_form",
+                    "ratio_values",
+                    "coordinate_pattern",
+                    "answer"
+                  ]
+                },
+                "validity_constraints": [
+                  "answer derivable from givens"
+                ],
+                "answer_shape": "numeric",
+                "explanation_variants": [
+                  "stepwise"
+                ],
+                "sampling_strategy": "weighted_random",
+                "template_families": [
+                  "judge_function_relation"
+                ]
+              },
+              "parameter_schema": {
+                "seed": {
+                  "type": "integer",
+                  "randomize": true
+                },
+                "difficulty_level": {
+                  "choices": [
+                    "level_1",
+                    "level_2",
+                    "level_3"
+                  ],
+                  "weights": [
+                    0.4,
+                    0.4,
+                    0.2
+                  ]
+                }
+              }
+            },
+            {
+              "candidate_id": "needs_review",
+              "target_task": "",
+              "task_family": "",
+              "problem_type_id": "needs_review",
+              "label": "needs_review",
+              "candidate_source": "needs_review",
+              "in_anchor_scope": false,
+              "answer_type": "",
+              "answer_shape": "",
+              "math_objects": [],
+              "checker_key": "manual_review_checker",
+              "equivalence_type": "manual_review_or_ai_judged",
+              "generator_contract": {},
+              "parameter_schema": {}
+            }
+          ],
+          "outsider_candidates": [],
+          "selected_subskill": "evaluate_function_value",
+          "selected_problem_type": "evaluate_function_value",
+          "candidate_source": "anchor",
+          "selected_generator_contract": {
+            "template_variants": [
+              {
+                "id": "default",
+                "label": "default",
+                "stem_pattern": "依題意求解：{stem_hint}。",
+                "weight": 1.0,
+                "enabled": true
+              }
+            ],
+            "parameter_schema": {
+              "seed": {
+                "type": "integer",
+                "randomize": true
+              },
+              "difficulty_level": {
+                "choices": [
+                  "level_1",
+                  "level_2",
+                  "level_3"
+                ],
+                "weights": [
+                  0.4,
+                  0.4,
+                  0.2
+                ]
+              }
+            },
+            "variation_dimensions": [
+              "seed",
+              "difficulty_level",
+              "context_style"
+            ],
+            "difficulty_controls": {
+              "level_1": {},
+              "level_2": {},
+              "level_3": {}
+            },
+            "anti_repetition_rules": {
+              "avoid_same_template_consecutive": true,
+              "avoid_same_ratio_consecutive": true,
+              "avoid_same_point_names_consecutive": true,
+              "avoid_same_answer_consecutive": true,
+              "recent_history_window": 5,
+              "signature_fields": [
+                "problem_type_id",
+                "template_variant",
+                "ratio_form",
+                "ratio_values",
+                "coordinate_pattern",
+                "answer"
+              ]
+            },
+            "validity_constraints": [
+              "answer derivable from givens"
+            ],
+            "answer_shape": "numeric",
+            "explanation_variants": [
+              "stepwise"
+            ],
+            "sampling_strategy": "weighted_random",
+            "template_families": [
+              "evaluate_function_value"
+            ]
+          },
+          "parameter_schema": {
+            "seed": {
+              "type": "integer",
+              "randomize": true
+            },
+            "difficulty_level": {
+              "choices": [
+                "level_1",
+                "level_2",
+                "level_3"
+              ],
+              "weights": [
+                0.4,
+                0.4,
+                0.2
+              ]
+            }
+          },
+          "variable_randomization_notes": [],
+          "checker_key": "numeric_checker",
+          "equivalence_type": "numeric_equivalence",
+          "skill_scope_trusted": true,
+          "target_task": "evaluate_function_value",
+          "task_family": "function_concept_family",
+          "math_objects": [
+            "coordinate_point",
+            "three_coordinate_points",
+            "triangle",
+            "two_coordinate_points"
+          ],
+          "answer_type": "numeric",
+          "answer_shape": "numeric",
+          "source_type": "worked_example",
+          "example_label": "例題2",
+          "practice_label": "",
+          "linked_example": "",
+          "linked_example_id": null,
+          "linked_example_task_family": "",
+          "structure_consistency": "not_applicable",
+          "sequence_context_used": true,
+          "structure_context_used": true,
+          "confidence_adjustment_reason": "sequence_context_used",
+          "possible_structure_mismatch": false,
+          "possible_mixed_source_context": false
+        },
+        "subskill_id": "evaluate_function_value",
+        "classification_source": "ai",
+        "induction_eligibility": "excluded_source_quality_reject"
+      },
+      {
         "example_id": 4433,
         "detected_problem_type_id": "short_answer_interpret_function_notation_short_answer",
         "example_feature": {
@@ -109402,15 +119154,15 @@
             "ai_best_candidate_id": "interpret_function_notation",
             "ai_evidence": [
               "題目要求在坐標平面上畫出常數函數 y = f(x) = -2 的圖形。",
-              "提供的候選子技能（C1-C5）皆屬於函數概念家族（function_concept_family），包含求值、符號辨識、定義域值域、映射判斷及函數關係判斷。",
-              "候選清單中缺乏與「繪製圖形」或「線型函數圖形」相關的子技能。"
+              "提供的候選子技能 (C1-C5) 均屬於函數概念家族 (function_concept_family)，包含求值、符號辨釋、定義域值域、映射判斷及函數關係判斷。",
+              "候選清單中缺乏「描繪函數圖形」或「線性函數圖形」相關的子技能。"
             ],
             "ai_rejected_candidates": {
-              "C1": "此題為作圖題，非單純求函數值。",
-              "C2": "此題重點在於圖形繪製，而非僅僅理解函數符號的意義。",
+              "C1": "此題為繪圖題，而非單純求特定點的函數值。",
+              "C2": "此題涉及函數符號，但核心任務是繪圖而非僅僅是辨釋符號意義。",
               "C3": "此題未要求判斷定義域或值域。",
               "C4": "此題非判斷映射是否為函數。",
-              "C5": "此題非判斷變數間的函數關係。"
+              "C5": "此題非判斷變數間是否構成函數關係。"
             },
             "ai_available": false,
             "ai_error": "",
@@ -109430,7 +119182,7 @@
             "conflict_reason": "",
             "source_mapping_warning": "",
             "requires_human_action": false,
-            "ai_notes": "題目要求畫出常數函數的圖形，但提供的候選子技能僅限於函數的基本概念（如求值、符號、定義域等），不包含線型函數的圖形特徵或作圖。建議增加與圖形繪製相關的子技能。",
+            "ai_notes": "題目任務為「描繪常數函數圖形」，但候選清單僅包含函數基本概念（求值、定義、符號等），缺乏繪圖相關的子技能（如 graph_linear_function 或 graph_constant_function）。",
             "skill_scoped_candidates": [
               {
                 "candidate_id": "C1",
@@ -109982,6 +119734,14 @@
                 "title_head": "例1"
               },
               {
+                "example_id": 4431,
+                "source_type": "worked_example",
+                "example_label": "例題2",
+                "practice_label": "",
+                "section_order": 0,
+                "title_head": "例2"
+              },
+              {
                 "example_id": 4434,
                 "source_type": "worked_example",
                 "example_label": "例題9",
@@ -110040,6 +119800,14 @@
                 "practice_label": "",
                 "section_order": 0,
                 "title_head": "例1"
+              },
+              {
+                "example_id": 4431,
+                "source_type": "worked_example",
+                "example_label": "例題2",
+                "practice_label": "",
+                "section_order": 0,
+                "title_head": "例2"
               },
               {
                 "example_id": 4433,
@@ -110157,15 +119925,15 @@
           "ai_best_candidate_id": "interpret_function_notation",
           "ai_evidence": [
             "題目要求在坐標平面上畫出常數函數 y = f(x) = -2 的圖形。",
-            "提供的候選子技能（C1-C5）皆屬於函數概念家族（function_concept_family），包含求值、符號辨識、定義域值域、映射判斷及函數關係判斷。",
-            "候選清單中缺乏與「繪製圖形」或「線型函數圖形」相關的子技能。"
+            "提供的候選子技能 (C1-C5) 均屬於函數概念家族 (function_concept_family)，包含求值、符號辨釋、定義域值域、映射判斷及函數關係判斷。",
+            "候選清單中缺乏「描繪函數圖形」或「線性函數圖形」相關的子技能。"
           ],
           "ai_rejected_candidates": {
-            "C1": "此題為作圖題，非單純求函數值。",
-            "C2": "此題重點在於圖形繪製，而非僅僅理解函數符號的意義。",
+            "C1": "此題為繪圖題，而非單純求特定點的函數值。",
+            "C2": "此題涉及函數符號，但核心任務是繪圖而非僅僅是辨釋符號意義。",
             "C3": "此題未要求判斷定義域或值域。",
             "C4": "此題非判斷映射是否為函數。",
-            "C5": "此題非判斷變數間的函數關係。"
+            "C5": "此題非判斷變數間是否構成函數關係。"
           },
           "ai_available": false,
           "ai_error": "",
@@ -110185,7 +119953,7 @@
           "conflict_reason": "",
           "source_mapping_warning": "",
           "requires_human_action": false,
-          "ai_notes": "題目要求畫出常數函數的圖形，但提供的候選子技能僅限於函數的基本概念（如求值、符號、定義域等），不包含線型函數的圖形特徵或作圖。建議增加與圖形繪製相關的子技能。",
+          "ai_notes": "題目任務為「描繪常數函數圖形」，但候選清單僅包含函數基本概念（求值、定義、符號等），缺乏繪圖相關的子技能（如 graph_linear_function 或 graph_constant_function）。",
           "skill_scoped_candidates": [
             {
               "candidate_id": "C1",
@@ -110767,16 +120535,16 @@
             "ai_confidence": 0.0,
             "ai_best_candidate_id": "interpret_function_notation",
             "ai_evidence": [
-              "題目要求在坐標平面上畫出一次函數 y=3x-6 的圖形。",
-              "提供的候選子技能 (C1-C5) 皆屬於函數概念家族 (function_concept_family)，包含求值、符號辨釋、定義域值域、映射判斷及函數關係判斷。",
-              "目前的候選清單中缺乏「描繪函數圖形」或「一次函數圖形」相關的子技能。"
+              "The question asks to draw the graph of the linear function y=f(x)=3x-6 on a coordinate plane.",
+              "The provided candidates are evaluate_function_value, interpret_function_notation, judge_domain_range_basic, judge_function_from_mapping, and judge_function_relation.",
+              "None of the available candidates cover the task of graphing or plotting a linear function."
             ],
             "ai_rejected_candidates": {
-              "C1": "求函數值僅為描繪圖形的其中一個步驟，並非此題目的核心任務。",
-              "C2": "此題重點在於繪圖而非辨識函數符號的意義。",
-              "C3": "此題未涉及定義域或值域的判斷。",
-              "C4": "此題並非判斷是否為函數映射。",
-              "C5": "此題並非判斷變數間是否構成函數關係。"
+              "C1": "Evaluating function values is a necessary step for graphing, but the primary task is the construction of the graph itself.",
+              "C2": "While the problem uses function notation, the objective is to draw a graph, not just interpret the notation.",
+              "C3": "The problem does not ask to determine the domain or range.",
+              "C4": "The problem is not about identifying a function from a mapping diagram.",
+              "C5": "The problem is not about judging whether a relation is a function."
             },
             "ai_available": false,
             "ai_error": "",
@@ -110796,7 +120564,7 @@
             "conflict_reason": "",
             "source_mapping_warning": "",
             "requires_human_action": false,
-            "ai_notes": "題目核心為「描繪一次函數圖形」，但提供的候選子技能僅限於函數基本概念（求值、定義、映射等），不包含圖形繪製，故選擇 needs_review。",
+            "ai_notes": "The specific subskill for graphing linear functions (e.g., graph_linear_function) is missing from the candidate list. Since the task is to draw a graph, none of the concept-based subskills are a perfect fit.",
             "skill_scoped_candidates": [
               {
                 "candidate_id": "C1",
@@ -111348,6 +121116,14 @@
                 "title_head": "例1"
               },
               {
+                "example_id": 4431,
+                "source_type": "worked_example",
+                "example_label": "例題2",
+                "practice_label": "",
+                "section_order": 0,
+                "title_head": "例2"
+              },
+              {
                 "example_id": 4433,
                 "source_type": "worked_example",
                 "example_label": "例題8",
@@ -111406,6 +121182,14 @@
                 "practice_label": "",
                 "section_order": 0,
                 "title_head": "例1"
+              },
+              {
+                "example_id": 4431,
+                "source_type": "worked_example",
+                "example_label": "例題2",
+                "practice_label": "",
+                "section_order": 0,
+                "title_head": "例2"
               },
               {
                 "example_id": 4433,
@@ -111522,16 +121306,16 @@
           "ai_confidence": 0.0,
           "ai_best_candidate_id": "interpret_function_notation",
           "ai_evidence": [
-            "題目要求在坐標平面上畫出一次函數 y=3x-6 的圖形。",
-            "提供的候選子技能 (C1-C5) 皆屬於函數概念家族 (function_concept_family)，包含求值、符號辨釋、定義域值域、映射判斷及函數關係判斷。",
-            "目前的候選清單中缺乏「描繪函數圖形」或「一次函數圖形」相關的子技能。"
+            "The question asks to draw the graph of the linear function y=f(x)=3x-6 on a coordinate plane.",
+            "The provided candidates are evaluate_function_value, interpret_function_notation, judge_domain_range_basic, judge_function_from_mapping, and judge_function_relation.",
+            "None of the available candidates cover the task of graphing or plotting a linear function."
           ],
           "ai_rejected_candidates": {
-            "C1": "求函數值僅為描繪圖形的其中一個步驟，並非此題目的核心任務。",
-            "C2": "此題重點在於繪圖而非辨識函數符號的意義。",
-            "C3": "此題未涉及定義域或值域的判斷。",
-            "C4": "此題並非判斷是否為函數映射。",
-            "C5": "此題並非判斷變數間是否構成函數關係。"
+            "C1": "Evaluating function values is a necessary step for graphing, but the primary task is the construction of the graph itself.",
+            "C2": "While the problem uses function notation, the objective is to draw a graph, not just interpret the notation.",
+            "C3": "The problem does not ask to determine the domain or range.",
+            "C4": "The problem is not about identifying a function from a mapping diagram.",
+            "C5": "The problem is not about judging whether a relation is a function."
           },
           "ai_available": false,
           "ai_error": "",
@@ -111551,7 +121335,7 @@
           "conflict_reason": "",
           "source_mapping_warning": "",
           "requires_human_action": false,
-          "ai_notes": "題目核心為「描繪一次函數圖形」，但提供的候選子技能僅限於函數基本概念（求值、定義、映射等），不包含圖形繪製，故選擇 needs_review。",
+          "ai_notes": "The specific subskill for graphing linear functions (e.g., graph_linear_function) is missing from the candidate list. Since the task is to draw a graph, none of the concept-based subskills are a perfect fit.",
           "skill_scoped_candidates": [
             {
               "candidate_id": "C1",
@@ -112137,15 +121921,15 @@
             "ai_best_candidate_id": "interpret_function_notation",
             "ai_evidence": [
               "題目要求從圖形中求出直線的 x 截距、y 截距以及函數 f(x) 的解析式。",
-              "提供的候選子技能（evaluate_function_value, interpret_function_notation, judge_domain_range_basic, judge_function_from_mapping, judge_function_relation）皆屬於函數的基本概念（function_concept_family）。",
-              "「由圖形求線性函數解析式」或「求截距」屬於線性函數的圖形性質或方程式判定，不屬於上述基本概念子技能的範疇。"
+              "候選子技能清單僅包含函數的基本概念（求值、符號辨識、定義域值域、映射判斷、關係判斷）。",
+              "清單中缺乏「求線型函數解析式」或「判讀圖形截距」等相關子技能。"
             ],
             "ai_rejected_candidates": {
-              "C1": "此題並非單純給定 x 求 f(x) 的函數值評估。",
-              "C2": "此題並非解釋函數符號的意義。",
-              "C3": "此題不涉及定義域或值域的判斷。",
-              "C4": "此題不涉及判斷是否為函數的對應關係。",
-              "C5": "此題不涉及判斷變數間的函數關係。"
+              "C1": "evaluate_function_value 僅涉及給定 x 求 f(x)，而本題重點在於求出函數解析式本身。",
+              "C2": "interpret_function_notation 涉及對函數符號的理解，而非從圖形推導函數。",
+              "C3": "judge_domain_range_basic 涉及定義域與值域，本題未要求。",
+              "C4": "judge_function_from_mapping 涉及映射圖判斷，與本題座標系圖形無關。",
+              "C5": "judge_function_relation 涉及判斷關係是否為函數，本題已給定是函數。"
             },
             "ai_available": false,
             "ai_error": "",
@@ -112165,7 +121949,7 @@
             "conflict_reason": "",
             "source_mapping_warning": "",
             "requires_human_action": false,
-            "ai_notes": "題目核心為「由圖形求線性函數方程式」及「求截距」，這在數學課程中通常對應到線性函數的圖形特徵或待定係數法，而提供的候選清單僅限於函數的基本概念（如定義、符號、求值），因此無合適選項。",
+            "ai_notes": "本題屬於「求線型函數解析式」或「線型函數的圖形特徵（截距）」，目前的候選清單中沒有對應的子技能，建議新增相關標籤。",
             "skill_scoped_candidates": [
               {
                 "candidate_id": "C1",
@@ -112718,6 +122502,14 @@
                 "title_head": "例1"
               },
               {
+                "example_id": 4431,
+                "source_type": "worked_example",
+                "example_label": "例題2",
+                "practice_label": "",
+                "section_order": 0,
+                "title_head": "例2"
+              },
+              {
                 "example_id": 4433,
                 "source_type": "worked_example",
                 "example_label": "例題8",
@@ -112776,6 +122568,14 @@
                 "practice_label": "",
                 "section_order": 0,
                 "title_head": "例1"
+              },
+              {
+                "example_id": 4431,
+                "source_type": "worked_example",
+                "example_label": "例題2",
+                "practice_label": "",
+                "section_order": 0,
+                "title_head": "例2"
               },
               {
                 "example_id": 4433,
@@ -112893,15 +122693,15 @@
           "ai_best_candidate_id": "interpret_function_notation",
           "ai_evidence": [
             "題目要求從圖形中求出直線的 x 截距、y 截距以及函數 f(x) 的解析式。",
-            "提供的候選子技能（evaluate_function_value, interpret_function_notation, judge_domain_range_basic, judge_function_from_mapping, judge_function_relation）皆屬於函數的基本概念（function_concept_family）。",
-            "「由圖形求線性函數解析式」或「求截距」屬於線性函數的圖形性質或方程式判定，不屬於上述基本概念子技能的範疇。"
+            "候選子技能清單僅包含函數的基本概念（求值、符號辨識、定義域值域、映射判斷、關係判斷）。",
+            "清單中缺乏「求線型函數解析式」或「判讀圖形截距」等相關子技能。"
           ],
           "ai_rejected_candidates": {
-            "C1": "此題並非單純給定 x 求 f(x) 的函數值評估。",
-            "C2": "此題並非解釋函數符號的意義。",
-            "C3": "此題不涉及定義域或值域的判斷。",
-            "C4": "此題不涉及判斷是否為函數的對應關係。",
-            "C5": "此題不涉及判斷變數間的函數關係。"
+            "C1": "evaluate_function_value 僅涉及給定 x 求 f(x)，而本題重點在於求出函數解析式本身。",
+            "C2": "interpret_function_notation 涉及對函數符號的理解，而非從圖形推導函數。",
+            "C3": "judge_domain_range_basic 涉及定義域與值域，本題未要求。",
+            "C4": "judge_function_from_mapping 涉及映射圖判斷，與本題座標系圖形無關。",
+            "C5": "judge_function_relation 涉及判斷關係是否為函數，本題已給定是函數。"
           },
           "ai_available": false,
           "ai_error": "",
@@ -112921,7 +122721,7 @@
           "conflict_reason": "",
           "source_mapping_warning": "",
           "requires_human_action": false,
-          "ai_notes": "題目核心為「由圖形求線性函數方程式」及「求截距」，這在數學課程中通常對應到線性函數的圖形特徵或待定係數法，而提供的候選清單僅限於函數的基本概念（如定義、符號、求值），因此無合適選項。",
+          "ai_notes": "本題屬於「求線型函數解析式」或「線型函數的圖形特徵（截距）」，目前的候選清單中沒有對應的子技能，建議新增相關標籤。",
           "skill_scoped_candidates": [
             {
               "candidate_id": "C1",
@@ -113491,17 +123291,18 @@
           "semantic_classification": {
             "ai_target_task": "evaluate_function_value",
             "ai_task_family": "function_concept_family",
-            "ai_confidence": 0.9,
+            "ai_confidence": 0.95,
             "ai_best_candidate_id": "C1",
             "ai_evidence": [
-              "題目要求根據線型函數關係求出特定時間下的手機費用，這屬於求函數值的範疇。",
-              "第一小題要求基本費用 m，即為函數的起始值或特定點的值；第二小題要求 120 分鐘的費用，即為給定自變數求應變數的值。",
-              "此題型符合 function_concept_family 中的 evaluate_function_value 任務。"
+              "題目要求找出基本費 m 以及通話 120 分鐘的總費用。",
+              "這涉及在已知線型函數關係的情況下，計算特定自變數（時間）對應的應變數（費用）數值。",
+              "屬於函數值的求值計算。"
             ],
             "ai_rejected_candidates": {
-              "C2": "題目並未強調函數符號 f(x) 的解讀，而是著重於實際數值的計算。",
-              "C5": "題目已明確指出通話費與時間為線型函數關係，不需判斷是否為函數關係。",
-              "C6": "雖然涉及數值計算，但題目背景明確為線型函數，應優先選擇 anchor 範圍內的 evaluate_function_value。"
+              "C2": "並非著重於函數符號的解讀。",
+              "C3": "並非判斷定義域或值域。",
+              "C4": "並非判斷對應關係是否為函數。",
+              "C5": "題目已給定為線型函數，重點在於求值而非判斷關係。"
             },
             "ai_available": true,
             "ai_error": "",
@@ -113521,7 +123322,7 @@
             "conflict_reason": "",
             "source_mapping_warning": "",
             "requires_human_action": false,
-            "ai_notes": "此題為典型的線型函數應用題，透過圖形或已知條件求出函數關係後計算特定點的函數值。",
+            "ai_notes": "此題為典型的應用題，透過圖形或描述建立線型函數後求特定點的函數值。",
             "skill_scoped_candidates": [
               {
                 "candidate_id": "C1",
@@ -114251,6 +124052,14 @@
                 "title_head": "例1"
               },
               {
+                "example_id": 4431,
+                "source_type": "worked_example",
+                "example_label": "例題2",
+                "practice_label": "",
+                "section_order": 0,
+                "title_head": "例2"
+              },
+              {
                 "example_id": 4433,
                 "source_type": "worked_example",
                 "example_label": "例題8",
@@ -114309,6 +124118,14 @@
                 "practice_label": "",
                 "section_order": 0,
                 "title_head": "例1"
+              },
+              {
+                "example_id": 4431,
+                "source_type": "worked_example",
+                "example_label": "例題2",
+                "practice_label": "",
+                "section_order": 0,
+                "title_head": "例2"
               },
               {
                 "example_id": 4433,
@@ -114421,17 +124238,18 @@
         "semantic_classification": {
           "ai_target_task": "evaluate_function_value",
           "ai_task_family": "function_concept_family",
-          "ai_confidence": 0.9,
+          "ai_confidence": 0.95,
           "ai_best_candidate_id": "C1",
           "ai_evidence": [
-            "題目要求根據線型函數關係求出特定時間下的手機費用，這屬於求函數值的範疇。",
-            "第一小題要求基本費用 m，即為函數的起始值或特定點的值；第二小題要求 120 分鐘的費用，即為給定自變數求應變數的值。",
-            "此題型符合 function_concept_family 中的 evaluate_function_value 任務。"
+            "題目要求找出基本費 m 以及通話 120 分鐘的總費用。",
+            "這涉及在已知線型函數關係的情況下，計算特定自變數（時間）對應的應變數（費用）數值。",
+            "屬於函數值的求值計算。"
           ],
           "ai_rejected_candidates": {
-            "C2": "題目並未強調函數符號 f(x) 的解讀，而是著重於實際數值的計算。",
-            "C5": "題目已明確指出通話費與時間為線型函數關係，不需判斷是否為函數關係。",
-            "C6": "雖然涉及數值計算，但題目背景明確為線型函數，應優先選擇 anchor 範圍內的 evaluate_function_value。"
+            "C2": "並非著重於函數符號的解讀。",
+            "C3": "並非判斷定義域或值域。",
+            "C4": "並非判斷對應關係是否為函數。",
+            "C5": "題目已給定為線型函數，重點在於求值而非判斷關係。"
           },
           "ai_available": true,
           "ai_error": "",
@@ -114451,7 +124269,7 @@
           "conflict_reason": "",
           "source_mapping_warning": "",
           "requires_human_action": false,
-          "ai_notes": "此題為典型的線型函數應用題，透過圖形或已知條件求出函數關係後計算特定點的函數值。",
+          "ai_notes": "此題為典型的應用題，透過圖形或描述建立線型函數後求特定點的函數值。",
           "skill_scoped_candidates": [
             {
               "candidate_id": "C1",
@@ -115214,16 +125032,15 @@
             "ai_confidence": 0.0,
             "ai_best_candidate_id": "interpret_function_notation",
             "ai_evidence": [
-              "題目要求從函數圖形求出 x 截距、y 截距以及函數解析式 f(x) = ax + b。",
-              "候選清單中的 subskills (evaluate_function_value, interpret_function_notation, judge_domain_range_basic, judge_function_from_mapping, judge_function_relation) 皆不包含「求截距」或「求線型函數解析式」等核心任務。",
-              "此題屬於「由圖形求線型函數」或「線型函數的截距」，在提供的候選清單中無對應項。"
+              "題目要求從圖形中求出直線的 x 截距、y 截距以及函數 f(x) = ax + b 的解析式。",
+              "提供的候選子技能（求函數值、解釋函數符號、判斷定義域值域、由對應關係判斷函數、判斷函數關係）皆不包含「從圖形求一次函數解析式」或「求截距」的任務。"
             ],
             "ai_rejected_candidates": {
-              "C1": "evaluate_function_value 通常指已知函數求特定點的值，而非求函數解析式或截距。",
-              "C2": "interpret_function_notation 涉及對函數符號意義的理解，不涵蓋求解析式的計算過程。",
-              "C3": "judge_domain_range_basic 涉及定義域與值域，與本題求解析式無關。",
-              "C4": "judge_function_from_mapping 涉及映射圖判斷，與本題無關。",
-              "C5": "judge_function_relation 涉及判斷關係是否為函數，與本題無關。"
+              "C1": "此子技能通常指給定 x 求 f(x) 的值，而非求出函數解析式本身。",
+              "C2": "此子技能涉及對函數符號意義的理解，不涵蓋從圖形推導函數解析式的計算過程。",
+              "C3": "題目未涉及定義域或值域的判斷。",
+              "C4": "題目並非透過對應圖（如箭號圖）來判斷函數。",
+              "C5": "題目並非判斷一個關係是否為函數。"
             },
             "ai_available": false,
             "ai_error": "",
@@ -115243,7 +125060,7 @@
             "conflict_reason": "",
             "source_mapping_warning": "",
             "requires_human_action": false,
-            "ai_notes": "該題目涉及從圖形資訊（截距）推導線型函數解析式，這屬於線型函數的核心技能，但目前提供的候選清單僅限於函數的基本概念（如定義、符號、求值、定義域），缺乏「求線型函數解析式」或「線型函數圖形特徵」相關的 subskill。",
+            "ai_notes": "目前的候選子技能清單僅限於函數的基本概念（function_concept_family），而本題屬於一次函數的圖形與解析式求法，建議增加如「從圖形求一次函數解析式」或「一次函數的截距」等子技能。",
             "skill_scoped_candidates": [
               {
                 "candidate_id": "C1",
@@ -115788,12 +125605,12 @@
             "practice_number": null,
             "nearby_worked_examples": [
               {
-                "example_id": 4430,
+                "example_id": 4431,
                 "source_type": "worked_example",
-                "example_label": "例題1",
+                "example_label": "例題2",
                 "practice_label": "",
                 "section_order": 0,
-                "title_head": "例1"
+                "title_head": "例2"
               },
               {
                 "example_id": 4433,
@@ -115862,6 +125679,14 @@
                 "practice_label": "",
                 "section_order": 0,
                 "title_head": "例1"
+              },
+              {
+                "example_id": 4431,
+                "source_type": "worked_example",
+                "example_label": "例題2",
+                "practice_label": "",
+                "section_order": 0,
+                "title_head": "例2"
               },
               {
                 "example_id": 4433,
@@ -115978,16 +125803,15 @@
           "ai_confidence": 0.0,
           "ai_best_candidate_id": "interpret_function_notation",
           "ai_evidence": [
-            "題目要求從函數圖形求出 x 截距、y 截距以及函數解析式 f(x) = ax + b。",
-            "候選清單中的 subskills (evaluate_function_value, interpret_function_notation, judge_domain_range_basic, judge_function_from_mapping, judge_function_relation) 皆不包含「求截距」或「求線型函數解析式」等核心任務。",
-            "此題屬於「由圖形求線型函數」或「線型函數的截距」，在提供的候選清單中無對應項。"
+            "題目要求從圖形中求出直線的 x 截距、y 截距以及函數 f(x) = ax + b 的解析式。",
+            "提供的候選子技能（求函數值、解釋函數符號、判斷定義域值域、由對應關係判斷函數、判斷函數關係）皆不包含「從圖形求一次函數解析式」或「求截距」的任務。"
           ],
           "ai_rejected_candidates": {
-            "C1": "evaluate_function_value 通常指已知函數求特定點的值，而非求函數解析式或截距。",
-            "C2": "interpret_function_notation 涉及對函數符號意義的理解，不涵蓋求解析式的計算過程。",
-            "C3": "judge_domain_range_basic 涉及定義域與值域，與本題求解析式無關。",
-            "C4": "judge_function_from_mapping 涉及映射圖判斷，與本題無關。",
-            "C5": "judge_function_relation 涉及判斷關係是否為函數，與本題無關。"
+            "C1": "此子技能通常指給定 x 求 f(x) 的值，而非求出函數解析式本身。",
+            "C2": "此子技能涉及對函數符號意義的理解，不涵蓋從圖形推導函數解析式的計算過程。",
+            "C3": "題目未涉及定義域或值域的判斷。",
+            "C4": "題目並非透過對應圖（如箭號圖）來判斷函數。",
+            "C5": "題目並非判斷一個關係是否為函數。"
           },
           "ai_available": false,
           "ai_error": "",
@@ -116007,7 +125831,7 @@
           "conflict_reason": "",
           "source_mapping_warning": "",
           "requires_human_action": false,
-          "ai_notes": "該題目涉及從圖形資訊（截距）推導線型函數解析式，這屬於線型函數的核心技能，但目前提供的候選清單僅限於函數的基本概念（如定義、符號、求值、定義域），缺乏「求線型函數解析式」或「線型函數圖形特徵」相關的 subskill。",
+          "ai_notes": "目前的候選子技能清單僅限於函數的基本概念（function_concept_family），而本題屬於一次函數的圖形與解析式求法，建議增加如「從圖形求一次函數解析式」或「一次函數的截距」等子技能。",
           "skill_scoped_candidates": [
             {
               "candidate_id": "C1",
@@ -116580,14 +126404,16 @@
             "ai_confidence": 0.9,
             "ai_best_candidate_id": "C1",
             "ai_evidence": [
-              "題目要求計算特定通話時間（1500秒）下的費用，這屬於求函數值的範疇 (evaluate_function_value)。",
-              "題目明確提到通話時間與費用成線型函數關係。",
-              "第一題要求基本費用，即在特定區間（300秒以內）的函數值。"
+              "題目描述通話時間與費用之間存在線型函數關係",
+              "第二小題要求計算通話 1500 秒時的費用，這屬於給定自變數求應變數的函數值計算",
+              "第一題要求基本費用，即為函數在特定區間或起始點的輸出值"
             ],
             "ai_rejected_candidates": {
-              "C2": "雖然題目涉及對情境的理解，但核心任務是計算具體的數值而非解釋函數符號的含義。",
-              "C5": "題目已經給定函數關係，不需要判斷是否為函數關係。",
-              "C6": "C6 是外部候選者 (outsider)，在有合適的錨點候選者 (anchor) C1 的情況下，應優先選擇 C1。"
+              "C2": "題目並未著重於函數符號 f(x) 的解讀，而是具體數值的計算",
+              "C3": "題目並非要求判斷定義域或值域",
+              "C4": "題目並非判斷是否為函數映射關係",
+              "C5": "題目已給定為線型函數關係，不需判斷關係類型",
+              "C6": "雖然涉及計算，但題目背景明確屬於線型函數範疇，應優先選擇 anchor 內的子技能"
             },
             "ai_available": true,
             "ai_error": "",
@@ -116607,7 +126433,7 @@
             "conflict_reason": "",
             "source_mapping_warning": "",
             "requires_human_action": false,
-            "ai_notes": "此題為線型函數的應用，透過給定的條件（或圖形）求出函數關係後，計算特定自變數下的應變數值，符合 evaluate_function_value 的定義。",
+            "ai_notes": "此題為線型函數的應用題，核心任務是根據給定的函數關係（圖形或文字描述）求出特定點的函數值（費用）。",
             "skill_scoped_candidates": [
               {
                 "candidate_id": "C1",
@@ -117329,12 +127155,12 @@
             "practice_number": null,
             "nearby_worked_examples": [
               {
-                "example_id": 4430,
+                "example_id": 4431,
                 "source_type": "worked_example",
-                "example_label": "例題1",
+                "example_label": "例題2",
                 "practice_label": "",
                 "section_order": 0,
-                "title_head": "例1"
+                "title_head": "例2"
               },
               {
                 "example_id": 4433,
@@ -117403,6 +127229,14 @@
                 "practice_label": "",
                 "section_order": 0,
                 "title_head": "例1"
+              },
+              {
+                "example_id": 4431,
+                "source_type": "worked_example",
+                "example_label": "例題2",
+                "practice_label": "",
+                "section_order": 0,
+                "title_head": "例2"
               },
               {
                 "example_id": 4433,
@@ -117518,14 +127352,16 @@
           "ai_confidence": 0.9,
           "ai_best_candidate_id": "C1",
           "ai_evidence": [
-            "題目要求計算特定通話時間（1500秒）下的費用，這屬於求函數值的範疇 (evaluate_function_value)。",
-            "題目明確提到通話時間與費用成線型函數關係。",
-            "第一題要求基本費用，即在特定區間（300秒以內）的函數值。"
+            "題目描述通話時間與費用之間存在線型函數關係",
+            "第二小題要求計算通話 1500 秒時的費用，這屬於給定自變數求應變數的函數值計算",
+            "第一題要求基本費用，即為函數在特定區間或起始點的輸出值"
           ],
           "ai_rejected_candidates": {
-            "C2": "雖然題目涉及對情境的理解，但核心任務是計算具體的數值而非解釋函數符號的含義。",
-            "C5": "題目已經給定函數關係，不需要判斷是否為函數關係。",
-            "C6": "C6 是外部候選者 (outsider)，在有合適的錨點候選者 (anchor) C1 的情況下，應優先選擇 C1。"
+            "C2": "題目並未著重於函數符號 f(x) 的解讀，而是具體數值的計算",
+            "C3": "題目並非要求判斷定義域或值域",
+            "C4": "題目並非判斷是否為函數映射關係",
+            "C5": "題目已給定為線型函數關係，不需判斷關係類型",
+            "C6": "雖然涉及計算，但題目背景明確屬於線型函數範疇，應優先選擇 anchor 內的子技能"
           },
           "ai_available": true,
           "ai_error": "",
@@ -117545,7 +127381,7 @@
           "conflict_reason": "",
           "source_mapping_warning": "",
           "requires_human_action": false,
-          "ai_notes": "此題為線型函數的應用，透過給定的條件（或圖形）求出函數關係後，計算特定自變數下的應變數值，符合 evaluate_function_value 的定義。",
+          "ai_notes": "此題為線型函數的應用題，核心任務是根據給定的函數關係（圖形或文字描述）求出特定點的函數值（費用）。",
           "skill_scoped_candidates": [
             {
               "candidate_id": "C1",
@@ -118314,17 +128150,17 @@
             "ai_confidence": 0.0,
             "ai_best_candidate_id": "needs_review",
             "ai_evidence": [
-              "題目要求計算線段三等分點的坐標，屬於分點公式（division point formula）的應用。",
-              "提供的候選子技能（C1-C5）皆屬於函數概念家族（function_concept_family），如函數值求值、符號辨釋、定義域值域、映射判斷等。",
-              "此題目不涉及函數映射、函數符號或函數值的計算，與現有的函數概念子技能不符。"
+              "題目要求找出將線段 AD 三等分的點 C 之坐標，這屬於解析幾何中的分點公式問題。",
+              "候選子技能 C1 至 C5 皆屬於函數概念（如函數值計算、符號辨識、定義域值域、映射判斷等），與分點公式或坐標幾何計算不符。",
+              "雖然題目涉及計算，但 C6 (compute_numeric) 過於籠統，且不屬於該技能錨點 (Linear Function) 的預期任務家族。"
             ],
             "ai_rejected_candidates": {
-              "C1": "此題並非給定函數 f(x) 並要求計算特定 x 的函數值。",
-              "C2": "此題未出現函數符號 f(x) 或其相關表示法。",
-              "C3": "此題不涉及函數的定義域或值域判斷。",
-              "C4": "此題並非判斷一組對應關係是否為函數。",
+              "C1": "此題並非給定函數 f(x) 並要求計算特定輸入的函數值。",
+              "C2": "此題不涉及函數符號的解讀。",
+              "C3": "此題不涉及判斷函數的定義域或值域。",
+              "C4": "此題不涉及判斷映射關係是否為函數。",
               "C5": "此題不涉及判斷兩個變量之間的函數關係。",
-              "C6": "雖然涉及數值計算，但此題具有明確的幾何分點公式特徵，不應僅歸類為一般數值計算。"
+              "C6": "雖然涉及數值計算，但此題核心為分點公式，且 C6 為 outsider 類別，在沒有合適錨點子技能時應優先考慮 needs_review。"
             },
             "ai_available": false,
             "ai_error": "",
@@ -118344,7 +128180,7 @@
             "conflict_reason": "needs_review",
             "source_mapping_warning": "",
             "requires_human_action": false,
-            "ai_notes": "題目內容為坐標幾何中的分點公式（三等分點），而提供的候選子技能全數屬於函數概念範疇，兩者不匹配。建議將此題歸類至坐標系或分點公式相關技能。",
+            "ai_notes": "題目為典型的分點公式應用（三等分點），但提供的子技能清單僅限於函數概念（function_concept_family），缺乏坐標幾何或分點公式相關的選項。因此選擇 needs_review。",
             "skill_scoped_candidates": [
               {
                 "candidate_id": "C1",
@@ -118990,12 +128826,12 @@
             "practice_number": null,
             "nearby_worked_examples": [
               {
-                "example_id": 4430,
+                "example_id": 4431,
                 "source_type": "worked_example",
-                "example_label": "例題1",
+                "example_label": "例題2",
                 "practice_label": "",
                 "section_order": 0,
-                "title_head": "例1"
+                "title_head": "例2"
               },
               {
                 "example_id": 4433,
@@ -119064,6 +128900,14 @@
                 "practice_label": "",
                 "section_order": 0,
                 "title_head": "例1"
+              },
+              {
+                "example_id": 4431,
+                "source_type": "worked_example",
+                "example_label": "例題2",
+                "practice_label": "",
+                "section_order": 0,
+                "title_head": "例2"
               },
               {
                 "example_id": 4433,
@@ -119180,17 +129024,17 @@
           "ai_confidence": 0.0,
           "ai_best_candidate_id": "needs_review",
           "ai_evidence": [
-            "題目要求計算線段三等分點的坐標，屬於分點公式（division point formula）的應用。",
-            "提供的候選子技能（C1-C5）皆屬於函數概念家族（function_concept_family），如函數值求值、符號辨釋、定義域值域、映射判斷等。",
-            "此題目不涉及函數映射、函數符號或函數值的計算，與現有的函數概念子技能不符。"
+            "題目要求找出將線段 AD 三等分的點 C 之坐標，這屬於解析幾何中的分點公式問題。",
+            "候選子技能 C1 至 C5 皆屬於函數概念（如函數值計算、符號辨識、定義域值域、映射判斷等），與分點公式或坐標幾何計算不符。",
+            "雖然題目涉及計算，但 C6 (compute_numeric) 過於籠統，且不屬於該技能錨點 (Linear Function) 的預期任務家族。"
           ],
           "ai_rejected_candidates": {
-            "C1": "此題並非給定函數 f(x) 並要求計算特定 x 的函數值。",
-            "C2": "此題未出現函數符號 f(x) 或其相關表示法。",
-            "C3": "此題不涉及函數的定義域或值域判斷。",
-            "C4": "此題並非判斷一組對應關係是否為函數。",
+            "C1": "此題並非給定函數 f(x) 並要求計算特定輸入的函數值。",
+            "C2": "此題不涉及函數符號的解讀。",
+            "C3": "此題不涉及判斷函數的定義域或值域。",
+            "C4": "此題不涉及判斷映射關係是否為函數。",
             "C5": "此題不涉及判斷兩個變量之間的函數關係。",
-            "C6": "雖然涉及數值計算，但此題具有明確的幾何分點公式特徵，不應僅歸類為一般數值計算。"
+            "C6": "雖然涉及數值計算，但此題核心為分點公式，且 C6 為 outsider 類別，在沒有合適錨點子技能時應優先考慮 needs_review。"
           },
           "ai_available": false,
           "ai_error": "",
@@ -119210,7 +129054,7 @@
           "conflict_reason": "needs_review",
           "source_mapping_warning": "",
           "requires_human_action": false,
-          "ai_notes": "題目內容為坐標幾何中的分點公式（三等分點），而提供的候選子技能全數屬於函數概念範疇，兩者不匹配。建議將此題歸類至坐標系或分點公式相關技能。",
+          "ai_notes": "題目為典型的分點公式應用（三等分點），但提供的子技能清單僅限於函數概念（function_concept_family），缺乏坐標幾何或分點公式相關的選項。因此選擇 needs_review。",
           "skill_scoped_candidates": [
             {
               "candidate_id": "C1",
@@ -119897,16 +129741,16 @@
             "ai_confidence": 0.0,
             "ai_best_candidate_id": "interpret_function_notation",
             "ai_evidence": [
-              "題目要求從圖形中求出直線的 x 截距與 y 截距，並求出函數 f(x) 的解析式。",
-              "提供的候選子技能（evaluate_function_value, interpret_function_notation, judge_domain_range_basic, judge_function_from_mapping, judge_function_relation）皆屬於函數概念家族，側重於函數定義、符號、定義域值域及對應關係。",
-              "目前候選清單中缺乏「由圖形求線型函數解析式」或「求直線截距」等具體針對線型函數運算的子技能。"
+              "題目要求從圖形中求出直線的 x 截距、y 截距以及函數 f(x) 的解析式。",
+              "候選子技能列表僅包含函數概念（求值、符號辨釋、定義域值域、映射判斷、函數關係判斷）。",
+              "題目核心在於「求一次函數解析式」與「截距概念」，現有子技能中無一符合此特定任務。"
             ],
             "ai_rejected_candidates": {
-              "C1": "此題並非給定 x 求 f(x) 的值，而是要先求出函數解析式。",
-              "C2": "此題涉及函數符號的使用，但核心任務是求出函數解析式，而非僅僅解釋符號意義。",
+              "C1": "此題並非單純給定 x 求 f(x) 的值，而是要求出整個函數解析式。",
+              "C2": "此題涉及函數符號的使用，但核心任務是求出函數式與截距，而非僅僅辨識符號意義。",
               "C3": "題目未涉及定義域或值域的判斷。",
-              "C4": "題目並非判斷對應圖表是否為函數。",
-              "C5": "題目並非判斷兩個變量之間的函數關係。"
+              "C4": "題目未涉及映射圖或判斷是否為函數。",
+              "C5": "題目未涉及判斷變數間是否構成函數關係。"
             },
             "ai_available": false,
             "ai_error": "",
@@ -119926,7 +129770,7 @@
             "conflict_reason": "",
             "source_mapping_warning": "",
             "requires_human_action": false,
-            "ai_notes": "該題目屬於「由圖形求線型函數」或「直線的截距」，在目前的候選清單中沒有完全符合的子技能，建議新增相關子技能或檢查技能錨點範圍。",
+            "ai_notes": "該題目屬於「求一次函數解析式」或「一次函數的圖形特徵（截距）」，但提供的候選子技能僅限於「函數概念」家族。建議新增與一次函數（Linear Function）具體性質相關的子技能，如「從圖形求一次函數式」或「求一次函數的截距」。",
             "skill_scoped_candidates": [
               {
                 "candidate_id": "C1",
@@ -120471,12 +130315,12 @@
             "practice_number": 10,
             "nearby_worked_examples": [
               {
-                "example_id": 4430,
+                "example_id": 4431,
                 "source_type": "worked_example",
-                "example_label": "例題1",
+                "example_label": "例題2",
                 "practice_label": "",
                 "section_order": 0,
-                "title_head": "例1"
+                "title_head": "例2"
               },
               {
                 "example_id": 4433,
@@ -120545,6 +130389,14 @@
                 "practice_label": "",
                 "section_order": 0,
                 "title_head": "例1"
+              },
+              {
+                "example_id": 4431,
+                "source_type": "worked_example",
+                "example_label": "例題2",
+                "practice_label": "",
+                "section_order": 0,
+                "title_head": "例2"
               },
               {
                 "example_id": 4433,
@@ -120661,16 +130513,16 @@
           "ai_confidence": 0.0,
           "ai_best_candidate_id": "interpret_function_notation",
           "ai_evidence": [
-            "題目要求從圖形中求出直線的 x 截距與 y 截距，並求出函數 f(x) 的解析式。",
-            "提供的候選子技能（evaluate_function_value, interpret_function_notation, judge_domain_range_basic, judge_function_from_mapping, judge_function_relation）皆屬於函數概念家族，側重於函數定義、符號、定義域值域及對應關係。",
-            "目前候選清單中缺乏「由圖形求線型函數解析式」或「求直線截距」等具體針對線型函數運算的子技能。"
+            "題目要求從圖形中求出直線的 x 截距、y 截距以及函數 f(x) 的解析式。",
+            "候選子技能列表僅包含函數概念（求值、符號辨釋、定義域值域、映射判斷、函數關係判斷）。",
+            "題目核心在於「求一次函數解析式」與「截距概念」，現有子技能中無一符合此特定任務。"
           ],
           "ai_rejected_candidates": {
-            "C1": "此題並非給定 x 求 f(x) 的值，而是要先求出函數解析式。",
-            "C2": "此題涉及函數符號的使用，但核心任務是求出函數解析式，而非僅僅解釋符號意義。",
+            "C1": "此題並非單純給定 x 求 f(x) 的值，而是要求出整個函數解析式。",
+            "C2": "此題涉及函數符號的使用，但核心任務是求出函數式與截距，而非僅僅辨識符號意義。",
             "C3": "題目未涉及定義域或值域的判斷。",
-            "C4": "題目並非判斷對應圖表是否為函數。",
-            "C5": "題目並非判斷兩個變量之間的函數關係。"
+            "C4": "題目未涉及映射圖或判斷是否為函數。",
+            "C5": "題目未涉及判斷變數間是否構成函數關係。"
           },
           "ai_available": false,
           "ai_error": "",
@@ -120690,7 +130542,7 @@
           "conflict_reason": "",
           "source_mapping_warning": "",
           "requires_human_action": false,
-          "ai_notes": "該題目屬於「由圖形求線型函數」或「直線的截距」，在目前的候選清單中沒有完全符合的子技能，建議新增相關子技能或檢查技能錨點範圍。",
+          "ai_notes": "該題目屬於「求一次函數解析式」或「一次函數的圖形特徵（截距）」，但提供的候選子技能僅限於「函數概念」家族。建議新增與一次函數（Linear Function）具體性質相關的子技能，如「從圖形求一次函數式」或「求一次函數的截距」。",
           "skill_scoped_candidates": [
             {
               "candidate_id": "C1",
@@ -121260,17 +131112,17 @@
           "semantic_classification": {
             "ai_target_task": "evaluate_function_value",
             "ai_task_family": "function_concept_family",
-            "ai_confidence": 0.95,
+            "ai_confidence": 0.9,
             "ai_best_candidate_id": "C1",
             "ai_evidence": [
-              "題目要求在已知托運費用（函數值）的情況下，求出對應的行李重量（自變數）。",
-              "這屬於線型函數中求特定數值的應用，符合 evaluate_function_value 的定義。"
+              "題目描述行李費用與重量成線型函數關係，並給出特定費用（函數值）要求回推重量（自變數）。",
+              "此類已知函數值求自變數或已知自變數求函數值的計算，屬於 evaluate_function_value 的範疇。",
+              "該候選項目位於 anchor 範圍內且符合 function_concept_family。"
             ],
             "ai_rejected_candidates": {
-              "C2": "題目並非著重於函數符號 f(x) 的解讀。",
-              "C3": "題目並非要求判斷定義域或值域。",
-              "C4": "題目並非判斷映射是否為函數。",
-              "C5": "題目並非判斷兩個變數之間是否具備函數關係。"
+              "C2": "題目並非著重於函數符號（如 f(x)）的意義解釋，而是具體的數值計算。",
+              "C5": "題目已明確指出是線型函數關係，不需要判斷兩變數是否構成函數。",
+              "C6": "雖然涉及計算，但 C1 更符合線型函數技能的學科特定分類。"
             },
             "ai_available": true,
             "ai_error": "",
@@ -121290,7 +131142,7 @@
             "conflict_reason": "",
             "source_mapping_warning": "",
             "requires_human_action": false,
-            "ai_notes": "此題為線型函數的應用題，透過給定的函數值（費用 850 元）回推自變數（重量），屬於函數值的計算範疇。",
+            "ai_notes": "題目給定 y = 850 並要求透過線型函數關係求 x，這屬於函數求值與應用的標準題型。",
             "skill_scoped_candidates": [
               {
                 "candidate_id": "C1",
@@ -122012,12 +131864,12 @@
             "practice_number": 11,
             "nearby_worked_examples": [
               {
-                "example_id": 4430,
+                "example_id": 4431,
                 "source_type": "worked_example",
-                "example_label": "例題1",
+                "example_label": "例題2",
                 "practice_label": "",
                 "section_order": 0,
-                "title_head": "例1"
+                "title_head": "例2"
               },
               {
                 "example_id": 4433,
@@ -122086,6 +131938,14 @@
                 "practice_label": "",
                 "section_order": 0,
                 "title_head": "例1"
+              },
+              {
+                "example_id": 4431,
+                "source_type": "worked_example",
+                "example_label": "例題2",
+                "practice_label": "",
+                "section_order": 0,
+                "title_head": "例2"
               },
               {
                 "example_id": 4433,
@@ -122198,17 +132058,17 @@
         "semantic_classification": {
           "ai_target_task": "evaluate_function_value",
           "ai_task_family": "function_concept_family",
-          "ai_confidence": 0.95,
+          "ai_confidence": 0.9,
           "ai_best_candidate_id": "C1",
           "ai_evidence": [
-            "題目要求在已知托運費用（函數值）的情況下，求出對應的行李重量（自變數）。",
-            "這屬於線型函數中求特定數值的應用，符合 evaluate_function_value 的定義。"
+            "題目描述行李費用與重量成線型函數關係，並給出特定費用（函數值）要求回推重量（自變數）。",
+            "此類已知函數值求自變數或已知自變數求函數值的計算，屬於 evaluate_function_value 的範疇。",
+            "該候選項目位於 anchor 範圍內且符合 function_concept_family。"
           ],
           "ai_rejected_candidates": {
-            "C2": "題目並非著重於函數符號 f(x) 的解讀。",
-            "C3": "題目並非要求判斷定義域或值域。",
-            "C4": "題目並非判斷映射是否為函數。",
-            "C5": "題目並非判斷兩個變數之間是否具備函數關係。"
+            "C2": "題目並非著重於函數符號（如 f(x)）的意義解釋，而是具體的數值計算。",
+            "C5": "題目已明確指出是線型函數關係，不需要判斷兩變數是否構成函數。",
+            "C6": "雖然涉及計算，但 C1 更符合線型函數技能的學科特定分類。"
           },
           "ai_available": true,
           "ai_error": "",
@@ -122228,7 +132088,7 @@
           "conflict_reason": "",
           "source_mapping_warning": "",
           "requires_human_action": false,
-          "ai_notes": "此題為線型函數的應用題，透過給定的函數值（費用 850 元）回推自變數（重量），屬於函數值的計算範疇。",
+          "ai_notes": "題目給定 y = 850 並要求透過線型函數關係求 x，這屬於函數求值與應用的標準題型。",
           "skill_scoped_candidates": [
             {
               "candidate_id": "C1",
@@ -122959,8 +132819,8 @@
           ],
           "has_choices": true,
           "stem_embeds_choices": true,
-          "answer_type": "expression",
-          "answer_shape": "choice_label",
+          "answer_type": "integer",
+          "answer_shape": "numeric",
           "checker": "choice_label_checker",
           "equivalence": "choice_label",
           "math_objects": [
@@ -122970,7 +132830,7 @@
             "two_coordinate_points"
           ],
           "target_task": "evaluate_function_value",
-          "task_family": "generic_numeric_family",
+          "task_family": "function_concept_family",
           "reasoning_type": [
             "numeric_computation"
           ],
@@ -122995,28 +132855,26 @@
             "y"
           ],
           "target": "evaluate_function_value",
-          "classifier_source": "ai_needs_review",
+          "classifier_source": "ai",
           "semantic_classification": {
-            "ai_target_task": "",
-            "ai_task_family": "",
-            "ai_confidence": 0.0,
-            "ai_best_candidate_id": "needs_review",
+            "ai_target_task": "evaluate_function_value",
+            "ai_task_family": "function_concept_family",
+            "ai_confidence": 0.8,
+            "ai_best_candidate_id": "C1",
             "ai_evidence": [
-              "The problem is a word problem involving linear inequalities in two variables: 100x + 200y <= 500,000 and 200x + 100y <= 500,000.",
-              "The provided subskills are restricted to the 'function_concept_family', which focuses on the definition, notation, and basic properties (domain/range) of functions.",
-              "The problem does not use function notation (e.g., f(x)), nor does it involve mapping diagrams or determining if a relation is a function.",
-              "The required action is to verify which coordinate pair satisfies a set of linear constraints, which is an application of linear inequalities rather than a basic function concept evaluation.",
-              "The skill anchor 'vh_數學B1_LinearFunction' usually covers one-variable linear functions (f(x) = ax + b), whereas this problem involves two variables and inequalities."
+              "The problem requires calculating the total cost for specific pairs of (x, y) to check if they exceed a budget of 500,000.",
+              "This process involves substituting numerical values into linear expressions (100x + 200y and 200x + 100y), which is the core action of evaluating a function value.",
+              "Among the anchor-scoped candidates in the function_concept_family, evaluate_function_value is the only one that matches the task of plugging in values to find a result."
             ],
             "ai_rejected_candidates": {
-              "C1": "While it involves calculation, 'evaluate_function_value' typically refers to finding f(a) given a function f(x), which is not the case here.",
-              "C2": "The problem does not use or require the interpretation of function notation like f(x).",
-              "C3": "The problem is not asking for the domain or range of a function.",
-              "C4": "The problem does not involve determining if a mapping or set of pairs constitutes a function.",
-              "C5": "The problem does not involve judging the relationship between variables in a functional context (e.g., is y a function of x?).",
-              "C6": "Although the problem involves arithmetic, 'compute_numeric' is an outsider candidate and the problem is a structured word problem rather than a pure numeric calculation."
+              "C2": "The problem does not involve interpreting function notation like f(x).",
+              "C3": "The problem is not about determining the domain or range of a function.",
+              "C4": "The problem does not involve identifying whether a mapping is a function.",
+              "C5": "The problem does not ask to determine the relationship between variables in a functional sense (e.g., whether y is a function of x).",
+              "C6": "While the problem involves arithmetic, C1 is an anchor-scoped candidate and is preferred over the outsider candidate C6 according to the rules.",
+              "needs_review": "The problem fits the 'evaluate' task well enough within the context of linear functions and expressions to avoid a needs_review tag."
             },
-            "ai_available": false,
+            "ai_available": true,
             "ai_error": "",
             "ai_unavailable_reason": "",
             "ai_semantic_status": "ok",
@@ -123029,12 +132887,12 @@
             "rule_task_family": "generic_numeric_family",
             "rule_confidence": 0.2,
             "final_target_task": "evaluate_function_value",
-            "final_task_family": "generic_numeric_family",
-            "classifier_source": "fallback_application_induct",
-            "conflict_reason": "needs_review",
+            "final_task_family": "function_concept_family",
+            "classifier_source": "ai",
+            "conflict_reason": "",
             "source_mapping_warning": "",
             "requires_human_action": false,
-            "ai_notes": "The problem is a 112 Unified Entrance Exam (統測B) question that involves modeling and solving linear inequalities in two variables. This does not align with the provided subskills, which are focused on the conceptual foundations of functions (mapping, notation, domain/range). A subskill related to 'Linear Inequalities' or 'Linear Function Applications' would be more appropriate.",
+            "ai_notes": "The problem asks to verify which coordinate pair satisfies a budget constraint under two possible price scenarios. This is mathematically equivalent to evaluating a cost function at specific points and comparing the output to a threshold.",
             "skill_scoped_candidates": [
               {
                 "candidate_id": "C1",
@@ -123638,25 +133496,106 @@
             "outsider_candidates": [
               "C6"
             ],
-            "selected_subskill": "compute_numeric",
-            "selected_problem_type": "compute_numeric",
-            "candidate_source": "fallback_application",
-            "selected_generator_contract": {},
-            "parameter_schema": {},
+            "selected_subskill": "evaluate_function_value",
+            "selected_problem_type": "evaluate_function_value",
+            "candidate_source": "anchor",
+            "selected_generator_contract": {
+              "template_variants": [
+                {
+                  "id": "default",
+                  "label": "default",
+                  "stem_pattern": "依題意求解：{stem_hint}。",
+                  "weight": 1.0,
+                  "enabled": true
+                }
+              ],
+              "parameter_schema": {
+                "seed": {
+                  "type": "integer",
+                  "randomize": true
+                },
+                "difficulty_level": {
+                  "choices": [
+                    "level_1",
+                    "level_2",
+                    "level_3"
+                  ],
+                  "weights": [
+                    0.4,
+                    0.4,
+                    0.2
+                  ]
+                }
+              },
+              "variation_dimensions": [
+                "seed",
+                "difficulty_level",
+                "context_style"
+              ],
+              "difficulty_controls": {
+                "level_1": {},
+                "level_2": {},
+                "level_3": {}
+              },
+              "anti_repetition_rules": {
+                "avoid_same_template_consecutive": true,
+                "avoid_same_ratio_consecutive": true,
+                "avoid_same_point_names_consecutive": true,
+                "avoid_same_answer_consecutive": true,
+                "recent_history_window": 5,
+                "signature_fields": [
+                  "problem_type_id",
+                  "template_variant",
+                  "ratio_form",
+                  "ratio_values",
+                  "coordinate_pattern",
+                  "answer"
+                ]
+              },
+              "validity_constraints": [
+                "answer derivable from givens"
+              ],
+              "answer_shape": "numeric",
+              "explanation_variants": [
+                "stepwise"
+              ],
+              "sampling_strategy": "weighted_random",
+              "template_families": [
+                "evaluate_function_value"
+              ]
+            },
+            "parameter_schema": {
+              "seed": {
+                "type": "integer",
+                "randomize": true
+              },
+              "difficulty_level": {
+                "choices": [
+                  "level_1",
+                  "level_2",
+                  "level_3"
+                ],
+                "weights": [
+                  0.4,
+                  0.4,
+                  0.2
+                ]
+              }
+            },
             "variable_randomization_notes": [],
-            "checker_key": "manual_review_checker",
-            "equivalence_type": "manual_review_or_ai_judged",
+            "checker_key": "numeric_checker",
+            "equivalence_type": "numeric_equivalence",
             "skill_scope_trusted": true,
-            "target_task": "compute_numeric",
-            "task_family": "generic_numeric_family",
+            "target_task": "evaluate_function_value",
+            "task_family": "function_concept_family",
             "math_objects": [
               "coordinate_point",
               "three_coordinate_points",
               "triangle",
               "two_coordinate_points"
             ],
-            "answer_type": "single_choice",
-            "answer_shape": "choice_label",
+            "answer_type": "numeric",
+            "answer_shape": "numeric",
             "source_type": "unknown",
             "example_label": "",
             "practice_label": "",
@@ -123666,9 +133605,9 @@
             "structure_consistency": "not_applicable",
             "sequence_context_used": true,
             "structure_context_used": true,
-            "confidence_adjustment_reason": "possible_structure_mismatch_penalty; sequence_context_used",
-            "possible_structure_mismatch": true,
-            "possible_mixed_source_context": true,
+            "confidence_adjustment_reason": "sequence_context_used",
+            "possible_structure_mismatch": false,
+            "possible_mixed_source_context": false,
             "source_quality_reject": false,
             "source_quality_status": "FORCE_ALLOWED_FOR_INDUCTION"
           },
@@ -123682,12 +133621,12 @@
             "practice_number": null,
             "nearby_worked_examples": [
               {
-                "example_id": 4430,
+                "example_id": 4431,
                 "source_type": "worked_example",
-                "example_label": "例題1",
+                "example_label": "例題2",
                 "practice_label": "",
                 "section_order": 0,
-                "title_head": "例1"
+                "title_head": "例2"
               },
               {
                 "example_id": 4433,
@@ -123756,6 +133695,14 @@
                 "practice_label": "",
                 "section_order": 0,
                 "title_head": "例1"
+              },
+              {
+                "example_id": 4431,
+                "source_type": "worked_example",
+                "example_label": "例題2",
+                "practice_label": "",
+                "section_order": 0,
+                "title_head": "例2"
               },
               {
                 "example_id": 4433,
@@ -123860,38 +133807,35 @@
           "induction_tier": "core",
           "enrichment_reasons": [],
           "included_in_core_induction": true,
-          "problem_type_id": "single_choice_evaluate_function_value_fallback_application",
           "equivalence_type": "choice_label",
           "checker_key": "choice_label_checker"
         },
-        "answer_shape": "choice_label",
+        "answer_shape": "numeric",
         "classification_confidence": "low",
-        "classification_reason": "ai_needs_review",
+        "classification_reason": "ai",
         "risk_flags": [
           "stem_embeds_choices",
           "candidate_only"
         ],
         "semantic_classification": {
-          "ai_target_task": "",
-          "ai_task_family": "",
-          "ai_confidence": 0.0,
-          "ai_best_candidate_id": "needs_review",
+          "ai_target_task": "evaluate_function_value",
+          "ai_task_family": "function_concept_family",
+          "ai_confidence": 0.8,
+          "ai_best_candidate_id": "C1",
           "ai_evidence": [
-            "The problem is a word problem involving linear inequalities in two variables: 100x + 200y <= 500,000 and 200x + 100y <= 500,000.",
-            "The provided subskills are restricted to the 'function_concept_family', which focuses on the definition, notation, and basic properties (domain/range) of functions.",
-            "The problem does not use function notation (e.g., f(x)), nor does it involve mapping diagrams or determining if a relation is a function.",
-            "The required action is to verify which coordinate pair satisfies a set of linear constraints, which is an application of linear inequalities rather than a basic function concept evaluation.",
-            "The skill anchor 'vh_數學B1_LinearFunction' usually covers one-variable linear functions (f(x) = ax + b), whereas this problem involves two variables and inequalities."
+            "The problem requires calculating the total cost for specific pairs of (x, y) to check if they exceed a budget of 500,000.",
+            "This process involves substituting numerical values into linear expressions (100x + 200y and 200x + 100y), which is the core action of evaluating a function value.",
+            "Among the anchor-scoped candidates in the function_concept_family, evaluate_function_value is the only one that matches the task of plugging in values to find a result."
           ],
           "ai_rejected_candidates": {
-            "C1": "While it involves calculation, 'evaluate_function_value' typically refers to finding f(a) given a function f(x), which is not the case here.",
-            "C2": "The problem does not use or require the interpretation of function notation like f(x).",
-            "C3": "The problem is not asking for the domain or range of a function.",
-            "C4": "The problem does not involve determining if a mapping or set of pairs constitutes a function.",
-            "C5": "The problem does not involve judging the relationship between variables in a functional context (e.g., is y a function of x?).",
-            "C6": "Although the problem involves arithmetic, 'compute_numeric' is an outsider candidate and the problem is a structured word problem rather than a pure numeric calculation."
+            "C2": "The problem does not involve interpreting function notation like f(x).",
+            "C3": "The problem is not about determining the domain or range of a function.",
+            "C4": "The problem does not involve identifying whether a mapping is a function.",
+            "C5": "The problem does not ask to determine the relationship between variables in a functional sense (e.g., whether y is a function of x).",
+            "C6": "While the problem involves arithmetic, C1 is an anchor-scoped candidate and is preferred over the outsider candidate C6 according to the rules.",
+            "needs_review": "The problem fits the 'evaluate' task well enough within the context of linear functions and expressions to avoid a needs_review tag."
           },
-          "ai_available": false,
+          "ai_available": true,
           "ai_error": "",
           "ai_unavailable_reason": "",
           "ai_semantic_status": "ok",
@@ -123904,12 +133848,12 @@
           "rule_task_family": "generic_numeric_family",
           "rule_confidence": 0.2,
           "final_target_task": "evaluate_function_value",
-          "final_task_family": "generic_numeric_family",
-          "classifier_source": "fallback_application_induct",
-          "conflict_reason": "needs_review",
+          "final_task_family": "function_concept_family",
+          "classifier_source": "ai",
+          "conflict_reason": "",
           "source_mapping_warning": "",
           "requires_human_action": false,
-          "ai_notes": "The problem is a 112 Unified Entrance Exam (統測B) question that involves modeling and solving linear inequalities in two variables. This does not align with the provided subskills, which are focused on the conceptual foundations of functions (mapping, notation, domain/range). A subskill related to 'Linear Inequalities' or 'Linear Function Applications' would be more appropriate.",
+          "ai_notes": "The problem asks to verify which coordinate pair satisfies a budget constraint under two possible price scenarios. This is mathematically equivalent to evaluating a cost function at specific points and comparing the output to a threshold.",
           "skill_scoped_candidates": [
             {
               "candidate_id": "C1",
@@ -124513,25 +134457,106 @@
           "outsider_candidates": [
             "C6"
           ],
-          "selected_subskill": "compute_numeric",
-          "selected_problem_type": "compute_numeric",
-          "candidate_source": "fallback_application",
-          "selected_generator_contract": {},
-          "parameter_schema": {},
+          "selected_subskill": "evaluate_function_value",
+          "selected_problem_type": "evaluate_function_value",
+          "candidate_source": "anchor",
+          "selected_generator_contract": {
+            "template_variants": [
+              {
+                "id": "default",
+                "label": "default",
+                "stem_pattern": "依題意求解：{stem_hint}。",
+                "weight": 1.0,
+                "enabled": true
+              }
+            ],
+            "parameter_schema": {
+              "seed": {
+                "type": "integer",
+                "randomize": true
+              },
+              "difficulty_level": {
+                "choices": [
+                  "level_1",
+                  "level_2",
+                  "level_3"
+                ],
+                "weights": [
+                  0.4,
+                  0.4,
+                  0.2
+                ]
+              }
+            },
+            "variation_dimensions": [
+              "seed",
+              "difficulty_level",
+              "context_style"
+            ],
+            "difficulty_controls": {
+              "level_1": {},
+              "level_2": {},
+              "level_3": {}
+            },
+            "anti_repetition_rules": {
+              "avoid_same_template_consecutive": true,
+              "avoid_same_ratio_consecutive": true,
+              "avoid_same_point_names_consecutive": true,
+              "avoid_same_answer_consecutive": true,
+              "recent_history_window": 5,
+              "signature_fields": [
+                "problem_type_id",
+                "template_variant",
+                "ratio_form",
+                "ratio_values",
+                "coordinate_pattern",
+                "answer"
+              ]
+            },
+            "validity_constraints": [
+              "answer derivable from givens"
+            ],
+            "answer_shape": "numeric",
+            "explanation_variants": [
+              "stepwise"
+            ],
+            "sampling_strategy": "weighted_random",
+            "template_families": [
+              "evaluate_function_value"
+            ]
+          },
+          "parameter_schema": {
+            "seed": {
+              "type": "integer",
+              "randomize": true
+            },
+            "difficulty_level": {
+              "choices": [
+                "level_1",
+                "level_2",
+                "level_3"
+              ],
+              "weights": [
+                0.4,
+                0.4,
+                0.2
+              ]
+            }
+          },
           "variable_randomization_notes": [],
-          "checker_key": "manual_review_checker",
-          "equivalence_type": "manual_review_or_ai_judged",
+          "checker_key": "numeric_checker",
+          "equivalence_type": "numeric_equivalence",
           "skill_scope_trusted": true,
-          "target_task": "compute_numeric",
-          "task_family": "generic_numeric_family",
+          "target_task": "evaluate_function_value",
+          "task_family": "function_concept_family",
           "math_objects": [
             "coordinate_point",
             "three_coordinate_points",
             "triangle",
             "two_coordinate_points"
           ],
-          "answer_type": "single_choice",
-          "answer_shape": "choice_label",
+          "answer_type": "numeric",
+          "answer_shape": "numeric",
           "source_type": "unknown",
           "example_label": "",
           "practice_label": "",
@@ -124541,14 +134566,14 @@
           "structure_consistency": "not_applicable",
           "sequence_context_used": true,
           "structure_context_used": true,
-          "confidence_adjustment_reason": "possible_structure_mismatch_penalty; sequence_context_used",
-          "possible_structure_mismatch": true,
-          "possible_mixed_source_context": true,
+          "confidence_adjustment_reason": "sequence_context_used",
+          "possible_structure_mismatch": false,
+          "possible_mixed_source_context": false,
           "source_quality_reject": false,
           "source_quality_status": "FORCE_ALLOWED_FOR_INDUCTION"
         },
         "subskill_id": "same_as_main_skill",
-        "classification_source": "fallback_application_induct",
+        "classification_source": "ai",
         "induction_eligibility": "eligible"
       },
       {
@@ -124595,16 +134620,16 @@
             "ai_confidence": 0.0,
             "ai_best_candidate_id": "interpret_function_notation",
             "ai_evidence": [
-              "題目要求在坐標平面上畫出函數 y=f(x)=3 的圖形。",
-              "候選清單 (C1-C5) 主要涵蓋函數的概念性任務，如求值、符號辨釋、定義域值域、映射判斷及函數關係判斷。",
-              "清單中缺乏「描繪函數圖形」或「常數函數圖形」相關的子技能。"
+              "題目要求在坐標平面上畫出常數函數 y=f(x)=3 的圖形。",
+              "候選子技能包含：求函數值、解釋函數符號、判斷定義域值域、從對應關係判斷函數、判斷函數關係。",
+              "現有的候選子技能中沒有任何一項對應到「繪製函數圖形」或「函數圖形的幾何表示」。"
             ],
             "ai_rejected_candidates": {
-              "C1": "求函數值僅為描圖過程中的一個可能步驟，並非此題的主要任務。",
-              "C2": "符號辨釋涉及理解 f(x) 的含義，但此題核心在於繪圖。",
-              "C3": "此題並未要求判斷定義域或值域。",
-              "C4": "此題與映射圖無關。",
-              "C5": "此題並非要求判斷 y 是否為 x 的函數。"
+              "C1": "求函數值是指計算特定點的數值，而非繪製完整圖形。",
+              "C2": "解釋函數符號通常涉及理解 y=f(x) 的意義，雖然與圖形有關，但不足以涵蓋繪圖任務。",
+              "C3": "判斷定義域與值域是函數的性質分析，而非繪圖動作。",
+              "C4": "從對應關係判斷函數通常涉及集合間的映射圖，而非坐標平面上的圖形繪製。",
+              "C5": "判斷函數關係是辨識一個關係是否為函數，而非繪圖。"
             },
             "ai_available": false,
             "ai_error": "",
@@ -124624,7 +134649,7 @@
             "conflict_reason": "",
             "source_mapping_warning": "",
             "requires_human_action": false,
-            "ai_notes": "此題目屬於「描繪線型函數圖形」或「常數函數的圖形」，但在提供的 anchor 候選清單中僅包含函數概念相關的子技能，建議新增與圖形繪製相關的子技能。",
+            "ai_notes": "題目要求繪製常數函數圖形，但提供的候選子技能（屬於 function_concept_family）皆不包含「繪圖」相關任務。建議新增「繪製線型函數圖形」或「函數圖形的幾何特徵」等子技能。",
             "skill_scoped_candidates": [
               {
                 "candidate_id": "C1",
@@ -125168,12 +135193,12 @@
             "practice_number": 8,
             "nearby_worked_examples": [
               {
-                "example_id": 4430,
+                "example_id": 4431,
                 "source_type": "worked_example",
-                "example_label": "例題1",
+                "example_label": "例題2",
                 "practice_label": "",
                 "section_order": 0,
-                "title_head": "例1"
+                "title_head": "例2"
               },
               {
                 "example_id": 4433,
@@ -125242,6 +135267,14 @@
                 "practice_label": "",
                 "section_order": 0,
                 "title_head": "例1"
+              },
+              {
+                "example_id": 4431,
+                "source_type": "worked_example",
+                "example_label": "例題2",
+                "practice_label": "",
+                "section_order": 0,
+                "title_head": "例2"
               },
               {
                 "example_id": 4433,
@@ -125358,16 +135391,16 @@
           "ai_confidence": 0.0,
           "ai_best_candidate_id": "interpret_function_notation",
           "ai_evidence": [
-            "題目要求在坐標平面上畫出函數 y=f(x)=3 的圖形。",
-            "候選清單 (C1-C5) 主要涵蓋函數的概念性任務，如求值、符號辨釋、定義域值域、映射判斷及函數關係判斷。",
-            "清單中缺乏「描繪函數圖形」或「常數函數圖形」相關的子技能。"
+            "題目要求在坐標平面上畫出常數函數 y=f(x)=3 的圖形。",
+            "候選子技能包含：求函數值、解釋函數符號、判斷定義域值域、從對應關係判斷函數、判斷函數關係。",
+            "現有的候選子技能中沒有任何一項對應到「繪製函數圖形」或「函數圖形的幾何表示」。"
           ],
           "ai_rejected_candidates": {
-            "C1": "求函數值僅為描圖過程中的一個可能步驟，並非此題的主要任務。",
-            "C2": "符號辨釋涉及理解 f(x) 的含義，但此題核心在於繪圖。",
-            "C3": "此題並未要求判斷定義域或值域。",
-            "C4": "此題與映射圖無關。",
-            "C5": "此題並非要求判斷 y 是否為 x 的函數。"
+            "C1": "求函數值是指計算特定點的數值，而非繪製完整圖形。",
+            "C2": "解釋函數符號通常涉及理解 y=f(x) 的意義，雖然與圖形有關，但不足以涵蓋繪圖任務。",
+            "C3": "判斷定義域與值域是函數的性質分析，而非繪圖動作。",
+            "C4": "從對應關係判斷函數通常涉及集合間的映射圖，而非坐標平面上的圖形繪製。",
+            "C5": "判斷函數關係是辨識一個關係是否為函數，而非繪圖。"
           },
           "ai_available": false,
           "ai_error": "",
@@ -125387,7 +135420,7 @@
           "conflict_reason": "",
           "source_mapping_warning": "",
           "requires_human_action": false,
-          "ai_notes": "此題目屬於「描繪線型函數圖形」或「常數函數的圖形」，但在提供的 anchor 候選清單中僅包含函數概念相關的子技能，建議新增與圖形繪製相關的子技能。",
+          "ai_notes": "題目要求繪製常數函數圖形，但提供的候選子技能（屬於 function_concept_family）皆不包含「繪圖」相關任務。建議新增「繪製線型函數圖形」或「函數圖形的幾何特徵」等子技能。",
           "skill_scoped_candidates": [
             {
               "candidate_id": "C1",
@@ -125969,16 +136002,15 @@
             "ai_confidence": 0.0,
             "ai_best_candidate_id": "interpret_function_notation",
             "ai_evidence": [
-              "題目要求在坐標平面上畫出函數 y = f(x) = -2x + 4 的圖形。",
-              "候選清單中的子技能（C1-C5）皆屬於函數概念家族（function_concept_family），包含求值、符號辨釋、定義域值域、映射判斷及函數關係判斷。",
-              "清單中缺乏「描繪函數圖形」或「一次函數圖形」相關的子技能。"
+              "題目要求在坐標平面上畫出一次函數 y = -2x + 4 的圖形。",
+              "候選清單中的 C1 至 C5 分別為求函數值、函數符號意義、判斷定義域值域、由對應關係判斷函數、判斷函數關係，皆不包含「繪製函數圖形」的任務。"
             ],
             "ai_rejected_candidates": {
-              "C1": "求函數值僅為描點過程中的一個步驟，並非此題「畫出圖形」的核心任務。",
-              "C2": "此題重點在於繪圖，而非單純辨識或解釋函數符號的意義。",
-              "C3": "題目未要求判斷定義域或值域。",
-              "C4": "題目未涉及映射圖或判斷是否為函數。",
-              "C5": "題目未要求判斷變數間是否構成函數關係。"
+              "C1": "求函數值僅為描點繪圖的過程之一，並非繪圖任務本身。",
+              "C2": "此題並非在解釋函數符號的意義。",
+              "C3": "此題並非在判斷定義域或值域。",
+              "C4": "此題並非由對應圖判斷是否為函數。",
+              "C5": "此題並非判斷兩個變數之間是否具備函數關係。"
             },
             "ai_available": false,
             "ai_error": "",
@@ -125998,7 +136030,7 @@
             "conflict_reason": "",
             "source_mapping_warning": "",
             "requires_human_action": false,
-            "ai_notes": "題目核心任務為「描繪一次函數圖形」，但候選清單中僅包含函數基本概念的子技能，建議新增「描繪一次函數圖形」或「一次函數的圖形」相關子技能。",
+            "ai_notes": "題目任務為「繪製一次函數圖形」，但提供的候選子技能皆屬於函數基本觀念（如求值、定義、符號等），缺乏繪圖相關的子技能，因此選擇 needs_review。",
             "skill_scoped_candidates": [
               {
                 "candidate_id": "C1",
@@ -126542,12 +136574,12 @@
             "practice_number": 9,
             "nearby_worked_examples": [
               {
-                "example_id": 4430,
+                "example_id": 4431,
                 "source_type": "worked_example",
-                "example_label": "例題1",
+                "example_label": "例題2",
                 "practice_label": "",
                 "section_order": 0,
-                "title_head": "例1"
+                "title_head": "例2"
               },
               {
                 "example_id": 4433,
@@ -126616,6 +136648,14 @@
                 "practice_label": "",
                 "section_order": 0,
                 "title_head": "例1"
+              },
+              {
+                "example_id": 4431,
+                "source_type": "worked_example",
+                "example_label": "例題2",
+                "practice_label": "",
+                "section_order": 0,
+                "title_head": "例2"
               },
               {
                 "example_id": 4433,
@@ -126732,16 +136772,15 @@
           "ai_confidence": 0.0,
           "ai_best_candidate_id": "interpret_function_notation",
           "ai_evidence": [
-            "題目要求在坐標平面上畫出函數 y = f(x) = -2x + 4 的圖形。",
-            "候選清單中的子技能（C1-C5）皆屬於函數概念家族（function_concept_family），包含求值、符號辨釋、定義域值域、映射判斷及函數關係判斷。",
-            "清單中缺乏「描繪函數圖形」或「一次函數圖形」相關的子技能。"
+            "題目要求在坐標平面上畫出一次函數 y = -2x + 4 的圖形。",
+            "候選清單中的 C1 至 C5 分別為求函數值、函數符號意義、判斷定義域值域、由對應關係判斷函數、判斷函數關係，皆不包含「繪製函數圖形」的任務。"
           ],
           "ai_rejected_candidates": {
-            "C1": "求函數值僅為描點過程中的一個步驟，並非此題「畫出圖形」的核心任務。",
-            "C2": "此題重點在於繪圖，而非單純辨識或解釋函數符號的意義。",
-            "C3": "題目未要求判斷定義域或值域。",
-            "C4": "題目未涉及映射圖或判斷是否為函數。",
-            "C5": "題目未要求判斷變數間是否構成函數關係。"
+            "C1": "求函數值僅為描點繪圖的過程之一，並非繪圖任務本身。",
+            "C2": "此題並非在解釋函數符號的意義。",
+            "C3": "此題並非在判斷定義域或值域。",
+            "C4": "此題並非由對應圖判斷是否為函數。",
+            "C5": "此題並非判斷兩個變數之間是否具備函數關係。"
           },
           "ai_available": false,
           "ai_error": "",
@@ -126761,7 +136800,7 @@
           "conflict_reason": "",
           "source_mapping_warning": "",
           "requires_human_action": false,
-          "ai_notes": "題目核心任務為「描繪一次函數圖形」，但候選清單中僅包含函數基本概念的子技能，建議新增「描繪一次函數圖形」或「一次函數的圖形」相關子技能。",
+          "ai_notes": "題目任務為「繪製一次函數圖形」，但提供的候選子技能皆屬於函數基本觀念（如求值、定義、符號等），缺乏繪圖相關的子技能，因此選擇 needs_review。",
           "skill_scoped_candidates": [
             {
               "candidate_id": "C1",
@@ -127333,17 +137372,13 @@
             "ai_confidence": 0.0,
             "ai_best_candidate_id": "needs_review",
             "ai_evidence": [
-              "題目要求根據圖形求出線型函數的關係式（即求出 y = ax + b 的方程式）。",
-              "候選子技能（C1-C5）主要集中在函數的概念性理解，如求函數值、符號辨釋、定義域值域、判斷是否為函數等。",
-              "目前清單中缺乏「求線型函數解析式」或「求直線方程式」這類程序性運算的子技能。"
+              "題目要求根據圖形求出線型函數的關係式（即 y = ax + b）。",
+              "提供的候選子技能（C1-C5）主要集中在函數的概念（如：求函數值、符號辨識、定義域值域、判斷是否為函數）。",
+              "候選清單中缺乏「求線型函數解析式」或「由圖形求函數關係式」等相關子技能。"
             ],
             "ai_rejected_candidates": {
-              "C1": "此題是要求出整個關係式，而非給定 x 求單一函數值。",
-              "C2": "此題涉及函數的建立而非單純對函數符號的解釋。",
-              "C3": "此題未要求判斷定義域或值域。",
-              "C4": "此題並非判斷對應關係是否構成函數。",
-              "C5": "此題要求具體的關係式，而非僅僅判斷變數間是否存在函數關係。",
-              "C6": "此為外部技能且過於籠統，無法精確描述「求函數關係式」的數學任務。"
+              "C1": "此子技能為求特定點的函數值，而本題要求的是整體的關係式。",
+              "C5": "此子技能為判斷變數間是否構成函數關係，而非求出其具體的代數表達式。"
             },
             "ai_available": false,
             "ai_error": "",
@@ -127363,7 +137398,7 @@
             "conflict_reason": "needs_review",
             "source_mapping_warning": "",
             "requires_human_action": false,
-            "ai_notes": "該題目屬於「求線型函數的關係式」，但在提供的 anchor 範圍內（function_concept_family）僅包含概念判斷與求值，建議增加「求線型函數解析式」相關的子技能。",
+            "ai_notes": "本題的核心任務是「求線型函數的關係式」，但目前的候選清單僅包含函數概念（function_concept_family）相關的子技能，建議增加如「求線型函數解析式」之類的子技能。",
             "skill_scoped_candidates": [
               {
                 "candidate_id": "C1",
@@ -128004,12 +138039,12 @@
             "practice_number": null,
             "nearby_worked_examples": [
               {
-                "example_id": 4430,
+                "example_id": 4431,
                 "source_type": "worked_example",
-                "example_label": "例題1",
+                "example_label": "例題2",
                 "practice_label": "",
                 "section_order": 0,
-                "title_head": "例1"
+                "title_head": "例2"
               },
               {
                 "example_id": 4433,
@@ -128078,6 +138113,14 @@
                 "practice_label": "",
                 "section_order": 0,
                 "title_head": "例1"
+              },
+              {
+                "example_id": 4431,
+                "source_type": "worked_example",
+                "example_label": "例題2",
+                "practice_label": "",
+                "section_order": 0,
+                "title_head": "例2"
               },
               {
                 "example_id": 4433,
@@ -128194,17 +138237,13 @@
           "ai_confidence": 0.0,
           "ai_best_candidate_id": "needs_review",
           "ai_evidence": [
-            "題目要求根據圖形求出線型函數的關係式（即求出 y = ax + b 的方程式）。",
-            "候選子技能（C1-C5）主要集中在函數的概念性理解，如求函數值、符號辨釋、定義域值域、判斷是否為函數等。",
-            "目前清單中缺乏「求線型函數解析式」或「求直線方程式」這類程序性運算的子技能。"
+            "題目要求根據圖形求出線型函數的關係式（即 y = ax + b）。",
+            "提供的候選子技能（C1-C5）主要集中在函數的概念（如：求函數值、符號辨識、定義域值域、判斷是否為函數）。",
+            "候選清單中缺乏「求線型函數解析式」或「由圖形求函數關係式」等相關子技能。"
           ],
           "ai_rejected_candidates": {
-            "C1": "此題是要求出整個關係式，而非給定 x 求單一函數值。",
-            "C2": "此題涉及函數的建立而非單純對函數符號的解釋。",
-            "C3": "此題未要求判斷定義域或值域。",
-            "C4": "此題並非判斷對應關係是否構成函數。",
-            "C5": "此題要求具體的關係式，而非僅僅判斷變數間是否存在函數關係。",
-            "C6": "此為外部技能且過於籠統，無法精確描述「求函數關係式」的數學任務。"
+            "C1": "此子技能為求特定點的函數值，而本題要求的是整體的關係式。",
+            "C5": "此子技能為判斷變數間是否構成函數關係，而非求出其具體的代數表達式。"
           },
           "ai_available": false,
           "ai_error": "",
@@ -128224,7 +138263,7 @@
           "conflict_reason": "needs_review",
           "source_mapping_warning": "",
           "requires_human_action": false,
-          "ai_notes": "該題目屬於「求線型函數的關係式」，但在提供的 anchor 範圍內（function_concept_family）僅包含概念判斷與求值，建議增加「求線型函數解析式」相關的子技能。",
+          "ai_notes": "本題的核心任務是「求線型函數的關係式」，但目前的候選清單僅包含函數概念（function_concept_family）相關的子技能，建議增加如「求線型函數解析式」之類的子技能。",
           "skill_scoped_candidates": [
             {
               "candidate_id": "C1",
@@ -128919,17 +138958,16 @@
             "ai_confidence": 0.0,
             "ai_best_candidate_id": "interpret_function_notation",
             "ai_evidence": [
-              "題目要求根據兩個已知點 (-2, 4) 與 (1, 1) 求出線型函數 f(x) = ax + b 的解析式。",
-              "這屬於「求線型函數解析式」或「待定係數法求函數」的題型。",
-              "提供的候選子技能包括：計算函數值 (evaluate_function_value)、理解函數符號 (interpret_function_notation)、判斷定義域值域 (judge_domain_range_basic)、從對應關係判斷函數 (judge_function_from_mapping) 以及判斷函數關係 (judge_function_relation)。",
-              "這些候選子技能多屬於「函數概念 (function_concept_family)」的基礎認知，缺乏「求線型函數解析式」這一具體的運算型子技能。"
+              "題目要求根據通過的兩點 (-2, 4) 與 (1, 1) 求出線型函數 f(x) = ax + b 的解析式。",
+              "候選子技能列表包含：求函數值 (evaluate_function_value)、理解函數符號 (interpret_function_notation)、判斷定義域值域 (judge_domain_range_basic)、由對應關係判斷函數 (judge_function_from_mapping) 以及判斷函數關係 (judge_function_relation)。",
+              "現有的候選子技能中，沒有一個直接對應到「給定兩點求線型函數解析式」這一特定任務。"
             ],
             "ai_rejected_candidates": {
-              "C1": "evaluate_function_value 通常指已知函數式求特定輸入的輸出值，而非求函數式本身。",
-              "C2": "interpret_function_notation 涉及理解 f(x) 的含義，雖然解題第一步需將點座標轉化為 f(-2)=4，但核心任務是求解係數，該項不足以涵蓋完整過程。",
-              "C3": "題目未涉及定義域或值域的判斷。",
-              "C4": "題目未涉及對應圖表或映射關係的函數判定。",
-              "C5": "題目未涉及函數關係的性質判定（如是否為函數）。"
+              "C1": "此題並非單純求特定點的函數值，而是要求出整個函數的表達式。",
+              "C2": "此題涉及函數符號的應用，但核心任務是解聯立方程式求係數，而非僅僅是解釋符號意義。",
+              "C3": "此題不涉及定義域或值域的判斷。",
+              "C4": "此題並非判斷給定的對應圖或集合是否構成函數。",
+              "C5": "此題已明示為線型函數，不需判斷是否為函數關係。"
             },
             "ai_available": false,
             "ai_error": "",
@@ -128949,7 +138987,7 @@
             "conflict_reason": "",
             "source_mapping_warning": "",
             "requires_human_action": false,
-            "ai_notes": "該題目為「已知兩點求線型函數」，在現有的候選清單中缺乏對應的子技能（如 determine_linear_function_from_points）。建議新增此類子技能或將其歸類至更合適的技能架構下。",
+            "ai_notes": "該題目屬於「給定兩點求一次函數（線型函數）解析式」，在目前的候選清單中缺乏對應的子技能。建議新增如 'determine_linear_function_from_points' 類型的子技能。",
             "skill_scoped_candidates": [
               {
                 "candidate_id": "C1",
@@ -129498,12 +139536,12 @@
             "practice_number": null,
             "nearby_worked_examples": [
               {
-                "example_id": 4430,
+                "example_id": 4431,
                 "source_type": "worked_example",
-                "example_label": "例題1",
+                "example_label": "例題2",
                 "practice_label": "",
                 "section_order": 0,
-                "title_head": "例1"
+                "title_head": "例2"
               },
               {
                 "example_id": 4433,
@@ -129572,6 +139610,14 @@
                 "practice_label": "",
                 "section_order": 0,
                 "title_head": "例1"
+              },
+              {
+                "example_id": 4431,
+                "source_type": "worked_example",
+                "example_label": "例題2",
+                "practice_label": "",
+                "section_order": 0,
+                "title_head": "例2"
               },
               {
                 "example_id": 4433,
@@ -129692,17 +139738,16 @@
           "ai_confidence": 0.0,
           "ai_best_candidate_id": "interpret_function_notation",
           "ai_evidence": [
-            "題目要求根據兩個已知點 (-2, 4) 與 (1, 1) 求出線型函數 f(x) = ax + b 的解析式。",
-            "這屬於「求線型函數解析式」或「待定係數法求函數」的題型。",
-            "提供的候選子技能包括：計算函數值 (evaluate_function_value)、理解函數符號 (interpret_function_notation)、判斷定義域值域 (judge_domain_range_basic)、從對應關係判斷函數 (judge_function_from_mapping) 以及判斷函數關係 (judge_function_relation)。",
-            "這些候選子技能多屬於「函數概念 (function_concept_family)」的基礎認知，缺乏「求線型函數解析式」這一具體的運算型子技能。"
+            "題目要求根據通過的兩點 (-2, 4) 與 (1, 1) 求出線型函數 f(x) = ax + b 的解析式。",
+            "候選子技能列表包含：求函數值 (evaluate_function_value)、理解函數符號 (interpret_function_notation)、判斷定義域值域 (judge_domain_range_basic)、由對應關係判斷函數 (judge_function_from_mapping) 以及判斷函數關係 (judge_function_relation)。",
+            "現有的候選子技能中，沒有一個直接對應到「給定兩點求線型函數解析式」這一特定任務。"
           ],
           "ai_rejected_candidates": {
-            "C1": "evaluate_function_value 通常指已知函數式求特定輸入的輸出值，而非求函數式本身。",
-            "C2": "interpret_function_notation 涉及理解 f(x) 的含義，雖然解題第一步需將點座標轉化為 f(-2)=4，但核心任務是求解係數，該項不足以涵蓋完整過程。",
-            "C3": "題目未涉及定義域或值域的判斷。",
-            "C4": "題目未涉及對應圖表或映射關係的函數判定。",
-            "C5": "題目未涉及函數關係的性質判定（如是否為函數）。"
+            "C1": "此題並非單純求特定點的函數值，而是要求出整個函數的表達式。",
+            "C2": "此題涉及函數符號的應用，但核心任務是解聯立方程式求係數，而非僅僅是解釋符號意義。",
+            "C3": "此題不涉及定義域或值域的判斷。",
+            "C4": "此題並非判斷給定的對應圖或集合是否構成函數。",
+            "C5": "此題已明示為線型函數，不需判斷是否為函數關係。"
           },
           "ai_available": false,
           "ai_error": "",
@@ -129722,7 +139767,7 @@
           "conflict_reason": "",
           "source_mapping_warning": "",
           "requires_human_action": false,
-          "ai_notes": "該題目為「已知兩點求線型函數」，在現有的候選清單中缺乏對應的子技能（如 determine_linear_function_from_points）。建議新增此類子技能或將其歸類至更合適的技能架構下。",
+          "ai_notes": "該題目屬於「給定兩點求一次函數（線型函數）解析式」，在目前的候選清單中缺乏對應的子技能。建議新增如 'determine_linear_function_from_points' 類型的子技能。",
           "skill_scoped_candidates": [
             {
               "candidate_id": "C1",
@@ -130309,14 +140354,14 @@
             "ai_confidence": 0.0,
             "ai_best_candidate_id": "interpret_function_notation",
             "ai_evidence": [
-              "題目要求利用截距定義判斷函數 y=f(x)=ax-3 的圖形，屬於線型函數圖形特徵的辨識。",
-              "提供的候選子技能（C1-C5）均屬於『函數觀念 (function_concept_family)』，如求值、符號、定義域、映射判斷等。",
-              "候選清單中缺乏與『線型函數圖形』、『截距』或『斜率』直接相關的子技能。",
-              "根據規則，若候選清單中沒有合適的子技能，應選擇 needs_review。"
+              "題目要求利用截距定義判斷函數 y=ax-3 的圖形，這涉及線性函數的圖形特徵（如 y 截距為 -3）與參數 a 對圖形的影響。",
+              "提供的候選子技能（evaluate_function_value, interpret_function_notation, judge_domain_range_basic, judge_function_from_mapping, judge_function_relation）皆屬於函數基本概念（function_concept_family），而非線性函數圖形的具體判別。",
+              "題目核心在於線性函數的圖形性質（截距與斜率），現有選項中缺乏『線性函數圖形』或『截距與斜率的應用』等相關子技能。"
             ],
             "ai_rejected_candidates": {
-              "C1": "evaluate_function_value 雖然涉及計算 f(0)=-3，但本題核心在於圖形截距的幾何意義，而非單純代值計算。",
-              "C5": "judge_function_relation 通常用於判斷變數間是否為函數關係或區分常數與一次函數，不足以涵蓋根據截距判斷圖形的任務。"
+              "C1": "evaluate_function_value 僅涉及計算特定點的函數值，不足以涵蓋判斷整個圖形可能性的任務。",
+              "C2": "interpret_function_notation 涉及對 f(x) 符號的理解，而非圖形判別。",
+              "C5": "judge_function_relation 通常用於判斷一個關係是否為函數，而非判斷特定線性函數的圖形。"
             },
             "ai_available": false,
             "ai_error": "",
@@ -130336,7 +140381,7 @@
             "conflict_reason": "",
             "source_mapping_warning": "",
             "requires_human_action": false,
-            "ai_notes": "The current example focuses on the graphical representation and intercepts of a linear function, which is not covered by the provided subskill candidates in the 'function_concept_family'. A subskill such as 'identify_linear_function_graph' or 'understand_intercepts' would be more appropriate.",
+            "ai_notes": "本題屬於線性函數圖形的判別，特別是截距的應用。然而，候選清單中的子技能僅限於函數的基本概念（如定義、符號、定義域值域），缺乏針對線性函數圖形性質（如斜率、截距、圖形平移）的對應選項，因此選擇 needs_review。",
             "skill_scoped_candidates": [
               {
                 "candidate_id": "C1",
@@ -130880,12 +140925,12 @@
             "practice_number": null,
             "nearby_worked_examples": [
               {
-                "example_id": 4430,
+                "example_id": 4431,
                 "source_type": "worked_example",
-                "example_label": "例題1",
+                "example_label": "例題2",
                 "practice_label": "",
                 "section_order": 0,
-                "title_head": "例1"
+                "title_head": "例2"
               },
               {
                 "example_id": 4433,
@@ -130954,6 +140999,14 @@
                 "practice_label": "",
                 "section_order": 0,
                 "title_head": "例1"
+              },
+              {
+                "example_id": 4431,
+                "source_type": "worked_example",
+                "example_label": "例題2",
+                "practice_label": "",
+                "section_order": 0,
+                "title_head": "例2"
               },
               {
                 "example_id": 4433,
@@ -131070,14 +141123,14 @@
           "ai_confidence": 0.0,
           "ai_best_candidate_id": "interpret_function_notation",
           "ai_evidence": [
-            "題目要求利用截距定義判斷函數 y=f(x)=ax-3 的圖形，屬於線型函數圖形特徵的辨識。",
-            "提供的候選子技能（C1-C5）均屬於『函數觀念 (function_concept_family)』，如求值、符號、定義域、映射判斷等。",
-            "候選清單中缺乏與『線型函數圖形』、『截距』或『斜率』直接相關的子技能。",
-            "根據規則，若候選清單中沒有合適的子技能，應選擇 needs_review。"
+            "題目要求利用截距定義判斷函數 y=ax-3 的圖形，這涉及線性函數的圖形特徵（如 y 截距為 -3）與參數 a 對圖形的影響。",
+            "提供的候選子技能（evaluate_function_value, interpret_function_notation, judge_domain_range_basic, judge_function_from_mapping, judge_function_relation）皆屬於函數基本概念（function_concept_family），而非線性函數圖形的具體判別。",
+            "題目核心在於線性函數的圖形性質（截距與斜率），現有選項中缺乏『線性函數圖形』或『截距與斜率的應用』等相關子技能。"
           ],
           "ai_rejected_candidates": {
-            "C1": "evaluate_function_value 雖然涉及計算 f(0)=-3，但本題核心在於圖形截距的幾何意義，而非單純代值計算。",
-            "C5": "judge_function_relation 通常用於判斷變數間是否為函數關係或區分常數與一次函數，不足以涵蓋根據截距判斷圖形的任務。"
+            "C1": "evaluate_function_value 僅涉及計算特定點的函數值，不足以涵蓋判斷整個圖形可能性的任務。",
+            "C2": "interpret_function_notation 涉及對 f(x) 符號的理解，而非圖形判別。",
+            "C5": "judge_function_relation 通常用於判斷一個關係是否為函數，而非判斷特定線性函數的圖形。"
           },
           "ai_available": false,
           "ai_error": "",
@@ -131097,7 +141150,7 @@
           "conflict_reason": "",
           "source_mapping_warning": "",
           "requires_human_action": false,
-          "ai_notes": "The current example focuses on the graphical representation and intercepts of a linear function, which is not covered by the provided subskill candidates in the 'function_concept_family'. A subskill such as 'identify_linear_function_graph' or 'understand_intercepts' would be more appropriate.",
+          "ai_notes": "本題屬於線性函數圖形的判別，特別是截距的應用。然而，候選清單中的子技能僅限於函數的基本概念（如定義、符號、定義域值域），缺乏針對線性函數圖形性質（如斜率、截距、圖形平移）的對應選項，因此選擇 needs_review。",
           "skill_scoped_candidates": [
             {
               "candidate_id": "C1",
@@ -131649,7 +141702,8 @@
       "allowed": true,
       "warnings": [
         "insufficient_examples",
-        "alignment_score_below_recommended_threshold"
+        "alignment_score_below_recommended_threshold",
+        "source_quality_reject_examples_present"
       ]
     },
     "generator_draft_gate": {
@@ -131657,7 +141711,8 @@
       "allowed": true,
       "warnings": [
         "low_source_examples",
-        "alignment_score_below_recommended_threshold"
+        "alignment_score_below_recommended_threshold",
+        "source_quality_reject_examples_present"
       ]
     },
     "runtime_ready_gate": {
@@ -131668,7 +141723,8 @@
         "dynamic_sampling_failed"
       ],
       "warnings": [
-        "alignment_score_below_recommended_threshold"
+        "alignment_score_below_recommended_threshold",
+        "source_quality_reject_examples_present"
       ]
     },
     "exception_review_gate": {
@@ -132451,8 +142507,10 @@
     }
   ],
   "human_review_items": [],
-  "source_quality_reject_examples": [],
-  "skill_source_score": 0.64,
+  "source_quality_reject_examples": [
+    4431
+  ],
+  "skill_source_score": 0.6933,
   "proposal_items": [
     {
       "problem_type_id": "integer_evaluate_function_value",
@@ -132632,7 +142690,8 @@
       "promote_recommendation": "recommend_promote_for_that_candidate",
       "promote_blockers": [],
       "risk_flags": [
-        "alignment_score_below_recommended_threshold"
+        "alignment_score_below_recommended_threshold",
+        "source_quality_reject_examples_present"
       ],
       "checker_contract_warnings": [
         "equivalence_type_mismatch"
@@ -133004,7 +143063,8 @@
       "promote_recommendation": "recommend_promote_for_that_candidate",
       "promote_blockers": [],
       "risk_flags": [
-        "alignment_score_below_recommended_threshold"
+        "alignment_score_below_recommended_threshold",
+        "source_quality_reject_examples_present"
       ],
       "checker_contract_warnings": [],
       "spec_source": "phase1_induced_draft",
@@ -133378,7 +143438,8 @@
       "promote_recommendation": "recommend_promote_for_that_candidate",
       "promote_blockers": [],
       "risk_flags": [
-        "alignment_score_below_recommended_threshold"
+        "alignment_score_below_recommended_threshold",
+        "source_quality_reject_examples_present"
       ],
       "checker_contract_warnings": [
         "equivalence_type_mismatch"
@@ -133755,7 +143816,8 @@
       "promote_recommendation": "recommend_promote_for_that_candidate",
       "promote_blockers": [],
       "risk_flags": [
-        "alignment_score_below_recommended_threshold"
+        "alignment_score_below_recommended_threshold",
+        "source_quality_reject_examples_present"
       ],
       "checker_contract_warnings": [],
       "spec_source": "phase1_induced_draft",
@@ -133964,6 +144026,7 @@
   "candidate_problem_type_count": 4,
   "report_contract_status": "PASS_WITH_WARNINGS",
   "report_contract_warnings": [
+    "source_quality_reject_examples_normalized:4431",
     "per_example_alignment_score_corrected:4433",
     "per_example_alignment_score_corrected:4434",
     "per_example_alignment_score_corrected:4444",
@@ -133972,6 +144035,7 @@
     "per_example_alignment_score_corrected:4425",
     "per_example_alignment_score_corrected:4441",
     "per_example_alignment_score_corrected:4442",
+    "per_example_alignment_score_corrected:4446",
     "per_example_alignment_score_corrected:4448",
     "per_example_alignment_score_corrected:4449",
     "per_example_alignment_score_corrected:4515",

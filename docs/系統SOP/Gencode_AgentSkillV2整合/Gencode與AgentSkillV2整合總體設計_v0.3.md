@@ -1,9 +1,12 @@
-# Gencode與AgentSkillV2整合總體設計 v0.2
+# Gencode與AgentSkillV2整合總體設計 v0.3
 
 ## 0. 文件目的與最高原則
 本文件為 Gencode 與 AgentSkillV2 整合的最高 SOP 及總流程法規。後續所有 Codex / Antigravity 任務凡涉及 Gencode、Phase 0/1/2/3 流程、ProblemTypeSpec、runtime wrapper 與 source classification 等，均須以此文件為最高規範，並在修改回報中明確列出遵守之條款。
 
-### 12 大最高原則
+### 15 大最高原則
+
+**v0.2 原則（1–12，完整保留）**
+
 1. **ProblemTypeSpec** 是 Phase 2 / Phase 3 / Runtime Generation 的唯一權威來源，一切 runtime 生成必須以此為準。
 2. **Source examples** 只能作為分類與結構推導之 evidence，絕不可直接主導或強行限制 runtime generator 的生成內容。
 3. **Phase 1** 只負責來源盤點、來源分層與題型歸納，**絕對不可**過早阻擋（block）整個 skill。
@@ -11,11 +14,17 @@
 5. **單一壞題**、少量 missing_answer、broken_latex 或 OCR noise，**絕對不可**直接升級為整個 skill blocked。
 6. 只要 **usable core examples** 足以形成至少一個合法 ProblemTypeSpec，即允許後續流程繼續，但需於報告中提示 warning。
 7. **分類依據**：AI classification、rule classification、registry classification 均為 classification_source evidence；後續流程只能讀取並信任 `final_classification`。
-8. **Phase 3 嚴格邊界**：不得重新猜測題型、不得從 source examples 反推 checker，更不得自行覆寫 Phase 2 定義的 `answer_contract`。
+8. **Phase 3 嚴格邊界**：不得重新猜測題型、不得從 source examples 反推 checker，更不得自行覆寫 Phase 2 定義的 `answer_contract`（展現型態強制校正除外，見 AnswerContract SOP §4.3）。
 9. **反特例化**：不得為單一 skill_id、problem_type、章節或特定題型寫死通過條件或強行寫入特例邏輯。
 10. **Coverage $\neq$ Quality**：coverage gate 通過僅代表具備 runtime/review 路徑，不等於 quality gate（學生端可用性）通過。
 11. **Runtime-Ready 定義**：不只代表會出題與批改，還必須通過 textbook coverage、runtime quality、web runtime 與 source alignment 的四重檢查。
 12. **Codex 任務規範**：後續每一輪 Codex / Antigravity 任務都必須先閱讀本設計，並於回報中列出遵守了哪些條款。
+
+**v0.3 增補原則（13–15）**
+
+13. **【薄入口外殼原則】**：`skills/{skill_id}.py` 僅作前台請求之 Thin Facade；所有實體計算、多模板分流、選項 shuffle 與 SymPy 驗證，必須穿透外殼，在全域 `generate_for_skill()` → `SLOT_REGISTRY` 動態插槽庫中執行。詳見 [AgentSkillV2_ProblemType規格包設計_v0.3.md §1.5](AgentSkillV2_ProblemType規格包設計_v0.3.md)。
+14. **【插槽去耦合解鎖原則】**：任一 ProblemTypeSpec 若僅完成編譯而未在 `template_slot_resolver.TASK_FAMILY_TO_SLOT` 與 `slot_generators.SLOT_REGISTRY` 雙向註冊實體處理函數，執行期必發生**退化坍塌**（fallback 至通用 stub 或重複題幹）。規格編譯與插槽實作為**強制共生運作**，缺一不可。
+15. **【數據驅動靈魂 Token 原則】**：題幹完整性約束所要求的核心關鍵字（靈魂 Token），必須 100% 由 `semantic_contract.required_concepts` 與 Phase 1 來源樣本動態提取驅動；Codegen 提示詞（`build_generator_code_prompt` §5）與插槽生成器均須引用該 Token 集合，**嚴禁**針對單一 skill_id 寫死特例字串。
 
 ---
 
@@ -31,7 +40,9 @@
 
 ---
 
-## 2. 五層流程定義與邊界
+## 2. 六層流程定義與邊界
+
+> v0.3 說明：v0.2 之 Layer 1–5 **完整保留**；本版增量新增 **Layer 6（執行期插槽動態註冊與分流實作層）**，與 Phase 3 尾端及 Runtime 抽題路徑銜接。
 
 ### Layer 1：Import / Source Normalization (匯入與標準化)
 - **職責**：切題、題幹清理、答案/選項擷取、LaTeX 語意保留、關聯 chapter/section/skill_id、標記 source_type（可引用 MathType DOCX 轉 LaTeX 工具）。
@@ -53,6 +64,23 @@
 - **職責**：僅根據通過 Spec Gate 的 ProblemTypeSpec 生成 runtime code，使用 answer_contract 產生 checker，使用 semantic_contract 控制生成語意與 randomization，產生 verified generator 後由 registry 接入 thin wrapper。
 - **禁止**：不得重新猜測 problem_type，不得從 source examples 反推 checker，亦不得覆寫 Phase 2 的 AnswerContract 或 fallback 到 legacy skills 以掩蓋錯誤。
 
+### Layer 6：執行期插槽動態註冊與分流實作層（Runtime Dynamic Slot Overloading Layer）
+
+- **職責**（v0.3 新增實體流程層）：
+  1. 當題型規格通過 Spec Gate（Phase 2.5 `runtime_ready` 或帶 warning 之 `runtime_ready_with_warning`）後，必須在 `core/gencode/template_slot_resolver.py` 的 **`TASK_FAMILY_TO_SLOT`** 靜態對照表中，將 `target_task` / `template_families` Contract Token 綁定至具名 slot 字串（資料驅動，禁止 skill 硬編碼）。
+  2. 同時在 `core/gencode/slot_generators.py` 的 **`SLOT_REGISTRY`** 映射表中，實體掛載對應處理函數（例如：兩點聯立求線性函數之單選分支、多模板生活情境字題池、純數值代入求值分支等）。
+  3. `generate_from_problem_type_spec()` 執行時依 `resolve_template_slot()` 分流，產出經 `validate_generator_payload()` 驗證之 payload，再交由 Thin Facade 對外服務。
+  4. Phase 2 **低樣本多樣性特赦**（`low_sample_diversity_tolerance_applied`）僅可移除重複類 diversity blocker，**不得**繞過本層未註冊插槽之硬性缺失（`slot_generator_not_registered` 仍為 blocked）。
+
+- **禁止**：
+  1. 任何插槽處理函數在隨機路徑、`seed=0` 或 fallback 分支下，將 `question_text` 退化為 minimalist 佔位符（如「請計算」「待補」）。
+  2. 最終執行期 `question_text` 長度必須自然且穩健地 **超過 30 字**；並須嵌入由 `semantic_contract.required_concepts` 與教材源例對齊之**靈魂 Token**（原則 15）。
+  3. 僅在 `SLOT_REGISTRY` 註冊名稱、卻無實體數學分支實作 — 視同 **Slot Hollow Registration（空心註冊）**，Quality Gate 不得標記為 Runtime-Ready。
+  4. 在 `skills/{skill_id}.py` 內實作本層邏輯（違反原則 13）。
+
+- **與 Phase 3 的銜接順序**：
+  `Spec Gate 通過` → `TASK_FAMILY_TO_SLOT 綁定` → `SLOT_REGISTRY 掛載` → `Phase 3 序列化 Thin Facade` → `runtime_smoke` → `publish`。
+
 ---
 
 ## 3. Phase 0 / 1 / 2 / 2.5 / 3 階段定義
@@ -71,8 +99,9 @@
 - **輸出**： readiness 判定結果（runtime_ready / pending_template / pending_renderer / blocked）與 blockers / warnings 清單。
 
 ### Phase 3：Runtime Generation / Registry / Thin Wrapper (運行生成與註冊)
-- **輸入**：僅接受 Phase 2.5 通過之 ProblemTypeSpec。
-- **輸出**：經 verified 的 generator、non-destructive merged registry、以及通過 runtime smoke 測試的 thin wrapper。絕對禁止將 manual_review/future_ai_judged 題型塞入 deterministic checker。
+- **輸入**：僅接受 Phase 2.5 通過之 ProblemTypeSpec；且對應 `target_task` 已完成 **Layer 6** 雙表註冊（`TASK_FAMILY_TO_SLOT` + `SLOT_REGISTRY`），或明確標記 `pending_template` 不得發布。
+- **輸出**：經 verified 的 generator、non-destructive merged registry、以及通過 runtime smoke 測試的 **Thin Facade**（`skills/{skill_id}.py`，僅含白名單委託）。絕對禁止將 manual_review/future_ai_judged 題型塞入 deterministic checker。
+- **v0.3 增量**：序列化前須執行 AnswerContract §4.3 展現型態強制作戰；同步前須執行 induced spec 幽靈快取清除（canonical whitelist purge）。
 
 ---
 
@@ -228,7 +257,7 @@
 
 ## 11. 後續任務引用與變更回報規範
 所有後續 Codex 任務，在提交 PR 或回報時，必須在報告中明確回答以下檢驗項目：
-1. **本次修改對應 SOP 哪一層？** (Layer 1 ~ Layer 5)
+1. **本次修改對應 SOP 哪一層？** (Layer 1 ~ Layer 6)
 2. **是否修改 production code / Python 邏輯？** (本輪是否為純配置/規格修改)
 3. **是否新增 hardcode / 特例？** (是否有針對特定單元的 hardcode 邏輯)
 4. **對 Gate 的影響是什麼？** (是否有影響 source-level / problem-type-level / skill-level 判定)
@@ -246,7 +275,8 @@
 | 2026-05-25 | v0.1 | 首版總體設計，後續因編碼問題導致亂碼污染 | Codex |
 | 2026-05-31 | v0.2 | 重整 v0.2，將資料規格與答案判定細則完全解耦，吸收閉環稽核與雙 pool 抽題規則，100% 乾淨 UTF-8 | Antigravity |
 | 2026-06-01 | v0.2.1 | 增補條款 3.4 非破壞性智能拯救原則、條款 4.5 未分類低置信度強制作戰原則、以及條款 5.2 動態數學形態容忍機制 | Antigravity |
+| 2026-06-01 | v0.3 | 15 大原則（增補 13–15）；六層架構新增 Layer 6 執行期插槽層；焊入 Thin Facade 與 Runtime Multi-Slot Engine；完整保留 v0.2 流程與 Gate | 首席系統架構師 |
 
-*本文件職責：定義整合總體流程、最高法規與閉環安全機制。*
+*本文件職責：定義整合總體流程、最高法規、六層架構邊界與閉環安全機制。*
 *不負責事項：不定義 YAML schema 細部欄位與 equivalence 白名單細則。*
-*應參考的其他 SOP：[AgentSkillV2_ProblemType規格包設計_v0.2.md](file:///e:/Python/Mathproject_tvet_mathB/docs/系統SOP/Gencode_AgentSkillV2整合/AgentSkillV2_ProblemType規格包設計_v0.2.md)、[AnswerContract_EquivalenceType_Gate_v0.2.md](file:///e:/Python/Mathproject_tvet_mathB/docs/系統SOP/Gencode_AgentSkillV2整合/AnswerContract_EquivalenceType_Gate_v0.2.md)。*
+*應參考的其他 SOP：[AgentSkillV2_ProblemType規格包設計_v0.3.md](AgentSkillV2_ProblemType規格包設計_v0.3.md)、[AnswerContract_EquivalenceType_Gate_v0.3.md](AnswerContract_EquivalenceType_Gate_v0.3.md)。*

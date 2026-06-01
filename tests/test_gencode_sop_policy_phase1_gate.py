@@ -33,9 +33,9 @@ class TestGencodeSopPolicyPhase1Gate(unittest.TestCase):
         Verify that build_sop_reference returns valid dictionary.
         """
         ref = build_sop_reference(self.project_root)
-        self.assertEqual(ref["sop_policy_version"], "v0.2")
+        self.assertEqual(ref["sop_policy_version"], "v0.3")
         self.assertEqual(ref["sop_preflight_status"], "PASS")
-        self.assertTrue(ref["highest_sop"].endswith("Gencode與AgentSkillV2整合總體設計_v0.2.md"))
+        self.assertTrue(ref["highest_sop"].endswith("Gencode與AgentSkillV2整合總體設計_v0.3.md"))
 
     def test_validate_skill_level_blockers_success(self):
         """

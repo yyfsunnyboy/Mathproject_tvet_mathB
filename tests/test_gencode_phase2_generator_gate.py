@@ -262,7 +262,7 @@ def test_low_source_diversity_blocker_is_downgraded_for_phase3_packaging():
     assert "generator_diversity_blocked" not in row["blockers"]
     assert "no_template_variant_used" not in row["blockers"]
     assert "consecutive_template_diversity_blocked" not in row["blockers"]
-    assert "model_repetition_blocked" not in row["blockers"]
+    assert "model_repetition_blocked" in row["blockers"]
     assert "low_unique_signature_count" in row["warnings"]
     assert "low_sample_diversity_tolerance_applied" in row["warnings"]
     assert row["generator_key"] in (out.get("accepted_generators") or [])

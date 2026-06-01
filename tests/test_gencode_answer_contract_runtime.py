@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import importlib
+from unittest.mock import patch
 
 from core.checkers.solution_set_checker import check_solution_set_answer
 from core.gencode.answer_payload import is_valid_answer_payload, validate_generated_answer_shape
@@ -281,7 +282,24 @@ def test_fake_diversity_detection_smoke():
 
     try:
         # Run run_draft_runtime_smoke and check if fake_diversity_fatal was triggered
-        res = run_draft_runtime_smoke("vh_數學B1_LinearFunction", f_path, sample_count=5)
+        with patch(
+            "core.gencode.runtime_smoke.load_problem_type_spec",
+            side_effect=lambda _sid, requested_pt, **_kwargs: (
+                {
+                    "problem_type_id": "numeric_numeric_evaluate_function_notation_short_answer",
+                    "answer_contract": {
+                        "answer_type": "numeric",
+                        "answer_shape": "scalar",
+                        "answer_equivalence": "numeric_exact",
+                        "checker": "numeric_checker",
+                        "choices_required": False,
+                    },
+                }
+                if requested_pt == "numeric_numeric_evaluate_function_notation_short_answer"
+                else None
+            ),
+        ):
+            res = run_draft_runtime_smoke("vh_數學B1_LinearFunction", f_path, sample_count=5)
         assert res.get("status") == "failed", res
         assert "fake_diversity_fatal" in res.get("blockers"), res.get("blockers")
     finally:

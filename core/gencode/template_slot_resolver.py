@@ -24,6 +24,11 @@ TASK_FAMILY_TO_SLOT: dict[str, str] = {
     "compute_centroid_coordinates": DIVISION_POINT_SLOT,
     "compute_midpoint_coordinates": DIVISION_POINT_SLOT,
     "solve_point_from_section_ratio": DIVISION_POINT_SLOT,
+    "compute_triangle_median_line": "linear_triangle_median_compute",
+    "evaluate_function_value": "function_value_numeric",
+    "interpret_function_notation": "linear_function_two_point_choice",
+    "contextual_application": "linear_function_contextual_word_problem",
+    "word_problem": "linear_function_contextual_word_problem",
 }
 
 SLOT_COMPATIBLE_FAMILIES: dict[str, frozenset[str]] = {
@@ -34,7 +39,45 @@ SLOT_COMPATIBLE_FAMILIES: dict[str, frozenset[str]] = {
     "two_point_distance_solution_set": frozenset({"solution_set"}),
     "two_point_distance_compute": frozenset({"numeric_or_radical", "numeric"}),
     DIVISION_POINT_SLOT: frozenset({"ordered_pair", "coordinate_pair"}),
+    "linear_triangle_median_compute": frozenset({"numeric", "numeric_or_radical", "expression", "short_answer"}),
+    "function_value_numeric": frozenset({"numeric", "short_answer"}),
+    "linear_function_two_point_choice": frozenset({"single_choice"}),
+    "linear_function_contextual_word_problem": frozenset({"numeric", "expression", "short_answer"}),
 }
+
+
+def _resolve_function_family_slot(problem_type_spec: dict[str, Any], family: str) -> str:
+    """Contract-aware slot for function-value task families (data-driven, not skill-specific)."""
+    task = str(family or problem_type_spec.get("target_task", "")).strip()
+    if task not in {"evaluate_function_value", "interpret_function_notation", "contextual_application", "word_problem"}:
+        return ""
+    ac = get_answer_contract(problem_type_spec)
+    gc = get_generator_contract(problem_type_spec)
+    answer_type = str(ac.get("answer_type", "")).strip()
+    checker = str(ac.get("checker") or ac.get("checker_key") or "").strip()
+    pt_key = str(problem_type_spec.get("problem_type_id", "")).strip().lower()
+    if task == "interpret_function_notation":
+        mapped = TASK_FAMILY_TO_SLOT.get("interpret_function_notation", "")
+        if mapped and _slot_compatible_with_contract(mapped, problem_type_spec):
+            return mapped
+    application_requested = task in {"contextual_application", "word_problem"} or (
+        task == "evaluate_function_value"
+        and (
+            bool(gc.get("contextual_application"))
+            or "application" in pt_key
+            or "word_problem" in pt_key
+            or pt_key.startswith("expression_evaluate_function_value")
+        )
+        and (answer_type == "expression" or checker == "expression_checker")
+    )
+    if application_requested:
+        mapped = TASK_FAMILY_TO_SLOT.get("contextual_application", "")
+        if mapped and _slot_compatible_with_contract(mapped, problem_type_spec):
+            return mapped
+    mapped = TASK_FAMILY_TO_SLOT.get("evaluate_function_value", "")
+    if mapped and _slot_compatible_with_contract(mapped, problem_type_spec):
+        return mapped
+    return ""
 
 
 def _infer_slot_from_answer_contract(problem_type_spec: dict[str, Any]) -> str:
@@ -79,6 +122,14 @@ def resolve_template_slot(problem_type_spec: dict[str, Any], seed: int | None = 
             slot,
         )
         return slot
+    if target_task == "compute_triangle_median_line":
+        slot = TASK_FAMILY_TO_SLOT[target_task]
+        logger.info(
+            "[GENCODE DISPATCH] template_slot problem_type_id=%s selected_slot=%s selection_strategy=target_task",
+            pt,
+            slot,
+        )
+        return slot
     gc = get_generator_contract(problem_type_spec)
     families = gc.get("template_families")
     strategy = "template_slots.stem"
@@ -88,7 +139,7 @@ def resolve_template_slot(problem_type_spec: dict[str, Any], seed: int | None = 
         if len(usable) > 1:
             rng = _slot_rng(seed, pt)
             family = usable[rng.randrange(len(usable))]
-            slot = TASK_FAMILY_TO_SLOT.get(family, "")
+            slot = _resolve_function_family_slot(problem_type_spec, family) or TASK_FAMILY_TO_SLOT.get(family, "")
             if slot:
                 strategy = "template_families.uniform_random"
                 selected_slot = slot
@@ -101,7 +152,7 @@ def resolve_template_slot(problem_type_spec: dict[str, Any], seed: int | None = 
                 )
                 return selected_slot
         elif len(usable) == 1:
-            slot = TASK_FAMILY_TO_SLOT.get(usable[0], "")
+            slot = _resolve_function_family_slot(problem_type_spec, usable[0]) or TASK_FAMILY_TO_SLOT.get(usable[0], "")
             if slot:
                 strategy = "template_families.single"
                 selected_slot = slot
