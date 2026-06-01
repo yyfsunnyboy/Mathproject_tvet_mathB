@@ -1,0 +1,35 @@
+{
+  "skill_id": "vh_數學B1_LinearFunction",
+  "gap": "missing_runtime_binding",
+  "repair_status": "PASS",
+  "phase2_status": "BUILD_PASS",
+  "verified_problem_types": [
+    "integer_numeric_evaluate_function_notation"
+  ],
+  "created_or_updated_wrapper": true,
+  "wrapper_path": "skills/vh_數學B1_LinearFunction.py",
+  "registry_binding_status": "SKIPPED_NON_DESTRUCTIVE",
+  "wrapper_binding_status": "BOUND",
+  "runtime_binding_status": "READY_FOR_PHASE3_CHECK",
+  "manual_review_exclusions": [],
+  "tests_run": [
+    "py_compile skills/vh_數學B1_LinearFunction.py",
+    "pytest tests/test_b1_absolute_value_inequality_runtime_wrapper.py -q"
+  ],
+  "py_compile_results": {
+    "skills/vh_數學B1_LinearFunction.py": true
+  },
+  "pytest_results": {
+    "tests/test_b1_absolute_value_inequality_runtime_wrapper.py": {
+      "passed": true,
+      "output": "..                                                                       [100%]\n2 passed in 0.07s"
+    }
+  },
+  "blocking_reasons": [],
+  "warnings": [],
+  "artifact_paths": {
+    "repair_json": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_LinearFunction_repair_missing_runtime_binding.json",
+    "repair_md": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_LinearFunction_repair_missing_runtime_binding.md"
+  },
+  "timestamp": "2026-06-01T03:37:33.605469+00:00"
+}

@@ -97,7 +97,7 @@ def test_outside_family_needs_review_still_can_block():
         ai_semantic_status="ok",
         induction_source_report={"core_example_count": 5, "enrichment_example_count": 0},
     )
-    assert str(out.get("decision", "")) == "warn"
+    assert str(out.get("decision", "")) == "block"
 
 
 def test_source_quality_reject_does_not_semantic_block_when_core_enough():

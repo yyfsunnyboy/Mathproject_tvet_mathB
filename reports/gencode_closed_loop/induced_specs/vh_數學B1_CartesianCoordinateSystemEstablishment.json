@@ -3,26 +3,36 @@
   "spec_source": "phase1_induced_draft",
   "items": [
     {
-      "problem_type_id": "short_answer_classify_quadrant_symbolic_condition_coordinate_point_2",
+      "problem_type_id": "short_answer_evaluate_function_value_fallback_application",
       "skill_id": "vh_數學B1_CartesianCoordinateSystemEstablishment",
-      "display_name": "象限判斷短答",
+      "target_task": "evaluate_function_value",
+      "task_family": "function_concept_family",
+      "display_name": "short_answer / evaluate_function_value",
       "source_example_ids": [
         4417,
         4435
       ],
       "answer_contract": {
-        "answer_type": "short_answer",
         "choices_required": false,
         "choice_count": null,
         "correct_choice_count": null,
-        "answer_equivalence": "exact_text",
-        "frontend_render_choices": false
+        "frontend_render_choices": false,
+        "answer_type": "numeric",
+        "answer_shape": "scalar",
+        "answer_equivalence": "numeric_exact",
+        "checker": "numeric_checker",
+        "accepted_formats": [
+          "5",
+          "5.0",
+          "-3"
+        ]
       },
       "stem_contract": {
         "stem_must_not_embed_choices": true,
         "allowed_math_objects": [
           "coordinate_point",
-          "symbolic_condition"
+          "symbolic_condition",
+          "two_coordinate_points"
         ],
         "required_math_objects": [
           "symbolic_condition",
@@ -54,8 +64,68 @@
         ]
       },
       "generator_contract": {
+        "template_variants": [
+          {
+            "id": "default",
+            "label": "default",
+            "stem_pattern": "依題意求解：{stem_hint}。",
+            "weight": 1.0,
+            "enabled": true
+          }
+        ],
+        "parameter_schema": {
+          "seed": {
+            "type": "integer",
+            "randomize": true
+          },
+          "difficulty_level": {
+            "choices": [
+              "level_1",
+              "level_2",
+              "level_3"
+            ],
+            "weights": [
+              0.4,
+              0.4,
+              0.2
+            ]
+          }
+        },
+        "variation_dimensions": [
+          "seed",
+          "difficulty_level",
+          "context_style"
+        ],
+        "difficulty_controls": {
+          "level_1": {},
+          "level_2": {},
+          "level_3": {}
+        },
+        "anti_repetition_rules": {
+          "avoid_same_template_consecutive": true,
+          "avoid_same_ratio_consecutive": true,
+          "avoid_same_point_names_consecutive": true,
+          "avoid_same_answer_consecutive": true,
+          "recent_history_window": 5,
+          "signature_fields": [
+            "problem_type_id",
+            "template_variant",
+            "ratio_form",
+            "ratio_values",
+            "coordinate_pattern",
+            "answer"
+          ]
+        },
+        "validity_constraints": [
+          "answer derivable from givens"
+        ],
+        "answer_shape": "numeric",
+        "explanation_variants": [
+          "stepwise"
+        ],
+        "sampling_strategy": "weighted_random",
         "template_families": [
-          "classify_quadrant"
+          "evaluate_function_value"
         ],
         "parameter_slots": {
           "seed": "integer",
@@ -67,9 +137,16 @@
         "avoid_llm_freeform_math": true,
         "use_domain_functions": true,
         "derivation_steps_required": true,
+        "contextual_application": true,
         "template_slots": {
-          "stem": "symbolic_quadrant"
-        }
+          "stem": "function_value_numeric"
+        },
+        "problem_type_id": "short_answer_evaluate_function_value_fallback_application",
+        "contract_validation_blockers": [],
+        "contract_validation_warnings": [
+          "single_template_variant_only",
+          "variation_dimensions_below_recommended_minimum"
+        ]
       },
       "validator_contract": {
         "static_checks": [
@@ -85,7 +162,8 @@
       "grouping_reason": "single_signature_group",
       "feature_signature": [
         "short_answer",
-        "classify_quadrant",
+        "evaluate_function_value",
+        "short_answer",
         [
           "sign_reasoning"
         ],
@@ -96,26 +174,46 @@
       ]
     },
     {
-      "problem_type_id": "single_choice_choose_correct_statement_axis_distance_coordinate_point_2",
+      "problem_type_id": "single_choice_evaluate_function_value_fallback_application",
       "skill_id": "vh_數學B1_CartesianCoordinateSystemEstablishment",
-      "display_name": "象限敘述選擇",
+      "target_task": "evaluate_function_value",
+      "task_family": "function_concept_family",
+      "display_name": "single_choice / evaluate_function_value",
       "source_example_ids": [
         4509,
         4510
       ],
       "answer_contract": {
-        "answer_type": "single_choice",
         "choices_required": true,
         "choice_count": 4,
         "correct_choice_count": 1,
+        "frontend_render_choices": true,
+        "answer_type": "single_choice",
+        "answer_shape": "choice_label",
+        "answer_semantics": "choice_label",
         "answer_equivalence": "choice_label",
-        "frontend_render_choices": true
+        "checker": "choice_label_checker",
+        "presentation_mode": "single_choice",
+        "source_has_choices": true,
+        "selected_checker": "choice_label_checker",
+        "checker_selection_reason": "explicit_single_choice",
+        "accepted_formats": [
+          "A",
+          "B",
+          "C",
+          "D"
+        ]
       },
       "stem_contract": {
         "stem_must_not_embed_choices": true,
         "allowed_math_objects": [
           "axis_distance",
-          "coordinate_point"
+          "coordinate_point",
+          "distance_formula",
+          "segment_length",
+          "three_coordinate_points",
+          "triangle",
+          "two_coordinate_points"
         ],
         "required_math_objects": [
           "axis_distance",
@@ -136,6 +234,7 @@
       "semantic_contract": {
         "reasoning_type": [
           "axis_distance_reasoning",
+          "distance_formula_reasoning",
           "sign_reasoning"
         ],
         "reject_if": [
@@ -148,9 +247,68 @@
         ]
       },
       "generator_contract": {
+        "template_variants": [
+          {
+            "id": "default",
+            "label": "default",
+            "stem_pattern": "依題意求解：{stem_hint}。",
+            "weight": 1.0,
+            "enabled": true
+          }
+        ],
+        "parameter_schema": {
+          "seed": {
+            "type": "integer",
+            "randomize": true
+          },
+          "difficulty_level": {
+            "choices": [
+              "level_1",
+              "level_2",
+              "level_3"
+            ],
+            "weights": [
+              0.4,
+              0.4,
+              0.2
+            ]
+          }
+        },
+        "variation_dimensions": [
+          "seed",
+          "difficulty_level",
+          "context_style"
+        ],
+        "difficulty_controls": {
+          "level_1": {},
+          "level_2": {},
+          "level_3": {}
+        },
+        "anti_repetition_rules": {
+          "avoid_same_template_consecutive": true,
+          "avoid_same_ratio_consecutive": true,
+          "avoid_same_point_names_consecutive": true,
+          "avoid_same_answer_consecutive": true,
+          "recent_history_window": 5,
+          "signature_fields": [
+            "problem_type_id",
+            "template_variant",
+            "ratio_form",
+            "ratio_values",
+            "coordinate_pattern",
+            "answer"
+          ]
+        },
+        "validity_constraints": [
+          "answer derivable from givens"
+        ],
+        "answer_shape": "numeric",
+        "explanation_variants": [
+          "stepwise"
+        ],
+        "sampling_strategy": "weighted_random",
         "template_families": [
-          "choose_correct_statement",
-          "choose_possible_coordinate"
+          "evaluate_function_value"
         ],
         "parameter_slots": {
           "seed": "integer",
@@ -162,9 +320,16 @@
         "avoid_llm_freeform_math": true,
         "use_domain_functions": true,
         "derivation_steps_required": true,
+        "contextual_application": true,
         "template_slots": {
           "stem": "axis_distance_choice"
-        }
+        },
+        "problem_type_id": "single_choice_evaluate_function_value_fallback_application",
+        "contract_validation_blockers": [],
+        "contract_validation_warnings": [
+          "single_template_variant_only",
+          "variation_dimensions_below_recommended_minimum"
+        ]
       },
       "validator_contract": {
         "static_checks": [
@@ -182,8 +347,7 @@
         "merged_single_choice",
         "single_choice",
         [
-          "choose_correct_statement",
-          "choose_possible_coordinate"
+          "evaluate_function_value"
         ]
       ]
     }

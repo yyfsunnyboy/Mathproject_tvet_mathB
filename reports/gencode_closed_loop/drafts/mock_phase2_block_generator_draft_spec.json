@@ -10,9 +10,9 @@
       },
       "answer_type": "short_answer",
       "answer_shape": "",
-      "equivalence_type": "string_equivalence",
-      "selected_checker": "text_checker",
-      "checker_key": "text_checker",
+      "equivalence_type": "exact_string",
+      "selected_checker": "text_short_checker",
+      "checker_key": "text_short_checker",
       "checker_capability_status": "blocked",
       "checker_contract_blockers": [
         "checker_contract_missing"
@@ -27,11 +27,10 @@
       "template_variant_distribution": {},
       "variable_coverage_report": {},
       "repetition_warnings": [],
-      "requires_human_action": true,
+      "requires_human_action": false,
       "blockers": [
         "answer_contract_not_supported",
         "checker_contract_missing",
-        "manual_review_or_malformed_source",
         "mixed_source_families",
         "phase1_semantic_alignment_blocked"
       ],
@@ -43,6 +42,6 @@
   "failed_generators": [
     "mock_phase2_block:short_answer_classify_quadrant_coordinate_point:draft_v1"
   ],
-  "timestamp": "2026-05-30T04:24:56.477251+00:00",
+  "timestamp": "2026-06-01T04:14:39.248859+00:00",
   "dry_run": true
 }

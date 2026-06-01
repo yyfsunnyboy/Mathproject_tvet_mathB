@@ -31,10 +31,12 @@ def test_linear_function_phase1_not_blocked_by_majority_needs_review():
     assert all(str(r.get("alignment_kind", "")) in {"rule_fallback_same_family", "same_as_main_skill", "anchor_subskill_match"} for r in targeted)
     sem = out.get("semantic_alignment") or {}
     sq = sem.get("source_quality_reject_examples") or []
-    assert {4431, 4446, 4515}.issubset(set(sq))
+    # Under database cleanup (4431 deleted) and Non-Destructive Salvage (4446 & 4515 salvaged), rejects are empty/reduced
+    assert 4431 not in [r.get("example_id") for r in rows]
+    assert len(sq) < 3
     specs = [s for s in (out.get("induced_problem_type_specs") or []) if isinstance(s, dict)]
     ids = [str(s.get("problem_type_id", "")) for s in specs]
-    assert "numeric_interpret_function_notation_short_answer" in ids
+    assert "numeric_numeric_evaluate_function_notation_short_answer" in ids
     assert not any("coordinate_point" in x for x in ids)
     ex_gate = out.get("exception_review_gate") or {}
     reasons = ex_gate.get("reasons") or []

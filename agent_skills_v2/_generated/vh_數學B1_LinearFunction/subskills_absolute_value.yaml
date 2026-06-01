@@ -1,0 +1,30 @@
+skill_id: "vh_數學B1_LinearFunction"
+subskills:
+  -
+    subskill_id: "integer_numeric_evaluate_function_notation"
+    observed: true
+    supporting_example_ids:
+      - 4424
+      - 4425
+      - 4426
+      - 4430
+      - 4431
+      - 4433
+      - 4434
+      - 4441
+      - 4442
+      - 4444
+      - 4445
+      - 4446
+      - 4448
+      - 4449
+      - 4500
+      - 4515
+      - 4516
+    suggested_problem_types:
+      - "integer_numeric_evaluate_function_notation"
+    runtime_category: "deterministic_expression"
+    prerequisite_subskills:
+      - "absolute_value_numeric_evaluation"
+    diagnosis_tags:
+      - "absolute_value"

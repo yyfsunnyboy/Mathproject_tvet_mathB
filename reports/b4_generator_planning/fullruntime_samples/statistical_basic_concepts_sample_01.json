@@ -1,37 +1,44 @@
 {
-  "question_text": "若學校想了解全校學生通勤方式，直接詢問全校每一位學生，這屬於何者？ 請輸入選項代號。",
+  "question_text": "把整理後資料畫成長條圖或折線圖，屬於統計研究的哪一步？請輸入選項代號。",
   "answer": "3",
   "correct_answer": "3",
   "choices": [
-    "1. 抽查",
-    "2. 分層隨機抽樣",
-    "3. 普查",
-    "4. 系統抽樣"
+    "1. 蒐集",
+    "2. 整理",
+    "3. 陳示",
+    "4. 解釋"
   ],
-  "explanation": "對母群體每一個個體都進行調查，屬於普查。",
+  "choices_display": [
+    "1. 蒐集",
+    "2. 整理",
+    "3. 陳示",
+    "4. 解釋"
+  ],
+  "explanation": "用圖表呈現資料屬於陳示。",
   "skill_id": "vh_數學B4_StatisticalBasicConcepts",
   "subskill_id": "b4_ch3_statistical_basic_concepts_choice_01",
   "problem_type_id": "statistical_basic_concepts_choice",
   "scenario_family": "statistical_basic_concepts_boundary_aligned",
-  "scenario_id": "census_vs_sample_survey_basic",
+  "scenario_id": "statistics_process_present_data",
   "generator_key": "b4.chap3.statistical_basic_concepts_choice",
   "answer_type": "integer",
   "answer_input_type": "choice",
   "difficulty": 1,
   "diagnosis_tags": [
     "statistics_basics",
-    "terminology"
+    "terminology",
+    "statistics_process_present_data"
   ],
   "remediation_candidates": [
-    "vh_數學B4_StatisticalBasicConcepts"
+    "vh_?詨飛B4_StatisticalBasicConcepts"
   ],
   "source_style_refs": [
     "B4_Ch3_statistical_basics"
   ],
-  "source_style_summary": "3-1 統計基本概念：統計意義、流程、敘述與推論、普查抽查。",
-  "textbook_alignment_note": "避免樣本平均數/母體平均數名詞反覆題，改為 3-1 概念辨識題。",
+  "source_style_summary": "3-1 統計基本概念：統計目的、資料處理流程、敘述統計、推論統計、普查與抽查。",
+  "textbook_alignment_note": "限於 B4 3-1 統計基本概念範圍，不含抽樣方法分類、調查對象數量細節或統計量計算題。",
   "parameters": {
-    "scenario_id": "census_vs_sample_survey_basic",
+    "scenario_id": "statistics_process_present_data",
     "scenario_family": "statistical_basic_concepts_boundary_aligned"
   },
   "visual_backed": false,

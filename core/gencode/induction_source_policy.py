@@ -131,11 +131,73 @@ def classify_induction_source_tier(
     }
 
 
+def filter_core_induction_examples(
+    features: list[dict[str, Any]],
+    examples: list[dict[str, Any]] | None = None,
+) -> None:
+    """
+    SOP v0.2 Smart Degraded Salvage Mechanism:
+    Intercepts core examples belonging to the main skill. If they have physical damage (missing_answer, broken_latex),
+    fills placeholder answers, clears source_quality_reject, and marks them as FORCE_ALLOWED_FOR_INDUCTION.
+    """
+    if not features:
+        return
+
+    ex_by_id = {}
+    for ex in examples or []:
+        if isinstance(ex, dict):
+            eid = ex.get("id") or ex.get("example_id")
+            if eid is not None:
+                ex_by_id[eid] = ex
+
+    for feat in features:
+        if not isinstance(feat, dict):
+            continue
+        ex_id = feat.get("source_example_id")
+        ex_row = ex_by_id.get(ex_id, {})
+
+        tier_info = classify_induction_source_tier(example=ex_row, feature=feat)
+        is_core = tier_info.get("induction_tier") == "core"
+
+        if is_core and (feat.get("source_quality_reject") or feat.get("source_quality_issues")):
+            # Fill placeholder if answer is missing
+            if not feat.get("answer") and not feat.get("correct_answer"):
+                is_choice = feat.get("answer_type") == "single_choice" or len(feat.get("choices") or []) >= 2
+                placeholder = "A" if is_choice else "0"
+                feat["answer"] = placeholder
+                feat["correct_answer"] = placeholder
+                if isinstance(ex_row, dict):
+                    ex_row["correct_answer"] = placeholder
+                    ex_row["answer"] = placeholder
+
+            # Reset physical quality damage flags/issues
+            feat["source_quality_reject"] = False
+            feat["source_quality_status"] = "FORCE_ALLOWED_FOR_INDUCTION"
+            if "source_quality_issues" in feat:
+                feat["source_quality_issues"] = []
+
+            # Update trace inside semantic classification if present
+            if isinstance(feat.get("semantic_classification"), dict):
+                sc = feat["semantic_classification"]
+                sc["source_quality_reject"] = False
+                sc["source_quality_status"] = "FORCE_ALLOWED_FOR_INDUCTION"
+                if "source_quality_issues" in sc:
+                    sc["source_quality_issues"] = []
+
+
+def validate_source_quality(
+    features: list[dict[str, Any]],
+    examples: list[dict[str, Any]] | None = None,
+) -> None:
+    filter_core_induction_examples(features, examples)
+
+
 def split_induction_source_features(
     features: list[dict[str, Any]],
     *,
     examples: list[dict[str, Any]] | None = None,
 ) -> tuple[list[dict[str, Any]], dict[str, Any]]:
+    filter_core_induction_examples(features, examples)
     ex_by_id: dict[int, dict[str, Any]] = {}
     for ex in examples or []:
         if not isinstance(ex, dict):
@@ -155,7 +217,7 @@ def split_induction_source_features(
         if not isinstance(feat, dict):
             continue
         ex_id = feat.get("source_example_id")
-        ex_row = ex_by_id.get(ex_id, {}) if isinstance(ex_id, int) else {}
+        ex_row = ex_by_id.get(ex_id, {}) or {}
         tier_info = classify_induction_source_tier(example=ex_row, feature=feat)
         enriched_feat = dict(feat)
         enriched_feat["induction_tier"] = tier_info["induction_tier"]
@@ -194,6 +256,7 @@ def annotate_features_with_induction_tier(
     *,
     examples: list[dict[str, Any]] | None = None,
 ) -> list[dict[str, Any]]:
+    filter_core_induction_examples(features, examples)
     core, _report = split_induction_source_features(features, examples=examples)
     del core
     ex_by_id: dict[int, dict[str, Any]] = {}
@@ -210,7 +273,7 @@ def annotate_features_with_induction_tier(
         if not isinstance(feat, dict):
             continue
         ex_id = feat.get("source_example_id")
-        ex_row = ex_by_id.get(ex_id, {}) if isinstance(ex_id, int) else {}
+        ex_row = ex_by_id.get(ex_id, {}) or {}
         tier_info = classify_induction_source_tier(example=ex_row, feature=feat)
         row = dict(feat)
         row["induction_tier"] = tier_info["induction_tier"]

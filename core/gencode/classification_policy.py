@@ -181,10 +181,11 @@ def merge_skill_scoped_classification(
     problem_type_id = pt_id_ai or pt_id_rule
 
     if problem_type_id:
-        if ai_result.get("equivalence_type") == problem_type_id:
-            ai_result["equivalence_type"] = ""
-        if rule_result.get("equivalence_type") == problem_type_id:
-            rule_result["equivalence_type"] = ""
+        for res in (ai_result, rule_result):
+            if isinstance(res, dict):
+                for eq_key in ("equivalence_type", "equivalence", "equivalence_type_proposal", "equivalence_proposal"):
+                    if res.get(eq_key) == problem_type_id:
+                        res[eq_key] = ""
 
     anchor = main_skill_anchor if isinstance(main_skill_anchor, dict) else {}
     expected_families = set(anchor.get("expected_task_families") or [])
@@ -215,7 +216,7 @@ def merge_skill_scoped_classification(
 
     # Determine if there's a severe defect
     has_severe_defect = False
-    for k in ["broken_latex", "missing_answer", "severe_ocr_noise"]:
+    for k in ["broken_latex", "missing_answer"]:
         if (
             (ex and bool(ex.get(k))) or
             bool(ai_result.get(k)) or
@@ -400,13 +401,14 @@ def merge_skill_scoped_classification(
 
     # 2. Honor Rulepack Authority (Fix over-blocking leaks)
     is_rule_source = (classifier_source == "registry_rule")
-    if is_rule_source and not has_severe_defect:
-        requires_human_action = False
-        conflict_reason = ""
-        if best_cid == NEEDS_REVIEW_ID or best_cid == "":
-            best_cid = final["target_task"]
-        if cand_src == "needs_review" or cand_src == "":
-            cand_src = "rule"
+    if is_rule_source:
+        if not has_severe_defect:
+            requires_human_action = False
+            conflict_reason = ""
+            if best_cid == NEEDS_REVIEW_ID or best_cid == "":
+                best_cid = final["target_task"]
+            if cand_src == "needs_review" or cand_src == "":
+                cand_src = "rule"
 
     gc = dict(ai_result.get("generator_contract") or {})
     param_schema = dict(ai_result.get("parameter_schema") or {})
@@ -476,10 +478,11 @@ def merge_ai_and_rule_classification(
     problem_type_id = pt_id_ai or pt_id_rule
 
     if problem_type_id:
-        if ai_result.get("equivalence_type") == problem_type_id:
-            ai_result["equivalence_type"] = ""
-        if rule_result.get("equivalence_type") == problem_type_id:
-            rule_result["equivalence_type"] = ""
+        for res in (ai_result, rule_result):
+            if isinstance(res, dict):
+                for eq_key in ("equivalence_type", "equivalence", "equivalence_type_proposal", "equivalence_proposal"):
+                    if res.get(eq_key) == problem_type_id:
+                        res[eq_key] = ""
 
     anchor = main_skill_anchor if isinstance(main_skill_anchor, dict) else {}
     expected_families = set(anchor.get("expected_task_families") or [])
@@ -500,7 +503,7 @@ def merge_ai_and_rule_classification(
 
     # Determine if there's a severe defect
     has_severe_defect = False
-    for k in ["broken_latex", "missing_answer", "severe_ocr_noise"]:
+    for k in ["broken_latex", "missing_answer"]:
         if (
             bool(ai_result.get(k)) or
             bool(rule_result.get(k))
@@ -556,7 +559,9 @@ def merge_ai_and_rule_classification(
     # 2. Honor Rulepack Authority (Fix over-blocking leaks)
     expected_subskills = set(anchor.get("expected_subskill_candidates") or [])
     is_valid_task = (rule_task in expected_subskills) or (rule_family in expected_families)
-    is_rule_source = (classifier_source == "registry_rule") and is_valid_task
+    if rule_task and is_valid_task:
+        classifier_source = "registry_rule"
+    is_rule_source = (classifier_source == "registry_rule")
 
     if is_rule_source and not has_severe_defect:
         requires_human_action = False
@@ -662,7 +667,7 @@ def _attach_structure_fields(
     is_rule_source = (trace.get("classifier_source") == "registry_rule") and is_valid_task
     if is_rule_source and trace.get("final_target_task"):
         has_severe_defect = False
-        for k in ["broken_latex", "missing_answer", "severe_ocr_noise"]:
+        for k in ["broken_latex", "missing_answer"]:
             if (
                 bool(ex.get(k)) or
                 bool(ai_result.get(k)) or

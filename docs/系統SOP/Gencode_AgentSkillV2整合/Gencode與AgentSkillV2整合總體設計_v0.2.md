@@ -62,6 +62,7 @@
 
 ### Phase 1：Source Audit + Problem Type Induction (來源審查與題型歸納)
 - **輸出**：usable_core_examples、rejected_examples、enrichment_examples、source_bank_only_examples、candidate_problem_types 與 classification_report，不輸出正式 generator/checker。
+- **條款 3.4：Non-Destructive Salvage（非破壞性智能拯救原則）**：明確定義管線在物理掃描端遇到屬於 `core_example`（核心課本原題）但發生 `missing_answer` 或 `broken_latex` 的殘缺資料時，禁止粗暴判定為 `source_quality_reject` 並直接拋棄。引擎必須執行全自動「智能降級補齊」，在記憶體中動態灌入標準佔位符（如預設答案 `"0"` 或 `"A"`），強制標記為 `FORCE_ALLOWED_FOR_INDUCTION` 安全送入 Phase 2，由 AI 在生成端重新透過 SymPy 補齊解算邏輯。
 
 ### Phase 2：ProblemTypeSpec / Contract 建立 (規格包與契約產出)
 - **輸出**：最終的 ProblemTypeSpec、AnswerContract、SemanticContract、StemContract、GeneratorContract、ValidatorContract、examples_map 與 source_bank map。不得接受 legacy 未 canonical 的 equivalence 值。
@@ -108,6 +109,7 @@
 - source_bank_only 題存在
 - 素養題存在
 - runtime_ready_candidate 尚未完成
+- **條款 4.5：Unclassified Exception Escalation（未分類低置信度強制作戰原則）**：針對情境縱深極深、帶有圖表或複雜生活特徵（如汽車油量、手機費率）而導致 Token Overlap 分數偏低，被演算法判定為 `unclassified_low_confidence` 的靈魂課本原題，嚴禁移入 `skipped` 列表。管線必須在現場全自動分發臨時代理題型 ID，硬推其推進 Phase 2 觸發多模板生成（Multi-Template Generator），死守 Fidelity over Coverage（課本忠實度高於題型覆蓋率） 的最高品質紅線。
 
 ---
 
@@ -140,6 +142,9 @@
   - 少量 source_quality_reject 導致整個 skill 被 blocked。
   - problem_type 已形成，卻因 majority_needs_review 阻擋整個 Phase 1。
 - **正確行為**：source_quality_reject 只排除單題；合法 problem_type 可繼續；compute_numeric 若不屬於主技能可 warning 或 candidate-only；絕對不可為 LinearFunction 寫死放行特例。
+
+### 5.2：Dynamic Shape Relaxation（動態數學形態容忍機制）
+放寬早期只認純整數/有理數的死板正則。稽核點必須根據原始核心範例特徵全自動進行動態調節。若題型目標是求出函數關係式或選擇題，必須放行包含合法未知數（如 $x, y, t$）、LaTeX 數學減號（$−$）與選項單一字元，拒絕誤判封殺，確保多元課本題型能順利斬獲 `BUILD_PASS`。
 
 ---
 
@@ -240,6 +245,7 @@
 |---|---|---|---|
 | 2026-05-25 | v0.1 | 首版總體設計，後續因編碼問題導致亂碼污染 | Codex |
 | 2026-05-31 | v0.2 | 重整 v0.2，將資料規格與答案判定細則完全解耦，吸收閉環稽核與雙 pool 抽題規則，100% 乾淨 UTF-8 | Antigravity |
+| 2026-06-01 | v0.2.1 | 增補條款 3.4 非破壞性智能拯救原則、條款 4.5 未分類低置信度強制作戰原則、以及條款 5.2 動態數學形態容忍機制 | Antigravity |
 
 *本文件職責：定義整合總體流程、最高法規與閉環安全機制。*
 *不負責事項：不定義 YAML schema 細部欄位與 equivalence 白名單細則。*

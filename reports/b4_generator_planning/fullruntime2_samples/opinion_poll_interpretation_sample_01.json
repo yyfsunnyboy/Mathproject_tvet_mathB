@@ -1,5 +1,5 @@
 {
-  "question_text": "某民調資料如下：樣本數 200、贊成比例 58%、調查方式為網路問卷。請說明此結果可如何解讀，並指出至少一項可能限制。",
+  "question_text": "某民調針對「是否滿意校園餐廳品質」進行調查，以學校問卷方式訪問了 120 人，結果顯示有 67% 的受訪者表示贊成。請說明此結果可如何解讀，並指出至少一項可能的限制（例如：樣本代表性）。",
   "answer": "",
   "correct_answer": "",
   "expected_answer_schema": {
@@ -7,15 +7,16 @@
     "required_points": [
       "結果解讀",
       "限制或偏誤"
-    ]
+    ],
+    "focus_hint": "樣本代表性"
   },
   "choices": [],
-  "explanation": "民調解讀需評估樣本代表性與調查方式限制，建議 AI/教師覆核。",
+  "explanation": "民調解讀需評估樣本代表性與調查方式限制（本題重點：樣本代表性），建議 AI/教師覆核。",
   "skill_id": "vh_數學B4_OpinionPollInterpretation",
   "subskill_id": "b4_ch3_opinion_poll_review_01",
   "problem_type_id": "opinion_poll_interpretation_review",
   "scenario_family": "opinion_poll_interpretation",
-  "scenario_id": "opinion_poll_interpretation_review",
+  "scenario_id": "opinion_poll_校園滿意度_學校問卷_120",
   "generator_key": "b4.chap3.opinion_poll_interpretation_review_shell",
   "answer_type": "text",
   "answer_input_type": "text_or_handwriting",
@@ -31,12 +32,12 @@
     "B4_Ch3_opinion_poll"
   ],
   "parameters": {
-    "scenario_id": "opinion_poll_interpretation_review",
+    "scenario_id": "opinion_poll_校園滿意度_學校問卷_120",
     "scenario_family": "opinion_poll_interpretation",
     "poll": {
-      "樣本數": 200,
-      "贊成比例": "58%",
-      "調查方式": "網路問卷"
+      "樣本數": 120,
+      "贊成比例": "67%",
+      "調查方式": "學校問卷"
     }
   },
   "visual_backed": false,

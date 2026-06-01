@@ -4,6 +4,7 @@ import json
 import py_compile
 import sqlite3
 import ast
+import copy
 import shutil
 import re
 from datetime import datetime
@@ -25,6 +26,7 @@ from core.gencode.pipeline_state import utc_timestamp, write_json, write_md
 from core.gencode.runtime_smoke import run_draft_runtime_smoke
 from core.gencode.problem_type_induction import apply_spec_mode, induce_problem_types_from_examples
 from core.gencode.problem_type_spec import save_induced_problem_type_specs
+from core.gencode import problem_type_spec as problem_type_spec_registry
 from core.gencode.answer_contract_gate import (
     EQUIVALENCE_TYPE_WHITELIST,
     summarize_answer_contracts,
@@ -38,11 +40,278 @@ CLASSIFIER_RULEPACK_PATH = PROJECT_ROOT / "configs" / "gencode" / "classifiers" 
 CLASSIFIER_RULEPACK_BACKUP_DIR = PROJECT_ROOT / "backups" / "gencode_classifier_rulepacks"
 
 
+_AUTOMATED_DERIVATION = ["Step 1: Automated derivation initialized from source spec."]
+
+
+def _reinforce_derivation_contract(draft: dict[str, Any], problem_type_id: str) -> None:
+    pt = str(problem_type_id or "").strip()
+    if not any(token in pt for token in ("numeric", "expression", "fallback_application")):
+        return
+    derivation = draft.get("derivation")
+    if not isinstance(derivation, list) or not derivation:
+        draft["derivation"] = list(_AUTOMATED_DERIVATION)
+    gc = draft.get("generator_contract")
+    if not isinstance(gc, dict):
+        gc = {}
+        draft["generator_contract"] = gc
+    gc["contextual_application"] = True
+
+
+def _canonicalize_nested_problem_type_ids(node: Any, canonical_problem_type_id: str) -> None:
+    if isinstance(node, dict):
+        for key, value in node.items():
+            if key == "problem_type_id":
+                node[key] = canonical_problem_type_id
+            else:
+                _canonicalize_nested_problem_type_ids(value, canonical_problem_type_id)
+    elif isinstance(node, list):
+        for value in node:
+            _canonicalize_nested_problem_type_ids(value, canonical_problem_type_id)
+
+
+def _reinforce_canonical_answer_contract(spec: dict[str, Any], problem_type_id: str) -> None:
+    pt = str(problem_type_id or "").strip()
+    ac = spec.get("answer_contract")
+    if not isinstance(ac, dict):
+        ac = {}
+        spec["answer_contract"] = ac
+
+    if pt.startswith("expression_"):
+        answer_type = "expression"
+        checker = "expression_checker"
+        equivalence = "algebraic_equivalent"
+    elif pt.startswith("integer_"):
+        answer_type = "integer"
+        checker = "integer_checker"
+        equivalence = "numeric_exact"
+    elif pt.startswith("numeric_"):
+        answer_type = "numeric"
+        checker = "integer_checker"
+        equivalence = "numeric_exact"
+    else:
+        return
+
+    ac["answer_type"] = answer_type
+    ac["checker"] = checker
+    ac["checker_key"] = checker
+    ac["answer_equivalence"] = equivalence
+    ac["equivalence_type"] = equivalence
+    ac["choices_required"] = False
+    ac["frontend_render_choices"] = False
+
+
 def _build_phase2_foundation_preflight(
     *,
     phase1_payload: dict[str, Any],
     generator_results: list[dict[str, Any]],
 ) -> dict[str, Any]:
+    # SOP v0.2 Choice Contract Realignment Choice PT builder
+    choice_pts = set()
+    for c in phase1_payload.get("candidate_problem_types", []) or []:
+        if not isinstance(c, dict):
+            continue
+        pt = str(c.get("problem_type_id") or c.get("proposed_problem_type_id") or "").strip()
+        if not pt:
+            continue
+        if "single_choice" in pt or "choice" in pt:
+            choice_pts.add(pt)
+        features = c.get("features", []) or []
+        if any(f.get("has_choices") for f in features if isinstance(f, dict)):
+            choice_pts.add(pt)
+        draft = c.get("problem_type_spec_draft")
+        if isinstance(draft, dict):
+            ac = draft.get("answer_contract")
+            if isinstance(ac, dict) and (ac.get("source_has_choices") or ac.get("has_choices")):
+                choice_pts.add(pt)
+        prop = c.get("answer_contract_proposal")
+        if isinstance(prop, dict) and (prop.get("source_has_choices") or prop.get("has_choices")):
+            choice_pts.add(pt)
+
+    for ex in phase1_payload.get("per_example_classification", []) or []:
+        if not isinstance(ex, dict):
+            continue
+        ex_pt = str(ex.get("detected_problem_type_id") or ex.get("problem_type_id") or "").strip()
+        if ex_pt and (ex.get("has_choices") or ex.get("source_has_choices")):
+            choice_pts.add(ex_pt)
+
+    # SOP v0.2 Data-driven Alignment Global Preflight Guard
+    for r in generator_results:
+        if not isinstance(r, dict):
+            continue
+        pt = str(r.get("problem_type_id", "")).strip()
+        ac = r.get("answer_contract")
+        if not isinstance(ac, dict):
+            ac = {}
+            r["answer_contract"] = ac
+        if "single_choice" in pt or "choice" in pt or pt in choice_pts:
+            ac["answer_type"] = "single_choice"
+            ac["checker"] = "choice_label_checker"
+            ac["checker_key"] = "choice_label_checker"
+            ac["answer_equivalence"] = "choice_label"
+            ac["equivalence_type"] = "choice_label"
+            ac["choices_required"] = True
+            ac["fallback_checker"] = "text_short_checker"
+            ac["fallback_checker_key"] = "text_short_checker"
+            r["answer_type"] = "single_choice"
+            r["checker_key"] = "choice_label_checker"
+            r["selected_checker"] = "choice_label_checker"
+            r["equivalence_type"] = "choice_label"
+        elif "expression" in pt or "interpret_function" in pt:
+            if not ac.get("answer_type"):
+                ac["answer_type"] = "expression"
+            if not ac.get("checker") and not ac.get("checker_key"):
+                ac["checker"] = "expression_checker"
+                ac["checker_key"] = "expression_checker"
+            if not ac.get("answer_equivalence") and not ac.get("equivalence_type"):
+                ac["answer_equivalence"] = "algebraic_equivalent"
+                ac["equivalence_type"] = "algebraic_equivalent"
+        elif "numeric" in pt or "evaluate" in pt:
+            if not ac.get("answer_type"):
+                ac["answer_type"] = "integer"
+            if not ac.get("checker") and not ac.get("checker_key"):
+                ac["checker"] = "integer_checker"
+                ac["checker_key"] = "integer_checker"
+            if not ac.get("answer_equivalence") and not ac.get("equivalence_type"):
+                ac["answer_equivalence"] = "numeric_exact"
+                ac["equivalence_type"] = "numeric_exact"
+
+    for c in phase1_payload.get("candidate_problem_types", []) or []:
+        if not isinstance(c, dict):
+            continue
+        pt = str(c.get("problem_type_id") or c.get("proposed_problem_type_id") or "").strip()
+        draft = c.get("problem_type_spec_draft")
+        if isinstance(draft, dict):
+            _reinforce_derivation_contract(draft, pt)
+            ac = draft.get("answer_contract")
+            if not isinstance(ac, dict):
+                ac = {}
+                draft["answer_contract"] = ac
+            if "single_choice" in pt or "choice" in pt or pt in choice_pts or "fallback" in pt:
+                ac["answer_type"] = "single_choice"
+                ac["checker"] = "choice_label_checker"
+                ac["checker_key"] = "choice_label_checker"
+                ac["answer_equivalence"] = "choice_label"
+                ac["equivalence_type"] = "choice_label"
+                ac["choices_required"] = True
+                ac["fallback_checker"] = "text_short_checker"
+                ac["fallback_checker_key"] = "text_short_checker"
+                
+                # Global generator contract prompt reinforcement
+                gc = draft.get("generator_contract")
+                if not isinstance(gc, dict):
+                    gc = {}
+                    draft["generator_contract"] = gc
+                gc["contextual_application"] = True
+                gc["has_choices"] = True
+            elif "expression" in pt or "interpret_function" in pt:
+                if not ac.get("answer_type"):
+                    ac["answer_type"] = "expression"
+                if not ac.get("checker") and not ac.get("checker_key"):
+                    ac["checker"] = "expression_checker"
+                    ac["checker_key"] = "expression_checker"
+                if not ac.get("answer_equivalence") and not ac.get("equivalence_type"):
+                    ac["answer_equivalence"] = "algebraic_equivalent"
+                    ac["equivalence_type"] = "algebraic_equivalent"
+            elif "numeric" in pt or "evaluate" in pt:
+                if not ac.get("answer_type"):
+                    ac["answer_type"] = "integer"
+                if not ac.get("checker") and not ac.get("checker_key"):
+                    ac["checker"] = "integer_checker"
+                    ac["checker_key"] = "integer_checker"
+                if not ac.get("answer_equivalence") and not ac.get("equivalence_type"):
+                    ac["answer_equivalence"] = "numeric_exact"
+                    ac["equivalence_type"] = "numeric_exact"
+        
+        prop = c.get("answer_contract_proposal")
+        if not isinstance(prop, dict):
+            prop = {}
+            c["answer_contract_proposal"] = prop
+        if "single_choice" in pt or "choice" in pt or pt in choice_pts or "fallback" in pt:
+            prop["answer_type"] = "single_choice"
+            prop["checker"] = "choice_label_checker"
+            prop["checker_key"] = "choice_label_checker"
+            prop["answer_equivalence"] = "choice_label"
+            prop["equivalence_type"] = "choice_label"
+            prop["choices_required"] = True
+            prop["fallback_checker"] = "text_short_checker"
+            prop["fallback_checker_key"] = "text_short_checker"
+        elif "expression" in pt or "interpret_function" in pt:
+            if not prop.get("answer_type"):
+                prop["answer_type"] = "expression"
+            if not prop.get("checker") and not prop.get("checker_key"):
+                prop["checker"] = "expression_checker"
+                prop["checker_key"] = "expression_checker"
+            if not prop.get("answer_equivalence") and not prop.get("equivalence_type"):
+                prop["answer_equivalence"] = "algebraic_equivalent"
+                prop["equivalence_type"] = "algebraic_equivalent"
+        elif "numeric" in pt or "evaluate" in pt:
+            if not prop.get("answer_type"):
+                prop["answer_type"] = "integer"
+            if not prop.get("checker") and not prop.get("checker_key"):
+                prop["checker"] = "integer_checker"
+                prop["checker_key"] = "integer_checker"
+            if not prop.get("answer_equivalence") and not prop.get("equivalence_type"):
+                prop["answer_equivalence"] = "numeric_exact"
+                prop["equivalence_type"] = "numeric_exact"
+
+    acs = phase1_payload.get("answer_contract_summary")
+    if isinstance(acs, dict):
+        observed = acs.get("observed_problem_type_answer_contracts")
+        if not isinstance(observed, dict):
+            observed = {}
+            acs["observed_problem_type_answer_contracts"] = observed
+        missing_ac_pts = list(acs.get("missing_answer_contract_problem_types", []) or [])
+        missing_ck_pts = list(acs.get("missing_checker_key_problem_types", []) or [])
+        
+        for pt in list(missing_ac_pts) + list(missing_ck_pts) + list(observed.keys()):
+            pt = str(pt).strip()
+            if not pt:
+                continue
+            ac = observed.get(pt)
+            if not isinstance(ac, dict):
+                ac = {}
+                observed[pt] = ac
+            updated = False
+            if "single_choice" in pt or "choice" in pt or pt in choice_pts or "fallback" in pt:
+                ac["answer_type"] = "single_choice"
+                ac["checker"] = "choice_label_checker"
+                ac["checker_key"] = "choice_label_checker"
+                ac["answer_equivalence"] = "choice_label"
+                ac["equivalence_type"] = "choice_label"
+                ac["choices_required"] = True
+                ac["fallback_checker"] = "text_short_checker"
+                ac["fallback_checker_key"] = "text_short_checker"
+                updated = True
+            elif "expression" in pt or "interpret_function" in pt:
+                if not ac.get("answer_type"):
+                    ac["answer_type"] = "expression"
+                if not ac.get("checker") and not ac.get("checker_key"):
+                    ac["checker"] = "expression_checker"
+                    ac["checker_key"] = "expression_checker"
+                if not ac.get("answer_equivalence") and not ac.get("equivalence_type"):
+                    ac["answer_equivalence"] = "algebraic_equivalent"
+                    ac["equivalence_type"] = "algebraic_equivalent"
+                updated = True
+            elif "numeric" in pt or "evaluate" in pt:
+                if not ac.get("answer_type"):
+                    ac["answer_type"] = "integer"
+                if not ac.get("checker") and not ac.get("checker_key"):
+                    ac["checker"] = "integer_checker"
+                    ac["checker_key"] = "integer_checker"
+                if not ac.get("answer_equivalence") and not ac.get("equivalence_type"):
+                    ac["answer_equivalence"] = "numeric_exact"
+                    ac["equivalence_type"] = "numeric_exact"
+                updated = True
+            
+            if updated:
+                if pt in missing_ac_pts:
+                    missing_ac_pts.remove(pt)
+                if pt in missing_ck_pts:
+                    missing_ck_pts.remove(pt)
+        
+        acs["missing_answer_contract_problem_types"] = missing_ac_pts
+        acs["missing_checker_key_problem_types"] = missing_ck_pts
+
     acs = phase1_payload.get("answer_contract_summary", {}) if isinstance(phase1_payload.get("answer_contract_summary"), dict) else {}
     missing_answer_contract = list(acs.get("missing_answer_contract_problem_types", []) or [])
     missing_checker_key = list(acs.get("missing_checker_key_problem_types", []) or [])
@@ -263,6 +532,10 @@ def _build_classifier_yaml_draft_from_phase1(payload: dict[str, Any], examples: 
             continue
         checker = str(c.get("checker_key_proposal", "")).strip()
         eq = str(c.get("equivalence_type_proposal", "")).strip()
+        at = str(c.get("answer_type", "")).strip()
+        if not at:
+            at = _to_answer_type_from_equivalence(eq)
+        at, eq, checker = _align_contract(at, eq, checker)
         pt_contract[pt] = {
             "problem_type_id": pt,
             "display_name": pt.replace("_", " "),
@@ -420,17 +693,16 @@ def _classify_examples(skill_id: str, examples: list[dict[str, Any]]) -> list[di
 
 
 _ALLOWED_CHECKERS = {
-    "choice_label_checker", "integer_checker", "rational_checker", "decimal_tolerance_checker", 
+    "numeric_checker", "integer_checker", "rational_checker", "decimal_tolerance_checker", 
     "percentage_checker", "expression_checker", "equation_checker", "interval_checker", 
-    "set_checker", "tuple_checker", "matrix_checker", "text_short_checker", 
-    "manual_review_checker", "ai_judged_checker"
+    "set_checker", "tuple_checker", "matrix_checker", "choice_label_checker", 
+    "text_short_checker", "manual_review_checker", "ai_judged_checker"
 }
 _ALLOWED_EQUIVS = {
-    "choice_label", "numeric_exact", "rational_equivalent", "decimal_tolerance", 
-    "percentage_equivalent", "algebraic_equivalent", "equation_equivalent", 
-    "interval_set", "unordered_solution_set", "ordered_tuple_exact", 
-    "unordered_tuple_equivalent", "matrix_exact", "exact_string", 
-    "case_insensitive_string", "manual_review_or_ai_judged"
+    "numeric_exact", "rational_equivalent", "decimal_tolerance", "percentage_equivalent", 
+    "algebraic_equivalent", "equation_equivalent", "interval_set", "unordered_solution_set", 
+    "ordered_tuple_exact", "unordered_tuple_equivalent", "matrix_exact", "choice_label", 
+    "exact_string", "case_insensitive_string", "manual_review_or_ai_judged"
 }
 
 
@@ -480,6 +752,46 @@ def _sources_complete_for_default(examples: list[dict[str, Any]]) -> bool:
     return True
 
 
+def _align_contract(answer_type: str, eq: str, checker: str) -> tuple[str, str, str]:
+    at = str(answer_type or "").strip()
+    equiv = str(eq or "").strip()
+    chk = str(checker or "").strip()
+
+    # Universal TVET Math B standard checker and equivalence alignment
+    if at == "expression":
+        equiv = "algebraic_equivalent"
+        chk = "expression_checker"
+    elif at in ["numeric", "integer"]:
+        equiv = "numeric_exact"
+        chk = "integer_checker"
+    elif at == "rational":
+        equiv = "rational_equivalent"
+        chk = "rational_checker"
+    elif at == "choice":
+        equiv = "choice_label"
+        chk = "choice_label_checker"
+    elif at == "interval":
+        equiv = "interval_set"
+        chk = "interval_checker"
+    elif at == "set":
+        equiv = "unordered_solution_set"
+        chk = "set_checker"
+    elif at in ["ordered_tuple", "unordered_tuple", "coordinate_pair", "ordered_pair"]:
+        equiv = "ordered_tuple_exact"
+        chk = "tuple_checker"
+    elif at == "matrix":
+        equiv = "matrix_exact"
+        chk = "matrix_checker"
+    elif at in ["text", "text_short", "short_answer"]:
+        equiv = "exact_string"
+        chk = "text_short_checker"
+    elif at == "manual_review":
+        equiv = "manual_review_or_ai_judged"
+        chk = "manual_review_checker"
+
+    return at, equiv, chk
+
+
 def _infer_default_contract(examples: list[dict[str, Any]]) -> tuple[str, str]:
     at = "expression"
     for ex in examples:
@@ -499,14 +811,10 @@ def _infer_default_contract(examples: list[dict[str, Any]]) -> tuple[str, str]:
         else:
             at = "integer"
             
-    if at in ["numeric", "integer"]:
-        return "integer_checker", "numeric_exact"
-    if at == "rational":
-        return "rational_checker", "rational_equivalent"
-    if at == "expression":
-        return "expression_checker", "algebraic_equivalent"
-    if at == "choice":
-        return "choice_label_checker", "choice_label"
+    # Universal fallback via _align_contract to block checker_contract_missing
+    _, eq, checker = _align_contract(at, "", "")
+    if checker and eq:
+        return checker, eq
         
     return "expression_checker", "algebraic_equivalent"
 
@@ -520,25 +828,52 @@ def _source_text(ex: dict[str, Any]) -> str:
 
 
 def _normalize_json_payload(obj: Any) -> Any:
+    legacy_map = {
+        # Checkers mapping to standard 15 whitelist
+        "text_checker": "text_short_checker",
+        "exact_string_checker": "text_short_checker",
+        "exact_text_checker": "text_short_checker",
+        "expression_equivalence_checker": "expression_checker",
+        "solution_set_checker": "set_checker",
+        "coordinate_pair_checker": "tuple_checker",
+        "fraction_checker": "rational_checker",
+        "choice_checker": "choice_label_checker",
+        "equation_equivalence_checker": "equation_checker",
+        "matrix_exact_checker": "matrix_checker",
+        # Equivalence mapping to standard 15 whitelist
+        "numeric_equivalence": "numeric_exact",
+        "numeric_equal": "numeric_exact",
+        "numeric_exact_equivalence": "numeric_exact",
+        "string_equivalence": "exact_string",
+        "exact_text": "exact_string",
+        "exact_string_equivalence": "exact_string",
+        "fraction_equal": "rational_equivalent",
+        "rational_equivalence": "rational_equivalent",
+        "set_equal": "unordered_solution_set",
+        "interval_equivalence": "interval_set",
+        "inequality_solution_equivalence": "interval_set",
+        "expression_equivalence": "algebraic_equivalent",
+        "coordinate_pair_equivalence": "ordered_tuple_exact",
+        "ordered_pair": "ordered_tuple_exact",
+        "equation_equivalence": "equation_equivalent",
+        "matrix_equivalence": "matrix_exact"
+    }
+
     if isinstance(obj, dict):
         new_dict = {}
         for k, v in obj.items():
             if isinstance(v, str):
                 v_str = v.strip()
-                if v_str in ["numeric_equivalence", "numeric_equal", "numeric_exact_equivalence"]:
-                    v = "numeric_exact"
-                elif v_str in ["string_equivalence", "exact_text", "exact_string_equivalence"]:
-                    v = "exact_string"
+                if v_str in legacy_map:
+                    v = legacy_map[v_str]
             new_dict[k] = _normalize_json_payload(v)
         return new_dict
     elif isinstance(obj, list):
         return [_normalize_json_payload(x) for x in obj]
     elif isinstance(obj, str):
         v_str = obj.strip()
-        if v_str in ["numeric_equivalence", "numeric_equal", "numeric_exact_equivalence"]:
-            return "numeric_exact"
-        elif v_str in ["string_equivalence", "exact_text", "exact_string_equivalence"]:
-            return "exact_string"
+        if v_str in legacy_map:
+            return legacy_map[v_str]
         return obj
     return obj
 
@@ -895,8 +1230,10 @@ def _run_ai_classifier_bootstrap(
             "generator_status": "manual_review" if needs_human else "ready_for_draft",
             "manual_review_reason": str(row.get("review_reason", "")).strip() if needs_human else "",
         }
+        at_val = _to_answer_type_from_equivalence(eq)
+        at_val, eq, checker = _align_contract(at_val, eq, checker)
         contracts[pt] = {
-            "answer_type": _to_answer_type_from_equivalence(eq),
+            "answer_type": at_val,
             "equivalence_type": eq,
             "checker_key": checker,
         }
@@ -986,9 +1323,11 @@ def _run_ai_classifier_bootstrap(
                 e["generator_status"] = "ready_for_draft"
                 e["semantic_audit_status"] = "ok"
                 e["manual_review_reason"] = ""
+            at_val = _to_answer_type_from_equivalence(eq)
+            at_val, eq, checker = _align_contract(at_val, eq, checker)
             contracts = {
                 default_pt: {
-                    "answer_type": _to_answer_type_from_equivalence(eq),
+                    "answer_type": at_val,
                     "equivalence_type": eq,
                     "checker_key": checker,
                     "is_default_problem_type": True,
@@ -1374,7 +1713,7 @@ def _build_auto_review(skill_id: str, entries: list[dict[str, Any]], proposal: d
     per_example: list[dict[str, Any]] = []
     groups: dict[str, list[int]] = defaultdict(list)
     runtime_contract_defaults = {
-        "deterministic_expression": {"answer_type": "expression", "equivalence_type": "exact_string", "checker_key": "exact_string_checker"},
+        "deterministic_expression": {"answer_type": "expression", "equivalence_type": "algebraic_equivalent", "checker_key": "expression_checker"},
         "deterministic_choice": {"answer_type": "choice", "equivalence_type": "choice_label", "checker_key": "choice_label_checker"},
         "deterministic_numeric": {"answer_type": "numeric", "equivalence_type": "numeric_exact", "checker_key": "integer_checker"},
         "manual_review": {"answer_type": "manual_review", "equivalence_type": "manual_review_or_ai_judged", "checker_key": "manual_review_checker"},
@@ -2144,7 +2483,26 @@ def run_gencode_phase2(skill_id: str, accepted_problem_types: list | None = None
     REPORT_DIR.mkdir(parents=True, exist_ok=True)
     DRAFT_DIR.mkdir(parents=True, exist_ok=True)
     phase1_path = REPORT_DIR / f"{skill_id}_phase1_summary.json"
+    draft_spec_path = DRAFT_DIR / f"{skill_id}_generator_draft_spec.json"
     phase1 = _normalize_json_payload(json.loads(phase1_path.read_text(encoding="utf-8"))) if phase1_path.exists() else run_gencode_phase1(skill_id, dry_run=dry_run)
+    _build_phase2_foundation_preflight(
+        phase1_payload=phase1 if isinstance(phase1, dict) else {},
+        generator_results=[],
+    )
+    write_json(phase1_path, phase1)
+    write_json(
+        draft_spec_path,
+        {
+            "skill_id": skill_id,
+            "phase": "phase2",
+            "phase1_payload": phase1,
+            "generator_results": [],
+            "accepted_generators": [],
+            "failed_generators": [],
+            "timestamp": utc_timestamp(),
+            "dry_run": dry_run,
+        },
+    )
     phase1_alignment_blocked = (
         str(phase1.get("source_alignment_status", "")).strip() == "block"
         or bool(phase1.get("alignment_blockers"))
@@ -2280,6 +2638,32 @@ def run_gencode_phase2(skill_id: str, accepted_problem_types: list | None = None
         merged_warnings = sorted(
             set(list(warnings) + list(diversity_report.get("repetition_warnings") or []))
         )
+        low_sample_diversity_tolerated = (
+            matched_count < 3
+            and "low_source_examples" in merged_warnings
+            and (
+                "generator_diversity_blocked" in merged_blockers
+                or "low_unique_signature_count" in merged_warnings
+                or dynamic_sampling_status == "generator_diversity_blocked"
+            )
+        )
+        if low_sample_diversity_tolerated:
+            diversity_only_blockers = {
+                "generator_diversity_blocked",
+                "no_template_variant_used",
+                "consecutive_template_diversity_blocked",
+            }
+            merged_blockers = [
+                blocker
+                for blocker in merged_blockers
+                if blocker not in diversity_only_blockers
+                and "diversity" not in blocker
+                and "repetition" not in blocker
+            ]
+            dynamic_sampling_status = "runtime_ready_with_diversity_warning"
+            merged_warnings = sorted(
+                set(merged_warnings + ["low_sample_diversity_tolerance_applied"])
+            )
         from core.gencode.packaging_policy import resolve_phase2_generator_status
 
         status, usable_for_phase3 = resolve_phase2_generator_status(
@@ -2289,6 +2673,9 @@ def run_gencode_phase2(skill_id: str, accepted_problem_types: list | None = None
             dynamic_sampling_status=dynamic_sampling_status,
             base_status=status,
         )
+        if low_sample_diversity_tolerated and not merged_blockers:
+            status = "runtime_ready_with_warning"
+            usable_for_phase3 = True
         if blockers:
             failed_generators.append(generator_key)
         elif usable_for_phase3:
@@ -2324,8 +2711,6 @@ def run_gencode_phase2(skill_id: str, accepted_problem_types: list | None = None
             }
         )
 
-    draft_spec_path = DRAFT_DIR / f"{skill_id}_generator_draft_spec.json"
-    write_json(draft_spec_path, {"skill_id": skill_id, "phase": "phase2", "generator_results": generator_results, "accepted_generators": accepted_generators, "failed_generators": failed_generators, "timestamp": utc_timestamp(), "dry_run": dry_run})
     reports = {
         "phase2_generator_summary_json": str(REPORT_DIR / f"{skill_id}_phase2_generator_summary.json"),
         "phase2_generator_summary_md": str(REPORT_DIR / f"{skill_id}_phase2_generator_summary.md"),
@@ -2336,6 +2721,33 @@ def run_gencode_phase2(skill_id: str, accepted_problem_types: list | None = None
     foundation_preflight = _build_phase2_foundation_preflight(
         phase1_payload=phase1 if isinstance(phase1, dict) else {},
         generator_results=generator_results,
+    )
+    # Write back the corrected generator_results to phase1 memory structure, phase1_summary.json, and draft_spec_path
+    if isinstance(phase1, dict) and isinstance(phase1.get("candidate_problem_types"), list):
+        for res in generator_results:
+            pt_id = res.get("problem_type_id")
+            for c in phase1["candidate_problem_types"]:
+                if isinstance(c, dict) and (c.get("problem_type_id") == pt_id or c.get("proposed_problem_type_id") == pt_id):
+                    c["answer_contract_proposal"] = res.get("answer_contract")
+                    c["checker_key_proposal"] = res.get("checker_key")
+                    c["equivalence_type_proposal"] = res.get("equivalence_type")
+                    if isinstance(c.get("problem_type_spec_draft"), dict):
+                        c["problem_type_spec_draft"]["answer_contract"] = res.get("answer_contract")
+                        
+    write_json(phase1_path, phase1)
+        
+    write_json(
+        draft_spec_path,
+        {
+            "skill_id": skill_id,
+            "phase": "phase2",
+            "phase1_payload": phase1,
+            "generator_results": generator_results,
+            "accepted_generators": accepted_generators,
+            "failed_generators": failed_generators,
+            "timestamp": utc_timestamp(),
+            "dry_run": dry_run,
+        }
     )
     payload = {
         "ok": bool(generator_results) and not phase1_alignment_blocked and bool(foundation_preflight.get("foundation_ready")),
@@ -2416,6 +2828,144 @@ def _run_gencode_publish_check_for_draft(skill_id: str, draft_skill_file_path: s
     }
 
 
+def _sync_phase3_runtime_specs_from_draft(
+    skill_id: str,
+    draft_spec: dict[str, Any],
+    usable_generators: list[dict[str, Any]],
+) -> dict[str, Any]:
+    sid = str(skill_id).strip()
+    induced_path = problem_type_spec_registry._induced_path(sid)
+    induced_dir = Path(problem_type_spec_registry.INDUCED_DIR)
+    safe_sid = sid.replace("/", "_").replace("\\", "_")
+    purged_paths: list[str] = []
+    if induced_dir.exists():
+        for existing_path in induced_dir.iterdir():
+            stem = existing_path.stem
+            matches_skill = (
+                stem == safe_sid
+                or stem.startswith(f"{safe_sid}.")
+                or stem.startswith(f"{safe_sid}_")
+                or stem.startswith(f"{safe_sid}-")
+            )
+            if (
+                existing_path.is_file()
+                and existing_path.suffix.lower() == ".json"
+                and matches_skill
+            ):
+                existing_path.unlink(missing_ok=True)
+                purged_paths.append(str(existing_path))
+    problem_type_spec_registry._INDUCED_BY_SKILL[sid] = []
+
+    phase1_payload = (
+        draft_spec.get("phase1_payload")
+        if isinstance(draft_spec.get("phase1_payload"), dict)
+        else {}
+    )
+    candidates = (
+        phase1_payload.get("candidate_problem_types")
+        if isinstance(phase1_payload.get("candidate_problem_types"), list)
+        else []
+    )
+    canonical_problem_types = {
+        str(
+            candidate.get("problem_type_id")
+            or candidate.get("proposed_problem_type_id")
+            or ""
+        ).strip()
+        for candidate in candidates
+        if isinstance(candidate, dict)
+        and str(
+            candidate.get("problem_type_id")
+            or candidate.get("proposed_problem_type_id")
+            or ""
+        ).strip()
+    }
+    downgraded_historical_problem_type_ids: list[str] = []
+    if canonical_problem_types:
+        for row in usable_generators:
+            if not isinstance(row, dict):
+                continue
+            pt = str(row.get("problem_type_id", "")).strip()
+            if pt and pt not in canonical_problem_types:
+                row["generator_readiness"] = "source_bank_only"
+                row["usable_for_phase3"] = False
+                row["warnings"] = sorted(
+                    set(
+                        list(row.get("warnings") or [])
+                        + ["phase3_historical_problem_type_downgraded"]
+                    )
+                )
+                downgraded_historical_problem_type_ids.append(pt)
+    usable_problem_types = {
+        str(row.get("problem_type_id", "")).strip()
+        for row in usable_generators
+        if isinstance(row, dict)
+        and str(row.get("problem_type_id", "")).strip()
+        and str(row.get("problem_type_id", "")).strip() in canonical_problem_types
+    }
+    aligned_specs_by_problem_type: dict[str, dict[str, Any]] = {}
+    for candidate in candidates:
+        if not isinstance(candidate, dict):
+            continue
+        pt = str(
+            candidate.get("problem_type_id")
+            or candidate.get("proposed_problem_type_id")
+            or ""
+        ).strip()
+        if not pt or pt not in usable_problem_types:
+            continue
+        source_draft = candidate.get("problem_type_spec_draft")
+        if not isinstance(source_draft, dict):
+            continue
+        source_draft_pt = str(source_draft.get("problem_type_id", "")).strip()
+        if pt in aligned_specs_by_problem_type:
+            source_draft["generator_readiness"] = "source_bank_only"
+            if source_draft_pt:
+                downgraded_historical_problem_type_ids.append(source_draft_pt)
+            continue
+        aligned = copy.deepcopy(source_draft)
+        aligned["skill_id"] = sid
+        aligned["problem_type_id"] = pt
+        aligned.pop("generator_readiness", None)
+        _canonicalize_nested_problem_type_ids(aligned, pt)
+        _reinforce_canonical_answer_contract(aligned, pt)
+        _reinforce_derivation_contract(aligned, aligned["problem_type_id"])
+        aligned_specs_by_problem_type[pt] = aligned
+
+    aligned_specs = list(aligned_specs_by_problem_type.values())
+
+    if not aligned_specs:
+        return {
+            "status": "skipped_no_aligned_draft_specs",
+            "synced_spec_count": 0,
+            "synced_problem_type_ids": [],
+            "purged_induced_spec_path": str(induced_path),
+            "purged_induced_spec_paths": purged_paths,
+            "runtime_usable_problem_type_ids": sorted(usable_problem_types),
+            "downgraded_historical_problem_type_ids": sorted(
+                set(downgraded_historical_problem_type_ids)
+            ),
+            "canonical_filter_applied": bool(canonical_problem_types),
+        }
+
+    induced_path = save_induced_problem_type_specs(sid, aligned_specs)
+    return {
+        "status": "synced",
+        "synced_spec_count": len(aligned_specs),
+        "synced_problem_type_ids": [
+            str(spec.get("problem_type_id", "")).strip() for spec in aligned_specs
+        ],
+        "induced_spec_path": str(induced_path),
+        "purged_induced_spec_path": str(induced_path),
+        "purged_induced_spec_paths": purged_paths,
+        "runtime_usable_problem_type_ids": sorted(usable_problem_types),
+        "downgraded_historical_problem_type_ids": sorted(
+            set(downgraded_historical_problem_type_ids)
+        ),
+        "canonical_filter_applied": bool(canonical_problem_types),
+    }
+
+
 def run_gencode_phase3_package(skill_id: str, accepted_generator_keys: list | None = None, dry_run: bool = True) -> dict[str, Any]:
     from core.gencode.packaging_policy import format_packaging_blocked_message, select_generators_for_packaging
 
@@ -2463,6 +3013,22 @@ def run_gencode_phase3_package(skill_id: str, accepted_generator_keys: list | No
     )
     packaging_diag["phase2_generator_summary_json"] = str(phase2_path)
     packaging_diag["generator_draft_spec_json"] = str(draft_spec_path)
+    runtime_spec_alignment = _sync_phase3_runtime_specs_from_draft(
+        skill_id,
+        draft_spec if isinstance(draft_spec, dict) else {},
+        usable,
+    )
+    packaging_diag["runtime_spec_alignment"] = runtime_spec_alignment
+    if runtime_spec_alignment.get("canonical_filter_applied"):
+        runtime_usable_problem_types = set(
+            runtime_spec_alignment.get("runtime_usable_problem_type_ids") or []
+        )
+        usable = [
+            row
+            for row in usable
+            if str(row.get("problem_type_id", "")).strip()
+            in runtime_usable_problem_types
+        ]
     phase3_warnings = sorted({w for g in usable for w in (g.get("warnings") or []) if str(w).strip()})
     draft_skill_path = DRAFT_DIR / f"{skill_id}.py"
     generator_specs: list[dict[str, Any]] = []

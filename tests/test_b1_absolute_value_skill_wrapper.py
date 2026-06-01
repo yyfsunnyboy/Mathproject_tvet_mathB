@@ -70,46 +70,53 @@ def test_wrapper_module_importable() -> None:
     assert hasattr(module, "check")
 
 
-def test_wrapper_generate_from_verified_candidate(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
-    _prepare_verified_env(tmp_path)
-    monkeypatch.setattr(
-        loader,
-        "REGISTRY_PATH",
-        tmp_path / "configs" / "generated_registry" / "b1_section_1_1_verified_registry.v0.1.yaml",
-    )
-    monkeypatch.setattr(
-        loader,
-        "GENERATED_BASE",
-        tmp_path / "generated_candidates" / "vocational_math_b1" / "section_1_1",
-    )
+def test_wrapper_generate_from_verified_candidate(monkeypatch: pytest.MonkeyPatch) -> None:
+    import tempfile
+    with tempfile.TemporaryDirectory() as tmpdir:
+        tmp_path = Path(tmpdir)
+        _prepare_verified_env(tmp_path)
+        monkeypatch.setattr(
+            loader,
+            "REGISTRY_PATH",
+            tmp_path / "configs" / "generated_registry" / "b1_section_1_1_verified_registry.v0.1.yaml",
+        )
+        monkeypatch.setattr(
+            loader,
+            "GENERATED_BASE",
+            tmp_path / "generated_candidates" / "vocational_math_b1" / "section_1_1",
+        )
 
-    module = importlib.import_module(SKILL_MODULE)
-    payload = module.generate(seed=1)
+        module = importlib.import_module(SKILL_MODULE)
+        payload = module.generate(seed=1)
 
-    assert payload["question_text"]
-    assert payload["question"]
-    assert payload["answer"] == "3"
-    assert payload["correct_answer"] == "3"
-    assert payload["problem_type_id"] == "absolute_value_numeric_evaluation"
-    assert payload["skill_id"] == SKILL_ID
+        assert payload["question_text"]
+        assert payload["question"]
+        assert payload["answer"] == "3"
+        assert payload["correct_answer"] == "3"
+        assert payload["problem_type_id"] == "absolute_value_numeric_evaluation"
+        assert payload["skill_id"] == SKILL_ID
 
 
-def test_wrapper_clear_error_when_no_verified_candidate(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
-    monkeypatch.setattr(
-        loader,
-        "REGISTRY_PATH",
-        tmp_path / "configs" / "generated_registry" / "b1_section_1_1_verified_registry.v0.1.yaml",
-    )
-    monkeypatch.setattr(
-        loader,
-        "GENERATED_BASE",
-        tmp_path / "generated_candidates" / "vocational_math_b1" / "section_1_1",
-    )
+def test_wrapper_clear_error_when_no_verified_candidate(monkeypatch: pytest.MonkeyPatch) -> None:
+    import tempfile
+    with tempfile.TemporaryDirectory() as tmpdir:
+        tmp_path = Path(tmpdir)
+        monkeypatch.setattr(
+            loader,
+            "REGISTRY_PATH",
+            tmp_path / "configs" / "generated_registry" / "b1_section_1_1_verified_registry.v0.1.yaml",
+        )
+        monkeypatch.setattr(
+            loader,
+            "GENERATED_BASE",
+            tmp_path / "generated_candidates" / "vocational_math_b1" / "section_1_1",
+        )
 
-    module = importlib.import_module(SKILL_MODULE)
-    with pytest.raises(RuntimeError) as exc:
-        module.generate(seed=1)
-    assert "尚未開放" in str(exc.value)
+        module = importlib.import_module(SKILL_MODULE)
+        with pytest.raises(RuntimeError) as exc:
+            module.generate(seed=1)
+        assert "尚未開放" in str(exc.value)
+
 
 
 def test_solution_set_equivalence_for_absolute_value_equation_basic() -> None:

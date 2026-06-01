@@ -1,0 +1,110 @@
+{
+  "skill_id": "vh_數學B1_LinearFunction",
+  "phase": "phase3_publish_gate",
+  "final_status": "PASS",
+  "publish_ready": true,
+  "full_observed_coverage": true,
+  "source_coverage_status": "FULL_OBSERVED_COVERAGE_CANDIDATE",
+  "bootstrap_summary": {
+    "bootstrap_mode": false,
+    "bootstrap_source_skill_id": "",
+    "source_coverage_status": "",
+    "allowed_problem_types": []
+  },
+  "examples_total": 17,
+  "examples_covered": 17,
+  "observed_problem_types": [
+    "integer_numeric_evaluate_function_notation"
+  ],
+  "verified_problem_types": [
+    "integer_numeric_evaluate_function_notation"
+  ],
+  "pending_implementation": [],
+  "manual_review_problem_types": [],
+  "future_ai_judged_problem_types": [],
+  "answer_contract_summary": {
+    "integer_numeric_evaluate_function_notation": {
+      "answer_type": "integer",
+      "equivalence_type": "numeric_exact",
+      "checker_key": "integer_checker",
+      "order_matters": true,
+      "accepted_format_notes": [
+        "single integer answer"
+      ],
+      "canonical_answer_schema": {
+        "type": "integer"
+      }
+    }
+  },
+  "missing_answer_contract_problem_types": [],
+  "missing_checker_key_problem_types": [],
+  "equivalence_test_required_problem_types": [],
+  "runtime_problem_type_coverage": {
+    "expected_problem_types": [
+      "integer_numeric_evaluate_function_notation"
+    ],
+    "observed_problem_types": [
+      "integer_numeric_evaluate_function_notation"
+    ],
+    "missing_problem_types": [],
+    "status": "pass"
+  },
+  "blocking_reasons": [],
+  "warnings": [],
+  "publish_binding_summary": {
+    "candidate_verification_status": "PASS",
+    "verified_candidates_count": 1,
+    "verified_problem_types": [
+      "integer_numeric_evaluate_function_notation"
+    ],
+    "registry_binding_status": "BOUND",
+    "registry_path": "D:\\Python\\Mathproject_tvet_mathB\\configs\\generated_registry\\b1_section_1_1_verified_registry.v0.1.yaml",
+    "registry_entry_found": true,
+    "registry_entry_valid": true,
+    "registry_verified_problem_types": [
+      "integer_numeric_evaluate_function_notation"
+    ],
+    "registry_manual_review_exclusions": [
+      "unknown"
+    ],
+    "registry_binding_failure_reason": "",
+    "wrapper_binding_status": "BOUND",
+    "runtime_binding_status": "READY",
+    "binding_required": false,
+    "binding_blockers": [],
+    "publish_exclusions": {
+      "manual_review_problem_types": [],
+      "future_ai_judged_problem_types": []
+    }
+  },
+  "next_action": {
+    "next_action_type": "ready_for_publish_review",
+    "command": "",
+    "reason": "可進人工發布審核。",
+    "should_publish": true,
+    "requires_human_review": false
+  },
+  "success_items": {
+    "phase1_coverage_ok": true,
+    "phase2_candidate_verification_ok": true,
+    "verified_problem_types": [
+      "integer_numeric_evaluate_function_notation"
+    ],
+    "answer_contract_gate_ok": true,
+    "checker_key_gate_ok": true
+  },
+  "incomplete_items": {
+    "registry_binding_done": true,
+    "wrapper_binding_done": true,
+    "runtime_binding_ready": true,
+    "runtime_coverage_pass": true
+  },
+  "status_message": "candidate 驗證、binding 與 runtime coverage 綜合判讀結果。",
+  "artifact_paths": {
+    "phase1_json": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_LinearFunction_phase1_audit.json",
+    "phase2_json": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_LinearFunction_phase2_build.json",
+    "final_json": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_LinearFunction_pipeline_final.json",
+    "final_md": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_LinearFunction_pipeline_final.md"
+  },
+  "timestamp": "2026-06-01T03:37:44.726364+00:00"
+}

@@ -92,5 +92,14 @@ GENERATOR_REPAIR_CATALOG = {
         "required_checkers": ["choice_label_checker"],
         "required_verifiers": ["choice_verifier"],
     },
+    "integer_numeric_evaluate_function_notation": {
+        "module_path": "generated_candidates/vocational_math_b1/section_1_2/integer_numeric_evaluate_function_notation/candidate_v1.py",
+        "test_path": "tests/test_gencode_linear_function_anchor_regression.py",
+        "factory": "create_linear_function_generator",
+        "required_domain_functions": [],
+        "required_checkers": ["integer_checker"],
+        "required_verifiers": [],
+    },
 }
+
 

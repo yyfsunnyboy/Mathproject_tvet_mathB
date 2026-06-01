@@ -259,13 +259,14 @@ def infer_answer_contract_from_problem_context(
             "accepted_formats": ["5", "5.0", "-3"],
         }
 
-    if at == "numeric" or task in NUMERIC_SCALAR_TASKS or _answers_suggest_numeric_only(cluster_features):
+    if at in {"numeric", "integer"} or "evaluate_function" in task or task in NUMERIC_SCALAR_TASKS or _answers_suggest_numeric_only(cluster_features):
+        is_int = (at == "integer" or "integer" in task or _answers_suggest_numeric_only(cluster_features))
         return {
             **base,
-            "answer_type": "numeric",
+            "answer_type": "integer" if is_int else "numeric",
             "answer_shape": "scalar",
-            "answer_equivalence": "numeric_equivalence",
-            "checker": "integer_checker" if _answers_suggest_numeric_only(cluster_features) else "numeric_checker",
+            "answer_equivalence": "numeric_exact",
+            "checker": "integer_checker" if is_int else "numeric_checker",
             "accepted_formats": ["5", "5.0", "-3"],
         }
 

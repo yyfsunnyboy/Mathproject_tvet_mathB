@@ -1,21 +1,21 @@
 {
-  "question_text": "常態分配的經驗法則中，落在平均數正負 3 個標準差內的資料約占百分之幾（取整數近似）？",
-  "answer": "99",
-  "correct_answer": "99",
+  "question_text": "某資料呈常態分配，平均數為 100，標準差為 5。依經驗法則，落在 90 到 110 之間的資料約占百分之幾？",
+  "answer": "95",
+  "correct_answer": "95",
   "choices": [
-    "68",
+    "50",
     "95",
-    "99",
-    "50"
+    "68",
+    "99"
   ],
-  "explanation": "經驗法則為 68-95-99.7，分別對應正負 1、2、3 個標準差區間。",
+  "explanation": "區間 [90, 110] = 平均數 ±2 個標準差，依 68-95-99.7 法則約占 95%。",
   "skill_id": "vh_數學B4_NormalDistributionAndEmpiricalRule",
   "subskill_id": "b4_ch3_normal_distribution_empirical_rule_01",
-  "problem_type_id": "empirical_rule_interval_percentage",
+  "problem_type_id": "normal_interval_percentage",
   "scenario_family": "normal_distribution_empirical_rule",
-  "scenario_id": "within_3sigma",
+  "scenario_id": "normal_interval_percentage",
   "generator_key": "b4.chap3.empirical_rule_interval_percentage",
-  "answer_type": "rational_fraction",
+  "answer_type": "integer",
   "difficulty": 1,
   "diagnosis_tags": [
     "normal_distribution",
@@ -28,8 +28,10 @@
     "B4_Ch3_normal_distribution"
   ],
   "parameters": {
-    "scenario_id": "within_3sigma",
-    "scenario_family": "normal_distribution_empirical_rule"
+    "scenario_id": "normal_interval_percentage",
+    "scenario_family": "normal_distribution_empirical_rule",
+    "mu": 100,
+    "sd": 5
   },
   "visual_backed": false,
   "runtime_mode": "deterministic_short_answer",

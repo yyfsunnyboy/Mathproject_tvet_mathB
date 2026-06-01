@@ -285,6 +285,11 @@ def _build_problem_type_spec_draft(skill_id: str, cluster: dict[str, Any], exist
     canonical = _canonical_problem_type_base(answer_type, resolved_target_task, presentation_mode=presentation_mode)
     if canonical:
         pt_id = canonical
+        
+    has_fallback = any("fallback_application" in str(f.get("problem_type_id", "")) for f in features)
+    if has_fallback:
+        pt_id = f"{answer_type}_{resolved_target_task}_fallback_application"
+        
     suffix = 2
     original = pt_id
     if canonical:
@@ -337,6 +342,10 @@ def _build_problem_type_spec_draft(skill_id: str, cluster: dict[str, Any], exist
             if isinstance(param_schema, dict) and param_schema:
                 generator_contract["parameter_schema"] = param_schema
             break
+            
+    if has_fallback:
+        generator_contract["contextual_application"] = True
+        
     if slot:
         generator_contract["template_slots"] = {"stem": slot}
 
@@ -453,6 +462,67 @@ def _canonicalize_induction_clusters(clusters: list[dict[str, Any]]) -> list[dic
     return [merged_by_key[k] for k in ordered_keys]
 
 
+def merge_unclassified_low_confidence_examples(
+    features_for_induction: list[dict[str, Any]],
+    excluded_source_examples: list[dict[str, Any]],
+    features: list[dict[str, Any]],
+    skill_id: str,
+    main_skill_anchor: dict[str, Any],
+) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
+    """
+    SOP v0.2: Rescues core examples that are classified as unclassified_low_confidence.
+    Assigns them a fallback problem type ID format: [semantics_signature]_fallback_application.
+    Appends them to features_for_induction.
+    """
+    still_excluded = []
+    feat_by_id = {f.get("source_example_id"): f for f in features if isinstance(f.get("source_example_id"), int)}
+
+    for row in excluded_source_examples:
+        ex_id = row.get("example_id")
+        reason = row.get("exclude_reason")
+        is_core = row.get("induction_tier") == "core" or row.get("included_in_core_induction")
+
+        if reason == "unclassified_low_confidence" and is_core and isinstance(ex_id, int) and ex_id in feat_by_id:
+            feat = feat_by_id[ex_id]
+            fallback_subskill = (main_skill_anchor.get("fallback_subskill") or {}) if isinstance(main_skill_anchor, dict) else {}
+            fallback_task = fallback_subskill.get("subskill_id", "evaluate_function_value")
+            if not fallback_task or fallback_task == "same_as_main_skill":
+                fallback_task = "evaluate_function_value"
+
+            feat["target_task"] = fallback_task
+            feat["target"] = fallback_task
+            if not feat.get("task_family"):
+                feat["task_family"] = task_family_for_task(fallback_task) or "function_concept_family"
+
+            if isinstance(feat.get("semantic_classification"), dict):
+                sc = feat["semantic_classification"]
+                sc["final_target_task"] = fallback_task
+                sc["final_task_family"] = feat["task_family"]
+                sc["candidate_source"] = "fallback_application"
+                sc["classifier_source"] = "fallback_application_induct"
+                sc["requires_human_action"] = False
+
+            ans_type = _cluster_answer_type_key(feat)
+            sig_base = f"{ans_type}_{fallback_task}"
+            fallback_pt_id = f"{sig_base}_fallback_application"
+            feat["problem_type_id"] = fallback_pt_id
+            feat["included_in_core_induction"] = True
+            feat["induction_tier"] = "core"
+            feat["source_quality_reject"] = False
+
+            row["included_in_phase1"] = True
+            row["aligned_with_skill"] = True
+            row["exclude_reason"] = ""
+            row["alignment_kind"] = "fallback_application"
+            row["requires_human_action"] = False
+
+            features_for_induction.append(feat)
+        else:
+            still_excluded.append(row)
+
+    return features_for_induction, still_excluded
+
+
 def _spec_in_expected_families(spec: dict[str, Any], expected_families: set[str]) -> bool:
     if not expected_families:
         return True
@@ -560,6 +630,13 @@ def induce_problem_types_from_examples(
         features,
         examples=examples,
         main_skill_anchor=main_skill_anchor,
+    )
+    features_for_induction, excluded_source_examples = merge_unclassified_low_confidence_examples(
+        features_for_induction,
+        excluded_source_examples,
+        features,
+        skill_id,
+        main_skill_anchor,
     )
     # Candidate-only examples (composite exercises) are tracked separately and must not pollute fallback buckets.
     candidate_only_examples = [

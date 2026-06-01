@@ -41,9 +41,11 @@
         "checker_key": "integer_checker",
         "equivalence_type": "numeric_exact",
         "selected_checker": "numeric_checker",
-        "checker_capability_status": "ok",
+        "checker_capability_status": "warn",
         "checker_contract_blockers": [],
-        "checker_contract_warnings": [],
+        "checker_contract_warnings": [
+          "equivalence_type_mismatch"
+        ],
         "stem_contract": {
           "stem_must_not_embed_choices": true,
           "allowed_math_objects": [
@@ -193,7 +195,9 @@
         "source_quality_reject_examples_present",
         "subskill_mismatch_warning"
       ],
-      "checker_contract_warnings": [],
+      "checker_contract_warnings": [
+        "equivalence_type_mismatch"
+      ],
       "spec_source": "phase1_induced_draft",
       "grouping_reason": "merged_by_canonical_contract",
       "feature_signature": [
@@ -225,7 +229,7 @@
           "frontend_render_choices": false,
           "answer_type": "numeric",
           "answer_shape": "scalar",
-          "answer_equivalence": "numeric_equivalence",
+          "answer_equivalence": "numeric_exact",
           "checker": "numeric_checker",
           "accepted_formats": [
             "5",
@@ -1956,7 +1960,7 @@
       "detected_problem_type_id": "unknown",
       "example_feature": {
         "source_example_id": 4431,
-        "question_text": "英國科學家虎克（Robert Hooke，1635−1703）於1678年發現虎克定律：$F\\left( x \\right)=kx$，k為力常數，即在彈性限度內，彈簧所受的外力F與伸長量x有成正比的關係，所以外力F是伸長量x的函數（如圖22）。\r\n▲圖21 ▲圖22\r\n數學\r\n檔案\r\n尤拉（Leonhard Euler，1707-1783），瑞士數學家。\r\n他是最早使用函數記號「$f\\left( x \\right)$」的數學家。\r\nSDG 7可負擔的潔淨能源─供需曲線圖\r\n「一度電」就是耗電量 1,000 瓦特的電器，連續使用 1 小時所消耗的總電量。電費分為「夏季電費」（6 / 1～9 / 30）和「非夏季電費」（10 / 1～5 / 31），已知202年4月電費調漲，調漲後，若計費度數為x度，且一般住家的夏季電費（單位：元）滿足函數\r\n$f\\left( x \\right)=\\left\\{ \\begin{align}\r\n& 1.63x,x\\le 120 \\\\\r\n& 2.38x-90,120<x<330 \\\\\r\n& 3.52x-466.2,330<x\\le 500 \\\\\r\n& 4.8x-1106.2,500<x\\le 700 \\\\\r\n& 5.83x-1827.2,700<x\\le 1000 \\\\\r\n& 7.69x-368.7,x>1000 \\\\\r\n\\end{align} \\right.$\r\n若小蕙發現8 月用電為 800 度，花費太多，及時更換老舊電器，9月節能省電，用電為600度，試求小蕙的電費9月比8月省下多少元？\r\n8月電費為800度，將$x=800$代入$5.83x-1827.2$\r\n9月電費為600度，將$x=600$代入$4.8x-1106.2$\r\n得$\\left( 5.83\\times 800-1827.2 \\right)-\\left( 4.8\\times 600-1106.2 \\right)$ \r\n $=\\left( 4664-1827.2 \\right)-\\left( 2880-1106.2 \\right)=1063$（元）\r\nSDGS-------------------------------------------------------------------------------------------------------------------\r\n2023 年4 月的電費調漲，選購能源效率分級級數較低的產品，不單是能為個人省錢，亦能夠實踐節能減碳，臺灣近年來時常出現缺水及限電危機，為了讓我們能在地球上永續生存，力行「綠色生活」營造一個低碳的生活環境是重要的。",
+        "question_text": "英國科學家虎克（Robert Hooke，1635−1703）於1678年發現虎克定律：$F\\left( x \\right)=kx$，k為力常數，即在彈性限度內，彈簧所受的外力F與伸長量x有成正比的關係，所以外力F是伸長量x的函數（如圖22）。_x000D_\n▲圖21 ▲圖22_x000D_\n數學_x000D_\n檔案_x000D_\n尤拉（Leonhard Euler，1707-1783），瑞士數學家。_x000D_\n他是最早使用函數記號「$f\\left( x \\right)$」的數學家。_x000D_\nSDG 7可負擔的潔淨能源─供需曲線圖_x000D_\n「一度電」就是耗電量 1,000 瓦特的電器，連續使用 1 小時所消耗的總電量。電費分為「夏季電費」（6 / 1～9 / 30）和「非夏季電費」（10 / 1～5 / 31），已知202年4月電費調漲，調漲後，若計費度數為x度，且一般住家的夏季電費（單位：元）滿足函數_x000D_\n$f\\left( x \\right)=\\left\\{ \\begin{align}_x000D_\n& 1.63x,x\\le 120 \\\\_x000D_\n& 2.38x-90,120<x<330 \\\\_x000D_\n& 3.52x-466.2,330<x\\le 500 \\\\_x000D_\n& 4.8x-1106.2,500<x\\le 700 \\\\_x000D_\n& 5.83x-1827.2,700<x\\le 1000 \\\\_x000D_\n& 7.69x-368.7,x>1000 \\\\_x000D_\n\\end{align} \\right.$_x000D_\n若小蕙發現8 月用電為 800 度，花費太多，及時更換老舊電器，9月節能省電，用電為600度，試求小蕙的電費9月比8月省下多少元？_x000D_\n8月電費為800度，將$x=800$代入$5.83x-1827.2$_x000D_\n9月電費為600度，將$x=600$代入$4.8x-1106.2$_x000D_\n得$\\left( 5.83\\times 800-1827.2 \\right)-\\left( 4.8\\times 600-1106.2 \\right)$ _x000D_\n $=\\left( 4664-1827.2 \\right)-\\left( 2880-1106.2 \\right)=1063$（元）_x000D_\nSDGS-------------------------------------------------------------------------------------------------------------------_x000D_\n2023 年4 月的電費調漲，選購能源效率分級級數較低的產品，不單是能為個人省錢，亦能夠實踐節能減碳，臺灣近年來時常出現缺水及限電危機，為了讓我們能在地球上永續生存，力行「綠色生活」營造一個低碳的生活環境是重要的。",
         "answer": "",
         "choices": [],
         "has_choices": false,
@@ -2850,7 +2854,6 @@
           "figure_mixed",
           "historical_narrative",
           "long_stem",
-          "math_file",
           "mixed_unrelated_context",
           "piecewise_application",
           "sdgs"
@@ -29705,12 +29708,22 @@
   "classifier_gate": {
     "status": "classifier_auto_pending_promote",
     "allowed": true,
-    "warnings": []
+    "warnings": [
+      "ai_first_mode_fell_back_to_rule_only",
+      "alignment_score_below_recommended_threshold",
+      "source_quality_reject_examples_present",
+      "subskill_mismatch_warning"
+    ]
   },
   "generator_draft_gate": {
     "status": "generator_draft_allowed",
     "allowed": true,
-    "warnings": []
+    "warnings": [
+      "ai_first_mode_fell_back_to_rule_only",
+      "alignment_score_below_recommended_threshold",
+      "source_quality_reject_examples_present",
+      "subskill_mismatch_warning"
+    ]
   },
   "runtime_ready_gate": {
     "status": "blocked_insufficient_examples",
@@ -29718,6 +29731,12 @@
     "blockers": [
       "runtime_smoke_failed",
       "dynamic_sampling_failed"
+    ],
+    "warnings": [
+      "ai_first_mode_fell_back_to_rule_only",
+      "alignment_score_below_recommended_threshold",
+      "source_quality_reject_examples_present",
+      "subskill_mismatch_warning"
     ]
   },
   "exception_review_gate": {
@@ -29725,26 +29744,26 @@
     "reasons": []
   },
   "reports": {
-    "auto_pipeline_summary_json": "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_LinearFunction_auto_pipeline_summary.json",
-    "auto_pipeline_summary_md": "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_LinearFunction_auto_pipeline_summary.md",
-    "phase1_summary_json": "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_LinearFunction_phase1_summary.json",
-    "phase1_summary_md": "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_LinearFunction_phase1_summary.md",
-    "phase1_json": "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_LinearFunction_phase1_summary.json",
-    "phase1_md": "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_LinearFunction_phase1_summary.md",
-    "phase2_generator_summary_json": "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_LinearFunction_phase2_generator_summary.json",
-    "phase2_generator_summary_md": "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_LinearFunction_phase2_generator_summary.md",
-    "phase2_json": "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_LinearFunction_phase2_generator_summary.json",
-    "phase2_md": "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_LinearFunction_phase2_generator_summary.md",
-    "generator_draft_spec_json": "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\drafts\\vh_數學B1_LinearFunction_generator_draft_spec.json",
-    "phase3_package_summary_json": "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_LinearFunction_phase3_package_summary.json",
-    "phase3_package_summary_md": "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_LinearFunction_phase3_package_summary.md",
-    "phase3_json": "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_LinearFunction_phase3_package_summary.json",
-    "phase3_md": "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_LinearFunction_phase3_package_summary.md",
-    "final_json": "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_LinearFunction_phase3_package_summary.json",
-    "final_md": "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_LinearFunction_phase3_package_summary.md",
-    "draft_skill_file": "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\drafts\\vh_數學B1_LinearFunction.py"
+    "auto_pipeline_summary_json": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_LinearFunction_auto_pipeline_summary.json",
+    "auto_pipeline_summary_md": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_LinearFunction_auto_pipeline_summary.md",
+    "phase1_summary_json": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_LinearFunction_phase1_summary.json",
+    "phase1_summary_md": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_LinearFunction_phase1_summary.md",
+    "phase1_json": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_LinearFunction_phase1_summary.json",
+    "phase1_md": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_LinearFunction_phase1_summary.md",
+    "phase2_generator_summary_json": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_LinearFunction_phase2_generator_summary.json",
+    "phase2_generator_summary_md": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_LinearFunction_phase2_generator_summary.md",
+    "phase2_json": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_LinearFunction_phase2_generator_summary.json",
+    "phase2_md": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_LinearFunction_phase2_generator_summary.md",
+    "generator_draft_spec_json": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\drafts\\vh_數學B1_LinearFunction_generator_draft_spec.json",
+    "phase3_package_summary_json": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_LinearFunction_phase3_package_summary.json",
+    "phase3_package_summary_md": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_LinearFunction_phase3_package_summary.md",
+    "phase3_json": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_LinearFunction_phase3_package_summary.json",
+    "phase3_md": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_LinearFunction_phase3_package_summary.md",
+    "final_json": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_LinearFunction_phase3_package_summary.json",
+    "final_md": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_LinearFunction_phase3_package_summary.md",
+    "draft_skill_file": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\drafts\\vh_數學B1_LinearFunction.py"
   },
   "next_action": "review_phase2_blockers_before_phase3",
-  "timestamp": "2026-05-31T16:08:03.637740+00:00",
+  "timestamp": "2026-06-01T01:53:35.341248+00:00",
   "dry_run": true
 }

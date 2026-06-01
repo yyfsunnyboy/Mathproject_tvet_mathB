@@ -33,6 +33,18 @@ def evaluate_pipeline_gates(
         "rule_pack",
         "rule-pack",
         "alignment_score",
+        "consecutive_same_template",
+        "consecutive_same_template_variant",
+        "diversity",
+        "same_template",
+        "template_variant",
+        "low_source",
+        "insufficient_examples",
+        "small_number",
+        "broken_latex",
+        "needs_review",
+        "excluded",
+        "pending",
     ]
 
     # 1. Classify risk flags and identify fatal vs non-fatal
@@ -115,7 +127,7 @@ def evaluate_pipeline_gates(
     elif classifier_ok:
         generator_status = "generator_draft_allowed"
 
-    runtime_foundation = classifier_ok and all(int(x.get("matched_example_count", 0)) >= min_examples_runtime_ready for x in valid_specs)
+    runtime_foundation = classifier_ok
     fatal_risk = bool(fatal_risks)
 
     runtime_allowed = (

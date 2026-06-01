@@ -1,4 +1,4 @@
-﻿from __future__ import annotations
+from __future__ import annotations
 
 import hashlib
 from pathlib import Path
@@ -10,6 +10,15 @@ from .base import ClassificationResult, ClassifierContext
 class FallbackClassifier:
     def classify_examples(self, examples: list[dict[str, Any]], context: ClassifierContext) -> ClassificationResult:
         package_dir = context.project_root / "agent_skills_v2" / "_generated" / context.skill_id
+        try:
+            from core.gencode.pipeline_orchestrator import _load_registered_classifier_rulepack, _classify_examples_with_rulepack
+            pack = _load_registered_classifier_rulepack(context.skill_id)
+            if pack:
+                rows = _classify_examples_with_rulepack(skill_id=context.skill_id, examples=examples, pack=pack)
+                return ClassificationResult(package_dir=package_dir, examples_map_entries=rows)
+        except Exception:
+            pass
+
         rows: list[dict[str, Any]] = []
         for ex in examples:
             text = _example_text(ex)

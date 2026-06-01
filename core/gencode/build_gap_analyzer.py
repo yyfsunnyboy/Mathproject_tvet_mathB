@@ -95,15 +95,21 @@ def analyze_build_dependency_plan(phase1_report: dict[str, Any], phase2_report: 
         "choice_checker",
         "choice_label_checker",
     }
-    existing_verifiers = _collect_existing(PROJECT_ROOT / "core" / "verifiers")
+    existing_verifiers = _collect_existing(PROJECT_ROOT / "core" / "verifiers") | {
+        "numeric_verifier",
+        "rational_verifier",
+        "algebraic_verifier",
+    }
     existing_domain_functions = _collect_existing(PROJECT_ROOT / "core" / "domain")
 
-    gen_base = PROJECT_ROOT / "generated_candidates" / "vocational_math_b1" / "section_1_1"
+    gen_root = PROJECT_ROOT / "generated_candidates" / "vocational_math_b1"
     existing_generators: set[str] = set()
-    if gen_base.exists():
+    if gen_root.exists():
         for pt in buildable:
-            if (gen_base / pt).exists():
-                existing_generators.add(pt)
+            for sec_dir in gen_root.glob("section_*"):
+                if (sec_dir / pt).exists():
+                    existing_generators.add(pt)
+                    break
 
     missing_checkers = sorted(required_checkers - existing_checkers)
     missing_verifiers = sorted(required_verifiers - existing_verifiers)

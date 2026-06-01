@@ -166,7 +166,7 @@ def test_phase2_blocks_unsupported_radical_checker():
         with patch.object(po, "REPORT_DIR", report_dir):
             out = run_gencode_phase2(skill_id, dry_run=True)
     row = (out.get("generator_results") or [{}])[0]
-    assert row.get("generator_status") == "blocked"
+    assert row.get("generator_status") == "validation_failed"
     assert "checker_contract_missing" in (row.get("blockers") or [])
 
 

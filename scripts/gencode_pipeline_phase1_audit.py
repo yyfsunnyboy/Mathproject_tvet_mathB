@@ -1,4 +1,4 @@
-﻿from __future__ import annotations
+from __future__ import annotations
 
 import argparse
 import json
@@ -128,6 +128,16 @@ ANSWER_CONTRACT_DEFAULTS: dict[str, dict[str, dict[str, Any]]] = {
             "order_matters": False,
             "accepted_format_notes": ["requires source text correction before deterministic generation"],
             "canonical_answer_schema": {"type": "manual_review"},
+        },
+    },
+    "vh_數學B1_LinearFunction": {
+        "integer_numeric_evaluate_function_notation": {
+            "answer_type": "integer",
+            "equivalence_type": "numeric_exact",
+            "checker_key": "integer_checker",
+            "order_matters": True,
+            "accepted_format_notes": ["single integer answer"],
+            "canonical_answer_schema": {"type": "integer"},
         },
     },
 }
@@ -873,6 +883,9 @@ def main() -> None:
     parser.add_argument("--json", action="store_true")
     args = parser.parse_args()
     skill_id = args.skill_id
+    out_md = REPORT_DIR / f"{skill_id}_phase1_audit.md"
+    proposal_json = REPORT_DIR / f"{skill_id}_classifier_proposal.json"
+    proposal_md = REPORT_DIR / f"{skill_id}_classifier_proposal.md"
 
     # Debug CLI delegates to shared orchestrator service.
     orchestrated = run_gencode_auto_pipeline(
@@ -902,7 +915,7 @@ def main() -> None:
         print(json.dumps(report, ensure_ascii=True))
     else:
         print(_build_stdout_summary(report))
-    return
+    # return
 
     out_json = REPORT_DIR / f"{skill_id}_phase1_audit.json"
 

@@ -82,6 +82,19 @@ verified_problem_types:
   manual_review_exclusions: *id001
   source: gencode_runtime_binding
   phase2_report_path: D:\Python\Mathproject_tvet_mathB\reports\gencode_closed_loop\vh_數學B1_AbsoluteValueInequality_phase2_build.json
+- problem_type_id: integer_numeric_evaluate_function_notation
+  skill_id: vh_數學B1_LinearFunction
+  subskill_id: integer_numeric_evaluate_function_notation
+  status: verified
+  candidate_path: generated_candidates/vocational_math_b1/section_1_2/integer_numeric_evaluate_function_notation/candidate_v1.py
+  function_name: generate
+  answer_type: integer
+  checker_type: integer_checker
+  wrapper_path: skills/vh_數學B1_LinearFunction.py
+  manual_review_exclusions:
+  - unknown
+  source: gencode_runtime_binding
+  phase2_report_path: D:\Python\Mathproject_tvet_mathB\reports\gencode_closed_loop\vh_數學B1_LinearFunction_phase2_build.json
 failed_problem_types: null
 manual_review_problem_types: null
 future_ai_judged_problem_types: null
@@ -160,3 +173,23 @@ runtime_bindings:
         type: interval_set
   source: gencode_runtime_binding
   phase2_report_path: D:\Python\Mathproject_tvet_mathB\reports\gencode_closed_loop\vh_數學B1_AbsoluteValueInequality_phase2_build.json
+- skill_id: vh_數學B1_LinearFunction
+  wrapper_path: skills/vh_數學B1_LinearFunction.py
+  verified_problem_types:
+  - integer_numeric_evaluate_function_notation
+  manual_review_exclusions:
+  - unknown
+  candidate_paths:
+    integer_numeric_evaluate_function_notation: generated_candidates/vocational_math_b1/section_1_2/integer_numeric_evaluate_function_notation/candidate_v1.py
+  answer_contract_summary:
+    integer_numeric_evaluate_function_notation:
+      answer_type: integer
+      equivalence_type: numeric_exact
+      checker_key: integer_checker
+      order_matters: true
+      accepted_format_notes:
+      - single integer answer
+      canonical_answer_schema:
+        type: integer
+  source: gencode_runtime_binding
+  phase2_report_path: D:\Python\Mathproject_tvet_mathB\reports\gencode_closed_loop\vh_數學B1_LinearFunction_phase2_build.json

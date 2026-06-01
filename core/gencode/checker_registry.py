@@ -22,6 +22,24 @@ CHECKER_CAPABILITIES: dict[str, dict[str, Any]] = {
         "equivalence_types": ["numeric_equivalence", "numeric_tolerance", "numeric_tolerance_equivalence"],
         "module": "pipeline",
     },
+    "rational_checker": {
+        "runtime_available": True,
+        "answer_types": ["fraction", "rational"],
+        "equivalence_types": ["fraction_equal", "rational_equivalent"],
+        "module": "pipeline",
+    },
+    "decimal_tolerance_checker": {
+        "runtime_available": True,
+        "answer_types": ["numeric", "decimal", "integer", "number", "rational"],
+        "equivalence_types": ["decimal_tolerance"],
+        "module": "pipeline",
+    },
+    "percentage_checker": {
+        "runtime_available": True,
+        "answer_types": ["numeric", "decimal", "integer", "number", "rational"],
+        "equivalence_types": ["percentage_equivalent"],
+        "module": "pipeline",
+    },
     "expression_equivalence_checker": {
         "runtime_available": True,
         "answer_types": [
@@ -38,7 +56,35 @@ CHECKER_CAPABILITIES: dict[str, dict[str, Any]] = {
         ],
         "module": "pipeline",
     },
+    "expression_checker": {
+        "runtime_available": True,
+        "answer_types": [
+            "numeric_or_radical",
+            "radical_number",
+            "math_expression",
+            "expression",
+        ],
+        "equivalence_types": [
+            "radical_equivalence",
+            "math_expression_equivalence",
+            "algebraic_equivalent",
+            "expression_equivalence",
+        ],
+        "module": "pipeline",
+    },
+    "equation_checker": {
+        "runtime_available": True,
+        "answer_types": ["expression", "equation"],
+        "equivalence_types": ["equation_equivalent"],
+        "module": "pipeline",
+    },
     "solution_set_checker": {
+        "runtime_available": True,
+        "answer_types": ["set", "solution_set", "integer_set", "number_set"],
+        "equivalence_types": ["unordered_solution_set", "set_equal"],
+        "module": "core.checkers.solution_set_checker",
+    },
+    "set_checker": {
         "runtime_available": True,
         "answer_types": ["set", "solution_set", "integer_set", "number_set"],
         "equivalence_types": ["unordered_solution_set", "set_equal"],
@@ -58,8 +104,14 @@ CHECKER_CAPABILITIES: dict[str, dict[str, Any]] = {
     },
     "coordinate_pair_checker": {
         "runtime_available": True,
-        "answer_types": ["ordered_pair", "coordinate_pair"],
-        "equivalence_types": ["coordinate_pair_equivalence", "ordered_pair"],
+        "answer_types": ["ordered_pair", "coordinate_pair", "ordered_tuple", "unordered_tuple"],
+        "equivalence_types": ["coordinate_pair_equivalence", "ordered_pair", "ordered_tuple_exact", "unordered_tuple_equivalent"],
+        "module": "core.checkers.coordinate_pair_checker",
+    },
+    "tuple_checker": {
+        "runtime_available": True,
+        "answer_types": ["ordered_pair", "coordinate_pair", "ordered_tuple", "unordered_tuple"],
+        "equivalence_types": ["coordinate_pair_equivalence", "ordered_pair", "ordered_tuple_exact", "unordered_tuple_equivalent"],
         "module": "core.checkers.coordinate_pair_checker",
     },
     "fraction_checker": {
@@ -70,10 +122,35 @@ CHECKER_CAPABILITIES: dict[str, dict[str, Any]] = {
     },
     "text_checker": {
         "runtime_available": True,
-        "answer_types": ["short_answer", "text", "table"],
-        "equivalence_types": ["exact_text", "normalized_text_equivalence", "string_equivalence"],
+        "answer_types": ["short_answer", "text", "table", "text_short"],
+        "equivalence_types": ["exact_text", "normalized_text_equivalence", "string_equivalence", "exact_string", "case_insensitive_string"],
         "module": "pipeline",
         "discouraged_for": ["numeric", "numeric_or_radical", "set", "interval"],
+    },
+    "text_short_checker": {
+        "runtime_available": True,
+        "answer_types": ["short_answer", "text", "table", "text_short", "expression", "numeric", "numeric_or_radical", "set", "solution_set", "interval", "rational", "integer", "single_choice", "choice"],
+        "equivalence_types": ["exact_text", "normalized_text_equivalence", "string_equivalence", "exact_string", "case_insensitive_string", "choice_label"],
+        "module": "pipeline",
+        "discouraged_for": ["numeric", "numeric_or_radical", "set", "interval"],
+    },
+    "matrix_checker": {
+        "runtime_available": True,
+        "answer_types": ["matrix"],
+        "equivalence_types": ["matrix_exact"],
+        "module": "pipeline",
+    },
+    "manual_review_checker": {
+        "runtime_available": True,
+        "answer_types": ["manual_review"],
+        "equivalence_types": ["manual_review_or_ai_judged"],
+        "module": "pipeline",
+    },
+    "ai_judged_checker": {
+        "runtime_available": True,
+        "answer_types": ["manual_review"],
+        "equivalence_types": ["manual_review_or_ai_judged"],
+        "module": "pipeline",
     },
     "radical_equivalence_checker": {
         "runtime_available": False,

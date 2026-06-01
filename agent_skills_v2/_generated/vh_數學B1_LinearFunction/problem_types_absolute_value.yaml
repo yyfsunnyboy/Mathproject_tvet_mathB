@@ -1,0 +1,44 @@
+items:
+  -
+    problem_type_id: "integer_numeric_evaluate_function_notation"
+    skill_id: "vh_數學B1_LinearFunction"
+    subskill_id: "integer_numeric_evaluate_function_notation"
+    display_name: "integer numeric evaluate function notation"
+    runtime_category: "deterministic_expression"
+    answer_type: "text"
+    checker_type: "exact_string_checker"
+    examples_refs:
+      - 4424
+      - 4425
+      - 4426
+      - 4430
+      - 4431
+      - 4433
+      - 4434
+      - 4441
+      - 4442
+      - 4444
+      - 4445
+      - 4446
+      - 4448
+      - 4449
+      - 4500
+      - 4515
+      - 4516
+    prerequisite_subskills:
+      - "absolute_value_numeric_evaluation"
+    diagnosis_tags:
+      - "absolute_value"
+    difficulty_policy: "easy_only_v1"
+    output_contract:
+      required_keys:
+        - "problem_type_id"
+        - "skill_id"
+        - "subskill_id"
+        - "question_text"
+        - "answer"
+        - "answer_type"
+        - "checker_type"
+        - "solution_steps"
+        - "metadata"
+    status: "draft"

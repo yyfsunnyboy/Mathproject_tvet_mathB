@@ -350,11 +350,32 @@ def evaluate_source_example_alignment(
     elif task in {"", "needs_review", "unknown"}:
         # SOP v0.2: Truly review-required classification only if final classification is not mapped.
         # AI/Registry/Parser raw results are only used as evidence, final classification is the only source.
-        alignment_kind = "needs_review"
-        aligned = False
-        included_in_phase1 = bool(for_core_induction)
-        requires_human_action = True
-        exclude_reason = ""
+        source_belongs_default = bool(anchor.get("source_belongs_to_current_skill_by_default", False))
+        explicit_remap = str(sc.get("source_mapping_warning", "")).strip() in {"expected_family_mismatch"}
+        has_outside_family_evidence = bool(rule_family and expected_families and rule_family not in expected_families)
+        
+        if source_belongs_default and not has_outside_family_evidence and not explicit_remap:
+            if rule_task and expected_tasks and rule_task in expected_tasks:
+                alignment_kind = "rule_fallback_same_family"
+                task = rule_task
+                family = rule_family
+                aligned = True
+                included_in_phase1 = True
+                requires_human_action = True
+                task_family_match = True
+                subskill_match = True
+            else:
+                alignment_kind = "same_as_main_skill"
+                aligned = True
+                included_in_phase1 = True
+                requires_human_action = True
+                task_family_match = True
+        else:
+            alignment_kind = "needs_review"
+            aligned = False
+            included_in_phase1 = bool(for_core_induction)
+            requires_human_action = True
+            exclude_reason = ""
     elif cand_src == "outsider" or sc.get("classifier_source") == "ai_outsider_candidate":
         alignment_kind = "outsider_candidate_warning"
         aligned = True

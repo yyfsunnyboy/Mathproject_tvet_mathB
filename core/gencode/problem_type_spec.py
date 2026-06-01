@@ -162,6 +162,10 @@ def get_template_slot(spec: dict[str, Any]) -> str:
     return str(slots.get("stem", "")).strip()
 
 
+# build_generator_plan_prompt and build_generator_code_prompt are defined here
+# and re-exported via problem_type_contracts.py as a backward-compatible facade.
+
+
 def build_generator_plan_prompt(spec: dict[str, Any]) -> str:
     pt = str(spec.get("problem_type_id", ""))
     return (
@@ -178,6 +182,13 @@ def build_generator_code_prompt(spec: dict[str, Any], examples_context: str = ""
     ac = get_answer_contract(spec)
     gc = get_generator_contract(spec)
     return (
+        "=== SYSTEM PROMPT CONSTRAINTS ===\n"
+        "1. STRICT SKELETAL ALIGNMENT: The generated question text, math structure, and core formula must 100% strictly align with the core textual and structural features of the provided source_examples.\n"
+        "2. ZERO UNRELATED MATH CONSTRUCTS: You are strictly forbidden from introducing math formulas or concepts that are outside the current ProblemTypeSpec definition. For example, in a linear function unit, you must NOT generate code involving 'distance between two points', 'midpoint coordinates', or 'determining quadrants'.\n"
+        "3. SAFE RANDOMIZATION ONLY: Randomization is strictly limited to numeric constants, coefficients, and scenario wording. You must NOT alter the mathematical skeleton, target task, or formula structure of the question.\n"
+        "4. MULTI-TEMPLATE PRINCIPLE: You must NEVER generate only a single default stem. If the source examples have graph features (has_graph) or contextual applications (contextual_application), you MUST declare multiple template_slots (e.g., plot_graph_slot, intercept_judge_slot, word_problem_slot) in the generated Python code. Randomization of scenarios is allowed and encouraged to replace contexts (e.g. mobile phone tariff -> water tariff or internet data tariff), maintaining the overall structural context of the textbook.\n"
+        "5. STEM COMPLETENESS & SOUL TOKENS: Any generated string for question_text must be a fully cohesive, human-readable textbook problem. It is strictly forbidden to output truncated stubs or generic placeholders. For choice-based or fallback problem types (e.g., 4515 single choice, 4500 word problems), the question_text must explicitly construct the mathematical conditions (e.g., passing coordinates, full contextual application stories) and must contain the soul mathematical tokens of the unit (such as '線型函數', 'f(x)', '通過'). The total length of question_text must be robust enough to reflect a complete and verbose mathematical scenario. EVERY random branch, scenario conditional, or fallback string assignment within the generated generate(seed) function MUST explicitly construct a fully descriptive problem. Truncating text in ANY code path is strictly prohibited. The final runtime length of question_text for EVERY generated seed MUST be robust and naturally exceed 30 characters under all randomization paths, ensuring no empty or minimalist stubs can ever be evaluated.\n"
+        "=================================\n\n"
         "Generate Python generate() using this ProblemTypeSpec only.\n"
         "Flow: generator_plan comment -> generate() implementation.\n"
         f"problem_type_id: {spec.get('problem_type_id')}\n"

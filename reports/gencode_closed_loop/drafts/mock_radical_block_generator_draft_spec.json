@@ -1,6 +1,38 @@
 {
   "skill_id": "mock_radical_block",
   "phase": "phase2",
+  "phase1_payload": {
+    "source_alignment_status": "pass",
+    "alignment_blockers": [],
+    "candidate_problem_types": [
+      {
+        "problem_type_id": "short_answer_numeric_or_radical",
+        "matched_example_count": 2,
+        "answer_contract_proposal": {
+          "answer_type": "numeric_or_radical",
+          "checker": "radical_equivalence_checker",
+          "answer_equivalence": "radical_equivalence"
+        },
+        "checker_key_proposal": "radical_equivalence_checker",
+        "equivalence_type_proposal": "radical_equivalence",
+        "spec_source": "phase1_induced_draft",
+        "generator_readiness": "runtime_ready",
+        "problem_type_spec_draft": {
+          "answer_contract": {
+            "answer_type": "numeric_or_radical",
+            "checker": "radical_equivalence_checker",
+            "answer_equivalence": "radical_equivalence"
+          },
+          "derivation": [
+            "Step 1: Automated derivation initialized from source spec."
+          ],
+          "generator_contract": {
+            "contextual_application": true
+          }
+        }
+      }
+    ]
+  },
   "generator_results": [
     {
       "problem_type_id": "short_answer_numeric_or_radical",
@@ -21,7 +53,7 @@
       ],
       "checker_contract_warnings": [],
       "generator_key": "mock_radical_block:short_answer_numeric_or_radical:draft_v1",
-      "generator_status": "blocked",
+      "generator_status": "validation_failed",
       "checker_smoke_status": "skipped_with_blockers",
       "dynamic_sampling_status": "skipped_with_blockers",
       "diversity_sampling": {},
@@ -38,13 +70,14 @@
       ],
       "warnings": [
         "low_source_examples"
-      ]
+      ],
+      "usable_for_phase3": false
     }
   ],
   "accepted_generators": [],
   "failed_generators": [
     "mock_radical_block:short_answer_numeric_or_radical:draft_v1"
   ],
-  "timestamp": "2026-05-29T13:41:04.900851+00:00",
+  "timestamp": "2026-06-01T06:11:09.667106+00:00",
   "dry_run": true
 }
