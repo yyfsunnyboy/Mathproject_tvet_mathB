@@ -4,7 +4,7 @@ from core.gencode.sop_policy import ALLOWED_SKILL_LEVEL_BLOCKERS, DISALLOWED_SKI
 
 ANSWER_TYPES = [
     "choice", "integer", "rational", "numeric", "expression", "interval", "set", 
-    "ordered_tuple", "unordered_tuple", "matrix", "boolean", "text_short", 
+    "ordered_tuple", "unordered_tuple", "coordinate_pair", "ordered_pair", "matrix", "boolean", "text_short",
     "free_response", "drawing", "handwriting"
 ]
 EQUIVALENCE_TYPES = [
@@ -21,13 +21,46 @@ CHECKER_KEYS = [
     "manual_review_checker", "ai_judged_checker"
 ]
 
-def canonicalize_and_complete(at: str, eq: str, checker: str, question_text: str = "") -> tuple[str, str, str]:
+def _has_coordinate_pair_semantics(payload: dict[str, Any]) -> bool:
+    semantic_values = {
+        str(payload.get("answer_shape", "")).strip(),
+        str(payload.get("semantic_answer_shape", "")).strip(),
+        str(payload.get("answer_semantics", "")).strip(),
+        str(payload.get("semantics", "")).strip(),
+    }
+    math_objects = set(payload.get("math_objects") or [])
+    stem = payload.get("stem_contract") if isinstance(payload.get("stem_contract"), dict) else {}
+    math_objects.update(stem.get("allowed_math_objects") or [])
+    math_objects.update(stem.get("required_math_objects") or [])
+    return "coordinate_pair" in semantic_values or "coordinate_pair" in math_objects
+
+
+def canonicalize_and_complete(
+    at: str,
+    eq: str,
+    checker: str,
+    question_text: str = "",
+    *,
+    problem_type_id: str = "",
+    coordinate_pair_semantic: bool = False,
+) -> tuple[str, str, str]:
     """
     Universally cleans, canonicalizes legacy tokens, and completes checkers/equivalence types.
     """
     at = str(at or "").strip()
     eq = str(eq or "").strip()
     checker = str(checker or "").strip()
+
+    if at == "single_choice":
+        at = "choice"
+    elif at == "short_answer":
+        at = "text_short"
+    if problem_type_id and eq == str(problem_type_id).strip():
+        eq = ""
+    if coordinate_pair_semantic and at not in {"choice", "single_choice"}:
+        at = "ordered_tuple"
+        eq = "ordered_tuple_exact"
+        checker = "tuple_checker"
     
     # 1. Mapping Canonicalization (Legacy Remap)
     if eq in ["numeric_equivalence", "numeric_equal", "numeric_exact_equivalence"]:
@@ -82,7 +115,8 @@ def canonicalize_and_complete(at: str, eq: str, checker: str, question_text: str
             eq = "interval_set"
         if not checker or checker not in CHECKER_KEYS:
             checker = "interval_checker"
-    elif at in ["ordered_tuple", "unordered_tuple"]:
+    elif at in ["ordered_tuple", "unordered_tuple", "coordinate_pair", "ordered_pair"]:
+        at = "ordered_tuple" if at in {"coordinate_pair", "ordered_pair"} else at
         if not eq or eq not in EQUIVALENCE_TYPES:
             eq = "ordered_tuple_exact" if at == "ordered_tuple" else "unordered_tuple_equivalent"
         if not checker or checker not in CHECKER_KEYS:
@@ -155,7 +189,16 @@ def remap_legacy_fields(cand: dict[str, Any]) -> dict[str, Any]:
     eq = str(ac.get("equivalence_type", cand.get("equivalence_type", ac.get("answer_equivalence", "")))).strip()
     checker = str(ac.get("checker_key", cand.get("checker_key", ac.get("checker", "")))).strip()
     
-    at, eq, checker = canonicalize_and_complete(at, eq, checker)
+    pt_id = str(cand.get("problem_type_id", "")).strip()
+    draft = dict(cand.get("problem_type_spec_draft")) if isinstance(cand.get("problem_type_spec_draft"), dict) else {}
+    coordinate_pair_semantic = _has_coordinate_pair_semantics(ac) or _has_coordinate_pair_semantics(draft)
+    at, eq, checker = canonicalize_and_complete(
+        at,
+        eq,
+        checker,
+        problem_type_id=pt_id,
+        coordinate_pair_semantic=coordinate_pair_semantic,
+    )
     
     ac.update({
         "answer_type": at,
@@ -171,12 +214,38 @@ def remap_legacy_fields(cand: dict[str, Any]) -> dict[str, Any]:
     cand["checker_key_proposal"] = checker
     
     # Re-slugify problem_type_id to match standard whitelisted tokens
-    pt_id = str(cand.get("problem_type_id", "")).strip()
+    draft_pt_id = str(draft.get("problem_type_id", "")).strip()
+    if pt_id.startswith("expression_") and draft_pt_id and draft_pt_id != pt_id:
+        pt_id = draft_pt_id
     if pt_id:
         pt_id = pt_id.replace("numeric_", f"{at}_").replace("_numeric", f"_{at}")
-        pt_id = pt_id.replace("short_answer", "expression")
+        if not coordinate_pair_semantic:
+            pt_id = pt_id.replace("short_answer", "expression")
         cand["problem_type_id"] = pt_id
         cand["proposed_problem_type_id"] = pt_id
+    if draft:
+        draft_ac = dict(draft.get("answer_contract")) if isinstance(draft.get("answer_contract"), dict) else {}
+        draft_ac.update(
+            {
+                "answer_type": at,
+                "equivalence_type": eq,
+                "answer_equivalence": eq,
+                "checker_key": checker,
+                "checker": checker,
+            }
+        )
+        draft["answer_contract"] = draft_ac
+        if pt_id:
+            draft["problem_type_id"] = pt_id
+        cand["problem_type_spec_draft"] = draft
+
+    owned_flags = {
+        "missing_answer_contract_problem_type",
+        "missing_checker_key_problem_type",
+        "invalid_equivalence_type_problem_type",
+    }
+    cand["promote_blockers"] = [x for x in (cand.get("promote_blockers", []) or []) if x not in owned_flags]
+    cand["risk_flags"] = [x for x in (cand.get("risk_flags", []) or []) if x not in owned_flags]
         
     return cand
 
@@ -301,7 +370,15 @@ def validate_phase1_report_contract(report: dict[str, Any]) -> dict[str, Any]:
         checker = str(row_copy.get("checker_key", feat.get("checker_key", row_copy.get("checker", feat.get("checker", ""))))).strip()
         question_text = str(feat.get("question_text", "")).strip()
         
-        at, eq, checker = canonicalize_and_complete(at, eq, checker, question_text)
+        coordinate_pair_semantic = _has_coordinate_pair_semantics(row_copy) or _has_coordinate_pair_semantics(feat)
+        at, eq, checker = canonicalize_and_complete(
+            at,
+            eq,
+            checker,
+            question_text,
+            problem_type_id=str(row_copy.get("detected_problem_type_id", "")).strip(),
+            coordinate_pair_semantic=coordinate_pair_semantic,
+        )
         
         row_copy["answer_type"] = at
         row_copy["equivalence_type"] = eq

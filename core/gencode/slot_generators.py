@@ -6,7 +6,7 @@ from fractions import Fraction
 from typing import Any, Callable
 
 from core.gencode.answer_payload import answer_type_family, apply_coordinate_pair_runtime_fields
-from core.gencode.problem_type_spec import get_answer_contract, get_stem_contract
+from core.gencode.problem_type_spec import get_answer_contract, get_semantic_contract, get_stem_contract
 from core.gencode.symbolic_coordinate_templates import (
     SYMBOLIC_QUADRANT_SHORT_ANSWER_TEMPLATES,
     SYMBOLIC_STATEMENT_CHOICE_TEMPLATES,
@@ -18,7 +18,7 @@ from core.gencode.division_point_slot_engine import (
     generate_division_point_payload,
     is_division_point_target_task,
 )
-from core.gencode.template_slot_resolver import resolve_template_slot
+from core.gencode.template_slot_resolver import infer_registered_task_token, resolve_template_slot
 from core.gencode.validators import validate_generator_payload
 
 GeneratorFn = Callable[[str, str, dict[str, Any], int | None], dict[str, Any]]
@@ -737,6 +737,49 @@ SLOT_REGISTRY: dict[str, GeneratorFn] = {
     DIVISION_POINT_SLOT: _slot_division_point_coordinates,
 }
 
+TARGET_TASK_GENERATOR_REGISTRY: dict[str, GeneratorFn] = {
+    "compute_internal_division_point_coordinates": _slot_division_point_coordinates,
+    "compute_centroid_coordinates": _slot_division_point_coordinates,
+    "compute_midpoint_coordinates": _slot_division_point_coordinates,
+    "solve_point_from_section_ratio": _slot_division_point_coordinates,
+}
+
+
+def _semantic_required_concepts(problem_type_spec: dict[str, Any]) -> list[str]:
+    raw = get_semantic_contract(problem_type_spec).get("required_concepts", [])
+    values = [raw] if isinstance(raw, str) else raw if isinstance(raw, list) else []
+    concepts: list[str] = []
+    for value in values:
+        if isinstance(value, dict):
+            value = value.get("token") or value.get("concept") or value.get("name") or ""
+        concept = str(value or "").strip()
+        if concept and concept not in concepts:
+            concepts.append(concept)
+    return concepts
+
+
+def _reinforce_slot_question_text(
+    payload: dict[str, Any],
+    problem_type_spec: dict[str, Any],
+) -> dict[str, Any]:
+    question_text = str(payload.get("question_text") or payload.get("question") or "").strip()
+    concepts = _semantic_required_concepts(problem_type_spec)
+    missing = [concept for concept in concepts if concept not in question_text]
+    additions: list[str] = []
+    if missing:
+        additions.append(f"解題時請運用{'、'.join(missing)}。")
+    if len(" ".join([question_text, *additions]).strip()) <= 30:
+        focus = "、".join(concepts) or "題目中的數學條件"
+        additions.append(f"請根據已知條件，運用{focus}完成計算，並寫出完整答案。")
+    if additions:
+        question_text = " ".join([question_text, *additions]).strip()
+    payload["question_text"] = question_text
+    payload["question"] = question_text
+    metadata = dict(payload.get("metadata") or {})
+    metadata["semantic_required_concepts"] = concepts
+    payload["metadata"] = metadata
+    return payload
+
 
 def generate_from_problem_type_spec(
     skill_id: str,
@@ -745,8 +788,14 @@ def generate_from_problem_type_spec(
     seed: int | None = None,
 ) -> dict[str, Any]:
     pt = str(problem_type_spec.get("problem_type_id", "")).strip()
+    target_task = str(problem_type_spec.get("target_task", "")).strip()
+    inferred_target_task = infer_registered_task_token(problem_type_spec)
+    if target_task not in TARGET_TASK_GENERATOR_REGISTRY and inferred_target_task in TARGET_TASK_GENERATOR_REGISTRY:
+        problem_type_spec = dict(problem_type_spec)
+        problem_type_spec["target_task"] = inferred_target_task
+        target_task = inferred_target_task
     slot = resolve_template_slot(problem_type_spec, seed)
-    fn = SLOT_REGISTRY.get(slot)
+    fn = TARGET_TASK_GENERATOR_REGISTRY.get(target_task) or SLOT_REGISTRY.get(slot)
     if fn is None:
         if _requires_symbolic_coordinate(problem_type_spec):
             raise RuntimeError("pending_template:symbolic_coordinate_slot_required")
@@ -765,6 +814,7 @@ def generate_from_problem_type_spec(
     payload = fn(skill_id, pt, problem_type_spec, seed)
     ac = get_answer_contract(problem_type_spec)
     payload = apply_coordinate_pair_runtime_fields(payload, ac)
+    payload = _reinforce_slot_question_text(payload, problem_type_spec)
     errors = validate_generator_payload(payload, skill_id=skill_id, problem_type_spec=problem_type_spec)
     if errors:
         raise RuntimeError(f"generator_semantically_unsafe:{','.join(errors)}")

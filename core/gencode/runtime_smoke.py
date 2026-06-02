@@ -17,6 +17,7 @@ from core.gencode.answer_payload import (
     build_answer_validation_diagnostics,
     validate_generated_answer_shape,
 )
+from core.gencode.answer_contract_gate import coerce_single_choice_contract
 from core.gencode.problem_type_spec import get_answer_contract, load_problem_type_spec
 from core.gencode.runtime_skill_wrapper import check_answer, dispatch_problem_type
 from core.gencode.validators import validate_generator_payload
@@ -43,6 +44,10 @@ _PLACEHOLDER_PATTERNS = (
     "implementation pending",
     "implementation_pending",
 )
+
+_SHORT_ANSWER_PROBLEM_TYPE_PREFIXES = ("ordered_tuple_", "text_short_")
+_SINGLE_CHOICE_PROBLEM_TYPE_PREFIXES = ("single_choice_", "choice_")
+_MULTI_CHOICE_PROBLEM_TYPE_PREFIXES = ("multi_choice_", "multiple_choice_")
 
 _NEGATIVE_CONDITION_UNUSED_PAYLOAD: dict[str, Any] = {
     "question_text": "若 $a<b<0$，且 $Q(12,-8)$，請判斷 $Q$ 位於哪一象限。",
@@ -182,18 +187,16 @@ def _validate_runtime_payload(payload: dict[str, Any], skill_id: str) -> tuple[l
         is_expression_rel = True
         
     # 2. Detect if it is multiple choice / single choice
+    short_answer_prefix = pt.lower().startswith(_SHORT_ANSWER_PROBLEM_TYPE_PREFIXES)
+    single_choice_prefix = pt.lower().startswith(_SINGLE_CHOICE_PROBLEM_TYPE_PREFIXES)
+    multi_choice_prefix = pt.lower().startswith(_MULTI_CHOICE_PROBLEM_TYPE_PREFIXES)
     is_multi_choice = False
     is_single_choice = False
-    if isinstance(ans_val, (list, tuple, set)):
+    if not short_answer_prefix and multi_choice_prefix:
         is_multi_choice = True
-    elif "multi_choice" in pt or str(ac.get("answer_type", "")).strip() == "multi_choice":
+    elif not short_answer_prefix and isinstance(ans_val, (list, tuple, set)):
         is_multi_choice = True
-    elif (
-        "choice" in pt 
-        or str(ac.get("answer_type", "")).lower() in ("single_choice", "choice", "choice_label")
-        or (isinstance(payload.get("choices"), list) and len(payload["choices"]) > 0)
-        or (isinstance(ans_val, str) and re.match(r"^[A-Ea-e]$", ans_str))
-    ):
+    elif not short_answer_prefix and single_choice_prefix:
         is_single_choice = True
         
     if is_expression_rel:
@@ -212,11 +215,7 @@ def _validate_runtime_payload(payload: dict[str, Any], skill_id: str) -> tuple[l
         ac["equivalence_type"] = "unordered_solution_set"
     elif is_single_choice:
         ac["answer_type"] = "single_choice"
-        ac["answer_shape"] = "multiple_choice"
-        ac["answer_equivalence"] = "choice_label"
-        ac["checker"] = "choice_label_checker"
-        ac["checker_key"] = "choice_label_checker"
-        ac["equivalence_type"] = "choice_label"
+        coerce_single_choice_contract(ac)
 
     # High defense check for TVET Math B to ensure clean math types (integer / rational)
     ans_type = str(ac.get("answer_type", "")).strip()
@@ -237,11 +236,7 @@ def _validate_runtime_payload(payload: dict[str, Any], skill_id: str) -> tuple[l
     )
     
     # SOP v0.2 Choice Shape Relaxation Principle
-    is_choice_type = (
-        is_single_choice 
-        or is_multi_choice 
-        or str(ac.get("answer_type", "")).strip() in ("single_choice", "multi_choice", "choice", "choice_label")
-    )
+    is_choice_type = is_single_choice or is_multi_choice
     if is_choice_type:
         choices_pool = payload.get("choices") or payload.get("options")
         choice_texts = set()
@@ -293,6 +288,8 @@ def _validate_runtime_payload(payload: dict[str, Any], skill_id: str) -> tuple[l
             # Update contract dynamically to align with choice type
             target_type = "multi_choice" if is_multi_choice else "single_choice"
             ac["answer_type"] = target_type
+            if target_type == "single_choice":
+                coerce_single_choice_contract(ac)
             ac["checker"] = "choice_label_checker"
             ac["checker_key"] = "choice_label_checker"
             ac["equivalence_type"] = "choice_label" if not is_multi_choice else "unordered_solution_set"

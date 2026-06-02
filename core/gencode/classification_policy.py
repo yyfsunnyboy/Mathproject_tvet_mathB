@@ -98,6 +98,7 @@ def build_classification_diagnostic(
         "sanitized_response_preview": str(trace.get("sanitized_response_preview", "")),
         "failed_stage": trace.get("failed_stage", ""),
         "classifier_source": trace.get("classifier_source", ""),
+        "classification_decision": trace.get("classification_decision", ""),
         "final_target_task": trace.get("final_target_task", feat.get("target_task", "")),
         "final_task_family": trace.get("final_task_family", feat.get("task_family", "")),
         "expected_task_families": list(anchor.get("expected_task_families") or []),
@@ -212,6 +213,7 @@ def merge_skill_scoped_classification(
     conflict_reason = ""
     requires_human_action = bool(ai_result.get("requires_human_action", False))
     classifier_source = ""
+    classification_decision = ""
     source_mapping_warning = ""
 
     # Determine if there's a severe defect
@@ -227,6 +229,7 @@ def merge_skill_scoped_classification(
 
     expected_subskills = set(anchor.get("expected_subskill_candidates") or [])
     is_valid_task = (rule_task in expected_subskills) or (rule_family in expected_families)
+    exact_legal_rule_match = bool(rule_task and is_valid_task and ai_task == rule_task)
 
     def _final_from_ai() -> dict[str, Any]:
         return {
@@ -327,6 +330,20 @@ def merge_skill_scoped_classification(
         requires_human_action = True
         if rule_family and rule_family != ai_family and rule_conf >= 0.35:
             conflict_reason = f"rule_family={rule_family}; ai_outsider={ai_family}"
+
+    elif exact_legal_rule_match:
+        final = {
+            "target_task": rule_task,
+            "task_family": rule_family,
+            "math_objects": list(rule_result.get("math_objects") or ai_result.get("math_objects") or []),
+            "answer_type": str(rule_result.get("answer_type") or ai_result.get("answer_type", "")).strip(),
+            "answer_shape": str(rule_result.get("answer_shape") or ai_result.get("answer_shape", "")).strip(),
+        }
+        classifier_source = "registry_rule"
+        classification_decision = "accepted_by_rule"
+        requires_human_action = has_severe_defect
+        best_cid = rule_task
+        cand_src = "rule"
 
     elif ai_conf >= AI_HIGH_CONFIDENCE:
         final = _final_from_ai()
@@ -444,6 +461,7 @@ def merge_skill_scoped_classification(
         "final_target_task": final["target_task"],
         "final_task_family": final["task_family"],
         "classifier_source": classifier_source,
+        "classification_decision": classification_decision,
         "conflict_reason": conflict_reason,
         "source_mapping_warning": source_mapping_warning,
         "requires_human_action": requires_human_action,

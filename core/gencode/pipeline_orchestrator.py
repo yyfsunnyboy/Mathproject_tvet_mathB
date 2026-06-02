@@ -29,6 +29,7 @@ from core.gencode.problem_type_spec import save_induced_problem_type_specs
 from core.gencode import problem_type_spec as problem_type_spec_registry
 from core.gencode.answer_contract_gate import (
     EQUIVALENCE_TYPE_WHITELIST,
+    coerce_single_choice_contract,
     summarize_answer_contracts,
 )
 
@@ -41,6 +42,8 @@ CLASSIFIER_RULEPACK_BACKUP_DIR = PROJECT_ROOT / "backups" / "gencode_classifier_
 
 
 _AUTOMATED_DERIVATION = ["Step 1: Automated derivation initialized from source spec."]
+_SHORT_ANSWER_PROBLEM_TYPE_PREFIXES = ("ordered_tuple_", "text_short_")
+_SINGLE_CHOICE_PROBLEM_TYPE_PREFIXES = ("single_choice_", "choice_")
 
 
 def _reinforce_derivation_contract(draft: dict[str, Any], problem_type_id: str) -> None:
@@ -91,6 +94,8 @@ def _reinforce_canonical_answer_contract(
     pt = str(problem_type_id or spec.get("problem_type_id", "")).strip()
     pt_key = pt.lower()
     target_task = str(spec.get("target_task", "")).strip().lower()
+    short_answer_prefix = pt_key.startswith(_SHORT_ANSWER_PROBLEM_TYPE_PREFIXES)
+    single_choice_prefix = pt_key.startswith(_SINGLE_CHOICE_PROBLEM_TYPE_PREFIXES)
     ac = spec.get("answer_contract")
     if not isinstance(ac, dict):
         ac = {}
@@ -131,20 +136,12 @@ def _reinforce_canonical_answer_contract(
         ac["checker"] = "expression_checker"
         ac["checker_key"] = "expression_checker"
 
-    if (
-        "choice" in pt_key
-        or "single_choice" in target_task
-        or str(ac.get("answer_shape", "")).strip() == "choice_label"
-    ):
+    if short_answer_prefix and _sanitize_coordinate_pair_answer_contract(spec, pt):
+        return spec
+
+    if single_choice_prefix and not short_answer_prefix:
         ac["answer_type"] = "single_choice"
-        ac["answer_shape"] = "choice_label"
-        ac["answer_equivalence"] = "choice_label"
-        ac["equivalence_type"] = "choice_label"
-        ac["checker"] = "choice_label_checker"
-        ac["checker_key"] = "choice_label_checker"
-        ac["presentation_mode"] = "single_choice"
-        ac["choices_required"] = True
-        ac["frontend_render_choices"] = True
+        coerce_single_choice_contract(ac)
 
     spec["answer_contract"] = ac
     return spec
@@ -155,6 +152,8 @@ def _sanitize_coordinate_pair_answer_contract(spec: dict[str, Any], problem_type
     pt = str(problem_type_id or "").strip().lower()
     target_task = str(spec.get("target_task", "")).strip().lower()
     task_family = str(spec.get("task_family", "")).strip().lower()
+    short_answer_prefix = pt.startswith(_SHORT_ANSWER_PROBLEM_TYPE_PREFIXES)
+    single_choice_prefix = pt.startswith(_SINGLE_CHOICE_PROBLEM_TYPE_PREFIXES)
     ac = spec.get("answer_contract")
     if not isinstance(ac, dict):
         ac = {}
@@ -186,25 +185,18 @@ def _sanitize_coordinate_pair_answer_contract(spec: dict[str, Any], problem_type
     ):
         ac.pop(key, None)
 
-    single_choice = "single_choice" in pt or str(ac.get("presentation_mode", "")).strip() == "single_choice"
+    single_choice = single_choice_prefix and not short_answer_prefix
     if single_choice:
         ac.update(
             {
                 "answer_type": "single_choice",
-                "answer_shape": "choice_label",
                 "answer_semantics": "coordinate_pair",
                 "semantic_answer_shape": "coordinate_pair",
-                "answer_equivalence": "choice_label",
-                "equivalence_type": "choice_label",
-                "checker": "choice_label_checker",
-                "checker_key": "choice_label_checker",
-                "presentation_mode": "single_choice",
-                "choices_required": True,
                 "choice_count": 4,
                 "correct_choice_count": 1,
-                "frontend_render_choices": True,
             }
         )
+        coerce_single_choice_contract(ac)
         return True
 
     ac.update(
@@ -270,14 +262,11 @@ def _build_phase2_foundation_preflight(
             r["answer_contract"] = ac
         if "single_choice" in pt or "choice" in pt or pt in choice_pts:
             ac["answer_type"] = "single_choice"
-            ac["checker"] = "choice_label_checker"
-            ac["checker_key"] = "choice_label_checker"
-            ac["answer_equivalence"] = "choice_label"
-            ac["equivalence_type"] = "choice_label"
-            ac["choices_required"] = True
+            coerce_single_choice_contract(ac)
             ac["fallback_checker"] = "text_short_checker"
             ac["fallback_checker_key"] = "text_short_checker"
             r["answer_type"] = "single_choice"
+            r["answer_shape"] = "single_choice"
             r["checker_key"] = "choice_label_checker"
             r["selected_checker"] = "choice_label_checker"
             r["equivalence_type"] = "choice_label"
@@ -313,11 +302,7 @@ def _build_phase2_foundation_preflight(
                 draft["answer_contract"] = ac
             if "single_choice" in pt or "choice" in pt or pt in choice_pts or "fallback" in pt:
                 ac["answer_type"] = "single_choice"
-                ac["checker"] = "choice_label_checker"
-                ac["checker_key"] = "choice_label_checker"
-                ac["answer_equivalence"] = "choice_label"
-                ac["equivalence_type"] = "choice_label"
-                ac["choices_required"] = True
+                coerce_single_choice_contract(ac)
                 ac["fallback_checker"] = "text_short_checker"
                 ac["fallback_checker_key"] = "text_short_checker"
                 
@@ -353,11 +338,7 @@ def _build_phase2_foundation_preflight(
             c["answer_contract_proposal"] = prop
         if "single_choice" in pt or "choice" in pt or pt in choice_pts or "fallback" in pt:
             prop["answer_type"] = "single_choice"
-            prop["checker"] = "choice_label_checker"
-            prop["checker_key"] = "choice_label_checker"
-            prop["answer_equivalence"] = "choice_label"
-            prop["equivalence_type"] = "choice_label"
-            prop["choices_required"] = True
+            coerce_single_choice_contract(prop)
             prop["fallback_checker"] = "text_short_checker"
             prop["fallback_checker_key"] = "text_short_checker"
         elif "expression" in pt or "interpret_function" in pt:
@@ -399,11 +380,7 @@ def _build_phase2_foundation_preflight(
             updated = False
             if "single_choice" in pt or "choice" in pt or pt in choice_pts or "fallback" in pt:
                 ac["answer_type"] = "single_choice"
-                ac["checker"] = "choice_label_checker"
-                ac["checker_key"] = "choice_label_checker"
-                ac["answer_equivalence"] = "choice_label"
-                ac["equivalence_type"] = "choice_label"
-                ac["choices_required"] = True
+                coerce_single_choice_contract(ac)
                 ac["fallback_checker"] = "text_short_checker"
                 ac["fallback_checker_key"] = "text_short_checker"
                 updated = True

@@ -11,6 +11,7 @@ from typing import Any
 
 from core.checkers.coordinate_pair_checker import parse_coordinate_pair_answer
 from core.gencode.answer_payload import answer_type_family
+from core.gencode.answer_contract_gate import coerce_single_choice_contract
 from core.gencode.generator_contract_schema import DEFAULT_ANTI_REPETITION
 from core.gencode.problem_type_spec import get_answer_contract, get_generator_contract
 
@@ -362,9 +363,10 @@ def _build_division_point_single_choice_payload(
             answer_label = label
 
     ac_out = dict(ac)
+    coerce_single_choice_contract(ac_out)
     ac_out.setdefault("semantic_answer_shape", "coordinate_pair")
-    checker = str(ac.get("checker", "choice_label_checker")).strip() or "choice_label_checker"
-    eq = str(ac.get("answer_equivalence", ac.get("equivalence_type", "choice_label"))).strip() or "choice_label"
+    checker = str(ac_out.get("checker", "choice_label_checker")).strip() or "choice_label_checker"
+    eq = str(ac_out.get("answer_equivalence", ac_out.get("equivalence_type", "choice_label"))).strip() or "choice_label"
     meta = dict(core.get("metadata") or {})
     meta["presentation_mode"] = "single_choice"
     meta["semantic_answer"] = correct_value

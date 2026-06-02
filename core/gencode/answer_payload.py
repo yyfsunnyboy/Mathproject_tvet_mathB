@@ -5,6 +5,8 @@ import re
 from fractions import Fraction
 from typing import Any
 
+from core.gencode.answer_contract_gate import coerce_single_choice_contract
+
 SOLUTION_SET_TYPES = frozenset({"set", "solution_set", "integer_set", "number_set"})
 INTERVAL_TYPES = frozenset({"interval", "union_of_intervals", "interval_set"})
 CLASSIFICATION_TYPES = frozenset({"classification", "quadrant_label", "text_label", "category"})
@@ -424,6 +426,7 @@ def finalize_generator_payload(payload: dict[str, Any], answer_contract: dict[st
     """Normalize generator output to standard runtime dict contract (JSON-safe)."""
     out = dict(payload)
     ac = dict(answer_contract) if isinstance(answer_contract, dict) else {}
+    coerce_single_choice_contract(ac)
     if ac:
         out["answer_contract"] = ac
         if ac.get("answer_type"):
@@ -465,6 +468,8 @@ def validate_generated_answer_shape(
     ac = answer_contract if isinstance(answer_contract, dict) else {}
     if not ac and isinstance(payload.get("answer_contract"), dict):
         ac = payload["answer_contract"]
+    ac = dict(ac)
+    coerce_single_choice_contract(ac)
     pt = str(problem_type_id or payload.get("problem_type_id", "")).strip()
     raw_type = str(ac.get("answer_type", "")).strip()
     canon_type = canonical_answer_type(raw_type)

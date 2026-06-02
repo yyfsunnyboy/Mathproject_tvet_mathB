@@ -423,12 +423,10 @@ def evaluate_source_example_alignment(
             exclude_reason = "unclassified_low_confidence"
             alignment_kind = "unclassified_low_confidence"
 
-    # SOP v0.2: If final target task belongs to expected candidates,
-    # and final task family is in expected families, and not rejected, we must not give alignment_score = 0.0.
+    # A trusted final classification is stronger evidence than lexical overlap.
     score_val = round(score, 4)
     if task in expected_tasks and family in expected_families and sc.get("source_quality_status") != "rejected":
-        if score_val == 0.0:
-            score_val = 0.8
+        score_val = max(score_val, 0.8)
             
     return {
         "example_id": feature.get("source_example_id"),
@@ -572,6 +570,30 @@ def evaluate_semantic_alignment(
             blockers.append("skill_problem_type_semantic_mismatch")
 
     skill_source_score = _overlap_score(skill_terms, source_terms)
+    usable_features = [
+        feat
+        for feat in blocker_features
+        if isinstance(feat, dict) and not feat.get("source_quality_reject")
+    ]
+    trusted_classification_count = sum(
+        1
+        for feat in usable_features
+        if (
+            str(
+                (
+                    feat.get("semantic_classification")
+                    if isinstance(feat.get("semantic_classification"), dict)
+                    else {}
+                ).get("final_task_family")
+                or feat.get("task_family")
+                or task_family_for_task(str(feat.get("target_task", "")))
+            ).strip()
+            in expected_families
+        )
+    )
+    if usable_features and trusted_classification_count:
+        trusted_ratio = trusted_classification_count / len(usable_features)
+        skill_source_score = max(skill_source_score, trusted_ratio * 0.8)
     skill_problem_type_score = min(spec_task_scores) if spec_task_scores else 0.0
     source_problem_type_score = max((x.get("source_problem_type_score", 0.0) for x in per_spec_scores), default=0.0)
 

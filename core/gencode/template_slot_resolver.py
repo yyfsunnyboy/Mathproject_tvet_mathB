@@ -38,7 +38,7 @@ SLOT_COMPATIBLE_FAMILIES: dict[str, frozenset[str]] = {
     "symbolic_quadrant_choice": frozenset({"single_choice"}),
     "two_point_distance_solution_set": frozenset({"solution_set"}),
     "two_point_distance_compute": frozenset({"numeric_or_radical", "numeric"}),
-    DIVISION_POINT_SLOT: frozenset({"ordered_pair", "coordinate_pair"}),
+    DIVISION_POINT_SLOT: frozenset({"ordered_pair", "coordinate_pair", "single_choice"}),
     "linear_triangle_median_compute": frozenset({"numeric", "numeric_or_radical", "expression", "short_answer"}),
     "function_value_numeric": frozenset({"numeric", "short_answer"}),
     "linear_function_two_point_choice": frozenset({"single_choice"}),
@@ -110,10 +110,29 @@ def _slot_rng(seed: int | None, problem_type_id: str) -> random.Random:
     return random.Random(f"{seed}|template_slot|{problem_type_id}")
 
 
+def infer_registered_task_token(problem_type_spec: dict[str, Any]) -> str:
+    """Recover a registered task token from a normalized problem_type_id."""
+    pt = str(problem_type_spec.get("problem_type_id", "")).strip().lower()
+    if not pt:
+        return ""
+    matches = [task for task in TASK_FAMILY_TO_SLOT if task.lower() in pt]
+    if not matches:
+        return ""
+    return max(matches, key=len)
+
+
 def resolve_template_slot(problem_type_spec: dict[str, Any], seed: int | None = None) -> str:
     """Pick slot from template_families when multiple families are induced for one problem_type."""
     pt = str(problem_type_spec.get("problem_type_id", "")).strip()
     target_task = str(problem_type_spec.get("target_task", "")).strip()
+    inferred_target_task = infer_registered_task_token(problem_type_spec)
+    if target_task not in TASK_FAMILY_TO_SLOT and inferred_target_task:
+        target_task = inferred_target_task
+        logger.info(
+            "[GENCODE DISPATCH] recovered_target_task problem_type_id=%s target_task=%s selection_strategy=problem_type_id_token",
+            pt,
+            target_task,
+        )
     if is_division_point_target_task(target_task):
         slot = TASK_FAMILY_TO_SLOT.get(target_task, DIVISION_POINT_SLOT)
         logger.info(

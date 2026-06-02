@@ -10,6 +10,8 @@ EQUIVALENCE_TYPE_WHITELIST = {
     "unordered_solution_set",
     "interval_set",
     "algebraic_equivalent",
+    "ordered_tuple_exact",
+    "unordered_tuple_equivalent",
     "manual_review_or_ai_judged",
 }
 
@@ -20,6 +22,8 @@ _NON_RAW_STRING_EQ_TYPES = {
     "unordered_solution_set",
     "interval_set",
     "algebraic_equivalent",
+    "ordered_tuple_exact",
+    "unordered_tuple_equivalent",
     "manual_review_or_ai_judged",
 }
 
@@ -33,7 +37,69 @@ _EQUIVALENCE_CANONICAL_MAP = {
     "interval_equivalence": "interval_set",
     "inequality_solution_equivalence": "interval_set",
     "expression_equivalence": "algebraic_equivalent",
+    "coordinate_pair_equivalence": "ordered_tuple_exact",
+    "ordered_pair": "ordered_tuple_exact",
 }
+
+_DEFAULT_CONTRACT_BY_ANSWER_TYPE = {
+    "short_answer": ("exact_string", "text_short_checker"),
+    "text": ("exact_string", "text_short_checker"),
+    "text_short": ("exact_string", "text_short_checker"),
+    "numeric": ("numeric_exact", "integer_checker"),
+    "integer": ("numeric_exact", "integer_checker"),
+    "expression": ("algebraic_equivalent", "expression_checker"),
+    "fraction": ("rational_equivalent", "rational_checker"),
+    "rational": ("rational_equivalent", "rational_checker"),
+    "set": ("unordered_solution_set", "set_checker"),
+    "solution_set": ("unordered_solution_set", "set_checker"),
+    "interval": ("interval_set", "interval_checker"),
+    "ordered_pair": ("ordered_tuple_exact", "tuple_checker"),
+    "coordinate_pair": ("ordered_tuple_exact", "tuple_checker"),
+    "ordered_tuple": ("ordered_tuple_exact", "tuple_checker"),
+    "unordered_tuple": ("unordered_tuple_equivalent", "tuple_checker"),
+}
+
+
+def coerce_single_choice_contract(answer_contract: dict[str, Any]) -> dict[str, Any]:
+    ac = answer_contract if isinstance(answer_contract, dict) else {}
+    answer_type = str(ac.get("answer_type", "")).strip()
+    presentation = str(ac.get("presentation_mode", "")).strip()
+    if answer_type not in {"single_choice", "choice", "choice_label"} and presentation != "single_choice":
+        return ac
+    ac.update(
+        {
+            "answer_type": "single_choice",
+            "answer_shape": "single_choice",
+            "answer_equivalence": "choice_label",
+            "equivalence_type": "choice_label",
+            "checker": "choice_label_checker",
+            "checker_key": "choice_label_checker",
+            "presentation_mode": "single_choice",
+            "choices_required": True,
+            "frontend_render_choices": True,
+        }
+    )
+    return ac
+
+
+def _is_coordinate_pair_short_answer(candidate: dict[str, Any], ac: dict[str, Any]) -> bool:
+    answer_type = str(ac.get("answer_type", "")).strip()
+    presentation = str(ac.get("presentation_mode", "")).strip()
+    if answer_type in {"single_choice", "choice", "choice_label"} or presentation == "single_choice":
+        return False
+    semantic_values = {
+        str(ac.get("answer_shape", "")).strip(),
+        str(ac.get("semantic_answer_shape", "")).strip(),
+        str(ac.get("answer_semantics", "")).strip(),
+        str(ac.get("semantics", "")).strip(),
+    }
+    math_objects = set(candidate.get("math_objects") or [])
+    draft = candidate.get("problem_type_spec_draft")
+    if isinstance(draft, dict):
+        stem = draft.get("stem_contract") if isinstance(draft.get("stem_contract"), dict) else {}
+        math_objects.update(stem.get("allowed_math_objects") or [])
+        math_objects.update(stem.get("required_math_objects") or [])
+    return "coordinate_pair" in semantic_values or "coordinate_pair" in math_objects
 
 
 def _contract_from_candidate(candidate: dict[str, Any]) -> dict[str, Any]:
@@ -49,6 +115,7 @@ def _problem_type_id(candidate: dict[str, Any]) -> str:
 
 def normalize_contract(candidate: dict[str, Any]) -> dict[str, Any]:
     ac = _contract_from_candidate(candidate)
+    coerce_single_choice_contract(ac)
     checker_key = str(
         ac.get("checker_key")
         or ac.get("checker")
@@ -67,10 +134,19 @@ def normalize_contract(candidate: dict[str, Any]) -> dict[str, Any]:
     if pt and equivalence_type == pt:
         equivalence_type = ""
     answer_type = str(ac.get("answer_type", "")).strip()
-    if answer_type == "numeric" and not equivalence_type:
-        equivalence_type = "numeric_exact"
+    if _is_coordinate_pair_short_answer(candidate, ac):
+        answer_type = "coordinate_pair"
+        equivalence_type = "ordered_tuple_exact"
+        checker_key = "tuple_checker"
+    else:
+        default_equivalence, default_checker = _DEFAULT_CONTRACT_BY_ANSWER_TYPE.get(answer_type, ("", ""))
+        if not equivalence_type:
+            equivalence_type = default_equivalence
+        if not checker_key:
+            checker_key = default_checker
     return {
         "answer_type": answer_type,
+        "answer_shape": str(ac.get("answer_shape", "")).strip(),
         "equivalence_type": equivalence_type,
         "checker_key": checker_key,
         "order_matters": bool(ac.get("order_matters", True)),
@@ -128,8 +204,13 @@ def apply_runtime_gate_to_candidate(candidate: dict[str, Any]) -> dict[str, Any]
     missing_checker = not bool(ck)
     invalid_eq = bool(eq) and eq not in EQUIVALENCE_TYPE_WHITELIST
 
-    promote_blockers = list(row.get("promote_blockers", []) or [])
-    risk_flags = list(row.get("risk_flags", []) or [])
+    owned_flags = {
+        "missing_answer_contract_problem_type",
+        "missing_checker_key_problem_type",
+        "invalid_equivalence_type_problem_type",
+    }
+    promote_blockers = [x for x in (row.get("promote_blockers", []) or []) if x not in owned_flags]
+    risk_flags = [x for x in (row.get("risk_flags", []) or []) if x not in owned_flags]
     runtime_status = "runtime_ready_candidate"
     next_action = "phase2_foundation_preflight"
     if missing_contract or missing_checker:

@@ -11,6 +11,7 @@ from core.gencode.answer_payload import (
     format_invalid_answer_type_error,
     validate_generated_answer_shape,
 )
+from core.gencode.answer_contract_gate import coerce_single_choice_contract
 from core.gencode.problem_type_spec import get_answer_contract, get_stem_contract
 
 CHOICE_EMBEDDED_PATTERN = re.compile(r"(\([A-D]\)|[A-D][\.\)]\s)")
@@ -52,6 +53,7 @@ def _answer_value(payload: dict[str, Any]) -> Any:
 def validate_answer_contract(payload: dict[str, Any], problem_type_spec: dict[str, Any]) -> list[str]:
     errors: list[str] = []
     answer_contract = get_answer_contract(problem_type_spec)
+    coerce_single_choice_contract(answer_contract)
     stem_contract = get_stem_contract(problem_type_spec)
     raw_answer_type = str(answer_contract.get("answer_type", "")).strip()
     answer_type = canonical_answer_type(raw_answer_type)

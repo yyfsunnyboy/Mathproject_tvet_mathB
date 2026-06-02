@@ -81,14 +81,17 @@ def is_coordinate_pair_semantic(
     target_task: str = "",
     task_family: str = "",
     answer_shape: str = "",
+    math_objects: list[str] | None = None,
 ) -> bool:
     at = str(answer_type or "").strip()
     shape = str(answer_shape or "").strip()
     task = str(target_task or "").strip()
     family = str(task_family or task_family_for_task(task)).strip()
+    mos = set(math_objects or [])
     return (
         at in {"ordered_pair", "coordinate_pair"}
         or shape == "coordinate_pair"
+        or "coordinate_pair" in mos
         or task in DIVISION_POINT_COORDINATES_TASKS
         or family == DIVISION_POINT_COORDINATES_FAMILY
     )
@@ -164,7 +167,7 @@ def infer_answer_contract_from_problem_context(
         return {
             **base,
             "answer_type": "single_choice",
-            "answer_shape": "choice_label",
+            "answer_shape": "single_choice",
             "answer_semantics": "choice_label",
             "answer_equivalence": "choice_label",
             "checker": "choice_label_checker",
@@ -181,7 +184,7 @@ def infer_answer_contract_from_problem_context(
             "accepted_formats": ["A", "B", "C", "D"],
         }
 
-    if is_coordinate_pair_semantic(answer_type=at, target_task=task, task_family=family):
+    if is_coordinate_pair_semantic(answer_type=at, target_task=task, task_family=family, math_objects=mos):
         reason = checker_selection_reason(
             answer_type=at,
             target_task=task,
@@ -194,7 +197,7 @@ def infer_answer_contract_from_problem_context(
             "answer_type": "ordered_pair",
             "answer_shape": "coordinate_pair",
             "answer_semantics": "coordinate_pair",
-            "answer_equivalence": "coordinate_pair_equivalence",
+            "answer_equivalence": "ordered_tuple_exact",
             "checker": "coordinate_pair_checker",
             "presentation_mode": presentation,
             "source_has_choices": source_has_choices,

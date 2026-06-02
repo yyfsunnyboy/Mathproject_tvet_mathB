@@ -3,7 +3,7 @@
 ## phase2
 ```json
 {
-  "ok": false,
+  "ok": true,
   "phase": "phase2",
   "skill_id": "vh_數學B1_MidpointCoordinates",
   "sop_reference": {
@@ -35,19 +35,19 @@
   "alignment_blockers": [],
   "generator_results": [
     {
-      "problem_type_id": "expression_compute_midpoint_coordinates",
-      "source_example_count": 6,
+      "problem_type_id": "ordered_tuple_compute_midpoint_coordinates",
+      "source_example_count": 4,
       "answer_contract": {
         "choices_required": true,
         "choice_count": null,
         "correct_choice_count": null,
-        "frontend_render_choices": false,
+        "frontend_render_choices": true,
         "answer_type": "single_choice",
-        "answer_shape": "coordinate_pair",
+        "answer_shape": "single_choice",
         "answer_semantics": "coordinate_pair",
         "answer_equivalence": "choice_label",
         "checker": "choice_label_checker",
-        "presentation_mode": "",
+        "presentation_mode": "single_choice",
         "source_has_choices": false,
         "selected_checker": "tuple_checker",
         "checker_selection_reason": "coordinate_pair_semantic",
@@ -69,9 +69,9 @@
           "allowed_math_objects": [
             "coordinate_point",
             "midpoint",
-            "two_coordinate_points",
             "three_coordinate_points",
-            "triangle"
+            "triangle",
+            "two_coordinate_points"
           ],
           "required_math_objects": [
             "coordinate_point",
@@ -91,8 +91,8 @@
         },
         "semantic_contract": {
           "reasoning_type": [
-            "coordinate_average_reasoning",
-            "numeric_computation"
+            "numeric_computation",
+            "coordinate_average_reasoning"
           ],
           "reject_if": [
             "unused_condition",
@@ -247,19 +247,312 @@
         },
         "order_matters": true,
         "accepted_format_notes": [],
-        "canonical_answer_schema": "ordered_tuple_exact",
+        "canonical_answer_schema": "coordinate_pair",
         "fallback_checker": "text_short_checker",
         "fallback_checker_key": "text_short_checker"
       },
       "answer_type": "single_choice",
-      "answer_shape": "coordinate_pair",
+      "answer_shape": "single_choice",
       "equivalence_type": "choice_label",
       "selected_checker": "choice_label_checker",
       "checker_key": "choice_label_checker",
       "checker_capability_status": "ok",
       "checker_contract_blockers": [],
       "checker_contract_warnings": [],
-      "generator_key": "vh_數學B1_MidpointCoordinates:expression_compute_midpoint_coordinates:draft_v1",
+      "generator_key": "vh_數學B1_MidpointCoordinates:ordered_tuple_compute_midpoint_coordinates:draft_v1",
+      "generator_status": "runtime_ready_with_warning",
+      "checker_smoke_status": "passed",
+      "dynamic_sampling_status": "runtime_ready_with_diversity_warning",
+      "diversity_sampling": {
+        "diversity_sampling_status": "runtime_ready_with_diversity_warning",
+        "diversity_healthy": true,
+        "sample_count": 30,
+        "unique_signature_count": 19,
+        "unique_question_text_count": 30,
+        "template_variant_distribution": {
+          "word_context_midpoint": 17,
+          "direct_midpoint": 13
+        },
+        "answer_shape_distribution": {
+          "B": 9,
+          "C": 8,
+          "D": 7,
+          "A": 6
+        },
+        "variable_coverage_report": {
+          "ratio_forms": [
+            "midpoint"
+          ],
+          "coordinate_patterns": [
+            "++",
+            "+-",
+            "-+",
+            "--"
+          ],
+          "answer_type_modes": [
+            ""
+          ]
+        },
+        "repetition_warnings": [
+          "consecutive_same_template_variant"
+        ],
+        "diversity_blockers": [],
+        "max_consecutive_same_template": 7,
+        "generation_errors": [],
+        "sampling_mode": "live"
+      },
+      "unique_signature_count": 19,
+      "template_variant_distribution": {
+        "word_context_midpoint": 17,
+        "direct_midpoint": 13
+      },
+      "variable_coverage_report": {
+        "ratio_forms": [
+          "midpoint"
+        ],
+        "coordinate_patterns": [
+          "++",
+          "+-",
+          "-+",
+          "--"
+        ],
+        "answer_type_modes": [
+          ""
+        ]
+      },
+      "repetition_warnings": [
+        "consecutive_same_template_variant"
+      ],
+      "requires_human_action": false,
+      "blockers": [],
+      "warnings": [
+        "consecutive_same_template_variant"
+      ],
+      "usable_for_phase3": true
+    },
+    {
+      "problem_type_id": "text_short_compute_midpoint_coordinates",
+      "source_example_count": 3,
+      "answer_contract": {
+        "choices_required": false,
+        "choice_count": null,
+        "correct_choice_count": null,
+        "frontend_render_choices": false,
+        "answer_type": "text_short",
+        "answer_shape": "coordinate_pair",
+        "answer_semantics": "coordinate_pair",
+        "answer_equivalence": "exact_string",
+        "checker": "text_short_checker",
+        "presentation_mode": "",
+        "source_has_choices": false,
+        "selected_checker": "tuple_checker",
+        "checker_selection_reason": "coordinate_pair_semantic",
+        "accepted_formats": [
+          "(0,-2)",
+          "0,-2",
+          "（0，-2）",
+          "x=0,y=-2",
+          "(0, -2)",
+          "P(0,-2)"
+        ],
+        "checker_key": "text_short_checker",
+        "equivalence_type": "exact_string",
+        "checker_capability_status": "ok",
+        "checker_contract_blockers": [],
+        "checker_contract_warnings": [],
+        "stem_contract": {
+          "stem_must_not_embed_choices": true,
+          "allowed_math_objects": [
+            "coordinate_point",
+            "midpoint",
+            "two_coordinate_points",
+            "three_coordinate_points",
+            "triangle"
+          ],
+          "required_math_objects": [
+            "coordinate_point",
+            "midpoint"
+          ],
+          "forbidden_patterns": [
+            "\\(A\\)",
+            "\\(B\\)",
+            "\\(C\\)",
+            "\\(D\\)"
+          ]
+        },
+        "dependency_contract": {
+          "givens_must_be_used": true,
+          "target_answer_must_depend_on_givens": true,
+          "variables_in_conditions_must_appear_in_target": false
+        },
+        "semantic_contract": {
+          "reasoning_type": [
+            "coordinate_average_reasoning"
+          ],
+          "reject_if": [
+            "unused_condition",
+            "ambiguous_answer",
+            "answer_not_derivable",
+            "duplicated_choices",
+            "no_correct_choice",
+            "multiple_correct_choices_when_single_choice"
+          ]
+        },
+        "generator_contract": {
+          "template_variants": [
+            {
+              "id": "direct_midpoint",
+              "label": "直接求中點",
+              "stem_pattern": "求 {A}({ax},{ay}) 與 {B}({bx},{by}) 的中點坐標。",
+              "weight": 1.0,
+              "enabled": true
+            },
+            {
+              "id": "word_context_midpoint",
+              "label": "語境中點",
+              "stem_pattern": "兩地中間位置為 {M}，求其中點坐標。",
+              "weight": 1.0,
+              "enabled": true
+            }
+          ],
+          "parameter_schema": {
+            "point_names": {
+              "choices": [
+                [
+                  "A",
+                  "B",
+                  "P"
+                ],
+                [
+                  "P",
+                  "Q",
+                  "R"
+                ],
+                [
+                  "M",
+                  "N",
+                  "T"
+                ],
+                [
+                  "C",
+                  "D",
+                  "E"
+                ]
+              ],
+              "randomize": true
+            },
+            "coordinate_range": {
+              "x_min": -10,
+              "x_max": 10,
+              "y_min": -10,
+              "y_max": 10,
+              "exclude_zero_probability": 0.2
+            },
+            "answer_type_mode": {
+              "choices": [
+                "integer_midpoint",
+                "rational_midpoint"
+              ],
+              "weights": [
+                0.75,
+                0.25
+              ]
+            }
+          },
+          "variation_dimensions": [
+            "point_names",
+            "coordinate_sign_pattern",
+            "answer_integer_or_fraction",
+            "word_context",
+            "ask_target"
+          ],
+          "difficulty_controls": {
+            "level_1": {
+              "coordinate_range": [
+                -5,
+                5
+              ],
+              "integer_midpoint": true
+            },
+            "level_2": {
+              "coordinate_range": [
+                -10,
+                10
+              ],
+              "allow_rational_answer": true
+            },
+            "level_3": {
+              "missing_endpoint_enabled": true,
+              "word_context_enabled": true
+            }
+          },
+          "anti_repetition_rules": {
+            "avoid_same_template_consecutive": true,
+            "avoid_same_ratio_consecutive": true,
+            "avoid_same_point_names_consecutive": true,
+            "avoid_same_answer_consecutive": true,
+            "recent_history_window": 5,
+            "signature_fields": [
+              "problem_type_id",
+              "template_variant",
+              "ratio_form",
+              "ratio_values",
+              "coordinate_pattern",
+              "answer"
+            ]
+          },
+          "validity_constraints": [
+            "A != B",
+            "midpoint formula consistent with endpoints"
+          ],
+          "answer_shape": "coordinate_pair",
+          "explanation_variants": [
+            "midpoint_formula"
+          ],
+          "sampling_strategy": "weighted_random",
+          "template_families": [
+            "compute_midpoint_coordinates"
+          ],
+          "parameter_slots": {
+            "seed": "integer",
+            "difficulty": "easy"
+          },
+          "randomization_rules": {
+            "shuffle_choices": false
+          },
+          "avoid_llm_freeform_math": true,
+          "use_domain_functions": true,
+          "derivation_steps_required": true,
+          "template_slots": {
+            "stem": "division_point_coordinates"
+          },
+          "problem_type_id": "short_answer_compute_midpoint_coordinates",
+          "contract_validation_blockers": [],
+          "contract_validation_warnings": []
+        },
+        "validator_contract": {
+          "static_checks": [
+            "answer_contract_checks",
+            "choices_policy"
+          ],
+          "semantic_checks": [
+            "givens_to_target_dependency"
+          ],
+          "runtime_smoke_count": 30
+        },
+        "order_matters": true,
+        "accepted_format_notes": [],
+        "canonical_answer_schema": "coordinate_pair"
+      },
+      "answer_type": "text_short",
+      "answer_shape": "coordinate_pair",
+      "equivalence_type": "exact_string",
+      "selected_checker": "text_short_checker",
+      "checker_key": "text_short_checker",
+      "checker_capability_status": "ok",
+      "checker_contract_blockers": [],
+      "checker_contract_warnings": [],
+      "generator_key": "vh_數學B1_MidpointCoordinates:text_short_compute_midpoint_coordinates:draft_v1",
       "generator_status": "runtime_ready",
       "checker_smoke_status": "passed",
       "dynamic_sampling_status": "passed",
@@ -326,11 +619,11 @@
         "diversity_blockers": [],
         "max_consecutive_same_template": 1,
         "generation_errors": [
-          "generator_semantically_unsafe:answer_not_in_choices,choice_count_mismatch,choices_missing",
-          "generator_semantically_unsafe:answer_not_in_choices,choice_count_mismatch,choices_missing",
-          "generator_semantically_unsafe:answer_not_in_choices,choice_count_mismatch,choices_missing",
-          "generator_semantically_unsafe:answer_not_in_choices,choice_count_mismatch,choices_missing",
-          "generator_semantically_unsafe:answer_not_in_choices,choice_count_mismatch,choices_missing"
+          "generator_semantically_unsafe:invalid_answer_type: problem_type_id=short_answer_compute_midpoint_coordinates answer_type",
+          "generator_semantically_unsafe:invalid_answer_type: problem_type_id=short_answer_compute_midpoint_coordinates answer_type",
+          "generator_semantically_unsafe:invalid_answer_type: problem_type_id=short_answer_compute_midpoint_coordinates answer_type",
+          "generator_semantically_unsafe:invalid_answer_type: problem_type_id=short_answer_compute_midpoint_coordinates answer_type",
+          "generator_semantically_unsafe:invalid_answer_type: problem_type_id=short_answer_compute_midpoint_coordinates answer_type"
         ],
         "sampling_mode": "contract_simulation"
       },
@@ -363,14 +656,14 @@
       "usable_for_phase3": true
     },
     {
-      "problem_type_id": "expression_compute_centroid_coordinates",
-      "source_example_count": 4,
+      "problem_type_id": "text_short_compute_centroid_coordinates",
+      "source_example_count": 2,
       "answer_contract": {
         "choices_required": false,
         "choice_count": null,
         "correct_choice_count": null,
         "frontend_render_choices": false,
-        "answer_type": "expression",
+        "answer_type": "text_short",
         "answer_shape": "coordinate_pair",
         "answer_semantics": "coordinate_pair",
         "answer_equivalence": "exact_string",
@@ -576,9 +869,9 @@
         },
         "order_matters": true,
         "accepted_format_notes": [],
-        "canonical_answer_schema": "ordered_tuple_exact"
+        "canonical_answer_schema": "coordinate_pair"
       },
-      "answer_type": "expression",
+      "answer_type": "text_short",
       "answer_shape": "coordinate_pair",
       "equivalence_type": "exact_string",
       "selected_checker": "text_short_checker",
@@ -586,25 +879,116 @@
       "checker_capability_status": "ok",
       "checker_contract_blockers": [],
       "checker_contract_warnings": [],
-      "generator_key": "vh_數學B1_MidpointCoordinates:expression_compute_centroid_coordinates:draft_v1",
-      "generator_status": "validation_failed",
-      "checker_smoke_status": "skipped_with_blockers",
-      "dynamic_sampling_status": "skipped_with_blockers",
-      "diversity_sampling": {},
-      "unique_signature_count": "",
-      "template_variant_distribution": {},
-      "variable_coverage_report": {},
-      "repetition_warnings": [],
-      "requires_human_action": false,
-      "blockers": [
-        "answer_contract_not_supported",
-        "checker_contract_missing"
+      "generator_key": "vh_數學B1_MidpointCoordinates:text_short_compute_centroid_coordinates:draft_v1",
+      "generator_status": "runtime_ready_with_warning",
+      "checker_smoke_status": "passed",
+      "dynamic_sampling_status": "runtime_ready_with_diversity_warning",
+      "diversity_sampling": {
+        "diversity_sampling_status": "passed",
+        "diversity_healthy": true,
+        "sample_count": 30,
+        "unique_signature_count": 30,
+        "unique_question_text_count": 20,
+        "template_variant_distribution": {
+          "worded_triangle_centroid": 15,
+          "direct_triangle_centroid": 15
+        },
+        "answer_shape_distribution": {
+          "(-1,-1)": 1,
+          "(5,0)": 1,
+          "(2,1)": 1,
+          "(3,4)": 1,
+          "(12,10)": 1,
+          "(9,-7)": 1,
+          "(-1,8)": 1,
+          "(9,6)": 1,
+          "(8,3)": 1,
+          "(-1,15)": 1,
+          "(10,10)": 1,
+          "(8,-2)": 1,
+          "(4,9)": 1,
+          "(6,5)": 1,
+          "(13,12)": 1,
+          "(-5,-6)": 2,
+          "(6,8)": 1,
+          "(-2,11)": 1,
+          "(-3,2)": 1,
+          "(11,4)": 1,
+          "(11,-1)": 1,
+          "(10,-1)": 1,
+          "(12,5)": 1,
+          "(-5,13)": 1,
+          "(-3,-4)": 1,
+          "(-6,-6)": 1,
+          "(1,7)": 1,
+          "(7,9)": 1,
+          "(3,-5)": 1
+        },
+        "variable_coverage_report": {
+          "ratio_forms": [
+            "AP:PB=m:n",
+            "AP=mPB",
+            "mAP=nPB"
+          ],
+          "coordinate_patterns": [
+            "++",
+            "+-",
+            "-+",
+            "--",
+            "mixed"
+          ],
+          "answer_type_modes": [
+            ""
+          ]
+        },
+        "repetition_warnings": [],
+        "diversity_blockers": [],
+        "max_consecutive_same_template": 1,
+        "generation_errors": [
+          "generator_semantically_unsafe:invalid_answer_type: problem_type_id=short_answer_compute_centroid_coordinates answer_type",
+          "generator_semantically_unsafe:invalid_answer_type: problem_type_id=short_answer_compute_centroid_coordinates answer_type",
+          "generator_semantically_unsafe:invalid_answer_type: problem_type_id=short_answer_compute_centroid_coordinates answer_type",
+          "generator_semantically_unsafe:invalid_answer_type: problem_type_id=short_answer_compute_centroid_coordinates answer_type",
+          "generator_semantically_unsafe:invalid_answer_type: problem_type_id=short_answer_compute_centroid_coordinates answer_type"
+        ],
+        "sampling_mode": "contract_simulation"
+      },
+      "unique_signature_count": 30,
+      "template_variant_distribution": {
+        "worded_triangle_centroid": 15,
+        "direct_triangle_centroid": 15
+      },
+      "variable_coverage_report": {
+        "ratio_forms": [
+          "AP:PB=m:n",
+          "AP=mPB",
+          "mAP=nPB"
+        ],
+        "coordinate_patterns": [
+          "++",
+          "+-",
+          "-+",
+          "--",
+          "mixed"
+        ],
+        "answer_type_modes": [
+          ""
+        ]
+      },
+      "repetition_warnings": [
+        "low_sample_diversity_tolerance_applied",
+        "low_source_examples"
       ],
-      "warnings": [],
-      "usable_for_phase3": false
+      "requires_human_action": false,
+      "blockers": [],
+      "warnings": [
+        "low_sample_diversity_tolerance_applied",
+        "low_source_examples"
+      ],
+      "usable_for_phase3": true
     },
     {
-      "problem_type_id": "expression_compute_midpoint_coordinates",
+      "problem_type_id": "ordered_tuple_compute_midpoint_coordinates",
       "source_example_count": 1,
       "answer_contract": {
         "choices_required": true,
@@ -612,11 +996,11 @@
         "correct_choice_count": 1,
         "frontend_render_choices": true,
         "answer_type": "single_choice",
-        "answer_shape": "choice_label",
+        "answer_shape": "single_choice",
         "answer_semantics": "choice_label",
         "answer_equivalence": "choice_label",
         "checker": "choice_label_checker",
-        "presentation_mode": "",
+        "presentation_mode": "single_choice",
         "source_has_choices": true,
         "selected_checker": "choice_label_checker",
         "checker_selection_reason": "coordinate_pair_semantic",
@@ -818,14 +1202,14 @@
         "fallback_checker_key": "text_short_checker"
       },
       "answer_type": "single_choice",
-      "answer_shape": "choice_label",
+      "answer_shape": "single_choice",
       "equivalence_type": "choice_label",
       "selected_checker": "choice_label_checker",
       "checker_key": "choice_label_checker",
       "checker_capability_status": "ok",
       "checker_contract_blockers": [],
       "checker_contract_warnings": [],
-      "generator_key": "vh_數學B1_MidpointCoordinates:expression_compute_midpoint_coordinates:draft_v1",
+      "generator_key": "vh_數學B1_MidpointCoordinates:ordered_tuple_compute_midpoint_coordinates:draft_v1",
       "generator_status": "runtime_ready_with_warning",
       "checker_smoke_status": "passed",
       "dynamic_sampling_status": "runtime_ready_with_diversity_warning",
@@ -897,75 +1281,38 @@
       "usable_for_phase3": true
     }
   ],
-  "failed_generators": [
-    "vh_數學B1_MidpointCoordinates:expression_compute_centroid_coordinates:draft_v1"
-  ],
+  "failed_generators": [],
   "accepted_generators": [
-    "vh_數學B1_MidpointCoordinates:expression_compute_midpoint_coordinates:draft_v1",
-    "vh_數學B1_MidpointCoordinates:expression_compute_midpoint_coordinates:draft_v1"
+    "vh_數學B1_MidpointCoordinates:ordered_tuple_compute_midpoint_coordinates:draft_v1",
+    "vh_數學B1_MidpointCoordinates:text_short_compute_midpoint_coordinates:draft_v1",
+    "vh_數學B1_MidpointCoordinates:text_short_compute_centroid_coordinates:draft_v1",
+    "vh_數學B1_MidpointCoordinates:ordered_tuple_compute_midpoint_coordinates:draft_v1"
   ],
   "foundation_preflight": {
-    "foundation_ready": false,
-    "foundation_status": "FOUNDATION_REPAIR_REQUIRED",
+    "foundation_ready": true,
+    "foundation_status": "PASS",
     "missing_checker": [],
-    "missing_verifier": [
-      "short_answer_compute_centroid_coordinates",
-      "short_answer_compute_midpoint_coordinates"
-    ],
-    "missing_domain_function": [
-      "expression_compute_centroid_coordinates"
-    ],
+    "missing_verifier": [],
+    "missing_domain_function": [],
     "missing_generator": [],
     "missing_runtime_binding": [],
     "missing_registry_binding": [],
     "missing_answer_contract_problem_types": [],
-    "repair_plan": [
-      {
-        "gap": "missing_verifier",
-        "problem_types": [
-          "short_answer_compute_centroid_coordinates",
-          "short_answer_compute_midpoint_coordinates"
-        ],
-        "action": "repair_missing_verifier"
-      },
-      {
-        "gap": "missing_domain_function",
-        "problem_types": [
-          "expression_compute_centroid_coordinates"
-        ],
-        "action": "repair_missing_domain_function"
-      }
-    ],
-    "next_action": "repair_foundation_gaps_then_rerun_phase2"
+    "repair_plan": [],
+    "next_action": "phase3_package_draft"
   },
-  "foundation_ready": false,
-  "phase2_status": "FOUNDATION_REPAIR_REQUIRED",
-  "repair_plan": [
-    {
-      "gap": "missing_verifier",
-      "problem_types": [
-        "short_answer_compute_centroid_coordinates",
-        "short_answer_compute_midpoint_coordinates"
-      ],
-      "action": "repair_missing_verifier"
-    },
-    {
-      "gap": "missing_domain_function",
-      "problem_types": [
-        "expression_compute_centroid_coordinates"
-      ],
-      "action": "repair_missing_domain_function"
-    }
-  ],
+  "foundation_ready": true,
+  "phase2_status": "PASS",
+  "repair_plan": [],
   "reports": {
-    "phase2_generator_summary_json": "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_MidpointCoordinates_phase2_generator_summary.json",
-    "phase2_generator_summary_md": "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_MidpointCoordinates_phase2_generator_summary.md",
-    "phase2_json": "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_MidpointCoordinates_phase2_generator_summary.json",
-    "phase2_md": "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_MidpointCoordinates_phase2_generator_summary.md",
-    "generator_draft_spec_json": "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\drafts\\vh_數學B1_MidpointCoordinates_generator_draft_spec.json"
+    "phase2_generator_summary_json": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_MidpointCoordinates_phase2_generator_summary.json",
+    "phase2_generator_summary_md": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_MidpointCoordinates_phase2_generator_summary.md",
+    "phase2_json": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_MidpointCoordinates_phase2_generator_summary.json",
+    "phase2_md": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_MidpointCoordinates_phase2_generator_summary.md",
+    "generator_draft_spec_json": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\drafts\\vh_數學B1_MidpointCoordinates_generator_draft_spec.json"
   },
-  "next_action": "repair_foundation_gaps_then_rerun_phase2",
-  "timestamp": "2026-06-01T15:28:03.220940+00:00",
+  "next_action": "phase3_package_draft",
+  "timestamp": "2026-06-02T15:36:25.984419+00:00",
   "dry_run": true
 }
 ```

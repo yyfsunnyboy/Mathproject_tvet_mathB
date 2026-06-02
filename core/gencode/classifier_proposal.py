@@ -160,10 +160,12 @@ def build_classifier_proposal(skill_id: str, examples_map: list[dict[str, Any]])
 
 def detect_answer_shape(answer_contract: dict[str, Any] | None) -> str:
     c = answer_contract if isinstance(answer_contract, dict) else {}
+    answer_type = str(c.get("answer_type", "")).strip().lower()
+    if answer_type == "single_choice":
+        return "single_choice"
     explicit_shape = str(c.get("answer_shape", "")).strip()
     if explicit_shape and explicit_shape not in {"", "unknown_answer_shape"}:
         return explicit_shape
-    answer_type = str(c.get("answer_type", "")).strip().lower()
     eq = str(c.get("equivalence_type", "")).strip().lower()
     if answer_type in {"ordered_pair", "coordinate_pair"} or eq in {
         "coordinate_pair_equivalence",
@@ -195,8 +197,8 @@ def detect_answer_shape(answer_contract: dict[str, Any] | None) -> str:
         return "set"
     if answer_type in {"text", "text_short", "short_answer"}:
         return "text_short"
-    if answer_type in {"single_choice", "multi_choice"}:
-        return "choice_label"
+    if answer_type == "multi_choice":
+        return "multiple_choice"
     if answer_type in {"manual_review"} or eq in {"manual_review_or_ai_judged"}:
         return "manual_review_or_free_response"
     return "unknown_answer_shape"
