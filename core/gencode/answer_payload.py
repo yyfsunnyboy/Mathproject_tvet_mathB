@@ -14,6 +14,7 @@ NUMERIC_TYPES = frozenset({"numeric", "integer", "decimal", "number"})
 RADICAL_TYPES = frozenset({"numeric_or_radical", "math_expression", "radical_number", "expression"})
 CHOICE_TYPES = frozenset({"single_choice", "multi_choice", "choice", "choice_label"})
 COORDINATE_PAIR_TYPES = frozenset({"coordinate_pair", "ordered_pair"})
+TEXT_SHORT_TYPES = frozenset({"text", "text_short", "exact_string", "case_insensitive_string"})
 
 ANSWER_TYPE_ALIASES: dict[str, str] = {
     "integer": "numeric",
@@ -30,6 +31,10 @@ ANSWER_TYPE_ALIASES: dict[str, str] = {
     "choice": "single_choice",
     "choice_label": "single_choice",
     "ordered_pair": "coordinate_pair",
+    "text": "short_answer",
+    "text_short": "short_answer",
+    "exact_string": "short_answer",
+    "case_insensitive_string": "short_answer",
 }
 
 VALID_ANSWER_TYPES = frozenset(
@@ -55,6 +60,7 @@ VALID_ANSWER_TYPES = frozenset(
     | RADICAL_TYPES
     | CHOICE_TYPES
     | COORDINATE_PAIR_TYPES
+    | TEXT_SHORT_TYPES
 )
 
 _RADICAL_TOKEN = re.compile(r"\\sqrt|sqrt\s*\(|√", re.I)
@@ -250,7 +256,18 @@ def answer_type_family(answer_type: str) -> str:
         return "numeric"
     if canon in COORDINATE_PAIR_TYPES:
         return "coordinate_pair"
+    if canon in TEXT_SHORT_TYPES:
+        return "short_answer"
     return canon
+
+
+def _is_text_short_numeric_string_contract(answer_contract: dict[str, Any], value: Any) -> bool:
+    ac = answer_contract if isinstance(answer_contract, dict) else {}
+    if str(ac.get("answer_type", "")).strip() != "text_short" and str(ac.get("answer_shape", "")).strip() != "text_short":
+        return False
+    if not isinstance(value, str):
+        return False
+    return bool(re.fullmatch(r"\s*[+-]?\d+\s*", value))
 
 
 def _element_to_number(value: Any) -> int | float | None:
@@ -475,12 +492,18 @@ def validate_generated_answer_shape(
     canon_type = canonical_answer_type(raw_type)
     blockers: list[str] = []
 
-    if raw_type and raw_type not in VALID_ANSWER_TYPES and canon_type not in VALID_ANSWER_TYPES:
+    raw_answer_value = payload.get("correct_answer", payload.get("answer"))
+    if (
+        raw_type
+        and raw_type not in VALID_ANSWER_TYPES
+        and canon_type not in VALID_ANSWER_TYPES
+        and not _is_text_short_numeric_string_contract(ac, raw_answer_value)
+    ):
         blockers.append(
             format_invalid_answer_type_error(
                 problem_type_id=pt,
                 answer_contract=ac,
-                answer_value=payload.get("correct_answer", payload.get("answer")),
+                answer_value=raw_answer_value,
                 checker=str(ac.get("checker", "")),
                 equivalence=str(ac.get("answer_equivalence", "")),
             )

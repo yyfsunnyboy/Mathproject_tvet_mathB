@@ -297,6 +297,23 @@ def _dominant_source_task(features: list[dict[str, Any]]) -> tuple[str, float]:
     return top_task, count / len(tasks)
 
 
+def _uniform_core_target_task(features: list[dict[str, Any]]) -> tuple[str, float, int]:
+    valid_core_tasks = [
+        str(f.get("target_task", "")).strip()
+        for f in features
+        if isinstance(f, dict)
+        and str(f.get("induction_tier", "core")).strip() == "core"
+        and not f.get("source_quality_reject")
+        and str(f.get("target_task", "")).strip()
+        and str(f.get("target_task", "")).strip() not in {"unknown", "needs_review"}
+    ]
+    if not valid_core_tasks:
+        return "", 0.0, 0
+    counter = Counter(valid_core_tasks)
+    task, count = counter.most_common(1)[0]
+    return task, count / len(valid_core_tasks), len(valid_core_tasks)
+
+
 def evaluate_source_example_alignment(
     skill_terms: set[str],
     feature: dict[str, Any],
@@ -501,6 +518,7 @@ def evaluate_semantic_alignment(
     expected_tasks = set(anchor.get("expected_subskill_candidates") or []) or infer_expected_tasks(skill_terms)
     expected_families = set(anchor.get("expected_task_families") or []) or infer_skill_families_from_terms(skill_terms)
     dominant_task, dominant_ratio = _dominant_source_task(blocker_features or source_features)
+    uniform_core_task, uniform_core_ratio, uniform_core_count = _uniform_core_target_task(blocker_features or source_features)
     src_family_dist = source_family_distribution(blocker_features or source_features)
     source_families = set(src_family_dist.keys())
     dom_families, dom_family_ratio = dominant_source_families(blocker_features or source_features)
@@ -596,6 +614,12 @@ def evaluate_semantic_alignment(
         skill_source_score = max(skill_source_score, trusted_ratio * 0.8)
     skill_problem_type_score = min(spec_task_scores) if spec_task_scores else 0.0
     source_problem_type_score = max((x.get("source_problem_type_score", 0.0) for x in per_spec_scores), default=0.0)
+    uniform_core_threshold_relaxed = bool(uniform_core_task and uniform_core_ratio >= 1.0 and uniform_core_count > 0)
+    if uniform_core_threshold_relaxed:
+        skill_source_score = max(skill_source_score, 0.8)
+        skill_problem_type_score = max(skill_problem_type_score, 0.8)
+        source_problem_type_score = max(source_problem_type_score, 0.8)
+        warnings.append("uniform_core_target_task_alignment_threshold_relaxed")
 
     needs_review_count = 0
     outsider_count = 0
@@ -750,6 +774,8 @@ def evaluate_semantic_alignment(
             warnings.append("candidate_family_span_outside_skill_scope")
 
     unique_blockers = sorted(set(blockers))
+    if uniform_core_threshold_relaxed:
+        unique_blockers = [b for b in unique_blockers if b != "low_alignment_score"]
     if skill_scope_trusted or rule_fallback_only:
         unique_blockers = [
             b
@@ -797,6 +823,10 @@ def evaluate_semantic_alignment(
         "candidate_problem_type_families": sorted(candidate_families),
         "dominant_source_task": dominant_task,
         "dominant_source_task_ratio": round(dominant_ratio, 4),
+        "uniform_core_target_task": uniform_core_task,
+        "uniform_core_target_task_ratio": round(uniform_core_ratio, 4),
+        "uniform_core_target_task_count": uniform_core_count,
+        "uniform_core_threshold_relaxed": uniform_core_threshold_relaxed,
         "dominant_source_family": sorted(dom_families),
         "dominant_source_family_ratio": round(dom_family_ratio, 4),
         "skill_source_score": round(skill_source_score, 4),

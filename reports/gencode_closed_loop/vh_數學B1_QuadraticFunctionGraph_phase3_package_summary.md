@@ -1,0 +1,374 @@
+# Gencode Phase3 Package Summary: vh_數學B1_QuadraticFunctionGraph
+
+## phase3
+```json
+{
+  "ok": true,
+  "phase": "phase3",
+  "skill_id": "vh_數學B1_QuadraticFunctionGraph",
+  "sop_reference": {
+    "sop_policy_version": "v0.3",
+    "highest_sop": "docs/系統SOP/Gencode_AgentSkillV2整合/Gencode與AgentSkillV2整合總體設計_v0.3.md",
+    "required_sop_files": [
+      {
+        "path": "docs/系統SOP/Gencode_AgentSkillV2整合/Gencode與AgentSkillV2整合總體設計_v0.3.md",
+        "exists": true,
+        "readable": true,
+        "mojibake_detected": false
+      },
+      {
+        "path": "docs/系統SOP/Gencode_AgentSkillV2整合/AgentSkillV2_ProblemType規格包設計_v0.3.md",
+        "exists": true,
+        "readable": true,
+        "mojibake_detected": false
+      },
+      {
+        "path": "docs/系統SOP/Gencode_AgentSkillV2整合/AnswerContract_EquivalenceType_Gate_v0.3.md",
+        "exists": true,
+        "readable": true,
+        "mojibake_detected": false
+      }
+    ],
+    "sop_preflight_status": "PASS"
+  },
+  "remaining_todos": [
+    "SOP v0.2 Verification: Verify that if a problem_type is verified, `/practice` must hit it within 50 rounds.",
+    "SOP v0.2 Verification: Ensure Gencode runtime audit uses `generated_only` to prevent source_bank_pool masking generator distribution.",
+    "SOP v0.2 Wrapper: Ensure wrapper state does not reload / reset state upon importlib.reload."
+  ],
+  "skill_file_path": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\drafts\\vh_數學B1_QuadraticFunctionGraph.py",
+  "package_status": "failed",
+  "py_compile_status": "passed",
+  "runtime_smoke_status": "failed",
+  "runtime_smoke_raw": {
+    "status": "failed",
+    "blockers": [
+      "runtime_smoke_generate_exception"
+    ],
+    "payload_preview": {
+      "problem_type_id": "text_short_contextual_application",
+      "answer_type": "text_short",
+      "answer_contract_answer_type": "text_short",
+      "checker": "text_short_checker",
+      "equivalence": "exact_string",
+      "question_text_len": 89,
+      "answer": "535",
+      "correct_answer": "535",
+      "choices_count": 0,
+      "metadata_keys": [
+        "givens",
+        "target",
+        "derivation",
+        "problem_type_id",
+        "template_slot",
+        "scenario",
+        "semantic_required_concepts"
+      ]
+    },
+    "interface_check": {
+      "generate_exists": true,
+      "check_exists": true,
+      "generate_returns_dict": false,
+      "check_callable": true
+    },
+    "py_compile_status": "passed",
+    "samples_tested": 1,
+    "negative_semantic_smoke": "passed",
+    "error": "generator_semantically_unsafe:answer_not_in_choices,choice_count_mismatch,choices_missing",
+    "failed_seed": 1,
+    "runtime_smoke_raw": {
+      "exception_type": "RuntimeError",
+      "exception_message": "generator_semantically_unsafe:answer_not_in_choices,choice_count_mismatch,choices_missing",
+      "traceback_preview": "Traceback (most recent call last):\n  File \"C:\\Python\\Mathproject_tvet_mathB\\core\\gencode\\runtime_smoke.py\", line 444, in _run_draft_runtime_smoke_impl\n    payload = gen(level=1, seed=seed)\n              ^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\drafts\\vh_數學B1_QuadraticFunctionGraph.py\", line 12, in generate\n    return generate_for_skill(SKILL_ID, GENERATOR_SPECS, level=level, seed=seed, difficulty=difficulty)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Python\\Mathproject_tvet_mathB\\core\\gencode\\runtime_skill_wrapper.py\", line 174, in generate_for_skill\n    payload = generate_from_problem_type_spec(skill_id, problem_type_spec, seed=generation_seed)\n              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Python\\Mathproject_tvet_mathB\\core\\gencode\\slot_generators.py\", line 820, in generate_from_problem_type_spec\n    raise RuntimeError(f\"generator_semantically_unsafe:{','.join(errors)}\")\nRuntimeError: generator_semantically_unsafe:answer_not_in_choices,choice_count_mismatch,choices_missing\n",
+      "problem_type_id": "choice_contextual_application",
+      "seed": 1
+    },
+    "failed_validator_name": "slot_generators.validate_generator_payload",
+    "validation_diagnostics": {
+      "problem_type_id": "text_short_contextual_application",
+      "answer_type": "text_short",
+      "answer_shape": "text_short",
+      "checker": "text_short_checker",
+      "equivalence": "exact_string",
+      "answer_repr": "'535'",
+      "answer_python_type": "str",
+      "correct_answer_repr": "'535'",
+      "correct_answer_python_type": "str",
+      "validator_expected_types": [
+        "case_insensitive_string",
+        "category",
+        "choice",
+        "choice_label",
+        "classification",
+        "coordinate_pair",
+        "decimal",
+        "exact_string",
+        "expression",
+        "fraction",
+        "integer",
+        "integer_set",
+        "interval",
+        "interval_set",
+        "manual_review",
+        "math_expression",
+        "multi_choice",
+        "number",
+        "number_set",
+        "numeric",
+        "numeric_or_radical",
+        "ordered_pair",
+        "quadrant_label",
+        "radical_number",
+        "set",
+        "short_answer",
+        "single_choice",
+        "solution_set",
+        "table",
+        "text",
+        "text_label",
+        "text_short",
+        "union_of_intervals"
+      ],
+      "expected_answer_shape": "short_answer allows non-empty string; answer_shape=text_short",
+      "failed_validator_name": "",
+      "validation_reason": ""
+    }
+  },
+  "publish_check": {
+    "draft_check_passed": false,
+    "can_publish_draft": false,
+    "can_publish_formal": false,
+    "can_mark_runtime_ready": false,
+    "formal_publish_blockers": [
+      "draft_check_not_passed"
+    ],
+    "runtime_ready_blockers": [
+      "runtime_ready_gate_not_allowed_or_not_verified"
+    ],
+    "warnings": [
+      "draft_passed_but_runtime_ready_not_confirmed"
+    ],
+    "blockers": [
+      "runtime_smoke_generate_exception"
+    ],
+    "py_compile_status": "passed",
+    "interface_check": {
+      "generate_exists": true,
+      "check_exists": true,
+      "generate_returns_dict": false,
+      "check_callable": true
+    },
+    "runtime_smoke_status": "failed",
+    "runtime_smoke_raw": {
+      "status": "failed",
+      "blockers": [
+        "runtime_smoke_generate_exception"
+      ],
+      "payload_preview": {
+        "problem_type_id": "text_short_contextual_application",
+        "answer_type": "text_short",
+        "answer_contract_answer_type": "text_short",
+        "checker": "text_short_checker",
+        "equivalence": "exact_string",
+        "question_text_len": 89,
+        "answer": "535",
+        "correct_answer": "535",
+        "choices_count": 0,
+        "metadata_keys": [
+          "givens",
+          "target",
+          "derivation",
+          "problem_type_id",
+          "template_slot",
+          "scenario",
+          "semantic_required_concepts"
+        ]
+      },
+      "interface_check": {
+        "generate_exists": true,
+        "check_exists": true,
+        "generate_returns_dict": false,
+        "check_callable": true
+      },
+      "py_compile_status": "passed",
+      "samples_tested": 1,
+      "negative_semantic_smoke": "passed",
+      "error": "generator_semantically_unsafe:answer_not_in_choices,choice_count_mismatch,choices_missing",
+      "failed_seed": 1,
+      "runtime_smoke_raw": {
+        "exception_type": "RuntimeError",
+        "exception_message": "generator_semantically_unsafe:answer_not_in_choices,choice_count_mismatch,choices_missing",
+        "traceback_preview": "Traceback (most recent call last):\n  File \"C:\\Python\\Mathproject_tvet_mathB\\core\\gencode\\runtime_smoke.py\", line 444, in _run_draft_runtime_smoke_impl\n    payload = gen(level=1, seed=seed)\n              ^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\drafts\\vh_數學B1_QuadraticFunctionGraph.py\", line 12, in generate\n    return generate_for_skill(SKILL_ID, GENERATOR_SPECS, level=level, seed=seed, difficulty=difficulty)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Python\\Mathproject_tvet_mathB\\core\\gencode\\runtime_skill_wrapper.py\", line 174, in generate_for_skill\n    payload = generate_from_problem_type_spec(skill_id, problem_type_spec, seed=generation_seed)\n              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Python\\Mathproject_tvet_mathB\\core\\gencode\\slot_generators.py\", line 820, in generate_from_problem_type_spec\n    raise RuntimeError(f\"generator_semantically_unsafe:{','.join(errors)}\")\nRuntimeError: generator_semantically_unsafe:answer_not_in_choices,choice_count_mismatch,choices_missing\n",
+        "problem_type_id": "choice_contextual_application",
+        "seed": 1
+      },
+      "failed_validator_name": "slot_generators.validate_generator_payload",
+      "validation_diagnostics": {
+        "problem_type_id": "text_short_contextual_application",
+        "answer_type": "text_short",
+        "answer_shape": "text_short",
+        "checker": "text_short_checker",
+        "equivalence": "exact_string",
+        "answer_repr": "'535'",
+        "answer_python_type": "str",
+        "correct_answer_repr": "'535'",
+        "correct_answer_python_type": "str",
+        "validator_expected_types": [
+          "case_insensitive_string",
+          "category",
+          "choice",
+          "choice_label",
+          "classification",
+          "coordinate_pair",
+          "decimal",
+          "exact_string",
+          "expression",
+          "fraction",
+          "integer",
+          "integer_set",
+          "interval",
+          "interval_set",
+          "manual_review",
+          "math_expression",
+          "multi_choice",
+          "number",
+          "number_set",
+          "numeric",
+          "numeric_or_radical",
+          "ordered_pair",
+          "quadrant_label",
+          "radical_number",
+          "set",
+          "short_answer",
+          "single_choice",
+          "solution_set",
+          "table",
+          "text",
+          "text_label",
+          "text_short",
+          "union_of_intervals"
+        ],
+        "expected_answer_shape": "short_answer allows non-empty string; answer_shape=text_short",
+        "failed_validator_name": "",
+        "validation_reason": ""
+      }
+    },
+    "summary_message": "Draft is not ready for publish yet. Please resolve blockers first."
+  },
+  "generator_specs": [
+    {
+      "problem_type_id": "text_short_contextual_application",
+      "checker_key": "text_short_checker",
+      "equivalence_type": "exact_string",
+      "generator_readiness": "runtime_ready"
+    },
+    {
+      "problem_type_id": "choice_contextual_application",
+      "checker_key": "choice_label_checker",
+      "equivalence_type": "choice_label",
+      "generator_readiness": "runtime_ready"
+    }
+  ],
+  "packaging_usable_count": 2,
+  "packaging_diagnostics": {
+    "candidate_count": 2,
+    "included_count": 2,
+    "excluded_count": 0,
+    "included": [
+      {
+        "problem_type_id": "text_short_contextual_application",
+        "generator_key": "vh_數學B1_QuadraticFunctionGraph:text_short_contextual_application:draft_v1",
+        "generator_status": "runtime_ready_with_warning"
+      },
+      {
+        "problem_type_id": "choice_contextual_application",
+        "generator_key": "vh_數學B1_QuadraticFunctionGraph:choice_contextual_application:draft_v1",
+        "generator_status": "runtime_ready_with_warning"
+      }
+    ],
+    "excluded": [],
+    "phase2_summary_exists": true,
+    "generator_draft_spec_exists": true,
+    "phase2_generator_summary_json": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_QuadraticFunctionGraph_phase2_generator_summary.json",
+    "generator_draft_spec_json": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\drafts\\vh_數學B1_QuadraticFunctionGraph_generator_draft_spec.json",
+    "runtime_spec_alignment": {
+      "status": "synced",
+      "synced_spec_count": 2,
+      "synced_problem_type_ids": [
+        "text_short_contextual_application",
+        "choice_contextual_application"
+      ],
+      "induced_spec_path": "reports\\gencode_closed_loop\\induced_specs\\vh_數學B1_QuadraticFunctionGraph.json",
+      "purged_induced_spec_path": "reports\\gencode_closed_loop\\induced_specs\\vh_數學B1_QuadraticFunctionGraph.json",
+      "purged_induced_spec_paths": [
+        "reports\\gencode_closed_loop\\induced_specs\\vh_數學B1_QuadraticFunctionGraph.json"
+      ],
+      "runtime_usable_problem_type_ids": [
+        "choice_contextual_application",
+        "text_short_contextual_application"
+      ],
+      "downgraded_historical_problem_type_ids": [],
+      "canonical_filter_applied": true
+    }
+  },
+  "reports": {
+    "phase3_package_summary_json": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_QuadraticFunctionGraph_phase3_package_summary.json",
+    "phase3_package_summary_md": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_QuadraticFunctionGraph_phase3_package_summary.md",
+    "phase3_json": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_QuadraticFunctionGraph_phase3_package_summary.json",
+    "phase3_md": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_QuadraticFunctionGraph_phase3_package_summary.md",
+    "final_json": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_QuadraticFunctionGraph_phase3_package_summary.json",
+    "final_md": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_QuadraticFunctionGraph_phase3_package_summary.md",
+    "draft_skill_file": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\drafts\\vh_數學B1_QuadraticFunctionGraph.py"
+  },
+  "next_action": "review_phase3_publish_check",
+  "error": "",
+  "dry_run": true,
+  "timestamp": "2026-06-03T12:24:19.878650+00:00",
+  "generated_with_warning": true,
+  "warnings": [
+    "consecutive_same_template_variant",
+    "low_sample_diversity_tolerance_applied",
+    "low_source_examples"
+  ],
+  "publish_gate_layers": {
+    "technical_closed_loop": "FAIL",
+    "runtime_quality": "FAIL",
+    "web_runtime": "FAIL",
+    "source_alignment": "PARTIAL"
+  },
+  "source_alignment_audit": {
+    "status": "PARTIAL",
+    "missing_source_aligned_problem_types": [
+      "fallback_contextual_application",
+      "fallback_contextual_application_2"
+    ],
+    "underrepresented_runtime_forms": [
+      "fallback_contextual_application",
+      "fallback_contextual_application_2"
+    ]
+  },
+  "post_phase3_audit_scripts": [
+    {
+      "script": "gencode_choice_quality_audit.py",
+      "exists": true,
+      "py_compile_ok": true
+    },
+    {
+      "script": "gencode_runtime_distribution_audit.py",
+      "exists": true,
+      "py_compile_ok": true
+    },
+    {
+      "script": "gencode_web_runtime_audit.py",
+      "exists": true,
+      "py_compile_ok": true
+    },
+    {
+      "script": "gencode_source_alignment_audit.py",
+      "exists": true,
+      "py_compile_ok": true
+    }
+  ],
+  "summary_message": "Phase 3 packaged draft skill file, but draft runtime smoke did not pass. See publish_check / runtime_smoke_raw. usable_generators=2."
+}
+```

@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import re
-from collections import defaultdict
+from collections import Counter, defaultdict
 from typing import Any
 
 from core.gencode.answer_contract_bridge import legacy_fields_from_answer_contract
@@ -292,8 +292,19 @@ def _build_problem_type_spec_draft(skill_id: str, cluster: dict[str, Any], exist
         pt_id = canonical
         
     has_fallback = any("fallback_application" in str(f.get("problem_type_id", "")) for f in features)
+    proxy_ids = sorted(
+        {
+            str(f.get("proxy_problem_type_id", "")).strip()
+            for f in features
+            if str(f.get("proxy_problem_type_id", "")).strip()
+        }
+    )
+    if len(proxy_ids) == 1:
+        pt_id = proxy_ids[0]
+        canonical = ""
+        has_fallback = True
     if has_fallback:
-        pt_id = f"{answer_type}_{resolved_target_task}_fallback_application"
+        pt_id = pt_id if len(proxy_ids) == 1 else f"{answer_type}_{resolved_target_task}_fallback_application"
         
     suffix = 2
     original = pt_id
@@ -528,6 +539,113 @@ def merge_unclassified_low_confidence_examples(
     return features_for_induction, still_excluded
 
 
+def _observed_target_task_for_clause45(
+    feat: dict[str, Any],
+    row: dict[str, Any],
+    main_skill_anchor: dict[str, Any],
+) -> str:
+    sc = feat.get("semantic_classification") if isinstance(feat.get("semantic_classification"), dict) else {}
+    fallback_subskill = (main_skill_anchor.get("fallback_subskill") or {}) if isinstance(main_skill_anchor, dict) else {}
+    candidates = (
+        sc.get("final_target_task"),
+        feat.get("target_task"),
+        row.get("target_task"),
+        sc.get("rule_target_task"),
+        sc.get("ai_target_task"),
+        fallback_subskill.get("subskill_id"),
+    )
+    for candidate in candidates:
+        task = str(candidate or "").strip()
+        if task and task not in {"unknown", "needs_review", "same_as_main_skill", "compute_numeric"}:
+            return task
+    return "contextual_application"
+
+
+def apply_clause45_unclassified_exception_escalation(
+    features_for_induction: list[dict[str, Any]],
+    excluded_source_examples: list[dict[str, Any]],
+    features: list[dict[str, Any]],
+    *,
+    main_skill_anchor: dict[str, Any],
+    induction_source_report: dict[str, Any],
+) -> tuple[list[dict[str, Any]], list[dict[str, Any]], dict[str, Any]]:
+    core_example_count = int(induction_source_report.get("core_example_count", 0) or 0)
+    if core_example_count <= 0 or features_for_induction:
+        return features_for_induction, excluded_source_examples, {}
+
+    feat_by_id = {f.get("source_example_id"): f for f in features if isinstance(f, dict) and isinstance(f.get("source_example_id"), int)}
+    core_low_confidence_rows = [
+        row
+        for row in excluded_source_examples
+        if isinstance(row, dict)
+        and row.get("exclude_reason") == "unclassified_low_confidence"
+        and (row.get("induction_tier") == "core" or row.get("included_in_core_induction") or row.get("example_id") in feat_by_id)
+        and isinstance(row.get("example_id"), int)
+        and row.get("example_id") in feat_by_id
+    ]
+    if not core_low_confidence_rows:
+        return features_for_induction, excluded_source_examples, {}
+
+    rescued_ids: set[int] = set()
+    observed_tasks: list[str] = []
+    for row in core_low_confidence_rows:
+        ex_id = row.get("example_id")
+        feat = feat_by_id.get(ex_id)
+        if not isinstance(feat, dict):
+            continue
+        observed_task = _observed_target_task_for_clause45(feat, row, main_skill_anchor)
+        observed_tasks.append(observed_task)
+        task_family = task_family_for_task(observed_task) or str(feat.get("task_family", "")).strip()
+        proxy_problem_type_id = re.sub(r"_+", "_", f"fallback_{observed_task}").strip("_")
+
+        feat["target_task"] = observed_task
+        feat["target"] = observed_task
+        feat["task_family"] = task_family
+        feat["problem_type_id"] = proxy_problem_type_id
+        feat["proxy_problem_type_id"] = proxy_problem_type_id
+        feat["included_in_core_induction"] = True
+        feat["induction_tier"] = "core"
+        feat["source_quality_reject"] = False
+
+        sc = feat.get("semantic_classification") if isinstance(feat.get("semantic_classification"), dict) else {}
+        if not isinstance(sc, dict):
+            sc = {}
+            feat["semantic_classification"] = sc
+        sc["final_target_task"] = observed_task
+        sc["final_task_family"] = task_family
+        sc["candidate_source"] = "clause45_fallback_proxy"
+        sc["classifier_source"] = "clause45_unclassified_exception"
+        sc["requires_human_action"] = False
+
+        row["target_task"] = observed_task
+        row["task_family"] = task_family
+        row["included_in_phase1"] = True
+        row["aligned_with_skill"] = True
+        row["exclude_reason"] = ""
+        row["alignment_kind"] = "clause45_fallback_proxy"
+        row["requires_human_action"] = False
+
+        features_for_induction.append(feat)
+        rescued_ids.add(int(ex_id))
+
+    if not rescued_ids:
+        return features_for_induction, excluded_source_examples, {}
+
+    still_excluded = [
+        row
+        for row in excluded_source_examples
+        if not (isinstance(row, dict) and isinstance(row.get("example_id"), int) and int(row.get("example_id")) in rescued_ids)
+    ]
+    task_counts = Counter(observed_tasks)
+    report = {
+        "clause45_escalation_applied": True,
+        "clause45_rescued_example_ids": sorted(rescued_ids),
+        "clause45_observed_target_task_distribution": dict(task_counts),
+        "clause45_proxy_problem_type_ids": sorted({f"fallback_{task}" for task in task_counts if task}),
+    }
+    return features_for_induction, still_excluded, report
+
+
 def _spec_in_expected_families(spec: dict[str, Any], expected_families: set[str]) -> bool:
     if not expected_families:
         return True
@@ -635,6 +753,14 @@ def induce_problem_types_from_examples(
         features,
         examples=examples,
         main_skill_anchor=main_skill_anchor,
+    )
+    clause45_report: dict[str, Any] = {}
+    features_for_induction, excluded_source_examples, clause45_report = apply_clause45_unclassified_exception_escalation(
+        features_for_induction,
+        excluded_source_examples,
+        features,
+        main_skill_anchor=main_skill_anchor,
+        induction_source_report=induction_source_report,
     )
     features_for_induction, excluded_source_examples = merge_unclassified_low_confidence_examples(
         features_for_induction,
@@ -822,9 +948,31 @@ def induce_problem_types_from_examples(
             }
         )
 
+    expected_family_relaxation_report: dict[str, Any] = {}
     if expected_families:
+        unfiltered_induced_specs = list(induced_specs)
+        unfiltered_candidates = list(candidates)
         induced_specs = [s for s in induced_specs if _spec_in_expected_families(s, expected_families)]
         candidates = [c for c in candidates if _spec_in_expected_families(c.get("problem_type_spec_draft", c), expected_families)]
+        valid_core_tasks = [
+            str(f.get("target_task", "")).strip()
+            for f in stable_features_for_clusters
+            if isinstance(f, dict)
+            and str(f.get("induction_tier", "core")).strip() == "core"
+            and not f.get("source_quality_reject")
+            and str(f.get("target_task", "")).strip()
+            and str(f.get("target_task", "")).strip() not in {"unknown", "needs_review"}
+        ]
+        task_counts = Counter(valid_core_tasks)
+        uniform_task = task_counts.most_common(1)[0][0] if task_counts and task_counts.most_common(1)[0][1] == len(valid_core_tasks) else ""
+        if uniform_task and unfiltered_candidates and not candidates:
+            induced_specs = unfiltered_induced_specs
+            candidates = unfiltered_candidates
+            expected_family_relaxation_report = {
+                "expected_family_relaxation_applied": True,
+                "expected_family_relaxation_reason": "uniform_core_target_task_distribution",
+                "expected_family_relaxation_target_task": uniform_task,
+            }
 
     candidates = [apply_runtime_gate_to_candidate(c) for c in candidates if isinstance(c, dict)]
 
@@ -1058,6 +1206,8 @@ def induce_problem_types_from_examples(
         "skipped_enrichment_examples": induction_source_report.get("skipped_enrichment_examples", []),
         "future_ai_judged_candidates": induction_source_report.get("future_ai_judged_candidates", []),
         "contextual_application_sources": induction_source_report.get("contextual_application_sources", []),
+        **clause45_report,
+        **expected_family_relaxation_report,
         "core_example_count": induction_source_report.get("core_example_count", 0),
         "enrichment_example_count": induction_source_report.get("enrichment_example_count", 0),
         "source_example_alignment": source_example_alignment,

@@ -42,6 +42,13 @@ CLASSIFIER_RULEPACK_BACKUP_DIR = PROJECT_ROOT / "backups" / "gencode_classifier_
 
 
 _AUTOMATED_DERIVATION = ["Step 1: Automated derivation initialized from source spec."]
+ALLOWED_SKILL_LEVEL_BLOCKERS = {
+    "sop_preflight_failed",
+    "no_source_examples",
+    "blocked_insufficient_examples",
+    "blocked_sop_preflight_failed",
+    "insufficient_examples_for_safe_promote",
+}
 _SHORT_ANSWER_PROBLEM_TYPE_PREFIXES = ("ordered_tuple_", "text_short_")
 _SINGLE_CHOICE_PROBLEM_TYPE_PREFIXES = ("single_choice_", "choice_")
 
@@ -88,6 +95,16 @@ def _canonicalize_nested_problem_type_ids(node: Any, canonical_problem_type_id: 
             _canonicalize_nested_problem_type_ids(value, canonical_problem_type_id)
 
 
+def _is_contextual_short_answer_choice_clone(problem_type_id: str) -> bool:
+    pt = str(problem_type_id or "").strip().lower()
+    if not pt.startswith(_SINGLE_CHOICE_PROBLEM_TYPE_PREFIXES):
+        return False
+    if "_contextual_application" in pt:
+        return True
+    sequence_markers = ("vertex", "axis")
+    return all(marker in pt for marker in sequence_markers)
+
+
 def _reinforce_canonical_answer_contract(
     spec: dict[str, Any], problem_type_id: str = ""
 ) -> dict[str, Any]:
@@ -100,6 +117,26 @@ def _reinforce_canonical_answer_contract(
     if not isinstance(ac, dict):
         ac = {}
         spec["answer_contract"] = ac
+
+    if _is_contextual_short_answer_choice_clone(pt):
+        pt = "text_short_contextual_application"
+        pt_key = pt
+        spec["problem_type_id"] = pt
+        _canonicalize_nested_problem_type_ids(spec, pt)
+        ac.update(
+            {
+                "answer_type": "text_short",
+                "answer_shape": "text_short",
+                "answer_equivalence": "exact_string",
+                "equivalence_type": "exact_string",
+                "checker": "text_short_checker",
+                "checker_key": "text_short_checker",
+                "choices_required": False,
+                "frontend_render_choices": False,
+            }
+        )
+        spec["answer_contract"] = ac
+        return spec
 
     if pt.startswith("expression_"):
         answer_type = "expression"
@@ -2433,6 +2470,13 @@ def run_gencode_phase1(skill_id: str, dry_run: bool = True, spec_mode: str = "ai
         "skipped_enrichment_examples": auto_review.get("skipped_enrichment_examples", []),
         "future_ai_judged_candidates": auto_review.get("future_ai_judged_candidates", []),
         "contextual_application_sources": auto_review.get("contextual_application_sources", []),
+        "clause45_escalation_applied": bool(auto_review.get("clause45_escalation_applied", False)),
+        "clause45_rescued_example_ids": auto_review.get("clause45_rescued_example_ids", []),
+        "clause45_observed_target_task_distribution": auto_review.get("clause45_observed_target_task_distribution", {}),
+        "clause45_proxy_problem_type_ids": auto_review.get("clause45_proxy_problem_type_ids", []),
+        "expected_family_relaxation_applied": bool(auto_review.get("expected_family_relaxation_applied", False)),
+        "expected_family_relaxation_reason": auto_review.get("expected_family_relaxation_reason", ""),
+        "expected_family_relaxation_target_task": auto_review.get("expected_family_relaxation_target_task", ""),
         "core_example_count": auto_review.get("core_example_count", 0),
         "enrichment_example_count": auto_review.get("enrichment_example_count", 0),
         "rejected_source_examples": auto_review.get("rejected_source_examples", []),
