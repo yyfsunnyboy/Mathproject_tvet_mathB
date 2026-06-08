@@ -165,11 +165,14 @@ def format_coordinate_pair_display(value: Any) -> str:
         return ""
     x, y = parsed
 
-    def _fmt_num(n: float) -> str:
+    def _fmt_num(n: Any) -> str:
+        if isinstance(n, Fraction):
+            if n.denominator == 1:
+                return str(n.numerator)
+            return f"{float(n):.6g}"
         if isinstance(n, float) and n.is_integer():
             return str(int(n))
-        text = f"{n:.6g}"
-        return text
+        return f"{n:.6g}"
 
     return f"({_fmt_num(x)},{_fmt_num(y)})"
 

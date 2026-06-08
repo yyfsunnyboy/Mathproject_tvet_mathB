@@ -300,7 +300,7 @@
       ]
     },
     {
-      "problem_type_id": "choice_contextual_application",
+      "problem_type_id": "text_short_contextual_application",
       "skill_id": "vh_數學B1_QuadraticFunctionGraph",
       "target_task": "contextual_application",
       "task_family": "generic_numeric_family",
@@ -309,15 +309,15 @@
         4503
       ],
       "answer_contract": {
-        "choices_required": true,
+        "choices_required": false,
         "choice_count": 4,
         "correct_choice_count": 1,
-        "frontend_render_choices": true,
-        "answer_type": "single_choice",
-        "answer_shape": "single_choice",
+        "frontend_render_choices": false,
+        "answer_type": "text_short",
+        "answer_shape": "text_short",
         "answer_semantics": "choice_label",
-        "answer_equivalence": "choice_label",
-        "checker": "choice_label_checker",
+        "answer_equivalence": "exact_string",
+        "checker": "text_short_checker",
         "presentation_mode": "single_choice",
         "source_has_choices": true,
         "selected_checker": "choice_label_checker",
@@ -328,8 +328,8 @@
           "C",
           "D"
         ],
-        "checker_key": "choice_label_checker",
-        "equivalence_type": "choice_label",
+        "checker_key": "text_short_checker",
+        "equivalence_type": "exact_string",
         "checker_capability_status": "ok",
         "checker_contract_blockers": [],
         "checker_contract_warnings": [],
@@ -446,7 +446,7 @@
           "template_slots": {
             "stem": "linear_function_contextual_word_problem"
           },
-          "problem_type_id": "choice_contextual_application",
+          "problem_type_id": "text_short_contextual_application",
           "contract_validation_blockers": [],
           "contract_validation_warnings": [
             "single_template_variant_only",
@@ -582,7 +582,7 @@
         "template_slots": {
           "stem": "linear_function_contextual_word_problem"
         },
-        "problem_type_id": "choice_contextual_application",
+        "problem_type_id": "text_short_contextual_application",
         "contract_validation_blockers": [],
         "contract_validation_warnings": [
           "single_template_variant_only",

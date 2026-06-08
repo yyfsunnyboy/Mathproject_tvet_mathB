@@ -6,10 +6,12 @@ from __future__ import annotations
 import re
 from fractions import Fraction
 
+import pytest
+
+from app import create_app
 from core.checkers.coordinate_pair_checker import check_coordinate_pair_answer
 from core.gencode.answer_grading import format_correct_answer_display, grade_answer_for_current_question
 from core.gencode.answer_payload import (
-    apply_coordinate_pair_runtime_fields,
     coerce_correct_answer,
     format_coordinate_pair_display,
 )
@@ -41,6 +43,13 @@ def _coord_spec() -> dict:
             "generator_contract": {},
         }
     )
+
+
+@pytest.fixture()
+def client():
+    app = create_app()
+    app.config.update(TESTING=True)
+    return app.test_client()
 
 
 def test_internal_division_mn_5_1_unique_coordinate():
@@ -83,6 +92,56 @@ def test_grading_rejects_scalar_and_wrong_pair():
     assert wrong["correct"] is False
     assert "或" not in wrong["result"]
     assert "(10,-7)" in wrong["result"]
+
+
+def test_coordinate_pair_checker_accepts_fraction_decimal_equivalence():
+    accepted = [
+        ("(1/2,-5/4)", "(0.5,-1.25)"),
+        ("-5/3,13/3", "(-1.66667,4.33333)"),
+        ("15/2,7", "(7.5,7)"),
+        ("P(0,-2)", "(0,-2)"),
+        ("T(-2,0)", "(-2,0)"),
+        ("x=0,y=-2", "(0,-2)"),
+        ("（0，-2）", "(0,-2)"),
+    ]
+    for user_answer, correct_answer in accepted:
+        assert check_coordinate_pair_answer(user_answer, correct_answer), user_answer
+
+
+@pytest.mark.parametrize(
+    "user_answer",
+    ["(2,1)", "(1/2,4/3)", "(1,2,3)", "(1/0,2)", "abc", "(1,)", "(,2)", "(1;2)"],
+)
+def test_coordinate_pair_checker_rejects_malformed_or_wrong_pairs(user_answer: str):
+    assert check_coordinate_pair_answer(user_answer, "(1,2)") is False
+
+
+def test_check_answer_route_coordinate_pair_fraction_decimal(client):
+    current = {
+        "skill": "vh_?詨飛B1_MidpointCoordinates",
+        "question_text": "Find centroid coordinates.",
+        "problem_type_id": "text_short_compute_centroid_coordinates",
+        "answer_type": "coordinate_pair",
+        "checker": "coordinate_pair_checker",
+        "equivalence": "coordinate_pair_equivalence",
+        "correct_answer": "(-1.66667,4.33333)",
+        "answer": "(-1.66667,4.33333)",
+        "choices": [],
+        "answer_contract": {
+            "answer_type": "coordinate_pair",
+            "answer_shape": "coordinate_pair",
+            "answer_semantics": "coordinate_pair",
+            "checker": "coordinate_pair_checker",
+            "checker_key": "coordinate_pair_checker",
+            "answer_equivalence": "coordinate_pair_equivalence",
+            "equivalence_type": "ordered_tuple_exact",
+            "order_matters": True,
+        },
+    }
+    with client.session_transaction() as sess:
+        sess["current_data"] = dict(current)
+    response = client.post("/check_answer", json={"answer": "-5/3,13/3"}).get_json() or {}
+    assert response.get("correct") is True, response
 
 
 def test_practice_normalize_session_payload():
