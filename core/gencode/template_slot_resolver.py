@@ -29,6 +29,11 @@ TASK_FAMILY_TO_SLOT: dict[str, str] = {
     "interpret_function_notation": "linear_function_two_point_choice",
     "contextual_application": "linear_function_contextual_word_problem",
     "word_problem": "linear_function_contextual_word_problem",
+    "quadratic_graph_vertex_axis_choice": "quadratic_graph_vertex_axis_choice",
+    "quadratic_graph_translation_fill_blank": "quadratic_graph_translation_fill_blank",
+    "quadratic_graph_translation_short_answer": "quadratic_graph_translation_short_answer",
+    "quadratic_vertex_form_properties": "quadratic_vertex_form_properties",
+    "quadratic_standard_to_vertex_properties": "quadratic_standard_to_vertex_properties",
 }
 
 SLOT_COMPATIBLE_FAMILIES: dict[str, frozenset[str]] = {
@@ -43,7 +48,50 @@ SLOT_COMPATIBLE_FAMILIES: dict[str, frozenset[str]] = {
     "function_value_numeric": frozenset({"numeric", "short_answer"}),
     "linear_function_two_point_choice": frozenset({"single_choice"}),
     "linear_function_contextual_word_problem": frozenset({"numeric", "expression", "short_answer"}),
+    "quadratic_graph_vertex_axis_choice": frozenset({"single_choice"}),
+    "quadratic_graph_translation_fill_blank": frozenset({"text_short", "short_answer"}),
+    "quadratic_graph_translation_short_answer": frozenset({"text_short", "short_answer"}),
+    "quadratic_vertex_form_properties": frozenset({"single_choice", "text_short", "short_answer"}),
+    "quadratic_standard_to_vertex_properties": frozenset({"single_choice", "text_short", "short_answer"}),
 }
+
+_QUADRATIC_GRAPH_TARGET_TASKS = frozenset(
+    {
+        "quadratic_graph_vertex_axis_choice",
+        "quadratic_graph_translation_fill_blank",
+        "quadratic_graph_translation_short_answer",
+        "quadratic_vertex_form_properties",
+        "quadratic_standard_to_vertex_properties",
+    }
+)
+
+
+def _is_quadratic_graph_spec(problem_type_spec: dict[str, Any]) -> bool:
+    skill_id = str(problem_type_spec.get("skill_id", "")).strip().lower()
+    pt = str(problem_type_spec.get("problem_type_id", "")).strip().lower()
+    target_task = str(problem_type_spec.get("target_task", "")).strip().lower()
+    if "quadraticfunctiongraph" in skill_id or "quadratic" in pt or target_task in _QUADRATIC_GRAPH_TARGET_TASKS:
+        return True
+    gc = get_generator_contract(problem_type_spec)
+    families = gc.get("template_families") if isinstance(gc.get("template_families"), list) else []
+    joined = " ".join(str(f).strip().lower() for f in families if str(f).strip())
+    return "quadratic" in joined
+
+
+def _resolve_quadratic_graph_slot(problem_type_spec: dict[str, Any]) -> str:
+    target_task = str(problem_type_spec.get("target_task", "")).strip()
+    if target_task in _QUADRATIC_GRAPH_TARGET_TASKS:
+        return TASK_FAMILY_TO_SLOT.get(target_task, "")
+    pt = str(problem_type_spec.get("problem_type_id", "")).strip().lower()
+    if "translation_fill_blank" in pt:
+        return "quadratic_graph_translation_fill_blank"
+    if "translation_short_answer" in pt:
+        return "quadratic_graph_translation_short_answer"
+    if "standard_to_vertex" in pt:
+        return "quadratic_standard_to_vertex_properties"
+    if "vertex_form" in pt:
+        return "quadratic_vertex_form_properties"
+    return "quadratic_graph_vertex_axis_choice"
 
 
 def _resolve_function_family_slot(problem_type_spec: dict[str, Any], family: str) -> str:
@@ -125,6 +173,15 @@ def resolve_template_slot(problem_type_spec: dict[str, Any], seed: int | None = 
     """Pick slot from template_families when multiple families are induced for one problem_type."""
     pt = str(problem_type_spec.get("problem_type_id", "")).strip()
     target_task = str(problem_type_spec.get("target_task", "")).strip()
+    if _is_quadratic_graph_spec(problem_type_spec):
+        slot = _resolve_quadratic_graph_slot(problem_type_spec)
+        if slot:
+            logger.info(
+                "[GENCODE DISPATCH] template_slot problem_type_id=%s selected_slot=%s selection_strategy=quadratic_domain_guard",
+                pt,
+                slot,
+            )
+            return slot
     inferred_target_task = infer_registered_task_token(problem_type_spec)
     if target_task not in TASK_FAMILY_TO_SLOT and inferred_target_task:
         target_task = inferred_target_task

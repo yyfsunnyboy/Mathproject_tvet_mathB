@@ -99,6 +99,8 @@ def _is_contextual_short_answer_choice_clone(problem_type_id: str) -> bool:
     pt = str(problem_type_id or "").strip().lower()
     if not pt.startswith(_SINGLE_CHOICE_PROBLEM_TYPE_PREFIXES):
         return False
+    if "quadratic" in pt:
+        return False
     if "_contextual_application" in pt:
         return True
     sequence_markers = ("vertex", "axis")

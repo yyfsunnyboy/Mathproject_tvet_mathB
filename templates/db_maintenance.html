@@ -62,6 +62,21 @@
         {% endif %}
         {% endwith %}
 
+        {% if import_result_missing %}
+        <div class="alert alert-warning">
+            <i class="bi bi-info-circle-fill" style="margin-right: 5px;"></i> 找不到上次匯入結果
+        </div>
+        {% elif last_import_summary %}
+        <div class="alert alert-info" style="background:#d1ecf1;color:#0c5460;border-color:#bee5eb;">
+            <strong>Import job {{ last_import_job_id }}</strong><br>
+            status={{ 'success' if last_import_summary.success else 'failed' }},
+            tables={{ last_import_summary.table_count }},
+            source_rows={{ last_import_summary.source_rows }},
+            imported={{ last_import_summary.imported_rows }},
+            failed={{ last_import_summary.failed_rows }}
+        </div>
+        {% endif %}
+
         <div class="card">
             <div class="card-header">
                 <i class="bi bi-tools"></i> 資料庫操作（Database Operations）

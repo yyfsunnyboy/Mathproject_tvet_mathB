@@ -4,10 +4,10 @@
   "skill_id": "vh_數學B1_QuadraticFunctionGraph",
   "phase": "publish",
   "publish_status": "published",
-  "draft_skill_file_path": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\drafts\\vh_數學B1_QuadraticFunctionGraph.py",
-  "formal_skill_file_path": "C:\\Python\\Mathproject_tvet_mathB\\skills\\vh_數學B1_QuadraticFunctionGraph.py",
-  "backup_path": "",
-  "backup_status": "no_existing_file",
+  "draft_skill_file_path": "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\drafts\\vh_數學B1_QuadraticFunctionGraph.py",
+  "formal_skill_file_path": "E:\\Python\\Mathproject_tvet_mathB\\skills\\vh_數學B1_QuadraticFunctionGraph.py",
+  "backup_path": "E:\\Python\\Mathproject_tvet_mathB\\backups\\gencode_skill_publish\\vh_數學B1_QuadraticFunctionGraph.20260608_140824.484529+0000.py",
+  "backup_status": "backed_up",
   "py_compile_status": "passed",
   "runtime_smoke_status": "passed",
   "runtime_ready_marked": false,
@@ -18,9 +18,9 @@
   ],
   "summary_message": "Formal skill file published successfully; if runtime-ready gate is not passed, run /practice smoke tests before marking runtime-ready.",
   "reports": {
-    "phase3_package_summary_json": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_QuadraticFunctionGraph_phase3_package_summary.json",
-    "publish_summary_json": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_QuadraticFunctionGraph_publish_summary.json",
-    "publish_summary_md": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_QuadraticFunctionGraph_publish_summary.md"
+    "phase3_package_summary_json": "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_QuadraticFunctionGraph_phase3_package_summary.json",
+    "publish_summary_json": "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_QuadraticFunctionGraph_publish_summary.json",
+    "publish_summary_md": "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_QuadraticFunctionGraph_publish_summary.md"
   },
-  "timestamp": "2026-06-07T08:37:08.159080+00:00"
+  "timestamp": "2026-06-08T14:08:24.490550+00:00"
 }

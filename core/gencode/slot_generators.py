@@ -668,6 +668,225 @@ def _slot_linear_function_contextual_word_problem(
     }
 
 
+def _fmt_signed_int(value: int) -> str:
+    return f"+{value}" if value > 0 else str(value)
+
+
+def _quadratic_vertex_form(a: int, h: int, k: int) -> str:
+    x_term = "(x)" if h == 0 else f"(x-{h})" if h > 0 else f"(x+{abs(h)})"
+    tail = "" if k == 0 else _fmt_signed_int(k)
+    if a == 1:
+        return f"y={x_term}^2{tail}"
+    if a == -1:
+        return f"y=-{x_term}^2{tail}"
+    return f"y={a}{x_term}^2{tail}"
+
+
+def _quadratic_standard_form_from_vertex(a: int, h: int, k: int) -> str:
+    b = -2 * a * h
+    c = a * h * h + k
+    parts = [f"y={a}x^2"]
+    if b:
+        parts.append(_fmt_signed_int(b) + "x")
+    if c:
+        parts.append(_fmt_signed_int(c))
+    return "".join(parts)
+
+
+def _shift_phrase(h: int, k: int) -> str:
+    horizontal = "none" if h == 0 else f"right {h}" if h > 0 else f"left {abs(h)}"
+    vertical = "none" if k == 0 else f"up {k}" if k > 0 else f"down {abs(k)}"
+    return f"{horizontal}, {vertical}"
+
+
+def _extreme_phrase(a: int, k: int) -> str:
+    return f"maximum {k}" if a < 0 else f"minimum {k}"
+
+
+def _vertex_axis_option(vertex: tuple[int, int], axis_x: int, extreme: str) -> str:
+    return f"vertex ({vertex[0]},{vertex[1]}), axis x={axis_x}, {extreme}"
+
+
+def _slot_quadratic_graph_vertex_axis_choice(
+    skill_id: str, pt: str, spec: dict[str, Any], seed: int | None
+) -> dict[str, Any]:
+    rng = random.Random(f"{seed}|quadratic_vertex_axis|{pt}")
+    a = rng.choice([-3, -2, -1, 1, 2, 3])
+    h = rng.randint(-4, 4)
+    k = rng.randint(-4, 5)
+    correct = _vertex_axis_option((h, k), h, _extreme_phrase(a, k))
+    wrongs = [
+        _vertex_axis_option((-h, k), -h, _extreme_phrase(a, k)),
+        _vertex_axis_option((h, -k), h, _extreme_phrase(a, -k)),
+        _vertex_axis_option((h + 1, k), h + 1, _extreme_phrase(-a, k)),
+    ]
+    stem = (
+        f"Given {_quadratic_vertex_form(a, h, k)}, which option correctly states "
+        "the vertex, axis of symmetry, and maximum/minimum value?"
+    )
+    return _build_choice_payload(
+        skill_id,
+        pt,
+        stem,
+        correct,
+        wrongs,
+        answer_type="single_choice",
+        checker_type="choice_label_checker",
+        metadata={
+            "givens": [f"equation={_quadratic_vertex_form(a, h, k)}"],
+            "target": "vertex-axis-extreme",
+            "derivation": [f"vertex=({h},{k})", f"axis=x={h}", _extreme_phrase(a, k)],
+            "template_slot": "quadratic_graph_vertex_axis_choice",
+            "problem_type_id": pt,
+        },
+        diagnosis_tags=["quadratic_vertex", "quadratic_axis", "quadratic_extreme"],
+        explanation=f"The vertex is ({h},{k}), so the axis is x={h} and the graph has {_extreme_phrase(a, k)}.",
+        seed=seed,
+    )
+
+
+def _slot_quadratic_graph_translation_fill_blank(
+    skill_id: str, pt: str, spec: dict[str, Any], seed: int | None
+) -> dict[str, Any]:
+    rng = random.Random(f"{seed}|quadratic_translation_blank|{pt}")
+    a = rng.choice([-3, -2, -1, 1, 2, 3])
+    h = rng.choice([-3, -2, -1, 1, 2, 3])
+    k = rng.choice([-4, -3, -2, -1, 1, 2, 3, 4])
+    answer = _shift_phrase(h, k)
+    stem = (
+        f"Relative to y={a}x^2, the graph of {_quadratic_vertex_form(a, h, k)} is shifted how? "
+        "Answer in the form 'left 2, up 3' or 'right 1, down 4'."
+    )
+    return {
+        "skill_id": skill_id,
+        "problem_type_id": pt,
+        "question_text": stem,
+        "question": stem,
+        "choices": [],
+        "answer": answer,
+        "correct_answer": answer,
+        "answer_type": "text_short",
+        "checker_type": "text_short_checker",
+        "checker": "text_short_checker",
+        "answer_contract": dict(get_answer_contract(spec)),
+        "explanation": f"Inside shift gives {('right ' + str(h)) if h > 0 else ('left ' + str(abs(h)))} and k gives {('up ' + str(k)) if k > 0 else ('down ' + str(abs(k)))}.",
+        "diagnosis_tags": ["quadratic_translation", "vertex_form_shift"],
+        "metadata": {
+            "givens": [f"base=y={a}x^2", f"shifted={_quadratic_vertex_form(a, h, k)}"],
+            "target": "translation",
+            "derivation": [f"h={h}", f"k={k}", answer],
+            "template_slot": "quadratic_graph_translation_fill_blank",
+            "problem_type_id": pt,
+        },
+        "source": "gencode_slot_generator",
+    }
+
+
+def _slot_quadratic_graph_translation_short_answer(
+    skill_id: str, pt: str, spec: dict[str, Any], seed: int | None
+) -> dict[str, Any]:
+    rng = random.Random(f"{seed}|quadratic_translation_short|{pt}")
+    a = rng.choice([-3, -2, -1, 1, 2, 3])
+    k = rng.choice([-5, -4, -3, -2, -1, 1, 2, 3, 4, 5])
+    answer = "up " + str(k) if k > 0 else "down " + str(abs(k))
+    stem = f"Compared with y={a}x^2, how is the graph of y={a}x^2{_fmt_signed_int(k)} shifted vertically?"
+    return {
+        "skill_id": skill_id,
+        "problem_type_id": pt,
+        "question_text": stem,
+        "question": stem,
+        "choices": [],
+        "answer": answer,
+        "correct_answer": answer,
+        "answer_type": "text_short",
+        "checker_type": "text_short_checker",
+        "checker": "text_short_checker",
+        "answer_contract": dict(get_answer_contract(spec)),
+        "explanation": f"Adding {_fmt_signed_int(k)} outside the square shifts the graph {answer}.",
+        "diagnosis_tags": ["quadratic_translation", "vertical_shift"],
+        "metadata": {
+            "givens": [f"base=y={a}x^2", f"shifted=y={a}x^2{_fmt_signed_int(k)}"],
+            "target": "vertical-shift",
+            "derivation": [f"k={k}", answer],
+            "template_slot": "quadratic_graph_translation_short_answer",
+            "problem_type_id": pt,
+        },
+        "source": "gencode_slot_generator",
+    }
+
+
+def _slot_quadratic_vertex_form_properties(
+    skill_id: str, pt: str, spec: dict[str, Any], seed: int | None
+) -> dict[str, Any]:
+    rng = random.Random(f"{seed}|quadratic_vertex_form_properties|{pt}")
+    a = rng.choice([-3, -2, -1, 1, 2, 3])
+    h = rng.randint(-5, 5)
+    k = rng.randint(-5, 5)
+    correct = _vertex_axis_option((h, k), h, _extreme_phrase(a, k))
+    wrongs = [
+        _vertex_axis_option((h, k), -h, _extreme_phrase(a, k)),
+        _vertex_axis_option((0, k), 0, _extreme_phrase(a, k)),
+        _vertex_axis_option((h, k + 1), h, _extreme_phrase(a, k + 1)),
+    ]
+    stem = f"For {_quadratic_vertex_form(a, h, k)}, choose the correct graph property statement."
+    return _build_choice_payload(
+        skill_id,
+        pt,
+        stem,
+        correct,
+        wrongs,
+        answer_type="single_choice",
+        checker_type="choice_label_checker",
+        metadata={
+            "givens": [f"equation={_quadratic_vertex_form(a, h, k)}"],
+            "target": "graph-properties",
+            "derivation": [f"vertex=({h},{k})", f"axis=x={h}", _extreme_phrase(a, k)],
+            "template_slot": "quadratic_vertex_form_properties",
+            "problem_type_id": pt,
+        },
+        diagnosis_tags=["quadratic_vertex_form", "quadratic_properties"],
+        explanation=f"In y=a(x-h)^2+k, the vertex is ({h},{k}) and the axis is x={h}.",
+        seed=seed,
+    )
+
+
+def _slot_quadratic_standard_to_vertex_properties(
+    skill_id: str, pt: str, spec: dict[str, Any], seed: int | None
+) -> dict[str, Any]:
+    rng = random.Random(f"{seed}|quadratic_standard_to_vertex|{pt}")
+    a = rng.choice([-2, -1, 1, 2])
+    h = rng.randint(-4, 4)
+    k = rng.randint(-4, 4)
+    standard_form = _quadratic_standard_form_from_vertex(a, h, k)
+    vertex_form = _quadratic_vertex_form(a, h, k)
+    correct = f"{vertex_form}; vertex ({h},{k}); axis x={h}"
+    wrongs = [
+        f"{vertex_form}; vertex ({-h},{k}); axis x={-h}",
+        f"{standard_form}; vertex ({h},{k}); axis x={h}",
+        f"{_quadratic_vertex_form(a, h, k + 1)}; vertex ({h},{k + 1}); axis x={h}",
+    ]
+    stem = f"Rewrite {standard_form} in vertex form and identify its vertex and axis of symmetry."
+    return _build_choice_payload(
+        skill_id,
+        pt,
+        stem,
+        correct,
+        wrongs,
+        answer_type="single_choice",
+        checker_type="choice_label_checker",
+        metadata={
+            "givens": [f"standard_form={standard_form}"],
+            "target": "vertex-form-conversion",
+            "derivation": [vertex_form, f"vertex=({h},{k})", f"axis=x={h}"],
+            "template_slot": "quadratic_standard_to_vertex_properties",
+            "problem_type_id": pt,
+        },
+        diagnosis_tags=["quadratic_complete_square", "quadratic_vertex_form"],
+        explanation=f"{standard_form} can be written as {vertex_form}, so the vertex is ({h},{k}) and the axis is x={h}.",
+        seed=seed,
+    )
+
+
 def _slot_function_value_numeric(skill_id: str, pt: str, spec: dict[str, Any], seed: int | None) -> dict[str, Any]:
     ac = get_answer_contract(spec)
     if _function_value_choice_requested(spec, ac):
@@ -734,6 +953,11 @@ SLOT_REGISTRY: dict[str, GeneratorFn] = {
     "function_value_numeric": _slot_function_value_numeric,
     "linear_function_two_point_choice": _slot_linear_function_two_point_choice,
     "linear_function_contextual_word_problem": _slot_linear_function_contextual_word_problem,
+    "quadratic_graph_vertex_axis_choice": _slot_quadratic_graph_vertex_axis_choice,
+    "quadratic_graph_translation_fill_blank": _slot_quadratic_graph_translation_fill_blank,
+    "quadratic_graph_translation_short_answer": _slot_quadratic_graph_translation_short_answer,
+    "quadratic_vertex_form_properties": _slot_quadratic_vertex_form_properties,
+    "quadratic_standard_to_vertex_properties": _slot_quadratic_standard_to_vertex_properties,
     DIVISION_POINT_SLOT: _slot_division_point_coordinates,
 }
 

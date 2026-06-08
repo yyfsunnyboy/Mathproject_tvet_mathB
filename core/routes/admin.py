@@ -16,7 +16,6 @@ from werkzeug.utils import secure_filename
 from sqlalchemy import distinct, text, MetaData, Table, select, func, or_, and_, inspect
 from sqlalchemy.exc import IntegrityError
 from datetime import datetime
-from markupsafe import Markup
 import os
 import uuid
 import queue
@@ -56,6 +55,12 @@ from core.textbook_filename_parser import (
 )
 from core.textbook_structure_parser import get_structure_map
 from core.ai_wrapper import resolve_gemini_api_key, mask_api_key
+from core.session_safety import (
+    get_large_result_from_server_store,
+    put_large_result_in_server_store,
+    safe_flash_message,
+    summarize_import_result,
+)
 from core.utils import handle_curriculum_filters
 from core.ai_settings import (
     AI_ROLE_KEYS,
@@ -1267,6 +1272,13 @@ def db_maintenance():
 
     core_scope_form_state = _core_scope_form_state({"scope_mode": "all"})
     core_scope_options = _collect_core_scope_options()
+    import_job_id = session.get("last_import_job_id")
+    import_job_payload = get_large_result_from_server_store(import_job_id, kind="import") if import_job_id else None
+    import_result_missing = bool(import_job_id and import_job_payload is None)
+    import_summary = None
+    if import_job_payload:
+        stored_result = import_job_payload.get("result", {})
+        import_summary = stored_result.get("summary") or summarize_import_result(stored_result)
 
     if request.method == 'POST':
         action = request.form.get('action')
@@ -1369,10 +1381,19 @@ def db_maintenance():
                         db.session.rollback()
 
                 if failed_tables:
-                    failed_names = ", ".join(name for name, _ in failed_tables)
-                    flash(
-                        f"full 清空部分失敗，未清空資料表: {failed_names}。請查看後端 log。",
-                        "danger"
+                    job_id = put_large_result_in_server_store(
+                        {
+                            "action": "clear_all_data",
+                            "mode": "full",
+                            "failed_tables": failed_tables,
+                            "cleared_table_count": len(clear_tables) - len(failed_tables),
+                        },
+                        kind="maintenance",
+                    )
+                    session["last_db_maintenance_job_id"] = job_id
+                    safe_flash_message(
+                        f"full clear partially failed: {len(failed_tables)} table(s). See maintenance job {job_id}.",
+                        "danger",
                     )
                 else:
                     flash(f"資料庫已完成 full 清空 ({len(clear_tables)} tables)", "warning")
@@ -1519,6 +1540,9 @@ def db_maintenance():
         core_scope_options=core_scope_options,
         core_scope_form_state=core_scope_form_state,
         core_scope_summary_text=_core_scope_summary(_normalize_core_scope_filters(core_scope_form_state)),
+        last_import_job_id=import_job_id,
+        last_import_summary=import_summary,
+        import_result_missing=import_result_missing,
         core_clear_confirm_token=CORE_CLEAR_CONFIRM_TOKEN,
     )
 
@@ -1621,12 +1645,44 @@ def upload_db():
                 mode=mode,
                 confirm_full_clear=confirm_full_clear
             )
+            summary = summarize_import_result((success, message))
+            job_id = put_large_result_in_server_store(
+                {
+                    "route": "upload_db",
+                    "filename": filename,
+                    "mode": mode,
+                    "success": success,
+                    "message": message,
+                    "summary": summary,
+                },
+                kind="import",
+            )
+            session["last_import_job_id"] = job_id
             if success:
-                flash(Markup(message.replace('\n', '<br>')), 'success')
+                safe_flash_message(
+                    f"Import completed. imported={summary.get('imported_rows', 0)}, failed={summary.get('failed_rows', 0)}. See job {job_id}.",
+                    'success',
+                )
             else:
-                flash(message, 'danger')
+                safe_flash_message(
+                    f"Import completed with errors. failed={summary.get('failed_rows', 0)}. See job {job_id}.",
+                    'danger',
+                )
         except Exception as e:
-            flash(f'?????芰?: {str(e)}', 'danger')
+            job_id = put_large_result_in_server_store(
+                {
+                    "route": "upload_db",
+                    "filename": filename,
+                    "mode": mode,
+                    "success": False,
+                    "error": str(e),
+                    "traceback": traceback.format_exc(),
+                    "summary": summarize_import_result((False, str(e))),
+                },
+                kind="import",
+            )
+            session["last_import_job_id"] = job_id
+            safe_flash_message(f"Import failed. See job {job_id}.", 'danger')
             
         if os.path.exists(filepath):
             os.remove(filepath)
@@ -1664,11 +1720,44 @@ def import_textbook_examples():
                 confirm_full_clear=confirm_full_clear
             )
             if os.path.exists(filepath): os.remove(filepath)
-            
-            if success: flash(Markup(message.replace('\n', '<br>')), 'success')
-            else: flash(message, 'danger')
+
+            summary = summarize_import_result((success, message))
+            job_id = put_large_result_in_server_store(
+                {
+                    "route": "import_textbook_examples",
+                    "filename": filename,
+                    "mode": mode,
+                    "success": success,
+                    "message": message,
+                    "summary": summary,
+                },
+                kind="import",
+            )
+            session["last_import_job_id"] = job_id
+            if success:
+                safe_flash_message(
+                    f"Import completed. imported={summary.get('imported_rows', 0)}, failed={summary.get('failed_rows', 0)}. See job {job_id}.",
+                    'success',
+                )
+            else:
+                safe_flash_message(
+                    f"Import completed with errors. failed={summary.get('failed_rows', 0)}. See job {job_id}.",
+                    'danger',
+                )
         except Exception as e:
-            flash(f'??穿?剜??: {str(e)}', 'error')
+            job_id = put_large_result_in_server_store(
+                {
+                    "route": "import_textbook_examples",
+                    "filename": secure_filename(file.filename) if file and file.filename else "",
+                    "success": False,
+                    "error": str(e),
+                    "traceback": traceback.format_exc(),
+                    "summary": summarize_import_result((False, str(e))),
+                },
+                kind="import",
+            )
+            session["last_import_job_id"] = job_id
+            safe_flash_message(f"Import failed. See job {job_id}.", 'error')
             
     return redirect(url_for('core.db_maintenance'))
 

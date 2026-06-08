@@ -70,6 +70,11 @@ from core.ai_wrapper import resolve_gemini_api_key, mask_api_key, sanitize_secre
 from core.rag_engine import init_rag
 from core.advanced_rag_engine import init_adv_rag
 from core.prompts.prompt_loader import bootstrap_prompt_registry
+from core.session_safety import (
+    estimate_session_cookie_size,
+    trim_session_for_cookie_limit,
+    trim_session_to_keep_keys,
+)
 from config import Config
 from models import init_db, User, db, Progress, SkillInfo, SkillCurriculum, SkillPrerequisites
 from core.utils import get_all_active_skills
@@ -153,6 +158,20 @@ def create_app():
     # 初始化擴充套件
     db.init_app(app)
     login_manager.init_app(app)
+
+    @app.after_request
+    def keep_session_cookie_small(response):
+        before, removed = trim_session_for_cookie_limit(logger=app.logger)
+        size = estimate_session_cookie_size(app)
+        if before > 3500 or size > 3500:
+            app.logger.warning(
+                "Session cookie safety check: before=%s after=%s removed=%s path=%s",
+                before,
+                size,
+                ",".join(removed) if removed else "-",
+                request.path,
+            )
+        return response
 
     # 註冊藍圖
     from core.routes import practice_bp, live_show_bp # 導入新的 blueprint
@@ -420,6 +439,18 @@ def create_app():
             "key_len": len(key) if key else 0,
             "masked_key": mask_api_key(key)
         })
+
+    @app.route("/debug/trim_session")
+    def debug_trim_session():
+        from flask import jsonify, request
+
+        remote_addr = request.remote_addr or ""
+        if remote_addr not in {"127.0.0.1", "::1", "localhost"}:
+            return jsonify({"ok": False, "error": "localhost_only"}), 403
+
+        result = trim_session_to_keep_keys()
+        result["ok"] = True
+        return jsonify(result)
 
     @app.route('/dashboard')
     @login_required
