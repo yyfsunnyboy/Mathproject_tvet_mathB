@@ -18,6 +18,7 @@ from core.gencode.answer_payload import (
     validate_generated_answer_shape,
 )
 from core.gencode.answer_contract_gate import coerce_single_choice_contract
+from core.gencode.generated_question_format_validator import validate_generated_question_format
 from core.gencode.problem_type_spec import get_answer_contract, load_problem_type_spec
 from core.gencode.runtime_skill_wrapper import check_answer, dispatch_problem_type
 from core.gencode.validators import validate_generator_payload
@@ -170,6 +171,20 @@ def _validate_runtime_payload(payload: dict[str, Any], skill_id: str) -> tuple[l
 
     pt = str(payload.get("problem_type_id", "")).strip()
     spec = load_problem_type_spec(skill_id, pt, prefer="auto") if pt else None
+
+    # ── Global format & localization validation ───────────────────────────
+    # Inserted after placeholder check, before answer-shape check.
+    # Acts as a single-source gate: both runtime_skill_wrapper and runtime_smoke
+    # call validate_generated_question_format; only one copy of rules lives here.
+    format_errors = validate_generated_question_format(
+        payload,
+        skill_id=skill_id,
+        problem_type_spec=spec,
+    )
+    blockers.extend(format_errors)
+    if format_errors:
+        return sorted(set(blockers)), empty_diag
+    # ─────────────────────────────────────────────────────────────────────
     ac = get_answer_contract(spec) if spec else {}
     if isinstance(payload.get("answer_contract"), dict) and payload["answer_contract"].get("answer_type"):
         ac = dict(payload["answer_contract"])

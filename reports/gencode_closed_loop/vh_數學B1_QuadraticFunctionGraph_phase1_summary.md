@@ -399,15 +399,15 @@
       "ai_confidence": 0.0,
       "ai_best_candidate_id": "needs_review",
       "ai_evidence": [
-        "The question asks for the horizontal and vertical translation, the axis of symmetry, and the vertex of a quadratic function.",
-        "The provided anchor candidates (choose_possible_coordinate, classify_quadrant, compute_axis_distance) belong to the coordinate_system_family and do not address quadratic function properties.",
-        "There is a mismatch between the skill name (QuadraticFunctionGraph) and the provided subskill candidates which focus on basic coordinate geometry."
+        "The question asks for the horizontal and vertical translation, the axis of symmetry, and the vertex of a quadratic function (parabola).",
+        "The provided anchor candidates (choose_possible_coordinate, classify_quadrant, compute_axis_distance) belong to the coordinate_system_family and focus on basic point properties in a Cartesian plane.",
+        "None of the candidates describe the task of identifying transformations or structural properties (vertex, axis) of a quadratic function graph."
       ],
       "ai_rejected_candidates": {
-        "C1": "This subskill involves selecting coordinates based on constraints, which does not match identifying quadratic function transformations.",
-        "C2": "This subskill involves identifying quadrants, which is not the primary task here.",
-        "C3": "This subskill involves calculating distances to axes, which is not relevant to finding the vertex or axis of symmetry of a parabola.",
-        "C4": "This is a generic outsider subskill and does not capture the specific mathematical concept of quadratic function properties."
+        "C1": "This candidate involves selecting coordinates based on conditions, which does not cover parabola translations or identifying the axis of symmetry.",
+        "C2": "This candidate involves identifying quadrants, which is not the primary task of finding a vertex or translation units.",
+        "C3": "This candidate involves calculating distances to axes, which is unrelated to the vertex and axis of symmetry of a parabola.",
+        "C4": "This is an outsider candidate for generic numeric computation and does not capture the specific geometric properties of quadratic functions."
       },
       "ai_available": false,
       "ai_error": "",
@@ -428,7 +428,7 @@
       "conflict_reason": "needs_review",
       "source_mapping_warning": "",
       "requires_human_action": true,
-      "ai_notes": "The current subskill candidates are for basic coordinate geometry (quadrants, distances), but the question is about quadratic function transformations, vertices, and axes of symmetry. None of the provided candidates are appropriate for this task.",
+      "ai_notes": "The available subskill candidates are for basic coordinate geometry, whereas the question is specifically about the properties and transformations of a quadratic function graph (parabola). A new subskill related to quadratic function transformations or vertex/axis identification is needed.",
       "skill_scoped_candidates": [
         {
           "candidate_id": "C1",
@@ -876,17 +876,15 @@
       "ai_confidence": 0.0,
       "ai_best_candidate_id": "needs_review",
       "ai_evidence": [
-        "The question asks about the horizontal and vertical translation (shifting) of quadratic functions (parabolas).",
-        "Candidate C1 (choose_possible_coordinate) refers to selecting coordinates that satisfy specific conditions, which is not applicable here.",
-        "Candidate C2 (classify_quadrant) refers to identifying the quadrant of a point or graph, which is not the task.",
-        "Candidate C3 (compute_axis_distance) refers to calculating the distance of a point from the x or y axis, which is not the same as function translation units.",
-        "Candidate C4 (compute_numeric) is a generic outsider candidate that does not capture the specific mathematical subskill of quadratic function transformations."
+        "題目要求判斷二次函數圖形的平移單位（向上平移、向左平移）。",
+        "提供的候選子技能（選擇坐標、判斷象限、計算與軸距離）皆屬於坐標系基礎運算，與二次函數的圖形平移不符。",
+        "候選清單中缺乏關於二次函數圖形變換、頂點式或平移的相關選項。"
       ],
       "ai_rejected_candidates": {
-        "C1": "This subskill involves identifying coordinates, whereas the problem asks for translation units of a function.",
-        "C2": "This subskill involves quadrant classification, which is unrelated to function translation.",
-        "C3": "This subskill involves point-to-axis distances, which is a different concept from the shift parameters in a quadratic function's vertex form.",
-        "C4": "This is a generic numeric calculation subskill and does not specifically address the properties of quadratic function graphs."
+        "C1": "此選項涉及選擇可能的坐標點，與函數圖形平移無關。",
+        "C2": "此選項涉及判斷點所在的象限，與函數圖形平移無關。",
+        "C3": "此選項涉及計算點到坐標軸的距離，雖然平移涉及數值，但此子技能通常指點的幾何性質而非函數變換。",
+        "C4": "此為通用數值計算，無法精確描述二次函數圖形平移的數學特性。"
       },
       "ai_available": false,
       "ai_error": "",
@@ -907,7 +905,7 @@
       "conflict_reason": "needs_review",
       "source_mapping_warning": "",
       "requires_human_action": true,
-      "ai_notes": "The current candidates are focused on basic coordinate geometry (points, quadrants, distances), but the question is specifically about the translation of quadratic functions (y = ax^2 + k and y = a(x-h)^2). A subskill specifically for 'quadratic_function_translation' or 'identify_vertex_shift' should be added to the anchor scope.",
+      "ai_notes": "提供的子技能候選清單與二次函數圖形（Quadratic Function Graph）的實際教學內容（如平移、頂點、開口方向）不匹配，建議增加關於『二次函數圖形的平移』或『頂點式』的子技能。",
       "skill_scoped_candidates": [
         {
           "candidate_id": "C1",
@@ -1351,15 +1349,15 @@
       "ai_confidence": 0.0,
       "ai_best_candidate_id": "needs_review",
       "ai_evidence": [
-        "The question asks for the horizontal and vertical translation, the axis of symmetry, and the vertex of a quadratic function.",
-        "Candidates C1, C2, and C3 are focused on basic coordinate system tasks such as identifying quadrants or distances to axes, which do not match the properties of quadratic functions.",
-        "Candidate C4 is a generic numeric task that does not capture the specific geometric transformations or structural properties of parabolas."
+        "題目要求找出二次函數的平移（水平與鉛直）、對稱軸以及頂點座標。",
+        "候選項目 C1 (choose_possible_coordinate)、C2 (classify_quadrant) 與 C3 (compute_axis_distance) 皆屬於基礎坐標系技能，與二次函數圖形的性質（頂點、對稱軸、平移）不符。",
+        "候選清單中的 subskill 與 skill_id (QuadraticFunctionGraph) 及其對應的題目內容存在明顯不匹配。"
       ],
       "ai_rejected_candidates": {
-        "C1": "This subskill involves choosing possible coordinates based on geometric constraints, not identifying quadratic function translations or vertices.",
-        "C2": "This subskill involves classifying points into quadrants, which is not the primary task here.",
-        "C3": "This subskill involves computing distances to the x or y axis, which is not relevant to finding the vertex or axis of symmetry of a parabola.",
-        "C4": "This is a generic numeric subskill and does not specifically address the quadratic function concepts in the question."
+        "C1": "此子技能涉及根據條件選擇可能的坐標點，而非識別拋物線的平移或頂點。",
+        "C2": "此子技能涉及判斷點所在的象限，與本題無關。",
+        "C3": "此子技能涉及計算點到坐標軸的距離，與本題無關。",
+        "C4": "此為通用數值計算類別，無法精確描述二次函數圖形性質的識別任務。"
       },
       "ai_available": false,
       "ai_error": "",
@@ -1380,7 +1378,7 @@
       "conflict_reason": "needs_review",
       "source_mapping_warning": "",
       "requires_human_action": true,
-      "ai_notes": "The provided subskill candidates (C1, C2, C3) appear to be intended for a basic coordinate geometry skill rather than a quadratic function graph skill. The question specifically requires identifying translations, the axis of symmetry, and the vertex of a parabola, none of which are covered by the current candidate list.",
+      "ai_notes": "提供的候選子技能（C1-C3）屬於坐標系家族，但題目與技能 ID 屬於二次函數圖形。本題需要的是關於二次函數平移、頂點與對稱軸的子技能，現有選項皆不符合。",
       "skill_scoped_candidates": [
         {
           "candidate_id": "C1",
@@ -1824,15 +1822,15 @@
       "ai_confidence": 0.0,
       "ai_best_candidate_id": "needs_review",
       "ai_evidence": [
-        "The question asks about the properties of a quadratic function, including its vertex, axis of symmetry, maximum value, and translation.",
-        "The provided anchor-scoped candidates (C1, C2, C3) are related to basic coordinate geometry tasks like classifying quadrants or computing distances to axes.",
-        "There is a mismatch between the question content (quadratic function analysis) and the available subskill candidates (coordinate system basics)."
+        "The question asks to identify incorrect statements regarding a quadratic function, specifically its vertex, axis of symmetry, maximum value, and translation.",
+        "The provided anchor candidates (choose_possible_coordinate, classify_quadrant, compute_axis_distance) belong to coordinate system and axis distance families, which do not match the properties of quadratic functions.",
+        "The expected task families for this skill (coordinate_system_family) and the candidates provided seem to be misaligned with the actual content of a quadratic function graph skill."
       ],
       "ai_rejected_candidates": {
-        "C1": "This candidate belongs to the axis_distance_family and typically involves identifying coordinates based on geometric constraints, not analyzing quadratic function properties.",
-        "C2": "This candidate is for classifying quadrants, which is not the primary task of the question.",
-        "C3": "This candidate is for computing distances to axes, which is not required here.",
-        "C4": "While this is a generic calculation task, it is an outsider candidate and does not specifically capture the quadratic function analysis required."
+        "C1": "This candidate involves choosing coordinates based on axis distance or position, which does not apply to identifying quadratic function properties.",
+        "C2": "This candidate involves classifying points into quadrants, which is not the primary task of analyzing a quadratic function's vertex or axis.",
+        "C3": "This candidate involves computing distances to axes, which is not relevant to the vertex or translation of a parabola.",
+        "C4": "While the problem involves computation, this is a generic outsider candidate and does not specifically address the quadratic function concepts present in the question."
       },
       "ai_available": false,
       "ai_error": "",
@@ -1853,7 +1851,7 @@
       "conflict_reason": "needs_review",
       "source_mapping_warning": "",
       "requires_human_action": true,
-      "ai_notes": "The subskill candidates provided (quadrants, axis distance) do not match the mathematical content of the question (quadratic function vertex, axis, and translation). The anchor scope appears to contain subskills for a different topic.",
+      "ai_notes": "There is a significant mismatch between the current example (quadratic function properties) and the available subskill candidates (basic coordinate geometry). The candidates provided for the skill 'vh_數學B1_QuadraticFunctionGraph' appear to belong to a different topic entirely.",
       "skill_scoped_candidates": [
         {
           "candidate_id": "C1",
@@ -5140,15 +5138,15 @@
           "ai_confidence": 0.0,
           "ai_best_candidate_id": "needs_review",
           "ai_evidence": [
-            "The question asks for the horizontal and vertical translation, the axis of symmetry, and the vertex of a quadratic function.",
-            "The provided anchor candidates (choose_possible_coordinate, classify_quadrant, compute_axis_distance) belong to the coordinate_system_family and do not address quadratic function properties.",
-            "There is a mismatch between the skill name (QuadraticFunctionGraph) and the provided subskill candidates which focus on basic coordinate geometry."
+            "The question asks for the horizontal and vertical translation, the axis of symmetry, and the vertex of a quadratic function (parabola).",
+            "The provided anchor candidates (choose_possible_coordinate, classify_quadrant, compute_axis_distance) belong to the coordinate_system_family and focus on basic point properties in a Cartesian plane.",
+            "None of the candidates describe the task of identifying transformations or structural properties (vertex, axis) of a quadratic function graph."
           ],
           "ai_rejected_candidates": {
-            "C1": "This subskill involves selecting coordinates based on constraints, which does not match identifying quadratic function transformations.",
-            "C2": "This subskill involves identifying quadrants, which is not the primary task here.",
-            "C3": "This subskill involves calculating distances to axes, which is not relevant to finding the vertex or axis of symmetry of a parabola.",
-            "C4": "This is a generic outsider subskill and does not capture the specific mathematical concept of quadratic function properties."
+            "C1": "This candidate involves selecting coordinates based on conditions, which does not cover parabola translations or identifying the axis of symmetry.",
+            "C2": "This candidate involves identifying quadrants, which is not the primary task of finding a vertex or translation units.",
+            "C3": "This candidate involves calculating distances to axes, which is unrelated to the vertex and axis of symmetry of a parabola.",
+            "C4": "This is an outsider candidate for generic numeric computation and does not capture the specific geometric properties of quadratic functions."
           },
           "ai_available": false,
           "ai_error": "",
@@ -5169,7 +5167,7 @@
           "conflict_reason": "needs_review",
           "source_mapping_warning": "",
           "requires_human_action": false,
-          "ai_notes": "The current subskill candidates are for basic coordinate geometry (quadrants, distances), but the question is about quadratic function transformations, vertices, and axes of symmetry. None of the provided candidates are appropriate for this task.",
+          "ai_notes": "The available subskill candidates are for basic coordinate geometry, whereas the question is specifically about the properties and transformations of a quadratic function graph (parabola). A new subskill related to quadratic function transformations or vertex/axis identification is needed.",
           "skill_scoped_candidates": [
             {
               "candidate_id": "C1",
@@ -5674,15 +5672,15 @@
         "ai_confidence": 0.0,
         "ai_best_candidate_id": "needs_review",
         "ai_evidence": [
-          "The question asks for the horizontal and vertical translation, the axis of symmetry, and the vertex of a quadratic function.",
-          "The provided anchor candidates (choose_possible_coordinate, classify_quadrant, compute_axis_distance) belong to the coordinate_system_family and do not address quadratic function properties.",
-          "There is a mismatch between the skill name (QuadraticFunctionGraph) and the provided subskill candidates which focus on basic coordinate geometry."
+          "The question asks for the horizontal and vertical translation, the axis of symmetry, and the vertex of a quadratic function (parabola).",
+          "The provided anchor candidates (choose_possible_coordinate, classify_quadrant, compute_axis_distance) belong to the coordinate_system_family and focus on basic point properties in a Cartesian plane.",
+          "None of the candidates describe the task of identifying transformations or structural properties (vertex, axis) of a quadratic function graph."
         ],
         "ai_rejected_candidates": {
-          "C1": "This subskill involves selecting coordinates based on constraints, which does not match identifying quadratic function transformations.",
-          "C2": "This subskill involves identifying quadrants, which is not the primary task here.",
-          "C3": "This subskill involves calculating distances to axes, which is not relevant to finding the vertex or axis of symmetry of a parabola.",
-          "C4": "This is a generic outsider subskill and does not capture the specific mathematical concept of quadratic function properties."
+          "C1": "This candidate involves selecting coordinates based on conditions, which does not cover parabola translations or identifying the axis of symmetry.",
+          "C2": "This candidate involves identifying quadrants, which is not the primary task of finding a vertex or translation units.",
+          "C3": "This candidate involves calculating distances to axes, which is unrelated to the vertex and axis of symmetry of a parabola.",
+          "C4": "This is an outsider candidate for generic numeric computation and does not capture the specific geometric properties of quadratic functions."
         },
         "ai_available": false,
         "ai_error": "",
@@ -5703,7 +5701,7 @@
         "conflict_reason": "needs_review",
         "source_mapping_warning": "",
         "requires_human_action": false,
-        "ai_notes": "The current subskill candidates are for basic coordinate geometry (quadrants, distances), but the question is about quadratic function transformations, vertices, and axes of symmetry. None of the provided candidates are appropriate for this task.",
+        "ai_notes": "The available subskill candidates are for basic coordinate geometry, whereas the question is specifically about the properties and transformations of a quadratic function graph (parabola). A new subskill related to quadratic function transformations or vertex/axis identification is needed.",
         "skill_scoped_candidates": [
           {
             "candidate_id": "C1",
@@ -6191,17 +6189,15 @@
           "ai_confidence": 0.0,
           "ai_best_candidate_id": "needs_review",
           "ai_evidence": [
-            "The question asks about the horizontal and vertical translation (shifting) of quadratic functions (parabolas).",
-            "Candidate C1 (choose_possible_coordinate) refers to selecting coordinates that satisfy specific conditions, which is not applicable here.",
-            "Candidate C2 (classify_quadrant) refers to identifying the quadrant of a point or graph, which is not the task.",
-            "Candidate C3 (compute_axis_distance) refers to calculating the distance of a point from the x or y axis, which is not the same as function translation units.",
-            "Candidate C4 (compute_numeric) is a generic outsider candidate that does not capture the specific mathematical subskill of quadratic function transformations."
+            "題目要求判斷二次函數圖形的平移單位（向上平移、向左平移）。",
+            "提供的候選子技能（選擇坐標、判斷象限、計算與軸距離）皆屬於坐標系基礎運算，與二次函數的圖形平移不符。",
+            "候選清單中缺乏關於二次函數圖形變換、頂點式或平移的相關選項。"
           ],
           "ai_rejected_candidates": {
-            "C1": "This subskill involves identifying coordinates, whereas the problem asks for translation units of a function.",
-            "C2": "This subskill involves quadrant classification, which is unrelated to function translation.",
-            "C3": "This subskill involves point-to-axis distances, which is a different concept from the shift parameters in a quadratic function's vertex form.",
-            "C4": "This is a generic numeric calculation subskill and does not specifically address the properties of quadratic function graphs."
+            "C1": "此選項涉及選擇可能的坐標點，與函數圖形平移無關。",
+            "C2": "此選項涉及判斷點所在的象限，與函數圖形平移無關。",
+            "C3": "此選項涉及計算點到坐標軸的距離，雖然平移涉及數值，但此子技能通常指點的幾何性質而非函數變換。",
+            "C4": "此為通用數值計算，無法精確描述二次函數圖形平移的數學特性。"
           },
           "ai_available": false,
           "ai_error": "",
@@ -6222,7 +6218,7 @@
           "conflict_reason": "needs_review",
           "source_mapping_warning": "",
           "requires_human_action": false,
-          "ai_notes": "The current candidates are focused on basic coordinate geometry (points, quadrants, distances), but the question is specifically about the translation of quadratic functions (y = ax^2 + k and y = a(x-h)^2). A subskill specifically for 'quadratic_function_translation' or 'identify_vertex_shift' should be added to the anchor scope.",
+          "ai_notes": "提供的子技能候選清單與二次函數圖形（Quadratic Function Graph）的實際教學內容（如平移、頂點、開口方向）不匹配，建議增加關於『二次函數圖形的平移』或『頂點式』的子技能。",
           "skill_scoped_candidates": [
             {
               "candidate_id": "C1",
@@ -6732,17 +6728,15 @@
         "ai_confidence": 0.0,
         "ai_best_candidate_id": "needs_review",
         "ai_evidence": [
-          "The question asks about the horizontal and vertical translation (shifting) of quadratic functions (parabolas).",
-          "Candidate C1 (choose_possible_coordinate) refers to selecting coordinates that satisfy specific conditions, which is not applicable here.",
-          "Candidate C2 (classify_quadrant) refers to identifying the quadrant of a point or graph, which is not the task.",
-          "Candidate C3 (compute_axis_distance) refers to calculating the distance of a point from the x or y axis, which is not the same as function translation units.",
-          "Candidate C4 (compute_numeric) is a generic outsider candidate that does not capture the specific mathematical subskill of quadratic function transformations."
+          "題目要求判斷二次函數圖形的平移單位（向上平移、向左平移）。",
+          "提供的候選子技能（選擇坐標、判斷象限、計算與軸距離）皆屬於坐標系基礎運算，與二次函數的圖形平移不符。",
+          "候選清單中缺乏關於二次函數圖形變換、頂點式或平移的相關選項。"
         ],
         "ai_rejected_candidates": {
-          "C1": "This subskill involves identifying coordinates, whereas the problem asks for translation units of a function.",
-          "C2": "This subskill involves quadrant classification, which is unrelated to function translation.",
-          "C3": "This subskill involves point-to-axis distances, which is a different concept from the shift parameters in a quadratic function's vertex form.",
-          "C4": "This is a generic numeric calculation subskill and does not specifically address the properties of quadratic function graphs."
+          "C1": "此選項涉及選擇可能的坐標點，與函數圖形平移無關。",
+          "C2": "此選項涉及判斷點所在的象限，與函數圖形平移無關。",
+          "C3": "此選項涉及計算點到坐標軸的距離，雖然平移涉及數值，但此子技能通常指點的幾何性質而非函數變換。",
+          "C4": "此為通用數值計算，無法精確描述二次函數圖形平移的數學特性。"
         },
         "ai_available": false,
         "ai_error": "",
@@ -6763,7 +6757,7 @@
         "conflict_reason": "needs_review",
         "source_mapping_warning": "",
         "requires_human_action": false,
-        "ai_notes": "The current candidates are focused on basic coordinate geometry (points, quadrants, distances), but the question is specifically about the translation of quadratic functions (y = ax^2 + k and y = a(x-h)^2). A subskill specifically for 'quadratic_function_translation' or 'identify_vertex_shift' should be added to the anchor scope.",
+        "ai_notes": "提供的子技能候選清單與二次函數圖形（Quadratic Function Graph）的實際教學內容（如平移、頂點、開口方向）不匹配，建議增加關於『二次函數圖形的平移』或『頂點式』的子技能。",
         "skill_scoped_candidates": [
           {
             "candidate_id": "C1",
@@ -7247,15 +7241,15 @@
           "ai_confidence": 0.0,
           "ai_best_candidate_id": "needs_review",
           "ai_evidence": [
-            "The question asks for the horizontal and vertical translation, the axis of symmetry, and the vertex of a quadratic function.",
-            "Candidates C1, C2, and C3 are focused on basic coordinate system tasks such as identifying quadrants or distances to axes, which do not match the properties of quadratic functions.",
-            "Candidate C4 is a generic numeric task that does not capture the specific geometric transformations or structural properties of parabolas."
+            "題目要求找出二次函數的平移（水平與鉛直）、對稱軸以及頂點座標。",
+            "候選項目 C1 (choose_possible_coordinate)、C2 (classify_quadrant) 與 C3 (compute_axis_distance) 皆屬於基礎坐標系技能，與二次函數圖形的性質（頂點、對稱軸、平移）不符。",
+            "候選清單中的 subskill 與 skill_id (QuadraticFunctionGraph) 及其對應的題目內容存在明顯不匹配。"
           ],
           "ai_rejected_candidates": {
-            "C1": "This subskill involves choosing possible coordinates based on geometric constraints, not identifying quadratic function translations or vertices.",
-            "C2": "This subskill involves classifying points into quadrants, which is not the primary task here.",
-            "C3": "This subskill involves computing distances to the x or y axis, which is not relevant to finding the vertex or axis of symmetry of a parabola.",
-            "C4": "This is a generic numeric subskill and does not specifically address the quadratic function concepts in the question."
+            "C1": "此子技能涉及根據條件選擇可能的坐標點，而非識別拋物線的平移或頂點。",
+            "C2": "此子技能涉及判斷點所在的象限，與本題無關。",
+            "C3": "此子技能涉及計算點到坐標軸的距離，與本題無關。",
+            "C4": "此為通用數值計算類別，無法精確描述二次函數圖形性質的識別任務。"
           },
           "ai_available": false,
           "ai_error": "",
@@ -7276,7 +7270,7 @@
           "conflict_reason": "needs_review",
           "source_mapping_warning": "",
           "requires_human_action": false,
-          "ai_notes": "The provided subskill candidates (C1, C2, C3) appear to be intended for a basic coordinate geometry skill rather than a quadratic function graph skill. The question specifically requires identifying translations, the axis of symmetry, and the vertex of a parabola, none of which are covered by the current candidate list.",
+          "ai_notes": "提供的候選子技能（C1-C3）屬於坐標系家族，但題目與技能 ID 屬於二次函數圖形。本題需要的是關於二次函數平移、頂點與對稱軸的子技能，現有選項皆不符合。",
           "skill_scoped_candidates": [
             {
               "candidate_id": "C1",
@@ -7786,15 +7780,15 @@
         "ai_confidence": 0.0,
         "ai_best_candidate_id": "needs_review",
         "ai_evidence": [
-          "The question asks for the horizontal and vertical translation, the axis of symmetry, and the vertex of a quadratic function.",
-          "Candidates C1, C2, and C3 are focused on basic coordinate system tasks such as identifying quadrants or distances to axes, which do not match the properties of quadratic functions.",
-          "Candidate C4 is a generic numeric task that does not capture the specific geometric transformations or structural properties of parabolas."
+          "題目要求找出二次函數的平移（水平與鉛直）、對稱軸以及頂點座標。",
+          "候選項目 C1 (choose_possible_coordinate)、C2 (classify_quadrant) 與 C3 (compute_axis_distance) 皆屬於基礎坐標系技能，與二次函數圖形的性質（頂點、對稱軸、平移）不符。",
+          "候選清單中的 subskill 與 skill_id (QuadraticFunctionGraph) 及其對應的題目內容存在明顯不匹配。"
         ],
         "ai_rejected_candidates": {
-          "C1": "This subskill involves choosing possible coordinates based on geometric constraints, not identifying quadratic function translations or vertices.",
-          "C2": "This subskill involves classifying points into quadrants, which is not the primary task here.",
-          "C3": "This subskill involves computing distances to the x or y axis, which is not relevant to finding the vertex or axis of symmetry of a parabola.",
-          "C4": "This is a generic numeric subskill and does not specifically address the quadratic function concepts in the question."
+          "C1": "此子技能涉及根據條件選擇可能的坐標點，而非識別拋物線的平移或頂點。",
+          "C2": "此子技能涉及判斷點所在的象限，與本題無關。",
+          "C3": "此子技能涉及計算點到坐標軸的距離，與本題無關。",
+          "C4": "此為通用數值計算類別，無法精確描述二次函數圖形性質的識別任務。"
         },
         "ai_available": false,
         "ai_error": "",
@@ -7815,7 +7809,7 @@
         "conflict_reason": "needs_review",
         "source_mapping_warning": "",
         "requires_human_action": false,
-        "ai_notes": "The provided subskill candidates (C1, C2, C3) appear to be intended for a basic coordinate geometry skill rather than a quadratic function graph skill. The question specifically requires identifying translations, the axis of symmetry, and the vertex of a parabola, none of which are covered by the current candidate list.",
+        "ai_notes": "提供的候選子技能（C1-C3）屬於坐標系家族，但題目與技能 ID 屬於二次函數圖形。本題需要的是關於二次函數平移、頂點與對稱軸的子技能，現有選項皆不符合。",
         "skill_scoped_candidates": [
           {
             "candidate_id": "C1",
@@ -8315,15 +8309,15 @@
           "ai_confidence": 0.0,
           "ai_best_candidate_id": "needs_review",
           "ai_evidence": [
-            "The question asks about the properties of a quadratic function, including its vertex, axis of symmetry, maximum value, and translation.",
-            "The provided anchor-scoped candidates (C1, C2, C3) are related to basic coordinate geometry tasks like classifying quadrants or computing distances to axes.",
-            "There is a mismatch between the question content (quadratic function analysis) and the available subskill candidates (coordinate system basics)."
+            "The question asks to identify incorrect statements regarding a quadratic function, specifically its vertex, axis of symmetry, maximum value, and translation.",
+            "The provided anchor candidates (choose_possible_coordinate, classify_quadrant, compute_axis_distance) belong to coordinate system and axis distance families, which do not match the properties of quadratic functions.",
+            "The expected task families for this skill (coordinate_system_family) and the candidates provided seem to be misaligned with the actual content of a quadratic function graph skill."
           ],
           "ai_rejected_candidates": {
-            "C1": "This candidate belongs to the axis_distance_family and typically involves identifying coordinates based on geometric constraints, not analyzing quadratic function properties.",
-            "C2": "This candidate is for classifying quadrants, which is not the primary task of the question.",
-            "C3": "This candidate is for computing distances to axes, which is not required here.",
-            "C4": "While this is a generic calculation task, it is an outsider candidate and does not specifically capture the quadratic function analysis required."
+            "C1": "This candidate involves choosing coordinates based on axis distance or position, which does not apply to identifying quadratic function properties.",
+            "C2": "This candidate involves classifying points into quadrants, which is not the primary task of analyzing a quadratic function's vertex or axis.",
+            "C3": "This candidate involves computing distances to axes, which is not relevant to the vertex or translation of a parabola.",
+            "C4": "While the problem involves computation, this is a generic outsider candidate and does not specifically address the quadratic function concepts present in the question."
           },
           "ai_available": false,
           "ai_error": "",
@@ -8344,7 +8338,7 @@
           "conflict_reason": "needs_review",
           "source_mapping_warning": "",
           "requires_human_action": false,
-          "ai_notes": "The subskill candidates provided (quadrants, axis distance) do not match the mathematical content of the question (quadratic function vertex, axis, and translation). The anchor scope appears to contain subskills for a different topic.",
+          "ai_notes": "There is a significant mismatch between the current example (quadratic function properties) and the available subskill candidates (basic coordinate geometry). The candidates provided for the skill 'vh_數學B1_QuadraticFunctionGraph' appear to belong to a different topic entirely.",
           "skill_scoped_candidates": [
             {
               "candidate_id": "C1",
@@ -8863,15 +8857,15 @@
         "ai_confidence": 0.0,
         "ai_best_candidate_id": "needs_review",
         "ai_evidence": [
-          "The question asks about the properties of a quadratic function, including its vertex, axis of symmetry, maximum value, and translation.",
-          "The provided anchor-scoped candidates (C1, C2, C3) are related to basic coordinate geometry tasks like classifying quadrants or computing distances to axes.",
-          "There is a mismatch between the question content (quadratic function analysis) and the available subskill candidates (coordinate system basics)."
+          "The question asks to identify incorrect statements regarding a quadratic function, specifically its vertex, axis of symmetry, maximum value, and translation.",
+          "The provided anchor candidates (choose_possible_coordinate, classify_quadrant, compute_axis_distance) belong to coordinate system and axis distance families, which do not match the properties of quadratic functions.",
+          "The expected task families for this skill (coordinate_system_family) and the candidates provided seem to be misaligned with the actual content of a quadratic function graph skill."
         ],
         "ai_rejected_candidates": {
-          "C1": "This candidate belongs to the axis_distance_family and typically involves identifying coordinates based on geometric constraints, not analyzing quadratic function properties.",
-          "C2": "This candidate is for classifying quadrants, which is not the primary task of the question.",
-          "C3": "This candidate is for computing distances to axes, which is not required here.",
-          "C4": "While this is a generic calculation task, it is an outsider candidate and does not specifically capture the quadratic function analysis required."
+          "C1": "This candidate involves choosing coordinates based on axis distance or position, which does not apply to identifying quadratic function properties.",
+          "C2": "This candidate involves classifying points into quadrants, which is not the primary task of analyzing a quadratic function's vertex or axis.",
+          "C3": "This candidate involves computing distances to axes, which is not relevant to the vertex or translation of a parabola.",
+          "C4": "While the problem involves computation, this is a generic outsider candidate and does not specifically address the quadratic function concepts present in the question."
         },
         "ai_available": false,
         "ai_error": "",
@@ -8892,7 +8886,7 @@
         "conflict_reason": "needs_review",
         "source_mapping_warning": "",
         "requires_human_action": false,
-        "ai_notes": "The subskill candidates provided (quadrants, axis distance) do not match the mathematical content of the question (quadratic function vertex, axis, and translation). The anchor scope appears to contain subskills for a different topic.",
+        "ai_notes": "There is a significant mismatch between the current example (quadratic function properties) and the available subskill candidates (basic coordinate geometry). The candidates provided for the skill 'vh_數學B1_QuadraticFunctionGraph' appear to belong to a different topic entirely.",
         "skill_scoped_candidates": [
           {
             "candidate_id": "C1",
@@ -9385,15 +9379,15 @@
           "ai_confidence": 0.0,
           "ai_best_candidate_id": "needs_review",
           "ai_evidence": [
-            "The question asks for the horizontal and vertical translation, the axis of symmetry, and the vertex of a quadratic function.",
-            "The provided anchor candidates (choose_possible_coordinate, classify_quadrant, compute_axis_distance) belong to the coordinate_system_family and do not address quadratic function properties.",
-            "There is a mismatch between the skill name (QuadraticFunctionGraph) and the provided subskill candidates which focus on basic coordinate geometry."
+            "The question asks for the horizontal and vertical translation, the axis of symmetry, and the vertex of a quadratic function (parabola).",
+            "The provided anchor candidates (choose_possible_coordinate, classify_quadrant, compute_axis_distance) belong to the coordinate_system_family and focus on basic point properties in a Cartesian plane.",
+            "None of the candidates describe the task of identifying transformations or structural properties (vertex, axis) of a quadratic function graph."
           ],
           "ai_rejected_candidates": {
-            "C1": "This subskill involves selecting coordinates based on constraints, which does not match identifying quadratic function transformations.",
-            "C2": "This subskill involves identifying quadrants, which is not the primary task here.",
-            "C3": "This subskill involves calculating distances to axes, which is not relevant to finding the vertex or axis of symmetry of a parabola.",
-            "C4": "This is a generic outsider subskill and does not capture the specific mathematical concept of quadratic function properties."
+            "C1": "This candidate involves selecting coordinates based on conditions, which does not cover parabola translations or identifying the axis of symmetry.",
+            "C2": "This candidate involves identifying quadrants, which is not the primary task of finding a vertex or translation units.",
+            "C3": "This candidate involves calculating distances to axes, which is unrelated to the vertex and axis of symmetry of a parabola.",
+            "C4": "This is an outsider candidate for generic numeric computation and does not capture the specific geometric properties of quadratic functions."
           },
           "ai_available": false,
           "ai_error": "",
@@ -9414,7 +9408,7 @@
           "conflict_reason": "needs_review",
           "source_mapping_warning": "",
           "requires_human_action": false,
-          "ai_notes": "The current subskill candidates are for basic coordinate geometry (quadrants, distances), but the question is about quadratic function transformations, vertices, and axes of symmetry. None of the provided candidates are appropriate for this task.",
+          "ai_notes": "The available subskill candidates are for basic coordinate geometry, whereas the question is specifically about the properties and transformations of a quadratic function graph (parabola). A new subskill related to quadratic function transformations or vertex/axis identification is needed.",
           "skill_scoped_candidates": [
             {
               "candidate_id": "C1",
@@ -9919,15 +9913,15 @@
         "ai_confidence": 0.0,
         "ai_best_candidate_id": "needs_review",
         "ai_evidence": [
-          "The question asks for the horizontal and vertical translation, the axis of symmetry, and the vertex of a quadratic function.",
-          "The provided anchor candidates (choose_possible_coordinate, classify_quadrant, compute_axis_distance) belong to the coordinate_system_family and do not address quadratic function properties.",
-          "There is a mismatch between the skill name (QuadraticFunctionGraph) and the provided subskill candidates which focus on basic coordinate geometry."
+          "The question asks for the horizontal and vertical translation, the axis of symmetry, and the vertex of a quadratic function (parabola).",
+          "The provided anchor candidates (choose_possible_coordinate, classify_quadrant, compute_axis_distance) belong to the coordinate_system_family and focus on basic point properties in a Cartesian plane.",
+          "None of the candidates describe the task of identifying transformations or structural properties (vertex, axis) of a quadratic function graph."
         ],
         "ai_rejected_candidates": {
-          "C1": "This subskill involves selecting coordinates based on constraints, which does not match identifying quadratic function transformations.",
-          "C2": "This subskill involves identifying quadrants, which is not the primary task here.",
-          "C3": "This subskill involves calculating distances to axes, which is not relevant to finding the vertex or axis of symmetry of a parabola.",
-          "C4": "This is a generic outsider subskill and does not capture the specific mathematical concept of quadratic function properties."
+          "C1": "This candidate involves selecting coordinates based on conditions, which does not cover parabola translations or identifying the axis of symmetry.",
+          "C2": "This candidate involves identifying quadrants, which is not the primary task of finding a vertex or translation units.",
+          "C3": "This candidate involves calculating distances to axes, which is unrelated to the vertex and axis of symmetry of a parabola.",
+          "C4": "This is an outsider candidate for generic numeric computation and does not capture the specific geometric properties of quadratic functions."
         },
         "ai_available": false,
         "ai_error": "",
@@ -9948,7 +9942,7 @@
         "conflict_reason": "needs_review",
         "source_mapping_warning": "",
         "requires_human_action": false,
-        "ai_notes": "The current subskill candidates are for basic coordinate geometry (quadrants, distances), but the question is about quadratic function transformations, vertices, and axes of symmetry. None of the provided candidates are appropriate for this task.",
+        "ai_notes": "The available subskill candidates are for basic coordinate geometry, whereas the question is specifically about the properties and transformations of a quadratic function graph (parabola). A new subskill related to quadratic function transformations or vertex/axis identification is needed.",
         "skill_scoped_candidates": [
           {
             "candidate_id": "C1",
@@ -10436,17 +10430,15 @@
           "ai_confidence": 0.0,
           "ai_best_candidate_id": "needs_review",
           "ai_evidence": [
-            "The question asks about the horizontal and vertical translation (shifting) of quadratic functions (parabolas).",
-            "Candidate C1 (choose_possible_coordinate) refers to selecting coordinates that satisfy specific conditions, which is not applicable here.",
-            "Candidate C2 (classify_quadrant) refers to identifying the quadrant of a point or graph, which is not the task.",
-            "Candidate C3 (compute_axis_distance) refers to calculating the distance of a point from the x or y axis, which is not the same as function translation units.",
-            "Candidate C4 (compute_numeric) is a generic outsider candidate that does not capture the specific mathematical subskill of quadratic function transformations."
+            "題目要求判斷二次函數圖形的平移單位（向上平移、向左平移）。",
+            "提供的候選子技能（選擇坐標、判斷象限、計算與軸距離）皆屬於坐標系基礎運算，與二次函數的圖形平移不符。",
+            "候選清單中缺乏關於二次函數圖形變換、頂點式或平移的相關選項。"
           ],
           "ai_rejected_candidates": {
-            "C1": "This subskill involves identifying coordinates, whereas the problem asks for translation units of a function.",
-            "C2": "This subskill involves quadrant classification, which is unrelated to function translation.",
-            "C3": "This subskill involves point-to-axis distances, which is a different concept from the shift parameters in a quadratic function's vertex form.",
-            "C4": "This is a generic numeric calculation subskill and does not specifically address the properties of quadratic function graphs."
+            "C1": "此選項涉及選擇可能的坐標點，與函數圖形平移無關。",
+            "C2": "此選項涉及判斷點所在的象限，與函數圖形平移無關。",
+            "C3": "此選項涉及計算點到坐標軸的距離，雖然平移涉及數值，但此子技能通常指點的幾何性質而非函數變換。",
+            "C4": "此為通用數值計算，無法精確描述二次函數圖形平移的數學特性。"
           },
           "ai_available": false,
           "ai_error": "",
@@ -10467,7 +10459,7 @@
           "conflict_reason": "needs_review",
           "source_mapping_warning": "",
           "requires_human_action": false,
-          "ai_notes": "The current candidates are focused on basic coordinate geometry (points, quadrants, distances), but the question is specifically about the translation of quadratic functions (y = ax^2 + k and y = a(x-h)^2). A subskill specifically for 'quadratic_function_translation' or 'identify_vertex_shift' should be added to the anchor scope.",
+          "ai_notes": "提供的子技能候選清單與二次函數圖形（Quadratic Function Graph）的實際教學內容（如平移、頂點、開口方向）不匹配，建議增加關於『二次函數圖形的平移』或『頂點式』的子技能。",
           "skill_scoped_candidates": [
             {
               "candidate_id": "C1",
@@ -10977,17 +10969,15 @@
         "ai_confidence": 0.0,
         "ai_best_candidate_id": "needs_review",
         "ai_evidence": [
-          "The question asks about the horizontal and vertical translation (shifting) of quadratic functions (parabolas).",
-          "Candidate C1 (choose_possible_coordinate) refers to selecting coordinates that satisfy specific conditions, which is not applicable here.",
-          "Candidate C2 (classify_quadrant) refers to identifying the quadrant of a point or graph, which is not the task.",
-          "Candidate C3 (compute_axis_distance) refers to calculating the distance of a point from the x or y axis, which is not the same as function translation units.",
-          "Candidate C4 (compute_numeric) is a generic outsider candidate that does not capture the specific mathematical subskill of quadratic function transformations."
+          "題目要求判斷二次函數圖形的平移單位（向上平移、向左平移）。",
+          "提供的候選子技能（選擇坐標、判斷象限、計算與軸距離）皆屬於坐標系基礎運算，與二次函數的圖形平移不符。",
+          "候選清單中缺乏關於二次函數圖形變換、頂點式或平移的相關選項。"
         ],
         "ai_rejected_candidates": {
-          "C1": "This subskill involves identifying coordinates, whereas the problem asks for translation units of a function.",
-          "C2": "This subskill involves quadrant classification, which is unrelated to function translation.",
-          "C3": "This subskill involves point-to-axis distances, which is a different concept from the shift parameters in a quadratic function's vertex form.",
-          "C4": "This is a generic numeric calculation subskill and does not specifically address the properties of quadratic function graphs."
+          "C1": "此選項涉及選擇可能的坐標點，與函數圖形平移無關。",
+          "C2": "此選項涉及判斷點所在的象限，與函數圖形平移無關。",
+          "C3": "此選項涉及計算點到坐標軸的距離，雖然平移涉及數值，但此子技能通常指點的幾何性質而非函數變換。",
+          "C4": "此為通用數值計算，無法精確描述二次函數圖形平移的數學特性。"
         },
         "ai_available": false,
         "ai_error": "",
@@ -11008,7 +10998,7 @@
         "conflict_reason": "needs_review",
         "source_mapping_warning": "",
         "requires_human_action": false,
-        "ai_notes": "The current candidates are focused on basic coordinate geometry (points, quadrants, distances), but the question is specifically about the translation of quadratic functions (y = ax^2 + k and y = a(x-h)^2). A subskill specifically for 'quadratic_function_translation' or 'identify_vertex_shift' should be added to the anchor scope.",
+        "ai_notes": "提供的子技能候選清單與二次函數圖形（Quadratic Function Graph）的實際教學內容（如平移、頂點、開口方向）不匹配，建議增加關於『二次函數圖形的平移』或『頂點式』的子技能。",
         "skill_scoped_candidates": [
           {
             "candidate_id": "C1",
@@ -11492,15 +11482,15 @@
           "ai_confidence": 0.0,
           "ai_best_candidate_id": "needs_review",
           "ai_evidence": [
-            "The question asks for the horizontal and vertical translation, the axis of symmetry, and the vertex of a quadratic function.",
-            "Candidates C1, C2, and C3 are focused on basic coordinate system tasks such as identifying quadrants or distances to axes, which do not match the properties of quadratic functions.",
-            "Candidate C4 is a generic numeric task that does not capture the specific geometric transformations or structural properties of parabolas."
+            "題目要求找出二次函數的平移（水平與鉛直）、對稱軸以及頂點座標。",
+            "候選項目 C1 (choose_possible_coordinate)、C2 (classify_quadrant) 與 C3 (compute_axis_distance) 皆屬於基礎坐標系技能，與二次函數圖形的性質（頂點、對稱軸、平移）不符。",
+            "候選清單中的 subskill 與 skill_id (QuadraticFunctionGraph) 及其對應的題目內容存在明顯不匹配。"
           ],
           "ai_rejected_candidates": {
-            "C1": "This subskill involves choosing possible coordinates based on geometric constraints, not identifying quadratic function translations or vertices.",
-            "C2": "This subskill involves classifying points into quadrants, which is not the primary task here.",
-            "C3": "This subskill involves computing distances to the x or y axis, which is not relevant to finding the vertex or axis of symmetry of a parabola.",
-            "C4": "This is a generic numeric subskill and does not specifically address the quadratic function concepts in the question."
+            "C1": "此子技能涉及根據條件選擇可能的坐標點，而非識別拋物線的平移或頂點。",
+            "C2": "此子技能涉及判斷點所在的象限，與本題無關。",
+            "C3": "此子技能涉及計算點到坐標軸的距離，與本題無關。",
+            "C4": "此為通用數值計算類別，無法精確描述二次函數圖形性質的識別任務。"
           },
           "ai_available": false,
           "ai_error": "",
@@ -11521,7 +11511,7 @@
           "conflict_reason": "needs_review",
           "source_mapping_warning": "",
           "requires_human_action": false,
-          "ai_notes": "The provided subskill candidates (C1, C2, C3) appear to be intended for a basic coordinate geometry skill rather than a quadratic function graph skill. The question specifically requires identifying translations, the axis of symmetry, and the vertex of a parabola, none of which are covered by the current candidate list.",
+          "ai_notes": "提供的候選子技能（C1-C3）屬於坐標系家族，但題目與技能 ID 屬於二次函數圖形。本題需要的是關於二次函數平移、頂點與對稱軸的子技能，現有選項皆不符合。",
           "skill_scoped_candidates": [
             {
               "candidate_id": "C1",
@@ -12031,15 +12021,15 @@
         "ai_confidence": 0.0,
         "ai_best_candidate_id": "needs_review",
         "ai_evidence": [
-          "The question asks for the horizontal and vertical translation, the axis of symmetry, and the vertex of a quadratic function.",
-          "Candidates C1, C2, and C3 are focused on basic coordinate system tasks such as identifying quadrants or distances to axes, which do not match the properties of quadratic functions.",
-          "Candidate C4 is a generic numeric task that does not capture the specific geometric transformations or structural properties of parabolas."
+          "題目要求找出二次函數的平移（水平與鉛直）、對稱軸以及頂點座標。",
+          "候選項目 C1 (choose_possible_coordinate)、C2 (classify_quadrant) 與 C3 (compute_axis_distance) 皆屬於基礎坐標系技能，與二次函數圖形的性質（頂點、對稱軸、平移）不符。",
+          "候選清單中的 subskill 與 skill_id (QuadraticFunctionGraph) 及其對應的題目內容存在明顯不匹配。"
         ],
         "ai_rejected_candidates": {
-          "C1": "This subskill involves choosing possible coordinates based on geometric constraints, not identifying quadratic function translations or vertices.",
-          "C2": "This subskill involves classifying points into quadrants, which is not the primary task here.",
-          "C3": "This subskill involves computing distances to the x or y axis, which is not relevant to finding the vertex or axis of symmetry of a parabola.",
-          "C4": "This is a generic numeric subskill and does not specifically address the quadratic function concepts in the question."
+          "C1": "此子技能涉及根據條件選擇可能的坐標點，而非識別拋物線的平移或頂點。",
+          "C2": "此子技能涉及判斷點所在的象限，與本題無關。",
+          "C3": "此子技能涉及計算點到坐標軸的距離，與本題無關。",
+          "C4": "此為通用數值計算類別，無法精確描述二次函數圖形性質的識別任務。"
         },
         "ai_available": false,
         "ai_error": "",
@@ -12060,7 +12050,7 @@
         "conflict_reason": "needs_review",
         "source_mapping_warning": "",
         "requires_human_action": false,
-        "ai_notes": "The provided subskill candidates (C1, C2, C3) appear to be intended for a basic coordinate geometry skill rather than a quadratic function graph skill. The question specifically requires identifying translations, the axis of symmetry, and the vertex of a parabola, none of which are covered by the current candidate list.",
+        "ai_notes": "提供的候選子技能（C1-C3）屬於坐標系家族，但題目與技能 ID 屬於二次函數圖形。本題需要的是關於二次函數平移、頂點與對稱軸的子技能，現有選項皆不符合。",
         "skill_scoped_candidates": [
           {
             "candidate_id": "C1",
@@ -12560,15 +12550,15 @@
           "ai_confidence": 0.0,
           "ai_best_candidate_id": "needs_review",
           "ai_evidence": [
-            "The question asks about the properties of a quadratic function, including its vertex, axis of symmetry, maximum value, and translation.",
-            "The provided anchor-scoped candidates (C1, C2, C3) are related to basic coordinate geometry tasks like classifying quadrants or computing distances to axes.",
-            "There is a mismatch between the question content (quadratic function analysis) and the available subskill candidates (coordinate system basics)."
+            "The question asks to identify incorrect statements regarding a quadratic function, specifically its vertex, axis of symmetry, maximum value, and translation.",
+            "The provided anchor candidates (choose_possible_coordinate, classify_quadrant, compute_axis_distance) belong to coordinate system and axis distance families, which do not match the properties of quadratic functions.",
+            "The expected task families for this skill (coordinate_system_family) and the candidates provided seem to be misaligned with the actual content of a quadratic function graph skill."
           ],
           "ai_rejected_candidates": {
-            "C1": "This candidate belongs to the axis_distance_family and typically involves identifying coordinates based on geometric constraints, not analyzing quadratic function properties.",
-            "C2": "This candidate is for classifying quadrants, which is not the primary task of the question.",
-            "C3": "This candidate is for computing distances to axes, which is not required here.",
-            "C4": "While this is a generic calculation task, it is an outsider candidate and does not specifically capture the quadratic function analysis required."
+            "C1": "This candidate involves choosing coordinates based on axis distance or position, which does not apply to identifying quadratic function properties.",
+            "C2": "This candidate involves classifying points into quadrants, which is not the primary task of analyzing a quadratic function's vertex or axis.",
+            "C3": "This candidate involves computing distances to axes, which is not relevant to the vertex or translation of a parabola.",
+            "C4": "While the problem involves computation, this is a generic outsider candidate and does not specifically address the quadratic function concepts present in the question."
           },
           "ai_available": false,
           "ai_error": "",
@@ -12589,7 +12579,7 @@
           "conflict_reason": "needs_review",
           "source_mapping_warning": "",
           "requires_human_action": false,
-          "ai_notes": "The subskill candidates provided (quadrants, axis distance) do not match the mathematical content of the question (quadratic function vertex, axis, and translation). The anchor scope appears to contain subskills for a different topic.",
+          "ai_notes": "There is a significant mismatch between the current example (quadratic function properties) and the available subskill candidates (basic coordinate geometry). The candidates provided for the skill 'vh_數學B1_QuadraticFunctionGraph' appear to belong to a different topic entirely.",
           "skill_scoped_candidates": [
             {
               "candidate_id": "C1",
@@ -13108,15 +13098,15 @@
         "ai_confidence": 0.0,
         "ai_best_candidate_id": "needs_review",
         "ai_evidence": [
-          "The question asks about the properties of a quadratic function, including its vertex, axis of symmetry, maximum value, and translation.",
-          "The provided anchor-scoped candidates (C1, C2, C3) are related to basic coordinate geometry tasks like classifying quadrants or computing distances to axes.",
-          "There is a mismatch between the question content (quadratic function analysis) and the available subskill candidates (coordinate system basics)."
+          "The question asks to identify incorrect statements regarding a quadratic function, specifically its vertex, axis of symmetry, maximum value, and translation.",
+          "The provided anchor candidates (choose_possible_coordinate, classify_quadrant, compute_axis_distance) belong to coordinate system and axis distance families, which do not match the properties of quadratic functions.",
+          "The expected task families for this skill (coordinate_system_family) and the candidates provided seem to be misaligned with the actual content of a quadratic function graph skill."
         ],
         "ai_rejected_candidates": {
-          "C1": "This candidate belongs to the axis_distance_family and typically involves identifying coordinates based on geometric constraints, not analyzing quadratic function properties.",
-          "C2": "This candidate is for classifying quadrants, which is not the primary task of the question.",
-          "C3": "This candidate is for computing distances to axes, which is not required here.",
-          "C4": "While this is a generic calculation task, it is an outsider candidate and does not specifically capture the quadratic function analysis required."
+          "C1": "This candidate involves choosing coordinates based on axis distance or position, which does not apply to identifying quadratic function properties.",
+          "C2": "This candidate involves classifying points into quadrants, which is not the primary task of analyzing a quadratic function's vertex or axis.",
+          "C3": "This candidate involves computing distances to axes, which is not relevant to the vertex or translation of a parabola.",
+          "C4": "While the problem involves computation, this is a generic outsider candidate and does not specifically address the quadratic function concepts present in the question."
         },
         "ai_available": false,
         "ai_error": "",
@@ -13137,7 +13127,7 @@
         "conflict_reason": "needs_review",
         "source_mapping_warning": "",
         "requires_human_action": false,
-        "ai_notes": "The subskill candidates provided (quadrants, axis distance) do not match the mathematical content of the question (quadratic function vertex, axis, and translation). The anchor scope appears to contain subskills for a different topic.",
+        "ai_notes": "There is a significant mismatch between the current example (quadratic function properties) and the available subskill candidates (basic coordinate geometry). The candidates provided for the skill 'vh_數學B1_QuadraticFunctionGraph' appear to belong to a different topic entirely.",
         "skill_scoped_candidates": [
           {
             "candidate_id": "C1",
@@ -13635,13 +13625,13 @@
     "reasons": []
   },
   "reports": {
-    "phase1_summary_json": "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_QuadraticFunctionGraph_phase1_summary.json",
-    "phase1_summary_md": "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_QuadraticFunctionGraph_phase1_summary.md",
-    "phase1_json": "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_QuadraticFunctionGraph_phase1_summary.json",
-    "phase1_md": "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_QuadraticFunctionGraph_phase1_summary.md"
+    "phase1_summary_json": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_QuadraticFunctionGraph_phase1_summary.json",
+    "phase1_summary_md": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_QuadraticFunctionGraph_phase1_summary.md",
+    "phase1_json": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_QuadraticFunctionGraph_phase1_summary.json",
+    "phase1_md": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_QuadraticFunctionGraph_phase1_summary.md"
   },
   "next_action": "phase2_generate_from_induced_specs",
-  "timestamp": "2026-06-08T13:50:39.812104+00:00",
+  "timestamp": "2026-06-12T08:53:43.853248+00:00",
   "dry_run": true,
   "auto_review_summary": {
     "skill_id": "vh_數學B1_QuadraticFunctionGraph",
@@ -13693,15 +13683,15 @@
         "ai_confidence": 0.0,
         "ai_best_candidate_id": "needs_review",
         "ai_evidence": [
-          "The question asks for the horizontal and vertical translation, the axis of symmetry, and the vertex of a quadratic function.",
-          "The provided anchor candidates (choose_possible_coordinate, classify_quadrant, compute_axis_distance) belong to the coordinate_system_family and do not address quadratic function properties.",
-          "There is a mismatch between the skill name (QuadraticFunctionGraph) and the provided subskill candidates which focus on basic coordinate geometry."
+          "The question asks for the horizontal and vertical translation, the axis of symmetry, and the vertex of a quadratic function (parabola).",
+          "The provided anchor candidates (choose_possible_coordinate, classify_quadrant, compute_axis_distance) belong to the coordinate_system_family and focus on basic point properties in a Cartesian plane.",
+          "None of the candidates describe the task of identifying transformations or structural properties (vertex, axis) of a quadratic function graph."
         ],
         "ai_rejected_candidates": {
-          "C1": "This subskill involves selecting coordinates based on constraints, which does not match identifying quadratic function transformations.",
-          "C2": "This subskill involves identifying quadrants, which is not the primary task here.",
-          "C3": "This subskill involves calculating distances to axes, which is not relevant to finding the vertex or axis of symmetry of a parabola.",
-          "C4": "This is a generic outsider subskill and does not capture the specific mathematical concept of quadratic function properties."
+          "C1": "This candidate involves selecting coordinates based on conditions, which does not cover parabola translations or identifying the axis of symmetry.",
+          "C2": "This candidate involves identifying quadrants, which is not the primary task of finding a vertex or translation units.",
+          "C3": "This candidate involves calculating distances to axes, which is unrelated to the vertex and axis of symmetry of a parabola.",
+          "C4": "This is an outsider candidate for generic numeric computation and does not capture the specific geometric properties of quadratic functions."
         },
         "ai_available": false,
         "ai_error": "",
@@ -13722,7 +13712,7 @@
         "conflict_reason": "needs_review",
         "source_mapping_warning": "",
         "requires_human_action": true,
-        "ai_notes": "The current subskill candidates are for basic coordinate geometry (quadrants, distances), but the question is about quadratic function transformations, vertices, and axes of symmetry. None of the provided candidates are appropriate for this task.",
+        "ai_notes": "The available subskill candidates are for basic coordinate geometry, whereas the question is specifically about the properties and transformations of a quadratic function graph (parabola). A new subskill related to quadratic function transformations or vertex/axis identification is needed.",
         "skill_scoped_candidates": [
           {
             "candidate_id": "C1",
@@ -14170,17 +14160,15 @@
         "ai_confidence": 0.0,
         "ai_best_candidate_id": "needs_review",
         "ai_evidence": [
-          "The question asks about the horizontal and vertical translation (shifting) of quadratic functions (parabolas).",
-          "Candidate C1 (choose_possible_coordinate) refers to selecting coordinates that satisfy specific conditions, which is not applicable here.",
-          "Candidate C2 (classify_quadrant) refers to identifying the quadrant of a point or graph, which is not the task.",
-          "Candidate C3 (compute_axis_distance) refers to calculating the distance of a point from the x or y axis, which is not the same as function translation units.",
-          "Candidate C4 (compute_numeric) is a generic outsider candidate that does not capture the specific mathematical subskill of quadratic function transformations."
+          "題目要求判斷二次函數圖形的平移單位（向上平移、向左平移）。",
+          "提供的候選子技能（選擇坐標、判斷象限、計算與軸距離）皆屬於坐標系基礎運算，與二次函數的圖形平移不符。",
+          "候選清單中缺乏關於二次函數圖形變換、頂點式或平移的相關選項。"
         ],
         "ai_rejected_candidates": {
-          "C1": "This subskill involves identifying coordinates, whereas the problem asks for translation units of a function.",
-          "C2": "This subskill involves quadrant classification, which is unrelated to function translation.",
-          "C3": "This subskill involves point-to-axis distances, which is a different concept from the shift parameters in a quadratic function's vertex form.",
-          "C4": "This is a generic numeric calculation subskill and does not specifically address the properties of quadratic function graphs."
+          "C1": "此選項涉及選擇可能的坐標點，與函數圖形平移無關。",
+          "C2": "此選項涉及判斷點所在的象限，與函數圖形平移無關。",
+          "C3": "此選項涉及計算點到坐標軸的距離，雖然平移涉及數值，但此子技能通常指點的幾何性質而非函數變換。",
+          "C4": "此為通用數值計算，無法精確描述二次函數圖形平移的數學特性。"
         },
         "ai_available": false,
         "ai_error": "",
@@ -14201,7 +14189,7 @@
         "conflict_reason": "needs_review",
         "source_mapping_warning": "",
         "requires_human_action": true,
-        "ai_notes": "The current candidates are focused on basic coordinate geometry (points, quadrants, distances), but the question is specifically about the translation of quadratic functions (y = ax^2 + k and y = a(x-h)^2). A subskill specifically for 'quadratic_function_translation' or 'identify_vertex_shift' should be added to the anchor scope.",
+        "ai_notes": "提供的子技能候選清單與二次函數圖形（Quadratic Function Graph）的實際教學內容（如平移、頂點、開口方向）不匹配，建議增加關於『二次函數圖形的平移』或『頂點式』的子技能。",
         "skill_scoped_candidates": [
           {
             "candidate_id": "C1",
@@ -14645,15 +14633,15 @@
         "ai_confidence": 0.0,
         "ai_best_candidate_id": "needs_review",
         "ai_evidence": [
-          "The question asks for the horizontal and vertical translation, the axis of symmetry, and the vertex of a quadratic function.",
-          "Candidates C1, C2, and C3 are focused on basic coordinate system tasks such as identifying quadrants or distances to axes, which do not match the properties of quadratic functions.",
-          "Candidate C4 is a generic numeric task that does not capture the specific geometric transformations or structural properties of parabolas."
+          "題目要求找出二次函數的平移（水平與鉛直）、對稱軸以及頂點座標。",
+          "候選項目 C1 (choose_possible_coordinate)、C2 (classify_quadrant) 與 C3 (compute_axis_distance) 皆屬於基礎坐標系技能，與二次函數圖形的性質（頂點、對稱軸、平移）不符。",
+          "候選清單中的 subskill 與 skill_id (QuadraticFunctionGraph) 及其對應的題目內容存在明顯不匹配。"
         ],
         "ai_rejected_candidates": {
-          "C1": "This subskill involves choosing possible coordinates based on geometric constraints, not identifying quadratic function translations or vertices.",
-          "C2": "This subskill involves classifying points into quadrants, which is not the primary task here.",
-          "C3": "This subskill involves computing distances to the x or y axis, which is not relevant to finding the vertex or axis of symmetry of a parabola.",
-          "C4": "This is a generic numeric subskill and does not specifically address the quadratic function concepts in the question."
+          "C1": "此子技能涉及根據條件選擇可能的坐標點，而非識別拋物線的平移或頂點。",
+          "C2": "此子技能涉及判斷點所在的象限，與本題無關。",
+          "C3": "此子技能涉及計算點到坐標軸的距離，與本題無關。",
+          "C4": "此為通用數值計算類別，無法精確描述二次函數圖形性質的識別任務。"
         },
         "ai_available": false,
         "ai_error": "",
@@ -14674,7 +14662,7 @@
         "conflict_reason": "needs_review",
         "source_mapping_warning": "",
         "requires_human_action": true,
-        "ai_notes": "The provided subskill candidates (C1, C2, C3) appear to be intended for a basic coordinate geometry skill rather than a quadratic function graph skill. The question specifically requires identifying translations, the axis of symmetry, and the vertex of a parabola, none of which are covered by the current candidate list.",
+        "ai_notes": "提供的候選子技能（C1-C3）屬於坐標系家族，但題目與技能 ID 屬於二次函數圖形。本題需要的是關於二次函數平移、頂點與對稱軸的子技能，現有選項皆不符合。",
         "skill_scoped_candidates": [
           {
             "candidate_id": "C1",
@@ -15118,15 +15106,15 @@
         "ai_confidence": 0.0,
         "ai_best_candidate_id": "needs_review",
         "ai_evidence": [
-          "The question asks about the properties of a quadratic function, including its vertex, axis of symmetry, maximum value, and translation.",
-          "The provided anchor-scoped candidates (C1, C2, C3) are related to basic coordinate geometry tasks like classifying quadrants or computing distances to axes.",
-          "There is a mismatch between the question content (quadratic function analysis) and the available subskill candidates (coordinate system basics)."
+          "The question asks to identify incorrect statements regarding a quadratic function, specifically its vertex, axis of symmetry, maximum value, and translation.",
+          "The provided anchor candidates (choose_possible_coordinate, classify_quadrant, compute_axis_distance) belong to coordinate system and axis distance families, which do not match the properties of quadratic functions.",
+          "The expected task families for this skill (coordinate_system_family) and the candidates provided seem to be misaligned with the actual content of a quadratic function graph skill."
         ],
         "ai_rejected_candidates": {
-          "C1": "This candidate belongs to the axis_distance_family and typically involves identifying coordinates based on geometric constraints, not analyzing quadratic function properties.",
-          "C2": "This candidate is for classifying quadrants, which is not the primary task of the question.",
-          "C3": "This candidate is for computing distances to axes, which is not required here.",
-          "C4": "While this is a generic calculation task, it is an outsider candidate and does not specifically capture the quadratic function analysis required."
+          "C1": "This candidate involves choosing coordinates based on axis distance or position, which does not apply to identifying quadratic function properties.",
+          "C2": "This candidate involves classifying points into quadrants, which is not the primary task of analyzing a quadratic function's vertex or axis.",
+          "C3": "This candidate involves computing distances to axes, which is not relevant to the vertex or translation of a parabola.",
+          "C4": "While the problem involves computation, this is a generic outsider candidate and does not specifically address the quadratic function concepts present in the question."
         },
         "ai_available": false,
         "ai_error": "",
@@ -15147,7 +15135,7 @@
         "conflict_reason": "needs_review",
         "source_mapping_warning": "",
         "requires_human_action": true,
-        "ai_notes": "The subskill candidates provided (quadrants, axis distance) do not match the mathematical content of the question (quadratic function vertex, axis, and translation). The anchor scope appears to contain subskills for a different topic.",
+        "ai_notes": "There is a significant mismatch between the current example (quadratic function properties) and the available subskill candidates (basic coordinate geometry). The candidates provided for the skill 'vh_數學B1_QuadraticFunctionGraph' appear to belong to a different topic entirely.",
         "skill_scoped_candidates": [
           {
             "candidate_id": "C1",
@@ -17473,15 +17461,15 @@
           "ai_confidence": 0.0,
           "ai_best_candidate_id": "needs_review",
           "ai_evidence": [
-            "The question asks for the horizontal and vertical translation, the axis of symmetry, and the vertex of a quadratic function.",
-            "The provided anchor candidates (choose_possible_coordinate, classify_quadrant, compute_axis_distance) belong to the coordinate_system_family and do not address quadratic function properties.",
-            "There is a mismatch between the skill name (QuadraticFunctionGraph) and the provided subskill candidates which focus on basic coordinate geometry."
+            "The question asks for the horizontal and vertical translation, the axis of symmetry, and the vertex of a quadratic function (parabola).",
+            "The provided anchor candidates (choose_possible_coordinate, classify_quadrant, compute_axis_distance) belong to the coordinate_system_family and focus on basic point properties in a Cartesian plane.",
+            "None of the candidates describe the task of identifying transformations or structural properties (vertex, axis) of a quadratic function graph."
           ],
           "ai_rejected_candidates": {
-            "C1": "This subskill involves selecting coordinates based on constraints, which does not match identifying quadratic function transformations.",
-            "C2": "This subskill involves identifying quadrants, which is not the primary task here.",
-            "C3": "This subskill involves calculating distances to axes, which is not relevant to finding the vertex or axis of symmetry of a parabola.",
-            "C4": "This is a generic outsider subskill and does not capture the specific mathematical concept of quadratic function properties."
+            "C1": "This candidate involves selecting coordinates based on conditions, which does not cover parabola translations or identifying the axis of symmetry.",
+            "C2": "This candidate involves identifying quadrants, which is not the primary task of finding a vertex or translation units.",
+            "C3": "This candidate involves calculating distances to axes, which is unrelated to the vertex and axis of symmetry of a parabola.",
+            "C4": "This is an outsider candidate for generic numeric computation and does not capture the specific geometric properties of quadratic functions."
           },
           "ai_available": false,
           "ai_error": "",
@@ -17502,7 +17490,7 @@
           "conflict_reason": "needs_review",
           "source_mapping_warning": "",
           "requires_human_action": false,
-          "ai_notes": "The current subskill candidates are for basic coordinate geometry (quadrants, distances), but the question is about quadratic function transformations, vertices, and axes of symmetry. None of the provided candidates are appropriate for this task.",
+          "ai_notes": "The available subskill candidates are for basic coordinate geometry, whereas the question is specifically about the properties and transformations of a quadratic function graph (parabola). A new subskill related to quadratic function transformations or vertex/axis identification is needed.",
           "skill_scoped_candidates": [
             {
               "candidate_id": "C1",
@@ -18034,17 +18022,15 @@
           "ai_confidence": 0.0,
           "ai_best_candidate_id": "needs_review",
           "ai_evidence": [
-            "The question asks about the horizontal and vertical translation (shifting) of quadratic functions (parabolas).",
-            "Candidate C1 (choose_possible_coordinate) refers to selecting coordinates that satisfy specific conditions, which is not applicable here.",
-            "Candidate C2 (classify_quadrant) refers to identifying the quadrant of a point or graph, which is not the task.",
-            "Candidate C3 (compute_axis_distance) refers to calculating the distance of a point from the x or y axis, which is not the same as function translation units.",
-            "Candidate C4 (compute_numeric) is a generic outsider candidate that does not capture the specific mathematical subskill of quadratic function transformations."
+            "題目要求判斷二次函數圖形的平移單位（向上平移、向左平移）。",
+            "提供的候選子技能（選擇坐標、判斷象限、計算與軸距離）皆屬於坐標系基礎運算，與二次函數的圖形平移不符。",
+            "候選清單中缺乏關於二次函數圖形變換、頂點式或平移的相關選項。"
           ],
           "ai_rejected_candidates": {
-            "C1": "This subskill involves identifying coordinates, whereas the problem asks for translation units of a function.",
-            "C2": "This subskill involves quadrant classification, which is unrelated to function translation.",
-            "C3": "This subskill involves point-to-axis distances, which is a different concept from the shift parameters in a quadratic function's vertex form.",
-            "C4": "This is a generic numeric calculation subskill and does not specifically address the properties of quadratic function graphs."
+            "C1": "此選項涉及選擇可能的坐標點，與函數圖形平移無關。",
+            "C2": "此選項涉及判斷點所在的象限，與函數圖形平移無關。",
+            "C3": "此選項涉及計算點到坐標軸的距離，雖然平移涉及數值，但此子技能通常指點的幾何性質而非函數變換。",
+            "C4": "此為通用數值計算，無法精確描述二次函數圖形平移的數學特性。"
           },
           "ai_available": false,
           "ai_error": "",
@@ -18065,7 +18051,7 @@
           "conflict_reason": "needs_review",
           "source_mapping_warning": "",
           "requires_human_action": false,
-          "ai_notes": "The current candidates are focused on basic coordinate geometry (points, quadrants, distances), but the question is specifically about the translation of quadratic functions (y = ax^2 + k and y = a(x-h)^2). A subskill specifically for 'quadratic_function_translation' or 'identify_vertex_shift' should be added to the anchor scope.",
+          "ai_notes": "提供的子技能候選清單與二次函數圖形（Quadratic Function Graph）的實際教學內容（如平移、頂點、開口方向）不匹配，建議增加關於『二次函數圖形的平移』或『頂點式』的子技能。",
           "skill_scoped_candidates": [
             {
               "candidate_id": "C1",
@@ -18602,15 +18588,15 @@
           "ai_confidence": 0.0,
           "ai_best_candidate_id": "needs_review",
           "ai_evidence": [
-            "The question asks for the horizontal and vertical translation, the axis of symmetry, and the vertex of a quadratic function.",
-            "Candidates C1, C2, and C3 are focused on basic coordinate system tasks such as identifying quadrants or distances to axes, which do not match the properties of quadratic functions.",
-            "Candidate C4 is a generic numeric task that does not capture the specific geometric transformations or structural properties of parabolas."
+            "題目要求找出二次函數的平移（水平與鉛直）、對稱軸以及頂點座標。",
+            "候選項目 C1 (choose_possible_coordinate)、C2 (classify_quadrant) 與 C3 (compute_axis_distance) 皆屬於基礎坐標系技能，與二次函數圖形的性質（頂點、對稱軸、平移）不符。",
+            "候選清單中的 subskill 與 skill_id (QuadraticFunctionGraph) 及其對應的題目內容存在明顯不匹配。"
           ],
           "ai_rejected_candidates": {
-            "C1": "This subskill involves choosing possible coordinates based on geometric constraints, not identifying quadratic function translations or vertices.",
-            "C2": "This subskill involves classifying points into quadrants, which is not the primary task here.",
-            "C3": "This subskill involves computing distances to the x or y axis, which is not relevant to finding the vertex or axis of symmetry of a parabola.",
-            "C4": "This is a generic numeric subskill and does not specifically address the quadratic function concepts in the question."
+            "C1": "此子技能涉及根據條件選擇可能的坐標點，而非識別拋物線的平移或頂點。",
+            "C2": "此子技能涉及判斷點所在的象限，與本題無關。",
+            "C3": "此子技能涉及計算點到坐標軸的距離，與本題無關。",
+            "C4": "此為通用數值計算類別，無法精確描述二次函數圖形性質的識別任務。"
           },
           "ai_available": false,
           "ai_error": "",
@@ -18631,7 +18617,7 @@
           "conflict_reason": "needs_review",
           "source_mapping_warning": "",
           "requires_human_action": false,
-          "ai_notes": "The provided subskill candidates (C1, C2, C3) appear to be intended for a basic coordinate geometry skill rather than a quadratic function graph skill. The question specifically requires identifying translations, the axis of symmetry, and the vertex of a parabola, none of which are covered by the current candidate list.",
+          "ai_notes": "提供的候選子技能（C1-C3）屬於坐標系家族，但題目與技能 ID 屬於二次函數圖形。本題需要的是關於二次函數平移、頂點與對稱軸的子技能，現有選項皆不符合。",
           "skill_scoped_candidates": [
             {
               "candidate_id": "C1",
@@ -19184,15 +19170,15 @@
           "ai_confidence": 0.0,
           "ai_best_candidate_id": "needs_review",
           "ai_evidence": [
-            "The question asks about the properties of a quadratic function, including its vertex, axis of symmetry, maximum value, and translation.",
-            "The provided anchor-scoped candidates (C1, C2, C3) are related to basic coordinate geometry tasks like classifying quadrants or computing distances to axes.",
-            "There is a mismatch between the question content (quadratic function analysis) and the available subskill candidates (coordinate system basics)."
+            "The question asks to identify incorrect statements regarding a quadratic function, specifically its vertex, axis of symmetry, maximum value, and translation.",
+            "The provided anchor candidates (choose_possible_coordinate, classify_quadrant, compute_axis_distance) belong to coordinate system and axis distance families, which do not match the properties of quadratic functions.",
+            "The expected task families for this skill (coordinate_system_family) and the candidates provided seem to be misaligned with the actual content of a quadratic function graph skill."
           ],
           "ai_rejected_candidates": {
-            "C1": "This candidate belongs to the axis_distance_family and typically involves identifying coordinates based on geometric constraints, not analyzing quadratic function properties.",
-            "C2": "This candidate is for classifying quadrants, which is not the primary task of the question.",
-            "C3": "This candidate is for computing distances to axes, which is not required here.",
-            "C4": "While this is a generic calculation task, it is an outsider candidate and does not specifically capture the quadratic function analysis required."
+            "C1": "This candidate involves choosing coordinates based on axis distance or position, which does not apply to identifying quadratic function properties.",
+            "C2": "This candidate involves classifying points into quadrants, which is not the primary task of analyzing a quadratic function's vertex or axis.",
+            "C3": "This candidate involves computing distances to axes, which is not relevant to the vertex or translation of a parabola.",
+            "C4": "While the problem involves computation, this is a generic outsider candidate and does not specifically address the quadratic function concepts present in the question."
           },
           "ai_available": false,
           "ai_error": "",
@@ -19213,7 +19199,7 @@
           "conflict_reason": "needs_review",
           "source_mapping_warning": "",
           "requires_human_action": false,
-          "ai_notes": "The subskill candidates provided (quadrants, axis distance) do not match the mathematical content of the question (quadratic function vertex, axis, and translation). The anchor scope appears to contain subskills for a different topic.",
+          "ai_notes": "There is a significant mismatch between the current example (quadratic function properties) and the available subskill candidates (basic coordinate geometry). The candidates provided for the skill 'vh_數學B1_QuadraticFunctionGraph' appear to belong to a different topic entirely.",
           "skill_scoped_candidates": [
             {
               "candidate_id": "C1",
@@ -21263,15 +21249,15 @@
             "ai_confidence": 0.0,
             "ai_best_candidate_id": "needs_review",
             "ai_evidence": [
-              "The question asks for the horizontal and vertical translation, the axis of symmetry, and the vertex of a quadratic function.",
-              "The provided anchor candidates (choose_possible_coordinate, classify_quadrant, compute_axis_distance) belong to the coordinate_system_family and do not address quadratic function properties.",
-              "There is a mismatch between the skill name (QuadraticFunctionGraph) and the provided subskill candidates which focus on basic coordinate geometry."
+              "The question asks for the horizontal and vertical translation, the axis of symmetry, and the vertex of a quadratic function (parabola).",
+              "The provided anchor candidates (choose_possible_coordinate, classify_quadrant, compute_axis_distance) belong to the coordinate_system_family and focus on basic point properties in a Cartesian plane.",
+              "None of the candidates describe the task of identifying transformations or structural properties (vertex, axis) of a quadratic function graph."
             ],
             "ai_rejected_candidates": {
-              "C1": "This subskill involves selecting coordinates based on constraints, which does not match identifying quadratic function transformations.",
-              "C2": "This subskill involves identifying quadrants, which is not the primary task here.",
-              "C3": "This subskill involves calculating distances to axes, which is not relevant to finding the vertex or axis of symmetry of a parabola.",
-              "C4": "This is a generic outsider subskill and does not capture the specific mathematical concept of quadratic function properties."
+              "C1": "This candidate involves selecting coordinates based on conditions, which does not cover parabola translations or identifying the axis of symmetry.",
+              "C2": "This candidate involves identifying quadrants, which is not the primary task of finding a vertex or translation units.",
+              "C3": "This candidate involves calculating distances to axes, which is unrelated to the vertex and axis of symmetry of a parabola.",
+              "C4": "This is an outsider candidate for generic numeric computation and does not capture the specific geometric properties of quadratic functions."
             },
             "ai_available": false,
             "ai_error": "",
@@ -21292,7 +21278,7 @@
             "conflict_reason": "needs_review",
             "source_mapping_warning": "",
             "requires_human_action": false,
-            "ai_notes": "The current subskill candidates are for basic coordinate geometry (quadrants, distances), but the question is about quadratic function transformations, vertices, and axes of symmetry. None of the provided candidates are appropriate for this task.",
+            "ai_notes": "The available subskill candidates are for basic coordinate geometry, whereas the question is specifically about the properties and transformations of a quadratic function graph (parabola). A new subskill related to quadratic function transformations or vertex/axis identification is needed.",
             "skill_scoped_candidates": [
               {
                 "candidate_id": "C1",
@@ -21797,15 +21783,15 @@
           "ai_confidence": 0.0,
           "ai_best_candidate_id": "needs_review",
           "ai_evidence": [
-            "The question asks for the horizontal and vertical translation, the axis of symmetry, and the vertex of a quadratic function.",
-            "The provided anchor candidates (choose_possible_coordinate, classify_quadrant, compute_axis_distance) belong to the coordinate_system_family and do not address quadratic function properties.",
-            "There is a mismatch between the skill name (QuadraticFunctionGraph) and the provided subskill candidates which focus on basic coordinate geometry."
+            "The question asks for the horizontal and vertical translation, the axis of symmetry, and the vertex of a quadratic function (parabola).",
+            "The provided anchor candidates (choose_possible_coordinate, classify_quadrant, compute_axis_distance) belong to the coordinate_system_family and focus on basic point properties in a Cartesian plane.",
+            "None of the candidates describe the task of identifying transformations or structural properties (vertex, axis) of a quadratic function graph."
           ],
           "ai_rejected_candidates": {
-            "C1": "This subskill involves selecting coordinates based on constraints, which does not match identifying quadratic function transformations.",
-            "C2": "This subskill involves identifying quadrants, which is not the primary task here.",
-            "C3": "This subskill involves calculating distances to axes, which is not relevant to finding the vertex or axis of symmetry of a parabola.",
-            "C4": "This is a generic outsider subskill and does not capture the specific mathematical concept of quadratic function properties."
+            "C1": "This candidate involves selecting coordinates based on conditions, which does not cover parabola translations or identifying the axis of symmetry.",
+            "C2": "This candidate involves identifying quadrants, which is not the primary task of finding a vertex or translation units.",
+            "C3": "This candidate involves calculating distances to axes, which is unrelated to the vertex and axis of symmetry of a parabola.",
+            "C4": "This is an outsider candidate for generic numeric computation and does not capture the specific geometric properties of quadratic functions."
           },
           "ai_available": false,
           "ai_error": "",
@@ -21826,7 +21812,7 @@
           "conflict_reason": "needs_review",
           "source_mapping_warning": "",
           "requires_human_action": false,
-          "ai_notes": "The current subskill candidates are for basic coordinate geometry (quadrants, distances), but the question is about quadratic function transformations, vertices, and axes of symmetry. None of the provided candidates are appropriate for this task.",
+          "ai_notes": "The available subskill candidates are for basic coordinate geometry, whereas the question is specifically about the properties and transformations of a quadratic function graph (parabola). A new subskill related to quadratic function transformations or vertex/axis identification is needed.",
           "skill_scoped_candidates": [
             {
               "candidate_id": "C1",
@@ -22311,17 +22297,15 @@
             "ai_confidence": 0.0,
             "ai_best_candidate_id": "needs_review",
             "ai_evidence": [
-              "The question asks about the horizontal and vertical translation (shifting) of quadratic functions (parabolas).",
-              "Candidate C1 (choose_possible_coordinate) refers to selecting coordinates that satisfy specific conditions, which is not applicable here.",
-              "Candidate C2 (classify_quadrant) refers to identifying the quadrant of a point or graph, which is not the task.",
-              "Candidate C3 (compute_axis_distance) refers to calculating the distance of a point from the x or y axis, which is not the same as function translation units.",
-              "Candidate C4 (compute_numeric) is a generic outsider candidate that does not capture the specific mathematical subskill of quadratic function transformations."
+              "題目要求判斷二次函數圖形的平移單位（向上平移、向左平移）。",
+              "提供的候選子技能（選擇坐標、判斷象限、計算與軸距離）皆屬於坐標系基礎運算，與二次函數的圖形平移不符。",
+              "候選清單中缺乏關於二次函數圖形變換、頂點式或平移的相關選項。"
             ],
             "ai_rejected_candidates": {
-              "C1": "This subskill involves identifying coordinates, whereas the problem asks for translation units of a function.",
-              "C2": "This subskill involves quadrant classification, which is unrelated to function translation.",
-              "C3": "This subskill involves point-to-axis distances, which is a different concept from the shift parameters in a quadratic function's vertex form.",
-              "C4": "This is a generic numeric calculation subskill and does not specifically address the properties of quadratic function graphs."
+              "C1": "此選項涉及選擇可能的坐標點，與函數圖形平移無關。",
+              "C2": "此選項涉及判斷點所在的象限，與函數圖形平移無關。",
+              "C3": "此選項涉及計算點到坐標軸的距離，雖然平移涉及數值，但此子技能通常指點的幾何性質而非函數變換。",
+              "C4": "此為通用數值計算，無法精確描述二次函數圖形平移的數學特性。"
             },
             "ai_available": false,
             "ai_error": "",
@@ -22342,7 +22326,7 @@
             "conflict_reason": "needs_review",
             "source_mapping_warning": "",
             "requires_human_action": false,
-            "ai_notes": "The current candidates are focused on basic coordinate geometry (points, quadrants, distances), but the question is specifically about the translation of quadratic functions (y = ax^2 + k and y = a(x-h)^2). A subskill specifically for 'quadratic_function_translation' or 'identify_vertex_shift' should be added to the anchor scope.",
+            "ai_notes": "提供的子技能候選清單與二次函數圖形（Quadratic Function Graph）的實際教學內容（如平移、頂點、開口方向）不匹配，建議增加關於『二次函數圖形的平移』或『頂點式』的子技能。",
             "skill_scoped_candidates": [
               {
                 "candidate_id": "C1",
@@ -22852,17 +22836,15 @@
           "ai_confidence": 0.0,
           "ai_best_candidate_id": "needs_review",
           "ai_evidence": [
-            "The question asks about the horizontal and vertical translation (shifting) of quadratic functions (parabolas).",
-            "Candidate C1 (choose_possible_coordinate) refers to selecting coordinates that satisfy specific conditions, which is not applicable here.",
-            "Candidate C2 (classify_quadrant) refers to identifying the quadrant of a point or graph, which is not the task.",
-            "Candidate C3 (compute_axis_distance) refers to calculating the distance of a point from the x or y axis, which is not the same as function translation units.",
-            "Candidate C4 (compute_numeric) is a generic outsider candidate that does not capture the specific mathematical subskill of quadratic function transformations."
+            "題目要求判斷二次函數圖形的平移單位（向上平移、向左平移）。",
+            "提供的候選子技能（選擇坐標、判斷象限、計算與軸距離）皆屬於坐標系基礎運算，與二次函數的圖形平移不符。",
+            "候選清單中缺乏關於二次函數圖形變換、頂點式或平移的相關選項。"
           ],
           "ai_rejected_candidates": {
-            "C1": "This subskill involves identifying coordinates, whereas the problem asks for translation units of a function.",
-            "C2": "This subskill involves quadrant classification, which is unrelated to function translation.",
-            "C3": "This subskill involves point-to-axis distances, which is a different concept from the shift parameters in a quadratic function's vertex form.",
-            "C4": "This is a generic numeric calculation subskill and does not specifically address the properties of quadratic function graphs."
+            "C1": "此選項涉及選擇可能的坐標點，與函數圖形平移無關。",
+            "C2": "此選項涉及判斷點所在的象限，與函數圖形平移無關。",
+            "C3": "此選項涉及計算點到坐標軸的距離，雖然平移涉及數值，但此子技能通常指點的幾何性質而非函數變換。",
+            "C4": "此為通用數值計算，無法精確描述二次函數圖形平移的數學特性。"
           },
           "ai_available": false,
           "ai_error": "",
@@ -22883,7 +22865,7 @@
           "conflict_reason": "needs_review",
           "source_mapping_warning": "",
           "requires_human_action": false,
-          "ai_notes": "The current candidates are focused on basic coordinate geometry (points, quadrants, distances), but the question is specifically about the translation of quadratic functions (y = ax^2 + k and y = a(x-h)^2). A subskill specifically for 'quadratic_function_translation' or 'identify_vertex_shift' should be added to the anchor scope.",
+          "ai_notes": "提供的子技能候選清單與二次函數圖形（Quadratic Function Graph）的實際教學內容（如平移、頂點、開口方向）不匹配，建議增加關於『二次函數圖形的平移』或『頂點式』的子技能。",
           "skill_scoped_candidates": [
             {
               "candidate_id": "C1",
@@ -23364,15 +23346,15 @@
             "ai_confidence": 0.0,
             "ai_best_candidate_id": "needs_review",
             "ai_evidence": [
-              "The question asks for the horizontal and vertical translation, the axis of symmetry, and the vertex of a quadratic function.",
-              "Candidates C1, C2, and C3 are focused on basic coordinate system tasks such as identifying quadrants or distances to axes, which do not match the properties of quadratic functions.",
-              "Candidate C4 is a generic numeric task that does not capture the specific geometric transformations or structural properties of parabolas."
+              "題目要求找出二次函數的平移（水平與鉛直）、對稱軸以及頂點座標。",
+              "候選項目 C1 (choose_possible_coordinate)、C2 (classify_quadrant) 與 C3 (compute_axis_distance) 皆屬於基礎坐標系技能，與二次函數圖形的性質（頂點、對稱軸、平移）不符。",
+              "候選清單中的 subskill 與 skill_id (QuadraticFunctionGraph) 及其對應的題目內容存在明顯不匹配。"
             ],
             "ai_rejected_candidates": {
-              "C1": "This subskill involves choosing possible coordinates based on geometric constraints, not identifying quadratic function translations or vertices.",
-              "C2": "This subskill involves classifying points into quadrants, which is not the primary task here.",
-              "C3": "This subskill involves computing distances to the x or y axis, which is not relevant to finding the vertex or axis of symmetry of a parabola.",
-              "C4": "This is a generic numeric subskill and does not specifically address the quadratic function concepts in the question."
+              "C1": "此子技能涉及根據條件選擇可能的坐標點，而非識別拋物線的平移或頂點。",
+              "C2": "此子技能涉及判斷點所在的象限，與本題無關。",
+              "C3": "此子技能涉及計算點到坐標軸的距離，與本題無關。",
+              "C4": "此為通用數值計算類別，無法精確描述二次函數圖形性質的識別任務。"
             },
             "ai_available": false,
             "ai_error": "",
@@ -23393,7 +23375,7 @@
             "conflict_reason": "needs_review",
             "source_mapping_warning": "",
             "requires_human_action": false,
-            "ai_notes": "The provided subskill candidates (C1, C2, C3) appear to be intended for a basic coordinate geometry skill rather than a quadratic function graph skill. The question specifically requires identifying translations, the axis of symmetry, and the vertex of a parabola, none of which are covered by the current candidate list.",
+            "ai_notes": "提供的候選子技能（C1-C3）屬於坐標系家族，但題目與技能 ID 屬於二次函數圖形。本題需要的是關於二次函數平移、頂點與對稱軸的子技能，現有選項皆不符合。",
             "skill_scoped_candidates": [
               {
                 "candidate_id": "C1",
@@ -23903,15 +23885,15 @@
           "ai_confidence": 0.0,
           "ai_best_candidate_id": "needs_review",
           "ai_evidence": [
-            "The question asks for the horizontal and vertical translation, the axis of symmetry, and the vertex of a quadratic function.",
-            "Candidates C1, C2, and C3 are focused on basic coordinate system tasks such as identifying quadrants or distances to axes, which do not match the properties of quadratic functions.",
-            "Candidate C4 is a generic numeric task that does not capture the specific geometric transformations or structural properties of parabolas."
+            "題目要求找出二次函數的平移（水平與鉛直）、對稱軸以及頂點座標。",
+            "候選項目 C1 (choose_possible_coordinate)、C2 (classify_quadrant) 與 C3 (compute_axis_distance) 皆屬於基礎坐標系技能，與二次函數圖形的性質（頂點、對稱軸、平移）不符。",
+            "候選清單中的 subskill 與 skill_id (QuadraticFunctionGraph) 及其對應的題目內容存在明顯不匹配。"
           ],
           "ai_rejected_candidates": {
-            "C1": "This subskill involves choosing possible coordinates based on geometric constraints, not identifying quadratic function translations or vertices.",
-            "C2": "This subskill involves classifying points into quadrants, which is not the primary task here.",
-            "C3": "This subskill involves computing distances to the x or y axis, which is not relevant to finding the vertex or axis of symmetry of a parabola.",
-            "C4": "This is a generic numeric subskill and does not specifically address the quadratic function concepts in the question."
+            "C1": "此子技能涉及根據條件選擇可能的坐標點，而非識別拋物線的平移或頂點。",
+            "C2": "此子技能涉及判斷點所在的象限，與本題無關。",
+            "C3": "此子技能涉及計算點到坐標軸的距離，與本題無關。",
+            "C4": "此為通用數值計算類別，無法精確描述二次函數圖形性質的識別任務。"
           },
           "ai_available": false,
           "ai_error": "",
@@ -23932,7 +23914,7 @@
           "conflict_reason": "needs_review",
           "source_mapping_warning": "",
           "requires_human_action": false,
-          "ai_notes": "The provided subskill candidates (C1, C2, C3) appear to be intended for a basic coordinate geometry skill rather than a quadratic function graph skill. The question specifically requires identifying translations, the axis of symmetry, and the vertex of a parabola, none of which are covered by the current candidate list.",
+          "ai_notes": "提供的候選子技能（C1-C3）屬於坐標系家族，但題目與技能 ID 屬於二次函數圖形。本題需要的是關於二次函數平移、頂點與對稱軸的子技能，現有選項皆不符合。",
           "skill_scoped_candidates": [
             {
               "candidate_id": "C1",
@@ -24429,15 +24411,15 @@
             "ai_confidence": 0.0,
             "ai_best_candidate_id": "needs_review",
             "ai_evidence": [
-              "The question asks about the properties of a quadratic function, including its vertex, axis of symmetry, maximum value, and translation.",
-              "The provided anchor-scoped candidates (C1, C2, C3) are related to basic coordinate geometry tasks like classifying quadrants or computing distances to axes.",
-              "There is a mismatch between the question content (quadratic function analysis) and the available subskill candidates (coordinate system basics)."
+              "The question asks to identify incorrect statements regarding a quadratic function, specifically its vertex, axis of symmetry, maximum value, and translation.",
+              "The provided anchor candidates (choose_possible_coordinate, classify_quadrant, compute_axis_distance) belong to coordinate system and axis distance families, which do not match the properties of quadratic functions.",
+              "The expected task families for this skill (coordinate_system_family) and the candidates provided seem to be misaligned with the actual content of a quadratic function graph skill."
             ],
             "ai_rejected_candidates": {
-              "C1": "This candidate belongs to the axis_distance_family and typically involves identifying coordinates based on geometric constraints, not analyzing quadratic function properties.",
-              "C2": "This candidate is for classifying quadrants, which is not the primary task of the question.",
-              "C3": "This candidate is for computing distances to axes, which is not required here.",
-              "C4": "While this is a generic calculation task, it is an outsider candidate and does not specifically capture the quadratic function analysis required."
+              "C1": "This candidate involves choosing coordinates based on axis distance or position, which does not apply to identifying quadratic function properties.",
+              "C2": "This candidate involves classifying points into quadrants, which is not the primary task of analyzing a quadratic function's vertex or axis.",
+              "C3": "This candidate involves computing distances to axes, which is not relevant to the vertex or translation of a parabola.",
+              "C4": "While the problem involves computation, this is a generic outsider candidate and does not specifically address the quadratic function concepts present in the question."
             },
             "ai_available": false,
             "ai_error": "",
@@ -24458,7 +24440,7 @@
             "conflict_reason": "needs_review",
             "source_mapping_warning": "",
             "requires_human_action": false,
-            "ai_notes": "The subskill candidates provided (quadrants, axis distance) do not match the mathematical content of the question (quadratic function vertex, axis, and translation). The anchor scope appears to contain subskills for a different topic.",
+            "ai_notes": "There is a significant mismatch between the current example (quadratic function properties) and the available subskill candidates (basic coordinate geometry). The candidates provided for the skill 'vh_數學B1_QuadraticFunctionGraph' appear to belong to a different topic entirely.",
             "skill_scoped_candidates": [
               {
                 "candidate_id": "C1",
@@ -24977,15 +24959,15 @@
           "ai_confidence": 0.0,
           "ai_best_candidate_id": "needs_review",
           "ai_evidence": [
-            "The question asks about the properties of a quadratic function, including its vertex, axis of symmetry, maximum value, and translation.",
-            "The provided anchor-scoped candidates (C1, C2, C3) are related to basic coordinate geometry tasks like classifying quadrants or computing distances to axes.",
-            "There is a mismatch between the question content (quadratic function analysis) and the available subskill candidates (coordinate system basics)."
+            "The question asks to identify incorrect statements regarding a quadratic function, specifically its vertex, axis of symmetry, maximum value, and translation.",
+            "The provided anchor candidates (choose_possible_coordinate, classify_quadrant, compute_axis_distance) belong to coordinate system and axis distance families, which do not match the properties of quadratic functions.",
+            "The expected task families for this skill (coordinate_system_family) and the candidates provided seem to be misaligned with the actual content of a quadratic function graph skill."
           ],
           "ai_rejected_candidates": {
-            "C1": "This candidate belongs to the axis_distance_family and typically involves identifying coordinates based on geometric constraints, not analyzing quadratic function properties.",
-            "C2": "This candidate is for classifying quadrants, which is not the primary task of the question.",
-            "C3": "This candidate is for computing distances to axes, which is not required here.",
-            "C4": "While this is a generic calculation task, it is an outsider candidate and does not specifically capture the quadratic function analysis required."
+            "C1": "This candidate involves choosing coordinates based on axis distance or position, which does not apply to identifying quadratic function properties.",
+            "C2": "This candidate involves classifying points into quadrants, which is not the primary task of analyzing a quadratic function's vertex or axis.",
+            "C3": "This candidate involves computing distances to axes, which is not relevant to the vertex or translation of a parabola.",
+            "C4": "While the problem involves computation, this is a generic outsider candidate and does not specifically address the quadratic function concepts present in the question."
           },
           "ai_available": false,
           "ai_error": "",
@@ -25006,7 +24988,7 @@
           "conflict_reason": "needs_review",
           "source_mapping_warning": "",
           "requires_human_action": false,
-          "ai_notes": "The subskill candidates provided (quadrants, axis distance) do not match the mathematical content of the question (quadratic function vertex, axis, and translation). The anchor scope appears to contain subskills for a different topic.",
+          "ai_notes": "There is a significant mismatch between the current example (quadratic function properties) and the available subskill candidates (basic coordinate geometry). The candidates provided for the skill 'vh_數學B1_QuadraticFunctionGraph' appear to belong to a different topic entirely.",
           "skill_scoped_candidates": [
             {
               "candidate_id": "C1",

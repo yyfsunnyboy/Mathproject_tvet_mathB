@@ -29,6 +29,41 @@ import logging
 logger = logging.getLogger(__name__)
 
 # ==============================================================================
+# 【全域出題約束 (Global Generation Constraints)】
+# 版本: V1.0  日期: 2026-06-12
+# 說明: 此常數為所有 LLM 出題 Prompt 的通用底層約束，無論 Ablation 模式或技能類型，
+#       所有繼承此引擎產生的題目都必須自動套用以下規範。
+# ==============================================================================
+
+GLOBAL_GEN_CONSTRAINTS = """
+╔══════════════════════════════════════════════════════════════════╗
+║  【全域出題強制規範 (Global Generation Constraints) — 必須遵守】  ║
+╚══════════════════════════════════════════════════════════════════╝
+
+【1. 全域語系強制規範 (Localization — 台灣高職數學 B 版)】
+- 所有生成的題目文本（question_text）、選項（choices）及解題提示（hints），
+  一律使用「繁體中文（台灣高職數學 B 版語境）」輸出。
+- 嚴禁輸出任何英文題目文字、英文選項或非必要的英文解題提示。
+- 數學符號及變數名稱（如 x, y, f(x)）保持慣例即可，但文字說明必須繁體中文。
+- ✅ 正確範例：「計算 $2x^2 + 3x - 1$ 在 $x = 2$ 時的值。」
+- ❌ 禁止範例：「Calculate the value of $2x^2+3x-1$ when $x=2$.」
+
+【2. 全域 LaTeX 渲染標準化 (Mathematical Formatting)】
+- 僅在必要、複雜的數學公式（如二次函數、方程式、排列組合公式）使用 LaTeX 語法。
+- 行內公式必須嚴格使用「單美金符號」$...$ 包裹，嚴禁使用雙美金符號 $$...$$。
+- 次方符號（^2, ^3 等）必須與公式一同包裹在 $...$ 內，例：$x^2+4x+3$、$y=2x^2-1$。
+- 簡單的常數、標籤、一元一次關係（如 x=−2、n=5）或純文字敘述，
+  直接使用一般文本格式，嚴禁濫用 LaTeX 符號。
+- LaTeX 語法前後括號必須對稱，每一個 $ 開頭必須有對應的 $ 結尾，不得缺漏。
+- 嚴禁將 LaTeX 語法包裹在 Markdown 程式碼區塊（```）中輸出。
+- ✅ 正確範例（行內公式）：「求二次函數 $y = x^2 + 4x + 3$ 的頂點。」
+- ✅ 正確範例（簡單關係）：「當 x = 2 時，求 $y = 3x + 1$ 的值。」（x=2 不必加 LaTeX）
+- ❌ 禁止範例（括號不對稱）：「$x^2+4x+3 的值」（缺結尾 $）
+- ❌ 禁止範例（濫用 LaTeX）：「已知 $x$ $=$ $-2$，求...」（過度包裹）
+- ❌ 禁止範例（雙美金符號）：「$$y = x^2$$」（應改為 $y = x^2$）
+"""
+
+# ==============================================================================
 # [2026-01-30 新增] Ab1 Bare Prompt Template - 模擬一般用戶
 # ==============================================================================
 # 設計理念：
@@ -38,14 +73,15 @@ logger = logging.getLogger(__name__)
 # - 完全獨立於 UNIVERSAL_GEN_CODE_PROMPT 和 MASTER_SPEC
 # ==============================================================================
 
-BARE_PROMPT_TEMPLATE = """【角色設定】
-你是一位中學數學老師的「出題助理」。
+BARE_PROMPT_TEMPLATE = """{global_constraints}
+【角色設定】
+你是一位台灣高職數學 B 版的「自動出題助理」。
 
 【任務說明】
 請幫我寫一個 Python 程式，用來自動生成數學題目。
 ★ 題目主題是：「{topic}」（請務必針對此主題出題，不要生成其他類型的題目）
 這個程式需要隨機產生數字，每次執行都能變換數值。
-請使用跟課本一樣的格式表達數學式子。
+請使用跟課本一樣的格式表達數學式子，並嚴格遵守上方的全域出題規範。
 
 【參考例題】
 以下是我們想模仿的題目類型（請參考這個邏輯來寫程式）：
@@ -155,7 +191,8 @@ BARE_MINIMAL_PROMPT = r"""你是 Python 程式設計師。請根據以下 MASTER
 # 完整的 UNIVERSAL_GEN_CODE_PROMPT（針對 14B 模型優化的鷹架版）
 # ==============================================================================
 
-UNIVERSAL_GEN_CODE_PROMPT = """【角色】K12 數學演算法工程師
+UNIVERSAL_GEN_CODE_PROMPT = """{global_constraints}
+【角色】台灣高職數學 B 版自動出題演算法工程師
 
 【任務】
 實作 `def generate(level=1, **kwargs)` 函數，根據 MASTER_SPEC 生成數學問題的完整 Python 代碼。
@@ -386,10 +423,11 @@ class PromptBuilder:
                 topic = "數學題目"
             
             prompt = BARE_PROMPT_TEMPLATE.format(
+                global_constraints=GLOBAL_GEN_CONSTRAINTS,
                 topic=topic,
                 textbook_example=textbook_example
             )
-            logger.info(f"Prompt Ab1 - BARE_PROMPT_TEMPLATE (自然語言)")
+            logger.info(f"Prompt Ab1 - BARE_PROMPT_TEMPLATE (自然語言，含 Global Constraints)")
             logger.info(f"   Topic: {topic}")
             logger.info(f"   Final Prompt: {len(prompt)} chars")
 
@@ -455,8 +493,9 @@ class PromptBuilder:
             # 這些是 Legacy 的寫法。
             # 我們應該依賴我們動態生成的 prompt part。
             
-            # 對 UNIVERSAL_GEN_CODE_PROMPT 進行格式化
+            # 對 UNIVERSAL_GEN_CODE_PROMPT 進行格式化（含全域約束注入）
             universal_prompt_with_example = UNIVERSAL_GEN_CODE_PROMPT.format(
+                global_constraints=GLOBAL_GEN_CONSTRAINTS,
                 textbook_example_section=textbook_example_section
             )
             
@@ -464,7 +503,7 @@ class PromptBuilder:
             # universal_prompt + domain_stubs + tool_selection + master_spec
             prompt = universal_prompt_with_example + domain_injection + tool_selection_protocol + f"\n\n### MASTER_SPEC:\n{clean_spec}"
             
-            logger.info(f"Prompt Ab{ablation_id} - Optimized Stub Mode")
+            logger.info(f"Prompt Ab{ablation_id} - Optimized Stub Mode (含 Global Constraints)")
             logger.info(f"   Universal Prompt: {len(universal_prompt_with_example)} chars")
             logger.info(f"   Domain Injection: {len(domain_injection)} chars")
             logger.info(f"   MASTER_SPEC: {len(clean_spec)} chars")
@@ -565,4 +604,5 @@ __all__ = [
     'PromptBuilder',
     'BARE_MINIMAL_PROMPT',
     'UNIVERSAL_GEN_CODE_PROMPT',
+    'GLOBAL_GEN_CONSTRAINTS',
 ]

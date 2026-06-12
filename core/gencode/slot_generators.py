@@ -672,7 +672,10 @@ def _fmt_signed_int(value: int) -> str:
     return f"+{value}" if value > 0 else str(value)
 
 
+# ── Raw formula helpers (no $...$ — for metadata/derivation/internal use) ────
+
 def _quadratic_vertex_form(a: int, h: int, k: int) -> str:
+    """Raw vertex-form string without $...$ (metadata / checker use)."""
     x_term = "(x)" if h == 0 else f"(x-{h})" if h > 0 else f"(x+{abs(h)})"
     tail = "" if k == 0 else _fmt_signed_int(k)
     if a == 1:
@@ -683,6 +686,7 @@ def _quadratic_vertex_form(a: int, h: int, k: int) -> str:
 
 
 def _quadratic_standard_form_from_vertex(a: int, h: int, k: int) -> str:
+    """Raw standard-form string without $...$ (metadata / checker use)."""
     b = -2 * a * h
     c = a * h * h + k
     parts = [f"y={a}x^2"]
@@ -692,6 +696,93 @@ def _quadratic_standard_form_from_vertex(a: int, h: int, k: int) -> str:
         parts.append(_fmt_signed_int(c))
     return "".join(parts)
 
+
+# ── Display formula helpers ($...$ wrapped — for student-facing fields) ───────
+
+def _display_math(raw: str) -> str:
+    """Wrap a raw formula string in $...$ for student-facing display."""
+    return f"${raw}$"
+
+
+def _quadratic_vertex_form_display(a: int, h: int, k: int) -> str:
+    """Display vertex-form with $...$ (question_text / choices / explanation)."""
+    return _display_math(_quadratic_vertex_form(a, h, k))
+
+
+def _quadratic_standard_form_display(a: int, h: int, k: int) -> str:
+    """Display standard-form with $...$ (question_text / choices / explanation)."""
+    return _display_math(_quadratic_standard_form_from_vertex(a, h, k))
+
+
+# ── Chinese-language phrase helpers ──────────────────────────────────────────
+
+def _shift_phrase_zh(h: int, k: int) -> str:
+    """Chinese description of 2-D translation e.g. '向左 2、向上 3'."""
+    if h == 0 and k == 0:
+        return "不移動"
+    parts: list[str] = []
+    if h != 0:
+        parts.append(f"向右 {h}" if h > 0 else f"向左 {abs(h)}")
+    if k != 0:
+        parts.append(f"向上 {k}" if k > 0 else f"向下 {abs(k)}")
+    return "、".join(parts)
+
+
+def _vertical_shift_phrase_zh(k: int) -> str:
+    """Chinese description of vertical-only translation e.g. '向上 5'."""
+    return f"向上 {k}" if k > 0 else f"向下 {abs(k)}"
+
+
+def _extreme_phrase_zh(a: int, k: int) -> str:
+    """Chinese extreme-value description e.g. '最大值為 k' or '最小值為 k'."""
+    return f"最大值為 {k}" if a < 0 else f"最小值為 {k}"
+
+
+def _vertex_axis_option_zh(
+    vertex: tuple[int, int], axis_x: int, extreme_zh: str
+) -> str:
+    """Chinese choice-option text: '頂點 (h,k)，對稱軸 $x=axis_x$，最小值為 k'."""
+    return f"頂點 ({vertex[0]},{vertex[1]})，對稱軸 $x={axis_x}$，{extreme_zh}"
+
+
+def _make_quadratic_choice_options_zh(
+    h: int, k: int, a: int
+) -> tuple[str, list[str]]:
+    """
+    Build correct option + 3 unique wrong options in Chinese.
+    Uses a cascade of 8 deterministic candidate distractors to guarantee
+    no duplicates even when h=0 or k=0.
+    """
+    correct_ext = _extreme_phrase_zh(a, k)
+    correct = _vertex_axis_option_zh((h, k), h, correct_ext)
+    seen: set[str] = {correct}
+
+    def opt(vh: int, vk: int, ax: int, ea: int, ek: int) -> str:
+        return _vertex_axis_option_zh((vh, vk), ax, _extreme_phrase_zh(ea, ek))
+
+    candidates = [
+        opt(-h,    k,    -h,    a,      k),       # flip vertex/axis sign
+        opt(h,    -k,     h,    a,     -k),       # flip k sign
+        opt(h + 1, k,   h + 1, -a,     k),       # offset h, flip a-sign
+        opt(h,    k + 1,  h,    a,    k + 1),    # offset k up
+        opt(h - 1, k,   h - 1,  a,     k),       # offset h the other way
+        opt(h,    k - 1,  h,    a,    k - 1),    # offset k down
+        opt(h + 2, k,   h + 2,  a,     k),       # larger h offset
+        opt(h,    k + 2,  h,    a,    k + 2),    # larger k offset
+    ]
+
+    wrongs: list[str] = []
+    for c in candidates:
+        if c not in seen:
+            seen.add(c)
+            wrongs.append(c)
+        if len(wrongs) == 3:
+            break
+
+    return correct, wrongs
+
+
+# ── Legacy English helpers (kept for backward compatibility, not used in slots) ─
 
 def _shift_phrase(h: int, k: int) -> str:
     horizontal = "none" if h == 0 else f"right {h}" if h > 0 else f"left {abs(h)}"
@@ -714,15 +805,10 @@ def _slot_quadratic_graph_vertex_axis_choice(
     a = rng.choice([-3, -2, -1, 1, 2, 3])
     h = rng.randint(-4, 4)
     k = rng.randint(-4, 5)
-    correct = _vertex_axis_option((h, k), h, _extreme_phrase(a, k))
-    wrongs = [
-        _vertex_axis_option((-h, k), -h, _extreme_phrase(a, k)),
-        _vertex_axis_option((h, -k), h, _extreme_phrase(a, -k)),
-        _vertex_axis_option((h + 1, k), h + 1, _extreme_phrase(-a, k)),
-    ]
+    correct, wrongs = _make_quadratic_choice_options_zh(h, k, a)
     stem = (
-        f"Given {_quadratic_vertex_form(a, h, k)}, which option correctly states "
-        "the vertex, axis of symmetry, and maximum/minimum value?"
+        f"已知拋物線 {_quadratic_vertex_form_display(a, h, k)}，"
+        "請選出其頂點、對稱軸與最大值或最小值的正確敘述。"
     )
     return _build_choice_payload(
         skill_id,
@@ -735,12 +821,15 @@ def _slot_quadratic_graph_vertex_axis_choice(
         metadata={
             "givens": [f"equation={_quadratic_vertex_form(a, h, k)}"],
             "target": "vertex-axis-extreme",
-            "derivation": [f"vertex=({h},{k})", f"axis=x={h}", _extreme_phrase(a, k)],
+            "derivation": [f"vertex=({h},{k})", f"axis=x={h}", _extreme_phrase_zh(a, k)],
             "template_slot": "quadratic_graph_vertex_axis_choice",
             "problem_type_id": pt,
         },
         diagnosis_tags=["quadratic_vertex", "quadratic_axis", "quadratic_extreme"],
-        explanation=f"The vertex is ({h},{k}), so the axis is x={h} and the graph has {_extreme_phrase(a, k)}.",
+        explanation=(
+            f"拋物線 {_quadratic_vertex_form_display(a, h, k)} 的頂點為 $({h},{k})$，"
+            f"對稱軸為 $x={h}$，{_extreme_phrase_zh(a, k)}。"
+        ),
         seed=seed,
     )
 
@@ -752,10 +841,19 @@ def _slot_quadratic_graph_translation_fill_blank(
     a = rng.choice([-3, -2, -1, 1, 2, 3])
     h = rng.choice([-3, -2, -1, 1, 2, 3])
     k = rng.choice([-4, -3, -2, -1, 1, 2, 3, 4])
-    answer = _shift_phrase(h, k)
+    answer = _shift_phrase_zh(h, k)
+    base_display = _display_math(f"y={a}x^2")
+    shifted_display = _quadratic_vertex_form_display(a, h, k)
     stem = (
-        f"Relative to y={a}x^2, the graph of {_quadratic_vertex_form(a, h, k)} is shifted how? "
-        "Answer in the form 'left 2, up 3' or 'right 1, down 4'."
+        f"相較於 {base_display}，拋物線 {shifted_display} 如何平移？"
+        "請用「向左 2、向上 3」的格式作答。"
+    )
+    h_desc = f"向右 {h}" if h > 0 else f"向左 {abs(h)}"
+    k_desc = f"向上 {k}" if k > 0 else f"向下 {abs(k)}"
+    explanation = (
+        f"水平方向平移：{h_desc}（頂點式中 $x$ 的位移）；"
+        f"鉛直方向平移：{k_desc}（常數項的移動）。"
+        f"答案為「{answer}」。"
     )
     return {
         "skill_id": skill_id,
@@ -769,7 +867,7 @@ def _slot_quadratic_graph_translation_fill_blank(
         "checker_type": "text_short_checker",
         "checker": "text_short_checker",
         "answer_contract": dict(get_answer_contract(spec)),
-        "explanation": f"Inside shift gives {('right ' + str(h)) if h > 0 else ('left ' + str(abs(h)))} and k gives {('up ' + str(k)) if k > 0 else ('down ' + str(abs(k)))}.",
+        "explanation": explanation,
         "diagnosis_tags": ["quadratic_translation", "vertex_form_shift"],
         "metadata": {
             "givens": [f"base=y={a}x^2", f"shifted={_quadratic_vertex_form(a, h, k)}"],
@@ -788,8 +886,22 @@ def _slot_quadratic_graph_translation_short_answer(
     rng = random.Random(f"{seed}|quadratic_translation_short|{pt}")
     a = rng.choice([-3, -2, -1, 1, 2, 3])
     k = rng.choice([-5, -4, -3, -2, -1, 1, 2, 3, 4, 5])
-    answer = "up " + str(k) if k > 0 else "down " + str(abs(k))
-    stem = f"Compared with y={a}x^2, how is the graph of y={a}x^2{_fmt_signed_int(k)} shifted vertically?"
+    answer = _vertical_shift_phrase_zh(k)
+    base_raw = f"y={a}x^2"
+    shifted_raw = f"y={a}x^2{_fmt_signed_int(k)}"
+    base_display = _display_math(base_raw)
+    shifted_display = _display_math(shifted_raw)
+    stem = f"相較於 {base_display}，拋物線 {shifted_display} 在鉛直方向如何平移？"
+    if k > 0:
+        explanation = (
+            f"函數 {shifted_display} 是在 {base_display} 外部加上 ${k}$，"
+            f"圖形向上平移 ${k}$ 單位，答案為「{answer}」。"
+        )
+    else:
+        explanation = (
+            f"函數 {shifted_display} 是在 {base_display} 外部減去 ${abs(k)}$，"
+            f"圖形向下平移 ${abs(k)}$ 單位，答案為「{answer}」。"
+        )
     return {
         "skill_id": skill_id,
         "problem_type_id": pt,
@@ -802,10 +914,10 @@ def _slot_quadratic_graph_translation_short_answer(
         "checker_type": "text_short_checker",
         "checker": "text_short_checker",
         "answer_contract": dict(get_answer_contract(spec)),
-        "explanation": f"Adding {_fmt_signed_int(k)} outside the square shifts the graph {answer}.",
+        "explanation": explanation,
         "diagnosis_tags": ["quadratic_translation", "vertical_shift"],
         "metadata": {
-            "givens": [f"base=y={a}x^2", f"shifted=y={a}x^2{_fmt_signed_int(k)}"],
+            "givens": [f"base={base_raw}", f"shifted={shifted_raw}"],
             "target": "vertical-shift",
             "derivation": [f"k={k}", answer],
             "template_slot": "quadratic_graph_translation_short_answer",
@@ -822,13 +934,11 @@ def _slot_quadratic_vertex_form_properties(
     a = rng.choice([-3, -2, -1, 1, 2, 3])
     h = rng.randint(-5, 5)
     k = rng.randint(-5, 5)
-    correct = _vertex_axis_option((h, k), h, _extreme_phrase(a, k))
-    wrongs = [
-        _vertex_axis_option((h, k), -h, _extreme_phrase(a, k)),
-        _vertex_axis_option((0, k), 0, _extreme_phrase(a, k)),
-        _vertex_axis_option((h, k + 1), h, _extreme_phrase(a, k + 1)),
-    ]
-    stem = f"For {_quadratic_vertex_form(a, h, k)}, choose the correct graph property statement."
+    correct, wrongs = _make_quadratic_choice_options_zh(h, k, a)
+    stem = (
+        f"已知二次函數 {_quadratic_vertex_form_display(a, h, k)}，"
+        "請選出其圖形性質的正確敘述。"
+    )
     return _build_choice_payload(
         skill_id,
         pt,
@@ -840,12 +950,15 @@ def _slot_quadratic_vertex_form_properties(
         metadata={
             "givens": [f"equation={_quadratic_vertex_form(a, h, k)}"],
             "target": "graph-properties",
-            "derivation": [f"vertex=({h},{k})", f"axis=x={h}", _extreme_phrase(a, k)],
+            "derivation": [f"vertex=({h},{k})", f"axis=x={h}", _extreme_phrase_zh(a, k)],
             "template_slot": "quadratic_vertex_form_properties",
             "problem_type_id": pt,
         },
         diagnosis_tags=["quadratic_vertex_form", "quadratic_properties"],
-        explanation=f"In y=a(x-h)^2+k, the vertex is ({h},{k}) and the axis is x={h}.",
+        explanation=(
+            f"對於 {_quadratic_vertex_form_display(a, h, k)}，"
+            f"頂點為 $({h},{k})$，對稱軸為 $x={h}$，{_extreme_phrase_zh(a, k)}。"
+        ),
         seed=seed,
     )
 
@@ -857,15 +970,39 @@ def _slot_quadratic_standard_to_vertex_properties(
     a = rng.choice([-2, -1, 1, 2])
     h = rng.randint(-4, 4)
     k = rng.randint(-4, 4)
-    standard_form = _quadratic_standard_form_from_vertex(a, h, k)
-    vertex_form = _quadratic_vertex_form(a, h, k)
-    correct = f"{vertex_form}; vertex ({h},{k}); axis x={h}"
-    wrongs = [
-        f"{vertex_form}; vertex ({-h},{k}); axis x={-h}",
-        f"{standard_form}; vertex ({h},{k}); axis x={h}",
-        f"{_quadratic_vertex_form(a, h, k + 1)}; vertex ({h},{k + 1}); axis x={h}",
+    standard_raw = _quadratic_standard_form_from_vertex(a, h, k)
+    vertex_raw = _quadratic_vertex_form(a, h, k)
+    standard_display = _quadratic_standard_form_display(a, h, k)
+    vertex_display = _quadratic_vertex_form_display(a, h, k)
+
+    def ch_opt(vf_disp: str, vh: int, vk: int, ax: int) -> str:
+        return f"{vf_disp}；頂點 $({vh},{vk})$；對稱軸 $x={ax}$"
+
+    correct = ch_opt(vertex_display, h, k, h)
+
+    # Cascade of 6 distinct distractor candidates — handles h=0 / k=0 edge cases
+    cands = [
+        ch_opt(vertex_display, -h, k, -h),
+        ch_opt(standard_display, h, k, h),
+        ch_opt(_quadratic_vertex_form_display(a, h, k + 1), h, k + 1, h),
+        ch_opt(vertex_display, h, k - 1, h),
+        ch_opt(_quadratic_vertex_form_display(a, h + 1, k), h + 1, k, h + 1),
+        ch_opt(vertex_display, h, k + 2, h),
     ]
-    stem = f"Rewrite {standard_form} in vertex form and identify its vertex and axis of symmetry."
+    seen: set[str] = {correct}
+    wrongs: list[str] = []
+    for c in cands:
+        if c not in seen:
+            seen.add(c)
+            wrongs.append(c)
+        if len(wrongs) == 3:
+            break
+
+    stem = f"將 {standard_display} 化為頂點式，並選出正確的頂點與對稱軸。"
+    explanation = (
+        f"{standard_display} 可化為 {vertex_display}，"
+        f"頂點為 $({h},{k})$，對稱軸為 $x={h}$。"
+    )
     return _build_choice_payload(
         skill_id,
         pt,
@@ -875,14 +1012,14 @@ def _slot_quadratic_standard_to_vertex_properties(
         answer_type="single_choice",
         checker_type="choice_label_checker",
         metadata={
-            "givens": [f"standard_form={standard_form}"],
+            "givens": [f"standard_form={standard_raw}"],
             "target": "vertex-form-conversion",
-            "derivation": [vertex_form, f"vertex=({h},{k})", f"axis=x={h}"],
+            "derivation": [vertex_raw, f"vertex=({h},{k})", f"axis=x={h}"],
             "template_slot": "quadratic_standard_to_vertex_properties",
             "problem_type_id": pt,
         },
         diagnosis_tags=["quadratic_complete_square", "quadratic_vertex_form"],
-        explanation=f"{standard_form} can be written as {vertex_form}, so the vertex is ({h},{k}) and the axis is x={h}.",
+        explanation=explanation,
         seed=seed,
     )
 

@@ -17,6 +17,7 @@ from core.gencode.answer_payload import (
 from core.gencode.problem_type_spec import get_answer_contract, list_problem_types_for_skill, load_problem_type_spec
 from core.gencode.slot_generators import generate_from_problem_type_spec
 from core.gencode.validators import validate_generator_payload
+from core.gencode.generated_question_format_validator import validate_generated_question_format
 from core.checkers.quadrant_checker import check_quadrant_answer
 
 try:
@@ -186,6 +187,15 @@ def generate_for_skill(
     if answer_contract:
         payload = finalize_generator_payload(payload, answer_contract)
         payload = apply_coordinate_pair_runtime_fields(payload, answer_contract)
+
+    # ── Global format & localization validation (fail-fast, no repair) ───
+    format_errors = validate_generated_question_format(
+        payload,
+        skill_id=skill_id,
+        problem_type_spec=problem_type_spec,
+    )
+    if format_errors:
+        raise RuntimeError(f"generator_format_unsafe:{','.join(format_errors)}")
 
     errors = validate_generator_payload(payload, problem_type_spec=problem_type_spec)
     if errors:
