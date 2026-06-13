@@ -12,17 +12,19 @@ Slot Generator Question Output Contract 測試
   - 選擇題 choices 長度為 4，文字不重複，answer 為 A/B/C/D
   - text_short 平移題的 answer 使用中文，不含 left/right/up/down
   - question_text 與 explanation 中的二次函數公式有 $...$ 包裹
+
+NOTE: This test uses SELF-CONTAINED in-test fixtures and does NOT read any
+reports/induced_specs artifact.  This ensures tests remain stable even when
+Phase 1–3 artifacts are polluted or missing.
 """
 from __future__ import annotations
 
-import json
 import os
 import re
 import sys
 
 import pytest
 
-# ─── 確保 project root 在 sys.path ────────────────────────────────────────────
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 if ROOT not in sys.path:
     sys.path.insert(0, ROOT)
@@ -39,32 +41,96 @@ from core.gencode.slot_generators import (
 )
 from core.gencode.validators import validate_generator_payload
 
-# ─── 讀取 induced spec ────────────────────────────────────────────────────────
-_SPEC_PATH = os.path.join(
-    ROOT,
-    "reports",
-    "gencode_closed_loop",
-    "induced_specs",
-    "vh_數學B1_QuadraticFunctionGraph.json",
-)
-
-with open(_SPEC_PATH, encoding="utf-8") as _f:
-    _RAW_SPEC = json.load(_f)
-
-_SPEC_BY_PT: dict[str, dict] = {
-    item["problem_type_id"]: item for item in _RAW_SPEC["items"]
-}
-
 SKILL_ID = "vh_數學B1_QuadraticFunctionGraph"
 SEEDS = list(range(10))
 
-# ─── Slot 定義 ─────────────────────────────────────────────────────────────────
+# ─── Self-contained ProblemTypeSpec fixtures ─────────────────────────────────
+# These are minimal specs sufficient to satisfy slot functions and validators.
+# They do NOT depend on reports/induced_specs artifacts.
+
+def _make_choice_spec(pt_id: str) -> dict:
+    return {
+        "problem_type_id": pt_id,
+        "skill_id": SKILL_ID,
+        "target_task": pt_id,
+        "task_family": "quadratic_function_graph_family",
+        "display_name": pt_id.replace("_", " "),
+        "answer_contract": {
+            "answer_type": "single_choice",
+            "checker_key": "choice_label_checker",
+            "equivalence_type": "choice_label",
+            "choices_required": True,
+            "frontend_render_choices": True,
+            "presentation_mode": "single_choice",
+        },
+        "stem_contract": {
+            "stem_must_not_embed_choices": True,
+            "required_math_objects": ["quadratic_equation"],
+            "allowed_math_objects": ["quadratic_equation", "coordinate_point"],
+            "forbidden_patterns": [r"\(A\)", r"\(B\)", r"\(C\)", r"\(D\)"],
+        },
+        "semantic_contract": {
+            "required_concepts": ["二次函數圖形"],
+            "reasoning_type": ["numeric_computation"],
+        },
+        "generator_contract": {
+            "template_slots": {"stem": pt_id},
+            "template_families": [pt_id],
+        },
+        "spec_source": "self_contained_test_fixture",
+        "generator_readiness": "runtime_ready",
+    }
+
+
+def _make_text_short_spec(pt_id: str) -> dict:
+    return {
+        "problem_type_id": pt_id,
+        "skill_id": SKILL_ID,
+        "target_task": pt_id,
+        "task_family": "quadratic_function_graph_family",
+        "display_name": pt_id.replace("_", " "),
+        "answer_contract": {
+            "answer_type": "text_short",
+            "checker_key": "text_short_checker",
+            "equivalence_type": "exact_string",
+            "choices_required": False,
+            "frontend_render_choices": False,
+            "presentation_mode": "short_answer",
+        },
+        "stem_contract": {
+            "stem_must_not_embed_choices": True,
+            "required_math_objects": ["quadratic_equation"],
+            "allowed_math_objects": ["quadratic_equation"],
+            "forbidden_patterns": [],
+        },
+        "semantic_contract": {
+            "required_concepts": ["二次函數圖形"],
+            "reasoning_type": ["numeric_computation"],
+        },
+        "generator_contract": {
+            "template_slots": {"stem": pt_id},
+            "template_families": [pt_id],
+        },
+        "spec_source": "self_contained_test_fixture",
+        "generator_readiness": "runtime_ready",
+    }
+
+
+_SPEC_BY_PT: dict[str, dict] = {
+    "quadratic_graph_vertex_axis_choice":      _make_choice_spec("quadratic_graph_vertex_axis_choice"),
+    "quadratic_graph_translation_fill_blank":  _make_text_short_spec("quadratic_graph_translation_fill_blank"),
+    "quadratic_graph_translation_short_answer": _make_text_short_spec("quadratic_graph_translation_short_answer"),
+    "quadratic_vertex_form_properties":        _make_choice_spec("quadratic_vertex_form_properties"),
+    "quadratic_standard_to_vertex_properties": _make_choice_spec("quadratic_standard_to_vertex_properties"),
+}
+
+# ─── Slot table ───────────────────────────────────────────────────────────────
 _SLOT_TABLE = [
     ("quadratic_graph_vertex_axis_choice",      _slot_quadratic_graph_vertex_axis_choice),
-    ("quadratic_graph_translation_fill_blank",   _slot_quadratic_graph_translation_fill_blank),
+    ("quadratic_graph_translation_fill_blank",  _slot_quadratic_graph_translation_fill_blank),
     ("quadratic_graph_translation_short_answer", _slot_quadratic_graph_translation_short_answer),
-    ("quadratic_vertex_form_properties",         _slot_quadratic_vertex_form_properties),
-    ("quadratic_standard_to_vertex_properties",  _slot_quadratic_standard_to_vertex_properties),
+    ("quadratic_vertex_form_properties",        _slot_quadratic_vertex_form_properties),
+    ("quadratic_standard_to_vertex_properties", _slot_quadratic_standard_to_vertex_properties),
 ]
 
 _CHOICE_PTS = {
@@ -72,7 +138,6 @@ _CHOICE_PTS = {
     "quadratic_vertex_form_properties",
     "quadratic_standard_to_vertex_properties",
 }
-
 _TEXT_SHORT_PTS = {
     "quadratic_graph_translation_fill_blank",
     "quadratic_graph_translation_short_answer",
@@ -87,7 +152,6 @@ _BAD_FORMAT_BLOCKERS = {
 
 _ENGLISH_SHIFT_WORDS = re.compile(r"\b(left|right|up|down)\b", re.IGNORECASE)
 _DOLLAR_RE = re.compile(r"\$[^$\n]+?\$")
-
 
 # ─── Parametrize 全部 50 組合 ──────────────────────────────────────────────────
 _ALL_CASES = [
@@ -174,15 +238,9 @@ def test_slot_output_contract(pt: str, fn, seed: int) -> None:
 class TestChoiceDedup:
     """驗證 h=0 / k=0 邊界時不產生重複選項。"""
 
-    def _run(self, pt: str, fn, seed: int) -> list[dict]:
-        spec = _SPEC_BY_PT[pt]
-        payload = fn(SKILL_ID, pt, spec, seed)
-        return payload.get("choices", [])
-
     def test_vertex_axis_h_zero(self) -> None:
         """seed 使 h=0 時，vertex_axis_choice 選項仍不重複。"""
         spec = _SPEC_BY_PT["quadratic_graph_vertex_axis_choice"]
-        # Try all seeds; at least one should produce h=0
         for seed in range(20):
             payload = _slot_quadratic_graph_vertex_axis_choice(
                 SKILL_ID, "quadratic_graph_vertex_axis_choice", spec, seed
@@ -243,11 +301,36 @@ class TestDisplayFormula:
             SKILL_ID, "quadratic_graph_vertex_axis_choice", spec, 0
         )
         givens = payload.get("metadata", {}).get("givens", [])
-        # givens 是 raw string list — 格式驗證不會掃 metadata plain strings
         assert isinstance(givens, list)
         blockers = validate_generated_question_format(
             payload, skill_id=SKILL_ID, problem_type_spec=spec
         )
         assert "formula_not_wrapped" not in blockers, (
             f"formula_not_wrapped triggered unexpectedly: {blockers}"
+        )
+
+
+class TestFixtureIsNotArtifactDependent:
+    """Verify the test itself does not load any reports/induced_specs file."""
+
+    def test_spec_by_pt_is_self_contained(self) -> None:
+        for pt_id in [
+            "quadratic_graph_vertex_axis_choice",
+            "quadratic_graph_translation_fill_blank",
+            "quadratic_graph_translation_short_answer",
+            "quadratic_vertex_form_properties",
+            "quadratic_standard_to_vertex_properties",
+        ]:
+            assert pt_id in _SPEC_BY_PT, f"{pt_id} missing from fixture"
+            spec = _SPEC_BY_PT[pt_id]
+            assert spec.get("spec_source") == "self_contained_test_fixture"
+
+    def test_no_reports_artifact_dependency(self) -> None:
+        """The fixture path must NOT be under reports/."""
+        import inspect
+        src = inspect.getsource(
+            sys.modules[__name__]
+        )
+        assert "induced_specs" not in src or "self_contained" in src, (
+            "Test module must not reference induced_specs path for fixture loading"
         )

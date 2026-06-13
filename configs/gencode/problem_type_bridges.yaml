@@ -1,0 +1,62 @@
+# ProblemType Bridge Configuration
+#
+# Maps "semantic primary problem_type_id" (e.g. from human_confirmed rule packs)
+# to runtime presentation variants that are backed by registered slot generators.
+#
+# Schema:
+#   bridges:
+#     <semantic_primary_problem_type_id>:
+#       semantic_family: <task_family string, for routing / audit>
+#       notes: <optional human note>
+#       runtime_variants:
+#         - problem_type_id: <formal runtime pt id — must match SLOT_REGISTRY key or TASK_FAMILY_TO_SLOT>
+#           presentation_mode: <short_answer | single_choice>
+#           answer_type: <text_short | single_choice | choice>
+#           checker_key: <checker id>
+#           equivalence_type: <equivalence id>
+#           template_slot: <SLOT_REGISTRY key>
+#
+# Rules:
+#   - No skill_id hardcodes here.  Bridge is problem_type-level / taxonomy-level.
+#   - If a Phase 1-induced problem_type_id matches a bridge key, Phase 2 must expand
+#     to runtime_variants instead of packaging the primary as a runtime generator.
+#   - single_primary_problem_type in rule packs means "source classification converges";
+#     it does NOT mean only one runtime presentation generator is allowed.
+
+bridges:
+  text_short_compute_vertex_and_axis:
+    semantic_family: quadratic_function_graph_family
+    notes: >
+      human_confirmed rule pack primary for quadratic function graph skills.
+      Expands into 5 presentation-level runtime variants.
+    runtime_variants:
+      - problem_type_id: quadratic_graph_translation_fill_blank
+        presentation_mode: short_answer
+        answer_type: text_short
+        checker_key: text_short_checker
+        equivalence_type: exact_string
+        template_slot: quadratic_graph_translation_fill_blank
+      - problem_type_id: quadratic_graph_translation_short_answer
+        presentation_mode: short_answer
+        answer_type: text_short
+        checker_key: text_short_checker
+        equivalence_type: exact_string
+        template_slot: quadratic_graph_translation_short_answer
+      - problem_type_id: quadratic_graph_vertex_axis_choice
+        presentation_mode: single_choice
+        answer_type: single_choice
+        checker_key: choice_label_checker
+        equivalence_type: choice_label
+        template_slot: quadratic_graph_vertex_axis_choice
+      - problem_type_id: quadratic_vertex_form_properties
+        presentation_mode: single_choice
+        answer_type: single_choice
+        checker_key: choice_label_checker
+        equivalence_type: choice_label
+        template_slot: quadratic_vertex_form_properties
+      - problem_type_id: quadratic_standard_to_vertex_properties
+        presentation_mode: single_choice
+        answer_type: single_choice
+        checker_key: choice_label_checker
+        equivalence_type: choice_label
+        template_slot: quadratic_standard_to_vertex_properties

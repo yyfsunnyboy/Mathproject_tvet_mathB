@@ -540,7 +540,33 @@ def validate_phase1_report_contract(report: dict[str, Any]) -> dict[str, Any]:
         contract_status = "PASS_WITH_WARNINGS"
     else:
         contract_status = "PASS"
-        
+
+    # Source Skill Binding Supremacy §3: pass through scope lock and authority fields.
+    for _ssb_field in (
+        "source_skill_scope_locked",
+        "source_skill_id",
+        "classification_scope",
+        "skill_mapping_authority",
+        "human_confirmed_rule_pack_applied",
+        "matched_registered_yaml_rule_pack",
+        "ai_classification_overridden_by_human_confirmed_rule_pack",
+        "core_skill_concept",
+        "supporting_math_objects",
+    ):
+        if _ssb_field in report:
+            normalized_fields[_ssb_field] = report[_ssb_field]
+        elif _ssb_field not in normalized_fields:
+            if _ssb_field == "source_skill_scope_locked":
+                normalized_fields[_ssb_field] = True
+            elif _ssb_field == "classification_scope":
+                normalized_fields[_ssb_field] = "within_current_skill"
+            elif _ssb_field == "skill_mapping_authority":
+                normalized_fields[_ssb_field] = "textbook_examples.skill_id"
+            elif _ssb_field in {"human_confirmed_rule_pack_applied", "ai_classification_overridden_by_human_confirmed_rule_pack"}:
+                normalized_fields[_ssb_field] = False
+            elif _ssb_field == "supporting_math_objects":
+                normalized_fields[_ssb_field] = []
+
     return {
         "report_contract_status": contract_status,
         "report_contract_violations": violations,

@@ -6,7 +6,7 @@
   "publish_status": "published",
   "draft_skill_file_path": "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\drafts\\vh_數學B1_QuadraticFunctionGraph.py",
   "formal_skill_file_path": "E:\\Python\\Mathproject_tvet_mathB\\skills\\vh_數學B1_QuadraticFunctionGraph.py",
-  "backup_path": "E:\\Python\\Mathproject_tvet_mathB\\backups\\gencode_skill_publish\\vh_數學B1_QuadraticFunctionGraph.20260608_140824.484529+0000.py",
+  "backup_path": "E:\\Python\\Mathproject_tvet_mathB\\backups\\gencode_skill_publish\\vh_數學B1_QuadraticFunctionGraph.20260613_050641.123917+0000.py",
   "backup_status": "backed_up",
   "py_compile_status": "passed",
   "runtime_smoke_status": "passed",
@@ -22,5 +22,5 @@
     "publish_summary_json": "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_QuadraticFunctionGraph_publish_summary.json",
     "publish_summary_md": "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_QuadraticFunctionGraph_publish_summary.md"
   },
-  "timestamp": "2026-06-08T14:08:24.490550+00:00"
+  "timestamp": "2026-06-13T05:06:41.128313+00:00"
 }

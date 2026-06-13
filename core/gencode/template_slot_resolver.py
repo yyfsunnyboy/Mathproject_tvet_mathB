@@ -34,6 +34,14 @@ TASK_FAMILY_TO_SLOT: dict[str, str] = {
     "quadratic_graph_translation_short_answer": "quadratic_graph_translation_short_answer",
     "quadratic_vertex_form_properties": "quadratic_vertex_form_properties",
     "quadratic_standard_to_vertex_properties": "quadratic_standard_to_vertex_properties",
+    # Taxonomy target_tasks → precise presentation slots (Source Skill Binding Supremacy §resolver).
+    "quadratic_graph_translation": "quadratic_graph_translation_fill_blank",
+    "quadratic_vertex_axis_identification": "quadratic_graph_translation_fill_blank",
+    "quadratic_graph_properties_choice": "quadratic_vertex_form_properties",
+    "identify_quadratic_graph_shape": "quadratic_graph_vertex_axis_choice",
+    "compute_quadratic_vertex": "quadratic_graph_vertex_axis_choice",
+    "compute_quadratic_axis_of_symmetry": "quadratic_graph_vertex_axis_choice",
+    "quadratic_vertex_form_properties": "quadratic_vertex_form_properties",
 }
 
 SLOT_COMPATIBLE_FAMILIES: dict[str, frozenset[str]] = {
@@ -51,9 +59,31 @@ SLOT_COMPATIBLE_FAMILIES: dict[str, frozenset[str]] = {
     "quadratic_graph_vertex_axis_choice": frozenset({"single_choice"}),
     "quadratic_graph_translation_fill_blank": frozenset({"text_short", "short_answer"}),
     "quadratic_graph_translation_short_answer": frozenset({"text_short", "short_answer"}),
-    "quadratic_vertex_form_properties": frozenset({"single_choice", "text_short", "short_answer"}),
-    "quadratic_standard_to_vertex_properties": frozenset({"single_choice", "text_short", "short_answer"}),
+    # These slots ALWAYS produce A/B/C/D choice payloads.  Do not add text_short here.
+    "quadratic_vertex_form_properties": frozenset({"single_choice"}),
+    "quadratic_standard_to_vertex_properties": frozenset({"single_choice"}),
 }
+
+# Map from slot name → its actual runtime presentation mode.
+# Derived from SLOT_COMPATIBLE_FAMILIES: slots whose compatible set contains ONLY
+# "single_choice" are choice-only; text_short family → "short_answer".
+SLOT_PRESENTATION_MODE: dict[str, str] = {
+    slot: "single_choice"
+    for slot, compat in SLOT_COMPATIBLE_FAMILIES.items()
+    if compat <= {"single_choice"}
+}
+SLOT_PRESENTATION_MODE.update(
+    {
+        slot: "short_answer"
+        for slot, compat in SLOT_COMPATIBLE_FAMILIES.items()
+        if compat <= {"text_short", "short_answer"}
+    }
+)
+
+
+def get_slot_primary_presentation_mode(slot: str) -> str:
+    """Return the authoritative presentation mode for a registered slot, or ''."""
+    return SLOT_PRESENTATION_MODE.get(str(slot or "").strip(), "")
 
 _QUADRATIC_GRAPH_TARGET_TASKS = frozenset(
     {
@@ -62,6 +92,13 @@ _QUADRATIC_GRAPH_TARGET_TASKS = frozenset(
         "quadratic_graph_translation_short_answer",
         "quadratic_vertex_form_properties",
         "quadratic_standard_to_vertex_properties",
+        # taxonomy target_tasks
+        "quadratic_graph_translation",
+        "quadratic_vertex_axis_identification",
+        "quadratic_graph_properties_choice",
+        "identify_quadratic_graph_shape",
+        "compute_quadratic_vertex",
+        "compute_quadratic_axis_of_symmetry",
     }
 )
 
@@ -80,9 +117,26 @@ def _is_quadratic_graph_spec(problem_type_spec: dict[str, Any]) -> bool:
 
 def _resolve_quadratic_graph_slot(problem_type_spec: dict[str, Any]) -> str:
     target_task = str(problem_type_spec.get("target_task", "")).strip()
-    if target_task in _QUADRATIC_GRAPH_TARGET_TASKS:
-        return TASK_FAMILY_TO_SLOT.get(target_task, "")
     pt = str(problem_type_spec.get("problem_type_id", "")).strip().lower()
+
+    # Precise mapping via TASK_FAMILY_TO_SLOT for formal presentation problem_type_ids.
+    if target_task in TASK_FAMILY_TO_SLOT:
+        return TASK_FAMILY_TO_SLOT[target_task]
+
+    # Bridge-primary: if this pt is a semantic bridge primary, derive slot from
+    # answer_contract rather than defaulting to choice slot.
+    from core.gencode.problem_type_bridge import is_bridge_primary, get_runtime_variants
+    if is_bridge_primary(pt) or is_bridge_primary(problem_type_spec.get("problem_type_id", "")):
+        ac = get_answer_contract(problem_type_spec)
+        answer_type = str(ac.get("answer_type", "")).strip()
+        presentation_mode = str(ac.get("presentation_mode", "")).strip()
+        # text_short bridge primary → map to fill_blank slot (first short_answer variant)
+        if answer_type in {"text_short", "short_answer"} or presentation_mode == "short_answer":
+            return "quadratic_graph_translation_fill_blank"
+        # Otherwise use vertex_axis_choice as default choice slot
+        return "quadratic_graph_vertex_axis_choice"
+
+    # pt-name based sub-routing.
     if "translation_fill_blank" in pt:
         return "quadratic_graph_translation_fill_blank"
     if "translation_short_answer" in pt:
@@ -90,6 +144,10 @@ def _resolve_quadratic_graph_slot(problem_type_spec: dict[str, Any]) -> str:
     if "standard_to_vertex" in pt:
         return "quadratic_standard_to_vertex_properties"
     if "vertex_form" in pt:
+        return "quadratic_vertex_form_properties"
+    if "translation" in pt:
+        return "quadratic_graph_translation_fill_blank"
+    if "properties_choice" in pt or "graph_properties" in pt:
         return "quadratic_vertex_form_properties"
     return "quadratic_graph_vertex_axis_choice"
 
@@ -160,10 +218,14 @@ def _slot_rng(seed: int | None, problem_type_id: str) -> random.Random:
 
 def infer_registered_task_token(problem_type_spec: dict[str, Any]) -> str:
     """Recover a registered task token from a normalized problem_type_id."""
+    from core.gencode.problem_type_canonicalizer import _strip_typed_prefix
+
     pt = str(problem_type_spec.get("problem_type_id", "")).strip().lower()
     if not pt:
         return ""
-    matches = [task for task in TASK_FAMILY_TO_SLOT if task.lower() in pt]
+    _, base_pt = _strip_typed_prefix(pt)
+    search_pt = base_pt.lower() if base_pt else pt
+    matches = [task for task in TASK_FAMILY_TO_SLOT if task.lower() in search_pt]
     if not matches:
         return ""
     return max(matches, key=len)

@@ -140,6 +140,40 @@ def _reinforce_canonical_answer_contract(
         spec["answer_contract"] = ac
         return spec
 
+    # Typed-prefix canonicalization guard:
+    # If this spec was already run through enrich_spec_with_canonicalization(),
+    # its answer_contract reflects the canonical presentation (choice/text_short/…)
+    # NOT the raw value-type prefix.  Skip the crude prefix→checker override and
+    # instead re-apply the canonicalizer's result to guarantee consistency.
+    _is_already_canonicalized = bool(
+        spec.get("canonical_base_problem_type_id") or spec.get("value_type_prefix")
+    )
+    if _is_already_canonicalized:
+        from core.gencode.problem_type_canonicalizer import enrich_spec_with_canonicalization
+        enriched = enrich_spec_with_canonicalization(spec)
+        canonical_ac = enriched.get("answer_contract")
+        if isinstance(canonical_ac, dict):
+            ac.update(canonical_ac)
+            spec["answer_contract"] = ac
+        # Propagate resolved template slot into generator_contract
+        resolved_slot = enriched.get("_resolved_template_slot", "")
+        if resolved_slot:
+            spec["_resolved_template_slot"] = resolved_slot
+            gc = spec.get("generator_contract")
+            if not isinstance(gc, dict):
+                gc = {}
+                spec["generator_contract"] = gc
+            slots = gc.get("template_slots")
+            if not isinstance(slots, dict):
+                slots = {}
+                gc["template_slots"] = slots
+            if not slots.get("stem"):
+                slots["stem"] = resolved_slot
+        if short_answer_prefix and _sanitize_coordinate_pair_answer_contract(spec, pt):
+            return spec
+        spec["answer_contract"] = ac
+        return spec
+
     if pt.startswith("expression_"):
         answer_type = "expression"
         checker = "expression_checker"

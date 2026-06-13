@@ -260,6 +260,69 @@ def evaluate_diversity_metrics(
     }
 
 
+def _detect_payload_spec_contract_mismatch(
+    spec: dict[str, Any],
+    payloads: list[dict[str, Any]],
+) -> list[str]:
+    """Compare live payloads against spec answer_contract.
+
+    Returns blocker tokens when the actual generator output contradicts the spec.
+    Requires at least 3 payloads to make a reliable judgment.
+    """
+    if len(payloads) < 3:
+        return []
+    from core.gencode.problem_type_spec import get_answer_contract
+
+    ac = get_answer_contract(spec)
+    spec_answer_type = str(ac.get("answer_type", "")).strip().lower()
+    spec_checker = str(ac.get("checker_key") or ac.get("checker") or "").strip().lower()
+
+    blockers: list[str] = []
+
+    # Count mismatch evidence
+    choices_in_payload = 0
+    text_short_in_payload = 0
+    numeric_type_in_payload = 0
+    choice_answer_in_payload = 0
+
+    for pl in payloads:
+        if not isinstance(pl, dict):
+            continue
+        pl_answer_type = str(pl.get("answer_type", "")).strip().lower()
+        pl_choices = pl.get("choices")
+        pl_answer = str(pl.get("answer", pl.get("correct_answer", ""))).strip()
+
+        if isinstance(pl_choices, list) and pl_choices:
+            choices_in_payload += 1
+        if pl_answer_type in {"single_choice", "choice", "choice_label"}:
+            choice_answer_in_payload += 1
+        if pl_answer_type in {"text_short", "short_answer"}:
+            text_short_in_payload += 1
+        if pl_answer_type in {"integer", "numeric", "rational"}:
+            numeric_type_in_payload += 1
+        # Detect A/B/C/D answers that look like choice labels
+        if len(pl_answer) == 1 and pl_answer in {"A", "B", "C", "D"}:
+            choice_answer_in_payload += 1
+
+    threshold = max(3, len(payloads) // 2)
+
+    # Spec says integer/numeric but payload produces choices
+    if spec_answer_type in {"integer", "numeric", "rational"} and spec_checker in {
+        "integer_checker", "numeric_checker", "rational_checker"
+    }:
+        if choices_in_payload >= threshold or choice_answer_in_payload >= threshold:
+            blockers.append("checker_answer_mismatch:spec_numeric_but_payload_choices")
+        if text_short_in_payload >= threshold:
+            blockers.append("text_answer_numeric_checker_mismatch")
+
+    # Spec says text_short but payload produces numeric
+    if spec_answer_type in {"text_short", "short_answer"} or "text_short_checker" in spec_checker:
+        if numeric_type_in_payload >= threshold and choices_in_payload < threshold:
+            blockers.append("checker_answer_mismatch:spec_text_short_but_payload_numeric")
+
+    return blockers
+
+
 def run_diversity_sampling(
     skill_id: str,
     spec: dict[str, Any],
@@ -276,6 +339,7 @@ def run_diversity_sampling(
     sig_fields = list(anti.get("signature_fields") or DEFAULT_ANTI_REPETITION.get("signature_fields") or [])
     variant_ids = [str(v.get("id", "")) for v in _enabled_variants(gc)]
 
+    live_payloads: list[dict[str, Any]] = []
     signatures: list[dict[str, Any]] = []
     question_texts: list[str] = []
     answers: list[str] = []
@@ -293,6 +357,7 @@ def run_diversity_sampling(
             generation_errors.append(str(ex)[:120])
 
         if payload and isinstance(payload, dict):
+            live_payloads.append(payload)
             qt = str(payload.get("question_text", "")).strip()
             ans = str(payload.get("answer", payload.get("correct_answer", ""))).strip()
             question_texts.append(qt)
@@ -332,4 +397,19 @@ def run_diversity_sampling(
         metrics["sampling_mode"] = "live_and_contract"
     else:
         metrics["sampling_mode"] = "live"
+
+    # ── Payload/spec contract mismatch gate ─────────────────────────────────
+    # Detect when live generator output contradicts spec answer_contract.
+    # This catches issues Phase 3 smoke would otherwise catch.
+    if live_payloads:
+        mismatch_blockers = _detect_payload_spec_contract_mismatch(spec, live_payloads)
+        if mismatch_blockers:
+            existing_blockers = list(metrics.get("diversity_blockers") or [])
+            existing_blockers.extend(mismatch_blockers)
+            metrics["diversity_blockers"] = sorted(set(existing_blockers))
+            # Upgrade to a hard blocker status
+            if metrics.get("diversity_sampling_status") not in {"generator_diversity_blocked"}:
+                metrics["diversity_sampling_status"] = "generator_diversity_blocked"
+            metrics["contract_mismatch_blockers"] = mismatch_blockers
+
     return metrics

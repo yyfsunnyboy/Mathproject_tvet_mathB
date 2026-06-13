@@ -52,6 +52,35 @@ from core.gencode.task_families import (
     task_family_for_task,
 )
 
+
+def _load_human_confirmed_rulepack(skill_id: str) -> dict[str, Any] | None:
+    """Source Skill Binding Supremacy §7: load human_confirmed rule pack for a skill.
+
+    Returns the rule pack entry dict if one with ``classifier_source: human_confirmed``
+    exists for *skill_id*, otherwise returns None.
+    """
+    import yaml
+    from pathlib import Path
+
+    rulepack_path = Path(__file__).resolve().parents[2] / "configs" / "gencode" / "classifiers" / "phase1_rule_packs.yaml"
+    if not rulepack_path.exists():
+        return None
+    try:
+        with rulepack_path.open("r", encoding="utf-8") as fh:
+            root = yaml.safe_load(fh) or []
+    except Exception:
+        return None
+    if not isinstance(root, list):
+        return None
+    sid = str(skill_id or "").strip()
+    for item in root:
+        if not isinstance(item, dict):
+            continue
+        if str(item.get("skill_id", "")).strip() == sid:
+            if str(item.get("classifier_source", "")).strip() == "human_confirmed":
+                return item
+    return None
+
 _DISPLAY_NAME = {
     ("short_answer", "classify_quadrant"): "象限判斷短答",
     ("short_answer", "solve_unknown_coordinate_from_two_point_distance"): "兩點距離反求座標",
@@ -409,6 +438,13 @@ def _build_problem_type_spec_draft(skill_id: str, cluster: dict[str, Any], exist
         "feature_signature": list(cluster.get("signature", ())),
         }
     )
+    from core.gencode.problem_type_canonicalizer import enrich_spec_with_canonicalization
+
+    spec = enrich_spec_with_canonicalization(spec)
+    ac = spec.get("answer_contract") if isinstance(spec.get("answer_contract"), dict) else ac
+    legacy = legacy_fields_from_answer_contract(ac)
+    # Mark spec as canonicalized so _reinforce_canonical_answer_contract won't overwrite.
+    # (canonical_base_problem_type_id is set by enrich_spec_with_canonicalization)
     return spec, legacy
 
 
@@ -588,6 +624,13 @@ def apply_clause45_unclassified_exception_escalation(
 
     rescued_ids: set[int] = set()
     observed_tasks: list[str] = []
+    # Source Skill Binding Supremacy §6: when scope is locked, generic fallback
+    # tasks must NOT be promoted as usable Phase 3 problem types.
+    scope_locked = bool((main_skill_anchor or {}).get("source_skill_scope_locked", False))
+    _GENERIC_FALLBACK_TASKS = frozenset({
+        "contextual_application", "generic_numeric", "generic_numeric_family",
+        "fallback_contextual_application", "compute_numeric",
+    })
     for row in core_low_confidence_rows:
         ex_id = row.get("example_id")
         feat = feat_by_id.get(ex_id)
@@ -596,7 +639,17 @@ def apply_clause45_unclassified_exception_escalation(
         observed_task = _observed_target_task_for_clause45(feat, row, main_skill_anchor)
         observed_tasks.append(observed_task)
         task_family = task_family_for_task(observed_task) or str(feat.get("task_family", "")).strip()
-        proxy_problem_type_id = re.sub(r"_+", "_", f"fallback_{observed_task}").strip("_")
+
+        # Source Skill Binding Supremacy §6: if scope is locked and the resolved
+        # task is a generic fallback, produce skill_scoped_unresolved_problem_type
+        # instead so Phase 3 cannot use it as a real generator.
+        if scope_locked and (observed_task in _GENERIC_FALLBACK_TASKS or observed_task == "contextual_application"):
+            proxy_problem_type_id = "skill_scoped_unresolved_problem_type"
+            feat["generator_readiness"] = "pending_problem_type_induction"
+            feat["usable_for_phase3"] = False
+            feat["needs_rule_pack_or_slot_registration"] = True
+        else:
+            proxy_problem_type_id = re.sub(r"_+", "_", f"fallback_{observed_task}").strip("_")
 
         feat["target_task"] = observed_task
         feat["target"] = observed_task
@@ -637,11 +690,22 @@ def apply_clause45_unclassified_exception_escalation(
         if not (isinstance(row, dict) and isinstance(row.get("example_id"), int) and int(row.get("example_id")) in rescued_ids)
     ]
     task_counts = Counter(observed_tasks)
+    # Determine whether any rescued examples were demoted to skill_scoped_unresolved.
+    unresolved_ids = {
+        int(feat_by_id[row.get("example_id")].get("source_example_id", row.get("example_id")))
+        for row in core_low_confidence_rows
+        if isinstance(row, dict)
+        and isinstance(row.get("example_id"), int)
+        and row.get("example_id") in feat_by_id
+        and feat_by_id[row.get("example_id")].get("problem_type_id") == "skill_scoped_unresolved_problem_type"
+    } if scope_locked else set()
     report = {
         "clause45_escalation_applied": True,
         "clause45_rescued_example_ids": sorted(rescued_ids),
         "clause45_observed_target_task_distribution": dict(task_counts),
         "clause45_proxy_problem_type_ids": sorted({f"fallback_{task}" for task in task_counts if task}),
+        "clause45_source_skill_scope_locked": scope_locked,
+        "clause45_skill_scoped_unresolved_example_ids": sorted(unresolved_ids),
     }
     return features_for_induction, still_excluded, report
 
@@ -661,6 +725,15 @@ def induce_problem_types_from_examples(
 ) -> dict[str, Any]:
     skill_metadata = load_skill_metadata_from_db(skill_id)
     main_skill_anchor = build_main_skill_anchor(skill_id, skill_metadata)
+    # Source Skill Binding Supremacy §7: check for human_confirmed rule pack.
+    human_confirmed_pack = _load_human_confirmed_rulepack(skill_id)
+    human_confirmed_rule_pack_applied = False
+    if human_confirmed_pack is not None:
+        human_confirmed_rule_pack_applied = True
+        # If single_primary_problem_type flag set, pin spec_mode to rule-first
+        # so AI cannot overwrite the human_confirmed classification.
+        if human_confirmed_pack.get("single_primary_problem_type"):
+            spec_mode = "rule_first_induce_from_sources"
     expected_families = set(main_skill_anchor.get("expected_task_families") or [])
     expected_subskills = {
         t
@@ -812,12 +885,45 @@ def induce_problem_types_from_examples(
             }
         )
         answer_shape = str(ac_proposal.get("answer_shape", "")).strip() or detect_answer_shape(ac_proposal)
-        readiness = slot_generator_readiness(spec)
+        from core.gencode.problem_type_canonicalizer import (
+            is_phase3_packaging_allowed,
+            evaluate_typed_prefix_readiness,
+        )
+        readiness, usable_for_phase3, canonical_blockers = evaluate_typed_prefix_readiness(spec)
+        if readiness != "runtime_ready" and readiness != "runtime_ready_with_warning":
+            # Fallback to legacy readiness for non-canonicalizable paths
+            legacy_readiness = slot_generator_readiness(spec)
+            if legacy_readiness in {"runtime_ready", "runtime_ready_with_warning"}:
+                readiness = legacy_readiness
+                usable_for_phase3 = True
         contract_ok, contract_blockers = answer_contract_supports_task(spec)
+        if canonical_blockers:
+            contract_blockers = sorted(set(list(contract_blockers) + list(canonical_blockers)))
         if checker_cap.get("checker_capability_status") == "blocked":
             readiness = "answer_contract_not_supported"
+            usable_for_phase3 = False
         elif not contract_ok:
             readiness = "answer_contract_not_supported"
+            usable_for_phase3 = False
+        # Source Skill Binding Supremacy §9: block Phase 3 for unresolved/generic fallback types.
+        _UNRESOLVED_PT_PREFIXES = (
+            "skill_scoped_unresolved",
+            "pending_problem_type_induction",
+        )
+        _GENERIC_FALLBACK_PT_SUBSTRINGS = (
+            "fallback_contextual_application",
+            "contextual_application",
+            "generic_numeric_family",
+        )
+        if any(pt.startswith(p) for p in _UNRESOLVED_PT_PREFIXES):
+            readiness = "pending_problem_type_induction"
+        elif bool(main_skill_anchor.get("source_skill_scope_locked")) and any(
+            s in pt for s in _GENERIC_FALLBACK_PT_SUBSTRINGS
+        ):
+            readiness = "blocked_by_unresolved_skill_scoped_problem_type"
+            usable_for_phase3 = False
+        if not is_phase3_packaging_allowed(readiness, usable_for_phase3):
+            usable_for_phase3 = False
         cand_target = str(spec.get("target_task", "")).strip()
         cand_family = str(spec.get("task_family", "")).strip() or task_family_for_task(cand_target)
         subskill_risk: list[str] = []
@@ -896,10 +1002,57 @@ def induce_problem_types_from_examples(
                 "feature_signature": spec.get("feature_signature", []),
                 "problem_type_spec_draft": spec,
                 "generator_readiness": readiness,
-                "template_slot": get_template_slot(spec),
+                "usable_for_phase3": usable_for_phase3,
+                "template_slot": get_template_slot(spec) or spec.get("_resolved_template_slot", ""),
+                "canonical_base_problem_type_id": spec.get("canonical_base_problem_type_id", ""),
+                "value_type_prefix": spec.get("value_type_prefix", ""),
                 "subskill_id": cand_target or fallback_subskill_id,
             }
         )
+
+    # Source Skill Binding Supremacy / ProblemType Bridge §3–§4:
+    # If any induced candidate is a bridge primary, expand it to runtime variants.
+    from core.gencode.problem_type_bridge import (
+        BRIDGE_MISSING,
+        expand_primary_to_runtime_variants,
+        is_bridge_primary,
+    )
+    expanded_candidates: list[dict[str, Any]] = []
+    bridge_expanded_pts: set[str] = set()
+    for cand in candidates:
+        pt_id = str(cand.get("problem_type_id", "")).strip()
+        if is_bridge_primary(pt_id):
+            source_ex_ids = [
+                int(eid) for eid in (cand.get("matched_example_ids") or [])
+                if isinstance(eid, int)
+            ]
+            variants, status = expand_primary_to_runtime_variants(skill_id, pt_id, source_ex_ids)
+            if status == "ok" and variants:
+                bridge_expanded_pts.add(pt_id)
+                for v in variants:
+                    v["source_candidate"] = cand
+                    v["confidence"] = "high"
+                    v["promote_recommendation"] = "recommend_promote_for_that_candidate"
+                    v["promote_blockers"] = []
+                    v["risk_flags"] = []
+                    v["template_slot"] = v.get("generator_contract", {}).get("template_slots", {}).get("stem", "")
+                    v["subskill_id"] = v.get("target_task", fallback_subskill_id)
+                    expanded_candidates.append(v)
+            else:
+                # Bridge missing — mark as blocked, do NOT fallback to contextual_application
+                blocked_cand = dict(cand)
+                blocked_cand["generator_readiness"] = BRIDGE_MISSING
+                blocked_cand["usable_for_phase3"] = False
+                blocked_cand["risk_flags"] = sorted(
+                    set(list(blocked_cand.get("risk_flags", []) or []) + [BRIDGE_MISSING])
+                )
+                blocked_cand["promote_blockers"] = sorted(
+                    set(list(blocked_cand.get("promote_blockers", []) or []) + [BRIDGE_MISSING])
+                )
+                expanded_candidates.append(blocked_cand)
+        else:
+            expanded_candidates.append(cand)
+    candidates = expanded_candidates
 
     non_runtime_supported_problem_type_ids = {
         str(c.get("problem_type_id", "")).strip()
@@ -1237,6 +1390,14 @@ def induce_problem_types_from_examples(
         "spec_defined_problem_type_ids": [s["problem_type_id"] for s in induced_specs],
         **gates,
         "next_action": "phase2_generate_from_induced_specs",
+        # Source Skill Binding Supremacy §3/§7 fields.
+        "source_skill_scope_locked": bool(main_skill_anchor.get("source_skill_scope_locked", True)),
+        "source_skill_id": str(main_skill_anchor.get("source_skill_id", skill_id)),
+        "classification_scope": str(main_skill_anchor.get("classification_scope", "within_current_skill")),
+        "skill_mapping_authority": str(main_skill_anchor.get("skill_mapping_authority", "textbook_examples.skill_id")),
+        "human_confirmed_rule_pack_applied": human_confirmed_rule_pack_applied,
+        "matched_registered_yaml_rule_pack": str(human_confirmed_pack.get("rule_pack_id", "")) if human_confirmed_pack else "",
+        "ai_classification_overridden_by_human_confirmed_rule_pack": human_confirmed_rule_pack_applied,
     }
 
 

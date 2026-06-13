@@ -70,7 +70,18 @@ def spec_to_answer_contract_proposal(spec: dict[str, Any]) -> dict[str, Any]:
 
 def slot_generator_readiness(spec: dict[str, Any]) -> str:
     from core.gencode.checker_registry import validate_answer_contract_capability
+    from core.gencode.problem_type_canonicalizer import (
+        READINESS_CONTRACT_SLOT_MISMATCH,
+        evaluate_typed_prefix_readiness,
+    )
     from core.gencode.task_families import answer_contract_supports_task
+
+    # Typed-prefix canonicalization: resolve slot + answer_contract before readiness.
+    readiness, usable, blockers = evaluate_typed_prefix_readiness(spec)
+    if readiness == READINESS_CONTRACT_SLOT_MISMATCH:
+        return readiness
+    if usable and readiness in {"runtime_ready", "runtime_ready_with_warning"}:
+        return readiness
 
     ac = get_answer_contract(spec)
     cap = validate_answer_contract_capability(ac)
@@ -102,7 +113,7 @@ def slot_generator_readiness(spec: dict[str, Any]) -> str:
         return "runtime_ready"
     if slot:
         return "pending_template"
-    return "generator_not_ready"
+    return readiness if readiness != "runtime_ready" else "generator_not_ready"
 
 
 def merge_phase1_with_problem_type_specs(

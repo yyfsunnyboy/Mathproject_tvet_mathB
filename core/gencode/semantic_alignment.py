@@ -11,6 +11,7 @@ from core.gencode.task_families import (
     DISTANCE_BETWEEN_TWO_POINTS_TASKS,
     DIVISION_POINT_COORDINATES_FAMILY,
     DIVISION_POINT_COORDINATES_TASKS,
+    QUADRATIC_FUNCTION_GRAPH_FAMILY,
     answer_contract_supports_task,
     dominant_source_families,
     families_compatible,
@@ -205,6 +206,70 @@ def extract_source_terms_from_features(features: list[dict[str, Any]]) -> set[st
         terms.add(str(feat.get("answer_type", "")).strip())
         terms |= _tokenize(str(feat.get("question_text", "")))
     return {t for t in terms if t}
+
+
+# ---------------------------------------------------------------------------
+# Source Skill Binding Supremacy §5: core_skill_concept / supporting_math_objects
+# ---------------------------------------------------------------------------
+
+_FAMILY_TO_CORE_CONCEPT: dict[str, str] = {
+    QUADRATIC_FUNCTION_GRAPH_FAMILY: "quadratic_function_graph",
+    "function_concept_family": "function_concept",
+    "distance_between_two_points_family": "distance_between_two_points",
+    "division_point_coordinates_family": "division_point_coordinates",
+    "classify_quadrant_family": "coordinate_quadrant",
+    "coordinate_system_family": "coordinate_system",
+    "absolute_value_inequality_family": "absolute_value",
+    "axis_distance_family": "axis_distance",
+}
+
+_SUPPORTING_MATH_OBJECTS_POOL: frozenset[str] = frozenset({
+    "coordinate_point", "two_coordinate_points", "three_coordinate_points",
+    "distance_formula", "segment_length", "midpoint", "centroid",
+    "slope", "intercept", "axis_of_symmetry", "vertex", "parabola",
+    "number_line", "absolute_value", "inequality", "interval",
+    "function_notation", "domain", "range",
+    "permutation", "combination", "probability",
+    "vector", "matrix", "triangle", "polygon",
+    "area", "perimeter", "angle",
+})
+
+
+def _infer_core_skill_concept(anchor: dict[str, Any]) -> str:
+    """Return a canonical core skill concept token for the given anchor."""
+    families = set(anchor.get("expected_task_families") or [])
+    for fam in (
+        QUADRATIC_FUNCTION_GRAPH_FAMILY,
+        "function_concept_family",
+        "distance_between_two_points_family",
+        "division_point_coordinates_family",
+        "classify_quadrant_family",
+        "coordinate_system_family",
+        "absolute_value_inequality_family",
+        "axis_distance_family",
+    ):
+        if fam in families:
+            return _FAMILY_TO_CORE_CONCEPT.get(fam, fam)
+    skill_en = str(anchor.get("skill_en_name", "")).lower().replace(" ", "")
+    if skill_en:
+        return skill_en
+    return "unknown"
+
+
+def _infer_supporting_math_objects(
+    source_features: list[dict[str, Any]],
+    core_concept: str,
+) -> list[str]:
+    """Collect math objects from source features that are NOT the core skill concept."""
+    found: set[str] = set()
+    for feat in source_features:
+        if not isinstance(feat, dict):
+            continue
+        for mo in feat.get("math_objects", []) or []:
+            s = str(mo).strip()
+            if s and s != core_concept and s in _SUPPORTING_MATH_OBJECTS_POOL:
+                found.add(s)
+    return sorted(found)
 
 
 def extract_problem_type_terms(spec: dict[str, Any]) -> set[str]:
@@ -784,6 +849,40 @@ def evaluate_semantic_alignment(
         ]
     if rule_fallback_only:
         warnings.append("ai_first_mode_fell_back_to_rule_only")
+
+    # Source Skill Binding Supremacy §4 / §6: when scope is locked (DB skill_id is
+    # authoritative), demote anchor-mismatch blockers to named warnings rather than
+    # blocking the skill.  This prevents chapter background terms from halting progress.
+    scope_locked = bool(anchor.get("source_skill_scope_locked", False))
+    if scope_locked:
+        _scope_lock_demote = {
+            "source_examples_mismatch",
+            "majority_needs_review",
+            "expected_family_mismatch",
+            "mixed_source_families",
+            "low_alignment_score",
+        }
+        demoted = [b for b in unique_blockers if b in _scope_lock_demote]
+        unique_blockers = [b for b in unique_blockers if b not in _scope_lock_demote]
+        for b in demoted:
+            if b == "source_examples_mismatch":
+                warnings.append("anchor_taxonomy_needs_refinement")
+            elif b == "majority_needs_review":
+                warnings.append("skill_scoped_classification_low_confidence")
+            elif b == "expected_family_mismatch":
+                warnings.append("expected_subskill_taxonomy_missing")
+            else:
+                warnings.append(b)
+        if demoted:
+            warnings.append("source_skill_scope_locked_demoted_blockers_to_warnings")
+
+    # Source Skill Binding Supremacy §5: derive core_skill_concept and
+    # supporting_math_objects for downstream consumers.
+    core_skill_concept = _infer_core_skill_concept(anchor)
+    supporting_math_objects = _infer_supporting_math_objects(
+        blocker_features or source_features, core_skill_concept
+    )
+
     suggested_action = ""
     if subskill_mismatch_rows and not unique_blockers:
         suggested_action = "review_source_mapping_or_skill_scope"
@@ -838,6 +937,13 @@ def evaluate_semantic_alignment(
         "warnings": sorted(set(warnings)),
         "induction_core_example_count": core_count,
         "induction_enrichment_example_count": enrichment_count,
+        # Source Skill Binding Supremacy §3/§5 fields.
+        "source_skill_scope_locked": scope_locked,
+        "source_skill_id": str(anchor.get("source_skill_id", anchor.get("skill_id", ""))).strip(),
+        "classification_scope": str(anchor.get("classification_scope", "within_current_skill")),
+        "skill_mapping_authority": str(anchor.get("skill_mapping_authority", "textbook_examples.skill_id")),
+        "core_skill_concept": core_skill_concept,
+        "supporting_math_objects": supporting_math_objects,
         "source_quality_reject_examples": sorted(set(source_quality_reject_examples)),
     }
 

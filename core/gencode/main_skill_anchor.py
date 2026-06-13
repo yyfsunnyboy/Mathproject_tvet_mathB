@@ -14,6 +14,8 @@ from core.gencode.task_families import (
     DISTANCE_BETWEEN_TWO_POINTS_TASKS,
     FUNCTION_CONCEPT_FAMILY,
     FUNCTION_CONCEPT_TASKS,
+    QUADRATIC_FUNCTION_GRAPH_FAMILY,
+    QUADRATIC_FUNCTION_GRAPH_TASKS,
     infer_skill_families_from_terms,
 )
 
@@ -25,6 +27,18 @@ _LINEAR_FUNCTION_HINTS: tuple[str, ...] = (
     "线型函数",
     "一次函數",
     "一次函数",
+)
+
+# Source Skill Binding Supremacy §8: quadratic function skill guard hints.
+_QUADRATIC_FUNCTION_HINTS: tuple[str, ...] = (
+    "quadraticfunctiongraph",
+    "quadratic function graph",
+    "二次函數的圖形",
+    "二次函数的图形",
+    "quadraticgraph",
+    "二次函數圖形",
+    "quadraticfunction",
+    "quadratic function",
 )
 
 # Exclusive skill titles → single subskill (narrow scope).
@@ -79,6 +93,13 @@ def _terms_blob(skill_terms: set[str]) -> str:
 def _is_linear_function_skill(skill_terms: set[str]) -> bool:
     blob = _terms_blob(skill_terms)
     return any(h.lower() in blob for h in _LINEAR_FUNCTION_HINTS)
+
+
+def _is_quadratic_function_skill(skill_terms: set[str]) -> bool:
+    """Source Skill Binding Supremacy §8: recognize quadratic function skills to prevent
+    background chapter terms (e.g. '坐標系') from hijacking the skill family anchor."""
+    blob = _terms_blob(skill_terms)
+    return any(h.lower() in blob for h in _QUADRATIC_FUNCTION_HINTS)
 
 
 def _phrase_in_skill_terms(phrase: str, skill_terms: set[str]) -> bool:
@@ -173,6 +194,11 @@ def infer_expected_subskill_candidates(
         candidates |= {"classify_quadrant", "choose_possible_coordinate", "compute_axis_distance"}
     if FUNCTION_CONCEPT_FAMILY in expected_families:
         candidates |= set(FUNCTION_CONCEPT_TASKS)
+    # Source Skill Binding Supremacy §8: quadratic function graph subskills.
+    if QUADRATIC_FUNCTION_GRAPH_FAMILY in expected_families:
+        candidates |= set(QUADRATIC_FUNCTION_GRAPH_TASKS)
+        # Do not also add coordinate system subskills for quadratic skills.
+        candidates -= {"classify_quadrant", "choose_possible_coordinate", "compute_axis_distance"}
 
     if not candidates and expected_families:
         for fam in expected_families:
@@ -203,6 +229,11 @@ def build_main_skill_anchor(skill_id: str, skill_metadata: dict[str, Any] | None
         expected_families.add(FUNCTION_CONCEPT_FAMILY)
         # For clear function skills, avoid coordinate-system background term hijacking.
         expected_families.discard(COORDINATE_SYSTEM_FAMILY)
+    # Source Skill Binding Supremacy §8: quadratic function guard.
+    if _is_quadratic_function_skill(skill_terms):
+        expected_families.add(QUADRATIC_FUNCTION_GRAPH_FAMILY)
+        # Discard coordinate-system background term hijacking for quadratic skills.
+        expected_families.discard(COORDINATE_SYSTEM_FAMILY)
     subskill_candidates, skill_anchor_scope = infer_expected_subskill_candidates(skill_terms, expected_families)
 
     return {
@@ -223,6 +254,11 @@ def build_main_skill_anchor(skill_id: str, skill_metadata: dict[str, Any] | None
             "display_note": "此子技能為 fallback，用於收納未細分或綜合題",
         },
         "source_belongs_to_current_skill_by_default": True,
+        # Source Skill Binding Supremacy fields (§3 - Implementation Req 1).
+        "source_skill_scope_locked": True,
+        "source_skill_id": str(skill_id or "").strip(),
+        "classification_scope": "within_current_skill",
+        "skill_mapping_authority": "textbook_examples.skill_id",
     }
 
 

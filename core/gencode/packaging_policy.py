@@ -22,6 +22,78 @@ DIVERSITY_SAMPLING_OK_STATUSES = frozenset(
     }
 )
 
+# ── Phase 3 contract integrity ────────────────────────────────────────────────
+
+_FILL_BLANK_SLOTS = frozenset(
+    {
+        "quadratic_graph_translation_fill_blank",
+        "quadratic_graph_translation_short_answer",
+        "linear_triangle_median_compute",
+        "function_value_numeric",
+        "symbolic_quadrant",
+        "point_quadrant",
+    }
+)
+
+_CHOICE_SLOTS = frozenset(
+    {
+        "quadratic_graph_vertex_axis_choice",
+        "quadratic_vertex_form_properties",
+        "quadratic_standard_to_vertex_properties",
+        "point_quadrant_choice",
+        "axis_distance_choice",
+        "symbolic_quadrant_statement_choice",
+        "linear_function_two_point_choice",
+    }
+)
+
+_NUMERIC_CHECKERS = frozenset(
+    {"integer_checker", "rational_checker", "numeric_checker", "fraction_checker"}
+)
+
+
+def validate_phase3_generator_spec_integrity(row: dict[str, Any]) -> list[str]:
+    """Return blocker tokens when a GENERATOR_SPECS row has contract/slot mismatch.
+
+    Called before writing the draft wrapper to prevent smoke-time surprises.
+    """
+    if not isinstance(row, dict):
+        return ["invalid_generator_spec_row"]
+    blockers: list[str] = []
+    pt = str(row.get("problem_type_id", "")).strip()
+    checker = str(row.get("checker_key") or row.get("checker") or "").strip()
+    eq = str(row.get("equivalence_type") or row.get("answer_equivalence") or "").strip()
+    answer_type = str(row.get("answer_type", "")).strip()
+    answer_shape = str(row.get("answer_shape", "")).strip()
+    slot = str(row.get("template_slot", "")).strip()
+    readiness = str(row.get("generator_readiness", "")).strip()
+
+    # 1. generator_not_ready must never enter wrapper
+    if readiness == "generator_not_ready":
+        blockers.append("phase3_generator_not_ready_in_wrapper")
+
+    # 2. fill_blank slot + numeric checker → mismatch
+    if slot in _FILL_BLANK_SLOTS and checker in _NUMERIC_CHECKERS:
+        blockers.append("phase3_contract_slot_mismatch:fill_blank_slot_numeric_checker")
+
+    # 3. choice slot + non-choice checker → mismatch
+    if slot in _CHOICE_SLOTS and checker not in {"choice_label_checker", ""}:
+        blockers.append("phase3_contract_slot_mismatch:choice_slot_non_choice_checker")
+
+    # 4. answer_shape=text_short + answer_type integer/rational/numeric → shape/type mismatch
+    if answer_shape in {"text_short", "short_answer"} and answer_type in {"integer", "numeric", "rational"}:
+        blockers.append("phase3_answer_shape_type_mismatch")
+
+    # 5. usable_for_phase3=true but no canonical fields (only for typed-prefix pt_ids)
+    from core.gencode.problem_type_canonicalizer import _strip_typed_prefix
+    _, base_pt = _strip_typed_prefix(pt)
+    if base_pt != pt:  # has a typed prefix
+        has_canonical = bool(row.get("base_problem_type_id") or row.get("canonical_base_problem_type_id"))
+        if not has_canonical:
+            blockers.append("phase3_canonicalized_spec_missing")
+
+    return blockers
+
 _STATUS_KEYS = ("generator_status", "status", "readiness_status")
 _SMOKE_KEYS = (("checker_smoke_status", "checker_smoke"), ("dynamic_sampling_status", "dynamic_sampling"))
 

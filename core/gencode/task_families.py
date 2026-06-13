@@ -13,6 +13,8 @@ ABSOLUTE_VALUE_INEQUALITY_FAMILY = "absolute_value_inequality_family"
 AXIS_DISTANCE_FAMILY = "axis_distance_family"
 FUNCTION_CONCEPT_FAMILY = "function_concept_family"
 GENERIC_NUMERIC_FAMILY = "generic_numeric_family"
+# K12 quadratic function graph family (Source Skill Binding Supremacy §8).
+QUADRATIC_FUNCTION_GRAPH_FAMILY = "quadratic_function_graph_family"
 
 FUNCTION_CONCEPT_TASKS = frozenset(
     {
@@ -49,6 +51,23 @@ DISTANCE_BETWEEN_TWO_POINTS_TASKS = frozenset(
 
 CLASSIFY_QUADRANT_TASKS = frozenset({"classify_quadrant", "choose_correct_statement"})
 
+# Quadratic function graph tasks (K12 taxonomy).
+QUADRATIC_FUNCTION_GRAPH_TASKS = frozenset(
+    {
+        "quadratic_graph_translation",
+        "quadratic_vertex_axis_identification",
+        "quadratic_graph_properties_choice",
+        "quadratic_standard_to_vertex_properties",
+        "identify_quadratic_graph_shape",
+        "compute_quadratic_vertex",
+        "compute_quadratic_axis_of_symmetry",
+        "quadratic_graph_vertex_axis_choice",
+        "quadratic_graph_translation_fill_blank",
+        "quadratic_graph_translation_short_answer",
+        "quadratic_vertex_form_properties",
+    }
+)
+
 TASK_TO_FAMILY: dict[str, str] = {
     "compute_distance": DISTANCE_BETWEEN_TWO_POINTS_FAMILY,
     "compute_distance_between_two_points": DISTANCE_BETWEEN_TWO_POINTS_FAMILY,
@@ -74,10 +93,46 @@ TASK_TO_FAMILY: dict[str, str] = {
     "evaluate_function_value": FUNCTION_CONCEPT_FAMILY,
     "interpret_function_notation": FUNCTION_CONCEPT_FAMILY,
     "judge_domain_range_basic": FUNCTION_CONCEPT_FAMILY,
+    # Quadratic function graph tasks.
+    "quadratic_graph_translation": QUADRATIC_FUNCTION_GRAPH_FAMILY,
+    "quadratic_vertex_axis_identification": QUADRATIC_FUNCTION_GRAPH_FAMILY,
+    "quadratic_graph_properties_choice": QUADRATIC_FUNCTION_GRAPH_FAMILY,
+    "quadratic_standard_to_vertex_properties": QUADRATIC_FUNCTION_GRAPH_FAMILY,
+    "identify_quadratic_graph_shape": QUADRATIC_FUNCTION_GRAPH_FAMILY,
+    "compute_quadratic_vertex": QUADRATIC_FUNCTION_GRAPH_FAMILY,
+    "compute_quadratic_axis_of_symmetry": QUADRATIC_FUNCTION_GRAPH_FAMILY,
+    "quadratic_graph_vertex_axis_choice": QUADRATIC_FUNCTION_GRAPH_FAMILY,
+    "quadratic_graph_translation_fill_blank": QUADRATIC_FUNCTION_GRAPH_FAMILY,
+    "quadratic_graph_translation_short_answer": QUADRATIC_FUNCTION_GRAPH_FAMILY,
+    "quadratic_vertex_form_properties": QUADRATIC_FUNCTION_GRAPH_FAMILY,
 }
 
 # Higher score wins when multiple families match skill terms (not generator availability).
 FAMILY_SKILL_HINTS_SCORED: list[tuple[str, tuple[str, ...], int]] = [
+    (
+        QUADRATIC_FUNCTION_GRAPH_FAMILY,
+        (
+            "二次函數",
+            "二次函数",
+            "二次函數的圖形",
+            "二次函数的图形",
+            "quadraticfunctiongraph",
+            "quadratic function graph",
+            "拋物線",
+            "抛物线",
+            "頂點式",
+            "顶点式",
+            "二次函數圖形",
+            "quadratic graph",
+            "parabola",
+            "最大值",
+            "最小值",
+            "對稱軸",
+            "对称轴",
+            "平移",
+        ),
+        150,
+    ),
     (
         FUNCTION_CONCEPT_FAMILY,
         (
@@ -259,6 +314,8 @@ def task_family_for_task(target_task: str) -> str:
         return DISTANCE_BETWEEN_TWO_POINTS_FAMILY
     if task in FUNCTION_CONCEPT_TASKS or "function" in task:
         return FUNCTION_CONCEPT_FAMILY
+    if task in QUADRATIC_FUNCTION_GRAPH_TASKS or "quadratic" in task:
+        return QUADRATIC_FUNCTION_GRAPH_FAMILY
     return GENERIC_NUMERIC_FAMILY
 
 
@@ -278,7 +335,15 @@ def infer_skill_families_from_terms(skill_terms: set[str]) -> set[str]:
         return families
     scored.sort(reverse=True)
     top_score = scored[0][0]
-    return {fam for score, fam in scored if score >= top_score * 0.5}
+    result = {fam for score, fam in scored if score >= top_score * 0.5}
+    # Source Skill Binding Supremacy §8: when quadratic family is the dominant match,
+    # discard coordinate_system_family which is only a background chapter term.
+    if QUADRATIC_FUNCTION_GRAPH_FAMILY in result and COORDINATE_SYSTEM_FAMILY in result:
+        quad_score = next((s for s, f in scored if f == QUADRATIC_FUNCTION_GRAPH_FAMILY), 0)
+        coord_score = next((s for s, f in scored if f == COORDINATE_SYSTEM_FAMILY), 0)
+        if quad_score >= coord_score:
+            result.discard(COORDINATE_SYSTEM_FAMILY)
+    return result
 
 
 def infer_skill_families(skill_terms: set[str]) -> set[str]:
