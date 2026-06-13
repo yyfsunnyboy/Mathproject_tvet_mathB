@@ -64,6 +64,32 @@ _BROKEN_LATEX_BRACE = re.compile(r"\\(frac|sqrt|begin|end)\{[^}]*$")
 _COMPOSITE_EXERCISE = re.compile(r"綜合|综合|章末|統測|统测|基礎題|基础题", re.I)
 
 
+_QUADRATIC_FORM = re.compile(r"(二次函數|拋物線|抛物线|x\}\^\{2\}|x\^2|\\left\(\s*x|頂點|顶点|對稱軸|对称轴|開口方向|开口方向|最大值|最小值)")
+_VERTEX_FORM_HINT = re.compile(r"(\\left\(\s*x|頂點式|顶点式|\(x[+-]|頂點|顶点|對稱軸|对称轴|最低點|最低点|最高點|最高点)")
+_QUADRATIC_TRANSLATION = re.compile(r"(平移|水平向|鉛直向|铅直向|向左|向右|向上|向下)")
+_QUADRATIC_NEW_FUNCTION = re.compile(r"(新頂點|新顶点|新函數|新函数|平移到新頂點|平移到新顶点|寫出.*函數|写出.*函数)")
+_QUADRATIC_PROPERTIES = re.compile(r"(開口方向|开口方向|頂點坐標|顶点坐标|頂點座標|顶点座标|對稱軸|对称轴|最大值|最小值|概略圖形|概略图形)")
+_QUADRATIC_PARAMETER_COMPUTE = re.compile(r"(p\s*\+\s*q|f\s*\\left\s*\(\s*3\s*\\right|f\s*\(\s*3\s*\)|交\s*y\s*軸|交\s*y\s*轴|最低點|最低点|最高點|最高点|求.*[abc pq]\s*之值|求.*參數|求.*参数)")
+
+
+def _infer_quadratic_vertex_task(text: str, answer_type: str) -> str:
+    """Classify quadratic vertex-form stems before generic function rules."""
+    t = str(text or "")
+    if not _QUADRATIC_FORM.search(t):
+        return ""
+    if _QUADRATIC_NEW_FUNCTION.search(t):
+        return "quadratic_vertex_form_translation_to_new_function"
+    if _QUADRATIC_PARAMETER_COMPUTE.search(t):
+        return "quadratic_vertex_or_parameter_computation"
+    if _QUADRATIC_TRANSLATION.search(t) and _VERTEX_FORM_HINT.search(t):
+        return "quadratic_graph_translation_fill_blank"
+    if _QUADRATIC_PROPERTIES.search(t):
+        return "quadratic_vertex_form_properties"
+    if _QUADRATIC_TRANSLATION.search(t):
+        return "quadratic_graph_translation"
+    return ""
+
+
 def _source_text(ex: dict[str, Any]) -> str:
     for k in ("problem_text", "problem", "question", "stem", "content"):
         v = str(ex.get(k, "")).strip()
@@ -224,6 +250,16 @@ def _detect_math_objects(text: str, target_task: str) -> list[str]:
         objs.append("combinatorics_context")
     if _STATS.search(text):
         objs.append("statistics_context")
+    if task_family_for_task(target_task) == "quadratic_function_graph_family" or _QUADRATIC_FORM.search(text):
+        objs.append("quadratic_equation")
+        if _VERTEX_FORM_HINT.search(text):
+            objs.append("quadratic_vertex_form")
+        if _QUADRATIC_TRANSLATION.search(text):
+            objs.append("quadratic_translation")
+        if "頂點" in text or "顶点" in text:
+            objs.append("quadratic_vertex")
+        if "對稱軸" in text or "对称轴" in text:
+            objs.append("quadratic_axis")
     return sorted(set(objs))
 
 
@@ -241,6 +277,9 @@ def _infer_target_task(text: str, math_objects: list[str], answer_type: str) -> 
     two_pt = _infer_two_point_distance_task(text)
     if two_pt:
         return two_pt
+    quadratic_task = _infer_quadratic_vertex_task(text, answer_type)
+    if quadratic_task:
+        return quadratic_task
     if _QUADRANT_EXPLICIT.search(text) and answer_type == "short_answer":
         return "classify_quadrant"
     if _AXIS_DIST.search(text):
@@ -302,6 +341,15 @@ def _infer_reasoning_type(text: str, math_objects: list[str], target_task: str) 
         types.append("combinatorics_counting")
     if _STATS.search(text):
         types.append("statistics_computation")
+    if task_family_for_task(target_task) == "quadratic_function_graph_family":
+        if target_task == "quadratic_vertex_or_parameter_computation":
+            types.append("quadratic_vertex_parameter_reasoning")
+        elif target_task == "quadratic_vertex_form_translation_to_new_function":
+            types.append("quadratic_vertex_translation_reasoning")
+        elif target_task == "quadratic_graph_translation_fill_blank":
+            types.append("quadratic_vertex_form_translation")
+        else:
+            types.append("quadratic_vertex_form_properties")
     if _GRAPH.search(text):
         types.append("graph_reading")
     if _TABLE.search(text):

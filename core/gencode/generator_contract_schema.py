@@ -21,6 +21,8 @@ DEFAULT_ANTI_REPETITION: dict[str, Any] = {
     "signature_fields": [
         "problem_type_id",
         "template_variant",
+        "routing_track",
+        "scenario_type",
         "ratio_form",
         "ratio_values",
         "coordinate_pattern",

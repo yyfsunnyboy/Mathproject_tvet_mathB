@@ -96,6 +96,24 @@ answer_contract:
 - **代數多項式**：嚴禁直接對比 LaTeX 字串（例如 `x^2 - 1` 與 `(x-1)(x+1)`），必須使用 SymPy 進行 `algebraic_equivalent` 展開化簡驗證。
 - **選擇題標籤**：前台輸入與正確答案均必須 normalize 為 `A`, `B`, `C`, `D` 單一字元，嚴禁包含括號或完整選項內容（如 `(A)` 或 `A. 5`）直接與 raw string 比對。
 - **畫圖、證明與開放說明**：**絕對不可**使用 `exact_string` 企圖矇混自動批改，此類題型之 `auto_checkable` 必須標記為 `false`，且將 `equivalence_type` 設為 `manual_review_or_ai_judged`。
+- **高職數B離散數學專屬等價守衛**（v0.3.2 最終洗淨版）：
+  - **觸發條件**：當 `skill_id` 含「排列」「組合」「機率」語意關鍵字，或題型 Contract 標記為離散數學家族時，下列守衛**剛性生效**。
+  1. **機率分數／有理數型態**：嚴禁 raw string 比對（如 `1/6` 與 `2/12`、`0.166` 與 `1/6`），必須使用 `rational_equivalent` 或 `decimal_tolerance_checker` 解析後比對。
+  2. **大數階乘／排列組合數**：嚴禁直接比對 LaTeX 字串（如 $P^{10}_3$、`P(10,3)`、`10P3`、`720` 視為不等價）。**必須**強制交由 Layer 6 之 `combinatorics_evaluator.py` 進行正規化洗淨與比對，嚴禁 raw string 矇混。
+  3. **$P$ 與 $C$ 混淆偵測**：若學生答案與正解相差恰為 $r!$ 倍數（排列誤用組合或反之），`diagnosis_engine` 須拋出 `p_c_confusion` tag，不得僅回傳「答案錯誤」。
+  4. **樣本空間與分母錯誤**：機率題答案須先驗證分母（樣本空間大小）一致性，再比對分子；分母不符時拋出 `sample_space_error` 或 `denominator_error`，不得 raw string 比對分數字面。
+
+### 4.2.1 排列組合 LaTeX 變體正規化白名單
+
+下列輸入變體**必須**被 `combinatorics_evaluator.py` 視為等價候選，經解析後數值比對：
+
+| 語意 | 允許輸入變體（範例） | 正規化目標 |
+|------|---------------------|-----------|
+| 排列 $P^n_r$ | `$P^{10}_3$`、`P(10,3)`、`10P3`、`_10P_3` | 數值 `720` 或符號 `factorial(10)/factorial(7)` |
+| 組合 $C^n_r$ | `$C^{10}_3$`、`C(10,3)`、`10C3`、`\binom{10}{3}` | 數值 `120` 或符號 `factorial(10)/(factorial(3)*factorial(7))` |
+| 階乘 | `10!`、`factorial(10)` | 數值 `3628800` |
+
+**禁止**：以 `exact_string` 或前台 raw input 直接比對上述變體字面。
 
 ### 4.3 執行期展現型態強制作戰原則（Runtime Presentation Mode Coercion）
 
@@ -143,6 +161,53 @@ answer_contract:
 
 展現型態強制作戰屬**確定性管線責任**；LLM 僅可於 Phase 3 Codegen 建議題幹，**不得**於 runtime 判斷「這題是不是選擇題」。最終 checker 以本節覆寫後之 `answer_contract` 為準。
 
+#### 4.3.5 多元題型特徵攔截與 Coercion（強制作戰）
+
+##### 4.3.5.1 多小題題型（Multi-Subproblem Coercion）
+
+若 Contract Token 或題幹特徵偵測到題目包含**多個問號**或**多個填空符**（如 `(1)…？(2)…？`、`___` 重複出現），管線必須在**編譯前夕**強制覆寫：
+
+| 欄位 | 強制值 |
+|------|--------|
+| `answer_type` | `ordered_tuple`（順序影響答案時）或 `unordered_tuple`（順序不影響時） |
+| `equivalence_type` | `ordered_tuple_exact` 或 `unordered_tuple_equivalent` |
+| `checker_key` | `tuple_checker` |
+| `order_matters` | 依題幹語意剛性記錄於 `answer_contract`（`true` / `false`） |
+| `presentation_mode` | `"short_answer"` |
+
+**禁止**：將多小題降級為單一 `numeric` 或 `text_short` 答案型態，導致學生端只填一個值卻被誤判。
+
+##### 4.3.5.2 圖表題型（Chart / Graph Coercion）
+
+若 Contract Token 或題幹特徵偵測到圖表 Token（如「數線」「拋物線」「統計表」「坐標圖」「作圖」、`graph_required`、`chart_spec` 等），管線必須在**編譯前夕**強制覆寫：
+
+| 欄位 | 強制值 |
+|------|--------|
+| `presentation_mode` | `"handwriting_or_canvas"` |
+| `auto_checkable` | `false` |
+| `equivalence_type` | `manual_review_or_ai_judged` |
+| `checker_key` | `manual_review_checker` 或 `ai_judged_checker` |
+
+並在 generator payload 中**剛性注入** `visual_aids` 圖表 JSON 規格（含 `chart_type`、`axis_spec`、`data_points` 等 Contract Token），確保前台渲染手寫區或畫布區。
+
+**禁止**：圖表題殘留 `numeric_checker` 或 `expression_checker` 作為最終批改器。
+
+#### 4.3.6 題幹尾端剛性黏貼答案範例（格式洗淨義務）
+
+為徹底解決前台學生端因輸入格式不符導致的誤判卡點，全域文本域函數（`scenario_pool_manager.py`）在題幹組裝的**最後一毫秒**，必須剛性讀取 `answer_contract` 的 `accepted_format_notes` 與標準答案範例，自動在 `question_text` 最末端整齊黏貼中文化提示字串：
+
+| 題型家族 | 尾綴格式範例 |
+|---------|-------------|
+| 填充題 / 數值題 | `\n（答案範例：1/2）` |
+| 多小題 | `\n（答案範例：2, 4）` |
+| 圖表題 | `\n（請在下方繪圖/手寫區作答）` |
+| 選擇題 | 不黏貼答案範例（選項由 `frontend_render_choices` 渲染） |
+
+**剛性約束**：
+1. 黏貼後之 `question_text` 長度必須自然且穩健地**超過 30 字**，並含有由 `semantic_contract.required_concepts` 驅動之**靈魂 Token**。
+2. 答案範例必須取自 `canonical_answer_schema` 或 Phase 2 驗證過之標準答案，**嚴禁** AI 即興捏造與正解不符之範例。
+3. 尾綴字串格式統一為全形括號 `（…）`，置於題幹最末端獨立一行，不得嵌入題幹正文。
+
 ---
 
 ## 5. 版本紀錄
@@ -151,6 +216,8 @@ answer_contract:
 | 2026-05-25 | v0.1 | 首版答案契約定義，內含過多流程性描述 | Codex |
 | 2026-05-31 | v0.2 | 重整 v0.2，將 Phase 1/2 流程與品質稽核工具移出，專注於 answer_type、equivalence_type 白名單、legacy 對應表、污染防線與結構化比對防護，確保 100% 乾淨 UTF-8 | Antigravity |
 | 2026-06-01 | v0.3 | 增量新增 §4.3 執行期展現型態強制作戰；完整保留 v0.2 白名單與 Schema | 首席系統架構師 |
+| 2026-06-13 | v0.3.1 | 增量新增 §4.3.5 多元題型特徵攔截（多小題 / 圖表 Coercion）；§4.3.6 題幹尾端答案範例黏貼義務 | 首席系統架構師 |
+| 2026-06-13 | v0.3.2 | 最終洗淨版：§4.2 更名為高職數B離散數學專屬等價守衛；追加語意關鍵字觸發條件；剛性綁定 Layer 6 `combinatorics_evaluator.py` | 首席系統架構師 |
 
 *本文件職責：定義答案判定契約、比對 whitelist、legacy canonical mapping、精確批改防禦規則，以及 Phase 3 展現型態強制校正。*
 *不負責事項：不定義 ProblemType 規格包與資料結構、亦不定義 pipeline 各階段流程。*

@@ -35,6 +35,26 @@ NUMERIC_SCALAR_TASKS = frozenset(
     }
 )
 
+QUADRATIC_RATIONAL_SCALAR_TASKS = frozenset(
+    {
+        "quadratic_vertex_or_parameter_computation",
+        "compute_quadratic_vertex",
+        "compute_quadratic_axis_of_symmetry",
+        "quadratic_vertex_axis_identification",
+    }
+)
+
+_QUADRATIC_RATIONAL_TOKENS = frozenset(
+    {
+        "quadratic_vertex_or_parameter_computation",
+        "compute_quadratic_vertex",
+        "compute_quadratic_axis_of_symmetry",
+        "completing_the_square",
+        "complete_square",
+        "axis_of_symmetry",
+    }
+)
+
 CLASSIFICATION_TASKS = frozenset({"classify_quadrant", "identify_concept", "choose_name"})
 
 _INTERVAL_TASKS = frozenset(
@@ -48,6 +68,7 @@ _INTERVAL_TASKS = frozenset(
 
 _RADICAL_IN_ANSWER = re.compile(r"\\sqrt|sqrt\s*\(|√", re.I)
 _NUMERIC_ANSWER = re.compile(r"^-?\d+(?:\.\d+)?$")
+_RATIONAL_IN_ANSWER = re.compile(r"^-?\d+\s*/\s*-?\d+$")
 
 
 def _feature_answers(features: list[dict[str, Any]] | None) -> list[str]:
@@ -73,6 +94,40 @@ def _answers_suggest_radical(features: list[dict[str, Any]] | None) -> bool:
 def _answers_suggest_numeric_only(features: list[dict[str, Any]] | None) -> bool:
     answers = _feature_answers(features)
     return bool(answers) and all(_NUMERIC_ANSWER.match(a) for a in answers)
+
+
+def _answers_suggest_rational(features: list[dict[str, Any]] | None) -> bool:
+    answers = _feature_answers(features)
+    if not answers:
+        return False
+    return any("/" in a or _RATIONAL_IN_ANSWER.search(a) for a in answers)
+
+
+def is_quadratic_rational_scalar_semantic(
+    *,
+    problem_type_id: str = "",
+    target_task: str = "",
+    task_family: str = "",
+    math_objects: list[str] | None = None,
+) -> bool:
+    """True for quadratic vertex/completing-square scalar tasks that may be fractional.
+
+    Source examples for these tasks often have integer answers, but generators can
+    legitimately emit values such as -b/(2a) or (4ac-b^2)/(4a).
+    """
+    task = str(target_task or "").strip()
+    family = str(task_family or task_family_for_task(task)).strip()
+    if task in QUADRATIC_RATIONAL_SCALAR_TASKS:
+        return True
+    combined = " ".join(
+        [
+            str(problem_type_id or ""),
+            task,
+            family,
+            " ".join(str(m or "") for m in (math_objects or [])),
+        ]
+    ).lower()
+    return any(token in combined for token in _QUADRATIC_RATIONAL_TOKENS)
 
 
 def is_coordinate_pair_semantic(
@@ -260,6 +315,56 @@ def infer_answer_contract_from_problem_context(
             "answer_equivalence": "numeric_equivalence",
             "checker": "numeric_checker",
             "accepted_formats": ["5", "5.0", "-3"],
+        }
+
+    if is_quadratic_rational_scalar_semantic(
+        target_task=task,
+        task_family=family,
+        math_objects=mos,
+    ) and not source_has_choices:
+        if _answers_suggest_rational(cluster_features):
+            return {
+                **base,
+                "answer_type": "rational",
+                "answer_shape": "scalar",
+                "answer_equivalence": "rational_equivalent",
+                "equivalence_type": "rational_equivalent",
+                "checker": "rational_checker",
+                "checker_key": "rational_checker",
+                "presentation_mode": "short_answer",
+                "source_has_choices": source_has_choices,
+                "selected_checker": "rational_checker",
+                "checker_selection_reason": "quadratic_vertex_rational_from_source_answers",
+                "accepted_formats": ["-9/8", "3/2", "-2", "1.5"],
+            }
+        if at == "integer" or _answers_suggest_numeric_only(cluster_features):
+            return {
+                **base,
+                "answer_type": "integer",
+                "answer_shape": "scalar",
+                "answer_equivalence": "numeric_exact",
+                "equivalence_type": "numeric_exact",
+                "checker": "integer_checker",
+                "checker_key": "integer_checker",
+                "presentation_mode": "short_answer",
+                "source_has_choices": source_has_choices,
+                "selected_checker": "integer_checker",
+                "checker_selection_reason": "quadratic_vertex_integer_capable",
+                "accepted_formats": ["-9", "0", "3", "12"],
+            }
+        return {
+            **base,
+            "answer_type": "rational",
+            "answer_shape": "scalar",
+            "answer_equivalence": "rational_equivalent",
+            "equivalence_type": "rational_equivalent",
+            "checker": "rational_checker",
+            "checker_key": "rational_checker",
+            "presentation_mode": "short_answer",
+            "source_has_choices": source_has_choices,
+            "selected_checker": "rational_checker",
+            "checker_selection_reason": "quadratic_vertex_rational_capable",
+            "accepted_formats": ["-9/8", "3/2", "-2", "1.5"],
         }
 
     if at in {"numeric", "integer"} or "evaluate_function" in task or task in NUMERIC_SCALAR_TASKS or _answers_suggest_numeric_only(cluster_features):

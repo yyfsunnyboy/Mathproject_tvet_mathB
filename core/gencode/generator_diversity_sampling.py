@@ -98,6 +98,29 @@ def _answer_mode(rng: random.Random, schema: dict[str, Any]) -> str:
     return "integer_coordinate"
 
 
+def _coerce_mapping(value: Any) -> dict[str, Any]:
+    return dict(value) if isinstance(value, dict) else {}
+
+
+def _metadata_plan_fields(meta: Any) -> dict[str, str]:
+    md = _coerce_mapping(meta)
+    givens = md.get("givens")
+    givens_map = _coerce_mapping(givens)
+    scenario_type = str(
+        givens_map.get("scenario_type", "")
+        or md.get("scenario_type", "")
+        or md.get("scenario_id", "")
+    ).strip()
+    return {
+        "template_variant": str(md.get("template_variant") or md.get("template_id") or "live"),
+        "routing_track": str(md.get("routing_track", "")),
+        "scenario_type": scenario_type,
+        "ratio_form": str(md.get("ratio_form", "")),
+        "ratio_values": str(md.get("ratio_values", "")),
+        "coordinate_pattern": str(md.get("coordinate_pattern", "")),
+    }
+
+
 def sample_plan_from_contract(
     spec: dict[str, Any],
     seed: int | None,
@@ -161,8 +184,10 @@ def sample_plan_from_contract(
 
 
 def plan_to_signature(plan: dict[str, Any], signature_fields: list[str] | None = None) -> dict[str, Any]:
-    fields = signature_fields or list(DEFAULT_ANTI_REPETITION.get("signature_fields") or [])
-    return {f: plan.get(f, "") for f in fields if f in plan or f == "problem_type_id"}
+    plan_map = dict(plan) if isinstance(plan, dict) else {}
+    fields_raw = signature_fields or list(DEFAULT_ANTI_REPETITION.get("signature_fields") or [])
+    fields = [str(f).strip() for f in fields_raw if isinstance(f, str) and str(f).strip()]
+    return {f: plan_map.get(f, "") for f in fields if f in plan_map or f == "problem_type_id"}
 
 
 def signature_key(sig: dict[str, Any]) -> str:
@@ -264,7 +289,7 @@ def _detect_payload_spec_contract_mismatch(
     spec: dict[str, Any],
     payloads: list[dict[str, Any]],
 ) -> list[str]:
-    """Compare live payloads against spec answer_contract.
+    """Compare live payloads against spec answer_contract and answer_format_hint.
 
     Returns blocker tokens when the actual generator output contradicts the spec.
     Requires at least 3 payloads to make a reliable judgment.
@@ -272,18 +297,32 @@ def _detect_payload_spec_contract_mismatch(
     if len(payloads) < 3:
         return []
     from core.gencode.problem_type_spec import get_answer_contract
+    from core.gencode.answer_format_hint import (
+        HINT_UNKNOWN,
+        HINT_CHOICE,
+        HINT_INTEGER,
+        HINT_RATIONAL,
+        HINT_COORDINATE,
+        infer_answer_format_hint,
+    )
 
     ac = get_answer_contract(spec)
     spec_answer_type = str(ac.get("answer_type", "")).strip().lower()
     spec_checker = str(ac.get("checker_key") or ac.get("checker") or "").strip().lower()
+    spec_hint = str(spec.get("answer_format_hint") or "").strip()
+    if not spec_hint:
+        spec_hint = infer_answer_format_hint(spec)
 
     blockers: list[str] = []
 
-    # Count mismatch evidence
+    # Tally payload evidence
     choices_in_payload = 0
     text_short_in_payload = 0
     numeric_type_in_payload = 0
+    rational_answer_in_payload = 0
     choice_answer_in_payload = 0
+    coordinate_in_payload = 0
+    structured_text_in_payload = 0
 
     for pl in payloads:
         if not isinstance(pl, dict):
@@ -291,6 +330,7 @@ def _detect_payload_spec_contract_mismatch(
         pl_answer_type = str(pl.get("answer_type", "")).strip().lower()
         pl_choices = pl.get("choices")
         pl_answer = str(pl.get("answer", pl.get("correct_answer", ""))).strip()
+        pl_checker = str(pl.get("checker") or pl.get("checker_key") or "").strip().lower()
 
         if isinstance(pl_choices, list) and pl_choices:
             choices_in_payload += 1
@@ -300,25 +340,66 @@ def _detect_payload_spec_contract_mismatch(
             text_short_in_payload += 1
         if pl_answer_type in {"integer", "numeric", "rational"}:
             numeric_type_in_payload += 1
-        # Detect A/B/C/D answers that look like choice labels
+        if pl_answer_type == "rational" or "/" in pl_answer:
+            rational_answer_in_payload += 1
+        if pl_answer_type in {"coordinate_pair", "ordered_pair"}:
+            coordinate_in_payload += 1
+        # A/B/C/D single-char answers indicate choice
         if len(pl_answer) == 1 and pl_answer in {"A", "B", "C", "D"}:
             choice_answer_in_payload += 1
+        # Bracket pattern for coordinate
+        if pl_answer.startswith("(") and "," in pl_answer and pl_answer.endswith(")"):
+            coordinate_in_payload += 1
 
     threshold = max(3, len(payloads) // 2)
 
-    # Spec says integer/numeric but payload produces choices
-    if spec_answer_type in {"integer", "numeric", "rational"} and spec_checker in {
+    # ── Rule 1: spec numeric but payload produces choices ────────────────────
+    if spec_answer_type in {"integer", "numeric", "rational"} or spec_checker in {
         "integer_checker", "numeric_checker", "rational_checker"
     }:
         if choices_in_payload >= threshold or choice_answer_in_payload >= threshold:
             blockers.append("checker_answer_mismatch:spec_numeric_but_payload_choices")
         if text_short_in_payload >= threshold:
-            blockers.append("text_answer_numeric_checker_mismatch")
+            blockers.append("checker_answer_mismatch:spec_numeric_but_payload_text")
+        if (spec_answer_type == "integer" or spec_checker == "integer_checker") and rational_answer_in_payload >= threshold:
+            blockers.append("checker_answer_mismatch:spec_integer_but_payload_rational")
 
-    # Spec says text_short but payload produces numeric
-    if spec_answer_type in {"text_short", "short_answer"} or "text_short_checker" in spec_checker:
+    # ── Rule 2: spec choice but payload is non-choice ─────────────────────────
+    if spec_answer_type in {"single_choice", "choice"} or spec_checker in {"choice_label_checker"}:
         if numeric_type_in_payload >= threshold and choices_in_payload < threshold:
-            blockers.append("checker_answer_mismatch:spec_text_short_but_payload_numeric")
+            blockers.append("checker_answer_mismatch:spec_choice_but_payload_numeric")
+        if text_short_in_payload >= threshold and choices_in_payload < threshold:
+            blockers.append("checker_answer_mismatch:spec_choice_but_payload_text_without_choices")
+
+    # ── Rule 3: spec text_short but payload produces choices ──────────────────
+    if spec_answer_type in {"text_short", "short_answer"} or "text_short_checker" in spec_checker:
+        if choices_in_payload >= threshold or choice_answer_in_payload >= threshold:
+            blockers.append("checker_answer_mismatch:spec_text_but_payload_choices")
+        # Also detect text_short spec with integer/numeric payload (common wrong prefix inference)
+        if numeric_type_in_payload >= threshold and choices_in_payload < threshold:
+            blockers.append("checker_answer_mismatch:spec_text_but_payload_numeric")
+
+    # ── Rule 4: spec coordinate_pair but payload produces scalar ──────────────
+    if spec_answer_type in {"coordinate_pair", "ordered_pair"}:
+        if numeric_type_in_payload >= threshold and coordinate_in_payload < threshold:
+            blockers.append("checker_answer_mismatch:spec_coordinate_but_payload_scalar")
+
+    # ── Rule 5: answer_format_hint mismatch ───────────────────────────────────
+    if spec_hint == HINT_CHOICE:
+        if choices_in_payload < threshold and choice_answer_in_payload < threshold:
+            blockers.append("answer_format_mismatch:spec_hint_choice_but_payload_has_no_choices")
+    elif spec_hint in {HINT_INTEGER, HINT_RATIONAL}:
+        if choices_in_payload >= threshold or choice_answer_in_payload >= threshold:
+            blockers.append("answer_format_mismatch:payload_not_following_answer_format_hint")
+    elif spec_hint == HINT_COORDINATE:
+        if coordinate_in_payload < threshold and choices_in_payload >= threshold:
+            blockers.append("answer_format_mismatch:payload_not_following_answer_format_hint")
+
+    # ── Rule 6: unknown hint warning (not a hard blocker) ─────────────────────
+    # (Only flag when hint is truly absent AND no evidence from answer_type either)
+    if not spec_hint or spec_hint == HINT_UNKNOWN:
+        if not spec_answer_type and not spec_checker:
+            blockers.append("contract_unknown:missing_answer_format_hint")
 
     return blockers
 
@@ -363,12 +444,10 @@ def run_diversity_sampling(
             question_texts.append(qt)
             answers.append(ans)
             meta = payload.get("metadata") if isinstance(payload.get("metadata"), dict) else {}
+            fields = _metadata_plan_fields(meta)
             plan = {
                 "problem_type_id": str(spec.get("problem_type_id", "")),
-                "template_variant": str((meta.get("template_variant") or meta.get("template_id") or "live")),
-                "ratio_form": str(meta.get("ratio_form", "")),
-                "ratio_values": str(meta.get("ratio_values", "")),
-                "coordinate_pattern": str(meta.get("coordinate_pattern", "")),
+                **fields,
                 "answer": ans,
             }
         else:

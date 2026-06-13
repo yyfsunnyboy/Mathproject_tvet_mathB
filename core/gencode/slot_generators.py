@@ -5,7 +5,11 @@ import random
 from fractions import Fraction
 from typing import Any, Callable
 
-from core.gencode.answer_payload import answer_type_family, apply_coordinate_pair_runtime_fields
+from core.gencode.answer_payload import (
+    RATIONAL_TYPES,
+    answer_type_family,
+    apply_coordinate_pair_runtime_fields,
+)
 from core.gencode.problem_type_spec import get_answer_contract, get_semantic_contract, get_stem_contract
 from core.gencode.symbolic_coordinate_templates import (
     SYMBOLIC_QUADRANT_SHORT_ANSWER_TEMPLATES,
@@ -17,6 +21,14 @@ from core.gencode.division_point_slot_engine import (
     DIVISION_POINT_SLOT,
     generate_division_point_payload,
     is_division_point_target_task,
+)
+from core.gencode.scenario_pool_manager import (
+    build_quadratic_extremum_literacy_stem,
+    finalize_question_text,
+    format_answer_example_text,
+    generate_quadratic_extremum_application,
+    pick_quadratic_extremum_scenario,
+    should_use_literacy_scenario,
 )
 from core.gencode.template_slot_resolver import infer_registered_task_token, resolve_template_slot
 from core.gencode.validators import validate_generator_payload
@@ -745,6 +757,321 @@ def _vertex_axis_option_zh(
     return f"頂點 ({vertex[0]},{vertex[1]})，對稱軸 $x={axis_x}$，{extreme_zh}"
 
 
+def _quadratic_standard_form_from_abc(a: int, b: int, c: int) -> str:
+    """Raw standard-form y=ax^2+bx+c without $...$."""
+    if a == 1:
+        head = "y=x^2"
+    elif a == -1:
+        head = "y=-x^2"
+    else:
+        head = f"y={a}x^2"
+    parts = [head]
+    if b:
+        parts.append(_fmt_signed_int(b) + "x")
+    if c:
+        parts.append(_fmt_signed_int(c))
+    return "".join(parts)
+
+
+def _quadratic_standard_form_display_from_abc(a: int, b: int, c: int) -> str:
+    return _display_math(_quadratic_standard_form_from_abc(a, b, c))
+
+
+def _resolve_rational_scalar_answer(value: Fraction) -> int | Fraction:
+    return int(value) if value.denominator == 1 else value
+
+
+def _requires_vertex_rational_compute(spec: dict[str, Any], pt: str) -> bool:
+    """True when vertex/extremum task must emit rational short_answer (not choice labels)."""
+    if pt == "integer_compute_quadratic_vertex":
+        return True
+    target = str(spec.get("target_task", "")).strip()
+    if target != "compute_quadratic_vertex":
+        return False
+    ac = get_answer_contract(spec)
+    pm = str(ac.get("presentation_mode", "")).strip()
+    at = str(ac.get("answer_type", "")).strip()
+    if pm != "short_answer":
+        return False
+    return at in RATIONAL_TYPES or at in {"integer", "numeric"} or answer_type_family(at) == "fraction"
+
+
+def _resolve_slot_difficulty(spec: dict[str, Any], default: str = "level_1") -> str:
+    gc = spec.get("generator_contract")
+    if isinstance(gc, dict):
+        slots = gc.get("parameter_slots")
+        if isinstance(slots, dict):
+            diff = str(slots.get("difficulty", "")).strip()
+            if diff:
+                mapping = {"easy": "level_1", "medium": "level_2", "hard": "level_3"}
+                return mapping.get(diff, diff)
+        schema = gc.get("parameter_schema")
+        if isinstance(schema, dict):
+            diff_cfg = schema.get("difficulty_level")
+            if isinstance(diff_cfg, dict):
+                choices = diff_cfg.get("choices")
+                if isinstance(choices, list) and choices:
+                    return str(choices[0]).strip()
+    return default
+
+
+def _slot_quadratic_vertex_extremum_rational(seed: int, difficulty: str = "level_1", *, require_integer: bool = False) -> dict[str, Any]:
+    """SOP v0.3.2 獨立算力插槽：用 Fraction 精確計算極值，合約要求整數時保證整數極值。"""
+    _ = difficulty
+    a, b, c, k_frac = _sample_quadratic_vertex_coefficients(seed, require_integer=require_integer)
+    resolved_answer = int(k_frac) if k_frac.denominator == 1 else k_frac
+    extremum_word = "最大值" if a < 0 else "最小值"
+    equation = _quadratic_standard_form_display_from_abc(a, b, c)
+
+    return {
+        "question_text": f"已知二次函數 {equation}，試求此二次函數的{extremum_word}為何？",
+        "answer": resolved_answer,
+        "correct_answer": resolved_answer,
+        "choices": [],
+        "checker_key": "integer_checker" if require_integer else "rational_checker",
+        "equivalence_type": "numeric_exact" if require_integer else "rational_equivalent",
+        "presentation_mode": "short_answer",
+        "metadata": {
+            "givens": {"a": a, "b": b, "c": c},
+            "target": "vertex_extremum",
+            "derivation": ["Computed via vertex formula k = (4ac - b^2)/4a"],
+        },
+    }
+
+
+def _sample_quadratic_vertex_coefficients(
+    seed: int,
+    *,
+    require_integer: bool = False,
+) -> tuple[int, int, int, Fraction]:
+    """Deterministic coefficient sampling with optional integer-extremum guarantee."""
+    if require_integer:
+        rng = random.Random(f"{seed}|quad_vertex|constructive")
+        for attempt in range(256):
+            sub = random.Random(f"{seed}|quad_vertex|constructive|{attempt}")
+            a = sub.choice([x for x in range(-4, 5) if x != 0])
+            h = sub.randint(-5, 5)
+            k = sub.randint(-12, 12)
+            b = -2 * a * h
+            c = k + a * h * h
+            k_frac = Fraction(4 * a * c - b * b, 4 * a)
+            if k_frac.denominator == 1:
+                return a, b, c, k_frac
+        a, h, k = 1, 2, 3
+        b = -2 * a * h
+        c = k + a * h * h
+        return a, b, c, Fraction(k)
+
+    rng = random.Random(seed)
+    for attempt in range(128):
+        sub = random.Random(f"{seed}|quad_vertex|{attempt}")
+        a = sub.choice([x for x in range(-4, 5) if x != 0])
+        b = sub.choice([x for x in range(-6, 7) if x % 2 == 0])
+        c = sub.randint(-10, 10)
+        k_frac = Fraction(4 * a * c - b * b, 4 * a)
+        return a, b, c, k_frac
+    a, b, c = 1, -4, 1
+    return a, b, c, Fraction(0)
+
+
+def _contract_checker_and_type(spec: dict[str, Any], core_payload: dict[str, Any]) -> tuple[str, str, str]:
+    ac = dict(get_answer_contract(spec))
+    checker = str(
+        ac.get("checker")
+        or ac.get("checker_key")
+        or core_payload.get("checker_key")
+        or core_payload.get("checker")
+        or "integer_checker"
+    ).strip()
+    answer_type = str(ac.get("answer_type") or ("integer" if checker == "integer_checker" else "rational")).strip()
+    equivalence = str(
+        ac.get("equivalence_type")
+        or ac.get("answer_equivalence")
+        or core_payload.get("equivalence_type")
+        or ("numeric_exact" if answer_type == "integer" else "rational_equivalent")
+    ).strip()
+    return checker, answer_type, equivalence
+
+
+def _finalize_quadratic_vertex_extremum_payload(
+    core_payload: dict[str, Any],
+    *,
+    skill_id: str,
+    problem_type_id: str,
+    spec: dict[str, Any],
+    seed: int | None,
+    force_direct_formula: bool = False,
+) -> dict[str, Any]:
+    ac = dict(get_answer_contract(spec))
+    checker, answer_type, equivalence = _contract_checker_and_type(spec, core_payload)
+    ac["checker"] = checker
+    ac["checker_key"] = checker
+    ac["selected_checker"] = checker
+    ac["answer_type"] = answer_type
+    ac["answer_equivalence"] = equivalence
+    ac["equivalence_type"] = equivalence
+    ac["presentation_mode"] = "short_answer"
+    ac["choices_required"] = False
+
+    givens = dict((core_payload.get("metadata") or {}).get("givens") or {})
+    a_val = int(givens.get("a", 1))
+    b_val = int(givens.get("b", 0))
+    c_val = int(givens.get("c", 0))
+    k_fraction = Fraction(4 * a_val * c_val - b_val * b_val, 4 * a_val)
+    h_fraction = Fraction(-b_val, 2 * a_val)
+    extreme_label = "最小值" if a_val > 0 else "最大值"
+    resolved_numeric_answer = core_payload.get("correct_answer", core_payload.get("answer"))
+
+    stem = str(core_payload.get("question_text") or "").strip()
+    use_literacy = (
+        not force_direct_formula
+        and should_use_literacy_scenario(skill_id, problem_type_id)
+        and random.Random(f"{seed}|quadratic_extremum_mode|{problem_type_id}").random() < 0.6
+    )
+    scenario_meta = "direct_standard_form"
+    if use_literacy:
+        scenario_id, template = pick_quadratic_extremum_scenario(seed=seed, problem_type_id=problem_type_id)
+        equation_display = _quadratic_standard_form_display_from_abc(a_val, b_val, c_val)
+        stem = build_quadratic_extremum_literacy_stem(
+            equation_display=equation_display,
+            extreme_label=extreme_label,
+            template=template,
+        )
+        scenario_meta = scenario_id
+
+    h_text = str(int(h_fraction)) if h_fraction.denominator == 1 else f"{h_fraction.numerator}/{h_fraction.denominator}"
+    k_text = (
+        str(resolved_numeric_answer)
+        if isinstance(resolved_numeric_answer, int)
+        else f"{resolved_numeric_answer.numerator}/{resolved_numeric_answer.denominator}"
+    )
+    explanation = (
+        f"頂點橫座標 $h=-b/(2a)={h_text}$，"
+        f"{extreme_label} $k=(4ac-b^2)/(4a)={k_text}$。"
+    )
+
+    metadata = dict(core_payload.get("metadata") or {})
+    metadata.update(
+        {
+            "template_slot": "quadratic_vertex_extremum_rational",
+            "template_variant": scenario_meta,
+            "problem_type_id": problem_type_id,
+            "scenario_id": scenario_meta,
+            "routing_track": "formula_rational",
+            "derivation": [
+                f"h={h_fraction}",
+                f"k={k_fraction}",
+                "Step 1: Computed via vertex formula k = (4ac - b^2)/4a",
+            ],
+        }
+    )
+
+    return {
+        "skill_id": skill_id,
+        "problem_type_id": problem_type_id,
+        "question_text": stem,
+        "question": stem,
+        "choices": [],
+        "answer": resolved_numeric_answer,
+        "correct_answer": resolved_numeric_answer,
+        "answer_type": answer_type,
+        "checker_type": checker,
+        "checker": checker,
+        "checker_key": checker,
+        "equivalence_type": equivalence,
+        "answer_contract": ac,
+        "presentation_mode": "short_answer",
+        "explanation": explanation,
+        "diagnosis_tags": ["quadratic_vertex", "quadratic_extreme", "vertex_formula"],
+        "metadata": metadata,
+        "source": "gencode_slot_generator",
+    }
+
+
+def _finalize_quadratic_extremum_application_payload(
+    core_payload: dict[str, Any],
+    *,
+    skill_id: str,
+    problem_type_id: str,
+    spec: dict[str, Any],
+) -> dict[str, Any]:
+    ac = dict(get_answer_contract(spec))
+    checker, answer_type, equivalence = _contract_checker_and_type(spec, core_payload)
+    ac["checker"] = checker
+    ac["checker_key"] = checker
+    ac["selected_checker"] = checker
+    ac["answer_type"] = answer_type
+    ac["answer_equivalence"] = equivalence
+    ac["equivalence_type"] = equivalence
+    ac["presentation_mode"] = "short_answer"
+    ac["choices_required"] = False
+
+    resolved_numeric_answer = core_payload.get("correct_answer", core_payload.get("answer"))
+    stem = str(core_payload.get("question_text") or "").strip()
+    metadata = dict(core_payload.get("metadata") or {})
+    givens = dict(metadata.get("givens") or {})
+    scenario_type = str(givens.get("scenario_type", "application")).strip()
+    ans_text = format_answer_example_text(resolved_numeric_answer)
+    explanation = (
+        f"將{scenario_type}應用題轉化為二次函數極值模型後，"
+        f"可得最值為 {ans_text}。"
+    )
+    metadata.update(
+        {
+            "template_slot": "quadratic_extremum_application",
+            "template_variant": scenario_type,
+            "problem_type_id": problem_type_id,
+            "routing_track": "application_scenario",
+        }
+    )
+
+    return {
+        "skill_id": skill_id,
+        "problem_type_id": problem_type_id,
+        "question_text": stem,
+        "question": stem,
+        "choices": [],
+        "answer": resolved_numeric_answer,
+        "correct_answer": resolved_numeric_answer,
+        "answer_type": answer_type,
+        "checker_type": checker,
+        "checker": checker,
+        "checker_key": checker,
+        "equivalence_type": equivalence,
+        "answer_contract": ac,
+        "presentation_mode": "short_answer",
+        "explanation": explanation,
+        "diagnosis_tags": ["quadratic_vertex", "quadratic_extreme", "application_modeling"],
+        "metadata": metadata,
+        "source": "gencode_slot_generator",
+    }
+
+
+def _requires_integer_vertex_answer(spec: dict[str, Any]) -> bool:
+    ac = get_answer_contract(spec)
+    checker = str(ac.get("checker") or ac.get("checker_key") or "").strip()
+    answer_type = str(ac.get("answer_type") or "").strip()
+    return checker == "integer_checker" or answer_type == "integer"
+
+
+def _slot_quadratic_vertex_extremum_rational_runtime(
+    skill_id: str, pt: str, spec: dict[str, Any], seed: int | None
+) -> dict[str, Any]:
+    difficulty = _resolve_slot_difficulty(spec)
+    core = _slot_quadratic_vertex_extremum_rational(
+        seed if seed is not None else 0,
+        difficulty,
+        require_integer=_requires_integer_vertex_answer(spec),
+    )
+    return _finalize_quadratic_vertex_extremum_payload(
+        core,
+        skill_id=skill_id,
+        problem_type_id=pt,
+        spec=spec,
+        seed=seed,
+    )
+
+
 def _make_quadratic_choice_options_zh(
     h: int, k: int, a: int
 ) -> tuple[str, list[str]]:
@@ -801,6 +1128,8 @@ def _vertex_axis_option(vertex: tuple[int, int], axis_x: int, extreme: str) -> s
 def _slot_quadratic_graph_vertex_axis_choice(
     skill_id: str, pt: str, spec: dict[str, Any], seed: int | None
 ) -> dict[str, Any]:
+    if _requires_vertex_rational_compute(spec, pt):
+        return _slot_quadratic_vertex_extremum_rational_runtime(skill_id, pt, spec, seed)
     rng = random.Random(f"{seed}|quadratic_vertex_axis|{pt}")
     a = rng.choice([-3, -2, -1, 1, 2, 3])
     h = rng.randint(-4, 4)
@@ -1024,6 +1353,174 @@ def _slot_quadratic_standard_to_vertex_properties(
     )
 
 
+def _slot_quadratic_vertex_or_parameter_computation(
+    skill_id: str, pt: str, spec: dict[str, Any], seed: int | None
+) -> dict[str, Any]:
+    ac = get_answer_contract(spec)
+    is_choice = str(ac.get("answer_type", "")).strip() in {"single_choice", "choice"}
+    require_integer = _requires_integer_vertex_answer(spec)
+    templates = ["pq_from_minimum"] if require_integer else ["pq_from_minimum", "value_from_vertex_and_intercept"]
+
+    stem = ""
+    explanation = ""
+    metadata: dict[str, Any] = {}
+    answer_value: Any = 0
+    for attempt in range(128):
+        rng = random.Random(f"{seed}|quadratic_vertex_parameter|{pt}|{attempt}")
+        template = rng.choice(templates)
+
+        if template == "pq_from_minimum":
+            h = rng.choice([i for i in range(-5, 6) if i != 0])
+            k = rng.randint(-5, 6)
+            p = -2 * h
+            q = h * h + k
+            answer_value = p + q
+            stem = (
+                f"已知二次函數 $y=f(x)=x^2+px+q$ 的圖形最低點為 $({h},{k})$，"
+                "求 $p+q$ 的值。"
+            )
+            explanation = (
+                f"$y=x^2+px+q=(x-{h})^2+{k}$，"
+                f"所以 $p={p}$、$q={q}$，故 $p+q={answer_value}$。"
+            )
+            metadata = {
+                "givens": [f"vertex=({h},{k})", "leading_coefficient=1"],
+                "target": "p+q",
+                "derivation": [f"p={p}", f"q={q}", f"p+q={answer_value}"],
+                "template_slot": "quadratic_vertex_or_parameter_computation",
+                "problem_type_id": pt,
+                "source_pattern": "minimum_point_to_p_plus_q",
+            }
+        else:
+            h = rng.choice([i for i in range(-4, 5) if i != 0])
+            k = rng.randint(-4, 6)
+            y0 = rng.randint(-6, 6)
+            a_num = y0 - k
+            if a_num == 0:
+                a_num = rng.choice([-4, -3, -2, 2, 3, 4])
+                y0 = k + a_num
+            a = Fraction(a_num, h * h)
+            query_x = 2 * h + rng.choice([-1, 1])
+            answer_fraction = a * (query_x - h) * (query_x - h) + k
+            if require_integer and answer_fraction.denominator != 1:
+                continue
+            answer_value = int(answer_fraction) if answer_fraction.denominator == 1 else answer_fraction
+            a_text = str(a.numerator) if a.denominator == 1 else f"\\frac{{{a.numerator}}}{{{a.denominator}}}"
+            ans_text = str(answer_value) if isinstance(answer_value, int) else f"{answer_value.numerator}/{answer_value.denominator}"
+            stem = (
+                f"設二次函數 $y=f(x)=ax^2+bx+c$ 的圖形頂點為 $({h},{k})$，"
+                f"且交 $y$ 軸於 $(0,{y0})$，求 $f({query_x})$ 的值。"
+            )
+            explanation = (
+                f"由頂點得 $f(x)=a(x-{h})^2+{k}$。"
+                f"代入 $(0,{y0})$ 得 $a={a_text}$，"
+                f"所以 $f({query_x})={ans_text}$。"
+            )
+            answer_value = answer_value if isinstance(answer_value, int) else ans_text
+            metadata = {
+                "givens": [f"vertex=({h},{k})", f"y_intercept=(0,{y0})"],
+                "target": f"f({query_x})",
+                "derivation": [f"a={a}", f"f({query_x})={ans_text}"],
+                "template_slot": "quadratic_vertex_or_parameter_computation",
+                "problem_type_id": pt,
+                "source_pattern": "vertex_and_intercept_to_function_value",
+            }
+        if require_integer and isinstance(answer_value, str) and "/" in answer_value:
+            continue
+        break
+
+    if is_choice:
+        correct = str(answer_value)
+        base = int(answer_value) if isinstance(answer_value, int) or str(answer_value).lstrip("-").isdigit() else 0
+        wrongs: list[str] = []
+        for delta in (-2, -1, 1, 2, 3, -3):
+            cand = str(base + delta)
+            if cand != correct and cand not in wrongs:
+                wrongs.append(cand)
+            if len(wrongs) == 3:
+                break
+        return _build_choice_payload(
+            skill_id,
+            pt,
+            stem,
+            correct,
+            wrongs,
+            answer_type="single_choice",
+            checker_type="choice_label_checker",
+            metadata=metadata,
+            diagnosis_tags=["quadratic_vertex_form", "quadratic_parameter_computation"],
+            explanation=explanation,
+            seed=seed,
+        )
+
+    checker, answer_type, equivalence = _contract_checker_and_type(spec, {"answer": answer_value})
+    resolved_answer = answer_value if isinstance(answer_value, int) else str(answer_value)
+    return {
+        "skill_id": skill_id,
+        "problem_type_id": pt,
+        "question_text": stem,
+        "question": stem,
+        "choices": [],
+        "answer": resolved_answer,
+        "correct_answer": resolved_answer,
+        "answer_type": answer_type,
+        "checker_type": checker,
+        "checker": checker,
+        "checker_key": checker,
+        "equivalence_type": equivalence,
+        "answer_contract": dict(ac),
+        "explanation": explanation,
+        "diagnosis_tags": ["quadratic_vertex_form", "quadratic_parameter_computation"],
+        "metadata": metadata,
+        "source": "gencode_slot_generator",
+    }
+
+
+def _slot_quadratic_vertex_form_translation_to_new_function(
+    skill_id: str, pt: str, spec: dict[str, Any], seed: int | None
+) -> dict[str, Any]:
+    rng = random.Random(f"{seed}|quadratic_new_vertex_function|{pt}")
+    a = rng.choice([-3, -2, -1, 1, 2, 3])
+    h = rng.choice([i for i in range(-4, 5) if i != 0])
+    k = rng.randint(-5, 5)
+    base_display = _display_math(f"y={a}x^2")
+    vertex_display = _display_math(f"({h},{k})")
+    answer = _quadratic_vertex_form(a, h, k)
+    answer_display = _quadratic_vertex_form_display(a, h, k)
+    stem = (
+        f"將函數 {base_display} 的圖形平移到新頂點 {vertex_display} 後，"
+        "寫出新的頂點式函數。"
+    )
+    explanation = (
+        f"頂點式為 $y=a(x-h)^2+k$。新頂點是 $({h},{k})$，"
+        f"且開口係數仍為 ${a}$，所以新函數為 {answer_display}。"
+    )
+    ac = get_answer_contract(spec)
+    return {
+        "skill_id": skill_id,
+        "problem_type_id": pt,
+        "question_text": stem,
+        "question": stem,
+        "choices": [],
+        "answer": answer,
+        "correct_answer": answer,
+        "answer_type": str(ac.get("answer_type") or "text_short"),
+        "checker_type": str(ac.get("checker") or ac.get("checker_key") or "text_short_checker"),
+        "checker": str(ac.get("checker") or ac.get("checker_key") or "text_short_checker"),
+        "answer_contract": dict(ac),
+        "explanation": explanation,
+        "diagnosis_tags": ["quadratic_translation", "quadratic_vertex_form_new_function"],
+        "metadata": {
+            "givens": [f"base=y={a}x^2", f"new_vertex=({h},{k})"],
+            "target": "new_vertex_form_function",
+            "derivation": [f"a={a}", f"h={h}", f"k={k}", answer],
+            "template_slot": "quadratic_vertex_form_translation_to_new_function",
+            "problem_type_id": pt,
+        },
+        "source": "gencode_slot_generator",
+    }
+
+
 def _slot_function_value_numeric(skill_id: str, pt: str, spec: dict[str, Any], seed: int | None) -> dict[str, Any]:
     ac = get_answer_contract(spec)
     if _function_value_choice_requested(spec, ac):
@@ -1091,10 +1588,13 @@ SLOT_REGISTRY: dict[str, GeneratorFn] = {
     "linear_function_two_point_choice": _slot_linear_function_two_point_choice,
     "linear_function_contextual_word_problem": _slot_linear_function_contextual_word_problem,
     "quadratic_graph_vertex_axis_choice": _slot_quadratic_graph_vertex_axis_choice,
+    "quadratic_vertex_extremum_rational": _slot_quadratic_vertex_extremum_rational_runtime,
     "quadratic_graph_translation_fill_blank": _slot_quadratic_graph_translation_fill_blank,
     "quadratic_graph_translation_short_answer": _slot_quadratic_graph_translation_short_answer,
     "quadratic_vertex_form_properties": _slot_quadratic_vertex_form_properties,
     "quadratic_standard_to_vertex_properties": _slot_quadratic_standard_to_vertex_properties,
+    "quadratic_vertex_or_parameter_computation": _slot_quadratic_vertex_or_parameter_computation,
+    "quadratic_vertex_form_translation_to_new_function": _slot_quadratic_vertex_form_translation_to_new_function,
     DIVISION_POINT_SLOT: _slot_division_point_coordinates,
 }
 
@@ -1149,6 +1649,48 @@ def generate_from_problem_type_spec(
     seed: int | None = None,
 ) -> dict[str, Any]:
     pt = str(problem_type_spec.get("problem_type_id", "")).strip()
+
+    # ── SOP v0.3.3 最終發布防線：二次函數頂點計算（純數值 vs 素養應用題）雙軌分流 ──
+    if pt == "integer_compute_quadratic_vertex":
+        difficulty = _resolve_slot_difficulty(problem_type_spec)
+        route_seed = seed if seed is not None else 0
+
+        if route_seed % 2 == 1:
+            core_payload = generate_quadratic_extremum_application(
+                route_seed,
+                pt,
+                require_integer=_requires_integer_vertex_answer(problem_type_spec),
+            )
+            payload = _finalize_quadratic_extremum_application_payload(
+                core_payload,
+                skill_id=skill_id,
+                problem_type_id=pt,
+                spec=problem_type_spec,
+            )
+        else:
+            core_payload = _slot_quadratic_vertex_extremum_rational(
+                route_seed,
+                difficulty,
+                require_integer=_requires_integer_vertex_answer(problem_type_spec),
+            )
+            payload = _finalize_quadratic_vertex_extremum_payload(
+                core_payload,
+                skill_id=skill_id,
+                problem_type_id=pt,
+                spec=problem_type_spec,
+                seed=seed,
+                force_direct_formula=True,
+            )
+
+        ac = get_answer_contract(problem_type_spec)
+        payload = apply_coordinate_pair_runtime_fields(payload, ac)
+        payload = _reinforce_slot_question_text(payload, problem_type_spec)
+        payload = finalize_question_text(payload, problem_type_spec)
+        errors = validate_generator_payload(payload, skill_id=skill_id, problem_type_spec=problem_type_spec)
+        if errors:
+            raise RuntimeError(f"generator_semantically_unsafe:{','.join(errors)}")
+        return payload
+
     target_task = str(problem_type_spec.get("target_task", "")).strip()
     inferred_target_task = infer_registered_task_token(problem_type_spec)
     if target_task not in TARGET_TASK_GENERATOR_REGISTRY and inferred_target_task in TARGET_TASK_GENERATOR_REGISTRY:
@@ -1156,7 +1698,10 @@ def generate_from_problem_type_spec(
         problem_type_spec["target_task"] = inferred_target_task
         target_task = inferred_target_task
     slot = resolve_template_slot(problem_type_spec, seed)
-    fn = TARGET_TASK_GENERATOR_REGISTRY.get(target_task) or SLOT_REGISTRY.get(slot)
+    if _requires_vertex_rational_compute(problem_type_spec, pt):
+        fn: GeneratorFn | None = _slot_quadratic_vertex_extremum_rational_runtime
+    else:
+        fn = TARGET_TASK_GENERATOR_REGISTRY.get(target_task) or SLOT_REGISTRY.get(slot)
     if fn is None:
         if _requires_symbolic_coordinate(problem_type_spec):
             raise RuntimeError("pending_template:symbolic_coordinate_slot_required")
@@ -1176,6 +1721,7 @@ def generate_from_problem_type_spec(
     ac = get_answer_contract(problem_type_spec)
     payload = apply_coordinate_pair_runtime_fields(payload, ac)
     payload = _reinforce_slot_question_text(payload, problem_type_spec)
+    payload = finalize_question_text(payload, problem_type_spec)
     errors = validate_generator_payload(payload, skill_id=skill_id, problem_type_spec=problem_type_spec)
     if errors:
         raise RuntimeError(f"generator_semantically_unsafe:{','.join(errors)}")

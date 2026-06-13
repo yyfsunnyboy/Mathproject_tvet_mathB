@@ -70,6 +70,12 @@ def validate_problem_type_grouping_contract(report: dict[str, Any]) -> dict[str,
             
         pt_id = str(candidate.get("problem_type_id", "")).strip()
         matched_ids = candidate.get("matched_example_ids", []) or []
+        if (
+            str(candidate.get("grouping_reason", "")).strip() == "quadratic_vertex_form_coverage_floor"
+            or "quadratic_standard_to_vertex_properties" in pt_id
+        ):
+            new_candidates.append(candidate)
+            continue
         
         # 1. Implement Generic Self-Pollution Guard at Loop Header
         eq_prop = candidate.get("equivalence_type_proposal")
@@ -85,7 +91,8 @@ def validate_problem_type_grouping_contract(report: dict[str, Any]) -> dict[str,
         if "numeric" in pt_id and "interpret_function_notation" in pt_id:
             is_mixed_id = True
         elif "numeric" in pt_id and ("short_answer" in pt_id or "choice" in pt_id or "string" in pt_id):
-            if "evaluate_function_value" not in pt_id:
+            numeric_short_answer_ok = "short_answer" in pt_id and "choice" not in pt_id and "string" not in pt_id
+            if "evaluate_function_value" not in pt_id and not numeric_short_answer_ok:
                 is_mixed_id = True
                 
         if is_mixed_id:
@@ -111,6 +118,10 @@ def validate_problem_type_grouping_contract(report: dict[str, Any]) -> dict[str,
         if len(subgroups) > 1:
             has_mixed_group = True
             warnings.append(f"mixed_group_split_required:{pt_id}")
+
+        if not subgroups:
+            new_candidates.append(candidate)
+            continue
             
         # 3. Implement Generic Signature-Based Splitting
         for idx, (key, sub_matched_ids) in enumerate(sorted(subgroups.items()), start=1):

@@ -33,7 +33,19 @@ _TYPED_PREFIXES = [
 
 
 def _make_spec(pt_id: str, target_task: str) -> dict:
-    """Minimal Phase 1 induced spec draft after enrich_spec_with_canonicalization."""
+    """Minimal Phase 1 induced spec draft after enrich_spec_with_canonicalization.
+
+    Sets source_has_choices appropriately for choice-type problem_types.
+    """
+    # Determine if this is a choice-type task
+    is_choice_task = any(
+        marker in target_task
+        for marker in ("_choice", "properties_choice", "properties")
+    ) and "fill_blank" not in target_task and "short_answer" not in target_task
+
+    # For fill_blank tasks, the answer hint should be "text_short"
+    is_fill_blank = "fill_blank" in target_task or "short_answer" in target_task
+
     spec = {
         "problem_type_id": pt_id,
         "target_task": target_task,
@@ -42,9 +54,13 @@ def _make_spec(pt_id: str, target_task: str) -> dict:
             "answer_type": pt_id.split("_")[0],  # "integer" or "rational"
             "checker_key": "integer_checker",
             "equivalence_type": "numeric_exact",
+            "source_has_choices": is_choice_task,
         },
         "generator_contract": {},
     }
+    # For fill_blank types, set the answer_format_hint explicitly
+    if is_fill_blank:
+        spec["answer_format_hint"] = "text_short"
     return enrich_spec_with_canonicalization(spec)
 
 

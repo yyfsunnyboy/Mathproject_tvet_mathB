@@ -1,0 +1,51 @@
+skill_id: "vh_數學B1_VertexFormOfQuadraticFunction"
+subskills:
+  -
+    subskill_id: "quadratic_graph_translation_fill_blank"
+    observed: true
+    supporting_example_ids:
+      - 4451
+    suggested_problem_types:
+      - "quadratic_graph_translation_fill_blank"
+    runtime_category: "rule_only"
+    prerequisite_subskills:
+      - "absolute_value_numeric_evaluation"
+    diagnosis_tags:
+      - "absolute_value"
+  -
+    subskill_id: "quadratic_vertex_form_properties"
+    observed: true
+    supporting_example_ids:
+      - 4453
+    suggested_problem_types:
+      - "quadratic_vertex_form_properties"
+    runtime_category: "rule_only"
+    prerequisite_subskills:
+      - "absolute_value_numeric_evaluation"
+    diagnosis_tags:
+      - "absolute_value"
+  -
+    subskill_id: "quadratic_vertex_form_translation_to_new_function"
+    observed: true
+    supporting_example_ids:
+      - 4452
+    suggested_problem_types:
+      - "quadratic_vertex_form_translation_to_new_function"
+    runtime_category: "rule_only"
+    prerequisite_subskills:
+      - "absolute_value_numeric_evaluation"
+    diagnosis_tags:
+      - "absolute_value"
+  -
+    subskill_id: "quadratic_vertex_or_parameter_computation"
+    observed: true
+    supporting_example_ids:
+      - 4456
+      - 4504
+    suggested_problem_types:
+      - "quadratic_vertex_or_parameter_computation"
+    runtime_category: "rule_only"
+    prerequisite_subskills:
+      - "absolute_value_numeric_evaluation"
+    diagnosis_tags:
+      - "absolute_value"

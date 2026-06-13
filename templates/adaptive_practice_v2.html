@@ -2299,7 +2299,7 @@
       );
       state.remediationFamily = responseRemediationFamily;
       state.familyNameEn = String((response.new_question_data || {}).family_name || "");
-      state.currentQuestionText = q.question_text || q.question || "";
+      state.currentQuestionText = q.question_text || q.new_question_text || q.question || "";
       state.currentContext = q.context_string || "";
       state.expectedAnswer = String(q.correct_answer || q.answer || q.expected_answer || response.correct_answer || "");
       state.currentSubskills = response.target_subskills || [];

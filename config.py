@@ -66,6 +66,19 @@ class Config:
     DEFAULT_PROVIDER = 'local' 
     DEFAULT_CLOUD_PROVIDER = "google"
     GOOGLE_GEMINI_MODELS = {
+        "gemini-3.5-flash": {
+            "label": "Gemini 3.5 Flash",
+            "provider": "google",
+            "enabled": True,
+            "tier": "flash_stable",
+            "recommended_for": [
+                "default_cloud",
+                "hybrid_preview",
+                "rag_tutor",
+                "structured_output",
+                "complex_reasoning",
+            ],
+        },
         "gemini-3.1-flash-lite-preview": {
             "label": "Gemini 3.1 Flash-Lite",
             "provider": "google",
@@ -105,17 +118,18 @@ class Config:
             ],
         },
     }
-    DEFAULT_GOOGLE_MODEL = "gemini-3.1-flash-lite-preview"
+    DEFAULT_GOOGLE_MODEL = "gemini-3.5-flash"
     DEFAULT_CLOUD_MODEL = DEFAULT_GOOGLE_MODEL
-    DEFAULT_TUTOR_MODEL = "gemini-3.1-flash-lite-preview"
-    DEFAULT_HINT_MODEL = "gemini-3.1-flash-lite-preview"
-    DEFAULT_BASIC_QA_MODEL = "gemini-3.1-flash-lite-preview"
-    DEFAULT_SELF_ASSESSMENT_IMPORT_MODEL = "gemini-3.1-flash-lite-preview"
-    DEFAULT_OCR_JSON_MODEL = "gemini-3.1-flash-lite-preview"
+    DEFAULT_TUTOR_MODEL = "gemini-3.5-flash"
+    DEFAULT_HINT_MODEL = "gemini-3.5-flash"
+    DEFAULT_BASIC_QA_MODEL = "gemini-3.5-flash"
+    DEFAULT_SELF_ASSESSMENT_IMPORT_MODEL = "gemini-3.5-flash"
+    DEFAULT_OCR_JSON_MODEL = "gemini-3.5-flash"
     DEFAULT_TEXTBOOK_IMPORT_MODEL = "gemini-3-flash-preview"
     DEFAULT_RAG_TUTOR_MODEL = "gemini-3-flash-preview"
     DEFAULT_STABLE_FALLBACK_MODEL = "gemini-2.5-flash"
     SUPPORTED_CLOUD_MODELS = [
+        "gemini-3.5-flash",
         "gemini-3.1-flash-lite-preview",
         "gemini-3-flash-preview",
         "gemini-2.5-flash",
@@ -126,6 +140,19 @@ class Config:
     # 格式：dictionary { 'safe-name': { config } }
     CODER_PRESETS = {
         # 1. Google Gemini (Cloud)
+        'gemini-3.5-flash': {
+            'provider': 'google',
+            'model': 'gemini-3.5-flash',
+            'temperature': 0.1,
+            'max_tokens': 65536,
+            'description': 'Gemini 3.5 Flash (Cloud)',
+            'safety_settings': [
+                {"category": "HARM_CATEGORY_HARASSMENT", "threshold": "BLOCK_NONE"},
+                {"category": "HARM_CATEGORY_HATE_SPEECH", "threshold": "BLOCK_NONE"},
+                {"category": "HARM_CATEGORY_SEXUALLY_EXPLICIT", "threshold": "BLOCK_NONE"},
+                {"category": "HARM_CATEGORY_DANGEROUS_CONTENT", "threshold": "BLOCK_NONE"},
+            ],
+        },
         'gemini-3.1-flash-lite-preview': {
             'provider': 'google',
             'model': 'gemini-3.1-flash-lite-preview',

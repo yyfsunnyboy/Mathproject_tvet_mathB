@@ -45,7 +45,7 @@ _DEFAULT_CONTRACT_BY_ANSWER_TYPE = {
     "short_answer": ("exact_string", "text_short_checker"),
     "text": ("exact_string", "text_short_checker"),
     "text_short": ("exact_string", "text_short_checker"),
-    "numeric": ("numeric_exact", "integer_checker"),
+    "numeric": ("numeric_exact", "numeric_checker"),
     "integer": ("numeric_exact", "integer_checker"),
     "expression": ("algebraic_equivalent", "expression_checker"),
     "fraction": ("rational_equivalent", "rational_checker"),

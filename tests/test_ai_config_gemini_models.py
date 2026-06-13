@@ -8,6 +8,9 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 def test_normalize_google_model_id_legacy_and_31_models():
+    assert normalize_google_model_id("gemini-3.5-flash") == "gemini-3.5-flash"
+    assert normalize_google_model_id("Gemini 3.5 Flash") == "gemini-3.5-flash"
+    assert normalize_google_model_id("Gemini 3.5 Flash Stable") == "gemini-3.5-flash"
     assert normalize_google_model_id("gemini-3.1-flash") == "gemini-3.1-flash-lite-preview"
     assert normalize_google_model_id("Gemini 3.1 Flash-Lite") == "gemini-3.1-flash-lite-preview"
     assert normalize_google_model_id("gemini-3.1-flash-lite") == "gemini-3.1-flash-lite-preview"
@@ -20,16 +23,18 @@ def test_normalize_google_model_id_legacy_and_31_models():
 
 
 def test_config_google_model_ids_and_default():
-    assert Config.DEFAULT_CLOUD_MODEL == "gemini-3.1-flash-lite-preview"
-    assert Config.DEFAULT_OCR_JSON_MODEL == "gemini-3.1-flash-lite-preview"
-    assert Config.DEFAULT_SELF_ASSESSMENT_IMPORT_MODEL == "gemini-3.1-flash-lite-preview"
+    assert Config.DEFAULT_CLOUD_MODEL == "gemini-3.5-flash"
+    assert Config.DEFAULT_OCR_JSON_MODEL == "gemini-3.5-flash"
+    assert Config.DEFAULT_SELF_ASSESSMENT_IMPORT_MODEL == "gemini-3.5-flash"
     assert Config.DEFAULT_TEXTBOOK_IMPORT_MODEL == "gemini-3-flash-preview"
     assert Config.DEFAULT_STABLE_FALLBACK_MODEL == "gemini-2.5-flash"
     assert Config.SUPPORTED_CLOUD_MODELS == [
+        "gemini-3.5-flash",
         "gemini-3.1-flash-lite-preview",
         "gemini-3-flash-preview",
         "gemini-2.5-flash",
     ]
+    assert Config.CODER_PRESETS["gemini-3.5-flash"]["model"] == "gemini-3.5-flash"
     assert Config.CODER_PRESETS["gemini-3.1-flash-lite-preview"]["model"] == "gemini-3.1-flash-lite-preview"
     assert Config.CODER_PRESETS["gemini-3-flash-preview"]["model"] == "gemini-3-flash-preview"
 
@@ -37,8 +42,9 @@ def test_config_google_model_ids_and_default():
 def test_ai_prompt_settings_ui_model_options():
     html = (ROOT / "templates" / "ai_prompt_settings.html").read_text(encoding="utf-8")
     assert 'value="{{ model.value }}"' in html
-    assert "gemini-3.1-flash-lite-preview" in html
-    for model_id in ("gemini-3.1-flash-lite-preview", "gemini-3-flash-preview", "gemini-2.5-flash"):
+    assert "gemini-3.5-flash" in html
+    assert "gemini-3.1-flash-lite-preview" not in html
+    for model_id in ("gemini-3.5-flash", "gemini-3.1-flash-lite-preview", "gemini-3-flash-preview", "gemini-2.5-flash"):
         assert model_id in Config.SUPPORTED_CLOUD_MODELS
     assert "gemini-3.1-flash" not in Config.SUPPORTED_CLOUD_MODELS
     assert "gemini-3.1-flash-lite" not in Config.SUPPORTED_CLOUD_MODELS

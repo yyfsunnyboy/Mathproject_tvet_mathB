@@ -65,6 +65,8 @@ QUADRATIC_FUNCTION_GRAPH_TASKS = frozenset(
         "quadratic_graph_translation_fill_blank",
         "quadratic_graph_translation_short_answer",
         "quadratic_vertex_form_properties",
+        "quadratic_vertex_or_parameter_computation",
+        "quadratic_vertex_form_translation_to_new_function",
     }
 )
 
@@ -105,6 +107,8 @@ TASK_TO_FAMILY: dict[str, str] = {
     "quadratic_graph_translation_fill_blank": QUADRATIC_FUNCTION_GRAPH_FAMILY,
     "quadratic_graph_translation_short_answer": QUADRATIC_FUNCTION_GRAPH_FAMILY,
     "quadratic_vertex_form_properties": QUADRATIC_FUNCTION_GRAPH_FAMILY,
+    "quadratic_vertex_or_parameter_computation": QUADRATIC_FUNCTION_GRAPH_FAMILY,
+    "quadratic_vertex_form_translation_to_new_function": QUADRATIC_FUNCTION_GRAPH_FAMILY,
 }
 
 # Higher score wins when multiple families match skill terms (not generator availability).

@@ -1,0 +1,96 @@
+{
+  "skill_id": "vh_數學B1_CompletingTheSquare",
+  "phase": "phase3_publish_gate",
+  "final_status": "PUBLISH_BINDING_REQUIRED",
+  "publish_ready": false,
+  "full_observed_coverage": true,
+  "source_coverage_status": "INSUFFICIENT_SOURCE_EXAMPLES",
+  "bootstrap_summary": {
+    "bootstrap_mode": false,
+    "bootstrap_source_skill_id": "",
+    "source_coverage_status": "",
+    "allowed_problem_types": []
+  },
+  "examples_total": 2,
+  "examples_covered": 2,
+  "observed_problem_types": [],
+  "verified_problem_types": [],
+  "pending_implementation": [],
+  "manual_review_problem_types": [
+    "unknown"
+  ],
+  "future_ai_judged_problem_types": [],
+  "answer_contract_summary": {},
+  "missing_answer_contract_problem_types": [],
+  "missing_checker_key_problem_types": [],
+  "equivalence_test_required_problem_types": [],
+  "runtime_problem_type_coverage": {
+    "expected_problem_types": [],
+    "observed_problem_types": [],
+    "missing_problem_types": [],
+    "status": "pass"
+  },
+  "blocking_reasons": [
+    "candidate_verification_failed",
+    "registry_binding_missing",
+    "runtime_binding_missing",
+    "wrapper_binding_missing"
+  ],
+  "warnings": [
+    "manual_review_present"
+  ],
+  "publish_binding_summary": {
+    "candidate_verification_status": "FAIL",
+    "verified_candidates_count": 0,
+    "verified_problem_types": [],
+    "registry_binding_status": "NOT_BOUND",
+    "registry_path": "",
+    "registry_entry_found": false,
+    "registry_entry_valid": false,
+    "registry_verified_problem_types": [],
+    "registry_manual_review_exclusions": [],
+    "registry_binding_failure_reason": "registry_binding_missing",
+    "wrapper_binding_status": "NOT_BOUND",
+    "runtime_binding_status": "NOT_READY",
+    "binding_required": true,
+    "binding_blockers": [
+      "registry_binding_missing",
+      "runtime_binding_missing",
+      "wrapper_binding_missing"
+    ],
+    "publish_exclusions": {
+      "manual_review_problem_types": [
+        "unknown"
+      ],
+      "future_ai_judged_problem_types": []
+    }
+  },
+  "next_action": {
+    "next_action_type": "rerun_or_fix_phase2",
+    "command": "python scripts\\gencode_pipeline_phase2_build.py --skill-id vh_數學B1_CompletingTheSquare",
+    "reason": "Phase 2 尚未 BUILD_PASS 或 candidate 驗證未通過。",
+    "should_publish": false,
+    "requires_human_review": true
+  },
+  "success_items": {
+    "phase1_coverage_ok": true,
+    "phase2_candidate_verification_ok": false,
+    "verified_problem_types": [],
+    "answer_contract_gate_ok": true,
+    "checker_key_gate_ok": true
+  },
+  "incomplete_items": {
+    "registry_binding_done": false,
+    "wrapper_binding_done": false,
+    "runtime_binding_ready": false,
+    "runtime_coverage_pass": true
+  },
+  "status_message": "candidate 驗證、binding 與 runtime coverage 綜合判讀結果。",
+  "artifact_paths": {
+    "phase1_json": "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_CompletingTheSquare_phase1_audit.json",
+    "phase2_json": "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_CompletingTheSquare_phase2_build.json",
+    "final_json": "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_CompletingTheSquare_pipeline_final.json",
+    "final_md": "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_CompletingTheSquare_pipeline_final.md"
+  },
+  "timestamp": "2026-06-13T13:38:01.310722+00:00"
+}

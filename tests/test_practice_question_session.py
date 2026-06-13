@@ -113,6 +113,60 @@ def test_skill_mismatch_returns_stale(logged_client) -> None:
     assert resp.get("stale_question") is True
 
 
+def test_practice_page_clears_session_on_skill_switch(logged_client) -> None:
+    """Navigating to a different /practice/<skill_id> must clear stale question pointers."""
+    logged_client.get(
+        f"/get_next_question?skill={quote(SKILL_DIVISION)}&problem_type={PT_DIVISION}&gen_seed=20&level=1"
+    )
+    with logged_client.session_transaction() as sess:
+        assert sess.get("current_skill_id") == SKILL_DIVISION
+        assert sess.get("current_question_uid")
+
+    logged_client.get(f"/practice/{quote(SKILL_DISTANCE)}")
+    with logged_client.session_transaction() as sess:
+        assert sess.get("current_skill_id") in (None, "", SKILL_DISTANCE)
+        assert not sess.get("current_question_uid")
+        assert not sess.get("practice_ref")
+        assert not sess.get("current_data")
+
+
+def test_check_answer_session_skill_mismatch_returns_stale(logged_client) -> None:
+    q = logged_client.get(
+        f"/get_next_question?skill={quote(SKILL_DIVISION)}&problem_type={PT_DIVISION}&gen_seed=21&level=1"
+    ).get_json() or {}
+    with logged_client.session_transaction() as sess:
+        sess["current_skill_id"] = SKILL_DISTANCE
+    resp = logged_client.post(
+        "/check_answer",
+        json=_check_payload(q, "(0,0)", skill_id=SKILL_DIVISION),
+    ).get_json() or {}
+    assert resp.get("stale_question") is True
+    assert resp.get("stale_question_requires_reload") is True
+
+
+def test_get_question_by_uid_requires_skill_match() -> None:
+    app = create_app()
+    with app.test_request_context():
+        from core.session import set_current
+        from core.practice_question_store import get_question_by_uid
+
+        set_current(
+            SKILL_DIVISION,
+            {
+                "question_text": "division point",
+                "problem_type_id": PT_DIVISION,
+                "correct_answer": "(1,2)",
+                "checker": "coordinate_pair_checker",
+            },
+        )
+        from flask import session
+
+        uid = session.get("current_question_uid")
+        assert uid
+        assert get_question_by_uid(uid, skill_id=SKILL_DIVISION) is not None
+        assert get_question_by_uid(uid, skill_id=SKILL_DISTANCE) is None
+
+
 def test_question_uid_missing_in_store_returns_stale(logged_client) -> None:
     logged_client.get(
         f"/get_next_question?skill={quote(SKILL_DIVISION)}&problem_type={PT_DIVISION}&gen_seed=5&level=1"

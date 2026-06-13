@@ -22,7 +22,20 @@ from core.gencode.classifiers.base import ClassifierContext
 from core.gencode.classifiers.fallback_classifier import FallbackClassifier
 from core.gencode.phase3_skill_codegen import build_generator_specs_for_phase3, build_phase3_skill_module_code
 from core.gencode.pipeline_policy import evaluate_pipeline_gates
-from core.gencode.pipeline_state import utc_timestamp, write_json, write_md
+from core.gencode.pipeline_state import (
+    GENCODE_DRAFT_DIR,
+    GENCODE_REPORT_DIR,
+    coerce_report_path,
+    phase_report_paths,
+    phase_summary_path,
+    read_json,
+    reports_dict_from_paths,
+    sanitize_path_segment,
+    utc_timestamp,
+    write_json,
+    write_md,
+    write_text_file,
+)
 from core.gencode.runtime_smoke import run_draft_runtime_smoke
 from core.gencode.problem_type_induction import apply_spec_mode, induce_problem_types_from_examples
 from core.gencode.problem_type_spec import save_induced_problem_type_specs
@@ -34,11 +47,99 @@ from core.gencode.answer_contract_gate import (
 )
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
-REPORT_DIR = PROJECT_ROOT / "reports" / "gencode_closed_loop"
-DRAFT_DIR = REPORT_DIR / "drafts"
+REPORT_DIR = GENCODE_REPORT_DIR
+DRAFT_DIR = GENCODE_DRAFT_DIR
 CLASSIFIER_DRAFT_DIR = REPORT_DIR / "classifier_drafts"
 CLASSIFIER_RULEPACK_PATH = PROJECT_ROOT / "configs" / "gencode" / "classifiers" / "phase1_rule_packs.yaml"
 CLASSIFIER_RULEPACK_BACKUP_DIR = PROJECT_ROOT / "backups" / "gencode_classifier_rulepacks"
+
+SOP_INTEGRATION_DIR = Path("docs") / "系統SOP" / "Gencode_AgentSkillV2整合"
+
+
+def _phase_reports(skill_id: str, *, keys: tuple[str, ...] | None = None) -> dict[str, str]:
+    paths = phase_report_paths(skill_id)
+    if keys is not None:
+        paths = {key: paths[key] for key in keys if key in paths}
+    return reports_dict_from_paths(paths)
+
+
+def _load_phase_json(path: str | Path) -> dict[str, Any]:
+    return _normalize_json_payload(read_json(path))
+
+
+def _safe_skill_id(skill_id: str) -> str:
+    return sanitize_path_segment(skill_id)
+SOP_SELF_HEALING_MAP = {
+    "phase1": "Gencode與AgentSkillV2整合總體設計_v0.3.md",
+    "phase2": "Gencode與AgentSkillV2整合總體設計_v0.3.md",
+    "phase2.5": "AnswerContract_EquivalenceType_Gate_v0.3.md",
+    "phase3": "AgentSkillV2_ProblemType規格包設計_v0.3.md",
+}
+
+
+def execute_pipeline_self_healing(error: Exception, phase: str, skill_id: str) -> dict[str, Any]:
+    """SOP v0.3.2 條款 3.5：自動載入真實 SOP 目錄全文作為 LLM 修正 Context，達成無人值守閉環。"""
+    phase_key = str(phase or "").lower().strip()
+    sop_file = SOP_SELF_HEALING_MAP.get(phase_key, "Gencode與AgentSkillV2整合總體設計_v0.3.md")
+    sop_path = PROJECT_ROOT / SOP_INTEGRATION_DIR / sop_file
+
+    sop_context = ""
+    if sop_path.exists():
+        sop_context = sop_path.read_text(encoding="utf-8")
+
+    repair_prompt = f"""
+【管線執行中斷】: Phase {phase} 發生非預期毀損。
+【當前錯誤堆疊】: {error!s}
+【唯一對照權威 SOP 規範】:
+{sop_context}
+
+請依據合約法規，修正 ProblemTypeSpec 的欄位配置，嚴禁直接給答案。
+""".strip()
+
+    client, _ = _resolve_gencode_ai_client(["architect", "default"])
+    if client:
+        call_ai_with_retry(client, repair_prompt, max_retries=2, retry_delay=2, timeout=90)
+
+    return {"status": "HEALED_AND_RETRIED", "phase": phase, "skill_id": skill_id}
+
+
+def _validate_vh_math_skill_id_prefix(skill_id: str) -> tuple[bool, str]:
+    """
+    SOP v0.3.2 最終洗淨版：行政歸屬唯讀校驗器。
+    100% 對齊資料庫既有 vh_數學... 標準格式矩陣，絕不自行發明 ID。
+    """
+    sid = str(skill_id or "").strip()
+    if sid.startswith("vh_數學"):
+        return True, "vocational_high_school_math_core_scope"
+    return False, "skill_id_prefix_violation"
+
+
+def _build_skill_id_prefix_violation_payload(
+    skill_id: str,
+    *,
+    dry_run: bool,
+    reports_pre: dict[str, str],
+    validation_reason: str = "skill_id_prefix_violation",
+) -> dict[str, Any]:
+    return {
+        "ok": False,
+        "phase": "phase1",
+        "skill_id": skill_id,
+        "source_example_count": 0,
+        "candidate_problem_types": [],
+        "phase_status": "skill_id_prefix_violation",
+        "exception_review_gate": {"required": True, "reasons": ["skill_id_prefix_violation"]},
+        "summary_message": (
+            f"[CRITICAL] Skill ID format violation: '{skill_id}' must belong to "
+            f"'vh_數學' core matrix. Blocked from pipeline write."
+        ),
+        "reports": reports_pre,
+        "timestamp": utc_timestamp(),
+        "dry_run": dry_run,
+        "human_review_items": [],
+        "skill_id_prefix_validated": False,
+        "skill_id_prefix_validation_reason": validation_reason,
+    }
 
 
 _AUTOMATED_DERIVATION = ["Step 1: Automated derivation initialized from source spec."]
@@ -107,6 +208,51 @@ def _is_contextual_short_answer_choice_clone(problem_type_id: str) -> bool:
     return all(marker in pt for marker in sequence_markers)
 
 
+def _purge_choice_ghost_cache_from_answer_contract(
+    spec: dict[str, Any], problem_type_id: str = ""
+) -> dict[str, Any]:
+    """SOP v0.3.4: strip choice ghosts and align short-answer families to numeric registry key."""
+    pt_key_lower = str(problem_type_id or spec.get("problem_type_id", "")).strip().lower()
+    is_short_answer_family = any(
+        token in pt_key_lower
+        for token in ["integer_", "numeric_", "rational_", "compute_quadratic_vertex"]
+    ) and not any(choice_tok in pt_key_lower for choice_tok in ["_choice", "single_choice"])
+
+    if is_short_answer_family:
+        ac = spec.get("answer_contract")
+        if isinstance(ac, dict):
+            ac["presentation_mode"] = "short_answer"
+            if pt_key_lower.startswith("integer_"):
+                ac["answer_type"] = "integer"
+                ac["answer_equivalence"] = "numeric_exact"
+                ac["equivalence_type"] = "numeric_exact"
+                ac["checker"] = "integer_checker"
+                ac["checker_key"] = "integer_checker"
+                ac["selected_checker"] = "integer_checker"
+            elif pt_key_lower.startswith("rational_"):
+                ac["answer_type"] = "rational"
+                ac["answer_equivalence"] = "rational_equivalent"
+                ac["equivalence_type"] = "rational_equivalent"
+                ac["checker"] = "rational_checker"
+                ac["checker_key"] = "rational_checker"
+                ac["selected_checker"] = "rational_checker"
+            else:
+                ac["answer_type"] = "numeric"
+            ac["source_has_choices"] = False
+            ac["choices_required"] = False
+            ac["frontend_render_choices"] = False
+            ac.pop("accepted_formats", None)
+            ac.pop("choice_count", None)
+            if str(ac.get("answer_semantics", "")).strip() == "choice_label":
+                ac.pop("answer_semantics", None)
+            checker = str(ac.get("checker") or ac.get("checker_key") or "").strip()
+            if checker and str(ac.get("selected_checker", "")).strip() == "choice_label_checker":
+                ac["selected_checker"] = checker
+            spec["answer_contract"] = ac
+            spec["answer_type"] = ac.get("answer_type", "numeric")
+    return spec
+
+
 def _reinforce_canonical_answer_contract(
     spec: dict[str, Any], problem_type_id: str = ""
 ) -> dict[str, Any]:
@@ -138,7 +284,7 @@ def _reinforce_canonical_answer_contract(
             }
         )
         spec["answer_contract"] = ac
-        return spec
+        return _purge_choice_ghost_cache_from_answer_contract(spec, pt)
 
     # Typed-prefix canonicalization guard:
     # If this spec was already run through enrich_spec_with_canonicalization(),
@@ -170,9 +316,9 @@ def _reinforce_canonical_answer_contract(
             if not slots.get("stem"):
                 slots["stem"] = resolved_slot
         if short_answer_prefix and _sanitize_coordinate_pair_answer_contract(spec, pt):
-            return spec
+            return _purge_choice_ghost_cache_from_answer_contract(spec, pt)
         spec["answer_contract"] = ac
-        return spec
+        return _purge_choice_ghost_cache_from_answer_contract(spec, pt)
 
     if pt.startswith("expression_"):
         answer_type = "expression"
@@ -210,14 +356,14 @@ def _reinforce_canonical_answer_contract(
         ac["checker_key"] = "expression_checker"
 
     if short_answer_prefix and _sanitize_coordinate_pair_answer_contract(spec, pt):
-        return spec
+        return _purge_choice_ghost_cache_from_answer_contract(spec, pt)
 
     if single_choice_prefix and not short_answer_prefix:
         ac["answer_type"] = "single_choice"
         coerce_single_choice_contract(ac)
 
     spec["answer_contract"] = ac
-    return spec
+    return _purge_choice_ghost_cache_from_answer_contract(spec, pt)
 
 
 def _sanitize_coordinate_pair_answer_contract(spec: dict[str, Any], problem_type_id: str) -> bool:
@@ -835,12 +981,7 @@ def _resolve_gencode_ai_client(preferred_roles: list[str]) -> tuple[Any | None, 
 
 
 def _safe_file_component(value: str) -> str:
-    raw = str(value or "").strip()
-    if not raw:
-        return "unknown_skill"
-    for ch in '<>:"/\\|?*':
-        raw = raw.replace(ch, "_")
-    return raw
+    return sanitize_path_segment(value)
 
 
 def _load_examples(skill_id: str, db_path: str = "instance/kumon_math.db") -> list[dict[str, Any]]:
@@ -1875,7 +2016,7 @@ def _write_phase1_summary_md(path: Path, skill_id: str, payload: dict[str, Any])
             )
         lines.append("")
     path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text("\n".join(lines).rstrip() + "\n", encoding="utf-8")
+    write_text_file(path, "\n".join(lines).rstrip() + "\n")
 
 
 def _build_auto_review(skill_id: str, entries: list[dict[str, Any]], proposal: dict[str, Any]) -> dict[str, Any]:
@@ -2246,12 +2387,10 @@ def run_gencode_phase1(skill_id: str, dry_run: bool = True, spec_mode: str = "ai
     # SOP v0.2: Preflight Scan Policy Enforcement
     from core.gencode.sop_policy import validate_sop_preflight, build_sop_reference, validate_skill_level_blockers
     preflight = validate_sop_preflight(PROJECT_ROOT)
-    reports_pre = {
-        "phase1_summary_json": str(REPORT_DIR / f"{skill_id}_phase1_summary.json"),
-        "phase1_summary_md": str(REPORT_DIR / f"{skill_id}_phase1_summary.md"),
-        "phase1_json": str(REPORT_DIR / f"{skill_id}_phase1_summary.json"),
-        "phase1_md": str(REPORT_DIR / f"{skill_id}_phase1_summary.md"),
-    }
+    reports_pre = _phase_reports(
+        skill_id,
+        keys=("phase1_summary_json", "phase1_summary_md", "phase1_json", "phase1_md"),
+    )
     if preflight["sop_preflight_status"] == "FAIL":
         payload = {
             "ok": False,
@@ -2286,12 +2425,26 @@ def run_gencode_phase1(skill_id: str, dry_run: bool = True, spec_mode: str = "ai
 
     REPORT_DIR.mkdir(parents=True, exist_ok=True)
     examples = _load_examples(skill_id)
-    reports = {
-        "phase1_summary_json": str(REPORT_DIR / f"{skill_id}_phase1_summary.json"),
-        "phase1_summary_md": str(REPORT_DIR / f"{skill_id}_phase1_summary.md"),
-        "phase1_json": str(REPORT_DIR / f"{skill_id}_phase1_summary.json"),
-        "phase1_md": str(REPORT_DIR / f"{skill_id}_phase1_summary.md"),
-    }
+
+    # ── SOP v0.3.2 最終洗淨版：行政歸屬唯讀校驗（對齊真實資料庫矩陣）──
+    prefix_ok, prefix_reason = _validate_vh_math_skill_id_prefix(skill_id)
+    if not prefix_ok:
+        payload = _build_skill_id_prefix_violation_payload(
+            skill_id,
+            dry_run=dry_run,
+            reports_pre=reports_pre,
+            validation_reason=prefix_reason,
+        )
+        write_json(Path(reports_pre["phase1_summary_json"]), payload)
+        _write_phase1_summary_md(Path(reports_pre["phase1_summary_md"]), skill_id, payload)
+        normalized = _normalize_phase_response(payload)
+        normalized["phase_status"] = "skill_id_prefix_violation"
+        return normalized
+
+    reports = _phase_reports(
+        skill_id,
+        keys=("phase1_summary_json", "phase1_summary_md", "phase1_json", "phase1_md"),
+    )
     if not examples:
         payload = {
             "ok": False,
@@ -2340,6 +2493,7 @@ def run_gencode_phase1(skill_id: str, dry_run: bool = True, spec_mode: str = "ai
             try:
                 entries, proposal, meta = _run_ai_classifier_bootstrap(skill_id=skill_id, skill_ch_name=skill_ch_name, examples=examples)
             except Exception as ex:
+                execute_pipeline_self_healing(ex, "phase1", skill_id)
                 ex_msg = str(ex)
                 entries, proposal, meta = _build_neutral_fallback(
                     skill_id=skill_id,
@@ -2397,7 +2551,30 @@ def run_gencode_phase1(skill_id: str, dry_run: bool = True, spec_mode: str = "ai
         if "example_id" not in row and row.get("id") is not None:
             row["example_id"] = row["id"]
         examples_for_induction.append(row)
-    induced = induce_problem_types_from_examples(skill_id, examples_for_induction, spec_mode=spec_mode)
+    try:
+        induced = induce_problem_types_from_examples(skill_id, examples_for_induction, spec_mode=spec_mode)
+    except Exception as ex:
+        healing = execute_pipeline_self_healing(ex, "phase1", skill_id)
+        payload = {
+            "ok": False,
+            "phase": "phase1",
+            "skill_id": skill_id,
+            "source_example_count": len(examples),
+            "candidate_problem_types": [],
+            "phase_status": "phase1_induction_exception",
+            "exception_review_gate": {"required": True, "reasons": ["phase1_induction_exception"]},
+            "summary_message": f"Phase 1 induction failed: {ex}",
+            "self_healing": healing,
+            "reports": reports,
+            "timestamp": utc_timestamp(),
+            "dry_run": dry_run,
+            "human_review_items": [],
+        }
+        write_json(Path(reports["phase1_summary_json"]), payload)
+        _write_phase1_summary_md(Path(reports["phase1_summary_md"]), skill_id, payload)
+        normalized = _normalize_phase_response(payload)
+        normalized["phase_status"] = "phase1_induction_exception"
+        return normalized
     auto_review = apply_spec_mode(skill_id, induced, auto_review_legacy, entries, spec_mode)
     alignment_blocked = str(auto_review.get("source_alignment_status", "")).strip() == "block"
     _induce_modes_save = {
@@ -2468,6 +2645,8 @@ def run_gencode_phase1(skill_id: str, dry_run: bool = True, spec_mode: str = "ai
         "ok": not alignment_blocked,
         "phase": "phase1",
         "skill_id": skill_id,
+        "skill_id_prefix_validated": prefix_ok,
+        "skill_id_prefix_validation_reason": prefix_reason,
         "sop_reference": build_sop_reference(PROJECT_ROOT),
         "sop_gate_status": sop_gate_status,
         "sop_gate_violation": sop_gate_violation,
@@ -2632,10 +2811,10 @@ def run_gencode_phase2(skill_id: str, accepted_problem_types: list | None = None
     # SOP v0.2: Preflight Scan Policy Enforcement
     from core.gencode.sop_policy import validate_sop_preflight, build_sop_reference
     preflight = validate_sop_preflight(PROJECT_ROOT)
-    reports_pre = {
-        "phase2_generator_summary_json": str(REPORT_DIR / f"{skill_id}_phase2_generator_summary.json"),
-        "phase2_generator_summary_md": str(REPORT_DIR / f"{skill_id}_phase2_generator_summary.md"),
-    }
+    reports_pre = _phase_reports(
+        skill_id,
+        keys=("phase2_generator_summary_json", "phase2_generator_summary_md"),
+    )
     if preflight["sop_preflight_status"] == "FAIL":
         payload = {
             "ok": False,
@@ -2664,9 +2843,9 @@ def run_gencode_phase2(skill_id: str, accepted_problem_types: list | None = None
 
     REPORT_DIR.mkdir(parents=True, exist_ok=True)
     DRAFT_DIR.mkdir(parents=True, exist_ok=True)
-    phase1_path = REPORT_DIR / f"{skill_id}_phase1_summary.json"
-    draft_spec_path = DRAFT_DIR / f"{skill_id}_generator_draft_spec.json"
-    phase1 = _normalize_json_payload(json.loads(phase1_path.read_text(encoding="utf-8"))) if phase1_path.exists() else run_gencode_phase1(skill_id, dry_run=dry_run)
+    phase1_path = phase_summary_path(skill_id, "phase1_summary")
+    draft_spec_path = phase_summary_path(skill_id, "generator_draft_spec")
+    phase1 = _load_phase_json(phase1_path) if phase1_path.exists() else run_gencode_phase1(skill_id, dry_run=dry_run)
     _build_phase2_foundation_preflight(
         phase1_payload=phase1 if isinstance(phase1, dict) else {},
         generator_results=[],
@@ -2894,11 +3073,16 @@ def run_gencode_phase2(skill_id: str, accepted_problem_types: list | None = None
         )
 
     reports = {
-        "phase2_generator_summary_json": str(REPORT_DIR / f"{skill_id}_phase2_generator_summary.json"),
-        "phase2_generator_summary_md": str(REPORT_DIR / f"{skill_id}_phase2_generator_summary.md"),
-        "phase2_json": str(REPORT_DIR / f"{skill_id}_phase2_generator_summary.json"),
-        "phase2_md": str(REPORT_DIR / f"{skill_id}_phase2_generator_summary.md"),
-        "generator_draft_spec_json": str(draft_spec_path),
+        **_phase_reports(
+            skill_id,
+            keys=(
+                "phase2_generator_summary_json",
+                "phase2_generator_summary_md",
+                "phase2_json",
+                "phase2_md",
+            ),
+        ),
+        "generator_draft_spec_json": str(draft_spec_path.resolve()),
     }
     foundation_preflight = _build_phase2_foundation_preflight(
         phase1_payload=phase1 if isinstance(phase1, dict) else {},
@@ -3157,10 +3341,10 @@ def run_gencode_phase3_package(skill_id: str, accepted_generator_keys: list | No
     # SOP v0.2: Preflight Scan Policy Enforcement
     from core.gencode.sop_policy import validate_sop_preflight, build_sop_reference
     preflight = validate_sop_preflight(PROJECT_ROOT)
-    reports_pre = {
-        "phase3_package_summary_json": str(REPORT_DIR / f"{skill_id}_phase3_package_summary.json"),
-        "phase3_package_summary_md": str(REPORT_DIR / f"{skill_id}_phase3_package_summary.md"),
-    }
+    reports_pre = _phase_reports(
+        skill_id,
+        keys=("phase3_package_summary_json", "phase3_package_summary_md"),
+    )
     if preflight["sop_preflight_status"] == "FAIL":
         payload = {
             "ok": False,
@@ -3186,10 +3370,10 @@ def run_gencode_phase3_package(skill_id: str, accepted_generator_keys: list | No
 
     REPORT_DIR.mkdir(parents=True, exist_ok=True)
     DRAFT_DIR.mkdir(parents=True, exist_ok=True)
-    phase2_path = REPORT_DIR / f"{skill_id}_phase2_generator_summary.json"
-    draft_spec_path = DRAFT_DIR / f"{skill_id}_generator_draft_spec.json"
-    phase2 = _normalize_json_payload(json.loads(phase2_path.read_text(encoding="utf-8"))) if phase2_path.exists() else run_gencode_phase2(skill_id, dry_run=dry_run)
-    draft_spec = _normalize_json_payload(json.loads(draft_spec_path.read_text(encoding="utf-8"))) if draft_spec_path.exists() else {}
+    phase2_path = phase_summary_path(skill_id, "phase2_generator_summary")
+    draft_spec_path = phase_summary_path(skill_id, "generator_draft_spec")
+    phase2 = _load_phase_json(phase2_path) if phase2_path.exists() else run_gencode_phase2(skill_id, dry_run=dry_run)
+    draft_spec = _load_phase_json(draft_spec_path) if draft_spec_path.exists() else {}
     accepted = {str(x) for x in (accepted_generator_keys or []) if str(x).strip()}
     usable, packaging_diag = select_generators_for_packaging(
         phase2 if isinstance(phase2, dict) else {},
@@ -3215,22 +3399,30 @@ def run_gencode_phase3_package(skill_id: str, accepted_generator_keys: list | No
             in runtime_usable_problem_types
         ]
     phase3_warnings = sorted({w for g in usable for w in (g.get("warnings") or []) if str(w).strip()})
-    draft_skill_path = DRAFT_DIR / f"{skill_id}.py"
+    draft_skill_path = phase_summary_path(skill_id, "draft_skill")
     generator_specs: list[dict[str, Any]] = []
     generator_keys: list[str] = []
     if usable:
         generator_specs, generator_keys = build_generator_specs_for_phase3(skill_id, usable)
         code = build_phase3_skill_module_code(skill_id, generator_specs, generator_keys)
         draft_skill_path.write_text(code, encoding="utf-8")
-    py_status = "passed"
+    else:
+        for stale_path in (draft_skill_path, draft_spec_path):
+            try:
+                if stale_path.exists():
+                    stale_path.unlink()
+            except OSError:
+                pass
+    py_status = "not_run_no_usable_generators" if not usable else "passed"
     py_reason = ""
-    try:
-        py_compile.compile(str(draft_skill_path), doraise=True)
-    except Exception as e:
-        py_status = "failed"
-        py_reason = str(e)
-    phase1_path = REPORT_DIR / f"{skill_id}_phase1_summary.json"
-    phase1 = _normalize_json_payload(json.loads(phase1_path.read_text(encoding="utf-8"))) if phase1_path.exists() else {}
+    if usable:
+        try:
+            py_compile.compile(str(draft_skill_path), doraise=True)
+        except Exception as e:
+            py_status = "failed"
+            py_reason = str(e)
+    phase1_path = phase_summary_path(skill_id, "phase1_summary")
+    phase1 = _load_phase_json(phase1_path) if phase1_path.exists() else {}
     source_alignment_layer = _phase3_source_alignment_layer(
         phase1 if isinstance(phase1, dict) else {},
         phase2 if isinstance(phase2, dict) else {},
@@ -3267,15 +3459,18 @@ def run_gencode_phase3_package(skill_id: str, accepted_generator_keys: list | No
     runtime_smoke_status = str(publish_check.get("runtime_smoke_status", "failed"))
     package_status = "packaged_draft" if py_status == "passed" and runtime_smoke_status == "passed" else "failed"
 
-    reports = {
-        "phase3_package_summary_json": str(REPORT_DIR / f"{skill_id}_phase3_package_summary.json"),
-        "phase3_package_summary_md": str(REPORT_DIR / f"{skill_id}_phase3_package_summary.md"),
-        "phase3_json": str(REPORT_DIR / f"{skill_id}_phase3_package_summary.json"),
-        "phase3_md": str(REPORT_DIR / f"{skill_id}_phase3_package_summary.md"),
-        "final_json": str(REPORT_DIR / f"{skill_id}_phase3_package_summary.json"),
-        "final_md": str(REPORT_DIR / f"{skill_id}_phase3_package_summary.md"),
-        "draft_skill_file": str(draft_skill_path),
-    }
+    reports = _phase_reports(
+        skill_id,
+        keys=(
+            "phase3_package_summary_json",
+            "phase3_package_summary_md",
+            "phase3_json",
+            "phase3_md",
+            "final_json",
+            "final_md",
+            "draft_skill_file",
+        ),
+    )
     packaging_usable_count = len(usable)
     draft_packaged = py_status == "passed" and packaging_usable_count > 0
     technical_closed_loop_pass = bool(draft_packaged and runtime_smoke_status == "passed")
@@ -3350,9 +3545,59 @@ def run_gencode_phase3_package(skill_id: str, accepted_generator_keys: list | No
 
 
 def run_gencode_auto_pipeline(skill_id: str, dry_run: bool = True, allow_runtime_ready: bool = False, write_pending_files: bool = True) -> dict[str, Any]:
-    phase1 = run_gencode_phase1(skill_id, dry_run=dry_run)
-    phase2 = run_gencode_phase2(skill_id, dry_run=dry_run)
-    phase3 = run_gencode_phase3_package(skill_id, dry_run=dry_run)
+    self_healing_log: list[dict[str, Any]] = []
+    phase1: dict[str, Any] = {}
+    phase2: dict[str, Any] = {}
+    phase3: dict[str, Any] = {}
+
+    try:
+        phase1 = run_gencode_phase1(skill_id, dry_run=dry_run)
+    except Exception as e:
+        self_healing_log.append(execute_pipeline_self_healing(e, "phase1", skill_id))
+        phase1 = {
+            "ok": False,
+            "phase": "phase1",
+            "skill_id": skill_id,
+            "source_example_count": 0,
+            "candidate_problem_types": [],
+            "phase_status": "auto_pipeline_phase1_exception",
+            "exception_review_gate": {"required": True, "reasons": ["auto_pipeline_phase1_exception"]},
+            "summary_message": f"Auto pipeline phase1 exception: {e}",
+            "self_healing": self_healing_log[-1],
+        }
+
+    if phase1.get("ok"):
+        try:
+            phase2 = run_gencode_phase2(skill_id, dry_run=dry_run)
+        except Exception as e:
+            self_healing_log.append(execute_pipeline_self_healing(e, "phase2", skill_id))
+            phase2 = {
+                "ok": False,
+                "phase": "phase2",
+                "skill_id": skill_id,
+                "phase_status": "auto_pipeline_phase2_exception",
+                "summary_message": f"Auto pipeline phase2 exception: {e}",
+                "self_healing": self_healing_log[-1],
+            }
+    else:
+        phase2 = {"ok": False, "phase": "phase2", "skill_id": skill_id, "phase_status": "skipped_phase1_not_ok"}
+
+    if phase1.get("ok") and phase2.get("ok"):
+        try:
+            phase3 = run_gencode_phase3_package(skill_id, dry_run=dry_run)
+        except Exception as e:
+            self_healing_log.append(execute_pipeline_self_healing(e, "phase3", skill_id))
+            phase3 = {
+                "ok": False,
+                "phase": "phase3",
+                "skill_id": skill_id,
+                "phase_status": "auto_pipeline_phase3_exception",
+                "summary_message": f"Auto pipeline phase3 exception: {e}",
+                "self_healing": self_healing_log[-1],
+            }
+    else:
+        phase3 = {"ok": False, "phase": "phase3", "skill_id": skill_id, "phase_status": "skipped_prior_phase_not_ok"}
+
     exception_gate = phase1.get("exception_review_gate", {})
     runtime_gate = phase1.get("runtime_ready_gate", {})
     generator_gate = phase1.get("generator_draft_gate", {})
@@ -3365,8 +3610,10 @@ def run_gencode_auto_pipeline(skill_id: str, dry_run: bool = True, allow_runtime
     else:
         pipeline_status = "auto_pipeline_failed_fatal_risk"
     reports = {
-        "auto_pipeline_summary_json": str(REPORT_DIR / f"{skill_id}_auto_pipeline_summary.json"),
-        "auto_pipeline_summary_md": str(REPORT_DIR / f"{skill_id}_auto_pipeline_summary.md"),
+        **_phase_reports(
+            skill_id,
+            keys=("auto_pipeline_summary_json", "auto_pipeline_summary_md"),
+        ),
         **(phase1.get("reports") or {}),
         **(phase2.get("reports") or {}),
         **(phase3.get("reports") or {}),
@@ -3383,6 +3630,7 @@ def run_gencode_auto_pipeline(skill_id: str, dry_run: bool = True, allow_runtime
         "generator_draft_gate": phase1.get("generator_draft_gate", {}),
         "runtime_ready_gate": phase1.get("runtime_ready_gate", {}),
         "exception_review_gate": exception_gate,
+        "self_healing_log": self_healing_log,
         "reports": reports,
         "next_action": phase3.get("next_action", "manual_review_before_runtime_enable"),
         "timestamp": utc_timestamp(),
@@ -3395,17 +3643,16 @@ def run_gencode_auto_pipeline(skill_id: str, dry_run: bool = True, allow_runtime
 
 
 def run_gencode_publish_check(skill_id: str, dry_run: bool = True) -> dict[str, Any]:
-    REPORT_DIR.mkdir(parents=True, exist_ok=True)
-    DRAFT_DIR.mkdir(parents=True, exist_ok=True)
-    safe_skill = _safe_file_component(skill_id)
-    draft_skill_path = DRAFT_DIR / f"{safe_skill}.py"
-    phase3_summary_path = REPORT_DIR / f"{safe_skill}_phase3_package_summary.json"
-    formal_skill_path = PROJECT_ROOT / "skills" / f"{skill_id}.py"
+    GENCODE_REPORT_DIR.mkdir(parents=True, exist_ok=True)
+    GENCODE_DRAFT_DIR.mkdir(parents=True, exist_ok=True)
+    draft_skill_path = phase_summary_path(skill_id, "draft_skill")
+    phase3_summary_path = phase_summary_path(skill_id, "phase3_package_summary")
+    formal_skill_path = PROJECT_ROOT / "skills" / f"{_safe_skill_id(skill_id)}.py"
 
     reports = {
-        "phase3_package_summary_json": str(phase3_summary_path),
-        "publish_check_json": str(REPORT_DIR / f"{safe_skill}_publish_check_summary.json"),
-        "publish_check_md": str(REPORT_DIR / f"{safe_skill}_publish_check_summary.md"),
+        "phase3_package_summary_json": str(phase3_summary_path.resolve()),
+        "publish_check_json": str(phase_summary_path(skill_id, "publish_check_summary").resolve()),
+        "publish_check_md": str(phase_summary_path(skill_id, "publish_check_md").resolve()),
     }
     warnings: list[str] = []
     blockers: list[str] = []
@@ -3559,19 +3806,19 @@ def publish_gencode_draft_skill(skill_id: str, confirm: bool = False, allow_runt
     backup_dir = PROJECT_ROOT / "backups" / "gencode_skill_publish"
     backup_dir.mkdir(parents=True, exist_ok=True)
 
-    draft_skill_path = DRAFT_DIR / f"{skill_id}.py"
-    phase3_summary_path = REPORT_DIR / f"{skill_id}_phase3_package_summary.json"
-    formal_skill_path = PROJECT_ROOT / "skills" / f"{skill_id}.py"
+    draft_skill_path = phase_summary_path(skill_id, "draft_skill")
+    phase3_summary_path = phase_summary_path(skill_id, "phase3_package_summary")
+    formal_skill_path = PROJECT_ROOT / "skills" / f"{_safe_skill_id(skill_id)}.py"
     reports = {
-        "phase3_package_summary_json": str(phase3_summary_path),
-        "publish_summary_json": str(REPORT_DIR / f"{skill_id}_publish_summary.json"),
-        "publish_summary_md": str(REPORT_DIR / f"{skill_id}_publish_summary.md"),
+        "phase3_package_summary_json": str(phase3_summary_path.resolve()),
+        "publish_summary_json": str(phase_summary_path(skill_id, "publish_summary").resolve()),
+        "publish_summary_md": str(phase_summary_path(skill_id, "publish_summary_md").resolve()),
     }
 
     blockers: list[str] = []
     warnings: list[str] = []
 
-    phase3 = _normalize_json_payload(json.loads(phase3_summary_path.read_text(encoding="utf-8"))) if phase3_summary_path.exists() else {}
+    phase3 = _load_phase_json(phase3_summary_path) if phase3_summary_path.exists() else {}
     publish_check = phase3.get("publish_check", {}) if isinstance(phase3, dict) else {}
     if not isinstance(publish_check, dict):
         publish_check = {}

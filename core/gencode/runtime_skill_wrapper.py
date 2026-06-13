@@ -292,12 +292,26 @@ def check_answer(
 
         return check_expression_equivalence_answer(user_answer, correct_answer)
 
+    if checker in {"integer_checker", "numeric_checker", "rational_checker", "decimal_tolerance_checker"}:
+        from core.gencode.answer_payload import parse_rational_literal
+
+        user_frac = parse_rational_literal(user_answer)
+        correct_frac = parse_rational_literal(correct_answer)
+        if user_frac is not None and correct_frac is not None:
+            if checker == "integer_checker" and correct_frac.denominator == 1:
+                return user_frac == correct_frac
+            return user_frac == correct_frac
+
     quadrant_result = check_quadrant_answer(user_answer, correct_answer)
     if quadrant_result is not None:
         return quadrant_result
 
-    ua = str(user_answer or "").strip().upper()
-    ca = str(correct_answer or "").strip().upper()
+    if user_answer is None or correct_answer is None:
+        return False
+    if isinstance(user_answer, bool) or isinstance(correct_answer, bool):
+        return False
+    ua = str(user_answer).strip().upper()
+    ca = str(correct_answer).strip().upper()
     if not ua or not ca:
         return False
     if ua[:1] in {"A", "B", "C", "D"} and ca[:1] in {"A", "B", "C", "D"}:

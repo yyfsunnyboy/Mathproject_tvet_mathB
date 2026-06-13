@@ -22,6 +22,69 @@ class FallbackClassifier:
         rows: list[dict[str, Any]] = []
         for ex in examples:
             text = _example_text(ex)
+            rule_feature: dict[str, Any] = {}
+            target_task = ""
+            task_in_scope = False
+            try:
+                from core.gencode.example_feature_extractor import extract_example_feature_rule_only
+                from core.gencode.main_skill_anchor import build_main_skill_anchor
+                from core.gencode.task_families import task_family_for_task
+
+                rule_feature = extract_example_feature_rule_only(ex)
+                target_task = str(rule_feature.get("target_task", "")).strip()
+                anchor = build_main_skill_anchor(context.skill_id)
+                expected_tasks = {
+                    str(t).strip()
+                    for t in (anchor.get("expected_subskill_candidates", []) if isinstance(anchor, dict) else [])
+                    if str(t).strip()
+                }
+                expected_families = {
+                    str(f).strip()
+                    for f in (anchor.get("expected_task_families", []) if isinstance(anchor, dict) else [])
+                    if str(f).strip()
+                }
+                task_in_scope = bool(
+                    target_task
+                    and target_task not in {"unknown", "needs_review", "compute_numeric"}
+                    and (
+                        target_task in expected_tasks
+                        or task_family_for_task(target_task) in expected_families
+                    )
+                )
+            except Exception:
+                rule_feature = {}
+                target_task = ""
+                task_in_scope = False
+
+            if task_in_scope:
+                rows.append(
+                    {
+                        "example_id": ex.get("id"),
+                        "title": str(ex.get("title", "") or ""),
+                        "source_type": "textbook_example",
+                        "source_chapter": "unknown",
+                        "source_section": "unknown",
+                        "problem_preview": text[:200],
+                        "problem_text_hash": hashlib.sha1(text.encode("utf-8")).hexdigest() if text else "",
+                        "skill_id": context.skill_id,
+                        "subskill_id": target_task,
+                        "problem_type_id": target_task,
+                        "target_task": target_task,
+                        "task_family": str(rule_feature.get("task_family", "")),
+                        "answer_type": str(rule_feature.get("answer_type", "")),
+                        "answer_shape": str(rule_feature.get("answer_shape", "")),
+                        "math_objects": list(rule_feature.get("math_objects") or []),
+                        "runtime_category": "rule_only",
+                        "classification_rule_id": "fallback.rule_only_feature_extractor",
+                        "classification_reason": "Rule-only feature extractor matched an in-scope skill candidate.",
+                        "classifier_confidence": "medium",
+                        "semantic_risk_flags": [],
+                        "semantic_audit_status": "pass",
+                        "generator_status": "candidate",
+                        "manual_review_reason": "",
+                    }
+                )
+                continue
             rows.append(
                 {
                     "example_id": ex.get("id"),

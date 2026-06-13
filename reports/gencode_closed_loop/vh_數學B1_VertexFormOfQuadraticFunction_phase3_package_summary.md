@@ -37,61 +37,50 @@
     "SOP v0.2 Wrapper: Ensure wrapper state does not reload / reset state upon importlib.reload."
   ],
   "skill_file_path": "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\drafts\\vh_數學B1_VertexFormOfQuadraticFunction.py",
-  "package_status": "failed",
+  "package_status": "packaged_draft",
   "py_compile_status": "passed",
-  "runtime_smoke_status": "failed",
+  "runtime_smoke_status": "passed",
   "runtime_smoke_raw": {
-    "status": "failed",
-    "blockers": [
-      "runtime_smoke_generate_exception"
-    ],
+    "status": "passed",
+    "blockers": [],
     "payload_preview": {
-      "problem_type_id": "integer_quadratic_graph_translation_fill_blank",
-      "answer_type": "text_short",
-      "answer_contract_answer_type": "text_short",
-      "checker": "text_short_checker",
-      "equivalence": "exact_string",
-      "question_text_len": 56,
-      "answer": "向右 1、向上 2",
-      "correct_answer": "向右 1、向上 2",
-      "choices_count": 0,
+      "problem_type_id": "integer_quadratic_vertex_or_parameter_computation",
+      "answer_type": "single_choice",
+      "answer_contract_answer_type": "single_choice",
+      "checker": "choice_label_checker",
+      "equivalence": "choice_label",
+      "question_text_len": 53,
+      "answer": "D",
+      "correct_answer": "D",
+      "choices_count": 4,
       "metadata_keys": [
         "givens",
         "target",
         "derivation",
         "template_slot",
         "problem_type_id",
+        "source_pattern",
         "semantic_required_concepts"
       ]
     },
     "interface_check": {
       "generate_exists": true,
       "check_exists": true,
-      "generate_returns_dict": false,
+      "generate_returns_dict": true,
       "check_callable": true
     },
     "py_compile_status": "passed",
-    "samples_tested": 2,
+    "samples_tested": 30,
     "negative_semantic_smoke": "passed",
-    "error": "generator_semantically_unsafe:invalid_answer_type: problem_type_id=integer_quadratic_standard_to_vertex_properties answer_type=integer answer_shape=text_short answer='D' answer_type=str checker=integer_checker equivalence=numeric_exact expected=numeric allows int/float/numeric string; answer_shape=text_short",
-    "failed_seed": 2,
-    "runtime_smoke_raw": {
-      "exception_type": "RuntimeError",
-      "exception_message": "generator_semantically_unsafe:invalid_answer_type: problem_type_id=integer_quadratic_standard_to_vertex_properties answer_type=integer answer_shape=text_short answer='D' answer_type=str checker=integer_checker equivalence=numeric_exact expected=numeric allows int/float/numeric string; answer_shape=text_short",
-      "traceback_preview": "Traceback (most recent call last):\n  File \"E:\\Python\\Mathproject_tvet_mathB\\core\\gencode\\runtime_smoke.py\", line 459, in _run_draft_runtime_smoke_impl\n    payload = gen(level=1, seed=seed)\n  File \"E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\drafts\\vh_數學B1_VertexFormOfQuadraticFunction.py\", line 12, in generate\n    return generate_for_skill(SKILL_ID, GENERATOR_SPECS, level=level, seed=seed, difficulty=difficulty)\n  File \"E:\\Python\\Mathproject_tvet_mathB\\core\\gencode\\runtime_skill_wrapper.py\", line 175, in generate_for_skill\n    payload = generate_from_problem_type_spec(skill_id, problem_type_spec, seed=generation_seed)\n  File \"E:\\Python\\Mathproject_tvet_mathB\\core\\gencode\\slot_generators.py\", line 1181, in generate_from_problem_type_spec\n    raise RuntimeError(f\"generator_semantically_unsafe:{','.join(errors)}\")\nRuntimeError: generator_semantically_unsafe:invalid_answer_type: problem_type_id=integer_quadratic_standard_to_vertex_properties answer_type=integer answer_shape=text_short answer='D' answer_type=str checker=integer_checker equivalence=numeric_exact expected=numeric allows int/float/numeric string; answer_shape=text_short\n",
-      "problem_type_id": "integer_quadratic_standard_to_vertex_properties",
-      "seed": 2
-    },
-    "failed_validator_name": "slot_generators.validate_generator_payload",
     "validation_diagnostics": {
-      "problem_type_id": "integer_quadratic_graph_translation_fill_blank",
-      "answer_type": "text_short",
-      "answer_shape": "text_short",
-      "checker": "text_short_checker",
-      "equivalence": "exact_string",
-      "answer_repr": "'向右 1、向上 2'",
+      "problem_type_id": "integer_quadratic_vertex_or_parameter_computation",
+      "answer_type": "single_choice",
+      "answer_shape": "single_choice",
+      "checker": "choice_label_checker",
+      "equivalence": "choice_label",
+      "answer_repr": "'D'",
       "answer_python_type": "str",
-      "correct_answer_repr": "'向右 1、向上 2'",
+      "correct_answer_repr": "'D'",
       "correct_answer_python_type": "str",
       "validator_expected_types": [
         "case_insensitive_string",
@@ -128,88 +117,73 @@
         "text_short",
         "union_of_intervals"
       ],
-      "expected_answer_shape": "short_answer allows non-empty string; answer_shape=text_short",
+      "expected_answer_shape": "single_choice allows A/B/C/D or choice label text; answer_shape=single_choice",
       "failed_validator_name": "",
       "validation_reason": ""
     }
   },
   "publish_check": {
-    "draft_check_passed": false,
-    "can_publish_draft": false,
-    "can_publish_formal": false,
+    "draft_check_passed": true,
+    "can_publish_draft": true,
+    "can_publish_formal": true,
     "can_mark_runtime_ready": false,
-    "formal_publish_blockers": [
-      "draft_check_not_passed"
-    ],
+    "formal_publish_blockers": [],
     "runtime_ready_blockers": [
       "runtime_ready_gate_not_allowed_or_not_verified"
     ],
     "warnings": [
       "draft_passed_but_runtime_ready_not_confirmed"
     ],
-    "blockers": [
-      "runtime_smoke_generate_exception"
-    ],
+    "blockers": [],
     "py_compile_status": "passed",
     "interface_check": {
       "generate_exists": true,
       "check_exists": true,
-      "generate_returns_dict": false,
+      "generate_returns_dict": true,
       "check_callable": true
     },
-    "runtime_smoke_status": "failed",
+    "runtime_smoke_status": "passed",
     "runtime_smoke_raw": {
-      "status": "failed",
-      "blockers": [
-        "runtime_smoke_generate_exception"
-      ],
+      "status": "passed",
+      "blockers": [],
       "payload_preview": {
-        "problem_type_id": "integer_quadratic_graph_translation_fill_blank",
-        "answer_type": "text_short",
-        "answer_contract_answer_type": "text_short",
-        "checker": "text_short_checker",
-        "equivalence": "exact_string",
-        "question_text_len": 56,
-        "answer": "向右 1、向上 2",
-        "correct_answer": "向右 1、向上 2",
-        "choices_count": 0,
+        "problem_type_id": "integer_quadratic_vertex_or_parameter_computation",
+        "answer_type": "single_choice",
+        "answer_contract_answer_type": "single_choice",
+        "checker": "choice_label_checker",
+        "equivalence": "choice_label",
+        "question_text_len": 53,
+        "answer": "D",
+        "correct_answer": "D",
+        "choices_count": 4,
         "metadata_keys": [
           "givens",
           "target",
           "derivation",
           "template_slot",
           "problem_type_id",
+          "source_pattern",
           "semantic_required_concepts"
         ]
       },
       "interface_check": {
         "generate_exists": true,
         "check_exists": true,
-        "generate_returns_dict": false,
+        "generate_returns_dict": true,
         "check_callable": true
       },
       "py_compile_status": "passed",
-      "samples_tested": 2,
+      "samples_tested": 30,
       "negative_semantic_smoke": "passed",
-      "error": "generator_semantically_unsafe:invalid_answer_type: problem_type_id=integer_quadratic_standard_to_vertex_properties answer_type=integer answer_shape=text_short answer='D' answer_type=str checker=integer_checker equivalence=numeric_exact expected=numeric allows int/float/numeric string; answer_shape=text_short",
-      "failed_seed": 2,
-      "runtime_smoke_raw": {
-        "exception_type": "RuntimeError",
-        "exception_message": "generator_semantically_unsafe:invalid_answer_type: problem_type_id=integer_quadratic_standard_to_vertex_properties answer_type=integer answer_shape=text_short answer='D' answer_type=str checker=integer_checker equivalence=numeric_exact expected=numeric allows int/float/numeric string; answer_shape=text_short",
-        "traceback_preview": "Traceback (most recent call last):\n  File \"E:\\Python\\Mathproject_tvet_mathB\\core\\gencode\\runtime_smoke.py\", line 459, in _run_draft_runtime_smoke_impl\n    payload = gen(level=1, seed=seed)\n  File \"E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\drafts\\vh_數學B1_VertexFormOfQuadraticFunction.py\", line 12, in generate\n    return generate_for_skill(SKILL_ID, GENERATOR_SPECS, level=level, seed=seed, difficulty=difficulty)\n  File \"E:\\Python\\Mathproject_tvet_mathB\\core\\gencode\\runtime_skill_wrapper.py\", line 175, in generate_for_skill\n    payload = generate_from_problem_type_spec(skill_id, problem_type_spec, seed=generation_seed)\n  File \"E:\\Python\\Mathproject_tvet_mathB\\core\\gencode\\slot_generators.py\", line 1181, in generate_from_problem_type_spec\n    raise RuntimeError(f\"generator_semantically_unsafe:{','.join(errors)}\")\nRuntimeError: generator_semantically_unsafe:invalid_answer_type: problem_type_id=integer_quadratic_standard_to_vertex_properties answer_type=integer answer_shape=text_short answer='D' answer_type=str checker=integer_checker equivalence=numeric_exact expected=numeric allows int/float/numeric string; answer_shape=text_short\n",
-        "problem_type_id": "integer_quadratic_standard_to_vertex_properties",
-        "seed": 2
-      },
-      "failed_validator_name": "slot_generators.validate_generator_payload",
       "validation_diagnostics": {
-        "problem_type_id": "integer_quadratic_graph_translation_fill_blank",
-        "answer_type": "text_short",
-        "answer_shape": "text_short",
-        "checker": "text_short_checker",
-        "equivalence": "exact_string",
-        "answer_repr": "'向右 1、向上 2'",
+        "problem_type_id": "integer_quadratic_vertex_or_parameter_computation",
+        "answer_type": "single_choice",
+        "answer_shape": "single_choice",
+        "checker": "choice_label_checker",
+        "equivalence": "choice_label",
+        "answer_repr": "'D'",
         "answer_python_type": "str",
-        "correct_answer_repr": "'向右 1、向上 2'",
+        "correct_answer_repr": "'D'",
         "correct_answer_python_type": "str",
         "validator_expected_types": [
           "case_insensitive_string",
@@ -246,101 +220,87 @@
           "text_short",
           "union_of_intervals"
         ],
-        "expected_answer_shape": "short_answer allows non-empty string; answer_shape=text_short",
+        "expected_answer_shape": "single_choice allows A/B/C/D or choice label text; answer_shape=single_choice",
         "failed_validator_name": "",
         "validation_reason": ""
       }
     },
-    "summary_message": "Draft is not ready for publish yet. Please resolve blockers first."
+    "summary_message": "Draft passed checks and can be formally published; runtime-ready is not marked yet. Run /practice smoke tests first."
   },
   "generator_specs": [
     {
-      "problem_type_id": "integer_quadratic_graph_translation_fill_blank",
-      "checker_key": "text_short_checker",
-      "equivalence_type": "exact_string",
+      "problem_type_id": "integer_quadratic_vertex_or_parameter_computation",
+      "checker_key": "choice_label_checker",
+      "equivalence_type": "choice_label",
       "generator_readiness": "runtime_ready",
-      "answer_type": "text_short",
-      "template_slot": "quadratic_graph_translation_fill_blank",
-      "base_problem_type_id": "quadratic_graph_translation_fill_blank",
+      "answer_type": "single_choice",
+      "template_slot": "quadratic_vertex_or_parameter_computation",
+      "base_problem_type_id": "quadratic_vertex_or_parameter_computation",
       "value_type_prefix": "integer",
-      "presentation_mode": "short_answer",
-      "answer_shape": "text_short"
+      "presentation_mode": "single_choice",
+      "answer_shape": "single_choice"
     },
     {
-      "problem_type_id": "rational_quadratic_graph_translation_fill_blank",
-      "checker_key": "text_short_checker",
-      "equivalence_type": "exact_string",
+      "problem_type_id": "choice_quadratic_vertex_form_properties",
+      "checker_key": "choice_label_checker",
+      "equivalence_type": "choice_label",
       "generator_readiness": "runtime_ready",
-      "answer_type": "text_short",
-      "template_slot": "quadratic_graph_translation_fill_blank",
-      "base_problem_type_id": "quadratic_graph_translation_fill_blank",
-      "value_type_prefix": "rational",
-      "presentation_mode": "short_answer",
-      "answer_shape": "text_short"
-    },
-    {
-      "problem_type_id": "integer_quadratic_graph_translation",
-      "checker_key": "integer_checker",
-      "equivalence_type": "numeric_exact",
-      "generator_readiness": "contract_slot_mismatch",
-      "answer_type": "integer",
-      "template_slot": "quadratic_graph_translation_fill_blank",
-      "base_problem_type_id": "quadratic_graph_translation",
-      "value_type_prefix": "integer",
-      "answer_shape": "text_short"
-    },
-    {
-      "problem_type_id": "integer_quadratic_vertex_form_properties",
-      "checker_key": "integer_checker",
-      "equivalence_type": "numeric_exact",
-      "generator_readiness": "contract_slot_mismatch",
-      "answer_type": "integer",
+      "answer_type": "single_choice",
       "template_slot": "quadratic_vertex_form_properties",
       "base_problem_type_id": "quadratic_vertex_form_properties",
-      "value_type_prefix": "integer",
+      "value_type_prefix": "choice",
+      "presentation_mode": "single_choice",
+      "answer_shape": "single_choice"
+    },
+    {
+      "problem_type_id": "expression_quadratic_graph_translation_fill_blank",
+      "checker_key": "text_short_checker",
+      "equivalence_type": "exact_string",
+      "generator_readiness": "runtime_ready",
+      "answer_type": "text_short",
+      "template_slot": "quadratic_graph_translation_fill_blank",
+      "base_problem_type_id": "quadratic_graph_translation_fill_blank",
+      "value_type_prefix": "expression",
+      "presentation_mode": "short_answer",
       "answer_shape": "text_short"
     },
     {
-      "problem_type_id": "integer_quadratic_standard_to_vertex_properties",
-      "checker_key": "integer_checker",
-      "equivalence_type": "numeric_exact",
-      "generator_readiness": "contract_slot_mismatch",
-      "answer_type": "integer",
-      "template_slot": "quadratic_standard_to_vertex_properties",
-      "base_problem_type_id": "quadratic_standard_to_vertex_properties",
-      "value_type_prefix": "integer",
+      "problem_type_id": "expression_quadratic_vertex_form_translation_to_new_function",
+      "checker_key": "text_short_checker",
+      "equivalence_type": "exact_string",
+      "generator_readiness": "runtime_ready",
+      "answer_type": "text_short",
+      "template_slot": "quadratic_vertex_form_translation_to_new_function",
+      "base_problem_type_id": "quadratic_vertex_form_translation_to_new_function",
+      "value_type_prefix": "expression",
+      "presentation_mode": "short_answer",
       "answer_shape": "text_short"
     }
   ],
-  "packaging_usable_count": 5,
+  "packaging_usable_count": 4,
   "packaging_diagnostics": {
-    "candidate_count": 5,
-    "included_count": 5,
+    "candidate_count": 4,
+    "included_count": 4,
     "excluded_count": 0,
     "included": [
       {
-        "problem_type_id": "integer_quadratic_graph_translation_fill_blank",
-        "generator_key": "vh_數學B1_VertexFormOfQuadraticFunction:integer_quadratic_graph_translation_fill_blank:draft_v1",
+        "problem_type_id": "integer_quadratic_vertex_or_parameter_computation",
+        "generator_key": "vh_數學B1_VertexFormOfQuadraticFunction:integer_quadratic_vertex_or_parameter_computation:draft_v1",
         "generator_status": "runtime_ready_with_warning"
       },
       {
-        "problem_type_id": "rational_quadratic_graph_translation_fill_blank",
-        "generator_key": "vh_數學B1_VertexFormOfQuadraticFunction:rational_quadratic_graph_translation_fill_blank:draft_v1",
+        "problem_type_id": "choice_quadratic_vertex_form_properties",
+        "generator_key": "vh_數學B1_VertexFormOfQuadraticFunction:choice_quadratic_vertex_form_properties:draft_v1",
         "generator_status": "runtime_ready_with_warning"
       },
       {
-        "problem_type_id": "integer_quadratic_graph_translation",
-        "generator_key": "vh_數學B1_VertexFormOfQuadraticFunction:integer_quadratic_graph_translation:draft_v1",
+        "problem_type_id": "expression_quadratic_graph_translation_fill_blank",
+        "generator_key": "vh_數學B1_VertexFormOfQuadraticFunction:expression_quadratic_graph_translation_fill_blank:draft_v1",
         "generator_status": "runtime_ready_with_warning"
       },
       {
-        "problem_type_id": "integer_quadratic_vertex_form_properties",
-        "generator_key": "vh_數學B1_VertexFormOfQuadraticFunction:integer_quadratic_vertex_form_properties:draft_v1",
-        "generator_status": "runtime_ready_with_warning"
-      },
-      {
-        "problem_type_id": "integer_quadratic_standard_to_vertex_properties",
-        "generator_key": "vh_數學B1_VertexFormOfQuadraticFunction:integer_quadratic_standard_to_vertex_properties:draft_v1",
+        "problem_type_id": "expression_quadratic_vertex_form_translation_to_new_function",
+        "generator_key": "vh_數學B1_VertexFormOfQuadraticFunction:expression_quadratic_vertex_form_translation_to_new_function:draft_v1",
         "generator_status": "runtime_ready_with_warning"
       }
     ],
@@ -351,13 +311,12 @@
     "generator_draft_spec_json": "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\drafts\\vh_數學B1_VertexFormOfQuadraticFunction_generator_draft_spec.json",
     "runtime_spec_alignment": {
       "status": "synced",
-      "synced_spec_count": 5,
+      "synced_spec_count": 4,
       "synced_problem_type_ids": [
-        "integer_quadratic_graph_translation_fill_blank",
-        "rational_quadratic_graph_translation_fill_blank",
-        "integer_quadratic_graph_translation",
-        "integer_quadratic_vertex_form_properties",
-        "integer_quadratic_standard_to_vertex_properties"
+        "integer_quadratic_vertex_or_parameter_computation",
+        "choice_quadratic_vertex_form_properties",
+        "expression_quadratic_graph_translation_fill_blank",
+        "expression_quadratic_vertex_form_translation_to_new_function"
       ],
       "induced_spec_path": "reports\\gencode_closed_loop\\induced_specs\\vh_數學B1_VertexFormOfQuadraticFunction.json",
       "purged_induced_spec_path": "reports\\gencode_closed_loop\\induced_specs\\vh_數學B1_VertexFormOfQuadraticFunction.json",
@@ -365,13 +324,15 @@
         "reports\\gencode_closed_loop\\induced_specs\\vh_數學B1_VertexFormOfQuadraticFunction.json"
       ],
       "runtime_usable_problem_type_ids": [
-        "integer_quadratic_graph_translation",
-        "integer_quadratic_graph_translation_fill_blank",
-        "integer_quadratic_standard_to_vertex_properties",
-        "integer_quadratic_vertex_form_properties",
-        "rational_quadratic_graph_translation_fill_blank"
+        "choice_quadratic_vertex_form_properties",
+        "expression_quadratic_graph_translation_fill_blank",
+        "expression_quadratic_vertex_form_translation_to_new_function",
+        "integer_quadratic_vertex_or_parameter_computation"
       ],
-      "downgraded_historical_problem_type_ids": [],
+      "downgraded_historical_problem_type_ids": [
+        "choice_quadratic_vertex_or_parameter_computation_single_choice",
+        "quadratic_standard_to_vertex_properties"
+      ],
       "canonical_filter_applied": true
     }
   },
@@ -387,34 +348,35 @@
   "next_action": "review_phase3_publish_check",
   "error": "",
   "dry_run": true,
-  "timestamp": "2026-06-13T05:15:04.295237+00:00",
+  "timestamp": "2026-06-13T07:11:28.154288+00:00",
   "generated_with_warning": true,
   "warnings": [
     "consecutive_same_template_variant",
     "low_sample_diversity_tolerance_applied",
-    "low_source_examples"
+    "low_source_examples",
+    "low_unique_signature_count"
   ],
   "publish_gate_layers": {
-    "technical_closed_loop": "FAIL",
-    "runtime_quality": "FAIL",
-    "web_runtime": "FAIL",
+    "technical_closed_loop": "PASS",
+    "runtime_quality": "PASS",
+    "web_runtime": "PASS",
     "source_alignment": "PARTIAL"
   },
   "source_alignment_audit": {
     "status": "PARTIAL",
     "missing_source_aligned_problem_types": [
-      "numeric_quadratic_graph_translation_fill_blank_short_answer",
-      "numeric_quadratic_graph_translation_short_answer",
-      "numeric_quadratic_standard_to_vertex_properties_short_answer",
-      "numeric_quadratic_vertex_form_properties_short_answer",
-      "single_choice_evaluate_function_value_fallback_application"
+      "numeric_quadratic_vertex_or_parameter_computation_short_answer",
+      "numeric_quadratic_vertex_or_parameter_computation_single_choice",
+      "single_choice_quadratic_vertex_form_properties_single_choice",
+      "text_quadratic_graph_translation_fill_blank_short_answer",
+      "text_quadratic_vertex_form_translation_to_new_function_short_answer"
     ],
     "underrepresented_runtime_forms": [
-      "numeric_quadratic_graph_translation_fill_blank_short_answer",
-      "numeric_quadratic_graph_translation_short_answer",
-      "numeric_quadratic_standard_to_vertex_properties_short_answer",
-      "numeric_quadratic_vertex_form_properties_short_answer",
-      "single_choice_evaluate_function_value_fallback_application"
+      "numeric_quadratic_vertex_or_parameter_computation_short_answer",
+      "numeric_quadratic_vertex_or_parameter_computation_single_choice",
+      "single_choice_quadratic_vertex_form_properties_single_choice",
+      "text_quadratic_graph_translation_fill_blank_short_answer",
+      "text_quadratic_vertex_form_translation_to_new_function_short_answer"
     ]
   },
   "post_phase3_audit_scripts": [
@@ -439,6 +401,6 @@
       "py_compile_ok": true
     }
   ],
-  "summary_message": "Phase 3 packaged draft skill file, but draft runtime smoke did not pass. See publish_check / runtime_smoke_raw. usable_generators=5."
+  "summary_message": "Draft passed checks and can be formally published; runtime-ready is not marked yet. Run /practice smoke tests first."
 }
 ```

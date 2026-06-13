@@ -1,0 +1,103 @@
+{
+  "skill_id": "vh_數學B1_CompletingTheSquare",
+  "phase": "phase1_audit",
+  "final_status": "AUDIT_PARTIAL",
+  "examples_total": 2,
+  "examples_covered": 2,
+  "examples_map": [
+    {
+      "example_id": 4468,
+      "title": "",
+      "source_type": "textbook_example",
+      "source_chapter": "unknown",
+      "source_section": "unknown",
+      "problem_preview": "利用配方法將下列各式化為$a{{\\left( x+m \\right)}^{2}}+n$的形式。\n(1)${{x}^{2}}-6x$ (2)$4{{x}^{2}}-16x+3$",
+      "problem_text_hash": "2ded008adf7c4764898e6cf41b824383797ec325",
+      "skill_id": "vh_數學B1_CompletingTheSquare",
+      "subskill_id": "unknown",
+      "problem_type_id": "unknown",
+      "runtime_category": "manual_review",
+      "classification_rule_id": "fallback.unknown",
+      "classification_reason": "No skill-specific classifier found; fallback classifier routes to manual review.",
+      "classifier_confidence": "low",
+      "semantic_risk_flags": [
+        "possible_missing_problem_type",
+        "weak_classifier_match"
+      ],
+      "semantic_audit_status": "review_required",
+      "generator_status": "manual_review",
+      "manual_review_reason": "Skill-specific classifier/rule pack is missing."
+    },
+    {
+      "example_id": 4501,
+      "title": "",
+      "source_type": "textbook_example",
+      "source_chapter": "unknown",
+      "source_section": "unknown",
+      "problem_preview": "試判斷拋物線$y=3{{x}^{2}}+2x+4$的頂點落在哪一象限？ (A)第一象限 (B)第二象限 (C)第三象限 (D)第四象限。",
+      "problem_text_hash": "07cba813b074403967f257dea8fc53110ea53b1c",
+      "skill_id": "vh_數學B1_CompletingTheSquare",
+      "subskill_id": "unknown",
+      "problem_type_id": "unknown",
+      "runtime_category": "manual_review",
+      "classification_rule_id": "fallback.unknown",
+      "classification_reason": "No skill-specific classifier found; fallback classifier routes to manual review.",
+      "classifier_confidence": "low",
+      "semantic_risk_flags": [
+        "possible_missing_problem_type",
+        "weak_classifier_match"
+      ],
+      "semantic_audit_status": "review_required",
+      "generator_status": "manual_review",
+      "manual_review_reason": "Skill-specific classifier/rule pack is missing."
+    }
+  ],
+  "observed_problem_types": [],
+  "source_coverage_status": "INSUFFICIENT_SOURCE_EXAMPLES",
+  "bootstrap_summary": {
+    "bootstrap_mode": false,
+    "bootstrap_source_skill_id": "",
+    "source_coverage_status": "",
+    "allowed_problem_types": []
+  },
+  "answer_contract_summary": {},
+  "missing_answer_contract_problem_types": [],
+  "missing_checker_key_problem_types": [],
+  "equivalence_test_required_problem_types": [],
+  "manual_review_problem_types": [
+    "unknown"
+  ],
+  "future_ai_judged_problem_types": [],
+  "classifier_proposal": {
+    "enabled": false,
+    "reason": "",
+    "proposal_status": "SKIPPED",
+    "proposed_problem_types": [],
+    "proposed_example_map": [],
+    "proposed_answer_contracts": {},
+    "manual_review_candidates": [],
+    "risk_flags": [],
+    "proposal_path": "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_CompletingTheSquare_classifier_proposal.json",
+    "promote_ready": false,
+    "promote_command_suggestion": "python scripts\\gencode_promote_classifier_proposal.py --skill-id vh_數學B1_CompletingTheSquare"
+  },
+  "auto_review_summary": {},
+  "risk_flags": [
+    "possible_missing_problem_type",
+    "weak_classifier_match"
+  ],
+  "recommended_next_phase": "phase2_build",
+  "blocking_reasons": [],
+  "warnings": [
+    "manual_review_problem_types_present",
+    "risk_flags_present"
+  ],
+  "artifact_paths": {
+    "phase1_json": "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_CompletingTheSquare_phase1_audit.json",
+    "phase1_md": "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_CompletingTheSquare_phase1_audit.md",
+    "inventory_report": "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_CompletingTheSquare_inventory_report.md",
+    "classifier_proposal_json": "",
+    "classifier_proposal_md": ""
+  },
+  "timestamp": "2026-06-13T13:37:13.475467+00:00"
+}

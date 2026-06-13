@@ -37,9 +37,11 @@ from models import db, SkillInfo, SkillPrerequisites, SkillCurriculum, Progress,
 from core.utils import get_skill_info
 from core.session import get_current, set_current
 from core.practice_question_store import (
+    clear_practice_display_state_for_skill_switch,
     estimate_session_cookie_bytes,
     mark_question_answered,
     resolve_check_context,
+    preview_question_text,
 )
 from core.adaptive_engine import recommend_question, update_student_ability, apply_error_penalty, get_all_prerequisites
 from core.ai_analyzer import diagnose_error
@@ -183,6 +185,78 @@ def _normalize_gencode_runtime_payload(data: dict, *, skill_id: str = "") -> dic
     return refresh_runtime_question_session(data, skill_id=skill_id)
 
 
+def _extract_canonical_question_stem(data: dict[str, Any]) -> str:
+    """Return the canonical question stem for API / frontend display."""
+    if not isinstance(data, dict):
+        return ""
+    for key in ("question_text", "new_question_text", "question", "prompt"):
+        val = str(data.get(key) or "").strip()
+        if val:
+            return val
+    return ""
+
+
+def _canonicalize_answer_contract_for_api(data: dict[str, Any]) -> dict[str, Any]:
+    """Align top-level answer_contract with runtime checker; demote stale nested shapes."""
+    ac = dict(data.get("answer_contract") or {}) if isinstance(data.get("answer_contract"), dict) else {}
+    top_shape = str(
+        ac.get("answer_shape")
+        or data.get("answer_shape")
+        or ac.get("answer_type")
+        or data.get("answer_type")
+        or ""
+    ).strip()
+    top_checker = str(
+        ac.get("checker_key")
+        or ac.get("checker")
+        or data.get("checker")
+        or data.get("checker_type")
+        or ""
+    ).strip()
+    if top_shape:
+        ac["answer_shape"] = top_shape
+        ac.setdefault("answer_type", top_shape)
+    if top_checker:
+        ac["checker"] = top_checker
+        ac["checker_key"] = top_checker
+
+    gc = ac.get("generator_contract")
+    if isinstance(gc, dict):
+        gc_copy = dict(gc)
+        nested_shape = gc_copy.get("answer_shape")
+        if nested_shape and top_shape and str(nested_shape).strip() != top_shape:
+            gc_copy["raw_generator_answer_shape"] = nested_shape
+            gc_copy["answer_shape"] = top_shape
+        ac["generator_contract"] = gc_copy
+
+    return ac
+
+
+def _finalize_practice_question_api_fields(data: dict[str, Any], *, skill_id: str = "") -> dict[str, Any]:
+    """Ensure question_text/new_question_text parity and canonical answer_contract for API consumers."""
+    out = dict(data)
+    if skill_id:
+        out["skill_id"] = skill_id
+    stem = _extract_canonical_question_stem(out)
+    out["question_text"] = stem
+    out["new_question_text"] = stem
+    out["answer_contract"] = _canonicalize_answer_contract_for_api(out)
+    return out
+
+
+def _log_get_next_question_response(payload: dict[str, Any]) -> None:
+    stem = str(payload.get("question_text") or "")
+    current_app.logger.info(
+        "[PRACTICE get_next_question] question_text_preview=%s",
+        preview_question_text(stem),
+    )
+    current_app.logger.info(
+        "[PRACTICE get_next_question] response_fields includes question_text=%s new_question_text=%s",
+        bool(payload.get("question_text")),
+        bool(payload.get("new_question_text")),
+    )
+
+
 def _runtime_reload_skill_modules() -> bool:
     try:
         return bool(current_app.debug)
@@ -190,13 +264,33 @@ def _runtime_reload_skill_modules() -> bool:
         return False
 
 
-def _prepare_skill_switch(skill_id: str) -> None:
-    """On cross-skill navigation, drop legacy cookie blob only; keep recent server store."""
-    sid = str(skill_id or "").strip()
-    prev = str(session.get("current_skill_id", "")).strip()
-    if prev and prev != sid:
-        session.pop("current_data", None)
-        session.modified = True
+def _prepare_skill_switch(skill_id: str) -> dict[str, Any]:
+    """On cross-skill navigation, clear stale question display session keys."""
+    info = clear_practice_display_state_for_skill_switch(skill_id)
+    if info.get("did_clear"):
+        current_app.logger.info(
+            "[PRACTICE skill_switch] requested=%s previous_skill=%s previous_uid=%s cleared=%s",
+            info.get("requested_skill_id"),
+            info.get("previous_skill_id"),
+            info.get("previous_question_uid"),
+            info.get("cleared_keys"),
+        )
+    return info
+
+
+def _log_practice_page_entry(skill_id: str, switch_info: dict[str, Any]) -> None:
+    current_app.logger.info(
+        "[PRACTICE page] frontend_requested_skill_id=%s session_skill_before=%s session_uid_before=%s",
+        skill_id,
+        switch_info.get("previous_skill_id"),
+        switch_info.get("previous_question_uid"),
+    )
+    current_app.logger.info(
+        "[PRACTICE page] session_skill_after=%s session_uid_after=%s cleared=%s",
+        switch_info.get("current_skill_id_after"),
+        switch_info.get("current_question_uid_after"),
+        switch_info.get("cleared_keys"),
+    )
 
 
 def _emit_check_result(
@@ -790,7 +884,8 @@ def practice(skill_id):
     # depending on the URL_MAP_STRICT_SLASHES setting; be explicit).
     skill_id = _url_unquote(skill_id)
     """?脣?孵???賜?蝺渡??"""
-    _prepare_skill_switch(skill_id)
+    switch_info = _prepare_skill_switch(skill_id)
+    _log_practice_page_entry(skill_id, switch_info)
     requested_problem_type = (request.args.get("problem_type") or "").strip()
     is_pascal_runtime_request = _is_b4_pascal_triangle_request(skill_id, requested_problem_type)
     manual_review_info = None if is_pascal_runtime_request else MANUAL_REVIEW_SKILLS.get(skill_id)
@@ -1098,22 +1193,25 @@ def get_adaptive_question():
 
         question_db_id = question_template.id if question_template else 0
 
-        payload_out = {
-            "question_id": question_db_id,
-            "skill_id": skill_id_for_generate,
-            "question_uid": stored_adaptive.get("question_uid", ""),
-            "question_text_hash": stored_adaptive.get("question_text_hash", ""),
-            "mode": "adaptive",
-            "new_question_text": data.get("question_text"),
-            "correct_answer": data.get("correct_answer"),
-            "context_string": data.get("context_string", ""),
-            "image_base64": data.get("image_base64", ""),
-            "visual_aids": data.get("visual_aids", []),
-            "answer_type": data.get("answer_type", "text"),
-            "problem_type_id": data.get("problem_type_id") or data.get("problem_type"),
-            "scenario_id": data.get("scenario_id", ""),
-            "scenario_family": data.get("scenario_family", ""),
-        }
+        payload_out = _finalize_practice_question_api_fields(
+            {
+                "question_id": question_db_id,
+                "skill_id": skill_id_for_generate,
+                "question_uid": stored_adaptive.get("question_uid", ""),
+                "question_text_hash": stored_adaptive.get("question_text_hash", ""),
+                "mode": "adaptive",
+                "new_question_text": data.get("question_text"),
+                "correct_answer": data.get("correct_answer"),
+                "context_string": data.get("context_string", ""),
+                "image_base64": data.get("image_base64", ""),
+                "visual_aids": data.get("visual_aids", []),
+                "answer_type": data.get("answer_type", "text"),
+                "problem_type_id": data.get("problem_type_id") or data.get("problem_type"),
+                "scenario_id": data.get("scenario_id", ""),
+                "scenario_family": data.get("scenario_family", ""),
+            },
+            skill_id=skill_id_for_generate,
+        )
         if request.args.get("adaptive_audit") == "1":
             payload_out["adaptive_audit"] = audit_blob
         return jsonify(payload_out)
@@ -1137,7 +1235,13 @@ def next_question():
     mode = request.args.get('mode', '')
     # Phase 6C-1R: URL-decode so encoded CJK skill_ids are resolved correctly.
     skill_id = _url_unquote(request.args.get('skill', 'remainder'))
-    _prepare_skill_switch(skill_id)
+    switch_info = _prepare_skill_switch(skill_id)
+    current_app.logger.info(
+        "[PRACTICE get_next_question] frontend_requested_skill_id=%s session_uid_before=%s cleared=%s",
+        skill_id,
+        switch_info.get("previous_question_uid"),
+        switch_info.get("cleared_keys"),
+    )
     current_app.logger.info("[GENCODE WEB RUNTIME] skill_id=%s", request.args.get('skill', ''))
     current_app.logger.info("[GENCODE WEB RUNTIME] decoded_skill_id=%s", skill_id)
     problem_type = request.args.get('problem_type', '')
@@ -1173,24 +1277,25 @@ def next_question():
 
     manual_review_info = None if _is_b4_pascal_triangle_request(skill_id, problem_type) else MANUAL_REVIEW_SKILLS.get(skill_id)
     if manual_review_info:
-        return jsonify({
+        review_stem = (
+            f"<strong>{manual_review_info['display_name']}：暫緩 / 尚未開放一般自動判分練習</strong><br>"
+            f"{manual_review_info['reason']}<br><br>"
+            "此題型目前屬於 AI 手寫判分 / 教師審閱候選題型，尚未開放一般自動判分練習。<br>"
+            "未來可透過手寫作答、OCR / Vision、AI 助教判斷 correct / partially_correct / needs_review。"
+        )
+        return jsonify(_finalize_practice_question_api_fields({
             "manual_review_unavailable": True,
-            "new_question_text": (
-                f"<strong>{manual_review_info['display_name']}嚗蝺?/ 撠?銝?祈??毀蝧?/strong><br>"
-                f"{manual_review_info['reason']}<br><br>"
-                "甇日???惇??AI ?神?文? / ?葦撖拚?憿?嚗??芷??曆??祈??毀蝧?br>"
-                "?芯??舫??神雿??CR / Vision?I ?拇??斗 correct / partially_correct / needs_review??"
-            ),
+            "new_question_text": review_stem,
             "context_string": "",
             "inequality_string": "",
             "consecutive_correct": 0,
-            "current_level": "?怎楨",
+            "current_level": "暫緩",
             "image_base64": "",
             "visual_aids": [],
             "answer_type": "unavailable",
             "reason": manual_review_info["reason"],
             "future_path": manual_review_info["future_path"],
-        })
+        }, skill_id=skill_id))
 
     # Phase 6C-1R2: gated Chap2 skills ??clear gate error instead of importing missing skills.<id>
     if is_b4_chapter2_skill_not_enabled_in_phase6c1(skill_id):
@@ -1239,17 +1344,18 @@ def next_question():
         # or we add a specific field. Let's use image_base64 field as a generic image source carrier for now or add image_url.
         img_src = current.get("image_path") if current.get("image_path") else current.get("image_base64", "")
         
-        return jsonify({
-            "new_question_text": current.get("question_text", ""), 
+        instant_stem = str(current.get("question_text", "") or "")
+        return jsonify(_finalize_practice_question_api_fields({
+            "new_question_text": instant_stem,
             "context_string": "",
             "inequality_string": "",
-            "consecutive_correct": 0, 
-            "current_level": 1, 
-            "image_base64": img_src, # Now carries URL or Base64
+            "consecutive_correct": 0,
+            "current_level": 1,
+            "image_base64": img_src,
             "visual_aids": [],
             "answer_type": "text",
-            "is_instant_upload": True 
-        })
+            "is_instant_upload": True,
+        }, skill_id=skill_id))
     
     try:
         # [Phase 6C-1R2] Chap2 deterministic P0 avoids legacy skills.<skill_id> import entirely.
@@ -1488,19 +1594,20 @@ def next_question():
         session_data["skill_id"] = skill_id
         _log_runtime_generate_payload(skill_id, session_data, module_file=module_file if wrapper_loaded else "")
 
-        return jsonify({
+        response_payload = _finalize_practice_question_api_fields({
             "skill_id": skill_id,
             "question_uid": session_data.get("question_uid", ""),
             "question_text_hash": session_data.get("question_text_hash", ""),
-            "new_question_text": session_data["question_text"],
+            "question_text": session_data.get("question_text", ""),
+            "new_question_text": session_data.get("question_text", ""),
             "message": session_data.get("message", ""),
             "choices": session_data.get("choices", []),
             "choices_display": session_data.get("choices", []),
             "context_string": session_data.get("context_string", ""),
             "inequality_string": session_data.get("inequality_string", ""),
-            "consecutive_correct": consecutive, 
-            "current_level": difficulty_level, 
-            "image_base64": session_data.get("image_base64", ""), 
+            "consecutive_correct": consecutive,
+            "current_level": difficulty_level,
+            "image_base64": session_data.get("image_base64", ""),
             "visual_aids": session_data.get("visual_aids", []),
             "table": session_data.get("table", {}),
             "table_title": session_data.get("table_title", ""),
@@ -1512,6 +1619,7 @@ def next_question():
             "answer_contract": session_data.get("answer_contract", {}),
             "equivalence": session_data.get("equivalence", ""),
             "display_answer": session_data.get("display_answer", ""),
+            "correct_answer": session_data.get("correct_answer", session_data.get("answer")),
             "problem_type_id": session_data.get("problem_type_id") or session_data.get("problem_type"),
             "source": session_data.get("source", route_source),
             "route_source": route_source,
@@ -1538,7 +1646,14 @@ def next_question():
             "expected_row": data.get("expected_row", []),
             "expected_terms": data.get("expected_terms", []),
             "expected_expansion": data.get("expected_expansion", ""),
-        })
+        }, skill_id=skill_id)
+        _log_get_next_question_response(response_payload)
+        current_app.logger.info(
+            "[PRACTICE get_next_question] response.skill_id=%s response.question_uid=%s",
+            skill_id,
+            response_payload.get("question_uid", ""),
+        )
+        return jsonify(response_payload)
     except Exception as e:
         return jsonify({"error": f"??憿憭望?: {str(e)}"}), 500
 
@@ -1547,6 +1662,17 @@ def check_answer():
     """API: 瑼Ｘ蝑?"""
     body = dict(request.json) if isinstance(request.json, dict) else {}
     user_ans = str(body.get('answer', '')).strip()
+    req_skill = str(body.get("skill_id", "")).strip()
+    req_uid = str(body.get("question_uid", "")).strip()
+    session_skill = str(session.get("current_skill_id", "")).strip()
+    session_uid = str(session.get("current_question_uid", "")).strip()
+    current_app.logger.info(
+        "[PRACTICE check_answer] request.skill_id=%s request.question_uid=%s session.skill_id=%s session.question_uid=%s",
+        req_skill,
+        req_uid,
+        session_skill,
+        session_uid,
+    )
     ref = session.get('practice_ref') if isinstance(session.get('practice_ref'), dict) else {}
     if ref.get('question_uid') and not str(body.get('question_uid', '')).strip() and not str(body.get('skill_id', '')).strip():
         body.setdefault('question_uid', str(ref.get('question_uid', '')))

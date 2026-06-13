@@ -2258,6 +2258,7 @@
 
         // 將後端資料傳給 JS
         const PRACTICE_MODE = {{ (practice_mode or 'standard') | tojson | safe }};
+        const PAGE_SKILL_ID = {{ (skill_id or '') | tojson | safe }};
         const MANUAL_REVIEW_UNAVAILABLE = {{ (true if manual_review_unavailable is defined and manual_review_unavailable else false) | tojson | safe }};
         const PREREQ_SKILLS = {{ prereq_skills | tojson | safe }};
         const SIMILAR_DEFAULT_MODEL = 'qwen3-vl-8b';
@@ -2313,11 +2314,20 @@
                 if (answerInput) answerInput.disabled = true;
                 if (submitBtn) submitBtn.disabled = true;
             } else {
+                handlePracticeSkillEntry();
                 // 修正：不再直接呼叫 loadQuestion()。
                 // MathJax 準備好後會自動呼叫它。
                 // 如果 MathJax 因故未執行，提供一個備用方案。
                 setTimeout(ensureInitialLoad, 1000); // 1秒後檢查
             }
+
+            window.addEventListener('pageshow', (event) => {
+                if (event.persisted) {
+                    console.log('[FRONTEND PRACTICE] bfcache restore detected — reloading question');
+                    handlePracticeSkillEntry();
+                    loadQuestion();
+                }
+            });
 
             // 視窗大小改變時重新調整字體
             let resizeTimer;
@@ -3336,6 +3346,76 @@
             }
         }
 
+        function practiceStorageKey(suffix) {
+            const sid = getSkillId() || PAGE_SKILL_ID || 'unknown';
+            return `practice_state:${sid}:${suffix}`;
+        }
+
+        function clearGlobalPracticeStorageKeys() {
+            const legacyKeys = ['current_question', 'current_question_uid', 'practice_state'];
+            legacyKeys.forEach((key) => {
+                try { localStorage.removeItem(key); } catch (e) { /* ignore */ }
+                try { sessionStorage.removeItem(key); } catch (e) { /* ignore */ }
+            });
+        }
+
+        function clearSkillPracticeStorage(skillId) {
+            const sid = String(skillId || '').trim();
+            if (!sid) return;
+            const prefix = `practice_state:${sid}:`;
+            try {
+                for (let i = localStorage.length - 1; i >= 0; i -= 1) {
+                    const key = localStorage.key(i);
+                    if (key && key.startsWith(prefix)) localStorage.removeItem(key);
+                }
+            } catch (e) { /* ignore */ }
+            try {
+                for (let i = sessionStorage.length - 1; i >= 0; i -= 1) {
+                    const key = sessionStorage.key(i);
+                    if (key && key.startsWith(prefix)) sessionStorage.removeItem(key);
+                }
+            } catch (e) { /* ignore */ }
+        }
+
+        function resetPracticeQuestionDisplay(message) {
+            practiceQuestionEpoch += 1;
+            currentQuestion = null;
+            window.currentProblemTypeId = '';
+            window.currentExpectedAnswer = '';
+            clearPracticeFeedback();
+            clearGlobalPracticeStorageKeys();
+            if (questionText) {
+                questionText.innerHTML = message || '<span style="color:#7f8c8d;">載入題目中…</span>';
+                questionText.style.opacity = '1';
+            }
+            if (questionChoices) {
+                questionChoices.innerHTML = '';
+                questionChoices.style.display = 'none';
+            }
+            if (answerInput) {
+                answerInput.value = '';
+                answerInput.disabled = false;
+                answerInput.placeholder = '請在此輸入答案';
+            }
+            if (submitBtn) submitBtn.disabled = false;
+            resetAIChat();
+        }
+
+        function handlePracticeSkillEntry() {
+            const activeSkill = getSkillId() || PAGE_SKILL_ID || '';
+            const lastSkill = (function() {
+                try { return sessionStorage.getItem('practice_last_skill_id') || ''; } catch (e) { return ''; }
+            })();
+            console.log('[FRONTEND PRACTICE] skill entry', { activeSkill, lastSkill, pageSkill: PAGE_SKILL_ID });
+            if (lastSkill && activeSkill && lastSkill !== activeSkill) {
+                clearSkillPracticeStorage(lastSkill);
+                resetPracticeQuestionDisplay('<span style="color:#7f8c8d;">已切換技能，載入新題目中…</span>');
+            } else {
+                resetPracticeQuestionDisplay('<span style="color:#7f8c8d;">載入題目中…</span>');
+            }
+            try { sessionStorage.setItem('practice_last_skill_id', activeSkill); } catch (e) { /* ignore */ }
+        }
+
         function snapshotPracticeQuestion(payload) {
             if (!payload || typeof payload !== 'object') {
                 return null;
@@ -3383,17 +3463,36 @@
         }
 
         function applyCurrentQuestion(payload) {
-            currentQuestion = snapshotPracticeQuestion(payload);
+            const expectedSkill = getSkillId() || PAGE_SKILL_ID || '';
+            const snapshot = snapshotPracticeQuestion(payload);
+            if (expectedSkill && snapshot && snapshot.skill_id && snapshot.skill_id !== expectedSkill) {
+                console.warn('[FRONTEND PRACTICE] skill mismatch in payload', {
+                    expectedSkill,
+                    payloadSkill: snapshot.skill_id,
+                    question_uid: snapshot.question_uid,
+                });
+                return;
+            }
+            currentQuestion = snapshot;
             window.currentProblemTypeId = currentQuestion ? currentQuestion.problem_type_id : '';
             window.currentExpectedAnswer = currentQuestion
                 ? String(currentQuestion.display_answer || currentQuestion.correct_answer || '')
                 : '';
+            try {
+                if (currentQuestion && currentQuestion.question_uid) {
+                    sessionStorage.setItem(practiceStorageKey('question_uid'), currentQuestion.question_uid);
+                }
+            } catch (e) { /* ignore */ }
         }
 
         function logPracticeNewQuestionDebug(payload) {
+            console.log('[FRONTEND PRACTICE] received keys=', payload ? Object.keys(payload) : []);
+            const stem = resolveQuestionText(payload);
+            console.log('[FRONTEND PRACTICE] question_text_preview=', previewQuestionText(stem));
             const cq = snapshotPracticeQuestion(payload);
             console.log('[FRONTEND PRACTICE] new question received');
-            console.log('[FRONTEND PRACTICE] question_text', cq && cq.question_text);
+            console.log('[FRONTEND PRACTICE] skill_id', cq && cq.skill_id);
+            console.log('[FRONTEND PRACTICE] question_uid', cq && cq.question_uid);
             console.log('[FRONTEND PRACTICE] problem_type_id', cq && cq.problem_type_id);
             console.log('[FRONTEND PRACTICE] checker', cq && cq.checker);
             console.log('[FRONTEND PRACTICE] answer_contract', cq && cq.answer_contract);
@@ -3417,6 +3516,11 @@
             const loadEpoch = practiceQuestionEpoch;
             currentQuestion = null;
             clearPracticeFeedback();
+            clearGlobalPracticeStorageKeys();
+            if (questionText) {
+                questionText.innerHTML = '<span style="color:#7f8c8d;">載入題目中…</span>';
+                questionText.style.opacity = '0.5';
+            }
             if (answerInput) {
                 answerInput.value = '';
             }
@@ -3424,9 +3528,7 @@
                 questionChoices.innerHTML = '';
                 questionChoices.style.display = 'none';
             }
-
-            // 顯示載入中...
-            if (questionText) questionText.style.opacity = '0.5';
+            resetAIChat();
 
             const safeLevel = getSafeSelectedLevel();
             const params = new URLSearchParams();
@@ -3460,10 +3562,24 @@
                         return;
                     }
 
+                    const responseSkill = data.skill_id || skill;
+                    if (responseSkill && skill && responseSkill !== skill) {
+                        console.warn('[FRONTEND PRACTICE] get_next_question skill mismatch', {
+                            requested: skill,
+                            responseSkill,
+                        });
+                        questionText.textContent = '題目技能不一致，請重新整理頁面。';
+                        return;
+                    }
+
                     applyCurrentQuestion(data);
+                    if (!currentQuestion) {
+                        questionText.textContent = '題目載入失敗（技能不一致），請重新整理。';
+                        return;
+                    }
                     logPracticeNewQuestionDebug(data);
 
-                    // 1. 顯示題目文字
+                    // 1. 顯示題目文字（完整覆寫）
                     const questionMainText = renderQuestion(data);
                     isInitialQuestionLoaded = true;
 
@@ -3682,49 +3798,71 @@
 
         function resolveQuestionText(payload) {
             if (!payload || typeof payload !== 'object') return '';
+            const direct = String(
+                payload.question_text || payload.new_question_text || payload.question || payload.prompt || ''
+            ).trim();
+            if (direct) return direct;
 
             const sources = [
-                payload,
                 payload.data,
                 payload.raw,
                 payload.new_question_data,
                 payload.current_question,
-                payload.item
+                payload.item,
             ].filter(src => src && typeof src === 'object');
 
-            console.debug("[practice render] question sources", sources);
-
             for (const src of sources) {
-                const candidates = [
-                    src.question_text,
-                    src.new_question_text,
-                    src.question,
-                    src.prompt,
-                    src.text
-                ];
-                for (const value of candidates) {
-                    const text = String(value == null ? '' : value).trim();
-                    if (text) return text;
-                }
+                const nested = String(
+                    src.question_text || src.new_question_text || src.question || src.prompt || src.text || ''
+                ).trim();
+                if (nested) return nested;
             }
 
-            console.warn("[practice render] missing question stem", payload);
+            console.error('[FRONTEND PRACTICE] missing question stem; keys=', Object.keys(payload));
             return '';
+        }
+
+        function previewQuestionText(text) {
+            return String(text || '').replace(/\s+/g, ' ').slice(0, 80);
+        }
+
+        function setQuestionDisplayText(element, text) {
+            if (!element) return;
+            const safeText = String(text || '');
+            element.textContent = safeText;
+        }
+
+        function showMissingQuestionTextError(element, payload) {
+            if (!element) return;
+            console.error('[FRONTEND PRACTICE] question_text empty; payload keys=', payload ? Object.keys(payload) : []);
+            element.innerHTML = '<span style="color:#c0392b;">題目資料缺少 question_text，請重新載入</span>';
         }
 
         function renderQuestion(payload) {
             clearPracticeFeedback();
             applyCurrentQuestion(payload);
             const questionMainText = resolveQuestionText(payload);
-            if (questionText) {
-                questionText.textContent = questionMainText;
+            if (!questionMainText) {
+                showMissingQuestionTextError(questionText, payload);
+                return '';
             }
+            setQuestionDisplayText(questionText, questionMainText);
             if (answerInput) {
                 answerInput.value = '';
+            }
+            if (resultDisplay) {
+                resultDisplay.textContent = '';
+                resultDisplay.className = '';
+            }
+            if (questionChoices) {
+                questionChoices.innerHTML = '';
+                questionChoices.style.display = 'none';
             }
             resetQuestionScroll();
             renderChoices(payload);
             resetQuestionScroll();
+            console.log('[FRONTEND PRACTICE] rendered question_uid', payload && payload.question_uid);
+            console.log('[FRONTEND PRACTICE] rendered question_text_preview=', previewQuestionText(questionMainText));
             if (questionText && window.MathJax && typeof window.MathJax.typesetClear === 'function') {
                 try {
                     window.MathJax.typesetClear([questionText]);
@@ -4517,7 +4655,6 @@
                 }
             }, 1000);
         });
-    </script>
     </script>
     <script>
         /* [Feature] Instant Upload Handler */

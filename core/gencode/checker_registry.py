@@ -19,7 +19,7 @@ CHECKER_CAPABILITIES: dict[str, dict[str, Any]] = {
     "numeric_checker": {
         "runtime_available": True,
         "answer_types": ["numeric", "decimal", "integer", "number"],
-        "equivalence_types": ["numeric_equivalence", "numeric_tolerance", "numeric_tolerance_equivalence"],
+        "equivalence_types": ["numeric_equivalence", "numeric_equal", "numeric_exact", "numeric_tolerance", "numeric_tolerance_equivalence"],
         "module": "pipeline",
     },
     "rational_checker": {

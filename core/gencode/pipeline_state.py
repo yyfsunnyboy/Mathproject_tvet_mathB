@@ -1,31 +1,148 @@
 from __future__ import annotations
 
 import json
+import os
+import re
+import time
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
+
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
+GENCODE_REPORT_DIR = PROJECT_ROOT / "reports" / "gencode_closed_loop"
+GENCODE_DRAFT_DIR = GENCODE_REPORT_DIR / "drafts"
+
+_WIN_INVALID_PATH_CHARS = re.compile(r'[<>:"|?*\x00-\x1f]')
 
 
 def utc_timestamp() -> str:
     return datetime.now(timezone.utc).isoformat()
 
 
-def read_json(path: Path) -> dict[str, Any]:
-    if not path.exists():
-        return {}
+def sanitize_path_segment(value: str) -> str:
+    """Strip quotes/control chars and Windows-forbidden path symbols."""
+    text = str(value or "").strip().strip('"').strip("'")
+    text = "".join(ch for ch in text if ch >= " " or ch in "\t")
+    text = _WIN_INVALID_PATH_CHARS.sub("_", text)
+    return text or "unknown_skill"
+
+
+def coerce_report_path(path: str | Path) -> Path:
+    """Normalize report paths for cross-platform open()/replace() safety."""
+    if isinstance(path, Path):
+        candidate = path
+    else:
+        raw = str(path or "").strip().strip('"').strip("'")
+        raw = "".join(ch for ch in raw if ch >= " " or ch in "\t")
+        candidate = Path(raw)
+    if not candidate.is_absolute():
+        candidate = (PROJECT_ROOT / candidate).resolve()
+    else:
+        candidate = candidate.resolve()
+    return candidate
+
+
+def phase_summary_path(skill_id: str, artifact: str) -> Path:
+    """Canonical Path builder for gencode closed-loop artifacts."""
+    safe_skill = sanitize_path_segment(skill_id)
+    name = str(artifact or "").strip().lower()
+    mapping = {
+        "phase1_summary": GENCODE_REPORT_DIR / f"{safe_skill}_phase1_summary.json",
+        "phase1_md": GENCODE_REPORT_DIR / f"{safe_skill}_phase1_summary.md",
+        "phase2_generator_summary": GENCODE_REPORT_DIR / f"{safe_skill}_phase2_generator_summary.json",
+        "phase2_generator_md": GENCODE_REPORT_DIR / f"{safe_skill}_phase2_generator_summary.md",
+        "phase3_package_summary": GENCODE_REPORT_DIR / f"{safe_skill}_phase3_package_summary.json",
+        "phase3_package_md": GENCODE_REPORT_DIR / f"{safe_skill}_phase3_package_summary.md",
+        "generator_draft_spec": GENCODE_DRAFT_DIR / f"{safe_skill}_generator_draft_spec.json",
+        "draft_skill": GENCODE_DRAFT_DIR / f"{safe_skill}.py",
+        "auto_pipeline_summary": GENCODE_REPORT_DIR / f"{safe_skill}_auto_pipeline_summary.json",
+        "auto_pipeline_md": GENCODE_REPORT_DIR / f"{safe_skill}_auto_pipeline_summary.md",
+        "publish_check_summary": GENCODE_REPORT_DIR / f"{safe_skill}_publish_check_summary.json",
+        "publish_check_md": GENCODE_REPORT_DIR / f"{safe_skill}_publish_check_summary.md",
+        "publish_summary": GENCODE_REPORT_DIR / f"{safe_skill}_publish_summary.json",
+        "publish_summary_md": GENCODE_REPORT_DIR / f"{safe_skill}_publish_summary.md",
+    }
+    if name not in mapping:
+        raise KeyError(f"unknown_gencode_artifact:{artifact}")
+    return mapping[name]
+
+
+def phase_report_paths(skill_id: str) -> dict[str, Path]:
+    """Return canonical Path objects for all standard phase report artifacts."""
+    return {
+        "phase1_summary_json": phase_summary_path(skill_id, "phase1_summary"),
+        "phase1_summary_md": phase_summary_path(skill_id, "phase1_md"),
+        "phase1_json": phase_summary_path(skill_id, "phase1_summary"),
+        "phase1_md": phase_summary_path(skill_id, "phase1_md"),
+        "phase2_generator_summary_json": phase_summary_path(skill_id, "phase2_generator_summary"),
+        "phase2_generator_summary_md": phase_summary_path(skill_id, "phase2_generator_md"),
+        "phase2_json": phase_summary_path(skill_id, "phase2_generator_summary"),
+        "phase2_md": phase_summary_path(skill_id, "phase2_generator_md"),
+        "phase3_package_summary_json": phase_summary_path(skill_id, "phase3_package_summary"),
+        "phase3_package_summary_md": phase_summary_path(skill_id, "phase3_package_md"),
+        "phase3_json": phase_summary_path(skill_id, "phase3_package_summary"),
+        "phase3_md": phase_summary_path(skill_id, "phase3_package_md"),
+        "final_json": phase_summary_path(skill_id, "phase3_package_summary"),
+        "final_md": phase_summary_path(skill_id, "phase3_package_md"),
+        "draft_skill_file": phase_summary_path(skill_id, "draft_skill"),
+        "generator_draft_spec_json": phase_summary_path(skill_id, "generator_draft_spec"),
+        "auto_pipeline_summary_json": phase_summary_path(skill_id, "auto_pipeline_summary"),
+        "auto_pipeline_summary_md": phase_summary_path(skill_id, "auto_pipeline_md"),
+    }
+
+
+def reports_dict_from_paths(paths: dict[str, Path]) -> dict[str, str]:
+    return {key: str(coerce_report_path(value)) for key, value in paths.items()}
+
+
+def _atomic_write_text(path: Path, text: str) -> None:
+    target = coerce_report_path(path)
+    target.parent.mkdir(parents=True, exist_ok=True)
+    tmp = target.with_name(f".{target.name}.{os.getpid()}.tmp")
     try:
-        obj = json.loads(path.read_text(encoding="utf-8"))
-    except Exception:
+        with open(tmp, "w", encoding="utf-8", newline="\n") as handle:
+            handle.write(text)
+            handle.flush()
+            os.fsync(handle.fileno())
+        os.replace(tmp, target)
+    finally:
+        if tmp.exists() and not target.exists():
+            try:
+                tmp.unlink()
+            except OSError:
+                pass
+
+
+def read_json(path: str | Path, *, retries: int = 6, retry_delay_s: float = 0.12) -> dict[str, Any]:
+    target = coerce_report_path(path)
+    if not target.exists():
         return {}
-    return obj if isinstance(obj, dict) else {}
+    last_exc: Exception | None = None
+    for attempt in range(max(1, retries)):
+        try:
+            with open(target, "r", encoding="utf-8") as handle:
+                obj = json.load(handle)
+            return obj if isinstance(obj, dict) else {}
+        except (OSError, json.JSONDecodeError, ValueError) as ex:
+            last_exc = ex
+            if attempt + 1 < retries:
+                time.sleep(retry_delay_s * (attempt + 1))
+    if last_exc is not None:
+        raise last_exc
+    return {}
 
 
-def write_json(path: Path, payload: dict[str, Any]) -> None:
-    path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+def write_json(path: str | Path, payload: dict[str, Any]) -> None:
+    target = coerce_report_path(path)
+    text = json.dumps(payload, ensure_ascii=False, indent=2) + "\n"
+    _atomic_write_text(target, text)
 
 
-def write_md(path: Path, title: str, sections: list[tuple[str, Any]]) -> None:
+def write_text_file(path: str | Path, text: str) -> None:
+    _atomic_write_text(coerce_report_path(path), text)
+
+
+def write_md(path: str | Path, title: str, sections: list[tuple[str, Any]]) -> None:
     lines = [f"# {title}", ""]
     for name, data in sections:
         lines.append(f"## {name}")
@@ -33,8 +150,7 @@ def write_md(path: Path, title: str, sections: list[tuple[str, Any]]) -> None:
         lines.append(json.dumps(data, ensure_ascii=False, indent=2))
         lines.append("```")
         lines.append("")
-    path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text("\n".join(lines).rstrip() + "\n", encoding="utf-8")
+    write_text_file(path, "\n".join(lines).rstrip() + "\n")
 
 
 def determine_next_repair_action(phase2_report: dict[str, Any]) -> dict[str, Any]:
@@ -101,4 +217,3 @@ def determine_next_repair_action(phase2_report: dict[str, Any]) -> dict[str, Any
         "should_run_phase3": False,
         "requires_human_review": True,
     }
-

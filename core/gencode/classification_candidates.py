@@ -60,6 +60,12 @@ def _default_answer_fields(target_task: str) -> tuple[str, str, list[str]]:
         return "ordered_pair", "coordinate_pair", ["two_coordinate_points", "section_ratio"]
     if task == "classify_quadrant":
         return "single_choice", "choice_label", ["coordinate_point"]
+    if task in {"quadratic_vertex_form_properties", "quadratic_standard_to_vertex_properties"}:
+        return "single_choice", "choice_label", ["quadratic_equation", "quadratic_vertex_form"]
+    if task == "quadratic_vertex_or_parameter_computation":
+        return "numeric", "numeric", ["quadratic_equation", "quadratic_vertex_form", "parameter"]
+    if task in {"quadratic_vertex_form_translation_to_new_function", "quadratic_graph_translation_fill_blank"}:
+        return "text", "text_short", ["quadratic_equation", "quadratic_vertex_form", "quadratic_translation"]
     return "numeric", "numeric", []
 
 

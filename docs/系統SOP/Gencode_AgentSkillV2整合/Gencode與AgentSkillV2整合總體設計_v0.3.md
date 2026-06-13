@@ -3,7 +3,7 @@
 ## 0. 文件目的與最高原則
 本文件為 Gencode 與 AgentSkillV2 整合的最高 SOP 及總流程法規。後續所有 Codex / Antigravity 任務凡涉及 Gencode、Phase 0/1/2/3 流程、ProblemTypeSpec、runtime wrapper 與 source classification 等，均須以此文件為最高規範，並在修改回報中明確列出遵守之條款。
 
-### 15 大最高原則
+### 16 大最高原則
 
 **v0.2 原則（1–12，完整保留）**
 
@@ -20,11 +20,17 @@
 11. **Runtime-Ready 定義**：不只代表會出題與批改，還必須通過 textbook coverage、runtime quality、web runtime 與 source alignment 的四重檢查。
 12. **Codex 任務規範**：後續每一輪 Codex / Antigravity 任務都必須先閱讀本設計，並於回報中列出遵守了哪些條款。
 
-**v0.3 增補原則（13–15）**
+**v0.3 增補原則（13–16）**
 
 13. **【薄入口外殼原則】**：`skills/{skill_id}.py` 僅作前台請求之 Thin Facade；所有實體計算、多模板分流、選項 shuffle 與 SymPy 驗證，必須穿透外殼，在全域 `generate_for_skill()` → `SLOT_REGISTRY` 動態插槽庫中執行。詳見 [AgentSkillV2_ProblemType規格包設計_v0.3.md §1.5](AgentSkillV2_ProblemType規格包設計_v0.3.md)。
 14. **【插槽去耦合解鎖原則】**：任一 ProblemTypeSpec 若僅完成編譯而未在 `template_slot_resolver.TASK_FAMILY_TO_SLOT` 與 `slot_generators.SLOT_REGISTRY` 雙向註冊實體處理函數，執行期必發生**退化坍塌**（fallback 至通用 stub 或重複題幹）。規格編譯與插槽實作為**強制共生運作**，缺一不可。
 15. **【數據驅動靈魂 Token 原則】**：題幹完整性約束所要求的核心關鍵字（靈魂 Token），必須 100% 由 `semantic_contract.required_concepts` 與 Phase 1 來源樣本動態提取驅動；Codegen 提示詞（`build_generator_code_prompt` §5）與插槽生成器均須引用該 Token 集合，**嚴禁**針對單一 skill_id 寫死特例字串。
+
+16. **【Phase 錯誤對照權威地圖（Self-Healing 自我修復）】**：當自動化流水線在不同 Phase 出現 Warning 或 Error 時，管線與 AI 修復任務**必須**依下列權威地圖進行規則對照與自我修復（Self-Healing），**不得**跨文件混用或自行臆測修復策略：
+    - **Phase 1（來源審查）與 Phase 2（規格建構）**：凡涉及「單元分類、樣本拯救、阻擋層級判定、抽題 pool 分流」之異常，**唯一對照權威**為本文件《Gencode與AgentSkillV2整合總體設計_v0.3.md》。
+    - **Phase 2.5（規格稽核）與 Phase 3（編譯期）**：凡涉及「選擇題、填充題、多小題、圖表題之展現型態（`presentation_mode`）、Contract 欄位剛性覆寫、幽靈快取洗淨」之異常，**唯一對照權威**為《AnswerContract_EquivalenceType_Gate_v0.3.md》。
+    - **Phase 3 生成產物與 Runtime 執行期**：凡涉及「技能檔外殼極簡化（Thin Facade）、註冊表非破壞性合併（Non-Destructive Merge）、以及插槽動態註冊分流」之異常，**唯一對照權威**為《AgentSkillV2_ProblemType規格包設計_v0.3.md》。
+    - **執行規則**：Gen Code 批次管線報錯時，必須先抓取報錯 Phase 標籤（如 `Phase 2.5`），自動載入對應 SOP 全文作為修復 Context，再觸發 Self-Healing 修正；實現無人值守 24 小時自我閉環出題。
 
 ---
 
@@ -47,14 +53,29 @@
 ### Layer 1：Import / Source Normalization (匯入與標準化)
 - **職責**：切題、題幹清理、答案/選項擷取、LaTeX 語意保留、關聯 chapter/section/skill_id、標記 source_type（可引用 MathType DOCX 轉 LaTeX 工具）。
 - **禁止**：不得判斷 problem_type、不得判斷 runtime readiness、不得建立 generator，更不得因題目不好直接刪除原始資料。
+- **【行政歸屬唯讀校驗（vh_數學 標準格式矩陣）】**：
+  1. 管線掃描端**必須**強制校驗 `skill_id` 是否完美吻合資料庫既有之 `vh_數學...` 標準格式矩陣；**嚴禁**自行發明、猜測或補寫不存在的 ID 前綴（含已廢棄之草稿前綴）。
+  2. 不符標準之 malformed 損毀字串須在 Layer 1 **入口剛性攔截**，標記 `skill_id_format_violation`，**沒收 DB 寫入權**，禁止進入後續 Phase。
+  3. 校驗器由 `pipeline_orchestrator.py` 在教材匯入（Scenario 1️⃣）啟動、`_load_examples` 之後強制執行；AI **不得**自行更名、補前綴或繞過校驗。
 
 ### Layer 2：Source Audit (來源品質審核)
 - **職責**：審查每題來源品質，標記 source_item_status（如 usable / rejected / enrichment / future_ai_judged / source_bank_only），並記錄 missing_answer、broken_latex、graph_required 等標記。
 - **禁止**：不得因少量 rejected 題目而阻擋整個 skill 的推進，也不得在此階段建立 ProblemTypeSpec 或決定 Phase 3 generator。
+- **【Anchor Shield（單元錨定防線）】**：
+  1. 管線從 Word 讀入並寫入資料庫的 **`skill_id` 為最高行政命令且唯讀**；Layer 2 僅可審查來源品質，**嚴禁** AI 以分類錯誤、超綱或低置信度為由，將題目剔除出本單元或改派至其他 `skill_id`。
+  2. 若 AI 觸發 `unclassified_low_confidence` 或企圖拒絕收錄，管線**必須沒收 AI 的拒絕權**，強制標記 `FORCE_ALLOWED_FOR_INDUCTION` 並全自動分發臨時代理題型 ID，硬推推進後續 Phase，死守 **Fidelity over Coverage（課本忠實度高於題型覆蓋率）** 紅線。
+  3. `should_remap` 僅可作為**人工覆寫**標記，**不得**由 AI 在 Layer 2 自動觸發以繞過 Anchor Shield。
+- **【行政歸屬唯讀校驗（複核關卡）】**：
+  1. Layer 2 審查時須**二次複核** Layer 1 已鎖定之 `skill_id` 仍符合 `vh_數學...` 標準格式矩陣；若發現漏網、AI 改寫或 OCR 損毀，立即升級為 `skill_id_format_violation` 並阻擋該批次。
+  2. 審查報告須記錄 `skill_id_prefix_validated: true/false` 與 `skill_id_prefix_validation_reason`（如 `vocational_high_school_math_core_scope`），作為 Phase 1 Gate 必要欄位。
 
 ### Layer 3：Problem Type Induction (題型歸納)
 - **職責**：僅使用 **usable core examples** 歸納 candidate problem types，產出 target_task、task_family、answer_type，以及草擬的 answer_contract / semantic_contract，以 `final_classification` 作為唯一分類結果。
 - **禁止**：不得讓 source_quality_reject 題目參與 core induction，不得讓 registry_rule 自動等於 needs_review，也不得把素養題預設放入 core induction。
+- **【Anchor Shield（單元錨定防線）】**：
+  1. 題型歸納必須在**當前唯讀 `skill_id` 錨定範圍內**進行；AI **嚴禁**以「此題不屬於本單元」為由，將 core example 移出 induction 或改寫 `skill_id`。
+  2. 對 `unclassified_low_confidence` 之靈魂課本原題，管線**不得**移入 `skipped` 列表；必須在現場分發臨時代理題型 ID（如 `proxy_<skill_id>_<hash>`），強制送入 Phase 2 觸發多模板生成（Multi-Template Generator）。
+  3. 歸納結果之 `final_target_task` / `final_task_family` 僅描述題型語意，**不得**覆寫或質疑 Word 匯入時鎖定之 `skill_id` 行政歸屬。
 
 ### Layer 4：Spec Gate (規格審查門檻)
 - **職責**：以 **problem_type 為單位** 判斷 readiness（runtime_ready / pending_template / blocked），驗證 AnswerContract、SemanticContract 等契約完整性，判斷是否可進入 Phase 3。
@@ -94,6 +115,15 @@
 
 ### Phase 2：ProblemTypeSpec / Contract 建立 (規格包與契約產出)
 - **輸出**：最終的 ProblemTypeSpec、AnswerContract、SemanticContract、StemContract、GeneratorContract、ValidatorContract、examples_map 與 source_bank map。不得接受 legacy 未 canonical 的 equivalence 值。
+- **條款 3.6：錯誤診斷與補救節點映射合約（Diagnosis Remediation Mapping）**：
+  1. **語意關鍵字動態驅動**：當管線讀入之唯讀 `skill_id` 名稱內包含「**排列**」、「**組合**」或「**機率**」關鍵字時，`problem_type_induction.py` 在歸納題型時**必須自動且剛性注入**下列四大經典診斷標籤：
+     - `p_c_confusion`：排列（$P$）與組合（$C$）混淆
+     - `sample_space_error`：樣本空間定義錯誤
+     - `double_counting`：重複計數
+     - `denominator_error`：分母／機率分數計算錯誤
+  2. 注入須覆蓋三層輸出：`subskills_detail`、`diagnosis_tags` 頂層清單、以及 `per_example_classification[].diagnosis_tag_candidates`。
+  3. 上述 tag 為後台 RAG 檢索補救路徑之**唯一特徵鍵**；`diagnosis_engine`（或等價判定擴充模組）比對學生錯答特徵後，**必須**拋出已登記 tag，不得自創臨時標籤。
+  4. 補救橋接候選之 Chroma / bridge 身份仍須遵守 `skill_id:family_id` 規則（見 AGENTS.md §9），`diagnosis_tags` 僅作檢索特徵，不得取代 family 身份鍵。
 
 ### Phase 2.5：Spec Gate (規格稽核)
 - **輸出**： readiness 判定結果（runtime_ready / pending_template / pending_renderer / blocked）與 blockers / warnings 清單。
@@ -102,6 +132,22 @@
 - **輸入**：僅接受 Phase 2.5 通過之 ProblemTypeSpec；且對應 `target_task` 已完成 **Layer 6** 雙表註冊（`TASK_FAMILY_TO_SLOT` + `SLOT_REGISTRY`），或明確標記 `pending_template` 不得發布。
 - **輸出**：經 verified 的 generator、non-destructive merged registry、以及通過 runtime smoke 測試的 **Thin Facade**（`skills/{skill_id}.py`，僅含白名單委託）。絕對禁止將 manual_review/future_ai_judged 題型塞入 deterministic checker。
 - **v0.3 增量**：序列化前須執行 AnswerContract §4.3 展現型態強制作戰；同步前須執行 induced spec 幽靈快取清除（canonical whitelist purge）。
+
+### 條款 3.5：Phase 錯誤對照權威地圖（Self-Healing 自我修復閉環）
+
+當自動化流水線在不同 Phase 出現 Warning 或 Error 時，管線與 AI 修復任務**必須**依下列權威地圖進行規則對照與自我修復，**不得**跨文件混用或自行臆測修復策略：
+
+| Phase 範圍 | 異常類型 | 唯一對照權威 SOP |
+|----------|---------|-----------------|
+| Phase 1（來源審查）、Phase 2（規格建構） | 單元分類、樣本拯救、阻擋層級判定、抽題 pool 分流 | 本文件《Gencode與AgentSkillV2整合總體設計_v0.3.md》 |
+| Phase 2.5（規格稽核）、Phase 3（編譯期） | 選擇題、填充題、多小題、圖表題之 `presentation_mode`、Contract 欄位剛性覆寫、幽靈快取洗淨 | 《AnswerContract_EquivalenceType_Gate_v0.3.md》 |
+| Phase 3 生成產物、Runtime 執行期 | Thin Facade 極簡化、Non-Destructive Merge、插槽動態註冊分流 | 《AgentSkillV2_ProblemType規格包設計_v0.3.md》 |
+
+**Self-Healing 執行流程**：
+1. 管線報錯時，先抓取報錯 Phase 標籤（例如 `Phase 2.5`）。
+2. 依上表自動載入對應 SOP 全文，作為 AI 修復 Context。SOP 實體目錄**剛性錨定**為：`docs/系統SOP/Gencode_AgentSkillV2整合/`（**禁止**引用草稿路徑 `docs/SOP/`）。
+3. 將 SOP 條款與報錯堆疊餵入修復 Prompt，觸發確定性自我校正。
+4. 修復完成後重新執行該 Phase Gate，形成無人值守 24 小時自我閉環。
 
 ---
 
@@ -276,6 +322,28 @@
 | 2026-05-31 | v0.2 | 重整 v0.2，將資料規格與答案判定細則完全解耦，吸收閉環稽核與雙 pool 抽題規則，100% 乾淨 UTF-8 | Antigravity |
 | 2026-06-01 | v0.2.1 | 增補條款 3.4 非破壞性智能拯救原則、條款 4.5 未分類低置信度強制作戰原則、以及條款 5.2 動態數學形態容忍機制 | Antigravity |
 | 2026-06-01 | v0.3 | 15 大原則（增補 13–15）；六層架構新增 Layer 6 執行期插槽層；焊入 Thin Facade 與 Runtime Multi-Slot Engine；完整保留 v0.2 流程與 Gate | 首席系統架構師 |
+| 2026-06-13 | v0.3.1 | 增補原則 16 Phase 錯誤對照權威地圖；Layer 2/3 焊入 Anchor Shield 單元錨定防線；新增條款 3.5 Self-Healing 自我修復閉環 | 首席系統架構師 |
+| 2026-06-13 | v0.3.2 | 洗淨版：Layer 1/2 改為 `vh_數學` 行政歸屬唯讀校驗；條款 3.6 改為語意關鍵字驅動診斷標籤；條款 3.5 錨定真實 SOP 目錄；新增 §13 Gen Code 職責對照 | 首席系統架構師 |
+
+---
+
+## 13. Gen Code 核心程式職責對照（GEM 五大場景落地）
+
+> v0.3.2 增量：落實 GEM 使用說明之五大場景，下列 **6 支 Gen Code 核心程式** 為唯一允許修改之調度與生成後台；**嚴禁**在任一 `skills/{skill_id}.py` 薄外殼內堆疊實體邏輯。
+
+| 程式名稱（路徑） | 對應場景 | 修改職責 |
+|----------------|---------|---------|
+| `core/gencode/pipeline_orchestrator.py` | 1️⃣ 教材匯入、編譯期 Self-Healing | 校驗 `vh_數學` 行政歸屬矩陣；從 `docs/系統SOP/Gencode_AgentSkillV2整合/` 載入 SOP 執行智能修復 |
+| `core/gencode/problem_type_induction.py` | 1️⃣ 教材匯入、Phase 1 盤點切題 | 語意關鍵字（排列/組合/機率）驅動四大診斷標籤注入；自動分流 core examples 與 source bank pool |
+| `core/gencode/runtime_skill_wrapper.py` | 2️⃣ 出題生成、3️⃣ 提示生成 | 全域調度器；控制難度（簡單/中等/困難）與 Hint 請求，委託 Domain 模組，穿透外殼交由 SymPy 最終判定 |
+| `core/gencode/slot_generators.py` | 2️⃣ 出題生成 | 全域插槽庫；掛載排列組合與機率數學算力分支，確保題目避免模糊或多解，保持課本一致 |
+| `core/gencode/scenario_pool_manager.py`（Template Domain，待建或擴充） | 2️⃣ 出題生成 | 管理排列組合（排隊、分球、買票）與機率（丟硬幣、擲骰子）情境文本池；最後一毫秒組裝題幹與黏貼格式尾綴 |
+| `core/diagnosis_analyzer.py` 或等價 `diagnosis_engine` 擴充 | 4️⃣ 錯誤診斷、5️⃣ 補救建議 | `check_answer` 答錯時比對正解與學生答案特徵（如 $P$/$C$ 階乘倍數差），拋出 `diagnosis_tags` 補救標籤 |
+
+**剛性約束**：
+1. 系統負責決策與數學嚴格防守；AI 僅作純粹教學輔助（Hint 引導、情境文本建議），**不得**直接給最終答案。
+2. 上述程式之修改須遵守規格包 SOP §1.5.6 防胖防禦線：實體數學與文本邏輯委託 Domain 模組，調度器僅做分流。
+3. 新增 Gen Code 邏輯時，須在變更回報（§11）明列對照之 SOP 條款與場景編號。
 
 *本文件職責：定義整合總體流程、最高法規、六層架構邊界與閉環安全機制。*
 *不負責事項：不定義 YAML schema 細部欄位與 equivalence 白名單細則。*

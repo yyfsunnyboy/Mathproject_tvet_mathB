@@ -18,6 +18,7 @@ if str(PROJECT_ROOT) not in sys.path:
 from core.gencode.pipeline_state import utc_timestamp, write_json, write_md
 from core.gencode.classifier_proposal import (
     build_classifier_proposal,
+    build_phase1_gate_policy,
     detect_answer_shape,
 )
 from core.gencode.pipeline_orchestrator import run_gencode_auto_pipeline

@@ -154,18 +154,81 @@ def _mark_uids_expired(uids: list[str]) -> None:
             row["status"] = STATUS_EXPIRED
 
 
-def get_question_by_uid(question_uid: str, *, owner_key: str | None = None) -> dict[str, Any] | None:
+def get_question_by_uid(
+    question_uid: str,
+    *,
+    owner_key: str | None = None,
+    skill_id: str = "",
+) -> dict[str, Any] | None:
     uid = str(question_uid or "").strip()
     if not uid:
         return None
     key = str(owner_key or get_practice_owner_key()).strip()
     row = (_STORE.get(key) or {}).get(uid)
-    return dict(row) if isinstance(row, dict) else None
+    if not isinstance(row, dict):
+        return None
+    expected_skill = str(skill_id or "").strip()
+    if expected_skill:
+        stored_skill = str(row.get("skill_id", row.get("skill", ""))).strip()
+        if stored_skill and stored_skill != expected_skill:
+            return None
+    return dict(row)
 
 
 def clear_practice_cache_for_owner(owner_key: str | None = None) -> None:
     key = str(owner_key or get_practice_owner_key()).strip()
     _STORE.pop(key, None)
+
+
+# Session keys that hold the currently displayed practice question or grading context.
+# Must be cleared when the user navigates to a different skill_id.
+PRACTICE_DISPLAY_SESSION_KEYS: tuple[str, ...] = (
+    "current_question_uid",
+    "current_skill_id",
+    "practice_ref",
+    "current_data",
+    "current_question",
+    "correct_answer",
+    "review_history",
+)
+
+
+def preview_question_text(text: Any, limit: int = 80) -> str:
+    raw = " ".join(str(text or "").split())
+    return raw[:limit] + ("…" if len(raw) > limit else "")
+
+
+def clear_practice_display_state_for_skill_switch(new_skill_id: str) -> dict[str, Any]:
+    """Drop stale question pointers when URL skill_id differs from session skill.
+
+    Returns a debug dict with before/after snapshots for logging.
+    """
+    new_sid = str(new_skill_id or "").strip()
+    prev_skill = str(session.get("current_skill_id", "")).strip()
+    prev_uid = str(session.get("current_question_uid", "")).strip()
+    cleared: list[str] = []
+
+    should_clear = bool(new_sid) and (not prev_skill or prev_skill != new_sid)
+    if should_clear:
+        for key in PRACTICE_DISPLAY_SESSION_KEYS:
+            if key in session:
+                session.pop(key, None)
+                cleared.append(key)
+        # Drop recent uid list so check_answer cannot resolve an old uid from cookie.
+        if session.get("recent_question_uids"):
+            session.pop("recent_question_uids", None)
+            cleared.append("recent_question_uids")
+        session.modified = True
+
+    return {
+        "requested_skill_id": new_sid,
+        "previous_skill_id": prev_skill,
+        "previous_question_uid": prev_uid,
+        "current_skill_id_after": str(session.get("current_skill_id", "")).strip(),
+        "current_question_uid_after": str(session.get("current_question_uid", "")).strip(),
+        "cleared_keys": cleared,
+        "did_clear": bool(cleared),
+    }
 
 
 def clear_practice_state() -> None:
@@ -178,6 +241,7 @@ def clear_practice_state() -> None:
         "recent_question_uids",
         "practice_ref",
         "current_data",
+        *PRACTICE_DISPLAY_SESSION_KEYS,
     ):
         session.pop(k, None)
     session.modified = True
@@ -208,18 +272,26 @@ def persist_current_question(skill_id: str, data: dict[str, Any]) -> tuple[dict[
 
 def load_current_question(ref: dict[str, Any] | None = None) -> dict[str, Any]:
     uid = str(session.get("current_question_uid", "")).strip()
+    session_skill = str(session.get("current_skill_id", "")).strip()
     if not uid and isinstance(ref, dict):
         uid = str(ref.get("question_uid", "")).strip()
     if not uid:
         cookie_ref = session.get("practice_ref")
         if isinstance(cookie_ref, dict):
             uid = str(cookie_ref.get("question_uid", "")).strip()
+            if not session_skill:
+                session_skill = str(cookie_ref.get("skill_id", "")).strip()
     if uid:
-        loaded = get_question_by_uid(uid)
+        loaded = get_question_by_uid(uid, skill_id=session_skill)
         if loaded:
             return loaded
     legacy = session.get("current_data")
-    return dict(legacy) if isinstance(legacy, dict) else {}
+    if isinstance(legacy, dict) and legacy:
+        legacy_skill = str(legacy.get("skill_id", legacy.get("skill", ""))).strip()
+        if session_skill and legacy_skill and legacy_skill != session_skill:
+            return {}
+        return dict(legacy)
+    return {}
 
 
 def mark_question_answered(question_uid: str, grade_result: dict[str, Any]) -> None:
@@ -296,17 +368,32 @@ def resolve_check_context(body: dict[str, Any] | None) -> tuple[dict[str, Any] |
     req = body if isinstance(body, dict) else {}
     req_skill = str(req.get("skill_id", "")).strip()
     req_uid = str(req.get("question_uid", "")).strip()
+    session_skill = str(session.get("current_skill_id", "")).strip()
 
     if not req_uid:
         legacy = session.get("current_data")
         if isinstance(legacy, dict) and legacy.get("skill"):
+            legacy_skill = str(legacy.get("skill_id", legacy.get("skill", ""))).strip()
+            if req_skill and legacy_skill and req_skill != legacy_skill:
+                _log_stale("legacy_skill_mismatch", request_skill=req_skill, legacy_skill=legacy_skill)
+                return None, stale_question_response()
             return dict(legacy), None
         _log_stale("missing_question_uid", skill=req_skill)
         return None, stale_question_response("Session state lost. Please reload and try again.")
 
-    payload = get_question_by_uid(req_uid)
+    # Session skill guard: request must match active session skill when both are known.
+    if req_skill and session_skill and req_skill != session_skill:
+        _log_stale(
+            "session_skill_mismatch",
+            request_skill=req_skill,
+            session_skill=session_skill,
+            uid=req_uid,
+        )
+        return None, stale_question_response()
+
+    payload = get_question_by_uid(req_uid, skill_id=req_skill or session_skill)
     if not payload:
-        _log_stale("question_not_in_store", uid=req_uid, skill=req_skill)
+        _log_stale("question_not_in_store", uid=req_uid, skill=req_skill or session_skill)
         return None, stale_question_response()
 
     status = str(payload.get("status", STATUS_GENERATED)).strip()
@@ -331,12 +418,33 @@ def resolve_check_context(body: dict[str, Any] | None) -> tuple[dict[str, Any] |
         _log_stale("skill_mismatch", request_skill=req_skill, payload_skill=payload_skill, uid=req_uid)
         return None, stale_question_response()
 
+    # practice_ref guard
+    cookie_ref = session.get("practice_ref")
+    if isinstance(cookie_ref, dict):
+        ref_skill = str(cookie_ref.get("skill_id", "")).strip()
+        ref_uid = str(cookie_ref.get("question_uid", "")).strip()
+        if ref_skill and req_skill and ref_skill != req_skill:
+            _log_stale("practice_ref_skill_mismatch", request_skill=req_skill, ref_skill=ref_skill, uid=req_uid)
+            return None, stale_question_response()
+        if ref_uid and req_uid and ref_uid != req_uid:
+            _log_stale("practice_ref_uid_mismatch", request_uid=req_uid, ref_uid=ref_uid)
+            return None, stale_question_response()
+
     if not str(payload.get("question_text", "")).strip():
         return None, stale_question_response()
 
     current_uid = str(session.get("current_question_uid", "")).strip()
     if current_uid and req_uid != current_uid:
         _log_stale("not_current_question", request_uid=req_uid, current_uid=current_uid)
+        return None, stale_question_response()
+
+    if session_skill and payload_skill and session_skill != payload_skill:
+        _log_stale(
+            "session_payload_skill_mismatch",
+            session_skill=session_skill,
+            payload_skill=payload_skill,
+            uid=req_uid,
+        )
         return None, stale_question_response()
 
     return payload, None

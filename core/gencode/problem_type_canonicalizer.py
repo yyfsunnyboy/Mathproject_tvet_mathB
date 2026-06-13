@@ -19,12 +19,14 @@ from __future__ import annotations
 from typing import Any
 
 from core.gencode.answer_payload import answer_type_family
+from core.gencode.answer_contract_policy import is_quadratic_rational_scalar_semantic
 from core.gencode.problem_type_spec import get_answer_contract, get_generator_contract
 
 # Prefixes stripped from the LEFT of problem_type_id (longest match first).
 TYPED_PREFIXES: tuple[str, ...] = (
     "single_choice",
     "text_short",
+    "text",
     "integer",
     "rational",
     "numeric",
@@ -33,7 +35,7 @@ TYPED_PREFIXES: tuple[str, ...] = (
 )
 
 VALUE_TYPE_PREFIXES = frozenset({"integer", "rational", "numeric", "expression"})
-PRESENTATION_PREFIXES = frozenset({"choice", "single_choice", "text_short"})
+PRESENTATION_PREFIXES = frozenset({"choice", "single_choice", "text_short", "text"})
 
 CHOICE_MARKERS: tuple[str, ...] = (
     "_choice",
@@ -155,7 +157,13 @@ def _slot_for_spec(spec: dict[str, Any]) -> str:
     slots = gc.get("template_slots") if isinstance(gc.get("template_slots"), dict) else {}
     explicit = str(slots.get("stem", "")).strip()
     if explicit:
-        return explicit
+        from core.gencode.template_slot_resolver import _slot_compatible_with_contract, resolve_template_slot
+
+        if _slot_compatible_with_contract(explicit, spec):
+            return explicit
+        resolved = str(resolve_template_slot(spec) or "").strip()
+        if resolved:
+            return resolved
     from core.gencode.template_slot_resolver import resolve_template_slot
 
     return str(resolve_template_slot(spec) or "").strip()
@@ -172,6 +180,10 @@ def infer_answer_contract_for_canonical(
     base_pt = str(canonical.get("base_problem_type_id", "")).strip()
     base_task = str(canonical.get("base_target_task", "")).strip()
     value_prefix = str(canonical.get("value_type_prefix", "")).strip()
+    rational_scalar = is_quadratic_rational_scalar_semantic(
+        problem_type_id=base_pt,
+        target_task=base_task,
+    )
     # Pass slot so SLOT_PRESENTATION_MODE takes precedence over name-based markers.
     presentation = infer_presentation_mode(
         base_pt, base_task, source_has_choices=source_has_choices, slot=slot
@@ -211,6 +223,7 @@ def infer_answer_contract_for_canonical(
         text_slots = {
             "quadratic_graph_translation_fill_blank",
             "quadratic_graph_translation_short_answer",
+            "quadratic_vertex_form_translation_to_new_function",
         }
         if slot in text_slots or any(m in f"{base_pt} {base_task}" for m in TEXT_SHORT_MARKERS):
             return {
@@ -225,8 +238,34 @@ def infer_answer_contract_for_canonical(
                 "presentation_mode": "short_answer",
                 "selected_checker": "text_short_checker",
             }
-        # Numeric slot: use value prefix if present.
-        if value_prefix == "rational":
+        # Numeric slot: typed prefix wins over rational_scalar capability.
+        if value_prefix == "integer":
+            return {
+                **base_ac,
+                "answer_type": "integer",
+                "answer_shape": "scalar",
+                "answer_equivalence": "numeric_exact",
+                "equivalence_type": "numeric_exact",
+                "checker": "integer_checker",
+                "checker_key": "integer_checker",
+                "presentation_mode": "short_answer",
+                "selected_checker": "integer_checker",
+                "checker_selection_reason": "typed_prefix_integer",
+            }
+        if value_prefix == "numeric":
+            return {
+                **base_ac,
+                "answer_type": "numeric",
+                "answer_shape": "scalar",
+                "answer_equivalence": "numeric_exact",
+                "equivalence_type": "numeric_exact",
+                "checker": "numeric_checker",
+                "checker_key": "numeric_checker",
+                "presentation_mode": "short_answer",
+                "selected_checker": "numeric_checker",
+                "checker_selection_reason": "typed_prefix_numeric",
+            }
+        if value_prefix == "rational" or rational_scalar:
             return {
                 **base_ac,
                 "answer_type": "rational",
@@ -237,18 +276,7 @@ def infer_answer_contract_for_canonical(
                 "checker_key": "rational_checker",
                 "presentation_mode": "short_answer",
                 "selected_checker": "rational_checker",
-            }
-        if value_prefix in {"integer", "numeric"}:
-            return {
-                **base_ac,
-                "answer_type": "integer" if value_prefix == "integer" else "numeric",
-                "answer_shape": "scalar",
-                "answer_equivalence": "numeric_exact",
-                "equivalence_type": "numeric_exact",
-                "checker": "integer_checker" if value_prefix == "integer" else "numeric_checker",
-                "checker_key": "integer_checker" if value_prefix == "integer" else "numeric_checker",
-                "presentation_mode": "short_answer",
-                "selected_checker": "integer_checker" if value_prefix == "integer" else "numeric_checker",
+                "checker_selection_reason": "quadratic_vertex_rational_capable" if rational_scalar else "typed_prefix_rational",
             }
         return {
             **base_ac,
@@ -263,6 +291,20 @@ def infer_answer_contract_for_canonical(
         }
 
     # ── Fallback: preserve existing if reasonable, else value-prefix numeric ─
+    if rational_scalar:
+        return {
+            **base_ac,
+            "answer_type": "rational",
+            "answer_shape": "scalar",
+            "answer_equivalence": "rational_equivalent",
+            "equivalence_type": "rational_equivalent",
+            "checker": "rational_checker",
+            "checker_key": "rational_checker",
+            "presentation_mode": "short_answer",
+            "selected_checker": "rational_checker",
+            "checker_selection_reason": "quadratic_vertex_rational_capable",
+        }
+
     if isinstance(existing_ac, dict) and existing_ac.get("answer_type"):
         return dict(existing_ac)
 
@@ -323,7 +365,10 @@ def check_contract_slot_mismatch(spec: dict[str, Any], slot: str) -> list[str]:
         family = answer_type_family(at)
         # Normalize single_choice family
         check_family = "single_choice" if at in {"single_choice", "choice"} else family
-        if check_family not in allowed and at not in allowed:
+        family_ok = check_family in allowed or at in allowed
+        if not family_ok and check_family == "fraction" and "rational" in allowed:
+            family_ok = True
+        if not family_ok:
             # text_short slots accept text_short family
             if not (check_family in {"text_short", "short_answer"} and "text_short" in allowed):
                 blockers.append(f"contract_slot_mismatch:{check_family}_not_compatible_with_{slot}")
@@ -332,7 +377,25 @@ def check_contract_slot_mismatch(spec: dict[str, Any], slot: str) -> list[str]:
 
 
 def enrich_spec_with_canonicalization(spec: dict[str, Any]) -> dict[str, Any]:
-    """Return an enriched spec copy with canonical fields, slot, and corrected answer_contract."""
+    """Return an enriched spec copy with canonical fields, slot, and corrected answer_contract.
+
+    Canonicalization priority order (highest first):
+      1. explicit answer_format_hint in spec            ← NEW: highest authority
+      2. source_has_choices / choices_count             ← infer hint from choices evidence
+      3. answer_fields in spec                          ← field-based hint inference
+      4. template_slot registry (SLOT_PRESENTATION_MODE)← slot-based fallback
+      5. base_problem_type_id name markers (CHOICE_MARKERS, TEXT_SHORT_MARKERS)
+      6. value-type prefix (integer_/rational_/…)      ← last resort
+
+    The value-type prefix NEVER overrides an explicit answer_format_hint.
+    """
+    from core.gencode.answer_format_hint import (
+        HINT_UNKNOWN,
+        answer_contract_from_hint,
+        enrich_spec_with_answer_format_hint,
+        naming_warning_if_prefix_contract_mismatch,
+    )
+
     out = dict(spec)
     pt_id = str(spec.get("problem_type_id", "")).strip()
     canonical = canonicalize_problem_type_id(pt_id)
@@ -359,9 +422,55 @@ def enrich_spec_with_canonicalization(spec: dict[str, Any]) -> dict[str, Any]:
         gc["template_slots"] = slots
         out["generator_contract"] = gc
 
-    # Re-infer answer contract from presentation, not prefix.
-    # Pass resolved slot so slot-registry evidence overrides name-based heuristics.
+    # ── Priority 1: answer_format_hint (highest authority) ──────────────────
+    # Enrich hint from existing evidence (source_has_choices, answer_fields, etc.)
+    out = enrich_spec_with_answer_format_hint(out)
+    hint = str(out.get("answer_format_hint") or "").strip()
     existing_ac = get_answer_contract(spec)
+    rational_scalar = is_quadratic_rational_scalar_semantic(
+        problem_type_id=canonical["base_problem_type_id"],
+        target_task=str(out.get("target_task") or canonical["base_target_task"] or ""),
+    )
+
+    if rational_scalar and canonical["value_type_prefix"] in {"integer", "numeric"}:
+        if canonical["value_type_prefix"] != "integer":
+            out["problem_type_id"] = canonical["base_problem_type_id"]
+            out["naming_warning"] = "naming_warning:quadratic_vertex_value_prefix_removed"
+
+    if rational_scalar and hint == "integer" and canonical["value_type_prefix"] not in {"integer", "rational"}:
+        out["answer_format_hint"] = "rational"
+        hint = "rational"
+        out["naming_warning"] = "naming_warning:quadratic_vertex_integer_hint_promoted_to_rational"
+    elif canonical["value_type_prefix"] == "integer":
+        from core.gencode.answer_format_hint import HINT_INTEGER
+
+        out["answer_format_hint"] = HINT_INTEGER
+        hint = HINT_INTEGER
+    elif canonical["value_type_prefix"] == "rational":
+        from core.gencode.answer_format_hint import HINT_RATIONAL
+
+        out["answer_format_hint"] = HINT_RATIONAL
+        hint = HINT_RATIONAL
+
+    if hint and hint != HINT_UNKNOWN:
+        # Hint is known → use it as the authoritative contract
+        corrected_ac = answer_contract_from_hint(hint, existing_ac=existing_ac)
+        # Propagate answer_fields / answer_separator from hint template
+        from core.gencode.answer_format_hint import _HINT_TO_CONTRACT
+        hint_template = _HINT_TO_CONTRACT.get(hint, {})
+        if "answer_fields" in hint_template:
+            corrected_ac["answer_fields"] = hint_template["answer_fields"]
+        if "answer_separator" in hint_template:
+            corrected_ac["answer_separator"] = hint_template["answer_separator"]
+        out["answer_contract"] = corrected_ac
+        # Emit naming warning if prefix contradicts hint
+        nw = naming_warning_if_prefix_contract_mismatch(pt_id, hint)
+        if nw:
+            out["naming_warning"] = nw
+        return out
+
+    # ── Fallback to slot + name markers + prefix ─────────────────────────────
+    # (only reached when answer_format_hint is absent/unknown)
     source_has_choices = bool(existing_ac.get("source_has_choices"))
     corrected_ac = infer_answer_contract_for_canonical(
         canonical,

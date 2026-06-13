@@ -34,6 +34,10 @@ TASK_FAMILY_TO_SLOT: dict[str, str] = {
     "quadratic_graph_translation_short_answer": "quadratic_graph_translation_short_answer",
     "quadratic_vertex_form_properties": "quadratic_vertex_form_properties",
     "quadratic_standard_to_vertex_properties": "quadratic_standard_to_vertex_properties",
+    "quadratic_vertex_or_parameter_computation": "quadratic_vertex_or_parameter_computation",
+    "quadratic_vertex_form_translation_to_new_function": "quadratic_vertex_form_translation_to_new_function",
+    # compute_quadratic_vertex short-answer extremum uses dedicated rational/integer slot.
+    "quadratic_vertex_extremum_rational": "quadratic_vertex_extremum_rational",
     # Taxonomy target_tasks → precise presentation slots (Source Skill Binding Supremacy §resolver).
     "quadratic_graph_translation": "quadratic_graph_translation_fill_blank",
     "quadratic_vertex_axis_identification": "quadratic_graph_translation_fill_blank",
@@ -59,14 +63,30 @@ SLOT_COMPATIBLE_FAMILIES: dict[str, frozenset[str]] = {
     "quadratic_graph_vertex_axis_choice": frozenset({"single_choice"}),
     "quadratic_graph_translation_fill_blank": frozenset({"text_short", "short_answer"}),
     "quadratic_graph_translation_short_answer": frozenset({"text_short", "short_answer"}),
-    # These slots ALWAYS produce A/B/C/D choice payloads.  Do not add text_short here.
-    "quadratic_vertex_form_properties": frozenset({"single_choice"}),
-    "quadratic_standard_to_vertex_properties": frozenset({"single_choice"}),
+    # Properties slots: current generators produce single_choice, but the spec may
+    # carry a different answer_format_hint (coordinate, translation text, etc.).
+    # answer_format_hint canonicalization is the authoritative source; this table
+    # is used only as a slot-mismatch fallback guard.
+    "quadratic_vertex_form_properties": frozenset(
+        {"single_choice", "text_short", "short_answer", "coordinate_pair"}
+    ),
+    "quadratic_standard_to_vertex_properties": frozenset(
+        {"single_choice", "text_short", "short_answer", "coordinate_pair"}
+    ),
+    "quadratic_vertex_or_parameter_computation": frozenset(
+        {"single_choice", "numeric", "integer", "rational", "fraction", "text_short", "short_answer"}
+    ),
+    "quadratic_vertex_extremum_rational": frozenset(
+        {"integer", "numeric", "rational", "fraction", "short_answer"}
+    ),
+    "quadratic_vertex_form_translation_to_new_function": frozenset(
+        {"text_short", "short_answer", "expression"}
+    ),
 }
 
-# Map from slot name → its actual runtime presentation mode.
-# Derived from SLOT_COMPATIBLE_FAMILIES: slots whose compatible set contains ONLY
-# "single_choice" are choice-only; text_short family → "short_answer".
+# SLOT_PRESENTATION_MODE is a FALLBACK used only when answer_format_hint is
+# absent/unknown.  It must NOT override an explicit answer_format_hint.
+# Derived from slots whose compatible set is exclusively single_choice.
 SLOT_PRESENTATION_MODE: dict[str, str] = {
     slot: "single_choice"
     for slot, compat in SLOT_COMPATIBLE_FAMILIES.items()
@@ -79,10 +99,15 @@ SLOT_PRESENTATION_MODE.update(
         if compat <= {"text_short", "short_answer"}
     }
 )
+# Note: quadratic_vertex_form_properties and quadratic_standard_to_vertex_properties
+# are intentionally NOT in SLOT_PRESENTATION_MODE because they support multiple formats.
 
 
 def get_slot_primary_presentation_mode(slot: str) -> str:
-    """Return the authoritative presentation mode for a registered slot, or ''."""
+    """Return the fallback presentation mode for a registered slot, or ''.
+
+    This is used ONLY when answer_format_hint is absent.
+    """
     return SLOT_PRESENTATION_MODE.get(str(slot or "").strip(), "")
 
 _QUADRATIC_GRAPH_TARGET_TASKS = frozenset(
@@ -99,6 +124,8 @@ _QUADRATIC_GRAPH_TARGET_TASKS = frozenset(
         "identify_quadratic_graph_shape",
         "compute_quadratic_vertex",
         "compute_quadratic_axis_of_symmetry",
+        "quadratic_vertex_or_parameter_computation",
+        "quadratic_vertex_form_translation_to_new_function",
     }
 )
 
@@ -118,10 +145,36 @@ def _is_quadratic_graph_spec(problem_type_spec: dict[str, Any]) -> bool:
 def _resolve_quadratic_graph_slot(problem_type_spec: dict[str, Any]) -> str:
     target_task = str(problem_type_spec.get("target_task", "")).strip()
     pt = str(problem_type_spec.get("problem_type_id", "")).strip().lower()
+    ac = get_answer_contract(problem_type_spec)
+    answer_type = str(ac.get("answer_type", "")).strip()
+    presentation_mode = str(ac.get("presentation_mode", "")).strip()
+    checker = str(ac.get("checker") or ac.get("checker_key") or "").strip()
+
+    if target_task == "compute_quadratic_vertex":
+        if (
+            presentation_mode == "short_answer"
+            or answer_type in {"integer", "numeric", "rational"}
+            or checker in {"integer_checker", "rational_checker", "numeric_checker"}
+            or pt.startswith("integer_")
+            or pt.startswith("rational_")
+        ):
+            return "quadratic_vertex_extremum_rational"
+
+    if target_task == "quadratic_vertex_or_parameter_computation":
+        if (
+            presentation_mode == "short_answer"
+            or answer_type in {"integer", "numeric", "rational"}
+            or checker in {"integer_checker", "rational_checker", "numeric_checker"}
+            or pt.startswith("integer_")
+            or pt.startswith("rational_")
+        ):
+            return "quadratic_vertex_or_parameter_computation"
 
     # Precise mapping via TASK_FAMILY_TO_SLOT for formal presentation problem_type_ids.
     if target_task in TASK_FAMILY_TO_SLOT:
-        return TASK_FAMILY_TO_SLOT[target_task]
+        mapped = TASK_FAMILY_TO_SLOT[target_task]
+        if _slot_compatible_with_contract(mapped, problem_type_spec):
+            return mapped
 
     # Bridge-primary: if this pt is a semantic bridge primary, derive slot from
     # answer_contract rather than defaulting to choice slot.
@@ -143,6 +196,10 @@ def _resolve_quadratic_graph_slot(problem_type_spec: dict[str, Any]) -> str:
         return "quadratic_graph_translation_short_answer"
     if "standard_to_vertex" in pt:
         return "quadratic_standard_to_vertex_properties"
+    if "vertex_or_parameter_computation" in pt or "parameter_computation" in pt:
+        return "quadratic_vertex_or_parameter_computation"
+    if "translation_to_new_function" in pt or "new_function" in pt:
+        return "quadratic_vertex_form_translation_to_new_function"
     if "vertex_form" in pt:
         return "quadratic_vertex_form_properties"
     if "translation" in pt:

@@ -34,7 +34,7 @@ _CHECKER_MAP = {
     "single_choice": ("choice_label_checker", "choice_label"),
     "short_answer": ("text_checker", "exact_string"),
     "multi_choice": ("choice_label_checker", "choice_label"),
-    "numeric": ("integer_checker", "numeric_exact"),
+    "numeric": ("numeric_checker", "numeric_exact"),
     "fraction": ("fraction_checker", "rational_equivalent"),
     "expression": ("expression_equivalence_checker", "algebraic_equivalent"),
     "ordered_pair": ("coordinate_pair_checker", "coordinate_pair_equivalence"),

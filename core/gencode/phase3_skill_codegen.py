@@ -6,18 +6,16 @@ from core.gencode.problem_type_spec import list_problem_types_for_skill
 from core.gencode.spec_phase1_merge import spec_to_answer_contract_proposal, slot_generator_readiness
 
 
+from core.gencode.pipeline_state import GENCODE_REPORT_DIR, read_json, sanitize_path_segment
+
+
 def _phase1_induced_specs(skill_id: str, phase2_usable: list[dict[str, Any]]) -> list[dict[str, Any]]:
-    import json
-    from pathlib import Path
-
-    REPORT_DIR = Path("reports/gencode_closed_loop")
-
     induced_file = list_problem_types_for_skill(skill_id, prefer="induced")
     if induced_file:
         return induced_file
-    path = REPORT_DIR / f"{skill_id}_phase1_summary.json"
+    path = GENCODE_REPORT_DIR / f"{sanitize_path_segment(skill_id)}_phase1_summary.json"
     if path.exists():
-        data = json.loads(path.read_text(encoding="utf-8"))
+        data = read_json(path)
         auto = data.get("auto_review_summary") if isinstance(data.get("auto_review_summary"), dict) else {}
         induced = auto.get("induced_problem_type_specs") or data.get("induced_problem_type_specs")
         if isinstance(induced, list) and induced:
@@ -38,6 +36,11 @@ def build_generator_specs_for_phase3(skill_id: str, phase2_usable: list[dict[str
     from core.gencode.problem_type_canonicalizer import (
         enrich_spec_with_canonicalization,
         evaluate_typed_prefix_readiness,
+    )
+    from core.gencode.answer_format_hint import (
+        HINT_INTEGER,
+        HINT_RATIONAL,
+        answer_contract_from_hint,
     )
 
     specs = _phase1_induced_specs(skill_id, phase2_usable)
@@ -60,16 +63,32 @@ def build_generator_specs_for_phase3(skill_id: str, phase2_usable: list[dict[str
     specs_out: list[dict[str, Any]] = []
     keys: list[str] = []
     for spec in specs:
-        pt = str(spec.get("problem_type_id", "")).strip()
-        if not pt:
+        original_pt = str(spec.get("problem_type_id", "")).strip()
+        if not original_pt:
             continue
         # Canonicalize spec to get correct answer_contract (not re-derived from prefix)
         enriched = enrich_spec_with_canonicalization(spec)
+        pt = str(enriched.get("problem_type_id") or original_pt).strip()
+        if original_pt.startswith("integer_"):
+            pt = original_pt
+            enriched = dict(enriched)
+            enriched["problem_type_id"] = original_pt
+        elif original_pt.startswith("rational_"):
+            pt = original_pt
+            enriched = dict(enriched)
+            enriched["problem_type_id"] = original_pt
         canonical_ac = enriched.get("answer_contract") if isinstance(enriched.get("answer_contract"), dict) else {}
+        if original_pt.startswith("integer_"):
+            canonical_ac = answer_contract_from_hint(HINT_INTEGER, existing_ac=canonical_ac)
+            enriched["answer_contract"] = canonical_ac
+            enriched["answer_format_hint"] = HINT_INTEGER
+        elif original_pt.startswith("rational_"):
+            canonical_ac = answer_contract_from_hint(HINT_RATIONAL, existing_ac=canonical_ac)
+            enriched["answer_contract"] = canonical_ac
+            enriched["answer_format_hint"] = HINT_RATIONAL
         resolved_slot = enriched.get("_resolved_template_slot", "") or str(
             (spec.get("generator_contract") or {}).get("template_slots", {}).get("stem", "")
         ).strip()
-        # Prefer canonical over legacy spec_to_answer_contract_proposal
         checker_key = str(canonical_ac.get("checker_key") or canonical_ac.get("checker") or "").strip()
         equivalence_type = str(canonical_ac.get("equivalence_type") or canonical_ac.get("answer_equivalence") or "").strip()
         answer_type = str(canonical_ac.get("answer_type", "")).strip()
@@ -83,7 +102,7 @@ def build_generator_specs_for_phase3(skill_id: str, phase2_usable: list[dict[str
             readiness_fallback = slot_generator_readiness(enriched)
             if readiness_fallback in {"runtime_ready", "runtime_ready_with_warning"}:
                 readiness = readiness_fallback
-        g2 = phase2_by_pt.get(pt, {})
+        g2 = phase2_by_pt.get(pt, phase2_by_pt.get(original_pt, {}))
         row: dict[str, Any] = {
             "problem_type_id": pt,
             "checker_key": checker_key,

@@ -90,6 +90,37 @@ def check(user_answer, correct_answer, question_payload=None):
 - **ProblemTypeSpec**（`problem_types.yaml` / induced JSON）仍是數學語意與 Contract 的唯一權威來源。
 - **skills/{skill_id}.py** 僅為 Runtime 索引外殼；規格變更必須先走 Phase 1/2/2.5，再經 Phase 3 重新序列化外殼，禁止直接編輯外殼以「修題」。
 
+### 1.5.6 防胖防禦線：Layer 6 獨立 Domain 隔離原則（Anti-Bloat Defense）
+
+為了通吃 K7–K12 所有複雜數學題型，且防止全域調度器（`runtime_skill_wrapper.py`、`slot_generators.py`、`template_slot_resolver.py`）無限膨脹，本節剛性規定 **Layer 6 執行期** 的 Domain 職責隔離邊界：
+
+#### 1.5.6.1 全域調度器職責上限
+
+全域調度器**僅負責**：
+1. YAML / ProblemTypeSpec 解析與 Contract Token 讀取。
+2. `TASK_FAMILY_TO_SLOT` → `SLOT_REGISTRY` 函式分流與 payload 組裝委託。
+3. `validate_generator_payload()` 與 Thin Facade 回傳封裝。
+
+全域調度器**嚴禁**寫入任何實體數學公式、文字特例、情境池分支或 SymPy 運算邏輯。
+
+#### 1.5.6.2 具名全域 Domain 模組（Domain Functions）
+
+所有實體特殊邏輯**必須**依 Domain 職責完全抽離至下列具名全域模組；`SLOT_REGISTRY` 內的插槽處理函數僅能**委託**這些模組，不得內嵌實作：
+
+| Domain | 模組範例 | 職責 |
+|--------|---------|------|
+| **核心算力域（Math Domain）** | `combinatorics_evaluator.py` | 排列組合計數、階乘、組合數等離散數學算力 |
+| | `symbolic_expression_engine.py` | SymPy 符號運算、代數展開化簡、等價判定 |
+| **插槽約束求解域（Constraint Domain）** | `random_slot_solver.py` | 解析 `variable_constraints`，自動求解合理參數，消除無解怪題 |
+| **情境與文本樣板域（Template Domain）** | `scenario_pool_manager.py` | 情境多樣性文本管理、題幹組裝、靈魂 Token 黏貼與答案範例尾綴 |
+
+#### 1.5.6.3 違規判定
+
+下列情形視為 **Global Engine Bloat（全域引擎膨脹污染）**，Quality Gate 必須標記 `BLOCKED`：
+1. 在 `slot_generators.py` 或 `runtime_skill_wrapper.py` 內直接撰寫超過 20 行之實體數學邏輯。
+2. 以 `skill_id` 或 `problem_type_id` 為條件，在全域調度器內寫死 `if/elif` 特例分支。
+3. 新建插槽處理函數卻未委託至上述 Domain 模組，而是將數學與文本邏輯堆疊於調度器本體。
+
 ---
 
 ## 2. 核心 YAML Schema 設計
@@ -119,14 +150,35 @@ skill_id: vh_數學B1_AbsoluteValue       # 所屬主技能 ID
 display_name: 絕對值幾何意義            # 前台子技能顯示名稱
 learning_goal: 理解絕對值為數線上點到原點的距離
 prerequisite_subskills: []              # 前置子技能 ID 列表
-diagnosis_tags: [concept_distance]      # 診斷用標記
+diagnosis_tags: [concept_distance]      # 診斷用標記；排列組合單元須含四大經典 tag（見總體設計 §3.6）
 related_problem_types:                  # 關聯題型列表
   - absolute_value_numeric_evaluation
 runtime_status: runtime_ready           # runtime_ready | pending | disabled
 ```
 
+**排列組合／機率單元 `diagnosis_tags` 強制範例**（見總體設計 §3.6；觸發條件：`skill_id` 含「排列」「組合」「機率」語意關鍵字）：
+
+```yaml
+subskill_id: permutation_combination_basic
+skill_id: vh_數學B1_Permutations
+display_name: 排列與組合
+learning_goal: 區分排列與組合，正確計數並求機率
+diagnosis_tags:                         # 四大經典錯誤標籤 — RAG 補救唯一特徵鍵
+  - p_c_confusion
+  - sample_space_error
+  - double_counting
+  - denominator_error
+related_problem_types:
+  - permutation_count_basic
+  - combination_count_basic
+  - probability_fraction_basic
+runtime_status: runtime_ready
+```
+
 ### 2.3 ProblemTypeSpec (problem_types.yaml)
 題型規格，是 Gencode Pipeline 生成程式的唯一權威輸入。
+
+**一般數值題範例**：
 ```yaml
 problem_type_id: absolute_value_numeric_evaluation
 skill_id: vh_數學B1_AbsoluteValue
@@ -142,6 +194,7 @@ answer_contract:                        # 答案判定契約，參閱 AnswerCont
   equivalence_type: numeric_exact
   checker_key: numeric_checker
 semantic_contract:                      # 語意與變數約束契約
+  required_concepts: [絕對值]
   variable_constraints:
     x: { type: integer, range: [-50, 50], exclude: [0] }
 generator_contract:                     # 生成器調用契約
@@ -153,6 +206,41 @@ validator_contract:                     # 驗證器要求
 source_examples: [ex_101, ex_102]       # 支撐的教材 core example IDs
 source_bank_refs: [ex_103]              # 僅進題庫原題的 example IDs
 readiness: runtime_ready                # runtime_ready | pending_template | blocked
+status: active
+```
+
+**排列組合／機率單元範例**（`skill_id` 含語意關鍵字時**必須**含 `hint_contract`）：
+```yaml
+problem_type_id: permutation_count_basic
+skill_id: vh_數學B1_Combinatorics
+subskill_id: permutation_combination_basic
+display_name: 排列數計算
+runtime_category: deterministic_numeric
+answer_type: integer
+stem_contract:
+  require_latex: true
+  keywords_required: [排列]
+answer_contract:
+  answer_type: integer
+  equivalence_type: numeric_exact
+  checker_key: integer_checker
+semantic_contract:
+  required_concepts: [排列, 組合, 階乘]
+  variable_constraints:
+    n: { type: integer, range: [3, 12] }
+    r: { type: integer, range: [1, 5] }
+hint_contract:                          # 語意判定屬排列/組合/機率時剛性必填
+  hint_levels: 3
+  forbid_final_answer: true
+  concept_source: semantic_contract.required_concepts
+generator_contract:
+  generator_key: perm_count_v1
+  function_name: generate
+validator_contract:
+  sample_count: 30
+  correct_rate_threshold: 1.0
+source_examples: [ex_201, ex_202]
+readiness: runtime_ready
 status: active
 ```
 
@@ -184,6 +272,51 @@ answer_contract_ref:                     # 關聯的答案判定細節
   checker_key: numeric_checker
 auto_checkable: true
 ```
+
+---
+
+## 2.5 教學提示與核心概念三層階梯架構（Hint Scheme）
+
+本節為 v0.3.2 增量法規。當單元經**語意關鍵字判定**（`skill_id` 含「排列」「組合」「機率」）屬於排列、組合、機率範疇時，規格包內 `problem_types.yaml` **必須剛性包含** `hint_contract`，落實「L1 概念喚醒 → L2 方法提示 → L3 結構提示」階梯，且強制標記 `forbid_final_answer: true`。
+
+### 2.5.1 法規定位
+
+- `hint_contract` 與 `answer_contract` **分離**：Hint 僅引導思考方向，**不得**洩漏最終答案或可直接代入求解之完整算式。
+- Hint 文本**必須**由 `semantic_contract.required_concepts` 驅動，限制產出引導方向之文本，**嚴禁** AI 直接給解答（❌ 直接給最終答案）。
+- 非排列/組合/機率單元：`hint_contract` 為選配；排列/組合/機率單元：**剛性必填**。
+
+### 2.5.2 三層階梯定義
+
+| 層級 | 欄位鍵 | 職責 | 允許內容 | 禁止內容 |
+|------|--------|------|---------|---------|
+| L1 | `concept_nudge` | 概念喚醒 | 點出本題核心概念（如「此題涉及排列還是組合？」） | 最終數值、完整公式、逐步代入 |
+| L2 | `method_hint` | 方法提示 | 建議解題策略（如「先定義樣本空間，再計數」） | 最終答案、可直接抄寫之算式 |
+| L3 | `structure_hint` | 結構提示 | 提示算式骨架（如「使用 $P^n_r$ 或 $C^n_r$」） | 代入後可直接得出之結果 |
+
+### 2.5.3 hint_contract Schema
+
+```yaml
+hint_contract:
+  hint_levels: 3
+  forbid_final_answer: true              # 剛性：任何層級均不得含最終答案
+  concept_source: semantic_contract.required_concepts
+  level_1_concept_nudge:
+    max_chars: 80
+    must_reference_concepts: true
+  level_2_method_hint:
+    max_chars: 120
+    must_reference_concepts: true
+  level_3_structure_hint:
+    max_chars: 150
+    allow_formula_skeleton: true         # 允許符號骨架，禁止代入求值
+  runtime_delegate: runtime_skill_wrapper  # Hint 請求由全域調度器委託產出
+```
+
+### 2.5.4 執行期委託規則
+
+1. 學生請求 Hint 時，`runtime_skill_wrapper.py` 讀取 `hint_contract` 與當前 `required_concepts`，依已請求層級遞進產出 L1→L2→L3。
+2. AI 僅可於 Template Domain（`scenario_pool_manager.py`）建議引導用語；最終 Hint 須經 `forbid_final_answer` 守衛過濾後方可回傳前台。
+3. 違反 `forbid_final_answer` 之 Hint 視為 **Hint Leakage（提示洩題）**，Quality Gate 標記 `BLOCKED`。
 
 ---
 
@@ -247,6 +380,8 @@ registry:
 | 2026-05-25 | v0.1 | 首版規格包 schema 定義 | Codex |
 | 2026-05-31 | v0.2 | 重整 v0.2，將流程性內容（Phase 3、Web Runtime、Quality Gate）移至總體設計，精簡 Schema 欄位，增加 source_item_status 與 non-destructive merge 細則，確保 100% 乾淨 UTF-8 | Antigravity |
 | 2026-06-01 | v0.3 | 增量新增 §1.5 薄入口外殼方案；完整保留 v0.2 Schema；焊入 Thin Facade 與全域調度器委託法規 | 首席系統架構師 |
+| 2026-06-13 | v0.3.1 | 增量新增 §1.5.6 防胖防禦線（Layer 6 Domain 隔離原則）；明訂 Math / Constraint / Template 三域具名模組 | 首席系統架構師 |
+| 2026-06-13 | v0.3.2 | 洗淨版：清除 `tvet_mathB_` 佔位符；YAML 範例改為 `vh_數學B1_Permutations`/`Combinatorics`；§2.5 Hint 改為語意關鍵字驅動剛性必填 | 首席系統架構師 |
 
 *本文件職責：定義 AgentSkillV2 所有核心規格檔（YAML）與 Registry Entry 的 Schema 結構，以及 Phase 3 技能薄外殼之職責邊界。*
 *不負責事項：不定義具體的運行流程（Phase）與等價判定 checker 的比對邏輯。*

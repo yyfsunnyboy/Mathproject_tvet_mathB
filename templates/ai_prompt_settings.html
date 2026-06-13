@@ -240,7 +240,7 @@
 
     <script>
         let currentMode = "cloud";
-        let currentCloudModel = "gemini-3.1-flash-lite-preview";
+        let currentCloudModel = "gemini-3.5-flash";
         let modelMappingCache = {};
         let promptTemplatesCache = [];
         let googleModelOptions = {{ google_model_options|tojson }};
@@ -254,9 +254,23 @@
         ];
 
         window.addEventListener("DOMContentLoaded", () => {
+            ensureCloudModelOption();
             loadSettings();
             loadPromptTemplateList();
         });
+
+        function ensureCloudModelOption() {
+            const modelId = "gemini-3.5-flash";
+            const cloudModelSelect = document.getElementById("cloud-model-select");
+            if (!cloudModelSelect) return;
+            if ([...cloudModelSelect.options].some(option => option.value === modelId)) return;
+
+            const option = document.createElement("option");
+            option.value = modelId;
+            option.textContent = "Gemini 3.5 Flash";
+            option.title = "default_cloud / hybrid_preview / rag_tutor / structured_output / complex_reasoning";
+            cloudModelSelect.insertBefore(option, cloudModelSelect.firstChild);
+        }
 
         function showAlert(msg, isSuccess) {
             const c = document.getElementById("alert-container");
@@ -485,7 +499,7 @@
 
         function generateLocalPreview(mode, availableModels) {
             const roles = {};
-            const selectedCloud = document.getElementById("cloud-model-select")?.value || currentCloudModel || "gemini-3.1-flash-lite-preview";
+            const selectedCloud = document.getElementById("cloud-model-select")?.value || currentCloudModel || "gemini-3.5-flash";
             const g = availableModels.find(m => (m.key || "") === selectedCloud)?.key || selectedCloud;
             const qVl = availableModels.find(m => (m.key || "").includes("qwen3-vl-8b"))?.key || "qwen3-vl-8b";
             const q8b = availableModels.find(m => (m.key || "").includes("qwen3-8b") && !(m.key || "").includes("vl"))?.key || "qwen3-8b";
@@ -591,9 +605,10 @@
                     if (!data.success) return showAlert("設定讀取失敗", false);
                     window._availModels = data.available_models || [];
                     googleModelOptions = data.google_model_options || googleModelOptions || [];
-                    const cloudModel = data.cloud_model || "gemini-3.1-flash-lite-preview";
+                    const cloudModel = data.cloud_model || "gemini-3.5-flash";
                     currentCloudModel = cloudModel;
                     const cloudModelSelect = document.getElementById("cloud-model-select");
+                    ensureCloudModelOption();
                     if (cloudModelSelect) cloudModelSelect.value = cloudModel;
                     document.getElementById("prompt-editor").value = data.prompt || "";
                     currentMode = data.ai_mode || "cloud";

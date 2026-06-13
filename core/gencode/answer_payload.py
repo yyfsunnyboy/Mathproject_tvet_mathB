@@ -11,6 +11,7 @@ SOLUTION_SET_TYPES = frozenset({"set", "solution_set", "integer_set", "number_se
 INTERVAL_TYPES = frozenset({"interval", "union_of_intervals", "interval_set"})
 CLASSIFICATION_TYPES = frozenset({"classification", "quadrant_label", "text_label", "category"})
 NUMERIC_TYPES = frozenset({"numeric", "integer", "decimal", "number"})
+RATIONAL_TYPES = frozenset({"fraction", "rational", "rational_fraction"})
 RADICAL_TYPES = frozenset({"numeric_or_radical", "math_expression", "radical_number", "expression"})
 CHOICE_TYPES = frozenset({"single_choice", "multi_choice", "choice", "choice_label"})
 COORDINATE_PAIR_TYPES = frozenset({"coordinate_pair", "ordered_pair"})
@@ -28,6 +29,8 @@ ANSWER_TYPE_ALIASES: dict[str, str] = {
     "category": "classification",
     "math_expression": "numeric_or_radical",
     "radical_number": "numeric_or_radical",
+    "rational": "fraction",
+    "rational_fraction": "fraction",
     "choice": "single_choice",
     "choice_label": "single_choice",
     "ordered_pair": "coordinate_pair",
@@ -44,6 +47,8 @@ VALID_ANSWER_TYPES = frozenset(
         "multi_choice",
         "numeric",
         "fraction",
+        "rational",
+        "rational_fraction",
         "expression",
         "set",
         "solution_set",
@@ -57,6 +62,7 @@ VALID_ANSWER_TYPES = frozenset(
     | INTERVAL_TYPES
     | CLASSIFICATION_TYPES
     | NUMERIC_TYPES
+    | RATIONAL_TYPES
     | RADICAL_TYPES
     | CHOICE_TYPES
     | COORDINATE_PAIR_TYPES
@@ -292,6 +298,44 @@ def _element_to_number(value: Any) -> int | float | None:
         return None
 
 
+def parse_rational_literal(value: Any) -> Fraction | None:
+    """Parse JSON-safe rational literals without eval.
+
+    Accepted examples: Fraction(3, 2), 5, "5", "-9/8", " 3 / 2 ", "+7/4".
+    Floats are accepted only when they are exact integers.
+    """
+    if isinstance(value, bool) or value is None:
+        return None
+    if isinstance(value, Fraction):
+        return value
+    if isinstance(value, int):
+        return Fraction(value, 1)
+    if isinstance(value, float):
+        return Fraction(int(value), 1) if value.is_integer() else None
+    if not isinstance(value, str):
+        return None
+    text = value.strip()
+    if not text:
+        return None
+    int_pat = r"[+-]?\d+"
+    if re.fullmatch(int_pat, text):
+        return Fraction(int(text), 1)
+    if "/" in text:
+        m = re.fullmatch(rf"\s*({int_pat})\s*/\s*({int_pat})\s*", text)
+        if not m:
+            return None
+        numerator = int(m.group(1))
+        denominator = int(m.group(2))
+        if denominator == 0:
+            return None
+        return Fraction(numerator, denominator)
+    return None
+
+
+def is_valid_rational_literal(value: Any) -> bool:
+    return parse_rational_literal(value) is not None
+
+
 def normalize_solution_set_value(value: Any) -> list[int | float]:
     """Canonical list form for solution_set correct_answer (JSON-safe, sorted)."""
     from core.checkers.solution_set_checker import parse_solution_set_answer
@@ -354,11 +398,7 @@ def is_valid_answer_payload(value: Any, answer_contract: dict[str, Any]) -> tupl
             return True, ""
         return bool(re.search(r"[0-9a-zA-Z+\-*/^=()\\]", text)), "expression_invalid"
     if family == "fraction":
-        try:
-            Fraction(str(value).strip())
-            return True, ""
-        except Exception:
-            return False, "fraction_invalid"
+        return is_valid_rational_literal(value), "fraction_invalid"
     if family == "coordinate_pair":
         from core.checkers.coordinate_pair_checker import parse_coordinate_pair_answer
 
@@ -379,7 +419,7 @@ def expected_answer_shape_hint(answer_contract: dict[str, Any]) -> str:
         "single_choice": "single_choice allows A/B/C/D or choice label text",
         "numeric": "numeric allows int/float/numeric string",
         "numeric_or_radical": "numeric_or_radical allows int/float/expression string",
-        "fraction": "fraction allows fraction string or numeric",
+        "fraction": "rational/fraction allows Fraction, int, integer string, or a/b string",
         "short_answer": "short_answer allows non-empty string",
         "coordinate_pair": "coordinate_pair allows (x,y) string or equivalent formats",
     }

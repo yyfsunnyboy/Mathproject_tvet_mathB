@@ -1,0 +1,17 @@
+items:
+  -
+    subskill_id: "quadratic_graph_translation_fill_blank"
+    prerequisite_subskills:
+      - "absolute_value_numeric_evaluation"
+  -
+    subskill_id: "quadratic_vertex_form_properties"
+    prerequisite_subskills:
+      - "absolute_value_numeric_evaluation"
+  -
+    subskill_id: "quadratic_vertex_form_translation_to_new_function"
+    prerequisite_subskills:
+      - "absolute_value_numeric_evaluation"
+  -
+    subskill_id: "quadratic_vertex_or_parameter_computation"
+    prerequisite_subskills:
+      - "absolute_value_numeric_evaluation"

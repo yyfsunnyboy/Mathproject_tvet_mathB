@@ -9,6 +9,9 @@ from core.gencode.answer_contract_policy import (
     checker_selection_reason,
     infer_answer_contract_from_problem_context,
     is_coordinate_pair_semantic,
+    is_quadratic_rational_scalar_semantic,
+    _answers_suggest_rational,
+    _answers_suggest_numeric_only,
     presentation_mode_for_features,
 )
 from core.gencode.checker_registry import validate_answer_contract_capability
@@ -226,6 +229,12 @@ def _slugify_problem_type_id(
 
 def _canonical_problem_type_base(answer_type: str, target_task: str, presentation_mode: str = "") -> str:
     task = str(target_task or "").strip()
+    if is_quadratic_rational_scalar_semantic(target_task=task) and str(presentation_mode or "").strip() != "single_choice":
+        if str(answer_type or "").strip() == "rational":
+            return f"rational_{task}"
+        if str(answer_type or "").strip() == "integer":
+            return f"integer_{task}"
+        return task
     if task in {"compute_midpoint_coordinates", "compute_centroid_coordinates"}:
         mode = str(presentation_mode or "").strip()
         if mode in {"single_choice", "short_answer"}:
@@ -239,7 +248,53 @@ def _canonical_problem_type_base(answer_type: str, target_task: str, presentatio
     return ""
 
 
+def _strip_value_prefix_for_semantic_problem_type(
+    problem_type_id: str,
+    *,
+    target_task: str = "",
+    presentation_mode: str = "",
+    math_objects: list[str] | None = None,
+) -> str:
+    pt = str(problem_type_id or "").strip()
+    if pt.startswith(("integer_", "rational_")):
+        return pt
+    task = str(target_task or "").strip()
+    mode = str(presentation_mode or "").strip()
+    value_prefixes = ("integer_", "numeric_", "rational_")
+    base = pt
+    for prefix in value_prefixes:
+        if base.startswith(prefix):
+            base = base[len(prefix):]
+            break
+    if base == pt:
+        return pt
+    if is_quadratic_rational_scalar_semantic(
+        problem_type_id=base,
+        target_task=task,
+        math_objects=math_objects,
+    ):
+        return base
+    if mode == "single_choice" and (
+        task == "quadratic_graph_vertex_axis_choice"
+        or base == "quadratic_graph_vertex_axis_choice"
+    ):
+        return base
+    return pt
+
+
 def _infer_template_slot(answer_type: str, target_task: str, math_objects: list[str]) -> str:
+    if target_task == "quadratic_vertex_form_translation_to_new_function":
+        return "quadratic_vertex_form_translation_to_new_function"
+    if target_task == "compute_quadratic_vertex":
+        return "quadratic_vertex_extremum_rational"
+    if target_task == "quadratic_vertex_or_parameter_computation":
+        return "quadratic_vertex_or_parameter_computation"
+    if target_task == "quadratic_graph_translation_fill_blank":
+        return "quadratic_graph_translation_fill_blank"
+    if target_task == "quadratic_vertex_form_properties":
+        return "quadratic_vertex_form_properties"
+    if target_task == "quadratic_standard_to_vertex_properties":
+        return "quadratic_standard_to_vertex_properties"
     if target_task == "interpret_function_notation":
         if answer_type == "single_choice":
             return "linear_function_two_point_choice"
@@ -334,6 +389,13 @@ def _build_problem_type_spec_draft(skill_id: str, cluster: dict[str, Any], exist
         has_fallback = True
     if has_fallback:
         pt_id = pt_id if len(proxy_ids) == 1 else f"{answer_type}_{resolved_target_task}_fallback_application"
+
+    pt_id = _strip_value_prefix_for_semantic_problem_type(
+        pt_id,
+        target_task=resolved_target_task,
+        presentation_mode=presentation_mode,
+        math_objects=math_union,
+    )
         
     suffix = 2
     original = pt_id
@@ -367,6 +429,74 @@ def _build_problem_type_spec_draft(skill_id: str, cluster: dict[str, Any], exist
         math_objects=math_union,
     )
     legacy = legacy_fields_from_answer_contract(ac)
+    checker_key = str(legacy.get("checker_key", ac.get("checker_key", ac.get("checker", "")))).strip()
+    cluster_has_rational_answers = _answers_suggest_rational(features)
+    cluster_has_integer_only_answers = _answers_suggest_numeric_only(features)
+    if resolved_target_task in {"compute_quadratic_vertex", "quadratic_vertex_or_parameter_computation"}:
+        if cluster_has_rational_answers and not str(pt_id or "").startswith("rational_"):
+            pt_id = f"rational_{resolved_target_task}"
+        elif (
+            checker_key == "integer_checker"
+            and cluster_has_integer_only_answers
+            and not cluster_has_rational_answers
+            and not str(pt_id or "").startswith("integer_")
+        ):
+            pt_id = f"integer_{resolved_target_task}"
+
+    # ── Infer answer_format_hint from Phase 1 cluster evidence ───────────────
+    from core.gencode.answer_format_hint import (
+        HINT_UNKNOWN,
+        HINT_CHOICE,
+        HINT_RATIONAL,
+        infer_answer_format_hint,
+        infer_answer_format_hint_from_answers,
+        _HINT_TO_CONTRACT,
+    )
+    # Priority: source_has_choices flag → answer text samples → answer_type
+    has_choices_in_cluster = any(
+        f.get("has_choices") for f in features if isinstance(f, dict)
+    )
+    if has_choices_in_cluster:
+        inferred_hint = HINT_CHOICE
+    else:
+        sample_answers: list[str] = [
+            str(f.get("answer") or f.get("source_answer") or "").strip()
+            for f in features if isinstance(f, dict)
+            if str(f.get("answer") or f.get("source_answer") or "").strip()
+        ]
+        if cluster_has_rational_answers and resolved_target_task in {
+            "compute_quadratic_vertex",
+            "quadratic_vertex_or_parameter_computation",
+        }:
+            inferred_hint = HINT_RATIONAL
+        elif is_quadratic_rational_scalar_semantic(
+            problem_type_id=pt_id,
+            target_task=resolved_target_task,
+            task_family=task_family,
+            math_objects=math_union,
+        ) and not str(pt_id or "").strip().lower().startswith(("integer_", "rational_")):
+            inferred_hint = HINT_RATIONAL
+        elif str(pt_id or "").strip().lower().startswith("rational_"):
+            inferred_hint = HINT_RATIONAL
+        elif str(pt_id or "").strip().lower().startswith("integer_"):
+            from core.gencode.answer_format_hint import HINT_INTEGER
+
+            inferred_hint = HINT_INTEGER
+        else:
+            inferred_hint = infer_answer_format_hint_from_answers(sample_answers) if sample_answers \
+                else infer_answer_format_hint({"answer_contract": ac})
+    # Set answer_format_hint on ac so enrich_spec_with_canonicalization can use it
+    if inferred_hint and inferred_hint != HINT_UNKNOWN:
+        ac["source_has_choices"] = has_choices_in_cluster
+        hint_template = _HINT_TO_CONTRACT.get(inferred_hint, {})
+        if "answer_fields" in hint_template:
+            ac["answer_fields"] = hint_template["answer_fields"]
+        if "answer_separator" in hint_template:
+            ac["answer_separator"] = hint_template["answer_separator"]
+    elif has_choices_in_cluster:
+        ac["source_has_choices"] = True
+        inferred_hint = HINT_CHOICE
+    # ─────────────────────────────────────────────────────────────────────────
     display_key = (answer_type, tasks[0] if tasks else target_task)
     display_name = _DISPLAY_NAME.get(display_key, f"{answer_type} / {target_task}")
 
@@ -401,6 +531,9 @@ def _build_problem_type_spec_draft(skill_id: str, cluster: dict[str, Any], exist
         "target_task": resolved_target_task,
         "task_family": task_family,
         "display_name": display_name,
+        "answer_format_hint": inferred_hint if inferred_hint != HINT_UNKNOWN else None,
+        "answer_fields": ac.get("answer_fields") or None,
+        "answer_separator": ac.get("answer_separator") or None,
         "source_example_ids": sorted(
             {int(f.get("source_example_id")) for f in features if isinstance(f.get("source_example_id"), int)}
         ),
@@ -512,6 +645,39 @@ def _canonicalize_induction_clusters(clusters: list[dict[str, Any]]) -> list[dic
         existing["merge_reason"] = "merged_by_canonical_contract"
         existing["signature"] = ("canonical_contract_merge", key[0], key[1], key[2])
     return [merged_by_key[k] for k in ordered_keys]
+
+
+def _synthesize_orphan_problem_type_id(feat: dict[str, Any]) -> str:
+    """Assign a deterministic problem_type_id for examples excluded from clustering."""
+    if not isinstance(feat, dict):
+        return ""
+    target = str(feat.get("target_task", "")).strip()
+    sem = feat.get("semantic_classification") if isinstance(feat.get("semantic_classification"), dict) else {}
+    if not target or target in {"unknown", "needs_review", "same_as_main_skill"}:
+        target = str(sem.get("final_target_task", "")).strip() or target
+    if not target or target in {"unknown", "needs_review", "same_as_main_skill"}:
+        return ""
+    ans_type = _cluster_answer_type_key(feat)
+    presentation = _presentation_mode_for_feature(feat)
+    math_objs = list(feat.get("math_objects", []) or [])
+    primary_math = _primary_math_objects(math_objs)
+    canonical = _canonical_problem_type_base(ans_type, target, presentation_mode=presentation)
+    pt_id = canonical or _slugify_problem_type_id(
+        ans_type,
+        target,
+        primary_math,
+        presentation_mode=presentation if presentation != ans_type else "",
+    )
+    if str(ac_checker := str(feat.get("checker_key", feat.get("checker", ""))).strip()) == "integer_checker":
+        if not pt_id.startswith("integer_") and not _answers_suggest_rational([feat]):
+            pt_id = f"integer_{target}"
+    elif _answers_suggest_rational([feat]) and not pt_id.startswith("rational_"):
+        if is_quadratic_rational_scalar_semantic(target_task=target, math_objects=math_objs):
+            pt_id = f"rational_{target}"
+    elif ans_type == "integer" and not pt_id.startswith("integer_"):
+        if is_quadratic_rational_scalar_semantic(target_task=target, math_objects=math_objs) and not _answers_suggest_rational([feat]):
+            pt_id = f"integer_{target}"
+    return pt_id
 
 
 def merge_unclassified_low_confidence_examples(
@@ -715,6 +881,48 @@ def _spec_in_expected_families(spec: dict[str, Any], expected_families: set[str]
         return True
     fam = str(spec.get("task_family", "")).strip() or task_family_for_task(str(spec.get("target_task", "")))
     return fam in expected_families
+
+
+COMBINATORICS_PROBABILITY_KEYWORDS = ("排列", "組合", "機率")
+COMBINATORICS_PROBABILITY_DIAGNOSIS_TAGS = (
+    "p_c_confusion",
+    "sample_space_error",
+    "double_counting",
+    "denominator_error",
+)
+
+
+def _inject_combinatorics_probability_diagnosis_tags(induced: dict[str, Any], skill_id: str) -> None:
+    """SOP v0.3.2 條款 3.6：語意關鍵字驅動之高職數B四大經典診斷標籤剛性注入。"""
+    sid_str = str(skill_id or "").strip()
+    is_combinatorics_or_prob = any(k in sid_str for k in COMBINATORICS_PROBABILITY_KEYWORDS)
+    if not is_combinatorics_or_prob:
+        return
+
+    diagnosis_tags = list(COMBINATORICS_PROBABILITY_DIAGNOSIS_TAGS)
+
+    # 1. 注入頂層屬性（保持大字典向後相容）
+    induced["diagnosis_tags"] = diagnosis_tags
+
+    # 2. 注入 subskills 子技能明細（不改變 subskills 原本的字串清單結構）
+    if isinstance(induced.get("subskills"), list):
+        induced.setdefault("subskills_detail", [])
+        for sub in induced["subskills"]:
+            sub_id = str(sub).strip()
+            if not sub_id:
+                continue
+            induced["subskills_detail"].append(
+                {
+                    "subskill_id": sub_id,
+                    "diagnosis_tags": diagnosis_tags,
+                }
+            )
+
+    # 3. 注入每題分類候選，為 RAG 補救提供每題特徵
+    if isinstance(induced.get("per_example_classification"), list):
+        for row in induced["per_example_classification"]:
+            if isinstance(row, dict):
+                row["diagnosis_tag_candidates"] = diagnosis_tags
 
 
 def induce_problem_types_from_examples(
@@ -1012,6 +1220,102 @@ def induce_problem_types_from_examples(
 
     # Source Skill Binding Supremacy / ProblemType Bridge §3–§4:
     # If any induced candidate is a bridge primary, expand it to runtime variants.
+    coverage_floor_suggestions: list[dict[str, Any]] = []
+    candidate_ids = {str(c.get("problem_type_id", "")).strip() for c in candidates if isinstance(c, dict)}
+    observed_quadratic_tasks = {
+        str(f.get("target_task", "")).strip()
+        for f in features_for_induction
+        if isinstance(f, dict)
+        and task_family_for_task(str(f.get("target_task", ""))) == "quadratic_function_graph_family"
+    }
+    standard_vertex_evidence = [
+        f for f in features_for_induction
+        if isinstance(f, dict)
+        and task_family_for_task(str(f.get("target_task", ""))) == "quadratic_function_graph_family"
+        and re.search(r"x\}\^\{2\}|x\^2|ax\^2|px\+q|bx\+c", str(f.get("question_text", "")))
+        and ("quadratic_vertex_form" in list(f.get("math_objects") or []) or "頂點" in str(f.get("question_text", "")))
+    ]
+    if (
+        "quadratic_standard_to_vertex_properties" not in candidate_ids
+        and observed_quadratic_tasks
+        and standard_vertex_evidence
+    ):
+        pt = "quadratic_standard_to_vertex_properties"
+        ex_ids = sorted(
+            {
+                int(f.get("source_example_id"))
+                for f in standard_vertex_evidence
+                if isinstance(f.get("source_example_id"), int)
+            }
+        )
+        coverage_floor_suggestions.append(
+            {
+                "problem_type_id": pt,
+                "target_task": pt,
+                "reason": "quadratic_vertex_form_coverage_floor",
+                "suggestion_only": True,
+                "candidate_only": True,
+                "requires_human_action": True,
+                "phase3_include": False,
+                "usable_for_phase3": False,
+                "matched_example_ids": ex_ids,
+                "matched_example_count": len(ex_ids),
+                "notes": "coverage_floor may suggest missing coverage, but source evidence did not classify this problem_type directly",
+            }
+        )
+        spec = {
+            "problem_type_id": pt,
+            "skill_id": skill_id,
+            "display_name": "quadratic / standard to vertex properties",
+            "target_task": pt,
+            "task_family": task_family_for_task(pt),
+            "source_example_ids": ex_ids,
+            "answer_contract": {
+                "answer_type": "single_choice",
+                "answer_shape": "single_choice",
+                "answer_semantics": "choice_label",
+                "answer_equivalence": "choice_label",
+                "equivalence_type": "choice_label",
+                "checker": "choice_label_checker",
+                "checker_key": "choice_label_checker",
+                "presentation_mode": "single_choice",
+                "choices_required": True,
+                "choice_count": 4,
+                "correct_choice_count": 1,
+                "frontend_render_choices": True,
+            },
+            "stem_contract": {
+                "stem_must_not_embed_choices": True,
+                "required_math_objects": ["quadratic_equation"],
+                "allowed_math_objects": ["quadratic_equation", "quadratic_vertex_form", "quadratic_vertex", "quadratic_axis"],
+                "forbidden_patterns": [r"\(A\)", r"\(B\)", r"\(C\)", r"\(D\)"],
+            },
+            "dependency_contract": {
+                "givens_must_be_used": True,
+                "target_answer_must_depend_on_givens": True,
+                "variables_in_conditions_must_appear_in_target": False,
+            },
+            "semantic_contract": {
+                "reasoning_type": ["quadratic_standard_to_vertex_properties"],
+                "required_concepts": ["quadratic_vertex_form"],
+            },
+            "generator_contract": {
+                "template_slots": {"stem": "quadratic_standard_to_vertex_properties"},
+                "template_families": [pt],
+                "derivation_steps_required": True,
+                "avoid_llm_freeform_math": True,
+            },
+            "validator_contract": {"runtime_smoke_count": 30},
+            "grouping_reason": "quadratic_vertex_form_coverage_floor",
+            "feature_signature": ["single_choice", pt],
+            "spec_source": "phase1_induced_draft",
+            "generator_readiness": "runtime_ready",
+            "usable_for_phase3": False,
+            "candidate_only": True,
+            "requires_human_action": True,
+            "phase3_include": False,
+        }
+
     from core.gencode.problem_type_bridge import (
         BRIDGE_MISSING,
         expand_primary_to_runtime_variants,
@@ -1068,6 +1372,10 @@ def induce_problem_types_from_examples(
     for f in features:
         ex_id = f.get("source_example_id")
         pt = cluster_by_ex.get(ex_id, "unknown")
+        if pt == "unknown":
+            synthesized = _synthesize_orphan_problem_type_id(f)
+            if synthesized:
+                pt = synthesized
         sem = f.get("semantic_classification") if isinstance(f.get("semantic_classification"), dict) else {}
         risk_flags = ["stem_embeds_choices"] if f.get("stem_embeds_choices") else []
         if sem.get("classifier_source") == "ai_overrode_rule":
@@ -1283,7 +1591,7 @@ def induce_problem_types_from_examples(
         | {fallback_subskill_id}
     )
 
-    return {
+    induced: dict[str, Any] = {
         "skill_id": skill_id,
         "main_skill_anchor": main_skill_anchor,
         "spec_mode": spec_mode,
@@ -1342,6 +1650,7 @@ def induce_problem_types_from_examples(
         "same_as_main_skill_examples": same_as_main_skill_examples,
         "inherited_from_previous_context_examples": inherited_from_previous_context_examples,
         "low_source_examples": low_source_examples,
+        "coverage_floor_suggestions": coverage_floor_suggestions,
         "candidate_only_problem_types": candidate_only_problem_types,
         "candidate_only_count": len(candidate_only_problem_types),
         "same_as_main_skill_count": len(same_as_main_skill_examples),
@@ -1399,6 +1708,8 @@ def induce_problem_types_from_examples(
         "matched_registered_yaml_rule_pack": str(human_confirmed_pack.get("rule_pack_id", "")) if human_confirmed_pack else "",
         "ai_classification_overridden_by_human_confirmed_rule_pack": human_confirmed_rule_pack_applied,
     }
+    _inject_combinatorics_probability_diagnosis_tags(induced, skill_id)
+    return induced
 
 
 def apply_spec_mode(
@@ -1435,7 +1746,6 @@ def apply_spec_mode(
         out["spec_mode"] = mode
         return out
 
-    # hybrid: induced primary, annotate curated diff
     out = dict(induced)
     out["spec_mode"] = mode
     out["curated_specs_available"] = bool(curated)
@@ -1447,3 +1757,51 @@ def apply_spec_mode(
         "overlap": sorted(curated_ids & induced_ids),
     }
     return out
+
+
+def _build_quadratic_coverage_floor_suggestions(
+    *,
+    skill_id: str,
+    features_for_induction: list[dict[str, Any]],
+    candidate_ids: set[str],
+) -> list[dict[str, Any]]:
+    """Suggest, but never promote, unobserved quadratic coverage-floor types."""
+    observed_quadratic_tasks = {
+        str(f.get("target_task", "")).strip()
+        for f in features_for_induction
+        if isinstance(f, dict)
+        and task_family_for_task(str(f.get("target_task", ""))) == "quadratic_function_graph_family"
+    }
+    standard_vertex_evidence = [
+        f for f in features_for_induction
+        if isinstance(f, dict)
+        and task_family_for_task(str(f.get("target_task", ""))) == "quadratic_function_graph_family"
+        and re.search(r"x\}\^\{2\}|x\^2|ax\^2|px\+q|bx\+c", str(f.get("question_text", "")))
+        and ("quadratic_vertex_form" in list(f.get("math_objects") or []) or "??" in str(f.get("question_text", "")))
+    ]
+    pt = "quadratic_standard_to_vertex_properties"
+    if pt in candidate_ids or not observed_quadratic_tasks or not standard_vertex_evidence:
+        return []
+    ex_ids = sorted(
+        {
+            int(f.get("source_example_id"))
+            for f in standard_vertex_evidence
+            if isinstance(f.get("source_example_id"), int)
+        }
+    )
+    return [
+        {
+            "skill_id": skill_id,
+            "problem_type_id": pt,
+            "target_task": pt,
+            "reason": "quadratic_vertex_form_coverage_floor",
+            "suggestion_only": True,
+            "candidate_only": True,
+            "requires_human_action": True,
+            "phase3_include": False,
+            "usable_for_phase3": False,
+            "matched_example_ids": ex_ids,
+            "matched_example_count": len(ex_ids),
+            "notes": "coverage_floor may suggest missing coverage, but source evidence did not classify this problem_type directly",
+        }
+    ]

@@ -26,7 +26,7 @@ DEFAULT_AI_DEFAULT_PROVIDER = str(getattr(Config, "DEFAULT_PROVIDER", "local") o
 DEFAULT_AI_RAG_NAIVE_THRESHOLD = float(getattr(Config, "ADVANCED_RAG_NAIVE_THRESHOLD", 0.35))
 DEFAULT_AI_ENABLE_TUTOR_RESPONSE = True
 DEFAULT_AI_ENABLE_HIGH_PRECISION_VISION = False
-DEFAULT_AI_CLOUD_MODEL = str(getattr(Config, "DEFAULT_CLOUD_MODEL", "gemini-3.1-flash-lite-preview") or "gemini-3.1-flash-lite-preview")
+DEFAULT_AI_CLOUD_MODEL = str(getattr(Config, "DEFAULT_CLOUD_MODEL", "gemini-3.5-flash") or "gemini-3.5-flash")
 SUPPORTED_CLOUD_MODELS = tuple(getattr(Config, "SUPPORTED_CLOUD_MODELS", [DEFAULT_AI_CLOUD_MODEL]))
 
 
@@ -83,6 +83,9 @@ def normalize_google_model_id(model: Any, *, allow_fallback: bool = False) -> st
     raw = str(model or "").strip()
     key = raw.lower()
     aliases = {
+        "gemini 3.5 flash": "gemini-3.5-flash",
+        "gemini-3.5-flash": "gemini-3.5-flash",
+        "gemini 3.5 flash stable": "gemini-3.5-flash",
         "gemini 3.1 flash": "gemini-3.1-flash-lite-preview",
         "gemini-3.1-flash": "gemini-3.1-flash-lite-preview",
         "gemini 3.1 flash-lite": "gemini-3.1-flash-lite-preview",
