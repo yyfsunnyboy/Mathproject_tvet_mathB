@@ -14,11 +14,14 @@ from .prompt_builder import (
     PromptBuilder,
     BARE_MINIMAL_PROMPT,
     UNIVERSAL_GEN_CODE_PROMPT,
+    GENERIC_MATRIX_V2_PROMPT,
 )
 
 __all__ = [
     'PromptBuilder',
     'BARE_MINIMAL_PROMPT',
     'UNIVERSAL_GEN_CODE_PROMPT',
+    'GENERIC_MATRIX_V2_PROMPT',
 ]
+
 

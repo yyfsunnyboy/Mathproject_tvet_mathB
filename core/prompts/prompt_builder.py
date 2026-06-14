@@ -236,123 +236,113 @@ UNIVERSAL_GEN_CODE_PROMPT = """{global_constraints}
 #     而忽略同等重要的目標求值（如「求幾何表達式/方程式」）
 # ==============================================================================
 
-GENERIC_MATRIX_V2_PROMPT = \"\"\"{global_constraints}
+# ==============================================================================
+# [V2.4 added] GENERIC_MATRIX_V2_PROMPT - Generic Bidirectional Matrix Prompt (Ab4)
+# ==============================================================================
+# Design rationale:
+# - Forces LLM to enumerate ALL Ask-Target question dimensions from source examples
+# - Produces INDEPENDENT sub-templates for each dimension (scalar, expression, geo)
+# - Solves "Defensive Degradation": LLM defaulting to easiest scalar-answer questions
+# ==============================================================================
 
-# Role & Mission
-你是一個負責 Mathproject 高職數B自適應學習系統的「全自動多模態題族擴充專家」。
-你的任務是根據 Phase 1 傳入的課本來源範例（Source Examples），自主分析其教學脈絡，
-設計出能完全覆蓋課本所有解題問法與提問目標的通用變化模板（Templates），
-拒絕任何單一、重複、或退化的出題偏誤。
-
----
-
-# 🧠 通用核心決策原則（強制提問分流、反防禦性退化）
-
-## 原則 1：【提問目標強制分流（Ask-Target Bifurcation）】
-- 在分析完所有來源例題後，你必須識別出所有不同的「提問目標（Ask-Target）」維度。
-- 每一種提問目標，必須對應產生獨立的子模板（Sub-Template），嚴禁合併或省略。
-- 判斷標準如下（依 answer_type 分流）：
-  - 如果答案是「代數式/方程式/幾何表達式」（例如：直線方程 $y = mx + b$、$Ax+By+C=0$），
-    則 answer_type = "expression"，此類題型必須獨立成一個子模板。
-  - 如果答案是「純量未知數」（例如：$x = 3$、$k = -2$、$a = 5$），
-    則 answer_type = "scalar"，此類題型也必須獨立成一個子模板。
-  - 如果答案是「幾何特徵值」（例如：斜率 $m$、距離 $d$、中點座標），
-    則 answer_type = "geometric_value"，此類也必須獨立成一個子模板。
-  - 如果答案是「計算個數/布林判斷」（例如：共有幾個點、是否平行），
-    則 answer_type = "count_or_bool"，此類也必須獨立成一個子模板。
-
-## 原則 2：【互逆問法強制衍生（Inverse Problem Generation）】
-- 對每個識別出的提問目標，你必須主動衍生其「互逆問法」：
-  - 若例題是「已知條件，求方程式」→ 衍生「已知方程式，求條件」
-  - 若例題是「已知兩點，求斜率」→ 衍生「已知斜率與一點，求另一點」
-  - 若例題是「已知方程式，求係數 k」→ 衍生「已知係數 k，求點是否在直線上」
-
-## 原則 3：【反防禦性退化守則（Anti-Defensive-Degradation）】
-- 絕對禁止因「checker 設定是 rational_checker 或 integer_checker」
-  而讓 LLM 只生成「求純量答案」的題型。
-- 若來源例題中有「求方程式」類的題型，必須建立 expression 子模板，
-  即使 answer_contract 中的 checker 是 text_checker 或 expression_equivalence_checker。
-- 生成的代碼中，正確答案（correct_answer）格式必須與 answer_type 一致：
-  - expression 類：correct_answer 為標準化代數式字串（如 \"2*x - y + 1 = 0\"）
-  - scalar 類：correct_answer 為分數或整數字串（如 \"3\" 或 \"1/2\"）
-  - geometric_value 類：correct_answer 為分數或數值字串
-
-## 原則 4：【結構化模板設計（Template Matrix Design）】
-設計一個「提問物件 × 提問目標」的二維矩陣：
-- 行（Row）= 可操作的數學物件（如：兩點、斜率、直線方程式、係數、垂直條件）
-- 列（Column）= 提問目標維度（如：求方程式、求係數、求座標、求幾何關係）
-- 每一個有意義的格子（Cell）= 一個獨立的子模板
-- 你必須填滿至少 2×2 = 4 個有效格子，並產生對應代碼。
-
----
-
-# 📐 代碼生成規格（Code Generation Spec）
-
-## 函數簽名（必須遵守）
-```python
-def generate(level=1, **kwargs) -> dict:
-    \"\"\"
-    生成題目。
-    level: 1=easy, 2=medium, 3=hard
-    \"\"\"
-```
-
-## 子模板選擇邏輯
-```python
-import random
-# 在函數內，根據 level 或隨機數選擇子模板（template_id）
-template_id = random.choice([
-    \"template_scalar\",       # 求純量未知數（x, k, a）
-    \"template_expression\",   # 求代數式/方程式
-    \"template_geo_value\",    # 求幾何特徵值（斜率、距離）
-    # ... 根據實際例題增加
-])
-```
-
-## 返回格式（必須完整包含以下欄位）
-```python
-return {{
-    \"question_text\": q,          # 題目文字（LaTeX 數學式用 $...$ 包裹）
-    \"correct_answer\": a,          # 正確答案（字串格式，與 answer_type 一致）
-    \"answer\": a,                  # 同 correct_answer（向後相容）
-    \"mode\": 1,
-    \"answer_type\": answer_type,   # "scalar" | "expression" | "geometric_value"
-    \"template_id\": template_id,   # 子模板 ID（用於多樣性追蹤）
-    \"metadata\": {{
-        \"givens\": [...],           # 題目給定的條件清單
-        \"target\": \"...\",           # 題目求解的目標描述
-        \"derivation\": \"...\",       # 推導邏輯摘要
-    }},
-}}
-```
-
----
-
-# 📋 Phase 1 輸入資料（請根據以下來源分析）
-
-## 課本來源範例（Source Examples）
-{textbook_example_section}
-
-## MASTER_SPEC（技能規格）
-{{master_spec}}
-
----
-
-# 🎯 輸出指令
-
-請依照以下順序輸出：
-
-1. **Ask-Target 分析表**（Markdown 表格，列出所有識別到的提問目標維度）
-2. **模板矩陣設計**（2D 矩陣描述）
-3. **完整 Python 代碼**（包含所有子模板的 generate 函數，只輸出代碼，不要 Markdown 圍欄）
-
-⚠️ 重要：
-- 只輸出 Python 程式碼！
-- 不要加任何說明文字在程式碼之外
-- 不要用 ```python 包裹代碼
-- 不要加 if __name__ == '__main__'
-- 🔴 CRITICAL：程式碼結束後不可有任何文字
-\"\"\"
+_GENERIC_MATRIX_V2_LINES = [
+    "{global_constraints}",
+    "",
+    "# Role & Mission",
+    "\u4f60\u662f\u4e00\u500b\u8ca0\u8cac Mathproject \u9ad8\u8077\u6578B\u81ea\u9069\u61c9\u5b78\u7fd2\u7cfb\u7d71\u7684\u300c\u5168\u81ea\u52d5\u591a\u6a21\u614b\u984c\u65cf\u64f4\u5145\u5c08\u5bb6\u300d\u3002",
+    "\u4f60\u7684\u4efb\u52d9\u662f\u6839\u64da Phase 1 \u50b3\u5165\u7684\u8ab2\u672c\u4f86\u6e90\u7bc4\u4f8b\uff08Source Examples\uff09\uff0c\u81ea\u4e3b\u5206\u6790\u5176\u6559\u5b78\u8108\u7d61\uff0c",
+    "\u8a2d\u8a08\u51fa\u80fd\u5b8c\u5168\u8986\u84cb\u8ab2\u672c\u6240\u6709\u89e3\u984c\u554f\u6cd5\u8207\u63d0\u554f\u76ee\u6a19\u7684\u901a\u7528\u8b8a\u5316\u6a21\u677f\uff08Templates\uff09\uff0c",
+    "\u62d2\u7d55\u4efb\u4f55\u55ae\u4e00\u3001\u91cd\u8907\u3001\u6216\u9000\u5316\u7684\u51fa\u984c\u504f\u8aa4\u3002",
+    "",
+    "---",
+    "",
+    "# Principle 1: Ask-Target Bifurcation (mandatory)",
+    "After analyzing all source examples, identify ALL distinct question-target dimensions.",
+    "Each dimension MUST produce its own independent sub-template. Merging is forbidden.",
+    "Classification by answer_type:",
+    "  - Algebraic/equation/geometric expression answer -> answer_type=expression",
+    "  - Scalar unknown (x, k, a) -> answer_type=scalar",
+    "  - Geometric feature value (slope m, distance d, midpoint) -> answer_type=geometric_value",
+    "  - Count / boolean -> answer_type=count_or_bool",
+    "",
+    "# Principle 2: Inverse Problem Derivation (mandatory)",
+    "For every identified target dimension, derive its inverse:",
+    "  - Given condition, find equation -> also: given equation, find condition",
+    "  - Given two points, find slope -> also: given slope + one point, find another",
+    "",
+    "# Principle 3: Anti-Defensive-Degradation",
+    "NEVER restrict output to scalar-answer questions just because checker=rational_checker.",
+    "If any source example asks for an equation/expression, you MUST produce an expression sub-template.",
+    "correct_answer format must match answer_type:",
+    "  expression: normalized algebra string e.g. \"2*x - y + 1 = 0\"",
+    "  scalar: fraction or integer string e.g. \"3\" or \"1/2\"",
+    "  geometric_value: numeric or fraction string",
+    "",
+    "# Principle 4: Template Matrix Design",
+    "Design a 2D matrix: [math object] x [question target]",
+    "  rows = math objects (two points, slope, line equation, coefficient, perp condition)",
+    "  cols = question targets (find equation, find coefficient, find coordinate, find property)",
+    "  Each meaningful cell = independent sub-template.",
+    "  Fill at least 2x2 = 4 valid cells with corresponding code.",
+    "",
+    "---",
+    "",
+    "# Code Generation Spec",
+    "",
+    "## Function signature (mandatory)",
+    "def generate(level=1, **kwargs) -> dict:",
+    "    # level: 1=easy, 2=medium, 3=hard",
+    "",
+    "## Sub-template selection (inside generate function)",
+    "import random",
+    "template_id = random.choice([",
+    '    "template_scalar",      # find scalar unknown (x, k, a)',
+    '    "template_expression",  # find algebraic/geometric expression',
+    '    "template_geo_value",   # find geometric feature value',
+    "])",
+    "",
+    "## Return dict (must contain all fields)",
+    "return {",
+    '    "question_text": q,         # LaTeX math in $...$',
+    '    "correct_answer": a,        # string matching answer_type',
+    '    "answer": a,                # backward compat',
+    '    "mode": 1,',
+    '    "answer_type": answer_type, # scalar|expression|geometric_value',
+    '    "template_id": template_id, # for diversity tracking',
+    '    "metadata": {',
+    '        "givens": [],           # list of given conditions',
+    '        "target": "",           # what is being solved',
+    '        "derivation": "",       # reasoning summary',
+    "    },",
+    "}",
+    "",
+    "---",
+    "",
+    "# Phase 1 Input (analyze the following)",
+    "",
+    "## Textbook Source Examples",
+    "{textbook_example_section}",
+    "",
+    "## MASTER_SPEC",
+    "{master_spec}",
+    "",
+    "---",
+    "",
+    "# Output Instructions",
+    "",
+    "Output in this order:",
+    "1. Ask-Target analysis table (Markdown)",
+    "2. Template matrix design (2D description)",
+    "3. Complete Python code (all sub-templates in generate(), no Markdown fences)",
+    "",
+    "CRITICAL:",
+    "- Output ONLY Python code",
+    "- No explanation outside the code",
+    "- No ```python fences",
+    "- No if __name__ == '__main__'",
+    "- NOTHING after the code ends",
+]
+GENERIC_MATRIX_V2_PROMPT = "\n".join(_GENERIC_MATRIX_V2_LINES)
 
 
 class PromptBuilder:
@@ -640,8 +630,34 @@ class PromptBuilder:
             logger.info(f"   Universal Prompt: {len(universal_prompt_with_example)} chars")
             logger.info(f"   Domain Injection: {len(domain_injection)} chars")
             logger.info(f"   MASTER_SPEC: {len(clean_spec)} chars")
-        
+
+        elif ablation_id == 4:
+            # Ab4: GENERIC_MATRIX_V2_PROMPT — 通用雙向矩陣多模態出題（強制提問分流）
+            # 核心設計：強迫 LLM 識別所有 Ask-Target 維度並各自產生獨立子模板
+            # 解決「防禦性退化」問題（LLM 只生成最簡單的 scalar 題型）
+            clean_spec = PromptBuilder._clean_master_spec(master_spec)
+
+            # 組裝 textbook_example_section（所有例題合併，供矩陣分析用）
+            textbook_example_section = ""
+            if textbook_example:
+                textbook_example_section = f"【課本範例】\n{textbook_example}\n\n此為課本原始例題，請分析其中所有不同的提問目標維度（Ask-Target）。"
+            else:
+                textbook_example_section = "（無特定參考範例，請根據 MASTER_SPEC 推斷所有可能的提問目標維度）"
+
+            prompt = (
+                GENERIC_MATRIX_V2_PROMPT
+                .replace("{global_constraints}", GLOBAL_GEN_CONSTRAINTS)
+                .replace("{textbook_example_section}", textbook_example_section)
+                .replace("{master_spec}", clean_spec)
+            )
+
+            logger.info(f"Prompt Ab4 - GENERIC_MATRIX_V2_PROMPT (通用矩陣多模態強制分流)")
+            logger.info(f"   Textbook Example: {len(textbook_example_section)} chars")
+            logger.info(f"   MASTER_SPEC: {len(clean_spec)} chars")
+            logger.info(f"   Final Prompt: {len(prompt)} chars")
+
         return prompt
+
     
     @staticmethod
     def _extract_and_clean_yaml(text: str) -> str:
@@ -737,5 +753,7 @@ __all__ = [
     'PromptBuilder',
     'BARE_MINIMAL_PROMPT',
     'UNIVERSAL_GEN_CODE_PROMPT',
+    'GENERIC_MATRIX_V2_PROMPT',
     'GLOBAL_GEN_CONSTRAINTS',
 ]
+
