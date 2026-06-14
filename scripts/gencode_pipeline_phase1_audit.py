@@ -141,6 +141,26 @@ ANSWER_CONTRACT_DEFAULTS: dict[str, dict[str, dict[str, Any]]] = {
             "canonical_answer_schema": {"type": "integer"},
         },
     },
+    "vh_數學B1_SlopeOfALine": {
+        "text_short_slope_of_line_problems": {
+            "answer_type": "rational",
+            "equivalence_type": "rational_equivalent",
+            "checker_key": "rational_checker",
+            "order_matters": True,
+            "accepted_format_notes": ["integer or fraction slope answer"],
+            "canonical_answer_schema": {"type": "rational"},
+        }
+    },
+    "vh_數學B1_PropertiesOfParallelLines": {
+        "parallel_lines_properties": {
+            "answer_type": "integer",
+            "equivalence_type": "numeric_exact",
+            "checker_key": "integer_checker",
+            "order_matters": True,
+            "accepted_format_notes": ["single integer answer"],
+            "canonical_answer_schema": {"type": "integer"},
+        }
+    }
 }
 
 

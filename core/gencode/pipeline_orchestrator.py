@@ -1,5 +1,8 @@
 from __future__ import annotations
 
+import logging
+logger = logging.getLogger(__name__)
+
 import json
 import py_compile
 import sqlite3
@@ -2911,6 +2914,16 @@ def run_gencode_phase1(skill_id: str, dry_run: bool = True, spec_mode: str = "ai
 
 
 def run_gencode_phase2(skill_id: str, accepted_problem_types: list | None = None, excluded_example_ids: list | None = None, dry_run: bool = True) -> dict[str, Any]:
+    from gencode_closed_loop.controller import execute_phase_2
+    return execute_phase_2(
+        skill_id=skill_id,
+        accepted_problem_types=accepted_problem_types,
+        excluded_example_ids=excluded_example_ids,
+        dry_run=dry_run
+    )
+
+
+def run_gencode_phase2_raw(skill_id: str, accepted_problem_types: list | None = None, excluded_example_ids: list | None = None, dry_run: bool = True) -> dict[str, Any]:
     # SOP v0.2: Preflight Scan Policy Enforcement
     from core.gencode.sop_policy import validate_sop_preflight, build_sop_reference
     preflight = validate_sop_preflight(PROJECT_ROOT)
@@ -3311,12 +3324,83 @@ def _run_gencode_publish_check_for_draft(skill_id: str, draft_skill_file_path: s
     py_compile_status = str(runtime_smoke_raw.get("py_compile_status", "not_run"))
     interface_check = runtime_smoke_raw.get("interface_check", {}) if isinstance(runtime_smoke_raw.get("interface_check"), dict) else {}
 
+    # SOP v0.3: Closed-loop Self-healing retry loop
+    if runtime_smoke_status == "failed":
+        max_retries = 3
+        current_attempt = 1
+        while current_attempt <= max_retries:
+            logger.info(f"[SELF-HEALING] Phase 3 smoke test failed. Starting attempt {current_attempt}/{max_retries}...")
+            
+            # Load SOP context for repair alignment
+            sop_file = PROJECT_ROOT / SOP_INTEGRATION_DIR / "AgentSkillV2_ProblemType規格包設計_v0.3.md"
+            sop_content = ""
+            if sop_file.exists():
+                try:
+                    sop_content = sop_file.read_text(encoding="utf-8")
+                except Exception:
+                    pass
+
+            # Read current failed draft skill code
+            current_code = ""
+            if draft_path.exists():
+                current_code = draft_path.read_text(encoding="utf-8")
+
+            # Construct repair prompt
+            repair_prompt = f"""
+你剛剛生成的代碼未能通過冒煙測試。
+【錯誤詳情】:
+{json.dumps(runtime_smoke_raw, ensure_ascii=False, indent=2)}
+
+【目前程式碼】:
+```python
+{current_code}
+```
+
+【唯一對照權威 SOP 規範】:
+{sop_content}
+
+請扮演修復 Agent，對照 SOP 規範，精準修正隨機性邏輯與 YAML 任務過濾（特別注意若發生 fake_diversity_fatal 請修正隨機化邏輯綁定 seed），重新生成覆蓋。
+請僅回傳修正後的完整 Python 程式碼，不要有 Markdown 格式或額外說明。
+""".strip()
+
+            client, client_meta = _resolve_gencode_ai_client(["architect", "tutor", "default"])
+            if client:
+                try:
+                    resp = call_ai_with_retry(client, repair_prompt, max_retries=2, retry_delay=2, timeout=90)
+                    resp_text = str(getattr(resp, "text", "") or "").strip()
+                    if resp_text.startswith("```python"):
+                        resp_text = resp_text.split("```python", 1)[-1].split("```", 1)[0].strip()
+                    elif resp_text.startswith("```"):
+                        resp_text = resp_text.split("```", 1)[-1].split("```", 1)[0].strip()
+                    
+                    if resp_text:
+                        logger.info(f"[SELF-HEALING] AI generated repaired code. Overwriting {draft_skill_file_path}...")
+                        draft_path.write_text(resp_text, encoding="utf-8")
+                        
+                        # Re-run compile and smoke test on the new code
+                        runtime_smoke_raw = run_draft_runtime_smoke(skill_id, draft_skill_file_path)
+                        runtime_smoke_status = str(runtime_smoke_raw.get("status", "failed"))
+                        blockers = list(runtime_smoke_raw.get("blockers", [])) if isinstance(runtime_smoke_raw.get("blockers"), list) else []
+                        py_compile_status = str(runtime_smoke_raw.get("py_compile_status", "not_run"))
+                        interface_check = runtime_smoke_raw.get("interface_check", {}) if isinstance(runtime_smoke_raw.get("interface_check"), dict) else {}
+                        
+                        if runtime_smoke_status == "passed" and not blockers:
+                            logger.info(f"[SELF-HEALING] Attempt {current_attempt} PASSED.")
+                            break
+                        else:
+                            logger.warning(f"[SELF-HEALING] Attempt {current_attempt} failed. Blockers: {blockers}")
+                except Exception as ex:
+                    logger.error(f"[SELF-HEALING] Exception in attempt {current_attempt}: {ex}")
+            
+            current_attempt += 1
+
     draft_check_passed = bool(
         draft_path.exists()
         and py_compile_status == "passed"
         and runtime_smoke_status == "passed"
         and not blockers
     )
+
 
     can_publish_draft = draft_check_passed
     can_publish_formal = can_publish_draft
@@ -3497,6 +3581,15 @@ def _sync_phase3_runtime_specs_from_draft(
 
 
 def run_gencode_phase3_package(skill_id: str, accepted_generator_keys: list | None = None, dry_run: bool = True) -> dict[str, Any]:
+    from gencode_closed_loop.pipeline import execute_phase_3
+    return execute_phase_3(
+        skill_id=skill_id,
+        accepted_generator_keys=accepted_generator_keys,
+        dry_run=dry_run
+    )
+
+
+def run_gencode_phase3_package_raw(skill_id: str, accepted_generator_keys: list | None = None, dry_run: bool = True) -> dict[str, Any]:
     from core.gencode.packaging_policy import format_packaging_blocked_message, select_generators_for_packaging
 
     # SOP v0.2: Preflight Scan Policy Enforcement

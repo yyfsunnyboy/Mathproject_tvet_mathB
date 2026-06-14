@@ -1,195 +1,300 @@
-version: '0.1'
-scope: vocational_math_b1_section_1_1
+version: "0.1"
+scope: "vocational_math_b1_section_1_1"
 verified_problem_types:
-- problem_type_id: absolute_value_numeric_evaluation
-  skill_id: vh_數學B1_AbsoluteValue
-  subskill_id: absolute_value_numeric_evaluation
-  status: verified
-  candidate_path: generated_candidates/vocational_math_b1/section_1_1/absolute_value_numeric_evaluation/candidate_v1.py
-  function_name: generate
-  answer_type: integer
-  checker_type: integer_checker
-- problem_type_id: absolute_value_distance_from_zero
-  skill_id: vh_數學B1_AbsoluteValue
-  subskill_id: absolute_value_distance_from_zero
-  status: verified
-  candidate_path: generated_candidates/vocational_math_b1/section_1_1/absolute_value_distance_from_zero/candidate_v1.py
-  function_name: generate
-  answer_type: choice
-  checker_type: choice_checker
-- problem_type_id: absolute_value_distance_between_two_points
-  skill_id: vh_數學B1_AbsoluteValue
-  subskill_id: absolute_value_distance_between_two_points
-  status: verified
-  candidate_path: generated_candidates/vocational_math_b1/section_1_1/absolute_value_distance_between_two_points/candidate_v1.py
-  function_name: generate
-  answer_type: integer
-  checker_type: integer_checker
-- problem_type_id: absolute_value_equation_basic
-  skill_id: vh_數學B1_AbsoluteValue
-  subskill_id: absolute_value_equation_basic
-  status: verified
-  candidate_path: generated_candidates/vocational_math_b1/section_1_1/absolute_value_equation_basic/candidate_v1.py
-  function_name: generate
-  answer_type: text
-  checker_type: exact_string_checker
-- problem_type_id: absolute_value_inequality_integer_solution_count_choice
-  skill_id: vh_數學B1_AbsoluteValueInequality
-  subskill_id: absolute_value_inequality_integer_solution_count_choice
-  status: verified
-  candidate_path: generated_candidates/vocational_math_b1/section_1_1/absolute_value_inequality_integer_solution_count_choice/candidate_v1.py
-  function_name: generate
-  answer_type: choice
-  checker_type: choice_label_checker
-  wrapper_path: skills/vh_數學B1_AbsoluteValueInequality.py
-  manual_review_exclusions: &id001
-  - absolute_value_inequality_malformed_source_review
-  source: gencode_runtime_binding
-  phase2_report_path: D:\Python\Mathproject_tvet_mathB\reports\gencode_closed_loop\vh_數學B1_AbsoluteValueInequality_phase2_build.json
-- problem_type_id: absolute_value_inequality_linear_expression_basic
-  skill_id: vh_數學B1_AbsoluteValueInequality
-  subskill_id: absolute_value_inequality_linear_expression_basic
-  status: verified
-  candidate_path: generated_candidates/vocational_math_b1/section_1_1/absolute_value_inequality_linear_expression_basic/candidate_v1.py
-  function_name: generate
-  answer_type: interval_set
-  checker_type: interval_checker
-  wrapper_path: skills/vh_數學B1_AbsoluteValueInequality.py
-  manual_review_exclusions: *id001
-  source: gencode_runtime_binding
-  phase2_report_path: D:\Python\Mathproject_tvet_mathB\reports\gencode_closed_loop\vh_數學B1_AbsoluteValueInequality_phase2_build.json
-- problem_type_id: absolute_value_inequality_shifted_basic
-  skill_id: vh_數學B1_AbsoluteValueInequality
-  subskill_id: absolute_value_inequality_shifted_basic
-  status: verified
-  candidate_path: generated_candidates/vocational_math_b1/section_1_1/absolute_value_inequality_shifted_basic/candidate_v1.py
-  function_name: generate
-  answer_type: interval_set
-  checker_type: interval_checker
-  wrapper_path: skills/vh_數學B1_AbsoluteValueInequality.py
-  manual_review_exclusions: *id001
-  source: gencode_runtime_binding
-  phase2_report_path: D:\Python\Mathproject_tvet_mathB\reports\gencode_closed_loop\vh_數學B1_AbsoluteValueInequality_phase2_build.json
-- problem_type_id: absolute_value_inequality_zero_center_basic
-  skill_id: vh_數學B1_AbsoluteValueInequality
-  subskill_id: absolute_value_inequality_zero_center_basic
-  status: verified
-  candidate_path: generated_candidates/vocational_math_b1/section_1_1/absolute_value_inequality_zero_center_basic/candidate_v1.py
-  function_name: generate
-  answer_type: interval_set
-  checker_type: interval_checker
-  wrapper_path: skills/vh_數學B1_AbsoluteValueInequality.py
-  manual_review_exclusions: *id001
-  source: gencode_runtime_binding
-  phase2_report_path: D:\Python\Mathproject_tvet_mathB\reports\gencode_closed_loop\vh_數學B1_AbsoluteValueInequality_phase2_build.json
-- problem_type_id: integer_numeric_evaluate_function_notation
-  skill_id: vh_數學B1_LinearFunction
-  subskill_id: integer_numeric_evaluate_function_notation
-  status: verified
-  candidate_path: generated_candidates/vocational_math_b1/section_1_2/integer_numeric_evaluate_function_notation/candidate_v1.py
-  function_name: generate
-  answer_type: integer
-  checker_type: integer_checker
-  wrapper_path: skills/vh_數學B1_LinearFunction.py
-  manual_review_exclusions:
-  - unknown
-  source: gencode_runtime_binding
-  phase2_report_path: D:\Python\Mathproject_tvet_mathB\reports\gencode_closed_loop\vh_數學B1_LinearFunction_phase2_build.json
-failed_problem_types: null
-manual_review_problem_types: null
-future_ai_judged_problem_types: null
+  -
+    problem_type_id: "absolute_value_numeric_evaluation"
+    skill_id: "vh_數學B1_AbsoluteValue"
+    subskill_id: "absolute_value_numeric_evaluation"
+    status: "verified"
+    candidate_path: "generated_candidates/vocational_math_b1/section_1_1/absolute_value_numeric_evaluation/candidate_v1.py"
+    function_name: "generate"
+    answer_type: "integer"
+    checker_type: "integer_checker"
+  -
+    problem_type_id: "absolute_value_distance_from_zero"
+    skill_id: "vh_數學B1_AbsoluteValue"
+    subskill_id: "absolute_value_distance_from_zero"
+    status: "verified"
+    candidate_path: "generated_candidates/vocational_math_b1/section_1_1/absolute_value_distance_from_zero/candidate_v1.py"
+    function_name: "generate"
+    answer_type: "choice"
+    checker_type: "choice_checker"
+  -
+    problem_type_id: "absolute_value_distance_between_two_points"
+    skill_id: "vh_數學B1_AbsoluteValue"
+    subskill_id: "absolute_value_distance_between_two_points"
+    status: "verified"
+    candidate_path: "generated_candidates/vocational_math_b1/section_1_1/absolute_value_distance_between_two_points/candidate_v1.py"
+    function_name: "generate"
+    answer_type: "integer"
+    checker_type: "integer_checker"
+  -
+    problem_type_id: "absolute_value_equation_basic"
+    skill_id: "vh_數學B1_AbsoluteValue"
+    subskill_id: "absolute_value_equation_basic"
+    status: "verified"
+    candidate_path: "generated_candidates/vocational_math_b1/section_1_1/absolute_value_equation_basic/candidate_v1.py"
+    function_name: "generate"
+    answer_type: "text"
+    checker_type: "exact_string_checker"
+  -
+    problem_type_id: "absolute_value_inequality_integer_solution_count_choice"
+    skill_id: "vh_數學B1_AbsoluteValueInequality"
+    subskill_id: "absolute_value_inequality_integer_solution_count_choice"
+    status: "verified"
+    candidate_path: "generated_candidates/vocational_math_b1/section_1_1/absolute_value_inequality_integer_solution_count_choice/candidate_v1.py"
+    function_name: "generate"
+    answer_type: "choice"
+    checker_type: "choice_label_checker"
+    wrapper_path: "skills/vh_數學B1_AbsoluteValueInequality.py"
+    manual_review_exclusions:
+      - "absolute_value_inequality_malformed_source_review"
+    source: "gencode_runtime_binding"
+    phase2_report_path: "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_AbsoluteValueInequality_phase2_build.json"
+  -
+    problem_type_id: "absolute_value_inequality_linear_expression_basic"
+    skill_id: "vh_數學B1_AbsoluteValueInequality"
+    subskill_id: "absolute_value_inequality_linear_expression_basic"
+    status: "verified"
+    candidate_path: "generated_candidates/vocational_math_b1/section_1_1/absolute_value_inequality_linear_expression_basic/candidate_v1.py"
+    function_name: "generate"
+    answer_type: "interval_set"
+    checker_type: "interval_checker"
+    wrapper_path: "skills/vh_數學B1_AbsoluteValueInequality.py"
+    manual_review_exclusions:
+      - "absolute_value_inequality_malformed_source_review"
+    source: "gencode_runtime_binding"
+    phase2_report_path: "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_AbsoluteValueInequality_phase2_build.json"
+  -
+    problem_type_id: "absolute_value_inequality_shifted_basic"
+    skill_id: "vh_數學B1_AbsoluteValueInequality"
+    subskill_id: "absolute_value_inequality_shifted_basic"
+    status: "verified"
+    candidate_path: "generated_candidates/vocational_math_b1/section_1_1/absolute_value_inequality_shifted_basic/candidate_v1.py"
+    function_name: "generate"
+    answer_type: "interval_set"
+    checker_type: "interval_checker"
+    wrapper_path: "skills/vh_數學B1_AbsoluteValueInequality.py"
+    manual_review_exclusions:
+      - "absolute_value_inequality_malformed_source_review"
+    source: "gencode_runtime_binding"
+    phase2_report_path: "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_AbsoluteValueInequality_phase2_build.json"
+  -
+    problem_type_id: "absolute_value_inequality_zero_center_basic"
+    skill_id: "vh_數學B1_AbsoluteValueInequality"
+    subskill_id: "absolute_value_inequality_zero_center_basic"
+    status: "verified"
+    candidate_path: "generated_candidates/vocational_math_b1/section_1_1/absolute_value_inequality_zero_center_basic/candidate_v1.py"
+    function_name: "generate"
+    answer_type: "interval_set"
+    checker_type: "interval_checker"
+    wrapper_path: "skills/vh_數學B1_AbsoluteValueInequality.py"
+    manual_review_exclusions:
+      - "absolute_value_inequality_malformed_source_review"
+    source: "gencode_runtime_binding"
+    phase2_report_path: "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_AbsoluteValueInequality_phase2_build.json"
+  -
+    problem_type_id: "integer_numeric_evaluate_function_notation"
+    skill_id: "vh_數學B1_LinearFunction"
+    subskill_id: "integer_numeric_evaluate_function_notation"
+    status: "verified"
+    candidate_path: "generated_candidates/vocational_math_b1/section_1_2/integer_numeric_evaluate_function_notation/candidate_v1.py"
+    function_name: "generate"
+    answer_type: "integer"
+    checker_type: "integer_checker"
+    wrapper_path: "skills/vh_數學B1_LinearFunction.py"
+    manual_review_exclusions:
+      - "unknown"
+    source: "gencode_runtime_binding"
+    phase2_report_path: "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_LinearFunction_phase2_build.json"
+  -
+    problem_type_id: "parallel_lines_properties"
+    skill_id: "vh_數學B1_PropertiesOfParallelLines"
+    subskill_id: "parallel_lines_properties"
+    status: "verified"
+    candidate_path: "generated_candidates/vocational_math_b1/section_2_1/parallel_lines_properties/candidate_v1.py"
+    function_name: "generate"
+    answer_type: "integer"
+    checker_type: "integer_checker"
+  -
+    problem_type_id: "text_short_slope_of_line_problems"
+    skill_id: "vh_數學B1_SlopeOfALine"
+    subskill_id: "text_short_slope_of_line_problems"
+    status: "verified"
+    candidate_path: "generated_candidates/vocational_math_b1/section_2_1/text_short_slope_of_line_problems/candidate_v1.py"
+    function_name: "generate"
+    answer_type: "rational"
+    checker_type: "rational_checker"
+  -
+    problem_type_id: "perpendicular_lines_properties"
+    skill_id: "vh_數學B1_PropertiesOfPerpendicularLines"
+    subskill_id: "perpendicular_lines_properties"
+    status: "verified"
+    candidate_path: "generated_candidates/vocational_math_b1/section_2_1/perpendicular_lines_properties/candidate_v1.py"
+    function_name: "generate"
+    answer_type: "rational"
+    checker_type: "rational_checker"
+failed_problem_types:
+
+manual_review_problem_types:
+
+future_ai_judged_problem_types:
+
 runtime_ready_auto_publish: false
 runtime_bindings:
-- skill_id: vh_數學B1_AbsoluteValueInequality
-  wrapper_path: skills/vh_數學B1_AbsoluteValueInequality.py
-  verified_problem_types:
-  - absolute_value_inequality_integer_solution_count_choice
-  - absolute_value_inequality_linear_expression_basic
-  - absolute_value_inequality_shifted_basic
-  - absolute_value_inequality_zero_center_basic
-  manual_review_exclusions: *id001
-  candidate_paths:
-    absolute_value_inequality_integer_solution_count_choice: generated_candidates/vocational_math_b1/section_1_1/absolute_value_inequality_integer_solution_count_choice/candidate_v1.py
-    absolute_value_inequality_linear_expression_basic: generated_candidates/vocational_math_b1/section_1_1/absolute_value_inequality_linear_expression_basic/candidate_v1.py
-    absolute_value_inequality_shifted_basic: generated_candidates/vocational_math_b1/section_1_1/absolute_value_inequality_shifted_basic/candidate_v1.py
-    absolute_value_inequality_zero_center_basic: generated_candidates/vocational_math_b1/section_1_1/absolute_value_inequality_zero_center_basic/candidate_v1.py
-  answer_contract_summary:
-    absolute_value_inequality_integer_solution_count_choice:
-      answer_type: choice
-      equivalence_type: choice_label
-      checker_key: choice_label_checker
-      order_matters: false
-      accepted_format_notes:
-      - A/B/C/D labels
-      canonical_answer_schema:
-        type: choice_label
-    absolute_value_inequality_linear_expression_basic:
-      answer_type: interval_set
-      equivalence_type: interval_set
-      checker_key: interval_checker
-      order_matters: false
-      accepted_format_notes:
-      - x > a
-      - x < a
-      - x ≤ a
-      - x ≥ a
-      - interval notation
-      canonical_answer_schema:
-        type: interval_set
-    absolute_value_inequality_malformed_source_review:
-      answer_type: manual_review
-      equivalence_type: manual_review_or_ai_judged
-      checker_key: manual_review_checker
-      order_matters: false
-      accepted_format_notes:
-      - requires source text correction before deterministic generation
-      canonical_answer_schema:
-        type: manual_review
-    absolute_value_inequality_shifted_basic:
-      answer_type: interval_set
-      equivalence_type: interval_set
-      checker_key: interval_checker
-      order_matters: false
-      accepted_format_notes:
-      - x > a
-      - x < a
-      - x ≤ a
-      - x ≥ a
-      - interval notation
-      canonical_answer_schema:
-        type: interval_set
-    absolute_value_inequality_zero_center_basic:
-      answer_type: interval_set
-      equivalence_type: interval_set
-      checker_key: interval_checker
-      order_matters: false
-      accepted_format_notes:
-      - x > a
-      - x < a
-      - x ≤ a
-      - x ≥ a
-      - interval notation
-      canonical_answer_schema:
-        type: interval_set
-  source: gencode_runtime_binding
-  phase2_report_path: D:\Python\Mathproject_tvet_mathB\reports\gencode_closed_loop\vh_數學B1_AbsoluteValueInequality_phase2_build.json
-- skill_id: vh_數學B1_LinearFunction
-  wrapper_path: skills/vh_數學B1_LinearFunction.py
-  verified_problem_types:
-  - integer_numeric_evaluate_function_notation
-  manual_review_exclusions:
-  - unknown
-  candidate_paths:
-    integer_numeric_evaluate_function_notation: generated_candidates/vocational_math_b1/section_1_2/integer_numeric_evaluate_function_notation/candidate_v1.py
-  answer_contract_summary:
-    integer_numeric_evaluate_function_notation:
-      answer_type: integer
-      equivalence_type: numeric_exact
-      checker_key: integer_checker
-      order_matters: true
-      accepted_format_notes:
-      - single integer answer
-      canonical_answer_schema:
-        type: integer
-  source: gencode_runtime_binding
-  phase2_report_path: D:\Python\Mathproject_tvet_mathB\reports\gencode_closed_loop\vh_數學B1_LinearFunction_phase2_build.json
+  -
+    skill_id: "vh_數學B1_AbsoluteValueInequality"
+    wrapper_path: "skills/vh_數學B1_AbsoluteValueInequality.py"
+    verified_problem_types:
+      - "absolute_value_inequality_integer_solution_count_choice"
+      - "absolute_value_inequality_linear_expression_basic"
+      - "absolute_value_inequality_shifted_basic"
+      - "absolute_value_inequality_zero_center_basic"
+    manual_review_exclusions:
+      - "absolute_value_inequality_malformed_source_review"
+    candidate_paths:
+      absolute_value_inequality_integer_solution_count_choice: "generated_candidates/vocational_math_b1/section_1_1/absolute_value_inequality_integer_solution_count_choice/candidate_v1.py"
+      absolute_value_inequality_linear_expression_basic: "generated_candidates/vocational_math_b1/section_1_1/absolute_value_inequality_linear_expression_basic/candidate_v1.py"
+      absolute_value_inequality_shifted_basic: "generated_candidates/vocational_math_b1/section_1_1/absolute_value_inequality_shifted_basic/candidate_v1.py"
+      absolute_value_inequality_zero_center_basic: "generated_candidates/vocational_math_b1/section_1_1/absolute_value_inequality_zero_center_basic/candidate_v1.py"
+    answer_contract_summary:
+      absolute_value_inequality_integer_solution_count_choice:
+        answer_type: "choice"
+        equivalence_type: "choice_label"
+        checker_key: "choice_label_checker"
+        order_matters: false
+        accepted_format_notes:
+          - "A/B/C/D labels"
+        canonical_answer_schema:
+          type: "choice_label"
+      absolute_value_inequality_linear_expression_basic:
+        answer_type: "interval_set"
+        equivalence_type: "interval_set"
+        checker_key: "interval_checker"
+        order_matters: false
+        accepted_format_notes:
+          - "x > a"
+          - "x < a"
+          - "x ≤ a"
+          - "x ≥ a"
+          - "interval notation"
+        canonical_answer_schema:
+          type: "interval_set"
+      absolute_value_inequality_malformed_source_review:
+        answer_type: "manual_review"
+        equivalence_type: "manual_review_or_ai_judged"
+        checker_key: "manual_review_checker"
+        order_matters: false
+        accepted_format_notes:
+          - "requires source text correction before deterministic generation"
+        canonical_answer_schema:
+          type: "manual_review"
+      absolute_value_inequality_shifted_basic:
+        answer_type: "interval_set"
+        equivalence_type: "interval_set"
+        checker_key: "interval_checker"
+        order_matters: false
+        accepted_format_notes:
+          - "x > a"
+          - "x < a"
+          - "x ≤ a"
+          - "x ≥ a"
+          - "interval notation"
+        canonical_answer_schema:
+          type: "interval_set"
+      absolute_value_inequality_zero_center_basic:
+        answer_type: "interval_set"
+        equivalence_type: "interval_set"
+        checker_key: "interval_checker"
+        order_matters: false
+        accepted_format_notes:
+          - "x > a"
+          - "x < a"
+          - "x ≤ a"
+          - "x ≥ a"
+          - "interval notation"
+        canonical_answer_schema:
+          type: "interval_set"
+    source: "gencode_runtime_binding"
+    phase2_report_path: "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_AbsoluteValueInequality_phase2_build.json"
+  -
+    skill_id: "vh_數學B1_LinearFunction"
+    wrapper_path: "skills/vh_數學B1_LinearFunction.py"
+    verified_problem_types:
+      - "integer_numeric_evaluate_function_notation"
+    manual_review_exclusions:
+      - "unknown"
+    candidate_paths:
+      integer_numeric_evaluate_function_notation: "generated_candidates/vocational_math_b1/section_1_2/integer_numeric_evaluate_function_notation/candidate_v1.py"
+    answer_contract_summary:
+      integer_numeric_evaluate_function_notation:
+        answer_type: "integer"
+        equivalence_type: "numeric_exact"
+        checker_key: "integer_checker"
+        order_matters: true
+        accepted_format_notes:
+          - "single integer answer"
+        canonical_answer_schema:
+          type: "integer"
+    source: "gencode_runtime_binding"
+    phase2_report_path: "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_LinearFunction_phase2_build.json"
+  -
+    skill_id: "vh_數學B1_SlopeOfALine"
+    wrapper_path: "skills/vh_數學B1_SlopeOfALine.py"
+    verified_problem_types:
+      - "text_short_slope_of_line_problems"
+    manual_review_exclusions: null
+    candidate_paths:
+      text_short_slope_of_line_problems: "generated_candidates/vocational_math_b1/section_2_1/text_short_slope_of_line_problems/candidate_v1.py"
+    answer_contract_summary:
+      text_short_slope_of_line_problems:
+        answer_type: "rational"
+        equivalence_type: "rational_equivalent"
+        checker_key: "rational_checker"
+        order_matters: true
+        accepted_format_notes:
+          - "integer or fraction slope answer"
+        canonical_answer_schema:
+          type: "rational"
+    source: "gencode_runtime_binding"
+    phase2_report_path: "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_SlopeOfALine_phase2_build.json"
+  -
+    skill_id: "vh_數學B1_PropertiesOfParallelLines"
+    wrapper_path: "skills/vh_數學B1_PropertiesOfParallelLines.py"
+    verified_problem_types:
+      - "parallel_lines_properties"
+    manual_review_exclusions: null
+    candidate_paths:
+      parallel_lines_properties: "generated_candidates/vocational_math_b1/section_2_1/parallel_lines_properties/candidate_v1.py"
+    answer_contract_summary:
+      parallel_lines_properties:
+        answer_type: "integer"
+        equivalence_type: "numeric_exact"
+        checker_key: "integer_checker"
+        order_matters: true
+        accepted_format_notes:
+          - "single integer answer"
+        canonical_answer_schema:
+          type: "integer"
+    source: "gencode_runtime_binding"
+    phase2_report_path: "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_PropertiesOfParallelLines_phase2_build.json"
+  -
+    skill_id: "vh_數學B1_PropertiesOfPerpendicularLines"
+    wrapper_path: "skills/vh_數學B1_PropertiesOfPerpendicularLines.py"
+    verified_problem_types:
+      - "perpendicular_lines_properties"
+    manual_review_exclusions: null
+    candidate_paths:
+      perpendicular_lines_properties: "generated_candidates/vocational_math_b1/section_2_1/perpendicular_lines_properties/candidate_v1.py"
+    answer_contract_summary:
+      perpendicular_lines_properties:
+        answer_type: "rational"
+        equivalence_type: "rational_equivalent"
+        checker_key: "rational_checker"
+        order_matters: true
+        accepted_format_notes:
+          - "rational or integer slope/parameter answer"
+        canonical_answer_schema:
+          type: "rational"
+    source: "gencode_runtime_binding"
+    phase2_report_path: "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_PropertiesOfPerpendicularLines_phase2_build.json"

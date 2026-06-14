@@ -1,0 +1,5 @@
+items:
+  -
+    subskill_id: "text_short_slope_of_line_problems"
+    prerequisite_subskills:
+      - "absolute_value_numeric_evaluation"

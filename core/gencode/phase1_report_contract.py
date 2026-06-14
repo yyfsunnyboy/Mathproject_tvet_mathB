@@ -179,10 +179,37 @@ def canonicalize_and_complete(
         
     return at, eq, checker
 
-def remap_legacy_fields(cand: dict[str, Any]) -> dict[str, Any]:
+def _is_tvet_mathB_linear_or_combinatorics(skill_id: str) -> bool:
+    s = str(skill_id or "").strip()
+    if not s.startswith("vh_"):
+        return False
+    if "數學B4_" in s:
+        return True
+    linear_keywords = [
+        "SlopeOfALine",
+        "PropertiesOfPerpendicularLines",
+        "PropertiesOfParallelLines",
+        "PointSlopeForm",
+        "HorizontalAndVerticalLineEquations",
+        "SlopeInterceptForm",
+        "InterceptForm",
+        "GeneralFormOfLinearEquation",
+        "DistanceBetweenPointAndLine",
+        "DistanceBetweenTwoParallelLines",
+        "CartesianCoordinateSystemEstablishment",
+        "MidpointCoordinates",
+        "DistanceBetweenTwoPointsInPlane",
+        "DivisionPointCoordinates"
+    ]
+    if any(k in s for k in linear_keywords):
+        return True
+    return False
+
+def remap_legacy_fields(cand: dict[str, Any], skill_id: str = "") -> dict[str, Any]:
     """
     Cleans and canonicalizes legacy fields in a candidate to standard Gencode Whitelist tokens.
     """
+    import re
     ac = dict(cand.get("answer_contract_proposal", {}))
     
     at = str(ac.get("answer_type", cand.get("answer_type", "expression"))).strip()
@@ -192,6 +219,63 @@ def remap_legacy_fields(cand: dict[str, Any]) -> dict[str, Any]:
     pt_id = str(cand.get("problem_type_id", "")).strip()
     draft = dict(cand.get("problem_type_spec_draft")) if isinstance(cand.get("problem_type_spec_draft"), dict) else {}
     coordinate_pair_semantic = _has_coordinate_pair_semantics(ac) or _has_coordinate_pair_semantics(draft)
+    
+    # 0. Hard constraints for TVET Math B (Linear Equations & Permutations/Combinations/Probability)
+    is_single_var = False
+    has_slope = False
+    is_relevant_skill = skill_id and _is_tvet_mathB_linear_or_combinatorics(skill_id)
+    
+    example_ids = []
+    if draft:
+        example_ids = draft.get("source_example_ids", [])
+    if not example_ids and "source_example_ids" in cand:
+        example_ids = cand.get("source_example_ids", [])
+        
+    if is_relevant_skill:
+        example_texts = []
+        if example_ids:
+            import sqlite3
+            try:
+                conn = sqlite3.connect('instance/kumon_math.db')
+                cursor = conn.cursor()
+                clean_ids = []
+                for x in example_ids:
+                    try:
+                        clean_ids.append(int(x))
+                    except (TypeError, ValueError):
+                        pass
+                if clean_ids:
+                    ids_str = ",".join(str(cid) for cid in clean_ids)
+                    cursor.execute(f"SELECT problem_text, correct_answer FROM textbook_examples WHERE id IN ({ids_str})")
+                    rows = cursor.fetchall()
+                    for problem_text, correct_answer in rows:
+                        if problem_text:
+                            example_texts.append(str(problem_text))
+                        if correct_answer:
+                            ans_str = str(correct_answer)
+                            if "/" in ans_str or "frac" in ans_str or "." in ans_str:
+                                has_slope = True
+                conn.close()
+            except Exception:
+                pass
+                
+        for text in example_texts:
+            if "斜率" in text or "slope" in text.lower() or "/" in text or "frac" in text:
+                has_slope = True
+            # Matches 求 x 之值, 試求 a之值, 求k =, etc.
+            if re.search(r"求\s*[a-zA-Z]\s*之值|試求\s*[a-zA-Z]\s*之值|求\s*[a-zA-Z]\s*=|試求\s*[a-zA-Z]\s*=|求\s*[a-zA-Z]\s*值|試求\s*[a-zA-Z]\s*值", text):
+                is_single_var = True
+                
+        if is_single_var:
+            if has_slope:
+                at = "rational"
+                eq = "rational_equivalent"
+                checker = "rational_checker"
+            else:
+                at = "integer"
+                eq = "numeric_exact"
+                checker = "integer_checker"
+                
     at, eq, checker = canonicalize_and_complete(
         at,
         eq,
@@ -221,6 +305,14 @@ def remap_legacy_fields(cand: dict[str, Any]) -> dict[str, Any]:
         pt_id = pt_id.replace("numeric_", f"{at}_").replace("_numeric", f"_{at}")
         if not coordinate_pair_semantic:
             pt_id = pt_id.replace("short_answer", "expression")
+        if is_single_var:
+            pt_id = pt_id.replace("text_short_", f"{at}_").replace("_text_short", f"_{at}").replace("text_short", at)
+            if pt_id.startswith("expression_"):
+                pt_id = pt_id.replace("expression_", f"{at}_")
+            if pt_id.startswith("text_short_"):
+                pt_id = pt_id.replace("text_short_", f"{at}_")
+            if pt_id.startswith("short_answer_"):
+                pt_id = pt_id.replace("short_answer_", f"{at}_")
         cand["problem_type_id"] = pt_id
         cand["proposed_problem_type_id"] = pt_id
     if draft:
@@ -258,6 +350,7 @@ def validate_phase1_report_contract(report: dict[str, Any]) -> dict[str, Any]:
     violations = []
     warnings = []
     normalized_fields = {}
+    skill_id = report.get("source_skill_id") or report.get("skill_id", "")
     
     # 1. Load data collections safely
     per_example = report.get("per_example_classification", []) or report.get("source_classifications", []) or []
@@ -509,7 +602,7 @@ def validate_phase1_report_contract(report: dict[str, Any]) -> dict[str, Any]:
         if not isinstance(cand, dict):
             normalized_candidates.append(cand)
             continue
-        cleaned_cand = remap_legacy_fields(dict(cand))
+        cleaned_cand = remap_legacy_fields(dict(cand), skill_id=skill_id)
         normalized_candidates.append(cleaned_cand)
         
     normalized_fields["candidate_problem_types"] = normalized_candidates

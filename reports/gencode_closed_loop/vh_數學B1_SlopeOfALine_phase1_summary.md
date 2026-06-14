@@ -59,7 +59,7 @@ $$、$D\lef |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | 4529 | compute_numeric | generic_numeric_family | 1.0 | compute_numeric | generic_numeric_family | compute_numeric | generic_numeric_family | ai_outsider_candidate |  | True |
 | 4519 | compute_numeric | generic_numeric_family | 0.9 | compute_numeric | generic_numeric_family | compute_numeric | generic_numeric_family | ai |  | False |
-| 4520 | compute_numeric | generic_numeric_family | 0.9 | compute_numeric | generic_numeric_family | compute_numeric | generic_numeric_family | ai |  | False |
+| 4520 | compute_numeric | generic_numeric_family | 1.0 | compute_numeric | generic_numeric_family | compute_numeric | generic_numeric_family | ai |  | False |
 | 4521 | compute_numeric | generic_numeric_family | 1.0 | compute_numeric | generic_numeric_family | compute_numeric | generic_numeric_family | ai |  | False |
 | 4522 | compute_numeric | generic_numeric_family | 1.0 | compute_numeric | generic_numeric_family | compute_numeric | generic_numeric_family | ai |  | False |
 | 4523 | compute_numeric | generic_numeric_family | 1.0 | compute_numeric | generic_numeric_family | compute_numeric | generic_numeric_family | ai |  | False |
@@ -75,7 +75,7 @@ $$、$D\lef |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | 4529 | compute_numeric/generic_numeric_family | compute_numeric/generic_numeric_family | 1.0 | ai_outsider_candidate | compute_numeric/generic_numeric_family | outsider_candidate_warning |  |
 | 4519 | compute_numeric/generic_numeric_family | compute_numeric/generic_numeric_family | 0.9 | fallback_application_induct | evaluate_function_value/generic_numeric_family | unclassified_low_confidence | unclassified_low_confidence |
-| 4520 | compute_numeric/generic_numeric_family | compute_numeric/generic_numeric_family | 0.9 | fallback_application_induct | evaluate_function_value/generic_numeric_family | unclassified_low_confidence | unclassified_low_confidence |
+| 4520 | compute_numeric/generic_numeric_family | compute_numeric/generic_numeric_family | 1.0 | fallback_application_induct | evaluate_function_value/generic_numeric_family | unclassified_low_confidence | unclassified_low_confidence |
 | 4521 | compute_numeric/generic_numeric_family | compute_numeric/generic_numeric_family | 1.0 | fallback_application_induct | evaluate_function_value/generic_numeric_family | unclassified_low_confidence | unclassified_low_confidence |
 | 4522 | compute_numeric/generic_numeric_family | compute_numeric/generic_numeric_family | 1.0 | fallback_application_induct | evaluate_function_value/generic_numeric_family | unclassified_low_confidence | unclassified_low_confidence |
 | 4523 | compute_numeric/generic_numeric_family | compute_numeric/generic_numeric_family | 1.0 | fallback_application_induct | evaluate_function_value/generic_numeric_family | unclassified_low_confidence | unclassified_low_confidence |
@@ -543,11 +543,11 @@ $$、$D\lef |
       "ai_confidence": 1.0,
       "ai_best_candidate_id": "C1",
       "ai_evidence": [
-        "題目給定三點 A(-2,0), B(-1,1), C(k,4) 共線，求未知數 k 的值，此題型屬於直線斜率的應用，利用 AB 斜率等於 BC 斜率來求解。",
-        "在候選清單中，C1 (compute_numeric) 是唯一可選的具體子技能。"
+        "題目給定三點 A(-2,0), B(-1,1), C(k,4) 共線，求 k 的值。",
+        "此題利用 AB 斜率等於 BC 斜率的觀念來列式求解，屬於數值計算。"
       ],
       "ai_rejected_candidates": {
-        "needs_review": "題目清晰可讀，且屬於該技能的核心範疇，不應選擇 needs_review。"
+        "needs_review": "題目清晰且與斜率單元完全契合，無須送審。"
       },
       "ai_available": true,
       "ai_error": "",
@@ -568,7 +568,7 @@ $$、$D\lef |
       "conflict_reason": "",
       "source_mapping_warning": "outsider_candidate_within_confirmed_skill",
       "requires_human_action": true,
-      "ai_notes": "由於候選清單中僅有 C1 與 needs_review，且題目完全可讀，因此依據規則選擇 C1。",
+      "ai_notes": "根據強制合約，此題屬於直線的斜率單元，利用斜率相等求解 k，選擇 compute_numeric。",
       "skill_scoped_candidates": [
         {
           "candidate_id": "C1",
@@ -811,11 +811,10 @@ $$、$D\lef |
       "ai_confidence": 0.9,
       "ai_best_candidate_id": "C1",
       "ai_evidence": [
-        "題目要求計算直線 AB、BC、AC、BD 的斜率並畫出圖形。",
-        "此任務屬於數值計算（compute_numeric）。"
+        "The question asks to find the slopes of lines AB, BC, AC, and BD, which is a numeric computation task."
       ],
       "ai_rejected_candidates": {
-        "needs_review": "雖然題目中 A 與 B 點的座標在文字中遺漏，但題意明確為計算斜率，且規則規定除非完全無法閱讀否則禁止選擇 needs_review。"
+        "needs_review": "The stem has a typo where coordinates for A and B are missing, but the task type is clearly numeric computation, and needs_review is forbidden unless the stem is completely unreadable."
       },
       "ai_available": true,
       "ai_error": "",
@@ -836,7 +835,7 @@ $$、$D\lef |
       "conflict_reason": "",
       "source_mapping_warning": "",
       "requires_human_action": false,
-      "ai_notes": "題目中點 A 與點 B 的座標在文字中遺漏（顯示為『設、、』），但其核心任務為計算直線斜率，符合 compute_numeric 的定義。",
+      "ai_notes": "The task is to compute the slope of lines given points, which corresponds to compute_numeric.",
       "skill_scoped_candidates": [
         {
           "candidate_id": "C1",
@@ -1074,15 +1073,14 @@ $$、$D\lef |
       "example_id": 4520,
       "ai_target_task": "compute_numeric",
       "ai_task_family": "generic_numeric_family",
-      "ai_confidence": 0.9,
+      "ai_confidence": 1.0,
       "ai_best_candidate_id": "C1",
       "ai_evidence": [
-        "The question asks to identify and compare the slopes of lines from graphs.",
-        "The candidate list only contains C1 (compute_numeric) and needs_review.",
-        "Choosing needs_review is forbidden because the question text is clear and readable."
+        "題目要求根據圖形判斷斜率的正負、零或不存在，並比較斜率大小，屬於直線斜率的基本觀念。",
+        "依據規定，題目清晰可讀時禁止選擇 needs_review，因此選擇唯一的候選者 C1。"
       ],
       "ai_rejected_candidates": {
-        "needs_review": "The question text is fully readable and aligned with the skill of slope of a line, so needs_review is rejected."
+        "needs_review": "題目語意清晰、圖形描述完整，不符合 needs_review 的選取條件。"
       },
       "ai_available": true,
       "ai_error": "",
@@ -1103,7 +1101,7 @@ $$、$D\lef |
       "conflict_reason": "",
       "source_mapping_warning": "",
       "requires_human_action": false,
-      "ai_notes": "The question asks students to determine the sign of slopes and compare slope values based on graphs. Since needs_review is forbidden for readable stems, C1 is selected.",
+      "ai_notes": "本題為直線斜率的觀念判定與大小比較。因 needs_review 僅在題目無法閱讀時使用，故選擇 C1。",
       "skill_scoped_candidates": [
         {
           "candidate_id": "C1",
@@ -1339,12 +1337,10 @@ $$、$D\lef |
       "ai_confidence": 1.0,
       "ai_best_candidate_id": "C1",
       "ai_evidence": [
-        "題目要求計算通過兩點 A 與 B 的直線斜率",
-        "此題為直線斜率的基本數值計算",
-        "在候選清單中，C1 (compute_numeric) 是唯一合理的非 needs_review 選項"
+        "題目要求計算過兩點 A 與 B 的直線斜率，屬於基礎數值計算。"
       ],
       "ai_rejected_candidates": {
-        "needs_review": "題目清晰且完全可讀，無須人工審查"
+        "needs_review": "題目語意清晰且完整，無須送審。"
       },
       "ai_available": true,
       "ai_error": "",
@@ -1365,7 +1361,7 @@ $$、$D\lef |
       "conflict_reason": "",
       "source_mapping_warning": "",
       "requires_human_action": false,
-      "ai_notes": "本題為給定兩點求直線斜率的數值計算題，對應 compute_numeric。",
+      "ai_notes": "此題為給定兩點求斜率的標準計算題，對應到 compute_numeric 子技能。",
       "skill_scoped_candidates": [
         {
           "candidate_id": "C1",
@@ -1606,10 +1602,11 @@ $$、$D\lef |
       "ai_confidence": 1.0,
       "ai_best_candidate_id": "C1",
       "ai_evidence": [
-        "題目給定兩點座標 (2, a) 與 (1-a, 5) 且斜率為 2，要求解 a 的值，屬於數值計算。"
+        "題目給定兩點座標 (2, a) 與 (1-a, 5) 且斜率為 2，要求解未知數 a 的值。",
+        "此題屬於直線斜率公式的數值計算應用。"
       ],
       "ai_rejected_candidates": {
-        "needs_review": "題目清晰且可正常求解，不應選擇 needs_review。"
+        "needs_review": "題目清晰且完全符合直線斜率的教學範疇，無須人工審查。"
       },
       "ai_available": true,
       "ai_error": "",
@@ -1630,7 +1627,7 @@ $$、$D\lef |
       "conflict_reason": "",
       "source_mapping_warning": "",
       "requires_human_action": false,
-      "ai_notes": "依據強制合約，此題與直線斜率技能完全對齊，且題目清晰，故選擇 C1。",
+      "ai_notes": "依據強制合約，此題與直線的斜率技能 100% 對齊，且題幹清晰，故選擇 C1。",
       "skill_scoped_candidates": [
         {
           "candidate_id": "C1",
@@ -1869,11 +1866,11 @@ $$、$D\lef |
       "ai_confidence": 1.0,
       "ai_best_candidate_id": "C1",
       "ai_evidence": [
-        "題目給定三點 A(-1,-1)、B(2,k)、C(8,5) 共線，求 k 的值。",
-        "此題利用 AB 斜率等於 AC 斜率的觀念進行數值計算，符合 compute_numeric 的定義。"
+        "題目給定三點 A(-1, -1)、B(2, k)、C(8, 5) 共線，要求未知數 k 的值。",
+        "此題利用 AB 斜率等於 AC 斜率的觀念來建立方程式並求解，屬於直線斜率的數值計算。"
       ],
       "ai_rejected_candidates": {
-        "needs_review": "題目語意清晰且與直線斜率技能完全契合，無須人工審查。"
+        "needs_review": "題目語意清晰完整，且與直線斜率的核心概念完全符合，不需送審。"
       },
       "ai_available": true,
       "ai_error": "",
@@ -1894,7 +1891,7 @@ $$、$D\lef |
       "conflict_reason": "",
       "source_mapping_warning": "",
       "requires_human_action": false,
-      "ai_notes": "三點共線是直線斜率單元的經典題型，透過斜率相等建立方程式求出未知數 k。",
+      "ai_notes": "透過三點共線斜率相等的性質求解未知數，選擇 compute_numeric。",
       "skill_scoped_candidates": [
         {
           "candidate_id": "C1",
@@ -2135,12 +2132,12 @@ $$、$D\lef |
       "ai_confidence": 0.92,
       "ai_best_candidate_id": "C2",
       "ai_evidence": [
-        "The Python math meta preflight specifies a forced target task of applied_quadratic_inequality_problem.",
-        "Candidate C2 matches this forced target task and must be selected as per the mandatory instruction."
+        "The Python math meta preflight instructions explicitly mandate selecting the candidate whose target_task equals forced_target_task (applied_quadratic_inequality_problem).",
+        "Candidate C2 has the target_task applied_quadratic_inequality_problem."
       ],
       "ai_rejected_candidates": {
-        "C1": "This candidate does not match the forced target task specified in the preflight instructions.",
-        "needs_review": "This candidate is rejected because choosing needs_review is forbidden and does not match the forced target task."
+        "C1": "Rejected because C2 is forced by the mandatory preflight instructions.",
+        "needs_review": "Rejected because choosing needs_review is forbidden when the stem is readable and a candidate is forced."
       },
       "ai_available": true,
       "ai_error": "",
@@ -2161,7 +2158,7 @@ $$、$D\lef |
       "conflict_reason": "",
       "source_mapping_warning": "outsider_candidate_within_confirmed_skill",
       "requires_human_action": true,
-      "ai_notes": "The selection of C2 is strictly guided by the mandatory preflight instruction to choose the candidate whose target task equals applied_quadratic_inequality_problem.",
+      "ai_notes": "Selected C2 as mandated by the forced_target_task rule in the preflight instructions.",
       "skill_scoped_candidates": [
         {
           "candidate_id": "C1",
@@ -2503,14 +2500,12 @@ $$、$D\lef |
       "ai_confidence": 0.9,
       "ai_best_candidate_id": "C1",
       "ai_evidence": [
-        "題目要求在兩線段平行或垂直的條件下求解未知數 a 與 x 的值",
-        "此題型利用兩點斜率公式，平行時斜率相等，垂直時斜率乘積為負一",
-        "候選項目 C2 為利用兩點距離公式求解未知坐標，與本題斜率概念不符",
-        "在沒有更具體斜率相關子技能的情況下，選擇 C1 (compute_numeric) 作為通用數值計算"
+        "題目要求利用線段 AB 與線段 CD 平行，以及線段 AB 與線段 CD 垂直的條件，求出未知數 a 與 x 的值。",
+        "此題涉及斜率相等與斜率相乘等於 -1 的計算，在提供的候選清單中，C1 (compute_numeric) 作為通用數值計算最為合適。"
       ],
       "ai_rejected_candidates": {
-        "C2": "此題並非使用兩點距離公式，而是利用平行與垂直的斜率關係求解，故排除 C2",
-        "needs_review": "題目清晰可讀，且依據合約禁止在題目可讀時選擇 needs_review"
+        "C2": "此題並非利用兩點距離公式求未知坐標，而是利用平行與垂直的斜率關係，故排除 C2。",
+        "needs_review": "題目清晰可讀，且依合約規定禁止輕易選擇 needs_review。"
       },
       "ai_available": true,
       "ai_error": "",
@@ -2531,7 +2526,7 @@ $$、$D\lef |
       "conflict_reason": "rule_family=distance_between_two_points_family; ai_subskill=compute_numeric",
       "source_mapping_warning": "",
       "requires_human_action": false,
-      "ai_notes": "本題屬於直線斜率的平行與垂直應用。由於候選清單中無斜率相關子技能，且 C2 屬於兩點距離家族，故選擇 C1 作為最合適的通用計算分類。",
+      "ai_notes": "由於候選清單中沒有專門針對斜率平行或垂直的子技能，故歸類於通用的數值計算 (compute_numeric)。",
       "skill_scoped_candidates": [
         {
           "candidate_id": "C1",
@@ -2993,11 +2988,10 @@ $$、$D\lef |
       "ai_confidence": 0.95,
       "ai_best_candidate_id": "C1",
       "ai_evidence": [
-        "題目給定數個點的坐標，並要求計算直線 AP、BP、CP、DP 的斜率。",
-        "此任務屬於計算兩點間直線斜率的數值計算題型。"
+        "題目給定數個點的座標，要求計算直線 AP、BP、CP、DP 的斜率，屬於數值計算。"
       ],
       "ai_rejected_candidates": {
-        "needs_review": "雖然題目文本中 C 點的坐標因格式問題顯示為雙錢字號，但整體題意非常明確，為求兩點連線之斜率，且合約規定除非題目完全無法閱讀，否則禁止選擇 needs_review。"
+        "needs_review": "雖然題目文字中 C 點座標因格式問題顯示為雙錢字號，但整體題意極為明確，為標準的斜率計算，不需設為 needs_review。"
       },
       "ai_available": true,
       "ai_error": "",
@@ -3018,7 +3012,7 @@ $$、$D\lef |
       "conflict_reason": "",
       "source_mapping_warning": "",
       "requires_human_action": false,
-      "ai_notes": "本題為給定點坐標求直線斜率的標準計算題，對應 compute_numeric。",
+      "ai_notes": "此題為給定點座標求直線斜率，符合 compute_numeric 的定義。",
       "skill_scoped_candidates": [
         {
           "candidate_id": "C1",
@@ -3259,11 +3253,12 @@ $$、$D\lef |
       "ai_confidence": 0.92,
       "ai_best_candidate_id": "C2",
       "ai_evidence": [
-        "The Python math meta preflight specifies that we must select the candidate whose target_task equals forced_target_task, which is applied_quadratic_inequality_problem (C2)."
+        "The Python math meta preflight MANDATORY instruction forces the selection of the candidate with target_task equal to applied_quadratic_inequality_problem.",
+        "Candidate C2 matches this forced target task."
       ],
       "ai_rejected_candidates": {
-        "C1": "Not the forced target task",
-        "needs_review": "Preflight instruction overrides other options"
+        "C1": "Rejected because C2 is forced by the preflight instruction.",
+        "needs_review": "Rejected because C2 is forced by the preflight instruction."
       },
       "ai_available": true,
       "ai_error": "",
@@ -3284,7 +3279,7 @@ $$、$D\lef |
       "conflict_reason": "",
       "source_mapping_warning": "outsider_candidate_within_confirmed_skill",
       "requires_human_action": true,
-      "ai_notes": "Selected C2 as mandated by the Python math meta preflight instruction.",
+      "ai_notes": "Forced selection of C2 based on the mandatory preflight instruction.",
       "skill_scoped_candidates": [
         {
           "candidate_id": "C1",
@@ -3624,12 +3619,12 @@ $$、$D\lef |
       "ai_confidence": 1.0,
       "ai_best_candidate_id": "C1",
       "ai_evidence": [
-        "The question asks to find the value of a parameter 'a' given two points A(2, a) and B(a, 8) on a line with a slope of 2.",
-        "This is a standard numeric calculation task based on the slope formula.",
-        "The candidate C1 (compute_numeric) is the most appropriate category among the choices, and needs_review is avoided as the question is fully readable."
+        "The question asks to find the value of a given two points A(2, a) and B(a, 8) on line L with slope 2.",
+        "This is a numeric computation task based on the definition of the slope of a line.",
+        "The candidate C1 (compute_numeric) is the only valid non-needs_review candidate provided."
       ],
       "ai_rejected_candidates": {
-        "needs_review": "The question is clear, readable, and perfectly aligned with the slope of a line topic, so needs_review is rejected."
+        "needs_review": "The stem is perfectly readable and aligned with the skill of finding the slope of a line, so needs_review is rejected."
       },
       "ai_available": true,
       "ai_error": "",
@@ -3650,7 +3645,7 @@ $$、$D\lef |
       "conflict_reason": "",
       "source_mapping_warning": "",
       "requires_human_action": false,
-      "ai_notes": "The problem requires solving the equation (8 - a) / (a - 2) = 2 to find the value of a.",
+      "ai_notes": "The problem requires solving for the parameter a using the slope formula (8 - a) / (a - 2) = 2, which is a numeric computation task.",
       "skill_scoped_candidates": [
         {
           "candidate_id": "C1",
@@ -3889,11 +3884,11 @@ $$、$D\lef |
       "ai_confidence": 1.0,
       "ai_best_candidate_id": "C1",
       "ai_evidence": [
-        "題目給定三點共線，要求解未知數 a 的值。",
-        "此題可利用兩點求斜率公式，藉由斜率相等（PQ 斜率等於 PR 斜率）列式求解，屬於數值計算。"
+        "The problem asks to find the value of 'a' given that three points are collinear, which is solved by setting the slope of PQ equal to the slope of PR.",
+        "Since C1 (compute_numeric) is the only non-review candidate provided, and the stem is readable, C1 is the correct choice."
       ],
       "ai_rejected_candidates": {
-        "needs_review": "題目雖然在點的標示上有些許排版瑕疵（如 B(-1,0)R(8,-2)），但整體語意依然清晰可解，不需進入人工審查。"
+        "needs_review": "The stem is readable and represents a standard collinearity problem using slopes, so needs_review is rejected."
       },
       "ai_available": true,
       "ai_error": "",
@@ -3914,7 +3909,7 @@ $$、$D\lef |
       "conflict_reason": "",
       "source_mapping_warning": "",
       "requires_human_action": false,
-      "ai_notes": "此題為利用三點共線（斜率相等）來求未知數的典型數值計算題，故選擇 C1。",
+      "ai_notes": "The text contains a minor typo 'B(-1,0)R(8,-2)' but the mathematical intent of collinear points P, Q, and R is clear and solvable.",
       "skill_scoped_candidates": [
         {
           "candidate_id": "C1",
@@ -4664,7 +4659,7 @@ $$、$D\lef |
       "rule_confidence": 0.2,
       "ai_target_task": "compute_numeric",
       "ai_task_family": "generic_numeric_family",
-      "ai_confidence": 0.9,
+      "ai_confidence": 1.0,
       "ai_semantic_status": "ok",
       "ai_available": true,
       "ai_error": "",
@@ -9672,11 +9667,11 @@ $$、$D\lef |
           "ai_confidence": 1.0,
           "ai_best_candidate_id": "C1",
           "ai_evidence": [
-            "題目給定三點 A(-2,0), B(-1,1), C(k,4) 共線，求未知數 k 的值，此題型屬於直線斜率的應用，利用 AB 斜率等於 BC 斜率來求解。",
-            "在候選清單中，C1 (compute_numeric) 是唯一可選的具體子技能。"
+            "題目給定三點 A(-2,0), B(-1,1), C(k,4) 共線，求 k 的值。",
+            "此題利用 AB 斜率等於 BC 斜率的觀念來列式求解，屬於數值計算。"
           ],
           "ai_rejected_candidates": {
-            "needs_review": "題目清晰可讀，且屬於該技能的核心範疇，不應選擇 needs_review。"
+            "needs_review": "題目清晰且與斜率單元完全契合，無須送審。"
           },
           "ai_available": true,
           "ai_error": "",
@@ -9697,7 +9692,7 @@ $$、$D\lef |
           "conflict_reason": "",
           "source_mapping_warning": "outsider_candidate_within_confirmed_skill",
           "requires_human_action": true,
-          "ai_notes": "由於候選清單中僅有 C1 與 needs_review，且題目完全可讀，因此依據規則選擇 C1。",
+          "ai_notes": "根據強制合約，此題屬於直線的斜率單元，利用斜率相等求解 k，選擇 compute_numeric。",
           "skill_scoped_candidates": [
             {
               "candidate_id": "C1",
@@ -10062,11 +10057,11 @@ $$、$D\lef |
         "ai_confidence": 1.0,
         "ai_best_candidate_id": "C1",
         "ai_evidence": [
-          "題目給定三點 A(-2,0), B(-1,1), C(k,4) 共線，求未知數 k 的值，此題型屬於直線斜率的應用，利用 AB 斜率等於 BC 斜率來求解。",
-          "在候選清單中，C1 (compute_numeric) 是唯一可選的具體子技能。"
+          "題目給定三點 A(-2,0), B(-1,1), C(k,4) 共線，求 k 的值。",
+          "此題利用 AB 斜率等於 BC 斜率的觀念來列式求解，屬於數值計算。"
         ],
         "ai_rejected_candidates": {
-          "needs_review": "題目清晰可讀，且屬於該技能的核心範疇，不應選擇 needs_review。"
+          "needs_review": "題目清晰且與斜率單元完全契合，無須送審。"
         },
         "ai_available": true,
         "ai_error": "",
@@ -10087,7 +10082,7 @@ $$、$D\lef |
         "conflict_reason": "",
         "source_mapping_warning": "outsider_candidate_within_confirmed_skill",
         "requires_human_action": true,
-        "ai_notes": "由於候選清單中僅有 C1 與 needs_review，且題目完全可讀，因此依據規則選擇 C1。",
+        "ai_notes": "根據強制合約，此題屬於直線的斜率單元，利用斜率相等求解 k，選擇 compute_numeric。",
         "skill_scoped_candidates": [
           {
             "candidate_id": "C1",
@@ -10378,11 +10373,10 @@ $$、$D\lef |
           "ai_confidence": 0.9,
           "ai_best_candidate_id": "C1",
           "ai_evidence": [
-            "題目要求計算直線 AB、BC、AC、BD 的斜率並畫出圖形。",
-            "此任務屬於數值計算（compute_numeric）。"
+            "The question asks to find the slopes of lines AB, BC, AC, and BD, which is a numeric computation task."
           ],
           "ai_rejected_candidates": {
-            "needs_review": "雖然題目中 A 與 B 點的座標在文字中遺漏，但題意明確為計算斜率，且規則規定除非完全無法閱讀否則禁止選擇 needs_review。"
+            "needs_review": "The stem has a typo where coordinates for A and B are missing, but the task type is clearly numeric computation, and needs_review is forbidden unless the stem is completely unreadable."
           },
           "ai_available": true,
           "ai_error": "",
@@ -10403,7 +10397,7 @@ $$、$D\lef |
           "conflict_reason": "",
           "source_mapping_warning": "",
           "requires_human_action": false,
-          "ai_notes": "題目中點 A 與點 B 的座標在文字中遺漏（顯示為『設、、』），但其核心任務為計算直線斜率，符合 compute_numeric 的定義。",
+          "ai_notes": "The task is to compute the slope of lines given points, which corresponds to compute_numeric.",
           "skill_scoped_candidates": [
             {
               "candidate_id": "C1",
@@ -10775,11 +10769,10 @@ $$、$D\lef |
         "ai_confidence": 0.9,
         "ai_best_candidate_id": "C1",
         "ai_evidence": [
-          "題目要求計算直線 AB、BC、AC、BD 的斜率並畫出圖形。",
-          "此任務屬於數值計算（compute_numeric）。"
+          "The question asks to find the slopes of lines AB, BC, AC, and BD, which is a numeric computation task."
         ],
         "ai_rejected_candidates": {
-          "needs_review": "雖然題目中 A 與 B 點的座標在文字中遺漏，但題意明確為計算斜率，且規則規定除非完全無法閱讀否則禁止選擇 needs_review。"
+          "needs_review": "The stem has a typo where coordinates for A and B are missing, but the task type is clearly numeric computation, and needs_review is forbidden unless the stem is completely unreadable."
         },
         "ai_available": true,
         "ai_error": "",
@@ -10800,7 +10793,7 @@ $$、$D\lef |
         "conflict_reason": "",
         "source_mapping_warning": "",
         "requires_human_action": false,
-        "ai_notes": "題目中點 A 與點 B 的座標在文字中遺漏（顯示為『設、、』），但其核心任務為計算直線斜率，符合 compute_numeric 的定義。",
+        "ai_notes": "The task is to compute the slope of lines given points, which corresponds to compute_numeric.",
         "skill_scoped_candidates": [
           {
             "candidate_id": "C1",
@@ -11081,15 +11074,14 @@ $$、$D\lef |
         "semantic_classification": {
           "ai_target_task": "compute_numeric",
           "ai_task_family": "generic_numeric_family",
-          "ai_confidence": 0.9,
+          "ai_confidence": 1.0,
           "ai_best_candidate_id": "C1",
           "ai_evidence": [
-            "The question asks to identify and compare the slopes of lines from graphs.",
-            "The candidate list only contains C1 (compute_numeric) and needs_review.",
-            "Choosing needs_review is forbidden because the question text is clear and readable."
+            "題目要求根據圖形判斷斜率的正負、零或不存在，並比較斜率大小，屬於直線斜率的基本觀念。",
+            "依據規定，題目清晰可讀時禁止選擇 needs_review，因此選擇唯一的候選者 C1。"
           ],
           "ai_rejected_candidates": {
-            "needs_review": "The question text is fully readable and aligned with the skill of slope of a line, so needs_review is rejected."
+            "needs_review": "題目語意清晰、圖形描述完整，不符合 needs_review 的選取條件。"
           },
           "ai_available": true,
           "ai_error": "",
@@ -11110,7 +11102,7 @@ $$、$D\lef |
           "conflict_reason": "",
           "source_mapping_warning": "",
           "requires_human_action": false,
-          "ai_notes": "The question asks students to determine the sign of slopes and compare slope values based on graphs. Since needs_review is forbidden for readable stems, C1 is selected.",
+          "ai_notes": "本題為直線斜率的觀念判定與大小比較。因 needs_review 僅在題目無法閱讀時使用，故選擇 C1。",
           "skill_scoped_candidates": [
             {
               "candidate_id": "C1",
@@ -11474,15 +11466,14 @@ $$、$D\lef |
       "semantic_classification": {
         "ai_target_task": "compute_numeric",
         "ai_task_family": "generic_numeric_family",
-        "ai_confidence": 0.9,
+        "ai_confidence": 1.0,
         "ai_best_candidate_id": "C1",
         "ai_evidence": [
-          "The question asks to identify and compare the slopes of lines from graphs.",
-          "The candidate list only contains C1 (compute_numeric) and needs_review.",
-          "Choosing needs_review is forbidden because the question text is clear and readable."
+          "題目要求根據圖形判斷斜率的正負、零或不存在，並比較斜率大小，屬於直線斜率的基本觀念。",
+          "依據規定，題目清晰可讀時禁止選擇 needs_review，因此選擇唯一的候選者 C1。"
         ],
         "ai_rejected_candidates": {
-          "needs_review": "The question text is fully readable and aligned with the skill of slope of a line, so needs_review is rejected."
+          "needs_review": "題目語意清晰、圖形描述完整，不符合 needs_review 的選取條件。"
         },
         "ai_available": true,
         "ai_error": "",
@@ -11503,7 +11494,7 @@ $$、$D\lef |
         "conflict_reason": "",
         "source_mapping_warning": "",
         "requires_human_action": false,
-        "ai_notes": "The question asks students to determine the sign of slopes and compare slope values based on graphs. Since needs_review is forbidden for readable stems, C1 is selected.",
+        "ai_notes": "本題為直線斜率的觀念判定與大小比較。因 needs_review 僅在題目無法閱讀時使用，故選擇 C1。",
         "skill_scoped_candidates": [
           {
             "candidate_id": "C1",
@@ -11787,12 +11778,10 @@ $$、$D\lef |
           "ai_confidence": 1.0,
           "ai_best_candidate_id": "C1",
           "ai_evidence": [
-            "題目要求計算通過兩點 A 與 B 的直線斜率",
-            "此題為直線斜率的基本數值計算",
-            "在候選清單中，C1 (compute_numeric) 是唯一合理的非 needs_review 選項"
+            "題目要求計算過兩點 A 與 B 的直線斜率，屬於基礎數值計算。"
           ],
           "ai_rejected_candidates": {
-            "needs_review": "題目清晰且完全可讀，無須人工審查"
+            "needs_review": "題目語意清晰且完整，無須送審。"
           },
           "ai_available": true,
           "ai_error": "",
@@ -11813,7 +11802,7 @@ $$、$D\lef |
           "conflict_reason": "",
           "source_mapping_warning": "",
           "requires_human_action": false,
-          "ai_notes": "本題為給定兩點求直線斜率的數值計算題，對應 compute_numeric。",
+          "ai_notes": "此題為給定兩點求斜率的標準計算題，對應到 compute_numeric 子技能。",
           "skill_scoped_candidates": [
             {
               "candidate_id": "C1",
@@ -12185,12 +12174,10 @@ $$、$D\lef |
         "ai_confidence": 1.0,
         "ai_best_candidate_id": "C1",
         "ai_evidence": [
-          "題目要求計算通過兩點 A 與 B 的直線斜率",
-          "此題為直線斜率的基本數值計算",
-          "在候選清單中，C1 (compute_numeric) 是唯一合理的非 needs_review 選項"
+          "題目要求計算過兩點 A 與 B 的直線斜率，屬於基礎數值計算。"
         ],
         "ai_rejected_candidates": {
-          "needs_review": "題目清晰且完全可讀，無須人工審查"
+          "needs_review": "題目語意清晰且完整，無須送審。"
         },
         "ai_available": true,
         "ai_error": "",
@@ -12211,7 +12198,7 @@ $$、$D\lef |
         "conflict_reason": "",
         "source_mapping_warning": "",
         "requires_human_action": false,
-        "ai_notes": "本題為給定兩點求直線斜率的數值計算題，對應 compute_numeric。",
+        "ai_notes": "此題為給定兩點求斜率的標準計算題，對應到 compute_numeric 子技能。",
         "skill_scoped_candidates": [
           {
             "candidate_id": "C1",
@@ -12496,10 +12483,11 @@ $$、$D\lef |
           "ai_confidence": 1.0,
           "ai_best_candidate_id": "C1",
           "ai_evidence": [
-            "題目給定兩點座標 (2, a) 與 (1-a, 5) 且斜率為 2，要求解 a 的值，屬於數值計算。"
+            "題目給定兩點座標 (2, a) 與 (1-a, 5) 且斜率為 2，要求解未知數 a 的值。",
+            "此題屬於直線斜率公式的數值計算應用。"
           ],
           "ai_rejected_candidates": {
-            "needs_review": "題目清晰且可正常求解，不應選擇 needs_review。"
+            "needs_review": "題目清晰且完全符合直線斜率的教學範疇，無須人工審查。"
           },
           "ai_available": true,
           "ai_error": "",
@@ -12520,7 +12508,7 @@ $$、$D\lef |
           "conflict_reason": "",
           "source_mapping_warning": "",
           "requires_human_action": false,
-          "ai_notes": "依據強制合約，此題與直線斜率技能完全對齊，且題目清晰，故選擇 C1。",
+          "ai_notes": "依據強制合約，此題與直線的斜率技能 100% 對齊，且題幹清晰，故選擇 C1。",
           "skill_scoped_candidates": [
             {
               "candidate_id": "C1",
@@ -12890,10 +12878,11 @@ $$、$D\lef |
         "ai_confidence": 1.0,
         "ai_best_candidate_id": "C1",
         "ai_evidence": [
-          "題目給定兩點座標 (2, a) 與 (1-a, 5) 且斜率為 2，要求解 a 的值，屬於數值計算。"
+          "題目給定兩點座標 (2, a) 與 (1-a, 5) 且斜率為 2，要求解未知數 a 的值。",
+          "此題屬於直線斜率公式的數值計算應用。"
         ],
         "ai_rejected_candidates": {
-          "needs_review": "題目清晰且可正常求解，不應選擇 needs_review。"
+          "needs_review": "題目清晰且完全符合直線斜率的教學範疇，無須人工審查。"
         },
         "ai_available": true,
         "ai_error": "",
@@ -12914,7 +12903,7 @@ $$、$D\lef |
         "conflict_reason": "",
         "source_mapping_warning": "",
         "requires_human_action": false,
-        "ai_notes": "依據強制合約，此題與直線斜率技能完全對齊，且題目清晰，故選擇 C1。",
+        "ai_notes": "依據強制合約，此題與直線的斜率技能 100% 對齊，且題幹清晰，故選擇 C1。",
         "skill_scoped_candidates": [
           {
             "candidate_id": "C1",
@@ -13205,11 +13194,11 @@ $$、$D\lef |
           "ai_confidence": 1.0,
           "ai_best_candidate_id": "C1",
           "ai_evidence": [
-            "題目給定三點 A(-1,-1)、B(2,k)、C(8,5) 共線，求 k 的值。",
-            "此題利用 AB 斜率等於 AC 斜率的觀念進行數值計算，符合 compute_numeric 的定義。"
+            "題目給定三點 A(-1, -1)、B(2, k)、C(8, 5) 共線，要求未知數 k 的值。",
+            "此題利用 AB 斜率等於 AC 斜率的觀念來建立方程式並求解，屬於直線斜率的數值計算。"
           ],
           "ai_rejected_candidates": {
-            "needs_review": "題目語意清晰且與直線斜率技能完全契合，無須人工審查。"
+            "needs_review": "題目語意清晰完整，且與直線斜率的核心概念完全符合，不需送審。"
           },
           "ai_available": true,
           "ai_error": "",
@@ -13230,7 +13219,7 @@ $$、$D\lef |
           "conflict_reason": "",
           "source_mapping_warning": "",
           "requires_human_action": false,
-          "ai_notes": "三點共線是直線斜率單元的經典題型，透過斜率相等建立方程式求出未知數 k。",
+          "ai_notes": "透過三點共線斜率相等的性質求解未知數，選擇 compute_numeric。",
           "skill_scoped_candidates": [
             {
               "candidate_id": "C1",
@@ -13602,11 +13591,11 @@ $$、$D\lef |
         "ai_confidence": 1.0,
         "ai_best_candidate_id": "C1",
         "ai_evidence": [
-          "題目給定三點 A(-1,-1)、B(2,k)、C(8,5) 共線，求 k 的值。",
-          "此題利用 AB 斜率等於 AC 斜率的觀念進行數值計算，符合 compute_numeric 的定義。"
+          "題目給定三點 A(-1, -1)、B(2, k)、C(8, 5) 共線，要求未知數 k 的值。",
+          "此題利用 AB 斜率等於 AC 斜率的觀念來建立方程式並求解，屬於直線斜率的數值計算。"
         ],
         "ai_rejected_candidates": {
-          "needs_review": "題目語意清晰且與直線斜率技能完全契合，無須人工審查。"
+          "needs_review": "題目語意清晰完整，且與直線斜率的核心概念完全符合，不需送審。"
         },
         "ai_available": true,
         "ai_error": "",
@@ -13627,7 +13616,7 @@ $$、$D\lef |
         "conflict_reason": "",
         "source_mapping_warning": "",
         "requires_human_action": false,
-        "ai_notes": "三點共線是直線斜率單元的經典題型，透過斜率相等建立方程式求出未知數 k。",
+        "ai_notes": "透過三點共線斜率相等的性質求解未知數，選擇 compute_numeric。",
         "skill_scoped_candidates": [
           {
             "candidate_id": "C1",
@@ -13922,12 +13911,12 @@ $$、$D\lef |
           "ai_confidence": 0.92,
           "ai_best_candidate_id": "C2",
           "ai_evidence": [
-            "The Python math meta preflight specifies a forced target task of applied_quadratic_inequality_problem.",
-            "Candidate C2 matches this forced target task and must be selected as per the mandatory instruction."
+            "The Python math meta preflight instructions explicitly mandate selecting the candidate whose target_task equals forced_target_task (applied_quadratic_inequality_problem).",
+            "Candidate C2 has the target_task applied_quadratic_inequality_problem."
           ],
           "ai_rejected_candidates": {
-            "C1": "This candidate does not match the forced target task specified in the preflight instructions.",
-            "needs_review": "This candidate is rejected because choosing needs_review is forbidden and does not match the forced target task."
+            "C1": "Rejected because C2 is forced by the mandatory preflight instructions.",
+            "needs_review": "Rejected because choosing needs_review is forbidden when the stem is readable and a candidate is forced."
           },
           "ai_available": true,
           "ai_error": "",
@@ -13948,7 +13937,7 @@ $$、$D\lef |
           "conflict_reason": "",
           "source_mapping_warning": "outsider_candidate_within_confirmed_skill",
           "requires_human_action": true,
-          "ai_notes": "The selection of C2 is strictly guided by the mandatory preflight instruction to choose the candidate whose target task equals applied_quadratic_inequality_problem.",
+          "ai_notes": "Selected C2 as mandated by the forced_target_task rule in the preflight instructions.",
           "skill_scoped_candidates": [
             {
               "candidate_id": "C1",
@@ -14421,12 +14410,12 @@ $$、$D\lef |
         "ai_confidence": 0.92,
         "ai_best_candidate_id": "C2",
         "ai_evidence": [
-          "The Python math meta preflight specifies a forced target task of applied_quadratic_inequality_problem.",
-          "Candidate C2 matches this forced target task and must be selected as per the mandatory instruction."
+          "The Python math meta preflight instructions explicitly mandate selecting the candidate whose target_task equals forced_target_task (applied_quadratic_inequality_problem).",
+          "Candidate C2 has the target_task applied_quadratic_inequality_problem."
         ],
         "ai_rejected_candidates": {
-          "C1": "This candidate does not match the forced target task specified in the preflight instructions.",
-          "needs_review": "This candidate is rejected because choosing needs_review is forbidden and does not match the forced target task."
+          "C1": "Rejected because C2 is forced by the mandatory preflight instructions.",
+          "needs_review": "Rejected because choosing needs_review is forbidden when the stem is readable and a candidate is forced."
         },
         "ai_available": true,
         "ai_error": "",
@@ -14447,7 +14436,7 @@ $$、$D\lef |
         "conflict_reason": "",
         "source_mapping_warning": "outsider_candidate_within_confirmed_skill",
         "requires_human_action": true,
-        "ai_notes": "The selection of C2 is strictly guided by the mandatory preflight instruction to choose the candidate whose target task equals applied_quadratic_inequality_problem.",
+        "ai_notes": "Selected C2 as mandated by the forced_target_task rule in the preflight instructions.",
         "skill_scoped_candidates": [
           {
             "candidate_id": "C1",
@@ -14845,14 +14834,12 @@ $$、$D\lef |
           "ai_confidence": 0.9,
           "ai_best_candidate_id": "C1",
           "ai_evidence": [
-            "題目要求在兩線段平行或垂直的條件下求解未知數 a 與 x 的值",
-            "此題型利用兩點斜率公式，平行時斜率相等，垂直時斜率乘積為負一",
-            "候選項目 C2 為利用兩點距離公式求解未知坐標，與本題斜率概念不符",
-            "在沒有更具體斜率相關子技能的情況下，選擇 C1 (compute_numeric) 作為通用數值計算"
+            "題目要求利用線段 AB 與線段 CD 平行，以及線段 AB 與線段 CD 垂直的條件，求出未知數 a 與 x 的值。",
+            "此題涉及斜率相等與斜率相乘等於 -1 的計算，在提供的候選清單中，C1 (compute_numeric) 作為通用數值計算最為合適。"
           ],
           "ai_rejected_candidates": {
-            "C2": "此題並非使用兩點距離公式，而是利用平行與垂直的斜率關係求解，故排除 C2",
-            "needs_review": "題目清晰可讀，且依據合約禁止在題目可讀時選擇 needs_review"
+            "C2": "此題並非利用兩點距離公式求未知坐標，而是利用平行與垂直的斜率關係，故排除 C2。",
+            "needs_review": "題目清晰可讀，且依合約規定禁止輕易選擇 needs_review。"
           },
           "ai_available": true,
           "ai_error": "",
@@ -14873,7 +14860,7 @@ $$、$D\lef |
           "conflict_reason": "rule_family=distance_between_two_points_family; ai_subskill=compute_numeric",
           "source_mapping_warning": "",
           "requires_human_action": false,
-          "ai_notes": "本題屬於直線斜率的平行與垂直應用。由於候選清單中無斜率相關子技能，且 C2 屬於兩點距離家族，故選擇 C1 作為最合適的通用計算分類。",
+          "ai_notes": "由於候選清單中沒有專門針對斜率平行或垂直的子技能，故歸類於通用的數值計算 (compute_numeric)。",
           "skill_scoped_candidates": [
             {
               "candidate_id": "C1",
@@ -15467,14 +15454,12 @@ $$、$D\lef |
         "ai_confidence": 0.9,
         "ai_best_candidate_id": "C1",
         "ai_evidence": [
-          "題目要求在兩線段平行或垂直的條件下求解未知數 a 與 x 的值",
-          "此題型利用兩點斜率公式，平行時斜率相等，垂直時斜率乘積為負一",
-          "候選項目 C2 為利用兩點距離公式求解未知坐標，與本題斜率概念不符",
-          "在沒有更具體斜率相關子技能的情況下，選擇 C1 (compute_numeric) 作為通用數值計算"
+          "題目要求利用線段 AB 與線段 CD 平行，以及線段 AB 與線段 CD 垂直的條件，求出未知數 a 與 x 的值。",
+          "此題涉及斜率相等與斜率相乘等於 -1 的計算，在提供的候選清單中，C1 (compute_numeric) 作為通用數值計算最為合適。"
         ],
         "ai_rejected_candidates": {
-          "C2": "此題並非使用兩點距離公式，而是利用平行與垂直的斜率關係求解，故排除 C2",
-          "needs_review": "題目清晰可讀，且依據合約禁止在題目可讀時選擇 needs_review"
+          "C2": "此題並非利用兩點距離公式求未知坐標，而是利用平行與垂直的斜率關係，故排除 C2。",
+          "needs_review": "題目清晰可讀，且依合約規定禁止輕易選擇 needs_review。"
         },
         "ai_available": true,
         "ai_error": "",
@@ -15495,7 +15480,7 @@ $$、$D\lef |
         "conflict_reason": "rule_family=distance_between_two_points_family; ai_subskill=compute_numeric",
         "source_mapping_warning": "",
         "requires_human_action": false,
-        "ai_notes": "本題屬於直線斜率的平行與垂直應用。由於候選清單中無斜率相關子技能，且 C2 屬於兩點距離家族，故選擇 C1 作為最合適的通用計算分類。",
+        "ai_notes": "由於候選清單中沒有專門針對斜率平行或垂直的子技能，故歸類於通用的數值計算 (compute_numeric)。",
         "skill_scoped_candidates": [
           {
             "candidate_id": "C1",
@@ -16010,11 +15995,10 @@ $$、$D\lef |
           "ai_confidence": 0.95,
           "ai_best_candidate_id": "C1",
           "ai_evidence": [
-            "題目給定數個點的坐標，並要求計算直線 AP、BP、CP、DP 的斜率。",
-            "此任務屬於計算兩點間直線斜率的數值計算題型。"
+            "題目給定數個點的座標，要求計算直線 AP、BP、CP、DP 的斜率，屬於數值計算。"
           ],
           "ai_rejected_candidates": {
-            "needs_review": "雖然題目文本中 C 點的坐標因格式問題顯示為雙錢字號，但整體題意非常明確，為求兩點連線之斜率，且合約規定除非題目完全無法閱讀，否則禁止選擇 needs_review。"
+            "needs_review": "雖然題目文字中 C 點座標因格式問題顯示為雙錢字號，但整體題意極為明確，為標準的斜率計算，不需設為 needs_review。"
           },
           "ai_available": true,
           "ai_error": "",
@@ -16035,7 +16019,7 @@ $$、$D\lef |
           "conflict_reason": "",
           "source_mapping_warning": "",
           "requires_human_action": false,
-          "ai_notes": "本題為給定點坐標求直線斜率的標準計算題，對應 compute_numeric。",
+          "ai_notes": "此題為給定點座標求直線斜率，符合 compute_numeric 的定義。",
           "skill_scoped_candidates": [
             {
               "candidate_id": "C1",
@@ -16407,11 +16391,10 @@ $$、$D\lef |
         "ai_confidence": 0.95,
         "ai_best_candidate_id": "C1",
         "ai_evidence": [
-          "題目給定數個點的坐標，並要求計算直線 AP、BP、CP、DP 的斜率。",
-          "此任務屬於計算兩點間直線斜率的數值計算題型。"
+          "題目給定數個點的座標，要求計算直線 AP、BP、CP、DP 的斜率，屬於數值計算。"
         ],
         "ai_rejected_candidates": {
-          "needs_review": "雖然題目文本中 C 點的坐標因格式問題顯示為雙錢字號，但整體題意非常明確，為求兩點連線之斜率，且合約規定除非題目完全無法閱讀，否則禁止選擇 needs_review。"
+          "needs_review": "雖然題目文字中 C 點座標因格式問題顯示為雙錢字號，但整體題意極為明確，為標準的斜率計算，不需設為 needs_review。"
         },
         "ai_available": true,
         "ai_error": "",
@@ -16432,7 +16415,7 @@ $$、$D\lef |
         "conflict_reason": "",
         "source_mapping_warning": "",
         "requires_human_action": false,
-        "ai_notes": "本題為給定點坐標求直線斜率的標準計算題，對應 compute_numeric。",
+        "ai_notes": "此題為給定點座標求直線斜率，符合 compute_numeric 的定義。",
         "skill_scoped_candidates": [
           {
             "candidate_id": "C1",
@@ -16723,11 +16706,12 @@ $$、$D\lef |
           "ai_confidence": 0.92,
           "ai_best_candidate_id": "C2",
           "ai_evidence": [
-            "The Python math meta preflight specifies that we must select the candidate whose target_task equals forced_target_task, which is applied_quadratic_inequality_problem (C2)."
+            "The Python math meta preflight MANDATORY instruction forces the selection of the candidate with target_task equal to applied_quadratic_inequality_problem.",
+            "Candidate C2 matches this forced target task."
           ],
           "ai_rejected_candidates": {
-            "C1": "Not the forced target task",
-            "needs_review": "Preflight instruction overrides other options"
+            "C1": "Rejected because C2 is forced by the preflight instruction.",
+            "needs_review": "Rejected because C2 is forced by the preflight instruction."
           },
           "ai_available": true,
           "ai_error": "",
@@ -16748,7 +16732,7 @@ $$、$D\lef |
           "conflict_reason": "",
           "source_mapping_warning": "outsider_candidate_within_confirmed_skill",
           "requires_human_action": true,
-          "ai_notes": "Selected C2 as mandated by the Python math meta preflight instruction.",
+          "ai_notes": "Forced selection of C2 based on the mandatory preflight instruction.",
           "skill_scoped_candidates": [
             {
               "candidate_id": "C1",
@@ -17219,11 +17203,12 @@ $$、$D\lef |
         "ai_confidence": 0.92,
         "ai_best_candidate_id": "C2",
         "ai_evidence": [
-          "The Python math meta preflight specifies that we must select the candidate whose target_task equals forced_target_task, which is applied_quadratic_inequality_problem (C2)."
+          "The Python math meta preflight MANDATORY instruction forces the selection of the candidate with target_task equal to applied_quadratic_inequality_problem.",
+          "Candidate C2 matches this forced target task."
         ],
         "ai_rejected_candidates": {
-          "C1": "Not the forced target task",
-          "needs_review": "Preflight instruction overrides other options"
+          "C1": "Rejected because C2 is forced by the preflight instruction.",
+          "needs_review": "Rejected because C2 is forced by the preflight instruction."
         },
         "ai_available": true,
         "ai_error": "",
@@ -17244,7 +17229,7 @@ $$、$D\lef |
         "conflict_reason": "",
         "source_mapping_warning": "outsider_candidate_within_confirmed_skill",
         "requires_human_action": true,
-        "ai_notes": "Selected C2 as mandated by the Python math meta preflight instruction.",
+        "ai_notes": "Forced selection of C2 based on the mandatory preflight instruction.",
         "skill_scoped_candidates": [
           {
             "candidate_id": "C1",
@@ -17641,12 +17626,12 @@ $$、$D\lef |
           "ai_confidence": 1.0,
           "ai_best_candidate_id": "C1",
           "ai_evidence": [
-            "The question asks to find the value of a parameter 'a' given two points A(2, a) and B(a, 8) on a line with a slope of 2.",
-            "This is a standard numeric calculation task based on the slope formula.",
-            "The candidate C1 (compute_numeric) is the most appropriate category among the choices, and needs_review is avoided as the question is fully readable."
+            "The question asks to find the value of a given two points A(2, a) and B(a, 8) on line L with slope 2.",
+            "This is a numeric computation task based on the definition of the slope of a line.",
+            "The candidate C1 (compute_numeric) is the only valid non-needs_review candidate provided."
           ],
           "ai_rejected_candidates": {
-            "needs_review": "The question is clear, readable, and perfectly aligned with the slope of a line topic, so needs_review is rejected."
+            "needs_review": "The stem is perfectly readable and aligned with the skill of finding the slope of a line, so needs_review is rejected."
           },
           "ai_available": true,
           "ai_error": "",
@@ -17667,7 +17652,7 @@ $$、$D\lef |
           "conflict_reason": "",
           "source_mapping_warning": "",
           "requires_human_action": false,
-          "ai_notes": "The problem requires solving the equation (8 - a) / (a - 2) = 2 to find the value of a.",
+          "ai_notes": "The problem requires solving for the parameter a using the slope formula (8 - a) / (a - 2) = 2, which is a numeric computation task.",
           "skill_scoped_candidates": [
             {
               "candidate_id": "C1",
@@ -18042,12 +18027,12 @@ $$、$D\lef |
         "ai_confidence": 1.0,
         "ai_best_candidate_id": "C1",
         "ai_evidence": [
-          "The question asks to find the value of a parameter 'a' given two points A(2, a) and B(a, 8) on a line with a slope of 2.",
-          "This is a standard numeric calculation task based on the slope formula.",
-          "The candidate C1 (compute_numeric) is the most appropriate category among the choices, and needs_review is avoided as the question is fully readable."
+          "The question asks to find the value of a given two points A(2, a) and B(a, 8) on line L with slope 2.",
+          "This is a numeric computation task based on the definition of the slope of a line.",
+          "The candidate C1 (compute_numeric) is the only valid non-needs_review candidate provided."
         ],
         "ai_rejected_candidates": {
-          "needs_review": "The question is clear, readable, and perfectly aligned with the slope of a line topic, so needs_review is rejected."
+          "needs_review": "The stem is perfectly readable and aligned with the skill of finding the slope of a line, so needs_review is rejected."
         },
         "ai_available": true,
         "ai_error": "",
@@ -18068,7 +18053,7 @@ $$、$D\lef |
         "conflict_reason": "",
         "source_mapping_warning": "",
         "requires_human_action": false,
-        "ai_notes": "The problem requires solving the equation (8 - a) / (a - 2) = 2 to find the value of a.",
+        "ai_notes": "The problem requires solving for the parameter a using the slope formula (8 - a) / (a - 2) = 2, which is a numeric computation task.",
         "skill_scoped_candidates": [
           {
             "candidate_id": "C1",
@@ -18374,11 +18359,11 @@ $$、$D\lef |
           "ai_confidence": 1.0,
           "ai_best_candidate_id": "C1",
           "ai_evidence": [
-            "題目給定三點共線，要求解未知數 a 的值。",
-            "此題可利用兩點求斜率公式，藉由斜率相等（PQ 斜率等於 PR 斜率）列式求解，屬於數值計算。"
+            "The problem asks to find the value of 'a' given that three points are collinear, which is solved by setting the slope of PQ equal to the slope of PR.",
+            "Since C1 (compute_numeric) is the only non-review candidate provided, and the stem is readable, C1 is the correct choice."
           ],
           "ai_rejected_candidates": {
-            "needs_review": "題目雖然在點的標示上有些許排版瑕疵（如 B(-1,0)R(8,-2)），但整體語意依然清晰可解，不需進入人工審查。"
+            "needs_review": "The stem is readable and represents a standard collinearity problem using slopes, so needs_review is rejected."
           },
           "ai_available": true,
           "ai_error": "",
@@ -18399,7 +18384,7 @@ $$、$D\lef |
           "conflict_reason": "",
           "source_mapping_warning": "",
           "requires_human_action": false,
-          "ai_notes": "此題為利用三點共線（斜率相等）來求未知數的典型數值計算題，故選擇 C1。",
+          "ai_notes": "The text contains a minor typo 'B(-1,0)R(8,-2)' but the mathematical intent of collinear points P, Q, and R is clear and solvable.",
           "skill_scoped_candidates": [
             {
               "candidate_id": "C1",
@@ -18776,11 +18761,11 @@ $$、$D\lef |
         "ai_confidence": 1.0,
         "ai_best_candidate_id": "C1",
         "ai_evidence": [
-          "題目給定三點共線，要求解未知數 a 的值。",
-          "此題可利用兩點求斜率公式，藉由斜率相等（PQ 斜率等於 PR 斜率）列式求解，屬於數值計算。"
+          "The problem asks to find the value of 'a' given that three points are collinear, which is solved by setting the slope of PQ equal to the slope of PR.",
+          "Since C1 (compute_numeric) is the only non-review candidate provided, and the stem is readable, C1 is the correct choice."
         ],
         "ai_rejected_candidates": {
-          "needs_review": "題目雖然在點的標示上有些許排版瑕疵（如 B(-1,0)R(8,-2)），但整體語意依然清晰可解，不需進入人工審查。"
+          "needs_review": "The stem is readable and represents a standard collinearity problem using slopes, so needs_review is rejected."
         },
         "ai_available": true,
         "ai_error": "",
@@ -18801,7 +18786,7 @@ $$、$D\lef |
         "conflict_reason": "",
         "source_mapping_warning": "",
         "requires_human_action": false,
-        "ai_notes": "此題為利用三點共線（斜率相等）來求未知數的典型數值計算題，故選擇 C1。",
+        "ai_notes": "The text contains a minor typo 'B(-1,0)R(8,-2)' but the mathematical intent of collinear points P, Q, and R is clear and solvable.",
         "skill_scoped_candidates": [
           {
             "candidate_id": "C1",
@@ -19098,11 +19083,11 @@ $$、$D\lef |
           "ai_confidence": 1.0,
           "ai_best_candidate_id": "C1",
           "ai_evidence": [
-            "題目給定三點 A(-2,0), B(-1,1), C(k,4) 共線，求未知數 k 的值，此題型屬於直線斜率的應用，利用 AB 斜率等於 BC 斜率來求解。",
-            "在候選清單中，C1 (compute_numeric) 是唯一可選的具體子技能。"
+            "題目給定三點 A(-2,0), B(-1,1), C(k,4) 共線，求 k 的值。",
+            "此題利用 AB 斜率等於 BC 斜率的觀念來列式求解，屬於數值計算。"
           ],
           "ai_rejected_candidates": {
-            "needs_review": "題目清晰可讀，且屬於該技能的核心範疇，不應選擇 needs_review。"
+            "needs_review": "題目清晰且與斜率單元完全契合，無須送審。"
           },
           "ai_available": true,
           "ai_error": "",
@@ -19123,7 +19108,7 @@ $$、$D\lef |
           "conflict_reason": "",
           "source_mapping_warning": "outsider_candidate_within_confirmed_skill",
           "requires_human_action": true,
-          "ai_notes": "由於候選清單中僅有 C1 與 needs_review，且題目完全可讀，因此依據規則選擇 C1。",
+          "ai_notes": "根據強制合約，此題屬於直線的斜率單元，利用斜率相等求解 k，選擇 compute_numeric。",
           "skill_scoped_candidates": [
             {
               "candidate_id": "C1",
@@ -19488,11 +19473,11 @@ $$、$D\lef |
         "ai_confidence": 1.0,
         "ai_best_candidate_id": "C1",
         "ai_evidence": [
-          "題目給定三點 A(-2,0), B(-1,1), C(k,4) 共線，求未知數 k 的值，此題型屬於直線斜率的應用，利用 AB 斜率等於 BC 斜率來求解。",
-          "在候選清單中，C1 (compute_numeric) 是唯一可選的具體子技能。"
+          "題目給定三點 A(-2,0), B(-1,1), C(k,4) 共線，求 k 的值。",
+          "此題利用 AB 斜率等於 BC 斜率的觀念來列式求解，屬於數值計算。"
         ],
         "ai_rejected_candidates": {
-          "needs_review": "題目清晰可讀，且屬於該技能的核心範疇，不應選擇 needs_review。"
+          "needs_review": "題目清晰且與斜率單元完全契合，無須送審。"
         },
         "ai_available": true,
         "ai_error": "",
@@ -19513,7 +19498,7 @@ $$、$D\lef |
         "conflict_reason": "",
         "source_mapping_warning": "outsider_candidate_within_confirmed_skill",
         "requires_human_action": true,
-        "ai_notes": "由於候選清單中僅有 C1 與 needs_review，且題目完全可讀，因此依據規則選擇 C1。",
+        "ai_notes": "根據強制合約，此題屬於直線的斜率單元，利用斜率相等求解 k，選擇 compute_numeric。",
         "skill_scoped_candidates": [
           {
             "candidate_id": "C1",
@@ -19804,11 +19789,10 @@ $$、$D\lef |
           "ai_confidence": 0.9,
           "ai_best_candidate_id": "C1",
           "ai_evidence": [
-            "題目要求計算直線 AB、BC、AC、BD 的斜率並畫出圖形。",
-            "此任務屬於數值計算（compute_numeric）。"
+            "The question asks to find the slopes of lines AB, BC, AC, and BD, which is a numeric computation task."
           ],
           "ai_rejected_candidates": {
-            "needs_review": "雖然題目中 A 與 B 點的座標在文字中遺漏，但題意明確為計算斜率，且規則規定除非完全無法閱讀否則禁止選擇 needs_review。"
+            "needs_review": "The stem has a typo where coordinates for A and B are missing, but the task type is clearly numeric computation, and needs_review is forbidden unless the stem is completely unreadable."
           },
           "ai_available": true,
           "ai_error": "",
@@ -19829,7 +19813,7 @@ $$、$D\lef |
           "conflict_reason": "",
           "source_mapping_warning": "",
           "requires_human_action": false,
-          "ai_notes": "題目中點 A 與點 B 的座標在文字中遺漏（顯示為『設、、』），但其核心任務為計算直線斜率，符合 compute_numeric 的定義。",
+          "ai_notes": "The task is to compute the slope of lines given points, which corresponds to compute_numeric.",
           "skill_scoped_candidates": [
             {
               "candidate_id": "C1",
@@ -20201,11 +20185,10 @@ $$、$D\lef |
         "ai_confidence": 0.9,
         "ai_best_candidate_id": "C1",
         "ai_evidence": [
-          "題目要求計算直線 AB、BC、AC、BD 的斜率並畫出圖形。",
-          "此任務屬於數值計算（compute_numeric）。"
+          "The question asks to find the slopes of lines AB, BC, AC, and BD, which is a numeric computation task."
         ],
         "ai_rejected_candidates": {
-          "needs_review": "雖然題目中 A 與 B 點的座標在文字中遺漏，但題意明確為計算斜率，且規則規定除非完全無法閱讀否則禁止選擇 needs_review。"
+          "needs_review": "The stem has a typo where coordinates for A and B are missing, but the task type is clearly numeric computation, and needs_review is forbidden unless the stem is completely unreadable."
         },
         "ai_available": true,
         "ai_error": "",
@@ -20226,7 +20209,7 @@ $$、$D\lef |
         "conflict_reason": "",
         "source_mapping_warning": "",
         "requires_human_action": false,
-        "ai_notes": "題目中點 A 與點 B 的座標在文字中遺漏（顯示為『設、、』），但其核心任務為計算直線斜率，符合 compute_numeric 的定義。",
+        "ai_notes": "The task is to compute the slope of lines given points, which corresponds to compute_numeric.",
         "skill_scoped_candidates": [
           {
             "candidate_id": "C1",
@@ -20507,15 +20490,14 @@ $$、$D\lef |
         "semantic_classification": {
           "ai_target_task": "compute_numeric",
           "ai_task_family": "generic_numeric_family",
-          "ai_confidence": 0.9,
+          "ai_confidence": 1.0,
           "ai_best_candidate_id": "C1",
           "ai_evidence": [
-            "The question asks to identify and compare the slopes of lines from graphs.",
-            "The candidate list only contains C1 (compute_numeric) and needs_review.",
-            "Choosing needs_review is forbidden because the question text is clear and readable."
+            "題目要求根據圖形判斷斜率的正負、零或不存在，並比較斜率大小，屬於直線斜率的基本觀念。",
+            "依據規定，題目清晰可讀時禁止選擇 needs_review，因此選擇唯一的候選者 C1。"
           ],
           "ai_rejected_candidates": {
-            "needs_review": "The question text is fully readable and aligned with the skill of slope of a line, so needs_review is rejected."
+            "needs_review": "題目語意清晰、圖形描述完整，不符合 needs_review 的選取條件。"
           },
           "ai_available": true,
           "ai_error": "",
@@ -20536,7 +20518,7 @@ $$、$D\lef |
           "conflict_reason": "",
           "source_mapping_warning": "",
           "requires_human_action": false,
-          "ai_notes": "The question asks students to determine the sign of slopes and compare slope values based on graphs. Since needs_review is forbidden for readable stems, C1 is selected.",
+          "ai_notes": "本題為直線斜率的觀念判定與大小比較。因 needs_review 僅在題目無法閱讀時使用，故選擇 C1。",
           "skill_scoped_candidates": [
             {
               "candidate_id": "C1",
@@ -20900,15 +20882,14 @@ $$、$D\lef |
       "semantic_classification": {
         "ai_target_task": "compute_numeric",
         "ai_task_family": "generic_numeric_family",
-        "ai_confidence": 0.9,
+        "ai_confidence": 1.0,
         "ai_best_candidate_id": "C1",
         "ai_evidence": [
-          "The question asks to identify and compare the slopes of lines from graphs.",
-          "The candidate list only contains C1 (compute_numeric) and needs_review.",
-          "Choosing needs_review is forbidden because the question text is clear and readable."
+          "題目要求根據圖形判斷斜率的正負、零或不存在，並比較斜率大小，屬於直線斜率的基本觀念。",
+          "依據規定，題目清晰可讀時禁止選擇 needs_review，因此選擇唯一的候選者 C1。"
         ],
         "ai_rejected_candidates": {
-          "needs_review": "The question text is fully readable and aligned with the skill of slope of a line, so needs_review is rejected."
+          "needs_review": "題目語意清晰、圖形描述完整，不符合 needs_review 的選取條件。"
         },
         "ai_available": true,
         "ai_error": "",
@@ -20929,7 +20910,7 @@ $$、$D\lef |
         "conflict_reason": "",
         "source_mapping_warning": "",
         "requires_human_action": false,
-        "ai_notes": "The question asks students to determine the sign of slopes and compare slope values based on graphs. Since needs_review is forbidden for readable stems, C1 is selected.",
+        "ai_notes": "本題為直線斜率的觀念判定與大小比較。因 needs_review 僅在題目無法閱讀時使用，故選擇 C1。",
         "skill_scoped_candidates": [
           {
             "candidate_id": "C1",
@@ -21213,12 +21194,10 @@ $$、$D\lef |
           "ai_confidence": 1.0,
           "ai_best_candidate_id": "C1",
           "ai_evidence": [
-            "題目要求計算通過兩點 A 與 B 的直線斜率",
-            "此題為直線斜率的基本數值計算",
-            "在候選清單中，C1 (compute_numeric) 是唯一合理的非 needs_review 選項"
+            "題目要求計算過兩點 A 與 B 的直線斜率，屬於基礎數值計算。"
           ],
           "ai_rejected_candidates": {
-            "needs_review": "題目清晰且完全可讀，無須人工審查"
+            "needs_review": "題目語意清晰且完整，無須送審。"
           },
           "ai_available": true,
           "ai_error": "",
@@ -21239,7 +21218,7 @@ $$、$D\lef |
           "conflict_reason": "",
           "source_mapping_warning": "",
           "requires_human_action": false,
-          "ai_notes": "本題為給定兩點求直線斜率的數值計算題，對應 compute_numeric。",
+          "ai_notes": "此題為給定兩點求斜率的標準計算題，對應到 compute_numeric 子技能。",
           "skill_scoped_candidates": [
             {
               "candidate_id": "C1",
@@ -21611,12 +21590,10 @@ $$、$D\lef |
         "ai_confidence": 1.0,
         "ai_best_candidate_id": "C1",
         "ai_evidence": [
-          "題目要求計算通過兩點 A 與 B 的直線斜率",
-          "此題為直線斜率的基本數值計算",
-          "在候選清單中，C1 (compute_numeric) 是唯一合理的非 needs_review 選項"
+          "題目要求計算過兩點 A 與 B 的直線斜率，屬於基礎數值計算。"
         ],
         "ai_rejected_candidates": {
-          "needs_review": "題目清晰且完全可讀，無須人工審查"
+          "needs_review": "題目語意清晰且完整，無須送審。"
         },
         "ai_available": true,
         "ai_error": "",
@@ -21637,7 +21614,7 @@ $$、$D\lef |
         "conflict_reason": "",
         "source_mapping_warning": "",
         "requires_human_action": false,
-        "ai_notes": "本題為給定兩點求直線斜率的數值計算題，對應 compute_numeric。",
+        "ai_notes": "此題為給定兩點求斜率的標準計算題，對應到 compute_numeric 子技能。",
         "skill_scoped_candidates": [
           {
             "candidate_id": "C1",
@@ -21922,10 +21899,11 @@ $$、$D\lef |
           "ai_confidence": 1.0,
           "ai_best_candidate_id": "C1",
           "ai_evidence": [
-            "題目給定兩點座標 (2, a) 與 (1-a, 5) 且斜率為 2，要求解 a 的值，屬於數值計算。"
+            "題目給定兩點座標 (2, a) 與 (1-a, 5) 且斜率為 2，要求解未知數 a 的值。",
+            "此題屬於直線斜率公式的數值計算應用。"
           ],
           "ai_rejected_candidates": {
-            "needs_review": "題目清晰且可正常求解，不應選擇 needs_review。"
+            "needs_review": "題目清晰且完全符合直線斜率的教學範疇，無須人工審查。"
           },
           "ai_available": true,
           "ai_error": "",
@@ -21946,7 +21924,7 @@ $$、$D\lef |
           "conflict_reason": "",
           "source_mapping_warning": "",
           "requires_human_action": false,
-          "ai_notes": "依據強制合約，此題與直線斜率技能完全對齊，且題目清晰，故選擇 C1。",
+          "ai_notes": "依據強制合約，此題與直線的斜率技能 100% 對齊，且題幹清晰，故選擇 C1。",
           "skill_scoped_candidates": [
             {
               "candidate_id": "C1",
@@ -22316,10 +22294,11 @@ $$、$D\lef |
         "ai_confidence": 1.0,
         "ai_best_candidate_id": "C1",
         "ai_evidence": [
-          "題目給定兩點座標 (2, a) 與 (1-a, 5) 且斜率為 2，要求解 a 的值，屬於數值計算。"
+          "題目給定兩點座標 (2, a) 與 (1-a, 5) 且斜率為 2，要求解未知數 a 的值。",
+          "此題屬於直線斜率公式的數值計算應用。"
         ],
         "ai_rejected_candidates": {
-          "needs_review": "題目清晰且可正常求解，不應選擇 needs_review。"
+          "needs_review": "題目清晰且完全符合直線斜率的教學範疇，無須人工審查。"
         },
         "ai_available": true,
         "ai_error": "",
@@ -22340,7 +22319,7 @@ $$、$D\lef |
         "conflict_reason": "",
         "source_mapping_warning": "",
         "requires_human_action": false,
-        "ai_notes": "依據強制合約，此題與直線斜率技能完全對齊，且題目清晰，故選擇 C1。",
+        "ai_notes": "依據強制合約，此題與直線的斜率技能 100% 對齊，且題幹清晰，故選擇 C1。",
         "skill_scoped_candidates": [
           {
             "candidate_id": "C1",
@@ -22631,11 +22610,11 @@ $$、$D\lef |
           "ai_confidence": 1.0,
           "ai_best_candidate_id": "C1",
           "ai_evidence": [
-            "題目給定三點 A(-1,-1)、B(2,k)、C(8,5) 共線，求 k 的值。",
-            "此題利用 AB 斜率等於 AC 斜率的觀念進行數值計算，符合 compute_numeric 的定義。"
+            "題目給定三點 A(-1, -1)、B(2, k)、C(8, 5) 共線，要求未知數 k 的值。",
+            "此題利用 AB 斜率等於 AC 斜率的觀念來建立方程式並求解，屬於直線斜率的數值計算。"
           ],
           "ai_rejected_candidates": {
-            "needs_review": "題目語意清晰且與直線斜率技能完全契合，無須人工審查。"
+            "needs_review": "題目語意清晰完整，且與直線斜率的核心概念完全符合，不需送審。"
           },
           "ai_available": true,
           "ai_error": "",
@@ -22656,7 +22635,7 @@ $$、$D\lef |
           "conflict_reason": "",
           "source_mapping_warning": "",
           "requires_human_action": false,
-          "ai_notes": "三點共線是直線斜率單元的經典題型，透過斜率相等建立方程式求出未知數 k。",
+          "ai_notes": "透過三點共線斜率相等的性質求解未知數，選擇 compute_numeric。",
           "skill_scoped_candidates": [
             {
               "candidate_id": "C1",
@@ -23028,11 +23007,11 @@ $$、$D\lef |
         "ai_confidence": 1.0,
         "ai_best_candidate_id": "C1",
         "ai_evidence": [
-          "題目給定三點 A(-1,-1)、B(2,k)、C(8,5) 共線，求 k 的值。",
-          "此題利用 AB 斜率等於 AC 斜率的觀念進行數值計算，符合 compute_numeric 的定義。"
+          "題目給定三點 A(-1, -1)、B(2, k)、C(8, 5) 共線，要求未知數 k 的值。",
+          "此題利用 AB 斜率等於 AC 斜率的觀念來建立方程式並求解，屬於直線斜率的數值計算。"
         ],
         "ai_rejected_candidates": {
-          "needs_review": "題目語意清晰且與直線斜率技能完全契合，無須人工審查。"
+          "needs_review": "題目語意清晰完整，且與直線斜率的核心概念完全符合，不需送審。"
         },
         "ai_available": true,
         "ai_error": "",
@@ -23053,7 +23032,7 @@ $$、$D\lef |
         "conflict_reason": "",
         "source_mapping_warning": "",
         "requires_human_action": false,
-        "ai_notes": "三點共線是直線斜率單元的經典題型，透過斜率相等建立方程式求出未知數 k。",
+        "ai_notes": "透過三點共線斜率相等的性質求解未知數，選擇 compute_numeric。",
         "skill_scoped_candidates": [
           {
             "candidate_id": "C1",
@@ -23348,12 +23327,12 @@ $$、$D\lef |
           "ai_confidence": 0.92,
           "ai_best_candidate_id": "C2",
           "ai_evidence": [
-            "The Python math meta preflight specifies a forced target task of applied_quadratic_inequality_problem.",
-            "Candidate C2 matches this forced target task and must be selected as per the mandatory instruction."
+            "The Python math meta preflight instructions explicitly mandate selecting the candidate whose target_task equals forced_target_task (applied_quadratic_inequality_problem).",
+            "Candidate C2 has the target_task applied_quadratic_inequality_problem."
           ],
           "ai_rejected_candidates": {
-            "C1": "This candidate does not match the forced target task specified in the preflight instructions.",
-            "needs_review": "This candidate is rejected because choosing needs_review is forbidden and does not match the forced target task."
+            "C1": "Rejected because C2 is forced by the mandatory preflight instructions.",
+            "needs_review": "Rejected because choosing needs_review is forbidden when the stem is readable and a candidate is forced."
           },
           "ai_available": true,
           "ai_error": "",
@@ -23374,7 +23353,7 @@ $$、$D\lef |
           "conflict_reason": "",
           "source_mapping_warning": "outsider_candidate_within_confirmed_skill",
           "requires_human_action": true,
-          "ai_notes": "The selection of C2 is strictly guided by the mandatory preflight instruction to choose the candidate whose target task equals applied_quadratic_inequality_problem.",
+          "ai_notes": "Selected C2 as mandated by the forced_target_task rule in the preflight instructions.",
           "skill_scoped_candidates": [
             {
               "candidate_id": "C1",
@@ -23847,12 +23826,12 @@ $$、$D\lef |
         "ai_confidence": 0.92,
         "ai_best_candidate_id": "C2",
         "ai_evidence": [
-          "The Python math meta preflight specifies a forced target task of applied_quadratic_inequality_problem.",
-          "Candidate C2 matches this forced target task and must be selected as per the mandatory instruction."
+          "The Python math meta preflight instructions explicitly mandate selecting the candidate whose target_task equals forced_target_task (applied_quadratic_inequality_problem).",
+          "Candidate C2 has the target_task applied_quadratic_inequality_problem."
         ],
         "ai_rejected_candidates": {
-          "C1": "This candidate does not match the forced target task specified in the preflight instructions.",
-          "needs_review": "This candidate is rejected because choosing needs_review is forbidden and does not match the forced target task."
+          "C1": "Rejected because C2 is forced by the mandatory preflight instructions.",
+          "needs_review": "Rejected because choosing needs_review is forbidden when the stem is readable and a candidate is forced."
         },
         "ai_available": true,
         "ai_error": "",
@@ -23873,7 +23852,7 @@ $$、$D\lef |
         "conflict_reason": "",
         "source_mapping_warning": "outsider_candidate_within_confirmed_skill",
         "requires_human_action": true,
-        "ai_notes": "The selection of C2 is strictly guided by the mandatory preflight instruction to choose the candidate whose target task equals applied_quadratic_inequality_problem.",
+        "ai_notes": "Selected C2 as mandated by the forced_target_task rule in the preflight instructions.",
         "skill_scoped_candidates": [
           {
             "candidate_id": "C1",
@@ -24271,14 +24250,12 @@ $$、$D\lef |
           "ai_confidence": 0.9,
           "ai_best_candidate_id": "C1",
           "ai_evidence": [
-            "題目要求在兩線段平行或垂直的條件下求解未知數 a 與 x 的值",
-            "此題型利用兩點斜率公式，平行時斜率相等，垂直時斜率乘積為負一",
-            "候選項目 C2 為利用兩點距離公式求解未知坐標，與本題斜率概念不符",
-            "在沒有更具體斜率相關子技能的情況下，選擇 C1 (compute_numeric) 作為通用數值計算"
+            "題目要求利用線段 AB 與線段 CD 平行，以及線段 AB 與線段 CD 垂直的條件，求出未知數 a 與 x 的值。",
+            "此題涉及斜率相等與斜率相乘等於 -1 的計算，在提供的候選清單中，C1 (compute_numeric) 作為通用數值計算最為合適。"
           ],
           "ai_rejected_candidates": {
-            "C2": "此題並非使用兩點距離公式，而是利用平行與垂直的斜率關係求解，故排除 C2",
-            "needs_review": "題目清晰可讀，且依據合約禁止在題目可讀時選擇 needs_review"
+            "C2": "此題並非利用兩點距離公式求未知坐標，而是利用平行與垂直的斜率關係，故排除 C2。",
+            "needs_review": "題目清晰可讀，且依合約規定禁止輕易選擇 needs_review。"
           },
           "ai_available": true,
           "ai_error": "",
@@ -24299,7 +24276,7 @@ $$、$D\lef |
           "conflict_reason": "rule_family=distance_between_two_points_family; ai_subskill=compute_numeric",
           "source_mapping_warning": "",
           "requires_human_action": false,
-          "ai_notes": "本題屬於直線斜率的平行與垂直應用。由於候選清單中無斜率相關子技能，且 C2 屬於兩點距離家族，故選擇 C1 作為最合適的通用計算分類。",
+          "ai_notes": "由於候選清單中沒有專門針對斜率平行或垂直的子技能，故歸類於通用的數值計算 (compute_numeric)。",
           "skill_scoped_candidates": [
             {
               "candidate_id": "C1",
@@ -24893,14 +24870,12 @@ $$、$D\lef |
         "ai_confidence": 0.9,
         "ai_best_candidate_id": "C1",
         "ai_evidence": [
-          "題目要求在兩線段平行或垂直的條件下求解未知數 a 與 x 的值",
-          "此題型利用兩點斜率公式，平行時斜率相等，垂直時斜率乘積為負一",
-          "候選項目 C2 為利用兩點距離公式求解未知坐標，與本題斜率概念不符",
-          "在沒有更具體斜率相關子技能的情況下，選擇 C1 (compute_numeric) 作為通用數值計算"
+          "題目要求利用線段 AB 與線段 CD 平行，以及線段 AB 與線段 CD 垂直的條件，求出未知數 a 與 x 的值。",
+          "此題涉及斜率相等與斜率相乘等於 -1 的計算，在提供的候選清單中，C1 (compute_numeric) 作為通用數值計算最為合適。"
         ],
         "ai_rejected_candidates": {
-          "C2": "此題並非使用兩點距離公式，而是利用平行與垂直的斜率關係求解，故排除 C2",
-          "needs_review": "題目清晰可讀，且依據合約禁止在題目可讀時選擇 needs_review"
+          "C2": "此題並非利用兩點距離公式求未知坐標，而是利用平行與垂直的斜率關係，故排除 C2。",
+          "needs_review": "題目清晰可讀，且依合約規定禁止輕易選擇 needs_review。"
         },
         "ai_available": true,
         "ai_error": "",
@@ -24921,7 +24896,7 @@ $$、$D\lef |
         "conflict_reason": "rule_family=distance_between_two_points_family; ai_subskill=compute_numeric",
         "source_mapping_warning": "",
         "requires_human_action": false,
-        "ai_notes": "本題屬於直線斜率的平行與垂直應用。由於候選清單中無斜率相關子技能，且 C2 屬於兩點距離家族，故選擇 C1 作為最合適的通用計算分類。",
+        "ai_notes": "由於候選清單中沒有專門針對斜率平行或垂直的子技能，故歸類於通用的數值計算 (compute_numeric)。",
         "skill_scoped_candidates": [
           {
             "candidate_id": "C1",
@@ -25436,11 +25411,10 @@ $$、$D\lef |
           "ai_confidence": 0.95,
           "ai_best_candidate_id": "C1",
           "ai_evidence": [
-            "題目給定數個點的坐標，並要求計算直線 AP、BP、CP、DP 的斜率。",
-            "此任務屬於計算兩點間直線斜率的數值計算題型。"
+            "題目給定數個點的座標，要求計算直線 AP、BP、CP、DP 的斜率，屬於數值計算。"
           ],
           "ai_rejected_candidates": {
-            "needs_review": "雖然題目文本中 C 點的坐標因格式問題顯示為雙錢字號，但整體題意非常明確，為求兩點連線之斜率，且合約規定除非題目完全無法閱讀，否則禁止選擇 needs_review。"
+            "needs_review": "雖然題目文字中 C 點座標因格式問題顯示為雙錢字號，但整體題意極為明確，為標準的斜率計算，不需設為 needs_review。"
           },
           "ai_available": true,
           "ai_error": "",
@@ -25461,7 +25435,7 @@ $$、$D\lef |
           "conflict_reason": "",
           "source_mapping_warning": "",
           "requires_human_action": false,
-          "ai_notes": "本題為給定點坐標求直線斜率的標準計算題，對應 compute_numeric。",
+          "ai_notes": "此題為給定點座標求直線斜率，符合 compute_numeric 的定義。",
           "skill_scoped_candidates": [
             {
               "candidate_id": "C1",
@@ -25833,11 +25807,10 @@ $$、$D\lef |
         "ai_confidence": 0.95,
         "ai_best_candidate_id": "C1",
         "ai_evidence": [
-          "題目給定數個點的坐標，並要求計算直線 AP、BP、CP、DP 的斜率。",
-          "此任務屬於計算兩點間直線斜率的數值計算題型。"
+          "題目給定數個點的座標，要求計算直線 AP、BP、CP、DP 的斜率，屬於數值計算。"
         ],
         "ai_rejected_candidates": {
-          "needs_review": "雖然題目文本中 C 點的坐標因格式問題顯示為雙錢字號，但整體題意非常明確，為求兩點連線之斜率，且合約規定除非題目完全無法閱讀，否則禁止選擇 needs_review。"
+          "needs_review": "雖然題目文字中 C 點座標因格式問題顯示為雙錢字號，但整體題意極為明確，為標準的斜率計算，不需設為 needs_review。"
         },
         "ai_available": true,
         "ai_error": "",
@@ -25858,7 +25831,7 @@ $$、$D\lef |
         "conflict_reason": "",
         "source_mapping_warning": "",
         "requires_human_action": false,
-        "ai_notes": "本題為給定點坐標求直線斜率的標準計算題，對應 compute_numeric。",
+        "ai_notes": "此題為給定點座標求直線斜率，符合 compute_numeric 的定義。",
         "skill_scoped_candidates": [
           {
             "candidate_id": "C1",
@@ -26149,11 +26122,12 @@ $$、$D\lef |
           "ai_confidence": 0.92,
           "ai_best_candidate_id": "C2",
           "ai_evidence": [
-            "The Python math meta preflight specifies that we must select the candidate whose target_task equals forced_target_task, which is applied_quadratic_inequality_problem (C2)."
+            "The Python math meta preflight MANDATORY instruction forces the selection of the candidate with target_task equal to applied_quadratic_inequality_problem.",
+            "Candidate C2 matches this forced target task."
           ],
           "ai_rejected_candidates": {
-            "C1": "Not the forced target task",
-            "needs_review": "Preflight instruction overrides other options"
+            "C1": "Rejected because C2 is forced by the preflight instruction.",
+            "needs_review": "Rejected because C2 is forced by the preflight instruction."
           },
           "ai_available": true,
           "ai_error": "",
@@ -26174,7 +26148,7 @@ $$、$D\lef |
           "conflict_reason": "",
           "source_mapping_warning": "outsider_candidate_within_confirmed_skill",
           "requires_human_action": true,
-          "ai_notes": "Selected C2 as mandated by the Python math meta preflight instruction.",
+          "ai_notes": "Forced selection of C2 based on the mandatory preflight instruction.",
           "skill_scoped_candidates": [
             {
               "candidate_id": "C1",
@@ -26645,11 +26619,12 @@ $$、$D\lef |
         "ai_confidence": 0.92,
         "ai_best_candidate_id": "C2",
         "ai_evidence": [
-          "The Python math meta preflight specifies that we must select the candidate whose target_task equals forced_target_task, which is applied_quadratic_inequality_problem (C2)."
+          "The Python math meta preflight MANDATORY instruction forces the selection of the candidate with target_task equal to applied_quadratic_inequality_problem.",
+          "Candidate C2 matches this forced target task."
         ],
         "ai_rejected_candidates": {
-          "C1": "Not the forced target task",
-          "needs_review": "Preflight instruction overrides other options"
+          "C1": "Rejected because C2 is forced by the preflight instruction.",
+          "needs_review": "Rejected because C2 is forced by the preflight instruction."
         },
         "ai_available": true,
         "ai_error": "",
@@ -26670,7 +26645,7 @@ $$、$D\lef |
         "conflict_reason": "",
         "source_mapping_warning": "outsider_candidate_within_confirmed_skill",
         "requires_human_action": true,
-        "ai_notes": "Selected C2 as mandated by the Python math meta preflight instruction.",
+        "ai_notes": "Forced selection of C2 based on the mandatory preflight instruction.",
         "skill_scoped_candidates": [
           {
             "candidate_id": "C1",
@@ -27067,12 +27042,12 @@ $$、$D\lef |
           "ai_confidence": 1.0,
           "ai_best_candidate_id": "C1",
           "ai_evidence": [
-            "The question asks to find the value of a parameter 'a' given two points A(2, a) and B(a, 8) on a line with a slope of 2.",
-            "This is a standard numeric calculation task based on the slope formula.",
-            "The candidate C1 (compute_numeric) is the most appropriate category among the choices, and needs_review is avoided as the question is fully readable."
+            "The question asks to find the value of a given two points A(2, a) and B(a, 8) on line L with slope 2.",
+            "This is a numeric computation task based on the definition of the slope of a line.",
+            "The candidate C1 (compute_numeric) is the only valid non-needs_review candidate provided."
           ],
           "ai_rejected_candidates": {
-            "needs_review": "The question is clear, readable, and perfectly aligned with the slope of a line topic, so needs_review is rejected."
+            "needs_review": "The stem is perfectly readable and aligned with the skill of finding the slope of a line, so needs_review is rejected."
           },
           "ai_available": true,
           "ai_error": "",
@@ -27093,7 +27068,7 @@ $$、$D\lef |
           "conflict_reason": "",
           "source_mapping_warning": "",
           "requires_human_action": false,
-          "ai_notes": "The problem requires solving the equation (8 - a) / (a - 2) = 2 to find the value of a.",
+          "ai_notes": "The problem requires solving for the parameter a using the slope formula (8 - a) / (a - 2) = 2, which is a numeric computation task.",
           "skill_scoped_candidates": [
             {
               "candidate_id": "C1",
@@ -27468,12 +27443,12 @@ $$、$D\lef |
         "ai_confidence": 1.0,
         "ai_best_candidate_id": "C1",
         "ai_evidence": [
-          "The question asks to find the value of a parameter 'a' given two points A(2, a) and B(a, 8) on a line with a slope of 2.",
-          "This is a standard numeric calculation task based on the slope formula.",
-          "The candidate C1 (compute_numeric) is the most appropriate category among the choices, and needs_review is avoided as the question is fully readable."
+          "The question asks to find the value of a given two points A(2, a) and B(a, 8) on line L with slope 2.",
+          "This is a numeric computation task based on the definition of the slope of a line.",
+          "The candidate C1 (compute_numeric) is the only valid non-needs_review candidate provided."
         ],
         "ai_rejected_candidates": {
-          "needs_review": "The question is clear, readable, and perfectly aligned with the slope of a line topic, so needs_review is rejected."
+          "needs_review": "The stem is perfectly readable and aligned with the skill of finding the slope of a line, so needs_review is rejected."
         },
         "ai_available": true,
         "ai_error": "",
@@ -27494,7 +27469,7 @@ $$、$D\lef |
         "conflict_reason": "",
         "source_mapping_warning": "",
         "requires_human_action": false,
-        "ai_notes": "The problem requires solving the equation (8 - a) / (a - 2) = 2 to find the value of a.",
+        "ai_notes": "The problem requires solving for the parameter a using the slope formula (8 - a) / (a - 2) = 2, which is a numeric computation task.",
         "skill_scoped_candidates": [
           {
             "candidate_id": "C1",
@@ -27800,11 +27775,11 @@ $$、$D\lef |
           "ai_confidence": 1.0,
           "ai_best_candidate_id": "C1",
           "ai_evidence": [
-            "題目給定三點共線，要求解未知數 a 的值。",
-            "此題可利用兩點求斜率公式，藉由斜率相等（PQ 斜率等於 PR 斜率）列式求解，屬於數值計算。"
+            "The problem asks to find the value of 'a' given that three points are collinear, which is solved by setting the slope of PQ equal to the slope of PR.",
+            "Since C1 (compute_numeric) is the only non-review candidate provided, and the stem is readable, C1 is the correct choice."
           ],
           "ai_rejected_candidates": {
-            "needs_review": "題目雖然在點的標示上有些許排版瑕疵（如 B(-1,0)R(8,-2)），但整體語意依然清晰可解，不需進入人工審查。"
+            "needs_review": "The stem is readable and represents a standard collinearity problem using slopes, so needs_review is rejected."
           },
           "ai_available": true,
           "ai_error": "",
@@ -27825,7 +27800,7 @@ $$、$D\lef |
           "conflict_reason": "",
           "source_mapping_warning": "",
           "requires_human_action": false,
-          "ai_notes": "此題為利用三點共線（斜率相等）來求未知數的典型數值計算題，故選擇 C1。",
+          "ai_notes": "The text contains a minor typo 'B(-1,0)R(8,-2)' but the mathematical intent of collinear points P, Q, and R is clear and solvable.",
           "skill_scoped_candidates": [
             {
               "candidate_id": "C1",
@@ -28202,11 +28177,11 @@ $$、$D\lef |
         "ai_confidence": 1.0,
         "ai_best_candidate_id": "C1",
         "ai_evidence": [
-          "題目給定三點共線，要求解未知數 a 的值。",
-          "此題可利用兩點求斜率公式，藉由斜率相等（PQ 斜率等於 PR 斜率）列式求解，屬於數值計算。"
+          "The problem asks to find the value of 'a' given that three points are collinear, which is solved by setting the slope of PQ equal to the slope of PR.",
+          "Since C1 (compute_numeric) is the only non-review candidate provided, and the stem is readable, C1 is the correct choice."
         ],
         "ai_rejected_candidates": {
-          "needs_review": "題目雖然在點的標示上有些許排版瑕疵（如 B(-1,0)R(8,-2)），但整體語意依然清晰可解，不需進入人工審查。"
+          "needs_review": "The stem is readable and represents a standard collinearity problem using slopes, so needs_review is rejected."
         },
         "ai_available": true,
         "ai_error": "",
@@ -28227,7 +28202,7 @@ $$、$D\lef |
         "conflict_reason": "",
         "source_mapping_warning": "",
         "requires_human_action": false,
-        "ai_notes": "此題為利用三點共線（斜率相等）來求未知數的典型數值計算題，故選擇 C1。",
+        "ai_notes": "The text contains a minor typo 'B(-1,0)R(8,-2)' but the mathematical intent of collinear points P, Q, and R is clear and solvable.",
         "skill_scoped_candidates": [
           {
             "candidate_id": "C1",
@@ -28534,7 +28509,7 @@ $$、$D\lef |
     "phase1_md": "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_SlopeOfALine_phase1_summary.md"
   },
   "next_action": "phase2_generate_from_induced_specs",
-  "timestamp": "2026-06-14T08:31:35.943557+00:00",
+  "timestamp": "2026-06-14T09:05:16.157059+00:00",
   "dry_run": true,
   "auto_review_summary": {
     "skill_id": "vh_數學B1_SlopeOfALine",
@@ -28589,11 +28564,11 @@ $$、$D\lef |
         "ai_confidence": 1.0,
         "ai_best_candidate_id": "C1",
         "ai_evidence": [
-          "題目給定三點 A(-2,0), B(-1,1), C(k,4) 共線，求未知數 k 的值，此題型屬於直線斜率的應用，利用 AB 斜率等於 BC 斜率來求解。",
-          "在候選清單中，C1 (compute_numeric) 是唯一可選的具體子技能。"
+          "題目給定三點 A(-2,0), B(-1,1), C(k,4) 共線，求 k 的值。",
+          "此題利用 AB 斜率等於 BC 斜率的觀念來列式求解，屬於數值計算。"
         ],
         "ai_rejected_candidates": {
-          "needs_review": "題目清晰可讀，且屬於該技能的核心範疇，不應選擇 needs_review。"
+          "needs_review": "題目清晰且與斜率單元完全契合，無須送審。"
         },
         "ai_available": true,
         "ai_error": "",
@@ -28614,7 +28589,7 @@ $$、$D\lef |
         "conflict_reason": "",
         "source_mapping_warning": "outsider_candidate_within_confirmed_skill",
         "requires_human_action": true,
-        "ai_notes": "由於候選清單中僅有 C1 與 needs_review，且題目完全可讀，因此依據規則選擇 C1。",
+        "ai_notes": "根據強制合約，此題屬於直線的斜率單元，利用斜率相等求解 k，選擇 compute_numeric。",
         "skill_scoped_candidates": [
           {
             "candidate_id": "C1",
@@ -28857,11 +28832,10 @@ $$、$D\lef |
         "ai_confidence": 0.9,
         "ai_best_candidate_id": "C1",
         "ai_evidence": [
-          "題目要求計算直線 AB、BC、AC、BD 的斜率並畫出圖形。",
-          "此任務屬於數值計算（compute_numeric）。"
+          "The question asks to find the slopes of lines AB, BC, AC, and BD, which is a numeric computation task."
         ],
         "ai_rejected_candidates": {
-          "needs_review": "雖然題目中 A 與 B 點的座標在文字中遺漏，但題意明確為計算斜率，且規則規定除非完全無法閱讀否則禁止選擇 needs_review。"
+          "needs_review": "The stem has a typo where coordinates for A and B are missing, but the task type is clearly numeric computation, and needs_review is forbidden unless the stem is completely unreadable."
         },
         "ai_available": true,
         "ai_error": "",
@@ -28882,7 +28856,7 @@ $$、$D\lef |
         "conflict_reason": "",
         "source_mapping_warning": "",
         "requires_human_action": false,
-        "ai_notes": "題目中點 A 與點 B 的座標在文字中遺漏（顯示為『設、、』），但其核心任務為計算直線斜率，符合 compute_numeric 的定義。",
+        "ai_notes": "The task is to compute the slope of lines given points, which corresponds to compute_numeric.",
         "skill_scoped_candidates": [
           {
             "candidate_id": "C1",
@@ -29120,15 +29094,14 @@ $$、$D\lef |
         "example_id": 4520,
         "ai_target_task": "compute_numeric",
         "ai_task_family": "generic_numeric_family",
-        "ai_confidence": 0.9,
+        "ai_confidence": 1.0,
         "ai_best_candidate_id": "C1",
         "ai_evidence": [
-          "The question asks to identify and compare the slopes of lines from graphs.",
-          "The candidate list only contains C1 (compute_numeric) and needs_review.",
-          "Choosing needs_review is forbidden because the question text is clear and readable."
+          "題目要求根據圖形判斷斜率的正負、零或不存在，並比較斜率大小，屬於直線斜率的基本觀念。",
+          "依據規定，題目清晰可讀時禁止選擇 needs_review，因此選擇唯一的候選者 C1。"
         ],
         "ai_rejected_candidates": {
-          "needs_review": "The question text is fully readable and aligned with the skill of slope of a line, so needs_review is rejected."
+          "needs_review": "題目語意清晰、圖形描述完整，不符合 needs_review 的選取條件。"
         },
         "ai_available": true,
         "ai_error": "",
@@ -29149,7 +29122,7 @@ $$、$D\lef |
         "conflict_reason": "",
         "source_mapping_warning": "",
         "requires_human_action": false,
-        "ai_notes": "The question asks students to determine the sign of slopes and compare slope values based on graphs. Since needs_review is forbidden for readable stems, C1 is selected.",
+        "ai_notes": "本題為直線斜率的觀念判定與大小比較。因 needs_review 僅在題目無法閱讀時使用，故選擇 C1。",
         "skill_scoped_candidates": [
           {
             "candidate_id": "C1",
@@ -29385,12 +29358,10 @@ $$、$D\lef |
         "ai_confidence": 1.0,
         "ai_best_candidate_id": "C1",
         "ai_evidence": [
-          "題目要求計算通過兩點 A 與 B 的直線斜率",
-          "此題為直線斜率的基本數值計算",
-          "在候選清單中，C1 (compute_numeric) 是唯一合理的非 needs_review 選項"
+          "題目要求計算過兩點 A 與 B 的直線斜率，屬於基礎數值計算。"
         ],
         "ai_rejected_candidates": {
-          "needs_review": "題目清晰且完全可讀，無須人工審查"
+          "needs_review": "題目語意清晰且完整，無須送審。"
         },
         "ai_available": true,
         "ai_error": "",
@@ -29411,7 +29382,7 @@ $$、$D\lef |
         "conflict_reason": "",
         "source_mapping_warning": "",
         "requires_human_action": false,
-        "ai_notes": "本題為給定兩點求直線斜率的數值計算題，對應 compute_numeric。",
+        "ai_notes": "此題為給定兩點求斜率的標準計算題，對應到 compute_numeric 子技能。",
         "skill_scoped_candidates": [
           {
             "candidate_id": "C1",
@@ -29652,10 +29623,11 @@ $$、$D\lef |
         "ai_confidence": 1.0,
         "ai_best_candidate_id": "C1",
         "ai_evidence": [
-          "題目給定兩點座標 (2, a) 與 (1-a, 5) 且斜率為 2，要求解 a 的值，屬於數值計算。"
+          "題目給定兩點座標 (2, a) 與 (1-a, 5) 且斜率為 2，要求解未知數 a 的值。",
+          "此題屬於直線斜率公式的數值計算應用。"
         ],
         "ai_rejected_candidates": {
-          "needs_review": "題目清晰且可正常求解，不應選擇 needs_review。"
+          "needs_review": "題目清晰且完全符合直線斜率的教學範疇，無須人工審查。"
         },
         "ai_available": true,
         "ai_error": "",
@@ -29676,7 +29648,7 @@ $$、$D\lef |
         "conflict_reason": "",
         "source_mapping_warning": "",
         "requires_human_action": false,
-        "ai_notes": "依據強制合約，此題與直線斜率技能完全對齊，且題目清晰，故選擇 C1。",
+        "ai_notes": "依據強制合約，此題與直線的斜率技能 100% 對齊，且題幹清晰，故選擇 C1。",
         "skill_scoped_candidates": [
           {
             "candidate_id": "C1",
@@ -29915,11 +29887,11 @@ $$、$D\lef |
         "ai_confidence": 1.0,
         "ai_best_candidate_id": "C1",
         "ai_evidence": [
-          "題目給定三點 A(-1,-1)、B(2,k)、C(8,5) 共線，求 k 的值。",
-          "此題利用 AB 斜率等於 AC 斜率的觀念進行數值計算，符合 compute_numeric 的定義。"
+          "題目給定三點 A(-1, -1)、B(2, k)、C(8, 5) 共線，要求未知數 k 的值。",
+          "此題利用 AB 斜率等於 AC 斜率的觀念來建立方程式並求解，屬於直線斜率的數值計算。"
         ],
         "ai_rejected_candidates": {
-          "needs_review": "題目語意清晰且與直線斜率技能完全契合，無須人工審查。"
+          "needs_review": "題目語意清晰完整，且與直線斜率的核心概念完全符合，不需送審。"
         },
         "ai_available": true,
         "ai_error": "",
@@ -29940,7 +29912,7 @@ $$、$D\lef |
         "conflict_reason": "",
         "source_mapping_warning": "",
         "requires_human_action": false,
-        "ai_notes": "三點共線是直線斜率單元的經典題型，透過斜率相等建立方程式求出未知數 k。",
+        "ai_notes": "透過三點共線斜率相等的性質求解未知數，選擇 compute_numeric。",
         "skill_scoped_candidates": [
           {
             "candidate_id": "C1",
@@ -30181,12 +30153,12 @@ $$、$D\lef |
         "ai_confidence": 0.92,
         "ai_best_candidate_id": "C2",
         "ai_evidence": [
-          "The Python math meta preflight specifies a forced target task of applied_quadratic_inequality_problem.",
-          "Candidate C2 matches this forced target task and must be selected as per the mandatory instruction."
+          "The Python math meta preflight instructions explicitly mandate selecting the candidate whose target_task equals forced_target_task (applied_quadratic_inequality_problem).",
+          "Candidate C2 has the target_task applied_quadratic_inequality_problem."
         ],
         "ai_rejected_candidates": {
-          "C1": "This candidate does not match the forced target task specified in the preflight instructions.",
-          "needs_review": "This candidate is rejected because choosing needs_review is forbidden and does not match the forced target task."
+          "C1": "Rejected because C2 is forced by the mandatory preflight instructions.",
+          "needs_review": "Rejected because choosing needs_review is forbidden when the stem is readable and a candidate is forced."
         },
         "ai_available": true,
         "ai_error": "",
@@ -30207,7 +30179,7 @@ $$、$D\lef |
         "conflict_reason": "",
         "source_mapping_warning": "outsider_candidate_within_confirmed_skill",
         "requires_human_action": true,
-        "ai_notes": "The selection of C2 is strictly guided by the mandatory preflight instruction to choose the candidate whose target task equals applied_quadratic_inequality_problem.",
+        "ai_notes": "Selected C2 as mandated by the forced_target_task rule in the preflight instructions.",
         "skill_scoped_candidates": [
           {
             "candidate_id": "C1",
@@ -30549,14 +30521,12 @@ $$、$D\lef |
         "ai_confidence": 0.9,
         "ai_best_candidate_id": "C1",
         "ai_evidence": [
-          "題目要求在兩線段平行或垂直的條件下求解未知數 a 與 x 的值",
-          "此題型利用兩點斜率公式，平行時斜率相等，垂直時斜率乘積為負一",
-          "候選項目 C2 為利用兩點距離公式求解未知坐標，與本題斜率概念不符",
-          "在沒有更具體斜率相關子技能的情況下，選擇 C1 (compute_numeric) 作為通用數值計算"
+          "題目要求利用線段 AB 與線段 CD 平行，以及線段 AB 與線段 CD 垂直的條件，求出未知數 a 與 x 的值。",
+          "此題涉及斜率相等與斜率相乘等於 -1 的計算，在提供的候選清單中，C1 (compute_numeric) 作為通用數值計算最為合適。"
         ],
         "ai_rejected_candidates": {
-          "C2": "此題並非使用兩點距離公式，而是利用平行與垂直的斜率關係求解，故排除 C2",
-          "needs_review": "題目清晰可讀，且依據合約禁止在題目可讀時選擇 needs_review"
+          "C2": "此題並非利用兩點距離公式求未知坐標，而是利用平行與垂直的斜率關係，故排除 C2。",
+          "needs_review": "題目清晰可讀，且依合約規定禁止輕易選擇 needs_review。"
         },
         "ai_available": true,
         "ai_error": "",
@@ -30577,7 +30547,7 @@ $$、$D\lef |
         "conflict_reason": "rule_family=distance_between_two_points_family; ai_subskill=compute_numeric",
         "source_mapping_warning": "",
         "requires_human_action": false,
-        "ai_notes": "本題屬於直線斜率的平行與垂直應用。由於候選清單中無斜率相關子技能，且 C2 屬於兩點距離家族，故選擇 C1 作為最合適的通用計算分類。",
+        "ai_notes": "由於候選清單中沒有專門針對斜率平行或垂直的子技能，故歸類於通用的數值計算 (compute_numeric)。",
         "skill_scoped_candidates": [
           {
             "candidate_id": "C1",
@@ -31039,11 +31009,10 @@ $$、$D\lef |
         "ai_confidence": 0.95,
         "ai_best_candidate_id": "C1",
         "ai_evidence": [
-          "題目給定數個點的坐標，並要求計算直線 AP、BP、CP、DP 的斜率。",
-          "此任務屬於計算兩點間直線斜率的數值計算題型。"
+          "題目給定數個點的座標，要求計算直線 AP、BP、CP、DP 的斜率，屬於數值計算。"
         ],
         "ai_rejected_candidates": {
-          "needs_review": "雖然題目文本中 C 點的坐標因格式問題顯示為雙錢字號，但整體題意非常明確，為求兩點連線之斜率，且合約規定除非題目完全無法閱讀，否則禁止選擇 needs_review。"
+          "needs_review": "雖然題目文字中 C 點座標因格式問題顯示為雙錢字號，但整體題意極為明確，為標準的斜率計算，不需設為 needs_review。"
         },
         "ai_available": true,
         "ai_error": "",
@@ -31064,7 +31033,7 @@ $$、$D\lef |
         "conflict_reason": "",
         "source_mapping_warning": "",
         "requires_human_action": false,
-        "ai_notes": "本題為給定點坐標求直線斜率的標準計算題，對應 compute_numeric。",
+        "ai_notes": "此題為給定點座標求直線斜率，符合 compute_numeric 的定義。",
         "skill_scoped_candidates": [
           {
             "candidate_id": "C1",
@@ -31305,11 +31274,12 @@ $$、$D\lef |
         "ai_confidence": 0.92,
         "ai_best_candidate_id": "C2",
         "ai_evidence": [
-          "The Python math meta preflight specifies that we must select the candidate whose target_task equals forced_target_task, which is applied_quadratic_inequality_problem (C2)."
+          "The Python math meta preflight MANDATORY instruction forces the selection of the candidate with target_task equal to applied_quadratic_inequality_problem.",
+          "Candidate C2 matches this forced target task."
         ],
         "ai_rejected_candidates": {
-          "C1": "Not the forced target task",
-          "needs_review": "Preflight instruction overrides other options"
+          "C1": "Rejected because C2 is forced by the preflight instruction.",
+          "needs_review": "Rejected because C2 is forced by the preflight instruction."
         },
         "ai_available": true,
         "ai_error": "",
@@ -31330,7 +31300,7 @@ $$、$D\lef |
         "conflict_reason": "",
         "source_mapping_warning": "outsider_candidate_within_confirmed_skill",
         "requires_human_action": true,
-        "ai_notes": "Selected C2 as mandated by the Python math meta preflight instruction.",
+        "ai_notes": "Forced selection of C2 based on the mandatory preflight instruction.",
         "skill_scoped_candidates": [
           {
             "candidate_id": "C1",
@@ -31670,12 +31640,12 @@ $$、$D\lef |
         "ai_confidence": 1.0,
         "ai_best_candidate_id": "C1",
         "ai_evidence": [
-          "The question asks to find the value of a parameter 'a' given two points A(2, a) and B(a, 8) on a line with a slope of 2.",
-          "This is a standard numeric calculation task based on the slope formula.",
-          "The candidate C1 (compute_numeric) is the most appropriate category among the choices, and needs_review is avoided as the question is fully readable."
+          "The question asks to find the value of a given two points A(2, a) and B(a, 8) on line L with slope 2.",
+          "This is a numeric computation task based on the definition of the slope of a line.",
+          "The candidate C1 (compute_numeric) is the only valid non-needs_review candidate provided."
         ],
         "ai_rejected_candidates": {
-          "needs_review": "The question is clear, readable, and perfectly aligned with the slope of a line topic, so needs_review is rejected."
+          "needs_review": "The stem is perfectly readable and aligned with the skill of finding the slope of a line, so needs_review is rejected."
         },
         "ai_available": true,
         "ai_error": "",
@@ -31696,7 +31666,7 @@ $$、$D\lef |
         "conflict_reason": "",
         "source_mapping_warning": "",
         "requires_human_action": false,
-        "ai_notes": "The problem requires solving the equation (8 - a) / (a - 2) = 2 to find the value of a.",
+        "ai_notes": "The problem requires solving for the parameter a using the slope formula (8 - a) / (a - 2) = 2, which is a numeric computation task.",
         "skill_scoped_candidates": [
           {
             "candidate_id": "C1",
@@ -31935,11 +31905,11 @@ $$、$D\lef |
         "ai_confidence": 1.0,
         "ai_best_candidate_id": "C1",
         "ai_evidence": [
-          "題目給定三點共線，要求解未知數 a 的值。",
-          "此題可利用兩點求斜率公式，藉由斜率相等（PQ 斜率等於 PR 斜率）列式求解，屬於數值計算。"
+          "The problem asks to find the value of 'a' given that three points are collinear, which is solved by setting the slope of PQ equal to the slope of PR.",
+          "Since C1 (compute_numeric) is the only non-review candidate provided, and the stem is readable, C1 is the correct choice."
         ],
         "ai_rejected_candidates": {
-          "needs_review": "題目雖然在點的標示上有些許排版瑕疵（如 B(-1,0)R(8,-2)），但整體語意依然清晰可解，不需進入人工審查。"
+          "needs_review": "The stem is readable and represents a standard collinearity problem using slopes, so needs_review is rejected."
         },
         "ai_available": true,
         "ai_error": "",
@@ -31960,7 +31930,7 @@ $$、$D\lef |
         "conflict_reason": "",
         "source_mapping_warning": "",
         "requires_human_action": false,
-        "ai_notes": "此題為利用三點共線（斜率相等）來求未知數的典型數值計算題，故選擇 C1。",
+        "ai_notes": "The text contains a minor typo 'B(-1,0)R(8,-2)' but the mathematical intent of collinear points P, Q, and R is clear and solvable.",
         "skill_scoped_candidates": [
           {
             "candidate_id": "C1",
@@ -32685,7 +32655,7 @@ $$、$D\lef |
         "rule_confidence": 0.2,
         "ai_target_task": "compute_numeric",
         "ai_task_family": "generic_numeric_family",
-        "ai_confidence": 0.9,
+        "ai_confidence": 1.0,
         "ai_semantic_status": "ok",
         "ai_available": true,
         "ai_error": "",
@@ -35575,11 +35545,11 @@ $$、$D\lef |
           "ai_confidence": 1.0,
           "ai_best_candidate_id": "C1",
           "ai_evidence": [
-            "題目給定三點 A(-2,0), B(-1,1), C(k,4) 共線，求未知數 k 的值，此題型屬於直線斜率的應用，利用 AB 斜率等於 BC 斜率來求解。",
-            "在候選清單中，C1 (compute_numeric) 是唯一可選的具體子技能。"
+            "題目給定三點 A(-2,0), B(-1,1), C(k,4) 共線，求 k 的值。",
+            "此題利用 AB 斜率等於 BC 斜率的觀念來列式求解，屬於數值計算。"
           ],
           "ai_rejected_candidates": {
-            "needs_review": "題目清晰可讀，且屬於該技能的核心範疇，不應選擇 needs_review。"
+            "needs_review": "題目清晰且與斜率單元完全契合，無須送審。"
           },
           "ai_available": true,
           "ai_error": "",
@@ -35600,7 +35570,7 @@ $$、$D\lef |
           "conflict_reason": "",
           "source_mapping_warning": "outsider_candidate_within_confirmed_skill",
           "requires_human_action": true,
-          "ai_notes": "由於候選清單中僅有 C1 與 needs_review，且題目完全可讀，因此依據規則選擇 C1。",
+          "ai_notes": "根據強制合約，此題屬於直線的斜率單元，利用斜率相等求解 k，選擇 compute_numeric。",
           "skill_scoped_candidates": [
             {
               "candidate_id": "C1",
@@ -35997,11 +35967,10 @@ $$、$D\lef |
           "ai_confidence": 0.9,
           "ai_best_candidate_id": "C1",
           "ai_evidence": [
-            "題目要求計算直線 AB、BC、AC、BD 的斜率並畫出圖形。",
-            "此任務屬於數值計算（compute_numeric）。"
+            "The question asks to find the slopes of lines AB, BC, AC, and BD, which is a numeric computation task."
           ],
           "ai_rejected_candidates": {
-            "needs_review": "雖然題目中 A 與 B 點的座標在文字中遺漏，但題意明確為計算斜率，且規則規定除非完全無法閱讀否則禁止選擇 needs_review。"
+            "needs_review": "The stem has a typo where coordinates for A and B are missing, but the task type is clearly numeric computation, and needs_review is forbidden unless the stem is completely unreadable."
           },
           "ai_available": true,
           "ai_error": "",
@@ -36022,7 +35991,7 @@ $$、$D\lef |
           "conflict_reason": "",
           "source_mapping_warning": "",
           "requires_human_action": false,
-          "ai_notes": "題目中點 A 與點 B 的座標在文字中遺漏（顯示為『設、、』），但其核心任務為計算直線斜率，符合 compute_numeric 的定義。",
+          "ai_notes": "The task is to compute the slope of lines given points, which corresponds to compute_numeric.",
           "skill_scoped_candidates": [
             {
               "candidate_id": "C1",
@@ -36419,15 +36388,14 @@ $$、$D\lef |
         "semantic_classification": {
           "ai_target_task": "compute_numeric",
           "ai_task_family": "generic_numeric_family",
-          "ai_confidence": 0.9,
+          "ai_confidence": 1.0,
           "ai_best_candidate_id": "C1",
           "ai_evidence": [
-            "The question asks to identify and compare the slopes of lines from graphs.",
-            "The candidate list only contains C1 (compute_numeric) and needs_review.",
-            "Choosing needs_review is forbidden because the question text is clear and readable."
+            "題目要求根據圖形判斷斜率的正負、零或不存在，並比較斜率大小，屬於直線斜率的基本觀念。",
+            "依據規定，題目清晰可讀時禁止選擇 needs_review，因此選擇唯一的候選者 C1。"
           ],
           "ai_rejected_candidates": {
-            "needs_review": "The question text is fully readable and aligned with the skill of slope of a line, so needs_review is rejected."
+            "needs_review": "題目語意清晰、圖形描述完整，不符合 needs_review 的選取條件。"
           },
           "ai_available": true,
           "ai_error": "",
@@ -36448,7 +36416,7 @@ $$、$D\lef |
           "conflict_reason": "",
           "source_mapping_warning": "",
           "requires_human_action": false,
-          "ai_notes": "The question asks students to determine the sign of slopes and compare slope values based on graphs. Since needs_review is forbidden for readable stems, C1 is selected.",
+          "ai_notes": "本題為直線斜率的觀念判定與大小比較。因 needs_review 僅在題目無法閱讀時使用，故選擇 C1。",
           "skill_scoped_candidates": [
             {
               "candidate_id": "C1",
@@ -36848,12 +36816,10 @@ $$、$D\lef |
           "ai_confidence": 1.0,
           "ai_best_candidate_id": "C1",
           "ai_evidence": [
-            "題目要求計算通過兩點 A 與 B 的直線斜率",
-            "此題為直線斜率的基本數值計算",
-            "在候選清單中，C1 (compute_numeric) 是唯一合理的非 needs_review 選項"
+            "題目要求計算過兩點 A 與 B 的直線斜率，屬於基礎數值計算。"
           ],
           "ai_rejected_candidates": {
-            "needs_review": "題目清晰且完全可讀，無須人工審查"
+            "needs_review": "題目語意清晰且完整，無須送審。"
           },
           "ai_available": true,
           "ai_error": "",
@@ -36874,7 +36840,7 @@ $$、$D\lef |
           "conflict_reason": "",
           "source_mapping_warning": "",
           "requires_human_action": false,
-          "ai_notes": "本題為給定兩點求直線斜率的數值計算題，對應 compute_numeric。",
+          "ai_notes": "此題為給定兩點求斜率的標準計算題，對應到 compute_numeric 子技能。",
           "skill_scoped_candidates": [
             {
               "candidate_id": "C1",
@@ -37275,10 +37241,11 @@ $$、$D\lef |
           "ai_confidence": 1.0,
           "ai_best_candidate_id": "C1",
           "ai_evidence": [
-            "題目給定兩點座標 (2, a) 與 (1-a, 5) 且斜率為 2，要求解 a 的值，屬於數值計算。"
+            "題目給定兩點座標 (2, a) 與 (1-a, 5) 且斜率為 2，要求解未知數 a 的值。",
+            "此題屬於直線斜率公式的數值計算應用。"
           ],
           "ai_rejected_candidates": {
-            "needs_review": "題目清晰且可正常求解，不應選擇 needs_review。"
+            "needs_review": "題目清晰且完全符合直線斜率的教學範疇，無須人工審查。"
           },
           "ai_available": true,
           "ai_error": "",
@@ -37299,7 +37266,7 @@ $$、$D\lef |
           "conflict_reason": "",
           "source_mapping_warning": "",
           "requires_human_action": false,
-          "ai_notes": "依據強制合約，此題與直線斜率技能完全對齊，且題目清晰，故選擇 C1。",
+          "ai_notes": "依據強制合約，此題與直線的斜率技能 100% 對齊，且題幹清晰，故選擇 C1。",
           "skill_scoped_candidates": [
             {
               "candidate_id": "C1",
@@ -37706,11 +37673,11 @@ $$、$D\lef |
           "ai_confidence": 1.0,
           "ai_best_candidate_id": "C1",
           "ai_evidence": [
-            "題目給定三點 A(-1,-1)、B(2,k)、C(8,5) 共線，求 k 的值。",
-            "此題利用 AB 斜率等於 AC 斜率的觀念進行數值計算，符合 compute_numeric 的定義。"
+            "題目給定三點 A(-1, -1)、B(2, k)、C(8, 5) 共線，要求未知數 k 的值。",
+            "此題利用 AB 斜率等於 AC 斜率的觀念來建立方程式並求解，屬於直線斜率的數值計算。"
           ],
           "ai_rejected_candidates": {
-            "needs_review": "題目語意清晰且與直線斜率技能完全契合，無須人工審查。"
+            "needs_review": "題目語意清晰完整，且與直線斜率的核心概念完全符合，不需送審。"
           },
           "ai_available": true,
           "ai_error": "",
@@ -37731,7 +37698,7 @@ $$、$D\lef |
           "conflict_reason": "",
           "source_mapping_warning": "",
           "requires_human_action": false,
-          "ai_notes": "三點共線是直線斜率單元的經典題型，透過斜率相等建立方程式求出未知數 k。",
+          "ai_notes": "透過三點共線斜率相等的性質求解未知數，選擇 compute_numeric。",
           "skill_scoped_candidates": [
             {
               "candidate_id": "C1",
@@ -38142,12 +38109,12 @@ $$、$D\lef |
           "ai_confidence": 0.92,
           "ai_best_candidate_id": "C2",
           "ai_evidence": [
-            "The Python math meta preflight specifies a forced target task of applied_quadratic_inequality_problem.",
-            "Candidate C2 matches this forced target task and must be selected as per the mandatory instruction."
+            "The Python math meta preflight instructions explicitly mandate selecting the candidate whose target_task equals forced_target_task (applied_quadratic_inequality_problem).",
+            "Candidate C2 has the target_task applied_quadratic_inequality_problem."
           ],
           "ai_rejected_candidates": {
-            "C1": "This candidate does not match the forced target task specified in the preflight instructions.",
-            "needs_review": "This candidate is rejected because choosing needs_review is forbidden and does not match the forced target task."
+            "C1": "Rejected because C2 is forced by the mandatory preflight instructions.",
+            "needs_review": "Rejected because choosing needs_review is forbidden when the stem is readable and a candidate is forced."
           },
           "ai_available": true,
           "ai_error": "",
@@ -38168,7 +38135,7 @@ $$、$D\lef |
           "conflict_reason": "",
           "source_mapping_warning": "outsider_candidate_within_confirmed_skill",
           "requires_human_action": true,
-          "ai_notes": "The selection of C2 is strictly guided by the mandatory preflight instruction to choose the candidate whose target task equals applied_quadratic_inequality_problem.",
+          "ai_notes": "Selected C2 as mandated by the forced_target_task rule in the preflight instructions.",
           "skill_scoped_candidates": [
             {
               "candidate_id": "C1",
@@ -38681,14 +38648,12 @@ $$、$D\lef |
           "ai_confidence": 0.9,
           "ai_best_candidate_id": "C1",
           "ai_evidence": [
-            "題目要求在兩線段平行或垂直的條件下求解未知數 a 與 x 的值",
-            "此題型利用兩點斜率公式，平行時斜率相等，垂直時斜率乘積為負一",
-            "候選項目 C2 為利用兩點距離公式求解未知坐標，與本題斜率概念不符",
-            "在沒有更具體斜率相關子技能的情況下，選擇 C1 (compute_numeric) 作為通用數值計算"
+            "題目要求利用線段 AB 與線段 CD 平行，以及線段 AB 與線段 CD 垂直的條件，求出未知數 a 與 x 的值。",
+            "此題涉及斜率相等與斜率相乘等於 -1 的計算，在提供的候選清單中，C1 (compute_numeric) 作為通用數值計算最為合適。"
           ],
           "ai_rejected_candidates": {
-            "C2": "此題並非使用兩點距離公式，而是利用平行與垂直的斜率關係求解，故排除 C2",
-            "needs_review": "題目清晰可讀，且依據合約禁止在題目可讀時選擇 needs_review"
+            "C2": "此題並非利用兩點距離公式求未知坐標，而是利用平行與垂直的斜率關係，故排除 C2。",
+            "needs_review": "題目清晰可讀，且依合約規定禁止輕易選擇 needs_review。"
           },
           "ai_available": true,
           "ai_error": "",
@@ -38709,7 +38674,7 @@ $$、$D\lef |
           "conflict_reason": "rule_family=distance_between_two_points_family; ai_subskill=compute_numeric",
           "source_mapping_warning": "",
           "requires_human_action": false,
-          "ai_notes": "本題屬於直線斜率的平行與垂直應用。由於候選清單中無斜率相關子技能，且 C2 屬於兩點距離家族，故選擇 C1 作為最合適的通用計算分類。",
+          "ai_notes": "由於候選清單中沒有專門針對斜率平行或垂直的子技能，故歸類於通用的數值計算 (compute_numeric)。",
           "skill_scoped_candidates": [
             {
               "candidate_id": "C1",
@@ -39340,11 +39305,10 @@ $$、$D\lef |
           "ai_confidence": 0.95,
           "ai_best_candidate_id": "C1",
           "ai_evidence": [
-            "題目給定數個點的坐標，並要求計算直線 AP、BP、CP、DP 的斜率。",
-            "此任務屬於計算兩點間直線斜率的數值計算題型。"
+            "題目給定數個點的座標，要求計算直線 AP、BP、CP、DP 的斜率，屬於數值計算。"
           ],
           "ai_rejected_candidates": {
-            "needs_review": "雖然題目文本中 C 點的坐標因格式問題顯示為雙錢字號，但整體題意非常明確，為求兩點連線之斜率，且合約規定除非題目完全無法閱讀，否則禁止選擇 needs_review。"
+            "needs_review": "雖然題目文字中 C 點座標因格式問題顯示為雙錢字號，但整體題意極為明確，為標準的斜率計算，不需設為 needs_review。"
           },
           "ai_available": true,
           "ai_error": "",
@@ -39365,7 +39329,7 @@ $$、$D\lef |
           "conflict_reason": "",
           "source_mapping_warning": "",
           "requires_human_action": false,
-          "ai_notes": "本題為給定點坐標求直線斜率的標準計算題，對應 compute_numeric。",
+          "ai_notes": "此題為給定點座標求直線斜率，符合 compute_numeric 的定義。",
           "skill_scoped_candidates": [
             {
               "candidate_id": "C1",
@@ -39772,11 +39736,12 @@ $$、$D\lef |
           "ai_confidence": 0.92,
           "ai_best_candidate_id": "C2",
           "ai_evidence": [
-            "The Python math meta preflight specifies that we must select the candidate whose target_task equals forced_target_task, which is applied_quadratic_inequality_problem (C2)."
+            "The Python math meta preflight MANDATORY instruction forces the selection of the candidate with target_task equal to applied_quadratic_inequality_problem.",
+            "Candidate C2 matches this forced target task."
           ],
           "ai_rejected_candidates": {
-            "C1": "Not the forced target task",
-            "needs_review": "Preflight instruction overrides other options"
+            "C1": "Rejected because C2 is forced by the preflight instruction.",
+            "needs_review": "Rejected because C2 is forced by the preflight instruction."
           },
           "ai_available": true,
           "ai_error": "",
@@ -39797,7 +39762,7 @@ $$、$D\lef |
           "conflict_reason": "",
           "source_mapping_warning": "outsider_candidate_within_confirmed_skill",
           "requires_human_action": true,
-          "ai_notes": "Selected C2 as mandated by the Python math meta preflight instruction.",
+          "ai_notes": "Forced selection of C2 based on the mandatory preflight instruction.",
           "skill_scoped_candidates": [
             {
               "candidate_id": "C1",
@@ -40309,12 +40274,12 @@ $$、$D\lef |
           "ai_confidence": 1.0,
           "ai_best_candidate_id": "C1",
           "ai_evidence": [
-            "The question asks to find the value of a parameter 'a' given two points A(2, a) and B(a, 8) on a line with a slope of 2.",
-            "This is a standard numeric calculation task based on the slope formula.",
-            "The candidate C1 (compute_numeric) is the most appropriate category among the choices, and needs_review is avoided as the question is fully readable."
+            "The question asks to find the value of a given two points A(2, a) and B(a, 8) on line L with slope 2.",
+            "This is a numeric computation task based on the definition of the slope of a line.",
+            "The candidate C1 (compute_numeric) is the only valid non-needs_review candidate provided."
           ],
           "ai_rejected_candidates": {
-            "needs_review": "The question is clear, readable, and perfectly aligned with the slope of a line topic, so needs_review is rejected."
+            "needs_review": "The stem is perfectly readable and aligned with the skill of finding the slope of a line, so needs_review is rejected."
           },
           "ai_available": true,
           "ai_error": "",
@@ -40335,7 +40300,7 @@ $$、$D\lef |
           "conflict_reason": "",
           "source_mapping_warning": "",
           "requires_human_action": false,
-          "ai_notes": "The problem requires solving the equation (8 - a) / (a - 2) = 2 to find the value of a.",
+          "ai_notes": "The problem requires solving for the parameter a using the slope formula (8 - a) / (a - 2) = 2, which is a numeric computation task.",
           "skill_scoped_candidates": [
             {
               "candidate_id": "C1",
@@ -40759,11 +40724,11 @@ $$、$D\lef |
           "ai_confidence": 1.0,
           "ai_best_candidate_id": "C1",
           "ai_evidence": [
-            "題目給定三點共線，要求解未知數 a 的值。",
-            "此題可利用兩點求斜率公式，藉由斜率相等（PQ 斜率等於 PR 斜率）列式求解，屬於數值計算。"
+            "The problem asks to find the value of 'a' given that three points are collinear, which is solved by setting the slope of PQ equal to the slope of PR.",
+            "Since C1 (compute_numeric) is the only non-review candidate provided, and the stem is readable, C1 is the correct choice."
           ],
           "ai_rejected_candidates": {
-            "needs_review": "題目雖然在點的標示上有些許排版瑕疵（如 B(-1,0)R(8,-2)），但整體語意依然清晰可解，不需進入人工審查。"
+            "needs_review": "The stem is readable and represents a standard collinearity problem using slopes, so needs_review is rejected."
           },
           "ai_available": true,
           "ai_error": "",
@@ -40784,7 +40749,7 @@ $$、$D\lef |
           "conflict_reason": "",
           "source_mapping_warning": "",
           "requires_human_action": false,
-          "ai_notes": "此題為利用三點共線（斜率相等）來求未知數的典型數值計算題，故選擇 C1。",
+          "ai_notes": "The text contains a minor typo 'B(-1,0)R(8,-2)' but the mathematical intent of collinear points P, Q, and R is clear and solvable.",
           "skill_scoped_candidates": [
             {
               "candidate_id": "C1",
@@ -44393,11 +44358,11 @@ $$、$D\lef |
             "ai_confidence": 1.0,
             "ai_best_candidate_id": "C1",
             "ai_evidence": [
-              "題目給定三點 A(-2,0), B(-1,1), C(k,4) 共線，求未知數 k 的值，此題型屬於直線斜率的應用，利用 AB 斜率等於 BC 斜率來求解。",
-              "在候選清單中，C1 (compute_numeric) 是唯一可選的具體子技能。"
+              "題目給定三點 A(-2,0), B(-1,1), C(k,4) 共線，求 k 的值。",
+              "此題利用 AB 斜率等於 BC 斜率的觀念來列式求解，屬於數值計算。"
             ],
             "ai_rejected_candidates": {
-              "needs_review": "題目清晰可讀，且屬於該技能的核心範疇，不應選擇 needs_review。"
+              "needs_review": "題目清晰且與斜率單元完全契合，無須送審。"
             },
             "ai_available": true,
             "ai_error": "",
@@ -44418,7 +44383,7 @@ $$、$D\lef |
             "conflict_reason": "",
             "source_mapping_warning": "outsider_candidate_within_confirmed_skill",
             "requires_human_action": true,
-            "ai_notes": "由於候選清單中僅有 C1 與 needs_review，且題目完全可讀，因此依據規則選擇 C1。",
+            "ai_notes": "根據強制合約，此題屬於直線的斜率單元，利用斜率相等求解 k，選擇 compute_numeric。",
             "skill_scoped_candidates": [
               {
                 "candidate_id": "C1",
@@ -44783,11 +44748,11 @@ $$、$D\lef |
           "ai_confidence": 1.0,
           "ai_best_candidate_id": "C1",
           "ai_evidence": [
-            "題目給定三點 A(-2,0), B(-1,1), C(k,4) 共線，求未知數 k 的值，此題型屬於直線斜率的應用，利用 AB 斜率等於 BC 斜率來求解。",
-            "在候選清單中，C1 (compute_numeric) 是唯一可選的具體子技能。"
+            "題目給定三點 A(-2,0), B(-1,1), C(k,4) 共線，求 k 的值。",
+            "此題利用 AB 斜率等於 BC 斜率的觀念來列式求解，屬於數值計算。"
           ],
           "ai_rejected_candidates": {
-            "needs_review": "題目清晰可讀，且屬於該技能的核心範疇，不應選擇 needs_review。"
+            "needs_review": "題目清晰且與斜率單元完全契合，無須送審。"
           },
           "ai_available": true,
           "ai_error": "",
@@ -44808,7 +44773,7 @@ $$、$D\lef |
           "conflict_reason": "",
           "source_mapping_warning": "outsider_candidate_within_confirmed_skill",
           "requires_human_action": true,
-          "ai_notes": "由於候選清單中僅有 C1 與 needs_review，且題目完全可讀，因此依據規則選擇 C1。",
+          "ai_notes": "根據強制合約，此題屬於直線的斜率單元，利用斜率相等求解 k，選擇 compute_numeric。",
           "skill_scoped_candidates": [
             {
               "candidate_id": "C1",
@@ -45096,11 +45061,10 @@ $$、$D\lef |
             "ai_confidence": 0.9,
             "ai_best_candidate_id": "C1",
             "ai_evidence": [
-              "題目要求計算直線 AB、BC、AC、BD 的斜率並畫出圖形。",
-              "此任務屬於數值計算（compute_numeric）。"
+              "The question asks to find the slopes of lines AB, BC, AC, and BD, which is a numeric computation task."
             ],
             "ai_rejected_candidates": {
-              "needs_review": "雖然題目中 A 與 B 點的座標在文字中遺漏，但題意明確為計算斜率，且規則規定除非完全無法閱讀否則禁止選擇 needs_review。"
+              "needs_review": "The stem has a typo where coordinates for A and B are missing, but the task type is clearly numeric computation, and needs_review is forbidden unless the stem is completely unreadable."
             },
             "ai_available": true,
             "ai_error": "",
@@ -45121,7 +45085,7 @@ $$、$D\lef |
             "conflict_reason": "",
             "source_mapping_warning": "",
             "requires_human_action": false,
-            "ai_notes": "題目中點 A 與點 B 的座標在文字中遺漏（顯示為『設、、』），但其核心任務為計算直線斜率，符合 compute_numeric 的定義。",
+            "ai_notes": "The task is to compute the slope of lines given points, which corresponds to compute_numeric.",
             "skill_scoped_candidates": [
               {
                 "candidate_id": "C1",
@@ -45493,11 +45457,10 @@ $$、$D\lef |
           "ai_confidence": 0.9,
           "ai_best_candidate_id": "C1",
           "ai_evidence": [
-            "題目要求計算直線 AB、BC、AC、BD 的斜率並畫出圖形。",
-            "此任務屬於數值計算（compute_numeric）。"
+            "The question asks to find the slopes of lines AB, BC, AC, and BD, which is a numeric computation task."
           ],
           "ai_rejected_candidates": {
-            "needs_review": "雖然題目中 A 與 B 點的座標在文字中遺漏，但題意明確為計算斜率，且規則規定除非完全無法閱讀否則禁止選擇 needs_review。"
+            "needs_review": "The stem has a typo where coordinates for A and B are missing, but the task type is clearly numeric computation, and needs_review is forbidden unless the stem is completely unreadable."
           },
           "ai_available": true,
           "ai_error": "",
@@ -45518,7 +45481,7 @@ $$、$D\lef |
           "conflict_reason": "",
           "source_mapping_warning": "",
           "requires_human_action": false,
-          "ai_notes": "題目中點 A 與點 B 的座標在文字中遺漏（顯示為『設、、』），但其核心任務為計算直線斜率，符合 compute_numeric 的定義。",
+          "ai_notes": "The task is to compute the slope of lines given points, which corresponds to compute_numeric.",
           "skill_scoped_candidates": [
             {
               "candidate_id": "C1",
@@ -45796,15 +45759,14 @@ $$、$D\lef |
           "semantic_classification": {
             "ai_target_task": "compute_numeric",
             "ai_task_family": "generic_numeric_family",
-            "ai_confidence": 0.9,
+            "ai_confidence": 1.0,
             "ai_best_candidate_id": "C1",
             "ai_evidence": [
-              "The question asks to identify and compare the slopes of lines from graphs.",
-              "The candidate list only contains C1 (compute_numeric) and needs_review.",
-              "Choosing needs_review is forbidden because the question text is clear and readable."
+              "題目要求根據圖形判斷斜率的正負、零或不存在，並比較斜率大小，屬於直線斜率的基本觀念。",
+              "依據規定，題目清晰可讀時禁止選擇 needs_review，因此選擇唯一的候選者 C1。"
             ],
             "ai_rejected_candidates": {
-              "needs_review": "The question text is fully readable and aligned with the skill of slope of a line, so needs_review is rejected."
+              "needs_review": "題目語意清晰、圖形描述完整，不符合 needs_review 的選取條件。"
             },
             "ai_available": true,
             "ai_error": "",
@@ -45825,7 +45787,7 @@ $$、$D\lef |
             "conflict_reason": "",
             "source_mapping_warning": "",
             "requires_human_action": false,
-            "ai_notes": "The question asks students to determine the sign of slopes and compare slope values based on graphs. Since needs_review is forbidden for readable stems, C1 is selected.",
+            "ai_notes": "本題為直線斜率的觀念判定與大小比較。因 needs_review 僅在題目無法閱讀時使用，故選擇 C1。",
             "skill_scoped_candidates": [
               {
                 "candidate_id": "C1",
@@ -46189,15 +46151,14 @@ $$、$D\lef |
         "semantic_classification": {
           "ai_target_task": "compute_numeric",
           "ai_task_family": "generic_numeric_family",
-          "ai_confidence": 0.9,
+          "ai_confidence": 1.0,
           "ai_best_candidate_id": "C1",
           "ai_evidence": [
-            "The question asks to identify and compare the slopes of lines from graphs.",
-            "The candidate list only contains C1 (compute_numeric) and needs_review.",
-            "Choosing needs_review is forbidden because the question text is clear and readable."
+            "題目要求根據圖形判斷斜率的正負、零或不存在，並比較斜率大小，屬於直線斜率的基本觀念。",
+            "依據規定，題目清晰可讀時禁止選擇 needs_review，因此選擇唯一的候選者 C1。"
           ],
           "ai_rejected_candidates": {
-            "needs_review": "The question text is fully readable and aligned with the skill of slope of a line, so needs_review is rejected."
+            "needs_review": "題目語意清晰、圖形描述完整，不符合 needs_review 的選取條件。"
           },
           "ai_available": true,
           "ai_error": "",
@@ -46218,7 +46179,7 @@ $$、$D\lef |
           "conflict_reason": "",
           "source_mapping_warning": "",
           "requires_human_action": false,
-          "ai_notes": "The question asks students to determine the sign of slopes and compare slope values based on graphs. Since needs_review is forbidden for readable stems, C1 is selected.",
+          "ai_notes": "本題為直線斜率的觀念判定與大小比較。因 needs_review 僅在題目無法閱讀時使用，故選擇 C1。",
           "skill_scoped_candidates": [
             {
               "candidate_id": "C1",
@@ -46499,12 +46460,10 @@ $$、$D\lef |
             "ai_confidence": 1.0,
             "ai_best_candidate_id": "C1",
             "ai_evidence": [
-              "題目要求計算通過兩點 A 與 B 的直線斜率",
-              "此題為直線斜率的基本數值計算",
-              "在候選清單中，C1 (compute_numeric) 是唯一合理的非 needs_review 選項"
+              "題目要求計算過兩點 A 與 B 的直線斜率，屬於基礎數值計算。"
             ],
             "ai_rejected_candidates": {
-              "needs_review": "題目清晰且完全可讀，無須人工審查"
+              "needs_review": "題目語意清晰且完整，無須送審。"
             },
             "ai_available": true,
             "ai_error": "",
@@ -46525,7 +46484,7 @@ $$、$D\lef |
             "conflict_reason": "",
             "source_mapping_warning": "",
             "requires_human_action": false,
-            "ai_notes": "本題為給定兩點求直線斜率的數值計算題，對應 compute_numeric。",
+            "ai_notes": "此題為給定兩點求斜率的標準計算題，對應到 compute_numeric 子技能。",
             "skill_scoped_candidates": [
               {
                 "candidate_id": "C1",
@@ -46897,12 +46856,10 @@ $$、$D\lef |
           "ai_confidence": 1.0,
           "ai_best_candidate_id": "C1",
           "ai_evidence": [
-            "題目要求計算通過兩點 A 與 B 的直線斜率",
-            "此題為直線斜率的基本數值計算",
-            "在候選清單中，C1 (compute_numeric) 是唯一合理的非 needs_review 選項"
+            "題目要求計算過兩點 A 與 B 的直線斜率，屬於基礎數值計算。"
           ],
           "ai_rejected_candidates": {
-            "needs_review": "題目清晰且完全可讀，無須人工審查"
+            "needs_review": "題目語意清晰且完整，無須送審。"
           },
           "ai_available": true,
           "ai_error": "",
@@ -46923,7 +46880,7 @@ $$、$D\lef |
           "conflict_reason": "",
           "source_mapping_warning": "",
           "requires_human_action": false,
-          "ai_notes": "本題為給定兩點求直線斜率的數值計算題，對應 compute_numeric。",
+          "ai_notes": "此題為給定兩點求斜率的標準計算題，對應到 compute_numeric 子技能。",
           "skill_scoped_candidates": [
             {
               "candidate_id": "C1",
@@ -47205,10 +47162,11 @@ $$、$D\lef |
             "ai_confidence": 1.0,
             "ai_best_candidate_id": "C1",
             "ai_evidence": [
-              "題目給定兩點座標 (2, a) 與 (1-a, 5) 且斜率為 2，要求解 a 的值，屬於數值計算。"
+              "題目給定兩點座標 (2, a) 與 (1-a, 5) 且斜率為 2，要求解未知數 a 的值。",
+              "此題屬於直線斜率公式的數值計算應用。"
             ],
             "ai_rejected_candidates": {
-              "needs_review": "題目清晰且可正常求解，不應選擇 needs_review。"
+              "needs_review": "題目清晰且完全符合直線斜率的教學範疇，無須人工審查。"
             },
             "ai_available": true,
             "ai_error": "",
@@ -47229,7 +47187,7 @@ $$、$D\lef |
             "conflict_reason": "",
             "source_mapping_warning": "",
             "requires_human_action": false,
-            "ai_notes": "依據強制合約，此題與直線斜率技能完全對齊，且題目清晰，故選擇 C1。",
+            "ai_notes": "依據強制合約，此題與直線的斜率技能 100% 對齊，且題幹清晰，故選擇 C1。",
             "skill_scoped_candidates": [
               {
                 "candidate_id": "C1",
@@ -47599,10 +47557,11 @@ $$、$D\lef |
           "ai_confidence": 1.0,
           "ai_best_candidate_id": "C1",
           "ai_evidence": [
-            "題目給定兩點座標 (2, a) 與 (1-a, 5) 且斜率為 2，要求解 a 的值，屬於數值計算。"
+            "題目給定兩點座標 (2, a) 與 (1-a, 5) 且斜率為 2，要求解未知數 a 的值。",
+            "此題屬於直線斜率公式的數值計算應用。"
           ],
           "ai_rejected_candidates": {
-            "needs_review": "題目清晰且可正常求解，不應選擇 needs_review。"
+            "needs_review": "題目清晰且完全符合直線斜率的教學範疇，無須人工審查。"
           },
           "ai_available": true,
           "ai_error": "",
@@ -47623,7 +47582,7 @@ $$、$D\lef |
           "conflict_reason": "",
           "source_mapping_warning": "",
           "requires_human_action": false,
-          "ai_notes": "依據強制合約，此題與直線斜率技能完全對齊，且題目清晰，故選擇 C1。",
+          "ai_notes": "依據強制合約，此題與直線的斜率技能 100% 對齊，且題幹清晰，故選擇 C1。",
           "skill_scoped_candidates": [
             {
               "candidate_id": "C1",
@@ -47911,11 +47870,11 @@ $$、$D\lef |
             "ai_confidence": 1.0,
             "ai_best_candidate_id": "C1",
             "ai_evidence": [
-              "題目給定三點 A(-1,-1)、B(2,k)、C(8,5) 共線，求 k 的值。",
-              "此題利用 AB 斜率等於 AC 斜率的觀念進行數值計算，符合 compute_numeric 的定義。"
+              "題目給定三點 A(-1, -1)、B(2, k)、C(8, 5) 共線，要求未知數 k 的值。",
+              "此題利用 AB 斜率等於 AC 斜率的觀念來建立方程式並求解，屬於直線斜率的數值計算。"
             ],
             "ai_rejected_candidates": {
-              "needs_review": "題目語意清晰且與直線斜率技能完全契合，無須人工審查。"
+              "needs_review": "題目語意清晰完整，且與直線斜率的核心概念完全符合，不需送審。"
             },
             "ai_available": true,
             "ai_error": "",
@@ -47936,7 +47895,7 @@ $$、$D\lef |
             "conflict_reason": "",
             "source_mapping_warning": "",
             "requires_human_action": false,
-            "ai_notes": "三點共線是直線斜率單元的經典題型，透過斜率相等建立方程式求出未知數 k。",
+            "ai_notes": "透過三點共線斜率相等的性質求解未知數，選擇 compute_numeric。",
             "skill_scoped_candidates": [
               {
                 "candidate_id": "C1",
@@ -48308,11 +48267,11 @@ $$、$D\lef |
           "ai_confidence": 1.0,
           "ai_best_candidate_id": "C1",
           "ai_evidence": [
-            "題目給定三點 A(-1,-1)、B(2,k)、C(8,5) 共線，求 k 的值。",
-            "此題利用 AB 斜率等於 AC 斜率的觀念進行數值計算，符合 compute_numeric 的定義。"
+            "題目給定三點 A(-1, -1)、B(2, k)、C(8, 5) 共線，要求未知數 k 的值。",
+            "此題利用 AB 斜率等於 AC 斜率的觀念來建立方程式並求解，屬於直線斜率的數值計算。"
           ],
           "ai_rejected_candidates": {
-            "needs_review": "題目語意清晰且與直線斜率技能完全契合，無須人工審查。"
+            "needs_review": "題目語意清晰完整，且與直線斜率的核心概念完全符合，不需送審。"
           },
           "ai_available": true,
           "ai_error": "",
@@ -48333,7 +48292,7 @@ $$、$D\lef |
           "conflict_reason": "",
           "source_mapping_warning": "",
           "requires_human_action": false,
-          "ai_notes": "三點共線是直線斜率單元的經典題型，透過斜率相等建立方程式求出未知數 k。",
+          "ai_notes": "透過三點共線斜率相等的性質求解未知數，選擇 compute_numeric。",
           "skill_scoped_candidates": [
             {
               "candidate_id": "C1",
@@ -48625,12 +48584,12 @@ $$、$D\lef |
             "ai_confidence": 0.92,
             "ai_best_candidate_id": "C2",
             "ai_evidence": [
-              "The Python math meta preflight specifies a forced target task of applied_quadratic_inequality_problem.",
-              "Candidate C2 matches this forced target task and must be selected as per the mandatory instruction."
+              "The Python math meta preflight instructions explicitly mandate selecting the candidate whose target_task equals forced_target_task (applied_quadratic_inequality_problem).",
+              "Candidate C2 has the target_task applied_quadratic_inequality_problem."
             ],
             "ai_rejected_candidates": {
-              "C1": "This candidate does not match the forced target task specified in the preflight instructions.",
-              "needs_review": "This candidate is rejected because choosing needs_review is forbidden and does not match the forced target task."
+              "C1": "Rejected because C2 is forced by the mandatory preflight instructions.",
+              "needs_review": "Rejected because choosing needs_review is forbidden when the stem is readable and a candidate is forced."
             },
             "ai_available": true,
             "ai_error": "",
@@ -48651,7 +48610,7 @@ $$、$D\lef |
             "conflict_reason": "",
             "source_mapping_warning": "outsider_candidate_within_confirmed_skill",
             "requires_human_action": true,
-            "ai_notes": "The selection of C2 is strictly guided by the mandatory preflight instruction to choose the candidate whose target task equals applied_quadratic_inequality_problem.",
+            "ai_notes": "Selected C2 as mandated by the forced_target_task rule in the preflight instructions.",
             "skill_scoped_candidates": [
               {
                 "candidate_id": "C1",
@@ -49124,12 +49083,12 @@ $$、$D\lef |
           "ai_confidence": 0.92,
           "ai_best_candidate_id": "C2",
           "ai_evidence": [
-            "The Python math meta preflight specifies a forced target task of applied_quadratic_inequality_problem.",
-            "Candidate C2 matches this forced target task and must be selected as per the mandatory instruction."
+            "The Python math meta preflight instructions explicitly mandate selecting the candidate whose target_task equals forced_target_task (applied_quadratic_inequality_problem).",
+            "Candidate C2 has the target_task applied_quadratic_inequality_problem."
           ],
           "ai_rejected_candidates": {
-            "C1": "This candidate does not match the forced target task specified in the preflight instructions.",
-            "needs_review": "This candidate is rejected because choosing needs_review is forbidden and does not match the forced target task."
+            "C1": "Rejected because C2 is forced by the mandatory preflight instructions.",
+            "needs_review": "Rejected because choosing needs_review is forbidden when the stem is readable and a candidate is forced."
           },
           "ai_available": true,
           "ai_error": "",
@@ -49150,7 +49109,7 @@ $$、$D\lef |
           "conflict_reason": "",
           "source_mapping_warning": "outsider_candidate_within_confirmed_skill",
           "requires_human_action": true,
-          "ai_notes": "The selection of C2 is strictly guided by the mandatory preflight instruction to choose the candidate whose target task equals applied_quadratic_inequality_problem.",
+          "ai_notes": "Selected C2 as mandated by the forced_target_task rule in the preflight instructions.",
           "skill_scoped_candidates": [
             {
               "candidate_id": "C1",
@@ -49545,14 +49504,12 @@ $$、$D\lef |
             "ai_confidence": 0.9,
             "ai_best_candidate_id": "C1",
             "ai_evidence": [
-              "題目要求在兩線段平行或垂直的條件下求解未知數 a 與 x 的值",
-              "此題型利用兩點斜率公式，平行時斜率相等，垂直時斜率乘積為負一",
-              "候選項目 C2 為利用兩點距離公式求解未知坐標，與本題斜率概念不符",
-              "在沒有更具體斜率相關子技能的情況下，選擇 C1 (compute_numeric) 作為通用數值計算"
+              "題目要求利用線段 AB 與線段 CD 平行，以及線段 AB 與線段 CD 垂直的條件，求出未知數 a 與 x 的值。",
+              "此題涉及斜率相等與斜率相乘等於 -1 的計算，在提供的候選清單中，C1 (compute_numeric) 作為通用數值計算最為合適。"
             ],
             "ai_rejected_candidates": {
-              "C2": "此題並非使用兩點距離公式，而是利用平行與垂直的斜率關係求解，故排除 C2",
-              "needs_review": "題目清晰可讀，且依據合約禁止在題目可讀時選擇 needs_review"
+              "C2": "此題並非利用兩點距離公式求未知坐標，而是利用平行與垂直的斜率關係，故排除 C2。",
+              "needs_review": "題目清晰可讀，且依合約規定禁止輕易選擇 needs_review。"
             },
             "ai_available": true,
             "ai_error": "",
@@ -49573,7 +49530,7 @@ $$、$D\lef |
             "conflict_reason": "rule_family=distance_between_two_points_family; ai_subskill=compute_numeric",
             "source_mapping_warning": "",
             "requires_human_action": false,
-            "ai_notes": "本題屬於直線斜率的平行與垂直應用。由於候選清單中無斜率相關子技能，且 C2 屬於兩點距離家族，故選擇 C1 作為最合適的通用計算分類。",
+            "ai_notes": "由於候選清單中沒有專門針對斜率平行或垂直的子技能，故歸類於通用的數值計算 (compute_numeric)。",
             "skill_scoped_candidates": [
               {
                 "candidate_id": "C1",
@@ -50167,14 +50124,12 @@ $$、$D\lef |
           "ai_confidence": 0.9,
           "ai_best_candidate_id": "C1",
           "ai_evidence": [
-            "題目要求在兩線段平行或垂直的條件下求解未知數 a 與 x 的值",
-            "此題型利用兩點斜率公式，平行時斜率相等，垂直時斜率乘積為負一",
-            "候選項目 C2 為利用兩點距離公式求解未知坐標，與本題斜率概念不符",
-            "在沒有更具體斜率相關子技能的情況下，選擇 C1 (compute_numeric) 作為通用數值計算"
+            "題目要求利用線段 AB 與線段 CD 平行，以及線段 AB 與線段 CD 垂直的條件，求出未知數 a 與 x 的值。",
+            "此題涉及斜率相等與斜率相乘等於 -1 的計算，在提供的候選清單中，C1 (compute_numeric) 作為通用數值計算最為合適。"
           ],
           "ai_rejected_candidates": {
-            "C2": "此題並非使用兩點距離公式，而是利用平行與垂直的斜率關係求解，故排除 C2",
-            "needs_review": "題目清晰可讀，且依據合約禁止在題目可讀時選擇 needs_review"
+            "C2": "此題並非利用兩點距離公式求未知坐標，而是利用平行與垂直的斜率關係，故排除 C2。",
+            "needs_review": "題目清晰可讀，且依合約規定禁止輕易選擇 needs_review。"
           },
           "ai_available": true,
           "ai_error": "",
@@ -50195,7 +50150,7 @@ $$、$D\lef |
           "conflict_reason": "rule_family=distance_between_two_points_family; ai_subskill=compute_numeric",
           "source_mapping_warning": "",
           "requires_human_action": false,
-          "ai_notes": "本題屬於直線斜率的平行與垂直應用。由於候選清單中無斜率相關子技能，且 C2 屬於兩點距離家族，故選擇 C1 作為最合適的通用計算分類。",
+          "ai_notes": "由於候選清單中沒有專門針對斜率平行或垂直的子技能，故歸類於通用的數值計算 (compute_numeric)。",
           "skill_scoped_candidates": [
             {
               "candidate_id": "C1",
@@ -50706,11 +50661,10 @@ $$、$D\lef |
             "ai_confidence": 0.95,
             "ai_best_candidate_id": "C1",
             "ai_evidence": [
-              "題目給定數個點的坐標，並要求計算直線 AP、BP、CP、DP 的斜率。",
-              "此任務屬於計算兩點間直線斜率的數值計算題型。"
+              "題目給定數個點的座標，要求計算直線 AP、BP、CP、DP 的斜率，屬於數值計算。"
             ],
             "ai_rejected_candidates": {
-              "needs_review": "雖然題目文本中 C 點的坐標因格式問題顯示為雙錢字號，但整體題意非常明確，為求兩點連線之斜率，且合約規定除非題目完全無法閱讀，否則禁止選擇 needs_review。"
+              "needs_review": "雖然題目文字中 C 點座標因格式問題顯示為雙錢字號，但整體題意極為明確，為標準的斜率計算，不需設為 needs_review。"
             },
             "ai_available": true,
             "ai_error": "",
@@ -50731,7 +50685,7 @@ $$、$D\lef |
             "conflict_reason": "",
             "source_mapping_warning": "",
             "requires_human_action": false,
-            "ai_notes": "本題為給定點坐標求直線斜率的標準計算題，對應 compute_numeric。",
+            "ai_notes": "此題為給定點座標求直線斜率，符合 compute_numeric 的定義。",
             "skill_scoped_candidates": [
               {
                 "candidate_id": "C1",
@@ -51103,11 +51057,10 @@ $$、$D\lef |
           "ai_confidence": 0.95,
           "ai_best_candidate_id": "C1",
           "ai_evidence": [
-            "題目給定數個點的坐標，並要求計算直線 AP、BP、CP、DP 的斜率。",
-            "此任務屬於計算兩點間直線斜率的數值計算題型。"
+            "題目給定數個點的座標，要求計算直線 AP、BP、CP、DP 的斜率，屬於數值計算。"
           ],
           "ai_rejected_candidates": {
-            "needs_review": "雖然題目文本中 C 點的坐標因格式問題顯示為雙錢字號，但整體題意非常明確，為求兩點連線之斜率，且合約規定除非題目完全無法閱讀，否則禁止選擇 needs_review。"
+            "needs_review": "雖然題目文字中 C 點座標因格式問題顯示為雙錢字號，但整體題意極為明確，為標準的斜率計算，不需設為 needs_review。"
           },
           "ai_available": true,
           "ai_error": "",
@@ -51128,7 +51081,7 @@ $$、$D\lef |
           "conflict_reason": "",
           "source_mapping_warning": "",
           "requires_human_action": false,
-          "ai_notes": "本題為給定點坐標求直線斜率的標準計算題，對應 compute_numeric。",
+          "ai_notes": "此題為給定點座標求直線斜率，符合 compute_numeric 的定義。",
           "skill_scoped_candidates": [
             {
               "candidate_id": "C1",
@@ -51416,11 +51369,12 @@ $$、$D\lef |
             "ai_confidence": 0.92,
             "ai_best_candidate_id": "C2",
             "ai_evidence": [
-              "The Python math meta preflight specifies that we must select the candidate whose target_task equals forced_target_task, which is applied_quadratic_inequality_problem (C2)."
+              "The Python math meta preflight MANDATORY instruction forces the selection of the candidate with target_task equal to applied_quadratic_inequality_problem.",
+              "Candidate C2 matches this forced target task."
             ],
             "ai_rejected_candidates": {
-              "C1": "Not the forced target task",
-              "needs_review": "Preflight instruction overrides other options"
+              "C1": "Rejected because C2 is forced by the preflight instruction.",
+              "needs_review": "Rejected because C2 is forced by the preflight instruction."
             },
             "ai_available": true,
             "ai_error": "",
@@ -51441,7 +51395,7 @@ $$、$D\lef |
             "conflict_reason": "",
             "source_mapping_warning": "outsider_candidate_within_confirmed_skill",
             "requires_human_action": true,
-            "ai_notes": "Selected C2 as mandated by the Python math meta preflight instruction.",
+            "ai_notes": "Forced selection of C2 based on the mandatory preflight instruction.",
             "skill_scoped_candidates": [
               {
                 "candidate_id": "C1",
@@ -51912,11 +51866,12 @@ $$、$D\lef |
           "ai_confidence": 0.92,
           "ai_best_candidate_id": "C2",
           "ai_evidence": [
-            "The Python math meta preflight specifies that we must select the candidate whose target_task equals forced_target_task, which is applied_quadratic_inequality_problem (C2)."
+            "The Python math meta preflight MANDATORY instruction forces the selection of the candidate with target_task equal to applied_quadratic_inequality_problem.",
+            "Candidate C2 matches this forced target task."
           ],
           "ai_rejected_candidates": {
-            "C1": "Not the forced target task",
-            "needs_review": "Preflight instruction overrides other options"
+            "C1": "Rejected because C2 is forced by the preflight instruction.",
+            "needs_review": "Rejected because C2 is forced by the preflight instruction."
           },
           "ai_available": true,
           "ai_error": "",
@@ -51937,7 +51892,7 @@ $$、$D\lef |
           "conflict_reason": "",
           "source_mapping_warning": "outsider_candidate_within_confirmed_skill",
           "requires_human_action": true,
-          "ai_notes": "Selected C2 as mandated by the Python math meta preflight instruction.",
+          "ai_notes": "Forced selection of C2 based on the mandatory preflight instruction.",
           "skill_scoped_candidates": [
             {
               "candidate_id": "C1",
@@ -52331,12 +52286,12 @@ $$、$D\lef |
             "ai_confidence": 1.0,
             "ai_best_candidate_id": "C1",
             "ai_evidence": [
-              "The question asks to find the value of a parameter 'a' given two points A(2, a) and B(a, 8) on a line with a slope of 2.",
-              "This is a standard numeric calculation task based on the slope formula.",
-              "The candidate C1 (compute_numeric) is the most appropriate category among the choices, and needs_review is avoided as the question is fully readable."
+              "The question asks to find the value of a given two points A(2, a) and B(a, 8) on line L with slope 2.",
+              "This is a numeric computation task based on the definition of the slope of a line.",
+              "The candidate C1 (compute_numeric) is the only valid non-needs_review candidate provided."
             ],
             "ai_rejected_candidates": {
-              "needs_review": "The question is clear, readable, and perfectly aligned with the slope of a line topic, so needs_review is rejected."
+              "needs_review": "The stem is perfectly readable and aligned with the skill of finding the slope of a line, so needs_review is rejected."
             },
             "ai_available": true,
             "ai_error": "",
@@ -52357,7 +52312,7 @@ $$、$D\lef |
             "conflict_reason": "",
             "source_mapping_warning": "",
             "requires_human_action": false,
-            "ai_notes": "The problem requires solving the equation (8 - a) / (a - 2) = 2 to find the value of a.",
+            "ai_notes": "The problem requires solving for the parameter a using the slope formula (8 - a) / (a - 2) = 2, which is a numeric computation task.",
             "skill_scoped_candidates": [
               {
                 "candidate_id": "C1",
@@ -52732,12 +52687,12 @@ $$、$D\lef |
           "ai_confidence": 1.0,
           "ai_best_candidate_id": "C1",
           "ai_evidence": [
-            "The question asks to find the value of a parameter 'a' given two points A(2, a) and B(a, 8) on a line with a slope of 2.",
-            "This is a standard numeric calculation task based on the slope formula.",
-            "The candidate C1 (compute_numeric) is the most appropriate category among the choices, and needs_review is avoided as the question is fully readable."
+            "The question asks to find the value of a given two points A(2, a) and B(a, 8) on line L with slope 2.",
+            "This is a numeric computation task based on the definition of the slope of a line.",
+            "The candidate C1 (compute_numeric) is the only valid non-needs_review candidate provided."
           ],
           "ai_rejected_candidates": {
-            "needs_review": "The question is clear, readable, and perfectly aligned with the slope of a line topic, so needs_review is rejected."
+            "needs_review": "The stem is perfectly readable and aligned with the skill of finding the slope of a line, so needs_review is rejected."
           },
           "ai_available": true,
           "ai_error": "",
@@ -52758,7 +52713,7 @@ $$、$D\lef |
           "conflict_reason": "",
           "source_mapping_warning": "",
           "requires_human_action": false,
-          "ai_notes": "The problem requires solving the equation (8 - a) / (a - 2) = 2 to find the value of a.",
+          "ai_notes": "The problem requires solving for the parameter a using the slope formula (8 - a) / (a - 2) = 2, which is a numeric computation task.",
           "skill_scoped_candidates": [
             {
               "candidate_id": "C1",
@@ -53061,11 +53016,11 @@ $$、$D\lef |
             "ai_confidence": 1.0,
             "ai_best_candidate_id": "C1",
             "ai_evidence": [
-              "題目給定三點共線，要求解未知數 a 的值。",
-              "此題可利用兩點求斜率公式，藉由斜率相等（PQ 斜率等於 PR 斜率）列式求解，屬於數值計算。"
+              "The problem asks to find the value of 'a' given that three points are collinear, which is solved by setting the slope of PQ equal to the slope of PR.",
+              "Since C1 (compute_numeric) is the only non-review candidate provided, and the stem is readable, C1 is the correct choice."
             ],
             "ai_rejected_candidates": {
-              "needs_review": "題目雖然在點的標示上有些許排版瑕疵（如 B(-1,0)R(8,-2)），但整體語意依然清晰可解，不需進入人工審查。"
+              "needs_review": "The stem is readable and represents a standard collinearity problem using slopes, so needs_review is rejected."
             },
             "ai_available": true,
             "ai_error": "",
@@ -53086,7 +53041,7 @@ $$、$D\lef |
             "conflict_reason": "",
             "source_mapping_warning": "",
             "requires_human_action": false,
-            "ai_notes": "此題為利用三點共線（斜率相等）來求未知數的典型數值計算題，故選擇 C1。",
+            "ai_notes": "The text contains a minor typo 'B(-1,0)R(8,-2)' but the mathematical intent of collinear points P, Q, and R is clear and solvable.",
             "skill_scoped_candidates": [
               {
                 "candidate_id": "C1",
@@ -53463,11 +53418,11 @@ $$、$D\lef |
           "ai_confidence": 1.0,
           "ai_best_candidate_id": "C1",
           "ai_evidence": [
-            "題目給定三點共線，要求解未知數 a 的值。",
-            "此題可利用兩點求斜率公式，藉由斜率相等（PQ 斜率等於 PR 斜率）列式求解，屬於數值計算。"
+            "The problem asks to find the value of 'a' given that three points are collinear, which is solved by setting the slope of PQ equal to the slope of PR.",
+            "Since C1 (compute_numeric) is the only non-review candidate provided, and the stem is readable, C1 is the correct choice."
           ],
           "ai_rejected_candidates": {
-            "needs_review": "題目雖然在點的標示上有些許排版瑕疵（如 B(-1,0)R(8,-2)），但整體語意依然清晰可解，不需進入人工審查。"
+            "needs_review": "The stem is readable and represents a standard collinearity problem using slopes, so needs_review is rejected."
           },
           "ai_available": true,
           "ai_error": "",
@@ -53488,7 +53443,7 @@ $$、$D\lef |
           "conflict_reason": "",
           "source_mapping_warning": "",
           "requires_human_action": false,
-          "ai_notes": "此題為利用三點共線（斜率相等）來求未知數的典型數值計算題，故選擇 C1。",
+          "ai_notes": "The text contains a minor typo 'B(-1,0)R(8,-2)' but the mathematical intent of collinear points P, Q, and R is clear and solvable.",
           "skill_scoped_candidates": [
             {
               "candidate_id": "C1",
@@ -53785,87 +53740,21 @@ $$、$D\lef |
     "human_confirmed_rule_pack_applied": false,
     "matched_registered_yaml_rule_pack": "",
     "ai_classification_overridden_by_human_confirmed_rule_pack": false,
-    "curated_specs_available": false
+    "curated_specs_available": true
   },
-  "classifier_source": "ai_bootstrap_with_default_fallback+phase1_induction",
-  "ai_bootstrap_used": true,
-  "ai_bootstrap_status": "success",
-  "ai_bootstrap_confidence_summary": {
-    "count": 12,
-    "avg": 0.0,
-    "low_confidence_count": 12
-  },
-  "inspect_report_note": "Missing classifier/rule pack, AI bootstrap attempted.",
+  "classifier_source": "rule_pack+phase1_induction",
+  "ai_bootstrap_used": false,
+  "ai_bootstrap_status": "not_used",
+  "ai_bootstrap_confidence_summary": {},
+  "inspect_report_note": "",
   "ai_bootstrap_error": "",
-  "ai_bootstrap_raw_response_preview": "```json\n{\n  \"skill_id\": \"vh_數學B1_SlopeOfALine\",\n  \"skill_ch_name\": \"直線的斜率\",\n  \"classifier_source\": \"llm_bootstrap\",\n  \"problem_types\": [\n    {\n      \"problem_type_id\": \"calculate_slope_from_two_points\",\n      \"problem_type_ch_name\": \"由兩點求直線斜率\",\n      \"description\": \"給定平面上兩點的座標，計算通過這兩點的直線斜率（包含斜率不存在或為零的情況）。\",\n      \"answer_contract\": {\n        \"checker\": \"text_checker\",\n        \"equivalence\": \"string_equivalence\",\n        \"requires_human_action\": false\n      }\n    },\n    {\n      \"problem_type_id\": \"find_coordinate_by_slope\",\n      \"problem_type_ch_name\": \"已知斜率求未知點座標\",\n      \"description\": \"已知通過兩點的直線斜率，其中一個點的座標含有未知數，求該未知數的值。\",\n      \"answer_contract\": {\n        \"checker\": \"numeric_checker\",\n        \"equivalence\": \"numeric_equivalence\",\n        \"requires_human_action\": false\n      }\n    },\n    {\n      \"problem_type_id\": \"collinear_points_slope_application\",\n      \"problem_type_ch_name\": \"三點共線與無法構成三角形的斜率應用\",\n      \"description\": \"利用三點共線（或無法構成三角形）時，任意兩點所連直線的斜率相等之性質，求解未知數。\",\n      \"answer_con",
-  "ai_bootstrap_validation_errors": [
-    "source_index=1: invalid_problem_type_id=",
-    "source_index=1: invalid_checker=",
-    "source_index=1: invalid_equivalence=",
-    "source_index=1: unrelated_problem_type=",
-    "source_index=1: invalid_problem_type_id_style=",
-    "source_index=2: invalid_problem_type_id=",
-    "source_index=2: invalid_checker=",
-    "source_index=2: invalid_equivalence=",
-    "source_index=2: unrelated_problem_type=",
-    "source_index=2: invalid_problem_type_id_style=",
-    "source_index=3: invalid_problem_type_id=",
-    "source_index=3: invalid_checker=",
-    "source_index=3: invalid_equivalence=",
-    "source_index=3: unrelated_problem_type=",
-    "source_index=3: invalid_problem_type_id_style=",
-    "source_index=4: invalid_problem_type_id=",
-    "source_index=4: invalid_checker=",
-    "source_index=4: invalid_equivalence=",
-    "source_index=4: unrelated_problem_type=",
-    "source_index=4: invalid_problem_type_id_style=",
-    "source_index=5: invalid_problem_type_id=",
-    "source_index=5: invalid_checker=",
-    "source_index=5: invalid_equivalence=",
-    "source_index=5: unrelated_problem_type=",
-    "source_index=5: invalid_problem_type_id_style=",
-    "source_index=6: invalid_problem_type_id=",
-    "source_index=6: invalid_checker=",
-    "source_index=6: invalid_equivalence=",
-    "source_index=6: unrelated_problem_type=",
-    "source_index=6: invalid_problem_type_id_style=",
-    "source_index=7: invalid_problem_type_id=",
-    "source_index=7: invalid_checker=",
-    "source_index=7: invalid_equivalence=",
-    "source_index=7: unrelated_problem_type=",
-    "source_index=7: invalid_problem_type_id_style=",
-    "source_index=8: invalid_problem_type_id=",
-    "source_index=8: invalid_checker=",
-    "source_index=8: invalid_equivalence=",
-    "source_index=8: unrelated_problem_type=",
-    "source_index=8: invalid_problem_type_id_style=",
-    "source_index=9: invalid_problem_type_id=",
-    "source_index=9: invalid_checker=",
-    "source_index=9: invalid_equivalence=",
-    "source_index=9: unrelated_problem_type=",
-    "source_index=9: invalid_problem_type_id_style=",
-    "source_index=10: invalid_problem_type_id=",
-    "source_index=10: invalid_checker=",
-    "source_index=10: invalid_equivalence=",
-    "source_index=10: unrelated_problem_type=",
-    "source_index=10: invalid_problem_type_id_style=",
-    "source_index=11: invalid_problem_type_id=",
-    "source_index=11: invalid_checker=",
-    "source_index=11: invalid_equivalence=",
-    "source_index=11: unrelated_problem_type=",
-    "source_index=11: invalid_problem_type_id_style=",
-    "source_index=12: invalid_problem_type_id=",
-    "source_index=12: invalid_checker=",
-    "source_index=12: invalid_equivalence=",
-    "source_index=12: unrelated_problem_type=",
-    "source_index=12: invalid_problem_type_id_style=",
-    "ai_bootstrap_all_unclassified_promoted_to_default_problem_type"
-  ],
-  "ai_bootstrap_prompt_version": "gencode_phase1_ai_bootstrap_v2",
-  "ai_bootstrap_model": "gemini-3.5-flash",
-  "ai_bootstrap_provider": "google",
-  "ai_bootstrap_config_source": "db_global_selected_model",
-  "default_problem_type_used": true,
+  "ai_bootstrap_raw_response_preview": "",
+  "ai_bootstrap_validation_errors": [],
+  "ai_bootstrap_prompt_version": "",
+  "ai_bootstrap_model": "",
+  "ai_bootstrap_provider": "",
+  "ai_bootstrap_config_source": "",
+  "default_problem_type_used": false,
   "problem_type_spec_first": true,
   "spec_defined_problem_type_ids": [
     "numeric_compute_numeric_short_answer",

@@ -2060,7 +2060,120 @@ def _slot_function_value_numeric(skill_id: str, pt: str, spec: dict[str, Any], s
     }
 
 
+def _slot_parallel_lines_properties(skill_id: str, pt: str, spec: dict[str, Any], seed: int | None) -> dict[str, Any]:
+    rng = random.Random(seed)
+    m = rng.choice([-3, -2, -1, 1, 2, 3])
+    
+    x1 = rng.randint(-5, 5)
+    y1 = rng.randint(-5, 5)
+    dx1 = rng.choice([-3, -2, -1, 1, 2, 3])
+    x2 = x1 + dx1
+    y2 = y1 + m * dx1
+    
+    x3 = rng.randint(-5, 5)
+    while x3 == x1 or x3 == x2:
+        x3 = rng.randint(-5, 5)
+    y3 = rng.randint(-5, 5)
+    
+    dx2 = rng.choice([-3, -2, -1, 1, 2, 3])
+    x4 = x3 + dx2
+    y4 = y3 + m * dx2
+    
+    template_type = rng.randint(1, 3)
+    var_name = rng.choice(['x', 'a'])
+    
+    # Formatting helper for var_name - y3
+    if y3 < 0:
+        var_minus_y3 = f"{var_name} + {abs(y3)}"
+    elif y3 > 0:
+        var_minus_y3 = f"{var_name} - {y3}"
+    else:
+        var_minus_y3 = var_name
+
+    # Formatting helper for y4 - var_name
+    if y4 == 0:
+        y4_minus_var = f"-{var_name}"
+    else:
+        y4_minus_var = f"{y4} - {var_name}"
+        
+    if template_type == 1:
+        val = y4
+        stem = f"設$A\\left( {x1},{y1} \\right)$、$B\\left( {x2},{y2} \\right)$、$C\\left( {x3},{y3} \\right)$、$D\\left( {x4},{var_name} \\right)$，若$\\overline{{AB}}$與$\\overline{{CD}}$平行，試求{var_name}之值。"
+        explanation = f"因為$\\overline{{AB}}$與$\\overline{{CD}}$平行，所以它們的斜率相等。\n" \
+                      f"直線AB的斜率為 $m_{{AB}} = \\frac{{{y2} - ({y1})}}{{{x2} - ({x1})}} = {m}$。\n" \
+                      f"直線CD的斜率為 $m_{{CD}} = \\frac{{{var_minus_y3}}}{{{x4} - ({x3})}} = \\frac{{{var_minus_y3}}}{{{dx2}}}$。\n" \
+                      f"由 $m_{{AB}} = m_{{CD}}$ 可得：$\\frac{{{var_minus_y3}}}{{{dx2}}} = {m}$，\n" \
+                      f"所以 ${var_minus_y3} = {m * dx2}$，解得 {var_name} = {val}。"
+    elif template_type == 2:
+        val = y3
+        stem = f"設$A\\left( {x1},{y1} \\right)$、$B\\left( {x2},{y2} \\right)$、$C\\left( {x3},{var_name} \\right)$、$D\\left( {x4},{y4} \\right)$，若$\\overline{{AB}}$與$\\overline{{CD}}$平行，試求{var_name}之值。"
+        explanation = f"因為$\\overline{{AB}}$與$\\overline{{CD}}$平行，所以它們的斜率相等。\n" \
+                      f"直線AB的斜率為 $m_{{AB}} = \\frac{{{y2} - ({y1})}}{{{x2} - ({x1})}} = {m}$。\n" \
+                      f"直線CD的斜率為 $m_{{CD}} = \\frac{{{y4_minus_var}}}{{{x4} - ({x3})}} = \\frac{{{y4_minus_var}}}{{{dx2}}}$。\n" \
+                      f"由 $m_{{AB}} = m_{{CD}}$ 可得：$\\frac{{{y4_minus_var}}}{{{dx2}}} = {m}$，\n" \
+                      f"所以 ${y4_minus_var} = {m * dx2}$，解得 {var_name} = {val}。"
+    else:
+        val = y4
+        stem = f"平面上過兩點$\\left( {x1},{y1} \\right)$、$\\left( {x2},{y2} \\right)$的直線和過另兩點$\\left( {x3},{y3} \\right)$、$\\left( {x4},{var_name} \\right)$的直線平行，則{var_name} = "
+        explanation = f"因為兩直線平行，所以它們的斜率相等。\n" \
+                      f"第一條直線的斜率為 $m_1 = \\frac{{{y2} - ({y1})}}{{{x2} - ({x1})}} = {m}$。\n" \
+                      f"第二條直線的斜率為 $m_2 = \\frac{{{var_minus_y3}}}{{{x4} - ({x3})}} = \\frac{{{var_minus_y3}}}{{{dx2}}}$。\n" \
+                      f"由 $m_1 = m_2$ 可得：$\\frac{{{var_minus_y3}}}{{{dx2}}} = {m}$，\n" \
+                      f"所以 ${var_minus_y3} = {m * dx2}$，解得 {var_name} = {val}。"
+
+    answer_contract = spec.get("answer_contract", {}) or spec.get("answer_contract_proposal", {}) or {}
+    raw_answer_type = str(answer_contract.get("answer_type", "")).strip().lower()
+    
+    if raw_answer_type in {"choice", "single_choice", "multi_choice", "multiple_choice"}:
+        wrong_vals = [val + 1, val - 1, val + 2]
+        wrong_vals = list(set(wrong_vals) - {val})
+        while len(wrong_vals) < 3:
+            wrong_vals.append(val + len(wrong_vals) + 3)
+        wrong_texts = [str(w) for w in wrong_vals]
+        correct_text = str(val)
+        
+        return _build_choice_payload(
+            skill_id,
+            pt,
+            stem,
+            correct_text,
+            wrong_texts,
+            answer_type="single_choice",
+            checker_type="choice_label_checker",
+            metadata={
+                "givens": [f"A({x1},{y1})", f"B({x2},{y2})", f"C({x3},{y3})", f"D({x4},{y4})"],
+                "target": str(val),
+                "derivation": [f"m_AB = {m}", f"m_CD = {m}", f"{var_name} = {val}"]
+            },
+            diagnosis_tags=["parallel_lines_slope_equality"],
+            explanation=explanation,
+            seed=seed
+        )
+    else:
+        ans = str(val)
+        return {
+            "skill_id": skill_id,
+            "problem_type_id": pt,
+            "question_text": stem,
+            "question": stem,
+            "choices": [],
+            "answer": ans,
+            "correct_answer": ans,
+            "answer_type": "integer",
+            "checker_type": "integer_checker",
+            "explanation": explanation,
+            "diagnosis_tags": ["parallel_lines_slope_equality"],
+            "metadata": {
+                "givens": [f"A({x1},{y1})", f"B({x2},{y2})", f"C({x3},{y3})", f"D({x4},{y4})"],
+                "target": ans,
+                "derivation": [f"m_AB = {m}", f"m_CD = {m}", f"{var_name} = {val}"]
+            },
+            "source": "gencode_slot_generator",
+        }
+
+
 SLOT_REGISTRY: dict[str, GeneratorFn] = {
+    "parallel_lines_properties": _slot_parallel_lines_properties,
     "point_quadrant": _slot_point_quadrant,
     "point_quadrant_choice": _slot_point_quadrant_choice,
     "symbolic_quadrant": _slot_symbolic_quadrant,

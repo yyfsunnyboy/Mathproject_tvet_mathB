@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 # ==============================================================================
 # ID: core/prompts/prompt_builder.py
-# Version: V2.3 (Added BARE_PROMPT_TEMPLATE for realistic user simulation)
-# Last Updated: 2026-01-30
+# Version: V2.4 (Added GENERIC_MATRIX_V2_PROMPT for multi-modal bifurcation)
+# Last Updated: 2026-06-15
 # Author: Math AI Research Team (Advisor & Student)
 #
 # [Description]:
@@ -12,6 +12,7 @@
 # [Ablation Modes]:
 #   1. BARE_PROMPT_TEMPLATE: 模擬一般用戶的 Prompt（Ab1 對照組）
 #   2. UNIVERSAL_GEN_CODE_PROMPT: 完整規格書（Ab2/Ab3 實驗組）
+#   4. GENERIC_MATRIX_V2_PROMPT: 通用雙向矩陣出題（Ab4 全模態強制分流）
 #
 # [Core Technology]:
 #   - Template-based prompt generation
@@ -223,15 +224,147 @@ UNIVERSAL_GEN_CODE_PROMPT = """{global_constraints}
 """
 
 
+# ==============================================================================
+# [V2.4 新增] GENERIC_MATRIX_V2_PROMPT — 通用雙向矩陣多模態出題 Prompt（Ab4）
+# ==============================================================================
+# 設計理念：
+# - 利用高職數B「例題與隨堂練習互為表裡」的編排特性，強迫 AI 進行「提問目標分流」
+# - 不寫死任何特定幾何名詞或垂直線約束
+# - 用最底層的數學物件解構框架約束 AI，屬於 100% 通用、不打補丁的架構級 Prompt
+# - 核心目標：解決 LLM 防禦性退化（Defensive Degradation）問題
+#   → 即 LLM 只生成它最有把握的最簡子題型（如「求未知數 x」），
+#     而忽略同等重要的目標求值（如「求幾何表達式/方程式」）
+# ==============================================================================
+
+GENERIC_MATRIX_V2_PROMPT = \"\"\"{global_constraints}
+
+# Role & Mission
+你是一個負責 Mathproject 高職數B自適應學習系統的「全自動多模態題族擴充專家」。
+你的任務是根據 Phase 1 傳入的課本來源範例（Source Examples），自主分析其教學脈絡，
+設計出能完全覆蓋課本所有解題問法與提問目標的通用變化模板（Templates），
+拒絕任何單一、重複、或退化的出題偏誤。
+
+---
+
+# 🧠 通用核心決策原則（強制提問分流、反防禦性退化）
+
+## 原則 1：【提問目標強制分流（Ask-Target Bifurcation）】
+- 在分析完所有來源例題後，你必須識別出所有不同的「提問目標（Ask-Target）」維度。
+- 每一種提問目標，必須對應產生獨立的子模板（Sub-Template），嚴禁合併或省略。
+- 判斷標準如下（依 answer_type 分流）：
+  - 如果答案是「代數式/方程式/幾何表達式」（例如：直線方程 $y = mx + b$、$Ax+By+C=0$），
+    則 answer_type = "expression"，此類題型必須獨立成一個子模板。
+  - 如果答案是「純量未知數」（例如：$x = 3$、$k = -2$、$a = 5$），
+    則 answer_type = "scalar"，此類題型也必須獨立成一個子模板。
+  - 如果答案是「幾何特徵值」（例如：斜率 $m$、距離 $d$、中點座標），
+    則 answer_type = "geometric_value"，此類也必須獨立成一個子模板。
+  - 如果答案是「計算個數/布林判斷」（例如：共有幾個點、是否平行），
+    則 answer_type = "count_or_bool"，此類也必須獨立成一個子模板。
+
+## 原則 2：【互逆問法強制衍生（Inverse Problem Generation）】
+- 對每個識別出的提問目標，你必須主動衍生其「互逆問法」：
+  - 若例題是「已知條件，求方程式」→ 衍生「已知方程式，求條件」
+  - 若例題是「已知兩點，求斜率」→ 衍生「已知斜率與一點，求另一點」
+  - 若例題是「已知方程式，求係數 k」→ 衍生「已知係數 k，求點是否在直線上」
+
+## 原則 3：【反防禦性退化守則（Anti-Defensive-Degradation）】
+- 絕對禁止因「checker 設定是 rational_checker 或 integer_checker」
+  而讓 LLM 只生成「求純量答案」的題型。
+- 若來源例題中有「求方程式」類的題型，必須建立 expression 子模板，
+  即使 answer_contract 中的 checker 是 text_checker 或 expression_equivalence_checker。
+- 生成的代碼中，正確答案（correct_answer）格式必須與 answer_type 一致：
+  - expression 類：correct_answer 為標準化代數式字串（如 \"2*x - y + 1 = 0\"）
+  - scalar 類：correct_answer 為分數或整數字串（如 \"3\" 或 \"1/2\"）
+  - geometric_value 類：correct_answer 為分數或數值字串
+
+## 原則 4：【結構化模板設計（Template Matrix Design）】
+設計一個「提問物件 × 提問目標」的二維矩陣：
+- 行（Row）= 可操作的數學物件（如：兩點、斜率、直線方程式、係數、垂直條件）
+- 列（Column）= 提問目標維度（如：求方程式、求係數、求座標、求幾何關係）
+- 每一個有意義的格子（Cell）= 一個獨立的子模板
+- 你必須填滿至少 2×2 = 4 個有效格子，並產生對應代碼。
+
+---
+
+# 📐 代碼生成規格（Code Generation Spec）
+
+## 函數簽名（必須遵守）
+```python
+def generate(level=1, **kwargs) -> dict:
+    \"\"\"
+    生成題目。
+    level: 1=easy, 2=medium, 3=hard
+    \"\"\"
+```
+
+## 子模板選擇邏輯
+```python
+import random
+# 在函數內，根據 level 或隨機數選擇子模板（template_id）
+template_id = random.choice([
+    \"template_scalar\",       # 求純量未知數（x, k, a）
+    \"template_expression\",   # 求代數式/方程式
+    \"template_geo_value\",    # 求幾何特徵值（斜率、距離）
+    # ... 根據實際例題增加
+])
+```
+
+## 返回格式（必須完整包含以下欄位）
+```python
+return {{
+    \"question_text\": q,          # 題目文字（LaTeX 數學式用 $...$ 包裹）
+    \"correct_answer\": a,          # 正確答案（字串格式，與 answer_type 一致）
+    \"answer\": a,                  # 同 correct_answer（向後相容）
+    \"mode\": 1,
+    \"answer_type\": answer_type,   # "scalar" | "expression" | "geometric_value"
+    \"template_id\": template_id,   # 子模板 ID（用於多樣性追蹤）
+    \"metadata\": {{
+        \"givens\": [...],           # 題目給定的條件清單
+        \"target\": \"...\",           # 題目求解的目標描述
+        \"derivation\": \"...\",       # 推導邏輯摘要
+    }},
+}}
+```
+
+---
+
+# 📋 Phase 1 輸入資料（請根據以下來源分析）
+
+## 課本來源範例（Source Examples）
+{textbook_example_section}
+
+## MASTER_SPEC（技能規格）
+{{master_spec}}
+
+---
+
+# 🎯 輸出指令
+
+請依照以下順序輸出：
+
+1. **Ask-Target 分析表**（Markdown 表格，列出所有識別到的提問目標維度）
+2. **模板矩陣設計**（2D 矩陣描述）
+3. **完整 Python 代碼**（包含所有子模板的 generate 函數，只輸出代碼，不要 Markdown 圍欄）
+
+⚠️ 重要：
+- 只輸出 Python 程式碼！
+- 不要加任何說明文字在程式碼之外
+- 不要用 ```python 包裹代碼
+- 不要加 if __name__ == '__main__'
+- 🔴 CRITICAL：程式碼結束後不可有任何文字
+\"\"\"
+
+
 class PromptBuilder:
     """
     Prompt 構建引擎 - 負責生成不同 Ablation 模式的 Prompt
     [V2.4 新增] 上下文感知工具選用系統 (Context-Aware Tool Selection)
     
-    支援 3 種 Ablation 模式：
+    支援 4 種 Ablation 模式：
     - Ab1: BARE_MINIMAL_PROMPT (最簡 Prompt)
     - Ab2: UNIVERSAL_GEN_CODE_PROMPT + MASTER_SPEC + 動態工具選擇
     - Ab3: UNIVERSAL_GEN_CODE_PROMPT + MASTER_SPEC + 動態工具選擇 (默認)
+    - Ab4: GENERIC_MATRIX_V2_PROMPT (通用矩陣多模態強制分流)
     
     [新增功能] 自動感知並選用數學工具：
     - 根據題目關鍵字動態組裝 API 手冊

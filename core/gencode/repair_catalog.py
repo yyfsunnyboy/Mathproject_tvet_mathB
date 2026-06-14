@@ -100,6 +100,31 @@ GENERATOR_REPAIR_CATALOG = {
         "required_checkers": ["integer_checker"],
         "required_verifiers": [],
     },
+    "text_short_slope_of_line_problems": {
+        "module_path": "generated_candidates/vocational_math_b1/section_2_1/text_short_slope_of_line_problems/candidate_v1.py",
+        "test_path": "tests/test_gencode_slope_of_line.py",
+        "factory": "create_slope_of_line_generator",
+        "required_domain_functions": [],
+        "required_checkers": ["rational_checker"],
+        "required_verifiers": ["rational_verifier"],
+    },
+    "parallel_lines_properties": {
+        "module_path": "generated_candidates/vocational_math_b1/section_2_1/parallel_lines_properties/candidate_v1.py",
+        "test_path": "tests/test_gencode_slope_of_line.py",
+        "factory": "create_parallel_lines_properties_generator",
+        "required_domain_functions": [],
+        "required_checkers": ["integer_checker"],
+        "required_verifiers": [],
+    },
+    "perpendicular_lines_properties": {
+        "module_path": "generated_candidates/vocational_math_b1/section_2_1/perpendicular_lines_properties/candidate_v1.py",
+        "test_path": "tests/test_gencode_slope_of_line.py",
+        "factory": "create_perpendicular_lines_properties_generator",
+        "required_domain_functions": [],
+        "required_checkers": ["rational_checker"],
+        "required_verifiers": [],
+    },
 }
+
 
 

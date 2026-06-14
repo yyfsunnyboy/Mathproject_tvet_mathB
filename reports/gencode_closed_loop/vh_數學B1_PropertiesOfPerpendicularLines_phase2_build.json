@@ -1,0 +1,124 @@
+{
+  "skill_id": "vh_數學B1_PropertiesOfPerpendicularLines",
+  "phase": "phase2_build",
+  "final_status": "BUILD_PASS",
+  "input_phase1_report": "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_PropertiesOfPerpendicularLines_phase1_audit.json",
+  "build_mode": "normal",
+  "generated_problem_types": [
+    "perpendicular_lines_properties"
+  ],
+  "verified_problem_types": [
+    "perpendicular_lines_properties"
+  ],
+  "failed_problem_types": [],
+  "pending_implementation": [],
+  "manual_review_problem_types": [],
+  "future_ai_judged_problem_types": [],
+  "checker_implementation_summary": {
+    "missing_checker_key_problem_types": []
+  },
+  "answer_contract_summary": {
+    "perpendicular_lines_properties": null
+  },
+  "registry_merge_summary": {
+    "mode": "non_destructive",
+    "updated": false
+  },
+  "wrapper_summary": {
+    "pipeline_invoked": false,
+    "pipeline_return_code": 0,
+    "pipeline_final_status": "BOUND_BY_RUNTIME_REPAIR"
+  },
+  "bootstrap_summary": {
+    "bootstrap_mode": false,
+    "bootstrap_source_skill_id": "",
+    "source_coverage_status": "",
+    "allowed_problem_types": []
+  },
+  "blocking_reasons": [],
+  "warnings": [],
+  "artifact_paths": {
+    "phase2_json": "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_PropertiesOfPerpendicularLines_phase2_build.json",
+    "phase2_md": "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_PropertiesOfPerpendicularLines_phase2_build.md"
+  },
+  "timestamp": "2026-06-14T15:30:22.291951+00:00",
+  "build_dependency_plan": {
+    "foundation_ready": true,
+    "required_checkers": [],
+    "existing_checkers": [
+      "choice_checker",
+      "choice_label_checker",
+      "coordinate_pair_checker",
+      "exact_string_checker",
+      "expression_equivalence_checker",
+      "integer_checker",
+      "interval_checker",
+      "numeric_checker",
+      "quadrant_checker",
+      "rational_checker",
+      "solution_set_checker",
+      "structured_text_checker"
+    ],
+    "missing_checkers": [],
+    "required_verifiers": [],
+    "missing_verifiers": [],
+    "required_domain_functions": [],
+    "missing_domain_functions": [],
+    "required_generators": [
+      "perpendicular_lines_properties"
+    ],
+    "missing_generators": [],
+    "excluded_manual_review_problem_types": [],
+    "buildable_problem_types": [
+      "perpendicular_lines_properties"
+    ],
+    "blocked_problem_types": [],
+    "preflight_status": "PASS"
+  },
+  "preflight_status": "PASS",
+  "build_execution_status": "EXECUTED",
+  "candidate_discovery_summary": {
+    "discovered_candidates": [
+      {
+        "problem_type_id": "perpendicular_lines_properties",
+        "module_path": "generated_candidates/vocational_math_b1/section_2_1/perpendicular_lines_properties/candidate_v1.py"
+      }
+    ],
+    "missing_candidate_files": [],
+    "unsupported_candidate_problem_types": [],
+    "verified_candidates": [
+      "perpendicular_lines_properties"
+    ],
+    "failed_candidates": [],
+    "candidate_failure_reasons": {},
+    "sample_count": 11
+  },
+  "build_execution_summary": {
+    "execution_attempted": true,
+    "execution_status": "PASS",
+    "verified_problem_types": [
+      "perpendicular_lines_properties"
+    ],
+    "failed_problem_types": [],
+    "pending_problem_types": [],
+    "failure_reasons": []
+  },
+  "build_gap_summary": {
+    "has_build_gaps": false,
+    "gap_types": [],
+    "problem_type_gaps": {}
+  },
+  "repair_plan": {
+    "recommended_next_action": "phase2_ready",
+    "steps": []
+  },
+  "repair_plan_status": "SKIPPED",
+  "next_action": {
+    "next_action_type": "phase3_publish_gate",
+    "gap": "",
+    "command": "python scripts\\gencode_pipeline_phase3_publish_gate.py --skill-id vh_數學B1_PropertiesOfPerpendicularLines",
+    "reason": "No blocking build dependency gaps detected and phase2 status is publish-gate eligible.",
+    "should_run_phase3": true,
+    "requires_human_review": false
+  }
+}

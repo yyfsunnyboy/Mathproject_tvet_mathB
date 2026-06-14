@@ -1,0 +1,144 @@
+{
+  "skill_id": "vh_數學B1_PropertiesOfParallelLines",
+  "phase": "phase1_audit",
+  "final_status": "AUDIT_PASS",
+  "examples_total": 4,
+  "examples_covered": 4,
+  "examples_map": [
+    {
+      "example_id": 4530,
+      "title": "",
+      "source_type": "textbook_example",
+      "problem_preview": "設$A\\left( 2,0 \\right)$、$B\\left( -3,5 \\right)$、$C\\left( -1,-1 \\right)$、$D\\left( 4,x \\right)$，若$\\overline{AB}$與$\\overline{CD}$平行，試求x之值。",
+      "skill_id": "vh_數學B1_PropertiesOfParallelLines",
+      "subskill_id": "parallel_lines_properties",
+      "problem_type_id": "parallel_lines_properties",
+      "runtime_category": "deterministic_expression",
+      "classification_rule_id": "rule_pack.yaml",
+      "classification_reason": "matched_registered_yaml_rule_pack",
+      "classifier_confidence": "high",
+      "semantic_risk_flags": null,
+      "semantic_audit_status": "ok",
+      "generator_status": "ready_for_draft",
+      "manual_review_reason": "",
+      "source_chapter": "",
+      "source_section": "",
+      "problem_text_hash": ""
+    },
+    {
+      "example_id": 4535,
+      "title": "",
+      "source_type": "textbook_example",
+      "problem_preview": "設$A\\left( 1,-5 \\right)$、$B\\left( 4,1 \\right)$、$C\\left( -1,x \\right)$、$D\\left( -4,-3 \\right)$，若$\\overline{AB}$與$\\overline{CD}$平行，試求x之值。",
+      "skill_id": "vh_數學B1_PropertiesOfParallelLines",
+      "subskill_id": "parallel_lines_properties",
+      "problem_type_id": "parallel_lines_properties",
+      "runtime_category": "deterministic_expression",
+      "classification_rule_id": "rule_pack.yaml",
+      "classification_reason": "matched_registered_yaml_rule_pack",
+      "classifier_confidence": "high",
+      "semantic_risk_flags": null,
+      "semantic_audit_status": "ok",
+      "generator_status": "ready_for_draft",
+      "manual_review_reason": "",
+      "source_chapter": "",
+      "source_section": "",
+      "problem_text_hash": ""
+    },
+    {
+      "example_id": 4600,
+      "title": "",
+      "source_type": "textbook_example",
+      "problem_preview": "已知平面上四點$A\\left( 1,3 \\right)$、$B\\left( 2,5 \\right)$、$C\\left( 3,1 \\right)$、$D\\left( 5,x \\right)$。若直線AB與直線CD平行，則x = (A) 3 (B) 4 (C) 5 (D) 6。",
+      "skill_id": "vh_數學B1_PropertiesOfParallelLines",
+      "subskill_id": "parallel_lines_properties",
+      "problem_type_id": "parallel_lines_properties",
+      "runtime_category": "deterministic_expression",
+      "classification_rule_id": "rule_pack.yaml",
+      "classification_reason": "matched_registered_yaml_rule_pack",
+      "classifier_confidence": "high",
+      "semantic_risk_flags": null,
+      "semantic_audit_status": "ok",
+      "generator_status": "ready_for_draft",
+      "manual_review_reason": "",
+      "source_chapter": "",
+      "source_section": "",
+      "problem_text_hash": ""
+    },
+    {
+      "example_id": 4602,
+      "title": "",
+      "source_type": "textbook_example",
+      "problem_preview": "平面上過兩點$\\left( 1,3 \\right)$、$\\left( 3,5 \\right)$的直線和過另兩點$\\left( 2,0 \\right)$、$\\left( 3,a \\right)$的直線平行，則a = (A) 1 (B) 2 (C) 3 (D) 4。",
+      "skill_id": "vh_數學B1_PropertiesOfParallelLines",
+      "subskill_id": "parallel_lines_properties",
+      "problem_type_id": "parallel_lines_properties",
+      "runtime_category": "deterministic_expression",
+      "classification_rule_id": "rule_pack.yaml",
+      "classification_reason": "matched_registered_yaml_rule_pack",
+      "classifier_confidence": "high",
+      "semantic_risk_flags": null,
+      "semantic_audit_status": "ok",
+      "generator_status": "ready_for_draft",
+      "manual_review_reason": "",
+      "source_chapter": "",
+      "source_section": "",
+      "problem_text_hash": ""
+    }
+  ],
+  "observed_problem_types": [
+    "parallel_lines_properties"
+  ],
+  "source_coverage_status": "FULL_OBSERVED_COVERAGE_CANDIDATE",
+  "bootstrap_summary": {
+    "bootstrap_mode": false,
+    "bootstrap_source_skill_id": "",
+    "source_coverage_status": "",
+    "allowed_problem_types": []
+  },
+  "answer_contract_summary": {
+    "parallel_lines_properties": {
+      "answer_type": "integer",
+      "equivalence_type": "numeric_exact",
+      "checker_key": "integer_checker",
+      "order_matters": true,
+      "accepted_format_notes": [
+        "single integer answer"
+      ],
+      "canonical_answer_schema": {
+        "type": "integer"
+      }
+    }
+  },
+  "missing_answer_contract_problem_types": [],
+  "missing_checker_key_problem_types": [],
+  "equivalence_test_required_problem_types": [],
+  "manual_review_problem_types": [],
+  "future_ai_judged_problem_types": [],
+  "classifier_proposal": {
+    "enabled": false,
+    "reason": "",
+    "proposal_status": "SKIPPED",
+    "proposed_problem_types": [],
+    "proposed_example_map": [],
+    "proposed_answer_contracts": {},
+    "manual_review_candidates": [],
+    "risk_flags": [],
+    "proposal_path": "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_PropertiesOfParallelLines_classifier_proposal.json",
+    "promote_ready": false,
+    "promote_command_suggestion": "python scripts\\gencode_promote_classifier_proposal.py --skill-id vh_數學B1_PropertiesOfParallelLines"
+  },
+  "auto_review_summary": {},
+  "risk_flags": [],
+  "recommended_next_phase": "phase2_build",
+  "blocking_reasons": [],
+  "warnings": [],
+  "artifact_paths": {
+    "phase1_json": "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_PropertiesOfParallelLines_phase1_audit.json",
+    "phase1_md": "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_PropertiesOfParallelLines_phase1_audit.md",
+    "inventory_report": "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_PropertiesOfParallelLines_inventory_report.md",
+    "classifier_proposal_json": "",
+    "classifier_proposal_md": ""
+  },
+  "timestamp": "2026-06-14T14:24:16.320394+00:00"
+}

@@ -33,23 +33,21 @@
     "SOP v0.2 Wrapper: Ensure wrapper state does not reload / reset state upon importlib.reload."
   ],
   "skill_file_path": "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\drafts\\vh_數學B1_SlopeOfALine.py",
-  "package_status": "failed",
+  "package_status": "packaged_draft",
   "py_compile_status": "passed",
-  "runtime_smoke_status": "failed",
+  "runtime_smoke_status": "passed",
   "runtime_smoke_raw": {
-    "status": "failed",
-    "blockers": [
-      "fake_diversity_fatal"
-    ],
+    "status": "passed",
+    "blockers": [],
     "payload_preview": {
-      "problem_type_id": "integer_applied_quadratic_inequality_problem",
+      "problem_type_id": "text_short_applied_quadratic_inequality_problem",
       "answer_type": "interval",
       "answer_contract_answer_type": "interval",
       "checker": "interval_checker",
       "equivalence": "interval_equivalence",
-      "question_text_len": 81,
-      "answer": "x<3 or x>5",
-      "correct_answer": "x<3 or x>5",
+      "question_text_len": 86,
+      "answer": "2<x<9",
+      "correct_answer": "2<x<9",
       "choices_count": 0,
       "metadata_keys": [
         "givens",
@@ -69,19 +67,17 @@
       "check_callable": true
     },
     "py_compile_status": "passed",
-    "samples_tested": 9,
+    "samples_tested": 30,
     "negative_semantic_smoke": "passed",
-    "error": "Fake Diversity / State Lock detected: consecutive outputs are identical across seeds.",
-    "failed_seed": 9,
     "validation_diagnostics": {
-      "problem_type_id": "integer_applied_quadratic_inequality_problem",
+      "problem_type_id": "text_short_applied_quadratic_inequality_problem",
       "answer_type": "interval",
       "answer_shape": "interval_or_union",
       "checker": "interval_checker",
       "equivalence": "interval_equivalence",
-      "answer_repr": "'x<3 or x>5'",
+      "answer_repr": "'2<x<9'",
       "answer_python_type": "str",
-      "correct_answer_repr": "'x<3 or x>5'",
+      "correct_answer_repr": "'2<x<9'",
       "correct_answer_python_type": "str",
       "validator_expected_types": [
         "case_insensitive_string",
@@ -126,22 +122,18 @@
     }
   },
   "publish_check": {
-    "draft_check_passed": false,
-    "can_publish_draft": false,
-    "can_publish_formal": false,
+    "draft_check_passed": true,
+    "can_publish_draft": true,
+    "can_publish_formal": true,
     "can_mark_runtime_ready": false,
-    "formal_publish_blockers": [
-      "draft_check_not_passed"
-    ],
+    "formal_publish_blockers": [],
     "runtime_ready_blockers": [
       "runtime_ready_gate_not_allowed_or_not_verified"
     ],
     "warnings": [
       "draft_passed_but_runtime_ready_not_confirmed"
     ],
-    "blockers": [
-      "fake_diversity_fatal"
-    ],
+    "blockers": [],
     "py_compile_status": "passed",
     "interface_check": {
       "generate_exists": true,
@@ -149,21 +141,19 @@
       "generate_returns_dict": true,
       "check_callable": true
     },
-    "runtime_smoke_status": "failed",
+    "runtime_smoke_status": "passed",
     "runtime_smoke_raw": {
-      "status": "failed",
-      "blockers": [
-        "fake_diversity_fatal"
-      ],
+      "status": "passed",
+      "blockers": [],
       "payload_preview": {
-        "problem_type_id": "integer_applied_quadratic_inequality_problem",
+        "problem_type_id": "text_short_applied_quadratic_inequality_problem",
         "answer_type": "interval",
         "answer_contract_answer_type": "interval",
         "checker": "interval_checker",
         "equivalence": "interval_equivalence",
-        "question_text_len": 81,
-        "answer": "x<3 or x>5",
-        "correct_answer": "x<3 or x>5",
+        "question_text_len": 86,
+        "answer": "2<x<9",
+        "correct_answer": "2<x<9",
         "choices_count": 0,
         "metadata_keys": [
           "givens",
@@ -183,19 +173,17 @@
         "check_callable": true
       },
       "py_compile_status": "passed",
-      "samples_tested": 9,
+      "samples_tested": 30,
       "negative_semantic_smoke": "passed",
-      "error": "Fake Diversity / State Lock detected: consecutive outputs are identical across seeds.",
-      "failed_seed": 9,
       "validation_diagnostics": {
-        "problem_type_id": "integer_applied_quadratic_inequality_problem",
+        "problem_type_id": "text_short_applied_quadratic_inequality_problem",
         "answer_type": "interval",
         "answer_shape": "interval_or_union",
         "checker": "interval_checker",
         "equivalence": "interval_equivalence",
-        "answer_repr": "'x<3 or x>5'",
+        "answer_repr": "'2<x<9'",
         "answer_python_type": "str",
-        "correct_answer_repr": "'x<3 or x>5'",
+        "correct_answer_repr": "'2<x<9'",
         "correct_answer_python_type": "str",
         "validator_expected_types": [
           "case_insensitive_string",
@@ -239,18 +227,18 @@
         "validation_reason": ""
       }
     },
-    "summary_message": "Draft is not ready for publish yet. Please resolve blockers first."
+    "summary_message": "Draft passed checks and can be formally published; runtime-ready is not marked yet. Run /practice smoke tests first."
   },
   "generator_specs": [
     {
-      "problem_type_id": "integer_applied_quadratic_inequality_problem",
+      "problem_type_id": "text_short_applied_quadratic_inequality_problem",
       "checker_key": "interval_checker",
       "equivalence_type": "interval_equivalence",
       "generator_readiness": "runtime_ready",
       "answer_type": "interval",
       "template_slot": "applied_quadratic_inequality_problem",
       "base_problem_type_id": "applied_quadratic_inequality_problem",
-      "value_type_prefix": "integer",
+      "value_type_prefix": "text_short",
       "target_task": "applied_quadratic_inequality_problem",
       "presentation_mode": "short_answer",
       "answer_shape": "interval_or_union"
@@ -258,34 +246,56 @@
   ],
   "packaging_usable_count": 2,
   "packaging_diagnostics": {
-    "candidate_count": 3,
+    "candidate_count": 4,
     "included_count": 2,
-    "excluded_count": 1,
+    "excluded_count": 2,
     "included": [
       {
-        "problem_type_id": "integer_compute_numeric",
-        "generator_key": "vh_數學B1_SlopeOfALine:integer_compute_numeric:draft_v1",
+        "problem_type_id": "text_short_applied_quadratic_inequality_problem",
+        "generator_key": "vh_數學B1_SlopeOfALine:text_short_applied_quadratic_inequality_problem:draft_v1",
         "generator_status": "runtime_ready_with_warning"
       },
       {
-        "problem_type_id": "integer_applied_quadratic_inequality_problem",
-        "generator_key": "vh_數學B1_SlopeOfALine:integer_applied_quadratic_inequality_problem:draft_v1",
+        "problem_type_id": "text_short_solve_unknown_coordinate_from_two_point_distance",
+        "generator_key": "vh_數學B1_SlopeOfALine:text_short_solve_unknown_coordinate_from_two_point_distance:draft_v1",
         "generator_status": "runtime_ready_with_warning"
       }
     ],
     "excluded": [
       {
-        "problem_type_id": "integer_evaluate_function_value",
-        "generator_key": "vh_數學B1_SlopeOfALine:integer_evaluate_function_value:draft_v1",
+        "problem_type_id": "text_short_contextual_application",
+        "generator_key": "vh_數學B1_SlopeOfALine:text_short_contextual_application:draft_v1",
+        "generator_status": "validation_failed",
+        "checker_smoke_status": "passed",
+        "dynamic_sampling_status": "generator_diversity_blocked",
+        "blockers": [
+          "checker_answer_mismatch:spec_text_but_payload_numeric"
+        ],
+        "warnings": [
+          "consecutive_same_template_variant"
+        ],
+        "reasons": [
+          "readiness_not_packagable:validation_failed",
+          "status_not_packaging_ready:validation_failed",
+          "dynamic_sampling_status_not_passed",
+          "blockers:checker_answer_mismatch:spec_text_but_payload_numeric",
+          "usable_for_phase3_false"
+        ]
+      },
+      {
+        "problem_type_id": "choice_contextual_application",
+        "generator_key": "vh_數學B1_SlopeOfALine:choice_contextual_application:draft_v1",
         "generator_status": "runtime_ready_with_warning",
         "checker_smoke_status": "passed",
         "dynamic_sampling_status": "runtime_ready_with_diversity_warning",
         "blockers": [],
         "warnings": [
-          "consecutive_same_template_variant"
+          "consecutive_same_template_variant",
+          "low_sample_diversity_tolerance_applied",
+          "low_source_examples"
         ],
         "reasons": [
-          "slot_base_task_mismatch:point_quadrant!=function_value_numeric"
+          "choice_prefix_on_non_choice_slot"
         ]
       }
     ],
@@ -297,7 +307,7 @@
       "status": "synced",
       "synced_spec_count": 1,
       "synced_problem_type_ids": [
-        "integer_applied_quadratic_inequality_problem"
+        "text_short_applied_quadratic_inequality_problem"
       ],
       "induced_spec_path": "reports\\gencode_closed_loop\\induced_specs\\vh_數學B1_SlopeOfALine.json",
       "purged_induced_spec_path": "reports\\gencode_closed_loop\\induced_specs\\vh_數學B1_SlopeOfALine.json",
@@ -305,7 +315,7 @@
         "reports\\gencode_closed_loop\\induced_specs\\vh_數學B1_SlopeOfALine.json"
       ],
       "runtime_usable_problem_type_ids": [
-        "integer_applied_quadratic_inequality_problem"
+        "text_short_applied_quadratic_inequality_problem"
       ],
       "downgraded_historical_problem_type_ids": [],
       "canonical_filter_applied": true
@@ -322,32 +332,33 @@
   },
   "next_action": "review_phase3_publish_check",
   "error": "",
-  "dry_run": true,
-  "timestamp": "2026-06-14T08:33:13.570135+00:00",
+  "dry_run": false,
+  "timestamp": "2026-06-14T08:47:59.116791+00:00",
   "generated_with_warning": true,
   "warnings": [
-    "consecutive_same_template_variant",
     "low_sample_diversity_tolerance_applied",
     "low_source_examples",
     "low_unique_signature_count"
   ],
   "publish_gate_layers": {
-    "technical_closed_loop": "FAIL",
-    "runtime_quality": "FAIL",
-    "web_runtime": "FAIL",
+    "technical_closed_loop": "PASS",
+    "runtime_quality": "PASS",
+    "web_runtime": "PASS",
     "source_alignment": "PARTIAL"
   },
   "source_alignment_audit": {
     "status": "PARTIAL",
     "missing_source_aligned_problem_types": [
-      "numeric_applied_quadratic_inequality_problem_short_answer",
-      "numeric_compute_numeric_short_answer",
-      "numeric_evaluate_function_value_fallback_application"
+      "fallback_applied_quadratic_inequality_problem",
+      "fallback_solve_unknown_coordinate_from_two_point_distance",
+      "skill_scoped_unresolved_problem_type",
+      "skill_scoped_unresolved_problem_type_2"
     ],
     "underrepresented_runtime_forms": [
-      "numeric_applied_quadratic_inequality_problem_short_answer",
-      "numeric_compute_numeric_short_answer",
-      "numeric_evaluate_function_value_fallback_application"
+      "fallback_applied_quadratic_inequality_problem",
+      "fallback_solve_unknown_coordinate_from_two_point_distance",
+      "skill_scoped_unresolved_problem_type",
+      "skill_scoped_unresolved_problem_type_2"
     ]
   },
   "post_phase3_audit_scripts": [
@@ -372,5 +383,5 @@
       "py_compile_ok": true
     }
   ],
-  "summary_message": "Phase 3 packaged draft skill file, but draft runtime smoke did not pass. See publish_check / runtime_smoke_raw. usable_generators=2."
+  "summary_message": "Draft passed checks and can be formally published; runtime-ready is not marked yet. Run /practice smoke tests first."
 }

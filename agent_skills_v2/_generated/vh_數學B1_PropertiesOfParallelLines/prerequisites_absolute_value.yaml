@@ -1,0 +1,5 @@
+items:
+  -
+    subskill_id: "parallel_lines_properties"
+    prerequisite_subskills:
+      - "absolute_value_numeric_evaluation"

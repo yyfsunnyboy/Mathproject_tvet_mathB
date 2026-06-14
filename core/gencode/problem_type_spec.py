@@ -219,6 +219,21 @@ def build_generator_plan_prompt(spec: dict[str, Any]) -> str:
 def build_generator_code_prompt(spec: dict[str, Any], examples_context: str = "") -> str:
     ac = get_answer_contract(spec)
     gc = get_generator_contract(spec)
+
+    # SOP v0.3: Read and inject local SOP files for static alignment
+    project_root = Path(__file__).resolve().parents[2]
+    sop_file = project_root / "docs" / "系統SOP" / "Gencode_AgentSkillV2整合" / "AgentSkillV2_ProblemType規格包設計_v0.3.md"
+    sop_content = ""
+    if sop_file.exists():
+        try:
+            sop_content = sop_file.read_text(encoding="utf-8")
+        except Exception:
+            pass
+
+    sop_section = ""
+    if sop_content:
+        sop_section = f"\n=== LOCAL SOP REFERENCE ===\n{sop_content}\n===========================\n\n"
+
     return (
         "=== SYSTEM PROMPT CONSTRAINTS ===\n"
         "1. STRICT SKELETAL ALIGNMENT: The generated question text, math structure, and core formula must 100% strictly align with the core textual and structural features of the provided source_examples.\n"
@@ -227,6 +242,7 @@ def build_generator_code_prompt(spec: dict[str, Any], examples_context: str = ""
         "4. MULTI-TEMPLATE PRINCIPLE: You must NEVER generate only a single default stem. If the source examples have graph features (has_graph) or contextual applications (contextual_application), you MUST declare multiple template_slots (e.g., plot_graph_slot, intercept_judge_slot, word_problem_slot) in the generated Python code. Randomization of scenarios is allowed and encouraged to replace contexts (e.g. mobile phone tariff -> water tariff or internet data tariff), maintaining the overall structural context of the textbook.\n"
         "5. STEM COMPLETENESS & REQUIRED CONCEPT TOKENS: Any generated string for question_text must be a fully cohesive, human-readable textbook problem. It is strictly forbidden to output truncated stubs or generic placeholders. For choice-based or fallback problem types, the question_text must explicitly construct the mathematical conditions and contextual application story. It must naturally include the unit soul tokens declared by semantic_contract.required_concepts and reflected by the provided source examples. EVERY random branch, scenario conditional, or fallback string assignment within the generated generate(seed) function MUST explicitly construct a fully descriptive problem. Truncating text in ANY code path is strictly prohibited. The final runtime length of question_text for EVERY generated seed MUST be robust and naturally exceed 30 characters under all randomization paths, ensuring no empty or minimalist stubs can ever be evaluated.\n"
         "=================================\n\n"
+        f"{sop_section}"
         "Generate Python generate() using this ProblemTypeSpec only.\n"
         "Flow: generator_plan comment -> generate() implementation.\n"
         f"problem_type_id: {spec.get('problem_type_id')}\n"
@@ -241,3 +257,4 @@ def build_generator_code_prompt(spec: dict[str, Any], examples_context: str = ""
         "Do not embed (A)(B)(C)(D) in question_text when choices is non-empty.\n"
         f"examples:\n{examples_context}\n"
     )
+

@@ -1,4 +1,4 @@
-﻿import argparse
+import argparse
 import ast
 import importlib.util
 import json
@@ -37,6 +37,24 @@ PT_SPECS: dict[str, dict[str, Any]] = {
         "checker_type": "integer_checker",
         "candidate_subdir": "absolute_value_distance_between_two_points",
         "subskill_id": "absolute_value_distance_between_two_points",
+    },
+    "parallel_lines_properties": {
+        "answer_type": "integer",
+        "checker_type": "integer_checker",
+        "candidate_subdir": "parallel_lines_properties",
+        "subskill_id": "parallel_lines_properties",
+    },
+    "perpendicular_lines_properties": {
+        "answer_type": "rational",
+        "checker_type": "rational_checker",
+        "candidate_subdir": "perpendicular_lines_properties",
+        "subskill_id": "perpendicular_lines_properties",
+    },
+    "text_short_slope_of_line_problems": {
+        "answer_type": "rational",
+        "checker_type": "rational_checker",
+        "candidate_subdir": "text_short_slope_of_line_problems",
+        "subskill_id": "text_short_slope_of_line_problems",
     },
 }
 
@@ -420,22 +438,48 @@ def main() -> None:
     p.add_argument("--max-rounds", type=int, default=5)
     args = p.parse_args()
 
-    if args.skill_id != TARGET_SKILL:
-        raise RuntimeError("此版本只支援 vh_數學B1_AbsoluteValue")
+    if args.skill_id not in {TARGET_SKILL, "vh_數學B1_PropertiesOfParallelLines", "vh_數學B1_PropertiesOfPerpendicularLines", "vh_數學B1_SlopeOfALine"}:
+        raise RuntimeError("此版本只支援 vh_數學B1_AbsoluteValue、ParallelLines、PerpendicularLines 與 SlopeOfALine")
     if args.problem_type_id not in PT_SPECS:
         raise RuntimeError("closed_loop_generator_not_implemented")
 
     root = Path(__file__).resolve().parents[1]
-    spec_path = root / "agent_skills_v2" / "vocational_math_b1" / "chapter_1" / "section_1_1_number_line_absolute_value" / "problem_types_absolute_value.yaml"
+    
+    # Dynamically find the problem type spec path for the skill
+    spec_path = None
+    base = root / "agent_skills_v2"
+    for ex_map in base.rglob("examples_map_*.yaml"):
+        import yaml
+        if not ex_map.exists():
+            continue
+        try:
+            obj = yaml.safe_load(ex_map.read_text(encoding="utf-8")) or {}
+            rows = obj.get("examples", [])
+            if any(isinstance(r, dict) and str(r.get("skill_id", "")) == args.skill_id for r in rows):
+                spec_path = next(iter(ex_map.parent.glob("problem_types_*.yaml")), None)
+                break
+        except Exception:
+            continue
+
+    if not spec_path or not spec_path.exists():
+        raise RuntimeError("problem_type spec not found, run inventory first")
+
     items = _read_yaml(spec_path).get("items", [])
     if not any(isinstance(i, dict) and i.get("problem_type_id") == args.problem_type_id for i in items):
         raise RuntimeError("problem_type spec not found, run inventory first")
 
     subdir = PT_SPECS[args.problem_type_id]["candidate_subdir"]
-    pdir = root / "generated_candidates" / "vocational_math_b1" / "section_1_1" / subdir
+    if args.skill_id in {"vh_數學B1_PropertiesOfParallelLines", "vh_數學B1_PropertiesOfPerpendicularLines", "vh_數學B1_SlopeOfALine"}:
+        pdir = root / "generated_candidates" / "vocational_math_b1" / "section_2_1" / subdir
+        cand_rel_path = f"generated_candidates/vocational_math_b1/section_2_1/{subdir}/candidate_v1.py"
+    else:
+        pdir = root / "generated_candidates" / "vocational_math_b1" / "section_1_1" / subdir
+        cand_rel_path = f"generated_candidates/vocational_math_b1/section_1_1/{subdir}/candidate_v1.py"
+
     pdir.mkdir(parents=True, exist_ok=True)
     cand = pdir / "candidate_v1.py"
-    cand.write_text(_candidate_code(args.skill_id, args.problem_type_id), encoding="utf-8")
+    if not cand.exists():
+        cand.write_text(_candidate_code(args.skill_id, args.problem_type_id), encoding="utf-8")
 
     trace = {"rounds": [], "final_candidate": str(cand), "status": "failed"}
     current = cand
@@ -459,7 +503,7 @@ def main() -> None:
             "skill_id": args.skill_id,
             "subskill_id": PT_SPECS[args.problem_type_id]["subskill_id"],
             "status": "verified",
-            "candidate_path": f"generated_candidates/vocational_math_b1/section_1_1/{subdir}/candidate_v1.py",
+            "candidate_path": cand_rel_path,
             "function_name": "generate",
             "answer_type": PT_SPECS[args.problem_type_id]["answer_type"],
             "checker_type": PT_SPECS[args.problem_type_id]["checker_type"],

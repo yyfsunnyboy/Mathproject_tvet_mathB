@@ -301,12 +301,13 @@ def _repair_missing_runtime_binding(skill_id: str) -> dict[str, Any]:
         p2["wrapper_summary"] = {"pipeline_invoked": False, "pipeline_return_code": 0, "pipeline_final_status": "BOUND_BY_RUNTIME_REPAIR"}
         _write_json(phase2_path, p2)
 
-        test_path = "tests/test_b1_absolute_value_inequality_runtime_wrapper.py"
-        t_code, t_out, t_err = _run([sys.executable, "-m", "pytest", test_path, "-q"], timeout=300)
-        pytest_results[test_path] = {"passed": t_code == 0, "output": (t_out + t_err).strip()}
-        tests_run.append(f"pytest {test_path} -q")
-        if t_code != 0:
-            blocking.append("pytest_failed:runtime_wrapper")
+        test_path = "tests/test_b1_absolute_value_inequality_runtime_wrapper.py" if skill_id == "vh_數學B1_AbsoluteValueInequality" else None
+        if test_path:
+            t_code, t_out, t_err = _run([sys.executable, "-m", "pytest", test_path, "-q"], timeout=300)
+            pytest_results[test_path] = {"passed": t_code == 0, "output": (t_out + t_err).strip()}
+            tests_run.append(f"pytest {test_path} -q")
+            if t_code != 0:
+                blocking.append("pytest_failed:runtime_wrapper")
 
     repair_status = "PASS" if not blocking else "FAIL"
     return {

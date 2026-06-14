@@ -1,0 +1,1363 @@
+{
+  "candidate_path": "E:\\Python\\Mathproject_tvet_mathB\\generated_candidates\\vocational_math_b1\\section_2_1\\parallel_lines_properties\\candidate_v1.py",
+  "errors": [],
+  "samples": [
+    {
+      "problem_type_id": "parallel_lines_properties",
+      "skill_id": "vh_數學B1_PropertiesOfParallelLines",
+      "subskill_id": "parallel_lines_properties",
+      "question_text": "設$A\\left( 1,-5 \\right)$、$B\\left( 0,-6 \\right)$、$C\\left( 3,a \\right)$、$D\\left( 4,3 \\right)$，若$\\overline{AB}$與$\\overline{CD}$平行，試求a之值。",
+      "answer": "2",
+      "answer_type": "integer",
+      "checker_type": "integer_checker",
+      "solution_steps": [
+        "因為$\\overline{AB}$與$\\overline{CD}$平行，所以它們的斜率相等。",
+        "直線AB的斜率為 $m_{AB} = \\frac{-6 - (-5)}{0 - (1)} = 1$。",
+        "直線CD的斜率為 $m_{CD} = \\frac{3 - a}{4 - (3)} = \\frac{3 - a}{1}$。",
+        "由 $m_{AB} = m_{CD}$ 可得：$\\frac{3 - a}{1} = 1$，",
+        "所以 $3 - a = 1$，解得 a = 2。"
+      ],
+      "metadata": {
+        "scenario_family": "parallel_lines_properties",
+        "scenario_id": "s6",
+        "parameter_signature": "m=1:template=2:answer=2",
+        "question_pattern_id": "p2",
+        "diagnosis_tags": [
+          "parallel_lines_slope_equality"
+        ],
+        "prerequisite_subskills": []
+      },
+      "question": "設$A\\left( 1,-5 \\right)$、$B\\left( 0,-6 \\right)$、$C\\left( 3,a \\right)$、$D\\left( 4,3 \\right)$，若$\\overline{AB}$與$\\overline{CD}$平行，試求a之值。",
+      "correct_answer": "2",
+      "explanation": "因為$\\overline{AB}$與$\\overline{CD}$平行，所以它們的斜率相等。\n直線AB的斜率為 $m_{AB} = \\frac{-6 - (-5)}{0 - (1)} = 1$。\n直線CD的斜率為 $m_{CD} = \\frac{3 - a}{4 - (3)} = \\frac{3 - a}{1}$。\n由 $m_{AB} = m_{CD}$ 可得：$\\frac{3 - a}{1} = 1$，\n所以 $3 - a = 1$，解得 a = 2。",
+      "choices": [],
+      "answer_contract": {
+        "choices_required": false,
+        "choice_count": null,
+        "correct_choice_count": null,
+        "frontend_render_choices": false,
+        "answer_type": "integer",
+        "answer_shape": "scalar",
+        "answer_equivalence": "numeric_exact",
+        "checker": "integer_checker",
+        "accepted_formats": [
+          "2"
+        ],
+        "checker_key": "integer_checker",
+        "equivalence_type": "numeric_exact"
+      }
+    },
+    {
+      "problem_type_id": "parallel_lines_properties",
+      "skill_id": "vh_數學B1_PropertiesOfParallelLines",
+      "subskill_id": "parallel_lines_properties",
+      "question_text": "設$A\\left( 4,-4 \\right)$、$B\\left( 3,-2 \\right)$、$C\\left( -4,a \\right)$、$D\\left( -3,0 \\right)$，若$\\overline{AB}$與$\\overline{CD}$平行，試求a之值。",
+      "answer": "2",
+      "answer_type": "integer",
+      "checker_type": "integer_checker",
+      "solution_steps": [
+        "因為$\\overline{AB}$與$\\overline{CD}$平行，所以它們的斜率相等。",
+        "直線AB的斜率為 $m_{AB} = \\frac{-2 - (-4)}{3 - (4)} = -2$。",
+        "直線CD的斜率為 $m_{CD} = \\frac{-a}{-3 - (-4)} = \\frac{-a}{1}$。",
+        "由 $m_{AB} = m_{CD}$ 可得：$\\frac{-a}{1} = -2$，",
+        "所以 $-a = -2$，解得 a = 2。"
+      ],
+      "metadata": {
+        "scenario_family": "parallel_lines_properties",
+        "scenario_id": "s4",
+        "parameter_signature": "m=-2:template=2:answer=2",
+        "question_pattern_id": "p1",
+        "diagnosis_tags": [
+          "parallel_lines_slope_equality"
+        ],
+        "prerequisite_subskills": []
+      },
+      "question": "設$A\\left( 4,-4 \\right)$、$B\\left( 3,-2 \\right)$、$C\\left( -4,a \\right)$、$D\\left( -3,0 \\right)$，若$\\overline{AB}$與$\\overline{CD}$平行，試求a之值。",
+      "correct_answer": "2",
+      "explanation": "因為$\\overline{AB}$與$\\overline{CD}$平行，所以它們的斜率相等。\n直線AB的斜率為 $m_{AB} = \\frac{-2 - (-4)}{3 - (4)} = -2$。\n直線CD的斜率為 $m_{CD} = \\frac{-a}{-3 - (-4)} = \\frac{-a}{1}$。\n由 $m_{AB} = m_{CD}$ 可得：$\\frac{-a}{1} = -2$，\n所以 $-a = -2$，解得 a = 2。",
+      "choices": [],
+      "answer_contract": {
+        "choices_required": false,
+        "choice_count": null,
+        "correct_choice_count": null,
+        "frontend_render_choices": false,
+        "answer_type": "integer",
+        "answer_shape": "scalar",
+        "answer_equivalence": "numeric_exact",
+        "checker": "integer_checker",
+        "accepted_formats": [
+          "2"
+        ],
+        "checker_key": "integer_checker",
+        "equivalence_type": "numeric_exact"
+      }
+    },
+    {
+      "problem_type_id": "parallel_lines_properties",
+      "skill_id": "vh_數學B1_PropertiesOfParallelLines",
+      "subskill_id": "parallel_lines_properties",
+      "question_text": "設$A\\left( -4,-4 \\right)$、$B\\left( -5,-1 \\right)$、$C\\left( -3,x \\right)$、$D\\left( -4,8 \\right)$，若$\\overline{AB}$與$\\overline{CD}$平行，試求x之值。",
+      "answer": "5",
+      "answer_type": "integer",
+      "checker_type": "integer_checker",
+      "solution_steps": [
+        "因為$\\overline{AB}$與$\\overline{CD}$平行，所以它們的斜率相等。",
+        "直線AB的斜率為 $m_{AB} = \\frac{-1 - (-4)}{-5 - (-4)} = -3$。",
+        "直線CD的斜率為 $m_{CD} = \\frac{8 - x}{-4 - (-3)} = \\frac{8 - x}{-1}$。",
+        "由 $m_{AB} = m_{CD}$ 可得：$\\frac{8 - x}{-1} = -3$，",
+        "所以 $8 - x = 3$，解得 x = 5。"
+      ],
+      "metadata": {
+        "scenario_family": "parallel_lines_properties",
+        "scenario_id": "s1",
+        "parameter_signature": "m=-3:template=2:answer=5",
+        "question_pattern_id": "p2",
+        "diagnosis_tags": [
+          "parallel_lines_slope_equality"
+        ],
+        "prerequisite_subskills": []
+      },
+      "question": "設$A\\left( -4,-4 \\right)$、$B\\left( -5,-1 \\right)$、$C\\left( -3,x \\right)$、$D\\left( -4,8 \\right)$，若$\\overline{AB}$與$\\overline{CD}$平行，試求x之值。",
+      "correct_answer": "5",
+      "explanation": "因為$\\overline{AB}$與$\\overline{CD}$平行，所以它們的斜率相等。\n直線AB的斜率為 $m_{AB} = \\frac{-1 - (-4)}{-5 - (-4)} = -3$。\n直線CD的斜率為 $m_{CD} = \\frac{8 - x}{-4 - (-3)} = \\frac{8 - x}{-1}$。\n由 $m_{AB} = m_{CD}$ 可得：$\\frac{8 - x}{-1} = -3$，\n所以 $8 - x = 3$，解得 x = 5。",
+      "choices": [],
+      "answer_contract": {
+        "choices_required": false,
+        "choice_count": null,
+        "correct_choice_count": null,
+        "frontend_render_choices": false,
+        "answer_type": "integer",
+        "answer_shape": "scalar",
+        "answer_equivalence": "numeric_exact",
+        "checker": "integer_checker",
+        "accepted_formats": [
+          "5"
+        ],
+        "checker_key": "integer_checker",
+        "equivalence_type": "numeric_exact"
+      }
+    },
+    {
+      "problem_type_id": "parallel_lines_properties",
+      "skill_id": "vh_數學B1_PropertiesOfParallelLines",
+      "subskill_id": "parallel_lines_properties",
+      "question_text": "平面上過兩點$\\left( 4,3 \\right)$、$\\left( 2,7 \\right)$的直線和過另兩點$\\left( 0,4 \\right)$、$\\left( 1,x \\right)$的直線平行，則x = ",
+      "answer": "2",
+      "answer_type": "integer",
+      "checker_type": "integer_checker",
+      "solution_steps": [
+        "因為兩直線平行，所以它們的斜率相等。",
+        "第一條直線的斜率為 $m_1 = \\frac{7 - (3)}{2 - (4)} = -2$。",
+        "第二條直線的斜率為 $m_2 = \\frac{x - 4}{1 - (0)} = \\frac{x - 4}{1}$。",
+        "由 $m_1 = m_2$ 可得：$\\frac{x - 4}{1} = -2$，",
+        "所以 $x - 4 = -2$，解得 x = 2。"
+      ],
+      "metadata": {
+        "scenario_family": "parallel_lines_properties",
+        "scenario_id": "s1",
+        "parameter_signature": "m=-2:template=3:answer=2",
+        "question_pattern_id": "p4",
+        "diagnosis_tags": [
+          "parallel_lines_slope_equality"
+        ],
+        "prerequisite_subskills": []
+      },
+      "question": "平面上過兩點$\\left( 4,3 \\right)$、$\\left( 2,7 \\right)$的直線和過另兩點$\\left( 0,4 \\right)$、$\\left( 1,x \\right)$的直線平行，則x = ",
+      "correct_answer": "2",
+      "explanation": "因為兩直線平行，所以它們的斜率相等。\n第一條直線的斜率為 $m_1 = \\frac{7 - (3)}{2 - (4)} = -2$。\n第二條直線的斜率為 $m_2 = \\frac{x - 4}{1 - (0)} = \\frac{x - 4}{1}$。\n由 $m_1 = m_2$ 可得：$\\frac{x - 4}{1} = -2$，\n所以 $x - 4 = -2$，解得 x = 2。",
+      "choices": [],
+      "answer_contract": {
+        "choices_required": false,
+        "choice_count": null,
+        "correct_choice_count": null,
+        "frontend_render_choices": false,
+        "answer_type": "integer",
+        "answer_shape": "scalar",
+        "answer_equivalence": "numeric_exact",
+        "checker": "integer_checker",
+        "accepted_formats": [
+          "2"
+        ],
+        "checker_key": "integer_checker",
+        "equivalence_type": "numeric_exact"
+      }
+    },
+    {
+      "problem_type_id": "parallel_lines_properties",
+      "skill_id": "vh_數學B1_PropertiesOfParallelLines",
+      "subskill_id": "parallel_lines_properties",
+      "question_text": "設$A\\left( -1,-4 \\right)$、$B\\left( 2,-10 \\right)$、$C\\left( 1,2 \\right)$、$D\\left( -1,x \\right)$，若$\\overline{AB}$與$\\overline{CD}$平行，試求x之值。",
+      "answer": "6",
+      "answer_type": "integer",
+      "checker_type": "integer_checker",
+      "solution_steps": [
+        "因為$\\overline{AB}$與$\\overline{CD}$平行，所以它們的斜率相等。",
+        "直線AB的斜率為 $m_{AB} = \\frac{-10 - (-4)}{2 - (-1)} = -2$。",
+        "直線CD的斜率為 $m_{CD} = \\frac{x - 2}{-1 - (1)} = \\frac{x - 2}{-2}$。",
+        "由 $m_{AB} = m_{CD}$ 可得：$\\frac{x - 2}{-2} = -2$，",
+        "所以 $x - 2 = 4$，解得 x = 6。"
+      ],
+      "metadata": {
+        "scenario_family": "parallel_lines_properties",
+        "scenario_id": "s1",
+        "parameter_signature": "m=-2:template=1:answer=6",
+        "question_pattern_id": "p4",
+        "diagnosis_tags": [
+          "parallel_lines_slope_equality"
+        ],
+        "prerequisite_subskills": []
+      },
+      "question": "設$A\\left( -1,-4 \\right)$、$B\\left( 2,-10 \\right)$、$C\\left( 1,2 \\right)$、$D\\left( -1,x \\right)$，若$\\overline{AB}$與$\\overline{CD}$平行，試求x之值。",
+      "correct_answer": "6",
+      "explanation": "因為$\\overline{AB}$與$\\overline{CD}$平行，所以它們的斜率相等。\n直線AB的斜率為 $m_{AB} = \\frac{-10 - (-4)}{2 - (-1)} = -2$。\n直線CD的斜率為 $m_{CD} = \\frac{x - 2}{-1 - (1)} = \\frac{x - 2}{-2}$。\n由 $m_{AB} = m_{CD}$ 可得：$\\frac{x - 2}{-2} = -2$，\n所以 $x - 2 = 4$，解得 x = 6。",
+      "choices": [],
+      "answer_contract": {
+        "choices_required": false,
+        "choice_count": null,
+        "correct_choice_count": null,
+        "frontend_render_choices": false,
+        "answer_type": "integer",
+        "answer_shape": "scalar",
+        "answer_equivalence": "numeric_exact",
+        "checker": "integer_checker",
+        "accepted_formats": [
+          "6"
+        ],
+        "checker_key": "integer_checker",
+        "equivalence_type": "numeric_exact"
+      }
+    },
+    {
+      "problem_type_id": "parallel_lines_properties",
+      "skill_id": "vh_數學B1_PropertiesOfParallelLines",
+      "subskill_id": "parallel_lines_properties",
+      "question_text": "設$A\\left( -1,0 \\right)$、$B\\left( 2,6 \\right)$、$C\\left( 5,x \\right)$、$D\\left( 2,-3 \\right)$，若$\\overline{AB}$與$\\overline{CD}$平行，試求x之值。",
+      "answer": "3",
+      "answer_type": "integer",
+      "checker_type": "integer_checker",
+      "solution_steps": [
+        "因為$\\overline{AB}$與$\\overline{CD}$平行，所以它們的斜率相等。",
+        "直線AB的斜率為 $m_{AB} = \\frac{6 - (0)}{2 - (-1)} = 2$。",
+        "直線CD的斜率為 $m_{CD} = \\frac{-3 - x}{2 - (5)} = \\frac{-3 - x}{-3}$。",
+        "由 $m_{AB} = m_{CD}$ 可得：$\\frac{-3 - x}{-3} = 2$，",
+        "所以 $-3 - x = -6$，解得 x = 3。"
+      ],
+      "metadata": {
+        "scenario_family": "parallel_lines_properties",
+        "scenario_id": "s1",
+        "parameter_signature": "m=2:template=2:answer=3",
+        "question_pattern_id": "p2",
+        "diagnosis_tags": [
+          "parallel_lines_slope_equality"
+        ],
+        "prerequisite_subskills": []
+      },
+      "question": "設$A\\left( -1,0 \\right)$、$B\\left( 2,6 \\right)$、$C\\left( 5,x \\right)$、$D\\left( 2,-3 \\right)$，若$\\overline{AB}$與$\\overline{CD}$平行，試求x之值。",
+      "correct_answer": "3",
+      "explanation": "因為$\\overline{AB}$與$\\overline{CD}$平行，所以它們的斜率相等。\n直線AB的斜率為 $m_{AB} = \\frac{6 - (0)}{2 - (-1)} = 2$。\n直線CD的斜率為 $m_{CD} = \\frac{-3 - x}{2 - (5)} = \\frac{-3 - x}{-3}$。\n由 $m_{AB} = m_{CD}$ 可得：$\\frac{-3 - x}{-3} = 2$，\n所以 $-3 - x = -6$，解得 x = 3。",
+      "choices": [],
+      "answer_contract": {
+        "choices_required": false,
+        "choice_count": null,
+        "correct_choice_count": null,
+        "frontend_render_choices": false,
+        "answer_type": "integer",
+        "answer_shape": "scalar",
+        "answer_equivalence": "numeric_exact",
+        "checker": "integer_checker",
+        "accepted_formats": [
+          "3"
+        ],
+        "checker_key": "integer_checker",
+        "equivalence_type": "numeric_exact"
+      }
+    },
+    {
+      "problem_type_id": "parallel_lines_properties",
+      "skill_id": "vh_數學B1_PropertiesOfParallelLines",
+      "subskill_id": "parallel_lines_properties",
+      "question_text": "設$A\\left( -4,2 \\right)$、$B\\left( -5,0 \\right)$、$C\\left( -3,a \\right)$、$D\\left( -1,9 \\right)$，若$\\overline{AB}$與$\\overline{CD}$平行，試求a之值。",
+      "answer": "5",
+      "answer_type": "integer",
+      "checker_type": "integer_checker",
+      "solution_steps": [
+        "因為$\\overline{AB}$與$\\overline{CD}$平行，所以它們的斜率相等。",
+        "直線AB的斜率為 $m_{AB} = \\frac{0 - (2)}{-5 - (-4)} = 2$。",
+        "直線CD的斜率為 $m_{CD} = \\frac{9 - a}{-1 - (-3)} = \\frac{9 - a}{2}$。",
+        "由 $m_{AB} = m_{CD}$ 可得：$\\frac{9 - a}{2} = 2$，",
+        "所以 $9 - a = 4$，解得 a = 5。"
+      ],
+      "metadata": {
+        "scenario_family": "parallel_lines_properties",
+        "scenario_id": "s6",
+        "parameter_signature": "m=2:template=2:answer=5",
+        "question_pattern_id": "p1",
+        "diagnosis_tags": [
+          "parallel_lines_slope_equality"
+        ],
+        "prerequisite_subskills": []
+      },
+      "question": "設$A\\left( -4,2 \\right)$、$B\\left( -5,0 \\right)$、$C\\left( -3,a \\right)$、$D\\left( -1,9 \\right)$，若$\\overline{AB}$與$\\overline{CD}$平行，試求a之值。",
+      "correct_answer": "5",
+      "explanation": "因為$\\overline{AB}$與$\\overline{CD}$平行，所以它們的斜率相等。\n直線AB的斜率為 $m_{AB} = \\frac{0 - (2)}{-5 - (-4)} = 2$。\n直線CD的斜率為 $m_{CD} = \\frac{9 - a}{-1 - (-3)} = \\frac{9 - a}{2}$。\n由 $m_{AB} = m_{CD}$ 可得：$\\frac{9 - a}{2} = 2$，\n所以 $9 - a = 4$，解得 a = 5。",
+      "choices": [],
+      "answer_contract": {
+        "choices_required": false,
+        "choice_count": null,
+        "correct_choice_count": null,
+        "frontend_render_choices": false,
+        "answer_type": "integer",
+        "answer_shape": "scalar",
+        "answer_equivalence": "numeric_exact",
+        "checker": "integer_checker",
+        "accepted_formats": [
+          "5"
+        ],
+        "checker_key": "integer_checker",
+        "equivalence_type": "numeric_exact"
+      }
+    },
+    {
+      "problem_type_id": "parallel_lines_properties",
+      "skill_id": "vh_數學B1_PropertiesOfParallelLines",
+      "subskill_id": "parallel_lines_properties",
+      "question_text": "設$A\\left( -3,1 \\right)$、$B\\left( 0,-2 \\right)$、$C\\left( -5,-4 \\right)$、$D\\left( -3,a \\right)$，若$\\overline{AB}$與$\\overline{CD}$平行，試求a之值。",
+      "answer": "-6",
+      "answer_type": "integer",
+      "checker_type": "integer_checker",
+      "solution_steps": [
+        "因為$\\overline{AB}$與$\\overline{CD}$平行，所以它們的斜率相等。",
+        "直線AB的斜率為 $m_{AB} = \\frac{-2 - (1)}{0 - (-3)} = -1$。",
+        "直線CD的斜率為 $m_{CD} = \\frac{a + 4}{-3 - (-5)} = \\frac{a + 4}{2}$。",
+        "由 $m_{AB} = m_{CD}$ 可得：$\\frac{a + 4}{2} = -1$，",
+        "所以 $a + 4 = -2$，解得 a = -6。"
+      ],
+      "metadata": {
+        "scenario_family": "parallel_lines_properties",
+        "scenario_id": "s1",
+        "parameter_signature": "m=-1:template=1:answer=-6",
+        "question_pattern_id": "p2",
+        "diagnosis_tags": [
+          "parallel_lines_slope_equality"
+        ],
+        "prerequisite_subskills": []
+      },
+      "question": "設$A\\left( -3,1 \\right)$、$B\\left( 0,-2 \\right)$、$C\\left( -5,-4 \\right)$、$D\\left( -3,a \\right)$，若$\\overline{AB}$與$\\overline{CD}$平行，試求a之值。",
+      "correct_answer": "-6",
+      "explanation": "因為$\\overline{AB}$與$\\overline{CD}$平行，所以它們的斜率相等。\n直線AB的斜率為 $m_{AB} = \\frac{-2 - (1)}{0 - (-3)} = -1$。\n直線CD的斜率為 $m_{CD} = \\frac{a + 4}{-3 - (-5)} = \\frac{a + 4}{2}$。\n由 $m_{AB} = m_{CD}$ 可得：$\\frac{a + 4}{2} = -1$，\n所以 $a + 4 = -2$，解得 a = -6。",
+      "choices": [],
+      "answer_contract": {
+        "choices_required": false,
+        "choice_count": null,
+        "correct_choice_count": null,
+        "frontend_render_choices": false,
+        "answer_type": "integer",
+        "answer_shape": "scalar",
+        "answer_equivalence": "numeric_exact",
+        "checker": "integer_checker",
+        "accepted_formats": [
+          "-6"
+        ],
+        "checker_key": "integer_checker",
+        "equivalence_type": "numeric_exact"
+      }
+    },
+    {
+      "problem_type_id": "parallel_lines_properties",
+      "skill_id": "vh_數學B1_PropertiesOfParallelLines",
+      "subskill_id": "parallel_lines_properties",
+      "question_text": "設$A\\left( 0,1 \\right)$、$B\\left( -2,5 \\right)$、$C\\left( -5,-4 \\right)$、$D\\left( -7,x \\right)$，若$\\overline{AB}$與$\\overline{CD}$平行，試求x之值。",
+      "answer": "0",
+      "answer_type": "integer",
+      "checker_type": "integer_checker",
+      "solution_steps": [
+        "因為$\\overline{AB}$與$\\overline{CD}$平行，所以它們的斜率相等。",
+        "直線AB的斜率為 $m_{AB} = \\frac{5 - (1)}{-2 - (0)} = -2$。",
+        "直線CD的斜率為 $m_{CD} = \\frac{x + 4}{-7 - (-5)} = \\frac{x + 4}{-2}$。",
+        "由 $m_{AB} = m_{CD}$ 可得：$\\frac{x + 4}{-2} = -2$，",
+        "所以 $x + 4 = 4$，解得 x = 0。"
+      ],
+      "metadata": {
+        "scenario_family": "parallel_lines_properties",
+        "scenario_id": "s7",
+        "parameter_signature": "m=-2:template=1:answer=0",
+        "question_pattern_id": "p1",
+        "diagnosis_tags": [
+          "parallel_lines_slope_equality"
+        ],
+        "prerequisite_subskills": []
+      },
+      "question": "設$A\\left( 0,1 \\right)$、$B\\left( -2,5 \\right)$、$C\\left( -5,-4 \\right)$、$D\\left( -7,x \\right)$，若$\\overline{AB}$與$\\overline{CD}$平行，試求x之值。",
+      "correct_answer": "0",
+      "explanation": "因為$\\overline{AB}$與$\\overline{CD}$平行，所以它們的斜率相等。\n直線AB的斜率為 $m_{AB} = \\frac{5 - (1)}{-2 - (0)} = -2$。\n直線CD的斜率為 $m_{CD} = \\frac{x + 4}{-7 - (-5)} = \\frac{x + 4}{-2}$。\n由 $m_{AB} = m_{CD}$ 可得：$\\frac{x + 4}{-2} = -2$，\n所以 $x + 4 = 4$，解得 x = 0。",
+      "choices": [],
+      "answer_contract": {
+        "choices_required": false,
+        "choice_count": null,
+        "correct_choice_count": null,
+        "frontend_render_choices": false,
+        "answer_type": "integer",
+        "answer_shape": "scalar",
+        "answer_equivalence": "numeric_exact",
+        "checker": "integer_checker",
+        "accepted_formats": [
+          "0"
+        ],
+        "checker_key": "integer_checker",
+        "equivalence_type": "numeric_exact"
+      }
+    },
+    {
+      "problem_type_id": "parallel_lines_properties",
+      "skill_id": "vh_數學B1_PropertiesOfParallelLines",
+      "subskill_id": "parallel_lines_properties",
+      "question_text": "設$A\\left( 4,0 \\right)$、$B\\left( 3,-1 \\right)$、$C\\left( -3,-3 \\right)$、$D\\left( 0,a \\right)$，若$\\overline{AB}$與$\\overline{CD}$平行，試求a之值。",
+      "answer": "0",
+      "answer_type": "integer",
+      "checker_type": "integer_checker",
+      "solution_steps": [
+        "因為$\\overline{AB}$與$\\overline{CD}$平行，所以它們的斜率相等。",
+        "直線AB的斜率為 $m_{AB} = \\frac{-1 - (0)}{3 - (4)} = 1$。",
+        "直線CD的斜率為 $m_{CD} = \\frac{a + 3}{0 - (-3)} = \\frac{a + 3}{3}$。",
+        "由 $m_{AB} = m_{CD}$ 可得：$\\frac{a + 3}{3} = 1$，",
+        "所以 $a + 3 = 3$，解得 a = 0。"
+      ],
+      "metadata": {
+        "scenario_family": "parallel_lines_properties",
+        "scenario_id": "s9",
+        "parameter_signature": "m=1:template=1:answer=0",
+        "question_pattern_id": "p4",
+        "diagnosis_tags": [
+          "parallel_lines_slope_equality"
+        ],
+        "prerequisite_subskills": []
+      },
+      "question": "設$A\\left( 4,0 \\right)$、$B\\left( 3,-1 \\right)$、$C\\left( -3,-3 \\right)$、$D\\left( 0,a \\right)$，若$\\overline{AB}$與$\\overline{CD}$平行，試求a之值。",
+      "correct_answer": "0",
+      "explanation": "因為$\\overline{AB}$與$\\overline{CD}$平行，所以它們的斜率相等。\n直線AB的斜率為 $m_{AB} = \\frac{-1 - (0)}{3 - (4)} = 1$。\n直線CD的斜率為 $m_{CD} = \\frac{a + 3}{0 - (-3)} = \\frac{a + 3}{3}$。\n由 $m_{AB} = m_{CD}$ 可得：$\\frac{a + 3}{3} = 1$，\n所以 $a + 3 = 3$，解得 a = 0。",
+      "choices": [],
+      "answer_contract": {
+        "choices_required": false,
+        "choice_count": null,
+        "correct_choice_count": null,
+        "frontend_render_choices": false,
+        "answer_type": "integer",
+        "answer_shape": "scalar",
+        "answer_equivalence": "numeric_exact",
+        "checker": "integer_checker",
+        "accepted_formats": [
+          "0"
+        ],
+        "checker_key": "integer_checker",
+        "equivalence_type": "numeric_exact"
+      }
+    },
+    {
+      "problem_type_id": "parallel_lines_properties",
+      "skill_id": "vh_數學B1_PropertiesOfParallelLines",
+      "subskill_id": "parallel_lines_properties",
+      "question_text": "設$A\\left( -5,1 \\right)$、$B\\left( -4,3 \\right)$、$C\\left( 4,a \\right)$、$D\\left( 2,-9 \\right)$，若$\\overline{AB}$與$\\overline{CD}$平行，試求a之值。",
+      "answer": "-5",
+      "answer_type": "integer",
+      "checker_type": "integer_checker",
+      "solution_steps": [
+        "因為$\\overline{AB}$與$\\overline{CD}$平行，所以它們的斜率相等。",
+        "直線AB的斜率為 $m_{AB} = \\frac{3 - (1)}{-4 - (-5)} = 2$。",
+        "直線CD的斜率為 $m_{CD} = \\frac{-9 - a}{2 - (4)} = \\frac{-9 - a}{-2}$。",
+        "由 $m_{AB} = m_{CD}$ 可得：$\\frac{-9 - a}{-2} = 2$，",
+        "所以 $-9 - a = -4$，解得 a = -5。"
+      ],
+      "metadata": {
+        "scenario_family": "parallel_lines_properties",
+        "scenario_id": "s5",
+        "parameter_signature": "m=2:template=2:answer=-5",
+        "question_pattern_id": "p2",
+        "diagnosis_tags": [
+          "parallel_lines_slope_equality"
+        ],
+        "prerequisite_subskills": []
+      },
+      "question": "設$A\\left( -5,1 \\right)$、$B\\left( -4,3 \\right)$、$C\\left( 4,a \\right)$、$D\\left( 2,-9 \\right)$，若$\\overline{AB}$與$\\overline{CD}$平行，試求a之值。",
+      "correct_answer": "-5",
+      "explanation": "因為$\\overline{AB}$與$\\overline{CD}$平行，所以它們的斜率相等。\n直線AB的斜率為 $m_{AB} = \\frac{3 - (1)}{-4 - (-5)} = 2$。\n直線CD的斜率為 $m_{CD} = \\frac{-9 - a}{2 - (4)} = \\frac{-9 - a}{-2}$。\n由 $m_{AB} = m_{CD}$ 可得：$\\frac{-9 - a}{-2} = 2$，\n所以 $-9 - a = -4$，解得 a = -5。",
+      "choices": [],
+      "answer_contract": {
+        "choices_required": false,
+        "choice_count": null,
+        "correct_choice_count": null,
+        "frontend_render_choices": false,
+        "answer_type": "integer",
+        "answer_shape": "scalar",
+        "answer_equivalence": "numeric_exact",
+        "checker": "integer_checker",
+        "accepted_formats": [
+          "-5"
+        ],
+        "checker_key": "integer_checker",
+        "equivalence_type": "numeric_exact"
+      }
+    },
+    {
+      "problem_type_id": "parallel_lines_properties",
+      "skill_id": "vh_數學B1_PropertiesOfParallelLines",
+      "subskill_id": "parallel_lines_properties",
+      "question_text": "設$A\\left( 3,2 \\right)$、$B\\left( 4,3 \\right)$、$C\\left( -2,x \\right)$、$D\\left( 0,-1 \\right)$，若$\\overline{AB}$與$\\overline{CD}$平行，試求x之值。",
+      "answer": "-3",
+      "answer_type": "integer",
+      "checker_type": "integer_checker",
+      "solution_steps": [
+        "因為$\\overline{AB}$與$\\overline{CD}$平行，所以它們的斜率相等。",
+        "直線AB的斜率為 $m_{AB} = \\frac{3 - (2)}{4 - (3)} = 1$。",
+        "直線CD的斜率為 $m_{CD} = \\frac{-1 - x}{0 - (-2)} = \\frac{-1 - x}{2}$。",
+        "由 $m_{AB} = m_{CD}$ 可得：$\\frac{-1 - x}{2} = 1$，",
+        "所以 $-1 - x = 2$，解得 x = -3。"
+      ],
+      "metadata": {
+        "scenario_family": "parallel_lines_properties",
+        "scenario_id": "s2",
+        "parameter_signature": "m=1:template=2:answer=-3",
+        "question_pattern_id": "p4",
+        "diagnosis_tags": [
+          "parallel_lines_slope_equality"
+        ],
+        "prerequisite_subskills": []
+      },
+      "question": "設$A\\left( 3,2 \\right)$、$B\\left( 4,3 \\right)$、$C\\left( -2,x \\right)$、$D\\left( 0,-1 \\right)$，若$\\overline{AB}$與$\\overline{CD}$平行，試求x之值。",
+      "correct_answer": "-3",
+      "explanation": "因為$\\overline{AB}$與$\\overline{CD}$平行，所以它們的斜率相等。\n直線AB的斜率為 $m_{AB} = \\frac{3 - (2)}{4 - (3)} = 1$。\n直線CD的斜率為 $m_{CD} = \\frac{-1 - x}{0 - (-2)} = \\frac{-1 - x}{2}$。\n由 $m_{AB} = m_{CD}$ 可得：$\\frac{-1 - x}{2} = 1$，\n所以 $-1 - x = 2$，解得 x = -3。",
+      "choices": [],
+      "answer_contract": {
+        "choices_required": false,
+        "choice_count": null,
+        "correct_choice_count": null,
+        "frontend_render_choices": false,
+        "answer_type": "integer",
+        "answer_shape": "scalar",
+        "answer_equivalence": "numeric_exact",
+        "checker": "integer_checker",
+        "accepted_formats": [
+          "-3"
+        ],
+        "checker_key": "integer_checker",
+        "equivalence_type": "numeric_exact"
+      }
+    },
+    {
+      "problem_type_id": "parallel_lines_properties",
+      "skill_id": "vh_數學B1_PropertiesOfParallelLines",
+      "subskill_id": "parallel_lines_properties",
+      "question_text": "設$A\\left( -1,5 \\right)$、$B\\left( 1,7 \\right)$、$C\\left( 5,x \\right)$、$D\\left( 3,-2 \\right)$，若$\\overline{AB}$與$\\overline{CD}$平行，試求x之值。",
+      "answer": "0",
+      "answer_type": "integer",
+      "checker_type": "integer_checker",
+      "solution_steps": [
+        "因為$\\overline{AB}$與$\\overline{CD}$平行，所以它們的斜率相等。",
+        "直線AB的斜率為 $m_{AB} = \\frac{7 - (5)}{1 - (-1)} = 1$。",
+        "直線CD的斜率為 $m_{CD} = \\frac{-2 - x}{3 - (5)} = \\frac{-2 - x}{-2}$。",
+        "由 $m_{AB} = m_{CD}$ 可得：$\\frac{-2 - x}{-2} = 1$，",
+        "所以 $-2 - x = -2$，解得 x = 0。"
+      ],
+      "metadata": {
+        "scenario_family": "parallel_lines_properties",
+        "scenario_id": "s6",
+        "parameter_signature": "m=1:template=2:answer=0",
+        "question_pattern_id": "p4",
+        "diagnosis_tags": [
+          "parallel_lines_slope_equality"
+        ],
+        "prerequisite_subskills": []
+      },
+      "question": "設$A\\left( -1,5 \\right)$、$B\\left( 1,7 \\right)$、$C\\left( 5,x \\right)$、$D\\left( 3,-2 \\right)$，若$\\overline{AB}$與$\\overline{CD}$平行，試求x之值。",
+      "correct_answer": "0",
+      "explanation": "因為$\\overline{AB}$與$\\overline{CD}$平行，所以它們的斜率相等。\n直線AB的斜率為 $m_{AB} = \\frac{7 - (5)}{1 - (-1)} = 1$。\n直線CD的斜率為 $m_{CD} = \\frac{-2 - x}{3 - (5)} = \\frac{-2 - x}{-2}$。\n由 $m_{AB} = m_{CD}$ 可得：$\\frac{-2 - x}{-2} = 1$，\n所以 $-2 - x = -2$，解得 x = 0。",
+      "choices": [],
+      "answer_contract": {
+        "choices_required": false,
+        "choice_count": null,
+        "correct_choice_count": null,
+        "frontend_render_choices": false,
+        "answer_type": "integer",
+        "answer_shape": "scalar",
+        "answer_equivalence": "numeric_exact",
+        "checker": "integer_checker",
+        "accepted_formats": [
+          "0"
+        ],
+        "checker_key": "integer_checker",
+        "equivalence_type": "numeric_exact"
+      }
+    },
+    {
+      "problem_type_id": "parallel_lines_properties",
+      "skill_id": "vh_數學B1_PropertiesOfParallelLines",
+      "subskill_id": "parallel_lines_properties",
+      "question_text": "平面上過兩點$\\left( -1,5 \\right)$、$\\left( 2,2 \\right)$的直線和過另兩點$\\left( -3,5 \\right)$、$\\left( -5,x \\right)$的直線平行，則x = ",
+      "answer": "7",
+      "answer_type": "integer",
+      "checker_type": "integer_checker",
+      "solution_steps": [
+        "因為兩直線平行，所以它們的斜率相等。",
+        "第一條直線的斜率為 $m_1 = \\frac{2 - (5)}{2 - (-1)} = -1$。",
+        "第二條直線的斜率為 $m_2 = \\frac{x - 5}{-5 - (-3)} = \\frac{x - 5}{-2}$。",
+        "由 $m_1 = m_2$ 可得：$\\frac{x - 5}{-2} = -1$，",
+        "所以 $x - 5 = 2$，解得 x = 7。"
+      ],
+      "metadata": {
+        "scenario_family": "parallel_lines_properties",
+        "scenario_id": "s4",
+        "parameter_signature": "m=-1:template=3:answer=7",
+        "question_pattern_id": "p2",
+        "diagnosis_tags": [
+          "parallel_lines_slope_equality"
+        ],
+        "prerequisite_subskills": []
+      },
+      "question": "平面上過兩點$\\left( -1,5 \\right)$、$\\left( 2,2 \\right)$的直線和過另兩點$\\left( -3,5 \\right)$、$\\left( -5,x \\right)$的直線平行，則x = ",
+      "correct_answer": "7",
+      "explanation": "因為兩直線平行，所以它們的斜率相等。\n第一條直線的斜率為 $m_1 = \\frac{2 - (5)}{2 - (-1)} = -1$。\n第二條直線的斜率為 $m_2 = \\frac{x - 5}{-5 - (-3)} = \\frac{x - 5}{-2}$。\n由 $m_1 = m_2$ 可得：$\\frac{x - 5}{-2} = -1$，\n所以 $x - 5 = 2$，解得 x = 7。",
+      "choices": [],
+      "answer_contract": {
+        "choices_required": false,
+        "choice_count": null,
+        "correct_choice_count": null,
+        "frontend_render_choices": false,
+        "answer_type": "integer",
+        "answer_shape": "scalar",
+        "answer_equivalence": "numeric_exact",
+        "checker": "integer_checker",
+        "accepted_formats": [
+          "7"
+        ],
+        "checker_key": "integer_checker",
+        "equivalence_type": "numeric_exact"
+      }
+    },
+    {
+      "problem_type_id": "parallel_lines_properties",
+      "skill_id": "vh_數學B1_PropertiesOfParallelLines",
+      "subskill_id": "parallel_lines_properties",
+      "question_text": "設$A\\left( 4,5 \\right)$、$B\\left( 6,-1 \\right)$、$C\\left( -2,a \\right)$、$D\\left( 1,-10 \\right)$，若$\\overline{AB}$與$\\overline{CD}$平行，試求a之值。",
+      "answer": "-1",
+      "answer_type": "integer",
+      "checker_type": "integer_checker",
+      "solution_steps": [
+        "因為$\\overline{AB}$與$\\overline{CD}$平行，所以它們的斜率相等。",
+        "直線AB的斜率為 $m_{AB} = \\frac{-1 - (5)}{6 - (4)} = -3$。",
+        "直線CD的斜率為 $m_{CD} = \\frac{-10 - a}{1 - (-2)} = \\frac{-10 - a}{3}$。",
+        "由 $m_{AB} = m_{CD}$ 可得：$\\frac{-10 - a}{3} = -3$，",
+        "所以 $-10 - a = -9$，解得 a = -1。"
+      ],
+      "metadata": {
+        "scenario_family": "parallel_lines_properties",
+        "scenario_id": "s2",
+        "parameter_signature": "m=-3:template=2:answer=-1",
+        "question_pattern_id": "p4",
+        "diagnosis_tags": [
+          "parallel_lines_slope_equality"
+        ],
+        "prerequisite_subskills": []
+      },
+      "question": "設$A\\left( 4,5 \\right)$、$B\\left( 6,-1 \\right)$、$C\\left( -2,a \\right)$、$D\\left( 1,-10 \\right)$，若$\\overline{AB}$與$\\overline{CD}$平行，試求a之值。",
+      "correct_answer": "-1",
+      "explanation": "因為$\\overline{AB}$與$\\overline{CD}$平行，所以它們的斜率相等。\n直線AB的斜率為 $m_{AB} = \\frac{-1 - (5)}{6 - (4)} = -3$。\n直線CD的斜率為 $m_{CD} = \\frac{-10 - a}{1 - (-2)} = \\frac{-10 - a}{3}$。\n由 $m_{AB} = m_{CD}$ 可得：$\\frac{-10 - a}{3} = -3$，\n所以 $-10 - a = -9$，解得 a = -1。",
+      "choices": [],
+      "answer_contract": {
+        "choices_required": false,
+        "choice_count": null,
+        "correct_choice_count": null,
+        "frontend_render_choices": false,
+        "answer_type": "integer",
+        "answer_shape": "scalar",
+        "answer_equivalence": "numeric_exact",
+        "checker": "integer_checker",
+        "accepted_formats": [
+          "-1"
+        ],
+        "checker_key": "integer_checker",
+        "equivalence_type": "numeric_exact"
+      }
+    },
+    {
+      "problem_type_id": "parallel_lines_properties",
+      "skill_id": "vh_數學B1_PropertiesOfParallelLines",
+      "subskill_id": "parallel_lines_properties",
+      "question_text": "設$A\\left( -5,3 \\right)$、$B\\left( -2,-3 \\right)$、$C\\left( -3,-2 \\right)$、$D\\left( -6,x \\right)$，若$\\overline{AB}$與$\\overline{CD}$平行，試求x之值。",
+      "answer": "4",
+      "answer_type": "integer",
+      "checker_type": "integer_checker",
+      "solution_steps": [
+        "因為$\\overline{AB}$與$\\overline{CD}$平行，所以它們的斜率相等。",
+        "直線AB的斜率為 $m_{AB} = \\frac{-3 - (3)}{-2 - (-5)} = -2$。",
+        "直線CD的斜率為 $m_{CD} = \\frac{x + 2}{-6 - (-3)} = \\frac{x + 2}{-3}$。",
+        "由 $m_{AB} = m_{CD}$ 可得：$\\frac{x + 2}{-3} = -2$，",
+        "所以 $x + 2 = 6$，解得 x = 4。"
+      ],
+      "metadata": {
+        "scenario_family": "parallel_lines_properties",
+        "scenario_id": "s6",
+        "parameter_signature": "m=-2:template=1:answer=4",
+        "question_pattern_id": "p2",
+        "diagnosis_tags": [
+          "parallel_lines_slope_equality"
+        ],
+        "prerequisite_subskills": []
+      },
+      "question": "設$A\\left( -5,3 \\right)$、$B\\left( -2,-3 \\right)$、$C\\left( -3,-2 \\right)$、$D\\left( -6,x \\right)$，若$\\overline{AB}$與$\\overline{CD}$平行，試求x之值。",
+      "correct_answer": "4",
+      "explanation": "因為$\\overline{AB}$與$\\overline{CD}$平行，所以它們的斜率相等。\n直線AB的斜率為 $m_{AB} = \\frac{-3 - (3)}{-2 - (-5)} = -2$。\n直線CD的斜率為 $m_{CD} = \\frac{x + 2}{-6 - (-3)} = \\frac{x + 2}{-3}$。\n由 $m_{AB} = m_{CD}$ 可得：$\\frac{x + 2}{-3} = -2$，\n所以 $x + 2 = 6$，解得 x = 4。",
+      "choices": [],
+      "answer_contract": {
+        "choices_required": false,
+        "choice_count": null,
+        "correct_choice_count": null,
+        "frontend_render_choices": false,
+        "answer_type": "integer",
+        "answer_shape": "scalar",
+        "answer_equivalence": "numeric_exact",
+        "checker": "integer_checker",
+        "accepted_formats": [
+          "4"
+        ],
+        "checker_key": "integer_checker",
+        "equivalence_type": "numeric_exact"
+      }
+    },
+    {
+      "problem_type_id": "parallel_lines_properties",
+      "skill_id": "vh_數學B1_PropertiesOfParallelLines",
+      "subskill_id": "parallel_lines_properties",
+      "question_text": "設$A\\left( 2,2 \\right)$、$B\\left( 1,3 \\right)$、$C\\left( -2,a \\right)$、$D\\left( -5,5 \\right)$，若$\\overline{AB}$與$\\overline{CD}$平行，試求a之值。",
+      "answer": "2",
+      "answer_type": "integer",
+      "checker_type": "integer_checker",
+      "solution_steps": [
+        "因為$\\overline{AB}$與$\\overline{CD}$平行，所以它們的斜率相等。",
+        "直線AB的斜率為 $m_{AB} = \\frac{3 - (2)}{1 - (2)} = -1$。",
+        "直線CD的斜率為 $m_{CD} = \\frac{5 - a}{-5 - (-2)} = \\frac{5 - a}{-3}$。",
+        "由 $m_{AB} = m_{CD}$ 可得：$\\frac{5 - a}{-3} = -1$，",
+        "所以 $5 - a = 3$，解得 a = 2。"
+      ],
+      "metadata": {
+        "scenario_family": "parallel_lines_properties",
+        "scenario_id": "s4",
+        "parameter_signature": "m=-1:template=2:answer=2",
+        "question_pattern_id": "p2",
+        "diagnosis_tags": [
+          "parallel_lines_slope_equality"
+        ],
+        "prerequisite_subskills": []
+      },
+      "question": "設$A\\left( 2,2 \\right)$、$B\\left( 1,3 \\right)$、$C\\left( -2,a \\right)$、$D\\left( -5,5 \\right)$，若$\\overline{AB}$與$\\overline{CD}$平行，試求a之值。",
+      "correct_answer": "2",
+      "explanation": "因為$\\overline{AB}$與$\\overline{CD}$平行，所以它們的斜率相等。\n直線AB的斜率為 $m_{AB} = \\frac{3 - (2)}{1 - (2)} = -1$。\n直線CD的斜率為 $m_{CD} = \\frac{5 - a}{-5 - (-2)} = \\frac{5 - a}{-3}$。\n由 $m_{AB} = m_{CD}$ 可得：$\\frac{5 - a}{-3} = -1$，\n所以 $5 - a = 3$，解得 a = 2。",
+      "choices": [],
+      "answer_contract": {
+        "choices_required": false,
+        "choice_count": null,
+        "correct_choice_count": null,
+        "frontend_render_choices": false,
+        "answer_type": "integer",
+        "answer_shape": "scalar",
+        "answer_equivalence": "numeric_exact",
+        "checker": "integer_checker",
+        "accepted_formats": [
+          "2"
+        ],
+        "checker_key": "integer_checker",
+        "equivalence_type": "numeric_exact"
+      }
+    },
+    {
+      "problem_type_id": "parallel_lines_properties",
+      "skill_id": "vh_數學B1_PropertiesOfParallelLines",
+      "subskill_id": "parallel_lines_properties",
+      "question_text": "平面上過兩點$\\left( 1,-1 \\right)$、$\\left( 0,-3 \\right)$的直線和過另兩點$\\left( -1,-3 \\right)$、$\\left( 2,a \\right)$的直線平行，則a = ",
+      "answer": "3",
+      "answer_type": "integer",
+      "checker_type": "integer_checker",
+      "solution_steps": [
+        "因為兩直線平行，所以它們的斜率相等。",
+        "第一條直線的斜率為 $m_1 = \\frac{-3 - (-1)}{0 - (1)} = 2$。",
+        "第二條直線的斜率為 $m_2 = \\frac{a + 3}{2 - (-1)} = \\frac{a + 3}{3}$。",
+        "由 $m_1 = m_2$ 可得：$\\frac{a + 3}{3} = 2$，",
+        "所以 $a + 3 = 6$，解得 a = 3。"
+      ],
+      "metadata": {
+        "scenario_family": "parallel_lines_properties",
+        "scenario_id": "s2",
+        "parameter_signature": "m=2:template=3:answer=3",
+        "question_pattern_id": "p1",
+        "diagnosis_tags": [
+          "parallel_lines_slope_equality"
+        ],
+        "prerequisite_subskills": []
+      },
+      "question": "平面上過兩點$\\left( 1,-1 \\right)$、$\\left( 0,-3 \\right)$的直線和過另兩點$\\left( -1,-3 \\right)$、$\\left( 2,a \\right)$的直線平行，則a = ",
+      "correct_answer": "3",
+      "explanation": "因為兩直線平行，所以它們的斜率相等。\n第一條直線的斜率為 $m_1 = \\frac{-3 - (-1)}{0 - (1)} = 2$。\n第二條直線的斜率為 $m_2 = \\frac{a + 3}{2 - (-1)} = \\frac{a + 3}{3}$。\n由 $m_1 = m_2$ 可得：$\\frac{a + 3}{3} = 2$，\n所以 $a + 3 = 6$，解得 a = 3。",
+      "choices": [],
+      "answer_contract": {
+        "choices_required": false,
+        "choice_count": null,
+        "correct_choice_count": null,
+        "frontend_render_choices": false,
+        "answer_type": "integer",
+        "answer_shape": "scalar",
+        "answer_equivalence": "numeric_exact",
+        "checker": "integer_checker",
+        "accepted_formats": [
+          "3"
+        ],
+        "checker_key": "integer_checker",
+        "equivalence_type": "numeric_exact"
+      }
+    },
+    {
+      "problem_type_id": "parallel_lines_properties",
+      "skill_id": "vh_數學B1_PropertiesOfParallelLines",
+      "subskill_id": "parallel_lines_properties",
+      "question_text": "設$A\\left( -4,5 \\right)$、$B\\left( -3,3 \\right)$、$C\\left( 0,a \\right)$、$D\\left( -2,2 \\right)$，若$\\overline{AB}$與$\\overline{CD}$平行，試求a之值。",
+      "answer": "-2",
+      "answer_type": "integer",
+      "checker_type": "integer_checker",
+      "solution_steps": [
+        "因為$\\overline{AB}$與$\\overline{CD}$平行，所以它們的斜率相等。",
+        "直線AB的斜率為 $m_{AB} = \\frac{3 - (5)}{-3 - (-4)} = -2$。",
+        "直線CD的斜率為 $m_{CD} = \\frac{2 - a}{-2 - (0)} = \\frac{2 - a}{-2}$。",
+        "由 $m_{AB} = m_{CD}$ 可得：$\\frac{2 - a}{-2} = -2$，",
+        "所以 $2 - a = 4$，解得 a = -2。"
+      ],
+      "metadata": {
+        "scenario_family": "parallel_lines_properties",
+        "scenario_id": "s3",
+        "parameter_signature": "m=-2:template=2:answer=-2",
+        "question_pattern_id": "p4",
+        "diagnosis_tags": [
+          "parallel_lines_slope_equality"
+        ],
+        "prerequisite_subskills": []
+      },
+      "question": "設$A\\left( -4,5 \\right)$、$B\\left( -3,3 \\right)$、$C\\left( 0,a \\right)$、$D\\left( -2,2 \\right)$，若$\\overline{AB}$與$\\overline{CD}$平行，試求a之值。",
+      "correct_answer": "-2",
+      "explanation": "因為$\\overline{AB}$與$\\overline{CD}$平行，所以它們的斜率相等。\n直線AB的斜率為 $m_{AB} = \\frac{3 - (5)}{-3 - (-4)} = -2$。\n直線CD的斜率為 $m_{CD} = \\frac{2 - a}{-2 - (0)} = \\frac{2 - a}{-2}$。\n由 $m_{AB} = m_{CD}$ 可得：$\\frac{2 - a}{-2} = -2$，\n所以 $2 - a = 4$，解得 a = -2。",
+      "choices": [],
+      "answer_contract": {
+        "choices_required": false,
+        "choice_count": null,
+        "correct_choice_count": null,
+        "frontend_render_choices": false,
+        "answer_type": "integer",
+        "answer_shape": "scalar",
+        "answer_equivalence": "numeric_exact",
+        "checker": "integer_checker",
+        "accepted_formats": [
+          "-2"
+        ],
+        "checker_key": "integer_checker",
+        "equivalence_type": "numeric_exact"
+      }
+    },
+    {
+      "problem_type_id": "parallel_lines_properties",
+      "skill_id": "vh_數學B1_PropertiesOfParallelLines",
+      "subskill_id": "parallel_lines_properties",
+      "question_text": "設$A\\left( -5,3 \\right)$、$B\\left( -8,-6 \\right)$、$C\\left( 3,a \\right)$、$D\\left( 4,1 \\right)$，若$\\overline{AB}$與$\\overline{CD}$平行，試求a之值。",
+      "answer": "-2",
+      "answer_type": "integer",
+      "checker_type": "integer_checker",
+      "solution_steps": [
+        "因為$\\overline{AB}$與$\\overline{CD}$平行，所以它們的斜率相等。",
+        "直線AB的斜率為 $m_{AB} = \\frac{-6 - (3)}{-8 - (-5)} = 3$。",
+        "直線CD的斜率為 $m_{CD} = \\frac{1 - a}{4 - (3)} = \\frac{1 - a}{1}$。",
+        "由 $m_{AB} = m_{CD}$ 可得：$\\frac{1 - a}{1} = 3$，",
+        "所以 $1 - a = 3$，解得 a = -2。"
+      ],
+      "metadata": {
+        "scenario_family": "parallel_lines_properties",
+        "scenario_id": "s3",
+        "parameter_signature": "m=3:template=2:answer=-2",
+        "question_pattern_id": "p3",
+        "diagnosis_tags": [
+          "parallel_lines_slope_equality"
+        ],
+        "prerequisite_subskills": []
+      },
+      "question": "設$A\\left( -5,3 \\right)$、$B\\left( -8,-6 \\right)$、$C\\left( 3,a \\right)$、$D\\left( 4,1 \\right)$，若$\\overline{AB}$與$\\overline{CD}$平行，試求a之值。",
+      "correct_answer": "-2",
+      "explanation": "因為$\\overline{AB}$與$\\overline{CD}$平行，所以它們的斜率相等。\n直線AB的斜率為 $m_{AB} = \\frac{-6 - (3)}{-8 - (-5)} = 3$。\n直線CD的斜率為 $m_{CD} = \\frac{1 - a}{4 - (3)} = \\frac{1 - a}{1}$。\n由 $m_{AB} = m_{CD}$ 可得：$\\frac{1 - a}{1} = 3$，\n所以 $1 - a = 3$，解得 a = -2。",
+      "choices": [],
+      "answer_contract": {
+        "choices_required": false,
+        "choice_count": null,
+        "correct_choice_count": null,
+        "frontend_render_choices": false,
+        "answer_type": "integer",
+        "answer_shape": "scalar",
+        "answer_equivalence": "numeric_exact",
+        "checker": "integer_checker",
+        "accepted_formats": [
+          "-2"
+        ],
+        "checker_key": "integer_checker",
+        "equivalence_type": "numeric_exact"
+      }
+    },
+    {
+      "problem_type_id": "parallel_lines_properties",
+      "skill_id": "vh_數學B1_PropertiesOfParallelLines",
+      "subskill_id": "parallel_lines_properties",
+      "question_text": "設$A\\left( 5,-3 \\right)$、$B\\left( 4,-6 \\right)$、$C\\left( -4,0 \\right)$、$D\\left( -2,x \\right)$，若$\\overline{AB}$與$\\overline{CD}$平行，試求x之值。",
+      "answer": "6",
+      "answer_type": "integer",
+      "checker_type": "integer_checker",
+      "solution_steps": [
+        "因為$\\overline{AB}$與$\\overline{CD}$平行，所以它們的斜率相等。",
+        "直線AB的斜率為 $m_{AB} = \\frac{-6 - (-3)}{4 - (5)} = 3$。",
+        "直線CD的斜率為 $m_{CD} = \\frac{x}{-2 - (-4)} = \\frac{x}{2}$。",
+        "由 $m_{AB} = m_{CD}$ 可得：$\\frac{x}{2} = 3$，",
+        "所以 $x = 6$，解得 x = 6。"
+      ],
+      "metadata": {
+        "scenario_family": "parallel_lines_properties",
+        "scenario_id": "s7",
+        "parameter_signature": "m=3:template=1:answer=6",
+        "question_pattern_id": "p4",
+        "diagnosis_tags": [
+          "parallel_lines_slope_equality"
+        ],
+        "prerequisite_subskills": []
+      },
+      "question": "設$A\\left( 5,-3 \\right)$、$B\\left( 4,-6 \\right)$、$C\\left( -4,0 \\right)$、$D\\left( -2,x \\right)$，若$\\overline{AB}$與$\\overline{CD}$平行，試求x之值。",
+      "correct_answer": "6",
+      "explanation": "因為$\\overline{AB}$與$\\overline{CD}$平行，所以它們的斜率相等。\n直線AB的斜率為 $m_{AB} = \\frac{-6 - (-3)}{4 - (5)} = 3$。\n直線CD的斜率為 $m_{CD} = \\frac{x}{-2 - (-4)} = \\frac{x}{2}$。\n由 $m_{AB} = m_{CD}$ 可得：$\\frac{x}{2} = 3$，\n所以 $x = 6$，解得 x = 6。",
+      "choices": [],
+      "answer_contract": {
+        "choices_required": false,
+        "choice_count": null,
+        "correct_choice_count": null,
+        "frontend_render_choices": false,
+        "answer_type": "integer",
+        "answer_shape": "scalar",
+        "answer_equivalence": "numeric_exact",
+        "checker": "integer_checker",
+        "accepted_formats": [
+          "6"
+        ],
+        "checker_key": "integer_checker",
+        "equivalence_type": "numeric_exact"
+      }
+    },
+    {
+      "problem_type_id": "parallel_lines_properties",
+      "skill_id": "vh_數學B1_PropertiesOfParallelLines",
+      "subskill_id": "parallel_lines_properties",
+      "question_text": "設$A\\left( 1,1 \\right)$、$B\\left( 4,-5 \\right)$、$C\\left( -1,x \\right)$、$D\\left( -3,6 \\right)$，若$\\overline{AB}$與$\\overline{CD}$平行，試求x之值。",
+      "answer": "2",
+      "answer_type": "integer",
+      "checker_type": "integer_checker",
+      "solution_steps": [
+        "因為$\\overline{AB}$與$\\overline{CD}$平行，所以它們的斜率相等。",
+        "直線AB的斜率為 $m_{AB} = \\frac{-5 - (1)}{4 - (1)} = -2$。",
+        "直線CD的斜率為 $m_{CD} = \\frac{6 - x}{-3 - (-1)} = \\frac{6 - x}{-2}$。",
+        "由 $m_{AB} = m_{CD}$ 可得：$\\frac{6 - x}{-2} = -2$，",
+        "所以 $6 - x = 4$，解得 x = 2。"
+      ],
+      "metadata": {
+        "scenario_family": "parallel_lines_properties",
+        "scenario_id": "s9",
+        "parameter_signature": "m=-2:template=2:answer=2",
+        "question_pattern_id": "p2",
+        "diagnosis_tags": [
+          "parallel_lines_slope_equality"
+        ],
+        "prerequisite_subskills": []
+      },
+      "question": "設$A\\left( 1,1 \\right)$、$B\\left( 4,-5 \\right)$、$C\\left( -1,x \\right)$、$D\\left( -3,6 \\right)$，若$\\overline{AB}$與$\\overline{CD}$平行，試求x之值。",
+      "correct_answer": "2",
+      "explanation": "因為$\\overline{AB}$與$\\overline{CD}$平行，所以它們的斜率相等。\n直線AB的斜率為 $m_{AB} = \\frac{-5 - (1)}{4 - (1)} = -2$。\n直線CD的斜率為 $m_{CD} = \\frac{6 - x}{-3 - (-1)} = \\frac{6 - x}{-2}$。\n由 $m_{AB} = m_{CD}$ 可得：$\\frac{6 - x}{-2} = -2$，\n所以 $6 - x = 4$，解得 x = 2。",
+      "choices": [],
+      "answer_contract": {
+        "choices_required": false,
+        "choice_count": null,
+        "correct_choice_count": null,
+        "frontend_render_choices": false,
+        "answer_type": "integer",
+        "answer_shape": "scalar",
+        "answer_equivalence": "numeric_exact",
+        "checker": "integer_checker",
+        "accepted_formats": [
+          "2"
+        ],
+        "checker_key": "integer_checker",
+        "equivalence_type": "numeric_exact"
+      }
+    },
+    {
+      "problem_type_id": "parallel_lines_properties",
+      "skill_id": "vh_數學B1_PropertiesOfParallelLines",
+      "subskill_id": "parallel_lines_properties",
+      "question_text": "設$A\\left( -2,-5 \\right)$、$B\\left( 0,-9 \\right)$、$C\\left( 2,-3 \\right)$、$D\\left( 5,a \\right)$，若$\\overline{AB}$與$\\overline{CD}$平行，試求a之值。",
+      "answer": "-9",
+      "answer_type": "integer",
+      "checker_type": "integer_checker",
+      "solution_steps": [
+        "因為$\\overline{AB}$與$\\overline{CD}$平行，所以它們的斜率相等。",
+        "直線AB的斜率為 $m_{AB} = \\frac{-9 - (-5)}{0 - (-2)} = -2$。",
+        "直線CD的斜率為 $m_{CD} = \\frac{a + 3}{5 - (2)} = \\frac{a + 3}{3}$。",
+        "由 $m_{AB} = m_{CD}$ 可得：$\\frac{a + 3}{3} = -2$，",
+        "所以 $a + 3 = -6$，解得 a = -9。"
+      ],
+      "metadata": {
+        "scenario_family": "parallel_lines_properties",
+        "scenario_id": "s2",
+        "parameter_signature": "m=-2:template=1:answer=-9",
+        "question_pattern_id": "p2",
+        "diagnosis_tags": [
+          "parallel_lines_slope_equality"
+        ],
+        "prerequisite_subskills": []
+      },
+      "question": "設$A\\left( -2,-5 \\right)$、$B\\left( 0,-9 \\right)$、$C\\left( 2,-3 \\right)$、$D\\left( 5,a \\right)$，若$\\overline{AB}$與$\\overline{CD}$平行，試求a之值。",
+      "correct_answer": "-9",
+      "explanation": "因為$\\overline{AB}$與$\\overline{CD}$平行，所以它們的斜率相等。\n直線AB的斜率為 $m_{AB} = \\frac{-9 - (-5)}{0 - (-2)} = -2$。\n直線CD的斜率為 $m_{CD} = \\frac{a + 3}{5 - (2)} = \\frac{a + 3}{3}$。\n由 $m_{AB} = m_{CD}$ 可得：$\\frac{a + 3}{3} = -2$，\n所以 $a + 3 = -6$，解得 a = -9。",
+      "choices": [],
+      "answer_contract": {
+        "choices_required": false,
+        "choice_count": null,
+        "correct_choice_count": null,
+        "frontend_render_choices": false,
+        "answer_type": "integer",
+        "answer_shape": "scalar",
+        "answer_equivalence": "numeric_exact",
+        "checker": "integer_checker",
+        "accepted_formats": [
+          "-9"
+        ],
+        "checker_key": "integer_checker",
+        "equivalence_type": "numeric_exact"
+      }
+    },
+    {
+      "problem_type_id": "parallel_lines_properties",
+      "skill_id": "vh_數學B1_PropertiesOfParallelLines",
+      "subskill_id": "parallel_lines_properties",
+      "question_text": "平面上過兩點$\\left( -4,-5 \\right)$、$\\left( -2,-7 \\right)$的直線和過另兩點$\\left( -1,1 \\right)$、$\\left( 0,a \\right)$的直線平行，則a = ",
+      "answer": "0",
+      "answer_type": "integer",
+      "checker_type": "integer_checker",
+      "solution_steps": [
+        "因為兩直線平行，所以它們的斜率相等。",
+        "第一條直線的斜率為 $m_1 = \\frac{-7 - (-5)}{-2 - (-4)} = -1$。",
+        "第二條直線的斜率為 $m_2 = \\frac{a - 1}{0 - (-1)} = \\frac{a - 1}{1}$。",
+        "由 $m_1 = m_2$ 可得：$\\frac{a - 1}{1} = -1$，",
+        "所以 $a - 1 = -1$，解得 a = 0。"
+      ],
+      "metadata": {
+        "scenario_family": "parallel_lines_properties",
+        "scenario_id": "s3",
+        "parameter_signature": "m=-1:template=3:answer=0",
+        "question_pattern_id": "p2",
+        "diagnosis_tags": [
+          "parallel_lines_slope_equality"
+        ],
+        "prerequisite_subskills": []
+      },
+      "question": "平面上過兩點$\\left( -4,-5 \\right)$、$\\left( -2,-7 \\right)$的直線和過另兩點$\\left( -1,1 \\right)$、$\\left( 0,a \\right)$的直線平行，則a = ",
+      "correct_answer": "0",
+      "explanation": "因為兩直線平行，所以它們的斜率相等。\n第一條直線的斜率為 $m_1 = \\frac{-7 - (-5)}{-2 - (-4)} = -1$。\n第二條直線的斜率為 $m_2 = \\frac{a - 1}{0 - (-1)} = \\frac{a - 1}{1}$。\n由 $m_1 = m_2$ 可得：$\\frac{a - 1}{1} = -1$，\n所以 $a - 1 = -1$，解得 a = 0。",
+      "choices": [],
+      "answer_contract": {
+        "choices_required": false,
+        "choice_count": null,
+        "correct_choice_count": null,
+        "frontend_render_choices": false,
+        "answer_type": "integer",
+        "answer_shape": "scalar",
+        "answer_equivalence": "numeric_exact",
+        "checker": "integer_checker",
+        "accepted_formats": [
+          "0"
+        ],
+        "checker_key": "integer_checker",
+        "equivalence_type": "numeric_exact"
+      }
+    },
+    {
+      "problem_type_id": "parallel_lines_properties",
+      "skill_id": "vh_數學B1_PropertiesOfParallelLines",
+      "subskill_id": "parallel_lines_properties",
+      "question_text": "設$A\\left( 1,4 \\right)$、$B\\left( -1,-2 \\right)$、$C\\left( -2,-3 \\right)$、$D\\left( -4,x \\right)$，若$\\overline{AB}$與$\\overline{CD}$平行，試求x之值。",
+      "answer": "-9",
+      "answer_type": "integer",
+      "checker_type": "integer_checker",
+      "solution_steps": [
+        "因為$\\overline{AB}$與$\\overline{CD}$平行，所以它們的斜率相等。",
+        "直線AB的斜率為 $m_{AB} = \\frac{-2 - (4)}{-1 - (1)} = 3$。",
+        "直線CD的斜率為 $m_{CD} = \\frac{x + 3}{-4 - (-2)} = \\frac{x + 3}{-2}$。",
+        "由 $m_{AB} = m_{CD}$ 可得：$\\frac{x + 3}{-2} = 3$，",
+        "所以 $x + 3 = -6$，解得 x = -9。"
+      ],
+      "metadata": {
+        "scenario_family": "parallel_lines_properties",
+        "scenario_id": "s3",
+        "parameter_signature": "m=3:template=1:answer=-9",
+        "question_pattern_id": "p3",
+        "diagnosis_tags": [
+          "parallel_lines_slope_equality"
+        ],
+        "prerequisite_subskills": []
+      },
+      "question": "設$A\\left( 1,4 \\right)$、$B\\left( -1,-2 \\right)$、$C\\left( -2,-3 \\right)$、$D\\left( -4,x \\right)$，若$\\overline{AB}$與$\\overline{CD}$平行，試求x之值。",
+      "correct_answer": "-9",
+      "explanation": "因為$\\overline{AB}$與$\\overline{CD}$平行，所以它們的斜率相等。\n直線AB的斜率為 $m_{AB} = \\frac{-2 - (4)}{-1 - (1)} = 3$。\n直線CD的斜率為 $m_{CD} = \\frac{x + 3}{-4 - (-2)} = \\frac{x + 3}{-2}$。\n由 $m_{AB} = m_{CD}$ 可得：$\\frac{x + 3}{-2} = 3$，\n所以 $x + 3 = -6$，解得 x = -9。",
+      "choices": [],
+      "answer_contract": {
+        "choices_required": false,
+        "choice_count": null,
+        "correct_choice_count": null,
+        "frontend_render_choices": false,
+        "answer_type": "integer",
+        "answer_shape": "scalar",
+        "answer_equivalence": "numeric_exact",
+        "checker": "integer_checker",
+        "accepted_formats": [
+          "-9"
+        ],
+        "checker_key": "integer_checker",
+        "equivalence_type": "numeric_exact"
+      }
+    },
+    {
+      "problem_type_id": "parallel_lines_properties",
+      "skill_id": "vh_數學B1_PropertiesOfParallelLines",
+      "subskill_id": "parallel_lines_properties",
+      "question_text": "設$A\\left( -5,-2 \\right)$、$B\\left( -6,-3 \\right)$、$C\\left( 5,x \\right)$、$D\\left( 2,-1 \\right)$，若$\\overline{AB}$與$\\overline{CD}$平行，試求x之值。",
+      "answer": "2",
+      "answer_type": "integer",
+      "checker_type": "integer_checker",
+      "solution_steps": [
+        "因為$\\overline{AB}$與$\\overline{CD}$平行，所以它們的斜率相等。",
+        "直線AB的斜率為 $m_{AB} = \\frac{-3 - (-2)}{-6 - (-5)} = 1$。",
+        "直線CD的斜率為 $m_{CD} = \\frac{-1 - x}{2 - (5)} = \\frac{-1 - x}{-3}$。",
+        "由 $m_{AB} = m_{CD}$ 可得：$\\frac{-1 - x}{-3} = 1$，",
+        "所以 $-1 - x = -3$，解得 x = 2。"
+      ],
+      "metadata": {
+        "scenario_family": "parallel_lines_properties",
+        "scenario_id": "s5",
+        "parameter_signature": "m=1:template=2:answer=2",
+        "question_pattern_id": "p4",
+        "diagnosis_tags": [
+          "parallel_lines_slope_equality"
+        ],
+        "prerequisite_subskills": []
+      },
+      "question": "設$A\\left( -5,-2 \\right)$、$B\\left( -6,-3 \\right)$、$C\\left( 5,x \\right)$、$D\\left( 2,-1 \\right)$，若$\\overline{AB}$與$\\overline{CD}$平行，試求x之值。",
+      "correct_answer": "2",
+      "explanation": "因為$\\overline{AB}$與$\\overline{CD}$平行，所以它們的斜率相等。\n直線AB的斜率為 $m_{AB} = \\frac{-3 - (-2)}{-6 - (-5)} = 1$。\n直線CD的斜率為 $m_{CD} = \\frac{-1 - x}{2 - (5)} = \\frac{-1 - x}{-3}$。\n由 $m_{AB} = m_{CD}$ 可得：$\\frac{-1 - x}{-3} = 1$，\n所以 $-1 - x = -3$，解得 x = 2。",
+      "choices": [],
+      "answer_contract": {
+        "choices_required": false,
+        "choice_count": null,
+        "correct_choice_count": null,
+        "frontend_render_choices": false,
+        "answer_type": "integer",
+        "answer_shape": "scalar",
+        "answer_equivalence": "numeric_exact",
+        "checker": "integer_checker",
+        "accepted_formats": [
+          "2"
+        ],
+        "checker_key": "integer_checker",
+        "equivalence_type": "numeric_exact"
+      }
+    },
+    {
+      "problem_type_id": "parallel_lines_properties",
+      "skill_id": "vh_數學B1_PropertiesOfParallelLines",
+      "subskill_id": "parallel_lines_properties",
+      "question_text": "設$A\\left( -2,5 \\right)$、$B\\left( -4,-1 \\right)$、$C\\left( 1,4 \\right)$、$D\\left( 3,x \\right)$，若$\\overline{AB}$與$\\overline{CD}$平行，試求x之值。",
+      "answer": "10",
+      "answer_type": "integer",
+      "checker_type": "integer_checker",
+      "solution_steps": [
+        "因為$\\overline{AB}$與$\\overline{CD}$平行，所以它們的斜率相等。",
+        "直線AB的斜率為 $m_{AB} = \\frac{-1 - (5)}{-4 - (-2)} = 3$。",
+        "直線CD的斜率為 $m_{CD} = \\frac{x - 4}{3 - (1)} = \\frac{x - 4}{2}$。",
+        "由 $m_{AB} = m_{CD}$ 可得：$\\frac{x - 4}{2} = 3$，",
+        "所以 $x - 4 = 6$，解得 x = 10。"
+      ],
+      "metadata": {
+        "scenario_family": "parallel_lines_properties",
+        "scenario_id": "s8",
+        "parameter_signature": "m=3:template=1:answer=10",
+        "question_pattern_id": "p1",
+        "diagnosis_tags": [
+          "parallel_lines_slope_equality"
+        ],
+        "prerequisite_subskills": []
+      },
+      "question": "設$A\\left( -2,5 \\right)$、$B\\left( -4,-1 \\right)$、$C\\left( 1,4 \\right)$、$D\\left( 3,x \\right)$，若$\\overline{AB}$與$\\overline{CD}$平行，試求x之值。",
+      "correct_answer": "10",
+      "explanation": "因為$\\overline{AB}$與$\\overline{CD}$平行，所以它們的斜率相等。\n直線AB的斜率為 $m_{AB} = \\frac{-1 - (5)}{-4 - (-2)} = 3$。\n直線CD的斜率為 $m_{CD} = \\frac{x - 4}{3 - (1)} = \\frac{x - 4}{2}$。\n由 $m_{AB} = m_{CD}$ 可得：$\\frac{x - 4}{2} = 3$，\n所以 $x - 4 = 6$，解得 x = 10。",
+      "choices": [],
+      "answer_contract": {
+        "choices_required": false,
+        "choice_count": null,
+        "correct_choice_count": null,
+        "frontend_render_choices": false,
+        "answer_type": "integer",
+        "answer_shape": "scalar",
+        "answer_equivalence": "numeric_exact",
+        "checker": "integer_checker",
+        "accepted_formats": [
+          "10"
+        ],
+        "checker_key": "integer_checker",
+        "equivalence_type": "numeric_exact"
+      }
+    },
+    {
+      "problem_type_id": "parallel_lines_properties",
+      "skill_id": "vh_數學B1_PropertiesOfParallelLines",
+      "subskill_id": "parallel_lines_properties",
+      "question_text": "設$A\\left( 2,-1 \\right)$、$B\\left( 1,-4 \\right)$、$C\\left( -2,a \\right)$、$D\\left( -5,-13 \\right)$，若$\\overline{AB}$與$\\overline{CD}$平行，試求a之值。",
+      "answer": "-4",
+      "answer_type": "integer",
+      "checker_type": "integer_checker",
+      "solution_steps": [
+        "因為$\\overline{AB}$與$\\overline{CD}$平行，所以它們的斜率相等。",
+        "直線AB的斜率為 $m_{AB} = \\frac{-4 - (-1)}{1 - (2)} = 3$。",
+        "直線CD的斜率為 $m_{CD} = \\frac{-13 - a}{-5 - (-2)} = \\frac{-13 - a}{-3}$。",
+        "由 $m_{AB} = m_{CD}$ 可得：$\\frac{-13 - a}{-3} = 3$，",
+        "所以 $-13 - a = -9$，解得 a = -4。"
+      ],
+      "metadata": {
+        "scenario_family": "parallel_lines_properties",
+        "scenario_id": "s5",
+        "parameter_signature": "m=3:template=2:answer=-4",
+        "question_pattern_id": "p3",
+        "diagnosis_tags": [
+          "parallel_lines_slope_equality"
+        ],
+        "prerequisite_subskills": []
+      },
+      "question": "設$A\\left( 2,-1 \\right)$、$B\\left( 1,-4 \\right)$、$C\\left( -2,a \\right)$、$D\\left( -5,-13 \\right)$，若$\\overline{AB}$與$\\overline{CD}$平行，試求a之值。",
+      "correct_answer": "-4",
+      "explanation": "因為$\\overline{AB}$與$\\overline{CD}$平行，所以它們的斜率相等。\n直線AB的斜率為 $m_{AB} = \\frac{-4 - (-1)}{1 - (2)} = 3$。\n直線CD的斜率為 $m_{CD} = \\frac{-13 - a}{-5 - (-2)} = \\frac{-13 - a}{-3}$。\n由 $m_{AB} = m_{CD}$ 可得：$\\frac{-13 - a}{-3} = 3$，\n所以 $-13 - a = -9$，解得 a = -4。",
+      "choices": [],
+      "answer_contract": {
+        "choices_required": false,
+        "choice_count": null,
+        "correct_choice_count": null,
+        "frontend_render_choices": false,
+        "answer_type": "integer",
+        "answer_shape": "scalar",
+        "answer_equivalence": "numeric_exact",
+        "checker": "integer_checker",
+        "accepted_formats": [
+          "-4"
+        ],
+        "checker_key": "integer_checker",
+        "equivalence_type": "numeric_exact"
+      }
+    },
+    {
+      "problem_type_id": "parallel_lines_properties",
+      "skill_id": "vh_數學B1_PropertiesOfParallelLines",
+      "subskill_id": "parallel_lines_properties",
+      "question_text": "設$A\\left( -3,3 \\right)$、$B\\left( -1,-3 \\right)$、$C\\left( -2,a \\right)$、$D\\left( 1,-12 \\right)$，若$\\overline{AB}$與$\\overline{CD}$平行，試求a之值。",
+      "answer": "-3",
+      "answer_type": "integer",
+      "checker_type": "integer_checker",
+      "solution_steps": [
+        "因為$\\overline{AB}$與$\\overline{CD}$平行，所以它們的斜率相等。",
+        "直線AB的斜率為 $m_{AB} = \\frac{-3 - (3)}{-1 - (-3)} = -3$。",
+        "直線CD的斜率為 $m_{CD} = \\frac{-12 - a}{1 - (-2)} = \\frac{-12 - a}{3}$。",
+        "由 $m_{AB} = m_{CD}$ 可得：$\\frac{-12 - a}{3} = -3$，",
+        "所以 $-12 - a = -9$，解得 a = -3。"
+      ],
+      "metadata": {
+        "scenario_family": "parallel_lines_properties",
+        "scenario_id": "s4",
+        "parameter_signature": "m=-3:template=2:answer=-3",
+        "question_pattern_id": "p2",
+        "diagnosis_tags": [
+          "parallel_lines_slope_equality"
+        ],
+        "prerequisite_subskills": []
+      },
+      "question": "設$A\\left( -3,3 \\right)$、$B\\left( -1,-3 \\right)$、$C\\left( -2,a \\right)$、$D\\left( 1,-12 \\right)$，若$\\overline{AB}$與$\\overline{CD}$平行，試求a之值。",
+      "correct_answer": "-3",
+      "explanation": "因為$\\overline{AB}$與$\\overline{CD}$平行，所以它們的斜率相等。\n直線AB的斜率為 $m_{AB} = \\frac{-3 - (3)}{-1 - (-3)} = -3$。\n直線CD的斜率為 $m_{CD} = \\frac{-12 - a}{1 - (-2)} = \\frac{-12 - a}{3}$。\n由 $m_{AB} = m_{CD}$ 可得：$\\frac{-12 - a}{3} = -3$，\n所以 $-12 - a = -9$，解得 a = -3。",
+      "choices": [],
+      "answer_contract": {
+        "choices_required": false,
+        "choice_count": null,
+        "correct_choice_count": null,
+        "frontend_render_choices": false,
+        "answer_type": "integer",
+        "answer_shape": "scalar",
+        "answer_equivalence": "numeric_exact",
+        "checker": "integer_checker",
+        "accepted_formats": [
+          "-3"
+        ],
+        "checker_key": "integer_checker",
+        "equivalence_type": "numeric_exact"
+      }
+    },
+    {
+      "problem_type_id": "parallel_lines_properties",
+      "skill_id": "vh_數學B1_PropertiesOfParallelLines",
+      "subskill_id": "parallel_lines_properties",
+      "question_text": "平面上過兩點$\\left( -4,0 \\right)$、$\\left( -2,4 \\right)$的直線和過另兩點$\\left( 4,-1 \\right)$、$\\left( 1,a \\right)$的直線平行，則a = ",
+      "answer": "-7",
+      "answer_type": "integer",
+      "checker_type": "integer_checker",
+      "solution_steps": [
+        "因為兩直線平行，所以它們的斜率相等。",
+        "第一條直線的斜率為 $m_1 = \\frac{4 - (0)}{-2 - (-4)} = 2$。",
+        "第二條直線的斜率為 $m_2 = \\frac{a + 1}{1 - (4)} = \\frac{a + 1}{-3}$。",
+        "由 $m_1 = m_2$ 可得：$\\frac{a + 1}{-3} = 2$，",
+        "所以 $a + 1 = -6$，解得 a = -7。"
+      ],
+      "metadata": {
+        "scenario_family": "parallel_lines_properties",
+        "scenario_id": "s7",
+        "parameter_signature": "m=2:template=3:answer=-7",
+        "question_pattern_id": "p4",
+        "diagnosis_tags": [
+          "parallel_lines_slope_equality"
+        ],
+        "prerequisite_subskills": []
+      },
+      "question": "平面上過兩點$\\left( -4,0 \\right)$、$\\left( -2,4 \\right)$的直線和過另兩點$\\left( 4,-1 \\right)$、$\\left( 1,a \\right)$的直線平行，則a = ",
+      "correct_answer": "-7",
+      "explanation": "因為兩直線平行，所以它們的斜率相等。\n第一條直線的斜率為 $m_1 = \\frac{4 - (0)}{-2 - (-4)} = 2$。\n第二條直線的斜率為 $m_2 = \\frac{a + 1}{1 - (4)} = \\frac{a + 1}{-3}$。\n由 $m_1 = m_2$ 可得：$\\frac{a + 1}{-3} = 2$，\n所以 $a + 1 = -6$，解得 a = -7。",
+      "choices": [],
+      "answer_contract": {
+        "choices_required": false,
+        "choice_count": null,
+        "correct_choice_count": null,
+        "frontend_render_choices": false,
+        "answer_type": "integer",
+        "answer_shape": "scalar",
+        "answer_equivalence": "numeric_exact",
+        "checker": "integer_checker",
+        "accepted_formats": [
+          "-7"
+        ],
+        "checker_key": "integer_checker",
+        "equivalence_type": "numeric_exact"
+      }
+    }
+  ],
+  "passed": true,
+  "diversity": {
+    "consecutive_duplicate_count": 0,
+    "unique_question_text_count": 30,
+    "repeated_question_text_ratio": 0.0,
+    "unique_parameter_signature_count": 28
+  }
+}

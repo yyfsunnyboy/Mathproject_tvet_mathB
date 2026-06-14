@@ -55,6 +55,7 @@ TASK_FAMILY_TO_SLOT: dict[str, str] = {
     "solve_quadratic_inequality_parameter_range": "solve_quadratic_inequality_parameter_range",
     "reverse_quadratic_inequality_coefficients": "reverse_quadratic_inequality_coefficients",
     "applied_quadratic_inequality_problem": "applied_quadratic_inequality_problem",
+    "parallel_lines_properties": "parallel_lines_properties",
 }
 
 SLOT_COMPATIBLE_FAMILIES: dict[str, frozenset[str]] = {
@@ -364,13 +365,18 @@ def _slot_rng(seed: int | None, problem_type_id: str) -> random.Random:
     return random.Random(f"{seed}|template_slot|{problem_type_id}")
 
 
-def infer_registered_task_token(problem_type_spec: dict[str, Any]) -> str:
+def infer_registered_task_token(problem_type_spec: dict[str, Any], skill_id: str | None = None) -> str:
     """Recover a registered task token from a normalized problem_type_id."""
     from core.gencode.problem_type_canonicalizer import _strip_typed_prefix
 
     pt = str(problem_type_spec.get("problem_type_id", "")).strip().lower()
     if not pt:
         return ""
+    
+    sid = str(skill_id or problem_type_spec.get("skill_id") or "").strip()
+    if "PropertiesOfParallelLines" in sid or "parallel_lines" in sid.lower() or "平行線" in sid:
+        return "parallel_lines_properties"
+
     _, base_pt = _strip_typed_prefix(pt)
     search_pt = base_pt.lower() if base_pt else pt
     matches = [task for task in TASK_FAMILY_TO_SLOT if task.lower() in search_pt]
@@ -401,7 +407,7 @@ def resolve_template_slot(problem_type_spec: dict[str, Any], seed: int | None = 
                 slot,
             )
             return slot
-    inferred_target_task = infer_registered_task_token(problem_type_spec)
+    inferred_target_task = infer_registered_task_token(problem_type_spec, skill_id=problem_type_spec.get("skill_id"))
     if target_task not in TASK_FAMILY_TO_SLOT and inferred_target_task:
         target_task = inferred_target_task
         logger.info(

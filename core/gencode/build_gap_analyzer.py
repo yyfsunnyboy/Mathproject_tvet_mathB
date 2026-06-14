@@ -94,6 +94,7 @@ def analyze_build_dependency_plan(phase1_report: dict[str, Any], phase2_report: 
         "exact_string_checker",
         "choice_checker",
         "choice_label_checker",
+        "rational_checker",
     }
     existing_verifiers = _collect_existing(PROJECT_ROOT / "core" / "verifiers") | {
         "numeric_verifier",

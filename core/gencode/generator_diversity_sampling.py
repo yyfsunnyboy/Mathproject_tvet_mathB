@@ -415,7 +415,24 @@ def run_diversity_sampling(
     Sample N plans (live generator when registered, else contract simulation).
     Returns diversity metrics for Phase 2 report.
     """
-    gc = _gc(spec)
+    from generators.base_generator import BaseGenerator
+    
+    # Resolve source examples count and initialize BaseGenerator
+    matched_count = int(spec.get("matched_example_count") or spec.get("source_example_count") or spec.get("matched_examples_count") or 3)
+    dummy_examples = [None] * matched_count
+    base_generator = BaseGenerator(source_examples=dummy_examples)
+    
+    # Apply Low-Sample Adaptation by scaling seed variance and parameters
+    spec_to_use = dict(spec)
+    if base_generator.low_source_examples:
+        gc = spec_to_use.get("generator_contract", {})
+        if isinstance(gc, dict):
+            spec_to_use["generator_contract"] = dict(gc)
+            schema = gc.get("parameter_schema", {})
+            if isinstance(schema, dict):
+                spec_to_use["generator_contract"]["parameter_schema"] = base_generator.adapt_parameters(schema)
+
+    gc = _gc(spec_to_use)
     anti = gc.get("anti_repetition_rules") if isinstance(gc.get("anti_repetition_rules"), dict) else {}
     sig_fields = list(anti.get("signature_fields") or DEFAULT_ANTI_REPETITION.get("signature_fields") or [])
     variant_ids = [str(v.get("id", "")) for v in _enabled_variants(gc)]
@@ -429,11 +446,14 @@ def run_diversity_sampling(
 
     for i in range(sample_count):
         seed = base_seed + i * 17
+        if base_generator.low_source_examples:
+            seed = base_generator.adjust_variance(seed)
+            
         payload = None
         try:
             from core.gencode.slot_generators import generate_from_problem_type_spec
 
-            payload = generate_from_problem_type_spec(skill_id, spec, seed=seed)
+            payload = generate_from_problem_type_spec(skill_id, spec_to_use, seed=seed)
         except Exception as ex:
             generation_errors.append(str(ex)[:120])
 
@@ -446,12 +466,12 @@ def run_diversity_sampling(
             meta = payload.get("metadata") if isinstance(payload.get("metadata"), dict) else {}
             fields = _metadata_plan_fields(meta)
             plan = {
-                "problem_type_id": str(spec.get("problem_type_id", "")),
+                "problem_type_id": str(spec_to_use.get("problem_type_id", "")),
                 **fields,
                 "answer": ans,
             }
         else:
-            plan = sample_plan_from_contract(spec, seed, history=history)
+            plan = sample_plan_from_contract(spec_to_use, seed, history=history)
             answers.append(str(plan.get("answer", "")))
             question_texts.append(
                 f"{plan.get('template_variant')}|{plan.get('ratio_form')}|{plan.get('coordinate_pattern')}"
@@ -468,6 +488,9 @@ def run_diversity_sampling(
         answers=answers,
         sample_count=sample_count,
     )
+    
+    # Apply diversity blocking exemption if low source examples
+    metrics = base_generator.exempt_diversity_warning(metrics)
     metrics["generation_errors"] = generation_errors[:5]
     err_count = len(generation_errors)
     if err_count >= sample_count // 2:

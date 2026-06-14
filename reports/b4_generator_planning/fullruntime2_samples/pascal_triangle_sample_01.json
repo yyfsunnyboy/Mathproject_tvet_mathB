@@ -1,5 +1,8 @@
 {
-  "answer_contract": {},
+  "answer_contract": {
+    "answer_shape": "handwriting",
+    "answer_type": "handwriting"
+  },
   "answer_input_type": "handwriting",
   "answer_type": "handwriting",
   "check_mode": "handwriting_ai_checked",
@@ -9,6 +12,7 @@
   "choices_display": [],
   "consecutive_correct": 0,
   "context_string": "",
+  "correct_answer": "",
   "current_level": 1,
   "display_answer": "",
   "equivalence": "",
@@ -31,9 +35,10 @@
   "path_labels": [],
   "problem_type_id": "pascal_triangle_handwriting",
   "question_source": "legacy",
+  "question_text": "已知巴斯卡三角形第 0 列為 1，第 1 列為 1, 1，第 2 列為 1, 2, 1。請寫出第 3 列的各項數字。",
   "question_text_hash": "7f1f531f52abc0e5",
   "question_type": "",
-  "question_uid": "90f12563-751d-48e1-ae5b-7b6b30b6edd2",
+  "question_uid": "98d62b35-f8a0-4adb-9095-d9aa5d9a316e",
   "requires_handwriting": true,
   "requires_listing_or_tree": false,
   "requires_teacher_review": true,

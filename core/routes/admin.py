@@ -1878,22 +1878,52 @@ def admin_skills():
     # ?方撒??V2.0 ????謘??叟??????
     selected, filters_data = handle_curriculum_filters(request)
     
-    # ?梁?? JOIN ?鈭亙眺
-    query = db.session.query(SkillInfo).join(SkillCurriculum)
+    # 關聯 JOIN 查詢，投影 SkillInfo 與 SkillCurriculum 兩個 model
+    query = db.session.query(SkillInfo, SkillCurriculum).join(
+        SkillCurriculum,
+        SkillInfo.skill_id == SkillCurriculum.skill_id
+    )
     
-    # --- ?乾??????????---
+    # --- 篩選條件過濾器 ---
     if selected['f_curriculum'] != 'all': 
         query = query.filter(SkillCurriculum.curriculum == selected['f_curriculum'])
     if selected['f_grade'] != 'all' and str(selected['f_grade']).isdigit(): 
         query = query.filter(SkillCurriculum.grade == int(selected['f_grade']))
     if selected['f_volume'] != 'all':
         query = query.filter(SkillCurriculum.volume == selected['f_volume'])
-    if selected['f_chapter'] != 'all': # ?乾?謕?
+    if selected['f_chapter'] != 'all': 
         query = query.filter(SkillCurriculum.chapter == selected['f_chapter'])
-    if selected['f_section'] != 'all': # ?乾?謕?
+    if selected['f_section'] != 'all': 
         query = query.filter(SkillCurriculum.section == selected['f_section'])
     
-    skills = query.distinct().order_by(SkillInfo.skill_id).all()
+    # 依 display_order 排序
+    skills_data = (
+        query
+        .distinct()
+        .order_by(
+            SkillCurriculum.display_order.asc(),
+            SkillInfo.skill_id.asc()
+        )
+        .all()
+    )
+    
+    # 只讀檢查
+    print(f"=== [admin_skills DEBUG] ===")
+    print(f"skills_data length: {len(skills_data)}")
+    if len(skills_data) > 0:
+        first_item = skills_data[0]
+        print(f"First item type: {type(first_item)}")
+        print(f"First item is tuple: {isinstance(first_item, tuple)}")
+        if isinstance(first_item, tuple):
+            print(f"First item length: {len(first_item)}")
+            if len(first_item) >= 2:
+                print(f"first_item[0] is SkillInfo: {isinstance(first_item[0], SkillInfo)}")
+                print(f"first_item[1] is SkillCurriculum: {isinstance(first_item[1], SkillCurriculum)}")
+                print(f"first_item[0].skill_id: {first_item[0].skill_id}")
+                print(f"first_item[1].display_order: {first_item[1].display_order}")
+    print(f"============================")
+
+    skills = [item[0] for item in skills_data]
     gencode_status_map = {}
     root_candidates = [
         Path(current_app.root_path),
@@ -1952,12 +1982,13 @@ def admin_skills():
             }
 
     return render_template('admin_skills.html', 
-                           skills=skills,
+                           skills_data=skills_data,
+                           skills=skills_data,
                            gencode_status_map=gencode_status_map,
                            filters=filters_data,
                            selected_filters=selected,
                            grade_map={str(g):str(g) for g in filters_data['grades']},
-                           curriculum_map={'junior_high': '???', 'general': '?獢?'},
+                           curriculum_map={'junior_high': '國中', 'general': '普高'},
                            username=current_user.username)
 
 @core_bp.route('/skills/add', methods=['POST'])
@@ -2142,7 +2173,7 @@ def admin_run_gencode_phase3(skill_id):
         )
         return jsonify(result), 200
     except Exception as e:
-        return jsonify({"ok": False, "phase": "phase3", "skill_id": skill_id, "error": str(e)}), 500
+        return jsonify({"ok": False, "phase": "phase3", "skill_id": skill_id, "error": str(e)}), 200
 
 
 @core_bp.route('/admin/gencode/skills/<skill_id>/publish-check', methods=['POST'])

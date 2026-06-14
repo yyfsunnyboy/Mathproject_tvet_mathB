@@ -1,0 +1,21 @@
+{
+  "skill_id": "vh_數學B1_SlopeOfALine",
+  "gap": "missing_registry_binding",
+  "repair_status": "PASS",
+  "registry_binding_status": "BOUND",
+  "registry_path": "E:\\Python\\Mathproject_tvet_mathB\\configs\\generated_registry\\b1_section_1_1_verified_registry.v0.1.yaml",
+  "registry_updated": true,
+  "merge_mode": "non_destructive",
+  "preserved_existing_entries": true,
+  "verified_problem_types": [
+    "text_short_slope_of_line_problems"
+  ],
+  "manual_review_exclusions": [],
+  "blocking_reasons": [],
+  "warnings": [],
+  "artifact_paths": {
+    "repair_json": "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_SlopeOfALine_repair_missing_registry_binding.json",
+    "repair_md": "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_SlopeOfALine_repair_missing_registry_binding.md"
+  },
+  "timestamp": "2026-06-14T09:06:05.313595+00:00"
+}

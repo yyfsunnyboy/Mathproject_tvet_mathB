@@ -28,6 +28,15 @@ def validate_generator_payload(
     errors = validate_answer_contract(payload, spec)
     errors.extend(validate_dependency_contract(payload, spec))
     errors.extend(validate_semantic_contract(payload, spec))
+    
+    # Run SemanticChecker Base check
+    import json
+    from validators.semantic_checker import SemanticChecker
+    checker = SemanticChecker()
+    ok, err_detail = checker.check_semantic(payload, spec)
+    if not ok:
+        errors.append(f"generator_semantically_unsafe:{json.dumps(err_detail, ensure_ascii=False)}")
+        
     return sorted(set(errors))
 
 

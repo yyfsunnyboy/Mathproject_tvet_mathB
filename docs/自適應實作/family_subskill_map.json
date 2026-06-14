@@ -216,5 +216,8 @@
   "jh_數學1上_FourArithmeticOperationsOfNumbers:F13": [
     "product_power_distribution",
     "fraction_power_distribution"
+  ],
+  "vh_數學B1_SlopeOfALine:S1": [
+    "slope_calculation"
   ]
 }
