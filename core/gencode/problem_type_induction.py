@@ -47,9 +47,12 @@ from core.gencode.induction_source_policy import (
     annotate_features_with_induction_tier,
     split_induction_source_features,
 )
+from core.gencode.phase1_anchor_contract import phase1_enforcement_assertion_block
 from core.gencode.spec_phase1_merge import slot_generator_readiness
 from core.gencode.answer_contract_gate import apply_runtime_gate_to_candidate
 from core.gencode.task_families import (
+    QUADRATIC_INEQUALITY_FAMILY,
+    QUADRATIC_INEQUALITY_TASKS,
     SOLVE_UNKNOWN_COORDINATE_TASKS,
     answer_contract_supports_task,
     task_family_for_task,
@@ -295,6 +298,18 @@ def _infer_template_slot(answer_type: str, target_task: str, math_objects: list[
         return "quadratic_vertex_form_properties"
     if target_task == "quadratic_standard_to_vertex_properties":
         return "quadratic_standard_to_vertex_properties"
+    if target_task in {"factor_quadratic_by_cross_multiplication", "solve_quadratic_by_factoring"}:
+        return "factor_quadratic_by_cross_multiplication"
+    if target_task in {"solve_quadratic_inequality", "interpret_quadratic_inequality_solution_set"}:
+        return "solve_quadratic_inequality"
+    if target_task == "solve_quadratic_inequality_special_cases":
+        return "solve_quadratic_inequality_special_cases"
+    if target_task == "solve_quadratic_inequality_parameter_range":
+        return "solve_quadratic_inequality_parameter_range"
+    if target_task == "reverse_quadratic_inequality_coefficients":
+        return "reverse_quadratic_inequality_coefficients"
+    if target_task == "applied_quadratic_inequality_problem":
+        return "applied_quadratic_inequality_problem"
     if target_task == "interpret_function_notation":
         if answer_type == "single_choice":
             return "linear_function_two_point_choice"
@@ -702,10 +717,24 @@ def merge_unclassified_low_confidence_examples(
 
         if reason == "unclassified_low_confidence" and is_core and isinstance(ex_id, int) and ex_id in feat_by_id:
             feat = feat_by_id[ex_id]
-            fallback_subskill = (main_skill_anchor.get("fallback_subskill") or {}) if isinstance(main_skill_anchor, dict) else {}
-            fallback_task = fallback_subskill.get("subskill_id", "evaluate_function_value")
-            if not fallback_task or fallback_task == "same_as_main_skill":
-                fallback_task = "evaluate_function_value"
+            expected_families = set((main_skill_anchor or {}).get("expected_task_families") or [])
+            observed_task = str(feat.get("target_task", "")).strip()
+            if observed_task in QUADRATIC_INEQUALITY_TASKS:
+                fallback_task = observed_task
+            elif QUADRATIC_INEQUALITY_FAMILY in expected_families:
+                text = str(feat.get("question_text") or feat.get("problem_text") or "")
+                mos = feat.get("math_objects") if isinstance(feat.get("math_objects"), list) else []
+                if "factoring_expression" in mos or re.search(r"十字交乘|因式分解", text, re.I):
+                    fallback_task = "factor_quadratic_by_cross_multiplication"
+                elif "inequality" in mos or re.search(r"不等式|inequality|[<>≤≥]", text, re.I):
+                    fallback_task = "solve_quadratic_inequality"
+                else:
+                    fallback_task = "factor_quadratic_by_cross_multiplication"
+            else:
+                fallback_subskill = (main_skill_anchor.get("fallback_subskill") or {}) if isinstance(main_skill_anchor, dict) else {}
+                fallback_task = fallback_subskill.get("subskill_id", "evaluate_function_value")
+                if not fallback_task or fallback_task == "same_as_main_skill":
+                    fallback_task = "evaluate_function_value"
 
             feat["target_task"] = fallback_task
             feat["target"] = fallback_task
@@ -722,7 +751,10 @@ def merge_unclassified_low_confidence_examples(
 
             ans_type = _cluster_answer_type_key(feat)
             sig_base = f"{ans_type}_{fallback_task}"
-            fallback_pt_id = f"{sig_base}_fallback_application"
+            if fallback_task in QUADRATIC_INEQUALITY_TASKS:
+                fallback_pt_id = f"expression_{fallback_task}"
+            else:
+                fallback_pt_id = f"{sig_base}_fallback_application"
             feat["problem_type_id"] = fallback_pt_id
             feat["included_in_core_induction"] = True
             feat["induction_tier"] = "core"
@@ -760,6 +792,17 @@ def _observed_target_task_for_clause45(
         task = str(candidate or "").strip()
         if task and task not in {"unknown", "needs_review", "same_as_main_skill", "compute_numeric"}:
             return task
+    feat_task = str(feat.get("target_task", "")).strip()
+    if feat_task in QUADRATIC_INEQUALITY_TASKS:
+        return feat_task
+    expected_families = set((main_skill_anchor or {}).get("expected_task_families") or [])
+    if QUADRATIC_INEQUALITY_FAMILY in expected_families:
+        mos = feat.get("math_objects") if isinstance(feat.get("math_objects"), list) else []
+        text = str(feat.get("question_text") or feat.get("problem_text") or "")
+        if "factoring_expression" in mos or re.search(r"十字交乘|因式分解", text, re.I):
+            return "factor_quadratic_by_cross_multiplication"
+        if "inequality" in mos or re.search(r"不等式|inequality|[<>≤≥]", text, re.I):
+            return "solve_quadratic_inequality"
     return "contextual_application"
 
 
@@ -930,9 +973,15 @@ def induce_problem_types_from_examples(
     examples: list[dict[str, Any]],
     *,
     spec_mode: str = "ai_first_induce_from_sources",
+    main_skill_anchor: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     skill_metadata = load_skill_metadata_from_db(skill_id)
-    main_skill_anchor = build_main_skill_anchor(skill_id, skill_metadata)
+    if isinstance(main_skill_anchor, dict) and str(main_skill_anchor.get("skill_id", "")).strip() == str(skill_id).strip():
+        anchor = dict(main_skill_anchor)
+    else:
+        anchor = build_main_skill_anchor(skill_id, skill_metadata)
+    anchor["classification_mandate"] = phase1_enforcement_assertion_block(anchor, include_anchor_fields=False)
+    main_skill_anchor = anchor
     # Source Skill Binding Supremacy §7: check for human_confirmed rule pack.
     human_confirmed_pack = _load_human_confirmed_rulepack(skill_id)
     human_confirmed_rule_pack_applied = False
@@ -1217,6 +1266,17 @@ def induce_problem_types_from_examples(
                 "subskill_id": cand_target or fallback_subskill_id,
             }
         )
+
+    from core.gencode.anchor_subskill_bootstrap import bootstrap_anchor_subskill_candidates
+
+    anchor_bootstrap_report = bootstrap_anchor_subskill_candidates(
+        skill_id,
+        main_skill_anchor,
+        induced_specs,
+        candidates,
+        existing_ids,
+        fallback_subskill_id=fallback_subskill_id,
+    )
 
     # Source Skill Binding Supremacy / ProblemType Bridge §3–§4:
     # If any induced candidate is a bridge primary, expand it to runtime variants.
@@ -1651,6 +1711,7 @@ def induce_problem_types_from_examples(
         "inherited_from_previous_context_examples": inherited_from_previous_context_examples,
         "low_source_examples": low_source_examples,
         "coverage_floor_suggestions": coverage_floor_suggestions,
+        "anchor_subskill_bootstrap": anchor_bootstrap_report,
         "candidate_only_problem_types": candidate_only_problem_types,
         "candidate_only_count": len(candidate_only_problem_types),
         "same_as_main_skill_count": len(same_as_main_skill_examples),

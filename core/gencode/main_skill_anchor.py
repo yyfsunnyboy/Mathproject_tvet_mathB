@@ -16,6 +16,8 @@ from core.gencode.task_families import (
     FUNCTION_CONCEPT_TASKS,
     QUADRATIC_FUNCTION_GRAPH_FAMILY,
     QUADRATIC_FUNCTION_GRAPH_TASKS,
+    QUADRATIC_INEQUALITY_FAMILY,
+    QUADRATIC_INEQUALITY_TASKS,
     infer_skill_families_from_terms,
 )
 
@@ -41,6 +43,18 @@ _QUADRATIC_FUNCTION_HINTS: tuple[str, ...] = (
     "quadratic function",
 )
 
+_QUADRATIC_INEQUALITY_HINTS: tuple[str, ...] = (
+    "quadraticinequality",
+    "quadratic inequality",
+    "一元二次不等式",
+    "二次不等式",
+    "十字交乘",
+    "十字交乘法",
+    "因式分解",
+    "factoring",
+)
+
+
 # Exclusive skill titles → single subskill (narrow scope).
 _EXCLUSIVE_SKILL_TITLE_PATTERNS: tuple[tuple[str, tuple[str, ...]], ...] = (
     ("compute_midpoint_coordinates", ("中點坐標", "中点坐标", "midpoint coordinates", "midpoint coordinate")),
@@ -52,6 +66,26 @@ _EXCLUSIVE_SKILL_TITLE_PATTERNS: tuple[tuple[str, tuple[str, ...]], ...] = (
     (
         "compute_external_division_point_coordinates",
         ("外分點坐標", "外分点坐标", "外分坐標", "外分坐标", "external division point"),
+    ),
+    (
+        "solve_quadratic_inequality",
+        (
+            "不等式的解",
+            "二次不等式的解",
+            "解一元二次不等式",
+            "quadratic inequality solution",
+        ),
+    ),
+    (
+        "factor_quadratic_by_cross_multiplication",
+        (
+            "十字交乘",
+            "十字相乘",
+            "十字交乘法",
+            "因式分解",
+            "cross multiplication",
+            "cross multipl",
+        ),
     ),
 )
 
@@ -112,6 +146,14 @@ def _phrase_in_skill_terms(phrase: str, skill_terms: set[str]) -> bool:
     if len(p) >= 2 and p in skill_terms:
         return True
     return False
+
+
+def _is_quadratic_inequality_skill(skill_terms: set[str]) -> bool:
+    blob = _terms_blob(skill_terms)
+    has_quadratic = any(h.lower() in blob for h in _QUADRATIC_FUNCTION_HINTS) or "quadratic" in blob or "二次" in blob
+    has_inequality = "inequality" in blob or "不等式" in blob
+    has_factoring = "factoring" in blob or "因式" in blob or "十字" in blob
+    return (has_quadratic and has_inequality) or (has_quadratic and has_factoring)
 
 
 def infer_narrow_subskills_from_skill_terms(skill_terms: set[str]) -> set[str]:
@@ -195,6 +237,24 @@ def infer_expected_subskill_candidates(
     if FUNCTION_CONCEPT_FAMILY in expected_families:
         candidates |= set(FUNCTION_CONCEPT_TASKS)
     # Source Skill Binding Supremacy §8: quadratic function graph subskills.
+    if QUADRATIC_INEQUALITY_FAMILY in expected_families:
+        from core.gencode.answer_contract_policy import QUADRATIC_INEQUALITY_SOLUTION_TASKS
+
+        solution_narrow = narrow & set(QUADRATIC_INEQUALITY_SOLUTION_TASKS)
+        factoring_narrow = narrow & {
+            "factor_quadratic_by_cross_multiplication",
+            "solve_quadratic_by_factoring",
+        }
+        if solution_narrow and not factoring_narrow:
+            candidates = set(QUADRATIC_INEQUALITY_SOLUTION_TASKS)
+        elif factoring_narrow and not solution_narrow:
+            candidates |= factoring_narrow
+        else:
+            candidates |= set(QUADRATIC_INEQUALITY_TASKS)
+            if any(tok in _terms_blob(skill_terms) for tok in ("factoring", "因式", "十字")):
+                candidates.add("factor_quadratic_by_cross_multiplication")
+            if "inequality" in _terms_blob(skill_terms) or "不等式" in _terms_blob(skill_terms):
+                candidates.add("solve_quadratic_inequality")
     if QUADRATIC_FUNCTION_GRAPH_FAMILY in expected_families:
         candidates |= set(QUADRATIC_FUNCTION_GRAPH_TASKS)
         # Do not also add coordinate system subskills for quadratic skills.
@@ -233,6 +293,10 @@ def build_main_skill_anchor(skill_id: str, skill_metadata: dict[str, Any] | None
     if _is_quadratic_function_skill(skill_terms):
         expected_families.add(QUADRATIC_FUNCTION_GRAPH_FAMILY)
         # Discard coordinate-system background term hijacking for quadratic skills.
+        expected_families.discard(COORDINATE_SYSTEM_FAMILY)
+    if _is_quadratic_inequality_skill(skill_terms):
+        expected_families.add(QUADRATIC_INEQUALITY_FAMILY)
+        expected_families.discard(ABSOLUTE_VALUE_INEQUALITY_FAMILY)
         expected_families.discard(COORDINATE_SYSTEM_FAMILY)
     subskill_candidates, skill_anchor_scope = infer_expected_subskill_candidates(skill_terms, expected_families)
 
@@ -281,6 +345,8 @@ def _expected_math_objects(families: set[str]) -> list[str]:
         objs.extend(["coordinate_point", "two_coordinate_points", "distance_formula", "segment_length"])
     if CLASSIFY_QUADRANT_FAMILY in families:
         objs.append("coordinate_point")
+    if QUADRATIC_INEQUALITY_FAMILY in families:
+        objs.extend(["quadratic_equation", "quadratic_trinomial", "inequality", "factoring_expression"])
     return sorted(set(objs))
 
 

@@ -16,10 +16,15 @@ Rules:
 """
 from __future__ import annotations
 
+import re
 from typing import Any
 
 from core.gencode.answer_payload import answer_type_family
-from core.gencode.answer_contract_policy import is_quadratic_rational_scalar_semantic
+from core.gencode.answer_contract_policy import (
+    infer_answer_contract_from_problem_context,
+    is_quadratic_inequality_semantic,
+    is_quadratic_rational_scalar_semantic,
+)
 from core.gencode.problem_type_spec import get_answer_contract, get_generator_contract
 
 # Prefixes stripped from the LEFT of problem_type_id (longest match first).
@@ -219,6 +224,26 @@ def infer_answer_contract_for_canonical(
 
     # ── Text-short / fill-blank presentation ─────────────────────────────────
     if presentation == "short_answer":
+        from core.gencode.answer_contract_policy import (
+            QUADRATIC_INEQUALITY_SOLUTION_TASKS,
+            build_interval_answer_contract,
+            is_quadratic_inequality_interval_semantic,
+        )
+
+        if is_quadratic_inequality_interval_semantic(
+            problem_type_id=base_pt,
+            target_task=base_task,
+        ) or base_task in QUADRATIC_INEQUALITY_SOLUTION_TASKS:
+            return build_interval_answer_contract(existing_ac=base_ac)
+        if is_quadratic_inequality_semantic(problem_type_id=base_pt, target_task=base_task):
+            return {
+                **base_ac,
+                **infer_answer_contract_from_problem_context(
+                    answer_type="expression",
+                    target_task=base_task,
+                    task_family="quadratic_inequality_family",
+                ),
+            }
         # Slots that output text answers always use text_short_checker.
         text_slots = {
             "quadratic_graph_translation_fill_blank",
@@ -427,6 +452,69 @@ def enrich_spec_with_canonicalization(spec: dict[str, Any]) -> dict[str, Any]:
     out = enrich_spec_with_answer_format_hint(out)
     hint = str(out.get("answer_format_hint") or "").strip()
     existing_ac = get_answer_contract(spec)
+    base_task = str(out.get("target_task") or canonical["base_target_task"] or "").strip()
+    skill_id = str(out.get("skill_id") or spec.get("skill_id") or "").strip()
+    from core.gencode.answer_contract_policy import (
+        _FACTORING_TASKS,
+        QUADRATIC_INEQUALITY_INTERVAL_SOLUTION_TASKS,
+        QUADRATIC_INEQUALITY_SOLUTION_TASKS,
+        build_interval_answer_contract,
+        build_quadratic_inequality_special_case_contract,
+        build_quadratic_inequality_parameter_range_contract,
+        build_reverse_quadratic_coefficients_integer_contract,
+        is_quadratic_inequality_interval_semantic,
+    )
+
+    if base_task in _FACTORING_TASKS:
+        from core.gencode.answer_format_hint import HINT_EXPRESSION
+
+        out["answer_format_hint"] = HINT_EXPRESSION
+        out["answer_contract"] = answer_contract_from_hint(HINT_EXPRESSION, existing_ac=existing_ac)
+        return out
+
+    if base_task == "solve_quadratic_inequality_special_cases":
+        from core.gencode.answer_format_hint import HINT_TEXT_SHORT
+
+        out["answer_format_hint"] = HINT_TEXT_SHORT
+        out["answer_contract"] = build_quadratic_inequality_special_case_contract(existing_ac=existing_ac)
+        return out
+
+    if base_task == "solve_quadratic_inequality_parameter_range":
+        from core.gencode.answer_format_hint import HINT_INTERVAL
+
+        out["answer_format_hint"] = HINT_INTERVAL
+        out["answer_contract"] = build_quadratic_inequality_parameter_range_contract(
+            existing_ac=existing_ac
+        )
+        return out
+
+    if base_task == "reverse_quadratic_inequality_coefficients":
+        from core.gencode.answer_format_hint import HINT_INTEGER
+
+        out["answer_format_hint"] = HINT_INTEGER
+        out["answer_contract"] = build_reverse_quadratic_coefficients_integer_contract(
+            existing_ac=existing_ac
+        )
+        return out
+
+    if (
+        base_task in QUADRATIC_INEQUALITY_INTERVAL_SOLUTION_TASKS
+        or (
+            base_task in QUADRATIC_INEQUALITY_SOLUTION_TASKS
+            and is_quadratic_inequality_interval_semantic(
+                problem_type_id=canonical["base_problem_type_id"],
+                target_task=base_task,
+            )
+        )
+    ):
+        from core.gencode.answer_format_hint import HINT_INTERVAL
+
+        out["answer_format_hint"] = HINT_INTERVAL
+        out["answer_contract"] = build_interval_answer_contract(existing_ac=existing_ac)
+        if canonical["value_type_prefix"] in {"integer", "numeric", "rational"}:
+            out["naming_warning"] = "naming_warning:interval_task_value_prefix_ignored"
+        return out
+
     rational_scalar = is_quadratic_rational_scalar_semantic(
         problem_type_id=canonical["base_problem_type_id"],
         target_task=str(out.get("target_task") or canonical["base_target_task"] or ""),
@@ -444,8 +532,15 @@ def enrich_spec_with_canonicalization(spec: dict[str, Any]) -> dict[str, Any]:
     elif canonical["value_type_prefix"] == "integer":
         from core.gencode.answer_format_hint import HINT_INTEGER
 
-        out["answer_format_hint"] = HINT_INTEGER
-        hint = HINT_INTEGER
+        if not (
+            base_task in QUADRATIC_INEQUALITY_SOLUTION_TASKS
+            or is_quadratic_inequality_interval_semantic(
+                problem_type_id=canonical["base_problem_type_id"],
+                target_task=base_task,
+            )
+        ):
+            out["answer_format_hint"] = HINT_INTEGER
+            hint = HINT_INTEGER
     elif canonical["value_type_prefix"] == "rational":
         from core.gencode.answer_format_hint import HINT_RATIONAL
 
@@ -538,3 +633,153 @@ def is_phase3_packaging_allowed(readiness: str, usable_for_phase3: bool) -> bool
         "ready",
         "passed",
     }
+
+
+# ── Generic second-order math meta preflight (Phase 1 source examples) ────────
+
+MATH_META_TAG_SPECIAL_CASES_D_NEG = "[Task: Special_Cases_D_Less_Than_Zero]"
+MATH_META_TAG_PARAMETER_RANGE = "[Task: Parameter_Range_D_Less_Than_Zero]"
+# Backward-compatible alias for older reports / prompts.
+MATH_META_TAG_SPECIAL_CASES_PARAM = MATH_META_TAG_PARAMETER_RANGE
+MATH_META_TAG_REVERSE_VIETA = "[Task: Reverse_Coefficient_Vieta]"
+MATH_META_TAG_APPLIED_CONTEXT = "[Task: Applied_Context]"
+
+MATH_META_TAG_TO_TARGET_TASK: dict[str, str] = {
+    MATH_META_TAG_SPECIAL_CASES_D_NEG: "solve_quadratic_inequality_special_cases",
+    MATH_META_TAG_PARAMETER_RANGE: "solve_quadratic_inequality_parameter_range",
+    MATH_META_TAG_REVERSE_VIETA: "reverse_quadratic_inequality_coefficients",
+    MATH_META_TAG_APPLIED_CONTEXT: "applied_quadratic_inequality_problem",
+}
+
+MATH_META_TAG_RESOLUTION_ORDER: tuple[str, ...] = (
+    MATH_META_TAG_REVERSE_VIETA,
+    MATH_META_TAG_APPLIED_CONTEXT,
+    MATH_META_TAG_PARAMETER_RANGE,
+    MATH_META_TAG_SPECIAL_CASES_D_NEG,
+)
+
+MATH_META_TAG_TO_ANSWER_HINT: dict[str, str] = {
+    MATH_META_TAG_SPECIAL_CASES_D_NEG: "text_short",
+    MATH_META_TAG_PARAMETER_RANGE: "interval",
+    MATH_META_TAG_REVERSE_VIETA: "integer",
+    MATH_META_TAG_APPLIED_CONTEXT: "interval",
+}
+
+MATH_META_TAG_TO_CHECKER: dict[str, str] = {
+    MATH_META_TAG_SPECIAL_CASES_D_NEG: "text_short_checker",
+    MATH_META_TAG_PARAMETER_RANGE: "interval_checker",
+    MATH_META_TAG_REVERSE_VIETA: "integer_checker",
+    MATH_META_TAG_APPLIED_CONTEXT: "interval_checker",
+}
+
+_RE_QUADRATIC_STEM = re.compile(
+    r"x\}\^\{2\}|x\^2|x\s*\^\s*2|二次|不等式|inequality|[<>≤≥＜＞]|"
+    r"拋物線|抛物线|判別式|判别式|恆正|恒正|恆負|恒负",
+    re.I,
+)
+_RE_SPECIAL_D_NEG = re.compile(
+    r"對於任意實數|对于任意实数|任意實數|任意实数|"
+    r"無解|无解|D\s*[<＜]\s*0|判別式\s*[<＜]|判别式\s*[<＜]",
+    re.I,
+)
+_RE_PARAMETER_RANGE = re.compile(
+    r"求\s*[km]\s*的?\s*範圍|求\s*[km]\s*的?\s*范围|"
+    r"求\s*[km]\s*之?\s*範圍|求\s*[km]\s*之?\s*范围|"
+    r"(恆正|恒正|恆負|恒负).{0,24}(範圍|范围|求\s*[km])|"
+    r"(使|對|对).{0,16}(恆正|恒正|恆負|恒负|均成立|恒成立|恆成立)|"
+    r"參數\s*[km]|参数\s*[km]",
+    re.I,
+)
+_RE_REVERSE_VIETA = re.compile(
+    r"求\s*a\s*\+\s*b|求\s*[ab]\s*(\+|、|和|之值)|"
+    r"求\s*[ab]\s*之值|求\s*[ab]\s*的值|"
+    r"已知.{0,24}(解|解集|解為|解为)|"
+    r"解為.{0,16}求|解为.{0,16}求|"
+    r"若.{0,32}不等式.{0,24}解.{0,12}求",
+    re.I,
+)
+_RE_APPLIED_CONTEXT = re.compile(
+    r"不大於|不大于|至少|至多|矩形|面積|面积|三角形|利润|利潤|成本|收入|咖啡|"
+    r"邊長|边长|三邊|三边|構成三角形|构成三角形|售出|獲利|获利|"
+    r"周長|周长|長度|长度|寬|宽|高",
+    re.I,
+)
+
+
+def _normalize_stem_for_meta_tags(stem_text: str) -> str:
+    text = str(stem_text or "").strip()
+    if not text:
+        return ""
+    text = text.replace("\\", "")
+    text = re.sub(r"\s+", " ", text)
+    return text
+
+
+def extract_math_meta_tags(stem_text: str) -> list[str]:
+    """
+    Deterministic second-order math feature preflight from stem text.
+
+    Returns hard tags such as ``[Task: Reverse_Coefficient_Vieta]`` that are
+    injected into Phase 1 AI context and may force subskill selection.
+    Skill-agnostic regex/keyword rules — extend patterns for new units.
+    """
+    text = _normalize_stem_for_meta_tags(stem_text)
+    if not text:
+        return []
+    if not _RE_QUADRATIC_STEM.search(text) and not _RE_APPLIED_CONTEXT.search(text):
+        return []
+
+    tags: list[str] = []
+    if _RE_REVERSE_VIETA.search(text):
+        tags.append(MATH_META_TAG_REVERSE_VIETA)
+    if _RE_APPLIED_CONTEXT.search(text):
+        tags.append(MATH_META_TAG_APPLIED_CONTEXT)
+    if _RE_PARAMETER_RANGE.search(text):
+        tags.append(MATH_META_TAG_PARAMETER_RANGE)
+    elif _RE_SPECIAL_D_NEG.search(text):
+        tags.append(MATH_META_TAG_SPECIAL_CASES_D_NEG)
+    return tags
+
+
+def resolve_target_task_from_math_meta_tags(tags: list[str] | None) -> str:
+    """Pick the highest-priority forced target_task from extracted meta tags."""
+    tag_set = {str(t).strip() for t in (tags or []) if str(t).strip()}
+    for tag in MATH_META_TAG_RESOLUTION_ORDER:
+        if tag in tag_set:
+            return MATH_META_TAG_TO_TARGET_TASK.get(tag, "")
+    return ""
+
+
+def resolve_answer_format_hint_from_math_meta_tags(tags: list[str] | None) -> str:
+    tag_set = {str(t).strip() for t in (tags or []) if str(t).strip()}
+    for tag in MATH_META_TAG_RESOLUTION_ORDER:
+        if tag in tag_set:
+            return MATH_META_TAG_TO_ANSWER_HINT.get(tag, "")
+    return ""
+
+
+def resolve_checker_from_math_meta_tags(tags: list[str] | None) -> str:
+    tag_set = {str(t).strip() for t in (tags or []) if str(t).strip()}
+    for tag in MATH_META_TAG_RESOLUTION_ORDER:
+        if tag in tag_set:
+            return MATH_META_TAG_TO_CHECKER.get(tag, "")
+    return ""
+
+
+def format_math_meta_tags_for_prompt(tags: list[str] | None) -> str:
+    """Human/AI-readable block appended to Phase 1 classifier context."""
+    clean = [str(t).strip() for t in (tags or []) if str(t).strip()]
+    if not clean:
+        return ""
+    forced = resolve_target_task_from_math_meta_tags(clean)
+    lines = [
+        "Python math meta preflight (MANDATORY — do not override):",
+        f"- math_meta_tags: {clean}",
+    ]
+    if forced:
+        lines.append(f"- forced_target_task: {forced}")
+        lines.append(
+            "- You MUST select the candidate whose target_task equals forced_target_task "
+            "when it appears in the candidate list."
+        )
+    return "\n".join(lines) + "\n"

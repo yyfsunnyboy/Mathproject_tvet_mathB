@@ -9,19 +9,55 @@ from core.gencode.spec_phase1_merge import spec_to_answer_contract_proposal, slo
 from core.gencode.pipeline_state import GENCODE_REPORT_DIR, read_json, sanitize_path_segment
 
 
-def _phase1_induced_specs(skill_id: str, phase2_usable: list[dict[str, Any]]) -> list[dict[str, Any]]:
-    induced_file = list_problem_types_for_skill(skill_id, prefer="induced")
-    if induced_file:
-        return induced_file
-    path = GENCODE_REPORT_DIR / f"{sanitize_path_segment(skill_id)}_phase1_summary.json"
-    if path.exists():
-        data = read_json(path)
-        auto = data.get("auto_review_summary") if isinstance(data.get("auto_review_summary"), dict) else {}
-        induced = auto.get("induced_problem_type_specs") or data.get("induced_problem_type_specs")
-        if isinstance(induced, list) and induced:
-            return [s for s in induced if isinstance(s, dict)]
-    drafts = [c.get("problem_type_spec_draft") for c in phase2_usable if isinstance(c, dict)]
-    return [d for d in drafts if isinstance(d, dict) and d.get("problem_type_id")]
+def _resolve_phase3_source_specs(
+    skill_id: str,
+    phase2_usable: list[dict[str, Any]],
+) -> list[dict[str, Any]]:
+    """Build one ProblemTypeSpec draft per Phase-2 usable row (authoritative packaging source)."""
+    phase1_path = GENCODE_REPORT_DIR / f"{sanitize_path_segment(skill_id)}_phase1_summary.json"
+    phase1_candidates: list[dict[str, Any]] = []
+    if phase1_path.exists():
+        data = read_json(phase1_path)
+        raw = data.get("candidate_problem_types")
+        if isinstance(raw, list):
+            phase1_candidates = [c for c in raw if isinstance(c, dict)]
+
+    induced_by_pt: dict[str, dict[str, Any]] = {}
+    for spec in list_problem_types_for_skill(skill_id, prefer="induced") or []:
+        if not isinstance(spec, dict):
+            continue
+        pt = str(spec.get("problem_type_id", "")).strip()
+        if pt:
+            induced_by_pt[pt] = spec
+
+    candidate_by_pt: dict[str, dict[str, Any]] = {}
+    for candidate in phase1_candidates:
+        pt = str(
+            candidate.get("problem_type_id") or candidate.get("proposed_problem_type_id") or ""
+        ).strip()
+        draft = candidate.get("problem_type_spec_draft")
+        if pt and isinstance(draft, dict):
+            candidate_by_pt[pt] = draft
+
+    resolved: list[dict[str, Any]] = []
+    for row in phase2_usable:
+        if not isinstance(row, dict):
+            continue
+        pt = str(row.get("problem_type_id", "")).strip()
+        if not pt:
+            continue
+        base_spec = induced_by_pt.get(pt) or candidate_by_pt.get(pt) or {}
+        spec = dict(base_spec) if isinstance(base_spec, dict) else {}
+        spec["skill_id"] = skill_id
+        spec["problem_type_id"] = pt
+        if row.get("target_task"):
+            spec["target_task"] = row.get("target_task")
+        if row.get("template_slot"):
+            spec["_resolved_template_slot"] = row.get("template_slot")
+        if isinstance(row.get("answer_contract"), dict):
+            spec["answer_contract"] = row.get("answer_contract")
+        resolved.append(spec)
+    return resolved
 
 
 def build_generator_specs_for_phase3(skill_id: str, phase2_usable: list[dict[str, Any]]) -> tuple[list[dict[str, Any]], list[str]]:
@@ -38,12 +74,24 @@ def build_generator_specs_for_phase3(skill_id: str, phase2_usable: list[dict[str
         evaluate_typed_prefix_readiness,
     )
     from core.gencode.answer_format_hint import (
+        HINT_EXPRESSION,
         HINT_INTEGER,
+        HINT_INTERVAL,
         HINT_RATIONAL,
         answer_contract_from_hint,
     )
+    from core.gencode.answer_contract_policy import (
+        _FACTORING_TASKS,
+        QUADRATIC_INEQUALITY_SOLUTION_TASKS,
+        build_interval_answer_contract,
+        build_quadratic_inequality_parameter_range_contract,
+        build_quadratic_inequality_special_case_contract,
+        build_reverse_quadratic_coefficients_integer_contract,
+        is_quadratic_inequality_interval_semantic,
+    )
+    from core.gencode.packaging_policy import phase3_generator_spec_exclusion_reasons
 
-    specs = _phase1_induced_specs(skill_id, phase2_usable)
+    specs = _resolve_phase3_source_specs(skill_id, phase2_usable)
     if not specs:
         specs = list_problem_types_for_skill(skill_id, prefer="curated")
     if not specs:
@@ -78,14 +126,55 @@ def build_generator_specs_for_phase3(skill_id: str, phase2_usable: list[dict[str
             enriched = dict(enriched)
             enriched["problem_type_id"] = original_pt
         canonical_ac = enriched.get("answer_contract") if isinstance(enriched.get("answer_contract"), dict) else {}
-        if original_pt.startswith("integer_"):
-            canonical_ac = answer_contract_from_hint(HINT_INTEGER, existing_ac=canonical_ac)
+        target_task = str(enriched.get("target_task") or "").strip()
+        base_task = str(
+            enriched.get("canonical_base_problem_type_id")
+            or enriched.get("base_problem_type_id")
+            or target_task
+        ).strip()
+        if base_task == "solve_quadratic_inequality_special_cases":
+            canonical_ac = build_quadratic_inequality_special_case_contract(existing_ac=canonical_ac)
+            enriched["answer_contract"] = canonical_ac
+            from core.gencode.answer_format_hint import HINT_TEXT_SHORT
+
+            enriched["answer_format_hint"] = HINT_TEXT_SHORT
+        elif base_task == "solve_quadratic_inequality_parameter_range":
+            canonical_ac = build_quadratic_inequality_parameter_range_contract(existing_ac=canonical_ac)
+            enriched["answer_contract"] = canonical_ac
+            enriched["answer_format_hint"] = HINT_INTERVAL
+        elif base_task == "reverse_quadratic_inequality_coefficients":
+            canonical_ac = build_reverse_quadratic_coefficients_integer_contract(existing_ac=canonical_ac)
             enriched["answer_contract"] = canonical_ac
             enriched["answer_format_hint"] = HINT_INTEGER
-        elif original_pt.startswith("rational_"):
-            canonical_ac = answer_contract_from_hint(HINT_RATIONAL, existing_ac=canonical_ac)
+        elif is_quadratic_inequality_interval_semantic(
+            problem_type_id=pt,
+            target_task=target_task,
+            task_family=str(enriched.get("task_family", "")).strip(),
+        ) or str(canonical_ac.get("answer_type", "")).strip() == "interval":
+            canonical_ac = build_interval_answer_contract(existing_ac=canonical_ac)
             enriched["answer_contract"] = canonical_ac
-            enriched["answer_format_hint"] = HINT_RATIONAL
+            enriched["answer_format_hint"] = HINT_INTERVAL
+        elif original_pt.startswith("integer_"):
+            if target_task in _FACTORING_TASKS or canonical_ac.get("answer_type") == "expression":
+                canonical_ac = answer_contract_from_hint(HINT_EXPRESSION, existing_ac=canonical_ac)
+                enriched["answer_contract"] = canonical_ac
+                enriched["answer_format_hint"] = HINT_EXPRESSION
+            else:
+                canonical_ac = answer_contract_from_hint(HINT_INTEGER, existing_ac=canonical_ac)
+                enriched["answer_contract"] = canonical_ac
+                enriched["answer_format_hint"] = HINT_INTEGER
+        elif original_pt.startswith("rational_"):
+            if target_task in QUADRATIC_INEQUALITY_SOLUTION_TASKS and base_task not in {
+                "solve_quadratic_inequality_special_cases",
+                "reverse_quadratic_inequality_coefficients",
+            }:
+                canonical_ac = build_interval_answer_contract(existing_ac=canonical_ac)
+                enriched["answer_contract"] = canonical_ac
+                enriched["answer_format_hint"] = HINT_INTERVAL
+            else:
+                canonical_ac = answer_contract_from_hint(HINT_RATIONAL, existing_ac=canonical_ac)
+                enriched["answer_contract"] = canonical_ac
+                enriched["answer_format_hint"] = HINT_RATIONAL
         resolved_slot = enriched.get("_resolved_template_slot", "") or str(
             (spec.get("generator_contract") or {}).get("template_slots", {}).get("stem", "")
         ).strip()
@@ -119,6 +208,8 @@ def build_generator_specs_for_phase3(skill_id: str, phase2_usable: list[dict[str
             row["base_problem_type_id"] = canonical_base
         if value_prefix:
             row["value_type_prefix"] = value_prefix
+        if target_task:
+            row["target_task"] = target_task
         # Carry through presentation_mode and answer_shape for smoke validator
         if canonical_ac.get("presentation_mode"):
             row["presentation_mode"] = canonical_ac["presentation_mode"]
@@ -126,7 +217,14 @@ def build_generator_specs_for_phase3(skill_id: str, phase2_usable: list[dict[str
             row["answer_shape"] = canonical_ac["answer_shape"]
         specs_out.append(row)
         keys.append(str(g2.get("generator_key", "")).strip() or f"{skill_id}:{pt}:spec_v1")
-    return specs_out, keys
+    filtered_specs: list[dict[str, Any]] = []
+    filtered_keys: list[str] = []
+    for row, key in zip(specs_out, keys):
+        if phase3_generator_spec_exclusion_reasons(row):
+            continue
+        filtered_specs.append(row)
+        filtered_keys.append(key)
+    return filtered_specs, filtered_keys
 
 
 def build_phase3_skill_module_code(skill_id: str, generator_specs: list[dict[str, Any]], generator_keys: list[str]) -> str:

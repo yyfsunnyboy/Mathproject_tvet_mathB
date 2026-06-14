@@ -1125,6 +1125,492 @@ def _vertex_axis_option(vertex: tuple[int, int], axis_x: int, extreme: str) -> s
     return f"vertex ({vertex[0]},{vertex[1]}), axis x={axis_x}, {extreme}"
 
 
+def _format_linear_factor(p: int, q: int) -> str:
+    if p == 1:
+        coeff = "x"
+    elif p == -1:
+        coeff = "-x"
+    else:
+        coeff = f"{p}x"
+    if q == 0:
+        return f"({coeff})"
+    sign = "+" if q > 0 else "-"
+    return f"({coeff}{sign}{abs(q)})"
+
+
+def _format_quadratic_trinomial_latex(a: int, b: int, c: int) -> str:
+    parts: list[str] = []
+    if a == 1:
+        parts.append("x^2")
+    elif a == -1:
+        parts.append("-x^2")
+    else:
+        parts.append(f"{a}x^2")
+    if b != 0:
+        sign = "+" if b > 0 else "-"
+        parts.append(f"{sign}{abs(b)}x")
+    if c != 0:
+        sign = "+" if c > 0 else "-"
+        parts.append(f"{sign}{abs(c)}")
+    return "".join(parts)
+
+
+def _slot_factor_quadratic_by_cross_multiplication(
+    skill_id: str, pt: str, spec: dict[str, Any], seed: int | None
+) -> dict[str, Any]:
+    rng = random.Random(f"{seed}|factor_cross|{pt}")
+    variants = ["monic", "general", "leading_negative"]
+    template_variant = rng.choice(variants)
+
+    if template_variant == "monic":
+        p = r = 1
+        q = rng.randint(-9, 9)
+        while q == 0:
+            q = rng.randint(-9, 9)
+        s = rng.randint(-9, 9)
+        while s == 0 or s == q:
+            s = rng.randint(-9, 9)
+    elif template_variant == "general":
+        p = rng.randint(2, 4)
+        r = rng.randint(1, 3)
+        q = rng.randint(-7, 7)
+        while q == 0:
+            q = rng.randint(-7, 7)
+        s = rng.randint(-7, 7)
+        while s == 0:
+            s = rng.randint(-7, 7)
+    else:
+        p = -rng.randint(1, 3)
+        r = rng.randint(1, 3)
+        q = rng.randint(-7, 7)
+        while q == 0:
+            q = rng.randint(-7, 7)
+        s = rng.randint(-7, 7)
+        while s == 0:
+            s = rng.randint(-7, 7)
+
+    a = p * r
+    b = p * s + q * r
+    c = q * s
+    poly = _format_quadratic_trinomial_latex(a, b, c)
+    factor1 = _format_linear_factor(p, q)
+    factor2 = _format_linear_factor(r, s)
+    answer = f"{factor1}{factor2}"
+
+    stem_templates = [
+        f"請使用十字交乘法因式分解：${poly}$",
+        f"請利用十字交乘法，將二次多項式 ${poly}$ 分解為兩個一次因式的乘積。",
+        f"利用十字交乘法分解：${poly}$",
+    ]
+    stem = rng.choice(stem_templates)
+    explanation = (
+        f"將 ${poly}$ 因式分解，可寫成 ${factor1}{factor2}$。"
+        f"其中一次項係數為 ${b}$，常數項為 ${c}$。"
+    )
+    return {
+        "skill_id": skill_id,
+        "problem_type_id": pt,
+        "question_text": stem,
+        "question": stem,
+        "choices": [],
+        "answer": answer,
+        "correct_answer": answer,
+        "answer_type": "expression",
+        "checker_type": "expression_checker",
+        "explanation": explanation,
+        "diagnosis_tags": ["quadratic_factoring", "cross_multiplication"],
+        "metadata": {
+            "givens": [f"polynomial={poly}"],
+            "target": "factored_expression",
+            "derivation": [f"{a}x^2+{b}x+{c}={factor1}{factor2}"],
+            "problem_type_id": pt,
+            "template_slot": "factor_quadratic_by_cross_multiplication",
+            "template_variant": template_variant,
+            "coefficients": {"a": a, "b": b, "c": c},
+        },
+        "source": "gencode_slot_generator",
+    }
+
+
+def _format_inequality_symbol(op: str, strict: bool) -> str:
+    if op == ">":
+        return ">" if strict else ">="
+    return "<" if strict else "<="
+
+
+def _build_quadratic_inequality_solution(
+    alpha: int,
+    beta: int,
+    *,
+    a_positive: bool,
+    direction: str,
+    strict: bool,
+) -> str:
+    """Construct interval literal aligned with interval_checker parser."""
+    if alpha >= beta:
+        alpha, beta = beta, alpha
+    gt = _format_inequality_symbol(">", strict)
+    lt = _format_inequality_symbol("<", strict)
+    outside = f"x{lt}{alpha} or x{gt}{beta}"
+    between = f"{alpha}{lt}x{lt}{beta}"
+    want_positive = direction in {">", ">="}
+    if a_positive:
+        return outside if want_positive else between
+    return between if want_positive else outside
+
+
+def _slot_solve_quadratic_inequality(
+    skill_id: str, pt: str, spec: dict[str, Any], seed: int | None
+) -> dict[str, Any]:
+    rng = random.Random(f"{seed}|solve_quad_ineq|{pt}")
+    variants = ["factored_strict", "expanded_strict", "factored_leading_negative"]
+    template_variant = rng.choice(variants)
+
+    alpha = rng.randint(-8, 2)
+    beta = rng.randint(alpha + 2, 9)
+    a_lead = 1
+    if template_variant == "factored_leading_negative":
+        a_lead = -rng.randint(1, 3)
+
+    b = -a_lead * (alpha + beta)
+    c = a_lead * alpha * beta
+    poly = _format_quadratic_trinomial_latex(a_lead, b, c)
+    factor1 = _format_linear_factor(1, -alpha)
+    factor2 = _format_linear_factor(1, -beta)
+    factored = f"{factor1}{factor2}"
+    if a_lead == -1:
+        factored_display = f"-{factored}"
+    elif a_lead != 1:
+        factored_display = f"{a_lead}{factored}"
+    else:
+        factored_display = factored
+
+    direction = rng.choice([">", "<"])
+    strict = rng.choice([True, True, False])
+    op = _format_inequality_symbol(direction, strict)
+    rhs = "0"
+
+    if template_variant == "expanded_strict":
+        expr = poly
+    else:
+        expr = factored_display
+
+    stem_templates = [
+        f"解不等式 ${expr}{op}{rhs}$",
+        f"求滿足 ${expr}{op}{rhs}$ 的 $x$ 之範圍。",
+        f"請解一元二次不等式 ${expr}{op}{rhs}$。",
+    ]
+    stem = rng.choice(stem_templates)
+    answer = _build_quadratic_inequality_solution(
+        alpha,
+        beta,
+        a_positive=a_lead > 0,
+        direction=direction,
+        strict=strict,
+    )
+    explanation = (
+        f"令 ${expr}=0$，得根為 $x={alpha}$ 與 $x={beta}$。"
+        f"依領導係數與不等號方向，解為 ${answer}$。"
+    )
+    return {
+        "skill_id": skill_id,
+        "problem_type_id": pt,
+        "question_text": stem,
+        "question": stem,
+        "choices": [],
+        "answer": answer,
+        "correct_answer": answer,
+        "answer_type": "interval",
+        "checker_type": "interval_checker",
+        "explanation": explanation,
+        "diagnosis_tags": ["quadratic_inequality", "interval_solution"],
+        "metadata": {
+            "givens": [f"inequality={expr}{op}{rhs}", f"roots=({alpha},{beta})", f"a={a_lead}"],
+            "target": "interval_solution",
+            "derivation": [f"{expr}=0", f"x={alpha} or x={beta}", answer],
+            "problem_type_id": pt,
+            "template_slot": "solve_quadratic_inequality",
+            "template_variant": template_variant,
+            "roots": {"alpha": alpha, "beta": beta},
+            "leading_coefficient": a_lead,
+        },
+        "source": "gencode_slot_generator",
+    }
+
+
+def _special_case_label(*, a_lead: int, direction: str) -> str:
+    want_above_zero = direction in {">", ">="}
+    if a_lead > 0:
+        return "任意實數" if want_above_zero else "無解"
+    return "無解" if want_above_zero else "任意實數"
+
+
+def _slot_solve_quadratic_inequality_special_cases(
+    skill_id: str, pt: str, spec: dict[str, Any], seed: int | None
+) -> dict[str, Any]:
+    rng = random.Random(f"{seed}|quad_ineq_special|{pt}")
+    a_lead = rng.choice([1, 2, 3])
+    b = rng.randint(-6, 6)
+    while b == 0:
+        b = rng.randint(-6, 6)
+    min_c = (b * b // 4) + 1
+    c = rng.randint(min_c, min_c + 8)
+    poly = _format_quadratic_trinomial_latex(a_lead, b, c)
+    direction_base = rng.choice([">", "<"])
+    strict = rng.choice([True, False])
+    op = _format_inequality_symbol(direction_base, strict)
+    answer = _special_case_label(a_lead=a_lead, direction=direction_base)
+    stem_templates = [
+        f"解不等式 ${poly}{op}0$",
+        f"求滿足 ${poly}{op}0$ 的 $x$ 之解。",
+        f"請解一元二次不等式 ${poly}{op}0$（判別式 $D<0$）。",
+    ]
+    stem = rng.choice(stem_templates)
+    discriminant = b * b - 4 * a_lead * c
+    explanation = (
+        f"判別式 $D={discriminant}<0$，拋物線與 $x$ 軸無交點。"
+        f"依領導係數與不等號方向，解為「{answer}」。"
+    )
+    return {
+        "skill_id": skill_id,
+        "problem_type_id": pt,
+        "question_text": stem,
+        "question": stem,
+        "choices": [],
+        "answer": answer,
+        "correct_answer": answer,
+        "answer_type": "text_short",
+        "checker_type": "text_short_checker",
+        "explanation": explanation,
+        "diagnosis_tags": ["quadratic_inequality", "special_case_solution"],
+        "metadata": {
+            "givens": [f"inequality={poly}{op}0", f"D={discriminant}"],
+            "target": "special_case_label",
+            "derivation": [f"D={discriminant}<0", answer],
+            "problem_type_id": pt,
+            "template_slot": "solve_quadratic_inequality_special_cases",
+            "template_variant": "discriminant_negative",
+            "leading_coefficient": a_lead,
+        },
+        "source": "gencode_slot_generator",
+    }
+
+
+def _slot_solve_quadratic_inequality_parameter_range(
+    skill_id: str, pt: str, spec: dict[str, Any], seed: int | None
+) -> dict[str, Any]:
+    """Parameter m/k range from D<0 definite-sign constraints (deterministic Vieta-style)."""
+    rng = random.Random(f"{seed}|quad_ineq_param_range|{pt}")
+    variant = rng.choice(["always_positive_m", "always_negative_k"])
+    strict = rng.choice([True, False])
+
+    if variant == "always_positive_m":
+        # x^2 - 2x + m > 0 for all x  →  D = 4 - 4m < 0  →  m > 1
+        param = "m"
+        boundary = Fraction(1, 1)
+        poly = f"x^2-2x+{param}"
+        op = ">"
+        stem_templates = [
+            f"若 $y={poly}$ 恆正，求 ${param}$ 的範圍。",
+            f"若不等式 ${poly}{op}0$ 對於任意實數 $x$ 均成立，求 ${param}$ 的範圍。",
+            f"求使 ${poly}{op}0$ 恆成立之 ${param}$ 的範圍。",
+        ]
+        answer = f"{param}>{boundary}" if strict else f"{param}>={boundary}"
+        explanation = (
+            f"開口向上且需判別式 $D=4-4{param}<0$，得 ${param}>{boundary}$。"
+        )
+        template_variant = "always_positive_m"
+    else:
+        # -2x^2 + 4x + k < 0 for all x  →  D = 16 + 8k < 0  →  k < -2
+        param = "k"
+        boundary = Fraction(-2, 1)
+        poly = f"-2x^2+4x+{param}"
+        op = "<"
+        stem_templates = [
+            f"若 $y={poly}$ 恆負，求 ${param}$ 的範圍。",
+            f"若不等式 ${poly}{op}0$ 對於任意實數 $x$ 均成立，求 ${param}$ 的範圍。",
+            f"求使 ${poly}{op}0$ 恆成立之 ${param}$ 的範圍。",
+        ]
+        answer = f"{param}<{boundary}" if strict else f"{param}<={boundary}"
+        explanation = (
+            f"開口向下且需判別式 $D=16+8{param}<0$，得 ${param}<{boundary}$。"
+        )
+        template_variant = "always_negative_k"
+
+    stem = rng.choice(stem_templates)
+    return {
+        "skill_id": skill_id,
+        "problem_type_id": pt,
+        "question_text": stem,
+        "question": stem,
+        "choices": [],
+        "answer": answer,
+        "correct_answer": answer,
+        "answer_type": "interval",
+        "checker_type": "interval_checker",
+        "explanation": explanation,
+        "diagnosis_tags": ["quadratic_inequality", "parameter_range", template_variant],
+        "metadata": {
+            "givens": [f"inequality={poly}{op}0", "definite_sign=True"],
+            "target": "parameter_interval",
+            "derivation": [f"D<0", answer],
+            "problem_type_id": pt,
+            "template_slot": "solve_quadratic_inequality_parameter_range",
+            "template_variant": template_variant,
+            "parameter": param,
+            "boundary": str(boundary),
+        },
+        "source": "gencode_slot_generator",
+    }
+
+
+def _slot_reverse_quadratic_inequality_coefficients(
+    skill_id: str, pt: str, spec: dict[str, Any], seed: int | None
+) -> dict[str, Any]:
+    rng = random.Random(f"{seed}|quad_ineq_reverse|{pt}")
+    alpha = rng.randint(-5, 0)
+    beta = rng.randint(2, 6)
+    scale = rng.randint(1, 3)
+    a_val = scale
+    b_val = -scale * (alpha + beta)
+    c_val = scale * alpha * beta
+    poly_full = _format_quadratic_trinomial_latex(a_val, b_val, c_val)
+    strict = rng.choice([True, False])
+    op = _format_inequality_symbol("<", strict)
+    interval_text = (
+        f"${alpha}<x<{beta}$"
+        if strict
+        else f"${alpha}\\le x\\le {beta}$"
+    )
+    ask_target = rng.choice(["a", "b", "a_plus_b"])
+    template_variant = f"ask_{ask_target}"
+    b_display = f"{b_val:+d}" if b_val != 0 else ""
+    c_display = f"{c_val:+d}" if c_val != 0 else ""
+    if ask_target == "a":
+        stem = (
+            f"若不等式 $ax^2{b_display}x{c_display}{op}0$ 的解為 {interval_text}，"
+            f"求 $a$ 的值。"
+        )
+        answer = str(a_val)
+    elif ask_target == "b":
+        stem = (
+            f"若不等式 ${scale}x^2+bx{c_display}{op}0$ 的解為 {interval_text}，"
+            f"且與 ${poly_full}{op}0$ 的解相同，求 $b$ 的值。"
+        )
+        answer = str(b_val)
+    else:
+        stem = (
+            f"若不等式 $ax^2{b_display}x{c_display}{op}0$ 的解為 {interval_text}，"
+            f"求 $a+b$ 的值。"
+        )
+        answer = str(a_val + b_val)
+        template_variant = "ask_a_plus_b"
+    explanation = (
+        f"由根 $x={alpha}$ 與 $x={beta}$ 反推得 ${poly_full}{op}0$，"
+        f"故 ${'a+b' if ask_target == 'a_plus_b' else ask_target}={answer}$。"
+    )
+    return {
+        "skill_id": skill_id,
+        "problem_type_id": pt,
+        "question_text": stem,
+        "question": stem,
+        "choices": [],
+        "answer": answer,
+        "correct_answer": answer,
+        "answer_type": "integer",
+        "checker_type": "integer_checker",
+        "explanation": explanation,
+        "diagnosis_tags": ["quadratic_inequality", "reverse_coefficients"],
+        "metadata": {
+            "givens": [f"roots=({alpha},{beta})", f"scaled={poly_full}"],
+            "target": ask_target,
+            "derivation": [f"alpha={alpha}", f"beta={beta}", f"{ask_target}={answer}"],
+            "problem_type_id": pt,
+            "template_slot": "reverse_quadratic_inequality_coefficients",
+            "template_variant": template_variant,
+            "roots": {"alpha": alpha, "beta": beta},
+            "coefficients": {"a": a_val, "b": b_val, "c": c_val},
+        },
+        "source": "gencode_slot_generator",
+    }
+
+
+def _slot_applied_quadratic_inequality_problem(
+    skill_id: str, pt: str, spec: dict[str, Any], seed: int | None
+) -> dict[str, Any]:
+    rng = random.Random(f"{seed}|quad_ineq_applied|{pt}")
+    scenario = rng.choice(["triangle_side", "coffee_profit"])
+    direction = ">"
+    strict = True
+    op = ">"
+    if scenario == "triangle_side":
+        third = rng.randint(6, 9)
+        lower = max(1, (third - 1) // 2 + (1 if (third - 1) % 2 else 0))
+        upper = third - 2
+        alpha = lower
+        beta = upper + 1
+        stem = (
+            f"已知三角形的三邊長分別為 $x$、$x+1$ 與 ${third}$（$x$ 為正數），"
+            f"求使三邊能構成三角形之 $x$ 的範圍。"
+        )
+        answer = _build_quadratic_inequality_solution(
+            alpha,
+            beta,
+            a_positive=True,
+            direction=direction,
+            strict=strict,
+        )
+        explanation = (
+            f"由 $x+(x+1)>{third}$、$x+1<{third}$ 與 $x>0$ 整理，"
+            f"得 $x$ 的範圍為 ${answer}$。"
+        )
+        template_variant = "triangle_side"
+    else:
+        alpha = rng.randint(1, 3)
+        beta = rng.randint(alpha + 3, alpha + 8)
+        b_val = alpha + beta
+        c_val = alpha * beta
+        poly = _format_quadratic_trinomial_latex(-1, b_val, -c_val)
+        stem = (
+            f"某咖啡車每日售出 $x$ 杯時，利潤可表示為 ${poly}{op}0$（$x$ 為正整數）。"
+            f"求可獲利的 $x$ 之範圍。"
+        )
+        answer = _build_quadratic_inequality_solution(
+            alpha,
+            beta,
+            a_positive=False,
+            direction=direction,
+            strict=strict,
+        )
+        explanation = (
+            f"令 ${poly}=0$ 得 $x={alpha}$ 與 $x={beta}$，"
+            f"開口向下且要求 ${op}0$，解為 ${answer}$。"
+        )
+        template_variant = "coffee_profit"
+    return {
+        "skill_id": skill_id,
+        "problem_type_id": pt,
+        "question_text": stem,
+        "question": stem,
+        "choices": [],
+        "answer": answer,
+        "correct_answer": answer,
+        "answer_type": "interval",
+        "checker_type": "interval_checker",
+        "explanation": explanation,
+        "diagnosis_tags": ["quadratic_inequality", "contextual_application", scenario],
+        "metadata": {
+            "givens": [f"scenario={scenario}"],
+            "target": "interval_solution",
+            "derivation": [answer],
+            "problem_type_id": pt,
+            "template_slot": "applied_quadratic_inequality_problem",
+            "template_variant": template_variant,
+        },
+        "source": "gencode_slot_generator",
+    }
+
+
 def _slot_quadratic_graph_vertex_axis_choice(
     skill_id: str, pt: str, spec: dict[str, Any], seed: int | None
 ) -> dict[str, Any]:
@@ -1595,6 +2081,12 @@ SLOT_REGISTRY: dict[str, GeneratorFn] = {
     "quadratic_standard_to_vertex_properties": _slot_quadratic_standard_to_vertex_properties,
     "quadratic_vertex_or_parameter_computation": _slot_quadratic_vertex_or_parameter_computation,
     "quadratic_vertex_form_translation_to_new_function": _slot_quadratic_vertex_form_translation_to_new_function,
+    "factor_quadratic_by_cross_multiplication": _slot_factor_quadratic_by_cross_multiplication,
+    "solve_quadratic_inequality": _slot_solve_quadratic_inequality,
+    "solve_quadratic_inequality_special_cases": _slot_solve_quadratic_inequality_special_cases,
+    "solve_quadratic_inequality_parameter_range": _slot_solve_quadratic_inequality_parameter_range,
+    "reverse_quadratic_inequality_coefficients": _slot_reverse_quadratic_inequality_coefficients,
+    "applied_quadratic_inequality_problem": _slot_applied_quadratic_inequality_problem,
     DIVISION_POINT_SLOT: _slot_division_point_coordinates,
 }
 
@@ -1603,6 +2095,14 @@ TARGET_TASK_GENERATOR_REGISTRY: dict[str, GeneratorFn] = {
     "compute_centroid_coordinates": _slot_division_point_coordinates,
     "compute_midpoint_coordinates": _slot_division_point_coordinates,
     "solve_point_from_section_ratio": _slot_division_point_coordinates,
+    "factor_quadratic_by_cross_multiplication": _slot_factor_quadratic_by_cross_multiplication,
+    "solve_quadratic_by_factoring": _slot_factor_quadratic_by_cross_multiplication,
+    "solve_quadratic_inequality": _slot_solve_quadratic_inequality,
+    "interpret_quadratic_inequality_solution_set": _slot_solve_quadratic_inequality,
+    "solve_quadratic_inequality_special_cases": _slot_solve_quadratic_inequality_special_cases,
+    "solve_quadratic_inequality_parameter_range": _slot_solve_quadratic_inequality_parameter_range,
+    "reverse_quadratic_inequality_coefficients": _slot_reverse_quadratic_inequality_coefficients,
+    "applied_quadratic_inequality_problem": _slot_applied_quadratic_inequality_problem,
 }
 
 

@@ -1,0 +1,433 @@
+# Gencode Phase2 Generator Summary: vh_數學B1_SlopeOfALine
+
+## phase2
+```json
+{
+  "ok": true,
+  "phase": "phase2",
+  "skill_id": "vh_數學B1_SlopeOfALine",
+  "sop_reference": {
+    "sop_policy_version": "v0.3",
+    "highest_sop": "docs/系統SOP/Gencode_AgentSkillV2整合/Gencode與AgentSkillV2整合總體設計_v0.3.md",
+    "required_sop_files": [
+      {
+        "path": "docs/系統SOP/Gencode_AgentSkillV2整合/Gencode與AgentSkillV2整合總體設計_v0.3.md",
+        "exists": true,
+        "readable": true,
+        "mojibake_detected": false
+      },
+      {
+        "path": "docs/系統SOP/Gencode_AgentSkillV2整合/AgentSkillV2_ProblemType規格包設計_v0.3.md",
+        "exists": true,
+        "readable": true,
+        "mojibake_detected": false
+      },
+      {
+        "path": "docs/系統SOP/Gencode_AgentSkillV2整合/AnswerContract_EquivalenceType_Gate_v0.3.md",
+        "exists": true,
+        "readable": true,
+        "mojibake_detected": false
+      }
+    ],
+    "sop_preflight_status": "PASS"
+  },
+  "phase1_alignment_blocked": false,
+  "alignment_blockers": [],
+  "generator_results": [
+    {
+      "problem_type_id": "integer_compute_numeric",
+      "source_example_count": 1,
+      "answer_contract": {
+        "choices_required": false,
+        "choice_count": null,
+        "correct_choice_count": null,
+        "frontend_render_choices": false,
+        "source_has_choices": false,
+        "answer_type": "integer",
+        "answer_shape": "scalar",
+        "answer_semantics": "text_short",
+        "answer_equivalence": "numeric_exact",
+        "equivalence_type": "numeric_exact",
+        "checker": "integer_checker",
+        "checker_key": "integer_checker",
+        "presentation_mode": "short_answer",
+        "selected_checker": "text_short_checker"
+      },
+      "answer_type": "integer",
+      "answer_shape": "scalar",
+      "equivalence_type": "numeric_exact",
+      "selected_checker": "integer_checker",
+      "checker_key": "integer_checker",
+      "checker_capability_status": "ok",
+      "checker_contract_blockers": [],
+      "checker_contract_warnings": [],
+      "generator_key": "vh_數學B1_SlopeOfALine:integer_compute_numeric:draft_v1",
+      "generator_status": "runtime_ready_with_warning",
+      "checker_smoke_status": "passed",
+      "dynamic_sampling_status": "runtime_ready_with_diversity_warning",
+      "diversity_sampling": {
+        "diversity_sampling_status": "generator_diversity_blocked",
+        "diversity_healthy": false,
+        "sample_count": 30,
+        "unique_signature_count": 4,
+        "unique_question_text_count": 28,
+        "template_variant_distribution": {
+          "live": 30
+        },
+        "answer_shape_distribution": {
+          "第三象限": 6,
+          "第一象限": 7,
+          "第四象限": 9,
+          "第二象限": 8
+        },
+        "variable_coverage_report": {
+          "ratio_forms": [],
+          "coordinate_patterns": [
+            ""
+          ],
+          "answer_type_modes": [
+            ""
+          ]
+        },
+        "repetition_warnings": [
+          "low_unique_signature_count",
+          "consecutive_same_template_variant"
+        ],
+        "diversity_blockers": [
+          "generator_diversity_blocked",
+          "consecutive_template_diversity_blocked"
+        ],
+        "max_consecutive_same_template": 30,
+        "generation_errors": [],
+        "sampling_mode": "live"
+      },
+      "unique_signature_count": 4,
+      "template_variant_distribution": {
+        "live": 30
+      },
+      "variable_coverage_report": {
+        "ratio_forms": [],
+        "coordinate_patterns": [
+          ""
+        ],
+        "answer_type_modes": [
+          ""
+        ]
+      },
+      "repetition_warnings": [
+        "consecutive_same_template_variant",
+        "low_sample_diversity_tolerance_applied",
+        "low_source_examples",
+        "low_unique_signature_count"
+      ],
+      "requires_human_action": false,
+      "blockers": [],
+      "warnings": [
+        "consecutive_same_template_variant",
+        "low_sample_diversity_tolerance_applied",
+        "low_source_examples",
+        "low_unique_signature_count"
+      ],
+      "usable_for_phase3": true,
+      "target_task": "compute_numeric",
+      "base_problem_type_id": "compute_numeric",
+      "value_type_prefix": "integer",
+      "template_slot": "point_quadrant",
+      "_resolved_template_slot": "point_quadrant"
+    },
+    {
+      "problem_type_id": "integer_applied_quadratic_inequality_problem",
+      "source_example_count": 2,
+      "answer_contract": {
+        "choices_required": false,
+        "choice_count": null,
+        "correct_choice_count": null,
+        "frontend_render_choices": false,
+        "source_has_choices": false,
+        "answer_type": "interval",
+        "answer_shape": "interval_or_union",
+        "answer_semantics": "interval_union",
+        "answer_equivalence": "interval_equivalence",
+        "equivalence_type": "interval_equivalence",
+        "checker": "interval_checker",
+        "checker_key": "interval_checker",
+        "presentation_mode": "short_answer",
+        "selected_checker": "interval_checker",
+        "checker_selection_reason": "quadratic_inequality_interval_solution",
+        "accepted_formats": [
+          "-5 <= x <= 1",
+          "(-5, 1]",
+          "x in [-5,1]",
+          "x<-2 or x>5",
+          "-2<x<5",
+          "x<=-2 or x>=5"
+        ]
+      },
+      "answer_type": "interval",
+      "answer_shape": "interval_or_union",
+      "equivalence_type": "interval_equivalence",
+      "selected_checker": "interval_checker",
+      "checker_key": "interval_checker",
+      "checker_capability_status": "ok",
+      "checker_contract_blockers": [],
+      "checker_contract_warnings": [],
+      "generator_key": "vh_數學B1_SlopeOfALine:integer_applied_quadratic_inequality_problem:draft_v1",
+      "generator_status": "runtime_ready_with_warning",
+      "checker_smoke_status": "passed",
+      "dynamic_sampling_status": "runtime_ready_with_diversity_warning",
+      "diversity_sampling": {
+        "diversity_sampling_status": "runtime_ready_with_diversity_warning",
+        "diversity_healthy": false,
+        "sample_count": 30,
+        "unique_signature_count": 14,
+        "unique_question_text_count": 14,
+        "template_variant_distribution": {
+          "triangle_side": 16,
+          "coffee_profit": 14
+        },
+        "answer_shape_distribution": {
+          "x<4 or x>8": 5,
+          "1<x<7": 3,
+          "1<x<4": 1,
+          "2<x<5": 1,
+          "x<4 or x>7": 3,
+          "x<3 or x>6": 5,
+          "3<x<10": 1,
+          "1<x<6": 3,
+          "3<x<11": 1,
+          "1<x<9": 1,
+          "2<x<10": 1,
+          "3<x<9": 1,
+          "x<3 or x>5": 3,
+          "2<x<9": 1
+        },
+        "variable_coverage_report": {
+          "ratio_forms": [],
+          "coordinate_patterns": [
+            ""
+          ],
+          "answer_type_modes": [
+            ""
+          ]
+        },
+        "repetition_warnings": [
+          "low_unique_signature_count",
+          "consecutive_same_template_variant"
+        ],
+        "diversity_blockers": [],
+        "max_consecutive_same_template": 5,
+        "generation_errors": [],
+        "sampling_mode": "live"
+      },
+      "unique_signature_count": 14,
+      "template_variant_distribution": {
+        "triangle_side": 16,
+        "coffee_profit": 14
+      },
+      "variable_coverage_report": {
+        "ratio_forms": [],
+        "coordinate_patterns": [
+          ""
+        ],
+        "answer_type_modes": [
+          ""
+        ]
+      },
+      "repetition_warnings": [
+        "consecutive_same_template_variant",
+        "low_sample_diversity_tolerance_applied",
+        "low_source_examples",
+        "low_unique_signature_count"
+      ],
+      "requires_human_action": false,
+      "blockers": [],
+      "warnings": [
+        "consecutive_same_template_variant",
+        "low_sample_diversity_tolerance_applied",
+        "low_source_examples",
+        "low_unique_signature_count"
+      ],
+      "usable_for_phase3": true,
+      "target_task": "applied_quadratic_inequality_problem",
+      "base_problem_type_id": "applied_quadratic_inequality_problem",
+      "value_type_prefix": "integer",
+      "template_slot": "applied_quadratic_inequality_problem",
+      "_resolved_template_slot": "applied_quadratic_inequality_problem"
+    },
+    {
+      "problem_type_id": "integer_evaluate_function_value",
+      "source_example_count": 7,
+      "answer_contract": {
+        "choices_required": true,
+        "choice_count": null,
+        "correct_choice_count": null,
+        "frontend_render_choices": true,
+        "answer_type": "single_choice",
+        "answer_shape": "single_choice",
+        "answer_equivalence": "choice_label",
+        "checker": "choice_label_checker",
+        "accepted_formats": [
+          "5",
+          "5.0",
+          "-3"
+        ],
+        "equivalence_type": "choice_label",
+        "checker_key": "choice_label_checker",
+        "presentation_mode": "single_choice",
+        "fallback_checker": "text_short_checker",
+        "fallback_checker_key": "text_short_checker"
+      },
+      "answer_type": "single_choice",
+      "answer_shape": "single_choice",
+      "equivalence_type": "choice_label",
+      "selected_checker": "choice_label_checker",
+      "checker_key": "choice_label_checker",
+      "checker_capability_status": "ok",
+      "checker_contract_blockers": [],
+      "checker_contract_warnings": [],
+      "generator_key": "vh_數學B1_SlopeOfALine:integer_evaluate_function_value:draft_v1",
+      "generator_status": "runtime_ready_with_warning",
+      "checker_smoke_status": "passed",
+      "dynamic_sampling_status": "runtime_ready_with_diversity_warning",
+      "diversity_sampling": {
+        "diversity_sampling_status": "runtime_ready_with_diversity_warning",
+        "diversity_healthy": true,
+        "sample_count": 30,
+        "unique_signature_count": 30,
+        "unique_question_text_count": 14,
+        "template_variant_distribution": {
+          "default": 30
+        },
+        "answer_shape_distribution": {
+          "(-8,-2)": 1,
+          "(9,8)": 1,
+          "(-4,12)": 1,
+          "(2,12)": 1,
+          "(-1,-6)": 2,
+          "(8,-2)": 1,
+          "(7,2)": 1,
+          "(10,7)": 1,
+          "(3,0)": 1,
+          "(4,-1)": 1,
+          "(0,1)": 1,
+          "(-2,1)": 1,
+          "(-2,5)": 1,
+          "(1,15)": 1,
+          "(9,6)": 1,
+          "(10,9)": 1,
+          "(7,-4)": 1,
+          "(-9,8)": 1,
+          "(0,5)": 1,
+          "(-1,8)": 1,
+          "(7,-9)": 1,
+          "(15,9)": 1,
+          "(-5,-5)": 1,
+          "(1,-4)": 1,
+          "(3,-5)": 1,
+          "(12,2)": 1,
+          "(0,-8)": 1,
+          "(3,6)": 1,
+          "(1,-6)": 1
+        },
+        "variable_coverage_report": {
+          "ratio_forms": [
+            "AP:PB=m:n",
+            "AP=mPB",
+            "mAP=nPB"
+          ],
+          "coordinate_patterns": [
+            "++",
+            "+-",
+            "-+",
+            "--",
+            "mixed"
+          ],
+          "answer_type_modes": [
+            ""
+          ]
+        },
+        "repetition_warnings": [
+          "consecutive_same_template_variant"
+        ],
+        "diversity_blockers": [],
+        "max_consecutive_same_template": 30,
+        "generation_errors": [
+          "generator_semantically_unsafe:answer_not_in_choices,choice_count_mismatch,choices_missing",
+          "generator_semantically_unsafe:answer_not_in_choices,choice_count_mismatch,choices_missing",
+          "generator_semantically_unsafe:answer_not_in_choices,choice_count_mismatch,choices_missing",
+          "generator_semantically_unsafe:answer_not_in_choices,choice_count_mismatch,choices_missing",
+          "generator_semantically_unsafe:answer_not_in_choices,choice_count_mismatch,choices_missing"
+        ],
+        "sampling_mode": "contract_simulation"
+      },
+      "unique_signature_count": 30,
+      "template_variant_distribution": {
+        "default": 30
+      },
+      "variable_coverage_report": {
+        "ratio_forms": [
+          "AP:PB=m:n",
+          "AP=mPB",
+          "mAP=nPB"
+        ],
+        "coordinate_patterns": [
+          "++",
+          "+-",
+          "-+",
+          "--",
+          "mixed"
+        ],
+        "answer_type_modes": [
+          ""
+        ]
+      },
+      "repetition_warnings": [
+        "consecutive_same_template_variant"
+      ],
+      "requires_human_action": false,
+      "blockers": [],
+      "warnings": [
+        "consecutive_same_template_variant"
+      ],
+      "usable_for_phase3": true,
+      "target_task": "evaluate_function_value",
+      "base_problem_type_id": "evaluate_function_value",
+      "value_type_prefix": "integer",
+      "template_slot": "point_quadrant",
+      "_resolved_template_slot": "point_quadrant"
+    }
+  ],
+  "failed_generators": [],
+  "accepted_generators": [
+    "vh_數學B1_SlopeOfALine:integer_applied_quadratic_inequality_problem:draft_v1",
+    "vh_數學B1_SlopeOfALine:integer_compute_numeric:draft_v1",
+    "vh_數學B1_SlopeOfALine:integer_evaluate_function_value:draft_v1"
+  ],
+  "foundation_preflight": {
+    "foundation_ready": true,
+    "foundation_status": "PASS",
+    "missing_checker": [],
+    "missing_verifier": [],
+    "missing_domain_function": [],
+    "missing_generator": [],
+    "missing_runtime_binding": [],
+    "missing_registry_binding": [],
+    "missing_answer_contract_problem_types": [],
+    "repair_plan": [],
+    "next_action": "phase3_package_draft"
+  },
+  "foundation_ready": true,
+  "phase2_status": "PASS",
+  "repair_plan": [],
+  "reports": {
+    "phase2_generator_summary_json": "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_SlopeOfALine_phase2_generator_summary.json",
+    "phase2_generator_summary_md": "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_SlopeOfALine_phase2_generator_summary.md",
+    "phase2_json": "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_SlopeOfALine_phase2_generator_summary.json",
+    "phase2_md": "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_SlopeOfALine_phase2_generator_summary.md",
+    "generator_draft_spec_json": "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\drafts\\vh_數學B1_SlopeOfALine_generator_draft_spec.json"
+  },
+  "next_action": "phase3_package_draft",
+  "timestamp": "2026-06-14T08:32:50.030839+00:00",
+  "dry_run": true
+}
+```

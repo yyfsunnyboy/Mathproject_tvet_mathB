@@ -37,6 +37,7 @@ from core.gencode.pipeline_state import (
     write_text_file,
 )
 from core.gencode.runtime_smoke import run_draft_runtime_smoke
+from core.gencode.phase1_anchor_contract import phase1_enforcement_assertion_block
 from core.gencode.problem_type_induction import apply_spec_mode, induce_problem_types_from_examples
 from core.gencode.problem_type_spec import save_induced_problem_type_specs
 from core.gencode import problem_type_spec as problem_type_spec_registry
@@ -212,6 +213,14 @@ def _purge_choice_ghost_cache_from_answer_contract(
     spec: dict[str, Any], problem_type_id: str = ""
 ) -> dict[str, Any]:
     """SOP v0.3.4: strip choice ghosts and align short-answer families to numeric registry key."""
+    from core.gencode.answer_contract_policy import _FACTORING_TASKS, QUADRATIC_INEQUALITY_SOLUTION_TASKS
+
+    target_task = str(spec.get("target_task", "")).strip()
+    if target_task in _FACTORING_TASKS:
+        return spec
+    if target_task in QUADRATIC_INEQUALITY_SOLUTION_TASKS:
+        return spec
+
     pt_key_lower = str(problem_type_id or spec.get("problem_type_id", "")).strip().lower()
     is_short_answer_family = any(
         token in pt_key_lower
@@ -221,6 +230,10 @@ def _purge_choice_ghost_cache_from_answer_contract(
     if is_short_answer_family:
         ac = spec.get("answer_contract")
         if isinstance(ac, dict):
+            if str(ac.get("answer_type", "")).strip() == "expression":
+                return spec
+            if str(ac.get("answer_type", "")).strip() == "interval":
+                return spec
             ac["presentation_mode"] = "short_answer"
             if pt_key_lower.startswith("integer_"):
                 ac["answer_type"] = "integer"
@@ -661,10 +674,22 @@ def _build_phase2_foundation_preflight(
     }
     missing_registry_binding = sorted(observed_pts - bound_pts)
     missing_verifier = sorted(set(invalid_eq))
-    missing_domain_function = sorted({
+    usable_pts = {
         str(r.get("problem_type_id", "")).strip()
         for r in generator_results
-        if isinstance(r, dict) and "answer_contract_not_supported" in (r.get("blockers") or [])
+        if isinstance(r, dict)
+        and r.get("usable_for_phase3")
+        and str(r.get("generator_status", "")).strip()
+        in {"runtime_ready", "runtime_ready_with_warning", "limited_runtime_ready"}
+    }
+    missing_domain_function = sorted({
+        pt
+        for pt in (
+            str(r.get("problem_type_id", "")).strip()
+            for r in generator_results
+            if isinstance(r, dict) and "answer_contract_not_supported" in (r.get("blockers") or [])
+        )
+        if pt and pt not in usable_pts
     })
     missing_checker = sorted(set(missing_checker_key))
 
@@ -1437,15 +1462,29 @@ def _run_ai_classifier_bootstrap(
             }
         )
     prompt = (
-        "You are a math problem-type classifier bootstrapper.\n"
+        phase1_enforcement_assertion_block(
+            _build_phase1_main_skill_anchor(skill_id, examples),
+            include_anchor_fields=True,
+        )
+        + "\nYou are a math problem-type classifier bootstrapper.\n"
         "Return JSON only.\n"
         "Skill context:\n"
-        + json.dumps({"skill_id": skill_id, "skill_ch_name": skill_ch_name, "skill_en_name": ""}, ensure_ascii=False)
+        + json.dumps(
+            {
+                "skill_id": skill_id,
+                "skill_ch_name": skill_ch_name,
+                "skill_en_name": str(skill_id.split("_", 1)[-1] if "_" in skill_id else ""),
+            },
+            ensure_ascii=False,
+        )
         + "\nSource examples:\n"
         + json.dumps(source_items, ensure_ascii=False)
         + "\nOutput schema keys: skill_id, skill_ch_name, classifier_source, problem_types, source_classifications, manual_review_items.\n"
         "Rules:\n"
-        "- infer skill-related problem types from skill_id, skill_ch_name and question text.\n"
+        "- The skill_id and ALL source examples are 100% teacher-confirmed aligned. NEVER judge cross-family membership.\n"
+        "- infer skill-related problem types ONLY from skill_id tokens, skill_ch_name, and question text.\n"
+        "- NEVER route to absolute_value_inequality unless stems contain absolute-value notation.\n"
+        "- For QuadraticInequality / Factoring skills, prefer factor_quadratic_by_cross_multiplication or solve_quadratic_inequality.\n"
         "- avoid unrelated problem types.\n"
         "- You do not need to split every skill into multiple problem_types.\n"
         "- If source examples are few and structurally similar, merge into one primary problem_type.\n"
@@ -1692,6 +1731,64 @@ def _pick_skill_ch_name(skill_id: str, examples: list[dict[str, Any]]) -> str:
             if v:
                 return v
     return skill_id
+
+
+def _build_phase1_main_skill_anchor(skill_id: str, examples: list[dict[str, Any]]) -> dict[str, Any]:
+    """Build a skill-id-derived anchor for unregistered skills — no cross-family pollution."""
+    from core.gencode.main_skill_anchor import (
+        _expand_skill_id_tokens,
+        build_main_skill_anchor,
+        infer_expected_subskill_candidates,
+    )
+    from core.gencode.semantic_alignment import load_skill_metadata_from_db
+    from core.gencode.task_families import (
+        ABSOLUTE_VALUE_INEQUALITY_FAMILY,
+        QUADRATIC_INEQUALITY_FAMILY,
+        infer_skill_families_from_terms,
+    )
+
+    meta = load_skill_metadata_from_db(skill_id)
+    for ex in examples:
+        if not isinstance(ex, dict):
+            continue
+        if not meta.get("skill_ch_name"):
+            meta["skill_ch_name"] = _pick_skill_ch_name(skill_id, examples)
+        if ex.get("source_paragraph") and not meta.get("unit_name"):
+            meta["unit_name"] = str(ex.get("source_paragraph", "")).strip()
+        if ex.get("source_section") and not meta.get("section_code"):
+            meta["section_code"] = str(ex.get("source_section", "")).strip()
+        if ex.get("source_chapter") and not meta.get("chapter"):
+            meta["chapter"] = str(ex.get("source_chapter", "")).strip()
+        break
+    sid = str(skill_id or "").strip()
+    if "_" in sid and not meta.get("skill_en_name"):
+        meta["skill_en_name"] = sid.split("_", 1)[-1]
+
+    anchor = build_main_skill_anchor(skill_id, meta)
+    skill_terms = set(anchor.get("normalized_skill_terms") or [])
+    skill_terms |= _expand_skill_id_tokens(skill_id)
+    fresh_families = infer_skill_families_from_terms(skill_terms)
+    if fresh_families:
+        anchor["expected_task_families"] = sorted(fresh_families)
+        subskills, scope = infer_expected_subskill_candidates(skill_terms, fresh_families)
+        anchor["expected_subskill_candidates"] = subskills
+        anchor["skill_anchor_scope"] = scope
+
+    families = set(anchor.get("expected_task_families") or [])
+    if QUADRATIC_INEQUALITY_FAMILY in families:
+        families.discard(ABSOLUTE_VALUE_INEQUALITY_FAMILY)
+        anchor["expected_task_families"] = sorted(families)
+        anchor["expected_subskill_candidates"] = [
+            s
+            for s in (anchor.get("expected_subskill_candidates") or [])
+            if str(s).strip() and str(s) != ABSOLUTE_VALUE_INEQUALITY_FAMILY and not str(s).endswith("_family")
+        ] or sorted(anchor.get("expected_subskill_candidates") or [])
+
+    anchor["anchor_authority"] = "skill_id_derived_no_cross_family_pollution"
+    anchor["classification_mandate"] = phase1_enforcement_assertion_block(anchor)
+    anchor["source_skill_scope_locked"] = True
+    anchor["source_belongs_to_current_skill_by_default"] = True
+    return anchor
 
 
 def _build_human_review_items(
@@ -2552,7 +2649,13 @@ def run_gencode_phase1(skill_id: str, dry_run: bool = True, spec_mode: str = "ai
             row["example_id"] = row["id"]
         examples_for_induction.append(row)
     try:
-        induced = induce_problem_types_from_examples(skill_id, examples_for_induction, spec_mode=spec_mode)
+        phase1_anchor = _build_phase1_main_skill_anchor(skill_id, examples_for_induction)
+        induced = induce_problem_types_from_examples(
+            skill_id,
+            examples_for_induction,
+            spec_mode=spec_mode,
+            main_skill_anchor=phase1_anchor,
+        )
     except Exception as ex:
         healing = execute_pipeline_self_healing(ex, "phase1", skill_id)
         payload = {
@@ -2896,11 +2999,23 @@ def run_gencode_phase2(skill_id: str, accepted_problem_types: list | None = None
         answer_contract = c.get("answer_contract_proposal", {}) if isinstance(c.get("answer_contract_proposal"), dict) else {}
         checker_key = str(c.get("checker_key_proposal", "")).strip()
         eq = str(c.get("equivalence_type_proposal", "")).strip()
+        draft_spec = c.get("problem_type_spec_draft") if isinstance(c.get("problem_type_spec_draft"), dict) else {}
+        if draft_spec:
+            from core.gencode.problem_type_canonicalizer import enrich_spec_with_canonicalization, get_answer_contract
+
+            enriched = enrich_spec_with_canonicalization({**draft_spec, "skill_id": skill_id, "problem_type_id": pt})
+            answer_contract = get_answer_contract(enriched) or answer_contract
+            checker_key = str(
+                answer_contract.get("checker_key") or answer_contract.get("checker") or checker_key
+            ).strip()
+            eq = str(
+                answer_contract.get("equivalence_type") or answer_contract.get("answer_equivalence") or eq
+            ).strip()
         generator_key = f"{skill_id}:{pt}:draft_v1"
         blockers: list[str] = []
         warnings: list[str] = []
         status = "draft_planned"
-        matched_count = int(c.get("matched_example_count", 0))
+        matched_count = int(c.get("matched_example_count") or c.get("source_example_count") or 0)
         spec_source = str(c.get("spec_source", "")).strip()
         generator_readiness = str(c.get("generator_readiness", "")).strip()
         pt_requires_human_action = bool(c.get("requires_human_action", False))
@@ -2913,7 +3028,7 @@ def run_gencode_phase2(skill_id: str, accepted_problem_types: list | None = None
             or all_sources_rejected_for_pt
             or (pt_requires_human_action and no_usable_source_for_pt)
         )
-        if spec_source in {"problem_type_specs.v1.json", "phase1_induced_draft"}:
+        if spec_source in {"problem_type_specs.v1.json", "phase1_induced_draft", "anchor_slot_bootstrap"}:
             draft_spec = c.get("problem_type_spec_draft") if isinstance(c.get("problem_type_spec_draft"), dict) else {}
             if draft_spec:
                 from core.gencode.spec_phase1_merge import slot_generator_readiness
@@ -2965,7 +3080,7 @@ def run_gencode_phase2(skill_id: str, accepted_problem_types: list | None = None
             if at in {"numeric", "numeric_or_radical", "set", "solution_set", "interval"}:
                 status = "blocked"
                 blockers.append("answer_contract_not_supported")
-        if matched_count < 3:
+        if matched_count <= 3:
             warnings.append("low_source_examples")
         checker_smoke_status = "pending"
         dynamic_sampling_status = "pending"
@@ -3000,7 +3115,7 @@ def run_gencode_phase2(skill_id: str, accepted_problem_types: list | None = None
             set(list(warnings) + list(diversity_report.get("repetition_warnings") or []))
         )
         low_sample_diversity_tolerated = (
-            matched_count < 3 and "low_source_examples" in merged_warnings
+            matched_count <= 3 and "low_source_examples" in merged_warnings
         )
         if low_sample_diversity_tolerated:
             diversity_only_blockers = {
@@ -3043,6 +3158,27 @@ def run_gencode_phase2(skill_id: str, accepted_problem_types: list | None = None
             accepted_generators.append(generator_key)
         else:
             failed_generators.append(generator_key)
+        packaging_meta: dict[str, Any] = {}
+        if draft_spec:
+            try:
+                from core.gencode.problem_type_canonicalizer import enrich_spec_with_canonicalization
+
+                enriched_pack = enrich_spec_with_canonicalization(
+                    {**draft_spec, "skill_id": skill_id, "problem_type_id": pt}
+                )
+                packaging_meta = {
+                    "target_task": str(enriched_pack.get("target_task") or "").strip(),
+                    "base_problem_type_id": str(
+                        enriched_pack.get("canonical_base_problem_type_id") or ""
+                    ).strip(),
+                    "value_type_prefix": str(enriched_pack.get("value_type_prefix") or "").strip(),
+                    "template_slot": str(enriched_pack.get("_resolved_template_slot") or "").strip(),
+                    "_resolved_template_slot": str(
+                        enriched_pack.get("_resolved_template_slot") or ""
+                    ).strip(),
+                }
+            except Exception:
+                packaging_meta = {}
         generator_results.append(
             {
                 "problem_type_id": pt,
@@ -3069,8 +3205,33 @@ def run_gencode_phase2(skill_id: str, accepted_problem_types: list | None = None
                 "blockers": merged_blockers,
                 "warnings": merged_warnings,
                 "usable_for_phase3": usable_for_phase3,
+                **packaging_meta,
             }
         )
+
+    from core.gencode.packaging_policy import _generator_record_rank
+
+    deduped_results: dict[str, dict[str, Any]] = {}
+    for row in generator_results:
+        if not isinstance(row, dict):
+            continue
+        gk = str(row.get("generator_key", "")).strip() or str(row.get("problem_type_id", "")).strip()
+        if not gk:
+            continue
+        existing = deduped_results.get(gk)
+        if existing is None or _generator_record_rank(row) > _generator_record_rank(existing):
+            deduped_results[gk] = row
+    generator_results = list(deduped_results.values())
+    accepted_generators = sorted({
+        str(r.get("generator_key", "")).strip()
+        for r in generator_results
+        if isinstance(r, dict) and r.get("usable_for_phase3")
+    })
+    failed_generators = sorted({
+        str(r.get("generator_key", "")).strip()
+        for r in generator_results
+        if isinstance(r, dict) and not r.get("usable_for_phase3")
+    })
 
     reports = {
         **_phase_reports(
@@ -3382,28 +3543,28 @@ def run_gencode_phase3_package(skill_id: str, accepted_generator_keys: list | No
     )
     packaging_diag["phase2_generator_summary_json"] = str(phase2_path)
     packaging_diag["generator_draft_spec_json"] = str(draft_spec_path)
-    runtime_spec_alignment = _sync_phase3_runtime_specs_from_draft(
-        skill_id,
-        draft_spec if isinstance(draft_spec, dict) else {},
-        usable,
-    )
-    packaging_diag["runtime_spec_alignment"] = runtime_spec_alignment
-    if runtime_spec_alignment.get("canonical_filter_applied"):
-        runtime_usable_problem_types = set(
-            runtime_spec_alignment.get("runtime_usable_problem_type_ids") or []
-        )
-        usable = [
-            row
-            for row in usable
-            if str(row.get("problem_type_id", "")).strip()
-            in runtime_usable_problem_types
-        ]
-    phase3_warnings = sorted({w for g in usable for w in (g.get("warnings") or []) if str(w).strip()})
     draft_skill_path = phase_summary_path(skill_id, "draft_skill")
     generator_specs: list[dict[str, Any]] = []
     generator_keys: list[str] = []
     if usable:
         generator_specs, generator_keys = build_generator_specs_for_phase3(skill_id, usable)
+    packaged_problem_types = {
+        str(spec.get("problem_type_id", "")).strip()
+        for spec in generator_specs
+        if isinstance(spec, dict) and str(spec.get("problem_type_id", "")).strip()
+    }
+    packaged_usable = [
+        row
+        for row in usable
+        if str(row.get("problem_type_id", "")).strip() in packaged_problem_types
+    ]
+    runtime_spec_alignment = _sync_phase3_runtime_specs_from_draft(
+        skill_id,
+        draft_spec if isinstance(draft_spec, dict) else {},
+        packaged_usable,
+    )
+    packaging_diag["runtime_spec_alignment"] = runtime_spec_alignment
+    if usable and generator_specs:
         code = build_phase3_skill_module_code(skill_id, generator_specs, generator_keys)
         draft_skill_path.write_text(code, encoding="utf-8")
     else:
@@ -3413,9 +3574,10 @@ def run_gencode_phase3_package(skill_id: str, accepted_generator_keys: list | No
                     stale_path.unlink()
             except OSError:
                 pass
-    py_status = "not_run_no_usable_generators" if not usable else "passed"
+    phase3_warnings = sorted({w for g in packaged_usable for w in (g.get("warnings") or []) if str(w).strip()})
+    py_status = "not_run_no_usable_generators" if not generator_specs else "passed"
     py_reason = ""
-    if usable:
+    if generator_specs:
         try:
             py_compile.compile(str(draft_skill_path), doraise=True)
         except Exception as e:

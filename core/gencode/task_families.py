@@ -15,6 +15,8 @@ FUNCTION_CONCEPT_FAMILY = "function_concept_family"
 GENERIC_NUMERIC_FAMILY = "generic_numeric_family"
 # K12 quadratic function graph family (Source Skill Binding Supremacy §8).
 QUADRATIC_FUNCTION_GRAPH_FAMILY = "quadratic_function_graph_family"
+# Quadratic inequality + factoring family (vocational math B1 §1-4).
+QUADRATIC_INEQUALITY_FAMILY = "quadratic_inequality_family"
 
 FUNCTION_CONCEPT_TASKS = frozenset(
     {
@@ -70,6 +72,19 @@ QUADRATIC_FUNCTION_GRAPH_TASKS = frozenset(
     }
 )
 
+QUADRATIC_INEQUALITY_TASKS = frozenset(
+    {
+        "solve_quadratic_inequality",
+        "factor_quadratic_by_cross_multiplication",
+        "solve_quadratic_by_factoring",
+        "interpret_quadratic_inequality_solution_set",
+        "solve_quadratic_inequality_special_cases",
+        "solve_quadratic_inequality_parameter_range",
+        "reverse_quadratic_inequality_coefficients",
+        "applied_quadratic_inequality_problem",
+    }
+)
+
 TASK_TO_FAMILY: dict[str, str] = {
     "compute_distance": DISTANCE_BETWEEN_TWO_POINTS_FAMILY,
     "compute_distance_between_two_points": DISTANCE_BETWEEN_TWO_POINTS_FAMILY,
@@ -109,6 +124,15 @@ TASK_TO_FAMILY: dict[str, str] = {
     "quadratic_vertex_form_properties": QUADRATIC_FUNCTION_GRAPH_FAMILY,
     "quadratic_vertex_or_parameter_computation": QUADRATIC_FUNCTION_GRAPH_FAMILY,
     "quadratic_vertex_form_translation_to_new_function": QUADRATIC_FUNCTION_GRAPH_FAMILY,
+    "solve_quadratic_inequality": QUADRATIC_INEQUALITY_FAMILY,
+    "interpret_quadratic_inequality_solution_set": QUADRATIC_INEQUALITY_FAMILY,
+    "solve_quadratic_inequality_special_cases": QUADRATIC_INEQUALITY_FAMILY,
+    "solve_quadratic_inequality_parameter_range": QUADRATIC_INEQUALITY_FAMILY,
+    "reverse_quadratic_inequality_coefficients": QUADRATIC_INEQUALITY_FAMILY,
+    "applied_quadratic_inequality_problem": QUADRATIC_INEQUALITY_FAMILY,
+    "factor_quadratic_by_cross_multiplication": QUADRATIC_INEQUALITY_FAMILY,
+    "solve_quadratic_by_factoring": QUADRATIC_INEQUALITY_FAMILY,
+    "interpret_quadratic_inequality_solution_set": QUADRATIC_INEQUALITY_FAMILY,
 }
 
 # Higher score wins when multiple families match skill terms (not generator availability).
@@ -136,6 +160,21 @@ FAMILY_SKILL_HINTS_SCORED: list[tuple[str, tuple[str, ...], int]] = [
             "平移",
         ),
         150,
+    ),
+    (
+        QUADRATIC_INEQUALITY_FAMILY,
+        (
+            "quadraticinequality",
+            "quadratic inequality",
+            "quadraticinequalityandfactoring",
+            "一元二次不等式",
+            "二次不等式",
+            "十字交乘",
+            "十字交乘法",
+            "因式分解",
+            "factoring",
+        ),
+        155,
     ),
     (
         FUNCTION_CONCEPT_FAMILY,
@@ -320,11 +359,36 @@ def task_family_for_task(target_task: str) -> str:
         return FUNCTION_CONCEPT_FAMILY
     if task in QUADRATIC_FUNCTION_GRAPH_TASKS or "quadratic" in task:
         return QUADRATIC_FUNCTION_GRAPH_FAMILY
+    if task in QUADRATIC_INEQUALITY_TASKS:
+        return QUADRATIC_INEQUALITY_FAMILY
     return GENERIC_NUMERIC_FAMILY
+
+
+def _is_quadratic_inequality_skill_blob(norm: str, skill_terms: set[str]) -> bool:
+    blob = norm.lower()
+    has_quadratic = (
+        "quadratic" in blob
+        or "二次" in blob
+        or any("quadratic" in t for t in skill_terms)
+    )
+    has_inequality = (
+        "inequality" in blob
+        or "不等式" in blob
+        or any("inequality" in t for t in skill_terms)
+    )
+    has_factoring = (
+        "factoring" in blob
+        or "因式" in blob
+        or "十字" in blob
+        or any(tok in skill_terms for tok in {"factoring", "factor"})
+    )
+    return (has_quadratic and has_inequality) or (has_quadratic and has_factoring)
 
 
 def infer_skill_families_from_terms(skill_terms: set[str]) -> set[str]:
     norm = " ".join(sorted(skill_terms)).lower()
+    if _is_quadratic_inequality_skill_blob(norm, skill_terms):
+        return {QUADRATIC_INEQUALITY_FAMILY}
     if "functionconcept" in skill_terms or "function concept" in norm or "函數的概念" in norm or "函数的概念" in norm:
         return {FUNCTION_CONCEPT_FAMILY}
     scored: list[tuple[int, str]] = []
@@ -340,6 +404,8 @@ def infer_skill_families_from_terms(skill_terms: set[str]) -> set[str]:
     scored.sort(reverse=True)
     top_score = scored[0][0]
     result = {fam for score, fam in scored if score >= top_score * 0.5}
+    if QUADRATIC_INEQUALITY_FAMILY in result:
+        result.discard(ABSOLUTE_VALUE_INEQUALITY_FAMILY)
     # Source Skill Binding Supremacy §8: when quadratic family is the dominant match,
     # discard coordinate_system_family which is only a background chapter term.
     if QUADRATIC_FUNCTION_GRAPH_FAMILY in result and COORDINATE_SYSTEM_FAMILY in result:

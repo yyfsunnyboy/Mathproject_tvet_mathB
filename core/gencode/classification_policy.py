@@ -14,6 +14,7 @@ from core.gencode.classification_candidates import (
     rule_fallback_candidate_selection,
 )
 from core.gencode.example_feature_extractor import extract_example_feature_rule_only
+from core.gencode.problem_type_canonicalizer import resolve_target_task_from_math_meta_tags
 from core.gencode.source_structure_context import (
     apply_structure_confidence_adjustment,
     check_linked_example_consistency,
@@ -133,6 +134,14 @@ def uses_ai_first_classification(spec_mode: str) -> bool:
 def _rule_confidence(rule_feat: dict[str, Any]) -> float:
     task = str(rule_feat.get("target_task", "")).strip()
     text = str(rule_feat.get("question_text", "")).strip()
+    if task in {
+        "solve_quadratic_inequality",
+        "factor_quadratic_by_cross_multiplication",
+        "solve_quadratic_by_factoring",
+    }:
+        if any(k in text for k in ("十字交乘", "因式分解", "不等式", "x^2", "x}^{2}")):
+            return 0.72 if task == "factor_quadratic_by_cross_multiplication" else 0.65
+        return 0.5
     if not task or task == "compute_numeric":
         return 0.2
     if task in {
@@ -190,6 +199,7 @@ def merge_skill_scoped_classification(
 
     anchor = main_skill_anchor if isinstance(main_skill_anchor, dict) else {}
     expected_families = set(anchor.get("expected_task_families") or [])
+    scope_locked = bool(anchor.get("source_skill_scope_locked", False))
     candidates = skill_scoped_candidates or list(ai_result.get("skill_scoped_candidates") or [])
     outsider_ids = [
         str(c.get("candidate_id", ""))
@@ -229,7 +239,72 @@ def merge_skill_scoped_classification(
 
     expected_subskills = set(anchor.get("expected_subskill_candidates") or [])
     is_valid_task = (rule_task in expected_subskills) or (rule_family in expected_families)
-    exact_legal_rule_match = bool(rule_task and is_valid_task and ai_task == rule_task)
+    exact_legal_rule_match = bool(rule_task and is_valid_task and (not ai_task or ai_task == rule_task))
+    if scope_locked and rule_task in expected_subskills and not has_severe_defect:
+        exact_legal_rule_match = True
+
+    math_meta_tags = list(rule_result.get("math_meta_tags") or [])
+    forced_meta_task = str(
+        rule_result.get("forced_target_task")
+        or resolve_target_task_from_math_meta_tags(math_meta_tags)
+        or ""
+    ).strip()
+    if forced_meta_task and (
+        not expected_subskills
+        or forced_meta_task in expected_subskills
+        or task_family_for_task(forced_meta_task) in expected_families
+    ):
+        forced_family = task_family_for_task(forced_meta_task)
+        meta_hint = str(rule_result.get("meta_answer_format_hint", "")).strip()
+        final = {
+            "target_task": forced_meta_task,
+            "task_family": forced_family,
+            "math_objects": list(rule_result.get("math_objects") or []),
+            "answer_type": str(rule_result.get("answer_type", "")).strip(),
+            "answer_shape": str(rule_result.get("answer_shape", "")).strip(),
+        }
+        trace = {
+            "ai_target_task": ai_task,
+            "ai_task_family": ai_family,
+            "ai_confidence": round(ai_conf, 4),
+            "ai_best_candidate_id": forced_meta_task,
+            "ai_evidence": list(ai_result.get("evidence") or []),
+            "ai_rejected_candidates": dict(ai_result.get("rejected_candidates") or {}),
+            "ai_available": ai_available,
+            "ai_error": str(ai_result.get("error", "")).strip(),
+            "ai_unavailable_reason": str(ai_result.get("ai_unavailable_reason", "")).strip(),
+            "ai_semantic_status": ai_semantic_status,
+            "ai_invalid_response_reason": ai_invalid_reason,
+            "parser_error": str(ai_result.get("parser_error", "")),
+            "raw_response_preview": str(ai_result.get("raw_response_preview", "")),
+            "sanitized_response_preview": str(ai_result.get("sanitized_response_preview", "")),
+            "failed_stage": str(ai_result.get("failed_stage", "")),
+            "rule_target_task": rule_task,
+            "rule_task_family": rule_family,
+            "rule_confidence": round(rule_conf, 4),
+            "final_target_task": forced_meta_task,
+            "final_task_family": forced_family,
+            "classifier_source": "math_meta_tag_forced",
+            "classification_decision": "forced_by_math_meta_preflight",
+            "conflict_reason": "",
+            "source_mapping_warning": "",
+            "requires_human_action": False,
+            "ai_notes": str(ai_result.get("notes", "")).strip(),
+            "skill_scoped_candidates": candidates,
+            "outsider_candidates": outsider_ids,
+            "selected_subskill": forced_meta_task,
+            "selected_problem_type": forced_meta_task,
+            "candidate_source": "math_meta_tag",
+            "selected_generator_contract": dict(ai_result.get("generator_contract") or {}),
+            "parameter_schema": dict(ai_result.get("parameter_schema") or {}),
+            "variable_randomization_notes": [],
+            "checker_key": str(ai_result.get("checker_key", "")).strip(),
+            "equivalence_type": str(ai_result.get("equivalence_type", "")).strip(),
+            "skill_scope_trusted": True,
+            "math_meta_tags": math_meta_tags,
+            "meta_answer_format_hint": meta_hint,
+        }
+        return {**trace, **final}
 
     def _final_from_ai() -> dict[str, Any]:
         return {
@@ -765,6 +840,9 @@ def build_classified_example_feature(
     )
     ex_run = dict(ex)
     ex_run["_skill_scoped_candidates"] = candidates
+    ex_run["math_meta_tags"] = list(rule_feat.get("math_meta_tags") or [])
+    if rule_feat.get("forced_target_task"):
+        ex_run["forced_target_task"] = rule_feat.get("forced_target_task")
 
     classify = ai_classify_fn or classify_example_semantics_with_ai
     ai_result = dict(

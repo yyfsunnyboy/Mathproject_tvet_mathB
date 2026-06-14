@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="zh-TW">
 
 <head>
@@ -582,7 +582,7 @@
         {% endwith %}
 
         <!-- Skills Table -->
-        {% if skills %}
+        {% if skills_data %}
         <div class="skills-table">
             <table>
                 <thead>
@@ -598,28 +598,28 @@
                     </tr>
                 </thead>
                 <tbody>
-                    {% for skill in skills %}
+                    {% for skill_info, curriculum in skills_data %}
                     <tr>
-                        <td>{{ skill.order_index }}</td>
+                        <td>{{ curriculum.display_order }}</td>
                         <td class="skill-id-col">
                             <div class="skill-id-cell">
-                                <code>{{ skill.skill_id }}</code>
-                                <small class="skill-subline">{{ skill.skill_en_name }}</small>
-                                <small class="skill-subline">{{ skill.skill_ch_name }}</small>
+                                <code>{{ skill_info.skill_id }}</code>
+                                <small class="skill-subline">{{ skill_info.skill_en_name }}</small>
+                                <small class="skill-subline">{{ skill_info.skill_ch_name }}</small>
                             </div>
                         </td>
-                        <td>{{ skill.category }}</td>
-                        <td>{{ '手寫' if skill.input_type == 'handwriting' else '文字' }}</td>
-                        <td>{{ skill.consecutive_correct_required }} 題</td>
+                        <td>{{ skill_info.category }}</td>
+                        <td>{{ '手寫' if skill_info.input_type == 'handwriting' else '文字' }}</td>
+                        <td>{{ skill_info.consecutive_correct_required }} 題</td>
                         <td>
-                            <span class="status-badge status-{{ 'active' if skill.is_active else 'inactive' }}">
-                                {{ '啟用' if skill.is_active else '停用' }}
+                            <span class="status-badge status-{{ 'active' if skill_info.is_active else 'inactive' }}">
+                                {{ '啟用' if skill_info.is_active else '停用' }}
                             </span>
                         </td>
                         <td>
-                            {% set gc = gencode_status_map.get(skill.skill_id, {'status':'missing','label':'執行中','button_label':'AI ??','formal_exists':False,'draft_exists':False,'formal_path':'','draft_path':'','formal_abs_path':'','draft_abs_path':''}) %}
+                            {% set gc = gencode_status_map.get(skill_info.skill_id, {'status':'missing','label':'執行中','button_label':'AI ??','formal_exists':False,'draft_exists':False,'formal_path':'','draft_path':'','formal_abs_path':'','draft_abs_path':''}) %}
                             <span class="gencode-badge gencode-badge-{{ gc.status }}">{{ gc.label }}</span>
-                            <button type="button" class="btn btn-secondary" style="margin-left:6px;" onclick="openGencodeWizard('{{ skill.skill_id }}')">{{ gc.button_label }}</button>
+                            <button type="button" class="btn btn-secondary" style="margin-left:6px;" onclick="openGencodeWizard('{{ skill_info.skill_id }}')">{{ gc.button_label }}</button>
                             {% if gc.status == 'generated' %}
                             <div class="small text-muted" title="{{ gc.formal_abs_path }}">{{ gc.formal_path }}</div>
                             {% elif gc.status == 'draft' %}
@@ -630,27 +630,27 @@
                         </td>
                         <td>
                             <div class="btn-group">
-                                <button class="btn btn-edit" onclick="openEditModal('{{ skill.skill_id }}')">
+                                <button class="btn btn-edit" onclick="openEditModal('{{ skill_info.skill_id }}')">
                                     <i class="bi bi-pencil-fill"></i>
                                 </button>
                                 <button type="button" class="btn btn-secondary"
-                                    onclick="regenerateSkillCode('{{ skill.skill_id }}')" title="重新生成程式碼">
+                                    onclick="regenerateSkillCode('{{ skill_info.skill_id }}')" title="重新生成程式碼">
                                     <i class="bi bi-arrow-clockwise"></i> 重建 Code
                                 </button>
-                                <a href="{{ url_for('core.admin_prerequisites', skill_id=skill.skill_id) }}"
+                                <a href="{{ url_for('core.admin_prerequisites', skill_id=skill_info.skill_id) }}"
                                     class="btn btn-prereq" title="設定前置技能"><i class="bi bi-diagram-2-fill"></i></a>
                                 <form method="POST"
-                                    action="{{ url_for('core.admin_toggle_skill', skill_id=skill.skill_id) }}"
+                                    action="{{ url_for('core.admin_toggle_skill', skill_id=skill_info.skill_id) }}"
                                     style="display: inline;">
                                     <button type="submit" class="btn btn-toggle"
-                                        title="{{ '停用' if skill.is_active else '啟用' }}">
-                                        {% if skill.is_active %}<i class="bi bi-pause-circle-fill"></i>{% else %}<i
+                                        title="{{ '停用' if skill_info.is_active else '啟用' }}">
+                                        {% if skill_info.is_active %}<i class="bi bi-pause-circle-fill"></i>{% else %}<i
                                             class="bi bi-play-circle-fill"></i>{% endif %}
                                     </button>
                                 </form>
                                 <form method="POST"
-                                    action="{{ url_for('core.admin_delete_skill', skill_id=skill.skill_id) }}"
-                                    onsubmit="return confirm('確定要刪除「{{ skill.skill_ch_name }}」嗎?此操作無法復原!')"
+                                    action="{{ url_for('core.admin_delete_skill', skill_id=skill_info.skill_id) }}"
+                                    onsubmit="return confirm('確定要刪除「{{ skill_info.skill_ch_name }}」嗎?此操作無法復原!')"
                                     style="display: inline;">
                                     <button type="submit" class="btn btn-delete" title="刪除"><i
                                             class="bi bi-trash-fill"></i></button>

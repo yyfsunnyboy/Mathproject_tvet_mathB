@@ -9,6 +9,8 @@ from core.gencode.task_families import (
     DISTANCE_BETWEEN_TWO_POINTS_FAMILY,
     DIVISION_POINT_COORDINATES_FAMILY,
     DIVISION_POINT_COORDINATES_TASKS,
+    QUADRATIC_INEQUALITY_FAMILY,
+    QUADRATIC_INEQUALITY_TASKS,
     SOLVE_UNKNOWN_COORDINATE_TASKS,
     task_family_for_task,
 )
@@ -63,8 +65,44 @@ _INTERVAL_TASKS = frozenset(
         "expand_absolute_value_inequality",
         "interpret_number_line_interval",
         "solve_inequality",
+        "solve_quadratic_inequality",
+        "interpret_quadratic_inequality_solution_set",
     }
 )
+
+_FACTORING_TASKS = frozenset(
+    {
+        "factor_quadratic_by_cross_multiplication",
+        "solve_quadratic_by_factoring",
+    }
+)
+
+QUADRATIC_INEQUALITY_INTERVAL_SOLUTION_TASKS = frozenset(
+    {
+        "solve_quadratic_inequality",
+        "interpret_quadratic_inequality_solution_set",
+        "applied_quadratic_inequality_problem",
+        "solve_quadratic_inequality_parameter_range",
+    }
+)
+
+QUADRATIC_INEQUALITY_SOLUTION_TASKS = QUADRATIC_INEQUALITY_INTERVAL_SOLUTION_TASKS | frozenset(
+    {
+        "solve_quadratic_inequality_special_cases",
+        "reverse_quadratic_inequality_coefficients",
+    }
+)
+
+QUADRATIC_INEQUALITY_SPECIAL_CASE_ANSWERS = frozenset({"無解", "任意實數"})
+
+_INTERVAL_ACCEPTED_FORMATS = [
+    "-5 <= x <= 1",
+    "(-5, 1]",
+    "x in [-5,1]",
+    "x<-2 or x>5",
+    "-2<x<5",
+    "x<=-2 or x>=5",
+]
 
 _RADICAL_IN_ANSWER = re.compile(r"\\sqrt|sqrt\s*\(|√", re.I)
 _NUMERIC_ANSWER = re.compile(r"^-?\d+(?:\.\d+)?$")
@@ -128,6 +166,185 @@ def is_quadratic_rational_scalar_semantic(
         ]
     ).lower()
     return any(token in combined for token in _QUADRATIC_RATIONAL_TOKENS)
+
+
+def is_quadratic_inequality_semantic(
+    *,
+    problem_type_id: str = "",
+    target_task: str = "",
+    task_family: str = "",
+    math_objects: list[str] | None = None,
+) -> bool:
+    task = str(target_task or "").strip()
+    family = str(task_family or task_family_for_task(task)).strip()
+    if task in QUADRATIC_INEQUALITY_TASKS or family == QUADRATIC_INEQUALITY_FAMILY:
+        return True
+    combined = " ".join(
+        [
+            str(problem_type_id or ""),
+            task,
+            family,
+            " ".join(str(m or "") for m in (math_objects or [])),
+        ]
+    ).lower()
+    tokens = (
+        "quadratic_inequality",
+        "factor_quadratic",
+        "quadratic_trinomial",
+        "cross_multiplication",
+        "factoring_expression",
+        "inequality_solution",
+        "solution_set",
+    )
+    return any(token in combined for token in tokens)
+
+
+def is_quadratic_inequality_interval_semantic(
+    *,
+    problem_type_id: str = "",
+    target_task: str = "",
+    task_family: str = "",
+    math_objects: list[str] | None = None,
+) -> bool:
+    """True when answer must be an interval/union (interval_checker), not numeric/expression."""
+    task = str(target_task or "").strip()
+    family = str(task_family or task_family_for_task(task)).strip()
+    if task in QUADRATIC_INEQUALITY_INTERVAL_SOLUTION_TASKS:
+        return True
+    if task in {
+        "solve_quadratic_inequality_special_cases",
+        "reverse_quadratic_inequality_coefficients",
+    }:
+        return False
+    combined = " ".join(
+        [
+            str(problem_type_id or ""),
+            task,
+            family,
+            " ".join(str(m or "") for m in (math_objects or [])),
+        ]
+    ).lower()
+    return any(
+        token in combined
+        for token in (
+            "solve_quadratic_inequality",
+            "interpret_quadratic_inequality_solution_set",
+            "inequality_solution",
+            "solution_set",
+        )
+    )
+
+
+def build_interval_answer_contract(*, existing_ac: dict[str, Any] | None = None) -> dict[str, Any]:
+    """Canonical interval contract for quadratic-inequality solution tasks."""
+    base = dict(existing_ac or {})
+    base.update(
+        {
+            "choices_required": False,
+            "choice_count": None,
+            "correct_choice_count": None,
+            "frontend_render_choices": False,
+            "source_has_choices": False,
+            "answer_type": "interval",
+            "answer_shape": "interval_or_union",
+            "answer_semantics": "interval_union",
+            "answer_equivalence": "interval_equivalence",
+            "equivalence_type": "interval_equivalence",
+            "checker": "interval_checker",
+            "checker_key": "interval_checker",
+            "presentation_mode": "short_answer",
+            "selected_checker": "interval_checker",
+            "checker_selection_reason": "quadratic_inequality_interval_solution",
+            "accepted_formats": list(_INTERVAL_ACCEPTED_FORMATS),
+        }
+    )
+    return base
+
+
+def build_quadratic_inequality_parameter_range_contract(
+    *, existing_ac: dict[str, Any] | None = None
+) -> dict[str, Any]:
+    """Interval contract for parameter k/m range from D<0 definite-sign constraints."""
+    base = dict(existing_ac or {})
+    base.update(
+        {
+            "choices_required": False,
+            "choice_count": None,
+            "correct_choice_count": None,
+            "frontend_render_choices": False,
+            "source_has_choices": False,
+            "answer_type": "interval",
+            "answer_shape": "parameter_interval",
+            "answer_semantics": "parameter_range",
+            "answer_equivalence": "interval_equivalence",
+            "equivalence_type": "interval_equivalence",
+            "checker": "interval_checker",
+            "checker_key": "interval_checker",
+            "presentation_mode": "short_answer",
+            "selected_checker": "interval_checker",
+            "checker_selection_reason": "quadratic_inequality_parameter_range",
+            "accepted_formats": ["m>1", "k<-2", "m>=1", "k<=-2", "a>3/2"],
+            "answer_format_example": "m>1",
+        }
+    )
+    return base
+
+
+def build_quadratic_inequality_special_case_contract(
+    *, existing_ac: dict[str, Any] | None = None
+) -> dict[str, Any]:
+    """Text-short contract for 無解 / 任意實數 special-case inequality solutions."""
+    base = dict(existing_ac or {})
+    base.update(
+        {
+            "choices_required": False,
+            "choice_count": None,
+            "correct_choice_count": None,
+            "frontend_render_choices": False,
+            "source_has_choices": False,
+            "answer_type": "text_short",
+            "answer_shape": "text_short",
+            "answer_semantics": "special_case_solution_label",
+            "answer_equivalence": "exact_string",
+            "equivalence_type": "exact_string",
+            "checker": "text_short_checker",
+            "checker_key": "text_short_checker",
+            "presentation_mode": "short_answer",
+            "selected_checker": "text_short_checker",
+            "checker_selection_reason": "quadratic_inequality_special_case",
+            "accepted_formats": ["無解", "任意實數"],
+            "answer_format_example": "任意實數",
+        }
+    )
+    return base
+
+
+def build_reverse_quadratic_coefficients_integer_contract(
+    *, existing_ac: dict[str, Any] | None = None
+) -> dict[str, Any]:
+    """Integer contract for reverse-engineering hidden quadratic coefficients."""
+    base = dict(existing_ac or {})
+    base.update(
+        {
+            "choices_required": False,
+            "choice_count": None,
+            "correct_choice_count": None,
+            "frontend_render_choices": False,
+            "source_has_choices": False,
+            "answer_type": "integer",
+            "answer_shape": "scalar",
+            "answer_semantics": "numeric_exact",
+            "answer_equivalence": "numeric_exact",
+            "equivalence_type": "numeric_exact",
+            "checker": "integer_checker",
+            "checker_key": "integer_checker",
+            "presentation_mode": "short_answer",
+            "selected_checker": "integer_checker",
+            "checker_selection_reason": "quadratic_inequality_reverse_coefficient",
+            "accepted_formats": ["2", "-3", "5"],
+        }
+    )
+    return base
 
 
 def is_coordinate_pair_semantic(
@@ -281,14 +498,41 @@ def infer_answer_contract_from_problem_context(
             "accepted_formats": ["第一象限", "第二象限", "2", "II"],
         }
 
+    if task == "solve_quadratic_inequality_special_cases":
+        return build_quadratic_inequality_special_case_contract(existing_ac=base)
+
+    if task == "solve_quadratic_inequality_parameter_range":
+        return build_quadratic_inequality_parameter_range_contract(existing_ac=base)
+
+    if task == "reverse_quadratic_inequality_coefficients":
+        return build_reverse_quadratic_coefficients_integer_contract(existing_ac=base)
+
+    if task in QUADRATIC_INEQUALITY_INTERVAL_SOLUTION_TASKS or is_quadratic_inequality_interval_semantic(
+        target_task=task,
+        task_family=family,
+        math_objects=mos,
+    ):
+        return build_interval_answer_contract(existing_ac=base)
+
     if task in _INTERVAL_TASKS or family == ABSOLUTE_VALUE_INEQUALITY_FAMILY:
+        return build_interval_answer_contract(existing_ac=base)
+
+    if task in _FACTORING_TASKS or (
+        is_quadratic_inequality_semantic(target_task=task, task_family=family, math_objects=mos)
+        and task not in _INTERVAL_TASKS
+    ):
         return {
             **base,
-            "answer_type": "interval",
-            "answer_shape": "interval_or_union",
-            "answer_equivalence": "interval_equivalence",
-            "checker": "interval_checker",
-            "accepted_formats": ["-5 <= x <= 1", "(-5, 1]", "x in [-5,1]"],
+            "answer_type": "expression",
+            "answer_shape": "factored_expression",
+            "answer_equivalence": "algebraic_equivalent",
+            "equivalence_type": "algebraic_equivalent",
+            "checker": "expression_checker",
+            "checker_key": "expression_checker",
+            "presentation_mode": "short_answer",
+            "selected_checker": "expression_checker",
+            "checker_selection_reason": "quadratic_factoring_expression",
+            "accepted_formats": ["(x-5)(x+3)", "(2x-1)(x+5)", "2(x-1)(3x+2)"],
         }
 
     if task in DISTANCE_COMPUTE_TASKS or (

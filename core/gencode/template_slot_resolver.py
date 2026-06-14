@@ -7,6 +7,7 @@ from typing import Any
 from core.gencode.answer_payload import answer_type_family
 from core.gencode.division_point_slot_engine import DIVISION_POINT_SLOT, is_division_point_target_task
 from core.gencode.problem_type_spec import get_answer_contract, get_generator_contract, get_template_slot
+from core.gencode.task_families import QUADRATIC_INEQUALITY_FAMILY, QUADRATIC_INEQUALITY_TASKS
 
 logger = logging.getLogger(__name__)
 
@@ -46,6 +47,14 @@ TASK_FAMILY_TO_SLOT: dict[str, str] = {
     "compute_quadratic_vertex": "quadratic_graph_vertex_axis_choice",
     "compute_quadratic_axis_of_symmetry": "quadratic_graph_vertex_axis_choice",
     "quadratic_vertex_form_properties": "quadratic_vertex_form_properties",
+    "factor_quadratic_by_cross_multiplication": "factor_quadratic_by_cross_multiplication",
+    "solve_quadratic_by_factoring": "factor_quadratic_by_cross_multiplication",
+    "solve_quadratic_inequality": "solve_quadratic_inequality",
+    "interpret_quadratic_inequality_solution_set": "solve_quadratic_inequality",
+    "solve_quadratic_inequality_special_cases": "solve_quadratic_inequality_special_cases",
+    "solve_quadratic_inequality_parameter_range": "solve_quadratic_inequality_parameter_range",
+    "reverse_quadratic_inequality_coefficients": "reverse_quadratic_inequality_coefficients",
+    "applied_quadratic_inequality_problem": "applied_quadratic_inequality_problem",
 }
 
 SLOT_COMPATIBLE_FAMILIES: dict[str, frozenset[str]] = {
@@ -82,6 +91,12 @@ SLOT_COMPATIBLE_FAMILIES: dict[str, frozenset[str]] = {
     "quadratic_vertex_form_translation_to_new_function": frozenset(
         {"text_short", "short_answer", "expression"}
     ),
+    "factor_quadratic_by_cross_multiplication": frozenset({"expression", "short_answer"}),
+    "solve_quadratic_inequality": frozenset({"interval", "short_answer"}),
+    "solve_quadratic_inequality_special_cases": frozenset({"text_short", "short_answer"}),
+    "solve_quadratic_inequality_parameter_range": frozenset({"interval", "short_answer"}),
+    "reverse_quadratic_inequality_coefficients": frozenset({"integer", "numeric", "short_answer"}),
+    "applied_quadratic_inequality_problem": frozenset({"interval", "short_answer"}),
 }
 
 # SLOT_PRESENTATION_MODE is a FALLBACK used only when answer_format_hint is
@@ -110,6 +125,76 @@ def get_slot_primary_presentation_mode(slot: str) -> str:
     """
     return SLOT_PRESENTATION_MODE.get(str(slot or "").strip(), "")
 
+_QUADRATIC_INEQUALITY_TARGET_TASKS = frozenset(QUADRATIC_INEQUALITY_TASKS)
+
+
+def _is_quadratic_inequality_spec(problem_type_spec: dict[str, Any]) -> bool:
+    from core.gencode.answer_contract_policy import is_quadratic_inequality_semantic
+
+    pt = str(problem_type_spec.get("problem_type_id", "")).strip().lower()
+    target_task = str(problem_type_spec.get("target_task", "")).strip().lower()
+    task_family = str(problem_type_spec.get("task_family", "")).strip().lower()
+    if target_task in _QUADRATIC_INEQUALITY_TARGET_TASKS or task_family == QUADRATIC_INEQUALITY_FAMILY:
+        return True
+    sc = problem_type_spec.get("semantic_contract")
+    mos: list[str] = []
+    if isinstance(sc, dict):
+        for key in ("required_math_objects", "math_objects"):
+            raw = sc.get(key)
+            if isinstance(raw, list):
+                mos.extend(str(m).strip() for m in raw if str(m).strip())
+    stem = problem_type_spec.get("stem_contract")
+    if isinstance(stem, dict):
+        for key in ("allowed_math_objects", "required_math_objects"):
+            raw = stem.get(key)
+            if isinstance(raw, list):
+                mos.extend(str(m).strip() for m in raw if str(m).strip())
+    return is_quadratic_inequality_semantic(
+        problem_type_id=pt,
+        target_task=target_task,
+        task_family=task_family,
+        math_objects=mos,
+    )
+
+
+def _resolve_quadratic_inequality_slot(problem_type_spec: dict[str, Any]) -> str:
+    from core.gencode.answer_contract_policy import (
+        QUADRATIC_INEQUALITY_INTERVAL_SOLUTION_TASKS,
+        is_quadratic_inequality_interval_semantic,
+    )
+
+    target_task = str(problem_type_spec.get("target_task", "")).strip()
+    _TASK_SLOT_MAP = {
+    "solve_quadratic_inequality_special_cases": "solve_quadratic_inequality_special_cases",
+    "solve_quadratic_inequality_parameter_range": "solve_quadratic_inequality_parameter_range",
+    "reverse_quadratic_inequality_coefficients": "reverse_quadratic_inequality_coefficients",
+        "applied_quadratic_inequality_problem": "applied_quadratic_inequality_problem",
+        "solve_quadratic_inequality": "solve_quadratic_inequality",
+        "interpret_quadratic_inequality_solution_set": "solve_quadratic_inequality",
+    }
+    if target_task in _TASK_SLOT_MAP:
+        return _TASK_SLOT_MAP[target_task]
+    if (
+        target_task in QUADRATIC_INEQUALITY_INTERVAL_SOLUTION_TASKS
+        or is_quadratic_inequality_interval_semantic(
+            problem_type_id=str(problem_type_spec.get("problem_type_id", "")).strip(),
+            target_task=target_task,
+            task_family=str(problem_type_spec.get("task_family", "")).strip(),
+        )
+    ):
+        return "solve_quadratic_inequality"
+    if target_task in TASK_FAMILY_TO_SLOT:
+        mapped = TASK_FAMILY_TO_SLOT[target_task]
+        if _slot_compatible_with_contract(mapped, problem_type_spec):
+            return mapped
+    pt = str(problem_type_spec.get("problem_type_id", "")).strip().lower()
+    if any(token in pt for token in ("solve_quadratic", "inequality_solution", "solution_set")):
+        return "solve_quadratic_inequality"
+    if any(token in pt for token in ("factor", "cross_multiplication", "factoring")):
+        return "factor_quadratic_by_cross_multiplication"
+    return "factor_quadratic_by_cross_multiplication"
+
+
 _QUADRATIC_GRAPH_TARGET_TASKS = frozenset(
     {
         "quadratic_graph_vertex_axis_choice",
@@ -131,10 +216,16 @@ _QUADRATIC_GRAPH_TARGET_TASKS = frozenset(
 
 
 def _is_quadratic_graph_spec(problem_type_spec: dict[str, Any]) -> bool:
+    if _is_quadratic_inequality_spec(problem_type_spec):
+        return False
     skill_id = str(problem_type_spec.get("skill_id", "")).strip().lower()
     pt = str(problem_type_spec.get("problem_type_id", "")).strip().lower()
     target_task = str(problem_type_spec.get("target_task", "")).strip().lower()
-    if "quadraticfunctiongraph" in skill_id or "quadratic" in pt or target_task in _QUADRATIC_GRAPH_TARGET_TASKS:
+    if "quadraticfunctiongraph" in skill_id or target_task in _QUADRATIC_GRAPH_TARGET_TASKS:
+        return True
+    if "quadratic" in pt and not any(
+        token in pt for token in ("factor", "cross_multiplication", "inequality", "factoring")
+    ):
         return True
     gc = get_generator_contract(problem_type_spec)
     families = gc.get("template_families") if isinstance(gc.get("template_families"), list) else []
@@ -292,6 +383,15 @@ def resolve_template_slot(problem_type_spec: dict[str, Any], seed: int | None = 
     """Pick slot from template_families when multiple families are induced for one problem_type."""
     pt = str(problem_type_spec.get("problem_type_id", "")).strip()
     target_task = str(problem_type_spec.get("target_task", "")).strip()
+    if _is_quadratic_inequality_spec(problem_type_spec):
+        slot = _resolve_quadratic_inequality_slot(problem_type_spec)
+        if slot:
+            logger.info(
+                "[GENCODE DISPATCH] template_slot problem_type_id=%s selected_slot=%s selection_strategy=quadratic_inequality_guard",
+                pt,
+                slot,
+            )
+            return slot
     if _is_quadratic_graph_spec(problem_type_spec):
         slot = _resolve_quadratic_graph_slot(problem_type_spec)
         if slot:

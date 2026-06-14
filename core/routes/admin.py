@@ -1,4 +1,4 @@
-﻿# -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 """
 =============================================================================
 ?????? (Module Name): core/routes/admin.py
@@ -2320,7 +2320,10 @@ def admin_examples():
     if selected['f_section'] != 'all':
         query = query.filter(SkillCurriculum.section == selected['f_section'])
     
-    pagination = query.order_by(TextbookExample.id.desc()).paginate(page=page, per_page=50, error_out=False)
+    pagination = query.order_by(
+        SkillCurriculum.display_order.asc(), 
+        TextbookExample.id.asc()
+    ).paginate(page=page, per_page=50, error_out=False)
     page_formula_stats = {
         "total": len(pagination.items),
         "with_formula_assets": 0,

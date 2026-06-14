@@ -7,6 +7,8 @@ from typing import Any, Callable
 from core.gencode.classification_candidates import apply_ai_candidate_selection
 from core.gencode.gemini_json_parse import parse_ai_semantic_json
 from core.gencode.gencode_ai_resolve import log_ai_semantic_classifier, resolve_gencode_ai_client
+from core.gencode.phase1_anchor_contract import phase1_enforcement_assertion_block
+from core.gencode.problem_type_canonicalizer import format_math_meta_tags_for_prompt
 from core.gencode.source_structure_context import build_sequence_context_for_prompt
 from core.gencode.task_families import task_family_for_task
 
@@ -64,6 +66,10 @@ def _build_prompt(
     struct_ctx = example.get("source_structure_context") if isinstance(example.get("source_structure_context"), dict) else {}
     seq_ctx = example.get("source_sequence_context") if isinstance(example.get("source_sequence_context"), dict) else {}
     structure_block = build_sequence_context_for_prompt(struct_ctx, seq_ctx) if struct_ctx else ""
+    meta_tags = example.get("math_meta_tags")
+    if not isinstance(meta_tags, list):
+        meta_tags = []
+    meta_block = format_math_meta_tags_for_prompt(meta_tags)
     cand_lines = []
     for c in candidates:
         if not isinstance(c, dict):
@@ -80,20 +86,27 @@ def _build_prompt(
         )
 
     return (
-        "You are a math subskill selector for a skill that is ALREADY confirmed by teachers.\n"
+        phase1_enforcement_assertion_block(anchor, include_anchor_fields=False)
+        + "You are a math subskill selector for a skill that is ALREADY confirmed by teachers.\n"
         "Do NOT decide whether the example belongs to this skill_id.\n"
+        "Do NOT question whether examples belong to a different family.\n"
         "Pick the best subskill candidate_id ONLY from the provided list.\n"
         "Do NOT invent new target_task or task_family values.\n"
-        "If none fit, choose needs_review.\n"
+        "Choosing needs_review is FORBIDDEN unless the stem is truly unreadable.\n"
         "Prefer anchor-scoped candidates over outsider candidates.\n"
         "Segment-ratio / on-segment / find point coordinate stems belong to division-point subskills, "
-        "NOT distance-between-two-points, when those subskills are in the candidate list.\n\n"
+        "NOT distance-between-two-points, when those subskills are in the candidate list.\n"
+        "Quadratic inequality / factoring skills: prefer factor_quadratic_by_cross_multiplication "
+        "or solve_quadratic_inequality over contextual_application, compute_numeric, or absolute-value tasks.\n"
+        "When the stem asks to factor a quadratic trinomial (e.g. cross multiplication / 十字交乘法), "
+        "choose factor_quadratic_by_cross_multiplication.\n\n"
         "Skill anchor (trusted):\n"
         f"- skill_id: {anchor.get('skill_id', '')}\n"
         f"- skill_ch_name: {anchor.get('skill_ch_name', '')}\n"
         f"- skill_anchor_scope: {anchor.get('skill_anchor_scope', '')}\n"
         f"- expected_task_families: {anchor.get('expected_task_families', [])}\n"
         f"- expected_subskill_candidates: {anchor.get('expected_subskill_candidates', [])}\n\n"
+        f"{meta_block}"
         f"{structure_block}\n\n"
         "Current example:\n"
         f"- example_id: {example.get('id') or example.get('example_id', '')}\n"

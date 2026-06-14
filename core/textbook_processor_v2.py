@@ -1,4 +1,4 @@
-﻿# -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 """
 Antigravity 教材匯入 V2 處理器
 - 模式一 (docx_problems)：converted_docx_latex DOCX Phase4 絕對注水與入庫
@@ -863,8 +863,11 @@ def _ensure_formal_skill_info_and_curriculum_v2(
         else:
             if not str(getattr(curriculum_row, "paragraph", "") or "").strip():
                 curriculum_row.paragraph = para
-            if not int(getattr(curriculum_row, "display_order", 0) or 0):
-                curriculum_row.display_order = int(display_order or 0)
+            passed_order = int(display_order or 0)
+            if passed_order > 0 and getattr(curriculum_row, "display_order", 0) != passed_order:
+                curriculum_row.display_order = passed_order
+            elif not int(getattr(curriculum_row, "display_order", 0) or 0):
+                curriculum_row.display_order = passed_order
             if not int(getattr(curriculum_row, "difficulty_level", 0) or 0):
                 curriculum_row.difficulty_level = int(difficulty_level or 1)
     return curriculum_row
@@ -1282,6 +1285,7 @@ def _persist_formal_skill_from_docx_heading(
     section_code: str,
     section_title: str,
     chapter_title: str = "",
+    display_order: int = 0,
 ) -> None:
     """Heading 當下寫入 skills_info + SkillCurriculum（paragraph = 課文中文 concept_name）。"""
     if not curriculum_info or not _is_docx_concept_heading_code(concept_code):
@@ -1314,6 +1318,7 @@ def _persist_formal_skill_from_docx_heading(
         paragraph=concept_name,
         section_code=sec_code,
         concept_code=concept_code,
+        display_order=display_order,
     )
     _log_info(
         (
@@ -1337,7 +1342,8 @@ def _mathb_block_meta_base(
     concept_name: str = "",
     concept_en_id: str = "",
     formal_skill_id: str = "",
-) -> dict[str, str]:
+    display_order: int = 0,
+) -> dict[str, Any]:
     return {
         "anchor": anchor,
         "source_type": source_type,
@@ -1349,6 +1355,7 @@ def _mathb_block_meta_base(
         "concept_name": concept_name,
         "concept_en_id": concept_en_id,
         "formal_skill_id": formal_skill_id,
+        "display_order": int(display_order or 0),
     }
 
 
@@ -1390,6 +1397,8 @@ def _build_anchor_blocks_v2(
     current_concept_en_id = ""
     current_formal_skill_id = ""
     recent_context_lines: list[str] = []
+    heading_idx = 0
+    current_concept_display_order = 0
 
     def flush_one() -> None:
         nonlocal cur_key, cur_anchor, cur_source_type, in_solution, problem_lines, solution_lines
@@ -1418,6 +1427,7 @@ def _build_anchor_blocks_v2(
                 concept_name=current_concept_name,
                 concept_en_id=current_concept_en_id,
                 formal_skill_id=formal_sid,
+                display_order=current_concept_display_order,
             )
         cur_key = ""
         cur_anchor = ""
@@ -1490,6 +1500,11 @@ def _build_anchor_blocks_v2(
             in_key_mode = False
             in_exercise_mode = False
             concept_code, docx_concept_name, switch_current, _det_meta = parsed_concept
+            
+            # Universal counter for concept headings
+            heading_idx += 1
+            current_concept_display_order = heading_idx
+
             if _det_meta.get("duplicate_merge"):
                 continue
             ch_title = str((curriculum_info or {}).get("chapter") or "").strip()
@@ -1559,6 +1574,7 @@ def _build_anchor_blocks_v2(
                     section_code=active_section_code,
                     section_title=active_section_title,
                     chapter_title=ch_title,
+                    display_order=heading_idx,
                 )
             _register_mathb_section_concept(
                 section_code=active_section_code,
@@ -4350,6 +4366,7 @@ def _phase4_resolve_mathb_formal_binding(
     if not concept_name and docx_concept_name:
         concept_name = docx_concept_name
 
+    display_order_val = int(block_meta.get("display_order") or 0)
     formal_curriculum = _ensure_formal_skill_info_and_curriculum_v2(
         formal_skill_id=formal_skill_id,
         concept_name=docx_concept_name or concept_name,
@@ -4362,6 +4379,7 @@ def _phase4_resolve_mathb_formal_binding(
         paragraph=docx_concept_name or concept_name,
         section_code=sec_code,
         concept_code=docx_concept_code,
+        display_order=display_order_val,
     )
     final_ch = docx_concept_name or concept_name
     bind_source = (
@@ -5209,6 +5227,7 @@ def _sync_skill_curriculum_outline_v2(parsed: dict, curriculum_info: dict, queue
         raise RuntimeError("chapters must be a list")
 
     try:
+        sec_idx = 0
         for ch_data in chapters:
             if not isinstance(ch_data, dict):
                 continue
@@ -5230,6 +5249,7 @@ def _sync_skill_curriculum_outline_v2(parsed: dict, curriculum_info: dict, queue
                     _log_info(f"[antigravity][pdf] skip section: {sec_title!r}")
                     continue
 
+                sec_idx += 1
                 skill_id = _outline_placeholder_skill_id(curriculum, volume, sec_title)
                 with db.session.no_autoflush:
                     _log_info(f"[antigravity][pdf] ENSURE outline SkillInfo skill_id='{skill_id}'")
@@ -5259,11 +5279,11 @@ def _sync_skill_curriculum_outline_v2(parsed: dict, curriculum_info: dict, queue
                         existing.skill_id = skill_id
                         existing.chapter = chapter_title
                         existing.section = sec_title
-                        existing.display_order = 0
+                        existing.display_order = sec_idx
                         existing.difficulty_level = 1
                         sections_updated += 1
                         _log_info(
-                            f"[antigravity][pdf] UPDATE SkillCurriculum section='{sec_title}' skill_id='{skill_id}'"
+                            f"[antigravity][pdf] UPDATE SkillCurriculum section='{sec_title}' skill_id='{skill_id}' to display_order={sec_idx}"
                         )
                     else:
                         db.session.add(
@@ -5275,7 +5295,7 @@ def _sync_skill_curriculum_outline_v2(parsed: dict, curriculum_info: dict, queue
                                 chapter=chapter_title,
                                 section=sec_title,
                                 paragraph=None,
-                                display_order=0,
+                                display_order=sec_idx,
                                 difficulty_level=1,
                             )
                         )
@@ -5284,7 +5304,7 @@ def _sync_skill_curriculum_outline_v2(parsed: dict, curriculum_info: dict, queue
                             chapters_created += 1
                             processed_chapters.add(chapter_title)
                         _log_info(
-                            f"[antigravity][pdf] INSERT SkillCurriculum section='{sec_title}' skill_id='{skill_id}'"
+                            f"[antigravity][pdf] INSERT SkillCurriculum section='{sec_title}' skill_id='{skill_id}' to display_order={sec_idx}"
                         )
 
         db.session.commit()

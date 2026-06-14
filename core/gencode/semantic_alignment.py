@@ -406,6 +406,30 @@ def evaluate_source_example_alignment(
     rule_task = str(sc.get("rule_target_task", "")).strip()
     rule_family = str(sc.get("rule_task_family", "")).strip() or task_family_for_task(rule_task)
     ai_status = str(sc.get("ai_semantic_status", "")).strip()
+    scope_locked = bool(anchor.get("source_skill_scope_locked", False))
+
+    def _scope_locked_rescue() -> dict[str, Any] | None:
+        if not scope_locked:
+            return None
+        rescue_task = ""
+        rescue_family = ""
+        if task in expected_tasks:
+            rescue_task, rescue_family = task, family
+        elif rule_task in expected_tasks:
+            rescue_task, rescue_family = rule_task, rule_family
+        if not rescue_task:
+            return None
+        return {
+            "task": rescue_task,
+            "family": rescue_family or task_family_for_task(rescue_task),
+            "alignment_kind": "scope_locked_anchor_trusted",
+            "aligned": True,
+            "included_in_phase1": True,
+            "exclude_reason": "",
+            "task_family_match": True,
+            "subskill_match": True,
+            "requires_human_action": False,
+        }
 
     exclude_reason = ""
     alignment_kind = ""
@@ -466,8 +490,20 @@ def evaluate_source_example_alignment(
         requires_human_action = True
         task_family_match = False
     elif not task or task == "compute_numeric":
-        exclude_reason = "unclassified_low_confidence"
-        alignment_kind = "unclassified_low_confidence"
+        rescued = _scope_locked_rescue()
+        if rescued:
+            task = rescued["task"]
+            family = rescued["family"]
+            alignment_kind = rescued["alignment_kind"]
+            aligned = rescued["aligned"]
+            included_in_phase1 = rescued["included_in_phase1"]
+            exclude_reason = rescued["exclude_reason"]
+            task_family_match = rescued["task_family_match"]
+            subskill_match = rescued["subskill_match"]
+            requires_human_action = rescued["requires_human_action"]
+        else:
+            exclude_reason = "unclassified_low_confidence"
+            alignment_kind = "unclassified_low_confidence"
     elif subskill_match or (skill_scope_trusted and task_family_match):
         alignment_kind = "anchor_subskill_match"
         aligned = True
@@ -502,8 +538,20 @@ def evaluate_source_example_alignment(
             aligned = True
             included_in_phase1 = True
         else:
-            exclude_reason = "unclassified_low_confidence"
-            alignment_kind = "unclassified_low_confidence"
+            rescued = _scope_locked_rescue()
+            if rescued:
+                task = rescued["task"]
+                family = rescued["family"]
+                alignment_kind = rescued["alignment_kind"]
+                aligned = rescued["aligned"]
+                included_in_phase1 = rescued["included_in_phase1"]
+                exclude_reason = rescued["exclude_reason"]
+                task_family_match = rescued["task_family_match"]
+                subskill_match = rescued["subskill_match"]
+                requires_human_action = rescued["requires_human_action"]
+            else:
+                exclude_reason = "unclassified_low_confidence"
+                alignment_kind = "unclassified_low_confidence"
 
     # A trusted final classification is stronger evidence than lexical overlap.
     score_val = round(score, 4)

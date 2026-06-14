@@ -94,6 +94,93 @@ def validate_phase3_generator_spec_integrity(row: dict[str, Any]) -> list[str]:
 
     return blockers
 
+
+def _expected_slot_for_base_task(
+    *,
+    base_problem_type_id: str = "",
+    target_task: str = "",
+) -> str:
+    from core.gencode.template_slot_resolver import TASK_FAMILY_TO_SLOT
+
+    for key in (target_task, base_problem_type_id):
+        token = str(key or "").strip()
+        if token in TASK_FAMILY_TO_SLOT:
+            return TASK_FAMILY_TO_SLOT[token]
+    combined = f"{base_problem_type_id} {target_task}".lower()
+    matches = [task for task in TASK_FAMILY_TO_SLOT if task.lower() in combined]
+    if matches:
+        return TASK_FAMILY_TO_SLOT[max(matches, key=len)]
+    return ""
+
+
+def packaging_exclusion_reasons(record: dict[str, Any]) -> list[str]:
+    """Generic Phase 3 exclusion rules for contract/slot inconsistencies."""
+    if not isinstance(record, dict):
+        return ["invalid_record"]
+    reasons: list[str] = []
+    readiness = str(
+        record.get("generator_readiness") or record.get("generator_status") or record.get("status") or ""
+    ).strip()
+    if readiness in {
+        "contract_slot_mismatch",
+        "validation_failed",
+        "generator_not_ready",
+        "blocked",
+        "answer_contract_not_supported",
+    }:
+        reasons.append(f"readiness_not_packagable:{readiness}")
+
+    slot = str(
+        record.get("template_slot")
+        or record.get("_resolved_template_slot")
+        or ""
+    ).strip()
+    if not slot:
+        gc = record.get("generator_contract")
+        if not isinstance(gc, dict):
+            draft = record.get("problem_type_spec_draft")
+            gc = draft.get("generator_contract") if isinstance(draft, dict) else {}
+        if isinstance(gc, dict):
+            slots = gc.get("template_slots") or {}
+            if isinstance(slots, dict):
+                slot = str(slots.get("stem", "")).strip()
+
+    base_task = str(
+        record.get("base_problem_type_id")
+        or record.get("canonical_base_problem_type_id")
+        or ""
+    ).strip()
+    target_task = str(record.get("target_task") or "").strip()
+    expected_slot = _expected_slot_for_base_task(
+        base_problem_type_id=base_task,
+        target_task=target_task,
+    )
+    if expected_slot and slot and slot != expected_slot:
+        reasons.append(f"slot_base_task_mismatch:{slot}!={expected_slot}")
+
+    value_prefix = str(record.get("value_type_prefix", "")).strip()
+    ac = record.get("answer_contract") if isinstance(record.get("answer_contract"), dict) else {}
+    answer_type = str(ac.get("answer_type") or record.get("answer_type") or "").strip()
+    checker = str(
+        ac.get("checker_key") or ac.get("checker") or record.get("checker_key") or ""
+    ).strip()
+    if value_prefix in {"choice", "single_choice"} and slot and slot not in _CHOICE_SLOTS:
+        reasons.append("choice_prefix_on_non_choice_slot")
+    if value_prefix in {"choice", "single_choice"} and answer_type not in {"single_choice", "multi_choice", "choice"}:
+        reasons.append("choice_prefix_without_choice_contract")
+
+    return reasons
+
+
+def phase3_generator_spec_exclusion_reasons(row: dict[str, Any]) -> list[str]:
+    """Final GENERATOR_SPECS row gate (includes contract integrity checks)."""
+    reasons = list(packaging_exclusion_reasons(row))
+    for issue in validate_phase3_generator_spec_integrity(row):
+        if issue not in reasons:
+            reasons.append(issue)
+    return reasons
+
+
 _STATUS_KEYS = ("generator_status", "status", "readiness_status")
 _SMOKE_KEYS = (("checker_smoke_status", "checker_smoke"), ("dynamic_sampling_status", "dynamic_sampling"))
 
@@ -161,6 +248,7 @@ def is_generator_usable_for_packaging(record: dict[str, Any]) -> tuple[bool, lis
     if not isinstance(record, dict):
         return False, ["invalid_record"]
     exclude: list[str] = []
+    exclude.extend(packaging_exclusion_reasons(record))
     status = generator_status_value(record)
     if status not in PACKAGING_READY_STATUSES:
         exclude.append(f"status_not_packaging_ready:{status or 'missing'}")
@@ -181,6 +269,22 @@ def is_generator_usable_for_packaging(record: dict[str, Any]) -> tuple[bool, lis
     return len(exclude) == 0, exclude
 
 
+def _generator_record_rank(record: dict[str, Any]) -> tuple[int, int, int, int]:
+    """Higher rank wins when merging duplicate generator_key / problem_type_id rows."""
+    if not isinstance(record, dict):
+        return (0, 0, 0)
+    usable = 1 if record.get("usable_for_phase3") is not False else 0
+    status = generator_status_value(record)
+    status_ok = 1 if status in PACKAGING_READY_STATUSES else 0
+    blockers = [str(b).strip() for b in (record.get("blockers") or []) if str(b).strip()]
+    blocker_penalty = 0 if blockers else 1
+    try:
+        sample_count = int(record.get("source_example_count") or 0)
+    except (TypeError, ValueError):
+        sample_count = 0
+    return (usable, status_ok, blocker_penalty, sample_count)
+
+
 def merge_generator_records(
     phase2_summary: dict[str, Any] | None,
     draft_spec: dict[str, Any] | None,
@@ -196,9 +300,17 @@ def merge_generator_records(
         key = gk or pt
         if not key:
             return
-        base = dict(merged.get(key, {}))
-        base.update(row)
-        base["_merge_sources"] = sorted(set(list(base.get("_merge_sources", [])) + [source]))
+        incoming = dict(row)
+        incoming["_merge_sources"] = [source]
+        existing = merged.get(key)
+        if existing:
+            if _generator_record_rank(incoming) <= _generator_record_rank(existing):
+                return
+            incoming["_merge_sources"] = sorted(
+                set(list(existing.get("_merge_sources", [])) + [source])
+            )
+        base = dict(existing or {})
+        base.update(incoming)
         if pt:
             base["problem_type_id"] = pt
         if gk:

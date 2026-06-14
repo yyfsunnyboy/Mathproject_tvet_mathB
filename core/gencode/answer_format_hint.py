@@ -43,6 +43,8 @@ HINT_TRANSLATION_TEXT = "向右 a, 向上 b"
 HINT_VERTEX_AXIS_TEXT = "頂點=(h,k), 對稱軸=x=h"
 HINT_OPENING_DIRECTION = "開口=向上"
 HINT_TEXT_SHORT = "text_short"
+HINT_EXPRESSION = "expression"
+HINT_INTERVAL = "interval"
 HINT_UNKNOWN = ""
 
 # ── Answer-contract definitions keyed by hint ─────────────────────────────────
@@ -152,6 +154,30 @@ _HINT_TO_CONTRACT: dict[str, dict[str, Any]] = {
         "presentation_mode": "short_answer",
         "choices_required": False,
     },
+    HINT_EXPRESSION: {
+        "answer_type": "expression",
+        "answer_shape": "factored_expression",
+        "answer_semantics": "algebraic_expression",
+        "answer_equivalence": "algebraic_equivalent",
+        "equivalence_type": "algebraic_equivalent",
+        "checker": "expression_checker",
+        "checker_key": "expression_checker",
+        "presentation_mode": "short_answer",
+        "choices_required": False,
+        "accepted_formats": ["(x-5)(x+3)", "(2x-1)(x+5)", "2(x-1)(3x+2)"],
+    },
+    HINT_INTERVAL: {
+        "answer_type": "interval",
+        "answer_shape": "interval_or_union",
+        "answer_semantics": "interval_union",
+        "answer_equivalence": "interval_equivalence",
+        "equivalence_type": "interval_equivalence",
+        "checker": "interval_checker",
+        "checker_key": "interval_checker",
+        "presentation_mode": "short_answer",
+        "choices_required": False,
+        "accepted_formats": ["x<-2 or x>5", "-2<x<5", "x<=-2 or x>=5"],
+    },
 }
 
 # answer_fields → canonical hint (when hint is absent but fields give evidence)
@@ -173,6 +199,7 @@ _AXIS_RE  = re.compile(r"^\s*x\s*=\s*-?\d+\s*$", re.IGNORECASE)
 _CHOICE_LABEL_RE = re.compile(r"^\s*[ABCD]\s*$")
 _INTEGER_RE = re.compile(r"^\s*-?\d+\s*$")
 _RATIONAL_RE = re.compile(r"^\s*-?\d+\s*/\s*\d+\s*$")
+_FACTOR_RE = re.compile(r"\(.*?\)\s*\(.*?\)")
 _TRANSLATION_RE = re.compile(r"向[左右][^，,]*[，,].*向[上下]")
 _OPENING_RE = re.compile(r"(開口|開口方向).*[向]?(上|下)")
 
@@ -234,6 +261,10 @@ def infer_answer_format_hint(spec: dict[str, Any]) -> str:
         return HINT_COORDINATE
     if at in {"text_short", "short_answer", "text"}:
         return HINT_TEXT_SHORT
+    if at == "expression":
+        return HINT_EXPRESSION
+    if at == "interval":
+        return HINT_INTERVAL
     # integer / rational / numeric: do NOT map to a hint here.
     # These are unreliable when derived from a typed-prefix problem_type_id.
     # The caller should fall through to slot-based or marker-based inference.
@@ -268,6 +299,10 @@ def infer_answer_format_hint_from_answers(sample_answers: list[str]) -> str:
             votes[HINT_INTEGER] = votes.get(HINT_INTEGER, 0) + 1
         elif _RATIONAL_RE.match(ans):
             votes[HINT_RATIONAL] = votes.get(HINT_RATIONAL, 0) + 1
+        elif _FACTOR_RE.search(ans):
+            votes[HINT_EXPRESSION] = votes.get(HINT_EXPRESSION, 0) + 1
+        elif re.search(r"x\s*[<>≤≥=]", ans) or re.search(r"<\s*x\s*<", ans):
+            votes[HINT_INTERVAL] = votes.get(HINT_INTERVAL, 0) + 1
         else:
             votes[HINT_TEXT_SHORT] = votes.get(HINT_TEXT_SHORT, 0) + 1
 
@@ -344,19 +379,31 @@ def naming_warning_if_prefix_contract_mismatch(
 
 # Static answer-shape examples for question_text suffix (SOP §4.3.6).
 # Must NOT use runtime correct_answer — only contract shape.
+# Quadratic-inequality family uses one composite decoy (no per-seed answer leak).
+QUADRATIC_INEQUALITY_UNIFIED_HINT_EXAMPLE = "任意實數/無解/ -1<x<3"
+QUADRATIC_INEQUALITY_SPECIAL_CASE_HINT_EXAMPLE = QUADRATIC_INEQUALITY_UNIFIED_HINT_EXAMPLE
+QUADRATIC_INEQUALITY_PARAMETER_RANGE_HINT_EXAMPLE = QUADRATIC_INEQUALITY_UNIFIED_HINT_EXAMPLE
+_QUADRATIC_INEQUALITY_HINT_REASONS = frozenset({
+    "quadratic_inequality_interval_solution",
+    "quadratic_inequality_parameter_range",
+    "quadratic_inequality_special_case",
+})
+_PARAMETER_RANGE_HINT_DECOYS = frozenset({"m>1", "k<-2", "m>=1", "k<=-2"})
+_SPECIAL_CASE_LABEL_ANSWERS = frozenset({"無解", "任意实数", "任意實數", "无解"})
+
 _CONTRACT_SHAPE_EXAMPLES: dict[str, str] = {
     "integer_checker": "5",
     "numeric_checker": "5",
     "rational_checker": "-3/4",
     "fraction_checker": "-3/4",
-    "expression_checker": "2\\sqrt{5}",
-    "expression_equivalence_checker": "2\\sqrt{5}",
+    "expression_checker": "(x-2)(x+3)",
+    "expression_equivalence_checker": "(x-2)(x+3)",
     "coordinate_pair_checker": "(1,-2)",
     "structured_text_checker": "x=3",
     "text_short_checker": "向上",
     "text_checker": "向上",
     "solution_set_checker": "-3, 7",
-    "interval_checker": "-5 <= x <= 1",
+    "interval_checker": "x<-2 or x>5",
     "choice_label_checker": "",
 }
 
@@ -364,6 +411,32 @@ _CONTRACT_SHAPE_EXAMPLES: dict[str, str] = {
 def answer_format_example_for_contract(answer_contract: dict[str, Any] | None) -> str:
     """Return a static, contract-shaped answer example for UI suffix hints."""
     ac = answer_contract if isinstance(answer_contract, dict) else {}
+    reason = str(ac.get("checker_selection_reason") or "").strip()
+    if reason in _QUADRATIC_INEQUALITY_HINT_REASONS:
+        return QUADRATIC_INEQUALITY_UNIFIED_HINT_EXAMPLE
+
+    semantics = str(ac.get("answer_semantics") or "").strip()
+    is_special_case_inequality = (
+        semantics == "special_case_solution_label"
+        or reason == "quadratic_inequality_special_case"
+    )
+    if is_special_case_inequality:
+        return QUADRATIC_INEQUALITY_UNIFIED_HINT_EXAMPLE
+
+    is_parameter_range = (
+        semantics == "parameter_range"
+        or reason == "quadratic_inequality_parameter_range"
+    )
+    if is_parameter_range:
+        return QUADRATIC_INEQUALITY_UNIFIED_HINT_EXAMPLE
+
+    explicit = str(ac.get("answer_format_example") or "").strip()
+    if explicit in _SPECIAL_CASE_LABEL_ANSWERS:
+        return QUADRATIC_INEQUALITY_UNIFIED_HINT_EXAMPLE
+    if explicit in _PARAMETER_RANGE_HINT_DECOYS:
+        return QUADRATIC_INEQUALITY_UNIFIED_HINT_EXAMPLE
+    if explicit:
+        return explicit
     checker = str(ac.get("checker") or ac.get("checker_key") or "").strip()
     if checker and checker in _CONTRACT_SHAPE_EXAMPLES:
         return _CONTRACT_SHAPE_EXAMPLES[checker]
@@ -387,6 +460,14 @@ def answer_format_example_for_contract(answer_contract: dict[str, Any] | None) -
         return _CONTRACT_SHAPE_EXAMPLES["coordinate_pair_checker"]
     if answer_type in {"text_short", "short_answer", "text"}:
         return _CONTRACT_SHAPE_EXAMPLES["text_short_checker"]
+    if answer_type == "expression":
+        return _CONTRACT_SHAPE_EXAMPLES["expression_checker"]
+    if answer_type == "interval":
+        return _CONTRACT_SHAPE_EXAMPLES["interval_checker"]
+    if hint == HINT_EXPRESSION:
+        return _CONTRACT_SHAPE_EXAMPLES["expression_checker"]
+    if hint == HINT_INTERVAL:
+        return _CONTRACT_SHAPE_EXAMPLES["interval_checker"]
     return _CONTRACT_SHAPE_EXAMPLES.get(checker, "5")
 
 

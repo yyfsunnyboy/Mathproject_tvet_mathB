@@ -50,6 +50,11 @@ def _resolve_induced_path(skill_id: str) -> Path | None:
     return None
 
 
+def _normalize_problem_type_id_for_match(problem_type_id: str) -> str:
+    """Strip trailing numeric variant suffix only (_1, _2); keep semantic suffixes intact."""
+    return _PT_SUFFIX.sub("", str(problem_type_id or "").strip())
+
+
 def _problem_type_id_matches(spec_pt: str, query_pt: str) -> bool:
     a = str(spec_pt).strip()
     b = str(query_pt).strip()
@@ -57,9 +62,40 @@ def _problem_type_id_matches(spec_pt: str, query_pt: str) -> bool:
         return False
     if a == b:
         return True
-    if a.startswith(f"{b}_") or b.startswith(f"{a}_"):
-        return True
-    return _PT_SUFFIX.sub("", a) == _PT_SUFFIX.sub("", b)
+    
+    # Only allow stripping pure numeric suffix (_1, _2) for backward compatibility matching
+    norm_a = _normalize_problem_type_id_for_match(a)
+    norm_b = _normalize_problem_type_id_for_match(b)
+    
+    # Explicitly verify we are not mapping semantic suffixes like _special_cases by a short parent type
+    # e.g., if one of them is "parent" and the other is "parent_special_cases", the normalized strings will differ, so norm_a == norm_b is False.
+    return norm_a == norm_b
+
+
+def _select_best_matching_spec(
+    candidates: list[dict[str, Any]],
+    query_pt: str,
+) -> dict[str, Any] | None:
+    """Prefer exact id match, then longest matching spec id (most specific)."""
+    pt = str(query_pt or "").strip()
+    if not pt:
+        return None
+    matches = [
+        spec
+        for spec in candidates
+        if isinstance(spec, dict)
+        and _problem_type_id_matches(str(spec.get("problem_type_id", "")).strip(), pt)
+    ]
+    if not matches:
+        return None
+    
+    # Complete exact match priority
+    for spec in matches:
+        if str(spec.get("problem_type_id", "")).strip() == pt:
+            return spec
+            
+    # Longest Match First
+    return max(matches, key=lambda spec: len(str(spec.get("problem_type_id", "")).strip()))
 
 
 def save_induced_problem_type_specs(skill_id: str, specs: list[dict[str, Any]]) -> Path:
@@ -103,12 +139,14 @@ def load_problem_type_spec(skill_id: str, problem_type_id: str, *, prefer: str =
     pt = str(problem_type_id).strip()
     mode = str(prefer or "auto").strip()
     if mode in {"auto", "induced"}:
-        for spec in load_induced_problem_type_specs(sid):
-            if _problem_type_id_matches(str(spec.get("problem_type_id", "")).strip(), pt):
-                return spec
-        for spec in _scan_induced_specs_by_problem_type(pt):
-            if _problem_type_id_matches(str(spec.get("problem_type_id", "")).strip(), pt):
-                return spec
+        induced = load_induced_problem_type_specs(sid)
+        best = _select_best_matching_spec(induced, pt)
+        if best is not None:
+            return best
+        scanned = _scan_induced_specs_by_problem_type(pt)
+        best = _select_best_matching_spec(scanned, pt)
+        if best is not None:
+            return best
     if mode != "induced":
         return _ensure_cache().get((sid, pt))
     return None

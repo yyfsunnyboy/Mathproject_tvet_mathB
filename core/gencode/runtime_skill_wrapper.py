@@ -78,10 +78,11 @@ def collect_available_runtime_problem_types(
         if spec is None or not _level_allowed(spec, level):
             return
         key = _normalize_problem_type_id(pt)
-        canonical_pt = str(spec.get("problem_type_id", pt)).strip() or pt
         if key not in merged:
+            # Respect and preserve the exact original problem_type_id (pt) compile-time tag.
+            # Do NOT overwrite it with a shorter problem_type_id loaded from problem type spec.
             merged[key] = {
-                "problem_type_id": canonical_pt,
+                "problem_type_id": pt,
                 "source": source,
                 "generator_readiness": row.get("generator_readiness", "runtime_ready"),
             }

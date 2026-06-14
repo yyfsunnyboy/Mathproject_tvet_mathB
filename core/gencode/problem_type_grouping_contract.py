@@ -180,10 +180,20 @@ def validate_problem_type_grouping_contract(report: dict[str, Any]) -> dict[str,
     
     # 3. Decision / Atomic consistency
     if has_mixed_group:
-        status = "FAIL"
-        normalized_fields["ok"] = False
-        normalized_fields["phase_status"] = "GROUPING_CONTRACT_FAIL"
-        normalized_fields["suggested_action"] = "Please review and split mixed problem type groups."
+        if violations:
+            status = "FAIL"
+            normalized_fields["ok"] = False
+            normalized_fields["phase_status"] = "GROUPING_CONTRACT_FAIL"
+            normalized_fields["suggested_action"] = "Please review and split mixed problem type groups."
+        elif new_candidates:
+            # Auto-split succeeded: keep pipeline moving with warnings only.
+            status = "PASS_WITH_WARNINGS"
+            normalized_fields["suggested_action"] = "Mixed groups were auto-split into distinct problem types."
+        else:
+            status = "FAIL"
+            normalized_fields["ok"] = False
+            normalized_fields["phase_status"] = "GROUPING_CONTRACT_FAIL"
+            normalized_fields["suggested_action"] = "Please review and split mixed problem type groups."
     else:
         status = "PASS"
         

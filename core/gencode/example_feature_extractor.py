@@ -64,7 +64,11 @@ _BROKEN_LATEX_BRACE = re.compile(r"\\(frac|sqrt|begin|end)\{[^}]*$")
 _COMPOSITE_EXERCISE = re.compile(r"綜合|综合|章末|統測|统测|基礎題|基础题", re.I)
 
 
-_QUADRATIC_FORM = re.compile(r"(二次函數|拋物線|抛物线|x\}\^\{2\}|x\^2|\\left\(\s*x|頂點|顶点|對稱軸|对称轴|開口方向|开口方向|最大值|最小值)")
+_QUADRATIC_FORM = re.compile(
+    r"(二次函數|二次式|一元二次|拋物線|抛物线|x\}\^\{2\}|x\^2|\\left\(\s*x|頂點|顶点|對稱軸|对称轴|開口方向|开口方向|最大值|最小值)"
+)
+_QUADRATIC_FACTORING = re.compile(r"十字交乘|因式分解|cross\s*multiplication|factor(?:ing)?", re.I)
+_QUADRATIC_INEQUALITY = re.compile(r"不等式|inequality|[<>≤≥＜＞]|解.*不等式", re.I)
 _VERTEX_FORM_HINT = re.compile(r"(\\left\(\s*x|頂點式|顶点式|\(x[+-]|頂點|顶点|對稱軸|对称轴|最低點|最低点|最高點|最高点)")
 _QUADRATIC_TRANSLATION = re.compile(r"(平移|水平向|鉛直向|铅直向|向左|向右|向上|向下)")
 _QUADRATIC_NEW_FUNCTION = re.compile(r"(新頂點|新顶点|新函數|新函数|平移到新頂點|平移到新顶点|寫出.*函數|写出.*函数)")
@@ -252,6 +256,11 @@ def _detect_math_objects(text: str, target_task: str) -> list[str]:
         objs.append("statistics_context")
     if task_family_for_task(target_task) == "quadratic_function_graph_family" or _QUADRATIC_FORM.search(text):
         objs.append("quadratic_equation")
+        if _QUADRATIC_FACTORING.search(text):
+            objs.append("factoring_expression")
+            objs.append("quadratic_trinomial")
+        if _QUADRATIC_INEQUALITY.search(text):
+            objs.append("inequality")
         if _VERTEX_FORM_HINT.search(text):
             objs.append("quadratic_vertex_form")
         if _QUADRATIC_TRANSLATION.search(text):
@@ -267,6 +276,19 @@ _COORD_POINT = re.compile(r"[PQABCD]\s*\\?\s*\(?\s*[^)\n]{1,40}\)?", re.I)
 
 
 def _infer_target_task(text: str, math_objects: list[str], answer_type: str) -> str:
+    from core.gencode.problem_type_canonicalizer import (
+        extract_math_meta_tags,
+        resolve_target_task_from_math_meta_tags,
+    )
+
+    forced = resolve_target_task_from_math_meta_tags(extract_math_meta_tags(text))
+    if forced:
+        return forced
+    if (_QUADRATIC_FORM.search(text) or re.search(r"x\}\^\{2\}|x\^2", text, re.I)):
+        if _QUADRATIC_FACTORING.search(text):
+            return "factor_quadratic_by_cross_multiplication"
+        if _QUADRATIC_INEQUALITY.search(text):
+            return "solve_quadratic_inequality"
     if re.search(r"絕對值|绝对值|absolute\s*value", text, re.I) and re.search(
         r"不等式|inequality|[<>≤≥]=?", text, re.I
     ):
@@ -341,6 +363,8 @@ def _infer_reasoning_type(text: str, math_objects: list[str], target_task: str) 
         types.append("combinatorics_counting")
     if _STATS.search(text):
         types.append("statistics_computation")
+    if task_family_for_task(target_task) == "quadratic_inequality_family":
+        types.append("quadratic_factoring_reasoning")
     if task_family_for_task(target_task) == "quadratic_function_graph_family":
         if target_task == "quadratic_vertex_or_parameter_computation":
             types.append("quadratic_vertex_parameter_reasoning")
@@ -407,6 +431,18 @@ def extract_example_feature_rule_only(ex: dict[str, Any]) -> dict[str, Any]:
     givens = [v for v in variables if v.isalpha()]
     eq = "set_equal" if answer_type == "set" else ("choice_label" if answer_type == "single_choice" else "exact_text")
     bridge = legacy_fields_from_answer_contract({"answer_type": answer_type, "answer_equivalence": eq})
+    from core.gencode.problem_type_canonicalizer import (
+        extract_math_meta_tags,
+        resolve_answer_format_hint_from_math_meta_tags,
+        resolve_target_task_from_math_meta_tags,
+    )
+
+    math_meta_tags = extract_math_meta_tags(question_text)
+    forced_target_task = resolve_target_task_from_math_meta_tags(math_meta_tags)
+    if forced_target_task:
+        target_task = forced_target_task
+        task_family = task_family_for_task(target_task)
+    meta_answer_hint = resolve_answer_format_hint_from_math_meta_tags(math_meta_tags)
     return {
         "source_example_id": ex_id,
         "question_text": question_text,
@@ -430,6 +466,9 @@ def extract_example_feature_rule_only(ex: dict[str, Any]) -> dict[str, Any]:
         "givens": givens,
         "target": target_task,
         "classifier_source": "rule_only",
+        "math_meta_tags": math_meta_tags,
+        "forced_target_task": forced_target_task,
+        "meta_answer_format_hint": meta_answer_hint,
     }
 
 

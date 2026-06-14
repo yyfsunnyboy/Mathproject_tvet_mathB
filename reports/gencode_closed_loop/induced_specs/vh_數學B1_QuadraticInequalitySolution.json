@@ -1,0 +1,1318 @@
+{
+  "skill_id": "vh_數學B1_QuadraticInequalitySolution",
+  "spec_source": "phase1_induced_draft",
+  "items": [
+    {
+      "problem_type_id": "integer_reverse_quadratic_inequality_coefficients",
+      "skill_id": "vh_數學B1_QuadraticInequalitySolution",
+      "target_task": "reverse_quadratic_inequality_coefficients",
+      "task_family": "quadratic_inequality_family",
+      "display_name": "numeric / reverse_quadratic_inequality_coefficients",
+      "answer_format_hint": "integer",
+      "answer_fields": null,
+      "answer_separator": null,
+      "source_example_ids": [
+        4474,
+        4482,
+        4493
+      ],
+      "answer_contract": {
+        "choices_required": false,
+        "choice_count": null,
+        "correct_choice_count": null,
+        "frontend_render_choices": false,
+        "source_has_choices": false,
+        "answer_type": "integer",
+        "answer_shape": "scalar",
+        "answer_semantics": "numeric_exact",
+        "answer_equivalence": "numeric_exact",
+        "equivalence_type": "numeric_exact",
+        "checker": "integer_checker",
+        "checker_key": "integer_checker",
+        "presentation_mode": "short_answer",
+        "selected_checker": "integer_checker",
+        "checker_selection_reason": "quadratic_inequality_reverse_coefficient",
+        "accepted_formats": [
+          "2",
+          "-3",
+          "5"
+        ]
+      },
+      "stem_contract": {
+        "stem_must_not_embed_choices": true,
+        "allowed_math_objects": [
+          "coordinate_point",
+          "inequality",
+          "quadratic_equation"
+        ],
+        "required_math_objects": [
+          "coordinate_point",
+          "inequality"
+        ],
+        "forbidden_patterns": [
+          "\\(A\\)",
+          "\\(B\\)",
+          "\\(C\\)",
+          "\\(D\\)"
+        ]
+      },
+      "dependency_contract": {
+        "givens_must_be_used": true,
+        "target_answer_must_depend_on_givens": true,
+        "variables_in_conditions_must_appear_in_target": false
+      },
+      "semantic_contract": {
+        "reasoning_type": [
+          "quadratic_factoring_reasoning"
+        ],
+        "reject_if": [
+          "unused_condition",
+          "ambiguous_answer",
+          "answer_not_derivable",
+          "duplicated_choices",
+          "no_correct_choice",
+          "multiple_correct_choices_when_single_choice"
+        ]
+      },
+      "generator_contract": {
+        "template_variants": [
+          {
+            "id": "default",
+            "label": "default",
+            "stem_pattern": "依題意求解：{stem_hint}。",
+            "weight": 1.0,
+            "enabled": true
+          }
+        ],
+        "parameter_schema": {
+          "seed": {
+            "type": "integer",
+            "randomize": true
+          },
+          "difficulty_level": {
+            "choices": [
+              "level_1",
+              "level_2",
+              "level_3"
+            ],
+            "weights": [
+              0.4,
+              0.4,
+              0.2
+            ]
+          }
+        },
+        "variation_dimensions": [
+          "seed",
+          "difficulty_level",
+          "context_style"
+        ],
+        "difficulty_controls": {
+          "level_1": {},
+          "level_2": {},
+          "level_3": {}
+        },
+        "anti_repetition_rules": {
+          "avoid_same_template_consecutive": true,
+          "avoid_same_ratio_consecutive": true,
+          "avoid_same_point_names_consecutive": true,
+          "avoid_same_answer_consecutive": true,
+          "recent_history_window": 5,
+          "signature_fields": [
+            "problem_type_id",
+            "template_variant",
+            "routing_track",
+            "scenario_type",
+            "ratio_form",
+            "ratio_values",
+            "coordinate_pattern",
+            "answer"
+          ]
+        },
+        "validity_constraints": [
+          "answer derivable from givens"
+        ],
+        "answer_shape": "numeric",
+        "explanation_variants": [
+          "stepwise"
+        ],
+        "sampling_strategy": "weighted_random",
+        "template_families": [
+          "reverse_quadratic_inequality_coefficients"
+        ],
+        "parameter_slots": {
+          "seed": "integer",
+          "difficulty": "easy"
+        },
+        "randomization_rules": {
+          "shuffle_choices": false
+        },
+        "avoid_llm_freeform_math": true,
+        "use_domain_functions": true,
+        "derivation_steps_required": true,
+        "template_slots": {
+          "stem": "reverse_quadratic_inequality_coefficients"
+        },
+        "problem_type_id": "integer_reverse_quadratic_inequality_coefficients",
+        "contract_validation_blockers": [],
+        "contract_validation_warnings": [
+          "single_template_variant_only",
+          "variation_dimensions_below_recommended_minimum"
+        ]
+      },
+      "validator_contract": {
+        "static_checks": [
+          "answer_contract_checks",
+          "choices_policy"
+        ],
+        "semantic_checks": [
+          "givens_to_target_dependency"
+        ],
+        "runtime_smoke_count": 30
+      },
+      "spec_source": "phase1_induced_draft",
+      "grouping_reason": "split_by_feature_signature",
+      "feature_signature": [
+        "numeric",
+        "reverse_quadratic_inequality_coefficients",
+        "short_answer",
+        [
+          "quadratic_factoring_reasoning"
+        ],
+        [
+          "coordinate_point",
+          "inequality"
+        ]
+      ],
+      "canonical_base_problem_type_id": "reverse_quadratic_inequality_coefficients_short_answer",
+      "value_type_prefix": "numeric",
+      "_resolved_template_slot": "reverse_quadratic_inequality_coefficients"
+    },
+    {
+      "problem_type_id": "integer_solve_quadratic_inequality",
+      "skill_id": "vh_數學B1_QuadraticInequalitySolution",
+      "target_task": "solve_quadratic_inequality",
+      "task_family": "quadratic_inequality_family",
+      "display_name": "numeric / solve_quadratic_inequality",
+      "answer_format_hint": "interval",
+      "answer_fields": null,
+      "answer_separator": null,
+      "source_example_ids": [
+        4475,
+        4477,
+        4478,
+        4481,
+        4483,
+        4485,
+        4486,
+        4489,
+        4492,
+        4494,
+        4496,
+        4497,
+        4505,
+        4506
+      ],
+      "answer_contract": {
+        "choices_required": false,
+        "choice_count": null,
+        "correct_choice_count": null,
+        "frontend_render_choices": false,
+        "source_has_choices": false,
+        "answer_type": "interval",
+        "answer_shape": "interval_or_union",
+        "answer_semantics": "interval_union",
+        "answer_equivalence": "interval_equivalence",
+        "equivalence_type": "interval_equivalence",
+        "checker": "interval_checker",
+        "checker_key": "interval_checker",
+        "presentation_mode": "short_answer",
+        "selected_checker": "interval_checker",
+        "checker_selection_reason": "quadratic_inequality_interval_solution",
+        "accepted_formats": [
+          "-5 <= x <= 1",
+          "(-5, 1]",
+          "x in [-5,1]",
+          "x<-2 or x>5",
+          "-2<x<5",
+          "x<=-2 or x>=5"
+        ]
+      },
+      "stem_contract": {
+        "stem_must_not_embed_choices": true,
+        "allowed_math_objects": [
+          "coordinate_point",
+          "inequality",
+          "quadratic_equation",
+          "quadratic_vertex_form",
+          "two_coordinate_points"
+        ],
+        "required_math_objects": [
+          "coordinate_point",
+          "inequality"
+        ],
+        "forbidden_patterns": [
+          "\\(A\\)",
+          "\\(B\\)",
+          "\\(C\\)",
+          "\\(D\\)"
+        ]
+      },
+      "dependency_contract": {
+        "givens_must_be_used": true,
+        "target_answer_must_depend_on_givens": true,
+        "variables_in_conditions_must_appear_in_target": false
+      },
+      "semantic_contract": {
+        "reasoning_type": [
+          "quadratic_factoring_reasoning"
+        ],
+        "reject_if": [
+          "unused_condition",
+          "ambiguous_answer",
+          "answer_not_derivable",
+          "duplicated_choices",
+          "no_correct_choice",
+          "multiple_correct_choices_when_single_choice"
+        ]
+      },
+      "generator_contract": {
+        "template_variants": [
+          {
+            "id": "default",
+            "label": "default",
+            "stem_pattern": "依題意求解：{stem_hint}。",
+            "weight": 1.0,
+            "enabled": true
+          }
+        ],
+        "parameter_schema": {
+          "seed": {
+            "type": "integer",
+            "randomize": true
+          },
+          "difficulty_level": {
+            "choices": [
+              "level_1",
+              "level_2",
+              "level_3"
+            ],
+            "weights": [
+              0.4,
+              0.4,
+              0.2
+            ]
+          }
+        },
+        "variation_dimensions": [
+          "seed",
+          "difficulty_level",
+          "context_style"
+        ],
+        "difficulty_controls": {
+          "level_1": {},
+          "level_2": {},
+          "level_3": {}
+        },
+        "anti_repetition_rules": {
+          "avoid_same_template_consecutive": true,
+          "avoid_same_ratio_consecutive": true,
+          "avoid_same_point_names_consecutive": true,
+          "avoid_same_answer_consecutive": true,
+          "recent_history_window": 5,
+          "signature_fields": [
+            "problem_type_id",
+            "template_variant",
+            "routing_track",
+            "scenario_type",
+            "ratio_form",
+            "ratio_values",
+            "coordinate_pattern",
+            "answer"
+          ]
+        },
+        "validity_constraints": [
+          "answer derivable from givens"
+        ],
+        "answer_shape": "numeric",
+        "explanation_variants": [
+          "stepwise"
+        ],
+        "sampling_strategy": "weighted_random",
+        "template_families": [
+          "solve_quadratic_inequality"
+        ],
+        "parameter_slots": {
+          "seed": "integer",
+          "difficulty": "easy"
+        },
+        "randomization_rules": {
+          "shuffle_choices": false
+        },
+        "avoid_llm_freeform_math": true,
+        "use_domain_functions": true,
+        "derivation_steps_required": true,
+        "template_slots": {
+          "stem": "solve_quadratic_inequality"
+        },
+        "problem_type_id": "integer_solve_quadratic_inequality",
+        "contract_validation_blockers": [],
+        "contract_validation_warnings": [
+          "single_template_variant_only",
+          "variation_dimensions_below_recommended_minimum"
+        ]
+      },
+      "validator_contract": {
+        "static_checks": [
+          "answer_contract_checks",
+          "choices_policy"
+        ],
+        "semantic_checks": [
+          "givens_to_target_dependency"
+        ],
+        "runtime_smoke_count": 30
+      },
+      "spec_source": "phase1_induced_draft",
+      "grouping_reason": "merged_by_canonical_contract",
+      "feature_signature": [
+        "canonical_contract_merge",
+        "solve_quadratic_inequality",
+        "numeric",
+        "short_answer"
+      ],
+      "canonical_base_problem_type_id": "solve_quadratic_inequality_short_answer",
+      "value_type_prefix": "numeric",
+      "_resolved_template_slot": "solve_quadratic_inequality",
+      "naming_warning": "naming_warning:interval_task_value_prefix_ignored"
+    },
+    {
+      "problem_type_id": "rational_solve_quadratic_inequality",
+      "skill_id": "vh_數學B1_QuadraticInequalitySolution",
+      "target_task": "solve_quadratic_inequality",
+      "task_family": "quadratic_inequality_family",
+      "display_name": "numeric / solve_quadratic_inequality",
+      "answer_format_hint": "interval",
+      "answer_fields": null,
+      "answer_separator": null,
+      "source_example_ids": [
+        4475,
+        4477,
+        4478,
+        4481,
+        4483,
+        4485,
+        4486,
+        4489,
+        4492,
+        4494,
+        4496,
+        4497,
+        4505,
+        4506
+      ],
+      "answer_contract": {
+        "choices_required": false,
+        "choice_count": null,
+        "correct_choice_count": null,
+        "frontend_render_choices": false,
+        "source_has_choices": false,
+        "answer_type": "interval",
+        "answer_shape": "interval_or_union",
+        "answer_semantics": "interval_union",
+        "answer_equivalence": "interval_equivalence",
+        "equivalence_type": "interval_equivalence",
+        "checker": "interval_checker",
+        "checker_key": "interval_checker",
+        "presentation_mode": "short_answer",
+        "selected_checker": "interval_checker",
+        "checker_selection_reason": "quadratic_inequality_interval_solution",
+        "accepted_formats": [
+          "-5 <= x <= 1",
+          "(-5, 1]",
+          "x in [-5,1]",
+          "x<-2 or x>5",
+          "-2<x<5",
+          "x<=-2 or x>=5"
+        ]
+      },
+      "stem_contract": {
+        "stem_must_not_embed_choices": true,
+        "allowed_math_objects": [
+          "coordinate_point",
+          "inequality",
+          "quadratic_equation",
+          "quadratic_vertex_form",
+          "two_coordinate_points"
+        ],
+        "required_math_objects": [
+          "coordinate_point",
+          "inequality"
+        ],
+        "forbidden_patterns": [
+          "\\(A\\)",
+          "\\(B\\)",
+          "\\(C\\)",
+          "\\(D\\)"
+        ]
+      },
+      "dependency_contract": {
+        "givens_must_be_used": true,
+        "target_answer_must_depend_on_givens": true,
+        "variables_in_conditions_must_appear_in_target": false
+      },
+      "semantic_contract": {
+        "reasoning_type": [
+          "quadratic_factoring_reasoning"
+        ],
+        "reject_if": [
+          "unused_condition",
+          "ambiguous_answer",
+          "answer_not_derivable",
+          "duplicated_choices",
+          "no_correct_choice",
+          "multiple_correct_choices_when_single_choice"
+        ]
+      },
+      "generator_contract": {
+        "template_variants": [
+          {
+            "id": "default",
+            "label": "default",
+            "stem_pattern": "依題意求解：{stem_hint}。",
+            "weight": 1.0,
+            "enabled": true
+          }
+        ],
+        "parameter_schema": {
+          "seed": {
+            "type": "integer",
+            "randomize": true
+          },
+          "difficulty_level": {
+            "choices": [
+              "level_1",
+              "level_2",
+              "level_3"
+            ],
+            "weights": [
+              0.4,
+              0.4,
+              0.2
+            ]
+          }
+        },
+        "variation_dimensions": [
+          "seed",
+          "difficulty_level",
+          "context_style"
+        ],
+        "difficulty_controls": {
+          "level_1": {},
+          "level_2": {},
+          "level_3": {}
+        },
+        "anti_repetition_rules": {
+          "avoid_same_template_consecutive": true,
+          "avoid_same_ratio_consecutive": true,
+          "avoid_same_point_names_consecutive": true,
+          "avoid_same_answer_consecutive": true,
+          "recent_history_window": 5,
+          "signature_fields": [
+            "problem_type_id",
+            "template_variant",
+            "routing_track",
+            "scenario_type",
+            "ratio_form",
+            "ratio_values",
+            "coordinate_pattern",
+            "answer"
+          ]
+        },
+        "validity_constraints": [
+          "answer derivable from givens"
+        ],
+        "answer_shape": "numeric",
+        "explanation_variants": [
+          "stepwise"
+        ],
+        "sampling_strategy": "weighted_random",
+        "template_families": [
+          "solve_quadratic_inequality"
+        ],
+        "parameter_slots": {
+          "seed": "integer",
+          "difficulty": "easy"
+        },
+        "randomization_rules": {
+          "shuffle_choices": false
+        },
+        "avoid_llm_freeform_math": true,
+        "use_domain_functions": true,
+        "derivation_steps_required": true,
+        "template_slots": {
+          "stem": "solve_quadratic_inequality"
+        },
+        "problem_type_id": "rational_solve_quadratic_inequality",
+        "contract_validation_blockers": [],
+        "contract_validation_warnings": [
+          "single_template_variant_only",
+          "variation_dimensions_below_recommended_minimum"
+        ]
+      },
+      "validator_contract": {
+        "static_checks": [
+          "answer_contract_checks",
+          "choices_policy"
+        ],
+        "semantic_checks": [
+          "givens_to_target_dependency"
+        ],
+        "runtime_smoke_count": 30
+      },
+      "spec_source": "phase1_induced_draft",
+      "grouping_reason": "merged_by_canonical_contract",
+      "feature_signature": [
+        "canonical_contract_merge",
+        "solve_quadratic_inequality",
+        "numeric",
+        "short_answer"
+      ],
+      "canonical_base_problem_type_id": "solve_quadratic_inequality_short_answer",
+      "value_type_prefix": "numeric",
+      "_resolved_template_slot": "solve_quadratic_inequality",
+      "naming_warning": "naming_warning:interval_task_value_prefix_ignored"
+    },
+    {
+      "problem_type_id": "integer_applied_quadratic_inequality_problem",
+      "skill_id": "vh_數學B1_QuadraticInequalitySolution",
+      "target_task": "applied_quadratic_inequality_problem",
+      "task_family": "quadratic_inequality_family",
+      "display_name": "numeric / applied_quadratic_inequality_problem",
+      "answer_format_hint": "interval",
+      "answer_fields": null,
+      "answer_separator": null,
+      "source_example_ids": [
+        4476,
+        4488,
+        4495
+      ],
+      "answer_contract": {
+        "choices_required": false,
+        "choice_count": null,
+        "correct_choice_count": null,
+        "frontend_render_choices": false,
+        "source_has_choices": false,
+        "answer_type": "interval",
+        "answer_shape": "interval_or_union",
+        "answer_semantics": "interval_union",
+        "answer_equivalence": "interval_equivalence",
+        "equivalence_type": "interval_equivalence",
+        "checker": "interval_checker",
+        "checker_key": "interval_checker",
+        "presentation_mode": "short_answer",
+        "selected_checker": "interval_checker",
+        "checker_selection_reason": "quadratic_inequality_interval_solution",
+        "accepted_formats": [
+          "-5 <= x <= 1",
+          "(-5, 1]",
+          "x in [-5,1]",
+          "x<-2 or x>5",
+          "-2<x<5",
+          "x<=-2 or x>=5"
+        ]
+      },
+      "stem_contract": {
+        "stem_must_not_embed_choices": true,
+        "allowed_math_objects": [
+          "coordinate_point",
+          "inequality",
+          "quadratic_equation",
+          "quadratic_vertex_form",
+          "three_coordinate_points",
+          "triangle",
+          "two_coordinate_points"
+        ],
+        "required_math_objects": [
+          "coordinate_point",
+          "inequality"
+        ],
+        "forbidden_patterns": [
+          "\\(A\\)",
+          "\\(B\\)",
+          "\\(C\\)",
+          "\\(D\\)"
+        ]
+      },
+      "dependency_contract": {
+        "givens_must_be_used": true,
+        "target_answer_must_depend_on_givens": true,
+        "variables_in_conditions_must_appear_in_target": false
+      },
+      "semantic_contract": {
+        "reasoning_type": [
+          "quadratic_factoring_reasoning"
+        ],
+        "reject_if": [
+          "unused_condition",
+          "ambiguous_answer",
+          "answer_not_derivable",
+          "duplicated_choices",
+          "no_correct_choice",
+          "multiple_correct_choices_when_single_choice"
+        ]
+      },
+      "generator_contract": {
+        "template_variants": [
+          {
+            "id": "default",
+            "label": "default",
+            "stem_pattern": "依題意求解：{stem_hint}。",
+            "weight": 1.0,
+            "enabled": true
+          }
+        ],
+        "parameter_schema": {
+          "seed": {
+            "type": "integer",
+            "randomize": true
+          },
+          "difficulty_level": {
+            "choices": [
+              "level_1",
+              "level_2",
+              "level_3"
+            ],
+            "weights": [
+              0.4,
+              0.4,
+              0.2
+            ]
+          }
+        },
+        "variation_dimensions": [
+          "seed",
+          "difficulty_level",
+          "context_style"
+        ],
+        "difficulty_controls": {
+          "level_1": {},
+          "level_2": {},
+          "level_3": {}
+        },
+        "anti_repetition_rules": {
+          "avoid_same_template_consecutive": true,
+          "avoid_same_ratio_consecutive": true,
+          "avoid_same_point_names_consecutive": true,
+          "avoid_same_answer_consecutive": true,
+          "recent_history_window": 5,
+          "signature_fields": [
+            "problem_type_id",
+            "template_variant",
+            "routing_track",
+            "scenario_type",
+            "ratio_form",
+            "ratio_values",
+            "coordinate_pattern",
+            "answer"
+          ]
+        },
+        "validity_constraints": [
+          "answer derivable from givens"
+        ],
+        "answer_shape": "numeric",
+        "explanation_variants": [
+          "stepwise"
+        ],
+        "sampling_strategy": "weighted_random",
+        "template_families": [
+          "applied_quadratic_inequality_problem"
+        ],
+        "parameter_slots": {
+          "seed": "integer",
+          "difficulty": "easy"
+        },
+        "randomization_rules": {
+          "shuffle_choices": false
+        },
+        "avoid_llm_freeform_math": true,
+        "use_domain_functions": true,
+        "derivation_steps_required": true,
+        "template_slots": {
+          "stem": "applied_quadratic_inequality_problem"
+        },
+        "problem_type_id": "integer_applied_quadratic_inequality_problem",
+        "contract_validation_blockers": [],
+        "contract_validation_warnings": [
+          "single_template_variant_only",
+          "variation_dimensions_below_recommended_minimum"
+        ]
+      },
+      "validator_contract": {
+        "static_checks": [
+          "answer_contract_checks",
+          "choices_policy"
+        ],
+        "semantic_checks": [
+          "givens_to_target_dependency"
+        ],
+        "runtime_smoke_count": 30
+      },
+      "spec_source": "phase1_induced_draft",
+      "grouping_reason": "merged_by_canonical_contract",
+      "feature_signature": [
+        "canonical_contract_merge",
+        "applied_quadratic_inequality_problem",
+        "numeric",
+        "short_answer"
+      ],
+      "canonical_base_problem_type_id": "applied_quadratic_inequality_problem_short_answer",
+      "value_type_prefix": "numeric",
+      "_resolved_template_slot": "applied_quadratic_inequality_problem",
+      "naming_warning": "naming_warning:interval_task_value_prefix_ignored"
+    },
+    {
+      "problem_type_id": "integer_solve_quadratic_inequality_parameter_range",
+      "skill_id": "vh_數學B1_QuadraticInequalitySolution",
+      "target_task": "solve_quadratic_inequality_parameter_range",
+      "task_family": "quadratic_inequality_family",
+      "display_name": "numeric / solve_quadratic_inequality_parameter_range",
+      "answer_format_hint": "interval",
+      "answer_fields": null,
+      "answer_separator": null,
+      "source_example_ids": [
+        4479,
+        4487,
+        4498
+      ],
+      "answer_contract": {
+        "choices_required": false,
+        "choice_count": null,
+        "correct_choice_count": null,
+        "frontend_render_choices": false,
+        "source_has_choices": false,
+        "answer_type": "interval",
+        "answer_shape": "parameter_interval",
+        "answer_semantics": "parameter_range",
+        "answer_equivalence": "interval_equivalence",
+        "equivalence_type": "interval_equivalence",
+        "checker": "interval_checker",
+        "checker_key": "interval_checker",
+        "presentation_mode": "short_answer",
+        "selected_checker": "interval_checker",
+        "checker_selection_reason": "quadratic_inequality_parameter_range",
+        "accepted_formats": [
+          "m>1",
+          "k<-2",
+          "m>=1",
+          "k<=-2",
+          "a>3/2"
+        ],
+        "answer_format_example": "m>1"
+      },
+      "stem_contract": {
+        "stem_must_not_embed_choices": true,
+        "allowed_math_objects": [
+          "quadratic_equation",
+          "quadratic_vertex_form",
+          "coordinate_point",
+          "inequality",
+          "two_coordinate_points"
+        ],
+        "required_math_objects": [
+          "coordinate_point",
+          "quadratic_equation"
+        ],
+        "forbidden_patterns": [
+          "\\(A\\)",
+          "\\(B\\)",
+          "\\(C\\)",
+          "\\(D\\)"
+        ]
+      },
+      "dependency_contract": {
+        "givens_must_be_used": true,
+        "target_answer_must_depend_on_givens": true,
+        "variables_in_conditions_must_appear_in_target": false
+      },
+      "semantic_contract": {
+        "reasoning_type": [
+          "quadratic_factoring_reasoning"
+        ],
+        "reject_if": [
+          "unused_condition",
+          "ambiguous_answer",
+          "answer_not_derivable",
+          "duplicated_choices",
+          "no_correct_choice",
+          "multiple_correct_choices_when_single_choice"
+        ]
+      },
+      "generator_contract": {
+        "template_variants": [
+          {
+            "id": "default",
+            "label": "default",
+            "stem_pattern": "依題意求解：{stem_hint}。",
+            "weight": 1.0,
+            "enabled": true
+          }
+        ],
+        "parameter_schema": {
+          "seed": {
+            "type": "integer",
+            "randomize": true
+          },
+          "difficulty_level": {
+            "choices": [
+              "level_1",
+              "level_2",
+              "level_3"
+            ],
+            "weights": [
+              0.4,
+              0.4,
+              0.2
+            ]
+          }
+        },
+        "variation_dimensions": [
+          "seed",
+          "difficulty_level",
+          "context_style"
+        ],
+        "difficulty_controls": {
+          "level_1": {},
+          "level_2": {},
+          "level_3": {}
+        },
+        "anti_repetition_rules": {
+          "avoid_same_template_consecutive": true,
+          "avoid_same_ratio_consecutive": true,
+          "avoid_same_point_names_consecutive": true,
+          "avoid_same_answer_consecutive": true,
+          "recent_history_window": 5,
+          "signature_fields": [
+            "problem_type_id",
+            "template_variant",
+            "routing_track",
+            "scenario_type",
+            "ratio_form",
+            "ratio_values",
+            "coordinate_pattern",
+            "answer"
+          ]
+        },
+        "validity_constraints": [
+          "answer derivable from givens"
+        ],
+        "answer_shape": "numeric",
+        "explanation_variants": [
+          "stepwise"
+        ],
+        "sampling_strategy": "weighted_random",
+        "template_families": [
+          "solve_quadratic_inequality_parameter_range"
+        ],
+        "parameter_slots": {
+          "seed": "integer",
+          "difficulty": "easy"
+        },
+        "randomization_rules": {
+          "shuffle_choices": false
+        },
+        "avoid_llm_freeform_math": true,
+        "use_domain_functions": true,
+        "derivation_steps_required": true,
+        "template_slots": {
+          "stem": "solve_quadratic_inequality_parameter_range"
+        },
+        "problem_type_id": "integer_solve_quadratic_inequality_parameter_range",
+        "contract_validation_blockers": [],
+        "contract_validation_warnings": [
+          "single_template_variant_only",
+          "variation_dimensions_below_recommended_minimum"
+        ]
+      },
+      "validator_contract": {
+        "static_checks": [
+          "answer_contract_checks",
+          "choices_policy"
+        ],
+        "semantic_checks": [
+          "givens_to_target_dependency"
+        ],
+        "runtime_smoke_count": 30
+      },
+      "spec_source": "phase1_induced_draft",
+      "grouping_reason": "merged_by_canonical_contract",
+      "feature_signature": [
+        "canonical_contract_merge",
+        "solve_quadratic_inequality_parameter_range",
+        "numeric",
+        "short_answer"
+      ],
+      "canonical_base_problem_type_id": "solve_quadratic_inequality_parameter_range_short_answer",
+      "value_type_prefix": "numeric",
+      "_resolved_template_slot": "solve_quadratic_inequality_parameter_range"
+    },
+    {
+      "problem_type_id": "rational_solve_quadratic_inequality_special_cases",
+      "skill_id": "vh_數學B1_QuadraticInequalitySolution",
+      "target_task": "solve_quadratic_inequality_special_cases",
+      "task_family": "quadratic_inequality_family",
+      "display_name": "numeric / solve_quadratic_inequality_special_cases",
+      "answer_format_hint": "text_short",
+      "answer_fields": null,
+      "answer_separator": null,
+      "source_example_ids": [
+        4518
+      ],
+      "answer_contract": {
+        "choices_required": false,
+        "choice_count": null,
+        "correct_choice_count": null,
+        "frontend_render_choices": false,
+        "source_has_choices": false,
+        "answer_type": "text_short",
+        "answer_shape": "text_short",
+        "answer_semantics": "special_case_solution_label",
+        "answer_equivalence": "exact_string",
+        "equivalence_type": "exact_string",
+        "checker": "text_short_checker",
+        "checker_key": "text_short_checker",
+        "presentation_mode": "short_answer",
+        "selected_checker": "text_short_checker",
+        "checker_selection_reason": "quadratic_inequality_special_case",
+        "accepted_formats": [
+          "無解",
+          "任意實數"
+        ],
+        "answer_format_example": "任意實數"
+      },
+      "stem_contract": {
+        "stem_must_not_embed_choices": true,
+        "allowed_math_objects": [
+          "coordinate_point",
+          "inequality",
+          "quadratic_equation",
+          "quadratic_vertex_form"
+        ],
+        "required_math_objects": [
+          "coordinate_point",
+          "inequality"
+        ],
+        "forbidden_patterns": [
+          "\\(A\\)",
+          "\\(B\\)",
+          "\\(C\\)",
+          "\\(D\\)"
+        ]
+      },
+      "dependency_contract": {
+        "givens_must_be_used": true,
+        "target_answer_must_depend_on_givens": true,
+        "variables_in_conditions_must_appear_in_target": false
+      },
+      "semantic_contract": {
+        "reasoning_type": [
+          "quadratic_factoring_reasoning"
+        ],
+        "reject_if": [
+          "unused_condition",
+          "ambiguous_answer",
+          "answer_not_derivable",
+          "duplicated_choices",
+          "no_correct_choice",
+          "multiple_correct_choices_when_single_choice"
+        ]
+      },
+      "generator_contract": {
+        "template_variants": [
+          {
+            "id": "default",
+            "label": "default",
+            "stem_pattern": "依題意求解：{stem_hint}。",
+            "weight": 1.0,
+            "enabled": true
+          }
+        ],
+        "parameter_schema": {
+          "seed": {
+            "type": "integer",
+            "randomize": true
+          },
+          "difficulty_level": {
+            "choices": [
+              "level_1",
+              "level_2",
+              "level_3"
+            ],
+            "weights": [
+              0.4,
+              0.4,
+              0.2
+            ]
+          }
+        },
+        "variation_dimensions": [
+          "seed",
+          "difficulty_level",
+          "context_style"
+        ],
+        "difficulty_controls": {
+          "level_1": {},
+          "level_2": {},
+          "level_3": {}
+        },
+        "anti_repetition_rules": {
+          "avoid_same_template_consecutive": true,
+          "avoid_same_ratio_consecutive": true,
+          "avoid_same_point_names_consecutive": true,
+          "avoid_same_answer_consecutive": true,
+          "recent_history_window": 5,
+          "signature_fields": [
+            "problem_type_id",
+            "template_variant",
+            "routing_track",
+            "scenario_type",
+            "ratio_form",
+            "ratio_values",
+            "coordinate_pattern",
+            "answer"
+          ]
+        },
+        "validity_constraints": [
+          "answer derivable from givens"
+        ],
+        "answer_shape": "numeric",
+        "explanation_variants": [
+          "stepwise"
+        ],
+        "sampling_strategy": "weighted_random",
+        "template_families": [
+          "solve_quadratic_inequality_special_cases"
+        ],
+        "parameter_slots": {
+          "seed": "integer",
+          "difficulty": "easy"
+        },
+        "randomization_rules": {
+          "shuffle_choices": false
+        },
+        "avoid_llm_freeform_math": true,
+        "use_domain_functions": true,
+        "derivation_steps_required": true,
+        "template_slots": {
+          "stem": "solve_quadratic_inequality_special_cases"
+        },
+        "problem_type_id": "rational_solve_quadratic_inequality_special_cases",
+        "contract_validation_blockers": [],
+        "contract_validation_warnings": [
+          "single_template_variant_only",
+          "variation_dimensions_below_recommended_minimum"
+        ]
+      },
+      "validator_contract": {
+        "static_checks": [
+          "answer_contract_checks",
+          "choices_policy"
+        ],
+        "semantic_checks": [
+          "givens_to_target_dependency"
+        ],
+        "runtime_smoke_count": 30
+      },
+      "spec_source": "phase1_induced_draft",
+      "grouping_reason": "split_by_feature_signature",
+      "feature_signature": [
+        "numeric",
+        "solve_quadratic_inequality_special_cases",
+        "single_choice",
+        [
+          "quadratic_factoring_reasoning"
+        ],
+        [
+          "coordinate_point",
+          "inequality"
+        ]
+      ],
+      "canonical_base_problem_type_id": "solve_quadratic_inequality_special_cases_single_choice",
+      "value_type_prefix": "numeric",
+      "_resolved_template_slot": "solve_quadratic_inequality_special_cases"
+    },
+    {
+      "problem_type_id": "text_short_factor_quadratic_by_cross_multiplication",
+      "skill_id": "vh_數學B1_QuadraticInequalitySolution",
+      "target_task": "factor_quadratic_by_cross_multiplication",
+      "task_family": "quadratic_inequality_family",
+      "display_name": "short_answer / factor_quadratic_by_cross_multiplication",
+      "answer_format_hint": "expression",
+      "answer_fields": null,
+      "answer_separator": null,
+      "source_example_ids": [
+        4484
+      ],
+      "answer_contract": {
+        "choices_required": false,
+        "choice_count": null,
+        "correct_choice_count": null,
+        "frontend_render_choices": false,
+        "answer_type": "expression",
+        "answer_shape": "factored_expression",
+        "answer_equivalence": "algebraic_equivalent",
+        "equivalence_type": "algebraic_equivalent",
+        "checker": "expression_checker",
+        "checker_key": "expression_checker",
+        "presentation_mode": "short_answer",
+        "selected_checker": "expression_checker",
+        "checker_selection_reason": "quadratic_factoring_expression",
+        "accepted_formats": [
+          "(x-5)(x+3)",
+          "(2x-1)(x+5)",
+          "2(x-1)(3x+2)"
+        ],
+        "source_has_choices": false,
+        "answer_semantics": "algebraic_expression"
+      },
+      "stem_contract": {
+        "stem_must_not_embed_choices": true,
+        "allowed_math_objects": [],
+        "required_math_objects": [],
+        "forbidden_patterns": [
+          "\\(A\\)",
+          "\\(B\\)",
+          "\\(C\\)",
+          "\\(D\\)"
+        ]
+      },
+      "dependency_contract": {
+        "givens_must_be_used": true,
+        "target_answer_must_depend_on_givens": true,
+        "variables_in_conditions_must_appear_in_target": false
+      },
+      "semantic_contract": {
+        "reasoning_type": [
+          "numeric_computation"
+        ],
+        "reject_if": [
+          "unused_condition",
+          "ambiguous_answer",
+          "answer_not_derivable",
+          "duplicated_choices",
+          "no_correct_choice",
+          "multiple_correct_choices_when_single_choice"
+        ]
+      },
+      "generator_contract": {
+        "template_variants": [
+          {
+            "id": "default",
+            "label": "default",
+            "stem_pattern": "依題意求解：{stem_hint}。",
+            "weight": 1.0,
+            "enabled": true
+          }
+        ],
+        "parameter_schema": {
+          "seed": {
+            "type": "integer",
+            "randomize": true
+          },
+          "difficulty_level": {
+            "choices": [
+              "level_1",
+              "level_2",
+              "level_3"
+            ],
+            "weights": [
+              0.4,
+              0.4,
+              0.2
+            ]
+          }
+        },
+        "variation_dimensions": [
+          "seed",
+          "difficulty_level",
+          "context_style"
+        ],
+        "difficulty_controls": {
+          "level_1": {},
+          "level_2": {},
+          "level_3": {}
+        },
+        "anti_repetition_rules": {
+          "avoid_same_template_consecutive": true,
+          "avoid_same_ratio_consecutive": true,
+          "avoid_same_point_names_consecutive": true,
+          "avoid_same_answer_consecutive": true,
+          "recent_history_window": 5,
+          "signature_fields": [
+            "problem_type_id",
+            "template_variant",
+            "routing_track",
+            "scenario_type",
+            "ratio_form",
+            "ratio_values",
+            "coordinate_pattern",
+            "answer"
+          ]
+        },
+        "validity_constraints": [
+          "answer derivable from givens"
+        ],
+        "answer_shape": "numeric",
+        "explanation_variants": [
+          "stepwise"
+        ],
+        "sampling_strategy": "weighted_random",
+        "template_families": [
+          "factor_quadratic_by_cross_multiplication"
+        ],
+        "parameter_slots": {
+          "seed": "integer",
+          "difficulty": "easy"
+        },
+        "randomization_rules": {
+          "shuffle_choices": false
+        },
+        "avoid_llm_freeform_math": true,
+        "use_domain_functions": true,
+        "derivation_steps_required": true,
+        "template_slots": {
+          "stem": "factor_quadratic_by_cross_multiplication"
+        },
+        "problem_type_id": "text_short_factor_quadratic_by_cross_multiplication",
+        "contract_validation_blockers": [],
+        "contract_validation_warnings": [
+          "single_template_variant_only",
+          "variation_dimensions_below_recommended_minimum"
+        ]
+      },
+      "validator_contract": {
+        "static_checks": [
+          "answer_contract_checks",
+          "choices_policy"
+        ],
+        "semantic_checks": [
+          "givens_to_target_dependency"
+        ],
+        "runtime_smoke_count": 30
+      },
+      "spec_source": "phase1_induced_draft",
+      "grouping_reason": "single_signature_group",
+      "feature_signature": [
+        "short_answer",
+        "factor_quadratic_by_cross_multiplication",
+        "short_answer",
+        [
+          "numeric_computation"
+        ],
+        []
+      ],
+      "canonical_base_problem_type_id": "short_answer_factor_quadratic_by_cross_multiplication_short_answer",
+      "value_type_prefix": "",
+      "_resolved_template_slot": "factor_quadratic_by_cross_multiplication"
+    }
+  ]
+}

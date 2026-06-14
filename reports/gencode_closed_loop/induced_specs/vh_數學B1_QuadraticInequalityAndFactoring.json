@@ -1,0 +1,329 @@
+{
+  "skill_id": "vh_數學B1_QuadraticInequalityAndFactoring",
+  "spec_source": "phase1_induced_draft",
+  "items": [
+    {
+      "problem_type_id": "integer_factor_quadratic_by_cross_multiplication",
+      "skill_id": "vh_數學B1_QuadraticInequalityAndFactoring",
+      "target_task": "factor_quadratic_by_cross_multiplication",
+      "task_family": "quadratic_inequality_family",
+      "display_name": "numeric / factor_quadratic_by_cross_multiplication",
+      "answer_format_hint": "",
+      "answer_fields": null,
+      "answer_separator": null,
+      "source_example_ids": [
+        4473,
+        4480,
+        4490
+      ],
+      "answer_contract": {
+        "choices_required": false,
+        "choice_count": 4,
+        "correct_choice_count": 1,
+        "frontend_render_choices": true,
+        "source_has_choices": false,
+        "answer_type": "expression",
+        "answer_shape": "factored_expression",
+        "answer_semantics": "algebraic_expression",
+        "answer_equivalence": "algebraic_equivalent",
+        "equivalence_type": "algebraic_equivalent",
+        "checker": "expression_checker",
+        "checker_key": "expression_checker",
+        "presentation_mode": "short_answer",
+        "selected_checker": "choice_label_checker",
+        "accepted_formats": [
+          "(x-5)(x+3)",
+          "(2x-1)(x+5)",
+          "2(x-1)(3x+2)"
+        ],
+        "checker_capability_status": "ok",
+        "checker_contract_blockers": [],
+        "checker_contract_warnings": [],
+        "stem_contract": {
+          "stem_must_not_embed_choices": true,
+          "allowed_math_objects": [
+            "factoring_expression",
+            "quadratic_equation",
+            "quadratic_trinomial"
+          ],
+          "required_math_objects": [
+            "factoring_expression",
+            "quadratic_equation"
+          ],
+          "forbidden_patterns": [
+            "\\(A\\)",
+            "\\(B\\)",
+            "\\(C\\)",
+            "\\(D\\)"
+          ]
+        },
+        "dependency_contract": {
+          "givens_must_be_used": true,
+          "target_answer_must_depend_on_givens": true,
+          "variables_in_conditions_must_appear_in_target": false
+        },
+        "semantic_contract": {
+          "reasoning_type": [
+            "quadratic_factoring_reasoning"
+          ],
+          "reject_if": [
+            "unused_condition",
+            "ambiguous_answer",
+            "answer_not_derivable",
+            "duplicated_choices",
+            "no_correct_choice",
+            "multiple_correct_choices_when_single_choice"
+          ]
+        },
+        "generator_contract": {
+          "template_variants": [
+            {
+              "id": "default",
+              "label": "default",
+              "stem_pattern": "依題意求解：{stem_hint}。",
+              "weight": 1.0,
+              "enabled": true
+            }
+          ],
+          "parameter_schema": {
+            "seed": {
+              "type": "integer",
+              "randomize": true
+            },
+            "difficulty_level": {
+              "choices": [
+                "level_1",
+                "level_2",
+                "level_3"
+              ],
+              "weights": [
+                0.4,
+                0.4,
+                0.2
+              ]
+            }
+          },
+          "variation_dimensions": [
+            "seed",
+            "difficulty_level",
+            "context_style"
+          ],
+          "difficulty_controls": {
+            "level_1": {},
+            "level_2": {},
+            "level_3": {}
+          },
+          "anti_repetition_rules": {
+            "avoid_same_template_consecutive": true,
+            "avoid_same_ratio_consecutive": true,
+            "avoid_same_point_names_consecutive": true,
+            "avoid_same_answer_consecutive": true,
+            "recent_history_window": 5,
+            "signature_fields": [
+              "problem_type_id",
+              "template_variant",
+              "routing_track",
+              "scenario_type",
+              "ratio_form",
+              "ratio_values",
+              "coordinate_pattern",
+              "answer"
+            ]
+          },
+          "validity_constraints": [
+            "answer derivable from givens"
+          ],
+          "answer_shape": "numeric",
+          "explanation_variants": [
+            "stepwise"
+          ],
+          "sampling_strategy": "weighted_random",
+          "template_families": [
+            "factor_quadratic_by_cross_multiplication"
+          ],
+          "parameter_slots": {
+            "seed": "integer",
+            "difficulty": "easy"
+          },
+          "randomization_rules": {
+            "shuffle_choices": false
+          },
+          "avoid_llm_freeform_math": true,
+          "use_domain_functions": true,
+          "derivation_steps_required": true,
+          "problem_type_id": "integer_factor_quadratic_by_cross_multiplication",
+          "contract_validation_blockers": [],
+          "contract_validation_warnings": [
+            "single_template_variant_only",
+            "variation_dimensions_below_recommended_minimum"
+          ],
+          "template_slots": {
+            "stem": "quadratic_graph_vertex_axis_choice"
+          }
+        },
+        "validator_contract": {
+          "static_checks": [
+            "answer_contract_checks",
+            "choices_policy"
+          ],
+          "semantic_checks": [
+            "givens_to_target_dependency"
+          ],
+          "runtime_smoke_count": 30
+        },
+        "order_matters": true,
+        "accepted_format_notes": [],
+        "canonical_answer_schema": "single_choice"
+      },
+      "stem_contract": {
+        "stem_must_not_embed_choices": true,
+        "allowed_math_objects": [
+          "factoring_expression",
+          "quadratic_equation",
+          "quadratic_trinomial"
+        ],
+        "required_math_objects": [
+          "factoring_expression",
+          "quadratic_equation"
+        ],
+        "forbidden_patterns": [
+          "\\(A\\)",
+          "\\(B\\)",
+          "\\(C\\)",
+          "\\(D\\)"
+        ]
+      },
+      "dependency_contract": {
+        "givens_must_be_used": true,
+        "target_answer_must_depend_on_givens": true,
+        "variables_in_conditions_must_appear_in_target": false
+      },
+      "semantic_contract": {
+        "reasoning_type": [
+          "quadratic_factoring_reasoning"
+        ],
+        "reject_if": [
+          "unused_condition",
+          "ambiguous_answer",
+          "answer_not_derivable",
+          "duplicated_choices",
+          "no_correct_choice",
+          "multiple_correct_choices_when_single_choice"
+        ]
+      },
+      "generator_contract": {
+        "template_variants": [
+          {
+            "id": "default",
+            "label": "default",
+            "stem_pattern": "依題意求解：{stem_hint}。",
+            "weight": 1.0,
+            "enabled": true
+          }
+        ],
+        "parameter_schema": {
+          "seed": {
+            "type": "integer",
+            "randomize": true
+          },
+          "difficulty_level": {
+            "choices": [
+              "level_1",
+              "level_2",
+              "level_3"
+            ],
+            "weights": [
+              0.4,
+              0.4,
+              0.2
+            ]
+          }
+        },
+        "variation_dimensions": [
+          "seed",
+          "difficulty_level",
+          "context_style"
+        ],
+        "difficulty_controls": {
+          "level_1": {},
+          "level_2": {},
+          "level_3": {}
+        },
+        "anti_repetition_rules": {
+          "avoid_same_template_consecutive": true,
+          "avoid_same_ratio_consecutive": true,
+          "avoid_same_point_names_consecutive": true,
+          "avoid_same_answer_consecutive": true,
+          "recent_history_window": 5,
+          "signature_fields": [
+            "problem_type_id",
+            "template_variant",
+            "routing_track",
+            "scenario_type",
+            "ratio_form",
+            "ratio_values",
+            "coordinate_pattern",
+            "answer"
+          ]
+        },
+        "validity_constraints": [
+          "answer derivable from givens"
+        ],
+        "answer_shape": "numeric",
+        "explanation_variants": [
+          "stepwise"
+        ],
+        "sampling_strategy": "weighted_random",
+        "template_families": [
+          "factor_quadratic_by_cross_multiplication"
+        ],
+        "parameter_slots": {
+          "seed": "integer",
+          "difficulty": "easy"
+        },
+        "randomization_rules": {
+          "shuffle_choices": false
+        },
+        "avoid_llm_freeform_math": true,
+        "use_domain_functions": true,
+        "derivation_steps_required": true,
+        "problem_type_id": "integer_factor_quadratic_by_cross_multiplication",
+        "contract_validation_blockers": [],
+        "contract_validation_warnings": [
+          "single_template_variant_only",
+          "variation_dimensions_below_recommended_minimum"
+        ],
+        "template_slots": {
+          "stem": "quadratic_graph_vertex_axis_choice"
+        }
+      },
+      "validator_contract": {
+        "static_checks": [
+          "answer_contract_checks",
+          "choices_policy"
+        ],
+        "semantic_checks": [
+          "givens_to_target_dependency"
+        ],
+        "runtime_smoke_count": 30
+      },
+      "spec_source": "phase1_induced_draft",
+      "grouping_reason": "single_signature_group",
+      "feature_signature": [
+        "numeric",
+        "factor_quadratic_by_cross_multiplication",
+        "short_answer",
+        [
+          "quadratic_factoring_reasoning"
+        ],
+        [
+          "factoring_expression",
+          "quadratic_equation"
+        ]
+      ],
+      "canonical_base_problem_type_id": "factor_quadratic_by_cross_multiplication_short_answer",
+      "value_type_prefix": "numeric",
+      "_resolved_template_slot": "factor_quadratic_by_cross_multiplication"
+    }
+  ]
+}
