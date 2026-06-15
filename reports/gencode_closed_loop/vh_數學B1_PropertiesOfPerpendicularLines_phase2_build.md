@@ -4,13 +4,13 @@
 - skill_id: vh_數學B1_PropertiesOfPerpendicularLines
 - final_status: BUILD_PASS
 - build_mode: normal
-- input_phase1_report: E:\Python\Mathproject_tvet_mathB\reports\gencode_closed_loop\vh_數學B1_PropertiesOfPerpendicularLines_phase1_audit.json
+- input_phase1_report: D:\Python\Mathproject_tvet_mathB\reports\gencode_closed_loop\vh_數學B1_PropertiesOfPerpendicularLines_phase1_audit.json
 
 ## 2. Build Dependency Plan
 - foundation_ready: true
-- required_checkers: -
+- required_checkers: rational_checker
 - missing_checkers: -
-- required_verifiers: -
+- required_verifiers: rational_verifier
 - missing_verifiers: -
 - required_domain_functions: -
 - missing_domain_functions: -

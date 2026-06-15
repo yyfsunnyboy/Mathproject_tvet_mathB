@@ -207,6 +207,20 @@ def _max_consecutive_same(values: list[str]) -> int:
     return best
 
 
+def _bucket_answer_for_distribution(answer: str, spec: dict[str, Any] | None = None) -> str:
+    from core.gencode.problem_type_spec import get_answer_contract
+    from core.checkers.linear_equation_equivalent_checker import canonicalize_linear_equation
+
+    ac = get_answer_contract(spec) if isinstance(spec, dict) else {}
+    shape = str(ac.get("answer_shape", "")).strip()
+    answer_type = str(ac.get("answer_type", "")).strip().lower()
+    if shape == "linear_equation" or answer_type == "equation":
+        if canonicalize_linear_equation(answer):
+            return "linear_equation"
+        return "linear_equation_unparseable"
+    return answer
+
+
 def evaluate_diversity_metrics(
     signatures: list[dict[str, Any]],
     *,
@@ -214,6 +228,7 @@ def evaluate_diversity_metrics(
     question_texts: list[str] | None = None,
     answers: list[str] | None = None,
     sample_count: int = DIVERSITY_SAMPLE_COUNT,
+    spec: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     keys = [signature_key(s) for s in signatures]
     unique_sig = len(set(keys))
@@ -221,7 +236,7 @@ def evaluate_diversity_metrics(
     unique_q = len(set(qt)) if qt else unique_sig
     tmpl_counts = Counter(str(s.get("template_variant", "")) for s in signatures)
     ans = answers or [str(s.get("answer", "")) for s in signatures]
-    ans_counts = Counter(ans)
+    ans_counts = Counter(_bucket_answer_for_distribution(str(a), spec) for a in ans)
     tmpl_seq = [str(s.get("template_variant", "")) for s in signatures]
     max_consec = _max_consecutive_same(tmpl_seq)
 
@@ -487,6 +502,7 @@ def run_diversity_sampling(
         question_texts=question_texts,
         answers=answers,
         sample_count=sample_count,
+        spec=spec_to_use,
     )
     
     # Apply diversity blocking exemption if low source examples

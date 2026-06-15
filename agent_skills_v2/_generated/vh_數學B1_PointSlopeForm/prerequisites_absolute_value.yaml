@@ -1,0 +1,9 @@
+items:
+  -
+    subskill_id: "unknown"
+    prerequisite_subskills:
+      - "absolute_value_numeric_evaluation"
+  -
+    subskill_id: "write_line_equation_from_point_slope"
+    prerequisite_subskills:
+      - "absolute_value_numeric_evaluation"

@@ -1,0 +1,31 @@
+# Gencode Publish Summary: vh_數學B1_PointSlopeForm
+
+## publish
+```json
+{
+  "ok": true,
+  "success": true,
+  "skill_id": "vh_數學B1_PointSlopeForm",
+  "phase": "publish",
+  "publish_status": "published",
+  "draft_skill_file_path": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\drafts\\vh_數學B1_PointSlopeForm.py",
+  "formal_skill_file_path": "D:\\Python\\Mathproject_tvet_mathB\\skills\\vh_數學B1_PointSlopeForm.py",
+  "backup_path": "D:\\Python\\Mathproject_tvet_mathB\\backups\\gencode_skill_publish\\vh_數學B1_PointSlopeForm.20260615_090438.578495+0000.py",
+  "backup_status": "backed_up",
+  "py_compile_status": "passed",
+  "runtime_smoke_status": "passed",
+  "runtime_ready_marked": false,
+  "can_mark_runtime_ready": false,
+  "blockers": [],
+  "warnings": [
+    "published_but_not_runtime_ready"
+  ],
+  "summary_message": "Formal skill file published successfully; if runtime-ready gate is not passed, run /practice smoke tests before marking runtime-ready.",
+  "reports": {
+    "phase3_package_summary_json": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_PointSlopeForm_phase3_package_summary.json",
+    "publish_summary_json": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_PointSlopeForm_publish_summary.json",
+    "publish_summary_md": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_PointSlopeForm_publish_summary.md"
+  },
+  "timestamp": "2026-06-15T09:04:38.599480+00:00"
+}
+```

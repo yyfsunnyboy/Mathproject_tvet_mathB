@@ -19,7 +19,7 @@
 - expected_subskill_candidates: []
 - skill_anchor_scope: `default`
 - observed_source_family_distribution: {'generic_numeric_family': 6, 'quadratic_inequality_family': 1, 'distance_between_two_points_family': 1}
-- observed_target_task_distribution: {'perpendicular_lines_properties': 1, 'contextual_application': 5, 'applied_quadratic_inequality_problem': 1, 'solve_unknown_coordinate_from_two_point_distance': 1}
+- observed_target_task_distribution: {'perpendicular_lines_properties': 1, 'contextual_application': 4, 'applied_quadratic_inequality_problem': 1, 'solve_unknown_coordinate_from_two_point_distance': 1, 'compute_numeric': 1}
 - same_family_subskill_mismatch_examples: 0
 - examples_outside_expected_subskills: []
 - suggested_action: ``
@@ -30,18 +30,18 @@
 - skill_problem_type_alignment_status: `warn`
 - alignment_score: `0.0`
 - alignment_blockers: []
-- alignment_warnings: ['ai_first_mode_fell_back_to_rule_only', 'ai_unavailable_fallback_to_same_as_main', 'alignment_score_below_recommended_threshold', 'majority_sources_need_human_subskill_review', 'skill_scoped_classification_low_confidence', 'source_skill_scope_locked_demoted_blockers_to_warnings']
+- alignment_warnings: ['ai_first_mode_fell_back_to_rule_only', 'ai_partial_unavailable_relaxed_tolerance', 'ai_unavailable_fallback_to_same_as_main', 'alignment_score_below_recommended_threshold', 'demoted_majority_needs_review_due_to_partial_unavailable', 'majority_sources_need_human_subskill_review']
 
 | example_id | target_task | task_family | alignment_kind | subskill_match | included | exclude_reason | stem_preview |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| 4531 | perpendicular_lines_properties | generic_numeric_family | unclassified_low_confidence | False | False | unclassified_low_confidence | 設$A\left( -2,a \right)$、$B\left( 3,4 \right)$、$C\left( -2,8  |
+| 4531 | perpendicular_lines_properties | generic_numeric_family | unclassified_low_confidence | False | False | semantic_alignment_score_zero_requires_human_review | 設$A\left( -2,a \right)$、$B\left( 3,4 \right)$、$C\left( -2,8  |
 | 4532 | contextual_application | generic_numeric_family | unclassified_low_confidence | False | False | unclassified_low_confidence | 已知直線${{L}_{1}}$的斜率為$\frac{3}{2}$，試問：
 (1)若直線${{L}_{2}}$平行${{L |
 | 4526 | contextual_application | generic_numeric_family | unclassified_low_confidence | False | False | unclassified_low_confidence | 已知直線${{L}_{1}}$的斜率為$-\frac{2}{3}$，試問：
 (1) 若直線${{L}_{2}}$平行${ |
-| 4527 | applied_quadratic_inequality_problem | quadratic_inequality_family | unclassified_low_confidence | False | False | unclassified_low_confidence | 已知坐標平面上三點$A\left( 2,1 \right)$、$B\left( 1,3 \right)$及$C\left |
-| 4536 | solve_unknown_coordinate_from_two_point_distance | distance_between_two_points_family | unclassified_low_confidence | False | False | unclassified_low_confidence | 設$A\left( -3,4 \right)$、$B\left( a,1 \right)$、$C\left( -4,-2 |
-| 4537 | contextual_application | generic_numeric_family | unclassified_low_confidence | False | False | unclassified_low_confidence | 設直線${{L}_{1}}$通過$A\left( 3,k+1 \right)$、$B\left( -k,5 \right |
+| 4527 | applied_quadratic_inequality_problem | quadratic_inequality_family | unclassified_low_confidence | False | False | semantic_alignment_score_zero_requires_human_review | 已知坐標平面上三點$A\left( 2,1 \right)$、$B\left( 1,3 \right)$及$C\left |
+| 4536 | solve_unknown_coordinate_from_two_point_distance | distance_between_two_points_family | unclassified_low_confidence | False | False | semantic_alignment_score_zero_requires_human_review | 設$A\left( -3,4 \right)$、$B\left( a,1 \right)$、$C\left( -4,-2 |
+| 4537 | compute_numeric | generic_numeric_family | unclassified_low_confidence | False | False | semantic_alignment_score_zero_requires_human_review | 設直線${{L}_{1}}$通過$A\left( 3,k+1 \right)$、$B\left( -k,5 \right |
 | 4538 | contextual_application | generic_numeric_family | unclassified_low_confidence | False | False | unclassified_low_confidence | 已知${{m}_{1}}$與${{m}_{2}}$分別為直線${{L}_{1}}$與直線${{L}_{2}}$的斜率，且 |
 | 4539 | contextual_application | generic_numeric_family | unclassified_low_confidence | False | False | unclassified_low_confidence | 已知直線${{L}_{1}}$的斜率為$-\frac{1}{2}$，試問：
 (1) 若直線${{L}_{2}}$平行${ |
@@ -66,12 +66,12 @@
 
 | id | rule_task/family | AI task/family | conf | source | final task/family | align | excluded |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| 4531 | perpendicular_lines_properties/generic_numeric_family | / | 0.0 | clause45_unclassified_exception | perpendicular_lines_properties/generic_numeric_family | unclassified_low_confidence | unclassified_low_confidence |
+| 4531 | perpendicular_lines_properties/generic_numeric_family | / | 0.0 | rule_fallback_ai_unavailable | perpendicular_lines_properties/generic_numeric_family | unclassified_low_confidence | semantic_alignment_score_zero_requires_human_review |
 | 4532 | compute_numeric/generic_numeric_family | / | 0.0 | clause45_unclassified_exception | contextual_application/generic_numeric_family | unclassified_low_confidence | unclassified_low_confidence |
 | 4526 | compute_numeric/generic_numeric_family | / | 0.0 | clause45_unclassified_exception | contextual_application/generic_numeric_family | unclassified_low_confidence | unclassified_low_confidence |
-| 4527 | applied_quadratic_inequality_problem/quadratic_inequality_family | / | 0.0 | clause45_unclassified_exception | applied_quadratic_inequality_problem/quadratic_inequality_family | unclassified_low_confidence | unclassified_low_confidence |
-| 4536 | solve_unknown_coordinate_from_two_point_distance/distance_between_two_points_family | / | 0.0 | clause45_unclassified_exception | solve_unknown_coordinate_from_two_point_distance/distance_between_two_points_family | unclassified_low_confidence | unclassified_low_confidence |
-| 4537 | compute_numeric/generic_numeric_family | / | 0.0 | clause45_unclassified_exception | contextual_application/generic_numeric_family | unclassified_low_confidence | unclassified_low_confidence |
+| 4527 | applied_quadratic_inequality_problem/quadratic_inequality_family | / | 0.0 | rule_fallback_ai_unavailable | applied_quadratic_inequality_problem/quadratic_inequality_family | unclassified_low_confidence | semantic_alignment_score_zero_requires_human_review |
+| 4536 | solve_unknown_coordinate_from_two_point_distance/distance_between_two_points_family | / | 0.0 | rule_fallback_ai_unavailable | solve_unknown_coordinate_from_two_point_distance/distance_between_two_points_family | unclassified_low_confidence | semantic_alignment_score_zero_requires_human_review |
+| 4537 | compute_numeric/generic_numeric_family | / | 0.0 | rule_fallback_ai_unavailable | compute_numeric/generic_numeric_family | unclassified_low_confidence | semantic_alignment_score_zero_requires_human_review |
 | 4538 | compute_numeric/generic_numeric_family | / | 0.0 | clause45_unclassified_exception | contextual_application/generic_numeric_family | unclassified_low_confidence | unclassified_low_confidence |
 | 4539 | compute_numeric/generic_numeric_family | / | 0.0 | clause45_unclassified_exception | contextual_application/generic_numeric_family | unclassified_low_confidence | unclassified_low_confidence |
 
@@ -89,45 +89,24 @@
 | 4526 | text_short | contextual_application | False | False | coordinate_point |
 | 4527 | text_short | applied_quadratic_inequality_problem | False | False | coordinate_point, three_coordinate_points, triangle, two_coordinate_points |
 | 4536 | text_short | solve_unknown_coordinate_from_two_point_distance | False | False | coordinate_point, distance_formula, parameter, segment_length, three_coordinate_points, triangle, two_coordinate_points, unknown_coordinate |
-| 4537 | text_short | contextual_application | False | False | coordinate_point, three_coordinate_points, triangle, two_coordinate_points |
+| 4537 | text_short | compute_numeric | False | False | coordinate_point, three_coordinate_points, triangle, two_coordinate_points |
 | 4538 | choice | contextual_application | True | True | coordinate_point |
 | 4539 | text_short | contextual_application | False | False | coordinate_point |
 
 ## Induction clusters
 
 ### Cluster 1
-- answer_type: `integer`
-- source_example_ids: [4531]
+- answer_type: `short_answer`
+- source_example_ids: [4526, 4532, 4539]
 - grouping_reason: single_signature_group
-- feature_signature: `['integer', 'perpendicular_lines_properties', 'short_answer', ('numeric_computation',), ('coordinate_point', 'three_coordinate_points')]`
-
-### Cluster 2
-- answer_type: `short_answer`
-- source_example_ids: [4526, 4532, 4537, 4539]
-- grouping_reason: merged_by_canonical_contract
-- feature_signature: `['canonical_contract_merge', 'contextual_application', 'short_answer', 'short_answer']`
-
-### Cluster 3
-- answer_type: `short_answer`
-- source_example_ids: [4527]
-- grouping_reason: split_by_feature_signature
-- feature_signature: `['short_answer', 'applied_quadratic_inequality_problem', 'short_answer', ('quadratic_factoring_reasoning',), ('coordinate_point', 'three_coordinate_points')]`
-
-### Cluster 4
-- answer_type: `short_answer`
-- source_example_ids: [4536]
-- grouping_reason: split_by_feature_signature
-- feature_signature: `['short_answer', 'solve_unknown_coordinate_from_two_point_distance', 'short_answer', ('distance_formula_reasoning',), ('coordinate_point', 'distance_formula')]`
+- feature_signature: `['short_answer', 'contextual_application', 'short_answer', ('numeric_computation',), ('coordinate_point',)]`
 
 
 ## Candidate problem types
 
 | problem_type_id | display_name | answer_type | source_examples | grouping_reason |
 | --- | --- | --- | --- | --- |
-| integer_perpendicular_lines_properties | integer / perpendicular_lines_properties | integer | [4531] | single_signature_group |
-| text_short_contextual_application | text_short / contextual_application | rational | [4526, 4532, 4537, 4539] | merged_by_canonical_contract |
-| text_short_applied_quadratic_inequality_problem | text_short / applied_quadratic_inequality_problem | interval | [4527] | split_by_feature_signature |
-| text_short_solve_unknown_coordinate_from_two_point_distance | text_short / solve_unknown_coordinate_from_two_point_distance | integer | [4536] | split_by_feature_signature |
+| text_short_contextual_application | text_short / contextual_application | text_short | [4526, 4532, 4539] | single_signature_group |
 
 ## phase1
 ```json
@@ -214,11 +193,11 @@
   "alignment_score": 0.0,
   "alignment_warnings": [
     "ai_first_mode_fell_back_to_rule_only",
+    "ai_partial_unavailable_relaxed_tolerance",
     "ai_unavailable_fallback_to_same_as_main",
     "alignment_score_below_recommended_threshold",
-    "majority_sources_need_human_subskill_review",
-    "skill_scoped_classification_low_confidence",
-    "source_skill_scope_locked_demoted_blockers_to_warnings"
+    "demoted_majority_needs_review_due_to_partial_unavailable",
+    "majority_sources_need_human_subskill_review"
   ],
   "alignment_blockers": [],
   "semantic_alignment": {
@@ -295,6 +274,7 @@
       "compute_centroid_coordinates",
       "compute_distance",
       "compute_distance_between_two_points",
+      "compute_numeric",
       "compute_slope",
       "contextual_application",
       "coordinate_point",
@@ -344,61 +324,30 @@
     ],
     "observed_target_task_distribution": {
       "perpendicular_lines_properties": 1,
-      "contextual_application": 5,
+      "contextual_application": 4,
       "applied_quadratic_inequality_problem": 1,
-      "solve_unknown_coordinate_from_two_point_distance": 1
+      "solve_unknown_coordinate_from_two_point_distance": 1,
+      "compute_numeric": 1
     },
     "same_family_subskill_mismatch_examples": [],
     "examples_outside_expected_subskills": [],
     "suggested_action": "",
     "examples_outside_expected_family": [],
     "problem_type_terms": [
-      "applied",
-      "applied_quadratic_inequality_problem",
       "contextual_application",
-      "coordinate",
       "coped",
-      "di",
-      "distance",
-      "distance_formula_reasoning",
-      "fallback",
-      "from",
-      "inequality",
-      "integer",
-      "integer / perpendicular_lines_properties",
-      "interval",
       "kill",
-      "line",
       "linear_function_contextual_word_problem",
-      "lines",
       "numeric_computation",
-      "olve",
       "olved",
-      "perpendicular",
-      "perpendicular_lines_properties",
-      "point",
-      "point_quadrant",
       "problem",
-      "propertie",
-      "properties",
-      "quadratic",
-      "quadratic_factoring_reasoning",
       "scoped",
-      "short_answer / applied_quadratic_inequality_problem",
       "short_answer / contextual_application",
       "skill",
-      "solution_set",
-      "solve",
-      "solve_absolute_value_inequality",
-      "solve_unknown_coordinate_from_two_point_distance",
-      "tance",
       "text_short",
-      "two",
       "type",
-      "unknown",
       "unre",
-      "unresolved",
-      "兩點距離反求座標"
+      "unresolved"
     ],
     "expected_task_candidates": [
       "compute_slope"
@@ -415,37 +364,22 @@
       "distance_between_two_points_family": 1
     },
     "candidate_problem_type_families": [
-      "distance_between_two_points_family",
-      "generic_numeric_family",
-      "quadratic_inequality_family"
+      "generic_numeric_family"
     ],
     "dominant_source_task": "contextual_application",
-    "dominant_source_task_ratio": 0.625,
+    "dominant_source_task_ratio": 0.5,
     "uniform_core_target_task": "contextual_application",
-    "uniform_core_target_task_ratio": 0.625,
+    "uniform_core_target_task_ratio": 0.5,
     "uniform_core_target_task_count": 8,
     "uniform_core_threshold_relaxed": false,
     "dominant_source_family": [
       "generic_numeric_family"
     ],
     "dominant_source_family_ratio": 0.75,
-    "skill_source_score": 0.0147,
+    "skill_source_score": 0.0145,
     "skill_problem_type_score": 0.0,
-    "source_problem_type_score": 0.0333,
+    "source_problem_type_score": 0.0152,
     "per_problem_type_scores": [
-      {
-        "problem_type_id": "fallback_perpendicular_lines_properties",
-        "target_task": "perpendicular_lines_properties",
-        "task_family": "generic_numeric_family",
-        "inferred_tasks": [
-          "perpendicular_lines_properties"
-        ],
-        "skill_problem_type_score": 0.1739,
-        "source_problem_type_score": 0.0333,
-        "task_consistent_with_skill": true,
-        "family_consistent_with_skill": true,
-        "answer_contract_supported": true
-      },
       {
         "problem_type_id": "skill_scoped_unresolved_problem_type",
         "target_task": "contextual_application",
@@ -454,33 +388,7 @@
           "contextual_application"
         ],
         "skill_problem_type_score": 0.0,
-        "source_problem_type_score": 0.0154,
-        "task_consistent_with_skill": true,
-        "family_consistent_with_skill": true,
-        "answer_contract_supported": true
-      },
-      {
-        "problem_type_id": "fallback_applied_quadratic_inequality_problem",
-        "target_task": "applied_quadratic_inequality_problem",
-        "task_family": "quadratic_inequality_family",
-        "inferred_tasks": [
-          "applied_quadratic_inequality_problem"
-        ],
-        "skill_problem_type_score": 0.0,
-        "source_problem_type_score": 0.0164,
-        "task_consistent_with_skill": true,
-        "family_consistent_with_skill": true,
-        "answer_contract_supported": true
-      },
-      {
-        "problem_type_id": "fallback_solve_unknown_coordinate_from_two_point_distance",
-        "target_task": "solve_unknown_coordinate_from_two_point_distance",
-        "task_family": "distance_between_two_points_family",
-        "inferred_tasks": [
-          "solve_unknown_coordinate_from_two_point_distance"
-        ],
-        "skill_problem_type_score": 0.0,
-        "source_problem_type_score": 0.0149,
+        "source_problem_type_score": 0.0152,
         "task_consistent_with_skill": true,
         "family_consistent_with_skill": true,
         "answer_contract_supported": true
@@ -490,11 +398,11 @@
     "blockers": [],
     "warnings": [
       "ai_first_mode_fell_back_to_rule_only",
+      "ai_partial_unavailable_relaxed_tolerance",
       "ai_unavailable_fallback_to_same_as_main",
       "alignment_score_below_recommended_threshold",
-      "majority_sources_need_human_subskill_review",
-      "skill_scoped_classification_low_confidence",
-      "source_skill_scope_locked_demoted_blockers_to_warnings"
+      "demoted_majority_needs_review_due_to_partial_unavailable",
+      "majority_sources_need_human_subskill_review"
     ],
     "induction_core_example_count": 8,
     "induction_enrichment_example_count": 0,
@@ -519,9 +427,7 @@
     "distance_between_two_points_family": 1
   },
   "candidate_problem_type_families": [
-    "distance_between_two_points_family",
-    "generic_numeric_family",
-    "quadratic_inequality_family"
+    "generic_numeric_family"
   ],
   "expected_skill_families": [],
   "expected_subskill_candidates": [
@@ -529,9 +435,10 @@
   ],
   "observed_target_task_distribution": {
     "perpendicular_lines_properties": 1,
-    "contextual_application": 5,
+    "contextual_application": 4,
     "applied_quadratic_inequality_problem": 1,
-    "solve_unknown_coordinate_from_two_point_distance": 1
+    "solve_unknown_coordinate_from_two_point_distance": 1,
+    "compute_numeric": 1
   },
   "same_family_subskill_mismatch_examples": [],
   "examples_outside_expected_subskills": [],
@@ -3020,7 +2927,7 @@
       "raw_response_preview": "",
       "sanitized_response_preview": "",
       "failed_stage": "",
-      "classifier_source": "clause45_unclassified_exception",
+      "classifier_source": "rule_fallback_ai_unavailable",
       "classification_decision": "",
       "final_target_task": "perpendicular_lines_properties",
       "final_task_family": "generic_numeric_family",
@@ -3029,7 +2936,7 @@
       "structure_context_used": true,
       "sequence_context_used": true,
       "alignment_kind": "unclassified_low_confidence",
-      "exclude_reason": "unclassified_low_confidence",
+      "exclude_reason": "semantic_alignment_score_zero_requires_human_review",
       "included_in_phase1": false,
       "conflict_reason": "ai_api_key_missing",
       "source_mapping_warning": "",
@@ -3154,7 +3061,7 @@
       "ai_best_candidate_id": "needs_review",
       "selected_subskill": "perpendicular_lines_properties",
       "selected_problem_type": "perpendicular_lines_properties",
-      "candidate_source": "clause45_fallback_proxy",
+      "candidate_source": "needs_review",
       "outsider_candidates": [
         "C1"
       ],
@@ -3693,7 +3600,7 @@
       "raw_response_preview": "",
       "sanitized_response_preview": "",
       "failed_stage": "",
-      "classifier_source": "clause45_unclassified_exception",
+      "classifier_source": "rule_fallback_ai_unavailable",
       "classification_decision": "",
       "final_target_task": "applied_quadratic_inequality_problem",
       "final_task_family": "quadratic_inequality_family",
@@ -3702,7 +3609,7 @@
       "structure_context_used": true,
       "sequence_context_used": true,
       "alignment_kind": "unclassified_low_confidence",
-      "exclude_reason": "unclassified_low_confidence",
+      "exclude_reason": "semantic_alignment_score_zero_requires_human_review",
       "included_in_phase1": false,
       "conflict_reason": "ai_api_key_missing",
       "source_mapping_warning": "",
@@ -4025,7 +3932,7 @@
       "ai_best_candidate_id": "needs_review",
       "selected_subskill": "applied_quadratic_inequality_problem",
       "selected_problem_type": "applied_quadratic_inequality_problem",
-      "candidate_source": "clause45_fallback_proxy",
+      "candidate_source": "needs_review",
       "outsider_candidates": [
         "C3"
       ],
@@ -4050,7 +3957,7 @@
       "raw_response_preview": "",
       "sanitized_response_preview": "",
       "failed_stage": "",
-      "classifier_source": "clause45_unclassified_exception",
+      "classifier_source": "rule_fallback_ai_unavailable",
       "classification_decision": "",
       "final_target_task": "solve_unknown_coordinate_from_two_point_distance",
       "final_task_family": "distance_between_two_points_family",
@@ -4059,7 +3966,7 @@
       "structure_context_used": true,
       "sequence_context_used": true,
       "alignment_kind": "unclassified_low_confidence",
-      "exclude_reason": "unclassified_low_confidence",
+      "exclude_reason": "semantic_alignment_score_zero_requires_human_review",
       "included_in_phase1": false,
       "conflict_reason": "ai_api_key_missing",
       "source_mapping_warning": "",
@@ -4498,7 +4405,7 @@
       "ai_best_candidate_id": "needs_review",
       "selected_subskill": "solve_unknown_coordinate_from_two_point_distance",
       "selected_problem_type": "solve_unknown_coordinate_from_two_point_distance",
-      "candidate_source": "clause45_fallback_proxy",
+      "candidate_source": "needs_review",
       "outsider_candidates": [
         "C3"
       ],
@@ -4523,16 +4430,16 @@
       "raw_response_preview": "",
       "sanitized_response_preview": "",
       "failed_stage": "",
-      "classifier_source": "clause45_unclassified_exception",
+      "classifier_source": "rule_fallback_ai_unavailable",
       "classification_decision": "",
-      "final_target_task": "contextual_application",
+      "final_target_task": "compute_numeric",
       "final_task_family": "generic_numeric_family",
       "expected_task_families": [],
       "expected_subskill_candidates": [],
       "structure_context_used": true,
       "sequence_context_used": true,
       "alignment_kind": "unclassified_low_confidence",
-      "exclude_reason": "unclassified_low_confidence",
+      "exclude_reason": "semantic_alignment_score_zero_requires_human_review",
       "included_in_phase1": false,
       "conflict_reason": "ai_api_key_missing",
       "source_mapping_warning": "",
@@ -4756,7 +4663,7 @@
       "ai_best_candidate_id": "needs_review",
       "selected_subskill": "compute_numeric",
       "selected_problem_type": "compute_numeric",
-      "candidate_source": "clause45_fallback_proxy",
+      "candidate_source": "needs_review",
       "outsider_candidates": [],
       "selected_generator_contract": {},
       "parameter_schema": {},
@@ -5276,7 +5183,108 @@
     }
   ],
   "ai_semantic_unavailable_reason": "missing_api_key",
-  "excluded_source_examples": [],
+  "excluded_source_examples": [
+    {
+      "example_id": 4531,
+      "target_task": "perpendicular_lines_properties",
+      "task_family": "generic_numeric_family",
+      "alignment_score": 0.0,
+      "aligned_with_skill": false,
+      "included_in_phase1": false,
+      "exclude_reason": "semantic_alignment_score_zero_requires_human_review",
+      "alignment_kind": "unclassified_low_confidence",
+      "skill_id_match": true,
+      "task_family_match": false,
+      "subskill_match": false,
+      "pass_with_warning": false,
+      "requires_human_action": true,
+      "induction_tier": "core",
+      "included_in_core_induction": false,
+      "enrichment_reasons": [],
+      "source_quality_issues": [],
+      "source_quality_reject": false,
+      "candidate_only": false,
+      "classification_source": "rule_fallback_ai_unavailable",
+      "induction_eligibility": "excluded",
+      "skill_id": "vh_數學B1_PropertiesOfPerpendicularLines",
+      "title_stem_preview": "設$A\\left( -2,a \\right)$、$B\\left( 3,4 \\right)$、$C\\left( -2,8 \\right)$、$D\\left( 4,..."
+    },
+    {
+      "example_id": 4527,
+      "target_task": "applied_quadratic_inequality_problem",
+      "task_family": "quadratic_inequality_family",
+      "alignment_score": 0.0,
+      "aligned_with_skill": false,
+      "included_in_phase1": false,
+      "exclude_reason": "semantic_alignment_score_zero_requires_human_review",
+      "alignment_kind": "unclassified_low_confidence",
+      "skill_id_match": true,
+      "task_family_match": false,
+      "subskill_match": false,
+      "pass_with_warning": false,
+      "requires_human_action": true,
+      "induction_tier": "core",
+      "included_in_core_induction": false,
+      "enrichment_reasons": [],
+      "source_quality_issues": [],
+      "source_quality_reject": false,
+      "candidate_only": false,
+      "classification_source": "rule_fallback_ai_unavailable",
+      "induction_eligibility": "excluded",
+      "skill_id": "vh_數學B1_PropertiesOfPerpendicularLines",
+      "title_stem_preview": "已知坐標平面上三點$A\\left( 2,1 \\right)$、$B\\left( 1,3 \\right)$及$C\\left( 4,2 \\right)$，試問△AB..."
+    },
+    {
+      "example_id": 4536,
+      "target_task": "solve_unknown_coordinate_from_two_point_distance",
+      "task_family": "distance_between_two_points_family",
+      "alignment_score": 0.0,
+      "aligned_with_skill": false,
+      "included_in_phase1": false,
+      "exclude_reason": "semantic_alignment_score_zero_requires_human_review",
+      "alignment_kind": "unclassified_low_confidence",
+      "skill_id_match": true,
+      "task_family_match": false,
+      "subskill_match": false,
+      "pass_with_warning": false,
+      "requires_human_action": true,
+      "induction_tier": "core",
+      "included_in_core_induction": false,
+      "enrichment_reasons": [],
+      "source_quality_issues": [],
+      "source_quality_reject": false,
+      "candidate_only": false,
+      "classification_source": "rule_fallback_ai_unavailable",
+      "induction_eligibility": "excluded",
+      "skill_id": "vh_數學B1_PropertiesOfPerpendicularLines",
+      "title_stem_preview": "設$A\\left( -3,4 \\right)$、$B\\left( a,1 \\right)$、$C\\left( -4,-2 \\right)$、$D\\left( 2..."
+    },
+    {
+      "example_id": 4537,
+      "target_task": "compute_numeric",
+      "task_family": "generic_numeric_family",
+      "alignment_score": 0.0,
+      "aligned_with_skill": false,
+      "included_in_phase1": false,
+      "exclude_reason": "semantic_alignment_score_zero_requires_human_review",
+      "alignment_kind": "unclassified_low_confidence",
+      "skill_id_match": true,
+      "task_family_match": false,
+      "subskill_match": false,
+      "pass_with_warning": false,
+      "requires_human_action": true,
+      "induction_tier": "core",
+      "included_in_core_induction": false,
+      "enrichment_reasons": [],
+      "source_quality_issues": [],
+      "source_quality_reject": false,
+      "candidate_only": false,
+      "classification_source": "rule_fallback_ai_unavailable",
+      "induction_eligibility": "excluded",
+      "skill_id": "vh_數學B1_PropertiesOfPerpendicularLines",
+      "title_stem_preview": "設直線${{L}_{1}}$通過$A\\left( 3,k+1 \\right)$、$B\\left( -k,5 \\right)$兩點，直線${{L}_{2}}$通過..."
+    }
+  ],
   "induction_source_selection": {
     "core_example_count": 8,
     "enrichment_example_count": 0,
@@ -5292,25 +5300,15 @@
   "clause45_escalation_applied": true,
   "clause45_rescued_example_ids": [
     4526,
-    4527,
-    4531,
     4532,
-    4536,
-    4537,
     4538,
     4539
   ],
   "clause45_observed_target_task_distribution": {
-    "perpendicular_lines_properties": 1,
-    "contextual_application": 5,
-    "applied_quadratic_inequality_problem": 1,
-    "solve_unknown_coordinate_from_two_point_distance": 1
+    "contextual_application": 4
   },
   "clause45_proxy_problem_type_ids": [
-    "fallback_applied_quadratic_inequality_problem",
-    "fallback_contextual_application",
-    "fallback_perpendicular_lines_properties",
-    "fallback_solve_unknown_coordinate_from_two_point_distance"
+    "fallback_contextual_application"
   ],
   "expected_family_relaxation_applied": false,
   "expected_family_relaxation_reason": "",
@@ -5325,30 +5323,12 @@
   "section_scope_subskill_extension_examples": [],
   "same_as_main_skill_examples": [],
   "inherited_from_previous_context_examples": [],
-  "low_source_examples": [
-    {
-      "problem_type_id": "fallback_perpendicular_lines_properties",
-      "matched_example_count": 1
-    },
-    {
-      "problem_type_id": "fallback_applied_quadratic_inequality_problem",
-      "matched_example_count": 1
-    },
-    {
-      "problem_type_id": "fallback_solve_unknown_coordinate_from_two_point_distance",
-      "matched_example_count": 1
-    }
-  ],
+  "low_source_examples": [],
   "candidate_only_problem_types": [
     {
       "example_id": 4538,
       "subskill_id": "same_as_main_skill",
       "reason": "candidate_only_source"
-    },
-    {
-      "example_id": 4531,
-      "problem_type_id": "fallback_perpendicular_lines_properties",
-      "reason": "runtime_not_supported"
     },
     {
       "example_id": 4532,
@@ -5361,22 +5341,18 @@
       "reason": "runtime_not_supported"
     },
     {
-      "example_id": 4537,
-      "problem_type_id": "skill_scoped_unresolved_problem_type",
-      "reason": "runtime_not_supported"
-    },
-    {
       "example_id": 4539,
       "problem_type_id": "skill_scoped_unresolved_problem_type",
       "reason": "runtime_not_supported"
     }
   ],
-  "candidate_only_count": 6,
+  "candidate_only_count": 4,
   "same_as_main_skill_count": 0,
   "rule_only_classification_count": 0,
   "hybrid_resolved_count": 0,
   "subskills": [
     "applied_quadratic_inequality_problem",
+    "compute_numeric",
     "contextual_application",
     "perpendicular_lines_properties",
     "same_as_main_skill",
@@ -5392,20 +5368,20 @@
       "alignment_score": 0.0,
       "aligned_with_skill": false,
       "included_in_phase1": false,
-      "exclude_reason": "unclassified_low_confidence",
+      "exclude_reason": "semantic_alignment_score_zero_requires_human_review",
       "alignment_kind": "unclassified_low_confidence",
       "skill_id_match": true,
       "task_family_match": false,
       "subskill_match": false,
       "pass_with_warning": false,
-      "requires_human_action": false,
+      "requires_human_action": true,
       "induction_tier": "core",
       "included_in_core_induction": false,
       "enrichment_reasons": [],
       "source_quality_issues": [],
       "source_quality_reject": false,
       "candidate_only": false,
-      "classification_source": "clause45_unclassified_exception",
+      "classification_source": "rule_fallback_ai_unavailable",
       "induction_eligibility": "excluded",
       "skill_id": "vh_數學B1_PropertiesOfPerpendicularLines",
       "title_stem_preview": "設$A\\left( -2,a \\right)$、$B\\left( 3,4 \\right)$、$C\\left( -2,8 \\right)$、$D\\left( 4,"
@@ -5467,20 +5443,20 @@
       "alignment_score": 0.0,
       "aligned_with_skill": false,
       "included_in_phase1": false,
-      "exclude_reason": "unclassified_low_confidence",
+      "exclude_reason": "semantic_alignment_score_zero_requires_human_review",
       "alignment_kind": "unclassified_low_confidence",
       "skill_id_match": true,
       "task_family_match": false,
       "subskill_match": false,
       "pass_with_warning": false,
-      "requires_human_action": false,
+      "requires_human_action": true,
       "induction_tier": "core",
       "included_in_core_induction": false,
       "enrichment_reasons": [],
       "source_quality_issues": [],
       "source_quality_reject": false,
       "candidate_only": false,
-      "classification_source": "clause45_unclassified_exception",
+      "classification_source": "rule_fallback_ai_unavailable",
       "induction_eligibility": "excluded",
       "skill_id": "vh_數學B1_PropertiesOfPerpendicularLines",
       "title_stem_preview": "已知坐標平面上三點$A\\left( 2,1 \\right)$、$B\\left( 1,3 \\right)$及$C\\left( 4,2 \\right)$，試問△AB"
@@ -5492,45 +5468,45 @@
       "alignment_score": 0.0,
       "aligned_with_skill": false,
       "included_in_phase1": false,
-      "exclude_reason": "unclassified_low_confidence",
+      "exclude_reason": "semantic_alignment_score_zero_requires_human_review",
       "alignment_kind": "unclassified_low_confidence",
       "skill_id_match": true,
       "task_family_match": false,
       "subskill_match": false,
       "pass_with_warning": false,
-      "requires_human_action": false,
+      "requires_human_action": true,
       "induction_tier": "core",
       "included_in_core_induction": false,
       "enrichment_reasons": [],
       "source_quality_issues": [],
       "source_quality_reject": false,
       "candidate_only": false,
-      "classification_source": "clause45_unclassified_exception",
+      "classification_source": "rule_fallback_ai_unavailable",
       "induction_eligibility": "excluded",
       "skill_id": "vh_數學B1_PropertiesOfPerpendicularLines",
       "title_stem_preview": "設$A\\left( -3,4 \\right)$、$B\\left( a,1 \\right)$、$C\\left( -4,-2 \\right)$、$D\\left( 2"
     },
     {
       "example_id": 4537,
-      "target_task": "contextual_application",
+      "target_task": "compute_numeric",
       "task_family": "generic_numeric_family",
       "alignment_score": 0.0,
       "aligned_with_skill": false,
       "included_in_phase1": false,
-      "exclude_reason": "unclassified_low_confidence",
+      "exclude_reason": "semantic_alignment_score_zero_requires_human_review",
       "alignment_kind": "unclassified_low_confidence",
       "skill_id_match": true,
       "task_family_match": false,
       "subskill_match": false,
       "pass_with_warning": false,
-      "requires_human_action": false,
+      "requires_human_action": true,
       "induction_tier": "core",
       "included_in_core_induction": false,
       "enrichment_reasons": [],
       "source_quality_issues": [],
       "source_quality_reject": false,
       "candidate_only": false,
-      "classification_source": "clause45_unclassified_exception",
+      "classification_source": "rule_fallback_ai_unavailable",
       "induction_eligibility": "excluded",
       "skill_id": "vh_數學B1_PropertiesOfPerpendicularLines",
       "title_stem_preview": "設直線${{L}_{1}}$通過$A\\left( 3,k+1 \\right)$、$B\\left( -k,5 \\right)$兩點，直線${{L}_{2}}$通過"
@@ -5588,416 +5564,15 @@
   ],
   "candidate_problem_types": [
     {
-      "problem_type_id": "integer_perpendicular_lines_properties",
-      "proposed_problem_type_id": "integer_perpendicular_lines_properties",
-      "display_name": "integer / perpendicular_lines_properties",
-      "matched_example_ids": [
-        4531
-      ],
-      "matched_example_count": 1,
-      "unmatched_example_ids": [],
-      "representative_example_id": 4531,
-      "structural_features": [
-        "scalar"
-      ],
-      "answer_contract_proposal": {
-        "choices_required": false,
-        "choice_count": null,
-        "correct_choice_count": null,
-        "frontend_render_choices": false,
-        "answer_type": "integer",
-        "answer_shape": "scalar",
-        "answer_equivalence": "numeric_exact",
-        "checker": "integer_checker",
-        "accepted_formats": [
-          "5",
-          "5.0",
-          "-3"
-        ],
-        "source_has_choices": false,
-        "equivalence_type": "numeric_exact",
-        "checker_key": "integer_checker",
-        "presentation_mode": "",
-        "selected_checker": "integer_checker",
-        "checker_capability_status": "ok",
-        "checker_contract_blockers": [],
-        "checker_contract_warnings": [],
-        "stem_contract": {
-          "stem_must_not_embed_choices": true,
-          "allowed_math_objects": [
-            "coordinate_point",
-            "three_coordinate_points",
-            "triangle",
-            "two_coordinate_points"
-          ],
-          "required_math_objects": [
-            "coordinate_point",
-            "three_coordinate_points"
-          ],
-          "forbidden_patterns": [
-            "\\(A\\)",
-            "\\(B\\)",
-            "\\(C\\)",
-            "\\(D\\)"
-          ]
-        },
-        "dependency_contract": {
-          "givens_must_be_used": true,
-          "target_answer_must_depend_on_givens": true,
-          "variables_in_conditions_must_appear_in_target": false
-        },
-        "semantic_contract": {
-          "reasoning_type": [
-            "numeric_computation"
-          ],
-          "reject_if": [
-            "unused_condition",
-            "ambiguous_answer",
-            "answer_not_derivable",
-            "duplicated_choices",
-            "no_correct_choice",
-            "multiple_correct_choices_when_single_choice"
-          ]
-        },
-        "generator_contract": {
-          "template_variants": [
-            {
-              "id": "default",
-              "label": "default",
-              "stem_pattern": "依題意求解：{stem_hint}。",
-              "weight": 1.0,
-              "enabled": true
-            }
-          ],
-          "parameter_schema": {
-            "seed": {
-              "type": "integer",
-              "randomize": true
-            },
-            "difficulty_level": {
-              "choices": [
-                "level_1",
-                "level_2",
-                "level_3"
-              ],
-              "weights": [
-                0.4,
-                0.4,
-                0.2
-              ]
-            }
-          },
-          "variation_dimensions": [
-            "seed",
-            "difficulty_level",
-            "context_style"
-          ],
-          "difficulty_controls": {
-            "level_1": {},
-            "level_2": {},
-            "level_3": {}
-          },
-          "anti_repetition_rules": {
-            "avoid_same_template_consecutive": true,
-            "avoid_same_ratio_consecutive": true,
-            "avoid_same_point_names_consecutive": true,
-            "avoid_same_answer_consecutive": true,
-            "recent_history_window": 5,
-            "signature_fields": [
-              "problem_type_id",
-              "template_variant",
-              "routing_track",
-              "scenario_type",
-              "ratio_form",
-              "ratio_values",
-              "coordinate_pattern",
-              "answer"
-            ]
-          },
-          "validity_constraints": [
-            "answer derivable from givens"
-          ],
-          "answer_shape": "numeric",
-          "explanation_variants": [
-            "stepwise"
-          ],
-          "sampling_strategy": "weighted_random",
-          "template_families": [
-            "perpendicular_lines_properties"
-          ],
-          "parameter_slots": {
-            "seed": "integer",
-            "difficulty": "easy"
-          },
-          "randomization_rules": {
-            "shuffle_choices": false
-          },
-          "avoid_llm_freeform_math": true,
-          "use_domain_functions": true,
-          "derivation_steps_required": true,
-          "contextual_application": true,
-          "problem_type_id": "fallback_perpendicular_lines_properties",
-          "contract_validation_blockers": [],
-          "contract_validation_warnings": [
-            "single_template_variant_only",
-            "variation_dimensions_below_recommended_minimum"
-          ]
-        },
-        "validator_contract": {
-          "static_checks": [
-            "answer_contract_checks",
-            "choices_policy"
-          ],
-          "semantic_checks": [
-            "givens_to_target_dependency"
-          ],
-          "runtime_smoke_count": 30
-        },
-        "order_matters": true,
-        "accepted_format_notes": [],
-        "canonical_answer_schema": "integer"
-      },
-      "checker_key_proposal": "integer_checker",
-      "equivalence_type_proposal": "numeric_exact",
-      "answer_shape": "scalar",
-      "answer_semantics": "scalar",
-      "presentation_mode": "short_answer",
-      "source_has_choices": false,
-      "selected_checker": "integer_checker",
-      "checker_selection_reason": "task_family_default",
-      "coordinate_pair_presentation_note": "",
-      "confidence": "high",
-      "promote_recommendation": "recommend_promote_for_that_candidate",
-      "promote_blockers": [],
-      "risk_flags": [
-        "ai_first_mode_fell_back_to_rule_only",
-        "ai_unavailable_fallback_to_same_as_main",
-        "alignment_score_below_recommended_threshold",
-        "majority_sources_need_human_subskill_review",
-        "skill_scoped_classification_low_confidence",
-        "source_skill_scope_locked_demoted_blockers_to_warnings"
-      ],
-      "checker_contract_warnings": [],
-      "spec_source": "phase1_induced_draft",
-      "grouping_reason": "single_signature_group",
-      "feature_signature": [
-        "integer",
-        "perpendicular_lines_properties",
-        "short_answer",
-        [
-          "numeric_computation"
-        ],
-        [
-          "coordinate_point",
-          "three_coordinate_points"
-        ]
-      ],
-      "problem_type_spec_draft": {
-        "problem_type_id": "fallback_perpendicular_lines_properties",
-        "skill_id": "vh_數學B1_PropertiesOfPerpendicularLines",
-        "target_task": "perpendicular_lines_properties",
-        "task_family": "generic_numeric_family",
-        "display_name": "integer / perpendicular_lines_properties",
-        "answer_format_hint": "integer",
-        "answer_fields": null,
-        "answer_separator": null,
-        "source_example_ids": [
-          4531
-        ],
-        "answer_contract": {
-          "choices_required": false,
-          "choice_count": null,
-          "correct_choice_count": null,
-          "frontend_render_choices": false,
-          "answer_type": "integer",
-          "answer_shape": "scalar",
-          "answer_equivalence": "numeric_exact",
-          "checker": "integer_checker",
-          "accepted_formats": [
-            "5",
-            "5.0",
-            "-3"
-          ],
-          "source_has_choices": false,
-          "equivalence_type": "numeric_exact",
-          "checker_key": "integer_checker",
-          "presentation_mode": "short_answer"
-        },
-        "stem_contract": {
-          "stem_must_not_embed_choices": true,
-          "allowed_math_objects": [
-            "coordinate_point",
-            "three_coordinate_points",
-            "triangle",
-            "two_coordinate_points"
-          ],
-          "required_math_objects": [
-            "coordinate_point",
-            "three_coordinate_points"
-          ],
-          "forbidden_patterns": [
-            "\\(A\\)",
-            "\\(B\\)",
-            "\\(C\\)",
-            "\\(D\\)"
-          ]
-        },
-        "dependency_contract": {
-          "givens_must_be_used": true,
-          "target_answer_must_depend_on_givens": true,
-          "variables_in_conditions_must_appear_in_target": false
-        },
-        "semantic_contract": {
-          "reasoning_type": [
-            "numeric_computation"
-          ],
-          "reject_if": [
-            "unused_condition",
-            "ambiguous_answer",
-            "answer_not_derivable",
-            "duplicated_choices",
-            "no_correct_choice",
-            "multiple_correct_choices_when_single_choice"
-          ]
-        },
-        "generator_contract": {
-          "template_variants": [
-            {
-              "id": "default",
-              "label": "default",
-              "stem_pattern": "依題意求解：{stem_hint}。",
-              "weight": 1.0,
-              "enabled": true
-            }
-          ],
-          "parameter_schema": {
-            "seed": {
-              "type": "integer",
-              "randomize": true
-            },
-            "difficulty_level": {
-              "choices": [
-                "level_1",
-                "level_2",
-                "level_3"
-              ],
-              "weights": [
-                0.4,
-                0.4,
-                0.2
-              ]
-            }
-          },
-          "variation_dimensions": [
-            "seed",
-            "difficulty_level",
-            "context_style"
-          ],
-          "difficulty_controls": {
-            "level_1": {},
-            "level_2": {},
-            "level_3": {}
-          },
-          "anti_repetition_rules": {
-            "avoid_same_template_consecutive": true,
-            "avoid_same_ratio_consecutive": true,
-            "avoid_same_point_names_consecutive": true,
-            "avoid_same_answer_consecutive": true,
-            "recent_history_window": 5,
-            "signature_fields": [
-              "problem_type_id",
-              "template_variant",
-              "routing_track",
-              "scenario_type",
-              "ratio_form",
-              "ratio_values",
-              "coordinate_pattern",
-              "answer"
-            ]
-          },
-          "validity_constraints": [
-            "answer derivable from givens"
-          ],
-          "answer_shape": "numeric",
-          "explanation_variants": [
-            "stepwise"
-          ],
-          "sampling_strategy": "weighted_random",
-          "template_families": [
-            "perpendicular_lines_properties"
-          ],
-          "parameter_slots": {
-            "seed": "integer",
-            "difficulty": "easy"
-          },
-          "randomization_rules": {
-            "shuffle_choices": false
-          },
-          "avoid_llm_freeform_math": true,
-          "use_domain_functions": true,
-          "derivation_steps_required": true,
-          "contextual_application": true,
-          "problem_type_id": "fallback_perpendicular_lines_properties",
-          "contract_validation_blockers": [],
-          "contract_validation_warnings": [
-            "single_template_variant_only",
-            "variation_dimensions_below_recommended_minimum"
-          ]
-        },
-        "validator_contract": {
-          "static_checks": [
-            "answer_contract_checks",
-            "choices_policy"
-          ],
-          "semantic_checks": [
-            "givens_to_target_dependency"
-          ],
-          "runtime_smoke_count": 30
-        },
-        "spec_source": "phase1_induced_draft",
-        "grouping_reason": "single_signature_group",
-        "feature_signature": [
-          "integer",
-          "perpendicular_lines_properties",
-          "short_answer",
-          [
-            "numeric_computation"
-          ],
-          [
-            "coordinate_point",
-            "three_coordinate_points"
-          ]
-        ],
-        "canonical_base_problem_type_id": "fallback_perpendicular_lines_properties",
-        "value_type_prefix": "",
-        "_resolved_template_slot": ""
-      },
-      "generator_readiness": "generator_not_ready",
-      "usable_for_phase3": false,
-      "template_slot": "",
-      "canonical_base_problem_type_id": "fallback_perpendicular_lines_properties",
-      "value_type_prefix": "",
-      "subskill_id": "perpendicular_lines_properties",
-      "runtime_status": "runtime_ready_candidate",
-      "next_action": "phase2_foundation_preflight",
-      "semantic_alignment": {
-        "skill_problem_type_score": 0.1739,
-        "source_problem_type_score": 0.0333,
-        "task_consistent_with_skill": true
-      },
-      "answer_type": "integer"
-    },
-    {
       "problem_type_id": "text_short_contextual_application",
       "proposed_problem_type_id": "text_short_contextual_application",
       "display_name": "text_short / contextual_application",
       "matched_example_ids": [
         4526,
         4532,
-        4537,
         4539
       ],
-      "matched_example_count": 4,
+      "matched_example_count": 3,
       "unmatched_example_ids": [],
       "representative_example_id": 4526,
       "structural_features": [
@@ -6024,14 +5599,10 @@
         "stem_contract": {
           "stem_must_not_embed_choices": true,
           "allowed_math_objects": [
-            "coordinate_point",
-            "three_coordinate_points",
-            "triangle",
-            "two_coordinate_points"
+            "coordinate_point"
           ],
           "required_math_objects": [
-            "coordinate_point",
-            "three_coordinate_points"
+            "coordinate_point"
           ],
           "forbidden_patterns": [
             "\\(A\\)",
@@ -6138,6 +5709,10 @@
           "template_slots": {
             "stem": "linear_function_contextual_word_problem"
           },
+          "templates": [
+            "template_scalar_unknown",
+            "template_feature_value"
+          ],
           "problem_type_id": "skill_scoped_unresolved_problem_type",
           "contract_validation_blockers": [],
           "contract_validation_warnings": [
@@ -6173,20 +5748,25 @@
       "promote_blockers": [],
       "risk_flags": [
         "ai_first_mode_fell_back_to_rule_only",
+        "ai_partial_unavailable_relaxed_tolerance",
         "ai_unavailable_fallback_to_same_as_main",
         "alignment_score_below_recommended_threshold",
-        "majority_sources_need_human_subskill_review",
-        "skill_scoped_classification_low_confidence",
-        "source_skill_scope_locked_demoted_blockers_to_warnings"
+        "demoted_majority_needs_review_due_to_partial_unavailable",
+        "majority_sources_need_human_subskill_review"
       ],
       "checker_contract_warnings": [],
       "spec_source": "phase1_induced_draft",
-      "grouping_reason": "merged_by_canonical_contract",
+      "grouping_reason": "single_signature_group",
       "feature_signature": [
-        "canonical_contract_merge",
+        "short_answer",
         "contextual_application",
         "short_answer",
-        "short_answer"
+        [
+          "numeric_computation"
+        ],
+        [
+          "coordinate_point"
+        ]
       ],
       "problem_type_spec_draft": {
         "problem_type_id": "skill_scoped_unresolved_problem_type",
@@ -6200,7 +5780,6 @@
         "source_example_ids": [
           4526,
           4532,
-          4537,
           4539
         ],
         "answer_contract": {
@@ -6208,27 +5787,23 @@
           "choice_count": null,
           "correct_choice_count": null,
           "frontend_render_choices": false,
-          "answer_type": "rational",
+          "answer_type": "text_short",
           "answer_shape": "text_short",
-          "answer_equivalence": "rational_equivalent",
-          "checker": "rational_checker",
+          "answer_equivalence": "exact_string",
+          "checker": "text_short_checker",
           "accepted_formats": [],
           "source_has_choices": false,
-          "equivalence_type": "rational_equivalent",
-          "checker_key": "rational_checker",
+          "equivalence_type": "exact_string",
+          "checker_key": "text_short_checker",
           "presentation_mode": "short_answer"
         },
         "stem_contract": {
           "stem_must_not_embed_choices": true,
           "allowed_math_objects": [
-            "coordinate_point",
-            "three_coordinate_points",
-            "triangle",
-            "two_coordinate_points"
+            "coordinate_point"
           ],
           "required_math_objects": [
-            "coordinate_point",
-            "three_coordinate_points"
+            "coordinate_point"
           ],
           "forbidden_patterns": [
             "\\(A\\)",
@@ -6335,6 +5910,10 @@
           "template_slots": {
             "stem": "linear_function_contextual_word_problem"
           },
+          "templates": [
+            "template_scalar_unknown",
+            "template_feature_value"
+          ],
           "problem_type_id": "skill_scoped_unresolved_problem_type",
           "contract_validation_blockers": [],
           "contract_validation_warnings": [
@@ -6353,12 +5932,17 @@
           "runtime_smoke_count": 30
         },
         "spec_source": "phase1_induced_draft",
-        "grouping_reason": "merged_by_canonical_contract",
+        "grouping_reason": "single_signature_group",
         "feature_signature": [
-          "canonical_contract_merge",
+          "short_answer",
           "contextual_application",
           "short_answer",
-          "short_answer"
+          [
+            "numeric_computation"
+          ],
+          [
+            "coordinate_point"
+          ]
         ],
         "canonical_base_problem_type_id": "skill_scoped_unresolved_problem_type",
         "value_type_prefix": "",
@@ -6374,998 +5958,10 @@
       "next_action": "phase2_foundation_preflight",
       "semantic_alignment": {
         "skill_problem_type_score": 0.0,
-        "source_problem_type_score": 0.0154,
+        "source_problem_type_score": 0.0152,
         "task_consistent_with_skill": true
       },
-      "answer_type": "rational"
-    },
-    {
-      "problem_type_id": "text_short_applied_quadratic_inequality_problem",
-      "proposed_problem_type_id": "text_short_applied_quadratic_inequality_problem",
-      "display_name": "text_short / applied_quadratic_inequality_problem",
-      "matched_example_ids": [
-        4527
-      ],
-      "matched_example_count": 1,
-      "unmatched_example_ids": [],
-      "representative_example_id": 4527,
-      "structural_features": [
-        "interval_or_union"
-      ],
-      "answer_contract_proposal": {
-        "choices_required": false,
-        "choice_count": null,
-        "correct_choice_count": null,
-        "frontend_render_choices": false,
-        "source_has_choices": false,
-        "answer_type": "text_short",
-        "answer_shape": "interval_or_union",
-        "answer_semantics": "interval_union",
-        "answer_equivalence": "exact_string",
-        "equivalence_type": "exact_string",
-        "checker": "text_short_checker",
-        "checker_key": "text_short_checker",
-        "presentation_mode": "",
-        "selected_checker": "interval_checker",
-        "checker_selection_reason": "quadratic_inequality_interval_solution",
-        "accepted_formats": [
-          "-5 <= x <= 1",
-          "(-5, 1]",
-          "x in [-5,1]",
-          "x<-2 or x>5",
-          "-2<x<5",
-          "x<=-2 or x>=5"
-        ],
-        "checker_capability_status": "ok",
-        "checker_contract_blockers": [],
-        "checker_contract_warnings": [],
-        "stem_contract": {
-          "stem_must_not_embed_choices": true,
-          "allowed_math_objects": [
-            "coordinate_point",
-            "three_coordinate_points",
-            "triangle",
-            "two_coordinate_points"
-          ],
-          "required_math_objects": [
-            "coordinate_point",
-            "three_coordinate_points"
-          ],
-          "forbidden_patterns": [
-            "\\(A\\)",
-            "\\(B\\)",
-            "\\(C\\)",
-            "\\(D\\)"
-          ]
-        },
-        "dependency_contract": {
-          "givens_must_be_used": true,
-          "target_answer_must_depend_on_givens": true,
-          "variables_in_conditions_must_appear_in_target": false
-        },
-        "semantic_contract": {
-          "reasoning_type": [
-            "quadratic_factoring_reasoning"
-          ],
-          "reject_if": [
-            "unused_condition",
-            "ambiguous_answer",
-            "answer_not_derivable",
-            "duplicated_choices",
-            "no_correct_choice",
-            "multiple_correct_choices_when_single_choice"
-          ]
-        },
-        "generator_contract": {
-          "template_variants": [
-            {
-              "id": "default",
-              "label": "default",
-              "stem_pattern": "依題意求解：{stem_hint}。",
-              "weight": 1.0,
-              "enabled": true
-            }
-          ],
-          "parameter_schema": {
-            "seed": {
-              "type": "integer",
-              "randomize": true
-            },
-            "difficulty_level": {
-              "choices": [
-                "level_1",
-                "level_2",
-                "level_3"
-              ],
-              "weights": [
-                0.4,
-                0.4,
-                0.2
-              ]
-            }
-          },
-          "variation_dimensions": [
-            "seed",
-            "difficulty_level",
-            "context_style"
-          ],
-          "difficulty_controls": {
-            "level_1": {},
-            "level_2": {},
-            "level_3": {}
-          },
-          "anti_repetition_rules": {
-            "avoid_same_template_consecutive": true,
-            "avoid_same_ratio_consecutive": true,
-            "avoid_same_point_names_consecutive": true,
-            "avoid_same_answer_consecutive": true,
-            "recent_history_window": 5,
-            "signature_fields": [
-              "problem_type_id",
-              "template_variant",
-              "routing_track",
-              "scenario_type",
-              "ratio_form",
-              "ratio_values",
-              "coordinate_pattern",
-              "answer"
-            ]
-          },
-          "validity_constraints": [
-            "answer derivable from givens"
-          ],
-          "answer_shape": "numeric",
-          "explanation_variants": [
-            "stepwise"
-          ],
-          "sampling_strategy": "weighted_random",
-          "template_families": [
-            "applied_quadratic_inequality_problem"
-          ],
-          "parameter_slots": {
-            "seed": "integer",
-            "difficulty": "easy"
-          },
-          "randomization_rules": {
-            "shuffle_choices": false
-          },
-          "avoid_llm_freeform_math": true,
-          "use_domain_functions": true,
-          "derivation_steps_required": true,
-          "contextual_application": true,
-          "template_slots": {
-            "stem": "applied_quadratic_inequality_problem"
-          },
-          "problem_type_id": "fallback_applied_quadratic_inequality_problem",
-          "contract_validation_blockers": [],
-          "contract_validation_warnings": [
-            "single_template_variant_only",
-            "variation_dimensions_below_recommended_minimum"
-          ]
-        },
-        "validator_contract": {
-          "static_checks": [
-            "answer_contract_checks",
-            "choices_policy"
-          ],
-          "semantic_checks": [
-            "givens_to_target_dependency"
-          ],
-          "runtime_smoke_count": 30
-        },
-        "order_matters": true,
-        "accepted_format_notes": [],
-        "canonical_answer_schema": "interval"
-      },
-      "checker_key_proposal": "text_short_checker",
-      "equivalence_type_proposal": "exact_string",
-      "answer_shape": "interval_or_union",
-      "answer_semantics": "interval_union",
-      "presentation_mode": "short_answer",
-      "source_has_choices": false,
-      "selected_checker": "interval_checker",
-      "checker_selection_reason": "quadratic_inequality_interval_solution",
-      "coordinate_pair_presentation_note": "",
-      "confidence": "high",
-      "promote_recommendation": "recommend_promote_for_that_candidate",
-      "promote_blockers": [],
-      "risk_flags": [
-        "ai_first_mode_fell_back_to_rule_only",
-        "ai_unavailable_fallback_to_same_as_main",
-        "alignment_score_below_recommended_threshold",
-        "majority_sources_need_human_subskill_review",
-        "skill_scoped_classification_low_confidence",
-        "source_skill_scope_locked_demoted_blockers_to_warnings"
-      ],
-      "checker_contract_warnings": [],
-      "spec_source": "phase1_induced_draft",
-      "grouping_reason": "split_by_feature_signature",
-      "feature_signature": [
-        "short_answer",
-        "applied_quadratic_inequality_problem",
-        "short_answer",
-        [
-          "quadratic_factoring_reasoning"
-        ],
-        [
-          "coordinate_point",
-          "three_coordinate_points"
-        ]
-      ],
-      "problem_type_spec_draft": {
-        "problem_type_id": "fallback_applied_quadratic_inequality_problem",
-        "skill_id": "vh_數學B1_PropertiesOfPerpendicularLines",
-        "target_task": "applied_quadratic_inequality_problem",
-        "task_family": "quadratic_inequality_family",
-        "display_name": "short_answer / applied_quadratic_inequality_problem",
-        "answer_format_hint": "interval",
-        "answer_fields": null,
-        "answer_separator": null,
-        "source_example_ids": [
-          4527
-        ],
-        "answer_contract": {
-          "choices_required": false,
-          "choice_count": null,
-          "correct_choice_count": null,
-          "frontend_render_choices": false,
-          "source_has_choices": false,
-          "answer_type": "interval",
-          "answer_shape": "interval_or_union",
-          "answer_semantics": "interval_union",
-          "answer_equivalence": "interval_set",
-          "equivalence_type": "interval_set",
-          "checker": "interval_checker",
-          "checker_key": "interval_checker",
-          "presentation_mode": "short_answer",
-          "selected_checker": "interval_checker",
-          "checker_selection_reason": "quadratic_inequality_interval_solution",
-          "accepted_formats": [
-            "-5 <= x <= 1",
-            "(-5, 1]",
-            "x in [-5,1]",
-            "x<-2 or x>5",
-            "-2<x<5",
-            "x<=-2 or x>=5"
-          ]
-        },
-        "stem_contract": {
-          "stem_must_not_embed_choices": true,
-          "allowed_math_objects": [
-            "coordinate_point",
-            "three_coordinate_points",
-            "triangle",
-            "two_coordinate_points"
-          ],
-          "required_math_objects": [
-            "coordinate_point",
-            "three_coordinate_points"
-          ],
-          "forbidden_patterns": [
-            "\\(A\\)",
-            "\\(B\\)",
-            "\\(C\\)",
-            "\\(D\\)"
-          ]
-        },
-        "dependency_contract": {
-          "givens_must_be_used": true,
-          "target_answer_must_depend_on_givens": true,
-          "variables_in_conditions_must_appear_in_target": false
-        },
-        "semantic_contract": {
-          "reasoning_type": [
-            "quadratic_factoring_reasoning"
-          ],
-          "reject_if": [
-            "unused_condition",
-            "ambiguous_answer",
-            "answer_not_derivable",
-            "duplicated_choices",
-            "no_correct_choice",
-            "multiple_correct_choices_when_single_choice"
-          ]
-        },
-        "generator_contract": {
-          "template_variants": [
-            {
-              "id": "default",
-              "label": "default",
-              "stem_pattern": "依題意求解：{stem_hint}。",
-              "weight": 1.0,
-              "enabled": true
-            }
-          ],
-          "parameter_schema": {
-            "seed": {
-              "type": "integer",
-              "randomize": true
-            },
-            "difficulty_level": {
-              "choices": [
-                "level_1",
-                "level_2",
-                "level_3"
-              ],
-              "weights": [
-                0.4,
-                0.4,
-                0.2
-              ]
-            }
-          },
-          "variation_dimensions": [
-            "seed",
-            "difficulty_level",
-            "context_style"
-          ],
-          "difficulty_controls": {
-            "level_1": {},
-            "level_2": {},
-            "level_3": {}
-          },
-          "anti_repetition_rules": {
-            "avoid_same_template_consecutive": true,
-            "avoid_same_ratio_consecutive": true,
-            "avoid_same_point_names_consecutive": true,
-            "avoid_same_answer_consecutive": true,
-            "recent_history_window": 5,
-            "signature_fields": [
-              "problem_type_id",
-              "template_variant",
-              "routing_track",
-              "scenario_type",
-              "ratio_form",
-              "ratio_values",
-              "coordinate_pattern",
-              "answer"
-            ]
-          },
-          "validity_constraints": [
-            "answer derivable from givens"
-          ],
-          "answer_shape": "numeric",
-          "explanation_variants": [
-            "stepwise"
-          ],
-          "sampling_strategy": "weighted_random",
-          "template_families": [
-            "applied_quadratic_inequality_problem"
-          ],
-          "parameter_slots": {
-            "seed": "integer",
-            "difficulty": "easy"
-          },
-          "randomization_rules": {
-            "shuffle_choices": false
-          },
-          "avoid_llm_freeform_math": true,
-          "use_domain_functions": true,
-          "derivation_steps_required": true,
-          "contextual_application": true,
-          "template_slots": {
-            "stem": "applied_quadratic_inequality_problem"
-          },
-          "problem_type_id": "fallback_applied_quadratic_inequality_problem",
-          "contract_validation_blockers": [],
-          "contract_validation_warnings": [
-            "single_template_variant_only",
-            "variation_dimensions_below_recommended_minimum"
-          ]
-        },
-        "validator_contract": {
-          "static_checks": [
-            "answer_contract_checks",
-            "choices_policy"
-          ],
-          "semantic_checks": [
-            "givens_to_target_dependency"
-          ],
-          "runtime_smoke_count": 30
-        },
-        "spec_source": "phase1_induced_draft",
-        "grouping_reason": "split_by_feature_signature",
-        "feature_signature": [
-          "short_answer",
-          "applied_quadratic_inequality_problem",
-          "short_answer",
-          [
-            "quadratic_factoring_reasoning"
-          ],
-          [
-            "coordinate_point",
-            "three_coordinate_points"
-          ]
-        ],
-        "canonical_base_problem_type_id": "fallback_applied_quadratic_inequality_problem",
-        "value_type_prefix": "",
-        "_resolved_template_slot": "applied_quadratic_inequality_problem"
-      },
-      "generator_readiness": "runtime_ready",
-      "usable_for_phase3": true,
-      "template_slot": "applied_quadratic_inequality_problem",
-      "canonical_base_problem_type_id": "fallback_applied_quadratic_inequality_problem",
-      "value_type_prefix": "",
-      "subskill_id": "applied_quadratic_inequality_problem",
-      "runtime_status": "runtime_ready_candidate",
-      "next_action": "phase2_foundation_preflight",
-      "semantic_alignment": {
-        "skill_problem_type_score": 0.0,
-        "source_problem_type_score": 0.0164,
-        "task_consistent_with_skill": true
-      },
-      "answer_type": "interval"
-    },
-    {
-      "problem_type_id": "text_short_solve_unknown_coordinate_from_two_point_distance",
-      "proposed_problem_type_id": "text_short_solve_unknown_coordinate_from_two_point_distance",
-      "display_name": "text_short / solve_unknown_coordinate_from_two_point_distance",
-      "matched_example_ids": [
-        4536
-      ],
-      "matched_example_count": 1,
-      "unmatched_example_ids": [],
-      "representative_example_id": 4536,
-      "structural_features": [
-        "unordered_set"
-      ],
-      "answer_contract_proposal": {
-        "choices_required": false,
-        "choice_count": null,
-        "correct_choice_count": null,
-        "frontend_render_choices": false,
-        "answer_type": "text_short",
-        "answer_shape": "unordered_set",
-        "answer_equivalence": "exact_string",
-        "checker": "text_short_checker",
-        "accepted_formats": [
-          "-3, 7",
-          "7, -3",
-          "{-3, 7}",
-          "k=-3 或 k=7",
-          "-3 或 7"
-        ],
-        "checker_key": "text_short_checker",
-        "equivalence_type": "exact_string",
-        "selected_checker": "solution_set_checker",
-        "checker_capability_status": "ok",
-        "checker_contract_blockers": [],
-        "checker_contract_warnings": [],
-        "stem_contract": {
-          "stem_must_not_embed_choices": true,
-          "allowed_math_objects": [
-            "coordinate_point",
-            "distance_formula",
-            "parameter",
-            "segment_length",
-            "three_coordinate_points",
-            "triangle",
-            "two_coordinate_points",
-            "unknown_coordinate"
-          ],
-          "required_math_objects": [
-            "coordinate_point",
-            "distance_formula"
-          ],
-          "forbidden_patterns": [
-            "\\(A\\)",
-            "\\(B\\)",
-            "\\(C\\)",
-            "\\(D\\)"
-          ]
-        },
-        "dependency_contract": {
-          "givens_must_be_used": true,
-          "target_answer_must_depend_on_givens": true,
-          "variables_in_conditions_must_appear_in_target": false
-        },
-        "semantic_contract": {
-          "reasoning_type": [
-            "distance_formula_reasoning"
-          ],
-          "reject_if": [
-            "unused_condition",
-            "ambiguous_answer",
-            "answer_not_derivable",
-            "duplicated_choices",
-            "no_correct_choice",
-            "multiple_correct_choices_when_single_choice"
-          ]
-        },
-        "generator_contract": {
-          "template_variants": [
-            {
-              "id": "direct_distance",
-              "label": "直接求距離",
-              "stem_pattern": "求 {A}({ax},{ay}) 與 {B}({bx},{by}) 的距離。",
-              "weight": 1.0,
-              "enabled": true
-            },
-            {
-              "id": "missing_coordinate",
-              "label": "反求坐標",
-              "stem_pattern": "已知 {A}({ax},{ay})、{B}({bx},{by}) 與距離 {d}，求未知坐標。",
-              "weight": 0.6,
-              "enabled": true
-            },
-            {
-              "id": "word_context_distance",
-              "label": "語境距離",
-              "stem_pattern": "平面上兩地坐標如下，求兩地距離。",
-              "weight": 1.0,
-              "enabled": true
-            },
-            {
-              "id": "compare_distance",
-              "label": "比較距離",
-              "stem_pattern": "比較 {A} 到 {B} 與 {A} 到 {C} 的距離大小。",
-              "weight": 0.4,
-              "enabled": true
-            }
-          ],
-          "parameter_schema": {
-            "point_names": {
-              "choices": [
-                [
-                  "A",
-                  "B",
-                  "P"
-                ],
-                [
-                  "P",
-                  "Q",
-                  "R"
-                ],
-                [
-                  "M",
-                  "N",
-                  "T"
-                ],
-                [
-                  "C",
-                  "D",
-                  "E"
-                ]
-              ],
-              "randomize": true
-            },
-            "coordinate_range": {
-              "x_min": -10,
-              "x_max": 10,
-              "y_min": -10,
-              "y_max": 10,
-              "exclude_zero_probability": 0.2
-            },
-            "distance_result_type": {
-              "choices": [
-                "integer",
-                "radical"
-              ],
-              "weights": [
-                0.55,
-                0.45
-              ]
-            },
-            "coordinate_delta_pattern": {
-              "choices": [
-                "axis_aligned",
-                "mixed_sign",
-                "general"
-              ],
-              "weights": [
-                0.3,
-                0.4,
-                0.3
-              ]
-            }
-          },
-          "variation_dimensions": [
-            "point_names",
-            "coordinate_sign_pattern",
-            "distance_result_type",
-            "coordinate_delta_pattern",
-            "ask_target",
-            "context_style"
-          ],
-          "difficulty_controls": {
-            "level_1": {
-              "coordinate_range": [
-                -5,
-                5
-              ],
-              "integer_distance_only": true
-            },
-            "level_2": {
-              "coordinate_range": [
-                -10,
-                10
-              ],
-              "allow_radical": true
-            },
-            "level_3": {
-              "word_context_enabled": true,
-              "missing_coordinate_enabled": true
-            }
-          },
-          "anti_repetition_rules": {
-            "avoid_same_template_consecutive": true,
-            "avoid_same_ratio_consecutive": true,
-            "avoid_same_point_names_consecutive": true,
-            "avoid_same_answer_consecutive": true,
-            "recent_history_window": 5,
-            "signature_fields": [
-              "problem_type_id",
-              "template_variant",
-              "routing_track",
-              "scenario_type",
-              "ratio_form",
-              "ratio_values",
-              "coordinate_pattern",
-              "answer"
-            ]
-          },
-          "validity_constraints": [
-            "A != B",
-            "distance > 0",
-            "if integer answer desired, dx^2+dy^2 must be perfect square",
-            "if radical answer desired, simplify radical form"
-          ],
-          "answer_shape": "numeric_or_radical",
-          "explanation_variants": [
-            "distance_formula",
-            "pythagorean_step"
-          ],
-          "sampling_strategy": "weighted_random",
-          "template_families": [
-            "solve_unknown_coordinate_from_two_point_distance"
-          ],
-          "parameter_slots": {
-            "seed": "integer",
-            "difficulty": "easy"
-          },
-          "randomization_rules": {
-            "shuffle_choices": false
-          },
-          "avoid_llm_freeform_math": true,
-          "use_domain_functions": true,
-          "derivation_steps_required": true,
-          "contextual_application": true,
-          "template_slots": {
-            "stem": "point_quadrant"
-          },
-          "problem_type_id": "fallback_solve_unknown_coordinate_from_two_point_distance",
-          "contract_validation_blockers": [],
-          "contract_validation_warnings": []
-        },
-        "validator_contract": {
-          "static_checks": [
-            "answer_contract_checks",
-            "choices_policy"
-          ],
-          "semantic_checks": [
-            "givens_to_target_dependency"
-          ],
-          "runtime_smoke_count": 30
-        },
-        "order_matters": true,
-        "accepted_format_notes": [],
-        "canonical_answer_schema": "solution_set",
-        "presentation_mode": ""
-      },
-      "checker_key_proposal": "text_short_checker",
-      "equivalence_type_proposal": "exact_string",
-      "answer_shape": "unordered_set",
-      "answer_semantics": "unordered_set",
-      "presentation_mode": "short_answer",
-      "source_has_choices": false,
-      "selected_checker": "solution_set_checker",
-      "checker_selection_reason": "task_family_default",
-      "coordinate_pair_presentation_note": "",
-      "confidence": "high",
-      "promote_recommendation": "recommend_promote_for_that_candidate",
-      "promote_blockers": [],
-      "risk_flags": [
-        "ai_first_mode_fell_back_to_rule_only",
-        "ai_unavailable_fallback_to_same_as_main",
-        "alignment_score_below_recommended_threshold",
-        "majority_sources_need_human_subskill_review",
-        "skill_scoped_classification_low_confidence",
-        "source_skill_scope_locked_demoted_blockers_to_warnings"
-      ],
-      "checker_contract_warnings": [],
-      "spec_source": "phase1_induced_draft",
-      "grouping_reason": "split_by_feature_signature",
-      "feature_signature": [
-        "short_answer",
-        "solve_unknown_coordinate_from_two_point_distance",
-        "short_answer",
-        [
-          "distance_formula_reasoning"
-        ],
-        [
-          "coordinate_point",
-          "distance_formula"
-        ]
-      ],
-      "problem_type_spec_draft": {
-        "problem_type_id": "fallback_solve_unknown_coordinate_from_two_point_distance",
-        "skill_id": "vh_數學B1_PropertiesOfPerpendicularLines",
-        "target_task": "solve_unknown_coordinate_from_two_point_distance",
-        "task_family": "distance_between_two_points_family",
-        "display_name": "兩點距離反求座標",
-        "answer_format_hint": "",
-        "answer_fields": null,
-        "answer_separator": null,
-        "source_example_ids": [
-          4536
-        ],
-        "answer_contract": {
-          "choices_required": false,
-          "choice_count": null,
-          "correct_choice_count": null,
-          "frontend_render_choices": false,
-          "answer_type": "integer",
-          "answer_shape": "unordered_set",
-          "answer_equivalence": "numeric_exact",
-          "checker": "integer_checker",
-          "accepted_formats": [
-            "-3, 7",
-            "7, -3",
-            "{-3, 7}",
-            "k=-3 或 k=7",
-            "-3 或 7"
-          ],
-          "equivalence_type": "numeric_exact",
-          "checker_key": "integer_checker"
-        },
-        "stem_contract": {
-          "stem_must_not_embed_choices": true,
-          "allowed_math_objects": [
-            "coordinate_point",
-            "distance_formula",
-            "parameter",
-            "segment_length",
-            "three_coordinate_points",
-            "triangle",
-            "two_coordinate_points",
-            "unknown_coordinate"
-          ],
-          "required_math_objects": [
-            "coordinate_point",
-            "distance_formula"
-          ],
-          "forbidden_patterns": [
-            "\\(A\\)",
-            "\\(B\\)",
-            "\\(C\\)",
-            "\\(D\\)"
-          ]
-        },
-        "dependency_contract": {
-          "givens_must_be_used": true,
-          "target_answer_must_depend_on_givens": true,
-          "variables_in_conditions_must_appear_in_target": false
-        },
-        "semantic_contract": {
-          "reasoning_type": [
-            "distance_formula_reasoning"
-          ],
-          "reject_if": [
-            "unused_condition",
-            "ambiguous_answer",
-            "answer_not_derivable",
-            "duplicated_choices",
-            "no_correct_choice",
-            "multiple_correct_choices_when_single_choice"
-          ]
-        },
-        "generator_contract": {
-          "template_variants": [
-            {
-              "id": "direct_distance",
-              "label": "直接求距離",
-              "stem_pattern": "求 {A}({ax},{ay}) 與 {B}({bx},{by}) 的距離。",
-              "weight": 1.0,
-              "enabled": true
-            },
-            {
-              "id": "missing_coordinate",
-              "label": "反求坐標",
-              "stem_pattern": "已知 {A}({ax},{ay})、{B}({bx},{by}) 與距離 {d}，求未知坐標。",
-              "weight": 0.6,
-              "enabled": true
-            },
-            {
-              "id": "word_context_distance",
-              "label": "語境距離",
-              "stem_pattern": "平面上兩地坐標如下，求兩地距離。",
-              "weight": 1.0,
-              "enabled": true
-            },
-            {
-              "id": "compare_distance",
-              "label": "比較距離",
-              "stem_pattern": "比較 {A} 到 {B} 與 {A} 到 {C} 的距離大小。",
-              "weight": 0.4,
-              "enabled": true
-            }
-          ],
-          "parameter_schema": {
-            "point_names": {
-              "choices": [
-                [
-                  "A",
-                  "B",
-                  "P"
-                ],
-                [
-                  "P",
-                  "Q",
-                  "R"
-                ],
-                [
-                  "M",
-                  "N",
-                  "T"
-                ],
-                [
-                  "C",
-                  "D",
-                  "E"
-                ]
-              ],
-              "randomize": true
-            },
-            "coordinate_range": {
-              "x_min": -10,
-              "x_max": 10,
-              "y_min": -10,
-              "y_max": 10,
-              "exclude_zero_probability": 0.2
-            },
-            "distance_result_type": {
-              "choices": [
-                "integer",
-                "radical"
-              ],
-              "weights": [
-                0.55,
-                0.45
-              ]
-            },
-            "coordinate_delta_pattern": {
-              "choices": [
-                "axis_aligned",
-                "mixed_sign",
-                "general"
-              ],
-              "weights": [
-                0.3,
-                0.4,
-                0.3
-              ]
-            }
-          },
-          "variation_dimensions": [
-            "point_names",
-            "coordinate_sign_pattern",
-            "distance_result_type",
-            "coordinate_delta_pattern",
-            "ask_target",
-            "context_style"
-          ],
-          "difficulty_controls": {
-            "level_1": {
-              "coordinate_range": [
-                -5,
-                5
-              ],
-              "integer_distance_only": true
-            },
-            "level_2": {
-              "coordinate_range": [
-                -10,
-                10
-              ],
-              "allow_radical": true
-            },
-            "level_3": {
-              "word_context_enabled": true,
-              "missing_coordinate_enabled": true
-            }
-          },
-          "anti_repetition_rules": {
-            "avoid_same_template_consecutive": true,
-            "avoid_same_ratio_consecutive": true,
-            "avoid_same_point_names_consecutive": true,
-            "avoid_same_answer_consecutive": true,
-            "recent_history_window": 5,
-            "signature_fields": [
-              "problem_type_id",
-              "template_variant",
-              "routing_track",
-              "scenario_type",
-              "ratio_form",
-              "ratio_values",
-              "coordinate_pattern",
-              "answer"
-            ]
-          },
-          "validity_constraints": [
-            "A != B",
-            "distance > 0",
-            "if integer answer desired, dx^2+dy^2 must be perfect square",
-            "if radical answer desired, simplify radical form"
-          ],
-          "answer_shape": "numeric_or_radical",
-          "explanation_variants": [
-            "distance_formula",
-            "pythagorean_step"
-          ],
-          "sampling_strategy": "weighted_random",
-          "template_families": [
-            "solve_unknown_coordinate_from_two_point_distance"
-          ],
-          "parameter_slots": {
-            "seed": "integer",
-            "difficulty": "easy"
-          },
-          "randomization_rules": {
-            "shuffle_choices": false
-          },
-          "avoid_llm_freeform_math": true,
-          "use_domain_functions": true,
-          "derivation_steps_required": true,
-          "contextual_application": true,
-          "template_slots": {
-            "stem": "point_quadrant"
-          },
-          "problem_type_id": "fallback_solve_unknown_coordinate_from_two_point_distance",
-          "contract_validation_blockers": [],
-          "contract_validation_warnings": []
-        },
-        "validator_contract": {
-          "static_checks": [
-            "answer_contract_checks",
-            "choices_policy"
-          ],
-          "semantic_checks": [
-            "givens_to_target_dependency"
-          ],
-          "runtime_smoke_count": 30
-        },
-        "spec_source": "phase1_induced_draft",
-        "grouping_reason": "split_by_feature_signature",
-        "feature_signature": [
-          "short_answer",
-          "solve_unknown_coordinate_from_two_point_distance",
-          "short_answer",
-          [
-            "distance_formula_reasoning"
-          ],
-          [
-            "coordinate_point",
-            "distance_formula"
-          ]
-        ],
-        "canonical_base_problem_type_id": "fallback_solve_unknown_coordinate_from_two_point_distance",
-        "value_type_prefix": "",
-        "_resolved_template_slot": "two_point_distance_solution_set"
-      },
-      "generator_readiness": "runtime_ready",
-      "usable_for_phase3": true,
-      "template_slot": "point_quadrant",
-      "canonical_base_problem_type_id": "fallback_solve_unknown_coordinate_from_two_point_distance",
-      "value_type_prefix": "",
-      "subskill_id": "solve_unknown_coordinate_from_two_point_distance",
-      "runtime_status": "runtime_ready_candidate",
-      "next_action": "phase2_foundation_preflight",
-      "semantic_alignment": {
-        "skill_problem_type_score": 0.0,
-        "source_problem_type_score": 0.0149,
-        "task_consistent_with_skill": true
-      },
-      "answer_type": "integer"
+      "answer_type": "text_short"
     }
   ],
   "answer_contract_summary": {
@@ -7382,15 +5978,6 @@
       "unordered_tuple_equivalent"
     ],
     "observed_problem_type_answer_contracts": {
-      "fallback_perpendicular_lines_properties": {
-        "answer_type": "integer",
-        "answer_shape": "scalar",
-        "equivalence_type": "numeric_exact",
-        "checker_key": "integer_checker",
-        "order_matters": true,
-        "accepted_format_notes": [],
-        "canonical_answer_schema": "integer"
-      },
       "skill_scoped_unresolved_problem_type": {
         "answer_type": "text_short",
         "answer_shape": "text_short",
@@ -7399,33 +5986,11 @@
         "order_matters": true,
         "accepted_format_notes": [],
         "canonical_answer_schema": "text_short"
-      },
-      "fallback_applied_quadratic_inequality_problem": {
-        "answer_type": "interval",
-        "answer_shape": "interval_or_union",
-        "equivalence_type": "interval_set",
-        "checker_key": "interval_checker",
-        "order_matters": true,
-        "accepted_format_notes": [],
-        "canonical_answer_schema": "interval"
-      },
-      "fallback_solve_unknown_coordinate_from_two_point_distance": {
-        "answer_type": "solution_set",
-        "answer_shape": "unordered_set",
-        "equivalence_type": "unordered_solution_set",
-        "checker_key": "solution_set_checker",
-        "order_matters": true,
-        "accepted_format_notes": [],
-        "canonical_answer_schema": "solution_set"
       }
     },
     "missing_answer_contract_problem_types": [],
     "missing_checker_key_problem_types": [],
-    "equivalence_test_required_problem_types": [
-      "fallback_applied_quadratic_inequality_problem",
-      "fallback_perpendicular_lines_properties",
-      "fallback_solve_unknown_coordinate_from_two_point_distance"
-    ],
+    "equivalence_test_required_problem_types": [],
     "convertible_to_choice_problem_types": [],
     "manual_review_or_ai_judged_problem_types": []
   },
@@ -7434,7 +5999,7 @@
   "per_example_classification": [
     {
       "example_id": 4531,
-      "detected_problem_type_id": "fallback_perpendicular_lines_properties",
+      "detected_problem_type_id": "integer_perpendicular_lines_properties",
       "example_feature": {
         "source_example_id": 4531,
         "question_text": "設$A\\left( -2,a \\right)$、$B\\left( 3,4 \\right)$、$C\\left( -2,8 \\right)$、$D\\left( 4,-2 \\right)$，若$\\overline{AB}$與$\\overline{CD}$垂直，試求a之值。",
@@ -7501,11 +6066,11 @@
           "rule_confidence": 0.5,
           "final_target_task": "perpendicular_lines_properties",
           "final_task_family": "generic_numeric_family",
-          "classifier_source": "clause45_unclassified_exception",
+          "classifier_source": "rule_fallback_ai_unavailable",
           "classification_decision": "",
           "conflict_reason": "ai_api_key_missing",
           "source_mapping_warning": "",
-          "requires_human_action": false,
+          "requires_human_action": true,
           "ai_notes": "",
           "skill_scoped_candidates": [
             {
@@ -7629,7 +6194,7 @@
           ],
           "selected_subskill": "perpendicular_lines_properties",
           "selected_problem_type": "perpendicular_lines_properties",
-          "candidate_source": "clause45_fallback_proxy",
+          "candidate_source": "needs_review",
           "selected_generator_contract": {},
           "parameter_schema": {},
           "variable_randomization_notes": [],
@@ -7758,8 +6323,6 @@
         "induction_tier": "core",
         "enrichment_reasons": [],
         "included_in_core_induction": true,
-        "problem_type_id": "fallback_perpendicular_lines_properties",
-        "proxy_problem_type_id": "fallback_perpendicular_lines_properties",
         "equivalence_type": "numeric_exact",
         "checker_key": "integer_checker",
         "requires_human_action": false
@@ -7768,7 +6331,7 @@
       "classification_confidence": "high",
       "classification_reason": "rule_fallback_ai_unavailable",
       "risk_flags": [
-        "candidate_only_problem_type"
+        "requires_human_action"
       ],
       "semantic_classification": {
         "ai_target_task": "",
@@ -7791,11 +6354,11 @@
         "rule_confidence": 0.5,
         "final_target_task": "perpendicular_lines_properties",
         "final_task_family": "generic_numeric_family",
-        "classifier_source": "clause45_unclassified_exception",
+        "classifier_source": "rule_fallback_ai_unavailable",
         "classification_decision": "",
         "conflict_reason": "ai_api_key_missing",
         "source_mapping_warning": "",
-        "requires_human_action": false,
+        "requires_human_action": true,
         "ai_notes": "",
         "skill_scoped_candidates": [
           {
@@ -7919,7 +6482,7 @@
         ],
         "selected_subskill": "perpendicular_lines_properties",
         "selected_problem_type": "perpendicular_lines_properties",
-        "candidate_source": "clause45_fallback_proxy",
+        "candidate_source": "needs_review",
         "selected_generator_contract": {},
         "parameter_schema": {},
         "variable_randomization_notes": [],
@@ -7957,7 +6520,7 @@
         "source_quality_status": "FORCE_ALLOWED_FOR_INDUCTION"
       },
       "subskill_id": "perpendicular_lines_properties",
-      "classification_source": "clause45_unclassified_exception",
+      "classification_source": "rule_fallback_ai_unavailable",
       "induction_eligibility": "excluded",
       "answer_type": "integer",
       "equivalence_type": "numeric_exact",
@@ -9370,7 +7933,7 @@
     },
     {
       "example_id": 4527,
-      "detected_problem_type_id": "fallback_applied_quadratic_inequality_problem",
+      "detected_problem_type_id": "short_answer_applied_quadratic_inequality_problem_short_answer",
       "example_feature": {
         "source_example_id": 4527,
         "question_text": "已知坐標平面上三點$A\\left( 2,1 \\right)$、$B\\left( 1,3 \\right)$及$C\\left( 4,2 \\right)$，試問△ABC是否為直角三角形？.",
@@ -9435,11 +7998,11 @@
           "rule_confidence": 0.5,
           "final_target_task": "applied_quadratic_inequality_problem",
           "final_task_family": "quadratic_inequality_family",
-          "classifier_source": "clause45_unclassified_exception",
+          "classifier_source": "rule_fallback_ai_unavailable",
           "classification_decision": "",
           "conflict_reason": "ai_api_key_missing",
           "source_mapping_warning": "",
-          "requires_human_action": false,
+          "requires_human_action": true,
           "ai_notes": "",
           "skill_scoped_candidates": [
             {
@@ -9761,7 +8324,7 @@
           ],
           "selected_subskill": "applied_quadratic_inequality_problem",
           "selected_problem_type": "applied_quadratic_inequality_problem",
-          "candidate_source": "clause45_fallback_proxy",
+          "candidate_source": "needs_review",
           "selected_generator_contract": {},
           "parameter_schema": {},
           "variable_randomization_notes": [],
@@ -9889,8 +8452,6 @@
         "induction_tier": "core",
         "enrichment_reasons": [],
         "included_in_core_induction": true,
-        "problem_type_id": "fallback_applied_quadratic_inequality_problem",
-        "proxy_problem_type_id": "fallback_applied_quadratic_inequality_problem",
         "equivalence_type": "exact_string",
         "checker_key": "text_short_checker",
         "requires_human_action": false
@@ -9898,7 +8459,9 @@
       "answer_shape": "text_short",
       "classification_confidence": "high",
       "classification_reason": "rule_fallback_ai_unavailable",
-      "risk_flags": [],
+      "risk_flags": [
+        "requires_human_action"
+      ],
       "semantic_classification": {
         "ai_target_task": "",
         "ai_task_family": "",
@@ -9920,11 +8483,11 @@
         "rule_confidence": 0.5,
         "final_target_task": "applied_quadratic_inequality_problem",
         "final_task_family": "quadratic_inequality_family",
-        "classifier_source": "clause45_unclassified_exception",
+        "classifier_source": "rule_fallback_ai_unavailable",
         "classification_decision": "",
         "conflict_reason": "ai_api_key_missing",
         "source_mapping_warning": "",
-        "requires_human_action": false,
+        "requires_human_action": true,
         "ai_notes": "",
         "skill_scoped_candidates": [
           {
@@ -10246,7 +8809,7 @@
         ],
         "selected_subskill": "applied_quadratic_inequality_problem",
         "selected_problem_type": "applied_quadratic_inequality_problem",
-        "candidate_source": "clause45_fallback_proxy",
+        "candidate_source": "needs_review",
         "selected_generator_contract": {},
         "parameter_schema": {},
         "variable_randomization_notes": [],
@@ -10277,7 +8840,7 @@
         "possible_mixed_source_context": true
       },
       "subskill_id": "applied_quadratic_inequality_problem",
-      "classification_source": "clause45_unclassified_exception",
+      "classification_source": "rule_fallback_ai_unavailable",
       "induction_eligibility": "excluded",
       "answer_type": "text_short",
       "equivalence_type": "exact_string",
@@ -10286,7 +8849,7 @@
     },
     {
       "example_id": 4536,
-      "detected_problem_type_id": "fallback_solve_unknown_coordinate_from_two_point_distance",
+      "detected_problem_type_id": "short_answer_solve_unknown_coordinate_from_two_point_distance_short_answer",
       "example_feature": {
         "source_example_id": 4536,
         "question_text": "設$A\\left( -3,4 \\right)$、$B\\left( a,1 \\right)$、$C\\left( -4,-2 \\right)$、$D\\left( 2,8 \\right)$，若$\\overline{AB}$與$\\overline{CD}$垂直，試求a之值。",
@@ -10357,11 +8920,11 @@
           "rule_confidence": 0.55,
           "final_target_task": "solve_unknown_coordinate_from_two_point_distance",
           "final_task_family": "distance_between_two_points_family",
-          "classifier_source": "clause45_unclassified_exception",
+          "classifier_source": "rule_fallback_ai_unavailable",
           "classification_decision": "",
           "conflict_reason": "ai_api_key_missing",
           "source_mapping_warning": "",
-          "requires_human_action": false,
+          "requires_human_action": true,
           "ai_notes": "",
           "skill_scoped_candidates": [
             {
@@ -10799,7 +9362,7 @@
           ],
           "selected_subskill": "solve_unknown_coordinate_from_two_point_distance",
           "selected_problem_type": "solve_unknown_coordinate_from_two_point_distance",
-          "candidate_source": "clause45_fallback_proxy",
+          "candidate_source": "needs_review",
           "selected_generator_contract": {},
           "parameter_schema": {},
           "variable_randomization_notes": [],
@@ -10931,8 +9494,6 @@
         "induction_tier": "core",
         "enrichment_reasons": [],
         "included_in_core_induction": true,
-        "problem_type_id": "fallback_solve_unknown_coordinate_from_two_point_distance",
-        "proxy_problem_type_id": "fallback_solve_unknown_coordinate_from_two_point_distance",
         "equivalence_type": "exact_string",
         "checker_key": "text_short_checker",
         "requires_human_action": false
@@ -10940,7 +9501,9 @@
       "answer_shape": "text_short",
       "classification_confidence": "high",
       "classification_reason": "rule_fallback_ai_unavailable",
-      "risk_flags": [],
+      "risk_flags": [
+        "requires_human_action"
+      ],
       "semantic_classification": {
         "ai_target_task": "",
         "ai_task_family": "",
@@ -10962,11 +9525,11 @@
         "rule_confidence": 0.55,
         "final_target_task": "solve_unknown_coordinate_from_two_point_distance",
         "final_task_family": "distance_between_two_points_family",
-        "classifier_source": "clause45_unclassified_exception",
+        "classifier_source": "rule_fallback_ai_unavailable",
         "classification_decision": "",
         "conflict_reason": "ai_api_key_missing",
         "source_mapping_warning": "",
-        "requires_human_action": false,
+        "requires_human_action": true,
         "ai_notes": "",
         "skill_scoped_candidates": [
           {
@@ -11404,7 +9967,7 @@
         ],
         "selected_subskill": "solve_unknown_coordinate_from_two_point_distance",
         "selected_problem_type": "solve_unknown_coordinate_from_two_point_distance",
-        "candidate_source": "clause45_fallback_proxy",
+        "candidate_source": "needs_review",
         "selected_generator_contract": {},
         "parameter_schema": {},
         "variable_randomization_notes": [],
@@ -11439,7 +10002,7 @@
         "possible_mixed_source_context": true
       },
       "subskill_id": "solve_unknown_coordinate_from_two_point_distance",
-      "classification_source": "clause45_unclassified_exception",
+      "classification_source": "rule_fallback_ai_unavailable",
       "induction_eligibility": "excluded",
       "answer_type": "text_short",
       "equivalence_type": "exact_string",
@@ -11448,7 +10011,7 @@
     },
     {
       "example_id": 4537,
-      "detected_problem_type_id": "skill_scoped_unresolved_problem_type",
+      "detected_problem_type_id": "short_answer_compute_numeric_short_answer",
       "example_feature": {
         "source_example_id": 4537,
         "question_text": "設直線${{L}_{1}}$通過$A\\left( 3,k+1 \\right)$、$B\\left( -k,5 \\right)$兩點，直線${{L}_{2}}$通過$C\\left( 4,-3 \\right)$、$D\\left( -2,1 \\right)$兩點，若直線${{L}_{1}}$垂直${{L}_{2}}$，試求k之值。",
@@ -11466,7 +10029,7 @@
           "triangle",
           "two_coordinate_points"
         ],
-        "target_task": "contextual_application",
+        "target_task": "compute_numeric",
         "task_family": "generic_numeric_family",
         "reasoning_type": [
           "numeric_computation"
@@ -11491,7 +10054,7 @@
           "L",
           "k"
         ],
-        "target": "contextual_application",
+        "target": "compute_numeric",
         "classifier_source": "rule_fallback_ai_unavailable",
         "math_meta_tags": [],
         "forced_target_task": "",
@@ -11515,13 +10078,13 @@
           "rule_target_task": "compute_numeric",
           "rule_task_family": "generic_numeric_family",
           "rule_confidence": 0.2,
-          "final_target_task": "contextual_application",
+          "final_target_task": "compute_numeric",
           "final_task_family": "generic_numeric_family",
-          "classifier_source": "clause45_unclassified_exception",
+          "classifier_source": "rule_fallback_ai_unavailable",
           "classification_decision": "",
           "conflict_reason": "ai_api_key_missing",
           "source_mapping_warning": "",
-          "requires_human_action": false,
+          "requires_human_action": true,
           "ai_notes": "",
           "skill_scoped_candidates": [
             {
@@ -11742,7 +10305,7 @@
           "outsider_candidates": [],
           "selected_subskill": "compute_numeric",
           "selected_problem_type": "compute_numeric",
-          "candidate_source": "clause45_fallback_proxy",
+          "candidate_source": "needs_review",
           "selected_generator_contract": {},
           "parameter_schema": {},
           "variable_randomization_notes": [],
@@ -11870,11 +10433,6 @@
         "induction_tier": "core",
         "enrichment_reasons": [],
         "included_in_core_induction": true,
-        "generator_readiness": "pending_problem_type_induction",
-        "usable_for_phase3": false,
-        "needs_rule_pack_or_slot_registration": true,
-        "problem_type_id": "skill_scoped_unresolved_problem_type",
-        "proxy_problem_type_id": "skill_scoped_unresolved_problem_type",
         "equivalence_type": "exact_string",
         "checker_key": "text_short_checker",
         "requires_human_action": false
@@ -11883,7 +10441,7 @@
       "classification_confidence": "high",
       "classification_reason": "rule_fallback_ai_unavailable",
       "risk_flags": [
-        "candidate_only_problem_type"
+        "requires_human_action"
       ],
       "semantic_classification": {
         "ai_target_task": "",
@@ -11904,13 +10462,13 @@
         "rule_target_task": "compute_numeric",
         "rule_task_family": "generic_numeric_family",
         "rule_confidence": 0.2,
-        "final_target_task": "contextual_application",
+        "final_target_task": "compute_numeric",
         "final_task_family": "generic_numeric_family",
-        "classifier_source": "clause45_unclassified_exception",
+        "classifier_source": "rule_fallback_ai_unavailable",
         "classification_decision": "",
         "conflict_reason": "ai_api_key_missing",
         "source_mapping_warning": "",
-        "requires_human_action": false,
+        "requires_human_action": true,
         "ai_notes": "",
         "skill_scoped_candidates": [
           {
@@ -12131,7 +10689,7 @@
         "outsider_candidates": [],
         "selected_subskill": "compute_numeric",
         "selected_problem_type": "compute_numeric",
-        "candidate_source": "clause45_fallback_proxy",
+        "candidate_source": "needs_review",
         "selected_generator_contract": {},
         "parameter_schema": {},
         "variable_randomization_notes": [],
@@ -12161,8 +10719,8 @@
         "possible_structure_mismatch": false,
         "possible_mixed_source_context": false
       },
-      "subskill_id": "contextual_application",
-      "classification_source": "clause45_unclassified_exception",
+      "subskill_id": "compute_numeric",
+      "classification_source": "rule_fallback_ai_unavailable",
       "induction_eligibility": "excluded",
       "answer_type": "text_short",
       "equivalence_type": "exact_string",
@@ -13603,7 +12161,7 @@
   "source_classifications": [
     {
       "example_id": 4531,
-      "detected_problem_type_id": "fallback_perpendicular_lines_properties",
+      "detected_problem_type_id": "integer_perpendicular_lines_properties",
       "example_feature": {
         "source_example_id": 4531,
         "question_text": "設$A\\left( -2,a \\right)$、$B\\left( 3,4 \\right)$、$C\\left( -2,8 \\right)$、$D\\left( 4,-2 \\right)$，若$\\overline{AB}$與$\\overline{CD}$垂直，試求a之值。",
@@ -13670,11 +12228,11 @@
           "rule_confidence": 0.5,
           "final_target_task": "perpendicular_lines_properties",
           "final_task_family": "generic_numeric_family",
-          "classifier_source": "clause45_unclassified_exception",
+          "classifier_source": "rule_fallback_ai_unavailable",
           "classification_decision": "",
           "conflict_reason": "ai_api_key_missing",
           "source_mapping_warning": "",
-          "requires_human_action": false,
+          "requires_human_action": true,
           "ai_notes": "",
           "skill_scoped_candidates": [
             {
@@ -13798,7 +12356,7 @@
           ],
           "selected_subskill": "perpendicular_lines_properties",
           "selected_problem_type": "perpendicular_lines_properties",
-          "candidate_source": "clause45_fallback_proxy",
+          "candidate_source": "needs_review",
           "selected_generator_contract": {},
           "parameter_schema": {},
           "variable_randomization_notes": [],
@@ -13927,8 +12485,6 @@
         "induction_tier": "core",
         "enrichment_reasons": [],
         "included_in_core_induction": true,
-        "problem_type_id": "fallback_perpendicular_lines_properties",
-        "proxy_problem_type_id": "fallback_perpendicular_lines_properties",
         "equivalence_type": "numeric_exact",
         "checker_key": "integer_checker",
         "requires_human_action": false
@@ -13937,7 +12493,7 @@
       "classification_confidence": "high",
       "classification_reason": "rule_fallback_ai_unavailable",
       "risk_flags": [
-        "candidate_only_problem_type"
+        "requires_human_action"
       ],
       "semantic_classification": {
         "ai_target_task": "",
@@ -13960,11 +12516,11 @@
         "rule_confidence": 0.5,
         "final_target_task": "perpendicular_lines_properties",
         "final_task_family": "generic_numeric_family",
-        "classifier_source": "clause45_unclassified_exception",
+        "classifier_source": "rule_fallback_ai_unavailable",
         "classification_decision": "",
         "conflict_reason": "ai_api_key_missing",
         "source_mapping_warning": "",
-        "requires_human_action": false,
+        "requires_human_action": true,
         "ai_notes": "",
         "skill_scoped_candidates": [
           {
@@ -14088,7 +12644,7 @@
         ],
         "selected_subskill": "perpendicular_lines_properties",
         "selected_problem_type": "perpendicular_lines_properties",
-        "candidate_source": "clause45_fallback_proxy",
+        "candidate_source": "needs_review",
         "selected_generator_contract": {},
         "parameter_schema": {},
         "variable_randomization_notes": [],
@@ -14126,7 +12682,7 @@
         "source_quality_status": "FORCE_ALLOWED_FOR_INDUCTION"
       },
       "subskill_id": "perpendicular_lines_properties",
-      "classification_source": "clause45_unclassified_exception",
+      "classification_source": "rule_fallback_ai_unavailable",
       "induction_eligibility": "excluded",
       "answer_type": "integer",
       "equivalence_type": "numeric_exact",
@@ -15539,7 +14095,7 @@
     },
     {
       "example_id": 4527,
-      "detected_problem_type_id": "fallback_applied_quadratic_inequality_problem",
+      "detected_problem_type_id": "short_answer_applied_quadratic_inequality_problem_short_answer",
       "example_feature": {
         "source_example_id": 4527,
         "question_text": "已知坐標平面上三點$A\\left( 2,1 \\right)$、$B\\left( 1,3 \\right)$及$C\\left( 4,2 \\right)$，試問△ABC是否為直角三角形？.",
@@ -15604,11 +14160,11 @@
           "rule_confidence": 0.5,
           "final_target_task": "applied_quadratic_inequality_problem",
           "final_task_family": "quadratic_inequality_family",
-          "classifier_source": "clause45_unclassified_exception",
+          "classifier_source": "rule_fallback_ai_unavailable",
           "classification_decision": "",
           "conflict_reason": "ai_api_key_missing",
           "source_mapping_warning": "",
-          "requires_human_action": false,
+          "requires_human_action": true,
           "ai_notes": "",
           "skill_scoped_candidates": [
             {
@@ -15930,7 +14486,7 @@
           ],
           "selected_subskill": "applied_quadratic_inequality_problem",
           "selected_problem_type": "applied_quadratic_inequality_problem",
-          "candidate_source": "clause45_fallback_proxy",
+          "candidate_source": "needs_review",
           "selected_generator_contract": {},
           "parameter_schema": {},
           "variable_randomization_notes": [],
@@ -16058,8 +14614,6 @@
         "induction_tier": "core",
         "enrichment_reasons": [],
         "included_in_core_induction": true,
-        "problem_type_id": "fallback_applied_quadratic_inequality_problem",
-        "proxy_problem_type_id": "fallback_applied_quadratic_inequality_problem",
         "equivalence_type": "exact_string",
         "checker_key": "text_short_checker",
         "requires_human_action": false
@@ -16067,7 +14621,9 @@
       "answer_shape": "text_short",
       "classification_confidence": "high",
       "classification_reason": "rule_fallback_ai_unavailable",
-      "risk_flags": [],
+      "risk_flags": [
+        "requires_human_action"
+      ],
       "semantic_classification": {
         "ai_target_task": "",
         "ai_task_family": "",
@@ -16089,11 +14645,11 @@
         "rule_confidence": 0.5,
         "final_target_task": "applied_quadratic_inequality_problem",
         "final_task_family": "quadratic_inequality_family",
-        "classifier_source": "clause45_unclassified_exception",
+        "classifier_source": "rule_fallback_ai_unavailable",
         "classification_decision": "",
         "conflict_reason": "ai_api_key_missing",
         "source_mapping_warning": "",
-        "requires_human_action": false,
+        "requires_human_action": true,
         "ai_notes": "",
         "skill_scoped_candidates": [
           {
@@ -16415,7 +14971,7 @@
         ],
         "selected_subskill": "applied_quadratic_inequality_problem",
         "selected_problem_type": "applied_quadratic_inequality_problem",
-        "candidate_source": "clause45_fallback_proxy",
+        "candidate_source": "needs_review",
         "selected_generator_contract": {},
         "parameter_schema": {},
         "variable_randomization_notes": [],
@@ -16446,7 +15002,7 @@
         "possible_mixed_source_context": true
       },
       "subskill_id": "applied_quadratic_inequality_problem",
-      "classification_source": "clause45_unclassified_exception",
+      "classification_source": "rule_fallback_ai_unavailable",
       "induction_eligibility": "excluded",
       "answer_type": "text_short",
       "equivalence_type": "exact_string",
@@ -16455,7 +15011,7 @@
     },
     {
       "example_id": 4536,
-      "detected_problem_type_id": "fallback_solve_unknown_coordinate_from_two_point_distance",
+      "detected_problem_type_id": "short_answer_solve_unknown_coordinate_from_two_point_distance_short_answer",
       "example_feature": {
         "source_example_id": 4536,
         "question_text": "設$A\\left( -3,4 \\right)$、$B\\left( a,1 \\right)$、$C\\left( -4,-2 \\right)$、$D\\left( 2,8 \\right)$，若$\\overline{AB}$與$\\overline{CD}$垂直，試求a之值。",
@@ -16526,11 +15082,11 @@
           "rule_confidence": 0.55,
           "final_target_task": "solve_unknown_coordinate_from_two_point_distance",
           "final_task_family": "distance_between_two_points_family",
-          "classifier_source": "clause45_unclassified_exception",
+          "classifier_source": "rule_fallback_ai_unavailable",
           "classification_decision": "",
           "conflict_reason": "ai_api_key_missing",
           "source_mapping_warning": "",
-          "requires_human_action": false,
+          "requires_human_action": true,
           "ai_notes": "",
           "skill_scoped_candidates": [
             {
@@ -16968,7 +15524,7 @@
           ],
           "selected_subskill": "solve_unknown_coordinate_from_two_point_distance",
           "selected_problem_type": "solve_unknown_coordinate_from_two_point_distance",
-          "candidate_source": "clause45_fallback_proxy",
+          "candidate_source": "needs_review",
           "selected_generator_contract": {},
           "parameter_schema": {},
           "variable_randomization_notes": [],
@@ -17100,8 +15656,6 @@
         "induction_tier": "core",
         "enrichment_reasons": [],
         "included_in_core_induction": true,
-        "problem_type_id": "fallback_solve_unknown_coordinate_from_two_point_distance",
-        "proxy_problem_type_id": "fallback_solve_unknown_coordinate_from_two_point_distance",
         "equivalence_type": "exact_string",
         "checker_key": "text_short_checker",
         "requires_human_action": false
@@ -17109,7 +15663,9 @@
       "answer_shape": "text_short",
       "classification_confidence": "high",
       "classification_reason": "rule_fallback_ai_unavailable",
-      "risk_flags": [],
+      "risk_flags": [
+        "requires_human_action"
+      ],
       "semantic_classification": {
         "ai_target_task": "",
         "ai_task_family": "",
@@ -17131,11 +15687,11 @@
         "rule_confidence": 0.55,
         "final_target_task": "solve_unknown_coordinate_from_two_point_distance",
         "final_task_family": "distance_between_two_points_family",
-        "classifier_source": "clause45_unclassified_exception",
+        "classifier_source": "rule_fallback_ai_unavailable",
         "classification_decision": "",
         "conflict_reason": "ai_api_key_missing",
         "source_mapping_warning": "",
-        "requires_human_action": false,
+        "requires_human_action": true,
         "ai_notes": "",
         "skill_scoped_candidates": [
           {
@@ -17573,7 +16129,7 @@
         ],
         "selected_subskill": "solve_unknown_coordinate_from_two_point_distance",
         "selected_problem_type": "solve_unknown_coordinate_from_two_point_distance",
-        "candidate_source": "clause45_fallback_proxy",
+        "candidate_source": "needs_review",
         "selected_generator_contract": {},
         "parameter_schema": {},
         "variable_randomization_notes": [],
@@ -17608,7 +16164,7 @@
         "possible_mixed_source_context": true
       },
       "subskill_id": "solve_unknown_coordinate_from_two_point_distance",
-      "classification_source": "clause45_unclassified_exception",
+      "classification_source": "rule_fallback_ai_unavailable",
       "induction_eligibility": "excluded",
       "answer_type": "text_short",
       "equivalence_type": "exact_string",
@@ -17617,7 +16173,7 @@
     },
     {
       "example_id": 4537,
-      "detected_problem_type_id": "skill_scoped_unresolved_problem_type",
+      "detected_problem_type_id": "short_answer_compute_numeric_short_answer",
       "example_feature": {
         "source_example_id": 4537,
         "question_text": "設直線${{L}_{1}}$通過$A\\left( 3,k+1 \\right)$、$B\\left( -k,5 \\right)$兩點，直線${{L}_{2}}$通過$C\\left( 4,-3 \\right)$、$D\\left( -2,1 \\right)$兩點，若直線${{L}_{1}}$垂直${{L}_{2}}$，試求k之值。",
@@ -17635,7 +16191,7 @@
           "triangle",
           "two_coordinate_points"
         ],
-        "target_task": "contextual_application",
+        "target_task": "compute_numeric",
         "task_family": "generic_numeric_family",
         "reasoning_type": [
           "numeric_computation"
@@ -17660,7 +16216,7 @@
           "L",
           "k"
         ],
-        "target": "contextual_application",
+        "target": "compute_numeric",
         "classifier_source": "rule_fallback_ai_unavailable",
         "math_meta_tags": [],
         "forced_target_task": "",
@@ -17684,13 +16240,13 @@
           "rule_target_task": "compute_numeric",
           "rule_task_family": "generic_numeric_family",
           "rule_confidence": 0.2,
-          "final_target_task": "contextual_application",
+          "final_target_task": "compute_numeric",
           "final_task_family": "generic_numeric_family",
-          "classifier_source": "clause45_unclassified_exception",
+          "classifier_source": "rule_fallback_ai_unavailable",
           "classification_decision": "",
           "conflict_reason": "ai_api_key_missing",
           "source_mapping_warning": "",
-          "requires_human_action": false,
+          "requires_human_action": true,
           "ai_notes": "",
           "skill_scoped_candidates": [
             {
@@ -17911,7 +16467,7 @@
           "outsider_candidates": [],
           "selected_subskill": "compute_numeric",
           "selected_problem_type": "compute_numeric",
-          "candidate_source": "clause45_fallback_proxy",
+          "candidate_source": "needs_review",
           "selected_generator_contract": {},
           "parameter_schema": {},
           "variable_randomization_notes": [],
@@ -18039,11 +16595,6 @@
         "induction_tier": "core",
         "enrichment_reasons": [],
         "included_in_core_induction": true,
-        "generator_readiness": "pending_problem_type_induction",
-        "usable_for_phase3": false,
-        "needs_rule_pack_or_slot_registration": true,
-        "problem_type_id": "skill_scoped_unresolved_problem_type",
-        "proxy_problem_type_id": "skill_scoped_unresolved_problem_type",
         "equivalence_type": "exact_string",
         "checker_key": "text_short_checker",
         "requires_human_action": false
@@ -18052,7 +16603,7 @@
       "classification_confidence": "high",
       "classification_reason": "rule_fallback_ai_unavailable",
       "risk_flags": [
-        "candidate_only_problem_type"
+        "requires_human_action"
       ],
       "semantic_classification": {
         "ai_target_task": "",
@@ -18073,13 +16624,13 @@
         "rule_target_task": "compute_numeric",
         "rule_task_family": "generic_numeric_family",
         "rule_confidence": 0.2,
-        "final_target_task": "contextual_application",
+        "final_target_task": "compute_numeric",
         "final_task_family": "generic_numeric_family",
-        "classifier_source": "clause45_unclassified_exception",
+        "classifier_source": "rule_fallback_ai_unavailable",
         "classification_decision": "",
         "conflict_reason": "ai_api_key_missing",
         "source_mapping_warning": "",
-        "requires_human_action": false,
+        "requires_human_action": true,
         "ai_notes": "",
         "skill_scoped_candidates": [
           {
@@ -18300,7 +16851,7 @@
         "outsider_candidates": [],
         "selected_subskill": "compute_numeric",
         "selected_problem_type": "compute_numeric",
-        "candidate_source": "clause45_fallback_proxy",
+        "candidate_source": "needs_review",
         "selected_generator_contract": {},
         "parameter_schema": {},
         "variable_randomization_notes": [],
@@ -18330,8 +16881,8 @@
         "possible_structure_mismatch": false,
         "possible_mixed_source_context": false
       },
-      "subskill_id": "contextual_application",
-      "classification_source": "clause45_unclassified_exception",
+      "subskill_id": "compute_numeric",
+      "classification_source": "rule_fallback_ai_unavailable",
       "induction_eligibility": "excluded",
       "answer_type": "text_short",
       "equivalence_type": "exact_string",
@@ -19774,35 +18325,35 @@
     4531,
     4532,
     4526,
+    4527,
+    4536,
     4537,
     4538,
     4539
   ],
   "split_or_merge_recommendation": "induced_from_source_features",
   "classifier_gate": {
-    "status": "classifier_auto_pending_promote_with_warning",
+    "status": "classifier_auto_pending_promote",
     "allowed": true,
     "warnings": [
-      "insufficient_examples",
       "ai_first_mode_fell_back_to_rule_only",
+      "ai_partial_unavailable_relaxed_tolerance",
       "ai_unavailable_fallback_to_same_as_main",
       "alignment_score_below_recommended_threshold",
-      "majority_sources_need_human_subskill_review",
-      "skill_scoped_classification_low_confidence",
-      "source_skill_scope_locked_demoted_blockers_to_warnings"
+      "demoted_majority_needs_review_due_to_partial_unavailable",
+      "majority_sources_need_human_subskill_review"
     ]
   },
   "generator_draft_gate": {
-    "status": "generator_draft_allowed_with_low_source_warning",
+    "status": "generator_draft_allowed",
     "allowed": true,
     "warnings": [
-      "low_source_examples",
       "ai_first_mode_fell_back_to_rule_only",
+      "ai_partial_unavailable_relaxed_tolerance",
       "ai_unavailable_fallback_to_same_as_main",
       "alignment_score_below_recommended_threshold",
-      "majority_sources_need_human_subskill_review",
-      "skill_scoped_classification_low_confidence",
-      "source_skill_scope_locked_demoted_blockers_to_warnings"
+      "demoted_majority_needs_review_due_to_partial_unavailable",
+      "majority_sources_need_human_subskill_review"
     ]
   },
   "runtime_ready_gate": {
@@ -19814,11 +18365,11 @@
     ],
     "warnings": [
       "ai_first_mode_fell_back_to_rule_only",
+      "ai_partial_unavailable_relaxed_tolerance",
       "ai_unavailable_fallback_to_same_as_main",
       "alignment_score_below_recommended_threshold",
-      "majority_sources_need_human_subskill_review",
-      "skill_scoped_classification_low_confidence",
-      "source_skill_scope_locked_demoted_blockers_to_warnings"
+      "demoted_majority_needs_review_due_to_partial_unavailable",
+      "majority_sources_need_human_subskill_review"
     ]
   },
   "exception_review_gate": {
@@ -19826,13 +18377,13 @@
     "reasons": []
   },
   "reports": {
-    "phase1_summary_json": "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_PropertiesOfPerpendicularLines_phase1_summary.json",
-    "phase1_summary_md": "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_PropertiesOfPerpendicularLines_phase1_summary.md",
-    "phase1_json": "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_PropertiesOfPerpendicularLines_phase1_summary.json",
-    "phase1_md": "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_PropertiesOfPerpendicularLines_phase1_summary.md"
+    "phase1_summary_json": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_PropertiesOfPerpendicularLines_phase1_summary.json",
+    "phase1_summary_md": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_PropertiesOfPerpendicularLines_phase1_summary.md",
+    "phase1_json": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_PropertiesOfPerpendicularLines_phase1_summary.json",
+    "phase1_md": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_PropertiesOfPerpendicularLines_phase1_summary.md"
   },
   "next_action": "phase2_generate_from_induced_specs",
-  "timestamp": "2026-06-14T15:28:46.348177+00:00",
+  "timestamp": "2026-06-15T02:24:05.578356+00:00",
   "dry_run": true,
   "auto_review_summary": {
     "skill_id": "vh_數學B1_PropertiesOfPerpendicularLines",
@@ -22336,7 +20887,7 @@
         "raw_response_preview": "",
         "sanitized_response_preview": "",
         "failed_stage": "",
-        "classifier_source": "clause45_unclassified_exception",
+        "classifier_source": "rule_fallback_ai_unavailable",
         "classification_decision": "",
         "final_target_task": "perpendicular_lines_properties",
         "final_task_family": "generic_numeric_family",
@@ -22345,7 +20896,7 @@
         "structure_context_used": true,
         "sequence_context_used": true,
         "alignment_kind": "unclassified_low_confidence",
-        "exclude_reason": "unclassified_low_confidence",
+        "exclude_reason": "semantic_alignment_score_zero_requires_human_review",
         "included_in_phase1": false,
         "conflict_reason": "ai_api_key_missing",
         "source_mapping_warning": "",
@@ -22470,7 +21021,7 @@
         "ai_best_candidate_id": "needs_review",
         "selected_subskill": "perpendicular_lines_properties",
         "selected_problem_type": "perpendicular_lines_properties",
-        "candidate_source": "clause45_fallback_proxy",
+        "candidate_source": "needs_review",
         "outsider_candidates": [
           "C1"
         ],
@@ -23009,7 +21560,7 @@
         "raw_response_preview": "",
         "sanitized_response_preview": "",
         "failed_stage": "",
-        "classifier_source": "clause45_unclassified_exception",
+        "classifier_source": "rule_fallback_ai_unavailable",
         "classification_decision": "",
         "final_target_task": "applied_quadratic_inequality_problem",
         "final_task_family": "quadratic_inequality_family",
@@ -23018,7 +21569,7 @@
         "structure_context_used": true,
         "sequence_context_used": true,
         "alignment_kind": "unclassified_low_confidence",
-        "exclude_reason": "unclassified_low_confidence",
+        "exclude_reason": "semantic_alignment_score_zero_requires_human_review",
         "included_in_phase1": false,
         "conflict_reason": "ai_api_key_missing",
         "source_mapping_warning": "",
@@ -23341,7 +21892,7 @@
         "ai_best_candidate_id": "needs_review",
         "selected_subskill": "applied_quadratic_inequality_problem",
         "selected_problem_type": "applied_quadratic_inequality_problem",
-        "candidate_source": "clause45_fallback_proxy",
+        "candidate_source": "needs_review",
         "outsider_candidates": [
           "C3"
         ],
@@ -23366,7 +21917,7 @@
         "raw_response_preview": "",
         "sanitized_response_preview": "",
         "failed_stage": "",
-        "classifier_source": "clause45_unclassified_exception",
+        "classifier_source": "rule_fallback_ai_unavailable",
         "classification_decision": "",
         "final_target_task": "solve_unknown_coordinate_from_two_point_distance",
         "final_task_family": "distance_between_two_points_family",
@@ -23375,7 +21926,7 @@
         "structure_context_used": true,
         "sequence_context_used": true,
         "alignment_kind": "unclassified_low_confidence",
-        "exclude_reason": "unclassified_low_confidence",
+        "exclude_reason": "semantic_alignment_score_zero_requires_human_review",
         "included_in_phase1": false,
         "conflict_reason": "ai_api_key_missing",
         "source_mapping_warning": "",
@@ -23814,7 +22365,7 @@
         "ai_best_candidate_id": "needs_review",
         "selected_subskill": "solve_unknown_coordinate_from_two_point_distance",
         "selected_problem_type": "solve_unknown_coordinate_from_two_point_distance",
-        "candidate_source": "clause45_fallback_proxy",
+        "candidate_source": "needs_review",
         "outsider_candidates": [
           "C3"
         ],
@@ -23839,16 +22390,16 @@
         "raw_response_preview": "",
         "sanitized_response_preview": "",
         "failed_stage": "",
-        "classifier_source": "clause45_unclassified_exception",
+        "classifier_source": "rule_fallback_ai_unavailable",
         "classification_decision": "",
-        "final_target_task": "contextual_application",
+        "final_target_task": "compute_numeric",
         "final_task_family": "generic_numeric_family",
         "expected_task_families": [],
         "expected_subskill_candidates": [],
         "structure_context_used": true,
         "sequence_context_used": true,
         "alignment_kind": "unclassified_low_confidence",
-        "exclude_reason": "unclassified_low_confidence",
+        "exclude_reason": "semantic_alignment_score_zero_requires_human_review",
         "included_in_phase1": false,
         "conflict_reason": "ai_api_key_missing",
         "source_mapping_warning": "",
@@ -24072,7 +22623,7 @@
         "ai_best_candidate_id": "needs_review",
         "selected_subskill": "compute_numeric",
         "selected_problem_type": "compute_numeric",
-        "candidate_source": "clause45_fallback_proxy",
+        "candidate_source": "needs_review",
         "outsider_candidates": [],
         "selected_generator_contract": {},
         "parameter_schema": {},
@@ -24687,11 +23238,11 @@
           "rule_confidence": 0.5,
           "final_target_task": "perpendicular_lines_properties",
           "final_task_family": "generic_numeric_family",
-          "classifier_source": "clause45_unclassified_exception",
+          "classifier_source": "rule_fallback_ai_unavailable",
           "classification_decision": "",
           "conflict_reason": "ai_api_key_missing",
           "source_mapping_warning": "",
-          "requires_human_action": false,
+          "requires_human_action": true,
           "ai_notes": "",
           "skill_scoped_candidates": [
             {
@@ -24815,7 +23366,7 @@
           ],
           "selected_subskill": "perpendicular_lines_properties",
           "selected_problem_type": "perpendicular_lines_properties",
-          "candidate_source": "clause45_fallback_proxy",
+          "candidate_source": "needs_review",
           "selected_generator_contract": {},
           "parameter_schema": {},
           "variable_randomization_notes": [],
@@ -24944,8 +23495,6 @@
         "induction_tier": "core",
         "enrichment_reasons": [],
         "included_in_core_induction": true,
-        "problem_type_id": "fallback_perpendicular_lines_properties",
-        "proxy_problem_type_id": "fallback_perpendicular_lines_properties",
         "equivalence_type": "numeric_exact",
         "checker_key": "integer_checker",
         "requires_human_action": false
@@ -25836,11 +24385,11 @@
           "rule_confidence": 0.5,
           "final_target_task": "applied_quadratic_inequality_problem",
           "final_task_family": "quadratic_inequality_family",
-          "classifier_source": "clause45_unclassified_exception",
+          "classifier_source": "rule_fallback_ai_unavailable",
           "classification_decision": "",
           "conflict_reason": "ai_api_key_missing",
           "source_mapping_warning": "",
-          "requires_human_action": false,
+          "requires_human_action": true,
           "ai_notes": "",
           "skill_scoped_candidates": [
             {
@@ -26162,7 +24711,7 @@
           ],
           "selected_subskill": "applied_quadratic_inequality_problem",
           "selected_problem_type": "applied_quadratic_inequality_problem",
-          "candidate_source": "clause45_fallback_proxy",
+          "candidate_source": "needs_review",
           "selected_generator_contract": {},
           "parameter_schema": {},
           "variable_randomization_notes": [],
@@ -26290,8 +24839,6 @@
         "induction_tier": "core",
         "enrichment_reasons": [],
         "included_in_core_induction": true,
-        "problem_type_id": "fallback_applied_quadratic_inequality_problem",
-        "proxy_problem_type_id": "fallback_applied_quadratic_inequality_problem",
         "equivalence_type": "exact_string",
         "checker_key": "text_short_checker",
         "requires_human_action": false
@@ -26366,11 +24913,11 @@
           "rule_confidence": 0.55,
           "final_target_task": "solve_unknown_coordinate_from_two_point_distance",
           "final_task_family": "distance_between_two_points_family",
-          "classifier_source": "clause45_unclassified_exception",
+          "classifier_source": "rule_fallback_ai_unavailable",
           "classification_decision": "",
           "conflict_reason": "ai_api_key_missing",
           "source_mapping_warning": "",
-          "requires_human_action": false,
+          "requires_human_action": true,
           "ai_notes": "",
           "skill_scoped_candidates": [
             {
@@ -26808,7 +25355,7 @@
           ],
           "selected_subskill": "solve_unknown_coordinate_from_two_point_distance",
           "selected_problem_type": "solve_unknown_coordinate_from_two_point_distance",
-          "candidate_source": "clause45_fallback_proxy",
+          "candidate_source": "needs_review",
           "selected_generator_contract": {},
           "parameter_schema": {},
           "variable_randomization_notes": [],
@@ -26940,8 +25487,6 @@
         "induction_tier": "core",
         "enrichment_reasons": [],
         "included_in_core_induction": true,
-        "problem_type_id": "fallback_solve_unknown_coordinate_from_two_point_distance",
-        "proxy_problem_type_id": "fallback_solve_unknown_coordinate_from_two_point_distance",
         "equivalence_type": "exact_string",
         "checker_key": "text_short_checker",
         "requires_human_action": false
@@ -26963,7 +25508,7 @@
           "triangle",
           "two_coordinate_points"
         ],
-        "target_task": "contextual_application",
+        "target_task": "compute_numeric",
         "task_family": "generic_numeric_family",
         "reasoning_type": [
           "numeric_computation"
@@ -26988,7 +25533,7 @@
           "L",
           "k"
         ],
-        "target": "contextual_application",
+        "target": "compute_numeric",
         "classifier_source": "rule_fallback_ai_unavailable",
         "math_meta_tags": [],
         "forced_target_task": "",
@@ -27012,13 +25557,13 @@
           "rule_target_task": "compute_numeric",
           "rule_task_family": "generic_numeric_family",
           "rule_confidence": 0.2,
-          "final_target_task": "contextual_application",
+          "final_target_task": "compute_numeric",
           "final_task_family": "generic_numeric_family",
-          "classifier_source": "clause45_unclassified_exception",
+          "classifier_source": "rule_fallback_ai_unavailable",
           "classification_decision": "",
           "conflict_reason": "ai_api_key_missing",
           "source_mapping_warning": "",
-          "requires_human_action": false,
+          "requires_human_action": true,
           "ai_notes": "",
           "skill_scoped_candidates": [
             {
@@ -27239,7 +25784,7 @@
           "outsider_candidates": [],
           "selected_subskill": "compute_numeric",
           "selected_problem_type": "compute_numeric",
-          "candidate_source": "clause45_fallback_proxy",
+          "candidate_source": "needs_review",
           "selected_generator_contract": {},
           "parameter_schema": {},
           "variable_randomization_notes": [],
@@ -27367,11 +25912,6 @@
         "induction_tier": "core",
         "enrichment_reasons": [],
         "included_in_core_induction": true,
-        "generator_readiness": "pending_problem_type_induction",
-        "usable_for_phase3": false,
-        "needs_rule_pack_or_slot_registration": true,
-        "problem_type_id": "skill_scoped_unresolved_problem_type",
-        "proxy_problem_type_id": "skill_scoped_unresolved_problem_type",
         "equivalence_type": "exact_string",
         "checker_key": "text_short_checker",
         "requires_human_action": false
@@ -28298,6 +26838,7 @@
         "compute_centroid_coordinates",
         "compute_distance",
         "compute_distance_between_two_points",
+        "compute_numeric",
         "compute_slope",
         "contextual_application",
         "coordinate_point",
@@ -28347,61 +26888,30 @@
       ],
       "observed_target_task_distribution": {
         "perpendicular_lines_properties": 1,
-        "contextual_application": 5,
+        "contextual_application": 4,
         "applied_quadratic_inequality_problem": 1,
-        "solve_unknown_coordinate_from_two_point_distance": 1
+        "solve_unknown_coordinate_from_two_point_distance": 1,
+        "compute_numeric": 1
       },
       "same_family_subskill_mismatch_examples": [],
       "examples_outside_expected_subskills": [],
       "suggested_action": "",
       "examples_outside_expected_family": [],
       "problem_type_terms": [
-        "applied",
-        "applied_quadratic_inequality_problem",
         "contextual_application",
-        "coordinate",
         "coped",
-        "di",
-        "distance",
-        "distance_formula_reasoning",
-        "fallback",
-        "from",
-        "inequality",
-        "integer",
-        "integer / perpendicular_lines_properties",
-        "interval",
         "kill",
-        "line",
         "linear_function_contextual_word_problem",
-        "lines",
         "numeric_computation",
-        "olve",
         "olved",
-        "perpendicular",
-        "perpendicular_lines_properties",
-        "point",
-        "point_quadrant",
         "problem",
-        "propertie",
-        "properties",
-        "quadratic",
-        "quadratic_factoring_reasoning",
         "scoped",
-        "short_answer / applied_quadratic_inequality_problem",
         "short_answer / contextual_application",
         "skill",
-        "solution_set",
-        "solve",
-        "solve_absolute_value_inequality",
-        "solve_unknown_coordinate_from_two_point_distance",
-        "tance",
         "text_short",
-        "two",
         "type",
-        "unknown",
         "unre",
-        "unresolved",
-        "兩點距離反求座標"
+        "unresolved"
       ],
       "expected_task_candidates": [
         "compute_slope"
@@ -28418,37 +26928,22 @@
         "distance_between_two_points_family": 1
       },
       "candidate_problem_type_families": [
-        "distance_between_two_points_family",
-        "generic_numeric_family",
-        "quadratic_inequality_family"
+        "generic_numeric_family"
       ],
       "dominant_source_task": "contextual_application",
-      "dominant_source_task_ratio": 0.625,
+      "dominant_source_task_ratio": 0.5,
       "uniform_core_target_task": "contextual_application",
-      "uniform_core_target_task_ratio": 0.625,
+      "uniform_core_target_task_ratio": 0.5,
       "uniform_core_target_task_count": 8,
       "uniform_core_threshold_relaxed": false,
       "dominant_source_family": [
         "generic_numeric_family"
       ],
       "dominant_source_family_ratio": 0.75,
-      "skill_source_score": 0.0147,
+      "skill_source_score": 0.0145,
       "skill_problem_type_score": 0.0,
-      "source_problem_type_score": 0.0333,
+      "source_problem_type_score": 0.0152,
       "per_problem_type_scores": [
-        {
-          "problem_type_id": "fallback_perpendicular_lines_properties",
-          "target_task": "perpendicular_lines_properties",
-          "task_family": "generic_numeric_family",
-          "inferred_tasks": [
-            "perpendicular_lines_properties"
-          ],
-          "skill_problem_type_score": 0.1739,
-          "source_problem_type_score": 0.0333,
-          "task_consistent_with_skill": true,
-          "family_consistent_with_skill": true,
-          "answer_contract_supported": true
-        },
         {
           "problem_type_id": "skill_scoped_unresolved_problem_type",
           "target_task": "contextual_application",
@@ -28457,33 +26952,7 @@
             "contextual_application"
           ],
           "skill_problem_type_score": 0.0,
-          "source_problem_type_score": 0.0154,
-          "task_consistent_with_skill": true,
-          "family_consistent_with_skill": true,
-          "answer_contract_supported": true
-        },
-        {
-          "problem_type_id": "fallback_applied_quadratic_inequality_problem",
-          "target_task": "applied_quadratic_inequality_problem",
-          "task_family": "quadratic_inequality_family",
-          "inferred_tasks": [
-            "applied_quadratic_inequality_problem"
-          ],
-          "skill_problem_type_score": 0.0,
-          "source_problem_type_score": 0.0164,
-          "task_consistent_with_skill": true,
-          "family_consistent_with_skill": true,
-          "answer_contract_supported": true
-        },
-        {
-          "problem_type_id": "fallback_solve_unknown_coordinate_from_two_point_distance",
-          "target_task": "solve_unknown_coordinate_from_two_point_distance",
-          "task_family": "distance_between_two_points_family",
-          "inferred_tasks": [
-            "solve_unknown_coordinate_from_two_point_distance"
-          ],
-          "skill_problem_type_score": 0.0,
-          "source_problem_type_score": 0.0149,
+          "source_problem_type_score": 0.0152,
           "task_consistent_with_skill": true,
           "family_consistent_with_skill": true,
           "answer_contract_supported": true
@@ -28493,11 +26962,11 @@
       "blockers": [],
       "warnings": [
         "ai_first_mode_fell_back_to_rule_only",
+        "ai_partial_unavailable_relaxed_tolerance",
         "ai_unavailable_fallback_to_same_as_main",
         "alignment_score_below_recommended_threshold",
-        "majority_sources_need_human_subskill_review",
-        "skill_scoped_classification_low_confidence",
-        "source_skill_scope_locked_demoted_blockers_to_warnings"
+        "demoted_majority_needs_review_due_to_partial_unavailable",
+        "majority_sources_need_human_subskill_review"
       ],
       "induction_core_example_count": 8,
       "induction_enrichment_example_count": 0,
@@ -28521,11 +26990,11 @@
     "alignment_score": 0.0,
     "alignment_warnings": [
       "ai_first_mode_fell_back_to_rule_only",
+      "ai_partial_unavailable_relaxed_tolerance",
       "ai_unavailable_fallback_to_same_as_main",
       "alignment_score_below_recommended_threshold",
-      "majority_sources_need_human_subskill_review",
-      "skill_scoped_classification_low_confidence",
-      "source_skill_scope_locked_demoted_blockers_to_warnings"
+      "demoted_majority_needs_review_due_to_partial_unavailable",
+      "majority_sources_need_human_subskill_review"
     ],
     "alignment_blockers": [],
     "source_family_distribution": {
@@ -28534,9 +27003,7 @@
       "distance_between_two_points_family": 1
     },
     "candidate_problem_type_families": [
-      "distance_between_two_points_family",
-      "generic_numeric_family",
-      "quadratic_inequality_family"
+      "generic_numeric_family"
     ],
     "expected_skill_families": [],
     "expected_subskill_candidates": [
@@ -28544,15 +27011,117 @@
     ],
     "observed_target_task_distribution": {
       "perpendicular_lines_properties": 1,
-      "contextual_application": 5,
+      "contextual_application": 4,
       "applied_quadratic_inequality_problem": 1,
-      "solve_unknown_coordinate_from_two_point_distance": 1
+      "solve_unknown_coordinate_from_two_point_distance": 1,
+      "compute_numeric": 1
     },
     "same_family_subskill_mismatch_examples": [],
     "examples_outside_expected_subskills": [],
     "suggested_action": "",
     "requires_human_action": true,
-    "excluded_source_examples": [],
+    "excluded_source_examples": [
+      {
+        "example_id": 4531,
+        "target_task": "perpendicular_lines_properties",
+        "task_family": "generic_numeric_family",
+        "alignment_score": 0.0,
+        "aligned_with_skill": false,
+        "included_in_phase1": false,
+        "exclude_reason": "semantic_alignment_score_zero_requires_human_review",
+        "alignment_kind": "unclassified_low_confidence",
+        "skill_id_match": true,
+        "task_family_match": false,
+        "subskill_match": false,
+        "pass_with_warning": false,
+        "requires_human_action": true,
+        "induction_tier": "core",
+        "included_in_core_induction": false,
+        "enrichment_reasons": [],
+        "source_quality_issues": [],
+        "source_quality_reject": false,
+        "candidate_only": false,
+        "classification_source": "rule_fallback_ai_unavailable",
+        "induction_eligibility": "excluded",
+        "skill_id": "vh_數學B1_PropertiesOfPerpendicularLines",
+        "title_stem_preview": "設$A\\left( -2,a \\right)$、$B\\left( 3,4 \\right)$、$C\\left( -2,8 \\right)$、$D\\left( 4,..."
+      },
+      {
+        "example_id": 4527,
+        "target_task": "applied_quadratic_inequality_problem",
+        "task_family": "quadratic_inequality_family",
+        "alignment_score": 0.0,
+        "aligned_with_skill": false,
+        "included_in_phase1": false,
+        "exclude_reason": "semantic_alignment_score_zero_requires_human_review",
+        "alignment_kind": "unclassified_low_confidence",
+        "skill_id_match": true,
+        "task_family_match": false,
+        "subskill_match": false,
+        "pass_with_warning": false,
+        "requires_human_action": true,
+        "induction_tier": "core",
+        "included_in_core_induction": false,
+        "enrichment_reasons": [],
+        "source_quality_issues": [],
+        "source_quality_reject": false,
+        "candidate_only": false,
+        "classification_source": "rule_fallback_ai_unavailable",
+        "induction_eligibility": "excluded",
+        "skill_id": "vh_數學B1_PropertiesOfPerpendicularLines",
+        "title_stem_preview": "已知坐標平面上三點$A\\left( 2,1 \\right)$、$B\\left( 1,3 \\right)$及$C\\left( 4,2 \\right)$，試問△AB..."
+      },
+      {
+        "example_id": 4536,
+        "target_task": "solve_unknown_coordinate_from_two_point_distance",
+        "task_family": "distance_between_two_points_family",
+        "alignment_score": 0.0,
+        "aligned_with_skill": false,
+        "included_in_phase1": false,
+        "exclude_reason": "semantic_alignment_score_zero_requires_human_review",
+        "alignment_kind": "unclassified_low_confidence",
+        "skill_id_match": true,
+        "task_family_match": false,
+        "subskill_match": false,
+        "pass_with_warning": false,
+        "requires_human_action": true,
+        "induction_tier": "core",
+        "included_in_core_induction": false,
+        "enrichment_reasons": [],
+        "source_quality_issues": [],
+        "source_quality_reject": false,
+        "candidate_only": false,
+        "classification_source": "rule_fallback_ai_unavailable",
+        "induction_eligibility": "excluded",
+        "skill_id": "vh_數學B1_PropertiesOfPerpendicularLines",
+        "title_stem_preview": "設$A\\left( -3,4 \\right)$、$B\\left( a,1 \\right)$、$C\\left( -4,-2 \\right)$、$D\\left( 2..."
+      },
+      {
+        "example_id": 4537,
+        "target_task": "compute_numeric",
+        "task_family": "generic_numeric_family",
+        "alignment_score": 0.0,
+        "aligned_with_skill": false,
+        "included_in_phase1": false,
+        "exclude_reason": "semantic_alignment_score_zero_requires_human_review",
+        "alignment_kind": "unclassified_low_confidence",
+        "skill_id_match": true,
+        "task_family_match": false,
+        "subskill_match": false,
+        "pass_with_warning": false,
+        "requires_human_action": true,
+        "induction_tier": "core",
+        "included_in_core_induction": false,
+        "enrichment_reasons": [],
+        "source_quality_issues": [],
+        "source_quality_reject": false,
+        "candidate_only": false,
+        "classification_source": "rule_fallback_ai_unavailable",
+        "induction_eligibility": "excluded",
+        "skill_id": "vh_數學B1_PropertiesOfPerpendicularLines",
+        "title_stem_preview": "設直線${{L}_{1}}$通過$A\\left( 3,k+1 \\right)$、$B\\left( -k,5 \\right)$兩點，直線${{L}_{2}}$通過..."
+      }
+    ],
     "rejected_source_examples": [],
     "source_quality_issues": [],
     "semantic_mismatch_examples": [],
@@ -28561,20 +27130,7 @@
     "section_scope_subskill_extension_examples": [],
     "same_as_main_skill_examples": [],
     "inherited_from_previous_context_examples": [],
-    "low_source_examples": [
-      {
-        "problem_type_id": "fallback_perpendicular_lines_properties",
-        "matched_example_count": 1
-      },
-      {
-        "problem_type_id": "fallback_applied_quadratic_inequality_problem",
-        "matched_example_count": 1
-      },
-      {
-        "problem_type_id": "fallback_solve_unknown_coordinate_from_two_point_distance",
-        "matched_example_count": 1
-      }
-    ],
+    "low_source_examples": [],
     "coverage_floor_suggestions": [],
     "anchor_subskill_bootstrap": {
       "bootstrapped_tasks": [],
@@ -28588,11 +27144,6 @@
         "reason": "candidate_only_source"
       },
       {
-        "example_id": 4531,
-        "problem_type_id": "fallback_perpendicular_lines_properties",
-        "reason": "runtime_not_supported"
-      },
-      {
         "example_id": 4532,
         "problem_type_id": "skill_scoped_unresolved_problem_type",
         "reason": "runtime_not_supported"
@@ -28603,22 +27154,18 @@
         "reason": "runtime_not_supported"
       },
       {
-        "example_id": 4537,
-        "problem_type_id": "skill_scoped_unresolved_problem_type",
-        "reason": "runtime_not_supported"
-      },
-      {
         "example_id": 4539,
         "problem_type_id": "skill_scoped_unresolved_problem_type",
         "reason": "runtime_not_supported"
       }
     ],
-    "candidate_only_count": 6,
+    "candidate_only_count": 4,
     "same_as_main_skill_count": 0,
     "rule_only_classification_count": 0,
     "hybrid_resolved_count": 0,
     "subskills": [
       "applied_quadratic_inequality_problem",
+      "compute_numeric",
       "contextual_application",
       "perpendicular_lines_properties",
       "same_as_main_skill",
@@ -28641,31 +27188,20 @@
     "clause45_escalation_applied": true,
     "clause45_rescued_example_ids": [
       4526,
-      4527,
-      4531,
       4532,
-      4536,
-      4537,
       4538,
       4539
     ],
     "clause45_observed_target_task_distribution": {
-      "perpendicular_lines_properties": 1,
-      "contextual_application": 5,
-      "applied_quadratic_inequality_problem": 1,
-      "solve_unknown_coordinate_from_two_point_distance": 1
+      "contextual_application": 4
     },
     "clause45_proxy_problem_type_ids": [
-      "fallback_applied_quadratic_inequality_problem",
-      "fallback_contextual_application",
-      "fallback_perpendicular_lines_properties",
-      "fallback_solve_unknown_coordinate_from_two_point_distance"
+      "fallback_contextual_application"
     ],
     "clause45_source_skill_scope_locked": true,
     "clause45_skill_scoped_unresolved_example_ids": [
       4526,
       4532,
-      4537,
       4538,
       4539
     ],
@@ -28679,20 +27215,20 @@
         "alignment_score": 0.0,
         "aligned_with_skill": false,
         "included_in_phase1": false,
-        "exclude_reason": "unclassified_low_confidence",
+        "exclude_reason": "semantic_alignment_score_zero_requires_human_review",
         "alignment_kind": "unclassified_low_confidence",
         "skill_id_match": true,
         "task_family_match": false,
         "subskill_match": false,
         "pass_with_warning": false,
-        "requires_human_action": false,
+        "requires_human_action": true,
         "induction_tier": "core",
         "included_in_core_induction": false,
         "enrichment_reasons": [],
         "source_quality_issues": [],
         "source_quality_reject": false,
         "candidate_only": false,
-        "classification_source": "clause45_unclassified_exception",
+        "classification_source": "rule_fallback_ai_unavailable",
         "induction_eligibility": "excluded",
         "skill_id": "vh_數學B1_PropertiesOfPerpendicularLines",
         "title_stem_preview": "設$A\\left( -2,a \\right)$、$B\\left( 3,4 \\right)$、$C\\left( -2,8 \\right)$、$D\\left( 4,"
@@ -28754,20 +27290,20 @@
         "alignment_score": 0.0,
         "aligned_with_skill": false,
         "included_in_phase1": false,
-        "exclude_reason": "unclassified_low_confidence",
+        "exclude_reason": "semantic_alignment_score_zero_requires_human_review",
         "alignment_kind": "unclassified_low_confidence",
         "skill_id_match": true,
         "task_family_match": false,
         "subskill_match": false,
         "pass_with_warning": false,
-        "requires_human_action": false,
+        "requires_human_action": true,
         "induction_tier": "core",
         "included_in_core_induction": false,
         "enrichment_reasons": [],
         "source_quality_issues": [],
         "source_quality_reject": false,
         "candidate_only": false,
-        "classification_source": "clause45_unclassified_exception",
+        "classification_source": "rule_fallback_ai_unavailable",
         "induction_eligibility": "excluded",
         "skill_id": "vh_數學B1_PropertiesOfPerpendicularLines",
         "title_stem_preview": "已知坐標平面上三點$A\\left( 2,1 \\right)$、$B\\left( 1,3 \\right)$及$C\\left( 4,2 \\right)$，試問△AB"
@@ -28779,45 +27315,45 @@
         "alignment_score": 0.0,
         "aligned_with_skill": false,
         "included_in_phase1": false,
-        "exclude_reason": "unclassified_low_confidence",
+        "exclude_reason": "semantic_alignment_score_zero_requires_human_review",
         "alignment_kind": "unclassified_low_confidence",
         "skill_id_match": true,
         "task_family_match": false,
         "subskill_match": false,
         "pass_with_warning": false,
-        "requires_human_action": false,
+        "requires_human_action": true,
         "induction_tier": "core",
         "included_in_core_induction": false,
         "enrichment_reasons": [],
         "source_quality_issues": [],
         "source_quality_reject": false,
         "candidate_only": false,
-        "classification_source": "clause45_unclassified_exception",
+        "classification_source": "rule_fallback_ai_unavailable",
         "induction_eligibility": "excluded",
         "skill_id": "vh_數學B1_PropertiesOfPerpendicularLines",
         "title_stem_preview": "設$A\\left( -3,4 \\right)$、$B\\left( a,1 \\right)$、$C\\left( -4,-2 \\right)$、$D\\left( 2"
       },
       {
         "example_id": 4537,
-        "target_task": "contextual_application",
+        "target_task": "compute_numeric",
         "task_family": "generic_numeric_family",
         "alignment_score": 0.0,
         "aligned_with_skill": false,
         "included_in_phase1": false,
-        "exclude_reason": "unclassified_low_confidence",
+        "exclude_reason": "semantic_alignment_score_zero_requires_human_review",
         "alignment_kind": "unclassified_low_confidence",
         "skill_id_match": true,
         "task_family_match": false,
         "subskill_match": false,
         "pass_with_warning": false,
-        "requires_human_action": false,
+        "requires_human_action": true,
         "induction_tier": "core",
         "included_in_core_induction": false,
         "enrichment_reasons": [],
         "source_quality_issues": [],
         "source_quality_reject": false,
         "candidate_only": false,
-        "classification_source": "clause45_unclassified_exception",
+        "classification_source": "rule_fallback_ai_unavailable",
         "induction_eligibility": "excluded",
         "skill_id": "vh_數學B1_PropertiesOfPerpendicularLines",
         "title_stem_preview": "設直線${{L}_{1}}$通過$A\\left( 3,k+1 \\right)$、$B\\left( -k,5 \\right)$兩點，直線${{L}_{2}}$通過"
@@ -28877,79 +27413,20 @@
       {
         "grouping_reason": "single_signature_group",
         "feature_signature": [
-          "integer",
-          "perpendicular_lines_properties",
+          "short_answer",
+          "contextual_application",
           "short_answer",
           [
             "numeric_computation"
           ],
           [
-            "coordinate_point",
-            "three_coordinate_points"
+            "coordinate_point"
           ]
-        ],
-        "source_example_ids": [
-          4531
-        ],
-        "answer_type": "integer",
-        "presentation_mode": "short_answer",
-        "source_has_choices": false
-      },
-      {
-        "grouping_reason": "merged_by_canonical_contract",
-        "feature_signature": [
-          "canonical_contract_merge",
-          "contextual_application",
-          "short_answer",
-          "short_answer"
         ],
         "source_example_ids": [
           4526,
           4532,
-          4537,
           4539
-        ],
-        "answer_type": "short_answer",
-        "presentation_mode": "short_answer",
-        "source_has_choices": false
-      },
-      {
-        "grouping_reason": "split_by_feature_signature",
-        "feature_signature": [
-          "short_answer",
-          "applied_quadratic_inequality_problem",
-          "short_answer",
-          [
-            "quadratic_factoring_reasoning"
-          ],
-          [
-            "coordinate_point",
-            "three_coordinate_points"
-          ]
-        ],
-        "source_example_ids": [
-          4527
-        ],
-        "answer_type": "short_answer",
-        "presentation_mode": "short_answer",
-        "source_has_choices": false
-      },
-      {
-        "grouping_reason": "split_by_feature_signature",
-        "feature_signature": [
-          "short_answer",
-          "solve_unknown_coordinate_from_two_point_distance",
-          "short_answer",
-          [
-            "distance_formula_reasoning"
-          ],
-          [
-            "coordinate_point",
-            "distance_formula"
-          ]
-        ],
-        "source_example_ids": [
-          4536
         ],
         "answer_type": "short_answer",
         "presentation_mode": "short_answer",
@@ -28957,186 +27434,6 @@
       }
     ],
     "induced_problem_type_specs": [
-      {
-        "problem_type_id": "fallback_perpendicular_lines_properties",
-        "skill_id": "vh_數學B1_PropertiesOfPerpendicularLines",
-        "target_task": "perpendicular_lines_properties",
-        "task_family": "generic_numeric_family",
-        "display_name": "integer / perpendicular_lines_properties",
-        "answer_format_hint": "integer",
-        "answer_fields": null,
-        "answer_separator": null,
-        "source_example_ids": [
-          4531
-        ],
-        "answer_contract": {
-          "choices_required": false,
-          "choice_count": null,
-          "correct_choice_count": null,
-          "frontend_render_choices": false,
-          "answer_type": "integer",
-          "answer_shape": "scalar",
-          "answer_equivalence": "numeric_exact",
-          "checker": "integer_checker",
-          "accepted_formats": [
-            "5",
-            "5.0",
-            "-3"
-          ],
-          "source_has_choices": false,
-          "equivalence_type": "numeric_exact",
-          "checker_key": "integer_checker",
-          "presentation_mode": "short_answer"
-        },
-        "stem_contract": {
-          "stem_must_not_embed_choices": true,
-          "allowed_math_objects": [
-            "coordinate_point",
-            "three_coordinate_points",
-            "triangle",
-            "two_coordinate_points"
-          ],
-          "required_math_objects": [
-            "coordinate_point",
-            "three_coordinate_points"
-          ],
-          "forbidden_patterns": [
-            "\\(A\\)",
-            "\\(B\\)",
-            "\\(C\\)",
-            "\\(D\\)"
-          ]
-        },
-        "dependency_contract": {
-          "givens_must_be_used": true,
-          "target_answer_must_depend_on_givens": true,
-          "variables_in_conditions_must_appear_in_target": false
-        },
-        "semantic_contract": {
-          "reasoning_type": [
-            "numeric_computation"
-          ],
-          "reject_if": [
-            "unused_condition",
-            "ambiguous_answer",
-            "answer_not_derivable",
-            "duplicated_choices",
-            "no_correct_choice",
-            "multiple_correct_choices_when_single_choice"
-          ]
-        },
-        "generator_contract": {
-          "template_variants": [
-            {
-              "id": "default",
-              "label": "default",
-              "stem_pattern": "依題意求解：{stem_hint}。",
-              "weight": 1.0,
-              "enabled": true
-            }
-          ],
-          "parameter_schema": {
-            "seed": {
-              "type": "integer",
-              "randomize": true
-            },
-            "difficulty_level": {
-              "choices": [
-                "level_1",
-                "level_2",
-                "level_3"
-              ],
-              "weights": [
-                0.4,
-                0.4,
-                0.2
-              ]
-            }
-          },
-          "variation_dimensions": [
-            "seed",
-            "difficulty_level",
-            "context_style"
-          ],
-          "difficulty_controls": {
-            "level_1": {},
-            "level_2": {},
-            "level_3": {}
-          },
-          "anti_repetition_rules": {
-            "avoid_same_template_consecutive": true,
-            "avoid_same_ratio_consecutive": true,
-            "avoid_same_point_names_consecutive": true,
-            "avoid_same_answer_consecutive": true,
-            "recent_history_window": 5,
-            "signature_fields": [
-              "problem_type_id",
-              "template_variant",
-              "routing_track",
-              "scenario_type",
-              "ratio_form",
-              "ratio_values",
-              "coordinate_pattern",
-              "answer"
-            ]
-          },
-          "validity_constraints": [
-            "answer derivable from givens"
-          ],
-          "answer_shape": "numeric",
-          "explanation_variants": [
-            "stepwise"
-          ],
-          "sampling_strategy": "weighted_random",
-          "template_families": [
-            "perpendicular_lines_properties"
-          ],
-          "parameter_slots": {
-            "seed": "integer",
-            "difficulty": "easy"
-          },
-          "randomization_rules": {
-            "shuffle_choices": false
-          },
-          "avoid_llm_freeform_math": true,
-          "use_domain_functions": true,
-          "derivation_steps_required": true,
-          "contextual_application": true,
-          "problem_type_id": "fallback_perpendicular_lines_properties",
-          "contract_validation_blockers": [],
-          "contract_validation_warnings": [
-            "single_template_variant_only",
-            "variation_dimensions_below_recommended_minimum"
-          ]
-        },
-        "validator_contract": {
-          "static_checks": [
-            "answer_contract_checks",
-            "choices_policy"
-          ],
-          "semantic_checks": [
-            "givens_to_target_dependency"
-          ],
-          "runtime_smoke_count": 30
-        },
-        "spec_source": "phase1_induced_draft",
-        "grouping_reason": "single_signature_group",
-        "feature_signature": [
-          "integer",
-          "perpendicular_lines_properties",
-          "short_answer",
-          [
-            "numeric_computation"
-          ],
-          [
-            "coordinate_point",
-            "three_coordinate_points"
-          ]
-        ],
-        "canonical_base_problem_type_id": "fallback_perpendicular_lines_properties",
-        "value_type_prefix": "",
-        "_resolved_template_slot": ""
-      },
       {
         "problem_type_id": "skill_scoped_unresolved_problem_type",
         "skill_id": "vh_數學B1_PropertiesOfPerpendicularLines",
@@ -29149,7 +27446,6 @@
         "source_example_ids": [
           4526,
           4532,
-          4537,
           4539
         ],
         "answer_contract": {
@@ -29170,14 +27466,10 @@
         "stem_contract": {
           "stem_must_not_embed_choices": true,
           "allowed_math_objects": [
-            "coordinate_point",
-            "three_coordinate_points",
-            "triangle",
-            "two_coordinate_points"
+            "coordinate_point"
           ],
           "required_math_objects": [
-            "coordinate_point",
-            "three_coordinate_points"
+            "coordinate_point"
           ],
           "forbidden_patterns": [
             "\\(A\\)",
@@ -29284,6 +27576,10 @@
           "template_slots": {
             "stem": "linear_function_contextual_word_problem"
           },
+          "templates": [
+            "template_scalar_unknown",
+            "template_feature_value"
+          ],
           "problem_type_id": "skill_scoped_unresolved_problem_type",
           "contract_validation_blockers": [],
           "contract_validation_warnings": [
@@ -29302,870 +27598,24 @@
           "runtime_smoke_count": 30
         },
         "spec_source": "phase1_induced_draft",
-        "grouping_reason": "merged_by_canonical_contract",
-        "feature_signature": [
-          "canonical_contract_merge",
-          "contextual_application",
-          "short_answer",
-          "short_answer"
-        ],
-        "canonical_base_problem_type_id": "skill_scoped_unresolved_problem_type",
-        "value_type_prefix": "",
-        "_resolved_template_slot": "linear_function_contextual_word_problem"
-      },
-      {
-        "problem_type_id": "fallback_applied_quadratic_inequality_problem",
-        "skill_id": "vh_數學B1_PropertiesOfPerpendicularLines",
-        "target_task": "applied_quadratic_inequality_problem",
-        "task_family": "quadratic_inequality_family",
-        "display_name": "short_answer / applied_quadratic_inequality_problem",
-        "answer_format_hint": "interval",
-        "answer_fields": null,
-        "answer_separator": null,
-        "source_example_ids": [
-          4527
-        ],
-        "answer_contract": {
-          "choices_required": false,
-          "choice_count": null,
-          "correct_choice_count": null,
-          "frontend_render_choices": false,
-          "source_has_choices": false,
-          "answer_type": "interval",
-          "answer_shape": "interval_or_union",
-          "answer_semantics": "interval_union",
-          "answer_equivalence": "interval_equivalence",
-          "equivalence_type": "interval_equivalence",
-          "checker": "interval_checker",
-          "checker_key": "interval_checker",
-          "presentation_mode": "short_answer",
-          "selected_checker": "interval_checker",
-          "checker_selection_reason": "quadratic_inequality_interval_solution",
-          "accepted_formats": [
-            "-5 <= x <= 1",
-            "(-5, 1]",
-            "x in [-5,1]",
-            "x<-2 or x>5",
-            "-2<x<5",
-            "x<=-2 or x>=5"
-          ]
-        },
-        "stem_contract": {
-          "stem_must_not_embed_choices": true,
-          "allowed_math_objects": [
-            "coordinate_point",
-            "three_coordinate_points",
-            "triangle",
-            "two_coordinate_points"
-          ],
-          "required_math_objects": [
-            "coordinate_point",
-            "three_coordinate_points"
-          ],
-          "forbidden_patterns": [
-            "\\(A\\)",
-            "\\(B\\)",
-            "\\(C\\)",
-            "\\(D\\)"
-          ]
-        },
-        "dependency_contract": {
-          "givens_must_be_used": true,
-          "target_answer_must_depend_on_givens": true,
-          "variables_in_conditions_must_appear_in_target": false
-        },
-        "semantic_contract": {
-          "reasoning_type": [
-            "quadratic_factoring_reasoning"
-          ],
-          "reject_if": [
-            "unused_condition",
-            "ambiguous_answer",
-            "answer_not_derivable",
-            "duplicated_choices",
-            "no_correct_choice",
-            "multiple_correct_choices_when_single_choice"
-          ]
-        },
-        "generator_contract": {
-          "template_variants": [
-            {
-              "id": "default",
-              "label": "default",
-              "stem_pattern": "依題意求解：{stem_hint}。",
-              "weight": 1.0,
-              "enabled": true
-            }
-          ],
-          "parameter_schema": {
-            "seed": {
-              "type": "integer",
-              "randomize": true
-            },
-            "difficulty_level": {
-              "choices": [
-                "level_1",
-                "level_2",
-                "level_3"
-              ],
-              "weights": [
-                0.4,
-                0.4,
-                0.2
-              ]
-            }
-          },
-          "variation_dimensions": [
-            "seed",
-            "difficulty_level",
-            "context_style"
-          ],
-          "difficulty_controls": {
-            "level_1": {},
-            "level_2": {},
-            "level_3": {}
-          },
-          "anti_repetition_rules": {
-            "avoid_same_template_consecutive": true,
-            "avoid_same_ratio_consecutive": true,
-            "avoid_same_point_names_consecutive": true,
-            "avoid_same_answer_consecutive": true,
-            "recent_history_window": 5,
-            "signature_fields": [
-              "problem_type_id",
-              "template_variant",
-              "routing_track",
-              "scenario_type",
-              "ratio_form",
-              "ratio_values",
-              "coordinate_pattern",
-              "answer"
-            ]
-          },
-          "validity_constraints": [
-            "answer derivable from givens"
-          ],
-          "answer_shape": "numeric",
-          "explanation_variants": [
-            "stepwise"
-          ],
-          "sampling_strategy": "weighted_random",
-          "template_families": [
-            "applied_quadratic_inequality_problem"
-          ],
-          "parameter_slots": {
-            "seed": "integer",
-            "difficulty": "easy"
-          },
-          "randomization_rules": {
-            "shuffle_choices": false
-          },
-          "avoid_llm_freeform_math": true,
-          "use_domain_functions": true,
-          "derivation_steps_required": true,
-          "contextual_application": true,
-          "template_slots": {
-            "stem": "applied_quadratic_inequality_problem"
-          },
-          "problem_type_id": "fallback_applied_quadratic_inequality_problem",
-          "contract_validation_blockers": [],
-          "contract_validation_warnings": [
-            "single_template_variant_only",
-            "variation_dimensions_below_recommended_minimum"
-          ]
-        },
-        "validator_contract": {
-          "static_checks": [
-            "answer_contract_checks",
-            "choices_policy"
-          ],
-          "semantic_checks": [
-            "givens_to_target_dependency"
-          ],
-          "runtime_smoke_count": 30
-        },
-        "spec_source": "phase1_induced_draft",
-        "grouping_reason": "split_by_feature_signature",
-        "feature_signature": [
-          "short_answer",
-          "applied_quadratic_inequality_problem",
-          "short_answer",
-          [
-            "quadratic_factoring_reasoning"
-          ],
-          [
-            "coordinate_point",
-            "three_coordinate_points"
-          ]
-        ],
-        "canonical_base_problem_type_id": "fallback_applied_quadratic_inequality_problem",
-        "value_type_prefix": "",
-        "_resolved_template_slot": "applied_quadratic_inequality_problem"
-      },
-      {
-        "problem_type_id": "fallback_solve_unknown_coordinate_from_two_point_distance",
-        "skill_id": "vh_數學B1_PropertiesOfPerpendicularLines",
-        "target_task": "solve_unknown_coordinate_from_two_point_distance",
-        "task_family": "distance_between_two_points_family",
-        "display_name": "兩點距離反求座標",
-        "answer_format_hint": "",
-        "answer_fields": null,
-        "answer_separator": null,
-        "source_example_ids": [
-          4536
-        ],
-        "answer_contract": {
-          "choices_required": false,
-          "choice_count": null,
-          "correct_choice_count": null,
-          "frontend_render_choices": false,
-          "answer_type": "solution_set",
-          "answer_shape": "unordered_set",
-          "answer_equivalence": "unordered_solution_set",
-          "checker": "solution_set_checker",
-          "accepted_formats": [
-            "-3, 7",
-            "7, -3",
-            "{-3, 7}",
-            "k=-3 或 k=7",
-            "-3 或 7"
-          ]
-        },
-        "stem_contract": {
-          "stem_must_not_embed_choices": true,
-          "allowed_math_objects": [
-            "coordinate_point",
-            "distance_formula",
-            "parameter",
-            "segment_length",
-            "three_coordinate_points",
-            "triangle",
-            "two_coordinate_points",
-            "unknown_coordinate"
-          ],
-          "required_math_objects": [
-            "coordinate_point",
-            "distance_formula"
-          ],
-          "forbidden_patterns": [
-            "\\(A\\)",
-            "\\(B\\)",
-            "\\(C\\)",
-            "\\(D\\)"
-          ]
-        },
-        "dependency_contract": {
-          "givens_must_be_used": true,
-          "target_answer_must_depend_on_givens": true,
-          "variables_in_conditions_must_appear_in_target": false
-        },
-        "semantic_contract": {
-          "reasoning_type": [
-            "distance_formula_reasoning"
-          ],
-          "reject_if": [
-            "unused_condition",
-            "ambiguous_answer",
-            "answer_not_derivable",
-            "duplicated_choices",
-            "no_correct_choice",
-            "multiple_correct_choices_when_single_choice"
-          ]
-        },
-        "generator_contract": {
-          "template_variants": [
-            {
-              "id": "direct_distance",
-              "label": "直接求距離",
-              "stem_pattern": "求 {A}({ax},{ay}) 與 {B}({bx},{by}) 的距離。",
-              "weight": 1.0,
-              "enabled": true
-            },
-            {
-              "id": "missing_coordinate",
-              "label": "反求坐標",
-              "stem_pattern": "已知 {A}({ax},{ay})、{B}({bx},{by}) 與距離 {d}，求未知坐標。",
-              "weight": 0.6,
-              "enabled": true
-            },
-            {
-              "id": "word_context_distance",
-              "label": "語境距離",
-              "stem_pattern": "平面上兩地坐標如下，求兩地距離。",
-              "weight": 1.0,
-              "enabled": true
-            },
-            {
-              "id": "compare_distance",
-              "label": "比較距離",
-              "stem_pattern": "比較 {A} 到 {B} 與 {A} 到 {C} 的距離大小。",
-              "weight": 0.4,
-              "enabled": true
-            }
-          ],
-          "parameter_schema": {
-            "point_names": {
-              "choices": [
-                [
-                  "A",
-                  "B",
-                  "P"
-                ],
-                [
-                  "P",
-                  "Q",
-                  "R"
-                ],
-                [
-                  "M",
-                  "N",
-                  "T"
-                ],
-                [
-                  "C",
-                  "D",
-                  "E"
-                ]
-              ],
-              "randomize": true
-            },
-            "coordinate_range": {
-              "x_min": -10,
-              "x_max": 10,
-              "y_min": -10,
-              "y_max": 10,
-              "exclude_zero_probability": 0.2
-            },
-            "distance_result_type": {
-              "choices": [
-                "integer",
-                "radical"
-              ],
-              "weights": [
-                0.55,
-                0.45
-              ]
-            },
-            "coordinate_delta_pattern": {
-              "choices": [
-                "axis_aligned",
-                "mixed_sign",
-                "general"
-              ],
-              "weights": [
-                0.3,
-                0.4,
-                0.3
-              ]
-            }
-          },
-          "variation_dimensions": [
-            "point_names",
-            "coordinate_sign_pattern",
-            "distance_result_type",
-            "coordinate_delta_pattern",
-            "ask_target",
-            "context_style"
-          ],
-          "difficulty_controls": {
-            "level_1": {
-              "coordinate_range": [
-                -5,
-                5
-              ],
-              "integer_distance_only": true
-            },
-            "level_2": {
-              "coordinate_range": [
-                -10,
-                10
-              ],
-              "allow_radical": true
-            },
-            "level_3": {
-              "word_context_enabled": true,
-              "missing_coordinate_enabled": true
-            }
-          },
-          "anti_repetition_rules": {
-            "avoid_same_template_consecutive": true,
-            "avoid_same_ratio_consecutive": true,
-            "avoid_same_point_names_consecutive": true,
-            "avoid_same_answer_consecutive": true,
-            "recent_history_window": 5,
-            "signature_fields": [
-              "problem_type_id",
-              "template_variant",
-              "routing_track",
-              "scenario_type",
-              "ratio_form",
-              "ratio_values",
-              "coordinate_pattern",
-              "answer"
-            ]
-          },
-          "validity_constraints": [
-            "A != B",
-            "distance > 0",
-            "if integer answer desired, dx^2+dy^2 must be perfect square",
-            "if radical answer desired, simplify radical form"
-          ],
-          "answer_shape": "numeric_or_radical",
-          "explanation_variants": [
-            "distance_formula",
-            "pythagorean_step"
-          ],
-          "sampling_strategy": "weighted_random",
-          "template_families": [
-            "solve_unknown_coordinate_from_two_point_distance"
-          ],
-          "parameter_slots": {
-            "seed": "integer",
-            "difficulty": "easy"
-          },
-          "randomization_rules": {
-            "shuffle_choices": false
-          },
-          "avoid_llm_freeform_math": true,
-          "use_domain_functions": true,
-          "derivation_steps_required": true,
-          "contextual_application": true,
-          "template_slots": {
-            "stem": "point_quadrant"
-          },
-          "problem_type_id": "fallback_solve_unknown_coordinate_from_two_point_distance",
-          "contract_validation_blockers": [],
-          "contract_validation_warnings": []
-        },
-        "validator_contract": {
-          "static_checks": [
-            "answer_contract_checks",
-            "choices_policy"
-          ],
-          "semantic_checks": [
-            "givens_to_target_dependency"
-          ],
-          "runtime_smoke_count": 30
-        },
-        "spec_source": "phase1_induced_draft",
-        "grouping_reason": "split_by_feature_signature",
-        "feature_signature": [
-          "short_answer",
-          "solve_unknown_coordinate_from_two_point_distance",
-          "short_answer",
-          [
-            "distance_formula_reasoning"
-          ],
-          [
-            "coordinate_point",
-            "distance_formula"
-          ]
-        ],
-        "canonical_base_problem_type_id": "fallback_solve_unknown_coordinate_from_two_point_distance",
-        "value_type_prefix": "",
-        "_resolved_template_slot": "two_point_distance_solution_set"
-      }
-    ],
-    "candidate_problem_types": [
-      {
-        "problem_type_id": "fallback_perpendicular_lines_properties",
-        "proposed_problem_type_id": "fallback_perpendicular_lines_properties",
-        "display_name": "integer / perpendicular_lines_properties",
-        "matched_example_ids": [
-          4531
-        ],
-        "matched_example_count": 1,
-        "unmatched_example_ids": [],
-        "representative_example_id": 4531,
-        "structural_features": [
-          "scalar"
-        ],
-        "answer_contract_proposal": {
-          "choices_required": false,
-          "choice_count": null,
-          "correct_choice_count": null,
-          "frontend_render_choices": false,
-          "answer_type": "integer",
-          "answer_shape": "scalar",
-          "answer_equivalence": "numeric_exact",
-          "checker": "integer_checker",
-          "accepted_formats": [
-            "5",
-            "5.0",
-            "-3"
-          ],
-          "source_has_choices": false,
-          "equivalence_type": "numeric_exact",
-          "checker_key": "integer_checker",
-          "presentation_mode": "short_answer",
-          "selected_checker": "integer_checker",
-          "checker_capability_status": "ok",
-          "checker_contract_blockers": [],
-          "checker_contract_warnings": [],
-          "stem_contract": {
-            "stem_must_not_embed_choices": true,
-            "allowed_math_objects": [
-              "coordinate_point",
-              "three_coordinate_points",
-              "triangle",
-              "two_coordinate_points"
-            ],
-            "required_math_objects": [
-              "coordinate_point",
-              "three_coordinate_points"
-            ],
-            "forbidden_patterns": [
-              "\\(A\\)",
-              "\\(B\\)",
-              "\\(C\\)",
-              "\\(D\\)"
-            ]
-          },
-          "dependency_contract": {
-            "givens_must_be_used": true,
-            "target_answer_must_depend_on_givens": true,
-            "variables_in_conditions_must_appear_in_target": false
-          },
-          "semantic_contract": {
-            "reasoning_type": [
-              "numeric_computation"
-            ],
-            "reject_if": [
-              "unused_condition",
-              "ambiguous_answer",
-              "answer_not_derivable",
-              "duplicated_choices",
-              "no_correct_choice",
-              "multiple_correct_choices_when_single_choice"
-            ]
-          },
-          "generator_contract": {
-            "template_variants": [
-              {
-                "id": "default",
-                "label": "default",
-                "stem_pattern": "依題意求解：{stem_hint}。",
-                "weight": 1.0,
-                "enabled": true
-              }
-            ],
-            "parameter_schema": {
-              "seed": {
-                "type": "integer",
-                "randomize": true
-              },
-              "difficulty_level": {
-                "choices": [
-                  "level_1",
-                  "level_2",
-                  "level_3"
-                ],
-                "weights": [
-                  0.4,
-                  0.4,
-                  0.2
-                ]
-              }
-            },
-            "variation_dimensions": [
-              "seed",
-              "difficulty_level",
-              "context_style"
-            ],
-            "difficulty_controls": {
-              "level_1": {},
-              "level_2": {},
-              "level_3": {}
-            },
-            "anti_repetition_rules": {
-              "avoid_same_template_consecutive": true,
-              "avoid_same_ratio_consecutive": true,
-              "avoid_same_point_names_consecutive": true,
-              "avoid_same_answer_consecutive": true,
-              "recent_history_window": 5,
-              "signature_fields": [
-                "problem_type_id",
-                "template_variant",
-                "routing_track",
-                "scenario_type",
-                "ratio_form",
-                "ratio_values",
-                "coordinate_pattern",
-                "answer"
-              ]
-            },
-            "validity_constraints": [
-              "answer derivable from givens"
-            ],
-            "answer_shape": "numeric",
-            "explanation_variants": [
-              "stepwise"
-            ],
-            "sampling_strategy": "weighted_random",
-            "template_families": [
-              "perpendicular_lines_properties"
-            ],
-            "parameter_slots": {
-              "seed": "integer",
-              "difficulty": "easy"
-            },
-            "randomization_rules": {
-              "shuffle_choices": false
-            },
-            "avoid_llm_freeform_math": true,
-            "use_domain_functions": true,
-            "derivation_steps_required": true,
-            "contextual_application": true,
-            "problem_type_id": "fallback_perpendicular_lines_properties",
-            "contract_validation_blockers": [],
-            "contract_validation_warnings": [
-              "single_template_variant_only",
-              "variation_dimensions_below_recommended_minimum"
-            ]
-          },
-          "validator_contract": {
-            "static_checks": [
-              "answer_contract_checks",
-              "choices_policy"
-            ],
-            "semantic_checks": [
-              "givens_to_target_dependency"
-            ],
-            "runtime_smoke_count": 30
-          },
-          "order_matters": true,
-          "accepted_format_notes": [],
-          "canonical_answer_schema": "integer"
-        },
-        "checker_key_proposal": "integer_checker",
-        "equivalence_type_proposal": "numeric_exact",
-        "answer_shape": "scalar",
-        "answer_semantics": "scalar",
-        "presentation_mode": "short_answer",
-        "source_has_choices": false,
-        "selected_checker": "integer_checker",
-        "checker_selection_reason": "task_family_default",
-        "coordinate_pair_presentation_note": "",
-        "confidence": "high",
-        "promote_recommendation": "recommend_promote_for_that_candidate",
-        "promote_blockers": [],
-        "risk_flags": [
-          "ai_first_mode_fell_back_to_rule_only",
-          "ai_unavailable_fallback_to_same_as_main",
-          "alignment_score_below_recommended_threshold",
-          "majority_sources_need_human_subskill_review",
-          "skill_scoped_classification_low_confidence",
-          "source_skill_scope_locked_demoted_blockers_to_warnings"
-        ],
-        "checker_contract_warnings": [],
-        "spec_source": "phase1_induced_draft",
         "grouping_reason": "single_signature_group",
         "feature_signature": [
-          "integer",
-          "perpendicular_lines_properties",
+          "short_answer",
+          "contextual_application",
           "short_answer",
           [
             "numeric_computation"
           ],
           [
-            "coordinate_point",
-            "three_coordinate_points"
+            "coordinate_point"
           ]
         ],
-        "problem_type_spec_draft": {
-          "problem_type_id": "fallback_perpendicular_lines_properties",
-          "skill_id": "vh_數學B1_PropertiesOfPerpendicularLines",
-          "target_task": "perpendicular_lines_properties",
-          "task_family": "generic_numeric_family",
-          "display_name": "integer / perpendicular_lines_properties",
-          "answer_format_hint": "integer",
-          "answer_fields": null,
-          "answer_separator": null,
-          "source_example_ids": [
-            4531
-          ],
-          "answer_contract": {
-            "choices_required": false,
-            "choice_count": null,
-            "correct_choice_count": null,
-            "frontend_render_choices": false,
-            "answer_type": "integer",
-            "answer_shape": "scalar",
-            "answer_equivalence": "numeric_exact",
-            "checker": "integer_checker",
-            "accepted_formats": [
-              "5",
-              "5.0",
-              "-3"
-            ],
-            "source_has_choices": false,
-            "equivalence_type": "numeric_exact",
-            "checker_key": "integer_checker",
-            "presentation_mode": "short_answer"
-          },
-          "stem_contract": {
-            "stem_must_not_embed_choices": true,
-            "allowed_math_objects": [
-              "coordinate_point",
-              "three_coordinate_points",
-              "triangle",
-              "two_coordinate_points"
-            ],
-            "required_math_objects": [
-              "coordinate_point",
-              "three_coordinate_points"
-            ],
-            "forbidden_patterns": [
-              "\\(A\\)",
-              "\\(B\\)",
-              "\\(C\\)",
-              "\\(D\\)"
-            ]
-          },
-          "dependency_contract": {
-            "givens_must_be_used": true,
-            "target_answer_must_depend_on_givens": true,
-            "variables_in_conditions_must_appear_in_target": false
-          },
-          "semantic_contract": {
-            "reasoning_type": [
-              "numeric_computation"
-            ],
-            "reject_if": [
-              "unused_condition",
-              "ambiguous_answer",
-              "answer_not_derivable",
-              "duplicated_choices",
-              "no_correct_choice",
-              "multiple_correct_choices_when_single_choice"
-            ]
-          },
-          "generator_contract": {
-            "template_variants": [
-              {
-                "id": "default",
-                "label": "default",
-                "stem_pattern": "依題意求解：{stem_hint}。",
-                "weight": 1.0,
-                "enabled": true
-              }
-            ],
-            "parameter_schema": {
-              "seed": {
-                "type": "integer",
-                "randomize": true
-              },
-              "difficulty_level": {
-                "choices": [
-                  "level_1",
-                  "level_2",
-                  "level_3"
-                ],
-                "weights": [
-                  0.4,
-                  0.4,
-                  0.2
-                ]
-              }
-            },
-            "variation_dimensions": [
-              "seed",
-              "difficulty_level",
-              "context_style"
-            ],
-            "difficulty_controls": {
-              "level_1": {},
-              "level_2": {},
-              "level_3": {}
-            },
-            "anti_repetition_rules": {
-              "avoid_same_template_consecutive": true,
-              "avoid_same_ratio_consecutive": true,
-              "avoid_same_point_names_consecutive": true,
-              "avoid_same_answer_consecutive": true,
-              "recent_history_window": 5,
-              "signature_fields": [
-                "problem_type_id",
-                "template_variant",
-                "routing_track",
-                "scenario_type",
-                "ratio_form",
-                "ratio_values",
-                "coordinate_pattern",
-                "answer"
-              ]
-            },
-            "validity_constraints": [
-              "answer derivable from givens"
-            ],
-            "answer_shape": "numeric",
-            "explanation_variants": [
-              "stepwise"
-            ],
-            "sampling_strategy": "weighted_random",
-            "template_families": [
-              "perpendicular_lines_properties"
-            ],
-            "parameter_slots": {
-              "seed": "integer",
-              "difficulty": "easy"
-            },
-            "randomization_rules": {
-              "shuffle_choices": false
-            },
-            "avoid_llm_freeform_math": true,
-            "use_domain_functions": true,
-            "derivation_steps_required": true,
-            "contextual_application": true,
-            "problem_type_id": "fallback_perpendicular_lines_properties",
-            "contract_validation_blockers": [],
-            "contract_validation_warnings": [
-              "single_template_variant_only",
-              "variation_dimensions_below_recommended_minimum"
-            ]
-          },
-          "validator_contract": {
-            "static_checks": [
-              "answer_contract_checks",
-              "choices_policy"
-            ],
-            "semantic_checks": [
-              "givens_to_target_dependency"
-            ],
-            "runtime_smoke_count": 30
-          },
-          "spec_source": "phase1_induced_draft",
-          "grouping_reason": "single_signature_group",
-          "feature_signature": [
-            "integer",
-            "perpendicular_lines_properties",
-            "short_answer",
-            [
-              "numeric_computation"
-            ],
-            [
-              "coordinate_point",
-              "three_coordinate_points"
-            ]
-          ],
-          "canonical_base_problem_type_id": "fallback_perpendicular_lines_properties",
-          "value_type_prefix": "",
-          "_resolved_template_slot": ""
-        },
-        "generator_readiness": "generator_not_ready",
-        "usable_for_phase3": false,
-        "template_slot": "",
-        "canonical_base_problem_type_id": "fallback_perpendicular_lines_properties",
+        "canonical_base_problem_type_id": "skill_scoped_unresolved_problem_type",
         "value_type_prefix": "",
-        "subskill_id": "perpendicular_lines_properties",
-        "runtime_status": "runtime_ready_candidate",
-        "next_action": "phase2_foundation_preflight",
-        "semantic_alignment": {
-          "skill_problem_type_score": 0.1739,
-          "source_problem_type_score": 0.0333,
-          "task_consistent_with_skill": true
-        }
-      },
+        "_resolved_template_slot": "linear_function_contextual_word_problem"
+      }
+    ],
+    "candidate_problem_types": [
       {
         "problem_type_id": "skill_scoped_unresolved_problem_type",
         "proposed_problem_type_id": "skill_scoped_unresolved_problem_type",
@@ -30173,10 +27623,9 @@
         "matched_example_ids": [
           4526,
           4532,
-          4537,
           4539
         ],
-        "matched_example_count": 4,
+        "matched_example_count": 3,
         "unmatched_example_ids": [],
         "representative_example_id": 4526,
         "structural_features": [
@@ -30203,14 +27652,10 @@
           "stem_contract": {
             "stem_must_not_embed_choices": true,
             "allowed_math_objects": [
-              "coordinate_point",
-              "three_coordinate_points",
-              "triangle",
-              "two_coordinate_points"
+              "coordinate_point"
             ],
             "required_math_objects": [
-              "coordinate_point",
-              "three_coordinate_points"
+              "coordinate_point"
             ],
             "forbidden_patterns": [
               "\\(A\\)",
@@ -30317,6 +27762,10 @@
             "template_slots": {
               "stem": "linear_function_contextual_word_problem"
             },
+            "templates": [
+              "template_scalar_unknown",
+              "template_feature_value"
+            ],
             "problem_type_id": "skill_scoped_unresolved_problem_type",
             "contract_validation_blockers": [],
             "contract_validation_warnings": [
@@ -30352,20 +27801,25 @@
         "promote_blockers": [],
         "risk_flags": [
           "ai_first_mode_fell_back_to_rule_only",
+          "ai_partial_unavailable_relaxed_tolerance",
           "ai_unavailable_fallback_to_same_as_main",
           "alignment_score_below_recommended_threshold",
-          "majority_sources_need_human_subskill_review",
-          "skill_scoped_classification_low_confidence",
-          "source_skill_scope_locked_demoted_blockers_to_warnings"
+          "demoted_majority_needs_review_due_to_partial_unavailable",
+          "majority_sources_need_human_subskill_review"
         ],
         "checker_contract_warnings": [],
         "spec_source": "phase1_induced_draft",
-        "grouping_reason": "merged_by_canonical_contract",
+        "grouping_reason": "single_signature_group",
         "feature_signature": [
-          "canonical_contract_merge",
+          "short_answer",
           "contextual_application",
           "short_answer",
-          "short_answer"
+          [
+            "numeric_computation"
+          ],
+          [
+            "coordinate_point"
+          ]
         ],
         "problem_type_spec_draft": {
           "problem_type_id": "skill_scoped_unresolved_problem_type",
@@ -30379,7 +27833,6 @@
           "source_example_ids": [
             4526,
             4532,
-            4537,
             4539
           ],
           "answer_contract": {
@@ -30400,14 +27853,10 @@
           "stem_contract": {
             "stem_must_not_embed_choices": true,
             "allowed_math_objects": [
-              "coordinate_point",
-              "three_coordinate_points",
-              "triangle",
-              "two_coordinate_points"
+              "coordinate_point"
             ],
             "required_math_objects": [
-              "coordinate_point",
-              "three_coordinate_points"
+              "coordinate_point"
             ],
             "forbidden_patterns": [
               "\\(A\\)",
@@ -30514,6 +27963,10 @@
             "template_slots": {
               "stem": "linear_function_contextual_word_problem"
             },
+            "templates": [
+              "template_scalar_unknown",
+              "template_feature_value"
+            ],
             "problem_type_id": "skill_scoped_unresolved_problem_type",
             "contract_validation_blockers": [],
             "contract_validation_warnings": [
@@ -30532,12 +27985,17 @@
             "runtime_smoke_count": 30
           },
           "spec_source": "phase1_induced_draft",
-          "grouping_reason": "merged_by_canonical_contract",
+          "grouping_reason": "single_signature_group",
           "feature_signature": [
-            "canonical_contract_merge",
+            "short_answer",
             "contextual_application",
             "short_answer",
-            "short_answer"
+            [
+              "numeric_computation"
+            ],
+            [
+              "coordinate_point"
+            ]
           ],
           "canonical_base_problem_type_id": "skill_scoped_unresolved_problem_type",
           "value_type_prefix": "",
@@ -30553,990 +28011,7 @@
         "next_action": "phase2_foundation_preflight",
         "semantic_alignment": {
           "skill_problem_type_score": 0.0,
-          "source_problem_type_score": 0.0154,
-          "task_consistent_with_skill": true
-        }
-      },
-      {
-        "problem_type_id": "fallback_applied_quadratic_inequality_problem",
-        "proposed_problem_type_id": "fallback_applied_quadratic_inequality_problem",
-        "display_name": "short_answer / applied_quadratic_inequality_problem",
-        "matched_example_ids": [
-          4527
-        ],
-        "matched_example_count": 1,
-        "unmatched_example_ids": [],
-        "representative_example_id": 4527,
-        "structural_features": [
-          "interval_or_union"
-        ],
-        "answer_contract_proposal": {
-          "choices_required": false,
-          "choice_count": null,
-          "correct_choice_count": null,
-          "frontend_render_choices": false,
-          "source_has_choices": false,
-          "answer_type": "interval",
-          "answer_shape": "interval_or_union",
-          "answer_semantics": "interval_union",
-          "answer_equivalence": "interval_equivalence",
-          "equivalence_type": "interval_set",
-          "checker": "interval_checker",
-          "checker_key": "interval_checker",
-          "presentation_mode": "short_answer",
-          "selected_checker": "interval_checker",
-          "checker_selection_reason": "quadratic_inequality_interval_solution",
-          "accepted_formats": [
-            "-5 <= x <= 1",
-            "(-5, 1]",
-            "x in [-5,1]",
-            "x<-2 or x>5",
-            "-2<x<5",
-            "x<=-2 or x>=5"
-          ],
-          "checker_capability_status": "ok",
-          "checker_contract_blockers": [],
-          "checker_contract_warnings": [],
-          "stem_contract": {
-            "stem_must_not_embed_choices": true,
-            "allowed_math_objects": [
-              "coordinate_point",
-              "three_coordinate_points",
-              "triangle",
-              "two_coordinate_points"
-            ],
-            "required_math_objects": [
-              "coordinate_point",
-              "three_coordinate_points"
-            ],
-            "forbidden_patterns": [
-              "\\(A\\)",
-              "\\(B\\)",
-              "\\(C\\)",
-              "\\(D\\)"
-            ]
-          },
-          "dependency_contract": {
-            "givens_must_be_used": true,
-            "target_answer_must_depend_on_givens": true,
-            "variables_in_conditions_must_appear_in_target": false
-          },
-          "semantic_contract": {
-            "reasoning_type": [
-              "quadratic_factoring_reasoning"
-            ],
-            "reject_if": [
-              "unused_condition",
-              "ambiguous_answer",
-              "answer_not_derivable",
-              "duplicated_choices",
-              "no_correct_choice",
-              "multiple_correct_choices_when_single_choice"
-            ]
-          },
-          "generator_contract": {
-            "template_variants": [
-              {
-                "id": "default",
-                "label": "default",
-                "stem_pattern": "依題意求解：{stem_hint}。",
-                "weight": 1.0,
-                "enabled": true
-              }
-            ],
-            "parameter_schema": {
-              "seed": {
-                "type": "integer",
-                "randomize": true
-              },
-              "difficulty_level": {
-                "choices": [
-                  "level_1",
-                  "level_2",
-                  "level_3"
-                ],
-                "weights": [
-                  0.4,
-                  0.4,
-                  0.2
-                ]
-              }
-            },
-            "variation_dimensions": [
-              "seed",
-              "difficulty_level",
-              "context_style"
-            ],
-            "difficulty_controls": {
-              "level_1": {},
-              "level_2": {},
-              "level_3": {}
-            },
-            "anti_repetition_rules": {
-              "avoid_same_template_consecutive": true,
-              "avoid_same_ratio_consecutive": true,
-              "avoid_same_point_names_consecutive": true,
-              "avoid_same_answer_consecutive": true,
-              "recent_history_window": 5,
-              "signature_fields": [
-                "problem_type_id",
-                "template_variant",
-                "routing_track",
-                "scenario_type",
-                "ratio_form",
-                "ratio_values",
-                "coordinate_pattern",
-                "answer"
-              ]
-            },
-            "validity_constraints": [
-              "answer derivable from givens"
-            ],
-            "answer_shape": "numeric",
-            "explanation_variants": [
-              "stepwise"
-            ],
-            "sampling_strategy": "weighted_random",
-            "template_families": [
-              "applied_quadratic_inequality_problem"
-            ],
-            "parameter_slots": {
-              "seed": "integer",
-              "difficulty": "easy"
-            },
-            "randomization_rules": {
-              "shuffle_choices": false
-            },
-            "avoid_llm_freeform_math": true,
-            "use_domain_functions": true,
-            "derivation_steps_required": true,
-            "contextual_application": true,
-            "template_slots": {
-              "stem": "applied_quadratic_inequality_problem"
-            },
-            "problem_type_id": "fallback_applied_quadratic_inequality_problem",
-            "contract_validation_blockers": [],
-            "contract_validation_warnings": [
-              "single_template_variant_only",
-              "variation_dimensions_below_recommended_minimum"
-            ]
-          },
-          "validator_contract": {
-            "static_checks": [
-              "answer_contract_checks",
-              "choices_policy"
-            ],
-            "semantic_checks": [
-              "givens_to_target_dependency"
-            ],
-            "runtime_smoke_count": 30
-          },
-          "order_matters": true,
-          "accepted_format_notes": [],
-          "canonical_answer_schema": "interval"
-        },
-        "checker_key_proposal": "interval_checker",
-        "equivalence_type_proposal": "interval_set",
-        "answer_shape": "interval_or_union",
-        "answer_semantics": "interval_union",
-        "presentation_mode": "short_answer",
-        "source_has_choices": false,
-        "selected_checker": "interval_checker",
-        "checker_selection_reason": "quadratic_inequality_interval_solution",
-        "coordinate_pair_presentation_note": "",
-        "confidence": "high",
-        "promote_recommendation": "recommend_promote_for_that_candidate",
-        "promote_blockers": [],
-        "risk_flags": [
-          "ai_first_mode_fell_back_to_rule_only",
-          "ai_unavailable_fallback_to_same_as_main",
-          "alignment_score_below_recommended_threshold",
-          "majority_sources_need_human_subskill_review",
-          "skill_scoped_classification_low_confidence",
-          "source_skill_scope_locked_demoted_blockers_to_warnings"
-        ],
-        "checker_contract_warnings": [],
-        "spec_source": "phase1_induced_draft",
-        "grouping_reason": "split_by_feature_signature",
-        "feature_signature": [
-          "short_answer",
-          "applied_quadratic_inequality_problem",
-          "short_answer",
-          [
-            "quadratic_factoring_reasoning"
-          ],
-          [
-            "coordinate_point",
-            "three_coordinate_points"
-          ]
-        ],
-        "problem_type_spec_draft": {
-          "problem_type_id": "fallback_applied_quadratic_inequality_problem",
-          "skill_id": "vh_數學B1_PropertiesOfPerpendicularLines",
-          "target_task": "applied_quadratic_inequality_problem",
-          "task_family": "quadratic_inequality_family",
-          "display_name": "short_answer / applied_quadratic_inequality_problem",
-          "answer_format_hint": "interval",
-          "answer_fields": null,
-          "answer_separator": null,
-          "source_example_ids": [
-            4527
-          ],
-          "answer_contract": {
-            "choices_required": false,
-            "choice_count": null,
-            "correct_choice_count": null,
-            "frontend_render_choices": false,
-            "source_has_choices": false,
-            "answer_type": "interval",
-            "answer_shape": "interval_or_union",
-            "answer_semantics": "interval_union",
-            "answer_equivalence": "interval_equivalence",
-            "equivalence_type": "interval_equivalence",
-            "checker": "interval_checker",
-            "checker_key": "interval_checker",
-            "presentation_mode": "short_answer",
-            "selected_checker": "interval_checker",
-            "checker_selection_reason": "quadratic_inequality_interval_solution",
-            "accepted_formats": [
-              "-5 <= x <= 1",
-              "(-5, 1]",
-              "x in [-5,1]",
-              "x<-2 or x>5",
-              "-2<x<5",
-              "x<=-2 or x>=5"
-            ]
-          },
-          "stem_contract": {
-            "stem_must_not_embed_choices": true,
-            "allowed_math_objects": [
-              "coordinate_point",
-              "three_coordinate_points",
-              "triangle",
-              "two_coordinate_points"
-            ],
-            "required_math_objects": [
-              "coordinate_point",
-              "three_coordinate_points"
-            ],
-            "forbidden_patterns": [
-              "\\(A\\)",
-              "\\(B\\)",
-              "\\(C\\)",
-              "\\(D\\)"
-            ]
-          },
-          "dependency_contract": {
-            "givens_must_be_used": true,
-            "target_answer_must_depend_on_givens": true,
-            "variables_in_conditions_must_appear_in_target": false
-          },
-          "semantic_contract": {
-            "reasoning_type": [
-              "quadratic_factoring_reasoning"
-            ],
-            "reject_if": [
-              "unused_condition",
-              "ambiguous_answer",
-              "answer_not_derivable",
-              "duplicated_choices",
-              "no_correct_choice",
-              "multiple_correct_choices_when_single_choice"
-            ]
-          },
-          "generator_contract": {
-            "template_variants": [
-              {
-                "id": "default",
-                "label": "default",
-                "stem_pattern": "依題意求解：{stem_hint}。",
-                "weight": 1.0,
-                "enabled": true
-              }
-            ],
-            "parameter_schema": {
-              "seed": {
-                "type": "integer",
-                "randomize": true
-              },
-              "difficulty_level": {
-                "choices": [
-                  "level_1",
-                  "level_2",
-                  "level_3"
-                ],
-                "weights": [
-                  0.4,
-                  0.4,
-                  0.2
-                ]
-              }
-            },
-            "variation_dimensions": [
-              "seed",
-              "difficulty_level",
-              "context_style"
-            ],
-            "difficulty_controls": {
-              "level_1": {},
-              "level_2": {},
-              "level_3": {}
-            },
-            "anti_repetition_rules": {
-              "avoid_same_template_consecutive": true,
-              "avoid_same_ratio_consecutive": true,
-              "avoid_same_point_names_consecutive": true,
-              "avoid_same_answer_consecutive": true,
-              "recent_history_window": 5,
-              "signature_fields": [
-                "problem_type_id",
-                "template_variant",
-                "routing_track",
-                "scenario_type",
-                "ratio_form",
-                "ratio_values",
-                "coordinate_pattern",
-                "answer"
-              ]
-            },
-            "validity_constraints": [
-              "answer derivable from givens"
-            ],
-            "answer_shape": "numeric",
-            "explanation_variants": [
-              "stepwise"
-            ],
-            "sampling_strategy": "weighted_random",
-            "template_families": [
-              "applied_quadratic_inequality_problem"
-            ],
-            "parameter_slots": {
-              "seed": "integer",
-              "difficulty": "easy"
-            },
-            "randomization_rules": {
-              "shuffle_choices": false
-            },
-            "avoid_llm_freeform_math": true,
-            "use_domain_functions": true,
-            "derivation_steps_required": true,
-            "contextual_application": true,
-            "template_slots": {
-              "stem": "applied_quadratic_inequality_problem"
-            },
-            "problem_type_id": "fallback_applied_quadratic_inequality_problem",
-            "contract_validation_blockers": [],
-            "contract_validation_warnings": [
-              "single_template_variant_only",
-              "variation_dimensions_below_recommended_minimum"
-            ]
-          },
-          "validator_contract": {
-            "static_checks": [
-              "answer_contract_checks",
-              "choices_policy"
-            ],
-            "semantic_checks": [
-              "givens_to_target_dependency"
-            ],
-            "runtime_smoke_count": 30
-          },
-          "spec_source": "phase1_induced_draft",
-          "grouping_reason": "split_by_feature_signature",
-          "feature_signature": [
-            "short_answer",
-            "applied_quadratic_inequality_problem",
-            "short_answer",
-            [
-              "quadratic_factoring_reasoning"
-            ],
-            [
-              "coordinate_point",
-              "three_coordinate_points"
-            ]
-          ],
-          "canonical_base_problem_type_id": "fallback_applied_quadratic_inequality_problem",
-          "value_type_prefix": "",
-          "_resolved_template_slot": "applied_quadratic_inequality_problem"
-        },
-        "generator_readiness": "runtime_ready",
-        "usable_for_phase3": true,
-        "template_slot": "applied_quadratic_inequality_problem",
-        "canonical_base_problem_type_id": "fallback_applied_quadratic_inequality_problem",
-        "value_type_prefix": "",
-        "subskill_id": "applied_quadratic_inequality_problem",
-        "runtime_status": "runtime_ready_candidate",
-        "next_action": "phase2_foundation_preflight",
-        "semantic_alignment": {
-          "skill_problem_type_score": 0.0,
-          "source_problem_type_score": 0.0164,
-          "task_consistent_with_skill": true
-        }
-      },
-      {
-        "problem_type_id": "fallback_solve_unknown_coordinate_from_two_point_distance",
-        "proposed_problem_type_id": "fallback_solve_unknown_coordinate_from_two_point_distance",
-        "display_name": "兩點距離反求座標",
-        "matched_example_ids": [
-          4536
-        ],
-        "matched_example_count": 1,
-        "unmatched_example_ids": [],
-        "representative_example_id": 4536,
-        "structural_features": [
-          "unordered_set"
-        ],
-        "answer_contract_proposal": {
-          "choices_required": false,
-          "choice_count": null,
-          "correct_choice_count": null,
-          "frontend_render_choices": false,
-          "answer_type": "solution_set",
-          "answer_shape": "unordered_set",
-          "answer_equivalence": "unordered_solution_set",
-          "checker": "solution_set_checker",
-          "accepted_formats": [
-            "-3, 7",
-            "7, -3",
-            "{-3, 7}",
-            "k=-3 或 k=7",
-            "-3 或 7"
-          ],
-          "checker_key": "solution_set_checker",
-          "equivalence_type": "unordered_solution_set",
-          "selected_checker": "solution_set_checker",
-          "checker_capability_status": "ok",
-          "checker_contract_blockers": [],
-          "checker_contract_warnings": [],
-          "stem_contract": {
-            "stem_must_not_embed_choices": true,
-            "allowed_math_objects": [
-              "coordinate_point",
-              "distance_formula",
-              "parameter",
-              "segment_length",
-              "three_coordinate_points",
-              "triangle",
-              "two_coordinate_points",
-              "unknown_coordinate"
-            ],
-            "required_math_objects": [
-              "coordinate_point",
-              "distance_formula"
-            ],
-            "forbidden_patterns": [
-              "\\(A\\)",
-              "\\(B\\)",
-              "\\(C\\)",
-              "\\(D\\)"
-            ]
-          },
-          "dependency_contract": {
-            "givens_must_be_used": true,
-            "target_answer_must_depend_on_givens": true,
-            "variables_in_conditions_must_appear_in_target": false
-          },
-          "semantic_contract": {
-            "reasoning_type": [
-              "distance_formula_reasoning"
-            ],
-            "reject_if": [
-              "unused_condition",
-              "ambiguous_answer",
-              "answer_not_derivable",
-              "duplicated_choices",
-              "no_correct_choice",
-              "multiple_correct_choices_when_single_choice"
-            ]
-          },
-          "generator_contract": {
-            "template_variants": [
-              {
-                "id": "direct_distance",
-                "label": "直接求距離",
-                "stem_pattern": "求 {A}({ax},{ay}) 與 {B}({bx},{by}) 的距離。",
-                "weight": 1.0,
-                "enabled": true
-              },
-              {
-                "id": "missing_coordinate",
-                "label": "反求坐標",
-                "stem_pattern": "已知 {A}({ax},{ay})、{B}({bx},{by}) 與距離 {d}，求未知坐標。",
-                "weight": 0.6,
-                "enabled": true
-              },
-              {
-                "id": "word_context_distance",
-                "label": "語境距離",
-                "stem_pattern": "平面上兩地坐標如下，求兩地距離。",
-                "weight": 1.0,
-                "enabled": true
-              },
-              {
-                "id": "compare_distance",
-                "label": "比較距離",
-                "stem_pattern": "比較 {A} 到 {B} 與 {A} 到 {C} 的距離大小。",
-                "weight": 0.4,
-                "enabled": true
-              }
-            ],
-            "parameter_schema": {
-              "point_names": {
-                "choices": [
-                  [
-                    "A",
-                    "B",
-                    "P"
-                  ],
-                  [
-                    "P",
-                    "Q",
-                    "R"
-                  ],
-                  [
-                    "M",
-                    "N",
-                    "T"
-                  ],
-                  [
-                    "C",
-                    "D",
-                    "E"
-                  ]
-                ],
-                "randomize": true
-              },
-              "coordinate_range": {
-                "x_min": -10,
-                "x_max": 10,
-                "y_min": -10,
-                "y_max": 10,
-                "exclude_zero_probability": 0.2
-              },
-              "distance_result_type": {
-                "choices": [
-                  "integer",
-                  "radical"
-                ],
-                "weights": [
-                  0.55,
-                  0.45
-                ]
-              },
-              "coordinate_delta_pattern": {
-                "choices": [
-                  "axis_aligned",
-                  "mixed_sign",
-                  "general"
-                ],
-                "weights": [
-                  0.3,
-                  0.4,
-                  0.3
-                ]
-              }
-            },
-            "variation_dimensions": [
-              "point_names",
-              "coordinate_sign_pattern",
-              "distance_result_type",
-              "coordinate_delta_pattern",
-              "ask_target",
-              "context_style"
-            ],
-            "difficulty_controls": {
-              "level_1": {
-                "coordinate_range": [
-                  -5,
-                  5
-                ],
-                "integer_distance_only": true
-              },
-              "level_2": {
-                "coordinate_range": [
-                  -10,
-                  10
-                ],
-                "allow_radical": true
-              },
-              "level_3": {
-                "word_context_enabled": true,
-                "missing_coordinate_enabled": true
-              }
-            },
-            "anti_repetition_rules": {
-              "avoid_same_template_consecutive": true,
-              "avoid_same_ratio_consecutive": true,
-              "avoid_same_point_names_consecutive": true,
-              "avoid_same_answer_consecutive": true,
-              "recent_history_window": 5,
-              "signature_fields": [
-                "problem_type_id",
-                "template_variant",
-                "routing_track",
-                "scenario_type",
-                "ratio_form",
-                "ratio_values",
-                "coordinate_pattern",
-                "answer"
-              ]
-            },
-            "validity_constraints": [
-              "A != B",
-              "distance > 0",
-              "if integer answer desired, dx^2+dy^2 must be perfect square",
-              "if radical answer desired, simplify radical form"
-            ],
-            "answer_shape": "numeric_or_radical",
-            "explanation_variants": [
-              "distance_formula",
-              "pythagorean_step"
-            ],
-            "sampling_strategy": "weighted_random",
-            "template_families": [
-              "solve_unknown_coordinate_from_two_point_distance"
-            ],
-            "parameter_slots": {
-              "seed": "integer",
-              "difficulty": "easy"
-            },
-            "randomization_rules": {
-              "shuffle_choices": false
-            },
-            "avoid_llm_freeform_math": true,
-            "use_domain_functions": true,
-            "derivation_steps_required": true,
-            "contextual_application": true,
-            "template_slots": {
-              "stem": "point_quadrant"
-            },
-            "problem_type_id": "fallback_solve_unknown_coordinate_from_two_point_distance",
-            "contract_validation_blockers": [],
-            "contract_validation_warnings": []
-          },
-          "validator_contract": {
-            "static_checks": [
-              "answer_contract_checks",
-              "choices_policy"
-            ],
-            "semantic_checks": [
-              "givens_to_target_dependency"
-            ],
-            "runtime_smoke_count": 30
-          },
-          "order_matters": true,
-          "accepted_format_notes": [],
-          "canonical_answer_schema": "solution_set"
-        },
-        "checker_key_proposal": "solution_set_checker",
-        "equivalence_type_proposal": "unordered_solution_set",
-        "answer_shape": "unordered_set",
-        "answer_semantics": "unordered_set",
-        "presentation_mode": "short_answer",
-        "source_has_choices": false,
-        "selected_checker": "solution_set_checker",
-        "checker_selection_reason": "task_family_default",
-        "coordinate_pair_presentation_note": "",
-        "confidence": "high",
-        "promote_recommendation": "recommend_promote_for_that_candidate",
-        "promote_blockers": [],
-        "risk_flags": [
-          "ai_first_mode_fell_back_to_rule_only",
-          "ai_unavailable_fallback_to_same_as_main",
-          "alignment_score_below_recommended_threshold",
-          "majority_sources_need_human_subskill_review",
-          "skill_scoped_classification_low_confidence",
-          "source_skill_scope_locked_demoted_blockers_to_warnings"
-        ],
-        "checker_contract_warnings": [],
-        "spec_source": "phase1_induced_draft",
-        "grouping_reason": "split_by_feature_signature",
-        "feature_signature": [
-          "short_answer",
-          "solve_unknown_coordinate_from_two_point_distance",
-          "short_answer",
-          [
-            "distance_formula_reasoning"
-          ],
-          [
-            "coordinate_point",
-            "distance_formula"
-          ]
-        ],
-        "problem_type_spec_draft": {
-          "problem_type_id": "fallback_solve_unknown_coordinate_from_two_point_distance",
-          "skill_id": "vh_數學B1_PropertiesOfPerpendicularLines",
-          "target_task": "solve_unknown_coordinate_from_two_point_distance",
-          "task_family": "distance_between_two_points_family",
-          "display_name": "兩點距離反求座標",
-          "answer_format_hint": "",
-          "answer_fields": null,
-          "answer_separator": null,
-          "source_example_ids": [
-            4536
-          ],
-          "answer_contract": {
-            "choices_required": false,
-            "choice_count": null,
-            "correct_choice_count": null,
-            "frontend_render_choices": false,
-            "answer_type": "solution_set",
-            "answer_shape": "unordered_set",
-            "answer_equivalence": "unordered_solution_set",
-            "checker": "solution_set_checker",
-            "accepted_formats": [
-              "-3, 7",
-              "7, -3",
-              "{-3, 7}",
-              "k=-3 或 k=7",
-              "-3 或 7"
-            ]
-          },
-          "stem_contract": {
-            "stem_must_not_embed_choices": true,
-            "allowed_math_objects": [
-              "coordinate_point",
-              "distance_formula",
-              "parameter",
-              "segment_length",
-              "three_coordinate_points",
-              "triangle",
-              "two_coordinate_points",
-              "unknown_coordinate"
-            ],
-            "required_math_objects": [
-              "coordinate_point",
-              "distance_formula"
-            ],
-            "forbidden_patterns": [
-              "\\(A\\)",
-              "\\(B\\)",
-              "\\(C\\)",
-              "\\(D\\)"
-            ]
-          },
-          "dependency_contract": {
-            "givens_must_be_used": true,
-            "target_answer_must_depend_on_givens": true,
-            "variables_in_conditions_must_appear_in_target": false
-          },
-          "semantic_contract": {
-            "reasoning_type": [
-              "distance_formula_reasoning"
-            ],
-            "reject_if": [
-              "unused_condition",
-              "ambiguous_answer",
-              "answer_not_derivable",
-              "duplicated_choices",
-              "no_correct_choice",
-              "multiple_correct_choices_when_single_choice"
-            ]
-          },
-          "generator_contract": {
-            "template_variants": [
-              {
-                "id": "direct_distance",
-                "label": "直接求距離",
-                "stem_pattern": "求 {A}({ax},{ay}) 與 {B}({bx},{by}) 的距離。",
-                "weight": 1.0,
-                "enabled": true
-              },
-              {
-                "id": "missing_coordinate",
-                "label": "反求坐標",
-                "stem_pattern": "已知 {A}({ax},{ay})、{B}({bx},{by}) 與距離 {d}，求未知坐標。",
-                "weight": 0.6,
-                "enabled": true
-              },
-              {
-                "id": "word_context_distance",
-                "label": "語境距離",
-                "stem_pattern": "平面上兩地坐標如下，求兩地距離。",
-                "weight": 1.0,
-                "enabled": true
-              },
-              {
-                "id": "compare_distance",
-                "label": "比較距離",
-                "stem_pattern": "比較 {A} 到 {B} 與 {A} 到 {C} 的距離大小。",
-                "weight": 0.4,
-                "enabled": true
-              }
-            ],
-            "parameter_schema": {
-              "point_names": {
-                "choices": [
-                  [
-                    "A",
-                    "B",
-                    "P"
-                  ],
-                  [
-                    "P",
-                    "Q",
-                    "R"
-                  ],
-                  [
-                    "M",
-                    "N",
-                    "T"
-                  ],
-                  [
-                    "C",
-                    "D",
-                    "E"
-                  ]
-                ],
-                "randomize": true
-              },
-              "coordinate_range": {
-                "x_min": -10,
-                "x_max": 10,
-                "y_min": -10,
-                "y_max": 10,
-                "exclude_zero_probability": 0.2
-              },
-              "distance_result_type": {
-                "choices": [
-                  "integer",
-                  "radical"
-                ],
-                "weights": [
-                  0.55,
-                  0.45
-                ]
-              },
-              "coordinate_delta_pattern": {
-                "choices": [
-                  "axis_aligned",
-                  "mixed_sign",
-                  "general"
-                ],
-                "weights": [
-                  0.3,
-                  0.4,
-                  0.3
-                ]
-              }
-            },
-            "variation_dimensions": [
-              "point_names",
-              "coordinate_sign_pattern",
-              "distance_result_type",
-              "coordinate_delta_pattern",
-              "ask_target",
-              "context_style"
-            ],
-            "difficulty_controls": {
-              "level_1": {
-                "coordinate_range": [
-                  -5,
-                  5
-                ],
-                "integer_distance_only": true
-              },
-              "level_2": {
-                "coordinate_range": [
-                  -10,
-                  10
-                ],
-                "allow_radical": true
-              },
-              "level_3": {
-                "word_context_enabled": true,
-                "missing_coordinate_enabled": true
-              }
-            },
-            "anti_repetition_rules": {
-              "avoid_same_template_consecutive": true,
-              "avoid_same_ratio_consecutive": true,
-              "avoid_same_point_names_consecutive": true,
-              "avoid_same_answer_consecutive": true,
-              "recent_history_window": 5,
-              "signature_fields": [
-                "problem_type_id",
-                "template_variant",
-                "routing_track",
-                "scenario_type",
-                "ratio_form",
-                "ratio_values",
-                "coordinate_pattern",
-                "answer"
-              ]
-            },
-            "validity_constraints": [
-              "A != B",
-              "distance > 0",
-              "if integer answer desired, dx^2+dy^2 must be perfect square",
-              "if radical answer desired, simplify radical form"
-            ],
-            "answer_shape": "numeric_or_radical",
-            "explanation_variants": [
-              "distance_formula",
-              "pythagorean_step"
-            ],
-            "sampling_strategy": "weighted_random",
-            "template_families": [
-              "solve_unknown_coordinate_from_two_point_distance"
-            ],
-            "parameter_slots": {
-              "seed": "integer",
-              "difficulty": "easy"
-            },
-            "randomization_rules": {
-              "shuffle_choices": false
-            },
-            "avoid_llm_freeform_math": true,
-            "use_domain_functions": true,
-            "derivation_steps_required": true,
-            "contextual_application": true,
-            "template_slots": {
-              "stem": "point_quadrant"
-            },
-            "problem_type_id": "fallback_solve_unknown_coordinate_from_two_point_distance",
-            "contract_validation_blockers": [],
-            "contract_validation_warnings": []
-          },
-          "validator_contract": {
-            "static_checks": [
-              "answer_contract_checks",
-              "choices_policy"
-            ],
-            "semantic_checks": [
-              "givens_to_target_dependency"
-            ],
-            "runtime_smoke_count": 30
-          },
-          "spec_source": "phase1_induced_draft",
-          "grouping_reason": "split_by_feature_signature",
-          "feature_signature": [
-            "short_answer",
-            "solve_unknown_coordinate_from_two_point_distance",
-            "short_answer",
-            [
-              "distance_formula_reasoning"
-            ],
-            [
-              "coordinate_point",
-              "distance_formula"
-            ]
-          ],
-          "canonical_base_problem_type_id": "fallback_solve_unknown_coordinate_from_two_point_distance",
-          "value_type_prefix": "",
-          "_resolved_template_slot": "two_point_distance_solution_set"
-        },
-        "generator_readiness": "runtime_ready",
-        "usable_for_phase3": true,
-        "template_slot": "point_quadrant",
-        "canonical_base_problem_type_id": "fallback_solve_unknown_coordinate_from_two_point_distance",
-        "value_type_prefix": "",
-        "subskill_id": "solve_unknown_coordinate_from_two_point_distance",
-        "runtime_status": "runtime_ready_candidate",
-        "next_action": "phase2_foundation_preflight",
-        "semantic_alignment": {
-          "skill_problem_type_score": 0.0,
-          "source_problem_type_score": 0.0149,
+          "source_problem_type_score": 0.0152,
           "task_consistent_with_skill": true
         }
       }
@@ -31544,7 +28019,7 @@
     "per_example_classification": [
       {
         "example_id": 4531,
-        "detected_problem_type_id": "fallback_perpendicular_lines_properties",
+        "detected_problem_type_id": "integer_perpendicular_lines_properties",
         "example_feature": {
           "source_example_id": 4531,
           "question_text": "設$A\\left( -2,a \\right)$、$B\\left( 3,4 \\right)$、$C\\left( -2,8 \\right)$、$D\\left( 4,-2 \\right)$，若$\\overline{AB}$與$\\overline{CD}$垂直，試求a之值。",
@@ -31611,11 +28086,11 @@
             "rule_confidence": 0.5,
             "final_target_task": "perpendicular_lines_properties",
             "final_task_family": "generic_numeric_family",
-            "classifier_source": "clause45_unclassified_exception",
+            "classifier_source": "rule_fallback_ai_unavailable",
             "classification_decision": "",
             "conflict_reason": "ai_api_key_missing",
             "source_mapping_warning": "",
-            "requires_human_action": false,
+            "requires_human_action": true,
             "ai_notes": "",
             "skill_scoped_candidates": [
               {
@@ -31739,7 +28214,7 @@
             ],
             "selected_subskill": "perpendicular_lines_properties",
             "selected_problem_type": "perpendicular_lines_properties",
-            "candidate_source": "clause45_fallback_proxy",
+            "candidate_source": "needs_review",
             "selected_generator_contract": {},
             "parameter_schema": {},
             "variable_randomization_notes": [],
@@ -31868,8 +28343,6 @@
           "induction_tier": "core",
           "enrichment_reasons": [],
           "included_in_core_induction": true,
-          "problem_type_id": "fallback_perpendicular_lines_properties",
-          "proxy_problem_type_id": "fallback_perpendicular_lines_properties",
           "equivalence_type": "numeric_exact",
           "checker_key": "integer_checker",
           "requires_human_action": false
@@ -31878,7 +28351,7 @@
         "classification_confidence": "high",
         "classification_reason": "rule_fallback_ai_unavailable",
         "risk_flags": [
-          "candidate_only_problem_type"
+          "requires_human_action"
         ],
         "semantic_classification": {
           "ai_target_task": "",
@@ -31901,11 +28374,11 @@
           "rule_confidence": 0.5,
           "final_target_task": "perpendicular_lines_properties",
           "final_task_family": "generic_numeric_family",
-          "classifier_source": "clause45_unclassified_exception",
+          "classifier_source": "rule_fallback_ai_unavailable",
           "classification_decision": "",
           "conflict_reason": "ai_api_key_missing",
           "source_mapping_warning": "",
-          "requires_human_action": false,
+          "requires_human_action": true,
           "ai_notes": "",
           "skill_scoped_candidates": [
             {
@@ -32029,7 +28502,7 @@
           ],
           "selected_subskill": "perpendicular_lines_properties",
           "selected_problem_type": "perpendicular_lines_properties",
-          "candidate_source": "clause45_fallback_proxy",
+          "candidate_source": "needs_review",
           "selected_generator_contract": {},
           "parameter_schema": {},
           "variable_randomization_notes": [],
@@ -32067,7 +28540,7 @@
           "source_quality_status": "FORCE_ALLOWED_FOR_INDUCTION"
         },
         "subskill_id": "perpendicular_lines_properties",
-        "classification_source": "clause45_unclassified_exception",
+        "classification_source": "rule_fallback_ai_unavailable",
         "induction_eligibility": "excluded"
       },
       {
@@ -33468,7 +29941,7 @@
       },
       {
         "example_id": 4527,
-        "detected_problem_type_id": "fallback_applied_quadratic_inequality_problem",
+        "detected_problem_type_id": "short_answer_applied_quadratic_inequality_problem_short_answer",
         "example_feature": {
           "source_example_id": 4527,
           "question_text": "已知坐標平面上三點$A\\left( 2,1 \\right)$、$B\\left( 1,3 \\right)$及$C\\left( 4,2 \\right)$，試問△ABC是否為直角三角形？.",
@@ -33533,11 +30006,11 @@
             "rule_confidence": 0.5,
             "final_target_task": "applied_quadratic_inequality_problem",
             "final_task_family": "quadratic_inequality_family",
-            "classifier_source": "clause45_unclassified_exception",
+            "classifier_source": "rule_fallback_ai_unavailable",
             "classification_decision": "",
             "conflict_reason": "ai_api_key_missing",
             "source_mapping_warning": "",
-            "requires_human_action": false,
+            "requires_human_action": true,
             "ai_notes": "",
             "skill_scoped_candidates": [
               {
@@ -33859,7 +30332,7 @@
             ],
             "selected_subskill": "applied_quadratic_inequality_problem",
             "selected_problem_type": "applied_quadratic_inequality_problem",
-            "candidate_source": "clause45_fallback_proxy",
+            "candidate_source": "needs_review",
             "selected_generator_contract": {},
             "parameter_schema": {},
             "variable_randomization_notes": [],
@@ -33987,8 +30460,6 @@
           "induction_tier": "core",
           "enrichment_reasons": [],
           "included_in_core_induction": true,
-          "problem_type_id": "fallback_applied_quadratic_inequality_problem",
-          "proxy_problem_type_id": "fallback_applied_quadratic_inequality_problem",
           "equivalence_type": "exact_string",
           "checker_key": "text_short_checker",
           "requires_human_action": false
@@ -33996,7 +30467,9 @@
         "answer_shape": "text_short",
         "classification_confidence": "high",
         "classification_reason": "rule_fallback_ai_unavailable",
-        "risk_flags": [],
+        "risk_flags": [
+          "requires_human_action"
+        ],
         "semantic_classification": {
           "ai_target_task": "",
           "ai_task_family": "",
@@ -34018,11 +30491,11 @@
           "rule_confidence": 0.5,
           "final_target_task": "applied_quadratic_inequality_problem",
           "final_task_family": "quadratic_inequality_family",
-          "classifier_source": "clause45_unclassified_exception",
+          "classifier_source": "rule_fallback_ai_unavailable",
           "classification_decision": "",
           "conflict_reason": "ai_api_key_missing",
           "source_mapping_warning": "",
-          "requires_human_action": false,
+          "requires_human_action": true,
           "ai_notes": "",
           "skill_scoped_candidates": [
             {
@@ -34344,7 +30817,7 @@
           ],
           "selected_subskill": "applied_quadratic_inequality_problem",
           "selected_problem_type": "applied_quadratic_inequality_problem",
-          "candidate_source": "clause45_fallback_proxy",
+          "candidate_source": "needs_review",
           "selected_generator_contract": {},
           "parameter_schema": {},
           "variable_randomization_notes": [],
@@ -34375,12 +30848,12 @@
           "possible_mixed_source_context": true
         },
         "subskill_id": "applied_quadratic_inequality_problem",
-        "classification_source": "clause45_unclassified_exception",
+        "classification_source": "rule_fallback_ai_unavailable",
         "induction_eligibility": "excluded"
       },
       {
         "example_id": 4536,
-        "detected_problem_type_id": "fallback_solve_unknown_coordinate_from_two_point_distance",
+        "detected_problem_type_id": "short_answer_solve_unknown_coordinate_from_two_point_distance_short_answer",
         "example_feature": {
           "source_example_id": 4536,
           "question_text": "設$A\\left( -3,4 \\right)$、$B\\left( a,1 \\right)$、$C\\left( -4,-2 \\right)$、$D\\left( 2,8 \\right)$，若$\\overline{AB}$與$\\overline{CD}$垂直，試求a之值。",
@@ -34451,11 +30924,11 @@
             "rule_confidence": 0.55,
             "final_target_task": "solve_unknown_coordinate_from_two_point_distance",
             "final_task_family": "distance_between_two_points_family",
-            "classifier_source": "clause45_unclassified_exception",
+            "classifier_source": "rule_fallback_ai_unavailable",
             "classification_decision": "",
             "conflict_reason": "ai_api_key_missing",
             "source_mapping_warning": "",
-            "requires_human_action": false,
+            "requires_human_action": true,
             "ai_notes": "",
             "skill_scoped_candidates": [
               {
@@ -34893,7 +31366,7 @@
             ],
             "selected_subskill": "solve_unknown_coordinate_from_two_point_distance",
             "selected_problem_type": "solve_unknown_coordinate_from_two_point_distance",
-            "candidate_source": "clause45_fallback_proxy",
+            "candidate_source": "needs_review",
             "selected_generator_contract": {},
             "parameter_schema": {},
             "variable_randomization_notes": [],
@@ -35025,8 +31498,6 @@
           "induction_tier": "core",
           "enrichment_reasons": [],
           "included_in_core_induction": true,
-          "problem_type_id": "fallback_solve_unknown_coordinate_from_two_point_distance",
-          "proxy_problem_type_id": "fallback_solve_unknown_coordinate_from_two_point_distance",
           "equivalence_type": "exact_string",
           "checker_key": "text_short_checker",
           "requires_human_action": false
@@ -35034,7 +31505,9 @@
         "answer_shape": "text_short",
         "classification_confidence": "high",
         "classification_reason": "rule_fallback_ai_unavailable",
-        "risk_flags": [],
+        "risk_flags": [
+          "requires_human_action"
+        ],
         "semantic_classification": {
           "ai_target_task": "",
           "ai_task_family": "",
@@ -35056,11 +31529,11 @@
           "rule_confidence": 0.55,
           "final_target_task": "solve_unknown_coordinate_from_two_point_distance",
           "final_task_family": "distance_between_two_points_family",
-          "classifier_source": "clause45_unclassified_exception",
+          "classifier_source": "rule_fallback_ai_unavailable",
           "classification_decision": "",
           "conflict_reason": "ai_api_key_missing",
           "source_mapping_warning": "",
-          "requires_human_action": false,
+          "requires_human_action": true,
           "ai_notes": "",
           "skill_scoped_candidates": [
             {
@@ -35498,7 +31971,7 @@
           ],
           "selected_subskill": "solve_unknown_coordinate_from_two_point_distance",
           "selected_problem_type": "solve_unknown_coordinate_from_two_point_distance",
-          "candidate_source": "clause45_fallback_proxy",
+          "candidate_source": "needs_review",
           "selected_generator_contract": {},
           "parameter_schema": {},
           "variable_randomization_notes": [],
@@ -35533,12 +32006,12 @@
           "possible_mixed_source_context": true
         },
         "subskill_id": "solve_unknown_coordinate_from_two_point_distance",
-        "classification_source": "clause45_unclassified_exception",
+        "classification_source": "rule_fallback_ai_unavailable",
         "induction_eligibility": "excluded"
       },
       {
         "example_id": 4537,
-        "detected_problem_type_id": "skill_scoped_unresolved_problem_type",
+        "detected_problem_type_id": "short_answer_compute_numeric_short_answer",
         "example_feature": {
           "source_example_id": 4537,
           "question_text": "設直線${{L}_{1}}$通過$A\\left( 3,k+1 \\right)$、$B\\left( -k,5 \\right)$兩點，直線${{L}_{2}}$通過$C\\left( 4,-3 \\right)$、$D\\left( -2,1 \\right)$兩點，若直線${{L}_{1}}$垂直${{L}_{2}}$，試求k之值。",
@@ -35556,7 +32029,7 @@
             "triangle",
             "two_coordinate_points"
           ],
-          "target_task": "contextual_application",
+          "target_task": "compute_numeric",
           "task_family": "generic_numeric_family",
           "reasoning_type": [
             "numeric_computation"
@@ -35581,7 +32054,7 @@
             "L",
             "k"
           ],
-          "target": "contextual_application",
+          "target": "compute_numeric",
           "classifier_source": "rule_fallback_ai_unavailable",
           "math_meta_tags": [],
           "forced_target_task": "",
@@ -35605,13 +32078,13 @@
             "rule_target_task": "compute_numeric",
             "rule_task_family": "generic_numeric_family",
             "rule_confidence": 0.2,
-            "final_target_task": "contextual_application",
+            "final_target_task": "compute_numeric",
             "final_task_family": "generic_numeric_family",
-            "classifier_source": "clause45_unclassified_exception",
+            "classifier_source": "rule_fallback_ai_unavailable",
             "classification_decision": "",
             "conflict_reason": "ai_api_key_missing",
             "source_mapping_warning": "",
-            "requires_human_action": false,
+            "requires_human_action": true,
             "ai_notes": "",
             "skill_scoped_candidates": [
               {
@@ -35832,7 +32305,7 @@
             "outsider_candidates": [],
             "selected_subskill": "compute_numeric",
             "selected_problem_type": "compute_numeric",
-            "candidate_source": "clause45_fallback_proxy",
+            "candidate_source": "needs_review",
             "selected_generator_contract": {},
             "parameter_schema": {},
             "variable_randomization_notes": [],
@@ -35960,11 +32433,6 @@
           "induction_tier": "core",
           "enrichment_reasons": [],
           "included_in_core_induction": true,
-          "generator_readiness": "pending_problem_type_induction",
-          "usable_for_phase3": false,
-          "needs_rule_pack_or_slot_registration": true,
-          "problem_type_id": "skill_scoped_unresolved_problem_type",
-          "proxy_problem_type_id": "skill_scoped_unresolved_problem_type",
           "equivalence_type": "exact_string",
           "checker_key": "text_short_checker",
           "requires_human_action": false
@@ -35973,7 +32441,7 @@
         "classification_confidence": "high",
         "classification_reason": "rule_fallback_ai_unavailable",
         "risk_flags": [
-          "candidate_only_problem_type"
+          "requires_human_action"
         ],
         "semantic_classification": {
           "ai_target_task": "",
@@ -35994,13 +32462,13 @@
           "rule_target_task": "compute_numeric",
           "rule_task_family": "generic_numeric_family",
           "rule_confidence": 0.2,
-          "final_target_task": "contextual_application",
+          "final_target_task": "compute_numeric",
           "final_task_family": "generic_numeric_family",
-          "classifier_source": "clause45_unclassified_exception",
+          "classifier_source": "rule_fallback_ai_unavailable",
           "classification_decision": "",
           "conflict_reason": "ai_api_key_missing",
           "source_mapping_warning": "",
-          "requires_human_action": false,
+          "requires_human_action": true,
           "ai_notes": "",
           "skill_scoped_candidates": [
             {
@@ -36221,7 +32689,7 @@
           "outsider_candidates": [],
           "selected_subskill": "compute_numeric",
           "selected_problem_type": "compute_numeric",
-          "candidate_source": "clause45_fallback_proxy",
+          "candidate_source": "needs_review",
           "selected_generator_contract": {},
           "parameter_schema": {},
           "variable_randomization_notes": [],
@@ -36251,8 +32719,8 @@
           "possible_structure_mismatch": false,
           "possible_mixed_source_context": false
         },
-        "subskill_id": "contextual_application",
-        "classification_source": "clause45_unclassified_exception",
+        "subskill_id": "compute_numeric",
+        "classification_source": "rule_fallback_ai_unavailable",
         "induction_eligibility": "excluded"
       },
       {
@@ -37681,35 +34149,30 @@
     "split_or_merge_recommendation": "induced_from_source_features",
     "problem_type_spec_first": true,
     "spec_defined_problem_type_ids": [
-      "fallback_perpendicular_lines_properties",
-      "skill_scoped_unresolved_problem_type",
-      "fallback_applied_quadratic_inequality_problem",
-      "fallback_solve_unknown_coordinate_from_two_point_distance"
+      "skill_scoped_unresolved_problem_type"
     ],
     "classifier_gate": {
-      "status": "classifier_auto_pending_promote_with_warning",
+      "status": "classifier_auto_pending_promote",
       "allowed": true,
       "warnings": [
-        "insufficient_examples",
         "ai_first_mode_fell_back_to_rule_only",
+        "ai_partial_unavailable_relaxed_tolerance",
         "ai_unavailable_fallback_to_same_as_main",
         "alignment_score_below_recommended_threshold",
-        "majority_sources_need_human_subskill_review",
-        "skill_scoped_classification_low_confidence",
-        "source_skill_scope_locked_demoted_blockers_to_warnings"
+        "demoted_majority_needs_review_due_to_partial_unavailable",
+        "majority_sources_need_human_subskill_review"
       ]
     },
     "generator_draft_gate": {
-      "status": "generator_draft_allowed_with_low_source_warning",
+      "status": "generator_draft_allowed",
       "allowed": true,
       "warnings": [
-        "low_source_examples",
         "ai_first_mode_fell_back_to_rule_only",
+        "ai_partial_unavailable_relaxed_tolerance",
         "ai_unavailable_fallback_to_same_as_main",
         "alignment_score_below_recommended_threshold",
-        "majority_sources_need_human_subskill_review",
-        "skill_scoped_classification_low_confidence",
-        "source_skill_scope_locked_demoted_blockers_to_warnings"
+        "demoted_majority_needs_review_due_to_partial_unavailable",
+        "majority_sources_need_human_subskill_review"
       ]
     },
     "runtime_ready_gate": {
@@ -37721,11 +34184,11 @@
       ],
       "warnings": [
         "ai_first_mode_fell_back_to_rule_only",
+        "ai_partial_unavailable_relaxed_tolerance",
         "ai_unavailable_fallback_to_same_as_main",
         "alignment_score_below_recommended_threshold",
-        "majority_sources_need_human_subskill_review",
-        "skill_scoped_classification_low_confidence",
-        "source_skill_scope_locked_demoted_blockers_to_warnings"
+        "demoted_majority_needs_review_due_to_partial_unavailable",
+        "majority_sources_need_human_subskill_review"
       ]
     },
     "exception_review_gate": {
@@ -37740,7 +34203,7 @@
     "human_confirmed_rule_pack_applied": false,
     "matched_registered_yaml_rule_pack": "",
     "ai_classification_overridden_by_human_confirmed_rule_pack": false,
-    "curated_specs_available": true
+    "curated_specs_available": false
   },
   "classifier_source": "rule_pack+phase1_induction",
   "ai_bootstrap_used": false,
@@ -37757,193 +34220,10 @@
   "default_problem_type_used": false,
   "problem_type_spec_first": true,
   "spec_defined_problem_type_ids": [
-    "fallback_perpendicular_lines_properties",
-    "skill_scoped_unresolved_problem_type",
-    "fallback_applied_quadratic_inequality_problem",
-    "fallback_solve_unknown_coordinate_from_two_point_distance"
+    "skill_scoped_unresolved_problem_type"
   ],
   "spec_mode": "ai_first_induce_from_sources",
   "induced_problem_type_specs": [
-    {
-      "problem_type_id": "fallback_perpendicular_lines_properties",
-      "skill_id": "vh_數學B1_PropertiesOfPerpendicularLines",
-      "target_task": "perpendicular_lines_properties",
-      "task_family": "generic_numeric_family",
-      "display_name": "integer / perpendicular_lines_properties",
-      "answer_format_hint": "integer",
-      "answer_fields": null,
-      "answer_separator": null,
-      "source_example_ids": [
-        4531
-      ],
-      "answer_contract": {
-        "choices_required": false,
-        "choice_count": null,
-        "correct_choice_count": null,
-        "frontend_render_choices": false,
-        "answer_type": "integer",
-        "answer_shape": "scalar",
-        "answer_equivalence": "numeric_exact",
-        "checker": "integer_checker",
-        "accepted_formats": [
-          "5",
-          "5.0",
-          "-3"
-        ],
-        "source_has_choices": false,
-        "equivalence_type": "numeric_exact",
-        "checker_key": "integer_checker",
-        "presentation_mode": "short_answer"
-      },
-      "stem_contract": {
-        "stem_must_not_embed_choices": true,
-        "allowed_math_objects": [
-          "coordinate_point",
-          "three_coordinate_points",
-          "triangle",
-          "two_coordinate_points"
-        ],
-        "required_math_objects": [
-          "coordinate_point",
-          "three_coordinate_points"
-        ],
-        "forbidden_patterns": [
-          "\\(A\\)",
-          "\\(B\\)",
-          "\\(C\\)",
-          "\\(D\\)"
-        ]
-      },
-      "dependency_contract": {
-        "givens_must_be_used": true,
-        "target_answer_must_depend_on_givens": true,
-        "variables_in_conditions_must_appear_in_target": false
-      },
-      "semantic_contract": {
-        "reasoning_type": [
-          "numeric_computation"
-        ],
-        "reject_if": [
-          "unused_condition",
-          "ambiguous_answer",
-          "answer_not_derivable",
-          "duplicated_choices",
-          "no_correct_choice",
-          "multiple_correct_choices_when_single_choice"
-        ]
-      },
-      "generator_contract": {
-        "template_variants": [
-          {
-            "id": "default",
-            "label": "default",
-            "stem_pattern": "依題意求解：{stem_hint}。",
-            "weight": 1.0,
-            "enabled": true
-          }
-        ],
-        "parameter_schema": {
-          "seed": {
-            "type": "integer",
-            "randomize": true
-          },
-          "difficulty_level": {
-            "choices": [
-              "level_1",
-              "level_2",
-              "level_3"
-            ],
-            "weights": [
-              0.4,
-              0.4,
-              0.2
-            ]
-          }
-        },
-        "variation_dimensions": [
-          "seed",
-          "difficulty_level",
-          "context_style"
-        ],
-        "difficulty_controls": {
-          "level_1": {},
-          "level_2": {},
-          "level_3": {}
-        },
-        "anti_repetition_rules": {
-          "avoid_same_template_consecutive": true,
-          "avoid_same_ratio_consecutive": true,
-          "avoid_same_point_names_consecutive": true,
-          "avoid_same_answer_consecutive": true,
-          "recent_history_window": 5,
-          "signature_fields": [
-            "problem_type_id",
-            "template_variant",
-            "routing_track",
-            "scenario_type",
-            "ratio_form",
-            "ratio_values",
-            "coordinate_pattern",
-            "answer"
-          ]
-        },
-        "validity_constraints": [
-          "answer derivable from givens"
-        ],
-        "answer_shape": "numeric",
-        "explanation_variants": [
-          "stepwise"
-        ],
-        "sampling_strategy": "weighted_random",
-        "template_families": [
-          "perpendicular_lines_properties"
-        ],
-        "parameter_slots": {
-          "seed": "integer",
-          "difficulty": "easy"
-        },
-        "randomization_rules": {
-          "shuffle_choices": false
-        },
-        "avoid_llm_freeform_math": true,
-        "use_domain_functions": true,
-        "derivation_steps_required": true,
-        "contextual_application": true,
-        "problem_type_id": "fallback_perpendicular_lines_properties",
-        "contract_validation_blockers": [],
-        "contract_validation_warnings": [
-          "single_template_variant_only",
-          "variation_dimensions_below_recommended_minimum"
-        ]
-      },
-      "validator_contract": {
-        "static_checks": [
-          "answer_contract_checks",
-          "choices_policy"
-        ],
-        "semantic_checks": [
-          "givens_to_target_dependency"
-        ],
-        "runtime_smoke_count": 30
-      },
-      "spec_source": "phase1_induced_draft",
-      "grouping_reason": "single_signature_group",
-      "feature_signature": [
-        "integer",
-        "perpendicular_lines_properties",
-        "short_answer",
-        [
-          "numeric_computation"
-        ],
-        [
-          "coordinate_point",
-          "three_coordinate_points"
-        ]
-      ],
-      "canonical_base_problem_type_id": "fallback_perpendicular_lines_properties",
-      "value_type_prefix": "",
-      "_resolved_template_slot": ""
-    },
     {
       "problem_type_id": "skill_scoped_unresolved_problem_type",
       "skill_id": "vh_數學B1_PropertiesOfPerpendicularLines",
@@ -37956,7 +34236,6 @@
       "source_example_ids": [
         4526,
         4532,
-        4537,
         4539
       ],
       "answer_contract": {
@@ -37977,14 +34256,10 @@
       "stem_contract": {
         "stem_must_not_embed_choices": true,
         "allowed_math_objects": [
-          "coordinate_point",
-          "three_coordinate_points",
-          "triangle",
-          "two_coordinate_points"
+          "coordinate_point"
         ],
         "required_math_objects": [
-          "coordinate_point",
-          "three_coordinate_points"
+          "coordinate_point"
         ],
         "forbidden_patterns": [
           "\\(A\\)",
@@ -38091,6 +34366,10 @@
         "template_slots": {
           "stem": "linear_function_contextual_word_problem"
         },
+        "templates": [
+          "template_scalar_unknown",
+          "template_feature_value"
+        ],
         "problem_type_id": "skill_scoped_unresolved_problem_type",
         "contract_validation_blockers": [],
         "contract_validation_warnings": [
@@ -38109,547 +34388,41 @@
         "runtime_smoke_count": 30
       },
       "spec_source": "phase1_induced_draft",
-      "grouping_reason": "merged_by_canonical_contract",
+      "grouping_reason": "single_signature_group",
       "feature_signature": [
-        "canonical_contract_merge",
+        "short_answer",
         "contextual_application",
         "short_answer",
-        "short_answer"
+        [
+          "numeric_computation"
+        ],
+        [
+          "coordinate_point"
+        ]
       ],
       "canonical_base_problem_type_id": "skill_scoped_unresolved_problem_type",
       "value_type_prefix": "",
       "_resolved_template_slot": "linear_function_contextual_word_problem"
-    },
-    {
-      "problem_type_id": "fallback_applied_quadratic_inequality_problem",
-      "skill_id": "vh_數學B1_PropertiesOfPerpendicularLines",
-      "target_task": "applied_quadratic_inequality_problem",
-      "task_family": "quadratic_inequality_family",
-      "display_name": "short_answer / applied_quadratic_inequality_problem",
-      "answer_format_hint": "interval",
-      "answer_fields": null,
-      "answer_separator": null,
-      "source_example_ids": [
-        4527
-      ],
-      "answer_contract": {
-        "choices_required": false,
-        "choice_count": null,
-        "correct_choice_count": null,
-        "frontend_render_choices": false,
-        "source_has_choices": false,
-        "answer_type": "interval",
-        "answer_shape": "interval_or_union",
-        "answer_semantics": "interval_union",
-        "answer_equivalence": "interval_equivalence",
-        "equivalence_type": "interval_equivalence",
-        "checker": "interval_checker",
-        "checker_key": "interval_checker",
-        "presentation_mode": "short_answer",
-        "selected_checker": "interval_checker",
-        "checker_selection_reason": "quadratic_inequality_interval_solution",
-        "accepted_formats": [
-          "-5 <= x <= 1",
-          "(-5, 1]",
-          "x in [-5,1]",
-          "x<-2 or x>5",
-          "-2<x<5",
-          "x<=-2 or x>=5"
-        ]
-      },
-      "stem_contract": {
-        "stem_must_not_embed_choices": true,
-        "allowed_math_objects": [
-          "coordinate_point",
-          "three_coordinate_points",
-          "triangle",
-          "two_coordinate_points"
-        ],
-        "required_math_objects": [
-          "coordinate_point",
-          "three_coordinate_points"
-        ],
-        "forbidden_patterns": [
-          "\\(A\\)",
-          "\\(B\\)",
-          "\\(C\\)",
-          "\\(D\\)"
-        ]
-      },
-      "dependency_contract": {
-        "givens_must_be_used": true,
-        "target_answer_must_depend_on_givens": true,
-        "variables_in_conditions_must_appear_in_target": false
-      },
-      "semantic_contract": {
-        "reasoning_type": [
-          "quadratic_factoring_reasoning"
-        ],
-        "reject_if": [
-          "unused_condition",
-          "ambiguous_answer",
-          "answer_not_derivable",
-          "duplicated_choices",
-          "no_correct_choice",
-          "multiple_correct_choices_when_single_choice"
-        ]
-      },
-      "generator_contract": {
-        "template_variants": [
-          {
-            "id": "default",
-            "label": "default",
-            "stem_pattern": "依題意求解：{stem_hint}。",
-            "weight": 1.0,
-            "enabled": true
-          }
-        ],
-        "parameter_schema": {
-          "seed": {
-            "type": "integer",
-            "randomize": true
-          },
-          "difficulty_level": {
-            "choices": [
-              "level_1",
-              "level_2",
-              "level_3"
-            ],
-            "weights": [
-              0.4,
-              0.4,
-              0.2
-            ]
-          }
-        },
-        "variation_dimensions": [
-          "seed",
-          "difficulty_level",
-          "context_style"
-        ],
-        "difficulty_controls": {
-          "level_1": {},
-          "level_2": {},
-          "level_3": {}
-        },
-        "anti_repetition_rules": {
-          "avoid_same_template_consecutive": true,
-          "avoid_same_ratio_consecutive": true,
-          "avoid_same_point_names_consecutive": true,
-          "avoid_same_answer_consecutive": true,
-          "recent_history_window": 5,
-          "signature_fields": [
-            "problem_type_id",
-            "template_variant",
-            "routing_track",
-            "scenario_type",
-            "ratio_form",
-            "ratio_values",
-            "coordinate_pattern",
-            "answer"
-          ]
-        },
-        "validity_constraints": [
-          "answer derivable from givens"
-        ],
-        "answer_shape": "numeric",
-        "explanation_variants": [
-          "stepwise"
-        ],
-        "sampling_strategy": "weighted_random",
-        "template_families": [
-          "applied_quadratic_inequality_problem"
-        ],
-        "parameter_slots": {
-          "seed": "integer",
-          "difficulty": "easy"
-        },
-        "randomization_rules": {
-          "shuffle_choices": false
-        },
-        "avoid_llm_freeform_math": true,
-        "use_domain_functions": true,
-        "derivation_steps_required": true,
-        "contextual_application": true,
-        "template_slots": {
-          "stem": "applied_quadratic_inequality_problem"
-        },
-        "problem_type_id": "fallback_applied_quadratic_inequality_problem",
-        "contract_validation_blockers": [],
-        "contract_validation_warnings": [
-          "single_template_variant_only",
-          "variation_dimensions_below_recommended_minimum"
-        ]
-      },
-      "validator_contract": {
-        "static_checks": [
-          "answer_contract_checks",
-          "choices_policy"
-        ],
-        "semantic_checks": [
-          "givens_to_target_dependency"
-        ],
-        "runtime_smoke_count": 30
-      },
-      "spec_source": "phase1_induced_draft",
-      "grouping_reason": "split_by_feature_signature",
-      "feature_signature": [
-        "short_answer",
-        "applied_quadratic_inequality_problem",
-        "short_answer",
-        [
-          "quadratic_factoring_reasoning"
-        ],
-        [
-          "coordinate_point",
-          "three_coordinate_points"
-        ]
-      ],
-      "canonical_base_problem_type_id": "fallback_applied_quadratic_inequality_problem",
-      "value_type_prefix": "",
-      "_resolved_template_slot": "applied_quadratic_inequality_problem"
-    },
-    {
-      "problem_type_id": "fallback_solve_unknown_coordinate_from_two_point_distance",
-      "skill_id": "vh_數學B1_PropertiesOfPerpendicularLines",
-      "target_task": "solve_unknown_coordinate_from_two_point_distance",
-      "task_family": "distance_between_two_points_family",
-      "display_name": "兩點距離反求座標",
-      "answer_format_hint": "",
-      "answer_fields": null,
-      "answer_separator": null,
-      "source_example_ids": [
-        4536
-      ],
-      "answer_contract": {
-        "choices_required": false,
-        "choice_count": null,
-        "correct_choice_count": null,
-        "frontend_render_choices": false,
-        "answer_type": "solution_set",
-        "answer_shape": "unordered_set",
-        "answer_equivalence": "unordered_solution_set",
-        "checker": "solution_set_checker",
-        "accepted_formats": [
-          "-3, 7",
-          "7, -3",
-          "{-3, 7}",
-          "k=-3 或 k=7",
-          "-3 或 7"
-        ]
-      },
-      "stem_contract": {
-        "stem_must_not_embed_choices": true,
-        "allowed_math_objects": [
-          "coordinate_point",
-          "distance_formula",
-          "parameter",
-          "segment_length",
-          "three_coordinate_points",
-          "triangle",
-          "two_coordinate_points",
-          "unknown_coordinate"
-        ],
-        "required_math_objects": [
-          "coordinate_point",
-          "distance_formula"
-        ],
-        "forbidden_patterns": [
-          "\\(A\\)",
-          "\\(B\\)",
-          "\\(C\\)",
-          "\\(D\\)"
-        ]
-      },
-      "dependency_contract": {
-        "givens_must_be_used": true,
-        "target_answer_must_depend_on_givens": true,
-        "variables_in_conditions_must_appear_in_target": false
-      },
-      "semantic_contract": {
-        "reasoning_type": [
-          "distance_formula_reasoning"
-        ],
-        "reject_if": [
-          "unused_condition",
-          "ambiguous_answer",
-          "answer_not_derivable",
-          "duplicated_choices",
-          "no_correct_choice",
-          "multiple_correct_choices_when_single_choice"
-        ]
-      },
-      "generator_contract": {
-        "template_variants": [
-          {
-            "id": "direct_distance",
-            "label": "直接求距離",
-            "stem_pattern": "求 {A}({ax},{ay}) 與 {B}({bx},{by}) 的距離。",
-            "weight": 1.0,
-            "enabled": true
-          },
-          {
-            "id": "missing_coordinate",
-            "label": "反求坐標",
-            "stem_pattern": "已知 {A}({ax},{ay})、{B}({bx},{by}) 與距離 {d}，求未知坐標。",
-            "weight": 0.6,
-            "enabled": true
-          },
-          {
-            "id": "word_context_distance",
-            "label": "語境距離",
-            "stem_pattern": "平面上兩地坐標如下，求兩地距離。",
-            "weight": 1.0,
-            "enabled": true
-          },
-          {
-            "id": "compare_distance",
-            "label": "比較距離",
-            "stem_pattern": "比較 {A} 到 {B} 與 {A} 到 {C} 的距離大小。",
-            "weight": 0.4,
-            "enabled": true
-          }
-        ],
-        "parameter_schema": {
-          "point_names": {
-            "choices": [
-              [
-                "A",
-                "B",
-                "P"
-              ],
-              [
-                "P",
-                "Q",
-                "R"
-              ],
-              [
-                "M",
-                "N",
-                "T"
-              ],
-              [
-                "C",
-                "D",
-                "E"
-              ]
-            ],
-            "randomize": true
-          },
-          "coordinate_range": {
-            "x_min": -10,
-            "x_max": 10,
-            "y_min": -10,
-            "y_max": 10,
-            "exclude_zero_probability": 0.2
-          },
-          "distance_result_type": {
-            "choices": [
-              "integer",
-              "radical"
-            ],
-            "weights": [
-              0.55,
-              0.45
-            ]
-          },
-          "coordinate_delta_pattern": {
-            "choices": [
-              "axis_aligned",
-              "mixed_sign",
-              "general"
-            ],
-            "weights": [
-              0.3,
-              0.4,
-              0.3
-            ]
-          }
-        },
-        "variation_dimensions": [
-          "point_names",
-          "coordinate_sign_pattern",
-          "distance_result_type",
-          "coordinate_delta_pattern",
-          "ask_target",
-          "context_style"
-        ],
-        "difficulty_controls": {
-          "level_1": {
-            "coordinate_range": [
-              -5,
-              5
-            ],
-            "integer_distance_only": true
-          },
-          "level_2": {
-            "coordinate_range": [
-              -10,
-              10
-            ],
-            "allow_radical": true
-          },
-          "level_3": {
-            "word_context_enabled": true,
-            "missing_coordinate_enabled": true
-          }
-        },
-        "anti_repetition_rules": {
-          "avoid_same_template_consecutive": true,
-          "avoid_same_ratio_consecutive": true,
-          "avoid_same_point_names_consecutive": true,
-          "avoid_same_answer_consecutive": true,
-          "recent_history_window": 5,
-          "signature_fields": [
-            "problem_type_id",
-            "template_variant",
-            "routing_track",
-            "scenario_type",
-            "ratio_form",
-            "ratio_values",
-            "coordinate_pattern",
-            "answer"
-          ]
-        },
-        "validity_constraints": [
-          "A != B",
-          "distance > 0",
-          "if integer answer desired, dx^2+dy^2 must be perfect square",
-          "if radical answer desired, simplify radical form"
-        ],
-        "answer_shape": "numeric_or_radical",
-        "explanation_variants": [
-          "distance_formula",
-          "pythagorean_step"
-        ],
-        "sampling_strategy": "weighted_random",
-        "template_families": [
-          "solve_unknown_coordinate_from_two_point_distance"
-        ],
-        "parameter_slots": {
-          "seed": "integer",
-          "difficulty": "easy"
-        },
-        "randomization_rules": {
-          "shuffle_choices": false
-        },
-        "avoid_llm_freeform_math": true,
-        "use_domain_functions": true,
-        "derivation_steps_required": true,
-        "contextual_application": true,
-        "template_slots": {
-          "stem": "point_quadrant"
-        },
-        "problem_type_id": "fallback_solve_unknown_coordinate_from_two_point_distance",
-        "contract_validation_blockers": [],
-        "contract_validation_warnings": []
-      },
-      "validator_contract": {
-        "static_checks": [
-          "answer_contract_checks",
-          "choices_policy"
-        ],
-        "semantic_checks": [
-          "givens_to_target_dependency"
-        ],
-        "runtime_smoke_count": 30
-      },
-      "spec_source": "phase1_induced_draft",
-      "grouping_reason": "split_by_feature_signature",
-      "feature_signature": [
-        "short_answer",
-        "solve_unknown_coordinate_from_two_point_distance",
-        "short_answer",
-        [
-          "distance_formula_reasoning"
-        ],
-        [
-          "coordinate_point",
-          "distance_formula"
-        ]
-      ],
-      "canonical_base_problem_type_id": "fallback_solve_unknown_coordinate_from_two_point_distance",
-      "value_type_prefix": "",
-      "_resolved_template_slot": "two_point_distance_solution_set"
     }
   ],
   "induction_clusters": [
     {
       "grouping_reason": "single_signature_group",
       "feature_signature": [
-        "integer",
-        "perpendicular_lines_properties",
+        "short_answer",
+        "contextual_application",
         "short_answer",
         [
           "numeric_computation"
         ],
         [
-          "coordinate_point",
-          "three_coordinate_points"
+          "coordinate_point"
         ]
-      ],
-      "source_example_ids": [
-        4531
-      ],
-      "answer_type": "integer",
-      "presentation_mode": "short_answer",
-      "source_has_choices": false
-    },
-    {
-      "grouping_reason": "merged_by_canonical_contract",
-      "feature_signature": [
-        "canonical_contract_merge",
-        "contextual_application",
-        "short_answer",
-        "short_answer"
       ],
       "source_example_ids": [
         4526,
         4532,
-        4537,
         4539
-      ],
-      "answer_type": "short_answer",
-      "presentation_mode": "short_answer",
-      "source_has_choices": false
-    },
-    {
-      "grouping_reason": "split_by_feature_signature",
-      "feature_signature": [
-        "short_answer",
-        "applied_quadratic_inequality_problem",
-        "short_answer",
-        [
-          "quadratic_factoring_reasoning"
-        ],
-        [
-          "coordinate_point",
-          "three_coordinate_points"
-        ]
-      ],
-      "source_example_ids": [
-        4527
-      ],
-      "answer_type": "short_answer",
-      "presentation_mode": "short_answer",
-      "source_has_choices": false
-    },
-    {
-      "grouping_reason": "split_by_feature_signature",
-      "feature_signature": [
-        "short_answer",
-        "solve_unknown_coordinate_from_two_point_distance",
-        "short_answer",
-        [
-          "distance_formula_reasoning"
-        ],
-        [
-          "coordinate_point",
-          "distance_formula"
-        ]
-      ],
-      "source_example_ids": [
-        4536
       ],
       "answer_type": "short_answer",
       "presentation_mode": "short_answer",
@@ -38660,416 +34433,15 @@
   "source_quality_reject_examples": [],
   "proposal_items": [
     {
-      "problem_type_id": "integer_perpendicular_lines_properties",
-      "proposed_problem_type_id": "integer_perpendicular_lines_properties",
-      "display_name": "integer / perpendicular_lines_properties",
-      "matched_example_ids": [
-        4531
-      ],
-      "matched_example_count": 1,
-      "unmatched_example_ids": [],
-      "representative_example_id": 4531,
-      "structural_features": [
-        "scalar"
-      ],
-      "answer_contract_proposal": {
-        "choices_required": false,
-        "choice_count": null,
-        "correct_choice_count": null,
-        "frontend_render_choices": false,
-        "answer_type": "integer",
-        "answer_shape": "scalar",
-        "answer_equivalence": "numeric_exact",
-        "checker": "integer_checker",
-        "accepted_formats": [
-          "5",
-          "5.0",
-          "-3"
-        ],
-        "source_has_choices": false,
-        "equivalence_type": "numeric_exact",
-        "checker_key": "integer_checker",
-        "presentation_mode": "",
-        "selected_checker": "integer_checker",
-        "checker_capability_status": "ok",
-        "checker_contract_blockers": [],
-        "checker_contract_warnings": [],
-        "stem_contract": {
-          "stem_must_not_embed_choices": true,
-          "allowed_math_objects": [
-            "coordinate_point",
-            "three_coordinate_points",
-            "triangle",
-            "two_coordinate_points"
-          ],
-          "required_math_objects": [
-            "coordinate_point",
-            "three_coordinate_points"
-          ],
-          "forbidden_patterns": [
-            "\\(A\\)",
-            "\\(B\\)",
-            "\\(C\\)",
-            "\\(D\\)"
-          ]
-        },
-        "dependency_contract": {
-          "givens_must_be_used": true,
-          "target_answer_must_depend_on_givens": true,
-          "variables_in_conditions_must_appear_in_target": false
-        },
-        "semantic_contract": {
-          "reasoning_type": [
-            "numeric_computation"
-          ],
-          "reject_if": [
-            "unused_condition",
-            "ambiguous_answer",
-            "answer_not_derivable",
-            "duplicated_choices",
-            "no_correct_choice",
-            "multiple_correct_choices_when_single_choice"
-          ]
-        },
-        "generator_contract": {
-          "template_variants": [
-            {
-              "id": "default",
-              "label": "default",
-              "stem_pattern": "依題意求解：{stem_hint}。",
-              "weight": 1.0,
-              "enabled": true
-            }
-          ],
-          "parameter_schema": {
-            "seed": {
-              "type": "integer",
-              "randomize": true
-            },
-            "difficulty_level": {
-              "choices": [
-                "level_1",
-                "level_2",
-                "level_3"
-              ],
-              "weights": [
-                0.4,
-                0.4,
-                0.2
-              ]
-            }
-          },
-          "variation_dimensions": [
-            "seed",
-            "difficulty_level",
-            "context_style"
-          ],
-          "difficulty_controls": {
-            "level_1": {},
-            "level_2": {},
-            "level_3": {}
-          },
-          "anti_repetition_rules": {
-            "avoid_same_template_consecutive": true,
-            "avoid_same_ratio_consecutive": true,
-            "avoid_same_point_names_consecutive": true,
-            "avoid_same_answer_consecutive": true,
-            "recent_history_window": 5,
-            "signature_fields": [
-              "problem_type_id",
-              "template_variant",
-              "routing_track",
-              "scenario_type",
-              "ratio_form",
-              "ratio_values",
-              "coordinate_pattern",
-              "answer"
-            ]
-          },
-          "validity_constraints": [
-            "answer derivable from givens"
-          ],
-          "answer_shape": "numeric",
-          "explanation_variants": [
-            "stepwise"
-          ],
-          "sampling_strategy": "weighted_random",
-          "template_families": [
-            "perpendicular_lines_properties"
-          ],
-          "parameter_slots": {
-            "seed": "integer",
-            "difficulty": "easy"
-          },
-          "randomization_rules": {
-            "shuffle_choices": false
-          },
-          "avoid_llm_freeform_math": true,
-          "use_domain_functions": true,
-          "derivation_steps_required": true,
-          "contextual_application": true,
-          "problem_type_id": "fallback_perpendicular_lines_properties",
-          "contract_validation_blockers": [],
-          "contract_validation_warnings": [
-            "single_template_variant_only",
-            "variation_dimensions_below_recommended_minimum"
-          ]
-        },
-        "validator_contract": {
-          "static_checks": [
-            "answer_contract_checks",
-            "choices_policy"
-          ],
-          "semantic_checks": [
-            "givens_to_target_dependency"
-          ],
-          "runtime_smoke_count": 30
-        },
-        "order_matters": true,
-        "accepted_format_notes": [],
-        "canonical_answer_schema": "integer"
-      },
-      "checker_key_proposal": "integer_checker",
-      "equivalence_type_proposal": "numeric_exact",
-      "answer_shape": "scalar",
-      "answer_semantics": "scalar",
-      "presentation_mode": "short_answer",
-      "source_has_choices": false,
-      "selected_checker": "integer_checker",
-      "checker_selection_reason": "task_family_default",
-      "coordinate_pair_presentation_note": "",
-      "confidence": "high",
-      "promote_recommendation": "recommend_promote_for_that_candidate",
-      "promote_blockers": [],
-      "risk_flags": [
-        "ai_first_mode_fell_back_to_rule_only",
-        "ai_unavailable_fallback_to_same_as_main",
-        "alignment_score_below_recommended_threshold",
-        "majority_sources_need_human_subskill_review",
-        "skill_scoped_classification_low_confidence",
-        "source_skill_scope_locked_demoted_blockers_to_warnings"
-      ],
-      "checker_contract_warnings": [],
-      "spec_source": "phase1_induced_draft",
-      "grouping_reason": "single_signature_group",
-      "feature_signature": [
-        "integer",
-        "perpendicular_lines_properties",
-        "short_answer",
-        [
-          "numeric_computation"
-        ],
-        [
-          "coordinate_point",
-          "three_coordinate_points"
-        ]
-      ],
-      "problem_type_spec_draft": {
-        "problem_type_id": "fallback_perpendicular_lines_properties",
-        "skill_id": "vh_數學B1_PropertiesOfPerpendicularLines",
-        "target_task": "perpendicular_lines_properties",
-        "task_family": "generic_numeric_family",
-        "display_name": "integer / perpendicular_lines_properties",
-        "answer_format_hint": "integer",
-        "answer_fields": null,
-        "answer_separator": null,
-        "source_example_ids": [
-          4531
-        ],
-        "answer_contract": {
-          "choices_required": false,
-          "choice_count": null,
-          "correct_choice_count": null,
-          "frontend_render_choices": false,
-          "answer_type": "integer",
-          "answer_shape": "scalar",
-          "answer_equivalence": "numeric_exact",
-          "checker": "integer_checker",
-          "accepted_formats": [
-            "5",
-            "5.0",
-            "-3"
-          ],
-          "source_has_choices": false,
-          "equivalence_type": "numeric_exact",
-          "checker_key": "integer_checker",
-          "presentation_mode": "short_answer"
-        },
-        "stem_contract": {
-          "stem_must_not_embed_choices": true,
-          "allowed_math_objects": [
-            "coordinate_point",
-            "three_coordinate_points",
-            "triangle",
-            "two_coordinate_points"
-          ],
-          "required_math_objects": [
-            "coordinate_point",
-            "three_coordinate_points"
-          ],
-          "forbidden_patterns": [
-            "\\(A\\)",
-            "\\(B\\)",
-            "\\(C\\)",
-            "\\(D\\)"
-          ]
-        },
-        "dependency_contract": {
-          "givens_must_be_used": true,
-          "target_answer_must_depend_on_givens": true,
-          "variables_in_conditions_must_appear_in_target": false
-        },
-        "semantic_contract": {
-          "reasoning_type": [
-            "numeric_computation"
-          ],
-          "reject_if": [
-            "unused_condition",
-            "ambiguous_answer",
-            "answer_not_derivable",
-            "duplicated_choices",
-            "no_correct_choice",
-            "multiple_correct_choices_when_single_choice"
-          ]
-        },
-        "generator_contract": {
-          "template_variants": [
-            {
-              "id": "default",
-              "label": "default",
-              "stem_pattern": "依題意求解：{stem_hint}。",
-              "weight": 1.0,
-              "enabled": true
-            }
-          ],
-          "parameter_schema": {
-            "seed": {
-              "type": "integer",
-              "randomize": true
-            },
-            "difficulty_level": {
-              "choices": [
-                "level_1",
-                "level_2",
-                "level_3"
-              ],
-              "weights": [
-                0.4,
-                0.4,
-                0.2
-              ]
-            }
-          },
-          "variation_dimensions": [
-            "seed",
-            "difficulty_level",
-            "context_style"
-          ],
-          "difficulty_controls": {
-            "level_1": {},
-            "level_2": {},
-            "level_3": {}
-          },
-          "anti_repetition_rules": {
-            "avoid_same_template_consecutive": true,
-            "avoid_same_ratio_consecutive": true,
-            "avoid_same_point_names_consecutive": true,
-            "avoid_same_answer_consecutive": true,
-            "recent_history_window": 5,
-            "signature_fields": [
-              "problem_type_id",
-              "template_variant",
-              "routing_track",
-              "scenario_type",
-              "ratio_form",
-              "ratio_values",
-              "coordinate_pattern",
-              "answer"
-            ]
-          },
-          "validity_constraints": [
-            "answer derivable from givens"
-          ],
-          "answer_shape": "numeric",
-          "explanation_variants": [
-            "stepwise"
-          ],
-          "sampling_strategy": "weighted_random",
-          "template_families": [
-            "perpendicular_lines_properties"
-          ],
-          "parameter_slots": {
-            "seed": "integer",
-            "difficulty": "easy"
-          },
-          "randomization_rules": {
-            "shuffle_choices": false
-          },
-          "avoid_llm_freeform_math": true,
-          "use_domain_functions": true,
-          "derivation_steps_required": true,
-          "contextual_application": true,
-          "problem_type_id": "fallback_perpendicular_lines_properties",
-          "contract_validation_blockers": [],
-          "contract_validation_warnings": [
-            "single_template_variant_only",
-            "variation_dimensions_below_recommended_minimum"
-          ]
-        },
-        "validator_contract": {
-          "static_checks": [
-            "answer_contract_checks",
-            "choices_policy"
-          ],
-          "semantic_checks": [
-            "givens_to_target_dependency"
-          ],
-          "runtime_smoke_count": 30
-        },
-        "spec_source": "phase1_induced_draft",
-        "grouping_reason": "single_signature_group",
-        "feature_signature": [
-          "integer",
-          "perpendicular_lines_properties",
-          "short_answer",
-          [
-            "numeric_computation"
-          ],
-          [
-            "coordinate_point",
-            "three_coordinate_points"
-          ]
-        ],
-        "canonical_base_problem_type_id": "fallback_perpendicular_lines_properties",
-        "value_type_prefix": "",
-        "_resolved_template_slot": ""
-      },
-      "generator_readiness": "generator_not_ready",
-      "usable_for_phase3": false,
-      "template_slot": "",
-      "canonical_base_problem_type_id": "fallback_perpendicular_lines_properties",
-      "value_type_prefix": "",
-      "subskill_id": "perpendicular_lines_properties",
-      "runtime_status": "runtime_ready_candidate",
-      "next_action": "phase2_foundation_preflight",
-      "semantic_alignment": {
-        "skill_problem_type_score": 0.1739,
-        "source_problem_type_score": 0.0333,
-        "task_consistent_with_skill": true
-      },
-      "answer_type": "integer"
-    },
-    {
       "problem_type_id": "text_short_contextual_application",
       "proposed_problem_type_id": "text_short_contextual_application",
       "display_name": "text_short / contextual_application",
       "matched_example_ids": [
         4526,
         4532,
-        4537,
         4539
       ],
-      "matched_example_count": 4,
+      "matched_example_count": 3,
       "unmatched_example_ids": [],
       "representative_example_id": 4526,
       "structural_features": [
@@ -39096,14 +34468,10 @@
         "stem_contract": {
           "stem_must_not_embed_choices": true,
           "allowed_math_objects": [
-            "coordinate_point",
-            "three_coordinate_points",
-            "triangle",
-            "two_coordinate_points"
+            "coordinate_point"
           ],
           "required_math_objects": [
-            "coordinate_point",
-            "three_coordinate_points"
+            "coordinate_point"
           ],
           "forbidden_patterns": [
             "\\(A\\)",
@@ -39210,6 +34578,10 @@
           "template_slots": {
             "stem": "linear_function_contextual_word_problem"
           },
+          "templates": [
+            "template_scalar_unknown",
+            "template_feature_value"
+          ],
           "problem_type_id": "skill_scoped_unresolved_problem_type",
           "contract_validation_blockers": [],
           "contract_validation_warnings": [
@@ -39245,20 +34617,25 @@
       "promote_blockers": [],
       "risk_flags": [
         "ai_first_mode_fell_back_to_rule_only",
+        "ai_partial_unavailable_relaxed_tolerance",
         "ai_unavailable_fallback_to_same_as_main",
         "alignment_score_below_recommended_threshold",
-        "majority_sources_need_human_subskill_review",
-        "skill_scoped_classification_low_confidence",
-        "source_skill_scope_locked_demoted_blockers_to_warnings"
+        "demoted_majority_needs_review_due_to_partial_unavailable",
+        "majority_sources_need_human_subskill_review"
       ],
       "checker_contract_warnings": [],
       "spec_source": "phase1_induced_draft",
-      "grouping_reason": "merged_by_canonical_contract",
+      "grouping_reason": "single_signature_group",
       "feature_signature": [
-        "canonical_contract_merge",
+        "short_answer",
         "contextual_application",
         "short_answer",
-        "short_answer"
+        [
+          "numeric_computation"
+        ],
+        [
+          "coordinate_point"
+        ]
       ],
       "problem_type_spec_draft": {
         "problem_type_id": "skill_scoped_unresolved_problem_type",
@@ -39272,7 +34649,6 @@
         "source_example_ids": [
           4526,
           4532,
-          4537,
           4539
         ],
         "answer_contract": {
@@ -39280,27 +34656,23 @@
           "choice_count": null,
           "correct_choice_count": null,
           "frontend_render_choices": false,
-          "answer_type": "rational",
+          "answer_type": "text_short",
           "answer_shape": "text_short",
-          "answer_equivalence": "rational_equivalent",
-          "checker": "rational_checker",
+          "answer_equivalence": "exact_string",
+          "checker": "text_short_checker",
           "accepted_formats": [],
           "source_has_choices": false,
-          "equivalence_type": "rational_equivalent",
-          "checker_key": "rational_checker",
+          "equivalence_type": "exact_string",
+          "checker_key": "text_short_checker",
           "presentation_mode": "short_answer"
         },
         "stem_contract": {
           "stem_must_not_embed_choices": true,
           "allowed_math_objects": [
-            "coordinate_point",
-            "three_coordinate_points",
-            "triangle",
-            "two_coordinate_points"
+            "coordinate_point"
           ],
           "required_math_objects": [
-            "coordinate_point",
-            "three_coordinate_points"
+            "coordinate_point"
           ],
           "forbidden_patterns": [
             "\\(A\\)",
@@ -39407,6 +34779,10 @@
           "template_slots": {
             "stem": "linear_function_contextual_word_problem"
           },
+          "templates": [
+            "template_scalar_unknown",
+            "template_feature_value"
+          ],
           "problem_type_id": "skill_scoped_unresolved_problem_type",
           "contract_validation_blockers": [],
           "contract_validation_warnings": [
@@ -39425,12 +34801,17 @@
           "runtime_smoke_count": 30
         },
         "spec_source": "phase1_induced_draft",
-        "grouping_reason": "merged_by_canonical_contract",
+        "grouping_reason": "single_signature_group",
         "feature_signature": [
-          "canonical_contract_merge",
+          "short_answer",
           "contextual_application",
           "short_answer",
-          "short_answer"
+          [
+            "numeric_computation"
+          ],
+          [
+            "coordinate_point"
+          ]
         ],
         "canonical_base_problem_type_id": "skill_scoped_unresolved_problem_type",
         "value_type_prefix": "",
@@ -39446,1001 +34827,13 @@
       "next_action": "phase2_foundation_preflight",
       "semantic_alignment": {
         "skill_problem_type_score": 0.0,
-        "source_problem_type_score": 0.0154,
+        "source_problem_type_score": 0.0152,
         "task_consistent_with_skill": true
       },
-      "answer_type": "rational"
-    },
-    {
-      "problem_type_id": "text_short_applied_quadratic_inequality_problem",
-      "proposed_problem_type_id": "text_short_applied_quadratic_inequality_problem",
-      "display_name": "text_short / applied_quadratic_inequality_problem",
-      "matched_example_ids": [
-        4527
-      ],
-      "matched_example_count": 1,
-      "unmatched_example_ids": [],
-      "representative_example_id": 4527,
-      "structural_features": [
-        "interval_or_union"
-      ],
-      "answer_contract_proposal": {
-        "choices_required": false,
-        "choice_count": null,
-        "correct_choice_count": null,
-        "frontend_render_choices": false,
-        "source_has_choices": false,
-        "answer_type": "text_short",
-        "answer_shape": "interval_or_union",
-        "answer_semantics": "interval_union",
-        "answer_equivalence": "exact_string",
-        "equivalence_type": "exact_string",
-        "checker": "text_short_checker",
-        "checker_key": "text_short_checker",
-        "presentation_mode": "",
-        "selected_checker": "interval_checker",
-        "checker_selection_reason": "quadratic_inequality_interval_solution",
-        "accepted_formats": [
-          "-5 <= x <= 1",
-          "(-5, 1]",
-          "x in [-5,1]",
-          "x<-2 or x>5",
-          "-2<x<5",
-          "x<=-2 or x>=5"
-        ],
-        "checker_capability_status": "ok",
-        "checker_contract_blockers": [],
-        "checker_contract_warnings": [],
-        "stem_contract": {
-          "stem_must_not_embed_choices": true,
-          "allowed_math_objects": [
-            "coordinate_point",
-            "three_coordinate_points",
-            "triangle",
-            "two_coordinate_points"
-          ],
-          "required_math_objects": [
-            "coordinate_point",
-            "three_coordinate_points"
-          ],
-          "forbidden_patterns": [
-            "\\(A\\)",
-            "\\(B\\)",
-            "\\(C\\)",
-            "\\(D\\)"
-          ]
-        },
-        "dependency_contract": {
-          "givens_must_be_used": true,
-          "target_answer_must_depend_on_givens": true,
-          "variables_in_conditions_must_appear_in_target": false
-        },
-        "semantic_contract": {
-          "reasoning_type": [
-            "quadratic_factoring_reasoning"
-          ],
-          "reject_if": [
-            "unused_condition",
-            "ambiguous_answer",
-            "answer_not_derivable",
-            "duplicated_choices",
-            "no_correct_choice",
-            "multiple_correct_choices_when_single_choice"
-          ]
-        },
-        "generator_contract": {
-          "template_variants": [
-            {
-              "id": "default",
-              "label": "default",
-              "stem_pattern": "依題意求解：{stem_hint}。",
-              "weight": 1.0,
-              "enabled": true
-            }
-          ],
-          "parameter_schema": {
-            "seed": {
-              "type": "integer",
-              "randomize": true
-            },
-            "difficulty_level": {
-              "choices": [
-                "level_1",
-                "level_2",
-                "level_3"
-              ],
-              "weights": [
-                0.4,
-                0.4,
-                0.2
-              ]
-            }
-          },
-          "variation_dimensions": [
-            "seed",
-            "difficulty_level",
-            "context_style"
-          ],
-          "difficulty_controls": {
-            "level_1": {},
-            "level_2": {},
-            "level_3": {}
-          },
-          "anti_repetition_rules": {
-            "avoid_same_template_consecutive": true,
-            "avoid_same_ratio_consecutive": true,
-            "avoid_same_point_names_consecutive": true,
-            "avoid_same_answer_consecutive": true,
-            "recent_history_window": 5,
-            "signature_fields": [
-              "problem_type_id",
-              "template_variant",
-              "routing_track",
-              "scenario_type",
-              "ratio_form",
-              "ratio_values",
-              "coordinate_pattern",
-              "answer"
-            ]
-          },
-          "validity_constraints": [
-            "answer derivable from givens"
-          ],
-          "answer_shape": "numeric",
-          "explanation_variants": [
-            "stepwise"
-          ],
-          "sampling_strategy": "weighted_random",
-          "template_families": [
-            "applied_quadratic_inequality_problem"
-          ],
-          "parameter_slots": {
-            "seed": "integer",
-            "difficulty": "easy"
-          },
-          "randomization_rules": {
-            "shuffle_choices": false
-          },
-          "avoid_llm_freeform_math": true,
-          "use_domain_functions": true,
-          "derivation_steps_required": true,
-          "contextual_application": true,
-          "template_slots": {
-            "stem": "applied_quadratic_inequality_problem"
-          },
-          "problem_type_id": "fallback_applied_quadratic_inequality_problem",
-          "contract_validation_blockers": [],
-          "contract_validation_warnings": [
-            "single_template_variant_only",
-            "variation_dimensions_below_recommended_minimum"
-          ]
-        },
-        "validator_contract": {
-          "static_checks": [
-            "answer_contract_checks",
-            "choices_policy"
-          ],
-          "semantic_checks": [
-            "givens_to_target_dependency"
-          ],
-          "runtime_smoke_count": 30
-        },
-        "order_matters": true,
-        "accepted_format_notes": [],
-        "canonical_answer_schema": "interval"
-      },
-      "checker_key_proposal": "text_short_checker",
-      "equivalence_type_proposal": "exact_string",
-      "answer_shape": "interval_or_union",
-      "answer_semantics": "interval_union",
-      "presentation_mode": "short_answer",
-      "source_has_choices": false,
-      "selected_checker": "interval_checker",
-      "checker_selection_reason": "quadratic_inequality_interval_solution",
-      "coordinate_pair_presentation_note": "",
-      "confidence": "high",
-      "promote_recommendation": "recommend_promote_for_that_candidate",
-      "promote_blockers": [],
-      "risk_flags": [
-        "ai_first_mode_fell_back_to_rule_only",
-        "ai_unavailable_fallback_to_same_as_main",
-        "alignment_score_below_recommended_threshold",
-        "majority_sources_need_human_subskill_review",
-        "skill_scoped_classification_low_confidence",
-        "source_skill_scope_locked_demoted_blockers_to_warnings"
-      ],
-      "checker_contract_warnings": [],
-      "spec_source": "phase1_induced_draft",
-      "grouping_reason": "split_by_feature_signature",
-      "feature_signature": [
-        "short_answer",
-        "applied_quadratic_inequality_problem",
-        "short_answer",
-        [
-          "quadratic_factoring_reasoning"
-        ],
-        [
-          "coordinate_point",
-          "three_coordinate_points"
-        ]
-      ],
-      "problem_type_spec_draft": {
-        "problem_type_id": "fallback_applied_quadratic_inequality_problem",
-        "skill_id": "vh_數學B1_PropertiesOfPerpendicularLines",
-        "target_task": "applied_quadratic_inequality_problem",
-        "task_family": "quadratic_inequality_family",
-        "display_name": "short_answer / applied_quadratic_inequality_problem",
-        "answer_format_hint": "interval",
-        "answer_fields": null,
-        "answer_separator": null,
-        "source_example_ids": [
-          4527
-        ],
-        "answer_contract": {
-          "choices_required": false,
-          "choice_count": null,
-          "correct_choice_count": null,
-          "frontend_render_choices": false,
-          "source_has_choices": false,
-          "answer_type": "interval",
-          "answer_shape": "interval_or_union",
-          "answer_semantics": "interval_union",
-          "answer_equivalence": "interval_set",
-          "equivalence_type": "interval_set",
-          "checker": "interval_checker",
-          "checker_key": "interval_checker",
-          "presentation_mode": "short_answer",
-          "selected_checker": "interval_checker",
-          "checker_selection_reason": "quadratic_inequality_interval_solution",
-          "accepted_formats": [
-            "-5 <= x <= 1",
-            "(-5, 1]",
-            "x in [-5,1]",
-            "x<-2 or x>5",
-            "-2<x<5",
-            "x<=-2 or x>=5"
-          ]
-        },
-        "stem_contract": {
-          "stem_must_not_embed_choices": true,
-          "allowed_math_objects": [
-            "coordinate_point",
-            "three_coordinate_points",
-            "triangle",
-            "two_coordinate_points"
-          ],
-          "required_math_objects": [
-            "coordinate_point",
-            "three_coordinate_points"
-          ],
-          "forbidden_patterns": [
-            "\\(A\\)",
-            "\\(B\\)",
-            "\\(C\\)",
-            "\\(D\\)"
-          ]
-        },
-        "dependency_contract": {
-          "givens_must_be_used": true,
-          "target_answer_must_depend_on_givens": true,
-          "variables_in_conditions_must_appear_in_target": false
-        },
-        "semantic_contract": {
-          "reasoning_type": [
-            "quadratic_factoring_reasoning"
-          ],
-          "reject_if": [
-            "unused_condition",
-            "ambiguous_answer",
-            "answer_not_derivable",
-            "duplicated_choices",
-            "no_correct_choice",
-            "multiple_correct_choices_when_single_choice"
-          ]
-        },
-        "generator_contract": {
-          "template_variants": [
-            {
-              "id": "default",
-              "label": "default",
-              "stem_pattern": "依題意求解：{stem_hint}。",
-              "weight": 1.0,
-              "enabled": true
-            }
-          ],
-          "parameter_schema": {
-            "seed": {
-              "type": "integer",
-              "randomize": true
-            },
-            "difficulty_level": {
-              "choices": [
-                "level_1",
-                "level_2",
-                "level_3"
-              ],
-              "weights": [
-                0.4,
-                0.4,
-                0.2
-              ]
-            }
-          },
-          "variation_dimensions": [
-            "seed",
-            "difficulty_level",
-            "context_style"
-          ],
-          "difficulty_controls": {
-            "level_1": {},
-            "level_2": {},
-            "level_3": {}
-          },
-          "anti_repetition_rules": {
-            "avoid_same_template_consecutive": true,
-            "avoid_same_ratio_consecutive": true,
-            "avoid_same_point_names_consecutive": true,
-            "avoid_same_answer_consecutive": true,
-            "recent_history_window": 5,
-            "signature_fields": [
-              "problem_type_id",
-              "template_variant",
-              "routing_track",
-              "scenario_type",
-              "ratio_form",
-              "ratio_values",
-              "coordinate_pattern",
-              "answer"
-            ]
-          },
-          "validity_constraints": [
-            "answer derivable from givens"
-          ],
-          "answer_shape": "numeric",
-          "explanation_variants": [
-            "stepwise"
-          ],
-          "sampling_strategy": "weighted_random",
-          "template_families": [
-            "applied_quadratic_inequality_problem"
-          ],
-          "parameter_slots": {
-            "seed": "integer",
-            "difficulty": "easy"
-          },
-          "randomization_rules": {
-            "shuffle_choices": false
-          },
-          "avoid_llm_freeform_math": true,
-          "use_domain_functions": true,
-          "derivation_steps_required": true,
-          "contextual_application": true,
-          "template_slots": {
-            "stem": "applied_quadratic_inequality_problem"
-          },
-          "problem_type_id": "fallback_applied_quadratic_inequality_problem",
-          "contract_validation_blockers": [],
-          "contract_validation_warnings": [
-            "single_template_variant_only",
-            "variation_dimensions_below_recommended_minimum"
-          ]
-        },
-        "validator_contract": {
-          "static_checks": [
-            "answer_contract_checks",
-            "choices_policy"
-          ],
-          "semantic_checks": [
-            "givens_to_target_dependency"
-          ],
-          "runtime_smoke_count": 30
-        },
-        "spec_source": "phase1_induced_draft",
-        "grouping_reason": "split_by_feature_signature",
-        "feature_signature": [
-          "short_answer",
-          "applied_quadratic_inequality_problem",
-          "short_answer",
-          [
-            "quadratic_factoring_reasoning"
-          ],
-          [
-            "coordinate_point",
-            "three_coordinate_points"
-          ]
-        ],
-        "canonical_base_problem_type_id": "fallback_applied_quadratic_inequality_problem",
-        "value_type_prefix": "",
-        "_resolved_template_slot": "applied_quadratic_inequality_problem"
-      },
-      "generator_readiness": "runtime_ready",
-      "usable_for_phase3": true,
-      "template_slot": "applied_quadratic_inequality_problem",
-      "canonical_base_problem_type_id": "fallback_applied_quadratic_inequality_problem",
-      "value_type_prefix": "",
-      "subskill_id": "applied_quadratic_inequality_problem",
-      "runtime_status": "runtime_ready_candidate",
-      "next_action": "phase2_foundation_preflight",
-      "semantic_alignment": {
-        "skill_problem_type_score": 0.0,
-        "source_problem_type_score": 0.0164,
-        "task_consistent_with_skill": true
-      },
-      "answer_type": "interval"
-    },
-    {
-      "problem_type_id": "text_short_solve_unknown_coordinate_from_two_point_distance",
-      "proposed_problem_type_id": "text_short_solve_unknown_coordinate_from_two_point_distance",
-      "display_name": "text_short / solve_unknown_coordinate_from_two_point_distance",
-      "matched_example_ids": [
-        4536
-      ],
-      "matched_example_count": 1,
-      "unmatched_example_ids": [],
-      "representative_example_id": 4536,
-      "structural_features": [
-        "unordered_set"
-      ],
-      "answer_contract_proposal": {
-        "choices_required": false,
-        "choice_count": null,
-        "correct_choice_count": null,
-        "frontend_render_choices": false,
-        "answer_type": "text_short",
-        "answer_shape": "unordered_set",
-        "answer_equivalence": "exact_string",
-        "checker": "text_short_checker",
-        "accepted_formats": [
-          "-3, 7",
-          "7, -3",
-          "{-3, 7}",
-          "k=-3 或 k=7",
-          "-3 或 7"
-        ],
-        "checker_key": "text_short_checker",
-        "equivalence_type": "exact_string",
-        "selected_checker": "solution_set_checker",
-        "checker_capability_status": "ok",
-        "checker_contract_blockers": [],
-        "checker_contract_warnings": [],
-        "stem_contract": {
-          "stem_must_not_embed_choices": true,
-          "allowed_math_objects": [
-            "coordinate_point",
-            "distance_formula",
-            "parameter",
-            "segment_length",
-            "three_coordinate_points",
-            "triangle",
-            "two_coordinate_points",
-            "unknown_coordinate"
-          ],
-          "required_math_objects": [
-            "coordinate_point",
-            "distance_formula"
-          ],
-          "forbidden_patterns": [
-            "\\(A\\)",
-            "\\(B\\)",
-            "\\(C\\)",
-            "\\(D\\)"
-          ]
-        },
-        "dependency_contract": {
-          "givens_must_be_used": true,
-          "target_answer_must_depend_on_givens": true,
-          "variables_in_conditions_must_appear_in_target": false
-        },
-        "semantic_contract": {
-          "reasoning_type": [
-            "distance_formula_reasoning"
-          ],
-          "reject_if": [
-            "unused_condition",
-            "ambiguous_answer",
-            "answer_not_derivable",
-            "duplicated_choices",
-            "no_correct_choice",
-            "multiple_correct_choices_when_single_choice"
-          ]
-        },
-        "generator_contract": {
-          "template_variants": [
-            {
-              "id": "direct_distance",
-              "label": "直接求距離",
-              "stem_pattern": "求 {A}({ax},{ay}) 與 {B}({bx},{by}) 的距離。",
-              "weight": 1.0,
-              "enabled": true
-            },
-            {
-              "id": "missing_coordinate",
-              "label": "反求坐標",
-              "stem_pattern": "已知 {A}({ax},{ay})、{B}({bx},{by}) 與距離 {d}，求未知坐標。",
-              "weight": 0.6,
-              "enabled": true
-            },
-            {
-              "id": "word_context_distance",
-              "label": "語境距離",
-              "stem_pattern": "平面上兩地坐標如下，求兩地距離。",
-              "weight": 1.0,
-              "enabled": true
-            },
-            {
-              "id": "compare_distance",
-              "label": "比較距離",
-              "stem_pattern": "比較 {A} 到 {B} 與 {A} 到 {C} 的距離大小。",
-              "weight": 0.4,
-              "enabled": true
-            }
-          ],
-          "parameter_schema": {
-            "point_names": {
-              "choices": [
-                [
-                  "A",
-                  "B",
-                  "P"
-                ],
-                [
-                  "P",
-                  "Q",
-                  "R"
-                ],
-                [
-                  "M",
-                  "N",
-                  "T"
-                ],
-                [
-                  "C",
-                  "D",
-                  "E"
-                ]
-              ],
-              "randomize": true
-            },
-            "coordinate_range": {
-              "x_min": -10,
-              "x_max": 10,
-              "y_min": -10,
-              "y_max": 10,
-              "exclude_zero_probability": 0.2
-            },
-            "distance_result_type": {
-              "choices": [
-                "integer",
-                "radical"
-              ],
-              "weights": [
-                0.55,
-                0.45
-              ]
-            },
-            "coordinate_delta_pattern": {
-              "choices": [
-                "axis_aligned",
-                "mixed_sign",
-                "general"
-              ],
-              "weights": [
-                0.3,
-                0.4,
-                0.3
-              ]
-            }
-          },
-          "variation_dimensions": [
-            "point_names",
-            "coordinate_sign_pattern",
-            "distance_result_type",
-            "coordinate_delta_pattern",
-            "ask_target",
-            "context_style"
-          ],
-          "difficulty_controls": {
-            "level_1": {
-              "coordinate_range": [
-                -5,
-                5
-              ],
-              "integer_distance_only": true
-            },
-            "level_2": {
-              "coordinate_range": [
-                -10,
-                10
-              ],
-              "allow_radical": true
-            },
-            "level_3": {
-              "word_context_enabled": true,
-              "missing_coordinate_enabled": true
-            }
-          },
-          "anti_repetition_rules": {
-            "avoid_same_template_consecutive": true,
-            "avoid_same_ratio_consecutive": true,
-            "avoid_same_point_names_consecutive": true,
-            "avoid_same_answer_consecutive": true,
-            "recent_history_window": 5,
-            "signature_fields": [
-              "problem_type_id",
-              "template_variant",
-              "routing_track",
-              "scenario_type",
-              "ratio_form",
-              "ratio_values",
-              "coordinate_pattern",
-              "answer"
-            ]
-          },
-          "validity_constraints": [
-            "A != B",
-            "distance > 0",
-            "if integer answer desired, dx^2+dy^2 must be perfect square",
-            "if radical answer desired, simplify radical form"
-          ],
-          "answer_shape": "numeric_or_radical",
-          "explanation_variants": [
-            "distance_formula",
-            "pythagorean_step"
-          ],
-          "sampling_strategy": "weighted_random",
-          "template_families": [
-            "solve_unknown_coordinate_from_two_point_distance"
-          ],
-          "parameter_slots": {
-            "seed": "integer",
-            "difficulty": "easy"
-          },
-          "randomization_rules": {
-            "shuffle_choices": false
-          },
-          "avoid_llm_freeform_math": true,
-          "use_domain_functions": true,
-          "derivation_steps_required": true,
-          "contextual_application": true,
-          "template_slots": {
-            "stem": "point_quadrant"
-          },
-          "problem_type_id": "fallback_solve_unknown_coordinate_from_two_point_distance",
-          "contract_validation_blockers": [],
-          "contract_validation_warnings": []
-        },
-        "validator_contract": {
-          "static_checks": [
-            "answer_contract_checks",
-            "choices_policy"
-          ],
-          "semantic_checks": [
-            "givens_to_target_dependency"
-          ],
-          "runtime_smoke_count": 30
-        },
-        "order_matters": true,
-        "accepted_format_notes": [],
-        "canonical_answer_schema": "solution_set",
-        "presentation_mode": ""
-      },
-      "checker_key_proposal": "text_short_checker",
-      "equivalence_type_proposal": "exact_string",
-      "answer_shape": "unordered_set",
-      "answer_semantics": "unordered_set",
-      "presentation_mode": "short_answer",
-      "source_has_choices": false,
-      "selected_checker": "solution_set_checker",
-      "checker_selection_reason": "task_family_default",
-      "coordinate_pair_presentation_note": "",
-      "confidence": "high",
-      "promote_recommendation": "recommend_promote_for_that_candidate",
-      "promote_blockers": [],
-      "risk_flags": [
-        "ai_first_mode_fell_back_to_rule_only",
-        "ai_unavailable_fallback_to_same_as_main",
-        "alignment_score_below_recommended_threshold",
-        "majority_sources_need_human_subskill_review",
-        "skill_scoped_classification_low_confidence",
-        "source_skill_scope_locked_demoted_blockers_to_warnings"
-      ],
-      "checker_contract_warnings": [],
-      "spec_source": "phase1_induced_draft",
-      "grouping_reason": "split_by_feature_signature",
-      "feature_signature": [
-        "short_answer",
-        "solve_unknown_coordinate_from_two_point_distance",
-        "short_answer",
-        [
-          "distance_formula_reasoning"
-        ],
-        [
-          "coordinate_point",
-          "distance_formula"
-        ]
-      ],
-      "problem_type_spec_draft": {
-        "problem_type_id": "fallback_solve_unknown_coordinate_from_two_point_distance",
-        "skill_id": "vh_數學B1_PropertiesOfPerpendicularLines",
-        "target_task": "solve_unknown_coordinate_from_two_point_distance",
-        "task_family": "distance_between_two_points_family",
-        "display_name": "兩點距離反求座標",
-        "answer_format_hint": "",
-        "answer_fields": null,
-        "answer_separator": null,
-        "source_example_ids": [
-          4536
-        ],
-        "answer_contract": {
-          "choices_required": false,
-          "choice_count": null,
-          "correct_choice_count": null,
-          "frontend_render_choices": false,
-          "answer_type": "integer",
-          "answer_shape": "unordered_set",
-          "answer_equivalence": "numeric_exact",
-          "checker": "integer_checker",
-          "accepted_formats": [
-            "-3, 7",
-            "7, -3",
-            "{-3, 7}",
-            "k=-3 或 k=7",
-            "-3 或 7"
-          ],
-          "equivalence_type": "numeric_exact",
-          "checker_key": "integer_checker"
-        },
-        "stem_contract": {
-          "stem_must_not_embed_choices": true,
-          "allowed_math_objects": [
-            "coordinate_point",
-            "distance_formula",
-            "parameter",
-            "segment_length",
-            "three_coordinate_points",
-            "triangle",
-            "two_coordinate_points",
-            "unknown_coordinate"
-          ],
-          "required_math_objects": [
-            "coordinate_point",
-            "distance_formula"
-          ],
-          "forbidden_patterns": [
-            "\\(A\\)",
-            "\\(B\\)",
-            "\\(C\\)",
-            "\\(D\\)"
-          ]
-        },
-        "dependency_contract": {
-          "givens_must_be_used": true,
-          "target_answer_must_depend_on_givens": true,
-          "variables_in_conditions_must_appear_in_target": false
-        },
-        "semantic_contract": {
-          "reasoning_type": [
-            "distance_formula_reasoning"
-          ],
-          "reject_if": [
-            "unused_condition",
-            "ambiguous_answer",
-            "answer_not_derivable",
-            "duplicated_choices",
-            "no_correct_choice",
-            "multiple_correct_choices_when_single_choice"
-          ]
-        },
-        "generator_contract": {
-          "template_variants": [
-            {
-              "id": "direct_distance",
-              "label": "直接求距離",
-              "stem_pattern": "求 {A}({ax},{ay}) 與 {B}({bx},{by}) 的距離。",
-              "weight": 1.0,
-              "enabled": true
-            },
-            {
-              "id": "missing_coordinate",
-              "label": "反求坐標",
-              "stem_pattern": "已知 {A}({ax},{ay})、{B}({bx},{by}) 與距離 {d}，求未知坐標。",
-              "weight": 0.6,
-              "enabled": true
-            },
-            {
-              "id": "word_context_distance",
-              "label": "語境距離",
-              "stem_pattern": "平面上兩地坐標如下，求兩地距離。",
-              "weight": 1.0,
-              "enabled": true
-            },
-            {
-              "id": "compare_distance",
-              "label": "比較距離",
-              "stem_pattern": "比較 {A} 到 {B} 與 {A} 到 {C} 的距離大小。",
-              "weight": 0.4,
-              "enabled": true
-            }
-          ],
-          "parameter_schema": {
-            "point_names": {
-              "choices": [
-                [
-                  "A",
-                  "B",
-                  "P"
-                ],
-                [
-                  "P",
-                  "Q",
-                  "R"
-                ],
-                [
-                  "M",
-                  "N",
-                  "T"
-                ],
-                [
-                  "C",
-                  "D",
-                  "E"
-                ]
-              ],
-              "randomize": true
-            },
-            "coordinate_range": {
-              "x_min": -10,
-              "x_max": 10,
-              "y_min": -10,
-              "y_max": 10,
-              "exclude_zero_probability": 0.2
-            },
-            "distance_result_type": {
-              "choices": [
-                "integer",
-                "radical"
-              ],
-              "weights": [
-                0.55,
-                0.45
-              ]
-            },
-            "coordinate_delta_pattern": {
-              "choices": [
-                "axis_aligned",
-                "mixed_sign",
-                "general"
-              ],
-              "weights": [
-                0.3,
-                0.4,
-                0.3
-              ]
-            }
-          },
-          "variation_dimensions": [
-            "point_names",
-            "coordinate_sign_pattern",
-            "distance_result_type",
-            "coordinate_delta_pattern",
-            "ask_target",
-            "context_style"
-          ],
-          "difficulty_controls": {
-            "level_1": {
-              "coordinate_range": [
-                -5,
-                5
-              ],
-              "integer_distance_only": true
-            },
-            "level_2": {
-              "coordinate_range": [
-                -10,
-                10
-              ],
-              "allow_radical": true
-            },
-            "level_3": {
-              "word_context_enabled": true,
-              "missing_coordinate_enabled": true
-            }
-          },
-          "anti_repetition_rules": {
-            "avoid_same_template_consecutive": true,
-            "avoid_same_ratio_consecutive": true,
-            "avoid_same_point_names_consecutive": true,
-            "avoid_same_answer_consecutive": true,
-            "recent_history_window": 5,
-            "signature_fields": [
-              "problem_type_id",
-              "template_variant",
-              "routing_track",
-              "scenario_type",
-              "ratio_form",
-              "ratio_values",
-              "coordinate_pattern",
-              "answer"
-            ]
-          },
-          "validity_constraints": [
-            "A != B",
-            "distance > 0",
-            "if integer answer desired, dx^2+dy^2 must be perfect square",
-            "if radical answer desired, simplify radical form"
-          ],
-          "answer_shape": "numeric_or_radical",
-          "explanation_variants": [
-            "distance_formula",
-            "pythagorean_step"
-          ],
-          "sampling_strategy": "weighted_random",
-          "template_families": [
-            "solve_unknown_coordinate_from_two_point_distance"
-          ],
-          "parameter_slots": {
-            "seed": "integer",
-            "difficulty": "easy"
-          },
-          "randomization_rules": {
-            "shuffle_choices": false
-          },
-          "avoid_llm_freeform_math": true,
-          "use_domain_functions": true,
-          "derivation_steps_required": true,
-          "contextual_application": true,
-          "template_slots": {
-            "stem": "point_quadrant"
-          },
-          "problem_type_id": "fallback_solve_unknown_coordinate_from_two_point_distance",
-          "contract_validation_blockers": [],
-          "contract_validation_warnings": []
-        },
-        "validator_contract": {
-          "static_checks": [
-            "answer_contract_checks",
-            "choices_policy"
-          ],
-          "semantic_checks": [
-            "givens_to_target_dependency"
-          ],
-          "runtime_smoke_count": 30
-        },
-        "spec_source": "phase1_induced_draft",
-        "grouping_reason": "split_by_feature_signature",
-        "feature_signature": [
-          "short_answer",
-          "solve_unknown_coordinate_from_two_point_distance",
-          "short_answer",
-          [
-            "distance_formula_reasoning"
-          ],
-          [
-            "coordinate_point",
-            "distance_formula"
-          ]
-        ],
-        "canonical_base_problem_type_id": "fallback_solve_unknown_coordinate_from_two_point_distance",
-        "value_type_prefix": "",
-        "_resolved_template_slot": "two_point_distance_solution_set"
-      },
-      "generator_readiness": "runtime_ready",
-      "usable_for_phase3": true,
-      "template_slot": "point_quadrant",
-      "canonical_base_problem_type_id": "fallback_solve_unknown_coordinate_from_two_point_distance",
-      "value_type_prefix": "",
-      "subskill_id": "solve_unknown_coordinate_from_two_point_distance",
-      "runtime_status": "runtime_ready_candidate",
-      "next_action": "phase2_foundation_preflight",
-      "semantic_alignment": {
-        "skill_problem_type_score": 0.0,
-        "source_problem_type_score": 0.0149,
-        "task_consistent_with_skill": true
-      },
-      "answer_type": "integer"
+      "answer_type": "text_short"
     }
   ],
-  "candidate_problem_type_count": 4,
+  "candidate_problem_type_count": 1,
   "source_skill_scope_locked": true,
   "classification_scope": "within_current_skill",
   "skill_mapping_authority": "textbook_examples.skill_id",

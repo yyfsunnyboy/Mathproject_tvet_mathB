@@ -1,0 +1,33 @@
+{
+  "skill_id": "vh_數學B1_PointSlopeForm",
+  "samples": 50,
+  "expected_problem_types": [
+    "write_line_equation_from_point_slope"
+  ],
+  "observed_problem_types": [
+    "equation_write_line_equation_from_point_slope_short_answer"
+  ],
+  "distribution_counts": {
+    "equation_write_line_equation_from_point_slope_short_answer": 50
+  },
+  "missing_problem_types": [
+    "write_line_equation_from_point_slope"
+  ],
+  "unexpected_problem_types": [
+    "equation_write_line_equation_from_point_slope_short_answer"
+  ],
+  "manual_review_exclusions": [
+    "unknown"
+  ],
+  "manual_review_leaked": [],
+  "choice_question_count": 0,
+  "choice_answer_label_counts": {},
+  "choice_answer_label_distribution_status": "PASS",
+  "choice_answer_fixed_label_detected": false,
+  "status": "FAIL",
+  "blocking_reasons": [
+    "runtime_distribution_missing_verified_problem_types"
+  ],
+  "warnings": [],
+  "timestamp": ""
+}

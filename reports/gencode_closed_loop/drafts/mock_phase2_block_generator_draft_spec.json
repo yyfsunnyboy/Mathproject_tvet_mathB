@@ -1,47 +1,46 @@
 {
   "skill_id": "mock_phase2_block",
   "phase": "phase2",
-  "generator_results": [
-    {
-      "problem_type_id": "short_answer_classify_quadrant_coordinate_point",
-      "source_example_count": 0,
-      "answer_contract": {
-        "answer_type": "short_answer"
-      },
-      "answer_type": "short_answer",
-      "answer_shape": "",
-      "equivalence_type": "exact_string",
-      "selected_checker": "text_short_checker",
-      "checker_key": "text_short_checker",
-      "checker_capability_status": "blocked",
-      "checker_contract_blockers": [
-        "checker_contract_missing"
-      ],
-      "checker_contract_warnings": [],
-      "generator_key": "mock_phase2_block:short_answer_classify_quadrant_coordinate_point:draft_v1",
-      "generator_status": "validation_failed",
-      "checker_smoke_status": "skipped_with_blockers",
-      "dynamic_sampling_status": "skipped_with_blockers",
-      "diversity_sampling": {},
-      "unique_signature_count": "",
-      "template_variant_distribution": {},
-      "variable_coverage_report": {},
-      "repetition_warnings": [],
-      "requires_human_action": false,
-      "blockers": [
-        "answer_contract_not_supported",
-        "checker_contract_missing",
-        "mixed_source_families",
-        "phase1_semantic_alignment_blocked"
-      ],
-      "warnings": [],
-      "usable_for_phase3": false
-    }
-  ],
+  "phase1_payload": {
+    "ok": false,
+    "phase": "phase1",
+    "skill_id": "mock_phase2_block",
+    "source_example_count": 0,
+    "candidate_problem_types": [],
+    "phase_status": "skill_id_prefix_violation",
+    "exception_review_gate": {
+      "required": true,
+      "reasons": [
+        "skill_id_prefix_violation"
+      ]
+    },
+    "summary_message": "Phase 1 blocked: no source examples.",
+    "reports": {
+      "phase1_summary_json": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\mock_phase2_block_phase1_summary.json",
+      "phase1_summary_md": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\mock_phase2_block_phase1_summary.md",
+      "phase1_json": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\mock_phase2_block_phase1_summary.json",
+      "phase1_md": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\mock_phase2_block_phase1_summary.md"
+    },
+    "timestamp": "2026-06-15T00:50:11.658482+00:00",
+    "dry_run": true,
+    "human_review_items": [],
+    "skill_id_prefix_validated": false,
+    "skill_id_prefix_validation_reason": "skill_id_prefix_violation",
+    "can_continue": false,
+    "can_retry": true,
+    "requires_human_action": true,
+    "human_action_items": [
+      {
+        "type": "inspect_report",
+        "target_id": "skill_id_prefix_violation",
+        "message": "Phase 1 exception reason: skill_id_prefix_violation",
+        "suggested_action": "inspect_report"
+      }
+    ]
+  },
+  "generator_results": [],
   "accepted_generators": [],
-  "failed_generators": [
-    "mock_phase2_block:short_answer_classify_quadrant_coordinate_point:draft_v1"
-  ],
-  "timestamp": "2026-06-01T04:14:39.248859+00:00",
+  "failed_generators": [],
+  "timestamp": "2026-06-15T00:53:37.932596+00:00",
   "dry_run": true
 }

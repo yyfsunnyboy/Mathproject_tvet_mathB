@@ -23,3 +23,14 @@ def test_generator_code_prompt_requires_complete_stems_and_semantic_contract_tok
     assert prompt.index("4. MULTI-TEMPLATE PRINCIPLE:") < prompt.index(
         "5. STEM COMPLETENESS & REQUIRED CONCEPT TOKENS:"
     )
+
+    # Constraint 6 assertions
+    assert "6. SLOT REGISTRATION DEFENSE & LATEX WRAPPING FOR TEXT_SHORT:" in prompt
+    assert "registered 'text_short' slot" in prompt
+    assert "strictly forbidden from inventing unregistered slot names" in prompt
+    assert "standard LaTeX dollar delimiters $...$" in prompt
+    assert "double escaped (e.g., {{...}})" in prompt
+    assert "degradation to runtime_ready_with_warning" in prompt
+    assert prompt.index("5. STEM COMPLETENESS & REQUIRED CONCEPT TOKENS:") < prompt.index(
+        "6. SLOT REGISTRATION DEFENSE & LATEX WRAPPING FOR TEXT_SHORT:"
+    )

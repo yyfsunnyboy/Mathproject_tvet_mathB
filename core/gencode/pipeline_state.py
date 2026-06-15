@@ -104,11 +104,35 @@ def _atomic_write_text(path: Path, text: str) -> None:
             handle.write(text)
             handle.flush()
             os.fsync(handle.fileno())
-        os.replace(tmp, target)
-    finally:
-        if tmp.exists() and not target.exists():
+        
+        import gc
+        gc.collect()
+        
+        max_retries = 5
+        for attempt in range(max_retries):
             try:
-                tmp.unlink()
+                if target.exists():
+                    try:
+                        target.unlink(missing_ok=True)
+                    except OSError:
+                        pass
+                os.replace(tmp, target)
+                break
+            except PermissionError as e:
+                if attempt == max_retries - 1:
+                    # Final attempt fallback: write directly if replace fails
+                    try:
+                        with open(target, "w", encoding="utf-8", newline="\n") as handle:
+                            handle.write(text)
+                    except Exception:
+                        raise e
+                else:
+                    time.sleep(0.1 * (attempt + 1))
+                    gc.collect()
+    finally:
+        if tmp.exists():
+            try:
+                tmp.unlink(missing_ok=True)
             except OSError:
                 pass
 

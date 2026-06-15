@@ -9,6 +9,66 @@ logger = logging.getLogger(__name__)
 
 LABEL_ONLY_PATTERN = re.compile(r"^[\(\[]?\s*[A-Da-d]\s*[\)\]\.]?\s*$")
 
+
+def _is_linear_equation_contract(answer_contract: dict[str, Any]) -> bool:
+    ac = answer_contract if isinstance(answer_contract, dict) else {}
+    checker_key = str(ac.get("checker") or ac.get("checker_key") or "").strip()
+    answer_shape = str(ac.get("answer_shape", "")).strip()
+    equiv = str(ac.get("equivalence_type") or ac.get("answer_equivalence", "")).strip()
+    answer_type = str(ac.get("answer_type", "")).strip().lower()
+    return (
+        checker_key == "linear_equation_equivalent_checker"
+        or answer_shape == "linear_equation"
+        or equiv == "linear_equation_equivalent"
+        or answer_type == "equation"
+    )
+
+
+def _validate_linear_equation_answer(correct_answer: Any) -> tuple[bool, dict[str, Any]]:
+    from core.checkers.linear_equation_equivalent_checker import (
+        canonicalize_linear_equation,
+        check_linear_equation_equivalent_answer,
+    )
+
+    if correct_answer is None:
+        return False, {
+            "can_continue": False,
+            "error_type": "parse_error",
+            "expected": "non-empty linear equation",
+            "actual": "None",
+        }
+    ans_str = str(correct_answer).strip()
+    if not ans_str:
+        return False, {
+            "can_continue": False,
+            "error_type": "parse_error",
+            "expected": "non-empty linear equation",
+            "actual": "",
+        }
+    if LABEL_ONLY_PATTERN.match(ans_str):
+        return False, {
+            "can_continue": False,
+            "error_type": "parse_error",
+            "expected": "linear equation string",
+            "actual": ans_str,
+        }
+    if canonicalize_linear_equation(ans_str) is None:
+        return False, {
+            "can_continue": False,
+            "error_type": "parse_error",
+            "expected": "parseable linear equation",
+            "actual": ans_str,
+        }
+    if not check_linear_equation_equivalent_answer(ans_str, ans_str):
+        return False, {
+            "can_continue": False,
+            "error_type": "parse_error",
+            "expected": "checker self-test pass",
+            "actual": ans_str,
+        }
+    return True, {}
+
+
 class BaseChecker:
     """
     Base Checker class for contract validation.
@@ -70,10 +130,17 @@ class BaseChecker:
                     }
                     return False, error
 
-        # 3. Sympy parsing check: parse_error
+        # 3. Linear equation contract: use dedicated checker, not sympy/choice parsers.
+        if _is_linear_equation_contract(answer_contract):
+            ok, error = _validate_linear_equation_answer(correct_answer)
+            if not ok:
+                return False, error
+            return True, {}
+
+        # 4. Sympy parsing check: parse_error
         checker_key = str(answer_contract.get("checker") or answer_contract.get("checker_key") or "").strip()
         is_math = (
-            raw_answer_type in {"expression", "equation", "numeric_or_radical", "rational", "fraction", "interval", "solution_set"}
+            raw_answer_type in {"expression", "numeric_or_radical", "rational", "fraction", "interval", "solution_set"}
             or "expression" in checker_key
             or "solution_set" in checker_key
             or "interval" in checker_key
@@ -85,11 +152,17 @@ class BaseChecker:
                 parts = [p.strip() for p in ans_str.replace("或", ",").split(",") if p.strip()]
             
             for part in parts:
-                clean_part = part.strip("()[]{} ")
+                clean_part = part.strip("()[] ")
+                if "\\" not in part:
+                    clean_part = clean_part.strip("{} ")
+                else:
+                    clean_part = clean_part.strip()
                 if not clean_part:
                     continue
                 try:
-                    parse_expr(clean_part)
+                    from core.checkers.expression_equivalence_checker import normalize_math_expression
+                    norm_part = normalize_math_expression(clean_part)
+                    parse_expr(norm_part)
                 except Exception as e:
                     error = {
                         "can_continue": False,

@@ -67,13 +67,29 @@
             <i class="bi bi-info-circle-fill" style="margin-right: 5px;"></i> 找不到上次匯入結果
         </div>
         {% elif last_import_summary %}
-        <div class="alert alert-info" style="background:#d1ecf1;color:#0c5460;border-color:#bee5eb;">
+        {% set import_status = last_import_summary.status or last_import_summary.final_status or ('completed' if last_import_summary.success else 'failed') %}
+        {% if import_status == 'completed' %}
+            {% set import_status_text = 'Import completed successfully' %}
+            {% set import_alert_class = 'alert-success' %}
+        {% elif import_status == 'completed_with_warnings' %}
+            {% set import_status_text = 'Import completed with warnings' %}
+            {% set import_alert_class = 'alert-warning' %}
+        {% else %}
+            {% set import_status_text = 'Import failed' %}
+            {% set import_alert_class = 'alert-danger' %}
+        {% endif %}
+        <div class="alert {{ import_alert_class }}">
             <strong>Import job {{ last_import_job_id }}</strong><br>
-            status={{ 'success' if last_import_summary.success else 'failed' }},
+            status={{ import_status }} ({{ import_status_text }}),
             tables={{ last_import_summary.table_count }},
             source_rows={{ last_import_summary.source_rows }},
             imported={{ last_import_summary.imported_rows }},
-            failed={{ last_import_summary.failed_rows }}
+            failed_rows={{ last_import_summary.failed_rows }},
+            warning_count={{ last_import_summary.warning_count or 0 }},
+            error_count={{ last_import_summary.error_count or 0 }},
+            fatal_errors={{ last_import_summary.fatal_errors or 0 }},
+            orphan_skill_curriculum_count={{ last_import_summary.orphan_skill_curriculum_count or 0 }}
+            {% if last_import_summary.final_status_reason %}<br>final_status_reason={{ last_import_summary.final_status_reason }}{% endif %}
         </div>
         {% endif %}
 

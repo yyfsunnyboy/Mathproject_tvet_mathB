@@ -303,6 +303,11 @@ def check_answer(
                 return user_frac == correct_frac
             return user_frac == correct_frac
 
+    if checker == "linear_equation_equivalent_checker" or equiv == "linear_equation_equivalent":
+        from core.checkers.linear_equation_equivalent_checker import check_linear_equation_equivalent_answer
+
+        return check_linear_equation_equivalent_answer(user_answer, correct_answer)
+
     quadrant_result = check_quadrant_answer(user_answer, correct_answer)
     if quadrant_result is not None:
         return quadrant_result

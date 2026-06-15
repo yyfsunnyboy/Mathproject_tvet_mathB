@@ -1,0 +1,106 @@
+{
+  "skill_id": "vh_數學B1_PointSlopeForm",
+  "samples": 50,
+  "expected_problem_types": [
+    "write_line_equation_from_point_slope"
+  ],
+  "observed_problem_types": [
+    "equation_write_line_equation_from_point_slope_short_answer"
+  ],
+  "distribution_counts": {
+    "equation_write_line_equation_from_point_slope_short_answer": 50
+  },
+  "missing_problem_types": [
+    "write_line_equation_from_point_slope"
+  ],
+  "unexpected_problem_types": [
+    "equation_write_line_equation_from_point_slope_short_answer"
+  ],
+  "route_sources": {
+    "gencode_wrapper": 50
+  },
+  "wrapper_loaded_count": 50,
+  "db_fallback_count": 0,
+  "legacy_count": 0,
+  "choice_question_count": 0,
+  "missing_problem_type_id_count": 0,
+  "answer_type_counts": {
+    "equation": 50
+  },
+  "sample_previews": [
+    {
+      "problem_type_id": "equation_write_line_equation_from_point_slope_short_answer",
+      "route_source": "gencode_wrapper",
+      "answer_type": "equation",
+      "has_choices": false,
+      "question_text_preview": "已知直線過點 $(8, 1)$，斜率為 $-1/2$，求此直線的斜截式方程式（$y = mx + b$）。\n（答案範例：5）"
+    },
+    {
+      "problem_type_id": "equation_write_line_equation_from_point_slope_short_answer",
+      "route_source": "gencode_wrapper",
+      "answer_type": "equation",
+      "has_choices": false,
+      "question_text_preview": "已知直線過點 $(-8, 4)$，斜率為 $5$，求此直線的點斜式方程式。\n（答案範例：5）"
+    },
+    {
+      "problem_type_id": "equation_write_line_equation_from_point_slope_short_answer",
+      "route_source": "gencode_wrapper",
+      "answer_type": "equation",
+      "has_choices": false,
+      "question_text_preview": "已知直線過點 $(-3, -2)$，斜率為 $3$，求此直線的點斜式方程式。\n（答案範例：5）"
+    },
+    {
+      "problem_type_id": "equation_write_line_equation_from_point_slope_short_answer",
+      "route_source": "gencode_wrapper",
+      "answer_type": "equation",
+      "has_choices": false,
+      "question_text_preview": "已知直線過點 $(3, 1)$，斜率為 $1/2$，求此直線的點斜式方程式。\n（答案範例：5）"
+    },
+    {
+      "problem_type_id": "equation_write_line_equation_from_point_slope_short_answer",
+      "route_source": "gencode_wrapper",
+      "answer_type": "equation",
+      "has_choices": false,
+      "question_text_preview": "已知直線過點 $(-1, -7)$，斜率為 $-3$，求此直線的點斜式方程式。\n（答案範例：5）"
+    },
+    {
+      "problem_type_id": "equation_write_line_equation_from_point_slope_short_answer",
+      "route_source": "gencode_wrapper",
+      "answer_type": "equation",
+      "has_choices": false,
+      "question_text_preview": "已知直線過點 $(4, 7)$，斜率為 $1$，求此直線的斜截式方程式（$y = mx + b$）。\n（答案範例：5）"
+    },
+    {
+      "problem_type_id": "equation_write_line_equation_from_point_slope_short_answer",
+      "route_source": "gencode_wrapper",
+      "answer_type": "equation",
+      "has_choices": false,
+      "question_text_preview": "已知直線過點 $(7, 0)$，斜率為 $2$，求此直線的一般式方程式（$Ax + By + C = 0$）。\n（答案範例：5）"
+    },
+    {
+      "problem_type_id": "equation_write_line_equation_from_point_slope_short_answer",
+      "route_source": "gencode_wrapper",
+      "answer_type": "equation",
+      "has_choices": false,
+      "question_text_preview": "已知直線過點 $(-6, 5)$，斜率為 $-3$，求此直線的一般式方程式（$Ax + By + C = 0$）。\n（答案範例：5）"
+    },
+    {
+      "problem_type_id": "equation_write_line_equation_from_point_slope_short_answer",
+      "route_source": "gencode_wrapper",
+      "answer_type": "equation",
+      "has_choices": false,
+      "question_text_preview": "已知直線過點 $(2, 3)$，斜率為 $3/2$，求此直線的點斜式方程式。\n（答案範例：5）"
+    },
+    {
+      "problem_type_id": "equation_write_line_equation_from_point_slope_short_answer",
+      "route_source": "gencode_wrapper",
+      "answer_type": "equation",
+      "has_choices": false,
+      "question_text_preview": "已知直線過點 $(8, 7)$，斜率為 $1$，求此直線的點斜式方程式。\n（答案範例：5）"
+    }
+  ],
+  "status": "FAIL",
+  "blocking_reasons": [
+    "web_runtime_distribution_missing_verified_problem_types"
+  ]
+}

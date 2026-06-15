@@ -45,6 +45,7 @@ HINT_OPENING_DIRECTION = "開口=向上"
 HINT_TEXT_SHORT = "text_short"
 HINT_EXPRESSION = "expression"
 HINT_INTERVAL = "interval"
+HINT_SOLUTION_SET = "solution_set"
 HINT_UNKNOWN = ""
 
 # ── Answer-contract definitions keyed by hint ─────────────────────────────────
@@ -178,6 +179,17 @@ _HINT_TO_CONTRACT: dict[str, dict[str, Any]] = {
         "choices_required": False,
         "accepted_formats": ["x<-2 or x>5", "-2<x<5", "x<=-2 or x>=5"],
     },
+    HINT_SOLUTION_SET: {
+        "answer_type": "solution_set",
+        "answer_shape": "unordered_set",
+        "answer_equivalence": "unordered_solution_set",
+        "equivalence_type": "unordered_solution_set",
+        "checker": "solution_set_checker",
+        "checker_key": "solution_set_checker",
+        "presentation_mode": "short_answer",
+        "choices_required": False,
+        "accepted_formats": ["-3, 7", "7, -3", "{-3, 7}", "k=-3 或 k=7", "-3 或 7"],
+    },
 }
 
 # answer_fields → canonical hint (when hint is absent but fields give evidence)
@@ -265,6 +277,8 @@ def infer_answer_format_hint(spec: dict[str, Any]) -> str:
         return HINT_EXPRESSION
     if at == "interval":
         return HINT_INTERVAL
+    if at in {"solution_set", "set"}:
+        return HINT_SOLUTION_SET
     # integer / rational / numeric: do NOT map to a hint here.
     # These are unreliable when derived from a typed-prefix problem_type_id.
     # The caller should fall through to slot-based or marker-based inference.
@@ -303,6 +317,8 @@ def infer_answer_format_hint_from_answers(sample_answers: list[str]) -> str:
             votes[HINT_EXPRESSION] = votes.get(HINT_EXPRESSION, 0) + 1
         elif re.search(r"x\s*[<>≤≥=]", ans) or re.search(r"<\s*x\s*<", ans):
             votes[HINT_INTERVAL] = votes.get(HINT_INTERVAL, 0) + 1
+        elif "," in ans or "或" in ans:
+            votes[HINT_SOLUTION_SET] = votes.get(HINT_SOLUTION_SET, 0) + 1
         else:
             votes[HINT_TEXT_SHORT] = votes.get(HINT_TEXT_SHORT, 0) + 1
 
@@ -390,6 +406,33 @@ _QUADRATIC_INEQUALITY_HINT_REASONS = frozenset({
 })
 _PARAMETER_RANGE_HINT_DECOYS = frozenset({"m>1", "k<-2", "m>=1", "k<=-2"})
 _SPECIAL_CASE_LABEL_ANSWERS = frozenset({"無解", "任意实数", "任意實數", "无解"})
+_LINEAR_EQUATION_DEFAULT_HINT = "（請輸入直線方程式，例如 $3x - y - 1 = 0$ 或 $y = 3x - 1$）"
+
+
+def _is_linear_equation_contract(ac: dict[str, Any]) -> bool:
+    checker = str(ac.get("checker") or ac.get("checker_key") or "").strip()
+    answer_type = str(ac.get("answer_type") or "").strip().lower()
+    answer_shape = str(ac.get("answer_shape") or "").strip().lower()
+    return checker == "linear_equation_equivalent_checker" or (
+        answer_type == "equation" and answer_shape == "linear_equation"
+    )
+
+
+def _latex_wrap_equation(expr: str) -> str:
+    s = str(expr or "").strip()
+    if not s:
+        return s
+    if s.startswith("$") and s.endswith("$"):
+        return s
+    return f"${s}$"
+
+
+def _build_linear_equation_format_suffix(ac: dict[str, Any]) -> str:
+    formats = [str(x).strip() for x in (ac.get("accepted_formats") or []) if str(x).strip()]
+    if formats:
+        examples = "、".join(_latex_wrap_equation(f) for f in formats[:3])
+        return f"（可輸入等價方程式，例如 {examples}）"
+    return _LINEAR_EQUATION_DEFAULT_HINT
 
 _CONTRACT_SHAPE_EXAMPLES: dict[str, str] = {
     "integer_checker": "5",
@@ -411,6 +454,8 @@ _CONTRACT_SHAPE_EXAMPLES: dict[str, str] = {
 def answer_format_example_for_contract(answer_contract: dict[str, Any] | None) -> str:
     """Return a static, contract-shaped answer example for UI suffix hints."""
     ac = answer_contract if isinstance(answer_contract, dict) else {}
+    if _is_linear_equation_contract(ac):
+        return ""
     reason = str(ac.get("checker_selection_reason") or "").strip()
     if reason in _QUADRATIC_INEQUALITY_HINT_REASONS:
         return QUADRATIC_INEQUALITY_UNIFIED_HINT_EXAMPLE
@@ -464,6 +509,8 @@ def answer_format_example_for_contract(answer_contract: dict[str, Any] | None) -
         return _CONTRACT_SHAPE_EXAMPLES["expression_checker"]
     if answer_type == "interval":
         return _CONTRACT_SHAPE_EXAMPLES["interval_checker"]
+    if answer_type == "equation":
+        return ""
     if hint == HINT_EXPRESSION:
         return _CONTRACT_SHAPE_EXAMPLES["expression_checker"]
     if hint == HINT_INTERVAL:
@@ -473,6 +520,9 @@ def answer_format_example_for_contract(answer_contract: dict[str, Any] | None) -
 
 def build_answer_format_suffix(answer_contract: dict[str, Any] | None) -> str:
     """Build the Chinese answer-format suffix from contract shape, not runtime answer."""
+    ac = answer_contract if isinstance(answer_contract, dict) else {}
+    if _is_linear_equation_contract(ac):
+        return _build_linear_equation_format_suffix(ac)
     example = answer_format_example_for_contract(answer_contract)
     if not example:
         return ""

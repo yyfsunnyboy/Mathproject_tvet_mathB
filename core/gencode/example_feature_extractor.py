@@ -5,7 +5,7 @@ from fractions import Fraction
 from typing import Any
 
 from core.gencode.answer_contract_bridge import legacy_fields_from_answer_contract
-from core.gencode.task_families import task_family_for_task
+from core.gencode.task_families import LINE_EQUATION_FAMILY, task_family_for_task
 from core.gencode.validators.answer_contract_validator import CHOICE_EMBEDDED_PATTERN, LABEL_ONLY_PATTERN
 
 _CHOICE_LINE = re.compile(r"[\(（]\s*([A-Da-d])\s*[\)）]")
@@ -75,6 +75,135 @@ _QUADRATIC_NEW_FUNCTION = re.compile(r"(新頂點|新顶点|新函數|新函数|
 _QUADRATIC_PROPERTIES = re.compile(r"(開口方向|开口方向|頂點坐標|顶点坐标|頂點座標|顶点座标|對稱軸|对称轴|最大值|最小值|概略圖形|概略图形)")
 _QUADRATIC_PARAMETER_COMPUTE = re.compile(r"(p\s*\+\s*q|f\s*\\left\s*\(\s*3\s*\\right|f\s*\(\s*3\s*\)|交\s*y\s*軸|交\s*y\s*轴|最低點|最低点|最高點|最高点|求.*[abc pq]\s*之值|求.*參數|求.*参数)")
 
+_LINE_EQUATION_FORMULA = re.compile(
+    r"y\s*[-−﹣]\s*y[_₁1]?\s*=\s*m\s*\(\s*x\s*[-−﹣]\s*x[_₁1]?\s*\)",
+    re.I,
+)
+_LINE_EQUATION_SIGNALS = re.compile(
+    r"點斜式|点斜式|直線方程式|直线方程式|直線方程|直线方程|垂直平分線|垂直平分线|"
+    r"line\s*equation|point[-\s]*slope|斜截式|一般式",
+    re.I,
+)
+_LINE_EQUATION_SLOPE = re.compile(r"斜率|slope", re.I)
+_LINE_EQUATION_THROUGH = re.compile(r"通過|通过|過點|过点", re.I)
+_LINE_EQUATION_WRITE = re.compile(r"求.*方程式|求.*方程|寫出|写出|化為|化为|表示成", re.I)
+_LINE_EQUATION_ANSWER = re.compile(r"(?:^|[^a-zA-Z])[xy]\s*[-−+＋]?[^=]{0,24}=", re.I)
+
+
+_LINE_EQUATION_TWO_POINTS = re.compile(
+    r"(?:通過|通过).{0,60}?(?:兩點|两点)|"
+    r"[ABCDabcd]\s*[\(（][^）\)]*[）\)]\s*(?:、|與|与)\s*[ABCDabcd]\s*[\(（]|"
+    r"過點\s*[ABCDabcd]\s*[\(（].{0,40}?(?:與|与)\s*[ABCDabcd]\s*[\(（]",
+    re.I,
+)
+_LINE_EQUATION_PERP_BISECTOR = re.compile(r"垂直平分線|垂直平分线", re.I)
+_LINE_EQUATION_MEDIAN = re.compile(r"三角形|農地|农地|面積|面积|平分", re.I)
+_LINE_EQUATION_INTERCEPT = re.compile(r"[xyXY]截距|x\s*截距|y\s*截距", re.I)
+_LINE_EQUATION_EQUAL_DISTANCE = re.compile(r"距離相同|距离相同|等距|車站|车站|兩鄉鎮|两乡镇|鄉鎮|乡镇", re.I)
+
+
+def _resolve_line_equation_target_task(stem: str) -> str:
+    text = str(stem or "").strip()
+    if not text:
+        return "write_line_equation_from_point_slope"
+    if _LINE_EQUATION_PERP_BISECTOR.search(text) or _LINE_EQUATION_EQUAL_DISTANCE.search(text):
+        return "write_perpendicular_bisector_from_two_points"
+    if _LINE_EQUATION_MEDIAN.search(text) and re.search(r"三角形|農地|农地|ABC|頂點|顶点", text, re.I):
+        return "write_triangle_median_line_from_vertices"
+    if _LINE_EQUATION_INTERCEPT.search(text) and _LINE_EQUATION_SLOPE.search(text):
+        return "write_line_equation_from_slope_and_intercept"
+    if _LINE_EQUATION_TWO_POINTS.search(text):
+        return "write_line_equation_from_two_points"
+    if _LINE_EQUATION_SLOPE.search(text) and (
+        _LINE_EQUATION_THROUGH.search(text) or "過點" in text or "过点" in text
+    ):
+        return "write_line_equation_from_point_slope"
+    return "write_line_equation_from_point_slope"
+
+
+def detect_line_equation_routing(
+    text: str,
+    *,
+    answer: str = "",
+    answer_type: str = "",
+) -> dict[str, str] | None:
+    """Return line-equation routing when stem/answer signals are present (generic, not skill-specific)."""
+    stem = str(text or "").strip()
+    if not stem:
+        return None
+    confidence = "medium"
+    strong = bool(
+        _LINE_EQUATION_FORMULA.search(stem)
+        or _LINE_EQUATION_SIGNALS.search(stem)
+        or ("點斜式" in stem or "点斜式" in stem)
+    )
+    contextual = bool(
+        _LINE_EQUATION_SLOPE.search(stem)
+        and (
+            _LINE_EQUATION_THROUGH.search(stem)
+            or "直線" in stem
+            or "直线" in stem
+            or "方程式" in stem
+            or "方程" in stem
+        )
+    )
+    write_form = bool(
+        (_LINE_EQUATION_WRITE.search(stem) or "方程式" in stem or "方程" in stem)
+        and (
+            "直線" in stem
+            or "直线" in stem
+            or _LINE_EQUATION_SLOPE.search(stem)
+            or _LINE_EQUATION_PERP_BISECTOR.search(stem)
+            or _LINE_EQUATION_MEDIAN.search(stem)
+        )
+    )
+    ans = str(answer or "").strip()
+    answer_like_equation = bool(_LINE_EQUATION_ANSWER.search(ans)) or (
+        "=" in ans and re.search(r"[xy]", ans, re.I)
+    )
+    if not (strong or contextual or write_form):
+        if answer_like_equation and (_LINE_EQUATION_SLOPE.search(stem) or "直線" in stem or "直线" in stem):
+            confidence = "medium"
+        else:
+            return None
+    else:
+        confidence = "high" if strong else "medium"
+    target_task = _resolve_line_equation_target_task(stem)
+    return {
+        "target_task": target_task,
+        "task_family": "line_equation_family",
+        "answer_type": "equation",
+        "answer_shape": "linear_equation",
+        "classification_confidence": confidence,
+    }
+
+
+def apply_line_equation_routing_to_feature(feat: dict[str, Any]) -> dict[str, Any]:
+    if not isinstance(feat, dict):
+        return feat
+    route = detect_line_equation_routing(
+        str(feat.get("question_text") or feat.get("problem_text") or ""),
+        answer=str(feat.get("answer") or ""),
+        answer_type=str(feat.get("answer_type") or ""),
+    )
+    if not route:
+        return feat
+    feat["target_task"] = route["target_task"]
+    feat["target"] = route["target_task"]
+    feat["task_family"] = route["task_family"]
+    feat["answer_type"] = route["answer_type"]
+    feat["answer_shape"] = route["answer_shape"]
+    feat["classification_confidence"] = route["classification_confidence"]
+    feat["stem_concept"] = "line_equation"
+    if "line_equation" not in (feat.get("math_objects") or []):
+        feat["math_objects"] = sorted(set(list(feat.get("math_objects") or []) + ["line_equation"]))
+    sc = feat.get("semantic_classification")
+    if isinstance(sc, dict):
+        sc["final_target_task"] = route["target_task"]
+        sc["final_task_family"] = route["task_family"]
+        sc["classifier_source"] = sc.get("classifier_source") or "line_equation_routing"
+    return feat
+
 
 def _infer_quadratic_vertex_task(text: str, answer_type: str) -> str:
     """Classify quadratic vertex-form stems before generic function rules."""
@@ -133,10 +262,14 @@ def _infer_answer_type(question_text: str, answer: str, choices: list[str], has_
             return "fraction"
     except Exception:
         pass
-    if re.search(r"[+\-*/^]|\\frac|=", ans):
-        return "expression"
     if re.search(r"[,、]|或|or\b|\{.*\}", ans, re.I):
         return "set"
+    if re.search(r"[xy]\s*[-+−﹣]", ans, re.I) or (
+        re.search(r"[xy]", ans, re.I) and "=" in ans and not re.search(r"\^", ans)
+    ):
+        return "equation"
+    if re.search(r"[+\-*/^]|\\frac|=", ans):
+        return "expression"
     if _COORD_PAIR_ANSWER.match(ans) or re.search(r"x\s*=\s*-?\d+.*y\s*=\s*-?\d+", ans, re.I):
         return "ordered_pair"
     if ans and not has_choices:
@@ -163,6 +296,8 @@ def _extract_labeled_points(text: str) -> list[tuple[str, str]]:
 
 
 def _infer_division_point_task(text: str) -> str:
+    if detect_line_equation_routing(text):
+        return ""
     points = _extract_labeled_points(text)
     if _CENTROID.search(text) and (len(points) >= 3 or _TRIANGLE.search(text)):
         return "compute_centroid_coordinates"
@@ -254,6 +389,8 @@ def _detect_math_objects(text: str, target_task: str) -> list[str]:
         objs.append("combinatorics_context")
     if _STATS.search(text):
         objs.append("statistics_context")
+    if task_family_for_task(target_task) == LINE_EQUATION_FAMILY or detect_line_equation_routing(text):
+        objs.append("line_equation")
     if task_family_for_task(target_task) == "quadratic_function_graph_family" or _QUADRATIC_FORM.search(text):
         objs.append("quadratic_equation")
         if _QUADRATIC_FACTORING.search(text):
@@ -276,6 +413,22 @@ _COORD_POINT = re.compile(r"[PQABCD]\s*\\?\s*\(?\s*[^)\n]{1,40}\)?", re.I)
 
 
 def _infer_target_task(text: str, math_objects: list[str], answer_type: str) -> str:
+    line_route = detect_line_equation_routing(text, answer_type=answer_type)
+    if line_route:
+        return line_route["target_task"]
+    division_pt = _infer_division_point_task(text)
+    if division_pt:
+        return division_pt
+    two_pt = _infer_two_point_distance_task(text)
+    if two_pt:
+        return two_pt
+    if _QUADRANT_EXPLICIT.search(text) and answer_type == "short_answer":
+        return "classify_quadrant"
+    if _AXIS_DIST.search(text):
+        return "choose_possible_coordinate"
+    if answer_type == "single_choice" and _QUADRANT_EXPLICIT.search(text):
+        return "choose_correct_statement"
+
     from core.gencode.problem_type_canonicalizer import (
         extract_math_meta_tags,
         resolve_target_task_from_math_meta_tags,
@@ -293,21 +446,9 @@ def _infer_target_task(text: str, math_objects: list[str], answer_type: str) -> 
         r"不等式|inequality|[<>≤≥]=?", text, re.I
     ):
         return "solve_absolute_value_inequality"
-    division_pt = _infer_division_point_task(text)
-    if division_pt:
-        return division_pt
-    two_pt = _infer_two_point_distance_task(text)
-    if two_pt:
-        return two_pt
     quadratic_task = _infer_quadratic_vertex_task(text, answer_type)
     if quadratic_task:
         return quadratic_task
-    if _QUADRANT_EXPLICIT.search(text) and answer_type == "short_answer":
-        return "classify_quadrant"
-    if _AXIS_DIST.search(text):
-        return "choose_possible_coordinate"
-    if answer_type == "single_choice" and _QUADRANT_EXPLICIT.search(text):
-        return "choose_correct_statement"
     if _PROB.search(text):
         return "compute_probability"
     if _COMB.search(text):
@@ -332,8 +473,9 @@ def _infer_target_task(text: str, math_objects: list[str], answer_type: str) -> 
         return "simplify_expression"
     if re.search(r"解方程式|solve", text, re.I):
         return "solve_equation"
-    if "coordinate_point" in math_objects:
-        return "compute_numeric"
+    line_route = detect_line_equation_routing(text)
+    if line_route:
+        return line_route["target_task"]
     return "compute_numeric"
 
 
@@ -353,6 +495,8 @@ def _infer_reasoning_type(text: str, math_objects: list[str], target_task: str) 
         "compute_distance",
     }:
         types.append("distance_formula_reasoning")
+    if task_family_for_task(target_task) == LINE_EQUATION_FAMILY or detect_line_equation_routing(text):
+        types.append("line_equation_reasoning")
     if _AXIS_DIST.search(text) or target_task == "choose_possible_coordinate":
         types.append("axis_distance_reasoning")
     if _QUADRANT_EXPLICIT.search(text) or "symbolic_condition" in math_objects:
@@ -428,6 +572,11 @@ def extract_example_feature_rule_only(ex: dict[str, Any]) -> dict[str, Any]:
         answer_type = "integer"
         target_task = "perpendicular_lines_properties"
 
+    route = detect_line_equation_routing(question_text, answer=answer, answer_type=answer_type)
+    if route:
+        target_task = route["target_task"]
+        answer_type = route["answer_type"]
+        math_objects = _detect_math_objects(question_text, target_task)
     task_family = task_family_for_task(target_task)
     reasoning_type = _infer_reasoning_type(question_text, math_objects, target_task)
     if target_task == "compute_centroid_coordinates" and "coordinate_average_reasoning" not in reasoning_type:
@@ -461,8 +610,15 @@ def extract_example_feature_rule_only(ex: dict[str, Any]) -> dict[str, Any]:
     math_meta_tags = extract_math_meta_tags(question_text)
     forced_target_task = resolve_target_task_from_math_meta_tags(math_meta_tags)
     if forced_target_task:
-        target_task = forced_target_task
-        task_family = task_family_for_task(target_task)
+        is_coord_geom = task_family in {
+            "distance_between_two_points_family",
+            "division_point_coordinates_family",
+            "classify_quadrant_family",
+            "axis_distance_family"
+        } or target_task == "perpendicular_lines_properties"
+        if not is_coord_geom:
+            target_task = forced_target_task
+            task_family = task_family_for_task(target_task)
     meta_answer_hint = resolve_answer_format_hint_from_math_meta_tags(math_meta_tags)
     return {
         "source_example_id": ex_id,

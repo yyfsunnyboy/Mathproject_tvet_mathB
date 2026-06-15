@@ -18,8 +18,8 @@
 - expected_task_families: ['function_concept_family']
 - expected_subskill_candidates: ['evaluate_function_value', 'interpret_function_notation', 'judge_domain_range_basic', 'judge_function_from_mapping', 'judge_function_relation']
 - skill_anchor_scope: `default`
-- observed_source_family_distribution: {'function_concept_family': 9, 'generic_numeric_family': 6}
-- observed_target_task_distribution: {'numeric_evaluate_function_notation': 9, 'evaluate_function_value': 6}
+- observed_source_family_distribution: {'function_concept_family': 9, 'generic_numeric_family': 5, 'quadratic_inequality_family': 1}
+- observed_target_task_distribution: {'numeric_evaluate_function_notation': 9, 'compute_numeric': 5, 'applied_quadratic_inequality_problem': 1}
 - same_family_subskill_mismatch_examples: 0
 - examples_outside_expected_subskills: []
 - suggested_action: ``
@@ -28,7 +28,7 @@
 
 - source_alignment_status: `warn`
 - skill_problem_type_alignment_status: `warn`
-- alignment_score: `0.0385`
+- alignment_score: `0.04`
 - alignment_blockers: []
 - alignment_warnings: ['ai_first_mode_fell_back_to_rule_only']
 
@@ -39,21 +39,21 @@
 | 4444 | numeric_evaluate_function_notation | function_concept_family | anchor_subskill_match | False | True |  | 下圖為函數$y=f\left( x \right)=ax+b$的圖形。
 (1)試求直線的x截距與y截距。
 (2)試求$f |
-| 4445 | evaluate_function_value | generic_numeric_family | anchor_subskill_match | True | True |  | 已知手機費包含月租基本費與超時通話費，某電信公司的手機月租基本費為m元，可以免費通話30分鐘。若通話時間超過30分鐘後， |
+| 4445 | compute_numeric | generic_numeric_family | unclassified_low_confidence | False | False | semantic_alignment_score_zero_requires_human_review | 已知手機費包含月租基本費與超時通話費，某電信公司的手機月租基本費為m元，可以免費通話30分鐘。若通話時間超過30分鐘後， |
 | 4424 | numeric_evaluate_function_notation | function_concept_family | anchor_subskill_match | False | True |  | 右圖為函數$y=f\left( x \right)=ax+b$的圖形。
 (1) 試求直線的x截距與y截距。
 (2) 試求 |
-| 4425 | evaluate_function_value | generic_numeric_family | anchor_subskill_match | True | True |  | 右圖是某電信公司的通話費計算方式：300秒以內只繳基本費，超過300秒之後的費用，與通話時間成線型函數關係，試問：
+| 4425 | compute_numeric | generic_numeric_family | unclassified_low_confidence | False | False | semantic_alignment_score_zero_requires_human_review | 右圖是某電信公司的通話費計算方式：300秒以內只繳基本費，超過300秒之後的費用，與通話時間成線型函數關係，試問：
 (1 |
-| 4426 | evaluate_function_value | generic_numeric_family | anchor_subskill_match | True | True |  | 設直角坐標平面上四點$A\left( -2,1 \right)$、$B\left( {{b}_{1}},{{b}_{2} |
+| 4426 | compute_numeric | generic_numeric_family | unclassified_low_confidence | False | False | semantic_alignment_score_zero_requires_human_review | 設直角坐標平面上四點$A\left( -2,1 \right)$、$B\left( {{b}_{1}},{{b}_{2} |
 | 4441 | numeric_evaluate_function_notation | function_concept_family | anchor_subskill_match | False | True |  | 右圖為函數$y=f\left( x \right)=ax+b$的圖形。
 (1) 試求直線的x截距與y截距。
 (2) 試求 |
-| 4442 | evaluate_function_value | generic_numeric_family | anchor_subskill_match | True | True |  | 高老師搭乘某廉價航空，他的行李托運費用是850元，若行李托運費用與重量是成線型函數的關係，如圖所示，試求高老師托運的行李 |
-| 4446 | evaluate_function_value | generic_numeric_family | anchor_subskill_match | True | True |  | 公司給小虹最多50萬元的預算來採買$x$、$y$兩種貨品。但小虹一時疏忽，無法確定$x$貨品跟$y$貨品的單價哪一個是1 |
+| 4442 | applied_quadratic_inequality_problem | quadratic_inequality_family | unclassified_low_confidence | False | False | semantic_alignment_score_zero_requires_human_review | 高老師搭乘某廉價航空，他的行李托運費用是850元，若行李托運費用與重量是成線型函數的關係，如圖所示，試求高老師托運的行李 |
+| 4446 | compute_numeric | generic_numeric_family | unclassified_low_confidence | False | False | semantic_alignment_score_zero_requires_human_review | 公司給小虹最多50萬元的預算來採買$x$、$y$兩種貨品。但小虹一時疏忽，無法確定$x$貨品跟$y$貨品的單價哪一個是1 |
 | 4448 | numeric_evaluate_function_notation | function_concept_family | anchor_subskill_match | False | True |  | 試在坐標平面上畫出$y=f\left( x \right)=3$的圖形。 |
 | 4449 | numeric_evaluate_function_notation | function_concept_family | anchor_subskill_match | False | True |  | 試在坐標平面上畫出函數$y=f\left( x \right)=-2x+4$的圖形。 |
-| 4500 | evaluate_function_value | generic_numeric_family | anchor_subskill_match | True | True |  | 阿偉的汽車加滿油後開始行駛，其行駛距離x公里與剩餘油量y公升的關係為線型函數，其圖形如右圖所示，則x與y的關係式為 |
+| 4500 | compute_numeric | generic_numeric_family | unclassified_low_confidence | False | False | semantic_alignment_score_zero_requires_human_review | 阿偉的汽車加滿油後開始行駛，其行駛距離x公里與剩餘油量y公升的關係為線型函數，其圖形如右圖所示，則x與y的關係式為 |
 | 4515 | numeric_evaluate_function_notation | function_concept_family | anchor_subskill_match | False | True |  | 設$f\left( x \right)=ax+b$為一線型函數，且圖形通過點$\left( -2,4 \right)$、 |
 | 4516 | numeric_evaluate_function_notation | function_concept_family | anchor_subskill_match | False | True |  | 利用截距定義，試問下列何者不可能是函數$y=f\left( x \right)=ax-3$的圖形？ |
 
@@ -71,7 +71,7 @@
 | 4425 |  |  | 0.0 | compute_numeric | generic_numeric_family | compute_numeric | generic_numeric_family | rule_fallback_ai_unavailable | ai_api_key_missing | True |
 | 4426 |  |  | 0.0 | compute_numeric | generic_numeric_family | compute_numeric | generic_numeric_family | rule_fallback_ai_unavailable | ai_api_key_missing | True |
 | 4441 |  |  | 0.45 | interpret_function_notation | function_concept_family | numeric_evaluate_function_notation | function_concept_family | rule_fallback_ai_unavailable | ai_api_key_missing | False |
-| 4442 |  |  | 0.0 | compute_numeric | generic_numeric_family | compute_numeric | generic_numeric_family | rule_fallback_ai_unavailable | ai_api_key_missing | True |
+| 4442 |  |  | 0.0 | applied_quadratic_inequality_problem | quadratic_inequality_family | applied_quadratic_inequality_problem | quadratic_inequality_family | rule_fallback_ai_unavailable | ai_api_key_missing | True |
 | 4446 |  |  | 0.0 | compute_numeric | generic_numeric_family | compute_numeric | generic_numeric_family | rule_fallback_ai_unavailable | ai_api_key_missing | True |
 | 4448 |  |  | 0.45 | interpret_function_notation | function_concept_family | numeric_evaluate_function_notation | function_concept_family | rule_fallback_ai_unavailable | ai_api_key_missing | False |
 | 4449 |  |  | 0.45 | interpret_function_notation | function_concept_family | numeric_evaluate_function_notation | function_concept_family | rule_fallback_ai_unavailable | ai_api_key_missing | False |
@@ -87,23 +87,23 @@
 | 4433 | interpret_function_notation/function_concept_family | / | 0.45 | rule_fallback_ai_unavailable | numeric_evaluate_function_notation/function_concept_family | anchor_subskill_match |  |
 | 4434 | interpret_function_notation/function_concept_family | / | 0.45 | rule_fallback_ai_unavailable | numeric_evaluate_function_notation/function_concept_family | anchor_subskill_match |  |
 | 4444 | interpret_function_notation/function_concept_family | / | 0.45 | rule_fallback_ai_unavailable | numeric_evaluate_function_notation/function_concept_family | anchor_subskill_match |  |
-| 4445 | compute_numeric/generic_numeric_family | / | 0.0 | fallback_application_induct | evaluate_function_value/generic_numeric_family | anchor_subskill_match |  |
+| 4445 | compute_numeric/generic_numeric_family | / | 0.0 | rule_fallback_ai_unavailable | compute_numeric/generic_numeric_family | unclassified_low_confidence | semantic_alignment_score_zero_requires_human_review |
 | 4424 | interpret_function_notation/function_concept_family | / | 0.45 | rule_fallback_ai_unavailable | numeric_evaluate_function_notation/function_concept_family | anchor_subskill_match |  |
-| 4425 | compute_numeric/generic_numeric_family | / | 0.0 | fallback_application_induct | evaluate_function_value/generic_numeric_family | anchor_subskill_match |  |
-| 4426 | compute_numeric/generic_numeric_family | / | 0.0 | fallback_application_induct | evaluate_function_value/generic_numeric_family | anchor_subskill_match |  |
+| 4425 | compute_numeric/generic_numeric_family | / | 0.0 | rule_fallback_ai_unavailable | compute_numeric/generic_numeric_family | unclassified_low_confidence | semantic_alignment_score_zero_requires_human_review |
+| 4426 | compute_numeric/generic_numeric_family | / | 0.0 | rule_fallback_ai_unavailable | compute_numeric/generic_numeric_family | unclassified_low_confidence | semantic_alignment_score_zero_requires_human_review |
 | 4441 | interpret_function_notation/function_concept_family | / | 0.45 | rule_fallback_ai_unavailable | numeric_evaluate_function_notation/function_concept_family | anchor_subskill_match |  |
-| 4442 | compute_numeric/generic_numeric_family | / | 0.0 | fallback_application_induct | evaluate_function_value/generic_numeric_family | anchor_subskill_match |  |
-| 4446 | compute_numeric/generic_numeric_family | / | 0.0 | fallback_application_induct | evaluate_function_value/generic_numeric_family | anchor_subskill_match |  |
+| 4442 | applied_quadratic_inequality_problem/quadratic_inequality_family | / | 0.0 | rule_fallback_ai_unavailable | applied_quadratic_inequality_problem/quadratic_inequality_family | unclassified_low_confidence | semantic_alignment_score_zero_requires_human_review |
+| 4446 | compute_numeric/generic_numeric_family | / | 0.0 | rule_fallback_ai_unavailable | compute_numeric/generic_numeric_family | unclassified_low_confidence | semantic_alignment_score_zero_requires_human_review |
 | 4448 | interpret_function_notation/function_concept_family | / | 0.45 | rule_fallback_ai_unavailable | numeric_evaluate_function_notation/function_concept_family | anchor_subskill_match |  |
 | 4449 | interpret_function_notation/function_concept_family | / | 0.45 | rule_fallback_ai_unavailable | numeric_evaluate_function_notation/function_concept_family | anchor_subskill_match |  |
-| 4500 | compute_numeric/generic_numeric_family | / | 0.0 | fallback_application_induct | evaluate_function_value/generic_numeric_family | anchor_subskill_match |  |
+| 4500 | compute_numeric/generic_numeric_family | / | 0.0 | rule_fallback_ai_unavailable | compute_numeric/generic_numeric_family | unclassified_low_confidence | semantic_alignment_score_zero_requires_human_review |
 | 4515 | interpret_function_notation/function_concept_family | / | 0.45 | rule_fallback_ai_unavailable | numeric_evaluate_function_notation/function_concept_family | anchor_subskill_match |  |
 | 4516 | interpret_function_notation/function_concept_family | / | 0.45 | rule_fallback_ai_unavailable | numeric_evaluate_function_notation/function_concept_family | anchor_subskill_match |  |
 
 
 ## Same-section family distribution
 
-{'function_concept_family': 9, 'generic_numeric_family': 6}
+{'function_concept_family': 9, 'generic_numeric_family': 5, 'quadratic_inequality_family': 1}
 
 ## Example features
 
@@ -112,16 +112,16 @@
 | 4433 | integer | numeric_evaluate_function_notation | False | False | coordinate_point, quadratic_equation, quadratic_vertex_form |
 | 4434 | integer | numeric_evaluate_function_notation | False | False | coordinate_point, quadratic_equation, quadratic_vertex_form |
 | 4444 | integer | numeric_evaluate_function_notation | False | False | coordinate_point, quadratic_equation, quadratic_vertex_form, two_coordinate_points |
-| 4445 | text_short | evaluate_function_value | False | False |  |
+| 4445 | text_short | compute_numeric | False | False |  |
 | 4424 | integer | numeric_evaluate_function_notation | False | False | coordinate_point, quadratic_equation, quadratic_vertex_form, two_coordinate_points |
-| 4425 | text_short | evaluate_function_value | False | False |  |
-| 4426 | text_short | evaluate_function_value | False | False | coordinate_point, three_coordinate_points, triangle, two_coordinate_points |
+| 4425 | text_short | compute_numeric | False | False |  |
+| 4426 | text_short | compute_numeric | False | False | coordinate_point, three_coordinate_points, triangle, two_coordinate_points |
 | 4441 | integer | numeric_evaluate_function_notation | False | False | coordinate_point, quadratic_equation, quadratic_vertex_form, two_coordinate_points |
-| 4442 | text_short | evaluate_function_value | False | False |  |
-| 4446 | choice | evaluate_function_value | True | True | coordinate_point, three_coordinate_points, triangle, two_coordinate_points |
+| 4442 | text_short | applied_quadratic_inequality_problem | False | False |  |
+| 4446 | choice | compute_numeric | True | True | coordinate_point, three_coordinate_points, triangle, two_coordinate_points |
 | 4448 | integer | numeric_evaluate_function_notation | False | False | coordinate_point, quadratic_equation, quadratic_vertex_form |
 | 4449 | integer | numeric_evaluate_function_notation | False | False | coordinate_point, quadratic_equation, quadratic_vertex_form |
-| 4500 | text_short | evaluate_function_value | False | False |  |
+| 4500 | text_short | compute_numeric | False | False |  |
 | 4515 | integer | numeric_evaluate_function_notation | True | True | coordinate_point, quadratic_equation, quadratic_vertex_form, three_coordinate_points, triangle, two_coordinate_points |
 | 4516 | integer | numeric_evaluate_function_notation | False | False | coordinate_point, quadratic_equation, quadratic_vertex_form |
 
@@ -139,12 +139,6 @@
 - grouping_reason: split_by_feature_signature
 - feature_signature: `['numeric', 'numeric_evaluate_function_notation', 'single_choice', ('numeric_computation',), ('coordinate_point', 'quadratic_equation')]`
 
-### Cluster 3
-- answer_type: `short_answer`
-- source_example_ids: [4425, 4426, 4442, 4445, 4500]
-- grouping_reason: merged_by_canonical_contract
-- feature_signature: `['canonical_contract_merge', 'evaluate_function_value', 'short_answer', 'short_answer']`
-
 
 ## Candidate problem types
 
@@ -152,7 +146,8 @@
 | --- | --- | --- | --- | --- |
 | integer_numeric_evaluate_function_notation | integer / numeric_evaluate_function_notation | text_short | [4424, 4433, 4434, 4441, 4444, 4448, 4449, 4516] | split_by_feature_signature |
 | integer_numeric_evaluate_function_notation | integer / numeric_evaluate_function_notation | choice | [4515] | split_by_feature_signature |
-| text_short_evaluate_function_value | text_short / evaluate_function_value | text_short | [4425, 4426, 4442, 4445, 4500] | merged_by_canonical_contract |
+| evaluate_function_value | evaluate_function_value / anchor bootstrap | expression | [] | anchor_subskill_bootstrap_zero_source |
+| interpret_function_notation | interpret_function_notation / anchor bootstrap | expression | [] | anchor_subskill_bootstrap_zero_source |
 
 ## phase1
 ```json
@@ -232,12 +227,14 @@
     "source_skill_scope_locked": true,
     "source_skill_id": "vh_數學B1_LinearFunction",
     "classification_scope": "within_current_skill",
-    "skill_mapping_authority": "textbook_examples.skill_id"
+    "skill_mapping_authority": "textbook_examples.skill_id",
+    "anchor_authority": "skill_id_derived_no_cross_family_pollution",
+    "classification_mandate": "【強制合約｜最高優先級】\n目前的 skill_id 與傳入的來源例題 100% 正確對齊，已由教師與課本 skill_id 欄位確認。\n你被禁止評估這些例題是否屬於其他家族（例如 absolute_value_inequality_family）。\n你的唯一任務，是 100% 相信這些題目就是該技能的標準核心，並直接在此 anchor 範圍內切分子技能（subskills）。\n禁止輸出 needs_review 或 contextual_application 作為跨家族質疑的結果；若規則分類已在 anchor 子技能清單內，必須接受。\n\n【強制合約｜最高優先級】\n目前的 skill_id 與傳入的來源例題 100% 正確對齊，已由教師與課本 skill_id 欄位確認。\n你被禁止評估這些例題是否屬於其他家族（例如 absolute_value_inequality_family）。\n你的唯一任務，是 100% 相信這些題目就是該技能的標準核心，並直接在此 anchor 範圍內切分子技能（subskills）。\n禁止輸出 needs_review 或 contextual_application 作為跨家族質疑的結果；若規則分類已在 anchor 子技能清單內，必須接受。\n\nTrusted skill anchor (do not override):\n- skill_id: vh_數學B1_LinearFunction\n- skill_ch_name: 線型函數\n- skill_en_name: LinearFunction\n- expected_task_families: ['function_concept_family']\n- expected_subskill_candidates: ['evaluate_function_value', 'interpret_function_notation', 'judge_domain_range_basic', 'judge_function_from_mapping', 'judge_function_relation']\n- skill_anchor_scope: default\n- source_skill_scope_locked: True\n"
   },
   "source_example_count": 15,
   "source_alignment_status": "warn",
   "skill_problem_type_alignment_status": "warn",
-  "alignment_score": 0.0385,
+  "alignment_score": 0.04,
   "alignment_warnings": [
     "ai_first_mode_fell_back_to_rule_only"
   ],
@@ -285,7 +282,9 @@
       "source_skill_scope_locked": true,
       "source_skill_id": "vh_數學B1_LinearFunction",
       "classification_scope": "within_current_skill",
-      "skill_mapping_authority": "textbook_examples.skill_id"
+      "skill_mapping_authority": "textbook_examples.skill_id",
+      "anchor_authority": "skill_id_derived_no_cross_family_pollution",
+      "classification_mandate": "【強制合約｜最高優先級】\n目前的 skill_id 與傳入的來源例題 100% 正確對齊，已由教師與課本 skill_id 欄位確認。\n你被禁止評估這些例題是否屬於其他家族（例如 absolute_value_inequality_family）。\n你的唯一任務，是 100% 相信這些題目就是該技能的標準核心，並直接在此 anchor 範圍內切分子技能（subskills）。\n禁止輸出 needs_review 或 contextual_application 作為跨家族質疑的結果；若規則分類已在 anchor 子技能清單內，必須接受。\n\n【強制合約｜最高優先級】\n目前的 skill_id 與傳入的來源例題 100% 正確對齊，已由教師與課本 skill_id 欄位確認。\n你被禁止評估這些例題是否屬於其他家族（例如 absolute_value_inequality_family）。\n你的唯一任務，是 100% 相信這些題目就是該技能的標準核心，並直接在此 anchor 範圍內切分子技能（subskills）。\n禁止輸出 needs_review 或 contextual_application 作為跨家族質疑的結果；若規則分類已在 anchor 子技能清單內，必須接受。\n\nTrusted skill anchor (do not override):\n- skill_id: vh_數學B1_LinearFunction\n- skill_ch_name: 線型函數\n- skill_en_name: LinearFunction\n- expected_task_families: ['function_concept_family']\n- expected_subskill_candidates: ['evaluate_function_value', 'interpret_function_notation', 'judge_domain_range_basic', 'judge_function_from_mapping', 'judge_function_relation']\n- skill_anchor_scope: default\n- source_skill_scope_locked: True\n"
     },
     "ai_semantic_status": "unavailable",
     "skill_terms": [
@@ -313,6 +312,7 @@
       "2x",
       "300秒以內只繳基本費",
       "3x",
+      "applied_quadratic_inequality_problem",
       "ax",
       "choose_correct_statement",
       "compute_distance",
@@ -320,7 +320,6 @@
       "compute_numeric",
       "coordinate_point",
       "c兩點將線段ad三等分",
-      "evaluate_function_value",
       "find_intercepts",
       "left",
       "numeric",
@@ -396,7 +395,8 @@
     ],
     "observed_target_task_distribution": {
       "numeric_evaluate_function_notation": 9,
-      "evaluate_function_value": 6
+      "compute_numeric": 5,
+      "applied_quadratic_inequality_problem": 1
     },
     "same_family_subskill_mismatch_examples": [],
     "examples_outside_expected_subskills": [],
@@ -405,23 +405,26 @@
     "problem_type_terms": [
       "an",
       "answer",
-      "application",
       "choice",
       "compute_numeric",
       "evaluate",
       "evaluate_function_value",
-      "fallback",
+      "evaluate_function_value / anchor bootstrap",
+      "expression",
       "function",
       "function_value_numeric",
       "hort",
       "ingle",
+      "interpret",
+      "interpret_function_notation",
+      "interpret_function_notation / anchor bootstrap",
+      "linear_function_two_point_choice",
       "notation",
       "numeric",
       "numeric / numeric_evaluate_function_notation",
       "numeric_computation",
       "numeric_evaluate_function_notation",
       "short",
-      "short_answer / evaluate_function_value",
       "single",
       "single_choice",
       "text_short",
@@ -440,11 +443,13 @@
     ],
     "observed_source_family_distribution": {
       "function_concept_family": 9,
-      "generic_numeric_family": 6
+      "generic_numeric_family": 5,
+      "quadratic_inequality_family": 1
     },
     "source_family_distribution": {
       "function_concept_family": 9,
-      "generic_numeric_family": 6
+      "generic_numeric_family": 5,
+      "quadratic_inequality_family": 1
     },
     "candidate_problem_type_families": [
       "function_concept_family"
@@ -460,7 +465,7 @@
     ],
     "dominant_source_family_ratio": 0.6,
     "skill_source_score": 0.48,
-    "skill_problem_type_score": 0.0385,
+    "skill_problem_type_score": 0.04,
     "source_problem_type_score": 0.044,
     "per_problem_type_scores": [
       {
@@ -490,14 +495,27 @@
         "answer_contract_supported": true
       },
       {
-        "problem_type_id": "short_answer_evaluate_function_value_fallback_application",
+        "problem_type_id": "evaluate_function_value",
         "target_task": "evaluate_function_value",
         "task_family": "function_concept_family",
         "inferred_tasks": [
           "evaluate_function_value"
         ],
-        "skill_problem_type_score": 0.0385,
-        "source_problem_type_score": 0.0103,
+        "skill_problem_type_score": 0.0556,
+        "source_problem_type_score": 0.0,
+        "task_consistent_with_skill": true,
+        "family_consistent_with_skill": true,
+        "answer_contract_supported": true
+      },
+      {
+        "problem_type_id": "interpret_function_notation",
+        "target_task": "interpret_function_notation",
+        "task_family": "function_concept_family",
+        "inferred_tasks": [
+          "interpret_function_notation"
+        ],
+        "skill_problem_type_score": 0.0556,
+        "source_problem_type_score": 0.0,
         "task_consistent_with_skill": true,
         "family_consistent_with_skill": true,
         "answer_contract_supported": true
@@ -525,7 +543,8 @@
   },
   "source_family_distribution": {
     "function_concept_family": 9,
-    "generic_numeric_family": 6
+    "generic_numeric_family": 5,
+    "quadratic_inequality_family": 1
   },
   "candidate_problem_type_families": [
     "function_concept_family"
@@ -542,7 +561,8 @@
   ],
   "observed_target_task_distribution": {
     "numeric_evaluate_function_notation": 9,
-    "evaluate_function_value": 6
+    "compute_numeric": 5,
+    "applied_quadratic_inequality_problem": 1
   },
   "same_family_subskill_mismatch_examples": [],
   "examples_outside_expected_subskills": [],
@@ -638,6 +658,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -735,6 +757,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -832,6 +856,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -929,6 +955,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -1026,6 +1054,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -1201,6 +1231,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -1298,6 +1330,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -1395,6 +1429,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -1492,6 +1528,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -1589,6 +1627,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -1686,6 +1726,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -1861,6 +1903,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -1958,6 +2002,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -2055,6 +2101,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -2152,6 +2200,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -2249,6 +2299,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -2346,6 +2398,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -2522,6 +2576,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -2619,6 +2675,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -2716,6 +2774,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -2813,6 +2873,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -2910,6 +2972,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -3007,6 +3071,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -3104,6 +3170,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -3277,6 +3345,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -3374,6 +3444,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -3471,6 +3543,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -3568,6 +3642,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -3665,6 +3741,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -3762,6 +3840,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -3859,6 +3939,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -4035,6 +4117,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -4132,6 +4216,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -4229,6 +4315,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -4326,6 +4414,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -4423,6 +4513,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -4520,6 +4612,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -4617,6 +4711,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -4788,6 +4884,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -4885,6 +4983,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -4982,6 +5082,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -5079,6 +5181,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -5176,6 +5280,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -5273,6 +5379,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -5370,6 +5478,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -5546,6 +5656,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -5643,6 +5755,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -5740,6 +5854,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -5837,6 +5953,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -5934,6 +6052,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -6031,6 +6151,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -6128,6 +6250,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -6232,11 +6356,11 @@
       "raw_response_preview": "",
       "sanitized_response_preview": "",
       "failed_stage": "",
-      "rule_target_task": "compute_numeric",
-      "rule_task_family": "generic_numeric_family",
-      "rule_confidence": 0.2,
-      "final_target_task": "compute_numeric",
-      "final_task_family": "generic_numeric_family",
+      "rule_target_task": "applied_quadratic_inequality_problem",
+      "rule_task_family": "quadratic_inequality_family",
+      "rule_confidence": 0.5,
+      "final_target_task": "applied_quadratic_inequality_problem",
+      "final_task_family": "quadratic_inequality_family",
       "classifier_source": "rule_fallback_ai_unavailable",
       "classification_decision": "",
       "conflict_reason": "ai_api_key_missing",
@@ -6304,6 +6428,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -6401,6 +6527,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -6498,6 +6626,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -6595,6 +6725,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -6692,6 +6824,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -6789,6 +6923,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -6886,6 +7022,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -6924,6 +7062,105 @@
           }
         },
         {
+          "candidate_id": "C8",
+          "target_task": "applied_quadratic_inequality_problem",
+          "task_family": "quadratic_inequality_family",
+          "problem_type_id": "applied_quadratic_inequality_problem",
+          "label": "applied_quadratic_inequality_problem",
+          "candidate_source": "outsider",
+          "in_anchor_scope": false,
+          "answer_type": "numeric",
+          "answer_shape": "numeric",
+          "math_objects": [],
+          "checker_key": "numeric_checker",
+          "equivalence_type": "numeric_equivalence",
+          "generator_contract": {
+            "template_variants": [
+              {
+                "id": "default",
+                "label": "default",
+                "stem_pattern": "依題意求解：{stem_hint}。",
+                "weight": 1.0,
+                "enabled": true
+              }
+            ],
+            "parameter_schema": {
+              "seed": {
+                "type": "integer",
+                "randomize": true
+              },
+              "difficulty_level": {
+                "choices": [
+                  "level_1",
+                  "level_2",
+                  "level_3"
+                ],
+                "weights": [
+                  0.4,
+                  0.4,
+                  0.2
+                ]
+              }
+            },
+            "variation_dimensions": [
+              "seed",
+              "difficulty_level",
+              "context_style"
+            ],
+            "difficulty_controls": {
+              "level_1": {},
+              "level_2": {},
+              "level_3": {}
+            },
+            "anti_repetition_rules": {
+              "avoid_same_template_consecutive": true,
+              "avoid_same_ratio_consecutive": true,
+              "avoid_same_point_names_consecutive": true,
+              "avoid_same_answer_consecutive": true,
+              "recent_history_window": 5,
+              "signature_fields": [
+                "problem_type_id",
+                "template_variant",
+                "routing_track",
+                "scenario_type",
+                "ratio_form",
+                "ratio_values",
+                "coordinate_pattern",
+                "answer"
+              ]
+            },
+            "validity_constraints": [
+              "answer derivable from givens"
+            ],
+            "answer_shape": "numeric",
+            "explanation_variants": [
+              "stepwise"
+            ],
+            "sampling_strategy": "weighted_random",
+            "template_families": [
+              "applied_quadratic_inequality_problem"
+            ]
+          },
+          "parameter_schema": {
+            "seed": {
+              "type": "integer",
+              "randomize": true
+            },
+            "difficulty_level": {
+              "choices": [
+                "level_1",
+                "level_2",
+                "level_3"
+              ],
+              "weights": [
+                0.4,
+                0.4,
+                0.2
+              ]
+            }
+          }
+        },
+        {
           "candidate_id": "needs_review",
           "target_task": "",
           "task_family": "",
@@ -6940,9 +7177,11 @@
           "parameter_schema": {}
         }
       ],
-      "outsider_candidates": [],
-      "selected_subskill": "compute_numeric",
-      "selected_problem_type": "compute_numeric",
+      "outsider_candidates": [
+        "C8"
+      ],
+      "selected_subskill": "applied_quadratic_inequality_problem",
+      "selected_problem_type": "applied_quadratic_inequality_problem",
       "candidate_source": "needs_review",
       "selected_generator_contract": {},
       "parameter_schema": {},
@@ -6950,8 +7189,8 @@
       "checker_key": "",
       "equivalence_type": "",
       "skill_scope_trusted": true,
-      "target_task": "compute_numeric",
-      "task_family": "generic_numeric_family",
+      "target_task": "applied_quadratic_inequality_problem",
+      "task_family": "quadratic_inequality_family",
       "math_objects": [],
       "answer_type": "short_answer",
       "answer_shape": "text_short",
@@ -7057,6 +7296,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -7154,6 +7395,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -7251,6 +7494,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -7348,6 +7593,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -7445,6 +7692,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -7542,6 +7791,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -7639,6 +7890,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -7815,6 +8068,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -7912,6 +8167,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -8009,6 +8266,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -8106,6 +8365,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -8203,6 +8464,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -8300,6 +8563,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -8397,6 +8662,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -8572,6 +8839,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -8669,6 +8938,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -8766,6 +9037,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -8863,6 +9136,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -8960,6 +9235,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -9057,6 +9334,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -9154,6 +9433,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -9329,6 +9610,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -9426,6 +9709,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -9523,6 +9808,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -9620,6 +9907,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -9717,6 +10006,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -9814,6 +10105,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -9911,6 +10204,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -10082,6 +10377,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -10179,6 +10476,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -10276,6 +10575,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -10373,6 +10674,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -10470,6 +10773,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -10567,6 +10872,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -10664,6 +10971,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -10842,6 +11151,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -10939,6 +11250,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -11036,6 +11349,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -11133,6 +11448,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -11230,6 +11547,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -11327,6 +11646,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -11424,6 +11745,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -11521,7 +11844,8 @@
   "structure_mismatch_examples": [],
   "same_section_family_distribution": {
     "function_concept_family": 9,
-    "generic_numeric_family": 6
+    "generic_numeric_family": 5,
+    "quadratic_inequality_family": 1
   },
   "source_structure_report": {
     "source_type_distribution": {
@@ -11533,7 +11857,8 @@
     "structure_mismatch_examples": [],
     "same_section_family_distribution": {
       "function_concept_family": 9,
-      "generic_numeric_family": 6
+      "generic_numeric_family": 5,
+      "quadratic_inequality_family": 1
     }
   },
   "classification_diagnostics": [
@@ -11637,6 +11962,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -11734,6 +12061,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -11831,6 +12160,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -11928,6 +12259,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -12025,6 +12358,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -12188,6 +12523,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -12285,6 +12622,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -12382,6 +12721,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -12479,6 +12820,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -12576,6 +12919,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -12673,6 +13018,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -12836,6 +13183,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -12933,6 +13282,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -13030,6 +13381,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -13127,6 +13480,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -13224,6 +13579,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -13321,6 +13678,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -13401,9 +13760,9 @@
       "raw_response_preview": "",
       "sanitized_response_preview": "",
       "failed_stage": "",
-      "classifier_source": "fallback_application_induct",
+      "classifier_source": "rule_fallback_ai_unavailable",
       "classification_decision": "",
-      "final_target_task": "evaluate_function_value",
+      "final_target_task": "compute_numeric",
       "final_task_family": "generic_numeric_family",
       "expected_task_families": [
         "function_concept_family"
@@ -13417,9 +13776,9 @@
       ],
       "structure_context_used": true,
       "sequence_context_used": true,
-      "alignment_kind": "anchor_subskill_match",
-      "exclude_reason": "",
-      "included_in_phase1": true,
+      "alignment_kind": "unclassified_low_confidence",
+      "exclude_reason": "semantic_alignment_score_zero_requires_human_review",
+      "included_in_phase1": false,
       "conflict_reason": "ai_api_key_missing",
       "source_mapping_warning": "",
       "skill_anchor_scope": "default",
@@ -13484,6 +13843,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -13581,6 +13942,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -13678,6 +14041,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -13775,6 +14140,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -13872,6 +14239,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -13969,6 +14338,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -14066,6 +14437,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -14123,7 +14496,7 @@
       "ai_best_candidate_id": "needs_review",
       "selected_subskill": "compute_numeric",
       "selected_problem_type": "compute_numeric",
-      "candidate_source": "fallback_application",
+      "candidate_source": "needs_review",
       "outsider_candidates": [
         "C7"
       ],
@@ -14231,6 +14604,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -14328,6 +14703,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -14425,6 +14802,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -14522,6 +14901,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -14619,6 +15000,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -14716,6 +15099,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -14813,6 +15198,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -14893,9 +15280,9 @@
       "raw_response_preview": "",
       "sanitized_response_preview": "",
       "failed_stage": "",
-      "classifier_source": "fallback_application_induct",
+      "classifier_source": "rule_fallback_ai_unavailable",
       "classification_decision": "",
-      "final_target_task": "evaluate_function_value",
+      "final_target_task": "compute_numeric",
       "final_task_family": "generic_numeric_family",
       "expected_task_families": [
         "function_concept_family"
@@ -14909,9 +15296,9 @@
       ],
       "structure_context_used": true,
       "sequence_context_used": true,
-      "alignment_kind": "anchor_subskill_match",
-      "exclude_reason": "",
-      "included_in_phase1": true,
+      "alignment_kind": "unclassified_low_confidence",
+      "exclude_reason": "semantic_alignment_score_zero_requires_human_review",
+      "included_in_phase1": false,
       "conflict_reason": "ai_api_key_missing",
       "source_mapping_warning": "",
       "skill_anchor_scope": "default",
@@ -14976,6 +15363,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -15073,6 +15462,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -15170,6 +15561,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -15267,6 +15660,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -15364,6 +15759,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -15461,6 +15858,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -15558,6 +15957,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -15615,7 +16016,7 @@
       "ai_best_candidate_id": "needs_review",
       "selected_subskill": "compute_numeric",
       "selected_problem_type": "compute_numeric",
-      "candidate_source": "fallback_application",
+      "candidate_source": "needs_review",
       "outsider_candidates": [],
       "selected_generator_contract": {},
       "parameter_schema": {},
@@ -15638,9 +16039,9 @@
       "raw_response_preview": "",
       "sanitized_response_preview": "",
       "failed_stage": "",
-      "classifier_source": "fallback_application_induct",
+      "classifier_source": "rule_fallback_ai_unavailable",
       "classification_decision": "",
-      "final_target_task": "evaluate_function_value",
+      "final_target_task": "compute_numeric",
       "final_task_family": "generic_numeric_family",
       "expected_task_families": [
         "function_concept_family"
@@ -15654,9 +16055,9 @@
       ],
       "structure_context_used": true,
       "sequence_context_used": true,
-      "alignment_kind": "anchor_subskill_match",
-      "exclude_reason": "",
-      "included_in_phase1": true,
+      "alignment_kind": "unclassified_low_confidence",
+      "exclude_reason": "semantic_alignment_score_zero_requires_human_review",
+      "included_in_phase1": false,
       "conflict_reason": "ai_api_key_missing",
       "source_mapping_warning": "",
       "skill_anchor_scope": "default",
@@ -15721,6 +16122,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -15818,6 +16221,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -15915,6 +16320,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -16012,6 +16419,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -16109,6 +16518,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -16206,6 +16617,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -16303,6 +16716,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -16360,7 +16775,7 @@
       "ai_best_candidate_id": "needs_review",
       "selected_subskill": "compute_numeric",
       "selected_problem_type": "compute_numeric",
-      "candidate_source": "fallback_application",
+      "candidate_source": "needs_review",
       "outsider_candidates": [],
       "selected_generator_contract": {},
       "parameter_schema": {},
@@ -16466,6 +16881,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -16563,6 +16980,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -16660,6 +17079,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -16757,6 +17178,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -16854,6 +17277,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -16951,6 +17376,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -17048,6 +17475,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -17113,9 +17542,9 @@
     },
     {
       "example_id": 4442,
-      "rule_target_task": "compute_numeric",
-      "rule_task_family": "generic_numeric_family",
-      "rule_confidence": 0.2,
+      "rule_target_task": "applied_quadratic_inequality_problem",
+      "rule_task_family": "quadratic_inequality_family",
+      "rule_confidence": 0.5,
       "ai_target_task": "",
       "ai_task_family": "",
       "ai_confidence": 0.0,
@@ -17128,10 +17557,10 @@
       "raw_response_preview": "",
       "sanitized_response_preview": "",
       "failed_stage": "",
-      "classifier_source": "fallback_application_induct",
+      "classifier_source": "rule_fallback_ai_unavailable",
       "classification_decision": "",
-      "final_target_task": "evaluate_function_value",
-      "final_task_family": "generic_numeric_family",
+      "final_target_task": "applied_quadratic_inequality_problem",
+      "final_task_family": "quadratic_inequality_family",
       "expected_task_families": [
         "function_concept_family"
       ],
@@ -17144,9 +17573,9 @@
       ],
       "structure_context_used": true,
       "sequence_context_used": true,
-      "alignment_kind": "anchor_subskill_match",
-      "exclude_reason": "",
-      "included_in_phase1": true,
+      "alignment_kind": "unclassified_low_confidence",
+      "exclude_reason": "semantic_alignment_score_zero_requires_human_review",
+      "included_in_phase1": false,
       "conflict_reason": "ai_api_key_missing",
       "source_mapping_warning": "",
       "skill_anchor_scope": "default",
@@ -17211,6 +17640,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -17308,6 +17739,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -17405,6 +17838,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -17502,6 +17937,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -17599,6 +18036,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -17696,6 +18135,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -17793,6 +18234,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -17809,6 +18252,105 @@
             "sampling_strategy": "weighted_random",
             "template_families": [
               "compute_numeric"
+            ]
+          },
+          "parameter_schema": {
+            "seed": {
+              "type": "integer",
+              "randomize": true
+            },
+            "difficulty_level": {
+              "choices": [
+                "level_1",
+                "level_2",
+                "level_3"
+              ],
+              "weights": [
+                0.4,
+                0.4,
+                0.2
+              ]
+            }
+          }
+        },
+        {
+          "candidate_id": "C8",
+          "target_task": "applied_quadratic_inequality_problem",
+          "task_family": "quadratic_inequality_family",
+          "problem_type_id": "applied_quadratic_inequality_problem",
+          "label": "applied_quadratic_inequality_problem",
+          "candidate_source": "outsider",
+          "in_anchor_scope": false,
+          "answer_type": "numeric",
+          "answer_shape": "numeric",
+          "math_objects": [],
+          "checker_key": "numeric_checker",
+          "equivalence_type": "numeric_equivalence",
+          "generator_contract": {
+            "template_variants": [
+              {
+                "id": "default",
+                "label": "default",
+                "stem_pattern": "依題意求解：{stem_hint}。",
+                "weight": 1.0,
+                "enabled": true
+              }
+            ],
+            "parameter_schema": {
+              "seed": {
+                "type": "integer",
+                "randomize": true
+              },
+              "difficulty_level": {
+                "choices": [
+                  "level_1",
+                  "level_2",
+                  "level_3"
+                ],
+                "weights": [
+                  0.4,
+                  0.4,
+                  0.2
+                ]
+              }
+            },
+            "variation_dimensions": [
+              "seed",
+              "difficulty_level",
+              "context_style"
+            ],
+            "difficulty_controls": {
+              "level_1": {},
+              "level_2": {},
+              "level_3": {}
+            },
+            "anti_repetition_rules": {
+              "avoid_same_template_consecutive": true,
+              "avoid_same_ratio_consecutive": true,
+              "avoid_same_point_names_consecutive": true,
+              "avoid_same_answer_consecutive": true,
+              "recent_history_window": 5,
+              "signature_fields": [
+                "problem_type_id",
+                "template_variant",
+                "routing_track",
+                "scenario_type",
+                "ratio_form",
+                "ratio_values",
+                "coordinate_pattern",
+                "answer"
+              ]
+            },
+            "validity_constraints": [
+              "answer derivable from givens"
+            ],
+            "answer_shape": "numeric",
+            "explanation_variants": [
+              "stepwise"
+            ],
+            "sampling_strategy": "weighted_random",
+            "template_families": [
+              "applied_quadratic_inequality_problem"
             ]
           },
           "parameter_schema": {
@@ -17848,10 +18390,12 @@
         }
       ],
       "ai_best_candidate_id": "needs_review",
-      "selected_subskill": "compute_numeric",
-      "selected_problem_type": "compute_numeric",
-      "candidate_source": "fallback_application",
-      "outsider_candidates": [],
+      "selected_subskill": "applied_quadratic_inequality_problem",
+      "selected_problem_type": "applied_quadratic_inequality_problem",
+      "candidate_source": "needs_review",
+      "outsider_candidates": [
+        "C8"
+      ],
       "selected_generator_contract": {},
       "parameter_schema": {},
       "variable_randomization_notes": []
@@ -17873,9 +18417,9 @@
       "raw_response_preview": "",
       "sanitized_response_preview": "",
       "failed_stage": "",
-      "classifier_source": "fallback_application_induct",
+      "classifier_source": "rule_fallback_ai_unavailable",
       "classification_decision": "",
-      "final_target_task": "evaluate_function_value",
+      "final_target_task": "compute_numeric",
       "final_task_family": "generic_numeric_family",
       "expected_task_families": [
         "function_concept_family"
@@ -17889,9 +18433,9 @@
       ],
       "structure_context_used": true,
       "sequence_context_used": true,
-      "alignment_kind": "anchor_subskill_match",
-      "exclude_reason": "",
-      "included_in_phase1": true,
+      "alignment_kind": "unclassified_low_confidence",
+      "exclude_reason": "semantic_alignment_score_zero_requires_human_review",
+      "included_in_phase1": false,
       "conflict_reason": "ai_api_key_missing",
       "source_mapping_warning": "",
       "skill_anchor_scope": "default",
@@ -17956,6 +18500,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -18053,6 +18599,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -18150,6 +18698,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -18247,6 +18797,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -18344,6 +18896,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -18441,6 +18995,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -18538,6 +19094,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -18595,7 +19153,7 @@
       "ai_best_candidate_id": "needs_review",
       "selected_subskill": "compute_numeric",
       "selected_problem_type": "compute_numeric",
-      "candidate_source": "fallback_application",
+      "candidate_source": "needs_review",
       "outsider_candidates": [],
       "selected_generator_contract": {},
       "parameter_schema": {},
@@ -18701,6 +19259,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -18798,6 +19358,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -18895,6 +19457,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -18992,6 +19556,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -19089,6 +19655,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -19186,6 +19754,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -19283,6 +19853,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -19446,6 +20018,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -19543,6 +20117,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -19640,6 +20216,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -19737,6 +20315,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -19834,6 +20414,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -19931,6 +20513,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -20028,6 +20612,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -20108,9 +20694,9 @@
       "raw_response_preview": "",
       "sanitized_response_preview": "",
       "failed_stage": "",
-      "classifier_source": "fallback_application_induct",
+      "classifier_source": "rule_fallback_ai_unavailable",
       "classification_decision": "",
-      "final_target_task": "evaluate_function_value",
+      "final_target_task": "compute_numeric",
       "final_task_family": "generic_numeric_family",
       "expected_task_families": [
         "function_concept_family"
@@ -20124,9 +20710,9 @@
       ],
       "structure_context_used": true,
       "sequence_context_used": true,
-      "alignment_kind": "anchor_subskill_match",
-      "exclude_reason": "",
-      "included_in_phase1": true,
+      "alignment_kind": "unclassified_low_confidence",
+      "exclude_reason": "semantic_alignment_score_zero_requires_human_review",
+      "included_in_phase1": false,
       "conflict_reason": "ai_api_key_missing",
       "source_mapping_warning": "",
       "skill_anchor_scope": "default",
@@ -20191,6 +20777,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -20288,6 +20876,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -20385,6 +20975,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -20482,6 +21074,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -20579,6 +21173,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -20676,6 +21272,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -20773,6 +21371,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -20830,7 +21430,7 @@
       "ai_best_candidate_id": "needs_review",
       "selected_subskill": "compute_numeric",
       "selected_problem_type": "compute_numeric",
-      "candidate_source": "fallback_application",
+      "candidate_source": "needs_review",
       "outsider_candidates": [],
       "selected_generator_contract": {},
       "parameter_schema": {},
@@ -20936,6 +21536,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -21033,6 +21635,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -21130,6 +21734,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -21227,6 +21833,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -21324,6 +21932,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -21421,6 +22031,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -21518,6 +22130,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -21681,6 +22295,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -21778,6 +22394,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -21875,6 +22493,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -21972,6 +22592,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -22069,6 +22691,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -22166,6 +22790,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -22263,6 +22889,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -22328,7 +22956,158 @@
     }
   ],
   "ai_semantic_unavailable_reason": "missing_api_key",
-  "excluded_source_examples": [],
+  "excluded_source_examples": [
+    {
+      "example_id": 4445,
+      "target_task": "compute_numeric",
+      "task_family": "generic_numeric_family",
+      "alignment_score": 0.0,
+      "aligned_with_skill": false,
+      "included_in_phase1": false,
+      "exclude_reason": "semantic_alignment_score_zero_requires_human_review",
+      "alignment_kind": "unclassified_low_confidence",
+      "skill_id_match": true,
+      "task_family_match": false,
+      "subskill_match": false,
+      "pass_with_warning": false,
+      "requires_human_action": true,
+      "induction_tier": "core",
+      "included_in_core_induction": false,
+      "enrichment_reasons": [],
+      "source_quality_issues": [],
+      "source_quality_reject": false,
+      "candidate_only": false,
+      "classification_source": "rule_fallback_ai_unavailable",
+      "induction_eligibility": "excluded",
+      "skill_id": "vh_數學B1_LinearFunction",
+      "title_stem_preview": "已知手機費包含月租基本費與超時通話費，某電信公司的手機月租基本費為m元，可以免費通話30分鐘。若通話時間超過30分鐘後，通話費與時間（分鐘）為線型函數的關係如圖..."
+    },
+    {
+      "example_id": 4425,
+      "target_task": "compute_numeric",
+      "task_family": "generic_numeric_family",
+      "alignment_score": 0.0,
+      "aligned_with_skill": false,
+      "included_in_phase1": false,
+      "exclude_reason": "semantic_alignment_score_zero_requires_human_review",
+      "alignment_kind": "unclassified_low_confidence",
+      "skill_id_match": true,
+      "task_family_match": false,
+      "subskill_match": false,
+      "pass_with_warning": false,
+      "requires_human_action": true,
+      "induction_tier": "core",
+      "included_in_core_induction": false,
+      "enrichment_reasons": [],
+      "source_quality_issues": [],
+      "source_quality_reject": false,
+      "candidate_only": false,
+      "classification_source": "rule_fallback_ai_unavailable",
+      "induction_eligibility": "excluded",
+      "skill_id": "vh_數學B1_LinearFunction",
+      "title_stem_preview": "右圖是某電信公司的通話費計算方式：300秒以內只繳基本費，超過300秒之後的費用，與通話時間成線型函數關係，試問： (1) 手機基本費用為多少元？ (2) 本月..."
+    },
+    {
+      "example_id": 4426,
+      "target_task": "compute_numeric",
+      "task_family": "generic_numeric_family",
+      "alignment_score": 0.0,
+      "aligned_with_skill": false,
+      "included_in_phase1": false,
+      "exclude_reason": "semantic_alignment_score_zero_requires_human_review",
+      "alignment_kind": "unclassified_low_confidence",
+      "skill_id_match": true,
+      "task_family_match": false,
+      "subskill_match": false,
+      "pass_with_warning": false,
+      "requires_human_action": true,
+      "induction_tier": "core",
+      "included_in_core_induction": false,
+      "enrichment_reasons": [],
+      "source_quality_issues": [],
+      "source_quality_reject": false,
+      "candidate_only": false,
+      "classification_source": "rule_fallback_ai_unavailable",
+      "induction_eligibility": "excluded",
+      "skill_id": "vh_數學B1_LinearFunction",
+      "title_stem_preview": "設直角坐標平面上四點$A\\left( -2,1 \\right)$、$B\\left( {{b}_{1}},{{b}_{2}} \\right)$、$C\\left( ..."
+    },
+    {
+      "example_id": 4442,
+      "target_task": "applied_quadratic_inequality_problem",
+      "task_family": "quadratic_inequality_family",
+      "alignment_score": 0.0,
+      "aligned_with_skill": false,
+      "included_in_phase1": false,
+      "exclude_reason": "semantic_alignment_score_zero_requires_human_review",
+      "alignment_kind": "unclassified_low_confidence",
+      "skill_id_match": true,
+      "task_family_match": false,
+      "subskill_match": false,
+      "pass_with_warning": false,
+      "requires_human_action": true,
+      "induction_tier": "core",
+      "included_in_core_induction": false,
+      "enrichment_reasons": [],
+      "source_quality_issues": [],
+      "source_quality_reject": false,
+      "candidate_only": false,
+      "classification_source": "rule_fallback_ai_unavailable",
+      "induction_eligibility": "excluded",
+      "skill_id": "vh_數學B1_LinearFunction",
+      "title_stem_preview": "高老師搭乘某廉價航空，他的行李托運費用是850元，若行李托運費用與重量是成線型函數的關係，如圖所示，試求高老師托運的行李幾公斤？"
+    },
+    {
+      "example_id": 4446,
+      "target_task": "compute_numeric",
+      "task_family": "generic_numeric_family",
+      "alignment_score": 0.0,
+      "aligned_with_skill": false,
+      "included_in_phase1": false,
+      "exclude_reason": "semantic_alignment_score_zero_requires_human_review",
+      "alignment_kind": "unclassified_low_confidence",
+      "skill_id_match": true,
+      "task_family_match": false,
+      "subskill_match": false,
+      "pass_with_warning": false,
+      "requires_human_action": true,
+      "induction_tier": "core",
+      "included_in_core_induction": false,
+      "enrichment_reasons": [],
+      "source_quality_issues": [],
+      "source_quality_reject": false,
+      "candidate_only": true,
+      "classification_source": "rule_fallback_ai_unavailable",
+      "induction_eligibility": "excluded",
+      "skill_id": "vh_數學B1_LinearFunction",
+      "title_stem_preview": "公司給小虹最多50萬元的預算來採買$x$、$y$兩種貨品。但小虹一時疏忽，無法確定$x$貨品跟$y$貨品的單價哪一個是100元、哪一個是200元。下列數對($x..."
+    },
+    {
+      "example_id": 4500,
+      "target_task": "compute_numeric",
+      "task_family": "generic_numeric_family",
+      "alignment_score": 0.0,
+      "aligned_with_skill": false,
+      "included_in_phase1": false,
+      "exclude_reason": "semantic_alignment_score_zero_requires_human_review",
+      "alignment_kind": "unclassified_low_confidence",
+      "skill_id_match": true,
+      "task_family_match": false,
+      "subskill_match": false,
+      "pass_with_warning": false,
+      "requires_human_action": true,
+      "induction_tier": "core",
+      "included_in_core_induction": false,
+      "enrichment_reasons": [],
+      "source_quality_issues": [],
+      "source_quality_reject": false,
+      "candidate_only": false,
+      "classification_source": "rule_fallback_ai_unavailable",
+      "induction_eligibility": "excluded",
+      "skill_id": "vh_數學B1_LinearFunction",
+      "title_stem_preview": "阿偉的汽車加滿油後開始行駛，其行駛距離x公里與剩餘油量y公升的關係為線型函數，其圖形如右圖所示，則x與y的關係式為"
+    }
+  ],
   "induction_source_selection": {
     "core_example_count": 15,
     "enrichment_example_count": 0,
@@ -22362,14 +23141,17 @@
     {
       "problem_type_id": "numeric_numeric_evaluate_function_notation_single_choice",
       "matched_example_count": 1
+    },
+    {
+      "problem_type_id": "evaluate_function_value",
+      "matched_example_count": 0
+    },
+    {
+      "problem_type_id": "interpret_function_notation",
+      "matched_example_count": 0
     }
   ],
   "candidate_only_problem_types": [
-    {
-      "example_id": 4446,
-      "subskill_id": "same_as_main_skill",
-      "reason": "candidate_only_source"
-    },
     {
       "example_id": 4433,
       "problem_type_id": "numeric_numeric_evaluate_function_notation_short_answer",
@@ -22416,12 +23198,13 @@
       "reason": "runtime_not_supported"
     }
   ],
-  "candidate_only_count": 10,
+  "candidate_only_count": 9,
   "same_as_main_skill_count": 0,
   "rule_only_classification_count": 0,
   "hybrid_resolved_count": 0,
   "subskills": [
-    "evaluate_function_value",
+    "applied_quadratic_inequality_problem",
+    "compute_numeric",
     "numeric_evaluate_function_notation",
     "same_as_main_skill"
   ],
@@ -22505,26 +23288,26 @@
     },
     {
       "example_id": 4445,
-      "target_task": "evaluate_function_value",
+      "target_task": "compute_numeric",
       "task_family": "generic_numeric_family",
       "alignment_score": 0.0,
-      "aligned_with_skill": true,
-      "included_in_phase1": true,
-      "exclude_reason": "",
-      "alignment_kind": "anchor_subskill_match",
+      "aligned_with_skill": false,
+      "included_in_phase1": false,
+      "exclude_reason": "semantic_alignment_score_zero_requires_human_review",
+      "alignment_kind": "unclassified_low_confidence",
       "skill_id_match": true,
       "task_family_match": false,
-      "subskill_match": true,
+      "subskill_match": false,
       "pass_with_warning": false,
-      "requires_human_action": false,
+      "requires_human_action": true,
       "induction_tier": "core",
-      "included_in_core_induction": true,
+      "included_in_core_induction": false,
       "enrichment_reasons": [],
       "source_quality_issues": [],
       "source_quality_reject": false,
       "candidate_only": false,
-      "classification_source": "fallback_application_induct",
-      "induction_eligibility": "eligible",
+      "classification_source": "rule_fallback_ai_unavailable",
+      "induction_eligibility": "excluded",
       "skill_id": "vh_數學B1_LinearFunction",
       "title_stem_preview": "已知手機費包含月租基本費與超時通話費，某電信公司的手機月租基本費為m元，可以免費通話30分鐘。若通話時間超過30分鐘後，通話費與時間（分鐘）為線型函數的關係如圖"
     },
@@ -22555,51 +23338,51 @@
     },
     {
       "example_id": 4425,
-      "target_task": "evaluate_function_value",
+      "target_task": "compute_numeric",
       "task_family": "generic_numeric_family",
       "alignment_score": 0.0,
-      "aligned_with_skill": true,
-      "included_in_phase1": true,
-      "exclude_reason": "",
-      "alignment_kind": "anchor_subskill_match",
+      "aligned_with_skill": false,
+      "included_in_phase1": false,
+      "exclude_reason": "semantic_alignment_score_zero_requires_human_review",
+      "alignment_kind": "unclassified_low_confidence",
       "skill_id_match": true,
       "task_family_match": false,
-      "subskill_match": true,
+      "subskill_match": false,
       "pass_with_warning": false,
-      "requires_human_action": false,
+      "requires_human_action": true,
       "induction_tier": "core",
-      "included_in_core_induction": true,
+      "included_in_core_induction": false,
       "enrichment_reasons": [],
       "source_quality_issues": [],
       "source_quality_reject": false,
       "candidate_only": false,
-      "classification_source": "fallback_application_induct",
-      "induction_eligibility": "eligible",
+      "classification_source": "rule_fallback_ai_unavailable",
+      "induction_eligibility": "excluded",
       "skill_id": "vh_數學B1_LinearFunction",
       "title_stem_preview": "右圖是某電信公司的通話費計算方式：300秒以內只繳基本費，超過300秒之後的費用，與通話時間成線型函數關係，試問：\n(1) 手機基本費用為多少元？\n(2) 本月"
     },
     {
       "example_id": 4426,
-      "target_task": "evaluate_function_value",
+      "target_task": "compute_numeric",
       "task_family": "generic_numeric_family",
       "alignment_score": 0.0,
-      "aligned_with_skill": true,
-      "included_in_phase1": true,
-      "exclude_reason": "",
-      "alignment_kind": "anchor_subskill_match",
+      "aligned_with_skill": false,
+      "included_in_phase1": false,
+      "exclude_reason": "semantic_alignment_score_zero_requires_human_review",
+      "alignment_kind": "unclassified_low_confidence",
       "skill_id_match": true,
       "task_family_match": false,
-      "subskill_match": true,
+      "subskill_match": false,
       "pass_with_warning": false,
-      "requires_human_action": false,
+      "requires_human_action": true,
       "induction_tier": "core",
-      "included_in_core_induction": true,
+      "included_in_core_induction": false,
       "enrichment_reasons": [],
       "source_quality_issues": [],
       "source_quality_reject": false,
       "candidate_only": false,
-      "classification_source": "fallback_application_induct",
-      "induction_eligibility": "eligible",
+      "classification_source": "rule_fallback_ai_unavailable",
+      "induction_eligibility": "excluded",
       "skill_id": "vh_數學B1_LinearFunction",
       "title_stem_preview": "設直角坐標平面上四點$A\\left( -2,1 \\right)$、$B\\left( {{b}_{1}},{{b}_{2}} \\right)$、$C\\left( "
     },
@@ -22630,51 +23413,51 @@
     },
     {
       "example_id": 4442,
-      "target_task": "evaluate_function_value",
-      "task_family": "generic_numeric_family",
+      "target_task": "applied_quadratic_inequality_problem",
+      "task_family": "quadratic_inequality_family",
       "alignment_score": 0.0,
-      "aligned_with_skill": true,
-      "included_in_phase1": true,
-      "exclude_reason": "",
-      "alignment_kind": "anchor_subskill_match",
+      "aligned_with_skill": false,
+      "included_in_phase1": false,
+      "exclude_reason": "semantic_alignment_score_zero_requires_human_review",
+      "alignment_kind": "unclassified_low_confidence",
       "skill_id_match": true,
       "task_family_match": false,
-      "subskill_match": true,
+      "subskill_match": false,
       "pass_with_warning": false,
-      "requires_human_action": false,
+      "requires_human_action": true,
       "induction_tier": "core",
-      "included_in_core_induction": true,
+      "included_in_core_induction": false,
       "enrichment_reasons": [],
       "source_quality_issues": [],
       "source_quality_reject": false,
       "candidate_only": false,
-      "classification_source": "fallback_application_induct",
-      "induction_eligibility": "eligible",
+      "classification_source": "rule_fallback_ai_unavailable",
+      "induction_eligibility": "excluded",
       "skill_id": "vh_數學B1_LinearFunction",
       "title_stem_preview": "高老師搭乘某廉價航空，他的行李托運費用是850元，若行李托運費用與重量是成線型函數的關係，如圖所示，試求高老師托運的行李幾公斤？"
     },
     {
       "example_id": 4446,
-      "target_task": "evaluate_function_value",
+      "target_task": "compute_numeric",
       "task_family": "generic_numeric_family",
       "alignment_score": 0.0,
-      "aligned_with_skill": true,
-      "included_in_phase1": true,
-      "exclude_reason": "",
-      "alignment_kind": "anchor_subskill_match",
+      "aligned_with_skill": false,
+      "included_in_phase1": false,
+      "exclude_reason": "semantic_alignment_score_zero_requires_human_review",
+      "alignment_kind": "unclassified_low_confidence",
       "skill_id_match": true,
       "task_family_match": false,
-      "subskill_match": true,
+      "subskill_match": false,
       "pass_with_warning": false,
-      "requires_human_action": false,
+      "requires_human_action": true,
       "induction_tier": "core",
-      "included_in_core_induction": true,
+      "included_in_core_induction": false,
       "enrichment_reasons": [],
       "source_quality_issues": [],
       "source_quality_reject": false,
       "candidate_only": true,
-      "classification_source": "fallback_application_induct",
-      "induction_eligibility": "eligible",
+      "classification_source": "rule_fallback_ai_unavailable",
+      "induction_eligibility": "excluded",
       "skill_id": "vh_數學B1_LinearFunction",
       "title_stem_preview": "公司給小虹最多50萬元的預算來採買$x$、$y$兩種貨品。但小虹一時疏忽，無法確定$x$貨品跟$y$貨品的單價哪一個是100元、哪一個是200元。下列數對($x"
     },
@@ -22730,26 +23513,26 @@
     },
     {
       "example_id": 4500,
-      "target_task": "evaluate_function_value",
+      "target_task": "compute_numeric",
       "task_family": "generic_numeric_family",
       "alignment_score": 0.0,
-      "aligned_with_skill": true,
-      "included_in_phase1": true,
-      "exclude_reason": "",
-      "alignment_kind": "anchor_subskill_match",
+      "aligned_with_skill": false,
+      "included_in_phase1": false,
+      "exclude_reason": "semantic_alignment_score_zero_requires_human_review",
+      "alignment_kind": "unclassified_low_confidence",
       "skill_id_match": true,
       "task_family_match": false,
-      "subskill_match": true,
+      "subskill_match": false,
       "pass_with_warning": false,
-      "requires_human_action": false,
+      "requires_human_action": true,
       "induction_tier": "core",
-      "included_in_core_induction": true,
+      "included_in_core_induction": false,
       "enrichment_reasons": [],
       "source_quality_issues": [],
       "source_quality_reject": false,
       "candidate_only": false,
-      "classification_source": "fallback_application_induct",
-      "induction_eligibility": "eligible",
+      "classification_source": "rule_fallback_ai_unavailable",
+      "induction_eligibility": "excluded",
       "skill_id": "vh_數學B1_LinearFunction",
       "title_stem_preview": "阿偉的汽車加滿油後開始行駛，其行駛距離x公里與剩餘油量y公升的關係為線型函數，其圖形如右圖所示，則x與y的關係式為"
     },
@@ -22927,6 +23710,8 @@
             "signature_fields": [
               "problem_type_id",
               "template_variant",
+              "routing_track",
+              "scenario_type",
               "ratio_form",
               "ratio_values",
               "coordinate_pattern",
@@ -22954,6 +23739,10 @@
           "avoid_llm_freeform_math": true,
           "use_domain_functions": true,
           "derivation_steps_required": true,
+          "templates": [
+            "template_scalar_unknown",
+            "template_feature_value"
+          ],
           "problem_type_id": "numeric_numeric_evaluate_function_notation_short_answer",
           "contract_validation_blockers": [],
           "contract_validation_warnings": [
@@ -23126,6 +23915,8 @@
             "signature_fields": [
               "problem_type_id",
               "template_variant",
+              "routing_track",
+              "scenario_type",
               "ratio_form",
               "ratio_values",
               "coordinate_pattern",
@@ -23153,6 +23944,10 @@
           "avoid_llm_freeform_math": true,
           "use_domain_functions": true,
           "derivation_steps_required": true,
+          "templates": [
+            "template_scalar_unknown",
+            "template_feature_value"
+          ],
           "problem_type_id": "numeric_numeric_evaluate_function_notation_short_answer",
           "contract_validation_blockers": [],
           "contract_validation_warnings": [
@@ -23326,6 +24121,8 @@
             "signature_fields": [
               "problem_type_id",
               "template_variant",
+              "routing_track",
+              "scenario_type",
               "ratio_form",
               "ratio_values",
               "coordinate_pattern",
@@ -23353,6 +24150,10 @@
           "avoid_llm_freeform_math": true,
           "use_domain_functions": true,
           "derivation_steps_required": true,
+          "templates": [
+            "template_scalar_unknown",
+            "template_feature_value"
+          ],
           "problem_type_id": "numeric_numeric_evaluate_function_notation_single_choice",
           "contract_validation_blockers": [],
           "contract_validation_warnings": [
@@ -23525,6 +24326,8 @@
             "signature_fields": [
               "problem_type_id",
               "template_variant",
+              "routing_track",
+              "scenario_type",
               "ratio_form",
               "ratio_values",
               "coordinate_pattern",
@@ -23552,6 +24355,10 @@
           "avoid_llm_freeform_math": true,
           "use_domain_functions": true,
           "derivation_steps_required": true,
+          "templates": [
+            "template_scalar_unknown",
+            "template_feature_value"
+          ],
           "problem_type_id": "numeric_numeric_evaluate_function_notation_single_choice",
           "contract_validation_blockers": [],
           "contract_validation_warnings": [
@@ -23604,51 +24411,46 @@
       "answer_type": "choice"
     },
     {
-      "problem_type_id": "text_short_evaluate_function_value",
-      "proposed_problem_type_id": "text_short_evaluate_function_value",
-      "display_name": "text_short / evaluate_function_value",
-      "matched_example_ids": [
-        4425,
-        4426,
-        4442,
-        4445,
-        4500
-      ],
-      "matched_example_count": 5,
+      "problem_type_id": "evaluate_function_value",
+      "proposed_problem_type_id": "evaluate_function_value",
+      "display_name": "evaluate_function_value / anchor bootstrap",
+      "matched_example_ids": [],
+      "matched_example_count": 0,
       "unmatched_example_ids": [],
-      "representative_example_id": 4425,
+      "representative_example_id": null,
       "structural_features": [
-        "text_short"
+        "factored_expression"
       ],
       "answer_contract_proposal": {
         "choices_required": false,
         "choice_count": null,
         "correct_choice_count": null,
         "frontend_render_choices": false,
-        "source_has_choices": false,
-        "answer_type": "text_short",
-        "answer_shape": "text_short",
-        "answer_semantics": "text_short",
-        "answer_equivalence": "exact_string",
-        "equivalence_type": "exact_string",
-        "checker": "text_short_checker",
-        "checker_key": "text_short_checker",
-        "presentation_mode": "",
-        "selected_checker": "text_short_checker",
+        "answer_type": "expression",
+        "answer_shape": "factored_expression",
+        "answer_equivalence": "algebraic_equivalent",
+        "equivalence_type": "algebraic_equivalent",
+        "checker": "expression_checker",
+        "checker_key": "expression_checker",
+        "presentation_mode": "short_answer",
+        "selected_checker": "expression_checker",
+        "checker_selection_reason": "quadratic_factoring_expression",
+        "accepted_formats": [
+          "(x-5)(x+3)",
+          "(2x-1)(x+5)",
+          "2(x-1)(3x+2)"
+        ],
+        "answer_semantics": "algebraic_expression",
         "checker_capability_status": "ok",
         "checker_contract_blockers": [],
         "checker_contract_warnings": [],
         "stem_contract": {
           "stem_must_not_embed_choices": true,
           "allowed_math_objects": [
-            "coordinate_point",
-            "three_coordinate_points",
-            "triangle",
-            "two_coordinate_points"
+            "quadratic_inequality"
           ],
           "required_math_objects": [
-            "coordinate_point",
-            "three_coordinate_points"
+            "quadratic_inequality"
           ],
           "forbidden_patterns": [
             "\\(A\\)",
@@ -23664,15 +24466,12 @@
         },
         "semantic_contract": {
           "reasoning_type": [
-            "numeric_computation"
+            "evaluate_function_value"
           ],
           "reject_if": [
             "unused_condition",
             "ambiguous_answer",
-            "answer_not_derivable",
-            "duplicated_choices",
-            "no_correct_choice",
-            "multiple_correct_choices_when_single_choice"
+            "answer_not_derivable"
           ]
         },
         "generator_contract": {
@@ -23722,6 +24521,8 @@
             "signature_fields": [
               "problem_type_id",
               "template_variant",
+              "routing_track",
+              "scenario_type",
               "ratio_form",
               "ratio_values",
               "coordinate_pattern",
@@ -23749,11 +24550,10 @@
           "avoid_llm_freeform_math": true,
           "use_domain_functions": true,
           "derivation_steps_required": true,
-          "contextual_application": true,
           "template_slots": {
             "stem": "function_value_numeric"
           },
-          "problem_type_id": "short_answer_evaluate_function_value_fallback_application",
+          "problem_type_id": "evaluate_function_value",
           "contract_validation_blockers": [],
           "contract_validation_warnings": [
             "single_template_variant_only",
@@ -23762,8 +24562,7 @@
         },
         "validator_contract": {
           "static_checks": [
-            "answer_contract_checks",
-            "choices_policy"
+            "answer_contract_checks"
           ],
           "semantic_checks": [
             "givens_to_target_dependency"
@@ -23772,75 +24571,66 @@
         },
         "order_matters": true,
         "accepted_format_notes": [],
-        "canonical_answer_schema": "text_short"
+        "canonical_answer_schema": "expression"
       },
-      "checker_key_proposal": "text_short_checker",
-      "equivalence_type_proposal": "exact_string",
-      "answer_shape": "text_short",
-      "answer_semantics": "text_short",
+      "checker_key_proposal": "expression_checker",
+      "equivalence_type_proposal": "algebraic_equivalent",
+      "answer_shape": "factored_expression",
+      "answer_semantics": "algebraic_expression",
       "presentation_mode": "short_answer",
       "source_has_choices": false,
-      "selected_checker": "text_short_checker",
-      "checker_selection_reason": "task_family_default",
-      "coordinate_pair_presentation_note": "",
-      "confidence": "high",
+      "selected_checker": "expression_checker",
+      "checker_selection_reason": "quadratic_factoring_expression",
+      "confidence": "medium",
       "promote_recommendation": "recommend_promote_for_that_candidate",
       "promote_blockers": [],
       "risk_flags": [
-        "ai_first_mode_fell_back_to_rule_only"
+        "ai_first_mode_fell_back_to_rule_only",
+        "anchor_slot_bootstrap_zero_source"
       ],
       "checker_contract_warnings": [],
-      "spec_source": "phase1_induced_draft",
-      "grouping_reason": "merged_by_canonical_contract",
+      "spec_source": "anchor_slot_bootstrap",
+      "grouping_reason": "anchor_subskill_bootstrap_zero_source",
       "feature_signature": [
-        "canonical_contract_merge",
-        "evaluate_function_value",
-        "short_answer",
-        "short_answer"
+        "anchor_slot_bootstrap",
+        "evaluate_function_value"
       ],
       "problem_type_spec_draft": {
-        "problem_type_id": "expression_evaluate_function_value_fallback_application",
+        "problem_type_id": "evaluate_function_value",
         "skill_id": "vh_數學B1_LinearFunction",
         "target_task": "evaluate_function_value",
         "task_family": "function_concept_family",
-        "display_name": "short_answer / evaluate_function_value",
-        "answer_format_hint": "",
-        "answer_fields": null,
-        "answer_separator": null,
-        "source_example_ids": [
-          4425,
-          4426,
-          4442,
-          4445,
-          4500
-        ],
+        "display_name": "evaluate_function_value / anchor bootstrap",
+        "answer_format_hint": "expression",
+        "source_example_ids": [],
         "answer_contract": {
           "choices_required": false,
           "choice_count": null,
           "correct_choice_count": null,
           "frontend_render_choices": false,
-          "source_has_choices": false,
-          "answer_type": "text_short",
-          "answer_shape": "text_short",
-          "answer_semantics": "text_short",
-          "answer_equivalence": "exact_string",
-          "equivalence_type": "exact_string",
-          "checker": "text_short_checker",
-          "checker_key": "text_short_checker",
+          "answer_type": "expression",
+          "answer_shape": "factored_expression",
+          "answer_equivalence": "algebraic_equivalent",
+          "equivalence_type": "algebraic_equivalent",
+          "checker": "expression_checker",
+          "checker_key": "expression_checker",
           "presentation_mode": "short_answer",
-          "selected_checker": "text_short_checker"
+          "selected_checker": "expression_checker",
+          "checker_selection_reason": "quadratic_factoring_expression",
+          "accepted_formats": [
+            "(x-5)(x+3)",
+            "(2x-1)(x+5)",
+            "2(x-1)(3x+2)"
+          ],
+          "answer_semantics": "algebraic_expression"
         },
         "stem_contract": {
           "stem_must_not_embed_choices": true,
           "allowed_math_objects": [
-            "coordinate_point",
-            "three_coordinate_points",
-            "triangle",
-            "two_coordinate_points"
+            "quadratic_inequality"
           ],
           "required_math_objects": [
-            "coordinate_point",
-            "three_coordinate_points"
+            "quadratic_inequality"
           ],
           "forbidden_patterns": [
             "\\(A\\)",
@@ -23856,15 +24646,12 @@
         },
         "semantic_contract": {
           "reasoning_type": [
-            "numeric_computation"
+            "evaluate_function_value"
           ],
           "reject_if": [
             "unused_condition",
             "ambiguous_answer",
-            "answer_not_derivable",
-            "duplicated_choices",
-            "no_correct_choice",
-            "multiple_correct_choices_when_single_choice"
+            "answer_not_derivable"
           ]
         },
         "generator_contract": {
@@ -23914,6 +24701,8 @@
             "signature_fields": [
               "problem_type_id",
               "template_variant",
+              "routing_track",
+              "scenario_type",
               "ratio_form",
               "ratio_values",
               "coordinate_pattern",
@@ -23941,11 +24730,10 @@
           "avoid_llm_freeform_math": true,
           "use_domain_functions": true,
           "derivation_steps_required": true,
-          "contextual_application": true,
           "template_slots": {
             "stem": "function_value_numeric"
           },
-          "problem_type_id": "short_answer_evaluate_function_value_fallback_application",
+          "problem_type_id": "evaluate_function_value",
           "contract_validation_blockers": [],
           "contract_validation_warnings": [
             "single_template_variant_only",
@@ -23954,40 +24742,401 @@
         },
         "validator_contract": {
           "static_checks": [
-            "answer_contract_checks",
-            "choices_policy"
+            "answer_contract_checks"
           ],
           "semantic_checks": [
             "givens_to_target_dependency"
           ],
           "runtime_smoke_count": 30
         },
-        "spec_source": "phase1_induced_draft",
-        "grouping_reason": "merged_by_canonical_contract",
+        "spec_source": "anchor_slot_bootstrap",
+        "grouping_reason": "anchor_subskill_bootstrap_zero_source",
         "feature_signature": [
-          "canonical_contract_merge",
-          "evaluate_function_value",
-          "short_answer",
-          "short_answer"
+          "anchor_slot_bootstrap",
+          "evaluate_function_value"
         ],
-        "canonical_base_problem_type_id": "short_answer_evaluate_function_value_fallback_application",
+        "canonical_base_problem_type_id": "evaluate_function_value",
         "value_type_prefix": "",
-        "_resolved_template_slot": "function_value_numeric"
+        "_resolved_template_slot": "factor_quadratic_by_cross_multiplication"
       },
       "generator_readiness": "runtime_ready",
       "usable_for_phase3": true,
       "template_slot": "function_value_numeric",
-      "canonical_base_problem_type_id": "short_answer_evaluate_function_value_fallback_application",
+      "canonical_base_problem_type_id": "evaluate_function_value",
       "value_type_prefix": "",
       "subskill_id": "evaluate_function_value",
       "runtime_status": "runtime_ready_candidate",
       "next_action": "phase2_foundation_preflight",
       "semantic_alignment": {
-        "skill_problem_type_score": 0.0385,
-        "source_problem_type_score": 0.0103,
+        "skill_problem_type_score": 0.0556,
+        "source_problem_type_score": 0.0,
         "task_consistent_with_skill": true
       },
-      "answer_type": "text_short"
+      "answer_type": "expression"
+    },
+    {
+      "problem_type_id": "interpret_function_notation",
+      "proposed_problem_type_id": "interpret_function_notation",
+      "display_name": "interpret_function_notation / anchor bootstrap",
+      "matched_example_ids": [],
+      "matched_example_count": 0,
+      "unmatched_example_ids": [],
+      "representative_example_id": null,
+      "structural_features": [
+        "factored_expression"
+      ],
+      "answer_contract_proposal": {
+        "choices_required": false,
+        "choice_count": null,
+        "correct_choice_count": null,
+        "frontend_render_choices": false,
+        "answer_type": "expression",
+        "answer_shape": "factored_expression",
+        "answer_equivalence": "algebraic_equivalent",
+        "equivalence_type": "algebraic_equivalent",
+        "checker": "expression_checker",
+        "checker_key": "expression_checker",
+        "presentation_mode": "short_answer",
+        "selected_checker": "expression_checker",
+        "checker_selection_reason": "quadratic_factoring_expression",
+        "accepted_formats": [
+          "(x-5)(x+3)",
+          "(2x-1)(x+5)",
+          "2(x-1)(3x+2)"
+        ],
+        "answer_semantics": "algebraic_expression",
+        "checker_capability_status": "ok",
+        "checker_contract_blockers": [],
+        "checker_contract_warnings": [],
+        "stem_contract": {
+          "stem_must_not_embed_choices": true,
+          "allowed_math_objects": [
+            "quadratic_inequality"
+          ],
+          "required_math_objects": [
+            "quadratic_inequality"
+          ],
+          "forbidden_patterns": [
+            "\\(A\\)",
+            "\\(B\\)",
+            "\\(C\\)",
+            "\\(D\\)"
+          ]
+        },
+        "dependency_contract": {
+          "givens_must_be_used": true,
+          "target_answer_must_depend_on_givens": true,
+          "variables_in_conditions_must_appear_in_target": false
+        },
+        "semantic_contract": {
+          "reasoning_type": [
+            "interpret_function_notation"
+          ],
+          "reject_if": [
+            "unused_condition",
+            "ambiguous_answer",
+            "answer_not_derivable"
+          ]
+        },
+        "generator_contract": {
+          "template_variants": [
+            {
+              "id": "default",
+              "label": "default",
+              "stem_pattern": "依題意求解：{stem_hint}。",
+              "weight": 1.0,
+              "enabled": true
+            }
+          ],
+          "parameter_schema": {
+            "seed": {
+              "type": "integer",
+              "randomize": true
+            },
+            "difficulty_level": {
+              "choices": [
+                "level_1",
+                "level_2",
+                "level_3"
+              ],
+              "weights": [
+                0.4,
+                0.4,
+                0.2
+              ]
+            }
+          },
+          "variation_dimensions": [
+            "seed",
+            "difficulty_level",
+            "context_style"
+          ],
+          "difficulty_controls": {
+            "level_1": {},
+            "level_2": {},
+            "level_3": {}
+          },
+          "anti_repetition_rules": {
+            "avoid_same_template_consecutive": true,
+            "avoid_same_ratio_consecutive": true,
+            "avoid_same_point_names_consecutive": true,
+            "avoid_same_answer_consecutive": true,
+            "recent_history_window": 5,
+            "signature_fields": [
+              "problem_type_id",
+              "template_variant",
+              "routing_track",
+              "scenario_type",
+              "ratio_form",
+              "ratio_values",
+              "coordinate_pattern",
+              "answer"
+            ]
+          },
+          "validity_constraints": [
+            "answer derivable from givens"
+          ],
+          "answer_shape": "numeric",
+          "explanation_variants": [
+            "stepwise"
+          ],
+          "sampling_strategy": "weighted_random",
+          "template_families": [
+            "interpret_function_notation"
+          ],
+          "parameter_slots": {
+            "seed": "integer",
+            "difficulty": "easy"
+          },
+          "randomization_rules": {
+            "shuffle_choices": false
+          },
+          "avoid_llm_freeform_math": true,
+          "use_domain_functions": true,
+          "derivation_steps_required": true,
+          "template_slots": {
+            "stem": "linear_function_two_point_choice"
+          },
+          "problem_type_id": "interpret_function_notation",
+          "contract_validation_blockers": [],
+          "contract_validation_warnings": [
+            "single_template_variant_only",
+            "variation_dimensions_below_recommended_minimum"
+          ]
+        },
+        "validator_contract": {
+          "static_checks": [
+            "answer_contract_checks"
+          ],
+          "semantic_checks": [
+            "givens_to_target_dependency"
+          ],
+          "runtime_smoke_count": 30
+        },
+        "order_matters": true,
+        "accepted_format_notes": [],
+        "canonical_answer_schema": "expression"
+      },
+      "checker_key_proposal": "expression_checker",
+      "equivalence_type_proposal": "algebraic_equivalent",
+      "answer_shape": "factored_expression",
+      "answer_semantics": "algebraic_expression",
+      "presentation_mode": "short_answer",
+      "source_has_choices": false,
+      "selected_checker": "expression_checker",
+      "checker_selection_reason": "quadratic_factoring_expression",
+      "confidence": "medium",
+      "promote_recommendation": "recommend_promote_for_that_candidate",
+      "promote_blockers": [],
+      "risk_flags": [
+        "ai_first_mode_fell_back_to_rule_only",
+        "anchor_slot_bootstrap_zero_source"
+      ],
+      "checker_contract_warnings": [],
+      "spec_source": "anchor_slot_bootstrap",
+      "grouping_reason": "anchor_subskill_bootstrap_zero_source",
+      "feature_signature": [
+        "anchor_slot_bootstrap",
+        "interpret_function_notation"
+      ],
+      "problem_type_spec_draft": {
+        "problem_type_id": "interpret_function_notation",
+        "skill_id": "vh_數學B1_LinearFunction",
+        "target_task": "interpret_function_notation",
+        "task_family": "function_concept_family",
+        "display_name": "interpret_function_notation / anchor bootstrap",
+        "answer_format_hint": "expression",
+        "source_example_ids": [],
+        "answer_contract": {
+          "choices_required": false,
+          "choice_count": null,
+          "correct_choice_count": null,
+          "frontend_render_choices": false,
+          "answer_type": "expression",
+          "answer_shape": "factored_expression",
+          "answer_equivalence": "algebraic_equivalent",
+          "equivalence_type": "algebraic_equivalent",
+          "checker": "expression_checker",
+          "checker_key": "expression_checker",
+          "presentation_mode": "short_answer",
+          "selected_checker": "expression_checker",
+          "checker_selection_reason": "quadratic_factoring_expression",
+          "accepted_formats": [
+            "(x-5)(x+3)",
+            "(2x-1)(x+5)",
+            "2(x-1)(3x+2)"
+          ],
+          "answer_semantics": "algebraic_expression"
+        },
+        "stem_contract": {
+          "stem_must_not_embed_choices": true,
+          "allowed_math_objects": [
+            "quadratic_inequality"
+          ],
+          "required_math_objects": [
+            "quadratic_inequality"
+          ],
+          "forbidden_patterns": [
+            "\\(A\\)",
+            "\\(B\\)",
+            "\\(C\\)",
+            "\\(D\\)"
+          ]
+        },
+        "dependency_contract": {
+          "givens_must_be_used": true,
+          "target_answer_must_depend_on_givens": true,
+          "variables_in_conditions_must_appear_in_target": false
+        },
+        "semantic_contract": {
+          "reasoning_type": [
+            "interpret_function_notation"
+          ],
+          "reject_if": [
+            "unused_condition",
+            "ambiguous_answer",
+            "answer_not_derivable"
+          ]
+        },
+        "generator_contract": {
+          "template_variants": [
+            {
+              "id": "default",
+              "label": "default",
+              "stem_pattern": "依題意求解：{stem_hint}。",
+              "weight": 1.0,
+              "enabled": true
+            }
+          ],
+          "parameter_schema": {
+            "seed": {
+              "type": "integer",
+              "randomize": true
+            },
+            "difficulty_level": {
+              "choices": [
+                "level_1",
+                "level_2",
+                "level_3"
+              ],
+              "weights": [
+                0.4,
+                0.4,
+                0.2
+              ]
+            }
+          },
+          "variation_dimensions": [
+            "seed",
+            "difficulty_level",
+            "context_style"
+          ],
+          "difficulty_controls": {
+            "level_1": {},
+            "level_2": {},
+            "level_3": {}
+          },
+          "anti_repetition_rules": {
+            "avoid_same_template_consecutive": true,
+            "avoid_same_ratio_consecutive": true,
+            "avoid_same_point_names_consecutive": true,
+            "avoid_same_answer_consecutive": true,
+            "recent_history_window": 5,
+            "signature_fields": [
+              "problem_type_id",
+              "template_variant",
+              "routing_track",
+              "scenario_type",
+              "ratio_form",
+              "ratio_values",
+              "coordinate_pattern",
+              "answer"
+            ]
+          },
+          "validity_constraints": [
+            "answer derivable from givens"
+          ],
+          "answer_shape": "numeric",
+          "explanation_variants": [
+            "stepwise"
+          ],
+          "sampling_strategy": "weighted_random",
+          "template_families": [
+            "interpret_function_notation"
+          ],
+          "parameter_slots": {
+            "seed": "integer",
+            "difficulty": "easy"
+          },
+          "randomization_rules": {
+            "shuffle_choices": false
+          },
+          "avoid_llm_freeform_math": true,
+          "use_domain_functions": true,
+          "derivation_steps_required": true,
+          "template_slots": {
+            "stem": "linear_function_two_point_choice"
+          },
+          "problem_type_id": "interpret_function_notation",
+          "contract_validation_blockers": [],
+          "contract_validation_warnings": [
+            "single_template_variant_only",
+            "variation_dimensions_below_recommended_minimum"
+          ]
+        },
+        "validator_contract": {
+          "static_checks": [
+            "answer_contract_checks"
+          ],
+          "semantic_checks": [
+            "givens_to_target_dependency"
+          ],
+          "runtime_smoke_count": 30
+        },
+        "spec_source": "anchor_slot_bootstrap",
+        "grouping_reason": "anchor_subskill_bootstrap_zero_source",
+        "feature_signature": [
+          "anchor_slot_bootstrap",
+          "interpret_function_notation"
+        ],
+        "canonical_base_problem_type_id": "interpret_function_notation",
+        "value_type_prefix": "",
+        "_resolved_template_slot": "factor_quadratic_by_cross_multiplication"
+      },
+      "generator_readiness": "runtime_ready",
+      "usable_for_phase3": true,
+      "template_slot": "linear_function_two_point_choice",
+      "canonical_base_problem_type_id": "interpret_function_notation",
+      "value_type_prefix": "",
+      "subskill_id": "interpret_function_notation",
+      "runtime_status": "runtime_ready_candidate",
+      "next_action": "phase2_foundation_preflight",
+      "semantic_alignment": {
+        "skill_problem_type_score": 0.0556,
+        "source_problem_type_score": 0.0,
+        "task_consistent_with_skill": true
+      },
+      "answer_type": "expression"
     }
   ],
   "answer_contract_summary": {
@@ -24022,22 +25171,36 @@
         "accepted_format_notes": [],
         "canonical_answer_schema": "single_choice"
       },
-      "short_answer_evaluate_function_value_fallback_application": {
-        "answer_type": "text_short",
-        "answer_shape": "text_short",
-        "equivalence_type": "exact_string",
-        "checker_key": "text_short_checker",
+      "evaluate_function_value": {
+        "answer_type": "expression",
+        "answer_shape": "factored_expression",
+        "equivalence_type": "algebraic_equivalent",
+        "checker_key": "expression_checker",
         "order_matters": true,
         "accepted_format_notes": [],
-        "canonical_answer_schema": "text_short"
+        "canonical_answer_schema": "expression"
+      },
+      "interpret_function_notation": {
+        "answer_type": "expression",
+        "answer_shape": "factored_expression",
+        "equivalence_type": "algebraic_equivalent",
+        "checker_key": "expression_checker",
+        "order_matters": true,
+        "accepted_format_notes": [],
+        "canonical_answer_schema": "expression"
       }
     },
     "missing_answer_contract_problem_types": [],
     "missing_checker_key_problem_types": [],
     "equivalence_test_required_problem_types": [
+      "evaluate_function_value",
+      "interpret_function_notation",
       "numeric_numeric_evaluate_function_notation_single_choice"
     ],
-    "convertible_to_choice_problem_types": [],
+    "convertible_to_choice_problem_types": [
+      "evaluate_function_value",
+      "interpret_function_notation"
+    ],
     "manual_review_or_ai_judged_problem_types": []
   },
   "invalid_equivalence_type_problem_types": [],
@@ -24083,6 +25246,9 @@
         ],
         "target": "numeric_evaluate_function_notation",
         "classifier_source": "rule_fallback_ai_unavailable",
+        "math_meta_tags": [],
+        "forced_target_task": "",
+        "meta_answer_format_hint": "",
         "semantic_classification": {
           "ai_target_task": "",
           "ai_task_family": "",
@@ -24171,6 +25337,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -24268,6 +25436,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -24365,6 +25535,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -24462,6 +25634,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -24559,6 +25733,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -24905,6 +26081,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -25002,6 +26180,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -25099,6 +26279,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -25196,6 +26378,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -25293,6 +26477,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -25427,6 +26613,9 @@
         ],
         "target": "numeric_evaluate_function_notation",
         "classifier_source": "rule_fallback_ai_unavailable",
+        "math_meta_tags": [],
+        "forced_target_task": "",
+        "meta_answer_format_hint": "",
         "semantic_classification": {
           "ai_target_task": "",
           "ai_task_family": "",
@@ -25515,6 +26704,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -25612,6 +26803,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -25709,6 +26902,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -25806,6 +27001,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -25903,6 +27100,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -26000,6 +27199,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -26346,6 +27547,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -26443,6 +27646,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -26540,6 +27745,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -26637,6 +27844,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -26734,6 +27943,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -26831,6 +28042,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -26968,6 +28181,9 @@
         ],
         "target": "numeric_evaluate_function_notation",
         "classifier_source": "rule_fallback_ai_unavailable",
+        "math_meta_tags": [],
+        "forced_target_task": "",
+        "meta_answer_format_hint": "",
         "semantic_classification": {
           "ai_target_task": "",
           "ai_task_family": "",
@@ -27056,6 +28272,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -27153,6 +28371,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -27250,6 +28470,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -27347,6 +28569,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -27444,6 +28668,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -27541,6 +28767,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -27888,6 +29116,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -27985,6 +29215,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -28082,6 +29314,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -28179,6 +29413,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -28276,6 +29512,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -28373,6 +29611,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -28470,7 +29710,7 @@
     },
     {
       "example_id": 4445,
-      "detected_problem_type_id": "short_answer_evaluate_function_value_fallback_application",
+      "detected_problem_type_id": "short_answer_compute_numeric_short_answer",
       "example_feature": {
         "source_example_id": 4445,
         "question_text": "已知手機費包含月租基本費與超時通話費，某電信公司的手機月租基本費為m元，可以免費通話30分鐘。若通話時間超過30分鐘後，通話費與時間（分鐘）為線型函數的關係如圖所示。試問：\n(1)手機每個月基本費用m為多少元？\n(2)若本月小偉使用120分鐘，需繳手機費多少元？",
@@ -28483,7 +29723,7 @@
         "checker": "text_short_checker",
         "equivalence": "exact_string",
         "math_objects": [],
-        "target_task": "evaluate_function_value",
+        "target_task": "compute_numeric",
         "task_family": "generic_numeric_family",
         "reasoning_type": [
           "numeric_computation"
@@ -28494,8 +29734,11 @@
         "candidate_only": false,
         "variables": [],
         "givens": [],
-        "target": "evaluate_function_value",
+        "target": "compute_numeric",
         "classifier_source": "rule_fallback_ai_unavailable",
+        "math_meta_tags": [],
+        "forced_target_task": "",
+        "meta_answer_format_hint": "",
         "semantic_classification": {
           "ai_target_task": "",
           "ai_task_family": "",
@@ -28515,13 +29758,13 @@
           "rule_target_task": "compute_numeric",
           "rule_task_family": "generic_numeric_family",
           "rule_confidence": 0.2,
-          "final_target_task": "evaluate_function_value",
+          "final_target_task": "compute_numeric",
           "final_task_family": "generic_numeric_family",
-          "classifier_source": "fallback_application_induct",
+          "classifier_source": "rule_fallback_ai_unavailable",
           "classification_decision": "",
           "conflict_reason": "ai_api_key_missing",
           "source_mapping_warning": "",
-          "requires_human_action": false,
+          "requires_human_action": true,
           "ai_notes": "",
           "skill_scoped_candidates": [
             {
@@ -28584,6 +29827,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -28681,6 +29926,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -28778,6 +30025,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -28875,6 +30124,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -28972,6 +30223,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -29069,6 +30322,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -29166,6 +30421,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -29225,7 +30482,7 @@
           ],
           "selected_subskill": "compute_numeric",
           "selected_problem_type": "compute_numeric",
-          "candidate_source": "fallback_application",
+          "candidate_source": "needs_review",
           "selected_generator_contract": {},
           "parameter_schema": {},
           "variable_randomization_notes": [],
@@ -29412,7 +30669,6 @@
         "induction_tier": "core",
         "enrichment_reasons": [],
         "included_in_core_induction": true,
-        "problem_type_id": "short_answer_evaluate_function_value_fallback_application",
         "equivalence_type": "exact_string",
         "checker_key": "text_short_checker",
         "requires_human_action": false
@@ -29420,7 +30676,9 @@
       "answer_shape": "text_short",
       "classification_confidence": "high",
       "classification_reason": "rule_fallback_ai_unavailable",
-      "risk_flags": [],
+      "risk_flags": [
+        "requires_human_action"
+      ],
       "semantic_classification": {
         "ai_target_task": "",
         "ai_task_family": "",
@@ -29440,13 +30698,13 @@
         "rule_target_task": "compute_numeric",
         "rule_task_family": "generic_numeric_family",
         "rule_confidence": 0.2,
-        "final_target_task": "evaluate_function_value",
+        "final_target_task": "compute_numeric",
         "final_task_family": "generic_numeric_family",
-        "classifier_source": "fallback_application_induct",
+        "classifier_source": "rule_fallback_ai_unavailable",
         "classification_decision": "",
         "conflict_reason": "ai_api_key_missing",
         "source_mapping_warning": "",
-        "requires_human_action": false,
+        "requires_human_action": true,
         "ai_notes": "",
         "skill_scoped_candidates": [
           {
@@ -29509,6 +30767,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -29606,6 +30866,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -29703,6 +30965,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -29800,6 +31064,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -29897,6 +31163,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -29994,6 +31262,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -30091,6 +31361,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -30150,7 +31422,7 @@
         ],
         "selected_subskill": "compute_numeric",
         "selected_problem_type": "compute_numeric",
-        "candidate_source": "fallback_application",
+        "candidate_source": "needs_review",
         "selected_generator_contract": {},
         "parameter_schema": {},
         "variable_randomization_notes": [],
@@ -30175,9 +31447,9 @@
         "possible_structure_mismatch": true,
         "possible_mixed_source_context": true
       },
-      "subskill_id": "evaluate_function_value",
-      "classification_source": "fallback_application_induct",
-      "induction_eligibility": "eligible",
+      "subskill_id": "compute_numeric",
+      "classification_source": "rule_fallback_ai_unavailable",
+      "induction_eligibility": "excluded",
       "answer_type": "text_short",
       "equivalence_type": "exact_string",
       "checker_key": "text_short_checker",
@@ -30226,6 +31498,9 @@
         ],
         "target": "numeric_evaluate_function_notation",
         "classifier_source": "rule_fallback_ai_unavailable",
+        "math_meta_tags": [],
+        "forced_target_task": "",
+        "meta_answer_format_hint": "",
         "semantic_classification": {
           "ai_target_task": "",
           "ai_task_family": "",
@@ -30314,6 +31589,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -30411,6 +31688,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -30508,6 +31787,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -30605,6 +31886,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -30702,6 +31985,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -30799,6 +32084,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -30896,6 +32183,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -31251,6 +32540,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -31348,6 +32639,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -31445,6 +32738,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -31542,6 +32837,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -31639,6 +32936,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -31736,6 +33035,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -31833,6 +33134,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -31930,7 +33233,7 @@
     },
     {
       "example_id": 4425,
-      "detected_problem_type_id": "short_answer_evaluate_function_value_fallback_application",
+      "detected_problem_type_id": "short_answer_compute_numeric_short_answer",
       "example_feature": {
         "source_example_id": 4425,
         "question_text": "右圖是某電信公司的通話費計算方式：300秒以內只繳基本費，超過300秒之後的費用，與通話時間成線型函數關係，試問：\n(1) 手機基本費用為多少元？\n(2) 本月小郁使用手機通話1500秒，需繳交多少元？",
@@ -31943,7 +33246,7 @@
         "checker": "text_short_checker",
         "equivalence": "exact_string",
         "math_objects": [],
-        "target_task": "evaluate_function_value",
+        "target_task": "compute_numeric",
         "task_family": "generic_numeric_family",
         "reasoning_type": [
           "numeric_computation"
@@ -31954,8 +33257,11 @@
         "candidate_only": false,
         "variables": [],
         "givens": [],
-        "target": "evaluate_function_value",
+        "target": "compute_numeric",
         "classifier_source": "rule_fallback_ai_unavailable",
+        "math_meta_tags": [],
+        "forced_target_task": "",
+        "meta_answer_format_hint": "",
         "semantic_classification": {
           "ai_target_task": "",
           "ai_task_family": "",
@@ -31975,13 +33281,13 @@
           "rule_target_task": "compute_numeric",
           "rule_task_family": "generic_numeric_family",
           "rule_confidence": 0.2,
-          "final_target_task": "evaluate_function_value",
+          "final_target_task": "compute_numeric",
           "final_task_family": "generic_numeric_family",
-          "classifier_source": "fallback_application_induct",
+          "classifier_source": "rule_fallback_ai_unavailable",
           "classification_decision": "",
           "conflict_reason": "ai_api_key_missing",
           "source_mapping_warning": "",
-          "requires_human_action": false,
+          "requires_human_action": true,
           "ai_notes": "",
           "skill_scoped_candidates": [
             {
@@ -32044,6 +33350,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -32141,6 +33449,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -32238,6 +33548,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -32335,6 +33647,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -32432,6 +33746,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -32529,6 +33845,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -32626,6 +33944,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -32683,7 +34003,7 @@
           "outsider_candidates": [],
           "selected_subskill": "compute_numeric",
           "selected_problem_type": "compute_numeric",
-          "candidate_source": "fallback_application",
+          "candidate_source": "needs_review",
           "selected_generator_contract": {},
           "parameter_schema": {},
           "variable_randomization_notes": [],
@@ -32878,7 +34198,6 @@
         "induction_tier": "core",
         "enrichment_reasons": [],
         "included_in_core_induction": true,
-        "problem_type_id": "short_answer_evaluate_function_value_fallback_application",
         "equivalence_type": "exact_string",
         "checker_key": "text_short_checker",
         "requires_human_action": false
@@ -32886,7 +34205,9 @@
       "answer_shape": "text_short",
       "classification_confidence": "high",
       "classification_reason": "rule_fallback_ai_unavailable",
-      "risk_flags": [],
+      "risk_flags": [
+        "requires_human_action"
+      ],
       "semantic_classification": {
         "ai_target_task": "",
         "ai_task_family": "",
@@ -32906,13 +34227,13 @@
         "rule_target_task": "compute_numeric",
         "rule_task_family": "generic_numeric_family",
         "rule_confidence": 0.2,
-        "final_target_task": "evaluate_function_value",
+        "final_target_task": "compute_numeric",
         "final_task_family": "generic_numeric_family",
-        "classifier_source": "fallback_application_induct",
+        "classifier_source": "rule_fallback_ai_unavailable",
         "classification_decision": "",
         "conflict_reason": "ai_api_key_missing",
         "source_mapping_warning": "",
-        "requires_human_action": false,
+        "requires_human_action": true,
         "ai_notes": "",
         "skill_scoped_candidates": [
           {
@@ -32975,6 +34296,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -33072,6 +34395,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -33169,6 +34494,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -33266,6 +34593,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -33363,6 +34692,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -33460,6 +34791,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -33557,6 +34890,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -33614,7 +34949,7 @@
         "outsider_candidates": [],
         "selected_subskill": "compute_numeric",
         "selected_problem_type": "compute_numeric",
-        "candidate_source": "fallback_application",
+        "candidate_source": "needs_review",
         "selected_generator_contract": {},
         "parameter_schema": {},
         "variable_randomization_notes": [],
@@ -33639,9 +34974,9 @@
         "possible_structure_mismatch": true,
         "possible_mixed_source_context": true
       },
-      "subskill_id": "evaluate_function_value",
-      "classification_source": "fallback_application_induct",
-      "induction_eligibility": "eligible",
+      "subskill_id": "compute_numeric",
+      "classification_source": "rule_fallback_ai_unavailable",
+      "induction_eligibility": "excluded",
       "answer_type": "text_short",
       "equivalence_type": "exact_string",
       "checker_key": "text_short_checker",
@@ -33649,7 +34984,7 @@
     },
     {
       "example_id": 4426,
-      "detected_problem_type_id": "short_answer_evaluate_function_value_fallback_application",
+      "detected_problem_type_id": "short_answer_compute_numeric_short_answer",
       "example_feature": {
         "source_example_id": 4426,
         "question_text": "設直角坐標平面上四點$A\\left( -2,1 \\right)$、$B\\left( {{b}_{1}},{{b}_{2}} \\right)$、$C\\left( {{c}_{1}},{{c}_{2}} \\right)$、$D\\left( 4,3 \\right)$在同一直線上，依序為A、B、C、D，且B、C兩點將線段AD三等分，則點C之坐標$\\left( {{c}_{1}},{{c}_{2}} \\right)$為何？..",
@@ -33667,7 +35002,7 @@
           "triangle",
           "two_coordinate_points"
         ],
-        "target_task": "evaluate_function_value",
+        "target_task": "compute_numeric",
         "task_family": "generic_numeric_family",
         "reasoning_type": [
           "numeric_computation"
@@ -33692,8 +35027,11 @@
           "b",
           "c"
         ],
-        "target": "evaluate_function_value",
+        "target": "compute_numeric",
         "classifier_source": "rule_fallback_ai_unavailable",
+        "math_meta_tags": [],
+        "forced_target_task": "",
+        "meta_answer_format_hint": "",
         "semantic_classification": {
           "ai_target_task": "",
           "ai_task_family": "",
@@ -33713,13 +35051,13 @@
           "rule_target_task": "compute_numeric",
           "rule_task_family": "generic_numeric_family",
           "rule_confidence": 0.2,
-          "final_target_task": "evaluate_function_value",
+          "final_target_task": "compute_numeric",
           "final_task_family": "generic_numeric_family",
-          "classifier_source": "fallback_application_induct",
+          "classifier_source": "rule_fallback_ai_unavailable",
           "classification_decision": "",
           "conflict_reason": "ai_api_key_missing",
           "source_mapping_warning": "",
-          "requires_human_action": false,
+          "requires_human_action": true,
           "ai_notes": "",
           "skill_scoped_candidates": [
             {
@@ -33782,6 +35120,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -33879,6 +35219,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -33976,6 +35318,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -34073,6 +35417,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -34170,6 +35516,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -34267,6 +35615,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -34364,6 +35714,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -34421,7 +35773,7 @@
           "outsider_candidates": [],
           "selected_subskill": "compute_numeric",
           "selected_problem_type": "compute_numeric",
-          "candidate_source": "fallback_application",
+          "candidate_source": "needs_review",
           "selected_generator_contract": {},
           "parameter_schema": {},
           "variable_randomization_notes": [],
@@ -34621,7 +35973,6 @@
         "induction_tier": "core",
         "enrichment_reasons": [],
         "included_in_core_induction": true,
-        "problem_type_id": "short_answer_evaluate_function_value_fallback_application",
         "equivalence_type": "exact_string",
         "checker_key": "text_short_checker",
         "requires_human_action": false
@@ -34629,7 +35980,9 @@
       "answer_shape": "text_short",
       "classification_confidence": "high",
       "classification_reason": "rule_fallback_ai_unavailable",
-      "risk_flags": [],
+      "risk_flags": [
+        "requires_human_action"
+      ],
       "semantic_classification": {
         "ai_target_task": "",
         "ai_task_family": "",
@@ -34649,13 +36002,13 @@
         "rule_target_task": "compute_numeric",
         "rule_task_family": "generic_numeric_family",
         "rule_confidence": 0.2,
-        "final_target_task": "evaluate_function_value",
+        "final_target_task": "compute_numeric",
         "final_task_family": "generic_numeric_family",
-        "classifier_source": "fallback_application_induct",
+        "classifier_source": "rule_fallback_ai_unavailable",
         "classification_decision": "",
         "conflict_reason": "ai_api_key_missing",
         "source_mapping_warning": "",
-        "requires_human_action": false,
+        "requires_human_action": true,
         "ai_notes": "",
         "skill_scoped_candidates": [
           {
@@ -34718,6 +36071,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -34815,6 +36170,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -34912,6 +36269,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -35009,6 +36368,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -35106,6 +36467,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -35203,6 +36566,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -35300,6 +36665,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -35357,7 +36724,7 @@
         "outsider_candidates": [],
         "selected_subskill": "compute_numeric",
         "selected_problem_type": "compute_numeric",
-        "candidate_source": "fallback_application",
+        "candidate_source": "needs_review",
         "selected_generator_contract": {},
         "parameter_schema": {},
         "variable_randomization_notes": [],
@@ -35387,9 +36754,9 @@
         "possible_structure_mismatch": true,
         "possible_mixed_source_context": true
       },
-      "subskill_id": "evaluate_function_value",
-      "classification_source": "fallback_application_induct",
-      "induction_eligibility": "eligible",
+      "subskill_id": "compute_numeric",
+      "classification_source": "rule_fallback_ai_unavailable",
+      "induction_eligibility": "excluded",
       "answer_type": "text_short",
       "equivalence_type": "exact_string",
       "checker_key": "text_short_checker",
@@ -35438,6 +36805,9 @@
         ],
         "target": "numeric_evaluate_function_notation",
         "classifier_source": "rule_fallback_ai_unavailable",
+        "math_meta_tags": [],
+        "forced_target_task": "",
+        "meta_answer_format_hint": "",
         "semantic_classification": {
           "ai_target_task": "",
           "ai_task_family": "",
@@ -35526,6 +36896,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -35623,6 +36995,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -35720,6 +37094,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -35817,6 +37193,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -35914,6 +37292,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -36011,6 +37391,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -36108,6 +37490,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -36463,6 +37847,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -36560,6 +37946,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -36657,6 +38045,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -36754,6 +38144,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -36851,6 +38243,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -36948,6 +38342,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -37045,6 +38441,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -37142,7 +38540,7 @@
     },
     {
       "example_id": 4442,
-      "detected_problem_type_id": "short_answer_evaluate_function_value_fallback_application",
+      "detected_problem_type_id": "short_answer_applied_quadratic_inequality_problem_short_answer",
       "example_feature": {
         "source_example_id": 4442,
         "question_text": "高老師搭乘某廉價航空，他的行李托運費用是850元，若行李托運費用與重量是成線型函數的關係，如圖所示，試求高老師托運的行李幾公斤？",
@@ -37155,10 +38553,10 @@
         "checker": "text_short_checker",
         "equivalence": "exact_string",
         "math_objects": [],
-        "target_task": "evaluate_function_value",
-        "task_family": "generic_numeric_family",
+        "target_task": "applied_quadratic_inequality_problem",
+        "task_family": "quadratic_inequality_family",
         "reasoning_type": [
-          "numeric_computation"
+          "quadratic_factoring_reasoning"
         ],
         "required_derivation": true,
         "source_quality_issues": [],
@@ -37166,8 +38564,13 @@
         "candidate_only": false,
         "variables": [],
         "givens": [],
-        "target": "evaluate_function_value",
+        "target": "applied_quadratic_inequality_problem",
         "classifier_source": "rule_fallback_ai_unavailable",
+        "math_meta_tags": [
+          "[Task: Applied_Context]"
+        ],
+        "forced_target_task": "applied_quadratic_inequality_problem",
+        "meta_answer_format_hint": "interval",
         "semantic_classification": {
           "ai_target_task": "",
           "ai_task_family": "",
@@ -37184,16 +38587,16 @@
           "raw_response_preview": "",
           "sanitized_response_preview": "",
           "failed_stage": "",
-          "rule_target_task": "compute_numeric",
-          "rule_task_family": "generic_numeric_family",
-          "rule_confidence": 0.2,
-          "final_target_task": "evaluate_function_value",
-          "final_task_family": "generic_numeric_family",
-          "classifier_source": "fallback_application_induct",
+          "rule_target_task": "applied_quadratic_inequality_problem",
+          "rule_task_family": "quadratic_inequality_family",
+          "rule_confidence": 0.5,
+          "final_target_task": "applied_quadratic_inequality_problem",
+          "final_task_family": "quadratic_inequality_family",
+          "classifier_source": "rule_fallback_ai_unavailable",
           "classification_decision": "",
           "conflict_reason": "ai_api_key_missing",
           "source_mapping_warning": "",
-          "requires_human_action": false,
+          "requires_human_action": true,
           "ai_notes": "",
           "skill_scoped_candidates": [
             {
@@ -37256,6 +38659,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -37353,6 +38758,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -37450,6 +38857,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -37547,6 +38956,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -37644,6 +39055,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -37741,6 +39154,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -37838,6 +39253,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -37876,6 +39293,105 @@
               }
             },
             {
+              "candidate_id": "C8",
+              "target_task": "applied_quadratic_inequality_problem",
+              "task_family": "quadratic_inequality_family",
+              "problem_type_id": "applied_quadratic_inequality_problem",
+              "label": "applied_quadratic_inequality_problem",
+              "candidate_source": "outsider",
+              "in_anchor_scope": false,
+              "answer_type": "numeric",
+              "answer_shape": "numeric",
+              "math_objects": [],
+              "checker_key": "numeric_checker",
+              "equivalence_type": "numeric_equivalence",
+              "generator_contract": {
+                "template_variants": [
+                  {
+                    "id": "default",
+                    "label": "default",
+                    "stem_pattern": "依題意求解：{stem_hint}。",
+                    "weight": 1.0,
+                    "enabled": true
+                  }
+                ],
+                "parameter_schema": {
+                  "seed": {
+                    "type": "integer",
+                    "randomize": true
+                  },
+                  "difficulty_level": {
+                    "choices": [
+                      "level_1",
+                      "level_2",
+                      "level_3"
+                    ],
+                    "weights": [
+                      0.4,
+                      0.4,
+                      0.2
+                    ]
+                  }
+                },
+                "variation_dimensions": [
+                  "seed",
+                  "difficulty_level",
+                  "context_style"
+                ],
+                "difficulty_controls": {
+                  "level_1": {},
+                  "level_2": {},
+                  "level_3": {}
+                },
+                "anti_repetition_rules": {
+                  "avoid_same_template_consecutive": true,
+                  "avoid_same_ratio_consecutive": true,
+                  "avoid_same_point_names_consecutive": true,
+                  "avoid_same_answer_consecutive": true,
+                  "recent_history_window": 5,
+                  "signature_fields": [
+                    "problem_type_id",
+                    "template_variant",
+                    "routing_track",
+                    "scenario_type",
+                    "ratio_form",
+                    "ratio_values",
+                    "coordinate_pattern",
+                    "answer"
+                  ]
+                },
+                "validity_constraints": [
+                  "answer derivable from givens"
+                ],
+                "answer_shape": "numeric",
+                "explanation_variants": [
+                  "stepwise"
+                ],
+                "sampling_strategy": "weighted_random",
+                "template_families": [
+                  "applied_quadratic_inequality_problem"
+                ]
+              },
+              "parameter_schema": {
+                "seed": {
+                  "type": "integer",
+                  "randomize": true
+                },
+                "difficulty_level": {
+                  "choices": [
+                    "level_1",
+                    "level_2",
+                    "level_3"
+                  ],
+                  "weights": [
+                    0.4,
+                    0.4,
+                    0.2
+                  ]
+                }
+              }
+            },
+            {
               "candidate_id": "needs_review",
               "target_task": "",
               "task_family": "",
@@ -37892,18 +39408,20 @@
               "parameter_schema": {}
             }
           ],
-          "outsider_candidates": [],
-          "selected_subskill": "compute_numeric",
-          "selected_problem_type": "compute_numeric",
-          "candidate_source": "fallback_application",
+          "outsider_candidates": [
+            "C8"
+          ],
+          "selected_subskill": "applied_quadratic_inequality_problem",
+          "selected_problem_type": "applied_quadratic_inequality_problem",
+          "candidate_source": "needs_review",
           "selected_generator_contract": {},
           "parameter_schema": {},
           "variable_randomization_notes": [],
           "checker_key": "",
           "equivalence_type": "",
           "skill_scope_trusted": true,
-          "target_task": "compute_numeric",
-          "task_family": "generic_numeric_family",
+          "target_task": "applied_quadratic_inequality_problem",
+          "task_family": "quadratic_inequality_family",
           "math_objects": [],
           "answer_type": "short_answer",
           "answer_shape": "text_short",
@@ -38090,7 +39608,6 @@
         "induction_tier": "core",
         "enrichment_reasons": [],
         "included_in_core_induction": true,
-        "problem_type_id": "short_answer_evaluate_function_value_fallback_application",
         "equivalence_type": "exact_string",
         "checker_key": "text_short_checker",
         "requires_human_action": false
@@ -38098,7 +39615,9 @@
       "answer_shape": "text_short",
       "classification_confidence": "high",
       "classification_reason": "rule_fallback_ai_unavailable",
-      "risk_flags": [],
+      "risk_flags": [
+        "requires_human_action"
+      ],
       "semantic_classification": {
         "ai_target_task": "",
         "ai_task_family": "",
@@ -38115,16 +39634,16 @@
         "raw_response_preview": "",
         "sanitized_response_preview": "",
         "failed_stage": "",
-        "rule_target_task": "compute_numeric",
-        "rule_task_family": "generic_numeric_family",
-        "rule_confidence": 0.2,
-        "final_target_task": "evaluate_function_value",
-        "final_task_family": "generic_numeric_family",
-        "classifier_source": "fallback_application_induct",
+        "rule_target_task": "applied_quadratic_inequality_problem",
+        "rule_task_family": "quadratic_inequality_family",
+        "rule_confidence": 0.5,
+        "final_target_task": "applied_quadratic_inequality_problem",
+        "final_task_family": "quadratic_inequality_family",
+        "classifier_source": "rule_fallback_ai_unavailable",
         "classification_decision": "",
         "conflict_reason": "ai_api_key_missing",
         "source_mapping_warning": "",
-        "requires_human_action": false,
+        "requires_human_action": true,
         "ai_notes": "",
         "skill_scoped_candidates": [
           {
@@ -38187,6 +39706,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -38284,6 +39805,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -38381,6 +39904,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -38478,6 +40003,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -38575,6 +40102,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -38672,6 +40201,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -38769,6 +40300,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -38807,6 +40340,105 @@
             }
           },
           {
+            "candidate_id": "C8",
+            "target_task": "applied_quadratic_inequality_problem",
+            "task_family": "quadratic_inequality_family",
+            "problem_type_id": "applied_quadratic_inequality_problem",
+            "label": "applied_quadratic_inequality_problem",
+            "candidate_source": "outsider",
+            "in_anchor_scope": false,
+            "answer_type": "numeric",
+            "answer_shape": "numeric",
+            "math_objects": [],
+            "checker_key": "numeric_checker",
+            "equivalence_type": "numeric_equivalence",
+            "generator_contract": {
+              "template_variants": [
+                {
+                  "id": "default",
+                  "label": "default",
+                  "stem_pattern": "依題意求解：{stem_hint}。",
+                  "weight": 1.0,
+                  "enabled": true
+                }
+              ],
+              "parameter_schema": {
+                "seed": {
+                  "type": "integer",
+                  "randomize": true
+                },
+                "difficulty_level": {
+                  "choices": [
+                    "level_1",
+                    "level_2",
+                    "level_3"
+                  ],
+                  "weights": [
+                    0.4,
+                    0.4,
+                    0.2
+                  ]
+                }
+              },
+              "variation_dimensions": [
+                "seed",
+                "difficulty_level",
+                "context_style"
+              ],
+              "difficulty_controls": {
+                "level_1": {},
+                "level_2": {},
+                "level_3": {}
+              },
+              "anti_repetition_rules": {
+                "avoid_same_template_consecutive": true,
+                "avoid_same_ratio_consecutive": true,
+                "avoid_same_point_names_consecutive": true,
+                "avoid_same_answer_consecutive": true,
+                "recent_history_window": 5,
+                "signature_fields": [
+                  "problem_type_id",
+                  "template_variant",
+                  "routing_track",
+                  "scenario_type",
+                  "ratio_form",
+                  "ratio_values",
+                  "coordinate_pattern",
+                  "answer"
+                ]
+              },
+              "validity_constraints": [
+                "answer derivable from givens"
+              ],
+              "answer_shape": "numeric",
+              "explanation_variants": [
+                "stepwise"
+              ],
+              "sampling_strategy": "weighted_random",
+              "template_families": [
+                "applied_quadratic_inequality_problem"
+              ]
+            },
+            "parameter_schema": {
+              "seed": {
+                "type": "integer",
+                "randomize": true
+              },
+              "difficulty_level": {
+                "choices": [
+                  "level_1",
+                  "level_2",
+                  "level_3"
+                ],
+                "weights": [
+                  0.4,
+                  0.4,
+                  0.2
+                ]
+              }
+            }
+          },
+          {
             "candidate_id": "needs_review",
             "target_task": "",
             "task_family": "",
@@ -38823,18 +40455,20 @@
             "parameter_schema": {}
           }
         ],
-        "outsider_candidates": [],
-        "selected_subskill": "compute_numeric",
-        "selected_problem_type": "compute_numeric",
-        "candidate_source": "fallback_application",
+        "outsider_candidates": [
+          "C8"
+        ],
+        "selected_subskill": "applied_quadratic_inequality_problem",
+        "selected_problem_type": "applied_quadratic_inequality_problem",
+        "candidate_source": "needs_review",
         "selected_generator_contract": {},
         "parameter_schema": {},
         "variable_randomization_notes": [],
         "checker_key": "",
         "equivalence_type": "",
         "skill_scope_trusted": true,
-        "target_task": "compute_numeric",
-        "task_family": "generic_numeric_family",
+        "target_task": "applied_quadratic_inequality_problem",
+        "task_family": "quadratic_inequality_family",
         "math_objects": [],
         "answer_type": "short_answer",
         "answer_shape": "text_short",
@@ -38851,9 +40485,9 @@
         "possible_structure_mismatch": true,
         "possible_mixed_source_context": true
       },
-      "subskill_id": "evaluate_function_value",
-      "classification_source": "fallback_application_induct",
-      "induction_eligibility": "eligible",
+      "subskill_id": "applied_quadratic_inequality_problem",
+      "classification_source": "rule_fallback_ai_unavailable",
+      "induction_eligibility": "excluded",
       "answer_type": "text_short",
       "equivalence_type": "exact_string",
       "checker_key": "text_short_checker",
@@ -38861,7 +40495,7 @@
     },
     {
       "example_id": 4446,
-      "detected_problem_type_id": "unknown",
+      "detected_problem_type_id": "single_choice_compute_numeric_single_choice",
       "example_feature": {
         "source_example_id": 4446,
         "question_text": "公司給小虹最多50萬元的預算來採買$x$、$y$兩種貨品。但小虹一時疏忽，無法確定$x$貨品跟$y$貨品的單價哪一個是100元、哪一個是200元。下列數對($x$貨品購買數量 , $y$貨品購買數量)中，試問哪一組不會超過預算？ \n(A)$\\left( 1400,1900 \\right)$ \n(B)$\\left( 1600,1700 \\right)$ \n(C)$\\left( 1700,1800 \\right)$ \n(D)$\\left( 1800,1500 \\right)$ 〔112統測B〕",
@@ -38884,7 +40518,7 @@
           "triangle",
           "two_coordinate_points"
         ],
-        "target_task": "evaluate_function_value",
+        "target_task": "compute_numeric",
         "task_family": "generic_numeric_family",
         "reasoning_type": [
           "numeric_computation"
@@ -38909,8 +40543,11 @@
           "x",
           "y"
         ],
-        "target": "evaluate_function_value",
+        "target": "compute_numeric",
         "classifier_source": "rule_fallback_ai_unavailable",
+        "math_meta_tags": [],
+        "forced_target_task": "",
+        "meta_answer_format_hint": "",
         "semantic_classification": {
           "ai_target_task": "",
           "ai_task_family": "",
@@ -38930,13 +40567,13 @@
           "rule_target_task": "compute_numeric",
           "rule_task_family": "generic_numeric_family",
           "rule_confidence": 0.2,
-          "final_target_task": "evaluate_function_value",
+          "final_target_task": "compute_numeric",
           "final_task_family": "generic_numeric_family",
-          "classifier_source": "fallback_application_induct",
+          "classifier_source": "rule_fallback_ai_unavailable",
           "classification_decision": "",
           "conflict_reason": "ai_api_key_missing",
           "source_mapping_warning": "",
-          "requires_human_action": false,
+          "requires_human_action": true,
           "ai_notes": "",
           "skill_scoped_candidates": [
             {
@@ -38999,6 +40636,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -39096,6 +40735,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -39193,6 +40834,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -39290,6 +40933,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -39387,6 +41032,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -39484,6 +41131,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -39581,6 +41230,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -39638,7 +41289,7 @@
           "outsider_candidates": [],
           "selected_subskill": "compute_numeric",
           "selected_problem_type": "compute_numeric",
-          "candidate_source": "fallback_application",
+          "candidate_source": "needs_review",
           "selected_generator_contract": {},
           "parameter_schema": {},
           "variable_randomization_notes": [],
@@ -39842,16 +41493,16 @@
         "induction_tier": "core",
         "enrichment_reasons": [],
         "included_in_core_induction": true,
-        "problem_type_id": "single_choice_evaluate_function_value_fallback_application",
         "equivalence_type": "choice_label",
         "checker_key": "choice_label_checker",
         "requires_human_action": false
       },
       "answer_shape": "single_choice",
-      "classification_confidence": "low",
+      "classification_confidence": "high",
       "classification_reason": "rule_fallback_ai_unavailable",
       "risk_flags": [
         "stem_embeds_choices",
+        "requires_human_action",
         "candidate_only"
       ],
       "semantic_classification": {
@@ -39873,13 +41524,13 @@
         "rule_target_task": "compute_numeric",
         "rule_task_family": "generic_numeric_family",
         "rule_confidence": 0.2,
-        "final_target_task": "evaluate_function_value",
+        "final_target_task": "compute_numeric",
         "final_task_family": "generic_numeric_family",
-        "classifier_source": "fallback_application_induct",
+        "classifier_source": "rule_fallback_ai_unavailable",
         "classification_decision": "",
         "conflict_reason": "ai_api_key_missing",
         "source_mapping_warning": "",
-        "requires_human_action": false,
+        "requires_human_action": true,
         "ai_notes": "",
         "skill_scoped_candidates": [
           {
@@ -39942,6 +41593,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -40039,6 +41692,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -40136,6 +41791,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -40233,6 +41890,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -40330,6 +41989,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -40427,6 +42088,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -40524,6 +42187,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -40581,7 +42246,7 @@
         "outsider_candidates": [],
         "selected_subskill": "compute_numeric",
         "selected_problem_type": "compute_numeric",
-        "candidate_source": "fallback_application",
+        "candidate_source": "needs_review",
         "selected_generator_contract": {},
         "parameter_schema": {},
         "variable_randomization_notes": [],
@@ -40614,8 +42279,8 @@
         "source_quality_status": "FORCE_ALLOWED_FOR_INDUCTION"
       },
       "subskill_id": "same_as_main_skill",
-      "classification_source": "fallback_application_induct",
-      "induction_eligibility": "eligible",
+      "classification_source": "rule_fallback_ai_unavailable",
+      "induction_eligibility": "excluded",
       "answer_type": "choice",
       "equivalence_type": "choice_label",
       "checker_key": "choice_label_checker",
@@ -40661,6 +42326,9 @@
         ],
         "target": "numeric_evaluate_function_notation",
         "classifier_source": "rule_fallback_ai_unavailable",
+        "math_meta_tags": [],
+        "forced_target_task": "",
+        "meta_answer_format_hint": "",
         "semantic_classification": {
           "ai_target_task": "",
           "ai_task_family": "",
@@ -40749,6 +42417,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -40846,6 +42516,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -40943,6 +42615,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -41040,6 +42714,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -41137,6 +42813,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -41234,6 +42912,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -41331,6 +43011,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -41685,6 +43367,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -41782,6 +43466,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -41879,6 +43565,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -41976,6 +43664,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -42073,6 +43763,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -42170,6 +43862,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -42267,6 +43961,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -42401,6 +44097,9 @@
         ],
         "target": "numeric_evaluate_function_notation",
         "classifier_source": "rule_fallback_ai_unavailable",
+        "math_meta_tags": [],
+        "forced_target_task": "",
+        "meta_answer_format_hint": "",
         "semantic_classification": {
           "ai_target_task": "",
           "ai_task_family": "",
@@ -42489,6 +44188,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -42586,6 +44287,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -42683,6 +44386,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -42780,6 +44485,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -42877,6 +44584,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -42974,6 +44683,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -43071,6 +44782,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -43425,6 +45138,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -43522,6 +45237,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -43619,6 +45336,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -43716,6 +45435,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -43813,6 +45534,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -43910,6 +45633,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -44007,6 +45732,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -44103,7 +45830,7 @@
     },
     {
       "example_id": 4500,
-      "detected_problem_type_id": "short_answer_evaluate_function_value_fallback_application",
+      "detected_problem_type_id": "short_answer_compute_numeric_short_answer",
       "example_feature": {
         "source_example_id": 4500,
         "question_text": "阿偉的汽車加滿油後開始行駛，其行駛距離x公里與剩餘油量y公升的關係為線型函數，其圖形如右圖所示，則x與y的關係式為",
@@ -44116,7 +45843,7 @@
         "checker": "text_short_checker",
         "equivalence": "exact_string",
         "math_objects": [],
-        "target_task": "evaluate_function_value",
+        "target_task": "compute_numeric",
         "task_family": "generic_numeric_family",
         "reasoning_type": [
           "numeric_computation"
@@ -44127,8 +45854,11 @@
         "candidate_only": false,
         "variables": [],
         "givens": [],
-        "target": "evaluate_function_value",
+        "target": "compute_numeric",
         "classifier_source": "rule_fallback_ai_unavailable",
+        "math_meta_tags": [],
+        "forced_target_task": "",
+        "meta_answer_format_hint": "",
         "semantic_classification": {
           "ai_target_task": "",
           "ai_task_family": "",
@@ -44148,13 +45878,13 @@
           "rule_target_task": "compute_numeric",
           "rule_task_family": "generic_numeric_family",
           "rule_confidence": 0.2,
-          "final_target_task": "evaluate_function_value",
+          "final_target_task": "compute_numeric",
           "final_task_family": "generic_numeric_family",
-          "classifier_source": "fallback_application_induct",
+          "classifier_source": "rule_fallback_ai_unavailable",
           "classification_decision": "",
           "conflict_reason": "ai_api_key_missing",
           "source_mapping_warning": "",
-          "requires_human_action": false,
+          "requires_human_action": true,
           "ai_notes": "",
           "skill_scoped_candidates": [
             {
@@ -44217,6 +45947,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -44314,6 +46046,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -44411,6 +46145,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -44508,6 +46244,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -44605,6 +46343,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -44702,6 +46442,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -44799,6 +46541,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -44856,7 +46600,7 @@
           "outsider_candidates": [],
           "selected_subskill": "compute_numeric",
           "selected_problem_type": "compute_numeric",
-          "candidate_source": "fallback_application",
+          "candidate_source": "needs_review",
           "selected_generator_contract": {},
           "parameter_schema": {},
           "variable_randomization_notes": [],
@@ -45051,7 +46795,6 @@
         "induction_tier": "core",
         "enrichment_reasons": [],
         "included_in_core_induction": true,
-        "problem_type_id": "short_answer_evaluate_function_value_fallback_application",
         "equivalence_type": "exact_string",
         "checker_key": "text_short_checker",
         "requires_human_action": false
@@ -45059,7 +46802,9 @@
       "answer_shape": "text_short",
       "classification_confidence": "high",
       "classification_reason": "rule_fallback_ai_unavailable",
-      "risk_flags": [],
+      "risk_flags": [
+        "requires_human_action"
+      ],
       "semantic_classification": {
         "ai_target_task": "",
         "ai_task_family": "",
@@ -45079,13 +46824,13 @@
         "rule_target_task": "compute_numeric",
         "rule_task_family": "generic_numeric_family",
         "rule_confidence": 0.2,
-        "final_target_task": "evaluate_function_value",
+        "final_target_task": "compute_numeric",
         "final_task_family": "generic_numeric_family",
-        "classifier_source": "fallback_application_induct",
+        "classifier_source": "rule_fallback_ai_unavailable",
         "classification_decision": "",
         "conflict_reason": "ai_api_key_missing",
         "source_mapping_warning": "",
-        "requires_human_action": false,
+        "requires_human_action": true,
         "ai_notes": "",
         "skill_scoped_candidates": [
           {
@@ -45148,6 +46893,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -45245,6 +46992,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -45342,6 +47091,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -45439,6 +47190,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -45536,6 +47289,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -45633,6 +47388,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -45730,6 +47487,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -45787,7 +47546,7 @@
         "outsider_candidates": [],
         "selected_subskill": "compute_numeric",
         "selected_problem_type": "compute_numeric",
-        "candidate_source": "fallback_application",
+        "candidate_source": "needs_review",
         "selected_generator_contract": {},
         "parameter_schema": {},
         "variable_randomization_notes": [],
@@ -45812,9 +47571,9 @@
         "possible_structure_mismatch": true,
         "possible_mixed_source_context": true
       },
-      "subskill_id": "evaluate_function_value",
-      "classification_source": "fallback_application_induct",
-      "induction_eligibility": "eligible",
+      "subskill_id": "compute_numeric",
+      "classification_source": "rule_fallback_ai_unavailable",
+      "induction_eligibility": "excluded",
       "answer_type": "text_short",
       "equivalence_type": "exact_string",
       "checker_key": "text_short_checker",
@@ -45876,6 +47635,9 @@
         ],
         "target": "numeric_evaluate_function_notation",
         "classifier_source": "rule_fallback_ai_unavailable",
+        "math_meta_tags": [],
+        "forced_target_task": "",
+        "meta_answer_format_hint": "",
         "semantic_classification": {
           "ai_target_task": "",
           "ai_task_family": "",
@@ -45964,6 +47726,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -46061,6 +47825,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -46158,6 +47924,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -46255,6 +48023,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -46352,6 +48122,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -46449,6 +48221,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -46546,6 +48320,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -46908,6 +48684,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -47005,6 +48783,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -47102,6 +48882,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -47199,6 +48981,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -47296,6 +49080,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -47393,6 +49179,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -47490,6 +49278,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -47629,6 +49419,9 @@
         ],
         "target": "numeric_evaluate_function_notation",
         "classifier_source": "rule_fallback_ai_unavailable",
+        "math_meta_tags": [],
+        "forced_target_task": "",
+        "meta_answer_format_hint": "",
         "semantic_classification": {
           "ai_target_task": "",
           "ai_task_family": "",
@@ -47717,6 +49510,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -47814,6 +49609,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -47911,6 +49708,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -48008,6 +49807,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -48105,6 +49906,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -48202,6 +50005,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -48299,6 +50104,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -48653,6 +50460,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -48750,6 +50559,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -48847,6 +50658,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -48944,6 +50757,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -49041,6 +50856,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -49138,6 +50955,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -49235,6 +51054,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -49371,6 +51192,9 @@
         ],
         "target": "numeric_evaluate_function_notation",
         "classifier_source": "rule_fallback_ai_unavailable",
+        "math_meta_tags": [],
+        "forced_target_task": "",
+        "meta_answer_format_hint": "",
         "semantic_classification": {
           "ai_target_task": "",
           "ai_task_family": "",
@@ -49459,6 +51283,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -49556,6 +51382,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -49653,6 +51481,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -49750,6 +51580,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -49847,6 +51679,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -50193,6 +52027,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -50290,6 +52126,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -50387,6 +52225,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -50484,6 +52324,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -50581,6 +52423,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -50715,6 +52559,9 @@
         ],
         "target": "numeric_evaluate_function_notation",
         "classifier_source": "rule_fallback_ai_unavailable",
+        "math_meta_tags": [],
+        "forced_target_task": "",
+        "meta_answer_format_hint": "",
         "semantic_classification": {
           "ai_target_task": "",
           "ai_task_family": "",
@@ -50803,6 +52650,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -50900,6 +52749,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -50997,6 +52848,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -51094,6 +52947,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -51191,6 +53046,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -51288,6 +53145,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -51634,6 +53493,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -51731,6 +53592,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -51828,6 +53691,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -51925,6 +53790,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -52022,6 +53889,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -52119,6 +53988,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -52256,6 +54127,9 @@
         ],
         "target": "numeric_evaluate_function_notation",
         "classifier_source": "rule_fallback_ai_unavailable",
+        "math_meta_tags": [],
+        "forced_target_task": "",
+        "meta_answer_format_hint": "",
         "semantic_classification": {
           "ai_target_task": "",
           "ai_task_family": "",
@@ -52344,6 +54218,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -52441,6 +54317,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -52538,6 +54416,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -52635,6 +54515,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -52732,6 +54614,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -52829,6 +54713,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -53176,6 +55062,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -53273,6 +55161,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -53370,6 +55260,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -53467,6 +55359,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -53564,6 +55458,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -53661,6 +55557,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -53758,7 +55656,7 @@
     },
     {
       "example_id": 4445,
-      "detected_problem_type_id": "short_answer_evaluate_function_value_fallback_application",
+      "detected_problem_type_id": "short_answer_compute_numeric_short_answer",
       "example_feature": {
         "source_example_id": 4445,
         "question_text": "已知手機費包含月租基本費與超時通話費，某電信公司的手機月租基本費為m元，可以免費通話30分鐘。若通話時間超過30分鐘後，通話費與時間（分鐘）為線型函數的關係如圖所示。試問：\n(1)手機每個月基本費用m為多少元？\n(2)若本月小偉使用120分鐘，需繳手機費多少元？",
@@ -53771,7 +55669,7 @@
         "checker": "text_short_checker",
         "equivalence": "exact_string",
         "math_objects": [],
-        "target_task": "evaluate_function_value",
+        "target_task": "compute_numeric",
         "task_family": "generic_numeric_family",
         "reasoning_type": [
           "numeric_computation"
@@ -53782,8 +55680,11 @@
         "candidate_only": false,
         "variables": [],
         "givens": [],
-        "target": "evaluate_function_value",
+        "target": "compute_numeric",
         "classifier_source": "rule_fallback_ai_unavailable",
+        "math_meta_tags": [],
+        "forced_target_task": "",
+        "meta_answer_format_hint": "",
         "semantic_classification": {
           "ai_target_task": "",
           "ai_task_family": "",
@@ -53803,13 +55704,13 @@
           "rule_target_task": "compute_numeric",
           "rule_task_family": "generic_numeric_family",
           "rule_confidence": 0.2,
-          "final_target_task": "evaluate_function_value",
+          "final_target_task": "compute_numeric",
           "final_task_family": "generic_numeric_family",
-          "classifier_source": "fallback_application_induct",
+          "classifier_source": "rule_fallback_ai_unavailable",
           "classification_decision": "",
           "conflict_reason": "ai_api_key_missing",
           "source_mapping_warning": "",
-          "requires_human_action": false,
+          "requires_human_action": true,
           "ai_notes": "",
           "skill_scoped_candidates": [
             {
@@ -53872,6 +55773,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -53969,6 +55872,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -54066,6 +55971,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -54163,6 +56070,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -54260,6 +56169,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -54357,6 +56268,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -54454,6 +56367,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -54513,7 +56428,7 @@
           ],
           "selected_subskill": "compute_numeric",
           "selected_problem_type": "compute_numeric",
-          "candidate_source": "fallback_application",
+          "candidate_source": "needs_review",
           "selected_generator_contract": {},
           "parameter_schema": {},
           "variable_randomization_notes": [],
@@ -54700,7 +56615,6 @@
         "induction_tier": "core",
         "enrichment_reasons": [],
         "included_in_core_induction": true,
-        "problem_type_id": "short_answer_evaluate_function_value_fallback_application",
         "equivalence_type": "exact_string",
         "checker_key": "text_short_checker",
         "requires_human_action": false
@@ -54708,7 +56622,9 @@
       "answer_shape": "text_short",
       "classification_confidence": "high",
       "classification_reason": "rule_fallback_ai_unavailable",
-      "risk_flags": [],
+      "risk_flags": [
+        "requires_human_action"
+      ],
       "semantic_classification": {
         "ai_target_task": "",
         "ai_task_family": "",
@@ -54728,13 +56644,13 @@
         "rule_target_task": "compute_numeric",
         "rule_task_family": "generic_numeric_family",
         "rule_confidence": 0.2,
-        "final_target_task": "evaluate_function_value",
+        "final_target_task": "compute_numeric",
         "final_task_family": "generic_numeric_family",
-        "classifier_source": "fallback_application_induct",
+        "classifier_source": "rule_fallback_ai_unavailable",
         "classification_decision": "",
         "conflict_reason": "ai_api_key_missing",
         "source_mapping_warning": "",
-        "requires_human_action": false,
+        "requires_human_action": true,
         "ai_notes": "",
         "skill_scoped_candidates": [
           {
@@ -54797,6 +56713,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -54894,6 +56812,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -54991,6 +56911,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -55088,6 +57010,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -55185,6 +57109,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -55282,6 +57208,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -55379,6 +57307,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -55438,7 +57368,7 @@
         ],
         "selected_subskill": "compute_numeric",
         "selected_problem_type": "compute_numeric",
-        "candidate_source": "fallback_application",
+        "candidate_source": "needs_review",
         "selected_generator_contract": {},
         "parameter_schema": {},
         "variable_randomization_notes": [],
@@ -55463,9 +57393,9 @@
         "possible_structure_mismatch": true,
         "possible_mixed_source_context": true
       },
-      "subskill_id": "evaluate_function_value",
-      "classification_source": "fallback_application_induct",
-      "induction_eligibility": "eligible",
+      "subskill_id": "compute_numeric",
+      "classification_source": "rule_fallback_ai_unavailable",
+      "induction_eligibility": "excluded",
       "answer_type": "text_short",
       "equivalence_type": "exact_string",
       "checker_key": "text_short_checker",
@@ -55514,6 +57444,9 @@
         ],
         "target": "numeric_evaluate_function_notation",
         "classifier_source": "rule_fallback_ai_unavailable",
+        "math_meta_tags": [],
+        "forced_target_task": "",
+        "meta_answer_format_hint": "",
         "semantic_classification": {
           "ai_target_task": "",
           "ai_task_family": "",
@@ -55602,6 +57535,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -55699,6 +57634,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -55796,6 +57733,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -55893,6 +57832,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -55990,6 +57931,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -56087,6 +58030,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -56184,6 +58129,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -56539,6 +58486,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -56636,6 +58585,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -56733,6 +58684,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -56830,6 +58783,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -56927,6 +58882,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -57024,6 +58981,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -57121,6 +59080,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -57218,7 +59179,7 @@
     },
     {
       "example_id": 4425,
-      "detected_problem_type_id": "short_answer_evaluate_function_value_fallback_application",
+      "detected_problem_type_id": "short_answer_compute_numeric_short_answer",
       "example_feature": {
         "source_example_id": 4425,
         "question_text": "右圖是某電信公司的通話費計算方式：300秒以內只繳基本費，超過300秒之後的費用，與通話時間成線型函數關係，試問：\n(1) 手機基本費用為多少元？\n(2) 本月小郁使用手機通話1500秒，需繳交多少元？",
@@ -57231,7 +59192,7 @@
         "checker": "text_short_checker",
         "equivalence": "exact_string",
         "math_objects": [],
-        "target_task": "evaluate_function_value",
+        "target_task": "compute_numeric",
         "task_family": "generic_numeric_family",
         "reasoning_type": [
           "numeric_computation"
@@ -57242,8 +59203,11 @@
         "candidate_only": false,
         "variables": [],
         "givens": [],
-        "target": "evaluate_function_value",
+        "target": "compute_numeric",
         "classifier_source": "rule_fallback_ai_unavailable",
+        "math_meta_tags": [],
+        "forced_target_task": "",
+        "meta_answer_format_hint": "",
         "semantic_classification": {
           "ai_target_task": "",
           "ai_task_family": "",
@@ -57263,13 +59227,13 @@
           "rule_target_task": "compute_numeric",
           "rule_task_family": "generic_numeric_family",
           "rule_confidence": 0.2,
-          "final_target_task": "evaluate_function_value",
+          "final_target_task": "compute_numeric",
           "final_task_family": "generic_numeric_family",
-          "classifier_source": "fallback_application_induct",
+          "classifier_source": "rule_fallback_ai_unavailable",
           "classification_decision": "",
           "conflict_reason": "ai_api_key_missing",
           "source_mapping_warning": "",
-          "requires_human_action": false,
+          "requires_human_action": true,
           "ai_notes": "",
           "skill_scoped_candidates": [
             {
@@ -57332,6 +59296,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -57429,6 +59395,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -57526,6 +59494,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -57623,6 +59593,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -57720,6 +59692,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -57817,6 +59791,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -57914,6 +59890,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -57971,7 +59949,7 @@
           "outsider_candidates": [],
           "selected_subskill": "compute_numeric",
           "selected_problem_type": "compute_numeric",
-          "candidate_source": "fallback_application",
+          "candidate_source": "needs_review",
           "selected_generator_contract": {},
           "parameter_schema": {},
           "variable_randomization_notes": [],
@@ -58166,7 +60144,6 @@
         "induction_tier": "core",
         "enrichment_reasons": [],
         "included_in_core_induction": true,
-        "problem_type_id": "short_answer_evaluate_function_value_fallback_application",
         "equivalence_type": "exact_string",
         "checker_key": "text_short_checker",
         "requires_human_action": false
@@ -58174,7 +60151,9 @@
       "answer_shape": "text_short",
       "classification_confidence": "high",
       "classification_reason": "rule_fallback_ai_unavailable",
-      "risk_flags": [],
+      "risk_flags": [
+        "requires_human_action"
+      ],
       "semantic_classification": {
         "ai_target_task": "",
         "ai_task_family": "",
@@ -58194,13 +60173,13 @@
         "rule_target_task": "compute_numeric",
         "rule_task_family": "generic_numeric_family",
         "rule_confidence": 0.2,
-        "final_target_task": "evaluate_function_value",
+        "final_target_task": "compute_numeric",
         "final_task_family": "generic_numeric_family",
-        "classifier_source": "fallback_application_induct",
+        "classifier_source": "rule_fallback_ai_unavailable",
         "classification_decision": "",
         "conflict_reason": "ai_api_key_missing",
         "source_mapping_warning": "",
-        "requires_human_action": false,
+        "requires_human_action": true,
         "ai_notes": "",
         "skill_scoped_candidates": [
           {
@@ -58263,6 +60242,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -58360,6 +60341,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -58457,6 +60440,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -58554,6 +60539,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -58651,6 +60638,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -58748,6 +60737,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -58845,6 +60836,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -58902,7 +60895,7 @@
         "outsider_candidates": [],
         "selected_subskill": "compute_numeric",
         "selected_problem_type": "compute_numeric",
-        "candidate_source": "fallback_application",
+        "candidate_source": "needs_review",
         "selected_generator_contract": {},
         "parameter_schema": {},
         "variable_randomization_notes": [],
@@ -58927,9 +60920,9 @@
         "possible_structure_mismatch": true,
         "possible_mixed_source_context": true
       },
-      "subskill_id": "evaluate_function_value",
-      "classification_source": "fallback_application_induct",
-      "induction_eligibility": "eligible",
+      "subskill_id": "compute_numeric",
+      "classification_source": "rule_fallback_ai_unavailable",
+      "induction_eligibility": "excluded",
       "answer_type": "text_short",
       "equivalence_type": "exact_string",
       "checker_key": "text_short_checker",
@@ -58937,7 +60930,7 @@
     },
     {
       "example_id": 4426,
-      "detected_problem_type_id": "short_answer_evaluate_function_value_fallback_application",
+      "detected_problem_type_id": "short_answer_compute_numeric_short_answer",
       "example_feature": {
         "source_example_id": 4426,
         "question_text": "設直角坐標平面上四點$A\\left( -2,1 \\right)$、$B\\left( {{b}_{1}},{{b}_{2}} \\right)$、$C\\left( {{c}_{1}},{{c}_{2}} \\right)$、$D\\left( 4,3 \\right)$在同一直線上，依序為A、B、C、D，且B、C兩點將線段AD三等分，則點C之坐標$\\left( {{c}_{1}},{{c}_{2}} \\right)$為何？..",
@@ -58955,7 +60948,7 @@
           "triangle",
           "two_coordinate_points"
         ],
-        "target_task": "evaluate_function_value",
+        "target_task": "compute_numeric",
         "task_family": "generic_numeric_family",
         "reasoning_type": [
           "numeric_computation"
@@ -58980,8 +60973,11 @@
           "b",
           "c"
         ],
-        "target": "evaluate_function_value",
+        "target": "compute_numeric",
         "classifier_source": "rule_fallback_ai_unavailable",
+        "math_meta_tags": [],
+        "forced_target_task": "",
+        "meta_answer_format_hint": "",
         "semantic_classification": {
           "ai_target_task": "",
           "ai_task_family": "",
@@ -59001,13 +60997,13 @@
           "rule_target_task": "compute_numeric",
           "rule_task_family": "generic_numeric_family",
           "rule_confidence": 0.2,
-          "final_target_task": "evaluate_function_value",
+          "final_target_task": "compute_numeric",
           "final_task_family": "generic_numeric_family",
-          "classifier_source": "fallback_application_induct",
+          "classifier_source": "rule_fallback_ai_unavailable",
           "classification_decision": "",
           "conflict_reason": "ai_api_key_missing",
           "source_mapping_warning": "",
-          "requires_human_action": false,
+          "requires_human_action": true,
           "ai_notes": "",
           "skill_scoped_candidates": [
             {
@@ -59070,6 +61066,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -59167,6 +61165,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -59264,6 +61264,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -59361,6 +61363,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -59458,6 +61462,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -59555,6 +61561,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -59652,6 +61660,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -59709,7 +61719,7 @@
           "outsider_candidates": [],
           "selected_subskill": "compute_numeric",
           "selected_problem_type": "compute_numeric",
-          "candidate_source": "fallback_application",
+          "candidate_source": "needs_review",
           "selected_generator_contract": {},
           "parameter_schema": {},
           "variable_randomization_notes": [],
@@ -59909,7 +61919,6 @@
         "induction_tier": "core",
         "enrichment_reasons": [],
         "included_in_core_induction": true,
-        "problem_type_id": "short_answer_evaluate_function_value_fallback_application",
         "equivalence_type": "exact_string",
         "checker_key": "text_short_checker",
         "requires_human_action": false
@@ -59917,7 +61926,9 @@
       "answer_shape": "text_short",
       "classification_confidence": "high",
       "classification_reason": "rule_fallback_ai_unavailable",
-      "risk_flags": [],
+      "risk_flags": [
+        "requires_human_action"
+      ],
       "semantic_classification": {
         "ai_target_task": "",
         "ai_task_family": "",
@@ -59937,13 +61948,13 @@
         "rule_target_task": "compute_numeric",
         "rule_task_family": "generic_numeric_family",
         "rule_confidence": 0.2,
-        "final_target_task": "evaluate_function_value",
+        "final_target_task": "compute_numeric",
         "final_task_family": "generic_numeric_family",
-        "classifier_source": "fallback_application_induct",
+        "classifier_source": "rule_fallback_ai_unavailable",
         "classification_decision": "",
         "conflict_reason": "ai_api_key_missing",
         "source_mapping_warning": "",
-        "requires_human_action": false,
+        "requires_human_action": true,
         "ai_notes": "",
         "skill_scoped_candidates": [
           {
@@ -60006,6 +62017,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -60103,6 +62116,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -60200,6 +62215,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -60297,6 +62314,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -60394,6 +62413,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -60491,6 +62512,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -60588,6 +62611,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -60645,7 +62670,7 @@
         "outsider_candidates": [],
         "selected_subskill": "compute_numeric",
         "selected_problem_type": "compute_numeric",
-        "candidate_source": "fallback_application",
+        "candidate_source": "needs_review",
         "selected_generator_contract": {},
         "parameter_schema": {},
         "variable_randomization_notes": [],
@@ -60675,9 +62700,9 @@
         "possible_structure_mismatch": true,
         "possible_mixed_source_context": true
       },
-      "subskill_id": "evaluate_function_value",
-      "classification_source": "fallback_application_induct",
-      "induction_eligibility": "eligible",
+      "subskill_id": "compute_numeric",
+      "classification_source": "rule_fallback_ai_unavailable",
+      "induction_eligibility": "excluded",
       "answer_type": "text_short",
       "equivalence_type": "exact_string",
       "checker_key": "text_short_checker",
@@ -60726,6 +62751,9 @@
         ],
         "target": "numeric_evaluate_function_notation",
         "classifier_source": "rule_fallback_ai_unavailable",
+        "math_meta_tags": [],
+        "forced_target_task": "",
+        "meta_answer_format_hint": "",
         "semantic_classification": {
           "ai_target_task": "",
           "ai_task_family": "",
@@ -60814,6 +62842,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -60911,6 +62941,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -61008,6 +63040,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -61105,6 +63139,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -61202,6 +63238,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -61299,6 +63337,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -61396,6 +63436,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -61751,6 +63793,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -61848,6 +63892,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -61945,6 +63991,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -62042,6 +64090,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -62139,6 +64189,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -62236,6 +64288,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -62333,6 +64387,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -62430,7 +64486,7 @@
     },
     {
       "example_id": 4442,
-      "detected_problem_type_id": "short_answer_evaluate_function_value_fallback_application",
+      "detected_problem_type_id": "short_answer_applied_quadratic_inequality_problem_short_answer",
       "example_feature": {
         "source_example_id": 4442,
         "question_text": "高老師搭乘某廉價航空，他的行李托運費用是850元，若行李托運費用與重量是成線型函數的關係，如圖所示，試求高老師托運的行李幾公斤？",
@@ -62443,10 +64499,10 @@
         "checker": "text_short_checker",
         "equivalence": "exact_string",
         "math_objects": [],
-        "target_task": "evaluate_function_value",
-        "task_family": "generic_numeric_family",
+        "target_task": "applied_quadratic_inequality_problem",
+        "task_family": "quadratic_inequality_family",
         "reasoning_type": [
-          "numeric_computation"
+          "quadratic_factoring_reasoning"
         ],
         "required_derivation": true,
         "source_quality_issues": [],
@@ -62454,8 +64510,13 @@
         "candidate_only": false,
         "variables": [],
         "givens": [],
-        "target": "evaluate_function_value",
+        "target": "applied_quadratic_inequality_problem",
         "classifier_source": "rule_fallback_ai_unavailable",
+        "math_meta_tags": [
+          "[Task: Applied_Context]"
+        ],
+        "forced_target_task": "applied_quadratic_inequality_problem",
+        "meta_answer_format_hint": "interval",
         "semantic_classification": {
           "ai_target_task": "",
           "ai_task_family": "",
@@ -62472,16 +64533,16 @@
           "raw_response_preview": "",
           "sanitized_response_preview": "",
           "failed_stage": "",
-          "rule_target_task": "compute_numeric",
-          "rule_task_family": "generic_numeric_family",
-          "rule_confidence": 0.2,
-          "final_target_task": "evaluate_function_value",
-          "final_task_family": "generic_numeric_family",
-          "classifier_source": "fallback_application_induct",
+          "rule_target_task": "applied_quadratic_inequality_problem",
+          "rule_task_family": "quadratic_inequality_family",
+          "rule_confidence": 0.5,
+          "final_target_task": "applied_quadratic_inequality_problem",
+          "final_task_family": "quadratic_inequality_family",
+          "classifier_source": "rule_fallback_ai_unavailable",
           "classification_decision": "",
           "conflict_reason": "ai_api_key_missing",
           "source_mapping_warning": "",
-          "requires_human_action": false,
+          "requires_human_action": true,
           "ai_notes": "",
           "skill_scoped_candidates": [
             {
@@ -62544,6 +64605,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -62641,6 +64704,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -62738,6 +64803,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -62835,6 +64902,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -62932,6 +65001,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -63029,6 +65100,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -63126,6 +65199,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -63164,6 +65239,105 @@
               }
             },
             {
+              "candidate_id": "C8",
+              "target_task": "applied_quadratic_inequality_problem",
+              "task_family": "quadratic_inequality_family",
+              "problem_type_id": "applied_quadratic_inequality_problem",
+              "label": "applied_quadratic_inequality_problem",
+              "candidate_source": "outsider",
+              "in_anchor_scope": false,
+              "answer_type": "numeric",
+              "answer_shape": "numeric",
+              "math_objects": [],
+              "checker_key": "numeric_checker",
+              "equivalence_type": "numeric_equivalence",
+              "generator_contract": {
+                "template_variants": [
+                  {
+                    "id": "default",
+                    "label": "default",
+                    "stem_pattern": "依題意求解：{stem_hint}。",
+                    "weight": 1.0,
+                    "enabled": true
+                  }
+                ],
+                "parameter_schema": {
+                  "seed": {
+                    "type": "integer",
+                    "randomize": true
+                  },
+                  "difficulty_level": {
+                    "choices": [
+                      "level_1",
+                      "level_2",
+                      "level_3"
+                    ],
+                    "weights": [
+                      0.4,
+                      0.4,
+                      0.2
+                    ]
+                  }
+                },
+                "variation_dimensions": [
+                  "seed",
+                  "difficulty_level",
+                  "context_style"
+                ],
+                "difficulty_controls": {
+                  "level_1": {},
+                  "level_2": {},
+                  "level_3": {}
+                },
+                "anti_repetition_rules": {
+                  "avoid_same_template_consecutive": true,
+                  "avoid_same_ratio_consecutive": true,
+                  "avoid_same_point_names_consecutive": true,
+                  "avoid_same_answer_consecutive": true,
+                  "recent_history_window": 5,
+                  "signature_fields": [
+                    "problem_type_id",
+                    "template_variant",
+                    "routing_track",
+                    "scenario_type",
+                    "ratio_form",
+                    "ratio_values",
+                    "coordinate_pattern",
+                    "answer"
+                  ]
+                },
+                "validity_constraints": [
+                  "answer derivable from givens"
+                ],
+                "answer_shape": "numeric",
+                "explanation_variants": [
+                  "stepwise"
+                ],
+                "sampling_strategy": "weighted_random",
+                "template_families": [
+                  "applied_quadratic_inequality_problem"
+                ]
+              },
+              "parameter_schema": {
+                "seed": {
+                  "type": "integer",
+                  "randomize": true
+                },
+                "difficulty_level": {
+                  "choices": [
+                    "level_1",
+                    "level_2",
+                    "level_3"
+                  ],
+                  "weights": [
+                    0.4,
+                    0.4,
+                    0.2
+                  ]
+                }
+              }
+            },
+            {
               "candidate_id": "needs_review",
               "target_task": "",
               "task_family": "",
@@ -63180,18 +65354,20 @@
               "parameter_schema": {}
             }
           ],
-          "outsider_candidates": [],
-          "selected_subskill": "compute_numeric",
-          "selected_problem_type": "compute_numeric",
-          "candidate_source": "fallback_application",
+          "outsider_candidates": [
+            "C8"
+          ],
+          "selected_subskill": "applied_quadratic_inequality_problem",
+          "selected_problem_type": "applied_quadratic_inequality_problem",
+          "candidate_source": "needs_review",
           "selected_generator_contract": {},
           "parameter_schema": {},
           "variable_randomization_notes": [],
           "checker_key": "",
           "equivalence_type": "",
           "skill_scope_trusted": true,
-          "target_task": "compute_numeric",
-          "task_family": "generic_numeric_family",
+          "target_task": "applied_quadratic_inequality_problem",
+          "task_family": "quadratic_inequality_family",
           "math_objects": [],
           "answer_type": "short_answer",
           "answer_shape": "text_short",
@@ -63378,7 +65554,6 @@
         "induction_tier": "core",
         "enrichment_reasons": [],
         "included_in_core_induction": true,
-        "problem_type_id": "short_answer_evaluate_function_value_fallback_application",
         "equivalence_type": "exact_string",
         "checker_key": "text_short_checker",
         "requires_human_action": false
@@ -63386,7 +65561,9 @@
       "answer_shape": "text_short",
       "classification_confidence": "high",
       "classification_reason": "rule_fallback_ai_unavailable",
-      "risk_flags": [],
+      "risk_flags": [
+        "requires_human_action"
+      ],
       "semantic_classification": {
         "ai_target_task": "",
         "ai_task_family": "",
@@ -63403,16 +65580,16 @@
         "raw_response_preview": "",
         "sanitized_response_preview": "",
         "failed_stage": "",
-        "rule_target_task": "compute_numeric",
-        "rule_task_family": "generic_numeric_family",
-        "rule_confidence": 0.2,
-        "final_target_task": "evaluate_function_value",
-        "final_task_family": "generic_numeric_family",
-        "classifier_source": "fallback_application_induct",
+        "rule_target_task": "applied_quadratic_inequality_problem",
+        "rule_task_family": "quadratic_inequality_family",
+        "rule_confidence": 0.5,
+        "final_target_task": "applied_quadratic_inequality_problem",
+        "final_task_family": "quadratic_inequality_family",
+        "classifier_source": "rule_fallback_ai_unavailable",
         "classification_decision": "",
         "conflict_reason": "ai_api_key_missing",
         "source_mapping_warning": "",
-        "requires_human_action": false,
+        "requires_human_action": true,
         "ai_notes": "",
         "skill_scoped_candidates": [
           {
@@ -63475,6 +65652,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -63572,6 +65751,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -63669,6 +65850,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -63766,6 +65949,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -63863,6 +66048,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -63960,6 +66147,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -64057,6 +66246,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -64095,6 +66286,105 @@
             }
           },
           {
+            "candidate_id": "C8",
+            "target_task": "applied_quadratic_inequality_problem",
+            "task_family": "quadratic_inequality_family",
+            "problem_type_id": "applied_quadratic_inequality_problem",
+            "label": "applied_quadratic_inequality_problem",
+            "candidate_source": "outsider",
+            "in_anchor_scope": false,
+            "answer_type": "numeric",
+            "answer_shape": "numeric",
+            "math_objects": [],
+            "checker_key": "numeric_checker",
+            "equivalence_type": "numeric_equivalence",
+            "generator_contract": {
+              "template_variants": [
+                {
+                  "id": "default",
+                  "label": "default",
+                  "stem_pattern": "依題意求解：{stem_hint}。",
+                  "weight": 1.0,
+                  "enabled": true
+                }
+              ],
+              "parameter_schema": {
+                "seed": {
+                  "type": "integer",
+                  "randomize": true
+                },
+                "difficulty_level": {
+                  "choices": [
+                    "level_1",
+                    "level_2",
+                    "level_3"
+                  ],
+                  "weights": [
+                    0.4,
+                    0.4,
+                    0.2
+                  ]
+                }
+              },
+              "variation_dimensions": [
+                "seed",
+                "difficulty_level",
+                "context_style"
+              ],
+              "difficulty_controls": {
+                "level_1": {},
+                "level_2": {},
+                "level_3": {}
+              },
+              "anti_repetition_rules": {
+                "avoid_same_template_consecutive": true,
+                "avoid_same_ratio_consecutive": true,
+                "avoid_same_point_names_consecutive": true,
+                "avoid_same_answer_consecutive": true,
+                "recent_history_window": 5,
+                "signature_fields": [
+                  "problem_type_id",
+                  "template_variant",
+                  "routing_track",
+                  "scenario_type",
+                  "ratio_form",
+                  "ratio_values",
+                  "coordinate_pattern",
+                  "answer"
+                ]
+              },
+              "validity_constraints": [
+                "answer derivable from givens"
+              ],
+              "answer_shape": "numeric",
+              "explanation_variants": [
+                "stepwise"
+              ],
+              "sampling_strategy": "weighted_random",
+              "template_families": [
+                "applied_quadratic_inequality_problem"
+              ]
+            },
+            "parameter_schema": {
+              "seed": {
+                "type": "integer",
+                "randomize": true
+              },
+              "difficulty_level": {
+                "choices": [
+                  "level_1",
+                  "level_2",
+                  "level_3"
+                ],
+                "weights": [
+                  0.4,
+                  0.4,
+                  0.2
+                ]
+              }
+            }
+          },
+          {
             "candidate_id": "needs_review",
             "target_task": "",
             "task_family": "",
@@ -64111,18 +66401,20 @@
             "parameter_schema": {}
           }
         ],
-        "outsider_candidates": [],
-        "selected_subskill": "compute_numeric",
-        "selected_problem_type": "compute_numeric",
-        "candidate_source": "fallback_application",
+        "outsider_candidates": [
+          "C8"
+        ],
+        "selected_subskill": "applied_quadratic_inequality_problem",
+        "selected_problem_type": "applied_quadratic_inequality_problem",
+        "candidate_source": "needs_review",
         "selected_generator_contract": {},
         "parameter_schema": {},
         "variable_randomization_notes": [],
         "checker_key": "",
         "equivalence_type": "",
         "skill_scope_trusted": true,
-        "target_task": "compute_numeric",
-        "task_family": "generic_numeric_family",
+        "target_task": "applied_quadratic_inequality_problem",
+        "task_family": "quadratic_inequality_family",
         "math_objects": [],
         "answer_type": "short_answer",
         "answer_shape": "text_short",
@@ -64139,9 +66431,9 @@
         "possible_structure_mismatch": true,
         "possible_mixed_source_context": true
       },
-      "subskill_id": "evaluate_function_value",
-      "classification_source": "fallback_application_induct",
-      "induction_eligibility": "eligible",
+      "subskill_id": "applied_quadratic_inequality_problem",
+      "classification_source": "rule_fallback_ai_unavailable",
+      "induction_eligibility": "excluded",
       "answer_type": "text_short",
       "equivalence_type": "exact_string",
       "checker_key": "text_short_checker",
@@ -64149,7 +66441,7 @@
     },
     {
       "example_id": 4446,
-      "detected_problem_type_id": "unknown",
+      "detected_problem_type_id": "single_choice_compute_numeric_single_choice",
       "example_feature": {
         "source_example_id": 4446,
         "question_text": "公司給小虹最多50萬元的預算來採買$x$、$y$兩種貨品。但小虹一時疏忽，無法確定$x$貨品跟$y$貨品的單價哪一個是100元、哪一個是200元。下列數對($x$貨品購買數量 , $y$貨品購買數量)中，試問哪一組不會超過預算？ \n(A)$\\left( 1400,1900 \\right)$ \n(B)$\\left( 1600,1700 \\right)$ \n(C)$\\left( 1700,1800 \\right)$ \n(D)$\\left( 1800,1500 \\right)$ 〔112統測B〕",
@@ -64172,7 +66464,7 @@
           "triangle",
           "two_coordinate_points"
         ],
-        "target_task": "evaluate_function_value",
+        "target_task": "compute_numeric",
         "task_family": "generic_numeric_family",
         "reasoning_type": [
           "numeric_computation"
@@ -64197,8 +66489,11 @@
           "x",
           "y"
         ],
-        "target": "evaluate_function_value",
+        "target": "compute_numeric",
         "classifier_source": "rule_fallback_ai_unavailable",
+        "math_meta_tags": [],
+        "forced_target_task": "",
+        "meta_answer_format_hint": "",
         "semantic_classification": {
           "ai_target_task": "",
           "ai_task_family": "",
@@ -64218,13 +66513,13 @@
           "rule_target_task": "compute_numeric",
           "rule_task_family": "generic_numeric_family",
           "rule_confidence": 0.2,
-          "final_target_task": "evaluate_function_value",
+          "final_target_task": "compute_numeric",
           "final_task_family": "generic_numeric_family",
-          "classifier_source": "fallback_application_induct",
+          "classifier_source": "rule_fallback_ai_unavailable",
           "classification_decision": "",
           "conflict_reason": "ai_api_key_missing",
           "source_mapping_warning": "",
-          "requires_human_action": false,
+          "requires_human_action": true,
           "ai_notes": "",
           "skill_scoped_candidates": [
             {
@@ -64287,6 +66582,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -64384,6 +66681,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -64481,6 +66780,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -64578,6 +66879,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -64675,6 +66978,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -64772,6 +67077,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -64869,6 +67176,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -64926,7 +67235,7 @@
           "outsider_candidates": [],
           "selected_subskill": "compute_numeric",
           "selected_problem_type": "compute_numeric",
-          "candidate_source": "fallback_application",
+          "candidate_source": "needs_review",
           "selected_generator_contract": {},
           "parameter_schema": {},
           "variable_randomization_notes": [],
@@ -65130,16 +67439,16 @@
         "induction_tier": "core",
         "enrichment_reasons": [],
         "included_in_core_induction": true,
-        "problem_type_id": "single_choice_evaluate_function_value_fallback_application",
         "equivalence_type": "choice_label",
         "checker_key": "choice_label_checker",
         "requires_human_action": false
       },
       "answer_shape": "single_choice",
-      "classification_confidence": "low",
+      "classification_confidence": "high",
       "classification_reason": "rule_fallback_ai_unavailable",
       "risk_flags": [
         "stem_embeds_choices",
+        "requires_human_action",
         "candidate_only"
       ],
       "semantic_classification": {
@@ -65161,13 +67470,13 @@
         "rule_target_task": "compute_numeric",
         "rule_task_family": "generic_numeric_family",
         "rule_confidence": 0.2,
-        "final_target_task": "evaluate_function_value",
+        "final_target_task": "compute_numeric",
         "final_task_family": "generic_numeric_family",
-        "classifier_source": "fallback_application_induct",
+        "classifier_source": "rule_fallback_ai_unavailable",
         "classification_decision": "",
         "conflict_reason": "ai_api_key_missing",
         "source_mapping_warning": "",
-        "requires_human_action": false,
+        "requires_human_action": true,
         "ai_notes": "",
         "skill_scoped_candidates": [
           {
@@ -65230,6 +67539,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -65327,6 +67638,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -65424,6 +67737,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -65521,6 +67836,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -65618,6 +67935,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -65715,6 +68034,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -65812,6 +68133,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -65869,7 +68192,7 @@
         "outsider_candidates": [],
         "selected_subskill": "compute_numeric",
         "selected_problem_type": "compute_numeric",
-        "candidate_source": "fallback_application",
+        "candidate_source": "needs_review",
         "selected_generator_contract": {},
         "parameter_schema": {},
         "variable_randomization_notes": [],
@@ -65902,8 +68225,8 @@
         "source_quality_status": "FORCE_ALLOWED_FOR_INDUCTION"
       },
       "subskill_id": "same_as_main_skill",
-      "classification_source": "fallback_application_induct",
-      "induction_eligibility": "eligible",
+      "classification_source": "rule_fallback_ai_unavailable",
+      "induction_eligibility": "excluded",
       "answer_type": "choice",
       "equivalence_type": "choice_label",
       "checker_key": "choice_label_checker",
@@ -65949,6 +68272,9 @@
         ],
         "target": "numeric_evaluate_function_notation",
         "classifier_source": "rule_fallback_ai_unavailable",
+        "math_meta_tags": [],
+        "forced_target_task": "",
+        "meta_answer_format_hint": "",
         "semantic_classification": {
           "ai_target_task": "",
           "ai_task_family": "",
@@ -66037,6 +68363,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -66134,6 +68462,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -66231,6 +68561,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -66328,6 +68660,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -66425,6 +68759,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -66522,6 +68858,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -66619,6 +68957,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -66973,6 +69313,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -67070,6 +69412,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -67167,6 +69511,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -67264,6 +69610,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -67361,6 +69709,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -67458,6 +69808,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -67555,6 +69907,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -67689,6 +70043,9 @@
         ],
         "target": "numeric_evaluate_function_notation",
         "classifier_source": "rule_fallback_ai_unavailable",
+        "math_meta_tags": [],
+        "forced_target_task": "",
+        "meta_answer_format_hint": "",
         "semantic_classification": {
           "ai_target_task": "",
           "ai_task_family": "",
@@ -67777,6 +70134,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -67874,6 +70233,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -67971,6 +70332,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -68068,6 +70431,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -68165,6 +70530,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -68262,6 +70629,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -68359,6 +70728,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -68713,6 +71084,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -68810,6 +71183,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -68907,6 +71282,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -69004,6 +71381,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -69101,6 +71480,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -69198,6 +71579,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -69295,6 +71678,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -69391,7 +71776,7 @@
     },
     {
       "example_id": 4500,
-      "detected_problem_type_id": "short_answer_evaluate_function_value_fallback_application",
+      "detected_problem_type_id": "short_answer_compute_numeric_short_answer",
       "example_feature": {
         "source_example_id": 4500,
         "question_text": "阿偉的汽車加滿油後開始行駛，其行駛距離x公里與剩餘油量y公升的關係為線型函數，其圖形如右圖所示，則x與y的關係式為",
@@ -69404,7 +71789,7 @@
         "checker": "text_short_checker",
         "equivalence": "exact_string",
         "math_objects": [],
-        "target_task": "evaluate_function_value",
+        "target_task": "compute_numeric",
         "task_family": "generic_numeric_family",
         "reasoning_type": [
           "numeric_computation"
@@ -69415,8 +71800,11 @@
         "candidate_only": false,
         "variables": [],
         "givens": [],
-        "target": "evaluate_function_value",
+        "target": "compute_numeric",
         "classifier_source": "rule_fallback_ai_unavailable",
+        "math_meta_tags": [],
+        "forced_target_task": "",
+        "meta_answer_format_hint": "",
         "semantic_classification": {
           "ai_target_task": "",
           "ai_task_family": "",
@@ -69436,13 +71824,13 @@
           "rule_target_task": "compute_numeric",
           "rule_task_family": "generic_numeric_family",
           "rule_confidence": 0.2,
-          "final_target_task": "evaluate_function_value",
+          "final_target_task": "compute_numeric",
           "final_task_family": "generic_numeric_family",
-          "classifier_source": "fallback_application_induct",
+          "classifier_source": "rule_fallback_ai_unavailable",
           "classification_decision": "",
           "conflict_reason": "ai_api_key_missing",
           "source_mapping_warning": "",
-          "requires_human_action": false,
+          "requires_human_action": true,
           "ai_notes": "",
           "skill_scoped_candidates": [
             {
@@ -69505,6 +71893,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -69602,6 +71992,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -69699,6 +72091,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -69796,6 +72190,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -69893,6 +72289,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -69990,6 +72388,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -70087,6 +72487,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -70144,7 +72546,7 @@
           "outsider_candidates": [],
           "selected_subskill": "compute_numeric",
           "selected_problem_type": "compute_numeric",
-          "candidate_source": "fallback_application",
+          "candidate_source": "needs_review",
           "selected_generator_contract": {},
           "parameter_schema": {},
           "variable_randomization_notes": [],
@@ -70339,7 +72741,6 @@
         "induction_tier": "core",
         "enrichment_reasons": [],
         "included_in_core_induction": true,
-        "problem_type_id": "short_answer_evaluate_function_value_fallback_application",
         "equivalence_type": "exact_string",
         "checker_key": "text_short_checker",
         "requires_human_action": false
@@ -70347,7 +72748,9 @@
       "answer_shape": "text_short",
       "classification_confidence": "high",
       "classification_reason": "rule_fallback_ai_unavailable",
-      "risk_flags": [],
+      "risk_flags": [
+        "requires_human_action"
+      ],
       "semantic_classification": {
         "ai_target_task": "",
         "ai_task_family": "",
@@ -70367,13 +72770,13 @@
         "rule_target_task": "compute_numeric",
         "rule_task_family": "generic_numeric_family",
         "rule_confidence": 0.2,
-        "final_target_task": "evaluate_function_value",
+        "final_target_task": "compute_numeric",
         "final_task_family": "generic_numeric_family",
-        "classifier_source": "fallback_application_induct",
+        "classifier_source": "rule_fallback_ai_unavailable",
         "classification_decision": "",
         "conflict_reason": "ai_api_key_missing",
         "source_mapping_warning": "",
-        "requires_human_action": false,
+        "requires_human_action": true,
         "ai_notes": "",
         "skill_scoped_candidates": [
           {
@@ -70436,6 +72839,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -70533,6 +72938,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -70630,6 +73037,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -70727,6 +73136,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -70824,6 +73235,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -70921,6 +73334,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -71018,6 +73433,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -71075,7 +73492,7 @@
         "outsider_candidates": [],
         "selected_subskill": "compute_numeric",
         "selected_problem_type": "compute_numeric",
-        "candidate_source": "fallback_application",
+        "candidate_source": "needs_review",
         "selected_generator_contract": {},
         "parameter_schema": {},
         "variable_randomization_notes": [],
@@ -71100,9 +73517,9 @@
         "possible_structure_mismatch": true,
         "possible_mixed_source_context": true
       },
-      "subskill_id": "evaluate_function_value",
-      "classification_source": "fallback_application_induct",
-      "induction_eligibility": "eligible",
+      "subskill_id": "compute_numeric",
+      "classification_source": "rule_fallback_ai_unavailable",
+      "induction_eligibility": "excluded",
       "answer_type": "text_short",
       "equivalence_type": "exact_string",
       "checker_key": "text_short_checker",
@@ -71164,6 +73581,9 @@
         ],
         "target": "numeric_evaluate_function_notation",
         "classifier_source": "rule_fallback_ai_unavailable",
+        "math_meta_tags": [],
+        "forced_target_task": "",
+        "meta_answer_format_hint": "",
         "semantic_classification": {
           "ai_target_task": "",
           "ai_task_family": "",
@@ -71252,6 +73672,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -71349,6 +73771,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -71446,6 +73870,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -71543,6 +73969,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -71640,6 +74068,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -71737,6 +74167,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -71834,6 +74266,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -72196,6 +74630,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -72293,6 +74729,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -72390,6 +74828,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -72487,6 +74927,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -72584,6 +75026,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -72681,6 +75125,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -72778,6 +75224,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -72917,6 +75365,9 @@
         ],
         "target": "numeric_evaluate_function_notation",
         "classifier_source": "rule_fallback_ai_unavailable",
+        "math_meta_tags": [],
+        "forced_target_task": "",
+        "meta_answer_format_hint": "",
         "semantic_classification": {
           "ai_target_task": "",
           "ai_task_family": "",
@@ -73005,6 +75456,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -73102,6 +75555,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -73199,6 +75654,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -73296,6 +75753,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -73393,6 +75852,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -73490,6 +75951,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -73587,6 +76050,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -73941,6 +76406,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -74038,6 +76505,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -74135,6 +76604,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -74232,6 +76703,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -74329,6 +76802,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -74426,6 +76901,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -74523,6 +77000,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -74618,18 +77097,21 @@
       "requires_human_action": false
     }
   ],
-  "unclassified_examples": [
-    4446
-  ],
+  "unclassified_examples": [],
   "risk_examples": [
     4433,
     4434,
     4444,
+    4445,
     4424,
+    4425,
+    4426,
     4441,
+    4442,
     4446,
     4448,
     4449,
+    4500,
     4515,
     4516
   ],
@@ -74641,7 +77123,8 @@
       "insufficient_examples",
       "ai_first_mode_fell_back_to_rule_only",
       "no_registered_slot_but_presentation_known",
-      "subskill_mismatch_warning"
+      "subskill_mismatch_warning",
+      "anchor_slot_bootstrap_zero_source"
     ]
   },
   "generator_draft_gate": {
@@ -74651,7 +77134,8 @@
       "low_source_examples",
       "ai_first_mode_fell_back_to_rule_only",
       "no_registered_slot_but_presentation_known",
-      "subskill_mismatch_warning"
+      "subskill_mismatch_warning",
+      "anchor_slot_bootstrap_zero_source"
     ]
   },
   "runtime_ready_gate": {
@@ -74664,7 +77148,8 @@
     "warnings": [
       "ai_first_mode_fell_back_to_rule_only",
       "no_registered_slot_but_presentation_known",
-      "subskill_mismatch_warning"
+      "subskill_mismatch_warning",
+      "anchor_slot_bootstrap_zero_source"
     ]
   },
   "exception_review_gate": {
@@ -74672,13 +77157,13 @@
     "reasons": []
   },
   "reports": {
-    "phase1_summary_json": "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_LinearFunction_phase1_summary.json",
-    "phase1_summary_md": "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_LinearFunction_phase1_summary.md",
-    "phase1_json": "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_LinearFunction_phase1_summary.json",
-    "phase1_md": "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_LinearFunction_phase1_summary.md"
+    "phase1_summary_json": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_LinearFunction_phase1_summary.json",
+    "phase1_summary_md": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_LinearFunction_phase1_summary.md",
+    "phase1_json": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_LinearFunction_phase1_summary.json",
+    "phase1_md": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_LinearFunction_phase1_summary.md"
   },
   "next_action": "phase2_generate_from_induced_specs",
-  "timestamp": "2026-06-13T14:04:12.243267+00:00",
+  "timestamp": "2026-06-15T00:55:57.793363+00:00",
   "dry_run": true,
   "auto_review_summary": {
     "skill_id": "vh_數學B1_LinearFunction",
@@ -74724,7 +77209,9 @@
       "source_skill_scope_locked": true,
       "source_skill_id": "vh_數學B1_LinearFunction",
       "classification_scope": "within_current_skill",
-      "skill_mapping_authority": "textbook_examples.skill_id"
+      "skill_mapping_authority": "textbook_examples.skill_id",
+      "anchor_authority": "skill_id_derived_no_cross_family_pollution",
+      "classification_mandate": "【強制合約｜最高優先級】\n目前的 skill_id 與傳入的來源例題 100% 正確對齊，已由教師與課本 skill_id 欄位確認。\n你被禁止評估這些例題是否屬於其他家族（例如 absolute_value_inequality_family）。\n你的唯一任務，是 100% 相信這些題目就是該技能的標準核心，並直接在此 anchor 範圍內切分子技能（subskills）。\n禁止輸出 needs_review 或 contextual_application 作為跨家族質疑的結果；若規則分類已在 anchor 子技能清單內，必須接受。\n\n【強制合約｜最高優先級】\n目前的 skill_id 與傳入的來源例題 100% 正確對齊，已由教師與課本 skill_id 欄位確認。\n你被禁止評估這些例題是否屬於其他家族（例如 absolute_value_inequality_family）。\n你的唯一任務，是 100% 相信這些題目就是該技能的標準核心，並直接在此 anchor 範圍內切分子技能（subskills）。\n禁止輸出 needs_review 或 contextual_application 作為跨家族質疑的結果；若規則分類已在 anchor 子技能清單內，必須接受。\n\nTrusted skill anchor (do not override):\n- skill_id: vh_數學B1_LinearFunction\n- skill_ch_name: 線型函數\n- skill_en_name: LinearFunction\n- expected_task_families: ['function_concept_family']\n- expected_subskill_candidates: ['evaluate_function_value', 'interpret_function_notation', 'judge_domain_range_basic', 'judge_function_from_mapping', 'judge_function_relation']\n- skill_anchor_scope: default\n- source_skill_scope_locked: True\n"
     },
     "spec_mode": "ai_first_induce_from_sources",
     "semantic_classifications": [
@@ -74817,6 +77304,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -74914,6 +77403,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -75011,6 +77502,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -75108,6 +77601,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -75205,6 +77700,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -75380,6 +77877,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -75477,6 +77976,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -75574,6 +78075,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -75671,6 +78174,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -75768,6 +78273,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -75865,6 +78372,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -76040,6 +78549,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -76137,6 +78648,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -76234,6 +78747,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -76331,6 +78846,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -76428,6 +78945,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -76525,6 +79044,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -76701,6 +79222,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -76798,6 +79321,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -76895,6 +79420,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -76992,6 +79519,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -77089,6 +79618,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -77186,6 +79717,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -77283,6 +79816,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -77456,6 +79991,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -77553,6 +80090,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -77650,6 +80189,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -77747,6 +80288,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -77844,6 +80387,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -77941,6 +80486,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -78038,6 +80585,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -78214,6 +80763,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -78311,6 +80862,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -78408,6 +80961,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -78505,6 +81060,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -78602,6 +81159,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -78699,6 +81258,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -78796,6 +81357,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -78967,6 +81530,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -79064,6 +81629,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -79161,6 +81728,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -79258,6 +81827,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -79355,6 +81926,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -79452,6 +82025,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -79549,6 +82124,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -79725,6 +82302,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -79822,6 +82401,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -79919,6 +82500,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -80016,6 +82599,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -80113,6 +82698,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -80210,6 +82797,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -80307,6 +82896,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -80411,11 +83002,11 @@
         "raw_response_preview": "",
         "sanitized_response_preview": "",
         "failed_stage": "",
-        "rule_target_task": "compute_numeric",
-        "rule_task_family": "generic_numeric_family",
-        "rule_confidence": 0.2,
-        "final_target_task": "compute_numeric",
-        "final_task_family": "generic_numeric_family",
+        "rule_target_task": "applied_quadratic_inequality_problem",
+        "rule_task_family": "quadratic_inequality_family",
+        "rule_confidence": 0.5,
+        "final_target_task": "applied_quadratic_inequality_problem",
+        "final_task_family": "quadratic_inequality_family",
         "classifier_source": "rule_fallback_ai_unavailable",
         "classification_decision": "",
         "conflict_reason": "ai_api_key_missing",
@@ -80483,6 +83074,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -80580,6 +83173,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -80677,6 +83272,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -80774,6 +83371,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -80871,6 +83470,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -80968,6 +83569,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -81065,6 +83668,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -81103,6 +83708,105 @@
             }
           },
           {
+            "candidate_id": "C8",
+            "target_task": "applied_quadratic_inequality_problem",
+            "task_family": "quadratic_inequality_family",
+            "problem_type_id": "applied_quadratic_inequality_problem",
+            "label": "applied_quadratic_inequality_problem",
+            "candidate_source": "outsider",
+            "in_anchor_scope": false,
+            "answer_type": "numeric",
+            "answer_shape": "numeric",
+            "math_objects": [],
+            "checker_key": "numeric_checker",
+            "equivalence_type": "numeric_equivalence",
+            "generator_contract": {
+              "template_variants": [
+                {
+                  "id": "default",
+                  "label": "default",
+                  "stem_pattern": "依題意求解：{stem_hint}。",
+                  "weight": 1.0,
+                  "enabled": true
+                }
+              ],
+              "parameter_schema": {
+                "seed": {
+                  "type": "integer",
+                  "randomize": true
+                },
+                "difficulty_level": {
+                  "choices": [
+                    "level_1",
+                    "level_2",
+                    "level_3"
+                  ],
+                  "weights": [
+                    0.4,
+                    0.4,
+                    0.2
+                  ]
+                }
+              },
+              "variation_dimensions": [
+                "seed",
+                "difficulty_level",
+                "context_style"
+              ],
+              "difficulty_controls": {
+                "level_1": {},
+                "level_2": {},
+                "level_3": {}
+              },
+              "anti_repetition_rules": {
+                "avoid_same_template_consecutive": true,
+                "avoid_same_ratio_consecutive": true,
+                "avoid_same_point_names_consecutive": true,
+                "avoid_same_answer_consecutive": true,
+                "recent_history_window": 5,
+                "signature_fields": [
+                  "problem_type_id",
+                  "template_variant",
+                  "routing_track",
+                  "scenario_type",
+                  "ratio_form",
+                  "ratio_values",
+                  "coordinate_pattern",
+                  "answer"
+                ]
+              },
+              "validity_constraints": [
+                "answer derivable from givens"
+              ],
+              "answer_shape": "numeric",
+              "explanation_variants": [
+                "stepwise"
+              ],
+              "sampling_strategy": "weighted_random",
+              "template_families": [
+                "applied_quadratic_inequality_problem"
+              ]
+            },
+            "parameter_schema": {
+              "seed": {
+                "type": "integer",
+                "randomize": true
+              },
+              "difficulty_level": {
+                "choices": [
+                  "level_1",
+                  "level_2",
+                  "level_3"
+                ],
+                "weights": [
+                  0.4,
+                  0.4,
+                  0.2
+                ]
+              }
+            }
+          },
+          {
             "candidate_id": "needs_review",
             "target_task": "",
             "task_family": "",
@@ -81119,9 +83823,11 @@
             "parameter_schema": {}
           }
         ],
-        "outsider_candidates": [],
-        "selected_subskill": "compute_numeric",
-        "selected_problem_type": "compute_numeric",
+        "outsider_candidates": [
+          "C8"
+        ],
+        "selected_subskill": "applied_quadratic_inequality_problem",
+        "selected_problem_type": "applied_quadratic_inequality_problem",
         "candidate_source": "needs_review",
         "selected_generator_contract": {},
         "parameter_schema": {},
@@ -81129,8 +83835,8 @@
         "checker_key": "",
         "equivalence_type": "",
         "skill_scope_trusted": true,
-        "target_task": "compute_numeric",
-        "task_family": "generic_numeric_family",
+        "target_task": "applied_quadratic_inequality_problem",
+        "task_family": "quadratic_inequality_family",
         "math_objects": [],
         "answer_type": "short_answer",
         "answer_shape": "text_short",
@@ -81236,6 +83942,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -81333,6 +84041,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -81430,6 +84140,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -81527,6 +84239,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -81624,6 +84338,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -81721,6 +84437,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -81818,6 +84536,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -81994,6 +84714,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -82091,6 +84813,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -82188,6 +84912,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -82285,6 +85011,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -82382,6 +85110,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -82479,6 +85209,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -82576,6 +85308,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -82751,6 +85485,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -82848,6 +85584,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -82945,6 +85683,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -83042,6 +85782,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -83139,6 +85881,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -83236,6 +85980,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -83333,6 +86079,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -83508,6 +86256,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -83605,6 +86355,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -83702,6 +86454,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -83799,6 +86553,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -83896,6 +86652,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -83993,6 +86751,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -84090,6 +86850,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -84261,6 +87023,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -84358,6 +87122,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -84455,6 +87221,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -84552,6 +87320,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -84649,6 +87419,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -84746,6 +87518,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -84843,6 +87617,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -85021,6 +87797,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -85118,6 +87896,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -85215,6 +87995,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -85312,6 +88094,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -85409,6 +88193,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -85506,6 +88292,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -85603,6 +88391,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -85791,6 +88581,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -85888,6 +88680,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -85985,6 +88779,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -86082,6 +88878,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -86179,6 +88977,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -86342,6 +89142,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -86439,6 +89241,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -86536,6 +89340,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -86633,6 +89439,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -86730,6 +89538,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -86827,6 +89637,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -86990,6 +89802,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -87087,6 +89901,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -87184,6 +90000,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -87281,6 +90099,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -87378,6 +90198,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -87475,6 +90297,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -87555,9 +90379,9 @@
         "raw_response_preview": "",
         "sanitized_response_preview": "",
         "failed_stage": "",
-        "classifier_source": "fallback_application_induct",
+        "classifier_source": "rule_fallback_ai_unavailable",
         "classification_decision": "",
-        "final_target_task": "evaluate_function_value",
+        "final_target_task": "compute_numeric",
         "final_task_family": "generic_numeric_family",
         "expected_task_families": [
           "function_concept_family"
@@ -87571,9 +90395,9 @@
         ],
         "structure_context_used": true,
         "sequence_context_used": true,
-        "alignment_kind": "anchor_subskill_match",
-        "exclude_reason": "",
-        "included_in_phase1": true,
+        "alignment_kind": "unclassified_low_confidence",
+        "exclude_reason": "semantic_alignment_score_zero_requires_human_review",
+        "included_in_phase1": false,
         "conflict_reason": "ai_api_key_missing",
         "source_mapping_warning": "",
         "skill_anchor_scope": "default",
@@ -87638,6 +90462,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -87735,6 +90561,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -87832,6 +90660,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -87929,6 +90759,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -88026,6 +90858,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -88123,6 +90957,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -88220,6 +91056,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -88277,7 +91115,7 @@
         "ai_best_candidate_id": "needs_review",
         "selected_subskill": "compute_numeric",
         "selected_problem_type": "compute_numeric",
-        "candidate_source": "fallback_application",
+        "candidate_source": "needs_review",
         "outsider_candidates": [
           "C7"
         ],
@@ -88385,6 +91223,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -88482,6 +91322,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -88579,6 +91421,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -88676,6 +91520,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -88773,6 +91619,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -88870,6 +91718,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -88967,6 +91817,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -89047,9 +91899,9 @@
         "raw_response_preview": "",
         "sanitized_response_preview": "",
         "failed_stage": "",
-        "classifier_source": "fallback_application_induct",
+        "classifier_source": "rule_fallback_ai_unavailable",
         "classification_decision": "",
-        "final_target_task": "evaluate_function_value",
+        "final_target_task": "compute_numeric",
         "final_task_family": "generic_numeric_family",
         "expected_task_families": [
           "function_concept_family"
@@ -89063,9 +91915,9 @@
         ],
         "structure_context_used": true,
         "sequence_context_used": true,
-        "alignment_kind": "anchor_subskill_match",
-        "exclude_reason": "",
-        "included_in_phase1": true,
+        "alignment_kind": "unclassified_low_confidence",
+        "exclude_reason": "semantic_alignment_score_zero_requires_human_review",
+        "included_in_phase1": false,
         "conflict_reason": "ai_api_key_missing",
         "source_mapping_warning": "",
         "skill_anchor_scope": "default",
@@ -89130,6 +91982,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -89227,6 +92081,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -89324,6 +92180,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -89421,6 +92279,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -89518,6 +92378,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -89615,6 +92477,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -89712,6 +92576,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -89769,7 +92635,7 @@
         "ai_best_candidate_id": "needs_review",
         "selected_subskill": "compute_numeric",
         "selected_problem_type": "compute_numeric",
-        "candidate_source": "fallback_application",
+        "candidate_source": "needs_review",
         "outsider_candidates": [],
         "selected_generator_contract": {},
         "parameter_schema": {},
@@ -89792,9 +92658,9 @@
         "raw_response_preview": "",
         "sanitized_response_preview": "",
         "failed_stage": "",
-        "classifier_source": "fallback_application_induct",
+        "classifier_source": "rule_fallback_ai_unavailable",
         "classification_decision": "",
-        "final_target_task": "evaluate_function_value",
+        "final_target_task": "compute_numeric",
         "final_task_family": "generic_numeric_family",
         "expected_task_families": [
           "function_concept_family"
@@ -89808,9 +92674,9 @@
         ],
         "structure_context_used": true,
         "sequence_context_used": true,
-        "alignment_kind": "anchor_subskill_match",
-        "exclude_reason": "",
-        "included_in_phase1": true,
+        "alignment_kind": "unclassified_low_confidence",
+        "exclude_reason": "semantic_alignment_score_zero_requires_human_review",
+        "included_in_phase1": false,
         "conflict_reason": "ai_api_key_missing",
         "source_mapping_warning": "",
         "skill_anchor_scope": "default",
@@ -89875,6 +92741,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -89972,6 +92840,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -90069,6 +92939,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -90166,6 +93038,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -90263,6 +93137,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -90360,6 +93236,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -90457,6 +93335,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -90514,7 +93394,7 @@
         "ai_best_candidate_id": "needs_review",
         "selected_subskill": "compute_numeric",
         "selected_problem_type": "compute_numeric",
-        "candidate_source": "fallback_application",
+        "candidate_source": "needs_review",
         "outsider_candidates": [],
         "selected_generator_contract": {},
         "parameter_schema": {},
@@ -90620,6 +93500,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -90717,6 +93599,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -90814,6 +93698,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -90911,6 +93797,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -91008,6 +93896,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -91105,6 +93995,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -91202,6 +94094,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -91267,9 +94161,9 @@
       },
       {
         "example_id": 4442,
-        "rule_target_task": "compute_numeric",
-        "rule_task_family": "generic_numeric_family",
-        "rule_confidence": 0.2,
+        "rule_target_task": "applied_quadratic_inequality_problem",
+        "rule_task_family": "quadratic_inequality_family",
+        "rule_confidence": 0.5,
         "ai_target_task": "",
         "ai_task_family": "",
         "ai_confidence": 0.0,
@@ -91282,10 +94176,10 @@
         "raw_response_preview": "",
         "sanitized_response_preview": "",
         "failed_stage": "",
-        "classifier_source": "fallback_application_induct",
+        "classifier_source": "rule_fallback_ai_unavailable",
         "classification_decision": "",
-        "final_target_task": "evaluate_function_value",
-        "final_task_family": "generic_numeric_family",
+        "final_target_task": "applied_quadratic_inequality_problem",
+        "final_task_family": "quadratic_inequality_family",
         "expected_task_families": [
           "function_concept_family"
         ],
@@ -91298,9 +94192,9 @@
         ],
         "structure_context_used": true,
         "sequence_context_used": true,
-        "alignment_kind": "anchor_subskill_match",
-        "exclude_reason": "",
-        "included_in_phase1": true,
+        "alignment_kind": "unclassified_low_confidence",
+        "exclude_reason": "semantic_alignment_score_zero_requires_human_review",
+        "included_in_phase1": false,
         "conflict_reason": "ai_api_key_missing",
         "source_mapping_warning": "",
         "skill_anchor_scope": "default",
@@ -91365,6 +94259,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -91462,6 +94358,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -91559,6 +94457,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -91656,6 +94556,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -91753,6 +94655,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -91850,6 +94754,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -91947,6 +94853,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -91963,6 +94871,105 @@
               "sampling_strategy": "weighted_random",
               "template_families": [
                 "compute_numeric"
+              ]
+            },
+            "parameter_schema": {
+              "seed": {
+                "type": "integer",
+                "randomize": true
+              },
+              "difficulty_level": {
+                "choices": [
+                  "level_1",
+                  "level_2",
+                  "level_3"
+                ],
+                "weights": [
+                  0.4,
+                  0.4,
+                  0.2
+                ]
+              }
+            }
+          },
+          {
+            "candidate_id": "C8",
+            "target_task": "applied_quadratic_inequality_problem",
+            "task_family": "quadratic_inequality_family",
+            "problem_type_id": "applied_quadratic_inequality_problem",
+            "label": "applied_quadratic_inequality_problem",
+            "candidate_source": "outsider",
+            "in_anchor_scope": false,
+            "answer_type": "numeric",
+            "answer_shape": "numeric",
+            "math_objects": [],
+            "checker_key": "numeric_checker",
+            "equivalence_type": "numeric_equivalence",
+            "generator_contract": {
+              "template_variants": [
+                {
+                  "id": "default",
+                  "label": "default",
+                  "stem_pattern": "依題意求解：{stem_hint}。",
+                  "weight": 1.0,
+                  "enabled": true
+                }
+              ],
+              "parameter_schema": {
+                "seed": {
+                  "type": "integer",
+                  "randomize": true
+                },
+                "difficulty_level": {
+                  "choices": [
+                    "level_1",
+                    "level_2",
+                    "level_3"
+                  ],
+                  "weights": [
+                    0.4,
+                    0.4,
+                    0.2
+                  ]
+                }
+              },
+              "variation_dimensions": [
+                "seed",
+                "difficulty_level",
+                "context_style"
+              ],
+              "difficulty_controls": {
+                "level_1": {},
+                "level_2": {},
+                "level_3": {}
+              },
+              "anti_repetition_rules": {
+                "avoid_same_template_consecutive": true,
+                "avoid_same_ratio_consecutive": true,
+                "avoid_same_point_names_consecutive": true,
+                "avoid_same_answer_consecutive": true,
+                "recent_history_window": 5,
+                "signature_fields": [
+                  "problem_type_id",
+                  "template_variant",
+                  "routing_track",
+                  "scenario_type",
+                  "ratio_form",
+                  "ratio_values",
+                  "coordinate_pattern",
+                  "answer"
+                ]
+              },
+              "validity_constraints": [
+                "answer derivable from givens"
+              ],
+              "answer_shape": "numeric",
+              "explanation_variants": [
+                "stepwise"
+              ],
+              "sampling_strategy": "weighted_random",
+              "template_families": [
+                "applied_quadratic_inequality_problem"
               ]
             },
             "parameter_schema": {
@@ -92002,10 +95009,12 @@
           }
         ],
         "ai_best_candidate_id": "needs_review",
-        "selected_subskill": "compute_numeric",
-        "selected_problem_type": "compute_numeric",
-        "candidate_source": "fallback_application",
-        "outsider_candidates": [],
+        "selected_subskill": "applied_quadratic_inequality_problem",
+        "selected_problem_type": "applied_quadratic_inequality_problem",
+        "candidate_source": "needs_review",
+        "outsider_candidates": [
+          "C8"
+        ],
         "selected_generator_contract": {},
         "parameter_schema": {},
         "variable_randomization_notes": []
@@ -92027,9 +95036,9 @@
         "raw_response_preview": "",
         "sanitized_response_preview": "",
         "failed_stage": "",
-        "classifier_source": "fallback_application_induct",
+        "classifier_source": "rule_fallback_ai_unavailable",
         "classification_decision": "",
-        "final_target_task": "evaluate_function_value",
+        "final_target_task": "compute_numeric",
         "final_task_family": "generic_numeric_family",
         "expected_task_families": [
           "function_concept_family"
@@ -92043,9 +95052,9 @@
         ],
         "structure_context_used": true,
         "sequence_context_used": true,
-        "alignment_kind": "anchor_subskill_match",
-        "exclude_reason": "",
-        "included_in_phase1": true,
+        "alignment_kind": "unclassified_low_confidence",
+        "exclude_reason": "semantic_alignment_score_zero_requires_human_review",
+        "included_in_phase1": false,
         "conflict_reason": "ai_api_key_missing",
         "source_mapping_warning": "",
         "skill_anchor_scope": "default",
@@ -92110,6 +95119,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -92207,6 +95218,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -92304,6 +95317,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -92401,6 +95416,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -92498,6 +95515,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -92595,6 +95614,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -92692,6 +95713,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -92749,7 +95772,7 @@
         "ai_best_candidate_id": "needs_review",
         "selected_subskill": "compute_numeric",
         "selected_problem_type": "compute_numeric",
-        "candidate_source": "fallback_application",
+        "candidate_source": "needs_review",
         "outsider_candidates": [],
         "selected_generator_contract": {},
         "parameter_schema": {},
@@ -92855,6 +95878,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -92952,6 +95977,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -93049,6 +96076,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -93146,6 +96175,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -93243,6 +96274,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -93340,6 +96373,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -93437,6 +96472,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -93600,6 +96637,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -93697,6 +96736,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -93794,6 +96835,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -93891,6 +96934,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -93988,6 +97033,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -94085,6 +97132,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -94182,6 +97231,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -94262,9 +97313,9 @@
         "raw_response_preview": "",
         "sanitized_response_preview": "",
         "failed_stage": "",
-        "classifier_source": "fallback_application_induct",
+        "classifier_source": "rule_fallback_ai_unavailable",
         "classification_decision": "",
-        "final_target_task": "evaluate_function_value",
+        "final_target_task": "compute_numeric",
         "final_task_family": "generic_numeric_family",
         "expected_task_families": [
           "function_concept_family"
@@ -94278,9 +97329,9 @@
         ],
         "structure_context_used": true,
         "sequence_context_used": true,
-        "alignment_kind": "anchor_subskill_match",
-        "exclude_reason": "",
-        "included_in_phase1": true,
+        "alignment_kind": "unclassified_low_confidence",
+        "exclude_reason": "semantic_alignment_score_zero_requires_human_review",
+        "included_in_phase1": false,
         "conflict_reason": "ai_api_key_missing",
         "source_mapping_warning": "",
         "skill_anchor_scope": "default",
@@ -94345,6 +97396,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -94442,6 +97495,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -94539,6 +97594,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -94636,6 +97693,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -94733,6 +97792,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -94830,6 +97891,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -94927,6 +97990,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -94984,7 +98049,7 @@
         "ai_best_candidate_id": "needs_review",
         "selected_subskill": "compute_numeric",
         "selected_problem_type": "compute_numeric",
-        "candidate_source": "fallback_application",
+        "candidate_source": "needs_review",
         "outsider_candidates": [],
         "selected_generator_contract": {},
         "parameter_schema": {},
@@ -95090,6 +98155,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -95187,6 +98254,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -95284,6 +98353,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -95381,6 +98452,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -95478,6 +98551,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -95575,6 +98650,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -95672,6 +98749,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -95835,6 +98914,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -95932,6 +99013,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -96029,6 +99112,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -96126,6 +99211,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -96223,6 +99310,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -96320,6 +99409,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -96417,6 +99508,8 @@
                 "signature_fields": [
                   "problem_type_id",
                   "template_variant",
+                  "routing_track",
+                  "scenario_type",
                   "ratio_form",
                   "ratio_values",
                   "coordinate_pattern",
@@ -96494,7 +99587,8 @@
       "structure_mismatch_examples": [],
       "same_section_family_distribution": {
         "function_concept_family": 9,
-        "generic_numeric_family": 6
+        "generic_numeric_family": 5,
+        "quadratic_inequality_family": 1
       }
     },
     "source_type_distribution": {
@@ -96506,7 +99600,8 @@
     "structure_mismatch_examples": [],
     "same_section_family_distribution": {
       "function_concept_family": 9,
-      "generic_numeric_family": 6
+      "generic_numeric_family": 5,
+      "quadratic_inequality_family": 1
     },
     "example_features": [
       {
@@ -96546,6 +99641,9 @@
         ],
         "target": "numeric_evaluate_function_notation",
         "classifier_source": "rule_fallback_ai_unavailable",
+        "math_meta_tags": [],
+        "forced_target_task": "",
+        "meta_answer_format_hint": "",
         "semantic_classification": {
           "ai_target_task": "",
           "ai_task_family": "",
@@ -96634,6 +99732,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -96731,6 +99831,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -96828,6 +99930,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -96925,6 +100029,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -97022,6 +100128,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -97311,6 +100419,9 @@
         ],
         "target": "numeric_evaluate_function_notation",
         "classifier_source": "rule_fallback_ai_unavailable",
+        "math_meta_tags": [],
+        "forced_target_task": "",
+        "meta_answer_format_hint": "",
         "semantic_classification": {
           "ai_target_task": "",
           "ai_task_family": "",
@@ -97399,6 +100510,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -97496,6 +100609,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -97593,6 +100708,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -97690,6 +100807,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -97787,6 +100906,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -97884,6 +101005,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -98176,6 +101299,9 @@
         ],
         "target": "numeric_evaluate_function_notation",
         "classifier_source": "rule_fallback_ai_unavailable",
+        "math_meta_tags": [],
+        "forced_target_task": "",
+        "meta_answer_format_hint": "",
         "semantic_classification": {
           "ai_target_task": "",
           "ai_task_family": "",
@@ -98264,6 +101390,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -98361,6 +101489,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -98458,6 +101588,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -98555,6 +101687,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -98652,6 +101786,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -98749,6 +101885,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -99014,7 +102152,7 @@
         "checker": "text_short_checker",
         "equivalence": "exact_string",
         "math_objects": [],
-        "target_task": "evaluate_function_value",
+        "target_task": "compute_numeric",
         "task_family": "generic_numeric_family",
         "reasoning_type": [
           "numeric_computation"
@@ -99025,8 +102163,11 @@
         "candidate_only": false,
         "variables": [],
         "givens": [],
-        "target": "evaluate_function_value",
+        "target": "compute_numeric",
         "classifier_source": "rule_fallback_ai_unavailable",
+        "math_meta_tags": [],
+        "forced_target_task": "",
+        "meta_answer_format_hint": "",
         "semantic_classification": {
           "ai_target_task": "",
           "ai_task_family": "",
@@ -99046,13 +102187,13 @@
           "rule_target_task": "compute_numeric",
           "rule_task_family": "generic_numeric_family",
           "rule_confidence": 0.2,
-          "final_target_task": "evaluate_function_value",
+          "final_target_task": "compute_numeric",
           "final_task_family": "generic_numeric_family",
-          "classifier_source": "fallback_application_induct",
+          "classifier_source": "rule_fallback_ai_unavailable",
           "classification_decision": "",
           "conflict_reason": "ai_api_key_missing",
           "source_mapping_warning": "",
-          "requires_human_action": false,
+          "requires_human_action": true,
           "ai_notes": "",
           "skill_scoped_candidates": [
             {
@@ -99115,6 +102256,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -99212,6 +102355,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -99309,6 +102454,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -99406,6 +102553,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -99503,6 +102652,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -99600,6 +102751,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -99697,6 +102850,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -99756,7 +102911,7 @@
           ],
           "selected_subskill": "compute_numeric",
           "selected_problem_type": "compute_numeric",
-          "candidate_source": "fallback_application",
+          "candidate_source": "needs_review",
           "selected_generator_contract": {},
           "parameter_schema": {},
           "variable_randomization_notes": [],
@@ -99943,7 +103098,6 @@
         "induction_tier": "core",
         "enrichment_reasons": [],
         "included_in_core_induction": true,
-        "problem_type_id": "short_answer_evaluate_function_value_fallback_application",
         "equivalence_type": "exact_string",
         "checker_key": "text_short_checker",
         "requires_human_action": false
@@ -99988,6 +103142,9 @@
         ],
         "target": "numeric_evaluate_function_notation",
         "classifier_source": "rule_fallback_ai_unavailable",
+        "math_meta_tags": [],
+        "forced_target_task": "",
+        "meta_answer_format_hint": "",
         "semantic_classification": {
           "ai_target_task": "",
           "ai_task_family": "",
@@ -100076,6 +103233,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -100173,6 +103332,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -100270,6 +103431,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -100367,6 +103530,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -100464,6 +103629,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -100561,6 +103728,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -100658,6 +103827,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -100931,7 +104102,7 @@
         "checker": "text_short_checker",
         "equivalence": "exact_string",
         "math_objects": [],
-        "target_task": "evaluate_function_value",
+        "target_task": "compute_numeric",
         "task_family": "generic_numeric_family",
         "reasoning_type": [
           "numeric_computation"
@@ -100942,8 +104113,11 @@
         "candidate_only": false,
         "variables": [],
         "givens": [],
-        "target": "evaluate_function_value",
+        "target": "compute_numeric",
         "classifier_source": "rule_fallback_ai_unavailable",
+        "math_meta_tags": [],
+        "forced_target_task": "",
+        "meta_answer_format_hint": "",
         "semantic_classification": {
           "ai_target_task": "",
           "ai_task_family": "",
@@ -100963,13 +104137,13 @@
           "rule_target_task": "compute_numeric",
           "rule_task_family": "generic_numeric_family",
           "rule_confidence": 0.2,
-          "final_target_task": "evaluate_function_value",
+          "final_target_task": "compute_numeric",
           "final_task_family": "generic_numeric_family",
-          "classifier_source": "fallback_application_induct",
+          "classifier_source": "rule_fallback_ai_unavailable",
           "classification_decision": "",
           "conflict_reason": "ai_api_key_missing",
           "source_mapping_warning": "",
-          "requires_human_action": false,
+          "requires_human_action": true,
           "ai_notes": "",
           "skill_scoped_candidates": [
             {
@@ -101032,6 +104206,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -101129,6 +104305,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -101226,6 +104404,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -101323,6 +104503,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -101420,6 +104602,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -101517,6 +104701,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -101614,6 +104800,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -101671,7 +104859,7 @@
           "outsider_candidates": [],
           "selected_subskill": "compute_numeric",
           "selected_problem_type": "compute_numeric",
-          "candidate_source": "fallback_application",
+          "candidate_source": "needs_review",
           "selected_generator_contract": {},
           "parameter_schema": {},
           "variable_randomization_notes": [],
@@ -101866,7 +105054,6 @@
         "induction_tier": "core",
         "enrichment_reasons": [],
         "included_in_core_induction": true,
-        "problem_type_id": "short_answer_evaluate_function_value_fallback_application",
         "equivalence_type": "exact_string",
         "checker_key": "text_short_checker",
         "requires_human_action": false
@@ -101888,7 +105075,7 @@
           "triangle",
           "two_coordinate_points"
         ],
-        "target_task": "evaluate_function_value",
+        "target_task": "compute_numeric",
         "task_family": "generic_numeric_family",
         "reasoning_type": [
           "numeric_computation"
@@ -101913,8 +105100,11 @@
           "b",
           "c"
         ],
-        "target": "evaluate_function_value",
+        "target": "compute_numeric",
         "classifier_source": "rule_fallback_ai_unavailable",
+        "math_meta_tags": [],
+        "forced_target_task": "",
+        "meta_answer_format_hint": "",
         "semantic_classification": {
           "ai_target_task": "",
           "ai_task_family": "",
@@ -101934,13 +105124,13 @@
           "rule_target_task": "compute_numeric",
           "rule_task_family": "generic_numeric_family",
           "rule_confidence": 0.2,
-          "final_target_task": "evaluate_function_value",
+          "final_target_task": "compute_numeric",
           "final_task_family": "generic_numeric_family",
-          "classifier_source": "fallback_application_induct",
+          "classifier_source": "rule_fallback_ai_unavailable",
           "classification_decision": "",
           "conflict_reason": "ai_api_key_missing",
           "source_mapping_warning": "",
-          "requires_human_action": false,
+          "requires_human_action": true,
           "ai_notes": "",
           "skill_scoped_candidates": [
             {
@@ -102003,6 +105193,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -102100,6 +105292,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -102197,6 +105391,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -102294,6 +105490,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -102391,6 +105589,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -102488,6 +105688,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -102585,6 +105787,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -102642,7 +105846,7 @@
           "outsider_candidates": [],
           "selected_subskill": "compute_numeric",
           "selected_problem_type": "compute_numeric",
-          "candidate_source": "fallback_application",
+          "candidate_source": "needs_review",
           "selected_generator_contract": {},
           "parameter_schema": {},
           "variable_randomization_notes": [],
@@ -102842,7 +106046,6 @@
         "induction_tier": "core",
         "enrichment_reasons": [],
         "included_in_core_induction": true,
-        "problem_type_id": "short_answer_evaluate_function_value_fallback_application",
         "equivalence_type": "exact_string",
         "checker_key": "text_short_checker",
         "requires_human_action": false
@@ -102887,6 +106090,9 @@
         ],
         "target": "numeric_evaluate_function_notation",
         "classifier_source": "rule_fallback_ai_unavailable",
+        "math_meta_tags": [],
+        "forced_target_task": "",
+        "meta_answer_format_hint": "",
         "semantic_classification": {
           "ai_target_task": "",
           "ai_task_family": "",
@@ -102975,6 +106181,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -103072,6 +106280,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -103169,6 +106379,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -103266,6 +106478,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -103363,6 +106577,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -103460,6 +106676,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -103557,6 +106775,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -103830,10 +107050,10 @@
         "checker": "text_short_checker",
         "equivalence": "exact_string",
         "math_objects": [],
-        "target_task": "evaluate_function_value",
-        "task_family": "generic_numeric_family",
+        "target_task": "applied_quadratic_inequality_problem",
+        "task_family": "quadratic_inequality_family",
         "reasoning_type": [
-          "numeric_computation"
+          "quadratic_factoring_reasoning"
         ],
         "required_derivation": true,
         "source_quality_issues": [],
@@ -103841,8 +107061,13 @@
         "candidate_only": false,
         "variables": [],
         "givens": [],
-        "target": "evaluate_function_value",
+        "target": "applied_quadratic_inequality_problem",
         "classifier_source": "rule_fallback_ai_unavailable",
+        "math_meta_tags": [
+          "[Task: Applied_Context]"
+        ],
+        "forced_target_task": "applied_quadratic_inequality_problem",
+        "meta_answer_format_hint": "interval",
         "semantic_classification": {
           "ai_target_task": "",
           "ai_task_family": "",
@@ -103859,16 +107084,16 @@
           "raw_response_preview": "",
           "sanitized_response_preview": "",
           "failed_stage": "",
-          "rule_target_task": "compute_numeric",
-          "rule_task_family": "generic_numeric_family",
-          "rule_confidence": 0.2,
-          "final_target_task": "evaluate_function_value",
-          "final_task_family": "generic_numeric_family",
-          "classifier_source": "fallback_application_induct",
+          "rule_target_task": "applied_quadratic_inequality_problem",
+          "rule_task_family": "quadratic_inequality_family",
+          "rule_confidence": 0.5,
+          "final_target_task": "applied_quadratic_inequality_problem",
+          "final_task_family": "quadratic_inequality_family",
+          "classifier_source": "rule_fallback_ai_unavailable",
           "classification_decision": "",
           "conflict_reason": "ai_api_key_missing",
           "source_mapping_warning": "",
-          "requires_human_action": false,
+          "requires_human_action": true,
           "ai_notes": "",
           "skill_scoped_candidates": [
             {
@@ -103931,6 +107156,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -104028,6 +107255,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -104125,6 +107354,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -104222,6 +107453,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -104319,6 +107552,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -104416,6 +107651,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -104513,6 +107750,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -104551,6 +107790,105 @@
               }
             },
             {
+              "candidate_id": "C8",
+              "target_task": "applied_quadratic_inequality_problem",
+              "task_family": "quadratic_inequality_family",
+              "problem_type_id": "applied_quadratic_inequality_problem",
+              "label": "applied_quadratic_inequality_problem",
+              "candidate_source": "outsider",
+              "in_anchor_scope": false,
+              "answer_type": "numeric",
+              "answer_shape": "numeric",
+              "math_objects": [],
+              "checker_key": "numeric_checker",
+              "equivalence_type": "numeric_equivalence",
+              "generator_contract": {
+                "template_variants": [
+                  {
+                    "id": "default",
+                    "label": "default",
+                    "stem_pattern": "依題意求解：{stem_hint}。",
+                    "weight": 1.0,
+                    "enabled": true
+                  }
+                ],
+                "parameter_schema": {
+                  "seed": {
+                    "type": "integer",
+                    "randomize": true
+                  },
+                  "difficulty_level": {
+                    "choices": [
+                      "level_1",
+                      "level_2",
+                      "level_3"
+                    ],
+                    "weights": [
+                      0.4,
+                      0.4,
+                      0.2
+                    ]
+                  }
+                },
+                "variation_dimensions": [
+                  "seed",
+                  "difficulty_level",
+                  "context_style"
+                ],
+                "difficulty_controls": {
+                  "level_1": {},
+                  "level_2": {},
+                  "level_3": {}
+                },
+                "anti_repetition_rules": {
+                  "avoid_same_template_consecutive": true,
+                  "avoid_same_ratio_consecutive": true,
+                  "avoid_same_point_names_consecutive": true,
+                  "avoid_same_answer_consecutive": true,
+                  "recent_history_window": 5,
+                  "signature_fields": [
+                    "problem_type_id",
+                    "template_variant",
+                    "routing_track",
+                    "scenario_type",
+                    "ratio_form",
+                    "ratio_values",
+                    "coordinate_pattern",
+                    "answer"
+                  ]
+                },
+                "validity_constraints": [
+                  "answer derivable from givens"
+                ],
+                "answer_shape": "numeric",
+                "explanation_variants": [
+                  "stepwise"
+                ],
+                "sampling_strategy": "weighted_random",
+                "template_families": [
+                  "applied_quadratic_inequality_problem"
+                ]
+              },
+              "parameter_schema": {
+                "seed": {
+                  "type": "integer",
+                  "randomize": true
+                },
+                "difficulty_level": {
+                  "choices": [
+                    "level_1",
+                    "level_2",
+                    "level_3"
+                  ],
+                  "weights": [
+                    0.4,
+                    0.4,
+                    0.2
+                  ]
+                }
+              }
+            },
+            {
               "candidate_id": "needs_review",
               "target_task": "",
               "task_family": "",
@@ -104567,18 +107905,20 @@
               "parameter_schema": {}
             }
           ],
-          "outsider_candidates": [],
-          "selected_subskill": "compute_numeric",
-          "selected_problem_type": "compute_numeric",
-          "candidate_source": "fallback_application",
+          "outsider_candidates": [
+            "C8"
+          ],
+          "selected_subskill": "applied_quadratic_inequality_problem",
+          "selected_problem_type": "applied_quadratic_inequality_problem",
+          "candidate_source": "needs_review",
           "selected_generator_contract": {},
           "parameter_schema": {},
           "variable_randomization_notes": [],
           "checker_key": "",
           "equivalence_type": "",
           "skill_scope_trusted": true,
-          "target_task": "compute_numeric",
-          "task_family": "generic_numeric_family",
+          "target_task": "applied_quadratic_inequality_problem",
+          "task_family": "quadratic_inequality_family",
           "math_objects": [],
           "answer_type": "short_answer",
           "answer_shape": "text_short",
@@ -104765,7 +108105,6 @@
         "induction_tier": "core",
         "enrichment_reasons": [],
         "included_in_core_induction": true,
-        "problem_type_id": "short_answer_evaluate_function_value_fallback_application",
         "equivalence_type": "exact_string",
         "checker_key": "text_short_checker",
         "requires_human_action": false
@@ -104792,7 +108131,7 @@
           "triangle",
           "two_coordinate_points"
         ],
-        "target_task": "evaluate_function_value",
+        "target_task": "compute_numeric",
         "task_family": "generic_numeric_family",
         "reasoning_type": [
           "numeric_computation"
@@ -104817,8 +108156,11 @@
           "x",
           "y"
         ],
-        "target": "evaluate_function_value",
+        "target": "compute_numeric",
         "classifier_source": "rule_fallback_ai_unavailable",
+        "math_meta_tags": [],
+        "forced_target_task": "",
+        "meta_answer_format_hint": "",
         "semantic_classification": {
           "ai_target_task": "",
           "ai_task_family": "",
@@ -104838,13 +108180,13 @@
           "rule_target_task": "compute_numeric",
           "rule_task_family": "generic_numeric_family",
           "rule_confidence": 0.2,
-          "final_target_task": "evaluate_function_value",
+          "final_target_task": "compute_numeric",
           "final_task_family": "generic_numeric_family",
-          "classifier_source": "fallback_application_induct",
+          "classifier_source": "rule_fallback_ai_unavailable",
           "classification_decision": "",
           "conflict_reason": "ai_api_key_missing",
           "source_mapping_warning": "",
-          "requires_human_action": false,
+          "requires_human_action": true,
           "ai_notes": "",
           "skill_scoped_candidates": [
             {
@@ -104907,6 +108249,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -105004,6 +108348,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -105101,6 +108447,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -105198,6 +108546,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -105295,6 +108645,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -105392,6 +108744,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -105489,6 +108843,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -105546,7 +108902,7 @@
           "outsider_candidates": [],
           "selected_subskill": "compute_numeric",
           "selected_problem_type": "compute_numeric",
-          "candidate_source": "fallback_application",
+          "candidate_source": "needs_review",
           "selected_generator_contract": {},
           "parameter_schema": {},
           "variable_randomization_notes": [],
@@ -105750,7 +109106,6 @@
         "induction_tier": "core",
         "enrichment_reasons": [],
         "included_in_core_induction": true,
-        "problem_type_id": "single_choice_evaluate_function_value_fallback_application",
         "equivalence_type": "choice_label",
         "checker_key": "choice_label_checker",
         "requires_human_action": false
@@ -105792,6 +109147,9 @@
         ],
         "target": "numeric_evaluate_function_notation",
         "classifier_source": "rule_fallback_ai_unavailable",
+        "math_meta_tags": [],
+        "forced_target_task": "",
+        "meta_answer_format_hint": "",
         "semantic_classification": {
           "ai_target_task": "",
           "ai_task_family": "",
@@ -105880,6 +109238,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -105977,6 +109337,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -106074,6 +109436,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -106171,6 +109535,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -106268,6 +109634,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -106365,6 +109733,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -106462,6 +109832,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -106759,6 +110131,9 @@
         ],
         "target": "numeric_evaluate_function_notation",
         "classifier_source": "rule_fallback_ai_unavailable",
+        "math_meta_tags": [],
+        "forced_target_task": "",
+        "meta_answer_format_hint": "",
         "semantic_classification": {
           "ai_target_task": "",
           "ai_task_family": "",
@@ -106847,6 +110222,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -106944,6 +110321,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -107041,6 +110420,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -107138,6 +110519,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -107235,6 +110618,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -107332,6 +110717,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -107429,6 +110816,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -107701,7 +111090,7 @@
         "checker": "text_short_checker",
         "equivalence": "exact_string",
         "math_objects": [],
-        "target_task": "evaluate_function_value",
+        "target_task": "compute_numeric",
         "task_family": "generic_numeric_family",
         "reasoning_type": [
           "numeric_computation"
@@ -107712,8 +111101,11 @@
         "candidate_only": false,
         "variables": [],
         "givens": [],
-        "target": "evaluate_function_value",
+        "target": "compute_numeric",
         "classifier_source": "rule_fallback_ai_unavailable",
+        "math_meta_tags": [],
+        "forced_target_task": "",
+        "meta_answer_format_hint": "",
         "semantic_classification": {
           "ai_target_task": "",
           "ai_task_family": "",
@@ -107733,13 +111125,13 @@
           "rule_target_task": "compute_numeric",
           "rule_task_family": "generic_numeric_family",
           "rule_confidence": 0.2,
-          "final_target_task": "evaluate_function_value",
+          "final_target_task": "compute_numeric",
           "final_task_family": "generic_numeric_family",
-          "classifier_source": "fallback_application_induct",
+          "classifier_source": "rule_fallback_ai_unavailable",
           "classification_decision": "",
           "conflict_reason": "ai_api_key_missing",
           "source_mapping_warning": "",
-          "requires_human_action": false,
+          "requires_human_action": true,
           "ai_notes": "",
           "skill_scoped_candidates": [
             {
@@ -107802,6 +111194,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -107899,6 +111293,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -107996,6 +111392,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -108093,6 +111491,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -108190,6 +111590,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -108287,6 +111689,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -108384,6 +111788,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -108441,7 +111847,7 @@
           "outsider_candidates": [],
           "selected_subskill": "compute_numeric",
           "selected_problem_type": "compute_numeric",
-          "candidate_source": "fallback_application",
+          "candidate_source": "needs_review",
           "selected_generator_contract": {},
           "parameter_schema": {},
           "variable_randomization_notes": [],
@@ -108636,7 +112042,6 @@
         "induction_tier": "core",
         "enrichment_reasons": [],
         "included_in_core_induction": true,
-        "problem_type_id": "short_answer_evaluate_function_value_fallback_application",
         "equivalence_type": "exact_string",
         "checker_key": "text_short_checker",
         "requires_human_action": false
@@ -108694,6 +112099,9 @@
         ],
         "target": "numeric_evaluate_function_notation",
         "classifier_source": "rule_fallback_ai_unavailable",
+        "math_meta_tags": [],
+        "forced_target_task": "",
+        "meta_answer_format_hint": "",
         "semantic_classification": {
           "ai_target_task": "",
           "ai_task_family": "",
@@ -108782,6 +112190,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -108879,6 +112289,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -108976,6 +112388,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -109073,6 +112487,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -109170,6 +112586,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -109267,6 +112685,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -109364,6 +112784,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -109668,6 +113090,9 @@
         ],
         "target": "numeric_evaluate_function_notation",
         "classifier_source": "rule_fallback_ai_unavailable",
+        "math_meta_tags": [],
+        "forced_target_task": "",
+        "meta_answer_format_hint": "",
         "semantic_classification": {
           "ai_target_task": "",
           "ai_task_family": "",
@@ -109756,6 +113181,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -109853,6 +113280,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -109950,6 +113379,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -110047,6 +113478,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -110144,6 +113577,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -110241,6 +113676,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -110338,6 +113775,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -110642,7 +114081,9 @@
         "source_skill_scope_locked": true,
         "source_skill_id": "vh_數學B1_LinearFunction",
         "classification_scope": "within_current_skill",
-        "skill_mapping_authority": "textbook_examples.skill_id"
+        "skill_mapping_authority": "textbook_examples.skill_id",
+        "anchor_authority": "skill_id_derived_no_cross_family_pollution",
+        "classification_mandate": "【強制合約｜最高優先級】\n目前的 skill_id 與傳入的來源例題 100% 正確對齊，已由教師與課本 skill_id 欄位確認。\n你被禁止評估這些例題是否屬於其他家族（例如 absolute_value_inequality_family）。\n你的唯一任務，是 100% 相信這些題目就是該技能的標準核心，並直接在此 anchor 範圍內切分子技能（subskills）。\n禁止輸出 needs_review 或 contextual_application 作為跨家族質疑的結果；若規則分類已在 anchor 子技能清單內，必須接受。\n\n【強制合約｜最高優先級】\n目前的 skill_id 與傳入的來源例題 100% 正確對齊，已由教師與課本 skill_id 欄位確認。\n你被禁止評估這些例題是否屬於其他家族（例如 absolute_value_inequality_family）。\n你的唯一任務，是 100% 相信這些題目就是該技能的標準核心，並直接在此 anchor 範圍內切分子技能（subskills）。\n禁止輸出 needs_review 或 contextual_application 作為跨家族質疑的結果；若規則分類已在 anchor 子技能清單內，必須接受。\n\nTrusted skill anchor (do not override):\n- skill_id: vh_數學B1_LinearFunction\n- skill_ch_name: 線型函數\n- skill_en_name: LinearFunction\n- expected_task_families: ['function_concept_family']\n- expected_subskill_candidates: ['evaluate_function_value', 'interpret_function_notation', 'judge_domain_range_basic', 'judge_function_from_mapping', 'judge_function_relation']\n- skill_anchor_scope: default\n- source_skill_scope_locked: True\n"
       },
       "ai_semantic_status": "unavailable",
       "skill_terms": [
@@ -110670,6 +114111,7 @@
         "2x",
         "300秒以內只繳基本費",
         "3x",
+        "applied_quadratic_inequality_problem",
         "ax",
         "choose_correct_statement",
         "compute_distance",
@@ -110677,7 +114119,6 @@
         "compute_numeric",
         "coordinate_point",
         "c兩點將線段ad三等分",
-        "evaluate_function_value",
         "find_intercepts",
         "left",
         "numeric",
@@ -110753,7 +114194,8 @@
       ],
       "observed_target_task_distribution": {
         "numeric_evaluate_function_notation": 9,
-        "evaluate_function_value": 6
+        "compute_numeric": 5,
+        "applied_quadratic_inequality_problem": 1
       },
       "same_family_subskill_mismatch_examples": [],
       "examples_outside_expected_subskills": [],
@@ -110762,23 +114204,26 @@
       "problem_type_terms": [
         "an",
         "answer",
-        "application",
         "choice",
         "compute_numeric",
         "evaluate",
         "evaluate_function_value",
-        "fallback",
+        "evaluate_function_value / anchor bootstrap",
+        "expression",
         "function",
         "function_value_numeric",
         "hort",
         "ingle",
+        "interpret",
+        "interpret_function_notation",
+        "interpret_function_notation / anchor bootstrap",
+        "linear_function_two_point_choice",
         "notation",
         "numeric",
         "numeric / numeric_evaluate_function_notation",
         "numeric_computation",
         "numeric_evaluate_function_notation",
         "short",
-        "short_answer / evaluate_function_value",
         "single",
         "single_choice",
         "text_short",
@@ -110797,11 +114242,13 @@
       ],
       "observed_source_family_distribution": {
         "function_concept_family": 9,
-        "generic_numeric_family": 6
+        "generic_numeric_family": 5,
+        "quadratic_inequality_family": 1
       },
       "source_family_distribution": {
         "function_concept_family": 9,
-        "generic_numeric_family": 6
+        "generic_numeric_family": 5,
+        "quadratic_inequality_family": 1
       },
       "candidate_problem_type_families": [
         "function_concept_family"
@@ -110817,7 +114264,7 @@
       ],
       "dominant_source_family_ratio": 0.6,
       "skill_source_score": 0.48,
-      "skill_problem_type_score": 0.0385,
+      "skill_problem_type_score": 0.04,
       "source_problem_type_score": 0.044,
       "per_problem_type_scores": [
         {
@@ -110847,14 +114294,27 @@
           "answer_contract_supported": true
         },
         {
-          "problem_type_id": "short_answer_evaluate_function_value_fallback_application",
+          "problem_type_id": "evaluate_function_value",
           "target_task": "evaluate_function_value",
           "task_family": "function_concept_family",
           "inferred_tasks": [
             "evaluate_function_value"
           ],
-          "skill_problem_type_score": 0.0385,
-          "source_problem_type_score": 0.0103,
+          "skill_problem_type_score": 0.0556,
+          "source_problem_type_score": 0.0,
+          "task_consistent_with_skill": true,
+          "family_consistent_with_skill": true,
+          "answer_contract_supported": true
+        },
+        {
+          "problem_type_id": "interpret_function_notation",
+          "target_task": "interpret_function_notation",
+          "task_family": "function_concept_family",
+          "inferred_tasks": [
+            "interpret_function_notation"
+          ],
+          "skill_problem_type_score": 0.0556,
+          "source_problem_type_score": 0.0,
           "task_consistent_with_skill": true,
           "family_consistent_with_skill": true,
           "answer_contract_supported": true
@@ -110882,14 +114342,15 @@
     },
     "source_alignment_status": "warn",
     "skill_problem_type_alignment_status": "warn",
-    "alignment_score": 0.0385,
+    "alignment_score": 0.04,
     "alignment_warnings": [
       "ai_first_mode_fell_back_to_rule_only"
     ],
     "alignment_blockers": [],
     "source_family_distribution": {
       "function_concept_family": 9,
-      "generic_numeric_family": 6
+      "generic_numeric_family": 5,
+      "quadratic_inequality_family": 1
     },
     "candidate_problem_type_families": [
       "function_concept_family"
@@ -110906,13 +114367,165 @@
     ],
     "observed_target_task_distribution": {
       "numeric_evaluate_function_notation": 9,
-      "evaluate_function_value": 6
+      "compute_numeric": 5,
+      "applied_quadratic_inequality_problem": 1
     },
     "same_family_subskill_mismatch_examples": [],
     "examples_outside_expected_subskills": [],
     "suggested_action": "",
     "requires_human_action": true,
-    "excluded_source_examples": [],
+    "excluded_source_examples": [
+      {
+        "example_id": 4445,
+        "target_task": "compute_numeric",
+        "task_family": "generic_numeric_family",
+        "alignment_score": 0.0,
+        "aligned_with_skill": false,
+        "included_in_phase1": false,
+        "exclude_reason": "semantic_alignment_score_zero_requires_human_review",
+        "alignment_kind": "unclassified_low_confidence",
+        "skill_id_match": true,
+        "task_family_match": false,
+        "subskill_match": false,
+        "pass_with_warning": false,
+        "requires_human_action": true,
+        "induction_tier": "core",
+        "included_in_core_induction": false,
+        "enrichment_reasons": [],
+        "source_quality_issues": [],
+        "source_quality_reject": false,
+        "candidate_only": false,
+        "classification_source": "rule_fallback_ai_unavailable",
+        "induction_eligibility": "excluded",
+        "skill_id": "vh_數學B1_LinearFunction",
+        "title_stem_preview": "已知手機費包含月租基本費與超時通話費，某電信公司的手機月租基本費為m元，可以免費通話30分鐘。若通話時間超過30分鐘後，通話費與時間（分鐘）為線型函數的關係如圖..."
+      },
+      {
+        "example_id": 4425,
+        "target_task": "compute_numeric",
+        "task_family": "generic_numeric_family",
+        "alignment_score": 0.0,
+        "aligned_with_skill": false,
+        "included_in_phase1": false,
+        "exclude_reason": "semantic_alignment_score_zero_requires_human_review",
+        "alignment_kind": "unclassified_low_confidence",
+        "skill_id_match": true,
+        "task_family_match": false,
+        "subskill_match": false,
+        "pass_with_warning": false,
+        "requires_human_action": true,
+        "induction_tier": "core",
+        "included_in_core_induction": false,
+        "enrichment_reasons": [],
+        "source_quality_issues": [],
+        "source_quality_reject": false,
+        "candidate_only": false,
+        "classification_source": "rule_fallback_ai_unavailable",
+        "induction_eligibility": "excluded",
+        "skill_id": "vh_數學B1_LinearFunction",
+        "title_stem_preview": "右圖是某電信公司的通話費計算方式：300秒以內只繳基本費，超過300秒之後的費用，與通話時間成線型函數關係，試問： (1) 手機基本費用為多少元？ (2) 本月..."
+      },
+      {
+        "example_id": 4426,
+        "target_task": "compute_numeric",
+        "task_family": "generic_numeric_family",
+        "alignment_score": 0.0,
+        "aligned_with_skill": false,
+        "included_in_phase1": false,
+        "exclude_reason": "semantic_alignment_score_zero_requires_human_review",
+        "alignment_kind": "unclassified_low_confidence",
+        "skill_id_match": true,
+        "task_family_match": false,
+        "subskill_match": false,
+        "pass_with_warning": false,
+        "requires_human_action": true,
+        "induction_tier": "core",
+        "included_in_core_induction": false,
+        "enrichment_reasons": [],
+        "source_quality_issues": [],
+        "source_quality_reject": false,
+        "candidate_only": false,
+        "classification_source": "rule_fallback_ai_unavailable",
+        "induction_eligibility": "excluded",
+        "skill_id": "vh_數學B1_LinearFunction",
+        "title_stem_preview": "設直角坐標平面上四點$A\\left( -2,1 \\right)$、$B\\left( {{b}_{1}},{{b}_{2}} \\right)$、$C\\left( ..."
+      },
+      {
+        "example_id": 4442,
+        "target_task": "applied_quadratic_inequality_problem",
+        "task_family": "quadratic_inequality_family",
+        "alignment_score": 0.0,
+        "aligned_with_skill": false,
+        "included_in_phase1": false,
+        "exclude_reason": "semantic_alignment_score_zero_requires_human_review",
+        "alignment_kind": "unclassified_low_confidence",
+        "skill_id_match": true,
+        "task_family_match": false,
+        "subskill_match": false,
+        "pass_with_warning": false,
+        "requires_human_action": true,
+        "induction_tier": "core",
+        "included_in_core_induction": false,
+        "enrichment_reasons": [],
+        "source_quality_issues": [],
+        "source_quality_reject": false,
+        "candidate_only": false,
+        "classification_source": "rule_fallback_ai_unavailable",
+        "induction_eligibility": "excluded",
+        "skill_id": "vh_數學B1_LinearFunction",
+        "title_stem_preview": "高老師搭乘某廉價航空，他的行李托運費用是850元，若行李托運費用與重量是成線型函數的關係，如圖所示，試求高老師托運的行李幾公斤？"
+      },
+      {
+        "example_id": 4446,
+        "target_task": "compute_numeric",
+        "task_family": "generic_numeric_family",
+        "alignment_score": 0.0,
+        "aligned_with_skill": false,
+        "included_in_phase1": false,
+        "exclude_reason": "semantic_alignment_score_zero_requires_human_review",
+        "alignment_kind": "unclassified_low_confidence",
+        "skill_id_match": true,
+        "task_family_match": false,
+        "subskill_match": false,
+        "pass_with_warning": false,
+        "requires_human_action": true,
+        "induction_tier": "core",
+        "included_in_core_induction": false,
+        "enrichment_reasons": [],
+        "source_quality_issues": [],
+        "source_quality_reject": false,
+        "candidate_only": true,
+        "classification_source": "rule_fallback_ai_unavailable",
+        "induction_eligibility": "excluded",
+        "skill_id": "vh_數學B1_LinearFunction",
+        "title_stem_preview": "公司給小虹最多50萬元的預算來採買$x$、$y$兩種貨品。但小虹一時疏忽，無法確定$x$貨品跟$y$貨品的單價哪一個是100元、哪一個是200元。下列數對($x..."
+      },
+      {
+        "example_id": 4500,
+        "target_task": "compute_numeric",
+        "task_family": "generic_numeric_family",
+        "alignment_score": 0.0,
+        "aligned_with_skill": false,
+        "included_in_phase1": false,
+        "exclude_reason": "semantic_alignment_score_zero_requires_human_review",
+        "alignment_kind": "unclassified_low_confidence",
+        "skill_id_match": true,
+        "task_family_match": false,
+        "subskill_match": false,
+        "pass_with_warning": false,
+        "requires_human_action": true,
+        "induction_tier": "core",
+        "included_in_core_induction": false,
+        "enrichment_reasons": [],
+        "source_quality_issues": [],
+        "source_quality_reject": false,
+        "candidate_only": false,
+        "classification_source": "rule_fallback_ai_unavailable",
+        "induction_eligibility": "excluded",
+        "skill_id": "vh_數學B1_LinearFunction",
+        "title_stem_preview": "阿偉的汽車加滿油後開始行駛，其行駛距離x公里與剩餘油量y公升的關係為線型函數，其圖形如右圖所示，則x與y的關係式為"
+      }
+    ],
     "rejected_source_examples": [],
     "source_quality_issues": [],
     "semantic_mismatch_examples": [],
@@ -110925,15 +114538,39 @@
       {
         "problem_type_id": "numeric_numeric_evaluate_function_notation_single_choice",
         "matched_example_count": 1
+      },
+      {
+        "problem_type_id": "evaluate_function_value",
+        "matched_example_count": 0
+      },
+      {
+        "problem_type_id": "interpret_function_notation",
+        "matched_example_count": 0
       }
     ],
     "coverage_floor_suggestions": [],
+    "anchor_subskill_bootstrap": {
+      "bootstrapped_tasks": [
+        "evaluate_function_value",
+        "interpret_function_notation"
+      ],
+      "bootstrapped_count": 2,
+      "skipped_tasks": [
+        {
+          "task": "judge_domain_range_basic",
+          "reason": "no_registered_slot_generator"
+        },
+        {
+          "task": "judge_function_from_mapping",
+          "reason": "no_registered_slot_generator"
+        },
+        {
+          "task": "judge_function_relation",
+          "reason": "no_registered_slot_generator"
+        }
+      ]
+    },
     "candidate_only_problem_types": [
-      {
-        "example_id": 4446,
-        "subskill_id": "same_as_main_skill",
-        "reason": "candidate_only_source"
-      },
       {
         "example_id": 4433,
         "problem_type_id": "numeric_numeric_evaluate_function_notation_short_answer",
@@ -110980,12 +114617,13 @@
         "reason": "runtime_not_supported"
       }
     ],
-    "candidate_only_count": 10,
+    "candidate_only_count": 9,
     "same_as_main_skill_count": 0,
     "rule_only_classification_count": 0,
     "hybrid_resolved_count": 0,
     "subskills": [
-      "evaluate_function_value",
+      "applied_quadratic_inequality_problem",
+      "compute_numeric",
       "numeric_evaluate_function_notation",
       "same_as_main_skill"
     ],
@@ -111083,26 +114721,26 @@
       },
       {
         "example_id": 4445,
-        "target_task": "evaluate_function_value",
+        "target_task": "compute_numeric",
         "task_family": "generic_numeric_family",
         "alignment_score": 0.0,
-        "aligned_with_skill": true,
-        "included_in_phase1": true,
-        "exclude_reason": "",
-        "alignment_kind": "anchor_subskill_match",
+        "aligned_with_skill": false,
+        "included_in_phase1": false,
+        "exclude_reason": "semantic_alignment_score_zero_requires_human_review",
+        "alignment_kind": "unclassified_low_confidence",
         "skill_id_match": true,
         "task_family_match": false,
-        "subskill_match": true,
+        "subskill_match": false,
         "pass_with_warning": false,
-        "requires_human_action": false,
+        "requires_human_action": true,
         "induction_tier": "core",
-        "included_in_core_induction": true,
+        "included_in_core_induction": false,
         "enrichment_reasons": [],
         "source_quality_issues": [],
         "source_quality_reject": false,
         "candidate_only": false,
-        "classification_source": "fallback_application_induct",
-        "induction_eligibility": "eligible",
+        "classification_source": "rule_fallback_ai_unavailable",
+        "induction_eligibility": "excluded",
         "skill_id": "vh_數學B1_LinearFunction",
         "title_stem_preview": "已知手機費包含月租基本費與超時通話費，某電信公司的手機月租基本費為m元，可以免費通話30分鐘。若通話時間超過30分鐘後，通話費與時間（分鐘）為線型函數的關係如圖"
       },
@@ -111133,51 +114771,51 @@
       },
       {
         "example_id": 4425,
-        "target_task": "evaluate_function_value",
+        "target_task": "compute_numeric",
         "task_family": "generic_numeric_family",
         "alignment_score": 0.0,
-        "aligned_with_skill": true,
-        "included_in_phase1": true,
-        "exclude_reason": "",
-        "alignment_kind": "anchor_subskill_match",
+        "aligned_with_skill": false,
+        "included_in_phase1": false,
+        "exclude_reason": "semantic_alignment_score_zero_requires_human_review",
+        "alignment_kind": "unclassified_low_confidence",
         "skill_id_match": true,
         "task_family_match": false,
-        "subskill_match": true,
+        "subskill_match": false,
         "pass_with_warning": false,
-        "requires_human_action": false,
+        "requires_human_action": true,
         "induction_tier": "core",
-        "included_in_core_induction": true,
+        "included_in_core_induction": false,
         "enrichment_reasons": [],
         "source_quality_issues": [],
         "source_quality_reject": false,
         "candidate_only": false,
-        "classification_source": "fallback_application_induct",
-        "induction_eligibility": "eligible",
+        "classification_source": "rule_fallback_ai_unavailable",
+        "induction_eligibility": "excluded",
         "skill_id": "vh_數學B1_LinearFunction",
         "title_stem_preview": "右圖是某電信公司的通話費計算方式：300秒以內只繳基本費，超過300秒之後的費用，與通話時間成線型函數關係，試問：\n(1) 手機基本費用為多少元？\n(2) 本月"
       },
       {
         "example_id": 4426,
-        "target_task": "evaluate_function_value",
+        "target_task": "compute_numeric",
         "task_family": "generic_numeric_family",
         "alignment_score": 0.0,
-        "aligned_with_skill": true,
-        "included_in_phase1": true,
-        "exclude_reason": "",
-        "alignment_kind": "anchor_subskill_match",
+        "aligned_with_skill": false,
+        "included_in_phase1": false,
+        "exclude_reason": "semantic_alignment_score_zero_requires_human_review",
+        "alignment_kind": "unclassified_low_confidence",
         "skill_id_match": true,
         "task_family_match": false,
-        "subskill_match": true,
+        "subskill_match": false,
         "pass_with_warning": false,
-        "requires_human_action": false,
+        "requires_human_action": true,
         "induction_tier": "core",
-        "included_in_core_induction": true,
+        "included_in_core_induction": false,
         "enrichment_reasons": [],
         "source_quality_issues": [],
         "source_quality_reject": false,
         "candidate_only": false,
-        "classification_source": "fallback_application_induct",
-        "induction_eligibility": "eligible",
+        "classification_source": "rule_fallback_ai_unavailable",
+        "induction_eligibility": "excluded",
         "skill_id": "vh_數學B1_LinearFunction",
         "title_stem_preview": "設直角坐標平面上四點$A\\left( -2,1 \\right)$、$B\\left( {{b}_{1}},{{b}_{2}} \\right)$、$C\\left( "
       },
@@ -111208,51 +114846,51 @@
       },
       {
         "example_id": 4442,
-        "target_task": "evaluate_function_value",
-        "task_family": "generic_numeric_family",
+        "target_task": "applied_quadratic_inequality_problem",
+        "task_family": "quadratic_inequality_family",
         "alignment_score": 0.0,
-        "aligned_with_skill": true,
-        "included_in_phase1": true,
-        "exclude_reason": "",
-        "alignment_kind": "anchor_subskill_match",
+        "aligned_with_skill": false,
+        "included_in_phase1": false,
+        "exclude_reason": "semantic_alignment_score_zero_requires_human_review",
+        "alignment_kind": "unclassified_low_confidence",
         "skill_id_match": true,
         "task_family_match": false,
-        "subskill_match": true,
+        "subskill_match": false,
         "pass_with_warning": false,
-        "requires_human_action": false,
+        "requires_human_action": true,
         "induction_tier": "core",
-        "included_in_core_induction": true,
+        "included_in_core_induction": false,
         "enrichment_reasons": [],
         "source_quality_issues": [],
         "source_quality_reject": false,
         "candidate_only": false,
-        "classification_source": "fallback_application_induct",
-        "induction_eligibility": "eligible",
+        "classification_source": "rule_fallback_ai_unavailable",
+        "induction_eligibility": "excluded",
         "skill_id": "vh_數學B1_LinearFunction",
         "title_stem_preview": "高老師搭乘某廉價航空，他的行李托運費用是850元，若行李托運費用與重量是成線型函數的關係，如圖所示，試求高老師托運的行李幾公斤？"
       },
       {
         "example_id": 4446,
-        "target_task": "evaluate_function_value",
+        "target_task": "compute_numeric",
         "task_family": "generic_numeric_family",
         "alignment_score": 0.0,
-        "aligned_with_skill": true,
-        "included_in_phase1": true,
-        "exclude_reason": "",
-        "alignment_kind": "anchor_subskill_match",
+        "aligned_with_skill": false,
+        "included_in_phase1": false,
+        "exclude_reason": "semantic_alignment_score_zero_requires_human_review",
+        "alignment_kind": "unclassified_low_confidence",
         "skill_id_match": true,
         "task_family_match": false,
-        "subskill_match": true,
+        "subskill_match": false,
         "pass_with_warning": false,
-        "requires_human_action": false,
+        "requires_human_action": true,
         "induction_tier": "core",
-        "included_in_core_induction": true,
+        "included_in_core_induction": false,
         "enrichment_reasons": [],
         "source_quality_issues": [],
         "source_quality_reject": false,
         "candidate_only": true,
-        "classification_source": "fallback_application_induct",
-        "induction_eligibility": "eligible",
+        "classification_source": "rule_fallback_ai_unavailable",
+        "induction_eligibility": "excluded",
         "skill_id": "vh_數學B1_LinearFunction",
         "title_stem_preview": "公司給小虹最多50萬元的預算來採買$x$、$y$兩種貨品。但小虹一時疏忽，無法確定$x$貨品跟$y$貨品的單價哪一個是100元、哪一個是200元。下列數對($x"
       },
@@ -111308,26 +114946,26 @@
       },
       {
         "example_id": 4500,
-        "target_task": "evaluate_function_value",
+        "target_task": "compute_numeric",
         "task_family": "generic_numeric_family",
         "alignment_score": 0.0,
-        "aligned_with_skill": true,
-        "included_in_phase1": true,
-        "exclude_reason": "",
-        "alignment_kind": "anchor_subskill_match",
+        "aligned_with_skill": false,
+        "included_in_phase1": false,
+        "exclude_reason": "semantic_alignment_score_zero_requires_human_review",
+        "alignment_kind": "unclassified_low_confidence",
         "skill_id_match": true,
         "task_family_match": false,
-        "subskill_match": true,
+        "subskill_match": false,
         "pass_with_warning": false,
-        "requires_human_action": false,
+        "requires_human_action": true,
         "induction_tier": "core",
-        "included_in_core_induction": true,
+        "included_in_core_induction": false,
         "enrichment_reasons": [],
         "source_quality_issues": [],
         "source_quality_reject": false,
         "candidate_only": false,
-        "classification_source": "fallback_application_induct",
-        "induction_eligibility": "eligible",
+        "classification_source": "rule_fallback_ai_unavailable",
+        "induction_eligibility": "excluded",
         "skill_id": "vh_數學B1_LinearFunction",
         "title_stem_preview": "阿偉的汽車加滿油後開始行駛，其行駛距離x公里與剩餘油量y公升的關係為線型函數，其圖形如右圖所示，則x與y的關係式為"
       },
@@ -111431,25 +115069,6 @@
         "answer_type": "numeric",
         "presentation_mode": "single_choice",
         "source_has_choices": true
-      },
-      {
-        "grouping_reason": "merged_by_canonical_contract",
-        "feature_signature": [
-          "canonical_contract_merge",
-          "evaluate_function_value",
-          "short_answer",
-          "short_answer"
-        ],
-        "source_example_ids": [
-          4425,
-          4426,
-          4442,
-          4445,
-          4500
-        ],
-        "answer_type": "short_answer",
-        "presentation_mode": "short_answer",
-        "source_has_choices": false
       }
     ],
     "induced_problem_type_specs": [
@@ -111572,6 +115191,8 @@
             "signature_fields": [
               "problem_type_id",
               "template_variant",
+              "routing_track",
+              "scenario_type",
               "ratio_form",
               "ratio_values",
               "coordinate_pattern",
@@ -111599,6 +115220,10 @@
           "avoid_llm_freeform_math": true,
           "use_domain_functions": true,
           "derivation_steps_required": true,
+          "templates": [
+            "template_scalar_unknown",
+            "template_feature_value"
+          ],
           "problem_type_id": "numeric_numeric_evaluate_function_notation_short_answer",
           "contract_validation_blockers": [],
           "contract_validation_warnings": [
@@ -111753,6 +115378,8 @@
             "signature_fields": [
               "problem_type_id",
               "template_variant",
+              "routing_track",
+              "scenario_type",
               "ratio_form",
               "ratio_values",
               "coordinate_pattern",
@@ -111780,6 +115407,10 @@
           "avoid_llm_freeform_math": true,
           "use_domain_functions": true,
           "derivation_steps_required": true,
+          "templates": [
+            "template_scalar_unknown",
+            "template_feature_value"
+          ],
           "problem_type_id": "numeric_numeric_evaluate_function_notation_single_choice",
           "contract_validation_blockers": [],
           "contract_validation_warnings": [
@@ -111817,48 +115448,41 @@
         "naming_warning": "naming_warning:numeric_prefix_but_hint_is_A/B/C/D"
       },
       {
-        "problem_type_id": "short_answer_evaluate_function_value_fallback_application",
+        "problem_type_id": "evaluate_function_value",
         "skill_id": "vh_數學B1_LinearFunction",
         "target_task": "evaluate_function_value",
         "task_family": "function_concept_family",
-        "display_name": "short_answer / evaluate_function_value",
-        "answer_format_hint": "",
-        "answer_fields": null,
-        "answer_separator": null,
-        "source_example_ids": [
-          4425,
-          4426,
-          4442,
-          4445,
-          4500
-        ],
+        "display_name": "evaluate_function_value / anchor bootstrap",
+        "answer_format_hint": "expression",
+        "source_example_ids": [],
         "answer_contract": {
           "choices_required": false,
           "choice_count": null,
           "correct_choice_count": null,
           "frontend_render_choices": false,
-          "source_has_choices": false,
-          "answer_type": "text_short",
-          "answer_shape": "text_short",
-          "answer_semantics": "text_short",
-          "answer_equivalence": "exact_string",
-          "equivalence_type": "exact_string",
-          "checker": "text_short_checker",
-          "checker_key": "text_short_checker",
+          "answer_type": "expression",
+          "answer_shape": "factored_expression",
+          "answer_equivalence": "algebraic_equivalent",
+          "equivalence_type": "algebraic_equivalent",
+          "checker": "expression_checker",
+          "checker_key": "expression_checker",
           "presentation_mode": "short_answer",
-          "selected_checker": "text_short_checker"
+          "selected_checker": "expression_checker",
+          "checker_selection_reason": "quadratic_factoring_expression",
+          "accepted_formats": [
+            "(x-5)(x+3)",
+            "(2x-1)(x+5)",
+            "2(x-1)(3x+2)"
+          ],
+          "answer_semantics": "algebraic_expression"
         },
         "stem_contract": {
           "stem_must_not_embed_choices": true,
           "allowed_math_objects": [
-            "coordinate_point",
-            "three_coordinate_points",
-            "triangle",
-            "two_coordinate_points"
+            "quadratic_inequality"
           ],
           "required_math_objects": [
-            "coordinate_point",
-            "three_coordinate_points"
+            "quadratic_inequality"
           ],
           "forbidden_patterns": [
             "\\(A\\)",
@@ -111874,15 +115498,12 @@
         },
         "semantic_contract": {
           "reasoning_type": [
-            "numeric_computation"
+            "evaluate_function_value"
           ],
           "reject_if": [
             "unused_condition",
             "ambiguous_answer",
-            "answer_not_derivable",
-            "duplicated_choices",
-            "no_correct_choice",
-            "multiple_correct_choices_when_single_choice"
+            "answer_not_derivable"
           ]
         },
         "generator_contract": {
@@ -111932,6 +115553,8 @@
             "signature_fields": [
               "problem_type_id",
               "template_variant",
+              "routing_track",
+              "scenario_type",
               "ratio_form",
               "ratio_values",
               "coordinate_pattern",
@@ -111959,11 +115582,10 @@
           "avoid_llm_freeform_math": true,
           "use_domain_functions": true,
           "derivation_steps_required": true,
-          "contextual_application": true,
           "template_slots": {
             "stem": "function_value_numeric"
           },
-          "problem_type_id": "short_answer_evaluate_function_value_fallback_application",
+          "problem_type_id": "evaluate_function_value",
           "contract_validation_blockers": [],
           "contract_validation_warnings": [
             "single_template_variant_only",
@@ -111972,25 +115594,186 @@
         },
         "validator_contract": {
           "static_checks": [
-            "answer_contract_checks",
-            "choices_policy"
+            "answer_contract_checks"
           ],
           "semantic_checks": [
             "givens_to_target_dependency"
           ],
           "runtime_smoke_count": 30
         },
-        "spec_source": "phase1_induced_draft",
-        "grouping_reason": "merged_by_canonical_contract",
+        "spec_source": "anchor_slot_bootstrap",
+        "grouping_reason": "anchor_subskill_bootstrap_zero_source",
         "feature_signature": [
-          "canonical_contract_merge",
-          "evaluate_function_value",
-          "short_answer",
-          "short_answer"
+          "anchor_slot_bootstrap",
+          "evaluate_function_value"
         ],
-        "canonical_base_problem_type_id": "short_answer_evaluate_function_value_fallback_application",
+        "canonical_base_problem_type_id": "evaluate_function_value",
         "value_type_prefix": "",
-        "_resolved_template_slot": "function_value_numeric"
+        "_resolved_template_slot": "factor_quadratic_by_cross_multiplication"
+      },
+      {
+        "problem_type_id": "interpret_function_notation",
+        "skill_id": "vh_數學B1_LinearFunction",
+        "target_task": "interpret_function_notation",
+        "task_family": "function_concept_family",
+        "display_name": "interpret_function_notation / anchor bootstrap",
+        "answer_format_hint": "expression",
+        "source_example_ids": [],
+        "answer_contract": {
+          "choices_required": false,
+          "choice_count": null,
+          "correct_choice_count": null,
+          "frontend_render_choices": false,
+          "answer_type": "expression",
+          "answer_shape": "factored_expression",
+          "answer_equivalence": "algebraic_equivalent",
+          "equivalence_type": "algebraic_equivalent",
+          "checker": "expression_checker",
+          "checker_key": "expression_checker",
+          "presentation_mode": "short_answer",
+          "selected_checker": "expression_checker",
+          "checker_selection_reason": "quadratic_factoring_expression",
+          "accepted_formats": [
+            "(x-5)(x+3)",
+            "(2x-1)(x+5)",
+            "2(x-1)(3x+2)"
+          ],
+          "answer_semantics": "algebraic_expression"
+        },
+        "stem_contract": {
+          "stem_must_not_embed_choices": true,
+          "allowed_math_objects": [
+            "quadratic_inequality"
+          ],
+          "required_math_objects": [
+            "quadratic_inequality"
+          ],
+          "forbidden_patterns": [
+            "\\(A\\)",
+            "\\(B\\)",
+            "\\(C\\)",
+            "\\(D\\)"
+          ]
+        },
+        "dependency_contract": {
+          "givens_must_be_used": true,
+          "target_answer_must_depend_on_givens": true,
+          "variables_in_conditions_must_appear_in_target": false
+        },
+        "semantic_contract": {
+          "reasoning_type": [
+            "interpret_function_notation"
+          ],
+          "reject_if": [
+            "unused_condition",
+            "ambiguous_answer",
+            "answer_not_derivable"
+          ]
+        },
+        "generator_contract": {
+          "template_variants": [
+            {
+              "id": "default",
+              "label": "default",
+              "stem_pattern": "依題意求解：{stem_hint}。",
+              "weight": 1.0,
+              "enabled": true
+            }
+          ],
+          "parameter_schema": {
+            "seed": {
+              "type": "integer",
+              "randomize": true
+            },
+            "difficulty_level": {
+              "choices": [
+                "level_1",
+                "level_2",
+                "level_3"
+              ],
+              "weights": [
+                0.4,
+                0.4,
+                0.2
+              ]
+            }
+          },
+          "variation_dimensions": [
+            "seed",
+            "difficulty_level",
+            "context_style"
+          ],
+          "difficulty_controls": {
+            "level_1": {},
+            "level_2": {},
+            "level_3": {}
+          },
+          "anti_repetition_rules": {
+            "avoid_same_template_consecutive": true,
+            "avoid_same_ratio_consecutive": true,
+            "avoid_same_point_names_consecutive": true,
+            "avoid_same_answer_consecutive": true,
+            "recent_history_window": 5,
+            "signature_fields": [
+              "problem_type_id",
+              "template_variant",
+              "routing_track",
+              "scenario_type",
+              "ratio_form",
+              "ratio_values",
+              "coordinate_pattern",
+              "answer"
+            ]
+          },
+          "validity_constraints": [
+            "answer derivable from givens"
+          ],
+          "answer_shape": "numeric",
+          "explanation_variants": [
+            "stepwise"
+          ],
+          "sampling_strategy": "weighted_random",
+          "template_families": [
+            "interpret_function_notation"
+          ],
+          "parameter_slots": {
+            "seed": "integer",
+            "difficulty": "easy"
+          },
+          "randomization_rules": {
+            "shuffle_choices": false
+          },
+          "avoid_llm_freeform_math": true,
+          "use_domain_functions": true,
+          "derivation_steps_required": true,
+          "template_slots": {
+            "stem": "linear_function_two_point_choice"
+          },
+          "problem_type_id": "interpret_function_notation",
+          "contract_validation_blockers": [],
+          "contract_validation_warnings": [
+            "single_template_variant_only",
+            "variation_dimensions_below_recommended_minimum"
+          ]
+        },
+        "validator_contract": {
+          "static_checks": [
+            "answer_contract_checks"
+          ],
+          "semantic_checks": [
+            "givens_to_target_dependency"
+          ],
+          "runtime_smoke_count": 30
+        },
+        "spec_source": "anchor_slot_bootstrap",
+        "grouping_reason": "anchor_subskill_bootstrap_zero_source",
+        "feature_signature": [
+          "anchor_slot_bootstrap",
+          "interpret_function_notation"
+        ],
+        "canonical_base_problem_type_id": "interpret_function_notation",
+        "value_type_prefix": "",
+        "_resolved_template_slot": "factor_quadratic_by_cross_multiplication"
       }
     ],
     "candidate_problem_types": [
@@ -112116,6 +115899,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -112143,6 +115928,10 @@
             "avoid_llm_freeform_math": true,
             "use_domain_functions": true,
             "derivation_steps_required": true,
+            "templates": [
+              "template_scalar_unknown",
+              "template_feature_value"
+            ],
             "problem_type_id": "numeric_numeric_evaluate_function_notation_short_answer",
             "contract_validation_blockers": [],
             "contract_validation_warnings": [
@@ -112315,6 +116104,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -112342,6 +116133,10 @@
             "avoid_llm_freeform_math": true,
             "use_domain_functions": true,
             "derivation_steps_required": true,
+            "templates": [
+              "template_scalar_unknown",
+              "template_feature_value"
+            ],
             "problem_type_id": "numeric_numeric_evaluate_function_notation_short_answer",
             "contract_validation_blockers": [],
             "contract_validation_warnings": [
@@ -112514,6 +116309,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -112541,6 +116338,10 @@
             "avoid_llm_freeform_math": true,
             "use_domain_functions": true,
             "derivation_steps_required": true,
+            "templates": [
+              "template_scalar_unknown",
+              "template_feature_value"
+            ],
             "problem_type_id": "numeric_numeric_evaluate_function_notation_single_choice",
             "contract_validation_blockers": [],
             "contract_validation_warnings": [
@@ -112713,6 +116514,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -112740,6 +116543,10 @@
             "avoid_llm_freeform_math": true,
             "use_domain_functions": true,
             "derivation_steps_required": true,
+            "templates": [
+              "template_scalar_unknown",
+              "template_feature_value"
+            ],
             "problem_type_id": "numeric_numeric_evaluate_function_notation_single_choice",
             "contract_validation_blockers": [],
             "contract_validation_warnings": [
@@ -112791,51 +116598,46 @@
         }
       },
       {
-        "problem_type_id": "short_answer_evaluate_function_value_fallback_application",
-        "proposed_problem_type_id": "short_answer_evaluate_function_value_fallback_application",
-        "display_name": "short_answer / evaluate_function_value",
-        "matched_example_ids": [
-          4425,
-          4426,
-          4442,
-          4445,
-          4500
-        ],
-        "matched_example_count": 5,
+        "problem_type_id": "evaluate_function_value",
+        "proposed_problem_type_id": "evaluate_function_value",
+        "display_name": "evaluate_function_value / anchor bootstrap",
+        "matched_example_ids": [],
+        "matched_example_count": 0,
         "unmatched_example_ids": [],
-        "representative_example_id": 4425,
+        "representative_example_id": null,
         "structural_features": [
-          "text_short"
+          "factored_expression"
         ],
         "answer_contract_proposal": {
           "choices_required": false,
           "choice_count": null,
           "correct_choice_count": null,
           "frontend_render_choices": false,
-          "source_has_choices": false,
-          "answer_type": "text_short",
-          "answer_shape": "text_short",
-          "answer_semantics": "text_short",
-          "answer_equivalence": "exact_string",
-          "equivalence_type": "exact_string",
-          "checker": "text_short_checker",
-          "checker_key": "text_short_checker",
+          "answer_type": "expression",
+          "answer_shape": "factored_expression",
+          "answer_equivalence": "algebraic_equivalent",
+          "equivalence_type": "algebraic_equivalent",
+          "checker": "expression_checker",
+          "checker_key": "expression_checker",
           "presentation_mode": "short_answer",
-          "selected_checker": "text_short_checker",
+          "selected_checker": "expression_checker",
+          "checker_selection_reason": "quadratic_factoring_expression",
+          "accepted_formats": [
+            "(x-5)(x+3)",
+            "(2x-1)(x+5)",
+            "2(x-1)(3x+2)"
+          ],
+          "answer_semantics": "algebraic_expression",
           "checker_capability_status": "ok",
           "checker_contract_blockers": [],
           "checker_contract_warnings": [],
           "stem_contract": {
             "stem_must_not_embed_choices": true,
             "allowed_math_objects": [
-              "coordinate_point",
-              "three_coordinate_points",
-              "triangle",
-              "two_coordinate_points"
+              "quadratic_inequality"
             ],
             "required_math_objects": [
-              "coordinate_point",
-              "three_coordinate_points"
+              "quadratic_inequality"
             ],
             "forbidden_patterns": [
               "\\(A\\)",
@@ -112851,15 +116653,12 @@
           },
           "semantic_contract": {
             "reasoning_type": [
-              "numeric_computation"
+              "evaluate_function_value"
             ],
             "reject_if": [
               "unused_condition",
               "ambiguous_answer",
-              "answer_not_derivable",
-              "duplicated_choices",
-              "no_correct_choice",
-              "multiple_correct_choices_when_single_choice"
+              "answer_not_derivable"
             ]
           },
           "generator_contract": {
@@ -112909,6 +116708,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -112936,11 +116737,10 @@
             "avoid_llm_freeform_math": true,
             "use_domain_functions": true,
             "derivation_steps_required": true,
-            "contextual_application": true,
             "template_slots": {
               "stem": "function_value_numeric"
             },
-            "problem_type_id": "short_answer_evaluate_function_value_fallback_application",
+            "problem_type_id": "evaluate_function_value",
             "contract_validation_blockers": [],
             "contract_validation_warnings": [
               "single_template_variant_only",
@@ -112949,8 +116749,7 @@
           },
           "validator_contract": {
             "static_checks": [
-              "answer_contract_checks",
-              "choices_policy"
+              "answer_contract_checks"
             ],
             "semantic_checks": [
               "givens_to_target_dependency"
@@ -112959,75 +116758,66 @@
           },
           "order_matters": true,
           "accepted_format_notes": [],
-          "canonical_answer_schema": "text_short"
+          "canonical_answer_schema": "expression"
         },
-        "checker_key_proposal": "text_short_checker",
-        "equivalence_type_proposal": "exact_string",
-        "answer_shape": "text_short",
-        "answer_semantics": "text_short",
+        "checker_key_proposal": "expression_checker",
+        "equivalence_type_proposal": "algebraic_equivalent",
+        "answer_shape": "factored_expression",
+        "answer_semantics": "algebraic_expression",
         "presentation_mode": "short_answer",
         "source_has_choices": false,
-        "selected_checker": "text_short_checker",
-        "checker_selection_reason": "task_family_default",
-        "coordinate_pair_presentation_note": "",
-        "confidence": "high",
+        "selected_checker": "expression_checker",
+        "checker_selection_reason": "quadratic_factoring_expression",
+        "confidence": "medium",
         "promote_recommendation": "recommend_promote_for_that_candidate",
         "promote_blockers": [],
         "risk_flags": [
-          "ai_first_mode_fell_back_to_rule_only"
+          "ai_first_mode_fell_back_to_rule_only",
+          "anchor_slot_bootstrap_zero_source"
         ],
         "checker_contract_warnings": [],
-        "spec_source": "phase1_induced_draft",
-        "grouping_reason": "merged_by_canonical_contract",
+        "spec_source": "anchor_slot_bootstrap",
+        "grouping_reason": "anchor_subskill_bootstrap_zero_source",
         "feature_signature": [
-          "canonical_contract_merge",
-          "evaluate_function_value",
-          "short_answer",
-          "short_answer"
+          "anchor_slot_bootstrap",
+          "evaluate_function_value"
         ],
         "problem_type_spec_draft": {
-          "problem_type_id": "short_answer_evaluate_function_value_fallback_application",
+          "problem_type_id": "evaluate_function_value",
           "skill_id": "vh_數學B1_LinearFunction",
           "target_task": "evaluate_function_value",
           "task_family": "function_concept_family",
-          "display_name": "short_answer / evaluate_function_value",
-          "answer_format_hint": "",
-          "answer_fields": null,
-          "answer_separator": null,
-          "source_example_ids": [
-            4425,
-            4426,
-            4442,
-            4445,
-            4500
-          ],
+          "display_name": "evaluate_function_value / anchor bootstrap",
+          "answer_format_hint": "expression",
+          "source_example_ids": [],
           "answer_contract": {
             "choices_required": false,
             "choice_count": null,
             "correct_choice_count": null,
             "frontend_render_choices": false,
-            "source_has_choices": false,
-            "answer_type": "text_short",
-            "answer_shape": "text_short",
-            "answer_semantics": "text_short",
-            "answer_equivalence": "exact_string",
-            "equivalence_type": "exact_string",
-            "checker": "text_short_checker",
-            "checker_key": "text_short_checker",
+            "answer_type": "expression",
+            "answer_shape": "factored_expression",
+            "answer_equivalence": "algebraic_equivalent",
+            "equivalence_type": "algebraic_equivalent",
+            "checker": "expression_checker",
+            "checker_key": "expression_checker",
             "presentation_mode": "short_answer",
-            "selected_checker": "text_short_checker"
+            "selected_checker": "expression_checker",
+            "checker_selection_reason": "quadratic_factoring_expression",
+            "accepted_formats": [
+              "(x-5)(x+3)",
+              "(2x-1)(x+5)",
+              "2(x-1)(3x+2)"
+            ],
+            "answer_semantics": "algebraic_expression"
           },
           "stem_contract": {
             "stem_must_not_embed_choices": true,
             "allowed_math_objects": [
-              "coordinate_point",
-              "three_coordinate_points",
-              "triangle",
-              "two_coordinate_points"
+              "quadratic_inequality"
             ],
             "required_math_objects": [
-              "coordinate_point",
-              "three_coordinate_points"
+              "quadratic_inequality"
             ],
             "forbidden_patterns": [
               "\\(A\\)",
@@ -113043,15 +116833,12 @@
           },
           "semantic_contract": {
             "reasoning_type": [
-              "numeric_computation"
+              "evaluate_function_value"
             ],
             "reject_if": [
               "unused_condition",
               "ambiguous_answer",
-              "answer_not_derivable",
-              "duplicated_choices",
-              "no_correct_choice",
-              "multiple_correct_choices_when_single_choice"
+              "answer_not_derivable"
             ]
           },
           "generator_contract": {
@@ -113101,6 +116888,8 @@
               "signature_fields": [
                 "problem_type_id",
                 "template_variant",
+                "routing_track",
+                "scenario_type",
                 "ratio_form",
                 "ratio_values",
                 "coordinate_pattern",
@@ -113128,11 +116917,10 @@
             "avoid_llm_freeform_math": true,
             "use_domain_functions": true,
             "derivation_steps_required": true,
-            "contextual_application": true,
             "template_slots": {
               "stem": "function_value_numeric"
             },
-            "problem_type_id": "short_answer_evaluate_function_value_fallback_application",
+            "problem_type_id": "evaluate_function_value",
             "contract_validation_blockers": [],
             "contract_validation_warnings": [
               "single_template_variant_only",
@@ -113141,37 +116929,397 @@
           },
           "validator_contract": {
             "static_checks": [
-              "answer_contract_checks",
-              "choices_policy"
+              "answer_contract_checks"
             ],
             "semantic_checks": [
               "givens_to_target_dependency"
             ],
             "runtime_smoke_count": 30
           },
-          "spec_source": "phase1_induced_draft",
-          "grouping_reason": "merged_by_canonical_contract",
+          "spec_source": "anchor_slot_bootstrap",
+          "grouping_reason": "anchor_subskill_bootstrap_zero_source",
           "feature_signature": [
-            "canonical_contract_merge",
-            "evaluate_function_value",
-            "short_answer",
-            "short_answer"
+            "anchor_slot_bootstrap",
+            "evaluate_function_value"
           ],
-          "canonical_base_problem_type_id": "short_answer_evaluate_function_value_fallback_application",
+          "canonical_base_problem_type_id": "evaluate_function_value",
           "value_type_prefix": "",
-          "_resolved_template_slot": "function_value_numeric"
+          "_resolved_template_slot": "factor_quadratic_by_cross_multiplication"
         },
         "generator_readiness": "runtime_ready",
         "usable_for_phase3": true,
         "template_slot": "function_value_numeric",
-        "canonical_base_problem_type_id": "short_answer_evaluate_function_value_fallback_application",
+        "canonical_base_problem_type_id": "evaluate_function_value",
         "value_type_prefix": "",
         "subskill_id": "evaluate_function_value",
         "runtime_status": "runtime_ready_candidate",
         "next_action": "phase2_foundation_preflight",
         "semantic_alignment": {
-          "skill_problem_type_score": 0.0385,
-          "source_problem_type_score": 0.0103,
+          "skill_problem_type_score": 0.0556,
+          "source_problem_type_score": 0.0,
+          "task_consistent_with_skill": true
+        }
+      },
+      {
+        "problem_type_id": "interpret_function_notation",
+        "proposed_problem_type_id": "interpret_function_notation",
+        "display_name": "interpret_function_notation / anchor bootstrap",
+        "matched_example_ids": [],
+        "matched_example_count": 0,
+        "unmatched_example_ids": [],
+        "representative_example_id": null,
+        "structural_features": [
+          "factored_expression"
+        ],
+        "answer_contract_proposal": {
+          "choices_required": false,
+          "choice_count": null,
+          "correct_choice_count": null,
+          "frontend_render_choices": false,
+          "answer_type": "expression",
+          "answer_shape": "factored_expression",
+          "answer_equivalence": "algebraic_equivalent",
+          "equivalence_type": "algebraic_equivalent",
+          "checker": "expression_checker",
+          "checker_key": "expression_checker",
+          "presentation_mode": "short_answer",
+          "selected_checker": "expression_checker",
+          "checker_selection_reason": "quadratic_factoring_expression",
+          "accepted_formats": [
+            "(x-5)(x+3)",
+            "(2x-1)(x+5)",
+            "2(x-1)(3x+2)"
+          ],
+          "answer_semantics": "algebraic_expression",
+          "checker_capability_status": "ok",
+          "checker_contract_blockers": [],
+          "checker_contract_warnings": [],
+          "stem_contract": {
+            "stem_must_not_embed_choices": true,
+            "allowed_math_objects": [
+              "quadratic_inequality"
+            ],
+            "required_math_objects": [
+              "quadratic_inequality"
+            ],
+            "forbidden_patterns": [
+              "\\(A\\)",
+              "\\(B\\)",
+              "\\(C\\)",
+              "\\(D\\)"
+            ]
+          },
+          "dependency_contract": {
+            "givens_must_be_used": true,
+            "target_answer_must_depend_on_givens": true,
+            "variables_in_conditions_must_appear_in_target": false
+          },
+          "semantic_contract": {
+            "reasoning_type": [
+              "interpret_function_notation"
+            ],
+            "reject_if": [
+              "unused_condition",
+              "ambiguous_answer",
+              "answer_not_derivable"
+            ]
+          },
+          "generator_contract": {
+            "template_variants": [
+              {
+                "id": "default",
+                "label": "default",
+                "stem_pattern": "依題意求解：{stem_hint}。",
+                "weight": 1.0,
+                "enabled": true
+              }
+            ],
+            "parameter_schema": {
+              "seed": {
+                "type": "integer",
+                "randomize": true
+              },
+              "difficulty_level": {
+                "choices": [
+                  "level_1",
+                  "level_2",
+                  "level_3"
+                ],
+                "weights": [
+                  0.4,
+                  0.4,
+                  0.2
+                ]
+              }
+            },
+            "variation_dimensions": [
+              "seed",
+              "difficulty_level",
+              "context_style"
+            ],
+            "difficulty_controls": {
+              "level_1": {},
+              "level_2": {},
+              "level_3": {}
+            },
+            "anti_repetition_rules": {
+              "avoid_same_template_consecutive": true,
+              "avoid_same_ratio_consecutive": true,
+              "avoid_same_point_names_consecutive": true,
+              "avoid_same_answer_consecutive": true,
+              "recent_history_window": 5,
+              "signature_fields": [
+                "problem_type_id",
+                "template_variant",
+                "routing_track",
+                "scenario_type",
+                "ratio_form",
+                "ratio_values",
+                "coordinate_pattern",
+                "answer"
+              ]
+            },
+            "validity_constraints": [
+              "answer derivable from givens"
+            ],
+            "answer_shape": "numeric",
+            "explanation_variants": [
+              "stepwise"
+            ],
+            "sampling_strategy": "weighted_random",
+            "template_families": [
+              "interpret_function_notation"
+            ],
+            "parameter_slots": {
+              "seed": "integer",
+              "difficulty": "easy"
+            },
+            "randomization_rules": {
+              "shuffle_choices": false
+            },
+            "avoid_llm_freeform_math": true,
+            "use_domain_functions": true,
+            "derivation_steps_required": true,
+            "template_slots": {
+              "stem": "linear_function_two_point_choice"
+            },
+            "problem_type_id": "interpret_function_notation",
+            "contract_validation_blockers": [],
+            "contract_validation_warnings": [
+              "single_template_variant_only",
+              "variation_dimensions_below_recommended_minimum"
+            ]
+          },
+          "validator_contract": {
+            "static_checks": [
+              "answer_contract_checks"
+            ],
+            "semantic_checks": [
+              "givens_to_target_dependency"
+            ],
+            "runtime_smoke_count": 30
+          },
+          "order_matters": true,
+          "accepted_format_notes": [],
+          "canonical_answer_schema": "expression"
+        },
+        "checker_key_proposal": "expression_checker",
+        "equivalence_type_proposal": "algebraic_equivalent",
+        "answer_shape": "factored_expression",
+        "answer_semantics": "algebraic_expression",
+        "presentation_mode": "short_answer",
+        "source_has_choices": false,
+        "selected_checker": "expression_checker",
+        "checker_selection_reason": "quadratic_factoring_expression",
+        "confidence": "medium",
+        "promote_recommendation": "recommend_promote_for_that_candidate",
+        "promote_blockers": [],
+        "risk_flags": [
+          "ai_first_mode_fell_back_to_rule_only",
+          "anchor_slot_bootstrap_zero_source"
+        ],
+        "checker_contract_warnings": [],
+        "spec_source": "anchor_slot_bootstrap",
+        "grouping_reason": "anchor_subskill_bootstrap_zero_source",
+        "feature_signature": [
+          "anchor_slot_bootstrap",
+          "interpret_function_notation"
+        ],
+        "problem_type_spec_draft": {
+          "problem_type_id": "interpret_function_notation",
+          "skill_id": "vh_數學B1_LinearFunction",
+          "target_task": "interpret_function_notation",
+          "task_family": "function_concept_family",
+          "display_name": "interpret_function_notation / anchor bootstrap",
+          "answer_format_hint": "expression",
+          "source_example_ids": [],
+          "answer_contract": {
+            "choices_required": false,
+            "choice_count": null,
+            "correct_choice_count": null,
+            "frontend_render_choices": false,
+            "answer_type": "expression",
+            "answer_shape": "factored_expression",
+            "answer_equivalence": "algebraic_equivalent",
+            "equivalence_type": "algebraic_equivalent",
+            "checker": "expression_checker",
+            "checker_key": "expression_checker",
+            "presentation_mode": "short_answer",
+            "selected_checker": "expression_checker",
+            "checker_selection_reason": "quadratic_factoring_expression",
+            "accepted_formats": [
+              "(x-5)(x+3)",
+              "(2x-1)(x+5)",
+              "2(x-1)(3x+2)"
+            ],
+            "answer_semantics": "algebraic_expression"
+          },
+          "stem_contract": {
+            "stem_must_not_embed_choices": true,
+            "allowed_math_objects": [
+              "quadratic_inequality"
+            ],
+            "required_math_objects": [
+              "quadratic_inequality"
+            ],
+            "forbidden_patterns": [
+              "\\(A\\)",
+              "\\(B\\)",
+              "\\(C\\)",
+              "\\(D\\)"
+            ]
+          },
+          "dependency_contract": {
+            "givens_must_be_used": true,
+            "target_answer_must_depend_on_givens": true,
+            "variables_in_conditions_must_appear_in_target": false
+          },
+          "semantic_contract": {
+            "reasoning_type": [
+              "interpret_function_notation"
+            ],
+            "reject_if": [
+              "unused_condition",
+              "ambiguous_answer",
+              "answer_not_derivable"
+            ]
+          },
+          "generator_contract": {
+            "template_variants": [
+              {
+                "id": "default",
+                "label": "default",
+                "stem_pattern": "依題意求解：{stem_hint}。",
+                "weight": 1.0,
+                "enabled": true
+              }
+            ],
+            "parameter_schema": {
+              "seed": {
+                "type": "integer",
+                "randomize": true
+              },
+              "difficulty_level": {
+                "choices": [
+                  "level_1",
+                  "level_2",
+                  "level_3"
+                ],
+                "weights": [
+                  0.4,
+                  0.4,
+                  0.2
+                ]
+              }
+            },
+            "variation_dimensions": [
+              "seed",
+              "difficulty_level",
+              "context_style"
+            ],
+            "difficulty_controls": {
+              "level_1": {},
+              "level_2": {},
+              "level_3": {}
+            },
+            "anti_repetition_rules": {
+              "avoid_same_template_consecutive": true,
+              "avoid_same_ratio_consecutive": true,
+              "avoid_same_point_names_consecutive": true,
+              "avoid_same_answer_consecutive": true,
+              "recent_history_window": 5,
+              "signature_fields": [
+                "problem_type_id",
+                "template_variant",
+                "routing_track",
+                "scenario_type",
+                "ratio_form",
+                "ratio_values",
+                "coordinate_pattern",
+                "answer"
+              ]
+            },
+            "validity_constraints": [
+              "answer derivable from givens"
+            ],
+            "answer_shape": "numeric",
+            "explanation_variants": [
+              "stepwise"
+            ],
+            "sampling_strategy": "weighted_random",
+            "template_families": [
+              "interpret_function_notation"
+            ],
+            "parameter_slots": {
+              "seed": "integer",
+              "difficulty": "easy"
+            },
+            "randomization_rules": {
+              "shuffle_choices": false
+            },
+            "avoid_llm_freeform_math": true,
+            "use_domain_functions": true,
+            "derivation_steps_required": true,
+            "template_slots": {
+              "stem": "linear_function_two_point_choice"
+            },
+            "problem_type_id": "interpret_function_notation",
+            "contract_validation_blockers": [],
+            "contract_validation_warnings": [
+              "single_template_variant_only",
+              "variation_dimensions_below_recommended_minimum"
+            ]
+          },
+          "validator_contract": {
+            "static_checks": [
+              "answer_contract_checks"
+            ],
+            "semantic_checks": [
+              "givens_to_target_dependency"
+            ],
+            "runtime_smoke_count": 30
+          },
+          "spec_source": "anchor_slot_bootstrap",
+          "grouping_reason": "anchor_subskill_bootstrap_zero_source",
+          "feature_signature": [
+            "anchor_slot_bootstrap",
+            "interpret_function_notation"
+          ],
+          "canonical_base_problem_type_id": "interpret_function_notation",
+          "value_type_prefix": "",
+          "_resolved_template_slot": "factor_quadratic_by_cross_multiplication"
+        },
+        "generator_readiness": "runtime_ready",
+        "usable_for_phase3": true,
+        "template_slot": "linear_function_two_point_choice",
+        "canonical_base_problem_type_id": "interpret_function_notation",
+        "value_type_prefix": "",
+        "subskill_id": "interpret_function_notation",
+        "runtime_status": "runtime_ready_candidate",
+        "next_action": "phase2_foundation_preflight",
+        "semantic_alignment": {
+          "skill_problem_type_score": 0.0556,
+          "source_problem_type_score": 0.0,
           "task_consistent_with_skill": true
         }
       }
@@ -113217,6 +117365,9 @@
           ],
           "target": "numeric_evaluate_function_notation",
           "classifier_source": "rule_fallback_ai_unavailable",
+          "math_meta_tags": [],
+          "forced_target_task": "",
+          "meta_answer_format_hint": "",
           "semantic_classification": {
             "ai_target_task": "",
             "ai_task_family": "",
@@ -113305,6 +117456,8 @@
                     "signature_fields": [
                       "problem_type_id",
                       "template_variant",
+                      "routing_track",
+                      "scenario_type",
                       "ratio_form",
                       "ratio_values",
                       "coordinate_pattern",
@@ -113402,6 +117555,8 @@
                     "signature_fields": [
                       "problem_type_id",
                       "template_variant",
+                      "routing_track",
+                      "scenario_type",
                       "ratio_form",
                       "ratio_values",
                       "coordinate_pattern",
@@ -113499,6 +117654,8 @@
                     "signature_fields": [
                       "problem_type_id",
                       "template_variant",
+                      "routing_track",
+                      "scenario_type",
                       "ratio_form",
                       "ratio_values",
                       "coordinate_pattern",
@@ -113596,6 +117753,8 @@
                     "signature_fields": [
                       "problem_type_id",
                       "template_variant",
+                      "routing_track",
+                      "scenario_type",
                       "ratio_form",
                       "ratio_values",
                       "coordinate_pattern",
@@ -113693,6 +117852,8 @@
                     "signature_fields": [
                       "problem_type_id",
                       "template_variant",
+                      "routing_track",
+                      "scenario_type",
                       "ratio_form",
                       "ratio_values",
                       "coordinate_pattern",
@@ -114039,6 +118200,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -114136,6 +118299,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -114233,6 +118398,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -114330,6 +118497,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -114427,6 +118596,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -114557,6 +118728,9 @@
           ],
           "target": "numeric_evaluate_function_notation",
           "classifier_source": "rule_fallback_ai_unavailable",
+          "math_meta_tags": [],
+          "forced_target_task": "",
+          "meta_answer_format_hint": "",
           "semantic_classification": {
             "ai_target_task": "",
             "ai_task_family": "",
@@ -114645,6 +118819,8 @@
                     "signature_fields": [
                       "problem_type_id",
                       "template_variant",
+                      "routing_track",
+                      "scenario_type",
                       "ratio_form",
                       "ratio_values",
                       "coordinate_pattern",
@@ -114742,6 +118918,8 @@
                     "signature_fields": [
                       "problem_type_id",
                       "template_variant",
+                      "routing_track",
+                      "scenario_type",
                       "ratio_form",
                       "ratio_values",
                       "coordinate_pattern",
@@ -114839,6 +119017,8 @@
                     "signature_fields": [
                       "problem_type_id",
                       "template_variant",
+                      "routing_track",
+                      "scenario_type",
                       "ratio_form",
                       "ratio_values",
                       "coordinate_pattern",
@@ -114936,6 +119116,8 @@
                     "signature_fields": [
                       "problem_type_id",
                       "template_variant",
+                      "routing_track",
+                      "scenario_type",
                       "ratio_form",
                       "ratio_values",
                       "coordinate_pattern",
@@ -115033,6 +119215,8 @@
                     "signature_fields": [
                       "problem_type_id",
                       "template_variant",
+                      "routing_track",
+                      "scenario_type",
                       "ratio_form",
                       "ratio_values",
                       "coordinate_pattern",
@@ -115130,6 +119314,8 @@
                     "signature_fields": [
                       "problem_type_id",
                       "template_variant",
+                      "routing_track",
+                      "scenario_type",
                       "ratio_form",
                       "ratio_values",
                       "coordinate_pattern",
@@ -115476,6 +119662,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -115573,6 +119761,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -115670,6 +119860,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -115767,6 +119959,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -115864,6 +120058,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -115961,6 +120157,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -116094,6 +120292,9 @@
           ],
           "target": "numeric_evaluate_function_notation",
           "classifier_source": "rule_fallback_ai_unavailable",
+          "math_meta_tags": [],
+          "forced_target_task": "",
+          "meta_answer_format_hint": "",
           "semantic_classification": {
             "ai_target_task": "",
             "ai_task_family": "",
@@ -116182,6 +120383,8 @@
                     "signature_fields": [
                       "problem_type_id",
                       "template_variant",
+                      "routing_track",
+                      "scenario_type",
                       "ratio_form",
                       "ratio_values",
                       "coordinate_pattern",
@@ -116279,6 +120482,8 @@
                     "signature_fields": [
                       "problem_type_id",
                       "template_variant",
+                      "routing_track",
+                      "scenario_type",
                       "ratio_form",
                       "ratio_values",
                       "coordinate_pattern",
@@ -116376,6 +120581,8 @@
                     "signature_fields": [
                       "problem_type_id",
                       "template_variant",
+                      "routing_track",
+                      "scenario_type",
                       "ratio_form",
                       "ratio_values",
                       "coordinate_pattern",
@@ -116473,6 +120680,8 @@
                     "signature_fields": [
                       "problem_type_id",
                       "template_variant",
+                      "routing_track",
+                      "scenario_type",
                       "ratio_form",
                       "ratio_values",
                       "coordinate_pattern",
@@ -116570,6 +120779,8 @@
                     "signature_fields": [
                       "problem_type_id",
                       "template_variant",
+                      "routing_track",
+                      "scenario_type",
                       "ratio_form",
                       "ratio_values",
                       "coordinate_pattern",
@@ -116667,6 +120878,8 @@
                     "signature_fields": [
                       "problem_type_id",
                       "template_variant",
+                      "routing_track",
+                      "scenario_type",
                       "ratio_form",
                       "ratio_values",
                       "coordinate_pattern",
@@ -117014,6 +121227,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -117111,6 +121326,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -117208,6 +121425,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -117305,6 +121524,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -117402,6 +121623,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -117499,6 +121722,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -117592,7 +121817,7 @@
       },
       {
         "example_id": 4445,
-        "detected_problem_type_id": "short_answer_evaluate_function_value_fallback_application",
+        "detected_problem_type_id": "short_answer_compute_numeric_short_answer",
         "example_feature": {
           "source_example_id": 4445,
           "question_text": "已知手機費包含月租基本費與超時通話費，某電信公司的手機月租基本費為m元，可以免費通話30分鐘。若通話時間超過30分鐘後，通話費與時間（分鐘）為線型函數的關係如圖所示。試問：\n(1)手機每個月基本費用m為多少元？\n(2)若本月小偉使用120分鐘，需繳手機費多少元？",
@@ -117605,7 +121830,7 @@
           "checker": "text_short_checker",
           "equivalence": "exact_string",
           "math_objects": [],
-          "target_task": "evaluate_function_value",
+          "target_task": "compute_numeric",
           "task_family": "generic_numeric_family",
           "reasoning_type": [
             "numeric_computation"
@@ -117616,8 +121841,11 @@
           "candidate_only": false,
           "variables": [],
           "givens": [],
-          "target": "evaluate_function_value",
+          "target": "compute_numeric",
           "classifier_source": "rule_fallback_ai_unavailable",
+          "math_meta_tags": [],
+          "forced_target_task": "",
+          "meta_answer_format_hint": "",
           "semantic_classification": {
             "ai_target_task": "",
             "ai_task_family": "",
@@ -117637,13 +121865,13 @@
             "rule_target_task": "compute_numeric",
             "rule_task_family": "generic_numeric_family",
             "rule_confidence": 0.2,
-            "final_target_task": "evaluate_function_value",
+            "final_target_task": "compute_numeric",
             "final_task_family": "generic_numeric_family",
-            "classifier_source": "fallback_application_induct",
+            "classifier_source": "rule_fallback_ai_unavailable",
             "classification_decision": "",
             "conflict_reason": "ai_api_key_missing",
             "source_mapping_warning": "",
-            "requires_human_action": false,
+            "requires_human_action": true,
             "ai_notes": "",
             "skill_scoped_candidates": [
               {
@@ -117706,6 +121934,8 @@
                     "signature_fields": [
                       "problem_type_id",
                       "template_variant",
+                      "routing_track",
+                      "scenario_type",
                       "ratio_form",
                       "ratio_values",
                       "coordinate_pattern",
@@ -117803,6 +122033,8 @@
                     "signature_fields": [
                       "problem_type_id",
                       "template_variant",
+                      "routing_track",
+                      "scenario_type",
                       "ratio_form",
                       "ratio_values",
                       "coordinate_pattern",
@@ -117900,6 +122132,8 @@
                     "signature_fields": [
                       "problem_type_id",
                       "template_variant",
+                      "routing_track",
+                      "scenario_type",
                       "ratio_form",
                       "ratio_values",
                       "coordinate_pattern",
@@ -117997,6 +122231,8 @@
                     "signature_fields": [
                       "problem_type_id",
                       "template_variant",
+                      "routing_track",
+                      "scenario_type",
                       "ratio_form",
                       "ratio_values",
                       "coordinate_pattern",
@@ -118094,6 +122330,8 @@
                     "signature_fields": [
                       "problem_type_id",
                       "template_variant",
+                      "routing_track",
+                      "scenario_type",
                       "ratio_form",
                       "ratio_values",
                       "coordinate_pattern",
@@ -118191,6 +122429,8 @@
                     "signature_fields": [
                       "problem_type_id",
                       "template_variant",
+                      "routing_track",
+                      "scenario_type",
                       "ratio_form",
                       "ratio_values",
                       "coordinate_pattern",
@@ -118288,6 +122528,8 @@
                     "signature_fields": [
                       "problem_type_id",
                       "template_variant",
+                      "routing_track",
+                      "scenario_type",
                       "ratio_form",
                       "ratio_values",
                       "coordinate_pattern",
@@ -118347,7 +122589,7 @@
             ],
             "selected_subskill": "compute_numeric",
             "selected_problem_type": "compute_numeric",
-            "candidate_source": "fallback_application",
+            "candidate_source": "needs_review",
             "selected_generator_contract": {},
             "parameter_schema": {},
             "variable_randomization_notes": [],
@@ -118534,7 +122776,6 @@
           "induction_tier": "core",
           "enrichment_reasons": [],
           "included_in_core_induction": true,
-          "problem_type_id": "short_answer_evaluate_function_value_fallback_application",
           "equivalence_type": "exact_string",
           "checker_key": "text_short_checker",
           "requires_human_action": false
@@ -118542,7 +122783,9 @@
         "answer_shape": "text_short",
         "classification_confidence": "high",
         "classification_reason": "rule_fallback_ai_unavailable",
-        "risk_flags": [],
+        "risk_flags": [
+          "requires_human_action"
+        ],
         "semantic_classification": {
           "ai_target_task": "",
           "ai_task_family": "",
@@ -118562,13 +122805,13 @@
           "rule_target_task": "compute_numeric",
           "rule_task_family": "generic_numeric_family",
           "rule_confidence": 0.2,
-          "final_target_task": "evaluate_function_value",
+          "final_target_task": "compute_numeric",
           "final_task_family": "generic_numeric_family",
-          "classifier_source": "fallback_application_induct",
+          "classifier_source": "rule_fallback_ai_unavailable",
           "classification_decision": "",
           "conflict_reason": "ai_api_key_missing",
           "source_mapping_warning": "",
-          "requires_human_action": false,
+          "requires_human_action": true,
           "ai_notes": "",
           "skill_scoped_candidates": [
             {
@@ -118631,6 +122874,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -118728,6 +122973,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -118825,6 +123072,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -118922,6 +123171,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -119019,6 +123270,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -119116,6 +123369,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -119213,6 +123468,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -119272,7 +123529,7 @@
           ],
           "selected_subskill": "compute_numeric",
           "selected_problem_type": "compute_numeric",
-          "candidate_source": "fallback_application",
+          "candidate_source": "needs_review",
           "selected_generator_contract": {},
           "parameter_schema": {},
           "variable_randomization_notes": [],
@@ -119297,9 +123554,9 @@
           "possible_structure_mismatch": true,
           "possible_mixed_source_context": true
         },
-        "subskill_id": "evaluate_function_value",
-        "classification_source": "fallback_application_induct",
-        "induction_eligibility": "eligible"
+        "subskill_id": "compute_numeric",
+        "classification_source": "rule_fallback_ai_unavailable",
+        "induction_eligibility": "excluded"
       },
       {
         "example_id": 4424,
@@ -119344,6 +123601,9 @@
           ],
           "target": "numeric_evaluate_function_notation",
           "classifier_source": "rule_fallback_ai_unavailable",
+          "math_meta_tags": [],
+          "forced_target_task": "",
+          "meta_answer_format_hint": "",
           "semantic_classification": {
             "ai_target_task": "",
             "ai_task_family": "",
@@ -119432,6 +123692,8 @@
                     "signature_fields": [
                       "problem_type_id",
                       "template_variant",
+                      "routing_track",
+                      "scenario_type",
                       "ratio_form",
                       "ratio_values",
                       "coordinate_pattern",
@@ -119529,6 +123791,8 @@
                     "signature_fields": [
                       "problem_type_id",
                       "template_variant",
+                      "routing_track",
+                      "scenario_type",
                       "ratio_form",
                       "ratio_values",
                       "coordinate_pattern",
@@ -119626,6 +123890,8 @@
                     "signature_fields": [
                       "problem_type_id",
                       "template_variant",
+                      "routing_track",
+                      "scenario_type",
                       "ratio_form",
                       "ratio_values",
                       "coordinate_pattern",
@@ -119723,6 +123989,8 @@
                     "signature_fields": [
                       "problem_type_id",
                       "template_variant",
+                      "routing_track",
+                      "scenario_type",
                       "ratio_form",
                       "ratio_values",
                       "coordinate_pattern",
@@ -119820,6 +124088,8 @@
                     "signature_fields": [
                       "problem_type_id",
                       "template_variant",
+                      "routing_track",
+                      "scenario_type",
                       "ratio_form",
                       "ratio_values",
                       "coordinate_pattern",
@@ -119917,6 +124187,8 @@
                     "signature_fields": [
                       "problem_type_id",
                       "template_variant",
+                      "routing_track",
+                      "scenario_type",
                       "ratio_form",
                       "ratio_values",
                       "coordinate_pattern",
@@ -120014,6 +124286,8 @@
                     "signature_fields": [
                       "problem_type_id",
                       "template_variant",
+                      "routing_track",
+                      "scenario_type",
                       "ratio_form",
                       "ratio_values",
                       "coordinate_pattern",
@@ -120369,6 +124643,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -120466,6 +124742,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -120563,6 +124841,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -120660,6 +124940,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -120757,6 +125039,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -120854,6 +125138,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -120951,6 +125237,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -121044,7 +125332,7 @@
       },
       {
         "example_id": 4425,
-        "detected_problem_type_id": "short_answer_evaluate_function_value_fallback_application",
+        "detected_problem_type_id": "short_answer_compute_numeric_short_answer",
         "example_feature": {
           "source_example_id": 4425,
           "question_text": "右圖是某電信公司的通話費計算方式：300秒以內只繳基本費，超過300秒之後的費用，與通話時間成線型函數關係，試問：\n(1) 手機基本費用為多少元？\n(2) 本月小郁使用手機通話1500秒，需繳交多少元？",
@@ -121057,7 +125345,7 @@
           "checker": "text_short_checker",
           "equivalence": "exact_string",
           "math_objects": [],
-          "target_task": "evaluate_function_value",
+          "target_task": "compute_numeric",
           "task_family": "generic_numeric_family",
           "reasoning_type": [
             "numeric_computation"
@@ -121068,8 +125356,11 @@
           "candidate_only": false,
           "variables": [],
           "givens": [],
-          "target": "evaluate_function_value",
+          "target": "compute_numeric",
           "classifier_source": "rule_fallback_ai_unavailable",
+          "math_meta_tags": [],
+          "forced_target_task": "",
+          "meta_answer_format_hint": "",
           "semantic_classification": {
             "ai_target_task": "",
             "ai_task_family": "",
@@ -121089,13 +125380,13 @@
             "rule_target_task": "compute_numeric",
             "rule_task_family": "generic_numeric_family",
             "rule_confidence": 0.2,
-            "final_target_task": "evaluate_function_value",
+            "final_target_task": "compute_numeric",
             "final_task_family": "generic_numeric_family",
-            "classifier_source": "fallback_application_induct",
+            "classifier_source": "rule_fallback_ai_unavailable",
             "classification_decision": "",
             "conflict_reason": "ai_api_key_missing",
             "source_mapping_warning": "",
-            "requires_human_action": false,
+            "requires_human_action": true,
             "ai_notes": "",
             "skill_scoped_candidates": [
               {
@@ -121158,6 +125449,8 @@
                     "signature_fields": [
                       "problem_type_id",
                       "template_variant",
+                      "routing_track",
+                      "scenario_type",
                       "ratio_form",
                       "ratio_values",
                       "coordinate_pattern",
@@ -121255,6 +125548,8 @@
                     "signature_fields": [
                       "problem_type_id",
                       "template_variant",
+                      "routing_track",
+                      "scenario_type",
                       "ratio_form",
                       "ratio_values",
                       "coordinate_pattern",
@@ -121352,6 +125647,8 @@
                     "signature_fields": [
                       "problem_type_id",
                       "template_variant",
+                      "routing_track",
+                      "scenario_type",
                       "ratio_form",
                       "ratio_values",
                       "coordinate_pattern",
@@ -121449,6 +125746,8 @@
                     "signature_fields": [
                       "problem_type_id",
                       "template_variant",
+                      "routing_track",
+                      "scenario_type",
                       "ratio_form",
                       "ratio_values",
                       "coordinate_pattern",
@@ -121546,6 +125845,8 @@
                     "signature_fields": [
                       "problem_type_id",
                       "template_variant",
+                      "routing_track",
+                      "scenario_type",
                       "ratio_form",
                       "ratio_values",
                       "coordinate_pattern",
@@ -121643,6 +125944,8 @@
                     "signature_fields": [
                       "problem_type_id",
                       "template_variant",
+                      "routing_track",
+                      "scenario_type",
                       "ratio_form",
                       "ratio_values",
                       "coordinate_pattern",
@@ -121740,6 +126043,8 @@
                     "signature_fields": [
                       "problem_type_id",
                       "template_variant",
+                      "routing_track",
+                      "scenario_type",
                       "ratio_form",
                       "ratio_values",
                       "coordinate_pattern",
@@ -121797,7 +126102,7 @@
             "outsider_candidates": [],
             "selected_subskill": "compute_numeric",
             "selected_problem_type": "compute_numeric",
-            "candidate_source": "fallback_application",
+            "candidate_source": "needs_review",
             "selected_generator_contract": {},
             "parameter_schema": {},
             "variable_randomization_notes": [],
@@ -121992,7 +126297,6 @@
           "induction_tier": "core",
           "enrichment_reasons": [],
           "included_in_core_induction": true,
-          "problem_type_id": "short_answer_evaluate_function_value_fallback_application",
           "equivalence_type": "exact_string",
           "checker_key": "text_short_checker",
           "requires_human_action": false
@@ -122000,7 +126304,9 @@
         "answer_shape": "text_short",
         "classification_confidence": "high",
         "classification_reason": "rule_fallback_ai_unavailable",
-        "risk_flags": [],
+        "risk_flags": [
+          "requires_human_action"
+        ],
         "semantic_classification": {
           "ai_target_task": "",
           "ai_task_family": "",
@@ -122020,13 +126326,13 @@
           "rule_target_task": "compute_numeric",
           "rule_task_family": "generic_numeric_family",
           "rule_confidence": 0.2,
-          "final_target_task": "evaluate_function_value",
+          "final_target_task": "compute_numeric",
           "final_task_family": "generic_numeric_family",
-          "classifier_source": "fallback_application_induct",
+          "classifier_source": "rule_fallback_ai_unavailable",
           "classification_decision": "",
           "conflict_reason": "ai_api_key_missing",
           "source_mapping_warning": "",
-          "requires_human_action": false,
+          "requires_human_action": true,
           "ai_notes": "",
           "skill_scoped_candidates": [
             {
@@ -122089,6 +126395,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -122186,6 +126494,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -122283,6 +126593,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -122380,6 +126692,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -122477,6 +126791,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -122574,6 +126890,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -122671,6 +126989,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -122728,7 +127048,7 @@
           "outsider_candidates": [],
           "selected_subskill": "compute_numeric",
           "selected_problem_type": "compute_numeric",
-          "candidate_source": "fallback_application",
+          "candidate_source": "needs_review",
           "selected_generator_contract": {},
           "parameter_schema": {},
           "variable_randomization_notes": [],
@@ -122753,13 +127073,13 @@
           "possible_structure_mismatch": true,
           "possible_mixed_source_context": true
         },
-        "subskill_id": "evaluate_function_value",
-        "classification_source": "fallback_application_induct",
-        "induction_eligibility": "eligible"
+        "subskill_id": "compute_numeric",
+        "classification_source": "rule_fallback_ai_unavailable",
+        "induction_eligibility": "excluded"
       },
       {
         "example_id": 4426,
-        "detected_problem_type_id": "short_answer_evaluate_function_value_fallback_application",
+        "detected_problem_type_id": "short_answer_compute_numeric_short_answer",
         "example_feature": {
           "source_example_id": 4426,
           "question_text": "設直角坐標平面上四點$A\\left( -2,1 \\right)$、$B\\left( {{b}_{1}},{{b}_{2}} \\right)$、$C\\left( {{c}_{1}},{{c}_{2}} \\right)$、$D\\left( 4,3 \\right)$在同一直線上，依序為A、B、C、D，且B、C兩點將線段AD三等分，則點C之坐標$\\left( {{c}_{1}},{{c}_{2}} \\right)$為何？..",
@@ -122777,7 +127097,7 @@
             "triangle",
             "two_coordinate_points"
           ],
-          "target_task": "evaluate_function_value",
+          "target_task": "compute_numeric",
           "task_family": "generic_numeric_family",
           "reasoning_type": [
             "numeric_computation"
@@ -122802,8 +127122,11 @@
             "b",
             "c"
           ],
-          "target": "evaluate_function_value",
+          "target": "compute_numeric",
           "classifier_source": "rule_fallback_ai_unavailable",
+          "math_meta_tags": [],
+          "forced_target_task": "",
+          "meta_answer_format_hint": "",
           "semantic_classification": {
             "ai_target_task": "",
             "ai_task_family": "",
@@ -122823,13 +127146,13 @@
             "rule_target_task": "compute_numeric",
             "rule_task_family": "generic_numeric_family",
             "rule_confidence": 0.2,
-            "final_target_task": "evaluate_function_value",
+            "final_target_task": "compute_numeric",
             "final_task_family": "generic_numeric_family",
-            "classifier_source": "fallback_application_induct",
+            "classifier_source": "rule_fallback_ai_unavailable",
             "classification_decision": "",
             "conflict_reason": "ai_api_key_missing",
             "source_mapping_warning": "",
-            "requires_human_action": false,
+            "requires_human_action": true,
             "ai_notes": "",
             "skill_scoped_candidates": [
               {
@@ -122892,6 +127215,8 @@
                     "signature_fields": [
                       "problem_type_id",
                       "template_variant",
+                      "routing_track",
+                      "scenario_type",
                       "ratio_form",
                       "ratio_values",
                       "coordinate_pattern",
@@ -122989,6 +127314,8 @@
                     "signature_fields": [
                       "problem_type_id",
                       "template_variant",
+                      "routing_track",
+                      "scenario_type",
                       "ratio_form",
                       "ratio_values",
                       "coordinate_pattern",
@@ -123086,6 +127413,8 @@
                     "signature_fields": [
                       "problem_type_id",
                       "template_variant",
+                      "routing_track",
+                      "scenario_type",
                       "ratio_form",
                       "ratio_values",
                       "coordinate_pattern",
@@ -123183,6 +127512,8 @@
                     "signature_fields": [
                       "problem_type_id",
                       "template_variant",
+                      "routing_track",
+                      "scenario_type",
                       "ratio_form",
                       "ratio_values",
                       "coordinate_pattern",
@@ -123280,6 +127611,8 @@
                     "signature_fields": [
                       "problem_type_id",
                       "template_variant",
+                      "routing_track",
+                      "scenario_type",
                       "ratio_form",
                       "ratio_values",
                       "coordinate_pattern",
@@ -123377,6 +127710,8 @@
                     "signature_fields": [
                       "problem_type_id",
                       "template_variant",
+                      "routing_track",
+                      "scenario_type",
                       "ratio_form",
                       "ratio_values",
                       "coordinate_pattern",
@@ -123474,6 +127809,8 @@
                     "signature_fields": [
                       "problem_type_id",
                       "template_variant",
+                      "routing_track",
+                      "scenario_type",
                       "ratio_form",
                       "ratio_values",
                       "coordinate_pattern",
@@ -123531,7 +127868,7 @@
             "outsider_candidates": [],
             "selected_subskill": "compute_numeric",
             "selected_problem_type": "compute_numeric",
-            "candidate_source": "fallback_application",
+            "candidate_source": "needs_review",
             "selected_generator_contract": {},
             "parameter_schema": {},
             "variable_randomization_notes": [],
@@ -123731,7 +128068,6 @@
           "induction_tier": "core",
           "enrichment_reasons": [],
           "included_in_core_induction": true,
-          "problem_type_id": "short_answer_evaluate_function_value_fallback_application",
           "equivalence_type": "exact_string",
           "checker_key": "text_short_checker",
           "requires_human_action": false
@@ -123739,7 +128075,9 @@
         "answer_shape": "text_short",
         "classification_confidence": "high",
         "classification_reason": "rule_fallback_ai_unavailable",
-        "risk_flags": [],
+        "risk_flags": [
+          "requires_human_action"
+        ],
         "semantic_classification": {
           "ai_target_task": "",
           "ai_task_family": "",
@@ -123759,13 +128097,13 @@
           "rule_target_task": "compute_numeric",
           "rule_task_family": "generic_numeric_family",
           "rule_confidence": 0.2,
-          "final_target_task": "evaluate_function_value",
+          "final_target_task": "compute_numeric",
           "final_task_family": "generic_numeric_family",
-          "classifier_source": "fallback_application_induct",
+          "classifier_source": "rule_fallback_ai_unavailable",
           "classification_decision": "",
           "conflict_reason": "ai_api_key_missing",
           "source_mapping_warning": "",
-          "requires_human_action": false,
+          "requires_human_action": true,
           "ai_notes": "",
           "skill_scoped_candidates": [
             {
@@ -123828,6 +128166,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -123925,6 +128265,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -124022,6 +128364,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -124119,6 +128463,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -124216,6 +128562,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -124313,6 +128661,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -124410,6 +128760,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -124467,7 +128819,7 @@
           "outsider_candidates": [],
           "selected_subskill": "compute_numeric",
           "selected_problem_type": "compute_numeric",
-          "candidate_source": "fallback_application",
+          "candidate_source": "needs_review",
           "selected_generator_contract": {},
           "parameter_schema": {},
           "variable_randomization_notes": [],
@@ -124497,9 +128849,9 @@
           "possible_structure_mismatch": true,
           "possible_mixed_source_context": true
         },
-        "subskill_id": "evaluate_function_value",
-        "classification_source": "fallback_application_induct",
-        "induction_eligibility": "eligible"
+        "subskill_id": "compute_numeric",
+        "classification_source": "rule_fallback_ai_unavailable",
+        "induction_eligibility": "excluded"
       },
       {
         "example_id": 4441,
@@ -124544,6 +128896,9 @@
           ],
           "target": "numeric_evaluate_function_notation",
           "classifier_source": "rule_fallback_ai_unavailable",
+          "math_meta_tags": [],
+          "forced_target_task": "",
+          "meta_answer_format_hint": "",
           "semantic_classification": {
             "ai_target_task": "",
             "ai_task_family": "",
@@ -124632,6 +128987,8 @@
                     "signature_fields": [
                       "problem_type_id",
                       "template_variant",
+                      "routing_track",
+                      "scenario_type",
                       "ratio_form",
                       "ratio_values",
                       "coordinate_pattern",
@@ -124729,6 +129086,8 @@
                     "signature_fields": [
                       "problem_type_id",
                       "template_variant",
+                      "routing_track",
+                      "scenario_type",
                       "ratio_form",
                       "ratio_values",
                       "coordinate_pattern",
@@ -124826,6 +129185,8 @@
                     "signature_fields": [
                       "problem_type_id",
                       "template_variant",
+                      "routing_track",
+                      "scenario_type",
                       "ratio_form",
                       "ratio_values",
                       "coordinate_pattern",
@@ -124923,6 +129284,8 @@
                     "signature_fields": [
                       "problem_type_id",
                       "template_variant",
+                      "routing_track",
+                      "scenario_type",
                       "ratio_form",
                       "ratio_values",
                       "coordinate_pattern",
@@ -125020,6 +129383,8 @@
                     "signature_fields": [
                       "problem_type_id",
                       "template_variant",
+                      "routing_track",
+                      "scenario_type",
                       "ratio_form",
                       "ratio_values",
                       "coordinate_pattern",
@@ -125117,6 +129482,8 @@
                     "signature_fields": [
                       "problem_type_id",
                       "template_variant",
+                      "routing_track",
+                      "scenario_type",
                       "ratio_form",
                       "ratio_values",
                       "coordinate_pattern",
@@ -125214,6 +129581,8 @@
                     "signature_fields": [
                       "problem_type_id",
                       "template_variant",
+                      "routing_track",
+                      "scenario_type",
                       "ratio_form",
                       "ratio_values",
                       "coordinate_pattern",
@@ -125569,6 +129938,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -125666,6 +130037,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -125763,6 +130136,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -125860,6 +130235,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -125957,6 +130334,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -126054,6 +130433,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -126151,6 +130532,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -126244,7 +130627,7 @@
       },
       {
         "example_id": 4442,
-        "detected_problem_type_id": "short_answer_evaluate_function_value_fallback_application",
+        "detected_problem_type_id": "short_answer_applied_quadratic_inequality_problem_short_answer",
         "example_feature": {
           "source_example_id": 4442,
           "question_text": "高老師搭乘某廉價航空，他的行李托運費用是850元，若行李托運費用與重量是成線型函數的關係，如圖所示，試求高老師托運的行李幾公斤？",
@@ -126257,10 +130640,10 @@
           "checker": "text_short_checker",
           "equivalence": "exact_string",
           "math_objects": [],
-          "target_task": "evaluate_function_value",
-          "task_family": "generic_numeric_family",
+          "target_task": "applied_quadratic_inequality_problem",
+          "task_family": "quadratic_inequality_family",
           "reasoning_type": [
-            "numeric_computation"
+            "quadratic_factoring_reasoning"
           ],
           "required_derivation": true,
           "source_quality_issues": [],
@@ -126268,8 +130651,13 @@
           "candidate_only": false,
           "variables": [],
           "givens": [],
-          "target": "evaluate_function_value",
+          "target": "applied_quadratic_inequality_problem",
           "classifier_source": "rule_fallback_ai_unavailable",
+          "math_meta_tags": [
+            "[Task: Applied_Context]"
+          ],
+          "forced_target_task": "applied_quadratic_inequality_problem",
+          "meta_answer_format_hint": "interval",
           "semantic_classification": {
             "ai_target_task": "",
             "ai_task_family": "",
@@ -126286,16 +130674,16 @@
             "raw_response_preview": "",
             "sanitized_response_preview": "",
             "failed_stage": "",
-            "rule_target_task": "compute_numeric",
-            "rule_task_family": "generic_numeric_family",
-            "rule_confidence": 0.2,
-            "final_target_task": "evaluate_function_value",
-            "final_task_family": "generic_numeric_family",
-            "classifier_source": "fallback_application_induct",
+            "rule_target_task": "applied_quadratic_inequality_problem",
+            "rule_task_family": "quadratic_inequality_family",
+            "rule_confidence": 0.5,
+            "final_target_task": "applied_quadratic_inequality_problem",
+            "final_task_family": "quadratic_inequality_family",
+            "classifier_source": "rule_fallback_ai_unavailable",
             "classification_decision": "",
             "conflict_reason": "ai_api_key_missing",
             "source_mapping_warning": "",
-            "requires_human_action": false,
+            "requires_human_action": true,
             "ai_notes": "",
             "skill_scoped_candidates": [
               {
@@ -126358,6 +130746,8 @@
                     "signature_fields": [
                       "problem_type_id",
                       "template_variant",
+                      "routing_track",
+                      "scenario_type",
                       "ratio_form",
                       "ratio_values",
                       "coordinate_pattern",
@@ -126455,6 +130845,8 @@
                     "signature_fields": [
                       "problem_type_id",
                       "template_variant",
+                      "routing_track",
+                      "scenario_type",
                       "ratio_form",
                       "ratio_values",
                       "coordinate_pattern",
@@ -126552,6 +130944,8 @@
                     "signature_fields": [
                       "problem_type_id",
                       "template_variant",
+                      "routing_track",
+                      "scenario_type",
                       "ratio_form",
                       "ratio_values",
                       "coordinate_pattern",
@@ -126649,6 +131043,8 @@
                     "signature_fields": [
                       "problem_type_id",
                       "template_variant",
+                      "routing_track",
+                      "scenario_type",
                       "ratio_form",
                       "ratio_values",
                       "coordinate_pattern",
@@ -126746,6 +131142,8 @@
                     "signature_fields": [
                       "problem_type_id",
                       "template_variant",
+                      "routing_track",
+                      "scenario_type",
                       "ratio_form",
                       "ratio_values",
                       "coordinate_pattern",
@@ -126843,6 +131241,8 @@
                     "signature_fields": [
                       "problem_type_id",
                       "template_variant",
+                      "routing_track",
+                      "scenario_type",
                       "ratio_form",
                       "ratio_values",
                       "coordinate_pattern",
@@ -126940,6 +131340,8 @@
                     "signature_fields": [
                       "problem_type_id",
                       "template_variant",
+                      "routing_track",
+                      "scenario_type",
                       "ratio_form",
                       "ratio_values",
                       "coordinate_pattern",
@@ -126978,6 +131380,105 @@
                 }
               },
               {
+                "candidate_id": "C8",
+                "target_task": "applied_quadratic_inequality_problem",
+                "task_family": "quadratic_inequality_family",
+                "problem_type_id": "applied_quadratic_inequality_problem",
+                "label": "applied_quadratic_inequality_problem",
+                "candidate_source": "outsider",
+                "in_anchor_scope": false,
+                "answer_type": "numeric",
+                "answer_shape": "numeric",
+                "math_objects": [],
+                "checker_key": "numeric_checker",
+                "equivalence_type": "numeric_equivalence",
+                "generator_contract": {
+                  "template_variants": [
+                    {
+                      "id": "default",
+                      "label": "default",
+                      "stem_pattern": "依題意求解：{stem_hint}。",
+                      "weight": 1.0,
+                      "enabled": true
+                    }
+                  ],
+                  "parameter_schema": {
+                    "seed": {
+                      "type": "integer",
+                      "randomize": true
+                    },
+                    "difficulty_level": {
+                      "choices": [
+                        "level_1",
+                        "level_2",
+                        "level_3"
+                      ],
+                      "weights": [
+                        0.4,
+                        0.4,
+                        0.2
+                      ]
+                    }
+                  },
+                  "variation_dimensions": [
+                    "seed",
+                    "difficulty_level",
+                    "context_style"
+                  ],
+                  "difficulty_controls": {
+                    "level_1": {},
+                    "level_2": {},
+                    "level_3": {}
+                  },
+                  "anti_repetition_rules": {
+                    "avoid_same_template_consecutive": true,
+                    "avoid_same_ratio_consecutive": true,
+                    "avoid_same_point_names_consecutive": true,
+                    "avoid_same_answer_consecutive": true,
+                    "recent_history_window": 5,
+                    "signature_fields": [
+                      "problem_type_id",
+                      "template_variant",
+                      "routing_track",
+                      "scenario_type",
+                      "ratio_form",
+                      "ratio_values",
+                      "coordinate_pattern",
+                      "answer"
+                    ]
+                  },
+                  "validity_constraints": [
+                    "answer derivable from givens"
+                  ],
+                  "answer_shape": "numeric",
+                  "explanation_variants": [
+                    "stepwise"
+                  ],
+                  "sampling_strategy": "weighted_random",
+                  "template_families": [
+                    "applied_quadratic_inequality_problem"
+                  ]
+                },
+                "parameter_schema": {
+                  "seed": {
+                    "type": "integer",
+                    "randomize": true
+                  },
+                  "difficulty_level": {
+                    "choices": [
+                      "level_1",
+                      "level_2",
+                      "level_3"
+                    ],
+                    "weights": [
+                      0.4,
+                      0.4,
+                      0.2
+                    ]
+                  }
+                }
+              },
+              {
                 "candidate_id": "needs_review",
                 "target_task": "",
                 "task_family": "",
@@ -126994,18 +131495,20 @@
                 "parameter_schema": {}
               }
             ],
-            "outsider_candidates": [],
-            "selected_subskill": "compute_numeric",
-            "selected_problem_type": "compute_numeric",
-            "candidate_source": "fallback_application",
+            "outsider_candidates": [
+              "C8"
+            ],
+            "selected_subskill": "applied_quadratic_inequality_problem",
+            "selected_problem_type": "applied_quadratic_inequality_problem",
+            "candidate_source": "needs_review",
             "selected_generator_contract": {},
             "parameter_schema": {},
             "variable_randomization_notes": [],
             "checker_key": "",
             "equivalence_type": "",
             "skill_scope_trusted": true,
-            "target_task": "compute_numeric",
-            "task_family": "generic_numeric_family",
+            "target_task": "applied_quadratic_inequality_problem",
+            "task_family": "quadratic_inequality_family",
             "math_objects": [],
             "answer_type": "short_answer",
             "answer_shape": "text_short",
@@ -127192,7 +131695,6 @@
           "induction_tier": "core",
           "enrichment_reasons": [],
           "included_in_core_induction": true,
-          "problem_type_id": "short_answer_evaluate_function_value_fallback_application",
           "equivalence_type": "exact_string",
           "checker_key": "text_short_checker",
           "requires_human_action": false
@@ -127200,7 +131702,9 @@
         "answer_shape": "text_short",
         "classification_confidence": "high",
         "classification_reason": "rule_fallback_ai_unavailable",
-        "risk_flags": [],
+        "risk_flags": [
+          "requires_human_action"
+        ],
         "semantic_classification": {
           "ai_target_task": "",
           "ai_task_family": "",
@@ -127217,16 +131721,16 @@
           "raw_response_preview": "",
           "sanitized_response_preview": "",
           "failed_stage": "",
-          "rule_target_task": "compute_numeric",
-          "rule_task_family": "generic_numeric_family",
-          "rule_confidence": 0.2,
-          "final_target_task": "evaluate_function_value",
-          "final_task_family": "generic_numeric_family",
-          "classifier_source": "fallback_application_induct",
+          "rule_target_task": "applied_quadratic_inequality_problem",
+          "rule_task_family": "quadratic_inequality_family",
+          "rule_confidence": 0.5,
+          "final_target_task": "applied_quadratic_inequality_problem",
+          "final_task_family": "quadratic_inequality_family",
+          "classifier_source": "rule_fallback_ai_unavailable",
           "classification_decision": "",
           "conflict_reason": "ai_api_key_missing",
           "source_mapping_warning": "",
-          "requires_human_action": false,
+          "requires_human_action": true,
           "ai_notes": "",
           "skill_scoped_candidates": [
             {
@@ -127289,6 +131793,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -127386,6 +131892,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -127483,6 +131991,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -127580,6 +132090,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -127677,6 +132189,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -127774,6 +132288,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -127871,6 +132387,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -127909,6 +132427,105 @@
               }
             },
             {
+              "candidate_id": "C8",
+              "target_task": "applied_quadratic_inequality_problem",
+              "task_family": "quadratic_inequality_family",
+              "problem_type_id": "applied_quadratic_inequality_problem",
+              "label": "applied_quadratic_inequality_problem",
+              "candidate_source": "outsider",
+              "in_anchor_scope": false,
+              "answer_type": "numeric",
+              "answer_shape": "numeric",
+              "math_objects": [],
+              "checker_key": "numeric_checker",
+              "equivalence_type": "numeric_equivalence",
+              "generator_contract": {
+                "template_variants": [
+                  {
+                    "id": "default",
+                    "label": "default",
+                    "stem_pattern": "依題意求解：{stem_hint}。",
+                    "weight": 1.0,
+                    "enabled": true
+                  }
+                ],
+                "parameter_schema": {
+                  "seed": {
+                    "type": "integer",
+                    "randomize": true
+                  },
+                  "difficulty_level": {
+                    "choices": [
+                      "level_1",
+                      "level_2",
+                      "level_3"
+                    ],
+                    "weights": [
+                      0.4,
+                      0.4,
+                      0.2
+                    ]
+                  }
+                },
+                "variation_dimensions": [
+                  "seed",
+                  "difficulty_level",
+                  "context_style"
+                ],
+                "difficulty_controls": {
+                  "level_1": {},
+                  "level_2": {},
+                  "level_3": {}
+                },
+                "anti_repetition_rules": {
+                  "avoid_same_template_consecutive": true,
+                  "avoid_same_ratio_consecutive": true,
+                  "avoid_same_point_names_consecutive": true,
+                  "avoid_same_answer_consecutive": true,
+                  "recent_history_window": 5,
+                  "signature_fields": [
+                    "problem_type_id",
+                    "template_variant",
+                    "routing_track",
+                    "scenario_type",
+                    "ratio_form",
+                    "ratio_values",
+                    "coordinate_pattern",
+                    "answer"
+                  ]
+                },
+                "validity_constraints": [
+                  "answer derivable from givens"
+                ],
+                "answer_shape": "numeric",
+                "explanation_variants": [
+                  "stepwise"
+                ],
+                "sampling_strategy": "weighted_random",
+                "template_families": [
+                  "applied_quadratic_inequality_problem"
+                ]
+              },
+              "parameter_schema": {
+                "seed": {
+                  "type": "integer",
+                  "randomize": true
+                },
+                "difficulty_level": {
+                  "choices": [
+                    "level_1",
+                    "level_2",
+                    "level_3"
+                  ],
+                  "weights": [
+                    0.4,
+                    0.4,
+                    0.2
+                  ]
+                }
+              }
+            },
+            {
               "candidate_id": "needs_review",
               "target_task": "",
               "task_family": "",
@@ -127925,18 +132542,20 @@
               "parameter_schema": {}
             }
           ],
-          "outsider_candidates": [],
-          "selected_subskill": "compute_numeric",
-          "selected_problem_type": "compute_numeric",
-          "candidate_source": "fallback_application",
+          "outsider_candidates": [
+            "C8"
+          ],
+          "selected_subskill": "applied_quadratic_inequality_problem",
+          "selected_problem_type": "applied_quadratic_inequality_problem",
+          "candidate_source": "needs_review",
           "selected_generator_contract": {},
           "parameter_schema": {},
           "variable_randomization_notes": [],
           "checker_key": "",
           "equivalence_type": "",
           "skill_scope_trusted": true,
-          "target_task": "compute_numeric",
-          "task_family": "generic_numeric_family",
+          "target_task": "applied_quadratic_inequality_problem",
+          "task_family": "quadratic_inequality_family",
           "math_objects": [],
           "answer_type": "short_answer",
           "answer_shape": "text_short",
@@ -127953,13 +132572,13 @@
           "possible_structure_mismatch": true,
           "possible_mixed_source_context": true
         },
-        "subskill_id": "evaluate_function_value",
-        "classification_source": "fallback_application_induct",
-        "induction_eligibility": "eligible"
+        "subskill_id": "applied_quadratic_inequality_problem",
+        "classification_source": "rule_fallback_ai_unavailable",
+        "induction_eligibility": "excluded"
       },
       {
         "example_id": 4446,
-        "detected_problem_type_id": "unknown",
+        "detected_problem_type_id": "single_choice_compute_numeric_single_choice",
         "example_feature": {
           "source_example_id": 4446,
           "question_text": "公司給小虹最多50萬元的預算來採買$x$、$y$兩種貨品。但小虹一時疏忽，無法確定$x$貨品跟$y$貨品的單價哪一個是100元、哪一個是200元。下列數對($x$貨品購買數量 , $y$貨品購買數量)中，試問哪一組不會超過預算？ \n(A)$\\left( 1400,1900 \\right)$ \n(B)$\\left( 1600,1700 \\right)$ \n(C)$\\left( 1700,1800 \\right)$ \n(D)$\\left( 1800,1500 \\right)$ 〔112統測B〕",
@@ -127982,7 +132601,7 @@
             "triangle",
             "two_coordinate_points"
           ],
-          "target_task": "evaluate_function_value",
+          "target_task": "compute_numeric",
           "task_family": "generic_numeric_family",
           "reasoning_type": [
             "numeric_computation"
@@ -128007,8 +132626,11 @@
             "x",
             "y"
           ],
-          "target": "evaluate_function_value",
+          "target": "compute_numeric",
           "classifier_source": "rule_fallback_ai_unavailable",
+          "math_meta_tags": [],
+          "forced_target_task": "",
+          "meta_answer_format_hint": "",
           "semantic_classification": {
             "ai_target_task": "",
             "ai_task_family": "",
@@ -128028,13 +132650,13 @@
             "rule_target_task": "compute_numeric",
             "rule_task_family": "generic_numeric_family",
             "rule_confidence": 0.2,
-            "final_target_task": "evaluate_function_value",
+            "final_target_task": "compute_numeric",
             "final_task_family": "generic_numeric_family",
-            "classifier_source": "fallback_application_induct",
+            "classifier_source": "rule_fallback_ai_unavailable",
             "classification_decision": "",
             "conflict_reason": "ai_api_key_missing",
             "source_mapping_warning": "",
-            "requires_human_action": false,
+            "requires_human_action": true,
             "ai_notes": "",
             "skill_scoped_candidates": [
               {
@@ -128097,6 +132719,8 @@
                     "signature_fields": [
                       "problem_type_id",
                       "template_variant",
+                      "routing_track",
+                      "scenario_type",
                       "ratio_form",
                       "ratio_values",
                       "coordinate_pattern",
@@ -128194,6 +132818,8 @@
                     "signature_fields": [
                       "problem_type_id",
                       "template_variant",
+                      "routing_track",
+                      "scenario_type",
                       "ratio_form",
                       "ratio_values",
                       "coordinate_pattern",
@@ -128291,6 +132917,8 @@
                     "signature_fields": [
                       "problem_type_id",
                       "template_variant",
+                      "routing_track",
+                      "scenario_type",
                       "ratio_form",
                       "ratio_values",
                       "coordinate_pattern",
@@ -128388,6 +133016,8 @@
                     "signature_fields": [
                       "problem_type_id",
                       "template_variant",
+                      "routing_track",
+                      "scenario_type",
                       "ratio_form",
                       "ratio_values",
                       "coordinate_pattern",
@@ -128485,6 +133115,8 @@
                     "signature_fields": [
                       "problem_type_id",
                       "template_variant",
+                      "routing_track",
+                      "scenario_type",
                       "ratio_form",
                       "ratio_values",
                       "coordinate_pattern",
@@ -128582,6 +133214,8 @@
                     "signature_fields": [
                       "problem_type_id",
                       "template_variant",
+                      "routing_track",
+                      "scenario_type",
                       "ratio_form",
                       "ratio_values",
                       "coordinate_pattern",
@@ -128679,6 +133313,8 @@
                     "signature_fields": [
                       "problem_type_id",
                       "template_variant",
+                      "routing_track",
+                      "scenario_type",
                       "ratio_form",
                       "ratio_values",
                       "coordinate_pattern",
@@ -128736,7 +133372,7 @@
             "outsider_candidates": [],
             "selected_subskill": "compute_numeric",
             "selected_problem_type": "compute_numeric",
-            "candidate_source": "fallback_application",
+            "candidate_source": "needs_review",
             "selected_generator_contract": {},
             "parameter_schema": {},
             "variable_randomization_notes": [],
@@ -128940,16 +133576,16 @@
           "induction_tier": "core",
           "enrichment_reasons": [],
           "included_in_core_induction": true,
-          "problem_type_id": "single_choice_evaluate_function_value_fallback_application",
           "equivalence_type": "choice_label",
           "checker_key": "choice_label_checker",
           "requires_human_action": false
         },
         "answer_shape": "single_choice",
-        "classification_confidence": "low",
+        "classification_confidence": "high",
         "classification_reason": "rule_fallback_ai_unavailable",
         "risk_flags": [
           "stem_embeds_choices",
+          "requires_human_action",
           "candidate_only"
         ],
         "semantic_classification": {
@@ -128971,13 +133607,13 @@
           "rule_target_task": "compute_numeric",
           "rule_task_family": "generic_numeric_family",
           "rule_confidence": 0.2,
-          "final_target_task": "evaluate_function_value",
+          "final_target_task": "compute_numeric",
           "final_task_family": "generic_numeric_family",
-          "classifier_source": "fallback_application_induct",
+          "classifier_source": "rule_fallback_ai_unavailable",
           "classification_decision": "",
           "conflict_reason": "ai_api_key_missing",
           "source_mapping_warning": "",
-          "requires_human_action": false,
+          "requires_human_action": true,
           "ai_notes": "",
           "skill_scoped_candidates": [
             {
@@ -129040,6 +133676,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -129137,6 +133775,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -129234,6 +133874,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -129331,6 +133973,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -129428,6 +134072,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -129525,6 +134171,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -129622,6 +134270,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -129679,7 +134329,7 @@
           "outsider_candidates": [],
           "selected_subskill": "compute_numeric",
           "selected_problem_type": "compute_numeric",
-          "candidate_source": "fallback_application",
+          "candidate_source": "needs_review",
           "selected_generator_contract": {},
           "parameter_schema": {},
           "variable_randomization_notes": [],
@@ -129712,8 +134362,8 @@
           "source_quality_status": "FORCE_ALLOWED_FOR_INDUCTION"
         },
         "subskill_id": "same_as_main_skill",
-        "classification_source": "fallback_application_induct",
-        "induction_eligibility": "eligible"
+        "classification_source": "rule_fallback_ai_unavailable",
+        "induction_eligibility": "excluded"
       },
       {
         "example_id": 4448,
@@ -129755,6 +134405,9 @@
           ],
           "target": "numeric_evaluate_function_notation",
           "classifier_source": "rule_fallback_ai_unavailable",
+          "math_meta_tags": [],
+          "forced_target_task": "",
+          "meta_answer_format_hint": "",
           "semantic_classification": {
             "ai_target_task": "",
             "ai_task_family": "",
@@ -129843,6 +134496,8 @@
                     "signature_fields": [
                       "problem_type_id",
                       "template_variant",
+                      "routing_track",
+                      "scenario_type",
                       "ratio_form",
                       "ratio_values",
                       "coordinate_pattern",
@@ -129940,6 +134595,8 @@
                     "signature_fields": [
                       "problem_type_id",
                       "template_variant",
+                      "routing_track",
+                      "scenario_type",
                       "ratio_form",
                       "ratio_values",
                       "coordinate_pattern",
@@ -130037,6 +134694,8 @@
                     "signature_fields": [
                       "problem_type_id",
                       "template_variant",
+                      "routing_track",
+                      "scenario_type",
                       "ratio_form",
                       "ratio_values",
                       "coordinate_pattern",
@@ -130134,6 +134793,8 @@
                     "signature_fields": [
                       "problem_type_id",
                       "template_variant",
+                      "routing_track",
+                      "scenario_type",
                       "ratio_form",
                       "ratio_values",
                       "coordinate_pattern",
@@ -130231,6 +134892,8 @@
                     "signature_fields": [
                       "problem_type_id",
                       "template_variant",
+                      "routing_track",
+                      "scenario_type",
                       "ratio_form",
                       "ratio_values",
                       "coordinate_pattern",
@@ -130328,6 +134991,8 @@
                     "signature_fields": [
                       "problem_type_id",
                       "template_variant",
+                      "routing_track",
+                      "scenario_type",
                       "ratio_form",
                       "ratio_values",
                       "coordinate_pattern",
@@ -130425,6 +135090,8 @@
                     "signature_fields": [
                       "problem_type_id",
                       "template_variant",
+                      "routing_track",
+                      "scenario_type",
                       "ratio_form",
                       "ratio_values",
                       "coordinate_pattern",
@@ -130779,6 +135446,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -130876,6 +135545,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -130973,6 +135644,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -131070,6 +135743,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -131167,6 +135842,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -131264,6 +135941,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -131361,6 +136040,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -131491,6 +136172,9 @@
           ],
           "target": "numeric_evaluate_function_notation",
           "classifier_source": "rule_fallback_ai_unavailable",
+          "math_meta_tags": [],
+          "forced_target_task": "",
+          "meta_answer_format_hint": "",
           "semantic_classification": {
             "ai_target_task": "",
             "ai_task_family": "",
@@ -131579,6 +136263,8 @@
                     "signature_fields": [
                       "problem_type_id",
                       "template_variant",
+                      "routing_track",
+                      "scenario_type",
                       "ratio_form",
                       "ratio_values",
                       "coordinate_pattern",
@@ -131676,6 +136362,8 @@
                     "signature_fields": [
                       "problem_type_id",
                       "template_variant",
+                      "routing_track",
+                      "scenario_type",
                       "ratio_form",
                       "ratio_values",
                       "coordinate_pattern",
@@ -131773,6 +136461,8 @@
                     "signature_fields": [
                       "problem_type_id",
                       "template_variant",
+                      "routing_track",
+                      "scenario_type",
                       "ratio_form",
                       "ratio_values",
                       "coordinate_pattern",
@@ -131870,6 +136560,8 @@
                     "signature_fields": [
                       "problem_type_id",
                       "template_variant",
+                      "routing_track",
+                      "scenario_type",
                       "ratio_form",
                       "ratio_values",
                       "coordinate_pattern",
@@ -131967,6 +136659,8 @@
                     "signature_fields": [
                       "problem_type_id",
                       "template_variant",
+                      "routing_track",
+                      "scenario_type",
                       "ratio_form",
                       "ratio_values",
                       "coordinate_pattern",
@@ -132064,6 +136758,8 @@
                     "signature_fields": [
                       "problem_type_id",
                       "template_variant",
+                      "routing_track",
+                      "scenario_type",
                       "ratio_form",
                       "ratio_values",
                       "coordinate_pattern",
@@ -132161,6 +136857,8 @@
                     "signature_fields": [
                       "problem_type_id",
                       "template_variant",
+                      "routing_track",
+                      "scenario_type",
                       "ratio_form",
                       "ratio_values",
                       "coordinate_pattern",
@@ -132515,6 +137213,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -132612,6 +137312,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -132709,6 +137411,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -132806,6 +137510,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -132903,6 +137609,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -133000,6 +137708,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -133097,6 +137807,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -133189,7 +137901,7 @@
       },
       {
         "example_id": 4500,
-        "detected_problem_type_id": "short_answer_evaluate_function_value_fallback_application",
+        "detected_problem_type_id": "short_answer_compute_numeric_short_answer",
         "example_feature": {
           "source_example_id": 4500,
           "question_text": "阿偉的汽車加滿油後開始行駛，其行駛距離x公里與剩餘油量y公升的關係為線型函數，其圖形如右圖所示，則x與y的關係式為",
@@ -133202,7 +137914,7 @@
           "checker": "text_short_checker",
           "equivalence": "exact_string",
           "math_objects": [],
-          "target_task": "evaluate_function_value",
+          "target_task": "compute_numeric",
           "task_family": "generic_numeric_family",
           "reasoning_type": [
             "numeric_computation"
@@ -133213,8 +137925,11 @@
           "candidate_only": false,
           "variables": [],
           "givens": [],
-          "target": "evaluate_function_value",
+          "target": "compute_numeric",
           "classifier_source": "rule_fallback_ai_unavailable",
+          "math_meta_tags": [],
+          "forced_target_task": "",
+          "meta_answer_format_hint": "",
           "semantic_classification": {
             "ai_target_task": "",
             "ai_task_family": "",
@@ -133234,13 +137949,13 @@
             "rule_target_task": "compute_numeric",
             "rule_task_family": "generic_numeric_family",
             "rule_confidence": 0.2,
-            "final_target_task": "evaluate_function_value",
+            "final_target_task": "compute_numeric",
             "final_task_family": "generic_numeric_family",
-            "classifier_source": "fallback_application_induct",
+            "classifier_source": "rule_fallback_ai_unavailable",
             "classification_decision": "",
             "conflict_reason": "ai_api_key_missing",
             "source_mapping_warning": "",
-            "requires_human_action": false,
+            "requires_human_action": true,
             "ai_notes": "",
             "skill_scoped_candidates": [
               {
@@ -133303,6 +138018,8 @@
                     "signature_fields": [
                       "problem_type_id",
                       "template_variant",
+                      "routing_track",
+                      "scenario_type",
                       "ratio_form",
                       "ratio_values",
                       "coordinate_pattern",
@@ -133400,6 +138117,8 @@
                     "signature_fields": [
                       "problem_type_id",
                       "template_variant",
+                      "routing_track",
+                      "scenario_type",
                       "ratio_form",
                       "ratio_values",
                       "coordinate_pattern",
@@ -133497,6 +138216,8 @@
                     "signature_fields": [
                       "problem_type_id",
                       "template_variant",
+                      "routing_track",
+                      "scenario_type",
                       "ratio_form",
                       "ratio_values",
                       "coordinate_pattern",
@@ -133594,6 +138315,8 @@
                     "signature_fields": [
                       "problem_type_id",
                       "template_variant",
+                      "routing_track",
+                      "scenario_type",
                       "ratio_form",
                       "ratio_values",
                       "coordinate_pattern",
@@ -133691,6 +138414,8 @@
                     "signature_fields": [
                       "problem_type_id",
                       "template_variant",
+                      "routing_track",
+                      "scenario_type",
                       "ratio_form",
                       "ratio_values",
                       "coordinate_pattern",
@@ -133788,6 +138513,8 @@
                     "signature_fields": [
                       "problem_type_id",
                       "template_variant",
+                      "routing_track",
+                      "scenario_type",
                       "ratio_form",
                       "ratio_values",
                       "coordinate_pattern",
@@ -133885,6 +138612,8 @@
                     "signature_fields": [
                       "problem_type_id",
                       "template_variant",
+                      "routing_track",
+                      "scenario_type",
                       "ratio_form",
                       "ratio_values",
                       "coordinate_pattern",
@@ -133942,7 +138671,7 @@
             "outsider_candidates": [],
             "selected_subskill": "compute_numeric",
             "selected_problem_type": "compute_numeric",
-            "candidate_source": "fallback_application",
+            "candidate_source": "needs_review",
             "selected_generator_contract": {},
             "parameter_schema": {},
             "variable_randomization_notes": [],
@@ -134137,7 +138866,6 @@
           "induction_tier": "core",
           "enrichment_reasons": [],
           "included_in_core_induction": true,
-          "problem_type_id": "short_answer_evaluate_function_value_fallback_application",
           "equivalence_type": "exact_string",
           "checker_key": "text_short_checker",
           "requires_human_action": false
@@ -134145,7 +138873,9 @@
         "answer_shape": "text_short",
         "classification_confidence": "high",
         "classification_reason": "rule_fallback_ai_unavailable",
-        "risk_flags": [],
+        "risk_flags": [
+          "requires_human_action"
+        ],
         "semantic_classification": {
           "ai_target_task": "",
           "ai_task_family": "",
@@ -134165,13 +138895,13 @@
           "rule_target_task": "compute_numeric",
           "rule_task_family": "generic_numeric_family",
           "rule_confidence": 0.2,
-          "final_target_task": "evaluate_function_value",
+          "final_target_task": "compute_numeric",
           "final_task_family": "generic_numeric_family",
-          "classifier_source": "fallback_application_induct",
+          "classifier_source": "rule_fallback_ai_unavailable",
           "classification_decision": "",
           "conflict_reason": "ai_api_key_missing",
           "source_mapping_warning": "",
-          "requires_human_action": false,
+          "requires_human_action": true,
           "ai_notes": "",
           "skill_scoped_candidates": [
             {
@@ -134234,6 +138964,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -134331,6 +139063,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -134428,6 +139162,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -134525,6 +139261,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -134622,6 +139360,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -134719,6 +139459,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -134816,6 +139558,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -134873,7 +139617,7 @@
           "outsider_candidates": [],
           "selected_subskill": "compute_numeric",
           "selected_problem_type": "compute_numeric",
-          "candidate_source": "fallback_application",
+          "candidate_source": "needs_review",
           "selected_generator_contract": {},
           "parameter_schema": {},
           "variable_randomization_notes": [],
@@ -134898,9 +139642,9 @@
           "possible_structure_mismatch": true,
           "possible_mixed_source_context": true
         },
-        "subskill_id": "evaluate_function_value",
-        "classification_source": "fallback_application_induct",
-        "induction_eligibility": "eligible"
+        "subskill_id": "compute_numeric",
+        "classification_source": "rule_fallback_ai_unavailable",
+        "induction_eligibility": "excluded"
       },
       {
         "example_id": 4515,
@@ -134958,6 +139702,9 @@
           ],
           "target": "numeric_evaluate_function_notation",
           "classifier_source": "rule_fallback_ai_unavailable",
+          "math_meta_tags": [],
+          "forced_target_task": "",
+          "meta_answer_format_hint": "",
           "semantic_classification": {
             "ai_target_task": "",
             "ai_task_family": "",
@@ -135046,6 +139793,8 @@
                     "signature_fields": [
                       "problem_type_id",
                       "template_variant",
+                      "routing_track",
+                      "scenario_type",
                       "ratio_form",
                       "ratio_values",
                       "coordinate_pattern",
@@ -135143,6 +139892,8 @@
                     "signature_fields": [
                       "problem_type_id",
                       "template_variant",
+                      "routing_track",
+                      "scenario_type",
                       "ratio_form",
                       "ratio_values",
                       "coordinate_pattern",
@@ -135240,6 +139991,8 @@
                     "signature_fields": [
                       "problem_type_id",
                       "template_variant",
+                      "routing_track",
+                      "scenario_type",
                       "ratio_form",
                       "ratio_values",
                       "coordinate_pattern",
@@ -135337,6 +140090,8 @@
                     "signature_fields": [
                       "problem_type_id",
                       "template_variant",
+                      "routing_track",
+                      "scenario_type",
                       "ratio_form",
                       "ratio_values",
                       "coordinate_pattern",
@@ -135434,6 +140189,8 @@
                     "signature_fields": [
                       "problem_type_id",
                       "template_variant",
+                      "routing_track",
+                      "scenario_type",
                       "ratio_form",
                       "ratio_values",
                       "coordinate_pattern",
@@ -135531,6 +140288,8 @@
                     "signature_fields": [
                       "problem_type_id",
                       "template_variant",
+                      "routing_track",
+                      "scenario_type",
                       "ratio_form",
                       "ratio_values",
                       "coordinate_pattern",
@@ -135628,6 +140387,8 @@
                     "signature_fields": [
                       "problem_type_id",
                       "template_variant",
+                      "routing_track",
+                      "scenario_type",
                       "ratio_form",
                       "ratio_values",
                       "coordinate_pattern",
@@ -135990,6 +140751,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -136087,6 +140850,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -136184,6 +140949,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -136281,6 +141048,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -136378,6 +141147,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -136475,6 +141246,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -136572,6 +141345,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -136707,6 +141482,9 @@
           ],
           "target": "numeric_evaluate_function_notation",
           "classifier_source": "rule_fallback_ai_unavailable",
+          "math_meta_tags": [],
+          "forced_target_task": "",
+          "meta_answer_format_hint": "",
           "semantic_classification": {
             "ai_target_task": "",
             "ai_task_family": "",
@@ -136795,6 +141573,8 @@
                     "signature_fields": [
                       "problem_type_id",
                       "template_variant",
+                      "routing_track",
+                      "scenario_type",
                       "ratio_form",
                       "ratio_values",
                       "coordinate_pattern",
@@ -136892,6 +141672,8 @@
                     "signature_fields": [
                       "problem_type_id",
                       "template_variant",
+                      "routing_track",
+                      "scenario_type",
                       "ratio_form",
                       "ratio_values",
                       "coordinate_pattern",
@@ -136989,6 +141771,8 @@
                     "signature_fields": [
                       "problem_type_id",
                       "template_variant",
+                      "routing_track",
+                      "scenario_type",
                       "ratio_form",
                       "ratio_values",
                       "coordinate_pattern",
@@ -137086,6 +141870,8 @@
                     "signature_fields": [
                       "problem_type_id",
                       "template_variant",
+                      "routing_track",
+                      "scenario_type",
                       "ratio_form",
                       "ratio_values",
                       "coordinate_pattern",
@@ -137183,6 +141969,8 @@
                     "signature_fields": [
                       "problem_type_id",
                       "template_variant",
+                      "routing_track",
+                      "scenario_type",
                       "ratio_form",
                       "ratio_values",
                       "coordinate_pattern",
@@ -137280,6 +142068,8 @@
                     "signature_fields": [
                       "problem_type_id",
                       "template_variant",
+                      "routing_track",
+                      "scenario_type",
                       "ratio_form",
                       "ratio_values",
                       "coordinate_pattern",
@@ -137377,6 +142167,8 @@
                     "signature_fields": [
                       "problem_type_id",
                       "template_variant",
+                      "routing_track",
+                      "scenario_type",
                       "ratio_form",
                       "ratio_values",
                       "coordinate_pattern",
@@ -137731,6 +142523,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -137828,6 +142622,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -137925,6 +142721,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -138022,6 +142820,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -138119,6 +142919,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -138216,6 +143018,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -138313,6 +143117,8 @@
                   "signature_fields": [
                     "problem_type_id",
                     "template_variant",
+                    "routing_track",
+                    "scenario_type",
                     "ratio_form",
                     "ratio_values",
                     "coordinate_pattern",
@@ -138409,7 +143215,8 @@
     "spec_defined_problem_type_ids": [
       "numeric_numeric_evaluate_function_notation_short_answer",
       "numeric_numeric_evaluate_function_notation_single_choice",
-      "short_answer_evaluate_function_value_fallback_application"
+      "evaluate_function_value",
+      "interpret_function_notation"
     ],
     "classifier_gate": {
       "status": "classifier_auto_pending_promote_with_warning",
@@ -138418,7 +143225,8 @@
         "insufficient_examples",
         "ai_first_mode_fell_back_to_rule_only",
         "no_registered_slot_but_presentation_known",
-        "subskill_mismatch_warning"
+        "subskill_mismatch_warning",
+        "anchor_slot_bootstrap_zero_source"
       ]
     },
     "generator_draft_gate": {
@@ -138428,7 +143236,8 @@
         "low_source_examples",
         "ai_first_mode_fell_back_to_rule_only",
         "no_registered_slot_but_presentation_known",
-        "subskill_mismatch_warning"
+        "subskill_mismatch_warning",
+        "anchor_slot_bootstrap_zero_source"
       ]
     },
     "runtime_ready_gate": {
@@ -138441,7 +143250,8 @@
       "warnings": [
         "ai_first_mode_fell_back_to_rule_only",
         "no_registered_slot_but_presentation_known",
-        "subskill_mismatch_warning"
+        "subskill_mismatch_warning",
+        "anchor_slot_bootstrap_zero_source"
       ]
     },
     "exception_review_gate": {
@@ -138475,7 +143285,8 @@
   "spec_defined_problem_type_ids": [
     "numeric_numeric_evaluate_function_notation_short_answer",
     "numeric_numeric_evaluate_function_notation_single_choice",
-    "short_answer_evaluate_function_value_fallback_application"
+    "evaluate_function_value",
+    "interpret_function_notation"
   ],
   "spec_mode": "ai_first_induce_from_sources",
   "induced_problem_type_specs": [
@@ -138598,6 +143409,8 @@
           "signature_fields": [
             "problem_type_id",
             "template_variant",
+            "routing_track",
+            "scenario_type",
             "ratio_form",
             "ratio_values",
             "coordinate_pattern",
@@ -138625,6 +143438,10 @@
         "avoid_llm_freeform_math": true,
         "use_domain_functions": true,
         "derivation_steps_required": true,
+        "templates": [
+          "template_scalar_unknown",
+          "template_feature_value"
+        ],
         "problem_type_id": "numeric_numeric_evaluate_function_notation_short_answer",
         "contract_validation_blockers": [],
         "contract_validation_warnings": [
@@ -138779,6 +143596,8 @@
           "signature_fields": [
             "problem_type_id",
             "template_variant",
+            "routing_track",
+            "scenario_type",
             "ratio_form",
             "ratio_values",
             "coordinate_pattern",
@@ -138806,6 +143625,10 @@
         "avoid_llm_freeform_math": true,
         "use_domain_functions": true,
         "derivation_steps_required": true,
+        "templates": [
+          "template_scalar_unknown",
+          "template_feature_value"
+        ],
         "problem_type_id": "numeric_numeric_evaluate_function_notation_single_choice",
         "contract_validation_blockers": [],
         "contract_validation_warnings": [
@@ -138843,48 +143666,41 @@
       "naming_warning": "naming_warning:numeric_prefix_but_hint_is_A/B/C/D"
     },
     {
-      "problem_type_id": "short_answer_evaluate_function_value_fallback_application",
+      "problem_type_id": "evaluate_function_value",
       "skill_id": "vh_數學B1_LinearFunction",
       "target_task": "evaluate_function_value",
       "task_family": "function_concept_family",
-      "display_name": "short_answer / evaluate_function_value",
-      "answer_format_hint": "",
-      "answer_fields": null,
-      "answer_separator": null,
-      "source_example_ids": [
-        4425,
-        4426,
-        4442,
-        4445,
-        4500
-      ],
+      "display_name": "evaluate_function_value / anchor bootstrap",
+      "answer_format_hint": "expression",
+      "source_example_ids": [],
       "answer_contract": {
         "choices_required": false,
         "choice_count": null,
         "correct_choice_count": null,
         "frontend_render_choices": false,
-        "source_has_choices": false,
-        "answer_type": "text_short",
-        "answer_shape": "text_short",
-        "answer_semantics": "text_short",
-        "answer_equivalence": "exact_string",
-        "equivalence_type": "exact_string",
-        "checker": "text_short_checker",
-        "checker_key": "text_short_checker",
+        "answer_type": "expression",
+        "answer_shape": "factored_expression",
+        "answer_equivalence": "algebraic_equivalent",
+        "equivalence_type": "algebraic_equivalent",
+        "checker": "expression_checker",
+        "checker_key": "expression_checker",
         "presentation_mode": "short_answer",
-        "selected_checker": "text_short_checker"
+        "selected_checker": "expression_checker",
+        "checker_selection_reason": "quadratic_factoring_expression",
+        "accepted_formats": [
+          "(x-5)(x+3)",
+          "(2x-1)(x+5)",
+          "2(x-1)(3x+2)"
+        ],
+        "answer_semantics": "algebraic_expression"
       },
       "stem_contract": {
         "stem_must_not_embed_choices": true,
         "allowed_math_objects": [
-          "coordinate_point",
-          "three_coordinate_points",
-          "triangle",
-          "two_coordinate_points"
+          "quadratic_inequality"
         ],
         "required_math_objects": [
-          "coordinate_point",
-          "three_coordinate_points"
+          "quadratic_inequality"
         ],
         "forbidden_patterns": [
           "\\(A\\)",
@@ -138900,15 +143716,12 @@
       },
       "semantic_contract": {
         "reasoning_type": [
-          "numeric_computation"
+          "evaluate_function_value"
         ],
         "reject_if": [
           "unused_condition",
           "ambiguous_answer",
-          "answer_not_derivable",
-          "duplicated_choices",
-          "no_correct_choice",
-          "multiple_correct_choices_when_single_choice"
+          "answer_not_derivable"
         ]
       },
       "generator_contract": {
@@ -138958,6 +143771,8 @@
           "signature_fields": [
             "problem_type_id",
             "template_variant",
+            "routing_track",
+            "scenario_type",
             "ratio_form",
             "ratio_values",
             "coordinate_pattern",
@@ -138985,11 +143800,10 @@
         "avoid_llm_freeform_math": true,
         "use_domain_functions": true,
         "derivation_steps_required": true,
-        "contextual_application": true,
         "template_slots": {
           "stem": "function_value_numeric"
         },
-        "problem_type_id": "short_answer_evaluate_function_value_fallback_application",
+        "problem_type_id": "evaluate_function_value",
         "contract_validation_blockers": [],
         "contract_validation_warnings": [
           "single_template_variant_only",
@@ -138998,25 +143812,186 @@
       },
       "validator_contract": {
         "static_checks": [
-          "answer_contract_checks",
-          "choices_policy"
+          "answer_contract_checks"
         ],
         "semantic_checks": [
           "givens_to_target_dependency"
         ],
         "runtime_smoke_count": 30
       },
-      "spec_source": "phase1_induced_draft",
-      "grouping_reason": "merged_by_canonical_contract",
+      "spec_source": "anchor_slot_bootstrap",
+      "grouping_reason": "anchor_subskill_bootstrap_zero_source",
       "feature_signature": [
-        "canonical_contract_merge",
-        "evaluate_function_value",
-        "short_answer",
-        "short_answer"
+        "anchor_slot_bootstrap",
+        "evaluate_function_value"
       ],
-      "canonical_base_problem_type_id": "short_answer_evaluate_function_value_fallback_application",
+      "canonical_base_problem_type_id": "evaluate_function_value",
       "value_type_prefix": "",
-      "_resolved_template_slot": "function_value_numeric"
+      "_resolved_template_slot": "factor_quadratic_by_cross_multiplication"
+    },
+    {
+      "problem_type_id": "interpret_function_notation",
+      "skill_id": "vh_數學B1_LinearFunction",
+      "target_task": "interpret_function_notation",
+      "task_family": "function_concept_family",
+      "display_name": "interpret_function_notation / anchor bootstrap",
+      "answer_format_hint": "expression",
+      "source_example_ids": [],
+      "answer_contract": {
+        "choices_required": false,
+        "choice_count": null,
+        "correct_choice_count": null,
+        "frontend_render_choices": false,
+        "answer_type": "expression",
+        "answer_shape": "factored_expression",
+        "answer_equivalence": "algebraic_equivalent",
+        "equivalence_type": "algebraic_equivalent",
+        "checker": "expression_checker",
+        "checker_key": "expression_checker",
+        "presentation_mode": "short_answer",
+        "selected_checker": "expression_checker",
+        "checker_selection_reason": "quadratic_factoring_expression",
+        "accepted_formats": [
+          "(x-5)(x+3)",
+          "(2x-1)(x+5)",
+          "2(x-1)(3x+2)"
+        ],
+        "answer_semantics": "algebraic_expression"
+      },
+      "stem_contract": {
+        "stem_must_not_embed_choices": true,
+        "allowed_math_objects": [
+          "quadratic_inequality"
+        ],
+        "required_math_objects": [
+          "quadratic_inequality"
+        ],
+        "forbidden_patterns": [
+          "\\(A\\)",
+          "\\(B\\)",
+          "\\(C\\)",
+          "\\(D\\)"
+        ]
+      },
+      "dependency_contract": {
+        "givens_must_be_used": true,
+        "target_answer_must_depend_on_givens": true,
+        "variables_in_conditions_must_appear_in_target": false
+      },
+      "semantic_contract": {
+        "reasoning_type": [
+          "interpret_function_notation"
+        ],
+        "reject_if": [
+          "unused_condition",
+          "ambiguous_answer",
+          "answer_not_derivable"
+        ]
+      },
+      "generator_contract": {
+        "template_variants": [
+          {
+            "id": "default",
+            "label": "default",
+            "stem_pattern": "依題意求解：{stem_hint}。",
+            "weight": 1.0,
+            "enabled": true
+          }
+        ],
+        "parameter_schema": {
+          "seed": {
+            "type": "integer",
+            "randomize": true
+          },
+          "difficulty_level": {
+            "choices": [
+              "level_1",
+              "level_2",
+              "level_3"
+            ],
+            "weights": [
+              0.4,
+              0.4,
+              0.2
+            ]
+          }
+        },
+        "variation_dimensions": [
+          "seed",
+          "difficulty_level",
+          "context_style"
+        ],
+        "difficulty_controls": {
+          "level_1": {},
+          "level_2": {},
+          "level_3": {}
+        },
+        "anti_repetition_rules": {
+          "avoid_same_template_consecutive": true,
+          "avoid_same_ratio_consecutive": true,
+          "avoid_same_point_names_consecutive": true,
+          "avoid_same_answer_consecutive": true,
+          "recent_history_window": 5,
+          "signature_fields": [
+            "problem_type_id",
+            "template_variant",
+            "routing_track",
+            "scenario_type",
+            "ratio_form",
+            "ratio_values",
+            "coordinate_pattern",
+            "answer"
+          ]
+        },
+        "validity_constraints": [
+          "answer derivable from givens"
+        ],
+        "answer_shape": "numeric",
+        "explanation_variants": [
+          "stepwise"
+        ],
+        "sampling_strategy": "weighted_random",
+        "template_families": [
+          "interpret_function_notation"
+        ],
+        "parameter_slots": {
+          "seed": "integer",
+          "difficulty": "easy"
+        },
+        "randomization_rules": {
+          "shuffle_choices": false
+        },
+        "avoid_llm_freeform_math": true,
+        "use_domain_functions": true,
+        "derivation_steps_required": true,
+        "template_slots": {
+          "stem": "linear_function_two_point_choice"
+        },
+        "problem_type_id": "interpret_function_notation",
+        "contract_validation_blockers": [],
+        "contract_validation_warnings": [
+          "single_template_variant_only",
+          "variation_dimensions_below_recommended_minimum"
+        ]
+      },
+      "validator_contract": {
+        "static_checks": [
+          "answer_contract_checks"
+        ],
+        "semantic_checks": [
+          "givens_to_target_dependency"
+        ],
+        "runtime_smoke_count": 30
+      },
+      "spec_source": "anchor_slot_bootstrap",
+      "grouping_reason": "anchor_subskill_bootstrap_zero_source",
+      "feature_signature": [
+        "anchor_slot_bootstrap",
+        "interpret_function_notation"
+      ],
+      "canonical_base_problem_type_id": "interpret_function_notation",
+      "value_type_prefix": "",
+      "_resolved_template_slot": "factor_quadratic_by_cross_multiplication"
     }
   ],
   "induction_clusters": [
@@ -139068,25 +144043,6 @@
       "answer_type": "numeric",
       "presentation_mode": "single_choice",
       "source_has_choices": true
-    },
-    {
-      "grouping_reason": "merged_by_canonical_contract",
-      "feature_signature": [
-        "canonical_contract_merge",
-        "evaluate_function_value",
-        "short_answer",
-        "short_answer"
-      ],
-      "source_example_ids": [
-        4425,
-        4426,
-        4442,
-        4445,
-        4500
-      ],
-      "answer_type": "short_answer",
-      "presentation_mode": "short_answer",
-      "source_has_choices": false
     }
   ],
   "human_review_items": [],
@@ -139214,6 +144170,8 @@
             "signature_fields": [
               "problem_type_id",
               "template_variant",
+              "routing_track",
+              "scenario_type",
               "ratio_form",
               "ratio_values",
               "coordinate_pattern",
@@ -139241,6 +144199,10 @@
           "avoid_llm_freeform_math": true,
           "use_domain_functions": true,
           "derivation_steps_required": true,
+          "templates": [
+            "template_scalar_unknown",
+            "template_feature_value"
+          ],
           "problem_type_id": "numeric_numeric_evaluate_function_notation_short_answer",
           "contract_validation_blockers": [],
           "contract_validation_warnings": [
@@ -139413,6 +144375,8 @@
             "signature_fields": [
               "problem_type_id",
               "template_variant",
+              "routing_track",
+              "scenario_type",
               "ratio_form",
               "ratio_values",
               "coordinate_pattern",
@@ -139440,6 +144404,10 @@
           "avoid_llm_freeform_math": true,
           "use_domain_functions": true,
           "derivation_steps_required": true,
+          "templates": [
+            "template_scalar_unknown",
+            "template_feature_value"
+          ],
           "problem_type_id": "numeric_numeric_evaluate_function_notation_short_answer",
           "contract_validation_blockers": [],
           "contract_validation_warnings": [
@@ -139613,6 +144581,8 @@
             "signature_fields": [
               "problem_type_id",
               "template_variant",
+              "routing_track",
+              "scenario_type",
               "ratio_form",
               "ratio_values",
               "coordinate_pattern",
@@ -139640,6 +144610,10 @@
           "avoid_llm_freeform_math": true,
           "use_domain_functions": true,
           "derivation_steps_required": true,
+          "templates": [
+            "template_scalar_unknown",
+            "template_feature_value"
+          ],
           "problem_type_id": "numeric_numeric_evaluate_function_notation_single_choice",
           "contract_validation_blockers": [],
           "contract_validation_warnings": [
@@ -139812,6 +144786,8 @@
             "signature_fields": [
               "problem_type_id",
               "template_variant",
+              "routing_track",
+              "scenario_type",
               "ratio_form",
               "ratio_values",
               "coordinate_pattern",
@@ -139839,6 +144815,10 @@
           "avoid_llm_freeform_math": true,
           "use_domain_functions": true,
           "derivation_steps_required": true,
+          "templates": [
+            "template_scalar_unknown",
+            "template_feature_value"
+          ],
           "problem_type_id": "numeric_numeric_evaluate_function_notation_single_choice",
           "contract_validation_blockers": [],
           "contract_validation_warnings": [
@@ -139891,51 +144871,46 @@
       "answer_type": "choice"
     },
     {
-      "problem_type_id": "text_short_evaluate_function_value",
-      "proposed_problem_type_id": "text_short_evaluate_function_value",
-      "display_name": "text_short / evaluate_function_value",
-      "matched_example_ids": [
-        4425,
-        4426,
-        4442,
-        4445,
-        4500
-      ],
-      "matched_example_count": 5,
+      "problem_type_id": "evaluate_function_value",
+      "proposed_problem_type_id": "evaluate_function_value",
+      "display_name": "evaluate_function_value / anchor bootstrap",
+      "matched_example_ids": [],
+      "matched_example_count": 0,
       "unmatched_example_ids": [],
-      "representative_example_id": 4425,
+      "representative_example_id": null,
       "structural_features": [
-        "text_short"
+        "factored_expression"
       ],
       "answer_contract_proposal": {
         "choices_required": false,
         "choice_count": null,
         "correct_choice_count": null,
         "frontend_render_choices": false,
-        "source_has_choices": false,
-        "answer_type": "text_short",
-        "answer_shape": "text_short",
-        "answer_semantics": "text_short",
-        "answer_equivalence": "exact_string",
-        "equivalence_type": "exact_string",
-        "checker": "text_short_checker",
-        "checker_key": "text_short_checker",
-        "presentation_mode": "",
-        "selected_checker": "text_short_checker",
+        "answer_type": "expression",
+        "answer_shape": "factored_expression",
+        "answer_equivalence": "algebraic_equivalent",
+        "equivalence_type": "algebraic_equivalent",
+        "checker": "expression_checker",
+        "checker_key": "expression_checker",
+        "presentation_mode": "short_answer",
+        "selected_checker": "expression_checker",
+        "checker_selection_reason": "quadratic_factoring_expression",
+        "accepted_formats": [
+          "(x-5)(x+3)",
+          "(2x-1)(x+5)",
+          "2(x-1)(3x+2)"
+        ],
+        "answer_semantics": "algebraic_expression",
         "checker_capability_status": "ok",
         "checker_contract_blockers": [],
         "checker_contract_warnings": [],
         "stem_contract": {
           "stem_must_not_embed_choices": true,
           "allowed_math_objects": [
-            "coordinate_point",
-            "three_coordinate_points",
-            "triangle",
-            "two_coordinate_points"
+            "quadratic_inequality"
           ],
           "required_math_objects": [
-            "coordinate_point",
-            "three_coordinate_points"
+            "quadratic_inequality"
           ],
           "forbidden_patterns": [
             "\\(A\\)",
@@ -139951,15 +144926,12 @@
         },
         "semantic_contract": {
           "reasoning_type": [
-            "numeric_computation"
+            "evaluate_function_value"
           ],
           "reject_if": [
             "unused_condition",
             "ambiguous_answer",
-            "answer_not_derivable",
-            "duplicated_choices",
-            "no_correct_choice",
-            "multiple_correct_choices_when_single_choice"
+            "answer_not_derivable"
           ]
         },
         "generator_contract": {
@@ -140009,6 +144981,8 @@
             "signature_fields": [
               "problem_type_id",
               "template_variant",
+              "routing_track",
+              "scenario_type",
               "ratio_form",
               "ratio_values",
               "coordinate_pattern",
@@ -140036,11 +145010,10 @@
           "avoid_llm_freeform_math": true,
           "use_domain_functions": true,
           "derivation_steps_required": true,
-          "contextual_application": true,
           "template_slots": {
             "stem": "function_value_numeric"
           },
-          "problem_type_id": "short_answer_evaluate_function_value_fallback_application",
+          "problem_type_id": "evaluate_function_value",
           "contract_validation_blockers": [],
           "contract_validation_warnings": [
             "single_template_variant_only",
@@ -140049,8 +145022,7 @@
         },
         "validator_contract": {
           "static_checks": [
-            "answer_contract_checks",
-            "choices_policy"
+            "answer_contract_checks"
           ],
           "semantic_checks": [
             "givens_to_target_dependency"
@@ -140059,75 +145031,66 @@
         },
         "order_matters": true,
         "accepted_format_notes": [],
-        "canonical_answer_schema": "text_short"
+        "canonical_answer_schema": "expression"
       },
-      "checker_key_proposal": "text_short_checker",
-      "equivalence_type_proposal": "exact_string",
-      "answer_shape": "text_short",
-      "answer_semantics": "text_short",
+      "checker_key_proposal": "expression_checker",
+      "equivalence_type_proposal": "algebraic_equivalent",
+      "answer_shape": "factored_expression",
+      "answer_semantics": "algebraic_expression",
       "presentation_mode": "short_answer",
       "source_has_choices": false,
-      "selected_checker": "text_short_checker",
-      "checker_selection_reason": "task_family_default",
-      "coordinate_pair_presentation_note": "",
-      "confidence": "high",
+      "selected_checker": "expression_checker",
+      "checker_selection_reason": "quadratic_factoring_expression",
+      "confidence": "medium",
       "promote_recommendation": "recommend_promote_for_that_candidate",
       "promote_blockers": [],
       "risk_flags": [
-        "ai_first_mode_fell_back_to_rule_only"
+        "ai_first_mode_fell_back_to_rule_only",
+        "anchor_slot_bootstrap_zero_source"
       ],
       "checker_contract_warnings": [],
-      "spec_source": "phase1_induced_draft",
-      "grouping_reason": "merged_by_canonical_contract",
+      "spec_source": "anchor_slot_bootstrap",
+      "grouping_reason": "anchor_subskill_bootstrap_zero_source",
       "feature_signature": [
-        "canonical_contract_merge",
-        "evaluate_function_value",
-        "short_answer",
-        "short_answer"
+        "anchor_slot_bootstrap",
+        "evaluate_function_value"
       ],
       "problem_type_spec_draft": {
-        "problem_type_id": "expression_evaluate_function_value_fallback_application",
+        "problem_type_id": "evaluate_function_value",
         "skill_id": "vh_數學B1_LinearFunction",
         "target_task": "evaluate_function_value",
         "task_family": "function_concept_family",
-        "display_name": "short_answer / evaluate_function_value",
-        "answer_format_hint": "",
-        "answer_fields": null,
-        "answer_separator": null,
-        "source_example_ids": [
-          4425,
-          4426,
-          4442,
-          4445,
-          4500
-        ],
+        "display_name": "evaluate_function_value / anchor bootstrap",
+        "answer_format_hint": "expression",
+        "source_example_ids": [],
         "answer_contract": {
           "choices_required": false,
           "choice_count": null,
           "correct_choice_count": null,
           "frontend_render_choices": false,
-          "source_has_choices": false,
-          "answer_type": "text_short",
-          "answer_shape": "text_short",
-          "answer_semantics": "text_short",
-          "answer_equivalence": "exact_string",
-          "equivalence_type": "exact_string",
-          "checker": "text_short_checker",
-          "checker_key": "text_short_checker",
+          "answer_type": "expression",
+          "answer_shape": "factored_expression",
+          "answer_equivalence": "algebraic_equivalent",
+          "equivalence_type": "algebraic_equivalent",
+          "checker": "expression_checker",
+          "checker_key": "expression_checker",
           "presentation_mode": "short_answer",
-          "selected_checker": "text_short_checker"
+          "selected_checker": "expression_checker",
+          "checker_selection_reason": "quadratic_factoring_expression",
+          "accepted_formats": [
+            "(x-5)(x+3)",
+            "(2x-1)(x+5)",
+            "2(x-1)(3x+2)"
+          ],
+          "answer_semantics": "algebraic_expression"
         },
         "stem_contract": {
           "stem_must_not_embed_choices": true,
           "allowed_math_objects": [
-            "coordinate_point",
-            "three_coordinate_points",
-            "triangle",
-            "two_coordinate_points"
+            "quadratic_inequality"
           ],
           "required_math_objects": [
-            "coordinate_point",
-            "three_coordinate_points"
+            "quadratic_inequality"
           ],
           "forbidden_patterns": [
             "\\(A\\)",
@@ -140143,15 +145106,12 @@
         },
         "semantic_contract": {
           "reasoning_type": [
-            "numeric_computation"
+            "evaluate_function_value"
           ],
           "reject_if": [
             "unused_condition",
             "ambiguous_answer",
-            "answer_not_derivable",
-            "duplicated_choices",
-            "no_correct_choice",
-            "multiple_correct_choices_when_single_choice"
+            "answer_not_derivable"
           ]
         },
         "generator_contract": {
@@ -140201,6 +145161,8 @@
             "signature_fields": [
               "problem_type_id",
               "template_variant",
+              "routing_track",
+              "scenario_type",
               "ratio_form",
               "ratio_values",
               "coordinate_pattern",
@@ -140228,11 +145190,10 @@
           "avoid_llm_freeform_math": true,
           "use_domain_functions": true,
           "derivation_steps_required": true,
-          "contextual_application": true,
           "template_slots": {
             "stem": "function_value_numeric"
           },
-          "problem_type_id": "short_answer_evaluate_function_value_fallback_application",
+          "problem_type_id": "evaluate_function_value",
           "contract_validation_blockers": [],
           "contract_validation_warnings": [
             "single_template_variant_only",
@@ -140241,43 +145202,404 @@
         },
         "validator_contract": {
           "static_checks": [
-            "answer_contract_checks",
-            "choices_policy"
+            "answer_contract_checks"
           ],
           "semantic_checks": [
             "givens_to_target_dependency"
           ],
           "runtime_smoke_count": 30
         },
-        "spec_source": "phase1_induced_draft",
-        "grouping_reason": "merged_by_canonical_contract",
+        "spec_source": "anchor_slot_bootstrap",
+        "grouping_reason": "anchor_subskill_bootstrap_zero_source",
         "feature_signature": [
-          "canonical_contract_merge",
-          "evaluate_function_value",
-          "short_answer",
-          "short_answer"
+          "anchor_slot_bootstrap",
+          "evaluate_function_value"
         ],
-        "canonical_base_problem_type_id": "short_answer_evaluate_function_value_fallback_application",
+        "canonical_base_problem_type_id": "evaluate_function_value",
         "value_type_prefix": "",
-        "_resolved_template_slot": "function_value_numeric"
+        "_resolved_template_slot": "factor_quadratic_by_cross_multiplication"
       },
       "generator_readiness": "runtime_ready",
       "usable_for_phase3": true,
       "template_slot": "function_value_numeric",
-      "canonical_base_problem_type_id": "short_answer_evaluate_function_value_fallback_application",
+      "canonical_base_problem_type_id": "evaluate_function_value",
       "value_type_prefix": "",
       "subskill_id": "evaluate_function_value",
       "runtime_status": "runtime_ready_candidate",
       "next_action": "phase2_foundation_preflight",
       "semantic_alignment": {
-        "skill_problem_type_score": 0.0385,
-        "source_problem_type_score": 0.0103,
+        "skill_problem_type_score": 0.0556,
+        "source_problem_type_score": 0.0,
         "task_consistent_with_skill": true
       },
-      "answer_type": "text_short"
+      "answer_type": "expression"
+    },
+    {
+      "problem_type_id": "interpret_function_notation",
+      "proposed_problem_type_id": "interpret_function_notation",
+      "display_name": "interpret_function_notation / anchor bootstrap",
+      "matched_example_ids": [],
+      "matched_example_count": 0,
+      "unmatched_example_ids": [],
+      "representative_example_id": null,
+      "structural_features": [
+        "factored_expression"
+      ],
+      "answer_contract_proposal": {
+        "choices_required": false,
+        "choice_count": null,
+        "correct_choice_count": null,
+        "frontend_render_choices": false,
+        "answer_type": "expression",
+        "answer_shape": "factored_expression",
+        "answer_equivalence": "algebraic_equivalent",
+        "equivalence_type": "algebraic_equivalent",
+        "checker": "expression_checker",
+        "checker_key": "expression_checker",
+        "presentation_mode": "short_answer",
+        "selected_checker": "expression_checker",
+        "checker_selection_reason": "quadratic_factoring_expression",
+        "accepted_formats": [
+          "(x-5)(x+3)",
+          "(2x-1)(x+5)",
+          "2(x-1)(3x+2)"
+        ],
+        "answer_semantics": "algebraic_expression",
+        "checker_capability_status": "ok",
+        "checker_contract_blockers": [],
+        "checker_contract_warnings": [],
+        "stem_contract": {
+          "stem_must_not_embed_choices": true,
+          "allowed_math_objects": [
+            "quadratic_inequality"
+          ],
+          "required_math_objects": [
+            "quadratic_inequality"
+          ],
+          "forbidden_patterns": [
+            "\\(A\\)",
+            "\\(B\\)",
+            "\\(C\\)",
+            "\\(D\\)"
+          ]
+        },
+        "dependency_contract": {
+          "givens_must_be_used": true,
+          "target_answer_must_depend_on_givens": true,
+          "variables_in_conditions_must_appear_in_target": false
+        },
+        "semantic_contract": {
+          "reasoning_type": [
+            "interpret_function_notation"
+          ],
+          "reject_if": [
+            "unused_condition",
+            "ambiguous_answer",
+            "answer_not_derivable"
+          ]
+        },
+        "generator_contract": {
+          "template_variants": [
+            {
+              "id": "default",
+              "label": "default",
+              "stem_pattern": "依題意求解：{stem_hint}。",
+              "weight": 1.0,
+              "enabled": true
+            }
+          ],
+          "parameter_schema": {
+            "seed": {
+              "type": "integer",
+              "randomize": true
+            },
+            "difficulty_level": {
+              "choices": [
+                "level_1",
+                "level_2",
+                "level_3"
+              ],
+              "weights": [
+                0.4,
+                0.4,
+                0.2
+              ]
+            }
+          },
+          "variation_dimensions": [
+            "seed",
+            "difficulty_level",
+            "context_style"
+          ],
+          "difficulty_controls": {
+            "level_1": {},
+            "level_2": {},
+            "level_3": {}
+          },
+          "anti_repetition_rules": {
+            "avoid_same_template_consecutive": true,
+            "avoid_same_ratio_consecutive": true,
+            "avoid_same_point_names_consecutive": true,
+            "avoid_same_answer_consecutive": true,
+            "recent_history_window": 5,
+            "signature_fields": [
+              "problem_type_id",
+              "template_variant",
+              "routing_track",
+              "scenario_type",
+              "ratio_form",
+              "ratio_values",
+              "coordinate_pattern",
+              "answer"
+            ]
+          },
+          "validity_constraints": [
+            "answer derivable from givens"
+          ],
+          "answer_shape": "numeric",
+          "explanation_variants": [
+            "stepwise"
+          ],
+          "sampling_strategy": "weighted_random",
+          "template_families": [
+            "interpret_function_notation"
+          ],
+          "parameter_slots": {
+            "seed": "integer",
+            "difficulty": "easy"
+          },
+          "randomization_rules": {
+            "shuffle_choices": false
+          },
+          "avoid_llm_freeform_math": true,
+          "use_domain_functions": true,
+          "derivation_steps_required": true,
+          "template_slots": {
+            "stem": "linear_function_two_point_choice"
+          },
+          "problem_type_id": "interpret_function_notation",
+          "contract_validation_blockers": [],
+          "contract_validation_warnings": [
+            "single_template_variant_only",
+            "variation_dimensions_below_recommended_minimum"
+          ]
+        },
+        "validator_contract": {
+          "static_checks": [
+            "answer_contract_checks"
+          ],
+          "semantic_checks": [
+            "givens_to_target_dependency"
+          ],
+          "runtime_smoke_count": 30
+        },
+        "order_matters": true,
+        "accepted_format_notes": [],
+        "canonical_answer_schema": "expression"
+      },
+      "checker_key_proposal": "expression_checker",
+      "equivalence_type_proposal": "algebraic_equivalent",
+      "answer_shape": "factored_expression",
+      "answer_semantics": "algebraic_expression",
+      "presentation_mode": "short_answer",
+      "source_has_choices": false,
+      "selected_checker": "expression_checker",
+      "checker_selection_reason": "quadratic_factoring_expression",
+      "confidence": "medium",
+      "promote_recommendation": "recommend_promote_for_that_candidate",
+      "promote_blockers": [],
+      "risk_flags": [
+        "ai_first_mode_fell_back_to_rule_only",
+        "anchor_slot_bootstrap_zero_source"
+      ],
+      "checker_contract_warnings": [],
+      "spec_source": "anchor_slot_bootstrap",
+      "grouping_reason": "anchor_subskill_bootstrap_zero_source",
+      "feature_signature": [
+        "anchor_slot_bootstrap",
+        "interpret_function_notation"
+      ],
+      "problem_type_spec_draft": {
+        "problem_type_id": "interpret_function_notation",
+        "skill_id": "vh_數學B1_LinearFunction",
+        "target_task": "interpret_function_notation",
+        "task_family": "function_concept_family",
+        "display_name": "interpret_function_notation / anchor bootstrap",
+        "answer_format_hint": "expression",
+        "source_example_ids": [],
+        "answer_contract": {
+          "choices_required": false,
+          "choice_count": null,
+          "correct_choice_count": null,
+          "frontend_render_choices": false,
+          "answer_type": "expression",
+          "answer_shape": "factored_expression",
+          "answer_equivalence": "algebraic_equivalent",
+          "equivalence_type": "algebraic_equivalent",
+          "checker": "expression_checker",
+          "checker_key": "expression_checker",
+          "presentation_mode": "short_answer",
+          "selected_checker": "expression_checker",
+          "checker_selection_reason": "quadratic_factoring_expression",
+          "accepted_formats": [
+            "(x-5)(x+3)",
+            "(2x-1)(x+5)",
+            "2(x-1)(3x+2)"
+          ],
+          "answer_semantics": "algebraic_expression"
+        },
+        "stem_contract": {
+          "stem_must_not_embed_choices": true,
+          "allowed_math_objects": [
+            "quadratic_inequality"
+          ],
+          "required_math_objects": [
+            "quadratic_inequality"
+          ],
+          "forbidden_patterns": [
+            "\\(A\\)",
+            "\\(B\\)",
+            "\\(C\\)",
+            "\\(D\\)"
+          ]
+        },
+        "dependency_contract": {
+          "givens_must_be_used": true,
+          "target_answer_must_depend_on_givens": true,
+          "variables_in_conditions_must_appear_in_target": false
+        },
+        "semantic_contract": {
+          "reasoning_type": [
+            "interpret_function_notation"
+          ],
+          "reject_if": [
+            "unused_condition",
+            "ambiguous_answer",
+            "answer_not_derivable"
+          ]
+        },
+        "generator_contract": {
+          "template_variants": [
+            {
+              "id": "default",
+              "label": "default",
+              "stem_pattern": "依題意求解：{stem_hint}。",
+              "weight": 1.0,
+              "enabled": true
+            }
+          ],
+          "parameter_schema": {
+            "seed": {
+              "type": "integer",
+              "randomize": true
+            },
+            "difficulty_level": {
+              "choices": [
+                "level_1",
+                "level_2",
+                "level_3"
+              ],
+              "weights": [
+                0.4,
+                0.4,
+                0.2
+              ]
+            }
+          },
+          "variation_dimensions": [
+            "seed",
+            "difficulty_level",
+            "context_style"
+          ],
+          "difficulty_controls": {
+            "level_1": {},
+            "level_2": {},
+            "level_3": {}
+          },
+          "anti_repetition_rules": {
+            "avoid_same_template_consecutive": true,
+            "avoid_same_ratio_consecutive": true,
+            "avoid_same_point_names_consecutive": true,
+            "avoid_same_answer_consecutive": true,
+            "recent_history_window": 5,
+            "signature_fields": [
+              "problem_type_id",
+              "template_variant",
+              "routing_track",
+              "scenario_type",
+              "ratio_form",
+              "ratio_values",
+              "coordinate_pattern",
+              "answer"
+            ]
+          },
+          "validity_constraints": [
+            "answer derivable from givens"
+          ],
+          "answer_shape": "numeric",
+          "explanation_variants": [
+            "stepwise"
+          ],
+          "sampling_strategy": "weighted_random",
+          "template_families": [
+            "interpret_function_notation"
+          ],
+          "parameter_slots": {
+            "seed": "integer",
+            "difficulty": "easy"
+          },
+          "randomization_rules": {
+            "shuffle_choices": false
+          },
+          "avoid_llm_freeform_math": true,
+          "use_domain_functions": true,
+          "derivation_steps_required": true,
+          "template_slots": {
+            "stem": "linear_function_two_point_choice"
+          },
+          "problem_type_id": "interpret_function_notation",
+          "contract_validation_blockers": [],
+          "contract_validation_warnings": [
+            "single_template_variant_only",
+            "variation_dimensions_below_recommended_minimum"
+          ]
+        },
+        "validator_contract": {
+          "static_checks": [
+            "answer_contract_checks"
+          ],
+          "semantic_checks": [
+            "givens_to_target_dependency"
+          ],
+          "runtime_smoke_count": 30
+        },
+        "spec_source": "anchor_slot_bootstrap",
+        "grouping_reason": "anchor_subskill_bootstrap_zero_source",
+        "feature_signature": [
+          "anchor_slot_bootstrap",
+          "interpret_function_notation"
+        ],
+        "canonical_base_problem_type_id": "interpret_function_notation",
+        "value_type_prefix": "",
+        "_resolved_template_slot": "factor_quadratic_by_cross_multiplication"
+      },
+      "generator_readiness": "runtime_ready",
+      "usable_for_phase3": true,
+      "template_slot": "linear_function_two_point_choice",
+      "canonical_base_problem_type_id": "interpret_function_notation",
+      "value_type_prefix": "",
+      "subskill_id": "interpret_function_notation",
+      "runtime_status": "runtime_ready_candidate",
+      "next_action": "phase2_foundation_preflight",
+      "semantic_alignment": {
+        "skill_problem_type_score": 0.0556,
+        "source_problem_type_score": 0.0,
+        "task_consistent_with_skill": true
+      },
+      "answer_type": "expression"
     }
   ],
-  "candidate_problem_type_count": 3,
+  "candidate_problem_type_count": 4,
   "source_skill_scope_locked": true,
   "classification_scope": "within_current_skill",
   "skill_mapping_authority": "textbook_examples.skill_id",

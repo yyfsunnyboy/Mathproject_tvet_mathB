@@ -22,6 +22,7 @@ from typing import Any
 from core.gencode.answer_payload import answer_type_family
 from core.gencode.answer_contract_policy import (
     infer_answer_contract_from_problem_context,
+    is_line_equation_semantic,
     is_quadratic_inequality_semantic,
     is_quadratic_rational_scalar_semantic,
 )
@@ -72,6 +73,7 @@ PHASE3_BLOCKED_READINESS = frozenset(
         "pending_problem_type_induction",
         "blocked_by_unresolved_skill_scoped_problem_type",
         "problem_type_bridge_missing",
+        "pending_line_equation_mcq_slot",
     }
 )
 
@@ -109,6 +111,113 @@ def canonicalize_problem_type_id(problem_type_id: str) -> dict[str, Any]:
         "base_problem_type_id": base,
         "base_target_task": base_target_task,
     }
+
+
+def typed_line_equation_problem_type_id(
+    target_task: str,
+    *,
+    presentation_mode: str = "short_answer",
+) -> str:
+    """Canonical typed id for line-equation family (always equation_ prefix)."""
+    task = str(target_task or "").strip()
+    mode = str(presentation_mode or "").strip() or "short_answer"
+    if mode not in {"single_choice", "short_answer"}:
+        mode = "short_answer"
+    return f"equation_{task}_{mode}"
+
+
+def resolve_authoritative_problem_type_id(
+    candidate: dict[str, Any] | None = None,
+    *,
+    spec: dict[str, Any] | None = None,
+) -> str:
+    """Resolve canonical problem_type_id; draft spec id wins over bootstrap top-level id."""
+    cand = candidate if isinstance(candidate, dict) else {}
+    draft = (
+        spec
+        if isinstance(spec, dict)
+        else (cand.get("problem_type_spec_draft") if isinstance(cand.get("problem_type_spec_draft"), dict) else {})
+    )
+    top = str(cand.get("problem_type_id") or cand.get("proposed_problem_type_id") or "").strip()
+    draft_id = str(draft.get("problem_type_id", "")).strip()
+    target = str(
+        draft.get("target_task") or cand.get("target_task") or cand.get("subskill_id") or ""
+    ).strip()
+    task_family = str(draft.get("task_family") or cand.get("task_family") or "").strip()
+    if not task_family and target:
+        from core.gencode.task_families import task_family_for_task
+
+        task_family = task_family_for_task(target)
+
+    if is_line_equation_semantic(
+        problem_type_id=draft_id or top,
+        target_task=target,
+        task_family=task_family,
+    ):
+        ac = draft.get("answer_contract") if isinstance(draft.get("answer_contract"), dict) else {}
+        presentation = str(
+            cand.get("presentation_mode")
+            or ac.get("presentation_mode")
+            or ""
+        ).strip()
+        feature_sig = draft.get("feature_signature") if isinstance(draft.get("feature_signature"), list) else []
+        if not presentation and "short_answer" in feature_sig:
+            presentation = "short_answer"
+        if not presentation and "single_choice" in feature_sig:
+            presentation = "single_choice"
+        if presentation != "single_choice":
+            if draft_id.endswith("_short_answer") or top.endswith("_short_answer"):
+                return draft_id if draft_id.endswith("_short_answer") else top
+            return typed_line_equation_problem_type_id(target, presentation_mode="short_answer")
+        if draft_id.endswith("_single_choice") or top.endswith("_single_choice"):
+            return draft_id if draft_id.endswith("_single_choice") else top
+        return typed_line_equation_problem_type_id(target, presentation_mode="single_choice")
+
+    if draft_id:
+        if top and top != draft_id:
+            if draft_id.startswith("equation_") and top.startswith("expression_"):
+                return draft_id
+            if len(draft_id) > len(top) and target and target in draft_id:
+                return draft_id
+        if not top:
+            return draft_id
+    return top or draft_id
+
+
+def sync_candidate_authoritative_identity(candidate: dict[str, Any]) -> dict[str, Any]:
+    """Align top-level candidate id/contract with authoritative draft spec when present."""
+    if not isinstance(candidate, dict):
+        return candidate
+    draft = candidate.get("problem_type_spec_draft")
+    if not isinstance(draft, dict):
+        return candidate
+    pt = resolve_authoritative_problem_type_id(candidate, spec=draft)
+    if not pt:
+        return candidate
+    candidate["problem_type_id"] = pt
+    candidate["proposed_problem_type_id"] = pt
+    draft["problem_type_id"] = pt
+    from core.gencode.problem_type_spec import get_answer_contract
+
+    enriched = enrich_spec_with_canonicalization({**draft, "problem_type_id": pt})
+    draft.update(enriched)
+    ac = get_answer_contract(enriched)
+    if isinstance(ac, dict) and ac:
+        candidate["answer_contract_proposal"] = dict(ac)
+        candidate["checker_key_proposal"] = str(ac.get("checker_key") or ac.get("checker") or "").strip()
+        candidate["equivalence_type_proposal"] = str(
+            ac.get("equivalence_type") or ac.get("answer_equivalence") or ""
+        ).strip()
+        candidate["answer_shape"] = str(ac.get("answer_shape", "")).strip()
+        candidate["answer_type"] = str(ac.get("answer_type", "")).strip()
+        candidate["template_slot"] = str(
+            enriched.get("_resolved_template_slot") or candidate.get("template_slot") or ""
+        ).strip()
+    candidate["problem_type_spec_draft"] = draft
+    candidate["canonical_base_problem_type_id"] = str(
+        enriched.get("canonical_base_problem_type_id") or draft.get("canonical_base_problem_type_id") or ""
+    ).strip()
+    return candidate
 
 
 def _infer_base_target_task(base_problem_type_id: str) -> str:
@@ -243,6 +352,19 @@ def infer_answer_contract_for_canonical(
                     target_task=base_task,
                     task_family="quadratic_inequality_family",
                 ),
+            }
+        from core.gencode.task_families import SOLVE_UNKNOWN_COORDINATE_TASKS
+        if (existing_ac and existing_ac.get("answer_type") == "solution_set") or base_task in SOLVE_UNKNOWN_COORDINATE_TASKS:
+            return {
+                **base_ac,
+                "answer_type": "solution_set",
+                "answer_shape": "unordered_set",
+                "answer_equivalence": "unordered_solution_set",
+                "equivalence_type": "unordered_solution_set",
+                "checker": "solution_set_checker",
+                "checker_key": "solution_set_checker",
+                "presentation_mode": "short_answer",
+                "accepted_formats": ["-3, 7", "7, -3", "{-3, 7}", "k=-3 或 k=7", "-3 或 7"],
             }
         # Slots that output text answers always use text_short_checker.
         text_slots = {
@@ -472,6 +594,39 @@ def enrich_spec_with_canonicalization(spec: dict[str, Any]) -> dict[str, Any]:
         out["answer_contract"] = answer_contract_from_hint(HINT_EXPRESSION, existing_ac=existing_ac)
         return out
 
+    from core.gencode.task_families import LINE_EQUATION_TASKS, LINE_EQUATION_TASK_TO_SLOT
+    from core.gencode.answer_contract_policy import build_line_equation_answer_contract
+
+    if base_task in LINE_EQUATION_TASKS:
+        pt_lower = pt_id.lower()
+        presentation_from_spec = str(existing_ac.get("presentation_mode", "")).strip()
+        if pt_lower.endswith("_short_answer") or presentation_from_spec == "short_answer":
+            is_choice_presentation = False
+        elif pt_lower.endswith("_single_choice") and presentation_from_spec != "short_answer":
+            is_choice_presentation = True
+        else:
+            is_choice_presentation = (
+                bool(existing_ac.get("source_has_choices"))
+                or str(existing_ac.get("presentation_mode", "")).strip() == "single_choice"
+            )
+        if not is_choice_presentation:
+            out["answer_contract"] = build_line_equation_answer_contract(existing_ac=existing_ac)
+            out["problem_type_id"] = typed_line_equation_problem_type_id(
+                base_task, presentation_mode="short_answer"
+            )
+            resolved_slot = LINE_EQUATION_TASK_TO_SLOT.get(base_task, "line_equation_from_point_slope")
+            if slot != resolved_slot:
+                slot = resolved_slot
+                out["_resolved_template_slot"] = slot
+                slots = dict(gc.get("template_slots") or {})
+                slots["stem"] = slot
+                gc["template_slots"] = slots
+                out["generator_contract"] = gc
+            return out
+        out["problem_type_id"] = typed_line_equation_problem_type_id(
+            base_task, presentation_mode="single_choice"
+        )
+
     if base_task == "solve_quadratic_inequality_special_cases":
         from core.gencode.answer_format_hint import HINT_TEXT_SHORT
 
@@ -577,11 +732,75 @@ def enrich_spec_with_canonicalization(spec: dict[str, Any]) -> dict[str, Any]:
     return out
 
 
+LINE_EQUATION_MCQ_HOLD_BLOCKER = "line_equation_single_choice_slot_not_ready"
+
+
+def line_equation_mcq_hold_applies(record: dict[str, Any]) -> bool:
+    """True when line-equation single_choice lacks a registered MCQ slot."""
+    from core.gencode.task_families import LINE_EQUATION_FAMILY, LINE_EQUATION_TASKS
+
+    if not isinstance(record, dict):
+        return False
+    task_family = str(record.get("task_family", "")).strip()
+    target_task = str(record.get("target_task", "")).strip()
+    if task_family != LINE_EQUATION_FAMILY:
+        return False
+    if target_task not in LINE_EQUATION_TASKS:
+        return False
+
+    ac = record.get("answer_contract") if isinstance(record.get("answer_contract"), dict) else {}
+    if not ac and isinstance(record.get("answer_contract_proposal"), dict):
+        ac = record["answer_contract_proposal"]
+    if not ac:
+        ac = get_answer_contract(record)
+
+    presentation = str(
+        record.get("presentation_mode") or ac.get("presentation_mode") or ""
+    ).strip()
+    answer_type = str(ac.get("answer_type", "")).strip().lower()
+    answer_shape = str(ac.get("answer_shape", "")).strip().lower()
+    pt_id = str(record.get("problem_type_id", "")).strip().lower()
+
+    if presentation == "single_choice":
+        return True
+    if answer_type in {"single_choice", "choice", "choice_label", "multi_choice"}:
+        return True
+    if answer_shape == "single_choice":
+        return True
+    if pt_id.endswith("_single_choice"):
+        return True
+    return False
+
+
+def apply_line_equation_mcq_hold_policy(record: dict[str, Any]) -> dict[str, Any]:
+    """Demote line-equation MCQ candidates until a dedicated slot exists."""
+    if not line_equation_mcq_hold_applies(record):
+        return record
+    out = dict(record)
+    out["usable_for_phase3"] = False
+    out["generator_readiness"] = "pending_line_equation_mcq_slot"
+    out["requires_human_action"] = True
+    out["promote_recommendation"] = "hold_pending_line_equation_mcq_slot"
+    for key in ("risk_flags", "promote_blockers", "blockers"):
+        existing = [str(x).strip() for x in (out.get(key) or []) if str(x).strip()]
+        if LINE_EQUATION_MCQ_HOLD_BLOCKER not in existing:
+            existing.append(LINE_EQUATION_MCQ_HOLD_BLOCKER)
+        out[key] = sorted(set(existing))
+    return out
+
+
 def evaluate_typed_prefix_readiness(spec: dict[str, Any]) -> tuple[str, bool, list[str]]:
     """Evaluate generator_readiness after canonicalization.
 
     Returns (readiness, usable_for_phase3, blockers).
     """
+    if line_equation_mcq_hold_applies(spec):
+        return (
+            "pending_line_equation_mcq_slot",
+            False,
+            [LINE_EQUATION_MCQ_HOLD_BLOCKER],
+        )
+
     from core.gencode.checker_registry import validate_answer_contract_capability
     from core.gencode.slot_generators import SLOT_REGISTRY
     from core.gencode.task_families import answer_contract_supports_task

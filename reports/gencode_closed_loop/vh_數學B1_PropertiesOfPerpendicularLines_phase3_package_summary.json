@@ -1,0 +1,344 @@
+{
+  "ok": true,
+  "phase": "phase3",
+  "skill_id": "vh_數學B1_PropertiesOfPerpendicularLines",
+  "sop_reference": {
+    "sop_policy_version": "v0.3",
+    "highest_sop": "docs/系統SOP/Gencode_AgentSkillV2整合/Gencode與AgentSkillV2整合總體設計_v0.3.md",
+    "required_sop_files": [
+      {
+        "path": "docs/系統SOP/Gencode_AgentSkillV2整合/Gencode與AgentSkillV2整合總體設計_v0.3.md",
+        "exists": true,
+        "readable": true,
+        "mojibake_detected": false
+      },
+      {
+        "path": "docs/系統SOP/Gencode_AgentSkillV2整合/AgentSkillV2_ProblemType規格包設計_v0.3.md",
+        "exists": true,
+        "readable": true,
+        "mojibake_detected": false
+      },
+      {
+        "path": "docs/系統SOP/Gencode_AgentSkillV2整合/AnswerContract_EquivalenceType_Gate_v0.3.md",
+        "exists": true,
+        "readable": true,
+        "mojibake_detected": false
+      }
+    ],
+    "sop_preflight_status": "PASS"
+  },
+  "remaining_todos": [
+    "SOP v0.2 Verification: Verify that if a problem_type is verified, `/practice` must hit it within 50 rounds.",
+    "SOP v0.2 Verification: Ensure Gencode runtime audit uses `generated_only` to prevent source_bank_pool masking generator distribution.",
+    "SOP v0.2 Wrapper: Ensure wrapper state does not reload / reset state upon importlib.reload."
+  ],
+  "skill_file_path": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\drafts\\vh_數學B1_PropertiesOfPerpendicularLines.py",
+  "package_status": "packaged_draft",
+  "py_compile_status": "passed",
+  "runtime_smoke_status": "passed",
+  "runtime_smoke_raw": {
+    "status": "passed",
+    "blockers": [],
+    "payload_preview": {
+      "problem_type_id": "perpendicular_lines_properties",
+      "answer_type": "rational",
+      "answer_contract_answer_type": "rational",
+      "checker": null,
+      "equivalence": null,
+      "question_text_len": 134,
+      "answer": "2",
+      "correct_answer": "2",
+      "choices_count": 0,
+      "metadata_keys": [
+        "scenario_family",
+        "scenario_id",
+        "parameter_signature",
+        "question_pattern_id",
+        "diagnosis_tags",
+        "prerequisite_subskills",
+        "givens",
+        "target",
+        "derivation",
+        "verified_problem_types",
+        "manual_review_exclusions",
+        "source"
+      ]
+    },
+    "interface_check": {
+      "generate_exists": true,
+      "check_exists": true,
+      "generate_returns_dict": true,
+      "check_callable": true
+    },
+    "py_compile_status": "passed",
+    "samples_tested": 30,
+    "negative_semantic_smoke": "passed",
+    "validation_diagnostics": {
+      "problem_type_id": "perpendicular_lines_properties",
+      "answer_type": "rational",
+      "answer_shape": "scalar",
+      "checker": "rational_checker",
+      "equivalence": "rational_equivalent",
+      "answer_repr": "'2'",
+      "answer_python_type": "str",
+      "correct_answer_repr": "'2'",
+      "correct_answer_python_type": "str",
+      "validator_expected_types": [
+        "case_insensitive_string",
+        "category",
+        "choice",
+        "choice_label",
+        "classification",
+        "coordinate_pair",
+        "decimal",
+        "exact_string",
+        "expression",
+        "fraction",
+        "integer",
+        "integer_set",
+        "interval",
+        "interval_set",
+        "manual_review",
+        "math_expression",
+        "multi_choice",
+        "number",
+        "number_set",
+        "numeric",
+        "numeric_or_radical",
+        "ordered_pair",
+        "quadrant_label",
+        "radical_number",
+        "rational",
+        "rational_fraction",
+        "set",
+        "short_answer",
+        "single_choice",
+        "solution_set",
+        "table",
+        "text",
+        "text_label",
+        "text_short",
+        "union_of_intervals"
+      ],
+      "expected_answer_shape": "rational/fraction allows Fraction, int, integer string, or a/b string; answer_shape=scalar",
+      "failed_validator_name": "",
+      "validation_reason": ""
+    }
+  },
+  "publish_check": {
+    "draft_check_passed": true,
+    "can_publish_draft": true,
+    "can_publish_formal": true,
+    "can_mark_runtime_ready": true,
+    "formal_publish_blockers": [],
+    "runtime_ready_blockers": [],
+    "warnings": [],
+    "blockers": [],
+    "py_compile_status": "passed",
+    "interface_check": {
+      "generate_exists": true,
+      "check_exists": true,
+      "generate_returns_dict": true,
+      "check_callable": true
+    },
+    "runtime_smoke_status": "passed",
+    "runtime_smoke_raw": {
+      "status": "passed",
+      "blockers": [],
+      "payload_preview": {
+        "problem_type_id": "perpendicular_lines_properties",
+        "answer_type": "rational",
+        "answer_contract_answer_type": "rational",
+        "checker": null,
+        "equivalence": null,
+        "question_text_len": 134,
+        "answer": "2",
+        "correct_answer": "2",
+        "choices_count": 0,
+        "metadata_keys": [
+          "scenario_family",
+          "scenario_id",
+          "parameter_signature",
+          "question_pattern_id",
+          "diagnosis_tags",
+          "prerequisite_subskills",
+          "givens",
+          "target",
+          "derivation",
+          "verified_problem_types",
+          "manual_review_exclusions",
+          "source"
+        ]
+      },
+      "interface_check": {
+        "generate_exists": true,
+        "check_exists": true,
+        "generate_returns_dict": true,
+        "check_callable": true
+      },
+      "py_compile_status": "passed",
+      "samples_tested": 30,
+      "negative_semantic_smoke": "passed",
+      "validation_diagnostics": {
+        "problem_type_id": "perpendicular_lines_properties",
+        "answer_type": "rational",
+        "answer_shape": "scalar",
+        "checker": "rational_checker",
+        "equivalence": "rational_equivalent",
+        "answer_repr": "'2'",
+        "answer_python_type": "str",
+        "correct_answer_repr": "'2'",
+        "correct_answer_python_type": "str",
+        "validator_expected_types": [
+          "case_insensitive_string",
+          "category",
+          "choice",
+          "choice_label",
+          "classification",
+          "coordinate_pair",
+          "decimal",
+          "exact_string",
+          "expression",
+          "fraction",
+          "integer",
+          "integer_set",
+          "interval",
+          "interval_set",
+          "manual_review",
+          "math_expression",
+          "multi_choice",
+          "number",
+          "number_set",
+          "numeric",
+          "numeric_or_radical",
+          "ordered_pair",
+          "quadrant_label",
+          "radical_number",
+          "rational",
+          "rational_fraction",
+          "set",
+          "short_answer",
+          "single_choice",
+          "solution_set",
+          "table",
+          "text",
+          "text_label",
+          "text_short",
+          "union_of_intervals"
+        ],
+        "expected_answer_shape": "rational/fraction allows Fraction, int, integer string, or a/b string; answer_shape=scalar",
+        "failed_validator_name": "",
+        "validation_reason": ""
+      }
+    },
+    "summary_message": "Draft passed checks and can be formally published; runtime-ready is not marked yet. Run /practice smoke tests first."
+  },
+  "generator_specs": [],
+  "packaging_usable_count": 0,
+  "packaging_diagnostics": {
+    "candidate_count": 1,
+    "included_count": 0,
+    "excluded_count": 1,
+    "included": [],
+    "excluded": [
+      {
+        "problem_type_id": "text_short_contextual_application",
+        "generator_key": "vh_數學B1_PropertiesOfPerpendicularLines:text_short_contextual_application:draft_v1",
+        "generator_status": "runtime_ready_with_warning",
+        "checker_smoke_status": "passed",
+        "dynamic_sampling_status": "runtime_ready_with_diversity_warning",
+        "blockers": [
+          "checker_answer_mismatch:spec_text_but_payload_numeric"
+        ],
+        "warnings": [
+          "consecutive_same_template_variant",
+          "low_sample_diversity_tolerance_applied",
+          "low_source_examples"
+        ],
+        "reasons": [
+          "blockers:checker_answer_mismatch:spec_text_but_payload_numeric"
+        ]
+      }
+    ],
+    "phase2_summary_exists": true,
+    "generator_draft_spec_exists": true,
+    "phase2_generator_summary_json": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_PropertiesOfPerpendicularLines_phase2_generator_summary.json",
+    "generator_draft_spec_json": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\drafts\\vh_數學B1_PropertiesOfPerpendicularLines_generator_draft_spec.json",
+    "runtime_spec_alignment": {
+      "status": "skipped_no_aligned_draft_specs",
+      "synced_spec_count": 0,
+      "synced_problem_type_ids": [],
+      "purged_induced_spec_path": "reports\\gencode_closed_loop\\induced_specs\\vh_數學B1_PropertiesOfPerpendicularLines.json",
+      "purged_induced_spec_paths": [
+        "reports\\gencode_closed_loop\\induced_specs\\vh_數學B1_PropertiesOfPerpendicularLines.json"
+      ],
+      "runtime_usable_problem_type_ids": [],
+      "downgraded_historical_problem_type_ids": [],
+      "canonical_filter_applied": true
+    }
+  },
+  "reports": {
+    "phase3_package_summary_json": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_PropertiesOfPerpendicularLines_phase3_package_summary.json",
+    "phase3_package_summary_md": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_PropertiesOfPerpendicularLines_phase3_package_summary.md",
+    "phase3_json": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_PropertiesOfPerpendicularLines_phase3_package_summary.json",
+    "phase3_md": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_PropertiesOfPerpendicularLines_phase3_package_summary.md",
+    "final_json": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_PropertiesOfPerpendicularLines_phase3_package_summary.json",
+    "final_md": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_PropertiesOfPerpendicularLines_phase3_package_summary.md",
+    "draft_skill_file": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\drafts\\vh_數學B1_PropertiesOfPerpendicularLines.py"
+  },
+  "next_action": "review_phase2_blockers_before_phase3",
+  "error": "",
+  "dry_run": true,
+  "timestamp": "2026-06-15T02:24:07.411833+00:00",
+  "generated_with_warning": false,
+  "warnings": [],
+  "publish_gate_layers": {
+    "technical_closed_loop": "FAIL",
+    "runtime_quality": "FAIL",
+    "web_runtime": "FAIL",
+    "source_alignment": "PARTIAL"
+  },
+  "source_alignment_audit": {
+    "status": "PARTIAL",
+    "missing_source_aligned_problem_types": [
+      "integer_perpendicular_lines_properties",
+      "short_answer_applied_quadratic_inequality_problem_short_answer",
+      "short_answer_compute_numeric_short_answer",
+      "short_answer_solve_unknown_coordinate_from_two_point_distance_short_answer",
+      "single_choice_contextual_application_single_choice",
+      "skill_scoped_unresolved_problem_type"
+    ],
+    "underrepresented_runtime_forms": [
+      "integer_perpendicular_lines_properties",
+      "short_answer_applied_quadratic_inequality_problem_short_answer",
+      "short_answer_compute_numeric_short_answer",
+      "short_answer_solve_unknown_coordinate_from_two_point_distance_short_answer",
+      "single_choice_contextual_application_single_choice",
+      "skill_scoped_unresolved_problem_type"
+    ]
+  },
+  "post_phase3_audit_scripts": [
+    {
+      "script": "gencode_choice_quality_audit.py",
+      "exists": true,
+      "py_compile_ok": true
+    },
+    {
+      "script": "gencode_runtime_distribution_audit.py",
+      "exists": true,
+      "py_compile_ok": true
+    },
+    {
+      "script": "gencode_web_runtime_audit.py",
+      "exists": true,
+      "py_compile_ok": true
+    },
+    {
+      "script": "gencode_source_alignment_audit.py",
+      "exists": true,
+      "py_compile_ok": true
+    }
+  ],
+  "summary_message": "Phase 3 blocked: no usable generators for packaging (candidates=1, included=0).\n  - text_short_contextual_application: blockers:checker_answer_mismatch:spec_text_but_payload_numeric",
+  "packaging_diagnostic_message": "Phase 3 blocked: no usable generators for packaging (candidates=1, included=0).\n  - text_short_contextual_application: blockers:checker_answer_mismatch:spec_text_but_payload_numeric"
+}

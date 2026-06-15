@@ -52,6 +52,8 @@ def generate(seed: int | None = None, difficulty: str | int | None = "easy", **k
             f"由 $m_{{AB}} \\cdot m_{{CD}} = -1$ 可得：${m1} \\cdot \\frac{{{var_name} - ({y3})}}{{{x4 - x3}}} = -1$，",
             f"解得 {var_name} = {val}。"
         ]
+        givens = [f"A({x1},{y1})", f"B({x2},{y2})", f"C({x3},{y3})", f"D({x4},{var_name})", "AB垂直CD"]
+        target = var_name
     elif template_type == 2:
         # x4 is unknown (var_name)
         val = x4
@@ -67,6 +69,8 @@ def generate(seed: int | None = None, difficulty: str | int | None = "easy", **k
             f"由 $m_{{AB}} \\cdot m_{{CD}} = -1$ 可得：${m1} \\cdot \\frac{{{y4 - y3}}}{{{var_name} - ({x3})}} = -1$，",
             f"解得 {var_name} = {val}。"
         ]
+        givens = [f"A({x1},{y1})", f"B({x2},{y2})", f"C({x3},{y3})", f"D({var_name},{y4})", "AB垂直CD"]
+        target = var_name
     else:
         # y1 is unknown (var_name)
         val = y1
@@ -79,9 +83,11 @@ def generate(seed: int | None = None, difficulty: str | int | None = "easy", **k
             f"因為$\\overline{{AB}}$與$\\overline{{CD}}$垂直，所以它們的斜率乘積為 $-1$。",
             f"直線AB的斜率為 $m_{{AB}} = {m_ab_str}$。",
             f"直線CD的斜率為 $m_{{CD}} = {m_cd_str}$。",
-            f"由 $m_{{AB}} \\cdot m_{{CD}} = -1$ 可得：\\frac{{{y2} - {var_name}}}{{{x2 - x1}}} \\cdot ({m2}) = -1，",
+            f"由 $m_{{AB}} \\cdot m_{{CD}} = -1$ 可得：$\\frac{{{y2} - {var_name}}}{{{x2 - x1}}} \\cdot ({m2}) = -1$，",
             f"解得 {var_name} = {val}。"
         ]
+        givens = [f"A({x1},{var_name})", f"B({x2},{y2})", f"C({x3},{y3})", f"D({x4},{y4})", "AB垂直CD"]
+        target = var_name
 
     answer = str(val)
     answer_contract = {
@@ -105,6 +111,9 @@ def generate(seed: int | None = None, difficulty: str | int | None = "easy", **k
         "question_pattern_id": f"p{rng.randint(1, 4)}",
         "diagnosis_tags": ["perpendicular_lines_slope_product"],
         "prerequisite_subskills": [],
+        "givens": givens,
+        "target": target,
+        "derivation": solution_steps,
     }
     
     return {

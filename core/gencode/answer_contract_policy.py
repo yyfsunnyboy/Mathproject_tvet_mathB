@@ -9,6 +9,8 @@ from core.gencode.task_families import (
     DISTANCE_BETWEEN_TWO_POINTS_FAMILY,
     DIVISION_POINT_COORDINATES_FAMILY,
     DIVISION_POINT_COORDINATES_TASKS,
+    LINE_EQUATION_FAMILY,
+    LINE_EQUATION_TASKS,
     QUADRATIC_INEQUALITY_FAMILY,
     QUADRATIC_INEQUALITY_TASKS,
     SOLVE_UNKNOWN_COORDINATE_TASKS,
@@ -233,6 +235,67 @@ def is_quadratic_inequality_interval_semantic(
             "solution_set",
         )
     )
+
+
+def build_line_equation_answer_contract(*, existing_ac: dict[str, Any] | None = None) -> dict[str, Any]:
+    """Canonical contract for binary linear equation answers (point-slope family)."""
+    base = dict(existing_ac or {})
+    base.update(
+        {
+            "choices_required": False,
+            "choice_count": None,
+            "correct_choice_count": None,
+            "frontend_render_choices": False,
+            "source_has_choices": False,
+            "answer_type": "equation",
+            "answer_shape": "linear_equation",
+            "answer_semantics": "line_equation",
+            "answer_equivalence": "linear_equation_equivalent",
+            "equivalence_type": "linear_equation_equivalent",
+            "checker": "linear_equation_equivalent_checker",
+            "checker_key": "linear_equation_equivalent_checker",
+            "presentation_mode": "short_answer",
+            "selected_checker": "linear_equation_equivalent_checker",
+            "checker_selection_reason": "line_equation_family",
+            "accepted_formats": [
+                "y - 2 = 3(x - 1)",
+                "y = 3x - 1",
+                "3x - y - 1 = 0",
+            ],
+        }
+    )
+    return base
+
+
+def is_line_equation_semantic(
+    *,
+    problem_type_id: str = "",
+    target_task: str = "",
+    task_family: str = "",
+    math_objects: list[str] | None = None,
+) -> bool:
+    task = str(target_task or "").strip()
+    family = str(task_family or task_family_for_task(task)).strip()
+    if task in LINE_EQUATION_TASKS or family == LINE_EQUATION_FAMILY:
+        return True
+    combined = " ".join(
+        [
+            str(problem_type_id or ""),
+            task,
+            family,
+            " ".join(str(m or "") for m in (math_objects or [])),
+        ]
+    ).lower()
+    tokens = (
+        "line_equation",
+        "point_slope",
+        "point-slope",
+        "slope_intercept",
+        "linear_equation",
+        "直線方程式",
+        "點斜式",
+    )
+    return any(token in combined for token in tokens)
 
 
 def build_interval_answer_contract(*, existing_ac: dict[str, Any] | None = None) -> dict[str, Any]:
@@ -513,6 +576,13 @@ def infer_answer_contract_from_problem_context(
         math_objects=mos,
     ):
         return build_interval_answer_contract(existing_ac=base)
+
+    if task in LINE_EQUATION_TASKS or is_line_equation_semantic(
+        target_task=task,
+        task_family=family,
+        math_objects=mos,
+    ):
+        return build_line_equation_answer_contract(existing_ac=base)
 
     if task in _INTERVAL_TASKS or family == ABSOLUTE_VALUE_INEQUALITY_FAMILY:
         return build_interval_answer_contract(existing_ac=base)

@@ -227,6 +227,8 @@ def resolve_phase2_generator_status(
     dynamic = str(dynamic_sampling_status or "").strip().lower()
 
     if merged_blockers:
+        if base_status == "blocked":
+            return "blocked", False
         return "validation_failed", False
     if smoke not in {"", "passed", "skipped_with_blockers"}:
         return "validation_failed", False
@@ -269,20 +271,25 @@ def is_generator_usable_for_packaging(record: dict[str, Any]) -> tuple[bool, lis
     return len(exclude) == 0, exclude
 
 
-def _generator_record_rank(record: dict[str, Any]) -> tuple[int, int, int, int]:
+def _generator_record_rank(record: dict[str, Any]) -> tuple[int, int, int, int, int]:
     """Higher rank wins when merging duplicate generator_key / problem_type_id rows."""
     if not isinstance(record, dict):
-        return (0, 0, 0)
+        return (0, 0, 0, 0, 0)
     usable = 1 if record.get("usable_for_phase3") is not False else 0
     status = generator_status_value(record)
     status_ok = 1 if status in PACKAGING_READY_STATUSES else 0
     blockers = [str(b).strip() for b in (record.get("blockers") or []) if str(b).strip()]
     blocker_penalty = 0 if blockers else 1
+    ac = record.get("answer_contract") if isinstance(record.get("answer_contract"), dict) else {}
+    checker = str(record.get("checker_key") or ac.get("checker_key") or ac.get("checker") or "").strip()
+    line_equation_bonus = 1 if checker == "linear_equation_equivalent_checker" else 0
+    pt = str(record.get("problem_type_id", "")).strip()
+    short_answer_bonus = 1 if pt.endswith("_short_answer") else 0
     try:
         sample_count = int(record.get("source_example_count") or 0)
     except (TypeError, ValueError):
         sample_count = 0
-    return (usable, status_ok, blocker_penalty, sample_count)
+    return (usable, line_equation_bonus, short_answer_bonus, status_ok, blocker_penalty, sample_count)
 
 
 def merge_generator_records(

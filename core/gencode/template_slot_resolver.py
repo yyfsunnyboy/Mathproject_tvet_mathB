@@ -56,6 +56,11 @@ TASK_FAMILY_TO_SLOT: dict[str, str] = {
     "reverse_quadratic_inequality_coefficients": "reverse_quadratic_inequality_coefficients",
     "applied_quadratic_inequality_problem": "applied_quadratic_inequality_problem",
     "parallel_lines_properties": "parallel_lines_properties",
+    "write_line_equation_from_point_slope": "line_equation_from_point_slope",
+    "write_line_equation_from_two_points": "line_equation_from_two_points",
+    "write_perpendicular_bisector_from_two_points": "perpendicular_bisector_from_two_points",
+    "write_line_equation_from_slope_and_intercept": "line_equation_from_slope_and_intercept",
+    "write_triangle_median_line_from_vertices": "triangle_median_line_from_vertices",
 }
 
 SLOT_COMPATIBLE_FAMILIES: dict[str, frozenset[str]] = {

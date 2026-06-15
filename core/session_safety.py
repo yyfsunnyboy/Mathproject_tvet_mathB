@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import json
 import os
+import re
 import secrets
 from datetime import datetime, timezone
 from pathlib import Path
@@ -230,6 +231,11 @@ def summarize_import_result(result: Any) -> dict[str, Any]:
     failed_rows = 0
     imported_rows = 0
     source_rows = 0
+    explicit_warning_count = None
+    fatal_errors = 0
+    orphan_skill_curriculum_count = 0
+    final_status = ""
+    final_status_reason = ""
     for line in table_lines:
         for token in line.replace(",", " ").split():
             if "=" not in token:
@@ -246,16 +252,65 @@ def summarize_import_result(result: Any) -> dict[str, Any]:
             elif key == "source_rows":
                 source_rows += number
 
-    error_lines = [line for line in lines if "row_error" in line or "failed" in line.lower()]
+    for line in lines:
+        lower = line.lower()
+        if lower.startswith("final_status:"):
+            final_status = line.split(":", 1)[1].strip()
+        elif lower.startswith("final_status_reason:"):
+            final_status_reason = line.split(":", 1)[1].strip()
+        elif lower.startswith("warning_count:"):
+            try:
+                explicit_warning_count = int(line.split(":", 1)[1].strip())
+            except ValueError:
+                explicit_warning_count = 0
+        elif lower.startswith("fatal_errors:"):
+            try:
+                fatal_errors = int(line.split(":", 1)[1].strip())
+            except ValueError:
+                fatal_errors = 0
+        elif lower.startswith("orphan_skill_curriculum_count:"):
+            try:
+                orphan_skill_curriculum_count = int(line.split(":", 1)[1].strip())
+            except ValueError:
+                orphan_skill_curriculum_count = 0
+        elif lower.startswith("orphan skill_curriculum rows:"):
+            match = re.search(r"(\d+)\s*$", line)
+            if match:
+                orphan_skill_curriculum_count = int(match.group(1))
+
+    warning_count = explicit_warning_count
+    if warning_count is None:
+        warning_count = orphan_skill_curriculum_count
+
+    row_error_count = sum(1 for line in lines if "row_error" in line)
+    error_count = max(failed_rows, row_error_count) + fatal_errors
+
+    if not final_status:
+        if failed_rows > 0 or fatal_errors > 0:
+            final_status = "failed"
+        elif warning_count > 0:
+            final_status = "completed_with_warnings"
+        elif not success:
+            final_status = "failed"
+        else:
+            final_status = "completed"
+    success = final_status != "failed"
+
     first_lines = lines[:8]
     return {
         "success": success,
+        "status": final_status,
+        "final_status": final_status,
+        "final_status_reason": final_status_reason,
         "line_count": len(lines),
         "table_count": len(table_lines),
         "source_rows": source_rows,
         "imported_rows": imported_rows,
         "failed_rows": failed_rows,
-        "error_count": len(error_lines),
+        "fatal_errors": fatal_errors,
+        "warning_count": warning_count,
+        "error_count": error_count,
+        "orphan_skill_curriculum_count": orphan_skill_curriculum_count,
         "preview": first_lines,
         "message": "\n".join(first_lines),
     }

@@ -21,7 +21,7 @@
 - wrapper binding: 完成
 - runtime coverage: 通過
 - missing runtime problem types: -
-- blocking reasons: answer_contract_gate_failed
+- blocking reasons: -
 
 ## 5. 發布排除題型
 - manual_review problem types: -
@@ -40,7 +40,7 @@
 - runtime_binding_status: READY
 
 ## 8. 阻塞原因與說明
-- answer_contract_gate_failed: answer_contract gate 未通過
+- 無
 
 ## 9. 下一步建議
 - next_action_type: ready_for_publish_review

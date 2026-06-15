@@ -1,0 +1,38 @@
+skill_id: "vh_數學B1_PointSlopeForm"
+subskills:
+  -
+    subskill_id: "unknown"
+    observed: true
+    supporting_example_ids:
+      - 4542
+      - 4552
+      - 4557
+      - 4561
+    suggested_problem_types:
+      - "unknown"
+    runtime_category: "manual_review"
+    prerequisite_subskills:
+      - "absolute_value_numeric_evaluation"
+    diagnosis_tags:
+      - "absolute_value"
+  -
+    subskill_id: "write_line_equation_from_point_slope"
+    observed: true
+    supporting_example_ids:
+      - 4540
+      - 4541
+      - 4543
+      - 4546
+      - 4549
+      - 4550
+      - 4551
+      - 4556
+      - 4560
+      - 4606
+    suggested_problem_types:
+      - "write_line_equation_from_point_slope"
+    runtime_category: "rule_only"
+    prerequisite_subskills:
+      - "absolute_value_numeric_evaluation"
+    diagnosis_tags:
+      - "absolute_value"

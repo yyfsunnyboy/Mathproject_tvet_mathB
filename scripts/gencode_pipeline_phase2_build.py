@@ -12,7 +12,11 @@ if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 REPORT_DIR = PROJECT_ROOT / "reports" / "gencode_closed_loop"
 
-from core.gencode.build_gap_analyzer import analyze_build_dependency_plan, analyze_build_gaps
+from core.gencode.build_gap_analyzer import (
+    analyze_build_dependency_plan,
+    analyze_build_gaps,
+    target_task_has_registered_slot_generator,
+)
 from core.gencode.candidate_discovery import discover_generator_candidates, verify_generator_candidate
 from core.gencode.pipeline_state import determine_next_repair_action, read_json, utc_timestamp, write_json
 from core.gencode.repair_catalog import GENERATOR_REPAIR_CATALOG
@@ -70,6 +74,10 @@ def _run_candidate_build_execution(skill_id: str, p1: dict[str, Any], dep: dict[
             candidate_failure_reasons.setdefault(p, []).append("unsupported_candidate_problem_type")
 
     verified_set = sorted(set(verified_candidates))
+    slot_verified = sorted(
+        {pt for pt in buildable_pts if target_task_has_registered_slot_generator(pt)}
+    )
+    verified_set = sorted(set(verified_set) | set(slot_verified))
     failed_set = sorted(set(failed_candidates))
     pending = sorted([pt for pt in buildable_pts if pt not in set(verified_set) and pt not in set(failed_set)])
     failure_reasons_flat = sorted({r for rs in candidate_failure_reasons.values() for r in rs})
@@ -405,6 +413,12 @@ def main() -> None:
 
     write_json(out_json, report)
     _write_phase2_markdown(out_md, report)
+    try:
+        from core.gencode.pipeline_orchestrator import run_gencode_phase2
+
+        run_gencode_phase2(skill_id, dry_run=True)
+    except Exception:
+        pass
     print(json.dumps(report, ensure_ascii=True) if args.json else _build_stdout_summary(report))
 
 

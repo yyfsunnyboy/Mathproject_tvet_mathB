@@ -53,14 +53,14 @@
   "phase2_status": "PASS",
   "repair_plan": [],
   "reports": {
-    "phase2_generator_summary_json": "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\mock_radical_block_phase2_generator_summary.json",
-    "phase2_generator_summary_md": "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\mock_radical_block_phase2_generator_summary.md",
-    "phase2_json": "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\mock_radical_block_phase2_generator_summary.json",
-    "phase2_md": "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\mock_radical_block_phase2_generator_summary.md",
-    "generator_draft_spec_json": "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\drafts\\mock_radical_block_generator_draft_spec.json"
+    "phase2_generator_summary_json": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\mock_radical_block_phase2_generator_summary.json",
+    "phase2_generator_summary_md": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\mock_radical_block_phase2_generator_summary.md",
+    "phase2_json": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\mock_radical_block_phase2_generator_summary.json",
+    "phase2_md": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\mock_radical_block_phase2_generator_summary.md",
+    "generator_draft_spec_json": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\drafts\\mock_radical_block_generator_draft_spec.json"
   },
   "next_action": "phase3_package_draft",
-  "timestamp": "2026-06-14T15:24:08.788216+00:00",
+  "timestamp": "2026-06-15T01:07:22.859314+00:00",
   "dry_run": true
 }
 ```

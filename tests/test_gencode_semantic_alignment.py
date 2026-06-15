@@ -169,7 +169,10 @@ def test_phase2_blocks_when_phase1_alignment_blocked():
             json.dumps(phase1, ensure_ascii=False),
             encoding="utf-8",
         )
-        with patch.object(po, "REPORT_DIR", report_dir):
+        from core.gencode import pipeline_state as ps
+        with patch.object(po, "REPORT_DIR", report_dir), \
+             patch.object(ps, "GENCODE_REPORT_DIR", report_dir), \
+             patch.object(ps, "GENCODE_DRAFT_DIR", report_dir / "drafts"):
             out = run_gencode_phase2(skill_id, dry_run=True)
     statuses = [r.get("generator_status") for r in out.get("generator_results") or []]
     assert statuses and all(s == "blocked" for s in statuses)

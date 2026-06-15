@@ -38,7 +38,7 @@
   "question_text": "已知巴斯卡三角形第 0 列為 1，第 1 列為 1, 1，第 2 列為 1, 2, 1。請寫出第 3 列的各項數字。",
   "question_text_hash": "7f1f531f52abc0e5",
   "question_type": "",
-  "question_uid": "98d62b35-f8a0-4adb-9095-d9aa5d9a316e",
+  "question_uid": "a9b65259-7621-41a0-92d7-10d5e627e397",
   "requires_handwriting": true,
   "requires_listing_or_tree": false,
   "requires_teacher_review": true,

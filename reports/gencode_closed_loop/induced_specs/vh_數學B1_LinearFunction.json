@@ -121,6 +121,8 @@
           "signature_fields": [
             "problem_type_id",
             "template_variant",
+            "routing_track",
+            "scenario_type",
             "ratio_form",
             "ratio_values",
             "coordinate_pattern",
@@ -148,6 +150,10 @@
         "avoid_llm_freeform_math": true,
         "use_domain_functions": true,
         "derivation_steps_required": true,
+        "templates": [
+          "template_scalar_unknown",
+          "template_feature_value"
+        ],
         "problem_type_id": "numeric_numeric_evaluate_function_notation_short_answer",
         "contract_validation_blockers": [],
         "contract_validation_warnings": [
@@ -302,6 +308,8 @@
           "signature_fields": [
             "problem_type_id",
             "template_variant",
+            "routing_track",
+            "scenario_type",
             "ratio_form",
             "ratio_values",
             "coordinate_pattern",
@@ -329,6 +337,10 @@
         "avoid_llm_freeform_math": true,
         "use_domain_functions": true,
         "derivation_steps_required": true,
+        "templates": [
+          "template_scalar_unknown",
+          "template_feature_value"
+        ],
         "problem_type_id": "numeric_numeric_evaluate_function_notation_single_choice",
         "contract_validation_blockers": [],
         "contract_validation_warnings": [
@@ -366,48 +378,41 @@
       "naming_warning": "naming_warning:numeric_prefix_but_hint_is_A/B/C/D"
     },
     {
-      "problem_type_id": "short_answer_evaluate_function_value_fallback_application",
+      "problem_type_id": "evaluate_function_value",
       "skill_id": "vh_數學B1_LinearFunction",
       "target_task": "evaluate_function_value",
       "task_family": "function_concept_family",
-      "display_name": "short_answer / evaluate_function_value",
-      "answer_format_hint": "",
-      "answer_fields": null,
-      "answer_separator": null,
-      "source_example_ids": [
-        4425,
-        4426,
-        4442,
-        4445,
-        4500
-      ],
+      "display_name": "evaluate_function_value / anchor bootstrap",
+      "answer_format_hint": "expression",
+      "source_example_ids": [],
       "answer_contract": {
         "choices_required": false,
         "choice_count": null,
         "correct_choice_count": null,
         "frontend_render_choices": false,
-        "source_has_choices": false,
-        "answer_type": "text_short",
-        "answer_shape": "text_short",
-        "answer_semantics": "text_short",
-        "answer_equivalence": "exact_string",
-        "equivalence_type": "exact_string",
-        "checker": "text_short_checker",
-        "checker_key": "text_short_checker",
+        "answer_type": "expression",
+        "answer_shape": "factored_expression",
+        "answer_equivalence": "algebraic_equivalent",
+        "equivalence_type": "algebraic_equivalent",
+        "checker": "expression_checker",
+        "checker_key": "expression_checker",
         "presentation_mode": "short_answer",
-        "selected_checker": "text_short_checker"
+        "selected_checker": "expression_checker",
+        "checker_selection_reason": "quadratic_factoring_expression",
+        "accepted_formats": [
+          "(x-5)(x+3)",
+          "(2x-1)(x+5)",
+          "2(x-1)(3x+2)"
+        ],
+        "answer_semantics": "algebraic_expression"
       },
       "stem_contract": {
         "stem_must_not_embed_choices": true,
         "allowed_math_objects": [
-          "coordinate_point",
-          "three_coordinate_points",
-          "triangle",
-          "two_coordinate_points"
+          "quadratic_inequality"
         ],
         "required_math_objects": [
-          "coordinate_point",
-          "three_coordinate_points"
+          "quadratic_inequality"
         ],
         "forbidden_patterns": [
           "\\(A\\)",
@@ -423,15 +428,12 @@
       },
       "semantic_contract": {
         "reasoning_type": [
-          "numeric_computation"
+          "evaluate_function_value"
         ],
         "reject_if": [
           "unused_condition",
           "ambiguous_answer",
-          "answer_not_derivable",
-          "duplicated_choices",
-          "no_correct_choice",
-          "multiple_correct_choices_when_single_choice"
+          "answer_not_derivable"
         ]
       },
       "generator_contract": {
@@ -481,6 +483,8 @@
           "signature_fields": [
             "problem_type_id",
             "template_variant",
+            "routing_track",
+            "scenario_type",
             "ratio_form",
             "ratio_values",
             "coordinate_pattern",
@@ -508,11 +512,10 @@
         "avoid_llm_freeform_math": true,
         "use_domain_functions": true,
         "derivation_steps_required": true,
-        "contextual_application": true,
         "template_slots": {
           "stem": "function_value_numeric"
         },
-        "problem_type_id": "short_answer_evaluate_function_value_fallback_application",
+        "problem_type_id": "evaluate_function_value",
         "contract_validation_blockers": [],
         "contract_validation_warnings": [
           "single_template_variant_only",
@@ -521,25 +524,186 @@
       },
       "validator_contract": {
         "static_checks": [
-          "answer_contract_checks",
-          "choices_policy"
+          "answer_contract_checks"
         ],
         "semantic_checks": [
           "givens_to_target_dependency"
         ],
         "runtime_smoke_count": 30
       },
-      "spec_source": "phase1_induced_draft",
-      "grouping_reason": "merged_by_canonical_contract",
+      "spec_source": "anchor_slot_bootstrap",
+      "grouping_reason": "anchor_subskill_bootstrap_zero_source",
       "feature_signature": [
-        "canonical_contract_merge",
-        "evaluate_function_value",
-        "short_answer",
-        "short_answer"
+        "anchor_slot_bootstrap",
+        "evaluate_function_value"
       ],
-      "canonical_base_problem_type_id": "short_answer_evaluate_function_value_fallback_application",
+      "canonical_base_problem_type_id": "evaluate_function_value",
       "value_type_prefix": "",
-      "_resolved_template_slot": "function_value_numeric"
+      "_resolved_template_slot": "factor_quadratic_by_cross_multiplication"
+    },
+    {
+      "problem_type_id": "interpret_function_notation",
+      "skill_id": "vh_數學B1_LinearFunction",
+      "target_task": "interpret_function_notation",
+      "task_family": "function_concept_family",
+      "display_name": "interpret_function_notation / anchor bootstrap",
+      "answer_format_hint": "expression",
+      "source_example_ids": [],
+      "answer_contract": {
+        "choices_required": false,
+        "choice_count": null,
+        "correct_choice_count": null,
+        "frontend_render_choices": false,
+        "answer_type": "expression",
+        "answer_shape": "factored_expression",
+        "answer_equivalence": "algebraic_equivalent",
+        "equivalence_type": "algebraic_equivalent",
+        "checker": "expression_checker",
+        "checker_key": "expression_checker",
+        "presentation_mode": "short_answer",
+        "selected_checker": "expression_checker",
+        "checker_selection_reason": "quadratic_factoring_expression",
+        "accepted_formats": [
+          "(x-5)(x+3)",
+          "(2x-1)(x+5)",
+          "2(x-1)(3x+2)"
+        ],
+        "answer_semantics": "algebraic_expression"
+      },
+      "stem_contract": {
+        "stem_must_not_embed_choices": true,
+        "allowed_math_objects": [
+          "quadratic_inequality"
+        ],
+        "required_math_objects": [
+          "quadratic_inequality"
+        ],
+        "forbidden_patterns": [
+          "\\(A\\)",
+          "\\(B\\)",
+          "\\(C\\)",
+          "\\(D\\)"
+        ]
+      },
+      "dependency_contract": {
+        "givens_must_be_used": true,
+        "target_answer_must_depend_on_givens": true,
+        "variables_in_conditions_must_appear_in_target": false
+      },
+      "semantic_contract": {
+        "reasoning_type": [
+          "interpret_function_notation"
+        ],
+        "reject_if": [
+          "unused_condition",
+          "ambiguous_answer",
+          "answer_not_derivable"
+        ]
+      },
+      "generator_contract": {
+        "template_variants": [
+          {
+            "id": "default",
+            "label": "default",
+            "stem_pattern": "依題意求解：{stem_hint}。",
+            "weight": 1.0,
+            "enabled": true
+          }
+        ],
+        "parameter_schema": {
+          "seed": {
+            "type": "integer",
+            "randomize": true
+          },
+          "difficulty_level": {
+            "choices": [
+              "level_1",
+              "level_2",
+              "level_3"
+            ],
+            "weights": [
+              0.4,
+              0.4,
+              0.2
+            ]
+          }
+        },
+        "variation_dimensions": [
+          "seed",
+          "difficulty_level",
+          "context_style"
+        ],
+        "difficulty_controls": {
+          "level_1": {},
+          "level_2": {},
+          "level_3": {}
+        },
+        "anti_repetition_rules": {
+          "avoid_same_template_consecutive": true,
+          "avoid_same_ratio_consecutive": true,
+          "avoid_same_point_names_consecutive": true,
+          "avoid_same_answer_consecutive": true,
+          "recent_history_window": 5,
+          "signature_fields": [
+            "problem_type_id",
+            "template_variant",
+            "routing_track",
+            "scenario_type",
+            "ratio_form",
+            "ratio_values",
+            "coordinate_pattern",
+            "answer"
+          ]
+        },
+        "validity_constraints": [
+          "answer derivable from givens"
+        ],
+        "answer_shape": "numeric",
+        "explanation_variants": [
+          "stepwise"
+        ],
+        "sampling_strategy": "weighted_random",
+        "template_families": [
+          "interpret_function_notation"
+        ],
+        "parameter_slots": {
+          "seed": "integer",
+          "difficulty": "easy"
+        },
+        "randomization_rules": {
+          "shuffle_choices": false
+        },
+        "avoid_llm_freeform_math": true,
+        "use_domain_functions": true,
+        "derivation_steps_required": true,
+        "template_slots": {
+          "stem": "linear_function_two_point_choice"
+        },
+        "problem_type_id": "interpret_function_notation",
+        "contract_validation_blockers": [],
+        "contract_validation_warnings": [
+          "single_template_variant_only",
+          "variation_dimensions_below_recommended_minimum"
+        ]
+      },
+      "validator_contract": {
+        "static_checks": [
+          "answer_contract_checks"
+        ],
+        "semantic_checks": [
+          "givens_to_target_dependency"
+        ],
+        "runtime_smoke_count": 30
+      },
+      "spec_source": "anchor_slot_bootstrap",
+      "grouping_reason": "anchor_subskill_bootstrap_zero_source",
+      "feature_signature": [
+        "anchor_slot_bootstrap",
+        "interpret_function_notation"
+      ],
+      "canonical_base_problem_type_id": "interpret_function_notation",
+      "value_type_prefix": "",
+      "_resolved_template_slot": "factor_quadratic_by_cross_multiplication"
     }
   ]
 }

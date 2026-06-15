@@ -15,6 +15,8 @@ RATIONAL_TYPES = frozenset({"fraction", "rational", "rational_fraction"})
 RADICAL_TYPES = frozenset({"numeric_or_radical", "math_expression", "radical_number", "expression"})
 CHOICE_TYPES = frozenset({"single_choice", "multi_choice", "choice", "choice_label"})
 COORDINATE_PAIR_TYPES = frozenset({"coordinate_pair", "ordered_pair"})
+EQUATION_TYPES = frozenset({"equation"})
+LINEAR_EQUATION_SHAPES = frozenset({"linear_equation"})
 TEXT_SHORT_TYPES = frozenset({"text", "text_short", "exact_string", "case_insensitive_string"})
 
 ANSWER_TYPE_ALIASES: dict[str, str] = {
@@ -57,8 +59,10 @@ VALID_ANSWER_TYPES = frozenset(
         "numeric_or_radical",
         "table",
         "manual_review",
+        "equation",
     }
     | SOLUTION_SET_TYPES
+    | EQUATION_TYPES
     | INTERVAL_TYPES
     | CLASSIFICATION_TYPES
     | NUMERIC_TYPES
@@ -70,6 +74,20 @@ VALID_ANSWER_TYPES = frozenset(
 )
 
 _RADICAL_TOKEN = re.compile(r"\\sqrt|sqrt\s*\(|√", re.I)
+
+
+def is_linear_equation_contract(answer_contract: dict[str, Any] | None) -> bool:
+    ac = answer_contract if isinstance(answer_contract, dict) else {}
+    if str(ac.get("answer_shape", "")).strip() in LINEAR_EQUATION_SHAPES:
+        return True
+    if str(ac.get("semantic_answer_shape", "")).strip() in LINEAR_EQUATION_SHAPES:
+        return True
+    if str(ac.get("checker", ac.get("checker_key", ""))).strip() == "linear_equation_equivalent_checker":
+        return True
+    equiv = str(ac.get("answer_equivalence", ac.get("equivalence_type", ""))).strip()
+    if equiv == "linear_equation_equivalent":
+        return True
+    return answer_type_family(str(ac.get("answer_type", ""))) == "linear_equation"
 
 
 def is_coordinate_pair_contract(answer_contract: dict[str, Any] | None) -> bool:
@@ -265,6 +283,8 @@ def answer_type_family(answer_type: str) -> str:
         return "numeric"
     if canon in COORDINATE_PAIR_TYPES:
         return "coordinate_pair"
+    if canon in EQUATION_TYPES:
+        return "linear_equation"
     if canon in TEXT_SHORT_TYPES:
         return "short_answer"
     return canon
@@ -405,6 +425,20 @@ def is_valid_answer_payload(value: Any, answer_contract: dict[str, Any]) -> tupl
         if parse_coordinate_pair_answer(value) is not None:
             return True, ""
         return False, "coordinate_pair_invalid"
+    if family == "linear_equation" or is_linear_equation_contract(ac):
+        from core.checkers.linear_equation_equivalent_checker import (
+            canonicalize_linear_equation,
+            check_linear_equation_equivalent_answer,
+        )
+
+        text = str(value).strip()
+        if not text:
+            return False, "linear_equation_empty"
+        if canonicalize_linear_equation(text) is None:
+            return False, "linear_equation_invalid"
+        if not check_linear_equation_equivalent_answer(text, text):
+            return False, "linear_equation_checker_self_test_failed"
+        return True, ""
     return bool(str(value).strip()), "answer_empty"
 
 
@@ -422,6 +456,7 @@ def expected_answer_shape_hint(answer_contract: dict[str, Any]) -> str:
         "fraction": "rational/fraction allows Fraction, int, integer string, or a/b string",
         "short_answer": "short_answer allows non-empty string",
         "coordinate_pair": "coordinate_pair allows (x,y) string or equivalent formats",
+        "linear_equation": "linear_equation allows parseable binary linear equation strings",
     }
     base = hints.get(family, f"{family} allows non-empty answer per contract")
     if shape:

@@ -2,7 +2,7 @@
 
 ## 1. 摘要
 - skill_id: vh_數學B1_PropertiesOfPerpendicularLines
-- 階段狀態: AUDIT_FAIL
+- 階段狀態: AUDIT_PASS
 - 建議下一步: phase2_build
 - 題庫例題總數: 8
 - 已分類例題數: 8
@@ -12,7 +12,7 @@
 
 | 題型 ID | 執行類型 | 例題 ID | 答案型態 | 等價判分型態 | 判分器 | 狀態 |
 | --- | --- | --- | --- | --- | --- | --- |
-| perpendicular_lines_properties | deterministic_expression | 4526, 4527, 4531, 4532, 4536, 4537, 4538, 4539 |  |  |  | classified |
+| perpendicular_lines_properties | deterministic_expression | 4526, 4527, 4531, 4532, 4536, 4537, 4538, 4539 | rational | rational_equivalent | rational_checker | classified |
 
 ## 3. 例題分類表
 
@@ -28,9 +28,9 @@
 | 4539 | perpendicular_lines_properties | deterministic_expression | high |  | 已知直線${{L}_{1}}$的斜率為$-\frac{1}{2}$，試問： (1) 若直線${{L}_{2}}$平行${{L}_{1}}$，試求${{L}_{2}}$的斜率。 (2) 若直線${{L}_{3}}$垂... |
 
 ## 4. 答案規格檢查
-- 缺少 answer_contract 的題型: perpendicular_lines_properties
+- 缺少 answer_contract 的題型: 無
 - 缺少 checker_key 的題型: 無
-- 需要等價答案測試的題型: 無
+- 需要等價答案測試的題型: perpendicular_lines_properties
 
 ## 5. 人工審查與風險標記
 - manual_review_problem_types: 無
@@ -40,7 +40,7 @@
 - classifier_proposal.enabled: False
 - proposal_status: SKIPPED
 - reason: 
-- proposal_path: E:\Python\Mathproject_tvet_mathB\reports\gencode_closed_loop\vh_數學B1_PropertiesOfPerpendicularLines_classifier_proposal.json
+- proposal_path: D:\Python\Mathproject_tvet_mathB\reports\gencode_closed_loop\vh_數學B1_PropertiesOfPerpendicularLines_classifier_proposal.json
 - promote_ready: False
 - promote_command_suggestion: python scripts\gencode_promote_classifier_proposal.py --skill-id vh_數學B1_PropertiesOfPerpendicularLines
 

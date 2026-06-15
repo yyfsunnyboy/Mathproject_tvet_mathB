@@ -22,6 +22,8 @@ from core.gencode.classifier_proposal import (
     detect_answer_shape,
 )
 from core.gencode.pipeline_orchestrator import run_gencode_auto_pipeline
+from core.gencode.problem_type_spec import list_problem_types_for_skill
+from core.gencode.source_skill_binding_policy import demote_unregistered_scope_locked_candidate
 
 REPORT_DIR = PROJECT_ROOT / "reports" / "gencode_closed_loop"
 BOOTSTRAP_MAP_PATH = PROJECT_ROOT / "configs" / "gencode" / "bootstrap_skill_map.yaml"
@@ -159,6 +161,16 @@ ANSWER_CONTRACT_DEFAULTS: dict[str, dict[str, dict[str, Any]]] = {
             "order_matters": True,
             "accepted_format_notes": ["single integer answer"],
             "canonical_answer_schema": {"type": "integer"},
+        }
+    },
+    "vh_數學B1_PropertiesOfPerpendicularLines": {
+        "perpendicular_lines_properties": {
+            "answer_type": "rational",
+            "equivalence_type": "rational_equivalent",
+            "checker_key": "rational_checker",
+            "order_matters": True,
+            "accepted_format_notes": ["rational or integer slope/parameter answer"],
+            "canonical_answer_schema": {"type": "rational"},
         }
     }
 }
@@ -499,6 +511,20 @@ def _propose_for_unknown_examples(skill_id: str, examples: list[dict[str, Any]],
         for x in proposals
         if isinstance(x.get("answer_contract_proposal"), dict)
     }
+    existing_ids = {
+        str(x.get("problem_type_id", "")).strip()
+        for x in list_problem_types_for_skill(skill_id)
+        if isinstance(x, dict)
+    }
+    if not str(skill_id or "").startswith("mock_"):
+        proposals = [
+            demote_unregistered_scope_locked_candidate(x)
+            if isinstance(x, dict)
+            and str(x.get("problem_type_id", "")).strip()
+            and str(x.get("problem_type_id", "")).strip() not in existing_ids
+            else x
+            for x in proposals
+        ]
     multi_shapes = len({x for x in answer_shapes if x}) >= 2
     single_structure = len(proposals) == 1
     has_singleton = any(int(x.get("matched_example_count", 0)) == 1 for x in proposals)

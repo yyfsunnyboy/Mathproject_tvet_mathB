@@ -1,0 +1,227 @@
+{
+  "skill_id": "vh_數學B1_PointSlopeForm",
+  "phase": "phase2_build",
+  "final_status": "BUILD_PASS",
+  "input_phase1_report": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_PointSlopeForm_phase1_audit.json",
+  "build_mode": "normal",
+  "generated_problem_types": [
+    "write_line_equation_from_point_slope",
+    "write_line_equation_from_two_points",
+    "write_perpendicular_bisector_from_two_points",
+    "write_line_equation_from_slope_and_intercept",
+    "write_triangle_median_line_from_vertices"
+  ],
+  "verified_problem_types": [
+    "write_line_equation_from_point_slope",
+    "write_line_equation_from_two_points",
+    "write_perpendicular_bisector_from_two_points",
+    "write_line_equation_from_slope_and_intercept",
+    "write_triangle_median_line_from_vertices"
+  ],
+  "failed_problem_types": [],
+  "pending_implementation": [],
+  "manual_review_problem_types": [
+    "unknown"
+  ],
+  "future_ai_judged_problem_types": [],
+  "checker_implementation_summary": {
+    "missing_checker_key_problem_types": []
+  },
+  "answer_contract_summary": {
+    "write_line_equation_from_point_slope": null
+  },
+  "registry_merge_summary": {
+    "mode": "non_destructive",
+    "updated": false
+  },
+  "wrapper_summary": {
+    "pipeline_invoked": false,
+    "pipeline_return_code": 0,
+    "pipeline_final_status": "SKIPPED_CANDIDATE_VERIFICATION_MODE"
+  },
+  "bootstrap_summary": {
+    "bootstrap_mode": false,
+    "bootstrap_source_skill_id": "",
+    "source_coverage_status": "",
+    "allowed_problem_types": []
+  },
+  "blocking_reasons": [
+    "candidate_verified_but_not_registered",
+    "wrapper_missing_candidate_binding"
+  ],
+  "warnings": [
+    "candidate 已通過，但尚未完成 registry/wrapper binding。"
+  ],
+  "artifact_paths": {
+    "phase2_json": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_PointSlopeForm_phase2_build.json",
+    "phase2_md": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_PointSlopeForm_phase2_build.md"
+  },
+  "timestamp": "2026-06-15T09:02:49.574719+00:00",
+  "build_dependency_plan": {
+    "foundation_ready": true,
+    "required_checkers": [],
+    "existing_checkers": [
+      "choice_checker",
+      "choice_label_checker",
+      "coordinate_pair_checker",
+      "exact_string_checker",
+      "expression_equivalence_checker",
+      "integer_checker",
+      "interval_checker",
+      "linear_equation_equivalent_checker",
+      "numeric_checker",
+      "quadrant_checker",
+      "rational_checker",
+      "solution_set_checker",
+      "structured_text_checker"
+    ],
+    "missing_checkers": [],
+    "required_verifiers": [],
+    "missing_verifiers": [],
+    "required_domain_functions": [],
+    "missing_domain_functions": [],
+    "required_generators": [
+      "write_line_equation_from_point_slope"
+    ],
+    "missing_generators": [],
+    "excluded_manual_review_problem_types": [
+      "unknown"
+    ],
+    "buildable_problem_types": [
+      "write_line_equation_from_point_slope"
+    ],
+    "blocked_problem_types": [
+      "unknown"
+    ],
+    "preflight_status": "PASS"
+  },
+  "preflight_status": "PASS",
+  "build_execution_status": "EXECUTED",
+  "candidate_discovery_summary": {
+    "discovered_candidates": [],
+    "missing_candidate_files": [],
+    "unsupported_candidate_problem_types": [
+      "write_line_equation_from_point_slope"
+    ],
+    "verified_candidates": [
+      "write_line_equation_from_point_slope"
+    ],
+    "failed_candidates": [
+      "write_line_equation_from_point_slope"
+    ],
+    "candidate_failure_reasons": {
+      "write_line_equation_from_point_slope": [
+        "unsupported_candidate_problem_type"
+      ]
+    },
+    "sample_count": 0
+  },
+  "build_execution_summary": {
+    "execution_attempted": true,
+    "execution_status": "PARTIAL",
+    "verified_problem_types": [
+      "write_line_equation_from_point_slope"
+    ],
+    "failed_problem_types": [
+      "write_line_equation_from_point_slope"
+    ],
+    "pending_problem_types": [],
+    "failure_reasons": [
+      "unsupported_candidate_problem_type"
+    ]
+  },
+  "build_gap_summary": {
+    "has_build_gaps": true,
+    "gap_types": [
+      "manual_review_unresolved"
+    ],
+    "problem_type_gaps": {
+      "unknown": {
+        "answer_type": "",
+        "equivalence_type": "",
+        "checker_key": "",
+        "gap_types": [
+          "manual_review_unresolved"
+        ],
+        "recommended_components": [],
+        "suggested_next_actions": [
+          "保留 manual_review 或先修正來源題庫"
+        ],
+        "severity": "medium"
+      }
+    }
+  },
+  "repair_plan": {
+    "recommended_next_action": "fix_build_gaps_then_rerun_phase2",
+    "steps": [
+      {
+        "step_id": "S1",
+        "title": "建立或驗證 checker/verifier",
+        "action_type": "implement_or_register_checker",
+        "target": "equivalence_type 對應 checker/verifier",
+        "reason": "優先打通答案等價判分",
+        "depends_on": [],
+        "safe_to_auto_generate": true,
+        "requires_human_review": false
+      },
+      {
+        "step_id": "S2",
+        "title": "建立 domain function",
+        "action_type": "implement_domain_function",
+        "target": "interval/solution_set/algebraic 題型 domain solver",
+        "reason": "支援非單純數值題型",
+        "depends_on": [
+          "S1"
+        ],
+        "safe_to_auto_generate": true,
+        "requires_human_review": false
+      },
+      {
+        "step_id": "S3",
+        "title": "建立 deterministic generators",
+        "action_type": "implement_generator",
+        "target": "failed deterministic problem types",
+        "reason": "補齊可生成題型",
+        "depends_on": [
+          "S1",
+          "S2"
+        ],
+        "safe_to_auto_generate": false,
+        "requires_human_review": true
+      },
+      {
+        "step_id": "S4",
+        "title": "修復 wrapper candidates",
+        "action_type": "fix_wrapper_candidate_linking",
+        "target": "verified candidates / wrapper pipeline",
+        "reason": "避免 wrapper verify fail",
+        "depends_on": [
+          "S3"
+        ],
+        "safe_to_auto_generate": false,
+        "requires_human_review": true
+      },
+      {
+        "step_id": "S5",
+        "title": "重跑 Phase 2",
+        "action_type": "rerun_phase2",
+        "target": "scripts/gencode_pipeline_phase2_build.py",
+        "reason": "驗證缺口是否修復",
+        "depends_on": [
+          "S4"
+        ],
+        "safe_to_auto_generate": true,
+        "requires_human_review": false
+      }
+    ]
+  },
+  "repair_plan_status": "GENERATED",
+  "next_action": {
+    "next_action_type": "phase3_publish_gate",
+    "gap": "",
+    "command": "python scripts\\gencode_pipeline_phase3_publish_gate.py --skill-id vh_數學B1_PointSlopeForm",
+    "reason": "No blocking build dependency gaps detected and phase2 status is publish-gate eligible.",
+    "should_run_phase3": true,
+    "requires_human_review": false
+  }
+}

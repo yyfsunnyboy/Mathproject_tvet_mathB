@@ -249,74 +249,43 @@ _GENERIC_MATRIX_V2_LINES = [
     "{global_constraints}",
     "",
     "# Role & Mission",
-    "\u4f60\u662f\u4e00\u500b\u8ca0\u8cac Mathproject \u9ad8\u8077\u6578B\u81ea\u9069\u61c9\u5b78\u7fd2\u7cfb\u7d71\u7684\u300c\u5168\u81ea\u52d5\u591a\u6a21\u614b\u984c\u65cf\u64f4\u5145\u5c08\u5bb6\u300d\u3002",
-    "\u4f60\u7684\u4efb\u52d9\u662f\u6839\u64da Phase 1 \u50b3\u5165\u7684\u8ab2\u672c\u4f86\u6e90\u7bc4\u4f8b\uff08Source Examples\uff09\uff0c\u81ea\u4e3b\u5206\u6790\u5176\u6559\u5b78\u8108\u7d61\uff0c",
-    "\u8a2d\u8a08\u51fa\u80fd\u5b8c\u5168\u8986\u84cb\u8ab2\u672c\u6240\u6709\u89e3\u984c\u554f\u6cd5\u8207\u63d0\u554f\u76ee\u6a19\u7684\u901a\u7528\u8b8a\u5316\u6a21\u677f\uff08Templates\uff09\uff0c",
-    "\u62d2\u7d55\u4efb\u4f55\u55ae\u4e00\u3001\u91cd\u8907\u3001\u6216\u9000\u5316\u7684\u51fa\u984c\u504f\u8aa4\u3002",
+    "你是一個負責 Mathproject 高職數B版自適應學習系統的「2D矩陣多模態出題專家（Ab4 引擎）」。",
+    "你的任務是承接 Phase 1 定錨的雙通道合約，將課本例題與隨堂練習的解題脈絡，演化為結構完整的 2D 題目變化矩陣。",
     "",
     "---",
     "",
-    "# Principle 1: Ask-Target Bifurcation (mandatory)",
-    "After analyzing all source examples, identify ALL distinct question-target dimensions.",
-    "Each dimension MUST produce its own independent sub-template. Merging is forbidden.",
-    "Classification by answer_type:",
-    "  - Algebraic/equation/geometric expression answer -> answer_type=expression",
-    "  - Scalar unknown (x, k, a) -> answer_type=scalar",
-    "  - Geometric feature value (slope m, distance d, midpoint) -> answer_type=geometric_value",
-    "  - Count / boolean -> answer_type=count_or_bool",
-    "",
-    "# Principle 2: Inverse Problem Derivation (mandatory)",
-    "For every identified target dimension, derive its inverse:",
-    "  - Given condition, find equation -> also: given equation, find condition",
-    "  - Given two points, find slope -> also: given slope + one point, find another",
-    "",
-    "# Principle 3: Anti-Defensive-Degradation",
-    "NEVER restrict output to scalar-answer questions just because checker=rational_checker.",
-    "If any source example asks for an equation/expression, you MUST produce an expression sub-template.",
-    "correct_answer format must match answer_type:",
-    "  expression: normalized algebra string e.g. \"2*x - y + 1 = 0\"",
-    "  scalar: fraction or integer string e.g. \"3\" or \"1/2\"",
-    "  geometric_value: numeric or fraction string",
-    "",
-    "# Principle 4: Template Matrix Design",
-    "Design a 2D matrix: [math object] x [question target]",
-    "  rows = math objects (two points, slope, line equation, coefficient, perp condition)",
-    "  cols = question targets (find equation, find coefficient, find coordinate, find property)",
-    "  Each meaningful cell = independent sub-template.",
-    "  Fill at least 2x2 = 4 valid cells with corresponding code.",
+    "1. 【Ask-Target Bifurcation（提問目標分流）】：",
+    "   - 你必須嚴格對齊 Phase 1 宣告的 `template_scalar_unknown` 與 `template_feature_value` 雙通道。",
+    "   - 模板 A（幾何特徵求值）：強制生成要求計算幾何核心純量（如：試求垂直線的「斜率」）的數字題。",
+    "   - 模板 B（代數未知數求解）：強制生成利用垂直幾何特性，反求坐標變數（如：試求 x 之值、求 a）的數字題。",
+    "2. 【反防禦性退化守則】：",
+    "   - 嚴禁為了逃避抽樣測試而將題型閹割為單一的 scalar（純量變數）題。兩大模板必須在 `templates` 陣列中同時出線，且必須在 `change_dimensions` 中配置 `ask_target_type` 控制開關。",
+    "3. 【結構化 2D 矩陣設計】：",
+    "   - 最終輸出的結構必須形成 2×2 的多樣性變化（2個獨立問法模板 × 至少 2 個座標軸或正負號變換維度），且答案必須 100% 透過 `rational_checker` 數字驗證，嚴禁輸出任何需要多項式解析的非預期字串。",
     "",
     "---",
+    "",
+    "# 📤 期望輸出通用 JSON Schema",
+    "請以純 JSON 格式回傳，不可夾帶任何 Markdown 語法區塊（如 ```json）：",
+    "{{",
+    '  "problem_type_id": "{expected_problem_type_id}",',
+    '  "answer_type": "rational",',
+    '  "answer_contract": "rational_equivalent",',
+    '  "templates": [',
+    '    "template_scalar_unknown",',
+    '    "template_feature_value"',
+    "  ],",
+    '  "change_dimensions": [',
+    '    "ask_target_type",',
+    '    "coordinate_sign_pattern",',
+    '    "unknown_position_pattern"',
+    "  ]",
+    "}}",
     "",
     "# Code Generation Spec",
-    "",
-    "## Function signature (mandatory)",
     "def generate(level=1, **kwargs) -> dict:",
-    "    # level: 1=easy, 2=medium, 3=hard",
-    "",
-    "## Sub-template selection (inside generate function)",
-    "import random",
-    "template_id = random.choice([",
-    '    "template_scalar",      # find scalar unknown (x, k, a)',
-    '    "template_expression",  # find algebraic/geometric expression',
-    '    "template_geo_value",   # find geometric feature value',
-    "])",
-    "",
-    "## Return dict (must contain all fields)",
-    "return {",
-    '    "question_text": q,         # LaTeX math in $...$',
-    '    "correct_answer": a,        # string matching answer_type',
-    '    "answer": a,                # backward compat',
-    '    "mode": 1,',
-    '    "answer_type": answer_type, # scalar|expression|geometric_value',
-    '    "template_id": template_id, # for diversity tracking',
-    '    "metadata": {',
-    '        "givens": [],           # list of given conditions',
-    '        "target": "",           # what is being solved',
-    '        "derivation": "",       # reasoning summary',
-    "    },",
-    "}",
-    "",
-    "---",
+    "    # must support template_scalar_unknown and template_feature_value",
+    "    # must utilize rational_checker",
     "",
     "# Phase 1 Input (analyze the following)",
     "",
@@ -343,6 +312,36 @@ _GENERIC_MATRIX_V2_LINES = [
     "- NOTHING after the code ends",
 ]
 GENERIC_MATRIX_V2_PROMPT = "\n".join(_GENERIC_MATRIX_V2_LINES)
+
+PHASE1_ANCHOR_PROMPT = """# Role & Mission
+你是一個負責 Mathproject 高職數B系統的「管線合約定錨專家」。
+你的任務是盤點傳入的課本來源範例（Source Examples），為當前技能節點訂立剛性的型態合約（Contract Spec）。
+
+---
+
+# 🧠 剛性合約約束原則（反結構鎖死）
+1. 【動態模板通道宣告】：
+   - 當你在盤點高職數B的幾何或代數章節時，即便目前的來源範例數量稀少，你【絕對禁止】在產出的 `generator_contract` 中將模板鎖死為唯一的 `["default"]`。
+   - 你必須為該技能預留多模板擴充通道，在 `templates` 欄位中至少宣告包含正向與逆向的雙重骨架通道（例如：`["template_scalar_unknown", "template_feature_value"]`），以確保 Phase 2 的 2D 矩陣大腦有合法的邊界可循。
+2. 【雜訊免疫過濾】：
+   - 仔細比對所有 `source_examples` 的核心數學概念。如果某個範例（如二次不等式）的解題特徵與主技能主題（如垂直線性質）的語意對齊分數（Alignment Score）為 0，你必須在報告中將其標記為需要人工審查，且【不得】讓它的干擾型態污染核心題型的分群結果。
+
+---
+
+# 📤 期望輸出 JSON Schema
+{{
+  "skill_id": "{skill_id}",
+  "generator_contract": {{
+    "problem_type_id": "{expected_problem_type_id}",
+    "answer_type": "rational",
+    "answer_contract": "rational_equivalent",
+    "templates": [
+      "template_scalar_unknown",
+      "template_feature_value"
+    ]
+  }}
+}}
+"""
 
 
 class PromptBuilder:
@@ -738,6 +737,16 @@ class PromptBuilder:
             return master_spec
     
     @staticmethod
+    def build_phase1_detector_prompt(skill_id: str, expected_problem_type_id: str) -> str:
+        """
+        承接 Phase 1 定錨合約，構建管線合約定錨與反結構鎖死 Prompt
+        """
+        return PHASE1_ANCHOR_PROMPT.format(
+            skill_id=skill_id,
+            expected_problem_type_id=expected_problem_type_id
+        )
+
+    @staticmethod
     def get_skeleton() -> str:
         """
         獲取代碼框架（用於向後兼容）
@@ -755,5 +764,6 @@ __all__ = [
     'UNIVERSAL_GEN_CODE_PROMPT',
     'GENERIC_MATRIX_V2_PROMPT',
     'GLOBAL_GEN_CONSTRAINTS',
+    'PHASE1_ANCHOR_PROMPT',
 ]
 

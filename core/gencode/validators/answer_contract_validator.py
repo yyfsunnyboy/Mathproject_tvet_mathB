@@ -9,6 +9,7 @@ from core.gencode.answer_payload import (
     answer_type_family,
     canonical_answer_type,
     format_invalid_answer_type_error,
+    is_linear_equation_contract,
     validate_generated_answer_shape,
 )
 from core.gencode.answer_contract_gate import coerce_single_choice_contract
@@ -91,24 +92,27 @@ def validate_answer_contract(payload: dict[str, Any], problem_type_spec: dict[st
         errors.extend(shape_errors)
 
     if family == "single_choice" or answer_type == "single_choice":
-        if not isinstance(choices, list) or not choices_text:
-            errors.append("choices_missing")
-        choice_count = int(answer_contract.get("choice_count", 4) or 4)
-        if len(choices_text) != choice_count:
-            errors.append("choice_count_mismatch")
-        if len(set(choices_text)) != len(choices_text):
-            errors.append("choices_duplicate")
-        if int(answer_contract.get("correct_choice_count", 1) or 1) != 1:
-            errors.append("correct_choice_count_invalid")
-        answer_str = str(answer).strip()
-        if LABEL_ONLY_PATTERN.match(answer_str):
-            labels = {chr(ord("A") + i) for i in range(len(choices_text))}
-            if answer_str.strip("()[] .").upper() not in labels:
+        if is_linear_equation_contract(answer_contract):
+            pass
+        else:
+            if not isinstance(choices, list) or not choices_text:
+                errors.append("choices_missing")
+            choice_count = int(answer_contract.get("choice_count", 4) or 4)
+            if len(choices_text) != choice_count:
+                errors.append("choice_count_mismatch")
+            if len(set(choices_text)) != len(choices_text):
+                errors.append("choices_duplicate")
+            if int(answer_contract.get("correct_choice_count", 1) or 1) != 1:
+                errors.append("correct_choice_count_invalid")
+            answer_str = str(answer).strip()
+            if LABEL_ONLY_PATTERN.match(answer_str):
+                labels = {chr(ord("A") + i) for i in range(len(choices_text))}
+                if answer_str.strip("()[] .").upper() not in labels:
+                    errors.append("answer_not_in_choices")
+            elif answer_str not in choices_text:
                 errors.append("answer_not_in_choices")
-        elif answer_str not in choices_text:
-            errors.append("answer_not_in_choices")
 
-    if family == "short_answer" or answer_type == "short_answer":
+    if family == "short_answer" or answer_type == "short_answer" or is_linear_equation_contract(answer_contract):
         if choices not in (None, []) and len(choices_text) > 0:
             errors.append("choices_must_be_empty_for_short_answer")
         if LABEL_ONLY_PATTERN.match(str(answer).strip()):
@@ -123,6 +127,19 @@ def validate_answer_contract(payload: dict[str, Any], problem_type_spec: dict[st
     if answer_type == "expression" and equivalence == "algebraic_equivalent":
         if not str(answer).strip():
             errors.append("algebraic_equivalence_invalid")
+    if is_linear_equation_contract(answer_contract) or equivalence == "linear_equation_equivalent":
+        from core.checkers.linear_equation_equivalent_checker import (
+            canonicalize_linear_equation,
+            check_linear_equation_equivalent_answer,
+        )
+
+        answer_str = str(answer).strip()
+        if not answer_str:
+            errors.append("linear_equation_equivalence_invalid")
+        elif canonicalize_linear_equation(answer_str) is None:
+            errors.append("linear_equation_equivalence_invalid")
+        elif not check_linear_equation_equivalent_answer(answer_str, answer_str):
+            errors.append("linear_equation_equivalence_invalid")
 
     if CHOICE_EMBEDDED_PATTERN.search(question_text) and len(choices_text) > 0:
         errors.append("choices_embedded_in_question_text")

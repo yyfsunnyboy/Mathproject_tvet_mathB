@@ -13,6 +13,7 @@ EQUIVALENCE_TYPE_WHITELIST = {
     "ordered_tuple_exact",
     "unordered_tuple_equivalent",
     "manual_review_or_ai_judged",
+    "linear_equation_equivalent",
 }
 
 _NON_RAW_STRING_EQ_TYPES = {
@@ -25,6 +26,7 @@ _NON_RAW_STRING_EQ_TYPES = {
     "ordered_tuple_exact",
     "unordered_tuple_equivalent",
     "manual_review_or_ai_judged",
+    "linear_equation_equivalent",
 }
 
 _EQUIVALENCE_CANONICAL_MAP = {
@@ -48,6 +50,8 @@ _DEFAULT_CONTRACT_BY_ANSWER_TYPE = {
     "numeric": ("numeric_exact", "numeric_checker"),
     "integer": ("numeric_exact", "integer_checker"),
     "expression": ("algebraic_equivalent", "expression_checker"),
+    "equation": ("linear_equation_equivalent", "linear_equation_equivalent_checker"),
+    "linear_equation": ("linear_equation_equivalent", "linear_equation_equivalent_checker"),
     "fraction": ("rational_equivalent", "rational_checker"),
     "rational": ("rational_equivalent", "rational_checker"),
     "set": ("unordered_solution_set", "set_checker"),

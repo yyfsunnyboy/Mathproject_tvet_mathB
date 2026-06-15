@@ -249,9 +249,12 @@ def _extract_identity_hint(data):
     return "pk=unknown"
 
 
-def _validate_core_restore_after_import(xls, row_stats):
+def _validate_core_restore_after_import(xls, row_stats, strict_mode=False):
     ok = True
     lines = []
+    warning_count = 0
+    fatal_error_count = 0
+    orphan_count = 0
 
     si_count = db.session.query(SkillInfo).count()
     sc_count = db.session.query(SkillCurriculum).count()
@@ -276,6 +279,7 @@ def _validate_core_restore_after_import(xls, row_stats):
             )
     if backup_b1_rows > 0 and b1_count == 0:
         ok = False
+        fatal_error_count += 1
         lines.append("❌ skills_info restore incomplete: backup has B1 rows but DB has 0 B1 rows.")
 
     orphan_q = (
@@ -291,7 +295,12 @@ def _validate_core_restore_after_import(xls, row_stats):
     orphan_count = orphan_q.count()
     lines.append(f"orphan skill_curriculum rows: {orphan_count}")
     if orphan_count > 0:
-        ok = False
+        warning_count += orphan_count
+        lines.append(f"WARNING: orphan skill_curriculum rows: {orphan_count}")
+        if strict_mode:
+            ok = False
+            fatal_error_count += 1
+            lines.append("FATAL: strict mode treats orphan skill_curriculum rows as fatal.")
         for row in orphan_q.limit(20).all():
             lines.append(
                 f"orphan: skill_id={row.skill_id!r}, volume={row.volume!r}, chapter={row.chapter!r}, section={row.section!r}"
@@ -301,12 +310,49 @@ def _validate_core_restore_after_import(xls, row_stats):
         st = row_stats.get(table, {})
         if st.get("failed", 0) > 0:
             ok = False
+            fatal_error_count += int(st.get("failed", 0) or 0)
             lines.append(f"❌ Table {table}: failed rows = {st.get('failed', 0)}")
 
-    return ok, lines
+    return ok, lines, {
+        "warning_count": warning_count,
+        "fatal_error_count": fatal_error_count,
+        "orphan_skill_curriculum_count": orphan_count,
+    }
 
 
-def import_excel_to_db(filepath, mode="core", confirm_full_clear=""):
+def _append_import_final_status(
+    lines,
+    *,
+    row_stats=None,
+    warning_count=0,
+    fatal_error_count=0,
+    orphan_skill_curriculum_count=0,
+    fatal_reason="",
+):
+    row_stats = row_stats or {}
+    failed_rows = sum(int((st or {}).get("failed", 0) or 0) for st in row_stats.values())
+    if fatal_reason and fatal_error_count == 0:
+        fatal_error_count = 1
+
+    if failed_rows > 0 or fatal_error_count > 0:
+        final_status = "failed"
+        final_status_reason = fatal_reason or "row_import_failures"
+    elif int(warning_count or 0) > 0:
+        final_status = "completed_with_warnings"
+        final_status_reason = "post_import_warnings"
+    else:
+        final_status = "completed"
+        final_status_reason = "all_rows_imported_without_warnings"
+
+    lines.append(f"final_status: {final_status}")
+    lines.append(f"final_status_reason: {final_status_reason}")
+    lines.append(f"warning_count: {int(warning_count or 0)}")
+    lines.append(f"fatal_errors: {int(fatal_error_count or 0)}")
+    lines.append(f"orphan_skill_curriculum_count: {int(orphan_skill_curriculum_count or 0)}")
+    return final_status
+
+
+def import_excel_to_db(filepath, mode="core", confirm_full_clear="", strict_mode=False):
     if not os.path.exists(filepath):
         return False, "找不到備份檔案"
 
@@ -345,7 +391,7 @@ def import_excel_to_db(filepath, mode="core", confirm_full_clear=""):
             for sheet_name_clean in sorted(excel_sheet_names & (required_core | optional_core)):
                 table_name, model = _match_model_for_sheet(sheet_name_clean, mapping)
                 if not model:
-                    return False, f"❌ core restore failed: sheet {sheet_name_clean} exists but no SQLAlchemy model mapping"
+                    return False, "\n".join(results)
 
         for sheet_name, df in xls.items():
             sheet_name_clean = sheet_name.strip()
@@ -356,6 +402,13 @@ def import_excel_to_db(filepath, mode="core", confirm_full_clear=""):
             table_name, model = _match_model_for_sheet(sheet_name_clean, mapping)
             if not model:
                 if mode == "core" and sheet_name_clean in set(CORE_TABLES):
+                    results.append(f"core restore failed: sheet {sheet_name_clean} exists but no SQLAlchemy model mapping")
+                    _append_import_final_status(
+                        results,
+                        row_stats=row_stats,
+                        fatal_error_count=1,
+                        fatal_reason="missing_model_mapping",
+                    )
                     return False, f"❌ core restore failed: sheet {sheet_name_clean} exists but no SQLAlchemy model mapping"
                 results.append(f"⚠️ skip sheet {sheet_name}: no model mapping")
                 continue
@@ -436,16 +489,47 @@ def import_excel_to_db(filepath, mode="core", confirm_full_clear=""):
                 for t in ("skills_info", "skill_curriculum", "textbook_examples")
             )
             if core_failed_rows:
+                _append_import_final_status(results, row_stats=row_stats)
                 return False, "\n".join(results)
 
             si_stat = row_stats.get("skills_info", {})
             if si_stat and si_stat.get("imported", 0) < si_stat.get("source_rows", 0):
+                _append_import_final_status(
+                    results,
+                    row_stats=row_stats,
+                    fatal_error_count=1,
+                    fatal_reason="skills_info_import_incomplete",
+                )
                 return False, "\n".join(results)
 
-            ok, validation = _validate_core_restore_after_import(xls, row_stats)
+            ok, validation, validation_meta = _validate_core_restore_after_import(
+                xls,
+                row_stats,
+                strict_mode=bool(strict_mode),
+            )
             results.extend(validation)
+            warning_count = int(validation_meta.get("warning_count", 0) or 0)
+            fatal_error_count = int(validation_meta.get("fatal_error_count", 0) or 0)
+            orphan_count = int(validation_meta.get("orphan_skill_curriculum_count", 0) or 0)
             if not ok:
+                _append_import_final_status(
+                    results,
+                    row_stats=row_stats,
+                    warning_count=warning_count,
+                    fatal_error_count=fatal_error_count,
+                    orphan_skill_curriculum_count=orphan_count,
+                    fatal_reason="post_import_validation_failed",
+                )
                 return False, "\n".join(results)
+            _append_import_final_status(
+                results,
+                row_stats=row_stats,
+                warning_count=warning_count,
+                fatal_error_count=fatal_error_count,
+                orphan_skill_curriculum_count=orphan_count,
+            )
+        else:
+            _append_import_final_status(results, row_stats=row_stats)
 
         return True, "\n".join(results)
 
@@ -453,4 +537,6 @@ def import_excel_to_db(filepath, mode="core", confirm_full_clear=""):
         db.session.rollback()
         error_msg = f"匯入失敗: {str(e)}\n{traceback.format_exc()}"
         logger.error(error_msg)
-        return False, f"匯入失敗: {str(e)}"
+        lines = [f"匯入失敗: {str(e)}"]
+        _append_import_final_status(lines, fatal_error_count=1, fatal_reason="fatal_exception")
+        return False, "\n".join(lines)

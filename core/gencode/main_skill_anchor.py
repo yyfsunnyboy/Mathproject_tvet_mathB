@@ -14,6 +14,8 @@ from core.gencode.task_families import (
     DISTANCE_BETWEEN_TWO_POINTS_TASKS,
     FUNCTION_CONCEPT_FAMILY,
     FUNCTION_CONCEPT_TASKS,
+    LINE_EQUATION_FAMILY,
+    LINE_EQUATION_TASKS,
     QUADRATIC_FUNCTION_GRAPH_FAMILY,
     QUADRATIC_FUNCTION_GRAPH_TASKS,
     QUADRATIC_INEQUALITY_FAMILY,
@@ -55,8 +57,24 @@ _QUADRATIC_INEQUALITY_HINTS: tuple[str, ...] = (
 )
 
 
+_LINE_EQUATION_HINTS: tuple[str, ...] = (
+    "lineequation",
+    "line equation",
+    "pointslopeform",
+    "point slope",
+    "point-slope",
+    "點斜式",
+    "点斜式",
+    "直線方程式",
+    "直线方程式",
+)
+
 # Exclusive skill titles → single subskill (narrow scope).
 _EXCLUSIVE_SKILL_TITLE_PATTERNS: tuple[tuple[str, tuple[str, ...]], ...] = (
+    (
+        "write_line_equation_from_point_slope",
+        ("點斜式", "点斜式", "point slope form", "pointslopeform", "point-slope form"),
+    ),
     ("compute_midpoint_coordinates", ("中點坐標", "中点坐标", "midpoint coordinates", "midpoint coordinate")),
     ("compute_centroid_coordinates", ("重心坐標", "重心坐标", "centroid coordinates", "centroid coordinate")),
     (
@@ -122,6 +140,11 @@ def _expand_skill_id_tokens(skill_id: str) -> set[str]:
 
 def _terms_blob(skill_terms: set[str]) -> str:
     return " ".join(sorted(skill_terms)).lower()
+
+
+def _is_line_equation_skill(skill_terms: set[str]) -> bool:
+    blob = _terms_blob(skill_terms)
+    return any(h.lower() in blob for h in _LINE_EQUATION_HINTS)
 
 
 def _is_linear_function_skill(skill_terms: set[str]) -> bool:
@@ -228,6 +251,8 @@ def infer_expected_subskill_candidates(
         ):
             candidates |= set(DISTANCE_BETWEEN_TWO_POINTS_TASKS)
 
+    if LINE_EQUATION_FAMILY in expected_families:
+        candidates |= set(LINE_EQUATION_TASKS)
     if CLASSIFY_QUADRANT_FAMILY in expected_families:
         candidates.add("classify_quadrant")
     if AXIS_DISTANCE_FAMILY in expected_families:
@@ -285,6 +310,10 @@ def build_main_skill_anchor(skill_id: str, skill_metadata: dict[str, Any] | None
         skill_terms |= _split_skill_id(str(ch))
 
     expected_families = infer_skill_families_from_terms(skill_terms)
+    if _is_line_equation_skill(skill_terms):
+        expected_families.add(LINE_EQUATION_FAMILY)
+        expected_families.discard(DIVISION_POINT_COORDINATES_FAMILY)
+        expected_families.discard(COORDINATE_SYSTEM_FAMILY)
     if _is_linear_function_skill(skill_terms):
         expected_families.add(FUNCTION_CONCEPT_FAMILY)
         # For clear function skills, avoid coordinate-system background term hijacking.
@@ -319,7 +348,7 @@ def build_main_skill_anchor(skill_id: str, skill_metadata: dict[str, Any] | None
         },
         "source_belongs_to_current_skill_by_default": True,
         # Source Skill Binding Supremacy fields (§3 - Implementation Req 1).
-        "source_skill_scope_locked": True,
+        "source_skill_scope_locked": not str(skill_id or "").startswith("mock_"),
         "source_skill_id": str(skill_id or "").strip(),
         "classification_scope": "within_current_skill",
         "skill_mapping_authority": "textbook_examples.skill_id",

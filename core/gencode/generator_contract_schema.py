@@ -9,6 +9,7 @@ from typing import Any
 from core.gencode.task_families import (
     DISTANCE_BETWEEN_TWO_POINTS_TASKS,
     DIVISION_POINT_COORDINATES_TASKS,
+    LINE_EQUATION_TASKS,
     task_family_for_task,
 )
 
@@ -423,6 +424,159 @@ _register_blueprint(
     },
 )
 
+_LINE_EQUATION_BLUEPRINTS: dict[str, dict[str, Any]] = {
+    "write_line_equation_from_point_slope": {
+        "template_variants": [
+            _variant(
+                "given_point_and_slope_find_point_slope_form",
+                "點斜式",
+                "已知直線過點 ({x1}, {y1})，斜率為 {m}，求此直線的點斜式方程式。",
+            ),
+            _variant(
+                "given_point_and_slope_find_slope_intercept_form",
+                "斜截式",
+                "已知直線過點 ({x1}, {y1})，斜率為 {m}，求此直線的斜截式方程式（y = mx + b）。",
+            ),
+            _variant(
+                "given_point_and_slope_find_general_form",
+                "一般式",
+                "已知直線過點 ({x1}, {y1})，斜率為 {m}，求此直線的一般式方程式（Ax + By + C = 0）。",
+            ),
+        ],
+        "variation_dimensions": [
+            "point_coordinates",
+            "slope_type",
+            "equation_form",
+            "integer_or_fraction_slope",
+            "coefficient_normalization",
+        ],
+        "explanation_variants": ["point_slope_to_general", "slope_intercept_to_general"],
+    },
+    "write_line_equation_from_two_points": {
+        "template_variants": [
+            _variant(
+                "two_points_general_form",
+                "兩點一般式",
+                "已知直線通過兩點 A({x1}, {y1})、B({x2}, {y2})，請寫出此直線的一個方程式。",
+            ),
+        ],
+        "variation_dimensions": ["point_pair", "coefficient_normalization"],
+        "explanation_variants": ["two_point_slope_to_general"],
+    },
+    "write_perpendicular_bisector_from_two_points": {
+        "template_variants": [
+            _variant(
+                "perpendicular_bisector_segment",
+                "垂直平分線",
+                "已知兩點 A({x1}, {y1})、B({x2}, {y2})，請寫出線段 AB 的垂直平分線方程式。",
+            ),
+        ],
+        "variation_dimensions": ["point_pair", "integer_midpoint"],
+        "explanation_variants": ["midpoint_and_normal_vector"],
+    },
+    "write_line_equation_from_slope_and_intercept": {
+        "template_variants": [
+            _variant(
+                "slope_with_x_intercept",
+                "斜率與 x 截距",
+                "已知直線斜率為 {m}，且 x 截距為 {k}，請寫出此直線的一個方程式。",
+            ),
+            _variant(
+                "slope_with_y_intercept",
+                "斜率與 y 截距",
+                "已知直線斜率為 {m}，且 y 截距為 {b}，請寫出此直線的一個方程式。",
+            ),
+        ],
+        "variation_dimensions": ["slope_type", "intercept_axis", "intercept_value"],
+        "explanation_variants": ["intercept_to_point_slope"],
+    },
+    "write_triangle_median_line_from_vertices": {
+        "template_variants": [
+            _variant(
+                "triangle_median_through_vertex",
+                "三角形中線",
+                "已知三角形 ABC 頂點，求過某頂點且平分面積的直線方程式。",
+            ),
+            _variant(
+                "triangle_median_area_bisector",
+                "面積平分線",
+                "設三角形 ABC 三頂點已知，求過指定頂點且將三角形面積平分的直線方程式。",
+            ),
+            _variant(
+                "triangle_median_coordinate_plane",
+                "坐標平面中線",
+                "在坐標平面上，三角形 ABC 頂點坐標已知，請寫出平分三角形面積的直線方程式。",
+            ),
+        ],
+        "variation_dimensions": ["triangle_vertices", "through_vertex", "integer_midpoint"],
+        "explanation_variants": ["opposite_side_midpoint_to_line"],
+    },
+}
+
+for _ltask in LINE_EQUATION_TASKS:
+    _line_meta = _LINE_EQUATION_BLUEPRINTS.get(_ltask, {})
+    _register_blueprint(
+        _ltask,
+        {
+            "template_variants": _line_meta.get(
+                "template_variants",
+                [_variant("default", "default", "依題意寫出直線方程式。")],
+            ),
+            "parameter_schema": {
+                "point_coordinates": {
+                    "x_min": -8,
+                    "x_max": 8,
+                    "y_min": -8,
+                    "y_max": 8,
+                    "integer_only": True,
+                },
+                "slope": {
+                    "choices": ["integer", "simple_fraction"],
+                    "weights": [0.65, 0.35],
+                    "integer_range": [-5, 5],
+                    "exclude_zero": True,
+                    "fraction_numerators": [1, 2, 3, -1, -2, -3],
+                    "fraction_denominators": [2, 3],
+                },
+                "equation_form": {
+                    "choices": [
+                        "point_slope",
+                        "slope_intercept",
+                        "general",
+                    ],
+                    "weights": [0.34, 0.33, 0.33],
+                },
+            },
+            "variation_dimensions": _line_meta.get(
+                "variation_dimensions",
+                ["point_coordinates", "slope_type", "equation_form"],
+            ),
+            "difficulty_controls": {
+                "level_1": {
+                    "coordinate_range": [-5, 5],
+                    "integer_slope_only": True,
+                },
+                "level_2": {
+                    "coordinate_range": [-8, 8],
+                    "allow_fraction_slope": True,
+                },
+                "level_3": {
+                    "allow_negative_slope": True,
+                    "require_general_form": True,
+                },
+            },
+            "anti_repetition_rules": dict(DEFAULT_ANTI_REPETITION),
+            "validity_constraints": [
+                "coordinates are integers",
+                "generated equation is a non-degenerate line",
+                "equivalent forms normalize to same Ax + By + C = 0",
+            ],
+            "answer_shape": "linear_equation",
+            "explanation_variants": _line_meta.get("explanation_variants", ["stepwise"]),
+            "sampling_strategy": DEFAULT_SAMPLING_STRATEGY,
+        },
+    )
+
 
 def _generic_blueprint(target_task: str) -> dict[str, Any]:
     family = task_family_for_task(target_task)
@@ -506,6 +660,25 @@ def enrich_generator_contract(
         merged["problem_type_id"] = problem_type_id
     if answer_contract and not merged.get("answer_shape"):
         merged["answer_shape"] = str(answer_contract.get("answer_shape") or answer_contract.get("answer_type", ""))
+    
+    # Force inject High School Math B variation dimensions
+    is_math_b = problem_type_id and (
+        "math_b" in problem_type_id.lower() or
+        "perpendicular" in problem_type_id.lower() or
+        "parallel" in problem_type_id.lower() or
+        "slope" in problem_type_id.lower() or
+        "midpoint" in problem_type_id.lower() or
+        "coordinate" in problem_type_id.lower() or
+        "vh_" in problem_type_id.lower()
+    )
+    if is_math_b:
+        dims = list(merged.get("variation_dimensions") or [])
+        mathb_dims = ["number_variation", "template_variant", "coordinate_sign_combination", "slope_type"]
+        for d in mathb_dims:
+            if d not in dims:
+                dims.append(d)
+        merged["variation_dimensions"] = dims
+
     return merged
 
 
@@ -520,16 +693,32 @@ def validate_generator_contract(
     for key in _REQUIRED_TOP_LEVEL:
         if key not in gc or (isinstance(gc.get(key), (list, dict)) and not gc.get(key)):
             blockers.append(f"missing_generator_contract_{key}")
+    pt_id = gc.get("problem_type_id") or ""
+    is_math_b = pt_id and (
+        "math_b" in str(pt_id).lower() or
+        "perpendicular" in str(pt_id).lower() or
+        "parallel" in str(pt_id).lower() or
+        "slope" in str(pt_id).lower() or
+        "midpoint" in str(pt_id).lower() or
+        "coordinate" in str(pt_id).lower() or
+        "vh_" in str(pt_id).lower()
+    )
     variants = gc.get("template_variants")
     if isinstance(variants, list):
         enabled = [v for v in variants if isinstance(v, dict) and v.get("enabled", True)]
         if len(enabled) < 1:
             blockers.append("no_enabled_template_variants")
         elif len(enabled) < 2:
-            warnings.append("single_template_variant_only")
+            if is_math_b:
+                blockers.append("insufficient_template_variants_math_b")
+            else:
+                warnings.append("single_template_variant_only")
     dims = gc.get("variation_dimensions")
     if isinstance(dims, list) and len(dims) < 4:
-        warnings.append("variation_dimensions_below_recommended_minimum")
+        if is_math_b:
+            blockers.append("insufficient_variation_dimensions_math_b")
+        else:
+            warnings.append("variation_dimensions_below_recommended_minimum")
     schema = gc.get("parameter_schema")
     if not isinstance(schema, dict) or not schema:
         blockers.append("parameter_schema_empty")

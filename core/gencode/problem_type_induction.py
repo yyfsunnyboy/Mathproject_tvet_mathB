@@ -6,6 +6,7 @@ from typing import Any
 
 from core.gencode.answer_contract_bridge import legacy_fields_from_answer_contract
 from core.gencode.answer_contract_policy import (
+    build_line_equation_answer_contract,
     checker_selection_reason,
     infer_answer_contract_from_problem_context,
     is_coordinate_pair_semantic,
@@ -26,6 +27,13 @@ from core.gencode.source_structure_context import (
     classification_sort_key,
     enrich_examples_with_structure_context,
     update_structure_report,
+)
+from core.gencode.source_skill_binding_policy import (
+    demote_generic_fallback_candidate,
+    demote_unregistered_scope_locked_candidate,
+    is_generic_fallback_problem_type,
+    should_block_generic_fallback_for_scope,
+    source_binding_metadata,
 )
 from core.gencode.example_feature_extractor import extract_example_feature, extract_example_feature_rule_only
 from core.gencode.example_feature_extractor import _detect_math_objects
@@ -51,6 +59,7 @@ from core.gencode.phase1_anchor_contract import phase1_enforcement_assertion_blo
 from core.gencode.spec_phase1_merge import slot_generator_readiness
 from core.gencode.answer_contract_gate import apply_runtime_gate_to_candidate
 from core.gencode.task_families import (
+    LINE_EQUATION_TASKS,
     QUADRATIC_INEQUALITY_FAMILY,
     QUADRATIC_INEQUALITY_TASKS,
     SOLVE_UNKNOWN_COORDINATE_TASKS,
@@ -122,6 +131,8 @@ def _primary_math_objects(math_objects: list[str]) -> tuple[str, ...]:
 def _cluster_answer_type_key(feat: dict[str, Any]) -> str:
     """Strategy A: MCQ presentation splits from ordered_pair short-answer clusters."""
     at = str(feat.get("answer_type", "")).strip()
+    if at == "integer" or at == "rational":
+        return "rational"
     if at in {"ordered_pair", "coordinate_pair"} and feat.get("has_choices"):
         return "single_choice"
     return at
@@ -135,12 +146,26 @@ def _presentation_mode_for_feature(feat: dict[str, Any]) -> str:
 
 
 def _feature_signature(feat: dict[str, Any]) -> tuple[Any, ...]:
+    text = str(feat.get("question_text") or feat.get("problem_preview") or "").strip()
+    stem_concept = "default"
+    from core.gencode.example_feature_extractor import detect_line_equation_routing
+
+    if detect_line_equation_routing(text, answer=str(feat.get("answer") or "")):
+        stem_concept = "line_equation"
+    elif "L:" in text or "L1" in text or "L2" in text or "方程式" in text or "直線" in text or "ax+" in text or "by+" in text:
+        stem_concept = "line_equation"
+    elif "三角形" in text or "ABC" in text or "直角三角形" in text:
+        stem_concept = "triangle_coordinates"
+    elif "A(" in text and "B(" in text and "C(" in text and "D(" in text:
+        stem_concept = "four_points"
+
     return (
         _cluster_answer_type_key(feat),
         str(feat.get("target_task", "")).strip(),
         _presentation_mode_for_feature(feat),
         tuple(feat.get("reasoning_type", []) if isinstance(feat.get("reasoning_type"), list) else []),
         _primary_math_objects(list(feat.get("math_objects", []) or [])),
+        stem_concept,
     )
 
 
@@ -231,7 +256,16 @@ def _slugify_problem_type_id(
 
 
 def _canonical_problem_type_base(answer_type: str, target_task: str, presentation_mode: str = "") -> str:
+    from core.gencode.problem_type_canonicalizer import typed_line_equation_problem_type_id
+
     task = str(target_task or "").strip()
+    from core.gencode.task_families import LINE_EQUATION_TASKS
+
+    if task in LINE_EQUATION_TASKS:
+        mode = str(presentation_mode or "").strip() or "short_answer"
+        if mode not in {"single_choice", "short_answer"}:
+            mode = "short_answer"
+        return typed_line_equation_problem_type_id(task, presentation_mode=mode)
     if is_quadratic_rational_scalar_semantic(target_task=task) and str(presentation_mode or "").strip() != "single_choice":
         if str(answer_type or "").strip() == "rational":
             return f"rational_{task}"
@@ -310,6 +344,10 @@ def _infer_template_slot(answer_type: str, target_task: str, math_objects: list[
         return "reverse_quadratic_inequality_coefficients"
     if target_task == "applied_quadratic_inequality_problem":
         return "applied_quadratic_inequality_problem"
+    from core.gencode.task_families import LINE_EQUATION_TASKS, LINE_EQUATION_TASK_TO_SLOT
+
+    if target_task in LINE_EQUATION_TASKS:
+        return LINE_EQUATION_TASK_TO_SLOT.get(target_task, "line_equation_from_point_slope")
     if target_task == "interpret_function_notation":
         if answer_type == "single_choice":
             return "linear_function_two_point_choice"
@@ -436,6 +474,9 @@ def _build_problem_type_spec_draft(skill_id: str, cluster: dict[str, Any], exist
     if is_division_point_target_task(resolved_target_task):
         slot = DIVISION_POINT_SLOT
     task_family = task_family_for_task(resolved_target_task)
+    has_choices_in_cluster = any(
+        f.get("has_choices") for f in features if isinstance(f, dict)
+    )
     ac = _build_answer_contract(
         answer_type,
         features,
@@ -443,6 +484,9 @@ def _build_problem_type_spec_draft(skill_id: str, cluster: dict[str, Any], exist
         task_family=task_family,
         math_objects=math_union,
     )
+    if resolved_target_task in LINE_EQUATION_TASKS:
+        if presentation_mode != "single_choice" and not has_choices_in_cluster:
+            ac = build_line_equation_answer_contract(existing_ac=ac)
     legacy = legacy_fields_from_answer_contract(ac)
     checker_key = str(legacy.get("checker_key", ac.get("checker_key", ac.get("checker", "")))).strip()
     cluster_has_rational_answers = _answers_suggest_rational(features)
@@ -468,9 +512,6 @@ def _build_problem_type_spec_draft(skill_id: str, cluster: dict[str, Any], exist
         _HINT_TO_CONTRACT,
     )
     # Priority: source_has_choices flag → answer text samples → answer_type
-    has_choices_in_cluster = any(
-        f.get("has_choices") for f in features if isinstance(f, dict)
-    )
     if has_choices_in_cluster:
         inferred_hint = HINT_CHOICE
     else:
@@ -539,6 +580,17 @@ def _build_problem_type_spec_draft(skill_id: str, cluster: dict[str, Any], exist
     if slot:
         generator_contract["template_slots"] = {"stem": slot}
 
+    # SOP v0.2: Dual-channel templates for high-school Math B geometry/algebra
+    if skill_id and (skill_id.startswith("vh_數學") or "perpendicular" in skill_id.lower() or "line" in skill_id.lower()):
+        generator_contract["templates"] = [
+            "template_scalar_unknown",
+            "template_feature_value"
+        ]
+
+    if resolved_target_task in LINE_EQUATION_TASKS and presentation_mode == "short_answer":
+        ac = build_line_equation_answer_contract(existing_ac=ac)
+        legacy = legacy_fields_from_answer_contract(ac)
+
     spec = enrich_spec_generator_contract(
         {
         "problem_type_id": pt_id,
@@ -586,7 +638,10 @@ def _build_problem_type_spec_draft(skill_id: str, cluster: dict[str, Any], exist
         "feature_signature": list(cluster.get("signature", ())),
         }
     )
-    from core.gencode.problem_type_canonicalizer import enrich_spec_with_canonicalization
+    from core.gencode.problem_type_canonicalizer import (
+        enrich_spec_with_canonicalization,
+        sync_candidate_authoritative_identity,
+    )
 
     spec = enrich_spec_with_canonicalization(spec)
     ac = spec.get("answer_contract") if isinstance(spec.get("answer_contract"), dict) else ac
@@ -619,6 +674,21 @@ def _cluster_contract_canonical_key(cluster: dict[str, Any]) -> tuple[Any, ...]:
     legacy = legacy_fields_from_answer_contract(ac)
     answer_shape = str(legacy.get("answer_shape", "")).strip() or detect_answer_shape(ac)
     template_families = tuple(tasks if len(tasks) > 1 else ([target_task] if target_task else []))
+
+    # Multi-cluster Induction based on stem_concept
+    stem_concepts = []
+    for f in features:
+        text = str(f.get("question_text") or f.get("problem_preview") or "").strip()
+        stem_concept = "default"
+        if "L:" in text or "L1" in text or "L2" in text or "方程式" in text or "直線" in text or "ax+" in text or "by+" in text:
+            stem_concept = "line_equation"
+        elif "三角形" in text or "ABC" in text or "直角三角形" in text:
+            stem_concept = "triangle_coordinates"
+        elif "A(" in text and "B(" in text and "C(" in text and "D(" in text:
+            stem_concept = "four_points"
+        stem_concepts.append(stem_concept)
+    most_common_concept = Counter(stem_concepts).most_common(1)[0][0] if stem_concepts else "default"
+
     return (
         resolved_target_task,
         answer_type,
@@ -627,6 +697,7 @@ def _cluster_contract_canonical_key(cluster: dict[str, Any]) -> tuple[Any, ...]:
         str(legacy.get("equivalence_type", "")).strip(),
         answer_shape,
         template_families,
+        most_common_concept,
     )
 
 
@@ -792,6 +863,12 @@ def _observed_target_task_for_clause45(
         task = str(candidate or "").strip()
         if task and task not in {"unknown", "needs_review", "same_as_main_skill", "compute_numeric"}:
             return task
+    from core.gencode.example_feature_extractor import detect_line_equation_routing
+
+    text = str(feat.get("question_text") or feat.get("problem_text") or "").strip()
+    line_route = detect_line_equation_routing(text, answer=str(feat.get("answer") or ""))
+    if line_route:
+        return line_route["target_task"]
     feat_task = str(feat.get("target_task", "")).strip()
     if feat_task in QUADRATIC_INEQUALITY_TASKS:
         return feat_task
@@ -1047,6 +1124,9 @@ def induce_problem_types_from_examples(
         else:
             ai_semantic_status = "ok"
     features = apply_final_classification_to_features(features)
+    from core.gencode.example_feature_extractor import apply_line_equation_routing_to_feature
+
+    features = [apply_line_equation_routing_to_feature(f) for f in features]
     # Recompute math_objects after final task is chosen to avoid stale rule-only objects.
     for feat in features:
         if not isinstance(feat, dict):
@@ -1143,6 +1223,7 @@ def induce_problem_types_from_examples(
         )
         answer_shape = str(ac_proposal.get("answer_shape", "")).strip() or detect_answer_shape(ac_proposal)
         from core.gencode.problem_type_canonicalizer import (
+            apply_line_equation_mcq_hold_policy,
             is_phase3_packaging_allowed,
             evaluate_typed_prefix_readiness,
         )
@@ -1150,7 +1231,14 @@ def induce_problem_types_from_examples(
         if readiness != "runtime_ready" and readiness != "runtime_ready_with_warning":
             # Fallback to legacy readiness for non-canonicalizable paths
             legacy_readiness = slot_generator_readiness(spec)
-            if legacy_readiness in {"runtime_ready", "runtime_ready_with_warning"}:
+            cand_target_preview = str(spec.get("target_task", "")).strip()
+            cand_family_preview = str(spec.get("task_family", "")).strip() or task_family_for_task(cand_target_preview)
+            generic_blocked = bool(main_skill_anchor.get("source_skill_scope_locked")) and is_generic_fallback_problem_type(
+                problem_type_id=pt,
+                target_task=cand_target_preview,
+                task_family=cand_family_preview,
+            )
+            if legacy_readiness in {"runtime_ready", "runtime_ready_with_warning"} and not generic_blocked:
                 readiness = legacy_readiness
                 usable_for_phase3 = True
         contract_ok, contract_blockers = answer_contract_supports_task(spec)
@@ -1171,6 +1259,8 @@ def induce_problem_types_from_examples(
             "fallback_contextual_application",
             "contextual_application",
             "generic_numeric_family",
+            "generic_numeric",
+            "compute_numeric",
         )
         if any(pt.startswith(p) for p in _UNRESOLVED_PT_PREFIXES):
             readiness = "pending_problem_type_induction"
@@ -1178,6 +1268,13 @@ def induce_problem_types_from_examples(
             s in pt for s in _GENERIC_FALLBACK_PT_SUBSTRINGS
         ):
             readiness = "blocked_by_unresolved_skill_scoped_problem_type"
+            usable_for_phase3 = False
+        elif bool(main_skill_anchor.get("source_skill_scope_locked")) and is_generic_fallback_problem_type(
+            problem_type_id=pt,
+            target_task=str(spec.get("target_task", "")).strip(),
+            task_family=str(spec.get("task_family", "")).strip(),
+        ):
+            readiness = "pending_problem_type_induction"
             usable_for_phase3 = False
         if not is_phase3_packaging_allowed(readiness, usable_for_phase3):
             usable_for_phase3 = False
@@ -1201,8 +1298,7 @@ def induce_problem_types_from_examples(
             task_family=cand_family,
             answer_shape=str(ac_proposal.get("answer_shape", "")),
         )
-        candidates.append(
-            {
+        candidate_row = {
                 "problem_type_id": pt,
                 "proposed_problem_type_id": pt,
                 "display_name": spec.get("display_name", ""),
@@ -1265,7 +1361,30 @@ def induce_problem_types_from_examples(
                 "value_type_prefix": spec.get("value_type_prefix", ""),
                 "subskill_id": cand_target or fallback_subskill_id,
             }
-        )
+        if bool(main_skill_anchor.get("source_skill_scope_locked")) and is_generic_fallback_problem_type(
+            problem_type_id=pt,
+            target_task=cand_target,
+            task_family=cand_family,
+        ):
+            candidate_row = demote_generic_fallback_candidate(candidate_row)
+        elif should_block_generic_fallback_for_scope(
+            main_skill_anchor,
+            problem_type_id=pt,
+            target_task=cand_target,
+            task_family=cand_family,
+        ):
+            candidate_row = demote_generic_fallback_candidate(candidate_row)
+        elif (
+            bool(main_skill_anchor.get("source_skill_scope_locked"))
+            and human_confirmed_pack is None
+            and pt not in existing_ids
+            and cand_target not in expected_subskills
+            and cand_family not in expected_families
+        ):
+            candidate_row = demote_unregistered_scope_locked_candidate(candidate_row)
+        candidate_row = apply_line_equation_mcq_hold_policy(candidate_row)
+        candidates.append(candidate_row)
+        candidates[-1] = sync_candidate_authoritative_identity(candidates[-1])
 
     from core.gencode.anchor_subskill_bootstrap import bootstrap_anchor_subskill_candidates
 
@@ -1417,6 +1536,33 @@ def induce_problem_types_from_examples(
         else:
             expanded_candidates.append(cand)
     candidates = expanded_candidates
+    if bool(main_skill_anchor.get("source_skill_scope_locked")) or str(
+        main_skill_anchor.get("classification_scope", "")
+    ).strip() == "within_current_skill":
+        rescoped_candidates: list[dict[str, Any]] = []
+        for cand in candidates:
+            if not isinstance(cand, dict):
+                continue
+            pt = str(cand.get("problem_type_id", "")).strip()
+            target = str(cand.get("target_task") or cand.get("subskill_id") or "").strip()
+            family = str(cand.get("task_family", "")).strip() or task_family_for_task(target)
+            if should_block_generic_fallback_for_scope(
+                main_skill_anchor,
+                problem_type_id=pt,
+                target_task=target,
+                task_family=family,
+            ):
+                rescoped_candidates.append(demote_generic_fallback_candidate(cand))
+            elif (
+                human_confirmed_pack is None
+                and pt not in existing_ids
+                and target not in expected_subskills
+                and family not in expected_families
+            ):
+                rescoped_candidates.append(demote_unregistered_scope_locked_candidate(cand))
+            else:
+                rescoped_candidates.append(cand)
+        candidates = rescoped_candidates
 
     non_runtime_supported_problem_type_ids = {
         str(c.get("problem_type_id", "")).strip()
@@ -1430,6 +1576,8 @@ def induce_problem_types_from_examples(
     }
 
     for f in features:
+        if isinstance(f, dict):
+            f.update({k: v for k, v in source_binding_metadata(skill_id).items() if k not in f})
         ex_id = f.get("source_example_id")
         pt = cluster_by_ex.get(ex_id, "unknown")
         if pt == "unknown":
@@ -1466,6 +1614,11 @@ def induce_problem_types_from_examples(
                 "semantic_classification": sem,
                 "subskill_id": subskill_id,
                 "classification_source": str(sem.get("classifier_source", "")).strip() or str(f.get("classifier_source", "")).strip(),
+                "source_skill_scope_locked": bool(f.get("source_skill_scope_locked") or main_skill_anchor.get("source_skill_scope_locked")),
+                "skill_mapping_authority": str(f.get("skill_mapping_authority") or main_skill_anchor.get("skill_mapping_authority", "textbook_examples.skill_id")),
+                "classification_scope": str(f.get("classification_scope") or main_skill_anchor.get("classification_scope", "within_current_skill")),
+                "unresolved_reason": str(f.get("unresolved_reason", "")),
+                "requires_human_rule_pack": bool(f.get("requires_human_rule_pack")),
             }
         )
 
@@ -1565,6 +1718,7 @@ def induce_problem_types_from_examples(
     for feat in features:
         if not isinstance(feat, dict):
             continue
+        feat.update({k: v for k, v in source_binding_metadata(skill_id).items() if k not in feat})
         row = evaluate_source_example_alignment(skill_terms, feat, main_skill_anchor=main_skill_anchor)
         row["skill_id"] = skill_id
         row["title_stem_preview"] = str(feat.get("question_text", ""))[:80]

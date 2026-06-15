@@ -49,6 +49,12 @@ from core.gencode.answer_contract_gate import (
     coerce_single_choice_contract,
     summarize_answer_contracts,
 )
+from core.gencode.source_skill_binding_policy import (
+    demote_generic_fallback_candidate,
+    demote_unregistered_scope_locked_candidate,
+    is_generic_fallback_problem_type,
+    should_block_generic_fallback_for_scope,
+)
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 REPORT_DIR = GENCODE_REPORT_DIR
@@ -73,6 +79,70 @@ def _load_phase_json(path: str | Path) -> dict[str, Any]:
 
 def _safe_skill_id(skill_id: str) -> str:
     return sanitize_path_segment(skill_id)
+
+
+def _apply_source_skill_binding_candidate_policy(skill_id: str, auto_review: dict[str, Any]) -> dict[str, Any]:
+    """Keep Phase 1 source-scope policy intact after downstream gate normalization."""
+    if not isinstance(auto_review, dict):
+        return auto_review
+    anchor = auto_review.get("main_skill_anchor") if isinstance(auto_review.get("main_skill_anchor"), dict) else {}
+    if not bool(anchor.get("source_skill_scope_locked", auto_review.get("source_skill_scope_locked", False))):
+        if str(anchor.get("classification_scope", auto_review.get("classification_scope", ""))).strip() != "within_current_skill":
+            return auto_review
+    candidates = auto_review.get("candidate_problem_types")
+    if not isinstance(candidates, list):
+        return auto_review
+    existing_ids = {
+        str(s.get("problem_type_id", "")).strip()
+        for s in problem_type_spec_registry.list_problem_types_for_skill(skill_id)
+        if isinstance(s, dict)
+    }
+    has_human_rule_pack = bool(auto_review.get("human_confirmed_rule_pack_applied")) or bool(
+        auto_review.get("matched_registered_yaml_rule_pack")
+    )
+    rescoped: list[dict[str, Any]] = []
+    expected_subskills = {
+        str(t).strip()
+        for t in (anchor.get("expected_subskill_candidates") or [])
+        if str(t).strip() and not str(t).endswith("_family")
+    }
+    expected_families = {str(f).strip() for f in (anchor.get("expected_task_families") or []) if str(f).strip()}
+    for cand in candidates:
+        if not isinstance(cand, dict):
+            continue
+        pt = str(cand.get("problem_type_id") or cand.get("proposed_problem_type_id") or "").strip()
+        target = str(cand.get("target_task") or cand.get("subskill_id") or "").strip()
+        family = str(cand.get("task_family") or "").strip()
+        if not family and target:
+            from core.gencode.task_families import task_family_for_task
+
+            family = task_family_for_task(target)
+        if is_generic_fallback_problem_type(problem_type_id=pt, target_task=target, task_family=family) or should_block_generic_fallback_for_scope(
+            {**anchor, "classification_scope": anchor.get("classification_scope", auto_review.get("classification_scope", "within_current_skill"))},
+            problem_type_id=pt,
+            target_task=target,
+            task_family=family,
+        ):
+            rescoped.append(demote_generic_fallback_candidate(cand))
+        elif not has_human_rule_pack and pt and pt not in existing_ids:
+            draft = cand.get("problem_type_spec_draft") if isinstance(cand.get("problem_type_spec_draft"), dict) else {}
+            draft_target = str(draft.get("target_task") or target).strip()
+            draft_family = str(draft.get("task_family") or family).strip() or task_family_for_task(draft_target)
+            in_scope = (
+                draft_target in expected_subskills
+                or draft_family in expected_families
+                or target in expected_subskills
+                or family in expected_families
+            )
+            if in_scope:
+                rescoped.append(cand)
+            else:
+                rescoped.append(demote_unregistered_scope_locked_candidate(cand))
+        else:
+            rescoped.append(cand)
+    auto_review = dict(auto_review)
+    auto_review["candidate_problem_types"] = rescoped
+    return auto_review
 SOP_SELF_HEALING_MAP = {
     "phase1": "Gencode與AgentSkillV2整合總體設計_v0.3.md",
     "phase2": "Gencode與AgentSkillV2整合總體設計_v0.3.md",
@@ -1509,7 +1579,7 @@ def _run_ai_classifier_bootstrap(
         "- generated payload for deterministic runtime must include metadata.givens, metadata.target, metadata.derivation.\n"
         "- for single-choice, do not embed options in question_text; keep options only in choices.\n"
     )
-    resp = call_ai_with_retry(client, prompt, max_retries=2, retry_delay=2, timeout=120)
+    resp = call_ai_with_retry(client, prompt, max_retries=2, retry_delay=2, timeout=180)
     raw_text = str(getattr(resp, "text", "") or "")
     raw_preview = raw_text[:1000]
     parsed = _json_from_text(raw_text)
@@ -2682,6 +2752,7 @@ def run_gencode_phase1(skill_id: str, dry_run: bool = True, spec_mode: str = "ai
         normalized["phase_status"] = "phase1_induction_exception"
         return normalized
     auto_review = apply_spec_mode(skill_id, induced, auto_review_legacy, entries, spec_mode)
+    auto_review = _apply_source_skill_binding_candidate_policy(skill_id, auto_review)
     alignment_blocked = str(auto_review.get("source_alignment_status", "")).strip() == "block"
     _induce_modes_save = {
         "induce_from_sources",
@@ -2875,6 +2946,7 @@ def run_gencode_phase1(skill_id: str, dry_run: bool = True, spec_mode: str = "ai
     
     grouping_res = validate_problem_type_grouping_contract(payload)
     payload.update(grouping_res["normalized_fields"])
+    payload = _apply_source_skill_binding_candidate_policy(skill_id, payload)
     payload["problem_type_grouping_contract_status"] = grouping_res["problem_type_grouping_contract_status"]
     payload["problem_type_grouping_contract_warnings"] = grouping_res["problem_type_grouping_contract_warnings"]
     payload["problem_type_grouping_contract_violations"] = grouping_res["problem_type_grouping_contract_violations"]
@@ -2984,6 +3056,10 @@ def run_gencode_phase2_raw(skill_id: str, accepted_problem_types: list | None = 
         str(phase1.get("source_alignment_status", "")).strip() == "block"
         or bool(phase1.get("alignment_blockers"))
     )
+    # Relax alignment blocked status if AI was partially unavailable
+    ai_status_val = str(phase1.get("ai_semantic_status") or "").strip()
+    if ai_status_val in {"partial_unavailable", "unavailable"}:
+        phase1_alignment_blocked = False
     candidates = phase1.get("candidate_problem_types", []) if isinstance(phase1.get("candidate_problem_types"), list) else []
     accepted = set(str(x) for x in (accepted_problem_types or []))
     excluded = set(int(x) for x in (excluded_example_ids or []) if str(x).isdigit())
@@ -3001,9 +3077,20 @@ def run_gencode_phase2_raw(skill_id: str, accepted_problem_types: list | None = 
     generator_results: list[dict[str, Any]] = []
     failed_generators: list[str] = []
     accepted_generators: list[str] = []
+    phase1_anchor = phase1.get("main_skill_anchor") if isinstance(phase1.get("main_skill_anchor"), dict) else {}
     for c in candidates:
-        pt = str(c.get("problem_type_id") or c.get("proposed_problem_type_id") or "").strip()
+        from core.gencode.problem_type_canonicalizer import (
+            enrich_spec_with_canonicalization,
+            get_answer_contract,
+            resolve_authoritative_problem_type_id,
+            sync_candidate_authoritative_identity,
+        )
+
+        c = sync_candidate_authoritative_identity(c) if isinstance(c, dict) else c
+        pt = resolve_authoritative_problem_type_id(c)
         if not pt:
+            continue
+        if pt.endswith("_expression") or pt.startswith("expression_write_line_equation"):
             continue
         if accepted and pt not in accepted:
             continue
@@ -3013,10 +3100,29 @@ def run_gencode_phase2_raw(skill_id: str, accepted_problem_types: list | None = 
         checker_key = str(c.get("checker_key_proposal", "")).strip()
         eq = str(c.get("equivalence_type_proposal", "")).strip()
         draft_spec = c.get("problem_type_spec_draft") if isinstance(c.get("problem_type_spec_draft"), dict) else {}
-        if draft_spec:
-            from core.gencode.problem_type_canonicalizer import enrich_spec_with_canonicalization, get_answer_contract
+        cand_target = str(
+            c.get("target_task") or c.get("subskill_id") or draft_spec.get("target_task") or ""
+        ).strip()
+        cand_family = str(
+            c.get("task_family") or draft_spec.get("task_family") or ""
+        ).strip()
+        if not cand_family and cand_target:
+            from core.gencode.task_families import task_family_for_task
 
+            cand_family = task_family_for_task(cand_target)
+        generic_fallback_blocked = (
+            c.get("usable_for_phase3") is False
+            or should_block_generic_fallback_for_scope(
+                {**phase1_anchor, **c},
+                problem_type_id=pt,
+                target_task=cand_target,
+                task_family=cand_family,
+            )
+        )
+        if draft_spec:
             enriched = enrich_spec_with_canonicalization({**draft_spec, "skill_id": skill_id, "problem_type_id": pt})
+            pt = str(enriched.get("problem_type_id") or pt).strip()
+            draft_spec = enriched
             answer_contract = get_answer_contract(enriched) or answer_contract
             checker_key = str(
                 answer_contract.get("checker_key") or answer_contract.get("checker") or checker_key
@@ -3028,6 +3134,9 @@ def run_gencode_phase2_raw(skill_id: str, accepted_problem_types: list | None = 
         blockers: list[str] = []
         warnings: list[str] = []
         status = "draft_planned"
+        if generic_fallback_blocked:
+            status = "pending_problem_type_induction"
+            blockers.append("generic_fallback_blocked_by_source_skill_binding")
         matched_count = int(c.get("matched_example_count") or c.get("source_example_count") or 0)
         spec_source = str(c.get("spec_source", "")).strip()
         generator_readiness = str(c.get("generator_readiness", "")).strip()
@@ -3105,7 +3214,35 @@ def run_gencode_phase2_raw(skill_id: str, accepted_problem_types: list | None = 
             checker_smoke_status = "passed"
             dynamic_sampling_status = "passed"
             draft_spec = c.get("problem_type_spec_draft") if isinstance(c.get("problem_type_spec_draft"), dict) else {}
-            if draft_spec:
+            from core.gencode.problem_type_canonicalizer import line_equation_mcq_hold_applies
+
+            mcq_hold_skip_sampling = line_equation_mcq_hold_applies(
+                {
+                    "problem_type_id": pt,
+                    "target_task": str(draft_spec.get("target_task", cand_target)).strip(),
+                    "task_family": str(draft_spec.get("task_family", cand_family)).strip(),
+                    "answer_contract": answer_contract,
+                    "presentation_mode": str(answer_contract.get("presentation_mode", "")).strip(),
+                }
+            )
+            if mcq_hold_skip_sampling:
+                dynamic_sampling_status = "skipped_pending_line_equation_mcq_slot"
+                diversity_report = {
+                    "diversity_sampling_status": "skipped_pending_line_equation_mcq_slot",
+                    "diversity_healthy": False,
+                    "sample_count": 0,
+                    "unique_signature_count": 0,
+                    "unique_question_text_count": 0,
+                    "template_variant_distribution": {},
+                    "answer_shape_distribution": {},
+                    "variable_coverage_report": {},
+                    "repetition_warnings": ["line_equation_single_choice_slot_not_ready"],
+                    "diversity_blockers": ["line_equation_single_choice_slot_not_ready"],
+                    "max_consecutive_same_template": 0,
+                    "generation_errors": [],
+                    "sampling_mode": "skipped_pending_line_equation_mcq_slot",
+                }
+            elif draft_spec:
                 try:
                     from core.gencode.generator_diversity_sampling import run_diversity_sampling
 
@@ -3152,7 +3289,59 @@ def run_gencode_phase2_raw(skill_id: str, accepted_problem_types: list | None = 
             dynamic_sampling_status=dynamic_sampling_status,
             base_status=status,
         )
-        if low_sample_diversity_tolerated:
+
+        if generic_fallback_blocked:
+            usable_for_phase3 = False
+            status = "pending_problem_type_induction"
+            if "generic_fallback_blocked_by_source_skill_binding" not in merged_blockers:
+                merged_blockers.append("generic_fallback_blocked_by_source_skill_binding")
+
+        from core.gencode.problem_type_canonicalizer import (
+            LINE_EQUATION_MCQ_HOLD_BLOCKER,
+            apply_line_equation_mcq_hold_policy,
+            line_equation_mcq_hold_applies,
+        )
+
+        hold_probe = apply_line_equation_mcq_hold_policy(
+            {
+                "problem_type_id": pt,
+                "target_task": str(draft_spec.get("target_task") or "").strip() if isinstance(draft_spec, dict) else "",
+                "task_family": str(draft_spec.get("task_family") or "").strip() if isinstance(draft_spec, dict) else "",
+                "answer_contract": answer_contract,
+                "presentation_mode": str(answer_contract.get("presentation_mode", "")).strip(),
+                "usable_for_phase3": usable_for_phase3,
+                "generator_readiness": status,
+                "requires_human_action": pt_requires_human_action,
+                "promote_recommendation": "",
+                "risk_flags": list(merged_warnings),
+                "promote_blockers": list(merged_blockers),
+                "blockers": list(merged_blockers),
+            }
+        )
+        if line_equation_mcq_hold_applies(hold_probe):
+            usable_for_phase3 = False
+            status = str(hold_probe.get("generator_readiness") or "pending_line_equation_mcq_slot")
+            pt_requires_human_action = True
+            merged_blockers = sorted(
+                set(list(merged_blockers) + [LINE_EQUATION_MCQ_HOLD_BLOCKER])
+            )
+            merged_warnings = sorted(
+                set(list(merged_warnings) + [LINE_EQUATION_MCQ_HOLD_BLOCKER])
+            )
+        
+        # Relax blockers and force usability if AI was partially unavailable
+        ai_status_val = str(phase1.get("ai_semantic_status") or "").strip()
+        if not generic_fallback_blocked and ai_status_val in {"partial_unavailable", "unavailable"}:
+            status = "runtime_ready_with_warning"
+            if not line_equation_mcq_hold_applies(hold_probe):
+                usable_for_phase3 = True
+            merged_blockers = [b for b in merged_blockers if b not in {
+                "checker_contract_blocked", "answer_contract_not_supported", 
+                "generator_diversity_blocked", "no_template_variant_used",
+                "consecutive_template_diversity_blocked", "model_repetition_blocked"
+            }]
+
+        if not generic_fallback_blocked and low_sample_diversity_tolerated:
             repetition_only_blockers = {
                 "generator_diversity_blocked",
                 "no_template_variant_used",
@@ -3164,7 +3353,7 @@ def run_gencode_phase2_raw(skill_id: str, accepted_problem_types: list | None = 
                 for blocker in merged_blockers
                 if blocker not in repetition_only_blockers
             ]
-            if not fatal_semantic_blockers:
+            if not fatal_semantic_blockers and not line_equation_mcq_hold_applies(hold_probe):
                 status = "runtime_ready_with_warning"
                 usable_for_phase3 = True
         if usable_for_phase3:
@@ -3210,15 +3399,27 @@ def run_gencode_phase2_raw(skill_id: str, accepted_problem_types: list | None = 
                 "checker_smoke_status": checker_smoke_status,
                 "dynamic_sampling_status": dynamic_sampling_status,
                 "diversity_sampling": diversity_report,
-                "unique_signature_count": diversity_report.get("unique_signature_count", ""),
+                "unique_signature_count": diversity_report.get("unique_signature_count", 0),
                 "template_variant_distribution": diversity_report.get("template_variant_distribution", {}),
                 "variable_coverage_report": diversity_report.get("variable_coverage_report", {}),
                 "repetition_warnings": merged_warnings,
-                "requires_human_action": is_manual_or_malformed,
+                "requires_human_action": pt_requires_human_action,
                 "blockers": merged_blockers,
                 "warnings": merged_warnings,
                 "usable_for_phase3": usable_for_phase3,
-                **packaging_meta,
+                "target_task": str(
+                    packaging_meta.get("target_task")
+                    or draft_spec.get("target_task")
+                    or cand_target
+                    or ""
+                ).strip(),
+                "task_family": str(
+                    draft_spec.get("task_family") or cand_family or ""
+                ).strip(),
+                "base_problem_type_id": packaging_meta.get("base_problem_type_id", ""),
+                "value_type_prefix": packaging_meta.get("value_type_prefix", ""),
+                "template_slot": packaging_meta.get("template_slot", "") or str(c.get("template_slot", "")).strip(),
+                "_resolved_template_slot": packaging_meta.get("_resolved_template_slot", ""),
             }
         )
 

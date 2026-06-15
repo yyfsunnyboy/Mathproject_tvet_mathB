@@ -13,14 +13,17 @@ from core.gencode.classification_candidates import (
     build_skill_scoped_candidates,
     rule_fallback_candidate_selection,
 )
-from core.gencode.example_feature_extractor import extract_example_feature_rule_only
+from core.gencode.example_feature_extractor import (
+    detect_line_equation_routing,
+    extract_example_feature_rule_only,
+)
 from core.gencode.problem_type_canonicalizer import resolve_target_task_from_math_meta_tags
 from core.gencode.source_structure_context import (
     apply_structure_confidence_adjustment,
     check_linked_example_consistency,
     detect_possible_mixed_source_context,
 )
-from core.gencode.task_families import task_family_for_task
+from core.gencode.task_families import LINE_EQUATION_TASKS, task_family_for_task
 
 AI_HIGH_CONFIDENCE = 0.75
 AI_MED_CONFIDENCE = 0.45
@@ -142,6 +145,8 @@ def _rule_confidence(rule_feat: dict[str, Any]) -> float:
         if any(k in text for k in ("十字交乘", "因式分解", "不等式", "x^2", "x}^{2}")):
             return 0.72 if task == "factor_quadratic_by_cross_multiplication" else 0.65
         return 0.5
+    if task in LINE_EQUATION_TASKS or detect_line_equation_routing(text):
+        return 0.7
     if not task or task == "compute_numeric":
         return 0.2
     if task in {
@@ -201,6 +206,52 @@ def merge_skill_scoped_classification(
     expected_families = set(anchor.get("expected_task_families") or [])
     scope_locked = bool(anchor.get("source_skill_scope_locked", False))
     candidates = skill_scoped_candidates or list(ai_result.get("skill_scoped_candidates") or [])
+
+    ex_text = ""
+    ex_answer = ""
+    if isinstance(ex, dict):
+        for key in ("problem_text", "problem", "question", "stem", "content"):
+            ex_text = str(ex.get(key, "")).strip()
+            if ex_text:
+                break
+        ex_answer = str(ex.get("correct_answer") or ex.get("answer") or "").strip()
+    line_route = detect_line_equation_routing(ex_text, answer=ex_answer) if ex_text else None
+    if line_route:
+        forced_task = line_route["target_task"]
+        forced_family = line_route["task_family"]
+        trace = {
+            "ai_target_task": str(ai_result.get("target_task", "")).strip(),
+            "ai_task_family": str(ai_result.get("task_family", "")).strip(),
+            "ai_confidence": float(ai_result.get("confidence", 0.0) or 0.0),
+            "rule_target_task": str(rule_result.get("target_task", "")).strip(),
+            "rule_task_family": str(rule_result.get("task_family", "")).strip(),
+            "rule_confidence": round(_rule_confidence(rule_result), 4),
+            "final_target_task": forced_task,
+            "final_task_family": forced_family,
+            "classifier_source": "line_equation_routing",
+            "classification_decision": "forced_by_line_equation_routing",
+            "conflict_reason": "",
+            "source_mapping_warning": "",
+            "requires_human_action": line_route.get("classification_confidence") == "medium",
+            "skill_scoped_candidates": candidates,
+            "outsider_candidates": [],
+            "selected_subskill": forced_task,
+            "selected_problem_type": forced_task,
+            "candidate_source": "line_equation_routing",
+            "skill_scope_trusted": True,
+        }
+        return {
+            **trace,
+            "target_task": forced_task,
+            "task_family": forced_family,
+            "math_objects": sorted(
+                set(list(rule_result.get("math_objects") or []) + ["line_equation"])
+            ),
+            "answer_type": line_route["answer_type"],
+            "answer_shape": line_route["answer_shape"],
+            "classification_confidence": line_route.get("classification_confidence", "medium"),
+        }
+
     outsider_ids = [
         str(c.get("candidate_id", ""))
         for c in candidates

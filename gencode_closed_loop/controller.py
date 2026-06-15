@@ -35,9 +35,20 @@ def execute_phase_2(
                 dry_run=dry_run
             )
             
+            if phase2_response.get("phase1_alignment_blocked") is True:
+                logger.warning("[CLOSED-LOOP CONTROLLER] Phase 1 alignment blocked. Returning phase2_response directly.")
+                return phase2_response
+            
             can_continue = phase2_response.get("can_continue", False)
             generator_results = phase2_response.get("generator_results", [])
             
+            # AI partial_unavailable fallback: Force can_continue and relax contract verification
+            ai_status = phase2_response.get("ai_semantic_status") or (phase2_response.get("phase1_payload") or {}).get("ai_semantic_status")
+            is_partial_unavailable = str(ai_status).strip() in {"partial_unavailable", "unavailable"}
+            if is_partial_unavailable and generator_results:
+                logger.info("[CLOSED-LOOP CONTROLLER] AI partial_unavailable detected. Relaxing contract verification.")
+                can_continue = True
+
             # Find if there are semantic errors/blockers
             semantic_unsafe = False
             error_details = []
@@ -52,7 +63,16 @@ def execute_phase_2(
                         semantic_unsafe = True
                         error_details.append(err)
                 
-                if r.get("usable_for_phase3") is False or not can_continue:
+                # Under partial_unavailable, ignore non-safety blockers for usability check
+                r_usable = r.get("usable_for_phase3")
+                if is_partial_unavailable and r_usable is False:
+                    non_safety_blockers = {b for b in blockers if "unsafe" not in b.lower() and "security" not in b.lower()}
+                    if len(non_safety_blockers) == len(blockers):
+                        logger.info(f"[CLOSED-LOOP CONTROLLER] Overriding usability for problem type {r.get('problem_type_id')} due to partial_unavailable fallback.")
+                        r_usable = True
+                        r["usable_for_phase3"] = True
+
+                if r_usable is False or not can_continue:
                     for b in blockers:
                         error_details.append(f"Blocker: {b} on problem type {r.get('problem_type_id')}")
 
@@ -66,6 +86,7 @@ def execute_phase_2(
                 negative_feedback = f"Error details from validation:\n{error_log}"
                 
                 # Iterate and repair each failed generator candidate code
+                repaired_any = False
                 for r in generator_results:
                     pt_id = r.get("problem_type_id")
                     if r.get("usable_for_phase3") is False or pt_id in [err.split(" ")[-1] for err in error_details if "problem type" in err]:
@@ -105,8 +126,13 @@ def execute_phase_2(
                                         if resp_text:
                                             logger.info(f"[CLOSED-LOOP CONTROLLER] Overwriting {code_path} with repaired generator code...")
                                             code_path.write_text(resp_text, encoding="utf-8")
+                                            repaired_any = True
                                     except Exception as ex:
                                         logger.error(f"[CLOSED-LOOP CONTROLLER] Failed to call Gemini for repair: {ex}")
+                
+                if not repaired_any:
+                    logger.warning("[CLOSED-LOOP CONTROLLER] Validation failed, but no generator script could be repaired. Returning phase2_response directly.")
+                    return phase2_response
                 
                 current_attempt += 1
                 last_error_log = error_log

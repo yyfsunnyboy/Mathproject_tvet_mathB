@@ -210,6 +210,43 @@ def remap_legacy_fields(cand: dict[str, Any], skill_id: str = "") -> dict[str, A
     Cleans and canonicalizes legacy fields in a candidate to standard Gencode Whitelist tokens.
     """
     import re
+    from core.gencode.answer_contract_policy import (
+        build_line_equation_answer_contract,
+        is_line_equation_semantic,
+    )
+    from core.gencode.problem_type_canonicalizer import (
+        resolve_authoritative_problem_type_id,
+        sync_candidate_authoritative_identity,
+    )
+
+    draft = dict(cand.get("problem_type_spec_draft")) if isinstance(cand.get("problem_type_spec_draft"), dict) else {}
+    target_task = str(
+        draft.get("target_task") or cand.get("target_task") or cand.get("subskill_id") or ""
+    ).strip()
+    task_family = str(draft.get("task_family") or cand.get("task_family") or "").strip()
+    pt_id = resolve_authoritative_problem_type_id(cand, spec=draft or None)
+
+    if is_line_equation_semantic(
+        problem_type_id=pt_id,
+        target_task=target_task,
+        task_family=task_family,
+    ):
+        line_ac = build_line_equation_answer_contract(
+            existing_ac=draft.get("answer_contract") if isinstance(draft.get("answer_contract"), dict) else cand.get("answer_contract_proposal")
+        )
+        cand["answer_contract_proposal"] = line_ac
+        cand["answer_type"] = line_ac.get("answer_type", "equation")
+        cand["equivalence_type_proposal"] = line_ac.get("equivalence_type", "linear_equation_equivalent")
+        cand["checker_key_proposal"] = line_ac.get("checker_key", "linear_equation_equivalent_checker")
+        cand["answer_shape"] = line_ac.get("answer_shape", "linear_equation")
+        cand["problem_type_id"] = pt_id
+        cand["proposed_problem_type_id"] = pt_id
+        if draft:
+            draft["problem_type_id"] = pt_id
+            draft["answer_contract"] = line_ac
+            cand["problem_type_spec_draft"] = draft
+        return sync_candidate_authoritative_identity(cand)
+
     ac = dict(cand.get("answer_contract_proposal", {}))
     
     at = str(ac.get("answer_type", cand.get("answer_type", "expression"))).strip()
@@ -301,7 +338,11 @@ def remap_legacy_fields(cand: dict[str, Any], skill_id: str = "") -> dict[str, A
     draft_pt_id = str(draft.get("problem_type_id", "")).strip()
     if pt_id.startswith("expression_") and draft_pt_id and draft_pt_id != pt_id:
         pt_id = draft_pt_id
-    if pt_id:
+    if pt_id and not is_line_equation_semantic(
+        problem_type_id=pt_id,
+        target_task=target_task,
+        task_family=task_family,
+    ):
         pt_id = pt_id.replace("numeric_", f"{at}_").replace("_numeric", f"_{at}")
         if not coordinate_pair_semantic:
             pt_id = pt_id.replace("short_answer", "expression")

@@ -22,6 +22,8 @@ from core.gencode.division_point_slot_engine import (
     generate_division_point_payload,
     is_division_point_target_task,
 )
+from core.gencode.answer_contract_policy import build_line_equation_answer_contract
+from core.gencode.task_families import LINE_EQUATION_FAMILY, task_family_for_task
 from core.gencode.scenario_pool_manager import (
     build_quadratic_extremum_literacy_stem,
     finalize_question_text,
@@ -345,7 +347,7 @@ def _slot_two_point_distance_solution_set(
         y2 = mid
         k1, k2 = mid - t, mid + t
         solutions = sorted({k1, k2})
-        q = f"已知 A({x1}, k)、B({x2}, {y2})，且 AB={d}，求 k 的所有可能值。"
+        q = f"已知 $A({x1}, k)$、$B({x2}, {y2})$，且 $AB={d}$，求 $k$ 的所有可能值。"
         ac = get_answer_contract(spec)
         return {
             "skill_id": skill_id,
@@ -357,7 +359,7 @@ def _slot_two_point_distance_solution_set(
             "correct_answer": solutions,
             "answer_type": str(ac.get("answer_type", "solution_set")),
             "checker_type": str(ac.get("checker", "solution_set_checker")),
-            "explanation": f"由距離公式得 (k-{y2})^2+{dx}^2={d}^2，解得 k={solutions[0]} 或 k={solutions[1]}。",
+            "explanation": f"由距離公式得 $(k-{y2})^2+{dx}^2={d}^2$，解得 $k={solutions[0]}$ 或 $k={solutions[1]}$。",
             "diagnosis_tags": ["distance_formula_reasoning"],
             "metadata": {
                 "givens": [f"A=({x1},k)", f"B=({x2},{y2})", f"AB={d}"],
@@ -385,7 +387,7 @@ def _slot_two_point_distance_compute(
             ans = str(d)
         else:
             ans = f"\\sqrt{{{d2}}}"
-        q = f"求 A({x1},{y1}) 與 B({x2},{y2}) 的距離。"
+        q = f"求 $A({x1},{y1})$ 與 $B({x2},{y2})$ 的距離。"
         ac = get_answer_contract(spec)
         return {
             "skill_id": skill_id,
@@ -397,7 +399,7 @@ def _slot_two_point_distance_compute(
             "correct_answer": ans,
             "answer_type": str(ac.get("answer_type", "numeric_or_radical")),
             "checker_type": str(ac.get("checker", "expression_equivalence_checker")),
-            "explanation": f"AB=\\sqrt{{({dx})^2+({dy})^2}}={ans}。",
+            "explanation": f"由距離公式得 $AB=\\sqrt{{({dx})^2+({dy})^2}}={ans}$。",
             "diagnosis_tags": ["distance_formula_reasoning"],
             "metadata": {
                 "givens": [f"A=({x1},{y1})", f"B=({x2},{y2})"],
@@ -407,6 +409,449 @@ def _slot_two_point_distance_compute(
             "source": "gencode_slot_generator",
         }
     raise RuntimeError("two_point_distance_compute_generation_failed")
+
+
+def _format_slope_display(slope: Fraction) -> str:
+    if slope.denominator == 1:
+        return str(slope.numerator)
+    return f"{slope.numerator}/{slope.denominator}"
+
+
+def _format_general_linear_equation(a: int, b: int, c: int) -> str:
+    terms: list[str] = []
+
+    def _append(coeff: int, var: str) -> None:
+        if coeff == 0:
+            return
+        if not terms:
+            if coeff == 1:
+                terms.append(var)
+            elif coeff == -1:
+                terms.append(f"-{var}")
+            else:
+                terms.append(f"{coeff}{var}")
+            return
+        if coeff > 0:
+            if coeff == 1:
+                terms.append(f" + {var}")
+            else:
+                terms.append(f" + {coeff}{var}")
+        elif coeff == -1:
+            terms.append(f" - {var}")
+        else:
+            terms.append(f" - {abs(coeff)}{var}")
+
+    _append(a, "x")
+    _append(b, "y")
+    if c != 0 or not terms:
+        if not terms:
+            terms.append(str(c))
+        elif c > 0:
+            terms.append(f" + {c}")
+        else:
+            terms.append(f" - {abs(c)}")
+    return f"{''.join(terms)} = 0"
+
+
+def _normalize_linear_equation_coefficients(
+    a: Fraction, b: Fraction, c: Fraction
+) -> tuple[int, int, int, str]:
+    denoms = [a.denominator, b.denominator, c.denominator]
+    lcm = 1
+    for d in denoms:
+        lcm = lcm * d // math.gcd(lcm, d)
+    a_int = int(a * lcm)
+    b_int = int(b * lcm)
+    c_int = int(c * lcm)
+    g = math.gcd(math.gcd(abs(a_int), abs(b_int)), abs(c_int))
+    if g:
+        a_int //= g
+        b_int //= g
+        c_int //= g
+    return a_int, b_int, c_int, _format_general_linear_equation(a_int, b_int, c_int)
+
+
+def _canonical_line_equation_from_point_slope(
+    x1: int, y1: int, slope: Fraction
+) -> tuple[int, int, int, str]:
+    ax = slope
+    by = Fraction(-1, 1)
+    c = Fraction(y1, 1) - slope * Fraction(x1, 1)
+    return _normalize_linear_equation_coefficients(ax, by, c)
+
+
+def _canonical_line_equation_from_two_points(
+    x1: int, y1: int, x2: int, y2: int
+) -> tuple[int, int, int, str]:
+    if x1 == x2:
+        return _normalize_linear_equation_coefficients(Fraction(1, 1), Fraction(0, 1), Fraction(-x1, 1))
+    if y1 == y2:
+        return _normalize_linear_equation_coefficients(Fraction(0, 1), Fraction(1, 1), Fraction(-y1, 1))
+    slope = Fraction(y2 - y1, x2 - x1)
+    return _canonical_line_equation_from_point_slope(x1, y1, slope)
+
+
+def _canonical_perpendicular_bisector_from_two_points(
+    x1: int, y1: int, x2: int, y2: int
+) -> tuple[int, int, int, str]:
+    mx = Fraction(x1 + x2, 2)
+    my = Fraction(y1 + y2, 2)
+    dx = x2 - x1
+    dy = y2 - y1
+    if dx == 0:
+        return _normalize_linear_equation_coefficients(Fraction(1, 1), Fraction(0, 1), Fraction(-mx, 1))
+    if dy == 0:
+        return _normalize_linear_equation_coefficients(Fraction(0, 1), Fraction(1, 1), Fraction(-my, 1))
+    c = Fraction(-dx, 1) * mx + Fraction(-dy, 1) * my
+    return _normalize_linear_equation_coefficients(Fraction(dx, 1), Fraction(dy, 1), c)
+
+
+def _build_line_equation_slot_payload(
+    skill_id: str,
+    pt: str,
+    spec: dict[str, Any],
+    *,
+    target_task: str,
+    template_variant: str,
+    question_text: str,
+    canonical: str,
+    explanation: str,
+    metadata: dict[str, Any],
+    diagnosis_tags: list[str],
+) -> dict[str, Any]:
+    task_family = str(spec.get("task_family", "")).strip() or task_family_for_task(target_task)
+    ac = get_answer_contract(spec)
+    if not str(ac.get("checker", "")).strip():
+        ac = build_line_equation_answer_contract(existing_ac=ac)
+    checker = str(ac.get("checker", "linear_equation_equivalent_checker")).strip()
+    equivalence = str(
+        ac.get("answer_equivalence", ac.get("equivalence_type", "linear_equation_equivalent"))
+    ).strip()
+    return {
+        "skill_id": skill_id,
+        "problem_type_id": pt,
+        "question_text": question_text,
+        "question": question_text,
+        "choices": [],
+        "answer": canonical,
+        "correct_answer": canonical,
+        "answer_type": str(ac.get("answer_type", "equation")),
+        "checker_type": checker,
+        "checker": checker,
+        "checker_key": checker,
+        "equivalence": equivalence,
+        "equivalence_type": equivalence,
+        "target_task": target_task,
+        "task_family": task_family or LINE_EQUATION_FAMILY,
+        "template_variant": template_variant,
+        "answer_contract": dict(ac),
+        "presentation_mode": "short_answer",
+        "explanation": explanation,
+        "diagnosis_tags": diagnosis_tags,
+        "metadata": metadata,
+        "source": "gencode_slot_generator",
+    }
+
+
+def _pick_line_equation_slope(rng: random.Random) -> Fraction:
+    if rng.random() < 0.65:
+        slope_candidates = [i for i in range(-5, 6) if i != 0]
+        return Fraction(rng.choice(slope_candidates), 1)
+    numerators = [1, 2, 3, -1, -2, -3]
+    denominators = [2, 3]
+    slope = Fraction(rng.choice(numerators), rng.choice(denominators))
+    return Fraction(1, 2) if slope == 0 else slope
+
+
+def _slot_line_equation_from_point_slope(
+    skill_id: str, pt: str, spec: dict[str, Any], seed: int | None
+) -> dict[str, Any]:
+    rng = random.Random(seed)
+    target_task = str(spec.get("target_task", "write_line_equation_from_point_slope")).strip()
+
+    variants = [
+        (
+            "given_point_and_slope_find_point_slope_form",
+            "已知直線過點 $({x1}, {y1})$，斜率為 ${m}$，求此直線的點斜式方程式。",
+        ),
+        (
+            "given_point_and_slope_find_slope_intercept_form",
+            "已知直線過點 $({x1}, {y1})$，斜率為 ${m}$，求此直線的斜截式方程式（$y = mx + b$）。",
+        ),
+        (
+            "given_point_and_slope_find_general_form",
+            "已知直線過點 $({x1}, {y1})$，斜率為 ${m}$，求此直線的一般式方程式（$Ax + By + C = 0$）。",
+        ),
+    ]
+    template_variant, template = rng.choice(variants)
+
+    x1 = rng.randint(-8, 8)
+    y1 = rng.randint(-8, 8)
+    slope = _pick_line_equation_slope(rng)
+
+    m_text = _format_slope_display(slope)
+    question_text = template.format(x1=x1, y1=y1, m=m_text)
+    a_int, b_int, c_int, canonical = _canonical_line_equation_from_point_slope(x1, y1, slope)
+    explanation = (
+        f"由點斜式 $y - {y1} = {m_text}(x - {x1})$ 整理，"
+        f"可得一般式 ${canonical}$。"
+    )
+
+    return _build_line_equation_slot_payload(
+        skill_id,
+        pt,
+        spec,
+        target_task=target_task,
+        template_variant=template_variant,
+        question_text=question_text,
+        canonical=canonical,
+        explanation=explanation,
+        metadata={
+            "givens": [f"point=({x1},{y1})", f"slope={m_text}"],
+            "target": canonical,
+            "template_variant": template_variant,
+            "equation_form": template_variant,
+            "coefficients": {"A": a_int, "B": b_int, "C": c_int},
+            "derivation": [f"y - {y1} = {m_text}(x - {x1})", canonical],
+        },
+        diagnosis_tags=["line_equation", "point_slope_form", template_variant],
+    )
+
+
+def _slot_line_equation_from_two_points(
+    skill_id: str, pt: str, spec: dict[str, Any], seed: int | None
+) -> dict[str, Any]:
+    rng = random.Random(seed)
+    target_task = str(spec.get("target_task", "write_line_equation_from_two_points")).strip()
+    variants = [
+        (
+            "two_points_general_form",
+            "已知直線通過兩點 $A({x1}, {y1})$、$B({x2}, {y2})$，請寫出此直線的一個方程式。",
+        ),
+        (
+            "two_points_through_ab",
+            "試求通過 $A({x1}, {y1})$、$B({x2}, {y2})$ 兩點的直線方程式。",
+        ),
+    ]
+    template_variant, template = rng.choice(variants)
+    for _ in range(200):
+        x1, y1 = rng.randint(-8, 8), rng.randint(-8, 8)
+        x2, y2 = rng.randint(-8, 8), rng.randint(-8, 8)
+        if x1 == x2 and y1 == y2:
+            continue
+        break
+    else:
+        x1, y1, x2, y2 = -3, 1, 2, 4
+    question_text = template.format(x1=x1, y1=y1, x2=x2, y2=y2)
+    a_int, b_int, c_int, canonical = _canonical_line_equation_from_two_points(x1, y1, x2, y2)
+    explanation = (
+        f"由兩點 $A({x1},{y1})$、$B({x2},{y2})$ 求斜率並整理，"
+        f"可得一般式 ${canonical}$。"
+    )
+    return _build_line_equation_slot_payload(
+        skill_id,
+        pt,
+        spec,
+        target_task=target_task,
+        template_variant=template_variant,
+        question_text=question_text,
+        canonical=canonical,
+        explanation=explanation,
+        metadata={
+            "givens": [f"A=({x1},{y1})", f"B=({x2},{y2})"],
+            "target": canonical,
+            "template_variant": template_variant,
+            "coefficients": {"A": a_int, "B": b_int, "C": c_int},
+            "derivation": [f"through A and B", canonical],
+        },
+        diagnosis_tags=["line_equation", "two_points", template_variant],
+    )
+
+
+def _slot_perpendicular_bisector_from_two_points(
+    skill_id: str, pt: str, spec: dict[str, Any], seed: int | None
+) -> dict[str, Any]:
+    rng = random.Random(seed)
+    target_task = str(spec.get("target_task", "write_perpendicular_bisector_from_two_points")).strip()
+    variants = [
+        (
+            "perpendicular_bisector_segment",
+            "已知兩點 $A({x1}, {y1})$、$B({x2}, {y2})$，請寫出線段 $AB$ 的垂直平分線方程式。",
+        ),
+        (
+            "perpendicular_bisector_equal_distance",
+            "平面上有兩點 $A({x1}, {y1})$、$B({x2}, {y2})$。若某直線上的點到 $A$、$B$ 距離相等，請寫出此直線的一個方程式。",
+        ),
+    ]
+    template_variant, template = rng.choice(variants)
+    for _ in range(200):
+        x1, y1 = rng.randint(-8, 8), rng.randint(-8, 8)
+        x2, y2 = rng.randint(-8, 8), rng.randint(-8, 8)
+        if x1 == x2 and y1 == y2:
+            continue
+        if (x1 + x2) % 2 != 0 or (y1 + y2) % 2 != 0:
+            continue
+        break
+    else:
+        x1, y1, x2, y2 = -1, 1, 3, -1
+    question_text = template.format(x1=x1, y1=y1, x2=x2, y2=y2)
+    mx, my = (x1 + x2) // 2, (y1 + y2) // 2
+    a_int, b_int, c_int, canonical = _canonical_perpendicular_bisector_from_two_points(x1, y1, x2, y2)
+    explanation = (
+        f"中點為 $M({mx},{my})$，取 $AB$ 方向向量並作法線，"
+        f"可得垂直平分線 ${canonical}$。"
+    )
+    return _build_line_equation_slot_payload(
+        skill_id,
+        pt,
+        spec,
+        target_task=target_task,
+        template_variant=template_variant,
+        question_text=question_text,
+        canonical=canonical,
+        explanation=explanation,
+        metadata={
+            "givens": [f"A=({x1},{y1})", f"B=({x2},{y2})", f"M=({mx},{my})"],
+            "target": canonical,
+            "template_variant": template_variant,
+            "coefficients": {"A": a_int, "B": b_int, "C": c_int},
+            "derivation": [f"midpoint=({mx},{my})", canonical],
+        },
+        diagnosis_tags=["line_equation", "perpendicular_bisector", template_variant],
+    )
+
+
+def _slot_line_equation_from_slope_and_intercept(
+    skill_id: str, pt: str, spec: dict[str, Any], seed: int | None
+) -> dict[str, Any]:
+    rng = random.Random(seed)
+    target_task = str(spec.get("target_task", "write_line_equation_from_slope_and_intercept")).strip()
+    use_x_intercept = rng.random() < 0.5
+    slope = _pick_line_equation_slope(rng)
+    m_text = _format_slope_display(slope)
+    if use_x_intercept:
+        intercept = rng.randint(-8, 8)
+        if intercept == 0:
+            intercept = 5
+        template_variant = "slope_with_x_intercept"
+        question_text = (
+            f"已知直線斜率為 ${m_text}$，且 $x$ 截距為 ${intercept}$，"
+            "請寫出此直線的一個方程式。"
+        )
+        x1, y1 = intercept, 0
+    else:
+        intercept = rng.randint(-8, 8)
+        template_variant = "slope_with_y_intercept"
+        question_text = (
+            f"已知直線斜率為 ${m_text}$，且 $y$ 截距為 ${intercept}$，"
+            "請寫出此直線的一個方程式。"
+        )
+        x1, y1 = 0, intercept
+    a_int, b_int, c_int, canonical = _canonical_line_equation_from_point_slope(x1, y1, slope)
+    explanation = (
+        f"由斜率 ${m_text}$ 與截距條件得通過點 $({x1},{y1})$，"
+        f"整理得一般式 ${canonical}$。"
+    )
+    return _build_line_equation_slot_payload(
+        skill_id,
+        pt,
+        spec,
+        target_task=target_task,
+        template_variant=template_variant,
+        question_text=question_text,
+        canonical=canonical,
+        explanation=explanation,
+        metadata={
+            "givens": [f"slope={m_text}", f"intercept_point=({x1},{y1})", f"intercept_axis={'x' if use_x_intercept else 'y'}"],
+            "target": canonical,
+            "template_variant": template_variant,
+            "coefficients": {"A": a_int, "B": b_int, "C": c_int},
+            "derivation": [f"point=({x1},{y1})", f"slope={m_text}", canonical],
+        },
+        diagnosis_tags=["line_equation", "slope_intercept", template_variant],
+    )
+
+
+def _slot_triangle_median_line_from_vertices(
+    skill_id: str, pt: str, spec: dict[str, Any], seed: int | None
+) -> dict[str, Any]:
+    rng = random.Random(seed)
+    target_task = str(spec.get("target_task", "write_triangle_median_line_from_vertices")).strip()
+    through_labels = ("A", "B", "C")
+    through = rng.choice(through_labels)
+    template_variant = rng.choice(
+        [
+            "triangle_median_through_vertex",
+            "triangle_median_area_bisector",
+            "triangle_median_coordinate_plane",
+        ]
+    )
+    for _ in range(200):
+        ax, ay = rng.randint(-8, 8), rng.randint(-8, 8)
+        bx, by = rng.randint(-8, 8), rng.randint(-8, 8)
+        cx, cy = rng.randint(-8, 8), rng.randint(-8, 8)
+        det = (bx - ax) * (cy - ay) - (cx - ax) * (by - ay)
+        if det == 0:
+            continue
+        coords = {"A": (ax, ay), "B": (bx, by), "C": (cx, cy)}
+        opposite = [label for label in through_labels if label != through]
+        p1 = coords[opposite[0]]
+        p2 = coords[opposite[1]]
+        if (p1[0] + p2[0]) % 2 != 0 or (p1[1] + p2[1]) % 2 != 0:
+            continue
+        break
+    else:
+        ax, ay, bx, by, cx, cy = 8, -4, 4, 2, 2, -2
+        through = "B"
+        coords = {"A": (ax, ay), "B": (bx, by), "C": (cx, cy)}
+        opposite = ["A", "C"]
+        p1, p2 = coords["A"], coords["C"]
+    vx, vy = coords[through]
+    mx, my = (p1[0] + p2[0]) // 2, (p1[1] + p2[1]) // 2
+    if template_variant == "triangle_median_area_bisector":
+        question_text = (
+            f"設三角形 $ABC$ 的頂點為 $A({ax}, {ay})$、$B({bx}, {by})$、$C({cx}, {cy})$。"
+            f"請寫出過頂點 ${through}$ 且將三角形 $ABC$ 面積平分的直線方程式。"
+        )
+    elif template_variant == "triangle_median_coordinate_plane":
+        question_text = (
+            f"在坐標平面上，三角形 $ABC$ 的頂點分別為 $A({ax}, {ay})$、$B({bx}, {by})$、$C({cx}, {cy})$。"
+            f"求過點 ${through}({vx}, {vy})$ 並將三角形面積分成相等兩部分的直線方程式。"
+        )
+    else:
+        question_text = (
+            f"已知三角形 $ABC$ 的頂點為 $A({ax}, {ay})$、$B({bx}, {by})$、$C({cx}, {cy})$。"
+            f"若直線通過點 ${through}({vx}, {vy})$ 並將三角形 $ABC$ 的面積平分，請寫出此直線方程式。"
+        )
+    a_int, b_int, c_int, canonical = _canonical_line_equation_from_two_points(vx, vy, mx, my)
+    explanation = (
+        f"對邊中點為 $M({mx},{my})$，中線為 ${through}M$，"
+        f"整理得一般式 ${canonical}$。"
+    )
+    return _build_line_equation_slot_payload(
+        skill_id,
+        pt,
+        spec,
+        target_task=target_task,
+        template_variant=template_variant,
+        question_text=question_text,
+        canonical=canonical,
+        explanation=explanation,
+        metadata={
+            "givens": [
+                f"A=({ax},{ay})",
+                f"B=({bx},{by})",
+                f"C=({cx},{cy})",
+                f"through={through}",
+                f"M=({mx},{my})",
+            ],
+            "target": canonical,
+            "template_variant": template_variant,
+            "coefficients": {"A": a_int, "B": b_int, "C": c_int},
+            "derivation": [f"median {through}M", canonical],
+        },
+        diagnosis_tags=["line_equation", "triangle_median", template_variant],
+    )
 
 
 def _slot_division_point_coordinates(
@@ -548,12 +993,12 @@ def _slot_linear_function_two_point_choice(
     x2 = rng.randint(x1 + 1, 7)
     y1 = slope * x1 + intercept
     y2 = slope * x2 + intercept
-    correct = f"f(x)={_linear_expression(slope, intercept)}"
+    correct = f"$f(x)={_linear_expression(slope, intercept)}$"
     wrong_candidates = [
-        f"f(x)={_linear_expression(-slope, intercept)}",
-        f"f(x)={_linear_expression(slope, intercept + 1)}",
-        f"f(x)={_linear_expression(slope, intercept - 1)}",
-        f"f(x)={_linear_expression(slope + 1 if slope != -1 else slope - 1, intercept)}",
+        f"$f(x)={_linear_expression(-slope, intercept)}$",
+        f"$f(x)={_linear_expression(slope, intercept + 1)}$",
+        f"$f(x)={_linear_expression(slope, intercept - 1)}$",
+        f"$f(x)={_linear_expression(slope + 1 if slope != -1 else slope - 1, intercept)}$",
     ]
     wrongs: list[str] = []
     for candidate in wrong_candidates:
@@ -2182,6 +2627,11 @@ SLOT_REGISTRY: dict[str, GeneratorFn] = {
     "symbolic_quadrant_statement_choice": _slot_symbolic_quadrant_statement_choice,
     "two_point_distance_solution_set": _slot_two_point_distance_solution_set,
     "two_point_distance_compute": _slot_two_point_distance_compute,
+    "line_equation_from_point_slope": _slot_line_equation_from_point_slope,
+    "line_equation_from_two_points": _slot_line_equation_from_two_points,
+    "perpendicular_bisector_from_two_points": _slot_perpendicular_bisector_from_two_points,
+    "line_equation_from_slope_and_intercept": _slot_line_equation_from_slope_and_intercept,
+    "triangle_median_line_from_vertices": _slot_triangle_median_line_from_vertices,
     "linear_triangle_median_compute": _slot_linear_triangle_median_compute,
     "function_value_numeric": _slot_function_value_numeric,
     "linear_function_two_point_choice": _slot_linear_function_two_point_choice,
@@ -2216,6 +2666,11 @@ TARGET_TASK_GENERATOR_REGISTRY: dict[str, GeneratorFn] = {
     "solve_quadratic_inequality_parameter_range": _slot_solve_quadratic_inequality_parameter_range,
     "reverse_quadratic_inequality_coefficients": _slot_reverse_quadratic_inequality_coefficients,
     "applied_quadratic_inequality_problem": _slot_applied_quadratic_inequality_problem,
+    "write_line_equation_from_point_slope": _slot_line_equation_from_point_slope,
+    "write_line_equation_from_two_points": _slot_line_equation_from_two_points,
+    "write_perpendicular_bisector_from_two_points": _slot_perpendicular_bisector_from_two_points,
+    "write_line_equation_from_slope_and_intercept": _slot_line_equation_from_slope_and_intercept,
+    "write_triangle_median_line_from_vertices": _slot_triangle_median_line_from_vertices,
 }
 
 

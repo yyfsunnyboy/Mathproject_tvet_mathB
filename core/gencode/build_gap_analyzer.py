@@ -36,6 +36,11 @@ EQUIVALENCE_REQUIREMENTS: dict[str, dict[str, list[str]]] = {
         "required_verifiers": ["algebraic_verifier"],
         "required_domain_functions": ["symbolic_simplifier"],
     },
+    "linear_equation_equivalent": {
+        "required_checkers": ["linear_equation_equivalent_checker"],
+        "required_verifiers": [],
+        "required_domain_functions": [],
+    },
     "manual_review_or_ai_judged": {
         "required_checkers": ["manual_review_checker"],
         "required_verifiers": [],
@@ -50,8 +55,48 @@ EQUIVALENCE_COMPONENTS = {
     "interval_set": ["interval_checker", "interval_verifier", "interval_domain_function", "interval_formatter"],
     "rational_equivalent": ["rational_checker", "fraction_normalizer", "rational_verifier"],
     "algebraic_equivalent": ["algebraic_equivalence_checker", "symbolic_simplifier", "expression_generator"],
+    "linear_equation_equivalent": [
+        "linear_equation_equivalent_checker",
+        "line_equation_from_point_slope",
+        "line_equation_from_two_points",
+        "perpendicular_bisector_from_two_points",
+        "line_equation_from_slope_and_intercept",
+        "triangle_median_line_from_vertices",
+    ],
     "manual_review_or_ai_judged": ["manual_review_marker", "future_ai_judged_path"],
 }
+
+
+def _collect_slot_registered_generators(phase1_report: dict[str, Any]) -> set[str]:
+    """Target tasks / observed ids backed by SLOT_REGISTRY or TARGET_TASK_GENERATOR_REGISTRY."""
+    from core.gencode.slot_generators import SLOT_REGISTRY, TARGET_TASK_GENERATOR_REGISTRY
+
+    registered: set[str] = set()
+    for pt in phase1_report.get("observed_problem_types", []) or []:
+        key = str(pt or "").strip()
+        if key in TARGET_TASK_GENERATOR_REGISTRY:
+            registered.add(key)
+    for c in phase1_report.get("candidate_problem_types", []) or []:
+        if not isinstance(c, dict):
+            continue
+        draft = c.get("problem_type_spec_draft") if isinstance(c.get("problem_type_spec_draft"), dict) else {}
+        target = str(draft.get("target_task") or c.get("target_task") or c.get("subskill_id") or "").strip()
+        slot = str(
+            c.get("template_slot")
+            or draft.get("_resolved_template_slot")
+            or ""
+        ).strip()
+        if target in TARGET_TASK_GENERATOR_REGISTRY:
+            registered.add(target)
+        if slot in SLOT_REGISTRY and target:
+            registered.add(target)
+    return registered
+
+
+def target_task_has_registered_slot_generator(target_task: str) -> bool:
+    from core.gencode.slot_generators import TARGET_TASK_GENERATOR_REGISTRY
+
+    return str(target_task or "").strip() in TARGET_TASK_GENERATOR_REGISTRY
 
 
 def _collect_existing(path: Path, suffix: str = ".py") -> set[str]:
@@ -95,6 +140,7 @@ def analyze_build_dependency_plan(phase1_report: dict[str, Any], phase2_report: 
         "choice_checker",
         "choice_label_checker",
         "rational_checker",
+        "linear_equation_equivalent_checker",
     }
     existing_verifiers = _collect_existing(PROJECT_ROOT / "core" / "verifiers") | {
         "numeric_verifier",
@@ -111,6 +157,7 @@ def analyze_build_dependency_plan(phase1_report: dict[str, Any], phase2_report: 
                 if (sec_dir / pt).exists():
                     existing_generators.add(pt)
                     break
+    existing_generators.update(_collect_slot_registered_generators(phase1_report))
 
     missing_checkers = sorted(required_checkers - existing_checkers)
     missing_verifiers = sorted(required_verifiers - existing_verifiers)

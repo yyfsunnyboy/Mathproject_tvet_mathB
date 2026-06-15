@@ -93,7 +93,19 @@ def _build_prompt(
         "Pick the best subskill candidate_id ONLY from the provided list.\n"
         "Do NOT invent new target_task or task_family values.\n"
         "Choosing needs_review is FORBIDDEN unless the stem is truly unreadable.\n"
-        "Prefer anchor-scoped candidates over outsider candidates.\n"
+        "Prefer anchor-scoped candidates over outsider candidates.\n\n"
+        "=== High School Math B (高職數B) Knowledge Graph Rules ===\n"
+        "- For skill 'vh_數學B1_PropertiesOfPerpendicularLines' (垂直線性質) or perpendicular lines properties: "
+        "The core mathematical concepts and key terms are: slope product equals -1 ($m_1 \\times m_2 = -1$), "
+        "perpendicular (垂直), and coordinate plane (坐標平面). If a problem asks whether a triangle is a right triangle "
+        "by checking slopes of perpendicular sides, or mentions perpendicular lines/slopes, it MUST be classified "
+        "under perpendicular lines properties subskills.\n"
+        "- For skill 'vh_數學B1_PropertiesOfParallelLines' (平行線性質) or parallel lines properties: "
+        "The core concepts are: slopes are equal ($m_1 = m_2$), parallel (平行), and coordinate plane (坐標平面).\n"
+        "- For skill 'vh_數學B1_SlopeOfALine' (直線的斜率): "
+        "The core concepts are: line slope ($m = \\frac{y_2-y_1}{x_2-x_1}$), inclination, and collinearity.\n"
+        "- For skill 'vh_數學B1_MidpointCoordinates' (中點坐標): "
+        "The core concepts are: midpoint formula, segment bisector.\n\n"
         "Segment-ratio / on-segment / find point coordinate stems belong to division-point subskills, "
         "NOT distance-between-two-points, when those subskills are in the candidate list.\n"
         "Quadratic inequality / factoring skills: prefer factor_quadratic_by_cross_multiplication "
@@ -405,7 +417,7 @@ def classify_example_semantics_with_ai(
         if not candidates:
             raise ValueError("skill_scoped_candidates_missing")
         prompt = _build_prompt(example, anchor, candidates)
-        resp = call_ai_with_retry(client, prompt, max_retries=1, retry_delay=1, timeout=60)
+        resp = call_ai_with_retry(client, prompt, max_retries=1, retry_delay=1, timeout=180)
         raw_text = str(getattr(resp, "text", "") or "")
         if raw_text.strip().lower().startswith("error:"):
             return _unavailable_result(

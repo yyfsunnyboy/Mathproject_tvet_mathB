@@ -17,6 +17,7 @@ GENERIC_NUMERIC_FAMILY = "generic_numeric_family"
 QUADRATIC_FUNCTION_GRAPH_FAMILY = "quadratic_function_graph_family"
 # Quadratic inequality + factoring family (vocational math B1 §1-4).
 QUADRATIC_INEQUALITY_FAMILY = "quadratic_inequality_family"
+LINE_EQUATION_FAMILY = "line_equation_family"
 
 FUNCTION_CONCEPT_TASKS = frozenset(
     {
@@ -71,6 +72,24 @@ QUADRATIC_FUNCTION_GRAPH_TASKS = frozenset(
         "quadratic_vertex_form_translation_to_new_function",
     }
 )
+
+LINE_EQUATION_TASKS = frozenset(
+    {
+        "write_line_equation_from_point_slope",
+        "write_line_equation_from_two_points",
+        "write_perpendicular_bisector_from_two_points",
+        "write_line_equation_from_slope_and_intercept",
+        "write_triangle_median_line_from_vertices",
+    }
+)
+
+LINE_EQUATION_TASK_TO_SLOT: dict[str, str] = {
+    "write_line_equation_from_point_slope": "line_equation_from_point_slope",
+    "write_line_equation_from_two_points": "line_equation_from_two_points",
+    "write_perpendicular_bisector_from_two_points": "perpendicular_bisector_from_two_points",
+    "write_line_equation_from_slope_and_intercept": "line_equation_from_slope_and_intercept",
+    "write_triangle_median_line_from_vertices": "triangle_median_line_from_vertices",
+}
 
 QUADRATIC_INEQUALITY_TASKS = frozenset(
     {
@@ -133,6 +152,11 @@ TASK_TO_FAMILY: dict[str, str] = {
     "factor_quadratic_by_cross_multiplication": QUADRATIC_INEQUALITY_FAMILY,
     "solve_quadratic_by_factoring": QUADRATIC_INEQUALITY_FAMILY,
     "interpret_quadratic_inequality_solution_set": QUADRATIC_INEQUALITY_FAMILY,
+    "write_line_equation_from_point_slope": LINE_EQUATION_FAMILY,
+    "write_line_equation_from_two_points": LINE_EQUATION_FAMILY,
+    "write_perpendicular_bisector_from_two_points": LINE_EQUATION_FAMILY,
+    "write_line_equation_from_slope_and_intercept": LINE_EQUATION_FAMILY,
+    "write_triangle_median_line_from_vertices": LINE_EQUATION_FAMILY,
 }
 
 # Higher score wins when multiple families match skill terms (not generator availability).
@@ -175,6 +199,23 @@ FAMILY_SKILL_HINTS_SCORED: list[tuple[str, tuple[str, ...], int]] = [
             "factoring",
         ),
         155,
+    ),
+    (
+        LINE_EQUATION_FAMILY,
+        (
+            "lineequation",
+            "line equation",
+            "pointslopeform",
+            "point slope",
+            "point-slope",
+            "點斜式",
+            "点斜式",
+            "直線方程式",
+            "直线方程式",
+            "斜截式",
+            "slope intercept",
+        ),
+        145,
     ),
     (
         FUNCTION_CONCEPT_FAMILY,
@@ -361,6 +402,8 @@ def task_family_for_task(target_task: str) -> str:
         return QUADRATIC_FUNCTION_GRAPH_FAMILY
     if task in QUADRATIC_INEQUALITY_TASKS:
         return QUADRATIC_INEQUALITY_FAMILY
+    if task in LINE_EQUATION_TASKS or "line_equation" in task:
+        return LINE_EQUATION_FAMILY
     return GENERIC_NUMERIC_FAMILY
 
 

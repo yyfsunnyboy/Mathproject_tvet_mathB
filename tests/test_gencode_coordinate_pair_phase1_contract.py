@@ -21,7 +21,7 @@ def test_ordered_pair_without_choices_uses_coordinate_pair_checker():
         has_choices=False,
     )
     assert ac["checker"] == "coordinate_pair_checker"
-    assert ac["answer_equivalence"] == "coordinate_pair_equivalence"
+    assert ac["answer_equivalence"] == "ordered_tuple_exact"
     assert ac["answer_shape"] == "coordinate_pair"
     assert ac["answer_type"] == "ordered_pair"
     assert detect_answer_shape(ac) == "coordinate_pair"
@@ -37,7 +37,7 @@ def test_ordered_pair_with_source_choices_does_not_override_checker():
         has_choices=True,
     )
     assert ac["checker"] == "coordinate_pair_checker"
-    assert ac["answer_equivalence"] == "coordinate_pair_equivalence"
+    assert ac["answer_equivalence"] == "ordered_tuple_exact"
     assert ac["source_has_choices"] is True
 
 
@@ -134,9 +134,9 @@ def test_mixed_internal_division_splits_problem_types():
     candidates = out.get("candidate_problem_types") or []
     assert len(candidates) >= 2
     checkers = {c.get("checker_key_proposal") for c in candidates}
-    assert "coordinate_pair_checker" in checkers
+    assert "tuple_checker" in checkers
     assert "choice_label_checker" in checkers
-    coord_cands = [c for c in candidates if c.get("checker_key_proposal") == "coordinate_pair_checker"]
+    coord_cands = [c for c in candidates if c.get("checker_key_proposal") == "tuple_checker"]
     for c in coord_cands:
         assert c.get("answer_shape") == "coordinate_pair"
         assert "unknown_answer_shape" not in str(c.get("answer_shape", ""))
@@ -192,9 +192,9 @@ def test_division_point_phase1_candidate_shapes():
         ):
             out = induce_problem_types_from_examples(skill_id, examples)
 
-    for c in out.get("candidate_problem_types") or []:
-        if "centroid" in str(c.get("problem_type_id", "")):
-            assert c.get("checker_key_proposal") == "coordinate_pair_checker"
+        for c in out.get("candidate_problem_types") or []:
+            if "centroid" in str(c.get("problem_type_id", "")):
+                assert c.get("checker_key_proposal") == "tuple_checker"
             assert c.get("answer_shape") == "coordinate_pair"
 
 

@@ -1278,7 +1278,7 @@ def db_maintenance():
     import_summary = None
     if import_job_payload:
         stored_result = import_job_payload.get("result", {})
-        import_summary = stored_result.get("summary") or summarize_import_result(stored_result)
+        import_summary = summarize_import_result(stored_result)
 
     if request.method == 'POST':
         action = request.form.get('action')
@@ -1561,6 +1561,28 @@ def db_maintenance_core_scope_options():
     return jsonify(_collect_core_scope_options(filters))
 
 
+def _flash_import_status(summary, job_id):
+    status = (summary or {}).get("status") or (summary or {}).get("final_status") or "failed"
+    imported_rows = int((summary or {}).get("imported_rows", 0) or 0)
+    failed_rows = int((summary or {}).get("failed_rows", 0) or 0)
+    warning_count = int((summary or {}).get("warning_count", 0) or 0)
+    if status == "completed":
+        safe_flash_message(
+            f"Import completed successfully. imported={imported_rows}, failed={failed_rows}. See job {job_id}.",
+            "success",
+        )
+    elif status == "completed_with_warnings":
+        safe_flash_message(
+            f"Import completed with warnings. imported={imported_rows}, failed={failed_rows}, warnings={warning_count}. See job {job_id}.",
+            "warning",
+        )
+    else:
+        safe_flash_message(
+            f"Import failed. failed={failed_rows}. See job {job_id}.",
+            "danger",
+        )
+
+
 @core_bp.route('/admin/maintenance/clear_vocational_math_core', methods=['POST'])
 @login_required
 def clear_vocational_math_core():
@@ -1658,16 +1680,7 @@ def upload_db():
                 kind="import",
             )
             session["last_import_job_id"] = job_id
-            if success:
-                safe_flash_message(
-                    f"Import completed. imported={summary.get('imported_rows', 0)}, failed={summary.get('failed_rows', 0)}. See job {job_id}.",
-                    'success',
-                )
-            else:
-                safe_flash_message(
-                    f"Import completed with errors. failed={summary.get('failed_rows', 0)}. See job {job_id}.",
-                    'danger',
-                )
+            _flash_import_status(summary, job_id)
         except Exception as e:
             job_id = put_large_result_in_server_store(
                 {
@@ -1734,16 +1747,7 @@ def import_textbook_examples():
                 kind="import",
             )
             session["last_import_job_id"] = job_id
-            if success:
-                safe_flash_message(
-                    f"Import completed. imported={summary.get('imported_rows', 0)}, failed={summary.get('failed_rows', 0)}. See job {job_id}.",
-                    'success',
-                )
-            else:
-                safe_flash_message(
-                    f"Import completed with errors. failed={summary.get('failed_rows', 0)}. See job {job_id}.",
-                    'danger',
-                )
+            _flash_import_status(summary, job_id)
         except Exception as e:
             job_id = put_large_result_in_server_store(
                 {

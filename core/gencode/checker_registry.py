@@ -78,6 +78,12 @@ CHECKER_CAPABILITIES: dict[str, dict[str, Any]] = {
         "equivalence_types": ["equation_equivalent"],
         "module": "pipeline",
     },
+    "linear_equation_equivalent_checker": {
+        "runtime_available": True,
+        "answer_types": ["equation", "expression", "linear_equation"],
+        "equivalence_types": ["linear_equation_equivalent"],
+        "module": "core.checkers.linear_equation_equivalent_checker",
+    },
     "solution_set_checker": {
         "runtime_available": True,
         "answer_types": ["set", "solution_set", "integer_set", "number_set"],
