@@ -32,7 +32,7 @@
 | 3 | `skill_id` 硬編碼僅允許停在 Registry 中繼層 | §2.7 |
 | 4 | Full Matrix Dictionary 六大欄位由 Domain 一次算完 | §2.3.2、§2.5.4 |
 | 5 | 首波實作檢查點：直線方程式 `build_line_equation_matrix` | §2.5.5 |
-| 6 | 教材例題權威庫增量 DB 欄位（`textbook_examples`） | §4.5 |
+| 6 | 教材例題影子對接表 `gencode_component_tracker`（§4.5） | §4.5 |
 | 7 | 後台定點熱拔插與零重啟動態加載 | §4.6 |
 
 ### 0.3 v1.3 務實落地摘要（保留）
@@ -57,7 +57,7 @@
 | K7–K12 題型白名單 | — | `configs/gencode_taxonomy/k12_component_taxonomy.yaml` |
 | **共用 Domain 邏輯層** | 分散於 `core/*_domain_functions.py`、`core/vocational_math_b4/domain/` | **`core/domain/{領域}/{主題}_domain.py`**（v1.4 目標，見 §2.5） |
 | **Domain 註冊中繼層** | — | **`core/registry/taxonomy_registry.py`**（v1.4 目標，見 §2.7） |
-| **教材例題權威庫（維運）** | 既有 `SkillExample` / Word 匯入 | **`textbook_examples` 增量欄位**（§4.5） |
+| **教材例題權威庫（維運）** | 既有 `TextbookExample` / Word 匯入 → `textbook_examples` | **`gencode_component_tracker` 影子表**（§4.5） |
 | **熱拔插編譯重載** | — | 後台 `admin_trigger_rebuild` → `skill_wrapper_compiler`（§4.6） |
 | 圖形語意驗證 | — | `core/gencode/visual_schema_validators.py`（V3 目標） |
 | 語意等價批改 | `core/checkers/expression_equivalence_checker.py` 等 | `rational_or_decimal_checker`（V3 擴充） |
@@ -81,38 +81,67 @@
 
 ### 1.2 標準目錄結構（V3 物理佈局）
 
-```text
-agent_skills_v3/{skill_id}/
-  skill.json                          # 單元 meta + 動態發布門檻（見 §4.3）
-  component_manifest.json             # Phase 3 自動生成：成功組件白名單
-  components/
-    {component_id}/                   # 例：ex_3、quiz_5、test_2（一題一資料夾）
-      metadata.py                     # 八維度 + ORDER_WEIGHT / DIFFICULTY_LEVEL
-      generate.py                     # 單題同構生成器（Gemini Flash 產物）
-      check.py                        # 薄委派或本地 check 包裝（可選）
-      get_hint.py                     # 三階段引導（強制）
-      tests/
-        test_component_smoke.py       # 沙盒隔離測試
-  __init__.py                         # 【自動生成】外層調度路由器（禁止手改）
+本節為 **v1.4 實體檔案物理佈局與向後相容薄外殼** 的剛性防線。  
+Codex / 管線產出之每一道教材原題 `py` 程式，**必須**依下列樹狀結構存放；違反即視為 Namespace 污染或向後相容破壞。
 
-skills/{skill_id}.py                  # 【自動生成】Thin Facade，100% 向後相容
+```text
+skills/                               # 【老屋根目錄 — 行政入口層，路徑雷打不動】
+  {skill_id}.py                         # 【自動生成 · 禁止手改】Thin Facade 薄外殼（見 §1.3）
+  ...                                   # 其他既有 skill 薄外殼（vh_數學B1_*.py 等）同樣保留於此層
+
+agent_skills_v3/                        # 【新屋軍火庫 — 微元件實體歸宿】
+  {skill_id}/                           # 單一 skill 的物理邊界（一 skill 一子目錄）
+    skill.json                          # 單元 meta + 動態發布門檻（見 §4.3）
+    component_manifest.json             # Phase 3 自動生成：verified / failed 全記錄
+    __init__.py                         # 【自動生成 · 禁止手改】新屋路由調度器（_COMPONENT_DISPATCH）
+    components/                         # 微元件倉庫根；嚴禁在此層直接堆疊 .py
+      src_{textbook_example_id}/        # 一題一資料夾；例：src_4545、src_4610（見 §1.2.2）
+        metadata.py                     # 八維度 + ORDER_WEIGHT / DIFFICULTY_LEVEL（強制）
+        generate.py                     # 單題同構生成器（Gemini Flash 產物 · 搬運工）
+        get_hint.py                     # 三階段引導（強制）
+        check.py                        # 薄委派或本地 check 包裝（可選）
+        tests/                          # 專屬沙盒；與姊妹 component 物理隔離
+          test_component_smoke.py       # 獨立 pytest，不 import 其他 component
+
 configs/generated_registry/
   {scope}_verified_registry.v*.yaml   # Phase 3 尾端同步
 ```
 
-**老屋保留，新屋新蓋**：
+#### 1.2.1 老屋保留，新屋新蓋（剛性三條）
 
-- **老屋**：既有 `skills/vh_數學B1_*.py` 薄外殼、`SkillInfo` DB 表、`GENERATOR_SPECS` 白名單矩陣、`practice.py` 的 `importlib` 載入路徑——**全部不變**。
-- **新屋**：數學邏輯與多模板分支遷入 `agent_skills_v3/{skill_id}/components/{component_id}/`；Phase 3 編譯器掃描成功組件，自動寫入 `component_manifest.json` 與 `__init__.py`。
+| # | 層級 | 物理路徑 | 剛性要求 |
+|---|------|----------|----------|
+| 1 | **主技能薄外殼（老屋入口）** | `skills/{skill_id}.py` | **雷打不動**保留於 `skills/` **根目錄**下。它是行政入口、門面；前台消費者（如 `practice.py`）執行 `importlib.import_module("skills.{skill_id}")` 時**唯一認得**的向後相容防線。**嚴禁**移入 `agent_skills_v3/`、**嚴禁**更名、**嚴禁**移除或改寫 import 路徑。 |
+| 2 | **微元件資料夾（新屋倉庫）** | `agent_skills_v3/{skill_id}/components/{component_id}/` | 每一道教材原題 Codegen 產出之 `py` 程式（`metadata.py`、`generate.py`、`get_hint.py` 及專屬測試），**必須嚴格**放在**同一** `skill_id` 子目錄下、**各自獨立**的 `{component_id}/` 資料夾內。 |
+| 3 | **禁止大雜燴** | — | **嚴禁**將多道題的 `py` 程式大雜燴地擠在同一目錄（含 `components/` 根層、`agent_skills_v3/{skill_id}/` 根層、或跨 `skill_id` 共用目錄）。每個 `src_{textbook_example_id}/` 資料夾內部**必須**獨立包含 `metadata.py`、`generate.py`、`get_hint.py` 及專屬 `tests/`，以確保 Namespace 完全隔離；`failed` 題型與 `verified` 題型在物理上互不干涉，定點修補半徑不污染姊妹題。 |
+
+#### 1.2.2 `component_id` 物理命名契約（第一階段 · 剛性）
+
+為在第一階段**完全消除** AI 對題型前綴（`ex_*` / `quiz_*` / `test_*`）的分類與命名幻覺，物理微元件目錄命名**剛性規定如下**：
+
+| 項目 | 規範 |
+|------|------|
+| **禁止** | 管線或 AI **不得**猜測、推斷或自行發明 `ex_*` / `quiz_*` / `test_*` 作為硬碟目錄名 |
+| **`component_id` 公式** | `src_{textbook_example_id}` — 直接取自 `textbook_examples.id` 主鍵 |
+| **命名範例** | `textbook_examples.id = 4545` → `component_id = "src_4545"` |
+| **硬碟實體路徑** | `agent_skills_v3/{skill_id}/components/src_{textbook_example_id}/` |
+| **影子表對齊** | `gencode_component_tracker.component_id` **必須**與上述目錄名完全一致 |
+
+> **備註**：`source_description`（例題 / 隨堂 / 自我評量）與 `ORDER_WEIGHT` / `DIFFICULTY_LEVEL` 仍由 §1.5 依教材語意注入 `metadata.py`；**僅**硬碟目錄名與 `component_id` 錨定主表主鍵，不經 AI 命名。
+
+**老屋不動、新屋新蓋** 的行政契約（與上表互補）：
+
+- **老屋（不變）**：`skills/` 根目錄薄外殼路徑、`SkillInfo` DB 表、`GENERATOR_SPECS` 白名單矩陣、`practice.py` 的 `importlib.import_module("skills.{skill_id}")` 調度入口——**全部不變**。
+- **新屋（增量）**：數學邏輯與多模板分支**僅**遷入 `agent_skills_v3/{skill_id}/components/{component_id}/`；Phase 3 編譯器掃描 `verified` 子目錄後，自動寫入 `component_manifest.json`、`agent_skills_v3/{skill_id}/__init__.py`（新屋路由），並同步覆寫原位 `skills/{skill_id}.py`（老屋門面）。
 
 ### 1.3 自動生成 `__init__.py` 路由調度器
 
 `core/gencode/skill_wrapper_compiler.py`（現行邏輯位於 `phase3_skill_codegen.build_phase3_skill_module_code`）在 Phase 3 執行：
 
-1. 讀取 `component_manifest.json` 中 `status == "verified"` 的列。
+1. 掃描 `agent_skills_v3/{skill_id}/components/` 下各 `{component_id}/` 子目錄，讀取 `component_manifest.json` 中 `status == "verified"` 的列。
 2. 為每個 `component_id` 生成 import 與 dispatch 表項。
-3. 寫入 `agent_skills_v3/{skill_id}/__init__.py`。
-4. 同步生成 `skills/{skill_id}.py` Thin Facade（與 V2 形狀一致）。
+3. **寫入新屋路由**：更新 `agent_skills_v3/{skill_id}/__init__.py` 之 `_COMPONENT_DISPATCH`（禁止手改）。
+4. **覆寫老屋門面**：同步自動覆寫原位 `skills/{skill_id}.py` Thin Facade（與 V2 形狀一致；**嚴禁**移出 `skills/` 根目錄，見 §1.2.1）。
 
 **生成的 `__init__.py` 職責邊界**（與 V2 Thin Facade 同構）：
 
@@ -1111,32 +1140,95 @@ else:
 ### 4.5 教材例題權威庫資料庫（DB Schema）增量設計
 
 本節為 v1.4 **線上滾動式維運**所需之**唯一允許** DB 增量設計。  
-僅限教材 / 例題管理權威庫表（建議表名 `textbook_examples`，或與現行 `SkillExample` 對齊之管理表）；**嚴禁**修改學生練習紀錄、答題軌跡、成績彙總等學習數據表。
+**不修改** `textbook_examples` 既有欄位結構；Gencode 管線狀態、Low-Code 誘導規格與沙盒錯誤日誌**全部**收斂至獨立影子對接表 `gencode_component_tracker`。  
+**嚴禁**修改學生練習紀錄、答題軌跡、成績彙總等學習數據表。
 
-#### 4.5.1 增量欄位規格
+#### 4.5.1 Canonical DDL（SQLite 3 · Production 對齊）
 
-| 欄位名 | 型別 | 必填 | 說明 |
-|--------|------|------|------|
-| `gencode_status` | `Enum` / `String` | 是 | Gencode 管線狀態；合法值見下表 |
-| `induced_spec_payload` | `JSON` / `Text` | 條件必填 | Phase 1 去糖衣後之誘導規格；供管理員線上微調題幹模板與 Domain 算子參數 |
-| `gencode_error_log` | `Text` | 否 | 當 `gencode_status = failed` 時，自動寫入 Phase 2.5 沙盒或 AST 掃描錯誤摘要 |
+```sql
+-- =============================================================================
+-- Gencode × AgentSkillV3 獨立維運影子對接表
+-- 方言：SQLite 3
+-- 核心作用：建立 textbook_examples(id) 與硬碟微元件物理路徑的剛性對接橋樑
+-- =============================================================================
+CREATE TABLE IF NOT EXISTS gencode_component_tracker (
+    id                      INTEGER PRIMARY KEY AUTOINCREMENT,
+    textbook_example_id     INTEGER NOT NULL,   -- 主錨點：1 對 1 關聯 textbook_examples.id
+    skill_id                TEXT    NOT NULL,   -- 行政錨點：利於依單元批次 Partial Publish 查詢
+    component_id            TEXT    NOT NULL,   -- 物理錨點：src_{textbook_example_id}，如 'src_4545'
+    gencode_status          TEXT    NOT NULL DEFAULT 'pending', -- 狀態機核心
+    induced_spec_payload    TEXT,               -- Low-Code 維運核心：去糖衣後的 JSON 字串
+    gencode_error_log       TEXT,               -- Sandbox / Validator 幾何代數崩潰日誌
+    created_at              TEXT    NOT NULL DEFAULT (datetime('now', 'localtime')),
+    updated_at              TEXT    NOT NULL DEFAULT (datetime('now', 'localtime')),
 
-**`gencode_status` 合法值**：
+    CONSTRAINT fk_gencode_component_tracker_example
+        FOREIGN KEY (textbook_example_id) REFERENCES textbook_examples (id) ON DELETE CASCADE,
+    CONSTRAINT fk_gencode_component_tracker_skill
+        FOREIGN KEY (skill_id) REFERENCES skills_info (skill_id) ON DELETE CASCADE,
+    CONSTRAINT uq_gencode_tracker_example_id
+        UNIQUE (textbook_example_id),
+    CONSTRAINT uq_gencode_tracker_namespace_pool
+        UNIQUE (skill_id, component_id),
+    CONSTRAINT ck_gencode_status_values
+        CHECK (gencode_status IN (
+            'pending', 'usable', 'generating', 'verified', 'failed',
+            'enrichment', 'needs_human_review', 'needs_regeneration'
+        ))
+);
+
+CREATE INDEX IF NOT EXISTS idx_gencode_tracker_query_gate
+    ON gencode_component_tracker (skill_id, gencode_status);
+
+CREATE INDEX IF NOT EXISTS idx_gencode_tracker_reverse_lookup
+    ON gencode_component_tracker (textbook_example_id);
+```
+
+**雙重 UNIQUE 防線語意**：
+
+| 約束名 | 欄位 | 防線目的 |
+|--------|------|----------|
+| `uq_gencode_tracker_example_id` | `textbook_example_id` | 一筆教材原題**最多**對應一列 tracker；禁止同一 `textbook_examples.id` 被重複掛載 |
+| `uq_gencode_tracker_namespace_pool` | `(skill_id, component_id)` | 同一 skill 命名空間內 `component_id` 不可重複；對齊 `agent_skills_v3/{skill_id}/components/{component_id}/` 物理隔離 |
+
+#### 4.5.2 `gencode_status` 狀態機（CHECK 約束合法值）
 
 | 值 | 語意 | 典型觸發 |
 |----|------|----------|
 | `pending` | 尚未進入 Phase 2 或等待管理員觸發重構 | Phase 1 完成、尚未 Codegen |
+| `usable` | 誘導規格已就緒，可進入 Codegen 佇列 | Phase 1 induced spec 寫入 tracker |
+| `generating` | Phase 2 Codegen / 修補閉環進行中 | Gemini Flash 產出或 controller 重試 |
 | `verified` | 單題沙盒通過，可進入 manifest 白名單 | Phase 2.5 全項通過 |
 | `failed` | 單題驗證失敗（含 3 次修補後放手） | AST / Validator / smoke 失敗 |
 | `enrichment` | 補充題 / 非核心例題；可不阻斷 Partial Publish | 人工標記或 Phase 1 分類 |
+| `needs_human_review` | 需人工審核後方可繼續 | Taxonomy Gate / 語意對齊阻擋 |
+| `needs_regeneration` | 誘導規格或 Domain 參數已變更，待重跑 Codegen | 後台修正 `induced_spec_payload` 後 |
 
-#### 4.5.2 `induced_spec_payload` 內容契約
+#### 4.5.3 影子表 Service 層契約（行政歸屬斷言）
 
-存放 Phase 1 **剛性去糖衣**後、由 AI 提取之純數學結構，**不含**自由發揮之故事層噪點。建議 JSON 骨架：
+後端 Service 層在**新增或更新** `gencode_component_tracker` 紀錄前，**必須**強制檢查並斷言：
+
+```text
+gencode_component_tracker.skill_id == textbook_examples.skill_id
+```
+
+（其中 `textbook_examples` 為 `textbook_example_id` 所指向之列。）
+
+| 項目 | 剛性要求 |
+|------|----------|
+| 寫入前校驗 | `INSERT` / `UPSERT` / `UPDATE` tracker 前，以 `textbook_example_id` 讀取 `textbook_examples.skill_id`，與待寫入之 `skill_id` 比對 |
+| 不一致處置 | 斷言失敗 → 拒絕寫入，回傳 `skill_id_mismatch`（或等價 blocker）；**禁止**靜默覆寫或跨 skill 掛載 |
+| `component_id` 連帶 | 寫入時 `component_id` **必須**為 `src_{textbook_example_id}`（見 §1.2.2），與硬碟目錄名一致 |
+
+**防線意圖**：影子表為 `textbook_examples` 與微元件物理路徑的橋樑；跨表 `skill_id` 不一致將導致 Partial Publish、編譯器白名單與 `practice.py` 路由全面錯位。
+
+#### 4.5.4 `induced_spec_payload` 內容契約
+
+存放 Phase 1 **剛性去糖衣**後、由 AI 提取之純數學結構，**不含**自由發揮之故事層噪點。SQLite 3 以 `TEXT` 儲存 JSON 字串。建議 JSON 骨架：
 
 ```json
 {
-  "component_id": "ex_4605",
+  "component_id": "src_4545",
   "skill_id": "vh_數學B1_PointSlopeForm",
   "target_task": "determine_linear_function_from_two_points",
   "presentation_mode": "single_choice",
@@ -1155,11 +1247,11 @@ else:
 
 管理員於後台修正文本噪點或 `domain_params` 後，透過 §4.6 觸發定點重構；**不得**在此欄位寫入可執行 Python 或 SymPy 程式碼。
 
-#### 4.5.3 `gencode_error_log` 寫入規則
+#### 4.5.5 `gencode_error_log` 寫入規則
 
-- 僅在狀態轉為 `failed` 時追加或覆寫（保留最近一次失敗摘要即可）。
+- 僅在狀態轉為 `failed`（或 `needs_regeneration` 保留前次摘要）時追加或覆寫（保留最近一次失敗摘要即可）。
 - 範例：`Missing validation_facts matrix`、`ai_math_operation_forbidden: distractors assigned without Domain call`、`visual_semantic_mismatch: line does not pass through point B`。
-- `verified` 時應清空或標記為 `null`，避免管理後台誤判。
+- `verified` 時應清空或標記為 `NULL`，避免管理後台誤判。
 
 ---
 
@@ -1172,24 +1264,24 @@ else:
 | 項目 | 規範 |
 |------|------|
 | 按鈕文案 | **⚡產生/重構出題程式**（或等價 i18n key：`admin.gencode.rebuild_component`） |
-| 作用範圍 | 單一 `component_id`（如 `ex_4605`、`quiz_3`）；**不得**一次觸發整 skill 全量重跑 |
-| 前置條件 | 管理員已修正 `textbook_examples.induced_spec_payload`（題幹模板、Domain 參數等） |
+| 作用範圍 | 單一 `component_id`（如 `src_4545`、`src_4610`）；**不得**一次觸發整 skill 全量重跑 |
+| 前置條件 | 管理員已修正 `gencode_component_tracker.induced_spec_payload`（題幹模板、Domain 參數等） |
 | 執行方式 | 非同步背景工作（Celery / RQ / 內建 job queue）；HTTP 立即回傳 `job_id`，避免阻塞後台 UI |
 
 #### 4.6.2 定點 Codegen 與驗證（Phase 2 子集）
 
 管線被喚醒後，**僅鎖定**該題：
 
-1. 讀取 DB `induced_spec_payload` → 生成或覆寫 `agent_skills_v3/{skill_id}/components/{component_id}/generate.py`（及必要之 `metadata.py` / `get_hint.py`）。
+1. 讀取 `gencode_component_tracker.induced_spec_payload` → 生成或覆寫 `agent_skills_v3/{skill_id}/components/{component_id}/generate.py`（及必要之 `metadata.py` / `get_hint.py`）。
 2. 對該 `component_id` **獨立**執行 Phase 2.5 沙盒（AST、Full Matrix Dict、Validator、P0 Checker）；修補半徑仍為單檔，最多 3 次（§4.2）。
-3. 通過 → `textbook_examples.gencode_status = verified`，清空 `gencode_error_log`。
-4. 失敗 → `gencode_status = failed`，寫入 `gencode_error_log`；**不**觸發 skill 級 `SYSTEM_INTERRUPT`（§4.3）。
+3. 通過 → `gencode_component_tracker.gencode_status = 'verified'`，清空 `gencode_error_log`，並由 Python 主動更新 `updated_at = datetime('now', 'localtime')`。
+4. 失敗 → `gencode_status = 'failed'`，寫入 `gencode_error_log`，同步更新 `updated_at`；**不**觸發 skill 級 `SYSTEM_INTERRUPT`（§4.3）。
 
 #### 4.6.3 編譯器一鍵重載（Reload Compiler）
 
 單題 `verified` 後，自動調用 `skill_wrapper_compiler.py`（現行等價：`phase3_skill_codegen`）：
 
-1. 重新掃描該 `skill_id` 下**所有** `gencode_status = verified`（或 manifest 等價 `status = verified`）的 component。
+1. 重新掃描該 `skill_id` 下**所有** `gencode_component_tracker.gencode_status = 'verified'` 的列（見 Pipeline §3.4 Step 4 場景 2 SQL；**必須** `ORDER BY textbook_example_id ASC, component_id ASC`）。
 2. 重寫 `component_manifest.json` 與 `agent_skills_v3/{skill_id}/__init__.py` 的 `_COMPONENT_DISPATCH` 路由器。
 3. 重新生成 `skills/{skill_id}.py` Thin Facade 之 `GENERATOR_SPECS` / `GENERATOR_KEYS`。
 4. 執行 Phase 3 smoke（可僅抽樣新修復之 `component_id` + 核心 `ex_*` 回歸）。
@@ -1213,7 +1305,25 @@ def _load_component_generate(component_id: str):
     return importlib.reload(mod) if module_path in sys.modules else mod
 ```
 
-**熱拔插閉環**：後台按鈕 → 單題 Codegen + 驗證 → DB `verified` → Reload Compiler → `importlib.reload` → 下一筆學生 `practice` 請求即命中新程式。
+**熱拔插閉環**：後台按鈕 → 單題 Codegen + 驗證 → `gencode_component_tracker` 標記 `verified` → Reload Compiler → `importlib.reload` → 下一筆學生 `practice` 請求即命中新程式。
+
+#### 4.6.5 影子表維運契約（剛性）
+
+**時間戳更新契約（`updated_at`）**：
+
+- 本表時間戳更新採用**做法 A**：由 Python 程式在執行 `UPDATE` SQL 時**主動填入** `datetime('now', 'localtime')`。
+- **明確不啟用**資料庫隱式 Trigger 自動維護 `updated_at`，以保持管線維護與除錯的完全透明度。
+
+**物理路徑推導契約**：
+
+- 本表**不存儲** `component_path` 字串欄位。
+- 執行期微元件路徑統一由 `skill_id` 與 `component_id` 依規則公式**動態拼接**：
+
+```text
+agent_skills_v3/{skill_id}/components/{component_id}/
+```
+
+- 避免硬碟目錄搬移或路徑重構時，DB 內過期絕對路徑造成數據漂移。
 
 ---
 
@@ -1230,8 +1340,11 @@ def _load_component_generate(component_id: str):
 
 ## 6. Codex 任務執行檢查清單
 
+- [ ] **物理佈局防線（§1.2）**：`skills/{skill_id}.py` 保留於 `skills/` 根目錄；每題 `py` 獨立於 `agent_skills_v3/{skill_id}/components/{component_id}/`；無大雜燴目錄
+- [ ] **雙重寫入（§1.3、Pipeline §3.4 Step 4）**：Phase 3 已同步更新 `__init__.py` 之 `_COMPONENT_DISPATCH` 與原位 `skills/{skill_id}.py` Thin Facade
 - [ ] 新數學邏輯寫入 **`core/domain/`**；`generate.py` 僅搬運；**不修改** `practice.py` 與學生學習數據表
-- [ ] 教材例題表已增量 `gencode_status` / `induced_spec_payload` / `gencode_error_log`（§4.5）
+- [ ] `gencode_component_tracker` 已依 §4.5 Canonical DDL 建立；雙重 UNIQUE + CHECK 約束生效；Service 層 `skill_id` 斷言（§4.5.3）已實作
+- [ ] 第一階段 `component_id` 為 `src_{textbook_example_id}`；硬碟路徑 `agent_skills_v3/{skill_id}/components/src_{id}/`（§1.2.2）
 - [ ] 後台「⚡重構出題程式」僅觸發單題 Codegen；通過後 Reload Compiler + `importlib.reload`（§4.6）
 - [ ] **一題一 `generate.py`**：`component_id` 為 `ex_*` / `quiz_*` / `test_*` 實體題號（§1.5）；無多題合一、無 AI 融合
 - [ ] `ORDER_WEIGHT` / `DIFFICULTY_LEVEL` 依前綴由管線注入；`skill_id` 在 Taxonomy MVP 六單元內（§1.4.1）

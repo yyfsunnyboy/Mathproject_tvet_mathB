@@ -64,6 +64,7 @@ CLASSIFIER_RULEPACK_PATH = PROJECT_ROOT / "configs" / "gencode" / "classifiers" 
 CLASSIFIER_RULEPACK_BACKUP_DIR = PROJECT_ROOT / "backups" / "gencode_classifier_rulepacks"
 
 SOP_INTEGRATION_DIR = Path("docs") / "系統SOP" / "Gencode_AgentSkillV2整合"
+V3_PRODUCTION_PUBLISH_ENABLED: bool = False
 
 
 def _phase_reports(skill_id: str, *, keys: tuple[str, ...] | None = None) -> dict[str, str]:
@@ -2995,7 +2996,76 @@ def run_gencode_phase2(skill_id: str, accepted_problem_types: list | None = None
     )
 
 
-def run_gencode_phase2_raw(skill_id: str, accepted_problem_types: list | None = None, excluded_example_ids: list | None = None, dry_run: bool = True) -> dict[str, Any]:
+def run_gencode_phase2_raw(
+    skill_id: str,
+    accepted_problem_types: list | None = None,
+    excluded_example_ids: list | None = None,
+    dry_run: bool = True,
+    *,
+    v3_textbook_example_id: int | None = None,
+    v3_conn: Any = None,
+    v3_dryrun_base_dir: str = "reports/gencode_v3_dryrun",
+    v3_project_root: str | None = None,
+    v3_staging_root: str | None = None,
+) -> dict[str, Any]:
+    skill_key = str(skill_id or "").strip()
+    taxonomy_path = "configs/gencode_taxonomy/k12_component_taxonomy.yaml"
+    taxonomy_file = PROJECT_ROOT / taxonomy_path
+    mvp_scope = (
+        _load_v3_taxonomy_mvp_scope(taxonomy_path)
+        if taxonomy_file.is_file()
+        else set()
+    )
+    if skill_key in mvp_scope:
+        if v3_textbook_example_id is None:
+            raise ValueError("missing_v3_textbook_example_id")
+        if v3_conn is None:
+            raise ValueError("missing_v3_conn")
+        bridge_result = run_gencode_phase2_v3_shadow_bridge(
+            conn=v3_conn,
+            skill_id=skill_key,
+            textbook_example_id=v3_textbook_example_id,
+            source_kind=f"ex_{v3_textbook_example_id}",
+            dryrun_base_dir=v3_dryrun_base_dir,
+        )
+        if V3_PRODUCTION_PUBLISH_ENABLED:
+            if skill_key != "vh_數學B1_PointSlopeForm":
+                raise ValueError("production_publish_not_allowed_for_skill")
+            if not str(v3_project_root or "").strip():
+                raise ValueError("missing_v3_project_root")
+            if not str(v3_staging_root or "").strip():
+                raise ValueError("missing_v3_staging_root")
+            from core.gencode.v3_production_publish_service import (
+                publish_single_v3_skill_to_production,
+            )
+
+            publish_report = publish_single_v3_skill_to_production(
+                conn=v3_conn,
+                skill_id=skill_key,
+                project_root=str(v3_project_root),
+                staging_root=str(v3_staging_root),
+            )
+            production_publish_status = str(publish_report.get("status", "unknown"))
+        else:
+            publish_report = None
+            production_publish_status = "disabled"
+        return {
+            "ok": True,
+            "phase": "phase2",
+            "skill_id": skill_key,
+            "phase_status": "V3_SHADOW_BRIDGE",
+            "route": str(bridge_result.get("route", "")),
+            "v3_activated": True,
+            "tracker_status": bridge_result.get("tracker_status"),
+            "textbook_example_id": v3_textbook_example_id,
+            "v3_shadow_bridge": bridge_result,
+            "production_publish_enabled": V3_PRODUCTION_PUBLISH_ENABLED,
+            "production_publish_status": production_publish_status,
+            "production_publish_report": publish_report,
+            "dry_run": dry_run,
+            "timestamp": utc_timestamp(),
+        }
+
     # SOP v0.2: Preflight Scan Policy Enforcement
     from core.gencode.sop_policy import validate_sop_preflight, build_sop_reference
     preflight = validate_sop_preflight(PROJECT_ROOT)
@@ -4453,3 +4523,373 @@ def publish_gencode_draft_skill(skill_id: str, confirm: bool = False, allow_runt
     write_json(Path(reports["publish_summary_json"]), payload)
     write_md(Path(reports["publish_summary_md"]), f"Gencode Publish Summary: {skill_id}", [("publish", payload)])
     return payload
+
+
+# ---------------------------------------------------------------------------
+# V3 isolated dry-run hook (does not touch Phase 2/3 production flows)
+# ---------------------------------------------------------------------------
+
+def _v3_resolve_dry_run_line_type(
+    source_kind: str,
+    constraints: dict[str, object] | None,
+) -> str:
+    extra = dict(constraints or {})
+    if "line_type" in extra:
+        return str(extra["line_type"])
+    normalized = str(source_kind or "").strip().lower()
+    if normalized.startswith("ex"):
+        return "point_slope"
+    if normalized.startswith("quiz") or normalized.startswith("test"):
+        return "two_points"
+    return "point_slope"
+
+
+def _v3_resolve_dry_run_difficulty_profile(source_kind: str) -> str:
+    normalized = str(source_kind or "").strip().lower()
+    if normalized.startswith("ex"):
+        return "easy"
+    if normalized.startswith("quiz"):
+        return "medium"
+    if normalized.startswith("test"):
+        return "hard"
+    return "easy"
+
+
+def _v3_target_task_for_line_type(line_type: str) -> str:
+    mapping = {
+        "point_slope": "write_line_equation_from_point_slope",
+        "two_points": "write_line_equation_from_two_points",
+        "horizontal_line": "write_line_equation_from_point_slope",
+        "vertical_line": "write_line_equation_from_point_slope",
+        "oblique_line": "write_line_equation_from_point_slope",
+    }
+    return mapping.get(line_type, "write_line_equation_from_point_slope")
+
+
+def _v3_template_slot_for_line_type(line_type: str) -> str:
+    mapping = {
+        "point_slope": "line_equation_from_point_slope",
+        "two_points": "line_equation_from_two_points",
+    }
+    return mapping.get(line_type, "line_equation_from_point_slope")
+
+
+def build_v3_component_draft_from_skill(
+    skill_id: str,
+    textbook_example_id: int,
+    source_kind: str,
+    seed: int | None = None,
+    constraints: dict[str, object] | None = None,
+) -> dict[str, object]:
+    """Build V3 component draft strings in memory without touching production flows."""
+    import importlib
+
+    from core.gencode.domain_matrix_adapter import (
+        convert_line_equation_matrix_to_question_payload,
+        normalize_domain_matrix,
+        validate_domain_matrix,
+    )
+    from core.gencode.v3_component_scaffold_builder import (
+        build_component_files_from_domain_payload,
+    )
+    from core.registry.taxonomy_registry import resolve_domain_for_skill
+
+    registry = resolve_domain_for_skill(skill_id)
+    domain_module = str(registry["domain_module"])
+    entrypoint = str(registry["entrypoint"])
+    curriculum_profile = str(registry["default_curriculum_profile"])
+
+    module = importlib.import_module(domain_module)
+    entrypoint_fn = getattr(module, entrypoint, None)
+    if not callable(entrypoint_fn):
+        raise AttributeError(
+            f"Domain entrypoint not callable: {domain_module}.{entrypoint}"
+        )
+
+    extra = dict(constraints or {})
+    line_type = _v3_resolve_dry_run_line_type(source_kind, extra)
+    difficulty_profile = _v3_resolve_dry_run_difficulty_profile(source_kind)
+
+    matrix = entrypoint_fn(
+        seed=seed,
+        line_type=line_type,
+        curriculum_profile=curriculum_profile,
+        difficulty_profile=difficulty_profile,
+        constraints=extra or None,
+    )
+    if not isinstance(matrix, dict):
+        raise TypeError(
+            f"Domain entrypoint must return dict, got {type(matrix)!r}"
+        )
+
+    validate_domain_matrix(matrix)
+    normalized_matrix = normalize_domain_matrix(matrix)
+    payload = convert_line_equation_matrix_to_question_payload(normalized_matrix)
+
+    draft_metadata = {
+        "skill_id": skill_id,
+        "textbook_example_id": textbook_example_id,
+        "source_kind": source_kind,
+        "line_type": line_type,
+        "domain_module": domain_module,
+        "entrypoint": entrypoint,
+    }
+    existing_metadata = payload.get("metadata")
+    if isinstance(existing_metadata, dict):
+        existing_metadata.update(draft_metadata)
+    else:
+        payload["metadata"] = draft_metadata
+
+    payload_meta = {
+        "line_type": line_type,
+        "target_task": _v3_target_task_for_line_type(line_type),
+        "template_slot": _v3_template_slot_for_line_type(line_type),
+        "presentation_mode": "single_choice",
+        "constraints": extra,
+        "curriculum_profile": curriculum_profile,
+    }
+    files = build_component_files_from_domain_payload(
+        skill_id=skill_id,
+        component_id=source_kind,
+        source_kind=source_kind,
+        domain_meta=registry,
+        payload_meta=payload_meta,
+    )
+
+    return {
+        "status": "draft_built",
+        "skill_id": skill_id,
+        "textbook_example_id": textbook_example_id,
+        "source_kind": source_kind,
+        "line_type": line_type,
+        "domain_module": domain_module,
+        "entrypoint": entrypoint,
+        "files": files,
+    }
+
+
+# ---------------------------------------------------------------------------
+# V3 sandbox workspace I/O and manifest compiler (dry-run only)
+# ---------------------------------------------------------------------------
+
+_V3_PRODUCTION_SKILLS_DIR = PROJECT_ROOT / "agent_skills_v3"
+_V3_COMPONENT_FILE_NAMES = ("metadata.py", "generate.py", "get_hint.py")
+_V3_FORBIDDEN_COMPONENT_STATUSES = frozenset(
+    {"verified", "publishable", "published", "runtime_ready"}
+)
+
+
+def _v3_guard_sandbox_base_dir(base_dir: str) -> Path:
+    import os
+
+    if not str(base_dir or "").strip():
+        raise ValueError("base_dir must be explicitly provided.")
+    normalized = Path(os.path.abspath(os.path.normpath(base_dir)))
+    production = Path(os.path.abspath(os.path.normpath(str(_V3_PRODUCTION_SKILLS_DIR))))
+    if normalized == production:
+        raise ValueError(
+            "base_dir must not point to production agent_skills_v3 directory."
+        )
+    return normalized
+
+
+def write_v3_component_to_disk(
+    draft_dict: dict[str, object],
+    base_dir: str,
+) -> str:
+    """Write V3 component draft files into an isolated sandbox workspace."""
+    import os
+
+    root = _v3_guard_sandbox_base_dir(base_dir)
+
+    skill_id = str(draft_dict.get("skill_id", "")).strip()
+    if not skill_id:
+        raise ValueError("draft_dict must include skill_id.")
+
+    textbook_example_id = draft_dict.get("textbook_example_id")
+    if not isinstance(textbook_example_id, int) or isinstance(textbook_example_id, bool):
+        raise ValueError("draft_dict must include integer textbook_example_id.")
+
+    files = draft_dict.get("files")
+    if not isinstance(files, dict):
+        raise ValueError("draft_dict must include files dict.")
+
+    for filename in _V3_COMPONENT_FILE_NAMES:
+        content = files.get(filename)
+        if not isinstance(content, str):
+            raise ValueError(f"draft_dict['files'] missing {filename}")
+
+    component_id = f"src_{textbook_example_id}"
+    component_dir = root / skill_id / "components" / component_id
+    os.makedirs(component_dir, exist_ok=True)
+
+    for filename in _V3_COMPONENT_FILE_NAMES:
+        target = component_dir / filename
+        target.write_text(str(files[filename]), encoding="utf-8")
+
+    return str(component_dir.resolve())
+
+
+def compile_v3_component_manifest(
+    skill_id: str,
+    component_statuses: list[dict],
+    base_dir: str,
+) -> dict:
+    """Compile and write a dry-run component manifest for one skill."""
+    root = _v3_guard_sandbox_base_dir(base_dir)
+
+    skill_key = str(skill_id or "").strip()
+    if not skill_key:
+        raise ValueError("skill_id must be provided.")
+    if not isinstance(component_statuses, list):
+        raise ValueError("component_statuses must be a list.")
+
+    normalized_components: list[dict[str, object]] = []
+    for row in component_statuses:
+        if not isinstance(row, dict):
+            raise ValueError("component_statuses must contain dict entries.")
+        status = str(row.get("status", "draft_written")).strip() or "draft_written"
+        if status in _V3_FORBIDDEN_COMPONENT_STATUSES:
+            raise ValueError(
+                f"component status must not be a production publish state: {status!r}"
+            )
+        entry = dict(row)
+        entry["status"] = status
+        normalized_components.append(entry)
+
+    manifest: dict[str, object] = {
+        "skill_id": skill_key,
+        "compiled_at": utc_timestamp(),
+        "publish_status": "dryrun_manifest_compiled",
+        "components": normalized_components,
+    }
+
+    manifest_path = root / skill_key / "component_manifest.json"
+    manifest_path.parent.mkdir(parents=True, exist_ok=True)
+    manifest_path.write_text(
+        json.dumps(manifest, ensure_ascii=False, indent=2),
+        encoding="utf-8",
+    )
+    return manifest
+
+
+# ---------------------------------------------------------------------------
+# V3 shadow bridge (taxonomy gate + tracker + dryrun workspace only)
+# ---------------------------------------------------------------------------
+
+def _load_v3_taxonomy_mvp_scope(taxonomy_path: str) -> set[str]:
+    relative = Path(str(taxonomy_path or "").strip())
+    path = relative if relative.is_absolute() else PROJECT_ROOT / relative
+    if not path.is_file():
+        raise FileNotFoundError(f"taxonomy file not found: {path}")
+    data = _load_yaml(path)
+    mvp_scope = data.get("mvp_scope", {})
+    if not isinstance(mvp_scope, dict):
+        return set()
+    v1 = mvp_scope.get("v1", [])
+    if not isinstance(v1, list):
+        return set()
+    return {str(item).strip() for item in v1 if str(item).strip()}
+
+
+def run_gencode_phase2_v3_shadow_bridge(
+    *,
+    conn,
+    skill_id: str,
+    textbook_example_id: int,
+    source_kind: str,
+    seed: int | None = None,
+    taxonomy_path: str = "configs/gencode_taxonomy/k12_component_taxonomy.yaml",
+    dryrun_base_dir: str = "reports/gencode_v3_dryrun",
+    constraints: dict[str, object] | None = None,
+) -> dict[str, object]:
+    """Run V3 shadow bridge without touching legacy Phase 2 production flows."""
+    from core.gencode.services.component_tracker_service import (
+        derive_component_id,
+        save_tracker_record,
+        update_status,
+    )
+    from core.gencode.skill_wrapper_compiler import assert_safe_sandbox_root
+
+    skill_key = str(skill_id or "").strip()
+    if not skill_key:
+        raise ValueError("skill_id must be provided.")
+
+    mvp_scope = _load_v3_taxonomy_mvp_scope(taxonomy_path)
+    if skill_key not in mvp_scope:
+        return {
+            "route": "v2_legacy_passthrough",
+            "skill_id": skill_key,
+            "v3_activated": False,
+            "message": "legacy_skill_not_in_mvp_scope",
+        }
+
+    dryrun_path = str(dryrun_base_dir or "").strip()
+    if not Path(dryrun_path).is_absolute():
+        dryrun_path = str((PROJECT_ROOT / dryrun_path).resolve())
+    assert_safe_sandbox_root(dryrun_path)
+
+    extra = dict(constraints or {})
+    induced_spec_payload = {
+        "source_kind": source_kind,
+        "presentation_mode": extra.get("presentation_mode", "short_answer"),
+        "line_type": extra.get("line_type"),
+    }
+
+    save_tracker_record(
+        conn,
+        textbook_example_id=textbook_example_id,
+        skill_id=skill_key,
+        gencode_status="generating",
+        induced_spec_payload=induced_spec_payload,
+    )
+
+    draft = build_v3_component_draft_from_skill(
+        skill_id=skill_key,
+        textbook_example_id=textbook_example_id,
+        source_kind=source_kind,
+        seed=seed,
+        constraints=extra or None,
+    )
+    component_dir = write_v3_component_to_disk(draft, dryrun_path)
+    component_id = derive_component_id(textbook_example_id)
+
+    manifest = compile_v3_component_manifest(
+        skill_key,
+        [
+            {
+                "component_id": component_id,
+                "status": "draft_written",
+                "presentation_mode": induced_spec_payload.get("presentation_mode", "short_answer"),
+                "source_kind": source_kind,
+                "textbook_example_id": textbook_example_id,
+                "line_type": draft.get("line_type"),
+                "domain_module": draft.get("domain_module"),
+                "entrypoint": draft.get("entrypoint"),
+                "component_dir": component_dir,
+            }
+        ],
+        dryrun_path,
+    )
+
+    tracker = update_status(
+        conn,
+        textbook_example_id=textbook_example_id,
+        skill_id=skill_key,
+        gencode_status="draft_written",
+    )
+
+    return {
+        "route": "v3_shadow_bridge",
+        "skill_id": skill_key,
+        "v3_activated": True,
+        "tracker_status": "draft_written",
+        "textbook_example_id": textbook_example_id,
+        "source_kind": source_kind,
+        "component_id": component_id,
+        "component_dir": component_dir,
+        "manifest": manifest,
+        "draft_status": draft.get("status"),
+        "tracker_record": tracker,
+        "dryrun_base_dir": dryrun_path,
+    }

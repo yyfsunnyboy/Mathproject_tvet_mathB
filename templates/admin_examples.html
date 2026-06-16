@@ -263,6 +263,7 @@
                         <th style="width: 25%;">技能</th>
                         <th>內容</th>
                         <th>來源</th>
+                        <th>Gencode V3</th>
                         <th>操作</th>
                     </tr>
                 </thead>
@@ -309,6 +310,51 @@
                             {% endif %}
                         </td>
                         <td>
+                            {% set gencode = (gencode_status_map or {}).get(example.id, {}) %}
+                            {% set gencode_status = gencode.get('status', 'not_created') %}
+                            <div><strong>{{ gencode.get('status_label', '未建立') }}</strong></div>
+                            <div><small>component_id: {{ gencode.get('component_id') or '-' }}</small></div>
+                            <div><small>payload: {{ gencode.get('has_payload_label', '無') }}</small></div>
+                            <div><small>dryrun generate.py: {{ gencode.get('dryrun_generate_label', '否') }}</small></div>
+                            <div><small>production generate.py: {{ gencode.get('production_generate_label', '否') }}</small></div>
+                            <div><small>updated_at: {{ gencode.get('updated_at') or '-' }}</small></div>
+                            {% if gencode.get('error_log') %}
+                            <div><small style="color:#c0392b;">error_log: {{ gencode.get('error_log') }}</small></div>
+                            {% endif %}
+                            {% if gencode_status in ['not_created', 'failed', 'draft_written'] %}
+                            <form method="POST"
+                                action="{{ url_for('core.admin_run_example_v3_dryrun', textbook_example_id=example.id) }}"
+                                style="margin-top: 6px;">
+                                <input type="hidden" name="skill_id" value="{{ example.skill_id }}">
+                                <input type="hidden" name="redirect_query" value="{{ request.query_string.decode('utf-8') }}">
+                                <button type="submit" class="btn btn-edit">
+                                    {% if gencode_status == 'draft_written' %}🔄 重新生成草稿{% else %}⚡ 生成 V3 草稿{% endif %}
+                                </button>
+                                <div><small style="color:#856404;">⚠️ 僅 dryrun 沙盒演練，不會正式覆寫發布</small></div>
+                            </form>
+                            {% endif %}
+                            {% if gencode_status in ['draft_written', 'failed'] %}
+                            <form method="POST"
+                                action="{{ url_for('core.admin_run_example_v3_smoke', textbook_example_id=example.id) }}"
+                                style="margin-top: 6px;">
+                                <input type="hidden" name="skill_id" value="{{ example.skill_id }}">
+                                <input type="hidden" name="redirect_query" value="{{ request.query_string.decode('utf-8') }}">
+                                <button type="submit" class="btn btn-secondary">🧪 執行 Smoke 測試</button>
+                                <div><small style="color:#856404;">⚠️ 僅測試 dryrun 沙盒組件，不會正式發布</small></div>
+                            </form>
+                            {% endif %}
+                            {% if gencode_status == 'smoke_passed' %}
+                            <form method="POST"
+                                action="{{ url_for('core.admin_run_example_v3_verify', textbook_example_id=example.id) }}"
+                                style="margin-top: 6px;">
+                                <input type="hidden" name="skill_id" value="{{ example.skill_id }}">
+                                <input type="hidden" name="redirect_query" value="{{ request.query_string.decode('utf-8') }}">
+                                <button type="submit" class="btn btn-prereq">✅ 標記 verified</button>
+                                <div><small style="color:#856404;">⚠️ 僅標記 verified，不會正式發布</small></div>
+                            </form>
+                            {% endif %}
+                        </td>
+                        <td>
                             <div class="btn-group">
                                 <a href="#" class="btn btn-edit" onclick='openEditModal({
                                     "id": {{ example.id }},
@@ -327,7 +373,7 @@
                     </tr>
                     {% else %}
                     <tr>
-                        <td colspan="5" style="text-align: center;">沒有找到符合條件的例題。</td>
+                        <td colspan="6" style="text-align: center;">沒有找到符合條件的例題。</td>
                     </tr>
                     {% endfor %}
                 </tbody>

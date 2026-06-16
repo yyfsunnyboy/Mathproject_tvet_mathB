@@ -323,3 +323,73 @@ def check_answer(
     if ua[:1] in {"A", "B", "C", "D"} and ca[:1] in {"A", "B", "C", "D"}:
         return ua[:1] == ca[:1]
     return ua == ca
+
+
+def _load_v3_skill_router(skill_id: str, v3_package_root: str) -> Any:
+    import importlib.util
+    from pathlib import Path
+
+    init_path = Path(v3_package_root) / skill_id / "__init__.py"
+    if not init_path.is_file():
+        raise RuntimeError(f"v3_skill_router_missing:{skill_id}")
+    module_name = f"_v3_skill_router_{abs(hash((skill_id, str(init_path.resolve()))))}"
+    spec = importlib.util.spec_from_file_location(module_name, init_path)
+    if spec is None or spec.loader is None:
+        raise RuntimeError(f"v3_skill_router_load_failed:{skill_id}")
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+def dispatch_generate(
+    skill_id: str,
+    generator_keys: list[str],
+    generator_specs: list[dict[str, Any]],
+    *,
+    v3_package_root: str,
+    level: int = 1,
+    seed: int | None = None,
+    difficulty: str | int | None = None,
+    **kwargs: Any,
+) -> dict[str, Any]:
+    """Thin-facade entry: delegate generate to sandbox V3 skill router."""
+    _ = generator_keys
+    _ = generator_specs
+    _ = difficulty
+    router = _load_v3_skill_router(skill_id, v3_package_root)
+    generate_fn = getattr(router, "generate", None)
+    if not callable(generate_fn):
+        raise RuntimeError(f"v3_skill_generate_missing:{skill_id}")
+    return generate_fn(level=level, seed=seed, **kwargs)
+
+
+def dispatch_check(
+    user_answer: Any,
+    correct_answer: Any,
+    *,
+    question_payload: dict[str, Any] | None = None,
+    v3_package_root: str,
+    skill_id: str,
+) -> Any:
+    """Thin-facade entry: delegate check to sandbox V3 skill router."""
+    router = _load_v3_skill_router(skill_id, v3_package_root)
+    check_fn = getattr(router, "check", None)
+    if callable(check_fn):
+        return check_fn(user_answer, correct_answer, question_payload)
+    return check_answer(user_answer, correct_answer, payload=question_payload)
+
+
+def dispatch_get_hint(
+    step: int,
+    question_payload: dict[str, Any] | None = None,
+    *,
+    v3_package_root: str,
+    skill_id: str,
+) -> str:
+    """Thin-facade entry: delegate get_hint to sandbox V3 skill router."""
+    router = _load_v3_skill_router(skill_id, v3_package_root)
+    hint_fn = getattr(router, "get_hint", None)
+    if not callable(hint_fn):
+        return ""
+    result = hint_fn(step, question_payload)
+    return str(result or "")

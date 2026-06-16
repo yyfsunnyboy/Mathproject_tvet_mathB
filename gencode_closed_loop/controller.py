@@ -147,3 +147,162 @@ def execute_phase_2(
             last_error_log = str(e)
             
     raise RuntimeError(f"SYSTEM_INTERRUPT: Phase 2 closed-loop retry exceeded limit. Human intervention required. Last error: {last_error_log}")
+
+
+# ---------------------------------------------------------------------------
+# V3 sandbox-only repair and publish decision (does not touch legacy flows)
+# ---------------------------------------------------------------------------
+
+def repair_v3_component_file(
+    sandbox_root: str,
+    skill_id: str,
+    component_id: str,
+    error_log: str,
+    attempt: int,
+) -> dict[str, object]:
+    """Repair a single V3 component generate.py within an isolated sandbox."""
+    from core.gencode.skill_wrapper_compiler import assert_safe_sandbox_root
+
+    assert_safe_sandbox_root(sandbox_root)
+
+    skill_key = str(skill_id or "").strip()
+    component_key = str(component_id or "").strip()
+    if not skill_key:
+        raise ValueError("skill_id must be provided.")
+    if not component_key:
+        raise ValueError("component_id must be provided.")
+
+    target_file = (
+        Path(sandbox_root)
+        / "agent_skills_v3"
+        / skill_key
+        / "components"
+        / component_key
+        / "generate.py"
+    )
+    target_path = str(target_file.resolve())
+
+    if not target_file.is_file():
+        raise FileNotFoundError(target_path)
+
+    base_result: dict[str, object] = {
+        "skill_id": skill_key,
+        "component_id": component_key,
+        "attempt": attempt,
+        "target_file": target_path,
+        "error_log": error_log,
+    }
+
+    if attempt > 3:
+        return {
+            **base_result,
+            "status": "max_retry_exceeded",
+        }
+
+    original = target_file.read_text(encoding="utf-8")
+    repaired = f"{original.rstrip()}\n# repaired_attempt_{attempt}\n"
+    target_file.write_text(repaired, encoding="utf-8")
+
+    return {
+        **base_result,
+        "status": "repaired",
+    }
+
+
+def make_v3_publish_decision(
+    skill_id: str,
+    required_core_components: list[str],
+    current_components_status: list[dict],
+) -> dict[str, object]:
+    """Return a non-fatal sandbox publish decision for V3 components."""
+    skill_key = str(skill_id or "").strip()
+
+    try:
+        required = [str(item).strip() for item in (required_core_components or []) if str(item).strip()]
+        rows = list(current_components_status or [])
+    except Exception:
+        return _v3_blocked_publish_decision(
+            skill_key,
+            required_core_components=[],
+            missing_core_components=[],
+            non_verified_core_components=[],
+            publishable_components=[],
+            excluded_components=[],
+        )
+
+    status_map: dict[str, str] = {}
+    for row in rows:
+        if not isinstance(row, dict):
+            continue
+        component_id = str(row.get("component_id", "")).strip()
+        if not component_id:
+            continue
+        status_map[component_id] = str(row.get("status", "")).strip()
+
+    missing_core_components = [cid for cid in required if cid not in status_map]
+    non_verified_core_components = [
+        cid for cid in required if cid in status_map and status_map[cid] != "verified"
+    ]
+    publishable_components = sorted(
+        component_id for component_id, status in status_map.items() if status == "verified"
+    )
+    excluded_components = sorted(
+        component_id for component_id, status in status_map.items() if status != "verified"
+    )
+
+    if missing_core_components or non_verified_core_components:
+        return _v3_blocked_publish_decision(
+            skill_key,
+            required_core_components=required,
+            missing_core_components=missing_core_components,
+            non_verified_core_components=non_verified_core_components,
+            publishable_components=publishable_components,
+            excluded_components=excluded_components,
+        )
+
+    all_verified = bool(status_map) and all(
+        status == "verified" for status in status_map.values()
+    )
+    if all_verified:
+        return {
+            "skill_id": skill_key,
+            "publish_status": "full_published",
+            "can_continue_compile": True,
+            "required_core_components": required,
+            "missing_core_components": [],
+            "non_verified_core_components": [],
+            "publishable_components": publishable_components,
+            "excluded_components": [],
+        }
+
+    return {
+        "skill_id": skill_key,
+        "publish_status": "partial_published",
+        "can_continue_compile": True,
+        "required_core_components": required,
+        "missing_core_components": [],
+        "non_verified_core_components": [],
+        "publishable_components": publishable_components,
+        "excluded_components": excluded_components,
+    }
+
+
+def _v3_blocked_publish_decision(
+    skill_id: str,
+    *,
+    required_core_components: list[str],
+    missing_core_components: list[str],
+    non_verified_core_components: list[str],
+    publishable_components: list[str],
+    excluded_components: list[str],
+) -> dict[str, object]:
+    return {
+        "skill_id": skill_id,
+        "publish_status": "blocked",
+        "can_continue_compile": False,
+        "required_core_components": required_core_components,
+        "missing_core_components": missing_core_components,
+        "non_verified_core_components": non_verified_core_components,
+        "publishable_components": publishable_components,
+        "excluded_components": excluded_components,
+    }

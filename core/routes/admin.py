@@ -131,6 +131,52 @@ def _derive_formula_status(*, formula_assets_count, has_formula_image_placeholde
     return "ok", "甇?虜", "secondary"
 
 
+def _resolve_admin_project_root() -> Path:
+    from core.gencode.services.gencode_status_query_service import resolve_admin_project_root
+
+    return resolve_admin_project_root(current_app.root_path)
+
+
+def _load_examples_gencode_status_map(examples) -> dict[int, dict[str, object]]:
+    from core.gencode.services.gencode_status_query_service import (
+        build_admin_examples_gencode_status_map,
+    )
+
+    if not examples:
+        return {}
+    raw_conn = db.engine.raw_connection()
+    try:
+        return build_admin_examples_gencode_status_map(
+            raw_conn,
+            [(int(ex.id), str(ex.skill_id)) for ex in examples],
+            project_root=_resolve_admin_project_root(),
+        )
+    except Exception:
+        return {}
+    finally:
+        raw_conn.close()
+
+
+def _load_skills_v3_gencode_status_map(skill_ids: list[str]) -> dict[str, dict[str, object]]:
+    from core.gencode.services.gencode_status_query_service import (
+        build_admin_skills_gencode_status_map,
+    )
+
+    if not skill_ids:
+        return {}
+    raw_conn = db.engine.raw_connection()
+    try:
+        return build_admin_skills_gencode_status_map(
+            raw_conn,
+            [str(skill_id) for skill_id in skill_ids if str(skill_id or "").strip()],
+            project_root=_resolve_admin_project_root(),
+        )
+    except Exception:
+        return {}
+    finally:
+        raw_conn.close()
+
+
 def _normalize_core_option_value(raw):
     val = str(raw or "").strip()
     return "" if val in ("", "all", "None", "null") else val
@@ -1985,10 +2031,15 @@ def admin_skills():
                 "draft_abs_path": str(draft_abs),
             }
 
+    v3_gencode_status_map = _load_skills_v3_gencode_status_map(
+        [str(s.skill_id) for s in skills]
+    )
+
     return render_template('admin_skills.html', 
                            skills_data=skills_data,
                            skills=skills_data,
                            gencode_status_map=gencode_status_map,
+                           v3_gencode_status_map=v3_gencode_status_map,
                            filters=filters_data,
                            selected_filters=selected,
                            grade_map={str(g):str(g) for g in filters_data['grades']},
@@ -2407,16 +2458,146 @@ def admin_examples():
             page_formula_stats["missing_no_asset"] += 1
         if ex._formula_status == "image_placeholder_no_asset":
             page_formula_stats["image_placeholder_no_asset"] += 1
+
+    gencode_status_map = _load_examples_gencode_status_map(pagination.items)
     
     return render_template('admin_examples.html', 
                            pagination=pagination, 
                            filters=filters_data,
                            selected_filters=selected,
                            page_formula_stats=page_formula_stats,
+                           gencode_status_map=gencode_status_map,
                            curriculum_map={'junior_high': '???', 'general': '?獢?'},
                            grade_map={str(g):str(g) for g in filters_data['grades']}, 
                            skills=SkillInfo.query.all(), 
                            username=current_user.username)
+
+
+@core_bp.route('/admin/examples/<int:textbook_example_id>/gencode_v3_dryrun', methods=['POST'])
+@login_required
+def admin_run_example_v3_dryrun(textbook_example_id: int):
+    if not (current_user.is_admin or current_user.role == 'teacher'):
+        return redirect(url_for('dashboard'))
+
+    redirect_query = str(request.form.get("redirect_query", "") or "").strip()
+    redirect_target = url_for("core.admin_examples")
+    if redirect_query:
+        redirect_target = f"{redirect_target}?{redirect_query.lstrip('?')}"
+
+    try:
+        skill_id = str(request.form.get("skill_id", "") or "").strip()
+        if not skill_id:
+            textbook_example = db.session.get(TextbookExample, textbook_example_id)
+            if textbook_example is None:
+                raise ValueError("textbook_example_not_found")
+            skill_id = str(textbook_example.skill_id or "").strip()
+        if not skill_id:
+            raise ValueError("missing_skill_id")
+
+        from core.gencode.services.admin_gencode_action_service import (
+            run_admin_v3_dryrun_for_example,
+        )
+
+        raw_conn = db.engine.raw_connection()
+        try:
+            run_admin_v3_dryrun_for_example(
+                conn=raw_conn,
+                textbook_example_id=textbook_example_id,
+                skill_id=skill_id,
+            )
+        finally:
+            raw_conn.close()
+
+        flash("V3 自動出題草稿已產生", "success")
+    except Exception as e:
+        flash(f"失敗原因: {e}", "danger")
+    return redirect(redirect_target)
+
+
+@core_bp.route('/admin/examples/<int:textbook_example_id>/gencode_v3_smoke', methods=['POST'])
+@login_required
+def admin_run_example_v3_smoke(textbook_example_id: int):
+    if not (current_user.is_admin or current_user.role == 'teacher'):
+        return redirect(url_for('dashboard'))
+
+    redirect_query = str(request.form.get("redirect_query", "") or "").strip()
+    redirect_target = url_for("core.admin_examples")
+    if redirect_query:
+        redirect_target = f"{redirect_target}?{redirect_query.lstrip('?')}"
+
+    try:
+        skill_id = str(request.form.get("skill_id", "") or "").strip()
+        if not skill_id:
+            textbook_example = db.session.get(TextbookExample, textbook_example_id)
+            if textbook_example is None:
+                raise ValueError("textbook_example_not_found")
+            skill_id = str(textbook_example.skill_id or "").strip()
+        if not skill_id:
+            raise ValueError("missing_skill_id")
+
+        from core.gencode.services.admin_gencode_action_service import (
+            run_admin_v3_smoke_for_example,
+        )
+
+        raw_conn = db.engine.raw_connection()
+        try:
+            run_admin_v3_smoke_for_example(
+                conn=raw_conn,
+                textbook_example_id=textbook_example_id,
+                skill_id=skill_id,
+            )
+        finally:
+            raw_conn.close()
+
+        flash("V3 Smoke 測試通過", "success")
+    except ValueError as e:
+        flash(f"失敗原因: {e}", "danger")
+    except Exception as e:
+        flash(f"失敗原因: {e}", "danger")
+    return redirect(redirect_target)
+
+
+@core_bp.route('/admin/examples/<int:textbook_example_id>/gencode_v3_verify', methods=['POST'])
+@login_required
+def admin_run_example_v3_verify(textbook_example_id: int):
+    if not (current_user.is_admin or current_user.role == 'teacher'):
+        return redirect(url_for('dashboard'))
+
+    redirect_query = str(request.form.get("redirect_query", "") or "").strip()
+    redirect_target = url_for("core.admin_examples")
+    if redirect_query:
+        redirect_target = f"{redirect_target}?{redirect_query.lstrip('?')}"
+
+    try:
+        skill_id = str(request.form.get("skill_id", "") or "").strip()
+        if not skill_id:
+            textbook_example = db.session.get(TextbookExample, textbook_example_id)
+            if textbook_example is None:
+                raise ValueError("textbook_example_not_found")
+            skill_id = str(textbook_example.skill_id or "").strip()
+        if not skill_id:
+            raise ValueError("missing_skill_id")
+
+        from core.gencode.services.admin_gencode_action_service import (
+            mark_admin_v3_example_verified,
+        )
+
+        raw_conn = db.engine.raw_connection()
+        try:
+            mark_admin_v3_example_verified(
+                conn=raw_conn,
+                textbook_example_id=textbook_example_id,
+                skill_id=skill_id,
+            )
+        finally:
+            raw_conn.close()
+
+        flash("V3 元件已標記為 verified", "success")
+    except ValueError as e:
+        flash(f"失敗原因: {e}", "danger")
+    except Exception as e:
+        flash(f"失敗原因: {e}", "danger")
+    return redirect(redirect_target)
 
 @core_bp.route('/examples/add', methods=['POST'])
 @login_required

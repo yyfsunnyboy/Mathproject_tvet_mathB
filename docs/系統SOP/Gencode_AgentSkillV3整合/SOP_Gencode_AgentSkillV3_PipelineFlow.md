@@ -14,7 +14,7 @@
 | 3 | Registry 中繼 `skill_id` → Domain | Phase 2 啟動前經 `taxonomy_registry` 解析入口 |
 | 4 | Full Matrix Dict 六大欄位 | Phase 2.5 沙盒驗證 `matrix` 結構完整性 |
 | 5 | P0 直線方程式垂直切片 | 首波驗收取 `build_line_equation_matrix` 為標竿 |
-| 6 | 教材例題 DB 維運欄位 | `textbook_examples` 增量設計（§4.5） |
+| 6 | 教材例題影子對接表 `gencode_component_tracker` | `textbook_examples` 增量設計（§4.5） |
 | 7 | 後台熱拔插 | `admin_trigger_rebuild` → Reload Compiler → `importlib.reload`（§4.6） |
 
 ### v1.3 務實落地摘要（保留）
@@ -539,25 +539,91 @@ flowchart LR
 3. `check()` **統一**委派 `runtime_skill_wrapper.check_answer()`（checker 鏈不改）。
 4. 熱拔插場景下，路由器須實作 `importlib.import_module` + `importlib.reload`（§4.6.4）。
 
-**Step 4 — 生成 Thin Facade `skills/{skill_id}.py`**
+**Step 4 — 生成 Thin Facade（編譯器雙重寫入 · 老屋門面 + 新屋路由）**
 
-與 V2 完全同構：
+`skill_wrapper_compiler.py` 在掃描完 `agent_skills_v3/{skill_id}/components/` 底下所有最新 `verified` 子目錄後，**必須**於 Phase 3 同一編譯回合執行**雙重寫入**（調度邊界不可拆成二段人工步驟）。  
+編譯白名單與後台維運列表**均以** `gencode_component_tracker` 為權威來源（LEFT JOIN `textbook_examples` 取題幹上下文）。
+
+| # | 寫入目標 | 編譯器職責 |
+|---|----------|------------|
+| 1 | **新屋路由** | 更新 `agent_skills_v3/{skill_id}/__init__.py` 的 `_COMPONENT_DISPATCH` 表項、`GENERATOR_SPECS` / `GENERATOR_KEYS`；僅納入 `verified` 之 `{component_id}`。 |
+| 2 | **覆寫老屋門面** | 同步自動將最輕量的 Thin Facade **覆寫**入原位的 `skills/{skill_id}.py`（**嚴禁**移出 `skills/` 根目錄）。內容與 V2 形狀同構，僅含 `SKILL_ID`、`GENERATOR_SPECS`、`GENERATOR_KEYS` 及薄委派函式。 |
+
+**場景 1 — 後台列表（Step 4 維運入口 · 定點 Debug 交叉校對）**
+
+後台「⚡重構出題程式」列表頁**必須**使用下列 JOIN；增補 `correct_answer`、`source_chapter`、`source_section`，供老師對照原題與 Gencode 狀態：
+
+```sql
+SELECT
+    e.id AS example_id,
+    e.skill_id,
+    e.source_description AS text_type,
+    e.source_chapter,
+    e.source_section,
+    e.problem_text AS raw_stem,
+    e.correct_answer,
+    COALESCE(t.gencode_status, 'pending') AS current_status,
+    t.component_id,
+    t.gencode_error_log,
+    t.updated_at
+FROM textbook_examples e
+LEFT JOIN gencode_component_tracker t ON e.id = t.textbook_example_id
+WHERE e.skill_id = :skill_id
+ORDER BY e.id ASC;
+```
+
+**場景 2 — Phase 3 編譯 verified 題目（編譯器職責 · Deterministic 排序）**
+
+`skill_wrapper_compiler` 讀取 verified 白名單時**剛性要求**下列 SQL；`ORDER BY textbook_example_id ASC, component_id ASC` 確保 `GENERATOR_SPECS` 陣列完全對齊教材自然匯入順序，且保證代碼重現性（徹底防止 Git 程式碼隨機漂移）：
+
+```sql
+SELECT
+    textbook_example_id,
+    component_id,
+    induced_spec_payload
+FROM gencode_component_tracker
+WHERE skill_id = :skill_id AND gencode_status = 'verified'
+ORDER BY textbook_example_id ASC, component_id ASC;
+```
+
+**Thin Facade 剛性邊界**：`skills/{skill_id}.py` **不得**內嵌任何數學邏輯、SymPy 運算或出題程式；它是純轉運站，100% 向後相容 `practice.py` 既有 import 契約。
 
 ```python
+# skills/{skill_id}.py — 【自動生成 · 禁止手改 · 原位覆寫】
 from core.gencode.runtime_skill_wrapper import check_answer, generate_for_skill
 
 SKILL_ID = "vh_數學B1_LinearFunction"
-GENERATOR_KEYS = [...]   # 編譯器寫入
-GENERATOR_SPECS = [...]    # 編譯器寫入
+GENERATOR_KEYS = [...]     # 編譯器自 verified manifest 寫入
+GENERATOR_SPECS = [...]    # 編譯器依 ORDER_WEIGHT 排序寫入
 
 def generate(level=1, seed=None, **kwargs):
+    # 薄外殼：零數學邏輯；僅轉交全域 runtime
     return generate_for_skill(SKILL_ID, GENERATOR_SPECS, level=level, seed=seed, **kwargs)
 
 def check(user_answer, correct_answer, question_payload=None):
     return check_answer(user_answer, correct_answer, payload=question_payload)
 ```
 
-前台 `practice.py` **無需改動**。
+**執行期調度閉環**（與 Step 7 銜接；前台 `practice.py` **無需改動**）：
+
+```
+practice.py
+  → importlib.import_module("skills.{skill_id}")     # 老屋入口：路徑不變
+  → skills.{skill_id}.generate(level, seed)          # Thin Facade：純轉運，無出題邏輯
+  → runtime_skill_wrapper.generate_for_skill(...)      # 全域調度：抽 component_id / problem_type
+      ├─ manifest 白名單命中 verified component_id
+      │     → importlib.import_module(
+      │           "agent_skills_v3.{skill_id}.components.{component_id}.generate")
+      │     → （熱拔插）importlib.reload(module) 若已載入
+      │     → 呼叫該子目錄 generate.py 之 generate(level, seed, ...)   # 新屋軍火庫幹活
+      └─ 否則 → slot_generators.generate_from_problem_type_spec()       # 既有 fallback
+```
+
+要點摘要：
+
+1. **老屋**（`skills/{skill_id}.py`）只做門面轉發；**新屋**（`agent_skills_v3/.../components/{component_id}/generate.py`）才承載單題出題與 Domain 搬運。
+2. `_COMPONENT_DISPATCH` 與 Thin Facade 的 `GENERATOR_SPECS` **必須同源**（同一 manifest 編譯回合），避免路由表與門面白名單漂移。
+3. `check()` 仍統一委派 `runtime_skill_wrapper.check_answer()`；component 內不得覆寫全域 checker 鏈。
 
 **Step 5 — runtime_smoke 與 integrity gate**
 
@@ -574,7 +640,23 @@ def check(user_answer, correct_answer, question_payload=None):
 2. 寫入 `backups/gencode_skill_publish/{skill_id}.{timestamp}.py`。
 3. 報告輸出至 `reports/gencode_closed_loop/{skill_id}_publish_summary.json`。
 
-**Step 7 — 執行期路徑（學生請求 · 含動態熱拔插）**
+**Step 7 — 執行期路徑（學生請求 · 含動態熱拔插 · 跨單元積木）**
+
+**場景 3 — 跨單元綜合大會考共用積木（執行期反向查表）**
+
+當綜合評量需從多個 skill 挑選已 verified 微元件時，以 `textbook_example_id` 批次反查 `(skill_id, component_id)`，再依 §4.6.5 路徑公式動態載入：
+
+```sql
+SELECT
+    skill_id,
+    component_id
+FROM gencode_component_tracker
+WHERE gencode_status = 'verified' AND textbook_example_id IN (4545, 4610);
+```
+
+查詢結果每列對應執行期路徑 `agent_skills_v3/{skill_id}/components/{component_id}/generate.py`（不讀 DB 內 `component_path`）。
+
+**標準單 skill 請求閉環**：
 
 ```
 HTTP /api/practice/next
@@ -596,8 +678,9 @@ HTTP /api/practice/next
 **動態加載要點**：
 
 1. 學生請求路徑**不經** Web 伺服器重啟；依賴 `importlib.reload` 載入後台剛編譯之 `generate.py`。
-2. `component_manifest.json` 為執行期白名單；僅 `verified` 之 `component_id` 參與 dispatch。
-3. 熱拔插由 `admin_trigger_rebuild`（§4.6）觸發：DB `induced_spec_payload` 修正 → 單題沙盒 → Reload Compiler → 下一筆請求生效。
+2. `component_manifest.json` 與 `gencode_component_tracker`（`gencode_status = 'verified'`）為執行期白名單雙錨；僅 verified 之 `component_id` 參與 dispatch。
+3. 熱拔插由 `admin_trigger_rebuild`（§4.6）觸發：`gencode_component_tracker.induced_spec_payload` 修正 → 單題沙盒 → Reload Compiler → 下一筆請求生效。
+4. 跨單元場景（場景 3）以 `textbook_example_id IN (...)` 反查後，仍走相同 `importlib` 動態載入契約；路徑由 `skill_id` + `component_id` 公式推導（§4.6.5）。
 
 ---
 
@@ -681,6 +764,7 @@ graph TD
 | Phase 1 | `reports/gencode_closed_loop/induced_specs/{skill_id}.json` |
 | Phase 2 | `reports/gencode_closed_loop/{skill_id}_phase2_generator_summary.json` |
 | Phase 3 | `agent_skills_v3/{skill_id}/component_manifest.json` |
+| Phase 3 | `gencode_component_tracker`（SQLite 3 影子表 · §4.5） |
 | Phase 3 | `reports/gencode_closed_loop/{skill_id}_publish_summary.json` |
 | 備份 | `backups/gencode_skill_publish/{skill_id}.*.py` |
 | Registry | `configs/generated_registry/*_verified_registry.v*.yaml` |
@@ -694,7 +778,7 @@ graph TD
 | Phase 1 結束 | 每道原題對應獨立 `ex_*` / `quiz_*` / `test_*`；`skill_id` 在 MVP 六單元內且 `accepted` |
 | Phase 2 結束 | 核心例題（`ex_*`）全 verified；`generate.py` 無 SymPy / 無 distractors 自算 |
 | Phase 2.5 | Full Matrix Dict 六大欄位齊全；P0 `build_line_equation_matrix` 回歸通過 |
-| Phase 3 結束 | smoke 通過；`GENERATOR_SPECS` 依 `ORDER_WEIGHT` 排序；manifest 僅含 verified 題 |
+| Phase 3 結束 | smoke 通過；場景 2 SQL `ORDER BY textbook_example_id ASC, component_id ASC` 確保 `GENERATOR_SPECS` 對齊教材匯入順序且具重現性；manifest 僅含 verified 題；`__init__.py` 與原位 `skills/{skill_id}.py` 已雙重寫入（§3.4 Step 4） |
 | 發布 | 核心例題 verified 即可 `partial_published`；單題失敗不觸發 `SYSTEM_INTERRUPT` |
 | 維運熱拔插 | 後台 `admin_trigger_rebuild` 可從 `blocked` / `partial_published` 重回 `compiling`；`importlib.reload` 零重啟生效（§4.6） |
 

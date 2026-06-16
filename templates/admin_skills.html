@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="zh-TW">
 
@@ -22,7 +23,7 @@
             padding-bottom: 50px;
         }
 
-        /* Navbar 樣式改由 _admin_navbar.html 提供,避免頁面覆寫 */
+        /* Navbar 樣式改由 _admin_navbar.html 提供，避免頁面覆寫 */
 
         .container {
             max-width: 1400px;
@@ -145,29 +146,6 @@
 
         tr:hover {
             background-color: #f8f9fa;
-        }
-
-        th.skill-id-col,
-        td.skill-id-col {
-            min-width: 360px;
-            max-width: 420px;
-            white-space: normal;
-            word-break: keep-all;
-            overflow-wrap: anywhere;
-        }
-
-        .skill-id-cell code {
-            font-size: 0.9rem;
-            word-break: break-all;
-        }
-
-        .skill-id-cell .skill-subline {
-            display: block;
-            margin-top: 4px;
-            color: #6c757d;
-            font-size: 0.85rem;
-            line-height: 1.35;
-            white-space: normal;
         }
 
         /* Status Badge */
@@ -375,79 +353,6 @@
             margin-bottom: 8px;
             font-family: 'Courier New', Consolas, monospace;
         }
-
-        .gencode-badge {
-            padding: 4px 8px;
-            border-radius: 999px;
-            font-size: 0.8rem;
-            font-weight: 600;
-            display: inline-block;
-        }
-
-        .gencode-badge-generated {
-            background: #e8f8f5;
-            color: #1e8449;
-        }
-
-        .gencode-badge-draft {
-            background: #fef5e7;
-            color: #b9770e;
-        }
-
-        .gencode-badge-missing {
-            background: #fdecea;
-            color: #c0392b;
-        }
-
-        .phase-status-badge {
-            display: inline-block;
-            padding: 3px 8px;
-            border-radius: 999px;
-            background: #eef2ff;
-            color: #4338ca;
-            font-size: 0.78rem;
-            font-weight: 600;
-            margin-left: 8px;
-        }
-
-        .gencode-phase-card {
-            border: 1px solid #e5e7eb;
-            border-radius: 8px;
-            padding: 12px;
-            margin-bottom: 10px;
-        }
-
-        .gencode-summary {
-            margin-top: 10px;
-            padding: 10px;
-            border-radius: 6px;
-            background: #ecfeff;
-            border: 1px solid #a5f3fc;
-            color: #0f766e;
-            font-size: 0.95rem;
-        }
-
-        .gencode-result-box {
-            margin-top: 8px;
-            border: 1px dashed #cbd5e1;
-            border-radius: 8px;
-            background: #f8fafc;
-            padding: 10px;
-            font-size: 0.9rem;
-        }
-
-        .gencode-result-box table {
-            width: 100%;
-            border-collapse: collapse;
-            box-shadow: none;
-        }
-
-        .gencode-result-box th,
-        .gencode-result-box td {
-            border-bottom: 1px solid #e5e7eb;
-            padding: 6px 8px;
-            font-size: 0.85rem;
-        }
     </style>
 </head>
 
@@ -461,7 +366,7 @@
                 <span class="visually-hidden">Loading...</span>
             </div>
             <h5 class="mt-3">AI 正在撰寫 Python 程式碼...</h5>
-            <p class="text-muted mb-0">請稍候,這可能需要 10-20 秒...</p>
+            <p class="text-muted mb-0">請稍候，這可能需要 10-20 秒...</p>
         </div>
     </div>
     <!-- Loading Overlay - Must be at top level for z-index to work -->
@@ -532,14 +437,13 @@
                     </div>
                     <!-- 章節 -->
                     <div class="form-group" style="flex: 1; min-width: 200px;">
-                        <label for="f_chapter">章節</label>
+                        <label for="f_chapter">章</label>
                         <select id="f_chapter" name="f_chapter" class="form-select" {% if not selected_filters.f_volume
                             %}disabled{% endif %} style="width: 100%; padding: 8px;">
                             <option value="">-- 請選擇 --</option>
                             {% if filters.chapters %}
                             {% for ch in filters.chapters %}
-                            <option value="{{ ch }}" {% if selected_filters.f_chapter==ch %}selected{% endif %}>
-                                {{ filters.chapter_labels.get(ch, ch) }}
+                            <option value="{{ ch }}" {% if selected_filters.f_chapter==ch %}selected{% endif %}>{{ ch }}
                             </option>
                             {% endfor %}
                             {% endif %}
@@ -582,75 +486,72 @@
         {% endwith %}
 
         <!-- Skills Table -->
-        {% if skills_data %}
+        {% if skills %}
         <div class="skills-table">
             <table>
                 <thead>
                     <tr>
                         <th>排序</th>
-                        <th class="skill-id-col">技能 ID / 英文名稱 / 中文名稱</th>
+                        <th style="width: 20%;">技能 ID / 英文名稱</th>
+                        <th>中文名稱</th>
                         <th style="width: 15%;">類別</th>
                         <th>作答</th>
                         <th>晉級門檻</th>
                         <th>狀態</th>
-                        <th>自動生成</th>
+                        <th>Gencode V3</th>
                         <th>操作</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {% for skill_info, curriculum in skills_data %}
+                    {% for skill in skills %}
                     <tr>
-                        <td>{{ curriculum.display_order }}</td>
-                        <td class="skill-id-col">
-                            <div class="skill-id-cell">
-                                <code>{{ skill_info.skill_id }}</code>
-                                <small class="skill-subline">{{ skill_info.skill_en_name }}</small>
-                                <small class="skill-subline">{{ skill_info.skill_ch_name }}</small>
-                            </div>
-                        </td>
-                        <td>{{ skill_info.category }}</td>
-                        <td>{{ '手寫' if skill_info.input_type == 'handwriting' else '文字' }}</td>
-                        <td>{{ skill_info.consecutive_correct_required }} 題</td>
+                        <td>{{ skill.order_index }}</td>
+                        <td><code>{{ skill.skill_id }}</code><br><small style="color: #6c757d;">{{ skill.skill_en_name
+                                }}</small></td>
+                        <td><strong>{{ skill.skill_ch_name }}</strong></td>
+                        <td>{{ skill.category }}</td>
+                        <td>{{ '手寫' if skill.input_type == 'handwriting' else '文字' }}</td>
+                        <td>{{ skill.consecutive_correct_required }} 題</td>
                         <td>
-                            <span class="status-badge status-{{ 'active' if skill_info.is_active else 'inactive' }}">
-                                {{ '啟用' if skill_info.is_active else '停用' }}
+                            <span class="status-badge status-{{ 'active' if skill.is_active else 'inactive' }}">
+                                {{ '啟用' if skill.is_active else '停用' }}
                             </span>
                         </td>
                         <td>
-                            {% set gc = gencode_status_map.get(skill_info.skill_id, {'status':'missing','label':'執行中','button_label':'AI ??','formal_exists':False,'draft_exists':False,'formal_path':'','draft_path':'','formal_abs_path':'','draft_abs_path':''}) %}
-                            <span class="gencode-badge gencode-badge-{{ gc.status }}">{{ gc.label }}</span>
-                            <button type="button" class="btn btn-secondary" style="margin-left:6px;" onclick="openGencodeWizard('{{ skill_info.skill_id }}')">{{ gc.button_label }}</button>
-                            {% if gc.status == 'generated' %}
-                            <div class="small text-muted" title="{{ gc.formal_abs_path }}">{{ gc.formal_path }}</div>
-                            {% elif gc.status == 'draft' %}
-                            <div class="small text-muted" title="{{ gc.draft_abs_path }}">已有 draft，尚未發布正式技能檔</div>
-                            {% else %}
-                            <div class="small text-muted">尚未產生 skill.py</div>
+                            {% set gencode = (v3_gencode_status_map or {}).get(skill.skill_id, {}) %}
+                            <div><strong>{{ gencode.get('status_label', '未建立') }}</strong></div>
+                            <div><small>component_id: {{ gencode.get('component_id') or '-' }}</small></div>
+                            <div><small>payload: {{ gencode.get('has_payload_label', '無') }}</small></div>
+                            <div><small>dryrun generate.py: {{ gencode.get('dryrun_generate_label', '否') }}</small></div>
+                            <div><small>production generate.py: {{ gencode.get('production_generate_label', '否') }}</small></div>
+                            <div><small>updated_at: {{ gencode.get('updated_at') or '-' }}</small></div>
+                            {% if gencode.get('error_log') %}
+                            <div><small style="color:#c0392b;">error_log: {{ gencode.get('error_log') }}</small></div>
                             {% endif %}
                         </td>
                         <td>
                             <div class="btn-group">
-                                <button class="btn btn-edit" onclick="openEditModal('{{ skill_info.skill_id }}')">
+                                <button class="btn btn-edit" onclick="openEditModal('{{ skill.skill_id }}')">
                                     <i class="bi bi-pencil-fill"></i>
                                 </button>
                                 <button type="button" class="btn btn-secondary"
-                                    onclick="regenerateSkillCode('{{ skill_info.skill_id }}')" title="重新生成程式碼">
+                                    onclick="regenerateSkillCode('{{ skill.skill_id }}')" title="重新生成程式碼">
                                     <i class="bi bi-arrow-clockwise"></i> 重建 Code
                                 </button>
-                                <a href="{{ url_for('core.admin_prerequisites', skill_id=skill_info.skill_id) }}"
+                                <a href="{{ url_for('core.admin_prerequisites', skill_id=skill.skill_id) }}"
                                     class="btn btn-prereq" title="設定前置技能"><i class="bi bi-diagram-2-fill"></i></a>
                                 <form method="POST"
-                                    action="{{ url_for('core.admin_toggle_skill', skill_id=skill_info.skill_id) }}"
+                                    action="{{ url_for('core.admin_toggle_skill', skill_id=skill.skill_id) }}"
                                     style="display: inline;">
                                     <button type="submit" class="btn btn-toggle"
-                                        title="{{ '停用' if skill_info.is_active else '啟用' }}">
-                                        {% if skill_info.is_active %}<i class="bi bi-pause-circle-fill"></i>{% else %}<i
+                                        title="{{ '停用' if skill.is_active else '啟用' }}">
+                                        {% if skill.is_active %}<i class="bi bi-pause-circle-fill"></i>{% else %}<i
                                             class="bi bi-play-circle-fill"></i>{% endif %}
                                     </button>
                                 </form>
                                 <form method="POST"
-                                    action="{{ url_for('core.admin_delete_skill', skill_id=skill_info.skill_id) }}"
-                                    onsubmit="return confirm('確定要刪除「{{ skill_info.skill_ch_name }}」嗎?此操作無法復原!')"
+                                    action="{{ url_for('core.admin_delete_skill', skill_id=skill.skill_id) }}"
+                                    onsubmit="return confirm('確定要刪除「{{ skill.skill_ch_name }}」嗎？此操作無法復原！')"
                                     style="display: inline;">
                                     <button type="submit" class="btn btn-delete" title="刪除"><i
                                             class="bi bi-trash-fill"></i></button>
@@ -681,21 +582,21 @@
                 <div class="form-group">
                     <label for="skill_id">技能 ID *</label>
                     <input type="text" id="skill_id" name="skill_id" required pattern="^[a-z_]+$"
-                        placeholder="例如:quadratic_equation">
-                    <small>只能使用小寫英文字母和底線,例如:remainder、factor_theorem</small>
+                        placeholder="例如：quadratic_equation">
+                    <small>只能使用小寫英文字母和底線，例如：remainder、factor_theorem</small>
                 </div>
                 <div class="form-group">
                     <label for="skill_en_name">英文名稱 *</label>
                     <input type="text" id="skill_en_name" name="skill_en_name" required
-                        placeholder="例如:Quadratic Equation">
+                        placeholder="例如：Quadratic Equation">
                 </div>
                 <div class="form-group">
                     <label for="skill_ch_name">中文名稱 *</label>
-                    <input type="text" id="skill_ch_name" name="skill_ch_name" required placeholder="例如:一元二次方程式">
+                    <input type="text" id="skill_ch_name" name="skill_ch_name" required placeholder="例如：一元二次方程式">
                 </div>
                 <div class="form-group">
                     <label for="category">技能類別 *</label>
-                    <input type="text" id="category" name="category" required placeholder="例如:多項式、三角函數">
+                    <input type="text" id="category" name="category" required placeholder="例如：多項式、三角函數">
                 </div>
                 <div class="form-group">
                     <label for="input_type">作答類型 *</label>
@@ -712,18 +613,18 @@
                 <div class="form-group">
                     <label for="gemini_prompt">Gemini 提示模板 *</label>
                     <textarea id="gemini_prompt" name="gemini_prompt" required class="gemini-prompt-textarea"
-                        placeholder="分析學生答案:{user_answer},正確答案:{correct_answer},如果錯誤,教導..."></textarea>
-                    <small>可用變數:{user_answer}、{correct_answer}、{context}</small>
+                        placeholder="分析學生答案：{user_answer}，正確答案：{correct_answer}，如果錯誤，教導..."></textarea>
+                    <small>可用變數：{user_answer}、{correct_answer}、{context}</small>
                 </div>
                 <div class="form-group">
-                    <label for="consecutive_correct_required">晉級門檻(連續答對題數)*</label>
+                    <label for="consecutive_correct_required">晉級門檻（連續答對題數）*</label>
                     <input type="number" id="consecutive_correct_required" name="consecutive_correct_required"
                         value="10" min="1" max="50" required>
                 </div>
                 <div class="form-group">
                     <label for="order_index">排序順序</label>
                     <input type="number" id="order_index" name="order_index" value="999" min="0">
-                    <small>數字越小越前面,預設 999</small>
+                    <small>數字越小越前面，預設 999</small>
                 </div>
                 <div class="form-group">
                     <div class="checkbox-group">
@@ -786,17 +687,17 @@
                 <div class="mb-3">
                     <label class="form-label">推薦提問 1 - 觀察例題</label>
                     <textarea class="form-control" id="edit_suggested_prompt_1" name="suggested_prompt_1" rows="2"
-                        placeholder="例:請觀察例題..."></textarea>
+                        placeholder="例：請觀察例題..."></textarea>
                 </div>
                 <div class="mb-3">
                     <label class="form-label">推薦提問 2 - 步驟提示</label>
                     <textarea class="form-control" id="edit_suggested_prompt_2" name="suggested_prompt_2" rows="2"
-                        placeholder="例:先做通分..."></textarea>
+                        placeholder="例：先做通分..."></textarea>
                 </div>
                 <div class="mb-3">
                     <label class="form-label">推薦提問 3 - 自我檢查</label>
                     <textarea class="form-control" id="edit_suggested_prompt_3" name="suggested_prompt_3" rows="2"
-                        placeholder="例:檢查正負號..."></textarea>
+                        placeholder="例：檢查正負號..."></textarea>
                 </div>
                 <div class="form-group">
                     <label for="edit_consecutive_correct_required">晉級門檻 *</label>
@@ -837,46 +738,6 @@
         </div>
     </div>
 
-    
-<div id="gencodeModal" class="modal">
-        <div class="modal-content" style="max-width: 980px;">
-            <div class="modal-header">
-                <h2>Gencode 自動生成</h2>
-                <span class="close" onclick="closeModal('gencodeModal')">&times;</span>
-            </div>
-            <div class="card-body">
-                <div><b>skill_id:</b> <code id="gencodeSkillId"></code></div>
-                <div id="gencodeAiExplanation" class="gencode-result-box" style="margin-top:8px;">AI 解讀摘要：尚未產生</div>
-                <div class="gencode-phase-card">
-                    <h3>Phase 1:來源盤點與題型分類 <span id="phase1StatusBadge" class="phase-status-badge">尚未執行</span></h3>
-                    <div style="margin:6px 0;">
-                        <label for="gencodeSpecMode"><b>spec_mode</b></label>
-                        <select id="gencodeSpecMode" style="margin-left:8px;">
-                            <option value="ai_first_induce_from_sources" selected>ai_first_induce_from_sources（AI 語意分類優先）</option>
-                            <option value="rule_first_induce_from_sources">rule_first_induce_from_sources（規則優先）</option>
-                            <option value="hybrid_ai_rule_validate">hybrid_ai_rule_validate（AI+規則驗證）</option>
-                            <option value="induce_from_sources">induce_from_sources（規則歸納，相容舊版）</option>
-                            <option value="hybrid">hybrid（歸納後比對 curated）</option>
-                            <option value="curated_first">curated_first（優先 curated spec）</option>
-                        </select>
-                    </div>
-                    <button id="gencodePhase1Btn" type="button" class="btn btn-secondary" onclick="runGencodePhase1()">執行 Phase 1</button>
-                    <div id="gencodePhase1Result" class="gencode-result-box">尚未執行 Phase 1</div>
-                </div>
-                <div class="gencode-phase-card">
-                    <h3>Phase 2:子技能 generator 生成與測試 <span id="phase2StatusBadge" class="phase-status-badge">尚未執行</span></h3>
-                    <button id="gencodePhase2Btn" type="button" class="btn btn-secondary" onclick="runGencodePhase2()" disabled>執行 Phase 2</button>
-                    <div id="gencodePhase2Result" class="gencode-result-box">尚未執行 Phase 2</div>
-                </div>
-                <div class="gencode-phase-card">
-                    <h3>Phase 3:包裝 skill_id.py 與驗收檢查 <span id="phase3StatusBadge" class="phase-status-badge">尚未執行</span></h3>
-                    <button id="gencodePhase3Btn" type="button" class="btn btn-secondary" onclick="runGencodePhase3()" disabled>執行 Phase 3</button>
-                    <div id="gencodePhase3Result" class="gencode-result-box">尚未執行 Phase 3</div>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <script>
         // Modal Functions
         function openAddModal() {
@@ -887,911 +748,7 @@
             document.getElementById(modalId).style.display = 'none';
         }
 
-        let currentGencodeSkillId = '';
-
-        function _escapeHtml(value) {
-            return String(value ?? '').replace(/[&<>"']/g, (s) => ({
-                '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
-            })[s]);
-        }
-
-        function _setPhaseStatus(phase, statusText) {
-            const el = document.getElementById(`${phase}StatusBadge`);
-            if (el) el.textContent = statusText || 'unknown';
-        }
-
-        function _renderReportsList(reports) {
-            const entries = Object.entries(reports || {});
-            if (!entries.length) return '<div>reports: (none)</div>';
-            return `<div><b>reports</b><ul>${entries.map(([k, v]) => `<li><code>${_escapeHtml(k)}</code>: <code>${_escapeHtml(v)}</code></li>`).join('')}</ul></div>`;
-        }
-
-        function _renderHumanActions(data) {
-            const items = Array.isArray(data?.human_action_items) ? data.human_action_items : [];
-            if (!items.length) return `<div><b>requires_human_action:</b> ${data?.requires_human_action ? 'true' : 'false'}</div>`;
-            return `<div><b>requires_human_action:</b> true<ul>${items.map((x) => `<li>[${_escapeHtml(x.type)}] ${_escapeHtml(x.message)} (${_escapeHtml(x.suggested_action)})</li>`).join('')}</ul></div>`;
-        }
-
-        function _renderClassifierRegisterPanel(data) {
-            const registerable = !!data?.classifier_rulepack_registerable;
-            const draftPath = String(data?.classifier_yaml_draft_path || '').trim();
-            const hasDraft = !!draftPath;
-            if (!hasDraft && !registerable) {
-                return '<div class="gencode-phase-card"><h4>Classifier Rule Pack 註冊</h4><div>尚無可註冊 classifier draft。</div></div>';
-            }
-            const disabledConfirm = registerable ? '' : 'disabled aria-disabled="true"';
-            const reason = registerable ? '' : '<div style="margin-top:6px;color:#92400e;">目前尚不可註冊：classifier_rulepack_registerable=false</div>';
-            return `
-                <div class="gencode-phase-card" style="margin-top:10px;">
-                    <h4>Classifier Rule Pack 註冊</h4>
-                    <div><b>draft path:</b> <code>${_escapeHtml(draftPath || '(none)')}</code></div>
-                    <div><b>formal YAML:</b> <code>configs/gencode/classifiers/phase1_rule_packs.yaml</code></div>
-                    <div><b>classifier_source:</b> ${_escapeHtml(data?.classifier_source || '')}</div>
-                    <div style="margin-top:6px;">註冊後，下次 Phase 1 將優先使用 rule_pack，不再重新 AI bootstrap。</div>
-                    ${reason}
-                    <div style="margin-top:8px; display:flex; gap:8px;">
-                        <button id="gencodeClassifierPreviewBtn" type="button" class="btn btn-secondary" onclick="runClassifierRegister(false)" ${hasDraft ? '' : 'disabled aria-disabled="true"'}>預覽註冊 classifier</button>
-                        <button id="gencodeClassifierConfirmBtn" type="button" class="btn btn-secondary" onclick="runClassifierRegister(true)" ${hasDraft ? disabledConfirm : 'disabled aria-disabled="true"'}>確認註冊 classifier</button>
-                    </div>
-                    <div id="gencodeClassifierRegisterError" style="margin-top:8px; color:#b91c1c;"></div>
-                    <div id="gencodeClassifierRegisterResult" class="gencode-result-box" style="margin-top:8px;">尚未執行 classifier 註冊</div>
-                </div>
-            `;
-        }
-
-        function _renderAiExplanation(ai) {
-            if (!ai || typeof ai !== 'object') {
-                return '<div><b>AI 解讀摘要</b><div>AI 解讀暫時不可用，請查看下方詳細 log。</div></div>';
-            }
-            const sev = String(ai.severity || 'warning').toLowerCase();
-            const badgeColor = sev === 'success' ? '#166534' : (sev === 'failed' ? '#b91c1c' : (sev === 'blocked' ? '#b45309' : '#1d4ed8'));
-            const items = Array.isArray(ai.items_to_check) ? ai.items_to_check : [];
-            const happened = Array.isArray(ai.what_happened) ? ai.what_happened : [];
-            const title = _escapeHtml(ai.short_title || 'AI 解讀摘要');
-            const msg = _escapeHtml(ai.user_friendly_message || ai.summary || 'AI 解讀暫時不可用，請查看下方詳細 log。');
-            const next = _escapeHtml(ai.next_action || '');
-            const itemHtml = items.length ? `<ul>${items.map((x) => `<li>${_escapeHtml(x)}</li>`).join('')}</ul>` : '<div>(none)</div>';
-            const happenedHtml = happened.length ? `<ul>${happened.map((x) => `<li>${_escapeHtml(x)}</li>`).join('')}</ul>` : '';
-            return `
-                <div><b>AI 解讀摘要</b> <span style="display:inline-block;padding:2px 8px;border-radius:999px;background:#eef2ff;color:${badgeColor};font-size:12px;">${_escapeHtml(sev)}</span></div>
-                <div style="margin-top:6px;"><b>${title}</b></div>
-                <div style="margin-top:6px;">${msg}</div>
-                ${happenedHtml}
-                <div style="margin-top:6px;"><b>下一步</b>：${next || '(none)'}</div>
-                <div style="margin-top:6px;"><b>建議檢查</b>${itemHtml}</div>
-            `;
-        }
-
-        function _updateAiExplanation(data) {
-            const el = document.getElementById('gencodeAiExplanation');
-            if (!el) return;
-            const ai = data && data.ai_explanation ? data.ai_explanation : null;
-            el.innerHTML = _renderAiExplanation(ai);
-        }
-
-        function _isPhase1LowCoreOnly(data) {
-            const st = String(data?.phase_status || '');
-            if (st === 'phase1_blocked_low_core_sources') return true;
-            const kind = String(data?.alignment_display_kind || '');
-            if (kind === 'low_core_sources') return true;
-            const blockers = Array.isArray(data?.alignment_blockers) ? data.alignment_blockers : [];
-            if (!blockers.length) return false;
-            return blockers.every((b) => {
-                const s = String(b || '').trim();
-                return s === 'low_core_source_examples' || s === 'semantic_alignment_blocked';
-            }) && blockers.some((b) => String(b || '').trim() === 'low_core_source_examples');
-        }
-
-        function _phase1WarningMessage(key) {
-            const k = String(key || '').trim();
-            if (!k) return '';
-            if (k === 'ai_first_mode_fell_back_to_rule_only') {
-                return 'AI 引導分類未成功，已改用規則分類。請檢查題型分群是否合理。';
-            }
-            if (k === 'alignment_score_below_recommended_threshold') {
-                return '語意分數偏低：目前分數仍偏字面 token overlap，若題族與子技能已對齊且無 blocker，僅作提醒。';
-            }
-            if (k === 'source_quality_reject_examples_present') {
-                return '部分來源題疑似品質問題，建議人工檢查；若剩餘 core 題足夠，仍可繼續。';
-            }
-            if (k === 'fallback_subskill_used') {
-                return '部分題目已放入主技能同名子技能 same_as_main_skill。';
-            }
-            if (k === 'same_family_extension') {
-                return '同一題族內的延伸題型，保留於目前 skill。';
-            }
-            if (k === 'section_scope_subskill_extension') {
-                return '同一小節脈絡下的延伸子技能，保留於目前 skill。';
-            }
-            if (k === 'same_as_main_skill') {
-                return '無法細分者已放入主技能同名子技能。';
-            }
-            if (k === 'inherited_from_previous_context') {
-                return '承接前文脈絡題型，保留於目前 skill。';
-            }
-            if (k === 'low_source_examples') {
-                return '樣本數不足，題型先列為候選。';
-            }
-            return '';
-        }
-
-        function _isPhase1CanContinueWarning(data) {
-            const blockers = Array.isArray(data?.alignment_blockers) ? data.alignment_blockers : [];
-            const semanticMismatchExamples = Array.isArray(data?.semantic_mismatch_examples) ? data.semantic_mismatch_examples : [];
-            const hasWarnings = (Array.isArray(data?.alignment_warnings) && data.alignment_warnings.length > 0)
-                || !!data?.fallback_subskill_used
-                || (Array.isArray(data?.same_family_extension_examples) && data.same_family_extension_examples.length > 0)
-                || (Array.isArray(data?.section_scope_subskill_extension_examples) && data.section_scope_subskill_extension_examples.length > 0)
-                || (Array.isArray(data?.same_as_main_skill_examples) && data.same_as_main_skill_examples.length > 0)
-                || (Array.isArray(data?.inherited_from_previous_context_examples) && data.inherited_from_previous_context_examples.length > 0)
-                || (Array.isArray(data?.low_source_examples) && data.low_source_examples.length > 0);
-            return !!data?.can_continue
-                && String(data?.phase_status || '') === 'phase1_completed_with_warning'
-                && !blockers.length
-                && !semanticMismatchExamples.length
-                && hasWarnings;
-        }
-
-        function _isPhase1CanContinueByFallbackSignal(data) {
-            const summary = String(data?.summary_message || '');
-            const classifierSource = String(data?.classifier_source || '');
-            const phaseStatus = String(data?.phase_status || '');
-            const warnings = Array.isArray(data?.alignment_warnings) ? data.alignment_warnings : [];
-            const hasDefaultPtSignal = classifierSource === 'ai_bootstrap_with_default_fallback'
-                || classifierSource === 'fallback_default_problem_type'
-                || !!data?.default_problem_type_used
-                || warnings.includes('default_problem_type_created')
-                || summary.includes('AI 未細分題型')
-                || summary.includes('default problem_type')
-                || summary.includes('default_problem_type');
-            const hasFallbackSignal = !!data?.fallback_subskill_used
-                || warnings.includes('fallback_subskill_used')
-                || warnings.includes('same_as_main_skill')
-                || summary.includes('same_as_main_skill');
-            const canByPhase = phaseStatus === 'phase1_completed' || phaseStatus === 'phase1_completed_with_warning';
-            const canByText = summary.includes('可進入 Phase 2');
-            return hasDefaultPtSignal || hasFallbackSignal || canByPhase || canByText;
-        }
-
-        function _renderPhase1WarningSummary(data) {
-            const warnings = Array.isArray(data?.alignment_warnings) ? data.alignment_warnings : [];
-            const infos = [];
-            for (const w of warnings) {
-                const m = _phase1WarningMessage(w);
-                if (m) infos.push({ key: w, msg: m });
-            }
-            if (data?.fallback_subskill_used) {
-                const m = _phase1WarningMessage('fallback_subskill_used');
-                if (m && !infos.find((x) => x.key === 'fallback_subskill_used')) infos.push({ key: 'fallback_subskill_used', msg: m });
-            }
-            const sameFamilyN = Number((data?.same_family_extension_examples || []).length) + Number((data?.section_scope_subskill_extension_examples || []).length);
-            if (sameFamilyN > 0 && !infos.find((x) => x.key === 'same_family_extension')) {
-                const m = _phase1WarningMessage('same_family_extension');
-                if (m) infos.push({ key: 'same_family_extension', msg: m });
-            }
-            if (Array.isArray(data?.same_as_main_skill_examples) && data.same_as_main_skill_examples.length > 0 && !infos.find((x) => x.key === 'same_as_main_skill')) {
-                const m = _phase1WarningMessage('same_as_main_skill');
-                if (m) infos.push({ key: 'same_as_main_skill', msg: m });
-            }
-            if (Array.isArray(data?.inherited_from_previous_context_examples) && data.inherited_from_previous_context_examples.length > 0 && !infos.find((x) => x.key === 'inherited_from_previous_context')) {
-                const m = _phase1WarningMessage('inherited_from_previous_context');
-                if (m) infos.push({ key: 'inherited_from_previous_context', msg: m });
-            }
-            const hasWarnings = infos.length > 0;
-            const summaryTitle = hasWarnings ? 'Phase 1 完成但有提醒' : 'Phase 1 完成';
-            const badgeColor = hasWarnings ? '#b45309' : '#166534';
-            const subskills = Array.isArray(data?.subskills) ? data.subskills : [];
-            const subskillLine = subskills.length ? `<div style="margin-top:6px;"><b>subskills:</b> ${_escapeHtml(subskills.join(', '))}</div>` : '';
-            if (!hasWarnings && !subskillLine) return '';
-            return `<div style="margin-top:8px;padding:8px;border-radius:6px;background:#f8fafc;">
-                <div style="color:${badgeColor};"><b>${summaryTitle}</b>${data?.can_continue ? '（可進入 Phase 2）' : ''}</div>
-                ${hasWarnings ? `<ul style="margin-top:6px;">${infos.map((x) => `<li>${_escapeHtml(x.msg)}</li>`).join('')}</ul>` : ''}
-                ${subskillLine}
-            </div>`;
-        }
-
-        function _renderPhase1SourceQualitySection(data) {
-            const rejected = Array.isArray(data?.rejected_source_examples) ? data.rejected_source_examples : [];
-            const issues = Array.isArray(data?.source_quality_issues) ? data.source_quality_issues : [];
-            const fromSemantic = data?.semantic_alignment?.source_quality_reject_examples;
-            const sourceQualityRejectExamples = Array.isArray(fromSemantic)
-                ? fromSemantic
-                : (Array.isArray(data?.source_quality_reject_examples) ? data.source_quality_reject_examples : []);
-            if (!rejected.length && !issues.length && !sourceQualityRejectExamples.length) return '';
-            const rows = [];
-            const seen = new Set();
-            const pushRow = (exampleId, issueType, reason) => {
-                const eid = String(exampleId || '').trim() || '(unknown)';
-                const typ = String(issueType || '').trim() || 'source_quality_reject';
-                const rsn = String(reason || '').trim() || '';
-                const key = `${eid}::${typ}::${rsn}`;
-                if (seen.has(key)) return;
-                seen.add(key);
-                rows.push(`<tr><td>${_escapeHtml(eid)}</td><td>${_escapeHtml(typ)}</td><td>${_escapeHtml(rsn)}</td></tr>`);
-            };
-            rejected.forEach((r) => {
-                const issueText = Array.isArray(r?.issues) ? r.issues.join(', ') : '';
-                pushRow(r?.example_id, r?.reason || 'source_quality_reject', issueText);
-            });
-            issues.forEach((r) => {
-                if (typeof r === 'string') {
-                    pushRow('', 'source_quality_issue', r);
-                    return;
-                }
-                pushRow(
-                    r?.example_id || r?.id || '',
-                    r?.issue_type || r?.issue || r?.reason || 'source_quality_issue',
-                    r?.reason || r?.message || r?.detail || '',
-                );
-            });
-            sourceQualityRejectExamples.forEach((r) => {
-                if (typeof r === 'string') {
-                    pushRow(r, 'source_quality_reject', '');
-                    return;
-                }
-                pushRow(
-                    r?.example_id || r?.id || '',
-                    r?.issue_type || r?.issue || 'source_quality_reject',
-                    r?.reason || r?.message || '',
-                );
-            });
-            return `<div style="margin-top:8px;padding:8px;background:#f8fafc;border-radius:6px;font-size:12px;">
-                <div><b>來源品質檢查</b></div>
-                <div style="margin-top:4px;">以下來源題可能有題幹、答案、LaTeX、選項或 OCR 問題，建議人工檢查。若仍有足夠可用 core 題，Phase 1 可繼續。</div>
-                <div style="margin-top:4px;"><b>rejected_source_examples:</b> ${_escapeHtml(rejected.map((x) => x?.example_id || '').filter(Boolean).join(', ') || '(none)')}</div>
-                <div><b>source_quality_issues:</b> ${_escapeHtml(issues.length ? String(issues.length) : '(none)')}</div>
-                <div style="margin-top:4px;"><b>source_quality_reject_examples:</b> ${_escapeHtml(
-                    sourceQualityRejectExamples
-                        .map((x) => (typeof x === 'string' ? x : (x?.example_id || x?.id || '')))
-                        .filter(Boolean)
-                        .join(', ') || '(none)'
-                )}</div>
-                <table style="margin-top:6px;"><thead><tr><th>example_id</th><th>issue type</th><th>簡短原因</th></tr></thead>
-                <tbody>${rows.join('') || '<tr><td colspan="3">(none)</td></tr>'}</tbody></table>
-            </div>`;
-        }
-
-        function _renderPhase1InductionSourceSummary(data) {
-            const summary = data?.phase1_induction_summary && typeof data.phase1_induction_summary === 'object'
-                ? data.phase1_induction_summary
-                : {};
-            const coreCount = data?.core_example_count ?? summary.core_example_count ?? '';
-            const enrichCount = data?.enrichment_example_count ?? summary.enrichment_example_count ?? '';
-            const blockers = Array.isArray(data?.alignment_blockers) ? data.alignment_blockers
-                : (Array.isArray(summary.blockers) ? summary.blockers : []);
-            const skipped = Array.isArray(data?.skipped_enrichment_examples) ? data.skipped_enrichment_examples
-                : (Array.isArray(summary.skipped_enrichment_examples) ? summary.skipped_enrichment_examples : []);
-            const futureAi = Array.isArray(data?.future_ai_judged_candidates) ? data.future_ai_judged_candidates
-                : (Array.isArray(summary.future_ai_judged_candidates) ? summary.future_ai_judged_candidates : []);
-            const contextual = Array.isArray(data?.contextual_application_sources) ? data.contextual_application_sources
-                : (Array.isArray(summary.contextual_application_sources) ? summary.contextual_application_sources : []);
-            const sameFamilyExt = Array.isArray(data?.same_family_extension_examples) ? data.same_family_extension_examples
-                : (Array.isArray(summary.same_family_extension_examples) ? summary.same_family_extension_examples : []);
-            const secScopeExt = Array.isArray(data?.section_scope_subskill_extension_examples) ? data.section_scope_subskill_extension_examples
-                : (Array.isArray(summary.section_scope_subskill_extension_examples) ? summary.section_scope_subskill_extension_examples : []);
-            const sameMain = Array.isArray(data?.same_as_main_skill_examples) ? data.same_as_main_skill_examples
-                : (Array.isArray(summary.same_as_main_skill_examples) ? summary.same_as_main_skill_examples : []);
-            const inherited = Array.isArray(data?.inherited_from_previous_context_examples) ? data.inherited_from_previous_context_examples
-                : (Array.isArray(summary.inherited_from_previous_context_examples) ? summary.inherited_from_previous_context_examples : []);
-            const lowSource = Array.isArray(data?.low_source_examples) ? data.low_source_examples
-                : (Array.isArray(summary.low_source_examples) ? summary.low_source_examples : []);
-            const candidateOnly = Array.isArray(data?.candidate_only_problem_types) ? data.candidate_only_problem_types
-                : (Array.isArray(summary.candidate_only_problem_types) ? summary.candidate_only_problem_types : []);
-            const fmtIds = (rows) => (rows || []).map((r) => _escapeHtml(r?.example_id ?? '')).filter(Boolean).join(', ') || '(none)';
-            if (coreCount === '' && enrichCount === '' && !blockers.length && !skipped.length) return '';
-            return `<div style="margin-top:8px;padding:8px;background:#f8fafc;border-radius:6px;font-size:12px;">
-                <div><b>Phase 1 來源分層</b></div>
-                <div><b>core_example_count:</b> ${_escapeHtml(coreCount)}; <b>enrichment_example_count:</b> ${_escapeHtml(enrichCount)}</div>
-                <div><b>blockers:</b> ${_escapeHtml(blockers.join(', ') || '(none)')}</div>
-                <div><b>skipped_enrichment_examples:</b> ${fmtIds(skipped)}</div>
-                <div><b>future_ai_judged_candidates:</b> ${fmtIds(futureAi)}</div>
-                <div><b>contextual_application_sources:</b> ${fmtIds(contextual)}</div>
-                <div><b>same_family_extension_examples:</b> ${fmtIds(sameFamilyExt)}</div>
-                <div><b>section_scope_subskill_extension_examples:</b> ${fmtIds(secScopeExt)}</div>
-                <div><b>same_as_main_skill_examples:</b> ${fmtIds(sameMain)}</div>
-                <div><b>inherited_from_previous_context_examples:</b> ${fmtIds(inherited)}</div>
-                <div><b>low_source_examples:</b> ${_escapeHtml((lowSource || []).map((x) => x?.problem_type_id || '').filter(Boolean).join(', ') || '(none)')}</div>
-                <div><b>candidate_only_problem_types:</b> ${_escapeHtml((candidateOnly || []).map((x) => x?.example_id || '').filter(Boolean).join(', ') || '(none)')}</div>
-            </div>`;
-        }
-
-        function _renderPhase1AlignmentDetails(data) {
-            const status = String(data?.source_alignment_status || '');
-            const blockers = Array.isArray(data?.alignment_blockers) ? data.alignment_blockers : [];
-            const rows = Array.isArray(data?.source_example_alignment) ? data.source_example_alignment : [];
-            if (!status && !blockers.length && !rows.length) return '';
-            const lowCoreOnly = _isPhase1LowCoreOnly(data);
-            const displayKind = String(data?.alignment_display_kind || '');
-            const userMsg = String(data?.alignment_user_message || '').trim();
-            const exampleNote = String(data?.example_ids_note || '').trim();
-            const statusLabel = String(data?.alignment_status_label || '').trim();
-            const phaseStatus = String(data?.phase_status || '');
-            const canContinue = !!data?.can_continue;
-            const semanticMismatchExamples = Array.isArray(data?.semantic_mismatch_examples) ? data.semantic_mismatch_examples : [];
-            const semanticBlocked = displayKind === 'semantic_mismatch'
-                || blockers.includes('majority_needs_review')
-                || semanticMismatchExamples.length > 0;
-            const sourceQualityBlocked = displayKind === 'source_quality_reject'
-                || blockers.includes('source_quality_reject')
-                || blockers.includes('no_usable_core_examples');
-            const aiUnavailable = String(data?.ai_semantic_status || '') === 'unavailable';
-            const aiReason = String(data?.ai_semantic_unavailable_reason || '').trim();
-            const ruleFallbackBanner = aiUnavailable
-                ? `<div style="margin-top:8px;color:#b45309;"><b>目前為 rule fallback</b>，請先於 AI 後台設定 API key 後重新執行 Phase 1。`
-                + (aiReason ? `（AI 語意分類未執行：${_escapeHtml(aiReason)}）` : '（AI 語意分類未執行）')
-                + '</div>'
-                : '';
-            const blocked = !aiUnavailable && !canContinue && (status === 'block' || phaseStatus.includes('blocked') || blockers.length > 0);
-            const alignRows = rows.map((r) => `<tr>
-                <td>${_escapeHtml(r.example_id ?? '')}</td>
-                <td>${_escapeHtml(r.target_task ?? '')}</td>
-                <td>${_escapeHtml(r.task_family ?? '')}</td>
-                <td>${_escapeHtml(r.alignment_kind ?? '')}</td>
-                <td>${_escapeHtml(r.subskill_match ?? '')}</td>
-                <td>${_escapeHtml(r.alignment_score ?? '')}</td>
-                <td>${_escapeHtml(r.included_in_phase1 ?? '')}</td>
-                <td>${_escapeHtml(r.exclude_reason ?? '')}</td>
-            </tr>`).join('');
-            const phase1CanContinueWarning = _isPhase1CanContinueWarning(data);
-            let warnHtml = '';
-            if (blocked && (semanticBlocked || sourceQualityBlocked || lowCoreOnly)) {
-                const body = semanticBlocked
-                    ? (userMsg || '來源題疑似錯分或來源題品質不可用')
-                    : (sourceQualityBlocked
-                        ? '來源題疑似錯分或來源題品質不可用'
-                        : (userMsg || '來源題疑似錯分或來源題品質不可用'));
-                warnHtml = `<div style="margin-top:8px;color:#b91c1c;"><b>Phase 1 阻擋</b>：${_escapeHtml(body)} blockers=${_escapeHtml(blockers.join(', ') || '(none)')}</div>`;
-                if (exampleNote) {
-                    warnHtml += `<div style="margin-top:4px;color:#64748b;font-size:12px;">${_escapeHtml(exampleNote)}</div>`;
-                }
-            } else if (blocked) {
-                const body = userMsg || '來源題疑似錯分或來源題品質不可用';
-                warnHtml = `<div style="margin-top:8px;color:#b91c1c;"><b>Phase 1 阻擋</b>：${ _escapeHtml(body) } blockers=${ _escapeHtml(blockers.join(', ') || '(none)') }</div>`;
-                if (exampleNote) {
-                    warnHtml += `<div style="margin-top:4px;color:#64748b;font-size:12px;">${_escapeHtml(exampleNote)}</div>`;
-                }
-            } else if (aiUnavailable && blockers.length) {
-                warnHtml = `<div style="margin-top:6px;color:#64748b;font-size:12px;">rule fallback 診斷（非 AI-first 結論）：blockers=${_escapeHtml(blockers.join(', '))}</div>`;
-            } else if (phase1CanContinueWarning) {
-                warnHtml = `<div style="margin-top:8px;color:#b45309;"><b>Phase 1 完成但有提醒</b>：可進入 Phase 2，但建議先檢查以下項目。</div>`;
-            }
-            const subMismatch = Array.isArray(data.same_family_subskill_mismatch_examples)
-                ? data.same_family_subskill_mismatch_examples : [];
-            const subWarnHtml = subMismatch.length
-                ? `<div style="margin-top:8px;color:#b45309;"><b>子技能提醒：</b>來源題與技能屬於同一大類，但子技能不同；請確認是否要放在此技能底下。 suggested_action=${_escapeHtml(data.suggested_action || 'review_source_mapping_or_skill_scope')}</div>`
-                : '';
-            const anchor = data.main_skill_anchor && typeof data.main_skill_anchor === 'object' ? data.main_skill_anchor : {};
-            const famDist = data.source_family_distribution && typeof data.source_family_distribution === 'object'
-                ? JSON.stringify(data.source_family_distribution) : '';
-            const taskDist = data.observed_target_task_distribution && typeof data.observed_target_task_distribution === 'object'
-                ? JSON.stringify(data.observed_target_task_distribution) : '';
-            const candFam = Array.isArray(data.candidate_problem_type_families)
-                ? data.candidate_problem_type_families.join(', ') : '';
-            const expectedSub = Array.isArray(data.expected_subskill_candidates)
-                ? data.expected_subskill_candidates.join(', ')
-                : (Array.isArray(anchor.expected_subskill_candidates) ? anchor.expected_subskill_candidates.join(', ') : '');
-            return `${ruleFallbackBanner}${warnHtml}${_renderPhase1WarningSummary(data)}${_renderPhase1InductionSourceSummary(data)}${_renderPhase1SourceQualitySection(data)}${subWarnHtml}
-                <div style="margin-top:8px;"><b>alignment_score:</b> ${_escapeHtml(data.alignment_score ?? '')};
-                <b>source_alignment_status:</b> ${_escapeHtml(status)}</div>
-                <div><b>expected_subskill_candidates:</b> ${_escapeHtml(expectedSub)}</div>
-                <div><b>skill_anchor_scope:</b> ${_escapeHtml(anchor.skill_anchor_scope ?? '')}</div>
-                <div><b>source_family_distribution:</b> ${_escapeHtml(famDist)}</div>
-                <div><b>observed_target_task_distribution:</b> ${_escapeHtml(taskDist)}</div>
-                <div><b>candidate_problem_type_families:</b> ${_escapeHtml(candFam)}</div>
-                <table><thead><tr><th>example_id</th><th>target_task</th><th>task_family</th><th>alignment_kind</th><th>subskill_match</th><th>score</th><th>included</th><th>exclude_reason</th></tr></thead>
-                <tbody>${alignRows || '<tr><td colspan="8">(none)</td></tr>'}</tbody></table>`;
-        }
-
-        function _renderPhase1InductionDetails(data) {
-            const auto = data?.auto_review_summary && typeof data.auto_review_summary === 'object' ? data.auto_review_summary : {};
-            const features = Array.isArray(auto.example_features) ? auto.example_features : [];
-            const clusters = Array.isArray(auto.induction_clusters) ? auto.induction_clusters : (Array.isArray(data.induction_clusters) ? data.induction_clusters : []);
-            const alignHtml = _renderPhase1AlignmentDetails(data);
-            const semRows = Array.isArray(data.semantic_classifications) ? data.semantic_classifications : [];
-            const semHtml = semRows.length || data.ai_semantic_status
-                ? (() => {
-                    const aiStatus = String(data.ai_semantic_status || 'not_used');
-                    const unavailableReason = String(data.ai_semantic_unavailable_reason || '').trim();
-                    const invalidReason = String(data.ai_invalid_response_reason || '').trim();
-                    const invalidNote = (aiStatus === 'invalid_response' || aiStatus === 'partial_invalid_response' || aiStatus === 'partial_invalid_and_unavailable')
-                        ? '<div style="margin-top:6px;color:#b45309;"><b>AI 回應格式解析失敗</b>，未採用 AI 分類，請檢查 raw response 或重跑。'
-                        + (invalidReason ? ' (' + _escapeHtml(invalidReason) + ')' : '')
-                        + '</div>'
-                        : '';
-                    const unavailableNote = aiStatus === 'unavailable'
-                        ? '<div style="margin-top:6px;color:#b45309;"><b>AI 語意分類未執行</b>：'
-                        + _escapeHtml(unavailableReason || 'unknown')
-                        + '。已退回 rule fallback，請先設定 AI key 後重新執行 Phase 1。'
-                        + '</div>'
-                        : (aiStatus === 'partial_unavailable'
-                            ? '<div style="margin-top:6px;color:#b45309;">部分題目 AI 不可用，已混用 rule fallback。</div>'
-                            : '');
-                    const diagRows = Array.isArray(data.classification_diagnostics) ? data.classification_diagnostics : [];
-                    const diagTable = diagRows.length
-                        ? `<div style="margin-top:8px;overflow:auto;"><table style="font-size:12px;"><thead><tr>
-                            <th>id</th><th>ai_status</th><th>rule</th><th>AI</th><th>final</th><th>candidate</th><th>source</th><th>parser</th><th>align</th>
-                            </tr></thead><tbody>${diagRows.map((d) => `<tr>
-                            <td>${_escapeHtml(d.example_id ?? '')}</td>
-                            <td>${_escapeHtml(d.ai_semantic_status ?? '')}</td>
-                            <td>${_escapeHtml(d.rule_target_task ?? '')}/${_escapeHtml(d.rule_task_family ?? '')}</td>
-                            <td>${_escapeHtml(d.ai_target_task ?? '')}/${_escapeHtml(d.ai_task_family ?? '')} (${_escapeHtml(d.ai_confidence ?? '')})</td>
-                            <td>${_escapeHtml(d.final_target_task ?? '')}/${_escapeHtml(d.final_task_family ?? '')}</td>
-                            <td>${_escapeHtml(d.ai_best_candidate_id ?? '')}</td>
-                            <td>${_escapeHtml(d.classifier_source ?? '')}</td>
-                            <td title="${_escapeHtml(d.parser_error ?? '')}">${_escapeHtml((d.ai_invalid_response_reason || d.parser_error || '').slice(0, 40))}</td>
-                            <td>${_escapeHtml(d.alignment_kind ?? '')}</td>
-                            </tr>`).join('')}</tbody></table></div>`
-                        : '';
-                    const structHint = '<div style="margin-top:4px;color:#475569;font-size:12px;">本題分類參考了例題/隨堂練習對應關係與同小節順序脈絡。</div>';
-                    const rows = semRows.map((r) => {
-                        const src = String(r.classifier_source || '');
-                        const overrideWarn = src === 'ai_overrode_rule'
-                            ? ' style="background:#fef9c3;"'
-                            : '';
-                        const conflictWarn = (src === 'ai_rule_conflict_review' || r.requires_human_action || r.structure_consistency === 'mismatch')
-                            ? ' style="background:#fee2e2;"'
-                            : '';
-                        const rowStyle = conflictWarn || overrideWarn;
-                        const stLabel = r.source_type === 'worked_example' ? '例題' : (r.source_type === 'in_class_practice' ? '隨堂練習' : (r.source_type || ''));
-                        const numLabel = r.practice_label || r.example_label || '';
-                        return `<tr${rowStyle}>
-                            <td>${_escapeHtml(r.example_id ?? '')}</td>
-                            <td>${_escapeHtml(stLabel)} / ${_escapeHtml(numLabel)}</td>
-                            <td>${_escapeHtml(r.linked_example ?? '')}</td>
-                            <td>${_escapeHtml(r.structure_consistency ?? '')}</td>
-                            <td>${_escapeHtml(r.structure_context_used ? '是' : '')}${_escapeHtml(r.sequence_context_used ? '/序' : '')}</td>
-                            <td>${_escapeHtml(r.ai_target_task ?? '')} / ${_escapeHtml(r.ai_task_family ?? '')} (${_escapeHtml(r.ai_confidence ?? '')})</td>
-                            <td>${_escapeHtml(r.rule_target_task ?? '')} / ${_escapeHtml(r.rule_task_family ?? '')}</td>
-                            <td>${_escapeHtml(r.final_target_task ?? '')} / ${_escapeHtml(r.final_task_family ?? '')}</td>
-                            <td>${_escapeHtml(src)}</td>
-                            <td>${_escapeHtml(r.conflict_reason ?? r.confidence_adjustment_reason ?? '')}</td>
-                        </tr>`;
-                    }).join('');
-                    const scopeNote = '<div style="margin-top:4px;color:#475569;font-size:12px;">本階段假設來源題已人工確認屬於目前 skill；AI 只在此 skill 範圍內選擇最合適子技能與題型。</div>';
-                    const anchorBlock = data.main_skill_anchor && typeof data.main_skill_anchor === 'object'
-                        ? `<div style="margin-top:6px;font-size:12px;"><b>main_skill_anchor:</b> scope=${_escapeHtml(data.main_skill_anchor.skill_anchor_scope || '')}; families=${_escapeHtml((data.main_skill_anchor.expected_task_families || []).join(', '))}; subskills=${_escapeHtml((data.main_skill_anchor.expected_subskill_candidates || []).join(', '))}</div>`
-                        : '';
-                    return `<div style="margin-top:10px;"><b>AI / Rule 語意分類</b> (status: ${_escapeHtml(aiStatus)})${scopeNote}${anchorBlock}${invalidNote}${unavailableNote}${diagTable}${structHint}
-                        <table><thead><tr><th>example_id</th><th>來源類型/編號</th><th>對應例題</th><th>結構一致性</th><th>結構脈絡</th><th>AI 判斷</th><th>Rule 判斷</th><th>最終判斷</th><th>source</th><th>備註</th></tr></thead>
-                        <tbody>${rows || '<tr><td colspan="10">(none)</td></tr>'}</tbody></table></div>`;
-                })()
-                : '';
-            if (!features.length && !clusters.length) return alignHtml + semHtml;
-            const featRows = features.map((f) => `<tr>
-                <td>${_escapeHtml(f.source_example_id ?? '')}</td>
-                <td>${_escapeHtml(f.answer_type ?? '')}</td>
-                <td>${_escapeHtml(f.target_task ?? '')}</td>
-                <td>${_escapeHtml(f.has_choices ?? '')}</td>
-                <td>${_escapeHtml(f.stem_embeds_choices ?? '')}</td>
-                <td>${_escapeHtml((f.math_objects || []).join(', '))}</td>
-            </tr>`).join('');
-            const clusterBlocks = clusters.map((c, i) => `
-                <div style="margin-top:8px;"><b>分群 ${i + 1}</b>
-                <div>answer_type: ${_escapeHtml(c.answer_type || '')}</div>
-                <div>source_example_ids: ${_escapeHtml((c.source_example_ids || []).join(', '))}</div>
-                <div>grouping_reason: ${_escapeHtml(c.grouping_reason || '')}</div>
-                <div>feature_signature: ${_escapeHtml(JSON.stringify(c.feature_signature || []))}</div></div>
-            `).join('');
-            const candPts = Array.isArray(data.candidate_problem_types) ? data.candidate_problem_types : [];
-            const gcBlocks = candPts.map((c) => {
-                const spec = c.problem_type_spec_draft && typeof c.problem_type_spec_draft === 'object' ? c.problem_type_spec_draft : {};
-                const gc = spec.generator_contract && typeof spec.generator_contract === 'object' ? spec.generator_contract : {};
-                const variants = Array.isArray(gc.template_variants) ? gc.template_variants.map((v) => v.id || v.label).filter(Boolean) : [];
-                const dims = Array.isArray(gc.variation_dimensions) ? gc.variation_dimensions.join(', ') : '';
-                return `<div style="margin-top:6px;font-size:12px;"><b>${_escapeHtml(c.problem_type_id || '')}</b> — templates: ${_escapeHtml(variants.join(', '))}; 變化維度: ${_escapeHtml(dims)}; answer_shape: ${_escapeHtml(gc.answer_shape || '')}</div>`;
-            }).join('');
-            const gcSection = gcBlocks
-                ? `<div style="margin-top:8px;"><b>generator_contract（題型變化度）</b>${gcBlocks}</div>`
-                : '';
-            return `${alignHtml}${semHtml}
-                <div style="margin-top:10px;"><b>spec_mode:</b> ${_escapeHtml(data.spec_mode || '')}</div>
-                ${gcSection}
-                <div style="margin-top:8px;"><b>ExampleFeature</b></div>
-                <table><thead><tr><th>example_id</th><th>answer_type</th><th>target_task</th><th>has_choices</th><th>stem_embeds</th><th>math_objects</th></tr></thead>
-                <tbody>${featRows || '<tr><td colspan="6">(none)</td></tr>'}</tbody></table>
-                <div style="margin-top:8px;"><b>分群結果</b>${clusterBlocks || '<div>(none)</div>'}</div>
-            `;
-        }
-
-        function openGencodeWizard(skillId) {
-            currentGencodeSkillId = skillId;
-            document.getElementById('gencodeSkillId').textContent = skillId;
-            document.getElementById('gencodePhase1Result').textContent = '尚未執行 Phase 1';
-            document.getElementById('gencodePhase2Result').textContent = '尚未執行 Phase 2';
-            document.getElementById('gencodePhase3Result').textContent = '尚未執行 Phase 3';
-            document.getElementById('gencodeAiExplanation').textContent = 'AI 解讀摘要：尚未產生';
-            _setPhaseStatus('phase1', '尚未執行');
-            _setPhaseStatus('phase2', '尚未執行');
-            _setPhaseStatus('phase3', '尚未執行');
-            document.getElementById('gencodePhase1Btn').disabled = false;
-            document.getElementById('gencodePhase2Btn').disabled = true;
-            document.getElementById('gencodePhase3Btn').disabled = true;
-            document.getElementById('gencodeModal').style.display = 'block';
-        }
-
-        async function runGencodePhase1() {
-            if (!currentGencodeSkillId) return;
-            const btn = document.getElementById('gencodePhase1Btn');
-            const box = document.getElementById('gencodePhase1Result');
-            btn.disabled = true;
-            box.textContent = '執行中...';
-            _setPhaseStatus('phase1', '執行中');
-            try {
-                const specModeEl = document.getElementById('gencodeSpecMode');
-                const spec_mode = specModeEl ? String(specModeEl.value || 'ai_first_induce_from_sources') : 'ai_first_induce_from_sources';
-                const resp = await fetch(`/admin/gencode/skills/${encodeURIComponent(currentGencodeSkillId)}/phase1`, {
-                    method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ dry_run: true, spec_mode })
-                });
-                const data = await resp.json();
-                const lowCoreOnly = _isPhase1LowCoreOnly(data);
-                const canContinueWarning = _isPhase1CanContinueWarning(data);
-                const canContinueByFallbackSignal = _isPhase1CanContinueByFallbackSignal(data);
-                const phaseCanContinue = !!data?.can_continue || canContinueWarning || canContinueByFallbackSignal;
-                if ((!resp.ok || !data.ok) && !lowCoreOnly && !phaseCanContinue) {
-                    throw new Error(data.error || data.summary_message || `HTTP ${resp.status}`);
-                }
-                const phaseBlocked = !phaseCanContinue;
-                const phase1StatusText = phaseBlocked
-                    ? 'Phase 1 阻擋'
-                    : ((canContinueWarning || canContinueByFallbackSignal) ? '完成但有提醒' : (data.phase_status || '完成'));
-                _setPhaseStatus('phase1', phase1StatusText);
-                _updateAiExplanation(data);
-                const candidates = Array.isArray(data.candidate_problem_types) ? data.candidate_problem_types : [];
-                const rows = candidates.map((c) => {
-                    const note = String(c.coordinate_pair_presentation_note || '').trim();
-                    const checkerMeta = [
-                        c.answer_semantics ? `semantics=${c.answer_semantics}` : '',
-                        c.presentation_mode ? `presentation=${c.presentation_mode}` : '',
-                        c.source_has_choices ? 'source_has_choices=true' : '',
-                        c.checker_selection_reason ? `reason=${c.checker_selection_reason}` : '',
-                    ].filter(Boolean).join('; ');
-                    return `<tr>
-                        <td>${_escapeHtml(c.problem_type_id || c.proposed_problem_type_id || '')}</td>
-                        <td>${_escapeHtml(c.display_name || '')}</td>
-                        <td>${_escapeHtml(c.matched_example_count ?? 0)}</td>
-                        <td>${_escapeHtml(c.grouping_reason || '')}</td>
-                        <td>${_escapeHtml(c.checker_key_proposal || c.selected_checker || '')}</td>
-                        <td>${_escapeHtml(c.equivalence_type_proposal || '')}</td>
-                        <td>${_escapeHtml(checkerMeta)}</td>
-                        <td>${note ? _escapeHtml(note) : ''}</td>
-                    </tr>`;
-                }).join('');
-                const summaryClass = lowCoreOnly ? 'gencode-summary' : 'gencode-summary';
-                const summaryStyle = lowCoreOnly ? 'color:#b45309;' : '';
-                box.innerHTML = `
-                    <div class="${summaryClass}" style="${summaryStyle}">${_escapeHtml(data.summary_message || data.alignment_user_message || '')}</div>
-                    <div><b>來源題數:</b> ${_escapeHtml(data.source_example_count ?? 0)};<b>候選題型數:</b> ${candidates.length}</div>
-                    ${_renderPhase1InductionDetails(data)}
-                    <table><thead><tr><th>problem_type_id</th><th>display_name</th><th>matched</th><th>grouping_reason</th><th>checker</th><th>equivalence</th><th>answer_contract</th><th>note</th></tr></thead><tbody>${rows || '<tr><td colspan="8">(none)</td></tr>'}</tbody></table>
-                    ${_renderHumanActions(data)}
-                    ${_renderReportsList(data.reports)}
-                    ${_renderClassifierRegisterPanel(data)}
-                `;
-                const phaseBlockedByPolicy = !phaseCanContinue;
-                document.getElementById('gencodePhase2Btn').disabled = phaseBlocked;
-                if (phaseBlockedByPolicy) {
-                    Swal.fire('Phase 1 阻擋', data.alignment_user_message || data.summary_message || '來源題疑似錯分或來源題品質不可用。', 'error');
-                } else if (canContinueWarning || canContinueByFallbackSignal) {
-                    Swal.fire('Phase 1 完成但有提醒', '可進入 Phase 2，但建議先檢查提醒項目。', 'warning');
-                }
-            } catch (e) {
-                _setPhaseStatus('phase1', '錯誤');
-                box.innerHTML = `<div style="color:#b91c1c;"><b>錯誤:</b> ${_escapeHtml(e.message || String(e))}</div>`;
-                Swal.fire('Phase 1 錯誤', String(e.message || e), 'error');
-            } finally { btn.disabled = false; }
-        }
-
-        async function runClassifierRegister(confirmRegister) {
-            if (!currentGencodeSkillId) return;
-            if (confirmRegister) {
-                const decision = await Swal.fire({
-                    title: '確認註冊 classifier',
-                    text: '確認要將此 classifier draft 註冊為正式 rule pack？系統會先備份正式 YAML。',
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonText: '確認註冊',
-                    cancelButtonText: '取消'
-                });
-                if (!decision.isConfirmed) return;
-            }
-            const previewBtn = document.getElementById('gencodeClassifierPreviewBtn');
-            const confirmBtn = document.getElementById('gencodeClassifierConfirmBtn');
-            const errEl = document.getElementById('gencodeClassifierRegisterError');
-            const resultEl = document.getElementById('gencodeClassifierRegisterResult');
-            if (previewBtn) previewBtn.disabled = true;
-            if (confirmBtn) confirmBtn.disabled = true;
-            if (errEl) errEl.textContent = '';
-            if (resultEl) resultEl.textContent = '執行中...';
-            try {
-                const resp = await fetch('/admin/gencode/classifier/register', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ skill_id: currentGencodeSkillId, confirm: !!confirmRegister })
-                });
-                const data = await resp.json();
-                const success = !!data?.success;
-                const status = String(data?.register_status || '');
-                const blockers = Array.isArray(data?.blockers) ? data.blockers : [];
-                const validation = Array.isArray(data?.validation_errors) ? data.validation_errors : [];
-                if (resultEl) {
-                    resultEl.innerHTML = `
-                        <table><tbody>
-                            <tr><th>register_status</th><td>${_escapeHtml(status)}</td></tr>
-                            <tr><th>skill_id</th><td>${_escapeHtml(data?.skill_id || '')}</td></tr>
-                            <tr><th>draft_path</th><td><code>${_escapeHtml(data?.draft_path || '')}</code></td></tr>
-                            <tr><th>formal_yaml_path</th><td><code>${_escapeHtml(data?.formal_yaml_path || '')}</code></td></tr>
-                            <tr><th>backup_path</th><td><code>${_escapeHtml(data?.backup_path || '')}</code></td></tr>
-                            <tr><th>summary_message</th><td>${_escapeHtml(data?.summary_message || '')}</td></tr>
-                            <tr><th>blockers</th><td>${_escapeHtml(blockers.join(', ') || '(none)')}</td></tr>
-                            <tr><th>validation_errors</th><td>${_escapeHtml(validation.join(', ') || '(none)')}</td></tr>
-                        </tbody></table>
-                    `;
-                }
-                if (success && status === 'preview') {
-                    Swal.fire('預覽完成', '預覽完成：可以註冊 classifier rule pack。尚未覆寫正式 YAML。', 'info');
-                } else if (success && status === 'registered') {
-                    Swal.fire('註冊成功', '註冊成功：classifier rule pack 已更新。下次 Phase 1 將使用 rule_pack。', 'success');
-                } else {
-                    const msg = `註冊失敗：${data?.summary_message || blockers.join(', ') || validation.join(', ') || '未知錯誤'}`;
-                    if (errEl) errEl.textContent = msg;
-                    Swal.fire('註冊失敗', msg, 'error');
-                }
-            } catch (e) {
-                const msg = `註冊失敗：網路或伺服器錯誤。${e.message || String(e)}`;
-                if (errEl) errEl.textContent = msg;
-                if (resultEl) resultEl.innerHTML = `<div style="color:#b91c1c;"><b>錯誤:</b> ${_escapeHtml(msg)}</div>`;
-                Swal.fire('註冊失敗', msg, 'error');
-            } finally {
-                if (previewBtn) previewBtn.disabled = false;
-                if (confirmBtn) confirmBtn.disabled = false;
-            }
-        }
-
-        async function runGencodePhase2() {
-            if (!currentGencodeSkillId) return;
-            const btn = document.getElementById('gencodePhase2Btn');
-            const box = document.getElementById('gencodePhase2Result');
-            btn.disabled = true;
-            box.textContent = '執行中...';
-            _setPhaseStatus('phase2', '執行中');
-            try {
-                const resp = await fetch(`/admin/gencode/skills/${encodeURIComponent(currentGencodeSkillId)}/phase2`, {
-                    method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ dry_run: true, accepted_problem_types: [], excluded_example_ids: [] })
-                });
-                const data = await resp.json();
-                if (!resp.ok || !data.ok) throw new Error(data.error || data.summary_message || `HTTP ${resp.status}`);
-                _setPhaseStatus('phase2', data.phase_status || '完成');
-                _updateAiExplanation(data);
-                const results = Array.isArray(data.generator_results) ? data.generator_results : [];
-                const rows = results.map((r) => {
-                    const div = r.diversity_sampling && typeof r.diversity_sampling === 'object' ? r.diversity_sampling : {};
-                    const tmplDist = div.template_variant_distribution || r.template_variant_distribution || {};
-                    const uniq = r.unique_signature_count ?? div.unique_signature_count ?? '';
-                    const repWarn = (r.repetition_warnings || div.repetition_warnings || []).join(', ');
-                    const allWarn = (r.warnings || []).concat(repWarn ? [repWarn] : []).filter(Boolean).join(', ');
-                    const usable = r.usable_for_phase3 === true ? 'yes' : (r.usable_for_phase3 === false ? 'no' : '');
-                    return `<tr><td>${_escapeHtml(r.problem_type_id || '')}</td><td>${_escapeHtml(r.generator_status || '')}</td><td>${_escapeHtml(usable)}</td><td>${_escapeHtml(r.dynamic_sampling_status || '')}</td><td>${_escapeHtml(uniq)}</td><td>${_escapeHtml(JSON.stringify(tmplDist))}</td><td>${_escapeHtml(allWarn)}</td><td>${_escapeHtml((r.blockers || []).join(','))}</td></tr>`;
-                }).join('');
-                box.innerHTML = `
-                    <div class="gencode-summary">${_escapeHtml(data.summary_message || '')}</div>
-                    <div style="margin:6px 0;color:#475569;font-size:12px;">題型變化度：dynamic_sampling 檢查 unique signature、模板覆蓋與變數範圍；重複度警告不代表 generator 崩潰。</div>
-                    <table><thead><tr><th>problem_type_id</th><th>status</th><th>Phase3</th><th>多樣性抽樣</th><th>unique_sig</th><th>模板分布</th><th>warnings</th><th>blockers</th></tr></thead><tbody>${rows || '<tr><td colspan="8">(none)</td></tr>'}</tbody></table>
-                    ${_renderHumanActions(data)}
-                    ${_renderReportsList(data.reports)}
-                `;
-                document.getElementById('gencodePhase3Btn').disabled = !(data.can_continue || (data.packaging_usable_count > 0));
-            } catch (e) {
-                _setPhaseStatus('phase2', '錯誤');
-                box.innerHTML = `<div style="color:#b91c1c;"><b>錯誤:</b> ${_escapeHtml(e.message || String(e))}</div>`;
-                Swal.fire('Phase 2 錯誤', String(e.message || e), 'error');
-            } finally { btn.disabled = false; }
-        }
-
-        async function runGencodePhase3() {
-            if (!currentGencodeSkillId) return;
-            const btn = document.getElementById('gencodePhase3Btn');
-            const box = document.getElementById('gencodePhase3Result');
-            btn.disabled = true;
-            box.textContent = '執行中...';
-            _setPhaseStatus('phase3', '執行中');
-            try {
-                const resp = await fetch(`/admin/gencode/skills/${encodeURIComponent(currentGencodeSkillId)}/phase3`, {
-                    method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ dry_run: true, accepted_generator_keys: [] })
-                });
-                const data = await resp.json();
-                if (!resp.ok || !data.ok) throw new Error(data.error || data.summary_message || `HTTP ${resp.status}`);
-                _setPhaseStatus('phase3', data.phase_status || '完成');
-                _updateAiExplanation(data);
-                const pc = data.publish_check || {};
-                const draftPassMsg = pc.draft_check_passed ? '<div class="gencode-summary">Draft 已通過檢查，可進入發布流程。</div>' : '';
-                                const packDiag = data.packaging_diagnostics && typeof data.packaging_diagnostics === 'object' ? data.packaging_diagnostics : null;
-                const packDiagHtml = packDiag ? `<div class="gencode-summary" style="margin-top:8px;"><b>Packaging:</b> candidates=${_escapeHtml(packDiag.candidate_count ?? 0)}, included=${_escapeHtml(packDiag.included_count ?? 0)}, excluded=${_escapeHtml(packDiag.excluded_count ?? 0)}</div>` : '';
-                const packUsable = data.packaging_usable_count != null ? `<div><b>packaging_usable_count:</b> ${_escapeHtml(data.packaging_usable_count)}</div>` : '';
-                const runtimeBlockMsg = pc.can_mark_runtime_ready === false ? '<div class="gencode-summary">目前尚未標記 runtime-ready（不影響本次 Phase 3 draft 產出）。</div>' : '';
-                const formalCandidateMsg = (pc.can_publish_formal && data.dry_run) ? '<div class="gencode-summary">目前為 dry-run。可先預覽發布，再按確認發布正式覆寫技能檔。</div>' : '';
-                const draftPath = data.skill_file_path || (data.reports && data.reports.draft_skill_file) || '';
-                const phase3Md = (data.reports && data.reports.phase3_package_summary_md) || '';
-                const smokeRaw = pc.runtime_smoke_raw || data.runtime_smoke_raw || {};
-                const publishControls = pc.can_publish_formal ? `
-                    <div style="margin-top:10px; border-top:1px solid #e5e7eb; padding-top:10px;">
-                      <div><b>發布操作</b>：可先預覽，確認後再正式發布。</div>
-                      <div style="margin-top:8px; display:flex; gap:8px; flex-wrap:wrap;">
-                        <button id="gencodePublishPreviewBtn" type="button" class="btn btn-secondary" onclick="runGencodePublishDraft(false)">預覽發布</button>
-                        <button id="gencodePublishConfirmBtn" type="button" class="btn btn-secondary" onclick="runGencodePublishDraft(true)">確認發布</button>
-                      </div>
-                      <div id="gencodePublishError" style="margin-top:8px; color:#b91c1c;"></div>
-                      <div id="gencodePublishResult" class="gencode-result-box" style="margin-top:8px;">尚未執行發布</div>
-                    </div>
-                ` : `
-                    <div style="margin-top:10px; border-top:1px solid #e5e7eb; padding-top:10px;">
-                      <div><b>正式發布尚未開放</b>：${_escapeHtml((pc.formal_publish_blockers || pc.blockers || []).join(', ') || '請先修正 publish_check blockers')}</div>
-                      <div style="margin-top:8px; display:flex; gap:8px; flex-wrap:wrap;">
-                        <button type="button" class="btn btn-secondary" onclick="runGencodePhase3()">重新執行 Phase 3</button>
-                        <button type="button" class="btn btn-secondary" onclick="runGencodePhase1()">重新執行 Phase 1</button>
-                        <button type="button" class="btn btn-secondary" onclick="runGencodeAutoPipeline()">重新執行 Phase 1–3</button>
-                      </div>
-                      <div style="margin-top:8px; display:flex; gap:8px; flex-wrap:wrap;">
-                        ${draftPath ? `<a class="btn btn-secondary" href="file:///${String(draftPath).replace(/\\\\/g, '/')}" target="_blank" rel="noopener">查看草稿</a>` : ''}
-                        ${phase3Md ? `<a class="btn btn-secondary" href="file:///${String(phase3Md).replace(/\\\\/g, '/')}" target="_blank" rel="noopener">Phase3 報告 MD</a>` : ''}
-                      </div>
-                      <pre class="gencode-result-box" style="margin-top:8px; max-height:180px; overflow:auto;">runtime_smoke_raw: ${_escapeHtml(JSON.stringify(smokeRaw, null, 2))}</pre>
-                    </div>
-                `;
-                box.innerHTML = `
-                    <div class="gencode-summary">${_escapeHtml(data.summary_message || '')}</div>
-                    <table><tbody>
-                        <tr><th>phase_status</th><td>${_escapeHtml(data.phase_status || '')}</td></tr>
-                        <tr><th>skill_file_path</th><td><code>${_escapeHtml(data.skill_file_path || '')}</code></td></tr>
-                        <tr><th>package_status</th><td>${_escapeHtml(data.package_status || '')}</td></tr>
-                        <tr><th>py_compile_status</th><td>${_escapeHtml(data.py_compile_status || '')}</td></tr>
-                        <tr><th>runtime_smoke_status</th><td>${_escapeHtml(data.runtime_smoke_status || '')}</td></tr>
-                        <tr><th>publish_check.runtime_smoke_status</th><td>${_escapeHtml(pc.runtime_smoke_status || '')}</td></tr>
-                        <tr><th>next_action</th><td>${_escapeHtml(data.next_action || '')}</td></tr>
-                    </tbody></table>
-                    <h4>publish_check</h4>
-                    <table><tbody>
-                        <tr><th>draft_check_passed</th><td>${_escapeHtml(pc.draft_check_passed)}</td></tr>
-                        <tr><th>can_publish_draft</th><td>${_escapeHtml(pc.can_publish_draft)}</td></tr>
-                        <tr><th>can_publish_formal</th><td>${_escapeHtml(pc.can_publish_formal)}</td></tr>
-                        <tr><th>can_mark_runtime_ready</th><td>${_escapeHtml(pc.can_mark_runtime_ready)}</td></tr>
-                        <tr><th>formal_publish_blockers</th><td>${_escapeHtml((pc.formal_publish_blockers || []).join(', ') || '(none)')}</td></tr>
-                        <tr><th>runtime_ready_blockers</th><td>${_escapeHtml((pc.runtime_ready_blockers || []).join(', ') || '(none)')}</td></tr>
-                        <tr><th>warnings</th><td>${_escapeHtml((pc.warnings || []).join(', ') || '(none)')}</td></tr>
-                        <tr><th>blockers</th><td>${_escapeHtml((pc.blockers || []).join(', ') || '(none)')}</td></tr>
-                        <tr><th>summary_message</th><td>${_escapeHtml(pc.summary_message || '')}</td></tr>
-                    </tbody></table>
-                    ${draftPassMsg}
-                    ${packUsable}${packDiagHtml}${runtimeBlockMsg}
-                    ${formalCandidateMsg}
-                    ${_renderReportsList(data.reports)}
-                    ${publishControls}
-                `;
-            } catch (e) {
-                _setPhaseStatus('phase3', '錯誤');
-                box.innerHTML = `<div style="color:#b91c1c;"><b>錯誤:</b> ${_escapeHtml(e.message || String(e))}</div>`;
-                Swal.fire('Phase 3 錯誤', String(e.message || e), 'error');
-            } finally { btn.disabled = false; }
-        }
-
-        async function runGencodeAutoPipeline() {
-            if (!currentGencodeSkillId) return;
-            try {
-                const resp = await fetch(`/admin/gencode/skills/${encodeURIComponent(currentGencodeSkillId)}/run-auto-pipeline`, {
-                    method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ dry_run: true })
-                });
-                const data = await resp.json();
-                if (!resp.ok || !data.ok) throw new Error(data.error || data.pipeline_status || `HTTP ${resp.status}`);
-                await runGencodePhase1();
-                await runGencodePhase2();
-                await runGencodePhase3();
-                Swal.fire('Phase 1–3 完成', data.pipeline_status || 'auto pipeline finished', 'success');
-            } catch (e) {
-                Swal.fire('Auto Pipeline 錯誤', String(e.message || e), 'error');
-            }
-        }
-
-        async function runGencodePublishDraft(confirmPublish) {
-            if (!currentGencodeSkillId) return;
-            if (confirmPublish) {
-                const result = await Swal.fire({
-                    title: '確認發布',
-                    text: '將把 draft 覆寫到正式技能檔，是否繼續？',
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonText: '確認發布',
-                    cancelButtonText: '取消'
-                });
-                if (!result.isConfirmed) return;
-            }
-            const target = document.getElementById('gencodePublishResult');
-            const errEl = document.getElementById('gencodePublishError');
-            const previewBtn = document.getElementById('gencodePublishPreviewBtn');
-            const confirmBtn = document.getElementById('gencodePublishConfirmBtn');
-            if (previewBtn) previewBtn.disabled = true;
-            if (confirmBtn) confirmBtn.disabled = true;
-            if (errEl) errEl.textContent = '';
-            if (target) target.textContent = '執行中...';
-            try {
-                const resp = await fetch(`/admin/gencode/skills/${encodeURIComponent(currentGencodeSkillId)}/publish-draft`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ confirm: !!confirmPublish, allow_runtime_ready: false })
-                });
-                const data = await resp.json();
-                const blockers = Array.isArray(data?.blockers) ? data.blockers : [];
-                const isPreview = data?.publish_status === 'publish_preview' || data?.backup_status === 'preview_only';
-                const isSuccess = !isPreview && !!resp.ok && (
-                    data?.success === true
-                    || data?.publish_status === 'formal_published'
-                    || data?.publish_status === 'published'
-                    || (!!data?.ok && !!data?.formal_skill_file_path && String(data?.py_compile_status || '') === 'passed' && blockers.length === 0)
-                );
-                const isFailure = !isPreview && (
-                    data?.success === false
-                    || data?.publish_status === 'failed'
-                    || data?.publish_status === 'publish_failed'
-                    || !!data?.error
-                    || blockers.length > 0
-                    || String(data?.py_compile_status || '') === 'failed'
-                    || String(data?.runtime_smoke_status || '') === 'failed'
-                    || !resp.ok
-                );
-                const failReason = data?.error
-                    || data?.summary_message
-                    || (blockers.length ? blockers.join(', ') : '')
-                    || `py_compile=${data?.py_compile_status || 'unknown'}, runtime_smoke=${data?.runtime_smoke_status || 'unknown'}`
-                    || '發布失敗，但後端未提供詳細原因，請查看 Phase 3 report。';
-                if (target) {
-                    target.innerHTML = `
-                        <table><tbody>
-                            <tr><th>publish_status</th><td>${_escapeHtml(data.publish_status || '')}</td></tr>
-                            <tr><th>formal_skill_file_path</th><td><code>${_escapeHtml(data.formal_skill_file_path || '')}</code></td></tr>
-                            <tr><th>backup_path</th><td><code>${_escapeHtml(data.backup_path || '')}</code></td></tr>
-                            <tr><th>backup_status</th><td>${_escapeHtml(data.backup_status || '')}</td></tr>
-                            <tr><th>py_compile_status</th><td>${_escapeHtml(data.py_compile_status || '')}</td></tr>
-                            <tr><th>runtime_smoke_status</th><td>${_escapeHtml(data.runtime_smoke_status || '')}</td></tr>
-                            <tr><th>runtime_ready_marked</th><td>${_escapeHtml(data.runtime_ready_marked)}</td></tr>
-                            <tr><th>summary_message</th><td>${_escapeHtml(data.summary_message || '')}</td></tr>
-                        </tbody></table>
-                    `;
-                }
-                if (isPreview) {
-                    const msg = '發布預覽完成：尚未覆寫正式技能檔。按下確認發布後才會正式發布。';
-                    if (errEl) errEl.textContent = msg;
-                    Swal.fire('發布預覽完成', msg, 'info');
-                } else if (isSuccess) {
-                    if (errEl) errEl.textContent = '';
-                    const backupMsg = data?.backup_path || '無舊檔需備份';
-                    const runtimeHint = data?.can_mark_runtime_ready
-                        ? '發布成功：正式技能檔已更新，並已通過 runtime-ready gate。'
-                        : '尚未標記 runtime-ready，請先到 /practice 測試後再開放學生端。';
-                    Swal.fire(
-                        '發布成功',
-                        `發布成功：正式技能檔已更新。\n檔案：${data?.formal_skill_file_path || ''}\n備份：${backupMsg}\npy_compile：${data?.py_compile_status || ''}\nruntime_smoke：${data?.runtime_smoke_status || ''}\n提醒：${runtimeHint}`,
-                        'success'
-                    );
-                } else if (isFailure) {
-                    const msg = `發布失敗：${failReason}\n正式技能檔未更新，請修正後再重試。`;
-                    if (errEl) errEl.textContent = msg;
-                    Swal.fire('發布失敗', msg, 'error');
-                } else {
-                    const msg = `發布失敗：${failReason}\n正式技能檔未更新，請修正後再重試。`;
-                    if (errEl) errEl.textContent = msg;
-                    Swal.fire('發布失敗', msg, 'error');
-                }
-            } catch (e) {
-                const msg = `發布失敗：網路或伺服器錯誤。${e.message || String(e)}`;
-                if (errEl) errEl.textContent = msg;
-                if (target) target.innerHTML = `<div style="color:#b91c1c;"><b>錯誤:</b> ${_escapeHtml(msg)}</div>`;
-                Swal.fire('發布失敗', msg, 'error');
-            } finally {
-                if (previewBtn) previewBtn.disabled = false;
-                if (confirmBtn) confirmBtn.disabled = false;
-            }
-        }
-
-
-function openEditModal(skillId) {
+        function openEditModal(skillId) {
             // 1. 顯示 Loading
             Swal.fire({
                 title: '載入中...',
@@ -1802,7 +759,7 @@ function openEditModal(skillId) {
             });
 
             // 2. 發送請求
-            // 使用 url_for 動態生成網址,確保路徑正確
+            // 使用 url_for 動態生成網址，確保路徑正確
             const url = "{{ url_for('core.admin_get_skill_details', skill_id='SKILL_ID_PLACEHOLDER') }}".replace('SKILL_ID_PLACEHOLDER', skillId);
 
             fetch(url)
@@ -1811,7 +768,7 @@ function openEditModal(skillId) {
                     Swal.close(); // 關閉 Loading
 
                     if (data.success) {
-                        // [Fix] 定義 skill 變數,從回應資料中取出
+                        // [Fix] 定義 skill 變數，從回應資料中取出
                         const skill = data.data;
 
                         // 3. 填入資料
@@ -1863,9 +820,9 @@ function openEditModal(skillId) {
                 .then(response => response.json())
                 .then(data => {
                     if (data.length === 0) {
-                        resultDiv.innerHTML = '<p>太棒了!沒有發現幽靈程式。</p>';
+                        resultDiv.innerHTML = '<p>太棒了！沒有發現幽靈程式。</p>';
                     } else {
-                        let html = '<p>發現以下技能檔案沒有對應的資料庫紀錄:</p><ul class="ghost-list">';
+                        let html = '<p>發現以下技能檔案沒有對應的資料庫紀錄：</p><ul class="ghost-list">';
                         data.forEach(skill => {
                             html += `<li>${skill}.py</li>`;
                         });
@@ -1874,7 +831,7 @@ function openEditModal(skillId) {
                     }
                 })
                 .catch(error => {
-                    resultDiv.innerHTML = '<p style="color: red;">檢查失敗:' + error + '</p>';
+                    resultDiv.innerHTML = '<p style="color: red;">檢查失敗：' + error + '</p>';
                 });
         }
 
@@ -1901,7 +858,7 @@ function openEditModal(skillId) {
 
             if (curriculumSelect) {
                 curriculumSelect.addEventListener('change', function () {
-                    // 當課綱改變時,我們需要重設後面的選項。
+                    // 當課綱改變時，我們需要重設後面的選項。
                     document.getElementById('curriculum_changed').value = 'true';
                     form.submit();
                 });
@@ -1914,17 +871,17 @@ function openEditModal(skillId) {
             });
         });
 
-        // 全域函式:重新生成技能程式碼 (使用 SweetAlert2)
+        // 全域函式：重新生成技能程式碼 (使用 SweetAlert2)
         function regenerateSkillCode(skillId) {
             // 1. 確認對話框 (美化版)
             Swal.fire({
-                title: '確定要重新生成嗎?',
+                title: '確定要重新生成嗎？',
                 text: `這將會覆蓋現有的 ${skillId}.py 檔案。`,
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonColor: '#3085d6',
                 cancelButtonColor: '#d33',
-                confirmButtonText: '是的,重新生成!',
+                confirmButtonText: '是的，重新生成！',
                 cancelButtonText: '取消'
             }).then((result) => {
                 if (result.isConfirmed) {
@@ -1932,7 +889,7 @@ function openEditModal(skillId) {
                     // 2. 顯示 Loading (美化版)
                     Swal.fire({
                         title: 'AI 正在撰寫程式碼...',
-                        html: '請稍候,這可能需要 10-20 秒。<br><br><b>正在處理中...</b>',
+                        html: '請稍候，這可能需要 10-20 秒。<br><br><b>正在處理中...</b>',
                         allowOutsideClick: false,
                         didOpen: () => {
                             Swal.showLoading();
@@ -1940,7 +897,7 @@ function openEditModal(skillId) {
                     });
 
                     // 3. 發送請求 (使用動態 URL 生成)
-                    // 先生成一個帶有佔位符的網址,再用 JS 替換掉佔位符
+                    // 先生成一個帶有佔位符的網址，再用 JS 替換掉佔位符
                     const targetUrl = "{{ url_for('core.admin_regenerate_skill_code', skill_id='SKILL_ID_PLACEHOLDER') }}".replace('SKILL_ID_PLACEHOLDER', skillId);
 
                     fetch(targetUrl, {
@@ -1967,10 +924,10 @@ function openEditModal(skillId) {
                             if (data.success) {
                                 // 4. 成功提示 (美化版)
                                 Swal.fire({
-                                    title: '✨ 生成成功!',
+                                    title: '✨ 生成成功！',
                                     text: `技能程式碼 ${skillId}.py 已建立完成。`,
                                     icon: 'success',
-                                    confirmButtonText: '太棒了!'
+                                    confirmButtonText: '太棒了！'
                                 }).then(() => {
                                     window.location.reload();
                                 });
