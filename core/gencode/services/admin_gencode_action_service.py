@@ -274,3 +274,71 @@ def mark_admin_v3_example_verified(
         "component_id": component_id,
         "tracker_updated_at": updated.get("updated_at"),
     }
+
+
+def _count_verified_components_for_skill(conn: sqlite3.Connection, skill_id: str) -> int:
+    row = conn.execute(
+        """
+        SELECT COUNT(*) AS verified_count
+        FROM gencode_component_tracker
+        WHERE skill_id = ? AND gencode_status = 'verified'
+        """,
+        (str(skill_id or "").strip(),),
+    ).fetchone()
+    if row is None:
+        return 0
+    if hasattr(row, "keys"):
+        return int(row["verified_count"])
+    return int(row[0])
+
+
+def run_admin_v3_publish_for_skill(
+    *,
+    conn,
+    skill_id: str,
+    project_root: str,
+    staging_root: str,
+    force_publish: bool = False,
+) -> dict[str, object]:
+    """Publish one admin-gated V3 skill through the production publish service."""
+    if force_publish is not True:
+        raise ValueError("production_publish_requires_force_publish")
+
+    from core.gencode.v3_production_publish_service import V3_PRODUCTION_PUBLISH_ALLOWED_SKILLS
+
+    skill_key = str(skill_id or "").strip()
+    if skill_key not in V3_PRODUCTION_PUBLISH_ALLOWED_SKILLS:
+        raise ValueError("production_publish_not_allowed_for_skill")
+
+    verified_component_count = _count_verified_components_for_skill(conn, skill_key)
+    if verified_component_count < 1:
+        raise ValueError("no_verified_components")
+
+    from core.gencode.v3_production_publish_service import publish_single_v3_skill_to_production
+
+    publish_result = publish_single_v3_skill_to_production(
+        conn=conn,
+        skill_id=skill_key,
+        project_root=project_root,
+        staging_root=staging_root,
+    )
+    status = str(publish_result.get("status", "")).strip()
+    component_count = publish_result.get("component_count", 0)
+
+    return {
+        "status": status,
+        "skill_id": skill_key,
+        "verified_component_count": verified_component_count,
+        "component_count": component_count,
+        "project_root": publish_result.get("project_root"),
+        "staging_root": publish_result.get("staging_root"),
+        "smoke_status": publish_result.get("smoke_status"),
+        "staging_smoke_status": publish_result.get("staging_smoke_status"),
+        "production_smoke_status": publish_result.get("production_smoke_status"),
+        "compile": publish_result.get("compile"),
+        "promote": publish_result.get("promote"),
+        "rollback": publish_result.get("rollback"),
+        "production_smoke_error": publish_result.get("production_smoke_error"),
+        "timestamp": publish_result.get("timestamp"),
+        "publish": publish_result,
+    }

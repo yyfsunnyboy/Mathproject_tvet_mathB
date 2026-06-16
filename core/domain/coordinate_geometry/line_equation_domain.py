@@ -229,7 +229,18 @@ def _build_horizontal_line(
     else:
         y_val = rng.randint(coord_min, coord_max)
 
-    givens: dict[str, object] = {"y_intercept": y_val}
+    x1 = rng.randint(coord_min, coord_max)
+    for _ in range(200):
+        x2 = rng.randint(coord_min, coord_max)
+        if x2 != x1:
+            break
+    else:
+        x2 = x1 + 1 if x1 < coord_max else x1 - 1
+
+    givens: dict[str, object] = {
+        "point_a": [x1, y_val],
+        "point_b": [x2, y_val],
+    }
     answer, actual_type = _line_from_horizontal(y_val)
     return givens, answer, actual_type
 
@@ -247,7 +258,18 @@ def _build_vertical_line(
     else:
         x_val = rng.randint(coord_min, coord_max)
 
-    givens: dict[str, object] = {"x_intercept": x_val}
+    y1 = rng.randint(coord_min, coord_max)
+    for _ in range(200):
+        y2 = rng.randint(coord_min, coord_max)
+        if y2 != y1:
+            break
+    else:
+        y2 = y1 + 1 if y1 < coord_max else y1 - 1
+
+    givens: dict[str, object] = {
+        "point_a": [x_val, y1],
+        "point_b": [x_val, y2],
+    }
     answer, actual_type = _line_from_vertical(x_val)
     return givens, answer, actual_type
 
@@ -660,9 +682,17 @@ def _build_explanation_steps(
             f"化簡得 {canonical}",
         ]
     if actual_type == "horizontal_line":
-        return ["水平線斜率為 0", f"直接寫成 {canonical}"]
+        return [
+            "觀察兩點的 y 座標相同，判斷為水平線",
+            "水平線斜率為 0",
+            f"直接寫成 {canonical}",
+        ]
     if actual_type == "vertical_line":
-        return ["鉛直線斜率不存在", f"直接寫成 {canonical}"]
+        return [
+            "觀察兩點的 x 座標相同，判斷為鉛直線",
+            "鉛直線斜率不存在",
+            f"直接寫成 {canonical}",
+        ]
     return [
         "確認斜率與截距",
         "寫成斜截式",

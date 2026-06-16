@@ -528,6 +528,17 @@
                             {% if gencode.get('error_log') %}
                             <div><small style="color:#c0392b;">error_log: {{ gencode.get('error_log') }}</small></div>
                             {% endif %}
+                            {% if skill.skill_id in (v3_publish_allowed_skill_ids or []) and gencode.get('status') == 'verified' %}
+                            <form method="POST"
+                                action="{{ url_for('core.admin_run_skill_v3_publish', skill_id=skill.skill_id) }}"
+                                style="margin-top: 0.5rem;">
+                                <input type="hidden" name="force_publish" value="1">
+                                <input type="hidden" name="skill_id" value="{{ skill.skill_id }}">
+                                <input type="hidden" name="redirect_query" value="{{ request.query_string.decode() }}">
+                                <button type="submit" class="btn btn-danger btn-sm">🚀 正式發布 V3</button>
+                            </form>
+                            <div><small style="color:#c0392b;">⚠️ 注意：此操作將全量執行 Staging Smoke、Production Smoke、.bak 備份防線；若任何一步失敗會自動執行秒級 Rollback 復原！</small></div>
+                            {% endif %}
                         </td>
                         <td>
                             <div class="btn-group">

@@ -142,15 +142,28 @@ def _build_line_equation_question_text(
     if "point_a" in givens and "point_b" in givens:
         pa = givens["point_a"]
         pb = givens["point_b"]
+        ax, ay = int(pa[0]), int(pa[1])
+        bx, by = int(pb[0]), int(pb[1])
+        if ax == bx:
+            # 鉛直線：兩點 x 相同，課本慣例用 C、D 標記
+            return (
+                f"試求通過 $C({ax},\\,{ay})$ 與 $D({bx},\\,{by})$ 兩點之直線方程式。"
+            )
+        if ay == by:
+            # 水平線：兩點 y 相同，課本慣例用 A、B 標記
+            return (
+                f"試求通過 $A({ax},\\,{ay})$ 與 $B({bx},\\,{by})$ 兩點之直線方程式。"
+            )
         return (
-            f"求通過點 A{tuple(pa)} 與點 B{tuple(pb)} 的直線方程式。"
+            f"試求通過 $A({ax},\\,{ay})$ 與 $B({bx},\\,{by})$ 兩點之直線方程式。"
         )
 
     if "point" in givens and "slope" in givens:
         point = givens["point"]
         slope = givens["slope"]
+        px, py = int(point[0]), int(point[1])
         return (
-            f"已知直線過點 {tuple(point)}，斜率為 {slope}，求此直線方程式。"
+            f"已知直線過點 $({px},\\,{py})$，斜率為 ${slope}$，求此直線方程式。"
         )
 
     if line_type == "horizontal_line" or "y_intercept" in givens:

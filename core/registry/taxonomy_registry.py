@@ -4,11 +4,17 @@ from __future__ import annotations
 
 from typing import Any
 
-SKILL_TO_DOMAIN: dict[str, dict[str, str]] = {
+SKILL_TO_DOMAIN: dict[str, dict[str, Any]] = {
     "vh_數學B1_PointSlopeForm": {
         "domain_module": "core.domain.coordinate_geometry.line_equation_domain",
         "entrypoint": "build_line_equation_matrix",
         "default_curriculum_profile": "vocational_high_b",
+    },
+    "vh_數學B1_HorizontalAndVerticalLineEquations": {
+        "domain_module": "core.domain.coordinate_geometry.line_equation_domain",
+        "entrypoint": "build_line_equation_matrix",
+        "default_curriculum_profile": "vocational_high_b",
+        "allowed_types": ["horizontal_line", "vertical_line"],
     },
 }
 

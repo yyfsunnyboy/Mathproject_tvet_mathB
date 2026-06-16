@@ -2035,11 +2035,13 @@ def admin_skills():
         [str(s.skill_id) for s in skills]
     )
 
+    from core.gencode.v3_production_publish_service import V3_PRODUCTION_PUBLISH_ALLOWED_SKILLS
     return render_template('admin_skills.html', 
                            skills_data=skills_data,
                            skills=skills_data,
                            gencode_status_map=gencode_status_map,
                            v3_gencode_status_map=v3_gencode_status_map,
+                           v3_publish_allowed_skill_ids=V3_PRODUCTION_PUBLISH_ALLOWED_SKILLS,
                            filters=filters_data,
                            selected_filters=selected,
                            grade_map={str(g):str(g) for g in filters_data['grades']},
@@ -2598,6 +2600,77 @@ def admin_run_example_v3_verify(textbook_example_id: int):
     except Exception as e:
         flash(f"失敗原因: {e}", "danger")
     return redirect(redirect_target)
+
+
+def _parse_admin_force_publish_flag(raw) -> bool:
+    return str(raw or "").strip().lower() in {"1", "true", "yes"}
+
+
+def _resolve_admin_v3_publish_roots() -> tuple[str, str]:
+    project_root = str(request.form.get("project_root", "") or "").strip()
+    staging_root = str(request.form.get("staging_root", "") or "").strip()
+    if not project_root:
+        project_root = str(current_app.config.get("GENCODE_V3_PUBLISH_PROJECT_ROOT", "") or "").strip()
+    if not staging_root:
+        staging_root = str(current_app.config.get("GENCODE_V3_PUBLISH_STAGING_ROOT", "") or "").strip()
+    if not project_root or not staging_root:
+        raise ValueError("unsafe_publish_roots_not_configured")
+    return project_root, staging_root
+
+
+@core_bp.route('/admin/skills/<skill_id>/gencode_v3_publish', methods=['POST'])
+@login_required
+def admin_run_skill_v3_publish(skill_id: str):
+    if not (current_user.is_admin or current_user.role == 'teacher'):
+        return redirect(url_for('dashboard'))
+
+    redirect_query = str(request.form.get("redirect_query", "") or "").strip()
+    redirect_target = url_for("core.admin_skills")
+    if redirect_query:
+        redirect_target = f"{redirect_target}?{redirect_query.lstrip('?')}"
+
+    try:
+        if not _parse_admin_force_publish_flag(request.form.get("force_publish")):
+            flash("正式發布需要明確確認", "danger")
+            return redirect(redirect_target)
+
+        skill_key = str(skill_id or "").strip()
+        if not skill_key:
+            raise ValueError("missing_skill_id")
+
+        project_root, staging_root = _resolve_admin_v3_publish_roots()
+
+        from core.gencode.services.admin_gencode_action_service import (
+            run_admin_v3_publish_for_skill,
+        )
+
+        raw_conn = db.engine.raw_connection()
+        try:
+            result = run_admin_v3_publish_for_skill(
+                conn=raw_conn,
+                skill_id=skill_key,
+                project_root=project_root,
+                staging_root=staging_root,
+                force_publish=True,
+            )
+        finally:
+            raw_conn.close()
+
+        if str(result.get("status", "")).strip() == "production_published":
+            flash("V3 技能已正式發布", "success")
+        elif str(result.get("status", "")).strip() == "rolled_back_after_failed_production_smoke":
+            flash(
+                f"正式發布失敗並已自動回滾: {result.get('production_smoke_error', 'production smoke failed')}",
+                "danger",
+            )
+        else:
+            flash(f"正式發布未完成: {result.get('status', 'unknown')}", "warning")
+    except ValueError as e:
+        flash(f"失敗原因: {e}", "danger")
+    except Exception as e:
+        flash(f"失敗原因: {e}", "danger")
+    return redirect(redirect_target)
+
 
 @core_bp.route('/examples/add', methods=['POST'])
 @login_required

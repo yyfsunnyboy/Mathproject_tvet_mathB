@@ -21,6 +21,12 @@ from core.gencode.skill_wrapper_compiler import (
     rollback_v3_to_v2_facade,
 )
 
+V3_PRODUCTION_PUBLISH_ALLOWED_SKILLS: frozenset[str] = frozenset({
+    "vh_數學B1_PointSlopeForm",
+    "vh_數學B1_HorizontalAndVerticalLineEquations",
+})
+
+# Backward-compatible alias for existing test imports
 ALLOWED_PRODUCTION_SKILL_ID = "vh_數學B1_PointSlopeForm"
 
 
@@ -131,7 +137,7 @@ def publish_single_v3_skill_to_production(
 ) -> dict[str, object]:
     """Publish one gated skill through staging smoke, promote, and production smoke."""
     skill_key = str(skill_id or "").strip()
-    if skill_key != ALLOWED_PRODUCTION_SKILL_ID:
+    if skill_key not in V3_PRODUCTION_PUBLISH_ALLOWED_SKILLS:
         raise ValueError("production_publish_not_allowed_for_skill")
 
     project_path = assert_safe_project_root(project_root)
