@@ -520,6 +520,10 @@
                         <td>
                             {% set gencode = (v3_gencode_status_map or {}).get(skill.skill_id, {}) %}
                             <div><strong>{{ gencode.get('status_label', '未建立') }}</strong></div>
+                            <div><small>{{ gencode.get('coverage_summary', 'V3: -') }}</small></div>
+                            {% if gencode.get('coverage_missing_ids') %}
+                            <div><small style="color:#856404;">missing: {{ gencode.get('coverage_missing_ids') | join(', ') }}</small></div>
+                            {% endif %}
                             <div><small>component_id: {{ gencode.get('component_id') or '-' }}</small></div>
                             <div><small>payload: {{ gencode.get('has_payload_label', '無') }}</small></div>
                             <div><small>dryrun generate.py: {{ gencode.get('dryrun_generate_label', '否') }}</small></div>
@@ -528,16 +532,23 @@
                             {% if gencode.get('error_log') %}
                             <div><small style="color:#c0392b;">error_log: {{ gencode.get('error_log') }}</small></div>
                             {% endif %}
-                            {% if skill.skill_id in (v3_publish_allowed_skill_ids or []) and gencode.get('status') == 'verified' %}
+                            {% if skill.skill_id in (v3_publish_allowed_skill_ids or []) %}
+                            <button type="button" class="btn btn-primary btn-sm"
+                                style="margin-top: 0.5rem;"
+                                onclick="runSkillV3BatchDryrun('{{ skill.skill_id }}')">
+                                ⚡ V3 批次生成元件
+                            </button>
+                            {% endif %}
+                            {% if skill.skill_id in (v3_publish_allowed_skill_ids or []) and (gencode.get('verified_count', 0) | int) > 0 %}
                             <form method="POST"
                                 action="{{ url_for('core.admin_run_skill_v3_publish', skill_id=skill.skill_id) }}"
                                 style="margin-top: 0.5rem;">
                                 <input type="hidden" name="force_publish" value="1">
                                 <input type="hidden" name="skill_id" value="{{ skill.skill_id }}">
                                 <input type="hidden" name="redirect_query" value="{{ request.query_string.decode() }}">
-                                <button type="submit" class="btn btn-danger btn-sm">🚀 正式發布 V3</button>
+                                <button type="submit" class="btn btn-danger btn-sm">🚀 V3 發布</button>
                             </form>
-                            <div><small style="color:#c0392b;">⚠️ 注意：此操作將全量執行 Staging Smoke、Production Smoke、.bak 備份防線；若任何一步失敗會自動執行秒級 Rollback 復原！</small></div>
+                            <div><small style="color:#c0392b;">⚠️ 發布僅包含 verified components；未 verified 的教材題不會自動補齊。</small></div>
                             {% endif %}
                         </td>
                         <td>
@@ -546,8 +557,8 @@
                                     <i class="bi bi-pencil-fill"></i>
                                 </button>
                                 <button type="button" class="btn btn-secondary"
-                                    onclick="regenerateSkillCode('{{ skill.skill_id }}')" title="重新生成程式碼">
-                                    <i class="bi bi-arrow-clockwise"></i> 重建 Code
+                                    onclick="regenerateSkillCode('{{ skill.skill_id }}')" title="舊版 AI 單檔 codegen">
+                                    <i class="bi bi-arrow-clockwise"></i> 舊版重建 Code
                                 </button>
                                 <a href="{{ url_for('core.admin_prerequisites', skill_id=skill.skill_id) }}"
                                     class="btn btn-prereq" title="設定前置技能"><i class="bi bi-diagram-2-fill"></i></a>
@@ -956,6 +967,50 @@
                             });
                         });
                 }
+            });
+        }
+
+        function runSkillV3BatchDryrun(skillId) {
+            Swal.fire({
+                title: 'V3 批次生成元件',
+                text: '將為此 skill 底下所有 textbook_examples 執行 dryrun（已 verified 的題目預設略過）。',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: '開始批次 dryrun',
+                cancelButtonText: '取消'
+            }).then((result) => {
+                if (!result.isConfirmed) {
+                    return;
+                }
+                Swal.fire({
+                    title: '批次 dryrun 執行中...',
+                    allowOutsideClick: false,
+                    didOpen: () => Swal.showLoading()
+                });
+                const targetUrl = "{{ url_for('core.admin_run_skill_v3_dryrun', skill_id='SKILL_ID_PLACEHOLDER') }}"
+                    .replace('SKILL_ID_PLACEHOLDER', skillId);
+                fetch(targetUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ smoke: false, verify: false, force: false })
+                })
+                    .then(async (response) => {
+                        const data = await response.json();
+                        if (!response.ok && response.status !== 207) {
+                            throw new Error(data.error || '批次 dryrun 失敗');
+                        }
+                        const summary = data.coverage?.verified_count !== undefined
+                            ? `V3: ${data.coverage.verified_count}/${data.coverage.total_examples} verified`
+                            : '';
+                        Swal.fire({
+                            title: data.success ? '批次 dryrun 完成' : '批次 dryrun 部分失敗',
+                            html: `${summary}<br>processed=${data.processed_count}, failed=${data.failed_count}`,
+                            icon: data.success ? 'success' : 'warning'
+                        }).then(() => window.location.reload());
+                    })
+                    .catch((error) => {
+                        Swal.fire({ title: '執行失敗', text: error.message, icon: 'error' });
+                    });
             });
         }
     </script>

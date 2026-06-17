@@ -256,10 +256,10 @@ def test_publish_rejects_when_verified_rows_cleared(
 def test_template_has_publish_button_contract():
     content = (PROJECT_ROOT / "templates" / "admin_skills.html").read_text(encoding="utf-8")
     assert "admin_run_skill_v3_publish" in content
-    assert "🚀 正式發布 V3" in content
-    # Step 7B 後：條件改為動態 allowlist，不再硬編碼單一 skill_id
+    assert "admin_run_skill_v3_dryrun" in content
+    assert "🚀 V3 發布" in content
+    assert "V3 批次生成元件" in content
     assert "v3_publish_allowed_skill_ids" in content
-    assert "gencode.get('status') == 'verified'" in content
+    assert "verified_count" in content
     assert 'name="force_publish" value="1"' in content
-    assert "Staging Smoke" in content
-    assert "Rollback" in content
+    assert "verified components" in content

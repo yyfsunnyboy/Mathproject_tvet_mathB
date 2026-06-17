@@ -17,6 +17,8 @@ def build_component_files_from_domain_payload(
     source_kind: str,
     domain_meta: dict[str, Any],
     payload_meta: dict[str, Any],
+    *,
+    textbook_example_id: int | None = None,
 ) -> dict[str, str]:
     """Return metadata.py / generate.py / get_hint.py source strings only."""
     profile = _resolve_source_kind_profile(source_kind)
@@ -32,6 +34,7 @@ def build_component_files_from_domain_payload(
             difficulty_level=difficulty_level,
             domain_meta=domain_meta,
             payload_meta=payload_meta,
+            textbook_example_id=textbook_example_id,
         ),
         "generate.py": _build_generate_py(
             domain_meta=domain_meta,
@@ -59,16 +62,27 @@ def _build_metadata_py(
     difficulty_level: str,
     domain_meta: dict[str, Any],
     payload_meta: dict[str, Any],
+    textbook_example_id: int | None = None,
 ) -> str:
     target_task = str(payload_meta.get("target_task", "write_line_equation_from_point_slope"))
     template_slot = str(payload_meta.get("template_slot", "line_equation_from_point_slope"))
-    presentation_mode = str(payload_meta.get("presentation_mode", "single_choice"))
-    checker_key = str(payload_meta.get("checker_key", "choice_label_checker"))
-    equivalence_type = str(payload_meta.get("equivalence_type", "choice_label"))
-    answer_type = str(payload_meta.get("answer_type", "single_choice"))
-    checker_module = str(
-        payload_meta.get("checker_module", "core.checkers.choice_label_checker")
-    )
+    presentation_mode = str(payload_meta.get("presentation_mode", "short_answer"))
+    answer_type = str(payload_meta.get("answer_type", "expression"))
+    problem_type_id = str(payload_meta.get("problem_type_id", target_task))
+    line_type = str(payload_meta.get("line_type", ""))
+    textbook_id = int(textbook_example_id if textbook_example_id is not None else payload_meta.get("textbook_example_id", 0) or 0)
+
+    if presentation_mode == "single_choice":
+        checker_key = str(payload_meta.get("checker_key", "choice_label_checker"))
+        equivalence_type = str(payload_meta.get("equivalence_type", "choice_label"))
+        checker_module = str(payload_meta.get("checker_module", "core.checkers.choice_label_checker"))
+    else:
+        checker_key = str(payload_meta.get("checker_key", "linear_equation_equivalent_checker"))
+        equivalence_type = str(payload_meta.get("equivalence_type", "linear_equation_equivalent"))
+        checker_module = str(
+            payload_meta.get("checker_module", "core.checkers.linear_equation_equivalent_checker")
+        )
+
     domain_entry = _domain_library_entry(domain_meta)
     semantic_concepts = payload_meta.get(
         "semantic_required_concepts",
@@ -91,13 +105,17 @@ COMPONENT_ID: Final[str] = "{component_id}"
 SKILL_ID: Final[str] = "{skill_id}"
 SOURCE_REF: Final[str] = "{component_id}"
 SOURCE_KIND: Final[str] = "{source_kind}"
+TEXTBOOK_EXAMPLE_ID: Final[int] = {textbook_id}
 
 ORDER_WEIGHT: Final[int] = {order_weight}
 DIFFICULTY_LEVEL: Final[str] = "{difficulty_level}"
+LINE_TYPE: Final[str] = "{line_type}"
 
 TARGET_TASK: Final[str] = "{target_task}"
 TEMPLATE_SLOT: Final[str] = "{template_slot}"
+PROBLEM_TYPE_ID: Final[str] = "{problem_type_id}"
 PRESENTATION_MODE: Final[str] = "{presentation_mode}"
+ANSWER_TYPE: Final[str] = "{answer_type}"
 
 DOMAIN_LIBRARY: Final[tuple[str, ...]] = (
     "{domain_entry}",
@@ -137,7 +155,13 @@ def _build_generate_py(
         )
     )
     line_type = str(payload_meta.get("line_type", "point_slope"))
+    presentation_mode = str(payload_meta.get("presentation_mode", "short_answer"))
+    answer_type = str(payload_meta.get("answer_type", "expression"))
+    problem_type_id = str(payload_meta.get("problem_type_id", "write_line_equation_from_point_slope"))
+    textbook_example_id = int(payload_meta.get("textbook_example_id", 0) or 0)
     constraints = payload_meta.get("constraints", {})
+    if line_type.startswith("slope_intercept_"):
+        constraints = {}
     constraints_literal = repr(constraints if isinstance(constraints, dict) else {})
 
     return f'''from __future__ import annotations
@@ -146,6 +170,11 @@ from typing import Any
 
 from {domain_module} import {entrypoint}
 from core.gencode.domain_matrix_adapter import convert_line_equation_matrix_to_question_payload
+
+PRESENTATION_MODE = "{presentation_mode}"
+ANSWER_TYPE = "{answer_type}"
+PROBLEM_TYPE_ID = "{problem_type_id}"
+TEXTBOOK_EXAMPLE_ID = {textbook_example_id}
 
 
 def generate(level: int = 1, seed: int | None = None, **kwargs: Any) -> dict[str, Any]:
@@ -156,8 +185,17 @@ def generate(level: int = 1, seed: int | None = None, **kwargs: Any) -> dict[str
         difficulty_profile="{difficulty_level}",
         constraints={constraints_literal},
     )
-    payload = convert_line_equation_matrix_to_question_payload(matrix)
-    payload["component_id"] = kwargs.get("component_id")
+    component_id = str(kwargs.get("component_id") or "")
+    payload = convert_line_equation_matrix_to_question_payload(
+        matrix,
+        presentation_mode=PRESENTATION_MODE,
+        answer_type=ANSWER_TYPE,
+        problem_type_id=PROBLEM_TYPE_ID,
+        component_id=component_id or None,
+        textbook_example_id=TEXTBOOK_EXAMPLE_ID or None,
+    )
+    if component_id:
+        payload["component_id"] = component_id
     payload["seed"] = seed
     return payload
 '''

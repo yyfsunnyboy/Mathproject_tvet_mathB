@@ -276,8 +276,18 @@ def test_adapter_converts_hv_matrix_to_valid_payload():
         payload = convert_line_equation_matrix_to_question_payload(matrix)
         assert isinstance(payload["question_text"], str) and payload["question_text"]
         assert isinstance(payload["correct_answer"], str) and payload["correct_answer"]
-        assert isinstance(payload["choices"], list) and len(payload["choices"]) >= 2
-        assert isinstance(payload["metadata"], dict)
+        assert payload["answer"] == payload["correct_answer"]
+        assert payload["choices"] == []
+        assert payload["metadata"]["presentation_mode"] == "short_answer"
+
+        choice_payload = convert_line_equation_matrix_to_question_payload(
+            matrix,
+            presentation_mode="single_choice",
+            answer_type="single_choice",
+        )
+        assert isinstance(choice_payload["choices"], list) and len(choice_payload["choices"]) >= 2
+        assert choice_payload["answer"] == choice_payload["correct_answer"]
+        assert isinstance(choice_payload["metadata"], dict)
 
 
 # ---------------------------------------------------------------------------
@@ -343,8 +353,6 @@ def test_template_publish_button_whitelist_contract():
     # Step 7B 後使用動態 allowlist，不再硬編碼 PointSlopeForm
     assert "v3_publish_allowed_skill_ids" in content
     assert "in (v3_publish_allowed_skill_ids or [])" in content
-    # verified component 條件仍保留
-    assert "gencode.get('status') == 'verified'" in content
-    # 防護文案仍保留
-    assert "Staging Smoke" in content
-    assert "Rollback" in content
+    assert "gencode.get('verified_count', 0)" in content
+    assert "admin_run_skill_v3_publish" in content
+    assert "force_publish" in content

@@ -4532,16 +4532,110 @@ def publish_gencode_draft_skill(skill_id: str, confirm: bool = False, allow_runt
 def _v3_resolve_dry_run_line_type(
     source_kind: str,
     constraints: dict[str, object] | None,
+    skill_id: str = "",
+    textbook_row: dict[str, object] | None = None,
 ) -> str:
     extra = dict(constraints or {})
     if "line_type" in extra:
         return str(extra["line_type"])
+    if str(skill_id or "").strip().endswith("_SlopeInterceptForm"):
+        problem_text = ""
+        problem_type = ""
+        if isinstance(textbook_row, dict):
+            problem_text = str(textbook_row.get("problem_text") or "")
+            problem_type = str(textbook_row.get("problem_type") or "")
+        compact = (
+            problem_text.replace("\\(", "")
+            .replace("\\)", "")
+            .replace(" ", "")
+            .replace("　", "")
+        )
+        asks_x_intercept = "x截距" in compact and "方程式" not in compact
+        if asks_x_intercept or (problem_type == "self_assessment" and "x截距" in compact):
+            return "slope_intercept_find_x_intercept"
+        if "何者" in problem_text or "y={{m" in problem_text or "y=m" in problem_text:
+            return "slope_intercept_read_slope_and_intercept"
+        return "slope_intercept_equation"
     normalized = str(source_kind or "").strip().lower()
     if normalized.startswith("ex"):
         return "point_slope"
     if normalized.startswith("quiz") or normalized.startswith("test"):
         return "two_points"
     return "point_slope"
+
+
+def _v3_infer_line_type_from_textbook_example(
+    conn,
+    textbook_example_id: int,
+) -> str | None:
+    """Infer horizontal/vertical line type from textbook example coordinates."""
+    import re
+
+    try:
+        row = conn.execute(
+            "SELECT problem_text FROM textbook_examples WHERE id = ?",
+            (textbook_example_id,),
+        ).fetchone()
+    except sqlite3.OperationalError:
+        return None
+    if row is None:
+        return None
+    text = str(row[0] if not hasattr(row, "keys") else row["problem_text"] or "")
+    if not text.strip():
+        return None
+
+    pattern = re.compile(
+        r"\\left\(\s*(-?\d+)\s*,\s*(-?\d+)\s*\\right\)",
+    )
+    coords: list[tuple[int, int]] = []
+    for match in pattern.finditer(text):
+        coords.append((int(match.group(1)), int(match.group(2))))
+
+    for index in range(0, len(coords) - 1, 2):
+        if index + 1 >= len(coords):
+            break
+        x1, y1 = coords[index]
+        x2, y2 = coords[index + 1]
+        if x1 == x2:
+            return "vertical_line"
+        if y1 == y2:
+            return "horizontal_line"
+    return None
+
+
+def _v3_extract_slope_intercept_constraints(textbook_row: dict[str, object] | None) -> dict[str, object]:
+    """Extract reusable slope/y-intercept/x-intercept givens from textbook text."""
+    if not isinstance(textbook_row, dict):
+        return {}
+    text = str(textbook_row.get("problem_text") or "")
+    if not text.strip():
+        return {}
+    search_text = text.replace("\\(", "").replace("\\)", "")
+
+    def _clean_token(token: str) -> str:
+        value = str(token or "").strip()
+        value = value.replace("−", "-").replace("　", " ")
+        value = value.replace("\\(", "").replace("\\)", "")
+        value = value.strip(" $，,。.)）")
+        return value.strip()
+
+    def _find_after(label: str) -> str:
+        match = re.search(rf"{label}\s*為\s*([$\\(){{}}A-Za-z\-\d/−\s]+)", search_text)
+        if not match:
+            return ""
+        return _clean_token(match.group(1))
+
+    constraints: dict[str, object] = {}
+    slope = _find_after("斜率")
+    if slope:
+        constraints["slope"] = slope
+    y_intercept = _find_after(r"y\s*截距")
+    if y_intercept:
+        constraints["y_intercept"] = y_intercept
+    x_intercept = _find_after(r"x\s*截距")
+    if x_intercept:
+        constraints["x_intercept"] = x_intercept
+    return constraints
 
 
 def _v3_resolve_dry_run_difficulty_profile(source_kind: str) -> str:
@@ -4562,6 +4656,9 @@ def _v3_target_task_for_line_type(line_type: str) -> str:
         "horizontal_line": "write_line_equation_from_point_slope",
         "vertical_line": "write_line_equation_from_point_slope",
         "oblique_line": "write_line_equation_from_point_slope",
+        "slope_intercept_equation": "slope_intercept_equation",
+        "slope_intercept_find_x_intercept": "slope_intercept_find_x_intercept",
+        "slope_intercept_read_slope_and_intercept": "slope_intercept_read_slope_and_intercept",
     }
     return mapping.get(line_type, "write_line_equation_from_point_slope")
 
@@ -4570,6 +4667,9 @@ def _v3_template_slot_for_line_type(line_type: str) -> str:
     mapping = {
         "point_slope": "line_equation_from_point_slope",
         "two_points": "line_equation_from_two_points",
+        "slope_intercept_equation": "slope_intercept_equation",
+        "slope_intercept_find_x_intercept": "slope_intercept_find_x_intercept",
+        "slope_intercept_read_slope_and_intercept": "slope_intercept_read_slope_and_intercept",
     }
     return mapping.get(line_type, "line_equation_from_point_slope")
 
@@ -4580,6 +4680,8 @@ def build_v3_component_draft_from_skill(
     source_kind: str,
     seed: int | None = None,
     constraints: dict[str, object] | None = None,
+    conn: object | None = None,
+    textbook_row: dict[str, object] | None = None,
 ) -> dict[str, object]:
     """Build V3 component draft strings in memory without touching production flows."""
     import importlib
@@ -4591,6 +4693,11 @@ def build_v3_component_draft_from_skill(
     )
     from core.gencode.v3_component_scaffold_builder import (
         build_component_files_from_domain_payload,
+    )
+    from core.gencode.v3_presentation_inference import (
+        build_presentation_evidence_payload,
+        fetch_textbook_example_row,
+        infer_presentation_mode_from_textbook_row,
     )
     from core.registry.taxonomy_registry import resolve_domain_for_skill
 
@@ -4607,8 +4714,36 @@ def build_v3_component_draft_from_skill(
         )
 
     extra = dict(constraints or {})
-    line_type = _v3_resolve_dry_run_line_type(source_kind, extra)
+    row = dict(textbook_row) if isinstance(textbook_row, dict) else None
+    if row is None and conn is not None:
+        row = fetch_textbook_example_row(conn, textbook_example_id)
+    if row is None:
+        row = {
+            "id": textbook_example_id,
+            "problem_type": "",
+            "problem_text": "",
+            "source_description": "",
+            "correct_answer": "",
+        }
+    if str(skill_id or "").strip().endswith("_SlopeInterceptForm"):
+        extra.update(_v3_extract_slope_intercept_constraints(row))
+    line_type = _v3_resolve_dry_run_line_type(
+        source_kind,
+        extra,
+        skill_id=skill_id,
+        textbook_row=row,
+    )
     difficulty_profile = _v3_resolve_dry_run_difficulty_profile(source_kind)
+    problem_type_id = _v3_target_task_for_line_type(line_type)
+    inferred = infer_presentation_mode_from_textbook_row(row)
+    presentation_mode = str(inferred.get("presentation_mode") or "short_answer")
+    answer_type = str(inferred.get("answer_type") or "expression")
+    if presentation_mode != "single_choice":
+        if line_type == "slope_intercept_find_x_intercept":
+            answer_type = "rational"
+        elif line_type == "slope_intercept_read_slope_and_intercept":
+            answer_type = "text_short"
+    presentation_evidence = build_presentation_evidence_payload(inferred)
 
     matrix = entrypoint_fn(
         seed=seed,
@@ -4624,7 +4759,14 @@ def build_v3_component_draft_from_skill(
 
     validate_domain_matrix(matrix)
     normalized_matrix = normalize_domain_matrix(matrix)
-    payload = convert_line_equation_matrix_to_question_payload(normalized_matrix)
+    payload = convert_line_equation_matrix_to_question_payload(
+        normalized_matrix,
+        presentation_mode=presentation_mode,
+        answer_type=answer_type,
+        problem_type_id=problem_type_id,
+        component_id=source_kind,
+        textbook_example_id=textbook_example_id,
+    )
 
     draft_metadata = {
         "skill_id": skill_id,
@@ -4633,6 +4775,10 @@ def build_v3_component_draft_from_skill(
         "line_type": line_type,
         "domain_module": domain_module,
         "entrypoint": entrypoint,
+        "presentation_mode": presentation_mode,
+        "answer_type": answer_type,
+        "problem_type_id": problem_type_id,
+        "presentation_evidence": presentation_evidence,
     }
     existing_metadata = payload.get("metadata")
     if isinstance(existing_metadata, dict):
@@ -4640,13 +4786,37 @@ def build_v3_component_draft_from_skill(
     else:
         payload["metadata"] = draft_metadata
 
+    if presentation_mode == "single_choice":
+        checker_key = "choice_label_checker"
+        equivalence_type = "choice_label"
+        checker_module = "core.checkers.choice_label_checker"
+    elif line_type == "slope_intercept_find_x_intercept":
+        checker_key = "rational_checker"
+        equivalence_type = "rational_equivalent"
+        checker_module = "core.checkers.structured_text_checker"
+    elif line_type == "slope_intercept_read_slope_and_intercept":
+        checker_key = "text_short_checker"
+        equivalence_type = "exact_string"
+        checker_module = "core.checkers.structured_text_checker"
+    else:
+        checker_key = "linear_equation_equivalent_checker"
+        equivalence_type = "linear_equation_equivalent"
+        checker_module = "core.checkers.linear_equation_equivalent_checker"
+
     payload_meta = {
         "line_type": line_type,
-        "target_task": _v3_target_task_for_line_type(line_type),
+        "target_task": problem_type_id,
         "template_slot": _v3_template_slot_for_line_type(line_type),
-        "presentation_mode": "single_choice",
+        "presentation_mode": presentation_mode,
+        "answer_type": answer_type,
+        "problem_type_id": problem_type_id,
+        "textbook_example_id": textbook_example_id,
         "constraints": extra,
         "curriculum_profile": curriculum_profile,
+        "checker_key": checker_key,
+        "equivalence_type": equivalence_type,
+        "checker_module": checker_module,
+        "presentation_evidence": presentation_evidence,
     }
     files = build_component_files_from_domain_payload(
         skill_id=skill_id,
@@ -4654,6 +4824,7 @@ def build_v3_component_draft_from_skill(
         source_kind=source_kind,
         domain_meta=registry,
         payload_meta=payload_meta,
+        textbook_example_id=textbook_example_id,
     )
 
     return {
@@ -4664,6 +4835,11 @@ def build_v3_component_draft_from_skill(
         "line_type": line_type,
         "domain_module": domain_module,
         "entrypoint": entrypoint,
+        "presentation_mode": presentation_mode,
+        "answer_type": answer_type,
+        "problem_type_id": problem_type_id,
+        "target_task": problem_type_id,
+        "presentation_evidence": presentation_evidence,
         "files": files,
     }
 
@@ -4757,14 +4933,42 @@ def compile_v3_component_manifest(
         entry["status"] = status
         normalized_components.append(entry)
 
+    manifest_path = root / skill_key / "component_manifest.json"
+    merged_by_key: dict[str, dict[str, object]] = {}
+    if manifest_path.is_file():
+        try:
+            existing = json.loads(manifest_path.read_text(encoding="utf-8"))
+            for row in existing.get("components") or []:
+                if not isinstance(row, dict):
+                    continue
+                key = str(row.get("component_id") or row.get("textbook_example_id") or "")
+                if key:
+                    merged_by_key[key] = dict(row)
+        except (json.JSONDecodeError, OSError):
+            merged_by_key = {}
+
+    for row in normalized_components:
+        key = str(row.get("component_id") or row.get("textbook_example_id") or "")
+        if not key:
+            continue
+        previous = merged_by_key.get(key, {})
+        merged_by_key[key] = {**previous, **row}
+
+    merged_components = sorted(
+        merged_by_key.values(),
+        key=lambda item: (
+            int(item.get("textbook_example_id") or 0),
+            str(item.get("component_id") or ""),
+        ),
+    )
+
     manifest: dict[str, object] = {
         "skill_id": skill_key,
         "compiled_at": utc_timestamp(),
         "publish_status": "dryrun_manifest_compiled",
-        "components": normalized_components,
+        "components": merged_components,
     }
 
-    manifest_path = root / skill_key / "component_manifest.json"
     manifest_path.parent.mkdir(parents=True, exist_ok=True)
     manifest_path.write_text(
         json.dumps(manifest, ensure_ascii=False, indent=2),
@@ -4790,6 +4994,31 @@ def _load_v3_taxonomy_mvp_scope(taxonomy_path: str) -> set[str]:
     if not isinstance(v1, list):
         return set()
     return {str(item).strip() for item in v1 if str(item).strip()}
+
+
+def _build_v3_induced_spec_payload(
+    draft: dict[str, object],
+    *,
+    source_kind: str,
+    textbook_example_id: int,
+) -> dict[str, object]:
+    from core.gencode.v3_component_scaffold_builder import _resolve_source_kind_profile
+
+    profile = _resolve_source_kind_profile(source_kind)
+    presentation_evidence = draft.get("presentation_evidence")
+    if not isinstance(presentation_evidence, dict):
+        presentation_evidence = {}
+    return {
+        "source_kind": source_kind,
+        "presentation_mode": str(draft.get("presentation_mode") or "short_answer"),
+        "line_type": draft.get("line_type"),
+        "answer_type": str(draft.get("answer_type") or "expression"),
+        "problem_type_id": str(draft.get("problem_type_id") or draft.get("target_task") or ""),
+        "display_order": int(textbook_example_id),
+        "source_order": int(textbook_example_id),
+        "sampling_weight": int(profile["order_weight"]),
+        "presentation_evidence": presentation_evidence,
+    }
 
 
 def run_gencode_phase2_v3_shadow_bridge(
@@ -4830,18 +5059,23 @@ def run_gencode_phase2_v3_shadow_bridge(
     assert_safe_sandbox_root(dryrun_path)
 
     extra = dict(constraints or {})
-    induced_spec_payload = {
-        "source_kind": source_kind,
-        "presentation_mode": extra.get("presentation_mode", "short_answer"),
-        "line_type": extra.get("line_type"),
-    }
+    if "line_type" not in extra:
+        inferred_line_type = _v3_infer_line_type_from_textbook_example(
+            conn,
+            textbook_example_id,
+        )
+        if inferred_line_type:
+            extra["line_type"] = inferred_line_type
 
     save_tracker_record(
         conn,
         textbook_example_id=textbook_example_id,
         skill_id=skill_key,
         gencode_status="generating",
-        induced_spec_payload=induced_spec_payload,
+        induced_spec_payload={
+            "source_kind": source_kind,
+            "line_type": extra.get("line_type"),
+        },
     )
 
     draft = build_v3_component_draft_from_skill(
@@ -4850,6 +5084,12 @@ def run_gencode_phase2_v3_shadow_bridge(
         source_kind=source_kind,
         seed=seed,
         constraints=extra or None,
+        conn=conn,
+    )
+    induced_spec_payload = _build_v3_induced_spec_payload(
+        draft,
+        source_kind=source_kind,
+        textbook_example_id=textbook_example_id,
     )
     component_dir = write_v3_component_to_disk(draft, dryrun_path)
     component_id = derive_component_id(textbook_example_id)
@@ -4872,11 +5112,12 @@ def run_gencode_phase2_v3_shadow_bridge(
         dryrun_path,
     )
 
-    tracker = update_status(
+    tracker = save_tracker_record(
         conn,
         textbook_example_id=textbook_example_id,
         skill_id=skill_key,
         gencode_status="draft_written",
+        induced_spec_payload=induced_spec_payload,
     )
 
     return {

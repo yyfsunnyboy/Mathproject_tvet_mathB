@@ -38,8 +38,10 @@ from core.utils import get_skill_info
 from core.session import get_current, set_current
 from core.practice_question_store import (
     clear_practice_display_state_for_skill_switch,
+    clear_practice_state,
     estimate_session_cookie_bytes,
     mark_question_answered,
+    prune_practice_session,
     resolve_check_context,
     preview_question_text,
 )
@@ -104,6 +106,20 @@ B4_CHAP3_SKILL_NOT_ENABLED_PUBLIC_ERROR = (
     "This Chap3 skill is not enabled in the current deterministic runtime."
 )
 B4_CHAP3_REQUIRES_EXPLICIT_PROBLEM_TYPE_SKILLS = set()
+
+
+@practice_bp.after_request
+def _auto_prune_practice_session(response):
+    """Keep client-side practice cookies small on practice runtime endpoints."""
+    try:
+        if request.path in {"/practice", "/get_next_question", "/check_answer"} or request.path.startswith("/practice/"):
+            prune_practice_session()
+    except Exception:
+        try:
+            current_app.logger.exception("[PRACTICE session prune] after_request_failed")
+        except Exception:
+            pass
+    return response
 
 
 def _b4_chap2_public_payload_validation_message(deny_reason: str | None) -> str:
@@ -244,6 +260,26 @@ def _finalize_practice_question_api_fields(data: dict[str, Any], *, skill_id: st
     return out
 
 
+def _v3_runtime_contract_api_fields(data: dict[str, Any]) -> dict[str, Any]:
+    """Expose V3 generator contract fields on practice API responses."""
+    meta = data.get("metadata") if isinstance(data.get("metadata"), dict) else {}
+    return {
+        "presentation_mode": data.get("presentation_mode") or meta.get("presentation_mode"),
+        "answer_type": data.get("answer_type") or meta.get("answer_type"),
+        "problem_type_id": data.get("problem_type_id") or meta.get("problem_type_id"),
+        "answer_contract": data.get("answer_contract", {}),
+        "metadata": meta,
+        "choices": data.get("choices", []),
+        "choices_display": data.get("choices_display", data.get("choices", [])),
+        "semantic_answer": data.get("semantic_answer") or meta.get("semantic_answer"),
+        "display_answer": data.get("display_answer"),
+        "component_id": data.get("component_id") or meta.get("component_id"),
+        "textbook_example_id": data.get("textbook_example_id") or meta.get("textbook_example_id"),
+        "generator_key": data.get("generator_key") or data.get("component_id"),
+        "source_kind": data.get("source_kind") or meta.get("source_kind"),
+    }
+
+
 def _log_get_next_question_response(payload: dict[str, Any]) -> None:
     stem = str(payload.get("question_text") or "")
     current_app.logger.info(
@@ -275,6 +311,7 @@ def _prepare_skill_switch(skill_id: str) -> dict[str, Any]:
             info.get("previous_question_uid"),
             info.get("cleared_keys"),
         )
+    prune_practice_session()
     return info
 
 
@@ -312,6 +349,51 @@ def _emit_check_result(
         except Exception:
             pass
     return jsonify(out)
+
+
+def _record_compact_practice_progress(skill_id: str, is_correct: bool) -> None:
+    """Keep adaptive review hints small enough for Flask's cookie session."""
+    import time
+
+    sid = str(skill_id or "").strip()
+    if not sid:
+        return
+    history = session.get("review_history")
+    if not isinstance(history, list):
+        history = []
+    history.append({"skill_id": sid[:80], "correct": bool(is_correct), "timestamp": int(time.time())})
+    session["review_history"] = history[-3:]
+
+    stats = session.get("skill_stats")
+    if not isinstance(stats, dict):
+        stats = {}
+    st = stats.get(sid)
+    if not isinstance(st, dict):
+        st = {"attempts": 0, "correct": 0, "wrong": 0, "fail_streak": 0}
+    st = {
+        "attempts": int(st.get("attempts", st.get("a", 0)) or 0) + 1,
+        "correct": int(st.get("correct", st.get("c", 0)) or 0),
+        "wrong": int(st.get("wrong", st.get("w", 0)) or 0),
+        "fail_streak": int(st.get("fail_streak", st.get("f", 0)) or 0),
+    }
+    if is_correct:
+        st["correct"] += 1
+        st["fail_streak"] = 0
+    else:
+        st["wrong"] += 1
+        st["fail_streak"] += 1
+    stats[sid] = st
+    if len(stats) > 8:
+        keep = set(x.get("skill_id") for x in session["review_history"] if isinstance(x, dict))
+        for key in list(stats.keys()):
+            if len(stats) <= 8:
+                break
+            if key not in keep:
+                stats.pop(key, None)
+    session["skill_stats"] = stats
+    for key in ("current_data", "current_question", "correct_answer"):
+        session.pop(key, None)
+    session.modified = True
 
 
 def _log_runtime_generate_payload(skill_id: str, payload: dict[str, Any], *, module_file: str = "") -> None:
@@ -1232,6 +1314,7 @@ def next_question():
     - mode=unit嚗誑?桀??粹?嚗? (curriculum, volume, chapter) ?豢? pattern skill 敺憿?
       ???chapter嚗??volume?urriculum嚗撩?? curriculum ??session嚗olume ?舐蝛箏?銝脩 selector ?冽??
     """
+    prune_practice_session()
     mode = request.args.get('mode', '')
     # Phase 6C-1R: URL-decode so encoded CJK skill_ids are resolved correctly.
     skill_id = _url_unquote(request.args.get('skill', 'remainder'))
@@ -1619,11 +1702,13 @@ def next_question():
             "answer_contract": session_data.get("answer_contract", {}),
             "equivalence": session_data.get("equivalence", ""),
             "display_answer": session_data.get("display_answer", ""),
+            "answer": session_data.get("answer", session_data.get("correct_answer")),
             "correct_answer": session_data.get("correct_answer", session_data.get("answer")),
             "problem_type_id": session_data.get("problem_type_id") or session_data.get("problem_type"),
             "source": session_data.get("source", route_source),
             "route_source": route_source,
             "question_source": session_data.get("question_source", route_source),
+            **_v3_runtime_contract_api_fields(session_data),
             "scenario_id": data.get("scenario_id", ""),
             "scenario_family": data.get("scenario_family", ""),
             "parameter_signature": data.get("parameter_signature", ""),
@@ -1911,22 +1996,7 @@ def check_answer():
             checker_result=is_correct,
             feedback_display=str(result.get("result", "")),
         )
-        import time
-        history = session.get('review_history', [])
-        history.append({'skill_id': skill_id, 'correct': is_correct, 'timestamp': time.time()})
-        session['review_history'] = history[-15:]
-        stats = session.get('skill_stats', {})
-        st = stats.get(skill_id, {'attempts': 0, 'correct': 0, 'wrong': 0, 'fail_streak': 0})
-        st['attempts'] += 1
-        if is_correct:
-            st['correct'] += 1
-            st['fail_streak'] = 0
-        else:
-            st['wrong'] += 1
-            st['fail_streak'] += 1
-        stats[skill_id] = st
-        session['skill_stats'] = stats
-        session.modified = True
+        _record_compact_practice_progress(skill_id, is_correct)
         return _emit_check_result(question_uid, skill_id, result)
 
     mod = get_skill(skill_id)
@@ -1962,24 +2032,8 @@ def check_answer():
         
     is_correct = result.get('correct', False)
 
-    # --- [Phase 8] Update Review History and Stats ---
-    import time
-    history = session.get('review_history', [])
-    history.append({'skill_id': skill_id, 'correct': is_correct, 'timestamp': time.time()})
-    session['review_history'] = history[-15:]
-
-    stats = session.get('skill_stats', {})
-    st = stats.get(skill_id, {'attempts': 0, 'correct': 0, 'wrong': 0, 'fail_streak': 0})
-    st['attempts'] += 1
-    if is_correct:
-        st['correct'] += 1
-        st['fail_streak'] = 0
-    else:
-        st['wrong'] += 1
-        st['fail_streak'] += 1
-    stats[skill_id] = st
-    session['skill_stats'] = stats
-    session.modified = True
+    # --- [Phase 8] Update compact review hints and stats ---
+    _record_compact_practice_progress(skill_id, is_correct)
 
     # --- [Phase 2 & 5] ?芷?飛蝧芋撘??---
     is_adaptive_mode = request.json.get('mode') == 'adaptive'
@@ -2148,9 +2202,7 @@ def debug_clear_practice_state():
     """Development-only: reset practice pointers and server-side question store."""
     if not current_app.debug and not current_app.config.get("TESTING"):
         return jsonify({"error": "not_available"}), 404
-    from core.session import clear as clear_practice_session
-
-    clear_practice_session()
+    clear_practice_state()
     return jsonify({"ok": True, "message": "practice state cleared"})
 
 

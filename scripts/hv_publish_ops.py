@@ -25,10 +25,6 @@ sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 
 DB_PATH = PROJECT_ROOT / "instance" / "kumon_math.db"
 HV_SKILL = "vh_數學B1_HorizontalAndVerticalLineEquations"
-# 使用 ID=4544 (兩點 x=-3 → vertical line)
-TEXTBOOK_EXAMPLE_ID = 4544
-LINE_TYPE = "vertical_line"   # example 4544 是 x=-3 鉛直線
-# dryrun、smoke、publish 三步統一使用 STAGING_ROOT，確保 component 路徑一致
 STAGING_ROOT = str(
     PROJECT_ROOT / "reports" / "gencode_v3_publish_staging" / "hv_line_publish"
 )
@@ -112,76 +108,60 @@ def cmd_check() -> None:
 
 
 # ---------------------------------------------------------------------------
-def cmd_dryrun(conn: sqlite3.Connection) -> str:
-    """執行 dryrun，回傳 component_id。"""
-    print("\n--- Step 1: dryrun ---")
-    from core.gencode.pipeline_orchestrator import run_gencode_phase2_v3_shadow_bridge
+def cmd_dryrun(conn: sqlite3.Connection) -> None:
+    """執行 skill-level batch dryrun（全部 textbook_examples）。"""
+    print("\n--- Step 1: batch dryrun ---")
+    from core.gencode.services.admin_gencode_action_service import run_admin_v3_dryrun_for_skill
 
-    result = run_gencode_phase2_v3_shadow_bridge(
+    result = run_admin_v3_dryrun_for_skill(
         conn=conn,
-        skill_id=HV_SKILL,
-        textbook_example_id=TEXTBOOK_EXAMPLE_ID,
-        source_kind=f"ex_{TEXTBOOK_EXAMPLE_ID}",
-        dryrun_base_dir=DRYRUN_DIR,
-        constraints={"line_type": LINE_TYPE},
-    )
-    route = result.get("route")
-    status = result.get("tracker_status")
-    component_id = result.get("component_id")
-    print(f"  route: {route}")
-    print(f"  tracker_status: {status}")
-    print(f"  component_id: {component_id}")
-
-    if route == "v2_legacy_passthrough":
-        print("  *** HV skill 未在 MVP scope，dryrun 終止 ***")
-        sys.exit(10)
-    if status != "draft_written":
-        print(f"  *** dryrun status 非 draft_written，終止 ***")
-        sys.exit(11)
-
-    # 確認生成三檔
-    dryrun_component = Path(DRYRUN_DIR) / HV_SKILL / "components" / str(component_id)
-    for fname in ("metadata.py", "generate.py", "get_hint.py"):
-        fpath = dryrun_component / fname
-        assert fpath.exists(), f"{fname} 未生成"
-        print(f"  {fname}: {fpath.stat().st_size}b ✅")
-
-    print("  dryrun 完成 ✅")
-    return str(component_id)
-
-
-def cmd_smoke(conn: sqlite3.Connection, component_id: str) -> None:
-    """執行 smoke test。"""
-    print("\n--- Step 2: smoke ---")
-    from core.gencode.services.admin_gencode_action_service import run_admin_v3_smoke_for_example
-
-    result = run_admin_v3_smoke_for_example(
-        conn=conn,
-        textbook_example_id=TEXTBOOK_EXAMPLE_ID,
         skill_id=HV_SKILL,
         dryrun_base_dir=DRYRUN_DIR,
         seed=42,
     )
-    status = result.get("status")
-    print(f"  smoke status: {status}")
-    assert status == "smoke_passed", f"smoke 失敗: {status}"
-    print("  smoke 完成 ✅")
+    print(f"  total_examples: {result.get('total_examples')}")
+    print(f"  success_count: {result.get('success_count')}")
+    print(f"  failed_count: {result.get('failed_count')}")
+    if not result.get("success"):
+        print("  *** batch dryrun 有失敗題目 ***")
+        sys.exit(11)
+
+
+def cmd_smoke(conn: sqlite3.Connection) -> None:
+    """執行 smoke test（對尚未 smoke 的題目）。"""
+    print("\n--- Step 2: batch smoke ---")
+    from core.gencode.services.admin_gencode_action_service import run_admin_v3_dryrun_for_skill
+
+    result = run_admin_v3_dryrun_for_skill(
+        conn=conn,
+        skill_id=HV_SKILL,
+        dryrun_base_dir=DRYRUN_DIR,
+        smoke=True,
+        seed=42,
+    )
+    print(f"  success_count: {result.get('success_count')}")
+    print(f"  failed_count: {result.get('failed_count')}")
+    if not result.get("success"):
+        sys.exit(12)
 
 
 def cmd_verify_tracker(conn: sqlite3.Connection) -> None:
-    """標記 verified。"""
-    print("\n--- Step 3: mark verified ---")
-    from core.gencode.services.admin_gencode_action_service import mark_admin_v3_example_verified
+    """標記 verified（dryrun+smoke+verify）。"""
+    print("\n--- Step 3: batch verify ---")
+    from core.gencode.services.admin_gencode_action_service import run_admin_v3_dryrun_for_skill
 
-    result = mark_admin_v3_example_verified(
+    result = run_admin_v3_dryrun_for_skill(
         conn=conn,
-        textbook_example_id=TEXTBOOK_EXAMPLE_ID,
         skill_id=HV_SKILL,
+        dryrun_base_dir=DRYRUN_DIR,
+        smoke=True,
+        verify=True,
+        seed=42,
     )
-    status = result.get("status")
-    print(f"  verified status: {status}")
-    assert status == "verified"
-    print("  verified 標記完成 ✅")
+    coverage = result.get("coverage") or {}
+    print(f"  verified: {coverage.get('verified_count')}/{coverage.get('total_examples')}")
+    if not result.get("success"):
+        sys.exit(13)
 
 
 def cmd_do_publish(conn: sqlite3.Connection) -> dict:
@@ -217,23 +197,12 @@ def cmd_full() -> None:
     try:
         _ensure_tracker_ddl(conn)
 
-        # 若有舊紀錄，清除後重新走 dryrun → smoke → verified
-        # （確保 component 檔案位於 STAGING_ROOT，與 publish service 路徑一致）
-        existing = conn.execute(
-            "SELECT gencode_status FROM gencode_component_tracker WHERE textbook_example_id=?",
-            (TEXTBOOK_EXAMPLE_ID,),
-        ).fetchone()
-        if existing:
-            print(f"\n  清除舊 tracker 紀錄 (舊 status={existing['gencode_status']})，"
-                  f"重新於 STAGING_ROOT 執行 dryrun")
-            conn.execute(
-                "DELETE FROM gencode_component_tracker WHERE textbook_example_id=?",
-                (TEXTBOOK_EXAMPLE_ID,),
-            )
-            conn.commit()
+        # 重新於 STAGING_ROOT 執行 batch dryrun → smoke → verified
+        conn.execute("DELETE FROM gencode_component_tracker WHERE skill_id = ?", (HV_SKILL,))
+        conn.commit()
 
-        component_id = cmd_dryrun(conn)
-        cmd_smoke(conn, component_id)
+        cmd_dryrun(conn)
+        cmd_smoke(conn)
         cmd_verify_tracker(conn)
 
         report = cmd_do_publish(conn)

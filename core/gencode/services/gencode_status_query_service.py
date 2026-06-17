@@ -264,6 +264,13 @@ def build_admin_skill_gencode_status_view(
     dryrun_base_dir: str = "reports/gencode_v3_dryrun",
     production_base_dir: str = "agent_skills_v3",
 ) -> dict[str, object]:
+    from core.gencode.services.v3_skill_coverage_service import (
+        build_coverage_warnings,
+        get_v3_skill_component_coverage,
+    )
+
+    coverage = get_v3_skill_component_coverage(conn, skill_id)
+    coverage_warnings = build_coverage_warnings(coverage)
     rows = _get_tracker_rows_for_skill(conn, skill_id)
     if not rows:
         view = dict(NOT_CREATED_STATUS)
@@ -335,6 +342,18 @@ def build_admin_skill_gencode_status_view(
         "has_payload_label": "有" if has_payload else "無",
         "error_log": error_log,
         "updated_at": updated_at,
+        "coverage": coverage,
+        "coverage_summary": (
+            f"V3: {coverage.get('verified_count', 0)}/{coverage.get('total_examples', 0)} verified"
+        ),
+        "verified_count": int(coverage.get("verified_count") or 0),
+        "coverage_missing_ids": [
+            row["textbook_example_id"]
+            for row in coverage.get("examples", [])
+            if isinstance(row, dict) and row.get("status") == "missing_tracker"
+        ],
+        "coverage_warnings": coverage_warnings,
+        "publish_ready": bool(coverage.get("publish_ready")),
         **file_status,
         "dryrun_generate_label": _bool_label(bool(file_status["dryrun_generate_exists"])),
         "production_generate_label": _bool_label(bool(file_status["production_generate_exists"])),

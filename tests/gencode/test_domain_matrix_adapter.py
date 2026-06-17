@@ -78,9 +78,14 @@ def test_adapter_validates_and_converts_line_equation_matrix():
     normalized = normalize_domain_matrix(matrix)
     json.dumps(normalized, ensure_ascii=False)
 
-    payload = convert_line_equation_matrix_to_question_payload(matrix)
+    payload = convert_line_equation_matrix_to_question_payload(
+        matrix,
+        presentation_mode="single_choice",
+        answer_type="single_choice",
+    )
     assert payload["question_text"]
-    assert payload["correct_answer"] == matrix["answer"]["canonical_form"]
+    assert payload["correct_answer"] == payload["answer"]
+    assert payload["semantic_answer"] == matrix["answer"]["canonical_form"]
     assert isinstance(payload["choices"], list)
     assert len(payload["choices"]) >= 4
     assert payload["visual_spec"] == matrix["visual_spec"]
@@ -92,6 +97,35 @@ def test_adapter_validates_and_converts_line_equation_matrix():
     assert matrix["answer"]["canonical_form"] in choice_texts
     for distractor in matrix["distractors"]:
         assert distractor in choice_texts
+
+
+def test_legacy_call_without_contract_kwargs_still_works():
+    matrix = _sample_matrix()
+    payload = convert_line_equation_matrix_to_question_payload(matrix)
+    assert payload["presentation_mode"] == "short_answer"
+    assert payload["choices"] == []
+
+
+def test_accepts_presentation_mode_and_contract_kwargs():
+    matrix = _sample_matrix()
+    payload = convert_line_equation_matrix_to_question_payload(
+        matrix,
+        presentation_mode="single_choice",
+        answer_type="single_choice",
+        problem_type_id="write_line_equation_from_point_slope",
+        component_id="src_test",
+        textbook_example_id=9999,
+        source_kind="ex_test",
+        generator_key="src_test",
+    )
+    assert payload["presentation_mode"] == "single_choice"
+    assert payload["problem_type_id"] == "write_line_equation_from_point_slope"
+    assert payload["component_id"] == "src_test"
+    assert payload["textbook_example_id"] == 9999
+    assert payload["source_kind"] == "ex_test"
+    assert payload["generator_key"] == "src_test"
+    assert payload["metadata"]["presentation_mode"] == "single_choice"
+    assert payload["answer_contract"]
 
 
 def test_adapter_rejects_incomplete_matrix():

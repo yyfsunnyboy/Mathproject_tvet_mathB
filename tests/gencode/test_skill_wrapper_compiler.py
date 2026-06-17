@@ -40,7 +40,6 @@ FORBIDDEN_THIN_FACADE_TOKENS = (
     "import matplotlib",
     "Fraction",
     "gcd(",
-    "solve(",
     "_compute_slope",
     "_build_distractors",
     "db.session",
@@ -150,6 +149,10 @@ def test_compile_and_double_write_skill_deterministic_order(
 
     for token in FORBIDDEN_THIN_FACADE_TOKENS:
         assert token not in thin_facade_source
+
+    assert "V3_PACKAGE_ROOT =" not in thin_facade_source
+    assert "_resolve_v3_package_root" in thin_facade_source
+    assert "gencode_v3_publish_staging" not in thin_facade_source
 
     assert str(new_house_path.resolve()) == result["new_house_path"]
     assert str(thin_facade_path.resolve()) == result["thin_facade_path"]

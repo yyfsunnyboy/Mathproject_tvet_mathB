@@ -2618,6 +2618,46 @@ def _resolve_admin_v3_publish_roots() -> tuple[str, str]:
     return project_root, staging_root
 
 
+@core_bp.route('/admin/skills/<skill_id>/gencode_v3_dryrun', methods=['POST'])
+@login_required
+def admin_run_skill_v3_dryrun(skill_id: str):
+    if not (current_user.is_admin or current_user.role == 'teacher'):
+        return jsonify({"ok": False, "error": "forbidden"}), 403
+
+    payload = request.get_json(silent=True) or {}
+    smoke = bool(payload.get("smoke") or request.args.get("smoke") in {"1", "true", "True"})
+    verify = bool(payload.get("verify") or request.args.get("verify") in {"1", "true", "True"})
+    force = bool(payload.get("force") or request.args.get("force") in {"1", "true", "True"})
+    limit_raw = payload.get("limit", request.args.get("limit"))
+    limit = int(limit_raw) if str(limit_raw or "").strip().isdigit() else None
+
+    skill_key = str(skill_id or "").strip()
+    if not skill_key:
+        return jsonify({"ok": False, "error": "missing_skill_id"}), 400
+
+    from core.gencode.services.admin_gencode_action_service import run_admin_v3_dryrun_for_skill
+
+    raw_conn = db.engine.raw_connection()
+    try:
+        result = run_admin_v3_dryrun_for_skill(
+            conn=raw_conn,
+            skill_id=skill_key,
+            smoke=smoke,
+            verify=verify,
+            force=force,
+            limit=limit,
+        )
+    except ValueError as exc:
+        return jsonify({"ok": False, "error": str(exc)}), 400
+    except Exception as exc:
+        return jsonify({"ok": False, "error": str(exc)}), 500
+    finally:
+        raw_conn.close()
+
+    status_code = 200 if result.get("success") else 207
+    return jsonify({"ok": bool(result.get("success")), **result}), status_code
+
+
 @core_bp.route('/admin/skills/<skill_id>/gencode_v3_publish', methods=['POST'])
 @login_required
 def admin_run_skill_v3_publish(skill_id: str):
@@ -2658,6 +2698,8 @@ def admin_run_skill_v3_publish(skill_id: str):
 
         if str(result.get("status", "")).strip() == "production_published":
             flash("V3 技能已正式發布", "success")
+            for warning in result.get("warnings") or []:
+                flash(str(warning), "warning")
         elif str(result.get("status", "")).strip() == "rolled_back_after_failed_production_smoke":
             flash(
                 f"正式發布失敗並已自動回滾: {result.get('production_smoke_error', 'production smoke failed')}",

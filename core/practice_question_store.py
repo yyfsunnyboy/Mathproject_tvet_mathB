@@ -9,7 +9,7 @@ import time
 import uuid
 from typing import Any
 
-from flask import session
+from flask import current_app, session
 
 try:
     from flask_login import current_user
@@ -18,13 +18,137 @@ except Exception:  # pragma: no cover
 
 # owner_key -> question_uid -> payload
 _STORE: dict[str, dict[str, dict[str, Any]]] = {}
-_MAX_RECENT_QUESTIONS = 20
+_MAX_RECENT_QUESTIONS = 3
 _COOKIE_TARGET_BYTES = 3500
+_PRACTICE_SESSION_TTL_SECONDS = 1800
 
 STATUS_GENERATED = "generated"
 STATUS_ANSWERED = "answered"
 STATUS_EXPIRED = "expired"
 STATUS_SKIPPED = "skipped"
+
+PRACTICE_AUTH_SESSION_KEYS: frozenset[str] = frozenset(
+    {
+        "_fresh",
+        "_id",
+        "_user_id",
+        "_remember",
+        "_remember_seconds",
+        "csrf_token",
+        "_csrf_token",
+        "_flashes",
+        "user_id",
+        "username",
+        "role",
+    }
+)
+
+PRACTICE_QUERY_SESSION_KEYS: frozenset[str] = frozenset(
+    {
+        "curriculum",
+        "selected_curriculum",
+        "current_curriculum",
+        "curriculum_code",
+        "curriculum_name",
+        "education_stage",
+        "selected_education_stage",
+        "current_education_stage",
+        "subject",
+        "selected_subject",
+        "current_subject",
+        "book",
+        "selected_book",
+        "current_book",
+        "book_no",
+        "volume",
+        "selected_volume",
+        "current_volume",
+        "volume_no",
+        "chapter",
+        "selected_chapter",
+        "current_chapter",
+        "chapter_no",
+        "chapter_name",
+        "section",
+        "selected_section",
+        "current_section",
+        "section_no",
+        "section_name",
+        "unit",
+        "selected_unit",
+        "current_unit",
+        "unit_no",
+        "unit_name",
+        "exam_round",
+        "selected_exam_round",
+        "current_exam_round",
+        "level",
+        "selected_level",
+        "current_level",
+        "difficulty",
+        "selected_difficulty",
+        "query_params",
+    }
+)
+
+PRACTICE_MINIMAL_STATE_KEYS: frozenset[str] = frozenset(
+    {
+        "_practice_owner_sid",
+        "current_skill_id",
+        "current_question_uid",
+        "current_problem_type_id",
+        "current_component_id",
+        "current_textbook_example_id",
+        "current_answer",
+        "practice_ref",
+        "recent_question_uids",
+        "practice_session_touched_at",
+        "practice_session_pruned_at",
+    }
+)
+
+PRACTICE_SESSION_KEEP_KEYS: frozenset[str] = (
+    PRACTICE_AUTH_SESSION_KEYS | PRACTICE_QUERY_SESSION_KEYS | PRACTICE_MINIMAL_STATE_KEYS
+)
+
+PRACTICE_ALWAYS_PRUNE_SESSION_KEYS: frozenset[str] = frozenset(
+    {
+        "current_data",
+        "current_question",
+        "current_question_data",
+        "current_question_payload",
+        "correct_answer",
+        "answer",
+        "answer_contract",
+        "metadata",
+        "choices",
+        "choices_display",
+        "hint",
+        "hints",
+        "diagnosis",
+        "diagnostic_result",
+        "explanation",
+        "solution",
+        "adaptive_runtime",
+        "chat_followup_state",
+        "practice_payload",
+        "last_question_payload",
+        "previous_question_payload",
+    }
+)
+
+PRACTICE_VOLATILE_SESSION_KEYS: frozenset[str] = frozenset(
+    {
+        "review_history",
+        "review_skill_pool",
+        "skill_stats",
+        "conversation_history",
+    }
+)
+
+PRACTICE_PRUNE_SESSION_KEYS: frozenset[str] = (
+    PRACTICE_ALWAYS_PRUNE_SESSION_KEYS | PRACTICE_VOLATILE_SESSION_KEYS
+)
 
 
 def get_practice_owner_key() -> str:
@@ -85,6 +209,9 @@ def slim_payload_for_store(data: dict[str, Any], *, skill_id: str, question_uid:
         "problem_type_id": str(data.get("problem_type_id", data.get("problem_type", ""))).strip(),
         "question_text": str(data.get("question_text", data.get("question", ""))).strip()[:2000],
         "question": str(data.get("question_text", data.get("question", ""))).strip()[:2000],
+        "component_id": str(data.get("component_id", meta.get("component_id", ""))).strip(),
+        "textbook_example_id": data.get("textbook_example_id", meta.get("textbook_example_id", "")),
+        "presentation_mode": str(data.get("presentation_mode", meta.get("presentation_mode", ""))).strip(),
         "answer": data.get("answer"),
         "correct_answer": data.get("correct_answer", data.get("answer")),
         "display_answer": str(data.get("display_answer", "")).strip(),
@@ -119,11 +246,29 @@ def attach_question_identity(payload: dict[str, Any], *, skill_id: str) -> dict[
     return out
 
 
-def _sync_session_pointers(*, skill_id: str, question_uid: str) -> None:
+def _small_session_value(value: Any, limit: int = 160) -> str:
+    if value is None:
+        return ""
+    if isinstance(value, (dict, list, tuple, set)):
+        try:
+            text = json.dumps(value, ensure_ascii=False, default=str, separators=(",", ":"))
+        except Exception:
+            text = str(value)
+    else:
+        text = str(value)
+    return text.strip()[:limit]
+
+
+def _sync_session_pointers(*, skill_id: str, question_uid: str, stored: dict[str, Any] | None = None) -> None:
     sid = str(skill_id).strip()
     uid = str(question_uid).strip()
     session["current_skill_id"] = sid
     session["current_question_uid"] = uid
+    stored = stored if isinstance(stored, dict) else {}
+    session["current_problem_type_id"] = str(stored.get("problem_type_id", "")).strip()
+    session["current_component_id"] = str(stored.get("component_id", "")).strip()
+    session["current_textbook_example_id"] = _small_session_value(stored.get("textbook_example_id", ""))
+    session["current_answer"] = _small_session_value(stored.get("correct_answer", stored.get("answer")))
     recent = session.get("recent_question_uids")
     if not isinstance(recent, list):
         recent = []
@@ -138,10 +283,12 @@ def _sync_session_pointers(*, skill_id: str, question_uid: str) -> None:
     session["practice_ref"] = {
         "skill_id": sid,
         "question_uid": uid,
-        "question_text_hash": "",
-        "problem_type_id": "",
+        "problem_type_id": session.get("current_problem_type_id", ""),
     }
+    session["practice_session_touched_at"] = int(time.time())
     session.pop("current_data", None)
+    session.pop("current_question", None)
+    session.pop("correct_answer", None)
     session.modified = True
 
 
@@ -152,6 +299,115 @@ def _mark_uids_expired(uids: list[str]) -> None:
         row = bucket.get(uid)
         if isinstance(row, dict) and row.get("status") == STATUS_GENERATED:
             row["status"] = STATUS_EXPIRED
+
+
+def _compact_practice_ref(value: Any) -> dict[str, str]:
+    if not isinstance(value, dict):
+        return {}
+    out = {
+        "skill_id": str(value.get("skill_id", "")).strip(),
+        "question_uid": str(value.get("question_uid", "")).strip(),
+        "problem_type_id": str(value.get("problem_type_id", "")).strip(),
+    }
+    return {k: v for k, v in out.items() if v}
+
+
+def _prune_recent_question_uids() -> None:
+    recent = session.get("recent_question_uids")
+    if not isinstance(recent, list):
+        if "recent_question_uids" in session:
+            session.pop("recent_question_uids", None)
+        return
+    compact = [str(x).strip() for x in recent if str(x).strip()][-_MAX_RECENT_QUESTIONS:]
+    if compact != recent:
+        session["recent_question_uids"] = compact
+
+
+def _clear_practice_cookie_state() -> list[str]:
+    cleared: list[str] = []
+    for key in (
+        *PRACTICE_DISPLAY_SESSION_KEYS,
+        "recent_question_uids",
+        "practice_ref",
+        "practice_session_touched_at",
+        "practice_session_pruned_at",
+    ):
+        if key in session:
+            session.pop(key, None)
+            cleared.append(key)
+    return cleared
+
+
+def prune_practice_session(
+    max_age_seconds: int = _PRACTICE_SESSION_TTL_SECONDS,
+    max_cookie_bytes: int = _COOKIE_TARGET_BYTES,
+) -> dict[str, Any]:
+    """Prune practice-only client session state while preserving auth and filters."""
+    now = time.time()
+    before = estimate_session_cookie_bytes()
+    removed: list[str] = []
+
+    touched = session.get("practice_session_touched_at")
+    try:
+        touched_at = float(touched)
+    except (TypeError, ValueError):
+        touched_at = now
+
+    if max_age_seconds > 0 and now - touched_at > max_age_seconds:
+        removed.extend(_clear_practice_cookie_state())
+        try:
+            clear_practice_cache_for_owner()
+        except Exception:
+            pass
+    else:
+        for key in PRACTICE_ALWAYS_PRUNE_SESSION_KEYS:
+            if key in session:
+                session.pop(key, None)
+                removed.append(key)
+        _prune_recent_question_uids()
+        if isinstance(session.get("practice_ref"), dict):
+            compact_ref = _compact_practice_ref(session.get("practice_ref"))
+            if compact_ref != session.get("practice_ref"):
+                session["practice_ref"] = compact_ref
+                removed.append("practice_ref.large_fields")
+
+    session["practice_session_pruned_at"] = int(now)
+    after_soft = estimate_session_cookie_bytes()
+    if after_soft > max_cookie_bytes:
+        for key in PRACTICE_VOLATILE_SESSION_KEYS:
+            if key in session:
+                session.pop(key, None)
+                removed.append(key)
+            if estimate_session_cookie_bytes() <= max_cookie_bytes:
+                break
+        for key in list(session.keys()):
+            if key in PRACTICE_SESSION_KEEP_KEYS:
+                continue
+            session.pop(key, None)
+            removed.append(str(key))
+            if estimate_session_cookie_bytes() <= max_cookie_bytes:
+                break
+
+    after = estimate_session_cookie_bytes()
+    if removed:
+        session.modified = True
+    kept = sorted(str(k) for k in session.keys())
+    try:
+        current_app.logger.info(
+            "[PRACTICE session prune] before=%s after=%s removed=%s kept=%s",
+            before,
+            after,
+            sorted(set(removed)),
+            kept,
+        )
+    except Exception:
+        pass
+    return {
+        "before": before,
+        "after": after,
+        "removed_keys": sorted(set(removed)),
+        "kept_keys": kept,
+    }
 
 
 def get_question_by_uid(
@@ -189,7 +445,12 @@ PRACTICE_DISPLAY_SESSION_KEYS: tuple[str, ...] = (
     "current_data",
     "current_question",
     "correct_answer",
+    "current_problem_type_id",
+    "current_component_id",
+    "current_textbook_example_id",
+    "current_answer",
     "review_history",
+    "skill_stats",
 )
 
 
@@ -232,12 +493,20 @@ def clear_practice_display_state_for_skill_switch(new_skill_id: str) -> dict[str
 
 
 def clear_practice_state() -> None:
-    """Clear cookie pointers and server store for current owner (debug / logout helper)."""
+    """Clear practice-only cookie pointers and server store for current owner.
+
+    This intentionally preserves auth and practice query filters such as
+    curriculum, subject, book, chapter, section, unit, exam_round, and level.
+    """
     owner_key = get_practice_owner_key()
     _STORE.pop(owner_key, None)
     for k in (
         "current_skill_id",
         "current_question_uid",
+        "current_problem_type_id",
+        "current_component_id",
+        "current_textbook_example_id",
+        "current_answer",
         "recent_question_uids",
         "practice_ref",
         "current_data",
@@ -258,12 +527,11 @@ def persist_current_question(skill_id: str, data: dict[str, Any]) -> tuple[dict[
 
     bucket = _STORE.setdefault(owner_key, {})
     bucket[uid] = stored
-    _sync_session_pointers(skill_id=sid, question_uid=uid)
+    _sync_session_pointers(skill_id=sid, question_uid=uid, stored=stored)
 
     ref = {
         "skill_id": sid,
         "question_uid": uid,
-        "question_text_hash": str(enriched["question_text_hash"]),
         "problem_type_id": str(stored.get("problem_type_id", "")),
     }
     session["practice_ref"] = ref

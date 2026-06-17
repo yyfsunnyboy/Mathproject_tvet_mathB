@@ -607,6 +607,12 @@ def init_db(engine):
 
     _sync_skill_family_bridge(conn)
 
+    from core.gencode.schema.gencode_component_tracker_inspection import (
+        ensure_gencode_component_tracker_table,
+    )
+
+    ensure_gencode_component_tracker_table(conn)
+
     conn.commit()
     conn.close()
     print("資料庫結構初始化與檢查完成 (v9.0)！")

@@ -13,11 +13,147 @@ from core.gencode.pipeline_orchestrator import (
     _load_v3_taxonomy_mvp_scope,
     run_gencode_phase2_raw,
 )
+from core.gencode.schema.gencode_component_tracker_inspection import (
+    ensure_gencode_component_tracker_table,
+)
 from core.gencode.services.component_tracker_service import (
     assert_textbook_example_skill,
     derive_component_id,
     update_status,
 )
+from core.gencode.services.v3_skill_coverage_service import (
+    build_coverage_warnings,
+    get_v3_skill_component_coverage,
+)
+
+
+def _fetch_textbook_example_ids_for_skill(
+    conn: sqlite3.Connection,
+    skill_id: str,
+) -> list[int]:
+    rows = conn.execute(
+        """
+        SELECT id
+        FROM textbook_examples
+        WHERE skill_id = ?
+        ORDER BY id ASC
+        """,
+        (str(skill_id or "").strip(),),
+    ).fetchall()
+    return [int(row[0] if not hasattr(row, "keys") else row["id"]) for row in rows]
+
+
+def run_admin_v3_dryrun_for_skill(
+    conn: sqlite3.Connection,
+    skill_id: str,
+    *,
+    smoke: bool = False,
+    verify: bool = False,
+    force: bool = False,
+    limit: int | None = None,
+    dryrun_base_dir: str = "reports/gencode_v3_dryrun",
+    seed: int | None = None,
+) -> dict[str, object]:
+    """Run V3 dryrun for all textbook examples under one skill."""
+    ensure_gencode_component_tracker_table(conn)
+
+    skill_key = str(skill_id or "").strip()
+    if not skill_key:
+        raise ValueError("missing_skill_id")
+
+    mvp_scope = _load_v3_taxonomy_mvp_scope("configs/gencode_taxonomy/k12_component_taxonomy.yaml")
+    if skill_key not in mvp_scope:
+        raise ValueError("skill_not_in_v3_mvp_scope")
+
+    example_ids = _fetch_textbook_example_ids_for_skill(conn, skill_key)
+    if limit is not None:
+        if not isinstance(limit, int) or isinstance(limit, bool) or limit < 1:
+            raise ValueError("invalid_limit")
+        example_ids = example_ids[:limit]
+
+    results: list[dict[str, object]] = []
+    processed_count = 0
+    skipped_verified_count = 0
+    success_count = 0
+    failed_count = 0
+
+    for textbook_example_id in example_ids:
+        component_id = derive_component_id(textbook_example_id)
+        tracker = _fetch_tracker_for_example(conn, textbook_example_id)
+        tracker_status = str((tracker or {}).get("gencode_status") or "").strip()
+
+        if tracker_status == "verified" and not force:
+            skipped_verified_count += 1
+            results.append(
+                {
+                    "textbook_example_id": textbook_example_id,
+                    "status": "skipped_verified",
+                    "component_id": component_id,
+                    "message": "verified tracker row kept",
+                }
+            )
+            continue
+
+        processed_count += 1
+        try:
+            dryrun_result = run_admin_v3_dryrun_for_example(
+                conn=conn,
+                textbook_example_id=textbook_example_id,
+                skill_id=skill_key,
+                dryrun_base_dir=dryrun_base_dir,
+                seed=seed,
+            )
+            entry_status = "processed"
+            message = str(dryrun_result.get("status") or "draft_written")
+
+            if smoke:
+                smoke_result = run_admin_v3_smoke_for_example(
+                    conn=conn,
+                    textbook_example_id=textbook_example_id,
+                    skill_id=skill_key,
+                    dryrun_base_dir=dryrun_base_dir,
+                    seed=seed if seed is not None else 42,
+                )
+                message = str(smoke_result.get("status") or "smoke_passed")
+                if verify:
+                    verify_result = mark_admin_v3_example_verified(
+                        conn=conn,
+                        textbook_example_id=textbook_example_id,
+                        skill_id=skill_key,
+                    )
+                    message = str(verify_result.get("status") or "verified")
+
+            success_count += 1
+            results.append(
+                {
+                    "textbook_example_id": textbook_example_id,
+                    "status": entry_status,
+                    "component_id": str(dryrun_result.get("component_id") or component_id),
+                    "message": message,
+                }
+            )
+        except Exception as exc:
+            failed_count += 1
+            results.append(
+                {
+                    "textbook_example_id": textbook_example_id,
+                    "status": "failed",
+                    "component_id": component_id,
+                    "message": f"{exc.__class__.__name__}:{exc}",
+                }
+            )
+
+    return {
+        "success": failed_count == 0,
+        "skill_id": skill_key,
+        "total_examples": len(example_ids),
+        "processed_count": processed_count,
+        "skipped_verified_count": skipped_verified_count,
+        "success_count": success_count,
+        "failed_count": failed_count,
+        "results": results,
+        "coverage": get_v3_skill_component_coverage(conn, skill_key),
+    }
 
 
 def run_admin_v3_dryrun_for_example(
@@ -29,6 +165,8 @@ def run_admin_v3_dryrun_for_example(
     seed: int | None = None,
 ) -> dict[str, object]:
     """Run one admin-triggered V3 shadow-bridge dryrun for a textbook example."""
+    ensure_gencode_component_tracker_table(conn)
+
     skill_key = str(skill_id or "").strip()
     if not skill_key:
         raise ValueError("missing_skill_id")
@@ -299,16 +437,25 @@ def run_admin_v3_publish_for_skill(
     project_root: str,
     staging_root: str,
     force_publish: bool = False,
+    strict_coverage: bool = False,
 ) -> dict[str, object]:
     """Publish one admin-gated V3 skill through the production publish service."""
     if force_publish is not True:
         raise ValueError("production_publish_requires_force_publish")
+
+    ensure_gencode_component_tracker_table(conn)
 
     from core.gencode.v3_production_publish_service import V3_PRODUCTION_PUBLISH_ALLOWED_SKILLS
 
     skill_key = str(skill_id or "").strip()
     if skill_key not in V3_PRODUCTION_PUBLISH_ALLOWED_SKILLS:
         raise ValueError("production_publish_not_allowed_for_skill")
+
+    coverage = get_v3_skill_component_coverage(conn, skill_key)
+    warnings = build_coverage_warnings(coverage)
+
+    if strict_coverage and not bool(coverage.get("publish_ready")):
+        raise ValueError("v3_coverage_incomplete_for_strict_publish")
 
     verified_component_count = _count_verified_components_for_skill(conn, skill_key)
     if verified_component_count < 1:
@@ -330,6 +477,8 @@ def run_admin_v3_publish_for_skill(
         "skill_id": skill_key,
         "verified_component_count": verified_component_count,
         "component_count": component_count,
+        "coverage": coverage,
+        "warnings": warnings,
         "project_root": publish_result.get("project_root"),
         "staging_root": publish_result.get("staging_root"),
         "smoke_status": publish_result.get("smoke_status"),

@@ -16,6 +16,16 @@ SKILL_TO_DOMAIN: dict[str, dict[str, Any]] = {
         "default_curriculum_profile": "vocational_high_b",
         "allowed_types": ["horizontal_line", "vertical_line"],
     },
+    "vh_數學B1_SlopeInterceptForm": {
+        "domain_module": "core.domain.coordinate_geometry.line_equation_domain",
+        "entrypoint": "build_line_equation_matrix",
+        "default_curriculum_profile": "vocational_high_b",
+        "allowed_types": [
+            "slope_intercept_equation",
+            "slope_intercept_find_x_intercept",
+            "slope_intercept_read_slope_and_intercept",
+        ],
+    },
 }
 
 

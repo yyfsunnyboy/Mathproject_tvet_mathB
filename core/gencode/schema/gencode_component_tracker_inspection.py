@@ -45,6 +45,22 @@ def apply_tracker_ddl(conn: sqlite3.Connection) -> None:
     conn.executescript(load_tracker_ddl())
 
 
+def tracker_table_exists(conn: sqlite3.Connection) -> bool:
+    row = conn.execute(
+        "SELECT name FROM sqlite_master WHERE type='table' AND name='gencode_component_tracker'"
+    ).fetchone()
+    return row is not None
+
+
+def ensure_gencode_component_tracker_table(conn: sqlite3.Connection) -> bool:
+    """Create gencode_component_tracker when missing; never drop or truncate existing data."""
+    if tracker_table_exists(conn):
+        return False
+    apply_tracker_ddl(conn)
+    conn.commit()
+    return True
+
+
 def inspect_gencode_component_tracker_schema(conn: sqlite3.Connection) -> dict[str, Any]:
     """Return a structured inspection report for the tracker table."""
     table_rows = conn.execute(

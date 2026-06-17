@@ -24,6 +24,7 @@ from core.gencode.skill_wrapper_compiler import (
 V3_PRODUCTION_PUBLISH_ALLOWED_SKILLS: frozenset[str] = frozenset({
     "vh_數學B1_PointSlopeForm",
     "vh_數學B1_HorizontalAndVerticalLineEquations",
+    "vh_數學B1_SlopeInterceptForm",
 })
 
 # Backward-compatible alias for existing test imports
@@ -149,6 +150,18 @@ def publish_single_v3_skill_to_production(
 
     compile_result = compile_and_double_write_skill(conn, skill_key, str(staging_path))
     _sync_dryrun_components_to_v3_house(staging_path, skill_key)
+
+    from core.gencode.v3_component_spec_validator import (
+        assert_generator_specs_metadata_consistent,
+    )
+
+    generator_specs = compile_result.get("generator_specs")
+    if isinstance(generator_specs, list):
+        assert_generator_specs_metadata_consistent(
+            sandbox_root=str(staging_path),
+            skill_id=skill_key,
+            generator_specs=generator_specs,
+        )
 
     try:
         run_v3_smoke(staging_path, skill_key)

@@ -137,6 +137,8 @@ def resolve_answer_contract_for_runtime(
     if not isinstance(payload, dict):
         return {}
     ac = payload.get("answer_contract") if isinstance(payload.get("answer_contract"), dict) else {}
+    if ac.get("answer_type"):
+        return dict(ac)
     if is_coordinate_pair_contract(ac):
         return dict(ac)
     if answer_type_family(str(ac.get("answer_type", ""))) == "solution_set":

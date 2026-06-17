@@ -308,6 +308,21 @@ def check_answer(
 
         return check_linear_equation_equivalent_answer(user_answer, correct_answer)
 
+    if (
+        checker == "choice_label_checker"
+        or family == "choice"
+        or str(ac.get("presentation_mode", "")).strip() == "single_choice"
+        or str((payload or {}).get("presentation_mode", "")).strip() == "single_choice"
+    ):
+        from core.checkers.choice_label_checker import check_choice_label
+
+        choices = []
+        if isinstance(payload, dict):
+            raw_choices = payload.get("choices") or payload.get("options") or []
+            if isinstance(raw_choices, list):
+                choices = raw_choices
+        return bool(check_choice_label(user_answer, correct_answer, choices))
+
     quadrant_result = check_quadrant_answer(user_answer, correct_answer)
     if quadrant_result is not None:
         return quadrant_result

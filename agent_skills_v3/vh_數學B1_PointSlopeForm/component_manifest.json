@@ -1,0 +1,161 @@
+{
+  "skill_id": "vh_數學B1_PointSlopeForm",
+  "compiled_at": "2026-06-17T01:46:11.391671+00:00",
+  "publish_status": "dryrun_manifest_compiled",
+  "components": [
+    {
+      "component_id": "src_4540",
+      "status": "draft_written",
+      "presentation_mode": "short_answer",
+      "source_kind": "ex_4540",
+      "textbook_example_id": 4540,
+      "line_type": "point_slope",
+      "domain_module": "core.domain.coordinate_geometry.line_equation_domain",
+      "entrypoint": "build_line_equation_matrix",
+      "component_dir": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_dryrun\\vh_數學B1_PointSlopeForm\\components\\src_4540"
+    },
+    {
+      "component_id": "src_4541",
+      "status": "draft_written",
+      "presentation_mode": "short_answer",
+      "source_kind": "ex_4541",
+      "textbook_example_id": 4541,
+      "line_type": "point_slope",
+      "domain_module": "core.domain.coordinate_geometry.line_equation_domain",
+      "entrypoint": "build_line_equation_matrix",
+      "component_dir": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_dryrun\\vh_數學B1_PointSlopeForm\\components\\src_4541"
+    },
+    {
+      "component_id": "src_4542",
+      "status": "draft_written",
+      "presentation_mode": "short_answer",
+      "source_kind": "ex_4542",
+      "textbook_example_id": 4542,
+      "line_type": "point_slope",
+      "domain_module": "core.domain.coordinate_geometry.line_equation_domain",
+      "entrypoint": "build_line_equation_matrix",
+      "component_dir": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_dryrun\\vh_數學B1_PointSlopeForm\\components\\src_4542"
+    },
+    {
+      "component_id": "src_4543",
+      "status": "draft_written",
+      "presentation_mode": "short_answer",
+      "source_kind": "ex_4543",
+      "textbook_example_id": 4543,
+      "line_type": "point_slope",
+      "domain_module": "core.domain.coordinate_geometry.line_equation_domain",
+      "entrypoint": "build_line_equation_matrix",
+      "component_dir": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_dryrun\\vh_數學B1_PointSlopeForm\\components\\src_4543"
+    },
+    {
+      "component_id": "src_4546",
+      "status": "draft_written",
+      "presentation_mode": "short_answer",
+      "source_kind": "ex_4546",
+      "textbook_example_id": 4546,
+      "line_type": "point_slope",
+      "domain_module": "core.domain.coordinate_geometry.line_equation_domain",
+      "entrypoint": "build_line_equation_matrix",
+      "component_dir": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_dryrun\\vh_數學B1_PointSlopeForm\\components\\src_4546"
+    },
+    {
+      "component_id": "src_4549",
+      "status": "draft_written",
+      "presentation_mode": "short_answer",
+      "source_kind": "ex_4549",
+      "textbook_example_id": 4549,
+      "line_type": "point_slope",
+      "domain_module": "core.domain.coordinate_geometry.line_equation_domain",
+      "entrypoint": "build_line_equation_matrix",
+      "component_dir": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_dryrun\\vh_數學B1_PointSlopeForm\\components\\src_4549"
+    },
+    {
+      "component_id": "src_4550",
+      "status": "draft_written",
+      "presentation_mode": "short_answer",
+      "source_kind": "ex_4550",
+      "textbook_example_id": 4550,
+      "line_type": "point_slope",
+      "domain_module": "core.domain.coordinate_geometry.line_equation_domain",
+      "entrypoint": "build_line_equation_matrix",
+      "component_dir": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_dryrun\\vh_數學B1_PointSlopeForm\\components\\src_4550"
+    },
+    {
+      "component_id": "src_4551",
+      "status": "draft_written",
+      "presentation_mode": "short_answer",
+      "source_kind": "ex_4551",
+      "textbook_example_id": 4551,
+      "line_type": "point_slope",
+      "domain_module": "core.domain.coordinate_geometry.line_equation_domain",
+      "entrypoint": "build_line_equation_matrix",
+      "component_dir": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_dryrun\\vh_數學B1_PointSlopeForm\\components\\src_4551"
+    },
+    {
+      "component_id": "src_4552",
+      "status": "draft_written",
+      "presentation_mode": "short_answer",
+      "source_kind": "ex_4552",
+      "textbook_example_id": 4552,
+      "line_type": "point_slope",
+      "domain_module": "core.domain.coordinate_geometry.line_equation_domain",
+      "entrypoint": "build_line_equation_matrix",
+      "component_dir": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_dryrun\\vh_數學B1_PointSlopeForm\\components\\src_4552"
+    },
+    {
+      "component_id": "src_4556",
+      "status": "draft_written",
+      "presentation_mode": "short_answer",
+      "source_kind": "ex_4556",
+      "textbook_example_id": 4556,
+      "line_type": "point_slope",
+      "domain_module": "core.domain.coordinate_geometry.line_equation_domain",
+      "entrypoint": "build_line_equation_matrix",
+      "component_dir": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_dryrun\\vh_數學B1_PointSlopeForm\\components\\src_4556"
+    },
+    {
+      "component_id": "src_4557",
+      "status": "draft_written",
+      "presentation_mode": "short_answer",
+      "source_kind": "ex_4557",
+      "textbook_example_id": 4557,
+      "line_type": "point_slope",
+      "domain_module": "core.domain.coordinate_geometry.line_equation_domain",
+      "entrypoint": "build_line_equation_matrix",
+      "component_dir": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_dryrun\\vh_數學B1_PointSlopeForm\\components\\src_4557"
+    },
+    {
+      "component_id": "src_4560",
+      "status": "draft_written",
+      "presentation_mode": "short_answer",
+      "source_kind": "ex_4560",
+      "textbook_example_id": 4560,
+      "line_type": "point_slope",
+      "domain_module": "core.domain.coordinate_geometry.line_equation_domain",
+      "entrypoint": "build_line_equation_matrix",
+      "component_dir": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_dryrun\\vh_數學B1_PointSlopeForm\\components\\src_4560"
+    },
+    {
+      "component_id": "src_4561",
+      "status": "draft_written",
+      "presentation_mode": "short_answer",
+      "source_kind": "ex_4561",
+      "textbook_example_id": 4561,
+      "line_type": "point_slope",
+      "domain_module": "core.domain.coordinate_geometry.line_equation_domain",
+      "entrypoint": "build_line_equation_matrix",
+      "component_dir": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_dryrun\\vh_數學B1_PointSlopeForm\\components\\src_4561"
+    },
+    {
+      "component_id": "src_4606",
+      "status": "draft_written",
+      "presentation_mode": "single_choice",
+      "source_kind": "ex_4606",
+      "textbook_example_id": 4606,
+      "line_type": "point_slope",
+      "domain_module": "core.domain.coordinate_geometry.line_equation_domain",
+      "entrypoint": "build_line_equation_matrix",
+      "component_dir": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_dryrun\\vh_數學B1_PointSlopeForm\\components\\src_4606"
+    }
+  ]
+}

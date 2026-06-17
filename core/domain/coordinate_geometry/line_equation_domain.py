@@ -14,6 +14,9 @@ _SUPPORTED_LINE_TYPES = frozenset(
         "horizontal_line",
         "vertical_line",
         "oblique_line",
+        "slope_intercept_equation",
+        "slope_intercept_find_x_intercept",
+        "slope_intercept_read_slope_and_intercept",
     }
 )
 
@@ -55,6 +58,18 @@ def build_line_equation_matrix(
         givens, answer, actual_type = _build_vertical_line(
             rng, coord_min, coord_max, extra
         )
+    elif normalized_type == "slope_intercept_equation":
+        givens, answer, actual_type = _build_slope_intercept_equation(
+            rng, coord_min, coord_max, extra
+        )
+    elif normalized_type == "slope_intercept_find_x_intercept":
+        givens, answer, actual_type = _build_slope_intercept_find_x_intercept(
+            rng, coord_min, coord_max, extra
+        )
+    elif normalized_type == "slope_intercept_read_slope_and_intercept":
+        givens, answer, actual_type = _build_slope_intercept_read_slope_and_intercept(
+            rng, coord_min, coord_max, extra
+        )
     else:
         givens, answer, actual_type = _build_oblique_line(
             rng, coord_min, coord_max, extra
@@ -71,6 +86,7 @@ def build_line_equation_matrix(
         "coefficients": {"A": a_int, "B": b_int, "C": c_int},
         "is_vertical": actual_type == "vertical_line",
         "is_horizontal": actual_type == "horizontal_line",
+        "task_type": normalized_type,
         "points_satisfy_line": _collect_points_on_line(givens, a_int, b_int, c_int),
     }
 
@@ -297,6 +313,188 @@ def _build_oblique_line(
     }
     answer, actual_type = _line_from_point_slope(x1, y1, slope)
     return givens, answer, actual_type
+
+
+def _build_slope_intercept_equation(
+    rng: random.Random,
+    coord_min: int,
+    coord_max: int,
+    constraints: dict[str, object],
+) -> tuple[dict[str, object], dict[str, object], str]:
+    _ = constraints
+    slope = _pick_nonzero_slope_intercept_slope(rng)
+    y_intercept = _pick_slope_intercept_b(rng, coord_min, coord_max)
+    answer, _ = _line_from_slope_intercept(slope, y_intercept)
+    givens: dict[str, object] = {
+        "slope": _format_number(slope),
+        "y_intercept": _format_number(y_intercept),
+    }
+    return givens, answer, "slope_intercept_equation"
+
+
+def _build_slope_intercept_find_x_intercept(
+    rng: random.Random,
+    coord_min: int,
+    coord_max: int,
+    constraints: dict[str, object],
+) -> tuple[dict[str, object], dict[str, object], str]:
+    _ = constraints
+    slope = _pick_nonzero_slope_intercept_slope(rng)
+    y_intercept = _pick_slope_intercept_b(rng, coord_min, coord_max, allow_zero=False)
+    if y_intercept == 0:
+        y_intercept = Fraction(2, 1)
+    line_answer, _ = _line_from_slope_intercept(slope, y_intercept)
+    x_intercept = -y_intercept / slope
+    answer = dict(line_answer)
+    answer["canonical_form"] = _format_number(x_intercept)
+    answer["x_intercept"] = _format_number(x_intercept)
+    answer["line_equation"] = line_answer["canonical_form"]
+    givens: dict[str, object] = {
+        "slope": _format_number(slope),
+        "y_intercept": _format_number(y_intercept),
+    }
+    return givens, answer, "slope_intercept_find_x_intercept"
+
+
+def _build_slope_intercept_read_slope_and_intercept(
+    rng: random.Random,
+    coord_min: int,
+    coord_max: int,
+    constraints: dict[str, object],
+) -> tuple[dict[str, object], dict[str, object], str]:
+    _ = constraints
+    slope = _pick_nonzero_slope_intercept_slope(rng)
+    y_intercept = _pick_slope_intercept_b(rng, coord_min, coord_max)
+    answer, _ = _line_from_slope_intercept(slope, y_intercept)
+    answer = dict(answer)
+    answer["canonical_form"] = (
+        f"m = {_format_number(slope)}, b = {_format_number(y_intercept)}"
+    )
+    answer["line_equation"] = _format_slope_intercept(slope, y_intercept)
+    givens: dict[str, object] = {
+        "equation": answer["line_equation"],
+    }
+    return givens, answer, "slope_intercept_read_slope_and_intercept"
+
+
+def _line_from_slope_intercept(
+    slope: Fraction,
+    intercept: Fraction,
+) -> tuple[dict[str, object], str]:
+    a_int, b_int, c_int = _normalize_fraction_coefficients(
+        slope,
+        Fraction(-1, 1),
+        intercept,
+    )
+    canonical = _format_slope_intercept(slope, intercept)
+    general = _format_general_form(a_int, b_int, c_int)
+    return (
+        {
+            "canonical_form": canonical,
+            "general_form": general,
+            "coefficients": {"A": a_int, "B": b_int, "C": c_int},
+            "slope": _format_fraction_or_int(slope),
+            "intercept": _format_fraction_or_int(intercept),
+        },
+        "oblique_line" if slope != 0 else "horizontal_line",
+    )
+
+
+def _read_slope_or_pick(
+    rng: random.Random,
+    constraints: dict[str, object],
+    *,
+    allow_zero: bool = True,
+) -> Fraction:
+    raw = constraints.get("slope")
+    if raw is not None:
+        slope = _parse_fraction(raw)
+    else:
+        slope = _pick_slope(rng)
+    if not allow_zero and slope == 0:
+        return Fraction(1, 1)
+    return slope
+
+
+def _pick_nonzero_slope_intercept_slope(rng: random.Random) -> Fraction:
+    slope = _pick_slope(rng, allow_fraction=True)
+    while slope == 0:
+        slope = _pick_slope(rng, allow_fraction=True)
+    return slope
+
+
+def _pick_slope_intercept_b(
+    rng: random.Random,
+    coord_min: int,
+    coord_max: int,
+    *,
+    allow_zero: bool = True,
+) -> Fraction:
+    if rng.random() < 0.35:
+        numerator = rng.choice([1, 2, 3, 4, 5, -1, -2, -3, -4, -5])
+        denominator = rng.choice([2, 3, 4])
+        value = Fraction(numerator, denominator)
+    else:
+        value = Fraction(rng.randint(coord_min, coord_max), 1)
+    if not allow_zero:
+        attempts = 0
+        while value == 0 and attempts < 20:
+            attempts += 1
+            value = _pick_slope_intercept_b(rng, coord_min, coord_max)
+        if value == 0:
+            value = Fraction(1, 1)
+    return value
+
+
+def _read_intercept_or_pick(
+    rng: random.Random,
+    constraints: dict[str, object],
+    *,
+    keys: tuple[str, ...],
+    coord_min: int,
+    coord_max: int,
+) -> Fraction:
+    for key in keys:
+        if key in constraints:
+            return _parse_fraction(constraints[key])
+    return Fraction(rng.randint(coord_min, coord_max), 1)
+
+
+def _parse_fraction(value: object) -> Fraction:
+    if isinstance(value, Fraction):
+        return value
+    if isinstance(value, int) and not isinstance(value, bool):
+        return Fraction(value, 1)
+    if isinstance(value, float):
+        return Fraction(value).limit_denominator()
+    if isinstance(value, str):
+        text = value.strip().replace("−", "-")
+        if text.startswith("$") and text.endswith("$"):
+            text = text[1:-1].strip()
+        frac_match = re_match_latex_fraction(text)
+        if frac_match is not None:
+            return frac_match
+        if "/" in text:
+            num, den = text.split("/", 1)
+            return Fraction(int(num.strip()), int(den.strip()))
+        return Fraction(int(text), 1)
+    raise ValueError(f"unsupported numeric token: {value!r}")
+
+
+def re_match_latex_fraction(text: str) -> Fraction | None:
+    import re
+
+    match = re.fullmatch(r"-?\\frac\{(-?\d+)\}\{(-?\d+)\}", text)
+    if not match:
+        return None
+    sign = -1 if text.startswith("-") else 1
+    return Fraction(sign * int(match.group(1)), int(match.group(2)))
+
+
+def _format_fraction_or_int(value: Fraction) -> str | int:
+    if value.denominator == 1:
+        return value.numerator
+    return _format_number(value)
 
 
 def _line_from_vertical(x_val: int) -> tuple[dict[str, object], str]:
@@ -540,7 +738,7 @@ def _build_visual_spec(
         x_val = int(givens.get("x_intercept", 0))  # type: ignore[arg-type]
         lines.append({"type": "vertical", "x": x_val, "label": "L"})
 
-    if actual_type == "oblique_line":
+    if actual_type == "oblique_line" or str(actual_type).startswith("slope_intercept"):
         slope = answer.get("slope")
         intercept = answer.get("intercept")
         line_entry: dict[str, object] = {"label": "L"}

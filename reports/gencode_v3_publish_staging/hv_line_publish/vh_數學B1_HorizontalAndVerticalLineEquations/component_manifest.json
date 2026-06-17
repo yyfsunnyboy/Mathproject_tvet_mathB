@@ -1,6 +1,6 @@
 {
   "skill_id": "vh_數學B1_HorizontalAndVerticalLineEquations",
-  "compiled_at": "2026-06-16T15:22:50.162590+00:00",
+  "compiled_at": "2026-06-17T01:51:51.304227+00:00",
   "publish_status": "dryrun_manifest_compiled",
   "components": [
     {
@@ -12,7 +12,40 @@
       "line_type": "vertical_line",
       "domain_module": "core.domain.coordinate_geometry.line_equation_domain",
       "entrypoint": "build_line_equation_matrix",
-      "component_dir": "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_publish_staging\\hv_line_publish\\vh_數學B1_HorizontalAndVerticalLineEquations\\components\\src_4544"
+      "component_dir": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_dryrun\\vh_數學B1_HorizontalAndVerticalLineEquations\\components\\src_4544"
+    },
+    {
+      "component_id": "src_4553",
+      "status": "draft_written",
+      "presentation_mode": "short_answer",
+      "source_kind": "ex_4553",
+      "textbook_example_id": 4553,
+      "line_type": "horizontal_line",
+      "domain_module": "core.domain.coordinate_geometry.line_equation_domain",
+      "entrypoint": "build_line_equation_matrix",
+      "component_dir": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_dryrun\\vh_數學B1_HorizontalAndVerticalLineEquations\\components\\src_4553"
+    },
+    {
+      "component_id": "src_4562",
+      "status": "draft_written",
+      "presentation_mode": "short_answer",
+      "source_kind": "ex_4562",
+      "textbook_example_id": 4562,
+      "line_type": "vertical_line",
+      "domain_module": "core.domain.coordinate_geometry.line_equation_domain",
+      "entrypoint": "build_line_equation_matrix",
+      "component_dir": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_dryrun\\vh_數學B1_HorizontalAndVerticalLineEquations\\components\\src_4562"
+    },
+    {
+      "component_id": "src_4591",
+      "status": "draft_written",
+      "presentation_mode": "single_choice",
+      "source_kind": "ex_4591",
+      "textbook_example_id": 4591,
+      "line_type": "vertical_line",
+      "domain_module": "core.domain.coordinate_geometry.line_equation_domain",
+      "entrypoint": "build_line_equation_matrix",
+      "component_dir": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_dryrun\\vh_數學B1_HorizontalAndVerticalLineEquations\\components\\src_4591"
     }
   ]
 }

@@ -112,20 +112,34 @@ def _fetch_verified_components(
 def _build_generator_specs(components: list[dict[str, Any]]) -> tuple[list[str], list[dict[str, Any]]]:
     generator_keys: list[str] = []
     generator_specs: list[dict[str, Any]] = []
-    for row in components:
+    for index, row in enumerate(components):
         component_id = str(row["component_id"])
         payload = row["induced_spec_payload"]
+        textbook_example_id = int(row["textbook_example_id"])
         generator_keys.append(component_id)
         generator_specs.append(
             {
-                "textbook_example_id": int(row["textbook_example_id"]),
+                "textbook_example_id": textbook_example_id,
                 "component_id": component_id,
                 "generator_key": component_id,
                 "presentation_mode": payload.get("presentation_mode", "short_answer"),
                 "source_kind": payload.get("source_kind"),
                 "line_type": payload.get("line_type"),
+                "answer_type": payload.get("answer_type"),
+                "problem_type_id": payload.get("problem_type_id"),
+                "display_order": int(payload.get("display_order", textbook_example_id)),
+                "source_order": int(payload.get("source_order", textbook_example_id)),
+                "sampling_weight": float(payload.get("sampling_weight", 1) or 1),
             }
         )
+    generator_specs.sort(
+        key=lambda spec: (
+            int(spec.get("display_order", 0)),
+            int(spec.get("textbook_example_id", 0)),
+            str(spec.get("component_id", "")),
+        )
+    )
+    generator_keys = [str(spec["component_id"]) for spec in generator_specs]
     return generator_keys, generator_specs
 
 
@@ -150,6 +164,30 @@ GENERATOR_KEYS = {generator_keys!r}
 GENERATOR_SPECS = {generator_specs!r}
 _COMPONENT_DISPATCH = {component_dispatch!r}
 _V3_ROOT = Path(__file__).resolve().parent
+_RR_CURSOR = 0
+
+
+def _component_sampling_weight(component_id: str) -> float:
+    for row in GENERATOR_SPECS:
+        if isinstance(row, dict) and str(row.get("component_id") or "") == component_id:
+            return float(row.get("sampling_weight", 1) or 1)
+    return 1.0
+
+
+def _ordered_generator_keys() -> list[str]:
+    specs_by_id = {{
+        str(row.get("component_id") or ""): row
+        for row in GENERATOR_SPECS
+        if isinstance(row, dict) and str(row.get("component_id") or "")
+    }}
+    return sorted(
+        GENERATOR_KEYS,
+        key=lambda key: (
+            int((specs_by_id.get(key) or {{}}).get("display_order", 0)),
+            int((specs_by_id.get(key) or {{}}).get("textbook_example_id", 0)),
+            key,
+        ),
+    )
 
 
 def _load_component_module(component_id: str, module_filename: str) -> Any:
@@ -169,13 +207,120 @@ def _pick_component_id(
 ) -> str:
     if component_id and component_id in _COMPONENT_DISPATCH:
         return component_id
-    if not GENERATOR_KEYS:
+    ordered_keys = _ordered_generator_keys()
+    if not ordered_keys:
         raise RuntimeError("generator_keys_empty")
     if seed is None:
-        return GENERATOR_KEYS[0]
+        global _RR_CURSOR
+        picked = ordered_keys[_RR_CURSOR % len(ordered_keys)]
+        _RR_CURSOR += 1
+        return picked
     import random
 
-    return random.Random(seed).choice(GENERATOR_KEYS)
+    weights = [_component_sampling_weight(key) for key in ordered_keys]
+    return random.Random(seed).choices(ordered_keys, weights=weights, k=1)[0]
+
+
+def _spec_for_component(component_id: str) -> dict[str, Any]:
+    for row in GENERATOR_SPECS:
+        if isinstance(row, dict) and str(row.get("component_id") or "") == component_id:
+            return dict(row)
+    return {{}}
+
+
+def _minimal_answer_contract(payload: dict[str, Any], spec: dict[str, Any]) -> dict[str, Any]:
+    embedded = payload.get("answer_contract")
+    if isinstance(embedded, dict) and embedded.get("answer_type"):
+        return dict(embedded)
+    presentation_mode = str(
+        payload.get("presentation_mode")
+        or spec.get("presentation_mode")
+        or (payload.get("metadata") or {{}}).get("presentation_mode")
+        or "short_answer"
+    ).strip()
+    answer_type = str(
+        payload.get("answer_type")
+        or spec.get("answer_type")
+        or (payload.get("metadata") or {{}}).get("answer_type")
+        or ("single_choice" if presentation_mode == "single_choice" else "expression")
+    ).strip()
+    semantic_answer = str(
+        payload.get("semantic_answer")
+        or (payload.get("metadata") or {{}}).get("semantic_answer")
+        or payload.get("display_answer")
+        or payload.get("correct_answer")
+        or ""
+    ).strip()
+    if presentation_mode == "single_choice":
+        return {{
+            "presentation_mode": "single_choice",
+            "answer_type": "single_choice",
+            "checker": "choice_label_checker",
+            "checker_key": "choice_label_checker",
+            "answer_equivalence": "choice_label",
+            "equivalence": "choice_label",
+            "semantic_answer": semantic_answer,
+        }}
+    return {{
+        "presentation_mode": "short_answer",
+        "answer_type": answer_type,
+        "checker": "linear_equation_equivalent_checker",
+        "checker_key": "linear_equation_equivalent_checker",
+        "answer_equivalence": "linear_equation_equivalent",
+        "equivalence": "linear_equation_equivalent",
+        "semantic_answer": semantic_answer,
+    }}
+
+
+def _merge_generator_spec(payload: dict[str, Any], component_id: str) -> dict[str, Any]:
+    if not isinstance(payload, dict):
+        return payload
+    spec = _spec_for_component(component_id)
+    out = dict(payload)
+    merge_keys = (
+        "textbook_example_id",
+        "component_id",
+        "generator_key",
+        "presentation_mode",
+        "answer_type",
+        "problem_type_id",
+        "source_kind",
+        "line_type",
+        "display_order",
+        "source_order",
+        "sampling_weight",
+    )
+    for key in merge_keys:
+        if spec.get(key) is not None:
+            out[key] = spec[key]
+    out.setdefault("component_id", component_id)
+    out.setdefault("generator_key", component_id)
+    meta = dict(out.get("metadata") or {{}}) if isinstance(out.get("metadata"), dict) else {{}}
+    for key in (
+        "textbook_example_id",
+        "component_id",
+        "presentation_mode",
+        "answer_type",
+        "problem_type_id",
+        "source_kind",
+        "line_type",
+        "semantic_answer",
+    ):
+        if out.get(key) is not None:
+            meta.setdefault(key, out.get(key))
+        elif spec.get(key) is not None:
+            meta.setdefault(key, spec.get(key))
+    if out.get("semantic_answer") is not None:
+        meta.setdefault("semantic_answer", out.get("semantic_answer"))
+    out["metadata"] = meta
+    if not isinstance(out.get("answer_contract"), dict) or not out.get("answer_contract"):
+        out["answer_contract"] = _minimal_answer_contract(out, spec)
+    if out["answer_contract"].get("checker"):
+        out["checker"] = out["answer_contract"].get("checker")
+        out.setdefault("checker_type", out["answer_contract"].get("checker"))
+    if out["answer_contract"].get("answer_equivalence"):
+        out["equivalence"] = out["answer_contract"].get("answer_equivalence")
+    return out
 
 
 def generate(
@@ -189,9 +334,11 @@ def generate(
     generate_fn = getattr(module, "generate", None)
     if not callable(generate_fn):
         raise RuntimeError(f"component_generate_missing:{{picked}}")
-    payload = generate_fn(level=level, seed=seed, **kwargs)
+    payload = generate_fn(level=level, seed=seed, component_id=picked, **kwargs)
     if isinstance(payload, dict):
-        payload.setdefault("component_id", picked)
+        if not payload.get("component_id"):
+            payload["component_id"] = picked
+        return _merge_generator_spec(payload, picked)
     return payload
 
 
@@ -224,15 +371,21 @@ def get_hint(step: int, question_payload: dict[str, Any] | None = None) -> str:
 '''
 
 
+def resolve_v3_package_root_from_facade(facade_path: str | Path) -> Path:
+    """Resolve agent_skills_v3 root relative to a thin facade at <root>/skills/<skill_id>.py."""
+    facade = Path(facade_path).resolve()
+    return (facade.parent.parent / "agent_skills_v3").resolve()
+
+
 def _render_thin_facade_py(
     *,
     skill_id: str,
     generator_keys: list[str],
     generator_specs: list[dict[str, Any]],
-    v3_package_root: str,
 ) -> str:
     return f'''from __future__ import annotations
 
+from pathlib import Path
 from typing import Any
 
 from core.gencode.runtime_skill_wrapper import (
@@ -244,7 +397,11 @@ from core.gencode.runtime_skill_wrapper import (
 SKILL_ID = {skill_id!r}
 GENERATOR_KEYS = {generator_keys!r}
 GENERATOR_SPECS = {generator_specs!r}
-V3_PACKAGE_ROOT = {v3_package_root!r}
+
+
+def _resolve_v3_package_root() -> str:
+    """Resolve V3 house root from this facade location: skills/ -> <root>/agent_skills_v3."""
+    return str((Path(__file__).resolve().parent.parent / "agent_skills_v3").resolve())
 
 
 def generate(
@@ -257,7 +414,7 @@ def generate(
         SKILL_ID,
         GENERATOR_KEYS,
         GENERATOR_SPECS,
-        v3_package_root=V3_PACKAGE_ROOT,
+        v3_package_root=_resolve_v3_package_root(),
         level=level,
         seed=seed,
         difficulty=difficulty,
@@ -274,7 +431,7 @@ def check(
         user_answer,
         correct_answer,
         question_payload=question_payload,
-        v3_package_root=V3_PACKAGE_ROOT,
+        v3_package_root=_resolve_v3_package_root(),
         skill_id=SKILL_ID,
     )
 
@@ -283,7 +440,7 @@ def get_hint(step: int, question_payload: dict[str, Any] | None = None) -> str:
     return dispatch_get_hint(
         step,
         question_payload=question_payload,
-        v3_package_root=V3_PACKAGE_ROOT,
+        v3_package_root=_resolve_v3_package_root(),
         skill_id=SKILL_ID,
     )
 '''
@@ -324,7 +481,6 @@ def compile_and_double_write_skill(
         skill_id=skill_key,
         generator_keys=generator_keys,
         generator_specs=generator_specs,
-        v3_package_root=str(v3_package_root),
     )
 
     new_house_path.write_text(new_house_source, encoding="utf-8")

@@ -5,23 +5,27 @@ COMPONENT_ID: Final[str] = "ex_4544"
 SKILL_ID: Final[str] = "vh_數學B1_HorizontalAndVerticalLineEquations"
 SOURCE_REF: Final[str] = "ex_4544"
 SOURCE_KIND: Final[str] = "ex_4544"
+TEXTBOOK_EXAMPLE_ID: Final[int] = 4544
 
 ORDER_WEIGHT: Final[int] = 10
 DIFFICULTY_LEVEL: Final[str] = "easy"
+LINE_TYPE: Final[str] = "vertical_line"
 
 TARGET_TASK: Final[str] = "write_line_equation_from_point_slope"
 TEMPLATE_SLOT: Final[str] = "line_equation_from_point_slope"
-PRESENTATION_MODE: Final[str] = "single_choice"
+PROBLEM_TYPE_ID: Final[str] = "write_line_equation_from_point_slope"
+PRESENTATION_MODE: Final[str] = "short_answer"
+ANSWER_TYPE: Final[str] = "expression"
 
 DOMAIN_LIBRARY: Final[tuple[str, ...]] = (
     "core.domain.coordinate_geometry.line_equation_domain.build_line_equation_matrix",
 )
 
 ANSWER_VERIFICATION_TYPE: Final[dict[str, str]] = {
-    "checker_key": "choice_label_checker",
-    "equivalence_type": "choice_label",
-    "answer_type": "single_choice",
-    "module": "core.checkers.choice_label_checker",
+    "checker_key": "linear_equation_equivalent_checker",
+    "equivalence_type": "linear_equation_equivalent",
+    "answer_type": "expression",
+    "module": "core.checkers.linear_equation_equivalent_checker",
 }
 
 GENERATOR_READINESS: Final[str] = "draft"
