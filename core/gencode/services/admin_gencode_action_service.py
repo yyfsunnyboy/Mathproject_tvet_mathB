@@ -19,6 +19,7 @@ from core.gencode.schema.gencode_component_tracker_inspection import (
 from core.gencode.services.component_tracker_service import (
     assert_textbook_example_skill,
     derive_component_id,
+    save_tracker_record,
     update_status,
 )
 from core.gencode.services.v3_skill_coverage_service import (
@@ -43,6 +44,80 @@ def _fetch_textbook_example_ids_for_skill(
     return [int(row[0] if not hasattr(row, "keys") else row["id"]) for row in rows]
 
 
+_UNSUPPORTED_ERROR_CODES = frozenset(
+    {
+        "unsupported_task_type",
+        "unsupported_domain",
+        "unsupported_checker",
+        "unsupported_answer_contract",
+        "unsupported_choices_generator",
+        "presentation_inference_failed",
+    }
+)
+
+
+def _assert_admin_v3_dryrun_skill_allowed(skill_id: str) -> None:
+    """Allow admin batch dryrun for any concrete skill; keep outline rows inert."""
+    skill_key = str(skill_id or "").strip()
+    if not skill_key:
+        raise ValueError("missing_skill_id")
+    if skill_key.startswith("outline_"):
+        raise ValueError("outline_skill_not_supported_for_v3_dryrun")
+
+
+def _classify_dryrun_error(exc: Exception) -> str:
+    message = f"{exc.__class__.__name__}:{exc}"
+    lowered = message.lower()
+    if "unsupported_task_type" in lowered:
+        return "unsupported_task_type"
+    if "unsupported_domain" in lowered:
+        return "unsupported_domain"
+    if "unsupported_checker" in lowered:
+        return "unsupported_checker"
+    if "unsupported_answer_contract" in lowered:
+        return "unsupported_answer_contract"
+    if "unsupported_choices_generator" in lowered:
+        return "unsupported_choices_generator"
+    if "presentation" in lowered and ("infer" in lowered or "inference" in lowered):
+        return "presentation_inference_failed"
+    if "choice" in lowered:
+        return "unsupported_choices_generator"
+    if "answer_contract" in lowered or "answer contract" in lowered:
+        return "unsupported_answer_contract"
+    if "checker" in lowered or "check_answer" in lowered:
+        return "unsupported_checker"
+    if "domain" in lowered or "adapter" in lowered:
+        return "unsupported_domain"
+    if "v3_shadow_bridge_not_executed" in lowered or "shadow_bridge" in lowered:
+        return "unsupported_task_type"
+    if "task_type" in lowered or "problem_type" in lowered or "unsupported" in lowered:
+        return "unsupported_task_type"
+    return "failed"
+
+
+def _record_failed_example(
+    conn: sqlite3.Connection,
+    *,
+    textbook_example_id: int,
+    skill_id: str,
+    error_code: str,
+    exc: Exception,
+) -> None:
+    error_log = f"{error_code}: {exc.__class__.__name__}: {exc}"
+    try:
+        save_tracker_record(
+            conn,
+            textbook_example_id=textbook_example_id,
+            skill_id=skill_id,
+            gencode_status="failed",
+            induced_spec_payload={"error_code": error_code},
+            gencode_error_log=error_log,
+        )
+    except Exception:
+        # Preserve the batch response even if an existing inconsistent row blocks the upsert.
+        pass
+
+
 def run_admin_v3_dryrun_for_skill(
     conn: sqlite3.Connection,
     skill_id: str,
@@ -60,10 +135,7 @@ def run_admin_v3_dryrun_for_skill(
     skill_key = str(skill_id or "").strip()
     if not skill_key:
         raise ValueError("missing_skill_id")
-
-    mvp_scope = _load_v3_taxonomy_mvp_scope("configs/gencode_taxonomy/k12_component_taxonomy.yaml")
-    if skill_key not in mvp_scope:
-        raise ValueError("skill_not_in_v3_mvp_scope")
+    _assert_admin_v3_dryrun_skill_allowed(skill_key)
 
     example_ids = _fetch_textbook_example_ids_for_skill(conn, skill_key)
     if limit is not None:
@@ -76,6 +148,7 @@ def run_admin_v3_dryrun_for_skill(
     skipped_verified_count = 0
     success_count = 0
     failed_count = 0
+    unsupported_count = 0
 
     for textbook_example_id in example_ids:
         component_id = derive_component_id(textbook_example_id)
@@ -102,6 +175,7 @@ def run_admin_v3_dryrun_for_skill(
                 skill_id=skill_key,
                 dryrun_base_dir=dryrun_base_dir,
                 seed=seed,
+                allow_non_mvp_skill=True,
             )
             entry_status = "processed"
             message = str(dryrun_result.get("status") or "draft_written")
@@ -133,15 +207,42 @@ def run_admin_v3_dryrun_for_skill(
                 }
             )
         except Exception as exc:
+            error_code = _classify_dryrun_error(exc)
+            if error_code in _UNSUPPORTED_ERROR_CODES:
+                unsupported_count += 1
+            _record_failed_example(
+                conn,
+                textbook_example_id=textbook_example_id,
+                skill_id=skill_key,
+                error_code=error_code,
+                exc=exc,
+            )
             failed_count += 1
             results.append(
                 {
                     "textbook_example_id": textbook_example_id,
                     "status": "failed",
                     "component_id": component_id,
+                    "error_code": error_code,
                     "message": f"{exc.__class__.__name__}:{exc}",
                 }
             )
+
+    coverage = get_v3_skill_component_coverage(conn, skill_key)
+    verified_count = int(coverage.get("verified_count") or 0)
+    missing_tracker_count = int(coverage.get("missing_tracker_count") or 0)
+
+    variation_report = {}
+    if failed_count == 0 and verified_count > 0:
+        from core.gencode.services.v3_variation_audit_service import audit_skill_variation
+        try:
+            variation_report = audit_skill_variation(
+                skill_id=skill_key,
+                source="dryrun",
+                conn=conn,
+            )
+        except Exception:
+            pass
 
     return {
         "success": failed_count == 0,
@@ -151,8 +252,19 @@ def run_admin_v3_dryrun_for_skill(
         "skipped_verified_count": skipped_verified_count,
         "success_count": success_count,
         "failed_count": failed_count,
+        "unsupported_count": unsupported_count,
+        "verified_count": verified_count,
+        "missing_tracker_count": missing_tracker_count,
+        "publish_ready": bool(coverage.get("publish_ready")),
         "results": results,
-        "coverage": get_v3_skill_component_coverage(conn, skill_key),
+        "per_example_results": results,
+        "coverage": coverage,
+        "variation_checked": bool(variation_report),
+        "dynamic_count": variation_report.get("dynamic_count", 0),
+        "static_count": variation_report.get("static_count", 0),
+        "partially_dynamic_count": variation_report.get("partially_dynamic_count", 0),
+        "insufficient_sample_count": variation_report.get("insufficient_sample_count", 0),
+        "variation_status_by_component": variation_report.get("variation_status_by_component", {}),
     }
 
 
@@ -163,6 +275,7 @@ def run_admin_v3_dryrun_for_example(
     skill_id: str,
     dryrun_base_dir: str = "reports/gencode_v3_dryrun",
     seed: int | None = None,
+    allow_non_mvp_skill: bool = False,
 ) -> dict[str, object]:
     """Run one admin-triggered V3 shadow-bridge dryrun for a textbook example."""
     ensure_gencode_component_tracker_table(conn)
@@ -170,6 +283,7 @@ def run_admin_v3_dryrun_for_example(
     skill_key = str(skill_id or "").strip()
     if not skill_key:
         raise ValueError("missing_skill_id")
+    _assert_admin_v3_dryrun_skill_allowed(skill_key)
     if not isinstance(textbook_example_id, int) or isinstance(textbook_example_id, bool):
         raise ValueError("invalid_textbook_example_id")
 
@@ -180,9 +294,10 @@ def run_admin_v3_dryrun_for_example(
         skill_id=skill_key,
     )
 
-    mvp_scope = _load_v3_taxonomy_mvp_scope("configs/gencode_taxonomy/k12_component_taxonomy.yaml")
-    if skill_key not in mvp_scope:
-        raise ValueError("skill_not_in_v3_mvp_scope")
+    if not allow_non_mvp_skill:
+        mvp_scope = _load_v3_taxonomy_mvp_scope("configs/gencode_taxonomy/k12_component_taxonomy.yaml")
+        if skill_key not in mvp_scope:
+            raise ValueError("skill_not_in_v3_mvp_scope")
 
     # Hard safety lock: admin dryrun must never run with publish flag enabled.
     if bool(V3_PRODUCTION_PUBLISH_ENABLED):

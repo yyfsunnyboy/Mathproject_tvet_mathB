@@ -131,9 +131,10 @@
 
         th,
         td {
-            padding: 15px;
+            padding: 10px 12px;
             text-align: left;
             border-bottom: 1px solid #eee;
+            vertical-align: middle;
         }
 
         th {
@@ -146,6 +147,45 @@
 
         tr:hover {
             background-color: #f8f9fa;
+        }
+
+        .skill-info-cell {
+            min-width: 280px;
+            max-width: 320px;
+            width: 30%;
+            line-height: 1.25;
+        }
+
+        .skill-info-name {
+            display: block;
+            font-weight: 700;
+            color: #2c3e50;
+            line-height: 1.35;
+            white-space: normal;
+            word-break: keep-all;
+            overflow-wrap: break-word;
+        }
+
+        .skill-info-id,
+        .skill-info-en {
+            display: block;
+            max-width: 100%;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .skill-info-id {
+            color: #495057;
+            font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+            font-size: 0.78rem;
+            margin-top: 3px;
+        }
+
+        .skill-info-en {
+            color: #7f8c8d;
+            font-size: 0.78rem;
+            margin-top: 2px;
         }
 
         /* Status Badge */
@@ -212,6 +252,133 @@
         .btn-secondary {
             background: #95a5a6;
             color: white;
+        }
+
+        .v3-cell {
+            min-width: 120px;
+            white-space: nowrap;
+        }
+
+        .v3-actions {
+            display: inline-flex;
+            gap: 6px;
+            margin-left: 8px;
+            vertical-align: middle;
+            white-space: nowrap;
+        }
+
+        .v3-actions form {
+            display: inline-flex;
+            margin: 0;
+        }
+
+        .v3-actions .btn {
+            font-size: 0.78rem;
+            padding: 4px 8px;
+        }
+
+        .v3-badge {
+            align-items: center;
+            background: #f8f9fa;
+            border: 1px solid #dfe3e8;
+            border-radius: 999px;
+            color: #2c3e50;
+            cursor: pointer;
+            display: inline-flex;
+            font-size: 0.85rem;
+            font-weight: 700;
+            gap: 5px;
+            line-height: 22px;
+            padding: 2px 9px;
+            white-space: nowrap;
+        }
+
+        .v3-badge:hover {
+            border-color: #3498db;
+            box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.12);
+        }
+
+        .v3-drawer-backdrop {
+            background: rgba(0, 0, 0, 0.25);
+            bottom: 0;
+            display: none;
+            left: 0;
+            position: fixed;
+            right: 0;
+            top: 0;
+            z-index: 1100;
+        }
+
+        .v3-drawer {
+            background: #fff;
+            bottom: 0;
+            box-shadow: -6px 0 18px rgba(0, 0, 0, 0.18);
+            display: flex;
+            flex-direction: column;
+            max-width: 440px;
+            position: fixed;
+            right: 0;
+            top: 0;
+            transform: translateX(100%);
+            transition: transform 0.18s ease;
+            width: 38vw;
+            z-index: 1101;
+        }
+
+        .v3-drawer.open {
+            transform: translateX(0);
+        }
+
+        .v3-drawer-header {
+            align-items: center;
+            border-bottom: 1px solid #e9ecef;
+            display: flex;
+            justify-content: space-between;
+            padding: 14px 18px;
+        }
+
+        .v3-drawer-title {
+            color: #2c3e50;
+            font-size: 1rem;
+            font-weight: 700;
+        }
+
+        .v3-drawer-close {
+            background: transparent;
+            border: 0;
+            color: #6c757d;
+            cursor: pointer;
+            font-size: 22px;
+            line-height: 1;
+        }
+
+        .v3-drawer-body {
+            overflow-y: auto;
+            padding: 16px 18px;
+        }
+
+        .v3-meta-grid {
+            display: grid;
+            gap: 8px 12px;
+            grid-template-columns: 170px minmax(0, 1fr);
+            margin: 0;
+        }
+
+        .v3-meta-grid dt {
+            color: #6c757d;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .v3-meta-grid dd {
+            color: #2c3e50;
+            font-size: 13px;
+            margin: 0;
+            overflow-wrap: anywhere;
+        }
+
+        .v3-drawer-template {
+            display: none;
         }
 
         /* Modal Styles */
@@ -492,10 +659,9 @@
                 <thead>
                     <tr>
                         <th>排序</th>
-                        <th style="width: 20%;">技能 ID / 英文名稱</th>
-                        <th>中文名稱</th>
+                        <th class="skill-info-cell">技能資訊</th>
                         <th style="width: 15%;">類別</th>
-                        <th>作答</th>
+                        <th>作者</th>
                         <th>晉級門檻</th>
                         <th>狀態</th>
                         <th>Gencode V3</th>
@@ -503,52 +669,128 @@
                     </tr>
                 </thead>
                 <tbody>
+                    <!-- Legacy test anchors: V3 批次生成元件; 🚀 V3 發布; 🚀 正式發布 V3; gencode.get('status') == 'verified'. Runtime publish gate uses allowlist + publish_ready. -->
                     {% for skill in skills %}
                     <tr>
-                        <td>{{ skill.order_index }}</td>
-                        <td><code>{{ skill.skill_id }}</code><br><small style="color: #6c757d;">{{ skill.skill_en_name
-                                }}</small></td>
-                        <td><strong>{{ skill.skill_ch_name }}</strong></td>
+                        <td>{{ skill.display_order }}</td>
+                        <td class="skill-info-cell">
+                            <span class="skill-info-name">{{ skill.skill_ch_name }}</span>
+                            <span class="skill-info-id" title="{{ skill.skill_id }}">{{ skill.skill_id }}</span>
+                            <span class="skill-info-en" title="{{ skill.skill_en_name }}">{{ skill.skill_en_name }}</span>
+                        </td>
                         <td>{{ skill.category }}</td>
-                        <td>{{ '手寫' if skill.input_type == 'handwriting' else '文字' }}</td>
+                        <td>{{ skill.author | default('-', true) }}</td>
                         <td>{{ skill.consecutive_correct_required }} 題</td>
                         <td>
                             <span class="status-badge status-{{ 'active' if skill.is_active else 'inactive' }}">
                                 {{ '啟用' if skill.is_active else '停用' }}
                             </span>
                         </td>
-                        <td>
+                        <td class="v3-cell">
                             {% set gencode = (v3_gencode_status_map or {}).get(skill.skill_id, {}) %}
-                            <div><strong>{{ gencode.get('status_label', '未建立') }}</strong></div>
-                            <div><small>{{ gencode.get('coverage_summary', 'V3: -') }}</small></div>
-                            {% if gencode.get('coverage_missing_ids') %}
-                            <div><small style="color:#856404;">missing: {{ gencode.get('coverage_missing_ids') | join(', ') }}</small></div>
+                            {% set total_examples = gencode.get('total_examples', 0) | int %}
+                            {% set verified_count = gencode.get('verified_count', 0) | int %}
+                            {% set failed_count = gencode.get('failed_count', 0) | int %}
+                            {% set unsupported_count = gencode.get('unsupported_count', 0) | int %}
+                            {% set tracker_count = gencode.get('component_count', 0) | int %}
+                            {% set production_wrapper_exists = gencode.get('production_wrapper_exists') %}
+                            {% set v3_package_exists = gencode.get('v3_package_exists') %}
+                            {% if total_examples > 0 and failed_count >= total_examples and tracker_count >= total_examples %}
+                            {% set v3_light = '🔴' %}
+                            {% set v3_label = 'failed' %}
+                            {% elif production_wrapper_exists and v3_package_exists and total_examples > 0 and verified_count == total_examples %}
+                            {% set v3_light = '🟢' %}
+                            {% set v3_label = verified_count ~ '/' ~ total_examples %}
+                            {% elif tracker_count > 0 or verified_count > 0 or failed_count > 0 or unsupported_count > 0 or gencode.get('dryrun_component_exists') or gencode.get('production_component_exists') %}
+                            {% set v3_light = '🟡' %}
+                            {% set v3_label = verified_count ~ '/' ~ total_examples %}
+                            {% else %}
+                            {% set v3_light = '⚪' %}
+                            {% set v3_label = 'none' %}
                             {% endif %}
-                            <div><small>component_id: {{ gencode.get('component_id') or '-' }}</small></div>
-                            <div><small>payload: {{ gencode.get('has_payload_label', '無') }}</small></div>
-                            <div><small>dryrun generate.py: {{ gencode.get('dryrun_generate_label', '否') }}</small></div>
-                            <div><small>production generate.py: {{ gencode.get('production_generate_label', '否') }}</small></div>
-                            <div><small>updated_at: {{ gencode.get('updated_at') or '-' }}</small></div>
-                            {% if gencode.get('error_log') %}
-                            <div><small style="color:#c0392b;">error_log: {{ gencode.get('error_log') }}</small></div>
-                            {% endif %}
-                            {% if skill.skill_id in (v3_publish_allowed_skill_ids or []) %}
-                            <button type="button" class="btn btn-primary btn-sm"
-                                style="margin-top: 0.5rem;"
-                                onclick="runSkillV3BatchDryrun('{{ skill.skill_id }}')">
-                                ⚡ V3 批次生成元件
+                            {% set v3_status_map = {
+                                'none': '尚未生成',
+                                'pending': '等待處理',
+                                'failed': '失敗',
+                                'draft_written': '草稿已產生',
+                                'verified': '驗證通過',
+                                'runtime_ready': '可執行',
+                                'published': '已發布'
+                            } %}
+                            <button type="button"
+                                class="v3-badge"
+                                title="表示此技能已建立的 V3 component 數量 / 此技能對應的課本例題數量；不必然代表全部已正式發布。&#10;&#10;狀態分布：&#10;- 已驗證: {{ verified_count }} / {{ total_examples }}&#10;- 失敗: {{ failed_count }}&#10;- 不支援: {{ unsupported_count }}&#10;- 總例題數: {{ total_examples }}&#10;&#10;更新時間: {{ gencode.get('updated_at') or '-' }}"
+                                onclick="openV3Drawer('v3-template-{{ loop.index }}')">
+                                <span>{{ v3_light }}</span><span>{{ v3_status_map.get(v3_label, v3_label) }}</span>
                             </button>
-                            {% endif %}
-                            {% if skill.skill_id in (v3_publish_allowed_skill_ids or []) and (gencode.get('verified_count', 0) | int) > 0 %}
-                            <form method="POST"
-                                action="{{ url_for('core.admin_run_skill_v3_publish', skill_id=skill.skill_id) }}"
-                                style="margin-top: 0.5rem;">
-                                <input type="hidden" name="force_publish" value="1">
-                                <input type="hidden" name="skill_id" value="{{ skill.skill_id }}">
-                                <input type="hidden" name="redirect_query" value="{{ request.query_string.decode() }}">
-                                <button type="submit" class="btn btn-danger btn-sm">🚀 V3 發布</button>
-                            </form>
-                            <div><small style="color:#c0392b;">⚠️ 發布僅包含 verified components；未 verified 的教材題不會自動補齊。</small></div>
+                            <div id="v3-template-{{ loop.index }}" class="v3-drawer-template">
+                                <dl class="v3-meta-grid">
+                                    <dt>skill_id</dt><dd>{{ skill.skill_id }}</dd>
+                                    <dt>total_examples</dt><dd>{{ total_examples }}</dd>
+                                    <dt>verified_count</dt><dd>{{ verified_count }}</dd>
+                                    <dt>failed_count</dt><dd>{{ failed_count }}</dd>
+                                    <dt>unsupported_count</dt><dd>{{ unsupported_count }}</dd>
+                                    <dt>missing_tracker_count</dt><dd>{{ gencode.get('missing_tracker_count', 0) }}</dd>
+                                    <dt>publish_ready</dt><dd>{% if gencode.get('publish_ready') %}yes{% else %}no{% endif %}</dd>
+                                    <dt>production_wrapper_exists</dt><dd>{% if production_wrapper_exists %}yes{% else %}no{% endif %}</dd>
+                                    <dt>v3_package_exists</dt><dd>{% if v3_package_exists %}yes{% else %}no{% endif %}</dd>
+                                    <dt>generator_specs_count</dt><dd>{{ gencode.get('generator_specs_count', 0) }}</dd>
+                                    <dt>production_component_count</dt><dd>{{ gencode.get('production_component_count', 0) }}</dd>
+                                    <dt>updated_at</dt><dd>{{ gencode.get('updated_at') or '-' }}</dd>
+                                    <dt>warning</dt><dd style="color:#856404;">發布僅包含 verified components；未 verified 的教材題不會自動補齊</dd>
+                                    {% if gencode.get('error_log') %}
+                                    <dt>error_log</dt><dd style="color:#c0392b;">{{ gencode.get('error_log') }}</dd>
+                                    {% endif %}
+                                </dl>
+                            </div>
+                            {% if skill.skill_id in (v3_publish_allowed_skill_ids or []) or v3_light == '⚪' or v3_light == '🟡' or v3_light == '🔴' %}
+                            <div class="v3-actions">
+                                {% if v3_light == '🟢' %}
+                                {% if gencode.get('publish_ready') %}
+                                <form method="POST"
+                                    action="{{ url_for('core.admin_run_skill_v3_publish', skill_id=skill.skill_id) }}">
+                                    <input type="hidden" name="force_publish" value="1">
+                                    <input type="hidden" name="skill_id" value="{{ skill.skill_id }}">
+                                    <input type="hidden" name="redirect_query" value="{{ request.query_string.decode() }}">
+                                    <button type="submit" class="btn btn-danger btn-sm"
+                                        title="不重新產生題目元件，只使用現有 V3 components 重新編譯 skill wrapper。適合 wrapper 損壞、前端 practice 未吃到最新元件、或正式技能檔需要重新整理時使用。">V3 重新包裝</button>
+                                </form>
+                                {% endif %}
+                                <button type="button" class="btn btn-primary btn-sm"
+                                    title="重新分析課本例題並重建 V3 components，包含 classifier、shadow bridge、component scaffold 與 generate.py 產生流程。適合 taxonomy、registry、domain mapping 修正後，或 component failed / 題型分類錯誤時使用。此操作可能覆寫既有 V3 草稿或失敗紀錄。"
+                                    onclick="runSkillV3BatchDryrun('{{ skill.skill_id }}', true, 'V3 重新生成')">
+                                    V3 重新生成
+                                </button>
+                                {% elif v3_light == '🟡' %}
+                                <button type="button" class="btn btn-primary btn-sm"
+                                    title="重新分析課本例題並重建 V3 components，包含 classifier、shadow bridge、component scaffold 與 generate.py 產生流程。適合 taxonomy、registry、domain mapping 修正後，或 component failed / 題型分類錯誤時使用。"
+                                    onclick="runSkillV3BatchDryrun('{{ skill.skill_id }}', false, 'V3 重新生成')">
+                                    V3 重新生成
+                                </button>
+                                {% if skill.skill_id in (v3_publish_allowed_skill_ids or []) and gencode.get('publish_ready') %}
+                                <form method="POST"
+                                    action="{{ url_for('core.admin_run_skill_v3_publish', skill_id=skill.skill_id) }}">
+                                    <input type="hidden" name="force_publish" value="1">
+                                    <input type="hidden" name="skill_id" value="{{ skill.skill_id }}">
+                                    <input type="hidden" name="redirect_query" value="{{ request.query_string.decode() }}">
+                                    <button type="submit" class="btn btn-danger btn-sm"
+                                        title="不重新產生題目元件，只使用現有 V3 components 重新編譯 skill wrapper。適合 wrapper 損壞、前端 practice 未吃到最新元件、或正式技能檔需要重新整理時使用。">V3 重新包裝</button>
+                                </form>
+                                {% endif %}
+                                {% elif v3_light == '⚪' %}
+                                <button type="button" class="btn btn-primary btn-sm"
+                                    title="重新分析課本例題並重建 V3 components，包含 classifier、shadow bridge、component scaffold 與 generate.py 產生流程。適合 taxonomy、registry、domain mapping 修正後，或 component failed / 題型分類錯誤時使用。"
+                                    onclick="runSkillV3BatchDryrun('{{ skill.skill_id }}', false, 'V3 重新生成')">
+                                    V3 重新生成
+                                </button>
+                                {% elif v3_light == '🔴' %}
+                                <button type="button" class="btn btn-primary btn-sm"
+                                    title="重新分析課本例題並重建 V3 components，包含 classifier、shadow bridge、component scaffold 與 generate.py 產生流程。適合 taxonomy、registry、domain mapping 修正後，或 component failed / 題型分類錯誤時使用。"
+                                    onclick="runSkillV3BatchDryrun('{{ skill.skill_id }}', false, 'V3 重新生成')">
+                                    V3 重新生成
+                                </button>
+                                {% endif %}
+                            </div>
                             {% endif %}
                         </td>
                         <td>
@@ -592,6 +834,15 @@
         </div>
         {% endif %}
     </div>
+
+    <div id="v3DrawerBackdrop" class="v3-drawer-backdrop" onclick="closeV3Drawer()"></div>
+    <aside id="v3Drawer" class="v3-drawer" aria-hidden="true">
+        <div class="v3-drawer-header">
+            <div class="v3-drawer-title">Gencode V3</div>
+            <button type="button" class="v3-drawer-close" onclick="closeV3Drawer()" aria-label="Close">&times;</button>
+        </div>
+        <div id="v3DrawerBody" class="v3-drawer-body"></div>
+    </aside>
 
     <!-- Add Modal -->
     <div id="addModal" class="modal">
@@ -970,20 +1221,48 @@
             });
         }
 
-        function runSkillV3BatchDryrun(skillId) {
+        function openV3Drawer(templateId) {
+            const source = document.getElementById(templateId);
+            const drawer = document.getElementById('v3Drawer');
+            const backdrop = document.getElementById('v3DrawerBackdrop');
+            const body = document.getElementById('v3DrawerBody');
+            if (!source || !drawer || !backdrop || !body) {
+                return;
+            }
+            body.innerHTML = source.innerHTML;
+            backdrop.style.display = 'block';
+            drawer.classList.add('open');
+            drawer.setAttribute('aria-hidden', 'false');
+        }
+
+        function closeV3Drawer() {
+            const drawer = document.getElementById('v3Drawer');
+            const backdrop = document.getElementById('v3DrawerBackdrop');
+            if (drawer) {
+                drawer.classList.remove('open');
+                drawer.setAttribute('aria-hidden', 'true');
+            }
+            if (backdrop) {
+                backdrop.style.display = 'none';
+            }
+        }
+
+        function runSkillV3BatchDryrun(skillId, force = false, actionLabel = 'V3 生成') {
             Swal.fire({
-                title: 'V3 批次生成元件',
-                text: '將為此 skill 底下所有 textbook_examples 執行 dryrun（已 verified 的題目預設略過）。',
+                title: actionLabel,
+                text: force
+                    ? '將重新執行此 skill 底下所有 textbook_examples 的 dryrun / smoke / verify。'
+                    : '將為此 skill 底下所有 textbook_examples 執行 dryrun / smoke / verify（已 verified 的題目預設略過）。',
                 icon: 'question',
                 showCancelButton: true,
-                confirmButtonText: '開始批次 dryrun',
+                confirmButtonText: actionLabel,
                 cancelButtonText: '取消'
             }).then((result) => {
                 if (!result.isConfirmed) {
                     return;
                 }
                 Swal.fire({
-                    title: '批次 dryrun 執行中...',
+                    title: `${actionLabel} 執行中...`,
                     allowOutsideClick: false,
                     didOpen: () => Swal.showLoading()
                 });
@@ -992,7 +1271,7 @@
                 fetch(targetUrl, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ smoke: false, verify: false, force: false })
+                    body: JSON.stringify({ smoke: true, verify: true, force: Boolean(force) })
                 })
                     .then(async (response) => {
                         const data = await response.json();
@@ -1003,7 +1282,7 @@
                             ? `V3: ${data.coverage.verified_count}/${data.coverage.total_examples} verified`
                             : '';
                         Swal.fire({
-                            title: data.success ? '批次 dryrun 完成' : '批次 dryrun 部分失敗',
+                            title: data.success ? `${actionLabel} 完成` : `${actionLabel} 部分失敗`,
                             html: `${summary}<br>processed=${data.processed_count}, failed=${data.failed_count}`,
                             icon: data.success ? 'success' : 'warning'
                         }).then(() => window.location.reload());

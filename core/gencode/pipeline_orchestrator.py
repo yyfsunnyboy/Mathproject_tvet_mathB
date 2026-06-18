@@ -4538,6 +4538,8 @@ def _v3_resolve_dry_run_line_type(
     extra = dict(constraints or {})
     if "line_type" in extra:
         return str(extra["line_type"])
+    if str(skill_id or "").strip().endswith("_InterceptForm"):
+        return _v3_intercept_form_task_from_textbook_row(textbook_row)
     if str(skill_id or "").strip().endswith("_SlopeInterceptForm"):
         problem_text = ""
         problem_type = ""
@@ -4638,6 +4640,126 @@ def _v3_extract_slope_intercept_constraints(textbook_row: dict[str, object] | No
     return constraints
 
 
+def _v3_parse_intercept_line_coefficients(problem_text: str) -> dict[str, object]:
+    import re
+
+    text = (
+        str(problem_text or "")
+        .replace("−", "-")
+        .replace("－", "-")
+        .replace("＋", "+")
+        .replace(" ", "")
+    )
+    match = re.search(r"([+-]?\d*)x([+-]\d*)y([+-]\d+)=0", text)
+    if not match:
+        return {}
+
+    def _coef(token: str) -> int:
+        if token in {"", "+"}:
+            return 1
+        if token == "-":
+            return -1
+        return int(token)
+
+    return {
+        "equation_coefficients": {
+            "A": _coef(match.group(1)),
+            "B": _coef(match.group(2)),
+            "C": int(match.group(3)),
+        }
+    }
+
+
+def _v3_extract_intercept_form_constraints(textbook_row: dict[str, object] | None) -> dict[str, object]:
+    import re
+
+    if not isinstance(textbook_row, dict):
+        return {}
+    text = str(textbook_row.get("problem_text") or "")
+    if not text.strip():
+        return {}
+    normalized = text.replace("−", "-").replace("－", "-").replace("＋", "+")
+    constraints = _v3_parse_intercept_line_coefficients(normalized)
+
+    def _clean_number(token: str) -> str:
+        value = str(token or "").strip()
+        value = value.replace("−", "-").replace("－", "-").replace("＋", "+")
+        value = value.replace("$", "").replace("\\(", "").replace("\\)", "")
+        value = value.strip("，。,.；;）)（( ")
+        return value
+
+    x_match = re.search(r"x\s*截距為\s*([+-]?\d+(?:/\d+)?)", normalized)
+    y_match = re.search(r"y\s*截距為\s*([+-]?\d+(?:/\d+)?)", normalized)
+    if x_match and y_match:
+        constraints["x_intercept"] = _clean_number(x_match.group(1))
+        constraints["y_intercept"] = _clean_number(y_match.group(1))
+    sum_match = re.search(r"截距和為\s*([+-]?\d+(?:/\d+)?)", normalized)
+    slope_match = re.search(r"斜率為\s*\$?((?:[+-]?\\frac\{[+-]?\d+\}\{[+-]?\d+\})|(?:[+-]?\d+(?:/\d+)?))\$?", normalized)
+    if sum_match and slope_match:
+        constraints["intercept_sum"] = _clean_number(sum_match.group(1))
+        constraints["slope"] = _clean_number(slope_match.group(1))
+    x_lines = re.findall(r"x\s*=\s*([+-]?\d+)", normalized)
+    if len(x_lines) >= 2 and "拋物線" in normalized:
+        constraints["p"] = x_lines[0]
+        constraints["q"] = x_lines[1]
+    point_matches = re.findall(
+        r"([ABC])\s*\\left\s*\(\s*([+-]?\d+)\s*,\s*([+-]?\d+)\s*\\right",
+        normalized,
+    )
+    if not point_matches:
+        point_matches = re.findall(
+            r"([ABC])\s*[（(]\s*([+-]?\d+)\s*,\s*([+-]?\d+)\s*[）)]",
+            normalized,
+        )
+    points = {
+        label: {"label": label, "x": _clean_number(x_value), "y": _clean_number(y_value)}
+        for label, x_value, y_value in point_matches
+    }
+    if {"A", "B", "C"}.issubset(points):
+        constraints["vertex"] = points["B"]
+        constraints["edge_p1"] = points["A"]
+        constraints["edge_p2"] = points["C"]
+    choice_matches = re.findall(
+        r"\(([A-D])\)\s*\$?([^$\n。]+)\$?",
+        normalized,
+    )
+    if choice_matches:
+        constraints["choices"] = [
+            {"label": label, "text": _clean_number(text)}
+            for label, text in choice_matches
+        ]
+    return constraints
+
+
+def _v3_intercept_form_task_from_textbook_row(textbook_row: dict[str, object] | None) -> str:
+    if not isinstance(textbook_row, dict):
+        raise ValueError("unsupported_task_type:missing_textbook_row")
+    text = str(textbook_row.get("problem_text") or "")
+    compact = text.replace(" ", "").replace("\n", "")
+    if "拋物線" in compact or "y={{x}^{2}}" in compact or "y=x^{2}" in compact:
+        return "parabola_secant_parallel_line_choice"
+    if "平分農地面積" in compact or "平分" in compact and "BD" in compact:
+        return "triangle_area_bisector_line_equation"
+    if "截距和" in compact and "斜率" in compact:
+        return "intercept_form_from_intercept_sum_and_slope"
+
+    constraints = _v3_extract_intercept_form_constraints(textbook_row)
+    has_intercepts = "x_intercept" in constraints and "y_intercept" in constraints
+    has_equation = "equation_coefficients" in constraints
+    asks_area = "面積" in compact
+    asks_equation = "方程式" in compact or "截距式" in compact
+    has_choices = "(A)" in compact and "(B)" in compact and "(C)" in compact
+    if asks_area and has_choices and has_equation:
+        return "intercept_form_triangle_area"
+    if asks_area and asks_equation and (has_intercepts or has_equation):
+        return "intercept_form_equation_and_triangle_area"
+    if asks_area and (has_intercepts or has_equation):
+        return "intercept_form_triangle_area"
+    if asks_equation and (has_intercepts or has_equation):
+        return "intercept_form_equation"
+    raise ValueError("unsupported_task_type:intercept_form_unclassified")
+
+
 def _v3_resolve_dry_run_difficulty_profile(source_kind: str) -> str:
     normalized = str(source_kind or "").strip().lower()
     if normalized.startswith("ex"):
@@ -4659,6 +4781,12 @@ def _v3_target_task_for_line_type(line_type: str) -> str:
         "slope_intercept_equation": "slope_intercept_equation",
         "slope_intercept_find_x_intercept": "slope_intercept_find_x_intercept",
         "slope_intercept_read_slope_and_intercept": "slope_intercept_read_slope_and_intercept",
+        "intercept_form_equation": "intercept_form_equation",
+        "intercept_form_triangle_area": "intercept_form_triangle_area",
+        "intercept_form_equation_and_triangle_area": "intercept_form_equation_and_triangle_area",
+        "intercept_form_from_intercept_sum_and_slope": "intercept_form_from_intercept_sum_and_slope",
+        "parabola_secant_parallel_line_choice": "parabola_secant_parallel_line_choice",
+        "triangle_area_bisector_line_equation": "triangle_area_bisector_line_equation",
     }
     return mapping.get(line_type, "write_line_equation_from_point_slope")
 
@@ -4670,6 +4798,12 @@ def _v3_template_slot_for_line_type(line_type: str) -> str:
         "slope_intercept_equation": "slope_intercept_equation",
         "slope_intercept_find_x_intercept": "slope_intercept_find_x_intercept",
         "slope_intercept_read_slope_and_intercept": "slope_intercept_read_slope_and_intercept",
+        "intercept_form_equation": "intercept_form_equation",
+        "intercept_form_triangle_area": "intercept_form_triangle_area",
+        "intercept_form_equation_and_triangle_area": "intercept_form_equation_and_triangle_area",
+        "intercept_form_from_intercept_sum_and_slope": "intercept_form_from_intercept_sum_and_slope",
+        "parabola_secant_parallel_line_choice": "parabola_secant_parallel_line_choice",
+        "triangle_area_bisector_line_equation": "triangle_area_bisector_line_equation",
     }
     return mapping.get(line_type, "line_equation_from_point_slope")
 
@@ -4727,6 +4861,8 @@ def build_v3_component_draft_from_skill(
         }
     if str(skill_id or "").strip().endswith("_SlopeInterceptForm"):
         extra.update(_v3_extract_slope_intercept_constraints(row))
+    if str(skill_id or "").strip().endswith("_InterceptForm"):
+        extra.update(_v3_extract_intercept_form_constraints(row))
     line_type = _v3_resolve_dry_run_line_type(
         source_kind,
         extra,
@@ -4743,6 +4879,14 @@ def build_v3_component_draft_from_skill(
             answer_type = "rational"
         elif line_type == "slope_intercept_read_slope_and_intercept":
             answer_type = "text_short"
+        elif line_type == "intercept_form_triangle_area":
+            answer_type = "rational"
+        elif line_type == "intercept_form_equation_and_triangle_area":
+            answer_type = "multi_part"
+        elif line_type == "intercept_form_equation":
+            answer_type = "expression"
+        elif line_type == "triangle_area_bisector_line_equation":
+            answer_type = "linear_equation"
     presentation_evidence = build_presentation_evidence_payload(inferred)
 
     matrix = entrypoint_fn(
@@ -4798,6 +4942,14 @@ def build_v3_component_draft_from_skill(
         checker_key = "text_short_checker"
         equivalence_type = "exact_string"
         checker_module = "core.checkers.structured_text_checker"
+    elif line_type == "intercept_form_triangle_area":
+        checker_key = "rational_checker"
+        equivalence_type = "rational_equivalent"
+        checker_module = "core.gencode.runtime_skill_wrapper"
+    elif line_type == "intercept_form_equation_and_triangle_area":
+        checker_key = "multi_part_answer_checker"
+        equivalence_type = "multi_part_answer"
+        checker_module = "core.checkers.multi_part_answer_checker"
     else:
         checker_key = "linear_equation_equivalent_checker"
         equivalence_type = "linear_equation_equivalent"

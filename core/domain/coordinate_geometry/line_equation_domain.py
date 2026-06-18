@@ -7,6 +7,12 @@ import random
 from fractions import Fraction
 from typing import Any
 
+from core.gencode.resources.rational_display import (
+    fraction_to_plain,
+    normalize_fraction_value,
+    normalize_linear_expression_display,
+)
+
 _SUPPORTED_LINE_TYPES = frozenset(
     {
         "two_points",
@@ -17,6 +23,12 @@ _SUPPORTED_LINE_TYPES = frozenset(
         "slope_intercept_equation",
         "slope_intercept_find_x_intercept",
         "slope_intercept_read_slope_and_intercept",
+        "intercept_form_equation",
+        "intercept_form_triangle_area",
+        "intercept_form_equation_and_triangle_area",
+        "intercept_form_from_intercept_sum_and_slope",
+        "parabola_secant_parallel_line_choice",
+        "triangle_area_bisector_line_equation",
     }
 )
 
@@ -69,6 +81,21 @@ def build_line_equation_matrix(
     elif normalized_type == "slope_intercept_read_slope_and_intercept":
         givens, answer, actual_type = _build_slope_intercept_read_slope_and_intercept(
             rng, coord_min, coord_max, extra
+        )
+    elif normalized_type in {
+        "intercept_form_equation",
+        "intercept_form_triangle_area",
+        "intercept_form_equation_and_triangle_area",
+        "intercept_form_from_intercept_sum_and_slope",
+        "parabola_secant_parallel_line_choice",
+        "triangle_area_bisector_line_equation",
+    }:
+        givens, answer, actual_type = _build_intercept_form_problem(
+            rng,
+            coord_min,
+            coord_max,
+            extra,
+            task_type=normalized_type,
         )
     else:
         givens, answer, actual_type = _build_oblique_line(
@@ -377,6 +404,362 @@ def _build_slope_intercept_read_slope_and_intercept(
     return givens, answer, "slope_intercept_read_slope_and_intercept"
 
 
+def _build_intercept_form_problem(
+    rng: random.Random,
+    coord_min: int,
+    coord_max: int,
+    constraints: dict[str, object],
+    *,
+    task_type: str,
+) -> tuple[dict[str, object], dict[str, object], str]:
+    if task_type == "triangle_area_bisector_line_equation":
+        built = build_triangle_area_bisector_line(
+            constraints.get("vertex"),
+            constraints.get("edge_p1"),
+            constraints.get("edge_p2"),
+        )
+        givens = {
+            "vertex": built["vertex"],
+            "edge_p1": built["edge_p1"],
+            "edge_p2": built["edge_p2"],
+            "midpoint": built["midpoint"],
+        }
+        answer = {
+            "canonical_form": built["general_form"],
+            "general_form": built["general_form"],
+            "display_equation": built["display_equation"],
+            "coefficients": built["coefficients"],
+            "slope": built["slope"],
+            "intercept": built["intercept"],
+            "line_equation": built["general_form"],
+            "midpoint": built["midpoint"],
+        }
+        return givens, answer, task_type
+
+    if task_type == "parabola_secant_parallel_line_choice":
+        p = _parse_fraction(constraints.get("p"))
+        q = _parse_fraction(constraints.get("q"))
+        choices = constraints.get("choices")
+        if not isinstance(choices, list):
+            raise ValueError("unsupported_choices_generator:parabola_secant_choices_missing")
+        built = build_parabola_secant_parallel_line_choice(p, q, choices)
+        givens = {
+            "parabola": "y = x^2",
+            "p": _format_number(p),
+            "q": _format_number(q),
+            "choices": built["choices"],
+        }
+        answer = {
+            "canonical_form": built["semantic_answer"],
+            "general_form": _format_general_form(*_normalize_fraction_coefficients(_parse_fraction(built["slope"]), Fraction(-1, 1), Fraction(0, 1))),
+            "coefficients": dict(zip(("A", "B", "C"), _normalize_fraction_coefficients(_parse_fraction(built["slope"]), Fraction(-1, 1), Fraction(0, 1)), strict=True)),
+            "slope": built["slope"],
+            "intercept": 0,
+            "line_equation": built["semantic_answer"],
+            "choices": built["choices"],
+            "correct_label": built["correct_answer"],
+            "semantic_answer": built["semantic_answer"],
+            "point_a": built["point_a"],
+            "point_b": built["point_b"],
+        }
+        return givens, answer, task_type
+
+    if task_type == "intercept_form_from_intercept_sum_and_slope":
+        built = build_intercept_form_from_intercept_sum_and_slope(
+            constraints.get("intercept_sum"),
+            constraints.get("slope"),
+        )
+        x_intercept = _parse_fraction(built["x_intercept"])
+        y_intercept = _parse_fraction(built["y_intercept"])
+        source_equation = ""
+    elif "equation_coefficients" in constraints:
+        coeffs = constraints["equation_coefficients"]
+        if not isinstance(coeffs, dict):
+            raise ValueError("equation_coefficients must be a dict.")
+        a_coeff = _parse_fraction(coeffs.get("A"))
+        b_coeff = _parse_fraction(coeffs.get("B"))
+        c_coeff = _parse_fraction(coeffs.get("C"))
+        if a_coeff == 0 or b_coeff == 0 or c_coeff == 0:
+            raise ValueError("intercept_form_requires_nonzero_axis_intercepts")
+        x_intercept = -c_coeff / a_coeff
+        y_intercept = -c_coeff / b_coeff
+        source_equation = _format_general_form(
+            *_normalize_fraction_coefficients(a_coeff, b_coeff, c_coeff)
+        )
+    else:
+        x_intercept = _read_intercept_or_pick(
+            rng,
+            constraints,
+            keys=("x_intercept", "a"),
+            coord_min=coord_min,
+            coord_max=coord_max,
+        )
+        y_intercept = _read_intercept_or_pick(
+            rng,
+            constraints,
+            keys=("y_intercept", "b"),
+            coord_min=coord_min,
+            coord_max=coord_max,
+        )
+        if x_intercept == 0 or y_intercept == 0:
+            raise ValueError("intercept_form_requires_nonzero_axis_intercepts")
+        source_equation = ""
+
+    if task_type != "intercept_form_from_intercept_sum_and_slope":
+        built = build_intercept_form_from_intercepts(x_intercept, y_intercept)
+    area = build_intercept_triangle_area(x_intercept, y_intercept)
+    answer = {
+        "canonical_form": built["general_form"],
+        "general_form": built["general_form"],
+        "display_equation": built["display_equation"],
+        "intercept_form": built["canonical_equation"],
+        "coefficients": built["coefficients"],
+        "slope": built["slope"],
+        "intercept": built["y_intercept"],
+        "x_intercept": built["x_intercept"],
+        "y_intercept": built["y_intercept"],
+        "triangle_area": _format_number(area),
+        "line_equation": built["general_form"],
+    }
+    if task_type == "intercept_form_triangle_area":
+        answer["canonical_form"] = _format_number(area)
+    elif task_type == "intercept_form_equation_and_triangle_area":
+        answer["canonical_form"] = build_intercept_form_equation_and_area(
+            x_intercept,
+            y_intercept,
+        )
+
+    givens: dict[str, object] = {
+        "x_intercept": _format_number(x_intercept),
+        "y_intercept": _format_number(y_intercept),
+    }
+    if task_type == "intercept_form_from_intercept_sum_and_slope":
+        givens["intercept_sum"] = _format_number(_parse_fraction(constraints.get("intercept_sum")))
+        givens["slope"] = _format_number(_parse_fraction(constraints.get("slope")))
+    if source_equation:
+        givens["equation"] = source_equation
+    return givens, answer, task_type
+
+
+def build_intercept_form_from_intercepts(
+    x_intercept: object,
+    y_intercept: object,
+) -> dict[str, object]:
+    a = _parse_fraction(x_intercept)
+    b = _parse_fraction(y_intercept)
+    if a == 0 or b == 0:
+        raise ValueError("intercept_form_requires_nonzero_axis_intercepts")
+    coeff_x, coeff_y, coeff_c = _normalize_fraction_coefficients(
+        Fraction(1, 1) / a,
+        Fraction(1, 1) / b,
+        Fraction(-1, 1),
+    )
+    general = _format_general_form(coeff_x, coeff_y, coeff_c)
+    display = f"x/{_format_number(a)} + y/{_format_number(b)} = 1"
+    display = display.replace("+ y/-", "- y/")
+    slope = -b / a
+    return {
+        "canonical_equation": display,
+        "display_equation": display,
+        "general_form": general,
+        "coefficients": {"A": coeff_x, "B": coeff_y, "C": coeff_c},
+        "x_intercept": _format_number(a),
+        "y_intercept": _format_number(b),
+        "slope": _format_number(slope),
+    }
+
+
+def build_intercept_triangle_area(
+    x_intercept: object,
+    y_intercept: object,
+) -> Fraction:
+    a = _parse_fraction(x_intercept)
+    b = _parse_fraction(y_intercept)
+    if a == 0 or b == 0:
+        raise ValueError("intercept_form_requires_nonzero_axis_intercepts")
+    return abs(a * b) / 2
+
+
+def build_intercept_form_equation_and_area(
+    x_intercept: object,
+    y_intercept: object,
+) -> dict[str, object]:
+    equation = build_intercept_form_from_intercepts(x_intercept, y_intercept)
+    area = build_intercept_triangle_area(x_intercept, y_intercept)
+    return {
+        "equation": equation["general_form"],
+        "area": _format_number(area),
+    }
+
+
+def get_coordinate_midpoint(p1: object, p2: object) -> tuple[str, str]:
+    x1, y1 = _read_coordinate_point(p1)
+    x2, y2 = _read_coordinate_point(p2)
+    return _format_number((x1 + x2) / 2), _format_number((y1 + y2) / 2)
+
+
+def build_triangle_area_bisector_line(
+    vertex: object,
+    edge_p1: object,
+    edge_p2: object,
+) -> dict[str, object]:
+    vx, vy = _read_coordinate_point(vertex)
+    midpoint_x, midpoint_y = get_coordinate_midpoint(edge_p1, edge_p2)
+    mx = _parse_fraction(midpoint_x)
+    my = _parse_fraction(midpoint_y)
+    line, actual_type = _line_from_two_fraction_points(vx, vy, mx, my)
+    return {
+        "vertex": _format_coordinate_point(vx, vy),
+        "edge_p1": _format_coordinate_point(*_read_coordinate_point(edge_p1)),
+        "edge_p2": _format_coordinate_point(*_read_coordinate_point(edge_p2)),
+        "midpoint": _format_coordinate_point(mx, my),
+        "line_type": actual_type,
+        "canonical_form": line["canonical_form"],
+        "display_equation": line["canonical_form"],
+        "general_form": line["general_form"],
+        "coefficients": line["coefficients"],
+        "slope": line["slope"],
+        "intercept": line["intercept"],
+    }
+
+
+def build_intercept_form_from_intercept_sum_and_slope(
+    intercept_sum: object,
+    slope: object,
+) -> dict[str, object]:
+    total = _parse_fraction(intercept_sum)
+    m = _parse_fraction(slope)
+    if m == 1:
+        raise ValueError("intercept_sum_and_slope_degenerate")
+    x_intercept = total / (1 - m)
+    y_intercept = total - x_intercept
+    return build_intercept_form_from_intercepts(x_intercept, y_intercept)
+
+
+def compute_parabola_y_equals_x_squared_point(x: object) -> tuple[str, str]:
+    x_value = _parse_fraction(x)
+    y_value = x_value * x_value
+    return _format_number(x_value), _format_number(y_value)
+
+
+def compute_secant_slope_on_y_equals_x_squared(p: object, q: object) -> Fraction:
+    p_value = _parse_fraction(p)
+    q_value = _parse_fraction(q)
+    if p_value == q_value:
+        raise ValueError("parabola_secant_requires_distinct_x_values")
+    return p_value + q_value
+
+
+def build_parabola_secant_parallel_line_choice(
+    p: object,
+    q: object,
+    choices: list[object],
+) -> dict[str, object]:
+    slope = compute_secant_slope_on_y_equals_x_squared(p, q)
+    normalized_choices: list[dict[str, str]] = []
+    correct_label = ""
+    semantic_answer = ""
+    for index, raw_choice in enumerate(choices):
+        if isinstance(raw_choice, dict):
+            label = str(raw_choice.get("label") or chr(ord("A") + index)).strip()
+            text = str(raw_choice.get("text") or raw_choice.get("value") or "").strip()
+        else:
+            label = chr(ord("A") + index)
+            text = str(raw_choice or "").strip()
+        if not label or not text:
+            continue
+        normalized_choices.append({"label": label, "text": normalize_linear_expression_display(text)})
+        choice_slope = _slope_from_origin_line_equation(text)
+        if choice_slope == slope:
+            correct_label = label
+            semantic_answer = normalize_linear_expression_display(text)
+    if not correct_label:
+        raise ValueError("unsupported_choices_generator:no_parallel_line_choice")
+    if len({choice["text"] for choice in normalized_choices}) != len(normalized_choices):
+        raise ValueError("unsupported_choices_generator:duplicate_choices")
+    point_a = compute_parabola_y_equals_x_squared_point(p)
+    point_b = compute_parabola_y_equals_x_squared_point(q)
+    return {
+        "point_a": point_a,
+        "point_b": point_b,
+        "slope": _format_number(slope),
+        "choices": normalized_choices,
+        "correct_answer": correct_label,
+        "semantic_answer": semantic_answer,
+    }
+
+
+def _slope_from_origin_line_equation(value: object) -> Fraction | None:
+    text = normalize_linear_expression_display(str(value or ""))
+    compact = text.replace(" ", "")
+    if not compact.startswith("y="):
+        return None
+    rhs = compact.split("=", 1)[1]
+    if not rhs.endswith("x"):
+        return None
+    coeff = rhs[:-1]
+    if coeff in {"", "+"}:
+        return Fraction(1, 1)
+    if coeff == "-":
+        return Fraction(-1, 1)
+    return _parse_fraction(coeff)
+
+
+def _read_coordinate_point(value: object) -> tuple[Fraction, Fraction]:
+    if isinstance(value, dict):
+        if "x" not in value or "y" not in value:
+            raise ValueError("coordinate_point_requires_x_y")
+        return _parse_fraction(value["x"]), _parse_fraction(value["y"])
+    if isinstance(value, (list, tuple)) and len(value) >= 2:
+        return _parse_fraction(value[0]), _parse_fraction(value[1])
+    raise ValueError("coordinate_point_must_be_pair_or_dict")
+
+
+def _format_coordinate_point(x_value: Fraction, y_value: Fraction) -> dict[str, str]:
+    return {"x": _format_number(x_value), "y": _format_number(y_value)}
+
+
+def _line_from_two_fraction_points(
+    x1: Fraction,
+    y1: Fraction,
+    x2: Fraction,
+    y2: Fraction,
+) -> tuple[dict[str, object], str]:
+    if x1 == x2 and y1 == y2:
+        raise ValueError("line_requires_distinct_points")
+    if x1 == x2:
+        a_int, b_int, c_int = _normalize_fraction_coefficients(
+            Fraction(1, 1),
+            Fraction(0, 1),
+            -x1,
+        )
+        general = _format_general_form(a_int, b_int, c_int)
+        return (
+            {
+                "canonical_form": f"x = {_format_number(x1)}",
+                "general_form": general,
+                "coefficients": {"A": a_int, "B": b_int, "C": c_int},
+                "slope": None,
+                "intercept": None,
+            },
+            "vertical_line",
+        )
+    slope = (y2 - y1) / (x2 - x1)
+    intercept = y1 - slope * x1
+    line, actual_type = _line_from_slope_intercept(slope, intercept)
+    line["line_equation"] = line["general_form"]
+    return line, actual_type
+
+
+def parse_or_canonicalize_intercept_form_equation(value: object) -> str | None:
+    from core.checkers.linear_equation_equivalent_checker import canonicalize_linear_equation
+
+    canonical = canonicalize_linear_equation(value)
+    if canonical is None:
+        return None
+    return _format_general_form(*canonical)
+
+
 def _line_from_slope_intercept(
     slope: Fraction,
     intercept: Fraction,
@@ -461,24 +844,10 @@ def _read_intercept_or_pick(
 
 
 def _parse_fraction(value: object) -> Fraction:
-    if isinstance(value, Fraction):
-        return value
-    if isinstance(value, int) and not isinstance(value, bool):
-        return Fraction(value, 1)
-    if isinstance(value, float):
-        return Fraction(value).limit_denominator()
-    if isinstance(value, str):
-        text = value.strip().replace("−", "-")
-        if text.startswith("$") and text.endswith("$"):
-            text = text[1:-1].strip()
-        frac_match = re_match_latex_fraction(text)
-        if frac_match is not None:
-            return frac_match
-        if "/" in text:
-            num, den = text.split("/", 1)
-            return Fraction(int(num.strip()), int(den.strip()))
-        return Fraction(int(text), 1)
-    raise ValueError(f"unsupported numeric token: {value!r}")
+    try:
+        return normalize_fraction_value(value)
+    except Exception as exc:
+        raise ValueError(f"unsupported numeric token: {value!r}") from exc
 
 
 def re_match_latex_fraction(text: str) -> Fraction | None:
@@ -487,8 +856,7 @@ def re_match_latex_fraction(text: str) -> Fraction | None:
     match = re.fullmatch(r"-?\\frac\{(-?\d+)\}\{(-?\d+)\}", text)
     if not match:
         return None
-    sign = -1 if text.startswith("-") else 1
-    return Fraction(sign * int(match.group(1)), int(match.group(2)))
+    return normalize_fraction_value(text)
 
 
 def _format_fraction_or_int(value: Fraction) -> str | int:
@@ -629,22 +997,17 @@ def _format_general_form(a: int, b: int, c: int) -> str:
 
 
 def _format_number(value: Fraction) -> str:
-    if value.denominator == 1:
-        return str(value.numerator)
-    return f"{value.numerator}/{value.denominator}"
+    return fraction_to_plain(value)
 
 
 def _format_slope_intercept(slope: Fraction, intercept: Fraction) -> str:
     m_text = _format_slope_term(slope)
     if intercept == 0:
-        return f"y = {m_text}x"
+        return normalize_linear_expression_display(f"y = {m_text}x")
     sign = "+" if intercept > 0 else "-"
     b_abs = abs(intercept)
-    if b_abs.denominator == 1:
-        b_text = str(b_abs.numerator)
-    else:
-        b_text = _format_number(b_abs)
-    return f"y = {m_text}x {sign} {b_text}"
+    b_text = fraction_to_plain(b_abs)
+    return normalize_linear_expression_display(f"y = {m_text}x {sign} {b_text}")
 
 
 def _format_slope_term(slope: Fraction) -> str:
@@ -652,9 +1015,7 @@ def _format_slope_term(slope: Fraction) -> str:
         return ""
     if slope == -1:
         return "-"
-    if slope.denominator == 1:
-        return str(slope.numerator)
-    return _format_number(slope)
+    return fraction_to_plain(slope)
 
 
 def _has_point_pair(constraints: dict[str, object]) -> bool:

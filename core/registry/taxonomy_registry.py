@@ -26,6 +26,27 @@ SKILL_TO_DOMAIN: dict[str, dict[str, Any]] = {
             "slope_intercept_read_slope_and_intercept",
         ],
     },
+    "vh_數學B1_InterceptForm": {
+        "domain_module": "core.domain.coordinate_geometry.line_equation_domain",
+        "entrypoint": "build_line_equation_matrix",
+        "default_curriculum_profile": "vocational_high_b",
+        "allowed_types": [
+            "intercept_form_equation",
+            "intercept_form_triangle_area",
+            "intercept_form_equation_and_triangle_area",
+        ],
+    },
+    "vh_數學B1_GeneralFormOfLinearEquation": {
+        "domain_module": "core.domain.coordinate_geometry.line_equation_domain",
+        "entrypoint": "build_line_equation_matrix",
+        "default_curriculum_profile": "vocational_high_b",
+        "allowed_types": [
+            "slope_from_general_form",
+            "line_through_point_parallel_to_line",
+            "line_through_point_perpendicular_to_line",
+            "parallel_condition_parameter",
+        ],
+    },
 }
 
 

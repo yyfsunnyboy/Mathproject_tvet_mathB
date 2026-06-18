@@ -3,6 +3,8 @@
 from __future__ import annotations
 
 import sqlite3
+import json
+import ast
 from pathlib import Path
 from typing import Any
 
@@ -11,6 +13,9 @@ PROJECT_ROOT = Path(__file__).resolve().parents[3]
 NOT_CREATED_STATUS: dict[str, object] = {
     "status": "not_created",
     "component_id": None,
+    "textbook_example_id": None,
+    "presentation_mode": None,
+    "problem_type_id": None,
     "has_payload": False,
     "error_log": None,
     "updated_at": None,
@@ -72,6 +77,39 @@ def _normalize_example_ids(textbook_example_ids: list[int]) -> list[int]:
     return sorted(normalized)
 
 
+def _extract_payload_summary(payload_raw: Any) -> dict[str, object]:
+    if payload_raw is None or str(payload_raw).strip() == "":
+        return {
+            "presentation_mode": None,
+            "problem_type_id": None,
+        }
+    try:
+        payload = json.loads(str(payload_raw))
+    except Exception:
+        return {
+            "presentation_mode": None,
+            "problem_type_id": None,
+        }
+    if not isinstance(payload, dict):
+        return {
+            "presentation_mode": None,
+            "problem_type_id": None,
+        }
+    metadata = payload.get("metadata") if isinstance(payload.get("metadata"), dict) else {}
+    return {
+        "presentation_mode": (
+            payload.get("presentation_mode")
+            or metadata.get("presentation_mode")
+            or payload.get("mode")
+        ),
+        "problem_type_id": (
+            payload.get("problem_type_id")
+            or metadata.get("problem_type_id")
+            or payload.get("problem_type")
+        ),
+    }
+
+
 def get_gencode_status_for_examples(
     conn: sqlite3.Connection,
     textbook_example_ids: list[int],
@@ -99,9 +137,12 @@ def get_gencode_status_for_examples(
     for row in rows:
         example_id = int(_row_value(row, "textbook_example_id", 0))
         payload_raw = _row_value(row, "induced_spec_payload", 3)
+        payload_summary = _extract_payload_summary(payload_raw)
         result[example_id] = {
             "status": str(_row_value(row, "gencode_status", 2)),
             "component_id": str(_row_value(row, "component_id", 1)),
+            "textbook_example_id": example_id,
+            **payload_summary,
             "has_payload": payload_raw is not None and str(payload_raw).strip() != "",
             "error_log": _row_value(row, "gencode_error_log", 4),
             "updated_at": _row_value(row, "updated_at", 5),
@@ -155,6 +196,51 @@ def inspect_gencode_files(
         "production_manifest_exists": (
             production_root / skill_key / "component_manifest.json"
         ).is_file(),
+    }
+
+
+def inspect_skill_production_files(
+    *,
+    skill_id: str,
+    production_base_dir: str = "agent_skills_v3",
+    project_root: str | Path | None = None,
+) -> dict[str, object]:
+    """Read-only skill-level production probes for admin status summaries."""
+    skill_key = str(skill_id or "").strip()
+    root = Path(project_root) if project_root is not None and str(project_root).strip() else PROJECT_ROOT
+    wrapper_path = root / "skills" / f"{skill_key}.py"
+    v3_skill_dir = _resolve_base_path(production_base_dir, project_root) / skill_key
+    components_dir = v3_skill_dir / "components"
+    generator_specs_count = 0
+    production_component_count = 0
+
+    if components_dir.is_dir():
+        production_component_count = sum(
+            1 for component_dir in components_dir.iterdir()
+            if component_dir.is_dir() and (component_dir / "generate.py").is_file()
+        )
+
+    init_path = v3_skill_dir / "__init__.py"
+    if init_path.is_file():
+        try:
+            text = init_path.read_text(encoding="utf-8", errors="replace")
+            tree = ast.parse(text)
+            for node in tree.body:
+                if (
+                    isinstance(node, ast.Assign)
+                    and any(isinstance(target, ast.Name) and target.id == "GENERATOR_SPECS" for target in node.targets)
+                    and isinstance(node.value, (ast.List, ast.Tuple))
+                ):
+                    generator_specs_count = len(node.value.elts)
+                    break
+        except Exception:
+            generator_specs_count = 0
+
+    return {
+        "production_wrapper_exists": wrapper_path.is_file(),
+        "v3_package_exists": v3_skill_dir.is_dir() and init_path.is_file(),
+        "generator_specs_count": generator_specs_count,
+        "production_component_count": production_component_count,
     }
 
 
@@ -243,11 +329,13 @@ def _get_tracker_rows_for_skill(conn: sqlite3.Connection, skill_id: str) -> list
     parsed: list[dict[str, object]] = []
     for row in rows:
         payload_raw = _row_value(row, "induced_spec_payload", 3)
+        payload_summary = _extract_payload_summary(payload_raw)
         parsed.append(
             {
                 "textbook_example_id": int(_row_value(row, "textbook_example_id", 0)),
                 "component_id": str(_row_value(row, "component_id", 1)),
                 "status": str(_row_value(row, "gencode_status", 2)),
+                **payload_summary,
                 "has_payload": payload_raw is not None and str(payload_raw).strip() != "",
                 "error_log": _row_value(row, "gencode_error_log", 4),
                 "updated_at": _row_value(row, "updated_at", 5),
@@ -333,6 +421,34 @@ def build_admin_skill_gencode_status_view(
             ):
                 file_status[key] = bool(file_status[key]) or bool(probes[key])
 
+    missing_tracker_ids = [
+        row["textbook_example_id"]
+        for row in coverage.get("examples", [])
+        if isinstance(row, dict) and row.get("status") == "missing_tracker"
+    ]
+
+    prod_info = inspect_skill_production_files(
+        skill_id=skill_id,
+        production_base_dir=production_base_dir,
+        project_root=project_root,
+    )
+    has_production = prod_info.get("production_wrapper_exists")
+    source_type = "production" if has_production else "dryrun"
+    verified_count = int(coverage.get("verified_count") or 0)
+
+    variation_report = {}
+    if verified_count > 0:
+        from core.gencode.services.v3_variation_audit_service import audit_skill_variation
+        try:
+            variation_report = audit_skill_variation(
+                skill_id=skill_id,
+                source=source_type,
+                project_root=project_root,
+                conn=conn,
+            )
+        except Exception:
+            pass
+
     return {
         "status": status,
         "status_label": format_gencode_status_label(status),
@@ -346,17 +462,23 @@ def build_admin_skill_gencode_status_view(
         "coverage_summary": (
             f"V3: {coverage.get('verified_count', 0)}/{coverage.get('total_examples', 0)} verified"
         ),
-        "verified_count": int(coverage.get("verified_count") or 0),
-        "coverage_missing_ids": [
-            row["textbook_example_id"]
-            for row in coverage.get("examples", [])
-            if isinstance(row, dict) and row.get("status") == "missing_tracker"
-        ],
+        "total_examples": int(coverage.get("total_examples") or 0),
+        "verified_count": verified_count,
+        "failed_count": sum(1 for row in rows if str(row.get("status")) == "failed" or row.get("error_log")),
+        "unsupported_count": int(coverage.get("unsupported_count") or 0),
+        "missing_tracker_count": len(missing_tracker_ids),
+        "coverage_missing_ids": missing_tracker_ids,
         "coverage_warnings": coverage_warnings,
         "publish_ready": bool(coverage.get("publish_ready")),
         **file_status,
+        **prod_info,
         "dryrun_generate_label": _bool_label(bool(file_status["dryrun_generate_exists"])),
         "production_generate_label": _bool_label(bool(file_status["production_generate_exists"])),
+        "variation_status": variation_report.get("status"),
+        "dynamic_count": variation_report.get("dynamic_count", 0),
+        "static_count": variation_report.get("static_count", 0),
+        "partially_dynamic_count": variation_report.get("partially_dynamic_count", 0),
+        "variation_warning": variation_report.get("variation_warning", ""),
     }
 
 

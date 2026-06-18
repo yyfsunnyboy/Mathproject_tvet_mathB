@@ -156,9 +156,21 @@
 
         th,
         td {
-            padding: 15px;
+            padding: 6px 10px;
             text-align: left;
             border-bottom: 1px solid #e9ecef;
+            vertical-align: middle;
+        }
+
+        tbody tr {
+            height: 48px;
+            max-height: 52px;
+        }
+
+        tbody td {
+            height: 48px;
+            max-height: 52px;
+            overflow: hidden;
         }
 
         th {
@@ -169,6 +181,215 @@
 
         tbody tr:hover {
             background: #f8f9fa;
+        }
+
+        .skill-cell {
+            max-width: 260px;
+            line-height: 1.2;
+        }
+
+        .skill-cell strong,
+        .skill-cell small,
+        .source-cell small {
+            display: block;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .problem-cell {
+            max-width: 520px;
+        }
+
+        .problem-ellipsis {
+            display: block;
+            max-height: 28px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            line-height: 28px;
+        }
+
+        .problem-ellipsis mjx-container,
+        .problem-ellipsis .MathJax {
+            display: inline-block !important;
+            max-height: 28px;
+            overflow: hidden;
+            vertical-align: middle;
+        }
+
+        .source-cell {
+            max-width: 220px;
+            line-height: 1.2;
+        }
+
+        .source-flags {
+            display: inline-flex;
+            max-width: 100%;
+            gap: 4px;
+            overflow: hidden;
+            white-space: nowrap;
+        }
+
+        .compact-flag {
+            display: inline-block;
+            padding: 1px 5px;
+            border-radius: 4px;
+            font-size: 11px;
+            line-height: 16px;
+            white-space: nowrap;
+        }
+
+        .v3-cell {
+            width: 132px;
+            white-space: nowrap;
+        }
+
+        .v3-badge {
+            align-items: center;
+            background: #f8f9fa;
+            border: 1px solid #dfe3e8;
+            border-radius: 999px;
+            color: #2c3e50;
+            cursor: pointer;
+            display: inline-flex;
+            font-size: 12px;
+            font-weight: 600;
+            gap: 5px;
+            line-height: 20px;
+            max-width: 120px;
+            overflow: hidden;
+            padding: 2px 8px;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .v3-badge:hover {
+            border-color: #3498db;
+            box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.12);
+        }
+
+        .v3-badge-label {
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .v3-drawer-backdrop {
+            background: rgba(0, 0, 0, 0.25);
+            bottom: 0;
+            display: none;
+            left: 0;
+            position: fixed;
+            right: 0;
+            top: 0;
+            z-index: 1100;
+        }
+
+        .v3-drawer {
+            background: #fff;
+            bottom: 0;
+            box-shadow: -6px 0 18px rgba(0, 0, 0, 0.18);
+            display: flex;
+            flex-direction: column;
+            max-width: 420px;
+            position: fixed;
+            right: 0;
+            top: 0;
+            transform: translateX(100%);
+            transition: transform 0.18s ease;
+            width: 38vw;
+            z-index: 1101;
+        }
+
+        .v3-drawer.open {
+            transform: translateX(0);
+        }
+
+        .v3-drawer-header {
+            align-items: center;
+            border-bottom: 1px solid #e9ecef;
+            display: flex;
+            justify-content: space-between;
+            padding: 14px 18px;
+        }
+
+        .v3-drawer-title {
+            color: #2c3e50;
+            font-size: 1rem;
+            font-weight: 700;
+        }
+
+        .v3-drawer-close {
+            background: transparent;
+            border: 0;
+            color: #6c757d;
+            cursor: pointer;
+            font-size: 22px;
+            line-height: 1;
+        }
+
+        .v3-drawer-body {
+            overflow-y: auto;
+            padding: 16px 18px;
+        }
+
+        .v3-meta-grid {
+            display: grid;
+            gap: 8px 12px;
+            grid-template-columns: 150px minmax(0, 1fr);
+            margin: 0;
+        }
+
+        .v3-meta-grid dt {
+            color: #6c757d;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .v3-meta-grid dd {
+            color: #2c3e50;
+            font-size: 13px;
+            margin: 0;
+            overflow-wrap: anywhere;
+        }
+
+        .v3-drawer-actions {
+            border-top: 1px solid #e9ecef;
+            display: grid;
+            gap: 8px;
+            margin-top: 16px;
+            padding-top: 14px;
+        }
+
+        .v3-drawer-actions form {
+            margin: 0;
+        }
+
+        .v3-drawer-actions .btn {
+            width: 100%;
+        }
+
+        .v3-drawer-template {
+            display: none;
+        }
+
+        .actions-cell {
+            width: 92px;
+            white-space: nowrap;
+        }
+
+        .btn-group {
+            display: inline-flex;
+            gap: 4px;
+            align-items: center;
+            flex-wrap: nowrap;
+        }
+
+        .btn-icon {
+            height: 28px;
+            min-width: 28px;
+            padding: 0;
+            width: 28px;
         }
 
         /* Pagination */
@@ -260,7 +481,7 @@
                 <thead>
                     <tr>
                         <th>ID</th>
-                        <th style="width: 25%;">技能</th>
+                        <th style="width: 20%;">技能</th>
                         <th>內容</th>
                         <th>來源</th>
                         <th>Gencode V3</th>
@@ -271,92 +492,136 @@
                     {% for example in pagination.items %}
                     <tr>
                         <td>{{ example.id }}</td>
-                        <td>
+                        <td class="skill-cell">
                             <strong>{{ example.skill_info.skill_ch_name if example.skill_info else 'N/A' }}</strong>
                             <br><small style="color: #6c757d;">{{ example.skill_id }}</small>
                         </td>
-                        <td>
-                            <div style="max-height: 100px; overflow-y: auto;">{{ example.problem_text }}</div>
+                        <td class="problem-cell">
+                            <div class="problem-ellipsis" title="{{ example.problem_text | striptags }}">{{ example.problem_text }}</div>
                         </td>
-                        <td>
+                        <td class="source-cell">
                             <small>{{ example.source_description }}</small>
+                            <div class="source-flags">
                             {% if example._needs_image_conversion %}
-                            <div><span style="display:inline-block;padding:2px 6px;margin-top:4px;background:#ffe4b5;color:#8a5a00;border-radius:4px;font-size:12px;">附圖需轉檔</span></div>
+                            <span class="compact-flag" title="附圖需轉檔" style="background:#ffe4b5;color:#8a5a00;">圖轉</span>
                             {% elif example._has_real_image_asset %}
-                            <div><span style="display:inline-block;padding:2px 6px;margin-top:4px;background:#dff0d8;color:#2e7d32;border-radius:4px;font-size:12px;">有附圖</span></div>
+                            <span class="compact-flag" title="有附圖" style="background:#dff0d8;color:#2e7d32;">圖</span>
                             {% elif example._missing_image_asset %}
-                            <div><span style="display:inline-block;padding:2px 6px;margin-top:4px;background:#fff3cd;color:#856404;border-radius:4px;font-size:12px;">附圖待確認</span></div>
+                            <span class="compact-flag" title="附圖待確認" style="background:#fff3cd;color:#856404;">圖?</span>
                             {% endif %}
                             {% if example._formula_assets_count > 0 %}
-                            <div><span style="display:inline-block;padding:2px 6px;margin-top:4px;background:#d1ecf1;color:#0c5460;border-radius:4px;font-size:12px;">formula_assets={{ example._formula_assets_count }}</span></div>
+                            <span class="compact-flag" title="formula_assets={{ example._formula_assets_count }}" style="background:#d1ecf1;color:#0c5460;">f={{ example._formula_assets_count }}</span>
                             {% endif %}
                             {% if example._needs_formula_review %}
-                            <div><span style="display:inline-block;padding:2px 6px;margin-top:4px;background:#fff3cd;color:#856404;border-radius:4px;font-size:12px;">needs_formula_review=true</span></div>
+                            <span class="compact-flag" title="needs_formula_review=true" style="background:#fff3cd;color:#856404;">review</span>
                             {% endif %}
                             {% if example._formula_status != 'ok' or example._needs_formula_review %}
                             {% if example._formula_status == 'asset_attached' %}
-                            <div><span style="display:inline-block;padding:2px 6px;margin-top:4px;background:#d1ecf1;color:#0c5460;border-radius:4px;font-size:12px;">formula_status=asset_attached</span></div>
-                            <div><small style="color:#0c5460;">公式圖片已掛載，待 OCR/複核</small></div>
+                            <span class="compact-flag" title="formula_status=asset_attached; 公式圖片已掛載，待 OCR/複核" style="background:#d1ecf1;color:#0c5460;">formula</span>
                             {% elif example._formula_status == 'asset_attached_but_text_missing' %}
-                            <div><span style="display:inline-block;padding:2px 6px;margin-top:4px;background:#fff3cd;color:#856404;border-radius:4px;font-size:12px;">formula_status=asset_attached_but_text_missing</span></div>
-                            <div><small style="color:#856404;">文字缺公式，但已有公式圖片資產，待 OCR/複核</small></div>
+                            <span class="compact-flag" title="formula_status=asset_attached_but_text_missing; 文字缺公式，但已有公式圖片資產，待 OCR/複核" style="background:#fff3cd;color:#856404;">formula?</span>
                             {% elif example._formula_status == 'image_placeholder_no_asset' %}
-                            <div><span style="display:inline-block;padding:2px 6px;margin-top:4px;background:#f8d7da;color:#721c24;border-radius:4px;font-size:12px;">formula_status=image_placeholder_no_asset</span></div>
-                            <div><small style="color:#721c24;">文字有公式圖片標記，但未找到對應資產</small></div>
+                            <span class="compact-flag" title="formula_status=image_placeholder_no_asset; 文字有公式圖片標記，但未找到對應資產" style="background:#f8d7da;color:#721c24;">formula!</span>
                             {% elif example._formula_status == 'missing_no_asset' %}
-                            <div><span style="display:inline-block;padding:2px 6px;margin-top:4px;background:#f8d7da;color:#721c24;border-radius:4px;font-size:12px;">formula_status=missing_no_asset</span></div>
-                            <div><small style="color:#721c24;">公式缺失，無可用資產</small></div>
+                            <span class="compact-flag" title="formula_status=missing_no_asset; 公式缺失，無可用資產" style="background:#f8d7da;color:#721c24;">formula!</span>
                             {% endif %}
                             {% endif %}
+                            </div>
                         </td>
-                        <td>
+                        <td class="v3-cell">
                             {% set gencode = (gencode_status_map or {}).get(example.id, {}) %}
                             {% set gencode_status = gencode.get('status', 'not_created') %}
-                            <div><strong>{{ gencode.get('status_label', '未建立') }}</strong></div>
-                            <div><small>component_id: {{ gencode.get('component_id') or '-' }}</small></div>
-                            <div><small>payload: {{ gencode.get('has_payload_label', '無') }}</small></div>
-                            <div><small>dryrun generate.py: {{ gencode.get('dryrun_generate_label', '否') }}</small></div>
-                            <div><small>production generate.py: {{ gencode.get('production_generate_label', '否') }}</small></div>
-                            <div><small>updated_at: {{ gencode.get('updated_at') or '-' }}</small></div>
-                            {% if gencode.get('error_log') %}
-                            <div><small style="color:#c0392b;">error_log: {{ gencode.get('error_log') }}</small></div>
+                            {% set has_payload = gencode.get('has_payload') %}
+                            {% set has_error = gencode_status == 'failed' or gencode.get('error_log') %}
+                            {% set has_production_generate = gencode.get('production_generate_exists') %}
+                            {% if has_error %}
+                            {% set v3_light = '🔴' %}
+                            {% set v3_label = 'failed' %}
+                            {% elif gencode_status in ['published', 'runtime_ready', 'ready'] or has_production_generate %}
+                            {% set v3_light = '🟢' %}
+                            {% set v3_label = gencode_status or gencode.get('component_id') or 'ready' %}
+                            {% elif gencode_status in ['verified', 'smoke_passed'] %}
+                            {% set v3_light = '🟢' %}
+                            {% set v3_label = gencode_status %}
+                            {% elif gencode_status in ['draft_written', 'pending'] %}
+                            {% set v3_light = '🟡' %}
+                            {% set v3_label = gencode_status %}
+                            {% elif gencode.get('component_id') or has_payload %}
+                            {% set v3_light = '🟡' %}
+                            {% set v3_label = 'pending' %}
+                            {% else %}
+                            {% set v3_light = '⚪' %}
+                            {% set v3_label = 'none' %}
                             {% endif %}
+                            {% set v3_status_map = {
+                                'none': '尚未生成',
+                                'pending': '等待處理',
+                                'failed': '失敗',
+                                'draft_written': '草稿已產生',
+                                'verified': '驗證通過',
+                                'smoke_passed': '驗證通過',
+                                'runtime_ready': '可執行',
+                                'published': '已發布',
+                                'ready': '可執行',
+                                'not_created': '尚未生成'
+                            } %}
+                            <button type="button"
+                                class="v3-badge"
+                                title="status: {{ v3_status_map.get(gencode_status, gencode_status) }}&#10;component_id: {{ gencode.get('component_id') or '-' }}&#10;updated_at: {{ gencode.get('updated_at') or '-' }}"
+                                onclick="openV3Drawer('v3-template-{{ example.id }}')">
+                                <span>{{ v3_light }}</span><span class="v3-badge-label">{{ v3_status_map.get(v3_label, v3_label) }}</span>
+                            </button>
+                            <div id="v3-template-{{ example.id }}" class="v3-drawer-template">
+                                <dl class="v3-meta-grid">
+                                    <dt>component_id</dt><dd>{{ gencode.get('component_id') or '-' }}</dd>
+                                    <dt>status</dt><dd>{{ v3_status_map.get(gencode_status, gencode_status) }}</dd>
+                                    <dt>textbook_example_id</dt><dd>{{ example.id }}</dd>
+                                    <dt>presentation_mode</dt><dd>{{ gencode.get('presentation_mode') or '-' }}</dd>
+                                    <dt>problem_type_id</dt><dd>{{ gencode.get('problem_type_id') or '-' }}</dd>
+                                    <dt>payload</dt><dd>{% if gencode.get('has_payload') %}yes{% else %}no{% endif %}</dd>
+                                    <dt>dryrun generate.py</dt><dd>{% if gencode.get('dryrun_generate_exists') %}yes{% else %}no{% endif %}</dd>
+                                    <dt>production generate.py</dt><dd>{% if gencode.get('production_generate_exists') %}yes{% else %}no{% endif %}</dd>
+                                    <dt>updated_at</dt><dd>{{ gencode.get('updated_at') or '-' }}</dd>
+                                    {% if gencode.get('error_log') %}
+                                    <dt>error</dt><dd style="color:#c0392b;">{{ gencode.get('error_log') }}</dd>
+                                    {% endif %}
+                                </dl>
+                                <div class="v3-drawer-actions">
                             {% if gencode_status in ['not_created', 'failed', 'draft_written'] %}
                             <form method="POST"
                                 action="{{ url_for('core.admin_run_example_v3_dryrun', textbook_example_id=example.id) }}"
-                                style="margin-top: 6px;">
+                                >
                                 <input type="hidden" name="skill_id" value="{{ example.skill_id }}">
                                 <input type="hidden" name="redirect_query" value="{{ request.query_string.decode('utf-8') }}">
                                 <button type="submit" class="btn btn-edit">
                                     {% if gencode_status == 'draft_written' %}🔄 重新生成草稿{% else %}⚡ 生成 V3 草稿{% endif %}
                                 </button>
-                                <div><small style="color:#856404;">⚠️ 僅 dryrun 沙盒演練，不會正式覆寫發布</small></div>
                             </form>
                             {% endif %}
                             {% if gencode_status in ['draft_written', 'failed'] %}
                             <form method="POST"
                                 action="{{ url_for('core.admin_run_example_v3_smoke', textbook_example_id=example.id) }}"
-                                style="margin-top: 6px;">
+                                >
                                 <input type="hidden" name="skill_id" value="{{ example.skill_id }}">
                                 <input type="hidden" name="redirect_query" value="{{ request.query_string.decode('utf-8') }}">
                                 <button type="submit" class="btn btn-secondary">🧪 執行 Smoke 測試</button>
-                                <div><small style="color:#856404;">⚠️ 僅測試 dryrun 沙盒組件，不會正式發布</small></div>
                             </form>
                             {% endif %}
                             {% if gencode_status == 'smoke_passed' %}
                             <form method="POST"
                                 action="{{ url_for('core.admin_run_example_v3_verify', textbook_example_id=example.id) }}"
-                                style="margin-top: 6px;">
+                                >
                                 <input type="hidden" name="skill_id" value="{{ example.skill_id }}">
                                 <input type="hidden" name="redirect_query" value="{{ request.query_string.decode('utf-8') }}">
                                 <button type="submit" class="btn btn-prereq">✅ 標記 verified</button>
-                                <div><small style="color:#856404;">⚠️ 僅標記 verified，不會正式發布</small></div>
                             </form>
                             {% endif %}
+                                </div>
+                            </div>
                         </td>
-                        <td>
+                        <td class="actions-cell">
                             <div class="btn-group">
-                                <a href="#" class="btn btn-edit" onclick='openEditModal({
+                                <a href="#" class="btn btn-edit btn-icon" title="編輯" onclick='openEditModal({
                                     "id": {{ example.id }},
                                     "skill_id": "{{ example.skill_id }}",
                                     "problem_text": {{ example.problem_text | tojson }},
@@ -364,9 +629,9 @@
                                     "detailed_solution": {{ example.detailed_solution | tojson }},
                                     "source_description": {{ example.source_description | tojson }},
                                     "notes": {{ example.notes | tojson }}
-                                })'><i class="bi bi-pencil-fill"></i> 編輯</a>
-                                <button type="button" class="btn btn-delete" onclick="deleteExample({{ example.id }})">
-                                    <i class="bi bi-trash-fill"></i> 刪除
+                                })'><i class="bi bi-pencil-fill"></i></a>
+                                <button type="button" class="btn btn-delete btn-icon" title="刪除" onclick="deleteExample({{ example.id }})">
+                                    <i class="bi bi-trash-fill"></i>
                                 </button>
                             </div>
                         </td>
@@ -403,6 +668,15 @@
         {% endif %}
     </div>
 
+    <div id="v3DrawerBackdrop" class="v3-drawer-backdrop" onclick="closeV3Drawer()"></div>
+    <aside id="v3Drawer" class="v3-drawer" aria-hidden="true">
+        <div class="v3-drawer-header">
+            <div class="v3-drawer-title">Gencode V3</div>
+            <button type="button" class="v3-drawer-close" onclick="closeV3Drawer()" aria-label="Close">&times;</button>
+        </div>
+        <div id="v3DrawerBody" class="v3-drawer-body"></div>
+    </aside>
+
     <script>
         // Modal handling
         function openModal(modalId) {
@@ -418,6 +692,32 @@
 
         function openAddModal() {
             openModal('addExampleModal');
+        }
+
+        function openV3Drawer(templateId) {
+            const source = document.getElementById(templateId);
+            const drawer = document.getElementById('v3Drawer');
+            const backdrop = document.getElementById('v3DrawerBackdrop');
+            const body = document.getElementById('v3DrawerBody');
+            if (!source || !drawer || !backdrop || !body) {
+                return;
+            }
+            body.innerHTML = source.innerHTML;
+            backdrop.style.display = 'block';
+            drawer.classList.add('open');
+            drawer.setAttribute('aria-hidden', 'false');
+        }
+
+        function closeV3Drawer() {
+            const drawer = document.getElementById('v3Drawer');
+            const backdrop = document.getElementById('v3DrawerBackdrop');
+            if (drawer) {
+                drawer.classList.remove('open');
+                drawer.setAttribute('aria-hidden', 'true');
+            }
+            if (backdrop) {
+                backdrop.style.display = 'none';
+            }
         }
 
         function openEditModal(example) {

@@ -10,6 +10,12 @@ CHECKER_CAPABILITIES: dict[str, dict[str, Any]] = {
         "equivalence_types": ["choice_label", "choice_label_exact"],
         "module": "core.checkers.choice_label_checker",
     },
+    "multi_part_answer_checker": {
+        "runtime_available": True,
+        "answer_types": ["multi_part"],
+        "equivalence_types": ["multi_part_answer"],
+        "module": "core.checkers.multi_part_answer_checker",
+    },
     "integer_checker": {
         "runtime_available": True,
         "answer_types": ["integer", "numeric", "decimal", "number"],

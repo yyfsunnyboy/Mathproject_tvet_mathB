@@ -14,6 +14,7 @@ EQUIVALENCE_TYPE_WHITELIST = {
     "unordered_tuple_equivalent",
     "manual_review_or_ai_judged",
     "linear_equation_equivalent",
+    "multi_part_answer",
 }
 
 _NON_RAW_STRING_EQ_TYPES = {
@@ -27,6 +28,7 @@ _NON_RAW_STRING_EQ_TYPES = {
     "unordered_tuple_equivalent",
     "manual_review_or_ai_judged",
     "linear_equation_equivalent",
+    "multi_part_answer",
 }
 
 _EQUIVALENCE_CANONICAL_MAP = {
@@ -61,6 +63,7 @@ _DEFAULT_CONTRACT_BY_ANSWER_TYPE = {
     "coordinate_pair": ("ordered_tuple_exact", "tuple_checker"),
     "ordered_tuple": ("ordered_tuple_exact", "tuple_checker"),
     "unordered_tuple": ("unordered_tuple_equivalent", "tuple_checker"),
+    "multi_part": ("multi_part_answer", "multi_part_answer_checker"),
 }
 
 

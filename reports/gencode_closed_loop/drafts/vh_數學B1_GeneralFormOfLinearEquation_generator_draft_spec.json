@@ -1,0 +1,49 @@
+{
+  "skill_id": "vh_數學B1_GeneralFormOfLinearEquation",
+  "phase": "phase2",
+  "phase1_payload": {
+    "ok": false,
+    "phase": "phase1",
+    "skill_id": "vh_數學B1_GeneralFormOfLinearEquation",
+    "source_example_count": 17,
+    "candidate_problem_types": [],
+    "phase_status": "phase1_induction_exception",
+    "exception_review_gate": {
+      "required": true,
+      "reasons": [
+        "phase1_induction_exception"
+      ]
+    },
+    "summary_message": "Phase 1 requires exception review.",
+    "self_healing": {
+      "status": "HEALED_AND_RETRIED",
+      "phase": "phase1",
+      "skill_id": "vh_數學B1_GeneralFormOfLinearEquation"
+    },
+    "reports": {
+      "phase1_summary_json": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_GeneralFormOfLinearEquation_phase1_summary.json",
+      "phase1_summary_md": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_GeneralFormOfLinearEquation_phase1_summary.md",
+      "phase1_json": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_GeneralFormOfLinearEquation_phase1_summary.json",
+      "phase1_md": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_GeneralFormOfLinearEquation_phase1_summary.md"
+    },
+    "timestamp": "2026-06-18T07:44:14.352171+00:00",
+    "dry_run": true,
+    "human_review_items": [],
+    "can_continue": true,
+    "can_retry": true,
+    "requires_human_action": true,
+    "human_action_items": [
+      {
+        "type": "inspect_report",
+        "target_id": "phase1_induction_exception",
+        "message": "Phase 1 exception reason: phase1_induction_exception",
+        "suggested_action": "inspect_report"
+      }
+    ]
+  },
+  "generator_results": [],
+  "accepted_generators": [],
+  "failed_generators": [],
+  "timestamp": "2026-06-18T07:47:13.635118+00:00",
+  "dry_run": true
+}

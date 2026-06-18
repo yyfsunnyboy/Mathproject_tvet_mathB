@@ -18,6 +18,7 @@ COORDINATE_PAIR_TYPES = frozenset({"coordinate_pair", "ordered_pair"})
 EQUATION_TYPES = frozenset({"equation"})
 LINEAR_EQUATION_SHAPES = frozenset({"linear_equation"})
 TEXT_SHORT_TYPES = frozenset({"text", "text_short", "exact_string", "case_insensitive_string"})
+MULTI_PART_TYPES = frozenset({"multi_part"})
 
 ANSWER_TYPE_ALIASES: dict[str, str] = {
     "integer": "numeric",
@@ -40,6 +41,7 @@ ANSWER_TYPE_ALIASES: dict[str, str] = {
     "text_short": "short_answer",
     "exact_string": "short_answer",
     "case_insensitive_string": "short_answer",
+    "multi_part": "multi_part",
 }
 
 VALID_ANSWER_TYPES = frozenset(
@@ -60,9 +62,11 @@ VALID_ANSWER_TYPES = frozenset(
         "table",
         "manual_review",
         "equation",
+        "multi_part",
     }
     | SOLUTION_SET_TYPES
     | EQUATION_TYPES
+    | MULTI_PART_TYPES
     | INTERVAL_TYPES
     | CLASSIFICATION_TYPES
     | NUMERIC_TYPES
@@ -287,6 +291,8 @@ def answer_type_family(answer_type: str) -> str:
         return "coordinate_pair"
     if canon in EQUATION_TYPES:
         return "linear_equation"
+    if canon in MULTI_PART_TYPES:
+        return "multi_part"
     if canon in TEXT_SHORT_TYPES:
         return "short_answer"
     return canon
@@ -441,6 +447,22 @@ def is_valid_answer_payload(value: Any, answer_contract: dict[str, Any]) -> tupl
         if not check_linear_equation_equivalent_answer(text, text):
             return False, "linear_equation_checker_self_test_failed"
         return True, ""
+    if family == "multi_part":
+        parts = ac.get("parts") if isinstance(ac.get("parts"), list) else []
+        if not parts:
+            return False, "multi_part_parts_missing"
+        if not isinstance(value, (dict, list, tuple)):
+            return False, "multi_part_answer_invalid"
+        if isinstance(value, dict):
+            for idx, part in enumerate(parts):
+                if not isinstance(part, dict):
+                    continue
+                key = str(part.get("key") or part.get("id") or f"part_{idx + 1}").strip()
+                if key not in value or value.get(key) in (None, ""):
+                    return False, f"multi_part_missing:{key}"
+        elif len(value) < len(parts):
+            return False, "multi_part_missing"
+        return True, ""
     return bool(str(value).strip()), "answer_empty"
 
 
@@ -459,6 +481,7 @@ def expected_answer_shape_hint(answer_contract: dict[str, Any]) -> str:
         "short_answer": "short_answer allows non-empty string",
         "coordinate_pair": "coordinate_pair allows (x,y) string or equivalent formats",
         "linear_equation": "linear_equation allows parseable binary linear equation strings",
+        "multi_part": "multi_part allows dict/list values matching answer_contract.parts",
     }
     base = hints.get(family, f"{family} allows non-empty answer per contract")
     if shape:

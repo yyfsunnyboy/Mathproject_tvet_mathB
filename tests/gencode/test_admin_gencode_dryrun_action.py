@@ -185,5 +185,34 @@ def test_admin_examples_template_has_post_only_dryrun_button_contract():
 
     assert "admin_run_example_v3_dryrun" in content
     assert "method=\"POST\"" in content
-    assert "⚠️ 僅 dryrun 沙盒演練，不會正式覆寫發布" in content
+    assert "v3-badge" in content
+    assert "v3Drawer" in content
+    assert "v3-drawer-template" in content
+    assert "openV3Drawer" in content
+    assert "發布僅包含 verified components；未 verified 的教材題不會自動補齊" not in content
+    assert "payload:" not in content
+    assert "dryrun generate.py:" not in content
+    assert "production generate.py:" not in content
     assert "gencode_status in ['not_created', 'failed', 'draft_written']" in content
+
+
+def test_admin_examples_get_renders_flat_v3_table():
+    from app import app
+
+    app.config["TESTING"] = True
+    with app.test_client() as client:
+        with client.session_transaction() as sess:
+            sess["_user_id"] = "1"
+            sess["_fresh"] = True
+
+        response = client.get("/examples")
+
+    assert response.status_code == 200
+    content = response.get_data(as_text=True)
+    assert "v3-badge" in content
+    assert "v3Drawer" in content
+    assert "v3-drawer-template" in content
+    assert "發布僅包含 verified components；未 verified 的教材題不會自動補齊" not in content
+    assert "payload:" not in content
+    assert "dryrun generate.py:" not in content
+    assert "production generate.py:" not in content

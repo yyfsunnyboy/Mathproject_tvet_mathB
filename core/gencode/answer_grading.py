@@ -27,6 +27,7 @@ _CONTRACT_CHECKERS = frozenset(
         "choice_label_checker",
         "coordinate_pair_checker",
         "linear_equation_equivalent_checker",
+        "multi_part_answer_checker",
     }
 )
 
@@ -71,6 +72,7 @@ def should_use_contract_aware_grading(current: dict[str, Any]) -> bool:
         "radical_equivalence",
         "coordinate_pair_equivalence",
         "linear_equation_equivalent",
+        "multi_part_answer",
     }:
         return True
     if is_coordinate_pair_contract(ac) or is_coordinate_pair_runtime_payload(refreshed):

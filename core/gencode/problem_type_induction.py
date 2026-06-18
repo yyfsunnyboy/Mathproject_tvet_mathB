@@ -39,7 +39,9 @@ from core.gencode.example_feature_extractor import extract_example_feature, extr
 from core.gencode.example_feature_extractor import _detect_math_objects
 from core.gencode.generator_contract_schema import enrich_spec_generator_contract
 from core.gencode.pipeline_policy import evaluate_pipeline_gates
+from core.gencode.problem_type_canonicalizer import sync_candidate_authoritative_identity
 from core.gencode.problem_type_spec import get_template_slot, list_problem_types_for_skill
+
 from core.gencode.main_skill_anchor import build_main_skill_anchor
 from core.gencode.semantic_alignment import (
     apply_alignment_gate_to_candidates,

@@ -7,6 +7,14 @@ import random
 from fractions import Fraction
 from typing import Any
 
+from core.gencode.resources.rational_display import (
+    canonicalize_display_answer,
+    canonicalize_multi_part_display,
+    canonicalize_part_display_answer,
+    fraction_to_plain,
+    normalize_fraction_value,
+)
+
 MATRIX_REQUIRED_FIELDS = (
     "givens",
     "answer",
@@ -103,6 +111,52 @@ def _build_line_equation_answer_contract(
             "equivalence": "exact_string",
             "semantic_answer": semantic_answer,
         }
+    if task_type == "intercept_form_triangle_area":
+        return {
+            "presentation_mode": presentation_mode,
+            "answer_type": "single_choice" if presentation_mode == "single_choice" else "rational",
+            "checker": "choice_label_checker" if presentation_mode == "single_choice" else "rational_checker",
+            "checker_key": "choice_label_checker" if presentation_mode == "single_choice" else "rational_checker",
+            "answer_equivalence": "choice_label" if presentation_mode == "single_choice" else "rational_equivalent",
+            "equivalence": "choice_label" if presentation_mode == "single_choice" else "rational_equivalent",
+            "semantic_answer": semantic_answer,
+        }
+    if task_type == "intercept_form_equation_and_triangle_area":
+        return {
+            "presentation_mode": "short_answer",
+            "answer_type": "multi_part",
+            "answer_shape": "multi_part",
+            "checker": "multi_part_answer_checker",
+            "checker_key": "multi_part_answer_checker",
+            "answer_equivalence": "multi_part_answer",
+            "equivalence_type": "multi_part_answer",
+            "equivalence": "multi_part_answer",
+            "semantic_answer": semantic_answer,
+            "parts": [
+                {
+                    "key": "equation",
+                    "label": "equation",
+                    "checker": "linear_equation_equivalent_checker",
+                    "equivalence_type": "linear_equation_equivalent",
+                    "expected_answer": semantic_answer.get("equation") if isinstance(semantic_answer, dict) else "",
+                    "display_answer": canonicalize_part_display_answer({
+                        "checker": "linear_equation_equivalent_checker",
+                        "expected_answer": semantic_answer.get("equation") if isinstance(semantic_answer, dict) else "",
+                    }),
+                },
+                {
+                    "key": "area",
+                    "label": "area",
+                    "checker": "rational_checker",
+                    "equivalence_type": "rational_equivalent",
+                    "expected_answer": semantic_answer.get("area") if isinstance(semantic_answer, dict) else "",
+                    "display_answer": canonicalize_part_display_answer({
+                        "checker": "rational_checker",
+                        "expected_answer": semantic_answer.get("area") if isinstance(semantic_answer, dict) else "",
+                    }),
+                },
+            ],
+        }
     return {
         "presentation_mode": "short_answer",
         "answer_type": answer_type,
@@ -143,13 +197,18 @@ def convert_line_equation_matrix_to_question_payload(
     assert isinstance(explanation_steps, list)
     assert isinstance(distractors, list)
 
-    canonical = str(answer["canonical_form"])
-    semantic_answer = canonical
+    canonical_raw = answer["canonical_form"]
+    canonical = str(canonical_raw)
+    semantic_answer: Any = canonical_raw
     question_text = _build_line_equation_question_text(givens, validation_facts)
     mode = str(presentation_mode or "short_answer").strip()
     task_type = str(validation_facts.get("task_type") or validation_facts.get("line_type") or "").strip()
     if mode == "single_choice":
         default_answer_type = "single_choice"
+    elif task_type == "intercept_form_triangle_area":
+        default_answer_type = "rational"
+    elif task_type == "intercept_form_equation_and_triangle_area":
+        default_answer_type = "multi_part"
     elif task_type == "slope_intercept_find_x_intercept":
         default_answer_type = "rational"
     elif task_type == "slope_intercept_read_slope_and_intercept":
@@ -161,6 +220,10 @@ def convert_line_equation_matrix_to_question_payload(
         resolved_answer_type = "rational"
     elif task_type == "slope_intercept_read_slope_and_intercept" and mode != "single_choice":
         resolved_answer_type = "text_short"
+    elif task_type == "intercept_form_triangle_area" and mode != "single_choice":
+        resolved_answer_type = "rational"
+    elif task_type == "intercept_form_equation_and_triangle_area":
+        resolved_answer_type = "multi_part"
 
     math_objects = _infer_math_objects(validation_facts)
     math_core: dict[str, Any] = {
@@ -194,7 +257,17 @@ def convert_line_equation_matrix_to_question_payload(
             metadata[key] = value
 
     if mode == "single_choice":
-        if task_type == "slope_intercept_find_x_intercept":
+        if task_type == "parabola_secant_parallel_line_choice":
+            choices = _normalize_labeled_choices(answer.get("choices"))
+            correct_label = str(answer.get("correct_label") or "").strip()
+            if not choices or not correct_label:
+                raise ValueError("unsupported_choices_generator:parabola_secant_choices_missing")
+        elif task_type == "intercept_form_triangle_area":
+            choices, correct_label = _build_area_choice_options(
+                str(semantic_answer),
+                seed_text=f"{semantic_answer}|{givens.get('x_intercept')}|{givens.get('y_intercept')}",
+            )
+        elif task_type == "slope_intercept_find_x_intercept":
             choices, correct_label = _build_x_intercept_choice_options(
                 canonical,
                 givens,
@@ -204,7 +277,7 @@ def convert_line_equation_matrix_to_question_payload(
             choices, correct_label = _build_choice_options(canonical, distractors, seed_text=canonical)
         payload_answer = correct_label
         payload_correct = correct_label
-        display_answer = _format_latex_display_answer(semantic_answer, task_type)
+        display_answer = _format_latex_display_answer(str(semantic_answer), task_type)
         choices = [
             {**choice, "text": _format_latex_display_answer(str(choice["text"]), task_type)}
             for choice in choices
@@ -221,7 +294,7 @@ def convert_line_equation_matrix_to_question_payload(
         options = []
         payload_answer = semantic_answer
         payload_correct = semantic_answer
-        display_answer = _format_latex_display_answer(semantic_answer, task_type)
+        display_answer = _format_display_answer(semantic_answer, task_type, resolved_answer_type)
         answer_contract = _build_line_equation_answer_contract(
             presentation_mode=mode,
             answer_type=resolved_answer_type,
@@ -285,13 +358,27 @@ def _latex_inline_equation(value: Any) -> str:
     return f"\\({_format_latex_math_text(str(value))}\\)"
 
 
+def _latex_dollar(value: Any) -> str:
+    return f"${_format_latex_math_text(str(value))}$"
+
+
 def _format_latex_display_answer(value: str, task_type: str = "") -> str:
     text = str(value or "").strip()
     if not text:
         return text
     if task_type.startswith("slope_intercept"):
-        return _latex_inline_equation(text)
+        return _latex_inline_equation(canonicalize_display_answer(text))
+    if task_type == "intercept_form_triangle_area":
+        return _latex_dollar(canonicalize_display_answer(text, answer_type="rational"))
+    if task_type == "parabola_secant_parallel_line_choice":
+        return _latex_dollar(canonicalize_display_answer(text))
     return text
+
+
+def _format_display_answer(value: Any, task_type: str = "", answer_type: str = "") -> Any:
+    if str(answer_type or "").strip() == "multi_part" and isinstance(value, dict):
+        return canonicalize_multi_part_display(value)
+    return _format_latex_display_answer(str(value), task_type)
 
 
 def _format_latex_math_text(text: str) -> str:
@@ -300,12 +387,9 @@ def _format_latex_math_text(text: str) -> str:
     normalized = str(text or "").strip().replace("−", "-")
 
     def repl_fraction(match: re.Match[str]) -> str:
-        sign = "-" if match.group(1) == "-" else ""
-        numerator = match.group(2)
-        denominator = match.group(3)
-        return f"{sign}\\frac{{{numerator}}}{{{denominator}}}"
+        return canonicalize_display_answer(match.group(0), answer_type="rational")
 
-    normalized = re.sub(r"(?<![\\\w])(-?)(\d+)/(\d+)", repl_fraction, normalized)
+    normalized = re.sub(r"(?<![\\\w])[-+]?\d+/\d+", repl_fraction, normalized)
     return normalized
 
 
@@ -335,6 +419,60 @@ def _build_line_equation_question_text(
     if task_type == "slope_intercept_read_slope_and_intercept":
         equation = givens.get("equation")
         return f"已知直線方程式為 {_latex_inline_equation(equation)}，判斷其斜率與 y 截距。"
+
+    if task_type in {
+        "intercept_form_equation",
+        "intercept_form_triangle_area",
+        "intercept_form_equation_and_triangle_area",
+        "intercept_form_from_intercept_sum_and_slope",
+        "parabola_secant_parallel_line_choice",
+        "triangle_area_bisector_line_equation",
+    }:
+        equation = givens.get("equation")
+        x_intercept = givens.get("x_intercept")
+        y_intercept = givens.get("y_intercept")
+        if task_type == "triangle_area_bisector_line_equation":
+            vertex = _format_point_for_question(givens.get("vertex"))
+            edge_p1 = _format_point_for_question(givens.get("edge_p1"))
+            edge_p2 = _format_point_for_question(givens.get("edge_p2"))
+            midpoint = _format_point_for_question(givens.get("midpoint"))
+            return (
+                f"已知三角形 ABC 中，A={edge_p1}、B={vertex}、C={edge_p2}。"
+                f"若直線通過 B 並通過 AC 的中點 D={midpoint}，求此平分三角形 ABC 面積的直線方程式。"
+            )
+        if task_type == "parabola_secant_parallel_line_choice":
+            p = givens.get("p")
+            q = givens.get("q")
+            return (
+                f"若 A、B 兩點分別是拋物線 $y=x^2$ 與直線 $x={p}$、$x={q}$ 的交點，"
+                "則直線 AB 與下列哪一條直線平行？"
+            )
+        if task_type == "intercept_form_from_intercept_sum_and_slope":
+            intercept_sum = givens.get("intercept_sum")
+            slope = givens.get("slope")
+            return (
+                f"已知直線 L 在兩坐標軸上的截距和為 {_latex_dollar(intercept_sum)}，"
+                f"且 L 的斜率為 {_latex_dollar(slope)}，求 L 的方程式。"
+            )
+        if task_type == "intercept_form_triangle_area":
+            if equation:
+                return (
+                    f"已知直線方程式為 {_latex_dollar(equation)}，求它與 x 軸及 y 軸"
+                    "所圍成的三角形面積。"
+                )
+            return (
+                f"已知一直線的 x 截距為 {_latex_dollar(x_intercept)}，y 截距為 "
+                f"{_latex_dollar(y_intercept)}，求它與兩坐標軸所圍成的三角形面積。"
+            )
+        if equation:
+            return (
+                f"已知直線方程式為 {_latex_dollar(equation)}，將此直線化成截距式，"
+                "並求與兩坐標軸所圍成的三角形面積。"
+            )
+        return (
+            f"已知一直線 L 的 x 截距為 {_latex_dollar(x_intercept)}，y 截距為 "
+            f"{_latex_dollar(y_intercept)}，試求直線 L 的方程式與兩坐標軸所圍成的三角形面積。"
+        )
 
     if "point_a" in givens and "point_b" in givens:
         pa = givens["point_a"]
@@ -401,18 +539,41 @@ def _build_choice_options(
     return choices, correct_label
 
 
+def _format_point_for_question(value: Any) -> str:
+    if isinstance(value, dict):
+        return f"$({value.get('x')}, {value.get('y')})$"
+    if isinstance(value, (list, tuple)) and len(value) >= 2:
+        return f"$({value[0]}, {value[1]})$"
+    return "$()$"
+
+
+def _normalize_labeled_choices(raw_choices: Any) -> list[dict[str, str]]:
+    if not isinstance(raw_choices, list):
+        return []
+    choices: list[dict[str, str]] = []
+    seen: set[str] = set()
+    for index, raw in enumerate(raw_choices):
+        if isinstance(raw, dict):
+            label = str(raw.get("label") or chr(ord("A") + index)).strip()
+            text = str(raw.get("text") or raw.get("value") or "").strip()
+        else:
+            label = chr(ord("A") + index)
+            text = str(raw or "").strip()
+        if not label or not text or text in seen:
+            continue
+        seen.add(text)
+        choices.append({"label": label, "text": text})
+    return choices
+
+
 def _parse_fraction_text(value: Any) -> Fraction:
-    text = str(value or "").strip()
-    if not text:
+    if value is None or str(value).strip() == "":
         return Fraction(0, 1)
-    return Fraction(text)
+    return normalize_fraction_value(value)
 
 
 def _format_fraction_text(value: Fraction) -> str:
-    value = Fraction(value)
-    if value.denominator == 1:
-        return str(value.numerator)
-    return f"{value.numerator}/{value.denominator}"
+    return fraction_to_plain(value)
 
 
 def _build_x_intercept_choice_options(
@@ -473,11 +634,61 @@ def _build_x_intercept_choice_options(
     return choices, correct_label
 
 
+def _build_area_choice_options(
+    canonical: str,
+    *,
+    seed_text: str,
+) -> tuple[list[dict[str, str]], str]:
+    correct = _parse_fraction_text(canonical)
+    rng = random.Random(sum(ord(ch) for ch in seed_text))
+    candidate_values: list[Fraction] = [
+        correct,
+        correct + 1,
+        correct + 2,
+        correct - 1,
+        correct * 2,
+        correct / 2 if correct != 0 else Fraction(1, 1),
+        -correct,
+    ]
+    wrong_values: list[Fraction] = []
+    seen: set[Fraction] = {correct}
+    for value in candidate_values:
+        value = Fraction(value)
+        if value <= 0 or value in seen:
+            continue
+        seen.add(value)
+        wrong_values.append(value)
+        if len(wrong_values) >= 3:
+            break
+    while len(wrong_values) < 3:
+        value = Fraction(rng.randint(1, 24), rng.choice([1, 2]))
+        if value in seen:
+            continue
+        seen.add(value)
+        wrong_values.append(value)
+
+    option_values = [correct] + wrong_values[:3]
+    rng.shuffle(option_values)
+    choices: list[dict[str, str]] = []
+    correct_label = "A"
+    for index, value in enumerate(option_values):
+        label = chr(ord("A") + index)
+        text = _format_fraction_text(value)
+        choices.append({"label": label, "text": text})
+        if value == correct:
+            correct_label = label
+    return choices, correct_label
+
+
 def _infer_math_objects(validation_facts: dict[str, Any]) -> list[str]:
     objects = ["coordinate_point", "linear_equation"]
     task_type = str(validation_facts.get("task_type") or "")
     if task_type.startswith("slope_intercept"):
         objects.append("slope_intercept_form")
+    if task_type.startswith("intercept_form"):
+        objects.append("intercept_form")
+    if task_type == "triangle_area_bisector_line_equation":
+        objects.extend(["triangle", "midpoint", "area_bisector"])
     if validation_facts.get("is_horizontal"):
         objects.append("horizontal_line")
     if validation_facts.get("is_vertical"):

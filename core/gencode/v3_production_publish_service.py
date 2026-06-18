@@ -25,7 +25,10 @@ V3_PRODUCTION_PUBLISH_ALLOWED_SKILLS: frozenset[str] = frozenset({
     "vh_數學B1_PointSlopeForm",
     "vh_數學B1_HorizontalAndVerticalLineEquations",
     "vh_數學B1_SlopeInterceptForm",
+    "vh_數學B1_InterceptForm",
 })
+
+V3_VARIATION_REQUIRED_SKILLS: frozenset[str] = frozenset()
 
 # Backward-compatible alias for existing test imports
 ALLOWED_PRODUCTION_SKILL_ID = "vh_數學B1_PointSlopeForm"
@@ -168,6 +171,33 @@ def publish_single_v3_skill_to_production(
     except Exception as exc:
         raise ValueError(f"staging_smoke_failed: {exc}") from exc
 
+    # Variation Audit Gate check before promotion
+    try:
+        from core.gencode.services.v3_variation_audit_service import audit_skill_variation
+        variation_report = audit_skill_variation(
+            skill_id=skill_key,
+            source="staging",
+            staging_root=str(staging_path),
+            conn=conn,
+        )
+    except Exception as exc:
+        raise ValueError(f"variation_audit_failed: {exc}") from exc
+
+    is_first_publish = not (project_path / "skills" / f"{skill_key}.py").exists()
+    is_variation_required = skill_key in V3_VARIATION_REQUIRED_SKILLS
+    has_static = variation_report.get("static_count", 0) > 0
+
+    if is_variation_required and has_static:
+        raise ValueError(
+            f"production_publish_blocked: variation gate failed due to static components. "
+            f"Warnings: {variation_report.get('variation_warning')}"
+        )
+
+    overall_status = "production_published"
+    if has_static:
+        if is_first_publish or not is_variation_required:
+            overall_status = "runtime_ready_with_variation_warning"
+
     promote_result = _promote_staging_to_production(staging_path, project_path, skill_key)
 
     try:
@@ -190,10 +220,16 @@ def publish_single_v3_skill_to_production(
             "promote": promote_result,
             "rollback": rollback_result,
             "timestamp": utc_timestamp(),
+            "variation_status": variation_report.get("status"),
+            "dynamic_count": variation_report.get("dynamic_count", 0),
+            "static_count": variation_report.get("static_count", 0),
+            "partially_dynamic_count": variation_report.get("partially_dynamic_count", 0),
+            "variation_warning": variation_report.get("variation_warning", ""),
+            "variation_status_by_component": variation_report.get("variation_status_by_component", {}),
         }
 
     return {
-        "status": "production_published",
+        "status": overall_status,
         "skill_id": skill_key,
         "project_root": str(project_path),
         "staging_root": str(staging_path),
@@ -204,4 +240,10 @@ def publish_single_v3_skill_to_production(
         "compile": compile_result,
         "promote": promote_result,
         "timestamp": utc_timestamp(),
+        "variation_status": variation_report.get("status"),
+        "dynamic_count": variation_report.get("dynamic_count", 0),
+        "static_count": variation_report.get("static_count", 0),
+        "partially_dynamic_count": variation_report.get("partially_dynamic_count", 0),
+        "variation_warning": variation_report.get("variation_warning", ""),
+        "variation_status_by_component": variation_report.get("variation_status_by_component", {}),
     }

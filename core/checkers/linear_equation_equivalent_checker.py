@@ -28,7 +28,19 @@ def _normalize_text(value: Any) -> str:
     for src, dst in replacements.items():
         text = text.replace(src, dst)
     text = text.replace(" ", "")
+    text = re.sub(r"([xyXY])/\(?([+-]?\d+)\)?", _normalize_variable_division, text)
+    text = text.replace("+-", "-").replace("--", "+")
     return text
+
+
+def _normalize_variable_division(match: re.Match[str]) -> str:
+    var = match.group(1).lower()
+    denominator = int(match.group(2))
+    if denominator == 0:
+        return match.group(0)
+    if denominator < 0:
+        return f"-1/{abs(denominator)}{var}"
+    return f"1/{denominator}{var}"
 
 
 def _parse_rational(token: str) -> Fraction | None:

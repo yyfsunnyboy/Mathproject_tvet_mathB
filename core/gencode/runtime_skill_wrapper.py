@@ -254,6 +254,17 @@ def check_answer(
         isinstance(payload, dict) and is_coordinate_pair_runtime_payload(payload)
     )
 
+    if checker == "multi_part_answer_checker" or family == "multi_part" or equiv == "multi_part_answer":
+        from core.checkers.multi_part_answer_checker import check_multi_part_answer
+
+        result = check_multi_part_answer(
+            user_answer,
+            correct_answer,
+            answer_contract=ac,
+            payload=payload,
+        )
+        return bool(result.get("overall_correct"))
+
     if checker == "coordinate_pair_checker" or family == "coordinate_pair" or coord_ctx:
         from core.checkers.coordinate_pair_checker import check_coordinate_pair_answer
 

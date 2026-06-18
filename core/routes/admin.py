@@ -1973,7 +1973,24 @@ def admin_skills():
                 print(f"first_item[1].display_order: {first_item[1].display_order}")
     print(f"============================")
 
-    skills = [item[0] for item in skills_data]
+    skills = []
+    for skill_info, curriculum in skills_data:
+        skills.append({
+            "skill_id": skill_info.skill_id,
+            "skill_en_name": skill_info.skill_en_name,
+            "skill_ch_name": skill_info.skill_ch_name,
+            "category": skill_info.category,
+            "description": skill_info.description,
+            "input_type": skill_info.input_type,
+            "gemini_prompt": skill_info.gemini_prompt,
+            "consecutive_correct_required": skill_info.consecutive_correct_required,
+            "is_active": skill_info.is_active,
+            "order_index": skill_info.order_index,
+            "display_order": curriculum.display_order,
+            "suggested_prompt_1": skill_info.suggested_prompt_1,
+            "suggested_prompt_2": skill_info.suggested_prompt_2,
+            "suggested_prompt_3": skill_info.suggested_prompt_3,
+        })
     gencode_status_map = {}
     root_candidates = [
         Path(current_app.root_path),
@@ -1987,7 +2004,7 @@ def admin_skills():
     skills_dir = project_root / "skills"
     drafts_dir = project_root / "reports" / "gencode_closed_loop" / "drafts"
     for s in skills:
-        sid = str(s.skill_id)
+        sid = str(s["skill_id"])
         formal_rel = f"skills/{sid}.py"
         draft_rel = f"reports/gencode_closed_loop/drafts/{sid}.py"
         formal_abs = skills_dir / f"{sid}.py"
@@ -2032,13 +2049,13 @@ def admin_skills():
             }
 
     v3_gencode_status_map = _load_skills_v3_gencode_status_map(
-        [str(s.skill_id) for s in skills]
+        [str(s["skill_id"]) for s in skills]
     )
 
     from core.gencode.v3_production_publish_service import V3_PRODUCTION_PUBLISH_ALLOWED_SKILLS
     return render_template('admin_skills.html', 
                            skills_data=skills_data,
-                           skills=skills_data,
+                           skills=skills,
                            gencode_status_map=gencode_status_map,
                            v3_gencode_status_map=v3_gencode_status_map,
                            v3_publish_allowed_skill_ids=V3_PRODUCTION_PUBLISH_ALLOWED_SKILLS,
@@ -2692,6 +2709,7 @@ def admin_run_skill_v3_publish(skill_id: str):
                 project_root=project_root,
                 staging_root=staging_root,
                 force_publish=True,
+                strict_coverage=True,
             )
         finally:
             raw_conn.close()
