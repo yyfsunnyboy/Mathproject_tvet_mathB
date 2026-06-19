@@ -8,7 +8,10 @@ configs/prompts/prompt_registry.yaml.bak
 uploads/
 *.docx
 *.pdf
-backup/
+/backup/
+/backups/
+/instance/backups/
+/reports/backups/
 temp/
 
 # 忽略轉檔產生的暫存圖片資料夾

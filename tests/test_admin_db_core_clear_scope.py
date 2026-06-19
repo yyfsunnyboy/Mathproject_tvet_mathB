@@ -5,10 +5,15 @@ import uuid
 from pathlib import Path
 
 import pytest
+from sqlalchemy import inspect, text
 
 from app import create_app
 from core.models.prompt_template import PromptTemplate
-from core.routes.admin import _clear_core_textbook_data
+from core.routes.admin import (
+    _build_full_clear_table_plan,
+    _clear_core_textbook_data,
+    _preview_core_textbook_data,
+)
 from models import SkillCurriculum, SkillInfo, SystemSetting, TextbookExample, User, db
 
 
@@ -89,6 +94,27 @@ def _mk_ex(
         detailed_solution="s",
         difficulty_level=1,
     )
+
+
+def _add_tracker(row_id: int, example_id: int, skill_id: str) -> None:
+    db.session.execute(
+        text(
+            """
+            INSERT INTO gencode_component_tracker (
+                id, textbook_example_id, skill_id, component_id, gencode_status,
+                induced_spec_payload
+            ) VALUES (:id, :example_id, :skill_id, :component_id, 'verified', :payload)
+            """
+        ),
+        {
+            "id": row_id,
+            "example_id": example_id,
+            "skill_id": skill_id,
+            "component_id": f"src_{example_id}",
+            "payload": '{"ok":true}',
+        },
+    )
+    db.session.commit()
 
 
 def _seed_scope_tree():
@@ -372,6 +398,67 @@ def test_preview_core_clear_does_not_delete_and_uses_same_filters(app_ctx):
         assert TextbookExample.query.filter_by(skill_id=sid).count() == 1
 
 
+def test_scoped_core_clear_deletes_only_matching_tracker(app_ctx):
+    app, _ = app_ctx
+    with app.app_context():
+        target = "vh_tracker_clear_target"
+        other = "vh_tracker_clear_other"
+        db.session.add_all([_mk_skill(target), _mk_skill(other)])
+        db.session.add_all([
+            _mk_curr(skill_id=target, volume="?詨飛B1", chapter="1", section="1-1"),
+            _mk_curr(skill_id=other, curriculum="general", grade=10, volume="數學A1", chapter="1", section="1-1"),
+        ])
+        target_ex = _mk_ex(skill_id=target, volume="?詨飛B1", chapter="1", section="1-1")
+        other_ex = _mk_ex(skill_id=other, volume="數學A1", chapter="1", section="1-1")
+        db.session.add_all([target_ex, other_ex])
+        db.session.commit()
+        _add_tracker(8101, int(target_ex.id), target)
+        _add_tracker(8102, int(other_ex.id), other)
+
+        stats = _clear_core_textbook_data(
+            {
+                "scope_mode": "filtered",
+                "curriculum": "vocational",
+                "grade": 10,
+                "volume": "?詨飛B1",
+                "chapter": "1",
+                "section": "1-1",
+            }
+        )
+
+        assert stats["deleted_gencode_component_tracker"] == 1
+        remaining = db.session.execute(
+            text("SELECT id, skill_id FROM gencode_component_tracker ORDER BY id")
+        ).fetchall()
+        assert [(row[0], row[1]) for row in remaining] == [(8102, other)]
+
+
+def test_scoped_core_clear_preview_counts_tracker_without_deleting(app_ctx):
+    app, _ = app_ctx
+    with app.app_context():
+        target = "vh_tracker_preview_target"
+        db.session.add(_mk_skill(target))
+        db.session.add(_mk_curr(skill_id=target, volume="?詨飛B1", chapter="1", section="1-1"))
+        target_ex = _mk_ex(skill_id=target, volume="?詨飛B1", chapter="1", section="1-1")
+        db.session.add(target_ex)
+        db.session.commit()
+        _add_tracker(8201, int(target_ex.id), target)
+
+        stats = _preview_core_textbook_data(
+            {
+                "scope_mode": "filtered",
+                "curriculum": "vocational",
+                "grade": 10,
+                "volume": "?詨飛B1",
+                "chapter": "1",
+                "section": "1-1",
+            }
+        )
+
+        assert stats["deleted_gencode_component_tracker"] == 1
+        assert db.session.execute(text("SELECT COUNT(*) FROM gencode_component_tracker")).scalar() == 1
+
+
 def test_preview_core_clear_preserves_form_state_and_filtered_mode(app_ctx):
     app, admin_id = app_ctx
     with app.app_context():
@@ -563,9 +650,12 @@ def test_full_clear_yes_delete_all_behavior_kept(app_ctx):
         db.session.add_all([
             _mk_skill(sid),
             _mk_curr(skill_id=sid, volume="數學B1", chapter="1 坐標系與函數圖形", section="1-1 數線與絕對值"),
-            _mk_ex(skill_id=sid, volume="數學B1", chapter="1 坐標系與函數圖形", section="1-1 數線與絕對值"),
         ])
+        ex = _mk_ex(skill_id=sid, volume="數學B1", chapter="1 坐標系與函數圖形", section="1-1 數線與絕對值")
+        db.session.add(ex)
         db.session.commit()
+        _add_tracker(8301, int(ex.id), sid)
+        assert db.session.execute(text("SELECT COUNT(*) FROM gencode_component_tracker")).scalar() == 1
         client = app.test_client()
         _login(client, admin_id)
         r = client.post(
@@ -574,6 +664,48 @@ def test_full_clear_yes_delete_all_behavior_kept(app_ctx):
             follow_redirects=False,
         )
         assert r.status_code in (302, 303)
+        inspector = inspect(db.engine)
+        for table_name in inspector.get_table_names():
+            if table_name.startswith("sqlite_") or table_name == "sqlite_sequence":
+                continue
+            count = db.session.execute(text(f'SELECT COUNT(*) FROM "{table_name}"')).scalar()
+            assert count == 0, table_name
+
+
+def test_full_clear_plan_deletes_tracker_before_textbook_examples():
+    plan = _build_full_clear_table_plan([
+        "skills_info",
+        "textbook_examples",
+        "gencode_component_tracker",
+        "users",
+    ])
+    assert plan.index("gencode_component_tracker") < plan.index("textbook_examples")
+
+
+def test_full_clear_preview_shows_tracker_count(app_ctx):
+    app, admin_id = app_ctx
+    with app.app_context():
+        sid = "vh_full_preview_tracker"
+        db.session.add_all([
+            _mk_skill(sid),
+            _mk_curr(skill_id=sid, volume="數學B1", chapter="1", section="1-1"),
+        ])
+        ex = _mk_ex(skill_id=sid, volume="數學B1", chapter="1", section="1-1")
+        db.session.add(ex)
+        db.session.commit()
+        _add_tracker(8401, int(ex.id), sid)
+        client = app.test_client()
+        _login(client, admin_id)
+        r = client.post(
+            "/db_maintenance",
+            data={"action": "preview_core_clear", "mode": "full"},
+            follow_redirects=True,
+        )
+        text_out = r.get_data(as_text=True)
+        assert r.status_code == 200
+        assert "Full clear preview" in text_out
+        assert "gencode_component_tracker=1" in text_out
+        assert db.session.execute(text("SELECT COUNT(*) FROM gencode_component_tracker")).scalar() == 1
 
 
 def test_template_has_no_mojibake_keywords():

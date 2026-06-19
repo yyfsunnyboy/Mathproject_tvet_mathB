@@ -81,7 +81,8 @@ from core.ai_settings import (
 )
 
 # [Fix] ?????賤?堊城?????鞈??橫???ImportError
-from core.data_importer import import_excel_to_db, CORE_TABLES, FULL_CONFIRM_TOKEN
+from core.backup.backup_registry import get_core_table_names
+from core.data_importer import import_excel_to_db, FULL_CONFIRM_TOKEN
 
 from config import Config
 # [Fix] 蝞? SkillPrerequisites ?⊥???
@@ -269,6 +270,44 @@ def _core_scope_has_any_filter(filters):
     )
 
 
+def _tracker_table_exists_for_clear() -> bool:
+    try:
+        row = db.session.execute(
+            text("SELECT name FROM sqlite_master WHERE type='table' AND name='gencode_component_tracker'")
+        ).fetchone()
+        return row is not None
+    except Exception:
+        return False
+
+
+def _count_tracker_for_example_ids(example_ids: list[int]) -> int:
+    ids = [int(x) for x in example_ids if x is not None]
+    if not ids or not _tracker_table_exists_for_clear():
+        return 0
+    placeholders = ", ".join(f":id_{idx}" for idx, _ in enumerate(ids))
+    params = {f"id_{idx}": value for idx, value in enumerate(ids)}
+    return int(
+        db.session.execute(
+            text(f"SELECT COUNT(*) FROM gencode_component_tracker WHERE textbook_example_id IN ({placeholders})"),
+            params,
+        ).scalar()
+        or 0
+    )
+
+
+def _delete_tracker_for_example_ids(example_ids: list[int]) -> int:
+    ids = [int(x) for x in example_ids if x is not None]
+    if not ids or not _tracker_table_exists_for_clear():
+        return 0
+    placeholders = ", ".join(f":id_{idx}" for idx, _ in enumerate(ids))
+    params = {f"id_{idx}": value for idx, value in enumerate(ids)}
+    result = db.session.execute(
+        text(f"DELETE FROM gencode_component_tracker WHERE textbook_example_id IN ({placeholders})"),
+        params,
+    )
+    return int(result.rowcount or 0)
+
+
 def _core_scope_summary(filters):
     mode = str((filters or {}).get("scope_mode", "all") or "all").strip().lower()
     if mode == "all":
@@ -320,6 +359,7 @@ def _clear_core_textbook_data(filters):
     target_row_ids = [r.id for r in deletable_rows]
     target_skill_ids = sorted({str(r.skill_id) for r in deletable_rows if r.skill_id})
     stats = {
+        "deleted_gencode_component_tracker": 0,
         "deleted_textbook_examples": 0,
         "deleted_skill_curriculum": 0,
         "deleted_orphan_skills_info": 0,
@@ -342,8 +382,15 @@ def _clear_core_textbook_data(filters):
     skipped_shared = sorted({str(r[0]) for r in shared_rows if r and r[0]})
     stats["skipped_shared_skill_ids"] = skipped_shared
     deletable_example_skills = [sid for sid in target_skill_ids if sid not in skipped_shared and not _is_outline_skill_id(sid)]
+    deletable_example_ids = [
+        int(row[0])
+        for row in db.session.query(TextbookExample.id)
+        .filter(TextbookExample.skill_id.in_(deletable_example_skills))
+        .all()
+    ] if deletable_example_skills else []
 
     try:
+        stats["deleted_gencode_component_tracker"] = _delete_tracker_for_example_ids(deletable_example_ids)
         if deletable_example_skills:
             stats["deleted_textbook_examples"] = (
                 TextbookExample.query.filter(TextbookExample.skill_id.in_(deletable_example_skills))
@@ -401,6 +448,7 @@ def _preview_core_textbook_data(filters):
     target_skill_ids = sorted({str(r.skill_id) for r in deletable_rows if r.skill_id})
     if not target_row_ids:
         return {
+            "deleted_gencode_component_tracker": 0,
             "deleted_textbook_examples": 0,
             "deleted_skill_curriculum": 0,
             "deleted_orphan_skills_info": 0,
@@ -419,6 +467,12 @@ def _preview_core_textbook_data(filters):
     )
     skipped_shared = sorted({str(r[0]) for r in shared_rows if r and r[0]})
     deletable_example_skills = [sid for sid in target_skill_ids if sid not in skipped_shared and not _is_outline_skill_id(sid)]
+    deletable_example_ids = [
+        int(row[0])
+        for row in db.session.query(TextbookExample.id)
+        .filter(TextbookExample.skill_id.in_(deletable_example_skills))
+        .all()
+    ] if deletable_example_skills else []
     preview_deleted_examples = 0
     if deletable_example_skills:
         preview_deleted_examples = (
@@ -446,6 +500,7 @@ def _preview_core_textbook_data(filters):
         if not has_examples:
             preview_deleted_orphan_skills += 1
     return {
+        "deleted_gencode_component_tracker": _count_tracker_for_example_ids(deletable_example_ids),
         "deleted_textbook_examples": preview_deleted_examples,
         "deleted_skill_curriculum": preview_deleted_curriculum,
         "deleted_orphan_skills_info": preview_deleted_orphan_skills,
@@ -478,6 +533,82 @@ def _delete_sql(sql: str, params: dict | None = None) -> int:
     return int(result.rowcount or 0)
 
 
+def _quote_sqlite_identifier(name: str) -> str:
+    return '"' + str(name).replace('"', '""') + '"'
+
+
+def _full_clear_table_priority(table_name: str) -> tuple[int, str]:
+    priorities = {
+        "gencode_component_tracker": 0,
+        "textbook_examples": 10,
+        "skill_family_bridge": 20,
+        "skill_prerequisites": 20,
+        "skill_curriculum": 30,
+        "skills_info": 40,
+    }
+    return (priorities.get(str(table_name), 100), str(table_name))
+
+
+def _build_full_clear_table_plan(table_names: list[str]) -> list[str]:
+    system_tables = {"sqlite_sequence"}
+    clear_tables = [
+        str(table_name)
+        for table_name in table_names
+        if str(table_name) not in system_tables and not str(table_name).startswith("sqlite_")
+    ]
+    return sorted(clear_tables, key=_full_clear_table_priority)
+
+
+def _run_full_clear(*, execute: bool, table_names: list[str]) -> dict:
+    clear_tables = _build_full_clear_table_plan(table_names)
+    counts: dict[str, int] = {}
+    failed_tables: list[tuple[str, str]] = []
+
+    for table_name in clear_tables:
+        counts[table_name] = _count_sql(f"SELECT COUNT(*) FROM {_quote_sqlite_identifier(table_name)}")
+
+    if not execute:
+        return {
+            "counts": counts,
+            "failed_tables": failed_tables,
+            "cleared_table_count": 0,
+            "planned_tables": clear_tables,
+            "gencode_component_tracker": counts.get("gencode_component_tracker", 0),
+        }
+
+    try:
+        db.session.execute(text("PRAGMA foreign_keys = OFF"))
+        for table_name in clear_tables:
+            try:
+                _delete_sql(f"DELETE FROM {_quote_sqlite_identifier(table_name)}")
+                current_app.logger.info(f"INFO: clearing full table {table_name}")
+            except Exception as e:
+                failed_tables.append((table_name, str(e)))
+                current_app.logger.warning(f"FULL_CLEAR_FAIL table={table_name} error={e}")
+        if failed_tables:
+            raise RuntimeError(f"full clear failed for {len(failed_tables)} table(s)")
+        if "sqlite_sequence" in table_names:
+            db.session.execute(text("DELETE FROM sqlite_sequence"))
+        db.session.commit()
+    except Exception:
+        db.session.rollback()
+        raise
+    finally:
+        try:
+            db.session.execute(text("PRAGMA foreign_keys = ON"))
+            db.session.commit()
+        except Exception:
+            db.session.rollback()
+
+    return {
+        "counts": counts,
+        "failed_tables": failed_tables,
+        "cleared_table_count": len(clear_tables),
+        "planned_tables": clear_tables,
+        "gencode_component_tracker": counts.get("gencode_component_tracker", 0),
+    }
+
+
 def _build_like_conditions(columns: set[str], field_names: list[str], alias: str = "") -> list[str]:
     out = []
     for f in field_names:
@@ -492,6 +623,7 @@ def _hard_clear_vocational_math_b_core(*, execute: bool = False) -> dict:
     params = {"vh_prefix": VOCATIONAL_MATH_B_PREFIX, "outline_prefix": VOCATIONAL_MATH_B_OUTLINE_PREFIX}
     deleted: dict[str, int] = {}
     missing_columns: dict[str, list[str]] = {}
+    core_clear_tables = set(get_core_table_names(include="clear"))
 
     dependent_tables = [
         "progress",
@@ -513,6 +645,10 @@ def _hard_clear_vocational_math_b_core(*, execute: bool = False) -> dict:
     skill_ref_fields = ["skill_id", "source_skill_id", "target_skill_id", "current_skill_id", "next_skill_id", "predicted_skill_id"]
 
     plan: list[tuple[str, str]] = []
+    textbook_math_b_where = (
+        "source_curriculum = 'vocational' OR source_volume LIKE '?詨飛B%' "
+        "OR skill_id LIKE :vh_prefix OR skill_id LIKE :outline_prefix"
+    )
 
     for table_name in dependent_tables:
         if not _table_exists(table_name):
@@ -529,35 +665,44 @@ def _hard_clear_vocational_math_b_core(*, execute: bool = False) -> dict:
             continue
         plan.append((table_name, " OR ".join(conds)))
 
-    if _table_exists("textbook_examples"):
+    if "gencode_component_tracker" in core_clear_tables and _table_exists("gencode_component_tracker") and _table_exists("textbook_examples"):
+        missing_columns["gencode_component_tracker"] = [
+            x for x in ["textbook_example_id", "skill_id", "component_id"] if x not in _columns_of("gencode_component_tracker")
+        ]
+        plan.append((
+            "gencode_component_tracker",
+            f"textbook_example_id IN (SELECT id FROM textbook_examples WHERE {textbook_math_b_where})",
+        ))
+
+    if "textbook_examples" in core_clear_tables and _table_exists("textbook_examples"):
         missing_columns["textbook_examples"] = [x for x in ["source_curriculum", "source_volume", "skill_id"] if x not in _columns_of("textbook_examples")]
         plan.append((
             "textbook_examples",
             "source_curriculum = 'vocational' OR source_volume LIKE '數學B%' OR skill_id LIKE :vh_prefix OR skill_id LIKE :outline_prefix",
         ))
 
-    if _table_exists("skill_prerequisites"):
+    if "skill_prerequisites" in core_clear_tables and _table_exists("skill_prerequisites"):
         missing_columns["skill_prerequisites"] = [x for x in ["skill_id", "prerequisite_id"] if x not in _columns_of("skill_prerequisites")]
         plan.append((
             "skill_prerequisites",
             "skill_id LIKE :vh_prefix OR prerequisite_id LIKE :vh_prefix OR skill_id LIKE :outline_prefix OR prerequisite_id LIKE :outline_prefix",
         ))
 
-    if _table_exists("skill_family_bridge"):
+    if "skill_family_bridge" in core_clear_tables and _table_exists("skill_family_bridge"):
         cols = _columns_of("skill_family_bridge")
         missing_columns["skill_family_bridge"] = [x for x in ["skill_id", "source_skill_id", "target_skill_id"] if x not in cols]
         bridge_conds = _build_like_conditions(cols, ["skill_id", "source_skill_id", "target_skill_id"])
         if bridge_conds:
             plan.append(("skill_family_bridge", " OR ".join(bridge_conds)))
 
-    if _table_exists("skill_curriculum"):
+    if "skill_curriculum" in core_clear_tables and _table_exists("skill_curriculum"):
         missing_columns["skill_curriculum"] = [x for x in ["curriculum", "volume", "skill_id"] if x not in _columns_of("skill_curriculum")]
         plan.append((
             "skill_curriculum",
             "curriculum = 'vocational' OR volume LIKE '數學B%' OR skill_id LIKE :vh_prefix OR skill_id LIKE :outline_prefix",
         ))
 
-    if _table_exists("skills_info"):
+    if "skills_info" in core_clear_tables and _table_exists("skills_info"):
         missing_columns["skills_info"] = [x for x in ["skill_id"] if x not in _columns_of("skills_info")]
         plan.append((
             "skills_info",
@@ -1347,15 +1492,16 @@ def db_maintenance():
 
         if action == 'export_db':
             output = io.BytesIO()
-            writer = pd.ExcelWriter(output, engine='xlsxwriter')
+            writer = pd.ExcelWriter(output, engine='openpyxl')
             inspector = inspect(db.engine)
             detected_tables = inspector.get_table_names()
-            current_app.logger.info(f"INFO: CORE_TABLES_EXPORT = {list(CORE_TABLES)}")
+            core_export_tables = get_core_table_names(include="export")
+            current_app.logger.info(f"INFO: CORE_TABLES_EXPORT = {list(core_export_tables)}")
             # core ?????頛魂??蝞??閰??萄???頦???inspector ?荒???穿???謘曇????
             if mode == 'core':
-                export_tables = list(CORE_TABLES)
+                export_tables = list(core_export_tables)
             else:
-                export_tables = list(dict.fromkeys(CORE_TABLES + detected_tables))
+                export_tables = list(dict.fromkeys(core_export_tables + detected_tables))
 
             for table in export_tables:
                 try:
@@ -1397,42 +1543,28 @@ def db_maintenance():
                 if confirm_full_clear != FULL_CONFIRM_TOKEN:
                     flash('Full clear requires confirmation token YES_DELETE_ALL.', 'danger')
                     return redirect(url_for('core.db_maintenance'))
-                system_tables = {"sqlite_sequence"}
-                clear_tables = [t for t in all_tables if t not in system_tables and not str(t).startswith("sqlite_")]
-                failed_tables = []
                 try:
-                    # SQLite frequently enforces FK ordering; disable checks during full wipe.
-                    db.session.execute(text("PRAGMA foreign_keys = OFF"))
-                    for table_name_to_clear in clear_tables:
-                        try:
-                            db.session.execute(text(f"DELETE FROM \"{table_name_to_clear}\""))
-                            current_app.logger.info(f"INFO: clearing full table {table_name_to_clear}")
-                        except Exception as e:
-                            failed_tables.append((table_name_to_clear, str(e)))
-                            current_app.logger.warning(
-                                f"FULL_CLEAR_FAIL table={table_name_to_clear} error={e}"
-                            )
-                    # Reset autoincrement counters when present.
-                    if "sqlite_sequence" in all_tables:
-                        db.session.execute(text("DELETE FROM sqlite_sequence"))
-                    db.session.commit()
+                    full_clear_result = _run_full_clear(execute=True, table_names=all_tables)
                 except Exception:
-                    db.session.rollback()
-                    raise
-                finally:
-                    try:
-                        db.session.execute(text("PRAGMA foreign_keys = ON"))
-                        db.session.commit()
-                    except Exception:
-                        db.session.rollback()
+                    current_app.logger.exception("Full clear failed")
+                    full_clear_result = {
+                        "failed_tables": [("full_clear", traceback.format_exc())],
+                        "cleared_table_count": 0,
+                        "counts": {},
+                        "planned_tables": [],
+                        "gencode_component_tracker": 0,
+                    }
 
+                failed_tables = full_clear_result.get("failed_tables", [])
                 if failed_tables:
                     job_id = put_large_result_in_server_store(
                         {
                             "action": "clear_all_data",
                             "mode": "full",
                             "failed_tables": failed_tables,
-                            "cleared_table_count": len(clear_tables) - len(failed_tables),
+                            "cleared_table_count": full_clear_result.get("cleared_table_count", 0),
+                            "counts": full_clear_result.get("counts", {}),
+                            "planned_tables": full_clear_result.get("planned_tables", []),
                         },
                         kind="maintenance",
                     )
@@ -1442,9 +1574,14 @@ def db_maintenance():
                         "danger",
                     )
                 else:
-                    flash(f"資料庫已完成 full 清空 ({len(clear_tables)} tables)", "warning")
+                    flash(
+                        "Full clear completed: "
+                        f"tables={full_clear_result.get('cleared_table_count', 0)}, "
+                        f"gencode_component_tracker={full_clear_result.get('gencode_component_tracker', 0)}",
+                        "warning",
+                    )
             else:
-                if core_scope_filters.get("scope_mode") != "all":
+                if False and core_scope_filters.get("scope_mode") != "all":
                     flash("高職數學 B 硬清除僅支援『全部教材資料』範圍。", "warning")
                     return render_template(
                         'db_maintenance.html',
@@ -1454,7 +1591,7 @@ def db_maintenance():
                         core_scope_summary_text=_core_scope_summary(core_scope_filters),
                         core_clear_confirm_token=CORE_CLEAR_CONFIRM_TOKEN,
                     )
-                if core_clear_confirm != CORE_CLEAR_CONFIRM_TOKEN:
+                if False and core_scope_filters.get("scope_mode") == "all" and core_clear_confirm != CORE_CLEAR_CONFIRM_TOKEN:
                     flash(f"請輸入確認字串 {CORE_CLEAR_CONFIRM_TOKEN} 才能執行清除。", "danger")
                     return render_template(
                         'db_maintenance.html',
@@ -1466,7 +1603,7 @@ def db_maintenance():
                     )
                 if core_scope_filters.get("scope_mode") == "filtered" and not _core_scope_has_any_filter(core_scope_filters):
                     flash(
-                        "Filtered mode requires at least one filter; otherwise switch to all scope.",
+                        "filtered 模式未選擇任何範圍，已取消清除",
                         "danger",
                     )
                     return render_template(
@@ -1477,14 +1614,26 @@ def db_maintenance():
                         core_scope_summary_text=_core_scope_summary(core_scope_filters),
                         core_clear_confirm_token=CORE_CLEAR_CONFIRM_TOKEN,
                     )
-                result = _hard_clear_vocational_math_b_core(execute=True)
-                deleted = result.get("deleted", {})
-                remaining = _vocational_math_b_remaining_check()
-                all_clean = all(int(v or 0) == 0 for v in remaining.values())
+                if core_scope_filters.get("scope_mode") == "filtered":
+                    deleted = _clear_core_textbook_data(core_scope_filters)
+                    all_clean = True
+                else:
+                    result = _hard_clear_vocational_math_b_core(execute=True)
+                    deleted = result.get("deleted", {})
+                    remaining = _vocational_math_b_remaining_check()
+                    all_clean = all(int(v or 0) == 0 for v in remaining.values())
                 if all_clean:
                     flash(
+                        "教材 core 清除完成："
+                        f"{_core_scope_summary(core_scope_filters)}, "
+                        f"gencode_component_tracker={deleted.get('gencode_component_tracker', deleted.get('deleted_gencode_component_tracker', 0))}, "
+                        f"preserved_outline_curriculum={deleted.get('preserved_outline_curriculum', 0)}",
+                        "success",
+                    )
+                    flash(
                         "高職數學 B 核心教材資料已清空："
-                        f"textbook_examples={deleted.get('textbook_examples', 0)}, "
+                        f"gencode_component_tracker={deleted.get('gencode_component_tracker', deleted.get('deleted_gencode_component_tracker', 0))}, "
+                        f"textbook_examples={deleted.get('textbook_examples', deleted.get('deleted_textbook_examples', 0))}, "
                         f"skills_info={deleted.get('skills_info', 0)}, "
                         f"skill_curriculum={deleted.get('skill_curriculum', 0)}, "
                         f"skill_prerequisites={deleted.get('skill_prerequisites', 0)}, "
@@ -1494,7 +1643,27 @@ def db_maintenance():
                 else:
                     flash(f"高職數學 B 清除後仍有殘留：{remaining}", "danger")
         elif action == 'preview_core_clear':
-            if core_scope_filters.get("scope_mode") != "all":
+            if mode == "full":
+                full_preview = _run_full_clear(
+                    execute=False,
+                    table_names=inspect(db.engine).get_table_names(),
+                )
+                flash(
+                    "Full clear preview: "
+                    f"tables={len(full_preview.get('planned_tables', []))}, "
+                    f"gencode_component_tracker={full_preview.get('gencode_component_tracker', 0)}",
+                    "warning",
+                )
+                return render_template(
+                    'db_maintenance.html',
+                    tables=sorted(inspect(db.engine).get_table_names()),
+                    core_scope_options=core_scope_options,
+                    core_scope_form_state=core_scope_form_state,
+                    core_scope_summary_text=_core_scope_summary(core_scope_filters),
+                    core_preview_stats=full_preview.get("counts", {}),
+                    core_clear_confirm_token=CORE_CLEAR_CONFIRM_TOKEN,
+                )
+            if False and core_scope_filters.get("scope_mode") != "all":
                 flash("高職數學 B 硬清除預覽僅支援『全部教材資料』範圍。", "warning")
                 return render_template(
                     'db_maintenance.html',
@@ -1506,7 +1675,7 @@ def db_maintenance():
                 )
             if core_scope_filters.get("scope_mode") == "filtered" and not _core_scope_has_any_filter(core_scope_filters):
                 flash(
-                    "Filtered mode requires at least one filter for preview.",
+                    "filtered 模式未選擇任何範圍，已取消預覽",
                     "warning",
                 )
                 return render_template(
@@ -1517,14 +1686,19 @@ def db_maintenance():
                     core_scope_summary_text=_core_scope_summary(core_scope_filters),
                     core_clear_confirm_token=CORE_CLEAR_CONFIRM_TOKEN,
                 )
-            result = _hard_clear_vocational_math_b_core(execute=False)
-            deleted = result.get("deleted", {})
-            remaining = _vocational_math_b_remaining_check()
-            all_clean_before = all(int(v or 0) == 0 for v in remaining.values())
+            if core_scope_filters.get("scope_mode") == "filtered":
+                deleted = _preview_core_textbook_data(core_scope_filters)
+                all_clean_before = False
+            else:
+                result = _hard_clear_vocational_math_b_core(execute=False)
+                deleted = result.get("deleted", {})
+                remaining = _vocational_math_b_remaining_check()
+                all_clean_before = all(int(v or 0) == 0 for v in remaining.values())
             flash(
                 (
                     "高職數學 B 硬清除預覽："
-                    f"textbook_examples={deleted.get('textbook_examples', 0)}, "
+                    f"gencode_component_tracker={deleted.get('gencode_component_tracker', deleted.get('deleted_gencode_component_tracker', 0))}, "
+                    f"textbook_examples={deleted.get('textbook_examples', deleted.get('deleted_textbook_examples', 0))}, "
                     f"skills_info={deleted.get('skills_info', 0)}, "
                     f"skill_curriculum={deleted.get('skill_curriculum', 0)}, "
                     f"skill_prerequisites={deleted.get('skill_prerequisites', 0)}, "

@@ -5,8 +5,15 @@ import traceback
 from datetime import datetime, timedelta
 
 import pandas as pd
+from sqlalchemy import text
 from sqlalchemy import UniqueConstraint
 
+from core.backup.backup_registry import (
+    get_core_optional_table_names,
+    get_core_required_table_names,
+    get_core_table_names,
+    get_table_spec,
+)
 from models import (
     db,
     SkillInfo,
@@ -18,13 +25,20 @@ from models import (
 
 logger = logging.getLogger(__name__)
 
-CORE_TABLES = [
-    "skills_info",
-    "skill_curriculum",
-    "textbook_examples",
-    "skill_family_bridge",
-    "skill_prerequisites",
-]
+CORE_TABLES = get_core_table_names(include="export")
+
+TRACKER_TABLE = "gencode_component_tracker"
+TRACKER_COLUMNS = (
+    "id",
+    "textbook_example_id",
+    "skill_id",
+    "component_id",
+    "gencode_status",
+    "induced_spec_payload",
+    "gencode_error_log",
+    "created_at",
+    "updated_at",
+)
 
 SYSTEM_TABLES = [
     "prompt_templates",
@@ -242,6 +256,87 @@ def _match_model_for_sheet(sheet_name_clean, mapping):
     return None, None
 
 
+def _table_exists(table_name):
+    row = db.session.execute(
+        text("SELECT name FROM sqlite_master WHERE type='table' AND name=:name"),
+        {"name": table_name},
+    ).fetchone()
+    return row is not None
+
+
+def _raw_sql_table_columns(table_name):
+    rows = db.session.execute(text(f'PRAGMA table_info("{table_name}")')).fetchall()
+    return [str(row[1]) for row in rows]
+
+
+def _normalize_raw_sql_value(value):
+    if _is_blank_value(value):
+        return None
+    if isinstance(value, bool):
+        return int(value)
+    if isinstance(value, datetime):
+        return value.strftime("%Y-%m-%d %H:%M:%S")
+    return value
+
+
+def _import_tracker_sheet(df):
+    if not _table_exists(TRACKER_TABLE):
+        from core.gencode.schema.gencode_component_tracker_inspection import (
+            ensure_gencode_component_tracker_table,
+        )
+
+        raw_conn = db.engine.raw_connection()
+        try:
+            ensure_gencode_component_tracker_table(raw_conn)
+        finally:
+            raw_conn.close()
+
+    db_columns = set(_raw_sql_table_columns(TRACKER_TABLE))
+    allowed_columns = [col for col in TRACKER_COLUMNS if col in db_columns]
+    sheet_columns = {str(col).strip() for col in df.columns}
+    unexpected = sorted(sheet_columns - set(TRACKER_COLUMNS))
+    if unexpected:
+        raise ValueError(f"tracker sheet has unsupported column(s): {', '.join(unexpected)}")
+
+    source_rows = len(df)
+    imported_count = 0
+    skipped_count = 0
+    for _index, row in df.where(pd.notnull(df), None).iterrows():
+        data = {
+            col: _normalize_raw_sql_value(row[col])
+            for col in allowed_columns
+            if col in row and not _is_blank_value(row[col])
+        }
+        if not data:
+            skipped_count += 1
+            continue
+        if "id" not in data:
+            raise ValueError("tracker restore requires id column to preserve identity")
+        if "textbook_example_id" not in data or "skill_id" not in data or "component_id" not in data:
+            raise ValueError("tracker restore requires textbook_example_id, skill_id, component_id")
+        if "gencode_status" not in data:
+            data["gencode_status"] = "pending"
+
+        columns = [col for col in allowed_columns if col in data]
+        assignments = [col for col in columns if col != "id"]
+        insert_cols = ", ".join(f'"{col}"' for col in columns)
+        placeholders = ", ".join(f":{col}" for col in columns)
+        update_sql = ", ".join(f'"{col}"=excluded."{col}"' for col in assignments)
+        sql = (
+            f'INSERT INTO "{TRACKER_TABLE}" ({insert_cols}) VALUES ({placeholders}) '
+            f'ON CONFLICT(id) DO UPDATE SET {update_sql}'
+        )
+        db.session.execute(text(sql), data)
+        imported_count += 1
+
+    return {
+        "source_rows": source_rows,
+        "imported": imported_count,
+        "failed": 0,
+        "skipped": skipped_count,
+    }
+
+
 def _extract_identity_hint(data):
     for key in ("skill_id", "id", "example_id"):
         if key in data and data.get(key) is not None:
@@ -306,6 +401,83 @@ def _validate_core_restore_after_import(xls, row_stats, strict_mode=False):
                 f"orphan: skill_id={row.skill_id!r}, volume={row.volume!r}, chapter={row.chapter!r}, section={row.section!r}"
             )
 
+    tracker_sheet_present = TRACKER_TABLE in {str(name).strip() for name in xls.keys()}
+    if not _table_exists(TRACKER_TABLE):
+        ok = False
+        fatal_error_count += 1
+        lines.append("FATAL: gencode_component_tracker table not found.")
+    elif not tracker_sheet_present:
+        warning_count += 1
+        lines.append("WARNING: legacy core workbook has no gencode_component_tracker sheet; V3 tracker restore was not performed.")
+    else:
+        tracker_db_count = int(
+            db.session.execute(text(f'SELECT COUNT(*) FROM "{TRACKER_TABLE}"')).scalar() or 0
+        )
+        tracker_source_rows = int(row_stats.get(TRACKER_TABLE, {}).get("source_rows", 0) or 0)
+        tracker_imported = int(row_stats.get(TRACKER_TABLE, {}).get("imported", 0) or 0)
+        lines.append(
+            f"tracker restore: source_rows={tracker_source_rows}, imported={tracker_imported}, db_count={tracker_db_count}"
+        )
+        if tracker_source_rows > 0 and tracker_imported < tracker_source_rows:
+            ok = False
+            fatal_error_count += 1
+            lines.append("FATAL: gencode_component_tracker restore incomplete.")
+
+        tracker_orphans = db.session.execute(
+            text(
+                """
+                SELECT COUNT(*)
+                FROM gencode_component_tracker g
+                LEFT JOIN textbook_examples t ON t.id = g.textbook_example_id
+                WHERE t.id IS NULL
+                """
+            )
+        ).scalar()
+        tracker_orphans = int(tracker_orphans or 0)
+        lines.append(f"orphan gencode_component_tracker rows: {tracker_orphans}")
+        if tracker_orphans:
+            warning_count += tracker_orphans
+            if strict_mode:
+                ok = False
+                fatal_error_count += 1
+                lines.append("FATAL: strict mode treats orphan tracker rows as fatal.")
+
+        tracker_skill_mismatch = db.session.execute(
+            text(
+                """
+                SELECT COUNT(*)
+                FROM gencode_component_tracker g
+                JOIN textbook_examples t ON t.id = g.textbook_example_id
+                LEFT JOIN skills_info s ON s.skill_id = g.skill_id
+                WHERE t.skill_id != g.skill_id OR s.skill_id IS NULL
+                """
+            )
+        ).scalar()
+        tracker_skill_mismatch = int(tracker_skill_mismatch or 0)
+        lines.append(f"tracker skill mismatch rows: {tracker_skill_mismatch}")
+        if tracker_skill_mismatch:
+            ok = False
+            fatal_error_count += tracker_skill_mismatch
+
+        tracker_duplicate_skill_component = db.session.execute(
+            text(
+                """
+                SELECT COUNT(*)
+                FROM (
+                    SELECT skill_id, component_id, COUNT(*) AS c
+                    FROM gencode_component_tracker
+                    GROUP BY skill_id, component_id
+                    HAVING c > 1
+                ) dup
+                """
+            )
+        ).scalar()
+        tracker_duplicate_skill_component = int(tracker_duplicate_skill_component or 0)
+        lines.append(f"duplicate tracker (skill_id, component_id) groups: {tracker_duplicate_skill_component}")
+        if tracker_duplicate_skill_component:
+            ok = False
+            fatal_error_count += tracker_duplicate_skill_component
+
     for table in ("skills_info", "skill_curriculum", "textbook_examples"):
         st = row_stats.get(table, {})
         if st.get("failed", 0) > 0:
@@ -368,7 +540,7 @@ def import_excel_to_db(filepath, mode="core", confirm_full_clear="", strict_mode
         if mode == "full" and str(confirm_full_clear or "").strip() != FULL_CONFIRM_TOKEN:
             return False, "full 模式需要 confirm token: YES_DELETE_ALL"
 
-        allowed_tables = set(CORE_TABLES) if mode == "core" else None
+        allowed_tables = set(get_core_table_names(include="import")) if mode == "core" else None
         results = []
         row_stats = {}
         row_errors = {}
@@ -377,8 +549,8 @@ def import_excel_to_db(filepath, mode="core", confirm_full_clear="", strict_mode
         results.append(f"import mode: {mode}")
 
         excel_sheet_names = {name.strip() for name in xls.keys()}
-        required_core = {"skills_info", "skill_curriculum", "textbook_examples"}
-        optional_core = {"skill_family_bridge", "skill_prerequisites"}
+        required_core = set(get_core_required_table_names())
+        optional_core = set(get_core_optional_table_names())
 
         if mode == "core":
             missing_required = sorted(required_core - excel_sheet_names)
@@ -389,7 +561,10 @@ def import_excel_to_db(filepath, mode="core", confirm_full_clear="", strict_mode
                 results.append(f"⚠️ optional core sheet missing: {missing_name}")
 
             for sheet_name_clean in sorted(excel_sheet_names & (required_core | optional_core)):
-                table_name, model = _match_model_for_sheet(sheet_name_clean, mapping)
+                spec = get_table_spec(sheet_name_clean)
+                if spec and spec.access_mode == "raw_sql":
+                    continue
+                _table_name, model = _match_model_for_sheet(sheet_name_clean, mapping)
                 if not model:
                     return False, "\n".join(results)
 
@@ -397,6 +572,42 @@ def import_excel_to_db(filepath, mode="core", confirm_full_clear="", strict_mode
             sheet_name_clean = sheet_name.strip()
             if allowed_tables is not None and sheet_name_clean not in allowed_tables:
                 results.append(f"INFO: ignored non-core sheet {sheet_name_clean}")
+                continue
+
+            spec = get_table_spec(sheet_name_clean)
+            if mode == "core" and spec and spec.access_mode == "raw_sql":
+                if sheet_name_clean != TRACKER_TABLE:
+                    db.session.rollback()
+                    _append_import_final_status(
+                        results,
+                        row_stats=row_stats,
+                        fatal_error_count=1,
+                        fatal_reason="unsupported_raw_sql_sheet",
+                    )
+                    return False, "\n".join(results)
+                try:
+                    row_stats[TRACKER_TABLE] = _import_tracker_sheet(df)
+                    results.append(
+                        f"Table {TRACKER_TABLE}: source_rows={row_stats[TRACKER_TABLE]['source_rows']}, "
+                        f"imported={row_stats[TRACKER_TABLE]['imported']}, failed=0, "
+                        f"skipped={row_stats[TRACKER_TABLE]['skipped']}"
+                    )
+                except Exception as e:
+                    db.session.rollback()
+                    row_stats[TRACKER_TABLE] = {
+                        "source_rows": len(df),
+                        "imported": 0,
+                        "failed": len(df),
+                        "skipped": 0,
+                    }
+                    results.append(f"tracker row_error error={e}")
+                    _append_import_final_status(
+                        results,
+                        row_stats=row_stats,
+                        fatal_error_count=1,
+                        fatal_reason="tracker_restore_failed",
+                    )
+                    return False, "\n".join(results)
                 continue
 
             table_name, model = _match_model_for_sheet(sheet_name_clean, mapping)
@@ -452,7 +663,10 @@ def import_excel_to_db(filepath, mode="core", confirm_full_clear="", strict_mode
                         _apply_data_to_instance(instance, data)
                         db.session.add(instance)
 
-                    db.session.commit()
+                    if mode == "full":
+                        db.session.commit()
+                    else:
+                        db.session.flush()
                     imported_count += 1
                 except Exception as e:
                     db.session.rollback()
@@ -465,6 +679,26 @@ def import_excel_to_db(filepath, mode="core", confirm_full_clear="", strict_mode
                             "error": str(e),
                         }
                     )
+                    if mode == "core":
+                        row_stats[table_name] = {
+                            "source_rows": source_rows,
+                            "imported": imported_count,
+                            "failed": failed_count,
+                            "skipped": skipped_count,
+                        }
+                        results.append(
+                            f"Table {table_name}: source_rows={source_rows}, imported={imported_count}, failed={failed_count}, skipped={skipped_count}"
+                        )
+                        results.append(
+                            f"row_error sheet={sheet_name} row={int(index)} {_extract_identity_hint(data)} error={e}"
+                        )
+                        _append_import_final_status(
+                            results,
+                            row_stats=row_stats,
+                            fatal_error_count=1,
+                            fatal_reason="core_row_restore_failed",
+                        )
+                        return False, "\n".join(results)
 
             row_stats[table_name] = {
                 "source_rows": source_rows,
@@ -489,11 +723,13 @@ def import_excel_to_db(filepath, mode="core", confirm_full_clear="", strict_mode
                 for t in ("skills_info", "skill_curriculum", "textbook_examples")
             )
             if core_failed_rows:
+                db.session.rollback()
                 _append_import_final_status(results, row_stats=row_stats)
                 return False, "\n".join(results)
 
             si_stat = row_stats.get("skills_info", {})
             if si_stat and si_stat.get("imported", 0) < si_stat.get("source_rows", 0):
+                db.session.rollback()
                 _append_import_final_status(
                     results,
                     row_stats=row_stats,
@@ -512,6 +748,7 @@ def import_excel_to_db(filepath, mode="core", confirm_full_clear="", strict_mode
             fatal_error_count = int(validation_meta.get("fatal_error_count", 0) or 0)
             orphan_count = int(validation_meta.get("orphan_skill_curriculum_count", 0) or 0)
             if not ok:
+                db.session.rollback()
                 _append_import_final_status(
                     results,
                     row_stats=row_stats,
@@ -528,6 +765,7 @@ def import_excel_to_db(filepath, mode="core", confirm_full_clear="", strict_mode
                 fatal_error_count=fatal_error_count,
                 orphan_skill_curriculum_count=orphan_count,
             )
+            db.session.commit()
         else:
             _append_import_final_status(results, row_stats=row_stats)
 
