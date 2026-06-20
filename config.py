@@ -10,6 +10,7 @@
 =============================================================================
 """
 import os
+from pathlib import Path
 
 # 專案根目錄絕對路徑（目前檔案所在資料夾）
 basedir = os.path.abspath(os.path.dirname(__file__))
@@ -43,6 +44,15 @@ class Config:
     
     # 確保上傳資料夾存在
     os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+
+    GENCODE_V3_PUBLISH_PROJECT_ROOT = os.environ.get(
+        "GENCODE_V3_PUBLISH_PROJECT_ROOT",
+        basedir,
+    )
+    GENCODE_V3_PUBLISH_STAGING_ROOT = os.environ.get(
+        "GENCODE_V3_PUBLISH_STAGING_ROOT",
+        os.path.join(basedir, "runtime", "v3_publish_staging"),
+    )
 
     # ==========================================
     # 3. 安全性設定

@@ -669,7 +669,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <!-- Legacy test anchors: V3 批次生成元件; 🚀 V3 發布; 🚀 正式發布 V3; gencode.get('status') == 'verified'. Runtime publish gate uses allowlist + publish_ready. -->
+                    <!-- Teacher-facing V3 controls: regenerate questions and update to student side. -->
                     {% for skill in skills %}
                     <tr>
                         <td>{{ skill.display_order }}</td>
@@ -689,47 +689,38 @@
                         <td class="v3-cell">
                             {% set gencode = (v3_gencode_status_map or {}).get(skill.skill_id, {}) %}
                             {% set total_examples = gencode.get('total_examples', 0) | int %}
-                            {% set verified_count = gencode.get('verified_count', 0) | int %}
+                            {% set verified_count = gencode.get('available_count', gencode.get('verified_count', 0)) | int %}
                             {% set failed_count = gencode.get('failed_count', 0) | int %}
                             {% set unsupported_count = gencode.get('unsupported_count', 0) | int %}
                             {% set tracker_count = gencode.get('component_count', 0) | int %}
                             {% set production_wrapper_exists = gencode.get('production_wrapper_exists') %}
                             {% set v3_package_exists = gencode.get('v3_package_exists') %}
-                            {% if total_examples > 0 and failed_count >= total_examples and tracker_count >= total_examples %}
-                            {% set v3_light = '🔴' %}
-                            {% set v3_label = 'failed' %}
-                            {% elif production_wrapper_exists and v3_package_exists and total_examples > 0 and verified_count == total_examples %}
-                            {% set v3_light = '🟢' %}
-                            {% set v3_label = verified_count ~ '/' ~ total_examples %}
-                            {% elif tracker_count > 0 or verified_count > 0 or failed_count > 0 or unsupported_count > 0 or gencode.get('dryrun_component_exists') or gencode.get('production_component_exists') %}
-                            {% set v3_light = '🟡' %}
-                            {% set v3_label = verified_count ~ '/' ~ total_examples %}
-                            {% else %}
-                            {% set v3_light = '⚪' %}
-                            {% set v3_label = 'none' %}
-                            {% endif %}
-                            {% set v3_status_map = {
-                                'none': '尚未生成',
-                                'pending': '等待處理',
-                                'failed': '失敗',
-                                'draft_written': '草稿已產生',
-                                'verified': '驗證通過',
-                                'runtime_ready': '可執行',
-                                'published': '已發布'
-                            } %}
+                            {% set published_count = gencode.get('published_count', 0) | int %}
+                            {% set not_packaged_count = gencode.get('generated_not_packaged_count', 0) | int %}
+                            {% set teacher_status = gencode.get('teacher_status', {}) %}
+                            {% set v3_light = teacher_status.get('icon', '⚪') %}
+                            {% set v3_label = teacher_status.get('label', '尚未生成') %}
                             <button type="button"
-                                class="v3-badge"
-                                title="表示此技能已建立的 V3 component 數量 / 此技能對應的課本例題數量；不必然代表全部已正式發布。&#10;&#10;狀態分布：&#10;- 已驗證: {{ verified_count }} / {{ total_examples }}&#10;- 失敗: {{ failed_count }}&#10;- 不支援: {{ unsupported_count }}&#10;- 總例題數: {{ total_examples }}&#10;&#10;更新時間: {{ gencode.get('updated_at') or '-' }}"
+                                class="v3-badge {{ teacher_status.get('badge_class', '') }}"
+                                title="目前狀態: {{ v3_label }}&#10;可用題目: {{ verified_count }}/{{ total_examples }}&#10;尚未加入技能包: {{ not_packaged_count }}&#10;已更新到學生端: {{ published_count }}&#10;生成失敗: {{ failed_count }}&#10;最後更新: {{ gencode.get('updated_at') or '-' }}"
                                 onclick="openV3Drawer('v3-template-{{ loop.index }}')">
-                                <span>{{ v3_light }}</span><span>{{ v3_status_map.get(v3_label, v3_label) }}</span>
+                                <span>{{ v3_light }}</span><span>{{ v3_label }}</span>
                             </button>
                             <div id="v3-template-{{ loop.index }}" class="v3-drawer-template">
+                                <div style="margin-bottom:10px;">
+                                    <strong>目前狀態：</strong>{{ v3_label }}<br>
+                                    <strong>最後生成時間：</strong>{{ gencode.get('updated_at') or '-' }}
+                                </div>
+                                <details>
+                                    <summary style="cursor:pointer;color:#6c757d;font-weight:700;">進階資訊</summary>
                                 <dl class="v3-meta-grid">
                                     <dt>skill_id</dt><dd>{{ skill.skill_id }}</dd>
                                     <dt>total_examples</dt><dd>{{ total_examples }}</dd>
                                     <dt>verified_count</dt><dd>{{ verified_count }}</dd>
                                     <dt>failed_count</dt><dd>{{ failed_count }}</dd>
                                     <dt>unsupported_count</dt><dd>{{ unsupported_count }}</dd>
+                                    <dt>published_count</dt><dd>{{ published_count }}</dd>
+                                    <dt>not_packaged_count</dt><dd>{{ not_packaged_count }}</dd>
                                     <dt>missing_tracker_count</dt><dd>{{ gencode.get('missing_tracker_count', 0) }}</dd>
                                     <dt>publish_ready</dt><dd>{% if gencode.get('publish_ready') %}yes{% else %}no{% endif %}</dd>
                                     <dt>production_wrapper_exists</dt><dd>{% if production_wrapper_exists %}yes{% else %}no{% endif %}</dd>
@@ -742,66 +733,54 @@
                                     <dt>error_log</dt><dd style="color:#c0392b;">{{ gencode.get('error_log') }}</dd>
                                     {% endif %}
                                 </dl>
+                                </details>
                             </div>
-                            {% if skill.skill_id in (v3_publish_allowed_skill_ids or []) or v3_light == '⚪' or v3_light == '🟡' or v3_light == '🔴' %}
-                            <div class="v3-actions">
-                                {% if v3_light == '🟢' %}
-                                {% if gencode.get('publish_ready') %}
-                                <form method="POST"
-                                    action="{{ url_for('core.admin_run_skill_v3_publish', skill_id=skill.skill_id) }}">
-                                    <input type="hidden" name="force_publish" value="1">
-                                    <input type="hidden" name="skill_id" value="{{ skill.skill_id }}">
-                                    <input type="hidden" name="redirect_query" value="{{ request.query_string.decode() }}">
-                                    <button type="submit" class="btn btn-danger btn-sm"
-                                        title="不重新產生題目元件，只使用現有 V3 components 重新編譯 skill wrapper。適合 wrapper 損壞、前端 practice 未吃到最新元件、或正式技能檔需要重新整理時使用。">V3 重新包裝</button>
-                                </form>
+                            <div class="v3-summary-info" style="font-size: 0.8rem; margin-top: 4px; color: #6c757d; line-height: 1.2;">
+                                可用題目：{{ verified_count }}/{{ total_examples }}<br>
+                                尚未加入技能包：{{ not_packaged_count }}<br>
+                                已更新到學生端：{{ published_count }}<br>
+                                生成失敗：{{ failed_count }}
+                            </div>
+                            <div class="v3-actions" style="margin-top: 6px;">
+                                {% if v3_light == '⚪' %}
+                                <button type="button" class="btn btn-primary btn-sm"
+                                    title="重新建立此技能所有教材例題的 V3 component"
+                                    onclick="runSkillV3BatchDryrun('{{ skill.skill_id }}', false, '重新生成本技能題目')">
+                                    重新生成本技能題目
+                                </button>
+                                {% else %}
+                                <button type="button" class="btn btn-primary btn-sm"
+                                    title="重新建立此技能所有教材例題的 V3 component"
+                                    onclick="runSkillV3BatchDryrun('{{ skill.skill_id }}', true, '重新生成本技能題目')">
+                                    重新生成本技能題目
+                                </button>
+                                <a href="{{ url_for('core.admin_examples', f_curriculum=skill.curriculum, f_grade=skill.grade, f_volume=skill.volume, f_chapter=skill.chapter, f_section=skill.section) }}"
+                                    class="btn btn-secondary btn-sm"
+                                    title="查看此技能的所有題目組件">
+                                    查看組件
+                                </a>
                                 {% endif %}
-                                <button type="button" class="btn btn-primary btn-sm"
-                                    title="重新分析課本例題並重建 V3 components，包含 classifier、shadow bridge、component scaffold 與 generate.py 產生流程。適合 taxonomy、registry、domain mapping 修正後，或 component failed / 題型分類錯誤時使用。此操作可能覆寫既有 V3 草稿或失敗紀錄。"
-                                    onclick="runSkillV3BatchDryrun('{{ skill.skill_id }}', true, 'V3 重新生成')">
-                                    V3 重新生成
-                                </button>
-                                {% elif v3_light == '🟡' %}
-                                <button type="button" class="btn btn-primary btn-sm"
-                                    title="重新分析課本例題並重建 V3 components，包含 classifier、shadow bridge、component scaffold 與 generate.py 產生流程。適合 taxonomy、registry、domain mapping 修正後，或 component failed / 題型分類錯誤時使用。"
-                                    onclick="runSkillV3BatchDryrun('{{ skill.skill_id }}', false, 'V3 重新生成')">
-                                    V3 重新生成
-                                </button>
-                                {% if skill.skill_id in (v3_publish_allowed_skill_ids or []) and gencode.get('publish_ready') %}
-                                <form method="POST"
-                                    action="{{ url_for('core.admin_run_skill_v3_publish', skill_id=skill.skill_id) }}">
-                                    <input type="hidden" name="force_publish" value="1">
-                                    <input type="hidden" name="skill_id" value="{{ skill.skill_id }}">
-                                    <input type="hidden" name="redirect_query" value="{{ request.query_string.decode() }}">
-                                    <button type="submit" class="btn btn-danger btn-sm"
-                                        title="不重新產生題目元件，只使用現有 V3 components 重新編譯 skill wrapper。適合 wrapper 損壞、前端 practice 未吃到最新元件、或正式技能檔需要重新整理時使用。">V3 重新包裝</button>
-                                </form>
-                                {% endif %}
-                                {% elif v3_light == '⚪' %}
-                                <button type="button" class="btn btn-primary btn-sm"
-                                    title="重新分析課本例題並重建 V3 components，包含 classifier、shadow bridge、component scaffold 與 generate.py 產生流程。適合 taxonomy、registry、domain mapping 修正後，或 component failed / 題型分類錯誤時使用。"
-                                    onclick="runSkillV3BatchDryrun('{{ skill.skill_id }}', false, 'V3 重新生成')">
-                                    V3 重新生成
-                                </button>
-                                {% elif v3_light == '🔴' %}
-                                <button type="button" class="btn btn-primary btn-sm"
-                                    title="重新分析課本例題並重建 V3 components，包含 classifier、shadow bridge、component scaffold 與 generate.py 產生流程。適合 taxonomy、registry、domain mapping 修正後，或 component failed / 題型分類錯誤時使用。"
-                                    onclick="runSkillV3BatchDryrun('{{ skill.skill_id }}', false, 'V3 重新生成')">
-                                    V3 重新生成
+
+                                {% if verified_count == total_examples and gencode.get('publish_ready') %}
+                                <button type="button" class="btn btn-danger btn-sm"
+                                    title="使用目前已驗證題目重新編譯並發布 production wrapper"
+                                    onclick="repackageSkillV3('{{ skill.skill_id }}')">
+                                    更新到學生端
                                 </button>
                                 {% endif %}
                             </div>
-                            {% endif %}
                         </td>
                         <td>
                             <div class="btn-group">
                                 <button class="btn btn-edit" onclick="openEditModal('{{ skill.skill_id }}')">
                                     <i class="bi bi-pencil-fill"></i>
                                 </button>
+                                {% if not (production_wrapper_exists and v3_package_exists) %}
                                 <button type="button" class="btn btn-secondary"
                                     onclick="regenerateSkillCode('{{ skill.skill_id }}')" title="舊版 AI 單檔 codegen">
-                                    <i class="bi bi-arrow-clockwise"></i> 舊版重建 Code
+                                    <i class="bi bi-arrow-clockwise"></i> V2 舊版重建
                                 </button>
+                                {% endif %}
                                 <a href="{{ url_for('core.admin_prerequisites', skill_id=skill.skill_id) }}"
                                     class="btn btn-prereq" title="設定前置技能"><i class="bi bi-diagram-2-fill"></i></a>
                                 <form method="POST"
@@ -1247,12 +1226,11 @@
             }
         }
 
-        function runSkillV3BatchDryrun(skillId, force = false, actionLabel = 'V3 生成') {
+        function runSkillV3BatchDryrun(skillId, force = false, actionLabel = '重新生成本技能題目') {
+            const confirmText = '重新建立此技能所有教材例題的 V3 component。是否繼續？';
             Swal.fire({
                 title: actionLabel,
-                text: force
-                    ? '將重新執行此 skill 底下所有 textbook_examples 的 dryrun / smoke / verify。'
-                    : '將為此 skill 底下所有 textbook_examples 執行 dryrun / smoke / verify（已 verified 的題目預設略過）。',
+                text: confirmText,
                 icon: 'question',
                 showCancelButton: true,
                 confirmButtonText: actionLabel,
@@ -1279,13 +1257,62 @@
                             throw new Error(data.error || '批次 dryrun 失敗');
                         }
                         const summary = data.coverage?.verified_count !== undefined
-                            ? `V3: ${data.coverage.verified_count}/${data.coverage.total_examples} verified`
+                            ? `可用題目：${data.coverage.verified_count}/${data.coverage.total_examples}`
                             : '';
                         Swal.fire({
-                            title: data.success ? `${actionLabel} 完成` : `${actionLabel} 部分失敗`,
-                            html: `${summary}<br>processed=${data.processed_count}, failed=${data.failed_count}`,
+                            title: data.success ? '重新生成完成' : '重新生成未完全完成',
+                            html: `${summary}<br>生成失敗：${data.failed_count}`,
                             icon: data.success ? 'success' : 'warning'
                         }).then(() => window.location.reload());
+                    })
+                    .catch((error) => {
+                        Swal.fire({ title: '執行失敗', text: error.message, icon: 'error' });
+                    });
+            });
+        }
+
+        function repackageSkillV3(skillId) {
+            Swal.fire({
+                title: '更新到學生端',
+                text: '使用目前已驗證題目重新編譯並發布 production wrapper。是否繼續？',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: '確定',
+                cancelButtonText: '取消'
+            }).then((result) => {
+                if (!result.isConfirmed) {
+                    return;
+                }
+                Swal.fire({
+                    title: '更新到學生端中...',
+                    allowOutsideClick: false,
+                    didOpen: () => Swal.showLoading()
+                });
+                const targetUrl = "{{ url_for('core.admin_run_skill_v3_repackage', skill_id='SKILL_ID_PLACEHOLDER') }}"
+                    .replace('SKILL_ID_PLACEHOLDER', skillId);
+                fetch(targetUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                })
+                    .then(async (response) => {
+                        const data = await response.json();
+                        if (data.status === 'success') {
+                            Swal.fire({
+                                title: '已更新到學生端',
+                                html: `已更新題目：${data.verified_component_count}/${data.total_component_count}`,
+                                icon: 'success'
+                            }).then(() => window.location.reload());
+                        } else {
+                            let failTitle = '更新到學生端失敗';
+                            if (data.publish_reason) {
+                                failTitle = `更新到學生端失敗：${data.publish_reason}`;
+                            }
+                            Swal.fire({
+                                title: failTitle,
+                                text: data.details || '未知錯誤',
+                                icon: 'error'
+                            });
+                        }
                     })
                     .catch((error) => {
                         Swal.fire({ title: '執行失敗', text: error.message, icon: 'error' });

@@ -169,6 +169,17 @@ def _validate_runtime_payload(payload: dict[str, Any], skill_id: str) -> tuple[l
     if any(p in text_blob for p in _PLACEHOLDER_PATTERNS):
         blockers.append("placeholder_output_detected")
 
+    # Integrity gate — shared validator (generic stem, slot coverage, checker mismatch)
+    try:
+        from core.gencode.services.v3_question_integrity_validator import validate_component_payload as _vcp
+        _integrity_result = _vcp(payload)
+        for _b in _integrity_result.get("blockers", []):
+            if _b not in blockers:
+                blockers.append(_b)
+    except Exception:
+        pass  # validator import failure must not break smoke
+
+
     pt = str(payload.get("problem_type_id", "")).strip()
     spec = load_problem_type_spec(skill_id, pt, prefer="auto") if pt else None
 

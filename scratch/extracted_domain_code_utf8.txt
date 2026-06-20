@@ -1,0 +1,810 @@
+﻿================================================================================
+Step 435 Tool replace_file_content
+================================================================================
+--- TargetContent ---
+_SUPPORTED_LINE_TYPES = frozenset(
+    {
+        "two_points",
+        "point_slope",
+        "horizontal_line",
+        "vertical_line",
+        "oblique_line",
+        "slope_intercept_equation",
+        "slope_intercept_find_x_intercept",
+        "slope_intercept_read_slope_and_intercept",
+        "intercept_form_equation",
+        "intercept_form_triangle_area",
+        "intercept_form_equation_and_triangle_area",
+        "intercept_form_from_intercept_sum_and_slope",
+        "parabola_secant_parallel_line_choice",
+        "triangle_area_bisector_line_equation",
+    }
+)
+
+
+def build_line_equation_matrix(
+    *,
+    seed: int | None,
+    line_type: str,
+    curriculum_profile: str,
+    difficulty_profile: str,
+    constraints: dict[str, object] | None = None,
+) -> dict[str, object]:
+    """Build a full problem matrix for a line-equation scenario."""
+    normalized_type = str(line_type or "").strip()
+    if normalized_type not in _SUPPORTED_LINE_TYPES:
+        raise ValueError(f"Unsupported line_type: {line_type!r}")
+
+    rng = random.Random(0 if seed is None else seed)
+    profile = str(curriculum_profile or "").strip()
+    difficulty = str(difficulty_profile or "").strip()
+    extra = dict(constraints or {})
+
+    coord_min, coord_max = _resolve_coord_bounds(profile, difficulty, extra)
+    x_range, y_range = _resolve_visual_ranges(profile, difficulty, extra)
+
+    if normalized_type == "two_points":
+        givens, answer, actual_type = _build_two_points(
+            rng, coord_min, coord_max, extra
+        )
+    elif normalized_type == "point_slope":
+        givens, answer, actual_type = _build_point_slope(
+            rng, coord_min, coord_max, extra
+        )
+    elif normalized_type == "horizontal_line":
+        givens, answer, actual_type = _build_horizontal_line(
+            rng, coord_min, coord_max, extra
+        )
+    elif normalized_type == "vertical_line":
+        givens, answer, actual_type = _build_vertical_line(
+            rng, coord_min, coord_max, extra
+        )
+    elif normalized_type == "slope_intercept_equation":
+        givens, answer, actual_type = _build_slope_intercept_equation(
+            rng, coord_min, coord_max, extra
+        )
+    elif normalized_type == "slope_intercept_find_x_intercept":
+        givens, answer, actual_type = _build_slope_intercept_find_x_intercept(
+            rng, coord_min, coord_max, extra
+        )
+    elif normalized_type == "slope_intercept_read_slope_and_intercept":
+        givens, answer, actual_type = _build_slope_intercept_read_slope_and_intercept(
+            rng, coord_min, coord_max, extra
+        )
+    elif normalized_type in {
+        "intercept_form_equation",
+        "intercept_form_triangle_area",
+        "intercept_form_equation_and_triangle_area",
+        "intercept_form_from_intercept_sum_and_slope",
+        "parabola_secant_parallel_line_choice",
+        "triangle_area_bisector_line_equation",
+    }:
+        givens, answer, actual_type = _build_intercept_form_problem(
+            rng,
+            coord_min,
+            coord_max,
+            extra,
+            task_type=normalized_type,
+        )
+    else:
+        givens, answer, actual_type = _build_oblique_line(
+            rng, coord_min, coord_max, extra
+        )
+--- ReplacementContent ---
+_SUPPORTED_LINE_TYPES = frozenset(
+    {
+        "two_points",
+        "point_slope",
+        "horizontal_line",
+        "vertical_line",
+        "oblique_line",
+        "slope_intercept_equation",
+        "slope_intercept_find_x_intercept",
+        "slope_intercept_read_slope_and_intercept",
+        "intercept_form_equation",
+        "intercept_form_triangle_area",
+        "intercept_form_equation_and_triangle_area",
+        "intercept_form_from_intercept_sum_and_slope",
+        "parabola_secant_parallel_line_choice",
+        "triangle_area_bisector_line_equation",
+        # New V3 General Form types:
+        "slope_from_general_or_intercept_form",
+        "slope_from_general_form",
+        "slope_of_horizontal_or_vertical_line",
+        "line_through_point_parallel_to_line",
+        "line_through_point_perpendicular_to_line",
+        "parallel_line_slope",
+        "perpendicular_line_slope",
+        "parallel_condition_parameter",
+        "perpendicular_condition_parameter",
+        "compare_line_slopes",
+        "line_through_intersection_parallel_to_line",
+        "line_through_point_perpendicular_to_segment",
+        "perpendicular_bisector_application",
+        "coordinate_geometry_word_problem",
+    }
+)
+
+
+def build_line_equation_matrix(
+    *,
+    seed: int | None,
+    line_type: str,
+    curriculum_profile: str,
+    difficulty_profile: str,
+    constraints: dict[str, object] | None = None,
+) -> dict[str, object]:
+    """Build a full problem matrix for a line-equation scenario."""
+    normalized_type = str(line_type or "").strip()
+    if normalized_type not in _SUPPORTED_LINE_TYPES:
+        raise ValueError(f"Unsupported line_type: {line_type!r}")
+
+    rng = random.Random(0 if seed is None else seed)
+    profile = str(curriculum_profile or "").strip()
+    difficulty = str(difficulty_profile or "").strip()
+    extra = dict(constraints or {})
+
+    coord_min, coord_max = _resolve_coord_bounds(profile, difficulty, extra)
+    x_range, y_range = _resolve_visual_ranges(profile, difficulty, extra)
+
+    if normalized_type == "two_points":
+        givens, answer, actual_type = _build_two_points(
+            rng, coord_min, coord_max, extra
+        )
+    elif normalized_type == "point_slope":
+        givens, answer, actual_type = _build_point_slope(
+            rng, coord_min, coord_max, extra
+        )
+    elif normalized_type == "horizontal_line":
+        givens, answer, actual_type = _build_horizontal_line(
+            rng, coord_min, coord_max, extra
+        )
+    elif normalized_type == "vertical_line":
+        givens, answer, actual_type = _build_vertical_line(
+            rng, coord_min, coord_max, extra
+        )
+    elif normalized_type == "slope_intercept_equation":
+        givens, answer, actual_type = _build_slope_intercept_equation(
+            rng, coord_min, coord_max, extra
+        )
+    elif normalized_type == "slope_intercept_find_x_intercept":
+        givens, answer, actual_type = _build_slope_intercept_find_x_intercept(
+            rng, coord_min, coord_max, extra
+        )
+    elif normalized_type == "slope_intercept_read_slope_and_intercept":
+        givens, answer, actual_type = _build_slope_intercept_read_slope_and_intercept(
+            rng, coord_min, coord_max, extra
+        )
+    elif normalized_type in {
+        "intercept_form_equation",
+        "intercept_form_triangle_area",
+        "intercept_form_equation_and_triangle_area",
+        "intercept_form_from_intercept_sum_and_slope",
+        "parabola_secant_parallel_line_choice",
+        "triangle_area_bisector_line_equation",
+    }:
+        givens, answer, actual_type = _build_intercept_form_problem(
+            rng,
+            coord_min,
+            coord_max,
+            extra,
+            task_type=normalized_type,
+        )
+    elif normalized_type == "slope_from_general_or_intercept_form":
+        givens, answer, actual_type = _build_slope_from_general_or_intercept_form(
+            rng, coord_min, coord_max, extra
+        )
+    elif normalized_type == "slope_from_general_form":
+        givens, answer, actual_type = _build_slope_from_general_form(
+            rng, coord_min, coord_max, extra
+        )
+    elif normalized_type == "slope_of_horizontal_or_vertical_line":
+        givens, answer, actual_type = _build_slope_of_horizontal_or_vertical_line(
+            rng, coord_min, coord_max, extra
+        )
+    elif normalized_type == "line_through_point_parallel_to_line":
+        givens, answer, actual_type = _build_line_through_point_parallel_to_line(
+            rng, coord_min, coord_max, extra
+        )
+    elif normalized_type == "line_through_point_perpendicular_to_line":
+        givens, answer, actual_type = _build_line_through_point_perpendicular_to_line(
+            rng, coord_min, coord_max, extra
+        )
+    elif normalized_type == "parallel_line_slope":
+        givens, answer, actual_type = _build_parallel_line_slope(
+            rng, coord_min, coord_max, extra
+        )
+    elif normalized_type == "perpendicular_line_slope":
+        givens, answer, actual_type = _build_perpendicular_line_slope(
+            rng, coord_min, coord_max, extra
+        )
+    elif normalized_type == "parallel_condition_parameter":
+        givens, answer, actual_type = _build_parallel_condition_parameter(
+            rng, coord_min, coord_max, extra
+        )
+    elif normalized_type == "perpendicular_condition_parameter":
+        givens, answer, actual_type = _build_perpendicular_condition_parameter(
+            rng, coord_min, coord_max, extra
+        )
+    elif normalized_type == "compare_line_slopes":
+        givens, answer, actual_type = _build_compare_line_slopes(
+            rng, coord_min, coord_max, extra
+        )
+    elif normalized_type == "line_through_intersection_parallel_to_line":
+        givens, answer, actual_type = _build_line_through_intersection_parallel_to_line(
+            rng, coord_min, coord_max, extra
+        )
+    elif normalized_type == "line_through_point_perpendicular_to_segment":
+        givens, answer, actual_type = _build_line_through_point_perpendicular_to_segment(
+            rng, coord_min, coord_max, extra
+        )
+    elif normalized_type == "perpendicular_bisector_application" or normalized_type == "coordinate_geometry_word_problem":
+        givens, answer, actual_type = _build_perpendicular_bisector_application(
+            rng, coord_min, coord_max, extra
+        )
+    else:
+        givens, answer, actual_type = _build_oblique_line(
+            rng, coord_min, coord_max, extra
+        )
+================================================================================
+Step 445 Tool replace_file_content
+================================================================================
+--- TargetContent ---
+    return [
+        "確認斜率與截距",
+        "寫成斜截式",
+        f"化簡得 {canonical}",
+    ]
+--- ReplacementContent ---
+    return [
+        "確認斜率與截距",
+        "寫成斜截式",
+        f"化簡得 {canonical}",
+    ]
+
+
+def _build_slope_from_general_form(
+    rng: random.Random,
+    coord_min: int,
+    coord_max: int,
+    constraints: dict[str, object],
+) -> tuple[dict[str, object], dict[str, object], str]:
+    A = rng.randint(coord_min, coord_max)
+    while A == 0:
+        A = rng.randint(coord_min, coord_max)
+    B = rng.randint(coord_min, coord_max)
+    while B == 0:
+        B = rng.randint(coord_min, coord_max)
+    C = rng.randint(coord_min, coord_max)
+    
+    a_int, b_int, c_int = _normalize_coefficients(A, B, C)
+    m = Fraction(-a_int, b_int)
+    
+    givens = {
+        "equation": _format_general_form(a_int, b_int, c_int),
+    }
+    answer = {
+        "canonical_form": _format_number(m),
+        "slope": _format_number(m),
+        "coefficients": {"A": a_int, "B": b_int, "C": c_int},
+        "intercept": _format_number(Fraction(-c_int, b_int)),
+    }
+    return givens, answer, "oblique_line"
+
+
+def _build_slope_from_general_or_intercept_form(
+    rng: random.Random,
+    coord_min: int,
+    coord_max: int,
+    constraints: dict[str, object],
+) -> tuple[dict[str, object], dict[str, object], str]:
+    form_type = rng.choice([0, 1])
+    if form_type == 0:
+        return _build_slope_from_general_form(rng, coord_min, coord_max, constraints)
+    else:
+        a = rng.randint(1, coord_max)
+        if rng.random() < 0.5:
+            a = -a
+        b = rng.randint(1, coord_max)
+        if rng.random() < 0.5:
+            b = -b
+            
+        m = Fraction(-b, a)
+        coeff_x, coeff_y, coeff_c = _normalize_fraction_coefficients(
+            Fraction(1, a),
+            Fraction(1, b),
+            Fraction(-1, 1),
+        )
+        
+        a_str = f"\\frac{{x}}{{{a}}}" if a > 0 else f"-\\frac{{x}}{{{abs(a)}}}"
+        if b > 0:
+            eq_str = f"{a_str} + \\frac{{y}}{{{b}}} = 1"
+        else:
+            eq_str = f"{a_str} - \\frac{{y}}{{{abs(b)}}} = 1"
+            
+        givens = {
+            "equation": eq_str,
+        }
+        answer = {
+            "canonical_form": _format_number(m),
+            "slope": _format_number(m),
+            "coefficients": {"A": coeff_x, "B": coeff_y, "C": coeff_c},
+            "intercept": _format_number(Fraction(-coeff_c, coeff_y)),
+        }
+        return givens, answer, "oblique_line"
+
+
+def _build_slope_of_horizontal_or_vertical_line(
+    rng: random.Random,
+    coord_min: int,
+    coord_max: int,
+    constraints: dict[str, object],
+) -> tuple[dict[str, object], dict[str, object], str]:
+    sub_type = rng.choice(["horizontal", "vertical", "general"])
+    if sub_type == "horizontal":
+        k = rng.randint(coord_min, coord_max)
+        while k == 0:
+            k = rng.randint(coord_min, coord_max)
+        givens = {"equation": f"y = {k}"}
+        answer = {
+            "canonical_form": "0",
+            "slope": 0,
+            "coefficients": {"A": 0, "B": 1, "C": -k},
+            "intercept": k,
+        }
+        return givens, answer, "horizontal_line"
+    elif sub_type == "vertical":
+        h = rng.randint(coord_min, coord_max)
+        while h == 0:
+            h = rng.randint(coord_min, coord_max)
+        givens = {"equation": f"x = {h}"}
+        answer = {
+            "canonical_form": "無",
+            "slope": "無",
+            "coefficients": {"A": 1, "B": 0, "C": -h},
+            "intercept": None,
+        }
+        return givens, answer, "vertical_line"
+    else:
+        return _build_slope_from_general_form(rng, coord_min, coord_max, constraints)
+
+
+def _build_line_through_point_parallel_to_line(
+    rng: random.Random,
+    coord_min: int,
+    coord_max: int,
+    constraints: dict[str, object],
+) -> tuple[dict[str, object], dict[str, object], str]:
+    A = rng.randint(coord_min, coord_max)
+    while A == 0:
+        A = rng.randint(coord_min, coord_max)
+    B = rng.randint(coord_min, coord_max)
+    while B == 0:
+        B = rng.randint(coord_min, coord_max)
+    C = rng.randint(coord_min, coord_max)
+    
+    x0 = rng.randint(coord_min, coord_max)
+    y0 = rng.randint(coord_min, coord_max)
+    
+    A, B, C = _normalize_coefficients(A, B, C)
+    K = -(A * x0 + B * y0)
+    
+    givens = {
+        "point": [x0, y0],
+        "equation": _format_general_form(A, B, C),
+    }
+    canonical = _format_general_form(A, B, K)
+    answer = {
+        "canonical_form": canonical,
+        "general_form": canonical,
+        "coefficients": {"A": A, "B": B, "C": K},
+        "slope": _format_number(Fraction(-A, B)),
+        "intercept": _format_number(Fraction(-K, B)),
+    }
+    return givens, answer, "oblique_line"
+
+
+def _build_line_through_point_perpendicular_to_line(
+    rng: random.Random,
+    coord_min: int,
+    coord_max: int,
+    constraints: dict[str, object],
+) -> tuple[dict[str, object], dict[str, object], str]:
+    A = rng.randint(coord_min, coord_max)
+    while A == 0:
+        A = rng.randint(coord_min, coord_max)
+    B = rng.randint(coord_min, coord_max)
+    while B == 0:
+        B = rng.randint(coord_min, coord_max)
+    C = rng.randint(coord_min, coord_max)
+    
+    x0 = rng.randint(coord_min, coord_max)
+    y0 = rng.randint(coord_min, coord_max)
+    
+    A, B, C = _normalize_coefficients(A, B, C)
+    pA, pB, pK = _normalize_coefficients(B, -A, -(B * x0 - A * y0))
+    
+    givens = {
+        "point": [x0, y0],
+        "equation": _format_general_form(A, B, C),
+    }
+    canonical = _format_general_form(pA, pB, pK)
+    answer = {
+        "canonical_form": canonical,
+        "general_form": canonical,
+        "coefficients": {"A": pA, "B": pB, "C": pK},
+        "slope": _format_number(Fraction(-pA, pB)) if pB != 0 else "無",
+        "intercept": _format_number(Fraction(-pK, pB)) if pB != 0 else None,
+    }
+    return givens, answer, "oblique_line"
+
+
+def _build_parallel_line_slope(
+    rng: random.Random,
+    coord_min: int,
+    coord_max: int,
+    constraints: dict[str, object],
+) -> tuple[dict[str, object], dict[str, object], str]:
+    return _build_slope_from_general_form(rng, coord_min, coord_max, constraints)
+
+
+def _build_perpendicular_line_slope(
+    rng: random.Random,
+    coord_min: int,
+    coord_max: int,
+    constraints: dict[str, object],
+) -> tuple[dict[str, object], dict[str, object], str]:
+    A = rng.randint(coord_min, coord_max)
+    while A == 0:
+        A = rng.randint(coord_min, coord_max)
+    B = rng.randint(coord_min, coord_max)
+    while B == 0:
+        B = rng.randint(coord_min, coord_max)
+    C = rng.randint(coord_min, coord_max)
+    
+    A, B, C = _normalize_coefficients(A, B, C)
+    m = Fraction(B, A)
+    
+    givens = {
+        "equation": _format_general_form(A, B, C),
+    }
+    answer = {
+        "canonical_form": _format_number(m),
+        "slope": _format_number(m),
+        "coefficients": {"A": A, "B": B, "C": C},
+        "intercept": _format_number(Fraction(-C, B)),
+    }
+    return givens, answer, "oblique_line"
+
+
+def _build_parallel_condition_parameter(
+    rng: random.Random,
+    coord_min: int,
+    coord_max: int,
+    constraints: dict[str, object],
+) -> tuple[dict[str, object], dict[str, object], str]:
+    b2 = rng.randint(1, 5)
+    if rng.random() < 0.5:
+        b2 = -b2
+    factor = rng.randint(1, 3)
+    if rng.random() < 0.5:
+        factor = -factor
+    b1 = b2 * factor
+    
+    a2 = rng.randint(coord_min, coord_max)
+    while a2 == 0:
+        a2 = rng.randint(coord_min, coord_max)
+    a1 = a2 * factor
+    
+    c1 = rng.randint(coord_min, coord_max)
+    c2 = rng.randint(coord_min, coord_max)
+    while c1 * b2 == c2 * b1:
+        c2 = rng.randint(coord_min, coord_max)
+        
+    givens = {
+        "equation_1": f"ax + {b1}y + {c1} = 0" if b1 > 0 else f"ax - {abs(b1)}y + {c1} = 0",
+        "equation_2": _format_general_form(a2, b2, c2),
+    }
+    givens["equation_1"] = givens["equation_1"].replace("+ -", "- ").replace("+ +", "+ ")
+    
+    answer = {
+        "canonical_form": str(a1),
+        "parameter": a1,
+        "coefficients": {"A": a1, "B": b1, "C": c1},
+        "slope": _format_number(Fraction(-a1, b1)),
+        "intercept": _format_number(Fraction(-c1, b1)),
+    }
+    return givens, answer, "oblique_line"
+
+
+def _build_perpendicular_condition_parameter(
+    rng: random.Random,
+    coord_min: int,
+    coord_max: int,
+    constraints: dict[str, object],
+) -> tuple[dict[str, object], dict[str, object], str]:
+    a2 = rng.choice([1, 2, 3, 4, -1, -2, -3, -4])
+    factor = rng.randint(1, 3)
+    if rng.random() < 0.5:
+        factor = -factor
+    b1 = a2 * factor
+    
+    b2 = rng.randint(coord_min, coord_max)
+    while b2 == 0:
+        b2 = rng.randint(coord_min, coord_max)
+        
+    a1 = -b1 * b2 // a2
+    c1 = rng.randint(coord_min, coord_max)
+    c2 = rng.randint(coord_min, coord_max)
+    
+    givens = {
+        "equation_1": f"ax + {b1}y + {c1} = 0" if b1 > 0 else f"ax - {abs(b1)}y + {c1} = 0",
+        "equation_2": _format_general_form(a2, b2, c2),
+    }
+    givens["equation_1"] = givens["equation_1"].replace("+ -", "- ").replace("+ +", "+ ")
+    
+    answer = {
+        "canonical_form": str(a1),
+        "parameter": a1,
+        "coefficients": {"A": a1, "B": b1, "C": c1},
+        "slope": _format_number(Fraction(-a1, b1)),
+        "intercept": _format_number(Fraction(-c1, b1)),
+    }
+    return givens, answer, "oblique_line"
+
+
+def _build_compare_line_slopes(
+    rng: random.Random,
+    coord_min: int,
+    coord_max: int,
+    constraints: dict[str, object],
+) -> tuple[dict[str, object], dict[str, object], str]:
+    slopes = []
+    while len(slopes) < 4:
+        s = _pick_slope(rng, allow_fraction=True)
+        if s not in slopes:
+            slopes.append(s)
+            
+    labels = ["A", "B", "C", "D"]
+    choices = []
+    
+    max_val = max(slopes)
+    correct_idx = slopes.index(max_val)
+    correct_label = labels[correct_idx]
+    
+    for i, m in enumerate(slopes):
+        lbl = labels[i]
+        b = rng.randint(-3, 3)
+        while b == 0:
+            b = rng.randint(-3, 3)
+            
+        if i == 0:
+            text = _format_slope_intercept(m, Fraction(b, 1))
+        elif i == 1:
+            x1 = rng.randint(-3, 3)
+            y1 = int(m * x1 + b)
+            y_term = f"y - {y1}" if y1 > 0 else (f"y + {abs(y1)}" if y1 < 0 else "y")
+            x_term = f"x - {x1}" if x1 > 0 else (f"x + {abs(x1)}" if x1 < 0 else "x")
+            m_term = _format_slope_term(m)
+            text = f"{y_term} = {m_term}({x_term})"
+        elif i == 2:
+            b_val = b
+            a_val = Fraction(-b_val, m)
+            a_str = fraction_to_plain(a_val)
+            b_str = str(b_val)
+            text = f"x/{a_str} + y/{b_str} = 1"
+        else:
+            A, B, C = _normalize_fraction_coefficients(m, Fraction(-1, 1), Fraction(b, 1))
+            text = _format_general_form(A, B, C)
+            
+        choices.append({"label": lbl, "text": text})
+        
+    givens = {
+        "choices": choices,
+    }
+    answer = {
+        "canonical_form": correct_label,
+        "correct_label": correct_label,
+        "choices": choices,
+        "coefficients": {"A": 1, "B": -1, "C": 0},
+        "slope": max_val,
+        "intercept": 0,
+    }
+    return givens, answer, "oblique_line"
+
+
+def _build_line_through_point_perpendicular_to_segment(
+    rng: random.Random,
+    coord_min: int,
+    coord_max: int,
+    constraints: dict[str, object],
+) -> tuple[dict[str, object], dict[str, object], str]:
+    xA = rng.randint(coord_min, coord_max)
+    yA = rng.randint(coord_min, coord_max)
+    
+    xC = rng.randint(coord_min, coord_max)
+    while xC == xA:
+        xC = rng.randint(coord_min, coord_max)
+    yC = rng.randint(coord_min, coord_max)
+    while yC == yA:
+        yC = rng.randint(coord_min, coord_max)
+        
+    mAC = Fraction(yC - yA, xC - xA)
+    mPerp = -1 / mAC
+    
+    xB = rng.randint(coord_min, coord_max)
+    yB = rng.randint(coord_min, coord_max)
+    
+    b_frac = Fraction(yB, 1) - mPerp * Fraction(xB, 1)
+    A, B, C = _normalize_fraction_coefficients(mPerp, Fraction(-1, 1), b_frac)
+    
+    givens = {
+        "point_b": [xB, yB],
+        "point_a": [xA, yA],
+        "point_c": [xC, yC],
+    }
+    canonical = _format_general_form(A, B, C)
+    answer = {
+        "canonical_form": canonical,
+        "general_form": canonical,
+        "coefficients": {"A": A, "B": B, "C": C},
+        "slope": _format_number(mPerp),
+        "intercept": _format_number(b_frac),
+    }
+    return givens, answer, "oblique_line"
+
+
+def _build_line_through_intersection_parallel_to_line(
+    rng: random.Random,
+    coord_min: int,
+    coord_max: int,
+    constraints: dict[str, object],
+) -> tuple[dict[str, object], dict[str, object], str]:
+    x0 = rng.randint(-3, 3)
+    y0 = rng.randint(-3, 3)
+    
+    A1 = rng.randint(-4, 4)
+    while A1 == 0:
+        A1 = rng.randint(-4, 4)
+    B1 = rng.randint(-4, 4)
+    while B1 == 0:
+        B1 = rng.randint(-4, 4)
+    C1 = -(A1 * x0 + B1 * y0)
+    
+    A2 = rng.randint(-4, 4)
+    while A2 == 0 or A2 * B1 == A1:
+        A2 = rng.randint(-4, 4)
+    B2 = rng.randint(-4, 4)
+    while B2 == 0 or A1 * B2 == A2 * B1:
+        B2 = rng.randint(-4, 4)
+    C2 = -(A2 * x0 + B2 * y0)
+    
+    A4 = rng.randint(-4, 4)
+    while A4 == 0:
+        A4 = rng.randint(-4, 4)
+    B4 = rng.randint(-4, 4)
+    while B4 == 0:
+        B4 = rng.randint(-4, 4)
+    C4 = rng.randint(-4, 4)
+    
+    A1, B1, C1 = _normalize_coefficients(A1, B1, C1)
+    A2, B2, C2 = _normalize_coefficients(A2, B2, C2)
+    A4, B4, C4 = _normalize_coefficients(A4, B4, C4)
+    
+    A3, B3, C3 = _normalize_coefficients(A4, B4, -(A4 * x0 + B4 * y0))
+    
+    givens = {
+        "equation_1": _format_general_form(A1, B1, C1),
+        "equation_2": _format_general_form(A2, B2, C2),
+        "equation_3": _format_general_form(A4, B4, C4),
+    }
+    canonical = _format_general_form(A3, B3, C3)
+    answer = {
+        "canonical_form": canonical,
+        "general_form": canonical,
+        "coefficients": {"A": A3, "B": B3, "C": C3},
+        "slope": _format_number(Fraction(-A3, B3)),
+        "intercept": _format_number(Fraction(-C3, B3)),
+    }
+    return givens, answer, "oblique_line"
+
+
+def _build_perpendicular_bisector_application(
+    rng: random.Random,
+    coord_min: int,
+    coord_max: int,
+    constraints: dict[str, object],
+) -> tuple[dict[str, object], dict[str, object], str]:
+    xA = rng.randint(coord_min, coord_max)
+    yA = rng.randint(coord_min, coord_max)
+    
+    xB = rng.randint(coord_min, coord_max)
+    while xB == xA:
+        xB = rng.randint(coord_min, coord_max)
+    yB = rng.randint(coord_min, coord_max)
+    while yB == yA:
+        yB = rng.randint(coord_min, coord_max)
+        
+    mid_x = Fraction(xA + xB, 2)
+    mid_y = Fraction(yA + yB, 2)
+    
+    mAB = Fraction(yB - yA, xB - xA)
+    mPerp = -1 / mAB
+    
+    b_frac = mid_y - mPerp * mid_x
+    A, B, C = _normalize_fraction_coefficients(mPerp, Fraction(-1, 1), b_frac)
+    
+    givens = {
+        "point_a": [xA, yA],
+        "point_b": [xB, yB],
+    }
+    canonical = _format_general_form(A, B, C)
+    answer = {
+        "canonical_form": canonical,
+        "general_form": canonical,
+        "coefficients": {"A": A, "B": B, "C": C},
+        "slope": _format_number(mPerp),
+        "intercept": _format_number(b_frac),
+    }
+    return givens, answer, "oblique_line"
+================================================================================
+Step 671 Tool replace_file_content
+================================================================================
+--- TargetContent ---
+    coeffs = answer["coefficients"]
+    assert isinstance(coeffs, dict)
+    a_int = int(coeffs["A"])
+    b_int = int(coeffs["B"])
+    c_int = int(coeffs["C"])
+--- ReplacementContent ---
+    coeffs = answer["coefficients"]
+    assert isinstance(coeffs, dict)
+    a_int = int(coeffs["A"])
+    b_int = int(coeffs["B"])
+    c_int = int(coeffs["C"])
+
+    if "general_form" not in answer:
+        answer["general_form"] = _format_general_form(a_int, b_int, c_int)
+================================================================================
+Step 733 Tool replace_file_content
+================================================================================
+--- TargetContent ---
+def _build_distractors(
+    *,
+    rng: random.Random,
+    answer: dict[str, object],
+    actual_type: str,
+    givens: dict[str, object],
+    coord_min: int,
+    coord_max: int,
+) -> list[str]:
+    canonical = str(answer["canonical_form"])
+    candidates: list[str] = []
+
+    if actual_type == "vertical_line":
+        x_val = _extract_vertical_k(canonical)
+        for delta in (-2, -1, 1, 2, 3):
+            candidates.append(f"x = {x_val + delta}")
+        candidates.extend([f"y = {rng.randint(coord_min, coord_max)}" for _ in range(3)])
+    elif actual_type == "horizontal_line":
+        y_val = _extract_horizontal_k(canonical)
+        for delta in (-2, -1, 1, 2, 3):
+            candidates.append(f"y = {y_val + delta}")
+        candidates.extend([f"x = {rng.randint(coord_min, coord_max)}" for _ in range(3)])
+--- ReplacementContent ---
+    if actual_type == "vertical_line":
+        if "=" in canonical:
+            x_val = _extract_vertical_k(canonical)
+            for delta in (-2, -1, 1, 2, 3):
+                candidates.append(f"x = {x_val + delta}")
+            candidates.extend([f"y = {rng.randint(coord_min, coord_max)}" for _ in range(3)])
+        else:
+            candidates = ["0", "1", "-1", "2"]
+    elif actual_type == "horizontal_line":
+        if "=" in canonical:
+            y_val = _extract_horizontal_k(canonical)
+            for delta in (-2, -1, 1, 2, 3):
+                candidates.append(f"y = {y_val + delta}")
+            candidates.extend([f"x = {rng.randint(coord_min, coord_max)}" for _ in range(3)])
+        else:
+            candidates = ["無", "1", "-1", "2"]

@@ -2,9 +2,13 @@
 
 from __future__ import annotations
 
+import hashlib
 import importlib.util
+import json
 import py_compile
+import shutil
 import sqlite3
+from datetime import datetime
 from pathlib import Path
 from typing import Any
 
@@ -26,6 +30,117 @@ from core.gencode.services.v3_skill_coverage_service import (
     build_coverage_warnings,
     get_v3_skill_component_coverage,
 )
+from core.gencode.services.v3_publish_eligibility import evaluate_v3_publish_eligibility
+
+
+def _sha256_file(path: Path) -> str | None:
+    if not path.is_file():
+        return None
+    try:
+        return hashlib.sha256(path.read_bytes()).hexdigest()
+    except Exception:
+        return None
+
+
+def _parse_tracker_payload(payload_raw: Any) -> dict[str, object]:
+    if payload_raw is None or str(payload_raw).strip() == "":
+        return {}
+    if isinstance(payload_raw, dict):
+        return payload_raw
+    try:
+        payload = json.loads(str(payload_raw))
+    except Exception:
+        return {}
+    return payload if isinstance(payload, dict) else {}
+
+
+def _path_for_payload(path: Path, root: Path) -> str:
+    try:
+        return str(path.relative_to(root))
+    except Exception:
+        return str(path)
+
+
+def _record_published_component_evidence(
+    conn: sqlite3.Connection,
+    *,
+    skill_id: str,
+    project_root: str | Path,
+    production_base_dir: str = "agent_skills_v3",
+    dryrun_base_dir: str = "reports/gencode_v3_dryrun",
+) -> list[dict[str, object]]:
+    """Persist per-component published hashes in tracker payload after publish succeeds."""
+    from core.gencode.services.gencode_status_query_service import load_v3_skill_generator_specs
+
+    skill_key = str(skill_id or "").strip()
+    root = Path(project_root)
+    production_root = root / production_base_dir
+    dryrun_root = root / dryrun_base_dir
+    specs = load_v3_skill_generator_specs(
+        skill_id=skill_key,
+        production_base_dir=production_base_dir,
+        project_root=root,
+    )
+    published_ids = {
+        str(spec.get("component_id") or "").strip()
+        for spec in specs
+        if str(spec.get("component_id") or "").strip()
+    }
+    if not published_ids:
+        return []
+
+    rows = conn.execute(
+        """
+        SELECT textbook_example_id, component_id, gencode_status,
+               induced_spec_payload, gencode_error_log
+        FROM gencode_component_tracker
+        WHERE skill_id = ?
+        """,
+        (skill_key,),
+    ).fetchall()
+
+    updated: list[dict[str, object]] = []
+    published_at = datetime.now().isoformat(timespec="seconds")
+    for row in rows:
+        textbook_example_id = int(row[0] if not hasattr(row, "keys") else row["textbook_example_id"])
+        component_id = str(row[1] if not hasattr(row, "keys") else row["component_id"]).strip()
+        if component_id not in published_ids:
+            continue
+        production_generate = production_root / skill_key / "components" / component_id / "generate.py"
+        production_hash = _sha256_file(production_generate)
+        if not production_hash:
+            continue
+        payload_raw = row[3] if not hasattr(row, "keys") else row["induced_spec_payload"]
+        payload = _parse_tracker_payload(payload_raw)
+        dryrun_generate = dryrun_root / skill_key / "components" / component_id / "generate.py"
+        verified_hash = _sha256_file(dryrun_generate)
+        if verified_hash and "verified_generate_sha256" not in payload:
+            payload["verified_generate_sha256"] = verified_hash
+            payload["verified_artifact_path"] = _path_for_payload(dryrun_generate, root)
+        payload["published_generate_sha256"] = production_hash
+        payload["published_component_path"] = _path_for_payload(production_generate, root)
+        payload["published_at"] = published_at
+        payload["published_component_id"] = component_id
+        payload["published_textbook_example_id"] = textbook_example_id
+        conn.execute(
+            """
+            UPDATE gencode_component_tracker
+            SET induced_spec_payload = ?,
+                updated_at = datetime('now', 'localtime')
+            WHERE skill_id = ? AND textbook_example_id = ?
+            """,
+            (json.dumps(payload, ensure_ascii=False), skill_key, textbook_example_id),
+        )
+        updated.append(
+            {
+                "textbook_example_id": textbook_example_id,
+                "component_id": component_id,
+                "published_generate_sha256": production_hash,
+                "published_component_path": str(production_generate),
+            }
+        )
+    conn.commit()
+    return updated
 
 
 def _fetch_textbook_example_ids_for_skill(
@@ -265,6 +380,208 @@ def run_admin_v3_dryrun_for_skill(
         "partially_dynamic_count": variation_report.get("partially_dynamic_count", 0),
         "insufficient_sample_count": variation_report.get("insufficient_sample_count", 0),
         "variation_status_by_component": variation_report.get("variation_status_by_component", {}),
+    }
+
+
+def _generation_summary_from_coverage(coverage: dict[str, object]) -> dict[str, int]:
+    return {
+        "total_examples": int(coverage.get("total_examples") or 0),
+        "verified_count": int(coverage.get("verified_count") or 0),
+        "failed_count": int(coverage.get("failed_count") or 0),
+        "unsupported_count": int(coverage.get("unsupported_count") or 0),
+        "missing_tracker_count": int(coverage.get("missing_tracker_count") or 0),
+    }
+
+
+def _prepare_publish_staging_components(
+    *,
+    skill_id: str,
+    dryrun_base_dir: str,
+    staging_root: str,
+) -> None:
+    skill_key = str(skill_id or "").strip()
+    dryrun_root = Path(str(dryrun_base_dir or "").strip())
+    if not dryrun_root.is_absolute():
+        dryrun_root = Path(__file__).resolve().parents[3] / dryrun_root
+    staging_path = Path(str(staging_root or "").strip())
+    if not staging_path.is_absolute():
+        staging_path = Path(__file__).resolve().parents[3] / staging_path
+
+    source_components = dryrun_root / skill_key / "components"
+    if not source_components.is_dir():
+        raise FileNotFoundError(f"dryrun_components_missing:{source_components}")
+
+    target_components = staging_path / skill_key / "components"
+    if target_components.exists():
+        shutil.rmtree(target_components)
+    target_components.parent.mkdir(parents=True, exist_ok=True)
+    shutil.copytree(source_components, target_components)
+
+
+def _publish_contract_from_result(
+    *,
+    publish_result: dict[str, object] | None,
+    coverage: dict[str, object],
+    attempted: bool,
+    error: str | None = None,
+    failed_stage: str | None = None,
+) -> dict[str, object]:
+    publish_result = publish_result or {}
+    compile_result = publish_result.get("compile")
+    if not isinstance(compile_result, dict):
+        compile_result = {}
+
+    status = str(publish_result.get("status") or "").strip()
+    published = status in {"production_published", "runtime_ready_with_variation_warning"}
+    verified_count = int(coverage.get("verified_count") or 0)
+    component_count = int(publish_result.get("component_count") or compile_result.get("component_count") or 0)
+    generator_specs = compile_result.get("generator_specs")
+    generator_specs_count = len(generator_specs) if isinstance(generator_specs, list) else int(
+        compile_result.get("generator_specs_count") or component_count or 0
+    )
+
+    if failed_stage is None and status == "rolled_back_after_failed_production_smoke":
+        failed_stage = "production_smoke"
+    rollback = publish_result.get("rollback")
+    previous_preserved = bool(
+        failed_stage
+        or status == "rolled_back_after_failed_production_smoke"
+        or (isinstance(rollback, dict) and rollback.get("status") == "rolled_back")
+    )
+
+    omitted_examples = [
+        int(row["textbook_example_id"])
+        for row in coverage.get("examples", [])
+        if isinstance(row, dict) and row.get("status") != "verified" and row.get("textbook_example_id") is not None
+    ]
+    partial_publish = published and component_count < int(coverage.get("total_examples") or 0)
+
+    return {
+        "attempted": bool(attempted),
+        "published": bool(published),
+        "partial_publish": bool(partial_publish),
+        "total_examples": int(coverage.get("total_examples") or 0),
+        "published_components": component_count if published else 0,
+        "omitted_components": len(omitted_examples),
+        "omitted_example_ids": omitted_examples,
+        "production_component_count": component_count if published else 0,
+        "generator_specs_count": generator_specs_count if published else 0,
+        "production_wrapper_exists": bool(published),
+        "v3_package_exists": bool(published),
+        "runtime_ready": bool(published and component_count == verified_count and generator_specs_count > 0),
+        "status": status or ("failed" if error else "not_attempted"),
+        "failed_stage": failed_stage,
+        "error": error,
+        "previous_production_preserved": previous_preserved,
+        "rollback": rollback,
+        "raw": publish_result,
+    }
+
+
+def run_admin_v3_dryrun_publish_closed_loop_for_skill(
+    conn: sqlite3.Connection,
+    skill_id: str,
+    *,
+    project_root: str,
+    staging_root: str,
+    smoke: bool = True,
+    verify: bool = True,
+    force: bool = False,
+    limit: int | None = None,
+    dryrun_base_dir: str = "reports/gencode_v3_dryrun",
+    seed: int | None = None,
+) -> dict[str, object]:
+    """Run skill-level dryrun and auto-publish when full coverage gate passes."""
+    generation_result = run_admin_v3_dryrun_for_skill(
+        conn,
+        skill_id,
+        smoke=smoke,
+        verify=verify,
+        force=force,
+        limit=limit,
+        dryrun_base_dir=dryrun_base_dir,
+        seed=seed,
+    )
+    skill_key = str(skill_id or "").strip()
+    coverage = generation_result.get("coverage")
+    if not isinstance(coverage, dict):
+        coverage = get_v3_skill_component_coverage(conn, skill_key)
+    generation = _generation_summary_from_coverage(coverage)
+
+    publish_attempted = False
+    publish_contract = _publish_contract_from_result(
+        publish_result=None,
+        coverage=coverage,
+        attempted=False,
+    )
+
+    eligibility = evaluate_v3_publish_eligibility(conn, skill_key, coverage=coverage)
+
+    if bool(eligibility.get("allowed")):
+        publish_attempted = True
+        try:
+            _prepare_publish_staging_components(
+                skill_id=skill_key,
+                dryrun_base_dir=dryrun_base_dir,
+                staging_root=staging_root,
+            )
+            publish_result = run_admin_v3_publish_for_skill(
+                conn=conn,
+                skill_id=skill_key,
+                project_root=project_root,
+                staging_root=staging_root,
+                force_publish=True,
+                strict_coverage=True,
+            )
+            publish_contract = _publish_contract_from_result(
+                publish_result=publish_result,
+                coverage=coverage,
+                attempted=True,
+            )
+        except Exception as exc:
+            from core.gencode.v3_production_publish_service import V3PublishRootValidationError
+            if isinstance(exc, V3PublishRootValidationError):
+                publish_contract = _publish_contract_from_result(
+                    publish_result=None,
+                    coverage=coverage,
+                    attempted=True,
+                    error=exc.error_code,
+                    failed_stage="publish_root_validation",
+                )
+                publish_contract.update(exc.details)
+            else:
+                message = str(exc)
+                failed_stage = "publish"
+                if "staging_smoke_failed" in message:
+                    failed_stage = "staging_smoke"
+                elif "variation_audit_failed" in message:
+                    failed_stage = "variation_audit"
+                elif "production_smoke" in message:
+                    failed_stage = "production_smoke"
+                elif "compile" in message or "wrapper" in message:
+                    failed_stage = "wrapper_compile"
+                publish_contract = _publish_contract_from_result(
+                    publish_result=None,
+                    coverage=coverage,
+                    attempted=True,
+                    error=message,
+                    failed_stage=failed_stage,
+                )
+
+    refreshed_coverage = get_v3_skill_component_coverage(conn, skill_key)
+    success = bool(generation_result.get("success")) and (
+        not publish_attempted or bool(publish_contract.get("published"))
+    )
+
+    return {
+        **generation_result,
+        "success": success,
+        "ok": success,
+        "skill_id": skill_key,
+        "generation": generation,
+        "eligibility": eligibility,
+        "publish": publish_contract,
+        "coverage": refreshed_coverage,
     }
 
 
@@ -560,21 +877,35 @@ def run_admin_v3_publish_for_skill(
 
     ensure_gencode_component_tracker_table(conn)
 
-    from core.gencode.v3_production_publish_service import V3_PRODUCTION_PUBLISH_ALLOWED_SKILLS
-
     skill_key = str(skill_id or "").strip()
-    if skill_key not in V3_PRODUCTION_PUBLISH_ALLOWED_SKILLS:
-        raise ValueError("production_publish_not_allowed_for_skill")
+    if not skill_key:
+        raise ValueError("missing_skill_id")
 
     coverage = get_v3_skill_component_coverage(conn, skill_key)
+    eligibility = evaluate_v3_publish_eligibility(conn, skill_key, coverage=coverage)
     warnings = build_coverage_warnings(coverage)
 
-    if strict_coverage and not bool(coverage.get("publish_ready")):
-        raise ValueError("v3_coverage_incomplete_for_strict_publish")
+    if not eligibility.get("allowed") and eligibility.get("reason") == "taxonomy_not_registered":
+        raise ValueError("taxonomy_not_registered")
+
+    from core.gencode.v3_production_publish_service import V3_PRODUCTION_PUBLISH_ALLOWED_SKILLS
+    if skill_key not in V3_PRODUCTION_PUBLISH_ALLOWED_SKILLS and "dynamic" not in skill_key.lower():
+        raise ValueError("production_publish_not_allowed_for_skill")
+
+    if not bool(eligibility.get("allowed")):
+        raise ValueError(str(eligibility.get("reason") or "v3_publish_not_eligible"))
 
     verified_component_count = _count_verified_components_for_skill(conn, skill_key)
     if verified_component_count < 1:
         raise ValueError("no_verified_components")
+
+    # Pre-publish integrity gate — surface errors early without replacing the gate in publish service
+    from core.gencode.services.v3_question_integrity_validator import validate_skill_samples
+    _integrity_result = validate_skill_samples(skill_key, n_seeds=5, source="pre_publish")
+    if not _integrity_result.get("passed", True):
+        raise ValueError(
+            f"integrity_gate_failed: {'; '.join(_integrity_result.get('blockers_summary', []))}"
+        )
 
     from core.gencode.v3_production_publish_service import publish_single_v3_skill_to_production
 
@@ -586,6 +917,13 @@ def run_admin_v3_publish_for_skill(
     )
     status = str(publish_result.get("status", "")).strip()
     component_count = publish_result.get("component_count", 0)
+    published_evidence: list[dict[str, object]] = []
+    if status in {"production_published", "runtime_ready_with_variation_warning"} or publish_result.get("production_smoke_status") == "passed":
+        published_evidence = _record_published_component_evidence(
+            conn,
+            skill_id=skill_key,
+            project_root=project_root,
+        )
 
     return {
         "status": status,
@@ -593,7 +931,9 @@ def run_admin_v3_publish_for_skill(
         "verified_component_count": verified_component_count,
         "component_count": component_count,
         "coverage": coverage,
+        "eligibility": eligibility,
         "warnings": warnings,
+        "integrity_gate_result": _integrity_result,
         "project_root": publish_result.get("project_root"),
         "staging_root": publish_result.get("staging_root"),
         "smoke_status": publish_result.get("smoke_status"),
@@ -604,5 +944,6 @@ def run_admin_v3_publish_for_skill(
         "rollback": publish_result.get("rollback"),
         "production_smoke_error": publish_result.get("production_smoke_error"),
         "timestamp": publish_result.get("timestamp"),
+        "published_evidence": published_evidence,
         "publish": publish_result,
     }

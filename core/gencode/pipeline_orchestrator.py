@@ -304,9 +304,7 @@ def _purge_choice_ghost_cache_from_answer_contract(
     if is_short_answer_family:
         ac = spec.get("answer_contract")
         if isinstance(ac, dict):
-            if str(ac.get("answer_type", "")).strip() == "expression":
-                return spec
-            if str(ac.get("answer_type", "")).strip() == "interval":
+            if str(ac.get("answer_type", "")).strip() in ("expression", "interval", "text_short", "short_answer"):
                 return spec
             ac["presentation_mode"] = "short_answer"
             if pt_key_lower.startswith("integer_"):
@@ -4534,10 +4532,18 @@ def _v3_resolve_dry_run_line_type(
     constraints: dict[str, object] | None,
     skill_id: str = "",
     textbook_row: dict[str, object] | None = None,
+    conn: Any = None,
 ) -> str:
     extra = dict(constraints or {})
-    if "line_type" in extra:
-        return str(extra["line_type"])
+    for k in ("line_type", "problem_type_id", "task_type"):
+        if k in extra and extra[k]:
+            return str(extra[k])
+    
+    if isinstance(textbook_row, dict):
+        for k in ("problem_type_id", "line_type", "task_type"):
+            if k in textbook_row and textbook_row[k]:
+                return str(textbook_row[k])
+
     if str(skill_id or "").strip().endswith("_InterceptForm"):
         return _v3_intercept_form_task_from_textbook_row(textbook_row)
     if str(skill_id or "").strip().endswith("_SlopeInterceptForm"):
@@ -4558,12 +4564,113 @@ def _v3_resolve_dry_run_line_type(
         if "何者" in problem_text or "y={{m" in problem_text or "y=m" in problem_text:
             return "slope_intercept_read_slope_and_intercept"
         return "slope_intercept_equation"
+
+    # Try database lookup of tracker spec payload
+    import json
+    import os
+    import sqlite3
+    textbook_example_id = None
+    if isinstance(textbook_row, dict) and "id" in textbook_row:
+        textbook_example_id = textbook_row["id"]
+    elif str(source_kind or "").strip().lower().startswith("ex_"):
+        try:
+            textbook_example_id = int(str(source_kind).strip().lower().split("_")[1])
+        except (ValueError, IndexError):
+            pass
+
+    if textbook_example_id is not None:
+        # Check database tracker
+        tracker_payload = None
+        if conn is not None:
+            try:
+                cursor = conn.execute(
+                    "SELECT induced_spec_payload FROM gencode_component_tracker WHERE textbook_example_id = ?",
+                    (int(textbook_example_id),)
+                )
+                row = cursor.fetchone()
+                if row and row[0]:
+                    tracker_payload = json.loads(row[0])
+            except Exception:
+                pass
+        else:
+            db_path = "instance/kumon_math.db"
+            if os.path.exists(db_path):
+                try:
+                    temp_conn = sqlite3.connect(db_path)
+                    cursor = temp_conn.execute(
+                        "SELECT induced_spec_payload FROM gencode_component_tracker WHERE textbook_example_id = ?",
+                        (int(textbook_example_id),)
+                    )
+                    row = cursor.fetchone()
+                    temp_conn.close()
+                    if row and row[0]:
+                        tracker_payload = json.loads(row[0])
+                except Exception:
+                    pass
+
+        if tracker_payload:
+            for k in ("problem_type_id", "line_type", "task_type"):
+                if k in tracker_payload and tracker_payload[k]:
+                    return str(tracker_payload[k])
+
+        # Run deterministic classifier
+        try:
+            from core.gencode.services.v3_example_semantic_classifier import TextbookExampleSource, _deterministic_classify, parse_choices_from_text
+            q_text = ""
+            ans_text = ""
+            exp_text = ""
+            lbl_text = ""
+            type_text = ""
+            if isinstance(textbook_row, dict):
+                q_text = textbook_row.get("problem_text") or ""
+                ans_text = textbook_row.get("correct_answer") or ""
+                exp_text = textbook_row.get("detailed_solution") or ""
+                lbl_text = textbook_row.get("source_description") or ""
+                type_text = textbook_row.get("problem_type") or ""
+
+            if not q_text and conn is not None:
+                cursor = conn.execute(
+                    "SELECT problem_text, correct_answer, detailed_solution, source_description, problem_type FROM textbook_examples WHERE id = ?",
+                    (int(textbook_example_id),)
+                )
+                db_row = cursor.fetchone()
+                if db_row:
+                    q_text = db_row[0] or ""
+                    ans_text = db_row[1] or ""
+                    exp_text = db_row[2] or ""
+                    lbl_text = db_row[3] or ""
+                    type_text = db_row[4] or ""
+
+            if q_text:
+                source = TextbookExampleSource(
+                    skill_id=skill_id,
+                    textbook_example_id=int(textbook_example_id),
+                    question_text=q_text,
+                    answer=ans_text,
+                    choices=parse_choices_from_text(q_text),
+                    explanation=exp_text,
+                    source_label=lbl_text,
+                    source_type=type_text,
+                    presentation_mode="short_answer",
+                    question_type=None,
+                    source_hash="",
+                )
+                res = _deterministic_classify(source)
+                if res and res.get("problem_type_id"):
+                    return res["problem_type_id"]
+        except Exception:
+            pass
+
     normalized = str(source_kind or "").strip().lower()
     if normalized.startswith("ex"):
+        import warnings
+        warnings.warn(f"fallback_line_type_detected: ex_* source kind {source_kind} has no resolved line_type. Falling back to point_slope.")
         return "point_slope"
     if normalized.startswith("quiz") or normalized.startswith("test"):
         return "two_points"
     return "point_slope"
+
+
 
 
 def _v3_infer_line_type_from_textbook_example(
@@ -4787,8 +4894,21 @@ def _v3_target_task_for_line_type(line_type: str) -> str:
         "intercept_form_from_intercept_sum_and_slope": "intercept_form_from_intercept_sum_and_slope",
         "parabola_secant_parallel_line_choice": "parabola_secant_parallel_line_choice",
         "triangle_area_bisector_line_equation": "triangle_area_bisector_line_equation",
+        # New General Form V3 types:
+        "slope_from_general_or_intercept_form": "slope_from_general_or_intercept_form",
+        "line_through_point_parallel_to_line": "line_through_point_parallel_to_line",
+        "line_through_point_perpendicular_to_line": "line_through_point_perpendicular_to_line",
+        "slope_of_horizontal_or_vertical_line": "slope_of_horizontal_or_vertical_line",
+        "slope_from_general_form": "slope_from_general_form",
+        "parallel_line_slope": "parallel_line_slope",
+        "perpendicular_condition_parameter": "perpendicular_condition_parameter",
+        "compare_line_slopes": "compare_line_slopes",
+        "perpendicular_line_slope": "perpendicular_line_slope",
+        "line_through_intersection_parallel_to_line": "line_through_intersection_parallel_to_line",
+        "perpendicular_bisector_application": "perpendicular_bisector_application",
+        "line_through_point_perpendicular_to_segment": "line_through_point_perpendicular_to_segment",
     }
-    return mapping.get(line_type, "write_line_equation_from_point_slope")
+    return mapping.get(line_type, line_type)
 
 
 def _v3_template_slot_for_line_type(line_type: str) -> str:
@@ -4804,8 +4924,21 @@ def _v3_template_slot_for_line_type(line_type: str) -> str:
         "intercept_form_from_intercept_sum_and_slope": "intercept_form_from_intercept_sum_and_slope",
         "parabola_secant_parallel_line_choice": "parabola_secant_parallel_line_choice",
         "triangle_area_bisector_line_equation": "triangle_area_bisector_line_equation",
+        # New General Form V3 types:
+        "slope_from_general_or_intercept_form": "slope_from_general_or_intercept_form",
+        "line_through_point_parallel_to_line": "line_through_point_parallel_to_line",
+        "line_through_point_perpendicular_to_line": "line_through_point_perpendicular_to_line",
+        "slope_of_horizontal_or_vertical_line": "slope_of_horizontal_or_vertical_line",
+        "slope_from_general_form": "slope_from_general_form",
+        "parallel_line_slope": "parallel_line_slope",
+        "perpendicular_condition_parameter": "perpendicular_condition_parameter",
+        "compare_line_slopes": "compare_line_slopes",
+        "perpendicular_line_slope": "perpendicular_line_slope",
+        "line_through_intersection_parallel_to_line": "line_through_intersection_parallel_to_line",
+        "perpendicular_bisector_application": "perpendicular_bisector_application",
+        "line_through_point_perpendicular_to_segment": "line_through_point_perpendicular_to_segment",
     }
-    return mapping.get(line_type, "line_equation_from_point_slope")
+    return mapping.get(line_type, line_type)
 
 
 def build_v3_component_draft_from_skill(
@@ -4868,6 +5001,7 @@ def build_v3_component_draft_from_skill(
         extra,
         skill_id=skill_id,
         textbook_row=row,
+        conn=conn,
     )
     difficulty_profile = _v3_resolve_dry_run_difficulty_profile(source_kind)
     problem_type_id = _v3_target_task_for_line_type(line_type)
@@ -4950,6 +5084,10 @@ def build_v3_component_draft_from_skill(
         checker_key = "multi_part_answer_checker"
         equivalence_type = "multi_part_answer"
         checker_module = "core.checkers.multi_part_answer_checker"
+    elif answer_type in ("rational", "numeric_or_undefined"):
+        checker_key = "rational_checker"
+        equivalence_type = "rational_equivalent"
+        checker_module = "core.checkers.structured_text_checker"
     else:
         checker_key = "linear_equation_equivalent_checker"
         equivalence_type = "linear_equation_equivalent"
@@ -5243,6 +5381,65 @@ def run_gencode_phase2_v3_shadow_bridge(
         source_kind=source_kind,
         textbook_example_id=textbook_example_id,
     )
+
+    # Integrity gate: exec generate.py at seed=42, validate payload
+    _gen_code_str = (draft.get("files") or {}).get("generate.py", "")
+    _sample_payload: dict = {}
+    _execution_error: str | None = None
+    try:
+        _locs: dict = {}
+        exec(_gen_code_str, _locs)  # noqa: S102
+        if "generate" in _locs:
+            _sample_payload = _locs["generate"](seed=42)
+        else:
+            _execution_error = "missing_generate_function"
+    except Exception as e:
+        _execution_error = f"execution_error:{type(e).__name__}:{str(e)}"
+
+    if _execution_error:
+        save_tracker_record(
+            conn,
+            textbook_example_id=textbook_example_id,
+            skill_id=skill_key,
+            gencode_status="failed",
+            induced_spec_payload={
+                **induced_spec_payload,
+                "integrity_gate_passed": False,
+                "integrity_gate_blockers": ["generate_execution_failed"],
+                "integrity_gate_version": "v1",
+            },
+            gencode_error_log=f"integrity_gate_blocker:{_execution_error}",
+        )
+        raise ValueError(f"source_fidelity_failed: integrity_gate_blocker:{_execution_error}")
+
+    from core.gencode.services.v3_question_integrity_validator import validate_component_payload
+    _gate_result = validate_component_payload(_sample_payload, component_id=str(derive_component_id(textbook_example_id)))
+    if not _gate_result["passed"]:
+        _blockers = _gate_result["blockers"]
+        save_tracker_record(
+            conn,
+            textbook_example_id=textbook_example_id,
+            skill_id=skill_key,
+            gencode_status="failed",
+            induced_spec_payload={
+                **induced_spec_payload,
+                "integrity_gate_passed": False,
+                "integrity_gate_blockers": _blockers,
+                "integrity_gate_version": "v1",
+            },
+            gencode_error_log="; ".join(f"integrity_gate_blocker:{b}" for b in _blockers),
+        )
+        raise ValueError(
+            f"source_fidelity_failed: " + "; ".join(f"integrity_gate_blocker:{b}" for b in _blockers)
+        )
+
+    # Record gate outcome in spec payload
+    induced_spec_payload.update({
+        "integrity_gate_passed": True,
+        "integrity_gate_blockers": [],
+        "integrity_gate_version": "v1",
+    })
+
     component_dir = write_v3_component_to_disk(draft, dryrun_path)
     component_id = derive_component_id(textbook_example_id)
 

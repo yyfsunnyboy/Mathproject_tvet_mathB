@@ -132,7 +132,9 @@ def create_app():
         SECRET_KEY=Config.SECRET_KEY,
         GEMINI_API_KEY=Config.GEMINI_API_KEY,
         GEMINI_MODEL_NAME=Config.GEMINI_MODEL_NAME,
-        ENABLE_VISION_OCR_FALLBACK=getattr(Config, "ENABLE_VISION_OCR_FALLBACK", False)
+        ENABLE_VISION_OCR_FALLBACK=getattr(Config, "ENABLE_VISION_OCR_FALLBACK", False),
+        GENCODE_V3_PUBLISH_PROJECT_ROOT=getattr(Config, "GENCODE_V3_PUBLISH_PROJECT_ROOT", None),
+        GENCODE_V3_PUBLISH_STAGING_ROOT=getattr(Config, "GENCODE_V3_PUBLISH_STAGING_ROOT", None)
         ,SQLALCHEMY_ENGINE_OPTIONS={
             "connect_args": {"timeout": 30}  # 增加等待解鎖的時間到 30 秒
         }

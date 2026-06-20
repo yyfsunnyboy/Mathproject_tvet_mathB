@@ -44,6 +44,8 @@ HV_PAYLOAD = {
     "source_kind": "ex_1",
     "presentation_mode": "short_answer",
     "line_type": "horizontal_line",
+    "integrity_gate_passed": True,
+    "integrity_gate_version": "v1",
 }
 
 STUB_METADATA_PY = f'''from __future__ import annotations
@@ -275,13 +277,13 @@ def test_hv_skill_publish_via_publish_single_directly(
 # ---------------------------------------------------------------------------
 
 
-def test_fake_skill_still_rejected(
+def test_fake_skill_rejected_when_taxonomy_not_registered(
     memory_conn: sqlite3.Connection,
     isolated_roots: tuple[Path, Path],
 ):
     """非 allowlist skill 仍必須被死鎖。"""
     project_root, staging_root = isolated_roots
-    with pytest.raises(ValueError, match="production_publish_not_allowed_for_skill"):
+    with pytest.raises(ValueError, match="taxonomy_not_registered"):
         run_admin_v3_publish_for_skill(
             conn=memory_conn,
             skill_id=FAKE_SKILL_ID,
@@ -298,7 +300,7 @@ def test_hv_skill_rejected_without_verified_components(
     """HV skill 無 verified component 時必須被拒絕。"""
     project_root, staging_root = isolated_roots
     # 不插入任何 verified 組件
-    with pytest.raises(ValueError, match="no_verified_components"):
+    with pytest.raises(ValueError, match="no_textbook_examples"):
         run_admin_v3_publish_for_skill(
             conn=memory_conn,
             skill_id=HV_SKILL_ID,
@@ -325,13 +327,13 @@ def test_force_publish_false_still_rejected(
         )
 
 
-def test_direct_publish_rejects_fake_skill(
+def test_direct_publish_rejects_fake_skill_when_taxonomy_not_registered(
     memory_conn: sqlite3.Connection,
     isolated_roots: tuple[Path, Path],
 ):
     """底層 publish_single_v3_skill_to_production 也必須拒絕非 allowlist skill。"""
     project_root, staging_root = isolated_roots
-    with pytest.raises(ValueError, match="production_publish_not_allowed_for_skill"):
+    with pytest.raises(ValueError, match="taxonomy_not_registered"):
         publish_single_v3_skill_to_production(
             conn=memory_conn,
             skill_id=FAKE_SKILL_ID,
@@ -345,12 +347,11 @@ def test_direct_publish_rejects_fake_skill(
 # ---------------------------------------------------------------------------
 
 
-def test_template_uses_dynamic_allowlist_context():
-    """模板必須使用動態 v3_publish_allowed_skill_ids，不再硬編碼單一 skill_id。"""
+def test_template_uses_eligibility_context():
+    """模板必須保留既有 V3 repackage 入口，不在老師主畫面要求工程狀態詞。"""
     content = (PROJECT_ROOT / "templates" / "admin_skills.html").read_text(encoding="utf-8")
-    assert "v3_publish_allowed_skill_ids" in content, (
-        "模板應使用後端傳入的 v3_publish_allowed_skill_ids context 變數"
-    )
+    assert "repackageSkillV3" in content
+    assert "core.admin_run_skill_v3_repackage" in content
     # 確認舊的硬編碼條件已消失
     assert "skill.skill_id == 'vh_數學B1_PointSlopeForm'" not in content, (
         "模板仍有舊的硬編碼 PointSlopeForm 條件，應已改為動態 allowlist 檢查"
@@ -360,15 +361,15 @@ def test_template_uses_dynamic_allowlist_context():
 def test_template_publish_button_present():
     """模板仍含有正式發布按鈕的關鍵元素。"""
     content = (PROJECT_ROOT / "templates" / "admin_skills.html").read_text(encoding="utf-8")
-    assert "admin_run_skill_v3_publish" in content
-    assert "🚀 正式發布 V3" in content
-    assert 'name="force_publish" value="1"' in content
+    assert "admin_run_skill_v3_repackage" in content
+    assert "更新到學生端" in content
+    assert "repackageSkillV3" in content
 
 
-def test_template_allowlist_membership_check():
+def test_template_eligibility_membership_check_removed():
     """模板發布按鈕條件必須含 'in' 語義（membership check）。"""
     content = (PROJECT_ROOT / "templates" / "admin_skills.html").read_text(encoding="utf-8")
-    assert "in (v3_publish_allowed_skill_ids or [])" in content, (
+    assert "in (v3_publish_allowed_skill_ids or [])" not in content, (
         "模板應使用 'skill.skill_id in (v3_publish_allowed_skill_ids or [])' 語義"
     )
 
@@ -376,11 +377,11 @@ def test_template_allowlist_membership_check():
 def test_template_verified_component_condition_preserved():
     """verified component 條件必須保留。"""
     content = (PROJECT_ROOT / "templates" / "admin_skills.html").read_text(encoding="utf-8")
-    assert "gencode.get('status') == 'verified'" in content
+    assert "gencode.get('publish_ready')" in content
 
 
-def test_admin_route_imports_allowlist():
+def test_admin_route_does_not_import_allowlist():
     """admin.py 的 admin_skills route 必須傳入 v3_publish_allowed_skill_ids。"""
     content = (PROJECT_ROOT / "core" / "routes" / "admin.py").read_text(encoding="utf-8")
-    assert "v3_publish_allowed_skill_ids" in content
-    assert "V3_PRODUCTION_PUBLISH_ALLOWED_SKILLS" in content
+    assert "v3_publish_allowed_skill_ids" not in content
+    assert "V3_PRODUCTION_PUBLISH_ALLOWED_SKILLS" not in content

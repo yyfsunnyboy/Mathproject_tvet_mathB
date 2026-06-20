@@ -1,0 +1,194 @@
+{
+  "skill_id": "vh_數學B1_GeneralFormOfLinearEquation",
+  "compiled_at": "2026-06-19T15:03:08.076208+00:00",
+  "publish_status": "dryrun_manifest_compiled",
+  "components": [
+    {
+      "component_id": "src_4565",
+      "status": "draft_written",
+      "presentation_mode": "short_answer",
+      "source_kind": "ex_4565",
+      "textbook_example_id": 4565,
+      "line_type": "slope_from_general_or_intercept_form",
+      "domain_module": "core.domain.coordinate_geometry.line_equation_domain",
+      "entrypoint": "build_line_equation_matrix",
+      "component_dir": "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_publish_staging\\general_form_rebuild\\vh_數學B1_GeneralFormOfLinearEquation\\components\\src_4565"
+    },
+    {
+      "component_id": "src_4566",
+      "status": "draft_written",
+      "presentation_mode": "short_answer",
+      "source_kind": "ex_4566",
+      "textbook_example_id": 4566,
+      "line_type": "line_through_point_parallel_to_line",
+      "domain_module": "core.domain.coordinate_geometry.line_equation_domain",
+      "entrypoint": "build_line_equation_matrix",
+      "component_dir": "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_publish_staging\\general_form_rebuild\\vh_數學B1_GeneralFormOfLinearEquation\\components\\src_4566"
+    },
+    {
+      "component_id": "src_4567",
+      "status": "draft_written",
+      "presentation_mode": "short_answer",
+      "source_kind": "ex_4567",
+      "textbook_example_id": 4567,
+      "line_type": "line_through_point_perpendicular_to_line",
+      "domain_module": "core.domain.coordinate_geometry.line_equation_domain",
+      "entrypoint": "build_line_equation_matrix",
+      "component_dir": "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_publish_staging\\general_form_rebuild\\vh_數學B1_GeneralFormOfLinearEquation\\components\\src_4567"
+    },
+    {
+      "component_id": "src_4572",
+      "status": "draft_written",
+      "presentation_mode": "short_answer",
+      "source_kind": "ex_4572",
+      "textbook_example_id": 4572,
+      "line_type": "slope_of_horizontal_or_vertical_line",
+      "domain_module": "core.domain.coordinate_geometry.line_equation_domain",
+      "entrypoint": "build_line_equation_matrix",
+      "component_dir": "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_publish_staging\\general_form_rebuild\\vh_數學B1_GeneralFormOfLinearEquation\\components\\src_4572"
+    },
+    {
+      "component_id": "src_4573",
+      "status": "draft_written",
+      "presentation_mode": "short_answer",
+      "source_kind": "ex_4573",
+      "textbook_example_id": 4573,
+      "line_type": "line_through_point_parallel_to_line",
+      "domain_module": "core.domain.coordinate_geometry.line_equation_domain",
+      "entrypoint": "build_line_equation_matrix",
+      "component_dir": "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_publish_staging\\general_form_rebuild\\vh_數學B1_GeneralFormOfLinearEquation\\components\\src_4573"
+    },
+    {
+      "component_id": "src_4574",
+      "status": "draft_written",
+      "presentation_mode": "short_answer",
+      "source_kind": "ex_4574",
+      "textbook_example_id": 4574,
+      "line_type": "line_through_point_perpendicular_to_line",
+      "domain_module": "core.domain.coordinate_geometry.line_equation_domain",
+      "entrypoint": "build_line_equation_matrix",
+      "component_dir": "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_publish_staging\\general_form_rebuild\\vh_數學B1_GeneralFormOfLinearEquation\\components\\src_4574"
+    },
+    {
+      "component_id": "src_4581",
+      "status": "draft_written",
+      "presentation_mode": "short_answer",
+      "source_kind": "ex_4581",
+      "textbook_example_id": 4581,
+      "line_type": "slope_from_general_form",
+      "domain_module": "core.domain.coordinate_geometry.line_equation_domain",
+      "entrypoint": "build_line_equation_matrix",
+      "component_dir": "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_publish_staging\\general_form_rebuild\\vh_數學B1_GeneralFormOfLinearEquation\\components\\src_4581"
+    },
+    {
+      "component_id": "src_4582",
+      "status": "draft_written",
+      "presentation_mode": "short_answer",
+      "source_kind": "ex_4582",
+      "textbook_example_id": 4582,
+      "line_type": "line_through_point_parallel_to_line",
+      "domain_module": "core.domain.coordinate_geometry.line_equation_domain",
+      "entrypoint": "build_line_equation_matrix",
+      "component_dir": "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_publish_staging\\general_form_rebuild\\vh_數學B1_GeneralFormOfLinearEquation\\components\\src_4582"
+    },
+    {
+      "component_id": "src_4585",
+      "status": "draft_written",
+      "presentation_mode": "short_answer",
+      "source_kind": "ex_4585",
+      "textbook_example_id": 4585,
+      "line_type": "line_through_point_perpendicular_to_line",
+      "domain_module": "core.domain.coordinate_geometry.line_equation_domain",
+      "entrypoint": "build_line_equation_matrix",
+      "component_dir": "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_publish_staging\\general_form_rebuild\\vh_數學B1_GeneralFormOfLinearEquation\\components\\src_4585"
+    },
+    {
+      "component_id": "src_4592",
+      "status": "draft_written",
+      "presentation_mode": "single_choice",
+      "source_kind": "ex_4592",
+      "textbook_example_id": 4592,
+      "line_type": "parallel_line_slope",
+      "domain_module": "core.domain.coordinate_geometry.line_equation_domain",
+      "entrypoint": "build_line_equation_matrix",
+      "component_dir": "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_publish_staging\\general_form_rebuild\\vh_數學B1_GeneralFormOfLinearEquation\\components\\src_4592"
+    },
+    {
+      "component_id": "src_4593",
+      "status": "draft_written",
+      "presentation_mode": "short_answer",
+      "source_kind": "ex_4593",
+      "textbook_example_id": 4593,
+      "line_type": "perpendicular_condition_parameter",
+      "domain_module": "core.domain.coordinate_geometry.line_equation_domain",
+      "entrypoint": "build_line_equation_matrix",
+      "component_dir": "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_publish_staging\\general_form_rebuild\\vh_數學B1_GeneralFormOfLinearEquation\\components\\src_4593"
+    },
+    {
+      "component_id": "src_4594",
+      "status": "draft_written",
+      "presentation_mode": "single_choice",
+      "source_kind": "ex_4594",
+      "textbook_example_id": 4594,
+      "line_type": "line_through_point_perpendicular_to_line",
+      "domain_module": "core.domain.coordinate_geometry.line_equation_domain",
+      "entrypoint": "build_line_equation_matrix",
+      "component_dir": "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_publish_staging\\general_form_rebuild\\vh_數學B1_GeneralFormOfLinearEquation\\components\\src_4594"
+    },
+    {
+      "component_id": "src_4595",
+      "status": "draft_written",
+      "presentation_mode": "single_choice",
+      "source_kind": "ex_4595",
+      "textbook_example_id": 4595,
+      "line_type": "compare_line_slopes",
+      "domain_module": "core.domain.coordinate_geometry.line_equation_domain",
+      "entrypoint": "build_line_equation_matrix",
+      "component_dir": "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_publish_staging\\general_form_rebuild\\vh_數學B1_GeneralFormOfLinearEquation\\components\\src_4595"
+    },
+    {
+      "component_id": "src_4596",
+      "status": "draft_written",
+      "presentation_mode": "single_choice",
+      "source_kind": "ex_4596",
+      "textbook_example_id": 4596,
+      "line_type": "perpendicular_line_slope",
+      "domain_module": "core.domain.coordinate_geometry.line_equation_domain",
+      "entrypoint": "build_line_equation_matrix",
+      "component_dir": "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_publish_staging\\general_form_rebuild\\vh_數學B1_GeneralFormOfLinearEquation\\components\\src_4596"
+    },
+    {
+      "component_id": "src_4597",
+      "status": "draft_written",
+      "presentation_mode": "single_choice",
+      "source_kind": "ex_4597",
+      "textbook_example_id": 4597,
+      "line_type": "line_through_intersection_parallel_to_line",
+      "domain_module": "core.domain.coordinate_geometry.line_equation_domain",
+      "entrypoint": "build_line_equation_matrix",
+      "component_dir": "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_publish_staging\\general_form_rebuild\\vh_數學B1_GeneralFormOfLinearEquation\\components\\src_4597"
+    },
+    {
+      "component_id": "src_4598",
+      "status": "draft_written",
+      "presentation_mode": "single_choice",
+      "source_kind": "ex_4598",
+      "textbook_example_id": 4598,
+      "line_type": "line_through_point_perpendicular_to_line",
+      "domain_module": "core.domain.coordinate_geometry.line_equation_domain",
+      "entrypoint": "build_line_equation_matrix",
+      "component_dir": "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_publish_staging\\general_form_rebuild\\vh_數學B1_GeneralFormOfLinearEquation\\components\\src_4598"
+    },
+    {
+      "component_id": "src_4599",
+      "status": "draft_written",
+      "presentation_mode": "single_choice",
+      "source_kind": "ex_4599",
+      "textbook_example_id": 4599,
+      "line_type": "perpendicular_bisector_application",
+      "domain_module": "core.domain.coordinate_geometry.line_equation_domain",
+      "entrypoint": "build_line_equation_matrix",
+      "component_dir": "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_publish_staging\\general_form_rebuild\\vh_數學B1_GeneralFormOfLinearEquation\\components\\src_4599"
+    }
+  ]
+}

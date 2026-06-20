@@ -1,6 +1,6 @@
 {
   "skill_id": "vh_數學B1_GeneralFormOfLinearEquation",
-  "compiled_at": "2026-06-18T08:10:13.971416+00:00",
+  "compiled_at": "2026-06-20T08:52:34.995585+00:00",
   "publish_status": "dryrun_manifest_compiled",
   "components": [
     {
@@ -9,10 +9,10 @@
       "presentation_mode": "short_answer",
       "source_kind": "ex_4565",
       "textbook_example_id": 4565,
-      "line_type": "point_slope",
+      "line_type": "slope_from_general_or_intercept_form",
       "domain_module": "core.domain.coordinate_geometry.line_equation_domain",
       "entrypoint": "build_line_equation_matrix",
-      "component_dir": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_dryrun\\vh_數學B1_GeneralFormOfLinearEquation\\components\\src_4565"
+      "component_dir": "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_dryrun\\vh_數學B1_GeneralFormOfLinearEquation\\components\\src_4565"
     },
     {
       "component_id": "src_4566",
@@ -23,7 +23,7 @@
       "line_type": "point_slope",
       "domain_module": "core.domain.coordinate_geometry.line_equation_domain",
       "entrypoint": "build_line_equation_matrix",
-      "component_dir": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_dryrun\\vh_數學B1_GeneralFormOfLinearEquation\\components\\src_4566"
+      "component_dir": "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_dryrun\\vh_數學B1_GeneralFormOfLinearEquation\\components\\src_4566"
     },
     {
       "component_id": "src_4567",
@@ -34,7 +34,7 @@
       "line_type": "point_slope",
       "domain_module": "core.domain.coordinate_geometry.line_equation_domain",
       "entrypoint": "build_line_equation_matrix",
-      "component_dir": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_dryrun\\vh_數學B1_GeneralFormOfLinearEquation\\components\\src_4567"
+      "component_dir": "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_dryrun\\vh_數學B1_GeneralFormOfLinearEquation\\components\\src_4567"
     },
     {
       "component_id": "src_4572",
@@ -45,7 +45,7 @@
       "line_type": "point_slope",
       "domain_module": "core.domain.coordinate_geometry.line_equation_domain",
       "entrypoint": "build_line_equation_matrix",
-      "component_dir": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_dryrun\\vh_數學B1_GeneralFormOfLinearEquation\\components\\src_4572"
+      "component_dir": "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_dryrun\\vh_數學B1_GeneralFormOfLinearEquation\\components\\src_4572"
     },
     {
       "component_id": "src_4573",
@@ -56,7 +56,7 @@
       "line_type": "point_slope",
       "domain_module": "core.domain.coordinate_geometry.line_equation_domain",
       "entrypoint": "build_line_equation_matrix",
-      "component_dir": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_dryrun\\vh_數學B1_GeneralFormOfLinearEquation\\components\\src_4573"
+      "component_dir": "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_dryrun\\vh_數學B1_GeneralFormOfLinearEquation\\components\\src_4573"
     },
     {
       "component_id": "src_4574",
@@ -67,7 +67,7 @@
       "line_type": "point_slope",
       "domain_module": "core.domain.coordinate_geometry.line_equation_domain",
       "entrypoint": "build_line_equation_matrix",
-      "component_dir": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_dryrun\\vh_數學B1_GeneralFormOfLinearEquation\\components\\src_4574"
+      "component_dir": "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_dryrun\\vh_數學B1_GeneralFormOfLinearEquation\\components\\src_4574"
     },
     {
       "component_id": "src_4581",
@@ -78,7 +78,7 @@
       "line_type": "point_slope",
       "domain_module": "core.domain.coordinate_geometry.line_equation_domain",
       "entrypoint": "build_line_equation_matrix",
-      "component_dir": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_dryrun\\vh_數學B1_GeneralFormOfLinearEquation\\components\\src_4581"
+      "component_dir": "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_dryrun\\vh_數學B1_GeneralFormOfLinearEquation\\components\\src_4581"
     },
     {
       "component_id": "src_4582",
@@ -89,7 +89,7 @@
       "line_type": "point_slope",
       "domain_module": "core.domain.coordinate_geometry.line_equation_domain",
       "entrypoint": "build_line_equation_matrix",
-      "component_dir": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_dryrun\\vh_數學B1_GeneralFormOfLinearEquation\\components\\src_4582"
+      "component_dir": "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_dryrun\\vh_數學B1_GeneralFormOfLinearEquation\\components\\src_4582"
     },
     {
       "component_id": "src_4585",
@@ -100,7 +100,7 @@
       "line_type": "point_slope",
       "domain_module": "core.domain.coordinate_geometry.line_equation_domain",
       "entrypoint": "build_line_equation_matrix",
-      "component_dir": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_dryrun\\vh_數學B1_GeneralFormOfLinearEquation\\components\\src_4585"
+      "component_dir": "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_dryrun\\vh_數學B1_GeneralFormOfLinearEquation\\components\\src_4585"
     },
     {
       "component_id": "src_4592",
@@ -111,7 +111,7 @@
       "line_type": "point_slope",
       "domain_module": "core.domain.coordinate_geometry.line_equation_domain",
       "entrypoint": "build_line_equation_matrix",
-      "component_dir": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_dryrun\\vh_數學B1_GeneralFormOfLinearEquation\\components\\src_4592"
+      "component_dir": "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_dryrun\\vh_數學B1_GeneralFormOfLinearEquation\\components\\src_4592"
     },
     {
       "component_id": "src_4593",
@@ -122,7 +122,7 @@
       "line_type": "point_slope",
       "domain_module": "core.domain.coordinate_geometry.line_equation_domain",
       "entrypoint": "build_line_equation_matrix",
-      "component_dir": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_dryrun\\vh_數學B1_GeneralFormOfLinearEquation\\components\\src_4593"
+      "component_dir": "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_dryrun\\vh_數學B1_GeneralFormOfLinearEquation\\components\\src_4593"
     },
     {
       "component_id": "src_4594",
@@ -133,7 +133,7 @@
       "line_type": "point_slope",
       "domain_module": "core.domain.coordinate_geometry.line_equation_domain",
       "entrypoint": "build_line_equation_matrix",
-      "component_dir": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_dryrun\\vh_數學B1_GeneralFormOfLinearEquation\\components\\src_4594"
+      "component_dir": "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_dryrun\\vh_數學B1_GeneralFormOfLinearEquation\\components\\src_4594"
     },
     {
       "component_id": "src_4595",
@@ -144,7 +144,7 @@
       "line_type": "point_slope",
       "domain_module": "core.domain.coordinate_geometry.line_equation_domain",
       "entrypoint": "build_line_equation_matrix",
-      "component_dir": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_dryrun\\vh_數學B1_GeneralFormOfLinearEquation\\components\\src_4595"
+      "component_dir": "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_dryrun\\vh_數學B1_GeneralFormOfLinearEquation\\components\\src_4595"
     },
     {
       "component_id": "src_4596",
@@ -155,7 +155,7 @@
       "line_type": "point_slope",
       "domain_module": "core.domain.coordinate_geometry.line_equation_domain",
       "entrypoint": "build_line_equation_matrix",
-      "component_dir": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_dryrun\\vh_數學B1_GeneralFormOfLinearEquation\\components\\src_4596"
+      "component_dir": "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_dryrun\\vh_數學B1_GeneralFormOfLinearEquation\\components\\src_4596"
     },
     {
       "component_id": "src_4597",
@@ -166,7 +166,7 @@
       "line_type": "point_slope",
       "domain_module": "core.domain.coordinate_geometry.line_equation_domain",
       "entrypoint": "build_line_equation_matrix",
-      "component_dir": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_dryrun\\vh_數學B1_GeneralFormOfLinearEquation\\components\\src_4597"
+      "component_dir": "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_dryrun\\vh_數學B1_GeneralFormOfLinearEquation\\components\\src_4597"
     },
     {
       "component_id": "src_4598",
@@ -177,7 +177,7 @@
       "line_type": "point_slope",
       "domain_module": "core.domain.coordinate_geometry.line_equation_domain",
       "entrypoint": "build_line_equation_matrix",
-      "component_dir": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_dryrun\\vh_數學B1_GeneralFormOfLinearEquation\\components\\src_4598"
+      "component_dir": "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_dryrun\\vh_數學B1_GeneralFormOfLinearEquation\\components\\src_4598"
     },
     {
       "component_id": "src_4599",
@@ -188,7 +188,7 @@
       "line_type": "point_slope",
       "domain_module": "core.domain.coordinate_geometry.line_equation_domain",
       "entrypoint": "build_line_equation_matrix",
-      "component_dir": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_dryrun\\vh_數學B1_GeneralFormOfLinearEquation\\components\\src_4599"
+      "component_dir": "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_dryrun\\vh_數學B1_GeneralFormOfLinearEquation\\components\\src_4599"
     }
   ]
 }

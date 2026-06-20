@@ -26,6 +26,8 @@ PAYLOAD = {
     "source_kind": "ex_1",
     "presentation_mode": "short_answer",
     "line_type": "point_slope",
+    "integrity_gate_passed": True,
+    "integrity_gate_version": "v1",
 }
 
 STUB_METADATA_PY = '''from __future__ import annotations
@@ -206,7 +208,8 @@ def test_publish_rejects_non_benchmark_skill(
     project_root, staging_root = isolated_publish_roots
     _setup_mock_project_root(project_root)
 
-    with pytest.raises(ValueError, match="production_publish_not_allowed_for_skill"):
+    # jh_* skills are not in the vh_* taxonomy scope → taxonomy_not_registered
+    with pytest.raises(ValueError, match="taxonomy_not_registered"):
         run_admin_v3_publish_for_skill(
             conn=memory_conn,
             skill_id="jh_數學1上_FourArithmeticOperationsOfIntegers",
@@ -220,46 +223,49 @@ def test_publish_rejects_missing_verified_components(
     memory_conn: sqlite3.Connection,
     isolated_publish_roots: tuple[Path, Path],
 ):
+    from unittest import mock
     project_root, staging_root = isolated_publish_roots
     _setup_mock_project_root(project_root)
 
-    with pytest.raises(ValueError, match="no_verified_components"):
-        run_admin_v3_publish_for_skill(
-            conn=memory_conn,
-            skill_id=SKILL_ID,
-            project_root=str(project_root),
-            staging_root=str(staging_root),
-            force_publish=True,
-        )
+    with mock.patch("core.gencode.services.admin_gencode_action_service.evaluate_v3_publish_eligibility", return_value={"allowed": True}):
+        with pytest.raises(ValueError, match="no_verified_components"):
+            run_admin_v3_publish_for_skill(
+                conn=memory_conn,
+                skill_id=SKILL_ID,
+                project_root=str(project_root),
+                staging_root=str(staging_root),
+                force_publish=True,
+            )
 
 
 def test_publish_rejects_when_verified_rows_cleared(
     memory_conn: sqlite3.Connection,
     isolated_publish_roots: tuple[Path, Path],
 ):
+    from unittest import mock
     _insert_verified_component(memory_conn)
     project_root, staging_root = isolated_publish_roots
     _setup_mock_project_root(project_root)
     memory_conn.execute("DELETE FROM gencode_component_tracker")
     memory_conn.commit()
 
-    with pytest.raises(ValueError, match="no_verified_components"):
-        run_admin_v3_publish_for_skill(
-            conn=memory_conn,
-            skill_id=SKILL_ID,
-            project_root=str(project_root),
-            staging_root=str(staging_root),
-            force_publish=True,
-        )
+    with mock.patch("core.gencode.services.admin_gencode_action_service.evaluate_v3_publish_eligibility", return_value={"allowed": True}):
+        with pytest.raises(ValueError, match="no_verified_components"):
+            run_admin_v3_publish_for_skill(
+                conn=memory_conn,
+                skill_id=SKILL_ID,
+                project_root=str(project_root),
+                staging_root=str(staging_root),
+                force_publish=True,
+            )
 
 
 def test_template_has_publish_button_contract():
     content = (PROJECT_ROOT / "templates" / "admin_skills.html").read_text(encoding="utf-8")
-    assert "admin_run_skill_v3_publish" in content
+    assert "admin_run_skill_v3_repackage" in content
     assert "admin_run_skill_v3_dryrun" in content
-    assert "🚀 V3 發布" in content
-    assert "V3 批次生成元件" in content
-    assert "v3_publish_allowed_skill_ids" in content
+    assert "V3 重新包裝" in content
+    assert "V3 重新生成" in content
+    assert "publish_eligible" in content
     assert "verified_count" in content
-    assert 'name="force_publish" value="1"' in content
-    assert "verified components" in content
+    assert "repackageSkillV3" in content

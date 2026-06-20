@@ -14,6 +14,9 @@ from typing import Any, Sequence
 
 PROJECT_ROOT = Path(__file__).resolve().parents[3]
 
+# Shared constant — do NOT copy; always import from here
+from core.gencode.services.v3_question_integrity_validator import BLOCKED_STEMS  # noqa: E402
+
 
 def extract_parameter_signature(payload: dict[str, Any]) -> str:
     """Extract a parameter signature from the payload to detect mathematical property variation."""
@@ -277,7 +280,12 @@ def audit_skill_variation(
             if unique_q > 1 and unique_c > 1 and unique_sigs > 1:
                 var_status = "dynamic"
             elif unique_q == 1 and unique_c == 1 and unique_sigs == 1:
-                var_status = "static"
+                # Check whether the single question_text is a generic placeholder
+                sole_q = next(iter(p["question_text"] for p in payloads), "")
+                if any(stem and stem in sole_q for stem in BLOCKED_STEMS):
+                    var_status = "static_stem_collapse"
+                else:
+                    var_status = "static"
             else:
                 var_status = "partially_dynamic"
                 
@@ -312,10 +320,13 @@ def audit_skill_variation(
     partial_count = sum(1 for c in component_results.values() if c["variation_status"] == "partially_dynamic")
     insufficient_count = sum(1 for c in component_results.values() if c["variation_status"] == "insufficient_sample")
     unsafe_count = sum(1 for c in component_results.values() if c["variation_status"] == "unsafe_dynamic")
+    collapse_count = sum(1 for c in component_results.values() if c["variation_status"] == "static_stem_collapse")
     
     # Skill-level status logic
     if total_comps == 0:
         overall_status = "no_components"
+    elif collapse_count > 0:
+        overall_status = "static_stem_collapse"
     elif unsafe_count > 0:
         overall_status = "unsafe_dynamic"
     elif dynamic_count == total_comps:
@@ -340,6 +351,7 @@ def audit_skill_variation(
         "partially_dynamic_count": partial_count,
         "insufficient_sample_count": insufficient_count,
         "unsafe_dynamic_count": unsafe_count,
+        "collapse_count": collapse_count,
         "variation_status_by_component": component_results,
         "variation_warnings": warnings,
         "variation_warning": "; ".join(warnings) if warnings else "",

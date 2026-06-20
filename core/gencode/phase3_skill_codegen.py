@@ -155,7 +155,11 @@ def build_generator_specs_for_phase3(skill_id: str, phase2_usable: list[dict[str
             enriched["answer_contract"] = canonical_ac
             enriched["answer_format_hint"] = HINT_INTERVAL
         elif original_pt.startswith("integer_"):
-            if target_task in _FACTORING_TASKS or canonical_ac.get("answer_type") == "expression":
+            if str(canonical_ac.get("answer_type", "")).strip() == "text_short" or str(canonical_ac.get("checker_key", "")).strip() in {"text_short_checker", "structured_text_checker"}:
+                pass
+            elif str(canonical_ac.get("answer_type", "")).strip() == "single_choice" or str(canonical_ac.get("checker_key", "")).strip() == "choice_label_checker":
+                pass
+            elif target_task in _FACTORING_TASKS or canonical_ac.get("answer_type") == "expression":
                 canonical_ac = answer_contract_from_hint(HINT_EXPRESSION, existing_ac=canonical_ac)
                 enriched["answer_contract"] = canonical_ac
                 enriched["answer_format_hint"] = HINT_EXPRESSION
@@ -164,7 +168,11 @@ def build_generator_specs_for_phase3(skill_id: str, phase2_usable: list[dict[str
                 enriched["answer_contract"] = canonical_ac
                 enriched["answer_format_hint"] = HINT_INTEGER
         elif original_pt.startswith("rational_"):
-            if target_task in QUADRATIC_INEQUALITY_SOLUTION_TASKS and base_task not in {
+            if str(canonical_ac.get("answer_type", "")).strip() == "text_short" or str(canonical_ac.get("checker_key", "")).strip() in {"text_short_checker", "structured_text_checker"}:
+                pass
+            elif str(canonical_ac.get("answer_type", "")).strip() == "single_choice" or str(canonical_ac.get("checker_key", "")).strip() == "choice_label_checker":
+                pass
+            elif target_task in QUADRATIC_INEQUALITY_SOLUTION_TASKS and base_task not in {
                 "solve_quadratic_inequality_special_cases",
                 "reverse_quadratic_inequality_coefficients",
             }:

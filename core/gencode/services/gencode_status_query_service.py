@@ -5,6 +5,8 @@ from __future__ import annotations
 import sqlite3
 import json
 import ast
+import hashlib
+from datetime import datetime
 from pathlib import Path
 from typing import Any
 
@@ -46,6 +48,332 @@ _STATUS_PRIORITY: dict[str, int] = {
 
 def format_gencode_status_label(status: str) -> str:
     return GENCODE_STATUS_LABELS.get(str(status or "").strip(), str(status or "").strip() or "未建立")
+
+
+TEACHER_V3_STATUS: dict[str, dict[str, object]] = {
+    "not_generated": {
+        "status_key": "not_generated",
+        "label": "尚未生成",
+        "badge_class": "teacher-v3-not-generated",
+        "icon": "⚪",
+        "is_clickable": True,
+    },
+    "generating": {
+        "status_key": "generating",
+        "label": "生成中",
+        "badge_class": "teacher-v3-generating",
+        "icon": "🔵",
+        "is_clickable": True,
+    },
+    "generated_not_packaged": {
+        "status_key": "generated_not_packaged",
+        "label": "尚未上線",
+        "badge_class": "teacher-v3-generated-not-packaged",
+        "icon": "🟡",
+        "is_clickable": True,
+    },
+    "generation_incomplete": {
+        "status_key": "generation_incomplete",
+        "label": "生成未完成",
+        "badge_class": "teacher-v3-generation-incomplete",
+        "icon": "🟡",
+        "is_clickable": True,
+    },
+    "failed": {
+        "status_key": "failed",
+        "label": "生成失敗",
+        "badge_class": "teacher-v3-failed",
+        "icon": "🔴",
+        "is_clickable": True,
+    },
+    "published": {
+        "status_key": "published",
+        "label": "已經上線",
+        "badge_class": "teacher-v3-published",
+        "icon": "🟢",
+        "is_clickable": True,
+    },
+}
+
+
+def _teacher_status_payload(status_key: str) -> dict[str, object]:
+    return dict(TEACHER_V3_STATUS.get(status_key, TEACHER_V3_STATUS["not_generated"]))
+
+
+def resolve_teacher_facing_v3_status(
+    *,
+    gencode_status: str | None = None,
+    has_tracker: bool = False,
+    has_component: bool = False,
+    has_generated_artifact: bool = False,
+    integrity_gate_passed: bool | None = None,
+    has_error: bool = False,
+    production_contains_latest: bool = False,
+) -> dict[str, object]:
+    status = str(gencode_status or "").strip()
+    if has_error or status == "failed":
+        return _teacher_status_payload("failed")
+    if status in {"generating", "pending", "running", "queued"}:
+        return _teacher_status_payload("generating")
+    if status == "draft_written":
+        if production_contains_latest:
+            return _teacher_status_payload("published")
+        if has_generated_artifact or integrity_gate_passed is True:
+            return _teacher_status_payload("generated_not_packaged")
+        return _teacher_status_payload("generation_incomplete")
+    if status in {"verified", "smoke_passed"}:
+        if production_contains_latest:
+            return _teacher_status_payload("published")
+        return _teacher_status_payload("generated_not_packaged")
+    if has_tracker and (has_generated_artifact or has_component):
+        return _teacher_status_payload("generated_not_packaged")
+    if not has_tracker and not has_component and not has_generated_artifact:
+        return _teacher_status_payload("not_generated")
+    if status in {"not_created", "", "none"}:
+        return _teacher_status_payload("not_generated")
+    return _teacher_status_payload("generating")
+
+
+def _payload_integrity_gate_passed(payload_raw: Any) -> bool | None:
+    if payload_raw is None or str(payload_raw).strip() == "":
+        return None
+    try:
+        payload = json.loads(str(payload_raw))
+    except Exception:
+        return None
+    if not isinstance(payload, dict) or "integrity_gate_passed" not in payload:
+        return None
+    return bool(payload.get("integrity_gate_passed"))
+
+
+def _parse_payload_dict(payload_raw: Any) -> dict[str, object]:
+    if payload_raw is None or str(payload_raw).strip() == "":
+        return {}
+    if isinstance(payload_raw, dict):
+        return payload_raw
+    try:
+        payload = json.loads(str(payload_raw))
+    except Exception:
+        return {}
+    return payload if isinstance(payload, dict) else {}
+
+
+def _file_sha256(path: Path | None) -> str | None:
+    if not path or not path.is_file():
+        return None
+    try:
+        return hashlib.sha256(path.read_bytes()).hexdigest()
+    except Exception:
+        return None
+
+
+def _timestamp_or_none(value: Any) -> float | None:
+    if value is None or str(value).strip() == "":
+        return None
+    if isinstance(value, datetime):
+        try:
+            return value.timestamp()
+        except Exception:
+            return None
+    text = str(value).strip().replace("Z", "+00:00")
+    for candidate in (text, text.replace(" ", "T", 1)):
+        try:
+            return datetime.fromisoformat(candidate).timestamp()
+        except Exception:
+            continue
+    return None
+
+
+def _read_generator_specs(init_path: Path) -> list[dict[str, object]]:
+    if not init_path.is_file():
+        return []
+    try:
+        tree = ast.parse(init_path.read_text(encoding="utf-8", errors="replace"))
+    except Exception:
+        return []
+    for node in tree.body:
+        if not (
+            isinstance(node, ast.Assign)
+            and any(isinstance(target, ast.Name) and target.id == "GENERATOR_SPECS" for target in node.targets)
+        ):
+            continue
+        try:
+            value = ast.literal_eval(node.value)
+        except Exception:
+            return []
+        if not isinstance(value, list):
+            return []
+        return [row for row in value if isinstance(row, dict)]
+    return []
+
+
+def load_v3_skill_generator_specs(
+    *,
+    skill_id: str,
+    production_base_dir: str = "agent_skills_v3",
+    project_root: str | Path | None = None,
+) -> list[dict[str, object]]:
+    skill_key = str(skill_id or "").strip()
+    if not skill_key:
+        return []
+    production_root = _resolve_base_path(production_base_dir, project_root)
+    return _read_generator_specs(production_root / skill_key / "__init__.py")
+
+
+def _production_specs_contains_component(
+    specs: list[dict[str, object]],
+    *,
+    component_id: str,
+    textbook_example_id: int | None,
+) -> bool:
+    for spec in specs:
+        if str(spec.get("component_id") or "").strip() != component_id:
+            continue
+        if textbook_example_id is None:
+            return True
+        try:
+            spec_example_id = int(spec.get("textbook_example_id"))
+        except Exception:
+            return True
+        if spec_example_id == textbook_example_id:
+            return True
+    return False
+
+
+def inspect_component_production_sync(
+    *,
+    skill_id: str,
+    component_id: str | None,
+    textbook_example_id: int | None = None,
+    tracker_payload: Any = None,
+    tracker_updated_at: Any = None,
+    dryrun_base_dir: str = "reports/gencode_v3_dryrun",
+    production_base_dir: str = "agent_skills_v3",
+    project_root: str | Path | None = None,
+) -> dict[str, object]:
+    skill_key = str(skill_id or "").strip()
+    component_key = str(component_id or "").strip()
+    if not skill_key or not component_key:
+        return {
+            "production_contains_latest": False,
+            "production_sync_method": "missing_component_id",
+            "production_sync_reason": "missing_skill_or_component_id",
+            "verified_component_hash": None,
+            "production_component_hash": None,
+            "published_component_hash": None,
+        }
+
+    dryrun_root = _resolve_base_path(dryrun_base_dir, project_root)
+    production_root = _resolve_base_path(production_base_dir, project_root)
+    verified_generate = dryrun_root / skill_key / "components" / component_key / "generate.py"
+    production_generate = production_root / skill_key / "components" / component_key / "generate.py"
+    verified_hash = _file_sha256(verified_generate)
+    production_hash = _file_sha256(production_generate)
+    payload = _parse_payload_dict(tracker_payload)
+    published_hash = str(payload.get("published_generate_sha256") or "").strip() or None
+    payload_verified_hash = str(payload.get("verified_generate_sha256") or "").strip() or None
+    verified_artifact_path = str(payload.get("verified_artifact_path") or "").strip()
+    verified_artifact_hash = None
+    if verified_artifact_path:
+        artifact_path = Path(verified_artifact_path)
+        if not artifact_path.is_absolute():
+            root = Path(project_root) if project_root is not None and str(project_root).strip() else PROJECT_ROOT
+            artifact_path = root / artifact_path
+        verified_artifact_hash = _file_sha256(artifact_path)
+
+    if published_hash and production_hash and published_hash == production_hash:
+        return {
+            "production_contains_latest": True,
+            "production_sync_method": "tracker_published_generate_sha256",
+            "production_sync_reason": None,
+            "verified_component_hash": verified_hash or payload_verified_hash or verified_artifact_hash,
+            "production_component_hash": production_hash,
+            "published_component_hash": published_hash,
+            "verified_component_path": str(verified_generate),
+            "production_component_path": str(production_generate),
+        }
+    if payload_verified_hash and production_hash and payload_verified_hash == production_hash:
+        return {
+            "production_contains_latest": True,
+            "production_sync_method": "tracker_verified_generate_sha256",
+            "production_sync_reason": None,
+            "verified_component_hash": payload_verified_hash,
+            "production_component_hash": production_hash,
+            "published_component_hash": published_hash,
+            "verified_component_path": str(verified_generate),
+            "production_component_path": str(production_generate),
+        }
+    if verified_artifact_hash and production_hash and verified_artifact_hash == production_hash:
+        return {
+            "production_contains_latest": True,
+            "production_sync_method": "tracker_verified_artifact_path_sha256",
+            "production_sync_reason": None,
+            "verified_component_hash": verified_artifact_hash,
+            "production_component_hash": production_hash,
+            "published_component_hash": published_hash,
+            "verified_component_path": str(verified_artifact_path),
+            "production_component_path": str(production_generate),
+        }
+    if verified_hash and production_hash and verified_hash == production_hash:
+        return {
+            "production_contains_latest": True,
+            "production_sync_method": "current_dryrun_generate_sha256",
+            "production_sync_reason": None,
+            "verified_component_hash": verified_hash,
+            "production_component_hash": production_hash,
+            "published_component_hash": published_hash,
+            "verified_component_path": str(verified_generate),
+            "production_component_path": str(production_generate),
+        }
+
+    specs = load_v3_skill_generator_specs(
+        skill_id=skill_key,
+        production_base_dir=production_base_dir,
+        project_root=project_root,
+    )
+    specs_match = _production_specs_contains_component(
+        specs,
+        component_id=component_key,
+        textbook_example_id=textbook_example_id,
+    )
+    tracker_ts = _timestamp_or_none(tracker_updated_at)
+    production_ts = None
+    if production_generate.is_file():
+        production_ts = production_generate.stat().st_mtime
+        init_path = production_root / skill_key / "__init__.py"
+        if init_path.is_file():
+            production_ts = max(production_ts, init_path.stat().st_mtime)
+    if production_hash and specs_match and tracker_ts is not None and production_ts is not None and production_ts >= tracker_ts:
+        return {
+            "production_contains_latest": True,
+            "production_sync_method": "legacy_generator_specs_component_match",
+            "production_sync_reason": None,
+            "verified_component_hash": verified_hash or payload_verified_hash or verified_artifact_hash,
+            "production_component_hash": production_hash,
+            "published_component_hash": published_hash,
+            "verified_component_path": str(verified_generate),
+            "production_component_path": str(production_generate),
+        }
+
+    reason = "hash_mismatch"
+    if not production_hash:
+        reason = "production_generate_missing"
+    elif not (verified_hash or payload_verified_hash or verified_artifact_hash or published_hash):
+        reason = "missing_verified_or_published_hash"
+    elif not specs_match:
+        reason = "production_manifest_missing_component"
+    elif tracker_ts is not None and production_ts is not None and production_ts < tracker_ts:
+        reason = "production_older_than_tracker"
+    return {
+        "production_contains_latest": False,
+        "production_sync_method": "not_synced",
+        "production_sync_reason": reason,
+        "verified_component_hash": verified_hash,
+        "production_component_hash": production_hash,
+        "published_component_hash": published_hash,
+        "verified_component_path": str(verified_generate),
+        "production_component_path": str(production_generate),
+    }
 
 
 def _tracker_table_exists(conn: sqlite3.Connection) -> bool:
@@ -143,6 +471,7 @@ def get_gencode_status_for_examples(
             "component_id": str(_row_value(row, "component_id", 1)),
             "textbook_example_id": example_id,
             **payload_summary,
+            "induced_spec_payload": payload_raw,
             "has_payload": payload_raw is not None and str(payload_raw).strip() != "",
             "error_log": _row_value(row, "gencode_error_log", 4),
             "updated_at": _row_value(row, "updated_at", 5),
@@ -268,11 +597,33 @@ def build_admin_example_gencode_status_view(
         production_base_dir=production_base_dir,
         project_root=project_root,
     )
+    sync_status = inspect_component_production_sync(
+        skill_id=skill_id,
+        component_id=str(tracker_status.get("component_id") or "") or None,
+        textbook_example_id=textbook_example_id,
+        tracker_payload=tracker_status.get("induced_spec_payload"),
+        tracker_updated_at=tracker_status.get("updated_at"),
+        dryrun_base_dir=dryrun_base_dir,
+        production_base_dir=production_base_dir,
+        project_root=project_root,
+    )
     status = str(tracker_status.get("status", "not_created"))
     has_payload = bool(tracker_status.get("has_payload"))
+    has_tracker = bool(tracker_status.get("component_id")) or status not in {"not_created", ""}
+    teacher_status = resolve_teacher_facing_v3_status(
+        gencode_status=status,
+        has_tracker=has_tracker,
+        has_component=bool(file_status.get("dryrun_component_exists") or file_status.get("production_component_exists")),
+        has_generated_artifact=bool(file_status.get("dryrun_generate_exists") or file_status.get("production_generate_exists")),
+        integrity_gate_passed=_payload_integrity_gate_passed(tracker_status.get("induced_spec_payload")),
+        has_error=bool(tracker_status.get("error_log")),
+        production_contains_latest=bool(sync_status.get("production_contains_latest")),
+    )
     return {
         **tracker_status,
         **file_status,
+        **sync_status,
+        "teacher_status": teacher_status,
         "status_label": format_gencode_status_label(status),
         "has_payload_label": "有" if has_payload else "無",
         "dryrun_generate_label": _bool_label(bool(file_status["dryrun_generate_exists"])),
@@ -300,11 +651,33 @@ def build_admin_examples_gencode_status_map(
             production_base_dir=production_base_dir,
             project_root=project_root,
         )
+        sync_status = inspect_component_production_sync(
+            skill_id=skill_id,
+            component_id=str(tracker_status.get("component_id") or "") or None,
+            textbook_example_id=example_id,
+            tracker_payload=tracker_status.get("induced_spec_payload"),
+            tracker_updated_at=tracker_status.get("updated_at"),
+            dryrun_base_dir=dryrun_base_dir,
+            production_base_dir=production_base_dir,
+            project_root=project_root,
+        )
         status = str(tracker_status.get("status", "not_created"))
         has_payload = bool(tracker_status.get("has_payload"))
+        has_tracker = bool(tracker_status.get("component_id")) or status not in {"not_created", ""}
+        teacher_status = resolve_teacher_facing_v3_status(
+            gencode_status=status,
+            has_tracker=has_tracker,
+            has_component=bool(file_status.get("dryrun_component_exists") or file_status.get("production_component_exists")),
+            has_generated_artifact=bool(file_status.get("dryrun_generate_exists") or file_status.get("production_generate_exists")),
+            integrity_gate_passed=_payload_integrity_gate_passed(tracker_status.get("induced_spec_payload")),
+            has_error=bool(tracker_status.get("error_log")),
+            production_contains_latest=bool(sync_status.get("production_contains_latest")),
+        )
         status_map[example_id] = {
             **tracker_status,
             **file_status,
+            **sync_status,
+            "teacher_status": teacher_status,
             "status_label": format_gencode_status_label(status),
             "has_payload_label": "有" if has_payload else "無",
             "dryrun_generate_label": _bool_label(bool(file_status["dryrun_generate_exists"])),
@@ -336,6 +709,7 @@ def _get_tracker_rows_for_skill(conn: sqlite3.Connection, skill_id: str) -> list
                 "component_id": str(_row_value(row, "component_id", 1)),
                 "status": str(_row_value(row, "gencode_status", 2)),
                 **payload_summary,
+                "induced_spec_payload": payload_raw,
                 "has_payload": payload_raw is not None and str(payload_raw).strip() != "",
                 "error_log": _row_value(row, "gencode_error_log", 4),
                 "updated_at": _row_value(row, "updated_at", 5),
@@ -356,8 +730,10 @@ def build_admin_skill_gencode_status_view(
         build_coverage_warnings,
         get_v3_skill_component_coverage,
     )
+    from core.gencode.services.v3_publish_eligibility import evaluate_v3_publish_eligibility
 
     coverage = get_v3_skill_component_coverage(conn, skill_id)
+    eligibility = evaluate_v3_publish_eligibility(conn, skill_id, coverage=coverage)
     coverage_warnings = build_coverage_warnings(coverage)
     rows = _get_tracker_rows_for_skill(conn, skill_id)
     if not rows:
@@ -435,6 +811,39 @@ def build_admin_skill_gencode_status_view(
     has_production = prod_info.get("production_wrapper_exists")
     source_type = "production" if has_production else "dryrun"
     verified_count = int(coverage.get("verified_count") or 0)
+    published_component_ids: set[str] = set()
+    for row in rows:
+        if str(row.get("status")) != "verified":
+            continue
+        sync_status = inspect_component_production_sync(
+            skill_id=skill_id,
+            component_id=str(row.get("component_id") or "") or None,
+            textbook_example_id=int(row.get("textbook_example_id")),
+            tracker_payload=row.get("induced_spec_payload"),
+            tracker_updated_at=row.get("updated_at"),
+            dryrun_base_dir=dryrun_base_dir,
+            production_base_dir=production_base_dir,
+            project_root=project_root,
+        )
+        if bool(sync_status.get("production_contains_latest")):
+            published_component_ids.add(str(row.get("component_id")))
+    published_count = len(published_component_ids)
+    generated_not_packaged_count = max(0, verified_count - published_count)
+    failed_count = sum(1 for row in rows if str(row.get("status")) == "failed" or row.get("error_log"))
+    if int(coverage.get("total_examples") or 0) > 0 and published_count == int(coverage.get("total_examples") or 0):
+        teacher_status = _teacher_status_payload("published")
+    elif failed_count > 0 and verified_count == 0:
+        teacher_status = _teacher_status_payload("failed")
+    elif verified_count > 0:
+        teacher_status = _teacher_status_payload("generated_not_packaged")
+    elif bool(file_status.get("dryrun_generate_exists") or file_status.get("production_generate_exists")):
+        teacher_status = _teacher_status_payload("generated_not_packaged")
+    elif any(str(row.get("status")) in {"generating", "pending"} for row in rows):
+        teacher_status = _teacher_status_payload("generating")
+    elif rows:
+        teacher_status = _teacher_status_payload("generation_incomplete")
+    else:
+        teacher_status = _teacher_status_payload("not_generated")
 
     variation_report = {}
     if verified_count > 0:
@@ -464,12 +873,19 @@ def build_admin_skill_gencode_status_view(
         ),
         "total_examples": int(coverage.get("total_examples") or 0),
         "verified_count": verified_count,
-        "failed_count": sum(1 for row in rows if str(row.get("status")) == "failed" or row.get("error_log")),
+        "available_count": verified_count,
+        "published_count": published_count,
+        "generated_not_packaged_count": generated_not_packaged_count,
+        "failed_count": failed_count,
         "unsupported_count": int(coverage.get("unsupported_count") or 0),
         "missing_tracker_count": len(missing_tracker_ids),
         "coverage_missing_ids": missing_tracker_ids,
         "coverage_warnings": coverage_warnings,
         "publish_ready": bool(coverage.get("publish_ready")),
+        "publish_eligibility": eligibility,
+        "publish_eligible": bool(eligibility.get("allowed")),
+        "publish_ineligible_reason": eligibility.get("reason"),
+        "teacher_status": teacher_status,
         **file_status,
         **prod_info,
         "dryrun_generate_label": _bool_label(bool(file_status["dryrun_generate_exists"])),

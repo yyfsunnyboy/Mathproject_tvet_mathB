@@ -1,9 +1,12 @@
-"""Hard-coded bridge from administrative skill_id to domain entrypoints."""
+"""Bridge from administrative skill_id to domain entrypoints via taxonomy config."""
 
 from __future__ import annotations
 
+import yaml
+from pathlib import Path
 from typing import Any
 
+# Hardcoded dict as base/fallback
 SKILL_TO_DOMAIN: dict[str, dict[str, Any]] = {
     "vh_數學B1_PointSlopeForm": {
         "domain_module": "core.domain.coordinate_geometry.line_equation_domain",
@@ -48,6 +51,21 @@ SKILL_TO_DOMAIN: dict[str, dict[str, Any]] = {
         ],
     },
 }
+
+# Try loading from YAML
+try:
+    PROJECT_ROOT = Path(__file__).resolve().parents[2]
+    YAML_PATH = PROJECT_ROOT / "configs" / "gencode_taxonomy" / "k12_component_taxonomy.yaml"
+    if YAML_PATH.is_file():
+        with open(YAML_PATH, "r", encoding="utf-8") as f:
+            data = yaml.safe_load(f)
+        skills = data.get("skills", {})
+        if isinstance(skills, dict) and skills:
+            for skill_id, skill_meta in skills.items():
+                if isinstance(skill_meta, dict):
+                    SKILL_TO_DOMAIN[skill_id] = skill_meta
+except Exception:
+    pass
 
 
 def resolve_domain_for_skill(skill_id: str) -> dict[str, Any]:

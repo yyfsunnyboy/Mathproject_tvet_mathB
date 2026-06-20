@@ -282,7 +282,7 @@
             position: fixed;
             right: 0;
             top: 0;
-            z-index: 1100;
+            z-index: 1999;
         }
 
         .v3-drawer {
@@ -298,7 +298,8 @@
             transform: translateX(100%);
             transition: transform 0.18s ease;
             width: 38vw;
-            z-index: 1101;
+            z-index: 2000;
+            pointer-events: auto;
         }
 
         .v3-drawer.open {
@@ -371,6 +372,34 @@
 
         .v3-drawer-template {
             display: none;
+        }
+
+        .v3-status-label {
+            display: inline-block;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 600;
+            color: #fff;
+            text-transform: uppercase;
+        }
+        .v3-status-label.status-verified {
+            background-color: #2e7d32;
+        }
+        .v3-status-label.status-smoke_passed {
+            background-color: #2e7d32;
+        }
+        .v3-status-label.status-draft_written {
+            background-color: #f57c00;
+        }
+        .v3-status-label.status-failed {
+            background-color: #d32f2f;
+        }
+        .v3-status-label.status-pending {
+            background-color: #7b1fa2;
+        }
+        .v3-status-label.status-not_created {
+            background-color: #757575;
         }
 
         .actions-cell {
@@ -530,94 +559,17 @@
                         </td>
                         <td class="v3-cell">
                             {% set gencode = (gencode_status_map or {}).get(example.id, {}) %}
-                            {% set gencode_status = gencode.get('status', 'not_created') %}
-                            {% set has_payload = gencode.get('has_payload') %}
-                            {% set has_error = gencode_status == 'failed' or gencode.get('error_log') %}
-                            {% set has_production_generate = gencode.get('production_generate_exists') %}
-                            {% if has_error %}
-                            {% set v3_light = '🔴' %}
-                            {% set v3_label = 'failed' %}
-                            {% elif gencode_status in ['published', 'runtime_ready', 'ready'] or has_production_generate %}
-                            {% set v3_light = '🟢' %}
-                            {% set v3_label = gencode_status or gencode.get('component_id') or 'ready' %}
-                            {% elif gencode_status in ['verified', 'smoke_passed'] %}
-                            {% set v3_light = '🟢' %}
-                            {% set v3_label = gencode_status %}
-                            {% elif gencode_status in ['draft_written', 'pending'] %}
-                            {% set v3_light = '🟡' %}
-                            {% set v3_label = gencode_status %}
-                            {% elif gencode.get('component_id') or has_payload %}
-                            {% set v3_light = '🟡' %}
-                            {% set v3_label = 'pending' %}
-                            {% else %}
-                            {% set v3_light = '⚪' %}
-                            {% set v3_label = 'none' %}
-                            {% endif %}
-                            {% set v3_status_map = {
-                                'none': '尚未生成',
-                                'pending': '等待處理',
-                                'failed': '失敗',
-                                'draft_written': '草稿已產生',
-                                'verified': '驗證通過',
-                                'smoke_passed': '驗證通過',
-                                'runtime_ready': '可執行',
-                                'published': '已發布',
-                                'ready': '可執行',
-                                'not_created': '尚未生成'
-                            } %}
+                            {% set teacher_status = gencode.get('teacher_status', {}) %}
+                            {% set v3_light = teacher_status.get('icon', '⚪') %}
+                            {% set v3_label = teacher_status.get('label', '尚未生成') %}
                             <button type="button"
-                                class="v3-badge"
-                                title="status: {{ v3_status_map.get(gencode_status, gencode_status) }}&#10;component_id: {{ gencode.get('component_id') or '-' }}&#10;updated_at: {{ gencode.get('updated_at') or '-' }}"
-                                onclick="openV3Drawer('v3-template-{{ example.id }}')">
-                                <span>{{ v3_light }}</span><span class="v3-badge-label">{{ v3_status_map.get(v3_label, v3_label) }}</span>
+                                class="v3-badge {{ teacher_status.get('badge_class', '') }}"
+                                data-v3-badge-example-id="{{ example.id }}"
+                                data-v3-skill-id="{{ example.skill_id }}"
+                                title="目前狀態: {{ v3_label }}&#10;component_id: {{ gencode.get('component_id') or '-' }}&#10;最後生成時間: {{ gencode.get('updated_at') or '-' }}"
+                                onclick="openV3ExampleDrawer({{ example.id }}, '{{ example.skill_id }}')">
+                                <span>{{ v3_light }}</span><span class="v3-badge-label">{{ v3_label }}</span>
                             </button>
-                            <div id="v3-template-{{ example.id }}" class="v3-drawer-template">
-                                <dl class="v3-meta-grid">
-                                    <dt>component_id</dt><dd>{{ gencode.get('component_id') or '-' }}</dd>
-                                    <dt>status</dt><dd>{{ v3_status_map.get(gencode_status, gencode_status) }}</dd>
-                                    <dt>textbook_example_id</dt><dd>{{ example.id }}</dd>
-                                    <dt>presentation_mode</dt><dd>{{ gencode.get('presentation_mode') or '-' }}</dd>
-                                    <dt>problem_type_id</dt><dd>{{ gencode.get('problem_type_id') or '-' }}</dd>
-                                    <dt>payload</dt><dd>{% if gencode.get('has_payload') %}yes{% else %}no{% endif %}</dd>
-                                    <dt>dryrun generate.py</dt><dd>{% if gencode.get('dryrun_generate_exists') %}yes{% else %}no{% endif %}</dd>
-                                    <dt>production generate.py</dt><dd>{% if gencode.get('production_generate_exists') %}yes{% else %}no{% endif %}</dd>
-                                    <dt>updated_at</dt><dd>{{ gencode.get('updated_at') or '-' }}</dd>
-                                    {% if gencode.get('error_log') %}
-                                    <dt>error</dt><dd style="color:#c0392b;">{{ gencode.get('error_log') }}</dd>
-                                    {% endif %}
-                                </dl>
-                                <div class="v3-drawer-actions">
-                            {% if gencode_status in ['not_created', 'failed', 'draft_written'] %}
-                            <form method="POST"
-                                action="{{ url_for('core.admin_run_example_v3_dryrun', textbook_example_id=example.id) }}"
-                                >
-                                <input type="hidden" name="skill_id" value="{{ example.skill_id }}">
-                                <input type="hidden" name="redirect_query" value="{{ request.query_string.decode('utf-8') }}">
-                                <button type="submit" class="btn btn-edit">
-                                    {% if gencode_status == 'draft_written' %}🔄 重新生成草稿{% else %}⚡ 生成 V3 草稿{% endif %}
-                                </button>
-                            </form>
-                            {% endif %}
-                            {% if gencode_status in ['draft_written', 'failed'] %}
-                            <form method="POST"
-                                action="{{ url_for('core.admin_run_example_v3_smoke', textbook_example_id=example.id) }}"
-                                >
-                                <input type="hidden" name="skill_id" value="{{ example.skill_id }}">
-                                <input type="hidden" name="redirect_query" value="{{ request.query_string.decode('utf-8') }}">
-                                <button type="submit" class="btn btn-secondary">🧪 執行 Smoke 測試</button>
-                            </form>
-                            {% endif %}
-                            {% if gencode_status == 'smoke_passed' %}
-                            <form method="POST"
-                                action="{{ url_for('core.admin_run_example_v3_verify', textbook_example_id=example.id) }}"
-                                >
-                                <input type="hidden" name="skill_id" value="{{ example.skill_id }}">
-                                <input type="hidden" name="redirect_query" value="{{ request.query_string.decode('utf-8') }}">
-                                <button type="submit" class="btn btn-prereq">✅ 標記 verified</button>
-                            </form>
-                            {% endif %}
-                                </div>
-                            </div>
                         </td>
                         <td class="actions-cell">
                             <div class="btn-group">
@@ -694,19 +646,516 @@
             openModal('addExampleModal');
         }
 
-        function openV3Drawer(templateId) {
-            const source = document.getElementById(templateId);
+        function openV3ExampleDrawer(exampleId, skillId) {
             const drawer = document.getElementById('v3Drawer');
             const backdrop = document.getElementById('v3DrawerBackdrop');
             const body = document.getElementById('v3DrawerBody');
-            if (!source || !drawer || !backdrop || !body) {
+            if (!drawer || !backdrop || !body) {
                 return;
             }
-            body.innerHTML = source.innerHTML;
             backdrop.style.display = 'block';
             drawer.classList.add('open');
             drawer.setAttribute('aria-hidden', 'false');
+
+            body.innerHTML = `
+                <div style="display:flex; justify-content:center; align-items:center; min-height:150px;">
+                    <div style="border: 4px solid #f3f3f3; border-top: 4px solid #3498db; border-radius: 50%; width: 30px; height: 30px; animation: spin 1s linear infinite;"></div>
+                </div>
+                <style>
+                    @keyframes spin {
+                        0% { transform: rotate(0deg); }
+                        100% { transform: rotate(360deg); }
+                    }
+                </style>
+            `;
+
+            fetch(`/admin/textbook-examples/${exampleId}/v3-details`)
+                .then(async response => {
+                    const contentType = response.headers.get('content-type') || '';
+                    if (!contentType.includes('application/json')) {
+                        const text = await response.text();
+                        throw new Error(`HTTP ${response.status} non-JSON response: ${text.slice(0, 200)}`);
+                    }
+                    const data = await response.json();
+                    if (!response.ok) {
+                        throw new Error(`HTTP ${response.status}: ${data.reason || data.details || 'request_failed'}${data.details ? ` - ${data.details}` : ''}`);
+                    }
+                    return data;
+                })
+                .then(data => {
+                    if (data.status !== 'success') {
+                        body.innerHTML = `<div style="color:#d32f2f; padding:10px;">載入失敗: ${data.details || '未知錯誤'}</div>`;
+                        return;
+                    }
+
+                    let integrityLabel = '-';
+                    if (data.integrity_gate_passed !== null) {
+                        integrityLabel = data.integrity_gate_passed ? '<span style="color:#2e7d32;font-weight:bold;">🟢 通過</span>' : '<span style="color:#d32f2f;font-weight:bold;">🔴 失敗</span>';
+                    }
+
+                    let blockersLabel = '無';
+                    if (data.integrity_gate_blockers && data.integrity_gate_blockers.length) {
+                        blockersLabel = `<span style="color:#d32f2f;font-weight:bold;">${data.integrity_gate_blockers.join(', ')}</span>`;
+                    }
+
+                    let errorLogHtml = '';
+                    if (data.gencode_error_log) {
+                        errorLogHtml = `<dt>錯誤日誌</dt><dd style="color:#d32f2f;word-break:break-all;font-family:monospace;background:#fff5f5;padding:6px;border-radius:4px;border:1px solid #fed7d7;">${data.gencode_error_log}</dd>`;
+                    }
+
+                    body.innerHTML = `
+                        <dl class="v3-meta-grid">
+                            <dt>教材例題 ID</dt><dd>${data.textbook_example_id}</dd>
+                            <dt>元件 ID</dt><dd>${data.component_id || '-'}</dd>
+                            <dt>題型 ID</dt><dd>${data.problem_type_id || '-'}</dd>
+                            <dt>呈現模式</dt><dd>${data.presentation_mode || '-'}</dd>
+                            <dt>答案型態</dt><dd>${data.answer_type || '-'}</dd>
+                            <dt>生成狀態</dt><dd><span class="v3-status-label status-${data.gencode_status}">${data.gencode_status}</span></dd>
+                            <dt>完整性驗證</dt><dd>${integrityLabel}</dd>
+                            <dt>完整性版本</dt><dd>${data.integrity_gate_version || '-'}</dd>
+                            <dt>完整性阻擋項</dt><dd>${blockersLabel}</dd>
+                            <dt>系統驗證狀態</dt><dd>${data.smoke_status || '-'}</dd>
+                            <dt>草稿存在</dt><dd>${data.dryrun_generate_exists ? '是' : '否'}</dd>
+                            <dt>正式代碼存在</dt><dd>${data.production_generate_exists ? '是' : '否'}</dd>
+                            <dt>更新時間</dt><dd>${data.updated_at || '-'}</dd>
+                            ${errorLogHtml}
+                        </dl>
+                        <div class="v3-drawer-actions">
+                            <button type="button" class="btn btn-edit" style="width:100%; margin-bottom:8px;" onclick="regenerateExampleV3(${data.textbook_example_id}, '${skillId}', '${data.gencode_status}')">
+                                ${data.gencode_status === 'not_created' ? '重新生成題目' : '重新生成題目'}
+                            </button>
+                            
+                            <button type="button" class="btn btn-secondary" style="width:100%; margin-bottom:8px;" ${data.dryrun_generate_exists ? '' : 'disabled'} onclick="smokeExampleV3(${data.textbook_example_id}, '${skillId}')">
+                                系統驗證
+                            </button>
+                            
+                            ${data.gencode_status === 'smoke_passed' ? `
+                            <button type="button" class="btn btn-prereq" style="width:100%; margin-bottom:8px;" onclick="verifyExampleV3(${data.textbook_example_id}, '${skillId}')">
+                                標記可用
+                            </button>
+                            ` : ''}
+                            
+                            <button type="button" class="btn btn-info" style="width:100%;" ${data.dryrun_generate_exists || data.production_generate_exists ? '' : 'disabled'} onclick="showExampleSampleV3(${data.textbook_example_id})">
+                                👁️ 查看 Sample
+                            </button>
+                        </div>
+                    `;
+                })
+                .catch(err => {
+                    body.innerHTML = `<div style="color:#d32f2f; padding:10px;">網路錯誤: ${err.message}</div>`;
+                });
         }
+
+        function regenerateExampleV3(exampleId, skillId, currentStatus) {
+            const actionLabel = '重新生成題目';
+            Swal.fire({
+                title: actionLabel,
+                text: '將只重新建立此教材例題的 V3 component，不會影響同技能的其他例題，也不會更新 production wrapper。是否繼續？',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: '確定',
+                cancelButtonText: '取消'
+            }).then((result) => {
+                if (!result.isConfirmed) return;
+                
+                Swal.fire({
+                    title: `${actionLabel}中...`,
+                    allowOutsideClick: false,
+                    didOpen: () => Swal.showLoading()
+                });
+
+                fetch(`/admin/textbook-examples/${exampleId}/v3-regenerate`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        Swal.fire({
+                            title: `${actionLabel}成功`,
+                            text: `已成功生成例題 ${exampleId} 的微元件草稿。`,
+                            icon: 'success'
+                        }).then(() => window.location.reload());
+                    } else {
+                        Swal.fire({
+                            title: '生成失敗',
+                            text: data.details || '未知錯誤',
+                            icon: 'error'
+                        });
+                    }
+                })
+                .catch(err => {
+                    Swal.fire({ title: '執行失敗', text: err.message, icon: 'error' });
+                });
+            });
+        }
+
+        function smokeExampleV3(exampleId, skillId) {
+            Swal.fire({
+                title: '系統驗證',
+                text: '將驗證此 component 的程式編譯、題目完整性、答案契約與 runtime 行為。是否繼續？',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: '確定',
+                cancelButtonText: '取消'
+            }).then((result) => {
+                if (!result.isConfirmed) return;
+
+                Swal.fire({
+                    title: '系統驗證中...',
+                    allowOutsideClick: false,
+                    didOpen: () => Swal.showLoading()
+                });
+
+                fetch(`/admin/textbook-examples/${exampleId}/v3-smoke`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        Swal.fire({
+                            title: '系統驗證通過',
+                            text: `例題 ${exampleId} 已驗證成功。`,
+                            icon: 'success'
+                        }).then(() => window.location.reload());
+                    } else {
+                        let text = data.details || '未知錯誤';
+                        if (data.blockers && data.blockers.length) {
+                            text += `\n阻擋項: ${data.blockers.join(', ')}`;
+                        }
+                        Swal.fire({
+                            title: `系統驗證失敗 (${data.component_id || ''})`,
+                            text: text,
+                            icon: 'error'
+                        }).then(() => {
+                            openV3ExampleDrawer(exampleId, skillId);
+                        });
+                    }
+                })
+                .catch(err => {
+                    Swal.fire({ title: '執行失敗', text: err.message, icon: 'error' });
+                });
+            });
+        }
+
+        function verifyExampleV3(exampleId, skillId) {
+            Swal.fire({
+                title: '標記可用',
+                text: '確定要將此元件標記為驗證通過嗎？',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: '確定',
+                cancelButtonText: '取消'
+            }).then((result) => {
+                if (!result.isConfirmed) return;
+
+                Swal.fire({
+                    title: '標記中...',
+                    allowOutsideClick: false,
+                    didOpen: () => Swal.showLoading()
+                });
+
+                const formData = new FormData();
+                formData.append('skill_id', skillId);
+
+                fetch(`/admin/examples/${exampleId}/gencode_v3_verify`, {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => {
+                    if (response.redirected) {
+                        window.location.href = response.url;
+                    } else {
+                        window.location.reload();
+                    }
+                })
+                .catch(err => {
+                    Swal.fire({ title: '執行失敗', text: err.message, icon: 'error' });
+                });
+            });
+        }
+
+        function showExampleSampleV3(exampleId) {
+            Swal.fire({
+                title: '載入樣品中...',
+                allowOutsideClick: false,
+                didOpen: () => Swal.showLoading()
+            });
+
+            fetch(`/admin/textbook-examples/${exampleId}/v3-sample`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.status !== 'success') {
+                    Swal.fire({
+                        title: '載入樣品失敗',
+                        text: data.details || '未知錯誤',
+                        icon: 'error'
+                    });
+                    return;
+                }
+
+                let htmlContent = '<div style="text-align: left; max-height: 500px; overflow-y: auto; font-family: sans-serif;">';
+                data.results.forEach(res => {
+                    let choicesHtml = '';
+                    if (res.choices) {
+                        choicesHtml = `<div style="margin-bottom: 8px;"><strong>選項:</strong> <pre style="background:#fff; border:1px solid #eee; padding:6px; border-radius:4px; margin-top:2px; white-space:pre-wrap; font-family:monospace;">${typeof res.choices === 'object' ? JSON.stringify(res.choices, null, 2) : res.choices}</pre></div>`;
+                    }
+
+                    htmlContent += `
+                    <div style="border: 1px solid #e2e8f0; border-radius: 8px; padding: 14px; margin-bottom: 12px; background: #f8fafc;">
+                        <h4 style="margin-top:0; color:#1e293b; border-bottom: 1px solid #e2e8f0; padding-bottom: 6px; font-weight:700; font-size:14px;">Seed: ${res.seed}</h4>
+                        <div style="margin-bottom: 8px;"><strong>題目內容:</strong> <div style="background:#fff; border:1px solid #cbd5e1; padding:8px; border-radius:4px; margin-top:2px; font-size:13px; color:#334155;">${res.question_text}</div></div>
+                        ${choicesHtml}
+                        <div style="margin-bottom: 6px; font-size:13px;"><strong>答案:</strong> <code style="background:#f1f5f9; padding:2px 6px; border-radius:4px; color:#0f172a; font-family:monospace;">${res.answer}</code></div>
+                        <div style="margin-bottom: 6px; font-size:13px;"><strong>語意答案:</strong> <code style="background:#f1f5f9; padding:2px 6px; border-radius:4px; color:#0f172a; font-family:monospace;">${res.semantic_answer || '-'}</code></div>
+                        <div style="margin-bottom: 6px; font-size:13px;"><strong>答案型態:</strong> <code style="background:#f1f5f9; padding:2px 6px; border-radius:4px; color:#0f172a; font-family:monospace;">${res.answer_type}</code></div>
+                        <div style="margin-bottom: 6px; font-size:13px;"><strong>批改器:</strong> <code style="background:#f1f5f9; padding:2px 6px; border-radius:4px; color:#0f172a; font-family:monospace;">${res.checker}</code></div>
+                        <div style="font-size:13px;"><strong>完整性檢查:</strong> <span style="font-weight:700; color:${res.integrity_result === 'passed' ? '#16a34a' : '#dc2626'};">${res.integrity_result}</span></div>
+                    </div>
+                    `;
+                });
+                htmlContent += '</div>';
+
+                Swal.fire({
+                    title: '微元件樣品 (Sample)',
+                    html: htmlContent,
+                    width: 650,
+                    confirmButtonText: '關閉'
+                });
+            })
+            .catch(err => {
+                Swal.fire({ title: '執行失敗', text: err.message, icon: 'error' });
+            });
+        }
+
+        function v3TeacherStatus(data) {
+            if (data && data.teacher_status) {
+                return data.teacher_status;
+            }
+            return {
+                status_key: 'not_generated',
+                label: '尚未生成',
+                icon: '⚪',
+                badge_class: ''
+            };
+        }
+
+        function v3EscapeHtml(value) {
+            return String(value ?? '')
+                .replaceAll('&', '&amp;')
+                .replaceAll('<', '&lt;')
+                .replaceAll('>', '&gt;')
+                .replaceAll('"', '&quot;')
+                .replaceAll("'", '&#039;');
+        }
+
+        async function v3FetchJson(url, options) {
+            const response = await fetch(url, options);
+            const contentType = response.headers.get('content-type') || '';
+            if (!contentType.includes('application/json')) {
+                const text = await response.text();
+                throw new Error(`HTTP ${response.status} non-JSON response: ${text.slice(0, 200)}`);
+            }
+            const data = await response.json();
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}: ${data.reason || data.details || 'request_failed'}${data.details ? ` - ${data.details}` : ''}`);
+            }
+            return data;
+        }
+
+        function updateV3Badge(exampleId, data) {
+            const badge = document.querySelector(`[data-v3-badge-example-id="${exampleId}"]`);
+            if (!badge || !data) {
+                return;
+            }
+            const teacherStatus = v3TeacherStatus(data);
+            const label = teacherStatus.label || '尚未生成';
+            const labelNode = badge.querySelector('.v3-badge-label');
+            if (labelNode) {
+                labelNode.textContent = label;
+            }
+            badge.title = `目前狀態: ${label}\ncomponent_id: ${data.component_id || '-'}\n最後生成時間: ${data.updated_at || '-'}`;
+        }
+
+        function renderV3DrawerDetails(data, skillId) {
+            const body = document.getElementById('v3DrawerBody');
+            if (!body) {
+                return;
+            }
+            const status = data.gencode_status || 'not_created';
+            const teacherStatus = v3TeacherStatus(data);
+            const primaryLabel = '重新生成題目';
+            const blockers = Array.isArray(data.integrity_gate_blockers) && data.integrity_gate_blockers.length
+                ? data.integrity_gate_blockers.join(', ')
+                : '無';
+            const errorLogHtml = data.gencode_error_log
+                ? `<dt>錯誤</dt><dd style="color:#d32f2f;word-break:break-all;font-family:monospace;background:#fff5f5;padding:6px;border-radius:4px;border:1px solid #fed7d7;">${v3EscapeHtml(data.gencode_error_log)}</dd>`
+                : '';
+
+            body.innerHTML = `
+                <dl class="v3-meta-grid">
+                    <dt>目前狀態</dt><dd><span class="v3-status-label status-${v3EscapeHtml(status)}">${v3EscapeHtml(teacherStatus.label || '-')}</span></dd>
+                    <dt>最後生成時間</dt><dd>${v3EscapeHtml(data.updated_at || '-')}</dd>
+                    <dt>是否已更新到學生端</dt><dd>${data.production_contains_latest ? '是' : '否'}</dd>
+                    ${errorLogHtml}
+                </dl>
+                <details style="margin-top:12px;">
+                    <summary style="cursor:pointer;color:#6c757d;font-weight:700;">進階資訊</summary>
+                    <dl class="v3-meta-grid" style="margin-top:10px;">
+                        <dt>教材例題 ID</dt><dd>${v3EscapeHtml(data.textbook_example_id)}</dd>
+                        <dt>元件 ID</dt><dd>${v3EscapeHtml(data.component_id || '-')}</dd>
+                        <dt>題型 ID</dt><dd>${v3EscapeHtml(data.problem_type_id || '-')}</dd>
+                        <dt>呈現模式</dt><dd>${v3EscapeHtml(data.presentation_mode || '-')}</dd>
+                        <dt>答案型態</dt><dd>${v3EscapeHtml(data.answer_type || '-')}</dd>
+                        <dt>Tracker 狀態</dt><dd>${v3EscapeHtml(status)}</dd>
+                        <dt>Integrity</dt><dd>${data.integrity_gate_passed === true ? '通過' : (data.integrity_gate_passed === false ? '失敗' : '-')}</dd>
+                        <dt>阻擋項</dt><dd>${v3EscapeHtml(blockers)}</dd>
+                    </dl>
+                </details>
+                <div class="v3-drawer-actions">
+                    <button type="button" class="btn btn-edit" data-v3-action="regenerate" data-example-id="${v3EscapeHtml(data.textbook_example_id)}" data-skill-id="${v3EscapeHtml(skillId)}">
+                        ${primaryLabel}
+                    </button>
+                    <a href="/admin/textbook-examples/${v3EscapeHtml(data.textbook_example_id)}/v3-preview" target="_blank" rel="noopener noreferrer" class="btn btn-info" data-v3-action="sample" style="text-decoration: none; display: inline-flex; align-items: center; justify-content: center;">
+                        查看生成例題
+                    </a>
+                </div>
+            `;
+        }
+
+        async function refreshV3DrawerDetails(exampleId, skillId) {
+            const data = await v3FetchJson(`/admin/textbook-examples/${exampleId}/v3-details`);
+            if (data.status !== 'success') {
+                throw new Error(data.reason || data.details || 'details_failed');
+            }
+            renderV3DrawerDetails(data, skillId);
+            updateV3Badge(exampleId, data);
+            return data;
+        }
+
+        openV3ExampleDrawer = function(exampleId, skillId) {
+            const drawer = document.getElementById('v3Drawer');
+            const backdrop = document.getElementById('v3DrawerBackdrop');
+            const body = document.getElementById('v3DrawerBody');
+            if (!drawer || !backdrop || !body) {
+                return;
+            }
+            backdrop.style.display = 'block';
+            drawer.classList.add('open');
+            drawer.setAttribute('aria-hidden', 'false');
+            body.innerHTML = `
+                <div style="display:flex; justify-content:center; align-items:center; min-height:150px;">
+                    <div style="border:4px solid #f3f3f3; border-top:4px solid #3498db; border-radius:50%; width:30px; height:30px; animation:spin 1s linear infinite;"></div>
+                </div>
+            `;
+            refreshV3DrawerDetails(exampleId, skillId).catch(err => {
+                body.innerHTML = `<div style="color:#d32f2f; padding:10px; white-space:pre-wrap; word-break:break-word;">網路錯誤: ${v3EscapeHtml(err.message)}</div>`;
+            });
+        };
+
+        async function handleV3Regenerate(button) {
+            const exampleId = button.dataset.exampleId;
+            const skillId = button.dataset.skillId;
+            const originalText = button.textContent;
+            button.disabled = true;
+            button.textContent = '生成與驗證中...';
+            Swal.fire({
+                title: '生成中',
+                text: '驗證中',
+                allowOutsideClick: false,
+                didOpen: () => Swal.showLoading()
+            });
+            try {
+                const data = await v3FetchJson(`/admin/textbook-examples/${exampleId}/v3-regenerate`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+                if (data.status !== 'success') {
+                    const blockers = Array.isArray(data.blockers) ? data.blockers.join('\n') : '';
+                    Swal.fire({
+                        title: '重新生成失敗',
+                        html: `<div style="text-align:left;white-space:pre-wrap;">component_id: ${v3EscapeHtml(data.component_id || '-')}\nblockers: ${v3EscapeHtml(blockers || '-')}\ndetails: ${v3EscapeHtml(data.details || '-')}</div>`,
+                        icon: 'error'
+                    });
+                    await refreshV3DrawerDetails(exampleId, skillId).catch(() => {});
+                    return;
+                }
+                await refreshV3DrawerDetails(exampleId, skillId);
+                Swal.fire({
+                    title: '生成成功',
+                    text: '此例題已重新生成並驗證通過。',
+                    icon: 'success'
+                });
+            } catch (err) {
+                Swal.fire({
+                    title: '重新生成失敗',
+                    text: err.message,
+                    icon: 'error'
+                });
+            } finally {
+                button.disabled = false;
+                button.textContent = originalText;
+            }
+        }
+
+        async function handleV3Sample(button) {
+            const exampleId = button.dataset.exampleId;
+            Swal.fire({
+                title: '載入生成例題中...',
+                allowOutsideClick: false,
+                didOpen: () => Swal.showLoading()
+            });
+            try {
+                const data = await v3FetchJson(`/admin/textbook-examples/${exampleId}/v3-sample`);
+                if (data.status !== 'success') {
+                    Swal.fire({ title: '載入生成例題失敗', text: data.details || '未知錯誤', icon: 'error' });
+                    return;
+                }
+                let htmlContent = '<div style="text-align:left;max-height:500px;overflow-y:auto;font-family:sans-serif;">';
+                data.results.forEach(res => {
+                    const choices = res.choices ? (typeof res.choices === 'object' ? JSON.stringify(res.choices, null, 2) : String(res.choices)) : '-';
+                    htmlContent += `
+                        <div style="border:1px solid #e2e8f0;border-radius:8px;padding:14px;margin-bottom:12px;background:#f8fafc;">
+                            <h4 style="margin-top:0;color:#1e293b;border-bottom:1px solid #e2e8f0;padding-bottom:6px;font-weight:700;font-size:14px;">Seed: ${v3EscapeHtml(res.seed)}</h4>
+                            <div style="margin-bottom:8px;"><strong>question_text</strong><div style="background:#fff;border:1px solid #cbd5e1;padding:8px;border-radius:4px;margin-top:2px;font-size:13px;color:#334155;">${v3EscapeHtml(res.question_text || '-')}</div></div>
+                            <div style="margin-bottom:8px;"><strong>choices</strong><pre style="background:#fff;border:1px solid #eee;padding:6px;border-radius:4px;margin-top:2px;white-space:pre-wrap;font-family:monospace;">${v3EscapeHtml(choices)}</pre></div>
+                            <div style="margin-bottom:6px;font-size:13px;"><strong>answer</strong> <code>${v3EscapeHtml(res.answer || '-')}</code></div>
+                            <div style="margin-bottom:6px;font-size:13px;"><strong>semantic_answer</strong> <code>${v3EscapeHtml(res.semantic_answer || '-')}</code></div>
+                            <div style="margin-bottom:6px;font-size:13px;"><strong>problem_type_id</strong> <code>${v3EscapeHtml(res.problem_type_id || '-')}</code></div>
+                            <div style="margin-bottom:6px;font-size:13px;"><strong>checker</strong> <code>${v3EscapeHtml(res.checker || '-')}</code></div>
+                            <div style="font-size:13px;"><strong>integrity_result</strong> <span style="font-weight:700;color:${res.integrity_result === 'passed' ? '#16a34a' : '#dc2626'};">${v3EscapeHtml(res.integrity_result || '-')}</span></div>
+                        </div>
+                    `;
+                });
+                htmlContent += '</div>';
+                Swal.fire({
+                    title: '查看生成例題',
+                    html: htmlContent,
+                    width: 650,
+                    confirmButtonText: '關閉'
+                });
+            } catch (err) {
+                Swal.fire({ title: '載入生成例題失敗', text: err.message, icon: 'error' });
+            }
+        }
+
+        document.addEventListener('click', function(event) {
+            const regenerate = event.target.closest("[data-v3-action='regenerate']");
+            if (regenerate) {
+                event.preventDefault();
+                handleV3Regenerate(regenerate);
+                return;
+            }
+            const sample = event.target.closest("[data-v3-action='sample']");
+            if (sample) {
+                if (sample.tagName === 'A') {
+                    return;
+                }
+                event.preventDefault();
+                handleV3Sample(sample);
+            }
+        });
 
         function closeV3Drawer() {
             const drawer = document.getElementById('v3Drawer');
@@ -966,6 +1415,7 @@
         </div>
     </div>
 
+    {# contract: teacher-facing V3 drawer keeps generation and sample actions while engineering checks stay internal. #}
 </body>
 
 </html>

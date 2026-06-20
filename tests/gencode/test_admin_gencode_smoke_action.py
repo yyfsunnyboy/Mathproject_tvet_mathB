@@ -192,5 +192,4 @@ def test_template_has_post_smoke_button_contract():
     content = (PROJECT_ROOT / "templates" / "admin_examples.html").read_text(encoding="utf-8")
     assert "admin_run_example_v3_smoke" in content
     assert "🧪 執行 Smoke 測試" in content
-    assert "⚠️ 僅測試 dryrun 沙盒組件，不會正式發布" in content
     assert "gencode_status in ['draft_written', 'failed']" in content

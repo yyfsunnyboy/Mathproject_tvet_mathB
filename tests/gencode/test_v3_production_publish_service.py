@@ -29,6 +29,8 @@ PAYLOAD = {
     "source_kind": "ex_1",
     "presentation_mode": "short_answer",
     "line_type": "point_slope",
+    "integrity_gate_passed": True,
+    "integrity_gate_version": "v1",
 }
 
 STUB_METADATA_PY = '''from __future__ import annotations
@@ -183,7 +185,7 @@ def test_publish_success_backup_promote_and_manual_rollback(
     assert (project_root / "agent_skills_v3").exists()
 
 
-def test_publish_rejects_non_benchmark_skill(
+def test_publish_rejects_taxonomy_unregistered_skill(
     memory_conn: sqlite3.Connection,
     isolated_publish_roots: tuple[Path, Path],
 ):
@@ -191,7 +193,7 @@ def test_publish_rejects_non_benchmark_skill(
     project_root, staging_root = isolated_publish_roots
     _setup_mock_project_root(project_root)
 
-    with pytest.raises(ValueError, match="production_publish_not_allowed_for_skill"):
+    with pytest.raises(ValueError, match="taxonomy_not_registered"):
         publish_single_v3_skill_to_production(
             conn=memory_conn,
             skill_id="jh_數學1上_FourArithmeticOperationsOfIntegers",
@@ -207,7 +209,7 @@ def test_publish_rejects_missing_verified_components(
     project_root, staging_root = isolated_publish_roots
     _setup_mock_project_root(project_root)
 
-    with pytest.raises(ValueError, match="no_verified_components"):
+    with pytest.raises(ValueError, match="no_textbook_examples"):
         publish_single_v3_skill_to_production(
             conn=memory_conn,
             skill_id=SKILL_ID,

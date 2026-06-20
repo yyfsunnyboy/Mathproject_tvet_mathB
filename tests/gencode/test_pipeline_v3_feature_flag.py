@@ -25,6 +25,8 @@ PAYLOAD = {
     "source_kind": "ex_1",
     "presentation_mode": "short_answer",
     "line_type": "point_slope",
+    "integrity_gate_passed": True,
+    "integrity_gate_version": "v1",
 }
 
 STUB_METADATA_PY = 'COMPONENT_ID = "src_1"\n'

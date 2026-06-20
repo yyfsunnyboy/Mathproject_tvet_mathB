@@ -202,3 +202,75 @@ def test_assert_safe_sandbox_root_blocks_production_paths():
     for unsafe_root in ("", ".", "skills", "agent_skills_v3", str(PROJECT_ROOT)):
         with pytest.raises(ValueError, match="unsafe_sandbox_root"):
             assert_safe_sandbox_root(unsafe_root)
+
+
+def test_shadow_bridge_validator_failure_blocks_disk_write(
+    memory_conn: sqlite3.Connection,
+    dryrun_base_dir: Path,
+    monkeypatch: pytest.MonkeyPatch,
+):
+    """If the validator fails, it must raise ValueError, save tracker status as 'failed', and not write component to disk."""
+    memory_conn.execute(
+        "INSERT INTO textbook_examples (id, skill_id) VALUES (?, ?)",
+        (1, SKILL_ID),
+    )
+    memory_conn.commit()
+
+    # Mock validate_component_payload to return failed
+    from core.gencode.services import v3_question_integrity_validator
+    monkeypatch.setattr(
+        v3_question_integrity_validator,
+        "validate_component_payload",
+        lambda payload, component_id=None: {
+            "passed": False,
+            "component_id": component_id,
+            "blockers": ["simulated_failure"],
+            "warnings": [],
+        }
+    )
+
+    # Track if write_v3_component_to_disk is called
+    write_called = False
+    import core.gencode.pipeline_orchestrator as orchestrator
+    original_write = orchestrator.write_v3_component_to_disk
+    def mock_write(draft, base_dir):
+        nonlocal write_called
+        write_called = True
+        return original_write(draft, base_dir)
+    monkeypatch.setattr(orchestrator, "write_v3_component_to_disk", mock_write)
+
+    # Run and verify it raises ValueError
+    with pytest.raises(ValueError, match="source_fidelity_failed: .*simulated_failure"):
+        run_gencode_phase2_v3_shadow_bridge(
+            conn=memory_conn,
+            skill_id=SKILL_ID,
+            textbook_example_id=1,
+            source_kind="ex_1",
+            seed=42,
+            dryrun_base_dir=str(dryrun_base_dir),
+        )
+
+    # Verify write_v3_component_to_disk was NEVER called
+    assert not write_called, "write_v3_component_to_disk was called but validator failed!"
+
+    # Verify component directory was not created/written
+    component_dir = dryrun_base_dir / SKILL_ID / "components" / "src_1"
+    assert not component_dir.exists(), "Component directory exists on disk despite validator failure!"
+
+    # Verify tracker is updated with 'failed' status and integrity_gate_passed=False
+    tracker_row = memory_conn.execute(
+        """
+        SELECT gencode_status, gencode_error_log, induced_spec_payload
+        FROM gencode_component_tracker
+        WHERE textbook_example_id = ?
+        """,
+        (1,),
+    ).fetchone()
+    assert tracker_row is not None
+    assert tracker_row["gencode_status"] == "failed"
+    assert "integrity_gate_blocker:simulated_failure" in tracker_row["gencode_error_log"]
+
+    spec = json.loads(tracker_row["induced_spec_payload"])
+    assert spec.get("integrity_gate_passed") is False
+    assert spec.get("integrity_gate_version") == "v1"
+    assert spec.get("integrity_gate_blockers") == ["simulated_failure"]

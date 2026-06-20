@@ -670,20 +670,54 @@ def enrich_spec_with_canonicalization(spec: dict[str, Any]) -> dict[str, Any]:
             out["naming_warning"] = "naming_warning:interval_task_value_prefix_ignored"
         return out
 
+    source_has_choices = bool(existing_ac.get("source_has_choices"))
+    presentation = infer_presentation_mode(
+        canonical["base_problem_type_id"],
+        base_task,
+        source_has_choices=source_has_choices,
+        slot=slot
+    )
+
     rational_scalar = is_quadratic_rational_scalar_semantic(
         problem_type_id=canonical["base_problem_type_id"],
         target_task=str(out.get("target_task") or canonical["base_target_task"] or ""),
     )
 
     if rational_scalar and canonical["value_type_prefix"] in {"integer", "numeric"}:
-        if canonical["value_type_prefix"] != "integer":
-            out["problem_type_id"] = canonical["base_problem_type_id"]
-            out["naming_warning"] = "naming_warning:quadratic_vertex_value_prefix_removed"
+        out["problem_type_id"] = canonical["base_problem_type_id"]
+        out["naming_warning"] = "naming_warning:quadratic_vertex_value_prefix_removed"
 
-    if rational_scalar and hint == "integer" and canonical["value_type_prefix"] not in {"integer", "rational"}:
-        out["answer_format_hint"] = "rational"
-        hint = "rational"
-        out["naming_warning"] = "naming_warning:quadratic_vertex_integer_hint_promoted_to_rational"
+    if presentation == "single_choice" and canonical["value_type_prefix"] in {"integer", "rational", "numeric"}:
+        out["problem_type_id"] = canonical["base_problem_type_id"]
+        out["naming_warning"] = "naming_warning:choice_task_value_prefix_removed"
+
+    if rational_scalar:
+        if hint in {"integer", "numeric", ""} or canonical["value_type_prefix"] in {"integer", "numeric"}:
+            out["answer_format_hint"] = "rational"
+            hint = "rational"
+            out["naming_warning"] = "naming_warning:quadratic_vertex_integer_hint_promoted_to_rational"
+    if not hint or hint == HINT_UNKNOWN:
+        if presentation == "single_choice":
+            from core.gencode.answer_format_hint import HINT_CHOICE
+            out["answer_format_hint"] = HINT_CHOICE
+            hint = HINT_CHOICE
+        elif slot in {
+            "quadratic_graph_translation_fill_blank",
+            "quadratic_graph_translation_short_answer",
+            "quadratic_vertex_form_translation_to_new_function",
+        } or any(m in f"{canonical['base_problem_type_id']} {base_task}" for m in TEXT_SHORT_MARKERS):
+            from core.gencode.answer_format_hint import HINT_TEXT_SHORT
+            out["answer_format_hint"] = HINT_TEXT_SHORT
+            hint = HINT_TEXT_SHORT
+
+    if hint and hint != HINT_UNKNOWN:
+        pass
+    elif slot in {
+        "quadratic_graph_translation_fill_blank",
+        "quadratic_graph_translation_short_answer",
+        "quadratic_vertex_form_translation_to_new_function",
+    }:
+        pass
     elif canonical["value_type_prefix"] == "integer":
         from core.gencode.answer_format_hint import HINT_INTEGER
 

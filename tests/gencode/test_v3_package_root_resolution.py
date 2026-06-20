@@ -28,6 +28,8 @@ PAYLOAD = {
     "source_kind": "ex_1",
     "presentation_mode": "short_answer",
     "line_type": "point_slope",
+    "integrity_gate_passed": True,
+    "integrity_gate_version": "v1",
 }
 
 STUB_GENERATE_PY = '''from __future__ import annotations

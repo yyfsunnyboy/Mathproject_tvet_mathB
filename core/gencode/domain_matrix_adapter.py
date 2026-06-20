@@ -157,6 +157,16 @@ def _build_line_equation_answer_contract(
                 },
             ],
         }
+    if answer_type in ("rational", "numeric_or_undefined"):
+        return {
+            "presentation_mode": "short_answer",
+            "answer_type": answer_type,
+            "checker": "rational_checker",
+            "checker_key": "rational_checker",
+            "answer_equivalence": "rational_equivalent",
+            "equivalence": "rational_equivalent",
+            "semantic_answer": semantic_answer,
+        }
     return {
         "presentation_mode": "short_answer",
         "answer_type": answer_type,
@@ -205,6 +215,16 @@ def convert_line_equation_matrix_to_question_payload(
     task_type = str(validation_facts.get("task_type") or validation_facts.get("line_type") or "").strip()
     if mode == "single_choice":
         default_answer_type = "single_choice"
+    elif task_type in (
+        "slope_from_general_or_intercept_form",
+        "slope_of_horizontal_or_vertical_line",
+        "slope_from_general_form",
+        "parallel_line_slope",
+        "perpendicular_line_slope",
+    ):
+        default_answer_type = "numeric_or_undefined"
+    elif task_type in ("perpendicular_condition_parameter", "parallel_condition_parameter"):
+        default_answer_type = "rational"
     elif task_type == "intercept_form_triangle_area":
         default_answer_type = "rational"
     elif task_type == "intercept_form_equation_and_triangle_area":
@@ -257,7 +277,16 @@ def convert_line_equation_matrix_to_question_payload(
             metadata[key] = value
 
     if mode == "single_choice":
-        if task_type == "parabola_secant_parallel_line_choice":
+        if task_type == "compare_line_slopes" or answer.get("choices") or givens.get("choices"):
+            choices = _normalize_labeled_choices(answer.get("choices") or givens.get("choices"))
+            correct_label = str(answer.get("correct_label") or "").strip()
+            correct_choice_text = ""
+            for choice in choices:
+                if choice["label"] == correct_label:
+                    correct_choice_text = str(choice["text"])
+                    break
+            semantic_answer = correct_choice_text
+        elif task_type == "parabola_secant_parallel_line_choice":
             choices = _normalize_labeled_choices(answer.get("choices"))
             correct_label = str(answer.get("correct_label") or "").strip()
             if not choices or not correct_label:
@@ -397,10 +426,49 @@ def _build_line_equation_question_text(
     givens: dict[str, Any],
     validation_facts: dict[str, Any],
 ) -> str:
-    line_type = str(validation_facts.get("line_type", ""))
-    task_type = str(validation_facts.get("task_type", ""))
+    task_type = str(validation_facts.get("task_type") or validation_facts.get("line_type") or "").strip()
+    if not task_type:
+        task_type = "point_slope"
 
+    registered_task_types = {
+        "point_slope",
+        "two_points",
+        "horizontal_line",
+        "vertical_line",
+        "oblique_line",
+        "slope_intercept_equation",
+        "slope_intercept_find_x_intercept",
+        "slope_intercept_read_slope_and_intercept",
+        "intercept_form_equation",
+        "intercept_form_triangle_area",
+        "intercept_form_equation_and_triangle_area",
+        "intercept_form_from_intercept_sum_and_slope",
+        "parabola_secant_parallel_line_choice",
+        "triangle_area_bisector_line_equation",
+        "slope_from_general_or_intercept_form",
+        "line_through_point_parallel_to_line",
+        "line_through_point_perpendicular_to_line",
+        "slope_of_horizontal_or_vertical_line",
+        "slope_from_general_form",
+        "parallel_line_slope",
+        "perpendicular_condition_parameter",
+        "parallel_condition_parameter",
+        "compare_line_slopes",
+        "perpendicular_line_slope",
+        "line_through_intersection_parallel_to_line",
+        "perpendicular_bisector_application",
+        "line_through_point_perpendicular_to_segment",
+    }
+
+    if task_type not in registered_task_types:
+        raise ValueError(f"unsupported_line_equation_task_type:{task_type}")
+
+    # 1. Slope-Intercept Forms
     if task_type == "slope_intercept_equation":
+        if "slope" not in givens:
+            raise ValueError("required_line_task_slot_missing:slope_intercept_equation:slope")
+        if "y_intercept" not in givens:
+            raise ValueError("required_line_task_slot_missing:slope_intercept_equation:y_intercept")
         slope = givens.get("slope")
         y_intercept = givens.get("y_intercept")
         return (
@@ -409,6 +477,10 @@ def _build_line_equation_question_text(
         )
 
     if task_type == "slope_intercept_find_x_intercept":
+        if "slope" not in givens:
+            raise ValueError("required_line_task_slot_missing:slope_intercept_find_x_intercept:slope")
+        if "y_intercept" not in givens:
+            raise ValueError("required_line_task_slot_missing:slope_intercept_find_x_intercept:y_intercept")
         slope = givens.get("slope")
         y_intercept = givens.get("y_intercept")
         return (
@@ -417,9 +489,12 @@ def _build_line_equation_question_text(
         )
 
     if task_type == "slope_intercept_read_slope_and_intercept":
+        if "equation" not in givens:
+            raise ValueError("required_line_task_slot_missing:slope_intercept_read_slope_and_intercept:equation")
         equation = givens.get("equation")
         return f"已知直線方程式為 {_latex_inline_equation(equation)}，判斷其斜率與 y 截距。"
 
+    # 2. Intercept Forms & Word Problems
     if task_type in {
         "intercept_form_equation",
         "intercept_form_triangle_area",
@@ -432,6 +507,9 @@ def _build_line_equation_question_text(
         x_intercept = givens.get("x_intercept")
         y_intercept = givens.get("y_intercept")
         if task_type == "triangle_area_bisector_line_equation":
+            for slot in ("vertex", "edge_p1", "edge_p2", "midpoint"):
+                if slot not in givens:
+                    raise ValueError(f"required_line_task_slot_missing:triangle_area_bisector_line_equation:{slot}")
             vertex = _format_point_for_question(givens.get("vertex"))
             edge_p1 = _format_point_for_question(givens.get("edge_p1"))
             edge_p2 = _format_point_for_question(givens.get("edge_p2"))
@@ -441,6 +519,8 @@ def _build_line_equation_question_text(
                 f"若直線通過 B 並通過 AC 的中點 D={midpoint}，求此平分三角形 ABC 面積的直線方程式。"
             )
         if task_type == "parabola_secant_parallel_line_choice":
+            if "p" not in givens or "q" not in givens:
+                raise ValueError("required_line_task_slot_missing:parabola_secant_parallel_line_choice:interval_bounds")
             p = givens.get("p")
             q = givens.get("q")
             return (
@@ -448,6 +528,8 @@ def _build_line_equation_question_text(
                 "則直線 AB 與下列哪一條直線平行？"
             )
         if task_type == "intercept_form_from_intercept_sum_and_slope":
+            if "intercept_sum" not in givens or "slope" not in givens:
+                raise ValueError("required_line_task_slot_missing:intercept_form_from_intercept_sum_and_slope:givens")
             intercept_sum = givens.get("intercept_sum")
             slope = givens.get("slope")
             return (
@@ -474,7 +556,117 @@ def _build_line_equation_question_text(
             f"{_latex_dollar(y_intercept)}，試求直線 L 的方程式與兩坐標軸所圍成的三角形面積。"
         )
 
-    if "point_a" in givens and "point_b" in givens:
+    # 3. V3 General Form Line types
+    if task_type == "slope_from_general_or_intercept_form":
+        if "equation" not in givens:
+            raise ValueError("required_line_task_slot_missing:slope_from_general_or_intercept_form:equation")
+        eq = givens["equation"]
+        return f"試求直線的斜率：{_latex_dollar(eq)}。"
+
+    if task_type == "line_through_point_parallel_to_line":
+        if "point" not in givens:
+            raise ValueError("required_line_task_slot_missing:line_through_point_parallel_to_line:point")
+        if "equation" not in givens:
+            raise ValueError("required_line_task_slot_missing:line_through_point_parallel_to_line:reference_line")
+        pt = _format_point_for_question(givens["point"])
+        eq = givens["equation"]
+        return f"已知直線 $L_2$ 通過點 {pt} 且與直線 $L_1: {eq}$ 平行，試求 $L_2$ 的直線方程式。"
+
+    if task_type == "line_through_point_perpendicular_to_line":
+        if "point" not in givens:
+            raise ValueError("required_line_task_slot_missing:line_through_point_perpendicular_to_line:point")
+        if "equation" not in givens:
+            raise ValueError("required_line_task_slot_missing:line_through_point_perpendicular_to_line:reference_line")
+        pt = _format_point_for_question(givens["point"])
+        eq = givens["equation"]
+        return f"已知直線 $L_2$ 通過點 {pt} 且與直線 $L_1: {eq}$ 垂直，試求 $L_2$ 的直線方程式。"
+
+    if task_type == "slope_of_horizontal_or_vertical_line":
+        if "equation" not in givens:
+            raise ValueError("required_line_task_slot_missing:slope_of_horizontal_or_vertical_line:equation")
+        eq = givens["equation"]
+        return f"試求直線的斜率：{_latex_dollar(eq)}。"
+
+    if task_type == "slope_from_general_form":
+        if "equation" not in givens:
+            raise ValueError("required_line_task_slot_missing:slope_from_general_form:equation")
+        eq = givens["equation"]
+        return f"試求直線的斜率：{_latex_dollar(eq)}。"
+
+    if task_type == "parallel_line_slope":
+        if "equation" not in givens:
+            raise ValueError("required_line_task_slot_missing:parallel_line_slope:reference_line")
+        eq = givens["equation"]
+        return f"試求與直線 {_latex_dollar(eq)} 平行之直線斜率。"
+
+    if task_type == "perpendicular_condition_parameter":
+        if "equation_1" not in givens:
+            raise ValueError("required_line_task_slot_missing:perpendicular_condition_parameter:line_1")
+        if "equation_2" not in givens:
+            raise ValueError("required_line_task_slot_missing:perpendicular_condition_parameter:line_2")
+        eq1 = givens["equation_1"]
+        eq2 = givens["equation_2"]
+        if "a" not in eq1 and "k" not in eq1:
+            raise ValueError("required_line_task_slot_missing:perpendicular_condition_parameter:parameter")
+        return f"設兩直線 $L_1: {eq1}$、$L_2: {eq2}$，若 $L_1 \\bot L_2$，則 $a =$"
+
+    if task_type == "parallel_condition_parameter":
+        if "equation_1" not in givens:
+            raise ValueError("required_line_task_slot_missing:parallel_condition_parameter:line_1")
+        if "equation_2" not in givens:
+            raise ValueError("required_line_task_slot_missing:parallel_condition_parameter:line_2")
+        eq1 = givens["equation_1"]
+        eq2 = givens["equation_2"]
+        if "a" not in eq1 and "k" not in eq1:
+            raise ValueError("required_line_task_slot_missing:parallel_condition_parameter:parameter")
+        return f"設兩直線 $L_1: {eq1}$、$L_2: {eq2}$，若 $L_1 \\parallel L_2$，則 $a =$"
+
+    if task_type == "compare_line_slopes":
+        if "choices" not in givens:
+            raise ValueError("required_line_task_slot_missing:compare_line_slopes:lines")
+        return "下列各直線方程式中，具有最大斜率的直線為"
+
+    if task_type == "perpendicular_line_slope":
+        if "equation" not in givens:
+            raise ValueError("required_line_task_slot_missing:perpendicular_line_slope:reference_line")
+        eq = givens["equation"]
+        return f"與直線 {_latex_dollar(eq)} 垂直的直線之斜率為"
+
+    if task_type == "line_through_intersection_parallel_to_line":
+        if "equation_1" not in givens:
+            raise ValueError("required_line_task_slot_missing:line_through_intersection_parallel_to_line:line_1")
+        if "equation_2" not in givens:
+            raise ValueError("required_line_task_slot_missing:line_through_intersection_parallel_to_line:line_2")
+        if "equation_3" not in givens:
+            raise ValueError("required_line_task_slot_missing:line_through_intersection_parallel_to_line:reference_line")
+        eq1 = givens["equation_1"]
+        eq2 = givens["equation_2"]
+        eq3 = givens["equation_3"]
+        return f"通過兩直線 {_latex_dollar(eq1)} 與 {_latex_dollar(eq2)} 的交點，並與直線 {_latex_dollar(eq3)} 平行的直線方程式為："
+
+    if task_type == "perpendicular_bisector_application":
+        if "point_a" not in givens:
+            raise ValueError("required_line_task_slot_missing:perpendicular_bisector_application:point_a")
+        if "point_b" not in givens:
+            raise ValueError("required_line_task_slot_missing:perpendicular_bisector_application:point_b")
+        pa = _format_point_for_question(givens["point_a"])
+        pb = _format_point_for_question(givens["point_b"])
+        return f"已知平面上兩點 A{pa}、B{pb}，求線段 AB 的垂直平分線（中垂線）方程式。"
+
+    if task_type == "line_through_point_perpendicular_to_segment":
+        if "point_b" not in givens:
+            raise ValueError("required_line_task_slot_missing:line_through_point_perpendicular_to_segment:point_b")
+        if "point_a" not in givens:
+            raise ValueError("required_line_task_slot_missing:line_through_point_perpendicular_to_segment:point_a")
+        if "point_c" not in givens:
+            raise ValueError("required_line_task_slot_missing:line_through_point_perpendicular_to_segment:point_c")
+        pb = _format_point_for_question(givens["point_b"])
+        pa = _format_point_for_question(givens["point_a"])
+        pc = _format_point_for_question(givens["point_c"])
+        return f"若 A{pa}、B{pb}、C{pc} 為平面上三點，則過點 B 且與直線 AC 垂直的直線方程式為何？"
+
+    # 4. Fallbacks for standard Point-Slope / Two-Points / Horizontal / Vertical
+    if task_type == "two_points" or ("point_a" in givens and "point_b" in givens):
         pa = givens["point_a"]
         pb = givens["point_b"]
         ax, ay = int(pa[0]), int(pa[1])
@@ -491,7 +683,9 @@ def _build_line_equation_question_text(
             f"試求通過 $A({ax},\\,{ay})$ 與 $B({bx},\\,{by})$ 兩點之直線方程式。"
         )
 
-    if "point" in givens and "slope" in givens:
+    if task_type == "point_slope" or ("point" in givens and "slope" in givens):
+        if "point" not in givens or "slope" not in givens:
+            raise ValueError("required_line_task_slot_missing:point_slope:point_or_slope")
         point = givens["point"]
         slope = givens["slope"]
         px, py = int(point[0]), int(point[1])
@@ -499,15 +693,15 @@ def _build_line_equation_question_text(
             f"已知直線過點 $({px},\\,{py})$，斜率為 ${slope}$，求此直線方程式。"
         )
 
-    if line_type == "horizontal_line" or "y_intercept" in givens:
+    if task_type == "horizontal_line" or line_type == "horizontal_line" or "y_intercept" in givens:
         y_val = givens.get("y_intercept")
         return f"寫出斜率為 0 且通過 y 軸上 {y_val} 的水平線方程式。"
 
-    if line_type == "vertical_line" or "x_intercept" in givens:
+    if task_type == "vertical_line" or line_type == "vertical_line" or "x_intercept" in givens:
         x_val = givens.get("x_intercept")
         return f"寫出鉛直且通過 x = {x_val} 的直線方程式。"
 
-    return "請寫出符合題意的直線方程式。"
+    raise ValueError(f"unsupported_line_equation_task_type:{task_type}")
 
 
 def _build_choice_options(

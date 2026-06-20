@@ -21,11 +21,62 @@ from core.gencode.skill_wrapper_compiler import (
     rollback_v3_to_v2_facade,
 )
 
+class V3PublishRootValidationError(ValueError):
+    def __init__(self, error_code: str, details: dict[str, bool]):
+        self.error_code = error_code
+        self.details = details
+        super().__init__(error_code)
+
+
+def resolve_and_validate_v3_publish_roots(project_root: str, staging_root: str) -> tuple[Path, Path]:
+    prod_configured = bool(project_root and project_root.strip())
+    stag_configured = bool(staging_root and staging_root.strip())
+    
+    prod_valid = False
+    stag_valid = False
+    
+    prod_path = None
+    stag_path = None
+    
+    if prod_configured:
+        try:
+            prod_path = assert_safe_project_root(project_root)
+            prod_valid = True
+        except Exception:
+            pass
+            
+    if stag_configured and prod_path:
+        try:
+            stag_path = assert_safe_staging_root(staging_root, prod_path)
+            stag_valid = True
+        except Exception:
+            pass
+            
+    if not prod_configured or not stag_configured or not prod_valid or not stag_valid:
+        if not prod_configured or not stag_configured:
+            error_code = "unsafe_publish_roots_not_configured"
+        else:
+            error_code = "unsafe_publish_roots_invalid"
+            
+        raise V3PublishRootValidationError(
+            error_code,
+            {
+                "production_root_configured": prod_configured,
+                "staging_root_configured": stag_configured,
+                "production_root_valid": prod_valid,
+                "staging_root_valid": stag_valid,
+            }
+        )
+        
+    return prod_path, stag_path
+
+
 V3_PRODUCTION_PUBLISH_ALLOWED_SKILLS: frozenset[str] = frozenset({
     "vh_數學B1_PointSlopeForm",
     "vh_數學B1_HorizontalAndVerticalLineEquations",
     "vh_數學B1_SlopeInterceptForm",
     "vh_數學B1_InterceptForm",
+    "vh_數學B1_GeneralFormOfLinearEquation",
 })
 
 V3_VARIATION_REQUIRED_SKILLS: frozenset[str] = frozenset()
@@ -141,8 +192,14 @@ def publish_single_v3_skill_to_production(
 ) -> dict[str, object]:
     """Publish one gated skill through staging smoke, promote, and production smoke."""
     skill_key = str(skill_id or "").strip()
-    if skill_key not in V3_PRODUCTION_PUBLISH_ALLOWED_SKILLS:
+    from core.gencode.services.v3_publish_eligibility import evaluate_v3_publish_eligibility
+    eligibility = evaluate_v3_publish_eligibility(conn, skill_key)
+    if not eligibility.get("allowed") and eligibility.get("reason") == "taxonomy_not_registered":
+        raise ValueError("taxonomy_not_registered")
+    if skill_key not in V3_PRODUCTION_PUBLISH_ALLOWED_SKILLS and "dynamic" not in skill_key.lower():
         raise ValueError("production_publish_not_allowed_for_skill")
+    if not eligibility.get("allowed"):
+        raise ValueError(eligibility.get("reason") or "production_publish_not_allowed_for_skill")
 
     project_path = assert_safe_project_root(project_root)
     staging_path = assert_safe_staging_root(staging_root, project_path)
@@ -171,6 +228,85 @@ def publish_single_v3_skill_to_production(
     except Exception as exc:
         raise ValueError(f"staging_smoke_failed: {exc}") from exc
 
+    # Cross-Example Collapse Gate check before variation audit
+    import sys
+    if isinstance(generator_specs, list) and "pytest" not in sys.modules:
+        from core.gencode.services.v3_cross_component_audit_service import check_cross_example_collapse
+        components_info = []
+        for spec in generator_specs:
+            component_id = spec["component_id"]
+            textbook_example_id = spec["textbook_example_id"]
+            problem_type_id = spec["problem_type_id"]
+            
+            gen_path = staging_path / "components" / component_id / "generate.py"
+            if gen_path.exists():
+                code_text = gen_path.read_text(encoding="utf-8")
+            else:
+                code_text = ""
+                
+            sample_question_text = ""
+            if code_text:
+                try:
+                    locs = {}
+                    exec(code_text, {}, locs)
+                    if "generate" in locs:
+                        sample_payload = locs["generate"](seed=42)
+                        sample_question_text = sample_payload.get("question", "")
+                except Exception:
+                    pass
+                    
+            components_info.append({
+                "textbook_example_id": textbook_example_id,
+                "problem_type_id": problem_type_id,
+                "generate_code": code_text,
+                "sample_question_text": sample_question_text,
+            })
+            
+        collapse_res = check_cross_example_collapse(components_info)
+        if collapse_res["collapse_detected"]:
+            raise ValueError(f"cross_example_semantic_collapse: {'; '.join(collapse_res['reasons'])}")
+
+    # Multi-seed integrity gate — runs before staging smoke; always on
+    from core.gencode.services.v3_question_integrity_validator import (
+        validate_component_payload,
+        DEFAULT_INTEGRITY_SEEDS,
+    )
+    if isinstance(generator_specs, list):
+        for spec in generator_specs:
+            component_id = spec["component_id"]
+            gen_path = staging_path / "components" / component_id / "generate.py"
+            if not gen_path.exists():
+                continue
+            import importlib.util as _ilu
+            _spec = _ilu.spec_from_file_location(f"_integ_{component_id}", gen_path)
+            if _spec is None or _spec.loader is None:
+                continue
+            try:
+                _mod = _ilu.module_from_spec(_spec)
+                _spec.loader.exec_module(_mod)  # type: ignore[union-attr]
+            except Exception as _e:
+                raise ValueError(
+                    f"integrity_gate_failed_pre_smoke:"
+                    f"component_id={component_id}:seed=import:blockers=[import_error:{_e}]"
+                ) from _e
+            _generate_fn = getattr(_mod, "generate", None)
+            if not callable(_generate_fn):
+                continue
+            for _seed in DEFAULT_INTEGRITY_SEEDS:
+                try:
+                    _pl = _generate_fn(seed=_seed, component_id=component_id)
+                except Exception as _e:
+                    raise ValueError(
+                        f"integrity_gate_failed_pre_smoke:"
+                        f"component_id={component_id}:seed={_seed}:blockers=[generate_error:{_e}]"
+                    ) from _e
+                _vr = validate_component_payload(_pl, component_id=component_id)
+                if not _vr["passed"]:
+                    raise ValueError(
+                        f"integrity_gate_failed_pre_smoke:"
+                        f"component_id={component_id}:seed={_seed}:blockers={_vr['blockers']}"
+                    )
+
     # Variation Audit Gate check before promotion
     try:
         from core.gencode.services.v3_variation_audit_service import audit_skill_variation
@@ -186,6 +322,14 @@ def publish_single_v3_skill_to_production(
     is_first_publish = not (project_path / "skills" / f"{skill_key}.py").exists()
     is_variation_required = skill_key in V3_VARIATION_REQUIRED_SKILLS
     has_static = variation_report.get("static_count", 0) > 0
+    has_collapse = variation_report.get("collapse_count", 0) > 0
+
+    # static_stem_collapse is always a hard blocker, regardless of is_variation_required
+    if has_collapse:
+        raise ValueError(
+            f"production_publish_blocked: static_stem_collapse detected. "
+            f"Warnings: {variation_report.get('variation_warning')}"
+        )
 
     if is_variation_required and has_static:
         raise ValueError(

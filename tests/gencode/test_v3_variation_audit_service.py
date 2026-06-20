@@ -24,28 +24,24 @@ def custom_temp_dir():
 def mock_db_with_tracker(custom_temp_dir):
     db_path = custom_temp_dir / "test_kumon.db"
     conn = sqlite3.connect(str(db_path))
+    ddl_path = PROJECT_ROOT / "core" / "gencode" / "schema" / "gencode_component_tracker.sql"
+    ddl = ddl_path.read_text(encoding="utf-8")
+    conn.executescript(ddl)
+    
     conn.execute(
-        """CREATE TABLE gencode_component_tracker (
-            textbook_example_id INTEGER PRIMARY KEY,
-            skill_id TEXT,
-            component_id TEXT,
-            gencode_status TEXT
-        )"""
-    )
-    conn.execute(
-        "INSERT INTO gencode_component_tracker VALUES (1, ?, 'comp_static', 'verified')",
+        "INSERT INTO gencode_component_tracker (textbook_example_id, skill_id, component_id, gencode_status) VALUES (1, ?, 'comp_static', 'verified')",
         (SKILL_ID,)
     )
     conn.execute(
-        "INSERT INTO gencode_component_tracker VALUES (2, ?, 'comp_dynamic', 'verified')",
+        "INSERT INTO gencode_component_tracker (textbook_example_id, skill_id, component_id, gencode_status) VALUES (2, ?, 'comp_dynamic', 'verified')",
         (SKILL_ID,)
     )
     conn.execute(
-        "INSERT INTO gencode_component_tracker VALUES (3, ?, 'comp_partial', 'verified')",
+        "INSERT INTO gencode_component_tracker (textbook_example_id, skill_id, component_id, gencode_status) VALUES (3, ?, 'comp_partial', 'verified')",
         (SKILL_ID,)
     )
     conn.execute(
-        "INSERT INTO gencode_component_tracker VALUES (4, ?, 'comp_unsafe', 'verified')",
+        "INSERT INTO gencode_component_tracker (textbook_example_id, skill_id, component_id, gencode_status) VALUES (4, ?, 'comp_unsafe', 'verified')",
         (SKILL_ID,)
     )
     conn.commit()

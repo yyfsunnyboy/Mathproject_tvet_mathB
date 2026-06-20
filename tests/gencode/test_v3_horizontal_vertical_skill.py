@@ -314,7 +314,32 @@ def test_publish_dead_locked_for_non_allowlist_skill_even_when_verified(
     )
     memory_conn.commit()
 
-    with pytest.raises(ValueError, match="production_publish_not_allowed_for_skill"):
+    with pytest.raises(ValueError, match="taxonomy_not_registered"):
+        run_admin_v3_publish_for_skill(
+            conn=memory_conn,
+            skill_id=non_allowlist_skill,
+            project_root=str(sandbox_root / "project"),
+            staging_root=str(sandbox_root / "staging"),
+            force_publish=True,
+        )
+
+
+def test_publish_whitelist_still_allows_only_benchmark(
+    memory_conn: sqlite3.Connection,
+    sandbox_root: Path,
+):
+    """驗證 PointSlopeForm 仍受白名單保護（force_publish=False 死鎖）。"""
+    with pytest.raises(ValueError, match="production_publish_requires_force_publish"):
+        run_admin_v3_publish_for_skill(
+            conn=memory_conn,
+            skill_id=BENCHMARK_SKILL_ID,
+            project_root=str(sandbox_root / "project"),
+            staging_root=str(sandbox_root / "staging"),
+            force_publish=False,
+        )
+
+
+# ---------------------------------------------------------------------------
         run_admin_v3_publish_for_skill(
             conn=memory_conn,
             skill_id=non_allowlist_skill,
@@ -344,15 +369,14 @@ def test_publish_whitelist_still_allows_only_benchmark(
 # ---------------------------------------------------------------------------
 
 
-def test_template_publish_button_whitelist_contract():
+def test_template_publish_button_eligibility_contract():
     """admin_skills.html 的發布按鈕必須使用動態 allowlist context 判斷。
     Step 7B 後：模板改為 v3_publish_allowed_skill_ids 動態集合，不再硬編碼單一 skill_id。
     """
     content = (PROJECT_ROOT / "templates" / "admin_skills.html").read_text(encoding="utf-8")
-    assert "admin_run_skill_v3_publish" in content
+    assert "admin_run_skill_v3_repackage" in content
     # Step 7B 後使用動態 allowlist，不再硬編碼 PointSlopeForm
-    assert "v3_publish_allowed_skill_ids" in content
-    assert "in (v3_publish_allowed_skill_ids or [])" in content
-    assert "gencode.get('verified_count', 0)" in content
-    assert "admin_run_skill_v3_publish" in content
-    assert "force_publish" in content
+    assert "publish_eligible" in content
+    assert "in (v3_publish_allowed_skill_ids or [])" not in content
+    assert "gencode.get" in content
+    assert "repackageSkillV3" in content

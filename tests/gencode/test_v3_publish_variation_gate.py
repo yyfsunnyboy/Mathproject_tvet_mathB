@@ -25,30 +25,26 @@ def custom_temp_dir():
 def mock_db_with_tracker(custom_temp_dir):
     db_path = custom_temp_dir / "test_kumon.db"
     conn = sqlite3.connect(str(db_path))
-    conn.execute(
-        """CREATE TABLE gencode_component_tracker (
-            textbook_example_id INTEGER PRIMARY KEY,
-            skill_id TEXT,
-            component_id TEXT,
-            gencode_status TEXT,
-            induced_spec_payload TEXT
-        )"""
-    )
+    ddl_path = PROJECT_ROOT / "core" / "gencode" / "schema" / "gencode_component_tracker.sql"
+    ddl = ddl_path.read_text(encoding="utf-8")
+    conn.executescript(ddl)
     
     mock_payload = {
         "presentation_mode": "short_answer",
         "answer_type": "integer",
         "problem_type_id": "integer_exercise",
         "display_order": 1,
-        "sampling_weight": 10.0
+        "sampling_weight": 10.0,
+        "integrity_gate_passed": True,
+        "integrity_gate_version": "v1"
     }
     
     conn.execute(
-        "INSERT INTO gencode_component_tracker VALUES (1, 'vh_數學B1_InterceptForm', 'src_4555', 'verified', ?)",
+        "INSERT INTO gencode_component_tracker (textbook_example_id, skill_id, component_id, gencode_status, induced_spec_payload) VALUES (1, 'vh_數學B1_InterceptForm', 'src_4555', 'verified', ?)",
         (json.dumps(mock_payload),)
     )
     conn.execute(
-        "INSERT INTO gencode_component_tracker VALUES (2, 'vh_數學B1_InterceptForm', 'src_4604', 'verified', ?)",
+        "INSERT INTO gencode_component_tracker (textbook_example_id, skill_id, component_id, gencode_status, induced_spec_payload) VALUES (2, 'vh_數學B1_InterceptForm', 'src_4604', 'verified', ?)",
         (json.dumps(mock_payload),)
     )
     conn.commit()

@@ -165,6 +165,7 @@ GENERATOR_SPECS = {generator_specs!r}
 _COMPONENT_DISPATCH = {component_dispatch!r}
 _V3_ROOT = Path(__file__).resolve().parent
 _RR_CURSOR = 0
+_SHUFFLED_CYCLE = None
 
 
 def _component_sampling_weight(component_id: str) -> float:
@@ -210,15 +211,40 @@ def _pick_component_id(
     ordered_keys = _ordered_generator_keys()
     if not ordered_keys:
         raise RuntimeError("generator_keys_empty")
+    
+    import math
+    from functools import reduce
+    
+    raw_weights = []
+    for key in ordered_keys:
+        w = int(_component_sampling_weight(key) or 1)
+        raw_weights.append(max(1, w))
+        
+    g = reduce(math.gcd, raw_weights) if raw_weights else 1
+    normalized_weights = [w // g for w in raw_weights]
+    
+    cycle = []
+    for key, w in zip(ordered_keys, normalized_weights):
+        cycle.extend([key] * w)
+
     if seed is None:
-        global _RR_CURSOR
-        picked = ordered_keys[_RR_CURSOR % len(ordered_keys)]
+        global _RR_CURSOR, _SHUFFLED_CYCLE
+        if _SHUFFLED_CYCLE is None or _RR_CURSOR >= len(_SHUFFLED_CYCLE):
+            import random
+            _SHUFFLED_CYCLE = list(cycle)
+            random.shuffle(_SHUFFLED_CYCLE)
+            _RR_CURSOR = 0
+        picked = _SHUFFLED_CYCLE[_RR_CURSOR]
         _RR_CURSOR += 1
         return picked
-    import random
+    else:
+        import random
+        cycle_len = len(cycle)
+        cycle_seed = int(seed) // cycle_len
+        shuffled = list(cycle)
+        random.Random(cycle_seed).shuffle(shuffled)
+        return shuffled[int(seed) % cycle_len]
 
-    weights = [_component_sampling_weight(key) for key in ordered_keys]
-    return random.Random(seed).choices(ordered_keys, weights=weights, k=1)[0]
 
 
 def _spec_for_component(component_id: str) -> dict[str, Any]:

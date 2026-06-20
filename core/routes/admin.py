@@ -46,6 +46,137 @@ from core.services.prompt_sync_service import (
     import_single_prompt_from_yaml,
 )
 
+
+def _admin_v3_json_safe(value):
+    if value is None or isinstance(value, (str, int, float, bool)):
+        return value
+    if isinstance(value, datetime):
+        return value.isoformat()
+    if isinstance(value, Path):
+        return str(value)
+    if isinstance(value, bytes):
+        try:
+            return value.decode("utf-8")
+        except UnicodeDecodeError:
+            return value.hex()
+    if isinstance(value, dict):
+        return {str(k): _admin_v3_json_safe(v) for k, v in value.items()}
+    if isinstance(value, (list, tuple, set)):
+        return [_admin_v3_json_safe(v) for v in value]
+    return str(value)
+
+
+def _parse_admin_v3_induced_spec_payload(payload_raw):
+    if payload_raw is None or str(payload_raw).strip() == "":
+        return {}, []
+    if isinstance(payload_raw, dict):
+        return payload_raw, []
+    if isinstance(payload_raw, (bytes, bytearray)):
+        try:
+            payload_text = bytes(payload_raw).decode("utf-8")
+        except UnicodeDecodeError:
+            payload_text = bytes(payload_raw).hex()
+    else:
+        payload_text = str(payload_raw)
+    try:
+        parsed = json.loads(payload_text)
+    except Exception as exc:
+        return {}, [{
+            "reason": "invalid_induced_spec_payload_json",
+            "details": str(exc),
+            "raw_preview": payload_text[:200],
+        }]
+    if not isinstance(parsed, dict):
+        return {}, [{
+            "reason": "induced_spec_payload_not_object",
+            "raw_preview": payload_text[:200],
+        }]
+    return parsed, []
+
+
+def _run_admin_v3_integrity_gate_for_example(
+    *,
+    conn,
+    textbook_example_id: int,
+    skill_id: str,
+    project_root: Path,
+    dryrun_base_dir: str = "reports/gencode_v3_dryrun",
+    seed: int = 42,
+) -> dict[str, object]:
+    from core.gencode.services.admin_gencode_action_service import _load_module_from_file
+    from core.gencode.services.component_tracker_service import _fetch_tracker_row, save_tracker_record
+    from core.gencode.services.v3_question_integrity_validator import validate_component_payload
+    import py_compile
+
+    tracker = _fetch_tracker_row(conn, textbook_example_id=textbook_example_id)
+    if not tracker:
+        raise ValueError("tracker_record_not_found")
+
+    component_id = str(tracker.get("component_id") or "").strip()
+    if not component_id:
+        raise ValueError("missing_component_id")
+
+    component_dir = project_root / dryrun_base_dir / skill_id / "components" / component_id
+    required_files = {
+        "metadata.py": component_dir / "metadata.py",
+        "generate.py": component_dir / "generate.py",
+        "get_hint.py": component_dir / "get_hint.py",
+    }
+    missing_files = [name for name, path in required_files.items() if not path.is_file()]
+    if missing_files:
+        raise ValueError(f"missing_files:{','.join(missing_files)}")
+
+    for target_path in required_files.values():
+        py_compile.compile(str(target_path), doraise=True)
+
+    generate_module = _load_module_from_file(required_files["generate.py"])
+    hint_module = _load_module_from_file(required_files["get_hint.py"])
+
+    generate_fn = getattr(generate_module, "generate", None)
+    if not callable(generate_fn):
+        raise RuntimeError("missing_generate_function")
+    payload = generate_fn(seed=seed)
+    if not isinstance(payload, dict):
+        payload = {}
+
+    hint_fn = getattr(hint_module, "get_hint", None)
+    if not callable(hint_fn):
+        raise RuntimeError("missing_get_hint_function")
+    hint_fn(1, payload)
+
+    validation = validate_component_payload(payload, component_id)
+    blockers = list(validation.get("blockers") or [])
+    if not validation.get("passed"):
+        if not blockers:
+            blockers = ["integrity_validation_failed"]
+        raise ValueError("; ".join(str(blocker) for blocker in blockers))
+
+    induced_spec_payload, warnings = _parse_admin_v3_induced_spec_payload(
+        tracker.get("induced_spec_payload")
+    )
+    induced_spec_payload["integrity_gate_passed"] = True
+    induced_spec_payload["integrity_gate_version"] = "v1"
+    induced_spec_payload["integrity_gate_blockers"] = []
+    saved = save_tracker_record(
+        conn,
+        textbook_example_id=textbook_example_id,
+        skill_id=skill_id,
+        gencode_status="verified",
+        induced_spec_payload=induced_spec_payload,
+        gencode_error_log=None,
+    )
+    return {
+        "status": "success",
+        "textbook_example_id": textbook_example_id,
+        "skill_id": skill_id,
+        "component_id": component_id,
+        "gencode_status": "verified",
+        "integrity_gate_passed": True,
+        "integrity_gate_version": "v1",
+        "warnings": warnings,
+        "updated_at": saved.get("updated_at"),
+    }
+
 from . import core_bp
 from core.globals import TASK_QUEUES
 from core import textbook_processor
@@ -152,8 +283,9 @@ def _load_examples_gencode_status_map(examples) -> dict[int, dict[str, object]]:
             [(int(ex.id), str(ex.skill_id)) for ex in examples],
             project_root=_resolve_admin_project_root(),
         )
-    except Exception:
-        return {}
+    except Exception as exc:
+        current_app.logger.exception("Failed to build admin example V3 status map: %s", exc)
+        raise
     finally:
         raw_conn.close()
 
@@ -2164,6 +2296,11 @@ def admin_skills():
             "suggested_prompt_1": skill_info.suggested_prompt_1,
             "suggested_prompt_2": skill_info.suggested_prompt_2,
             "suggested_prompt_3": skill_info.suggested_prompt_3,
+            "curriculum": curriculum.curriculum,
+            "grade": curriculum.grade,
+            "volume": curriculum.volume,
+            "chapter": curriculum.chapter,
+            "section": curriculum.section,
         })
     gencode_status_map = {}
     root_candidates = [
@@ -2226,13 +2363,11 @@ def admin_skills():
         [str(s["skill_id"]) for s in skills]
     )
 
-    from core.gencode.v3_production_publish_service import V3_PRODUCTION_PUBLISH_ALLOWED_SKILLS
     return render_template('admin_skills.html', 
                            skills_data=skills_data,
                            skills=skills,
                            gencode_status_map=gencode_status_map,
                            v3_gencode_status_map=v3_gencode_status_map,
-                           v3_publish_allowed_skill_ids=V3_PRODUCTION_PUBLISH_ALLOWED_SKILLS,
                            filters=filters_data,
                            selected_filters=selected,
                            grade_map={str(g):str(g) for g in filters_data['grades']},
@@ -2793,6 +2928,458 @@ def admin_run_example_v3_verify(textbook_example_id: int):
     return redirect(redirect_target)
 
 
+@core_bp.route('/admin/textbook-examples/<int:textbook_example_id>/v3-details', methods=['GET'])
+@login_required
+def admin_example_v3_details(textbook_example_id: int):
+    if not current_user.is_admin:
+        return jsonify({
+            "status": "failed",
+            "reason": "forbidden",
+            "details": "forbidden",
+        }), 403
+
+    try:
+        textbook_example = db.session.get(TextbookExample, textbook_example_id)
+        if not textbook_example:
+            return jsonify({
+                "status": "failed",
+                "reason": "textbook_example_not_found",
+                "details": "textbook_example_not_found",
+                "textbook_example_id": textbook_example_id,
+            }), 404
+
+        from core.gencode.services.gencode_status_query_service import (
+            get_gencode_status_for_examples,
+            inspect_gencode_files,
+            inspect_component_production_sync,
+            resolve_teacher_facing_v3_status,
+        )
+
+        raw_conn = db.engine.raw_connection()
+        try:
+            tracker_status = get_gencode_status_for_examples(raw_conn, [textbook_example_id]).get(
+                textbook_example_id, {}
+            )
+        finally:
+            raw_conn.close()
+
+        skill_id = str(textbook_example.skill_id or "").strip()
+        component_id = str(tracker_status.get("component_id") or "").strip()
+        if not component_id:
+            from core.gencode.services.component_tracker_service import derive_component_id
+            component_id = derive_component_id(textbook_example_id)
+
+        project_root = _resolve_admin_project_root()
+        file_status = inspect_gencode_files(
+            skill_id=skill_id,
+            component_id=component_id,
+            project_root=project_root,
+        )
+        sync_status = inspect_component_production_sync(
+            skill_id=skill_id,
+            component_id=component_id,
+            textbook_example_id=textbook_example_id,
+            tracker_payload=tracker_status.get("induced_spec_payload"),
+            tracker_updated_at=tracker_status.get("updated_at"),
+            project_root=project_root,
+        )
+
+        induced_spec_payload, warnings = _parse_admin_v3_induced_spec_payload(
+            tracker_status.get("induced_spec_payload")
+        )
+        metadata = induced_spec_payload.get("metadata") if isinstance(induced_spec_payload.get("metadata"), dict) else {}
+        presentation_mode = str(
+            induced_spec_payload.get("presentation_mode")
+            or metadata.get("presentation_mode")
+            or induced_spec_payload.get("mode")
+            or tracker_status.get("presentation_mode")
+            or ""
+        ).strip() or None
+        problem_type_id = str(
+            induced_spec_payload.get("problem_type_id")
+            or metadata.get("problem_type_id")
+            or induced_spec_payload.get("problem_type")
+            or tracker_status.get("problem_type_id")
+            or ""
+        ).strip() or None
+
+        answer_contract = induced_spec_payload.get("answer_contract") if isinstance(induced_spec_payload.get("answer_contract"), dict) else {}
+        answer_type = str(
+            answer_contract.get("answer_type")
+            or induced_spec_payload.get("answer_type")
+            or tracker_status.get("answer_type")
+            or ""
+        ).strip() or None
+
+        integrity_gate_passed = induced_spec_payload.get("integrity_gate_passed")
+        if integrity_gate_passed is not None:
+            integrity_gate_passed = bool(integrity_gate_passed)
+
+        integrity_gate_version = induced_spec_payload.get("integrity_gate_version")
+        integrity_gate_blockers = induced_spec_payload.get("integrity_gate_blockers") or []
+        if not isinstance(integrity_gate_blockers, list):
+            integrity_gate_blockers = [str(integrity_gate_blockers)]
+
+        smoke_status = str(
+            induced_spec_payload.get("checker_smoke_status")
+            or induced_spec_payload.get("runtime_smoke_status")
+            or ""
+        ).strip() or None
+
+        response_payload = {
+            "status": "success",
+            "textbook_example_id": textbook_example_id,
+            "component_id": component_id,
+            "problem_type_id": problem_type_id,
+            "presentation_mode": presentation_mode,
+            "answer_type": answer_type,
+            "gencode_status": tracker_status.get("status") or "not_created",
+            "integrity_gate_passed": integrity_gate_passed,
+            "integrity_gate_version": integrity_gate_version,
+            "integrity_gate_blockers": integrity_gate_blockers,
+            "smoke_status": smoke_status,
+            "dryrun_generate_exists": bool(file_status.get("dryrun_generate_exists", False)),
+            "production_generate_exists": bool(file_status.get("production_generate_exists", False)),
+            "updated_at": tracker_status.get("updated_at"),
+            "gencode_error_log": tracker_status.get("error_log"),
+            "warnings": warnings,
+            "production_contains_latest": sync_status.get("production_contains_latest"),
+            "production_sync_method": sync_status.get("production_sync_method"),
+            "production_sync_reason": sync_status.get("production_sync_reason"),
+            "teacher_status": resolve_teacher_facing_v3_status(
+                gencode_status=str(tracker_status.get("status") or "not_created"),
+                has_tracker=bool(tracker_status.get("component_id")),
+                has_component=bool(file_status.get("dryrun_component_exists") or file_status.get("production_component_exists")),
+                has_generated_artifact=bool(file_status.get("dryrun_generate_exists") or file_status.get("production_generate_exists")),
+                integrity_gate_passed=integrity_gate_passed,
+                has_error=bool(tracker_status.get("error_log")),
+                production_contains_latest=bool(sync_status.get("production_contains_latest")),
+            ),
+        }
+        return jsonify(_admin_v3_json_safe(response_payload)), 200
+    except Exception as exc:
+        return jsonify({
+            "status": "failed",
+            "reason": "v3_details_error",
+            "details": str(exc),
+            "textbook_example_id": textbook_example_id,
+        }), 500
+
+
+@core_bp.route('/admin/textbook-examples/<int:textbook_example_id>/v3-regenerate', methods=['POST'])
+@login_required
+def admin_example_v3_regenerate(textbook_example_id: int):
+    if not current_user.is_admin:
+        return jsonify({"status": "failed", "details": "forbidden"}), 403
+
+    textbook_example = db.session.get(TextbookExample, textbook_example_id)
+    if not textbook_example:
+        return jsonify({"status": "failed", "details": "textbook_example_not_found"}), 404
+
+    skill_id = str(textbook_example.skill_id or "").strip()
+    if not skill_id:
+        return jsonify({"status": "failed", "details": "missing_skill_id"}), 400
+
+    from core.gencode.services.admin_gencode_action_service import run_admin_v3_dryrun_for_example
+    from core.gencode.services.component_tracker_service import (
+        _fetch_tracker_row,
+        derive_component_id,
+        save_tracker_record,
+    )
+
+    raw_conn = db.engine.raw_connection()
+    try:
+        dryrun_result = run_admin_v3_dryrun_for_example(
+            conn=raw_conn,
+            textbook_example_id=textbook_example_id,
+            skill_id=skill_id,
+        )
+        result = _run_admin_v3_integrity_gate_for_example(
+            conn=raw_conn,
+            textbook_example_id=textbook_example_id,
+            skill_id=skill_id,
+            project_root=Path(_resolve_admin_project_root()),
+        )
+    except Exception as exc:
+        component_id = derive_component_id(textbook_example_id)
+        tracker = _fetch_tracker_row(raw_conn, textbook_example_id=textbook_example_id)
+        if tracker and tracker.get("component_id"):
+            component_id = str(tracker.get("component_id"))
+        induced_spec_payload, _warnings = _parse_admin_v3_induced_spec_payload(
+            (tracker or {}).get("induced_spec_payload") if tracker else None
+        )
+        blockers = [str(exc)]
+        induced_spec_payload["integrity_gate_passed"] = False
+        induced_spec_payload["integrity_gate_version"] = "v1"
+        induced_spec_payload["integrity_gate_blockers"] = blockers
+        try:
+            save_tracker_record(
+                raw_conn,
+                textbook_example_id=textbook_example_id,
+                skill_id=skill_id,
+                gencode_status="failed",
+                induced_spec_payload=induced_spec_payload,
+                gencode_error_log="; ".join(blockers),
+            )
+        except Exception:
+            pass
+        return jsonify({
+            "status": "failed",
+            "reason": "v3_regenerate_failed",
+            "details": str(exc),
+            "textbook_example_id": textbook_example_id,
+            "skill_id": skill_id,
+            "component_id": component_id,
+            "blockers": blockers,
+        }), 200
+    finally:
+        raw_conn.close()
+
+    result["dryrun"] = dryrun_result
+    return jsonify(_admin_v3_json_safe(result)), 200
+
+
+@core_bp.route('/admin/textbook-examples/<int:textbook_example_id>/v3-smoke', methods=['POST'])
+@login_required
+def admin_example_v3_smoke(textbook_example_id: int):
+    if not current_user.is_admin:
+        return jsonify({"status": "failed", "details": "forbidden"}), 403
+
+    textbook_example = db.session.get(TextbookExample, textbook_example_id)
+    if not textbook_example:
+        return jsonify({"status": "failed", "details": "textbook_example_not_found"}), 404
+
+    skill_id = str(textbook_example.skill_id or "").strip()
+    if not skill_id:
+        return jsonify({"status": "failed", "details": "missing_skill_id"}), 400
+
+    from core.gencode.services.component_tracker_service import (
+        _fetch_tracker_row,
+        save_tracker_record,
+    )
+    from core.gencode.services.admin_gencode_action_service import (
+        _load_module_from_file,
+    )
+    from core.gencode.services.v3_question_integrity_validator import (
+        validate_component_payload,
+    )
+    import py_compile
+
+    raw_conn = db.engine.raw_connection()
+    try:
+        tracker = _fetch_tracker_row(raw_conn, textbook_example_id=textbook_example_id)
+        if not tracker:
+            return jsonify({"status": "failed", "details": "tracker_record_not_found"}), 400
+
+        component_id = str(tracker.get("component_id") or "").strip()
+        dryrun_base_dir = "reports/gencode_v3_dryrun"
+        project_root = Path(_resolve_admin_project_root())
+        component_dir = project_root / dryrun_base_dir / skill_id / "components" / component_id
+
+        required_files = {
+            "metadata.py": component_dir / "metadata.py",
+            "generate.py": component_dir / "generate.py",
+            "get_hint.py": component_dir / "get_hint.py",
+        }
+        
+        missing_files = [name for name, path in required_files.items() if not path.is_file()]
+        if missing_files:
+            error_msg = f"missing_files:{','.join(missing_files)}"
+            save_tracker_record(
+                raw_conn,
+                textbook_example_id=textbook_example_id,
+                skill_id=skill_id,
+                gencode_status="failed",
+                gencode_error_log=error_msg,
+            )
+            return jsonify({
+                "status": "failed",
+                "details": error_msg,
+                "component_id": component_id,
+                "blockers": ["dryrun_component_missing_files"]
+            }), 200
+
+        # Compile, run smoke & validate integrity
+        blockers = []
+        try:
+            for target_path in required_files.values():
+                py_compile.compile(str(target_path), doraise=True)
+
+            generate_module = _load_module_from_file(required_files["generate.py"])
+            hint_module = _load_module_from_file(required_files["get_hint.py"])
+
+            generate_fn = getattr(generate_module, "generate", None)
+            if not callable(generate_fn):
+                raise RuntimeError("missing_generate_function")
+            payload = generate_fn(seed=42)
+            if not isinstance(payload, dict):
+                payload = {}
+
+            hint_fn = getattr(hint_module, "get_hint", None)
+            if not callable(hint_fn):
+                raise RuntimeError("missing_get_hint_function")
+            hint_fn(1, payload)
+
+            # Integrity validation
+            val_result = validate_component_payload(payload, component_id)
+            if not val_result.get("passed"):
+                blockers.extend(val_result.get("blockers") or ["integrity_validation_failed"])
+        except Exception as exc:
+            blockers.append(f"{exc.__class__.__name__}:{exc}")
+
+        # Update spec payload JSON inside tracker
+        induced_spec_payload = {}
+        payload_raw = tracker.get("induced_spec_payload")
+        if payload_raw:
+            try:
+                induced_spec_payload = json.loads(str(payload_raw))
+            except Exception:
+                induced_spec_payload = {}
+
+        if not blockers:
+            induced_spec_payload["integrity_gate_passed"] = True
+            induced_spec_payload["integrity_gate_version"] = "v1"
+            induced_spec_payload["integrity_gate_blockers"] = []
+            
+            save_tracker_record(
+                raw_conn,
+                textbook_example_id=textbook_example_id,
+                skill_id=skill_id,
+                gencode_status="verified",
+                induced_spec_payload=induced_spec_payload,
+                gencode_error_log=None,
+            )
+            return jsonify({
+                "status": "success",
+                "textbook_example_id": textbook_example_id,
+                "component_id": component_id,
+            }), 200
+        else:
+            induced_spec_payload["integrity_gate_passed"] = False
+            induced_spec_payload["integrity_gate_blockers"] = blockers
+            
+            error_log = "; ".join(blockers)
+            save_tracker_record(
+                raw_conn,
+                textbook_example_id=textbook_example_id,
+                skill_id=skill_id,
+                gencode_status="failed",
+                induced_spec_payload=induced_spec_payload,
+                gencode_error_log=error_log,
+            )
+            return jsonify({
+                "status": "failed",
+                "details": error_log,
+                "component_id": component_id,
+                "blockers": blockers,
+            }), 200
+    finally:
+        raw_conn.close()
+
+
+@core_bp.route('/admin/textbook-examples/<int:textbook_example_id>/v3-sample', methods=['GET'])
+@login_required
+def admin_example_v3_sample(textbook_example_id: int):
+    if not current_user.is_admin:
+        return jsonify({"status": "failed", "details": "forbidden"}), 403
+
+    textbook_example = db.session.get(TextbookExample, textbook_example_id)
+    if not textbook_example:
+        return jsonify({"status": "failed", "details": "textbook_example_not_found"}), 404
+
+    skill_id = str(textbook_example.skill_id or "").strip()
+    if not skill_id:
+        return jsonify({"status": "failed", "details": "missing_skill_id"}), 400
+
+    from core.gencode.services.component_tracker_service import _fetch_tracker_row
+    from core.gencode.services.admin_gencode_action_service import _load_module_from_file
+    from core.gencode.services.v3_question_integrity_validator import validate_component_payload
+
+    raw_conn = db.engine.raw_connection()
+    try:
+        tracker = _fetch_tracker_row(raw_conn, textbook_example_id=textbook_example_id)
+    finally:
+        raw_conn.close()
+
+    component_id = str((tracker or {}).get("component_id") or "").strip()
+    if not component_id:
+        from core.gencode.services.component_tracker_service import derive_component_id
+        component_id = derive_component_id(textbook_example_id)
+
+    project_root = Path(_resolve_admin_project_root())
+    
+    # Locate generate.py: check dryrun first, then production/agent_skills_v3
+    dryrun_generate = project_root / "reports/gencode_v3_dryrun" / skill_id / "components" / component_id / "generate.py"
+    prod_generate = project_root / "agent_skills_v3" / skill_id / "components" / component_id / "generate.py"
+
+    generate_path = None
+    if dryrun_generate.is_file():
+        generate_path = dryrun_generate
+    elif prod_generate.is_file():
+        generate_path = prod_generate
+
+    if not generate_path:
+        return jsonify({"status": "failed", "details": "generate_file_not_found"}), 404
+
+    try:
+        generate_module = _load_module_from_file(generate_path)
+        generate_fn = getattr(generate_module, "generate", None)
+        if not callable(generate_fn):
+            return jsonify({"status": "failed", "details": "generate_function_not_callable"}), 400
+
+        seeds = [7, 42, 101]
+        results = []
+        for seed in seeds:
+            payload = generate_fn(seed=seed)
+            if not isinstance(payload, dict):
+                payload = {}
+
+            # Retrieve details from payload
+            question_text = str(payload.get("question_text") or payload.get("question") or "").strip()
+            choices = payload.get("choices")
+            
+            # Answer contract extraction
+            ac = payload.get("answer_contract") or {}
+            answer_type = str(ac.get("answer_type") or payload.get("answer_type") or "").strip()
+            checker = str(ac.get("checker_key") or ac.get("checker") or payload.get("checker") or "").strip()
+            metadata = payload.get("metadata") if isinstance(payload.get("metadata"), dict) else {}
+            problem_type_id = str(
+                payload.get("problem_type_id")
+                or metadata.get("problem_type_id")
+                or payload.get("problem_type")
+                or ""
+            ).strip()
+
+            correct_answer = str(payload.get("correct_answer") or payload.get("answer") or "").strip()
+            semantic_answer = str(payload.get("semantic_answer") or (payload.get("metadata") or {}).get("semantic_answer") or "").strip()
+
+            # Run validation for this seed
+            val = validate_component_payload(payload, component_id)
+            integrity_result = "passed" if val.get("passed") else "; ".join(val.get("blockers") or ["failed"])
+
+            results.append({
+                "seed": seed,
+                "question_text": question_text,
+                "choices": choices,
+                "answer": correct_answer,
+                "semantic_answer": semantic_answer,
+                "problem_type_id": problem_type_id,
+                "answer_type": answer_type,
+                "checker": checker,
+                "integrity_result": integrity_result,
+            })
+    except Exception as exc:
+        return jsonify({
+            "status": "failed",
+            "details": f"Failed to execute generate function: {exc}"
+        }), 200
+
+    return jsonify({
+        "status": "success",
+        "results": results,
+    }), 200
+
+
 def _parse_admin_force_publish_flag(raw) -> bool:
     return str(raw or "").strip().lower() in {"1", "true", "yes"}
 
@@ -2804,9 +3391,10 @@ def _resolve_admin_v3_publish_roots() -> tuple[str, str]:
         project_root = str(current_app.config.get("GENCODE_V3_PUBLISH_PROJECT_ROOT", "") or "").strip()
     if not staging_root:
         staging_root = str(current_app.config.get("GENCODE_V3_PUBLISH_STAGING_ROOT", "") or "").strip()
-    if not project_root or not staging_root:
-        raise ValueError("unsafe_publish_roots_not_configured")
-    return project_root, staging_root
+
+    from core.gencode.v3_production_publish_service import resolve_and_validate_v3_publish_roots
+    prod_path, stag_path = resolve_and_validate_v3_publish_roots(project_root, staging_root)
+    return str(prod_path), str(stag_path)
 
 
 @core_bp.route('/admin/skills/<skill_id>/gencode_v3_dryrun', methods=['POST'])
@@ -2826,22 +3414,89 @@ def admin_run_skill_v3_dryrun(skill_id: str):
     if not skill_key:
         return jsonify({"ok": False, "error": "missing_skill_id"}), 400
 
-    from core.gencode.services.admin_gencode_action_service import run_admin_v3_dryrun_for_skill
+    from core.gencode.services.admin_gencode_action_service import (
+        run_admin_v3_dryrun_publish_closed_loop_for_skill,
+    )
+    from core.gencode.v3_production_publish_service import (
+        resolve_and_validate_v3_publish_roots,
+        V3PublishRootValidationError,
+    )
+
+    try:
+        project_root_raw = str(payload.get("project_root", "") or "").strip()
+        staging_root_raw = str(payload.get("staging_root", "") or "").strip()
+        if not project_root_raw:
+            project_root_raw = str(current_app.config.get("GENCODE_V3_PUBLISH_PROJECT_ROOT", "") or "").strip()
+        if not staging_root_raw:
+            staging_root_raw = str(current_app.config.get("GENCODE_V3_PUBLISH_STAGING_ROOT", "") or "").strip()
+
+        project_path, staging_path = resolve_and_validate_v3_publish_roots(project_root_raw, staging_root_raw)
+        project_root = str(project_path)
+        staging_root = str(staging_path)
+    except V3PublishRootValidationError as exc:
+        res = {
+            "success": False,
+            "failed_stage": "publish_root_validation",
+            "error": exc.error_code,
+            "production_root_configured": exc.details.get("production_root_configured"),
+            "staging_root_configured": exc.details.get("staging_root_configured"),
+            "production_root_valid": exc.details.get("production_root_valid"),
+            "staging_root_valid": exc.details.get("staging_root_valid"),
+            "previous_production_preserved": True
+        }
+        return jsonify(res), 400
+    except ValueError as exc:
+        err_str = str(exc)
+        if "integrity_gate" in err_str:
+            return jsonify({
+                "status": "failed",
+                "reason": "integrity_gate_not_passed",
+                "details": err_str
+            }), 400
+        return jsonify({"ok": False, "error": err_str}), 400
 
     raw_conn = db.engine.raw_connection()
     try:
-        result = run_admin_v3_dryrun_for_skill(
+        result = run_admin_v3_dryrun_publish_closed_loop_for_skill(
             conn=raw_conn,
             skill_id=skill_key,
+            project_root=project_root,
+            staging_root=staging_root,
             smoke=smoke,
             verify=verify,
             force=force,
             limit=limit,
         )
+    except V3PublishRootValidationError as exc:
+        res = {
+            "success": False,
+            "failed_stage": "publish_root_validation",
+            "error": exc.error_code,
+            "production_root_configured": exc.details.get("production_root_configured"),
+            "staging_root_configured": exc.details.get("staging_root_configured"),
+            "production_root_valid": exc.details.get("production_root_valid"),
+            "staging_root_valid": exc.details.get("staging_root_valid"),
+            "previous_production_preserved": True
+        }
+        return jsonify(res), 400
     except ValueError as exc:
-        return jsonify({"ok": False, "error": str(exc)}), 400
+        err_str = str(exc)
+        if "integrity_gate" in err_str:
+            return jsonify({
+                "status": "failed",
+                "reason": "integrity_gate_not_passed",
+                "details": err_str
+            }), 400
+        return jsonify({"ok": False, "error": err_str}), 400
     except Exception as exc:
-        return jsonify({"ok": False, "error": str(exc)}), 500
+        err_str = str(exc)
+        if "integrity_gate" in err_str:
+            return jsonify({
+                "status": "failed",
+                "reason": "integrity_gate_not_passed",
+                "details": err_str
+            }), 400
+        return jsonify({"ok": False, "error": err_str}), 500
     finally:
         raw_conn.close()
 
@@ -2900,10 +3555,175 @@ def admin_run_skill_v3_publish(skill_id: str):
         else:
             flash(f"正式發布未完成: {result.get('status', 'unknown')}", "warning")
     except ValueError as e:
-        flash(f"失敗原因: {e}", "danger")
+        from core.gencode.v3_production_publish_service import V3PublishRootValidationError
+        if isinstance(e, V3PublishRootValidationError):
+            flash(f"失敗原因: {e.error_code}", "danger")
+        else:
+            err_str = str(e)
+            if "integrity_gate" in err_str:
+                if request.is_json or request.accept_mimetypes.accept_json:
+                    return jsonify({
+                        "status": "failed",
+                        "reason": "integrity_gate_not_passed",
+                        "details": err_str
+                    }), 400
+                flash(f"失敗原因: 題目完整性驗證未通過 ({err_str})", "danger")
+            else:
+                flash(f"失敗原因: {e}", "danger")
     except Exception as e:
+        err_str = str(e)
+        if "integrity_gate" in err_str:
+            if request.is_json or request.accept_mimetypes.accept_json:
+                return jsonify({
+                    "status": "failed",
+                    "reason": "integrity_gate_not_passed",
+                    "details": err_str
+                }), 400
         flash(f"失敗原因: {e}", "danger")
     return redirect(redirect_target)
+
+
+@core_bp.route('/admin/skills/<skill_id>/v3_repackage', methods=['POST'])
+@login_required
+def admin_run_skill_v3_repackage(skill_id: str):
+    if not (current_user.is_admin or current_user.role == 'teacher'):
+        return jsonify({"status": "failed", "details": "forbidden"}), 403
+
+    skill_key = str(skill_id or "").strip()
+    if not skill_key:
+        return jsonify({"status": "failed", "details": "missing_skill_id"}), 400
+
+    from core.gencode.services.v3_publish_eligibility import evaluate_v3_publish_eligibility
+    from core.gencode.services.v3_skill_coverage_service import get_v3_skill_component_coverage
+    from core.gencode.services.admin_gencode_action_service import (
+        run_admin_v3_publish_for_skill,
+        _prepare_publish_staging_components,
+    )
+    from core.gencode.v3_production_publish_service import (
+        resolve_and_validate_v3_publish_roots,
+        V3PublishRootValidationError,
+    )
+
+    raw_conn = db.engine.raw_connection()
+    try:
+        coverage = get_v3_skill_component_coverage(raw_conn, skill_key)
+        total_count = int(coverage.get("total_examples") or 0)
+        verified_count = int(coverage.get("verified_count") or 0)
+
+        eligibility = evaluate_v3_publish_eligibility(raw_conn, skill_key, coverage=coverage)
+
+        if not bool(eligibility.get("allowed")):
+            return jsonify({
+                "status": "failed",
+                "skill_key": skill_key,
+                "verified_component_count": verified_count,
+                "total_component_count": total_count,
+                "publish_eligible": False,
+                "publish_reason": str(eligibility.get("reason") or "v3_publish_not_eligible"),
+                "generator_specs_count": 0,
+                "production_component_count": 0,
+                "wrapper_path": None,
+                "details": f"Eligibility check failed: {eligibility.get('reason')}"
+            }), 200
+
+        payload = request.get_json(silent=True) or {}
+        project_root_raw = str(payload.get("project_root", "") or request.form.get("project_root", "") or "").strip()
+        staging_root_raw = str(payload.get("staging_root", "") or request.form.get("staging_root", "") or "").strip()
+        if not project_root_raw:
+            project_root_raw = str(current_app.config.get("GENCODE_V3_PUBLISH_PROJECT_ROOT", "") or "").strip()
+        if not staging_root_raw:
+            staging_root_raw = str(current_app.config.get("GENCODE_V3_PUBLISH_STAGING_ROOT", "") or "").strip()
+
+        try:
+            project_path, staging_path = resolve_and_validate_v3_publish_roots(project_root_raw, staging_root_raw)
+            project_root = str(project_path)
+            staging_root = str(staging_path)
+        except V3PublishRootValidationError as exc:
+            return jsonify({
+                "status": "failed",
+                "skill_key": skill_key,
+                "verified_component_count": verified_count,
+                "total_component_count": total_count,
+                "publish_eligible": False,
+                "publish_reason": exc.error_code,
+                "generator_specs_count": 0,
+                "production_component_count": 0,
+                "wrapper_path": None,
+                "details": f"Publish root validation error: {exc.error_code}"
+            }), 200
+
+        try:
+            _prepare_publish_staging_components(
+                skill_id=skill_key,
+                dryrun_base_dir=str(project_path / "reports" / "gencode_v3_dryrun"),
+                staging_root=staging_root,
+            )
+        except Exception as exc:
+            return jsonify({
+                "status": "failed",
+                "skill_key": skill_key,
+                "verified_component_count": verified_count,
+                "total_component_count": total_count,
+                "publish_eligible": False,
+                "publish_reason": "dryrun_components_missing",
+                "generator_specs_count": 0,
+                "production_component_count": 0,
+                "wrapper_path": None,
+                "details": f"Failed to prepare staging components: {exc}"
+            }), 200
+
+        try:
+            result = run_admin_v3_publish_for_skill(
+                conn=raw_conn,
+                skill_id=skill_key,
+                project_root=project_root,
+                staging_root=staging_root,
+                force_publish=True,
+                strict_coverage=True,
+            )
+        except Exception as exc:
+            err_msg = str(exc)
+            publish_reason = err_msg
+            if "integrity_gate" in err_msg:
+                publish_reason = "integrity_gate_not_passed"
+            elif "variation" in err_msg or "static" in err_msg or "collapse" in err_msg:
+                publish_reason = "variation_gate_failed"
+            elif "coverage" in err_msg:
+                publish_reason = "coverage_incomplete"
+
+            return jsonify({
+                "status": "failed",
+                "skill_key": skill_key,
+                "verified_component_count": verified_count,
+                "total_component_count": total_count,
+                "publish_eligible": False,
+                "publish_reason": publish_reason,
+                "generator_specs_count": 0,
+                "production_component_count": 0,
+                "wrapper_path": None,
+                "details": err_msg
+            }), 200
+
+        compile_data = result.get("compile") or {}
+        generator_specs = compile_data.get("generator_specs") or []
+        generator_specs_count = len(generator_specs)
+        promote_data = result.get("promote") or {}
+        wrapper_path = promote_data.get("thin_facade_path")
+
+        return jsonify({
+            "status": "success",
+            "skill_key": skill_key,
+            "verified_component_count": verified_count,
+            "total_component_count": total_count,
+            "publish_eligible": True,
+            "publish_reason": "eligible",
+            "generator_specs_count": generator_specs_count,
+            "production_component_count": result.get("component_count", 0),
+            "wrapper_path": wrapper_path,
+            "details": f"Wrapper compiled successfully: {result.get('status')}"
+        }), 200
+    finally:
+        raw_conn.close()
 
 
 @core_bp.route('/examples/add', methods=['POST'])
@@ -3845,3 +4665,108 @@ def reset_ai_prompt_setting():
         db.session.rollback()
         return jsonify({'success': False, 'message': str(e)}), 500
 
+@core_bp.route('/admin/textbook-examples/<int:id>/v3-preview', methods=['GET'])
+@login_required
+def admin_example_v3_preview_page(id: int):
+    from flask import abort, render_template
+    if not current_user.is_admin:
+        abort(403)
+
+    example_id = id
+    textbook_example = db.session.get(TextbookExample, example_id)
+    if not textbook_example:
+        abort(404)
+
+    from core.gencode.services.v3_component_preview_service import resolve_preview_component
+
+    try:
+        resolved = resolve_preview_component(example_id)
+    except Exception as e:
+        from core.gencode.services.component_tracker_service import _fetch_tracker_row, derive_component_id
+        from models import SkillInfo
+
+        skill_id = str(textbook_example.skill_id or "").strip()
+        skill_info = db.session.get(SkillInfo, skill_id)
+        skill_name = skill_info.skill_ch_name if skill_info else skill_id
+
+        raw_conn = db.engine.raw_connection()
+        try:
+            tracker = _fetch_tracker_row(raw_conn, textbook_example_id=example_id)
+        except Exception:
+            tracker = None
+        finally:
+            raw_conn.close()
+
+        component_id = str((tracker or {}).get("component_id") or "").strip() or derive_component_id(example_id)
+
+        resolved = {
+            "textbook_example_id": example_id,
+            "skill_id": skill_id,
+            "skill_name": skill_name,
+            "component_id": component_id,
+            "artifact_source": "unknown",
+            "artifact_path": "未生成",
+            "updated_at": (tracker or {}).get("updated_at") if tracker else None,
+            "production_contains_latest": False,
+        }
+
+    return render_template("admin_v3_example_preview.html", **resolved)
+
+
+@core_bp.route('/admin/textbook-examples/<int:id>/v3-preview/generate', methods=['POST'])
+@login_required
+def admin_example_v3_preview_generate(id: int):
+    from flask import jsonify
+    if not current_user.is_admin:
+        return jsonify({
+            "success": False,
+            "error_code": "forbidden",
+            "message": "權限不足"
+        }), 403
+
+    example_id = id
+    textbook_example = db.session.get(TextbookExample, example_id)
+    if not textbook_example:
+        return jsonify({
+            "success": False,
+            "error_code": "example_not_found",
+            "message": "教材例題不存在"
+        }), 404
+
+    import random
+    seed = random.randint(1, 1000000)
+
+    from core.gencode.services.v3_component_preview_service import generate_component_preview
+
+    try:
+        result = generate_component_preview(example_id, seed=seed)
+        return jsonify(result), 200
+    except ValueError as e:
+        return jsonify({
+            "success": False,
+            "error_code": "invalid_parameters",
+            "message": str(e),
+            "detail": str(e)
+        }), 400
+    except FileNotFoundError as e:
+        return jsonify({
+            "success": False,
+            "error_code": "generate_file_not_found",
+            "message": "找不到生成例題檔案",
+            "detail": f"請先執行重新生成：{e}"
+        }), 404
+    except TimeoutError as e:
+        return jsonify({
+            "success": False,
+            "error_code": "component_generate_timeout",
+            "message": "例題生成超時",
+            "detail": str(e)
+        }), 408
+    except Exception as e:
+        import traceback
+        return jsonify({
+            "success": False,
+            "error_code": "component_generate_failed",
+            "message": "生成例題失敗",
+            "detail": f"{e.__class__.__name__}: {e}\n{traceback.format_exc()}"
+        }), 400

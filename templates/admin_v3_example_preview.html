@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>V3 生成例題預覽 - 例題 {{ textbook_example_id }}</title>
+    <meta name="description" content="預覽技高數學 B 版單一 V3 元件隨機生成例題">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Noto+Sans+TC:wght@300;400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css" rel="stylesheet">
+    
+    <!-- MathJax Configuration & Loader -->
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']],
+                processEscapes: true
+            },
+            options: {
+                ignoreHtmlClass: 'tex2jax_ignore',
+                processHtmlClass: 'tex2jax_process'
+            },
+            svg: {
+                fontCache: 'global'
+            }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+
+    <style>
+        :root {
+            --bg-main: #f8fafc;
+            --bg-card: #ffffff;
+            --card-border: #e2e8f0;
+            --primary: #4f46e5;
+            --primary-hover: #4338ca;
+            --primary-gradient: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+            --shadow-md: 0 4px 16px rgba(0,0,0,0.08), 0 1px 4px rgba(0,0,0,0.04);
+            --shadow-lg: 0 10px 32px rgba(0,0,0,0.10), 0 2px 8px rgba(0,0,0,0.06);
+            --text-primary: #1e293b;
+            --text-secondary: #64748b;
+            --accent: #4f46e5;
+            --accent-hover: #4338ca;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --r-sm: 8px;
+            --r-md: 12px;
+            --r-lg: 16px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Outfit', 'Noto Sans TC', system-ui, sans-serif;
+            background: var(--bg-main);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 2rem 1rem 4rem;
+            overflow-x: hidden;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        /* --- Header Styles --- */
+        header {
+            width: 100%;
+            text-align: center;
+            margin-bottom: 2.5rem;
+        }
+
+        h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.5rem;
+            letter-spacing: -0.02em;
+        }
+
+        .subtitle {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            font-weight: 400;
+        }
+
+        /* --- Meta Grid Cards --- */
+        .meta-container {
+            background: var(--bg-card);
+            border: 1px solid var(--card-border);
+            border-radius: var(--r-lg);
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: var(--shadow-md);
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .meta-item {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        .meta-label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-secondary);
+            font-weight: 600;
+        }
+
+        .meta-value {
+            font-size: 0.95rem;
+            font-weight: 500;
+            font-family: 'JetBrains Mono', monospace;
+            word-break: break-all;
+        }
+
+        /* --- Pill Badge Styling --- */
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.25rem 0.65rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+            border-radius: 9999px;
+            width: fit-content;
+            text-transform: uppercase;
+            letter-spacing: 0.02em;
+        }
+
+        .badge-dryrun {
+            background: #fef3c7;
+            color: #92400e;
+            border: 1px solid #fde68a;
+        }
+
+        .badge-production {
+            background: #d1fae5;
+            color: #065f46;
+            border: 1px solid #6ee7b7;
+        }
+
+        .badge-unknown {
+            background: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #fca5a5;
+        }
+
+        /* --- Main Content Preview Card --- */
+        .preview-card {
+            background: var(--bg-card);
+            border: 1px solid var(--card-border);
+            border-radius: var(--r-lg);
+            padding: 2.5rem;
+            margin-bottom: 2.5rem;
+            box-shadow: var(--shadow-lg);
+            position: relative;
+            min-height: 250px;
+        }
+
+        /* Loading / Error States */
+        .card-state {
+            position: absolute;
+            inset: 0;
+            background: rgba(248, 250, 252, 0.92);
+            backdrop-filter: blur(4px);
+            border-radius: var(--r-lg);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+            z-index: 10;
+            padding: 2rem;
+            text-align: center;
+            transition: opacity 0.3s ease;
+            color: var(--text-primary);
+        }
+
+        .spinner {
+            border: 4px solid #e2e8f0;
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            border-left-color: var(--accent);
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .error-title {
+            color: var(--danger);
+            font-size: 1.25rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .error-detail {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            font-family: 'JetBrains Mono', monospace;
+            background: #f1f5f9;
+            padding: 0.75rem 1rem;
+            border-radius: var(--r-sm);
+            width: 100%;
+            max-width: 600px;
+            overflow-x: auto;
+            text-align: left;
+            white-space: pre-wrap;
+            border: 1px solid #e2e8f0;
+        }
+
+        /* Question Render Styles */
+        .question-body {
+            font-size: 1.15rem;
+            line-height: 1.8;
+            margin-bottom: 12px;
+            color: var(--text-primary);
+        }
+
+        .question-title {
+            font-size: 0.8rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--accent);
+            margin-bottom: 0.5rem;
+        }
+
+        .choices-container {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 0.75rem;
+            margin-bottom: 2rem;
+        }
+
+        .choice-item {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: var(--r-md);
+            padding: 1rem 1.25rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            font-size: 1rem;
+            transition: all 0.2s ease;
+            cursor: default;
+        }
+
+        .choice-item:hover {
+            background: #eef2ff;
+            border-color: #c7d2fe;
+        }
+
+        .choice-prefix {
+            background: #eef2ff;
+            color: var(--accent);
+            font-weight: 700;
+            width: 30px;
+            height: 30px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            font-size: 0.9rem;
+            border: 1px solid #c7d2fe;
+        }
+
+        .choice-text {
+            color: var(--text-primary);
+            flex-grow: 1;
+            line-height: 1.6;
+        }
+
+        .answer-box {
+            background: #ecfdf5;
+            border: 1px solid #6ee7b7;
+            border-radius: var(--r-md);
+            padding: 1.25rem;
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+            margin-top: 1rem;
+        }
+
+        .answer-box i {
+            color: var(--success);
+            font-size: 1.25rem;
+            margin-top: 0.1rem;
+        }
+
+        .answer-label {
+            font-weight: 700;
+            color: var(--success);
+            margin-bottom: 0.25rem;
+        }
+
+        .answer-val {
+            font-size: 1.15rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 600;
+        }
+
+        /* Details info inside preview */
+        .info-grid {
+            border-top: 1px solid #e2e8f0;
+            padding-top: 1.25rem;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+
+        .info-item {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        .info-item strong {
+            color: var(--text-primary);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.82rem;
+        }
+
+        /* Collapsible Explanation */
+        .explanation-details {
+            margin-top: 1.5rem;
+            border-radius: var(--r-md);
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            padding: 1rem 1.25rem;
+        }
+
+        .explanation-details summary {
+            font-weight: 600;
+            color: var(--text-secondary);
+            cursor: pointer;
+            outline: none;
+            user-select: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: color 0.2s;
+        }
+
+        .explanation-details summary:hover {
+            color: var(--accent);
+        }
+
+        .explanation-details summary::marker {
+            color: var(--accent);
+        }
+
+        .explanation-content {
+            margin-top: 0.75rem;
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: var(--text-primary);
+            white-space: pre-wrap;
+        }
+
+        /* --- Footer Actions --- */
+        .actions {
+            display: flex;
+            gap: 1.25rem;
+            justify-content: center;
+            width: 100%;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            font-family: inherit;
+            font-size: 1rem;
+            font-weight: 600;
+            padding: 0.8rem 1.75rem;
+            border-radius: 12px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            text-decoration: none;
+            user-select: none;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+            color: #ffffff;
+            box-shadow: 0 4px 14px rgba(79, 70, 229, 0.25);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(79, 70, 229, 0.35);
+            filter: brightness(1.08);
+        }
+
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+
+        .btn-secondary {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            color: var(--text-primary);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .btn-secondary:hover {
+            background: #f8fafc;
+            border-color: #c7d2fe;
+            color: var(--accent);
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .btn-danger {
+            background: #fff0f0;
+            border: 1px solid #fca5a5;
+            color: #dc2626;
+        }
+
+        .btn-danger:hover {
+            background: #fee2e2;
+            border-color: #ef4444;
+            transform: translateY(-1px);
+        }
+
+        /* --- LaTeX processing helper --- */
+        .latex-rendered {
+            visibility: visible;
+        }
+    </style>
+</head>
+<body class="tex2jax_ignore">
+
+<div class="container">
+    <!-- Header -->
+    <header>
+        <h1>V3 生成例題預覽</h1>
+        <div class="subtitle">預覽單一教材例題 V3 component 隨機出題結果</div>
+    </header>
+
+    <!-- Metadata Grid -->
+    <section class="meta-container" aria-label="例題元資料">
+        <div class="meta-item">
+            <span class="meta-label">教材例題 ID</span>
+            <span class="meta-value" id="meta-example-id">{{ textbook_example_id }}</span>
+        </div>
+        <div class="meta-item">
+            <span class="meta-label">技能名稱</span>
+            <span class="meta-value" id="meta-skill-name" style="font-family: inherit;">{{ skill_name }}</span>
+        </div>
+        <div class="meta-item">
+            <span class="meta-label">Skill ID</span>
+            <span class="meta-value" id="meta-skill-id">{{ skill_id }}</span>
+        </div>
+        <div class="meta-item">
+            <span class="meta-label">元件 ID (Component)</span>
+            <span class="meta-value" id="meta-component-id">{{ component_id }}</span>
+        </div>
+        <div class="meta-item">
+            <span class="meta-label">目前載入來源</span>
+            <div id="meta-artifact-source-wrapper" style="margin-top: 0.15rem;">
+                {% if artifact_source == 'dryrun' %}
+                    <span class="badge badge-dryrun" id="meta-artifact-source">Verified Dryrun</span>
+                {% elif artifact_source == 'production' %}
+                    <span class="badge badge-production" id="meta-artifact-source">Production</span>
+                {% else %}
+                    <span class="badge badge-unknown" id="meta-artifact-source">Unknown</span>
+                {% endif %}
+            </div>
+        </div>
+        <div class="meta-item">
+            <span class="meta-label">是否已同步學生端</span>
+            <span class="meta-value" id="meta-production-sync">
+                {{ '是' if production_contains_latest else '否' }}
+            </span>
+        </div>
+        <div class="meta-item">
+            <span class="meta-label">最後生成時間</span>
+            <span class="meta-value" id="meta-updated-at">
+                {{ updated_at if updated_at else '-' }}
+            </span>
+        </div>
+    </section>
+
+    <!-- Main Content Preview Area -->
+    <main class="preview-card" aria-label="題目生成預覽區">
+        <!-- Dynamic States (Loading/Error) -->
+        <div id="card-state-overlay" class="card-state">
+            <div class="spinner"></div>
+            <p>正在生成隨機例題...</p>
+        </div>
+
+        <div id="card-error-overlay" class="card-state" style="display: none;">
+            <div class="error-title">
+                <i class="bi bi-exclamation-triangle-fill"></i>
+                <span id="error-message-title">生成例題失敗</span>
+            </div>
+            <p id="error-message-desc" style="color: var(--text-secondary); max-width: 500px;"></p>
+            <div class="error-detail" id="error-details-content"></div>
+            <button type="button" class="btn btn-secondary" onclick="generateNewQuestion()" style="margin-top: 1rem;">
+                <i class="bi bi-arrow-clockwise"></i> 重試
+            </button>
+        </div>
+
+        <!-- Render Content -->
+        <article id="question-content" class="tex2jax_process">
+            <!-- Question Text -->
+            <div class="question-title">題目內容</div>
+            <div class="question-body" id="question-text-el"></div>
+
+            <!-- Choices for Multiple Choice -->
+            <div id="choices-wrapper" style="display: none;">
+                <div class="question-title">選項</div>
+                <div class="choices-container" id="choices-list-el"></div>
+            </div>
+
+            <!-- Answer Box -->
+            <div class="answer-box">
+                <i class="bi bi-check-circle-fill"></i>
+                <div>
+                    <div class="answer-label">正確答案</div>
+                    <div class="answer-val" id="answer-val-el"></div>
+                </div>
+            </div>
+
+            <!-- Collapsible Explanation -->
+            <details class="explanation-details" id="explanation-details-el" style="display: none;">
+                <summary>
+                    <i class="bi bi-journal-text"></i> 答案解析 (Explanation)
+                </summary>
+                <div class="explanation-content" id="explanation-content-el"></div>
+            </details>
+
+            <!-- Bottom Technical Details -->
+            <div class="info-grid">
+                <div class="info-item">
+                    題型 ID (Problem Type): <strong id="info-problem-type-id">-</strong>
+                </div>
+                <div class="info-item">
+                    答案型態 (Answer Type): <strong id="info-answer-type">-</strong>
+                </div>
+            </div>
+        </article>
+    </main>
+
+    <!-- Actions Area -->
+    <footer class="actions">
+        <button type="button" id="btn-close-window" class="btn btn-secondary" onclick="window.close()">
+            <i class="bi bi-x-lg"></i> 關閉視窗
+        </button>
+        <button type="button" id="btn-reload-page" class="btn btn-secondary" onclick="location.reload()">
+            <i class="bi bi-arrow-clockwise"></i> 重新載入
+        </button>
+        <button type="button" id="btn-next-question" class="btn btn-primary" onclick="generateNewQuestion()">
+            <i class="bi bi-arrow-right-short" style="font-size: 1.3rem; margin: -0.2rem 0;"></i> 下一題
+        </button>
+    </footer>
+</div>
+
+<script>
+    const exampleId = "{{ textbook_example_id }}";
+
+    // Helper: Escape HTML to avoid injection
+    function escapeHtml(str) {
+        if (!str) return '';
+        return str
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#039;');
+    }
+
+    // Call MathJax typeset safely
+    async function triggerMathJax(elements) {
+        if (window.MathJax && window.MathJax.typesetPromise) {
+            try {
+                await window.MathJax.typesetPromise(elements);
+            } catch (err) {
+                console.warn('MathJax rendering failed:', err);
+            }
+        }
+    }
+
+    // Call generate API to get new question
+    async function generateNewQuestion() {
+        const overlayLoading = document.getElementById('card-state-overlay');
+        const overlayError = document.getElementById('card-error-overlay');
+        const contentBlock = document.getElementById('question-content');
+        const btnNext = document.getElementById('btn-next-question');
+
+        // Show loading state
+        overlayLoading.style.display = 'flex';
+        overlayError.style.display = 'none';
+        contentBlock.style.opacity = '0.3';
+        if (btnNext) btnNext.disabled = true;
+
+        try {
+            const response = await fetch(`/admin/textbook-examples/${exampleId}/v3-preview/generate`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            const data = await response.json();
+
+            if (!response.ok || data.success === false) {
+                throw {
+                    message: data.message || '無法生成例題',
+                    detail: data.detail || `HTTP 錯誤碼: ${response.status}`,
+                    code: data.error_code || 'unknown_error'
+                };
+            }
+
+            renderQuestion(data);
+        } catch (err) {
+            console.error('Failed to generate question:', err);
+            document.getElementById('error-message-title').textContent = err.message || '生成例題失敗';
+            document.getElementById('error-message-desc').textContent = `錯誤類型: ${err.code || 'component_generate_failed'}`;
+            document.getElementById('error-details-content').textContent = err.detail || '請檢查後端日誌或確認 generate.py 檔案語法是否正確。';
+            
+            overlayError.style.display = 'flex';
+            overlayLoading.style.display = 'none';
+        } finally {
+            if (btnNext) btnNext.disabled = false;
+        }
+    }
+
+    // Render returned JSON payload to UI
+    async function renderQuestion(data) {
+        const contentBlock = document.getElementById('question-content');
+        
+        // 1. Question Text
+        const qTextEl = document.getElementById('question-text-el');
+        qTextEl.innerHTML = data.question.question_text || '(空白題目)';
+
+        // 2. Choices
+        const choicesWrapper = document.getElementById('choices-wrapper');
+        const choicesListEl = document.getElementById('choices-list-el');
+        choicesListEl.innerHTML = '';
+
+        const rawChoices = data.question.choices;
+        let hasChoices = false;
+
+        if (rawChoices) {
+            if (Array.isArray(rawChoices) && rawChoices.length > 0) {
+                hasChoices = true;
+                rawChoices.forEach((choice, index) => {
+                    const optionLetter = String.fromCharCode(65 + index); // A, B, C, D...
+                    choicesListEl.appendChild(createChoiceItem(optionLetter, choice));
+                });
+            } else if (typeof rawChoices === 'object' && Object.keys(rawChoices).length > 0) {
+                hasChoices = true;
+                Object.entries(rawChoices).forEach(([key, val]) => {
+                    choicesListEl.appendChild(createChoiceItem(key, val));
+                });
+            }
+        }
+
+        choicesWrapper.style.display = hasChoices ? 'block' : 'none';
+
+        // 3. Answer
+        const ansValEl = document.getElementById('answer-val-el');
+        ansValEl.innerHTML = data.question.answer || '-';
+
+        // 4. Explanation
+        const explanationDetails = document.getElementById('explanation-details-el');
+        const explanationContent = document.getElementById('explanation-content-el');
+        if (data.question.explanation && data.question.explanation.trim() !== '') {
+            explanationContent.innerHTML = data.question.explanation;
+            explanationDetails.style.display = 'block';
+            explanationDetails.open = false; // keep collapsed initially
+        } else {
+            explanationDetails.style.display = 'none';
+        }
+
+        // 5. Technical Metadata
+        document.getElementById('info-problem-type-id').textContent = data.problem_type_id || '-';
+        document.getElementById('info-answer-type').textContent = data.question.answer_type || '-';
+
+        // Update Source badge just in case it dynamically changed
+        const badgeWrapper = document.getElementById('meta-artifact-source-wrapper');
+        if (data.artifact_source === 'dryrun') {
+            badgeWrapper.innerHTML = '<span class="badge badge-dryrun" id="meta-artifact-source">Verified Dryrun</span>';
+        } else if (data.artifact_source === 'production') {
+            badgeWrapper.innerHTML = '<span class="badge badge-production" id="meta-artifact-source">Production</span>';
+        }
+
+        // Trigger MathJax typeset
+        contentBlock.style.opacity = '1';
+        document.getElementById('card-state-overlay').style.display = 'none';
+        
+        await triggerMathJax([contentBlock]);
+    }
+
+    // Helper: Create HTML elements for options
+    function createChoiceItem(label, text) {
+        const div = document.createElement('div');
+        div.className = 'choice-item';
+        
+        const prefix = document.createElement('span');
+        prefix.className = 'choice-prefix';
+        prefix.textContent = label;
+
+        const textSpan = document.createElement('span');
+        textSpan.className = 'choice-text';
+        textSpan.innerHTML = text; // allow HTML/LaTeX
+
+        div.appendChild(prefix);
+        div.appendChild(textSpan);
+        return div;
+    }
+
+    // Generate first question on load
+    window.addEventListener('DOMContentLoaded', () => {
+        generateNewQuestion();
+    });
+</script>
+
+</body>
+</html>
