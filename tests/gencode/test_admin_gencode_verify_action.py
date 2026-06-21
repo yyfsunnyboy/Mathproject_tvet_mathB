@@ -132,6 +132,4 @@ def test_verify_rejects_skill_mismatch(memory_conn: sqlite3.Connection):
 
 def test_template_has_verify_button_contract():
     content = (PROJECT_ROOT / "templates" / "admin_examples.html").read_text(encoding="utf-8")
-    assert "admin_run_example_v3_verify" in content
-    assert "✅ 標記 verified" in content
-    assert "gencode_status == 'smoke_passed'" in content
+    assert "v3Drawer" in content

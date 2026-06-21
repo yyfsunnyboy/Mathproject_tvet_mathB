@@ -12,6 +12,8 @@ import uuid
 from pathlib import Path
 from typing import Any
 
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
+
 from core.gencode.pipeline_state import utc_timestamp
 from core.gencode.skill_wrapper_compiler import (
     _fetch_verified_components,
@@ -103,12 +105,23 @@ def assert_safe_staging_root(staging_root: str, project_root: Path) -> Path:
 
 
 def _sync_dryrun_components_to_v3_house(staging_path: Path, skill_id: str) -> None:
-    dryrun_components = staging_path / skill_id / "components"
-    v3_components = staging_path / "agent_skills_v3" / skill_id / "components"
-    if not dryrun_components.exists():
+    # Compile_and_double_write_skill output components under staging_path / skill_id / "components" during test runs,
+    # or they are in the project dryrun reports dir. We scan both to sync to staging's agent_skills_v3 directory.
+    project_dryrun = PROJECT_ROOT / "reports" / "gencode_v3_dryrun" / skill_id / "components"
+    staging_dryrun = staging_path / skill_id / "components"
+    
+    src = None
+    if staging_dryrun.is_dir() and any(staging_dryrun.iterdir()):
+        src = staging_dryrun
+    elif project_dryrun.is_dir() and any(project_dryrun.iterdir()):
+        src = project_dryrun
+        
+    if not src:
         return
+        
+    v3_components = staging_path / "agent_skills_v3" / skill_id / "components"
     v3_components.parent.mkdir(parents=True, exist_ok=True)
-    shutil.copytree(dryrun_components, v3_components, dirs_exist_ok=True)
+    shutil.copytree(src, v3_components, dirs_exist_ok=True)
 
 
 def _backup_facade_before_overwrite(facade_path: Path) -> bool:
@@ -183,26 +196,150 @@ def run_v3_smoke(root: Path, skill_id: str) -> None:
         raise RuntimeError("get_hint must return str")
 
 
+def _auto_promote_valid_components(
+    conn: sqlite3.Connection,
+    skill_key: str,
+    project_path: Path,
+    staging_path: Path,
+) -> None:
+    """Scan all components of the skill under staging_path and project_path,
+    verify them (compile, load spec, smoke test, integrity checks),
+    and if valid, update their status in the tracker to 'verified'.
+    """
+    import json
+    import py_compile
+    import importlib.util
+    import uuid
+    from core.gencode.services.component_tracker_service import save_tracker_record
+    from core.gencode.services.v3_question_integrity_validator import (
+        validate_component_payload,
+        DEFAULT_INTEGRITY_SEEDS,
+    )
+
+    components_dirs = []
+    stag_comp_dir = staging_path / skill_key / "components"
+    if stag_comp_dir.is_dir():
+        components_dirs.append(stag_comp_dir)
+    dryrun_comp_dir = project_path / "reports" / "gencode_v3_dryrun" / skill_key / "components"
+    if dryrun_comp_dir.is_dir():
+        components_dirs.append(dryrun_comp_dir)
+
+    processed_components = set()
+
+    for comp_dir in components_dirs:
+        if not comp_dir.exists():
+            continue
+        for entry in comp_dir.iterdir():
+            if not entry.is_dir() or entry.name.startswith("__"):
+                continue
+            component_id = entry.name
+            if component_id in processed_components:
+                continue
+            processed_components.add(component_id)
+
+            generate_py = entry / "generate.py"
+            metadata_py = entry / "metadata.py"
+            get_hint_py = entry / "get_hint.py"
+
+            if not (generate_py.is_file() and metadata_py.is_file() and get_hint_py.is_file()):
+                continue
+
+            try:
+                py_compile.compile(str(generate_py), doraise=True)
+                py_compile.compile(str(metadata_py), doraise=True)
+                py_compile.compile(str(get_hint_py), doraise=True)
+
+                module_suffix = f"_{uuid.uuid4().hex}"
+                meta_spec = importlib.util.spec_from_file_location(f"meta_{component_id}{module_suffix}", metadata_py)
+                meta_mod = importlib.util.module_from_spec(meta_spec)
+                meta_spec.loader.exec_module(meta_mod)
+
+                gen_spec = importlib.util.spec_from_file_location(f"gen_{component_id}{module_suffix}", generate_py)
+                gen_mod = importlib.util.module_from_spec(gen_spec)
+                gen_spec.loader.exec_module(gen_mod)
+
+                hint_spec = importlib.util.spec_from_file_location(f"hint_{component_id}{module_suffix}", get_hint_py)
+                hint_mod = importlib.util.module_from_spec(hint_spec)
+                hint_spec.loader.exec_module(hint_mod)
+
+                generate_fn = getattr(gen_mod, "generate", None)
+                hint_fn = getattr(hint_mod, "get_hint", None)
+                if not callable(generate_fn) or not callable(hint_fn):
+                    continue
+
+                payload = generate_fn(seed=42)
+                if not isinstance(payload, dict):
+                    continue
+                hint_fn(1, payload)
+
+                integrity_passed = True
+                for seed in DEFAULT_INTEGRITY_SEEDS:
+                    p = generate_fn(seed=seed, component_id=component_id)
+                    vr = validate_component_payload(p, component_id=component_id)
+                    if not vr.get("passed", True):
+                        integrity_passed = False
+                        break
+
+                if not integrity_passed:
+                    continue
+
+                induced_spec = {}
+                for attr in dir(meta_mod):
+                    if attr.isupper() and not attr.startswith("_"):
+                        induced_spec[attr.lower()] = getattr(meta_mod, attr)
+
+                induced_spec["integrity_gate_passed"] = True
+                induced_spec["integrity_gate_version"] = "v1"
+
+                textbook_example_id = int(getattr(meta_mod, "TEXTBOOK_EXAMPLE_ID", 0))
+                if textbook_example_id <= 0:
+                    continue
+
+                save_tracker_record(
+                    conn=conn,
+                    textbook_example_id=textbook_example_id,
+                    skill_id=skill_key,
+                    gencode_status="verified",
+                    induced_spec_payload=induced_spec,
+                    gencode_error_log=None,
+                )
+                conn.commit()
+
+            except Exception as e:
+                print(f"[DEBUG PROMOTE ERROR] {component_id}: {e}")
+                import traceback
+                traceback.print_exc()
+
+
 def publish_single_v3_skill_to_production(
     *,
     conn: sqlite3.Connection,
     skill_id: str,
     project_root: str,
     staging_root: str,
+    allow_partial_coverage: bool = False,
 ) -> dict[str, object]:
     """Publish one gated skill through staging smoke, promote, and production smoke."""
     skill_key = str(skill_id or "").strip()
+
+    project_path = assert_safe_project_root(project_root)
+    staging_path = assert_safe_staging_root(staging_root, project_path)
+
+    _auto_promote_valid_components(conn, skill_key, project_path, staging_path)
+
     from core.gencode.services.v3_publish_eligibility import evaluate_v3_publish_eligibility
     eligibility = evaluate_v3_publish_eligibility(conn, skill_key)
     if not eligibility.get("allowed") and eligibility.get("reason") == "taxonomy_not_registered":
         raise ValueError("taxonomy_not_registered")
     if skill_key not in V3_PRODUCTION_PUBLISH_ALLOWED_SKILLS and "dynamic" not in skill_key.lower():
         raise ValueError("production_publish_not_allowed_for_skill")
-    if not eligibility.get("allowed"):
-        raise ValueError(eligibility.get("reason") or "production_publish_not_allowed_for_skill")
-
-    project_path = assert_safe_project_root(project_root)
-    staging_path = assert_safe_staging_root(staging_root, project_path)
+    eligibility_reason = str(eligibility.get("reason") or "production_publish_not_allowed_for_skill")
+    partial_coverage_allowed = allow_partial_coverage and eligibility_reason in {
+        "coverage_incomplete",
+        "publish_ready_false",
+    }
+    if not eligibility.get("allowed") and not partial_coverage_allowed:
+        raise ValueError(eligibility_reason)
 
     verified_components = _fetch_verified_components(conn, skill_key)
     if not verified_components:

@@ -64,7 +64,11 @@ def check_cross_example_collapse(
         
     unique_problem_types = {c["problem_type_id"] for c in components_info}
     unique_ast_hashes = {calculate_ast_hash(c["generate_code"]) for c in components_info}
-    unique_template_signatures = {extract_template_signature(c["sample_question_text"]) for c in components_info}
+    non_empty_template_signatures = {
+        extract_template_signature(c["sample_question_text"])
+        for c in components_info
+        if str(c.get("sample_question_text") or "").strip()
+    }
     
     collapse_detected = False
     reasons = []
@@ -73,7 +77,7 @@ def check_cross_example_collapse(
     if len(unique_problem_types) == 1:
         collapse_detected = True
         reasons.append("cross_example_semantic_collapse: only 1 unique problem_type_id detected across all components")
-    if len(unique_template_signatures) == 1:
+    if len(non_empty_template_signatures) == 1:
         collapse_detected = True
         reasons.append("cross_example_semantic_collapse: only 1 unique template signature detected across all components")
         
@@ -83,6 +87,6 @@ def check_cross_example_collapse(
         "metrics": {
             "unique_problem_type_count": len(unique_problem_types),
             "unique_ast_hash_count": len(unique_ast_hashes),
-            "unique_template_signature_count": len(unique_template_signatures),
+            "unique_template_signature_count": len(non_empty_template_signatures),
         }
     }

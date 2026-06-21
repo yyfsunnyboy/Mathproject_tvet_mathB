@@ -10,6 +10,14 @@ _SOURCE_KIND_PROFILES: dict[str, dict[str, object]] = {
     "test": {"order_weight": 30, "difficulty_level": "hard"},
 }
 
+_RESPONSE_MODE_VALUES = frozenset({
+    "expression",
+    "single_choice",
+    "short_answer",
+    "text_short",
+    "multi_part",
+})
+
 
 def build_component_files_from_domain_payload(
     skill_id: str,
@@ -45,6 +53,29 @@ def build_component_files_from_domain_payload(
     }
 
 
+def normalize_v3_component_metadata_fields(payload_meta: dict[str, Any]) -> dict[str, str]:
+    """Split legacy answer_type into response-mode and answer-value dimensions."""
+    presentation_mode = str(payload_meta.get("presentation_mode") or "short_answer").strip()
+    response_mode = str(
+        payload_meta.get("response_mode")
+        or payload_meta.get("interaction_type")
+        or ("single_choice" if presentation_mode == "single_choice" else "expression")
+    ).strip()
+    legacy_answer_type = str(payload_meta.get("answer_type") or "").strip()
+    answer_value_type = str(payload_meta.get("answer_value_type") or "").strip()
+    if not answer_value_type and legacy_answer_type and legacy_answer_type not in _RESPONSE_MODE_VALUES:
+        answer_value_type = legacy_answer_type
+    if not answer_value_type:
+        answer_value_type = "choice_label" if response_mode == "single_choice" else "expression"
+    return {
+        "presentation_mode": presentation_mode,
+        "response_mode": response_mode,
+        "interaction_type": response_mode,
+        "answer_value_type": answer_value_type,
+        "legacy_answer_type": legacy_answer_type or answer_value_type,
+    }
+
+
 def _resolve_source_kind_profile(source_kind: str) -> dict[str, object]:
     normalized = str(source_kind or "").strip().lower()
     for prefix, profile in _SOURCE_KIND_PROFILES.items():
@@ -64,11 +95,19 @@ def _build_metadata_py(
     payload_meta: dict[str, Any],
     textbook_example_id: int | None = None,
 ) -> str:
-    target_task = str(payload_meta.get("target_task", "write_line_equation_from_point_slope"))
+    problem_type_id = str(payload_meta.get("problem_type_id") or "").strip()
+    target_task = str(payload_meta.get("target_task") or problem_type_id).strip()
+    if not problem_type_id:
+        problem_type_id = target_task
+    if not target_task:
+        raise ValueError("payload_meta must include problem_type_id or target_task.")
     template_slot = str(payload_meta.get("template_slot", "line_equation_from_point_slope"))
-    presentation_mode = str(payload_meta.get("presentation_mode", "short_answer"))
-    answer_type = str(payload_meta.get("answer_type", "expression"))
-    problem_type_id = str(payload_meta.get("problem_type_id", target_task))
+    normalized = normalize_v3_component_metadata_fields(payload_meta)
+    presentation_mode = normalized["presentation_mode"]
+    response_mode = normalized["response_mode"]
+    interaction_type = normalized["interaction_type"]
+    answer_value_type = normalized["answer_value_type"]
+    legacy_answer_type = normalized["legacy_answer_type"]
     line_type = str(payload_meta.get("line_type", ""))
     textbook_id = int(textbook_example_id if textbook_example_id is not None else payload_meta.get("textbook_example_id", 0) or 0)
 
@@ -115,7 +154,11 @@ TARGET_TASK: Final[str] = "{target_task}"
 TEMPLATE_SLOT: Final[str] = "{template_slot}"
 PROBLEM_TYPE_ID: Final[str] = "{problem_type_id}"
 PRESENTATION_MODE: Final[str] = "{presentation_mode}"
-ANSWER_TYPE: Final[str] = "{answer_type}"
+RESPONSE_MODE: Final[str] = "{response_mode}"
+INTERACTION_TYPE: Final[str] = "{interaction_type}"
+ANSWER_VALUE_TYPE: Final[str] = "{answer_value_type}"
+ANSWER_TYPE: Final[str] = "{answer_value_type}"
+LEGACY_ANSWER_TYPE: Final[str] = "{legacy_answer_type}"
 
 DOMAIN_LIBRARY: Final[tuple[str, ...]] = (
     "{domain_entry}",
@@ -124,7 +167,10 @@ DOMAIN_LIBRARY: Final[tuple[str, ...]] = (
 ANSWER_VERIFICATION_TYPE: Final[dict[str, str]] = {{
     "checker_key": "{checker_key}",
     "equivalence_type": "{equivalence_type}",
-    "answer_type": "{answer_type}",
+    "response_mode": "{response_mode}",
+    "interaction_type": "{interaction_type}",
+    "answer_value_type": "{answer_value_type}",
+    "answer_type": "{answer_value_type}",
     "module": "{checker_module}",
 }}
 

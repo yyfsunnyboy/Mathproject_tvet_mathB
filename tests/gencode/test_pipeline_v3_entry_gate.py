@@ -40,7 +40,10 @@ def memory_conn() -> sqlite3.Connection:
         """
         CREATE TABLE textbook_examples (
             id INTEGER PRIMARY KEY,
-            skill_id TEXT NOT NULL
+            skill_id TEXT NOT NULL,
+            problem_type_id TEXT,
+            line_type TEXT,
+            problem_text TEXT
         )
         """
     )
@@ -67,8 +70,8 @@ def test_mvp_skill_enters_v3_shadow_bridge_from_formal_entry(
     production_v3_snapshot = _snapshot_paths(PROJECT_ROOT / "agent_skills_v3")
 
     memory_conn.execute(
-        "INSERT INTO textbook_examples (id, skill_id) VALUES (?, ?)",
-        (1, SKILL_ID),
+        "INSERT INTO textbook_examples (id, skill_id, problem_type_id, line_type, problem_text) VALUES (?, ?, ?, ?, ?)",
+        (1, SKILL_ID, "write_line_equation_from_point_slope", "point_slope", "已知一點與斜率，求直線方程式"),
     )
     memory_conn.commit()
 
@@ -83,7 +86,7 @@ def test_mvp_skill_enters_v3_shadow_bridge_from_formal_entry(
     assert result["phase_status"] == "V3_SHADOW_BRIDGE"
     assert result["v3_activated"] is True
     assert result["route"] == "v3_shadow_bridge"
-    assert result["tracker_status"] == "draft_written"
+    assert result["tracker_status"] == "verified"
     assert result["textbook_example_id"] == 1
 
     tracker_row = memory_conn.execute(
@@ -95,7 +98,7 @@ def test_mvp_skill_enters_v3_shadow_bridge_from_formal_entry(
         (1,),
     ).fetchone()
     assert tracker_row is not None
-    assert tracker_row["gencode_status"] == "draft_written"
+    assert tracker_row["gencode_status"] == "verified"
     assert tracker_row["textbook_example_id"] == 1
 
     component_dir = dryrun_base_dir / SKILL_ID / "components" / "src_1"

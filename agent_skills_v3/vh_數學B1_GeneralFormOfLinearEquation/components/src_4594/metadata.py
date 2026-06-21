@@ -1,9 +1,9 @@
 from __future__ import annotations
 from typing import Final
 
-COMPONENT_ID: Final[str] = "ex_4594"
+COMPONENT_ID: Final[str] = "src_4594"
 SKILL_ID: Final[str] = "vh_數學B1_GeneralFormOfLinearEquation"
-SOURCE_REF: Final[str] = "ex_4594"
+SOURCE_REF: Final[str] = "src_4594"
 SOURCE_KIND: Final[str] = "ex_4594"
 TEXTBOOK_EXAMPLE_ID: Final[int] = 4594
 
@@ -12,10 +12,14 @@ DIFFICULTY_LEVEL: Final[str] = "easy"
 LINE_TYPE: Final[str] = "line_through_point_perpendicular_to_line"
 
 TARGET_TASK: Final[str] = "line_through_point_perpendicular_to_line"
-TEMPLATE_SLOT: Final[str] = "line_equation_from_point_slope"
+TEMPLATE_SLOT: Final[str] = "line_through_point_perpendicular_to_line"
 PROBLEM_TYPE_ID: Final[str] = "line_through_point_perpendicular_to_line"
 PRESENTATION_MODE: Final[str] = "single_choice"
-ANSWER_TYPE: Final[str] = "linear_equation"
+RESPONSE_MODE: Final[str] = "single_choice"
+INTERACTION_TYPE: Final[str] = "single_choice"
+ANSWER_VALUE_TYPE: Final[str] = "choice_label"
+ANSWER_TYPE: Final[str] = "choice_label"
+LEGACY_ANSWER_TYPE: Final[str] = "single_choice"
 
 DOMAIN_LIBRARY: Final[tuple[str, ...]] = (
     "core.domain.coordinate_geometry.line_equation_domain.build_line_equation_matrix",
@@ -24,7 +28,10 @@ DOMAIN_LIBRARY: Final[tuple[str, ...]] = (
 ANSWER_VERIFICATION_TYPE: Final[dict[str, str]] = {
     "checker_key": "choice_label_checker",
     "equivalence_type": "choice_label",
-    "answer_type": "linear_equation",
+    "response_mode": "single_choice",
+    "interaction_type": "single_choice",
+    "answer_value_type": "choice_label",
+    "answer_type": "choice_label",
     "module": "core.checkers.choice_label_checker",
 }
 

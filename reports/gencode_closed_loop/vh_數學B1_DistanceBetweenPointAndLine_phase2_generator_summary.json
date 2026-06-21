@@ -1,0 +1,575 @@
+{
+  "ok": true,
+  "phase": "phase2",
+  "skill_id": "vh_數學B1_DistanceBetweenPointAndLine",
+  "sop_reference": {
+    "sop_policy_version": "v0.3",
+    "highest_sop": "docs/系統SOP/Gencode_AgentSkillV2整合/Gencode與AgentSkillV2整合總體設計_v0.3.md",
+    "required_sop_files": [
+      {
+        "path": "docs/系統SOP/Gencode_AgentSkillV2整合/Gencode與AgentSkillV2整合總體設計_v0.3.md",
+        "exists": true,
+        "readable": true,
+        "mojibake_detected": false
+      },
+      {
+        "path": "docs/系統SOP/Gencode_AgentSkillV2整合/AgentSkillV2_ProblemType規格包設計_v0.3.md",
+        "exists": true,
+        "readable": true,
+        "mojibake_detected": false
+      },
+      {
+        "path": "docs/系統SOP/Gencode_AgentSkillV2整合/AnswerContract_EquivalenceType_Gate_v0.3.md",
+        "exists": true,
+        "readable": true,
+        "mojibake_detected": false
+      }
+    ],
+    "sop_preflight_status": "PASS"
+  },
+  "phase1_alignment_blocked": false,
+  "alignment_blockers": [],
+  "generator_results": [
+    {
+      "problem_type_id": "equation_write_line_equation_from_point_slope_short_answer",
+      "source_example_count": 0,
+      "answer_contract": {
+        "choices_required": false,
+        "choice_count": null,
+        "correct_choice_count": null,
+        "frontend_render_choices": false,
+        "source_has_choices": false,
+        "answer_type": "equation",
+        "answer_shape": "linear_equation",
+        "answer_semantics": "line_equation",
+        "answer_equivalence": "linear_equation_equivalent",
+        "equivalence_type": "linear_equation_equivalent",
+        "checker": "linear_equation_equivalent_checker",
+        "checker_key": "linear_equation_equivalent_checker",
+        "presentation_mode": "short_answer",
+        "selected_checker": "linear_equation_equivalent_checker",
+        "checker_selection_reason": "line_equation_family",
+        "accepted_formats": [
+          "y - 2 = 3(x - 1)",
+          "y = 3x - 1",
+          "3x - y - 1 = 0"
+        ]
+      },
+      "answer_type": "equation",
+      "answer_shape": "linear_equation",
+      "equivalence_type": "linear_equation_equivalent",
+      "selected_checker": "linear_equation_equivalent_checker",
+      "checker_key": "linear_equation_equivalent_checker",
+      "checker_capability_status": "ok",
+      "checker_contract_blockers": [],
+      "checker_contract_warnings": [],
+      "generator_key": "vh_數學B1_DistanceBetweenPointAndLine:equation_write_line_equation_from_point_slope_short_answer:draft_v1",
+      "generator_status": "runtime_ready_with_warning",
+      "checker_smoke_status": "passed",
+      "dynamic_sampling_status": "runtime_ready_with_diversity_warning",
+      "diversity_sampling": {
+        "diversity_sampling_status": "passed",
+        "diversity_healthy": true,
+        "sample_count": 30,
+        "unique_signature_count": 30,
+        "unique_question_text_count": 30,
+        "template_variant_distribution": {
+          "given_point_and_slope_find_general_form": 10,
+          "given_point_and_slope_find_point_slope_form": 10,
+          "given_point_and_slope_find_slope_intercept_form": 10
+        },
+        "answer_shape_distribution": {
+          "linear_equation": 30
+        },
+        "variable_coverage_report": {
+          "ratio_forms": [],
+          "coordinate_patterns": [
+            ""
+          ],
+          "answer_type_modes": [
+            ""
+          ]
+        },
+        "repetition_warnings": [],
+        "diversity_blockers": [],
+        "max_consecutive_same_template": 3,
+        "generation_errors": [],
+        "sampling_mode": "live"
+      },
+      "unique_signature_count": 30,
+      "template_variant_distribution": {
+        "given_point_and_slope_find_general_form": 10,
+        "given_point_and_slope_find_point_slope_form": 10,
+        "given_point_and_slope_find_slope_intercept_form": 10
+      },
+      "variable_coverage_report": {
+        "ratio_forms": [],
+        "coordinate_patterns": [
+          ""
+        ],
+        "answer_type_modes": [
+          ""
+        ]
+      },
+      "repetition_warnings": [
+        "low_sample_diversity_tolerance_applied",
+        "low_source_examples",
+        "no_matched_source_examples"
+      ],
+      "requires_human_action": false,
+      "blockers": [],
+      "warnings": [
+        "low_sample_diversity_tolerance_applied",
+        "low_source_examples",
+        "no_matched_source_examples"
+      ],
+      "usable_for_phase3": true,
+      "target_task": "write_line_equation_from_point_slope",
+      "task_family": "line_equation_family",
+      "base_problem_type_id": "equation_write_line_equation_from_point_slope_short_answer",
+      "value_type_prefix": "",
+      "template_slot": "line_equation_from_point_slope",
+      "_resolved_template_slot": "line_equation_from_point_slope"
+    },
+    {
+      "problem_type_id": "equation_write_line_equation_from_slope_and_intercept_short_answer",
+      "source_example_count": 0,
+      "answer_contract": {
+        "choices_required": false,
+        "choice_count": null,
+        "correct_choice_count": null,
+        "frontend_render_choices": false,
+        "source_has_choices": false,
+        "answer_type": "equation",
+        "answer_shape": "linear_equation",
+        "answer_semantics": "line_equation",
+        "answer_equivalence": "linear_equation_equivalent",
+        "equivalence_type": "linear_equation_equivalent",
+        "checker": "linear_equation_equivalent_checker",
+        "checker_key": "linear_equation_equivalent_checker",
+        "presentation_mode": "short_answer",
+        "selected_checker": "linear_equation_equivalent_checker",
+        "checker_selection_reason": "line_equation_family",
+        "accepted_formats": [
+          "y - 2 = 3(x - 1)",
+          "y = 3x - 1",
+          "3x - y - 1 = 0"
+        ]
+      },
+      "answer_type": "equation",
+      "answer_shape": "linear_equation",
+      "equivalence_type": "linear_equation_equivalent",
+      "selected_checker": "linear_equation_equivalent_checker",
+      "checker_key": "linear_equation_equivalent_checker",
+      "checker_capability_status": "ok",
+      "checker_contract_blockers": [],
+      "checker_contract_warnings": [],
+      "generator_key": "vh_數學B1_DistanceBetweenPointAndLine:equation_write_line_equation_from_slope_and_intercept_short_answer:draft_v1",
+      "generator_status": "runtime_ready_with_warning",
+      "checker_smoke_status": "passed",
+      "dynamic_sampling_status": "runtime_ready_with_diversity_warning",
+      "diversity_sampling": {
+        "diversity_sampling_status": "runtime_ready_with_diversity_warning",
+        "diversity_healthy": true,
+        "sample_count": 30,
+        "unique_signature_count": 29,
+        "unique_question_text_count": 29,
+        "template_variant_distribution": {
+          "slope_with_y_intercept": 16,
+          "slope_with_x_intercept": 14
+        },
+        "answer_shape_distribution": {
+          "linear_equation": 30
+        },
+        "variable_coverage_report": {
+          "ratio_forms": [],
+          "coordinate_patterns": [
+            ""
+          ],
+          "answer_type_modes": [
+            ""
+          ]
+        },
+        "repetition_warnings": [
+          "consecutive_same_template_variant"
+        ],
+        "diversity_blockers": [],
+        "max_consecutive_same_template": 6,
+        "generation_errors": [],
+        "sampling_mode": "live"
+      },
+      "unique_signature_count": 29,
+      "template_variant_distribution": {
+        "slope_with_y_intercept": 16,
+        "slope_with_x_intercept": 14
+      },
+      "variable_coverage_report": {
+        "ratio_forms": [],
+        "coordinate_patterns": [
+          ""
+        ],
+        "answer_type_modes": [
+          ""
+        ]
+      },
+      "repetition_warnings": [
+        "consecutive_same_template_variant",
+        "low_sample_diversity_tolerance_applied",
+        "low_source_examples",
+        "no_matched_source_examples"
+      ],
+      "requires_human_action": false,
+      "blockers": [],
+      "warnings": [
+        "consecutive_same_template_variant",
+        "low_sample_diversity_tolerance_applied",
+        "low_source_examples",
+        "no_matched_source_examples"
+      ],
+      "usable_for_phase3": true,
+      "target_task": "write_line_equation_from_slope_and_intercept",
+      "task_family": "line_equation_family",
+      "base_problem_type_id": "equation_write_line_equation_from_slope_and_intercept_short_answer",
+      "value_type_prefix": "",
+      "template_slot": "line_equation_from_slope_and_intercept",
+      "_resolved_template_slot": "line_equation_from_slope_and_intercept"
+    },
+    {
+      "problem_type_id": "equation_write_line_equation_from_two_points_short_answer",
+      "source_example_count": 0,
+      "answer_contract": {
+        "choices_required": false,
+        "choice_count": null,
+        "correct_choice_count": null,
+        "frontend_render_choices": false,
+        "source_has_choices": false,
+        "answer_type": "equation",
+        "answer_shape": "linear_equation",
+        "answer_semantics": "line_equation",
+        "answer_equivalence": "linear_equation_equivalent",
+        "equivalence_type": "linear_equation_equivalent",
+        "checker": "linear_equation_equivalent_checker",
+        "checker_key": "linear_equation_equivalent_checker",
+        "presentation_mode": "short_answer",
+        "selected_checker": "linear_equation_equivalent_checker",
+        "checker_selection_reason": "line_equation_family",
+        "accepted_formats": [
+          "y - 2 = 3(x - 1)",
+          "y = 3x - 1",
+          "3x - y - 1 = 0"
+        ]
+      },
+      "answer_type": "equation",
+      "answer_shape": "linear_equation",
+      "equivalence_type": "linear_equation_equivalent",
+      "selected_checker": "linear_equation_equivalent_checker",
+      "checker_key": "linear_equation_equivalent_checker",
+      "checker_capability_status": "ok",
+      "checker_contract_blockers": [],
+      "checker_contract_warnings": [],
+      "generator_key": "vh_數學B1_DistanceBetweenPointAndLine:equation_write_line_equation_from_two_points_short_answer:draft_v1",
+      "generator_status": "runtime_ready_with_warning",
+      "checker_smoke_status": "passed",
+      "dynamic_sampling_status": "runtime_ready_with_diversity_warning",
+      "diversity_sampling": {
+        "diversity_sampling_status": "passed",
+        "diversity_healthy": true,
+        "sample_count": 30,
+        "unique_signature_count": 30,
+        "unique_question_text_count": 30,
+        "template_variant_distribution": {
+          "two_points_general_form": 14,
+          "two_points_through_ab": 16
+        },
+        "answer_shape_distribution": {
+          "linear_equation": 30
+        },
+        "variable_coverage_report": {
+          "ratio_forms": [],
+          "coordinate_patterns": [
+            ""
+          ],
+          "answer_type_modes": [
+            ""
+          ]
+        },
+        "repetition_warnings": [],
+        "diversity_blockers": [],
+        "max_consecutive_same_template": 3,
+        "generation_errors": [],
+        "sampling_mode": "live"
+      },
+      "unique_signature_count": 30,
+      "template_variant_distribution": {
+        "two_points_general_form": 14,
+        "two_points_through_ab": 16
+      },
+      "variable_coverage_report": {
+        "ratio_forms": [],
+        "coordinate_patterns": [
+          ""
+        ],
+        "answer_type_modes": [
+          ""
+        ]
+      },
+      "repetition_warnings": [
+        "low_sample_diversity_tolerance_applied",
+        "low_source_examples",
+        "no_matched_source_examples"
+      ],
+      "requires_human_action": false,
+      "blockers": [],
+      "warnings": [
+        "low_sample_diversity_tolerance_applied",
+        "low_source_examples",
+        "no_matched_source_examples"
+      ],
+      "usable_for_phase3": true,
+      "target_task": "write_line_equation_from_two_points",
+      "task_family": "line_equation_family",
+      "base_problem_type_id": "equation_write_line_equation_from_two_points_short_answer",
+      "value_type_prefix": "",
+      "template_slot": "line_equation_from_two_points",
+      "_resolved_template_slot": "line_equation_from_two_points"
+    },
+    {
+      "problem_type_id": "equation_write_perpendicular_bisector_from_two_points_short_answer",
+      "source_example_count": 0,
+      "answer_contract": {
+        "choices_required": false,
+        "choice_count": null,
+        "correct_choice_count": null,
+        "frontend_render_choices": false,
+        "source_has_choices": false,
+        "answer_type": "equation",
+        "answer_shape": "linear_equation",
+        "answer_semantics": "line_equation",
+        "answer_equivalence": "linear_equation_equivalent",
+        "equivalence_type": "linear_equation_equivalent",
+        "checker": "linear_equation_equivalent_checker",
+        "checker_key": "linear_equation_equivalent_checker",
+        "presentation_mode": "short_answer",
+        "selected_checker": "linear_equation_equivalent_checker",
+        "checker_selection_reason": "line_equation_family",
+        "accepted_formats": [
+          "y - 2 = 3(x - 1)",
+          "y = 3x - 1",
+          "3x - y - 1 = 0"
+        ]
+      },
+      "answer_type": "equation",
+      "answer_shape": "linear_equation",
+      "equivalence_type": "linear_equation_equivalent",
+      "selected_checker": "linear_equation_equivalent_checker",
+      "checker_key": "linear_equation_equivalent_checker",
+      "checker_capability_status": "ok",
+      "checker_contract_blockers": [],
+      "checker_contract_warnings": [],
+      "generator_key": "vh_數學B1_DistanceBetweenPointAndLine:equation_write_perpendicular_bisector_from_two_points_short_answer:draft_v1",
+      "generator_status": "runtime_ready_with_warning",
+      "checker_smoke_status": "passed",
+      "dynamic_sampling_status": "runtime_ready_with_diversity_warning",
+      "diversity_sampling": {
+        "diversity_sampling_status": "passed",
+        "diversity_healthy": true,
+        "sample_count": 30,
+        "unique_signature_count": 30,
+        "unique_question_text_count": 30,
+        "template_variant_distribution": {
+          "perpendicular_bisector_segment": 14,
+          "perpendicular_bisector_equal_distance": 16
+        },
+        "answer_shape_distribution": {
+          "linear_equation": 30
+        },
+        "variable_coverage_report": {
+          "ratio_forms": [],
+          "coordinate_patterns": [
+            ""
+          ],
+          "answer_type_modes": [
+            ""
+          ]
+        },
+        "repetition_warnings": [],
+        "diversity_blockers": [],
+        "max_consecutive_same_template": 3,
+        "generation_errors": [],
+        "sampling_mode": "live"
+      },
+      "unique_signature_count": 30,
+      "template_variant_distribution": {
+        "perpendicular_bisector_segment": 14,
+        "perpendicular_bisector_equal_distance": 16
+      },
+      "variable_coverage_report": {
+        "ratio_forms": [],
+        "coordinate_patterns": [
+          ""
+        ],
+        "answer_type_modes": [
+          ""
+        ]
+      },
+      "repetition_warnings": [
+        "low_sample_diversity_tolerance_applied",
+        "low_source_examples",
+        "no_matched_source_examples"
+      ],
+      "requires_human_action": false,
+      "blockers": [],
+      "warnings": [
+        "low_sample_diversity_tolerance_applied",
+        "low_source_examples",
+        "no_matched_source_examples"
+      ],
+      "usable_for_phase3": true,
+      "target_task": "write_perpendicular_bisector_from_two_points",
+      "task_family": "line_equation_family",
+      "base_problem_type_id": "equation_write_perpendicular_bisector_from_two_points_short_answer",
+      "value_type_prefix": "",
+      "template_slot": "perpendicular_bisector_from_two_points",
+      "_resolved_template_slot": "perpendicular_bisector_from_two_points"
+    },
+    {
+      "problem_type_id": "equation_write_triangle_median_line_from_vertices_short_answer",
+      "source_example_count": 0,
+      "answer_contract": {
+        "choices_required": false,
+        "choice_count": null,
+        "correct_choice_count": null,
+        "frontend_render_choices": false,
+        "source_has_choices": false,
+        "answer_type": "equation",
+        "answer_shape": "linear_equation",
+        "answer_semantics": "line_equation",
+        "answer_equivalence": "linear_equation_equivalent",
+        "equivalence_type": "linear_equation_equivalent",
+        "checker": "linear_equation_equivalent_checker",
+        "checker_key": "linear_equation_equivalent_checker",
+        "presentation_mode": "short_answer",
+        "selected_checker": "linear_equation_equivalent_checker",
+        "checker_selection_reason": "line_equation_family",
+        "accepted_formats": [
+          "y - 2 = 3(x - 1)",
+          "y = 3x - 1",
+          "3x - y - 1 = 0"
+        ]
+      },
+      "answer_type": "equation",
+      "answer_shape": "linear_equation",
+      "equivalence_type": "linear_equation_equivalent",
+      "selected_checker": "linear_equation_equivalent_checker",
+      "checker_key": "linear_equation_equivalent_checker",
+      "checker_capability_status": "ok",
+      "checker_contract_blockers": [],
+      "checker_contract_warnings": [],
+      "generator_key": "vh_數學B1_DistanceBetweenPointAndLine:equation_write_triangle_median_line_from_vertices_short_answer:draft_v1",
+      "generator_status": "runtime_ready_with_warning",
+      "checker_smoke_status": "passed",
+      "dynamic_sampling_status": "runtime_ready_with_diversity_warning",
+      "diversity_sampling": {
+        "diversity_sampling_status": "runtime_ready_with_diversity_warning",
+        "diversity_healthy": true,
+        "sample_count": 30,
+        "unique_signature_count": 30,
+        "unique_question_text_count": 30,
+        "template_variant_distribution": {
+          "triangle_median_through_vertex": 9,
+          "triangle_median_area_bisector": 13,
+          "triangle_median_coordinate_plane": 8
+        },
+        "answer_shape_distribution": {
+          "linear_equation": 30
+        },
+        "variable_coverage_report": {
+          "ratio_forms": [],
+          "coordinate_patterns": [
+            ""
+          ],
+          "answer_type_modes": [
+            ""
+          ]
+        },
+        "repetition_warnings": [
+          "consecutive_same_template_variant"
+        ],
+        "diversity_blockers": [],
+        "max_consecutive_same_template": 5,
+        "generation_errors": [],
+        "sampling_mode": "live"
+      },
+      "unique_signature_count": 30,
+      "template_variant_distribution": {
+        "triangle_median_through_vertex": 9,
+        "triangle_median_area_bisector": 13,
+        "triangle_median_coordinate_plane": 8
+      },
+      "variable_coverage_report": {
+        "ratio_forms": [],
+        "coordinate_patterns": [
+          ""
+        ],
+        "answer_type_modes": [
+          ""
+        ]
+      },
+      "repetition_warnings": [
+        "consecutive_same_template_variant",
+        "low_sample_diversity_tolerance_applied",
+        "low_source_examples",
+        "no_matched_source_examples"
+      ],
+      "requires_human_action": false,
+      "blockers": [],
+      "warnings": [
+        "consecutive_same_template_variant",
+        "low_sample_diversity_tolerance_applied",
+        "low_source_examples",
+        "no_matched_source_examples"
+      ],
+      "usable_for_phase3": true,
+      "target_task": "write_triangle_median_line_from_vertices",
+      "task_family": "line_equation_family",
+      "base_problem_type_id": "equation_write_triangle_median_line_from_vertices_short_answer",
+      "value_type_prefix": "",
+      "template_slot": "triangle_median_line_from_vertices",
+      "_resolved_template_slot": "triangle_median_line_from_vertices"
+    }
+  ],
+  "failed_generators": [],
+  "accepted_generators": [
+    "vh_數學B1_DistanceBetweenPointAndLine:equation_write_line_equation_from_point_slope_short_answer:draft_v1",
+    "vh_數學B1_DistanceBetweenPointAndLine:equation_write_line_equation_from_slope_and_intercept_short_answer:draft_v1",
+    "vh_數學B1_DistanceBetweenPointAndLine:equation_write_line_equation_from_two_points_short_answer:draft_v1",
+    "vh_數學B1_DistanceBetweenPointAndLine:equation_write_perpendicular_bisector_from_two_points_short_answer:draft_v1",
+    "vh_數學B1_DistanceBetweenPointAndLine:equation_write_triangle_median_line_from_vertices_short_answer:draft_v1"
+  ],
+  "foundation_preflight": {
+    "foundation_ready": true,
+    "foundation_status": "PASS",
+    "missing_checker": [],
+    "missing_verifier": [],
+    "missing_domain_function": [],
+    "missing_generator": [],
+    "missing_runtime_binding": [],
+    "missing_registry_binding": [],
+    "missing_answer_contract_problem_types": [],
+    "repair_plan": [],
+    "next_action": "phase3_package_draft"
+  },
+  "foundation_ready": true,
+  "phase2_status": "PASS",
+  "repair_plan": [],
+  "reports": {
+    "phase2_generator_summary_json": "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_DistanceBetweenPointAndLine_phase2_generator_summary.json",
+    "phase2_generator_summary_md": "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_DistanceBetweenPointAndLine_phase2_generator_summary.md",
+    "phase2_json": "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_DistanceBetweenPointAndLine_phase2_generator_summary.json",
+    "phase2_md": "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_DistanceBetweenPointAndLine_phase2_generator_summary.md",
+    "generator_draft_spec_json": "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\drafts\\vh_數學B1_DistanceBetweenPointAndLine_generator_draft_spec.json"
+  },
+  "next_action": "phase3_package_draft",
+  "timestamp": "2026-06-21T15:15:11.172307+00:00",
+  "dry_run": true
+}

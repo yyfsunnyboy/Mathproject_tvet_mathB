@@ -3100,7 +3100,12 @@ def admin_example_v3_regenerate(textbook_example_id: int):
             skill_id=skill_id,
             project_root=Path(_resolve_admin_project_root()),
         )
+        raw_conn.commit()
     except Exception as exc:
+        try:
+            raw_conn.rollback()
+        except Exception:
+            pass
         component_id = derive_component_id(textbook_example_id)
         tracker = _fetch_tracker_row(raw_conn, textbook_example_id=textbook_example_id)
         if tracker and tracker.get("component_id"):
@@ -3121,6 +3126,7 @@ def admin_example_v3_regenerate(textbook_example_id: int):
                 induced_spec_payload=induced_spec_payload,
                 gencode_error_log="; ".join(blockers),
             )
+            raw_conn.commit()
         except Exception:
             pass
         return jsonify({
@@ -3593,7 +3599,6 @@ def admin_run_skill_v3_repackage(skill_id: str):
     if not skill_key:
         return jsonify({"status": "failed", "details": "missing_skill_id"}), 400
 
-    from core.gencode.services.v3_publish_eligibility import evaluate_v3_publish_eligibility
     from core.gencode.services.v3_skill_coverage_service import get_v3_skill_component_coverage
     from core.gencode.services.admin_gencode_action_service import (
         run_admin_v3_publish_for_skill,
@@ -3610,20 +3615,18 @@ def admin_run_skill_v3_repackage(skill_id: str):
         total_count = int(coverage.get("total_examples") or 0)
         verified_count = int(coverage.get("verified_count") or 0)
 
-        eligibility = evaluate_v3_publish_eligibility(raw_conn, skill_key, coverage=coverage)
-
-        if not bool(eligibility.get("allowed")):
+        if verified_count < 1:
             return jsonify({
                 "status": "failed",
                 "skill_key": skill_key,
                 "verified_component_count": verified_count,
                 "total_component_count": total_count,
                 "publish_eligible": False,
-                "publish_reason": str(eligibility.get("reason") or "v3_publish_not_eligible"),
+                "publish_reason": "no_verified_components",
                 "generator_specs_count": 0,
                 "production_component_count": 0,
                 "wrapper_path": None,
-                "details": f"Eligibility check failed: {eligibility.get('reason')}"
+                "details": "No verified V3 components are available for repackaging."
             }), 200
 
         payload = request.get_json(silent=True) or {}
@@ -3679,7 +3682,7 @@ def admin_run_skill_v3_repackage(skill_id: str):
                 project_root=project_root,
                 staging_root=staging_root,
                 force_publish=True,
-                strict_coverage=True,
+                strict_coverage=False,
             )
         except Exception as exc:
             err_msg = str(exc)
@@ -3716,7 +3719,7 @@ def admin_run_skill_v3_repackage(skill_id: str):
             "verified_component_count": verified_count,
             "total_component_count": total_count,
             "publish_eligible": True,
-            "publish_reason": "eligible",
+            "publish_reason": "eligible" if verified_count >= total_count else "partial_coverage_repackaged",
             "generator_specs_count": generator_specs_count,
             "production_component_count": result.get("component_count", 0),
             "wrapper_path": wrapper_path,

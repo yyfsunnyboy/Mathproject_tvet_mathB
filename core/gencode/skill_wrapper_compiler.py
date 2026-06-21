@@ -8,6 +8,8 @@ import sqlite3
 from pathlib import Path
 from typing import Any
 
+from core.gencode.v3_component_scaffold_builder import normalize_v3_component_metadata_fields
+
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 PRODUCTION_SKILLS_DIR = PROJECT_ROOT / "skills"
 PRODUCTION_V3_DIR = PROJECT_ROOT / "agent_skills_v3"
@@ -116,16 +118,20 @@ def _build_generator_specs(components: list[dict[str, Any]]) -> tuple[list[str],
         component_id = str(row["component_id"])
         payload = row["induced_spec_payload"]
         textbook_example_id = int(row["textbook_example_id"])
+        normalized = normalize_v3_component_metadata_fields(payload)
         generator_keys.append(component_id)
         generator_specs.append(
             {
                 "textbook_example_id": textbook_example_id,
                 "component_id": component_id,
                 "generator_key": component_id,
-                "presentation_mode": payload.get("presentation_mode", "short_answer"),
+                "presentation_mode": normalized["presentation_mode"],
+                "response_mode": normalized["response_mode"],
+                "interaction_type": normalized["interaction_type"],
                 "source_kind": payload.get("source_kind"),
                 "line_type": payload.get("line_type"),
                 "answer_type": payload.get("answer_type"),
+                "answer_value_type": normalized["answer_value_type"],
                 "problem_type_id": payload.get("problem_type_id"),
                 "display_order": int(payload.get("display_order", textbook_example_id)),
                 "source_order": int(payload.get("source_order", textbook_example_id)),

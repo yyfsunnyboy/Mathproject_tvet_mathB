@@ -70,8 +70,8 @@ def clean_html(html: str) -> str:
 
 # ----------------- UI Button Display Tests -----------------
 
-def test_ui_none_generated_shows_v3_generate():
-    """1. 尚未生成技能只顯示 V3 生成。"""
+def test_ui_none_generated_shows_fixed_v3_actions():
+    """1. 尚未生成技能也固定顯示三個 V3 操作。"""
     with app.test_request_context():
         gencode = {
             "total_examples": 5,
@@ -83,6 +83,11 @@ def test_ui_none_generated_shows_v3_generate():
             "v3_package_exists": False,
             "publish_ready": False,
             "publish_eligible": False,
+            "teacher_status": {
+                "icon": "⚪",
+                "label": "尚未生成",
+                "badge_class": "teacher-v3-not-generated"
+            }
         }
         skill = {
             "skill_id": SKILL_ID,
@@ -108,12 +113,12 @@ def test_ui_none_generated_shows_v3_generate():
         )
         
         compact = clean_html(rendered)
-        assert "V3生成</button>" in compact
-        assert "V3重新生成</button>" not in compact
-        assert "V3重新包裝</button>" not in compact
+        assert "重新生成本技能題目</button>" in compact
+        assert "更新到學生端</button>" not in compact
+        assert "查看組件</a>" not in compact
 
-def test_ui_has_package_shows_v3_regenerate():
-    """2. 已有 V3 package 顯示 V3 重新生成。"""
+def test_ui_has_package_shows_fixed_v3_actions():
+    """2. 已有 V3 package 仍固定顯示三個 V3 操作。"""
     with app.test_request_context():
         gencode = {
             "total_examples": 5,
@@ -125,6 +130,11 @@ def test_ui_has_package_shows_v3_regenerate():
             "v3_package_exists": True,
             "publish_ready": False,
             "publish_eligible": False,
+            "teacher_status": {
+                "icon": "🟡",
+                "label": "尚未上線",
+                "badge_class": "teacher-v3-generated-not-packaged"
+            }
         }
         skill = {
             "skill_id": SKILL_ID,
@@ -150,9 +160,9 @@ def test_ui_has_package_shows_v3_regenerate():
         )
         
         compact = clean_html(rendered)
-        assert "V3重新生成</button>" in compact
-        assert "V3生成</button>" not in compact
-        assert "查看組件" in rendered
+        assert "重新生成本技能題目</button>" in compact
+        assert "更新到學生端</button>" not in compact
+        assert "查看組件</a>" in compact
 
 def test_ui_verified_full_shows_repackage():
     """3. verified 全滿顯示 V3 重新包裝。"""
@@ -192,7 +202,7 @@ def test_ui_verified_full_shows_repackage():
         )
         
         compact = clean_html(rendered)
-        assert "V3重新包裝</button>" in compact
+        assert "更新到學生端</button>" in compact
 
 def test_ui_legacy_vs_v3_wrapper_button_displays():
     """9. V3 skill 不以舊版重建作為主要操作。
@@ -260,9 +270,12 @@ def test_ui_legacy_vs_v3_wrapper_button_displays():
 
 # ----------------- Endpoint API Behavior Tests -----------------
 
-def test_repackage_endpoint_eligibility_failure_returns_reason():
-    """6. eligibility failure 回傳具體 publish_reason。"""
+def test_repackage_endpoint_allows_partial_coverage_repackage(isolated_publish_roots):
+    """6. coverage 不完整時仍允許重新包裝已 verified components。"""
+    project_root, staging_root = isolated_publish_roots
     app.config["TESTING"] = True
+    app.config["GENCODE_V3_PUBLISH_PROJECT_ROOT"] = str(project_root)
+    app.config["GENCODE_V3_PUBLISH_STAGING_ROOT"] = str(staging_root)
     with app.test_client() as client:
         with client.session_transaction() as sess:
             sess["_user_id"] = "1"
@@ -278,23 +291,27 @@ def test_repackage_endpoint_eligibility_failure_returns_reason():
         }
 
         with mock.patch("core.gencode.services.v3_skill_coverage_service.get_v3_skill_component_coverage", return_value=mock_coverage), \
-             mock.patch("core.gencode.services.v3_publish_eligibility.evaluate_v3_publish_eligibility") as mock_eval:
-             
-            mock_eval.return_value = {
-                "allowed": False,
-                "reason": "coverage_incomplete",
-                "integrity_gate_component_count": 4,
+             mock.patch("core.gencode.services.admin_gencode_action_service._prepare_publish_staging_components") as mock_prep, \
+             mock.patch("core.gencode.services.admin_gencode_action_service.run_admin_v3_publish_for_skill") as mock_pub:
+            mock_pub.return_value = {
+                "status": "production_published",
+                "component_count": 4,
+                "compile": {"generator_specs": [{"component_id": COMPONENT_ID}] * 4},
+                "promote": {"thin_facade_path": str(project_root / "skills" / f"{SKILL_ID}.py")},
             }
-            
+
             response = client.post(f"/admin/skills/{SKILL_ID}/v3_repackage")
-            
+
             assert response.status_code == 200
             data = response.get_json()
-            assert data["status"] == "failed"
-            assert data["publish_eligible"] is False
-            assert data["publish_reason"] == "coverage_incomplete"
+            assert data["status"] == "success"
+            assert data["publish_eligible"] is True
+            assert data["publish_reason"] == "partial_coverage_repackaged"
             assert data["verified_component_count"] == 4
             assert data["total_component_count"] == 5
+            mock_prep.assert_called_once()
+            mock_pub.assert_called_once()
+            assert mock_pub.call_args.kwargs["strict_coverage"] is False
 
 def test_repackage_endpoint_does_not_call_generator(isolated_publish_roots):
     """4. 重新包裝 endpoint 不呼叫 component generator。"""
@@ -498,3 +515,185 @@ def test_repackage_endpoint_success_promotes_wrapper_and_counts_specs(isolated_p
              assert data["generator_specs_count"] == 1
              assert data["wrapper_path"] is not None
              assert str(data["wrapper_path"]).replace('\\', '/').endswith(f"skills/{SKILL_ID}.py")
+
+
+def test_repackage_auto_promotes_stale_tracker(isolated_publish_roots):
+    """Test that tracker status lagging behind is auto-promoted during repackage."""
+    project_root, staging_root = isolated_publish_roots
+    
+    # We will mock the database and auto-promotion calls
+    from core.gencode.v3_production_publish_service import _auto_promote_valid_components
+    import sqlite3
+    
+    conn = sqlite3.connect(":memory:")
+    conn.row_factory = sqlite3.Row
+    conn.execute(
+        """
+        CREATE TABLE gencode_component_tracker (
+            textbook_example_id INTEGER PRIMARY KEY,
+            skill_id TEXT,
+            component_id TEXT,
+            gencode_status TEXT,
+            induced_spec_payload TEXT,
+            gencode_error_log TEXT,
+            created_at TEXT,
+            updated_at TEXT
+        )
+        """
+    )
+    conn.execute(
+        """
+        CREATE TABLE textbook_examples (
+            id INTEGER PRIMARY KEY,
+            skill_id TEXT
+        )
+        """
+    )
+    conn.execute("INSERT INTO textbook_examples (id, skill_id) VALUES (4565, ?)", (SKILL_ID,))
+    conn.execute(
+        """
+        INSERT INTO gencode_component_tracker (textbook_example_id, skill_id, component_id, gencode_status)
+        VALUES (4565, ?, 'src_4565', 'draft_written')
+        """,
+        (SKILL_ID,)
+    )
+    conn.commit()
+
+    # Set up files in staging root
+    stag_dir = staging_root / SKILL_ID / "components" / "src_4565"
+    stag_dir.mkdir(parents=True, exist_ok=True)
+    
+    metadata_content = '''from __future__ import annotations
+COMPONENT_ID = "src_4565"
+SKILL_ID = "vh_數學B1_GeneralFormOfLinearEquation"
+TEXTBOOK_EXAMPLE_ID = 4565
+DIFFICULTY_LEVEL = "easy"
+PRESENTATION_MODE = "short_answer"
+ANSWER_TYPE = "numeric_or_undefined"
+PROBLEM_TYPE_ID = "slope_from_general_or_intercept_form"
+'''
+    (stag_dir / "metadata.py").write_text(metadata_content, encoding="utf-8")
+    (stag_dir / "generate.py").write_text(STUB_GENERATE_PY.replace("src_1", "src_4565"), encoding="utf-8")
+    (stag_dir / "get_hint.py").write_text(STUB_GET_HINT_PY, encoding="utf-8")
+
+    # Run auto promote
+    _auto_promote_valid_components(conn, SKILL_ID, project_root, staging_root)
+
+    # Check that status was promoted to verified
+    row = conn.execute("SELECT gencode_status, induced_spec_payload FROM gencode_component_tracker WHERE textbook_example_id = 4565").fetchone()
+    assert row["gencode_status"] == "verified"
+    payload = json.loads(row["induced_spec_payload"])
+    assert payload["integrity_gate_passed"] is True
+    assert payload["problem_type_id"] == "slope_from_general_or_intercept_form"
+    conn.close()
+
+
+def test_repackage_no_deduplicate_by_problem_type_id():
+    """Test that multiple textbook examples with the same problem_type_id are not deduplicated."""
+    from core.gencode.skill_wrapper_compiler import _build_generator_specs
+    
+    mock_components = [
+        {
+            "textbook_example_id": 4566,
+            "component_id": "src_4566",
+            "induced_spec_payload": {
+                "presentation_mode": "short_answer",
+                "response_mode": "short_answer",
+                "interaction_type": "standard",
+                "answer_value_type": "expression",
+                "problem_type_id": "line_through_point_parallel_to_line",
+            }
+        },
+        {
+            "textbook_example_id": 4573,
+            "component_id": "src_4573",
+            "induced_spec_payload": {
+                "presentation_mode": "short_answer",
+                "response_mode": "short_answer",
+                "interaction_type": "standard",
+                "answer_value_type": "expression",
+                "problem_type_id": "line_through_point_parallel_to_line",
+            }
+        }
+    ]
+    
+    keys, specs = _build_generator_specs(mock_components)
+    assert len(specs) == 2
+    assert specs[0]["component_id"] == "src_4566"
+    assert specs[1]["component_id"] == "src_4573"
+    assert specs[0]["problem_type_id"] == "line_through_point_parallel_to_line"
+    assert specs[1]["problem_type_id"] == "line_through_point_parallel_to_line"
+
+
+def test_instant_verified_and_failed_rebuild_flow(isolated_publish_roots):
+    """Regression: 1. Single example regeneration instantly verified without repackage. 2. Failed generation records failed status."""
+    project_root, staging_root = isolated_publish_roots
+    from core.gencode.pipeline_orchestrator import run_gencode_phase2_v3_shadow_bridge
+    from core.gencode.schema.gencode_component_tracker_inspection import apply_tracker_ddl
+    import sqlite3
+
+    conn = sqlite3.connect(":memory:")
+    conn.row_factory = sqlite3.Row
+    apply_tracker_ddl(conn)
+    conn.execute(
+        """
+        CREATE TABLE textbook_examples (
+            id INTEGER PRIMARY KEY,
+            skill_id TEXT,
+            problem_text TEXT,
+            correct_answer TEXT,
+            detailed_solution TEXT
+        )
+        """
+    )
+    conn.execute(
+        "INSERT INTO textbook_examples (id, skill_id, problem_text, correct_answer) VALUES (4565, ?, 'L: 3x - y + 2 = 0', '3')",
+        (SKILL_ID,)
+    )
+    conn.commit()
+
+    # Run regeneration (we mock or structure it so it passes validation)
+    with mock.patch("core.gencode.pipeline_orchestrator.build_v3_component_draft_from_skill") as mock_build:
+        mock_build.return_value = {
+            "status": "draft_built",
+            "skill_id": SKILL_ID,
+            "textbook_example_id": 4565,
+            "source_kind": "ex_4565",
+            "line_type": "slope_from_general_or_intercept_form",
+            "domain_module": "core.domain.coordinate_geometry.line_equation_domain",
+            "entrypoint": "build_line_equation_matrix",
+            "files": {
+                "metadata.py": STUB_METADATA_PY.replace("src_1", "src_4565"),
+                "generate.py": STUB_GENERATE_PY.replace("src_1", "src_4565"),
+                "get_hint.py": STUB_GET_HINT_PY,
+            }
+        }
+        res = run_gencode_phase2_v3_shadow_bridge(
+            conn=conn,
+            skill_id=SKILL_ID,
+            textbook_example_id=4565,
+            source_kind="ex_4565",
+            dryrun_base_dir=str(project_root / "reports" / "gencode_v3_dryrun"),
+        )
+        assert res["tracker_status"] == "verified"
+
+        # Check DB tracker is updated immediately without repackage
+        row = conn.execute("SELECT gencode_status FROM gencode_component_tracker WHERE textbook_example_id = 4565").fetchone()
+        assert row["gencode_status"] == "verified"
+
+        # 2. Assert validator failure transitions to failed
+        mock_build.return_value["files"]["generate.py"] = "def generate(seed):\n    return {}" # empty payload fails validator
+        with pytest.raises(ValueError):
+            run_gencode_phase2_v3_shadow_bridge(
+                conn=conn,
+                skill_id=SKILL_ID,
+                textbook_example_id=4565,
+                source_kind="ex_4565",
+                dryrun_base_dir=str(project_root / "reports" / "gencode_v3_dryrun"),
+            )
+        row = conn.execute("SELECT gencode_status FROM gencode_component_tracker WHERE textbook_example_id = 4565").fetchone()
+        assert row["gencode_status"] == "failed"
+
+    conn.close()
+
+

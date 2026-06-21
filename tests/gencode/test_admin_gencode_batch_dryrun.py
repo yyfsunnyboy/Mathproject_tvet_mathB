@@ -30,16 +30,23 @@ def memory_conn() -> Iterator[sqlite3.Connection]:
         """
         CREATE TABLE textbook_examples (
             id INTEGER PRIMARY KEY,
-            skill_id TEXT NOT NULL
+            skill_id TEXT NOT NULL,
+            problem_type_id TEXT,
+            line_type TEXT,
+            problem_text TEXT
         )
         """
     )
     apply_tracker_ddl(conn)
-    for example_id in (4544, 4553):
-        conn.execute(
-            "INSERT INTO textbook_examples (id, skill_id) VALUES (?, ?)",
-            (example_id, SKILL_ID),
-        )
+    # 4544 is vertical line, 4553 is horizontal line
+    conn.execute(
+        "INSERT INTO textbook_examples (id, skill_id, problem_type_id, line_type, problem_text) VALUES (?, ?, ?, ?, ?)",
+        (4544, SKILL_ID, "vertical_line", "vertical_line", "垂直線"),
+    )
+    conn.execute(
+        "INSERT INTO textbook_examples (id, skill_id, problem_type_id, line_type, problem_text) VALUES (?, ?, ?, ?, ?)",
+        (4553, SKILL_ID, "horizontal_line", "horizontal_line", "水平線"),
+    )
     conn.commit()
     try:
         yield conn

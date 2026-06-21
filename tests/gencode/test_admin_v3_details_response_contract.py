@@ -25,6 +25,9 @@ class _RawConn:
     def close(self) -> None:
         self.closed = True
 
+    def commit(self) -> None:
+        pass
+
 
 def _route_func(admin_route):
     return getattr(admin_route.admin_example_v3_details, "__wrapped__", admin_route.admin_example_v3_details)

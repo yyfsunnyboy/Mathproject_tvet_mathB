@@ -458,6 +458,9 @@ def _build_line_equation_question_text(
         "line_through_intersection_parallel_to_line",
         "perpendicular_bisector_application",
         "line_through_point_perpendicular_to_segment",
+        "distance_from_point_to_line",
+        "distance_from_point_to_line_parameter",
+        "compare_point_to_line_distances",
     }
 
     if task_type not in registered_task_types:
@@ -664,6 +667,42 @@ def _build_line_equation_question_text(
         pa = _format_point_for_question(givens["point_a"])
         pc = _format_point_for_question(givens["point_c"])
         return f"若 A{pa}、B{pb}、C{pc} 為平面上三點，則過點 B 且與直線 AC 垂直的直線方程式為何？"
+
+    if task_type == "distance_from_point_to_line":
+        if "point" not in givens:
+            raise ValueError("required_line_task_slot_missing:distance_from_point_to_line:point")
+        if "equation" not in givens:
+            raise ValueError("required_line_task_slot_missing:distance_from_point_to_line:equation")
+        pt = _format_point_for_question(givens["point"])
+        eq = givens["equation"]
+        return f"試求平面上一點 {pt} 到直線 L : {eq} 的距離。"
+
+    if task_type == "distance_from_point_to_line_parameter":
+        if "point" not in givens:
+            raise ValueError("required_line_task_slot_missing:distance_from_point_to_line_parameter:point")
+        if "equation" not in givens:
+            raise ValueError("required_line_task_slot_missing:distance_from_point_to_line_parameter:equation")
+        if "distance" not in givens:
+            raise ValueError("required_line_task_slot_missing:distance_from_point_to_line_parameter:distance")
+        pt = _format_point_for_question(givens["point"])
+        eq = givens["equation"]
+        dist = givens["distance"]
+        var_name = "k"
+        if "a" in eq or "a" in str(givens.get("point")):
+            var_name = "a"
+        return f"若點 {pt} 到直線 L : {eq} 的距離為 {dist}，試求 {var_name} 的值。"
+
+    if task_type == "compare_point_to_line_distances":
+        if "point" not in givens:
+            raise ValueError("required_line_task_slot_missing:compare_point_to_line_distances:point")
+        if "equation_1" not in givens:
+            raise ValueError("required_line_task_slot_missing:compare_point_to_line_distances:equation_1")
+        if "equation_2" not in givens:
+            raise ValueError("required_line_task_slot_missing:compare_point_to_line_distances:equation_2")
+        pt = _format_point_for_question(givens["point"])
+        eq1 = givens["equation_1"]
+        eq2 = givens["equation_2"]
+        return f"已知平面有一點 {pt} 及兩直線 $L_1: {eq1}$ 與 $L_2: {eq2}$，試比較該點到兩直線的距離關係。"
 
     # 4. Fallbacks for standard Point-Slope / Two-Points / Horizontal / Vertical
     if task_type == "two_points" or ("point_a" in givens and "point_b" in givens):

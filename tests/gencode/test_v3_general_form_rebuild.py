@@ -110,7 +110,7 @@ def test_shadow_bridge_dryrun_generates_correct_metas():
             source_kind="ex_4565",
         )
         assert res["route"] == "v3_shadow_bridge"
-        assert res["tracker_status"] == "draft_written"
+        assert res["tracker_status"] == "verified"
         assert res["component_id"] == "src_4565"
         
         # Load and verify metadata.py of the generated component

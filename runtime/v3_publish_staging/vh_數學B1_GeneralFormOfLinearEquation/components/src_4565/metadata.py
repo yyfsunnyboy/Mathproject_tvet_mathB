@@ -9,11 +9,11 @@ TEXTBOOK_EXAMPLE_ID: Final[int] = 4565
 
 ORDER_WEIGHT: Final[int] = 10
 DIFFICULTY_LEVEL: Final[str] = "easy"
-LINE_TYPE: Final[str] = "point_slope"
+LINE_TYPE: Final[str] = "slope_from_general_or_intercept_form"
 
-TARGET_TASK: Final[str] = "write_line_equation_from_point_slope"
-TEMPLATE_SLOT: Final[str] = "line_equation_from_point_slope"
-PROBLEM_TYPE_ID: Final[str] = "write_line_equation_from_point_slope"
+TARGET_TASK: Final[str] = "slope_from_general_or_intercept_form"
+TEMPLATE_SLOT: Final[str] = "slope_from_general_or_intercept_form"
+PROBLEM_TYPE_ID: Final[str] = "slope_from_general_or_intercept_form"
 PRESENTATION_MODE: Final[str] = "short_answer"
 ANSWER_TYPE: Final[str] = "expression"
 

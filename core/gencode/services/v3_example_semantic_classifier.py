@@ -243,6 +243,48 @@ def _deterministic_classify(source: TextbookExampleSource) -> dict[str, Any] | N
             "classification_source": "deterministic",
         }
 
+    # For vh_數學B1_DistanceBetweenPointAndLine textbook examples:
+    if "DistanceBetweenPointAndLine" in source.skill_id or "距離" in text and ("到直線" in text or "到" in text and "的距離" in text):
+        if "何者" in text or "比較近" in text or "比較遠" in text or "何者較" in text:
+            return {
+                "problem_type_id": "compare_point_to_line_distances",
+                "math_family": "line_equation",
+                "task_intent": "compare_point_to_line_distances",
+                "given_structure": ["coordinate_point", "two_line_equations"],
+                "target_structure": ["comparison_result"],
+                "presentation_mode": "single_choice" if ("A)" in text or source.choices) else "short_answer",
+                "answer_type": "single_choice" if ("A)" in text or source.choices) else "text_short",
+                "required_domain_capabilities": ["compare_point_to_line_distances"],
+                "confidence": 1.0,
+                "classification_source": "deterministic",
+            }
+        elif "k" in text.lower() or "a =" in text or "a=" in text or "a 值" in text or "a值" in text or "k值" in text:
+            return {
+                "problem_type_id": "distance_from_point_to_line_parameter",
+                "math_family": "line_equation",
+                "task_intent": "distance_from_point_to_line_parameter",
+                "given_structure": ["coordinate_point", "line_equation_with_parameter", "distance_value"],
+                "target_structure": ["parameter_value"],
+                "presentation_mode": "single_choice" if ("A)" in text or source.choices or "A" in str(source.answer)) else "short_answer",
+                "answer_type": "single_choice" if ("A)" in text or source.choices or "A" in str(source.answer)) else "rational",
+                "required_domain_capabilities": ["distance_from_point_to_line_parameter"],
+                "confidence": 1.0,
+                "classification_source": "deterministic",
+            }
+        else:
+            return {
+                "problem_type_id": "distance_from_point_to_line",
+                "math_family": "line_equation",
+                "task_intent": "distance_from_point_to_line",
+                "given_structure": ["coordinate_point", "line_equation"],
+                "target_structure": ["distance_value"],
+                "presentation_mode": "single_choice" if ("A)" in text or source.choices) else "short_answer",
+                "answer_type": "single_choice" if ("A)" in text or source.choices) else "rational",
+                "required_domain_capabilities": ["distance_from_point_to_line"],
+                "confidence": 1.0,
+                "classification_source": "deterministic",
+            }
+
     # For vh_數學B1_HorizontalAndVerticalLineEquations textbook examples:
     # 4544, 4553, 4562, 4591
     if "HorizontalAndVertical" in source.skill_id or source.skill_id == "vh_數學B1_HorizontalAndVerticalLineEquations":

@@ -809,6 +809,10 @@ def build_admin_skill_gencode_status_view(
         project_root=project_root,
     )
     has_production = prod_info.get("production_wrapper_exists")
+    has_published_package = bool(
+        prod_info.get("v3_package_exists")
+        and int(prod_info.get("production_component_count") or 0) > 0
+    )
     source_type = "production" if has_production else "dryrun"
     verified_count = int(coverage.get("verified_count") or 0)
     published_component_ids: set[str] = set()
@@ -830,7 +834,9 @@ def build_admin_skill_gencode_status_view(
     published_count = len(published_component_ids)
     generated_not_packaged_count = max(0, verified_count - published_count)
     failed_count = sum(1 for row in rows if str(row.get("status")) == "failed" or row.get("error_log"))
-    if int(coverage.get("total_examples") or 0) > 0 and published_count == int(coverage.get("total_examples") or 0):
+    if has_published_package and verified_count > 0:
+        teacher_status = _teacher_status_payload("published")
+    elif int(coverage.get("total_examples") or 0) > 0 and published_count == int(coverage.get("total_examples") or 0):
         teacher_status = _teacher_status_payload("published")
     elif failed_count > 0 and verified_count == 0:
         teacher_status = _teacher_status_payload("failed")

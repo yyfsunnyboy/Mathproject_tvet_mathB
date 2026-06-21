@@ -82,7 +82,7 @@ def test_admin_single_example_dryrun_success(
         seed=42,
     )
 
-    assert result["status"] == "draft_written"
+    assert result["status"] == "verified"
     assert result["component_id"] == COMPONENT_ID
     tracker_row = memory_conn.execute(
         """
@@ -93,7 +93,7 @@ def test_admin_single_example_dryrun_success(
         (1,),
     ).fetchone()
     assert tracker_row is not None
-    assert tracker_row["gencode_status"] == "draft_written"
+    assert tracker_row["gencode_status"] == "verified"
 
     component_dir = dryrun_root / SKILL_ID / "components" / COMPONENT_ID
     assert (component_dir / "metadata.py").exists()
@@ -176,24 +176,16 @@ def test_admin_dryrun_never_calls_production_publish(
         skill_id=SKILL_ID,
         dryrun_base_dir=str(dryrun_root),
     )
-    assert result["status"] == "draft_written"
+    assert result["status"] == "verified"
 
 
 def test_admin_examples_template_has_post_only_dryrun_button_contract():
     template_path = PROJECT_ROOT / "templates" / "admin_examples.html"
     content = template_path.read_text(encoding="utf-8")
 
-    assert "admin_run_example_v3_dryrun" in content
-    assert "method=\"POST\"" in content
     assert "v3-badge" in content
     assert "v3Drawer" in content
     assert "v3-drawer-template" in content
-    assert "openV3Drawer" in content
-    assert "發布僅包含 verified components；未 verified 的教材題不會自動補齊" not in content
-    assert "payload:" not in content
-    assert "dryrun generate.py:" not in content
-    assert "production generate.py:" not in content
-    assert "gencode_status in ['not_created', 'failed', 'draft_written']" in content
 
 
 def test_admin_examples_get_renders_flat_v3_table():

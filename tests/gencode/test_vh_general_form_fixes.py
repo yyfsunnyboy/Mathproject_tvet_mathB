@@ -27,14 +27,13 @@ def test_dry_run_line_type_ex_resolution_does_not_default():
     )
     assert resolved == "parallel_line_slope"
 
-    # Verify fallback triggers warning
-    with pytest.warns(UserWarning, match="fallback_line_type_detected"):
-        res = _v3_resolve_dry_run_line_type(
+    # Verify fallback is disabled and raises ValueError
+    with pytest.raises(ValueError, match="unsupported_candidate_problem_type"):
+        _v3_resolve_dry_run_line_type(
             source_kind="ex_unknown_999",
             constraints={},
             skill_id="vh_數學B1_GeneralFormOfLinearEquation",
         )
-        assert res == "point_slope"
 
 
 def test_line_type_mappings_target_task_and_template_slot():

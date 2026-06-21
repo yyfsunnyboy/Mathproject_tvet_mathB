@@ -44,6 +44,10 @@ _SUPPORTED_LINE_TYPES = frozenset(
         "line_through_point_perpendicular_to_segment",
         "perpendicular_bisector_application",
         "coordinate_geometry_word_problem",
+        # New distance V3 types:
+        "distance_from_point_to_line",
+        "distance_from_point_to_line_parameter",
+        "compare_point_to_line_distances",
     }
 )
 
@@ -162,6 +166,18 @@ def build_line_equation_matrix(
         )
     elif normalized_type == "perpendicular_bisector_application" or normalized_type == "coordinate_geometry_word_problem":
         givens, answer, actual_type = _build_perpendicular_bisector_application(
+            rng, coord_min, coord_max, extra
+        )
+    elif normalized_type == "distance_from_point_to_line":
+        givens, answer, actual_type = _build_distance_from_point_to_line(
+            rng, coord_min, coord_max, extra
+        )
+    elif normalized_type == "distance_from_point_to_line_parameter":
+        givens, answer, actual_type = _build_distance_from_point_to_line_parameter(
+            rng, coord_min, coord_max, extra
+        )
+    elif normalized_type == "compare_point_to_line_distances":
+        givens, answer, actual_type = _build_compare_point_to_line_distances(
             rng, coord_min, coord_max, extra
         )
     else:
@@ -1207,6 +1223,8 @@ def _build_distractors(
     coord_max: int,
     task_type: str = "",
 ) -> list[str]:
+    if "distractors" in answer:
+        return [str(d) for d in answer["distractors"]]
     canonical = str(answer["canonical_form"])
     candidates: list[str] = []
 
@@ -1219,9 +1237,27 @@ def _build_distractors(
         "perpendicular_condition_parameter",
         "parallel_condition_parameter",
         "intercept_form_triangle_area",
+        "distance_from_point_to_line",
+        "distance_from_point_to_line_parameter",
     }
 
-    if task_type in numeric_tasks or not any(char in canonical for char in ("x", "y", "=")):
+    if "或" in canonical:
+        parts = canonical.split(" 或 ")
+        try:
+            v1 = int(parts[0])
+            v2 = int(parts[1])
+            perturbations = [
+                f"{v1 + 2} 或 {v2 - 2}",
+                f"{v1 - 2} 或 {v2 + 2}",
+                f"{-v1} 或 {-v2}",
+                f"{v1} 或 {-v2}",
+                f"{-v1} 或 {v2}",
+            ]
+            candidates.extend(perturbations)
+        except Exception:
+            pass
+
+    elif task_type in numeric_tasks or not any(char in canonical for char in ("x", "y", "=")):
         # Generate numeric/fraction distractors
         val = 0
         try:
@@ -1855,3 +1891,141 @@ def _build_perpendicular_bisector_application(
         "intercept": _format_number(b_frac),
     }
     return givens, answer, "oblique_line"
+
+
+def _build_distance_from_point_to_line(
+    rng: random.Random,
+    coord_min: int,
+    coord_max: int,
+    constraints: dict[str, object],
+) -> tuple[dict[str, object], dict[str, object], str]:
+    triples = [(3, 4), (5, 12), (8, 15), (7, 24)]
+    base_a, base_b = rng.choice(triples)
+    A = base_a * rng.choice([1, -1])
+    B = base_b * rng.choice([1, -1])
+    C = rng.randint(coord_min, coord_max)
+    while C == 0:
+        C = rng.randint(coord_min, coord_max)
+        
+    x0 = rng.randint(coord_min, coord_max)
+    y0 = rng.randint(coord_min, coord_max)
+    
+    denom = int(math.isqrt(A*A + B*B))
+    numer = abs(A*x0 + B*y0 + C)
+    dist_frac = Fraction(numer, denom)
+    
+    givens = {
+        "point": [x0, y0],
+        "equation": f"{_format_general_form(A, B, C)} = 0",
+    }
+    canonical = fraction_to_plain(dist_frac)
+    answer = {
+        "canonical_form": canonical,
+        "general_form": canonical,
+        "coefficients": {"A": A, "B": B, "C": C},
+        "distance": canonical,
+        "value": canonical,
+    }
+    return givens, answer, "oblique_line"
+
+
+def _build_distance_from_point_to_line_parameter(
+    rng: random.Random,
+    coord_min: int,
+    coord_max: int,
+    constraints: dict[str, object],
+) -> tuple[dict[str, object], dict[str, object], str]:
+    triples = [(3, 4), (5, 12), (8, 15), (7, 24)]
+    base_a, base_b = rng.choice(triples)
+    A = base_a * rng.choice([1, -1])
+    B = base_b * rng.choice([1, -1])
+    D = int(math.isqrt(A*A + B*B))
+    
+    x0 = rng.randint(coord_min, coord_max)
+    y0 = rng.randint(coord_min, coord_max)
+    d = rng.randint(1, 5)
+    
+    param_name = rng.choice(["k", "a"])
+    V = A * x0 + B * y0
+    k1 = -V + d * D
+    k2 = -V - d * D
+    if k1 == 0: k1 = k2
+    if k2 == 0: k2 = k1
+    
+    givens = {
+        "point": [x0, y0],
+        "equation": f"{_format_general_form(A, B, 0).replace('+0', '')} + {param_name} = 0",
+        "distance": d,
+    }
+    canonical = f"{min(k1, k2)} 或 {max(k1, k2)}"
+    answer = {
+        "canonical_form": canonical,
+        "general_form": canonical,
+        "coefficients": {"A": A, "B": B, "C": 0},
+        "distance": d,
+        "value": canonical,
+    }
+    return givens, answer, "oblique_line"
+
+
+def _build_compare_point_to_line_distances(
+    rng: random.Random,
+    coord_min: int,
+    coord_max: int,
+    constraints: dict[str, object],
+) -> tuple[dict[str, object], dict[str, object], str]:
+    triples = [(3, 4), (5, 12), (8, 15), (7, 24)]
+    
+    # Line 1
+    base_a1, base_b1 = rng.choice(triples)
+    A1 = base_a1 * rng.choice([1, -1])
+    B1 = base_b1 * rng.choice([1, -1])
+    C1 = rng.randint(coord_min, coord_max)
+    while C1 == 0:
+        C1 = rng.randint(coord_min, coord_max)
+        
+    # Line 2
+    base_a2, base_b2 = rng.choice(triples)
+    A2 = base_a2 * rng.choice([1, -1])
+    B2 = base_b2 * rng.choice([1, -1])
+    C2 = rng.randint(coord_min, coord_max)
+    while C2 == 0:
+        C2 = rng.randint(coord_min, coord_max)
+        
+    x0 = rng.randint(coord_min, coord_max)
+    y0 = rng.randint(coord_min, coord_max)
+    
+    D1 = int(math.isqrt(A1*A1 + B1*B1))
+    D2 = int(math.isqrt(A2*A2 + B2*B2))
+    
+    d1 = Fraction(abs(A1*x0 + B1*y0 + C1), D1)
+    d2 = Fraction(abs(A2*x0 + B2*y0 + C2), D2)
+    
+    while d1 == d2:
+        C2 = rng.randint(coord_min, coord_max)
+        while C2 == 0:
+            C2 = rng.randint(coord_min, coord_max)
+        d2 = Fraction(abs(A2*x0 + B2*y0 + C2), D2)
+        
+    givens = {
+        "point": [x0, y0],
+        "equation_1": f"{_format_general_form(A1, B1, C1)} = 0",
+        "equation_2": f"{_format_general_form(A2, B2, C2)} = 0",
+    }
+    
+    if d1 < d2:
+        canonical = "L_1"
+        distractors = ["L_2", "一樣近", "無法比較"]
+    else:
+        canonical = "L_2"
+        distractors = ["L_1", "一樣近", "無法比較"]
+        
+    answer = {
+        "canonical_form": canonical,
+        "general_form": canonical,
+        "coefficients": {"A": A1, "B": B1, "C": C1},
+        "value": canonical,
+        "distractors": distractors,
+    }
+    return givens, answer, "oblique_line"
+

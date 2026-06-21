@@ -6,7 +6,7 @@ from core.domain.coordinate_geometry.line_equation_domain import build_line_equa
 from core.gencode.domain_matrix_adapter import convert_line_equation_matrix_to_question_payload
 
 PRESENTATION_MODE = "short_answer"
-ANSWER_TYPE = "rational"
+ANSWER_TYPE = "expression"
 PROBLEM_TYPE_ID = "perpendicular_condition_parameter"
 TEXTBOOK_EXAMPLE_ID = 4593
 

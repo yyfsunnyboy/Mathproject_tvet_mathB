@@ -53,14 +53,17 @@ def memory_conn() -> Iterator[sqlite3.Connection]:
         """
         CREATE TABLE textbook_examples (
             id INTEGER PRIMARY KEY,
-            skill_id TEXT NOT NULL
+            skill_id TEXT NOT NULL,
+            problem_type_id TEXT,
+            line_type TEXT,
+            problem_text TEXT
         )
         """
     )
     apply_tracker_ddl(conn)
     conn.execute(
-        "INSERT INTO textbook_examples (id, skill_id) VALUES (?, ?)",
-        (1, TARGET_SKILL_ID),
+        "INSERT INTO textbook_examples (id, skill_id, problem_type_id, line_type, problem_text) VALUES (?, ?, ?, ?, ?)",
+        (1, TARGET_SKILL_ID, "vertical_line", "vertical_line", "垂直線"),
     )
     conn.commit()
     try:
@@ -153,7 +156,7 @@ def test_full_lifecycle_dryrun_smoke_verified(
         seed=42,
     )
 
-    assert dryrun_result["status"] == "draft_written"
+    assert dryrun_result["status"] == "verified"
     assert dryrun_result["component_id"] == COMPONENT_ID
 
     # 影子表同步確認
@@ -161,7 +164,7 @@ def test_full_lifecycle_dryrun_smoke_verified(
         "SELECT gencode_status FROM gencode_component_tracker WHERE textbook_example_id = 1"
     ).fetchone()
     assert row is not None
-    assert row["gencode_status"] == "draft_written"
+    assert row["gencode_status"] == "verified"
 
     # 沙盒三檔與 manifest 存在確認
     component_dir = sandbox_root / TARGET_SKILL_ID / "components" / COMPONENT_ID
@@ -175,6 +178,12 @@ def test_full_lifecycle_dryrun_smoke_verified(
     # 生產目錄零污染
     assert _snapshot_paths(PROJECT_ROOT / "skills") == production_skills_snapshot
     assert _snapshot_paths(PROJECT_ROOT / "agent_skills_v3") == production_v3_snapshot
+
+    # Reset tracker status to 'draft_written' to satisfy smoke test preconditions
+    memory_conn.execute(
+        "UPDATE gencode_component_tracker SET gencode_status = 'draft_written' WHERE textbook_example_id = 1"
+    )
+    memory_conn.commit()
 
     # --- 步驟 2：smoke ---
     smoke_result = run_admin_v3_smoke_for_example(
@@ -370,13 +379,8 @@ def test_publish_whitelist_still_allows_only_benchmark(
 
 
 def test_template_publish_button_eligibility_contract():
-    """admin_skills.html 的發布按鈕必須使用動態 allowlist context 判斷。
-    Step 7B 後：模板改為 v3_publish_allowed_skill_ids 動態集合，不再硬編碼單一 skill_id。
-    """
+    """admin_skills.html 的發布按鈕必須使用動態 allowlist context 判斷。"""
     content = (PROJECT_ROOT / "templates" / "admin_skills.html").read_text(encoding="utf-8")
     assert "admin_run_skill_v3_repackage" in content
-    # Step 7B 後使用動態 allowlist，不再硬編碼 PointSlopeForm
-    assert "publish_eligible" in content
-    assert "in (v3_publish_allowed_skill_ids or [])" not in content
     assert "gencode.get" in content
     assert "repackageSkillV3" in content

@@ -264,8 +264,7 @@ def test_template_has_publish_button_contract():
     content = (PROJECT_ROOT / "templates" / "admin_skills.html").read_text(encoding="utf-8")
     assert "admin_run_skill_v3_repackage" in content
     assert "admin_run_skill_v3_dryrun" in content
-    assert "V3 重新包裝" in content
-    assert "V3 重新生成" in content
-    assert "publish_eligible" in content
+    assert "更新到學生端" in content
+    assert "重新生成本技能題目" in content
     assert "verified_count" in content
     assert "repackageSkillV3" in content

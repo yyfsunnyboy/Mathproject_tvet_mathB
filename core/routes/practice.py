@@ -1,4 +1,4 @@
-﻿# -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 """
 =============================================================================
 璅∠??迂 (Module Name): core/routes/practice.py
@@ -1645,8 +1645,75 @@ def next_question():
                     gen_seed = request.args.get("gen_seed", type=int)
                     if gen_seed is None:
                         gen_seed = random.randint(0, 10_000_000)
-                    data = mod.generate(level=difficulty_level, seed=gen_seed)
+
+                    # Determine selection mode: default to curriculum_sequence
+                    p_mode = request.args.get("mode", "").strip()
+                    if not p_mode:
+                        p_mode = "curriculum_sequence"
+
+                    picked_component_id = None
+                    if wrapper_loaded and hasattr(mod, "GENERATOR_KEYS") and p_mode == "curriculum_sequence":
+                        # We use curriculum_sequence mode
+                        from core.gencode.services.v3_curriculum_ordering_service import get_sorted_component_ids_for_skill
+                        raw_conn = db.engine.raw_connection()
+                        try:
+                            sorted_keys = get_sorted_component_ids_for_skill(raw_conn, skill_id, list(mod.GENERATOR_KEYS))
+                        finally:
+                            raw_conn.close()
+
+                        if sorted_keys:
+                            session_key = f"v3_sequence_{skill_id}"
+                            seq_data = session.get(session_key)
+                            if not isinstance(seq_data, dict) or seq_data.get("ordered_component_ids") != sorted_keys:
+                                seq_data = {
+                                    "skill_id": skill_id,
+                                    "current_round": 1,
+                                    "ordered_component_ids": sorted_keys,
+                                    "current_component_index": 0,
+                                    "completed_component_ids": [],
+                                }
+
+                            idx = seq_data.get("current_component_index", 0)
+                            if idx >= len(sorted_keys):
+                                idx = 0
+                                seq_data["current_round"] = seq_data.get("current_round", 1) + 1
+                                seq_data["completed_component_ids"] = []
+
+                            picked_component_id = sorted_keys[idx]
+                            seq_data["current_component_index"] = idx + 1
+                            if picked_component_id not in seq_data["completed_component_ids"]:
+                                seq_data["completed_component_ids"].append(picked_component_id)
+
+                            session[session_key] = seq_data
+                            session.modified = True
+
+                    try:
+                        data = mod.generate(level=difficulty_level, seed=gen_seed, component_id=picked_component_id)
+                    except Exception as generate_exc:
+                        # Mark component as failed in DB if semantic or generation validation fails
+                        from core.gencode.services.component_tracker_service import save_tracker_record
+                        if picked_component_id:
+                            try:
+                                raw_conn = db.engine.raw_connection()
+                                try:
+                                    # Extract textbook_example_id
+                                    eid = int(picked_component_id.split("_")[1])
+                                    save_tracker_record(
+                                        raw_conn,
+                                        textbook_example_id=eid,
+                                        skill_id=skill_id,
+                                        gencode_status="failed",
+                                        gencode_error_log=f"runtime_generation_error: {str(generate_exc)}",
+                                    )
+                                    raw_conn.commit()
+                                finally:
+                                    raw_conn.close()
+                            except Exception:
+                                pass
+                        raise generate_exc
+
                     route_source = "gencode_wrapper" if wrapper_loaded else "legacy"
+
 
                 # [?詨?靽格迤] 甈????芸??⊥迤 (撠???皞?
                 if "question" in data and "question_text" not in data:

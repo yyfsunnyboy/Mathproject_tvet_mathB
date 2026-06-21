@@ -153,6 +153,39 @@ def validate_component_payload(
                 f"checker_answer_type_mismatch:{answer_type}:{checker_key}"
             )
 
+    # ── 4. Strict Semantic Gate ──────────────────────────────────────────
+    # Ensure returned problem_type_id and answer_value_type match actual returned payload structures
+    if problem_type_id:
+        # Check semantic consistency for line_equation related problem_type_ids
+        if problem_type_id == "slope_from_general_or_intercept_form" and "斜率" not in question_text:
+            blockers.append("semantic_component_mismatch:slope_from_general_or_intercept_form_missing_slope")
+        elif problem_type_id == "slope_from_general_form" and ("斜率" not in question_text or "x截距" in question_text or "y截距" in question_text):
+            blockers.append("semantic_component_mismatch:slope_from_general_form_incorrect_question")
+        elif problem_type_id == "slope_of_horizontal_or_vertical_line" and "斜率" not in question_text:
+            blockers.append("semantic_component_mismatch:slope_of_horizontal_or_vertical_line_missing_slope")
+        elif problem_type_id == "line_through_point_parallel_to_line" and "平行" not in question_text:
+            blockers.append("semantic_component_mismatch:line_through_point_parallel_to_line_missing_parallel")
+        elif problem_type_id == "line_through_point_perpendicular_to_line" and "垂直" not in question_text:
+            blockers.append("semantic_component_mismatch:line_through_point_perpendicular_to_line_missing_perpendicular")
+        elif problem_type_id == "parallel_line_slope" and ("平行" not in question_text or "斜率" not in question_text):
+            blockers.append("semantic_component_mismatch:parallel_line_slope_incorrect")
+        elif problem_type_id == "perpendicular_line_slope" and ("垂直" not in question_text or "斜率" not in question_text):
+            blockers.append("semantic_component_mismatch:perpendicular_line_slope_incorrect")
+        elif problem_type_id == "perpendicular_condition_parameter" and ("垂直" not in question_text and "\\bot" not in question_text):
+            blockers.append("semantic_component_mismatch:perpendicular_condition_parameter_missing_perpendicular")
+        elif problem_type_id == "compare_line_slopes" and "最大斜率" not in question_text:
+            blockers.append("semantic_component_mismatch:compare_line_slopes_missing_max_slope")
+        elif problem_type_id == "line_through_intersection_parallel_to_line" and ("交點" not in question_text or "平行" not in question_text):
+            blockers.append("semantic_component_mismatch:line_through_intersection_parallel_to_line_incorrect")
+        elif problem_type_id == "perpendicular_bisector_application" and ("垂直平分線" not in question_text and "距離相等" not in question_text and "中垂線" not in question_text):
+            blockers.append("semantic_component_mismatch:perpendicular_bisector_application_incorrect")
+        elif problem_type_id == "distance_from_point_to_line" and "距離" not in question_text:
+            blockers.append("semantic_component_mismatch:distance_from_point_to_line_missing_distance")
+        elif problem_type_id == "distance_from_point_to_line_parameter" and "距離" not in question_text:
+            blockers.append("semantic_component_mismatch:distance_from_point_to_line_parameter_missing_distance")
+        elif problem_type_id == "compare_point_to_line_distances" and "距離" not in question_text:
+            blockers.append("semantic_component_mismatch:compare_point_to_line_distances_missing_distance")
+
     passed = len(blockers) == 0
     return {
         "passed": passed,

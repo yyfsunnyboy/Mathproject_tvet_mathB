@@ -7,14 +7,14 @@ from core.gencode.domain_matrix_adapter import convert_line_equation_matrix_to_q
 
 PRESENTATION_MODE = "single_choice"
 ANSWER_TYPE = "single_choice"
-PROBLEM_TYPE_ID = "write_line_equation_from_point_slope"
+PROBLEM_TYPE_ID = "line_through_point_perpendicular_to_line"
 TEXTBOOK_EXAMPLE_ID = 4598
 
 
 def generate(level: int = 1, seed: int | None = None, **kwargs: Any) -> dict[str, Any]:
     matrix = build_line_equation_matrix(
         seed=seed,
-        line_type="point_slope",
+        line_type="line_through_point_perpendicular_to_line",
         curriculum_profile="vocational_high_b",
         difficulty_profile="easy",
         constraints={},

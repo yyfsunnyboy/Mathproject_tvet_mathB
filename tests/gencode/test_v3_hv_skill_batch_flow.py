@@ -35,31 +35,35 @@ def memory_conn() -> Iterator[sqlite3.Connection]:
             source_description TEXT,
             problem_type TEXT,
             problem_text TEXT,
-            correct_answer TEXT
+            correct_answer TEXT,
+            problem_type_id TEXT,
+            line_type TEXT
         )
         """
     )
     apply_tracker_ddl(conn)
     textbook_rows = {
-        4544: ("2-2習題 基礎題 5", "textbook_exercise", "試求通過兩點之直線方程式。", ""),
-        4553: ("例5", "textbook_example", "(1) 求通過 A(0,-1) 與 B(4,-1) 的直線方程式。", ""),
-        4562: ("隨堂練習5", "in_class_practice", "(1) 求通過 A(1,2) 與 B(1,5) 的直線方程式。", ""),
+        4544: ("2-2習題 基礎題 5", "textbook_exercise", "試求通過兩點之直線方程式。", "", "vertical_line", "vertical_line"),
+        4553: ("例5", "textbook_example", "(1) 求通過 A(0,-1) 與 B(4,-1) 的直線方程式。", "", "horizontal_line", "horizontal_line"),
+        4562: ("隨堂練習5", "in_class_practice", "(1) 求通過 A(1,2) 與 B(1,5) 的直線方程式。", "", "vertical_line", "vertical_line"),
         4591: (
             "CH1自我評量 題10",
             "self_assessment",
             "求通過兩點之直線方程式。\n(A) x = 1\n(B) y = 2\n(C) x + y = 3\n(D) x - y = 4",
             "",
+            "vertical_line",
+            "vertical_line"
         ),
     }
     for example_id in EXAMPLE_IDS:
-        desc, problem_type, problem_text, correct_answer = textbook_rows[example_id]
+        desc, problem_type, problem_text, correct_answer, problem_type_id, line_type = textbook_rows[example_id]
         conn.execute(
             """
             INSERT INTO textbook_examples (
-                id, skill_id, source_description, problem_type, problem_text, correct_answer
-            ) VALUES (?, ?, ?, ?, ?, ?)
+                id, skill_id, source_description, problem_type, problem_text, correct_answer, problem_type_id, line_type
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
             """,
-            (example_id, SKILL_ID, desc, problem_type, problem_text, correct_answer),
+            (example_id, SKILL_ID, desc, problem_type, problem_text, correct_answer, problem_type_id, line_type),
         )
     conn.commit()
     try:

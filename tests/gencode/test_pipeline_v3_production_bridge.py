@@ -94,7 +94,7 @@ def test_v3_shadow_bridge_writes_tracker_and_dryrun_component(
 
     assert result["route"] == "v3_shadow_bridge"
     assert result["v3_activated"] is True
-    assert result["tracker_status"] == "draft_written"
+    assert result["tracker_status"] == "verified"
 
     tracker_row = memory_conn.execute(
         """
@@ -105,7 +105,7 @@ def test_v3_shadow_bridge_writes_tracker_and_dryrun_component(
         (1,),
     ).fetchone()
     assert tracker_row is not None
-    assert tracker_row["gencode_status"] == "draft_written"
+    assert tracker_row["gencode_status"] == "verified"
     assert tracker_row["component_id"] == "src_1"
 
     component_dir = dryrun_base_dir / SKILL_ID / "components" / "src_1"

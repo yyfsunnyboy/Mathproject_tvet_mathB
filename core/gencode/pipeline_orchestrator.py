@@ -4544,6 +4544,12 @@ def _v3_resolve_dry_run_line_type(
             if k in textbook_row and textbook_row[k]:
                 return str(textbook_row[k])
 
+    normalized = str(source_kind or "").strip().lower()
+    if normalized.startswith("quiz") or normalized.startswith("test"):
+        return "two_points"
+
+    if str(skill_id or "").strip().endswith("_PointSlopeForm"):
+        return "point_slope"
     if str(skill_id or "").strip().endswith("_InterceptForm"):
         return _v3_intercept_form_task_from_textbook_row(textbook_row)
     if str(skill_id or "").strip().endswith("_SlopeInterceptForm"):
@@ -4661,14 +4667,7 @@ def _v3_resolve_dry_run_line_type(
         except Exception:
             pass
 
-    normalized = str(source_kind or "").strip().lower()
-    if normalized.startswith("ex"):
-        import warnings
-        warnings.warn(f"fallback_line_type_detected: ex_* source kind {source_kind} has no resolved line_type. Falling back to point_slope.")
-        return "point_slope"
-    if normalized.startswith("quiz") or normalized.startswith("test"):
-        return "two_points"
-    return "point_slope"
+    raise ValueError(f"unsupported_candidate_problem_type: Could not resolve line_type for source_kind '{source_kind}' of skill '{skill_id}'. Fallback is disabled.")
 
 
 
@@ -5110,7 +5109,7 @@ def build_v3_component_draft_from_skill(
     }
     files = build_component_files_from_domain_payload(
         skill_id=skill_id,
-        component_id=source_kind,
+        component_id=f"src_{textbook_example_id}",
         source_kind=source_kind,
         domain_meta=registry,
         payload_meta=payload_meta,
@@ -5141,7 +5140,7 @@ def build_v3_component_draft_from_skill(
 _V3_PRODUCTION_SKILLS_DIR = PROJECT_ROOT / "agent_skills_v3"
 _V3_COMPONENT_FILE_NAMES = ("metadata.py", "generate.py", "get_hint.py")
 _V3_FORBIDDEN_COMPONENT_STATUSES = frozenset(
-    {"verified", "publishable", "published", "runtime_ready"}
+    {"publishable", "published", "runtime_ready"}
 )
 
 
@@ -5443,12 +5442,104 @@ def run_gencode_phase2_v3_shadow_bridge(
     component_dir = write_v3_component_to_disk(draft, dryrun_path)
     component_id = derive_component_id(textbook_example_id)
 
+    # Perform runtime compile, spec and smoke test immediately on the generated files
+    import py_compile
+    import importlib.util
+    import uuid
+    from core.gencode.services.v3_question_integrity_validator import DEFAULT_INTEGRITY_SEEDS
+
+    generate_py = Path(component_dir) / "generate.py"
+    metadata_py = Path(component_dir) / "metadata.py"
+    get_hint_py = Path(component_dir) / "get_hint.py"
+
+    if not (generate_py.is_file() and metadata_py.is_file() and get_hint_py.is_file()):
+        _err = f"missing_files_in_component_dir:{component_id}"
+        save_tracker_record(
+            conn,
+            textbook_example_id=textbook_example_id,
+            skill_id=skill_key,
+            gencode_status="failed",
+            induced_spec_payload={
+                **induced_spec_payload,
+                "integrity_gate_passed": False,
+                "integrity_gate_blockers": [_err],
+            },
+            gencode_error_log=f"validation_failed:{_err}",
+        )
+        try:
+            conn.commit()
+        except Exception:
+            pass
+        raise ValueError(_err)
+
+    try:
+        py_compile.compile(str(generate_py), doraise=True)
+        py_compile.compile(str(metadata_py), doraise=True)
+        py_compile.compile(str(get_hint_py), doraise=True)
+
+        module_suffix = f"_{uuid.uuid4().hex}"
+        meta_spec = importlib.util.spec_from_file_location(f"meta_{component_id}{module_suffix}", metadata_py)
+        meta_mod = importlib.util.module_from_spec(meta_spec)
+        meta_spec.loader.exec_module(meta_mod)
+
+        gen_spec = importlib.util.spec_from_file_location(f"gen_{component_id}{module_suffix}", generate_py)
+        gen_mod = importlib.util.module_from_spec(gen_spec)
+        gen_spec.loader.exec_module(gen_mod)
+
+        hint_spec = importlib.util.spec_from_file_location(f"hint_{component_id}{module_suffix}", get_hint_py)
+        hint_mod = importlib.util.module_from_spec(hint_spec)
+        hint_spec.loader.exec_module(hint_mod)
+
+        generate_fn = getattr(gen_mod, "generate", None)
+        hint_fn = getattr(hint_mod, "get_hint", None)
+        if not callable(generate_fn) or not callable(hint_fn):
+            raise RuntimeError("missing_generate_or_hint_function_in_module")
+
+        # Smoke check basic generate/hint flow
+        payload = generate_fn(seed=42)
+        if not isinstance(payload, dict):
+            raise TypeError("generate_must_return_dict")
+        hint_fn(1, payload)
+
+        # Multi-seed integrity check
+        for test_seed in DEFAULT_INTEGRITY_SEEDS:
+            p = generate_fn(seed=test_seed, component_id=component_id)
+            vr = validate_component_payload(p, component_id=component_id)
+            if not vr.get("passed", True):
+                _blockers = vr.get("blockers") or ["multi_seed_integrity_check_failed"]
+                raise ValueError("; ".join(str(b) for b in _blockers))
+
+        # Build induced spec based on successfully compiled/run metadata
+        for attr in dir(meta_mod):
+            if attr.isupper() and not attr.startswith("_"):
+                induced_spec_payload[attr.lower()] = getattr(meta_mod, attr)
+
+    except Exception as validation_exc:
+        _err_msg = str(validation_exc)
+        save_tracker_record(
+            conn,
+            textbook_example_id=textbook_example_id,
+            skill_id=skill_key,
+            gencode_status="failed",
+            induced_spec_payload={
+                **induced_spec_payload,
+                "integrity_gate_passed": False,
+                "integrity_gate_blockers": [_err_msg],
+            },
+            gencode_error_log=f"validation_failed:{_err_msg}",
+        )
+        try:
+            conn.commit()
+        except Exception:
+            pass
+        raise ValueError(f"validation_failed:{_err_msg}") from validation_exc
+
     manifest = compile_v3_component_manifest(
         skill_key,
         [
             {
                 "component_id": component_id,
-                "status": "draft_written",
+                "status": "verified",
                 "presentation_mode": induced_spec_payload.get("presentation_mode", "short_answer"),
                 "source_kind": source_kind,
                 "textbook_example_id": textbook_example_id,
@@ -5465,15 +5556,19 @@ def run_gencode_phase2_v3_shadow_bridge(
         conn,
         textbook_example_id=textbook_example_id,
         skill_id=skill_key,
-        gencode_status="draft_written",
+        gencode_status="verified",
         induced_spec_payload=induced_spec_payload,
     )
+    try:
+        conn.commit()
+    except Exception:
+        pass
 
     return {
         "route": "v3_shadow_bridge",
         "skill_id": skill_key,
         "v3_activated": True,
-        "tracker_status": "draft_written",
+        "tracker_status": "verified",
         "textbook_example_id": textbook_example_id,
         "source_kind": source_kind,
         "component_id": component_id,

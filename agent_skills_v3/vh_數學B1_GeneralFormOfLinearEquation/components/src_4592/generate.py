@@ -6,7 +6,7 @@ from core.domain.coordinate_geometry.line_equation_domain import build_line_equa
 from core.gencode.domain_matrix_adapter import convert_line_equation_matrix_to_question_payload
 
 PRESENTATION_MODE = "single_choice"
-ANSWER_TYPE = "numeric_or_undefined"
+ANSWER_TYPE = "single_choice"
 PROBLEM_TYPE_ID = "parallel_line_slope"
 TEXTBOOK_EXAMPLE_ID = 4592
 

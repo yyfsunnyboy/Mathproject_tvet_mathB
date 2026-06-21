@@ -742,26 +742,22 @@
                                 生成失敗：{{ failed_count }}
                             </div>
                             <div class="v3-actions" style="margin-top: 6px;">
-                                {% if v3_light == '⚪' %}
+                                {# 重新生成 — 任何狀態皆可用 #}
                                 <button type="button" class="btn btn-primary btn-sm"
                                     title="重新建立此技能所有教材例題的 V3 component"
-                                    onclick="runSkillV3BatchDryrun('{{ skill.skill_id }}', false, '重新生成本技能題目')">
-                                    重新生成本技能題目
+                                    onclick="runSkillV3BatchDryrun('{{ skill.skill_id }}', {{ 'false' if v3_light == '⚪' else 'true' }}, '重新生成')">
+                                    重新生成
                                 </button>
-                                {% else %}
-                                <button type="button" class="btn btn-primary btn-sm"
-                                    title="重新建立此技能所有教材例題的 V3 component"
-                                    onclick="runSkillV3BatchDryrun('{{ skill.skill_id }}', true, '重新生成本技能題目')">
-                                    重新生成本技能題目
-                                </button>
+                                {# 查看組件 — 有任何 component 資料時可用 #}
+                                {% if total_examples > 0 or tracker_count > 0 %}
                                 <a href="{{ url_for('core.admin_examples', f_curriculum=skill.curriculum, f_grade=skill.grade, f_volume=skill.volume, f_chapter=skill.chapter, f_section=skill.section) }}"
                                     class="btn btn-secondary btn-sm"
                                     title="查看此技能的所有題目組件">
                                     查看組件
                                 </a>
                                 {% endif %}
-
-                                {% if verified_count == total_examples and gencode.get('publish_ready') %}
+                                {# 更新到學生端 — 僅 publish_ready 時可用 #}
+                                {% if gencode.get('publish_ready') %}
                                 <button type="button" class="btn btn-danger btn-sm"
                                     title="使用目前已驗證題目重新編譯並發布 production wrapper"
                                     onclick="repackageSkillV3('{{ skill.skill_id }}')">

@@ -642,7 +642,8 @@ def run_admin_v3_dryrun_for_example(
         )
     if str(phase2_result.get("phase_status", "")).strip() != "V3_SHADOW_BRIDGE":
         raise ValueError("v3_shadow_bridge_not_executed")
-    if str(phase2_result.get("tracker_status", "")).strip() != "draft_written":
+    tracker_status = str(phase2_result.get("tracker_status", "")).strip()
+    if tracker_status not in {"draft_written", "verified"}:
         raise ValueError("v3_shadow_bridge_not_executed")
 
     component_id = derive_component_id(textbook_example_id)
@@ -652,7 +653,7 @@ def run_admin_v3_dryrun_for_example(
     component_dir = dryrun_root / skill_key / "components" / component_id
 
     return {
-        "status": "draft_written",
+        "status": tracker_status,
         "skill_id": skill_key,
         "textbook_example_id": textbook_example_id,
         "component_id": component_id,
