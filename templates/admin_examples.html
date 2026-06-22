@@ -16,6 +16,9 @@
     <title>課本例題管理</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css" rel="stylesheet">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- SweetAlert2 -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <script>
         window.MathJax = {
@@ -1058,44 +1061,103 @@
             const exampleId = button.dataset.exampleId;
             const skillId = button.dataset.skillId;
             const originalText = button.textContent;
-            button.disabled = true;
-            button.textContent = '生成與驗證中...';
-            Swal.fire({
-                title: '生成中',
-                text: '驗證中',
-                allowOutsideClick: false,
-                didOpen: () => Swal.showLoading()
-            });
+
+            if (button.dataset.loading === '1') return;
+            button.dataset.loading = '1';
+
             try {
-                const data = await v3FetchJson(`/admin/textbook-examples/${exampleId}/v3-regenerate`, {
+                button.disabled = true;
+                button.textContent = '生成與驗證中...';
+
+                if (!exampleId) {
+                    throw new Error('缺少教材例題 ID');
+                }
+
+                if (typeof window.Swal !== 'undefined') {
+                    window.Swal.fire({
+                        title: '生成中',
+                        text: '驗證中',
+                        allowOutsideClick: false,
+                        didOpen: () => window.Swal.showLoading()
+                    });
+                }
+
+                const data = await v3FetchJson(`/admin/textbook-examples/${encodeURIComponent(exampleId)}/v3-regenerate`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' }
                 });
-                if (data.status !== 'success') {
-                    const blockers = Array.isArray(data.blockers) ? data.blockers.join('\n') : '';
-                    Swal.fire({
+
+                if (typeof window.Swal !== 'undefined') {
+                    window.Swal.close();
+                }
+
+                await refreshV3DrawerDetails(exampleId, skillId).catch((err) => {
+                    console.warn('[V3 refresh details failed]', err);
+                });
+
+                const statusVal = data.gencode_status || data.status;
+                const detailsVal = data.details || '';
+                const blockersList = Array.isArray(data.blockers) ? data.blockers : [];
+
+                const isNeedsHumanReview = 
+                    statusVal === 'needs_human_review' || 
+                    detailsVal.includes('source_incomplete:missing_point_coordinates') ||
+                    detailsVal.includes('needs_human_review') ||
+                    blockersList.some(b => String(b).includes('source_incomplete:missing_point_coordinates') || String(b).includes('needs_human_review'));
+
+                const isFailed = 
+                    data.status !== 'success' || 
+                    statusVal === 'failed';
+
+                if (isNeedsHumanReview) {
+                    if (typeof window.Swal !== 'undefined') {
+                        window.Swal.fire({
+                            title: '重新生成提示',
+                            text: '教材資料仍不完整，請先補齊點座標',
+                            icon: 'warning'
+                        });
+                    } else {
+                        window.alert('重新生成提示：教材資料仍不完整，請先補齊點座標');
+                    }
+                } else if (isFailed) {
+                    const errorMsg = data.details || data.reason || '未知錯誤';
+                    const blockers = blockersList.length ? blockersList.join('\n') : '';
+                    const displayMsg = blockers ? `blockers: ${blockers}\ndetails: ${errorMsg}` : errorMsg;
+                    if (typeof window.Swal !== 'undefined') {
+                        window.Swal.fire({
+                            title: '重新生成失敗',
+                            html: `<div style="text-align:left;white-space:pre-wrap;">${v3EscapeHtml(displayMsg)}</div>`,
+                            icon: 'error'
+                        });
+                    } else {
+                        window.alert(`重新生成失敗：\n${displayMsg}`);
+                    }
+                } else {
+                    if (typeof window.Swal !== 'undefined') {
+                        window.Swal.fire({
+                            title: '生成成功',
+                            text: '此例題已重新生成並驗證通過。',
+                            icon: 'success'
+                        });
+                    } else {
+                        window.alert('生成成功：此例題已重新生成並驗證通過。');
+                    }
+                }
+            } catch (err) {
+                console.error('[V3 regenerate failed]', err);
+                if (typeof window.Swal !== 'undefined') {
+                    window.Swal.fire({
                         title: '重新生成失敗',
-                        html: `<div style="text-align:left;white-space:pre-wrap;">component_id: ${v3EscapeHtml(data.component_id || '-')}\nblockers: ${v3EscapeHtml(blockers || '-')}\ndetails: ${v3EscapeHtml(data.details || '-')}</div>`,
+                        text: err?.message || String(err),
                         icon: 'error'
                     });
-                    await refreshV3DrawerDetails(exampleId, skillId).catch(() => {});
-                    return;
+                } else {
+                    window.alert(`重新生成失敗：${err?.message || String(err)}`);
                 }
-                await refreshV3DrawerDetails(exampleId, skillId);
-                Swal.fire({
-                    title: '生成成功',
-                    text: '此例題已重新生成並驗證通過。',
-                    icon: 'success'
-                });
-            } catch (err) {
-                Swal.fire({
-                    title: '重新生成失敗',
-                    text: err.message,
-                    icon: 'error'
-                });
             } finally {
                 button.disabled = false;
                 button.textContent = originalText;
+                delete button.dataset.loading;
             }
         }
 

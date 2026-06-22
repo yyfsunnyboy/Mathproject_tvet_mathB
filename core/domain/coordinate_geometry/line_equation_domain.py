@@ -47,6 +47,7 @@ _SUPPORTED_LINE_TYPES = frozenset(
         # New distance V3 types:
         "distance_from_point_to_line",
         "distance_from_point_to_line_parameter",
+        "distance_from_point_to_line_parameter_single_choice_scalar",
         "compare_point_to_line_distances",
     }
 )
@@ -174,6 +175,10 @@ def build_line_equation_matrix(
         )
     elif normalized_type == "distance_from_point_to_line_parameter":
         givens, answer, actual_type = _build_distance_from_point_to_line_parameter(
+            rng, coord_min, coord_max, extra
+        )
+    elif normalized_type == "distance_from_point_to_line_parameter_single_choice_scalar":
+        givens, answer, actual_type = _build_distance_from_point_to_line_parameter_single_choice_scalar(
             rng, coord_min, coord_max, extra
         )
     elif normalized_type == "compare_point_to_line_distances":
@@ -1047,7 +1052,7 @@ def _normalize_coefficients(a: int, b: int, c: int) -> tuple[int, int, int]:
     return a, b, c
 
 
-def _format_general_form(a: int, b: int, c: int) -> str:
+def _format_general_expression(a: int, b: int, c: int) -> str:
     terms: list[str] = []
 
     def append_term(coeff: int, var: str) -> None:
@@ -1080,7 +1085,11 @@ def _format_general_form(a: int, b: int, c: int) -> str:
             terms.append(f" + {c}")
         else:
             terms.append(f" - {abs(c)}")
-    return f"{''.join(terms)} = 0"
+    return "".join(terms)
+
+
+def _format_general_form(a: int, b: int, c: int) -> str:
+    return f"{_format_general_expression(a, b, c)} = 0"
 
 
 def _format_number(value: Fraction) -> str:
@@ -1150,7 +1159,10 @@ def _collect_points_on_line(
     for key in ("point_a", "point_b", "point"):
         raw = givens.get(key)
         if isinstance(raw, (list, tuple)) and len(raw) == 2:
-            x_val, y_val = int(raw[0]), int(raw[1])
+            try:
+                x_val, y_val = int(raw[0]), int(raw[1])
+            except (TypeError, ValueError):
+                continue
             if a * x_val + b * y_val + c == 0:
                 points.append([x_val, y_val])
     return points
@@ -1177,8 +1189,11 @@ def _build_visual_spec(
     elif "point" in givens:
         pt = givens["point"]
         if isinstance(pt, (list, tuple)):
-            points.append({"x": int(pt[0]), "y": int(pt[1]), "label": "P"})
-            lines.append({"through_points": ["P"], "label": "L"})
+            try:
+                points.append({"x": int(pt[0]), "y": int(pt[1]), "label": "P"})
+                lines.append({"through_points": ["P"], "label": "L"})
+            except (TypeError, ValueError):
+                lines.append({"label": "L"})
     elif actual_type == "horizontal_line":
         y_val = int(givens.get("y_intercept", 0))  # type: ignore[arg-type]
         lines.append({"type": "horizontal", "y": y_val, "label": "L"})
@@ -1225,6 +1240,8 @@ def _build_distractors(
 ) -> list[str]:
     if "distractors" in answer:
         return [str(d) for d in answer["distractors"]]
+    if "choices" in answer:
+        return [str(choice.get("text") if isinstance(choice, dict) else choice) for choice in answer["choices"]]
     canonical = str(answer["canonical_form"])
     candidates: list[str] = []
 
@@ -1916,7 +1933,8 @@ def _build_distance_from_point_to_line(
     
     givens = {
         "point": [x0, y0],
-        "equation": f"{_format_general_form(A, B, C)} = 0",
+        "line_expression": _format_general_expression(A, B, C),
+        "equation": _format_general_form(A, B, C),
     }
     canonical = fraction_to_plain(dist_frac)
     answer = {
@@ -1954,7 +1972,8 @@ def _build_distance_from_point_to_line_parameter(
     
     givens = {
         "point": [x0, y0],
-        "equation": f"{_format_general_form(A, B, 0).replace('+0', '')} + {param_name} = 0",
+        "line_expression": _format_general_expression(A, B, 0),
+        "equation": f"{_format_general_expression(A, B, 0)} + {param_name} = 0",
         "distance": d,
     }
     canonical = f"{min(k1, k2)} 或 {max(k1, k2)}"
@@ -1963,6 +1982,68 @@ def _build_distance_from_point_to_line_parameter(
         "general_form": canonical,
         "coefficients": {"A": A, "B": B, "C": 0},
         "distance": d,
+        "parameter": canonical,
+        "parameter_name": param_name,
+        "value": canonical,
+    }
+    return givens, answer, "oblique_line"
+
+
+def _build_distance_from_point_to_line_parameter_single_choice_scalar(
+    rng: random.Random,
+    coord_min: int,
+    coord_max: int,
+    constraints: dict[str, object],
+) -> tuple[dict[str, object], dict[str, object], str]:
+    A, B, D = 3, 4, 5
+    x0 = rng.randint(min(coord_min, -6), -1)
+    distance_unit = rng.randint(1, 5)
+    distance_value = 4 * distance_unit
+    target_value = 5 * distance_unit
+    C = -A * x0
+    param_name = str(constraints.get("parameter_name") or "a")
+    line_expression = _format_general_expression(A, B, C)
+    distractor_values = [
+        target_value - 2,
+        target_value - 1,
+        target_value + 1,
+        target_value + 2,
+        -target_value,
+    ]
+    choices = [target_value]
+    for value in distractor_values:
+        if value != target_value and value not in choices:
+            choices.append(value)
+        if len(choices) == 4:
+            break
+    rng.shuffle(choices)
+    labels = ["A", "B", "C", "D"]
+    correct_label = labels[choices.index(target_value)]
+    choice_rows = [
+        {"label": label, "text": str(value), "value": value}
+        for label, value in zip(labels, choices, strict=True)
+    ]
+    givens = {
+        "point": [x0, param_name],
+        "point_parameter": param_name,
+        "quadrant": "II",
+        "line_expression": line_expression,
+        "equation": f"{line_expression} = 0",
+        "distance": distance_value,
+        "choices": choice_rows,
+    }
+    canonical = str(target_value)
+    answer = {
+        "canonical_form": correct_label,
+        "general_form": canonical,
+        "coefficients": {"A": A, "B": B, "C": C},
+        "distance": distance_value,
+        "parameter": canonical,
+        "parameter_name": param_name,
+        "solution_cardinality": "single",
+        "choice_value_shape": "scalar",
+        "correct_label": correct_label,
+        "choices": choice_rows,
         "value": canonical,
     }
     return givens, answer, "oblique_line"
@@ -2007,25 +2088,85 @@ def _build_compare_point_to_line_distances(
             C2 = rng.randint(coord_min, coord_max)
         d2 = Fraction(abs(A2*x0 + B2*y0 + C2), D2)
         
+    target_direction = str(constraints.get("target_direction") or "closer").strip().lower()
+    if target_direction not in {"closer", "farther", "relation"}:
+        target_direction = "closer"
     givens = {
         "point": [x0, y0],
-        "equation_1": f"{_format_general_form(A1, B1, C1)} = 0",
-        "equation_2": f"{_format_general_form(A2, B2, C2)} = 0",
+        "equation_1": _format_general_form(A1, B1, C1),
+        "equation_2": _format_general_form(A2, B2, C2),
+        "target_direction": target_direction,
     }
     
     if d1 < d2:
-        canonical = "L_1"
+        closer_line = "L_1"
+        farther_line = "L_2"
         distractors = ["L_2", "一樣近", "無法比較"]
     else:
-        canonical = "L_2"
+        closer_line = "L_2"
+        farther_line = "L_1"
         distractors = ["L_1", "一樣近", "無法比較"]
-        
+    comparison_relation = "d(P,L_1) < d(P,L_2)" if d1 < d2 else "d(P,L_1) > d(P,L_2)"
+    if target_direction == "farther":
+        canonical = farther_line
+    elif target_direction == "relation":
+        canonical = comparison_relation
+    else:
+        canonical = closer_line
     answer = {
         "canonical_form": canonical,
         "general_form": canonical,
         "coefficients": {"A": A1, "B": B1, "C": C1},
+        "target_direction": target_direction,
+        "closer_line": closer_line,
+        "farther_line": farther_line,
+        "comparison_relation": comparison_relation,
+        "comparison_result": canonical,
+        "distances": {
+            "L_1": fraction_to_plain(d1),
+            "L_2": fraction_to_plain(d2),
+        },
         "value": canonical,
         "distractors": distractors,
     }
     return givens, answer, "oblique_line"
+
+
+# Canonical domain_operation aliases -> legacy line_type tokens used inside builders.
+DOMAIN_OPERATION_LINE_TYPE: dict[str, str] = {
+    "point_to_line_distance": "distance_from_point_to_line",
+    "parallel_lines_distance": "distance_from_point_to_line",
+    "find_parameter_from_distance": "distance_from_point_to_line_parameter",
+    "find_parameter_from_point_line_distance": "distance_from_point_to_line_parameter",
+    "foot_of_perpendicular": "line_through_point_perpendicular_to_segment",
+    "point_reflection_across_line": "perpendicular_bisector_application",
+    "distance_comparison": "compare_point_to_line_distances",
+}
+
+
+def resolve_line_type_for_domain_operation(domain_operation: str) -> str:
+    """Map external domain_operation key to internal line_type."""
+    key = str(domain_operation or "").strip()
+    if not key:
+        raise ValueError("domain_operation must be provided.")
+    return DOMAIN_OPERATION_LINE_TYPE.get(key, key)
+
+
+def build_coordinate_geometry_matrix(
+    *,
+    seed: int | None,
+    domain_operation: str,
+    curriculum_profile: str,
+    difficulty_profile: str,
+    constraints: dict[str, object] | None = None,
+) -> dict[str, object]:
+    """Domain entrypoint keyed by domain_operation (no skill_id branching)."""
+    line_type = resolve_line_type_for_domain_operation(domain_operation)
+    return build_line_equation_matrix(
+        seed=seed,
+        line_type=line_type,
+        curriculum_profile=curriculum_profile,
+        difficulty_profile=difficulty_profile,
+        constraints=constraints,
+    )
 

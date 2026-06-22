@@ -25,6 +25,7 @@ CREATE TABLE IF NOT EXISTS gencode_component_tracker (
             'draft_written',
             'smoke_passed',
             'verified',
+            'needs_human_review',
             'failed'
         ))
 );

@@ -31,6 +31,7 @@ ALLOWED_GENCODE_STATUSES = (
     "draft_written",
     "smoke_passed",
     "verified",
+    "needs_human_review",
     "failed",
 )
 

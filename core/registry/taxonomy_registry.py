@@ -6,7 +6,35 @@ import yaml
 from pathlib import Path
 from typing import Any
 
-# Hardcoded dict as base/fallback
+# Administrative profile only — does not decide answer schema or domain_operation.
+SKILL_DOMAIN_PROFILE: dict[str, dict[str, Any]] = {
+    "vh_數學B1_PointSlopeForm": {
+        "domain": "coordinate_geometry",
+        "curriculum_profile": "vocational_high_b",
+    },
+    "vh_數學B1_HorizontalAndVerticalLineEquations": {
+        "domain": "coordinate_geometry",
+        "curriculum_profile": "vocational_high_b",
+    },
+    "vh_數學B1_SlopeInterceptForm": {
+        "domain": "coordinate_geometry",
+        "curriculum_profile": "vocational_high_b",
+    },
+    "vh_數學B1_InterceptForm": {
+        "domain": "coordinate_geometry",
+        "curriculum_profile": "vocational_high_b",
+    },
+    "vh_數學B1_GeneralFormOfLinearEquation": {
+        "domain": "coordinate_geometry",
+        "curriculum_profile": "vocational_high_b",
+    },
+    "vh_數學B1_DistanceBetweenPointAndLine": {
+        "domain": "coordinate_geometry",
+        "curriculum_profile": "vocational_high_b",
+    },
+}
+
+# Runtime domain module routing (YAML may extend this mapping).
 SKILL_TO_DOMAIN: dict[str, dict[str, Any]] = {
     "vh_數學B1_PointSlopeForm": {
         "domain_module": "core.domain.coordinate_geometry.line_equation_domain",
@@ -69,8 +97,14 @@ except Exception:
 
 
 def resolve_domain_for_skill(skill_id: str) -> dict[str, Any]:
-    """Return domain mapping metadata for a registered skill_id."""
+    """Return merged administrative profile + domain routing metadata."""
     key = str(skill_id or "").strip()
     if key not in SKILL_TO_DOMAIN:
         raise KeyError(f"Unregistered skill_id: {skill_id!r}")
-    return dict(SKILL_TO_DOMAIN[key])
+    merged = dict(SKILL_TO_DOMAIN[key])
+    profile = SKILL_DOMAIN_PROFILE.get(key)
+    if isinstance(profile, dict):
+        merged.update(profile)
+        if profile.get("curriculum_profile") and not merged.get("default_curriculum_profile"):
+            merged["default_curriculum_profile"] = profile["curriculum_profile"]
+    return merged

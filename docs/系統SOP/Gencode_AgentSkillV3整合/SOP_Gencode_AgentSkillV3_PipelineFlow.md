@@ -1,11 +1,34 @@
 # Gencode × AgentSkillV3 Pipeline 系統流程圖與狀態轉移說明
 
-> **文件版本**：v1.4（Domain 層架構規劃增補 · 僅 SOP，待實作）  
+> **文件版本**：v1.5（Component Domain Operation 與 Answer Schema Contract 收斂）  
 > **配套規範**：[SOP_Gencode_AgentSkillV3_Specification.md](./SOP_Gencode_AgentSkillV3_Specification.md)  
 > **實體錨點目錄**：`docs/系統SOP/Gencode_AgentSkillV3整合/`  
-> **實作狀態**：`core/domain/`、`taxonomy_registry` 條目為架構規劃，尚未落地程式。
+> **實作狀態**：`core/domain/`、`taxonomy_registry`、`answer_schema_registry`、tracker、scaffold、compiler 已落地（見 Specification §0.2–§0.3）。
 
-### v1.4 Domain 層架構規劃摘要（待實作）
+### v1.5 資料流摘要（IMPLEMENTED）
+
+```text
+textbook_examples
+  → induced_spec_payload
+  → semantic classification
+  → problem_type_id / domain_operation
+  → taxonomy_registry (skill profile only)
+  → Domain matrix (domain_operation)
+  → answer_schema_key
+  → validate_full_matrix_shell + validate_answer_schema
+  → component scaffold (src_{id})
+  → tracker evidence → publish gate
+```
+
+| # | 條款 | Pipeline 影響 |
+|---|------|---------------|
+| 1 | `component_id = src_{textbook_example_id}` | Phase 1/2 物理目錄與 tracker 鍵 |
+| 2 | `SOURCE_KIND` / `ORDER_WEIGHT` 自教材列映射 | metadata 注入；**禁止** src_ 前綴推斷 |
+| 3 | Answer schema 兩層驗證 | Phase 2.5 fail-fast；禁止 slope/intercept 全域 fallback |
+| 4 | 四層錯誤責任 | shared_contract_failure → 停止逐題 AI repair |
+| 5 | Skill Batch Build / Component Targeted Rebuild | `run_admin_v3_dryrun_for_skill` / `_for_example` |
+
+### v1.4 Domain 層架構摘要（保留 · 已落地）
 
 | # | 條款 | Pipeline 影響 |
 |---|------|---------------|
@@ -53,7 +76,7 @@
 
 | Phase | 名稱 | 核心產物 |
 |-------|------|----------|
-| Phase 1 | 案源一題一物理拆分 | `ex_*` / `quiz_*` / `test_*` component + induced spec |
+| Phase 1 | 案源一題一物理拆分 | `src_{textbook_example_id}` component + induced spec |
 | Phase 2 | 原子組件隔離生成與修補閉環 | `components/{component_id}/generate.py`（verified / failed） |
 | Phase 3 | 微元件自動黏合與發布 | `component_manifest.json` + `__init__.py` + `skills/{skill_id}.py` + verified registry |
 
@@ -784,4 +807,4 @@ graph TD
 
 ---
 
-*本文件為 Pipeline 流程審查規格書 v1.4（Domain 層架構規劃增補 · 待實作），與 [SOP_Gencode_AgentSkillV3_Specification.md](./SOP_Gencode_AgentSkillV3_Specification.md) 配套使用。*
+*本文件為 Pipeline 流程審查規格書 v1.5（Component Domain Operation 與 Answer Schema Contract 收斂），與 [SOP_Gencode_AgentSkillV3_Specification.md](./SOP_Gencode_AgentSkillV3_Specification.md) 配套使用。*

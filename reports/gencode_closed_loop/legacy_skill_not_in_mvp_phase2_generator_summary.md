@@ -16,10 +16,10 @@
   "foundation_ready": false,
   "phase2_status": "SOP_PREFLIGHT_FAIL",
   "reports": {
-    "phase2_generator_summary_json": "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\legacy_skill_not_in_mvp_phase2_generator_summary.json",
-    "phase2_generator_summary_md": "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\legacy_skill_not_in_mvp_phase2_generator_summary.md"
+    "phase2_generator_summary_json": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\legacy_skill_not_in_mvp_phase2_generator_summary.json",
+    "phase2_generator_summary_md": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\legacy_skill_not_in_mvp_phase2_generator_summary.md"
   },
-  "timestamp": "2026-06-21T14:50:22.383405+00:00",
+  "timestamp": "2026-06-22T06:42:56.866677+00:00",
   "dry_run": true,
   "sop_preflight_status": "FAIL",
   "sop_preflight_errors": [

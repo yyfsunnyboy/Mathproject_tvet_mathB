@@ -4545,8 +4545,6 @@ def _v3_resolve_dry_run_line_type(
                 return str(textbook_row[k])
 
     normalized = str(source_kind or "").strip().lower()
-    if normalized.startswith("quiz") or normalized.startswith("test"):
-        return "two_points"
 
     if str(skill_id or "").strip().endswith("_PointSlopeForm"):
         return "point_slope"
@@ -4570,6 +4568,44 @@ def _v3_resolve_dry_run_line_type(
         if "何者" in problem_text or "y={{m" in problem_text or "y=m" in problem_text:
             return "slope_intercept_read_slope_and_intercept"
         return "slope_intercept_equation"
+
+    if "DistanceBetweenPointAndLine" in str(skill_id or ""):
+        if not isinstance(textbook_row, dict):
+            return "distance_from_point_to_line"
+        from core.gencode.services.v3_example_semantic_classifier import (
+            TextbookExampleSource,
+            calculate_source_hash,
+            classify_textbook_example,
+            parse_choices_from_text,
+        )
+
+        question_text = str(textbook_row.get("problem_text") or "")
+        answer = str(textbook_row.get("correct_answer") or "")
+        explanation = str(textbook_row.get("detailed_solution") or textbook_row.get("explanation") or "")
+        choices = list(textbook_row.get("choices") or parse_choices_from_text(question_text))
+        source = TextbookExampleSource(
+            skill_id=str(skill_id),
+            textbook_example_id=int(textbook_row.get("id") or 0),
+            question_text=question_text,
+            answer=answer,
+            choices=choices,
+            explanation=explanation,
+            source_label=str(textbook_row.get("source_description") or ""),
+            source_type=str(textbook_row.get("problem_type") or ""),
+            presentation_mode="single_choice" if choices else "short_answer",
+            question_type=str(textbook_row.get("question_type") or ""),
+            source_hash=calculate_source_hash(question_text, answer, explanation),
+        )
+        classification = classify_textbook_example(source, {"allowed_types": [
+            "distance_from_point_to_line",
+            "distance_from_point_to_line_parameter",
+            "distance_from_point_to_line_parameter_single_choice_scalar",
+            "compare_point_to_line_distances",
+        ]})
+        return str(classification["problem_type_id"])
+
+    if normalized.startswith("quiz") or normalized.startswith("test"):
+        return "two_points"
 
     # Try database lookup of tracker spec payload
     import json
@@ -4867,14 +4903,14 @@ def _v3_intercept_form_task_from_textbook_row(textbook_row: dict[str, object] | 
 
 
 def _v3_resolve_dry_run_difficulty_profile(source_kind: str) -> str:
-    normalized = str(source_kind or "").strip().lower()
-    if normalized.startswith("ex"):
-        return "easy"
-    if normalized.startswith("quiz"):
-        return "medium"
-    if normalized.startswith("test"):
+    from core.gencode.source_kind_resolver import resolve_difficulty_level
+
+    level = resolve_difficulty_level(source_kind)
+    if level == "hard":
         return "hard"
-    return "easy"
+    if level == "easy":
+        return "easy"
+    return "medium"
 
 
 def _v3_target_task_for_line_type(line_type: str) -> str:
@@ -4906,6 +4942,10 @@ def _v3_target_task_for_line_type(line_type: str) -> str:
         "line_through_intersection_parallel_to_line": "line_through_intersection_parallel_to_line",
         "perpendicular_bisector_application": "perpendicular_bisector_application",
         "line_through_point_perpendicular_to_segment": "line_through_point_perpendicular_to_segment",
+        "distance_from_point_to_line": "distance_from_point_to_line",
+        "distance_from_point_to_line_parameter": "distance_from_point_to_line_parameter",
+        "distance_from_point_to_line_parameter_single_choice_scalar": "distance_from_point_to_line_parameter_single_choice_scalar",
+        "compare_point_to_line_distances": "compare_point_to_line_distances",
     }
     return mapping.get(line_type, line_type)
 
@@ -4965,12 +5005,16 @@ def build_v3_component_draft_from_skill(
         fetch_textbook_example_row,
         infer_presentation_mode_from_textbook_row,
     )
+    from core.gencode.answer_schema_registry import resolve_answer_schema_key
+    from core.gencode.services.component_tracker_service import derive_component_id
+    from core.gencode.source_kind_resolver import resolve_source_kind_from_textbook_row
     from core.registry.taxonomy_registry import resolve_domain_for_skill
 
     registry = resolve_domain_for_skill(skill_id)
     domain_module = str(registry["domain_module"])
     entrypoint = str(registry["entrypoint"])
     curriculum_profile = str(registry["default_curriculum_profile"])
+    component_id = derive_component_id(textbook_example_id)
 
     module = importlib.import_module(domain_module)
     entrypoint_fn = getattr(module, entrypoint, None)
@@ -4991,6 +5035,11 @@ def build_v3_component_draft_from_skill(
             "source_description": "",
             "correct_answer": "",
         }
+    canonical_source_kind = resolve_source_kind_from_textbook_row(row)
+    if str(source_kind or "").strip().lower().startswith(("ex_", "src_")):
+        source_kind = canonical_source_kind
+    elif not str(source_kind or "").strip():
+        source_kind = canonical_source_kind
     if str(skill_id or "").strip().endswith("_SlopeInterceptForm"):
         extra.update(_v3_extract_slope_intercept_constraints(row))
     if str(skill_id or "").strip().endswith("_InterceptForm"):
@@ -5002,8 +5051,48 @@ def build_v3_component_draft_from_skill(
         textbook_row=row,
         conn=conn,
     )
+    if "DistanceBetweenPointAndLine" in str(skill_id or ""):
+        try:
+            from core.gencode.services.v3_example_semantic_classifier import (
+                TextbookExampleSource,
+                calculate_source_hash,
+                classify_textbook_example,
+                parse_choices_from_text,
+            )
+
+            question_text = str(row.get("problem_text") or "")
+            answer_text = str(row.get("correct_answer") or "")
+            explanation_text = str(row.get("detailed_solution") or row.get("explanation") or "")
+            choices = list(row.get("choices") or parse_choices_from_text(question_text))
+            distance_source = TextbookExampleSource(
+                skill_id=str(skill_id),
+                textbook_example_id=int(row.get("id") or textbook_example_id),
+                question_text=question_text,
+                answer=answer_text,
+                choices=choices,
+                explanation=explanation_text,
+                source_label=str(row.get("source_description") or ""),
+                source_type=str(row.get("problem_type") or ""),
+                presentation_mode="single_choice" if choices else "short_answer",
+                question_type=str(row.get("question_type") or ""),
+                source_hash=calculate_source_hash(question_text, answer_text, explanation_text),
+            )
+            classification = classify_textbook_example(distance_source, {})
+            for key in ("target_direction", "solution_cardinality", "choice_value_shape"):
+                value = classification.get(key)
+                if value:
+                    extra[key] = value
+            if classification.get("problem_type_id"):
+                line_type = str(classification["problem_type_id"])
+        except Exception:
+            pass
     difficulty_profile = _v3_resolve_dry_run_difficulty_profile(source_kind)
     problem_type_id = _v3_target_task_for_line_type(line_type)
+    answer_schema_key = resolve_answer_schema_key(
+        domain_operation=line_type,
+        problem_type_id=problem_type_id,
+    )
+    domain_name = str(registry.get("domain") or "coordinate_geometry")
     inferred = infer_presentation_mode_from_textbook_row(row)
     presentation_mode = str(inferred.get("presentation_mode") or "short_answer")
     answer_type = str(inferred.get("answer_type") or "expression")
@@ -5020,6 +5109,10 @@ def build_v3_component_draft_from_skill(
             answer_type = "expression"
         elif line_type == "triangle_area_bisector_line_equation":
             answer_type = "linear_equation"
+        elif line_type == "distance_from_point_to_line":
+            answer_type = "rational"
+        elif line_type in ("distance_from_point_to_line_parameter", "distance_from_point_to_line_parameter_single_choice_scalar", "compare_point_to_line_distances"):
+            answer_type = "text_short"
     presentation_evidence = build_presentation_evidence_payload(inferred)
 
     matrix = entrypoint_fn(
@@ -5034,21 +5127,40 @@ def build_v3_component_draft_from_skill(
             f"Domain entrypoint must return dict, got {type(matrix)!r}"
         )
 
-    validate_domain_matrix(matrix)
-    normalized_matrix = normalize_domain_matrix(matrix)
+    validate_domain_matrix(
+        matrix,
+        answer_schema_key=answer_schema_key,
+        component_id=component_id,
+        problem_type_id=problem_type_id,
+        domain_operation=line_type,
+    )
+    normalized_matrix = normalize_domain_matrix(
+        matrix,
+        answer_schema_key=answer_schema_key,
+        component_id=component_id,
+        problem_type_id=problem_type_id,
+        domain_operation=line_type,
+    )
     payload = convert_line_equation_matrix_to_question_payload(
         normalized_matrix,
         presentation_mode=presentation_mode,
         answer_type=answer_type,
         problem_type_id=problem_type_id,
-        component_id=source_kind,
+        component_id=component_id,
         textbook_example_id=textbook_example_id,
+        source_kind=source_kind,
+        answer_schema_key=answer_schema_key,
+        domain_operation=line_type,
     )
 
     draft_metadata = {
         "skill_id": skill_id,
+        "component_id": component_id,
         "textbook_example_id": textbook_example_id,
         "source_kind": source_kind,
+        "domain": domain_name,
+        "domain_operation": line_type,
+        "answer_schema_key": answer_schema_key,
         "line_type": line_type,
         "domain_module": domain_module,
         "entrypoint": entrypoint,
@@ -5075,6 +5187,14 @@ def build_v3_component_draft_from_skill(
         checker_key = "text_short_checker"
         equivalence_type = "exact_string"
         checker_module = "core.checkers.structured_text_checker"
+    elif line_type in ("distance_from_point_to_line_parameter", "distance_from_point_to_line_parameter_single_choice_scalar"):
+        checker_key = "text_short_checker"
+        equivalence_type = "exact_string"
+        checker_module = "core.checkers.structured_text_checker"
+    elif answer_type == "text_short":
+        checker_key = "text_short_checker"
+        equivalence_type = "exact_string"
+        checker_module = "core.checkers.structured_text_checker"
     elif line_type == "intercept_form_triangle_area":
         checker_key = "rational_checker"
         equivalence_type = "rational_equivalent"
@@ -5094,6 +5214,8 @@ def build_v3_component_draft_from_skill(
 
     payload_meta = {
         "line_type": line_type,
+        "domain_operation": line_type,
+        "answer_schema_key": answer_schema_key,
         "target_task": problem_type_id,
         "template_slot": _v3_template_slot_for_line_type(line_type),
         "presentation_mode": presentation_mode,
@@ -5109,11 +5231,12 @@ def build_v3_component_draft_from_skill(
     }
     files = build_component_files_from_domain_payload(
         skill_id=skill_id,
-        component_id=f"src_{textbook_example_id}",
+        component_id=component_id,
         source_kind=source_kind,
         domain_meta=registry,
         payload_meta=payload_meta,
         textbook_example_id=textbook_example_id,
+        textbook_row=row,
     )
 
     return {
@@ -5290,24 +5413,50 @@ def _build_v3_induced_spec_payload(
     *,
     source_kind: str,
     textbook_example_id: int,
+    skill_id: str,
 ) -> dict[str, object]:
-    from core.gencode.v3_component_scaffold_builder import _resolve_source_kind_profile
+    from core.gencode.answer_schema_registry import resolve_answer_schema_key
+    from core.gencode.induced_spec_contract import migrate_induced_spec_payload
+    from core.gencode.source_kind_resolver import resolve_order_weight
+    from core.registry.taxonomy_registry import resolve_domain_for_skill
 
-    profile = _resolve_source_kind_profile(source_kind)
     presentation_evidence = draft.get("presentation_evidence")
     if not isinstance(presentation_evidence, dict):
         presentation_evidence = {}
-    return {
-        "source_kind": source_kind,
-        "presentation_mode": str(draft.get("presentation_mode") or "short_answer"),
-        "line_type": draft.get("line_type"),
-        "answer_type": str(draft.get("answer_type") or "expression"),
-        "problem_type_id": str(draft.get("problem_type_id") or draft.get("target_task") or ""),
-        "display_order": int(textbook_example_id),
-        "source_order": int(textbook_example_id),
-        "sampling_weight": int(profile["order_weight"]),
-        "presentation_evidence": presentation_evidence,
-    }
+    domain_operation = str(draft.get("domain_operation") or draft.get("line_type") or "").strip()
+    problem_type_id = str(draft.get("problem_type_id") or domain_operation).strip()
+    answer_schema_key = str(
+        draft.get("answer_schema_key")
+        or resolve_answer_schema_key(
+            domain_operation=domain_operation,
+            problem_type_id=problem_type_id,
+        )
+        or ""
+    )
+    domain_profile = resolve_domain_for_skill(skill_id)
+    checker_key = str(draft.get("checker_key") or "")
+    payload = migrate_induced_spec_payload(
+        {
+            "component_id": f"src_{textbook_example_id}",
+            "skill_id": skill_id,
+            "domain": str(domain_profile.get("domain") or "coordinate_geometry"),
+            "domain_operation": domain_operation,
+            "problem_type_id": problem_type_id,
+            "answer_schema_key": answer_schema_key,
+            "presentation_mode": str(draft.get("presentation_mode") or "short_answer"),
+            "checker_key": checker_key,
+            "domain_params": draft.get("constraints") if isinstance(draft.get("constraints"), dict) else {},
+            "source_template": "",
+            "source_kind": source_kind,
+            "line_type": draft.get("line_type"),
+            "answer_type": str(draft.get("answer_type") or "expression"),
+            "display_order": int(textbook_example_id),
+            "source_order": int(textbook_example_id),
+            "sampling_weight": resolve_order_weight(source_kind),
+            "presentation_evidence": presentation_evidence,
+        }
+    )
+    return payload
 
 
 def run_gencode_phase2_v3_shadow_bridge(
@@ -5356,6 +5505,75 @@ def run_gencode_phase2_v3_shadow_bridge(
         if inferred_line_type:
             extra["line_type"] = inferred_line_type
 
+    source_row_for_gate = None
+    try:
+        source_row_for_gate = conn.execute(
+            """
+            SELECT id, problem_text, correct_answer, detailed_solution, source_description, problem_type
+            FROM textbook_examples
+            WHERE id = ?
+            """,
+            (textbook_example_id,),
+        ).fetchone()
+    except Exception:
+        source_row_for_gate = None
+    if source_row_for_gate is not None:
+        if hasattr(source_row_for_gate, "keys"):
+            source_text = str(source_row_for_gate["problem_text"] or "")
+        else:
+            source_text = str(source_row_for_gate[1] or "")
+        problem_type_for_gate = str(extra.get("line_type") or "").strip()
+        if not problem_type_for_gate:
+            try:
+                problem_type_for_gate = _v3_resolve_dry_run_line_type(
+                    source_kind,
+                    extra,
+                    skill_id=skill_key,
+                    textbook_row={
+                        "id": textbook_example_id,
+                        "problem_text": source_text,
+                    },
+                    conn=conn,
+                )
+            except Exception:
+                problem_type_for_gate = ""
+        if problem_type_for_gate:
+            from core.gencode.question_semantic_validators import validate_source_completeness
+
+            completeness = validate_source_completeness(source_text, problem_type_for_gate)
+            if not completeness.get("passed", True):
+                component_id = derive_component_id(textbook_example_id)
+                tracker = save_tracker_record(
+                    conn,
+                    textbook_example_id=textbook_example_id,
+                    skill_id=skill_key,
+                    gencode_status="needs_human_review",
+                    induced_spec_payload={
+                        "source_kind": source_kind,
+                        "line_type": problem_type_for_gate,
+                        "problem_type_id": problem_type_for_gate,
+                        "source_completeness_passed": False,
+                        "source_completeness_blockers": completeness.get("blockers", []),
+                    },
+                    gencode_error_log="; ".join(str(b) for b in completeness.get("blockers", [])),
+                )
+                try:
+                    conn.commit()
+                except Exception:
+                    pass
+                return {
+                    "route": "v3_shadow_bridge",
+                    "skill_id": skill_key,
+                    "v3_activated": True,
+                    "tracker_status": "needs_human_review",
+                    "textbook_example_id": textbook_example_id,
+                    "source_kind": source_kind,
+                    "component_id": component_id,
+                    "tracker_record": tracker,
+                    "source_completeness": completeness,
+                    "dryrun_base_dir": dryrun_path,
+                }
+
     save_tracker_record(
         conn,
         textbook_example_id=textbook_example_id,
@@ -5379,6 +5597,7 @@ def run_gencode_phase2_v3_shadow_bridge(
         draft,
         source_kind=source_kind,
         textbook_example_id=textbook_example_id,
+        skill_id=skill_key,
     )
 
     # Integrity gate: exec generate.py at seed=42, validate payload

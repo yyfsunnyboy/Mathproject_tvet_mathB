@@ -6,6 +6,12 @@ import importlib.util
 from pathlib import Path
 from typing import Any
 
+from core.gencode.question_semantic_validators import (
+    validate_comparison_contract,
+    validate_equation_display_text,
+    validate_single_choice_scalar_topology,
+)
+
 # ---------------------------------------------------------------------------
 # Shared constants — import from here; never maintain copies elsewhere
 # ---------------------------------------------------------------------------
@@ -186,6 +192,10 @@ def validate_component_payload(
         elif problem_type_id == "compare_point_to_line_distances" and "距離" not in question_text:
             blockers.append("semantic_component_mismatch:compare_point_to_line_distances_missing_distance")
 
+    blockers.extend(validate_equation_display_text(payload))
+    blockers.extend(validate_comparison_contract(payload))
+    blockers.extend(validate_single_choice_scalar_topology(payload))
+
     passed = len(blockers) == 0
     return {
         "passed": passed,
@@ -241,6 +251,20 @@ def validate_skill_samples(
     component_results: dict[str, dict[str, Any]] = {}
     all_passed = True
     blockers_summary: list[str] = []
+    verified_component_ids: set[str] | None = None
+    if conn is not None:
+        try:
+            rows = conn.execute(
+                """
+                SELECT component_id
+                FROM gencode_component_tracker
+                WHERE skill_id = ? AND gencode_status = 'verified'
+                """,
+                (skill_key,),
+            ).fetchall()
+            verified_component_ids = {str(row[0] if not hasattr(row, "keys") else row["component_id"]) for row in rows}
+        except Exception:
+            verified_component_ids = None
 
     if not base.is_dir():
         return {
@@ -255,6 +279,8 @@ def validate_skill_samples(
         if not comp_dir.is_dir():
             continue
         comp_id = comp_dir.name
+        if verified_component_ids is not None and comp_id not in verified_component_ids:
+            continue
         gen_py = comp_dir / "generate.py"
         if not gen_py.is_file():
             continue

@@ -14,6 +14,7 @@ ALLOWED_GENCODE_STATUSES = frozenset(
         "draft_written",
         "smoke_passed",
         "verified",
+        "needs_human_review",
         "failed",
     }
 )

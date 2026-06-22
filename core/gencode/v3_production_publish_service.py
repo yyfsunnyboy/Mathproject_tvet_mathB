@@ -79,6 +79,7 @@ V3_PRODUCTION_PUBLISH_ALLOWED_SKILLS: frozenset[str] = frozenset({
     "vh_數學B1_SlopeInterceptForm",
     "vh_數學B1_InterceptForm",
     "vh_數學B1_GeneralFormOfLinearEquation",
+    "vh_數學B1_DistanceBetweenPointAndLine",
 })
 
 V3_VARIATION_REQUIRED_SKILLS: frozenset[str] = frozenset()
@@ -294,6 +295,36 @@ def _auto_promote_valid_components(
                 textbook_example_id = int(getattr(meta_mod, "TEXTBOOK_EXAMPLE_ID", 0))
                 if textbook_example_id <= 0:
                     continue
+                problem_type_id = str(getattr(meta_mod, "PROBLEM_TYPE_ID", "") or "")
+                try:
+                    source_row = conn.execute(
+                        "SELECT problem_text FROM textbook_examples WHERE id = ?",
+                        (textbook_example_id,),
+                    ).fetchone()
+                    source_text = ""
+                    if source_row is not None:
+                        source_text = str(source_row[0] if not hasattr(source_row, "keys") else source_row["problem_text"] or "")
+                    if source_text and problem_type_id:
+                        from core.gencode.question_semantic_validators import validate_source_completeness
+
+                        completeness = validate_source_completeness(source_text, problem_type_id)
+                        if not completeness.get("passed", True):
+                            save_tracker_record(
+                                conn=conn,
+                                textbook_example_id=textbook_example_id,
+                                skill_id=skill_key,
+                                gencode_status="needs_human_review",
+                                induced_spec_payload={
+                                    **induced_spec,
+                                    "source_completeness_passed": False,
+                                    "source_completeness_blockers": completeness.get("blockers", []),
+                                },
+                                gencode_error_log="; ".join(str(b) for b in completeness.get("blockers", [])),
+                            )
+                            conn.commit()
+                            continue
+                except Exception:
+                    pass
 
                 save_tracker_record(
                     conn=conn,
@@ -474,7 +505,7 @@ def publish_single_v3_skill_to_production(
             f"Warnings: {variation_report.get('variation_warning')}"
         )
 
-    overall_status = "production_published"
+    overall_status = "partial_published" if partial_coverage_allowed else "production_published"
     if has_static:
         if is_first_publish or not is_variation_required:
             overall_status = "runtime_ready_with_variation_warning"

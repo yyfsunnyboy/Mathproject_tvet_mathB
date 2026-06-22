@@ -17,6 +17,7 @@ _TRACKER_STATUSES = frozenset(
         "draft_written",
         "smoke_passed",
         "verified",
+        "needs_human_review",
         "failed",
     }
 )
@@ -30,6 +31,7 @@ _INCOMPLETE_FOR_PUBLISH = frozenset(
         "pending",
         "usable",
         "generating",
+        "needs_human_review",
     }
 )
 
@@ -94,6 +96,7 @@ def get_v3_skill_component_coverage(
     missing_tracker_count = 0
     failed_count = 0
     unsupported_count = 0
+    needs_human_review_count = 0
     unverified_count = 0
 
     for example_id in example_ids:
@@ -114,6 +117,9 @@ def get_v3_skill_component_coverage(
                 failed_count += 1
                 if str(error_log or "").strip().startswith("unsupported_"):
                     unsupported_count += 1
+                unverified_count += 1
+            elif status == "needs_human_review":
+                needs_human_review_count += 1
                 unverified_count += 1
             elif status in _INCOMPLETE_FOR_PUBLISH:
                 unverified_count += 1
@@ -141,6 +147,7 @@ def get_v3_skill_component_coverage(
         "missing_tracker_count": missing_tracker_count,
         "failed_count": failed_count,
         "unsupported_count": unsupported_count,
+        "needs_human_review_count": needs_human_review_count,
         "unverified_count": unverified_count,
         "publish_ready": publish_ready,
         "examples": examples,

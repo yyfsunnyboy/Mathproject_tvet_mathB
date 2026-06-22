@@ -284,6 +284,11 @@ def check_answer(
 
         return check_interval_answer(user_answer, correct_answer)
 
+    if checker == "line_label_checker" or equiv == "normalized_line_label":
+        from core.checkers.line_label_checker import check_line_label_answer
+
+        return check_line_label_answer(user_answer, correct_answer)
+
     if checker in {"quadrant_checker", "classification_checker"} or family == "classification":
         quadrant_result = check_quadrant_answer(user_answer, correct_answer)
         if quadrant_result is not None:

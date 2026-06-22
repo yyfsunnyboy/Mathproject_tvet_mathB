@@ -170,6 +170,12 @@ CHECKER_CAPABILITIES: dict[str, dict[str, Any]] = {
         "equivalence_types": ["radical_equivalence"],
         "module": None,
     },
+    "line_label_checker": {
+        "runtime_available": True,
+        "answer_types": ["text_short", "short_answer", "choice", "text"],
+        "equivalence_types": ["normalized_line_label"],
+        "module": "core.checkers.line_label_checker",
+    },
 }
 
 

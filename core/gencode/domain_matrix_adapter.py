@@ -28,13 +28,24 @@ ANSWER_REQUIRED_FIELDS = (
     "canonical_form",
     "general_form",
     "coefficients",
-    "slope",
-    "intercept",
 )
 
+# slope and intercept are only available for slope-bearing line types
+# (e.g. two_points, point_slope, slope_intercept_equation, etc.).
+# Distance-type matrices (distance_from_point_to_line, compare_point_to_line_distances, etc.)
+# do not carry slope/intercept. Do not add them to the universal required set.
 
-def validate_domain_matrix(matrix: dict[str, Any]) -> bool:
-    """Assert that a domain matrix contains all six required top-level fields."""
+
+def validate_domain_matrix(matrix: dict[str, Any], **kwargs: Any) -> bool:
+    """Assert that a domain matrix contains all six required top-level fields.
+
+    Accepts ignored **kwargs (component_id, problem_type_id, domain_operation) for
+    forward-compatibility with callers that pass schema context alongside the matrix.
+    Raises AnswerSchemaMismatchError for missing answer fields so callers can
+    distinguish answer-schema violations from structural errors.
+    """
+    from core.gencode.answer_schema_registry import AnswerSchemaMismatchError
+
     if not isinstance(matrix, dict):
         raise ValueError("matrix must be a dict.")
 
@@ -44,11 +55,13 @@ def validate_domain_matrix(matrix: dict[str, Any]) -> bool:
 
     answer = matrix["answer"]
     if not isinstance(answer, dict):
-        raise ValueError("matrix['answer'] must be a dict.")
+        raise AnswerSchemaMismatchError("matrix['answer'] must be a dict.")
 
     missing_answer = [field for field in ANSWER_REQUIRED_FIELDS if field not in answer]
     if missing_answer:
-        raise ValueError(f"matrix['answer'] missing required fields: {missing_answer}")
+        raise AnswerSchemaMismatchError(
+            f"matrix['answer'] missing required fields: {missing_answer}"
+        )
 
     if not isinstance(matrix["distractors"], list):
         raise ValueError("matrix['distractors'] must be a list.")
@@ -64,9 +77,44 @@ def validate_domain_matrix(matrix: dict[str, Any]) -> bool:
     return True
 
 
-def normalize_domain_matrix(matrix: dict[str, Any]) -> dict[str, Any]:
-    """Return a JSON-serializable copy of a domain matrix using basic types only."""
-    validate_domain_matrix(matrix)
+def validate_full_matrix_shell(matrix: dict[str, Any], **kwargs: Any) -> bool:
+    """Validate that a matrix contains the required top-level structural fields.
+
+    Unlike validate_domain_matrix, this does NOT inspect the contents of
+    matrix['answer'] — it only verifies the six outer shell fields are present
+    and correctly typed. Useful for testing broken or partially-constructed answer
+    dicts without tripping on the answer-schema gate.
+    """
+    if not isinstance(matrix, dict):
+        raise ValueError("matrix must be a dict.")
+
+    missing = [field for field in MATRIX_REQUIRED_FIELDS if field not in matrix]
+    if missing:
+        raise ValueError(f"domain matrix missing required fields: {missing}")
+
+    if not isinstance(matrix["answer"], dict):
+        raise ValueError("matrix['answer'] must be a dict.")
+    if not isinstance(matrix["givens"], dict):
+        raise ValueError("matrix['givens'] must be a dict.")
+    if not isinstance(matrix["distractors"], list):
+        raise ValueError("matrix['distractors'] must be a list.")
+    if not isinstance(matrix["explanation_steps"], list):
+        raise ValueError("matrix['explanation_steps'] must be a list.")
+    if not isinstance(matrix["validation_facts"], dict):
+        raise ValueError("matrix['validation_facts'] must be a dict.")
+    if not isinstance(matrix["visual_spec"], dict):
+        raise ValueError("matrix['visual_spec'] must be a dict.")
+
+    return True
+
+
+def normalize_domain_matrix(matrix: dict[str, Any], **kwargs: Any) -> dict[str, Any]:
+    """Return a JSON-serializable copy of a domain matrix using basic types only.
+
+    Accepts ignored **kwargs (answer_schema_key, component_id, problem_type_id,
+    domain_operation) for forward-compatibility with pipeline_orchestrator callers.
+    """
+    validate_domain_matrix(matrix, **kwargs)
     normalized = _normalize_value(matrix)
     if not isinstance(normalized, dict):
         raise ValueError("normalized matrix must remain a dict.")
@@ -91,6 +139,28 @@ def _build_line_equation_answer_contract(
             "equivalence": "choice_label",
             "semantic_answer": semantic_answer,
         }
+    if task_type == "compare_point_to_line_distances":
+        if semantic_answer in {"L_1", "L_2"}:
+            return {
+                "presentation_mode": "short_answer",
+                "answer_type": "text_short",
+                "checker": "line_label_checker",
+                "checker_key": "line_label_checker",
+                "answer_equivalence": "normalized_line_label",
+                "equivalence": "normalized_line_label",
+                "semantic_answer": semantic_answer,
+            }
+        else:
+            return {
+                "presentation_mode": "short_answer",
+                "answer_type": "text_short",
+                "checker": "text_short_checker",
+                "checker_key": "text_short_checker",
+                "answer_equivalence": "exact_string",
+                "equivalence": "exact_string",
+                "semantic_answer": semantic_answer,
+            }
+
     if task_type == "slope_intercept_find_x_intercept":
         return {
             "presentation_mode": "short_answer",
@@ -233,6 +303,13 @@ def convert_line_equation_matrix_to_question_payload(
         default_answer_type = "rational"
     elif task_type == "slope_intercept_read_slope_and_intercept":
         default_answer_type = "text_short"
+    elif task_type == "distance_from_point_to_line":
+        default_answer_type = "rational"
+    elif task_type in (
+        "distance_from_point_to_line_parameter",
+        "compare_point_to_line_distances",
+    ):
+        default_answer_type = "text_short"
     else:
         default_answer_type = "expression"
     resolved_answer_type = str(answer_type or default_answer_type).strip()
@@ -330,6 +407,29 @@ def convert_line_equation_matrix_to_question_payload(
             semantic_answer=semantic_answer,
             task_type=task_type,
         )
+
+    # Merge comparison-specific fields into the contract for compare_point_to_line_distances.
+    # This populates target_direction, closer_line, farther_line, comparison_relation,
+    # comparison_result, and distances — required by validate_comparison_contract.
+    if task_type == "compare_point_to_line_distances":
+        for _cmp_key in (
+            "target_direction",
+            "closer_line",
+            "farther_line",
+            "comparison_relation",
+            "comparison_result",
+            "distances",
+        ):
+            if _cmp_key in answer and _cmp_key not in answer_contract:
+                answer_contract[_cmp_key] = answer[_cmp_key]
+
+    # Merge scalar-topology fields for the single_choice_scalar distance type.
+    # validate_single_choice_scalar_topology checks choice_value_shape and solution_cardinality
+    # from the answer_contract.
+    if task_type == "distance_from_point_to_line_parameter_single_choice_scalar":
+        for _sc_key in ("choice_value_shape", "solution_cardinality"):
+            if _sc_key in answer and _sc_key not in answer_contract:
+                answer_contract[_sc_key] = answer[_sc_key]
 
     payload: dict[str, Any] = {
         "question_text": question_text,
@@ -460,6 +560,7 @@ def _build_line_equation_question_text(
         "line_through_point_perpendicular_to_segment",
         "distance_from_point_to_line",
         "distance_from_point_to_line_parameter",
+        "distance_from_point_to_line_parameter_single_choice_scalar",
         "compare_point_to_line_distances",
     }
 
@@ -677,7 +778,10 @@ def _build_line_equation_question_text(
         eq = givens["equation"]
         return f"試求平面上一點 {pt} 到直線 L : {eq} 的距離。"
 
-    if task_type == "distance_from_point_to_line_parameter":
+    if task_type in (
+        "distance_from_point_to_line_parameter",
+        "distance_from_point_to_line_parameter_single_choice_scalar",
+    ):
         if "point" not in givens:
             raise ValueError("required_line_task_slot_missing:distance_from_point_to_line_parameter:point")
         if "equation" not in givens:
@@ -702,7 +806,13 @@ def _build_line_equation_question_text(
         pt = _format_point_for_question(givens["point"])
         eq1 = givens["equation_1"]
         eq2 = givens["equation_2"]
-        return f"已知平面有一點 {pt} 及兩直線 $L_1: {eq1}$ 與 $L_2: {eq2}$，試比較該點到兩直線的距離關係。"
+        target_direction = str(givens.get("target_direction") or "closer").strip().lower()
+        if target_direction == "closer":
+            return f"已知平面上一點 P{pt} 及兩直線 $L_1: {eq1}$、$L_2: {eq2}$，試問點 P 到哪一條直線的距離較近？"
+        elif target_direction == "farther":
+            return f"已知平面上一點 P{pt} 及兩直線 $L_1: {eq1}$、$L_2: {eq2}$，試問點 P 到哪一條直線的距離較遠？"
+        else:
+            return f"已知平面有一點 P{pt} 及兩直線 $L_1: {eq1}$ 與 $L_2: {eq2}$，試比較該點到兩直線的距離關係。"
 
     # 4. Fallbacks for standard Point-Slope / Two-Points / Horizontal / Vertical
     if task_type == "two_points" or ("point_a" in givens and "point_b" in givens):

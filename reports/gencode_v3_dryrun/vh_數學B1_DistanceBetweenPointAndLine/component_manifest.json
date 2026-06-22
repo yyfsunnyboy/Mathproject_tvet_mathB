@@ -1,0 +1,84 @@
+{
+  "skill_id": "vh_數學B1_DistanceBetweenPointAndLine",
+  "compiled_at": "2026-06-22T06:14:14.361055+00:00",
+  "publish_status": "dryrun_manifest_compiled",
+  "components": [
+    {
+      "component_id": "src_4568",
+      "status": "verified",
+      "presentation_mode": "short_answer",
+      "source_kind": "ex_4568",
+      "textbook_example_id": 4568,
+      "line_type": "compare_point_to_line_distances",
+      "domain_module": "core.domain.coordinate_geometry.line_equation_domain",
+      "entrypoint": "build_line_equation_matrix",
+      "component_dir": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_dryrun\\vh_數學B1_DistanceBetweenPointAndLine\\components\\src_4568"
+    },
+    {
+      "component_id": "src_4569",
+      "status": "verified",
+      "presentation_mode": "short_answer",
+      "source_kind": "ex_4569",
+      "textbook_example_id": 4569,
+      "line_type": "distance_from_point_to_line_parameter",
+      "domain_module": "core.domain.coordinate_geometry.line_equation_domain",
+      "entrypoint": "build_line_equation_matrix",
+      "component_dir": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_dryrun\\vh_數學B1_DistanceBetweenPointAndLine\\components\\src_4569"
+    },
+    {
+      "component_id": "src_4575",
+      "status": "verified",
+      "presentation_mode": "short_answer",
+      "source_kind": "ex_4575",
+      "textbook_example_id": 4575,
+      "line_type": "distance_from_point_to_line",
+      "domain_module": "core.domain.coordinate_geometry.line_equation_domain",
+      "entrypoint": "build_line_equation_matrix",
+      "component_dir": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_dryrun\\vh_數學B1_DistanceBetweenPointAndLine\\components\\src_4575"
+    },
+    {
+      "component_id": "src_4576",
+      "status": "verified",
+      "presentation_mode": "short_answer",
+      "source_kind": "ex_4576",
+      "textbook_example_id": 4576,
+      "line_type": "distance_from_point_to_line_parameter",
+      "domain_module": "core.domain.coordinate_geometry.line_equation_domain",
+      "entrypoint": "build_line_equation_matrix",
+      "component_dir": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_dryrun\\vh_數學B1_DistanceBetweenPointAndLine\\components\\src_4576"
+    },
+    {
+      "component_id": "src_4586",
+      "status": "verified",
+      "presentation_mode": "short_answer",
+      "source_kind": "ex_4586",
+      "textbook_example_id": 4586,
+      "line_type": "compare_point_to_line_distances",
+      "domain_module": "core.domain.coordinate_geometry.line_equation_domain",
+      "entrypoint": "build_line_equation_matrix",
+      "component_dir": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_dryrun\\vh_數學B1_DistanceBetweenPointAndLine\\components\\src_4586"
+    },
+    {
+      "component_id": "src_4587",
+      "status": "verified",
+      "presentation_mode": "short_answer",
+      "source_kind": "ex_4587",
+      "textbook_example_id": 4587,
+      "line_type": "distance_from_point_to_line_parameter",
+      "domain_module": "core.domain.coordinate_geometry.line_equation_domain",
+      "entrypoint": "build_line_equation_matrix",
+      "component_dir": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_dryrun\\vh_數學B1_DistanceBetweenPointAndLine\\components\\src_4587"
+    },
+    {
+      "component_id": "src_4607",
+      "status": "verified",
+      "presentation_mode": "single_choice",
+      "source_kind": "ex_4607",
+      "textbook_example_id": 4607,
+      "line_type": "distance_from_point_to_line_parameter_single_choice_scalar",
+      "domain_module": "core.domain.coordinate_geometry.line_equation_domain",
+      "entrypoint": "build_line_equation_matrix",
+      "component_dir": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_dryrun\\vh_數學B1_DistanceBetweenPointAndLine\\components\\src_4607"
+    }
+  ]
+}

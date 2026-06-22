@@ -1,10 +1,10 @@
 # Gencode × AgentSkillV3 核心規範說明書
 
-> **文件版本**：v1.4（Domain 層架構規劃增補 · 僅 SOP，待實作）  
+> **文件版本**：v1.5（Component Domain Operation 與 Answer Schema Contract 收斂）  
 > **適用範圍**：高職數學 B 版 Gencode Pipeline 全面升級至 V3「西堤套餐」微元件化架構  
 > **上位法規**：[Gencode與AgentSkillV2整合總體設計_v0.3.md](../Gencode_AgentSkillV2整合/Gencode與AgentSkillV2整合總體設計_v0.3.md)（Layer 1–6 原則完整繼承，本文件僅增量定義 V3 微元件層）  
 > **實體錨點目錄**：`docs/系統SOP/Gencode_AgentSkillV3整合/`  
-> **實作狀態**：v1.4 新增之 `core/domain/`、`core/registry/taxonomy_registry.py` 條目為**架構規劃**；Codex 實作前以本 SOP 為準。
+> **實作狀態**：v1.5 條款對應之 `core/domain/`、`core/registry/taxonomy_registry.py`、`core/gencode/answer_schema_registry.py`、`gencode_component_tracker`、component scaffold / compiler / wrapper 已 **IMPLEMENTED** 或 **PARTIALLY_IMPLEMENTED**；各模組狀態見 §0.3。
 
 ---
 
@@ -20,10 +20,21 @@
 | **DB / 前台零侵入** | 嚴禁修改**學生學習數據表**與 `practice.py` 調度入口；教材例題權威庫之 Gencode 維運欄位增量見 §4.5（唯一允許之 DB 擴充範圍） |
 | **同構題自動變異** | 核心定位是 **Isomorphic Question Generator**：概念不動、難度不動、變數個數與計算公式與原題完全相同，**僅更換數值**；反向求解或題型變更由教材後續獨立 Source 承載，不在此管線融合 |
 | **一題一對一隔離** | 教材每一道例題 / 隨堂 / 自我評量 → 一個獨立 `components/{component_id}/` 資料夾 + 單一 `generate.py`；**嚴禁**多題合一、嚴禁 AI 自由發揮融合 |
-| **天然順序繼承難度** | 依教材天生題號前綴（`ex_*` / `quiz_*` / `test_*`）注入 `ORDER_WEIGHT` 與 `DIFFICULTY_LEVEL`，免去複雜出題演算法 |
+| **天然順序繼承難度** | 依 `SOURCE_KIND`（`example` / `quiz` / `test`，由 `source_description` 或 canonical problem_type 映射）注入 `ORDER_WEIGHT` 與 `DIFFICULTY_LEVEL`；**禁止**由 `component_id` 或 `src_*` 前綴推斷 |
 | **AI 角色定位** | Gemini Flash 僅扮演 **單題同構模板填空搬運工**；數學正確性由 Domain Function 算子盾牌 + Validator 接管 |
 
-### 0.2 v1.4 Domain 層架構規劃摘要（待實作）
+### 0.2 v1.5 Component Domain Operation 與 Answer Schema Contract 摘要（IMPLEMENTED）
+
+| # | 條款 | 模組 | 狀態 |
+|---|------|------|------|
+| 1 | `component_id = src_{textbook_example_id}`；`ex_*`/`quiz_*`/`test_*` 僅作 `SOURCE_KIND` | `component_tracker_service.derive_component_id` | IMPLEMENTED |
+| 2 | Registry 分層：`skill_id → domain profile`；`induced spec → domain_operation` | `taxonomy_registry.SKILL_DOMAIN_PROFILE` | IMPLEMENTED |
+| 3 | Full Matrix 兩層驗證：外殼六欄位 + `answer_schema_key` | `answer_schema_registry` / `domain_matrix_adapter` | IMPLEMENTED |
+| 4 | 四層錯誤責任：component / domain / shared contract / packaging | `failure_responsibility` | IMPLEMENTED |
+| 5 | 兩種重建入口：Skill Batch Build / Component Targeted Rebuild | `admin_gencode_action_service` | IMPLEMENTED |
+| 6 | induced spec 必填：`domain_operation`、`answer_schema_key`、`checker_key` 等 | `induced_spec_contract` | IMPLEMENTED |
+
+### 0.3 v1.4 Domain 層架構摘要（保留 · 多數已落地）
 
 | # | 條款 | 對應章節 |
 |---|------|----------|
@@ -55,8 +66,9 @@
 | B4 Payload 驗證 | `core/vocational_math_b4/domain/b4_validators.py` | 不變 |
 | Phase 2 閉環修補 | `gencode_closed_loop/controller.py` | 擴展至 component 粒度 |
 | K7–K12 題型白名單 | — | `configs/gencode_taxonomy/k12_component_taxonomy.yaml` |
-| **共用 Domain 邏輯層** | 分散於 `core/*_domain_functions.py`、`core/vocational_math_b4/domain/` | **`core/domain/{領域}/{主題}_domain.py`**（v1.4 目標，見 §2.5） |
-| **Domain 註冊中繼層** | — | **`core/registry/taxonomy_registry.py`**（v1.4 目標，見 §2.7） |
+| **共用 Domain 邏輯層** | 分散於 `core/*_domain_functions.py`、`core/vocational_math_b4/domain/` | **`core/domain/{領域}/{主題}_domain.py`**（v1.4+ **IMPLEMENTED**） |
+| **Domain 註冊中繼層** | — | **`core/registry/taxonomy_registry.py`**（v1.5：`SKILL_DOMAIN_PROFILE` + `SKILL_TO_DOMAIN` **IMPLEMENTED**） |
+| **Answer Schema Registry** | — | **`core/gencode/answer_schema_registry.py`**（v1.5 **IMPLEMENTED**） |
 | **教材例題權威庫（維運）** | 既有 `TextbookExample` / Word 匯入 → `textbook_examples` | **`gencode_component_tracker` 影子表**（§4.5） |
 | **熱拔插編譯重載** | — | 後台 `admin_trigger_rebuild` → `skill_wrapper_compiler`（§4.6） |
 | 圖形語意驗證 | — | `core/gencode/visual_schema_validators.py`（V3 目標） |
@@ -235,28 +247,35 @@ v1.3 **不再**以 Taxonomy 驅動概念聚類或題型拆分；Taxonomy 僅作*
 
 | 教材類型 | `component_id` 命名 | 範例 |
 |----------|---------------------|------|
-| 例題 | `ex_{題號}` | `ex_3` |
-| 隨堂練習 | `quiz_{題號}` | `quiz_3` |
-| 自我評量 / 課後習題 | `test_{題號}` | `test_7` |
-| DB 有 `source_id` 時 | `{source_id}` 正規化 | `src_ex_3_001` |
+#### 1.5.1 實體 component_id 與教材類型分離（v1.5 · 剛性）
 
-**嚴禁**：多題共用一個 `generate.py`、AI 將兩道原題融合為一個 component、以 `target_task` 取代實體題號作為 `component_id`。
+| 概念 | 規範 | 範例 |
+|------|------|------|
+| **`component_id`** | `src_{textbook_example_id}` | `textbook_examples.id=4545` → `src_4545` |
+| **`SOURCE_KIND`** | `example` \| `quiz` \| `test`（教材類型，**不得**併入 component_id） | 例題 → `example` |
+| **`ORDER_WEIGHT`** | `example=10`, `quiz=20`, `test=30`；由 `source_description` / canonical `problem_type` 映射 | 隨堂 → `20` |
+| **`DIFFICULTY_LEVEL`** | `example/quiz=easy`, `test=hard` | 自我評量 → `hard` |
+| **`IS_REQUIRED_CORE`** | Taxonomy 靜態或架構師預置；AI / repair loop **不得**改寫 | `True` / `False` |
+
+> **DEPRECATED（v1.5）**：以 `ex_{n}` / `quiz_{n}` / `test_{n}` 作為**實體** `component_id` 或硬碟目錄名。舊前綴僅允許出現在歷史報告；新管線一律 `src_*`。
 
 #### 1.5.2 天然難度權重注入
 
-管線在生成 `metadata.py` 骨架時，依題號前綴**自動**注入（無需 AI 判定、無需複雜演算法）：
+管線在生成 `metadata.py` 骨架時，依 **`SOURCE_KIND`**（由 `core/gencode/source_kind_resolver.py` 自教材列推得）**自動**注入：
 
-| 前綴系列 | `ORDER_WEIGHT` | `DIFFICULTY_LEVEL` | 語意 |
-|----------|----------------|-------------------|------|
-| `ex_*`（例題） | `10` | `"easy"` | 教材最前段、示範題 |
-| `quiz_*`（隨堂練習） | `20` | `"easy"` | 課中練習；同級難度，排序靠後 |
-| `test_*`（自我評量 / 課後） | `30` | `"hard"` | 單元後段評量題 |
+| `SOURCE_KIND` | `ORDER_WEIGHT` | `DIFFICULTY_LEVEL` | 語意 |
+|---------------|----------------|-------------------|------|
+| `example` | `10` | `"easy"` | 例題 / 示範 |
+| `quiz` | `20` | `"easy"` | 隨堂練習 |
+| `test` | `30` | `"hard"` | 自我評量 / 課後 |
 
 ```python
 # metadata.py — 管線自動注入（禁止 AI 改寫）
-ORDER_WEIGHT: Final[int] = 10          # ex_* → 10, quiz_* → 20, test_* → 30
-DIFFICULTY_LEVEL: Final[str] = "easy"    # test_* → "hard"
-SOURCE_REF: Final[str] = "ex_3"        # 回溯教材原題
+COMPONENT_ID: Final[str] = "src_4545"
+SOURCE_KIND: Final[str] = "example"
+ORDER_WEIGHT: Final[int] = 10
+DIFFICULTY_LEVEL: Final[str] = "easy"
+IS_REQUIRED_CORE: Final[bool] = False
 ```
 
 **出題順序**：Phase 3 編譯 `GENERATOR_SPECS` 時依 `ORDER_WEIGHT` 升序排列；前台抽題可優先例題再隨堂再評量，**無需**額外難度推斷模組。
@@ -516,6 +535,35 @@ ProblemMatrix = {
 
 > **payload 封裝**：`generate.py` 可將 `matrix["answer"]["canonical_form"]` 填入 `payload["correct_answer"]` 等前台欄位，但**不得**對答案、誘答項或坐標做任何數學運算或重新推導。
 
+#### 2.3.3 Answer Schema Registry 與兩層驗證（v1.5 · IMPLEMENTED）
+
+**Canonical 模組**：`core/gencode/answer_schema_registry.py`
+
+| 層級 | 函式 | 驗證範圍 |
+|------|------|----------|
+| 第一層 | `validate_full_matrix_shell(matrix)` | 六大外層欄位存在且型別正確 |
+| 第二層 | `validate_answer_schema(answer, answer_schema_key=...)` | `matrix["answer"]` 內部欄位依 schema key |
+
+**七種分流責任（不得互相代替）**：
+
+```text
+skill_id              → 行政歸屬與學生端入口
+domain                → 共用數學領域（如 coordinate_geometry）
+domain_operation      → 該題實際數學操作（induced spec 決定）
+problem_type_id       → 題型身份與 runtime 分流鍵
+answer_schema_key     → matrix["answer"] 結構契約
+presentation_mode     → 學生端輸入介面
+checker_key           → 批改與語意等價判定
+```
+
+**剛性禁止**：
+
+1. 不得由整個 `coordinate_geometry` domain 或 `skill_id` 直接決定固定 answer fields。
+2. schema 不存在 → **fail-fast**；禁止 fallback 到 `slope_intercept` 或 registry 第一筆。
+3. Full Matrix 共用 validator **不得**直接要求 `slope` / `intercept` / `distance` 等 operation-specific 欄位。
+
+**Legacy migration**：舊 induced spec 缺 `answer_schema_key` 時，僅允許依 `problem_type_id` / `domain_operation` **deterministic mapping**；無法唯一判定 → `needs_human_review`（禁止假裝分類成功）。
+
 **AI（Gemini Flash）搬運工角色**：
 
 | 允許 | 禁止 |
@@ -738,39 +786,94 @@ distractors = [f"y={slope}x+{b+1}", ...]  # 禁止
 visual_spec["points"][0]["x"] = x1 + 1    # 禁止
 ```
 
-### 2.7 Domain 註冊與對應層（Registry 中繼）
+### 2.7 Domain 註冊與對應層（Registry 中繼 · v1.5）
 
-**目標模組**：`core/registry/taxonomy_registry.py`（或倉庫內等價 registry 檔；實作前以本 SOP 路徑為準）
+**模組**：`core/registry/taxonomy_registry.py`（**IMPLEMENTED**）
 
-本層為 **skill_id → Domain Function** 的唯一硬編碼中繼站：
+Registry **分兩層責任**：
 
-| 職責 | 說明 |
-|------|------|
-| 綁定行政 skill | 將 `vh_數學B1_PointSlopeForm` 等外層 `skill_id` 映射至 `line_equation_domain.build_line_equation_matrix` |
-| 注入 profile 預設 | 為技高 B 單元預置 `curriculum_profile="vocational_high_b"` |
-| 解析 component 參數 | 依 `metadata.TARGET_TASK` / `line_type` 傳入 Domain 函式 |
+| 層 | 資料結構 | 職責 |
+|----|----------|------|
+| 行政 profile | `SKILL_DOMAIN_PROFILE` | `skill_id → domain` + `curriculum_profile` |
+| 模組路由 | `SKILL_TO_DOMAIN` | `domain_module` + `entrypoint` + `allowed_types` |
 
 ```python
-# taxonomy_registry.py — skill_id 僅允許出現在此層
-SKILL_TO_DOMAIN: dict[str, dict] = {
-    "vh_數學B1_PointSlopeForm": {
-        "domain_module": "core.domain.coordinate_geometry.line_equation_domain",
-        "entrypoint": "build_line_equation_matrix",
-        "default_curriculum_profile": "vocational_high_b",
+SKILL_DOMAIN_PROFILE = {
+    "vh_數學B1_DistanceBetweenPointAndLine": {
+        "domain": "coordinate_geometry",
+        "curriculum_profile": "vocational_high_b",
     },
-    "vh_數學B4_SimplePermutation": {
-        "domain_module": "core.domain.counting.permutation_combination_domain",
-        "entrypoint": "build_permutation_combination_matrix",
-        "default_curriculum_profile": "vocational_high_b",
-    },
+}
+```
+
+**Component induced spec**（非 skill registry）決定數學操作：
+
+```json
+{
+  "component_id": "src_4575",
+  "domain_operation": "point_to_line_distance",
+  "problem_type_id": "distance_from_point_to_line",
+  "answer_schema_key": "distance_scalar",
+  "presentation_mode": "short_answer",
+  "checker_key": "rational_checker"
 }
 ```
 
 **剛性原則**：
 
 1. `skill_id` 硬編碼**只能**停留在 Registry / Taxonomy 設定層；**絕對禁止**傳入 `core/domain/` 內部。
-2. 新增國中 / 普高題型時，僅調整 `metadata` 的 `curriculum_profile` 與 Registry 預設，**不修改**底層數學代碼。
-3. Phase 1 / Phase 2 管線透過 Registry 解析 Domain 入口；`generate.py` **不得**硬編碼 `skill_id` 分支。
+2. **禁止**因同屬一 skill 而共用 answer schema；每 component 自 induced spec 帶入 `answer_schema_key`。
+3. Domain 入口可選 `build_coordinate_geometry_matrix(domain_operation=...)`（operation registry，**IMPLEMENTED**）。
+
+#### Amendment 2026-06-22: coordinate geometry distance contracts
+
+For point-to-line distance components, `answer_schema_key` MUST be resolved from
+`problem_type_id` or an explicit `domain_operation` contract. It MUST NOT be
+inherited from the whole coordinate-geometry domain.
+
+Required contract examples:
+
+| problem_type_id | answer_schema_key | required semantic fields |
+|---|---|---|
+| `distance_from_point_to_line` | `distance_scalar` | `distance` |
+| `distance_from_point_to_line_parameter` | `parameter_scalar` | `parameter`, `distance`, `parameter_name` |
+| `distance_from_point_to_line_parameter_single_choice_scalar` | `parameter_scalar` | `parameter`, `solution_cardinality=single`, `choice_value_shape=scalar` |
+| `compare_point_to_line_distances` | `comparison_label` | `target_direction`, `closer_line`, `farther_line`, `comparison_relation`, `comparison_result`, `distances` |
+
+Canonical line-equation serialization is owned by the domain model:
+
+- `_format_general_expression(A, B, C)` returns only the left-hand expression.
+- `_format_general_form(A, B, C)` appends exactly one `= 0`.
+- Components and adapters must not repair duplicated equation text with runtime
+  string replacement.
+
+Source completeness is part of verification. A distance-parameter source missing
+the point coordinates is `needs_human_review`, not `verified`. Auto-promotion and
+partial publish must not re-promote such stale components. A component is
+`verified` only after source completeness, answer schema validation, component
+compile/smoke, multi-seed integrity, and semantic topology checks pass.
+
+### 2.8 四層錯誤責任（v1.5 · IMPLEMENTED）
+
+**模組**：`core/gencode/failure_responsibility.py`
+
+| 層級 | 典型錯誤 | 處置 |
+|------|----------|------|
+| `component_local_failure` | 題幹模板缺欄、choices 重複、LaTeX 錯 | 只修該 component；最多 3 次 repair |
+| `domain_operation_failure` | 距離公式錯、無法產生合法參數 | 標記 domain failure；禁止 AI 改寫 component 內數學 |
+| `shared_contract_failure` | 多題相同 schema mismatch、registry 缺失 | **停止** component-level AI repair；修正共用架構後批次重跑 |
+| `packaging_failure` | manifest / dispatch / wrapper 不一致 | 只重跑 compiler + integrity gate；不重新生成 component |
+
+Batch dry-run 若偵測 ≥2 題完全相同之 `answer_schema_mismatch` → `should_skip_component_repair=true`。
+
+### 2.9 兩種合法重建入口（v1.5 · IMPLEMENTED）
+
+| 入口 | 用途 | 行為 |
+|------|------|------|
+| **Skill Batch Build** | 首次建立、整 skill 重建、domain/schema 重大變更 | 逐 `textbook_example` 獨立 tracker；單題失敗不污染姊妹題 |
+| **Component Targeted Rebuild** | 單題修復、人工改 induced spec | 只重建 `src_{id}`；通過後重跑該 skill compiler |
+
+兩者共用同一 component pipeline（`run_gencode_phase2_v3_shadow_bridge` / `run_admin_v3_dryrun_for_example`），禁止維護第二套生成邏輯。
 
 ---
 
@@ -1364,4 +1467,4 @@ agent_skills_v3/{skill_id}/components/{component_id}/
 
 ---
 
-*本文件為 AgentSkillV3 架構大會審查規格書 v1.4（Domain 層架構規劃增補 · 待實作）。修訂須同步更新 `SOP_Gencode_AgentSkillV3_PipelineFlow.md`。*
+*本文件為 AgentSkillV3 架構大會審查規格書 v1.5（Component Domain Operation 與 Answer Schema Contract 收斂）。修訂須同步更新 `SOP_Gencode_AgentSkillV3_PipelineFlow.md`。*

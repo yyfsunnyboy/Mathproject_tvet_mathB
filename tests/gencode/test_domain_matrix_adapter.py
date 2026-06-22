@@ -113,17 +113,17 @@ def test_accepts_presentation_mode_and_contract_kwargs():
         presentation_mode="single_choice",
         answer_type="single_choice",
         problem_type_id="write_line_equation_from_point_slope",
-        component_id="src_test",
+        component_id="src_9999",
         textbook_example_id=9999,
-        source_kind="ex_test",
-        generator_key="src_test",
+        source_kind="example",
+        generator_key="src_9999",
     )
     assert payload["presentation_mode"] == "single_choice"
     assert payload["problem_type_id"] == "write_line_equation_from_point_slope"
-    assert payload["component_id"] == "src_test"
+    assert payload["component_id"] == "src_9999"
     assert payload["textbook_example_id"] == 9999
-    assert payload["source_kind"] == "ex_test"
-    assert payload["generator_key"] == "src_test"
+    assert payload["source_kind"] == "example"
+    assert payload["generator_key"] == "src_9999"
     assert payload["metadata"]["presentation_mode"] == "single_choice"
     assert payload["answer_contract"]
 
@@ -134,11 +134,43 @@ def test_adapter_rejects_incomplete_matrix():
 
 
 @pytest.mark.parametrize(
+    ("line_type", "required_key", "forbidden_keys", "expected_answer_type"),
+    [
+        ("distance_from_point_to_line", "distance", ("slope", "intercept"), "rational"),
+        ("distance_from_point_to_line_parameter", "parameter", ("slope", "intercept"), "text_short"),
+        ("compare_point_to_line_distances", "comparison_result", ("slope", "intercept"), "text_short"),
+        ("slope_intercept_equation", "slope", (), "expression"),
+    ],
+)
+def test_line_domain_answer_schema_is_task_specific(
+    line_type: str,
+    required_key: str,
+    forbidden_keys: tuple[str, ...],
+    expected_answer_type: str,
+):
+    matrix = _sample_matrix(line_type=line_type)
+
+    assert validate_domain_matrix(matrix) is True
+    assert required_key in matrix["answer"]
+    for key in forbidden_keys:
+        assert key not in matrix["answer"]
+
+    payload = convert_line_equation_matrix_to_question_payload(
+        matrix,
+        presentation_mode="short_answer",
+        problem_type_id=line_type,
+    )
+    assert payload["problem_type_id"] == line_type
+    assert payload["answer_type"] == expected_answer_type
+    assert payload["answer_contract"]["answer_type"] == expected_answer_type
+
+
+@pytest.mark.parametrize(
     ("source_kind", "order_weight", "difficulty_level"),
     [
-        ("ex_3", 10, "easy"),
-        ("quiz_5", 20, "easy"),
-        ("test_2", 30, "hard"),
+        ("example", 10, "easy"),
+        ("quiz", 20, "easy"),
+        ("test", 30, "hard"),
     ],
 )
 def test_scaffold_metadata_injects_source_kind_difficulty(
@@ -149,10 +181,11 @@ def test_scaffold_metadata_injects_source_kind_difficulty(
     domain_meta, payload_meta = _domain_and_payload_meta()
     files = build_component_files_from_domain_payload(
         skill_id="vh_數學B1_PointSlopeForm",
-        component_id=source_kind,
+        component_id="src_4545",
         source_kind=source_kind,
         domain_meta=domain_meta,
         payload_meta=payload_meta,
+        textbook_example_id=4545,
     )
     metadata_source = files["metadata.py"]
     assert f"ORDER_WEIGHT: Final[int] = {order_weight}" in metadata_source
@@ -164,8 +197,8 @@ def test_scaffold_generate_source_has_no_forbidden_imports_or_db_access():
     domain_meta, payload_meta = _domain_and_payload_meta()
     files = build_component_files_from_domain_payload(
         skill_id="vh_數學B1_PointSlopeForm",
-        component_id="ex_1",
-        source_kind="ex_1",
+        component_id="src_1",
+        source_kind="example",
         domain_meta=domain_meta,
         payload_meta=payload_meta,
     )
@@ -178,8 +211,8 @@ def test_scaffold_generate_source_has_no_manual_slope_intercept_derivation():
     domain_meta, payload_meta = _domain_and_payload_meta()
     files = build_component_files_from_domain_payload(
         skill_id="vh_數學B1_PointSlopeForm",
-        component_id="quiz_2",
-        source_kind="quiz_2",
+        component_id="src_2",
+        source_kind="quiz",
         domain_meta=domain_meta,
         payload_meta=payload_meta,
     )
@@ -195,8 +228,8 @@ def test_scaffold_get_hint_has_three_stage_semantic_skeleton():
     domain_meta, payload_meta = _domain_and_payload_meta()
     files = build_component_files_from_domain_payload(
         skill_id="vh_數學B1_PointSlopeForm",
-        component_id="test_1",
-        source_kind="test_1",
+        component_id="src_3",
+        source_kind="test",
         domain_meta=domain_meta,
         payload_meta=payload_meta,
     )
@@ -213,8 +246,8 @@ def test_scaffold_builder_returns_only_string_files_without_disk_write():
     domain_meta, payload_meta = _domain_and_payload_meta()
     files = build_component_files_from_domain_payload(
         skill_id="vh_數學B1_PointSlopeForm",
-        component_id="ex_9",
-        source_kind="ex_9",
+        component_id="src_9",
+        source_kind="example",
         domain_meta=domain_meta,
         payload_meta=payload_meta,
     )

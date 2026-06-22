@@ -46,6 +46,15 @@ def parse_choices_from_text(text: str) -> list[str]:
     return choices
 
 
+def _distance_comparison_target_direction(text: str) -> str:
+    normalized = str(text or "")
+    if any(token in normalized for token in ("比較遠", "較遠", "遠者", "farther")):
+        return "farther"
+    if any(token in normalized for token in ("比較近", "較近", "近者", "closer")):
+        return "closer"
+    return "relation"
+
+
 def _deterministic_classify(source: TextbookExampleSource) -> dict[str, Any] | None:
     text = source.question_text or ""
     
@@ -250,6 +259,7 @@ def _deterministic_classify(source: TextbookExampleSource) -> dict[str, Any] | N
                 "problem_type_id": "compare_point_to_line_distances",
                 "math_family": "line_equation",
                 "task_intent": "compare_point_to_line_distances",
+                "target_direction": _distance_comparison_target_direction(text),
                 "given_structure": ["coordinate_point", "two_line_equations"],
                 "target_structure": ["comparison_result"],
                 "presentation_mode": "single_choice" if ("A)" in text or source.choices) else "short_answer",
@@ -259,14 +269,22 @@ def _deterministic_classify(source: TextbookExampleSource) -> dict[str, Any] | N
                 "classification_source": "deterministic",
             }
         elif "k" in text.lower() or "a =" in text or "a=" in text or "a 值" in text or "a值" in text or "k值" in text:
+            is_scalar_single_choice = bool(source.choices or "A)" in text or "A" in str(source.answer))
+            problem_type_id = (
+                "distance_from_point_to_line_parameter_single_choice_scalar"
+                if is_scalar_single_choice
+                else "distance_from_point_to_line_parameter"
+            )
             return {
-                "problem_type_id": "distance_from_point_to_line_parameter",
+                "problem_type_id": problem_type_id,
                 "math_family": "line_equation",
-                "task_intent": "distance_from_point_to_line_parameter",
+                "task_intent": problem_type_id,
                 "given_structure": ["coordinate_point", "line_equation_with_parameter", "distance_value"],
                 "target_structure": ["parameter_value"],
+                "solution_cardinality": "single" if is_scalar_single_choice else "solution_set",
+                "choice_value_shape": "scalar" if is_scalar_single_choice else None,
                 "presentation_mode": "single_choice" if ("A)" in text or source.choices or "A" in str(source.answer)) else "short_answer",
-                "answer_type": "single_choice" if ("A)" in text or source.choices or "A" in str(source.answer)) else "rational",
+                "answer_type": "single_choice" if ("A)" in text or source.choices or "A" in str(source.answer)) else "text_short",
                 "required_domain_capabilities": ["distance_from_point_to_line_parameter"],
                 "confidence": 1.0,
                 "classification_source": "deterministic",

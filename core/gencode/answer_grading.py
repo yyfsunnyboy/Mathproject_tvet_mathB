@@ -28,6 +28,7 @@ _CONTRACT_CHECKERS = frozenset(
         "coordinate_pair_checker",
         "linear_equation_equivalent_checker",
         "multi_part_answer_checker",
+        "line_label_checker",
     }
 )
 

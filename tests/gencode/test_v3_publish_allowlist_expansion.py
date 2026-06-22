@@ -174,6 +174,10 @@ def test_allowlist_contains_horizontal_vertical():
     assert HV_SKILL_ID in V3_PRODUCTION_PUBLISH_ALLOWED_SKILLS
 
 
+def test_allowlist_contains_distance_between_point_and_line():
+    assert "vh_數學B1_DistanceBetweenPointAndLine" in V3_PRODUCTION_PUBLISH_ALLOWED_SKILLS
+
+
 def test_allowlist_does_not_contain_fake_skill():
     assert FAKE_SKILL_ID not in V3_PRODUCTION_PUBLISH_ALLOWED_SKILLS
 

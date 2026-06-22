@@ -43,6 +43,7 @@ _STATUS_PRIORITY: dict[str, int] = {
     "draft_written": 5,
     "smoke_passed": 6,
     "verified": 7,
+    "needs_human_review": 8,
 }
 
 

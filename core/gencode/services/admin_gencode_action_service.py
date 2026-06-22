@@ -295,7 +295,7 @@ def run_admin_v3_dryrun_for_skill(
             entry_status = "processed"
             message = str(dryrun_result.get("status") or "draft_written")
 
-            if smoke:
+            if smoke and message == "draft_written":
                 smoke_result = run_admin_v3_smoke_for_example(
                     conn=conn,
                     textbook_example_id=textbook_example_id,
@@ -359,6 +359,11 @@ def run_admin_v3_dryrun_for_skill(
         except Exception:
             pass
 
+    failed_entries = [item for item in results if item.get("status") == "failed"]
+    from core.gencode.failure_responsibility import classify_batch_failures
+
+    failure_batch = classify_batch_failures(failed_entries)
+
     return {
         "success": failed_count == 0,
         "skill_id": skill_key,
@@ -371,6 +376,8 @@ def run_admin_v3_dryrun_for_skill(
         "verified_count": verified_count,
         "missing_tracker_count": missing_tracker_count,
         "publish_ready": bool(coverage.get("publish_ready")),
+        "failure_batch": failure_batch,
+        "should_skip_component_repair": bool(failure_batch.get("should_skip_component_repair")),
         "results": results,
         "per_example_results": results,
         "coverage": coverage,
@@ -643,7 +650,7 @@ def run_admin_v3_dryrun_for_example(
     if str(phase2_result.get("phase_status", "")).strip() != "V3_SHADOW_BRIDGE":
         raise ValueError("v3_shadow_bridge_not_executed")
     tracker_status = str(phase2_result.get("tracker_status", "")).strip()
-    if tracker_status not in {"draft_written", "verified"}:
+    if tracker_status not in {"draft_written", "verified", "needs_human_review"}:
         raise ValueError("v3_shadow_bridge_not_executed")
 
     component_id = derive_component_id(textbook_example_id)
@@ -893,7 +900,11 @@ def run_admin_v3_publish_for_skill(
     if skill_key not in V3_PRODUCTION_PUBLISH_ALLOWED_SKILLS and "dynamic" not in skill_key.lower():
         raise ValueError("production_publish_not_allowed_for_skill")
 
-    if not bool(eligibility.get("allowed")):
+    partial_coverage_allowed = (
+        not strict_coverage
+        and str(eligibility.get("reason") or "") in {"coverage_incomplete", "publish_ready_false"}
+    )
+    if not bool(eligibility.get("allowed")) and not partial_coverage_allowed:
         raise ValueError(str(eligibility.get("reason") or "v3_publish_not_eligible"))
 
     verified_component_count = _count_verified_components_for_skill(conn, skill_key)
@@ -902,7 +913,7 @@ def run_admin_v3_publish_for_skill(
 
     # Pre-publish integrity gate — surface errors early without replacing the gate in publish service
     from core.gencode.services.v3_question_integrity_validator import validate_skill_samples
-    _integrity_result = validate_skill_samples(skill_key, n_seeds=5, source="pre_publish")
+    _integrity_result = validate_skill_samples(skill_key, n_seeds=5, source="pre_publish", conn=conn)
     if not _integrity_result.get("passed", True):
         raise ValueError(
             f"integrity_gate_failed: {'; '.join(_integrity_result.get('blockers_summary', []))}"
@@ -915,11 +926,12 @@ def run_admin_v3_publish_for_skill(
         skill_id=skill_key,
         project_root=project_root,
         staging_root=staging_root,
+        allow_partial_coverage=partial_coverage_allowed,
     )
     status = str(publish_result.get("status", "")).strip()
     component_count = publish_result.get("component_count", 0)
     published_evidence: list[dict[str, object]] = []
-    if status in {"production_published", "runtime_ready_with_variation_warning"} or publish_result.get("production_smoke_status") == "passed":
+    if status in {"production_published", "partial_published", "runtime_ready_with_variation_warning"} or publish_result.get("production_smoke_status") == "passed":
         published_evidence = _record_published_component_evidence(
             conn,
             skill_id=skill_key,

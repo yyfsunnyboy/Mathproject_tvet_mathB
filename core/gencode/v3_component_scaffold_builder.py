@@ -4,8 +4,14 @@ from __future__ import annotations
 
 from typing import Any
 
+from core.gencode.source_kind_resolver import (
+    resolve_difficulty_level,
+    resolve_order_weight,
+    resolve_source_kind_from_textbook_row,
+)
+
 _SOURCE_KIND_PROFILES: dict[str, dict[str, object]] = {
-    "ex": {"order_weight": 10, "difficulty_level": "easy"},
+    "example": {"order_weight": 10, "difficulty_level": "easy"},
     "quiz": {"order_weight": 20, "difficulty_level": "easy"},
     "test": {"order_weight": 30, "difficulty_level": "hard"},
 }
@@ -27,11 +33,14 @@ def build_component_files_from_domain_payload(
     payload_meta: dict[str, Any],
     *,
     textbook_example_id: int | None = None,
+    textbook_row: dict[str, Any] | None = None,
 ) -> dict[str, str]:
     """Return metadata.py / generate.py / get_hint.py source strings only."""
+    if textbook_row is not None:
+        source_kind = resolve_source_kind_from_textbook_row(textbook_row)
     profile = _resolve_source_kind_profile(source_kind)
-    order_weight = int(profile["order_weight"])
-    difficulty_level = str(profile["difficulty_level"])
+    order_weight = resolve_order_weight(source_kind)
+    difficulty_level = resolve_difficulty_level(source_kind)
 
     return {
         "metadata.py": _build_metadata_py(
@@ -63,7 +72,9 @@ def normalize_v3_component_metadata_fields(payload_meta: dict[str, Any]) -> dict
     ).strip()
     legacy_answer_type = str(payload_meta.get("answer_type") or "").strip()
     answer_value_type = str(payload_meta.get("answer_value_type") or "").strip()
-    if not answer_value_type and legacy_answer_type and legacy_answer_type not in _RESPONSE_MODE_VALUES:
+    if not answer_value_type and legacy_answer_type == "text_short":
+        answer_value_type = legacy_answer_type
+    elif not answer_value_type and legacy_answer_type and legacy_answer_type not in _RESPONSE_MODE_VALUES:
         answer_value_type = legacy_answer_type
     if not answer_value_type:
         answer_value_type = "choice_label" if response_mode == "single_choice" else "expression"
@@ -109,6 +120,10 @@ def _build_metadata_py(
     answer_value_type = normalized["answer_value_type"]
     legacy_answer_type = normalized["legacy_answer_type"]
     line_type = str(payload_meta.get("line_type", ""))
+    domain_operation = str(
+        payload_meta.get("domain_operation") or payload_meta.get("line_type") or target_task
+    ).strip()
+    answer_schema_key = str(payload_meta.get("answer_schema_key") or "").strip()
     textbook_id = int(textbook_example_id if textbook_example_id is not None else payload_meta.get("textbook_example_id", 0) or 0)
 
     if presentation_mode == "single_choice":
@@ -145,9 +160,12 @@ SKILL_ID: Final[str] = "{skill_id}"
 SOURCE_REF: Final[str] = "{component_id}"
 SOURCE_KIND: Final[str] = "{source_kind}"
 TEXTBOOK_EXAMPLE_ID: Final[int] = {textbook_id}
+IS_REQUIRED_CORE: Final[bool] = False
 
 ORDER_WEIGHT: Final[int] = {order_weight}
 DIFFICULTY_LEVEL: Final[str] = "{difficulty_level}"
+DOMAIN_OPERATION: Final[str] = "{domain_operation}"
+ANSWER_SCHEMA_KEY: Final[str] = "{answer_schema_key}"
 LINE_TYPE: Final[str] = "{line_type}"
 
 TARGET_TASK: Final[str] = "{target_task}"
@@ -201,6 +219,8 @@ def _build_generate_py(
         )
     )
     line_type = str(payload_meta.get("line_type", "point_slope"))
+    domain_operation = str(payload_meta.get("domain_operation") or line_type)
+    answer_schema_key = str(payload_meta.get("answer_schema_key") or "")
     presentation_mode = str(payload_meta.get("presentation_mode", "short_answer"))
     answer_type = str(payload_meta.get("answer_type", "expression"))
     problem_type_id = str(payload_meta.get("problem_type_id", "write_line_equation_from_point_slope"))
@@ -239,6 +259,8 @@ def generate(level: int = 1, seed: int | None = None, **kwargs: Any) -> dict[str
         problem_type_id=PROBLEM_TYPE_ID,
         component_id=component_id or None,
         textbook_example_id=TEXTBOOK_EXAMPLE_ID or None,
+        answer_schema_key="{answer_schema_key}",
+        domain_operation="{domain_operation}",
     )
     if component_id:
         payload["component_id"] = component_id
