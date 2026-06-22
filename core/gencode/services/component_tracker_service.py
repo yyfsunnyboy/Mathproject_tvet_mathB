@@ -16,6 +16,10 @@ ALLOWED_GENCODE_STATUSES = frozenset(
         "verified",
         "needs_human_review",
         "failed",
+        "unsupported_domain_operation",
+        "fixed_domain_violation",
+        "domain_operation_not_allowed",
+        "needs_regeneration",
     }
 )
 

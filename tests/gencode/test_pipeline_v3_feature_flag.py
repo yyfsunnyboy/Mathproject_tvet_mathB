@@ -25,6 +25,9 @@ PAYLOAD = {
     "source_kind": "ex_1",
     "presentation_mode": "short_answer",
     "line_type": "point_slope",
+    "fixed_domain_key": "coordinate_geometry.line_equation",
+    "domain_operation": "point_slope",
+    "problem_type_id": "point_slope",
     "integrity_gate_passed": True,
     "integrity_gate_version": "v1",
 }
@@ -301,7 +304,7 @@ def test_mvp_but_non_benchmark_skill_rejected_when_flag_enabled(
         _fake_shadow_bridge_factory(isolated_roots["dryrun_root"]),
     )
 
-    with pytest.raises(ValueError, match="production_publish_not_allowed_for_skill"):
+    with pytest.raises(ValueError, match="skill_domain_not_registered|v3_publish_not_eligible|no_eligible_components"):
         run_gencode_phase2_raw(
             "vh_fake_MVP",
             dry_run=True,

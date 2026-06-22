@@ -70,7 +70,19 @@ def migrate_induced_spec_payload(spec: dict[str, Any]) -> dict[str, Any]:
             migrated["checker_key"] = answer_contract["checker_key"]
 
     if not migrated.get("domain"):
-        migrated["domain"] = "coordinate_geometry"
+        skill_key = str(migrated.get("skill_id") or "").strip()
+        if skill_key:
+            try:
+                from core.registry.taxonomy_registry import get_fixed_domain_key
+
+                migrated["fixed_domain_key"] = get_fixed_domain_key(skill_key)
+                migrated["domain"] = str(migrated["fixed_domain_key"]).split(".", 1)[0]
+            except Exception:
+                migrated["classification_status"] = "needs_human_review"
+                migrated.setdefault("classification_blockers", ["fixed_domain_key_unresolved"])
+        else:
+            migrated["classification_status"] = "needs_human_review"
+            migrated.setdefault("classification_blockers", ["fixed_domain_key_unresolved"])
 
     if not migrated.get("component_id") and migrated.get("textbook_example_id") is not None:
         migrated["component_id"] = f"src_{int(migrated['textbook_example_id'])}"

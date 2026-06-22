@@ -1,0 +1,68 @@
+[
+  {
+    "example_id": 4570,
+    "fixed_domain_key": "coordinate_geometry.parallel_lines_distance",
+    "selected_operation": "distance_between_parallel_lines",
+    "status": "verified"
+  },
+  {
+    "example_id": 4571,
+    "fixed_domain_key": "coordinate_geometry.parallel_lines_distance",
+    "selected_operation": "solve_parameter_from_parallel_distance",
+    "status": "verified"
+  },
+  {
+    "example_id": 4577,
+    "fixed_domain_key": "coordinate_geometry.parallel_lines_distance",
+    "selected_operation": "distance_between_parallel_lines",
+    "status": "verified"
+  },
+  {
+    "example_id": 4578,
+    "fixed_domain_key": "coordinate_geometry.parallel_lines_distance",
+    "selected_operation": "distance_between_parallel_lines",
+    "status": "verified"
+  },
+  {
+    "example_id": 4579,
+    "fixed_domain_key": "coordinate_geometry.parallel_lines_distance",
+    "selected_operation": "solve_parameter_from_parallel_distance",
+    "status": "verified"
+  },
+  {
+    "example_id": 4580,
+    "fixed_domain_key": "coordinate_geometry.parallel_lines_distance",
+    "selected_operation": "solve_parameter_from_parallel_distance",
+    "status": "verified"
+  },
+  {
+    "example_id": 4583,
+    "fixed_domain_key": "coordinate_geometry.parallel_lines_distance",
+    "selected_operation": "area_using_parallel_distance",
+    "status": "verified"
+  },
+  {
+    "example_id": 4584,
+    "fixed_domain_key": "coordinate_geometry.parallel_lines_distance",
+    "selected_operation": "parallel_lines_distance_single_choice",
+    "status": "verified"
+  },
+  {
+    "example_id": 4588,
+    "fixed_domain_key": "coordinate_geometry.parallel_lines_distance",
+    "selected_operation": "distance_between_parallel_lines",
+    "status": "verified"
+  },
+  {
+    "example_id": 4589,
+    "fixed_domain_key": "coordinate_geometry.parallel_lines_distance",
+    "selected_operation": "solve_parameter_from_parallel_distance",
+    "status": "verified"
+  },
+  {
+    "example_id": 4608,
+    "fixed_domain_key": "coordinate_geometry.parallel_lines_distance",
+    "selected_operation": "distance_between_parallel_lines",
+    "status": "verified"
+  }
+]

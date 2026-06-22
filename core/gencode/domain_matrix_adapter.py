@@ -261,11 +261,15 @@ def convert_line_equation_matrix_to_question_payload(
     **kwargs: Any,
 ) -> dict[str, Any]:
     """Map a line-equation domain matrix into a standard outward question payload."""
-    _ = kwargs
+    domain_operation = str(kwargs.get("domain_operation") or "").strip()
     normalized = normalize_domain_matrix(matrix)
     givens = normalized["givens"]
     answer = normalized["answer"]
-    validation_facts = normalized["validation_facts"]
+    validation_facts = dict(normalized["validation_facts"])
+    if domain_operation:
+        validation_facts.setdefault("domain_operation", domain_operation)
+        validation_facts.setdefault("task_type", domain_operation)
+        validation_facts.setdefault("line_type", domain_operation)
     visual_spec = normalized["visual_spec"]
     explanation_steps = normalized["explanation_steps"]
     distractors = normalized["distractors"]
@@ -310,6 +314,14 @@ def convert_line_equation_matrix_to_question_payload(
         "compare_point_to_line_distances",
     ):
         default_answer_type = "text_short"
+    elif task_type in (
+        "distance_between_parallel_lines",
+        "solve_parameter_from_parallel_distance",
+        "area_using_parallel_distance",
+    ):
+        default_answer_type = "rational"
+    elif task_type == "parallel_lines_distance_single_choice":
+        default_answer_type = "single_choice"
     else:
         default_answer_type = "expression"
     resolved_answer_type = str(answer_type or default_answer_type).strip()
@@ -562,10 +574,62 @@ def _build_line_equation_question_text(
         "distance_from_point_to_line_parameter",
         "distance_from_point_to_line_parameter_single_choice_scalar",
         "compare_point_to_line_distances",
+        "distance_between_parallel_lines",
+        "solve_parameter_from_parallel_distance",
+        "construct_parallel_line_at_distance",
+        "parallel_lines_distance_single_choice",
+        "area_using_parallel_distance",
     }
 
     if task_type not in registered_task_types:
         raise ValueError(f"unsupported_line_equation_task_type:{task_type}")
+
+    if task_type == "distance_between_parallel_lines":
+        line_1 = givens.get("line_1") or givens.get("equation_1")
+        line_2 = givens.get("line_2") or givens.get("equation_2")
+        if not line_1 or not line_2:
+            raise ValueError("required_line_task_slot_missing:distance_between_parallel_lines:parallel_line_pair")
+        return f"試求兩平行線 ${line_1}$ 與 ${line_2}$ 之間的距離。"
+
+    if task_type == "solve_parameter_from_parallel_distance":
+        line_1 = givens.get("line_1")
+        line_2 = givens.get("line_2")
+        target_distance = givens.get("target_distance") or ""
+        param_name = givens.get("parameter_name") or "k"
+        if not line_1 or not line_2:
+            raise ValueError("required_line_task_slot_missing:solve_parameter_from_parallel_distance:parallel_line_pair")
+        return (
+            f"坐標平面上，若兩平行線 ${line_1}$ 與 ${line_2}$ 的距離為 ${target_distance}$，"
+            f"試求 {param_name} 之值。"
+        )
+
+    if task_type == "area_using_parallel_distance":
+        point_a = givens.get("point_a")
+        line = givens.get("line")
+        segment_length = givens.get("segment_length")
+        if point_a is None or not line or segment_length is None:
+            raise ValueError("required_line_task_slot_missing:area_using_parallel_distance:givens")
+        pt = _format_point_for_question(point_a)
+        return (
+            f"設 A 點坐標為 {pt}，且 B、C 兩點在直線 L: ${line}$ 上，"
+            f"若 $\\overline{{BC}}$ 的長為 {segment_length}，試求 △ABC 的面積。"
+        )
+
+    if task_type == "parallel_lines_distance_single_choice":
+        line_expr = givens.get("line_expression") or ""
+        slope = givens.get("slope") or ""
+        origin_distance = givens.get("origin_distance") or ""
+        return (
+            f"已知 $k>0$。若直線 ${line_expr}$ 的斜率為 ${slope}$，"
+            f"且點 $(0,0)$ 到直線 L 的距離為 ${origin_distance}$，則 $a+k=$？"
+        )
+
+    if task_type == "construct_parallel_line_at_distance":
+        line_1 = givens.get("line_1")
+        line_2 = givens.get("line_2")
+        if not line_1 or not line_2:
+            raise ValueError("required_line_task_slot_missing:construct_parallel_line_at_distance:parallel_line_pair")
+        return f"試求與 ${line_1}$ 平行且與 ${line_2}$ 相距離的直線方程式。"
 
     # 1. Slope-Intercept Forms
     if task_type == "slope_intercept_equation":

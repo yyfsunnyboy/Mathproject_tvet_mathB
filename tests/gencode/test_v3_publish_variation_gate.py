@@ -32,7 +32,9 @@ def mock_db_with_tracker(custom_temp_dir):
     mock_payload = {
         "presentation_mode": "short_answer",
         "answer_type": "integer",
-        "problem_type_id": "integer_exercise",
+        "problem_type_id": "intercept_form_equation",
+        "domain_operation": "intercept_form_equation",
+        "fixed_domain_key": "coordinate_geometry.line_equation",
         "display_order": 1,
         "sampling_weight": 10.0,
         "integrity_gate_passed": True,
@@ -100,34 +102,34 @@ def generate(seed=None, **kwargs):
     (project_root / "skills").mkdir(parents=True, exist_ok=True)
     (project_root / "agent_skills_v3").mkdir(parents=True, exist_ok=True)
     
-    # Ensure allowlist check passes
-    with mock.patch("core.gencode.v3_production_publish_service.V3_PRODUCTION_PUBLISH_ALLOWED_SKILLS", frozenset([skill_id])):
-        # Case 1: First publish, not in V3_VARIATION_REQUIRED_SKILLS -> Should allow publish with warning
-        with mock.patch("core.gencode.v3_production_publish_service.V3_VARIATION_REQUIRED_SKILLS", frozenset()):
-            result = publish_single_v3_skill_to_production(
+    # Case 1: First publish, not in V3_VARIATION_REQUIRED_SKILLS -> Should allow publish with warning
+    with mock.patch("core.gencode.v3_production_publish_service.V3_VARIATION_REQUIRED_SKILLS", frozenset()), \
+         mock.patch("core.gencode.v3_component_spec_validator.assert_generator_specs_metadata_consistent"):
+        result = publish_single_v3_skill_to_production(
+            conn=mock_db_with_tracker,
+            skill_id=skill_id,
+            project_root=str(project_root),
+            staging_root=str(staging_root),
+        )
+        assert result["status"] == "runtime_ready_with_variation_warning"
+        assert result["static_count"] == 2
+
+    # Clear files in mock project to simulate first publish again
+    shutil.rmtree(project_root)
+    project_root.mkdir(parents=True, exist_ok=True)
+    (project_root / "skills").mkdir(parents=True, exist_ok=True)
+    (project_root / "agent_skills_v3").mkdir(parents=True, exist_ok=True)
+
+    # Case 2: In V3_VARIATION_REQUIRED_SKILLS -> Should block publish
+    with mock.patch("core.gencode.v3_production_publish_service.V3_VARIATION_REQUIRED_SKILLS", frozenset([skill_id])), \
+         mock.patch("core.gencode.v3_component_spec_validator.assert_generator_specs_metadata_consistent"):
+        with pytest.raises(ValueError, match="production_publish_blocked: variation gate failed"):
+            publish_single_v3_skill_to_production(
                 conn=mock_db_with_tracker,
-                skill_id=skill_key if 'skill_key' in locals() else skill_id,
+                skill_id=skill_id,
                 project_root=str(project_root),
                 staging_root=str(staging_root),
             )
-            assert result["status"] == "runtime_ready_with_variation_warning"
-            assert result["static_count"] == 2
-            
-        # Clear files in mock project to simulate first publish again
-        shutil.rmtree(project_root)
-        project_root.mkdir(parents=True, exist_ok=True)
-        (project_root / "skills").mkdir(parents=True, exist_ok=True)
-        (project_root / "agent_skills_v3").mkdir(parents=True, exist_ok=True)
-        
-        # Case 2: In V3_VARIATION_REQUIRED_SKILLS -> Should block publish
-        with mock.patch("core.gencode.v3_production_publish_service.V3_VARIATION_REQUIRED_SKILLS", frozenset([skill_id])):
-            with pytest.raises(ValueError, match="production_publish_blocked: variation gate failed"):
-                publish_single_v3_skill_to_production(
-                    conn=mock_db_with_tracker,
-                    skill_id=skill_id,
-                    project_root=str(project_root),
-                    staging_root=str(staging_root),
-                )
 
 def test_intercept_form_audit_production_files():
     # Audit InterceptForm in production

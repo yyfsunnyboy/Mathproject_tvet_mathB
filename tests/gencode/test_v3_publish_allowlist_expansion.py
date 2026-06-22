@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
-"""Step 7B — Production Publish Allowlist 擴充整合測試。
+"""Step 7B — Production Publish eligibility policy integration tests.
 
 驗證：
-- V3_PRODUCTION_PUBLISH_ALLOWED_SKILLS 集中定義且包含兩個技能
+- 不再依賴硬編碼 skill allowlist
 - vh_數學B1_HorizontalAndVerticalLineEquations 全鏈路 production publish 成功
-- 非 allowlist skill 仍被死鎖
-- 無 verified component 仍被拒絕
+- 未註冊 skill 仍被 taxonomy / domain gate 拒絕
+- 無 eligible component 仍被拒絕
 - 模板 publish button 契約動態化
 - 真實 project_root 零污染
 """
@@ -25,6 +25,7 @@ import pytest
 from core.gencode.schema.gencode_component_tracker_inspection import apply_tracker_ddl
 from core.gencode.services.admin_gencode_action_service import run_admin_v3_publish_for_skill
 from core.gencode.skill_wrapper_compiler import rollback_v3_to_v2_facade
+from core.gencode.services.v3_publish_eligibility import evaluate_v3_publish_eligibility
 from core.gencode.v3_production_publish_service import (
     ALLOWED_PRODUCTION_SKILL_ID,
     V3_PRODUCTION_PUBLISH_ALLOWED_SKILLS,
@@ -44,6 +45,9 @@ HV_PAYLOAD = {
     "source_kind": "ex_1",
     "presentation_mode": "short_answer",
     "line_type": "horizontal_line",
+    "fixed_domain_key": "coordinate_geometry.line_equation",
+    "domain_operation": "horizontal_line",
+    "problem_type_id": "horizontal_line",
     "integrity_gate_passed": True,
     "integrity_gate_version": "v1",
 }
@@ -162,34 +166,17 @@ def _facade_paths(project_root: Path) -> tuple[Path, Path]:
 
 
 # ---------------------------------------------------------------------------
-# 任務 C-1：Allowlist 集中定義驗證
+# 任務 C-1：動態發布資格（無硬編碼 allowlist）
 # ---------------------------------------------------------------------------
 
 
-def test_allowlist_contains_point_slope():
-    assert PS_SKILL_ID in V3_PRODUCTION_PUBLISH_ALLOWED_SKILLS
-
-
-def test_allowlist_contains_horizontal_vertical():
-    assert HV_SKILL_ID in V3_PRODUCTION_PUBLISH_ALLOWED_SKILLS
-
-
-def test_allowlist_contains_distance_between_point_and_line():
-    assert "vh_數學B1_DistanceBetweenPointAndLine" in V3_PRODUCTION_PUBLISH_ALLOWED_SKILLS
-
-
-def test_allowlist_does_not_contain_fake_skill():
-    assert FAKE_SKILL_ID not in V3_PRODUCTION_PUBLISH_ALLOWED_SKILLS
+def test_hardcoded_allowlist_removed():
+    assert V3_PRODUCTION_PUBLISH_ALLOWED_SKILLS == frozenset()
 
 
 def test_allowed_production_skill_id_backward_compat():
     """舊有 ALLOWED_PRODUCTION_SKILL_ID 向後相容別名保持正確值。"""
     assert ALLOWED_PRODUCTION_SKILL_ID == PS_SKILL_ID
-
-
-def test_allowlist_is_frozenset():
-    """allowlist 必須為 frozenset，防止意外修改。"""
-    assert isinstance(V3_PRODUCTION_PUBLISH_ALLOWED_SKILLS, frozenset)
 
 
 # ---------------------------------------------------------------------------
@@ -304,7 +291,7 @@ def test_hv_skill_rejected_without_verified_components(
     """HV skill 無 verified component 時必須被拒絕。"""
     project_root, staging_root = isolated_roots
     # 不插入任何 verified 組件
-    with pytest.raises(ValueError, match="no_textbook_examples"):
+    with pytest.raises(ValueError, match="no_eligible_components"):
         run_admin_v3_publish_for_skill(
             conn=memory_conn,
             skill_id=HV_SKILL_ID,
@@ -335,8 +322,13 @@ def test_direct_publish_rejects_fake_skill_when_taxonomy_not_registered(
     memory_conn: sqlite3.Connection,
     isolated_roots: tuple[Path, Path],
 ):
-    """底層 publish_single_v3_skill_to_production 也必須拒絕非 allowlist skill。"""
+    """底層 publish 必須拒絕未註冊 taxonomy 的 skill。"""
     project_root, staging_root = isolated_roots
+    (project_root / "skills").mkdir(parents=True, exist_ok=True)
+    (project_root / "agent_skills_v3").mkdir(parents=True, exist_ok=True)
+    eligibility = evaluate_v3_publish_eligibility(memory_conn, FAKE_SKILL_ID)
+    assert eligibility["allowed"] is False
+    assert eligibility["reason"] == "taxonomy_not_registered"
     with pytest.raises(ValueError, match="taxonomy_not_registered"):
         publish_single_v3_skill_to_production(
             conn=memory_conn,

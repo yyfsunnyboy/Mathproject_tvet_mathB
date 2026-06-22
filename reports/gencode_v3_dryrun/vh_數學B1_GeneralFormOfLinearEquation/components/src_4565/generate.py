@@ -6,7 +6,7 @@ from core.domain.coordinate_geometry.line_equation_domain import build_line_equa
 from core.gencode.domain_matrix_adapter import convert_line_equation_matrix_to_question_payload
 
 PRESENTATION_MODE = "short_answer"
-ANSWER_TYPE = "expression"
+ANSWER_TYPE = "numeric_or_undefined"
 PROBLEM_TYPE_ID = "slope_from_general_or_intercept_form"
 TEXTBOOK_EXAMPLE_ID = 4565
 
@@ -27,6 +27,8 @@ def generate(level: int = 1, seed: int | None = None, **kwargs: Any) -> dict[str
         problem_type_id=PROBLEM_TYPE_ID,
         component_id=component_id or None,
         textbook_example_id=TEXTBOOK_EXAMPLE_ID or None,
+        answer_schema_key="slope_intercept",
+        domain_operation="slope_from_general_or_intercept_form",
     )
     if component_id:
         payload["component_id"] = component_id

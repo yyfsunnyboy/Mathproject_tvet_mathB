@@ -1,0 +1,1150 @@
+{
+  "skill_id": "vh_數學B1_DistanceBetweenTwoParallelLines",
+  "spec_source": "phase1_induced_draft",
+  "items": [
+    {
+      "problem_type_id": "equation_write_line_equation_from_point_slope_short_answer",
+      "skill_id": "vh_數學B1_DistanceBetweenTwoParallelLines",
+      "target_task": "write_line_equation_from_point_slope",
+      "task_family": "line_equation_family",
+      "display_name": "equation / write_line_equation_from_point_slope",
+      "answer_format_hint": "integer",
+      "answer_fields": null,
+      "answer_separator": null,
+      "source_example_ids": [
+        4577
+      ],
+      "answer_contract": {
+        "choices_required": false,
+        "choice_count": null,
+        "correct_choice_count": null,
+        "frontend_render_choices": false,
+        "source_has_choices": false,
+        "answer_type": "equation",
+        "answer_shape": "linear_equation",
+        "answer_semantics": "line_equation",
+        "answer_equivalence": "linear_equation_equivalent",
+        "equivalence_type": "linear_equation_equivalent",
+        "checker": "linear_equation_equivalent_checker",
+        "checker_key": "linear_equation_equivalent_checker",
+        "presentation_mode": "short_answer",
+        "selected_checker": "linear_equation_equivalent_checker",
+        "checker_selection_reason": "line_equation_family",
+        "accepted_formats": [
+          "y - 2 = 3(x - 1)",
+          "y = 3x - 1",
+          "3x - y - 1 = 0"
+        ]
+      },
+      "stem_contract": {
+        "stem_must_not_embed_choices": true,
+        "allowed_math_objects": [
+          "coordinate_point",
+          "line_equation"
+        ],
+        "required_math_objects": [
+          "coordinate_point",
+          "line_equation"
+        ],
+        "forbidden_patterns": [
+          "\\(A\\)",
+          "\\(B\\)",
+          "\\(C\\)",
+          "\\(D\\)"
+        ]
+      },
+      "dependency_contract": {
+        "givens_must_be_used": true,
+        "target_answer_must_depend_on_givens": true,
+        "variables_in_conditions_must_appear_in_target": false
+      },
+      "semantic_contract": {
+        "reasoning_type": [
+          "line_equation_reasoning"
+        ],
+        "reject_if": [
+          "unused_condition",
+          "ambiguous_answer",
+          "answer_not_derivable",
+          "duplicated_choices",
+          "no_correct_choice",
+          "multiple_correct_choices_when_single_choice"
+        ]
+      },
+      "generator_contract": {
+        "template_variants": [
+          {
+            "id": "given_point_and_slope_find_point_slope_form",
+            "label": "點斜式",
+            "stem_pattern": "已知直線過點 ({x1}, {y1})，斜率為 {m}，求此直線的點斜式方程式。",
+            "weight": 1.0,
+            "enabled": true
+          },
+          {
+            "id": "given_point_and_slope_find_slope_intercept_form",
+            "label": "斜截式",
+            "stem_pattern": "已知直線過點 ({x1}, {y1})，斜率為 {m}，求此直線的斜截式方程式（y = mx + b）。",
+            "weight": 1.0,
+            "enabled": true
+          },
+          {
+            "id": "given_point_and_slope_find_general_form",
+            "label": "一般式",
+            "stem_pattern": "已知直線過點 ({x1}, {y1})，斜率為 {m}，求此直線的一般式方程式（Ax + By + C = 0）。",
+            "weight": 1.0,
+            "enabled": true
+          }
+        ],
+        "parameter_schema": {
+          "point_coordinates": {
+            "x_min": -8,
+            "x_max": 8,
+            "y_min": -8,
+            "y_max": 8,
+            "integer_only": true
+          },
+          "slope": {
+            "choices": [
+              "integer",
+              "simple_fraction"
+            ],
+            "weights": [
+              0.65,
+              0.35
+            ],
+            "integer_range": [
+              -5,
+              5
+            ],
+            "exclude_zero": true,
+            "fraction_numerators": [
+              1,
+              2,
+              3,
+              -1,
+              -2,
+              -3
+            ],
+            "fraction_denominators": [
+              2,
+              3
+            ]
+          },
+          "equation_form": {
+            "choices": [
+              "point_slope",
+              "slope_intercept",
+              "general"
+            ],
+            "weights": [
+              0.34,
+              0.33,
+              0.33
+            ]
+          }
+        },
+        "variation_dimensions": [
+          "point_coordinates",
+          "slope_type",
+          "equation_form",
+          "integer_or_fraction_slope",
+          "coefficient_normalization",
+          "number_variation",
+          "template_variant",
+          "coordinate_sign_combination"
+        ],
+        "difficulty_controls": {
+          "level_1": {
+            "coordinate_range": [
+              -5,
+              5
+            ],
+            "integer_slope_only": true
+          },
+          "level_2": {
+            "coordinate_range": [
+              -8,
+              8
+            ],
+            "allow_fraction_slope": true
+          },
+          "level_3": {
+            "allow_negative_slope": true,
+            "require_general_form": true
+          }
+        },
+        "anti_repetition_rules": {
+          "avoid_same_template_consecutive": true,
+          "avoid_same_ratio_consecutive": true,
+          "avoid_same_point_names_consecutive": true,
+          "avoid_same_answer_consecutive": true,
+          "recent_history_window": 5,
+          "signature_fields": [
+            "problem_type_id",
+            "template_variant",
+            "routing_track",
+            "scenario_type",
+            "ratio_form",
+            "ratio_values",
+            "coordinate_pattern",
+            "answer"
+          ]
+        },
+        "validity_constraints": [
+          "coordinates are integers",
+          "generated equation is a non-degenerate line",
+          "equivalent forms normalize to same Ax + By + C = 0"
+        ],
+        "answer_shape": "linear_equation",
+        "explanation_variants": [
+          "point_slope_to_general",
+          "slope_intercept_to_general"
+        ],
+        "sampling_strategy": "weighted_random",
+        "template_families": [
+          "write_line_equation_from_point_slope"
+        ],
+        "parameter_slots": {
+          "seed": "integer",
+          "difficulty": "easy"
+        },
+        "randomization_rules": {
+          "shuffle_choices": false
+        },
+        "avoid_llm_freeform_math": true,
+        "use_domain_functions": true,
+        "derivation_steps_required": true,
+        "template_slots": {
+          "stem": "line_equation_from_point_slope"
+        },
+        "templates": [
+          "template_scalar_unknown",
+          "template_feature_value"
+        ],
+        "problem_type_id": "equation_write_line_equation_from_point_slope_short_answer",
+        "contract_validation_blockers": [],
+        "contract_validation_warnings": []
+      },
+      "validator_contract": {
+        "static_checks": [
+          "answer_contract_checks",
+          "choices_policy"
+        ],
+        "semantic_checks": [
+          "givens_to_target_dependency"
+        ],
+        "runtime_smoke_count": 30
+      },
+      "spec_source": "phase1_induced_draft",
+      "grouping_reason": "single_signature_group",
+      "feature_signature": [
+        "equation",
+        "write_line_equation_from_point_slope",
+        "short_answer",
+        [
+          "line_equation_reasoning"
+        ],
+        [
+          "coordinate_point",
+          "line_equation"
+        ],
+        "line_equation"
+      ],
+      "canonical_base_problem_type_id": "equation_write_line_equation_from_point_slope_short_answer",
+      "value_type_prefix": "",
+      "_resolved_template_slot": "line_equation_from_point_slope"
+    },
+    {
+      "problem_type_id": "equation_write_line_equation_from_slope_and_intercept_short_answer",
+      "skill_id": "vh_數學B1_DistanceBetweenTwoParallelLines",
+      "target_task": "write_line_equation_from_slope_and_intercept",
+      "task_family": "line_equation_family",
+      "display_name": "numeric / write_line_equation_from_slope_and_intercept",
+      "answer_format_hint": "",
+      "answer_fields": null,
+      "answer_separator": null,
+      "source_example_ids": [
+        4589
+      ],
+      "answer_contract": {
+        "choices_required": false,
+        "choice_count": null,
+        "correct_choice_count": null,
+        "frontend_render_choices": false,
+        "source_has_choices": false,
+        "answer_type": "equation",
+        "answer_shape": "linear_equation",
+        "answer_semantics": "line_equation",
+        "answer_equivalence": "linear_equation_equivalent",
+        "equivalence_type": "linear_equation_equivalent",
+        "checker": "linear_equation_equivalent_checker",
+        "checker_key": "linear_equation_equivalent_checker",
+        "presentation_mode": "short_answer",
+        "selected_checker": "linear_equation_equivalent_checker",
+        "checker_selection_reason": "line_equation_family",
+        "accepted_formats": [
+          "y - 2 = 3(x - 1)",
+          "y = 3x - 1",
+          "3x - y - 1 = 0"
+        ]
+      },
+      "stem_contract": {
+        "stem_must_not_embed_choices": true,
+        "allowed_math_objects": [
+          "coordinate_point",
+          "line_equation"
+        ],
+        "required_math_objects": [
+          "coordinate_point",
+          "line_equation"
+        ],
+        "forbidden_patterns": [
+          "\\(A\\)",
+          "\\(B\\)",
+          "\\(C\\)",
+          "\\(D\\)"
+        ]
+      },
+      "dependency_contract": {
+        "givens_must_be_used": true,
+        "target_answer_must_depend_on_givens": true,
+        "variables_in_conditions_must_appear_in_target": false
+      },
+      "semantic_contract": {
+        "reasoning_type": [
+          "numeric_computation"
+        ],
+        "reject_if": [
+          "unused_condition",
+          "ambiguous_answer",
+          "answer_not_derivable",
+          "duplicated_choices",
+          "no_correct_choice",
+          "multiple_correct_choices_when_single_choice"
+        ]
+      },
+      "generator_contract": {
+        "template_variants": [
+          {
+            "id": "slope_with_x_intercept",
+            "label": "斜率與 x 截距",
+            "stem_pattern": "已知直線斜率為 {m}，且 x 截距為 {k}，請寫出此直線的一個方程式。",
+            "weight": 1.0,
+            "enabled": true
+          },
+          {
+            "id": "slope_with_y_intercept",
+            "label": "斜率與 y 截距",
+            "stem_pattern": "已知直線斜率為 {m}，且 y 截距為 {b}，請寫出此直線的一個方程式。",
+            "weight": 1.0,
+            "enabled": true
+          }
+        ],
+        "parameter_schema": {
+          "point_coordinates": {
+            "x_min": -8,
+            "x_max": 8,
+            "y_min": -8,
+            "y_max": 8,
+            "integer_only": true
+          },
+          "slope": {
+            "choices": [
+              "integer",
+              "simple_fraction"
+            ],
+            "weights": [
+              0.65,
+              0.35
+            ],
+            "integer_range": [
+              -5,
+              5
+            ],
+            "exclude_zero": true,
+            "fraction_numerators": [
+              1,
+              2,
+              3,
+              -1,
+              -2,
+              -3
+            ],
+            "fraction_denominators": [
+              2,
+              3
+            ]
+          },
+          "equation_form": {
+            "choices": [
+              "point_slope",
+              "slope_intercept",
+              "general"
+            ],
+            "weights": [
+              0.34,
+              0.33,
+              0.33
+            ]
+          }
+        },
+        "variation_dimensions": [
+          "slope_type",
+          "intercept_axis",
+          "intercept_value",
+          "number_variation",
+          "template_variant",
+          "coordinate_sign_combination"
+        ],
+        "difficulty_controls": {
+          "level_1": {
+            "coordinate_range": [
+              -5,
+              5
+            ],
+            "integer_slope_only": true
+          },
+          "level_2": {
+            "coordinate_range": [
+              -8,
+              8
+            ],
+            "allow_fraction_slope": true
+          },
+          "level_3": {
+            "allow_negative_slope": true,
+            "require_general_form": true
+          }
+        },
+        "anti_repetition_rules": {
+          "avoid_same_template_consecutive": true,
+          "avoid_same_ratio_consecutive": true,
+          "avoid_same_point_names_consecutive": true,
+          "avoid_same_answer_consecutive": true,
+          "recent_history_window": 5,
+          "signature_fields": [
+            "problem_type_id",
+            "template_variant",
+            "routing_track",
+            "scenario_type",
+            "ratio_form",
+            "ratio_values",
+            "coordinate_pattern",
+            "answer"
+          ]
+        },
+        "validity_constraints": [
+          "coordinates are integers",
+          "generated equation is a non-degenerate line",
+          "equivalent forms normalize to same Ax + By + C = 0"
+        ],
+        "answer_shape": "linear_equation",
+        "explanation_variants": [
+          "intercept_to_point_slope"
+        ],
+        "sampling_strategy": "weighted_random",
+        "template_families": [
+          "write_line_equation_from_slope_and_intercept"
+        ],
+        "parameter_slots": {
+          "seed": "integer",
+          "difficulty": "easy"
+        },
+        "randomization_rules": {
+          "shuffle_choices": false
+        },
+        "avoid_llm_freeform_math": true,
+        "use_domain_functions": true,
+        "derivation_steps_required": true,
+        "template_slots": {
+          "stem": "line_equation_from_slope_and_intercept"
+        },
+        "templates": [
+          "template_scalar_unknown",
+          "template_feature_value"
+        ],
+        "problem_type_id": "equation_write_line_equation_from_slope_and_intercept_short_answer",
+        "contract_validation_blockers": [],
+        "contract_validation_warnings": []
+      },
+      "validator_contract": {
+        "static_checks": [
+          "answer_contract_checks",
+          "choices_policy"
+        ],
+        "semantic_checks": [
+          "givens_to_target_dependency"
+        ],
+        "runtime_smoke_count": 30
+      },
+      "spec_source": "phase1_induced_draft",
+      "grouping_reason": "split_by_feature_signature",
+      "feature_signature": [
+        "numeric",
+        "write_line_equation_from_slope_and_intercept",
+        "short_answer",
+        [
+          "numeric_computation"
+        ],
+        [
+          "coordinate_point",
+          "line_equation"
+        ],
+        "default"
+      ],
+      "canonical_base_problem_type_id": "equation_write_line_equation_from_slope_and_intercept_short_answer",
+      "value_type_prefix": "",
+      "_resolved_template_slot": "line_equation_from_slope_and_intercept"
+    },
+    {
+      "problem_type_id": "equation_write_line_equation_from_two_points_short_answer",
+      "skill_id": "vh_數學B1_DistanceBetweenTwoParallelLines",
+      "target_task": "write_line_equation_from_two_points",
+      "task_family": "line_equation_family",
+      "display_name": "write_line_equation_from_two_points / anchor bootstrap",
+      "answer_format_hint": "",
+      "source_example_ids": [],
+      "answer_contract": {
+        "choices_required": false,
+        "choice_count": null,
+        "correct_choice_count": null,
+        "frontend_render_choices": false,
+        "source_has_choices": false,
+        "answer_type": "equation",
+        "answer_shape": "linear_equation",
+        "answer_semantics": "line_equation",
+        "answer_equivalence": "linear_equation_equivalent",
+        "equivalence_type": "linear_equation_equivalent",
+        "checker": "linear_equation_equivalent_checker",
+        "checker_key": "linear_equation_equivalent_checker",
+        "presentation_mode": "short_answer",
+        "selected_checker": "linear_equation_equivalent_checker",
+        "checker_selection_reason": "line_equation_family",
+        "accepted_formats": [
+          "y - 2 = 3(x - 1)",
+          "y = 3x - 1",
+          "3x - y - 1 = 0"
+        ]
+      },
+      "stem_contract": {
+        "stem_must_not_embed_choices": true,
+        "allowed_math_objects": [
+          "quadratic_inequality"
+        ],
+        "required_math_objects": [
+          "quadratic_inequality"
+        ],
+        "forbidden_patterns": [
+          "\\(A\\)",
+          "\\(B\\)",
+          "\\(C\\)",
+          "\\(D\\)"
+        ]
+      },
+      "dependency_contract": {
+        "givens_must_be_used": true,
+        "target_answer_must_depend_on_givens": true,
+        "variables_in_conditions_must_appear_in_target": false
+      },
+      "semantic_contract": {
+        "reasoning_type": [
+          "write_line_equation_from_two_points"
+        ],
+        "reject_if": [
+          "unused_condition",
+          "ambiguous_answer",
+          "answer_not_derivable"
+        ]
+      },
+      "generator_contract": {
+        "template_variants": [
+          {
+            "id": "two_points_general_form",
+            "label": "兩點一般式",
+            "stem_pattern": "已知直線通過兩點 A({x1}, {y1})、B({x2}, {y2})，請寫出此直線的一個方程式。",
+            "weight": 1.0,
+            "enabled": true
+          }
+        ],
+        "parameter_schema": {
+          "point_coordinates": {
+            "x_min": -8,
+            "x_max": 8,
+            "y_min": -8,
+            "y_max": 8,
+            "integer_only": true
+          },
+          "slope": {
+            "choices": [
+              "integer",
+              "simple_fraction"
+            ],
+            "weights": [
+              0.65,
+              0.35
+            ],
+            "integer_range": [
+              -5,
+              5
+            ],
+            "exclude_zero": true,
+            "fraction_numerators": [
+              1,
+              2,
+              3,
+              -1,
+              -2,
+              -3
+            ],
+            "fraction_denominators": [
+              2,
+              3
+            ]
+          },
+          "equation_form": {
+            "choices": [
+              "point_slope",
+              "slope_intercept",
+              "general"
+            ],
+            "weights": [
+              0.34,
+              0.33,
+              0.33
+            ]
+          }
+        },
+        "variation_dimensions": [
+          "point_pair",
+          "coefficient_normalization"
+        ],
+        "difficulty_controls": {
+          "level_1": {
+            "coordinate_range": [
+              -5,
+              5
+            ],
+            "integer_slope_only": true
+          },
+          "level_2": {
+            "coordinate_range": [
+              -8,
+              8
+            ],
+            "allow_fraction_slope": true
+          },
+          "level_3": {
+            "allow_negative_slope": true,
+            "require_general_form": true
+          }
+        },
+        "anti_repetition_rules": {
+          "avoid_same_template_consecutive": true,
+          "avoid_same_ratio_consecutive": true,
+          "avoid_same_point_names_consecutive": true,
+          "avoid_same_answer_consecutive": true,
+          "recent_history_window": 5,
+          "signature_fields": [
+            "problem_type_id",
+            "template_variant",
+            "routing_track",
+            "scenario_type",
+            "ratio_form",
+            "ratio_values",
+            "coordinate_pattern",
+            "answer"
+          ]
+        },
+        "validity_constraints": [
+          "coordinates are integers",
+          "generated equation is a non-degenerate line",
+          "equivalent forms normalize to same Ax + By + C = 0"
+        ],
+        "answer_shape": "linear_equation",
+        "explanation_variants": [
+          "two_point_slope_to_general"
+        ],
+        "sampling_strategy": "weighted_random",
+        "template_families": [
+          "write_line_equation_from_two_points"
+        ],
+        "parameter_slots": {
+          "seed": "integer",
+          "difficulty": "easy"
+        },
+        "randomization_rules": {
+          "shuffle_choices": false
+        },
+        "avoid_llm_freeform_math": true,
+        "use_domain_functions": true,
+        "derivation_steps_required": true,
+        "template_slots": {
+          "stem": "line_equation_from_two_points"
+        },
+        "problem_type_id": "write_line_equation_from_two_points",
+        "contract_validation_blockers": [],
+        "contract_validation_warnings": [
+          "single_template_variant_only",
+          "variation_dimensions_below_recommended_minimum"
+        ]
+      },
+      "validator_contract": {
+        "static_checks": [
+          "answer_contract_checks"
+        ],
+        "semantic_checks": [
+          "givens_to_target_dependency"
+        ],
+        "runtime_smoke_count": 30
+      },
+      "spec_source": "anchor_slot_bootstrap",
+      "grouping_reason": "anchor_subskill_bootstrap_zero_source",
+      "feature_signature": [
+        "anchor_slot_bootstrap",
+        "write_line_equation_from_two_points"
+      ],
+      "canonical_base_problem_type_id": "write_line_equation_from_two_points",
+      "value_type_prefix": "",
+      "_resolved_template_slot": "line_equation_from_two_points"
+    },
+    {
+      "problem_type_id": "equation_write_perpendicular_bisector_from_two_points_short_answer",
+      "skill_id": "vh_數學B1_DistanceBetweenTwoParallelLines",
+      "target_task": "write_perpendicular_bisector_from_two_points",
+      "task_family": "line_equation_family",
+      "display_name": "write_perpendicular_bisector_from_two_points / anchor bootstrap",
+      "answer_format_hint": "",
+      "source_example_ids": [],
+      "answer_contract": {
+        "choices_required": false,
+        "choice_count": null,
+        "correct_choice_count": null,
+        "frontend_render_choices": false,
+        "source_has_choices": false,
+        "answer_type": "equation",
+        "answer_shape": "linear_equation",
+        "answer_semantics": "line_equation",
+        "answer_equivalence": "linear_equation_equivalent",
+        "equivalence_type": "linear_equation_equivalent",
+        "checker": "linear_equation_equivalent_checker",
+        "checker_key": "linear_equation_equivalent_checker",
+        "presentation_mode": "short_answer",
+        "selected_checker": "linear_equation_equivalent_checker",
+        "checker_selection_reason": "line_equation_family",
+        "accepted_formats": [
+          "y - 2 = 3(x - 1)",
+          "y = 3x - 1",
+          "3x - y - 1 = 0"
+        ]
+      },
+      "stem_contract": {
+        "stem_must_not_embed_choices": true,
+        "allowed_math_objects": [
+          "quadratic_inequality"
+        ],
+        "required_math_objects": [
+          "quadratic_inequality"
+        ],
+        "forbidden_patterns": [
+          "\\(A\\)",
+          "\\(B\\)",
+          "\\(C\\)",
+          "\\(D\\)"
+        ]
+      },
+      "dependency_contract": {
+        "givens_must_be_used": true,
+        "target_answer_must_depend_on_givens": true,
+        "variables_in_conditions_must_appear_in_target": false
+      },
+      "semantic_contract": {
+        "reasoning_type": [
+          "write_perpendicular_bisector_from_two_points"
+        ],
+        "reject_if": [
+          "unused_condition",
+          "ambiguous_answer",
+          "answer_not_derivable"
+        ]
+      },
+      "generator_contract": {
+        "template_variants": [
+          {
+            "id": "perpendicular_bisector_segment",
+            "label": "垂直平分線",
+            "stem_pattern": "已知兩點 A({x1}, {y1})、B({x2}, {y2})，請寫出線段 AB 的垂直平分線方程式。",
+            "weight": 1.0,
+            "enabled": true
+          }
+        ],
+        "parameter_schema": {
+          "point_coordinates": {
+            "x_min": -8,
+            "x_max": 8,
+            "y_min": -8,
+            "y_max": 8,
+            "integer_only": true
+          },
+          "slope": {
+            "choices": [
+              "integer",
+              "simple_fraction"
+            ],
+            "weights": [
+              0.65,
+              0.35
+            ],
+            "integer_range": [
+              -5,
+              5
+            ],
+            "exclude_zero": true,
+            "fraction_numerators": [
+              1,
+              2,
+              3,
+              -1,
+              -2,
+              -3
+            ],
+            "fraction_denominators": [
+              2,
+              3
+            ]
+          },
+          "equation_form": {
+            "choices": [
+              "point_slope",
+              "slope_intercept",
+              "general"
+            ],
+            "weights": [
+              0.34,
+              0.33,
+              0.33
+            ]
+          }
+        },
+        "variation_dimensions": [
+          "point_pair",
+          "integer_midpoint",
+          "number_variation",
+          "template_variant",
+          "coordinate_sign_combination",
+          "slope_type"
+        ],
+        "difficulty_controls": {
+          "level_1": {
+            "coordinate_range": [
+              -5,
+              5
+            ],
+            "integer_slope_only": true
+          },
+          "level_2": {
+            "coordinate_range": [
+              -8,
+              8
+            ],
+            "allow_fraction_slope": true
+          },
+          "level_3": {
+            "allow_negative_slope": true,
+            "require_general_form": true
+          }
+        },
+        "anti_repetition_rules": {
+          "avoid_same_template_consecutive": true,
+          "avoid_same_ratio_consecutive": true,
+          "avoid_same_point_names_consecutive": true,
+          "avoid_same_answer_consecutive": true,
+          "recent_history_window": 5,
+          "signature_fields": [
+            "problem_type_id",
+            "template_variant",
+            "routing_track",
+            "scenario_type",
+            "ratio_form",
+            "ratio_values",
+            "coordinate_pattern",
+            "answer"
+          ]
+        },
+        "validity_constraints": [
+          "coordinates are integers",
+          "generated equation is a non-degenerate line",
+          "equivalent forms normalize to same Ax + By + C = 0"
+        ],
+        "answer_shape": "linear_equation",
+        "explanation_variants": [
+          "midpoint_and_normal_vector"
+        ],
+        "sampling_strategy": "weighted_random",
+        "template_families": [
+          "write_perpendicular_bisector_from_two_points"
+        ],
+        "parameter_slots": {
+          "seed": "integer",
+          "difficulty": "easy"
+        },
+        "randomization_rules": {
+          "shuffle_choices": false
+        },
+        "avoid_llm_freeform_math": true,
+        "use_domain_functions": true,
+        "derivation_steps_required": true,
+        "template_slots": {
+          "stem": "perpendicular_bisector_from_two_points"
+        },
+        "problem_type_id": "write_perpendicular_bisector_from_two_points",
+        "contract_validation_blockers": [
+          "insufficient_template_variants_math_b"
+        ],
+        "contract_validation_warnings": []
+      },
+      "validator_contract": {
+        "static_checks": [
+          "answer_contract_checks"
+        ],
+        "semantic_checks": [
+          "givens_to_target_dependency"
+        ],
+        "runtime_smoke_count": 30
+      },
+      "spec_source": "anchor_slot_bootstrap",
+      "grouping_reason": "anchor_subskill_bootstrap_zero_source",
+      "feature_signature": [
+        "anchor_slot_bootstrap",
+        "write_perpendicular_bisector_from_two_points"
+      ],
+      "canonical_base_problem_type_id": "write_perpendicular_bisector_from_two_points",
+      "value_type_prefix": "",
+      "_resolved_template_slot": "perpendicular_bisector_from_two_points"
+    },
+    {
+      "problem_type_id": "equation_write_triangle_median_line_from_vertices_short_answer",
+      "skill_id": "vh_數學B1_DistanceBetweenTwoParallelLines",
+      "target_task": "write_triangle_median_line_from_vertices",
+      "task_family": "line_equation_family",
+      "display_name": "write_triangle_median_line_from_vertices / anchor bootstrap",
+      "answer_format_hint": "",
+      "source_example_ids": [],
+      "answer_contract": {
+        "choices_required": false,
+        "choice_count": null,
+        "correct_choice_count": null,
+        "frontend_render_choices": false,
+        "source_has_choices": false,
+        "answer_type": "equation",
+        "answer_shape": "linear_equation",
+        "answer_semantics": "line_equation",
+        "answer_equivalence": "linear_equation_equivalent",
+        "equivalence_type": "linear_equation_equivalent",
+        "checker": "linear_equation_equivalent_checker",
+        "checker_key": "linear_equation_equivalent_checker",
+        "presentation_mode": "short_answer",
+        "selected_checker": "linear_equation_equivalent_checker",
+        "checker_selection_reason": "line_equation_family",
+        "accepted_formats": [
+          "y - 2 = 3(x - 1)",
+          "y = 3x - 1",
+          "3x - y - 1 = 0"
+        ]
+      },
+      "stem_contract": {
+        "stem_must_not_embed_choices": true,
+        "allowed_math_objects": [
+          "quadratic_inequality"
+        ],
+        "required_math_objects": [
+          "quadratic_inequality"
+        ],
+        "forbidden_patterns": [
+          "\\(A\\)",
+          "\\(B\\)",
+          "\\(C\\)",
+          "\\(D\\)"
+        ]
+      },
+      "dependency_contract": {
+        "givens_must_be_used": true,
+        "target_answer_must_depend_on_givens": true,
+        "variables_in_conditions_must_appear_in_target": false
+      },
+      "semantic_contract": {
+        "reasoning_type": [
+          "write_triangle_median_line_from_vertices"
+        ],
+        "reject_if": [
+          "unused_condition",
+          "ambiguous_answer",
+          "answer_not_derivable"
+        ]
+      },
+      "generator_contract": {
+        "template_variants": [
+          {
+            "id": "triangle_median_through_vertex",
+            "label": "三角形中線",
+            "stem_pattern": "已知三角形 ABC 頂點，求過某頂點且平分面積的直線方程式。",
+            "weight": 1.0,
+            "enabled": true
+          },
+          {
+            "id": "triangle_median_area_bisector",
+            "label": "面積平分線",
+            "stem_pattern": "設三角形 ABC 三頂點已知，求過指定頂點且將三角形面積平分的直線方程式。",
+            "weight": 1.0,
+            "enabled": true
+          },
+          {
+            "id": "triangle_median_coordinate_plane",
+            "label": "坐標平面中線",
+            "stem_pattern": "在坐標平面上，三角形 ABC 頂點坐標已知，請寫出平分三角形面積的直線方程式。",
+            "weight": 1.0,
+            "enabled": true
+          }
+        ],
+        "parameter_schema": {
+          "point_coordinates": {
+            "x_min": -8,
+            "x_max": 8,
+            "y_min": -8,
+            "y_max": 8,
+            "integer_only": true
+          },
+          "slope": {
+            "choices": [
+              "integer",
+              "simple_fraction"
+            ],
+            "weights": [
+              0.65,
+              0.35
+            ],
+            "integer_range": [
+              -5,
+              5
+            ],
+            "exclude_zero": true,
+            "fraction_numerators": [
+              1,
+              2,
+              3,
+              -1,
+              -2,
+              -3
+            ],
+            "fraction_denominators": [
+              2,
+              3
+            ]
+          },
+          "equation_form": {
+            "choices": [
+              "point_slope",
+              "slope_intercept",
+              "general"
+            ],
+            "weights": [
+              0.34,
+              0.33,
+              0.33
+            ]
+          }
+        },
+        "variation_dimensions": [
+          "triangle_vertices",
+          "through_vertex",
+          "integer_midpoint"
+        ],
+        "difficulty_controls": {
+          "level_1": {
+            "coordinate_range": [
+              -5,
+              5
+            ],
+            "integer_slope_only": true
+          },
+          "level_2": {
+            "coordinate_range": [
+              -8,
+              8
+            ],
+            "allow_fraction_slope": true
+          },
+          "level_3": {
+            "allow_negative_slope": true,
+            "require_general_form": true
+          }
+        },
+        "anti_repetition_rules": {
+          "avoid_same_template_consecutive": true,
+          "avoid_same_ratio_consecutive": true,
+          "avoid_same_point_names_consecutive": true,
+          "avoid_same_answer_consecutive": true,
+          "recent_history_window": 5,
+          "signature_fields": [
+            "problem_type_id",
+            "template_variant",
+            "routing_track",
+            "scenario_type",
+            "ratio_form",
+            "ratio_values",
+            "coordinate_pattern",
+            "answer"
+          ]
+        },
+        "validity_constraints": [
+          "coordinates are integers",
+          "generated equation is a non-degenerate line",
+          "equivalent forms normalize to same Ax + By + C = 0"
+        ],
+        "answer_shape": "linear_equation",
+        "explanation_variants": [
+          "opposite_side_midpoint_to_line"
+        ],
+        "sampling_strategy": "weighted_random",
+        "template_families": [
+          "write_triangle_median_line_from_vertices"
+        ],
+        "parameter_slots": {
+          "seed": "integer",
+          "difficulty": "easy"
+        },
+        "randomization_rules": {
+          "shuffle_choices": false
+        },
+        "avoid_llm_freeform_math": true,
+        "use_domain_functions": true,
+        "derivation_steps_required": true,
+        "template_slots": {
+          "stem": "triangle_median_line_from_vertices"
+        },
+        "problem_type_id": "write_triangle_median_line_from_vertices",
+        "contract_validation_blockers": [],
+        "contract_validation_warnings": [
+          "variation_dimensions_below_recommended_minimum"
+        ]
+      },
+      "validator_contract": {
+        "static_checks": [
+          "answer_contract_checks"
+        ],
+        "semantic_checks": [
+          "givens_to_target_dependency"
+        ],
+        "runtime_smoke_count": 30
+      },
+      "spec_source": "anchor_slot_bootstrap",
+      "grouping_reason": "anchor_subskill_bootstrap_zero_source",
+      "feature_signature": [
+        "anchor_slot_bootstrap",
+        "write_triangle_median_line_from_vertices"
+      ],
+      "canonical_base_problem_type_id": "write_triangle_median_line_from_vertices",
+      "value_type_prefix": "",
+      "_resolved_template_slot": "triangle_median_line_from_vertices"
+    }
+  ]
+}

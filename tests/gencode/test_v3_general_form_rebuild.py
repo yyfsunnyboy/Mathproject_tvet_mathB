@@ -14,7 +14,7 @@ from core.gencode.services.v3_example_semantic_classifier import (
     calculate_source_hash,
 )
 from core.registry.taxonomy_registry import resolve_domain_for_skill
-from core.gencode.v3_production_publish_service import V3_PRODUCTION_PUBLISH_ALLOWED_SKILLS
+from core.registry.taxonomy_registry import resolve_domain_for_skill, get_fixed_domain_key
 from core.gencode.services.v3_cross_component_audit_service import check_cross_example_collapse
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
@@ -22,8 +22,8 @@ DB_PATH = PROJECT_ROOT / "instance" / "kumon_math.db"
 SKILL_ID = "vh_數學B1_GeneralFormOfLinearEquation"
 
 
-def test_allowed_skills_contains_general_form():
-    assert SKILL_ID in V3_PRODUCTION_PUBLISH_ALLOWED_SKILLS
+def test_general_form_has_fixed_domain_in_registry():
+    assert get_fixed_domain_key(SKILL_ID) == "coordinate_geometry.line_equation"
 
 
 def test_registry_metadata_for_general_form():

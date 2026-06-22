@@ -3027,16 +3027,20 @@ def run_gencode_phase2_raw(
             dryrun_base_dir=v3_dryrun_base_dir,
         )
         if V3_PRODUCTION_PUBLISH_ENABLED:
-            if skill_key != "vh_數學B1_PointSlopeForm":
-                raise ValueError("production_publish_not_allowed_for_skill")
             if not str(v3_project_root or "").strip():
                 raise ValueError("missing_v3_project_root")
             if not str(v3_staging_root or "").strip():
                 raise ValueError("missing_v3_staging_root")
+            from core.gencode.services.v3_publish_eligibility import evaluate_v3_publish_eligibility
             from core.gencode.v3_production_publish_service import (
+                assert_production_publish_globally_enabled,
                 publish_single_v3_skill_to_production,
             )
 
+            assert_production_publish_globally_enabled()
+            eligibility = evaluate_v3_publish_eligibility(v3_conn, skill_key)
+            if not eligibility.get("allowed"):
+                raise ValueError(str(eligibility.get("reason") or "v3_publish_not_eligible"))
             publish_report = publish_single_v3_skill_to_production(
                 conn=v3_conn,
                 skill_id=skill_key,
@@ -4976,8 +4980,141 @@ def _v3_template_slot_for_line_type(line_type: str) -> str:
         "line_through_intersection_parallel_to_line": "line_through_intersection_parallel_to_line",
         "perpendicular_bisector_application": "perpendicular_bisector_application",
         "line_through_point_perpendicular_to_segment": "line_through_point_perpendicular_to_segment",
+        "distance_between_parallel_lines": "distance_between_parallel_lines",
+        "solve_parameter_from_parallel_distance": "solve_parameter_from_parallel_distance",
+        "parallel_lines_distance_single_choice": "parallel_lines_distance_single_choice",
+        "area_using_parallel_distance": "area_using_parallel_distance",
     }
-    return mapping.get(line_type, line_type)
+    slot = mapping.get(line_type, line_type)
+    return slot
+
+
+def _v3_resolve_gated_domain_operation(
+    *,
+    skill_id: str,
+    textbook_row: dict[str, object],
+    conn: object | None,
+    extra: dict[str, object],
+) -> tuple[str, dict[str, object], Any]:
+    """Classify and hard-gate domain_operation under Registry fixed domain authority."""
+    from core.gencode.services.v3_example_semantic_classifier import (
+        TextbookExampleSource,
+        calculate_source_hash,
+        classify_textbook_example,
+        parse_choices_from_text,
+    )
+    from core.gencode.skill_fixed_domain_authority import (
+        SkillFixedDomainError,
+        assert_operation_allowed,
+        build_classifier_taxonomy_entry,
+        log_dispatch_event,
+        normalize_ai_classification,
+        resolve_fixed_domain_context,
+    )
+
+    ctx = resolve_fixed_domain_context(skill_id)
+    for k in ("line_type", "problem_type_id", "domain_operation", "task_type"):
+        if k in extra and extra[k]:
+            selected = str(extra[k]).strip()
+            assert_operation_allowed(
+                skill_id=ctx.skill_id,
+                fixed_domain_key=ctx.fixed_domain_key,
+                selected_operation=selected,
+                allowed_operations=ctx.allowed_operations,
+            )
+            log_dispatch_event(
+                phase="v3_draft",
+                skill_id=ctx.skill_id,
+                example_id=int(textbook_row.get("id") or 0),
+                fixed_domain_key=ctx.fixed_domain_key,
+                selected_operation=selected,
+                problem_type_id=selected,
+            )
+            return selected, {"problem_type_id": selected, "classification_source": "constraints"}, ctx
+
+    question_text = str(textbook_row.get("problem_text") or "")
+    answer_text = str(textbook_row.get("correct_answer") or "")
+    explanation_text = str(
+        textbook_row.get("detailed_solution") or textbook_row.get("explanation") or ""
+    )
+    choices = list(textbook_row.get("choices") or parse_choices_from_text(question_text))
+    example_id = int(textbook_row.get("id") or 0)
+    source = TextbookExampleSource(
+        skill_id=str(skill_id),
+        textbook_example_id=example_id,
+        question_text=question_text,
+        answer=answer_text,
+        choices=choices,
+        explanation=explanation_text,
+        source_label=str(textbook_row.get("source_description") or ""),
+        source_type=str(textbook_row.get("problem_type") or ""),
+        presentation_mode="single_choice" if choices else "short_answer",
+        question_type=str(textbook_row.get("question_type") or ""),
+        source_hash=calculate_source_hash(question_text, answer_text, explanation_text),
+    )
+    taxonomy_entry = build_classifier_taxonomy_entry(ctx)
+    try:
+        classification = classify_textbook_example(source, taxonomy_entry)
+        classification = normalize_ai_classification(classification, ctx)
+    except (SkillFixedDomainError, ValueError) as exc:
+        code = getattr(exc, "code", "domain_operation_not_allowed")
+        raise SkillFixedDomainError(
+            code,
+            str(exc),
+            details={
+                "skill_id": skill_id,
+                "fixed_domain_key": ctx.fixed_domain_key,
+                "allowed_operations": list(ctx.allowed_operations),
+            },
+        ) from exc
+
+    selected = str(
+        classification.get("selected_operation")
+        or classification.get("domain_operation")
+        or classification.get("problem_type_id")
+        or ""
+    ).strip()
+    if classification.get("parameter_sign"):
+        extra["parameter_sign"] = classification["parameter_sign"]
+    log_dispatch_event(
+        phase="v3_draft",
+        skill_id=ctx.skill_id,
+        component_id=f"src_{example_id}",
+        example_id=example_id,
+        fixed_domain_key=ctx.fixed_domain_key,
+        selected_operation=selected,
+        problem_type_id=selected,
+        template_domain_key=ctx.fixed_domain_key,
+        template_slot=selected,
+    )
+    return selected, classification, ctx
+
+
+def _v3_invoke_domain_entrypoint(
+    entrypoint_fn: Any,
+    *,
+    entrypoint_name: str,
+    domain_operation: str,
+    seed: int | None,
+    curriculum_profile: str,
+    difficulty_profile: str,
+    constraints: dict[str, object] | None,
+) -> dict[str, object]:
+    if entrypoint_name in {"build_coordinate_geometry_matrix", "build_parallel_lines_distance_matrix"}:
+        return entrypoint_fn(
+            seed=seed,
+            domain_operation=domain_operation,
+            curriculum_profile=curriculum_profile,
+            difficulty_profile=difficulty_profile,
+            constraints=constraints or None,
+        )
+    return entrypoint_fn(
+        seed=seed,
+        line_type=domain_operation,
+        curriculum_profile=curriculum_profile,
+        difficulty_profile=difficulty_profile,
+        constraints=constraints or None,
+    )
 
 
 def build_v3_component_draft_from_skill(
@@ -5008,20 +5145,10 @@ def build_v3_component_draft_from_skill(
     from core.gencode.answer_schema_registry import resolve_answer_schema_key
     from core.gencode.services.component_tracker_service import derive_component_id
     from core.gencode.source_kind_resolver import resolve_source_kind_from_textbook_row
-    from core.registry.taxonomy_registry import resolve_domain_for_skill
-
-    registry = resolve_domain_for_skill(skill_id)
-    domain_module = str(registry["domain_module"])
-    entrypoint = str(registry["entrypoint"])
-    curriculum_profile = str(registry["default_curriculum_profile"])
-    component_id = derive_component_id(textbook_example_id)
-
-    module = importlib.import_module(domain_module)
-    entrypoint_fn = getattr(module, entrypoint, None)
-    if not callable(entrypoint_fn):
-        raise AttributeError(
-            f"Domain entrypoint not callable: {domain_module}.{entrypoint}"
-        )
+    from core.gencode.skill_fixed_domain_authority import (
+        SkillFixedDomainError,
+        assert_template_dispatch,
+    )
 
     extra = dict(constraints or {})
     row = dict(textbook_row) if isinstance(textbook_row, dict) else None
@@ -5035,6 +5162,39 @@ def build_v3_component_draft_from_skill(
             "source_description": "",
             "correct_answer": "",
         }
+    row["id"] = textbook_example_id
+
+    try:
+        line_type, classification, domain_ctx = _v3_resolve_gated_domain_operation(
+            skill_id=skill_id,
+            textbook_row=row,
+            conn=conn,
+            extra=extra,
+        )
+    except SkillFixedDomainError as exc:
+        raise ValueError(f"{exc.code}:{exc}") from exc
+
+    registry = {
+        "domain_module": domain_ctx.domain_module,
+        "entrypoint": domain_ctx.entrypoint,
+        "default_curriculum_profile": domain_ctx.curriculum_profile,
+        "fixed_domain_key": domain_ctx.fixed_domain_key,
+        "allowed_operations": list(domain_ctx.allowed_operations),
+        "registry_revision": domain_ctx.registry_revision,
+        "domain": "coordinate_geometry",
+    }
+    domain_module = str(registry["domain_module"])
+    entrypoint = str(registry["entrypoint"])
+    curriculum_profile = str(registry["default_curriculum_profile"])
+    component_id = derive_component_id(textbook_example_id)
+
+    module = importlib.import_module(domain_module)
+    entrypoint_fn = getattr(module, entrypoint, None)
+    if not callable(entrypoint_fn):
+        raise AttributeError(
+            f"Domain entrypoint not callable: {domain_module}.{entrypoint}"
+        )
+
     canonical_source_kind = resolve_source_kind_from_textbook_row(row)
     if str(source_kind or "").strip().lower().startswith(("ex_", "src_")):
         source_kind = canonical_source_kind
@@ -5044,48 +5204,15 @@ def build_v3_component_draft_from_skill(
         extra.update(_v3_extract_slope_intercept_constraints(row))
     if str(skill_id or "").strip().endswith("_InterceptForm"):
         extra.update(_v3_extract_intercept_form_constraints(row))
-    line_type = _v3_resolve_dry_run_line_type(
-        source_kind,
-        extra,
-        skill_id=skill_id,
-        textbook_row=row,
-        conn=conn,
-    )
-    if "DistanceBetweenPointAndLine" in str(skill_id or ""):
-        try:
-            from core.gencode.services.v3_example_semantic_classifier import (
-                TextbookExampleSource,
-                calculate_source_hash,
-                classify_textbook_example,
-                parse_choices_from_text,
-            )
 
-            question_text = str(row.get("problem_text") or "")
-            answer_text = str(row.get("correct_answer") or "")
-            explanation_text = str(row.get("detailed_solution") or row.get("explanation") or "")
-            choices = list(row.get("choices") or parse_choices_from_text(question_text))
-            distance_source = TextbookExampleSource(
-                skill_id=str(skill_id),
-                textbook_example_id=int(row.get("id") or textbook_example_id),
-                question_text=question_text,
-                answer=answer_text,
-                choices=choices,
-                explanation=explanation_text,
-                source_label=str(row.get("source_description") or ""),
-                source_type=str(row.get("problem_type") or ""),
-                presentation_mode="single_choice" if choices else "short_answer",
-                question_type=str(row.get("question_type") or ""),
-                source_hash=calculate_source_hash(question_text, answer_text, explanation_text),
-            )
-            classification = classify_textbook_example(distance_source, {})
-            for key in ("target_direction", "solution_cardinality", "choice_value_shape"):
-                value = classification.get(key)
-                if value:
-                    extra[key] = value
-            if classification.get("problem_type_id"):
-                line_type = str(classification["problem_type_id"])
-        except Exception:
-            pass
+    template_slot = _v3_template_slot_for_line_type(line_type)
+    assert_template_dispatch(
+        skill_id=skill_id,
+        fixed_domain_key=domain_ctx.fixed_domain_key,
+        template_domain_key=domain_ctx.fixed_domain_key,
+        template_operation_key=line_type,
+        allowed_operations=domain_ctx.allowed_operations,
+    )
     difficulty_profile = _v3_resolve_dry_run_difficulty_profile(source_kind)
     problem_type_id = _v3_target_task_for_line_type(line_type)
     answer_schema_key = resolve_answer_schema_key(
@@ -5094,8 +5221,14 @@ def build_v3_component_draft_from_skill(
     )
     domain_name = str(registry.get("domain") or "coordinate_geometry")
     inferred = infer_presentation_mode_from_textbook_row(row)
-    presentation_mode = str(inferred.get("presentation_mode") or "short_answer")
-    answer_type = str(inferred.get("answer_type") or "expression")
+    if classification.get("presentation_mode"):
+        presentation_mode = str(classification["presentation_mode"])
+    else:
+        presentation_mode = str(inferred.get("presentation_mode") or "short_answer")
+    if classification.get("answer_type"):
+        answer_type = str(classification["answer_type"])
+    else:
+        answer_type = str(inferred.get("answer_type") or "expression")
     if presentation_mode != "single_choice":
         if line_type == "slope_intercept_find_x_intercept":
             answer_type = "rational"
@@ -5111,13 +5244,21 @@ def build_v3_component_draft_from_skill(
             answer_type = "linear_equation"
         elif line_type == "distance_from_point_to_line":
             answer_type = "rational"
-        elif line_type in ("distance_from_point_to_line_parameter", "distance_from_point_to_line_parameter_single_choice_scalar", "compare_point_to_line_distances"):
-            answer_type = "text_short"
+        elif line_type == "parallel_lines_distance_single_choice":
+            answer_type = "single_choice"
+        elif line_type == "area_using_parallel_distance":
+            answer_type = "rational"
+        elif line_type == "solve_parameter_from_parallel_distance":
+            answer_type = "rational"
+        elif line_type == "distance_between_parallel_lines":
+            answer_type = "rational"
     presentation_evidence = build_presentation_evidence_payload(inferred)
 
-    matrix = entrypoint_fn(
+    matrix = _v3_invoke_domain_entrypoint(
+        entrypoint_fn,
+        entrypoint_name=entrypoint,
+        domain_operation=line_type,
         seed=seed,
-        line_type=line_type,
         curriculum_profile=curriculum_profile,
         difficulty_profile=difficulty_profile,
         constraints=extra or None,
@@ -5159,6 +5300,8 @@ def build_v3_component_draft_from_skill(
         "textbook_example_id": textbook_example_id,
         "source_kind": source_kind,
         "domain": domain_name,
+        "fixed_domain_key": domain_ctx.fixed_domain_key,
+        "registry_revision": domain_ctx.registry_revision,
         "domain_operation": line_type,
         "answer_schema_key": answer_schema_key,
         "line_type": line_type,
@@ -5187,9 +5330,25 @@ def build_v3_component_draft_from_skill(
         checker_key = "text_short_checker"
         equivalence_type = "exact_string"
         checker_module = "core.checkers.structured_text_checker"
-    elif line_type in ("distance_from_point_to_line_parameter", "distance_from_point_to_line_parameter_single_choice_scalar"):
+    elif line_type in (
+        "distance_from_point_to_line_parameter",
+        "distance_from_point_to_line_parameter_single_choice_scalar",
+        "compare_point_to_line_distances",
+    ):
         checker_key = "text_short_checker"
         equivalence_type = "exact_string"
+        checker_module = "core.checkers.structured_text_checker"
+    elif line_type == "parallel_lines_distance_single_choice":
+        checker_key = "choice_label_checker"
+        equivalence_type = "choice_label"
+        checker_module = "core.checkers.choice_label_checker"
+    elif line_type in (
+        "distance_between_parallel_lines",
+        "solve_parameter_from_parallel_distance",
+        "area_using_parallel_distance",
+    ):
+        checker_key = "rational_checker"
+        equivalence_type = "rational_equivalent"
         checker_module = "core.checkers.structured_text_checker"
     elif answer_type == "text_short":
         checker_key = "text_short_checker"
@@ -5217,7 +5376,9 @@ def build_v3_component_draft_from_skill(
         "domain_operation": line_type,
         "answer_schema_key": answer_schema_key,
         "target_task": problem_type_id,
-        "template_slot": _v3_template_slot_for_line_type(line_type),
+        "template_slot": template_slot,
+        "template_domain_key": domain_ctx.fixed_domain_key,
+        "template_operation_key": line_type,
         "presentation_mode": presentation_mode,
         "answer_type": answer_type,
         "problem_type_id": problem_type_id,
@@ -5440,6 +5601,12 @@ def _build_v3_induced_spec_payload(
             "component_id": f"src_{textbook_example_id}",
             "skill_id": skill_id,
             "domain": str(domain_profile.get("domain") or "coordinate_geometry"),
+            "fixed_domain_key": str(
+                draft.get("fixed_domain_key") or domain_profile.get("fixed_domain_key") or ""
+            ),
+            "registry_revision": str(
+                draft.get("registry_revision") or domain_profile.get("registry_revision") or ""
+            ),
             "domain_operation": domain_operation,
             "problem_type_id": problem_type_id,
             "answer_schema_key": answer_schema_key,
@@ -5497,7 +5664,14 @@ def run_gencode_phase2_v3_shadow_bridge(
     assert_safe_sandbox_root(dryrun_path)
 
     extra = dict(constraints or {})
-    if "line_type" not in extra:
+    try:
+        from core.registry.taxonomy_registry import get_fixed_domain_key
+
+        get_fixed_domain_key(skill_key)
+        skip_legacy_line_type_inference = True
+    except Exception:
+        skip_legacy_line_type_inference = False
+    if not skip_legacy_line_type_inference and "line_type" not in extra:
         inferred_line_type = _v3_infer_line_type_from_textbook_example(
             conn,
             textbook_example_id,
@@ -5522,8 +5696,8 @@ def run_gencode_phase2_v3_shadow_bridge(
             source_text = str(source_row_for_gate["problem_text"] or "")
         else:
             source_text = str(source_row_for_gate[1] or "")
-        problem_type_for_gate = str(extra.get("line_type") or "").strip()
-        if not problem_type_for_gate:
+        problem_type_for_gate = str(extra.get("line_type") or extra.get("domain_operation") or "").strip()
+        if not problem_type_for_gate and not skip_legacy_line_type_inference:
             try:
                 problem_type_for_gate = _v3_resolve_dry_run_line_type(
                     source_kind,
@@ -5585,14 +5759,56 @@ def run_gencode_phase2_v3_shadow_bridge(
         },
     )
 
-    draft = build_v3_component_draft_from_skill(
-        skill_id=skill_key,
-        textbook_example_id=textbook_example_id,
-        source_kind=source_kind,
-        seed=seed,
-        constraints=extra or None,
-        conn=conn,
-    )
+    draft = None
+    try:
+        draft = build_v3_component_draft_from_skill(
+            skill_id=skill_key,
+            textbook_example_id=textbook_example_id,
+            source_kind=source_kind,
+            seed=seed,
+            constraints=extra or None,
+            conn=conn,
+        )
+    except ValueError as exc:
+        from core.gencode.skill_fixed_domain_authority import (
+            DOMAIN_OPERATION_NOT_ALLOWED,
+            FIXED_DOMAIN_VIOLATION,
+            UNSUPPORTED_DOMAIN_OPERATION,
+        )
+
+        message = str(exc)
+        if DOMAIN_OPERATION_NOT_ALLOWED in message:
+            status = "domain_operation_not_allowed"
+        elif UNSUPPORTED_DOMAIN_OPERATION in message:
+            status = "unsupported_domain_operation"
+        elif FIXED_DOMAIN_VIOLATION in message:
+            status = "fixed_domain_violation"
+        else:
+            raise
+        component_id = derive_component_id(textbook_example_id)
+        tracker = save_tracker_record(
+            conn,
+            textbook_example_id=textbook_example_id,
+            skill_id=skill_key,
+            gencode_status=status,
+            induced_spec_payload={"source_kind": source_kind, "error": message},
+            gencode_error_log=message,
+        )
+        try:
+            conn.commit()
+        except Exception:
+            pass
+        return {
+            "route": "v3_shadow_bridge",
+            "skill_id": skill_key,
+            "v3_activated": True,
+            "tracker_status": status,
+            "textbook_example_id": textbook_example_id,
+            "source_kind": source_kind,
+            "component_id": component_id,
+            "tracker_record": tracker,
+            "dryrun_base_dir": dryrun_path,
+        }
     induced_spec_payload = _build_v3_induced_spec_payload(
         draft,
         source_kind=source_kind,

@@ -16,6 +16,7 @@ PROJECT_ROOT = Path(__file__).resolve().parents[2]
 
 from core.gencode.pipeline_state import utc_timestamp
 from core.gencode.skill_wrapper_compiler import (
+    _fetch_publish_eligible_components,
     _fetch_verified_components,
     _is_path_under,
     assert_safe_project_root,
@@ -73,19 +74,21 @@ def resolve_and_validate_v3_publish_roots(project_root: str, staging_root: str) 
     return prod_path, stag_path
 
 
-V3_PRODUCTION_PUBLISH_ALLOWED_SKILLS: frozenset[str] = frozenset({
-    "vh_數學B1_PointSlopeForm",
-    "vh_數學B1_HorizontalAndVerticalLineEquations",
-    "vh_數學B1_SlopeInterceptForm",
-    "vh_數學B1_InterceptForm",
-    "vh_數學B1_GeneralFormOfLinearEquation",
-    "vh_數學B1_DistanceBetweenPointAndLine",
-})
+V3_PRODUCTION_PUBLISH_GLOBALLY_ENABLED: bool = True
+
+# Deprecated — v1.6 uses dynamic publish eligibility; kept only for legacy imports.
+V3_PRODUCTION_PUBLISH_ALLOWED_SKILLS: frozenset[str] = frozenset()
 
 V3_VARIATION_REQUIRED_SKILLS: frozenset[str] = frozenset()
 
 # Backward-compatible alias for existing test imports
 ALLOWED_PRODUCTION_SKILL_ID = "vh_數學B1_PointSlopeForm"
+
+
+def assert_production_publish_globally_enabled() -> None:
+    """Raise when the global production publish safety switch is off."""
+    if not V3_PRODUCTION_PUBLISH_GLOBALLY_ENABLED:
+        raise ValueError("production_publish_globally_disabled")
 
 
 def assert_safe_staging_root(staging_root: str, project_root: Path) -> Path:
@@ -289,6 +292,48 @@ def _auto_promote_valid_components(
                     if attr.isupper() and not attr.startswith("_"):
                         induced_spec[attr.lower()] = getattr(meta_mod, attr)
 
+                existing_spec: dict[str, Any] = {}
+                try:
+                    existing_row = conn.execute(
+                        """
+                        SELECT induced_spec_payload
+                        FROM gencode_component_tracker
+                        WHERE skill_id = ? AND component_id = ?
+                        """,
+                        (skill_key, component_id),
+                    ).fetchone()
+                    if existing_row is not None:
+                        raw_existing = (
+                            existing_row[0]
+                            if not hasattr(existing_row, "keys")
+                            else existing_row["induced_spec_payload"]
+                        )
+                        if isinstance(raw_existing, str) and raw_existing.strip():
+                            existing_spec = json.loads(raw_existing)
+                        elif isinstance(raw_existing, dict):
+                            existing_spec = raw_existing
+                except Exception:
+                    existing_spec = {}
+
+                preserved_keys = (
+                    "fixed_domain_key",
+                    "domain_operation",
+                    "selected_operation",
+                    "registry_revision",
+                    "skill_id",
+                    "source_kind",
+                    "presentation_mode",
+                    "answer_type",
+                    "answer_schema_key",
+                    "problem_type_id",
+                )
+                merged_spec = dict(existing_spec)
+                merged_spec.update(induced_spec)
+                for key in preserved_keys:
+                    if existing_spec.get(key) not in (None, ""):
+                        merged_spec[key] = existing_spec[key]
+                induced_spec = merged_spec
+
                 induced_spec["integrity_gate_passed"] = True
                 induced_spec["integrity_gate_version"] = "v1"
 
@@ -353,6 +398,8 @@ def publish_single_v3_skill_to_production(
     """Publish one gated skill through staging smoke, promote, and production smoke."""
     skill_key = str(skill_id or "").strip()
 
+    assert_production_publish_globally_enabled()
+
     project_path = assert_safe_project_root(project_root)
     staging_path = assert_safe_staging_root(staging_root, project_path)
 
@@ -362,19 +409,16 @@ def publish_single_v3_skill_to_production(
     eligibility = evaluate_v3_publish_eligibility(conn, skill_key)
     if not eligibility.get("allowed") and eligibility.get("reason") == "taxonomy_not_registered":
         raise ValueError("taxonomy_not_registered")
-    if skill_key not in V3_PRODUCTION_PUBLISH_ALLOWED_SKILLS and "dynamic" not in skill_key.lower():
-        raise ValueError("production_publish_not_allowed_for_skill")
-    eligibility_reason = str(eligibility.get("reason") or "production_publish_not_allowed_for_skill")
-    partial_coverage_allowed = allow_partial_coverage and eligibility_reason in {
-        "coverage_incomplete",
-        "publish_ready_false",
-    }
+    if not eligibility.get("allowed") and eligibility.get("reason") == "skill_domain_not_registered":
+        raise ValueError("skill_domain_not_registered")
+    eligibility_reason = str(eligibility.get("reason") or "v3_publish_not_eligible")
+    partial_coverage_allowed = allow_partial_coverage and not bool(eligibility.get("full_coverage"))
     if not eligibility.get("allowed") and not partial_coverage_allowed:
         raise ValueError(eligibility_reason)
 
-    verified_components = _fetch_verified_components(conn, skill_key)
-    if not verified_components:
-        raise ValueError("no_verified_components")
+    eligible_components = _fetch_publish_eligible_components(conn, skill_key)
+    if not eligible_components:
+        raise ValueError("no_eligible_components")
 
     compile_result = compile_and_double_write_skill(conn, skill_key, str(staging_path))
     _sync_dryrun_components_to_v3_house(staging_path, skill_key)

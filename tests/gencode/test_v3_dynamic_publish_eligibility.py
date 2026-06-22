@@ -16,7 +16,6 @@ from core.gencode.schema.gencode_component_tracker_inspection import apply_track
 from core.gencode.services.admin_gencode_action_service import run_admin_v3_publish_for_skill
 from core.gencode.services.v3_publish_eligibility import evaluate_v3_publish_eligibility
 from core.gencode.v3_production_publish_service import (
-    V3_PRODUCTION_PUBLISH_ALLOWED_SKILLS,
     publish_single_v3_skill_to_production,
 )
 
@@ -85,6 +84,26 @@ def taxonomy_registered(monkeypatch: pytest.MonkeyPatch) -> None:
     )
 
 
+@pytest.fixture
+def registry_registered(monkeypatch: pytest.MonkeyPatch) -> None:
+    from core.registry import taxonomy_registry
+
+    monkeypatch.setitem(
+        taxonomy_registry.SKILL_TO_DOMAIN,
+        DYNAMIC_SKILL,
+        {
+            "fixed_domain_key": "coordinate_geometry.line_equation",
+            "domain": "coordinate_geometry",
+            "allowed_types": ["point_slope"],
+        },
+    )
+    monkeypatch.setitem(
+        taxonomy_registry.SKILL_DOMAIN_PROFILE,
+        DYNAMIC_SKILL,
+        {"fixed_domain_key": "coordinate_geometry.line_equation", "registry_revision": "test"},
+    )
+
+
 def _seed_skill_metadata(conn: sqlite3.Connection, skill_id: str = DYNAMIC_SKILL) -> None:
     conn.execute(
         "INSERT INTO skills_info (skill_id, skill_en_name, skill_ch_name) VALUES (?, ?, ?)",
@@ -100,7 +119,9 @@ def _payload(example_id: int) -> str:
             "source_kind": f"ex_{example_id}",
             "presentation_mode": "short_answer",
             "line_type": "general_form",
-            "problem_type_id": "line_equation_general_form",
+            "fixed_domain_key": "coordinate_geometry.line_equation",
+            "domain_operation": "point_slope",
+            "problem_type_id": "point_slope",
             "display_order": example_id,
             "source_order": example_id,
             "sampling_weight": 1,
@@ -207,8 +228,8 @@ def test_dynamic_taxonomy_concrete_skill_gets_publish_eligibility_and_publishes(
     memory_conn: sqlite3.Connection,
     isolated_roots: tuple[Path, Path],
     taxonomy_registered: None,
+    registry_registered: None,
 ) -> None:
-    assert DYNAMIC_SKILL not in V3_PRODUCTION_PUBLISH_ALLOWED_SKILLS
     project_root, staging_root = isolated_roots
     _seed_skill_metadata(memory_conn)
     _seed_examples(memory_conn, total=17, verified=17)
@@ -241,46 +262,66 @@ def test_outline_skill_rejected(memory_conn: sqlite3.Connection, taxonomy_regist
     assert eligibility["reason"] == "not_concrete_skill"
 
 
-def test_no_textbook_examples_rejected(memory_conn: sqlite3.Connection, taxonomy_registered: None) -> None:
+def test_no_textbook_examples_rejected(memory_conn: sqlite3.Connection, taxonomy_registered: None, registry_registered: None) -> None:
     _seed_skill_metadata(memory_conn)
     eligibility = evaluate_v3_publish_eligibility(memory_conn, DYNAMIC_SKILL)
     assert eligibility["allowed"] is False
     assert eligibility["reason"] == "no_textbook_examples"
 
 
-def test_coverage_incomplete_rejected(memory_conn: sqlite3.Connection, taxonomy_registered: None) -> None:
+def test_coverage_incomplete_allows_partial_publish(
+    memory_conn: sqlite3.Connection,
+    taxonomy_registered: None,
+    registry_registered: None,
+) -> None:
     _seed_skill_metadata(memory_conn)
     _seed_examples(memory_conn, total=17, verified=16)
     eligibility = evaluate_v3_publish_eligibility(memory_conn, DYNAMIC_SKILL)
-    assert eligibility["allowed"] is False
-    assert eligibility["reason"] == "coverage_incomplete"
+    assert eligibility["allowed"] is True
+    assert eligibility["full_coverage"] is False
 
 
-def test_failed_count_rejected(memory_conn: sqlite3.Connection, taxonomy_registered: None) -> None:
+def test_failed_count_allows_partial_publish(
+    memory_conn: sqlite3.Connection,
+    taxonomy_registered: None,
+    registry_registered: None,
+) -> None:
     _seed_skill_metadata(memory_conn)
     _seed_examples(memory_conn, total=17, verified=16, failed_ids={17})
     eligibility = evaluate_v3_publish_eligibility(memory_conn, DYNAMIC_SKILL)
-    assert eligibility["allowed"] is False
-    assert eligibility["reason"] == "failed_components"
+    assert eligibility["allowed"] is True
+    assert eligibility["full_coverage"] is False
 
 
-def test_unsupported_count_rejected(memory_conn: sqlite3.Connection, taxonomy_registered: None) -> None:
+def test_unsupported_count_allows_partial_publish(
+    memory_conn: sqlite3.Connection,
+    taxonomy_registered: None,
+    registry_registered: None,
+) -> None:
     _seed_skill_metadata(memory_conn)
     _seed_examples(memory_conn, total=17, verified=16, unsupported_ids={17})
     eligibility = evaluate_v3_publish_eligibility(memory_conn, DYNAMIC_SKILL)
-    assert eligibility["allowed"] is False
-    assert eligibility["reason"] == "unsupported_components"
+    assert eligibility["allowed"] is True
+    assert eligibility["full_coverage"] is False
 
 
-def test_missing_tracker_rejected(memory_conn: sqlite3.Connection, taxonomy_registered: None) -> None:
+def test_missing_tracker_allows_partial_publish(
+    memory_conn: sqlite3.Connection,
+    taxonomy_registered: None,
+    registry_registered: None,
+) -> None:
     _seed_skill_metadata(memory_conn)
     _seed_examples(memory_conn, total=17, verified=16, missing_tracker_ids={17})
     eligibility = evaluate_v3_publish_eligibility(memory_conn, DYNAMIC_SKILL)
-    assert eligibility["allowed"] is False
-    assert eligibility["reason"] == "missing_tracker"
+    assert eligibility["allowed"] is True
+    assert eligibility["full_coverage"] is False
 
 
-def test_publish_ready_false_rejected(memory_conn: sqlite3.Connection, taxonomy_registered: None) -> None:
+def test_publish_ready_false_allows_partial_publish(
+    memory_conn: sqlite3.Connection,
+    taxonomy_registered: None,
+    registry_registered: None,
+) -> None:
     _seed_skill_metadata(memory_conn)
     _seed_examples(memory_conn, total=17, verified=17)
     coverage = {
@@ -292,22 +333,39 @@ def test_publish_ready_false_rejected(memory_conn: sqlite3.Connection, taxonomy_
         "publish_ready": False,
     }
     eligibility = evaluate_v3_publish_eligibility(memory_conn, DYNAMIC_SKILL, coverage=coverage)
-    assert eligibility["allowed"] is False
-    assert eligibility["reason"] == "publish_ready_false"
+    assert eligibility["allowed"] is True
+    assert eligibility["full_coverage"] is False
 
 
 def test_admin_and_production_share_same_policy_reason(
     memory_conn: sqlite3.Connection,
     isolated_roots: tuple[Path, Path],
     taxonomy_registered: None,
+    registry_registered: None,
 ) -> None:
     project_root, staging_root = isolated_roots
     _seed_skill_metadata(memory_conn)
-    _seed_examples(memory_conn, total=17, verified=16, missing_tracker_ids={17})
+    _seed_examples(memory_conn, total=1, verified=1)
+    conn = memory_conn
+    conn.execute(
+        "UPDATE gencode_component_tracker SET induced_spec_payload = ? WHERE textbook_example_id = 1",
+        (
+            json.dumps(
+                {
+                    "fixed_domain_key": "coordinate_geometry.point_line_distance",
+                    "domain_operation": "distance_from_point_to_line",
+                    "integrity_gate_passed": True,
+                    "integrity_gate_version": "v1",
+                },
+                ensure_ascii=False,
+            ),
+        ),
+    )
+    conn.commit()
 
     eligibility = evaluate_v3_publish_eligibility(memory_conn, DYNAMIC_SKILL)
-    assert eligibility["reason"] == "missing_tracker"
-    with pytest.raises(ValueError, match="missing_tracker"):
+    assert eligibility["reason"] == "no_eligible_components"
+    with pytest.raises(ValueError, match="no_eligible_components"):
         run_admin_v3_publish_for_skill(
             conn=memory_conn,
             skill_id=DYNAMIC_SKILL,
@@ -316,7 +374,7 @@ def test_admin_and_production_share_same_policy_reason(
             force_publish=True,
             strict_coverage=True,
         )
-    with pytest.raises(ValueError, match="missing_tracker"):
+    with pytest.raises(ValueError, match="no_eligible_components"):
         publish_single_v3_skill_to_production(
             conn=memory_conn,
             skill_id=DYNAMIC_SKILL,
@@ -325,18 +383,19 @@ def test_admin_and_production_share_same_policy_reason(
         )
 
 
-def test_illegal_skill_not_allowed_after_allowlist_removal(memory_conn: sqlite3.Connection) -> None:
+def test_illegal_skill_not_allowed_when_domain_unregistered(memory_conn: sqlite3.Connection, taxonomy_registered: None) -> None:
     _seed_skill_metadata(memory_conn)
     _seed_examples(memory_conn)
     eligibility = evaluate_v3_publish_eligibility(memory_conn, DYNAMIC_SKILL)
     assert eligibility["allowed"] is False
-    assert eligibility["reason"] == "taxonomy_not_registered"
+    assert eligibility["reason"] == "skill_domain_not_registered"
 
 
 def test_eligibility_does_not_skip_production_smoke_rollback(
     memory_conn: sqlite3.Connection,
     isolated_roots: tuple[Path, Path],
     taxonomy_registered: None,
+    registry_registered: None,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     project_root, staging_root = isolated_roots

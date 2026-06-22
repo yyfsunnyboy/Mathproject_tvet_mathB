@@ -78,6 +78,29 @@ def _parse_induced_spec_payload(raw: Any) -> dict[str, Any]:
     return loaded
 
 
+def _fetch_publish_eligible_components(
+    conn: sqlite3.Connection,
+    skill_id: str,
+) -> list[dict[str, Any]]:
+    """Return verified components that pass fixed-domain and integrity publish gates."""
+    from core.gencode.services.v3_publish_eligibility import component_publish_blockers
+
+    verified = _fetch_verified_components(conn, skill_id)
+    eligible: list[dict[str, Any]] = []
+    for row in verified:
+        payload = row["induced_spec_payload"]
+        blockers = component_publish_blockers(
+            skill_id=skill_id,
+            component_skill_id=skill_id,
+            component_status="verified",
+            spec=payload,
+        )
+        if blockers:
+            continue
+        eligible.append(row)
+    return eligible
+
+
 def _fetch_verified_components(
     conn: sqlite3.Connection,
     skill_id: str,
@@ -490,9 +513,9 @@ def compile_and_double_write_skill(
     if not skill_key:
         raise ValueError("skill_id must be provided.")
 
-    components = _fetch_verified_components(conn, skill_key)
+    components = _fetch_publish_eligible_components(conn, skill_key)
     if not components:
-        raise ValueError(f"no_verified_components: {skill_key}")
+        raise ValueError(f"no_eligible_components: {skill_key}")
 
     generator_keys, generator_specs = _build_generator_specs(components)
 

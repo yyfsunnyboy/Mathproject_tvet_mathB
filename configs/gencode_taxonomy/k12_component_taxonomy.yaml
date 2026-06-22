@@ -6,6 +6,7 @@ mvp_scope:
     - vh_數學B1_InterceptForm
     - vh_數學B1_GeneralFormOfLinearEquation
     - vh_數學B1_DistanceBetweenPointAndLine
+    - vh_數學B1_DistanceBetweenTwoParallelLines
 
 skills:
   vh_數學B1_PointSlopeForm:
@@ -59,11 +60,24 @@ skills:
       - perpendicular_bisector_application
       - coordinate_geometry_word_problem
   vh_數學B1_DistanceBetweenPointAndLine:
+    fixed_domain_key: coordinate_geometry.point_line_distance
     domain_module: core.domain.coordinate_geometry.line_equation_domain
-    entrypoint: build_line_equation_matrix
+    entrypoint: build_coordinate_geometry_matrix
     default_curriculum_profile: vocational_high_b
     concrete: true
     allowed_types:
       - distance_from_point_to_line
       - distance_from_point_to_line_parameter
       - compare_point_to_line_distances
+  vh_數學B1_DistanceBetweenTwoParallelLines:
+    fixed_domain_key: coordinate_geometry.parallel_lines_distance
+    domain_module: core.domain.coordinate_geometry.parallel_lines_distance_domain
+    entrypoint: build_parallel_lines_distance_matrix
+    default_curriculum_profile: vocational_high_b
+    concrete: true
+    allowed_types:
+      - distance_between_parallel_lines
+      - solve_parameter_from_parallel_distance
+      - construct_parallel_line_at_distance
+      - parallel_lines_distance_single_choice
+      - area_using_parallel_distance

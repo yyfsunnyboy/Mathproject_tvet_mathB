@@ -229,6 +229,22 @@ def _build_generate_py(
     if line_type.startswith("slope_intercept_"):
         constraints = {}
     constraints_literal = repr(constraints if isinstance(constraints, dict) else {})
+    if entrypoint in {"build_coordinate_geometry_matrix", "build_parallel_lines_distance_matrix"}:
+        matrix_call = f'''{entrypoint}(
+        seed=seed,
+        domain_operation="{domain_operation}",
+        curriculum_profile="{curriculum_profile}",
+        difficulty_profile="{difficulty_level}",
+        constraints={constraints_literal},
+    )'''
+    else:
+        matrix_call = f'''{entrypoint}(
+        seed=seed,
+        line_type="{line_type}",
+        curriculum_profile="{curriculum_profile}",
+        difficulty_profile="{difficulty_level}",
+        constraints={constraints_literal},
+    )'''
 
     return f'''from __future__ import annotations
 
@@ -244,13 +260,7 @@ TEXTBOOK_EXAMPLE_ID = {textbook_example_id}
 
 
 def generate(level: int = 1, seed: int | None = None, **kwargs: Any) -> dict[str, Any]:
-    matrix = {entrypoint}(
-        seed=seed,
-        line_type="{line_type}",
-        curriculum_profile="{curriculum_profile}",
-        difficulty_profile="{difficulty_level}",
-        constraints={constraints_literal},
-    )
+    matrix = {matrix_call}
     component_id = str(kwargs.get("component_id") or "")
     payload = convert_line_equation_matrix_to_question_payload(
         matrix,

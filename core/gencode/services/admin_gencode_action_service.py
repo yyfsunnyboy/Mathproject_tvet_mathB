@@ -895,21 +895,27 @@ def run_admin_v3_publish_for_skill(
 
     if not eligibility.get("allowed") and eligibility.get("reason") == "taxonomy_not_registered":
         raise ValueError("taxonomy_not_registered")
+    if not eligibility.get("allowed") and eligibility.get("reason") == "skill_domain_not_registered":
+        raise ValueError("skill_domain_not_registered")
 
-    from core.gencode.v3_production_publish_service import V3_PRODUCTION_PUBLISH_ALLOWED_SKILLS
-    if skill_key not in V3_PRODUCTION_PUBLISH_ALLOWED_SKILLS and "dynamic" not in skill_key.lower():
-        raise ValueError("production_publish_not_allowed_for_skill")
+    from core.gencode.v3_production_publish_service import (
+        assert_production_publish_globally_enabled,
+        publish_single_v3_skill_to_production,
+    )
+
+    assert_production_publish_globally_enabled()
 
     partial_coverage_allowed = (
         not strict_coverage
-        and str(eligibility.get("reason") or "") in {"coverage_incomplete", "publish_ready_false"}
+        and not bool(eligibility.get("full_coverage"))
     )
     if not bool(eligibility.get("allowed")) and not partial_coverage_allowed:
         raise ValueError(str(eligibility.get("reason") or "v3_publish_not_eligible"))
 
+    eligible_component_count = int(eligibility.get("eligible_component_count") or 0)
     verified_component_count = _count_verified_components_for_skill(conn, skill_key)
-    if verified_component_count < 1:
-        raise ValueError("no_verified_components")
+    if eligible_component_count < 1:
+        raise ValueError("no_eligible_components")
 
     # Pre-publish integrity gate — surface errors early without replacing the gate in publish service
     from core.gencode.services.v3_question_integrity_validator import validate_skill_samples

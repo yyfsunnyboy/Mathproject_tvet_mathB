@@ -55,8 +55,82 @@ def _distance_comparison_target_direction(text: str) -> str:
     return "relation"
 
 
+def _deterministic_classify_parallel_lines(source: TextbookExampleSource) -> dict[str, Any] | None:
+    """Skill-fixed rules for vh_數學B1_DistanceBetweenTwoParallelLines only."""
+    text = source.question_text or ""
+    compact = text.replace(" ", "").replace("　", "")
+
+    if ("(A)" in text or "(B)" in text or source.choices) and ("斜率" in text):
+        return {
+            "selected_operation": "parallel_lines_distance_single_choice",
+            "problem_type_id": "parallel_lines_distance_single_choice",
+            "math_family": "parallel_lines_distance",
+            "task_intent": "solve_parameter_sum_from_slope_and_distance",
+            "presentation_mode": "single_choice",
+            "answer_type": "single_choice",
+            "required_domain_capabilities": ["parallel_lines_distance_single_choice"],
+            "confidence": 1.0,
+            "classification_source": "deterministic",
+        }
+
+    if "面積" in text and ("直線" in text or "L" in text):
+        return {
+            "selected_operation": "area_using_parallel_distance",
+            "problem_type_id": "area_using_parallel_distance",
+            "math_family": "parallel_lines_distance",
+            "task_intent": "triangle_area_using_point_to_line_distance",
+            "presentation_mode": "short_answer",
+            "answer_type": "rational",
+            "required_domain_capabilities": ["area_using_parallel_distance"],
+            "confidence": 1.0,
+            "classification_source": "deterministic",
+        }
+
+    if "平行" in text and ("k" in compact.lower() or "k值" in text or "k之值" in text or "a=" in compact or "a值" in text):
+        sign = None
+        if "k<0" in compact or "k < 0" in text:
+            sign = "negative"
+        elif "k>0" in compact or "k > 0" in text:
+            sign = "positive"
+        result = {
+            "selected_operation": "solve_parameter_from_parallel_distance",
+            "problem_type_id": "solve_parameter_from_parallel_distance",
+            "math_family": "parallel_lines_distance",
+            "task_intent": "solve_parameter_from_parallel_distance",
+            "presentation_mode": "short_answer",
+            "answer_type": "rational",
+            "required_domain_capabilities": ["solve_parameter_from_parallel_distance"],
+            "confidence": 1.0,
+            "classification_source": "deterministic",
+        }
+        if sign:
+            result["parameter_sign"] = sign
+        return result
+
+    if "平行" in text and ("距離" in text or "最短距離" in text):
+        return {
+            "selected_operation": "distance_between_parallel_lines",
+            "problem_type_id": "distance_between_parallel_lines",
+            "math_family": "parallel_lines_distance",
+            "task_intent": "distance_between_parallel_lines",
+            "presentation_mode": "short_answer",
+            "answer_type": "rational",
+            "required_domain_capabilities": ["distance_between_parallel_lines"],
+            "confidence": 1.0,
+            "classification_source": "deterministic",
+        }
+
+    return None
+
+
 def _deterministic_classify(source: TextbookExampleSource) -> dict[str, Any] | None:
     text = source.question_text or ""
+
+    if "DistanceBetweenTwoParallelLines" in source.skill_id:
+        parallel = _deterministic_classify_parallel_lines(source)
+        if parallel is not None:
+            return parallel
+        return None
     
     # 4565: "試求下列各直線的斜率： (1) 3x − 2y + 1 = 0 (2) x/2 - y/5 = 1"
     if "試求下列各直線的斜率" in text and ("x/2" in text.replace(" ", "") or "frac{x}{2}" in text or "x}{2}" in text):
@@ -345,6 +419,8 @@ def _deterministic_classify(source: TextbookExampleSource) -> dict[str, Any] | N
 def _ai_fallback_classify(
     source: TextbookExampleSource,
     allowed_types: list[str],
+    *,
+    fixed_domain_key: str = "",
 ) -> dict[str, Any] | None:
     """Fallback to Google Gemini model if deterministic rules fail."""
     from core.gencode.gencode_ai_resolve import resolve_gencode_ai_client
@@ -354,22 +430,25 @@ def _ai_fallback_classify(
     
     prompt = (
         "You are an expert mathematical educator.\n"
-        "Classify the following math textbook example into exactly one of the allowed problem types.\n\n"
+        "Classify the following math textbook example into exactly one of the allowed operations.\n"
+        "You MUST NOT change skill_id or domain_key. Domain is already fixed by Registry.\n\n"
         f"Skill ID: {source.skill_id}\n"
+        f"Fixed Domain Key: {fixed_domain_key}\n"
         f"Example ID: {source.textbook_example_id}\n"
         f"Problem Text: {source.question_text}\n"
         f"Answer: {source.answer}\n"
         f"Explanation/Solution: {source.explanation}\n\n"
-        f"Allowed Problem Types: {allowed_types}\n\n"
+        f"Allowed Operations: {allowed_types}\n\n"
         "Your output must be a single JSON object. Do not include any markdown styling, fences, or text before/after. The JSON object must have keys:\n"
-        '- "problem_type_id": (string, must be one of the allowed types)\n'
-        '- "math_family": "line_equation"\n'
-        '- "task_intent": (brief string describing what to solve)\n'
-        '- "given_structure": (array of strings for given items)\n'
-        '- "target_structure": (array of strings for target items)\n'
-        '- "required_domain_capabilities": (array of strings)\n'
+        '- "selected_operation": (string, must be one of the allowed operations)\n'
+        '- "problem_type_id": (same as selected_operation)\n'
+        '- "question_intent": (brief string describing what to solve)\n'
+        '- "presentation_mode": (short_answer | single_choice | rational | etc.)\n'
+        '- "answer_type": (string)\n'
+        '- "checker_key": (optional suggestion)\n'
         '- "confidence": (float between 0 and 1)\n'
-        '- "notes": (brief explanation of the classification)\n'
+        '- "notes": (brief explanation)\n'
+        "Do NOT include domain_key, recommended_skill, or nearest_template.\n"
     )
     
     try:
@@ -379,9 +458,12 @@ def _ai_fallback_classify(
         text = re.sub(r"\s*```$", "", text, flags=re.IGNORECASE)
         parsed = json.loads(text.strip())
         
-        problem_type_id = parsed.get("problem_type_id")
+        problem_type_id = parsed.get("selected_operation") or parsed.get("problem_type_id")
         if problem_type_id not in allowed_types:
             raise ValueError(f"AI returned invalid problem_type_id: {problem_type_id}")
+        parsed["problem_type_id"] = problem_type_id
+        parsed["selected_operation"] = problem_type_id
+        parsed = {k: v for k, v in parsed.items() if k not in ("domain_key", "domain_family", "recommended_skill", "nearest_template")}
             
         parsed["classification_source"] = "ai_fallback"
         return parsed
@@ -423,19 +505,31 @@ def classify_textbook_example(
     # 1. Deterministic Rule Classifier first
     res = _deterministic_classify(source)
     if res is not None:
+        res = {k: v for k, v in res.items() if k not in ("domain_key", "recommended_skill")}
         res["skill_id"] = source.skill_id
         res["textbook_example_id"] = source.textbook_example_id
         res["source_hash"] = source.source_hash
+        if taxonomy_entry.get("fixed_domain_key"):
+            res["fixed_domain_key"] = taxonomy_entry["fixed_domain_key"]
         res["trace"] = {
             "method": "deterministic",
-            "confidence": res["confidence"],
+            "confidence": res.get("confidence", 1.0),
             "source_hash": source.source_hash,
         }
         return res
 
     # 2. AI Fallback Classifier second
-    allowed_types = taxonomy_entry.get("allowed_types") or taxonomy_entry.get("allowed_problem_types") or []
-    res = _ai_fallback_classify(source, allowed_types)
+    allowed_types = (
+        taxonomy_entry.get("allowed_operations")
+        or taxonomy_entry.get("allowed_types")
+        or taxonomy_entry.get("allowed_problem_types")
+        or []
+    )
+    res = _ai_fallback_classify(
+        source,
+        allowed_types,
+        fixed_domain_key=str(taxonomy_entry.get("fixed_domain_key") or ""),
+    )
     if res is not None:
         res["skill_id"] = source.skill_id
         res["textbook_example_id"] = source.textbook_example_id
