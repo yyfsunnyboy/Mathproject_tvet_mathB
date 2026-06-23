@@ -1,4 +1,4 @@
-﻿from __future__ import annotations
+from __future__ import annotations
 
 import logging
 logger = logging.getLogger(__name__)
@@ -5816,7 +5816,8 @@ def run_gencode_phase2_v3_shadow_bridge(
             "route": "v3_shadow_bridge",
             "skill_id": skill_key,
             "v3_activated": True,
-            "tracker_status": status,
+            "tracker_status": "failed",
+            "error_code": error_code,
             "textbook_example_id": textbook_example_id,
             "source_kind": source_kind,
             "component_id": component_id,
@@ -6027,11 +6028,3 @@ def run_gencode_phase2_v3_shadow_bridge(
         "tracker_record": tracker,
         "dryrun_base_dir": dryrun_path,
     }
-
-
-
-
-
-
-
-

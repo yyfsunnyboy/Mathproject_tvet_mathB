@@ -1,0 +1,51 @@
+{
+  "skill_id": "vh_數學B4_FrequencyDistributionTableConstruction",
+  "compiled_at": "2026-06-23T16:13:39.858442+00:00",
+  "publish_status": "dryrun_manifest_compiled",
+  "components": [
+    {
+      "component_id": "src_3822",
+      "status": "verified",
+      "presentation_mode": "short_answer",
+      "source_kind": "ex_3822",
+      "textbook_example_id": 3822,
+      "line_type": "frequency_table_construction_review",
+      "domain_module": "core.domain.statistics.frequency_distribution_domain",
+      "entrypoint": "build_frequency_distribution_table_matrix",
+      "component_dir": "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_dryrun\\vh_數學B4_FrequencyDistributionTableConstruction\\components\\src_3822"
+    },
+    {
+      "component_id": "src_3823",
+      "status": "verified",
+      "presentation_mode": "short_answer",
+      "source_kind": "ex_3823",
+      "textbook_example_id": 3823,
+      "line_type": "frequency_table_construction_review",
+      "domain_module": "core.domain.statistics.frequency_distribution_domain",
+      "entrypoint": "build_frequency_distribution_table_matrix",
+      "component_dir": "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_dryrun\\vh_數學B4_FrequencyDistributionTableConstruction\\components\\src_3823"
+    },
+    {
+      "component_id": "src_3824",
+      "status": "verified",
+      "presentation_mode": "short_answer",
+      "source_kind": "ex_3824",
+      "textbook_example_id": 3824,
+      "line_type": "frequency_table_construction_review",
+      "domain_module": "core.domain.statistics.frequency_distribution_domain",
+      "entrypoint": "build_frequency_distribution_table_matrix",
+      "component_dir": "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_dryrun\\vh_數學B4_FrequencyDistributionTableConstruction\\components\\src_3824"
+    },
+    {
+      "component_id": "src_3825",
+      "status": "verified",
+      "presentation_mode": "short_answer",
+      "source_kind": "ex_3825",
+      "textbook_example_id": 3825,
+      "line_type": "frequency_table_construction_review",
+      "domain_module": "core.domain.statistics.frequency_distribution_domain",
+      "entrypoint": "build_frequency_distribution_table_matrix",
+      "component_dir": "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_dryrun\\vh_數學B4_FrequencyDistributionTableConstruction\\components\\src_3825"
+    }
+  ]
+}

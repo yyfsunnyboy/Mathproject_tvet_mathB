@@ -124,9 +124,10 @@ def test_admin_action_rejects_skill_id_mismatch(
         )
 
 
-def test_admin_action_rejects_non_mvp_skill_without_v2_fallback(
+def test_admin_action_marks_non_mvp_skill_as_review_hint_not_bootstrap_blocker(
     memory_conn: sqlite3.Connection,
     dryrun_root: Path,
+    monkeypatch: pytest.MonkeyPatch,
 ):
     memory_conn.execute(
         "INSERT INTO textbook_examples (id, skill_id) VALUES (?, ?)",
@@ -134,19 +135,26 @@ def test_admin_action_rejects_non_mvp_skill_without_v2_fallback(
     )
     memory_conn.commit()
 
-    with pytest.raises(ValueError, match="skill_not_in_v3_mvp_scope"):
-        run_admin_v3_dryrun_for_example(
-            conn=memory_conn,
-            textbook_example_id=1,
-            skill_id=NON_MVP_SKILL_ID,
-            dryrun_base_dir=str(dryrun_root),
-        )
+    def _fake_phase2_raw(skill_id: str, **kwargs: object) -> dict[str, object]:
+        return {
+            "phase_status": "V3_SHADOW_BRIDGE",
+            "tracker_status": "failed",
+        }
 
-    tracker_count = memory_conn.execute(
-        "SELECT COUNT(*) AS c FROM gencode_component_tracker"
-    ).fetchone()["c"]
-    assert tracker_count == 0
-    assert list(dryrun_root.rglob("*")) == []
+    monkeypatch.setattr(
+        "core.gencode.services.admin_gencode_action_service.run_gencode_phase2_raw",
+        _fake_phase2_raw,
+    )
+
+    result = run_admin_v3_dryrun_for_example(
+        conn=memory_conn,
+        textbook_example_id=1,
+        skill_id=NON_MVP_SKILL_ID,
+        dryrun_base_dir=str(dryrun_root),
+    )
+
+    assert result["status"] == "failed"
+    assert result["review_hints"] == ["skill_not_in_v3_mvp_scope"]
 
 
 def test_admin_dryrun_never_calls_production_publish(

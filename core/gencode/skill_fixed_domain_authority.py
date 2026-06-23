@@ -1,4 +1,4 @@
-﻿"""Skill-Fixed Domain Authority — deterministic routing gates for Gencode V3."""
+"""Skill-Fixed Domain Authority — deterministic routing gates for Gencode V3."""
 
 from __future__ import annotations
 
@@ -23,7 +23,7 @@ from core.gencode.v3_error_codes import (
 logger = logging.getLogger(__name__)
 
 # Routing blocker codes (also used as tracker gencode_status where applicable).
-SKILL_DOMAIN_NOT_REGISTERED = "skill_domain_not_registered"
+SKILL_DOMAIN_NOT_REGISTERED = DOMAIN_BINDING_MISSING
 DOMAIN_OPERATION_NOT_ALLOWED = "domain_operation_not_allowed"
 UNSUPPORTED_DOMAIN_OPERATION = "unsupported_domain_operation"
 FIXED_DOMAIN_VIOLATION = "fixed_domain_violation"
@@ -69,7 +69,7 @@ def resolve_fixed_domain_context(skill_id: str) -> FixedDomainContext:
     except KeyError as exc:
         raise SkillFixedDomainError(
             SKILL_DOMAIN_NOT_REGISTERED,
-            f"skill_domain_not_registered: {key!r}",
+            f"{DOMAIN_BINDING_MISSING}: {key!r}",
             details={"skill_id": key},
         ) from exc
 

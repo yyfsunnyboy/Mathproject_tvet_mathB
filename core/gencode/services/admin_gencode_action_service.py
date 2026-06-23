@@ -1,4 +1,4 @@
-﻿"""Admin-only V3 dry-run action service."""
+"""Admin-only V3 dry-run action service."""
 
 from __future__ import annotations
 
@@ -31,7 +31,15 @@ from core.gencode.services.v3_skill_coverage_service import (
     get_v3_skill_component_coverage,
 )
 from core.gencode.services.v3_publish_eligibility import evaluate_v3_publish_eligibility
-
+from core.gencode.v3_error_codes import (
+    COMPONENT_GENERATION_FAILED,
+    COMPONENT_VERIFICATION_FAILED,
+    DOMAIN_FUNCTION_MISSING,
+    PACKAGING_FAILED,
+    SHADOW_BRIDGE_NOT_EXECUTED,
+    UNSUPPORTED_TASK_TYPE,
+    error_code_from_message,
+)
 
 def _sha256_file(path: Path) -> str | None:
     if not path.is_file():
@@ -606,10 +614,11 @@ def run_admin_v3_dryrun_for_example(
         skill_id=skill_key,
     )
 
+    review_hints: list[str] = []
     if not allow_non_mvp_skill:
         mvp_scope = _load_v3_taxonomy_mvp_scope("configs/gencode_taxonomy/k12_component_taxonomy.yaml")
         if skill_key not in mvp_scope:
-            raise ValueError("skill_not_in_v3_mvp_scope")
+            review_hints.append("skill_not_in_v3_mvp_scope")
 
     # Hard safety lock: admin dryrun must never run with publish flag enabled.
     if bool(V3_PRODUCTION_PUBLISH_ENABLED):
@@ -638,7 +647,7 @@ def run_admin_v3_dryrun_for_example(
     if str(phase2_result.get("phase_status", "")).strip() != "V3_SHADOW_BRIDGE":
         raise ValueError("v3_shadow_bridge_not_executed")
     tracker_status = str(phase2_result.get("tracker_status", "")).strip()
-    if tracker_status not in {"draft_written", "verified", "needs_human_review"}:
+    if tracker_status not in {"draft_written", "smoke_passed", "verified", "needs_human_review", "failed"}:
         raise ValueError("v3_shadow_bridge_not_executed")
 
     component_id = derive_component_id(textbook_example_id)
@@ -653,6 +662,7 @@ def run_admin_v3_dryrun_for_example(
         "textbook_example_id": textbook_example_id,
         "component_id": component_id,
         "dryrun_component_dir": str(component_dir.resolve()),
+        "review_hints": review_hints,
     }
 
 
@@ -954,4 +964,3 @@ def run_admin_v3_publish_for_skill(
         "published_evidence": published_evidence,
         "publish": publish_result,
     }
-

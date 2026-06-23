@@ -91,3 +91,41 @@ def test_domain_gap_not_counted_as_unsupported() -> None:
     assert coverage["failed_count"] == 1
     assert coverage["domain_gap_count"] == 1
     assert coverage["unsupported_count"] == 0
+
+
+def test_pipeline_defect_not_counted_as_unsupported() -> None:
+    conn = sqlite3.connect(":memory:")
+    conn.execute("CREATE TABLE textbook_examples (id INTEGER PRIMARY KEY, skill_id TEXT NOT NULL)")
+    conn.execute(
+        """
+        CREATE TABLE gencode_component_tracker (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            textbook_example_id INTEGER NOT NULL UNIQUE,
+            skill_id TEXT NOT NULL,
+            component_id TEXT NOT NULL,
+            gencode_status TEXT NOT NULL,
+            induced_spec_payload TEXT,
+            gencode_error_log TEXT,
+            created_at TEXT,
+            updated_at TEXT
+        )
+        """
+    )
+    conn.execute(
+        "INSERT INTO textbook_examples (id, skill_id) VALUES (?, ?)",
+        (3822, "vh_數學B4_FrequencyDistributionTableConstruction"),
+    )
+    save_tracker_record(
+        conn,
+        textbook_example_id=3822,
+        skill_id="vh_數學B4_FrequencyDistributionTableConstruction",
+        gencode_status="failed",
+        induced_spec_payload={"error_code": SHADOW_BRIDGE_NOT_EXECUTED},
+        gencode_error_log=f"{SHADOW_BRIDGE_NOT_EXECUTED}: bridge was not called",
+    )
+
+    coverage = get_v3_skill_component_coverage(conn, "vh_數學B4_FrequencyDistributionTableConstruction")
+
+    assert coverage["failed_count"] == 1
+    assert coverage["pipeline_failed_count"] == 1
+    assert coverage["unsupported_count"] == 0

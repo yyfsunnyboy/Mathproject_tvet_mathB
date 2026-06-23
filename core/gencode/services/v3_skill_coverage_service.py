@@ -1,12 +1,21 @@
-﻿"""Read-only V3 skill component coverage helpers."""
+"""Read-only V3 skill component coverage helpers."""
 
 from __future__ import annotations
 
+import json
 import sqlite3
 from typing import Any
 
 from core.gencode.schema.gencode_component_tracker_inspection import tracker_table_exists
 from core.gencode.services.component_tracker_service import derive_component_id
+from core.gencode.v3_error_codes import (
+    DOMAIN_BINDING_MISSING,
+    PACKAGING_FAILED,
+    UNSUPPORTED_TASK_TYPE,
+    canonical_error_code,
+    is_domain_gap_error,
+    is_pipeline_failure_error,
+)
 
 _TRACKER_STATUSES = frozenset(
     {
@@ -63,7 +72,7 @@ def _fetch_tracker_by_example_id(
         return {}
     rows = conn.execute(
         """
-        SELECT textbook_example_id, component_id, gencode_status, gencode_error_log
+        SELECT textbook_example_id, component_id, gencode_status, gencode_error_log, induced_spec_payload
         FROM gencode_component_tracker
         WHERE skill_id = ?
         ORDER BY textbook_example_id ASC
@@ -78,8 +87,31 @@ def _fetch_tracker_by_example_id(
             "component_id": str(_row_value(row, "component_id", 1)),
             "gencode_status": str(_row_value(row, "gencode_status", 2)),
             "gencode_error_log": _row_value(row, "gencode_error_log", 3),
+            "induced_spec_payload": _row_value(row, "induced_spec_payload", 4),
         }
     return mapped
+
+
+def _payload_error_code(payload_raw: object, error_log: object) -> str:
+    payload: dict[str, object] = {}
+    if isinstance(payload_raw, dict):
+        payload = payload_raw
+    elif payload_raw is not None and str(payload_raw).strip():
+        try:
+            parsed = json.loads(str(payload_raw))
+        except Exception:
+            parsed = None
+        if isinstance(parsed, dict):
+            payload = parsed
+    code = str(payload.get("error_code") or "").strip()
+    if code:
+        return canonical_error_code(code)
+    text = str(error_log or "").strip()
+    if not text:
+        return ""
+    if ":" in text:
+        return canonical_error_code(text.split(":", 1)[0])
+    return canonical_error_code(text)
 
 
 def get_v3_skill_component_coverage(
@@ -96,27 +128,38 @@ def get_v3_skill_component_coverage(
     missing_tracker_count = 0
     failed_count = 0
     unsupported_count = 0
+    domain_gap_count = 0
+    bootstrap_failed_count = 0
+    pipeline_failed_count = 0
     needs_human_review_count = 0
     unverified_count = 0
 
     for example_id in example_ids:
         tracker = tracker_map.get(example_id)
+        error_log = None
+        error_code = ""
         if tracker is None:
             status = "missing_tracker"
             component_id = derive_component_id(example_id)
             missing_tracker_count += 1
             unverified_count += 1
-            error_log = None
         else:
             status = str(tracker.get("gencode_status") or "missing_tracker")
             component_id = str(tracker.get("component_id") or derive_component_id(example_id))
             error_log = tracker.get("gencode_error_log")
+            error_code = _payload_error_code(tracker.get("induced_spec_payload"), error_log)
             if status == "verified":
                 verified_count += 1
             elif status == "failed":
                 failed_count += 1
-                if str(error_log or "").strip().startswith("unsupported_"):
+                if error_code == UNSUPPORTED_TASK_TYPE:
                     unsupported_count += 1
+                elif is_domain_gap_error(error_code):
+                    domain_gap_count += 1
+                elif is_pipeline_failure_error(error_code):
+                    pipeline_failed_count += 1
+                elif error_code in {DOMAIN_BINDING_MISSING, PACKAGING_FAILED}:
+                    bootstrap_failed_count += 1
                 unverified_count += 1
             elif status == "needs_human_review":
                 needs_human_review_count += 1
@@ -130,6 +173,7 @@ def get_v3_skill_component_coverage(
                 "component_id": component_id,
                 "status": status,
                 "gencode_error_log": error_log,
+                "error_code": error_code,
             }
         )
 
@@ -147,6 +191,10 @@ def get_v3_skill_component_coverage(
         "missing_tracker_count": missing_tracker_count,
         "failed_count": failed_count,
         "unsupported_count": unsupported_count,
+        "domain_gap_count": domain_gap_count,
+        "bootstrap_failed_count": bootstrap_failed_count,
+        "pipeline_failed_count": pipeline_failed_count,
+        "published_count": verified_count,
         "needs_human_review_count": needs_human_review_count,
         "unverified_count": unverified_count,
         "publish_ready": publish_ready,
@@ -195,4 +243,3 @@ def build_coverage_warnings(coverage: dict[str, object]) -> list[str]:
             "not all textbook_examples"
         )
     return warnings
-
