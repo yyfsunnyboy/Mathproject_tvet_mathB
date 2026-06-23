@@ -1,4 +1,4 @@
-"""Classify V3 pipeline failures by repair responsibility layer."""
+﻿"""Classify V3 pipeline failures by repair responsibility layer."""
 
 from __future__ import annotations
 
@@ -79,3 +79,4 @@ def classify_batch_failures(failures: list[dict[str, Any]]) -> dict[str, Any]:
         "component_failure_count": len(normalized),
         "should_skip_component_repair": shared_contract,
     }
+

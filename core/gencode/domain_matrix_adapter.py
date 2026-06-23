@@ -1,4 +1,4 @@
-"""Adapter layer between Domain Full Matrix Dictionary and question payloads."""
+﻿"""Adapter layer between Domain Full Matrix Dictionary and question payloads."""
 
 from __future__ import annotations
 
@@ -1161,3 +1161,140 @@ def _format_givens_for_hint(givens: dict[str, Any]) -> list[str]:
     if "equation" in givens:
         formatted.append(f"equation={givens['equation']}")
     return formatted
+
+
+def convert_domain_matrix_to_question_payload(
+    matrix: dict[str, Any],
+    *,
+    presentation_mode: str | None = None,
+    answer_type: str | None = None,
+    problem_type_id: str | None = None,
+    component_id: str | None = None,
+    textbook_example_id: int | None = None,
+    source_kind: str | None = None,
+    generator_key: str | None = None,
+    domain_operation: str | None = None,
+    answer_schema_key: str | None = None,
+    **kwargs: Any,
+) -> dict[str, Any]:
+    """Convert a fixed-domain Full Matrix Dictionary into a runtime payload.
+
+    Coordinate-geometry matrices keep their existing specialized adapter. Other
+    domains use a conservative generic adapter that preserves the Full Matrix
+    evidence and does not perform cross-domain routing.
+    """
+    op = str(domain_operation or kwargs.get("domain_operation") or "").strip()
+    if op in {
+        "two_points",
+        "point_slope",
+        "horizontal_line",
+        "vertical_line",
+        "oblique_line",
+        "slope_intercept_equation",
+        "slope_intercept_find_x_intercept",
+        "slope_intercept_read_slope_and_intercept",
+        "intercept_form_equation",
+        "intercept_form_triangle_area",
+        "intercept_form_equation_and_triangle_area",
+        "intercept_form_from_intercept_sum_and_slope",
+        "parabola_secant_parallel_line_choice",
+        "triangle_area_bisector_line_equation",
+        "slope_from_general_or_intercept_form",
+        "slope_from_general_form",
+        "slope_of_horizontal_or_vertical_line",
+        "line_through_point_parallel_to_line",
+        "line_through_point_perpendicular_to_line",
+        "parallel_line_slope",
+        "perpendicular_line_slope",
+        "parallel_condition_parameter",
+        "perpendicular_condition_parameter",
+        "compare_line_slopes",
+        "line_through_intersection_parallel_to_line",
+        "line_through_point_perpendicular_to_segment",
+        "perpendicular_bisector_application",
+        "coordinate_geometry_word_problem",
+        "distance_from_point_to_line",
+        "distance_from_point_to_line_parameter",
+        "distance_from_point_to_line_parameter_single_choice_scalar",
+        "compare_point_to_line_distances",
+        "distance_between_parallel_lines",
+        "solve_parameter_from_parallel_distance",
+        "construct_parallel_line_at_distance",
+        "parallel_lines_distance_single_choice",
+        "area_using_parallel_distance",
+    }:
+        return convert_line_equation_matrix_to_question_payload(
+            matrix,
+            presentation_mode=presentation_mode,
+            answer_type=answer_type,
+            problem_type_id=problem_type_id,
+            component_id=component_id,
+            textbook_example_id=textbook_example_id,
+            source_kind=source_kind,
+            generator_key=generator_key,
+            answer_schema_key=answer_schema_key,
+            domain_operation=op,
+            **kwargs,
+        )
+
+    normalized = normalize_domain_matrix(matrix)
+    answer = normalized["answer"]
+    givens = normalized["givens"]
+    validation_facts = dict(normalized["validation_facts"])
+    if op:
+        validation_facts.setdefault("domain_operation", op)
+        validation_facts.setdefault("task_type", op)
+    semantic_answer = answer.get("value", answer.get("canonical_form"))
+    display_answer = str(answer.get("canonical_form", semantic_answer))
+    mode = str(presentation_mode or "short_answer").strip()
+    resolved_answer_type = str(answer_type or "integer").strip()
+    question_text = str(kwargs.get("question_text") or "閱讀下列資料，根據表格回答問題。")
+    target_label = validation_facts.get("target_label")
+    if target_label:
+        question_text = f"閱讀下列次數分配表，求 {target_label} 的次數。"
+    return {
+        "question_text": question_text,
+        "answer": semantic_answer,
+        "correct_answer": semantic_answer,
+        "display_answer": display_answer,
+        "choices": [],
+        "options": [],
+        "component_id": component_id,
+        "textbook_example_id": textbook_example_id,
+        "problem_type_id": problem_type_id or op,
+        "source_kind": source_kind,
+        "presentation_mode": mode,
+        "answer_type": resolved_answer_type,
+        "answer_contract": {
+            "presentation_mode": mode,
+            "answer_type": resolved_answer_type,
+            "checker": "integer_checker",
+            "checker_key": "integer_checker",
+            "answer_equivalence": "numeric_exact",
+            "equivalence": "numeric_exact",
+            "semantic_answer": semantic_answer,
+        },
+        "metadata": {
+            "givens": givens,
+            "raw_givens": givens,
+            "target": display_answer,
+            "derivation": [str(step) for step in normalized["explanation_steps"]],
+            "presentation_mode": mode,
+            "answer_type": resolved_answer_type,
+            "semantic_answer": semantic_answer,
+            "problem_type_id": problem_type_id or op,
+            "component_id": component_id,
+            "textbook_example_id": textbook_example_id,
+        },
+        "math_core": {
+            "givens": givens,
+            "raw_givens": givens,
+            "target": display_answer,
+            "math_objects": ["frequency_table", "frequency"],
+            "derivation": [str(step) for step in normalized["explanation_steps"]],
+            "validation_facts": validation_facts,
+        },
+        "visual_spec": normalized["visual_spec"],
+        "validation_facts": validation_facts,
+        "generator_key": generator_key or component_id,
+    }

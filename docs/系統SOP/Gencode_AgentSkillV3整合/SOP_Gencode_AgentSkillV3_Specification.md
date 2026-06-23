@@ -1,12 +1,26 @@
 ﻿# Gencode × AgentSkillV3 核心規範說明書
 
-> **文件版本**：v1.6（Skill-Fixed Domain Authority · 西堤選餐正式寫入 SOP）  
-> **Amendment Revision**：v1.6 · 2026-06-22  
-> **Amendment 摘要**：新增 §1.6（Skill-Fixed Domain Authority、西堤選餐模式、AI 權限邊界、Domain Capability Gap、禁止跨 Domain Fallback、Routing Domain vs Primitive、複合題、Domain Function 設計、Operation 驗證、Registry 治理、Verified 補強、平行線距離實例）；Pipeline Flow SOP 同步更新為 v1.6 十一階管線。  
-> **適用範圍**：高職數學 B 版 Gencode Pipeline 全面升級至 V3「西堤套餐」微元件化架構  
+> **文件版本**：v1.8（Skill-Fixed Auto-Bootstrap · Domain Function Extension）  
+> **Amendment Revision**：v1.8 · 2026-06-23  
+> **Supersedes**：v1.7 中 production Generic Domain Fallback、AI 推論 Routing Domain、`unsupported_domain_operation` 作為終止態  
+> **文件權威分工**：本文件為 Gencode × AgentSkillV3 **唯一規範權威**（原則、契約、狀態、錯誤碼、Gate 定義）。流程與時序見配套 [SOP_Gencode_AgentSkillV3_PipelineFlow.md](./SOP_Gencode_AgentSkillV3_PipelineFlow.md)（**唯一流程權威**）。兩份文件衝突時：規則以本文件為準；流程以 PipelineFlow 為準。  
+> **適用範圍**：高職數學 B 版 Gencode Pipeline 全面升級至 V3「西堤套餐」微元件化架構；含全新 skill 第一次自動建立  
 > **上位法規**：[Gencode與AgentSkillV2整合總體設計_v0.3.md](../Gencode_AgentSkillV2整合/Gencode與AgentSkillV2整合總體設計_v0.3.md)（Layer 1–6 原則完整繼承，本文件僅增量定義 V3 微元件層）  
 > **實體錨點目錄**：`docs/系統SOP/Gencode_AgentSkillV3整合/`  
-> **實作狀態**：v1.5–v1.6 條款對應之 `core/domain/`、`core/registry/taxonomy_registry.py`、`core/gencode/answer_schema_registry.py`、`gencode_component_tracker`、component scaffold / compiler / wrapper 已 **IMPLEMENTED** 或 **PARTIALLY_IMPLEMENTED**；v1.6 Skill-Fixed Domain Authority 為 **SOP 權威**（部分 gate 仍待程式對齊）；各模組狀態見 §0.3–§0.4。
+> **實作狀態**：**SOP 已更新，程式尚待對齊**（v1.5–v1.6 多數條款 IMPLEMENTED；v1.8 Auto-Bootstrap、Domain Function Extension、狀態機擴充待程式對齊）
+
+### v1.8 CHANGELOG
+
+- 移除 production Generic Domain Fallback
+- 固定 skill → fixed domain；缺 function 走 Domain Function Extension
+- Auto-Bootstrap 不得由 AI 推論 Routing Domain
+- 統一 `component_id = src_{textbook_example_id}`
+- 修正 `required_core_components` 識別符
+- 修正 Bootstrap Gate / Publish Gate
+- 修正 Shadow Bridge 錯誤分類
+- 修正 `practice.py` 相容性規範
+- 區分 Skill Batch Build 與 Component Targeted Rebuild
+- `unsupported_domain_operation` 映射為可恢復之 `DOMAIN_FUNCTION_MISSING`
 
 ---
 
@@ -15,16 +29,49 @@
 本文件是 **AgentSkillV3 微元件生成與發布** 的工程 SOP，面向 Codex / Gemini Flash 閉環管線與人工審核。  
 所有敘述均對接倉庫內**已存在**的模組路徑；不存在之編譯器名稱標註為 V3 目標模組，並指明現行等價實作。
 
+### 0.0 核心架構權威鏈（v1.8 · 不可違反）
+
+```text
+textbook_example.skill_id
+→ authoritative Skill Registry
+→ fixed_domain_key
+→ allowed_operations / domain functions
+→ component generation
+```
+
+| # | 原則 |
+|---|------|
+| 1 | 教材例題已綁定的 `skill_id` 是權威事實 |
+| 2 | 每個 `skill_id` 必須對應唯一固定 `fixed_domain_key` |
+| 3 | AI 不得重新判斷、改寫或建議更換 skill |
+| 4 | AI 不得重新決定或改派 Domain |
+| 5 | 同一 skill 的所有 component 必須使用固定 Routing Domain |
+| 6 | Domain 能力不足時，擴充原 Domain function（§1.8） |
+| 7 | 不得借用其他 Domain |
+| 8 | 不得用 generic Domain 取代正式 Routing Domain |
+| 9 | 新 skill 缺少 package、component、wrapper 或 operation，**不代表** unsupported |
+| 10 | 只有教材本質無法程式化時，才能標記 `UNSUPPORTED_TASK_TYPE` |
+
 ### 0.1 核心修訂原則
 
 | 原則 | 剛性要求 |
 |------|----------|
-| **DB / 前台零侵入** | 嚴禁修改**學生學習數據表**與 `practice.py` 調度入口；教材例題權威庫之 Gencode 維運欄位增量見 §4.5（唯一允許之 DB 擴充範圍） |
+| **DB / 前台零侵入** | 嚴禁修改**學生學習數據表**；**不得破壞** `practice.py` 既有 public route、query contract、學生端 response contract 與 `skills.{skill_id}` import entry（允許相容 adapter、runtime loader、reload、結構化錯誤回應；見 §0.1.1）；教材例題權威庫之 Gencode 維運欄位增量見 §4.5 |
 | **同構題自動變異** | 核心定位是 **Isomorphic Question Generator**：概念不動、難度不動、變數個數與計算公式與原題完全相同，**僅更換數值**；反向求解或題型變更由教材後續獨立 Source 承載，不在此管線融合 |
 | **一題一對一隔離** | 教材每一道例題 / 隨堂 / 自我評量 → 一個獨立 `components/{component_id}/` 資料夾 + 單一 `generate.py`；**嚴禁**多題合一、嚴禁 AI 自由發揮融合 |
 | **天然順序繼承難度** | 依 `SOURCE_KIND`（`example` / `quiz` / `test`，由 `source_description` 或 canonical problem_type 映射）注入 `ORDER_WEIGHT` 與 `DIFFICULTY_LEVEL`；**禁止**由 `component_id` 或 `src_*` 前綴推斷 |
 | **AI 角色定位** | Gemini Flash 僅扮演 **單題同構模板填空搬運工**；在 Registry 固定 Domain 與 `allowed_operations` 白名單內選 operation / presentation；**不得**重判 skill、改派 Domain 或跨 Domain 選模板（見 §1.6） |
-| **Skill-Fixed Domain Authority** | `textbook_example.skill_id` → Registry `fixed_domain_key` → `allowed_operations` → AI 選題型與呈現；此鏈為**不可違反** routing authority（見 §1.6.1） |
+| **Skill-Fixed Domain Authority** | `textbook_example.skill_id` → Registry `fixed_domain_key` → `allowed_operations` → AI 選題型與呈現；此鏈為**不可違反** routing authority（見 §1.6） |
+
+#### 0.1.1 `practice.py` 相容性規範（v1.8）
+
+| 允許 | 禁止 |
+|------|------|
+| 修正 runtime loader、相容 adapter | 改變既有對外 URL |
+| 結構化錯誤回應、改善 Unicode | 任意改變必要 request parameters |
+| 修正 `importlib.reload` | 破壞既有 response contract |
+| 支援 legacy / V2 / V3 `generate` signature | 讓舊 skill 無法出題 |
+| — | 把未 verified component 暴露給學生端 |
 
 ### 0.2 v1.5 Component Domain Operation 與 Answer Schema Contract 摘要（IMPLEMENTED）
 
@@ -44,7 +91,7 @@
 | 1 | 權威鏈：`skill_id` → `fixed_domain_key` → `allowed_operations` → AI selection | §1.6.1 | SOP |
 | 2 | 西堤選餐模式：Skill=餐廳、Domain=菜單、Operation=菜色 | §1.6.2 | SOP |
 | 3 | AI 權限邊界；`domain_key` / `recommended_skill` 等非 routing authority | §1.6.3 | SOP |
-| 4 | Domain capability gap → `unsupported_domain_operation` | §1.6.4 | SOP |
+| 4 | Domain capability gap → `DOMAIN_FUNCTION_MISSING` → Domain Function Extension（§1.8） | §1.6.4 | SOP |
 | 5 | 禁止跨 Domain fallback（nearest template / semantic similarity 等） | §1.6.5 | SOP |
 | 6 | Routing Domain vs Shared Mathematical Primitive 分離 | §1.6.6 | SOP |
 | 7 | 複合題仍由固定主 Domain orchestration | §1.6.7 | SOP |
@@ -107,7 +154,7 @@
 3. **插槽庫持續膨脹**：`slot_generators.SLOT_REGISTRY` 已承載 30+ slot；若繼續單檔堆疊，違反 V2 §1.5.6 Anti-Bloat 原則。
 4. **並行開發衝突**：多人同時改同一 skill 檔，Git merge 成本高。
 
-**西堤套餐**（Set Meal）比喻：一個 skill 是一套餐；**每一道教材原題**對應一道可獨立烹調、獨立上菜、獨立下架的菜色（`ex_3`、`quiz_5`、`test_2`…）。套餐對外仍叫同一個名字（`skill_id`），學生端與 DB Schema 無感。
+**西堤套餐**（Set Meal）比喻：一個 skill 是一套餐；**每一道教材原題**對應一道可獨立烹調、獨立上菜、獨立下架的菜色（`src_4545`、`src_4610`…，一題一 `component_id`）。教材類型（例題／隨堂／自我評量）由 `SOURCE_KIND` 表達，**不得**併入目錄名。套餐對外仍叫同一個名字（`skill_id`），學生端與 DB Schema 無感。
 
 **v1.3 定位一句話**：不做學院派概念聚類，只做**教材原題的同構數值變異生成器**。
 
@@ -226,32 +273,33 @@ def get_hint(step: int, question_payload: dict | None = None) -> str:
 | `runtime_skill_wrapper` | `answer_contract` 驅動批改 | `check()` 仍委派全域 checker 鏈 |
 | RAG / Chroma | `skill_id:family_id` | 不變（AGENTS.md §9） |
 
-### 1.4 Taxonomy Gate（輕量行政閘門）
+### 1.4 Taxonomy Gate（v1.7 修訂 · 非生成阻擋閘門）
 
 **權威設定檔**：`configs/gencode_taxonomy/k12_component_taxonomy.yaml`
 
-v1.3 **不再**以 Taxonomy 驅動概念聚類或題型拆分；Taxonomy 僅作**行政閘門**：確認 `skill_id` 落在 MVP 白名單內即可 `accepted` 進入 Phase 2。  
+v1.3 **不再**以 Taxonomy 驅動概念聚類或題型拆分。  
+**v1.7 修訂**：Taxonomy **不得**作為生成入口阻擋；未知 skill 須走 §1.7 Auto-Bootstrap。  
 `component_id` 由教材實體題號決定（§1.5），**不由** Taxonomy 命名。
 
-#### 1.4.1 首波 MVP 範疇鎖定（嚴禁全學制鋪開）
+#### 1.4.1 MVP 範疇（v1.7 · 降級為審核提示，非生成阻擋）
 
-`configs/gencode_taxonomy/k12_component_taxonomy.yaml` 的**第一版實作嚴禁全學制鋪開**。  
-垂直切片 MVP 測試期間，Taxonomy Gate **僅受理**下列 6 個核心單元；其餘 `skill_id` 一律標記 `human_approval_required` 且**不予收錄**。
+> **DEPRECATED（v1.7 作為生成阻擋）**：「不在 MVP 六單元 → `human_approval_required` 且不予 Phase 2」已廢止。  
+> MVP 清單僅供 **風險提示**、`review_required` 標記與灰度發布參考；**不得**阻止 Auto-Bootstrap 或 Shadow Bridge。
 
-| # | 單元範疇 | 代表 `skill_id`（首波鎖定） |
-|---|----------|---------------------------|
-| 1 | 高職 B1 直線方程式 | `vh_數學B1_PointSlopeForm`（及同族 `vh_數學B1_*Line*`） |
-| 2 | 高職 B4 排列組合 | `vh_數學B4_*Permutation*` / `*Combination*` |
-| 3 | 高職 B4 機率 | `vh_數學B4_*Probability*` |
-| 4 | 高職 B4 統計 | `vh_數學B4_*Statistics*` / `*Mean*` / `*Std*` |
-| 5 | 國中一次方程式 | `jh_數學*_*LinearEquation*` / `*OneVariable*` |
-| 6 | 國中二次函數 | `jh_數學*_*QuadraticFunction*` / `*Quadratic*` |
+`configs/gencode_taxonomy/k12_component_taxonomy.yaml` 內 `mvp_scope: v1` 仍記錄首波六類核心單元（直線方程式、排列組合、機率、統計、國中一次方程、國中二次函數），用途如下：
 
-**剛性規則**：
+| 用途 | 允許 | 禁止 |
+|------|------|------|
+| 標記 `review_required=true` | ✅ | — |
+| 優先排程人工審核 | ✅ | — |
+| 阻擋 Phase 2 / Shadow Bridge | — | ❌ |
+| 映射為 `unsupported_task_type` | — | ❌ |
 
-1. YAML 內以 `mvp_scope: v1` 區段包裹上述 6 類；Phase 1 **僅查詢**此區段。
-2. `skill_id` 命中 MVP → 該 skill 下所有 `ex_*` / `quiz_*` / `test_*` 元件一律 `accepted` 進 Phase 2。
-3. 不在 MVP 清單內的 `skill_id` → `human_approval_required`。
+**v1.7 剛性規則**：
+
+1. `skill_id` 不在 MVP → 仍須進入 Auto-Bootstrap；建立 **draft** taxonomy（`taxonomy_status=ai_inferred`）。
+2. `skill_id` 在 MVP → 可標記較低審核優先級；**不**改變生成路徑。
+3. 僅 **Publish Gate** 可因未通過驗證而阻擋學生端可見性。
 
 ### 1.5 元件物理排序與天然難度契約
 
@@ -358,97 +406,111 @@ AI 只能點菜與決定呈現
 
 本比喻與 §1.1「西堤套餐」微元件架構互補：套餐（skill）內每道菜（component）必須在**同一餐廳菜單**（固定 Domain）內點選，不得跨館借菜。
 
-### 1.6.3 AI 權限邊界
+### 1.6.3 AI 權限邊界（v1.8）
 
-**AI 可以決定**（且僅限於固定 Domain 宣告之合法 operation menu 與 schema 內）：
+**AI 可以分析**（不得改變 Routing Domain）：
 
 ```text
-domain_operation / problem_type_id
-question_intent
+problem_type_id
+domain_operation 候選
+required_capabilities
+parameterization strategy
+answer_schema_key 候選
+checker_key 候選
 presentation_mode
 answer_type
-checker 建議
-題幹文字
-選項結構
-語言表達
+source facts
+story template
+required validation facts
+question_intent
+題幹文字、選項結構、語言表達
 ```
 
 **AI 不可以決定**：
 
 ```text
-教材例題屬於哪個 skill
-skill 應綁定哪個 Domain
+skill_id
+fixed_domain_key
+curriculum / grade / volume / chapter / section
+跨 Domain routing
+是否改用 generic domain
+是否跳過 Domain Function Extension
+是否直接標 verified
 重新分類到其他 skill
-跨 Domain 選 operation
-使用全域相似模板
 覆寫 Registry 的 fixed_domain_key
 ```
 
-若 AI response 仍包含 `domain_key`、`domain_family`、`recommended_skill`、`nearest_template` 等欄位：
+後端必須覆蓋或剝除 AI 回應中的：
 
-| 規則 | 說明 |
-|------|------|
-| 非 routing authority | 上述欄位**不可**作為 Domain / skill 路由依據 |
-| 後端必須忽略 | Phase 1 merge、induced spec 寫入前剝除或覆蓋 |
-| Registry 唯一權威 | 僅 `taxonomy_registry`（或等價 Registry 設定）之 `fixed_domain_key` 有效 |
+```text
+domain_key
+recommended_domain
+domain_family
+recommended_skill
+nearest_template
+fallback_domain
+```
 
-### 1.6.4 Domain Capability Expansion Rule
+若 AI response 仍包含上述欄位：**非 routing authority**；Phase 1 merge、induced spec 寫入前剝除或覆蓋；僅 `taxonomy_registry` 之 `fixed_domain_key` 有效。
 
-當固定 Domain **無法**處理教材例題所需數學能力時，系統**不得**改派其他 Domain；必須回報 **Domain capability gap**，並在原 Domain 增加可重複使用的通用 function。
+### 1.6.4 Domain Capability Gap 與 Function Extension 入口
 
-**正確終態**：`unsupported_domain_operation`
+當固定 Domain **無法**處理教材例題所需數學能力時，系統**不得**改派其他 Domain；**必須**進入 **Domain Function Extension**（§1.8）。
 
-至少應記錄：
+**正確可恢復狀態**：`DOMAIN_FUNCTION_MISSING` 或 `DOMAIN_OPERATION_MISSING`（舊名 `unsupported_domain_operation` 僅作 backward compatibility，**不得**計入 `unsupported_count` 或映射為 `UNSUPPORTED_TASK_TYPE`）。
+
+至少應記錄 capability gap：
 
 ```text
 skill_id
 fixed_domain_key
 requested_capability
+proposed_operation
+proposed_function_name
 available_operations
 missing_domain_function
+related_example_ids
 failure_responsibility = domain_capability_gap
 ```
 
-此狀態：
-
 | 行為 | 規定 |
 |------|------|
-| 不得 `verified` | 沙盒與 manifest 皆排除 |
+| 不得 `verified` | 在 function 測試通過前，沙盒與 manifest 皆排除 |
 | 不得 `publish` | 不進入 `GENERATOR_SPECS` |
-| 不阻斷 partial publish | 同 skill 其他合法 components 仍可發布（§4.3） |
+| 不阻斷姊妹題 | 同 skill 其他已有 function 的 components 仍可生成／發布（§4.3） |
+| 必須啟動 | Domain Function Extension Phase（PipelineFlow §1.5） |
 
-建議 tracker 狀態：`gencode_status = 'unsupported_domain_operation'` 或等價 blocker 碼（見 §4.5.2）。
+建議 tracker：`gencode_status = 'failed'` + `gencode_error_log` 結構化 `error_code=DOMAIN_FUNCTION_MISSING`；或 migration 後使用 `domain_function_missing`（§4.5.2）。
 
 ### 1.6.5 禁止跨 Domain Fallback
 
-下列行為**明文禁止**：
+下列行為**明文禁止**（production 管線）：
 
 ```text
 global template fallback
 nearest-template fallback
 cross-domain semantic similarity routing
 AI-selected domain override
+compatible domain fallback
+generic domain fallback / generic.structured 作為 Routing Domain
 generic line-equation fallback（當 fixed domain 非 line_equation 時）
 在 operation 不支援時改派其他 Domain
-```
-
-**關鍵原則**：
-
-```text
-找不到合法 operation
-≠ 可以選其他 Domain 的相似模板
+registry missing → AI inferred domain 作為 routing authority
 ```
 
 **唯一正確行為**：
 
 ```text
-unsupported_domain_operation
-→ 擴充原 Domain
-→ 新增數學測試
-→ 重新生成 component
+DOMAIN_FUNCTION_MISSING / DOMAIN_OPERATION_MISSING
+→ Domain Function Extension（§1.8）
+→ Domain Function Tests
+→ 更新 allowed_operations
+→ Resume Shadow Bridge
+→ component generation
 ```
 
-> **與執行期 slot fallback 之區分**：`runtime_skill_wrapper` 對**未 verified 之 legacy skill** 的 `slot_generators` 路徑屬執行期降級，**不構成** Gencode V3 管線之跨 Domain 授權；V3 component 生成與 induced spec 階段**不得**借用此路徑規避 `unsupported_domain_operation`。
+> **與執行期 slot fallback 之區分**：`runtime_skill_wrapper` 對**未 verified 之 legacy skill** 的 `slot_generators` 路徑屬執行期降級，**不構成** Gencode V3 管線之跨 Domain 授權。  
+> **與分析工具之區分**：未發布 scaffold 草稿、測試用分析輔助工具**不得**作為 production routing、不得 `verified`、不得進 manifest／wrapper／學生端。
 
 ### 1.6.6 Routing Domain 與 Shared Mathematical Primitives
 
@@ -623,7 +685,172 @@ line_from_two_points
 slope_intercept_line
 ```
 
-若原 Domain 尚未提供所需 operation → **`unsupported_domain_operation`**，**而非**改用 `line_equation_domain` 或其他 Domain 之相似模板。
+若原 Domain 尚未提供所需 operation → **`DOMAIN_FUNCTION_MISSING`**，啟動 §1.8 Domain Function Extension；**禁止**改用其他 Domain 之相似模板。
+
+### 1.7 Auto-Bootstrap 與分層 Gate（v1.8）
+
+#### 1.7.1 Auto-Bootstrap 定義
+
+Auto-Bootstrap **自動建立**：
+
+- V3 skill package（`agent_skills_v3/{skill_id}/`）
+- manifest skeleton、`skill.json` draft
+- `components/src_{example_id}/` 目錄
+- tracker rows、induced spec 草案
+- wrapper skeleton
+- 缺少 Domain function 時的 capability gap 紀錄與 Extension 工作流程
+
+Auto-Bootstrap **不得自動改變**：
+
+- `skill_id`、skill 中文名稱
+- curriculum、grade、volume、chapter、section
+- `fixed_domain_key`（須 deterministic 解析，見下）
+- 已確認 taxonomy、已確認 answer schema
+
+#### 1.7.2 Registry 與 Skill-Domain Binding
+
+| 情境 | 行為 |
+|------|------|
+| skill 已有 authoritative binding | 直接使用 `fixed_domain_key` |
+| registry row 缺失，但專案有 deterministic skill-domain mapping | 由 mapping 建立 registry row（`source=deterministic_mapping`） |
+| 完全找不到 deterministic binding | `DOMAIN_BINDING_MISSING`；**停止**該 skill 的 component generation |
+| — | **禁止** AI 自由猜 Domain；**禁止**標 `UNSUPPORTED_TASK_TYPE` |
+
+AI 可推論 operation 與 capability；**不可**推論 Routing Domain。
+
+#### 1.7.3 Bootstrap Gate vs Publish Gate
+
+**Bootstrap Gate**（生成入口）只檢查：
+
+- `skill_id`、`example_id` 存在
+- 教材內容可讀
+- skill-domain binding **可 deterministic 解析**（或明確 `DOMAIN_BINDING_MISSING`）
+- AI runtime 可用
+- 必要輸入資料存在
+
+**不得**要求：V3 package、component、wrapper、operation、Domain function 已存在；skill 在 allowlist；taxonomy 已人工 verified。
+
+若 operation／function 不存在 → 進入 **Domain Function Extension**（§1.8），**不是** unsupported。
+
+**Publish Gate**（學生端發布）才檢查：component `verified`、Domain function tests passed、compile、smoke、answer schema、oracle、semantic、topology、integrity、variation audit、wrapper 可執行、無 blocker。
+
+| 檢查項 | Bootstrap Gate | Publish Gate |
+|--------|:--------------:|:------------:|
+| skill-domain binding 可解析 | ✅ | ✅ |
+| Shadow Bridge 已執行（function 就緒後） | 目標 ✅ | — |
+| component `verified` | — | ✅ |
+| Domain function tests passed | — | ✅ |
+| MVP allowlist | ❌ 不得作為條件 | ❌ |
+
+#### 1.7.4 其他 Bootstrap 規則
+
+- 未知 skill（無 package／tracker）**不是** `UNSUPPORTED_TASK_TYPE`
+- `SHADOW_BRIDGE_NOT_EXECUTED` 為 pipeline defect，**禁止**映射為 `UNSUPPORTED_TASK_TYPE`
+- skill-specific allowlist **不得**作為生成入口；僅可用於灰度／風險提示
+- 一題一 `src_{example_id}`；單題失敗不阻斷姊妹題；僅 verified 可發布
+
+### 1.8 Domain Function Extension Contract（v1.8）
+
+當 Domain Capability Check 確認固定 Domain 缺少 operation 或 function 時，**必須**執行本階段（詳細時序見 PipelineFlow §1.5）。
+
+```text
+Skill-Domain Binding Resolution
+→ Domain Capability Check
+→ Existing Function Search
+→ Function Gap Detection
+→ Domain Function Specification
+→ Domain Function Generation / Extension
+→ Domain Function Tests
+→ Registry allowed_operations 更新
+→ Resume Shadow Bridge
+→ Component Generation
+```
+
+#### 1.8.1 Capability Check
+
+逐教材例題分析（AI 僅描述，不改 Domain）：
+
+- `required_capabilities`
+- expected `domain_operation`
+- `answer_schema_key`
+- `validation_facts`
+- visual requirements
+- mathematical invariants
+
+#### 1.8.2 Existing Function Search
+
+只可搜尋：
+
+1. 該 skill **固定 Domain** 的 `allowed_operations` 與 canonical functions
+2. 該 Domain 明確允許的 **shared mathematical primitives**（§1.6.6）
+
+須確認：是否已有相同／等價 function、是否可組合既有 function、是否僅 operation registry 尚未註冊。**禁止**在 component 內重寫數學核心。
+
+#### 1.8.3 Function Gap Record
+
+```text
+skill_id
+fixed_domain_key
+requested_capability
+proposed_operation
+proposed_function_name
+input_contract
+output_contract
+answer_schema_key
+mathematical_invariants
+edge_cases
+related_example_ids
+```
+
+#### 1.8.4 Add Function to Fixed Domain
+
+新 function **必須**：
+
+- 位於固定 Domain 的 `core/domain/...` canonical 模組
+- 不含 `skill_id`、`example_id`、教材硬編碼常數
+- 可重用於多筆同構例題
+- 回傳完整 Full Matrix Dictionary（§2.3.2）
+- 保持 Fraction / Decimal / SymPy 精確性
+
+#### 1.8.5 Domain Function Tests
+
+通過前**不得**建立 verified component。須涵蓋：一般／邊界／非法輸入、數學不變量、多 seed、answer consistency、distractor uniqueness、visual consistency、與既有 Domain 回歸。
+
+失敗 → `DOMAIN_FUNCTION_TEST_FAILED` 或 `DOMAIN_FUNCTION_EXTENSION_FAILED`。
+
+#### 1.8.6 Resume Generation
+
+function 測試通過後：更新 `allowed_operations` → 重建 induced spec → Shadow Bridge → `src_{example_id}` → compile / smoke / verification。
+
+### 1.9 錯誤碼與狀態機（v1.8 規範權威）
+
+#### 1.9.1 錯誤碼
+
+| 錯誤碼 | 語意 |
+|--------|------|
+| `DOMAIN_BINDING_MISSING` | 無 deterministic skill-domain binding |
+| `DOMAIN_MODULE_MISSING` | 固定 Domain 模組不存在 |
+| `DOMAIN_OPERATION_MISSING` | operation 未註冊 |
+| `DOMAIN_FUNCTION_MISSING` | function 不存在（**可恢復**） |
+| `DOMAIN_FUNCTION_EXTENSION_PENDING` | Extension 進行中 |
+| `DOMAIN_FUNCTION_EXTENSION_FAILED` | Extension 失敗 |
+| `DOMAIN_FUNCTION_TEST_FAILED` | Domain function 測試失敗 |
+| `SHADOW_BRIDGE_NOT_EXECUTED` | 應執行卻未執行（**pipeline defect**） |
+| `SHADOW_BRIDGE_FAILED` | Shadow Bridge 執行失敗 |
+| `COMPONENT_GENERATION_FAILED` | codegen 失敗 |
+| `COMPONENT_COMPILE_FAILED` | 編譯失敗 |
+| `COMPONENT_SMOKE_FAILED` | smoke 失敗 |
+| `COMPONENT_VERIFICATION_FAILED` | 驗證失敗 |
+| `PACKAGING_FAILED` | wrapper／manifest 失敗 |
+| `UNSUPPORTED_TASK_TYPE` | **僅**教材本質不可程式化 |
+
+規則：`SHADOW_BRIDGE_NOT_EXECUTED` **禁止**映射為 `UNSUPPORTED_TASK_TYPE`。metadata／registry／package 缺失**不是** unsupported。
+
+#### 1.9.2 狀態機（Target V3 Model）
+
+**Pipeline / 內部階段**（未必全部持久化至 DB）：`discovered`、`classified`、`domain_binding_resolved`、`domain_capability_checking`、`domain_function_missing`、`domain_extension_pending`、`domain_extension_testing`、`domain_extension_verified`、`bootstrapped`、`draft_written`、`compile_passed`、`smoke_passed`、`packaged`、`published`、`domain_extension_failed`、`generation_failed`、`compile_failed`、`smoke_failed`、`verification_failed`、`unsupported`
+
+**Tracker 持久化**：見 §4.5.2（Current Production vs Target；migration 前以 `failed` + 結構化 `error_code` 相容）。
 
 ---
 
@@ -634,7 +861,7 @@ slope_intercept_line
 
 | 維度 | 欄位名 | 說明 |
 |------|--------|------|
-| D1 | `COMPONENT_ID` | 全域唯一；**必須**為教材實體題號（`ex_3` / `quiz_5` / `test_2`），見 §1.5 |
+| D1 | `COMPONENT_ID` | 全域唯一；**必須**為 `src_{textbook_example_id}`（§1.2.2、§1.5） |
 | D2 | `SKILL_ID` | 行政歸屬；唯讀，與 Word 匯入鎖定一致 |
 | D3 | `TARGET_TASK` | 數學任務 token；對接 `template_slot_resolver.TASK_FAMILY_TO_SLOT` |
 | D4 | `TEMPLATE_SLOT` | 執行期插槽名；必須存在於 `SLOT_REGISTRY` 或為 V3 新註冊 slot |
@@ -646,18 +873,19 @@ slope_intercept_line
 ### 2.1 標準 Metadata 宣告範例
 
 ```python
-# agent_skills_v3/vh_數學B1_LinearFunction/components/ex_3/metadata.py
+# agent_skills_v3/vh_數學B1_LinearFunction/components/src_4545/metadata.py
 from __future__ import annotations
 from typing import Final
 
 # ── D1–D2：身份 ──────────────────────────────────────────
-COMPONENT_ID: Final[str] = "ex_3"
+COMPONENT_ID: Final[str] = "src_4545"
 SKILL_ID: Final[str] = "vh_數學B1_LinearFunction"
-SOURCE_REF: Final[str] = "ex_3"              # 回溯教材原題（管線注入）
+SOURCE_REF: Final[str] = "4545"              # textbook_examples.id（管線注入）
 
-# ── 天然難度（管線依前綴自動注入，禁止 AI 改寫）────────────
-ORDER_WEIGHT: Final[int] = 10                 # ex_*=10, quiz_*=20, test_*=30
-DIFFICULTY_LEVEL: Final[str] = "easy"         # test_* → "hard"
+# ── 天然難度（管線依 SOURCE_KIND 自動注入，禁止 AI 改寫）──
+SOURCE_KIND: Final[str] = "example"
+ORDER_WEIGHT: Final[int] = 10                 # example=10, quiz=20, test=30
+DIFFICULTY_LEVEL: Final[str] = "easy"         # test → "hard"
 
 # ── D3–D4：數學任務與插槽 ────────────────────────────────
 TARGET_TASK: Final[str] = "determine_linear_function_from_two_points"
@@ -720,7 +948,7 @@ AI Codegen **不得**自創新 Key；若需擴充，須先修改 `core/gencode/a
 
 #### 2.2.1 手寫題前端硬體連動（`handwriting` 專用）
 
-當 `PRESENTATION_MODE == "handwriting"` 時，`runtime_skill_wrapper` 在 `finalize_generator_payload()` 階段**必須**注入下列前台控制宣告（沿用既有 payload 欄位，**不修改** `practice.py` 路由邏輯）：
+當 `PRESENTATION_MODE == "handwriting"` 時，`runtime_skill_wrapper` 在 `finalize_generator_payload()` 階段**必須**注入下列前台控制宣告（沿用既有 payload 欄位，**不得破壞** `practice.py` 學生端 response contract（§0.1.1）：
 
 ```python
 payload.update({
@@ -896,7 +1124,7 @@ checker_key           → 批改與語意等價判定
 **剛性禁止**：
 
 1. 不得由整個 `coordinate_geometry` domain 或 `skill_id` 直接決定固定 answer fields。
-2. schema 不存在 → **fail-fast** → `unsupported_domain_operation` 或 `needs_human_review`；**禁止** fallback 到 `slope_intercept`、registry 第一筆、或**其他 Domain** 之相似 schema。
+2. schema 不存在 → **fail-fast** → `DOMAIN_FUNCTION_MISSING` / `needs_human_review`；**禁止** fallback 到其他 Domain 之相似 schema。
 3. Full Matrix 共用 validator **不得**直接要求 `slope` / `intercept` / `distance` 等 operation-specific 欄位。
 
 **Legacy migration**：舊 induced spec 缺 `answer_schema_key` 時，僅允許依 `problem_type_id` / `domain_operation` **deterministic mapping**；無法唯一判定 → `needs_human_review`（禁止假裝分類成功）。
@@ -1165,7 +1393,7 @@ SKILL_DOMAIN_PROFILE = {
 1. `skill_id` 硬編碼**只能**停留在 Registry / Taxonomy 設定層；**絕對禁止**傳入 `core/domain/` 內部。
 2. 每 skill **唯一** `fixed_domain_key`；AI **不得**建議或寫入其他 `domain_key` 作為 routing。
 3. **禁止**因同屬一 skill 而共用 answer schema；每 component 自 induced spec 帶入 `answer_schema_key`。
-4. Domain 入口可選 `build_coordinate_geometry_matrix(domain_operation=...)`（operation registry）；`domain_operation` **必須**落在 `allowed_operations` 白名單，否則 `unsupported_domain_operation`（§1.6.4）。
+4. Domain 入口可選 `build_coordinate_geometry_matrix(domain_operation=...)`；`domain_operation` **必須**落在 `allowed_operations`，否則 `DOMAIN_OPERATION_MISSING` → Domain Function Extension（§1.8）。
 5. 重新生成 / 發布時須驗證 `component.domain_key == Registry.fixed_domain_key`；不一致 → `needs_regeneration`（§1.6.10）。
 
 #### Amendment 2026-06-22: coordinate geometry distance contracts
@@ -1204,21 +1432,21 @@ compile/smoke, multi-seed integrity, and semantic topology checks pass.
 |------|----------|------|
 | `component_local_failure` | 題幹模板缺欄、choices 重複、LaTeX 錯 | 只修該 component；最多 3 次 repair |
 | `domain_operation_failure` | 距離公式錯、無法產生合法參數 | 標記 domain failure；禁止 AI 改寫 component 內數學 |
-| `domain_capability_gap` | 白名單無所需 operation、缺通用 function | `unsupported_domain_operation`；擴充原 Domain（§1.6.4） |
+| `domain_capability_gap` | 白名單無所需 operation、缺通用 function | `DOMAIN_FUNCTION_MISSING` → §1.8 Extension |
 | `operation_contract_mismatch` | AI 選 operation 與 source facts 不符 | fail-fast；不得生成 / 發布（§1.6.9） |
 | `shared_contract_failure` | 多題相同 schema mismatch、registry 缺失 | **停止** component-level AI repair；修正共用架構後批次重跑 |
 | `packaging_failure` | manifest / dispatch / wrapper 不一致 | 只重跑 compiler + integrity gate；不重新生成 component |
 
 Batch dry-run 若偵測 ≥2 題完全相同之 `answer_schema_mismatch` → `should_skip_component_repair=true`。
 
-### 2.9 兩種合法重建入口（v1.5 · IMPLEMENTED）
+### 2.9 兩種合法重建入口（v1.8）
 
 | 入口 | 用途 | 行為 |
 |------|------|------|
-| **Skill Batch Build** | 首次建立、整 skill 重建、domain/schema 重大變更 | 逐 `textbook_example` 獨立 tracker；單題失敗不污染姊妹題 |
-| **Component Targeted Rebuild** | 單題修復、人工改 induced spec | 只重建 `src_{id}`；通過後重跑該 skill compiler |
+| **Skill Batch Build** | 新 skill 首次建立；整 skill 重建；Domain function／schema 重大變更後批次重建 | 逐 `textbook_example` 獨立 component；單題失敗不污染姊妹題；**允許**整 skill 重跑 |
+| **Component Targeted Rebuild** | 單題修復；induced spec 調整；單題 generator 修復 | 只重建 `src_{id}`；通過後重跑該 skill wrapper compiler |
 
-兩者共用同一 component pipeline（`run_gencode_phase2_v3_shadow_bridge` / `run_admin_v3_dryrun_for_example`），禁止維護第二套生成邏輯。
+後台「⚡產生/重構出題程式」預設為 **Component Targeted Rebuild**；Skill Batch Build 由 CLI／管理員批次觸發。兩者共用 `run_gencode_phase2_v3_shadow_bridge` / `run_admin_v3_dryrun_for_example`，禁止第二套生成邏輯。
 
 ---
 
@@ -1253,7 +1481,7 @@ Batch dry-run 若偵測 ≥2 題完全相同之 `answer_schema_mismatch` → `sh
               │ Layer C：Presentation Layer  │
               │ - presentation_mode Key      │
               │ - answer_contract            │
-              │ → ex_* / quiz_* / test_*     │
+              │ → SOURCE_KIND → ORDER_WEIGHT     │
               └─────────────────────────────┘
 ```
 
@@ -1261,7 +1489,7 @@ Batch dry-run 若偵測 ≥2 題完全相同之 `answer_schema_mismatch` → `sh
 
 1. **一題一 component**：每道教材原題對應獨立 `component_id`（§1.5）；Story / Math Core / Presentation 三層僅用於**單題**模板填空，不驅動跨題聚類。
 2. **Story 不得綁定 Checker**：`answer_contract` 只能來自 Math Core + Presentation；應用題故事層固定於該題 `SCENARIO_POOL`（§3.4）。
-3. **禁止跨題拆分或合併**：同一課本題號即一個 component；若教材將「求斜率」與「寫方程式」列為兩道獨立題，則為兩個 `ex_*` / `quiz_*`，**不得** AI 融合或拆分。
+3. **禁止跨題拆分或合併**：同一 `textbook_examples.id` 即一個 `src_{id}` component；兩道獨立教材題 → 兩個獨立 component，**不得** AI 融合或拆分。
 4. **去糖衣驗證**：Math Core 必須能在純數學模式下由 Domain Function 產生合法 payload；數值與答案僅來自算子盾牌。
 
 ### 3.2 圖片掛載機制：禁止 AI 手寫繪圖
@@ -1468,9 +1696,9 @@ python -m pytest agent_skills_v3/{skill_id}/components/{component_id}/tests/ -q
 
 因採行「一題一 `generate.py`」架構，`gencode_closed_loop/controller.py` 的修補半徑**縮小至單一題目檔案**：
 
-1. 讀取 `GENERATOR_REPAIR_CATALOG` 或 component 路徑映射，**僅**鎖定 `components/{component_id}/generate.py`（該 `component_id` 對應一道原題，如 `quiz_5`）。
+1. 讀取 `GENERATOR_REPAIR_CATALOG` 或 component 路徑映射，**僅**鎖定 `components/src_{textbook_example_id}/generate.py`。
 2. 將 `blockers` + `generation_errors` 作為 Negative Feedback 餵給 Gemini Flash。
-3. 覆寫**該單檔**後重跑沙盒；**不得**連帶修改姊妹題 `ex_*` / `quiz_*` / `test_*` 檔案。
+3. 覆寫**該單檔**後重跑沙盒；**不得**連帶修改姊妹題檔案。
 
 ```text
 MAX_RETRY_PER_COMPONENT = 3   # 每道原題獨立計次
@@ -1478,7 +1706,7 @@ MAX_RETRY_PER_COMPONENT = 3   # 每道原題獨立計次
 
 ### 4.3 放手降級與動態發布門檻（v1.3 Partial Publish）
 
-> **v1.3 修訂**：核心例題（`required_core_components`，通常為 `ex_*` 系列）`verified` 即可 **Partial Publish**；單一隨堂或自我評量失敗不阻斷發布、不觸發 skill 級 `SYSTEM_INTERRUPT`。
+> **v1.3 修訂**：核心例題（`required_core_components`，以 `src_{textbook_example_id}` 標識）`verified` 即可 **Partial Publish**；單一隨堂或自我評量失敗不阻斷發布、不觸發 skill 級 `SYSTEM_INTERRUPT`。
 
 #### 4.3.1 `skill.json` 發布門檻宣告
 
@@ -1488,8 +1716,8 @@ MAX_RETRY_PER_COMPONENT = 3   # 每道原題獨立計次
   "display_name": "簡單排列",
   "expected_component_count": 5,
   "required_core_components": [
-    "ex_1",
-    "ex_2"
+    "src_4545",
+    "src_4546"
   ]
 }
 ```
@@ -1497,7 +1725,7 @@ MAX_RETRY_PER_COMPONENT = 3   # 每道原題獨立計次
 | 欄位 | 說明 |
 |------|------|
 | `expected_component_count` | 此 skill 預期應有的 component 總數（例題 + 隨堂 + 自我評量）；用於覆蓋率審計 |
-| `required_core_components` | **必須 verified 才能發布**的核心例題 `component_id` 清單（建議以 `ex_*` 為主） |
+| `required_core_components` | **必須 verified 才能發布**的核心例題 `component_id` 清單（**必須**為 `src_{textbook_example_id}`） |
 
 ##### 4.3.1.1 `required_core_components` 權限剛性鎖定（禁止 AI 自動判定）
 
@@ -1522,8 +1750,8 @@ MAX_RETRY_PER_COMPONENT = 3   # 每道原題獨立計次
 
 | 條件 | 管線行為 |
 |------|----------|
-| 單一 `quiz_*` / `test_*` component 重試 3 次仍失敗 | 標記 `GENERATOR_READINESS = "failed"`；寫入 manifest `status: failed`；**停止該題修補**；從發布清單剔除 |
-| `required_core_components`（核心例題，通常 `ex_*`）**全部** `verified` | **Partial Publish**：將其餘 `verified` 題目編譯發布；`failed` 的隨堂 / 自我評量**直接剔除**，前台僅載入通過題目 |
+| 單一非核心 component（`SOURCE_KIND=quiz` / `test`）重試 3 次仍失敗 | 標記 `GENERATOR_READINESS = "failed"`；寫入 manifest `status: failed`；**停止該題修補**；從發布清單剔除 |
+| `required_core_components`（`src_*` 核心例題）**全部** `verified` | **Partial Publish**：將其餘 `verified` 題目編譯發布；`failed` 題**直接剔除** |
 | `required_core_components` 僅 1 個且該項 `verified` | **允許 Partial Publish**（小技能豁免） |
 | 任一 `required_core_components` 未達 `verified` | `publish_status: blocked`；**仍不觸發** `SYSTEM_INTERRUPT` |
 | 無 `required_core_components` 宣告時（舊 skill 過渡） | fallback：`verified_count >= max(2, ceil(expected_component_count * 0.5))` |
@@ -1531,7 +1759,7 @@ MAX_RETRY_PER_COMPONENT = 3   # 每道原題獨立計次
 
 **關鍵原則（v1.3）**：
 
-- `SYSTEM_INTERRUPT` **禁止**因單一 `quiz_*` / `test_*` 失敗而觸發；確保前台學生練習**絕對順暢、不崩潰**。
+- `SYSTEM_INTERRUPT` **禁止**因單一非核心題失敗而觸發。
 - 只要 `skill.json` 預置的核心例題組件處於 `verified`，系統便將通過題目編譯發布（Partial Publish），失敗題目靜默剔除。
 - `publish_status` 可為 `partial_published`（含剔除的 failed 題）或 `full_published`（全部 verified）。
 
@@ -1558,7 +1786,7 @@ else:
 
 ### 4.4 manifest 記錄格式
 
-`component_id` **必須**為教材實體題號（§1.5），不得使用 `target_task` 或任務聚類命名。
+`component_id` **必須**為 `src_{textbook_example_id}`（§1.2.2），不得使用 `target_task` 或任務聚類命名。
 
 ```json
 {
@@ -1567,14 +1795,14 @@ else:
   "publish_status": "partial_published",
   "components": [
     {
-      "component_id": "ex_1",
+      "component_id": "src_4545",
       "status": "verified",
       "presentation_mode": "single_choice",
       "checker_key": "choice_label_checker",
       "retry_count": 1
     },
     {
-      "component_id": "quiz_5",
+      "component_id": "src_4610",
       "status": "failed",
       "last_error": "generator_semantically_unsafe: choices mismatch",
       "retry_count": 3
@@ -1591,22 +1819,19 @@ else:
 **不修改** `textbook_examples` 既有欄位結構；Gencode 管線狀態、Low-Code 誘導規格與沙盒錯誤日誌**全部**收斂至獨立影子對接表 `gencode_component_tracker`。  
 **嚴禁**修改學生練習紀錄、答題軌跡、成績彙總等學習數據表。
 
-#### 4.5.1 Canonical DDL（SQLite 3 · Production 對齊）
+#### 4.5.1 Current Production DDL（SQLite 3 · 現行 CHECK）
+
+> **v1.8**：下列 CHECK 為**現行 production** 已對齊值。Target V3 擴充狀態見 §4.5.2；**須 migration 後**方可寫入 DB。
 
 ```sql
--- =============================================================================
--- Gencode × AgentSkillV3 獨立維運影子對接表
--- 方言：SQLite 3
--- 核心作用：建立 textbook_examples(id) 與硬碟微元件物理路徑的剛性對接橋樑
--- =============================================================================
 CREATE TABLE IF NOT EXISTS gencode_component_tracker (
     id                      INTEGER PRIMARY KEY AUTOINCREMENT,
-    textbook_example_id     INTEGER NOT NULL,   -- 主錨點：1 對 1 關聯 textbook_examples.id
-    skill_id                TEXT    NOT NULL,   -- 行政錨點：利於依單元批次 Partial Publish 查詢
-    component_id            TEXT    NOT NULL,   -- 物理錨點：src_{textbook_example_id}，如 'src_4545'
-    gencode_status          TEXT    NOT NULL DEFAULT 'pending', -- 狀態機核心
-    induced_spec_payload    TEXT,               -- Low-Code 維運核心：去糖衣後的 JSON 字串
-    gencode_error_log       TEXT,               -- Sandbox / Validator 幾何代數崩潰日誌
+    textbook_example_id     INTEGER NOT NULL,
+    skill_id                TEXT    NOT NULL,
+    component_id            TEXT    NOT NULL,
+    gencode_status          TEXT    NOT NULL DEFAULT 'pending',
+    induced_spec_payload    TEXT,
+    gencode_error_log       TEXT,
     created_at              TEXT    NOT NULL DEFAULT (datetime('now', 'localtime')),
     updated_at              TEXT    NOT NULL DEFAULT (datetime('now', 'localtime')),
 
@@ -1625,34 +1850,52 @@ CREATE TABLE IF NOT EXISTS gencode_component_tracker (
             'unsupported_domain_operation'
         ))
 );
+```
 
+**Migration 前程式相容**：新錯誤碼應寫入 `gencode_error_log` 結構化 JSON；`gencode_status` 暫用 `failed` 或 `needs_human_review`，**不得**誤算為 `unsupported`。
+
+```sql
 CREATE INDEX IF NOT EXISTS idx_gencode_tracker_query_gate
     ON gencode_component_tracker (skill_id, gencode_status);
-
 CREATE INDEX IF NOT EXISTS idx_gencode_tracker_reverse_lookup
     ON gencode_component_tracker (textbook_example_id);
 ```
 
-**雙重 UNIQUE 防線語意**：
+**雙重 UNIQUE**：`uq_gencode_tracker_example_id`（一題一列）；`uq_gencode_tracker_namespace_pool`（skill 內 `component_id` 唯一）。
 
-| 約束名 | 欄位 | 防線目的 |
-|--------|------|----------|
-| `uq_gencode_tracker_example_id` | `textbook_example_id` | 一筆教材原題**最多**對應一列 tracker；禁止同一 `textbook_examples.id` 被重複掛載 |
-| `uq_gencode_tracker_namespace_pool` | `(skill_id, component_id)` | 同一 skill 命名空間內 `component_id` 不可重複；對齊 `agent_skills_v3/{skill_id}/components/{component_id}/` 物理隔離 |
+#### 4.5.2 狀態模型（Production · Target · Compatibility）
 
-#### 4.5.2 `gencode_status` 狀態機（CHECK 約束合法值）
+##### A. Current Production Status Values（上表 CHECK）
 
-| 值 | 語意 | 典型觸發 |
-|----|------|----------|
-| `pending` | 尚未進入 Phase 2 或等待管理員觸發重構 | Phase 1 完成、尚未 Codegen |
-| `usable` | 誘導規格已就緒，可進入 Codegen 佇列 | Phase 1 induced spec 寫入 tracker |
-| `generating` | Phase 2 Codegen / 修補閉環進行中 | Gemini Flash 產出或 controller 重試 |
-| `verified` | 單題沙盒通過 + §1.6.11 八項語意門檻齊全，可進入 manifest 白名單 | Phase 2.5 全項通過 |
-| `failed` | 單題驗證失敗（含 3 次修補後放手） | AST / Validator / smoke 失敗 |
-| `enrichment` | 補充題 / 非核心例題；可不阻斷 Partial Publish | 人工標記或 Phase 1 分類 |
-| `needs_human_review` | 需人工審核後方可繼續 | Taxonomy Gate / 語意對齊阻擋 |
-| `needs_regeneration` | Registry `fixed_domain_key` 或 induced spec 已變更，待重跑 Codegen | `component.domain_key ≠ Registry`（§1.6.10） |
-| `unsupported_domain_operation` | 固定 Domain 白名單無法覆蓋所需能力 | Domain capability gap（§1.6.4）；**禁止**跨 Domain fallback |
+| 值 | 語意 |
+|----|------|
+| `pending` | 尚未進入 Phase 2 |
+| `usable` | induced spec 就緒 |
+| `generating` | Codegen 進行中 |
+| `verified` | 通過 §1.6.11 與沙盒，可進 manifest |
+| `failed` | 單題失敗（含 Extension／verification 失敗） |
+| `enrichment` | 非核心題標記 |
+| `needs_human_review` | 需人工審核 |
+| `needs_regeneration` | Registry／spec 漂移待重跑 |
+| `unsupported_domain_operation` | **Legacy**；v1.8 映射為 `DOMAIN_FUNCTION_MISSING` 流程入口，**非**終止 unsupported |
+
+##### B. Target V3 Status Model（SOP 定義 · migration 後啟用）
+
+`discovered`、`classified`、`domain_binding_resolved`、`domain_capability_checking`、`domain_function_missing`、`domain_extension_pending`、`domain_extension_testing`、`domain_extension_verified`、`bootstrapped`、`draft_written`、`compile_passed`、`smoke_passed`、`packaged`、`published`、`domain_extension_failed`、`generation_failed`、`compile_failed`、`smoke_failed`、`verification_failed`、`unsupported`
+
+##### C. Migration Required
+
+- 擴充 `ck_gencode_status_values` 以納入 Target 狀態
+- 或新增 `pipeline_stage` / `error_code` 欄位承載內部階段
+- **本輪僅修文件，不執行 migration**
+
+##### D. Compatibility Mapping
+
+| Legacy / 內部 | v1.8 規範 |
+|---------------|-----------|
+| `unsupported_domain_operation` | `DOMAIN_FUNCTION_MISSING` → Extension |
+| `v3_shadow_bridge_not_executed` | `SHADOW_BRIDGE_NOT_EXECUTED` |
+| tracker `failed` + `error_code` | 承載 Extension 進行中／失敗 |
 
 #### 4.5.3 影子表 Service 層契約（行政歸屬斷言）
 
@@ -1718,8 +1961,9 @@ gencode_component_tracker.skill_id == textbook_examples.skill_id
 
 | 項目 | 規範 |
 |------|------|
-| 按鈕文案 | **⚡產生/重構出題程式**（或等價 i18n key：`admin.gencode.rebuild_component`） |
-| 作用範圍 | 單一 `component_id`（如 `src_4545`、`src_4610`）；**不得**一次觸發整 skill 全量重跑 |
+| 按鈕文案 | **⚡產生/重構出題程式**（`admin.gencode.rebuild_component`） |
+| 預設作用範圍 | **Component Targeted Rebuild**：單一 `src_{textbook_example_id}` |
+| 批次入口 | **Skill Batch Build** 由 CLI／管理員另行觸發整 skill 重建（§2.9） |
 | 前置條件 | 管理員已修正 `gencode_component_tracker.induced_spec_payload`（題幹模板、Domain 參數等） |
 | 執行方式 | 非同步背景工作（Celery / RQ / 內建 job queue）；HTTP 立即回傳 `job_id`，避免阻塞後台 UI |
 
@@ -1739,7 +1983,7 @@ gencode_component_tracker.skill_id == textbook_examples.skill_id
 1. 重新掃描該 `skill_id` 下**所有** `gencode_component_tracker.gencode_status = 'verified'` 的列（見 Pipeline §3.4 Step 4 場景 2 SQL；**必須** `ORDER BY textbook_example_id ASC, component_id ASC`）。
 2. 重寫 `component_manifest.json` 與 `agent_skills_v3/{skill_id}/__init__.py` 的 `_COMPONENT_DISPATCH` 路由器。
 3. 重新生成 `skills/{skill_id}.py` Thin Facade 之 `GENERATOR_SPECS` / `GENERATOR_KEYS`。
-4. 執行 Phase 3 smoke（可僅抽樣新修復之 `component_id` + 核心 `ex_*` 回歸）。
+4. 執行 Phase 3 smoke（可抽樣新修復之 `component_id` + `required_core_components` 回歸）。
 
 #### 4.6.4 零重啟動態加載契約
 
@@ -1747,7 +1991,7 @@ gencode_component_tracker.skill_id == textbook_examples.skill_id
 |------|----------|
 | `__init__.py` 路由器 | 抽題命中 `component_id` 時，須透過 `importlib.import_module` 載入 `components.{component_id}.generate`；若模組已載入，須對該模組執行 `importlib.reload` 以取得最新 `generate.py` |
 | `runtime_skill_wrapper` | 在 `generate_for_skill()` 路徑中，優先走 component dispatch；動態載入失敗時 fallback 既有 slot 路徑，**不得**使學生請求 500 |
-| `practice.py` | **不修改**對外 API；仍 `importlib.import_module("skills.{skill_id}")` 後呼叫 `generate()` |
+| `practice.py` | **不得破壞** public route 與 response contract；仍 `importlib.import_module("skills.{skill_id}")` 後呼叫 `generate()`（§0.1.1） |
 | 運維禁令 | Manifest 白名單更新後，**不允許**重啟整個 Web 伺服器作為發布手段；熱拔插必須在進行中請求下安全生效 |
 
 ```python
@@ -1799,12 +2043,12 @@ agent_skills_v3/{skill_id}/components/{component_id}/
 - [ ] **Verified 八項門檻（§1.6.11）**：除沙盒外須通過 skill/domain/operation/source/oracle/semantic/topology/runtime 驗證
 - [ ] **物理佈局防線（§1.2）**：`skills/{skill_id}.py` 保留於 `skills/` 根目錄；每題 `py` 獨立於 `agent_skills_v3/{skill_id}/components/{component_id}/`；無大雜燴目錄
 - [ ] **雙重寫入（§1.3、Pipeline §3.4 Step 4）**：Phase 3 已同步更新 `__init__.py` 之 `_COMPONENT_DISPATCH` 與原位 `skills/{skill_id}.py` Thin Facade
-- [ ] 新數學邏輯寫入 **`core/domain/`**；`generate.py` 僅搬運；**不修改** `practice.py` 與學生學習數據表
-- [ ] `gencode_component_tracker` 已依 §4.5 Canonical DDL 建立；雙重 UNIQUE + CHECK 約束生效；Service 層 `skill_id` 斷言（§4.5.3）已實作
-- [ ] 第一階段 `component_id` 為 `src_{textbook_example_id}`；硬碟路徑 `agent_skills_v3/{skill_id}/components/src_{id}/`（§1.2.2）
-- [ ] 後台「⚡重構出題程式」僅觸發單題 Codegen；通過後 Reload Compiler + `importlib.reload`（§4.6）
-- [ ] **一題一 `generate.py`**：`component_id` 為 `ex_*` / `quiz_*` / `test_*` 實體題號（§1.5）；無多題合一、無 AI 融合
-- [ ] `ORDER_WEIGHT` / `DIFFICULTY_LEVEL` 依前綴由管線注入；`skill_id` 在 Taxonomy MVP 六單元內（§1.4.1）
+- [ ] **Domain Function Extension（§1.8）**：缺 function 走 Extension，禁止 generic／跨 Domain fallback
+- [ ] **Auto-Bootstrap（§1.7）**：Bootstrap／Publish Gate 分離；`DOMAIN_BINDING_MISSING` 時停止生成、不猜 Domain
+- [ ] 新數學邏輯寫入 **`core/domain/`**；`generate.py` 僅搬運；**不破壞** `practice.py` public contract（§0.1.1）
+- [ ] **一題一 `generate.py`**：`component_id = src_{textbook_example_id}`；無多題合一
+- [ ] `ORDER_WEIGHT` / `DIFFICULTY_LEVEL` 依 `SOURCE_KIND` 注入；MVP 不阻擋生成
+- [ ] 核心 `required_core_components`（`src_*`）`verified` 即可 Partial Publish（§4.3）
 - [ ] `skill_id` 硬編碼僅出現在 `taxonomy_registry`；`core/domain/` 內無 skill_id（§2.7）
 - [ ] `generate.py` 為搬運工：無 SymPy、無 distractors 演算法、無 visual 坐標重算（§2.6）
 - [ ] Full Matrix Dictionary 六大欄位由 Domain 一次算完（§2.3.2、§2.5.4）
@@ -1817,8 +2061,8 @@ agent_skills_v3/{skill_id}/components/{component_id}/
 - [ ] `get_hint.py` 三階段 skeleton 已實作
 - [ ] 沙盒測試獨立通過後才寫入 `component_manifest.json`
 - [ ] `required_core_components` **僅**來自 Taxonomy / 架構師預置，未被 AI 或管線改寫（§4.3.1.1）
-- [ ] 核心例題 `verified` 即可 Partial Publish；`quiz_*` / `test_*` 失敗剔除、不觸發 `SYSTEM_INTERRUPT`（§4.3）
+- [ ] 核心例題 `verified` 即可 Partial Publish；非核心題失敗剔除、不觸發 `SYSTEM_INTERRUPT`（§4.3）
 
 ---
 
-*本文件為 AgentSkillV3 架構大會審查規格書 v1.6（Skill-Fixed Domain Authority · 西堤選餐模式）。修訂須同步更新 `SOP_Gencode_AgentSkillV3_PipelineFlow.md`。*
+*本文件為 AgentSkillV3 架構規範書 v1.8（Skill-Fixed Auto-Bootstrap · Domain Function Extension）。修訂須同步更新 [SOP_Gencode_AgentSkillV3_PipelineFlow.md](./SOP_Gencode_AgentSkillV3_PipelineFlow.md)。**實作狀態：SOP 已更新，程式尚待對齊。***

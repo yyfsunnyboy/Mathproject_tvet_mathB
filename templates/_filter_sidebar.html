@@ -43,8 +43,7 @@
                 <select id="f_curriculum" name="curriculum" class="form-select filter-select">
                     <option value="all">-- 請選擇 --</option>
                     {% for c in filters.curriculums %}
-                    <option value="{{ c }}" {% if selected_filters.f_curriculum==c %}selected{% endif %}>{{
-                        '技高' if c == 'vocational' else curriculum_map.get(c, c) }}</option>
+                    <option value="{{ c }}" {% if selected_filters.f_curriculum==c %}selected{% endif %}>{{ curriculum_map.get(c, c) }}</option>
                     {% endfor %}
                 </select>
             </div>

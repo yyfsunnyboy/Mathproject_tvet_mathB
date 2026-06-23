@@ -58,14 +58,6 @@ def resolve_generator_route(
             "module": loaded_module,
         }
 
-    route_source = str(existing_route_source or "").strip()
-    if route_source in _MODERN_ROUTE_SOURCES:
-        return {
-            "mode": "modern",
-            "reason": f"existing_route_source:{route_source}",
-            "module": loaded_module,
-        }
-
     if _has_modern_generator_contract(loaded_module):
         return {
             "mode": "modern",
@@ -73,10 +65,26 @@ def resolve_generator_route(
             "module": loaded_module,
         }
 
-    if skill_id.startswith("jh_") and _is_plain_skills_module(loaded_module, skill_id):
+    # Authority modern evidence check
+    has_authority_evidence = (
+        hasattr(loaded_module, "GENERATOR_SPECS") or
+        hasattr(loaded_module, "GENERATOR_KEYS") or
+        hasattr(loaded_module, "dispatch_generate") or
+        (existing_route_source in _MODERN_ROUTE_SOURCES)
+    )
+
+    if not has_authority_evidence and skill_id.startswith("jh_") and _is_plain_skills_module(loaded_module, skill_id):
         return {
             "mode": "legacy",
             "reason": "plain_jh_skill_module",
+            "module": loaded_module,
+        }
+
+    route_source = str(existing_route_source or "").strip()
+    if route_source in _MODERN_ROUTE_SOURCES:
+        return {
+            "mode": "modern",
+            "reason": f"existing_route_source:{route_source}",
             "module": loaded_module,
         }
 

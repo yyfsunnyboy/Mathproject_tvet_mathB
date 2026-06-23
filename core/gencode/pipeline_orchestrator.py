@@ -1,4 +1,4 @@
-from __future__ import annotations
+﻿from __future__ import annotations
 
 import logging
 logger = logging.getLogger(__name__)
@@ -3007,16 +3007,7 @@ def run_gencode_phase2_raw(
     v3_staging_root: str | None = None,
 ) -> dict[str, Any]:
     skill_key = str(skill_id or "").strip()
-    taxonomy_path = "configs/gencode_taxonomy/k12_component_taxonomy.yaml"
-    taxonomy_file = PROJECT_ROOT / taxonomy_path
-    mvp_scope = (
-        _load_v3_taxonomy_mvp_scope(taxonomy_path)
-        if taxonomy_file.is_file()
-        else set()
-    )
-    if skill_key in mvp_scope:
-        if v3_textbook_example_id is None:
-            raise ValueError("missing_v3_textbook_example_id")
+    if v3_textbook_example_id is not None:
         if v3_conn is None:
             raise ValueError("missing_v3_conn")
         bridge_result = run_gencode_phase2_v3_shadow_bridge(
@@ -5013,6 +5004,18 @@ def _v3_resolve_gated_domain_operation(
     )
 
     ctx = resolve_fixed_domain_context(skill_id)
+    if ctx.fixed_domain_key.startswith("statistics.") and not any(extra.get(k) for k in ("line_type", "problem_type_id", "domain_operation", "task_type")):
+        selected = ctx.allowed_operations[0]
+        log_dispatch_event(
+            phase="v3_draft",
+            skill_id=ctx.skill_id,
+            example_id=int(textbook_row.get("id") or 0),
+            fixed_domain_key=ctx.fixed_domain_key,
+            selected_operation=selected,
+            problem_type_id=selected,
+        )
+        return selected, {"problem_type_id": selected, "domain_operation": selected, "classification_source": "fixed_domain_default"}, ctx
+
     for k in ("line_type", "problem_type_id", "domain_operation", "task_type"):
         if k in extra and extra[k]:
             selected = str(extra[k]).strip()
@@ -5130,7 +5133,7 @@ def build_v3_component_draft_from_skill(
     import importlib
 
     from core.gencode.domain_matrix_adapter import (
-        convert_line_equation_matrix_to_question_payload,
+        convert_domain_matrix_to_question_payload,
         normalize_domain_matrix,
         validate_domain_matrix,
     )
@@ -5174,6 +5177,29 @@ def build_v3_component_draft_from_skill(
     except SkillFixedDomainError as exc:
         raise ValueError(f"{exc.code}:{exc}") from exc
 
+    from core.gencode.domain_capability_service import resolve_domain_capability
+    from core.gencode.domain_function_extension_service import extend_domain_function_for_capability
+
+    capability = resolve_domain_capability(
+        skill_id=skill_id,
+        fixed_domain_key=domain_ctx.fixed_domain_key,
+        normalized_classification={
+            **classification,
+            "domain_operation": line_type,
+            "function_name": domain_ctx.entrypoint,
+            "domain_module": domain_ctx.domain_module,
+            "allowed_operations": list(domain_ctx.allowed_operations),
+        },
+        source_example=row,
+        domain_context=domain_ctx,
+    )
+    if capability.capability_status != "ready":
+        extend_domain_function_for_capability(
+            skill_id=skill_id,
+            example_id=textbook_example_id,
+            capability=capability,
+            source_example=row,
+        )
     registry = {
         "domain_module": domain_ctx.domain_module,
         "entrypoint": domain_ctx.entrypoint,
@@ -5282,7 +5308,7 @@ def build_v3_component_draft_from_skill(
         problem_type_id=problem_type_id,
         domain_operation=line_type,
     )
-    payload = convert_line_equation_matrix_to_question_payload(
+    payload = convert_domain_matrix_to_question_payload(
         normalized_matrix,
         presentation_mode=presentation_mode,
         answer_type=answer_type,
@@ -5649,14 +5675,7 @@ def run_gencode_phase2_v3_shadow_bridge(
     if not skill_key:
         raise ValueError("skill_id must be provided.")
 
-    mvp_scope = _load_v3_taxonomy_mvp_scope(taxonomy_path)
-    if skill_key not in mvp_scope:
-        return {
-            "route": "v2_legacy_passthrough",
-            "skill_id": skill_key,
-            "v3_activated": False,
-            "message": "legacy_skill_not_in_mvp_scope",
-        }
+    # MVP scope is a review/publish hint only; Auto-Bootstrap must not be blocked here.
 
     dryrun_path = str(dryrun_base_dir or "").strip()
     if not Path(dryrun_path).is_absolute():
@@ -5769,30 +5788,25 @@ def run_gencode_phase2_v3_shadow_bridge(
             constraints=extra or None,
             conn=conn,
         )
-    except ValueError as exc:
-        from core.gencode.skill_fixed_domain_authority import (
-            DOMAIN_OPERATION_NOT_ALLOWED,
-            FIXED_DOMAIN_VIOLATION,
-            UNSUPPORTED_DOMAIN_OPERATION,
-        )
+    except Exception as exc:
+        from core.gencode.v3_error_codes import V3PipelineError, error_code_from_message
 
         message = str(exc)
-        if DOMAIN_OPERATION_NOT_ALLOWED in message:
-            status = "domain_operation_not_allowed"
-        elif UNSUPPORTED_DOMAIN_OPERATION in message:
-            status = "unsupported_domain_operation"
-        elif FIXED_DOMAIN_VIOLATION in message:
-            status = "fixed_domain_violation"
-        else:
+        error_code = exc.code if isinstance(exc, V3PipelineError) else error_code_from_message(message)
+        if error_code == "COMPONENT_GENERATION_FAILED":
             raise
         component_id = derive_component_id(textbook_example_id)
+        payload = {"source_kind": source_kind, "error_code": error_code, "error": message}
+        details = getattr(exc, "details", None)
+        if isinstance(details, dict):
+            payload.update(details)
         tracker = save_tracker_record(
             conn,
             textbook_example_id=textbook_example_id,
             skill_id=skill_key,
-            gencode_status=status,
-            induced_spec_payload={"source_kind": source_kind, "error": message},
-            gencode_error_log=message,
+            gencode_status="failed",
+            induced_spec_payload=payload,
+            gencode_error_log=f"{error_code}: {message}",
         )
         try:
             conn.commit()
@@ -6013,3 +6027,11 @@ def run_gencode_phase2_v3_shadow_bridge(
         "tracker_record": tracker,
         "dryrun_base_dir": dryrun_path,
     }
+
+
+
+
+
+
+
+

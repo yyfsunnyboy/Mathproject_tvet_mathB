@@ -1,4 +1,4 @@
-"""Bridge from administrative skill_id to domain entrypoints via taxonomy config."""
+﻿"""Bridge from administrative skill_id to domain entrypoints via taxonomy config."""
 
 from __future__ import annotations
 
@@ -6,7 +6,7 @@ import yaml
 from pathlib import Path
 from typing import Any
 
-REGISTRY_REVISION = "2026-06-22-v1.6"
+REGISTRY_REVISION = "2026-06-23-v1.8"
 
 
 class SkillDomainNotRegisteredError(KeyError):
@@ -58,6 +58,10 @@ DOMAIN_ALLOWED_OPERATIONS: dict[str, list[str]] = {
         "parallel_lines_distance_single_choice",
         "area_using_parallel_distance",
     ],
+    "statistics.frequency_distribution": [
+        "frequency_table_construction_review",
+        "frequency_table_single_bin_count",
+    ],
 }
 
 # Administrative profile: skill_id -> fixed_domain_key + curriculum.
@@ -104,6 +108,13 @@ SKILL_DOMAIN_PROFILE: dict[str, dict[str, Any]] = {
         "curriculum_profile": "vocational_high_b",
         "registry_revision": REGISTRY_REVISION,
         "mapping_reason": "textbook_skill_parallel_lines_distance",
+    },
+    "vh_數學B4_FrequencyDistributionTableConstruction": {
+        "fixed_domain_key": "statistics.frequency_distribution",
+        "domain": "statistics",
+        "curriculum_profile": "vocational_high_b",
+        "registry_revision": REGISTRY_REVISION,
+        "mapping_reason": "textbook_skill_frequency_distribution_table",
     },
 }
 
@@ -188,6 +199,16 @@ SKILL_TO_DOMAIN: dict[str, dict[str, Any]] = {
             "construct_parallel_line_at_distance",
             "parallel_lines_distance_single_choice",
             "area_using_parallel_distance",
+        ],
+    },
+    "vh_數學B4_FrequencyDistributionTableConstruction": {
+        "fixed_domain_key": "statistics.frequency_distribution",
+        "domain_module": "core.domain.statistics.frequency_distribution_domain",
+        "entrypoint": "build_frequency_distribution_table_matrix",
+        "default_curriculum_profile": "vocational_high_b",
+        "allowed_types": [
+            "frequency_table_construction_review",
+            "frequency_table_single_bin_count",
         ],
     },
 }
@@ -277,3 +298,6 @@ def resolve_domain_for_skill(skill_id: str) -> dict[str, Any]:
     merged["allowed_operations"] = get_allowed_operations(fixed_domain_key, skill_id=key)
     merged["registry_revision"] = get_registry_revision(key)
     return merged
+
+
+

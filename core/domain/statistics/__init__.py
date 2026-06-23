@@ -1,0 +1,2 @@
+"""Canonical statistics domain functions."""
+

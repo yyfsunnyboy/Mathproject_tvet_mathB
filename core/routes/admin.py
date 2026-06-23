@@ -192,7 +192,13 @@ from core.session_safety import (
     safe_flash_message,
     summarize_import_result,
 )
-from core.utils import handle_curriculum_filters
+from core.utils import (
+    handle_curriculum_filters,
+    normalize_curriculum,
+    get_curriculum_label,
+    get_curriculum_options,
+    get_curriculum_aliases
+)
 from core.ai_settings import (
     AI_ROLE_KEYS,
     SETTING_AI_CLOUD_MODEL,
@@ -317,30 +323,38 @@ def _normalize_core_option_value(raw):
 
 def _collect_core_scope_options(filters=None):
     filters = dict(filters or {})
-    curriculum = _normalize_core_option_value(filters.get("curriculum"))
+    curriculum = normalize_curriculum(_normalize_core_option_value(filters.get("curriculum")))
     grade_raw = _normalize_core_option_value(filters.get("grade"))
     volume = _normalize_core_option_value(filters.get("volume"))
     chapter = _normalize_core_option_value(filters.get("chapter"))
     grade = int(grade_raw) if str(grade_raw).isdigit() else None
 
-    q_curr = db.session.query(SkillCurriculum.curriculum).distinct()
-    curricula = sorted({str(r[0]) for r in q_curr.all() if r[0] is not None})
+    # Sort curricula based on the defined order (junior_high -> general -> vocational)
+    defined_keys = [opt['key'] for opt in get_curriculum_options()]
+    distinct_currs = [r[0] for r in db.session.query(distinct(SkillCurriculum.curriculum)).all() if r[0] is not None]
+    curricula = [k for k in defined_keys if k in distinct_currs]
+    for c in distinct_currs:
+        if c not in curricula:
+            curricula.append(c)
 
     q_grade = db.session.query(SkillCurriculum.grade)
     if curriculum:
-        q_grade = q_grade.filter(SkillCurriculum.curriculum == curriculum)
+        aliases = get_curriculum_aliases(curriculum)
+        q_grade = q_grade.filter(SkillCurriculum.curriculum.in_(aliases))
     grades = sorted({int(r[0]) for r in q_grade.distinct().all() if r[0] is not None})
 
     q_volume = db.session.query(SkillCurriculum.volume)
     if curriculum:
-        q_volume = q_volume.filter(SkillCurriculum.curriculum == curriculum)
+        aliases = get_curriculum_aliases(curriculum)
+        q_volume = q_volume.filter(SkillCurriculum.curriculum.in_(aliases))
     if grade is not None:
         q_volume = q_volume.filter(SkillCurriculum.grade == grade)
     volumes = sorted({str(r[0]) for r in q_volume.distinct().all() if r[0] is not None})
 
     q_chapter = db.session.query(SkillCurriculum.chapter)
     if curriculum:
-        q_chapter = q_chapter.filter(SkillCurriculum.curriculum == curriculum)
+        aliases = get_curriculum_aliases(curriculum)
+        q_chapter = q_chapter.filter(SkillCurriculum.curriculum.in_(aliases))
     if grade is not None:
         q_chapter = q_chapter.filter(SkillCurriculum.grade == grade)
     if volume:
@@ -349,7 +363,8 @@ def _collect_core_scope_options(filters=None):
 
     q_section = db.session.query(SkillCurriculum.section)
     if curriculum:
-        q_section = q_section.filter(SkillCurriculum.curriculum == curriculum)
+        aliases = get_curriculum_aliases(curriculum)
+        q_section = q_section.filter(SkillCurriculum.curriculum.in_(aliases))
     if grade is not None:
         q_section = q_section.filter(SkillCurriculum.grade == grade)
     if volume:
@@ -1243,7 +1258,7 @@ def admin_textbook_importer():
             TASK_QUEUES[task_id] = q
 
             curriculum_info = {
-                'curriculum': request.form.get('curriculum'),
+                'curriculum': normalize_curriculum(request.form.get('curriculum')),
                 'publisher': request.form.get('publisher'),
                 'grade': request.form.get('grade'),
                 'volume': request.form.get('volume')
@@ -2117,10 +2132,6 @@ def import_textbook_examples():
             
     return redirect(url_for('core.db_maintenance'))
 
-# ==========================================
-# Curriculum Management (?方??祆０????)
-# ==========================================
-
 @core_bp.route('/curriculum', methods=['GET', 'POST'])
 @login_required
 def admin_curriculum():
@@ -2131,7 +2142,7 @@ def admin_curriculum():
         try:
             new_curr = SkillCurriculum(
                 skill_id=request.form.get('skill_id'),
-                curriculum=request.form.get('curriculum'),
+                curriculum=normalize_curriculum(request.form.get('curriculum')),
                 grade=int(request.form.get('grade')) if request.form.get('grade') else 0,
                 volume=request.form.get('volume'),
                 chapter=request.form.get('chapter'),
@@ -2142,19 +2153,18 @@ def admin_curriculum():
             )
             db.session.add(new_curr)
             db.session.commit()
-            flash('??????', 'success')
+            flash('新增成功', 'success')
         except Exception as e:
             db.session.rollback()
-            flash(f'????剜??: {str(e)}', 'error')
+            flash(f'新增失敗: {str(e)}', 'error')
         return redirect(url_for('core.admin_curriculum'))
 
-    # ??蛛隤冽???????50 ?蛛?????????????
     selected, filters_data = handle_curriculum_filters(request)
     
-    # ??貔嚗嗉???selected ?????
     query = SkillCurriculum.query.join(SkillInfo)
     if selected['f_curriculum'] != 'all': 
-        query = query.filter(SkillCurriculum.curriculum == selected['f_curriculum'])
+        aliases = get_curriculum_aliases(selected['f_curriculum'])
+        query = query.filter(SkillCurriculum.curriculum.in_(aliases))
     
     if selected['f_grade'] != 'all' and str(selected['f_grade']).isdigit():
         query = query.filter(SkillCurriculum.grade == int(selected['f_grade']))
@@ -2170,12 +2180,19 @@ def admin_curriculum():
 
     items = query.order_by(SkillCurriculum.grade, SkillCurriculum.volume, SkillCurriculum.display_order).limit(200).all()
 
-    curriculum_map = {
-        'junior_high': 'junior_high',
-        'general': 'general',
-        'technical': 'technical',
-        'elementary': 'elementary',
-    }
+    # Build curriculum_map with Chinese labels
+    curriculum_map = {}
+    for opt in get_curriculum_options():
+        curriculum_map[opt['key']] = opt['label']
+        for alias in opt['aliases']:
+            curriculum_map[alias] = opt['label']
+            
+    # Include all distinct values from DB
+    distinct_currs = [r[0] for r in db.session.query(distinct(SkillCurriculum.curriculum)).all()]
+    for c in distinct_currs:
+        if c not in curriculum_map:
+            curriculum_map[c] = get_curriculum_label(c)
+
     grade_map = {str(g): str(g) for g in filters_data['grades']}
 
     return render_template('admin_curriculum.html', 
@@ -2193,7 +2210,7 @@ def admin_edit_curriculum(id):
         return jsonify({'success': False}), 403
     try:
         curr = SkillCurriculum.query.get_or_404(id)
-        curr.curriculum = request.form.get('curriculum')
+        curr.curriculum = normalize_curriculum(request.form.get('curriculum'))
         curr.grade = request.form.get('grade')
         curr.volume = request.form.get('volume')
         curr.chapter = request.form.get('chapter')
@@ -2202,10 +2219,10 @@ def admin_edit_curriculum(id):
         curr.display_order = request.form.get('display_order')
         curr.difficulty_level = request.form.get('difficulty_level')
         db.session.commit()
-        flash('?皝????', 'success')
+        flash('更新成功', 'success')
     except Exception as e:
         db.session.rollback()
-        flash(f'?皝??剜??: {e}', 'error')
+        flash(f'更新失敗: {e}', 'error')
     return redirect(url_for('core.admin_curriculum'))
 
 @core_bp.route('/curriculum/delete/<int:id>', methods=['POST'])
@@ -2242,7 +2259,8 @@ def admin_skills():
     
     # --- 篩選條件過濾器 ---
     if selected['f_curriculum'] != 'all': 
-        query = query.filter(SkillCurriculum.curriculum == selected['f_curriculum'])
+        aliases = get_curriculum_aliases(selected['f_curriculum'])
+        query = query.filter(SkillCurriculum.curriculum.in_(aliases))
     if selected['f_grade'] != 'all' and str(selected['f_grade']).isdigit(): 
         query = query.filter(SkillCurriculum.grade == int(selected['f_grade']))
     if selected['f_volume'] != 'all':
@@ -2371,7 +2389,17 @@ def admin_skills():
                            filters=filters_data,
                            selected_filters=selected,
                            grade_map={str(g):str(g) for g in filters_data['grades']},
-                           curriculum_map={'junior_high': '國中', 'general': '普高'},
+                           curriculum_map={
+                               'junior_high': '國中',
+                               'general': '普高',
+                               'vocational': '技高',
+                               'vocational_high': '技高',
+                               'technical': '技高',
+                               'junior': '國中',
+                               'senior': '普高',
+                               'general_high': '普高',
+                               'senior_high': '普高'
+                           },
                            username=current_user.username)
 
 @core_bp.route('/skills/add', methods=['POST'])
@@ -2724,7 +2752,8 @@ def admin_examples():
     query = db.session.query(TextbookExample).outerjoin(SkillInfo, TextbookExample.skill_id == SkillInfo.skill_id).join(SkillCurriculum, TextbookExample.skill_id == SkillCurriculum.skill_id)
     
     if selected['f_curriculum'] != 'all': 
-        query = query.filter(SkillCurriculum.curriculum == selected['f_curriculum'])
+        aliases = get_curriculum_aliases(selected['f_curriculum'])
+        query = query.filter(SkillCurriculum.curriculum.in_(aliases))
     if selected['f_grade'] != 'all' and str(selected['f_grade']).isdigit(): 
         query = query.filter(SkillCurriculum.grade == int(selected['f_grade']))
     if selected['f_volume'] != 'all':
@@ -2795,7 +2824,17 @@ def admin_examples():
                            selected_filters=selected,
                            page_formula_stats=page_formula_stats,
                            gencode_status_map=gencode_status_map,
-                           curriculum_map={'junior_high': '???', 'general': '?獢?'},
+                           curriculum_map={
+                               'junior_high': '國中',
+                               'general': '普高',
+                               'vocational': '技高',
+                               'vocational_high': '技高',
+                               'technical': '技高',
+                               'junior': '國中',
+                               'senior': '普高',
+                               'general_high': '普高',
+                               'senior_high': '普高'
+                           },
                            grade_map={str(g):str(g) for g in filters_data['grades']}, 
                            skills=SkillInfo.query.all(), 
                            username=current_user.username)
@@ -3875,7 +3914,8 @@ def admin_prerequisites():
     
     # --- ?乾??????????---
     if selected['f_curriculum'] != 'all': 
-        query = query.filter(SkillCurriculum.curriculum == selected['f_curriculum'])
+        aliases = get_curriculum_aliases(selected['f_curriculum'])
+        query = query.filter(SkillCurriculum.curriculum.in_(aliases))
     if selected['f_grade'] != 'all' and str(selected['f_grade']).isdigit(): 
         query = query.filter(SkillCurriculum.grade == int(selected['f_grade']))
     if selected['f_volume'] != 'all': 
@@ -3899,12 +3939,21 @@ def admin_prerequisites():
         skill_info.prereq_count = len(skill_info.prerequisites)
         skills_list.append(skill_info)
 
-    # --- C. ?????????皜??????? ---
     return render_template('admin_prerequisites.html',
                            skills=skills_list,
-                           filters=filters_data,             # ?舀????
-                           selected_filters=selected,        # ????UndefinedError
-                           curriculum_map={'junior_high': '???', 'general': '?獢?'},
+                           filters=filters_data,
+                           selected_filters=selected,
+                           curriculum_map={
+                               'junior_high': '國中',
+                               'general': '普高',
+                               'vocational': '技高',
+                               'vocational_high': '技高',
+                               'technical': '技高',
+                               'junior': '國中',
+                               'senior': '普高',
+                               'general_high': '普高',
+                               'senior_high': '普高'
+                           },
                            grade_map={str(g):str(g) for g in filters_data['grades']},
                            username=current_user.username)
 
@@ -4013,16 +4062,17 @@ def import_curriculum():
 @core_bp.route('/api/get_grades')
 @login_required
 def api_get_grades():
-    curriculum = request.args.get('curriculum')
+    curriculum = normalize_curriculum(request.args.get('curriculum'))
     if not curriculum: return jsonify([])
-    query = db.session.query(distinct(SkillCurriculum.grade)).filter_by(curriculum=curriculum)
+    aliases = get_curriculum_aliases(curriculum)
+    query = db.session.query(distinct(SkillCurriculum.grade)).filter(SkillCurriculum.curriculum.in_(aliases))
     grades = sorted([row[0] for row in query.filter(SkillCurriculum.grade != None).all()])
     return jsonify(grades)
 
 @core_bp.route('/api/get_volumes')
 @login_required
 def api_get_volumes():
-    curriculum = request.args.get('curriculum')
+    curriculum = normalize_curriculum(request.args.get('curriculum'))
     grade = request.args.get('grade')
     if not curriculum or not grade: return jsonify([])
     try:
@@ -4030,14 +4080,18 @@ def api_get_volumes():
     except:
         return jsonify([])
         
-    query = db.session.query(distinct(SkillCurriculum.volume)).filter_by(curriculum=curriculum, grade=grade)
+    aliases = get_curriculum_aliases(curriculum)
+    query = db.session.query(distinct(SkillCurriculum.volume)).filter(
+        SkillCurriculum.curriculum.in_(aliases),
+        SkillCurriculum.grade == grade
+    )
     volumes = [row[0] for row in query.all()]
     return jsonify(volumes)
 
 @core_bp.route('/api/get_chapters')
 @login_required
 def api_get_chapters():
-    curriculum = request.args.get('curriculum')
+    curriculum = normalize_curriculum(request.args.get('curriculum'))
     grade = request.args.get('grade')
     volume = request.args.get('volume')
     if not all([curriculum, grade, volume]): return jsonify([])
@@ -4046,8 +4100,11 @@ def api_get_chapters():
     except:
         return jsonify([])
 
-    query = db.session.query(distinct(SkillCurriculum.chapter)).filter_by(
-        curriculum=curriculum, grade=grade, volume=volume
+    aliases = get_curriculum_aliases(curriculum)
+    query = db.session.query(distinct(SkillCurriculum.chapter)).filter(
+        SkillCurriculum.curriculum.in_(aliases),
+        SkillCurriculum.grade == grade,
+        SkillCurriculum.volume == volume
     )
     chapters = [row[0] for row in query.all()]
     return jsonify(chapters)
@@ -4055,7 +4112,7 @@ def api_get_chapters():
 @core_bp.route('/api/get_sections')
 @login_required
 def api_get_sections():
-    curriculum = request.args.get('curriculum')
+    curriculum = normalize_curriculum(request.args.get('curriculum'))
     grade = request.args.get('grade')
     volume = request.args.get('volume')
     chapter = request.args.get('chapter')
@@ -4065,8 +4122,12 @@ def api_get_sections():
     except:
         return jsonify([])
 
-    query = db.session.query(distinct(SkillCurriculum.section)).filter_by(
-        curriculum=curriculum, grade=grade, volume=volume, chapter=chapter
+    aliases = get_curriculum_aliases(curriculum)
+    query = db.session.query(distinct(SkillCurriculum.section)).filter(
+        SkillCurriculum.curriculum.in_(aliases),
+        SkillCurriculum.grade == grade,
+        SkillCurriculum.volume == volume,
+        SkillCurriculum.chapter == chapter
     )
     sections = [row[0] for row in query.all()]
     return jsonify(sections)

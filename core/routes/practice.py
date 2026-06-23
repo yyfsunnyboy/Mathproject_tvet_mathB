@@ -1223,8 +1223,20 @@ def get_adaptive_question():
         else:
             mod = get_skill(skill_id_for_generate)
             if not mod:
-                return jsonify({"error": f"?⊥?頛??賣芋蝯?{skill_id_for_generate}"}), 500
-            data = mod.generate(**gen_kwargs)
+                return jsonify({
+                    "success": False,
+                    "error_code": "SKILL_MODULE_NOT_FOUND",
+                    "skill_id": skill_id_for_generate,
+                    "message": "題目載入失敗，請通知教師檢查此技能。"
+                }), 404
+            from core.legacy_generator_adapter import invoke_skill_generate, normalize_runtime_value
+            data = invoke_skill_generate(
+                mod,
+                level=difficulty_level,
+                seed=inner_router_seed if gen_seed is not None else None,
+                skill_id=skill_id_for_generate
+            )
+            data = normalize_runtime_value(data)
 
         ok_payload, deny_reason = validate_b4_deterministic_adaptive_generator_payload(
             skill_id_for_generate,
@@ -1439,36 +1451,38 @@ def next_question():
             "answer_type": "text",
             "is_instant_upload": True,
         }, skill_id=skill_id))
-    
     try:
-        # [Phase 6C-1R2] Chap2 deterministic P0 avoids legacy skills.<skill_id> import entirely.
-        # [靽格迤 2] 撘瑕?頛璅∠?嚗圾瘙箝鈭??????? ????其?韏?skills.<id>.generate() ?楝敺?
-        module_path = f"skills.{skill_id}"
-        wrapper_loaded = False
-        wrapper_path = ""
-        route_source = "legacy"
+        # 1. Check routing via resolve_generator_route first
+        from core.generator_route_resolver import resolve_generator_route
+        from core.legacy_generator_adapter import invoke_legacy_generator, normalize_legacy_payload
+
+        # Load skill module
+        reload_runtime = False
         if _is_b4_tree_diagram_request(skill_id, problem_type) or _is_b4_pascal_triangle_request(skill_id, problem_type):
             mod = None
         elif is_b4_chapter2_phase6c1_deterministic_skill(skill_id):
             mod = None
         elif is_b4_chapter3_phase7b_runtime_skill(skill_id):
             mod = None
-        reload_runtime = _runtime_reload_skill_modules()
-        mod = get_skill(skill_id, reload_module=reload_runtime)
+        else:
+            reload_runtime = _runtime_reload_skill_modules()
+            mod = get_skill(skill_id, reload_module=reload_runtime)
+
         wrapper_loaded = bool(mod is not None and hasattr(mod, "generate"))
-        wrapper_path = module_path
+        wrapper_path = f"skills.{skill_id}"
         route_source = "gencode_wrapper" if wrapper_loaded else "legacy"
         module_file = ""
         if mod is not None:
             module_file = str(getattr(mod, "__file__", "") or "")
+
         current_app.logger.info("[GENCODE WEB RUNTIME] wrapper_loaded=%s", str(wrapper_loaded).lower())
         current_app.logger.info("[GENCODE WEB RUNTIME] wrapper_path=%s", wrapper_path)
         current_app.logger.info("[GENCODE WEB RUNTIME] module_file=%s reload=%s", module_file, reload_runtime)
         current_app.logger.info("[GENCODE WEB RUNTIME] route_source=%s", route_source)
         if wrapper_loaded and hasattr(mod, "GENERATOR_SPECS"):
             current_app.logger.info("[GENCODE WEB RUNTIME] generator_specs=%s", getattr(mod, "GENERATOR_SPECS", []))
-        
-        # 瘙箏???漲蝑?
+
+        # Determine difficulty level
         current_curriculum_context = session.get('current_curriculum', 'general')
         curriculum_entry = db.session.query(SkillCurriculum).filter_by(
             skill_id=skill_id,
@@ -1485,7 +1499,7 @@ def next_question():
         progress = db.session.query(Progress).filter_by(user_id=current_user.id, skill_id=skill_id).first()
         consecutive = progress.consecutive_correct if progress else 0
 
-        # 皞??蔭??質?閮? AI 雿輻
+        # AI prereq query
         prereq_query = db.session.query(SkillInfo).join(
             SkillPrerequisites, SkillInfo.skill_id == SkillPrerequisites.prerequisite_id
         ).filter(
@@ -1495,237 +1509,285 @@ def next_question():
         
         prereq_info_for_ai = [{'id': p.skill_id, 'name': p.skill_ch_name} for p in prereq_query]
 
-        # [Safety] ?芸??岫璈 (閫?捱?嗥??AI ???航炊)
-        max_retries = 5
-        data = None
-        
-        for attempt in range(max_retries):
-            try:
-                # [靽格迤 3] 撘瑕??芸?靽桀儔??雿炎??
-                if _is_b4_tree_diagram_request(skill_id, problem_type):
-                    data = _build_b4_tree_diagram_runtime_payload(variant, tree_diagram_index)
-                elif _is_b4_pascal_triangle_request(skill_id, problem_type):
-                    data = _build_b4_pascal_triangle_runtime_payload(pascal_triangle_index)
-                elif is_b4_chapter2_phase6c1_deterministic_skill(skill_id):
-                    # Phase 6C-1R: Chap2 P0 deterministic generator path.
-                    # Guard: reject handwriting listing problem types immediately.
-                    if problem_type and is_b4_chapter2_excluded_problem_type(problem_type):
-                        persist_b4_chap2_gated_event(
-                            gated_event_type="reserved_problem_type",
-                            skill_id=str(skill_id),
-                            problem_type_id=str(problem_type),
-                            public_message=B4_CHAP2_RESERVED_PROBLEM_TYPE_PUBLIC_ERROR,
-                        )
-                        return jsonify(
-                            {"error": B4_CHAP2_RESERVED_PROBLEM_TYPE_PUBLIC_ERROR}
-                        ), 422
-                    gen_seed = request.args.get("gen_seed", type=int)
-                    chap2_payload = generate_for_chap2_skill(
-                        skill_id=skill_id,
-                        level=difficulty_level,
-                        seed=gen_seed,
-                        problem_type_id=problem_type or None,
-                    )
-                    # Validate through allowlist gate
-                    ok_p, deny_r = validate_b4_chap2_phase6c1_generator_payload(skill_id, chap2_payload)
-                    if not ok_p:
-                        current_app.logger.error(
-                            "[Chap2 Phase6C1R] payload blocked skill=%s reason=%s", skill_id, deny_r
-                        )
-                        return jsonify(
-                            {"error": _b4_chap2_public_payload_validation_message(deny_r)}
-                        ), 422
-                    data = chap2_payload
-                elif is_b4_chapter3_phase7b_runtime_skill(skill_id):
-                    gen_seed = request.args.get("gen_seed", type=int)
-                    previous_current = get_current() or {}
-                    previous_scenario_id = str(previous_current.get("scenario_id") or "")
-                    previous_question_text = str(previous_current.get("question_text") or "")
-                    previous_parameter_signature = str(previous_current.get("parameter_signature") or "")
-                    previous_scenario_family = str(previous_current.get("scenario_family") or "")
-                    previous_outcome_set_signature = str(previous_current.get("outcome_set_signature") or "")
-                    chap3_payload = generate_for_chap3_skill(
-                        skill_id=skill_id,
-                        level=difficulty_level,
-                        seed=gen_seed,
-                        problem_type_id=problem_type or None,
-                    )
-                    # Chap3 Level-1 global consecutive duplicate guard on default route.
-                    if difficulty_level <= 1 and not str(problem_type or "").strip():
-                        deterministic_mixed_suffixes = {
-                            "StatisticalBasicConcepts",
-                            "SamplingSurvey",
-                            "SamplingMethods",
-                            "DataOrganizationAndCharts",
-                            "StatisticalChartReading",
-                            "CumulativeFrequencyTablesAndGraphs",
-                            "FrequencyDistributionTableConstruction",
-                            "HistogramsAndFrequencyPolygons",
-                            "CentralTendencyMeasures",
-                            "DispersionMeasures",
-                            "WeightedMean",
-                            "VarianceAndStandardDeviation",
-                            "LinearTransformationOfData",
-                            "NormalDistributionAndEmpiricalRule",
-                        }
-                        if any(str(skill_id).endswith(sfx) for sfx in deterministic_mixed_suffixes):
-                            retry_count = 0
-                            retry_limit = 3
-                            open_ended_tokens = ["請", "說明", "理由", "解釋", "作答", "回答", "證明", "計算過程"]
-                            while retry_count < retry_limit:
-                                current_question_text = str(chap3_payload.get("question_text") or "")
-                                current_scenario_id = str(chap3_payload.get("scenario_id") or "")
-                                current_parameter_signature = str(chap3_payload.get("parameter_signature") or "")
-                                current_scenario_family = str(chap3_payload.get("scenario_family") or "")
-                                current_outcome_set_signature = str(chap3_payload.get("outcome_set_signature") or "")
-                                current_pattern_id = str(chap3_payload.get("question_pattern_id") or "")
-                                current_table_hash = str(chap3_payload.get("table_spec_hash") or "")
-                                current_chart_hash = str(chap3_payload.get("chart_spec_hash") or "")
-                                current_visual_hash = str(chap3_payload.get("visual_asset_hash") or "")
-                                previous_pattern_id = str(previous_current.get("question_pattern_id") or "")
-                                previous_table_hash = str(previous_current.get("table_spec_hash") or "")
-                                previous_chart_hash = str(previous_current.get("chart_spec_hash") or "")
-                                previous_visual_hash = str(previous_current.get("visual_asset_hash") or "")
+        # Route determination
+        resolved_route = resolve_generator_route(
+            skill_id=skill_id,
+            loaded_module=mod,
+            existing_route_source=None,
+        )
+        resolved_mode = resolved_route["mode"]
+        resolved_route_source = resolved_route.get("reason", "") # default routing source detail
 
-                                duplicate_hit = (
-                                    (current_question_text and current_question_text == previous_question_text)
-                                    or (current_scenario_id and current_scenario_id == previous_scenario_id)
-                                    or (current_parameter_signature and current_parameter_signature == previous_parameter_signature)
-                                    or (current_scenario_family and current_scenario_family == previous_scenario_family)
-                                    or (
-                                        current_outcome_set_signature
-                                        and current_outcome_set_signature == previous_outcome_set_signature
+        # Handle legacy route separately (strictly no retry loop, single call, only pass level)
+        if resolved_mode == "legacy":
+            # final route log
+            current_app.logger.info(
+                "[GENERATOR ROUTE FINAL]\n"
+                "skill_id=%s\n"
+                "module_file=%s\n"
+                "initial_route_source=%s\n"
+                "resolved_mode=legacy\n"
+                "resolved_route_source=legacy_skill\n"
+                "reason=%s\n"
+                "passed_params=['level']",
+                skill_id,
+                module_file,
+                route_source,
+                resolved_route.get("reason", "")
+            )
+            data = invoke_legacy_generator(
+                mod,
+                skill_id=skill_id,
+                level=difficulty_level,
+            )
+            route_source = "legacy_skill"
+        else:
+            # Modern generator path (includes retry loops)
+            max_retries = 5
+            data = None
+            
+            for attempt in range(max_retries):
+                try:
+                    if _is_b4_tree_diagram_request(skill_id, problem_type):
+                        data = _build_b4_tree_diagram_runtime_payload(variant, tree_diagram_index)
+                    elif _is_b4_pascal_triangle_request(skill_id, problem_type):
+                        data = _build_b4_pascal_triangle_runtime_payload(pascal_triangle_index)
+                    elif is_b4_chapter2_phase6c1_deterministic_skill(skill_id):
+                        if problem_type and is_b4_chapter2_excluded_problem_type(problem_type):
+                            persist_b4_chap2_gated_event(
+                                gated_event_type="reserved_problem_type",
+                                skill_id=str(skill_id),
+                                problem_type_id=str(problem_type),
+                                public_message=B4_CHAP2_RESERVED_PROBLEM_TYPE_PUBLIC_ERROR,
+                            )
+                            return jsonify(
+                                {"error": B4_CHAP2_RESERVED_PROBLEM_TYPE_PUBLIC_ERROR}
+                            ), 422
+                        gen_seed = request.args.get("gen_seed", type=int)
+                        chap2_payload = generate_for_chap2_skill(
+                            skill_id=skill_id,
+                            level=difficulty_level,
+                            seed=gen_seed,
+                            problem_type_id=problem_type or None,
+                        )
+                        ok_p, deny_r = validate_b4_chap2_phase6c1_generator_payload(skill_id, chap2_payload)
+                        if not ok_p:
+                            current_app.logger.error(
+                                "[Chap2 Phase6C1R] payload blocked skill=%s reason=%s", skill_id, deny_r
+                            )
+                            return jsonify(
+                                {"error": _b4_chap2_public_payload_validation_message(deny_r)}
+                            ), 422
+                        data = chap2_payload
+                    elif is_b4_chapter3_phase7b_runtime_skill(skill_id):
+                        gen_seed = request.args.get("gen_seed", type=int)
+                        previous_current = get_current() or {}
+                        previous_scenario_id = str(previous_current.get("scenario_id") or "")
+                        previous_question_text = str(previous_current.get("question_text") or "")
+                        previous_parameter_signature = str(previous_current.get("parameter_signature") or "")
+                        previous_scenario_family = str(previous_current.get("scenario_family") or "")
+                        previous_outcome_set_signature = str(previous_current.get("outcome_set_signature") or "")
+                        chap3_payload = generate_for_chap3_skill(
+                            skill_id=skill_id,
+                            level=difficulty_level,
+                            seed=gen_seed,
+                            problem_type_id=problem_type or None,
+                        )
+                        if difficulty_level <= 1 and not str(problem_type or "").strip():
+                            deterministic_mixed_suffixes = {
+                                "StatisticalBasicConcepts",
+                                "SamplingSurvey",
+                                "SamplingMethods",
+                                "DataOrganizationAndCharts",
+                                "StatisticalChartReading",
+                                "CumulativeFrequencyTablesAndGraphs",
+                                "FrequencyDistributionTableConstruction",
+                                "HistogramsAndFrequencyPolygons",
+                                "CentralTendencyMeasures",
+                                "DispersionMeasures",
+                                "WeightedMean",
+                                "VarianceAndStandardDeviation",
+                                "LinearTransformationOfData",
+                                "NormalDistributionAndEmpiricalRule",
+                            }
+                            if any(str(skill_id).endswith(sfx) for sfx in deterministic_mixed_suffixes):
+                                retry_count = 0
+                                retry_limit = 3
+                                open_ended_tokens = ["請", "說明", "理由", "解釋", "作答", "回答", "證明", "計算過程"]
+                                while retry_count < retry_limit:
+                                    current_question_text = str(chap3_payload.get("question_text") or "")
+                                    current_scenario_id = str(chap3_payload.get("scenario_id") or "")
+                                    current_parameter_signature = str(chap3_payload.get("parameter_signature") or "")
+                                    current_scenario_family = str(chap3_payload.get("scenario_family") or "")
+                                    current_outcome_set_signature = str(chap3_payload.get("outcome_set_signature") or "")
+                                    current_pattern_id = str(chap3_payload.get("question_pattern_id") or "")
+                                    current_table_hash = str(chap3_payload.get("table_spec_hash") or "")
+                                    current_chart_hash = str(chap3_payload.get("chart_spec_hash") or "")
+                                    current_visual_hash = str(chap3_payload.get("visual_asset_hash") or "")
+                                    previous_pattern_id = str(previous_current.get("question_pattern_id") or "")
+                                    previous_table_hash = str(previous_current.get("table_spec_hash") or "")
+                                    previous_chart_hash = str(previous_current.get("chart_spec_hash") or "")
+                                    previous_visual_hash = str(previous_current.get("visual_asset_hash") or "")
+
+                                    duplicate_hit = (
+                                        (current_question_text and current_question_text == previous_question_text)
+                                        or (current_scenario_id and current_scenario_id == previous_scenario_id)
+                                        or (current_parameter_signature and current_parameter_signature == previous_parameter_signature)
+                                        or (current_scenario_family and current_scenario_family == previous_scenario_family)
+                                        or (
+                                            current_outcome_set_signature
+                                            and current_outcome_set_signature == previous_outcome_set_signature
+                                        )
+                                        or (current_pattern_id and current_pattern_id == previous_pattern_id)
+                                        or (current_table_hash and current_table_hash == previous_table_hash)
+                                        or (current_chart_hash and current_chart_hash == previous_chart_hash)
+                                        or (current_visual_hash and current_visual_hash == previous_visual_hash)
                                     )
-                                    or (current_pattern_id and current_pattern_id == previous_pattern_id)
-                                    or (current_table_hash and current_table_hash == previous_table_hash)
-                                    or (current_chart_hash and current_chart_hash == previous_chart_hash)
-                                    or (current_visual_hash and current_visual_hash == previous_visual_hash)
-                                )
-                                open_ended_hit = any(tok in current_question_text for tok in open_ended_tokens)
-                                if not duplicate_hit and not open_ended_hit:
-                                    break
-                                retry_count += 1
-                                retry_seed = (
-                                    (gen_seed + retry_count + 7000)
-                                    if gen_seed is not None
-                                    else random.randint(1, 10_000_000)
-                                )
-                                chap3_payload = generate_for_chap3_skill(
-                                    skill_id=skill_id,
-                                    level=difficulty_level,
-                                    seed=retry_seed,
-                                    problem_type_id=problem_type or None,
-                                )
-
-                            rt = chap3_payload.get("router_trace") or {}
-                            final_question_text = str(chap3_payload.get("question_text") or "")
-                            final_duplicate = (
-                                (final_question_text and final_question_text == previous_question_text)
-                                or (str(chap3_payload.get("scenario_id") or "") and str(chap3_payload.get("scenario_id") or "") == previous_scenario_id)
-                                or (str(chap3_payload.get("parameter_signature") or "") and str(chap3_payload.get("parameter_signature") or "") == previous_parameter_signature)
-                                or (str(chap3_payload.get("scenario_family") or "") and str(chap3_payload.get("scenario_family") or "") == previous_scenario_family)
-                                or (str(chap3_payload.get("outcome_set_signature") or "") and str(chap3_payload.get("outcome_set_signature") or "") == previous_outcome_set_signature)
-                            )
-                            rt["duplicate_guard_attempted"] = True
-                            rt["duplicate_guard_retry_count"] = retry_count
-                            rt["duplicate_guard_fallback_reason"] = (
-                                "retry_limit_reached" if final_duplicate else ""
-                            )
-                            chap3_payload["router_trace"] = rt
-                    ok_p, deny_r = validate_b4_chap3_phase7b_generator_payload(skill_id, chap3_payload)
-                    if not ok_p:
-                        current_app.logger.error(
-                            "[Chap3 Phase7B] payload blocked skill=%s reason=%s", skill_id, deny_r
-                        )
-                        return jsonify(
-                            {"error": _b4_chap3_public_payload_validation_message(deny_r)}
-                        ), 422
-                    data = chap3_payload
-                else:
-                    gen_seed = request.args.get("gen_seed", type=int)
-                    if gen_seed is None:
-                        gen_seed = random.randint(0, 10_000_000)
-
-                    # Determine selection mode: default to curriculum_sequence
-                    p_mode = request.args.get("mode", "").strip()
-                    if not p_mode:
-                        p_mode = "curriculum_sequence"
-
-                    picked_component_id = None
-                    if wrapper_loaded and hasattr(mod, "GENERATOR_KEYS") and p_mode == "curriculum_sequence":
-                        # We use curriculum_sequence mode
-                        from core.gencode.services.v3_curriculum_ordering_service import get_sorted_component_ids_for_skill
-                        raw_conn = db.engine.raw_connection()
-                        try:
-                            sorted_keys = get_sorted_component_ids_for_skill(raw_conn, skill_id, list(mod.GENERATOR_KEYS))
-                        finally:
-                            raw_conn.close()
-
-                        if sorted_keys:
-                            session_key = f"v3_sequence_{skill_id}"
-                            seq_data = session.get(session_key)
-                            if not isinstance(seq_data, dict) or seq_data.get("ordered_component_ids") != sorted_keys:
-                                seq_data = {
-                                    "skill_id": skill_id,
-                                    "current_round": 1,
-                                    "ordered_component_ids": sorted_keys,
-                                    "current_component_index": 0,
-                                    "completed_component_ids": [],
-                                }
-
-                            idx = seq_data.get("current_component_index", 0)
-                            if idx >= len(sorted_keys):
-                                idx = 0
-                                seq_data["current_round"] = seq_data.get("current_round", 1) + 1
-                                seq_data["completed_component_ids"] = []
-
-                            picked_component_id = sorted_keys[idx]
-                            seq_data["current_component_index"] = idx + 1
-                            if picked_component_id not in seq_data["completed_component_ids"]:
-                                seq_data["completed_component_ids"].append(picked_component_id)
-
-                            session[session_key] = seq_data
-                            session.modified = True
-
-                    try:
-                        data = mod.generate(level=difficulty_level, seed=gen_seed, component_id=picked_component_id)
-                    except Exception as generate_exc:
-                        # Mark component as failed in DB if semantic or generation validation fails
-                        from core.gencode.services.component_tracker_service import save_tracker_record
-                        if picked_component_id:
-                            try:
-                                raw_conn = db.engine.raw_connection()
-                                try:
-                                    # Extract textbook_example_id
-                                    eid = int(picked_component_id.split("_")[1])
-                                    save_tracker_record(
-                                        raw_conn,
-                                        textbook_example_id=eid,
+                                    open_ended_hit = any(tok in current_question_text for tok in open_ended_tokens)
+                                    if not duplicate_hit and not open_ended_hit:
+                                        break
+                                    retry_count += 1
+                                    retry_seed = (
+                                        (gen_seed + retry_count + 7000)
+                                        if gen_seed is not None
+                                        else random.randint(1, 10_000_000)
+                                    )
+                                    chap3_payload = generate_for_chap3_skill(
                                         skill_id=skill_id,
-                                        gencode_status="failed",
-                                        gencode_error_log=f"runtime_generation_error: {str(generate_exc)}",
+                                        level=difficulty_level,
+                                        seed=retry_seed,
+                                        problem_type_id=problem_type or None,
                                     )
-                                    raw_conn.commit()
-                                finally:
-                                    raw_conn.close()
-                            except Exception:
-                                pass
-                        raise generate_exc
 
-                    route_source = "gencode_wrapper" if wrapper_loaded else "legacy"
+                                rt = chap3_payload.get("router_trace") or {}
+                                final_question_text = str(chap3_payload.get("question_text") or "")
+                                final_duplicate = (
+                                    (final_question_text and final_question_text == previous_question_text)
+                                    or (str(chap3_payload.get("scenario_id") or "") and str(chap3_payload.get("scenario_id") or "") == previous_scenario_id)
+                                    or (str(chap3_payload.get("parameter_signature") or "") and str(chap3_payload.get("parameter_signature") or "") == previous_parameter_signature)
+                                    or (str(chap3_payload.get("scenario_family") or "") and str(chap3_payload.get("scenario_family") or "") == previous_scenario_family)
+                                    or (str(chap3_payload.get("outcome_set_signature") or "") and str(chap3_payload.get("outcome_set_signature") or "") == previous_outcome_set_signature)
+                                )
+                                rt["duplicate_guard_attempted"] = True
+                                rt["duplicate_guard_retry_count"] = retry_count
+                                rt["duplicate_guard_fallback_reason"] = (
+                                    "retry_limit_reached" if final_duplicate else ""
+                                )
+                                chap3_payload["router_trace"] = rt
+                        ok_p, deny_r = validate_b4_chap3_phase7b_generator_payload(skill_id, chap3_payload)
+                        if not ok_p:
+                            current_app.logger.error(
+                                "[Chap3 Phase7B] payload blocked skill=%s reason=%s", skill_id, deny_r
+                            )
+                            return jsonify(
+                                {"error": _b4_chap3_public_payload_validation_message(deny_r)}
+                            ), 422
+                        data = chap3_payload
+                    else:
+                        gen_seed = request.args.get("gen_seed", type=int)
+                        if gen_seed is None:
+                            gen_seed = random.randint(0, 10_000_000)
 
+                        # Determine selection mode: default to curriculum_sequence
+                        p_mode = request.args.get("mode", "").strip()
+                        if not p_mode:
+                            p_mode = "curriculum_sequence"
 
-                # [?詨?靽格迤] 甈????芸??⊥迤 (撠???皞?
-                if "question" in data and "question_text" not in data:
-                    data["question_text"] = data["question"]
-                if "answer" in data and "correct_answer" not in data:
-                    data["correct_answer"] = data["answer"] # 蝣箔??寞?敺蝑?
+                        picked_component_id = None
+                        if wrapper_loaded and hasattr(mod, "GENERATOR_KEYS") and p_mode == "curriculum_sequence":
+                            from core.gencode.services.v3_curriculum_ordering_service import get_sorted_component_ids_for_skill
+                            raw_conn = db.engine.raw_connection()
+                            try:
+                                sorted_keys = get_sorted_component_ids_for_skill(raw_conn, skill_id, list(mod.GENERATOR_KEYS))
+                            finally:
+                                raw_conn.close()
 
-                if data and "question_text" in data and "correct_answer" in data:
-                    break
-            except Exception as e:
-                current_app.logger.warning(f"憿???岫 ({attempt+1}/{max_retries}): {e}")
-                if attempt == max_retries - 1: raise e
+                            if sorted_keys:
+                                session_key = f"v3_sequence_{skill_id}"
+                                seq_data = session.get(session_key)
+                                if not isinstance(seq_data, dict) or seq_data.get("ordered_component_ids") != sorted_keys:
+                                    seq_data = {
+                                        "skill_id": skill_id,
+                                        "current_round": 1,
+                                        "ordered_component_ids": sorted_keys,
+                                        "current_component_index": 0,
+                                        "completed_component_ids": [],
+                                    }
+
+                                idx = seq_data.get("current_component_index", 0)
+                                if idx >= len(sorted_keys):
+                                    idx = 0
+                                    seq_data["current_round"] = seq_data.get("current_round", 1) + 1
+                                    seq_data["completed_component_ids"] = []
+
+                                picked_component_id = sorted_keys[idx]
+                                seq_data["current_component_index"] = idx + 1
+                                if picked_component_id not in seq_data["completed_component_ids"]:
+                                    seq_data["completed_component_ids"].append(picked_component_id)
+
+                                session[session_key] = seq_data
+                                session.modified = True
+
+                        # final route log for modern
+                        current_app.logger.info(
+                            "[GENERATOR ROUTE FINAL]\n"
+                            "skill_id=%s\n"
+                            "module_file=%s\n"
+                            "initial_route_source=%s\n"
+                            "resolved_mode=modern\n"
+                            "resolved_route_source=gencode_wrapper\n"
+                            "reason=%s\n"
+                            "passed_params=['level','seed','component_id']",
+                            skill_id,
+                            module_file,
+                            route_source,
+                            resolved_route.get("reason", "")
+                        )
+
+                        try:
+                            from core.legacy_generator_adapter import invoke_skill_generate, normalize_runtime_value
+                            data = invoke_skill_generate(
+                                mod,
+                                level=difficulty_level,
+                                seed=gen_seed,
+                                component_id=picked_component_id,
+                                skill_id=skill_id
+                            )
+                            data = normalize_runtime_value(data)
+                        except Exception as generate_exc:
+                            from core.gencode.services.component_tracker_service import save_tracker_record
+                            if picked_component_id:
+                                try:
+                                    raw_conn = db.engine.raw_connection()
+                                    try:
+                                        eid = int(picked_component_id.split("_")[1])
+                                        save_tracker_record(
+                                            raw_conn,
+                                            textbook_example_id=eid,
+                                            skill_id=skill_id,
+                                            gencode_status="failed",
+                                            gencode_error_log=f"runtime_generation_error: {str(generate_exc)}",
+                                        )
+                                        raw_conn.commit()
+                                    finally:
+                                        raw_conn.close()
+                                except Exception:
+                                    pass
+                            raise generate_exc
+
+                        route_source = "gencode_wrapper" if wrapper_loaded else "legacy"
+
+                    # Normalize question fields if needed
+                    if "question" in data and "question_text" not in data:
+                        data["question_text"] = data["question"]
+                    if "answer" in data and "correct_answer" not in data:
+                        data["correct_answer"] = data["answer"]
+
+                    if data and "question_text" in data and "correct_answer" in data:
+                        break
+                except Exception as e:
+                    current_app.logger.warning(f"憿???岫 ({attempt+1}/{max_retries}): {e}")
+                    if attempt == max_retries - 1: raise e
         
         # 皞? Session 鞈?
         data['context_string'] = data.get('context_string', data.get('inequality_string', ''))
@@ -1761,8 +1823,8 @@ def next_question():
             "visual_aids": session_data.get("visual_aids", []),
             "table": session_data.get("table", {}),
             "table_title": session_data.get("table_title", ""),
-            "answer_type": session_data.get("answer_type", skill_info.get("input_type", "text")),
-            "answer_input_type": session_data.get("answer_input_type", session_data.get("answer_type", skill_info.get("input_type", "text"))),
+            "answer_type": session_data.get("answer_type", (skill_info.get("input_type", "text") if isinstance(skill_info, dict) else getattr(skill_info, "input_type", "text"))),
+            "answer_input_type": session_data.get("answer_input_type", session_data.get("answer_type", (skill_info.get("input_type", "text") if isinstance(skill_info, dict) else getattr(skill_info, "input_type", "text")))),
             "question_type": session_data.get("question_type", ""),
             "checker": session_data.get("checker", session_data.get("checker_type", "")),
             "checker_type": session_data.get("checker_type", session_data.get("checker", "")),
@@ -1775,6 +1837,7 @@ def next_question():
             "source": session_data.get("source", route_source),
             "route_source": route_source,
             "question_source": session_data.get("question_source", route_source),
+            "generator_mode": session_data.get("generator_mode"),
             **_v3_runtime_contract_api_fields(session_data),
             "scenario_id": data.get("scenario_id", ""),
             "scenario_family": data.get("scenario_family", ""),
@@ -1807,7 +1870,14 @@ def next_question():
         )
         return jsonify(response_payload)
     except Exception as e:
-        return jsonify({"error": f"??憿憭望?: {str(e)}"}), 500
+        import traceback
+        current_app.logger.error(f"[RUNTIME ERROR] skill_id={skill_id} exception={str(e)}\ntraceback={traceback.format_exc()}")
+        return jsonify({
+            "success": False,
+            "error_code": "GENERATE_EXECUTION_FAILED",
+            "skill_id": skill_id,
+            "message": "題目載入失敗，請通知教師檢查此技能。"
+        }), 500
 
 @practice_bp.route('/check_answer', methods=['POST'])
 def check_answer():
@@ -2391,12 +2461,13 @@ def generate_similar_questions():
     for skill_id in skill_ids:
         try:
             mod = importlib.import_module(f"skills.{skill_id}")
-            if hasattr(mod, 'generate'):
-                new_question = mod.generate(level=1)
-                skill_info = get_skill_info(skill_id)
-                new_question['skill_id'] = skill_id
-                new_question['skill_ch_name'] = skill_info.skill_ch_name if skill_info else "?芰"
-                generated_questions.append(new_question)
+            from core.legacy_generator_adapter import invoke_skill_generate, normalize_runtime_value
+            new_question = invoke_skill_generate(mod, level=1, skill_id=skill_id)
+            new_question = normalize_runtime_value(new_question)
+            skill_info = get_skill_info(skill_id)
+            new_question['skill_id'] = skill_id
+            new_question['skill_ch_name'] = skill_info.skill_ch_name if skill_info else "?芰"
+            generated_questions.append(new_question)
         except: pass
 
     return jsonify({"questions": generated_questions})

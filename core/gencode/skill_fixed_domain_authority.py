@@ -1,4 +1,4 @@
-"""Skill-Fixed Domain Authority — deterministic routing gates for Gencode V3."""
+﻿"""Skill-Fixed Domain Authority — deterministic routing gates for Gencode V3."""
 
 from __future__ import annotations
 
@@ -13,6 +13,11 @@ from core.registry.taxonomy_registry import (
     get_fixed_domain_key,
     get_registry_revision,
     resolve_domain_for_skill,
+)
+from core.gencode.v3_error_codes import (
+    DOMAIN_BINDING_MISSING,
+    DOMAIN_FUNCTION_MISSING,
+    DOMAIN_OPERATION_MISSING,
 )
 
 logger = logging.getLogger(__name__)
@@ -278,3 +283,5 @@ def validate_publish_component_record(
         blockers.append("component_not_verified")
 
     return blockers
+
+

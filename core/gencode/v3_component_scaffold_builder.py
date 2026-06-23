@@ -1,4 +1,4 @@
-"""Build V3 component scaffold source strings without writing to disk."""
+﻿"""Build V3 component scaffold source strings without writing to disk."""
 
 from __future__ import annotations
 
@@ -229,7 +229,7 @@ def _build_generate_py(
     if line_type.startswith("slope_intercept_"):
         constraints = {}
     constraints_literal = repr(constraints if isinstance(constraints, dict) else {})
-    if entrypoint in {"build_coordinate_geometry_matrix", "build_parallel_lines_distance_matrix"}:
+    if entrypoint in {"build_coordinate_geometry_matrix", "build_parallel_lines_distance_matrix", "build_frequency_distribution_table_matrix"}:
         matrix_call = f'''{entrypoint}(
         seed=seed,
         domain_operation="{domain_operation}",
@@ -251,7 +251,7 @@ def _build_generate_py(
 from typing import Any
 
 from {domain_module} import {entrypoint}
-from core.gencode.domain_matrix_adapter import convert_line_equation_matrix_to_question_payload
+from core.gencode.domain_matrix_adapter import convert_domain_matrix_to_question_payload
 
 PRESENTATION_MODE = "{presentation_mode}"
 ANSWER_TYPE = "{answer_type}"
@@ -262,7 +262,7 @@ TEXTBOOK_EXAMPLE_ID = {textbook_example_id}
 def generate(level: int = 1, seed: int | None = None, **kwargs: Any) -> dict[str, Any]:
     matrix = {matrix_call}
     component_id = str(kwargs.get("component_id") or "")
-    payload = convert_line_equation_matrix_to_question_payload(
+    payload = convert_domain_matrix_to_question_payload(
         matrix,
         presentation_mode=PRESENTATION_MODE,
         answer_type=ANSWER_TYPE,
@@ -328,3 +328,5 @@ def _domain_library_entry(domain_meta: dict[str, Any]) -> str:
     if not domain_module or not entrypoint:
         raise ValueError("domain_meta must include domain_module and entrypoint.")
     return f"{domain_module}.{entrypoint}"
+
+

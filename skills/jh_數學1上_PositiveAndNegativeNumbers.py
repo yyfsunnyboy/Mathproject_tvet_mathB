@@ -12,6 +12,11 @@ import random
 import math
 from fractions import Fraction
 from functools import reduce
+import io
+import base64
+import matplotlib
+matplotlib.use("Agg")
+import matplotlib.pyplot as plt
 
 # --- 1. Formatting Helpers ---
 def to_latex(num):

@@ -1,4 +1,4 @@
-"""Read-only V3 skill component coverage helpers."""
+﻿"""Read-only V3 skill component coverage helpers."""
 
 from __future__ import annotations
 
@@ -195,3 +195,4 @@ def build_coverage_warnings(coverage: dict[str, object]) -> list[str]:
             "not all textbook_examples"
         )
     return warnings
+

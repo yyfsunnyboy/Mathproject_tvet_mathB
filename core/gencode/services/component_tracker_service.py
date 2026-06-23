@@ -1,4 +1,4 @@
-"""Gencode component tracker shadow-table service (sqlite3 only)."""
+﻿"""Gencode component tracker shadow-table service (sqlite3 only)."""
 
 from __future__ import annotations
 
@@ -22,6 +22,24 @@ ALLOWED_GENCODE_STATUSES = frozenset(
         "needs_regeneration",
     }
 )
+
+STATUS_FOR_ERROR_CODE = {
+    "DOMAIN_BINDING_MISSING": "failed",
+    "DOMAIN_MODULE_MISSING": "failed",
+    "DOMAIN_OPERATION_MISSING": "failed",
+    "DOMAIN_FUNCTION_MISSING": "failed",
+    "DOMAIN_FUNCTION_EXTENSION_PENDING": "failed",
+    "DOMAIN_FUNCTION_EXTENSION_FAILED": "failed",
+    "DOMAIN_FUNCTION_TEST_FAILED": "failed",
+    "SHADOW_BRIDGE_NOT_EXECUTED": "failed",
+    "SHADOW_BRIDGE_FAILED": "failed",
+    "COMPONENT_GENERATION_FAILED": "failed",
+    "COMPONENT_COMPILE_FAILED": "failed",
+    "COMPONENT_SMOKE_FAILED": "failed",
+    "COMPONENT_VERIFICATION_FAILED": "failed",
+    "PACKAGING_FAILED": "failed",
+    "UNSUPPORTED_TASK_TYPE": "failed",
+}
 
 _TRACKER_COLUMNS = (
     "id",
@@ -81,6 +99,7 @@ def assert_textbook_example_skill(
 
 def _validate_gencode_status(gencode_status: str) -> str:
     status = str(gencode_status or "").strip()
+    status = STATUS_FOR_ERROR_CODE.get(status, status)
     if status not in ALLOWED_GENCODE_STATUSES:
         raise ValueError(f"invalid_gencode_status: {status!r}")
     return status
@@ -223,3 +242,6 @@ def update_status(
     if updated is None:
         raise RuntimeError("tracker_record_update_failed")
     return updated
+
+
+

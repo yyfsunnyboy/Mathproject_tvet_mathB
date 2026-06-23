@@ -1,4 +1,4 @@
-"""Admin-only V3 dry-run action service."""
+﻿"""Admin-only V3 dry-run action service."""
 
 from __future__ import annotations
 
@@ -182,33 +182,21 @@ def _assert_admin_v3_dryrun_skill_allowed(skill_id: str) -> None:
 
 def _classify_dryrun_error(exc: Exception) -> str:
     message = f"{exc.__class__.__name__}:{exc}"
+    code = error_code_from_message(message)
     lowered = message.lower()
+    if code != COMPONENT_GENERATION_FAILED:
+        return code
     if "unsupported_task_type" in lowered:
-        return "unsupported_task_type"
-    if "unsupported_domain" in lowered:
-        return "unsupported_domain"
-    if "unsupported_checker" in lowered:
-        return "unsupported_checker"
-    if "unsupported_answer_contract" in lowered:
-        return "unsupported_answer_contract"
-    if "unsupported_choices_generator" in lowered:
-        return "unsupported_choices_generator"
-    if "presentation" in lowered and ("infer" in lowered or "inference" in lowered):
-        return "presentation_inference_failed"
-    if "choice" in lowered:
-        return "unsupported_choices_generator"
-    if "answer_contract" in lowered or "answer contract" in lowered:
-        return "unsupported_answer_contract"
-    if "checker" in lowered or "check_answer" in lowered:
-        return "unsupported_checker"
-    if "domain" in lowered or "adapter" in lowered:
-        return "unsupported_domain"
+        return UNSUPPORTED_TASK_TYPE
     if "v3_shadow_bridge_not_executed" in lowered or "shadow_bridge" in lowered:
-        return "unsupported_task_type"
-    if "task_type" in lowered or "problem_type" in lowered or "unsupported" in lowered:
-        return "unsupported_task_type"
-    return "failed"
-
+        return SHADOW_BRIDGE_NOT_EXECUTED
+    if "unsupported_domain_operation" in lowered:
+        return DOMAIN_FUNCTION_MISSING
+    if "compile" in lowered or "wrapper" in lowered or "manifest" in lowered:
+        return PACKAGING_FAILED
+    if "validation" in lowered or "integrity" in lowered:
+        return COMPONENT_VERIFICATION_FAILED
+    return COMPONENT_GENERATION_FAILED
 
 def _record_failed_example(
     conn: sqlite3.Connection,
@@ -966,3 +954,4 @@ def run_admin_v3_publish_for_skill(
         "published_evidence": published_evidence,
         "publish": publish_result,
     }
+

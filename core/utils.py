@@ -18,6 +18,60 @@ from models import db, SkillInfo, SkillCurriculum
 from flask import session  # 補上這行
 from sqlalchemy import distinct  # 補上這行
 
+CURRICULUM_DEFINITIONS = [
+    {
+        "key": "junior_high",
+        "label": "國中",
+        "order": 1,
+        "aliases": ["junior_high", "國中", "junior"]
+    },
+    {
+        "key": "general",
+        "label": "普高",
+        "order": 2,
+        "aliases": ["general", "general_high", "senior_high", "普高", "senior"]
+    },
+    {
+        "key": "vocational",
+        "label": "技高",
+        "order": 3,
+        "aliases": ["vocational", "vocational_high", "technical", "技高"]
+    }
+]
+
+def normalize_curriculum(value):
+    """Normalize curriculum value or alias to canonical code."""
+    if not value or value == 'all':
+        return value
+    val_clean = str(value).strip().lower()
+    for item in CURRICULUM_DEFINITIONS:
+        if val_clean == item["key"]:
+            return item["key"]
+        for alias in item["aliases"]:
+            if val_clean == alias.strip().lower():
+                return item["key"]
+    return value
+
+def get_curriculum_label(value):
+    """Get Chinese display label for curriculum key or alias."""
+    norm = normalize_curriculum(value)
+    for item in CURRICULUM_DEFINITIONS:
+        if item["key"] == norm:
+            return item["label"]
+    return value
+
+def get_curriculum_options():
+    """Return curriculum definitions sorted by display order."""
+    return sorted(CURRICULUM_DEFINITIONS, key=lambda x: x["order"])
+
+def get_curriculum_aliases(canonical_value):
+    """Get list of aliases (including the canonical key itself) for a canonical value."""
+    for item in CURRICULUM_DEFINITIONS:
+        if item["key"] == canonical_value:
+            return list(set([item["key"]] + item["aliases"]))
+    return [canonical_value]
+
+
 def get_skill_info(skill_id):
     """從 skills_info 表讀取單一技能資訊"""
     # 使用 ORM 查詢
@@ -265,7 +319,8 @@ def handle_curriculum_filters(request):
     功能：自動處理網址參數、Session 記憶、以及動態選項產生。
     """
     # 1. 取得五層篩選值 (優先順序：網址參數 > Session 記憶 > 預設 'all')
-    f_curr = request.args.get('f_curriculum') or session.get('last_f_curr', 'all')
+    raw_curr = request.args.get('f_curriculum') or session.get('last_f_curr', 'all')
+    f_curr = normalize_curriculum(raw_curr)
     f_grade = request.args.get('f_grade') or session.get('last_f_grade', 'all')
     f_vol = request.args.get('f_volume') or session.get('last_f_vol', 'all')
     f_chap = request.args.get('f_chapter') or session.get('last_f_chap', 'all')
@@ -280,30 +335,38 @@ def handle_curriculum_filters(request):
     # 3. 動態產生下拉選單選項 (五層連動邏輯)
     filters = {}
     
-    # A. 課綱
-    filters['curriculums'] = [r[0] for r in db.session.query(distinct(SkillCurriculum.curriculum)).all()]
+    # A. 課綱 - 使用統一權威定義的順序
+    filters['curriculums'] = [opt['key'] for opt in get_curriculum_options()]
 
     # B. 年級 (依據課綱)
     g_q = db.session.query(distinct(SkillCurriculum.grade)).filter(SkillCurriculum.grade != None)
-    if f_curr != 'all': g_q = g_q.filter(SkillCurriculum.curriculum == f_curr)
+    if f_curr != 'all':
+        aliases = get_curriculum_aliases(f_curr)
+        g_q = g_q.filter(SkillCurriculum.curriculum.in_(aliases))
     filters['grades'] = sorted([r[0] for r in g_q.all()])
 
     # C. 冊別 (依據課綱+年級)
     v_q = db.session.query(distinct(SkillCurriculum.volume))
-    if f_curr != 'all': v_q = v_q.filter(SkillCurriculum.curriculum == f_curr)
+    if f_curr != 'all':
+        aliases = get_curriculum_aliases(f_curr)
+        v_q = v_q.filter(SkillCurriculum.curriculum.in_(aliases))
     if f_grade != 'all' and str(f_grade).isdigit(): v_q = v_q.filter(SkillCurriculum.grade == int(f_grade))
     filters['volumes'] = [r[0] for r in v_q.all()]
 
     # D. 章節 (依據前三層)
     c_q = db.session.query(distinct(SkillCurriculum.chapter))
-    if f_curr != 'all': c_q = c_q.filter(SkillCurriculum.curriculum == f_curr)
+    if f_curr != 'all':
+        aliases = get_curriculum_aliases(f_curr)
+        c_q = c_q.filter(SkillCurriculum.curriculum.in_(aliases))
     if f_grade != 'all' and str(f_grade).isdigit(): c_q = c_q.filter(SkillCurriculum.grade == int(f_grade))
     if f_vol != 'all': c_q = c_q.filter(SkillCurriculum.volume == f_vol)
     filters['chapters'] = [r[0] for r in c_q.all()]
 
     # E. 節 (依據前四層)
     s_q = db.session.query(distinct(SkillCurriculum.section))
-    if f_curr != 'all': s_q = s_q.filter(SkillCurriculum.curriculum == f_curr)
+    if f_curr != 'all':
+        aliases = get_curriculum_aliases(f_curr)
+        s_q = s_q.filter(SkillCurriculum.curriculum.in_(aliases))
     if f_grade != 'all' and str(f_grade).isdigit(): s_q = s_q.filter(SkillCurriculum.grade == int(f_grade))
     if f_vol != 'all': s_q = s_q.filter(SkillCurriculum.volume == f_vol)
     if f_chap != 'all': s_q = s_q.filter(SkillCurriculum.chapter == f_chap)
@@ -313,9 +376,11 @@ def handle_curriculum_filters(request):
     filters['chapter_labels'] = {}
     if f_curr == 'vocational' and f_vol != 'all' and 'B' in str(f_vol):
         for ch in filters['chapters']:
-            # 取得各章節代表性的小節資訊，用於顯示
-            rep = SkillCurriculum.query.filter_by(
-                curriculum=f_curr, volume=f_vol, chapter=ch
+            aliases = get_curriculum_aliases(f_curr)
+            rep = SkillCurriculum.query.filter(
+                SkillCurriculum.curriculum.in_(aliases),
+                SkillCurriculum.volume == f_vol,
+                SkillCurriculum.chapter == ch
             ).order_by(SkillCurriculum.display_order).first()
             filters['chapter_labels'][ch] = format_vocational_b_section_display(ch, rep.section if rep else "")
 
