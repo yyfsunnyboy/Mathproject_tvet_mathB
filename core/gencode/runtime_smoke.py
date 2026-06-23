@@ -209,7 +209,8 @@ def _validate_runtime_payload(payload: dict[str, Any], skill_id: str) -> tuple[l
     
     # 1. Detect if it is an algebraic expression / relation (e.g. contains variables like x, y, t)
     is_expression_rel = False
-    if re.search(r"[xytXYT]", norm_str) and re.match(r"^[0-9a-zA-Z+\-*/^=()\\{}_,\s\.]+$", norm_str):
+    symbol_probe = re.sub(r"(?i)sqrt", "", norm_str)
+    if re.search(r"[xytXYT]", symbol_probe) and re.match(r"^[0-9a-zA-Z+\-*/^=()\\{}_,\s\.]+$", norm_str):
         is_expression_rel = True
         
     # 2. Detect if it is multiple choice / single choice

@@ -1,0 +1,54 @@
+{
+  "skill_id": "vh_數學B1_DistanceBetweenTwoParallelLines",
+  "phase": "phase2_build",
+  "final_status": "BUILD_FAIL",
+  "build_mode": "audit_blocked",
+  "input_phase1_report": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_DistanceBetweenTwoParallelLines_phase1_audit.json",
+  "blocking_reasons": [
+    "missing_phase1_report"
+  ],
+  "warnings": [],
+  "artifact_paths": {
+    "phase2_json": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_DistanceBetweenTwoParallelLines_phase2_build.json",
+    "phase2_md": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_DistanceBetweenTwoParallelLines_phase2_build.md"
+  },
+  "timestamp": "2026-06-23T01:42:05.310620+00:00",
+  "preflight_status": "FAIL",
+  "build_execution_status": "FAILED",
+  "build_dependency_plan": {},
+  "candidate_discovery_summary": {
+    "discovered_candidates": [],
+    "missing_candidate_files": [],
+    "unsupported_candidate_problem_types": [],
+    "verified_candidates": [],
+    "failed_candidates": [],
+    "candidate_failure_reasons": {},
+    "sample_count": 0
+  },
+  "build_execution_summary": {
+    "execution_attempted": false,
+    "execution_status": "SKIPPED",
+    "verified_problem_types": [],
+    "failed_problem_types": [],
+    "pending_problem_types": [],
+    "failure_reasons": []
+  },
+  "build_gap_summary": {
+    "has_build_gaps": false,
+    "gap_types": [],
+    "problem_type_gaps": {}
+  },
+  "repair_plan": {
+    "recommended_next_action": "phase2_ready",
+    "steps": []
+  },
+  "repair_plan_status": "FAILED",
+  "next_action": {
+    "next_action_type": "human_review",
+    "gap": "",
+    "command": "",
+    "reason": "Unable to determine next action from build_dependency_plan.",
+    "should_run_phase3": false,
+    "requires_human_review": true
+  }
+}

@@ -15,9 +15,19 @@
       },
       "stem_contract": {
         "stem_must_not_embed_choices": true,
-        "allowed_math_objects": ["point", "quadrant"],
-        "required_math_objects": ["point"],
-        "forbidden_patterns": ["\\(A\\)", "\\(B\\)", "\\(C\\)", "\\(D\\)"]
+        "allowed_math_objects": [
+          "point",
+          "quadrant"
+        ],
+        "required_math_objects": [
+          "point"
+        ],
+        "forbidden_patterns": [
+          "\\(A\\)",
+          "\\(B\\)",
+          "\\(C\\)",
+          "\\(D\\)"
+        ]
       },
       "dependency_contract": {
         "givens_must_be_used": true,
@@ -25,19 +35,39 @@
         "variables_in_conditions_must_appear_in_target": false
       },
       "semantic_contract": {
-        "reasoning_type": ["sign_reasoning", "quadrant_mapping"],
-        "reject_if": ["ambiguous_answer"]
+        "reasoning_type": [
+          "sign_reasoning",
+          "quadrant_mapping"
+        ],
+        "reject_if": [
+          "ambiguous_answer"
+        ]
       },
       "generator_contract": {
-        "parameter_ranges": {"x": [-9, 9], "y": [-9, 9]},
-        "template_slots": {"stem": "point_quadrant"},
+        "parameter_ranges": {
+          "x": [
+            -9,
+            9
+          ],
+          "y": [
+            -9,
+            9
+          ]
+        },
+        "template_slots": {
+          "stem": "point_quadrant"
+        },
         "derivation_steps_required": true,
         "use_domain_functions": false,
         "avoid_llm_freeform_math": true
       },
       "validator_contract": {
-        "static_checks": ["question_answer_consistency"],
-        "semantic_checks": ["givens_to_target_dependency"],
+        "static_checks": [
+          "question_answer_consistency"
+        ],
+        "semantic_checks": [
+          "givens_to_target_dependency"
+        ],
         "runtime_smoke_count": 30
       }
     },
@@ -55,9 +85,19 @@
       },
       "stem_contract": {
         "stem_must_not_embed_choices": true,
-        "allowed_math_objects": ["point", "quadrant"],
-        "required_math_objects": ["point"],
-        "forbidden_patterns": ["\\(A\\)", "\\(B\\)", "\\(C\\)", "\\(D\\)"]
+        "allowed_math_objects": [
+          "point",
+          "quadrant"
+        ],
+        "required_math_objects": [
+          "point"
+        ],
+        "forbidden_patterns": [
+          "\\(A\\)",
+          "\\(B\\)",
+          "\\(C\\)",
+          "\\(D\\)"
+        ]
       },
       "dependency_contract": {
         "givens_must_be_used": true,
@@ -65,19 +105,42 @@
         "variables_in_conditions_must_appear_in_target": false
       },
       "semantic_contract": {
-        "reasoning_type": ["sign_reasoning", "quadrant_mapping"],
-        "reject_if": ["multiple_correct_choices_when_single_choice", "no_correct_choice", "ambiguous_answer"]
+        "reasoning_type": [
+          "sign_reasoning",
+          "quadrant_mapping"
+        ],
+        "reject_if": [
+          "multiple_correct_choices_when_single_choice",
+          "no_correct_choice",
+          "ambiguous_answer"
+        ]
       },
       "generator_contract": {
-        "parameter_ranges": {"x": [-9, 9], "y": [-9, 9]},
-        "template_slots": {"stem": "point_quadrant_choice"},
+        "parameter_ranges": {
+          "x": [
+            -9,
+            9
+          ],
+          "y": [
+            -9,
+            9
+          ]
+        },
+        "template_slots": {
+          "stem": "point_quadrant_choice"
+        },
         "derivation_steps_required": true,
         "use_domain_functions": false,
         "avoid_llm_freeform_math": true
       },
       "validator_contract": {
-        "static_checks": ["choice_uniqueness", "answer_alignment"],
-        "semantic_checks": ["givens_to_target_dependency"],
+        "static_checks": [
+          "choice_uniqueness",
+          "answer_alignment"
+        ],
+        "semantic_checks": [
+          "givens_to_target_dependency"
+        ],
         "runtime_smoke_count": 30
       }
     },
@@ -95,9 +158,19 @@
       },
       "stem_contract": {
         "stem_must_not_embed_choices": true,
-        "allowed_math_objects": ["symbolic_condition", "quadrant"],
-        "required_math_objects": ["symbolic_condition"],
-        "forbidden_patterns": ["\\(A\\)", "\\(B\\)", "\\(C\\)", "\\(D\\)"]
+        "allowed_math_objects": [
+          "symbolic_condition",
+          "quadrant"
+        ],
+        "required_math_objects": [
+          "symbolic_condition"
+        ],
+        "forbidden_patterns": [
+          "\\(A\\)",
+          "\\(B\\)",
+          "\\(C\\)",
+          "\\(D\\)"
+        ]
       },
       "dependency_contract": {
         "givens_must_be_used": true,
@@ -105,19 +178,40 @@
         "variables_in_conditions_must_appear_in_target": true
       },
       "semantic_contract": {
-        "reasoning_type": ["symbol_sign_reasoning", "quadrant_mapping"],
-        "reject_if": ["ambiguous_answer", "condition_unused_by_target"]
+        "reasoning_type": [
+          "symbol_sign_reasoning",
+          "quadrant_mapping"
+        ],
+        "reject_if": [
+          "ambiguous_answer",
+          "condition_unused_by_target"
+        ]
       },
       "generator_contract": {
-        "parameter_ranges": {"a": [-9, -1], "b": [-9, -1]},
-        "template_slots": {"stem": "symbolic_quadrant"},
+        "parameter_ranges": {
+          "a": [
+            -9,
+            -1
+          ],
+          "b": [
+            -9,
+            -1
+          ]
+        },
+        "template_slots": {
+          "stem": "symbolic_quadrant"
+        },
         "derivation_steps_required": true,
         "use_domain_functions": false,
         "avoid_llm_freeform_math": true
       },
       "validator_contract": {
-        "static_checks": ["symbolic_target_alignment"],
-        "semantic_checks": ["condition_usage_check"],
+        "static_checks": [
+          "symbolic_target_alignment"
+        ],
+        "semantic_checks": [
+          "condition_usage_check"
+        ],
         "runtime_smoke_count": 30
       }
     },
@@ -135,9 +229,19 @@
       },
       "stem_contract": {
         "stem_must_not_embed_choices": true,
-        "allowed_math_objects": ["symbolic_condition", "quadrant"],
-        "required_math_objects": ["symbolic_condition"],
-        "forbidden_patterns": ["\\(A\\)", "\\(B\\)", "\\(C\\)", "\\(D\\)"]
+        "allowed_math_objects": [
+          "symbolic_condition",
+          "quadrant"
+        ],
+        "required_math_objects": [
+          "symbolic_condition"
+        ],
+        "forbidden_patterns": [
+          "\\(A\\)",
+          "\\(B\\)",
+          "\\(C\\)",
+          "\\(D\\)"
+        ]
       },
       "dependency_contract": {
         "givens_must_be_used": true,
@@ -145,19 +249,42 @@
         "variables_in_conditions_must_appear_in_target": true
       },
       "semantic_contract": {
-        "reasoning_type": ["symbol_sign_reasoning", "quadrant_mapping"],
-        "reject_if": ["multiple_correct_choices_when_single_choice", "no_correct_choice", "ambiguous_answer"]
+        "reasoning_type": [
+          "symbol_sign_reasoning",
+          "quadrant_mapping"
+        ],
+        "reject_if": [
+          "multiple_correct_choices_when_single_choice",
+          "no_correct_choice",
+          "ambiguous_answer"
+        ]
       },
       "generator_contract": {
-        "parameter_ranges": {"a": [-9, -1], "b": [-9, -1]},
-        "template_slots": {"stem": "symbolic_quadrant_choice"},
+        "parameter_ranges": {
+          "a": [
+            -9,
+            -1
+          ],
+          "b": [
+            -9,
+            -1
+          ]
+        },
+        "template_slots": {
+          "stem": "symbolic_quadrant_choice"
+        },
         "derivation_steps_required": true,
         "use_domain_functions": false,
         "avoid_llm_freeform_math": true
       },
       "validator_contract": {
-        "static_checks": ["choice_uniqueness", "answer_alignment"],
-        "semantic_checks": ["condition_usage_check"],
+        "static_checks": [
+          "choice_uniqueness",
+          "answer_alignment"
+        ],
+        "semantic_checks": [
+          "condition_usage_check"
+        ],
         "runtime_smoke_count": 30
       }
     },
@@ -175,9 +302,20 @@
       },
       "stem_contract": {
         "stem_must_not_embed_choices": true,
-        "allowed_math_objects": ["point", "distance_to_axis"],
-        "required_math_objects": ["point", "distance_to_axis"],
-        "forbidden_patterns": ["\\(A\\)", "\\(B\\)", "\\(C\\)", "\\(D\\)"]
+        "allowed_math_objects": [
+          "point",
+          "distance_to_axis"
+        ],
+        "required_math_objects": [
+          "point",
+          "distance_to_axis"
+        ],
+        "forbidden_patterns": [
+          "\\(A\\)",
+          "\\(B\\)",
+          "\\(C\\)",
+          "\\(D\\)"
+        ]
       },
       "dependency_contract": {
         "givens_must_be_used": true,
@@ -185,19 +323,40 @@
         "variables_in_conditions_must_appear_in_target": false
       },
       "semantic_contract": {
-        "reasoning_type": ["distance_to_axis_reasoning"],
-        "reject_if": ["multiple_correct_choices_when_single_choice", "no_correct_choice"]
+        "reasoning_type": [
+          "distance_to_axis_reasoning"
+        ],
+        "reject_if": [
+          "multiple_correct_choices_when_single_choice",
+          "no_correct_choice"
+        ]
       },
       "generator_contract": {
-        "parameter_ranges": {"x": [-9, 9], "y": [-9, 9]},
-        "template_slots": {"stem": "axis_distance_choice"},
+        "parameter_ranges": {
+          "x": [
+            -9,
+            9
+          ],
+          "y": [
+            -9,
+            9
+          ]
+        },
+        "template_slots": {
+          "stem": "axis_distance_choice"
+        },
         "derivation_steps_required": true,
         "use_domain_functions": false,
         "avoid_llm_freeform_math": true
       },
       "validator_contract": {
-        "static_checks": ["choice_uniqueness", "answer_alignment"],
-        "semantic_checks": ["givens_to_target_dependency"],
+        "static_checks": [
+          "choice_uniqueness",
+          "answer_alignment"
+        ],
+        "semantic_checks": [
+          "givens_to_target_dependency"
+        ],
         "runtime_smoke_count": 30
       }
     },
@@ -215,9 +374,19 @@
       },
       "stem_contract": {
         "stem_must_not_embed_choices": true,
-        "allowed_math_objects": ["symbolic_condition", "quadrant_statement"],
-        "required_math_objects": ["symbolic_condition"],
-        "forbidden_patterns": ["\\(A\\)", "\\(B\\)", "\\(C\\)", "\\(D\\)"]
+        "allowed_math_objects": [
+          "symbolic_condition",
+          "quadrant_statement"
+        ],
+        "required_math_objects": [
+          "symbolic_condition"
+        ],
+        "forbidden_patterns": [
+          "\\(A\\)",
+          "\\(B\\)",
+          "\\(C\\)",
+          "\\(D\\)"
+        ]
       },
       "dependency_contract": {
         "givens_must_be_used": true,
@@ -225,19 +394,283 @@
         "variables_in_conditions_must_appear_in_target": true
       },
       "semantic_contract": {
-        "reasoning_type": ["statement_truth_reasoning", "quadrant_mapping"],
-        "reject_if": ["multiple_correct_choices_when_single_choice", "no_correct_choice", "ambiguous_answer"]
+        "reasoning_type": [
+          "statement_truth_reasoning",
+          "quadrant_mapping"
+        ],
+        "reject_if": [
+          "multiple_correct_choices_when_single_choice",
+          "no_correct_choice",
+          "ambiguous_answer"
+        ]
       },
       "generator_contract": {
-        "parameter_ranges": {"a": [-9, -1], "b": [-9, -1]},
-        "template_slots": {"stem": "symbolic_quadrant_statement_choice"},
+        "parameter_ranges": {
+          "a": [
+            -9,
+            -1
+          ],
+          "b": [
+            -9,
+            -1
+          ]
+        },
+        "template_slots": {
+          "stem": "symbolic_quadrant_statement_choice"
+        },
         "derivation_steps_required": true,
         "use_domain_functions": false,
         "avoid_llm_freeform_math": true
       },
       "validator_contract": {
-        "static_checks": ["choice_uniqueness", "answer_alignment"],
-        "semantic_checks": ["condition_usage_check"],
+        "static_checks": [
+          "choice_uniqueness",
+          "answer_alignment"
+        ],
+        "semantic_checks": [
+          "condition_usage_check"
+        ],
+        "runtime_smoke_count": 30
+      }
+    },
+    {
+      "problem_type_id": "distance_between_parallel_lines",
+      "skill_id": "vh_數學B1_DistanceBetweenTwoParallelLines",
+      "display_name": "distance between two parallel lines",
+      "answer_contract": {
+        "answer_type": "numeric_or_radical",
+        "choices_required": false,
+        "answer_equivalence": "radical_equivalence",
+        "checker": "expression_equivalence_checker",
+        "checker_key": "expression_equivalence_checker",
+        "frontend_render_choices": false
+      },
+      "stem_contract": {
+        "stem_must_not_embed_choices": true,
+        "allowed_math_objects": [
+          "parallel_lines",
+          "distance"
+        ],
+        "required_math_objects": [
+          "parallel_lines"
+        ],
+        "forbidden_patterns": [
+          "sqrt\\("
+        ]
+      },
+      "dependency_contract": {
+        "givens_must_be_used": true,
+        "target_answer_must_depend_on_givens": true,
+        "variables_in_conditions_must_appear_in_target": false
+      },
+      "semantic_contract": {
+        "reasoning_type": [
+          "parallel_line_normalization",
+          "distance_formula"
+        ],
+        "reject_if": [
+          "ambiguous_answer"
+        ]
+      },
+      "generator_contract": {
+        "template_slots": {
+          "stem": "distance_between_parallel_lines"
+        },
+        "derivation_steps_required": true,
+        "use_domain_functions": true,
+        "avoid_llm_freeform_math": true
+      },
+      "validator_contract": {
+        "static_checks": [
+          "question_answer_consistency"
+        ],
+        "semantic_checks": [
+          "givens_to_target_dependency"
+        ],
+        "runtime_smoke_count": 30
+      }
+    },
+    {
+      "problem_type_id": "solve_parameter_from_parallel_distance",
+      "skill_id": "vh_數學B1_DistanceBetweenTwoParallelLines",
+      "display_name": "solve parameter from parallel-line distance",
+      "answer_contract": {
+        "answer_type": "numeric_or_radical",
+        "choices_required": false,
+        "answer_equivalence": "radical_equivalence",
+        "checker": "expression_equivalence_checker",
+        "checker_key": "expression_equivalence_checker",
+        "frontend_render_choices": false
+      },
+      "stem_contract": {
+        "stem_must_not_embed_choices": true,
+        "allowed_math_objects": [
+          "parallel_lines",
+          "parameter",
+          "distance"
+        ],
+        "required_math_objects": [
+          "parallel_lines",
+          "parameter_condition"
+        ],
+        "forbidden_patterns": [
+          "sqrt\\("
+        ]
+      },
+      "dependency_contract": {
+        "givens_must_be_used": true,
+        "target_answer_must_depend_on_givens": true,
+        "variables_in_conditions_must_appear_in_target": true
+      },
+      "semantic_contract": {
+        "reasoning_type": [
+          "absolute_value_equation",
+          "parallel_line_normalization"
+        ],
+        "reject_if": [
+          "ambiguous_answer",
+          "condition_unused_by_target"
+        ]
+      },
+      "generator_contract": {
+        "template_slots": {
+          "stem": "solve_parameter_from_parallel_distance"
+        },
+        "derivation_steps_required": true,
+        "use_domain_functions": true,
+        "avoid_llm_freeform_math": true
+      },
+      "validator_contract": {
+        "static_checks": [
+          "question_answer_consistency"
+        ],
+        "semantic_checks": [
+          "givens_to_target_dependency"
+        ],
+        "runtime_smoke_count": 30
+      }
+    },
+    {
+      "problem_type_id": "area_using_parallel_distance",
+      "skill_id": "vh_數學B1_DistanceBetweenTwoParallelLines",
+      "display_name": "triangle area using distance to parallel line",
+      "answer_contract": {
+        "answer_type": "numeric_or_radical",
+        "choices_required": false,
+        "answer_equivalence": "radical_equivalence",
+        "checker": "expression_equivalence_checker",
+        "checker_key": "expression_equivalence_checker",
+        "frontend_render_choices": false
+      },
+      "stem_contract": {
+        "stem_must_not_embed_choices": true,
+        "allowed_math_objects": [
+          "line",
+          "point",
+          "triangle_area"
+        ],
+        "required_math_objects": [
+          "line",
+          "point"
+        ],
+        "forbidden_patterns": [
+          "sqrt\\("
+        ]
+      },
+      "dependency_contract": {
+        "givens_must_be_used": true,
+        "target_answer_must_depend_on_givens": true,
+        "variables_in_conditions_must_appear_in_target": false
+      },
+      "semantic_contract": {
+        "reasoning_type": [
+          "point_line_distance",
+          "triangle_area"
+        ],
+        "reject_if": [
+          "ambiguous_answer"
+        ]
+      },
+      "generator_contract": {
+        "template_slots": {
+          "stem": "area_using_parallel_distance"
+        },
+        "derivation_steps_required": true,
+        "use_domain_functions": true,
+        "avoid_llm_freeform_math": true
+      },
+      "validator_contract": {
+        "static_checks": [
+          "question_answer_consistency"
+        ],
+        "semantic_checks": [
+          "givens_to_target_dependency"
+        ],
+        "runtime_smoke_count": 30
+      }
+    },
+    {
+      "problem_type_id": "parallel_lines_distance_single_choice",
+      "skill_id": "vh_數學B1_DistanceBetweenTwoParallelLines",
+      "display_name": "parallel-line distance parameter single choice",
+      "answer_contract": {
+        "answer_type": "single_choice",
+        "choices_required": true,
+        "choice_count": 4,
+        "correct_choice_count": 1,
+        "answer_equivalence": "choice_label",
+        "checker": "choice_label_checker",
+        "checker_key": "choice_label_checker",
+        "frontend_render_choices": true
+      },
+      "stem_contract": {
+        "stem_must_not_embed_choices": true,
+        "allowed_math_objects": [
+          "line",
+          "slope",
+          "distance",
+          "choice"
+        ],
+        "required_math_objects": [
+          "line",
+          "slope",
+          "distance"
+        ],
+        "forbidden_patterns": [
+          "sqrt\\("
+        ]
+      },
+      "dependency_contract": {
+        "givens_must_be_used": true,
+        "target_answer_must_depend_on_givens": true,
+        "variables_in_conditions_must_appear_in_target": true
+      },
+      "semantic_contract": {
+        "reasoning_type": [
+          "distance_formula",
+          "choice_elimination"
+        ],
+        "reject_if": [
+          "multiple_correct_choices_when_single_choice",
+          "no_correct_choice",
+          "ambiguous_answer"
+        ]
+      },
+      "generator_contract": {
+        "template_slots": {
+          "stem": "parallel_lines_distance_single_choice"
+        },
+        "derivation_steps_required": true,
+        "use_domain_functions": true,
+        "avoid_llm_freeform_math": true
+      },
+      "validator_contract": {
+        "static_checks": [
+          "question_answer_consistency"
+        ],
+        "semantic_checks": [
+          "givens_to_target_dependency"
+        ],
         "runtime_smoke_count": 30
       }
     }

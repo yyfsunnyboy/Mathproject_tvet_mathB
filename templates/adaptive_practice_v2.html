@@ -638,7 +638,7 @@
               <button class="tool-btn" id="clearCanvasBtn" type="button" title="清空白板" aria-label="清空白板">
                 <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="m19 6-1 14H6L5 6"/></svg>
               </button>
-              <button class="warning" id="analyzeCanvasBtn" type="button">AI 檢查手寫</button>
+              <button class="warning" id="analyzeCanvasBtn" type="button">AI 檢查</button>
             </div>
             <div class="canvas-wrap"><canvas id="handwriting-canvas"></canvas></div>
           </section>
@@ -1922,23 +1922,30 @@
     }
     function summarizeHandwritingResult(data) {
       const messages = [];
-      if (data && data.correct === true) {
-        messages.push("我看過你的手寫內容了，這一題的計算方向大致正確。");
-      } else if (data && data.is_process_correct === true) {
+      const mode = String(data?.mode || "").trim();
+      if (typeof data?.feedback === "string" && data.feedback.trim()) {
+        messages.push(data.feedback.trim());
+      } else if (data && (data.is_correct === true || data.correct === true)) {
+        messages.push("答對了。");
+      } else if (mode === "process_only") {
+        messages.push("目前過程到這裡是正確的，但尚未寫出最後答案。");
+      } else if (data && (data.process_correct === true || data.is_process_correct === true)) {
         messages.push("你的步驟方向大致正確，再檢查最後一個計算有沒有算準。");
       } else {
-        messages.push("我看過你的手寫內容了，這一題先不要急著往下算。");
+        messages.push("目前無法清楚辨識，請重新書寫。");
       }
 
-      if (Array.isArray(data?.focus_points) && data.focus_points.length) {
+      if (Array.isArray(data?.recognized_steps) && data.recognized_steps.length) {
+        messages.push(`我辨識到：${data.recognized_steps.slice(0, 4).join("；")}。`);
+      } else if (data?.recognized_answer) {
+        messages.push(`我辨識到的答案：${data.recognized_answer}`);
+      } else if (Array.isArray(data?.focus_points) && data.focus_points.length) {
         messages.push(`先特別檢查：${data.focus_points.join("、")}。`);
       } else if (Array.isArray(data?.subskill_labels) && data.subskill_labels.length) {
         const cleanLabels = normalizeSubskillLabels(data.subskill_labels);
         if (cleanLabels.length) {
           messages.push(`先特別檢查：${cleanLabels.join("、")}。`);
         }
-      } else {
-        messages.push("先檢查你有沒有看清楚數字、符號和運算順序。");
       }
 
       if (typeof data?.reply === "string" && data.reply.trim()) {
@@ -2173,29 +2180,27 @@
       if (!state.currentQuestionText) { setStatus("請先開始診斷，再進行手寫檢查。"); return; }
       try {
         if (isCanvasBlank()) {
-          setStatus("白板目前是空白的，請先寫下解題步驟再送出 AI 檢查。");
-          await addMessage("bot", "我目前看不到你的手寫步驟，請先在白板寫一點內容後再檢查。");
+          setStatus("目前無法清楚辨識，請重新書寫。");
+          await addMessage("bot", "目前無法清楚辨識，請重新書寫。");
           return;
         }
         const imageDataUrl = canvas.toDataURL("image/png");
-        console.log("handwriting image length =", imageDataUrl.length);
-        console.log("handwriting prefix =", imageDataUrl.slice(0, 80));
-        await addMessage("user", "請幫我檢查我白板上的手寫步驟。");
+        await addMessage("user", "AI 檢查");
         const thinking = await addMessage("bot", "正在分析你的手寫內容...");
-        const response = await fetch("/analyze_handwriting", {
+        analyzeCanvasBtn.disabled = true;
+        const response = await fetch("/api/practice/ai-check-handwriting", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             image_data_url: imageDataUrl,
             image_base64: imageDataUrl,
-            handwriting_image: imageDataUrl,
-            scratchpad_image: imageDataUrl,
             session_id: state.sessionId,
+            question_uid: state.currentQuestionUid,
+            skill_id: state.mainSkill || skillId,
             question_text: state.currentQuestionText,
-            question_context: state.currentContext,
-            family_id: state.currentFamilyId,
-            subskill_nodes: state.currentSubskills,
-            expected_answer: state.expectedAnswer,
+            problem_type_id: state.currentProblemTypeId,
+            presentation_mode: state.currentPresentationMode,
+            answer_type: state.currentAnswerType,
           })
         });
         const rawText = await response.text();
@@ -2221,22 +2226,31 @@
         }
         setMessageContent(thinking, summarizeHandwritingResult(data));
         await typesetMath(thinking);
-        if (data && data.correct === true) {
-          await handleCorrectAnswer(async () => {
-            const nextData = await postAdaptive({
+        if (data && data.should_record_attempt === true) {
+          const submitAttempt = async () => {
+            const adaptivePayload = {
               ...basePayload,
               session_id: state.sessionId,
               step_number: state.stepNumber,
-              user_answer: "[handwriting-correct]",
-              is_correct: true
-            });
+              user_answer: data.recognized_answer || "[handwriting]",
+              is_correct: data.is_correct === true,
+              answer_feedback: data.feedback || "",
+            };
+            const nextData = await postAdaptive(adaptivePayload);
             resetChatHistory();
             await applyAdaptiveResponse(nextData);
-          });
+          };
+          if (data.is_correct === true) {
+            await handleCorrectAnswer(submitAttempt);
+          } else {
+            await submitAttempt();
+          }
         }
       } catch (err) {
         console.error("analyzeHandwriting failed:", err);
-        await addMessage("bot", "目前無法分析手寫內容，你可以先看右側補救提示，再檢查你的第一步。");
+        await addMessage("bot", "目前無法清楚辨識，請重新書寫。");
+      } finally {
+        analyzeCanvasBtn.disabled = false;
       }
     }
 
@@ -2300,6 +2314,10 @@
       state.remediationFamily = responseRemediationFamily;
       state.familyNameEn = String((response.new_question_data || {}).family_name || "");
       state.currentQuestionText = q.question_text || q.new_question_text || q.question || "";
+      state.currentQuestionUid = String(q.question_uid || response.question_uid || "");
+      state.currentProblemTypeId = String(q.problem_type_id || response.problem_type_id || "");
+      state.currentPresentationMode = String(q.presentation_mode || "");
+      state.currentAnswerType = String(q.answer_type || "");
       state.currentContext = q.context_string || "";
       state.expectedAnswer = String(q.correct_answer || q.answer || q.expected_answer || response.correct_answer || "");
       state.currentSubskills = response.target_subskills || [];

@@ -8,6 +8,10 @@ from flask import jsonify, request, session, current_app
 from flask_login import current_user, login_required
 
 from core.adaptive.judge import judge_answer_with_feedback
+from core.handwriting_ai_check import (
+    HandwritingCheckContext,
+    build_handwriting_check_response,
+)
 from . import practice_bp
 from core.adaptive.session_engine import get_rag_hint, submit_and_get_next
 from core.vocational_math_b4.adaptive.b4_chapter1_deterministic_allowlist import (
@@ -81,6 +85,101 @@ def _to_int(value: object, default: int = 0) -> int:
         return int(value)
     except Exception:
         return int(default)
+
+
+def _runtime_for_ai_handwriting(payload: dict[str, object]) -> dict[str, object]:
+    runtime_store = _adaptive_runtime_store()
+    session_id = str(payload.get("session_id") or "").strip()
+    if session_id and isinstance(runtime_store.get(session_id), dict):
+        return dict(runtime_store.get(session_id) or {})
+    question_uid = str(payload.get("question_uid") or "").strip()
+    if question_uid:
+        for item in runtime_store.values():
+            if isinstance(item, dict) and str(item.get("question_uid") or "").strip() == question_uid:
+                return dict(item)
+    return {}
+
+
+def _call_ai_handwriting_checker(payload: dict[str, object], ctx: HandwritingCheckContext) -> dict[str, object]:
+    from core.ai_analyzer import analyze
+    from core.ai_wrapper import resolve_gemini_api_key
+
+    return analyze(
+        image_data_url=str(payload.get("image_base64") or payload.get("image_data_url") or ""),
+        context=ctx.question_text,
+        api_key=resolve_gemini_api_key(),
+        prerequisite_skills=[],
+        correct_answer=str(ctx.correct_answer or ctx.semantic_answer or ""),
+    )
+
+
+@practice_bp.route("/api/practice/ai-check-handwriting", methods=["POST"])
+@login_required
+def ai_check_handwriting():
+    payload = request.get_json(silent=True) or {}
+    image_base64 = str(
+        payload.get("image_base64")
+        or payload.get("image_data_url")
+        or payload.get("handwriting_image")
+        or ""
+    )
+    runtime = _runtime_for_ai_handwriting(payload)
+
+    answer_contract = runtime.get("answer_contract")
+    if not isinstance(answer_contract, dict):
+        answer_contract = payload.get("answer_contract") if isinstance(payload.get("answer_contract"), dict) else {}
+
+    correct_answer = runtime.get("correct_answer", runtime.get("answer"))
+    if correct_answer in (None, ""):
+        # Backward-compatible fallback for tests and non-adaptive callers. The frontend does not need this.
+        correct_answer = payload.get("correct_answer")
+
+    ctx = HandwritingCheckContext(
+        question_uid=str(payload.get("question_uid") or runtime.get("question_uid") or ""),
+        skill_id=str(payload.get("skill_id") or runtime.get("skill_id") or runtime.get("skill") or ""),
+        question_text=str(payload.get("question_text") or runtime.get("question_text") or ""),
+        problem_type_id=str(payload.get("problem_type_id") or runtime.get("problem_type_id") or ""),
+        presentation_mode=str(payload.get("presentation_mode") or runtime.get("presentation_mode") or ""),
+        answer_type=str(payload.get("answer_type") or runtime.get("answer_type") or answer_contract.get("answer_type", "")),
+        correct_answer=correct_answer,
+        semantic_answer=runtime.get("semantic_answer"),
+        answer_contract=answer_contract,
+        checker=str(runtime.get("checker") or runtime.get("checker_type") or answer_contract.get("checker", "")),
+        equivalence=str(runtime.get("equivalence") or runtime.get("equivalence_type") or answer_contract.get("answer_equivalence", "")),
+        choices=list(runtime.get("choices") or payload.get("choices") or []),
+        rubric=str(runtime.get("rubric") or ""),
+    )
+
+    try:
+        ai_result = _call_ai_handwriting_checker(payload, ctx)
+    except Exception as exc:
+        current_app.logger.warning("[AI handwriting check] failed: %s", exc)
+        return jsonify(
+            {
+                "mode": "unrecognized",
+                "is_correct": False,
+                "final_answer_correct": None,
+                "process_correct": None,
+                "recognized_answer": "",
+                "recognized_latex": "",
+                "recognized_steps": [],
+                "first_error_step": None,
+                "error_type": "ai_timeout_or_error",
+                "feedback": "目前無法清楚辨識，請重新書寫。",
+                "confidence": 0.0,
+                "should_record_attempt": False,
+            }
+        ), 200
+
+    response = build_handwriting_check_response(
+        image_base64=image_base64,
+        ctx=ctx,
+        ai_result=ai_result,
+    )
+    # Do not leak hidden answer/rubric/checker internals to the browser.
+    for forbidden in ("correct_answer", "semantic_answer", "answer_contract", "rubric", "checker"):
+        response.pop(forbidden, None)
+    return jsonify(response), 200
 
 
 def _normalize_str_list(value: object) -> list[str]:

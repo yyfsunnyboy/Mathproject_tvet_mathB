@@ -227,6 +227,16 @@ def _build_line_equation_answer_contract(
                 },
             ],
         }
+    if answer_type == "numeric_or_radical":
+        return {
+            "presentation_mode": "short_answer",
+            "answer_type": "numeric_or_radical",
+            "checker": "expression_equivalence_checker",
+            "checker_key": "expression_equivalence_checker",
+            "answer_equivalence": "radical_equivalence",
+            "equivalence": "radical_equivalence",
+            "semantic_answer": semantic_answer,
+        }
     if answer_type in ("rational", "numeric_or_undefined"):
         return {
             "presentation_mode": "short_answer",
@@ -319,7 +329,7 @@ def convert_line_equation_matrix_to_question_payload(
         "solve_parameter_from_parallel_distance",
         "area_using_parallel_distance",
     ):
-        default_answer_type = "rational"
+        default_answer_type = "numeric_or_radical"
     elif task_type == "parallel_lines_distance_single_choice":
         default_answer_type = "single_choice"
     else:
@@ -333,10 +343,17 @@ def convert_line_equation_matrix_to_question_payload(
         resolved_answer_type = "rational"
     elif task_type == "intercept_form_equation_and_triangle_area":
         resolved_answer_type = "multi_part"
+    elif task_type in (
+        "distance_between_parallel_lines",
+        "solve_parameter_from_parallel_distance",
+        "area_using_parallel_distance",
+    ) and mode != "single_choice":
+        resolved_answer_type = "numeric_or_radical"
 
     math_objects = _infer_math_objects(validation_facts)
     math_core: dict[str, Any] = {
         "givens": _format_givens_for_hint(givens),
+        "raw_givens": givens,
         "target": canonical,
         "math_objects": math_objects,
         "derivation": [str(step) for step in explanation_steps],
@@ -352,6 +369,7 @@ def convert_line_equation_matrix_to_question_payload(
     }
     metadata: dict[str, Any] = {
         "givens": math_core["givens"],
+        "raw_givens": givens,
         "target": canonical,
         "derivation": math_core["derivation"],
         "coefficients": answer.get("coefficients"),
@@ -395,7 +413,11 @@ def convert_line_equation_matrix_to_question_payload(
             choices, correct_label = _build_choice_options(canonical, distractors, seed_text=canonical)
         payload_answer = correct_label
         payload_correct = correct_label
-        display_answer = _format_latex_display_answer(str(semantic_answer), task_type)
+        if task_type == "parallel_lines_distance_single_choice":
+            semantic_answer = correct_label
+            display_answer = correct_label
+        else:
+            display_answer = _format_latex_display_answer(str(semantic_answer), task_type)
         choices = [
             {**choice, "text": _format_latex_display_answer(str(choice["text"]), task_type)}
             for choice in choices
@@ -507,13 +529,17 @@ def _format_latex_display_answer(value: str, task_type: str = "") -> str:
     text = str(value or "").strip()
     if not text:
         return text
+    if len(text) == 1 and text.upper() in {"A", "B", "C", "D"}:
+        return text.upper()
     if task_type.startswith("slope_intercept"):
         return _latex_inline_equation(canonicalize_display_answer(text))
     if task_type == "intercept_form_triangle_area":
         return _latex_dollar(canonicalize_display_answer(text, answer_type="rational"))
     if task_type == "parabola_secant_parallel_line_choice":
         return _latex_dollar(canonicalize_display_answer(text))
-    return text
+    if _text_needs_math_latex(text):
+        return _latex_dollar(text)
+    return _format_latex_math_text(text)
 
 
 def _format_display_answer(value: Any, task_type: str = "", answer_type: str = "") -> Any:
@@ -526,12 +552,26 @@ def _format_latex_math_text(text: str) -> str:
     import re
 
     normalized = str(text or "").strip().replace("−", "-")
+    if normalized.startswith("$") and normalized.endswith("$"):
+        normalized = normalized[1:-1].strip()
 
     def repl_fraction(match: re.Match[str]) -> str:
         return canonicalize_display_answer(match.group(0), answer_type="rational")
 
     normalized = re.sub(r"(?<![\\\w])[-+]?\d+/\d+", repl_fraction, normalized)
+    if "sqrt" in normalized or "*" in normalized:
+        try:
+            import sympy
+
+            return sympy.latex(sympy.sympify(normalized))
+        except Exception:
+            normalized = re.sub(r"sqrt\(([^()]+)\)", r"\\sqrt{\1}", normalized)
+            normalized = normalized.replace("*", "")
     return normalized
+
+
+def _text_needs_math_latex(text: str) -> bool:
+    return any(token in str(text) for token in ("sqrt(", "\\sqrt", "/", "*"))
 
 
 def _build_line_equation_question_text(
@@ -585,43 +625,45 @@ def _build_line_equation_question_text(
         raise ValueError(f"unsupported_line_equation_task_type:{task_type}")
 
     if task_type == "distance_between_parallel_lines":
-        line_1 = givens.get("line_1") or givens.get("equation_1")
-        line_2 = givens.get("line_2") or givens.get("equation_2")
+        line_1 = _format_latex_math_text(givens.get("line_1") or givens.get("equation_1"))
+        line_2 = _format_latex_math_text(givens.get("line_2") or givens.get("equation_2"))
         if not line_1 or not line_2:
             raise ValueError("required_line_task_slot_missing:distance_between_parallel_lines:parallel_line_pair")
         return f"試求兩平行線 ${line_1}$ 與 ${line_2}$ 之間的距離。"
 
     if task_type == "solve_parameter_from_parallel_distance":
-        line_1 = givens.get("line_1")
-        line_2 = givens.get("line_2")
-        target_distance = givens.get("target_distance") or ""
+        line_1 = _format_latex_math_text(givens.get("line_1"))
+        line_2 = _format_latex_math_text(givens.get("line_2"))
+        target_distance = _format_latex_math_text(givens.get("target_distance") or "")
         param_name = givens.get("parameter_name") or "k"
+        parameter_condition = _format_latex_math_text(givens.get("parameter_condition") or "")
         if not line_1 or not line_2:
             raise ValueError("required_line_task_slot_missing:solve_parameter_from_parallel_distance:parallel_line_pair")
         return (
             f"坐標平面上，若兩平行線 ${line_1}$ 與 ${line_2}$ 的距離為 ${target_distance}$，"
-            f"試求 {param_name} 之值。"
+            f"且 ${parameter_condition}$，試求 ${param_name}$ 之值。"
         )
 
     if task_type == "area_using_parallel_distance":
         point_a = givens.get("point_a")
-        line = givens.get("line")
-        segment_length = givens.get("segment_length")
+        line = _format_latex_math_text(givens.get("line"))
+        segment_length = _format_latex_math_text(givens.get("segment_length"))
         if point_a is None or not line or segment_length is None:
             raise ValueError("required_line_task_slot_missing:area_using_parallel_distance:givens")
         pt = _format_point_for_question(point_a)
         return (
-            f"設 A 點坐標為 {pt}，且 B、C 兩點在直線 L: ${line}$ 上，"
-            f"若 $\\overline{{BC}}$ 的長為 {segment_length}，試求 △ABC 的面積。"
+            f"設 A 點坐標為 {pt}，且 B、C 兩點在直線 $L: {line}$ 上，"
+            f"若 $\\overline{{BC}}$ 的長為 ${segment_length}$，試求 △ABC 的面積。"
         )
 
     if task_type == "parallel_lines_distance_single_choice":
-        line_expr = givens.get("line_expression") or ""
-        slope = givens.get("slope") or ""
-        origin_distance = givens.get("origin_distance") or ""
+        line_expr = _format_latex_math_text(givens.get("line_expression") or "")
+        slope = _format_latex_math_text(givens.get("slope") or "")
+        origin_distance = _format_latex_math_text(givens.get("origin_distance") or "")
+        a_value = givens.get("a_value")
         return (
-            f"已知 $k>0$。若直線 ${line_expr}$ 的斜率為 ${slope}$，"
-            f"且點 $(0,0)$ 到直線 L 的距離為 ${origin_distance}$，則 $a+k=$？"
+            f"已知 $a>0$、$k>0$，且本題 $a={a_value}$。若直線 $L: {line_expr}$ 的斜率為 ${slope}$，"
+            f"且點 $(0,0)$ 到直線 $L$ 的距離為 ${origin_distance}$，則 $a+k=$？"
         )
 
     if task_type == "construct_parallel_line_at_distance":

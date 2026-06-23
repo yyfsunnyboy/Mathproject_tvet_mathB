@@ -1757,7 +1757,7 @@ def next_question():
             "inequality_string": session_data.get("inequality_string", ""),
             "consecutive_correct": consecutive,
             "current_level": difficulty_level,
-            "image_base64": session_data.get("image_base64", ""),
+            "image_base64": data.get("image_base64", ""),
             "visual_aids": session_data.get("visual_aids", []),
             "table": session_data.get("table", {}),
             "table_title": session_data.get("table_title", ""),

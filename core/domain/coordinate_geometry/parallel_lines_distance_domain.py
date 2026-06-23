@@ -1,4 +1,4 @@
-"""Parallel lines distance domain — pure math, no skill_id branching."""
+"""Parallel lines distance domain: pure math, no skill_id branching."""
 
 from __future__ import annotations
 
@@ -47,9 +47,33 @@ def _format_general_form(a: int, b: int, c: int) -> str:
     return f"{_format_general_expression(a, b, c)} = 0"
 
 
-def _parallel_distance(a: int, b: int, c1: int, c2: int) -> Fraction:
-    denom = int(math.isqrt(a * a + b * b))
-    return Fraction(abs(c1 - c2), denom)
+def _expr_text(value: Any) -> str:
+    import sympy
+
+    return str(sympy.simplify(value))
+
+
+def _normalize_line(a: int, b: int, c: int) -> tuple[int, int, Fraction]:
+    gcd_ab = math.gcd(abs(a), abs(b))
+    if gcd_ab == 0:
+        raise ValueError("invalid_line_coefficients")
+    if a < 0 or (a == 0 and b < 0):
+        gcd_ab = -gcd_ab
+    return a // gcd_ab, b // gcd_ab, Fraction(c, gcd_ab)
+
+
+def _parallel_distance_expr(a1: int, b1: int, c1: int, a2: int, b2: int, c2: int) -> Any:
+    import sympy
+
+    na1, nb1, nc1 = _normalize_line(a1, b1, c1)
+    na2, nb2, nc2 = _normalize_line(a2, b2, c2)
+    if (na1, nb1) != (na2, nb2):
+        raise ValueError("lines_are_not_parallel_after_normalization")
+    if nc1 == nc2:
+        raise ValueError("parallel_lines_are_coincident")
+    c1_expr = sympy.Rational(nc1.numerator, nc1.denominator)
+    c2_expr = sympy.Rational(nc2.numerator, nc2.denominator)
+    return sympy.simplify(sympy.Abs(c1_expr - c2_expr) / sympy.sqrt(na1 * na1 + nb1 * nb1))
 
 
 def _empty_visual() -> dict[str, object]:
@@ -66,20 +90,20 @@ def _build_distance_between_parallel_lines(
     rng: random.Random,
     constraints: dict[str, object],
 ) -> tuple[dict[str, object], dict[str, object]]:
-    triples = [(3, 4), (5, 12), (3, 1), (2, 1), (1, 2)]
-    a, b = rng.choice(triples)
+    normal_pairs = [(3, 4), (5, 12), (3, 1), (2, 1), (1, 2), (1, -2), (2, -3)]
+    a, b = rng.choice(normal_pairs)
     c1 = rng.randint(-10, 10)
     c2 = c1 + rng.choice([-8, -5, -3, 3, 5, 8])
-    while c1 == c2:
-        c2 = c1 + rng.choice([-5, 5])
+    scale = rng.choice([-3, -2, -1, 1, 2, 3])
+    a2, b2, c2_scaled = a * scale, b * scale, c2 * scale
 
-    dist = _parallel_distance(a, b, c1, c2)
-    canonical = fraction_to_plain(dist)
+    dist = _parallel_distance_expr(a, b, c1, a2, b2, c2_scaled)
+    canonical = _expr_text(dist)
     givens = {
         "line_1": _format_general_form(a, b, c1),
-        "line_2": _format_general_form(a, b, c2),
+        "line_2": _format_general_form(a2, b2, c2_scaled),
         "coefficients_line_1": {"A": a, "B": b, "C": c1},
-        "coefficients_line_2": {"A": a, "B": b, "C": c2},
+        "coefficients_line_2": {"A": a2, "B": b2, "C": c2_scaled},
     }
     answer = {
         "canonical_form": canonical,
@@ -95,43 +119,48 @@ def _build_solve_parameter_from_parallel_distance(
     rng: random.Random,
     constraints: dict[str, object],
 ) -> tuple[dict[str, object], dict[str, object]]:
-    # L1: 2x+4y-k=0, L2: x+2y+3=0 style — parallel lines, solve k given distance.
+    import sympy
+
     a1, b1 = 2, 4
     a2, b2 = 1, 2
     c2 = rng.choice([-5, 3, 10])
     target_dist_sq = rng.choice([5, 10, 20, 40])
-    target_dist = Fraction(math.isqrt(target_dist_sq), 1)
-    denom = int(math.isqrt(a1 * a1 + b1 * b1))
-    delta_c = int(target_dist * denom)
-    k_pos = c2 + delta_c
-    k_neg = c2 - delta_c
-    sign_constraint = str(constraints.get("parameter_sign") or "").strip().lower()
-    if sign_constraint == "negative":
-        k_val = min(k_pos, k_neg)
-        while k_val >= 0:
-            k_val -= 1
-    elif sign_constraint == "positive":
-        k_val = max(k_pos, k_neg)
-        while k_val <= 0:
-            k_val += 1
+    target_distance = sympy.sqrt(target_dist_sq)
+
+    norm_a1, norm_b1, _ = _normalize_line(a1, b1, 0)
+    g1 = abs(math.gcd(a1, b1))
+    _, _, normalized_c2 = _normalize_line(a2, b2, c2)
+    normalized_c2_expr = sympy.Rational(normalized_c2.numerator, normalized_c2.denominator)
+    center = sympy.simplify(-g1 * normalized_c2_expr)
+    delta_c = sympy.simplify(g1 * target_distance * sympy.sqrt(norm_a1 * norm_a1 + norm_b1 * norm_b1))
+    lower = sympy.simplify(center - delta_c)
+    upper = sympy.simplify(center + delta_c)
+
+    branch = str(constraints.get("parameter_branch") or rng.choice(["upper", "lower"])).strip().lower()
+    if branch == "upper":
+        k_val = upper
+        condition = f"k > {_expr_text(center)}"
     else:
-        k_val = rng.choice([k_pos, k_neg])
+        k_val = lower
+        condition = f"k < {_expr_text(center)}"
 
     param_name = "k"
+    canonical = _expr_text(k_val)
     givens = {
         "line_1": f"{_format_general_expression(a1, b1, 0)} - {param_name} = 0",
         "line_2": _format_general_form(a2, b2, c2),
-        "target_distance": f"sqrt({target_dist_sq})",
+        "target_distance": _expr_text(target_distance),
         "parameter_name": param_name,
+        "parameter_condition": condition,
     }
-    canonical = str(k_val)
     answer = {
         "canonical_form": canonical,
         "general_form": canonical,
-        "coefficients": {"A": a1, "B": b1, "C": -k_val},
-        "distance": fraction_to_plain(target_dist),
+        "coefficients": {"A": a1, "B": b1, "C": canonical},
+        "distance": _expr_text(target_distance),
         "parameter": canonical,
         "parameter_name": param_name,
+        "parameter_condition": condition,
         "value": canonical,
     }
     return givens, answer
@@ -141,13 +170,17 @@ def _build_area_using_parallel_distance(
     rng: random.Random,
     constraints: dict[str, object],
 ) -> tuple[dict[str, object], dict[str, object]]:
-    a, b, c = 3, -4, -1
-    x0, y0 = 1, -2
-    base_len = 3
-    denom = int(math.isqrt(a * a + b * b))
-    height = Fraction(abs(a * x0 + b * y0 + c), denom)
-    area = Fraction(base_len, 2) * height
-    canonical = fraction_to_plain(area)
+    import sympy
+
+    a, b = rng.choice([(3, -4), (5, 12), (3, 1), (2, 1), (1, 2), (1, -1)])
+    c = rng.randint(-10, 10)
+    x0, y0 = rng.randint(-6, 6), rng.randint(-6, 6)
+    while a * x0 + b * y0 + c == 0:
+        x0, y0 = rng.randint(-6, 6), rng.randint(-6, 6)
+    base_len = rng.randint(2, 8)
+    height = sympy.simplify(sympy.Abs(a * x0 + b * y0 + c) / sympy.sqrt(a * a + b * b))
+    area = sympy.simplify(sympy.Rational(base_len, 2) * height)
+    canonical = _expr_text(area)
     givens = {
         "point_a": [x0, y0],
         "line": _format_general_form(a, b, c),
@@ -157,7 +190,7 @@ def _build_area_using_parallel_distance(
         "canonical_form": canonical,
         "general_form": canonical,
         "coefficients": {"A": a, "B": b, "C": c},
-        "distance": fraction_to_plain(height),
+        "distance": _expr_text(height),
         "area": canonical,
         "value": canonical,
     }
@@ -168,19 +201,21 @@ def _build_parallel_lines_distance_single_choice(
     rng: random.Random,
     constraints: dict[str, object],
 ) -> tuple[dict[str, object], dict[str, object], list[str]]:
-    # ax+4y+k=0, slope 1/2, distance from origin sqrt(5) => a=2, k=-1 => a+k=1
-    # Generate isomorphic variants with distractors.
-    a = 2
-    b = 4
-    dist_sq = 5
-    dist = Fraction(math.isqrt(dist_sq), 1)
-    denom = int(math.isqrt(a * a + b * b))
-    k = -rng.choice([1, 2, 3])
-    canonical_sum = str(a + k)
+    import sympy
+
+    a = rng.choice([1, 2, 3])
+    b = 2 * a
+    k = rng.choice([2, 3, 4, 5])
+    slope = Fraction(-1, 2)
+    distance = sympy.simplify(sympy.Rational(k, 1) / sympy.sqrt(a * a + b * b))
+    correct_value = a + k
+    canonical_sum = str(correct_value)
     correct_label = rng.choice(["A", "B", "C", "D"])
-    distractor_values = [str(a + k + d) for d in (2, 4, 6) if str(a + k + d) != canonical_sum]
+    distractor_values = [str(correct_value + d) for d in (-3, -2, -1, 1, 2, 3) if correct_value + d > 0]
+    rng.shuffle(distractor_values)
     while len(distractor_values) < 3:
-        distractor_values.append(str(int(canonical_sum) + len(distractor_values) + 3))
+        distractor_values.append(str(correct_value + len(distractor_values) + 3))
+
     choices_map = {correct_label: canonical_sum}
     labels = ["A", "B", "C", "D"]
     di = 0
@@ -189,21 +224,25 @@ def _build_parallel_lines_distance_single_choice(
             continue
         choices_map[label] = distractor_values[di]
         di += 1
+
     givens = {
-        "line_expression": f"{a}x+{b}y+k=0",
-        "slope": "1/2",
-        "origin_distance": f"sqrt({dist_sq})",
+        "line_expression": "ax+2ay+k=0",
+        "slope": fraction_to_plain(slope),
+        "origin_distance": _expr_text(distance),
         "parameter_name": "k",
+        "a_value": a,
+        "b_value": b,
     }
     answer = {
         "canonical_form": correct_label,
         "general_form": correct_label,
         "coefficients": {"A": a, "B": b, "C": k},
-        "distance": fraction_to_plain(dist),
+        "distance": _expr_text(distance),
         "parameter": str(k),
         "parameter_name": "k",
         "sum_a_plus_k": canonical_sum,
         "correct_label": correct_label,
+        "choices": [{"label": label, "text": text} for label, text in sorted(choices_map.items())],
         "value": correct_label,
     }
     distractors = [v for lbl, v in choices_map.items() if lbl != correct_label]
@@ -217,7 +256,7 @@ def build_parallel_lines_distance_matrix(
     curriculum_profile: str,
     difficulty_profile: str,
     constraints: dict[str, object] | None = None,
-    line_type: str | None = None,  # legacy alias
+    line_type: str | None = None,
 ) -> dict[str, object]:
     """Build Full Matrix Dictionary for parallel-lines distance operations."""
     op = str(domain_operation or line_type or "").strip()
@@ -249,9 +288,9 @@ def build_parallel_lines_distance_matrix(
         "answer": answer,
         "distractors": distractors,
         "explanation_steps": [
-            "確認兩直線平行（法向量成比例）",
-            "使用平行線距離公式 |C1-C2|/sqrt(A^2+B^2)",
-            "代入計算並化簡",
+            "Normalize proportional parallel-line equations to the same A and B.",
+            "Use distance |C1-C2|/sqrt(A^2+B^2) after normalization.",
+            "For parameter problems, solve the absolute-value equation and apply the stated branch condition.",
         ],
         "validation_facts": {
             "domain_operation": op,

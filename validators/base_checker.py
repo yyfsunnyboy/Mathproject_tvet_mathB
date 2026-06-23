@@ -152,7 +152,10 @@ class BaseChecker:
                 parts = [p.strip() for p in ans_str.replace("或", ",").split(",") if p.strip()]
             
             for part in parts:
-                clean_part = part.strip("()[] ")
+                if raw_answer_type in {"solution_set", "interval"} or "set" in checker_key or "interval" in checker_key:
+                    clean_part = part.strip("()[] ")
+                else:
+                    clean_part = part.strip()
                 if "\\" not in part:
                     clean_part = clean_part.strip("{} ")
                 else:
@@ -160,9 +163,10 @@ class BaseChecker:
                 if not clean_part:
                     continue
                 try:
+                    from sympy import sqrt
                     from core.checkers.expression_equivalence_checker import normalize_math_expression
                     norm_part = normalize_math_expression(clean_part)
-                    parse_expr(norm_part)
+                    parse_expr(norm_part, local_dict={"sqrt": sqrt})
                 except Exception as e:
                     error = {
                         "can_continue": False,
