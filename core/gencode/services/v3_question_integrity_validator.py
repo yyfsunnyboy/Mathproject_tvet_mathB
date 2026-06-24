@@ -46,6 +46,20 @@ INCOMPATIBLE_PAIRS: frozenset[tuple[str, str]] = frozenset(
 # Seeds used for multi-seed pre-publish sampling
 DEFAULT_INTEGRITY_SEEDS: tuple[int, ...] = (7, 42, 137, 256, 999)
 
+EVIDENCE_DEPENDENCY_FIELDS: frozenset[str] = frozenset(
+    {
+        "raw_scores",
+        "data",
+        "values",
+        "table_rows",
+        "frequency_table",
+        "chart_data",
+        "figure",
+        "matrix",
+        "coordinates",
+    }
+)
+
 # ---------------------------------------------------------------------------
 # Required stem-slot tokens by problem_type_id prefix / exact match.
 # Keys may be exact problem_type_id strings or prefix patterns ending with '*'.
@@ -98,6 +112,59 @@ def _extract_givens(payload: dict[str, Any]) -> dict[str, Any]:
             # List-style givens — not slot-keyed, skip slot checks
             return {}
     return {}
+
+
+def _metadata_dict(payload: dict[str, Any]) -> dict[str, Any]:
+    metadata = payload.get("metadata")
+    return metadata if isinstance(metadata, dict) else {}
+
+
+def _visible_payload_text(payload: dict[str, Any], field: str) -> str:
+    value = payload.get(field)
+    if field == "metadata":
+        value = payload.get("metadata")
+    if value is None:
+        return ""
+    return str(value)
+
+
+def _evidence_values_rendered(payload: dict[str, Any], evidence: dict[str, Any]) -> bool:
+    field = str(evidence.get("field") or "").strip()
+    values = evidence.get("values")
+    if not field or values is None:
+        return False
+
+    visible_text = _visible_payload_text(payload, field)
+    if not visible_text:
+        return False
+
+    if isinstance(values, (list, tuple)):
+        separator = str(evidence.get("separator") or "、")
+        rendered_sequence = separator.join(str(value) for value in values)
+        return rendered_sequence in visible_text
+
+    return str(values) in visible_text
+
+
+def _validate_required_evidence_visibility(payload: dict[str, Any]) -> list[str]:
+    metadata = _metadata_dict(payload)
+    dependencies = metadata.get("answer_dependencies")
+    if not isinstance(dependencies, list):
+        return []
+
+    visible_evidence = metadata.get("visible_evidence")
+    if not isinstance(visible_evidence, dict):
+        visible_evidence = {}
+
+    blockers: list[str] = []
+    for dep in dependencies:
+        dep_name = str(dep or "").strip()
+        if dep_name not in EVIDENCE_DEPENDENCY_FIELDS:
+            continue
+        evidence = visible_evidence.get(dep_name)
+        if not isinstance(evidence, dict) or not _evidence_values_rendered(payload, evidence):
+            blockers.append(f"REQUIRED_EVIDENCE_NOT_RENDERED:{dep_name}")
+    return blockers
 
 
 # ---------------------------------------------------------------------------
@@ -195,6 +262,7 @@ def validate_component_payload(
     blockers.extend(validate_equation_display_text(payload))
     blockers.extend(validate_comparison_contract(payload))
     blockers.extend(validate_single_choice_scalar_topology(payload))
+    blockers.extend(_validate_required_evidence_visibility(payload))
 
     passed = len(blockers) == 0
     return {

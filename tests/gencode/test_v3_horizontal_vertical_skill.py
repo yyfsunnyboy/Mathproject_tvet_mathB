@@ -304,7 +304,7 @@ def test_adapter_converts_hv_matrix_to_valid_payload():
 # ---------------------------------------------------------------------------
 
 
-def test_publish_dead_locked_for_non_allowlist_skill_even_when_verified(
+def test_publish_rejects_unbound_skill_even_when_verified(
     memory_conn: sqlite3.Connection,
     sandbox_root: Path,
 ):
@@ -323,7 +323,7 @@ def test_publish_dead_locked_for_non_allowlist_skill_even_when_verified(
     )
     memory_conn.commit()
 
-    with pytest.raises(ValueError, match="taxonomy_not_registered"):
+    with pytest.raises(ValueError, match="DOMAIN_BINDING_MISSING"):
         run_admin_v3_publish_for_skill(
             conn=memory_conn,
             skill_id=non_allowlist_skill,

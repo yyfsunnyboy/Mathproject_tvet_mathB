@@ -1,0 +1,51 @@
+{
+  "skill_id": "vh_數學B4_FrequencyDistributionTableConstruction",
+  "publish_status": "production_manifest_compiled",
+  "component_count": 4,
+  "components": [
+    {
+      "component_id": "src_3822",
+      "textbook_example_id": 3822,
+      "status": "verified",
+      "problem_type_id": "frequency_table_construction_review",
+      "domain_operation": "frequency_table_construction_review",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_3822/generate.py"
+    },
+    {
+      "component_id": "src_3823",
+      "textbook_example_id": 3823,
+      "status": "verified",
+      "problem_type_id": "frequency_table_construction_review",
+      "domain_operation": "frequency_table_construction_review",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "quiz",
+      "generate_py": "components/src_3823/generate.py"
+    },
+    {
+      "component_id": "src_3824",
+      "textbook_example_id": 3824,
+      "status": "verified",
+      "problem_type_id": "frequency_table_construction_review",
+      "domain_operation": "frequency_table_construction_review",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_3824/generate.py"
+    },
+    {
+      "component_id": "src_3825",
+      "textbook_example_id": 3825,
+      "status": "verified",
+      "problem_type_id": "frequency_table_construction_review",
+      "domain_operation": "frequency_table_construction_review",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_3825/generate.py"
+    }
+  ]
+}

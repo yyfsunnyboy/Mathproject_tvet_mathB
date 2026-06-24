@@ -182,8 +182,9 @@ def invoke_skill_generate(
                 ignored_kwargs[key] = val
 
     # Log invocation details for audit
+    module_name = getattr(module, "__name__", type(module).__name__)
     logger.info(
-        f"[RUNTIME INVOKE] skill_id={skill_id} module={module.__name__} "
+        f"[RUNTIME INVOKE] skill_id={skill_id} module={module_name} "
         f"generate_signature={sig} requested_kwargs={candidate_kwargs} "
         f"accepted_kwargs={kwargs} ignored_kwargs={ignored_kwargs}"
     )

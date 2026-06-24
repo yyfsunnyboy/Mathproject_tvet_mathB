@@ -391,7 +391,33 @@ def dispatch_generate(
     generate_fn = getattr(router, "generate", None)
     if not callable(generate_fn):
         raise RuntimeError(f"v3_skill_generate_missing:{skill_id}")
-    return generate_fn(level=level, seed=seed, **kwargs)
+    payload = generate_fn(level=level, seed=seed, **kwargs)
+    if isinstance(payload, dict):
+        selected_component_id = str(payload.get("component_id") or "")
+        selected_problem_type_id = str(payload.get("problem_type_id") or "")
+        selected_index = -1
+        for index, row in enumerate(generator_specs):
+            if isinstance(row, dict) and str(row.get("component_id") or "") == selected_component_id:
+                selected_index = index
+                break
+        module_path = (
+            f"components/{selected_component_id}/generate.py"
+            if selected_component_id
+            else ""
+        )
+        logger.info(
+            "[V3 RUNTIME DISPATCH] skill_id=%s generator_spec_count=%s "
+            "selected_index=%s selected_component_id=%s "
+            "selected_problem_type_id=%s module_path=%s fallback_used=%s",
+            skill_id,
+            len(generator_specs),
+            selected_index,
+            selected_component_id,
+            selected_problem_type_id,
+            module_path,
+            bool(payload.get("fallback_used", False)),
+        )
+    return payload
 
 
 def dispatch_check(

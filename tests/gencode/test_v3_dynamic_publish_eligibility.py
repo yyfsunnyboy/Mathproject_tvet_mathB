@@ -19,6 +19,8 @@ from core.gencode.v3_production_publish_service import (
     publish_single_v3_skill_to_production,
 )
 
+B4_FREQUENCY_SKILL = "vh_數學B4_FrequencyDistributionTableConstruction"
+
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 SANDBOX_ROOT = PROJECT_ROOT / "reports" / "gencode_v3_dryrun"
 DYNAMIC_SKILL = "vh_數學B1_DynamicEligibilitySkill"
@@ -122,6 +124,24 @@ def _payload(example_id: int) -> str:
             "fixed_domain_key": "coordinate_geometry.line_equation",
             "domain_operation": "point_slope",
             "problem_type_id": "point_slope",
+            "display_order": example_id,
+            "source_order": example_id,
+            "sampling_weight": 1,
+            "integrity_gate_passed": True,
+            "integrity_gate_version": "v1",
+        },
+        ensure_ascii=False,
+    )
+
+
+def _frequency_payload(example_id: int) -> str:
+    return json.dumps(
+        {
+            "source_kind": f"ex_{example_id}",
+            "presentation_mode": "short_answer",
+            "fixed_domain_key": "statistics.frequency_distribution",
+            "domain_operation": "frequency_table_single_bin_count",
+            "problem_type_id": "frequency_table_single_bin_count",
             "display_order": example_id,
             "source_order": example_id,
             "sampling_weight": 1,
@@ -248,12 +268,55 @@ def test_dynamic_taxonomy_concrete_skill_gets_publish_eligibility_and_publishes(
     assert result["component_count"] == 17
 
 
-def test_taxonomy_not_registered_rejected(memory_conn: sqlite3.Connection) -> None:
+def test_skill_not_in_mvp_taxonomy_uses_authoritative_domain_binding(
+    memory_conn: sqlite3.Connection,
+    registry_registered: None,
+) -> None:
     _seed_skill_metadata(memory_conn)
     _seed_examples(memory_conn)
     eligibility = evaluate_v3_publish_eligibility(memory_conn, DYNAMIC_SKILL)
-    assert eligibility["allowed"] is False
-    assert eligibility["reason"] == "taxonomy_not_registered"
+    assert eligibility["allowed"] is True
+    assert eligibility["reason"] == "eligible"
+    assert eligibility["fixed_domain_key"] == "coordinate_geometry.line_equation"
+    assert "skill_not_in_v3_mvp_scope" in eligibility["review_hints"]
+
+
+def test_b4_frequency_skill_publish_eligibility_uses_authoritative_registry_without_mvp_taxonomy(
+    memory_conn: sqlite3.Connection,
+) -> None:
+    _seed_skill_metadata(memory_conn, B4_FREQUENCY_SKILL)
+    for example_id in range(3822, 3826):
+        memory_conn.execute(
+            "INSERT INTO textbook_examples (id, skill_id) VALUES (?, ?)",
+            (example_id, B4_FREQUENCY_SKILL),
+        )
+        memory_conn.execute(
+            """
+            INSERT INTO gencode_component_tracker (
+                textbook_example_id,
+                skill_id,
+                component_id,
+                gencode_status,
+                induced_spec_payload,
+                gencode_error_log
+            ) VALUES (?, ?, ?, 'verified', ?, NULL)
+            """,
+            (
+                example_id,
+                B4_FREQUENCY_SKILL,
+                f"src_{example_id}",
+                _frequency_payload(example_id),
+            ),
+        )
+    memory_conn.commit()
+
+    eligibility = evaluate_v3_publish_eligibility(memory_conn, B4_FREQUENCY_SKILL)
+
+    assert eligibility["allowed"] is True
+    assert eligibility["reason"] == "eligible"
+    assert eligibility["fixed_domain_key"] == "statistics.frequency_distribution"
+    assert eligibility["eligible_component_count"] == 4
+    assert "skill_not_in_v3_mvp_scope" in eligibility["review_hints"]
 
 
 def test_outline_skill_rejected(memory_conn: sqlite3.Connection, taxonomy_registered: None) -> None:
@@ -364,8 +427,8 @@ def test_admin_and_production_share_same_policy_reason(
     conn.commit()
 
     eligibility = evaluate_v3_publish_eligibility(memory_conn, DYNAMIC_SKILL)
-    assert eligibility["reason"] == "no_eligible_components"
-    with pytest.raises(ValueError, match="no_eligible_components"):
+    assert eligibility["reason"] == "COMPONENT_DOMAIN_MISMATCH"
+    with pytest.raises(ValueError, match="COMPONENT_DOMAIN_MISMATCH"):
         run_admin_v3_publish_for_skill(
             conn=memory_conn,
             skill_id=DYNAMIC_SKILL,
@@ -374,7 +437,7 @@ def test_admin_and_production_share_same_policy_reason(
             force_publish=True,
             strict_coverage=True,
         )
-    with pytest.raises(ValueError, match="no_eligible_components"):
+    with pytest.raises(ValueError, match="COMPONENT_DOMAIN_MISMATCH"):
         publish_single_v3_skill_to_production(
             conn=memory_conn,
             skill_id=DYNAMIC_SKILL,
@@ -388,7 +451,7 @@ def test_illegal_skill_not_allowed_when_domain_unregistered(memory_conn: sqlite3
     _seed_examples(memory_conn)
     eligibility = evaluate_v3_publish_eligibility(memory_conn, DYNAMIC_SKILL)
     assert eligibility["allowed"] is False
-    assert eligibility["reason"] == "skill_domain_not_registered"
+    assert eligibility["reason"] == "DOMAIN_BINDING_MISSING"
 
 
 def test_eligibility_does_not_skip_production_smoke_rollback(

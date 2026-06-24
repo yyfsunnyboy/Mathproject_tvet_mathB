@@ -200,7 +200,7 @@ def test_publish_requires_force_publish(
         )
 
 
-def test_publish_rejects_non_benchmark_skill(
+def test_publish_rejects_skill_without_authoritative_domain_binding(
     memory_conn: sqlite3.Connection,
     isolated_publish_roots: tuple[Path, Path],
 ):
@@ -209,7 +209,7 @@ def test_publish_rejects_non_benchmark_skill(
     _setup_mock_project_root(project_root)
 
     # jh_* skills are not in the vh_* taxonomy scope → taxonomy_not_registered
-    with pytest.raises(ValueError, match="taxonomy_not_registered"):
+    with pytest.raises(ValueError, match="DOMAIN_BINDING_MISSING"):
         run_admin_v3_publish_for_skill(
             conn=memory_conn,
             skill_id="jh_數學1上_FourArithmeticOperationsOfIntegers",
@@ -228,7 +228,7 @@ def test_publish_rejects_missing_verified_components(
     _setup_mock_project_root(project_root)
 
     with mock.patch("core.gencode.services.admin_gencode_action_service.evaluate_v3_publish_eligibility", return_value={"allowed": True}):
-        with pytest.raises(ValueError, match="no_verified_components"):
+        with pytest.raises(ValueError, match="no_eligible_components"):
             run_admin_v3_publish_for_skill(
                 conn=memory_conn,
                 skill_id=SKILL_ID,
@@ -250,7 +250,7 @@ def test_publish_rejects_when_verified_rows_cleared(
     memory_conn.commit()
 
     with mock.patch("core.gencode.services.admin_gencode_action_service.evaluate_v3_publish_eligibility", return_value={"allowed": True}):
-        with pytest.raises(ValueError, match="no_verified_components"):
+        with pytest.raises(ValueError, match="no_eligible_components"):
             run_admin_v3_publish_for_skill(
                 conn=memory_conn,
                 skill_id=SKILL_ID,

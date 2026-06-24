@@ -891,10 +891,8 @@ def run_admin_v3_publish_for_skill(
     eligibility = evaluate_v3_publish_eligibility(conn, skill_key, coverage=coverage)
     warnings = build_coverage_warnings(coverage)
 
-    if not eligibility.get("allowed") and eligibility.get("reason") == "taxonomy_not_registered":
-        raise ValueError("taxonomy_not_registered")
-    if not eligibility.get("allowed") and eligibility.get("reason") == "skill_domain_not_registered":
-        raise ValueError("skill_domain_not_registered")
+    if not eligibility.get("allowed") and eligibility.get("reason") == "DOMAIN_BINDING_MISSING":
+        raise ValueError("DOMAIN_BINDING_MISSING")
 
     from core.gencode.v3_production_publish_service import (
         assert_production_publish_globally_enabled,

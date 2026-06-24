@@ -7,6 +7,11 @@ import sqlite3
 from typing import Any
 
 from core.gencode.services.v3_skill_coverage_service import get_v3_skill_component_coverage
+from core.gencode.skill_fixed_domain_authority import (
+    SkillFixedDomainError,
+    resolve_fixed_domain_context,
+)
+from core.gencode.v3_error_codes import DOMAIN_BINDING_MISSING
 
 # Module-level reference — allows tests to monkeypatch
 # 'core.gencode.services.v3_publish_eligibility._load_v3_taxonomy_mvp_scope'
@@ -118,6 +123,8 @@ def count_publish_eligible_components(conn: sqlite3.Connection, skill_id: str) -
 
     verified_count = 0
     eligible_count = 0
+    domain_blocked_count = 0
+    integrity_blocked_count = 0
     for row in rows:
         if hasattr(row, "keys"):
             row_skill = row["skill_id"]
@@ -130,16 +137,24 @@ def count_publish_eligible_components(conn: sqlite3.Connection, skill_id: str) -
             continue
         verified_count += 1
         spec = _parse_spec_payload(raw_payload)
-        if not component_publish_blockers(
+        blockers = component_publish_blockers(
             skill_id=skill_id,
             component_skill_id=str(row_skill),
             component_status=status,
             spec=spec,
-        ):
+        )
+        if not blockers:
             eligible_count += 1
+            continue
+        if "integrity_gate_not_passed" in blockers:
+            integrity_blocked_count += 1
+        if any(blocker != "integrity_gate_not_passed" for blocker in blockers):
+            domain_blocked_count += 1
     return {
         "verified_component_count": verified_count,
         "eligible_component_count": eligible_count,
+        "domain_blocked_component_count": domain_blocked_count,
+        "integrity_blocked_component_count": integrity_blocked_count,
     }
 
 
@@ -162,30 +177,28 @@ def evaluate_v3_publish_eligibility(
             "eligible_component_count": 0,
         }
 
-    taxonomy_scope = _resolve_taxonomy_loader()(taxonomy_path)
-    if skill_key not in taxonomy_scope:
-        return {
-            "allowed": False,
-            "full_coverage": False,
-            "reason": "taxonomy_not_registered",
-            "skill_id": skill_key,
-            "coverage": _normalize_coverage(coverage or {}),
-            "eligible_component_count": 0,
-        }
-
     try:
-        from core.registry.taxonomy_registry import SkillDomainNotRegisteredError, get_fixed_domain_key
-
-        fixed_domain_key = get_fixed_domain_key(skill_key)
-    except SkillDomainNotRegisteredError:
+        domain_context = resolve_fixed_domain_context(skill_key)
+        fixed_domain_key = domain_context.fixed_domain_key
+    except SkillFixedDomainError as exc:
         return {
             "allowed": False,
             "full_coverage": False,
-            "reason": "skill_domain_not_registered",
+            "reason": DOMAIN_BINDING_MISSING,
             "skill_id": skill_key,
             "coverage": _normalize_coverage(coverage or {}),
             "eligible_component_count": 0,
+            "error_code": exc.code or DOMAIN_BINDING_MISSING,
         }
+
+    review_hints: list[str] = []
+    try:
+        taxonomy_scope = _resolve_taxonomy_loader()(taxonomy_path)
+    except Exception:
+        taxonomy_scope = set()
+        review_hints.append("mvp_taxonomy_scope_unavailable")
+    if skill_key not in taxonomy_scope:
+        review_hints.append("skill_not_in_v3_mvp_scope")
 
     if _table_exists(conn, "skills_info"):
         skill_count = _count_rows(conn, "SELECT COUNT(*) FROM skills_info WHERE skill_id = ?", (skill_key,))
@@ -193,11 +206,12 @@ def evaluate_v3_publish_eligibility(
             return {
                 "allowed": False,
                 "full_coverage": False,
-                "reason": "skill_info_missing",
+                "reason": "SKILL_METADATA_MISSING",
                 "skill_id": skill_key,
                 "coverage": _normalize_coverage(coverage or {}),
                 "eligible_component_count": 0,
                 "fixed_domain_key": fixed_domain_key,
+                "review_hints": review_hints,
             }
 
     if _table_exists(conn, "skill_curriculum"):
@@ -210,11 +224,12 @@ def evaluate_v3_publish_eligibility(
             return {
                 "allowed": False,
                 "full_coverage": False,
-                "reason": "skill_curriculum_missing",
+                "reason": "SKILL_METADATA_MISSING",
                 "skill_id": skill_key,
                 "coverage": _normalize_coverage(coverage or {}),
                 "eligible_component_count": 0,
                 "fixed_domain_key": fixed_domain_key,
+                "review_hints": review_hints,
             }
 
     normalized = _normalize_coverage(coverage or get_v3_skill_component_coverage(conn, skill_key))
@@ -225,6 +240,8 @@ def evaluate_v3_publish_eligibility(
 
     component_counts = count_publish_eligible_components(conn, skill_key)
     eligible_count = int(component_counts["eligible_component_count"])
+    domain_blocked_count = int(component_counts.get("domain_blocked_component_count") or 0)
+    integrity_blocked_count = int(component_counts.get("integrity_blocked_component_count") or 0)
     integrity_gate_component_count = eligible_count
 
     if total < 1:
@@ -232,11 +249,13 @@ def evaluate_v3_publish_eligibility(
         full_coverage = False
     elif eligible_count < 1:
         if verified < 1:
-            reason = "no_verified_components"
+            reason = "NO_VERIFIED_COMPONENTS"
+        elif integrity_blocked_count > 0 and domain_blocked_count < 1:
+            reason = "COMPONENT_INTEGRITY_FAILED"
         elif failed > 0:
-            reason = "failed_components"
+            reason = "COVERAGE_GATE_FAILED"
         else:
-            reason = "no_eligible_components"
+            reason = "COMPONENT_DOMAIN_MISMATCH"
         full_coverage = False
     elif missing > 0:
         reason = "eligible"
@@ -263,7 +282,12 @@ def evaluate_v3_publish_eligibility(
         "reason": reason,
         "skill_id": skill_key,
         "fixed_domain_key": fixed_domain_key,
+        "curriculum_profile": domain_context.curriculum_profile,
+        "allowed_operations": list(domain_context.allowed_operations),
         "coverage": normalized,
         "eligible_component_count": eligible_count,
+        "domain_blocked_component_count": domain_blocked_count,
+        "integrity_blocked_component_count": integrity_blocked_count,
         "integrity_gate_component_count": integrity_gate_component_count,
+        "review_hints": review_hints,
     }

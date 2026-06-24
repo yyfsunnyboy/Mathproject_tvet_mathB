@@ -268,13 +268,13 @@ def test_hv_skill_publish_via_publish_single_directly(
 # ---------------------------------------------------------------------------
 
 
-def test_fake_skill_rejected_when_taxonomy_not_registered(
+def test_fake_skill_rejected_when_domain_binding_missing(
     memory_conn: sqlite3.Connection,
     isolated_roots: tuple[Path, Path],
 ):
     """非 allowlist skill 仍必須被死鎖。"""
     project_root, staging_root = isolated_roots
-    with pytest.raises(ValueError, match="taxonomy_not_registered"):
+    with pytest.raises(ValueError, match="DOMAIN_BINDING_MISSING"):
         run_admin_v3_publish_for_skill(
             conn=memory_conn,
             skill_id=FAKE_SKILL_ID,
@@ -318,7 +318,7 @@ def test_force_publish_false_still_rejected(
         )
 
 
-def test_direct_publish_rejects_fake_skill_when_taxonomy_not_registered(
+def test_direct_publish_rejects_fake_skill_when_domain_binding_missing(
     memory_conn: sqlite3.Connection,
     isolated_roots: tuple[Path, Path],
 ):
@@ -328,8 +328,8 @@ def test_direct_publish_rejects_fake_skill_when_taxonomy_not_registered(
     (project_root / "agent_skills_v3").mkdir(parents=True, exist_ok=True)
     eligibility = evaluate_v3_publish_eligibility(memory_conn, FAKE_SKILL_ID)
     assert eligibility["allowed"] is False
-    assert eligibility["reason"] == "taxonomy_not_registered"
-    with pytest.raises(ValueError, match="taxonomy_not_registered"):
+    assert eligibility["reason"] == "DOMAIN_BINDING_MISSING"
+    with pytest.raises(ValueError, match="DOMAIN_BINDING_MISSING"):
         publish_single_v3_skill_to_production(
             conn=memory_conn,
             skill_id=FAKE_SKILL_ID,

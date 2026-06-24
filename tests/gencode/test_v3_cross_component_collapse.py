@@ -36,23 +36,23 @@ def test_extract_template_signature():
     assert sig3 == sig4
 
 
-def test_collapse_detected_when_single_problem_type():
+def test_single_problem_type_is_review_signal_not_collapse():
     components = [
         {
             "textbook_example_id": 1,
             "problem_type_id": "point_slope",
             "generate_code": "def generate(): pass",
-            "sample_question_text": "q1",
+            "sample_question_text": "find a line through a point",
         },
         {
             "textbook_example_id": 2,
             "problem_type_id": "point_slope",
             "generate_code": "def generate(): pass",
-            "sample_question_text": "q2",
+            "sample_question_text": "read a slope from a graph",
         },
     ]
     res = check_cross_example_collapse(components)
-    assert res["collapse_detected"]
+    assert not res["collapse_detected"]
     assert any("cross_example_semantic_collapse" in r for r in res["reasons"])
 
 

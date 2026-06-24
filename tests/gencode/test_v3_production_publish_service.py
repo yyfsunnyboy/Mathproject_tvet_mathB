@@ -185,7 +185,7 @@ def test_publish_success_backup_promote_and_manual_rollback(
     assert (project_root / "agent_skills_v3").exists()
 
 
-def test_publish_rejects_taxonomy_unregistered_skill(
+def test_publish_rejects_skill_without_authoritative_domain_binding(
     memory_conn: sqlite3.Connection,
     isolated_publish_roots: tuple[Path, Path],
 ):
@@ -193,7 +193,7 @@ def test_publish_rejects_taxonomy_unregistered_skill(
     project_root, staging_root = isolated_publish_roots
     _setup_mock_project_root(project_root)
 
-    with pytest.raises(ValueError, match="taxonomy_not_registered"):
+    with pytest.raises(ValueError, match="DOMAIN_BINDING_MISSING"):
         publish_single_v3_skill_to_production(
             conn=memory_conn,
             skill_id="jh_數學1上_FourArithmeticOperationsOfIntegers",

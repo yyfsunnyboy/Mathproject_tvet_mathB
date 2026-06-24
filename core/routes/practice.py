@@ -1452,25 +1452,34 @@ def next_question():
             "is_instant_upload": True,
         }, skill_id=skill_id))
     try:
-        # 1. Check routing via resolve_generator_route first
-        from core.generator_route_resolver import resolve_generator_route
+        # 1. Resolve runtime route with published V3 facade precedence.
+        from core.generator_route_resolver import resolve_runtime_route_decision
         from core.legacy_generator_adapter import invoke_legacy_generator, normalize_legacy_payload
 
         # Load skill module
         reload_runtime = False
         if _is_b4_tree_diagram_request(skill_id, problem_type) or _is_b4_pascal_triangle_request(skill_id, problem_type):
-            mod = None
+            route_decision = None
         elif is_b4_chapter2_phase6c1_deterministic_skill(skill_id):
-            mod = None
-        elif is_b4_chapter3_phase7b_runtime_skill(skill_id):
-            mod = None
+            route_decision = None
         else:
             reload_runtime = _runtime_reload_skill_modules()
-            mod = get_skill(skill_id, reload_module=reload_runtime)
+            route_decision = resolve_runtime_route_decision(
+                skill_id=skill_id,
+                reload_module=reload_runtime,
+                is_b4_phase7b_runtime_skill=is_b4_chapter3_phase7b_runtime_skill(skill_id),
+                legacy_module_loader=get_skill,
+            )
+
+        mod = route_decision.module if route_decision is not None else None
 
         wrapper_loaded = bool(mod is not None and hasattr(mod, "generate"))
         wrapper_path = f"skills.{skill_id}"
-        route_source = "gencode_wrapper" if wrapper_loaded else "legacy"
+        route_mode = route_decision.mode if route_decision is not None else "special_b4"
+        route_reason = route_decision.reason if route_decision is not None else "special_b4_runtime"
+        legacy_fallback_used = bool(route_decision.legacy_fallback_used) if route_decision is not None else False
+        legacy_fallback_reason = route_decision.legacy_fallback_reason if route_decision is not None else ""
+        route_source = "gencode_wrapper" if route_mode == "v3" else "legacy"
         module_file = ""
         if mod is not None:
             module_file = str(getattr(mod, "__file__", "") or "")
@@ -1479,6 +1488,13 @@ def next_question():
         current_app.logger.info("[GENCODE WEB RUNTIME] wrapper_path=%s", wrapper_path)
         current_app.logger.info("[GENCODE WEB RUNTIME] module_file=%s reload=%s", module_file, reload_runtime)
         current_app.logger.info("[GENCODE WEB RUNTIME] route_source=%s", route_source)
+        current_app.logger.info(
+            "[GENCODE WEB RUNTIME] route_mode=%s route_reason=%s legacy_fallback_used=%s legacy_fallback_reason=%s",
+            route_mode,
+            route_reason,
+            str(legacy_fallback_used).lower(),
+            legacy_fallback_reason,
+        )
         if wrapper_loaded and hasattr(mod, "GENERATOR_SPECS"):
             current_app.logger.info("[GENCODE WEB RUNTIME] generator_specs=%s", getattr(mod, "GENERATOR_SPECS", []))
 
@@ -1509,14 +1525,8 @@ def next_question():
         
         prereq_info_for_ai = [{'id': p.skill_id, 'name': p.skill_ch_name} for p in prereq_query]
 
-        # Route determination
-        resolved_route = resolve_generator_route(
-            skill_id=skill_id,
-            loaded_module=mod,
-            existing_route_source=None,
-        )
-        resolved_mode = resolved_route["mode"]
-        resolved_route_source = resolved_route.get("reason", "") # default routing source detail
+        resolved_mode = route_mode
+        resolved_route_source = route_reason
 
         # Handle legacy route separately (strictly no retry loop, single call, only pass level)
         if resolved_mode == "legacy":
@@ -1533,7 +1543,7 @@ def next_question():
                 skill_id,
                 module_file,
                 route_source,
-                resolved_route.get("reason", "")
+                route_reason
             )
             data = invoke_legacy_generator(
                 mod,
@@ -1579,7 +1589,7 @@ def next_question():
                                 {"error": _b4_chap2_public_payload_validation_message(deny_r)}
                             ), 422
                         data = chap2_payload
-                    elif is_b4_chapter3_phase7b_runtime_skill(skill_id):
+                    elif resolved_mode == "b4_phase7b":
                         gen_seed = request.args.get("gen_seed", type=int)
                         previous_current = get_current() or {}
                         previous_scenario_id = str(previous_current.get("scenario_id") or "")
@@ -1741,7 +1751,7 @@ def next_question():
                             skill_id,
                             module_file,
                             route_source,
-                            resolved_route.get("reason", "")
+                            route_reason
                         )
 
                         try:
@@ -1836,6 +1846,13 @@ def next_question():
             "problem_type_id": session_data.get("problem_type_id") or session_data.get("problem_type"),
             "source": session_data.get("source", route_source),
             "route_source": route_source,
+            "route_mode": route_mode,
+            "route_reason": route_reason,
+            "wrapper_path": wrapper_path,
+            "module_file": module_file,
+            "wrapper_loaded": wrapper_loaded,
+            "legacy_fallback_used": legacy_fallback_used,
+            "legacy_fallback_reason": legacy_fallback_reason,
             "question_source": session_data.get("question_source", route_source),
             "generator_mode": session_data.get("generator_mode"),
             **_v3_runtime_contract_api_fields(session_data),

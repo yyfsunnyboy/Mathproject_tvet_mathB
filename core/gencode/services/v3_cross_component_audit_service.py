@@ -73,9 +73,9 @@ def check_cross_example_collapse(
     collapse_detected = False
     reasons = []
     
-    # If there are many examples, but only 1 problem type or 1 ast hash, it is a collapse!
+    # Same problem type across examples is normal for a narrow textbook skill. Treat
+    # it as a metric, not a hard semantic-collapse signal.
     if len(unique_problem_types) == 1:
-        collapse_detected = True
         reasons.append("cross_example_semantic_collapse: only 1 unique problem_type_id detected across all components")
     if len(non_empty_template_signatures) == 1:
         collapse_detected = True

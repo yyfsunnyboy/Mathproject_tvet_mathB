@@ -258,7 +258,7 @@ def test_feature_flag_enabled_requires_project_and_staging_root(
     assert not (isolated_roots["project_root"] / "skills" / f"{BENCHMARK_SKILL_ID}.py.bak").exists()
 
 
-def test_non_mvp_skill_stays_v2_route_and_shape(
+def test_non_mvp_unbound_skill_runs_shadow_bridge_but_does_not_publish(
     memory_conn: sqlite3.Connection,
     isolated_roots: dict[str, Path],
     monkeypatch: pytest.MonkeyPatch,
@@ -266,7 +266,7 @@ def test_non_mvp_skill_stays_v2_route_and_shape(
     monkeypatch.setattr("core.gencode.pipeline_orchestrator.V3_PRODUCTION_PUBLISH_ENABLED", True)
     monkeypatch.setattr(
         "core.gencode.pipeline_orchestrator.run_gencode_phase2_v3_shadow_bridge",
-        lambda **_kwargs: (_ for _ in ()).throw(AssertionError("shadow bridge should not run for non-MVP skill")),
+        _fake_shadow_bridge_factory(isolated_roots["dryrun_root"]),
     )
     monkeypatch.setattr(
         "core.gencode.v3_production_publish_service.publish_single_v3_skill_to_production",
@@ -278,16 +278,21 @@ def test_non_mvp_skill_stays_v2_route_and_shape(
     )
 
     tracker_before = memory_conn.execute("SELECT COUNT(*) AS c FROM gencode_component_tracker").fetchone()["c"]
-    result = run_gencode_phase2_raw("legacy_skill_not_in_mvp", dry_run=True, v3_conn=memory_conn, v3_textbook_example_id=1)
+    with pytest.raises(ValueError, match="DOMAIN_BINDING_MISSING"):
+        run_gencode_phase2_raw(
+            "legacy_skill_not_in_mvp",
+            dry_run=True,
+            v3_conn=memory_conn,
+            v3_textbook_example_id=1,
+            v3_project_root=str(isolated_roots["project_root"]),
+            v3_staging_root=str(isolated_roots["staging_root"]),
+        )
     tracker_after = memory_conn.execute("SELECT COUNT(*) AS c FROM gencode_component_tracker").fetchone()["c"]
 
-    assert result.get("phase_status") == "SOP_PREFLIGHT_FAIL"
-    assert "production_publish_enabled" not in result
     assert tracker_after == tracker_before
-    assert list(isolated_roots["dryrun_root"].rglob("*")) == []
 
 
-def test_mvp_but_non_benchmark_skill_rejected_when_flag_enabled(
+def test_mvp_but_unbound_skill_rejected_when_flag_enabled(
     memory_conn: sqlite3.Connection,
     isolated_roots: dict[str, Path],
     monkeypatch: pytest.MonkeyPatch,
@@ -304,7 +309,7 @@ def test_mvp_but_non_benchmark_skill_rejected_when_flag_enabled(
         _fake_shadow_bridge_factory(isolated_roots["dryrun_root"]),
     )
 
-    with pytest.raises(ValueError, match="skill_domain_not_registered|v3_publish_not_eligible|no_eligible_components"):
+    with pytest.raises(ValueError, match="DOMAIN_BINDING_MISSING|v3_publish_not_eligible|no_eligible_components"):
         run_gencode_phase2_raw(
             "vh_fake_MVP",
             dry_run=True,

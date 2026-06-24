@@ -1,8 +1,9 @@
 from __future__ import annotations
 
+import importlib
 from types import ModuleType
 
-from core.generator_route_resolver import resolve_generator_route
+from core.generator_route_resolver import resolve_generator_route, resolve_runtime_route_decision
 
 
 def _module(name: str, file: str | None = None) -> ModuleType:
@@ -77,3 +78,81 @@ def test_missing_generate_is_unavailable() -> None:
 
     assert route["mode"] == "unavailable"
 
+
+def test_runtime_decision_prefers_v3_over_b4_phase7b_allowlist(monkeypatch) -> None:
+    mod = _module(
+        "skills.vh_b4_published",
+        r"D:\Python\Mathproject_tvet_mathB\skills\vh_b4_published.py",
+    )
+    mod.GENERATOR_KEYS = ["src_1"]
+    mod.GENERATOR_SPECS = [{"component_id": "src_1"}]
+
+    def generate(level=1, seed=None, component_id=None):
+        return {"question_text": "q", "answer": "1", "component_id": component_id}
+
+    mod.generate = generate
+
+    monkeypatch.setattr(importlib.util, "find_spec", lambda name: object())
+    monkeypatch.setattr(importlib, "import_module", lambda name: mod)
+
+    decision = resolve_runtime_route_decision(
+        skill_id="vh_b4_published",
+        is_b4_phase7b_runtime_skill=True,
+    )
+
+    assert decision.mode == "v3"
+    assert decision.reason == "published_v3_runtime_available"
+    assert decision.module is mod
+    assert decision.wrapper_loaded is True
+    assert decision.legacy_fallback_used is False
+
+
+def test_runtime_decision_b4_phase7b_only_when_v3_facade_missing(monkeypatch) -> None:
+    monkeypatch.setattr(importlib.util, "find_spec", lambda name: None)
+
+    decision = resolve_runtime_route_decision(
+        skill_id="vh_b4_legacy_only",
+        is_b4_phase7b_runtime_skill=True,
+    )
+
+    assert decision.mode == "b4_phase7b"
+    assert decision.reason == "b4_phase7b_legacy_available"
+    assert decision.legacy_fallback_used is True
+    assert decision.legacy_fallback_reason == "v3_facade_missing"
+
+
+def test_runtime_decision_import_failure_is_not_missing(monkeypatch) -> None:
+    def boom(name):
+        raise RuntimeError("facade exploded")
+
+    monkeypatch.setattr(importlib.util, "find_spec", lambda name: object())
+    monkeypatch.setattr(importlib, "import_module", boom)
+
+    decision = resolve_runtime_route_decision(
+        skill_id="vh_b4_import_failed",
+        is_b4_phase7b_runtime_skill=True,
+    )
+
+    assert decision.mode == "b4_phase7b"
+    assert decision.reason == "v3_facade_import_failed"
+    assert decision.legacy_fallback_reason == "v3_facade_import_failed"
+    assert decision.error_type == "RuntimeError"
+    assert decision.error_message == "facade exploded"
+
+
+def test_runtime_decision_missing_generate_is_explicit(monkeypatch) -> None:
+    mod = _module(
+        "skills.vh_b4_missing_generate",
+        r"D:\Python\Mathproject_tvet_mathB\skills\vh_b4_missing_generate.py",
+    )
+    monkeypatch.setattr(importlib.util, "find_spec", lambda name: object())
+    monkeypatch.setattr(importlib, "import_module", lambda name: mod)
+
+    decision = resolve_runtime_route_decision(
+        skill_id="vh_b4_missing_generate",
+        is_b4_phase7b_runtime_skill=True,
+    )
+
+    assert decision.mode == "b4_phase7b"
+    assert decision.reason == "v3_facade_missing_generate"
+    assert decision.legacy_fallback_reason == "v3_facade_missing_generate"

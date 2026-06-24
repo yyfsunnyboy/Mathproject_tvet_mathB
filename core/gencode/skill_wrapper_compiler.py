@@ -172,6 +172,32 @@ def _build_generator_specs(components: list[dict[str, Any]]) -> tuple[list[str],
     return generator_keys, generator_specs
 
 
+def _render_component_manifest(
+    *,
+    skill_id: str,
+    generator_specs: list[dict[str, Any]],
+) -> dict[str, Any]:
+    return {
+        "skill_id": skill_id,
+        "publish_status": "production_manifest_compiled",
+        "component_count": len(generator_specs),
+        "components": [
+            {
+                "component_id": str(spec.get("component_id") or ""),
+                "textbook_example_id": int(spec.get("textbook_example_id") or 0),
+                "status": "verified",
+                "problem_type_id": str(spec.get("problem_type_id") or ""),
+                "domain_operation": str(spec.get("domain_operation") or spec.get("problem_type_id") or ""),
+                "presentation_mode": str(spec.get("presentation_mode") or ""),
+                "answer_type": str(spec.get("answer_type") or ""),
+                "source_kind": str(spec.get("source_kind") or ""),
+                "generate_py": f"components/{spec.get('component_id')}/generate.py",
+            }
+            for spec in generator_specs
+        ],
+    }
+
+
 def _render_new_house_init_py(
     *,
     skill_id: str,
@@ -522,6 +548,7 @@ def compile_and_double_write_skill(
     sandbox_path = Path(os.path.abspath(os.path.normpath(sandbox_root)))
     v3_package_root = sandbox_path / "agent_skills_v3"
     new_house_path = v3_package_root / skill_key / "__init__.py"
+    manifest_path = v3_package_root / skill_key / "component_manifest.json"
     thin_facade_path = sandbox_path / "skills" / f"{skill_key}.py"
 
     new_house_path.parent.mkdir(parents=True, exist_ok=True)
@@ -539,6 +566,14 @@ def compile_and_double_write_skill(
     )
 
     new_house_path.write_text(new_house_source, encoding="utf-8")
+    manifest_path.write_text(
+        json.dumps(
+            _render_component_manifest(skill_id=skill_key, generator_specs=generator_specs),
+            ensure_ascii=False,
+            indent=2,
+        ),
+        encoding="utf-8",
+    )
 
     backup_path = thin_facade_path.with_suffix(f"{thin_facade_path.suffix}.bak")
     if thin_facade_path.exists() and not backup_path.exists():
@@ -552,6 +587,7 @@ def compile_and_double_write_skill(
         "generator_keys": generator_keys,
         "generator_specs": generator_specs,
         "new_house_path": str(new_house_path.resolve()),
+        "component_manifest_path": str(manifest_path.resolve()),
         "thin_facade_path": str(thin_facade_path.resolve()),
     }
 
