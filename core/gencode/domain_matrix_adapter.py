@@ -1,4 +1,4 @@
-﻿"""Adapter layer between Domain Full Matrix Dictionary and question payloads."""
+"""Adapter layer between Domain Full Matrix Dictionary and question payloads."""
 
 from __future__ import annotations
 
@@ -1249,9 +1249,71 @@ def convert_domain_matrix_to_question_payload(
     mode = str(presentation_mode or "short_answer").strip()
     resolved_answer_type = str(answer_type or "integer").strip()
     question_text = str(kwargs.get("question_text") or "閱讀下列資料，根據表格回答問題。")
-    target_label = validation_facts.get("target_label")
-    if target_label:
-        question_text = f"閱讀下列次數分配表，求 {target_label} 的次數。"
+    if problem_type_id == "frequency_distribution_chart_construction":
+        pass
+    elif problem_type_id == "histogram_distribution_update":
+        question_text = "下圖為某幼兒園班上25位小朋友身高分布之直方圖。今班上轉出一位身高117公分的小朋友，轉入一位身高112公分的小朋友，則此時班上小朋友身高分布之直方圖為何？（請說明哪兩組次數改變以及各改變多少）"
+    else:
+        target_label = validation_facts.get("target_label")
+        if target_label:
+            question_text = f"閱讀下列次數分配表，求 {target_label} 的次數。"
+
+    if problem_type_id == "frequency_distribution_chart_construction":
+        return {
+            "question_text": question_text,
+            "answer": "直方圖與折線圖已繪製於畫布。",
+            "correct_answer": "直方圖與折線圖已繪製於畫布。",
+            "display_answer": "直方圖與折線圖已繪製於畫布。",
+            "choices": [],
+            "options": [],
+            "component_id": component_id,
+            "textbook_example_id": textbook_example_id,
+            "problem_type_id": problem_type_id,
+            "source_kind": source_kind,
+            "presentation_mode": mode,
+            "answer_type": resolved_answer_type,
+            "interaction_type": "handwriting_drawing",
+            "auto_checkable": False,
+            "grading_mode": "manual_or_ai_visual_review",
+            "answer_contract": {
+                "presentation_mode": mode,
+                "answer_type": resolved_answer_type,
+                "checker": "free_response_drawing_checker",
+                "checker_key": "free_response_drawing_checker",
+                "answer_equivalence": "drawing_equivalence",
+                "equivalence": "drawing_equivalence",
+                "semantic_answer": "直方圖與折線圖已繪製於畫布。",
+            },
+            "metadata": {
+                "givens": givens,
+                "raw_givens": givens,
+                "target": "直方圖與折線圖已繪製於畫布。",
+                "derivation": [str(step) for step in normalized["explanation_steps"]],
+                "presentation_mode": mode,
+                "answer_type": resolved_answer_type,
+                "semantic_answer": "直方圖與折線圖已繪製於畫布。",
+                "problem_type_id": problem_type_id,
+                "component_id": component_id,
+                "textbook_example_id": textbook_example_id,
+                "interaction_type": "handwriting_drawing",
+                "auto_checkable": False,
+                "grading_mode": "manual_or_ai_visual_review",
+            },
+            "math_core": {
+                "givens": givens,
+                "raw_givens": givens,
+                "target": "直方圖與折線圖已繪製於畫布。",
+                "math_objects": ["frequency_table", "frequency"],
+                "derivation": [str(step) for step in normalized["explanation_steps"]],
+                "validation_facts": validation_facts,
+            },
+            "visual_spec": normalized["visual_spec"],
+            "visual_aids": normalized.get("visual_aids", matrix.get("visual_aids", [])),
+            "image_base64": normalized.get("image_base64", matrix.get("image_base64", "")),
+            "validation_facts": validation_facts,
+            "generator_key": generator_key or component_id,
+        }
+
     return {
         "question_text": question_text,
         "answer": semantic_answer,
@@ -1265,13 +1327,16 @@ def convert_domain_matrix_to_question_payload(
         "source_kind": source_kind,
         "presentation_mode": mode,
         "answer_type": resolved_answer_type,
+        "interaction_type": "handwriting_drawing" if problem_type_id == "histogram_distribution_update" else "expression",
+        "auto_checkable": False if problem_type_id == "histogram_distribution_update" else True,
+        "grading_mode": "manual_or_ai_visual_review" if problem_type_id == "histogram_distribution_update" else "auto",
         "answer_contract": {
             "presentation_mode": mode,
             "answer_type": resolved_answer_type,
-            "checker": "integer_checker",
-            "checker_key": "integer_checker",
-            "answer_equivalence": "numeric_exact",
-            "equivalence": "numeric_exact",
+            "checker": "free_response_drawing_checker" if problem_type_id == "histogram_distribution_update" else "integer_checker",
+            "checker_key": "free_response_drawing_checker" if problem_type_id == "histogram_distribution_update" else "integer_checker",
+            "answer_equivalence": "drawing_equivalence" if problem_type_id == "histogram_distribution_update" else "numeric_exact",
+            "equivalence": "drawing_equivalence" if problem_type_id == "histogram_distribution_update" else "numeric_exact",
             "semantic_answer": semantic_answer,
         },
         "metadata": {
@@ -1285,6 +1350,9 @@ def convert_domain_matrix_to_question_payload(
             "problem_type_id": problem_type_id or op,
             "component_id": component_id,
             "textbook_example_id": textbook_example_id,
+            "interaction_type": "handwriting_drawing" if problem_type_id == "histogram_distribution_update" else "expression",
+            "auto_checkable": False if problem_type_id == "histogram_distribution_update" else True,
+            "grading_mode": "manual_or_ai_visual_review" if problem_type_id == "histogram_distribution_update" else "auto",
         },
         "math_core": {
             "givens": givens,
@@ -1295,6 +1363,8 @@ def convert_domain_matrix_to_question_payload(
             "validation_facts": validation_facts,
         },
         "visual_spec": normalized["visual_spec"],
+        "visual_aids": normalized.get("visual_aids", matrix.get("visual_aids", [])),
+        "image_base64": normalized.get("image_base64", matrix.get("image_base64", "")),
         "validation_facts": validation_facts,
         "generator_key": generator_key or component_id,
     }

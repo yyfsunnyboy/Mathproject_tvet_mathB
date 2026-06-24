@@ -54,7 +54,7 @@ def format_gencode_status_label(status: str) -> str:
 TEACHER_V3_STATUS: dict[str, dict[str, object]] = {
     "not_generated": {
         "status_key": "not_generated",
-        "label": "尚未生成",
+        "label": "尚待驗證或尚未生成",
         "badge_class": "teacher-v3-not-generated",
         "icon": "⚪",
         "is_clickable": True,
@@ -68,7 +68,7 @@ TEACHER_V3_STATUS: dict[str, dict[str, object]] = {
     },
     "generated_not_packaged": {
         "status_key": "generated_not_packaged",
-        "label": "尚未上線",
+        "label": "已驗證／尚未封裝",
         "badge_class": "teacher-v3-generated-not-packaged",
         "icon": "🟡",
         "is_clickable": True,
@@ -94,6 +94,13 @@ TEACHER_V3_STATUS: dict[str, dict[str, object]] = {
         "icon": "🟢",
         "is_clickable": True,
     },
+    "unsupported": {
+        "status_key": "unsupported",
+        "label": "暫不支援",
+        "badge_class": "teacher-v3-unsupported",
+        "icon": "⚪",
+        "is_clickable": True,
+    },
 }
 
 
@@ -112,6 +119,8 @@ def resolve_teacher_facing_v3_status(
     production_contains_latest: bool = False,
 ) -> dict[str, object]:
     status = str(gencode_status or "").strip()
+    if status == "unsupported":
+        return _teacher_status_payload("unsupported")
     if has_error or status == "failed":
         return _teacher_status_payload("failed")
     if status in {"generating", "pending", "running", "queued"}:
@@ -126,7 +135,11 @@ def resolve_teacher_facing_v3_status(
         if production_contains_latest:
             return _teacher_status_payload("published")
         return _teacher_status_payload("generated_not_packaged")
+    if status in {"draft", "pending"} or status.startswith("draft"):
+        return _teacher_status_payload("not_generated")
     if has_tracker and (has_generated_artifact or has_component):
+        if production_contains_latest:
+            return _teacher_status_payload("published")
         return _teacher_status_payload("generated_not_packaged")
     if not has_tracker and not has_component and not has_generated_artifact:
         return _teacher_status_payload("not_generated")
@@ -609,6 +622,18 @@ def build_admin_example_gencode_status_view(
         project_root=project_root,
     )
     status = str(tracker_status.get("status", "not_created"))
+    v_hash = sync_status.get("verified_component_hash")
+    payload = _parse_payload_dict(tracker_status.get("induced_spec_payload"))
+    p_hash = str(payload.get("verified_generate_sha256") or "").strip() or None
+    if status in {"verified", "smoke_passed"} and p_hash and v_hash and p_hash != v_hash:
+        status = "pending"
+    error_log = tracker_status.get("error_log")
+    payload_raw = tracker_status.get("induced_spec_payload")
+    from core.gencode.services.v3_skill_coverage_service import _payload_error_code
+    from core.gencode.v3_error_codes import UNSUPPORTED_TASK_TYPE
+    error_code = _payload_error_code(payload_raw, error_log)
+    if error_code == UNSUPPORTED_TASK_TYPE or status == "unsupported":
+        status = "unsupported"
     has_payload = bool(tracker_status.get("has_payload"))
     has_tracker = bool(tracker_status.get("component_id")) or status not in {"not_created", ""}
     teacher_status = resolve_teacher_facing_v3_status(
@@ -663,6 +688,18 @@ def build_admin_examples_gencode_status_map(
             project_root=project_root,
         )
         status = str(tracker_status.get("status", "not_created"))
+        v_hash = sync_status.get("verified_component_hash")
+        payload = _parse_payload_dict(tracker_status.get("induced_spec_payload"))
+        p_hash = str(payload.get("verified_generate_sha256") or "").strip() or None
+        if status in {"verified", "smoke_passed"} and p_hash and v_hash and p_hash != v_hash:
+            status = "pending"
+        error_log = tracker_status.get("error_log")
+        payload_raw = tracker_status.get("induced_spec_payload")
+        from core.gencode.services.v3_skill_coverage_service import _payload_error_code
+        from core.gencode.v3_error_codes import UNSUPPORTED_TASK_TYPE
+        error_code = _payload_error_code(payload_raw, error_log)
+        if error_code == UNSUPPORTED_TASK_TYPE or status == "unsupported":
+            status = "unsupported"
         has_payload = bool(tracker_status.get("has_payload"))
         has_tracker = bool(tracker_status.get("component_id")) or status not in {"not_created", ""}
         teacher_status = resolve_teacher_facing_v3_status(
@@ -815,11 +852,12 @@ def build_admin_skill_gencode_status_view(
         and int(prod_info.get("production_component_count") or 0) > 0
     )
     source_type = "production" if has_production else "dryrun"
+    total_examples = int(coverage.get("total_examples") or 0)
     verified_count = int(coverage.get("verified_count") or 0)
     published_component_ids: set[str] = set()
+    stale_count = 0
     for row in rows:
-        if str(row.get("status")) != "verified":
-            continue
+        row_status = str(row.get("status"))
         sync_status = inspect_component_production_sync(
             skill_id=skill_id,
             component_id=str(row.get("component_id") or "") or None,
@@ -830,15 +868,35 @@ def build_admin_skill_gencode_status_view(
             production_base_dir=production_base_dir,
             project_root=project_root,
         )
+        if row_status in {"verified", "smoke_passed"}:
+            v_hash = sync_status.get("verified_component_hash")
+            payload = _parse_payload_dict(row.get("induced_spec_payload"))
+            p_hash = str(payload.get("verified_generate_sha256") or "").strip() or None
+            if p_hash and v_hash and p_hash != v_hash:
+                row_status = "pending"
+                stale_count += 1
+        if row_status != "verified":
+            continue
         if bool(sync_status.get("production_contains_latest")):
             published_component_ids.add(str(row.get("component_id")))
+    verified_count = max(0, verified_count - stale_count)
     published_count = len(published_component_ids)
     generated_not_packaged_count = max(0, verified_count - published_count)
     failed_count = sum(1 for row in rows if str(row.get("status")) == "failed" or row.get("error_log"))
-    if has_published_package and verified_count > 0:
+    # Map 'partially_published' status payload
+    partially_published_payload = {
+        "status_key": "partially_published",
+        "label": f"部分上線 ({published_count}/{total_examples})",
+        "badge_class": "teacher-v3-partially-published",
+        "icon": "🟡",
+        "is_clickable": True,
+    }
+
+    if published_count == total_examples and total_examples > 0 and generated_not_packaged_count == 0:
         teacher_status = _teacher_status_payload("published")
-    elif int(coverage.get("total_examples") or 0) > 0 and published_count == int(coverage.get("total_examples") or 0):
-        teacher_status = _teacher_status_payload("published")
+        teacher_status["label"] = "全部上線"
+    elif published_count > 0:
+        teacher_status = partially_published_payload
     elif failed_count > 0 and verified_count == 0:
         teacher_status = _teacher_status_payload("failed")
     elif verified_count > 0:

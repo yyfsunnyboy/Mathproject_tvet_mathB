@@ -28,7 +28,78 @@ def validate_generator_payload(
     errors = validate_answer_contract(payload, spec)
     errors.extend(validate_dependency_contract(payload, spec))
     errors.extend(validate_semantic_contract(payload, spec))
-    
+
+    # --- Six Generic Verification Gates ---
+    # 1. SOURCE_FIDELITY: Graph drawing tasks must not be degraded to value reading
+    problem_type_id = str(payload.get("problem_type_id") or "").strip()
+    question_text = str(payload.get("question_text") or "").strip()
+    if problem_type_id == "frequency_distribution_chart_construction":
+        is_degraded = False
+        if payload.get("answer_type") == "integer":
+            is_degraded = True
+        elif str(payload.get("correct_answer") or "").isdigit():
+            is_degraded = True
+        elif "求" in question_text and "次數" in question_text:
+            is_degraded = True
+        if is_degraded:
+            errors.append("SOURCE_FIDELITY: chart construction task must not be degraded to value reading")
+
+    # 2. ANSWER_DEPENDENCY_COMPLETENESS: Visual payload must be present when required
+    requires_visual = bool(spec.get("requires_visual", False) or spec.get("metadata", {}).get("requires_visual", False) or "chart" in problem_type_id or "histogram" in problem_type_id or "polygon" in problem_type_id)
+    if requires_visual:
+        visual_aids = payload.get("visual_aids", [])
+        image_base64 = payload.get("image_base64", "")
+        if not visual_aids and not image_base64:
+            errors.append("ANSWER_DEPENDENCY_COMPLETENESS: visual payload (visual_aids/image_base64) must be generated")
+
+    # 3. EXISTING_VISUAL_CONTRACT_COMPLIANCE: Check image format compliance
+    if requires_visual:
+        visual_aids = payload.get("visual_aids", [])
+        image_base64 = payload.get("image_base64", "")
+        has_b64 = False
+        if isinstance(image_base64, str) and image_base64.strip():
+            has_b64 = True
+        elif isinstance(visual_aids, list):
+            has_b64 = any(isinstance(x, dict) and x.get("type") == "image/png" and x.get("value") for x in visual_aids)
+        if not has_b64:
+            errors.append("EXISTING_VISUAL_CONTRACT_COMPLIANCE: visual payload must comply with image_base64/png base64 payload format")
+
+    # 4. SCAFFOLD_NOT_PUBLISHABLE: Do not publish generic AST scaffolds
+    metadata = payload.get("metadata", {})
+    givens = metadata.get("givens", {})
+    categories = givens.get("categories", [])
+    is_generic = False
+    if categories == ["A組", "B組", "C組", "D組"]:
+        is_generic = True
+    elif "A組" in question_text and "B組" in question_text and "C組" in question_text and "D組" in question_text:
+        background_keywords = ["模擬考", "體重", "國貿", "會計", "女中", "成績", "班"]
+        if not any(k in question_text for k in background_keywords):
+            is_generic = True
+    if is_generic:
+        errors.append("SCAFFOLD_NOT_PUBLISHABLE: generic scaffold with placeholder categories ['A組', 'B組', 'C組', 'D組'] cannot be published")
+
+    # 5. MISSING_SOURCE_ASSET: Reject if missing asset and cannot be reconstructed
+    if spec.get("missing_docx_image_asset") and not image_base64 and not visual_aids:
+         errors.append("MISSING_SOURCE_ASSET: missing textbook image and cannot reconstruct")
+
+    # 6. CHART_DATA_CONSISTENCY: Verify table categories/frequencies match between givens and visual_spec
+    visual_spec = payload.get("visual_spec", {})
+    if isinstance(visual_spec, dict) and visual_spec.get("type") == "table":
+        rows = visual_spec.get("rows", [])
+        givens_map = givens.get("frequency_map", {})
+        givens_categories = list(givens.get("categories") or [])
+        visual_categories = [row[0] for row in rows if len(row) >= 1]
+        if givens_categories and visual_categories != givens_categories:
+            errors.append("CHART_DATA_CONSISTENCY: visual table categories do not match givens categories")
+        if givens_map:
+            for row in rows:
+                if len(row) == 2:
+                    k, v = row[0], row[1]
+                    import re
+                    normalized_v = int(re.search(r'\d+', str(v)).group()) if re.search(r'\d+', str(v)) else None
+                    if k in givens_map and normalized_v is not None and givens_map[k] != normalized_v:
+                        errors.append("CHART_DATA_CONSISTENCY: visual table frequency does not match givens frequency map")
+
     # Run SemanticChecker Base check
     import json
     from validators.semantic_checker import SemanticChecker

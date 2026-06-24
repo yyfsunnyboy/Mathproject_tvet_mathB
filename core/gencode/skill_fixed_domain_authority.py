@@ -4,7 +4,10 @@ from __future__ import annotations
 
 import json
 import logging
+import sqlite3
+import threading
 from dataclasses import dataclass
+from pathlib import Path
 from typing import Any
 
 from core.registry.taxonomy_registry import (
@@ -18,6 +21,11 @@ from core.gencode.v3_error_codes import (
     DOMAIN_BINDING_MISSING,
     DOMAIN_FUNCTION_MISSING,
     DOMAIN_OPERATION_MISSING,
+    DOMAIN_OVERRIDE_NOT_FOUND,
+    DOMAIN_CAPABILITY_PARTIAL,
+    DOMAIN_CAPABILITY_UNRESOLVED,
+    DOMAIN_PROVIDER_MISSING,
+    DOMAIN_ADAPTER_FAILED,
 )
 
 logger = logging.getLogger(__name__)
@@ -40,6 +48,100 @@ AI_IGNORED_ROUTING_FIELDS = frozenset(
     }
 )
 
+# Registry of domain capabilities & providers
+DOMAIN_PROVIDERS = {
+    "coordinate_geometry.line_equation": {
+        "domain_module": "core.domain.coordinate_geometry.line_equation_domain",
+        "entrypoint": "build_line_equation_matrix",
+        "capabilities": {
+            "slope", "line_equation", "horizontal_line", "vertical_line", 
+            "point_slope", "intercept_form", "general_form", "two_points", 
+            "line_through_point_parallel_to_line", "line_through_point_perpendicular_to_line",
+            "compare_line_slopes", "line_through_intersection_parallel_to_line",
+            "line_through_point_perpendicular_to_segment", "perpendicular_bisector_application",
+            "coordinate_geometry_word_problem"
+        },
+        "allowed_operations": [
+            "two_points", "point_slope", "horizontal_line", "vertical_line",
+            "oblique_line", "slope_intercept_equation", "slope_intercept_find_x_intercept",
+            "slope_intercept_read_slope_and_intercept", "intercept_form_equation",
+            "intercept_form_triangle_area", "intercept_form_equation_and_triangle_area",
+            "intercept_form_from_intercept_sum_and_slope", "parabola_secant_parallel_line_choice",
+            "triangle_area_bisector_line_equation", "slope_from_general_or_intercept_form",
+            "slope_from_general_form", "slope_of_horizontal_or_vertical_line",
+            "line_through_point_parallel_to_line", "line_through_point_perpendicular_to_line",
+            "parallel_line_slope", "perpendicular_line_slope", "parallel_condition_parameter",
+            "perpendicular_condition_parameter", "compare_line_slopes",
+            "line_through_intersection_parallel_to_line", "line_through_point_perpendicular_to_segment",
+            "perpendicular_bisector_application", "coordinate_geometry_word_problem"
+        ]
+    },
+    "coordinate_geometry.point_line_distance": {
+        "domain_module": "core.domain.coordinate_geometry.line_equation_domain",
+        "entrypoint": "build_coordinate_geometry_matrix",
+        "capabilities": {
+            "distance_from_point_to_line", "compare_point_to_line_distances"
+        },
+        "allowed_operations": [
+            "distance_from_point_to_line", "distance_from_point_to_line_parameter",
+            "distance_from_point_to_line_parameter_single_choice_scalar", "compare_point_to_line_distances"
+        ]
+    },
+    "coordinate_geometry.parallel_lines_distance": {
+        "domain_module": "core.domain.coordinate_geometry.parallel_lines_distance_domain",
+        "entrypoint": "build_parallel_lines_distance_matrix",
+        "capabilities": {
+            "distance_between_parallel_lines", "parallel_lines_distance", "solve_parameter_from_parallel_distance",
+            "construct_parallel_line_at_distance", "parallel_lines_distance_single_choice", "area_using_parallel_distance"
+        },
+        "allowed_operations": [
+            "distance_between_parallel_lines", "solve_parameter_from_parallel_distance",
+            "construct_parallel_line_at_distance", "parallel_lines_distance_single_choice",
+            "area_using_parallel_distance"
+        ]
+    },
+    "statistics.frequency_distribution": {
+        "domain_module": "core.domain.statistics.frequency_distribution_domain",
+        "entrypoint": "build_frequency_distribution_table_matrix",
+        "capabilities": {
+            "frequency_table", "class_interval", "class_boundary", "class_midpoint", 
+            "histogram", "frequency_polygon", "chart_consistency_validation", "frequency_distribution"
+        },
+        "allowed_operations": [
+            "frequency_table_construction_review",
+            "frequency_table_single_bin_count",
+            "histogram_reading",
+            "frequency_polygon_reading",
+            "frequency_distribution_chart_construction",
+            "histogram_distribution_update"
+        ]
+    }
+}
+
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
+_thread_local = threading.local()
+
+
+class ComponentOverrideContext:
+    def __init__(self, extra: dict[str, Any] | None = None, component_id: str | None = None):
+        self.extra = extra or {}
+        self.component_id = component_id
+
+    def __enter__(self):
+        if not hasattr(_thread_local, "contexts"):
+            _thread_local.contexts = []
+        _thread_local.contexts.append(self)
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        _thread_local.contexts.pop()
+
+
+def get_current_component_override_context():
+    if hasattr(_thread_local, "contexts") and _thread_local.contexts:
+        return _thread_local.contexts[-1]
+    return None
+
 
 class SkillFixedDomainError(ValueError):
     """Base error for skill-fixed domain authority violations."""
@@ -61,40 +163,200 @@ class FixedDomainContext:
     curriculum_profile: str
 
 
+def resolve_dynamic_fixed_domain_context(skill_id: str, original_exc: Exception) -> FixedDomainContext:
+    resolver_path = []
+    fallback_attempts = []
+    
+    ctx = get_current_component_override_context()
+    component_id = ctx.component_id if ctx else ""
+    extra_data = ctx.extra if ctx else {}
+    
+    explicit_key = extra_data.get("fixed_domain_key") or extra_data.get("domain_key")
+    if explicit_key:
+        resolver_path.append("component_override")
+        fallback_attempts.append(f"try override key {explicit_key}")
+        if explicit_key in DOMAIN_PROVIDERS:
+            prov = DOMAIN_PROVIDERS[explicit_key]
+            allowed_ops = tuple(extra_data.get("allowed_operations") or prov["allowed_operations"])
+            return FixedDomainContext(
+                skill_id=skill_id,
+                fixed_domain_key=explicit_key,
+                allowed_operations=allowed_ops,
+                registry_revision="2026-06-23-v1.8",
+                domain_module=str(extra_data.get("domain_module") or prov["domain_module"]),
+                entrypoint=str(extra_data.get("entrypoint") or prov["entrypoint"]),
+                curriculum_profile=str(extra_data.get("curriculum_profile") or "vocational_high_b"),
+            )
+        else:
+            raise SkillFixedDomainError(
+                DOMAIN_OVERRIDE_NOT_FOUND,
+                f"component_override_domain_not_found: {explicit_key}",
+                details={
+                    "skill_id": skill_id,
+                    "component_id": component_id,
+                    "problem_type_id": extra_data.get("problem_type_id") or "",
+                    "required_capabilities": list(extra_data.get("required_capabilities") or []),
+                    "matched_capabilities": [],
+                    "missing_capabilities": [explicit_key],
+                    "resolver_path": resolver_path,
+                    "fallback_attempts": fallback_attempts,
+                }
+            )
+
+    examples = []
+    try:
+        db_path = PROJECT_ROOT / "instance/kumon_math.db"
+        if db_path.is_file():
+            with sqlite3.connect(str(db_path)) as db_conn:
+                db_conn.row_factory = sqlite3.Row
+                rows = db_conn.execute(
+                    "SELECT id, problem_text, correct_answer, detailed_solution, explanation, problem_type FROM textbook_examples WHERE skill_id = ? ORDER BY id ASC",
+                    (skill_id,),
+                ).fetchall()
+                examples = [dict(r) for r in rows]
+    except Exception as e:
+        fallback_attempts.append(f"db_load_failed: {e}")
+
+    required_caps = set()
+    domain_families = set()
+    problem_types = set()
+    
+    for ex in examples:
+        text = (
+            str(ex.get("problem_text") or "") + " " +
+            str(ex.get("correct_answer") or "") + " " +
+            str(ex.get("detailed_solution") or "") + " " +
+            str(ex.get("explanation") or "")
+        ).lower()
+        
+        pt = str(ex.get("problem_type") or "").strip()
+        if pt:
+            problem_types.add(pt)
+            
+        if any(kw in text for kw in ["直方圖", "折線圖", "次數分配", "組距", "組中點", "次數", "histogram", "polygon", "frequency"]):
+            domain_families.add("statistics_chart")
+            required_caps.update([
+                "frequency_table",
+                "class_interval",
+                "class_boundary",
+                "class_midpoint",
+                "histogram",
+                "frequency_polygon",
+                "chart_consistency_validation"
+            ])
+        elif any(kw in text for kw in ["平行線", "兩平行線", "平行線的距離", "平行線之距離", "parallel line"]):
+            domain_families.add("coordinate_geometry")
+            required_caps.update(["distance_between_parallel_lines", "parallel_lines_distance", "solve_parameter_from_parallel_distance"])
+        elif any(kw in text for kw in ["點到直線", "距離", "point to line", "distance"]):
+            domain_families.add("coordinate_geometry")
+            required_caps.update(["distance_from_point_to_line", "compare_point_to_line_distances"])
+        elif any(kw in text for kw in ["直線方程式", "斜率", "點斜式", "截距式", "一般式", "垂直平分線", "line equation", "slope"]):
+            domain_families.add("coordinate_geometry")
+            required_caps.update(["slope", "line_equation", "horizontal_line", "vertical_line", "point_slope", "intercept_form", "general_form", "two_points"])
+
+    if not required_caps:
+        fallback_attempts.append("guess_from_skill_id")
+        skill_lower = skill_id.lower()
+        if "histogram" in skill_lower or "polygon" in skill_lower or "frequency" in skill_lower:
+            domain_families.add("statistics_chart")
+            required_caps.update(["frequency_table", "histogram", "frequency_polygon"])
+        elif "parallel" in skill_lower and "distance" in skill_lower:
+            domain_families.add("coordinate_geometry")
+            required_caps.update(["distance_between_parallel_lines", "parallel_lines_distance"])
+        elif "distance" in skill_lower:
+            domain_families.add("coordinate_geometry")
+            required_caps.update(["distance_from_point_to_line"])
+        elif "slope" in skill_lower or "line" in skill_lower or "equation" in skill_lower:
+            domain_families.add("coordinate_geometry")
+            required_caps.update(["slope", "line_equation"])
+
+    best_provider_key = None
+    best_match_score = 0
+    best_matched_caps = []
+    
+    for prov_key, prov_val in DOMAIN_PROVIDERS.items():
+        prov_caps = prov_val["capabilities"]
+        matched = [c for c in required_caps if c in prov_caps]
+        score = len(matched)
+        
+        pt_match = len([pt for pt in problem_types if pt in prov_val["allowed_operations"]])
+        if pt_match > 0:
+            score += pt_match * 2
+            resolver_path.append("taxonomy_mapping")
+            
+        if score > best_match_score:
+            best_match_score = score
+            best_provider_key = prov_key
+            best_matched_caps = matched
+
+    if best_provider_key:
+        resolver_path.append("reusable_capability_matching")
+        prov = DOMAIN_PROVIDERS[best_provider_key]
+        return FixedDomainContext(
+            skill_id=skill_id,
+            fixed_domain_key=best_provider_key,
+            allowed_operations=tuple(prov["allowed_operations"]),
+            registry_revision="2026-06-23-v1.8",
+            domain_module=prov["domain_module"],
+            entrypoint=prov["entrypoint"],
+            curriculum_profile="vocational_high_b"
+        )
+
+    raise SkillFixedDomainError(
+        DOMAIN_CAPABILITY_UNRESOLVED,
+        f"DOMAIN_CAPABILITY_UNRESOLVED: cannot resolve domain for skill {skill_id}",
+        details={
+            "skill_id": skill_id,
+            "component_id": component_id,
+            "problem_type_id": extra_data.get("problem_type_id") or "",
+            "required_capabilities": list(required_caps),
+            "matched_capabilities": list(best_matched_caps),
+            "missing_capabilities": list(required_caps),
+            "resolver_path": resolver_path,
+            "fallback_attempts": fallback_attempts,
+        }
+    )
+
+
 def resolve_fixed_domain_context(skill_id: str) -> FixedDomainContext:
     """Resolve authoritative fixed-domain context for a skill."""
     key = str(skill_id or "").strip()
+    
+    # 1. Component-level explicit override takes highest precedence
+    ctx = get_current_component_override_context()
+    extra_data = ctx.extra if ctx else {}
+    explicit_key = extra_data.get("fixed_domain_key") or extra_data.get("domain_key")
+    if explicit_key:
+        return resolve_dynamic_fixed_domain_context(key, original_exc=ValueError("component_override_active"))
+
+    # 2. Skill-level explicit override
     try:
         routing = resolve_domain_for_skill(key)
-    except KeyError as exc:
-        raise SkillFixedDomainError(
-            SKILL_DOMAIN_NOT_REGISTERED,
-            f"{DOMAIN_BINDING_MISSING}: {key!r}",
-            details={"skill_id": key},
-        ) from exc
+        fixed_domain_key = get_fixed_domain_key(key)
+        allowed = tuple(get_allowed_operations(fixed_domain_key, skill_id=key))
+        if not allowed:
+            raise SkillFixedDomainError(
+                UNSUPPORTED_DOMAIN_OPERATION,
+                f"no_allowed_operations_for_domain: {fixed_domain_key!r}",
+                details={"skill_id": key, "fixed_domain_key": fixed_domain_key},
+            )
 
-    fixed_domain_key = get_fixed_domain_key(key)
-    allowed = tuple(get_allowed_operations(fixed_domain_key, skill_id=key))
-    if not allowed:
-        raise SkillFixedDomainError(
-            UNSUPPORTED_DOMAIN_OPERATION,
-            f"no_allowed_operations_for_domain: {fixed_domain_key!r}",
-            details={"skill_id": key, "fixed_domain_key": fixed_domain_key},
+        return FixedDomainContext(
+            skill_id=key,
+            fixed_domain_key=fixed_domain_key,
+            allowed_operations=allowed,
+            registry_revision=get_registry_revision(key),
+            domain_module=str(routing.get("domain_module") or ""),
+            entrypoint=str(routing.get("entrypoint") or ""),
+            curriculum_profile=str(
+                routing.get("default_curriculum_profile")
+                or routing.get("curriculum_profile")
+                or "vocational_high_b"
+            ),
         )
+    except Exception as exc:
+        return resolve_dynamic_fixed_domain_context(key, original_exc=exc)
 
-    return FixedDomainContext(
-        skill_id=key,
-        fixed_domain_key=fixed_domain_key,
-        allowed_operations=allowed,
-        registry_revision=get_registry_revision(key),
-        domain_module=str(routing.get("domain_module") or ""),
-        entrypoint=str(routing.get("entrypoint") or ""),
-        curriculum_profile=str(
-            routing.get("default_curriculum_profile")
-            or routing.get("curriculum_profile")
-            or "vocational_high_b"
-        ),
-    )
 
 
 def strip_ai_routing_fields(payload: dict[str, Any]) -> dict[str, Any]:

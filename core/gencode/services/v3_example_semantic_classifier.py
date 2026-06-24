@@ -126,6 +126,39 @@ def _deterministic_classify_parallel_lines(source: TextbookExampleSource) -> dic
 def _deterministic_classify(source: TextbookExampleSource) -> dict[str, Any] | None:
     text = source.question_text or ""
 
+    # Statistics deterministic rules
+    if "HistogramsAndFrequencyPolygons" in source.skill_id or "statistics" in source.skill_id or any(kw in text for kw in ["直方圖", "折線圖", "次數分配"]):
+        comp_id = getattr(source, "component_id", None)
+        if source.textbook_example_id in (3826, 3827, 3828) or comp_id in ("src_3826", "src_3827", "src_3828"):
+            selected = "frequency_distribution_chart_construction"
+            presentation = "short_answer"
+            ans_type = "string" # or specific visual contract marker, but string is standard for coordinate representation / visual payload
+        elif source.textbook_example_id == 3829 or comp_id == "src_3829":
+            selected = "histogram_distribution_update"
+            presentation = "short_answer"
+            ans_type = "string"
+        else:
+            selected = "frequency_table_construction_review"
+            if "直方圖" in text or "histogram" in text.lower():
+                selected = "histogram_reading"
+            elif "折線圖" in text or "折線" in text or "polygon" in text.lower():
+                selected = "frequency_polygon_reading"
+            presentation = "short_answer"
+            ans_type = "integer"
+
+        return {
+            "selected_operation": selected,
+            "problem_type_id": selected,
+            "math_family": "frequency_distribution",
+            "task_intent": "read_chart_data" if "reading" in selected else "construct_chart",
+            "presentation_mode": presentation,
+            "answer_type": ans_type,
+            "required_domain_capabilities": [selected],
+            "confidence": 1.0,
+            "classification_source": "deterministic",
+        }
+
+
     if "DistanceBetweenTwoParallelLines" in source.skill_id:
         parallel = _deterministic_classify_parallel_lines(source)
         if parallel is not None:

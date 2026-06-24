@@ -9714,7 +9714,10 @@
           "contract_validation_blockers": [],
           "contract_validation_warnings": [],
           "contextual_application": true,
-          "has_choices": true
+          "has_choices": true,
+          "template_slots": {
+            "stem": "line_equation_from_point_slope"
+          }
         },
         "validator_contract": {
           "static_checks": [
@@ -9743,14 +9746,14 @@
         ],
         "canonical_base_problem_type_id": "equation_write_line_equation_from_point_slope_single_choice",
         "value_type_prefix": "",
-        "_resolved_template_slot": "",
+        "_resolved_template_slot": "line_equation_from_point_slope",
         "derivation": [
           "Step 1: Automated derivation initialized from source spec."
         ]
       },
       "generator_readiness": "runtime_ready_with_warning",
       "usable_for_phase3": true,
-      "template_slot": "",
+      "template_slot": "line_equation_from_point_slope",
       "canonical_base_problem_type_id": "equation_write_line_equation_from_point_slope_single_choice",
       "value_type_prefix": "",
       "subskill_id": "write_line_equation_from_point_slope",

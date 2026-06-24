@@ -2721,34 +2721,44 @@
             };
         }
 
-        // [V9.6 新增] 將題目圖片繪製到畫布上 (佔據約 1/2)
-        function drawQuestionImage() {
-            if (!currentQuestionImage || !ctx || !canvas) return;
-
+        // === [HiDPI Fix] Step-1: 計算圖片 Geometry（只算座標，不繪製）===
+        // 所有座標均以 CSS px 為單位；DPR 縮放由 resizeCanvas 的 setTransform 統一處理
+        function calculateQuestionImageGeometry() {
+            if (!currentQuestionImage || !canvas) return;
             const cw = canvas.clientWidth || canvas.width;
             const ch = canvas.clientHeight || canvas.height;
             if (cw <= 0 || ch <= 0) return;
 
-            const targetWidth = cw * 0.45;
-            const maxHeight = ch * 0.9;
+            const availableWidth  = cw * 0.82;
+            const availableHeight = ch * 0.85;
 
-            let scale = targetWidth / currentQuestionImage.width;
-            if (currentQuestionImage.height * scale > maxHeight) {
-                scale = maxHeight / currentQuestionImage.height;
-            }
+            const scale = Math.min(
+                availableWidth  / currentQuestionImage.naturalWidth,
+                availableHeight / currentQuestionImage.naturalHeight
+            );
 
-            const drawWidth = currentQuestionImage.width * scale;
-            const drawHeight = currentQuestionImage.height * scale;
-            const padding = 20;
-            const x = padding;
-            const y = (ch - drawHeight) / 2;
+            const drawWidth  = currentQuestionImage.naturalWidth  * scale;
+            const drawHeight = currentQuestionImage.naturalHeight * scale;
+            const x = (cw - drawWidth) / 2;
+            const y = Math.max(16, ch * 0.03);
 
             imgDestX = x;
             imgDestY = y;
             imgDestW = drawWidth;
             imgDestH = drawHeight;
+        }
 
-            ctx.drawImage(currentQuestionImage, x, y, drawWidth, drawHeight);
+        // === [HiDPI Fix] Step-2: 繪製背景圖（須先呼叫 calculateQuestionImageGeometry）===
+        function drawQuestionImageBackground() {
+            if (!currentQuestionImage || !ctx || imgDestW <= 0 || imgDestH <= 0) return;
+            ctx.drawImage(currentQuestionImage, imgDestX, imgDestY, imgDestW, imgDestH);
+        }
+
+        // [V9.6 新增] 向後相容 wrapper：計算 geometry 後立即繪製背景
+        function drawQuestionImage() {
+            if (!currentQuestionImage || !ctx || !canvas) return;
+            calculateQuestionImageGeometry();
+            drawQuestionImageBackground();
         }
 
         // === 初始化畫布 ===
@@ -2797,52 +2807,69 @@
             }
         }
 
+        // === [HiDPI Fix] DPR-aware resizeCanvas ===
         function resizeCanvas() {
             if (!canvas || !ctx) return;
 
             const rect = canvas.getBoundingClientRect();
-            const displayWidth = Math.round(rect.width);
+            const displayWidth  = Math.round(rect.width);
             const displayHeight = Math.round(rect.height);
-
             if (displayWidth <= 0 || displayHeight <= 0) return;
 
-            if (displayWidth === lastCanvasDisplayWidth &&
+            const dpr   = window.devicePixelRatio || 1;
+            const physW = Math.round(displayWidth  * dpr);
+            const physH = Math.round(displayHeight * dpr);
+
+            // 只有在 CSS 尺寸或物理像素尺寸真正改變時才重設畫布
+            if (displayWidth  === lastCanvasDisplayWidth &&
                 displayHeight === lastCanvasDisplayHeight &&
-                canvas.width === displayWidth &&
-                canvas.height === displayHeight) {
+                canvas.width  === physW &&
+                canvas.height === physH) {
                 return;
             }
 
             const previousSnapshot = undoStack.length > 0 ? undoStack[undoStack.length - 1] : null;
 
-            lastCanvasDisplayWidth = displayWidth;
+            lastCanvasDisplayWidth  = displayWidth;
             lastCanvasDisplayHeight = displayHeight;
 
-            canvas.width = displayWidth;
-            canvas.height = displayHeight;
-            canvas.style.width = displayWidth + 'px';
+            // 設定物理像素解析度（4K/HiDPI 清晰輸出）
+            canvas.width  = physW;
+            canvas.height = physH;
+            // CSS 尺寸維持 CSS px（視覺大小不變）
+            canvas.style.width  = displayWidth  + 'px';
             canvas.style.height = displayHeight + 'px';
             canvas.style.touchAction = 'none';
 
-            ctx.setTransform(1, 0, 0, 1, 0, 0);
+            // ctx 座標系統對齊 CSS px：所有繪圖指令皆以 CSS px 為單位，DPR 自動縮放
+            ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
             ctx.clearRect(0, 0, displayWidth, displayHeight);
             ctx.fillStyle = 'white';
             ctx.fillRect(0, 0, displayWidth, displayHeight);
             setPenStyle();
 
+            // [關鍵] 先更新 imgDest* geometry，橡皮擦補圖位置在 resize 後立即正確
+            if (currentQuestionImage) {
+                calculateQuestionImageGeometry();
+            }
+
             if (previousSnapshot) {
+                // 有快照：以 CSS px 尺寸還原（快照已含背景與筆跡，不重畫背景以免覆蓋筆跡）
                 const img = new Image();
                 img.onload = () => {
-                    const cw = canvas.clientWidth || canvas.width;
-                    const ch = canvas.clientHeight || canvas.height;
-                    ctx.clearRect(0, 0, cw, ch);
+                    const dpr2 = window.devicePixelRatio || 1;
+                    ctx.setTransform(dpr2, 0, 0, dpr2, 0, 0);
+                    ctx.clearRect(0, 0, displayWidth, displayHeight);
                     ctx.fillStyle = 'white';
-                    ctx.fillRect(0, 0, cw, ch);
-                    ctx.drawImage(img, 0, 0, cw, ch);
+                    ctx.fillRect(0, 0, displayWidth, displayHeight);
+                    // 快照以 CSS px 座標還原，transform 自動縮放至物理像素
+                    ctx.drawImage(img, 0, 0, displayWidth, displayHeight);
+                    // imgDest* 已在同步段更新，橡皮擦可立即正確使用
                 };
                 img.src = previousSnapshot;
             } else if (currentQuestionImage) {
-                drawQuestionImage();
+                // 無快照：geometry 已算好，直接繪製背景
+                drawQuestionImageBackground();
             }
         }
 
@@ -3590,8 +3617,10 @@
 
                     // 1. 先重置畫布與圖片變數
                     currentQuestionImage = null;
+                    imgDestX = 0; imgDestY = 0; imgDestW = 0; imgDestH = 0;
+                    // [HiDPI Fix] 以 CSS px 清除（ctx transform 已對齊 CSS px，不可用 canvas.width 物理像素）
                     ctx.fillStyle = 'white';
-                    ctx.fillRect(0, 0, canvas.width, canvas.height);
+                    ctx.fillRect(0, 0, canvas.clientWidth || canvas.width, canvas.clientHeight || canvas.height);
                     undoStack = [];
                     redoStack = [];
 
@@ -4774,7 +4803,7 @@
                             if (canvas) {
                                 const ctx = canvas.getContext('2d');
                                 ctx.fillStyle = 'white';
-                                ctx.fillRect(0, 0, canvas.width, canvas.height); // 清空畫布
+                                ctx.fillRect(0, 0, canvas.clientWidth || canvas.width, canvas.clientHeight || canvas.height); // [HiDPI Fix] CSS px
                                 // 重置 undo/redo
                                 if (typeof undoStack !== 'undefined') undoStack = [];
                                 if (typeof redoStack !== 'undefined') redoStack = [];

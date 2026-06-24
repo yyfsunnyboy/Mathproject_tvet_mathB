@@ -41,6 +41,7 @@ ANSWER_TYPE_ALIASES: dict[str, str] = {
     "text_short": "short_answer",
     "exact_string": "short_answer",
     "case_insensitive_string": "short_answer",
+    "string": "short_answer",
     "multi_part": "multi_part",
 }
 
@@ -63,6 +64,7 @@ VALID_ANSWER_TYPES = frozenset(
         "manual_review",
         "equation",
         "multi_part",
+        "short_answer",
     }
     | SOLUTION_SET_TYPES
     | EQUATION_TYPES

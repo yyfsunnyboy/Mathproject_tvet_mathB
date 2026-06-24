@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import Any
 
 from core.domain.coordinate_geometry.line_equation_domain import build_line_equation_matrix
-from core.gencode.domain_matrix_adapter import convert_line_equation_matrix_to_question_payload
+from core.gencode.domain_matrix_adapter import convert_domain_matrix_to_question_payload
 
 PRESENTATION_MODE = "short_answer"
 ANSWER_TYPE = "numeric_or_undefined"
@@ -20,7 +20,7 @@ def generate(level: int = 1, seed: int | None = None, **kwargs: Any) -> dict[str
         constraints={},
     )
     component_id = str(kwargs.get("component_id") or "")
-    payload = convert_line_equation_matrix_to_question_payload(
+    payload = convert_domain_matrix_to_question_payload(
         matrix,
         presentation_mode=PRESENTATION_MODE,
         answer_type=ANSWER_TYPE,

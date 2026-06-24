@@ -5004,7 +5004,7 @@ def _v3_resolve_gated_domain_operation(
     )
 
     ctx = resolve_fixed_domain_context(skill_id)
-    if ctx.fixed_domain_key.startswith("statistics.") and not any(extra.get(k) for k in ("line_type", "problem_type_id", "domain_operation", "task_type")):
+    if ctx.fixed_domain_key.startswith("statistics.") and ctx.skill_id == "vh_數學B4_FrequencyDistributionTableConstruction" and not any(extra.get(k) for k in ("line_type", "problem_type_id", "domain_operation", "task_type")):
         selected = ctx.allowed_operations[0]
         log_dispatch_event(
             phase="v3_draft",
@@ -5103,7 +5103,7 @@ def _v3_invoke_domain_entrypoint(
     difficulty_profile: str,
     constraints: dict[str, object] | None,
 ) -> dict[str, object]:
-    if entrypoint_name in {"build_coordinate_geometry_matrix", "build_parallel_lines_distance_matrix"}:
+    if entrypoint_name in {"build_coordinate_geometry_matrix", "build_parallel_lines_distance_matrix", "build_frequency_distribution_table_matrix"}:
         return entrypoint_fn(
             seed=seed,
             domain_operation=domain_operation,
@@ -5167,15 +5167,18 @@ def build_v3_component_draft_from_skill(
         }
     row["id"] = textbook_example_id
 
-    try:
-        line_type, classification, domain_ctx = _v3_resolve_gated_domain_operation(
-            skill_id=skill_id,
-            textbook_row=row,
-            conn=conn,
-            extra=extra,
-        )
-    except SkillFixedDomainError as exc:
-        raise ValueError(f"{exc.code}:{exc}") from exc
+    from core.gencode.skill_fixed_domain_authority import ComponentOverrideContext
+    component_id = derive_component_id(textbook_example_id)
+    with ComponentOverrideContext(extra, component_id=component_id):
+        try:
+            line_type, classification, domain_ctx = _v3_resolve_gated_domain_operation(
+                skill_id=skill_id,
+                textbook_row=row,
+                conn=conn,
+                extra=extra,
+            )
+        except SkillFixedDomainError as exc:
+            raise ValueError(f"{exc.code}:{exc}") from exc
 
     from core.gencode.domain_capability_service import resolve_domain_capability
     from core.gencode.domain_function_extension_service import extend_domain_function_for_capability
@@ -5620,18 +5623,19 @@ def _build_v3_induced_spec_payload(
         )
         or ""
     )
-    domain_profile = resolve_domain_for_skill(skill_id)
+    from core.gencode.skill_fixed_domain_authority import resolve_fixed_domain_context
+    domain_ctx = resolve_fixed_domain_context(skill_id)
     checker_key = str(draft.get("checker_key") or "")
     payload = migrate_induced_spec_payload(
         {
             "component_id": f"src_{textbook_example_id}",
             "skill_id": skill_id,
-            "domain": str(domain_profile.get("domain") or "coordinate_geometry"),
+            "domain": str(domain_ctx.fixed_domain_key.split(".", 1)[0] if domain_ctx.fixed_domain_key else "coordinate_geometry"),
             "fixed_domain_key": str(
-                draft.get("fixed_domain_key") or domain_profile.get("fixed_domain_key") or ""
+                draft.get("fixed_domain_key") or domain_ctx.fixed_domain_key or ""
             ),
             "registry_revision": str(
-                draft.get("registry_revision") or domain_profile.get("registry_revision") or ""
+                draft.get("registry_revision") or domain_ctx.registry_revision or ""
             ),
             "domain_operation": domain_operation,
             "problem_type_id": problem_type_id,

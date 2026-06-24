@@ -100,8 +100,9 @@ def build_v3_component_spec(
         problem_type_id=problem_type_id,
         answer_type=answer_type,
     )
-    domain_profile = resolve_domain_for_skill(source.skill_id)
-    domain = str(domain_profile.get("domain") or "coordinate_geometry")
+    from core.gencode.skill_fixed_domain_authority import resolve_fixed_domain_context
+    domain_ctx = resolve_fixed_domain_context(source.skill_id)
+    domain = str(domain_ctx.fixed_domain_key.split(".", 1)[0] if domain_ctx.fixed_domain_key else "coordinate_geometry")
     answer_schema_key = resolve_answer_schema_key(
         answer_schema_key=classification.get("answer_schema_key"),
         domain_operation=domain_operation,

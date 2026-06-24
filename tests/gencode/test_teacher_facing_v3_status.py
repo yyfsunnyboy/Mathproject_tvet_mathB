@@ -21,7 +21,7 @@ def test_teacher_status_not_generated_without_tracker_or_component():
         has_component=False,
     )
     assert status["status_key"] == "not_generated"
-    assert status["label"] == "尚未生成"
+    assert status["label"] == "尚待驗證或尚未生成"
 
 
 def test_teacher_status_generating_for_running_state():
@@ -42,7 +42,7 @@ def test_teacher_status_verified_not_synced_is_generated_not_packaged():
         production_contains_latest=False,
     )
     assert status["status_key"] == "generated_not_packaged"
-    assert status["label"] == "尚未上線"
+    assert status["label"] == "已驗證／尚未封裝"
 
 
 def test_teacher_status_failed_is_generation_failed():
@@ -321,3 +321,157 @@ def test_update_to_student_button_keeps_existing_repackage_endpoint():
     assert "更新到學生端" in skills
     assert "repackageSkillV3" in skills
     assert "core.admin_run_skill_v3_repackage" in skills
+
+
+def test_regression_skill_partial_publishing_states(tmp_path: Path):
+    # Setup sqlite connection & mock tracker data
+    conn = sqlite3.connect(":memory:")
+    conn.execute(
+        """
+        CREATE TABLE gencode_component_tracker (
+            id INTEGER PRIMARY KEY,
+            textbook_example_id INTEGER,
+            skill_id TEXT,
+            component_id TEXT,
+            gencode_status TEXT,
+            induced_spec_payload TEXT,
+            gencode_error_log TEXT,
+            created_at TEXT,
+            updated_at TEXT
+        )
+        """
+    )
+    # Four textbook examples: 3826 (published/synced), 3827 (verified/not packaged), 3828 (draft/not generated), 3829 (failed)
+    # 3826 is verified and production_contains_latest = True
+    conn.execute(
+        "INSERT INTO gencode_component_tracker (textbook_example_id, skill_id, component_id, gencode_status) VALUES (3826, 'vh_math', 'src_3826', 'verified')"
+    )
+    conn.execute(
+        "INSERT INTO gencode_component_tracker (textbook_example_id, skill_id, component_id, gencode_status) VALUES (3827, 'vh_math', 'src_3827', 'verified')"
+    )
+    conn.execute(
+        "INSERT INTO gencode_component_tracker (textbook_example_id, skill_id, component_id, gencode_status) VALUES (3828, 'vh_math', 'src_3828', 'draft')"
+    )
+    conn.execute(
+        "INSERT INTO gencode_component_tracker (textbook_example_id, skill_id, component_id, gencode_status) VALUES (3829, 'vh_math', 'src_3829', 'failed')"
+    )
+    
+    # 3826 production contains latest
+    # Mock file system: create reports (dryrun) and agent_skills_v3 (production) dirs
+    skill_id = "vh_math"
+    (tmp_path / "reports" / "gencode_v3_dryrun" / skill_id / "components").mkdir(parents=True)
+    (tmp_path / "agent_skills_v3" / skill_id / "components").mkdir(parents=True)
+
+    # 3826 exists on both dryrun and production with same content
+    p_3826_dry = tmp_path / "reports" / "gencode_v3_dryrun" / skill_id / "components" / "src_3826"
+    p_3826_prod = tmp_path / "agent_skills_v3" / skill_id / "components" / "src_3826"
+    p_3826_dry.mkdir()
+    p_3826_prod.mkdir()
+    (p_3826_dry / "generate.py").write_text("def gen(): pass")
+    (p_3826_prod / "generate.py").write_text("def gen(): pass")
+
+    # 3827 exists on dryrun only
+    p_3827_dry = tmp_path / "reports" / "gencode_v3_dryrun" / skill_id / "components" / "src_3827"
+    p_3827_dry.mkdir()
+    (p_3827_dry / "generate.py").write_text("def gen(): pass")
+
+    from core.gencode.services.gencode_status_query_service import (
+        build_admin_examples_gencode_status_map,
+        build_admin_skill_gencode_status_view,
+    )
+
+    status_map = build_admin_examples_gencode_status_map(
+        conn,
+        [(3826, skill_id), (3827, skill_id), (3828, skill_id), (3829, skill_id)],
+        project_root=tmp_path,
+    )
+
+    # Individual status checks
+    assert status_map[3826]["teacher_status"]["status_key"] == "published"
+    assert status_map[3827]["teacher_status"]["status_key"] == "generated_not_packaged"
+    assert status_map[3828]["teacher_status"]["status_key"] == "not_generated"
+    assert status_map[3829]["teacher_status"]["status_key"] == "failed"
+
+    # Skill-level status checks (mock outline coverage payload structure)
+    outline_coverage = {
+        "skill_id": skill_id,
+        "total_examples": 4,
+        "verified_count": 2,
+        "failed_count": 1,
+        "unsupported_count": 0,
+        "publish_ready": False,
+        "examples": [
+            {"textbook_example_id": 3826, "component_id": "src_3826", "status": "verified"},
+            {"textbook_example_id": 3827, "component_id": "src_3827", "status": "verified"},
+            {"textbook_example_id": 3828, "component_id": "src_3828", "status": "draft"},
+            {"textbook_example_id": 3829, "component_id": "src_3829", "status": "failed"},
+        ]
+    }
+    
+    # We must patch get_v3_skill_component_coverage to return this mock coverage
+    import core.gencode.services.v3_skill_coverage_service as coverage_module
+    old_func = coverage_module.get_v3_skill_component_coverage
+    coverage_module.get_v3_skill_component_coverage = lambda *args, **kwargs: outline_coverage
+    
+    try:
+        # Mock production init so it says we have v3_package_exists
+        (tmp_path / "agent_skills_v3" / skill_id / "__init__.py").write_text("GENERATOR_SPECS = [1,2,3,4]")
+        (tmp_path / "skills").mkdir(parents=True, exist_ok=True)
+        (tmp_path / "skills" / f"{skill_id}.py").write_text("")
+        
+        skill_status = build_admin_skill_gencode_status_view(
+            conn,
+            skill_id=skill_id,
+            project_root=tmp_path,
+        )
+        assert skill_status["teacher_status"]["status_key"] == "partially_published"
+        assert "部分上線" in skill_status["teacher_status"]["label"]
+        assert skill_status["published_count"] == 1
+        assert skill_status["generated_not_packaged_count"] == 1
+    finally:
+        coverage_module.get_v3_skill_component_coverage = old_func
+        conn.close()
+
+
+def test_src_3829_production_consistency():
+    import hashlib
+    # 1. Verify dryrun reports and production agent_skills_v3 generate.py match
+    root = Path(__file__).resolve().parents[2]
+    dryrun_generate = root / "reports" / "gencode_v3_dryrun" / "vh_數學B4_HistogramsAndFrequencyPolygons" / "components" / "src_3829" / "generate.py"
+    prod_generate = root / "agent_skills_v3" / "vh_數學B4_HistogramsAndFrequencyPolygons" / "components" / "src_3829" / "generate.py"
+    
+    assert dryrun_generate.is_file(), "Dryrun src_3829 generate.py must exist"
+    assert prod_generate.is_file(), "Production src_3829 generate.py must exist"
+    
+    dryrun_hash = hashlib.sha256(dryrun_generate.read_bytes()).hexdigest()
+    prod_hash = hashlib.sha256(prod_generate.read_bytes()).hexdigest()
+    assert dryrun_hash == prod_hash, "Dryrun and Production generate.py files must be identical"
+
+    # 2. Check metadata vs wrapper specs consistency
+    import importlib.util
+    meta_path = root / "agent_skills_v3" / "vh_數學B4_HistogramsAndFrequencyPolygons" / "components" / "src_3829" / "metadata.py"
+    assert meta_path.is_file(), "Metadata file must exist"
+    spec = importlib.util.spec_from_file_location("test_meta_3829", meta_path)
+    meta_mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(meta_mod)
+    
+    from agent_skills_v3.vh_數學B4_HistogramsAndFrequencyPolygons import GENERATOR_SPECS
+    matching_spec = None
+    for row in GENERATOR_SPECS:
+        if row.get("component_id") == "src_3829":
+            matching_spec = row
+            break
+            
+    assert matching_spec is not None, "Wrapper GENERATOR_SPECS must contain src_3829"
+    assert matching_spec["problem_type_id"] == meta_mod.PROBLEM_TYPE_ID
+    assert matching_spec["line_type"] == meta_mod.LINE_TYPE
+    assert matching_spec["answer_type"] == meta_mod.ANSWER_TYPE
+    assert matching_spec["problem_type_id"] == "histogram_distribution_update"
+
+    # 3. Reload module check
+    import skills.vh_數學B4_HistogramsAndFrequencyPolygons as facade
+    p = facade.generate(seed=100, component_id="src_3829")
+    assert p["problem_type_id"] == "histogram_distribution_update"
+    assert p["answer_contract"]["checker"] == "free_response_drawing_checker"
+
+

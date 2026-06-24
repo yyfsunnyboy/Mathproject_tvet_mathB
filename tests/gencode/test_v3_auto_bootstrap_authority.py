@@ -26,10 +26,11 @@ def test_b4_frequency_skill_has_fixed_statistics_domain() -> None:
 
 
 def test_ai_cannot_make_unregistered_skill_guess_domain() -> None:
+    from core.gencode.v3_error_codes import DOMAIN_CAPABILITY_UNRESOLVED
     with pytest.raises(Exception) as exc:
         resolve_fixed_domain_context("vh_數學B4_NotRegisteredForV3")
 
-    assert getattr(exc.value, "code", "") == DOMAIN_BINDING_MISSING
+    assert getattr(exc.value, "code", "") == DOMAIN_CAPABILITY_UNRESOLVED
 
 
 def test_domain_capability_ready_for_frequency_table() -> None:
