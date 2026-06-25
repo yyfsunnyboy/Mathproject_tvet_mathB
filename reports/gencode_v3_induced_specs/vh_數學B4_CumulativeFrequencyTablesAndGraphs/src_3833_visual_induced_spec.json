@@ -1,0 +1,50 @@
+{
+  "skill_id": "vh_數學B4_CumulativeFrequencyTablesAndGraphs",
+  "component_id": "src_3833",
+  "example_id": 3833,
+  "schema_version": "visual_induced_spec.v1",
+  "prompt_version": "b4_cumulative_visual_extract.v1",
+  "extraction_timestamp": "2026-06-25T15:16:50+00:00",
+  "source_sha256": "724c963db0cb08c11ea588cf34fd4e3326170336303a71eaaf70b7b7b8075fe1",
+  "gemini_model": null,
+  "gemini_calls": 0,
+  "status": "blocked_missing_source",
+  "block_reason": "answer_not_verifiable;required_graph_image_missing;missing_docx_image_asset;graph_only_without_attachments",
+  "source_audit": {
+    "example_id": 3833,
+    "source_sha256": "724c963db0cb08c11ea588cf34fd4e3326170336303a71eaaf70b7b7b8075fe1",
+    "has_problem_text": true,
+    "has_answer": true,
+    "has_solution": true,
+    "has_image_flag": true,
+    "missing_docx_image_asset": true,
+    "image_attachment_paths_declared": [],
+    "image_attachment_files_resolved": [],
+    "table_embedded_in_text": false,
+    "text_table_complete": false,
+    "needs_graph": true,
+    "data_omitted_in_stem": false,
+    "answer_verifiable": false,
+    "preflight_blockers": [
+      "answer_not_verifiable",
+      "required_graph_image_missing",
+      "missing_docx_image_asset",
+      "graph_only_without_attachments"
+    ],
+    "gemini_eligible": false,
+    "gemini_mode": "blocked",
+    "problem_text_preview": "已知某班國文期中考成績的以下累積次數分配折線圖如右，試問：(1)以60分為標準，不及格的人數有幾人？(2)至少80分的人數有幾人？（圖片待補）"
+  },
+  "validation": {
+    "passed": false,
+    "errors": [
+      "answer_not_verifiable",
+      "required_graph_image_missing",
+      "missing_docx_image_asset",
+      "graph_only_without_attachments"
+    ]
+  },
+  "human_confirmed": false,
+  "generator_usable": false,
+  "spec": null
+}

@@ -6,7 +6,7 @@ from core.domain.statistics.table_chart_domain import build_statistical_chart_re
 from core.gencode.domain_matrix_adapter import convert_domain_matrix_to_question_payload
 
 PRESENTATION_MODE = "single_choice"
-ANSWER_TYPE = "integer"
+ANSWER_TYPE = "single_choice"
 PROBLEM_TYPE_ID = "cumulative_below_interval_count"
 TEXTBOOK_EXAMPLE_ID = 3886
 DEFAULT_COMPONENT_ID = "src_3886"

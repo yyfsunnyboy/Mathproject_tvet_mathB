@@ -9,6 +9,7 @@ PRESENTATION_MODE = "short_answer"
 ANSWER_TYPE = "numeric_or_undefined"
 PROBLEM_TYPE_ID = "slope_from_general_or_intercept_form"
 TEXTBOOK_EXAMPLE_ID = 4565
+DEFAULT_COMPONENT_ID = "src_4565" if TEXTBOOK_EXAMPLE_ID else ""
 
 
 def generate(level: int = 1, seed: int | None = None, **kwargs: Any) -> dict[str, Any]:
@@ -17,9 +18,9 @@ def generate(level: int = 1, seed: int | None = None, **kwargs: Any) -> dict[str
         line_type="slope_from_general_or_intercept_form",
         curriculum_profile="vocational_high_b",
         difficulty_profile="easy",
-        constraints={},
+        constraints={'exact_task_operation': ''},
     )
-    component_id = str(kwargs.get("component_id") or "")
+    component_id = str(kwargs.get("component_id") or DEFAULT_COMPONENT_ID or "")
     payload = convert_domain_matrix_to_question_payload(
         matrix,
         presentation_mode=PRESENTATION_MODE,

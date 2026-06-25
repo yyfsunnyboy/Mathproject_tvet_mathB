@@ -102,6 +102,57 @@ def validate_generator_payload(
                     if k in givens_map and normalized_v is not None and givens_map[k] != normalized_v:
                         errors.append("CHART_DATA_CONSISTENCY: visual table frequency does not match givens frequency map")
 
+    # 7. REQUIRED_VISUAL_ASSET_MISSING: cumulative freq polygon ops MUST carry at least one visual asset
+    _CUMULATIVE_POLYGON_OPS = frozenset({
+        "cumulative_above_fail_count",
+        "cumulative_above_interval_count",
+        "cumulative_below_interval_count",
+        "cumulative_frequency_graph_reading",
+        "less_than_cumulative_frequency_reading",
+        "greater_than_cumulative_frequency_reading",
+    })
+    if problem_type_id in _CUMULATIVE_POLYGON_OPS:
+        has_any_visual = (
+            bool(payload.get("image_base64", ""))
+            or bool(payload.get("image_url", ""))
+            or bool(payload.get("visual_spec"))
+            or bool(payload.get("visual_aids"))
+        )
+        if not has_any_visual:
+            errors.append(
+                "REQUIRED_VISUAL_ASSET_MISSING: cumulative frequency polygon question must provide "
+                "image_base64, image_url, visual_spec, or visual_aids"
+            )
+
+    # 8. CUMULATIVE_SEMANTIC_MISMATCH: cumulative stems must not map to frequency polygon
+    _CUMULATIVE_STEM_MARKERS = ("累積", "累積次數", "cumulative")
+    if any(marker in question_text for marker in _CUMULATIVE_STEM_MARKERS):
+        if problem_type_id == "frequency_polygon_reading":
+            errors.append(
+                "CUMULATIVE_SEMANTIC_MISMATCH: cumulative frequency stem cannot use frequency_polygon_reading"
+            )
+        if problem_type_id == "frequency_table_construction_review" and "累積" in question_text:
+            errors.append(
+                "CUMULATIVE_SEMANTIC_MISMATCH: cumulative frequency stem cannot use frequency_table_construction_review"
+            )
+
+    from core.gencode.validators.cumulative_frequency_validator import validate_cumulative_frequency_payload
+
+    _CUMULATIVE_FREQ_OPS = frozenset(
+        {
+            "cumulative_frequency_graph_reading",
+            "less_than_cumulative_frequency_reading",
+            "greater_than_cumulative_frequency_reading",
+            "class_frequency_from_cumulative_difference",
+            "cumulative_frequency_table_construction",
+            "cumulative_above_fail_count",
+            "cumulative_above_interval_count",
+            "cumulative_below_interval_count",
+        }
+    )
+    if problem_type_id in _CUMULATIVE_FREQ_OPS or str(payload.get("domain_operation") or "") in _CUMULATIVE_FREQ_OPS:
+        errors.extend(validate_cumulative_frequency_payload(payload))
+
     # Run SemanticChecker Base check
     import json
     from validators.semantic_checker import SemanticChecker

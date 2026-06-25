@@ -3504,6 +3504,7 @@ def admin_run_skill_v3_dryrun(skill_id: str):
     smoke = bool(payload.get("smoke") or request.args.get("smoke") in {"1", "true", "True"})
     verify = bool(payload.get("verify") or request.args.get("verify") in {"1", "true", "True"})
     force = bool(payload.get("force") or request.args.get("force") in {"1", "true", "True"})
+    mode = str(payload.get("mode") or request.args.get("mode") or "auto").strip()
     limit_raw = payload.get("limit", request.args.get("limit"))
     limit = int(limit_raw) if str(limit_raw or "").strip().isdigit() else None
 
@@ -3562,6 +3563,7 @@ def admin_run_skill_v3_dryrun(skill_id: str):
             smoke=smoke,
             verify=verify,
             force=force,
+            mode=mode,
             limit=limit,
         )
     except V3PublishRootValidationError as exc:

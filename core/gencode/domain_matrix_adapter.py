@@ -1163,6 +1163,187 @@ def _format_givens_for_hint(givens: dict[str, Any]) -> list[str]:
     return formatted
 
 
+def _convert_cumulative_frequency_distribution_payload(
+    matrix: dict[str, Any],
+    *,
+    op: str,
+    presentation_mode: str | None = None,
+    answer_type: str | None = None,
+    problem_type_id: str | None = None,
+    component_id: str | None = None,
+    textbook_example_id: int | None = None,
+    source_kind: str | None = None,
+    generator_key: str | None = None,
+    **kwargs: Any,
+) -> dict[str, Any]:
+    """Preserve cumulative-frequency contract fields (image, table, multi_part, MCQ)."""
+    normalized = normalize_domain_matrix(matrix)
+    givens = normalized["givens"]
+    answer_obj = normalized["answer"]
+    validation_facts = dict(normalized["validation_facts"])
+    validation_facts.setdefault("domain_operation", op)
+
+    question_text = str(
+        matrix.get("question_text")
+        or kwargs.get("question_text")
+        or "閱讀下列累積次數分配資料，回答問題。"
+    )
+    resolved_answer_type = str(matrix.get("answer_type") or answer_type or "integer").strip()
+    mode = str(
+        presentation_mode
+        or ("single_choice" if resolved_answer_type == "single_choice" else "short_answer")
+    ).strip()
+
+    contract_answer = matrix.get("answer")
+    if isinstance(contract_answer, dict) and "value" in contract_answer:
+        semantic_answer = contract_answer["value"]
+    elif contract_answer is not None and not isinstance(contract_answer, dict):
+        semantic_answer = contract_answer
+    else:
+        semantic_answer = answer_obj.get("value", answer_obj.get("canonical_form"))
+
+    display_answer = (
+        canonicalize_multi_part_display(semantic_answer)
+        if resolved_answer_type == "multi_part"
+        else str(answer_obj.get("canonical_form", semantic_answer))
+    )
+
+    image_base64 = str(matrix.get("image_base64") or normalized.get("image_base64") or "")
+    table_data = matrix.get("table_data") if isinstance(matrix.get("table_data"), dict) else {}
+    if not table_data and isinstance(normalized.get("table_data"), dict):
+        table_data = normalized["table_data"]
+    choices = list(matrix.get("choices") or normalized.get("choices") or [])
+    subquestions = list(matrix.get("subquestions") or normalized.get("subquestions") or [])
+    ui_contract = dict(matrix.get("ui_contract") or {})
+    visual_spec = dict(matrix.get("visual_spec") or normalized.get("visual_spec") or {})
+    visual_aids = list(matrix.get("visual_aids") or normalized.get("visual_aids") or [])
+
+    payload_answer = semantic_answer
+    payload_correct = semantic_answer
+    checker = "integer_checker"
+    equivalence = "numeric_exact"
+    interaction_type = "expression"
+
+    if resolved_answer_type == "multi_part":
+        checker = "multi_part_answer_checker"
+        equivalence = "multi_part_answer"
+        answer_contract = {
+            "presentation_mode": "short_answer",
+            "answer_type": "multi_part",
+            "answer_shape": "multi_part",
+            "checker": checker,
+            "checker_key": checker,
+            "answer_equivalence": equivalence,
+            "equivalence": equivalence,
+            "semantic_answer": semantic_answer,
+            "parts": [
+                {
+                    "key": str(sq.get("part") or f"part_{idx + 1}"),
+                    "label": str(sq.get("part") or f"part_{idx + 1}"),
+                    "checker": "integer_checker",
+                    "equivalence_type": "numeric_exact",
+                    "expected_answer": sq.get("expected_answer"),
+                }
+                for idx, sq in enumerate(subquestions)
+            ],
+            "ui_contract": ui_contract or {"response_mode": "multi_part", "text_input_enabled": True},
+        }
+    elif resolved_answer_type == "single_choice":
+        interaction_type = "single_choice"
+        correct_label = next(
+            (c.get("label") for c in choices if str(c.get("text")) == str(validation_facts.get("semantic_answer", semantic_answer))),
+            choices[0].get("label") if choices else "A",
+        )
+        payload_answer = correct_label
+        payload_correct = correct_label
+        answer_contract = {
+            "presentation_mode": "single_choice",
+            "answer_type": "single_choice",
+            "checker": "choice_label_checker",
+            "checker_key": "choice_label_checker",
+            "answer_equivalence": "choice_label",
+            "equivalence": "choice_label",
+            "semantic_answer": validation_facts.get("semantic_answer", semantic_answer),
+            "ui_contract": ui_contract or {"response_mode": "single_choice", "text_input_enabled": False},
+        }
+    else:
+        answer_contract = {
+            "presentation_mode": mode,
+            "answer_type": resolved_answer_type,
+            "checker": checker,
+            "checker_key": checker,
+            "answer_equivalence": equivalence,
+            "equivalence": equivalence,
+            "semantic_answer": semantic_answer,
+            "ui_contract": ui_contract or {"response_mode": "text", "text_input_enabled": True},
+        }
+
+    return {
+        "question_text": question_text,
+        "answer": payload_answer,
+        "correct_answer": payload_correct,
+        "display_answer": display_answer,
+        "semantic_answer": semantic_answer,
+        "semantic_answer_type": resolved_answer_type,
+        "choices": choices,
+        "options": [str(c.get("text", "")) for c in choices],
+        "subquestions": subquestions,
+        "table_data": table_data,
+        "component_id": component_id,
+        "textbook_example_id": textbook_example_id,
+        "problem_type_id": problem_type_id or op,
+        "domain_operation": op,
+        "fixed_domain_key": "statistics.frequency_distribution",
+        "source_kind": source_kind,
+        "presentation_mode": mode,
+        "answer_type": resolved_answer_type,
+        "interaction_type": interaction_type,
+        "auto_checkable": True,
+        "grading_mode": "auto",
+        "answer_contract": answer_contract,
+        "ui_contract": answer_contract.get("ui_contract", ui_contract),
+        "metadata": {
+            "givens": givens,
+            "raw_givens": givens,
+            "target": display_answer,
+            "derivation": [str(step) for step in normalized["explanation_steps"]],
+            "presentation_mode": mode,
+            "answer_type": resolved_answer_type,
+            "semantic_answer": semantic_answer,
+            "problem_type_id": problem_type_id or op,
+            "domain_operation": op,
+            "fixed_domain_key": "statistics.frequency_distribution",
+            "component_id": component_id,
+            "textbook_example_id": textbook_example_id,
+        },
+        "math_core": {
+            "givens": givens,
+            "raw_givens": givens,
+            "target": display_answer,
+            "math_objects": ["cumulative_frequency_graph", "cumulative_frequency_table"],
+            "derivation": [str(step) for step in normalized["explanation_steps"]],
+            "validation_facts": validation_facts,
+        },
+        "visual_spec": visual_spec,
+        "visual_aids": visual_aids,
+        "image_base64": image_base64,
+        "validation_facts": validation_facts,
+        "generator_key": generator_key or component_id,
+        "explanation": matrix.get("explanation") or " ".join(str(s) for s in normalized["explanation_steps"]),
+    }
+
+
+_CUMULATIVE_FREQ_DIST_OPS = frozenset(
+    {
+        "cumulative_frequency_table_construction",
+        "less_than_cumulative_frequency_reading",
+        "greater_than_cumulative_frequency_reading",
+        "class_frequency_from_cumulative_difference",
+        "cumulative_frequency_graph_reading",
+    }
+)
+
+
 def convert_domain_matrix_to_question_payload(
     matrix: dict[str, Any],
     *,
@@ -1184,6 +1365,19 @@ def convert_domain_matrix_to_question_payload(
     evidence and does not perform cross-domain routing.
     """
     op = str(domain_operation or kwargs.get("domain_operation") or "").strip()
+    if op in _CUMULATIVE_FREQ_DIST_OPS:
+        return _convert_cumulative_frequency_distribution_payload(
+            matrix,
+            op=op,
+            presentation_mode=presentation_mode,
+            answer_type=answer_type,
+            problem_type_id=problem_type_id,
+            component_id=component_id,
+            textbook_example_id=textbook_example_id,
+            source_kind=source_kind,
+            generator_key=generator_key,
+            **kwargs,
+        )
     if op in {
         "two_points",
         "point_slope",
@@ -1287,12 +1481,12 @@ def convert_domain_matrix_to_question_payload(
                 high = int(validation_facts.get("interval_high") or givens.get("interval_high") or 40)
                 if "員工" in story or unit == "歲":
                     question_text = (
-                        f"依某公司{total}名員工的年齡繪製以下{chart_phrase}如下圖所示，"
+                        f"依某公司{total}名員工的年齡繪製{chart_phrase}如下圖所示，"
                         f"請問年齡在{low}～{high}{unit}有多少人？"
                     )
                 else:
                     question_text = (
-                        f"依{story}共{total}名員工繪製以下{chart_phrase}如下圖所示，"
+                        f"依{story}共{total}名員工繪製{chart_phrase}如下圖所示，"
                         f"請問年齡在{low}～{high}{unit}有多少人？"
                     )
             semantic_answer = answer.get("value", validation_facts.get("answer_value"))
@@ -1323,19 +1517,24 @@ def convert_domain_matrix_to_question_payload(
                 payload_correct = correct_label
                 answer_contract = {
                     "presentation_mode": "single_choice",
-                    "answer_type": resolved_answer_type,
+                    "answer_type": "single_choice",
+                    "answer_value_type": "choice_label",
+                    "semantic_answer_type": resolved_answer_type,
                     "checker": "choice_label_checker",
                     "checker_key": "choice_label_checker",
                     "answer_equivalence": "choice_label",
                     "equivalence": "choice_label",
                     "semantic_answer": semantic_answer,
                 }
+            canonical_type = "single_choice" if mode == "single_choice" else resolved_answer_type
+            canonical_value_type = "choice_label" if mode == "single_choice" else resolved_answer_type
             return {
                 "question_text": question_text,
                 "answer": payload_answer,
                 "correct_answer": payload_correct,
                 "display_answer": display_answer,
                 "semantic_answer": semantic_answer,
+                "semantic_answer_type": resolved_answer_type,
                 "choices": choices,
                 "options": options,
                 "component_id": component_id,
@@ -1345,7 +1544,8 @@ def convert_domain_matrix_to_question_payload(
                 "fixed_domain_key": "statistics.table_chart",
                 "source_kind": source_kind,
                 "presentation_mode": mode,
-                "answer_type": resolved_answer_type,
+                "answer_type": canonical_type,
+                "answer_value_type": canonical_value_type,
                 "checker": answer_contract["checker"],
                 "checker_key": answer_contract["checker_key"],
                 "interaction_type": "single_choice" if mode == "single_choice" else "expression",
@@ -1358,7 +1558,9 @@ def convert_domain_matrix_to_question_payload(
                     "target": display_answer,
                     "derivation": [str(step) for step in normalized["explanation_steps"]],
                     "presentation_mode": mode,
-                    "answer_type": resolved_answer_type,
+                    "answer_type": canonical_type,
+                    "answer_value_type": canonical_value_type,
+                    "semantic_answer_type": resolved_answer_type,
                     "semantic_answer": semantic_answer,
                     "problem_type_id": operation,
                     "domain_operation": operation,
@@ -1441,19 +1643,24 @@ def convert_domain_matrix_to_question_payload(
             payload_correct = correct_label
             answer_contract = {
                 "presentation_mode": "single_choice",
-                "answer_type": resolved_answer_type,
+                "answer_type": "single_choice",
+                "answer_value_type": "choice_label",
+                "semantic_answer_type": resolved_answer_type,
                 "checker": "choice_label_checker",
                 "checker_key": "choice_label_checker",
                 "answer_equivalence": "choice_label",
                 "equivalence": "choice_label",
                 "semantic_answer": semantic_answer,
             }
+        canonical_type = "single_choice" if mode == "single_choice" else resolved_answer_type
+        canonical_value_type = "choice_label" if mode == "single_choice" else resolved_answer_type
         return {
             "question_text": question_text,
             "answer": payload_answer,
             "correct_answer": payload_correct,
             "display_answer": display_answer,
             "semantic_answer": semantic_answer,
+            "semantic_answer_type": resolved_answer_type,
             "choices": choices,
             "options": options,
             "component_id": component_id,
@@ -1463,7 +1670,8 @@ def convert_domain_matrix_to_question_payload(
             "fixed_domain_key": "statistics.table_chart",
             "source_kind": source_kind,
             "presentation_mode": mode,
-            "answer_type": resolved_answer_type,
+            "answer_type": canonical_type,
+            "answer_value_type": canonical_value_type,
             "checker": answer_contract["checker"],
             "checker_key": answer_contract["checker_key"],
             "interaction_type": "single_choice" if mode == "single_choice" else "expression",
@@ -1476,7 +1684,9 @@ def convert_domain_matrix_to_question_payload(
                 "target": display_answer,
                 "derivation": [str(step) for step in normalized["explanation_steps"]],
                 "presentation_mode": mode,
-                "answer_type": resolved_answer_type,
+                "answer_type": canonical_type,
+                "answer_value_type": canonical_value_type,
+                "semantic_answer_type": resolved_answer_type,
                 "semantic_answer": semantic_answer,
                 "problem_type_id": operation,
                 "domain_operation": operation,

@@ -286,12 +286,15 @@ def _v3_runtime_contract_api_fields(data: dict[str, Any]) -> dict[str, Any]:
         "metadata": meta,
         "choices": data.get("choices", []),
         "choices_display": data.get("choices_display", data.get("choices", [])),
+        "subquestions": data.get("subquestions", []),
+        "table_data": data.get("table_data", {}),
         "semantic_answer": data.get("semantic_answer") or meta.get("semantic_answer"),
         "display_answer": data.get("display_answer"),
         "component_id": data.get("component_id") or meta.get("component_id"),
         "textbook_example_id": data.get("textbook_example_id") or meta.get("textbook_example_id"),
         "generator_key": data.get("generator_key") or data.get("component_id"),
         "source_kind": data.get("source_kind") or meta.get("source_kind"),
+        "ui_contract": data.get("ui_contract") or (data.get("answer_contract") or {}).get("ui_contract", {}),
     }
 
 
@@ -1313,6 +1316,7 @@ def get_adaptive_question():
                 "correct_answer": data.get("correct_answer"),
                 "context_string": data.get("context_string", ""),
                 "image_base64": data.get("image_base64", ""),
+                "visual_spec": data.get("visual_spec", {}),
                 "visual_aids": data.get("visual_aids", []),
                 "answer_type": data.get("answer_type", "text"),
                 "problem_type_id": data.get("problem_type_id") or data.get("problem_type"),
@@ -1845,7 +1849,10 @@ def next_question():
             "consecutive_correct": consecutive,
             "current_level": difficulty_level,
             "image_base64": data.get("image_base64", ""),
-            "visual_aids": session_data.get("visual_aids", []),
+            "visual_spec": data.get("visual_spec", {}),
+            "visual_aids": session_data.get("visual_aids", data.get("visual_aids", [])),
+            "table_data": data.get("table_data", session_data.get("table_data", {})),
+            "subquestions": data.get("subquestions", session_data.get("subquestions", [])),
             "table": session_data.get("table", {}),
             "table_title": session_data.get("table_title", ""),
             "answer_type": session_data.get("answer_type", (skill_info.get("input_type", "text") if isinstance(skill_info, dict) else getattr(skill_info, "input_type", "text"))),
@@ -1915,7 +1922,17 @@ def next_question():
 def check_answer():
     """API: 瑼Ｘ蝑?"""
     body = dict(request.json) if isinstance(request.json, dict) else {}
-    user_ans = str(body.get('answer', '')).strip()
+    user_ans = body.get("answers", body.get("answer", ""))
+    if isinstance(user_ans, str):
+        user_ans = user_ans.strip()
+        if user_ans.startswith("[") and user_ans.endswith("]"):
+            try:
+                import json as _json
+                parsed = _json.loads(user_ans)
+                if isinstance(parsed, list):
+                    user_ans = parsed
+            except Exception:
+                pass
     req_skill = str(body.get("skill_id", "")).strip()
     req_uid = str(body.get("question_uid", "")).strip()
     session_skill = str(session.get("current_skill_id", "")).strip()
@@ -1951,7 +1968,8 @@ def check_answer():
         if body.get(_image_key):
             current[_image_key] = body.get(_image_key)
     current = _normalize_gencode_runtime_payload(current, skill_id=skill_id)
-    user_ans = _normalize_choice_alias_answer(user_ans, current)
+    if not isinstance(user_ans, (list, tuple, dict)):
+        user_ans = _normalize_choice_alias_answer(user_ans, current)
     check_mode = str(
         current.get("check_mode") or current.get("grading_mode") or ""
     ).strip().lower()

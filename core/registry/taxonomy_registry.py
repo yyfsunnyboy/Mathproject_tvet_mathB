@@ -6,6 +6,11 @@ import yaml
 from pathlib import Path
 from typing import Any
 
+from core.registry.domain_operation_registry import (
+    get_domain_operations,
+    list_registered_domains,
+)
+
 REGISTRY_REVISION = "2026-06-23-v1.8"
 
 
@@ -13,61 +18,13 @@ class SkillDomainNotRegisteredError(KeyError):
     """Raised when skill_id has no fixed domain binding in Registry."""
 
 
-# fixed_domain_key -> allowed_operations (canonical whitelist per routing domain).
+# fixed_domain_key -> allowed_operations.
+# Single source of truth is domain_operation_registry; this dict is derived
+# from it so all downstream callers see a consistent view without each module
+# importing the registry directly.
 DOMAIN_ALLOWED_OPERATIONS: dict[str, list[str]] = {
-    "coordinate_geometry.line_equation": [
-        "two_points",
-        "point_slope",
-        "horizontal_line",
-        "vertical_line",
-        "oblique_line",
-        "slope_intercept_equation",
-        "slope_intercept_find_x_intercept",
-        "slope_intercept_read_slope_and_intercept",
-        "intercept_form_equation",
-        "intercept_form_triangle_area",
-        "intercept_form_equation_and_triangle_area",
-        "intercept_form_from_intercept_sum_and_slope",
-        "parabola_secant_parallel_line_choice",
-        "triangle_area_bisector_line_equation",
-        "slope_from_general_or_intercept_form",
-        "slope_from_general_form",
-        "slope_of_horizontal_or_vertical_line",
-        "line_through_point_parallel_to_line",
-        "line_through_point_perpendicular_to_line",
-        "parallel_line_slope",
-        "perpendicular_line_slope",
-        "parallel_condition_parameter",
-        "perpendicular_condition_parameter",
-        "compare_line_slopes",
-        "line_through_intersection_parallel_to_line",
-        "line_through_point_perpendicular_to_segment",
-        "perpendicular_bisector_application",
-        "coordinate_geometry_word_problem",
-    ],
-    "coordinate_geometry.point_line_distance": [
-        "distance_from_point_to_line",
-        "distance_from_point_to_line_parameter",
-        "distance_from_point_to_line_parameter_single_choice_scalar",
-        "compare_point_to_line_distances",
-    ],
-    "coordinate_geometry.parallel_lines_distance": [
-        "distance_between_parallel_lines",
-        "solve_parameter_from_parallel_distance",
-        "construct_parallel_line_at_distance",
-        "parallel_lines_distance_single_choice",
-        "area_using_parallel_distance",
-    ],
-    "statistics.frequency_distribution": [
-        "frequency_table_construction_review",
-        "frequency_table_single_bin_count",
-    ],
-    "statistics.table_chart": [
-        "read_category_value",
-        "compare_category_values",
-        "calculate_total_ratio_percent",
-        "validate_chart_statement",
-    ],
+    dk: get_domain_operations(dk)
+    for dk in list_registered_domains()
 }
 
 # Administrative profile: skill_id -> fixed_domain_key + curriculum.
@@ -121,6 +78,13 @@ SKILL_DOMAIN_PROFILE: dict[str, dict[str, Any]] = {
         "curriculum_profile": "vocational_high_b",
         "registry_revision": REGISTRY_REVISION,
         "mapping_reason": "textbook_skill_frequency_distribution_table",
+    },
+    "vh_數學B4_CumulativeFrequencyTablesAndGraphs": {
+        "fixed_domain_key": "statistics.frequency_distribution",
+        "domain": "statistics",
+        "curriculum_profile": "vocational_high_b",
+        "registry_revision": REGISTRY_REVISION,
+        "mapping_reason": "textbook_skill_cumulative_frequency_distribution",
     },
     "vh_數學B4_StatisticalChartReading": {
         "fixed_domain_key": "statistics.table_chart",
@@ -224,17 +188,19 @@ SKILL_TO_DOMAIN: dict[str, dict[str, Any]] = {
             "frequency_table_single_bin_count",
         ],
     },
+    "vh_數學B4_CumulativeFrequencyTablesAndGraphs": {
+        "fixed_domain_key": "statistics.frequency_distribution",
+        "domain_module": "core.domain.statistics.frequency_distribution_domain",
+        "entrypoint": "build_frequency_distribution_table_matrix",
+        "default_curriculum_profile": "vocational_high_b",
+    },
     "vh_數學B4_StatisticalChartReading": {
         "fixed_domain_key": "statistics.table_chart",
         "domain_module": "core.domain.statistics.table_chart_domain",
         "entrypoint": "build_statistical_chart_reading_matrix",
         "default_curriculum_profile": "vocational_high_b",
-        "allowed_types": [
-            "read_category_value",
-            "compare_category_values",
-            "calculate_total_ratio_percent",
-            "validate_chart_statement",
-        ],
+        # All domain operations allowed for this skill; derived from registry.
+        "allowed_types": get_domain_operations("statistics.table_chart"),
     },
 }
 

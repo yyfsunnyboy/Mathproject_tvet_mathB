@@ -178,8 +178,47 @@ def _load_facade_module(thin_facade_path: Path):
     return module
 
 
+def run_v3_per_component_smoke(root: Path, skill_id: str, *, seed: int = 42) -> None:
+    """Run fixed-seed smoke against every component generate.py (no wrapper dispatch)."""
+    import importlib.util
+
+    components_dir = root / "agent_skills_v3" / skill_id / "components"
+    if not components_dir.is_dir():
+        raise RuntimeError(f"components_dir_missing:{components_dir}")
+
+    from core.gencode.services.v3_question_integrity_validator import validate_component_payload
+
+    for entry in sorted(components_dir.iterdir()):
+        if not entry.is_dir() or entry.name.startswith("__"):
+            continue
+        component_id = entry.name
+        generate_py = entry / "generate.py"
+        get_hint_py = entry / "get_hint.py"
+        if not generate_py.is_file():
+            raise RuntimeError(f"missing_generate_py:{component_id}")
+        py_compile.compile(str(generate_py), doraise=True)
+        if get_hint_py.is_file():
+            py_compile.compile(str(get_hint_py), doraise=True)
+
+        spec = importlib.util.spec_from_file_location(f"smoke_{component_id}", generate_py)
+        if spec is None or spec.loader is None:
+            raise RuntimeError(f"module_load_failed:{component_id}")
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+        generate_fn = getattr(module, "generate", None)
+        if not callable(generate_fn):
+            raise RuntimeError(f"missing_generate_function:{component_id}")
+        payload = generate_fn(seed=seed, component_id=component_id)
+        if not isinstance(payload, dict):
+            raise RuntimeError(f"generate_must_return_dict:{component_id}")
+        validation = validate_component_payload(payload, component_id=component_id)
+        if not validation.get("passed", True):
+            blockers = validation.get("blockers") or ["integrity_validation_failed"]
+            raise RuntimeError(f"component_smoke_failed:{component_id}:{'|'.join(str(b) for b in blockers)}")
+
+
 def run_v3_smoke(root: Path, skill_id: str) -> None:
-    """Static compile and dynamic dispatch smoke for one skill root."""
+    """Static compile and per-component smoke, then one wrapper dispatch check."""
     thin_facade_path = root / "skills" / f"{skill_id}.py"
     new_house_path = root / "agent_skills_v3" / skill_id / "__init__.py"
     components_dir = root / "agent_skills_v3" / skill_id / "components"
@@ -189,6 +228,8 @@ def run_v3_smoke(root: Path, skill_id: str) -> None:
     if components_dir.exists():
         for py_file in components_dir.rglob("*.py"):
             py_compile.compile(str(py_file), doraise=True)
+
+    run_v3_per_component_smoke(root, skill_id, seed=42)
 
     facade = _load_facade_module(thin_facade_path)
     payload = facade.generate(seed=42)

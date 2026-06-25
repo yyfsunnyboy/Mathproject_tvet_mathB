@@ -8,10 +8,11 @@ import json
 import py_compile
 import shutil
 import sqlite3
+import time
 import uuid
 from datetime import datetime
 from pathlib import Path
-from typing import Any
+from typing import Any, Literal
 
 from core.gencode.pipeline_orchestrator import (
     V3_PRODUCTION_PUBLISH_ENABLED,
@@ -156,8 +157,7 @@ def _record_published_component_evidence(
         conn.execute(
             """
             UPDATE gencode_component_tracker
-            SET induced_spec_payload = ?,
-                updated_at = datetime('now', 'localtime')
+            SET induced_spec_payload = ?
             WHERE skill_id = ? AND textbook_example_id = ?
             """,
             (json.dumps(payload, ensure_ascii=False), skill_key, textbook_example_id),
@@ -229,6 +229,119 @@ def _classify_dryrun_error(exc: Exception) -> str:
         return COMPONENT_VERIFICATION_FAILED
     return COMPONENT_GENERATION_FAILED
 
+V3DryrunMode = Literal["auto", "regenerate", "verify_existing"]
+
+
+def _normalize_v3_dryrun_mode(mode: str | None, *, force: bool) -> V3DryrunMode:
+    key = str(mode or "auto").strip().lower()
+    if key in {"regenerate", "verify_existing"}:
+        return key  # type: ignore[return-value]
+    if force:
+        return "regenerate"
+    return "auto"
+
+
+def _component_dir_path(dryrun_base_dir: str, skill_id: str, component_id: str) -> Path:
+    return _resolve_dryrun_root(dryrun_base_dir) / str(skill_id) / "components" / str(component_id)
+
+
+def _merge_tracker_run_evidence(
+    conn: sqlite3.Connection,
+    *,
+    textbook_example_id: int,
+    skill_id: str,
+    run_id: str,
+    evidence: dict[str, object],
+) -> None:
+    tracker = _fetch_tracker_for_example(conn, textbook_example_id)
+    if tracker is None:
+        return
+    payload = dict(tracker.get("payload") or {})
+    payload.update(evidence)
+    payload["last_run_id"] = run_id
+    save_tracker_record(
+        conn,
+        textbook_example_id=textbook_example_id,
+        skill_id=skill_id,
+        gencode_status=str(tracker.get("gencode_status") or "draft_written"),
+        induced_spec_payload=payload,
+        gencode_error_log=tracker.get("gencode_error_log"),
+    )
+
+
+def _execute_component_direct_smoke_and_validation(
+    *,
+    skill_id: str,
+    component_id: str,
+    dryrun_base_dir: str,
+    seed: int,
+) -> dict[str, object]:
+    """Smoke one dryrun component by loading its generate.py directly (no production wrapper)."""
+    component_dir = _component_dir_path(dryrun_base_dir, skill_id, component_id)
+    required_files = {
+        "metadata.py": component_dir / "metadata.py",
+        "generate.py": component_dir / "generate.py",
+        "get_hint.py": component_dir / "get_hint.py",
+    }
+    missing_files = [name for name, path in required_files.items() if not path.is_file()]
+    if missing_files:
+        return {
+            "compile_passed": False,
+            "smoke_passed": False,
+            "validation_passed": False,
+            "error": f"missing_files:{','.join(missing_files)}",
+        }
+
+    try:
+        for target_path in required_files.values():
+            py_compile.compile(str(target_path), doraise=True)
+
+        generate_module = _load_module_from_file(required_files["generate.py"])
+        hint_module = _load_module_from_file(required_files["get_hint.py"])
+        generate_fn = getattr(generate_module, "generate", None)
+        hint_fn = getattr(hint_module, "get_hint", None)
+        if not callable(generate_fn) or not callable(hint_fn):
+            raise RuntimeError("missing_generate_or_hint_function")
+
+        payload = generate_fn(seed=seed, component_id=component_id)
+        if not isinstance(payload, dict):
+            raise TypeError("generate_must_return_dict")
+        hint_fn(1, payload)
+
+        from core.gencode.services.v3_question_integrity_validator import (
+            DEFAULT_INTEGRITY_SEEDS,
+            validate_component_payload,
+        )
+
+        for test_seed in DEFAULT_INTEGRITY_SEEDS:
+            sample = generate_fn(seed=test_seed, component_id=component_id)
+            validation = validate_component_payload(sample, component_id=component_id)
+            if not validation.get("passed", True):
+                blockers = validation.get("blockers") or ["integrity_validation_failed"]
+                return {
+                    "compile_passed": True,
+                    "smoke_passed": True,
+                    "validation_passed": False,
+                    "error": "; ".join(str(b) for b in blockers),
+                    "validation_blockers": blockers,
+                }
+
+        return {
+            "compile_passed": True,
+            "smoke_passed": True,
+            "validation_passed": True,
+            "error": None,
+            "smoke_seed": seed,
+        }
+    except Exception as exc:
+        return {
+            "compile_passed": False,
+            "smoke_passed": False,
+            "validation_passed": False,
+            "error": f"{exc.__class__.__name__}:{exc}",
+        }
+
+
 def _record_failed_example(
     conn: sqlite3.Connection,
     *,
@@ -259,6 +372,7 @@ def run_admin_v3_dryrun_for_skill(
     smoke: bool = False,
     verify: bool = False,
     force: bool = False,
+    mode: str = "auto",
     limit: int | None = None,
     dryrun_base_dir: str = "reports/gencode_v3_dryrun",
     seed: int | None = None,
@@ -271,50 +385,135 @@ def run_admin_v3_dryrun_for_skill(
         raise ValueError("missing_skill_id")
     _assert_admin_v3_dryrun_skill_allowed(skill_key)
 
+    operation_mode = _normalize_v3_dryrun_mode(mode, force=force)
+    must_regenerate = operation_mode == "regenerate"
+    verify_existing_only = operation_mode == "verify_existing"
+
     example_ids = _fetch_textbook_example_ids_for_skill(conn, skill_key)
     if limit is not None:
         if not isinstance(limit, int) or isinstance(limit, bool) or limit < 1:
             raise ValueError("invalid_limit")
         example_ids = example_ids[:limit]
 
+    run_id = uuid.uuid4().hex
+    started_at = _now_iso()
+    started_monotonic = time.perf_counter()
+    smoke_seed = int(seed if seed is not None else 42)
+
     results: list[dict[str, object]] = []
+    component_results: list[dict[str, object]] = []
     processed_count = 0
     skipped_verified_count = 0
+    skipped_count = 0
+    rebuilt_count = 0
+    unchanged_count = 0
+    compile_passed_count = 0
+    smoke_passed_count = 0
+    validation_passed_count = 0
     success_count = 0
     failed_count = 0
     unsupported_count = 0
+    reused_components: list[str] = []
 
     for textbook_example_id in example_ids:
         component_id = derive_component_id(textbook_example_id)
         tracker = _fetch_tracker_for_example(conn, textbook_example_id)
         tracker_status = str((tracker or {}).get("gencode_status") or "").strip()
+        generate_path = _component_generate_path(dryrun_base_dir, skill_key, component_id)
+        before_sha = _sha256_file(generate_path)
+        before_mtime = _file_mtime(generate_path)
 
-        if tracker_status == "verified" and not force:
-            payload = tracker.get("payload") if isinstance(tracker, dict) else {}
-            generate_path = _component_generate_path(dryrun_base_dir, skill_key, component_id)
+        skip_rebuild = (
+            verify_existing_only
+            or (operation_mode == "auto" and tracker_status == "verified" and not force)
+        )
+        if skip_rebuild and tracker_status == "verified":
             skipped_verified_count += 1
+            skipped_count += 1
+            reused_components.append(component_id)
+            gate = _execute_component_direct_smoke_and_validation(
+                skill_id=skill_key,
+                component_id=component_id,
+                dryrun_base_dir=dryrun_base_dir,
+                seed=smoke_seed,
+            ) if smoke else {
+                "compile_passed": generate_path.is_file(),
+                "smoke_passed": False,
+                "validation_passed": False,
+                "error": None,
+            }
+            after_sha = _sha256_file(generate_path)
+            if gate.get("compile_passed"):
+                compile_passed_count += 1
+            if gate.get("smoke_passed"):
+                smoke_passed_count += 1
+            if gate.get("validation_passed"):
+                validation_passed_count += 1
+            if before_sha and after_sha and before_sha == after_sha:
+                unchanged_count += 1
+
+            component_entry = {
+                "textbook_example_id": textbook_example_id,
+                "component_id": component_id,
+                "status": "reused_verified",
+                "operation": "verify_existing",
+                "rebuild_started": False,
+                "rebuild_completed": False,
+                "before_sha": before_sha,
+                "after_sha": after_sha,
+                "compile_passed": bool(gate.get("compile_passed")),
+                "smoke_passed": bool(gate.get("smoke_passed")),
+                "validation_passed": bool(gate.get("validation_passed")),
+                "tracker_transition": f"{tracker_status}->{tracker_status}",
+                "published_artifact_sha": None,
+                "run_id": run_id,
+                "skip_reason": "verified_tracker_reused",
+                "model_generation_invoked": False,
+                "error": gate.get("error"),
+            }
+            component_results.append(component_entry)
             results.append(
                 {
-                    "textbook_example_id": textbook_example_id,
-                    "status": "skipped_verified",
-                    "component_id": component_id,
+                    **component_entry,
                     "message": "verified tracker row kept",
                     "force_regenerate": False,
                     "cache_hit": True,
-                    "skip_reason": "verified_tracker",
-                    "generation_run_id": payload.get("generation_run_id") if isinstance(payload, dict) else None,
+                    "generation_run_id": (tracker or {}).get("payload", {}).get("generation_run_id")
+                    if isinstance((tracker or {}).get("payload"), dict)
+                    else None,
                     "generation_started_at": None,
                     "generation_finished_at": None,
-                    "old_artifact_hash": _sha256_file(generate_path),
-                    "new_artifact_hash": _sha256_file(generate_path),
-                    "old_generate_mtime": _file_mtime(generate_path),
+                    "old_artifact_hash": before_sha,
+                    "new_artifact_hash": after_sha,
+                    "old_generate_mtime": before_mtime,
                     "new_generate_mtime": _file_mtime(generate_path),
-                    "model_generation_invoked": False,
                 }
             )
+            if gate.get("error"):
+                failed_count += 1
+            else:
+                success_count += 1
             continue
 
         processed_count += 1
+        rebuild_started_at = _now_iso()
+        component_entry: dict[str, object] = {
+            "textbook_example_id": textbook_example_id,
+            "component_id": component_id,
+            "operation": "regenerate" if must_regenerate or force else "generate",
+            "rebuild_started": True,
+            "rebuild_completed": False,
+            "before_sha": before_sha,
+            "after_sha": None,
+            "compile_passed": False,
+            "smoke_passed": False,
+            "validation_passed": False,
+            "tracker_transition": f"{tracker_status}->",
+            "published_artifact_sha": None,
+            "run_id": run_id,
+            "rebuild_started_at": rebuild_started_at,
+            "model_generation_invoked": False,
+        }
         try:
             dryrun_result = run_admin_v3_dryrun_for_example(
                 conn=conn,
@@ -323,59 +522,116 @@ def run_admin_v3_dryrun_for_skill(
                 dryrun_base_dir=dryrun_base_dir,
                 seed=seed,
                 allow_non_mvp_skill=True,
-                force_regenerate=force,
+                force_regenerate=must_regenerate or bool(force),
             )
-            entry_status = "processed"
+            component_entry["model_generation_invoked"] = bool(
+                dryrun_result.get("model_generation_invoked")
+            )
+            component_entry["generation_run_id"] = dryrun_result.get("generation_run_id")
+            after_sha = dryrun_result.get("new_artifact_hash") or _sha256_file(generate_path)
+            component_entry["after_sha"] = after_sha
+            component_entry["rebuild_completed"] = True
+            component_entry["rebuild_completed_at"] = dryrun_result.get("generation_finished_at") or _now_iso()
+            rebuilt_count += 1
+            if before_sha and after_sha and before_sha == after_sha:
+                unchanged_count += 1
+
+            tracker_after = _fetch_tracker_for_example(conn, textbook_example_id)
+            post_status = str((tracker_after or {}).get("gencode_status") or dryrun_result.get("status") or "")
+            component_entry["tracker_transition"] = f"{tracker_status}->{post_status}"
+
             message = str(dryrun_result.get("status") or "draft_written")
             if message == "failed":
                 failed_count += 1
-                results.append(
-                    {
-                        "textbook_example_id": textbook_example_id,
-                        "status": "failed",
-                        "component_id": str(dryrun_result.get("component_id") or component_id),
-                        "error_code": str(dryrun_result.get("error_code") or "COMPONENT_GENERATION_FAILED"),
-                        "message": "component_generation_failed_this_run",
-                        "force_regenerate": bool(dryrun_result.get("force_regenerate", force)),
-                        "cache_hit": bool(dryrun_result.get("cache_hit", False)),
-                        "skip_reason": dryrun_result.get("skip_reason"),
-                        "generation_run_id": dryrun_result.get("generation_run_id"),
-                        "generation_started_at": dryrun_result.get("generation_started_at"),
-                        "generation_finished_at": dryrun_result.get("generation_finished_at"),
-                        "old_artifact_hash": dryrun_result.get("old_artifact_hash"),
-                        "new_artifact_hash": dryrun_result.get("new_artifact_hash"),
-                        "old_generate_mtime": dryrun_result.get("old_generate_mtime"),
-                        "new_generate_mtime": dryrun_result.get("new_generate_mtime"),
-                        "model_generation_invoked": bool(dryrun_result.get("model_generation_invoked")),
-                    }
-                )
+                component_entry["status"] = "failed"
+                component_entry["error"] = dryrun_result.get("error_code") or "COMPONENT_GENERATION_FAILED"
+                component_results.append(component_entry)
+                results.append({
+                    **component_entry,
+                    "status": "failed",
+                    "message": "component_generation_failed_this_run",
+                    "cache_hit": False,
+                    "force_regenerate": bool(dryrun_result.get("force_regenerate", force or must_regenerate)),
+                })
                 continue
 
-            if smoke and message == "draft_written":
-                smoke_result = run_admin_v3_smoke_for_example(
-                    conn=conn,
-                    textbook_example_id=textbook_example_id,
+            gate: dict[str, object] = {"compile_passed": False, "smoke_passed": False, "validation_passed": False}
+            if smoke:
+                gate = _execute_component_direct_smoke_and_validation(
                     skill_id=skill_key,
+                    component_id=component_id,
                     dryrun_base_dir=dryrun_base_dir,
-                    seed=seed if seed is not None else 42,
+                    seed=smoke_seed,
                 )
-                message = str(smoke_result.get("status") or "smoke_passed")
-                if verify:
+                component_entry["compile_passed"] = bool(gate.get("compile_passed"))
+                component_entry["smoke_passed"] = bool(gate.get("smoke_passed"))
+                component_entry["validation_passed"] = bool(gate.get("validation_passed"))
+                if gate.get("compile_passed"):
+                    compile_passed_count += 1
+                if gate.get("smoke_passed"):
+                    smoke_passed_count += 1
+                if gate.get("validation_passed"):
+                    validation_passed_count += 1
+                if gate.get("error"):
+                    _record_failed_example(
+                        conn,
+                        textbook_example_id=textbook_example_id,
+                        skill_id=skill_key,
+                        error_code=COMPONENT_VERIFICATION_FAILED,
+                        exc=RuntimeError(str(gate.get("error"))),
+                    )
+                    failed_count += 1
+                    component_entry["status"] = "failed"
+                    component_entry["error"] = gate.get("error")
+                    component_results.append(component_entry)
+                    results.append({
+                        **component_entry,
+                        "status": "failed",
+                        "message": "component_smoke_or_validation_failed",
+                        "cache_hit": False,
+                        "force_regenerate": bool(force or must_regenerate),
+                    })
+                    continue
+
+                if verify and post_status == "smoke_passed":
                     verify_result = mark_admin_v3_example_verified(
                         conn=conn,
                         textbook_example_id=textbook_example_id,
                         skill_id=skill_key,
                     )
                     message = str(verify_result.get("status") or "verified")
+                    post_status = message
+                    component_entry["tracker_transition"] = f"{tracker_status}->{post_status}"
 
+            _merge_tracker_run_evidence(
+                conn,
+                textbook_example_id=textbook_example_id,
+                skill_id=skill_key,
+                run_id=run_id,
+                evidence={
+                    "rebuild_started": True,
+                    "rebuild_completed": True,
+                    "before_sha": before_sha,
+                    "after_sha": after_sha,
+                    "compile_passed": component_entry.get("compile_passed"),
+                    "smoke_passed": component_entry.get("smoke_passed"),
+                    "validation_passed": component_entry.get("validation_passed"),
+                    "generation_run_id": dryrun_result.get("generation_run_id"),
+                    "run_id": run_id,
+                    "rebuild_started_at": rebuild_started_at,
+                    "rebuild_completed_at": component_entry.get("rebuild_completed_at"),
+                },
+            )
+
+            component_entry["status"] = "rebuilt"
+            component_results.append(component_entry)
             success_count += 1
             results.append(
                 {
-                    "textbook_example_id": textbook_example_id,
-                    "status": entry_status,
-                    "component_id": str(dryrun_result.get("component_id") or component_id),
+                    **component_entry,
+                    "status": "processed",
                     "message": message,
-                    "force_regenerate": bool(dryrun_result.get("force_regenerate", force)),
+                    "force_regenerate": bool(dryrun_result.get("force_regenerate", force or must_regenerate)),
                     "cache_hit": bool(dryrun_result.get("cache_hit", False)),
                     "skip_reason": dryrun_result.get("skip_reason"),
                     "generation_run_id": dryrun_result.get("generation_run_id"),
@@ -400,22 +656,50 @@ def run_admin_v3_dryrun_for_skill(
                 exc=exc,
             )
             failed_count += 1
+            component_entry["status"] = "failed"
+            component_entry["error"] = f"{exc.__class__.__name__}:{exc}"
+            component_results.append(component_entry)
             results.append(
                 {
-                    "textbook_example_id": textbook_example_id,
+                    **component_entry,
                     "status": "failed",
-                    "component_id": component_id,
                     "error_code": error_code,
                     "message": f"{exc.__class__.__name__}:{exc}",
+                    "cache_hit": False,
+                    "force_regenerate": bool(force or must_regenerate),
                 }
             )
+
+    completed_at = _now_iso()
+    duration_ms = int((time.perf_counter() - started_monotonic) * 1000)
+    requested_count = len(example_ids)
 
     coverage = get_v3_skill_component_coverage(conn, skill_key)
     verified_count = int(coverage.get("verified_count") or 0)
     missing_tracker_count = int(coverage.get("missing_tracker_count") or 0)
 
+    if must_regenerate:
+        run_success = (
+            failed_count == 0
+            and rebuilt_count == requested_count
+            and (not smoke or smoke_passed_count == requested_count)
+            and (not smoke or compile_passed_count == requested_count)
+            and (not smoke or validation_passed_count == requested_count)
+        )
+        user_message = (
+            "重新生成完成"
+            if run_success
+            else "重新生成未完全完成"
+        )
+    elif verify_existing_only and rebuilt_count == 0:
+        run_success = failed_count == 0 and skipped_count == requested_count
+        user_message = "未重新生成；已驗證既有產物"
+    else:
+        run_success = failed_count == 0 and (success_count == requested_count or processed_count + skipped_count == requested_count)
+        user_message = "dryrun 完成" if run_success else "dryrun 未完全完成"
+
     variation_report = {}
-    if failed_count == 0 and verified_count > 0:
+    if failed_count == 0 and verified_count > 0 and rebuilt_count > 0:
         from core.gencode.services.v3_variation_audit_service import audit_skill_variation
         try:
             variation_report = audit_skill_variation(
@@ -432,9 +716,25 @@ def run_admin_v3_dryrun_for_skill(
     failure_batch = classify_batch_failures(failed_entries)
 
     return {
-        "success": failed_count == 0,
+        "success": run_success,
         "skill_id": skill_key,
-        "total_examples": len(example_ids),
+        "mode": operation_mode,
+        "user_message": user_message,
+        "run_id": run_id,
+        "started_at": started_at,
+        "completed_at": completed_at,
+        "duration_ms": duration_ms,
+        "requested_count": requested_count,
+        "rebuilt_count": rebuilt_count,
+        "skipped_count": skipped_count,
+        "unchanged_count": unchanged_count,
+        "compile_passed_count": compile_passed_count,
+        "smoke_passed_count": smoke_passed_count,
+        "validation_passed_count": validation_passed_count,
+        "published_count_this_run": 0,
+        "component_results": component_results,
+        "reused_components": reused_components,
+        "total_examples": requested_count,
         "processed_count": processed_count,
         "skipped_verified_count": skipped_verified_count,
         "success_count": success_count,
@@ -561,17 +861,20 @@ def run_admin_v3_dryrun_publish_closed_loop_for_skill(
     smoke: bool = True,
     verify: bool = True,
     force: bool = False,
+    mode: str = "auto",
     limit: int | None = None,
     dryrun_base_dir: str = "reports/gencode_v3_dryrun",
     seed: int | None = None,
 ) -> dict[str, object]:
     """Run skill-level dryrun and auto-publish when full coverage gate passes."""
+    operation_mode = _normalize_v3_dryrun_mode(mode, force=force)
     generation_result = run_admin_v3_dryrun_for_skill(
         conn,
         skill_id,
         smoke=smoke,
         verify=verify,
-        force=force,
+        force=force or operation_mode == "regenerate",
+        mode=operation_mode,
         limit=limit,
         dryrun_base_dir=dryrun_base_dir,
         seed=seed,
@@ -581,6 +884,7 @@ def run_admin_v3_dryrun_publish_closed_loop_for_skill(
     if not isinstance(coverage, dict):
         coverage = get_v3_skill_component_coverage(conn, skill_key)
     generation = _generation_summary_from_coverage(coverage)
+    rebuilt_count = int(generation_result.get("rebuilt_count") or 0)
 
     publish_attempted = False
     publish_contract = _publish_contract_from_result(
@@ -588,10 +892,16 @@ def run_admin_v3_dryrun_publish_closed_loop_for_skill(
         coverage=coverage,
         attempted=False,
     )
+    published_count_this_run = 0
 
     eligibility = evaluate_v3_publish_eligibility(conn, skill_key, coverage=coverage)
 
-    if bool(eligibility.get("allowed")):
+    should_auto_publish = (
+        bool(eligibility.get("allowed"))
+        and bool(generation_result.get("success"))
+        and rebuilt_count > 0
+    )
+    if should_auto_publish:
         publish_attempted = True
         try:
             _prepare_publish_staging_components(
@@ -612,6 +922,8 @@ def run_admin_v3_dryrun_publish_closed_loop_for_skill(
                 coverage=coverage,
                 attempted=True,
             )
+            if publish_contract.get("published"):
+                published_count_this_run = int(publish_contract.get("published_components") or 0)
         except Exception as exc:
             from core.gencode.v3_production_publish_service import V3PublishRootValidationError
             if isinstance(exc, V3PublishRootValidationError):
@@ -630,9 +942,9 @@ def run_admin_v3_dryrun_publish_closed_loop_for_skill(
                     failed_stage = "staging_smoke"
                 elif "variation_audit_failed" in message:
                     failed_stage = "variation_audit"
-                elif "production_smoke" in message:
+                elif "production_smoke" in message or "production smoke" in message.lower():
                     failed_stage = "production_smoke"
-                elif "compile" in message or "wrapper" in message:
+                elif "compile" in message.lower() or "wrapper" in message.lower():
                     failed_stage = "wrapper_compile"
                 publish_contract = _publish_contract_from_result(
                     publish_result=None,
@@ -656,6 +968,7 @@ def run_admin_v3_dryrun_publish_closed_loop_for_skill(
         "eligibility": eligibility,
         "publish": publish_contract,
         "coverage": refreshed_coverage,
+        "published_count_this_run": published_count_this_run,
     }
 
 

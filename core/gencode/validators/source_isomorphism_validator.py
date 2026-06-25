@@ -7,16 +7,37 @@ from typing import Any
 
 GENERATION_NOT_SOURCE_ISOMORPHIC = "GENERATION_NOT_SOURCE_ISOMORPHIC"
 
-_GENERIC_TABLE_CHART_OPS = frozenset(
-    {
-        "read_category_value",
-        "compare_category_values",
-        "calculate_total_ratio_percent",
-        "validate_chart_statement",
-    }
-)
+def _build_generic_table_chart_ops() -> frozenset:
+    """Generic (non-cumulative) table chart operations derived from the registry.
+
+    These are the operations that do NOT require a cumulative-frequency-polygon
+    source.  When a generated payload uses one of these ops for a source that
+    expected a cumulative operation, it is flagged as a degradation.
+    """
+    from core.registry.domain_operation_registry import get_domain_spec
+    spec = get_domain_spec("statistics.table_chart")
+    if spec is None:
+        return frozenset({
+            "read_category_value",
+            "compare_category_values",
+            "calculate_total_ratio_percent",
+            "validate_chart_statement",
+        })
+    return frozenset(
+        op_key
+        for op_key, op_spec in spec.operations.items()
+        if not op_spec.required_source_features
+    )
+
+
+_GENERIC_TABLE_CHART_OPS: frozenset = _build_generic_table_chart_ops()
 
 _GENERIC_CATEGORY_MARKERS = frozenset({"A", "B", "C", "D"})
+
+
+def _is_cumulative_source_text(text: str) -> bool:
+    return any(token in text for token in ("累積", "累積次數", "cumulative"))
+
 
 
 def validate_source_isomorphism(
@@ -43,6 +64,10 @@ def validate_source_isomorphism(
 
     if expected_op and actual_op and expected_op != actual_op:
         blockers.append(f"operation_mismatch:expected={expected_op},actual={actual_op}")
+
+    source_question_text = str(topology.get("source_question_text") or "")
+    if _is_cumulative_source_text(source_question_text) and actual_op == "frequency_polygon_reading":
+        blockers.append("cumulative_stem_matched_frequency_polygon_reading")
 
     if actual_op in _GENERIC_TABLE_CHART_OPS and expected_op not in _GENERIC_TABLE_CHART_OPS:
         blockers.append(f"degraded_to_generic_operation:{actual_op}")

@@ -921,6 +921,36 @@
            捲軸與高度限制優化 (Scrollbar & Height)
            ========================================= */
 
+        /* ── question-media-container: inline chart image ── */
+        #question-media-container {
+            margin: 12px 0 4px 0;
+        }
+        #question-media-container img {
+            display: block;
+            max-width: 100%;
+            width: auto;
+            height: auto;
+            max-height: 340px;
+            margin: 0 auto;
+            object-fit: contain;
+            border-radius: 6px;
+            box-shadow: 0 1px 6px rgba(0,0,0,.14);
+        }
+        .question-media-error {
+            color: #c0392b;
+            font-size: 0.9rem;
+            padding: 8px 12px;
+            background: #fdf2f2;
+            border-radius: 4px;
+            border-left: 3px solid #e74c3c;
+            margin: 6px 0;
+        }
+        @media (max-width: 600px) {
+            #question-media-container img {
+                max-height: 220px;
+            }
+        }
+
         /* 1. 題目顯示框框：限制高度 + 捲軸 */
         /* 1. 題目顯示框框：限制高度 + 捲軸 */
         #question-container {
@@ -1686,6 +1716,8 @@
                         </div>
                         {% endif %}
                     </div>
+                    <!-- question-media-container: 統計圖表、折線圖等視覺資產顯示在此 -->
+                    <div id="question-media-container" style="display:none;"></div>
                     <div id="question-choices" style="margin-top: 10px;"></div>
                 </div>
                 {% if is_similar_practice %}
@@ -1698,6 +1730,7 @@
                     <div id="similar-ocr-preview" class="similar-preview-box" style="display:none;"></div>
                 </div>
                 {% endif %}
+                <div id="subquestions-container" class="subquestions-container" style="display:none;"></div>
                 <div class="input-group"><input type="text" id="answer-input" placeholder="{% if manual_review_unavailable %}此題型尚未開放一般自動判分{% else %}輸入答案...{% endif %}"{% if manual_review_unavailable %} disabled aria-disabled="true"{% endif %}><button
                         id="submit-button"{% if manual_review_unavailable %} disabled aria-disabled="true"{% endif %}>{{ '檢查答案' if is_similar_practice else '提交' }}</button></div>
                 <div id="result-display"></div>
@@ -2246,7 +2279,7 @@
 
         // DOM 元素
         let canvas, ctx, analyzeBtn, submitBtn, answerInput, resultDisplay;
-        let questionText, questionChoices, chatHistory, streakCounter;
+        let questionText, questionChoices, chatHistory, streakCounter, subquestionsContainer;
         let canvasResizeObserver = null;
         let lastCanvasDisplayWidth = 0;
         let lastCanvasDisplayHeight = 0;
@@ -2286,6 +2319,7 @@
             resultDisplay = document.getElementById('result-display');
             questionText = document.getElementById('question-text');
             questionChoices = document.getElementById('question-choices');
+            subquestionsContainer = document.getElementById('subquestions-container');
             chatHistory = document.getElementById('chat-history');
             streakCounter = document.getElementById('streak-counter');
             levelIndicator = document.getElementById('level-indicator');
@@ -3480,7 +3514,79 @@
                 equivalence: payload.equivalence || '',
                 choices: Array.isArray(choices) ? choices.slice() : [],
                 answer_type: payload.answer_type || '',
+                subquestions: Array.isArray(payload.subquestions) ? payload.subquestions.slice() : [],
+                table_data: payload.table_data || {},
+                image_base64: payload.image_base64 || '',
             };
+        }
+
+        function isMultiPartQuestion(payload) {
+            const cq = payload || currentQuestion || {};
+            const answerType = String(cq.answer_type || (cq.answer_contract && cq.answer_contract.answer_type) || '').toLowerCase();
+            const subqs = cq.subquestions;
+            return answerType === 'multi_part' && Array.isArray(subqs) && subqs.length > 0;
+        }
+
+        function clearSubquestionInputs() {
+            if (!subquestionsContainer) return;
+            subquestionsContainer.innerHTML = '';
+            subquestionsContainer.style.display = 'none';
+        }
+
+        function renderSubquestionInputs(payload) {
+            clearSubquestionInputs();
+            if (!subquestionsContainer || !isMultiPartQuestion(payload)) {
+                if (answerInput) {
+                    answerInput.style.display = '';
+                }
+                return;
+            }
+            const subqs = payload.subquestions || [];
+            subquestionsContainer.style.display = 'block';
+            subquestionsContainer.classList.add('multi-part-list');
+            subqs.forEach((sq, index) => {
+                const row = document.createElement('div');
+                row.className = 'multi-part-row';
+                const label = document.createElement('label');
+                const partLabel = String(sq.part || `(${index + 1})`);
+                const prompt = String(sq.prompt || `小題 ${index + 1}`);
+                label.textContent = `${partLabel} ${prompt}`;
+                label.setAttribute('for', `multi-part-input-${index}`);
+                const input = document.createElement('input');
+                input.type = 'text';
+                input.id = `multi-part-input-${index}`;
+                input.className = 'multi-part-input';
+                input.dataset.partIndex = String(index);
+                input.placeholder = '請輸入此小題答案';
+                row.appendChild(label);
+                row.appendChild(input);
+                subquestionsContainer.appendChild(row);
+            });
+            if (answerInput) {
+                answerInput.style.display = 'none';
+                answerInput.disabled = true;
+                answerInput.value = '';
+            }
+        }
+
+        function collectMultiPartAnswers() {
+            if (!subquestionsContainer) return [];
+            const inputs = subquestionsContainer.querySelectorAll('.multi-part-input');
+            return Array.from(inputs).map((node) => String(node.value || '').trim());
+        }
+
+        function applyMultiPartUiContract(payload) {
+            const multi = isMultiPartQuestion(payload || currentQuestion);
+            if (multi) {
+                renderSubquestionInputs(payload || currentQuestion);
+                if (submitBtn) submitBtn.disabled = false;
+            } else {
+                clearSubquestionInputs();
+                if (answerInput) {
+                    answerInput.style.display = '';
+                    answerInput.disabled = false;
+                }
+            }
         }
 
         function buildCompositeCanvas() {
@@ -3665,8 +3771,13 @@
                 skill_id: cq.skill_id || getSkillId() || '',
                 question_uid: cq.question_uid || '',
                 problem_type_id: cq.problem_type_id || window.currentProblemTypeId || '',
-                answer: userAnswer,
             };
+            if (isMultiPartQuestion(cq)) {
+                payload.answers = collectMultiPartAnswers();
+                payload.answer = payload.answers;
+            } else {
+                payload.answer = userAnswer;
+            }
             if (isDrawingQuestion(cq)) {
                 payload.answer = "[drawing]";
                 const compCanvas = buildCompositeCanvas();
@@ -3818,7 +3929,7 @@
 
                     // === [V9.6 修改] 圖片處理邏輯：畫到 Canvas 上 ===
 
-                    // 1. 先重置畫布與圖片變數
+                    // 1. 先重置畫布與圖片變數，並清空 media container
                     currentQuestionImage = null;
                     imgDestX = 0; imgDestY = 0; imgDestW = 0; imgDestH = 0;
                     ctx.clearRect(0, 0, canvas.clientWidth || canvas.width, canvas.clientHeight || canvas.height);
@@ -3828,8 +3939,11 @@
                     }
                     undoStack = [];
                     redoStack = [];
+                    // 清空上一題圖片
+                    const _qmcEl = document.getElementById('question-media-container');
+                    if (_qmcEl) { _qmcEl.innerHTML = ''; _qmcEl.style.display = 'none'; }
 
-                    // 2. 抓取圖片資料
+                    // 2. 抓取圖片資料（優先順序：image_base64 > visual_aids > visual_spec）
                     let rawImage = data.image_base64;
                     if (!rawImage && data.visual_aids) {
                         if (typeof data.visual_aids === 'string') rawImage = data.visual_aids;
@@ -3840,21 +3954,52 @@
                         }
                     }
 
-                    // 3. 如果有圖片，載入並繪製
+                    // 3. 如果有圖片，(a) 顯示在題目區塊內 (b) 同時畫到 Canvas 背景
                     if (rawImage && rawImage.trim() !== "") {
                         let imgSource = rawImage;
                         if (!imgSource.startsWith('data:image')) {
                             imgSource = "data:image/png;base64," + imgSource;
                         }
 
-                        // 建立新的 Image 物件
+                        // (a) inline 顯示於題目與選項之間
+                        const qmc = document.getElementById('question-media-container');
+                        if (qmc) {
+                            const inlineImg = document.createElement('img');
+                            inlineImg.alt = '統計圖表';
+                            inlineImg.title = '統計圖表';
+                            inlineImg.onerror = function() {
+                                qmc.innerHTML = '<div class="question-media-error">⚠️ 圖表載入失敗，請重新整理頁面</div>';
+                                qmc.style.display = 'block';
+                            };
+                            inlineImg.onload = function() { qmc.style.display = 'block'; };
+                            inlineImg.src = imgSource;
+                            qmc.innerHTML = '';
+                            qmc.appendChild(inlineImg);
+                        }
+
+                        // (b) 建立 Canvas 背景圖物件（保留原有手寫畫布邏輯）
                         const img = new Image();
                         img.onload = function () {
-                            currentQuestionImage = img; // 存起來，方便 resize 或 clear 時重畫
-                            drawQuestionImage(); // 畫上去
-                            saveState(); // 存入 Undo 歷史紀錄
+                            currentQuestionImage = img;
+                            drawQuestionImage();
+                            saveState();
                         };
                         img.src = imgSource;
+                    } else if (data.table_data && data.table_data.html) {
+                        const qmc = document.getElementById('question-media-container');
+                        if (qmc) {
+                            qmc.innerHTML = data.table_data.html;
+                            qmc.style.display = 'block';
+                        }
+                        saveState();
+                    } else if (data.visual_spec && Object.keys(data.visual_spec).length > 0) {
+                        // fallback: visual_spec 存在但無 base64，顯示提示
+                        const qmc = document.getElementById('question-media-container');
+                        if (qmc) {
+                            qmc.innerHTML = '<div class="question-media-error">📊 圖表資料需由伺服器渲染（visual_spec 可用，base64 缺失）</div>';
+                            qmc.style.display = 'block';
+                        }
+                        saveState();
                     } else {
                         saveState(); // 沒圖片也要存初始狀態
                     }
@@ -4094,6 +4239,7 @@
             }
             resetQuestionScroll();
             renderChoices(payload);
+            applyMultiPartUiContract(payload);
             resetQuestionScroll();
             console.log('[FRONTEND PRACTICE] rendered question_uid', payload && payload.question_uid);
             console.log('[FRONTEND PRACTICE] rendered question_text_preview=', previewQuestionText(questionMainText));
@@ -4173,7 +4319,29 @@
                 const submitQuestionUid = currentQuestion && currentQuestion.question_uid
                     ? String(currentQuestion.question_uid)
                     : '';
-                const userAnswer = (answerInput && answerInput.value) ? answerInput.value : '';
+                const userAnswer = (answerInput && answerInput.style.display !== 'none' && answerInput.value)
+                    ? answerInput.value
+                    : '';
+                if (isMultiPartQuestion(currentQuestion)) {
+                    const partAnswers = collectMultiPartAnswers();
+                    if (partAnswers.some((v) => !v)) {
+                        resultDisplay.textContent = '請完成每一小題的答案。';
+                        resultDisplay.className = 'incorrect';
+                        isProcessing = false;
+                        submitBtn.disabled = false;
+                        setChoiceOptionsDisabled(false);
+                        stopLoadingMessage();
+                        return;
+                    }
+                } else if (!userAnswer) {
+                    resultDisplay.textContent = '請先輸入答案。';
+                    resultDisplay.className = 'incorrect';
+                    isProcessing = false;
+                    submitBtn.disabled = false;
+                    setChoiceOptionsDisabled(false);
+                    stopLoadingMessage();
+                    return;
+                }
                 logPracticeSubmitDebug(userAnswer);
 
                 isProcessing = true;

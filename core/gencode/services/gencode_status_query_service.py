@@ -936,6 +936,37 @@ def build_admin_skill_gencode_status_view(
         except Exception:
             pass
 
+    # ── generation-run status vs production status (clearly separated) ────────
+    # current_generation_status reflects ONLY what the tracker says about the
+    # most recent generation attempt.  It must never be conflated with the
+    # number of component files that exist on disk from a previous run.
+    _total = int(coverage.get("total_examples") or 0)
+    if verified_count == _total and _total > 0 and failed_count == 0:
+        current_generation_status = "all_verified"
+    elif verified_count > 0 and failed_count > 0:
+        current_generation_status = "partial_verified"
+    elif verified_count > 0:
+        current_generation_status = "verified_not_published"
+    elif failed_count > 0 and verified_count == 0:
+        current_generation_status = "all_failed"
+    elif any(str(row.get("status")) in {"generating", "pending"} for row in rows):
+        current_generation_status = "in_progress"
+    elif rows:
+        current_generation_status = "incomplete"
+    else:
+        current_generation_status = "not_started"
+
+    # production_is_current is True only when every source example has a
+    # tracker-verified component that has actually been pushed to production.
+    production_is_current = (
+        published_count == _total and _total > 0 and failed_count == 0
+    )
+
+    # last_successful_production_component_count = #verified components that are
+    # currently synced to production (may differ from disk file count if a
+    # previous run wrote stale files).
+    last_successful_production_component_count = published_count
+
     return {
         "status": status,
         "status_label": format_gencode_status_label(status),
@@ -964,6 +995,10 @@ def build_admin_skill_gencode_status_view(
         "publish_eligible": bool(eligibility.get("allowed")),
         "publish_ineligible_reason": eligibility.get("reason"),
         "teacher_status": teacher_status,
+        # ── generation-run vs production state model ───────────────────────
+        "current_generation_status": current_generation_status,
+        "production_is_current": production_is_current,
+        "last_successful_production_component_count": last_successful_production_component_count,
         **file_status,
         **prod_info,
         "dryrun_generate_label": _bool_label(bool(file_status["dryrun_generate_exists"])),

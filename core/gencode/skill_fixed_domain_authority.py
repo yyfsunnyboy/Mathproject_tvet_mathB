@@ -10,6 +10,10 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
+from core.registry.domain_operation_registry import (
+    get_domain_operations,
+    get_domain_spec,
+)
 from core.registry.taxonomy_registry import (
     SkillDomainNotRegisteredError,
     get_allowed_operations,
@@ -48,99 +52,31 @@ AI_IGNORED_ROUTING_FIELDS = frozenset(
     }
 )
 
-# Registry of domain capabilities & providers
-DOMAIN_PROVIDERS = {
-    "coordinate_geometry.line_equation": {
-        "domain_module": "core.domain.coordinate_geometry.line_equation_domain",
-        "entrypoint": "build_line_equation_matrix",
-        "capabilities": {
-            "slope", "line_equation", "horizontal_line", "vertical_line", 
-            "point_slope", "intercept_form", "general_form", "two_points", 
-            "line_through_point_parallel_to_line", "line_through_point_perpendicular_to_line",
-            "compare_line_slopes", "line_through_intersection_parallel_to_line",
-            "line_through_point_perpendicular_to_segment", "perpendicular_bisector_application",
-            "coordinate_geometry_word_problem"
-        },
-        "allowed_operations": [
-            "two_points", "point_slope", "horizontal_line", "vertical_line",
-            "oblique_line", "slope_intercept_equation", "slope_intercept_find_x_intercept",
-            "slope_intercept_read_slope_and_intercept", "intercept_form_equation",
-            "intercept_form_triangle_area", "intercept_form_equation_and_triangle_area",
-            "intercept_form_from_intercept_sum_and_slope", "parabola_secant_parallel_line_choice",
-            "triangle_area_bisector_line_equation", "slope_from_general_or_intercept_form",
-            "slope_from_general_form", "slope_of_horizontal_or_vertical_line",
-            "line_through_point_parallel_to_line", "line_through_point_perpendicular_to_line",
-            "parallel_line_slope", "perpendicular_line_slope", "parallel_condition_parameter",
-            "perpendicular_condition_parameter", "compare_line_slopes",
-            "line_through_intersection_parallel_to_line", "line_through_point_perpendicular_to_segment",
-            "perpendicular_bisector_application", "coordinate_geometry_word_problem"
-        ]
-    },
-    "coordinate_geometry.point_line_distance": {
-        "domain_module": "core.domain.coordinate_geometry.line_equation_domain",
-        "entrypoint": "build_coordinate_geometry_matrix",
-        "capabilities": {
-            "distance_from_point_to_line", "compare_point_to_line_distances"
-        },
-        "allowed_operations": [
-            "distance_from_point_to_line", "distance_from_point_to_line_parameter",
-            "distance_from_point_to_line_parameter_single_choice_scalar", "compare_point_to_line_distances"
-        ]
-    },
-    "coordinate_geometry.parallel_lines_distance": {
-        "domain_module": "core.domain.coordinate_geometry.parallel_lines_distance_domain",
-        "entrypoint": "build_parallel_lines_distance_matrix",
-        "capabilities": {
-            "distance_between_parallel_lines", "parallel_lines_distance", "solve_parameter_from_parallel_distance",
-            "construct_parallel_line_at_distance", "parallel_lines_distance_single_choice", "area_using_parallel_distance"
-        },
-        "allowed_operations": [
-            "distance_between_parallel_lines", "solve_parameter_from_parallel_distance",
-            "construct_parallel_line_at_distance", "parallel_lines_distance_single_choice",
-            "area_using_parallel_distance"
-        ]
-    },
-    "statistics.frequency_distribution": {
-        "domain_module": "core.domain.statistics.frequency_distribution_domain",
-        "entrypoint": "build_frequency_distribution_table_matrix",
-        "capabilities": {
-            "frequency_table", "class_interval", "class_boundary", "class_midpoint", 
-            "histogram", "frequency_polygon", "chart_consistency_validation", "frequency_distribution"
-        },
-        "allowed_operations": [
-            "frequency_table_construction_review",
-            "frequency_table_single_bin_count",
-            "histogram_reading",
-            "frequency_polygon_reading",
-            "frequency_distribution_chart_construction",
-            "histogram_distribution_update"
-        ]
-    },
-    "statistics.table_chart": {
-        "domain_module": "core.domain.statistics.table_chart_domain",
-        "entrypoint": "build_statistical_chart_reading_matrix",
-        "capabilities": {
-            "statistical_chart_reading",
-            "table_chart",
-            "read_category_value",
-            "compare_category_values",
-            "calculate_total_ratio_percent",
-            "validate_chart_statement",
-            "cumulative_above_fail_count",
-            "cumulative_above_interval_count",
-            "cumulative_below_interval_count",
-        },
-        "allowed_operations": [
-            "read_category_value",
-            "compare_category_values",
-            "calculate_total_ratio_percent",
-            "validate_chart_statement",
-            "cumulative_above_fail_count",
-            "cumulative_above_interval_count",
-            "cumulative_below_interval_count",
-        ]
-    }
-}
+def _build_providers_from_registry() -> dict:
+    """Build DOMAIN_PROVIDERS from the single authoritative domain_operation_registry.
+
+    allowed_operations is no longer hardcoded here; it is always read from the
+    registry so that registering a new operation in domain_operation_registry.py
+    is the only change required.
+    """
+    from core.registry.domain_operation_registry import list_registered_domains, get_domain_spec
+    result = {}
+    for dk in list_registered_domains():
+        spec = get_domain_spec(dk)
+        if spec is None:
+            continue
+        result[dk] = {
+            "domain_module": spec.domain_module,
+            "entrypoint": spec.entrypoint,
+            "capabilities": spec.capabilities,
+            "allowed_operations": spec.allowed_operations,
+        }
+    return result
+
+
+# Registry of domain capabilities & providers.
+# allowed_operations is authoritative and derived from domain_operation_registry.
+DOMAIN_PROVIDERS: dict = _build_providers_from_registry()
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 _thread_local = threading.local()
@@ -198,6 +134,15 @@ def _text_capability_hints(text: str) -> set[str]:
     caps: set[str] = set()
     if any(token in normalized for token in ("histogram", "frequency polygon", "frequency distribution")):
         caps.update({"frequency_table", "histogram", "frequency_polygon", "frequency_distribution"})
+    if any(token in normalized for token in ("cumulative", "累積", "累積次數")):
+        caps.update({
+            "cumulative_frequency_table",
+            "cumulative_frequency_graph",
+            "less_than_cumulative",
+            "greater_than_cumulative",
+            "class_frequency_from_cumulative",
+            "cumulative_monotonicity",
+        })
     if any(token in normalized for token in ("table", "chart", "bar chart", "line chart", "pie chart")) and any(
         token in normalized for token in ("read", "value", "compare", "difference", "total", "ratio", "percent", "percentage", "statement", "largest", "smallest")
     ):
@@ -340,6 +285,15 @@ def resolve_dynamic_fixed_domain_context(
         if "histogram" in skill_lower or "polygon" in skill_lower or "frequency" in skill_lower:
             domain_families.add("statistics_chart")
             required_caps.update(["frequency_table", "histogram", "frequency_polygon"])
+        if "cumulative" in skill_lower:
+            domain_families.add("statistics_chart")
+            required_caps.update([
+                "cumulative_frequency_table",
+                "cumulative_frequency_graph",
+                "less_than_cumulative",
+                "greater_than_cumulative",
+                "class_frequency_from_cumulative",
+            ])
         elif "chartreading" in skill_lower or "chart_reading" in skill_lower or "tablechart" in skill_lower:
             domain_families.add("statistics_table_chart")
             required_caps.update(["statistical_chart_reading", "table_chart"])

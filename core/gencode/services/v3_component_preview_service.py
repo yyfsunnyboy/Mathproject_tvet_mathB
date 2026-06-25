@@ -176,6 +176,10 @@ def generate_component_preview(example_id: int, seed: int = 42, timeout_seconds:
             "choices": choices if choices is not None else [],
             "answer_type": answer_type,
             "answer": correct_answer,
-            "explanation": str(payload.get("explanation") or "")
+            "explanation": str(payload.get("explanation") or ""),
+            "image_base64": str(payload.get("image_base64") or ""),
+            "table_data": payload.get("table_data") if isinstance(payload.get("table_data"), dict) else {},
+            "subquestions": payload.get("subquestions") if isinstance(payload.get("subquestions"), list) else [],
+            "visual_spec": payload.get("visual_spec") if isinstance(payload.get("visual_spec"), dict) else {},
         }
     }

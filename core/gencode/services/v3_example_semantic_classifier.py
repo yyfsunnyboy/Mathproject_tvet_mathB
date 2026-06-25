@@ -123,6 +123,104 @@ def _deterministic_classify_parallel_lines(source: TextbookExampleSource) -> dic
     return None
 
 
+def _is_cumulative_frequency_context(text: str) -> bool:
+    return any(token in text for token in ("累積", "累積次數", "cumulative"))
+
+
+def _classify_cumulative_frequency_operation(text: str) -> str | None:
+    """Map cumulative-frequency stems to domain operations (never frequency_polygon_reading)."""
+    if not _is_cumulative_frequency_context(text):
+        return None
+
+    if ("試完成" in text or "完成" in text) and "累積次數分配表" in text:
+        return "cumulative_frequency_table_construction"
+
+    if any(token in text for token in ("試求 a", "試求a", "試求 b", "試求b", "試求 c", "試求c", "試求 d", "試求d")):
+        if "次數分配表" in text and "累積" in text:
+            return "class_frequency_from_cumulative_difference"
+
+    if any(token in text for token in ("相鄰", "相減", "差值", "相差")) and "累積" in text:
+        return "class_frequency_from_cumulative_difference"
+
+    if "次數分配表" in text and any(token in text for token in ("以下累積", "及以下累積")):
+        if any(ch.isalpha() for ch in text if ch.isascii()):
+            return "class_frequency_from_cumulative_difference"
+
+    if "以上累積" in text:
+        return "greater_than_cumulative_frequency_reading"
+
+    if any(token in text for token in ("以下累積", "及以下累積")):
+        return "less_than_cumulative_frequency_reading"
+
+    if "折線圖" in text or "折線" in text:
+        return "cumulative_frequency_graph_reading"
+
+    if "累積次數分配表" in text:
+        return "cumulative_frequency_table_construction"
+
+    return None
+
+
+def _classify_frequency_distribution_domain(
+    source: TextbookExampleSource,
+) -> dict[str, Any] | None:
+    """Classify operations within statistics.frequency_distribution by stem semantics."""
+    text = source.question_text or ""
+
+    cumulative_op = _classify_cumulative_frequency_operation(text)
+    if cumulative_op is not None:
+        return {
+            "selected_operation": cumulative_op,
+            "problem_type_id": cumulative_op,
+            "math_family": "cumulative_frequency_distribution",
+            "task_intent": "read_or_construct_cumulative_frequency",
+            "presentation_mode": "short_answer",
+            "answer_type": "integer",
+            "required_domain_capabilities": [cumulative_op],
+            "confidence": 1.0,
+            "classification_source": "deterministic",
+        }
+
+    comp_id = getattr(source, "component_id", None)
+    has_freq_signal = (
+        "HistogramsAndFrequencyPolygons" in source.skill_id
+        or source.textbook_example_id in (3826, 3827, 3828, 3829)
+        or comp_id in ("src_3826", "src_3827", "src_3828", "src_3829")
+        or any(kw in text for kw in ["直方圖", "折線圖", "次數分配", "組距", "組中點", "histogram", "polygon"])
+    )
+    if not has_freq_signal:
+        return None
+
+    if source.textbook_example_id in (3826, 3827, 3828) or comp_id in ("src_3826", "src_3827", "src_3828"):
+        selected = "frequency_distribution_chart_construction"
+        presentation = "short_answer"
+        ans_type = "string"
+    elif source.textbook_example_id == 3829 or comp_id == "src_3829":
+        selected = "histogram_distribution_update"
+        presentation = "short_answer"
+        ans_type = "string"
+    else:
+        selected = "frequency_table_construction_review"
+        if "直方圖" in text or "histogram" in text.lower():
+            selected = "histogram_reading"
+        elif ("折線圖" in text or "折線" in text or "polygon" in text.lower()) and not _is_cumulative_frequency_context(text):
+            selected = "frequency_polygon_reading"
+        presentation = "short_answer"
+        ans_type = "integer"
+
+    return {
+        "selected_operation": selected,
+        "problem_type_id": selected,
+        "math_family": "frequency_distribution",
+        "task_intent": "read_chart_data" if "reading" in selected else "construct_chart",
+        "presentation_mode": presentation,
+        "answer_type": ans_type,
+        "required_domain_capabilities": [selected],
+        "confidence": 1.0,
+        "classification_source": "deterministic",
+    }
+
+
 def _deterministic_classify(
     source: TextbookExampleSource,
     taxonomy_entry: dict[str, Any] | None = None,
@@ -226,8 +324,31 @@ def _deterministic_classify(
             "classification_source": "deterministic",
         }
 
-    # Statistics deterministic rules
-    if "HistogramsAndFrequencyPolygons" in source.skill_id or "statistics" in source.skill_id or any(kw in text for kw in ["直方圖", "折線圖", "次數分配"]):
+    if fixed_domain_key == "statistics.frequency_distribution":
+        freq = _classify_frequency_distribution_domain(source)
+        if freq is not None:
+            return freq
+        return None
+
+    # Statistics deterministic rules (legacy path for skills without fixed domain binding)
+    if "HistogramsAndFrequencyPolygons" in source.skill_id or any(
+        kw in text for kw in ["直方圖", "折線圖", "次數分配"]
+    ):
+        if _is_cumulative_frequency_context(text):
+            cumulative_op = _classify_cumulative_frequency_operation(text)
+            if cumulative_op is not None:
+                return {
+                    "selected_operation": cumulative_op,
+                    "problem_type_id": cumulative_op,
+                    "math_family": "cumulative_frequency_distribution",
+                    "task_intent": "read_or_construct_cumulative_frequency",
+                    "presentation_mode": "short_answer",
+                    "answer_type": "integer",
+                    "required_domain_capabilities": [cumulative_op],
+                    "confidence": 1.0,
+                    "classification_source": "deterministic",
+                }
+            return None
         comp_id = getattr(source, "component_id", None)
         if source.textbook_example_id in (3826, 3827, 3828) or comp_id in ("src_3826", "src_3827", "src_3828"):
             selected = "frequency_distribution_chart_construction"
@@ -241,7 +362,7 @@ def _deterministic_classify(
             selected = "frequency_table_construction_review"
             if "直方圖" in text or "histogram" in text.lower():
                 selected = "histogram_reading"
-            elif "折線圖" in text or "折線" in text or "polygon" in text.lower():
+            elif ("折線圖" in text or "折線" in text or "polygon" in text.lower()) and not _is_cumulative_frequency_context(text):
                 selected = "frequency_polygon_reading"
             presentation = "short_answer"
             ans_type = "integer"
@@ -609,8 +730,28 @@ def classify_textbook_example(
     taxonomy_entry: dict[str, Any],
 ) -> dict[str, Any]:
     """Perform semantic classification on a TextbookExampleSource."""
+    from core.gencode.skill_fixed_domain_authority import SkillFixedDomainError
+    from core.gencode.v3_error_codes import DOMAIN_CAPABILITY_MISSING
+
+    fixed_domain_key = str(taxonomy_entry.get("fixed_domain_key") or "").strip()
+
     if not str(source.question_text or "").strip():
         import sys
+        if fixed_domain_key:
+            raise SkillFixedDomainError(
+                DOMAIN_CAPABILITY_MISSING,
+                f"domain_capability_missing: empty stem for fixed domain {fixed_domain_key}",
+                details={
+                    "skill_id": source.skill_id,
+                    "textbook_example_id": source.textbook_example_id,
+                    "fixed_domain_key": fixed_domain_key,
+                    "allowed_operations": list(
+                        taxonomy_entry.get("allowed_operations")
+                        or taxonomy_entry.get("allowed_types")
+                        or []
+                    ),
+                },
+            )
         if "pytest" in sys.modules:
             allowed = taxonomy_entry.get("allowed_types") or taxonomy_entry.get("allowed_problem_types") or []
             pt = allowed[0] if allowed else "slope_from_general_or_intercept_form"
@@ -651,7 +792,27 @@ def classify_textbook_example(
         }
         return res
 
-    # 2. AI Fallback Classifier second
+    if fixed_domain_key:
+        raise SkillFixedDomainError(
+            DOMAIN_CAPABILITY_MISSING,
+            (
+                f"domain_capability_missing: no semantically compatible operation in "
+                f"{fixed_domain_key} for textbook_example_id={source.textbook_example_id}"
+            ),
+            details={
+                "skill_id": source.skill_id,
+                "textbook_example_id": source.textbook_example_id,
+                "fixed_domain_key": fixed_domain_key,
+                "allowed_operations": list(
+                    taxonomy_entry.get("allowed_operations")
+                    or taxonomy_entry.get("allowed_types")
+                    or []
+                ),
+                "question_text_preview": str(source.question_text or "")[:200],
+            },
+        )
+
+    # 2. AI Fallback Classifier second (only when domain is not fixed)
     allowed_types = (
         taxonomy_entry.get("allowed_operations")
         or taxonomy_entry.get("allowed_types")

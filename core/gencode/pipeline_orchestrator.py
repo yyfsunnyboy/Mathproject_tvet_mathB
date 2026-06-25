@@ -5018,17 +5018,8 @@ def _v3_resolve_gated_domain_operation(
         problem_type_id=str(textbook_row.get("problem_type_id") or textbook_row.get("problem_type") or ""),
         extra=extra,
     )
-    if ctx.fixed_domain_key == "statistics.frequency_distribution" and not any(extra.get(k) for k in ("line_type", "problem_type_id", "domain_operation", "task_type")):
-        selected = ctx.allowed_operations[0]
-        log_dispatch_event(
-            phase="v3_draft",
-            skill_id=ctx.skill_id,
-            example_id=int(textbook_row.get("id") or 0),
-            fixed_domain_key=ctx.fixed_domain_key,
-            selected_operation=selected,
-            problem_type_id=selected,
-        )
-        return selected, {"problem_type_id": selected, "domain_operation": selected, "classification_source": "fixed_domain_default"}, ctx
+    example_id = int(textbook_row.get("id") or 0)
+    component_id = f"src_{example_id}" if example_id else ""
 
     for k in ("line_type", "problem_type_id", "domain_operation", "task_type"):
         if k in extra and extra[k]:
@@ -5042,12 +5033,13 @@ def _v3_resolve_gated_domain_operation(
             log_dispatch_event(
                 phase="v3_draft",
                 skill_id=ctx.skill_id,
-                example_id=int(textbook_row.get("id") or 0),
+                component_id=component_id,
+                example_id=example_id,
                 fixed_domain_key=ctx.fixed_domain_key,
                 selected_operation=selected,
                 problem_type_id=selected,
             )
-            return selected, {"problem_type_id": selected, "classification_source": "constraints"}, ctx
+            return selected, {"problem_type_id": selected, "domain_operation": selected, "classification_source": "constraints"}, ctx
 
     question_text = str(textbook_row.get("problem_text") or "")
     answer_text = str(textbook_row.get("correct_answer") or "")

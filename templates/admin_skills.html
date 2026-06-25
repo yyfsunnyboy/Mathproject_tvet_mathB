@@ -744,7 +744,7 @@
                                 {# 重新生成 — 任何狀態皆可用 #}
                                 <button type="button" class="btn btn-primary btn-sm"
                                     title="重新建立此技能所有教材例題的 V3 component"
-                                    onclick="runSkillV3BatchDryrun('{{ skill.skill_id }}', {{ 'false' if v3_light == '⚪' else 'true' }}, '重新生成')">
+                                    onclick="runSkillV3BatchDryrun('{{ skill.skill_id }}', 'regenerate', '重新生成')">
                                     重新生成
                                 </button>
                                 {# 查看組件 — 有任何 component 資料時可用 #}
@@ -1221,7 +1221,7 @@
             }
         }
 
-        function runSkillV3BatchDryrun(skillId, force = false, actionLabel = '重新生成本技能題目') {
+        function runSkillV3BatchDryrun(skillId, mode = 'regenerate', actionLabel = '重新生成本技能題目') {
             const confirmText = '重新建立此技能所有教材例題的 V3 component。是否繼續？';
             Swal.fire({
                 title: actionLabel,
@@ -1241,10 +1241,17 @@
                 });
                 const targetUrl = "{{ url_for('core.admin_run_skill_v3_dryrun', skill_id='SKILL_ID_PLACEHOLDER') }}"
                     .replace('SKILL_ID_PLACEHOLDER', skillId);
+                const normalizedMode = String(mode || 'regenerate');
+                const forceRegenerate = normalizedMode === 'regenerate';
                 fetch(targetUrl, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ smoke: true, verify: true, force: Boolean(force) })
+                    body: JSON.stringify({
+                        smoke: true,
+                        verify: true,
+                        force: forceRegenerate,
+                        mode: normalizedMode,
+                    })
                 })
                     .then(async (response) => {
                         const data = await response.json();
@@ -1254,9 +1261,17 @@
                         const summary = data.coverage?.verified_count !== undefined
                             ? `可用題目：${data.coverage.verified_count}/${data.coverage.total_examples}`
                             : '';
+                        const rebuiltSummary = data.rebuilt_count !== undefined
+                            ? `<br>本次重建：${data.rebuilt_count}/${data.requested_count}`
+                            : '';
+                        const skippedSummary = data.skipped_count > 0
+                            ? `<br>沿用既有：${data.skipped_count}（${(data.reused_components || []).join(', ')}）`
+                            : '';
+                        const title = data.user_message
+                            || (data.success ? '重新生成完成' : '重新生成未完全完成');
                         Swal.fire({
-                            title: data.success ? '重新生成完成' : '重新生成未完全完成',
-                            html: `${summary}<br>生成失敗：${data.failed_count}`,
+                            title,
+                            html: `${summary}${rebuiltSummary}${skippedSummary}<br>生成失敗：${data.failed_count}`,
                             icon: data.success ? 'success' : 'warning'
                         }).then(() => window.location.reload());
                     })

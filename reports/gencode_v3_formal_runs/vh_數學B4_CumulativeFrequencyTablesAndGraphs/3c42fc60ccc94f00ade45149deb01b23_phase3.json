@@ -1,0 +1,177 @@
+{
+  "phase": 3,
+  "run_id": "3c42fc60ccc94f00ade45149deb01b23",
+  "success": true,
+  "publish_result": {
+    "status": "runtime_ready_with_variation_warning",
+    "production_smoke_status": "passed",
+    "component_count": 5
+  },
+  "published_count_this_run": 5,
+  "regenerated_count": 5,
+  "production_smoke_passed_count": 15,
+  "production_smoke": [
+    {
+      "component_id": "src_3830",
+      "seed": 1,
+      "passed": true,
+      "has_visual": true,
+      "subquestions_count": 2,
+      "answer_type": "multi_part"
+    },
+    {
+      "component_id": "src_3830",
+      "seed": 2,
+      "passed": true,
+      "has_visual": true,
+      "subquestions_count": 2,
+      "answer_type": "multi_part"
+    },
+    {
+      "component_id": "src_3830",
+      "seed": 3,
+      "passed": true,
+      "has_visual": true,
+      "subquestions_count": 2,
+      "answer_type": "multi_part"
+    },
+    {
+      "component_id": "src_3831",
+      "seed": 1,
+      "passed": true,
+      "has_visual": true,
+      "subquestions_count": 10,
+      "answer_type": "multi_part"
+    },
+    {
+      "component_id": "src_3831",
+      "seed": 2,
+      "passed": true,
+      "has_visual": true,
+      "subquestions_count": 10,
+      "answer_type": "multi_part"
+    },
+    {
+      "component_id": "src_3831",
+      "seed": 3,
+      "passed": true,
+      "has_visual": true,
+      "subquestions_count": 10,
+      "answer_type": "multi_part"
+    },
+    {
+      "component_id": "src_3832",
+      "seed": 1,
+      "passed": true,
+      "has_visual": true,
+      "subquestions_count": 2,
+      "answer_type": "multi_part"
+    },
+    {
+      "component_id": "src_3832",
+      "seed": 2,
+      "passed": true,
+      "has_visual": true,
+      "subquestions_count": 2,
+      "answer_type": "multi_part"
+    },
+    {
+      "component_id": "src_3832",
+      "seed": 3,
+      "passed": true,
+      "has_visual": true,
+      "subquestions_count": 2,
+      "answer_type": "multi_part"
+    },
+    {
+      "component_id": "src_3833",
+      "seed": 1,
+      "passed": true,
+      "has_visual": true,
+      "subquestions_count": 2,
+      "answer_type": "multi_part"
+    },
+    {
+      "component_id": "src_3833",
+      "seed": 2,
+      "passed": true,
+      "has_visual": true,
+      "subquestions_count": 2,
+      "answer_type": "multi_part"
+    },
+    {
+      "component_id": "src_3833",
+      "seed": 3,
+      "passed": true,
+      "has_visual": true,
+      "subquestions_count": 2,
+      "answer_type": "multi_part"
+    },
+    {
+      "component_id": "src_3834",
+      "seed": 1,
+      "passed": true,
+      "has_visual": true,
+      "subquestions_count": 4,
+      "answer_type": "multi_part"
+    },
+    {
+      "component_id": "src_3834",
+      "seed": 2,
+      "passed": true,
+      "has_visual": true,
+      "subquestions_count": 4,
+      "answer_type": "multi_part"
+    },
+    {
+      "component_id": "src_3834",
+      "seed": 3,
+      "passed": true,
+      "has_visual": true,
+      "subquestions_count": 4,
+      "answer_type": "multi_part"
+    }
+  ],
+  "wrapper_coverage": {
+    "src_3830": 8,
+    "src_3831": 8,
+    "src_3832": 7,
+    "src_3833": 9,
+    "src_3834": 8
+  },
+  "wrapper_coverage_complete": true,
+  "published_evidence": [
+    {
+      "textbook_example_id": 3830,
+      "component_id": "src_3830",
+      "published_generate_sha256": "85577bce55b16c5a017105a19f3a03a451e260e6c604d551236a63ed153c5801",
+      "published_component_path": "E:\\Python\\Mathproject_tvet_mathB\\agent_skills_v3\\vh_數學B4_CumulativeFrequencyTablesAndGraphs\\components\\src_3830\\generate.py"
+    },
+    {
+      "textbook_example_id": 3831,
+      "component_id": "src_3831",
+      "published_generate_sha256": "519fcc68ef1d14cffe81b224f1aac2ac2407da99a25a7b223abb8c6c0dc6a910",
+      "published_component_path": "E:\\Python\\Mathproject_tvet_mathB\\agent_skills_v3\\vh_數學B4_CumulativeFrequencyTablesAndGraphs\\components\\src_3831\\generate.py"
+    },
+    {
+      "textbook_example_id": 3832,
+      "component_id": "src_3832",
+      "published_generate_sha256": "3578ea05b03c16874ddc80f11ace715f88cd2713b7bbdc24587b3b7a2e422278",
+      "published_component_path": "E:\\Python\\Mathproject_tvet_mathB\\agent_skills_v3\\vh_數學B4_CumulativeFrequencyTablesAndGraphs\\components\\src_3832\\generate.py"
+    },
+    {
+      "textbook_example_id": 3833,
+      "component_id": "src_3833",
+      "published_generate_sha256": "fa69cf070c6d6c13deb3c6cc19515dce916a14464c5b230fff027a3db9475b93",
+      "published_component_path": "E:\\Python\\Mathproject_tvet_mathB\\agent_skills_v3\\vh_數學B4_CumulativeFrequencyTablesAndGraphs\\components\\src_3833\\generate.py"
+    },
+    {
+      "textbook_example_id": 3834,
+      "component_id": "src_3834",
+      "published_generate_sha256": "7564b16e90a4095e4ce54e47032546a7b89cfe87e2c8ebed0992bb7d92847a6d",
+      "published_component_path": "E:\\Python\\Mathproject_tvet_mathB\\agent_skills_v3\\vh_數學B4_CumulativeFrequencyTablesAndGraphs\\components\\src_3834\\generate.py"
+    }
+  ],
+  "duration_ms": 36349,
+  "completed_at": "2026-06-25T15:54:07.720029+00:00"
+}

@@ -118,6 +118,7 @@ def test_batch_dryrun_skips_verified_unless_force(memory_conn, dryrun_root):
         SKILL_ID,
         dryrun_base_dir=str(dryrun_root),
         seed=42,
+        mode="regenerate",
         force=True,
     )
     assert forced["skipped_verified_count"] == 0
@@ -220,6 +221,7 @@ def test_force_regenerate_processes_all_three_components(memory_conn, dryrun_roo
         memory_conn,
         SKILL_ID,
         dryrun_base_dir=str(dryrun_root),
+        mode="regenerate",
         force=True,
     )
 
@@ -299,6 +301,7 @@ def test_force_regenerate_single_failure_does_not_reuse_old_verified_success(
         memory_conn,
         SKILL_ID,
         dryrun_base_dir=str(dryrun_root),
+        mode="regenerate",
         force=True,
     )
 

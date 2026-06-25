@@ -1,0 +1,85 @@
+{
+  "artifact_id": "induced_spec_above_cumulative_graph_reading_01",
+  "skill_id": "vh_數學B4_CumulativeFrequencyTablesAndGraphs",
+  "source_type": "manual_uploaded_image",
+  "source_is_authoritative": true,
+  "source_image_ref": "manual_sources/image_03_above_cumulative_graph.png",
+  "source_spec_ref": "manual_sources/image_03_above_cumulative_graph.source.json",
+  "suggested_domain_operation": "greater_than_cumulative_frequency_reading",
+  "suggested_textbook_example_ids": [3832],
+  "generator_usable": true,
+  "human_confirmed": true,
+  "confidence": 1.0,
+  "schema_version": "manual_visual_induced_spec.v1",
+  "visual_type": "cumulative_frequency_graph",
+  "cumulative_direction": "greater_than",
+  "question_target": "read_graph",
+  "render_mode": "multi_part",
+  "x_axis_semantics": "upper_class_boundary",
+  "y_axis_semantics": "cumulative_frequency",
+  "data_points": [
+    {"x": 40, "y": 50},
+    {"x": 50, "y": 46},
+    {"x": 60, "y": 35},
+    {"x": 70, "y": 22},
+    {"x": 80, "y": 15},
+    {"x": 90, "y": 5},
+    {"x": 100, "y": 0}
+  ],
+  "table_rows": [],
+  "table_columns": [],
+  "blank_fields": [],
+  "known_fields": ["total_students=50"],
+  "asked_fields": ["fail_below_60", "at_least_80"],
+  "sub_questions": [
+    {
+      "part": "(1)",
+      "prompt": "以60分為標準，不及格的人數有幾人",
+      "inference": "total_minus_above_cumulative_at_60",
+      "expected_answer": 15,
+      "unit": "人"
+    },
+    {
+      "part": "(2)",
+      "prompt": "80分以上的人數有幾人",
+      "inference": "read_above_cumulative_at_80",
+      "expected_answer": 15,
+      "unit": "人"
+    }
+  ],
+  "answer_dependencies": [
+    "cumulative_polygon_plot",
+    "above_cumulative_at_60=35",
+    "above_cumulative_at_80=15",
+    "total_students=50"
+  ],
+  "mathematical_relations": [
+    "fail_below_60 = total - above_cumulative(60) = 50 - 35 = 15",
+    "at_least_80 = above_cumulative(80) = 15"
+  ],
+  "required_student_visible_elements": [
+    "above_cumulative_frequency_polygon",
+    "x_axis_upper_boundaries",
+    "y_axis_cumulative_counts"
+  ],
+  "source_isomorphism_constraints": [
+    "cumulative_direction=greater_than",
+    "must_not_use_below_cumulative_reading_rules"
+  ],
+  "expected_answers": [15, 15],
+  "domain_constraints": {
+    "cumulative_direction": "above",
+    "total_students": 50,
+    "graph_points": [
+      {"class_bound": 40, "cumulative_count": 50},
+      {"class_bound": 50, "cumulative_count": 46},
+      {"class_bound": 60, "cumulative_count": 35},
+      {"class_bound": 70, "cumulative_count": 22},
+      {"class_bound": 80, "cumulative_count": 15},
+      {"class_bound": 90, "cumulative_count": 5},
+      {"class_bound": 100, "cumulative_count": 0}
+    ],
+    "thresholds": [60, 80]
+  },
+  "notes": ["圖3：以上累積折線圖判讀。"]
+}

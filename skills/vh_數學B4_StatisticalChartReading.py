@@ -11,7 +11,38 @@ from core.gencode.runtime_skill_wrapper import (
 
 SKILL_ID = 'vh_數學B4_StatisticalChartReading'
 GENERATOR_KEYS = ['src_3884', 'src_3885', 'src_3886']
-GENERATOR_SPECS = [{'textbook_example_id': 3884, 'component_id': 'src_3884', 'generator_key': 'src_3884', 'presentation_mode': 'single_choice', 'response_mode': 'single_choice', 'interaction_type': 'single_choice', 'source_kind': 'test', 'line_type': 'read_category_value', 'answer_type': 'integer', 'answer_value_type': 'integer', 'problem_type_id': 'read_category_value', 'display_order': 3884, 'source_order': 3884, 'sampling_weight': 10.0}, {'textbook_example_id': 3885, 'component_id': 'src_3885', 'generator_key': 'src_3885', 'presentation_mode': 'single_choice', 'response_mode': 'single_choice', 'interaction_type': 'single_choice', 'source_kind': 'test', 'line_type': 'compare_category_values', 'answer_type': 'integer', 'answer_value_type': 'integer', 'problem_type_id': 'compare_category_values', 'display_order': 3885, 'source_order': 3885, 'sampling_weight': 10.0}, {'textbook_example_id': 3886, 'component_id': 'src_3886', 'generator_key': 'src_3886', 'presentation_mode': 'single_choice', 'response_mode': 'single_choice', 'interaction_type': 'single_choice', 'source_kind': 'test', 'line_type': 'read_category_value', 'answer_type': 'integer', 'answer_value_type': 'integer', 'problem_type_id': 'read_category_value', 'display_order': 3886, 'source_order': 3886, 'sampling_weight': 10.0}]
+GENERATOR_SPECS = [
+    {
+        'textbook_example_id': 3884, 'component_id': 'src_3884', 'generator_key': 'src_3884',
+        'presentation_mode': 'single_choice', 'response_mode': 'single_choice',
+        'interaction_type': 'single_choice', 'source_kind': 'test',
+        'line_type': 'cumulative_above_fail_count', 'answer_type': 'single_choice',
+        'answer_value_type': 'choice_label', 'semantic_answer_type': 'integer',
+        'problem_type_id': 'cumulative_above_fail_count',
+        'domain_key': 'statistics.table_chart', 'domain_operation': 'cumulative_above_fail_count',
+        'display_order': 3884, 'source_order': 3884, 'sampling_weight': 10.0,
+    },
+    {
+        'textbook_example_id': 3885, 'component_id': 'src_3885', 'generator_key': 'src_3885',
+        'presentation_mode': 'single_choice', 'response_mode': 'single_choice',
+        'interaction_type': 'single_choice', 'source_kind': 'test',
+        'line_type': 'cumulative_above_interval_count', 'answer_type': 'single_choice',
+        'answer_value_type': 'choice_label', 'semantic_answer_type': 'integer',
+        'problem_type_id': 'cumulative_above_interval_count',
+        'domain_key': 'statistics.table_chart', 'domain_operation': 'cumulative_above_interval_count',
+        'display_order': 3885, 'source_order': 3885, 'sampling_weight': 10.0,
+    },
+    {
+        'textbook_example_id': 3886, 'component_id': 'src_3886', 'generator_key': 'src_3886',
+        'presentation_mode': 'single_choice', 'response_mode': 'single_choice',
+        'interaction_type': 'single_choice', 'source_kind': 'test',
+        'line_type': 'cumulative_below_interval_count', 'answer_type': 'single_choice',
+        'answer_value_type': 'choice_label', 'semantic_answer_type': 'integer',
+        'problem_type_id': 'cumulative_below_interval_count',
+        'domain_key': 'statistics.table_chart', 'domain_operation': 'cumulative_below_interval_count',
+        'display_order': 3886, 'source_order': 3886, 'sampling_weight': 10.0,
+    },
+]
 
 
 def _resolve_v3_package_root() -> str:

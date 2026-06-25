@@ -1,0 +1,73 @@
+{
+  "artifact_id": "induced_spec_above_cumulative_interval_difference_01",
+  "skill_id": "vh_數學B4_CumulativeFrequencyTablesAndGraphs",
+  "source_type": "manual_uploaded_image",
+  "source_is_authoritative": true,
+  "source_image_ref": "manual_sources/image_04_above_cumulative_mcq_and_interval.png",
+  "source_spec_ref": "manual_sources/image_04_above_cumulative_mcq_and_interval.source.json",
+  "suggested_domain_operation": "class_frequency_from_cumulative_difference",
+  "suggested_textbook_example_ids": [],
+  "generator_usable": true,
+  "human_confirmed": true,
+  "confidence": 1.0,
+  "schema_version": "manual_visual_induced_spec.v1",
+  "visual_type": "cumulative_frequency_graph",
+  "cumulative_direction": "greater_than",
+  "question_target": "recover_class_frequency",
+  "render_mode": "short_answer",
+  "x_axis_semantics": "upper_class_boundary",
+  "y_axis_semantics": "cumulative_frequency",
+  "data_points": [
+    {"x": 40, "y": 50},
+    {"x": 50, "y": 45},
+    {"x": 60, "y": 32},
+    {"x": 70, "y": 20},
+    {"x": 80, "y": 13},
+    {"x": 90, "y": 6},
+    {"x": 100, "y": 0}
+  ],
+  "table_rows": [],
+  "table_columns": [],
+  "blank_fields": [],
+  "known_fields": [
+    "above_cumulative_at_70=20",
+    "above_cumulative_at_80=13"
+  ],
+  "asked_fields": ["interval_70_80_frequency"],
+  "answer_dependencies": [
+    "cumulative_polygon_plot",
+    "above_cumulative_at_70",
+    "above_cumulative_at_80"
+  ],
+  "mathematical_relations": [
+    "interval_70_80 = above_cumulative(70) - above_cumulative(80) = 20 - 13 = 7"
+  ],
+  "required_student_visible_elements": [
+    "above_cumulative_frequency_polygon",
+    "interval_wording_70~80"
+  ],
+  "source_isomorphism_constraints": [
+    "adjacent_cumulative_difference",
+    "cumulative_direction=greater_than",
+    "interval_low=70",
+    "interval_high=80"
+  ],
+  "expected_answers": [7],
+  "domain_constraints": {
+    "cumulative_direction": "above",
+    "low_bound": 70,
+    "high_bound": 80,
+    "low_index": 3,
+    "high_index": 4,
+    "graph_points": [
+      {"class_bound": 40, "cumulative_count": 50},
+      {"class_bound": 50, "cumulative_count": 45},
+      {"class_bound": 60, "cumulative_count": 32},
+      {"class_bound": 70, "cumulative_count": 20},
+      {"class_bound": 80, "cumulative_count": 13},
+      {"class_bound": 90, "cumulative_count": 6},
+      {"class_bound": 100, "cumulative_count": 0}
+    ]
+  },
+  "notes": ["圖4中段：由以上累積次數差反推70~80分區間次數。"]
+}

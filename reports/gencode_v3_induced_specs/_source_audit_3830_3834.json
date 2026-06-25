@@ -1,0 +1,119 @@
+[
+  {
+    "id": 3830,
+    "skill_id": "vh_數學B4_CumulativeFrequencyTablesAndGraphs",
+    "problem_text": "已知某班數學期中考成績的以下累積次數分配折線圖如下，試問：(1)以60分為標準，不及格的人數有幾人？(2)至少70分的人數有幾人？（圖片待補）",
+    "correct_answer": "(1) 16人 (2) 21人",
+    "detailed_solution": "(1) 由圖可知60分以下的累積次數為16，故不及格有16人。 (2) 70分以下的累積次數為29，全班50人，故至少70分的人數 = 50 - 29 = 21人。",
+    "source_description": "例題 5 [source_type=textbook_example | dedupe=8fd34466d74dd9ed | needs_review=true]",
+    "notes_keys": [
+      "has_image",
+      "math_format",
+      "math_warnings",
+      "missing_docx_image_asset",
+      "needs_image_review",
+      "needs_review",
+      "raw_problem_backup",
+      "repair_log"
+    ],
+    "has_image": true,
+    "needs_image_review": true,
+    "missing_docx_image_asset": true,
+    "image_assets_count": 0,
+    "image_assets": [],
+    "source_sha256": "2d20e109976f54740cbe0eca86098d1aacadad70355d8b9089025344fb5829ab"
+  },
+  {
+    "id": 3831,
+    "skill_id": "vh_數學B4_CumulativeFrequencyTablesAndGraphs",
+    "problem_text": "試完成下方之累積次數分配表（數據略）。",
+    "correct_answer": "略",
+    "detailed_solution": "由上而下累加得以下累積，由下而上累加得以上累積。",
+    "source_description": "隨堂練習 3 [source_type=in_class_practice | linked_example=例題 3 | dedupe=031bf22e466b2711]",
+    "notes_keys": [
+      "math_format",
+      "math_warnings",
+      "needs_review",
+      "raw_problem_backup"
+    ],
+    "has_image": null,
+    "needs_image_review": null,
+    "missing_docx_image_asset": null,
+    "image_assets_count": 0,
+    "image_assets": [],
+    "source_sha256": "1e494bcee61052323195bc1975c9c5524fe3366ca3fe2ad0ef6a101df9ae43bf"
+  },
+  {
+    "id": 3832,
+    "skill_id": "vh_數學B4_CumulativeFrequencyTablesAndGraphs",
+    "problem_text": "已知某班英文期末考成績的以上累積次數分配折線圖如右，試問：(1)以60分為標準，不及格的人數有幾人？(2)80分以上的人數有幾人？（圖片待補）",
+    "correct_answer": "略",
+    "detailed_solution": "(1) 總人數減去60分以上的累積次數。 (2) 直接讀取80分對應的以上累積次數。",
+    "source_description": "隨堂練習 5 [source_type=in_class_practice | linked_example=例題 5 | dedupe=6df8d4d4d487c615 | needs_review=true]",
+    "notes_keys": [
+      "has_image",
+      "math_format",
+      "math_warnings",
+      "missing_docx_image_asset",
+      "needs_image_review",
+      "needs_review",
+      "raw_problem_backup",
+      "repair_log"
+    ],
+    "has_image": true,
+    "needs_image_review": true,
+    "missing_docx_image_asset": true,
+    "image_assets_count": 0,
+    "image_assets": [],
+    "source_sha256": "4352fd172906c46de1ddbd08296861778da470742c1964a40490a1959c6bc0a9"
+  },
+  {
+    "id": 3833,
+    "skill_id": "vh_數學B4_CumulativeFrequencyTablesAndGraphs",
+    "problem_text": "已知某班國文期中考成績的以下累積次數分配折線圖如右，試問：(1)以60分為標準，不及格的人數有幾人？(2)至少80分的人數有幾人？（圖片待補）",
+    "correct_answer": "需視圖表數據而定",
+    "detailed_solution": "(1) 讀取橫軸60對應的縱軸數值。 (2) 總人數減去80分以下的累積次數。",
+    "source_description": "3-2習題 基礎題6 [source_type=basic_exercise | needs_review=true | dedupe=79915e5a9b25b556]",
+    "notes_keys": [
+      "has_image",
+      "math_format",
+      "math_warnings",
+      "missing_docx_image_asset",
+      "needs_image_review",
+      "needs_review",
+      "raw_problem_backup",
+      "repair_log"
+    ],
+    "has_image": true,
+    "needs_image_review": true,
+    "missing_docx_image_asset": true,
+    "image_assets_count": 0,
+    "image_assets": [],
+    "source_sha256": "cec6c6d446a1e06507d0e2178e4f62c5f40dee6243a723fc1404cf370ad3459a"
+  },
+  {
+    "id": 3834,
+    "skill_id": "vh_數學B4_CumulativeFrequencyTablesAndGraphs",
+    "problem_text": "某班有40位同學，第一次期中考數學成績的次數分配表及以下累積次數分配表如下表，試求 a, b, c, d。成績：0~20(4人), 20~40(a人, 累積12), 40~60(10人, 累積b), 60~80(12人, 累積34), 80~100(c人, 累積d)。（圖片待補）",
+    "correct_answer": "a=8, b=22, c=6, d=40",
+    "detailed_solution": "1. a = 12 - 4 = 8。 2. b = 12 + 10 = 22。 3. c = 40 - 34 = 6。 4. d = 總人數 = 40。",
+    "source_description": "3-2習題 基礎題10 [source_type=basic_exercise | needs_review=true | dedupe=769d172a50bfe0d7]",
+    "notes_keys": [
+      "has_image",
+      "math_format",
+      "math_warnings",
+      "missing_docx_image_asset",
+      "needs_image_review",
+      "needs_review",
+      "parse_warning",
+      "raw_problem_backup",
+      "repair_log"
+    ],
+    "has_image": true,
+    "needs_image_review": true,
+    "missing_docx_image_asset": true,
+    "image_assets_count": 0,
+    "image_assets": [],
+    "source_sha256": "5d40126ec9936a32e95fa435aa04e5095189c6bc1434ffbdcd1cb5b724c6b6ed"
+  }
+]

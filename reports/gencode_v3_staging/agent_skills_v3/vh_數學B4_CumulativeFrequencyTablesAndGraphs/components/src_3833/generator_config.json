@@ -1,0 +1,155 @@
+{
+  "schema_version": "component_induced_config.v1",
+  "skill_id": "vh_數學B4_CumulativeFrequencyTablesAndGraphs",
+  "component_id": "src_3833",
+  "domain_operation": "cumulative_frequency_graph_reading",
+  "presentation_mode": "short_answer",
+  "source_artifact_path": "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_induced_specs\\vh_數學B4_CumulativeFrequencyTablesAndGraphs\\induced_specs\\below_cumulative_graph_reading_01.json",
+  "source_artifact_sha256": "9e407a439a23112cba1fab6c8237101a3517e83c3bdc83c1b706a20a7eaa0477",
+  "question_text": "已知某班國文期中考成績的以下累積次數分配折線圖如右，試問：(1)以60分為標準，不及格的人數有幾人？(2)至少80分的人數有幾人？",
+  "induced_spec": {
+    "artifact_id": "induced_spec_below_cumulative_graph_reading_01",
+    "skill_id": "vh_數學B4_CumulativeFrequencyTablesAndGraphs",
+    "source_type": "manual_uploaded_image",
+    "source_is_authoritative": true,
+    "source_image_ref": "manual_sources/image_01_below_cumulative_graph.png",
+    "source_spec_ref": "manual_sources/image_01_below_cumulative_graph.source.json",
+    "suggested_domain_operation": "cumulative_frequency_graph_reading",
+    "suggested_textbook_example_ids": [
+      3830,
+      3833
+    ],
+    "generator_usable": true,
+    "human_confirmed": true,
+    "confidence": 1.0,
+    "schema_version": "manual_visual_induced_spec.v1",
+    "visual_type": "cumulative_frequency_graph",
+    "cumulative_direction": "less_than",
+    "question_target": "read_graph",
+    "render_mode": "multi_part",
+    "x_axis_semantics": "upper_class_boundary",
+    "y_axis_semantics": "cumulative_frequency",
+    "data_points": [
+      {
+        "x": 40,
+        "y": 0
+      },
+      {
+        "x": 50,
+        "y": 4
+      },
+      {
+        "x": 60,
+        "y": 16
+      },
+      {
+        "x": 70,
+        "y": 29
+      },
+      {
+        "x": 80,
+        "y": 40
+      },
+      {
+        "x": 90,
+        "y": 45
+      },
+      {
+        "x": 100,
+        "y": 50
+      }
+    ],
+    "table_rows": [],
+    "table_columns": [],
+    "blank_fields": [],
+    "known_fields": [
+      "total_students=50"
+    ],
+    "asked_fields": [
+      "fail_below_60",
+      "at_least_70"
+    ],
+    "sub_questions": [
+      {
+        "part": "(1)",
+        "prompt": "以60分為標準，不及格的人數有幾人",
+        "inference": "read_below_cumulative_at_60",
+        "unit": "人"
+      },
+      {
+        "part": "(2)",
+        "prompt": "至少80分的人數有幾人",
+        "inference": "total_minus_below_cumulative_at_80",
+        "unit": "人"
+      }
+    ],
+    "answer_dependencies": [
+      "cumulative_polygon_plot",
+      "below_cumulative_at_60=16",
+      "below_cumulative_at_70=29",
+      "total_students=50"
+    ],
+    "mathematical_relations": [
+      "fail_below_60 = below_cumulative(60) = 16",
+      "at_least_70 = total - below_cumulative(70) = 50 - 29 = 21"
+    ],
+    "required_student_visible_elements": [
+      "below_cumulative_frequency_polygon",
+      "x_axis_upper_boundaries",
+      "y_axis_cumulative_counts"
+    ],
+    "source_isomorphism_constraints": [
+      "must_not_use_frequency_polygon_reading",
+      "must_not_use_class_midpoint_x_axis",
+      "cumulative_direction=less_than"
+    ],
+    "expected_answers": [
+      16,
+      21
+    ],
+    "domain_constraints": {
+      "cumulative_direction": "below",
+      "total_students": 50,
+      "graph_points": [
+        {
+          "class_bound": 40,
+          "cumulative_count": 0
+        },
+        {
+          "class_bound": 50,
+          "cumulative_count": 4
+        },
+        {
+          "class_bound": 60,
+          "cumulative_count": 16
+        },
+        {
+          "class_bound": 70,
+          "cumulative_count": 29
+        },
+        {
+          "class_bound": 80,
+          "cumulative_count": 40
+        },
+        {
+          "class_bound": 90,
+          "cumulative_count": 45
+        },
+        {
+          "class_bound": 100,
+          "cumulative_count": 50
+        }
+      ],
+      "thresholds": [
+        60,
+        80
+      ]
+    },
+    "notes": [
+      "圖1：以下累積折線圖判讀，雙子題短答。"
+    ]
+  },
+  "binding_notes": [
+    "3833 與 3830 共用圖1資料點；第二小題 threshold 為 80。"
+  ]
+}

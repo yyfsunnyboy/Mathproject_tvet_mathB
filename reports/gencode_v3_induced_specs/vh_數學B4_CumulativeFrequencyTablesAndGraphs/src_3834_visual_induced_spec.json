@@ -1,0 +1,43 @@
+{
+  "skill_id": "vh_數學B4_CumulativeFrequencyTablesAndGraphs",
+  "component_id": "src_3834",
+  "example_id": 3834,
+  "schema_version": "visual_induced_spec.v1",
+  "prompt_version": "b4_cumulative_visual_extract.v1",
+  "extraction_timestamp": "2026-06-25T15:16:51+00:00",
+  "source_sha256": "ae1f3f485caf7b5032341552230e61b8197b9125b97c5beb649cf97d14f0e0d0",
+  "gemini_model": "gemini_api_key_missing",
+  "gemini_calls": 1,
+  "repair_calls": 0,
+  "status": "gemini_failed_or_invalid",
+  "source_audit": {
+    "example_id": 3834,
+    "source_sha256": "ae1f3f485caf7b5032341552230e61b8197b9125b97c5beb649cf97d14f0e0d0",
+    "has_problem_text": true,
+    "has_answer": true,
+    "has_solution": true,
+    "has_image_flag": true,
+    "missing_docx_image_asset": true,
+    "image_attachment_paths_declared": [],
+    "image_attachment_files_resolved": [],
+    "table_embedded_in_text": true,
+    "text_table_complete": true,
+    "needs_graph": false,
+    "data_omitted_in_stem": false,
+    "answer_verifiable": true,
+    "preflight_blockers": [],
+    "gemini_eligible": true,
+    "gemini_mode": "text_only",
+    "problem_text_preview": "某班有40位同學，第一次期中考數學成績的次數分配表及以下累積次數分配表如下表，試求 a, b, c, d。成績：0~20(4人), 20~40(a人, 累積12), 40~60(10人, 累積b), 60~80(12人, 累積34), 80~100(c人, 累積d)。（圖片待補）"
+  },
+  "validation": {
+    "passed": false,
+    "errors": [
+      "gemini_api_key_missing"
+    ]
+  },
+  "human_confirmed": false,
+  "generator_usable": false,
+  "raw_gemini_text": "",
+  "spec": null
+}

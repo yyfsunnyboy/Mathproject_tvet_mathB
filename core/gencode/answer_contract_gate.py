@@ -67,6 +67,62 @@ _DEFAULT_CONTRACT_BY_ANSWER_TYPE = {
 }
 
 
+_INCOMPATIBLE_ANSWER_TYPES_FOR_CHOICE_LABEL_CHECKER = frozenset(
+    {"integer", "float", "numeric", "decimal", "number", "expression", "equation",
+     "linear_equation", "fraction", "rational", "set", "solution_set", "interval"}
+)
+
+
+def normalize_payload_answer_contract(payload: dict[str, Any]) -> dict[str, Any]:
+    """Universal canonical answer contract normalization.
+
+    Rules (applied in order, general — not skill-specific):
+
+    Rule A – single_choice presentation enforces choice_label answer_value_type:
+        presentation_mode=single_choice →
+            answer_type ∈ {single_choice, choice_label}
+            answer_value_type=choice_label
+            checker=choice_label_checker
+
+    Rule B – choice_label_checker forbids numeric/expression answer_type:
+        checker=choice_label_checker AND answer_type ∈ INCOMPATIBLE → override to single_choice
+
+    Rule C – semantic type is preserved separately:
+        semantic_answer_type stays as-is (integer/expression/etc.)
+
+    Rule D – numeric_input presentation:
+        presentation_mode=numeric_input → answer_type ∈ {integer,numeric,...}
+
+    Returns the mutated payload (mutates in place for convenience).
+    """
+    p = payload if isinstance(payload, dict) else {}
+    mode = str(p.get("presentation_mode") or "").strip()
+    answer_type = str(p.get("answer_type") or "").strip()
+    checker = str(p.get("checker_key") or p.get("checker") or "").strip()
+
+    if mode == "single_choice":
+        if answer_type in _INCOMPATIBLE_ANSWER_TYPES_FOR_CHOICE_LABEL_CHECKER:
+            p["answer_type"] = "single_choice"
+        if answer_type not in {"single_choice", "choice_label", "choice"}:
+            p["answer_type"] = "single_choice"
+        p.setdefault("answer_value_type", "choice_label")
+        p["checker"] = "choice_label_checker"
+        p["checker_key"] = "choice_label_checker"
+        ac = p.get("answer_contract")
+        if isinstance(ac, dict):
+            coerce_single_choice_contract(ac)
+            ac.setdefault("answer_value_type", "choice_label")
+
+    elif checker == "choice_label_checker":
+        if answer_type in _INCOMPATIBLE_ANSWER_TYPES_FOR_CHOICE_LABEL_CHECKER:
+            p["answer_type"] = "single_choice"
+            ac = p.get("answer_contract")
+            if isinstance(ac, dict):
+                coerce_single_choice_contract(ac)
+
+    return p
+
+
 def coerce_single_choice_contract(answer_contract: dict[str, Any]) -> dict[str, Any]:
     ac = answer_contract if isinstance(answer_contract, dict) else {}
     answer_type = str(ac.get("answer_type", "")).strip()

@@ -1,0 +1,74 @@
+{
+  "artifact_id": "manual_source_image_04",
+  "skill_id": "vh_數學B4_CumulativeFrequencyTablesAndGraphs",
+  "source_type": "manual_uploaded_image",
+  "source_is_authoritative": true,
+  "image_label": "圖4",
+  "image_ref": "manual_sources/image_04_above_cumulative_mcq_and_interval.png",
+  "extracted_by": "human_from_textbook_screenshot",
+  "extraction_timestamp": "2026-06-25T20:00:00+00:00",
+  "schema_version": "manual_visual_source.v1",
+  "visual_type": "cumulative_frequency_graph",
+  "cumulative_direction": "greater_than",
+  "question_target": "mixed",
+  "render_mode": "mixed",
+  "x_axis_semantics": "upper_class_boundary",
+  "y_axis_semantics": "cumulative_frequency",
+  "data_points": [
+    {"x": 40, "y": 50, "label": "40"},
+    {"x": 50, "y": 45, "label": "50"},
+    {"x": 60, "y": 32, "label": "60"},
+    {"x": 70, "y": 20, "label": "70"},
+    {"x": 80, "y": 13, "label": "80"},
+    {"x": 90, "y": 6, "label": "90"},
+    {"x": 100, "y": 0, "label": "100"}
+  ],
+  "table_rows": [],
+  "table_columns": [],
+  "blank_fields": [],
+  "known_fields": ["total_students=50"],
+  "asked_fields": [],
+  "answer_dependencies": [
+    "cumulative_polygon_plot",
+    "above_cumulative_counts_on_y_axis",
+    "total_student_count_for_complement",
+    "adjacent_above_cumulative_difference"
+  ],
+  "mathematical_relations": [
+    "fail_below_threshold = total_students - above_cumulative_at_threshold",
+    "interval_frequency = above_cumulative(low_boundary) - above_cumulative(high_boundary)",
+    "above_cumulative is monotone non-increasing left to right"
+  ],
+  "required_student_visible_elements": [
+    "cumulative_frequency_polygon",
+    "x_axis_score_marks",
+    "y_axis_cumulative_count_scale"
+  ],
+  "source_isomorphism_constraints": [
+    "chart_type=cumulative_frequency_polygon_above",
+    "total_students=50",
+    "contains_mcq_subquestion_and_interval_subquestion"
+  ],
+  "expected_answers": [],
+  "sub_questions": [
+    {
+      "section": "upper",
+      "question_target": "read_cumulative_value",
+      "render_mode": "multiple_choice",
+      "stem": "以60分為標準，不及格者有多少人",
+      "threshold": 60
+    },
+    {
+      "section": "middle",
+      "question_target": "recover_class_frequency",
+      "render_mode": "short_answer",
+      "stem": "70~80分有多少人",
+      "interval_low": 70,
+      "interval_high": 80
+    }
+  ],
+  "notes": [
+    "圖4上半為選擇題（不及格人數），中段為區間次數反推。",
+    "上下段共用同一組以上累積折線圖資料點。"
+  ]
+}

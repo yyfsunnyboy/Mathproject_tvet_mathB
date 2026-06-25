@@ -1,0 +1,46 @@
+{
+  "skill_id": "vh_數學B4_CumulativeFrequencyTablesAndGraphs",
+  "component_id": "src_3830",
+  "example_id": 3830,
+  "schema_version": "visual_induced_spec.v1",
+  "prompt_version": "b4_cumulative_visual_extract.v1",
+  "extraction_timestamp": "2026-06-25T15:16:50+00:00",
+  "source_sha256": "648629158b28c2c5e0024088a4e9251ecbabd987a83ee55af1924dd46d4287c7",
+  "gemini_model": null,
+  "gemini_calls": 0,
+  "status": "blocked_missing_source",
+  "block_reason": "required_graph_image_missing;missing_docx_image_asset",
+  "source_audit": {
+    "example_id": 3830,
+    "source_sha256": "648629158b28c2c5e0024088a4e9251ecbabd987a83ee55af1924dd46d4287c7",
+    "has_problem_text": true,
+    "has_answer": true,
+    "has_solution": true,
+    "has_image_flag": true,
+    "missing_docx_image_asset": true,
+    "image_attachment_paths_declared": [],
+    "image_attachment_files_resolved": [],
+    "table_embedded_in_text": false,
+    "text_table_complete": false,
+    "needs_graph": true,
+    "data_omitted_in_stem": false,
+    "answer_verifiable": true,
+    "preflight_blockers": [
+      "required_graph_image_missing",
+      "missing_docx_image_asset"
+    ],
+    "gemini_eligible": false,
+    "gemini_mode": "blocked",
+    "problem_text_preview": "已知某班數學期中考成績的以下累積次數分配折線圖如下，試問：(1)以60分為標準，不及格的人數有幾人？(2)至少70分的人數有幾人？（圖片待補）"
+  },
+  "validation": {
+    "passed": false,
+    "errors": [
+      "required_graph_image_missing",
+      "missing_docx_image_asset"
+    ]
+  },
+  "human_confirmed": false,
+  "generator_usable": false,
+  "spec": null
+}

@@ -88,6 +88,13 @@ DOMAIN_OPERATION_ANSWER_SCHEMA: dict[str, str] = {
     "line_through_intersection_parallel_to_line": "line_equation",
     "line_through_point_perpendicular_to_segment": "line_equation",
     "perpendicular_bisector_application": "line_equation",
+    # Statistics table_chart single-choice operations → choice_label schema
+    "read_category_value": "choice_label",
+    "compare_category_values": "choice_label",
+    "calculate_total_ratio_percent": "choice_label",
+    "cumulative_above_fail_count": "choice_label",
+    "cumulative_above_interval_count": "choice_label",
+    "cumulative_below_interval_count": "choice_label",
 }
 
 PROBLEM_TYPE_ANSWER_SCHEMA: dict[str, str] = dict(DOMAIN_OPERATION_ANSWER_SCHEMA)

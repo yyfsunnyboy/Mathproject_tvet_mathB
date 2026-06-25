@@ -162,14 +162,109 @@ def get_hint(step: int, question_payload: dict[str, Any] | None = None) -> str:
         )
 
 
-def _stub_generation(monkeypatch: pytest.MonkeyPatch) -> None:
+def _stub_successful_publish(monkeypatch: pytest.MonkeyPatch) -> None:
+    def _publish(*, conn, skill_id, project_root, **_kwargs):
+        count = conn.execute(
+            """
+            SELECT COUNT(*) FROM gencode_component_tracker
+            WHERE skill_id = ? AND gencode_status = 'verified'
+            """,
+            (skill_id,),
+        ).fetchone()[0]
+        facade = Path(str(project_root)) / "skills" / f"{skill_id}.py"
+        facade.parent.mkdir(parents=True, exist_ok=True)
+        facade.write_text(
+            """
+def generate(seed=42, **kwargs):
+    return {
+        "question_text": "mock question",
+        "answer": "mock answer",
+        "correct_answer": "mock answer",
+        "metadata": {},
+    }
+
+def check(user_answer, correct_answer, question_payload=None):
+    return str(user_answer) == str(correct_answer)
+
+def get_hint(level, question_payload):
+    return "hint"
+""",
+            encoding="utf-8",
+        )
+        components_root = Path(str(project_root)) / "agent_skills_v3" / skill_id / "components"
+        for index in range(1, int(count) + 1):
+            (components_root / f"src_{index}").mkdir(parents=True, exist_ok=True)
+        return {
+            "status": "production_published",
+            "component_count": int(count),
+            "production_smoke_status": "passed",
+            "compile": {
+                "generator_specs": [
+                    {"component_id": f"src_{index}"} for index in range(1, int(count) + 1)
+                ]
+            },
+        }
+
+    monkeypatch.setattr(
+        "core.gencode.v3_production_publish_service.publish_single_v3_skill_to_production",
+        _publish,
+    )
+    monkeypatch.setattr(
+        "core.gencode.services.admin_gencode_action_service._record_published_component_evidence",
+        lambda *args, **kwargs: [],
+    )
+
+
+def _stub_publish_eligible(monkeypatch: pytest.MonkeyPatch) -> None:
+    from core.gencode.skill_wrapper_compiler import _fetch_verified_components
+
+    monkeypatch.setattr(
+        "core.gencode.v3_production_publish_service._fetch_publish_eligible_components",
+        _fetch_verified_components,
+    )
+
+
+def _stub_publish_smoke(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr(
+        "core.gencode.v3_production_publish_service.run_v3_per_component_smoke",
+        lambda *_args, **_kwargs: None,
+    )
+
+
+def _stub_eligibility(monkeypatch: pytest.MonkeyPatch) -> None:
+    def _eligible(conn, skill_id, coverage=None):
+        verified = int((coverage or {}).get("verified_count") or 0)
+        return {
+            "allowed": True,
+            "full_coverage": True,
+            "reason": "eligible",
+            "skill_id": skill_id,
+            "eligible_component_count": verified,
+        }
+
+    monkeypatch.setattr(
+        "core.gencode.services.admin_gencode_action_service.evaluate_v3_publish_eligibility",
+        _eligible,
+    )
+    monkeypatch.setattr(
+        "core.gencode.services.v3_question_integrity_validator.validate_skill_samples",
+        lambda *args, **kwargs: {"passed": True, "blockers_summary": []},
+    )
+
+
+def _stub_generation(monkeypatch: pytest.MonkeyPatch, *, rebuilt_count: int | None = None) -> None:
     def _already_generated(conn, skill_id, **_kwargs):
         coverage = get_v3_skill_component_coverage(conn, skill_id)
+        total = int(coverage["total_examples"] or 0)
+        rebuilt = total if rebuilt_count is None else rebuilt_count
         return {
-            "success": bool(coverage["failed_count"] == 0),
+            "success": bool(coverage["failed_count"] == 0 and rebuilt > 0),
             "skill_id": skill_id,
-            "total_examples": coverage["total_examples"],
-            "processed_count": 0,
+            "total_examples": total,
+            "requested_count": total,
+            "processed_count": rebuilt,
+            "rebuilt_count": rebuilt,
+            "skipped_count": max(0, total - rebuilt),
             "failed_count": coverage["failed_count"],
             "unsupported_count": coverage["unsupported_count"],
             "verified_count": coverage["verified_count"],
@@ -178,6 +273,7 @@ def _stub_generation(monkeypatch: pytest.MonkeyPatch) -> None:
             "coverage": coverage,
             "results": [],
             "per_example_results": [],
+            "component_results": [],
         }
 
     monkeypatch.setattr(
@@ -208,6 +304,10 @@ def test_full_verified_17_of_17_auto_publishes(
     _insert_examples(memory_conn, 17, status="verified")
     _seed_dryrun_components(_dryrun_root(staging_root), 17)
     _stub_generation(monkeypatch)
+    _stub_eligibility(monkeypatch)
+    _stub_successful_publish(monkeypatch)
+    _stub_publish_eligible(monkeypatch)
+    _stub_publish_smoke(monkeypatch)
 
     result = _run_closed_loop(memory_conn, project_root, staging_root)
 
@@ -230,7 +330,7 @@ def test_failed_count_blocks_auto_publish(
 ) -> None:
     project_root, staging_root = isolated_roots
     _insert_examples(memory_conn, 2, status="failed")
-    _stub_generation(monkeypatch)
+    _stub_generation(monkeypatch, rebuilt_count=0)
 
     result = _run_closed_loop(memory_conn, project_root, staging_root)
 
@@ -246,7 +346,7 @@ def test_missing_tracker_blocks_auto_publish(
 ) -> None:
     project_root, staging_root = isolated_roots
     _insert_examples(memory_conn, 2, status="verified", missing_tracker_ids={2})
-    _stub_generation(monkeypatch)
+    _stub_generation(monkeypatch, rebuilt_count=0)
 
     result = _run_closed_loop(memory_conn, project_root, staging_root)
 
@@ -264,13 +364,16 @@ def test_wrapper_compile_failure_preserves_previous_production(
     _insert_examples(memory_conn, 1, status="verified")
     _seed_dryrun_components(_dryrun_root(staging_root), 1)
     _stub_generation(monkeypatch)
+    _stub_eligibility(monkeypatch)
+    _stub_publish_eligible(monkeypatch)
+    _stub_publish_smoke(monkeypatch)
 
-    def _fail_compile(*_args, **_kwargs):
+    def _fail_publish(**_kwargs):
         raise ValueError("wrapper compile failed")
 
     monkeypatch.setattr(
-        "core.gencode.v3_production_publish_service.compile_and_double_write_skill",
-        _fail_compile,
+        "core.gencode.services.admin_gencode_action_service.run_admin_v3_publish_for_skill",
+        _fail_publish,
     )
 
     result = _run_closed_loop(memory_conn, project_root, staging_root)
@@ -291,17 +394,16 @@ def test_production_smoke_failure_preserves_previous_production(
     _insert_examples(memory_conn, 1, status="verified")
     _seed_dryrun_components(_dryrun_root(staging_root), 1)
     _stub_generation(monkeypatch)
+    _stub_eligibility(monkeypatch)
+    _stub_publish_eligible(monkeypatch)
+    _stub_publish_smoke(monkeypatch)
 
-    from core.gencode.v3_production_publish_service import run_v3_smoke
-
-    def _fail_production_smoke(root: Path, skill_id: str) -> None:
-        if root.resolve() == project_root.resolve():
-            raise RuntimeError("forced production smoke failure")
-        run_v3_smoke(root, skill_id)
+    def _fail_publish(**_kwargs):
+        raise RuntimeError("forced production smoke failure")
 
     monkeypatch.setattr(
-        "core.gencode.v3_production_publish_service.run_v3_smoke",
-        _fail_production_smoke,
+        "core.gencode.services.admin_gencode_action_service.run_admin_v3_publish_for_skill",
+        _fail_publish,
     )
 
     result = _run_closed_loop(memory_conn, project_root, staging_root)
@@ -322,6 +424,10 @@ def test_successful_wrapper_can_be_loaded_by_runtime(
     _insert_examples(memory_conn, 1, status="verified")
     _seed_dryrun_components(_dryrun_root(staging_root), 1)
     _stub_generation(monkeypatch)
+    _stub_eligibility(monkeypatch)
+    _stub_successful_publish(monkeypatch)
+    _stub_publish_eligible(monkeypatch)
+    _stub_publish_smoke(monkeypatch)
 
     result = _run_closed_loop(memory_conn, project_root, staging_root)
     assert result["publish"]["published"] is True
@@ -345,6 +451,10 @@ def test_response_distinguishes_generation_and_publish_success(
     _insert_examples(memory_conn, 1, status="verified")
     _seed_dryrun_components(_dryrun_root(staging_root), 1)
     _stub_generation(monkeypatch)
+    _stub_eligibility(monkeypatch)
+    _stub_successful_publish(monkeypatch)
+    _stub_publish_eligible(monkeypatch)
+    _stub_publish_smoke(monkeypatch)
 
     result = _run_closed_loop(memory_conn, project_root, staging_root)
 
@@ -363,6 +473,10 @@ def test_repeated_closed_loop_is_idempotent(
     _insert_examples(memory_conn, 17, status="verified")
     _seed_dryrun_components(_dryrun_root(staging_root), 17)
     _stub_generation(monkeypatch)
+    _stub_eligibility(monkeypatch)
+    _stub_successful_publish(monkeypatch)
+    _stub_publish_eligible(monkeypatch)
+    _stub_publish_smoke(monkeypatch)
 
     first = _run_closed_loop(memory_conn, project_root, staging_root)
     second = _run_closed_loop(memory_conn, project_root, staging_root)

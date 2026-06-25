@@ -1,0 +1,70 @@
+{
+  "artifact_id": "induced_spec_above_cumulative_mcq_fail_count_01",
+  "skill_id": "vh_數學B4_CumulativeFrequencyTablesAndGraphs",
+  "source_type": "manual_uploaded_image",
+  "source_is_authoritative": true,
+  "source_image_ref": "manual_sources/image_04_above_cumulative_mcq_and_interval.png",
+  "source_spec_ref": "manual_sources/image_04_above_cumulative_mcq_and_interval.source.json",
+  "suggested_domain_operation": "greater_than_cumulative_frequency_reading",
+  "suggested_textbook_example_ids": [],
+  "generator_usable": true,
+  "human_confirmed": true,
+  "confidence": 1.0,
+  "schema_version": "manual_visual_induced_spec.v1",
+  "visual_type": "cumulative_frequency_graph",
+  "cumulative_direction": "greater_than",
+  "question_target": "read_cumulative_value",
+  "render_mode": "multiple_choice",
+  "x_axis_semantics": "upper_class_boundary",
+  "y_axis_semantics": "cumulative_frequency",
+  "data_points": [
+    {"x": 40, "y": 50},
+    {"x": 50, "y": 45},
+    {"x": 60, "y": 32},
+    {"x": 70, "y": 20},
+    {"x": 80, "y": 13},
+    {"x": 90, "y": 6},
+    {"x": 100, "y": 0}
+  ],
+  "table_rows": [],
+  "table_columns": [],
+  "blank_fields": [],
+  "known_fields": ["total_students=50", "above_cumulative_at_60=32"],
+  "asked_fields": ["fail_below_60"],
+  "answer_dependencies": [
+    "cumulative_polygon_plot",
+    "above_cumulative_at_60",
+    "total_students",
+    "four_integer_choices"
+  ],
+  "mathematical_relations": [
+    "fail_below_60 = total - above_cumulative(60) = 50 - 32 = 18"
+  ],
+  "required_student_visible_elements": [
+    "above_cumulative_frequency_polygon",
+    "mcq_four_options"
+  ],
+  "source_isomorphism_constraints": [
+    "presentation_mode=single_choice",
+    "threshold=60",
+    "cumulative_direction=greater_than"
+  ],
+  "expected_answers": [18],
+  "domain_constraints": {
+    "cumulative_direction": "above",
+    "total_students": 50,
+    "threshold": 60,
+    "graph_points": [
+      {"class_bound": 40, "cumulative_count": 50},
+      {"class_bound": 50, "cumulative_count": 45},
+      {"class_bound": 60, "cumulative_count": 32},
+      {"class_bound": 70, "cumulative_count": 20},
+      {"class_bound": 80, "cumulative_count": 13},
+      {"class_bound": 90, "cumulative_count": 6},
+      {"class_bound": 100, "cumulative_count": 0}
+    ],
+    "presentation_mode": "single_choice",
+    "distractor_rule": "integer_near_fail_count"
+  },
+  "notes": ["圖4上半：以上累積折線圖選擇題，求60分不及格人數。"]
+}

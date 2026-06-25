@@ -12,7 +12,10 @@ from core.gencode.answer_payload import (
     is_linear_equation_contract,
     validate_generated_answer_shape,
 )
-from core.gencode.answer_contract_gate import coerce_single_choice_contract
+from core.gencode.answer_contract_gate import (
+    _INCOMPATIBLE_ANSWER_TYPES_FOR_CHOICE_LABEL_CHECKER,
+    coerce_single_choice_contract,
+)
 from core.gencode.problem_type_spec import get_answer_contract, get_stem_contract
 
 CHOICE_EMBEDDED_PATTERN = re.compile(r"(\([A-D]\)|[A-D][\.\)]\s)")
@@ -51,8 +54,74 @@ def _answer_value(payload: dict[str, Any]) -> Any:
     return payload.get("correct_answer")
 
 
-def validate_answer_contract(payload: dict[str, Any], problem_type_spec: dict[str, Any]) -> list[str]:
+def validate_answer_type_presentation_consistency(payload: dict[str, Any]) -> list[str]:
+    """Hard contract rules that apply universally regardless of problem_type_spec.
+
+    Error codes returned (never raise):
+        ANSWER_CONTRACT_INCONSISTENT   – checker=choice_label_checker + incompatible answer_type
+        ANSWER_TYPE_INTEGER_LABEL_MISMATCH – answer_type=integer but answer is a choice label
+        CHOICE_LABEL_NOT_IN_CHOICES    – single_choice + answer not in choice labels
+        CHOICES_EMPTY_FOR_SINGLE_CHOICE – single_choice + no choices
+        SEMANTIC_ANSWER_MISMATCH       – correct choice value != semantic_answer
+    """
     errors: list[str] = []
+    mode = str(payload.get("presentation_mode") or "").strip()
+    answer_type = str(payload.get("answer_type") or "").strip()
+    checker = str(payload.get("checker_key") or payload.get("checker") or "").strip()
+    answer = payload.get("answer") or payload.get("correct_answer")
+    choices = payload.get("choices") or []
+    semantic = payload.get("semantic_answer")
+
+    answer_str = str(answer or "").strip()
+    is_label = bool(LABEL_ONLY_PATTERN.match(answer_str))
+
+    # Rule B: choice_label_checker forbids numeric/expression answer_type
+    if checker == "choice_label_checker" and answer_type in _INCOMPATIBLE_ANSWER_TYPES_FOR_CHOICE_LABEL_CHECKER:
+        errors.append(
+            f"ANSWER_CONTRACT_INCONSISTENT:checker=choice_label_checker+answer_type={answer_type}"
+        )
+
+    # answer_type=integer but answer is a choice label A/B/C/D
+    if answer_type in {"integer", "numeric", "number"} and is_label:
+        errors.append(
+            f"ANSWER_TYPE_INTEGER_LABEL_MISMATCH:answer_type={answer_type}+answer={answer_str}"
+        )
+
+    if mode == "single_choice":
+        if not isinstance(choices, list) or not choices:
+            errors.append("CHOICES_EMPTY_FOR_SINGLE_CHOICE")
+        else:
+            choice_labels = {
+                str(c.get("label", "")).strip()
+                for c in choices
+                if isinstance(c, dict)
+            }
+            normalized_choice_labels = {lb.strip("()[] .").upper() for lb in choice_labels}
+            if answer_str and answer_str.strip("()[] .").upper() not in normalized_choice_labels:
+                errors.append(f"CHOICE_LABEL_NOT_IN_CHOICES:answer={answer_str}")
+
+            # semantic_answer must equal the correct choice's value
+            if semantic is not None and is_label:
+                correct_label_upper = answer_str.strip("()[] .").upper()
+                for c in choices:
+                    if not isinstance(c, dict):
+                        continue
+                    lbl = str(c.get("label", "")).strip("()[] .").upper()
+                    if lbl == correct_label_upper:
+                        val = c.get("value")
+                        if val is not None and str(val) != str(semantic):
+                            errors.append(
+                                f"SEMANTIC_ANSWER_MISMATCH:"
+                                f"choice[{correct_label_upper}].value={val}"
+                                f"!=semantic_answer={semantic}"
+                            )
+                        break
+
+    return errors
+
+
+def validate_answer_contract(payload: dict[str, Any], problem_type_spec: dict[str, Any]) -> list[str]:
+    errors: list[str] = list(validate_answer_type_presentation_consistency(payload))
     answer_contract = get_answer_contract(problem_type_spec)
     coerce_single_choice_contract(answer_contract)
     stem_contract = get_stem_contract(problem_type_spec)

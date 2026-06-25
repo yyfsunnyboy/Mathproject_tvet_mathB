@@ -60,6 +60,10 @@ def test_b4_statistical_chart_reading_has_table_chart_domain_capability() -> Non
     assert "compare_category_values" in ctx.allowed_operations
     assert "calculate_total_ratio_percent" in ctx.allowed_operations
     assert "validate_chart_statement" in ctx.allowed_operations
+    # cumulative operations must also be present (regression guard)
+    assert "cumulative_above_fail_count" in ctx.allowed_operations
+    assert "cumulative_above_interval_count" in ctx.allowed_operations
+    assert "cumulative_below_interval_count" in ctx.allowed_operations
 
     result = resolve_domain_capability(
         skill_id=ctx.skill_id,
@@ -76,6 +80,37 @@ def test_b4_statistical_chart_reading_has_table_chart_domain_capability() -> Non
     assert result.capability_status == "ready"
     assert result.function_exists is True
     assert result.operation_registered is True
+
+
+@pytest.mark.parametrize("cumulative_op", [
+    "cumulative_above_fail_count",
+    "cumulative_above_interval_count",
+    "cumulative_below_interval_count",
+])
+def test_b4_statistical_chart_reading_cumulative_ops_resolve_ready(cumulative_op: str) -> None:
+    """Each cumulative operation must resolve as ready (no-LLM path)."""
+    ctx = resolve_fixed_domain_context("vh_數學B4_StatisticalChartReading")
+
+    assert cumulative_op in ctx.allowed_operations, (
+        f"{cumulative_op!r} missing from allowed_operations; got {list(ctx.allowed_operations)}"
+    )
+
+    result = resolve_domain_capability(
+        skill_id=ctx.skill_id,
+        fixed_domain_key=ctx.fixed_domain_key,
+        normalized_classification={
+            "domain_operation": cumulative_op,
+            "function_name": ctx.entrypoint,
+        },
+        source_example={"id": 3884},
+        domain_context=ctx,
+    )
+
+    assert result.operation_registered is True, f"{cumulative_op}: operation_registered=False"
+    assert result.function_exists is True, f"{cumulative_op}: function_exists=False"
+    assert result.capability_status == "ready", (
+        f"{cumulative_op}: capability_status={result.capability_status!r}"
+    )
 
 
 def test_unknown_statistical_skill_does_not_use_broad_statistical_fallback() -> None:

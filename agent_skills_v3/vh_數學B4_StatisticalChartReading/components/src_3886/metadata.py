@@ -20,9 +20,10 @@ PROBLEM_TYPE_ID: Final[str] = "cumulative_below_interval_count"
 PRESENTATION_MODE: Final[str] = "single_choice"
 RESPONSE_MODE: Final[str] = "single_choice"
 INTERACTION_TYPE: Final[str] = "single_choice"
-ANSWER_VALUE_TYPE: Final[str] = "integer"
-ANSWER_TYPE: Final[str] = "integer"
+ANSWER_VALUE_TYPE: Final[str] = "choice_label"
+ANSWER_TYPE: Final[str] = "single_choice"
 LEGACY_ANSWER_TYPE: Final[str] = "integer"
+SEMANTIC_ANSWER_TYPE: Final[str] = "integer"
 
 DOMAIN_LIBRARY: Final[tuple[str, ...]] = (
     "core.domain.statistics.table_chart_domain.build_statistical_chart_reading_matrix",
@@ -33,8 +34,9 @@ ANSWER_VERIFICATION_TYPE: Final[dict[str, str]] = {
     "equivalence_type": "choice_label",
     "response_mode": "single_choice",
     "interaction_type": "single_choice",
-    "answer_value_type": "integer",
-    "answer_type": "integer",
+    "answer_value_type": "choice_label",
+    "answer_type": "single_choice",
+    "semantic_answer_type": "integer",
     "module": "core.checkers.choice_label_checker",
 }
 

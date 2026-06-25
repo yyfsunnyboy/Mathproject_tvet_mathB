@@ -1,0 +1,65 @@
+{
+  "schema_version": "component_induced_config.v1",
+  "skill_id": "vh_數學B4_CumulativeFrequencyTablesAndGraphs",
+  "component_id": "src_3834",
+  "domain_operation": "class_frequency_from_cumulative_difference",
+  "presentation_mode": "short_answer",
+  "source_artifact_path": "",
+  "source_artifact_sha256": "9f8a2524e519cdb0e0a980a184b0140c6d27136d69f1ae9cb15aaaec65805f27",
+  "question_text": "某班有40位同學，第一次期中考數學成績的次數分配表及以下累積次數分配表如下表，試求 a, b, c, d。",
+  "induced_spec": {
+    "artifact_id": "component_induced_spec_src_3834",
+    "suggested_domain_operation": "class_frequency_from_cumulative_difference",
+    "render_mode": "multi_part",
+    "cumulative_direction": "less_than",
+    "task_topology": "cumulative_table_blank_fill",
+    "cumulative_table_blank_fill": true,
+    "domain_constraints": {
+      "cumulative_direction": "below",
+      "total_students": 40,
+      "table_rows": [
+        [
+          "0~20",
+          4,
+          4
+        ],
+        [
+          "20~40",
+          "a",
+          12
+        ],
+        [
+          "40~60",
+          10,
+          "b"
+        ],
+        [
+          "60~80",
+          12,
+          34
+        ],
+        [
+          "80~100",
+          "c",
+          "d"
+        ]
+      ],
+      "blank_fields": [
+        "a",
+        "b",
+        "c",
+        "d"
+      ],
+      "expected_answers": {
+        "a": 8,
+        "b": 22,
+        "c": 6,
+        "d": 40
+      }
+    },
+    "notes": [
+      "教材題為表格求 a,b,c,d；與圖4區間差 induced spec 不同，以題幹表格語意為準。"
+    ]
+  },
+  "binding_notes": []
+}

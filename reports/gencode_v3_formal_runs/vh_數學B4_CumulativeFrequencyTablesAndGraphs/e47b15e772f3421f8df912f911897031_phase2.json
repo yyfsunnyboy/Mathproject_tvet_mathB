@@ -1,0 +1,89 @@
+{
+  "phase": 2,
+  "run_id": "e47b15e772f3421f8df912f911897031",
+  "success": true,
+  "preview_results": [
+    {
+      "component_id": "src_3830",
+      "seed": 1,
+      "visible_question_text": "已知某班數學期中考成績的以下累積次數分配折線圖如下，試問：(1)以60分為標準，不及格的人數有幾人？(2)至少70分的人數有幾人？",
+      "visible_graph_or_table": "png_bytes=32427",
+      "answer_dependencies_visible": [
+        "以60分為標準，不及格的人數有幾人",
+        "至少70分的人數有幾人"
+      ],
+      "input_count": 2,
+      "answer_type": "multi_part",
+      "visual_payload_status": "ok",
+      "preview_pass": true,
+      "blocking_reason": null
+    },
+    {
+      "component_id": "src_3831",
+      "seed": 1,
+      "visible_question_text": "試完成下方之累積次數分配表。",
+      "visible_graph_or_table": "table_html_len=438",
+      "answer_dependencies_visible": [
+        "50~60 的以下累積次數",
+        "50~60 的以上累積次數",
+        "60~70 的以下累積次數",
+        "60~70 的以上累積次數",
+        "70~80 的以下累積次數",
+        "70~80 的以上累積次數"
+      ],
+      "input_count": 10,
+      "answer_type": "multi_part",
+      "visual_payload_status": "ok",
+      "preview_pass": true,
+      "blocking_reason": null
+    },
+    {
+      "component_id": "src_3832",
+      "seed": 1,
+      "visible_question_text": "已知某班英文期末考成績的以上累積次數分配折線圖如右，試問：(1)以60分為標準，不及格的人數有幾人？(2)80分以上的人數有幾人？",
+      "visible_graph_or_table": "png_bytes=33966",
+      "answer_dependencies_visible": [
+        "以60分為標準，不及格的人數有幾人",
+        "80分以上的人數有幾人"
+      ],
+      "input_count": 2,
+      "answer_type": "multi_part",
+      "visual_payload_status": "ok",
+      "preview_pass": true,
+      "blocking_reason": null
+    },
+    {
+      "component_id": "src_3833",
+      "seed": 1,
+      "visible_question_text": "已知某班國文期中考成績的以下累積次數分配折線圖如右，試問：(1)以60分為標準，不及格的人數有幾人？(2)至少80分的人數有幾人？",
+      "visible_graph_or_table": "png_bytes=32427",
+      "answer_dependencies_visible": [
+        "以60分為標準，不及格的人數有幾人",
+        "至少80分的人數有幾人"
+      ],
+      "input_count": 2,
+      "answer_type": "multi_part",
+      "visual_payload_status": "ok",
+      "preview_pass": true,
+      "blocking_reason": null
+    },
+    {
+      "component_id": "src_3834",
+      "seed": 1,
+      "visible_question_text": "某班有40位同學，第一次期中考數學成績的次數分配表及以下累積次數分配表如下表，試求 a, b, c, d。",
+      "visible_graph_or_table": "table_html_len=384",
+      "answer_dependencies_visible": [
+        "求 a 的值",
+        "求 b 的值",
+        "求 c 的值",
+        "求 d 的值"
+      ],
+      "input_count": 4,
+      "answer_type": "multi_part",
+      "visual_payload_status": "ok",
+      "preview_pass": true,
+      "blocking_reason": null
+    }
+  ],
+  "completed_at": "2026-06-25T15:52:37.963013+00:00"
+}

@@ -81,6 +81,8 @@ def should_use_contract_aware_grading(current: dict[str, Any]) -> bool:
     if is_coordinate_pair_contract(ac) or is_coordinate_pair_runtime_payload(refreshed):
         return True
     family = answer_type_family(str(refreshed.get("answer_type", "")))
+    if family == "multi_part":
+        return True
     if family in {"solution_set", "interval", "classification", "numeric_or_radical", "coordinate_pair", "drawing"}:
         return True
     ca = coerce_correct_answer(refreshed.get("correct_answer", refreshed.get("answer")), ac)
@@ -172,6 +174,10 @@ def grade_answer_for_current_question(
     checker = str(
         ac.get("checker") or ac.get("checker_key") or payload.get("checker") or payload.get("checker_key") or payload.get("checker_type") or ""
     ).strip()
+    family = answer_type_family(str(ac.get("answer_type", payload.get("answer_type", ""))))
+    equiv = str(
+        ac.get("answer_equivalence") or ac.get("equivalence") or payload.get("equivalence") or payload.get("equivalence_type") or ""
+    ).strip()
     expr_debug: dict[str, Any] | None = None
     if checker == "free_response_drawing_checker" or answer_type_family(str(ac.get("answer_type", ""))) == "drawing":
         from core.checkers.free_response_drawing_checker import (
@@ -241,6 +247,43 @@ def grade_answer_for_current_question(
 
         expr_debug = check_expression_equivalence_debug(user_answer, correct_answer)
         is_correct = bool(expr_debug.get("correct"))
+    elif checker == "multi_part_answer_checker" or family == "multi_part" or equiv == "multi_part_answer":
+        from core.checkers.multi_part_answer_checker import check_multi_part_answer
+
+        result = check_multi_part_answer(
+            user_answer,
+            correct_answer,
+            answer_contract=ac,
+            payload=payload,
+        )
+        overall = bool(result.get("overall_correct"))
+        per_part = result.get("per_part_results") or []
+        if overall:
+            msg = "答對了！"
+        elif per_part:
+            lines = []
+            for row in per_part:
+                mark = "正確" if row.get("correct") else "錯誤"
+                label = str(row.get("label") or row.get("key") or "")
+                lines.append(f"{label}：{mark}")
+            msg = "部分小題答錯。\n" + "\n".join(lines)
+        else:
+            msg = "答錯了。"
+        log_check_answer_debug(
+            skill_id=skill_id,
+            current=payload,
+            user_answer=user_answer,
+            correct_answer=correct_answer,
+            check_result=overall,
+            checker=checker,
+            log=log,
+        )
+        return {
+            "correct": overall,
+            "result": msg,
+            "per_part_results": per_part,
+            "failed_parts": result.get("failed_parts", []),
+        }
     else:
         is_correct = check_answer(
             user_answer,

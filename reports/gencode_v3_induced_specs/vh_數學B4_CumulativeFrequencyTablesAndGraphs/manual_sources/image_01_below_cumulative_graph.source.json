@@ -1,0 +1,60 @@
+{
+  "artifact_id": "manual_source_image_01",
+  "skill_id": "vh_數學B4_CumulativeFrequencyTablesAndGraphs",
+  "source_type": "manual_uploaded_image",
+  "source_is_authoritative": true,
+  "image_label": "圖1",
+  "image_ref": "manual_sources/image_01_below_cumulative_graph.png",
+  "extracted_by": "human_from_textbook_screenshot",
+  "extraction_timestamp": "2026-06-25T20:00:00+00:00",
+  "schema_version": "manual_visual_source.v1",
+  "visual_type": "cumulative_frequency_graph",
+  "cumulative_direction": "less_than",
+  "question_target": "read_graph",
+  "render_mode": "multi_part",
+  "x_axis_semantics": "upper_class_boundary",
+  "y_axis_semantics": "cumulative_frequency",
+  "data_points": [
+    {"x": 40, "y": 0, "label": "40"},
+    {"x": 50, "y": 4, "label": "50"},
+    {"x": 60, "y": 16, "label": "60"},
+    {"x": 70, "y": 29, "label": "70"},
+    {"x": 80, "y": 40, "label": "80"},
+    {"x": 90, "y": 45, "label": "90"},
+    {"x": 100, "y": 50, "label": "100"}
+  ],
+  "table_rows": [],
+  "table_columns": [],
+  "blank_fields": [],
+  "known_fields": ["total_students=50"],
+  "asked_fields": ["fail_below_60", "at_least_70"],
+  "answer_dependencies": [
+    "cumulative_polygon_plot",
+    "score_class_marks_on_x_axis",
+    "below_cumulative_counts_on_y_axis",
+    "total_student_count_for_complement"
+  ],
+  "mathematical_relations": [
+    "fail_below_threshold = below_cumulative_at_threshold",
+    "at_least_score = total_students - below_cumulative_at_score",
+    "below_cumulative is monotone non-decreasing left to right",
+    "x_axis uses class upper boundaries not class midpoints"
+  ],
+  "required_student_visible_elements": [
+    "cumulative_frequency_polygon",
+    "x_axis_score_marks",
+    "y_axis_cumulative_count_scale",
+    "polyline_connecting_upper_boundaries"
+  ],
+  "source_isomorphism_constraints": [
+    "chart_type=cumulative_frequency_polygon_below",
+    "not_frequency_polygon_of_class_midpoints",
+    "story_context=exam_scores",
+    "total_students=50"
+  ],
+  "expected_answers": [],
+  "notes": [
+    "圖1為以下累積次數分配折線圖；非一般次數分配折線圖。",
+    "資料點由人工自教材截圖讀取，為本輪唯一權威來源。"
+  ]
+}
