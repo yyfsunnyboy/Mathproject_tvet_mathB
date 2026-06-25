@@ -341,6 +341,10 @@ def init_db(engine):
             FOREIGN KEY (skill_id) REFERENCES skills_info (skill_id) ON DELETE CASCADE
         )
     ''')
+    c.execute('''
+        CREATE INDEX IF NOT EXISTS idx_textbook_examples_skill_id
+        ON textbook_examples (skill_id)
+    ''')
 
     # Learning Diagnosis 表格
     c.execute('''

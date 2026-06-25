@@ -158,6 +158,12 @@ CHECKER_CAPABILITIES: dict[str, dict[str, Any]] = {
         "equivalence_types": ["manual_review_or_ai_judged"],
         "module": "pipeline",
     },
+    "free_response_drawing_checker": {
+        "runtime_available": True,
+        "answer_types": ["drawing", "chart_drawing", "graph_drawing", "canvas_drawing"],
+        "equivalence_types": ["drawing_equivalence"],
+        "module": "core.checkers.free_response_drawing_checker",
+    },
     "ai_judged_checker": {
         "runtime_available": True,
         "answer_types": ["manual_review"],

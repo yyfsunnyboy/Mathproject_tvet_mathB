@@ -310,10 +310,32 @@ def _load_skills_v3_gencode_status_map(skill_ids: list[str]) -> dict[str, dict[s
             [str(skill_id) for skill_id in skill_ids if str(skill_id or "").strip()],
             project_root=_resolve_admin_project_root(),
         )
-    except Exception:
+    except Exception as exc:
+        current_app.logger.exception("Failed to build admin skills V3 status map: %s", exc)
         return {}
     finally:
         raw_conn.close()
+
+
+def _skills_route_timing_enabled() -> bool:
+    return str(os.environ.get("SKILLS_ROUTE_TIMING", "")).strip().lower() in {"1", "true", "yes", "on"}
+
+
+def _log_skills_route_phase(
+    phase: str,
+    elapsed_s: float,
+    *,
+    count: int | None = None,
+    filters: dict | None = None,
+) -> None:
+    if not _skills_route_timing_enabled():
+        return
+    parts = [f"[admin_skills] {phase}: {elapsed_s:.4f}s"]
+    if count is not None:
+        parts.append(f"count={count}")
+    if filters:
+        parts.append(f"filters={filters}")
+    current_app.logger.info(" | ".join(parts))
 
 
 def _normalize_core_option_value(raw):
@@ -2248,29 +2270,30 @@ def admin_skills():
     if not (current_user.is_admin or current_user.role == 'teacher'):
         return redirect(url_for('dashboard'))
 
-    # ?方撒??V2.0 ????謘??叟??????
+    import time as _time
+
+    route_started = _time.time()
     selected, filters_data = handle_curriculum_filters(request)
-    
-    # 關聯 JOIN 查詢，投影 SkillInfo 與 SkillCurriculum 兩個 model
+    _log_skills_route_phase("parse_filters", _time.time() - route_started, filters=selected)
+
+    query_started = _time.time()
     query = db.session.query(SkillInfo, SkillCurriculum).join(
         SkillCurriculum,
         SkillInfo.skill_id == SkillCurriculum.skill_id
     )
-    
-    # --- 篩選條件過濾器 ---
-    if selected['f_curriculum'] != 'all': 
+
+    if selected['f_curriculum'] != 'all':
         aliases = get_curriculum_aliases(selected['f_curriculum'])
         query = query.filter(SkillCurriculum.curriculum.in_(aliases))
-    if selected['f_grade'] != 'all' and str(selected['f_grade']).isdigit(): 
+    if selected['f_grade'] != 'all' and str(selected['f_grade']).isdigit():
         query = query.filter(SkillCurriculum.grade == int(selected['f_grade']))
     if selected['f_volume'] != 'all':
         query = query.filter(SkillCurriculum.volume == selected['f_volume'])
-    if selected['f_chapter'] != 'all': 
+    if selected['f_chapter'] != 'all':
         query = query.filter(SkillCurriculum.chapter == selected['f_chapter'])
-    if selected['f_section'] != 'all': 
+    if selected['f_section'] != 'all':
         query = query.filter(SkillCurriculum.section == selected['f_section'])
-    
-    # 依 display_order 排序
+
     skills_data = (
         query
         .distinct()
@@ -2280,23 +2303,14 @@ def admin_skills():
         )
         .all()
     )
-    
-    # 只讀檢查
-    print(f"=== [admin_skills DEBUG] ===")
-    print(f"skills_data length: {len(skills_data)}")
-    if len(skills_data) > 0:
-        first_item = skills_data[0]
-        print(f"First item type: {type(first_item)}")
-        print(f"First item is tuple: {isinstance(first_item, tuple)}")
-        if isinstance(first_item, tuple):
-            print(f"First item length: {len(first_item)}")
-            if len(first_item) >= 2:
-                print(f"first_item[0] is SkillInfo: {isinstance(first_item[0], SkillInfo)}")
-                print(f"first_item[1] is SkillCurriculum: {isinstance(first_item[1], SkillCurriculum)}")
-                print(f"first_item[0].skill_id: {first_item[0].skill_id}")
-                print(f"first_item[1].display_order: {first_item[1].display_order}")
-    print(f"============================")
+    _log_skills_route_phase(
+        "main_skill_query",
+        _time.time() - query_started,
+        count=len(skills_data),
+        filters=selected,
+    )
 
+    assembly_started = _time.time()
     skills = []
     for skill_info, curriculum in skills_data:
         skills.append({
@@ -2320,6 +2334,14 @@ def admin_skills():
             "chapter": curriculum.chapter,
             "section": curriculum.section,
         })
+    _log_skills_route_phase(
+        "python_dict_assembly",
+        _time.time() - assembly_started,
+        count=len(skills),
+        filters=selected,
+    )
+
+    v2_started = _time.time()
     gencode_status_map = {}
     root_candidates = [
         Path(current_app.root_path),
@@ -2376,12 +2398,26 @@ def admin_skills():
                 "formal_abs_path": str(formal_abs),
                 "draft_abs_path": str(draft_abs),
             }
+    _log_skills_route_phase(
+        "v2_gencode_file_checks",
+        _time.time() - v2_started,
+        count=len(gencode_status_map),
+        filters=selected,
+    )
 
+    v3_started = _time.time()
     v3_gencode_status_map = _load_skills_v3_gencode_status_map(
         [str(s["skill_id"]) for s in skills]
     )
+    _log_skills_route_phase(
+        "v3_gencode_status_map",
+        _time.time() - v3_started,
+        count=len(v3_gencode_status_map),
+        filters=selected,
+    )
 
-    return render_template('admin_skills.html', 
+    render_started = _time.time()
+    response = render_template('admin_skills.html',
                            skills_data=skills_data,
                            skills=skills,
                            gencode_status_map=gencode_status_map,
@@ -2401,6 +2437,19 @@ def admin_skills():
                                'senior_high': '普高'
                            },
                            username=current_user.username)
+    _log_skills_route_phase(
+        "render_template",
+        _time.time() - render_started,
+        count=len(response) if isinstance(response, str) else None,
+        filters=selected,
+    )
+    _log_skills_route_phase(
+        "route_total",
+        _time.time() - route_started,
+        count=len(skills),
+        filters=selected,
+    )
+    return response
 
 @core_bp.route('/skills/add', methods=['POST'])
 @login_required
@@ -3118,6 +3167,8 @@ def admin_example_v3_regenerate(textbook_example_id: int):
     skill_id = str(textbook_example.skill_id or "").strip()
     if not skill_id:
         return jsonify({"status": "failed", "details": "missing_skill_id"}), 400
+    payload = request.get_json(silent=True) or {}
+    force = bool(payload.get("force") or request.args.get("force") in {"1", "true", "True"})
 
     from core.gencode.services.admin_gencode_action_service import run_admin_v3_dryrun_for_example
     from core.gencode.services.component_tracker_service import (
@@ -3132,6 +3183,7 @@ def admin_example_v3_regenerate(textbook_example_id: int):
             conn=raw_conn,
             textbook_example_id=textbook_example_id,
             skill_id=skill_id,
+            force_regenerate=force,
         )
         result = _run_admin_v3_integrity_gate_for_example(
             conn=raw_conn,

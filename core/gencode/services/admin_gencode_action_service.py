@@ -8,6 +8,7 @@ import json
 import py_compile
 import shutil
 import sqlite3
+import uuid
 from datetime import datetime
 from pathlib import Path
 from typing import Any
@@ -60,6 +61,28 @@ def _parse_tracker_payload(payload_raw: Any) -> dict[str, object]:
     except Exception:
         return {}
     return payload if isinstance(payload, dict) else {}
+
+
+def _now_iso() -> str:
+    return datetime.now().isoformat(timespec="seconds")
+
+
+def _resolve_dryrun_root(dryrun_base_dir: str) -> Path:
+    dryrun_root = Path(str(dryrun_base_dir or "").strip())
+    if not dryrun_root.is_absolute():
+        dryrun_root = Path(__file__).resolve().parents[3] / dryrun_root
+    return dryrun_root
+
+
+def _component_generate_path(dryrun_base_dir: str, skill_id: str, component_id: str) -> Path:
+    return _resolve_dryrun_root(dryrun_base_dir) / str(skill_id) / "components" / str(component_id) / "generate.py"
+
+
+def _file_mtime(path: Path) -> float | None:
+    try:
+        return path.stat().st_mtime if path.is_file() else None
+    except Exception:
+        return None
 
 
 def _path_for_payload(path: Path, root: Path) -> str:
@@ -267,6 +290,8 @@ def run_admin_v3_dryrun_for_skill(
         tracker_status = str((tracker or {}).get("gencode_status") or "").strip()
 
         if tracker_status == "verified" and not force:
+            payload = tracker.get("payload") if isinstance(tracker, dict) else {}
+            generate_path = _component_generate_path(dryrun_base_dir, skill_key, component_id)
             skipped_verified_count += 1
             results.append(
                 {
@@ -274,6 +299,17 @@ def run_admin_v3_dryrun_for_skill(
                     "status": "skipped_verified",
                     "component_id": component_id,
                     "message": "verified tracker row kept",
+                    "force_regenerate": False,
+                    "cache_hit": True,
+                    "skip_reason": "verified_tracker",
+                    "generation_run_id": payload.get("generation_run_id") if isinstance(payload, dict) else None,
+                    "generation_started_at": None,
+                    "generation_finished_at": None,
+                    "old_artifact_hash": _sha256_file(generate_path),
+                    "new_artifact_hash": _sha256_file(generate_path),
+                    "old_generate_mtime": _file_mtime(generate_path),
+                    "new_generate_mtime": _file_mtime(generate_path),
+                    "model_generation_invoked": False,
                 }
             )
             continue
@@ -287,9 +323,33 @@ def run_admin_v3_dryrun_for_skill(
                 dryrun_base_dir=dryrun_base_dir,
                 seed=seed,
                 allow_non_mvp_skill=True,
+                force_regenerate=force,
             )
             entry_status = "processed"
             message = str(dryrun_result.get("status") or "draft_written")
+            if message == "failed":
+                failed_count += 1
+                results.append(
+                    {
+                        "textbook_example_id": textbook_example_id,
+                        "status": "failed",
+                        "component_id": str(dryrun_result.get("component_id") or component_id),
+                        "error_code": str(dryrun_result.get("error_code") or "COMPONENT_GENERATION_FAILED"),
+                        "message": "component_generation_failed_this_run",
+                        "force_regenerate": bool(dryrun_result.get("force_regenerate", force)),
+                        "cache_hit": bool(dryrun_result.get("cache_hit", False)),
+                        "skip_reason": dryrun_result.get("skip_reason"),
+                        "generation_run_id": dryrun_result.get("generation_run_id"),
+                        "generation_started_at": dryrun_result.get("generation_started_at"),
+                        "generation_finished_at": dryrun_result.get("generation_finished_at"),
+                        "old_artifact_hash": dryrun_result.get("old_artifact_hash"),
+                        "new_artifact_hash": dryrun_result.get("new_artifact_hash"),
+                        "old_generate_mtime": dryrun_result.get("old_generate_mtime"),
+                        "new_generate_mtime": dryrun_result.get("new_generate_mtime"),
+                        "model_generation_invoked": bool(dryrun_result.get("model_generation_invoked")),
+                    }
+                )
+                continue
 
             if smoke and message == "draft_written":
                 smoke_result = run_admin_v3_smoke_for_example(
@@ -315,6 +375,17 @@ def run_admin_v3_dryrun_for_skill(
                     "status": entry_status,
                     "component_id": str(dryrun_result.get("component_id") or component_id),
                     "message": message,
+                    "force_regenerate": bool(dryrun_result.get("force_regenerate", force)),
+                    "cache_hit": bool(dryrun_result.get("cache_hit", False)),
+                    "skip_reason": dryrun_result.get("skip_reason"),
+                    "generation_run_id": dryrun_result.get("generation_run_id"),
+                    "generation_started_at": dryrun_result.get("generation_started_at"),
+                    "generation_finished_at": dryrun_result.get("generation_finished_at"),
+                    "old_artifact_hash": dryrun_result.get("old_artifact_hash"),
+                    "new_artifact_hash": dryrun_result.get("new_artifact_hash"),
+                    "old_generate_mtime": dryrun_result.get("old_generate_mtime"),
+                    "new_generate_mtime": dryrun_result.get("new_generate_mtime"),
+                    "model_generation_invoked": bool(dryrun_result.get("model_generation_invoked")),
                 }
             )
         except Exception as exc:
@@ -596,6 +667,7 @@ def run_admin_v3_dryrun_for_example(
     dryrun_base_dir: str = "reports/gencode_v3_dryrun",
     seed: int | None = None,
     allow_non_mvp_skill: bool = False,
+    force_regenerate: bool = False,
 ) -> dict[str, object]:
     """Run one admin-triggered V3 shadow-bridge dryrun for a textbook example."""
     ensure_gencode_component_tracker_table(conn)
@@ -624,11 +696,22 @@ def run_admin_v3_dryrun_for_example(
     if bool(V3_PRODUCTION_PUBLISH_ENABLED):
         raise ValueError("unsafe_production_publish_flag_enabled")
 
+    component_id = derive_component_id(textbook_example_id)
+    generate_path = _component_generate_path(dryrun_base_dir, skill_key, component_id)
+    old_artifact_hash = _sha256_file(generate_path)
+    old_generate_mtime = _file_mtime(generate_path)
+    generation_run_id = uuid.uuid4().hex
+    generation_started_at = _now_iso()
+
     phase2_kwargs: dict[str, Any] = {
         "dry_run": True,
         "v3_textbook_example_id": textbook_example_id,
         "v3_conn": conn,
         "v3_dryrun_base_dir": dryrun_base_dir,
+        "force_regenerate": bool(force_regenerate),
+        "generation_run_id": generation_run_id,
+        "generation_started_at": generation_started_at,
+        "old_artifact_hash": old_artifact_hash,
     }
     if seed is not None:
         phase2_kwargs["seed"] = seed
@@ -650,11 +733,12 @@ def run_admin_v3_dryrun_for_example(
     if tracker_status not in {"draft_written", "smoke_passed", "verified", "needs_human_review", "failed"}:
         raise ValueError("v3_shadow_bridge_not_executed")
 
-    component_id = derive_component_id(textbook_example_id)
-    dryrun_root = Path(str(dryrun_base_dir or "").strip())
-    if not dryrun_root.is_absolute():
-        dryrun_root = Path(__file__).resolve().parents[3] / dryrun_root
+    dryrun_root = _resolve_dryrun_root(dryrun_base_dir)
     component_dir = dryrun_root / skill_key / "components" / component_id
+    new_artifact_hash = _sha256_file(generate_path)
+    new_generate_mtime = _file_mtime(generate_path)
+    bridge = phase2_result.get("v3_shadow_bridge")
+    bridge_payload = bridge if isinstance(bridge, dict) else {}
 
     return {
         "status": tracker_status,
@@ -663,6 +747,17 @@ def run_admin_v3_dryrun_for_example(
         "component_id": component_id,
         "dryrun_component_dir": str(component_dir.resolve()),
         "review_hints": review_hints,
+        "force_regenerate": bool(force_regenerate),
+        "cache_hit": False,
+        "skip_reason": None,
+        "generation_run_id": generation_run_id,
+        "generation_started_at": generation_started_at,
+        "generation_finished_at": bridge_payload.get("generation_finished_at") or _now_iso(),
+        "old_artifact_hash": old_artifact_hash,
+        "new_artifact_hash": new_artifact_hash,
+        "old_generate_mtime": old_generate_mtime,
+        "new_generate_mtime": new_generate_mtime,
+        "model_generation_invoked": bool(bridge_payload.get("model_generation_invoked", True)),
     }
 
 
@@ -672,7 +767,7 @@ def _fetch_tracker_for_example(
 ) -> dict[str, object] | None:
     row = conn.execute(
         """
-        SELECT textbook_example_id, skill_id, component_id, gencode_status, gencode_error_log, updated_at
+        SELECT textbook_example_id, skill_id, component_id, gencode_status, induced_spec_payload, gencode_error_log, updated_at
         FROM gencode_component_tracker
         WHERE textbook_example_id = ?
         """,
@@ -686,6 +781,8 @@ def _fetch_tracker_for_example(
             "skill_id": row["skill_id"],
             "component_id": row["component_id"],
             "gencode_status": row["gencode_status"],
+            "induced_spec_payload": row["induced_spec_payload"],
+            "payload": _parse_tracker_payload(row["induced_spec_payload"]),
             "gencode_error_log": row["gencode_error_log"],
             "updated_at": row["updated_at"],
         }
@@ -694,8 +791,10 @@ def _fetch_tracker_for_example(
         "skill_id": row[1],
         "component_id": row[2],
         "gencode_status": row[3],
-        "gencode_error_log": row[4],
-        "updated_at": row[5],
+        "induced_spec_payload": row[4],
+        "payload": _parse_tracker_payload(row[4]),
+        "gencode_error_log": row[5],
+        "updated_at": row[6],
     }
 
 

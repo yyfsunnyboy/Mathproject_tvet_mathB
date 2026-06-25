@@ -2,7 +2,7 @@
 
 - status: PASS
 - samples: 100
-- audited_modules: 32
+- audited_modules: 34
 - modules_with_choice_questions: 2
 - blocking_reasons: []
 

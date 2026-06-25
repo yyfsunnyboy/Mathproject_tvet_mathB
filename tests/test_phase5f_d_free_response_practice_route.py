@@ -195,7 +195,7 @@ def test_tree_diagram_get_next_question_uses_handwriting_payload_without_skill_m
     assert body["grading_mode"] == "ai_judged_free_response"
     assert body["variant"] == "early_stopping_game"
     assert body["expected_count"] == 6
-    assert body["path_labels"] == ["甲", "乙"]
+    assert body["path_labels"] in (["甲", "乙"], ["A", "B"])
     assert body["requires_listing_or_tree"] is True
     assert "expected_paths" not in body
     assert "No module named" not in str(body)

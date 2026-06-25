@@ -235,6 +235,21 @@ def _canonicalize_answer_contract_for_api(data: dict[str, Any]) -> dict[str, Any
     if top_checker:
         ac["checker"] = top_checker
         ac["checker_key"] = top_checker
+    is_drawing_contract = (
+        top_checker == "free_response_drawing_checker"
+        or str(ac.get("answer_type") or "").strip() == "drawing"
+        or str(ac.get("answer_shape") or "").strip() == "drawing"
+    )
+    if is_drawing_contract and not isinstance(ac.get("ui_contract"), dict):
+        ac["ui_contract"] = {
+            "response_mode": "drawing",
+            "text_input_enabled": False,
+            "normal_submit_enabled": False,
+            "ai_check_required": True,
+            "canvas_required": True,
+            "allow_image_upload": True,
+            "allow_text_answer": False,
+        }
 
     gc = ac.get("generator_contract")
     if isinstance(gc, dict):
@@ -1932,6 +1947,9 @@ def check_answer():
 
     skill_id = str(current.get('skill_id', current.get('skill', ''))).strip()
     question_uid = str(current.get('question_uid', body.get('question_uid', ''))).strip()
+    for _image_key in ("composite_image_data_url", "student_strokes_image_data_url", "image_data_url", "image_base64", "canvas_image", "drawing_image", "handwriting_image"):
+        if body.get(_image_key):
+            current[_image_key] = body.get(_image_key)
     current = _normalize_gencode_runtime_payload(current, skill_id=skill_id)
     user_ans = _normalize_choice_alias_answer(user_ans, current)
     check_mode = str(
@@ -2034,6 +2052,44 @@ def check_answer():
                 "result": "答對了！" if is_correct else f"答錯了，正確答案是 {correct_ans}",
             },
         )
+
+    from core.checkers.free_response_drawing_checker import is_drawing_answer_contract
+    from core.gencode.answer_payload import answer_type_family, resolve_answer_contract_for_runtime
+
+    _drawing_ac = resolve_answer_contract_for_runtime(current, skill_id=skill_id)
+    if is_drawing_answer_contract(_drawing_ac, current) or answer_type_family(str(_drawing_ac.get("answer_type", ""))) == "drawing":
+        from core.gencode.answer_grading import grade_answer_for_current_question
+
+        current_app.logger.info(
+            "[PRACTICE check_answer] drawing dispatch skill_id=%s component_id=%s problem_type_id=%s checker_key=%s",
+            skill_id,
+            current.get("component_id", ""),
+            current.get("problem_type_id", ""),
+            _drawing_ac.get("checker") or _drawing_ac.get("checker_key") or current.get("checker", ""),
+        )
+        drawing_user_answer = {
+            "image_data_url": body.get("image_data_url"),
+            "composite_image_data_url": body.get("composite_image_data_url"),
+            "student_strokes_image_data_url": body.get("student_strokes_image_data_url"),
+            "image_base64": body.get("image_base64"),
+            "canvas_image": body.get("canvas_image"),
+            "drawing_image": body.get("drawing_image"),
+            "handwriting_image": body.get("handwriting_image"),
+        }
+        contract_result = grade_answer_for_current_question(
+            drawing_user_answer, current, skill_id, log=current_app.logger
+        )
+        if contract_result is not None:
+            is_correct_value = contract_result.get("correct")
+            should_record = is_correct_value is not None and not contract_result.get("system_error")
+            if should_record:
+                _record_compact_practice_progress(skill_id, bool(is_correct_value))
+            return _emit_check_result(
+                question_uid,
+                skill_id,
+                contract_result,
+                record_progress=should_record,
+            )
 
     # Phase 7B: Chap3 deterministic checker logic
     if is_b4_chapter3_phase7b_deterministic_skill(skill_id):

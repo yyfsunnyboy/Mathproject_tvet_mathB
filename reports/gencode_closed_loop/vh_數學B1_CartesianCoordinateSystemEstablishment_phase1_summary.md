@@ -5,9 +5,9 @@
 - **SOP Policy Version**: `v0.3`
 - **Highest SOP**: `docs/系統SOP/Gencode_AgentSkillV2整合/Gencode與AgentSkillV2整合總體設計_v0.3.md`
 - **SOP Preflight Status**: `PASS`
-- **SOP Gate Status**: `FAIL`
+- **SOP Gate Status**: `PASS`
 - **Report Contract Status**: `PASS_WITH_WARNINGS`
-- **Report Contract Warnings**: ['source_alignment_status_blocked_demoted_to_warn', 'candidate_problem_type_count_synchronized']
+- **Report Contract Warnings**: ['candidate_problem_type_count_synchronized']
 - **Report Contract Violations**: []
 
 - spec_mode: `induce_from_sources`
@@ -29,17 +29,17 @@
 ## Source alignment
 
 - source_alignment_status: `warn`
-- skill_problem_type_alignment_status: `block`
+- skill_problem_type_alignment_status: `warn`
 - alignment_score: `0.0`
 - alignment_blockers: []
-- alignment_warnings: ['alignment_score_below_recommended_threshold', 'anchor_taxonomy_needs_refinement', 'candidate_family_span_outside_skill_scope', 'majority_sources_need_human_subskill_review', 'mixed_source_families', 'skill_scoped_classification_low_confidence', 'source_skill_scope_locked_demoted_blockers_to_warnings', 'disallowed_blocker_promoted_to_warning:source_examples_mismatch']
+- alignment_warnings: ['alignment_score_below_recommended_threshold', 'anchor_taxonomy_needs_refinement', 'candidate_family_span_outside_skill_scope', 'mixed_source_families', 'source_skill_scope_locked_demoted_blockers_to_warnings']
 
 | example_id | target_task | task_family | alignment_kind | subskill_match | included | exclude_reason | stem_preview |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| 4417 | classify_quadrant | classify_quadrant_family | unclassified_low_confidence | False | False | semantic_alignment_score_zero_requires_human_review | 若點$P\left( a,b \right)$位在第一象限且a < b，則$Q\left( a-b,{{a}^{2}}b |
-| 4435 | compute_numeric | generic_numeric_family | unclassified_low_confidence | False | False | semantic_alignment_score_zero_requires_human_review | 設a、b為實數，且a < b < 0，則點$Q\left( ab,a+b \right)$在第幾象限？ |
-| 4509 | compute_distance_between_two_points | distance_between_two_points_family | unclassified_low_confidence | False | False | semantic_alignment_score_zero_requires_human_review | 設A點為坐標平面上一點，且A點到x軸及y軸之距離分別為3和4，則下列何者可能為A點之坐標？ 　(A)$\left( -4 |
-| 4510 | choose_correct_statement | classify_quadrant_family | unclassified_low_confidence | False | False | semantic_alignment_score_zero_requires_human_review | 已知點$P\left( a-b,ab \right)$在坐標平面的第四象限，則下列敘述何者正確？_x000D_
+| 4417 | classify_quadrant | classify_quadrant_family | unresolved_within_current_skill | False | True |  | 若點$P\left( a,b \right)$位在第一象限且a < b，則$Q\left( a-b,{{a}^{2}}b |
+| 4435 | compute_numeric | generic_numeric_family | unresolved_within_current_skill | False | True |  | 設a、b為實數，且a < b < 0，則點$Q\left( ab,a+b \right)$在第幾象限？ |
+| 4509 | compute_distance_between_two_points | distance_between_two_points_family | unresolved_within_current_skill | False | True |  | 設A點為坐標平面上一點，且A點到x軸及y軸之距離分別為3和4，則下列何者可能為A點之坐標？ 　(A)$\left( -4 |
+| 4510 | choose_correct_statement | classify_quadrant_family | unresolved_within_current_skill | False | True |  | 已知點$P\left( a-b,ab \right)$在坐標平面的第四象限，則下列敘述何者正確？_x000D_
 (A)$ |
 
 ## AI semantic classification
@@ -56,10 +56,10 @@
 
 | id | rule_task/family | AI task/family | conf | source | final task/family | align | excluded |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| 4417 | classify_quadrant/classify_quadrant_family | / | 0.0 | rule_first_mode | classify_quadrant/classify_quadrant_family | unclassified_low_confidence | semantic_alignment_score_zero_requires_human_review |
-| 4435 | compute_numeric/generic_numeric_family | / | 0.0 | rule_first_mode | compute_numeric/generic_numeric_family | unclassified_low_confidence | semantic_alignment_score_zero_requires_human_review |
-| 4509 | compute_distance_between_two_points/distance_between_two_points_family | / | 0.0 | rule_first_mode | compute_distance_between_two_points/distance_between_two_points_family | unclassified_low_confidence | semantic_alignment_score_zero_requires_human_review |
-| 4510 | choose_correct_statement/classify_quadrant_family | / | 0.0 | rule_first_mode | choose_correct_statement/classify_quadrant_family | unclassified_low_confidence | semantic_alignment_score_zero_requires_human_review |
+| 4417 | classify_quadrant/classify_quadrant_family | / | 0.0 | rule_first_mode | classify_quadrant/classify_quadrant_family | unresolved_within_current_skill |  |
+| 4435 | compute_numeric/generic_numeric_family | / | 0.0 | rule_first_mode | compute_numeric/generic_numeric_family | unresolved_within_current_skill |  |
+| 4509 | compute_distance_between_two_points/distance_between_two_points_family | / | 0.0 | rule_first_mode | compute_distance_between_two_points/distance_between_two_points_family | unresolved_within_current_skill |  |
+| 4510 | choose_correct_statement/classify_quadrant_family | / | 0.0 | rule_first_mode | choose_correct_statement/classify_quadrant_family | unresolved_within_current_skill |  |
 
 
 ## Same-section family distribution
@@ -74,6 +74,33 @@
 | 4435 | text_short | compute_numeric | False | False | coordinate_point, symbolic_condition |
 | 4509 | choice | compute_distance_between_two_points | True | True | axis_distance, coordinate_point, distance_formula, segment_length, three_coordinate_points, triangle, two_coordinate_points |
 | 4510 | choice | choose_correct_statement | True | True | coordinate_point, three_coordinate_points, triangle, two_coordinate_points |
+
+## Induction clusters
+
+### Cluster 1
+- answer_type: `short_answer`
+- source_example_ids: [4417]
+- grouping_reason: split_by_feature_signature
+- feature_signature: `['short_answer', 'classify_quadrant', 'short_answer', ('sign_reasoning',), ('symbolic_condition', 'coordinate_point'), 'default']`
+
+### Cluster 2
+- answer_type: `short_answer`
+- source_example_ids: [4435]
+- grouping_reason: split_by_feature_signature
+- feature_signature: `['short_answer', 'compute_numeric', 'short_answer', ('sign_reasoning',), ('symbolic_condition', 'coordinate_point'), 'default']`
+
+### Cluster 3
+- answer_type: `single_choice`
+- source_example_ids: [4509]
+- grouping_reason: split_by_feature_signature
+- feature_signature: `['single_choice', 'compute_distance_between_two_points', 'single_choice', ('axis_distance_reasoning', 'distance_formula_reasoning'), ('axis_distance', 'coordinate_point'), 'default']`
+
+### Cluster 4
+- answer_type: `single_choice`
+- source_example_ids: [4510]
+- grouping_reason: split_by_feature_signature
+- feature_signature: `['single_choice', 'choose_correct_statement', 'single_choice', ('sign_reasoning',), ('coordinate_point', 'three_coordinate_points'), 'default']`
+
 
 ## Candidate problem types
 
@@ -115,11 +142,9 @@
     ],
     "sop_preflight_status": "PASS"
   },
-  "sop_gate_status": "FAIL",
-  "sop_gate_violation": true,
-  "invalid_skill_level_blockers": [
-    "source_examples_mismatch"
-  ],
+  "sop_gate_status": "PASS",
+  "sop_gate_violation": false,
+  "invalid_skill_level_blockers": [],
   "main_skill_anchor": {
     "skill_id": "vh_數學B1_CartesianCoordinateSystemEstablishment",
     "skill_ch_name": "直角坐標系的建立",
@@ -178,17 +203,14 @@
   },
   "source_example_count": 4,
   "source_alignment_status": "warn",
-  "skill_problem_type_alignment_status": "block",
+  "skill_problem_type_alignment_status": "warn",
   "alignment_score": 0.0,
   "alignment_warnings": [
     "alignment_score_below_recommended_threshold",
     "anchor_taxonomy_needs_refinement",
     "candidate_family_span_outside_skill_scope",
-    "majority_sources_need_human_subskill_review",
     "mixed_source_families",
-    "skill_scoped_classification_low_confidence",
-    "source_skill_scope_locked_demoted_blockers_to_warnings",
-    "disallowed_blocker_promoted_to_warning:source_examples_mismatch"
+    "source_skill_scope_locked_demoted_blockers_to_warnings"
   ],
   "alignment_blockers": [],
   "semantic_alignment": {
@@ -408,17 +430,13 @@
         "answer_contract_supported": true
       }
     ],
-    "decision": "block",
-    "blockers": [
-      "source_examples_mismatch"
-    ],
+    "decision": "warn",
+    "blockers": [],
     "warnings": [
       "alignment_score_below_recommended_threshold",
       "anchor_taxonomy_needs_refinement",
       "candidate_family_span_outside_skill_scope",
-      "majority_sources_need_human_subskill_review",
       "mixed_source_families",
-      "skill_scoped_classification_low_confidence",
       "source_skill_scope_locked_demoted_blockers_to_warnings"
     ],
     "induction_core_example_count": 4,
@@ -701,9 +719,9 @@
       ],
       "structure_context_used": false,
       "sequence_context_used": true,
-      "alignment_kind": "unclassified_low_confidence",
-      "exclude_reason": "semantic_alignment_score_zero_requires_human_review",
-      "included_in_phase1": false,
+      "alignment_kind": "unresolved_within_current_skill",
+      "exclude_reason": "",
+      "included_in_phase1": true,
       "conflict_reason": "",
       "source_mapping_warning": "expected_family_mismatch",
       "skill_anchor_scope": "default",
@@ -751,9 +769,9 @@
       ],
       "structure_context_used": true,
       "sequence_context_used": true,
-      "alignment_kind": "unclassified_low_confidence",
-      "exclude_reason": "semantic_alignment_score_zero_requires_human_review",
-      "included_in_phase1": false,
+      "alignment_kind": "unresolved_within_current_skill",
+      "exclude_reason": "",
+      "included_in_phase1": true,
       "conflict_reason": "rule_first_mode",
       "source_mapping_warning": "expected_family_mismatch",
       "skill_anchor_scope": "default",
@@ -801,9 +819,9 @@
       ],
       "structure_context_used": false,
       "sequence_context_used": true,
-      "alignment_kind": "unclassified_low_confidence",
-      "exclude_reason": "semantic_alignment_score_zero_requires_human_review",
-      "included_in_phase1": false,
+      "alignment_kind": "unresolved_within_current_skill",
+      "exclude_reason": "",
+      "included_in_phase1": true,
       "conflict_reason": "",
       "source_mapping_warning": "expected_family_mismatch",
       "skill_anchor_scope": "default",
@@ -851,9 +869,9 @@
       ],
       "structure_context_used": false,
       "sequence_context_used": true,
-      "alignment_kind": "unclassified_low_confidence",
-      "exclude_reason": "semantic_alignment_score_zero_requires_human_review",
-      "included_in_phase1": false,
+      "alignment_kind": "unresolved_within_current_skill",
+      "exclude_reason": "",
+      "included_in_phase1": true,
       "conflict_reason": "",
       "source_mapping_warning": "expected_family_mismatch",
       "skill_anchor_scope": "default",
@@ -869,108 +887,7 @@
     }
   ],
   "ai_semantic_unavailable_reason": "ai_wrapper_error",
-  "excluded_source_examples": [
-    {
-      "example_id": 4417,
-      "target_task": "classify_quadrant",
-      "task_family": "classify_quadrant_family",
-      "alignment_score": 0.0,
-      "aligned_with_skill": false,
-      "included_in_phase1": false,
-      "exclude_reason": "semantic_alignment_score_zero_requires_human_review",
-      "alignment_kind": "unclassified_low_confidence",
-      "skill_id_match": true,
-      "task_family_match": false,
-      "subskill_match": false,
-      "pass_with_warning": false,
-      "requires_human_action": true,
-      "induction_tier": "core",
-      "included_in_core_induction": false,
-      "enrichment_reasons": [],
-      "source_quality_issues": [],
-      "source_quality_reject": false,
-      "candidate_only": false,
-      "classification_source": "rule_first_mode",
-      "induction_eligibility": "excluded",
-      "skill_id": "vh_數學B1_CartesianCoordinateSystemEstablishment",
-      "title_stem_preview": "若點$P\\left( a,b \\right)$位在第一象限且a < b，則$Q\\left( a-b,{{a}^{2}}b \\right)$位在第幾象限？"
-    },
-    {
-      "example_id": 4435,
-      "target_task": "compute_numeric",
-      "task_family": "generic_numeric_family",
-      "alignment_score": 0.0,
-      "aligned_with_skill": false,
-      "included_in_phase1": false,
-      "exclude_reason": "semantic_alignment_score_zero_requires_human_review",
-      "alignment_kind": "unclassified_low_confidence",
-      "skill_id_match": true,
-      "task_family_match": false,
-      "subskill_match": false,
-      "pass_with_warning": false,
-      "requires_human_action": true,
-      "induction_tier": "core",
-      "included_in_core_induction": false,
-      "enrichment_reasons": [],
-      "source_quality_issues": [],
-      "source_quality_reject": false,
-      "candidate_only": false,
-      "classification_source": "rule_first_mode",
-      "induction_eligibility": "excluded",
-      "skill_id": "vh_數學B1_CartesianCoordinateSystemEstablishment",
-      "title_stem_preview": "設a、b為實數，且a < b < 0，則點$Q\\left( ab,a+b \\right)$在第幾象限？"
-    },
-    {
-      "example_id": 4509,
-      "target_task": "compute_distance_between_two_points",
-      "task_family": "distance_between_two_points_family",
-      "alignment_score": 0.0,
-      "aligned_with_skill": false,
-      "included_in_phase1": false,
-      "exclude_reason": "semantic_alignment_score_zero_requires_human_review",
-      "alignment_kind": "unclassified_low_confidence",
-      "skill_id_match": true,
-      "task_family_match": false,
-      "subskill_match": false,
-      "pass_with_warning": false,
-      "requires_human_action": true,
-      "induction_tier": "core",
-      "included_in_core_induction": false,
-      "enrichment_reasons": [],
-      "source_quality_issues": [],
-      "source_quality_reject": false,
-      "candidate_only": false,
-      "classification_source": "rule_first_mode",
-      "induction_eligibility": "excluded",
-      "skill_id": "vh_數學B1_CartesianCoordinateSystemEstablishment",
-      "title_stem_preview": "設A點為坐標平面上一點，且A點到x軸及y軸之距離分別為3和4，則下列何者可能為A點之坐標？ (A)$\\left( -4,-3 \\right)$ (B)$\\lef..."
-    },
-    {
-      "example_id": 4510,
-      "target_task": "choose_correct_statement",
-      "task_family": "classify_quadrant_family",
-      "alignment_score": 0.0,
-      "aligned_with_skill": false,
-      "included_in_phase1": false,
-      "exclude_reason": "semantic_alignment_score_zero_requires_human_review",
-      "alignment_kind": "unclassified_low_confidence",
-      "skill_id_match": true,
-      "task_family_match": false,
-      "subskill_match": false,
-      "pass_with_warning": false,
-      "requires_human_action": true,
-      "induction_tier": "core",
-      "included_in_core_induction": false,
-      "enrichment_reasons": [],
-      "source_quality_issues": [],
-      "source_quality_reject": false,
-      "candidate_only": false,
-      "classification_source": "rule_first_mode",
-      "induction_eligibility": "excluded",
-      "skill_id": "vh_數學B1_CartesianCoordinateSystemEstablishment",
-      "title_stem_preview": "已知點$P\\left( a-b,ab \\right)$在坐標平面的第四象限，則下列敘述何者正確？_x000D_ (A)$A\\left( -a,b \\right)..."
-    }
-  ],
+  "excluded_source_examples": [],
   "induction_source_selection": {
     "core_example_count": 4,
     "enrichment_example_count": 0,
@@ -1010,8 +927,14 @@
       "matched_example_count": 0
     }
   ],
-  "candidate_only_problem_types": [],
-  "candidate_only_count": 0,
+  "candidate_only_problem_types": [
+    {
+      "example_id": 4435,
+      "problem_type_id": "short_answer_compute_numeric_short_answer",
+      "reason": "runtime_not_supported"
+    }
+  ],
+  "candidate_only_count": 1,
   "same_as_main_skill_count": 0,
   "rule_only_classification_count": 0,
   "hybrid_resolved_count": 0,
@@ -1030,23 +953,27 @@
       "target_task": "classify_quadrant",
       "task_family": "classify_quadrant_family",
       "alignment_score": 0.0,
-      "aligned_with_skill": false,
-      "included_in_phase1": false,
-      "exclude_reason": "semantic_alignment_score_zero_requires_human_review",
-      "alignment_kind": "unclassified_low_confidence",
+      "aligned_with_skill": true,
+      "included_in_phase1": true,
+      "exclude_reason": "",
+      "alignment_kind": "unresolved_within_current_skill",
       "skill_id_match": true,
       "task_family_match": false,
       "subskill_match": false,
       "pass_with_warning": false,
       "requires_human_action": true,
       "induction_tier": "core",
-      "included_in_core_induction": false,
+      "included_in_core_induction": true,
       "enrichment_reasons": [],
       "source_quality_issues": [],
       "source_quality_reject": false,
       "candidate_only": false,
       "classification_source": "rule_first_mode",
-      "induction_eligibility": "excluded",
+      "source_skill_scope_locked": true,
+      "skill_mapping_authority": "textbook_examples.skill_id",
+      "classification_scope": "within_current_skill",
+      "unresolved_reason": "semantic_score_zero_within_current_skill",
+      "induction_eligibility": "eligible",
       "skill_id": "vh_數學B1_CartesianCoordinateSystemEstablishment",
       "title_stem_preview": "若點$P\\left( a,b \\right)$位在第一象限且a < b，則$Q\\left( a-b,{{a}^{2}}b \\right)$位在第幾象限？"
     },
@@ -1055,23 +982,27 @@
       "target_task": "compute_numeric",
       "task_family": "generic_numeric_family",
       "alignment_score": 0.0,
-      "aligned_with_skill": false,
-      "included_in_phase1": false,
-      "exclude_reason": "semantic_alignment_score_zero_requires_human_review",
-      "alignment_kind": "unclassified_low_confidence",
+      "aligned_with_skill": true,
+      "included_in_phase1": true,
+      "exclude_reason": "",
+      "alignment_kind": "unresolved_within_current_skill",
       "skill_id_match": true,
       "task_family_match": false,
       "subskill_match": false,
       "pass_with_warning": false,
       "requires_human_action": true,
       "induction_tier": "core",
-      "included_in_core_induction": false,
+      "included_in_core_induction": true,
       "enrichment_reasons": [],
       "source_quality_issues": [],
       "source_quality_reject": false,
       "candidate_only": false,
       "classification_source": "rule_first_mode",
-      "induction_eligibility": "excluded",
+      "source_skill_scope_locked": true,
+      "skill_mapping_authority": "textbook_examples.skill_id",
+      "classification_scope": "within_current_skill",
+      "unresolved_reason": "semantic_score_zero_within_current_skill",
+      "induction_eligibility": "eligible",
       "skill_id": "vh_數學B1_CartesianCoordinateSystemEstablishment",
       "title_stem_preview": "設a、b為實數，且a < b < 0，則點$Q\\left( ab,a+b \\right)$在第幾象限？"
     },
@@ -1080,23 +1011,27 @@
       "target_task": "compute_distance_between_two_points",
       "task_family": "distance_between_two_points_family",
       "alignment_score": 0.0,
-      "aligned_with_skill": false,
-      "included_in_phase1": false,
-      "exclude_reason": "semantic_alignment_score_zero_requires_human_review",
-      "alignment_kind": "unclassified_low_confidence",
+      "aligned_with_skill": true,
+      "included_in_phase1": true,
+      "exclude_reason": "",
+      "alignment_kind": "unresolved_within_current_skill",
       "skill_id_match": true,
       "task_family_match": false,
       "subskill_match": false,
       "pass_with_warning": false,
       "requires_human_action": true,
       "induction_tier": "core",
-      "included_in_core_induction": false,
+      "included_in_core_induction": true,
       "enrichment_reasons": [],
       "source_quality_issues": [],
       "source_quality_reject": false,
       "candidate_only": false,
       "classification_source": "rule_first_mode",
-      "induction_eligibility": "excluded",
+      "source_skill_scope_locked": true,
+      "skill_mapping_authority": "textbook_examples.skill_id",
+      "classification_scope": "within_current_skill",
+      "unresolved_reason": "semantic_score_zero_within_current_skill",
+      "induction_eligibility": "eligible",
       "skill_id": "vh_數學B1_CartesianCoordinateSystemEstablishment",
       "title_stem_preview": "設A點為坐標平面上一點，且A點到x軸及y軸之距離分別為3和4，則下列何者可能為A點之坐標？ 　(A)$\\left( -4,-3 \\right)$　(B)$\\le"
     },
@@ -1105,23 +1040,27 @@
       "target_task": "choose_correct_statement",
       "task_family": "classify_quadrant_family",
       "alignment_score": 0.0,
-      "aligned_with_skill": false,
-      "included_in_phase1": false,
-      "exclude_reason": "semantic_alignment_score_zero_requires_human_review",
-      "alignment_kind": "unclassified_low_confidence",
+      "aligned_with_skill": true,
+      "included_in_phase1": true,
+      "exclude_reason": "",
+      "alignment_kind": "unresolved_within_current_skill",
       "skill_id_match": true,
       "task_family_match": false,
       "subskill_match": false,
       "pass_with_warning": false,
       "requires_human_action": true,
       "induction_tier": "core",
-      "included_in_core_induction": false,
+      "included_in_core_induction": true,
       "enrichment_reasons": [],
       "source_quality_issues": [],
       "source_quality_reject": false,
       "candidate_only": false,
       "classification_source": "rule_first_mode",
-      "induction_eligibility": "excluded",
+      "source_skill_scope_locked": true,
+      "skill_mapping_authority": "textbook_examples.skill_id",
+      "classification_scope": "within_current_skill",
+      "unresolved_reason": "semantic_score_zero_within_current_skill",
+      "induction_eligibility": "eligible",
       "skill_id": "vh_數學B1_CartesianCoordinateSystemEstablishment",
       "title_stem_preview": "已知點$P\\left( a-b,ab \\right)$在坐標平面的第四象限，則下列敘述何者正確？_x000D_\n(A)$A\\left( -a,b \\right)"
     }
@@ -1298,12 +1237,16 @@
       "source_has_choices": false,
       "selected_checker": "expression_checker",
       "checker_selection_reason": "quadratic_factoring_expression",
-      "confidence": "low",
-      "promote_recommendation": "conservative_hold_for_that_candidate",
+      "confidence": "medium",
+      "promote_recommendation": "recommend_promote_for_that_candidate",
       "promote_blockers": [],
       "risk_flags": [
+        "alignment_score_below_recommended_threshold",
         "anchor_slot_bootstrap_zero_source",
-        "source_examples_mismatch"
+        "anchor_taxonomy_needs_refinement",
+        "candidate_family_span_outside_skill_scope",
+        "mixed_source_families",
+        "source_skill_scope_locked_demoted_blockers_to_warnings"
       ],
       "checker_contract_warnings": [],
       "spec_source": "anchor_slot_bootstrap",
@@ -1476,7 +1419,7 @@
         "value_type_prefix": "",
         "_resolved_template_slot": "factor_quadratic_by_cross_multiplication"
       },
-      "generator_readiness": "alignment_blocked",
+      "generator_readiness": "runtime_ready",
       "usable_for_phase3": true,
       "template_slot": "function_value_numeric",
       "canonical_base_problem_type_id": "evaluate_function_value",
@@ -1662,12 +1605,16 @@
       "source_has_choices": false,
       "selected_checker": "expression_checker",
       "checker_selection_reason": "quadratic_factoring_expression",
-      "confidence": "low",
-      "promote_recommendation": "conservative_hold_for_that_candidate",
+      "confidence": "medium",
+      "promote_recommendation": "recommend_promote_for_that_candidate",
       "promote_blockers": [],
       "risk_flags": [
+        "alignment_score_below_recommended_threshold",
         "anchor_slot_bootstrap_zero_source",
-        "source_examples_mismatch"
+        "anchor_taxonomy_needs_refinement",
+        "candidate_family_span_outside_skill_scope",
+        "mixed_source_families",
+        "source_skill_scope_locked_demoted_blockers_to_warnings"
       ],
       "checker_contract_warnings": [],
       "spec_source": "anchor_slot_bootstrap",
@@ -1840,7 +1787,7 @@
         "value_type_prefix": "",
         "_resolved_template_slot": "factor_quadratic_by_cross_multiplication"
       },
-      "generator_readiness": "alignment_blocked",
+      "generator_readiness": "runtime_ready",
       "usable_for_phase3": true,
       "template_slot": "linear_function_two_point_choice",
       "canonical_base_problem_type_id": "interpret_function_notation",
@@ -1862,7 +1809,9 @@
       "choice_label",
       "exact_string",
       "interval_set",
+      "linear_equation_equivalent",
       "manual_review_or_ai_judged",
+      "multi_part_answer",
       "numeric_exact",
       "ordered_tuple_exact",
       "rational_equivalent",
@@ -2039,9 +1988,19 @@
         "induction_tier": "core",
         "enrichment_reasons": [],
         "included_in_core_induction": true,
+        "source_skill_scope_locked": true,
+        "skill_mapping_authority": "textbook_examples.skill_id",
+        "classification_scope": "within_current_skill",
+        "source_skill_id": "vh_數學B1_CartesianCoordinateSystemEstablishment",
+        "unresolved_within_current_skill": true,
+        "pending_problem_type_induction": true,
+        "requires_human_rule_pack": true,
+        "requires_human_action": false,
+        "unresolved_reason": "semantic_score_zero_within_current_skill",
+        "generator_readiness": "pending_problem_type_induction",
+        "usable_for_phase3": false,
         "equivalence_type": "exact_string",
-        "checker_key": "text_short_checker",
-        "requires_human_action": false
+        "checker_key": "text_short_checker"
       },
       "answer_shape": "text_short",
       "classification_confidence": "high",
@@ -2092,7 +2051,12 @@
       },
       "subskill_id": "classify_quadrant",
       "classification_source": "rule_first_mode",
-      "induction_eligibility": "excluded",
+      "source_skill_scope_locked": true,
+      "skill_mapping_authority": "textbook_examples.skill_id",
+      "classification_scope": "within_current_skill",
+      "unresolved_reason": "semantic_score_zero_within_current_skill",
+      "requires_human_rule_pack": true,
+      "induction_eligibility": "eligible",
       "answer_type": "text_short",
       "equivalence_type": "exact_string",
       "checker_key": "text_short_checker",
@@ -2229,16 +2193,27 @@
         "induction_tier": "core",
         "enrichment_reasons": [],
         "included_in_core_induction": true,
+        "source_skill_scope_locked": true,
+        "skill_mapping_authority": "textbook_examples.skill_id",
+        "classification_scope": "within_current_skill",
+        "source_skill_id": "vh_數學B1_CartesianCoordinateSystemEstablishment",
+        "unresolved_within_current_skill": true,
+        "pending_problem_type_induction": true,
+        "requires_human_rule_pack": true,
+        "requires_human_action": false,
+        "unresolved_reason": "semantic_score_zero_within_current_skill",
+        "generator_readiness": "pending_problem_type_induction",
+        "usable_for_phase3": false,
         "equivalence_type": "exact_string",
-        "checker_key": "text_short_checker",
-        "requires_human_action": false
+        "checker_key": "text_short_checker"
       },
       "answer_shape": "text_short",
       "classification_confidence": "high",
       "classification_reason": "rule_first_mode",
       "risk_flags": [
         "expected_family_mismatch",
-        "requires_human_action"
+        "requires_human_action",
+        "candidate_only_problem_type"
       ],
       "semantic_classification": {
         "ai_target_task": "",
@@ -2282,7 +2257,12 @@
       },
       "subskill_id": "compute_numeric",
       "classification_source": "rule_first_mode",
-      "induction_eligibility": "excluded",
+      "source_skill_scope_locked": true,
+      "skill_mapping_authority": "textbook_examples.skill_id",
+      "classification_scope": "within_current_skill",
+      "unresolved_reason": "semantic_score_zero_within_current_skill",
+      "requires_human_rule_pack": true,
+      "induction_eligibility": "eligible",
       "answer_type": "text_short",
       "equivalence_type": "exact_string",
       "checker_key": "text_short_checker",
@@ -2441,9 +2421,19 @@
         "induction_tier": "core",
         "enrichment_reasons": [],
         "included_in_core_induction": true,
+        "source_skill_scope_locked": true,
+        "skill_mapping_authority": "textbook_examples.skill_id",
+        "classification_scope": "within_current_skill",
+        "source_skill_id": "vh_數學B1_CartesianCoordinateSystemEstablishment",
+        "unresolved_within_current_skill": true,
+        "pending_problem_type_induction": true,
+        "requires_human_rule_pack": true,
+        "requires_human_action": false,
+        "unresolved_reason": "semantic_score_zero_within_current_skill",
+        "generator_readiness": "pending_problem_type_induction",
+        "usable_for_phase3": false,
         "equivalence_type": "choice_label",
-        "checker_key": "choice_label_checker",
-        "requires_human_action": false
+        "checker_key": "choice_label_checker"
       },
       "answer_shape": "single_choice",
       "classification_confidence": "high",
@@ -2501,7 +2491,12 @@
       },
       "subskill_id": "compute_distance_between_two_points",
       "classification_source": "rule_first_mode",
-      "induction_eligibility": "excluded",
+      "source_skill_scope_locked": true,
+      "skill_mapping_authority": "textbook_examples.skill_id",
+      "classification_scope": "within_current_skill",
+      "unresolved_reason": "semantic_score_zero_within_current_skill",
+      "requires_human_rule_pack": true,
+      "induction_eligibility": "eligible",
       "answer_type": "choice",
       "equivalence_type": "choice_label",
       "checker_key": "choice_label_checker",
@@ -2659,9 +2654,19 @@
         "induction_tier": "core",
         "enrichment_reasons": [],
         "included_in_core_induction": true,
+        "source_skill_scope_locked": true,
+        "skill_mapping_authority": "textbook_examples.skill_id",
+        "classification_scope": "within_current_skill",
+        "source_skill_id": "vh_數學B1_CartesianCoordinateSystemEstablishment",
+        "unresolved_within_current_skill": true,
+        "pending_problem_type_induction": true,
+        "requires_human_rule_pack": true,
+        "requires_human_action": false,
+        "unresolved_reason": "semantic_score_zero_within_current_skill",
+        "generator_readiness": "pending_problem_type_induction",
+        "usable_for_phase3": false,
         "equivalence_type": "choice_label",
-        "checker_key": "choice_label_checker",
-        "requires_human_action": false
+        "checker_key": "choice_label_checker"
       },
       "answer_shape": "single_choice",
       "classification_confidence": "high",
@@ -2716,7 +2721,12 @@
       },
       "subskill_id": "choose_correct_statement",
       "classification_source": "rule_first_mode",
-      "induction_eligibility": "excluded",
+      "source_skill_scope_locked": true,
+      "skill_mapping_authority": "textbook_examples.skill_id",
+      "classification_scope": "within_current_skill",
+      "unresolved_reason": "semantic_score_zero_within_current_skill",
+      "requires_human_rule_pack": true,
+      "induction_eligibility": "eligible",
       "answer_type": "choice",
       "equivalence_type": "choice_label",
       "checker_key": "choice_label_checker",
@@ -2859,9 +2869,19 @@
         "induction_tier": "core",
         "enrichment_reasons": [],
         "included_in_core_induction": true,
+        "source_skill_scope_locked": true,
+        "skill_mapping_authority": "textbook_examples.skill_id",
+        "classification_scope": "within_current_skill",
+        "source_skill_id": "vh_數學B1_CartesianCoordinateSystemEstablishment",
+        "unresolved_within_current_skill": true,
+        "pending_problem_type_induction": true,
+        "requires_human_rule_pack": true,
+        "requires_human_action": false,
+        "unresolved_reason": "semantic_score_zero_within_current_skill",
+        "generator_readiness": "pending_problem_type_induction",
+        "usable_for_phase3": false,
         "equivalence_type": "exact_string",
-        "checker_key": "text_short_checker",
-        "requires_human_action": false
+        "checker_key": "text_short_checker"
       },
       "answer_shape": "text_short",
       "classification_confidence": "high",
@@ -2912,7 +2932,12 @@
       },
       "subskill_id": "classify_quadrant",
       "classification_source": "rule_first_mode",
-      "induction_eligibility": "excluded",
+      "source_skill_scope_locked": true,
+      "skill_mapping_authority": "textbook_examples.skill_id",
+      "classification_scope": "within_current_skill",
+      "unresolved_reason": "semantic_score_zero_within_current_skill",
+      "requires_human_rule_pack": true,
+      "induction_eligibility": "eligible",
       "answer_type": "text_short",
       "equivalence_type": "exact_string",
       "checker_key": "text_short_checker",
@@ -3049,16 +3074,27 @@
         "induction_tier": "core",
         "enrichment_reasons": [],
         "included_in_core_induction": true,
+        "source_skill_scope_locked": true,
+        "skill_mapping_authority": "textbook_examples.skill_id",
+        "classification_scope": "within_current_skill",
+        "source_skill_id": "vh_數學B1_CartesianCoordinateSystemEstablishment",
+        "unresolved_within_current_skill": true,
+        "pending_problem_type_induction": true,
+        "requires_human_rule_pack": true,
+        "requires_human_action": false,
+        "unresolved_reason": "semantic_score_zero_within_current_skill",
+        "generator_readiness": "pending_problem_type_induction",
+        "usable_for_phase3": false,
         "equivalence_type": "exact_string",
-        "checker_key": "text_short_checker",
-        "requires_human_action": false
+        "checker_key": "text_short_checker"
       },
       "answer_shape": "text_short",
       "classification_confidence": "high",
       "classification_reason": "rule_first_mode",
       "risk_flags": [
         "expected_family_mismatch",
-        "requires_human_action"
+        "requires_human_action",
+        "candidate_only_problem_type"
       ],
       "semantic_classification": {
         "ai_target_task": "",
@@ -3102,7 +3138,12 @@
       },
       "subskill_id": "compute_numeric",
       "classification_source": "rule_first_mode",
-      "induction_eligibility": "excluded",
+      "source_skill_scope_locked": true,
+      "skill_mapping_authority": "textbook_examples.skill_id",
+      "classification_scope": "within_current_skill",
+      "unresolved_reason": "semantic_score_zero_within_current_skill",
+      "requires_human_rule_pack": true,
+      "induction_eligibility": "eligible",
       "answer_type": "text_short",
       "equivalence_type": "exact_string",
       "checker_key": "text_short_checker",
@@ -3261,9 +3302,19 @@
         "induction_tier": "core",
         "enrichment_reasons": [],
         "included_in_core_induction": true,
+        "source_skill_scope_locked": true,
+        "skill_mapping_authority": "textbook_examples.skill_id",
+        "classification_scope": "within_current_skill",
+        "source_skill_id": "vh_數學B1_CartesianCoordinateSystemEstablishment",
+        "unresolved_within_current_skill": true,
+        "pending_problem_type_induction": true,
+        "requires_human_rule_pack": true,
+        "requires_human_action": false,
+        "unresolved_reason": "semantic_score_zero_within_current_skill",
+        "generator_readiness": "pending_problem_type_induction",
+        "usable_for_phase3": false,
         "equivalence_type": "choice_label",
-        "checker_key": "choice_label_checker",
-        "requires_human_action": false
+        "checker_key": "choice_label_checker"
       },
       "answer_shape": "single_choice",
       "classification_confidence": "high",
@@ -3321,7 +3372,12 @@
       },
       "subskill_id": "compute_distance_between_two_points",
       "classification_source": "rule_first_mode",
-      "induction_eligibility": "excluded",
+      "source_skill_scope_locked": true,
+      "skill_mapping_authority": "textbook_examples.skill_id",
+      "classification_scope": "within_current_skill",
+      "unresolved_reason": "semantic_score_zero_within_current_skill",
+      "requires_human_rule_pack": true,
+      "induction_eligibility": "eligible",
       "answer_type": "choice",
       "equivalence_type": "choice_label",
       "checker_key": "choice_label_checker",
@@ -3479,9 +3535,19 @@
         "induction_tier": "core",
         "enrichment_reasons": [],
         "included_in_core_induction": true,
+        "source_skill_scope_locked": true,
+        "skill_mapping_authority": "textbook_examples.skill_id",
+        "classification_scope": "within_current_skill",
+        "source_skill_id": "vh_數學B1_CartesianCoordinateSystemEstablishment",
+        "unresolved_within_current_skill": true,
+        "pending_problem_type_induction": true,
+        "requires_human_rule_pack": true,
+        "requires_human_action": false,
+        "unresolved_reason": "semantic_score_zero_within_current_skill",
+        "generator_readiness": "pending_problem_type_induction",
+        "usable_for_phase3": false,
         "equivalence_type": "choice_label",
-        "checker_key": "choice_label_checker",
-        "requires_human_action": false
+        "checker_key": "choice_label_checker"
       },
       "answer_shape": "single_choice",
       "classification_confidence": "high",
@@ -3536,7 +3602,12 @@
       },
       "subskill_id": "choose_correct_statement",
       "classification_source": "rule_first_mode",
-      "induction_eligibility": "excluded",
+      "source_skill_scope_locked": true,
+      "skill_mapping_authority": "textbook_examples.skill_id",
+      "classification_scope": "within_current_skill",
+      "unresolved_reason": "semantic_score_zero_within_current_skill",
+      "requires_human_rule_pack": true,
+      "induction_eligibility": "eligible",
       "answer_type": "choice",
       "equivalence_type": "choice_label",
       "checker_key": "choice_label_checker",
@@ -3555,42 +3626,42 @@
     "status": "classifier_auto_pending_promote_with_warning",
     "allowed": true,
     "warnings": [
-      "anchor_slot_bootstrap_zero_source",
       "insufficient_examples",
-      "semantic_alignment_blocked",
-      "source_examples_mismatch"
+      "alignment_score_below_recommended_threshold",
+      "anchor_slot_bootstrap_zero_source",
+      "anchor_taxonomy_needs_refinement",
+      "candidate_family_span_outside_skill_scope",
+      "mixed_source_families",
+      "source_skill_scope_locked_demoted_blockers_to_warnings"
     ]
   },
   "generator_draft_gate": {
-    "status": "generator_draft_blocked",
+    "status": "generator_draft_allowed_with_low_source_warning",
+    "allowed": true,
+    "warnings": [
+      "low_source_examples",
+      "alignment_score_below_recommended_threshold",
+      "anchor_slot_bootstrap_zero_source",
+      "anchor_taxonomy_needs_refinement",
+      "candidate_family_span_outside_skill_scope",
+      "mixed_source_families",
+      "source_skill_scope_locked_demoted_blockers_to_warnings"
+    ]
+  },
+  "runtime_ready_gate": {
+    "status": "blocked_insufficient_examples",
     "allowed": false,
+    "blockers": [
+      "runtime_smoke_failed",
+      "dynamic_sampling_failed"
+    ],
     "warnings": [
       "alignment_score_below_recommended_threshold",
       "anchor_slot_bootstrap_zero_source",
       "anchor_taxonomy_needs_refinement",
       "candidate_family_span_outside_skill_scope",
-      "low_source_examples",
-      "majority_sources_need_human_subskill_review",
       "mixed_source_families",
-      "semantic_alignment_blocked",
-      "skill_scoped_classification_low_confidence",
-      "source_examples_mismatch",
       "source_skill_scope_locked_demoted_blockers_to_warnings"
-    ]
-  },
-  "runtime_ready_gate": {
-    "status": "blocked_semantic_alignment",
-    "allowed": false,
-    "blockers": [
-      "dynamic_sampling_failed",
-      "runtime_smoke_failed",
-      "semantic_alignment_blocked",
-      "source_examples_mismatch"
-    ],
-    "warnings": [
-      "anchor_slot_bootstrap_zero_source",
-      "source_examples_mismatch",
-      "semantic_alignment_blocked"
     ]
   },
   "exception_review_gate": {
@@ -3604,7 +3675,7 @@
     "phase1_md": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_CartesianCoordinateSystemEstablishment_phase1_summary.md"
   },
   "next_action": "phase2_generate_from_induced_specs",
-  "timestamp": "2026-06-15T00:55:59.449647+00:00",
+  "timestamp": "2026-06-25T05:44:39.753716+00:00",
   "dry_run": true,
   "auto_review_summary": {
     "skill_id": "vh_數學B1_CartesianCoordinateSystemEstablishment",
@@ -3874,9 +3945,9 @@
         ],
         "structure_context_used": false,
         "sequence_context_used": true,
-        "alignment_kind": "unclassified_low_confidence",
-        "exclude_reason": "semantic_alignment_score_zero_requires_human_review",
-        "included_in_phase1": false,
+        "alignment_kind": "unresolved_within_current_skill",
+        "exclude_reason": "",
+        "included_in_phase1": true,
         "conflict_reason": "",
         "source_mapping_warning": "expected_family_mismatch",
         "skill_anchor_scope": "default",
@@ -3924,9 +3995,9 @@
         ],
         "structure_context_used": true,
         "sequence_context_used": true,
-        "alignment_kind": "unclassified_low_confidence",
-        "exclude_reason": "semantic_alignment_score_zero_requires_human_review",
-        "included_in_phase1": false,
+        "alignment_kind": "unresolved_within_current_skill",
+        "exclude_reason": "",
+        "included_in_phase1": true,
         "conflict_reason": "rule_first_mode",
         "source_mapping_warning": "expected_family_mismatch",
         "skill_anchor_scope": "default",
@@ -3974,9 +4045,9 @@
         ],
         "structure_context_used": false,
         "sequence_context_used": true,
-        "alignment_kind": "unclassified_low_confidence",
-        "exclude_reason": "semantic_alignment_score_zero_requires_human_review",
-        "included_in_phase1": false,
+        "alignment_kind": "unresolved_within_current_skill",
+        "exclude_reason": "",
+        "included_in_phase1": true,
         "conflict_reason": "",
         "source_mapping_warning": "expected_family_mismatch",
         "skill_anchor_scope": "default",
@@ -4024,9 +4095,9 @@
         ],
         "structure_context_used": false,
         "sequence_context_used": true,
-        "alignment_kind": "unclassified_low_confidence",
-        "exclude_reason": "semantic_alignment_score_zero_requires_human_review",
-        "included_in_phase1": false,
+        "alignment_kind": "unresolved_within_current_skill",
+        "exclude_reason": "",
+        "included_in_phase1": true,
         "conflict_reason": "",
         "source_mapping_warning": "expected_family_mismatch",
         "skill_anchor_scope": "default",
@@ -4201,9 +4272,19 @@
         "induction_tier": "core",
         "enrichment_reasons": [],
         "included_in_core_induction": true,
+        "source_skill_scope_locked": true,
+        "skill_mapping_authority": "textbook_examples.skill_id",
+        "classification_scope": "within_current_skill",
+        "source_skill_id": "vh_數學B1_CartesianCoordinateSystemEstablishment",
+        "unresolved_within_current_skill": true,
+        "pending_problem_type_induction": true,
+        "requires_human_rule_pack": true,
+        "requires_human_action": false,
+        "unresolved_reason": "semantic_score_zero_within_current_skill",
+        "generator_readiness": "pending_problem_type_induction",
+        "usable_for_phase3": false,
         "equivalence_type": "exact_string",
-        "checker_key": "text_short_checker",
-        "requires_human_action": false
+        "checker_key": "text_short_checker"
       },
       {
         "source_example_id": 4435,
@@ -4333,9 +4414,19 @@
         "induction_tier": "core",
         "enrichment_reasons": [],
         "included_in_core_induction": true,
+        "source_skill_scope_locked": true,
+        "skill_mapping_authority": "textbook_examples.skill_id",
+        "classification_scope": "within_current_skill",
+        "source_skill_id": "vh_數學B1_CartesianCoordinateSystemEstablishment",
+        "unresolved_within_current_skill": true,
+        "pending_problem_type_induction": true,
+        "requires_human_rule_pack": true,
+        "requires_human_action": false,
+        "unresolved_reason": "semantic_score_zero_within_current_skill",
+        "generator_readiness": "pending_problem_type_induction",
+        "usable_for_phase3": false,
         "equivalence_type": "exact_string",
-        "checker_key": "text_short_checker",
-        "requires_human_action": false
+        "checker_key": "text_short_checker"
       },
       {
         "source_example_id": 4509,
@@ -4487,9 +4578,19 @@
         "induction_tier": "core",
         "enrichment_reasons": [],
         "included_in_core_induction": true,
+        "source_skill_scope_locked": true,
+        "skill_mapping_authority": "textbook_examples.skill_id",
+        "classification_scope": "within_current_skill",
+        "source_skill_id": "vh_數學B1_CartesianCoordinateSystemEstablishment",
+        "unresolved_within_current_skill": true,
+        "pending_problem_type_induction": true,
+        "requires_human_rule_pack": true,
+        "requires_human_action": false,
+        "unresolved_reason": "semantic_score_zero_within_current_skill",
+        "generator_readiness": "pending_problem_type_induction",
+        "usable_for_phase3": false,
         "equivalence_type": "choice_label",
-        "checker_key": "choice_label_checker",
-        "requires_human_action": false
+        "checker_key": "choice_label_checker"
       },
       {
         "source_example_id": 4510,
@@ -4640,9 +4741,19 @@
         "induction_tier": "core",
         "enrichment_reasons": [],
         "included_in_core_induction": true,
+        "source_skill_scope_locked": true,
+        "skill_mapping_authority": "textbook_examples.skill_id",
+        "classification_scope": "within_current_skill",
+        "source_skill_id": "vh_數學B1_CartesianCoordinateSystemEstablishment",
+        "unresolved_within_current_skill": true,
+        "pending_problem_type_induction": true,
+        "requires_human_rule_pack": true,
+        "requires_human_action": false,
+        "unresolved_reason": "semantic_score_zero_within_current_skill",
+        "generator_readiness": "pending_problem_type_induction",
+        "usable_for_phase3": false,
         "equivalence_type": "choice_label",
-        "checker_key": "choice_label_checker",
-        "requires_human_action": false
+        "checker_key": "choice_label_checker"
       }
     ],
     "semantic_alignment": {
@@ -4862,17 +4973,13 @@
           "answer_contract_supported": true
         }
       ],
-      "decision": "block",
-      "blockers": [
-        "source_examples_mismatch"
-      ],
+      "decision": "warn",
+      "blockers": [],
       "warnings": [
         "alignment_score_below_recommended_threshold",
         "anchor_taxonomy_needs_refinement",
         "candidate_family_span_outside_skill_scope",
-        "majority_sources_need_human_subskill_review",
         "mixed_source_families",
-        "skill_scoped_classification_low_confidence",
         "source_skill_scope_locked_demoted_blockers_to_warnings"
       ],
       "induction_core_example_count": 4,
@@ -4892,18 +4999,15 @@
       ],
       "source_quality_reject_examples": []
     },
-    "source_alignment_status": "block",
-    "skill_problem_type_alignment_status": "block",
+    "source_alignment_status": "warn",
+    "skill_problem_type_alignment_status": "warn",
     "alignment_score": 0.0,
     "alignment_warnings": [
       "alignment_score_below_recommended_threshold",
       "anchor_taxonomy_needs_refinement",
       "candidate_family_span_outside_skill_scope",
-      "majority_sources_need_human_subskill_review",
       "mixed_source_families",
-      "skill_scoped_classification_low_confidence",
-      "source_skill_scope_locked_demoted_blockers_to_warnings",
-      "disallowed_blocker_promoted_to_warning:source_examples_mismatch"
+      "source_skill_scope_locked_demoted_blockers_to_warnings"
     ],
     "alignment_blockers": [],
     "source_family_distribution": {
@@ -4935,108 +5039,7 @@
     "examples_outside_expected_subskills": [],
     "suggested_action": "",
     "requires_human_action": true,
-    "excluded_source_examples": [
-      {
-        "example_id": 4417,
-        "target_task": "classify_quadrant",
-        "task_family": "classify_quadrant_family",
-        "alignment_score": 0.0,
-        "aligned_with_skill": false,
-        "included_in_phase1": false,
-        "exclude_reason": "semantic_alignment_score_zero_requires_human_review",
-        "alignment_kind": "unclassified_low_confidence",
-        "skill_id_match": true,
-        "task_family_match": false,
-        "subskill_match": false,
-        "pass_with_warning": false,
-        "requires_human_action": true,
-        "induction_tier": "core",
-        "included_in_core_induction": false,
-        "enrichment_reasons": [],
-        "source_quality_issues": [],
-        "source_quality_reject": false,
-        "candidate_only": false,
-        "classification_source": "rule_first_mode",
-        "induction_eligibility": "excluded",
-        "skill_id": "vh_數學B1_CartesianCoordinateSystemEstablishment",
-        "title_stem_preview": "若點$P\\left( a,b \\right)$位在第一象限且a < b，則$Q\\left( a-b,{{a}^{2}}b \\right)$位在第幾象限？"
-      },
-      {
-        "example_id": 4435,
-        "target_task": "compute_numeric",
-        "task_family": "generic_numeric_family",
-        "alignment_score": 0.0,
-        "aligned_with_skill": false,
-        "included_in_phase1": false,
-        "exclude_reason": "semantic_alignment_score_zero_requires_human_review",
-        "alignment_kind": "unclassified_low_confidence",
-        "skill_id_match": true,
-        "task_family_match": false,
-        "subskill_match": false,
-        "pass_with_warning": false,
-        "requires_human_action": true,
-        "induction_tier": "core",
-        "included_in_core_induction": false,
-        "enrichment_reasons": [],
-        "source_quality_issues": [],
-        "source_quality_reject": false,
-        "candidate_only": false,
-        "classification_source": "rule_first_mode",
-        "induction_eligibility": "excluded",
-        "skill_id": "vh_數學B1_CartesianCoordinateSystemEstablishment",
-        "title_stem_preview": "設a、b為實數，且a < b < 0，則點$Q\\left( ab,a+b \\right)$在第幾象限？"
-      },
-      {
-        "example_id": 4509,
-        "target_task": "compute_distance_between_two_points",
-        "task_family": "distance_between_two_points_family",
-        "alignment_score": 0.0,
-        "aligned_with_skill": false,
-        "included_in_phase1": false,
-        "exclude_reason": "semantic_alignment_score_zero_requires_human_review",
-        "alignment_kind": "unclassified_low_confidence",
-        "skill_id_match": true,
-        "task_family_match": false,
-        "subskill_match": false,
-        "pass_with_warning": false,
-        "requires_human_action": true,
-        "induction_tier": "core",
-        "included_in_core_induction": false,
-        "enrichment_reasons": [],
-        "source_quality_issues": [],
-        "source_quality_reject": false,
-        "candidate_only": false,
-        "classification_source": "rule_first_mode",
-        "induction_eligibility": "excluded",
-        "skill_id": "vh_數學B1_CartesianCoordinateSystemEstablishment",
-        "title_stem_preview": "設A點為坐標平面上一點，且A點到x軸及y軸之距離分別為3和4，則下列何者可能為A點之坐標？ (A)$\\left( -4,-3 \\right)$ (B)$\\lef..."
-      },
-      {
-        "example_id": 4510,
-        "target_task": "choose_correct_statement",
-        "task_family": "classify_quadrant_family",
-        "alignment_score": 0.0,
-        "aligned_with_skill": false,
-        "included_in_phase1": false,
-        "exclude_reason": "semantic_alignment_score_zero_requires_human_review",
-        "alignment_kind": "unclassified_low_confidence",
-        "skill_id_match": true,
-        "task_family_match": false,
-        "subskill_match": false,
-        "pass_with_warning": false,
-        "requires_human_action": true,
-        "induction_tier": "core",
-        "included_in_core_induction": false,
-        "enrichment_reasons": [],
-        "source_quality_issues": [],
-        "source_quality_reject": false,
-        "candidate_only": false,
-        "classification_source": "rule_first_mode",
-        "induction_eligibility": "excluded",
-        "skill_id": "vh_數學B1_CartesianCoordinateSystemEstablishment",
-        "title_stem_preview": "已知點$P\\left( a-b,ab \\right)$在坐標平面的第四象限，則下列敘述何者正確？_x000D_ (A)$A\\left( -a,b \\right)..."
-      }
-    ],
+    "excluded_source_examples": [],
     "rejected_source_examples": [],
     "source_quality_issues": [],
     "semantic_mismatch_examples": [],
@@ -5077,8 +5080,14 @@
         }
       ]
     },
-    "candidate_only_problem_types": [],
-    "candidate_only_count": 0,
+    "candidate_only_problem_types": [
+      {
+        "example_id": 4435,
+        "problem_type_id": "short_answer_compute_numeric_short_answer",
+        "reason": "runtime_not_supported"
+      }
+    ],
+    "candidate_only_count": 1,
     "same_as_main_skill_count": 0,
     "rule_only_classification_count": 0,
     "hybrid_resolved_count": 0,
@@ -5111,23 +5120,27 @@
         "target_task": "classify_quadrant",
         "task_family": "classify_quadrant_family",
         "alignment_score": 0.0,
-        "aligned_with_skill": false,
-        "included_in_phase1": false,
-        "exclude_reason": "semantic_alignment_score_zero_requires_human_review",
-        "alignment_kind": "unclassified_low_confidence",
+        "aligned_with_skill": true,
+        "included_in_phase1": true,
+        "exclude_reason": "",
+        "alignment_kind": "unresolved_within_current_skill",
         "skill_id_match": true,
         "task_family_match": false,
         "subskill_match": false,
         "pass_with_warning": false,
         "requires_human_action": true,
         "induction_tier": "core",
-        "included_in_core_induction": false,
+        "included_in_core_induction": true,
         "enrichment_reasons": [],
         "source_quality_issues": [],
         "source_quality_reject": false,
         "candidate_only": false,
         "classification_source": "rule_first_mode",
-        "induction_eligibility": "excluded",
+        "source_skill_scope_locked": true,
+        "skill_mapping_authority": "textbook_examples.skill_id",
+        "classification_scope": "within_current_skill",
+        "unresolved_reason": "semantic_score_zero_within_current_skill",
+        "induction_eligibility": "eligible",
         "skill_id": "vh_數學B1_CartesianCoordinateSystemEstablishment",
         "title_stem_preview": "若點$P\\left( a,b \\right)$位在第一象限且a < b，則$Q\\left( a-b,{{a}^{2}}b \\right)$位在第幾象限？"
       },
@@ -5136,23 +5149,27 @@
         "target_task": "compute_numeric",
         "task_family": "generic_numeric_family",
         "alignment_score": 0.0,
-        "aligned_with_skill": false,
-        "included_in_phase1": false,
-        "exclude_reason": "semantic_alignment_score_zero_requires_human_review",
-        "alignment_kind": "unclassified_low_confidence",
+        "aligned_with_skill": true,
+        "included_in_phase1": true,
+        "exclude_reason": "",
+        "alignment_kind": "unresolved_within_current_skill",
         "skill_id_match": true,
         "task_family_match": false,
         "subskill_match": false,
         "pass_with_warning": false,
         "requires_human_action": true,
         "induction_tier": "core",
-        "included_in_core_induction": false,
+        "included_in_core_induction": true,
         "enrichment_reasons": [],
         "source_quality_issues": [],
         "source_quality_reject": false,
         "candidate_only": false,
         "classification_source": "rule_first_mode",
-        "induction_eligibility": "excluded",
+        "source_skill_scope_locked": true,
+        "skill_mapping_authority": "textbook_examples.skill_id",
+        "classification_scope": "within_current_skill",
+        "unresolved_reason": "semantic_score_zero_within_current_skill",
+        "induction_eligibility": "eligible",
         "skill_id": "vh_數學B1_CartesianCoordinateSystemEstablishment",
         "title_stem_preview": "設a、b為實數，且a < b < 0，則點$Q\\left( ab,a+b \\right)$在第幾象限？"
       },
@@ -5161,23 +5178,27 @@
         "target_task": "compute_distance_between_two_points",
         "task_family": "distance_between_two_points_family",
         "alignment_score": 0.0,
-        "aligned_with_skill": false,
-        "included_in_phase1": false,
-        "exclude_reason": "semantic_alignment_score_zero_requires_human_review",
-        "alignment_kind": "unclassified_low_confidence",
+        "aligned_with_skill": true,
+        "included_in_phase1": true,
+        "exclude_reason": "",
+        "alignment_kind": "unresolved_within_current_skill",
         "skill_id_match": true,
         "task_family_match": false,
         "subskill_match": false,
         "pass_with_warning": false,
         "requires_human_action": true,
         "induction_tier": "core",
-        "included_in_core_induction": false,
+        "included_in_core_induction": true,
         "enrichment_reasons": [],
         "source_quality_issues": [],
         "source_quality_reject": false,
         "candidate_only": false,
         "classification_source": "rule_first_mode",
-        "induction_eligibility": "excluded",
+        "source_skill_scope_locked": true,
+        "skill_mapping_authority": "textbook_examples.skill_id",
+        "classification_scope": "within_current_skill",
+        "unresolved_reason": "semantic_score_zero_within_current_skill",
+        "induction_eligibility": "eligible",
         "skill_id": "vh_數學B1_CartesianCoordinateSystemEstablishment",
         "title_stem_preview": "設A點為坐標平面上一點，且A點到x軸及y軸之距離分別為3和4，則下列何者可能為A點之坐標？ 　(A)$\\left( -4,-3 \\right)$　(B)$\\le"
       },
@@ -5186,28 +5207,122 @@
         "target_task": "choose_correct_statement",
         "task_family": "classify_quadrant_family",
         "alignment_score": 0.0,
-        "aligned_with_skill": false,
-        "included_in_phase1": false,
-        "exclude_reason": "semantic_alignment_score_zero_requires_human_review",
-        "alignment_kind": "unclassified_low_confidence",
+        "aligned_with_skill": true,
+        "included_in_phase1": true,
+        "exclude_reason": "",
+        "alignment_kind": "unresolved_within_current_skill",
         "skill_id_match": true,
         "task_family_match": false,
         "subskill_match": false,
         "pass_with_warning": false,
         "requires_human_action": true,
         "induction_tier": "core",
-        "included_in_core_induction": false,
+        "included_in_core_induction": true,
         "enrichment_reasons": [],
         "source_quality_issues": [],
         "source_quality_reject": false,
         "candidate_only": false,
         "classification_source": "rule_first_mode",
-        "induction_eligibility": "excluded",
+        "source_skill_scope_locked": true,
+        "skill_mapping_authority": "textbook_examples.skill_id",
+        "classification_scope": "within_current_skill",
+        "unresolved_reason": "semantic_score_zero_within_current_skill",
+        "induction_eligibility": "eligible",
         "skill_id": "vh_數學B1_CartesianCoordinateSystemEstablishment",
         "title_stem_preview": "已知點$P\\left( a-b,ab \\right)$在坐標平面的第四象限，則下列敘述何者正確？_x000D_\n(A)$A\\left( -a,b \\right)"
       }
     ],
-    "induction_clusters": [],
+    "induction_clusters": [
+      {
+        "grouping_reason": "split_by_feature_signature",
+        "feature_signature": [
+          "short_answer",
+          "classify_quadrant",
+          "short_answer",
+          [
+            "sign_reasoning"
+          ],
+          [
+            "symbolic_condition",
+            "coordinate_point"
+          ],
+          "default"
+        ],
+        "source_example_ids": [
+          4417
+        ],
+        "answer_type": "short_answer",
+        "presentation_mode": "short_answer",
+        "source_has_choices": false
+      },
+      {
+        "grouping_reason": "split_by_feature_signature",
+        "feature_signature": [
+          "short_answer",
+          "compute_numeric",
+          "short_answer",
+          [
+            "sign_reasoning"
+          ],
+          [
+            "symbolic_condition",
+            "coordinate_point"
+          ],
+          "default"
+        ],
+        "source_example_ids": [
+          4435
+        ],
+        "answer_type": "short_answer",
+        "presentation_mode": "short_answer",
+        "source_has_choices": false
+      },
+      {
+        "grouping_reason": "split_by_feature_signature",
+        "feature_signature": [
+          "single_choice",
+          "compute_distance_between_two_points",
+          "single_choice",
+          [
+            "axis_distance_reasoning",
+            "distance_formula_reasoning"
+          ],
+          [
+            "axis_distance",
+            "coordinate_point"
+          ],
+          "default"
+        ],
+        "source_example_ids": [
+          4509
+        ],
+        "answer_type": "single_choice",
+        "presentation_mode": "single_choice",
+        "source_has_choices": true
+      },
+      {
+        "grouping_reason": "split_by_feature_signature",
+        "feature_signature": [
+          "single_choice",
+          "choose_correct_statement",
+          "single_choice",
+          [
+            "sign_reasoning"
+          ],
+          [
+            "coordinate_point",
+            "three_coordinate_points"
+          ],
+          "default"
+        ],
+        "source_example_ids": [
+          4510
+        ],
+        "answer_type": "single_choice",
+        "presentation_mode": "single_choice",
+        "source_has_choices": true
+      }
+    ],
     "induced_problem_type_specs": [
       {
         "problem_type_id": "evaluate_function_value",
@@ -5710,12 +5825,16 @@
         "source_has_choices": false,
         "selected_checker": "expression_checker",
         "checker_selection_reason": "quadratic_factoring_expression",
-        "confidence": "low",
-        "promote_recommendation": "conservative_hold_for_that_candidate",
+        "confidence": "medium",
+        "promote_recommendation": "recommend_promote_for_that_candidate",
         "promote_blockers": [],
         "risk_flags": [
+          "alignment_score_below_recommended_threshold",
           "anchor_slot_bootstrap_zero_source",
-          "source_examples_mismatch"
+          "anchor_taxonomy_needs_refinement",
+          "candidate_family_span_outside_skill_scope",
+          "mixed_source_families",
+          "source_skill_scope_locked_demoted_blockers_to_warnings"
         ],
         "checker_contract_warnings": [],
         "spec_source": "anchor_slot_bootstrap",
@@ -5888,7 +6007,7 @@
           "value_type_prefix": "",
           "_resolved_template_slot": "factor_quadratic_by_cross_multiplication"
         },
-        "generator_readiness": "alignment_blocked",
+        "generator_readiness": "runtime_ready",
         "usable_for_phase3": true,
         "template_slot": "function_value_numeric",
         "canonical_base_problem_type_id": "evaluate_function_value",
@@ -6073,12 +6192,16 @@
         "source_has_choices": false,
         "selected_checker": "expression_checker",
         "checker_selection_reason": "quadratic_factoring_expression",
-        "confidence": "low",
-        "promote_recommendation": "conservative_hold_for_that_candidate",
+        "confidence": "medium",
+        "promote_recommendation": "recommend_promote_for_that_candidate",
         "promote_blockers": [],
         "risk_flags": [
+          "alignment_score_below_recommended_threshold",
           "anchor_slot_bootstrap_zero_source",
-          "source_examples_mismatch"
+          "anchor_taxonomy_needs_refinement",
+          "candidate_family_span_outside_skill_scope",
+          "mixed_source_families",
+          "source_skill_scope_locked_demoted_blockers_to_warnings"
         ],
         "checker_contract_warnings": [],
         "spec_source": "anchor_slot_bootstrap",
@@ -6251,7 +6374,7 @@
           "value_type_prefix": "",
           "_resolved_template_slot": "factor_quadratic_by_cross_multiplication"
         },
-        "generator_readiness": "alignment_blocked",
+        "generator_readiness": "runtime_ready",
         "usable_for_phase3": true,
         "template_slot": "linear_function_two_point_choice",
         "canonical_base_problem_type_id": "interpret_function_notation",
@@ -6402,9 +6525,19 @@
           "induction_tier": "core",
           "enrichment_reasons": [],
           "included_in_core_induction": true,
+          "source_skill_scope_locked": true,
+          "skill_mapping_authority": "textbook_examples.skill_id",
+          "classification_scope": "within_current_skill",
+          "source_skill_id": "vh_數學B1_CartesianCoordinateSystemEstablishment",
+          "unresolved_within_current_skill": true,
+          "pending_problem_type_induction": true,
+          "requires_human_rule_pack": true,
+          "requires_human_action": false,
+          "unresolved_reason": "semantic_score_zero_within_current_skill",
+          "generator_readiness": "pending_problem_type_induction",
+          "usable_for_phase3": false,
           "equivalence_type": "exact_string",
-          "checker_key": "text_short_checker",
-          "requires_human_action": false
+          "checker_key": "text_short_checker"
         },
         "answer_shape": "text_short",
         "classification_confidence": "high",
@@ -6455,7 +6588,12 @@
         },
         "subskill_id": "classify_quadrant",
         "classification_source": "rule_first_mode",
-        "induction_eligibility": "excluded"
+        "source_skill_scope_locked": true,
+        "skill_mapping_authority": "textbook_examples.skill_id",
+        "classification_scope": "within_current_skill",
+        "unresolved_reason": "semantic_score_zero_within_current_skill",
+        "requires_human_rule_pack": true,
+        "induction_eligibility": "eligible"
       },
       {
         "example_id": 4435,
@@ -6588,16 +6726,27 @@
           "induction_tier": "core",
           "enrichment_reasons": [],
           "included_in_core_induction": true,
+          "source_skill_scope_locked": true,
+          "skill_mapping_authority": "textbook_examples.skill_id",
+          "classification_scope": "within_current_skill",
+          "source_skill_id": "vh_數學B1_CartesianCoordinateSystemEstablishment",
+          "unresolved_within_current_skill": true,
+          "pending_problem_type_induction": true,
+          "requires_human_rule_pack": true,
+          "requires_human_action": false,
+          "unresolved_reason": "semantic_score_zero_within_current_skill",
+          "generator_readiness": "pending_problem_type_induction",
+          "usable_for_phase3": false,
           "equivalence_type": "exact_string",
-          "checker_key": "text_short_checker",
-          "requires_human_action": false
+          "checker_key": "text_short_checker"
         },
         "answer_shape": "text_short",
         "classification_confidence": "high",
         "classification_reason": "rule_first_mode",
         "risk_flags": [
           "expected_family_mismatch",
-          "requires_human_action"
+          "requires_human_action",
+          "candidate_only_problem_type"
         ],
         "semantic_classification": {
           "ai_target_task": "",
@@ -6641,7 +6790,12 @@
         },
         "subskill_id": "compute_numeric",
         "classification_source": "rule_first_mode",
-        "induction_eligibility": "excluded"
+        "source_skill_scope_locked": true,
+        "skill_mapping_authority": "textbook_examples.skill_id",
+        "classification_scope": "within_current_skill",
+        "unresolved_reason": "semantic_score_zero_within_current_skill",
+        "requires_human_rule_pack": true,
+        "induction_eligibility": "eligible"
       },
       {
         "example_id": 4509,
@@ -6796,9 +6950,19 @@
           "induction_tier": "core",
           "enrichment_reasons": [],
           "included_in_core_induction": true,
+          "source_skill_scope_locked": true,
+          "skill_mapping_authority": "textbook_examples.skill_id",
+          "classification_scope": "within_current_skill",
+          "source_skill_id": "vh_數學B1_CartesianCoordinateSystemEstablishment",
+          "unresolved_within_current_skill": true,
+          "pending_problem_type_induction": true,
+          "requires_human_rule_pack": true,
+          "requires_human_action": false,
+          "unresolved_reason": "semantic_score_zero_within_current_skill",
+          "generator_readiness": "pending_problem_type_induction",
+          "usable_for_phase3": false,
           "equivalence_type": "choice_label",
-          "checker_key": "choice_label_checker",
-          "requires_human_action": false
+          "checker_key": "choice_label_checker"
         },
         "answer_shape": "single_choice",
         "classification_confidence": "high",
@@ -6856,7 +7020,12 @@
         },
         "subskill_id": "compute_distance_between_two_points",
         "classification_source": "rule_first_mode",
-        "induction_eligibility": "excluded"
+        "source_skill_scope_locked": true,
+        "skill_mapping_authority": "textbook_examples.skill_id",
+        "classification_scope": "within_current_skill",
+        "unresolved_reason": "semantic_score_zero_within_current_skill",
+        "requires_human_rule_pack": true,
+        "induction_eligibility": "eligible"
       },
       {
         "example_id": 4510,
@@ -7010,9 +7179,19 @@
           "induction_tier": "core",
           "enrichment_reasons": [],
           "included_in_core_induction": true,
+          "source_skill_scope_locked": true,
+          "skill_mapping_authority": "textbook_examples.skill_id",
+          "classification_scope": "within_current_skill",
+          "source_skill_id": "vh_數學B1_CartesianCoordinateSystemEstablishment",
+          "unresolved_within_current_skill": true,
+          "pending_problem_type_induction": true,
+          "requires_human_rule_pack": true,
+          "requires_human_action": false,
+          "unresolved_reason": "semantic_score_zero_within_current_skill",
+          "generator_readiness": "pending_problem_type_induction",
+          "usable_for_phase3": false,
           "equivalence_type": "choice_label",
-          "checker_key": "choice_label_checker",
-          "requires_human_action": false
+          "checker_key": "choice_label_checker"
         },
         "answer_shape": "single_choice",
         "classification_confidence": "high",
@@ -7067,7 +7246,12 @@
         },
         "subskill_id": "choose_correct_statement",
         "classification_source": "rule_first_mode",
-        "induction_eligibility": "excluded"
+        "source_skill_scope_locked": true,
+        "skill_mapping_authority": "textbook_examples.skill_id",
+        "classification_scope": "within_current_skill",
+        "unresolved_reason": "semantic_score_zero_within_current_skill",
+        "requires_human_rule_pack": true,
+        "induction_eligibility": "eligible"
       }
     ],
     "split_or_merge_recommendation": "induced_from_source_features",
@@ -7080,42 +7264,42 @@
       "status": "classifier_auto_pending_promote_with_warning",
       "allowed": true,
       "warnings": [
-        "anchor_slot_bootstrap_zero_source",
         "insufficient_examples",
-        "semantic_alignment_blocked",
-        "source_examples_mismatch"
+        "alignment_score_below_recommended_threshold",
+        "anchor_slot_bootstrap_zero_source",
+        "anchor_taxonomy_needs_refinement",
+        "candidate_family_span_outside_skill_scope",
+        "mixed_source_families",
+        "source_skill_scope_locked_demoted_blockers_to_warnings"
       ]
     },
     "generator_draft_gate": {
-      "status": "generator_draft_blocked",
+      "status": "generator_draft_allowed_with_low_source_warning",
+      "allowed": true,
+      "warnings": [
+        "low_source_examples",
+        "alignment_score_below_recommended_threshold",
+        "anchor_slot_bootstrap_zero_source",
+        "anchor_taxonomy_needs_refinement",
+        "candidate_family_span_outside_skill_scope",
+        "mixed_source_families",
+        "source_skill_scope_locked_demoted_blockers_to_warnings"
+      ]
+    },
+    "runtime_ready_gate": {
+      "status": "blocked_insufficient_examples",
       "allowed": false,
+      "blockers": [
+        "runtime_smoke_failed",
+        "dynamic_sampling_failed"
+      ],
       "warnings": [
         "alignment_score_below_recommended_threshold",
         "anchor_slot_bootstrap_zero_source",
         "anchor_taxonomy_needs_refinement",
         "candidate_family_span_outside_skill_scope",
-        "low_source_examples",
-        "majority_sources_need_human_subskill_review",
         "mixed_source_families",
-        "semantic_alignment_blocked",
-        "skill_scoped_classification_low_confidence",
-        "source_examples_mismatch",
         "source_skill_scope_locked_demoted_blockers_to_warnings"
-      ]
-    },
-    "runtime_ready_gate": {
-      "status": "blocked_semantic_alignment",
-      "allowed": false,
-      "blockers": [
-        "dynamic_sampling_failed",
-        "runtime_smoke_failed",
-        "semantic_alignment_blocked",
-        "source_examples_mismatch"
-      ],
-      "warnings": [
-        "anchor_slot_bootstrap_zero_source",
-        "source_examples_mismatch",
-        "semantic_alignment_blocked"
       ]
     },
     "exception_review_gate": {
@@ -7132,7 +7316,7 @@
     "ai_classification_overridden_by_human_confirmed_rule_pack": false,
     "curated_specs_available": true
   },
-  "classifier_source": "rule_pack",
+  "classifier_source": "rule_pack+phase1_induction",
   "ai_bootstrap_used": false,
   "ai_bootstrap_status": "not_used",
   "ai_bootstrap_confidence_summary": {},
@@ -7481,7 +7665,97 @@
       "_resolved_template_slot": "factor_quadratic_by_cross_multiplication"
     }
   ],
-  "induction_clusters": [],
+  "induction_clusters": [
+    {
+      "grouping_reason": "split_by_feature_signature",
+      "feature_signature": [
+        "short_answer",
+        "classify_quadrant",
+        "short_answer",
+        [
+          "sign_reasoning"
+        ],
+        [
+          "symbolic_condition",
+          "coordinate_point"
+        ],
+        "default"
+      ],
+      "source_example_ids": [
+        4417
+      ],
+      "answer_type": "short_answer",
+      "presentation_mode": "short_answer",
+      "source_has_choices": false
+    },
+    {
+      "grouping_reason": "split_by_feature_signature",
+      "feature_signature": [
+        "short_answer",
+        "compute_numeric",
+        "short_answer",
+        [
+          "sign_reasoning"
+        ],
+        [
+          "symbolic_condition",
+          "coordinate_point"
+        ],
+        "default"
+      ],
+      "source_example_ids": [
+        4435
+      ],
+      "answer_type": "short_answer",
+      "presentation_mode": "short_answer",
+      "source_has_choices": false
+    },
+    {
+      "grouping_reason": "split_by_feature_signature",
+      "feature_signature": [
+        "single_choice",
+        "compute_distance_between_two_points",
+        "single_choice",
+        [
+          "axis_distance_reasoning",
+          "distance_formula_reasoning"
+        ],
+        [
+          "axis_distance",
+          "coordinate_point"
+        ],
+        "default"
+      ],
+      "source_example_ids": [
+        4509
+      ],
+      "answer_type": "single_choice",
+      "presentation_mode": "single_choice",
+      "source_has_choices": true
+    },
+    {
+      "grouping_reason": "split_by_feature_signature",
+      "feature_signature": [
+        "single_choice",
+        "choose_correct_statement",
+        "single_choice",
+        [
+          "sign_reasoning"
+        ],
+        [
+          "coordinate_point",
+          "three_coordinate_points"
+        ],
+        "default"
+      ],
+      "source_example_ids": [
+        4510
+      ],
+      "answer_type": "single_choice",
+      "presentation_mode": "single_choice",
+      "source_has_choices": true
+    }
+  ],
   "human_review_items": [],
   "source_quality_reject_examples": [],
   "proposal_items": [
@@ -7656,12 +7930,16 @@
       "source_has_choices": false,
       "selected_checker": "expression_checker",
       "checker_selection_reason": "quadratic_factoring_expression",
-      "confidence": "low",
-      "promote_recommendation": "conservative_hold_for_that_candidate",
+      "confidence": "medium",
+      "promote_recommendation": "recommend_promote_for_that_candidate",
       "promote_blockers": [],
       "risk_flags": [
+        "alignment_score_below_recommended_threshold",
         "anchor_slot_bootstrap_zero_source",
-        "source_examples_mismatch"
+        "anchor_taxonomy_needs_refinement",
+        "candidate_family_span_outside_skill_scope",
+        "mixed_source_families",
+        "source_skill_scope_locked_demoted_blockers_to_warnings"
       ],
       "checker_contract_warnings": [],
       "spec_source": "anchor_slot_bootstrap",
@@ -7834,7 +8112,7 @@
         "value_type_prefix": "",
         "_resolved_template_slot": "factor_quadratic_by_cross_multiplication"
       },
-      "generator_readiness": "alignment_blocked",
+      "generator_readiness": "runtime_ready",
       "usable_for_phase3": true,
       "template_slot": "function_value_numeric",
       "canonical_base_problem_type_id": "evaluate_function_value",
@@ -8020,12 +8298,16 @@
       "source_has_choices": false,
       "selected_checker": "expression_checker",
       "checker_selection_reason": "quadratic_factoring_expression",
-      "confidence": "low",
-      "promote_recommendation": "conservative_hold_for_that_candidate",
+      "confidence": "medium",
+      "promote_recommendation": "recommend_promote_for_that_candidate",
       "promote_blockers": [],
       "risk_flags": [
+        "alignment_score_below_recommended_threshold",
         "anchor_slot_bootstrap_zero_source",
-        "source_examples_mismatch"
+        "anchor_taxonomy_needs_refinement",
+        "candidate_family_span_outside_skill_scope",
+        "mixed_source_families",
+        "source_skill_scope_locked_demoted_blockers_to_warnings"
       ],
       "checker_contract_warnings": [],
       "spec_source": "anchor_slot_bootstrap",
@@ -8198,7 +8480,7 @@
         "value_type_prefix": "",
         "_resolved_template_slot": "factor_quadratic_by_cross_multiplication"
       },
-      "generator_readiness": "alignment_blocked",
+      "generator_readiness": "runtime_ready",
       "usable_for_phase3": true,
       "template_slot": "linear_function_two_point_choice",
       "canonical_base_problem_type_id": "interpret_function_notation",
@@ -8223,7 +8505,6 @@
   "supporting_math_objects": [],
   "report_contract_status": "PASS_WITH_WARNINGS",
   "report_contract_warnings": [
-    "source_alignment_status_blocked_demoted_to_warn",
     "candidate_problem_type_count_synchronized"
   ],
   "report_contract_violations": [],

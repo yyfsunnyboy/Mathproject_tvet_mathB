@@ -1,4 +1,4 @@
-﻿<!doctype html>
+<!doctype html>
 <html lang="zh-Hant">
 <head>
   <meta charset="utf-8">
@@ -175,8 +175,10 @@
     .pen-width-wrap input[type="range"] { width:84px; }
     .color-dot { display:inline-block; width:16px; height:16px; vertical-align:middle; border-radius:999px; border:2px solid rgba(255,255,255,.92); box-shadow:0 0 0 1px rgba(0,0,0,.12); }
     .canvas-tools .warning { white-space:nowrap; height:36px; border-radius:10px; padding:7px 12px; }
-    .canvas-wrap { overflow:hidden; border:1px solid var(--line); border-radius:16px; background:linear-gradient(90deg, rgba(21,101,192,.06) 1px, transparent 1px), linear-gradient(rgba(21,101,192,.06) 1px, transparent 1px), #ffffff; background-size:22px 22px; }
-    #handwriting-canvas { display:block; width:100%; height:300px; background:transparent; cursor:crosshair; touch-action:none; user-select:none; }
+    .canvas-wrap { position:relative; overflow:hidden; border:1px solid var(--line); border-radius:16px; background:#ffffff; height:300px; }
+    .canvas-wrap canvas { position:absolute; inset:0; width:100%; height:100%; }
+    #drawing-background-canvas { z-index:1; pointer-events:none; }
+    #handwriting-canvas { z-index:2; display:block; background:transparent; cursor:crosshair; touch-action:none; user-select:none; }
     .assistant-title { color:#9b59b6; text-align:center; margin:0 0 12px; font-size:20px; font-weight:700; }
     .assistant-summary-card {
       --card-bg:#f4f8ff;
@@ -640,7 +642,7 @@
               </button>
               <button class="warning" id="analyzeCanvasBtn" type="button">AI 檢查</button>
             </div>
-            <div class="canvas-wrap"><canvas id="handwriting-canvas"></canvas></div>
+            <div class="canvas-wrap"><canvas id="drawing-background-canvas"></canvas><canvas id="handwriting-canvas"></canvas></div>
           </section>
 
           <section class="panel adaptive-state-panel" id="adaptiveStatePanel">
@@ -878,6 +880,68 @@
 
     const canvas = document.getElementById("handwriting-canvas");
     const ctx = canvas.getContext("2d");
+    const backgroundCanvas = document.getElementById("drawing-background-canvas");
+    const backgroundCtx = backgroundCanvas ? backgroundCanvas.getContext("2d") : null;
+    let currentQuestionImage = null;
+    let imgDestX = 0, imgDestY = 0, imgDestW = 0, imgDestH = 0;
+
+    let currentGeometry = { cssWidth: 0, cssHeight: 0, pixelWidth: 0, pixelHeight: 0, dpr: 1 };
+
+    function computeCanvasGeometry(container) {
+        const rect = container.getBoundingClientRect();
+        const dpr = window.devicePixelRatio || 1;
+        const cssWidth = Math.max(1, Math.floor(rect.width));
+        const cssHeight = Math.max(1, Math.floor(rect.height));
+
+        return {
+            cssWidth: cssWidth,
+            cssHeight: cssHeight,
+            pixelWidth: Math.round(cssWidth * dpr),
+            pixelHeight: Math.round(cssHeight * dpr),
+            dpr: dpr
+        };
+    }
+
+    function applyCanvasGeometry(canvasEl, geometry) {
+        canvasEl.style.setProperty('width', `${geometry.cssWidth}px`, 'important');
+        canvasEl.style.setProperty('height', `${geometry.cssHeight}px`, 'important');
+        canvasEl.width = geometry.pixelWidth;
+        canvasEl.height = geometry.pixelHeight;
+
+        const ctxEl = canvasEl.getContext("2d");
+        ctxEl.setTransform(geometry.dpr, 0, 0, geometry.dpr, 0, 0);
+        return ctxEl;
+    }
+
+    function calculateQuestionImageGeometry() {
+      if (!currentQuestionImage || !canvas) return;
+      const cw = currentGeometry.cssWidth || canvas.clientWidth || 300;
+      const ch = currentGeometry.cssHeight || canvas.clientHeight || 150;
+      if (cw <= 0 || ch <= 0) return;
+
+      const availableWidth  = cw * 0.82;
+      const availableHeight = ch * 0.85;
+
+      const scale = Math.min(
+        availableWidth  / currentQuestionImage.naturalWidth,
+        availableHeight / currentQuestionImage.naturalHeight
+      );
+
+      const drawWidth  = currentQuestionImage.naturalWidth * scale;
+      const drawHeight = currentQuestionImage.naturalHeight * scale;
+      const x = (cw - drawWidth) / 2;
+      const y = Math.max(16, ch * 0.03);
+
+      imgDestX = x;
+      imgDestY = y;
+      imgDestW = drawWidth;
+      imgDestH = drawHeight;
+    }
+
+    function drawQuestionImageBackground() {
+      if (!currentQuestionImage || !backgroundCtx || imgDestW <= 0 || imgDestH <= 0) return;
+      backgroundCtx.drawImage(currentQuestionImage, imgDestX, imgDestY, imgDestW, imgDestH);
+    }
     const answerInput = document.getElementById("answerInput");
     const submitBtn = document.getElementById("submitBtn");
     const choiceList = document.getElementById("choiceList");
@@ -2070,22 +2134,81 @@
     }
 
     function updateUndoRedoButtons() { undoBtn.disabled = undoStack.length <= 1; redoBtn.disabled = redoStack.length === 0; }
+    let lastCanvasDisplayWidth = 0;
+    let lastCanvasDisplayHeight = 0;
     function saveState() { const current = canvas.toDataURL(); if (undoStack.length > 0 && undoStack[undoStack.length - 1] === current) return; redoStack = []; undoStack.push(current); if (undoStack.length > 50) undoStack.shift(); updateUndoRedoButtons(); }
-    function restoreFromDataUrl(dataUrl) { const img = new Image(); img.onload = () => { ctx.clearRect(0, 0, canvas.width, canvas.height); ctx.drawImage(img, 0, 0, canvas.clientWidth, canvas.clientHeight); }; img.src = dataUrl; }
+    function restoreFromDataUrl(dataUrl) {
+      const img = new Image();
+      img.onload = () => {
+        const dpr = currentGeometry.dpr || window.devicePixelRatio || 1;
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        ctx.clearRect(0, 0, currentGeometry.cssWidth, currentGeometry.cssHeight);
+        ctx.drawImage(img, 0, 0, currentGeometry.cssWidth, currentGeometry.cssHeight);
+      };
+      img.src = dataUrl;
+    }
     function resizeCanvas() {
-      const ratio = Math.max(window.devicePixelRatio || 1, 1);
-      const rect = canvas.getBoundingClientRect();
-      const width = Math.max(1, Math.floor(rect.width));
-      const height = Math.max(1, Math.floor(rect.height));
+      const container = canvas.parentElement;
+      if (!container) return;
+      const geometry = computeCanvasGeometry(container);
+
+      if (geometry.cssWidth === lastCanvasDisplayWidth &&
+          geometry.cssHeight === lastCanvasDisplayHeight &&
+          canvas.width === geometry.pixelWidth &&
+          canvas.height === geometry.pixelHeight) {
+          return;
+      }
+
       const snapshot = undoStack.length ? undoStack[undoStack.length - 1] : null;
-      canvas.width = Math.floor(width * ratio);
-      canvas.height = Math.floor(height * ratio);
-      ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
+
+      lastCanvasDisplayWidth = geometry.cssWidth;
+      lastCanvasDisplayHeight = geometry.cssHeight;
+      currentGeometry = geometry;
+
+      applyCanvasGeometry(canvas, geometry);
+      if (backgroundCanvas) {
+        applyCanvasGeometry(backgroundCanvas, geometry);
+      }
+
       ctx.lineCap = "round";
       ctx.lineJoin = "round";
+
+      drawDrawingBackground(geometry.cssWidth, geometry.cssHeight, geometry.dpr);
       if (snapshot) restoreFromDataUrl(snapshot); else clearCanvas(false);
     }
-    function clearCanvas(resetHistory = true) { ctx.clearRect(0, 0, canvas.width, canvas.height); if (resetHistory) { undoStack = []; redoStack = []; saveState(); } }
+    function drawDrawingBackground(width = currentGeometry.cssWidth, height = currentGeometry.cssHeight, ratio = currentGeometry.dpr) {
+      if (!backgroundCtx || !backgroundCanvas) return;
+      backgroundCtx.setTransform(ratio, 0, 0, ratio, 0, 0);
+      backgroundCtx.clearRect(0, 0, width, height);
+      backgroundCtx.fillStyle = "#ffffff";
+      backgroundCtx.fillRect(0, 0, width, height);
+      backgroundCtx.strokeStyle = "rgba(21,101,192,.10)";
+      backgroundCtx.lineWidth = 1;
+      for (let x = 0; x <= width; x += 22) { backgroundCtx.beginPath(); backgroundCtx.moveTo(x, 0); backgroundCtx.lineTo(x, height); backgroundCtx.stroke(); }
+      for (let y = 0; y <= height; y += 22) { backgroundCtx.beginPath(); backgroundCtx.moveTo(0, y); backgroundCtx.lineTo(width, y); backgroundCtx.stroke(); }
+      if (currentQuestionImage) {
+        calculateQuestionImageGeometry();
+        drawQuestionImageBackground();
+      }
+    }
+    function buildCompositeCanvas() {
+      const composite = document.createElement("canvas");
+      composite.width = canvas.width;
+      composite.height = canvas.height;
+      const cctx = composite.getContext("2d");
+      cctx.clearRect(0, 0, composite.width, composite.height);
+      if (backgroundCanvas) cctx.drawImage(backgroundCanvas, 0, 0, composite.width, composite.height);
+      cctx.drawImage(canvas, 0, 0, composite.width, composite.height);
+      return composite;
+    }
+    function clearCanvas(resetHistory = true) {
+      ctx.clearRect(0, 0, currentGeometry.cssWidth, currentGeometry.cssHeight);
+      if (resetHistory) {
+        undoStack = [];
+        redoStack = [];
+        saveState();
+      }
+    }
     function isCanvasBlank() {
       try {
         const image = ctx.getImageData(0, 0, canvas.width, canvas.height);
@@ -2099,8 +2222,15 @@
         return false;
       }
     }
-    function getPointerPos(event) { const rect = canvas.getBoundingClientRect(); const point = event.touches && event.touches[0] ? event.touches[0] : event; return { x: point.clientX - rect.left, y: point.clientY - rect.top }; }
-    function setPenStyle() { ctx.lineWidth = isErasing ? 24 : currentWidth; ctx.strokeStyle = isErasing ? "#ffffff" : currentColor; ctx.lineCap = "round"; ctx.lineJoin = "round"; }
+    function getPointerPos(event) {
+      const rect = canvas.getBoundingClientRect();
+      const point = event.touches && event.touches[0] ? event.touches[0] : event;
+      return {
+        x: point.clientX - rect.left,
+        y: point.clientY - rect.top
+      };
+    }
+    function setPenStyle() { ctx.lineWidth = isErasing ? 24 : currentWidth; ctx.strokeStyle = currentColor; ctx.lineCap = "round"; ctx.lineJoin = "round"; ctx.globalCompositeOperation = isErasing ? "destination-out" : "source-over"; }
     function startDraw(event) { event.preventDefault(); isDrawing = true; const pos = getPointerPos(event); ctx.beginPath(); ctx.moveTo(pos.x, pos.y); setPenStyle(); saveState(); }
     function draw(event) { if (!isDrawing) return; event.preventDefault(); const pos = getPointerPos(event); setPenStyle(); ctx.lineTo(pos.x, pos.y); ctx.stroke(); }
     function stopDraw() { if (!isDrawing) return; isDrawing = false; ctx.closePath(); saveState(); }
@@ -2176,8 +2306,167 @@
       }
     }
 
+    function isDrawingQuestion(question) {
+      const q = question || {};
+      const contract = q.answer_contract || {};
+      return (
+        contract.checker_key === "free_response_drawing_checker" ||
+        contract.checker === "free_response_drawing_checker" ||
+        contract.answer_type === "drawing" ||
+        contract.answer_shape === "drawing" ||
+        q.checker_key === "free_response_drawing_checker" ||
+        q.checker === "free_response_drawing_checker" ||
+        q.answer_type === "drawing" ||
+        q.answer_shape === "drawing"
+      );
+    }
+
+    function resolveDrawingUiContract(question) {
+      const contract = question?.answer_contract || {};
+      const ui = contract.ui_contract || {};
+      const drawing = isCurrentDrawingQuestion() || ui.response_mode === "drawing";
+      return {
+        responseMode: ui.response_mode || (drawing ? "drawing" : "text"),
+        textInputEnabled: drawing ? (ui.text_input_enabled === true) : (ui.text_input_enabled !== false),
+        normalSubmitEnabled: drawing ? (ui.normal_submit_enabled === true) : (ui.normal_submit_enabled !== false),
+        aiCheckRequired: drawing ? (ui.ai_check_required !== false) : (ui.ai_check_required === true),
+        canvasRequired: drawing ? (ui.canvas_required !== false) : (ui.canvas_required === true),
+        allowImageUpload: ui.allow_image_upload !== false,
+        allowTextAnswer: ui.allow_text_answer === true,
+      };
+    }
+
+    function applyDrawingUiContract() {
+      if (!answerInput || !submitBtn || !analyzeCanvasBtn) return;
+      const question = state.currentQuestion;
+      const uiContract = resolveDrawingUiContract(question);
+      const drawing = isCurrentDrawingQuestion() || uiContract.responseMode === "drawing";
+
+      answerInput.disabled = !uiContract.textInputEnabled;
+      if (!uiContract.textInputEnabled) {
+        answerInput.setAttribute("aria-disabled", "true");
+        answerInput.placeholder = "此題請在畫布作答，並按 AI 檢查送出。";
+      } else {
+        answerInput.removeAttribute("aria-disabled");
+        answerInput.placeholder = "請輸入你的答案";
+      }
+
+      submitBtn.disabled = !uiContract.normalSubmitEnabled;
+      if (!uiContract.normalSubmitEnabled) {
+        submitBtn.setAttribute("aria-disabled", "true");
+      } else {
+        submitBtn.removeAttribute("aria-disabled");
+      }
+
+      if (!uiContract.aiCheckRequired) {
+        analyzeCanvasBtn.style.display = 'none';
+        analyzeCanvasBtn.disabled = true;
+      } else {
+        analyzeCanvasBtn.style.display = '';
+        analyzeCanvasBtn.disabled = false;
+      }
+
+      const scratchpad = document.querySelector('.scratchpad-section');
+      if (scratchpad) {
+        if (drawing || uiContract.canvasRequired) {
+          scratchpad.style.display = '';
+        } else {
+          scratchpad.style.display = 'none';
+        }
+      }
+    }
+
+    async function submitDrawingAnswer(source = "submit") {
+      if (!isCurrentDrawingQuestion()) {
+        throw new Error("current question is not drawing");
+      }
+      if (isCanvasBlank()) {
+        setStatus("請先在畫布作答。");
+        return null;
+      }
+      const compositeImageDataUrl = buildCompositeCanvas().toDataURL("image/png");
+      const studentStrokesImageDataUrl = canvas.toDataURL("image/png");
+      if (source === "ai_check") {
+        await addMessage("user", "AI 檢查");
+      }
+      const response = await fetch("/check_answer", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          answer: "[drawing]",
+          composite_image_data_url: compositeImageDataUrl,
+          student_strokes_image_data_url: studentStrokesImageDataUrl,
+          background_image_data_url: backgroundCanvas ? backgroundCanvas.toDataURL("image/png") : "",
+          image_data_url: compositeImageDataUrl,
+          question_uid: state.currentQuestionUid,
+          skill_id: state.mainSkill || skillId,
+          problem_type_id: state.currentProblemTypeId,
+          checker_key: state.currentCheckerKey || "free_response_drawing_checker",
+        })
+      });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.result || data.error || "drawing check failed");
+      const message = data.feedback || data.result || data.message || "圖形檢查完成。";
+      setStatus(message);
+      await addMessage("bot", message);
+
+      const isCorrect = data.correct === true;
+      const isCorrectVal = data.is_correct; // True / False / None
+      const submitAttempt = async () => {
+        const adaptivePayload = {
+          ...basePayload,
+          session_id: state.sessionId,
+          step_number: state.stepNumber,
+          user_answer: "[drawing]",
+          is_correct: isCorrect,
+          answer_feedback: message,
+        };
+        const nextData = await postAdaptive(adaptivePayload);
+        resetChatHistory();
+        await applyAdaptiveResponse(nextData);
+      };
+
+      if (isCorrectVal !== null && isCorrectVal !== undefined) {
+        if (isCorrect) {
+          await handleCorrectAnswer(submitAttempt);
+        } else {
+          await submitAttempt();
+        }
+      }
+      return data;
+    }
+
+    function isCurrentDrawingQuestion() {
+      return isDrawingQuestion(state.currentQuestion) ||
+        state.currentCheckerKey === "free_response_drawing_checker" ||
+        state.currentEquivalence === "drawing_equivalence" ||
+        state.currentAnswerType === "drawing" ||
+        Boolean(state.currentExpectedDrawingSpec);
+    }
+
     async function analyzeHandwriting() {
       if (!state.currentQuestionText) { setStatus("請先開始診斷，再進行手寫檢查。"); return; }
+      const question = state.currentQuestion;
+      const contract = question?.answer_contract || {};
+      const ui = contract.ui_contract || {};
+
+      if (isCurrentDrawingQuestion()) {
+        try {
+          await submitDrawingAnswer("ai_check");
+        } catch (err) {
+          console.error("submitDrawingAnswer from AI check failed:", err);
+          setStatus(`圖形檢查失敗：${err.message}`);
+        }
+        return;
+      }
+
+      if (ui.ai_check_required !== true) {
+        console.warn(
+          "[PRACTICE UI] AI check blocked by ui_contract",
+          question?.problem_type_id
+        );
+        return;
+      }
       try {
         if (isCanvasBlank()) {
           setStatus("目前無法清楚辨識，請重新書寫。");
@@ -2313,11 +2602,23 @@
       );
       state.remediationFamily = responseRemediationFamily;
       state.familyNameEn = String((response.new_question_data || {}).family_name || "");
+      state.currentQuestion = q;
       state.currentQuestionText = q.question_text || q.new_question_text || q.question || "";
       state.currentQuestionUid = String(q.question_uid || response.question_uid || "");
       state.currentProblemTypeId = String(q.problem_type_id || response.problem_type_id || "");
       state.currentPresentationMode = String(q.presentation_mode || "");
-      state.currentAnswerType = String(q.answer_type || "");
+      state.currentAnswerType = String(q.answer_contract?.answer_type || q.answer_type || "");
+      state.currentCheckerKey = String(q.answer_contract?.checker_key || q.answer_contract?.checker || q.checker_key || q.checker || "");
+      state.currentEquivalence = String(q.answer_contract?.answer_equivalence || q.answer_contract?.equivalence || q.equivalence || q.equivalence_type || "");
+      state.currentExpectedDrawingSpec = q.expected_drawing_spec || q.answer_contract?.expected_drawing_spec || q.metadata?.expected_drawing_spec || null;
+      console.log("[DRAWING FRONTEND]", {
+        answerType: state.currentQuestion?.answer_contract?.answer_type || state.currentAnswerType,
+        answerShape: state.currentQuestion?.answer_contract?.answer_shape || state.currentQuestion?.answer_shape || "",
+        checkerKey: state.currentQuestion?.answer_contract?.checker_key || state.currentQuestion?.answer_contract?.checker || state.currentCheckerKey,
+        hasDrawingSpec: !!state.currentExpectedDrawingSpec,
+        isDrawing: isCurrentDrawingQuestion()
+      });
+      applyDrawingUiContract();
       state.currentContext = q.context_string || "";
       state.expectedAnswer = String(q.correct_answer || q.answer || q.expected_answer || response.correct_answer || "");
       state.currentSubskills = response.target_subskills || [];
@@ -2439,6 +2740,31 @@
       answerInput.value = "";
       renderTrajectory();
       clearCanvas(true);
+      currentQuestionImage = null;
+      imgDestX = 0; imgDestY = 0; imgDestW = 0; imgDestH = 0;
+      let rawImage = q.image_base64;
+      if (!rawImage && q.visual_aids) {
+        if (typeof q.visual_aids === 'string') rawImage = q.visual_aids;
+        else if (q.visual_aids.plot_base64) rawImage = q.visual_aids.plot_base64;
+        else if (Array.isArray(q.visual_aids)) {
+          const imgObj = q.visual_aids.find(x => x.type === 'image/png');
+          if (imgObj) rawImage = imgObj.value;
+        }
+      }
+      if (rawImage && rawImage.trim() !== "") {
+        let imgSource = rawImage;
+        if (!imgSource.startsWith('data:image')) {
+          imgSource = "data:image/png;base64," + imgSource;
+        }
+        const img = new Image();
+        img.onload = function () {
+          currentQuestionImage = img;
+          drawDrawingBackground();
+        };
+        img.src = imgSource;
+      } else {
+        drawDrawingBackground();
+      }
       resetChatHistory();
       resetHintBox();
       if (state.mode === "assessment" && deriveMilestoneStateFromState() === "assessment_breakpoint_detected") {
@@ -2852,6 +3178,10 @@
 
       submitBtn.addEventListener("click", async () => {
         try {
+          if (isCurrentDrawingQuestion()) {
+            await submitDrawingAnswer("submit");
+            return;
+          }
           const answer = answerInput.value.trim();
           if (!answer) { setStatus("請先輸入答案。"); return; }
           const data = await postAdaptive({ ...basePayload, session_id: state.sessionId, step_number: state.stepNumber, user_answer: answer });

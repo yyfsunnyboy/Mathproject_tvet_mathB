@@ -115,6 +115,30 @@ DOMAIN_PROVIDERS = {
             "frequency_distribution_chart_construction",
             "histogram_distribution_update"
         ]
+    },
+    "statistics.table_chart": {
+        "domain_module": "core.domain.statistics.table_chart_domain",
+        "entrypoint": "build_statistical_chart_reading_matrix",
+        "capabilities": {
+            "statistical_chart_reading",
+            "table_chart",
+            "read_category_value",
+            "compare_category_values",
+            "calculate_total_ratio_percent",
+            "validate_chart_statement",
+            "cumulative_above_fail_count",
+            "cumulative_above_interval_count",
+            "cumulative_below_interval_count",
+        },
+        "allowed_operations": [
+            "read_category_value",
+            "compare_category_values",
+            "calculate_total_ratio_percent",
+            "validate_chart_statement",
+            "cumulative_above_fail_count",
+            "cumulative_above_interval_count",
+            "cumulative_below_interval_count",
+        ]
     }
 }
 
@@ -163,13 +187,46 @@ class FixedDomainContext:
     curriculum_profile: str
 
 
-def resolve_dynamic_fixed_domain_context(skill_id: str, original_exc: Exception) -> FixedDomainContext:
+def _append_unique(target: list[str], value: str) -> None:
+    value = str(value or "").strip()
+    if value and value not in target:
+        target.append(value)
+
+
+def _text_capability_hints(text: str) -> set[str]:
+    normalized = str(text or "").lower()
+    caps: set[str] = set()
+    if any(token in normalized for token in ("histogram", "frequency polygon", "frequency distribution")):
+        caps.update({"frequency_table", "histogram", "frequency_polygon", "frequency_distribution"})
+    if any(token in normalized for token in ("table", "chart", "bar chart", "line chart", "pie chart")) and any(
+        token in normalized for token in ("read", "value", "compare", "difference", "total", "ratio", "percent", "percentage", "statement", "largest", "smallest")
+    ):
+        caps.update({"statistical_chart_reading", "table_chart"})
+    if any(token in normalized for token in ("point to line", "distance from point", "distance to line")):
+        caps.update({"distance_from_point_to_line", "compare_point_to_line_distances"})
+    if any(token in normalized for token in ("parallel line distance", "distance between parallel", "parallel lines")):
+        caps.update({"distance_between_parallel_lines", "parallel_lines_distance"})
+    if any(token in normalized for token in ("line equation", "slope", "point-slope", "intercept", "horizontal line", "vertical line")):
+        caps.update({"slope", "line_equation"})
+    return caps
+
+
+def resolve_dynamic_fixed_domain_context(
+    skill_id: str,
+    original_exc: Exception,
+    *,
+    textbook_example: dict[str, Any] | None = None,
+    problem_type_id: str | None = None,
+    extra: dict[str, Any] | None = None,
+) -> FixedDomainContext:
     resolver_path = []
     fallback_attempts = []
     
     ctx = get_current_component_override_context()
     component_id = ctx.component_id if ctx else ""
-    extra_data = ctx.extra if ctx else {}
+    extra_data = dict(ctx.extra if ctx else {})
+    if extra:
+        extra_data.update(extra)
     
     explicit_key = extra_data.get("fixed_domain_key") or extra_data.get("domain_key")
     if explicit_key:
@@ -204,22 +261,37 @@ def resolve_dynamic_fixed_domain_context(skill_id: str, original_exc: Exception)
             )
 
     examples = []
-    try:
-        db_path = PROJECT_ROOT / "instance/kumon_math.db"
-        if db_path.is_file():
-            with sqlite3.connect(str(db_path)) as db_conn:
-                db_conn.row_factory = sqlite3.Row
-                rows = db_conn.execute(
-                    "SELECT id, problem_text, correct_answer, detailed_solution, explanation, problem_type FROM textbook_examples WHERE skill_id = ? ORDER BY id ASC",
-                    (skill_id,),
-                ).fetchall()
-                examples = [dict(r) for r in rows]
-    except Exception as e:
-        fallback_attempts.append(f"db_load_failed: {e}")
+    if isinstance(textbook_example, dict) and textbook_example:
+        resolver_path.append("component_textbook_example")
+        examples = [dict(textbook_example)]
+    else:
+        try:
+            db_path = PROJECT_ROOT / "instance/kumon_math.db"
+            if db_path.is_file():
+                with sqlite3.connect(str(db_path)) as db_conn:
+                    db_conn.row_factory = sqlite3.Row
+                    rows = db_conn.execute(
+                        "SELECT id, problem_text, correct_answer, detailed_solution, explanation, problem_type FROM textbook_examples WHERE skill_id = ? ORDER BY id ASC",
+                        (skill_id,),
+                    ).fetchall()
+                    examples = [dict(r) for r in rows]
+                    if examples:
+                        resolver_path.append("skill_examples_from_db")
+        except Exception as e:
+            fallback_attempts.append(f"db_load_failed: {e}")
 
     required_caps = set()
     domain_families = set()
     problem_types = set()
+
+    for key in ("problem_type_id", "domain_operation", "selected_operation", "line_type", "task_type"):
+        value = str(extra_data.get(key) or "").strip()
+        if value:
+            problem_types.add(value)
+            fallback_attempts.append(f"component_metadata:{key}={value}")
+    if problem_type_id:
+        problem_types.add(str(problem_type_id).strip())
+        fallback_attempts.append(f"problem_type_id={problem_type_id}")
     
     for ex in examples:
         text = (
@@ -232,6 +304,14 @@ def resolve_dynamic_fixed_domain_context(skill_id: str, original_exc: Exception)
         pt = str(ex.get("problem_type") or "").strip()
         if pt:
             problem_types.add(pt)
+        pt2 = str(ex.get("problem_type_id") or ex.get("domain_operation") or ex.get("line_type") or ex.get("task_type") or "").strip()
+        if pt2:
+            problem_types.add(pt2)
+
+        hinted_caps = _text_capability_hints(text)
+        if hinted_caps:
+            _append_unique(resolver_path, "text_answer_capability_inference")
+            required_caps.update(hinted_caps)
             
         if any(kw in text for kw in ["直方圖", "折線圖", "次數分配", "組距", "組中點", "次數", "histogram", "polygon", "frequency"]):
             domain_families.add("statistics_chart")
@@ -255,11 +335,14 @@ def resolve_dynamic_fixed_domain_context(skill_id: str, original_exc: Exception)
             required_caps.update(["slope", "line_equation", "horizontal_line", "vertical_line", "point_slope", "intercept_form", "general_form", "two_points"])
 
     if not required_caps:
-        fallback_attempts.append("guess_from_skill_id")
+        fallback_attempts.append("narrow_skill_name_inference")
         skill_lower = skill_id.lower()
         if "histogram" in skill_lower or "polygon" in skill_lower or "frequency" in skill_lower:
             domain_families.add("statistics_chart")
             required_caps.update(["frequency_table", "histogram", "frequency_polygon"])
+        elif "chartreading" in skill_lower or "chart_reading" in skill_lower or "tablechart" in skill_lower:
+            domain_families.add("statistics_table_chart")
+            required_caps.update(["statistical_chart_reading", "table_chart"])
         elif "parallel" in skill_lower and "distance" in skill_lower:
             domain_families.add("coordinate_geometry")
             required_caps.update(["distance_between_parallel_lines", "parallel_lines_distance"])
@@ -282,7 +365,7 @@ def resolve_dynamic_fixed_domain_context(skill_id: str, original_exc: Exception)
         pt_match = len([pt for pt in problem_types if pt in prov_val["allowed_operations"]])
         if pt_match > 0:
             score += pt_match * 2
-            resolver_path.append("taxonomy_mapping")
+            _append_unique(resolver_path, "problem_type_operation_match")
             
         if score > best_match_score:
             best_match_score = score
@@ -290,7 +373,7 @@ def resolve_dynamic_fixed_domain_context(skill_id: str, original_exc: Exception)
             best_matched_caps = matched
 
     if best_provider_key:
-        resolver_path.append("reusable_capability_matching")
+        _append_unique(resolver_path, "reusable_capability_matching")
         prov = DOMAIN_PROVIDERS[best_provider_key]
         return FixedDomainContext(
             skill_id=skill_id,
@@ -314,20 +397,73 @@ def resolve_dynamic_fixed_domain_context(skill_id: str, original_exc: Exception)
             "missing_capabilities": list(required_caps),
             "resolver_path": resolver_path,
             "fallback_attempts": fallback_attempts,
+            "inference_trace": {
+                "layers": [
+                    "component_metadata",
+                    "problem_type_id",
+                    "taxonomy_registry",
+                    "text_answer_capability_inference",
+                    "narrow_domain_fallback",
+                    "unsupported",
+                ],
+                "problem_types": sorted(problem_types),
+                "domain_families": sorted(domain_families),
+                "original_error": f"{original_exc.__class__.__name__}:{original_exc}",
+            },
         }
     )
 
 
-def resolve_fixed_domain_context(skill_id: str) -> FixedDomainContext:
+def resolve_fixed_domain_context(
+    skill_id: str,
+    *,
+    textbook_example: dict[str, Any] | None = None,
+    problem_type_id: str | None = None,
+    extra: dict[str, Any] | None = None,
+) -> FixedDomainContext:
     """Resolve authoritative fixed-domain context for a skill."""
     key = str(skill_id or "").strip()
     
     # 1. Component-level explicit override takes highest precedence
     ctx = get_current_component_override_context()
-    extra_data = ctx.extra if ctx else {}
+    extra_data = dict(ctx.extra if ctx else {})
+    if extra:
+        extra_data.update(extra)
     explicit_key = extra_data.get("fixed_domain_key") or extra_data.get("domain_key")
     if explicit_key:
-        return resolve_dynamic_fixed_domain_context(key, original_exc=ValueError("component_override_active"))
+        return resolve_dynamic_fixed_domain_context(
+            key,
+            original_exc=ValueError("component_override_active"),
+            textbook_example=textbook_example,
+            problem_type_id=problem_type_id,
+            extra=extra,
+        )
+
+    metadata_operation = str(
+        extra_data.get("domain_operation")
+        or extra_data.get("selected_operation")
+        or extra_data.get("problem_type_id")
+        or extra_data.get("line_type")
+        or extra_data.get("task_type")
+        or problem_type_id
+        or ""
+    ).strip()
+    if metadata_operation:
+        metadata_matches_known_operation = any(
+            metadata_operation in tuple(provider.get("allowed_operations") or ())
+            for provider in DOMAIN_PROVIDERS.values()
+        )
+        if metadata_matches_known_operation:
+            try:
+                return resolve_dynamic_fixed_domain_context(
+                    key,
+                    original_exc=ValueError("component_metadata_active"),
+                    textbook_example=textbook_example,
+                    problem_type_id=problem_type_id,
+                    extra=extra,
+                )
+            except SkillFixedDomainError:
+                pass
 
     # 2. Skill-level explicit override
     try:
@@ -355,7 +491,13 @@ def resolve_fixed_domain_context(skill_id: str) -> FixedDomainContext:
             ),
         )
     except Exception as exc:
-        return resolve_dynamic_fixed_domain_context(key, original_exc=exc)
+        return resolve_dynamic_fixed_domain_context(
+            key,
+            original_exc=exc,
+            textbook_example=textbook_example,
+            problem_type_id=problem_type_id,
+            extra=extra,
+        )
 
 
 

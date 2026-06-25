@@ -143,28 +143,52 @@ def resolve_answer_contract_for_runtime(
     if not isinstance(payload, dict):
         return {}
     ac = payload.get("answer_contract") if isinstance(payload.get("answer_contract"), dict) else {}
-    if ac.get("answer_type"):
-        return dict(ac)
-    if is_coordinate_pair_contract(ac):
-        return dict(ac)
-    if answer_type_family(str(ac.get("answer_type", ""))) == "solution_set":
-        return dict(ac)
-    if is_coordinate_pair_runtime_payload(payload):
-        merged = dict(ac)
-        merged.setdefault("answer_type", "ordered_pair")
-        merged.setdefault("answer_shape", "coordinate_pair")
-        merged.setdefault("answer_equivalence", "coordinate_pair_equivalence")
-        merged.setdefault("checker", "coordinate_pair_checker")
-        return merged
-    sid = str(skill_id or payload.get("skill_id", payload.get("skill", ""))).strip()
-    pt = str(payload.get("problem_type_id", "")).strip()
-    if sid and pt:
-        from core.gencode.problem_type_spec import get_answer_contract, load_problem_type_spec
+    
+    resolved = dict(ac)
+    is_drawing = False
+    try:
+        from core.checkers.free_response_drawing_checker import is_drawing_answer_contract
+        if is_drawing_answer_contract(ac, payload):
+            is_drawing = True
+    except Exception:
+        pass
 
-        spec = load_problem_type_spec(sid, pt, prefer="auto")
-        if spec:
-            return dict(get_answer_contract(spec))
-    return dict(ac)
+    if resolved.get("answer_type"):
+        pass
+    elif is_drawing:
+        ans_type = str(ac.get("answer_type") or payload.get("answer_type") or "").strip()
+        if ans_type != "string":
+            resolved.setdefault("answer_type", "drawing")
+            resolved.setdefault("answer_equivalence", "drawing_equivalence")
+            resolved.setdefault("checker", "free_response_drawing_checker")
+            
+    if not resolved.get("answer_type"):
+        if is_coordinate_pair_contract(ac):
+            pass
+        elif answer_type_family(str(ac.get("answer_type", ""))) == "solution_set":
+            pass
+        elif is_coordinate_pair_runtime_payload(payload):
+            resolved.setdefault("answer_type", "ordered_pair")
+            resolved.setdefault("answer_shape", "coordinate_pair")
+            resolved.setdefault("answer_equivalence", "coordinate_pair_equivalence")
+            resolved.setdefault("checker", "coordinate_pair_checker")
+        else:
+            sid = str(skill_id or payload.get("skill_id", payload.get("skill", ""))).strip()
+            pt = str(payload.get("problem_type_id", "")).strip()
+            if sid and pt:
+                from core.gencode.problem_type_spec import get_answer_contract, load_problem_type_spec
+                spec = load_problem_type_spec(sid, pt, prefer="auto")
+                if spec:
+                    resolved = dict(get_answer_contract(spec))
+                    
+    consistency_errors = validate_answer_contract_consistency(resolved)
+    if consistency_errors:
+        import logging
+        logging.getLogger(__name__).warning(
+            "[PRODUCTION CONTRACT INCONSISTENCY] question_uid=%s errors=%s resolved_contract=%s",
+            payload.get("question_uid"), consistency_errors, resolved
+        )
+    return resolved
 
 
 def refresh_runtime_question_session(payload: dict[str, Any], *, skill_id: str = "") -> dict[str, Any]:
@@ -648,3 +672,42 @@ def validate_generated_answer_shape(
 
     diag = build_answer_validation_diagnostics(payload, answer_contract=ac)
     return True, [], diag
+
+
+def validate_answer_contract_consistency(contract: dict[str, Any]) -> list[str]:
+    """Validate answer contract consistency.
+    
+    Returns a list of error strings if any inconsistency is found.
+    """
+    if not isinstance(contract, dict):
+        return ["contract_must_be_dict"]
+        
+    errors = []
+    checker = str(contract.get("checker") or contract.get("checker_key") or "").strip()
+    answer_type = str(contract.get("answer_type") or "").strip()
+    answer_shape = str(contract.get("answer_shape") or "").strip()
+    ui_contract = contract.get("ui_contract") or {}
+    expected_drawing_spec = contract.get("expected_drawing_spec")
+    
+    # 1. answer_type=string 不得搭配 drawing checker
+    if answer_type == "string" and checker == "free_response_drawing_checker":
+        errors.append("INVALID_CONTRACT: answer_type=string must not use drawing checker")
+        
+    # 2. drawing checker 必須搭配 answer_type=drawing
+    if checker == "free_response_drawing_checker" and answer_type != "drawing":
+        errors.append("INVALID_CONTRACT: drawing checker must use answer_type=drawing")
+        
+    # 3. drawing checker 必須有 expected_drawing_spec
+    if checker == "free_response_drawing_checker" and not expected_drawing_spec:
+        errors.append("INVALID_CONTRACT: drawing checker must have expected_drawing_spec")
+        
+    # 4. answer_type=drawing 必須有 answer_shape=drawing
+    if answer_type == "drawing" and answer_shape != "drawing":
+        errors.append("INVALID_CONTRACT: answer_type=drawing must have answer_shape=drawing")
+        
+    # 5. drawing UI contract 不得套在文字題
+    ui_response_mode = str(ui_contract.get("response_mode") or "").strip()
+    if ui_response_mode == "drawing" and checker != "free_response_drawing_checker":
+        errors.append("INVALID_CONTRACT: drawing UI contract must not be applied to non-drawing tasks")
+        
+    return errors

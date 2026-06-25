@@ -229,7 +229,12 @@ def _build_generate_py(
     if line_type.startswith("slope_intercept_"):
         constraints = {}
     constraints_literal = repr(constraints if isinstance(constraints, dict) else {})
-    if entrypoint in {"build_coordinate_geometry_matrix", "build_parallel_lines_distance_matrix", "build_frequency_distribution_table_matrix"}:
+    if entrypoint in {
+        "build_coordinate_geometry_matrix",
+        "build_parallel_lines_distance_matrix",
+        "build_frequency_distribution_table_matrix",
+        "build_statistical_chart_reading_matrix",
+    }:
         matrix_call = f'''{entrypoint}(
         seed=seed,
         domain_operation="{domain_operation}",
@@ -257,11 +262,12 @@ PRESENTATION_MODE = "{presentation_mode}"
 ANSWER_TYPE = "{answer_type}"
 PROBLEM_TYPE_ID = "{problem_type_id}"
 TEXTBOOK_EXAMPLE_ID = {textbook_example_id}
+DEFAULT_COMPONENT_ID = "src_{textbook_example_id}" if TEXTBOOK_EXAMPLE_ID else ""
 
 
 def generate(level: int = 1, seed: int | None = None, **kwargs: Any) -> dict[str, Any]:
     matrix = {matrix_call}
-    component_id = str(kwargs.get("component_id") or "")
+    component_id = str(kwargs.get("component_id") or DEFAULT_COMPONENT_ID or "")
     payload = convert_domain_matrix_to_question_payload(
         matrix,
         presentation_mode=PRESENTATION_MODE,

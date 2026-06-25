@@ -30,7 +30,7 @@
 - skill_problem_type_alignment_status: `warn`
 - alignment_score: `0.04`
 - alignment_blockers: []
-- alignment_warnings: ['ai_first_mode_fell_back_to_rule_only']
+- alignment_warnings: ['ai_first_mode_fell_back_to_rule_only', 'ai_partial_unavailable_relaxed_tolerance']
 
 | example_id | target_task | task_family | alignment_kind | subskill_match | included | exclude_reason | stem_preview |
 | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -39,21 +39,21 @@
 | 4444 | numeric_evaluate_function_notation | function_concept_family | anchor_subskill_match | False | True |  | 下圖為函數$y=f\left( x \right)=ax+b$的圖形。
 (1)試求直線的x截距與y截距。
 (2)試求$f |
-| 4445 | compute_numeric | generic_numeric_family | unclassified_low_confidence | False | False | semantic_alignment_score_zero_requires_human_review | 已知手機費包含月租基本費與超時通話費，某電信公司的手機月租基本費為m元，可以免費通話30分鐘。若通話時間超過30分鐘後， |
+| 4445 | compute_numeric | generic_numeric_family | unresolved_within_current_skill | False | True |  | 已知手機費包含月租基本費與超時通話費，某電信公司的手機月租基本費為m元，可以免費通話30分鐘。若通話時間超過30分鐘後， |
 | 4424 | numeric_evaluate_function_notation | function_concept_family | anchor_subskill_match | False | True |  | 右圖為函數$y=f\left( x \right)=ax+b$的圖形。
 (1) 試求直線的x截距與y截距。
 (2) 試求 |
-| 4425 | compute_numeric | generic_numeric_family | unclassified_low_confidence | False | False | semantic_alignment_score_zero_requires_human_review | 右圖是某電信公司的通話費計算方式：300秒以內只繳基本費，超過300秒之後的費用，與通話時間成線型函數關係，試問：
+| 4425 | compute_numeric | generic_numeric_family | unresolved_within_current_skill | False | True |  | 右圖是某電信公司的通話費計算方式：300秒以內只繳基本費，超過300秒之後的費用，與通話時間成線型函數關係，試問：
 (1 |
-| 4426 | compute_numeric | generic_numeric_family | unclassified_low_confidence | False | False | semantic_alignment_score_zero_requires_human_review | 設直角坐標平面上四點$A\left( -2,1 \right)$、$B\left( {{b}_{1}},{{b}_{2} |
+| 4426 | compute_numeric | generic_numeric_family | unresolved_within_current_skill | False | True |  | 設直角坐標平面上四點$A\left( -2,1 \right)$、$B\left( {{b}_{1}},{{b}_{2} |
 | 4441 | numeric_evaluate_function_notation | function_concept_family | anchor_subskill_match | False | True |  | 右圖為函數$y=f\left( x \right)=ax+b$的圖形。
 (1) 試求直線的x截距與y截距。
 (2) 試求 |
-| 4442 | applied_quadratic_inequality_problem | quadratic_inequality_family | unclassified_low_confidence | False | False | semantic_alignment_score_zero_requires_human_review | 高老師搭乘某廉價航空，他的行李托運費用是850元，若行李托運費用與重量是成線型函數的關係，如圖所示，試求高老師托運的行李 |
-| 4446 | compute_numeric | generic_numeric_family | unclassified_low_confidence | False | False | semantic_alignment_score_zero_requires_human_review | 公司給小虹最多50萬元的預算來採買$x$、$y$兩種貨品。但小虹一時疏忽，無法確定$x$貨品跟$y$貨品的單價哪一個是1 |
+| 4442 | applied_quadratic_inequality_problem | quadratic_inequality_family | unresolved_within_current_skill | False | True |  | 高老師搭乘某廉價航空，他的行李托運費用是850元，若行李托運費用與重量是成線型函數的關係，如圖所示，試求高老師托運的行李 |
+| 4446 | compute_numeric | generic_numeric_family | unresolved_within_current_skill | False | True |  | 公司給小虹最多50萬元的預算來採買$x$、$y$兩種貨品。但小虹一時疏忽，無法確定$x$貨品跟$y$貨品的單價哪一個是1 |
 | 4448 | numeric_evaluate_function_notation | function_concept_family | anchor_subskill_match | False | True |  | 試在坐標平面上畫出$y=f\left( x \right)=3$的圖形。 |
 | 4449 | numeric_evaluate_function_notation | function_concept_family | anchor_subskill_match | False | True |  | 試在坐標平面上畫出函數$y=f\left( x \right)=-2x+4$的圖形。 |
-| 4500 | compute_numeric | generic_numeric_family | unclassified_low_confidence | False | False | semantic_alignment_score_zero_requires_human_review | 阿偉的汽車加滿油後開始行駛，其行駛距離x公里與剩餘油量y公升的關係為線型函數，其圖形如右圖所示，則x與y的關係式為 |
+| 4500 | compute_numeric | generic_numeric_family | unresolved_within_current_skill | False | True |  | 阿偉的汽車加滿油後開始行駛，其行駛距離x公里與剩餘油量y公升的關係為線型函數，其圖形如右圖所示，則x與y的關係式為 |
 | 4515 | numeric_evaluate_function_notation | function_concept_family | anchor_subskill_match | False | True |  | 設$f\left( x \right)=ax+b$為一線型函數，且圖形通過點$\left( -2,4 \right)$、 |
 | 4516 | numeric_evaluate_function_notation | function_concept_family | anchor_subskill_match | False | True |  | 利用截距定義，試問下列何者不可能是函數$y=f\left( x \right)=ax-3$的圖形？ |
 
@@ -87,16 +87,16 @@
 | 4433 | interpret_function_notation/function_concept_family | / | 0.45 | rule_fallback_ai_unavailable | numeric_evaluate_function_notation/function_concept_family | anchor_subskill_match |  |
 | 4434 | interpret_function_notation/function_concept_family | / | 0.45 | rule_fallback_ai_unavailable | numeric_evaluate_function_notation/function_concept_family | anchor_subskill_match |  |
 | 4444 | interpret_function_notation/function_concept_family | / | 0.45 | rule_fallback_ai_unavailable | numeric_evaluate_function_notation/function_concept_family | anchor_subskill_match |  |
-| 4445 | compute_numeric/generic_numeric_family | / | 0.0 | rule_fallback_ai_unavailable | compute_numeric/generic_numeric_family | unclassified_low_confidence | semantic_alignment_score_zero_requires_human_review |
+| 4445 | compute_numeric/generic_numeric_family | / | 0.0 | rule_fallback_ai_unavailable | compute_numeric/generic_numeric_family | unresolved_within_current_skill |  |
 | 4424 | interpret_function_notation/function_concept_family | / | 0.45 | rule_fallback_ai_unavailable | numeric_evaluate_function_notation/function_concept_family | anchor_subskill_match |  |
-| 4425 | compute_numeric/generic_numeric_family | / | 0.0 | rule_fallback_ai_unavailable | compute_numeric/generic_numeric_family | unclassified_low_confidence | semantic_alignment_score_zero_requires_human_review |
-| 4426 | compute_numeric/generic_numeric_family | / | 0.0 | rule_fallback_ai_unavailable | compute_numeric/generic_numeric_family | unclassified_low_confidence | semantic_alignment_score_zero_requires_human_review |
+| 4425 | compute_numeric/generic_numeric_family | / | 0.0 | rule_fallback_ai_unavailable | compute_numeric/generic_numeric_family | unresolved_within_current_skill |  |
+| 4426 | compute_numeric/generic_numeric_family | / | 0.0 | rule_fallback_ai_unavailable | compute_numeric/generic_numeric_family | unresolved_within_current_skill |  |
 | 4441 | interpret_function_notation/function_concept_family | / | 0.45 | rule_fallback_ai_unavailable | numeric_evaluate_function_notation/function_concept_family | anchor_subskill_match |  |
-| 4442 | applied_quadratic_inequality_problem/quadratic_inequality_family | / | 0.0 | rule_fallback_ai_unavailable | applied_quadratic_inequality_problem/quadratic_inequality_family | unclassified_low_confidence | semantic_alignment_score_zero_requires_human_review |
-| 4446 | compute_numeric/generic_numeric_family | / | 0.0 | rule_fallback_ai_unavailable | compute_numeric/generic_numeric_family | unclassified_low_confidence | semantic_alignment_score_zero_requires_human_review |
+| 4442 | applied_quadratic_inequality_problem/quadratic_inequality_family | / | 0.0 | rule_fallback_ai_unavailable | applied_quadratic_inequality_problem/quadratic_inequality_family | unresolved_within_current_skill |  |
+| 4446 | compute_numeric/generic_numeric_family | / | 0.0 | rule_fallback_ai_unavailable | compute_numeric/generic_numeric_family | unresolved_within_current_skill |  |
 | 4448 | interpret_function_notation/function_concept_family | / | 0.45 | rule_fallback_ai_unavailable | numeric_evaluate_function_notation/function_concept_family | anchor_subskill_match |  |
 | 4449 | interpret_function_notation/function_concept_family | / | 0.45 | rule_fallback_ai_unavailable | numeric_evaluate_function_notation/function_concept_family | anchor_subskill_match |  |
-| 4500 | compute_numeric/generic_numeric_family | / | 0.0 | rule_fallback_ai_unavailable | compute_numeric/generic_numeric_family | unclassified_low_confidence | semantic_alignment_score_zero_requires_human_review |
+| 4500 | compute_numeric/generic_numeric_family | / | 0.0 | rule_fallback_ai_unavailable | compute_numeric/generic_numeric_family | unresolved_within_current_skill |  |
 | 4515 | interpret_function_notation/function_concept_family | / | 0.45 | rule_fallback_ai_unavailable | numeric_evaluate_function_notation/function_concept_family | anchor_subskill_match |  |
 | 4516 | interpret_function_notation/function_concept_family | / | 0.45 | rule_fallback_ai_unavailable | numeric_evaluate_function_notation/function_concept_family | anchor_subskill_match |  |
 
@@ -129,25 +129,50 @@
 
 ### Cluster 1
 - answer_type: `numeric`
-- source_example_ids: [4424, 4433, 4434, 4441, 4444, 4448, 4449, 4516]
+- source_example_ids: [4433, 4434, 4448, 4449, 4516]
 - grouping_reason: split_by_feature_signature
-- feature_signature: `['numeric', 'numeric_evaluate_function_notation', 'short_answer', ('numeric_computation',), ('coordinate_point', 'quadratic_equation')]`
+- feature_signature: `['numeric', 'numeric_evaluate_function_notation', 'short_answer', ('numeric_computation',), ('coordinate_point', 'quadratic_equation'), 'default']`
 
 ### Cluster 2
 - answer_type: `numeric`
+- source_example_ids: [4424, 4441, 4444]
+- grouping_reason: split_by_feature_signature
+- feature_signature: `['numeric', 'numeric_evaluate_function_notation', 'short_answer', ('numeric_computation',), ('coordinate_point', 'quadratic_equation'), 'line_equation']`
+
+### Cluster 3
+- answer_type: `numeric`
 - source_example_ids: [4515]
 - grouping_reason: split_by_feature_signature
-- feature_signature: `['numeric', 'numeric_evaluate_function_notation', 'single_choice', ('numeric_computation',), ('coordinate_point', 'quadratic_equation')]`
+- feature_signature: `['numeric', 'numeric_evaluate_function_notation', 'single_choice', ('numeric_computation',), ('coordinate_point', 'quadratic_equation'), 'line_equation']`
+
+### Cluster 4
+- answer_type: `short_answer`
+- source_example_ids: [4425, 4445, 4500]
+- grouping_reason: split_by_feature_signature
+- feature_signature: `['short_answer', 'compute_numeric', 'short_answer', ('numeric_computation',), (), 'default']`
+
+### Cluster 5
+- answer_type: `short_answer`
+- source_example_ids: [4426]
+- grouping_reason: split_by_feature_signature
+- feature_signature: `['short_answer', 'compute_numeric', 'short_answer', ('numeric_computation',), ('coordinate_point', 'three_coordinate_points'), 'line_equation']`
+
+### Cluster 6
+- answer_type: `short_answer`
+- source_example_ids: [4442]
+- grouping_reason: split_by_feature_signature
+- feature_signature: `['short_answer', 'applied_quadratic_inequality_problem', 'short_answer', ('quadratic_factoring_reasoning',), (), 'default']`
 
 
 ## Candidate problem types
 
 | problem_type_id | display_name | answer_type | source_examples | grouping_reason |
 | --- | --- | --- | --- | --- |
-| integer_numeric_evaluate_function_notation | integer / numeric_evaluate_function_notation | text_short | [4424, 4433, 4434, 4441, 4444, 4448, 4449, 4516] | split_by_feature_signature |
+| integer_numeric_evaluate_function_notation | integer / numeric_evaluate_function_notation | text_short | [4433, 4434, 4448, 4449, 4516] | split_by_feature_signature |
+| integer_numeric_evaluate_function_notation | integer / numeric_evaluate_function_notation | text_short | [4424, 4441, 4444] | split_by_feature_signature |
 | integer_numeric_evaluate_function_notation | integer / numeric_evaluate_function_notation | choice | [4515] | split_by_feature_signature |
-| evaluate_function_value | evaluate_function_value / anchor bootstrap | expression | [] | anchor_subskill_bootstrap_zero_source |
-| interpret_function_notation | interpret_function_notation / anchor bootstrap | expression | [] | anchor_subskill_bootstrap_zero_source |
+| evaluate_function_value_2 | evaluate_function_value / anchor bootstrap | expression | [] | anchor_subskill_bootstrap_zero_source |
+| interpret_function_notation_2 | interpret_function_notation / anchor bootstrap | expression | [] | anchor_subskill_bootstrap_zero_source |
 
 ## phase1
 ```json
@@ -236,7 +261,8 @@
   "skill_problem_type_alignment_status": "warn",
   "alignment_score": 0.04,
   "alignment_warnings": [
-    "ai_first_mode_fell_back_to_rule_only"
+    "ai_first_mode_fell_back_to_rule_only",
+    "ai_partial_unavailable_relaxed_tolerance"
   ],
   "alignment_blockers": [],
   "semantic_alignment": {
@@ -466,7 +492,7 @@
     "dominant_source_family_ratio": 0.6,
     "skill_source_score": 0.48,
     "skill_problem_type_score": 0.04,
-    "source_problem_type_score": 0.044,
+    "source_problem_type_score": 0.0319,
     "per_problem_type_scores": [
       {
         "problem_type_id": "numeric_numeric_evaluate_function_notation_short_answer",
@@ -482,20 +508,33 @@
         "answer_contract_supported": true
       },
       {
-        "problem_type_id": "numeric_numeric_evaluate_function_notation_single_choice",
+        "problem_type_id": "numeric_numeric_evaluate_function_notation_short_answer",
         "target_task": "numeric_evaluate_function_notation",
         "task_family": "function_concept_family",
         "inferred_tasks": [
           "numeric_evaluate_function_notation"
         ],
-        "skill_problem_type_score": 0.0435,
-        "source_problem_type_score": 0.044,
+        "skill_problem_type_score": 0.04,
+        "source_problem_type_score": 0.0319,
         "task_consistent_with_skill": true,
         "family_consistent_with_skill": true,
         "answer_contract_supported": true
       },
       {
-        "problem_type_id": "evaluate_function_value",
+        "problem_type_id": "evaluate_function_notation_single_choice",
+        "target_task": "numeric_evaluate_function_notation",
+        "task_family": "function_concept_family",
+        "inferred_tasks": [
+          "numeric_evaluate_function_notation"
+        ],
+        "skill_problem_type_score": 0.0476,
+        "source_problem_type_score": 0.022,
+        "task_consistent_with_skill": true,
+        "family_consistent_with_skill": true,
+        "answer_contract_supported": true
+      },
+      {
+        "problem_type_id": "evaluate_function_value_2",
         "target_task": "evaluate_function_value",
         "task_family": "function_concept_family",
         "inferred_tasks": [
@@ -508,7 +547,7 @@
         "answer_contract_supported": true
       },
       {
-        "problem_type_id": "interpret_function_notation",
+        "problem_type_id": "interpret_function_notation_2",
         "target_task": "interpret_function_notation",
         "task_family": "function_concept_family",
         "inferred_tasks": [
@@ -524,7 +563,8 @@
     "decision": "warn",
     "blockers": [],
     "warnings": [
-      "ai_first_mode_fell_back_to_rule_only"
+      "ai_first_mode_fell_back_to_rule_only",
+      "ai_partial_unavailable_relaxed_tolerance"
     ],
     "induction_core_example_count": 15,
     "induction_enrichment_example_count": 0,
@@ -13776,9 +13816,9 @@
       ],
       "structure_context_used": true,
       "sequence_context_used": true,
-      "alignment_kind": "unclassified_low_confidence",
-      "exclude_reason": "semantic_alignment_score_zero_requires_human_review",
-      "included_in_phase1": false,
+      "alignment_kind": "unresolved_within_current_skill",
+      "exclude_reason": "",
+      "included_in_phase1": true,
       "conflict_reason": "ai_api_key_missing",
       "source_mapping_warning": "",
       "skill_anchor_scope": "default",
@@ -15296,9 +15336,9 @@
       ],
       "structure_context_used": true,
       "sequence_context_used": true,
-      "alignment_kind": "unclassified_low_confidence",
-      "exclude_reason": "semantic_alignment_score_zero_requires_human_review",
-      "included_in_phase1": false,
+      "alignment_kind": "unresolved_within_current_skill",
+      "exclude_reason": "",
+      "included_in_phase1": true,
       "conflict_reason": "ai_api_key_missing",
       "source_mapping_warning": "",
       "skill_anchor_scope": "default",
@@ -16055,9 +16095,9 @@
       ],
       "structure_context_used": true,
       "sequence_context_used": true,
-      "alignment_kind": "unclassified_low_confidence",
-      "exclude_reason": "semantic_alignment_score_zero_requires_human_review",
-      "included_in_phase1": false,
+      "alignment_kind": "unresolved_within_current_skill",
+      "exclude_reason": "",
+      "included_in_phase1": true,
       "conflict_reason": "ai_api_key_missing",
       "source_mapping_warning": "",
       "skill_anchor_scope": "default",
@@ -17573,9 +17613,9 @@
       ],
       "structure_context_used": true,
       "sequence_context_used": true,
-      "alignment_kind": "unclassified_low_confidence",
-      "exclude_reason": "semantic_alignment_score_zero_requires_human_review",
-      "included_in_phase1": false,
+      "alignment_kind": "unresolved_within_current_skill",
+      "exclude_reason": "",
+      "included_in_phase1": true,
       "conflict_reason": "ai_api_key_missing",
       "source_mapping_warning": "",
       "skill_anchor_scope": "default",
@@ -18433,9 +18473,9 @@
       ],
       "structure_context_used": true,
       "sequence_context_used": true,
-      "alignment_kind": "unclassified_low_confidence",
-      "exclude_reason": "semantic_alignment_score_zero_requires_human_review",
-      "included_in_phase1": false,
+      "alignment_kind": "unresolved_within_current_skill",
+      "exclude_reason": "",
+      "included_in_phase1": true,
       "conflict_reason": "ai_api_key_missing",
       "source_mapping_warning": "",
       "skill_anchor_scope": "default",
@@ -20710,9 +20750,9 @@
       ],
       "structure_context_used": true,
       "sequence_context_used": true,
-      "alignment_kind": "unclassified_low_confidence",
-      "exclude_reason": "semantic_alignment_score_zero_requires_human_review",
-      "included_in_phase1": false,
+      "alignment_kind": "unresolved_within_current_skill",
+      "exclude_reason": "",
+      "included_in_phase1": true,
       "conflict_reason": "ai_api_key_missing",
       "source_mapping_warning": "",
       "skill_anchor_scope": "default",
@@ -22956,158 +22996,7 @@
     }
   ],
   "ai_semantic_unavailable_reason": "missing_api_key",
-  "excluded_source_examples": [
-    {
-      "example_id": 4445,
-      "target_task": "compute_numeric",
-      "task_family": "generic_numeric_family",
-      "alignment_score": 0.0,
-      "aligned_with_skill": false,
-      "included_in_phase1": false,
-      "exclude_reason": "semantic_alignment_score_zero_requires_human_review",
-      "alignment_kind": "unclassified_low_confidence",
-      "skill_id_match": true,
-      "task_family_match": false,
-      "subskill_match": false,
-      "pass_with_warning": false,
-      "requires_human_action": true,
-      "induction_tier": "core",
-      "included_in_core_induction": false,
-      "enrichment_reasons": [],
-      "source_quality_issues": [],
-      "source_quality_reject": false,
-      "candidate_only": false,
-      "classification_source": "rule_fallback_ai_unavailable",
-      "induction_eligibility": "excluded",
-      "skill_id": "vh_數學B1_LinearFunction",
-      "title_stem_preview": "已知手機費包含月租基本費與超時通話費，某電信公司的手機月租基本費為m元，可以免費通話30分鐘。若通話時間超過30分鐘後，通話費與時間（分鐘）為線型函數的關係如圖..."
-    },
-    {
-      "example_id": 4425,
-      "target_task": "compute_numeric",
-      "task_family": "generic_numeric_family",
-      "alignment_score": 0.0,
-      "aligned_with_skill": false,
-      "included_in_phase1": false,
-      "exclude_reason": "semantic_alignment_score_zero_requires_human_review",
-      "alignment_kind": "unclassified_low_confidence",
-      "skill_id_match": true,
-      "task_family_match": false,
-      "subskill_match": false,
-      "pass_with_warning": false,
-      "requires_human_action": true,
-      "induction_tier": "core",
-      "included_in_core_induction": false,
-      "enrichment_reasons": [],
-      "source_quality_issues": [],
-      "source_quality_reject": false,
-      "candidate_only": false,
-      "classification_source": "rule_fallback_ai_unavailable",
-      "induction_eligibility": "excluded",
-      "skill_id": "vh_數學B1_LinearFunction",
-      "title_stem_preview": "右圖是某電信公司的通話費計算方式：300秒以內只繳基本費，超過300秒之後的費用，與通話時間成線型函數關係，試問： (1) 手機基本費用為多少元？ (2) 本月..."
-    },
-    {
-      "example_id": 4426,
-      "target_task": "compute_numeric",
-      "task_family": "generic_numeric_family",
-      "alignment_score": 0.0,
-      "aligned_with_skill": false,
-      "included_in_phase1": false,
-      "exclude_reason": "semantic_alignment_score_zero_requires_human_review",
-      "alignment_kind": "unclassified_low_confidence",
-      "skill_id_match": true,
-      "task_family_match": false,
-      "subskill_match": false,
-      "pass_with_warning": false,
-      "requires_human_action": true,
-      "induction_tier": "core",
-      "included_in_core_induction": false,
-      "enrichment_reasons": [],
-      "source_quality_issues": [],
-      "source_quality_reject": false,
-      "candidate_only": false,
-      "classification_source": "rule_fallback_ai_unavailable",
-      "induction_eligibility": "excluded",
-      "skill_id": "vh_數學B1_LinearFunction",
-      "title_stem_preview": "設直角坐標平面上四點$A\\left( -2,1 \\right)$、$B\\left( {{b}_{1}},{{b}_{2}} \\right)$、$C\\left( ..."
-    },
-    {
-      "example_id": 4442,
-      "target_task": "applied_quadratic_inequality_problem",
-      "task_family": "quadratic_inequality_family",
-      "alignment_score": 0.0,
-      "aligned_with_skill": false,
-      "included_in_phase1": false,
-      "exclude_reason": "semantic_alignment_score_zero_requires_human_review",
-      "alignment_kind": "unclassified_low_confidence",
-      "skill_id_match": true,
-      "task_family_match": false,
-      "subskill_match": false,
-      "pass_with_warning": false,
-      "requires_human_action": true,
-      "induction_tier": "core",
-      "included_in_core_induction": false,
-      "enrichment_reasons": [],
-      "source_quality_issues": [],
-      "source_quality_reject": false,
-      "candidate_only": false,
-      "classification_source": "rule_fallback_ai_unavailable",
-      "induction_eligibility": "excluded",
-      "skill_id": "vh_數學B1_LinearFunction",
-      "title_stem_preview": "高老師搭乘某廉價航空，他的行李托運費用是850元，若行李托運費用與重量是成線型函數的關係，如圖所示，試求高老師托運的行李幾公斤？"
-    },
-    {
-      "example_id": 4446,
-      "target_task": "compute_numeric",
-      "task_family": "generic_numeric_family",
-      "alignment_score": 0.0,
-      "aligned_with_skill": false,
-      "included_in_phase1": false,
-      "exclude_reason": "semantic_alignment_score_zero_requires_human_review",
-      "alignment_kind": "unclassified_low_confidence",
-      "skill_id_match": true,
-      "task_family_match": false,
-      "subskill_match": false,
-      "pass_with_warning": false,
-      "requires_human_action": true,
-      "induction_tier": "core",
-      "included_in_core_induction": false,
-      "enrichment_reasons": [],
-      "source_quality_issues": [],
-      "source_quality_reject": false,
-      "candidate_only": true,
-      "classification_source": "rule_fallback_ai_unavailable",
-      "induction_eligibility": "excluded",
-      "skill_id": "vh_數學B1_LinearFunction",
-      "title_stem_preview": "公司給小虹最多50萬元的預算來採買$x$、$y$兩種貨品。但小虹一時疏忽，無法確定$x$貨品跟$y$貨品的單價哪一個是100元、哪一個是200元。下列數對($x..."
-    },
-    {
-      "example_id": 4500,
-      "target_task": "compute_numeric",
-      "task_family": "generic_numeric_family",
-      "alignment_score": 0.0,
-      "aligned_with_skill": false,
-      "included_in_phase1": false,
-      "exclude_reason": "semantic_alignment_score_zero_requires_human_review",
-      "alignment_kind": "unclassified_low_confidence",
-      "skill_id_match": true,
-      "task_family_match": false,
-      "subskill_match": false,
-      "pass_with_warning": false,
-      "requires_human_action": true,
-      "induction_tier": "core",
-      "included_in_core_induction": false,
-      "enrichment_reasons": [],
-      "source_quality_issues": [],
-      "source_quality_reject": false,
-      "candidate_only": false,
-      "classification_source": "rule_fallback_ai_unavailable",
-      "induction_eligibility": "excluded",
-      "skill_id": "vh_數學B1_LinearFunction",
-      "title_stem_preview": "阿偉的汽車加滿油後開始行駛，其行駛距離x公里與剩餘油量y公升的關係為線型函數，其圖形如右圖所示，則x與y的關係式為"
-    }
-  ],
+  "excluded_source_examples": [],
   "induction_source_selection": {
     "core_example_count": 15,
     "enrichment_example_count": 0,
@@ -23139,19 +23028,24 @@
   "inherited_from_previous_context_examples": [],
   "low_source_examples": [
     {
-      "problem_type_id": "numeric_numeric_evaluate_function_notation_single_choice",
+      "problem_type_id": "numeric_evaluate_function_notation_single_choice",
       "matched_example_count": 1
     },
     {
-      "problem_type_id": "evaluate_function_value",
+      "problem_type_id": "evaluate_function_value_2",
       "matched_example_count": 0
     },
     {
-      "problem_type_id": "interpret_function_notation",
+      "problem_type_id": "interpret_function_notation_2",
       "matched_example_count": 0
     }
   ],
   "candidate_only_problem_types": [
+    {
+      "example_id": 4446,
+      "subskill_id": "same_as_main_skill",
+      "reason": "candidate_only_source"
+    },
     {
       "example_id": 4433,
       "problem_type_id": "numeric_numeric_evaluate_function_notation_short_answer",
@@ -23168,8 +23062,23 @@
       "reason": "runtime_not_supported"
     },
     {
+      "example_id": 4445,
+      "problem_type_id": "short_answer_compute_numeric_short_answer",
+      "reason": "runtime_not_supported"
+    },
+    {
       "example_id": 4424,
       "problem_type_id": "numeric_numeric_evaluate_function_notation_short_answer",
+      "reason": "runtime_not_supported"
+    },
+    {
+      "example_id": 4425,
+      "problem_type_id": "short_answer_compute_numeric_short_answer",
+      "reason": "runtime_not_supported"
+    },
+    {
+      "example_id": 4426,
+      "problem_type_id": "short_answer_compute_numeric_short_answer",
       "reason": "runtime_not_supported"
     },
     {
@@ -23188,8 +23097,13 @@
       "reason": "runtime_not_supported"
     },
     {
+      "example_id": 4500,
+      "problem_type_id": "short_answer_compute_numeric_short_answer",
+      "reason": "runtime_not_supported"
+    },
+    {
       "example_id": 4515,
-      "problem_type_id": "numeric_numeric_evaluate_function_notation_single_choice",
+      "problem_type_id": "numeric_evaluate_function_notation_single_choice",
       "reason": "runtime_not_supported"
     },
     {
@@ -23198,7 +23112,7 @@
       "reason": "runtime_not_supported"
     }
   ],
-  "candidate_only_count": 9,
+  "candidate_only_count": 14,
   "same_as_main_skill_count": 0,
   "rule_only_classification_count": 0,
   "hybrid_resolved_count": 0,
@@ -23232,6 +23146,10 @@
       "source_quality_reject": false,
       "candidate_only": false,
       "classification_source": "rule_fallback_ai_unavailable",
+      "source_skill_scope_locked": true,
+      "skill_mapping_authority": "textbook_examples.skill_id",
+      "classification_scope": "within_current_skill",
+      "unresolved_reason": "",
       "induction_eligibility": "eligible",
       "skill_id": "vh_數學B1_LinearFunction",
       "title_stem_preview": "試在坐標平面上畫出$y=f\\left( x \\right)=-2$的圖形。"
@@ -23257,6 +23175,10 @@
       "source_quality_reject": false,
       "candidate_only": false,
       "classification_source": "rule_fallback_ai_unavailable",
+      "source_skill_scope_locked": true,
+      "skill_mapping_authority": "textbook_examples.skill_id",
+      "classification_scope": "within_current_skill",
+      "unresolved_reason": "",
       "induction_eligibility": "eligible",
       "skill_id": "vh_數學B1_LinearFunction",
       "title_stem_preview": "試在坐標平面上畫出函數$y=f\\left( x \\right)=3x-6$的圖形。"
@@ -23282,6 +23204,10 @@
       "source_quality_reject": false,
       "candidate_only": false,
       "classification_source": "rule_fallback_ai_unavailable",
+      "source_skill_scope_locked": true,
+      "skill_mapping_authority": "textbook_examples.skill_id",
+      "classification_scope": "within_current_skill",
+      "unresolved_reason": "",
       "induction_eligibility": "eligible",
       "skill_id": "vh_數學B1_LinearFunction",
       "title_stem_preview": "下圖為函數$y=f\\left( x \\right)=ax+b$的圖形。\n(1)試求直線的x截距與y截距。\n(2)試求$f\\left( x \\right)$。"
@@ -23291,23 +23217,27 @@
       "target_task": "compute_numeric",
       "task_family": "generic_numeric_family",
       "alignment_score": 0.0,
-      "aligned_with_skill": false,
-      "included_in_phase1": false,
-      "exclude_reason": "semantic_alignment_score_zero_requires_human_review",
-      "alignment_kind": "unclassified_low_confidence",
+      "aligned_with_skill": true,
+      "included_in_phase1": true,
+      "exclude_reason": "",
+      "alignment_kind": "unresolved_within_current_skill",
       "skill_id_match": true,
       "task_family_match": false,
       "subskill_match": false,
       "pass_with_warning": false,
       "requires_human_action": true,
       "induction_tier": "core",
-      "included_in_core_induction": false,
+      "included_in_core_induction": true,
       "enrichment_reasons": [],
       "source_quality_issues": [],
       "source_quality_reject": false,
       "candidate_only": false,
       "classification_source": "rule_fallback_ai_unavailable",
-      "induction_eligibility": "excluded",
+      "source_skill_scope_locked": true,
+      "skill_mapping_authority": "textbook_examples.skill_id",
+      "classification_scope": "within_current_skill",
+      "unresolved_reason": "semantic_score_zero_within_current_skill",
+      "induction_eligibility": "eligible",
       "skill_id": "vh_數學B1_LinearFunction",
       "title_stem_preview": "已知手機費包含月租基本費與超時通話費，某電信公司的手機月租基本費為m元，可以免費通話30分鐘。若通話時間超過30分鐘後，通話費與時間（分鐘）為線型函數的關係如圖"
     },
@@ -23332,6 +23262,10 @@
       "source_quality_reject": false,
       "candidate_only": false,
       "classification_source": "rule_fallback_ai_unavailable",
+      "source_skill_scope_locked": true,
+      "skill_mapping_authority": "textbook_examples.skill_id",
+      "classification_scope": "within_current_skill",
+      "unresolved_reason": "",
       "induction_eligibility": "eligible",
       "skill_id": "vh_數學B1_LinearFunction",
       "title_stem_preview": "右圖為函數$y=f\\left( x \\right)=ax+b$的圖形。\n(1) 試求直線的x截距與y截距。\n(2) 試求$f\\left( x \\right)$。"
@@ -23341,23 +23275,27 @@
       "target_task": "compute_numeric",
       "task_family": "generic_numeric_family",
       "alignment_score": 0.0,
-      "aligned_with_skill": false,
-      "included_in_phase1": false,
-      "exclude_reason": "semantic_alignment_score_zero_requires_human_review",
-      "alignment_kind": "unclassified_low_confidence",
+      "aligned_with_skill": true,
+      "included_in_phase1": true,
+      "exclude_reason": "",
+      "alignment_kind": "unresolved_within_current_skill",
       "skill_id_match": true,
       "task_family_match": false,
       "subskill_match": false,
       "pass_with_warning": false,
       "requires_human_action": true,
       "induction_tier": "core",
-      "included_in_core_induction": false,
+      "included_in_core_induction": true,
       "enrichment_reasons": [],
       "source_quality_issues": [],
       "source_quality_reject": false,
       "candidate_only": false,
       "classification_source": "rule_fallback_ai_unavailable",
-      "induction_eligibility": "excluded",
+      "source_skill_scope_locked": true,
+      "skill_mapping_authority": "textbook_examples.skill_id",
+      "classification_scope": "within_current_skill",
+      "unresolved_reason": "semantic_score_zero_within_current_skill",
+      "induction_eligibility": "eligible",
       "skill_id": "vh_數學B1_LinearFunction",
       "title_stem_preview": "右圖是某電信公司的通話費計算方式：300秒以內只繳基本費，超過300秒之後的費用，與通話時間成線型函數關係，試問：\n(1) 手機基本費用為多少元？\n(2) 本月"
     },
@@ -23366,23 +23304,27 @@
       "target_task": "compute_numeric",
       "task_family": "generic_numeric_family",
       "alignment_score": 0.0,
-      "aligned_with_skill": false,
-      "included_in_phase1": false,
-      "exclude_reason": "semantic_alignment_score_zero_requires_human_review",
-      "alignment_kind": "unclassified_low_confidence",
+      "aligned_with_skill": true,
+      "included_in_phase1": true,
+      "exclude_reason": "",
+      "alignment_kind": "unresolved_within_current_skill",
       "skill_id_match": true,
       "task_family_match": false,
       "subskill_match": false,
       "pass_with_warning": false,
       "requires_human_action": true,
       "induction_tier": "core",
-      "included_in_core_induction": false,
+      "included_in_core_induction": true,
       "enrichment_reasons": [],
       "source_quality_issues": [],
       "source_quality_reject": false,
       "candidate_only": false,
       "classification_source": "rule_fallback_ai_unavailable",
-      "induction_eligibility": "excluded",
+      "source_skill_scope_locked": true,
+      "skill_mapping_authority": "textbook_examples.skill_id",
+      "classification_scope": "within_current_skill",
+      "unresolved_reason": "semantic_score_zero_within_current_skill",
+      "induction_eligibility": "eligible",
       "skill_id": "vh_數學B1_LinearFunction",
       "title_stem_preview": "設直角坐標平面上四點$A\\left( -2,1 \\right)$、$B\\left( {{b}_{1}},{{b}_{2}} \\right)$、$C\\left( "
     },
@@ -23407,6 +23349,10 @@
       "source_quality_reject": false,
       "candidate_only": false,
       "classification_source": "rule_fallback_ai_unavailable",
+      "source_skill_scope_locked": true,
+      "skill_mapping_authority": "textbook_examples.skill_id",
+      "classification_scope": "within_current_skill",
+      "unresolved_reason": "",
       "induction_eligibility": "eligible",
       "skill_id": "vh_數學B1_LinearFunction",
       "title_stem_preview": "右圖為函數$y=f\\left( x \\right)=ax+b$的圖形。\n(1) 試求直線的x截距與y截距。\n(2) 試求$f\\left( x \\right)$。"
@@ -23416,23 +23362,27 @@
       "target_task": "applied_quadratic_inequality_problem",
       "task_family": "quadratic_inequality_family",
       "alignment_score": 0.0,
-      "aligned_with_skill": false,
-      "included_in_phase1": false,
-      "exclude_reason": "semantic_alignment_score_zero_requires_human_review",
-      "alignment_kind": "unclassified_low_confidence",
+      "aligned_with_skill": true,
+      "included_in_phase1": true,
+      "exclude_reason": "",
+      "alignment_kind": "unresolved_within_current_skill",
       "skill_id_match": true,
       "task_family_match": false,
       "subskill_match": false,
       "pass_with_warning": false,
       "requires_human_action": true,
       "induction_tier": "core",
-      "included_in_core_induction": false,
+      "included_in_core_induction": true,
       "enrichment_reasons": [],
       "source_quality_issues": [],
       "source_quality_reject": false,
       "candidate_only": false,
       "classification_source": "rule_fallback_ai_unavailable",
-      "induction_eligibility": "excluded",
+      "source_skill_scope_locked": true,
+      "skill_mapping_authority": "textbook_examples.skill_id",
+      "classification_scope": "within_current_skill",
+      "unresolved_reason": "semantic_score_zero_within_current_skill",
+      "induction_eligibility": "eligible",
       "skill_id": "vh_數學B1_LinearFunction",
       "title_stem_preview": "高老師搭乘某廉價航空，他的行李托運費用是850元，若行李托運費用與重量是成線型函數的關係，如圖所示，試求高老師托運的行李幾公斤？"
     },
@@ -23441,23 +23391,27 @@
       "target_task": "compute_numeric",
       "task_family": "generic_numeric_family",
       "alignment_score": 0.0,
-      "aligned_with_skill": false,
-      "included_in_phase1": false,
-      "exclude_reason": "semantic_alignment_score_zero_requires_human_review",
-      "alignment_kind": "unclassified_low_confidence",
+      "aligned_with_skill": true,
+      "included_in_phase1": true,
+      "exclude_reason": "",
+      "alignment_kind": "unresolved_within_current_skill",
       "skill_id_match": true,
       "task_family_match": false,
       "subskill_match": false,
       "pass_with_warning": false,
       "requires_human_action": true,
       "induction_tier": "core",
-      "included_in_core_induction": false,
+      "included_in_core_induction": true,
       "enrichment_reasons": [],
       "source_quality_issues": [],
       "source_quality_reject": false,
       "candidate_only": true,
       "classification_source": "rule_fallback_ai_unavailable",
-      "induction_eligibility": "excluded",
+      "source_skill_scope_locked": true,
+      "skill_mapping_authority": "textbook_examples.skill_id",
+      "classification_scope": "within_current_skill",
+      "unresolved_reason": "semantic_score_zero_within_current_skill",
+      "induction_eligibility": "eligible",
       "skill_id": "vh_數學B1_LinearFunction",
       "title_stem_preview": "公司給小虹最多50萬元的預算來採買$x$、$y$兩種貨品。但小虹一時疏忽，無法確定$x$貨品跟$y$貨品的單價哪一個是100元、哪一個是200元。下列數對($x"
     },
@@ -23482,6 +23436,10 @@
       "source_quality_reject": false,
       "candidate_only": false,
       "classification_source": "rule_fallback_ai_unavailable",
+      "source_skill_scope_locked": true,
+      "skill_mapping_authority": "textbook_examples.skill_id",
+      "classification_scope": "within_current_skill",
+      "unresolved_reason": "",
       "induction_eligibility": "eligible",
       "skill_id": "vh_數學B1_LinearFunction",
       "title_stem_preview": "試在坐標平面上畫出$y=f\\left( x \\right)=3$的圖形。"
@@ -23507,6 +23465,10 @@
       "source_quality_reject": false,
       "candidate_only": false,
       "classification_source": "rule_fallback_ai_unavailable",
+      "source_skill_scope_locked": true,
+      "skill_mapping_authority": "textbook_examples.skill_id",
+      "classification_scope": "within_current_skill",
+      "unresolved_reason": "",
       "induction_eligibility": "eligible",
       "skill_id": "vh_數學B1_LinearFunction",
       "title_stem_preview": "試在坐標平面上畫出函數$y=f\\left( x \\right)=-2x+4$的圖形。"
@@ -23516,23 +23478,27 @@
       "target_task": "compute_numeric",
       "task_family": "generic_numeric_family",
       "alignment_score": 0.0,
-      "aligned_with_skill": false,
-      "included_in_phase1": false,
-      "exclude_reason": "semantic_alignment_score_zero_requires_human_review",
-      "alignment_kind": "unclassified_low_confidence",
+      "aligned_with_skill": true,
+      "included_in_phase1": true,
+      "exclude_reason": "",
+      "alignment_kind": "unresolved_within_current_skill",
       "skill_id_match": true,
       "task_family_match": false,
       "subskill_match": false,
       "pass_with_warning": false,
       "requires_human_action": true,
       "induction_tier": "core",
-      "included_in_core_induction": false,
+      "included_in_core_induction": true,
       "enrichment_reasons": [],
       "source_quality_issues": [],
       "source_quality_reject": false,
       "candidate_only": false,
       "classification_source": "rule_fallback_ai_unavailable",
-      "induction_eligibility": "excluded",
+      "source_skill_scope_locked": true,
+      "skill_mapping_authority": "textbook_examples.skill_id",
+      "classification_scope": "within_current_skill",
+      "unresolved_reason": "semantic_score_zero_within_current_skill",
+      "induction_eligibility": "eligible",
       "skill_id": "vh_數學B1_LinearFunction",
       "title_stem_preview": "阿偉的汽車加滿油後開始行駛，其行駛距離x公里與剩餘油量y公升的關係為線型函數，其圖形如右圖所示，則x與y的關係式為"
     },
@@ -23557,6 +23523,10 @@
       "source_quality_reject": false,
       "candidate_only": false,
       "classification_source": "rule_fallback_ai_unavailable",
+      "source_skill_scope_locked": true,
+      "skill_mapping_authority": "textbook_examples.skill_id",
+      "classification_scope": "within_current_skill",
+      "unresolved_reason": "",
       "induction_eligibility": "eligible",
       "skill_id": "vh_數學B1_LinearFunction",
       "title_stem_preview": "設$f\\left( x \\right)=ax+b$為一線型函數，且圖形通過點$\\left( -2,4 \\right)$、$\\left( 1,1 \\right)$"
@@ -23582,6 +23552,10 @@
       "source_quality_reject": false,
       "candidate_only": false,
       "classification_source": "rule_fallback_ai_unavailable",
+      "source_skill_scope_locked": true,
+      "skill_mapping_authority": "textbook_examples.skill_id",
+      "classification_scope": "within_current_skill",
+      "unresolved_reason": "",
       "induction_eligibility": "eligible",
       "skill_id": "vh_數學B1_LinearFunction",
       "title_stem_preview": "利用截距定義，試問下列何者不可能是函數$y=f\\left( x \\right)=ax-3$的圖形？"
@@ -23593,18 +23567,15 @@
       "proposed_problem_type_id": "integer_numeric_evaluate_function_notation",
       "display_name": "integer / numeric_evaluate_function_notation",
       "matched_example_ids": [
-        4424,
         4433,
         4434,
-        4441,
-        4444,
         4448,
         4449,
         4516
       ],
-      "matched_example_count": 8,
+      "matched_example_count": 5,
       "unmatched_example_ids": [],
-      "representative_example_id": 4424,
+      "representative_example_id": 4433,
       "structural_features": [
         "text_short"
       ],
@@ -23613,26 +23584,96 @@
         "choice_count": null,
         "correct_choice_count": null,
         "frontend_render_choices": false,
-        "source_has_choices": false,
         "answer_type": "integer",
         "answer_shape": "text_short",
-        "answer_semantics": "text_short",
         "answer_equivalence": "numeric_exact",
-        "equivalence_type": "numeric_exact",
         "checker": "integer_checker",
+        "accepted_formats": [
+          "5",
+          "5.0",
+          "-3"
+        ],
+        "equivalence_type": "numeric_exact",
         "checker_key": "integer_checker",
         "presentation_mode": "",
-        "selected_checker": "text_short_checker",
-        "checker_capability_status": "ok",
-        "checker_contract_blockers": [],
-        "checker_contract_warnings": [],
+        "order_matters": true,
+        "accepted_format_notes": [],
+        "canonical_answer_schema": "text_short"
+      },
+      "checker_key_proposal": "integer_checker",
+      "equivalence_type_proposal": "numeric_exact",
+      "answer_shape": "text_short",
+      "answer_semantics": "text_short",
+      "presentation_mode": "short_answer",
+      "source_has_choices": false,
+      "selected_checker": "text_short_checker",
+      "checker_selection_reason": "task_family_default",
+      "coordinate_pair_presentation_note": "",
+      "confidence": "high",
+      "promote_recommendation": "recommend_promote_for_that_candidate",
+      "promote_blockers": [],
+      "risk_flags": [
+        "ai_first_mode_fell_back_to_rule_only",
+        "ai_partial_unavailable_relaxed_tolerance",
+        "no_registered_slot_but_presentation_known",
+        "subskill_mismatch_warning"
+      ],
+      "checker_contract_warnings": [],
+      "spec_source": "phase1_induced_draft",
+      "grouping_reason": "split_by_feature_signature",
+      "feature_signature": [
+        "numeric",
+        "numeric_evaluate_function_notation",
+        "short_answer",
+        [
+          "numeric_computation"
+        ],
+        [
+          "coordinate_point",
+          "quadratic_equation"
+        ],
+        "default"
+      ],
+      "problem_type_spec_draft": {
+        "problem_type_id": "text_short_text_short_evaluate_function_notation_expression",
+        "skill_id": "vh_數學B1_LinearFunction",
+        "target_task": "numeric_evaluate_function_notation",
+        "task_family": "function_concept_family",
+        "display_name": "numeric / numeric_evaluate_function_notation",
+        "answer_format_hint": "text_short",
+        "answer_fields": null,
+        "answer_separator": null,
+        "source_example_ids": [
+          4433,
+          4434,
+          4448,
+          4449,
+          4516
+        ],
+        "answer_contract": {
+          "choices_required": false,
+          "choice_count": null,
+          "correct_choice_count": null,
+          "frontend_render_choices": false,
+          "answer_type": "text_short",
+          "answer_shape": "text_short",
+          "answer_equivalence": "exact_string",
+          "checker": "text_short_checker",
+          "accepted_formats": [
+            "5",
+            "5.0",
+            "-3"
+          ],
+          "equivalence_type": "exact_string",
+          "checker_key": "text_short_checker",
+          "presentation_mode": "short_answer"
+        },
         "stem_contract": {
           "stem_must_not_embed_choices": true,
           "allowed_math_objects": [
             "coordinate_point",
             "quadratic_equation",
-            "quadratic_vertex_form",
-            "two_coordinate_points"
+            "quadratic_vertex_form"
           ],
           "required_math_objects": [
             "coordinate_point",
@@ -23760,6 +23801,73 @@
           ],
           "runtime_smoke_count": 30
         },
+        "spec_source": "phase1_induced_draft",
+        "grouping_reason": "split_by_feature_signature",
+        "feature_signature": [
+          "numeric",
+          "numeric_evaluate_function_notation",
+          "short_answer",
+          [
+            "numeric_computation"
+          ],
+          [
+            "coordinate_point",
+            "quadratic_equation"
+          ],
+          "default"
+        ],
+        "canonical_base_problem_type_id": "numeric_evaluate_function_notation_short_answer",
+        "value_type_prefix": "numeric",
+        "_resolved_template_slot": "",
+        "naming_warning": "naming_warning:numeric_prefix_but_hint_is_text_short"
+      },
+      "generator_readiness": "runtime_ready_with_warning",
+      "usable_for_phase3": true,
+      "template_slot": "",
+      "canonical_base_problem_type_id": "numeric_evaluate_function_notation_short_answer",
+      "value_type_prefix": "numeric",
+      "subskill_id": "numeric_evaluate_function_notation",
+      "answer_type": "text_short",
+      "runtime_status": "runtime_ready_candidate",
+      "next_action": "phase2_foundation_preflight",
+      "semantic_alignment": {
+        "skill_problem_type_score": 0.04,
+        "source_problem_type_score": 0.0319,
+        "task_consistent_with_skill": true
+      }
+    },
+    {
+      "problem_type_id": "integer_numeric_evaluate_function_notation",
+      "proposed_problem_type_id": "integer_numeric_evaluate_function_notation",
+      "display_name": "integer / numeric_evaluate_function_notation",
+      "matched_example_ids": [
+        4424,
+        4441,
+        4444
+      ],
+      "matched_example_count": 3,
+      "unmatched_example_ids": [],
+      "representative_example_id": 4424,
+      "structural_features": [
+        "text_short"
+      ],
+      "answer_contract_proposal": {
+        "choices_required": false,
+        "choice_count": null,
+        "correct_choice_count": null,
+        "frontend_render_choices": false,
+        "answer_type": "integer",
+        "answer_shape": "text_short",
+        "answer_equivalence": "numeric_exact",
+        "checker": "integer_checker",
+        "accepted_formats": [
+          "5",
+          "5.0",
+          "-3"
+        ],
+        "equivalence_type": "numeric_exact",
+        "checker_key": "integer_checker",
+        "presentation_mode": "",
         "order_matters": true,
         "accepted_format_notes": [],
         "canonical_answer_schema": "text_short"
@@ -23778,6 +23886,7 @@
       "promote_blockers": [],
       "risk_flags": [
         "ai_first_mode_fell_back_to_rule_only",
+        "ai_partial_unavailable_relaxed_tolerance",
         "no_registered_slot_but_presentation_known",
         "subskill_mismatch_warning"
       ],
@@ -23794,7 +23903,8 @@
         [
           "coordinate_point",
           "quadratic_equation"
-        ]
+        ],
+        "line_equation"
       ],
       "problem_type_spec_draft": {
         "problem_type_id": "text_short_text_short_evaluate_function_notation_expression",
@@ -23802,34 +23912,31 @@
         "target_task": "numeric_evaluate_function_notation",
         "task_family": "function_concept_family",
         "display_name": "numeric / numeric_evaluate_function_notation",
-        "answer_format_hint": "",
+        "answer_format_hint": "text_short",
         "answer_fields": null,
         "answer_separator": null,
         "source_example_ids": [
           4424,
-          4433,
-          4434,
           4441,
-          4444,
-          4448,
-          4449,
-          4516
+          4444
         ],
         "answer_contract": {
           "choices_required": false,
           "choice_count": null,
           "correct_choice_count": null,
           "frontend_render_choices": false,
-          "source_has_choices": false,
           "answer_type": "text_short",
           "answer_shape": "text_short",
-          "answer_semantics": "text_short",
           "answer_equivalence": "exact_string",
-          "equivalence_type": "exact_string",
           "checker": "text_short_checker",
+          "accepted_formats": [
+            "5",
+            "5.0",
+            "-3"
+          ],
+          "equivalence_type": "exact_string",
           "checker_key": "text_short_checker",
-          "presentation_mode": "short_answer",
-          "selected_checker": "text_short_checker"
+          "presentation_mode": "short_answer"
         },
         "stem_contract": {
           "stem_must_not_embed_choices": true,
@@ -23977,11 +24084,13 @@
           [
             "coordinate_point",
             "quadratic_equation"
-          ]
+          ],
+          "line_equation"
         ],
         "canonical_base_problem_type_id": "numeric_evaluate_function_notation_short_answer",
         "value_type_prefix": "numeric",
-        "_resolved_template_slot": ""
+        "_resolved_template_slot": "",
+        "naming_warning": "naming_warning:numeric_prefix_but_hint_is_text_short"
       },
       "generator_readiness": "runtime_ready_with_warning",
       "usable_for_phase3": true,
@@ -23989,14 +24098,14 @@
       "canonical_base_problem_type_id": "numeric_evaluate_function_notation_short_answer",
       "value_type_prefix": "numeric",
       "subskill_id": "numeric_evaluate_function_notation",
+      "answer_type": "text_short",
       "runtime_status": "runtime_ready_candidate",
       "next_action": "phase2_foundation_preflight",
       "semantic_alignment": {
         "skill_problem_type_score": 0.04,
         "source_problem_type_score": 0.0319,
         "task_consistent_with_skill": true
-      },
-      "answer_type": "text_short"
+      }
     },
     {
       "problem_type_id": "integer_numeric_evaluate_function_notation",
@@ -24031,146 +24140,6 @@
         "equivalence_type": "choice_label",
         "checker_key": "choice_label_checker",
         "presentation_mode": "",
-        "selected_checker": "choice_label_checker",
-        "checker_capability_status": "ok",
-        "checker_contract_blockers": [],
-        "checker_contract_warnings": [],
-        "stem_contract": {
-          "stem_must_not_embed_choices": true,
-          "allowed_math_objects": [
-            "coordinate_point",
-            "quadratic_equation",
-            "quadratic_vertex_form",
-            "three_coordinate_points",
-            "triangle",
-            "two_coordinate_points"
-          ],
-          "required_math_objects": [
-            "coordinate_point",
-            "quadratic_equation"
-          ],
-          "forbidden_patterns": [
-            "\\(A\\)",
-            "\\(B\\)",
-            "\\(C\\)",
-            "\\(D\\)"
-          ]
-        },
-        "dependency_contract": {
-          "givens_must_be_used": true,
-          "target_answer_must_depend_on_givens": true,
-          "variables_in_conditions_must_appear_in_target": false
-        },
-        "semantic_contract": {
-          "reasoning_type": [
-            "numeric_computation"
-          ],
-          "reject_if": [
-            "unused_condition",
-            "ambiguous_answer",
-            "answer_not_derivable",
-            "duplicated_choices",
-            "no_correct_choice",
-            "multiple_correct_choices_when_single_choice"
-          ]
-        },
-        "generator_contract": {
-          "template_variants": [
-            {
-              "id": "default",
-              "label": "default",
-              "stem_pattern": "依題意求解：{stem_hint}。",
-              "weight": 1.0,
-              "enabled": true
-            }
-          ],
-          "parameter_schema": {
-            "seed": {
-              "type": "integer",
-              "randomize": true
-            },
-            "difficulty_level": {
-              "choices": [
-                "level_1",
-                "level_2",
-                "level_3"
-              ],
-              "weights": [
-                0.4,
-                0.4,
-                0.2
-              ]
-            }
-          },
-          "variation_dimensions": [
-            "seed",
-            "difficulty_level",
-            "context_style"
-          ],
-          "difficulty_controls": {
-            "level_1": {},
-            "level_2": {},
-            "level_3": {}
-          },
-          "anti_repetition_rules": {
-            "avoid_same_template_consecutive": true,
-            "avoid_same_ratio_consecutive": true,
-            "avoid_same_point_names_consecutive": true,
-            "avoid_same_answer_consecutive": true,
-            "recent_history_window": 5,
-            "signature_fields": [
-              "problem_type_id",
-              "template_variant",
-              "routing_track",
-              "scenario_type",
-              "ratio_form",
-              "ratio_values",
-              "coordinate_pattern",
-              "answer"
-            ]
-          },
-          "validity_constraints": [
-            "answer derivable from givens"
-          ],
-          "answer_shape": "numeric",
-          "explanation_variants": [
-            "stepwise"
-          ],
-          "sampling_strategy": "weighted_random",
-          "template_families": [
-            "numeric_evaluate_function_notation"
-          ],
-          "parameter_slots": {
-            "seed": "integer",
-            "difficulty": "easy"
-          },
-          "randomization_rules": {
-            "shuffle_choices": false
-          },
-          "avoid_llm_freeform_math": true,
-          "use_domain_functions": true,
-          "derivation_steps_required": true,
-          "templates": [
-            "template_scalar_unknown",
-            "template_feature_value"
-          ],
-          "problem_type_id": "numeric_numeric_evaluate_function_notation_single_choice",
-          "contract_validation_blockers": [],
-          "contract_validation_warnings": [
-            "single_template_variant_only",
-            "variation_dimensions_below_recommended_minimum"
-          ]
-        },
-        "validator_contract": {
-          "static_checks": [
-            "answer_contract_checks",
-            "choices_policy"
-          ],
-          "semantic_checks": [
-            "givens_to_target_dependency"
-          ],
-          "runtime_smoke_count": 30
-        },
         "order_matters": true,
         "accepted_format_notes": [],
         "canonical_answer_schema": "single_choice"
@@ -24189,6 +24158,7 @@
       "promote_blockers": [],
       "risk_flags": [
         "ai_first_mode_fell_back_to_rule_only",
+        "ai_partial_unavailable_relaxed_tolerance",
         "no_registered_slot_but_presentation_known",
         "subskill_mismatch_warning"
       ],
@@ -24205,10 +24175,11 @@
         [
           "coordinate_point",
           "quadratic_equation"
-        ]
+        ],
+        "line_equation"
       ],
       "problem_type_spec_draft": {
-        "problem_type_id": "choice_choice_evaluate_function_notation_single_choice",
+        "problem_type_id": "choice_evaluate_function_notation_single_choice",
         "skill_id": "vh_數學B1_LinearFunction",
         "target_task": "numeric_evaluate_function_notation",
         "task_family": "function_concept_family",
@@ -24388,9 +24359,10 @@
           [
             "coordinate_point",
             "quadratic_equation"
-          ]
+          ],
+          "line_equation"
         ],
-        "canonical_base_problem_type_id": "numeric_evaluate_function_notation_single_choice",
+        "canonical_base_problem_type_id": "evaluate_function_notation_single_choice",
         "value_type_prefix": "numeric",
         "_resolved_template_slot": "",
         "naming_warning": "naming_warning:numeric_prefix_but_hint_is_A/B/C/D"
@@ -24398,21 +24370,21 @@
       "generator_readiness": "runtime_ready_with_warning",
       "usable_for_phase3": true,
       "template_slot": "",
-      "canonical_base_problem_type_id": "numeric_evaluate_function_notation_single_choice",
+      "canonical_base_problem_type_id": "evaluate_function_notation_single_choice",
       "value_type_prefix": "numeric",
       "subskill_id": "numeric_evaluate_function_notation",
+      "answer_type": "choice",
       "runtime_status": "runtime_ready_candidate",
       "next_action": "phase2_foundation_preflight",
       "semantic_alignment": {
-        "skill_problem_type_score": 0.0435,
-        "source_problem_type_score": 0.044,
+        "skill_problem_type_score": 0.0,
+        "source_problem_type_score": 0.0,
         "task_consistent_with_skill": true
-      },
-      "answer_type": "choice"
+      }
     },
     {
-      "problem_type_id": "evaluate_function_value",
-      "proposed_problem_type_id": "evaluate_function_value",
+      "problem_type_id": "evaluate_function_value_2",
+      "proposed_problem_type_id": "evaluate_function_value_2",
       "display_name": "evaluate_function_value / anchor bootstrap",
       "matched_example_ids": [],
       "matched_example_count": 0,
@@ -24553,7 +24525,7 @@
           "template_slots": {
             "stem": "function_value_numeric"
           },
-          "problem_type_id": "evaluate_function_value",
+          "problem_type_id": "evaluate_function_value_2",
           "contract_validation_blockers": [],
           "contract_validation_warnings": [
             "single_template_variant_only",
@@ -24586,6 +24558,7 @@
       "promote_blockers": [],
       "risk_flags": [
         "ai_first_mode_fell_back_to_rule_only",
+        "ai_partial_unavailable_relaxed_tolerance",
         "anchor_slot_bootstrap_zero_source"
       ],
       "checker_contract_warnings": [],
@@ -24596,7 +24569,7 @@
         "evaluate_function_value"
       ],
       "problem_type_spec_draft": {
-        "problem_type_id": "evaluate_function_value",
+        "problem_type_id": "evaluate_function_value_2",
         "skill_id": "vh_數學B1_LinearFunction",
         "target_task": "evaluate_function_value",
         "task_family": "function_concept_family",
@@ -24733,7 +24706,7 @@
           "template_slots": {
             "stem": "function_value_numeric"
           },
-          "problem_type_id": "evaluate_function_value",
+          "problem_type_id": "evaluate_function_value_2",
           "contract_validation_blockers": [],
           "contract_validation_warnings": [
             "single_template_variant_only",
@@ -24755,14 +24728,14 @@
           "anchor_slot_bootstrap",
           "evaluate_function_value"
         ],
-        "canonical_base_problem_type_id": "evaluate_function_value",
+        "canonical_base_problem_type_id": "evaluate_function_value_2",
         "value_type_prefix": "",
         "_resolved_template_slot": "factor_quadratic_by_cross_multiplication"
       },
       "generator_readiness": "runtime_ready",
       "usable_for_phase3": true,
       "template_slot": "function_value_numeric",
-      "canonical_base_problem_type_id": "evaluate_function_value",
+      "canonical_base_problem_type_id": "evaluate_function_value_2",
       "value_type_prefix": "",
       "subskill_id": "evaluate_function_value",
       "runtime_status": "runtime_ready_candidate",
@@ -24775,8 +24748,8 @@
       "answer_type": "expression"
     },
     {
-      "problem_type_id": "interpret_function_notation",
-      "proposed_problem_type_id": "interpret_function_notation",
+      "problem_type_id": "interpret_function_notation_2",
+      "proposed_problem_type_id": "interpret_function_notation_2",
       "display_name": "interpret_function_notation / anchor bootstrap",
       "matched_example_ids": [],
       "matched_example_count": 0,
@@ -24917,7 +24890,7 @@
           "template_slots": {
             "stem": "linear_function_two_point_choice"
           },
-          "problem_type_id": "interpret_function_notation",
+          "problem_type_id": "interpret_function_notation_2",
           "contract_validation_blockers": [],
           "contract_validation_warnings": [
             "single_template_variant_only",
@@ -24950,6 +24923,7 @@
       "promote_blockers": [],
       "risk_flags": [
         "ai_first_mode_fell_back_to_rule_only",
+        "ai_partial_unavailable_relaxed_tolerance",
         "anchor_slot_bootstrap_zero_source"
       ],
       "checker_contract_warnings": [],
@@ -24960,7 +24934,7 @@
         "interpret_function_notation"
       ],
       "problem_type_spec_draft": {
-        "problem_type_id": "interpret_function_notation",
+        "problem_type_id": "interpret_function_notation_2",
         "skill_id": "vh_數學B1_LinearFunction",
         "target_task": "interpret_function_notation",
         "task_family": "function_concept_family",
@@ -25097,7 +25071,7 @@
           "template_slots": {
             "stem": "linear_function_two_point_choice"
           },
-          "problem_type_id": "interpret_function_notation",
+          "problem_type_id": "interpret_function_notation_2",
           "contract_validation_blockers": [],
           "contract_validation_warnings": [
             "single_template_variant_only",
@@ -25119,14 +25093,14 @@
           "anchor_slot_bootstrap",
           "interpret_function_notation"
         ],
-        "canonical_base_problem_type_id": "interpret_function_notation",
+        "canonical_base_problem_type_id": "interpret_function_notation_2",
         "value_type_prefix": "",
         "_resolved_template_slot": "factor_quadratic_by_cross_multiplication"
       },
       "generator_readiness": "runtime_ready",
       "usable_for_phase3": true,
       "template_slot": "linear_function_two_point_choice",
-      "canonical_base_problem_type_id": "interpret_function_notation",
+      "canonical_base_problem_type_id": "interpret_function_notation_2",
       "value_type_prefix": "",
       "subskill_id": "interpret_function_notation",
       "runtime_status": "runtime_ready_candidate",
@@ -25145,7 +25119,9 @@
       "choice_label",
       "exact_string",
       "interval_set",
+      "linear_equation_equivalent",
       "manual_review_or_ai_judged",
+      "multi_part_answer",
       "numeric_exact",
       "ordered_tuple_exact",
       "rational_equivalent",
@@ -25162,7 +25138,7 @@
         "accepted_format_notes": [],
         "canonical_answer_schema": "text_short"
       },
-      "numeric_numeric_evaluate_function_notation_single_choice": {
+      "numeric_evaluate_function_notation_single_choice": {
         "answer_type": "single_choice",
         "answer_shape": "single_choice",
         "equivalence_type": "choice_label",
@@ -25171,7 +25147,7 @@
         "accepted_format_notes": [],
         "canonical_answer_schema": "single_choice"
       },
-      "evaluate_function_value": {
+      "evaluate_function_value_2": {
         "answer_type": "expression",
         "answer_shape": "factored_expression",
         "equivalence_type": "algebraic_equivalent",
@@ -25180,7 +25156,7 @@
         "accepted_format_notes": [],
         "canonical_answer_schema": "expression"
       },
-      "interpret_function_notation": {
+      "interpret_function_notation_2": {
         "answer_type": "expression",
         "answer_shape": "factored_expression",
         "equivalence_type": "algebraic_equivalent",
@@ -25193,13 +25169,13 @@
     "missing_answer_contract_problem_types": [],
     "missing_checker_key_problem_types": [],
     "equivalence_test_required_problem_types": [
-      "evaluate_function_value",
-      "interpret_function_notation",
-      "numeric_numeric_evaluate_function_notation_single_choice"
+      "evaluate_function_value_2",
+      "interpret_function_notation_2",
+      "numeric_evaluate_function_notation_single_choice"
     ],
     "convertible_to_choice_problem_types": [
-      "evaluate_function_value",
-      "interpret_function_notation"
+      "evaluate_function_value_2",
+      "interpret_function_notation_2"
     ],
     "manual_review_or_ai_judged_problem_types": []
   },
@@ -25983,6 +25959,10 @@
         "induction_tier": "core",
         "enrichment_reasons": [],
         "included_in_core_induction": true,
+        "source_skill_scope_locked": true,
+        "skill_mapping_authority": "textbook_examples.skill_id",
+        "classification_scope": "within_current_skill",
+        "source_skill_id": "vh_數學B1_LinearFunction",
         "equivalence_type": "numeric_exact",
         "checker_key": "integer_checker",
         "requires_human_action": false
@@ -26567,6 +26547,11 @@
       },
       "subskill_id": "numeric_evaluate_function_notation",
       "classification_source": "rule_fallback_ai_unavailable",
+      "source_skill_scope_locked": true,
+      "skill_mapping_authority": "textbook_examples.skill_id",
+      "classification_scope": "within_current_skill",
+      "unresolved_reason": "",
+      "requires_human_rule_pack": false,
       "induction_eligibility": "eligible",
       "answer_type": "integer",
       "equivalence_type": "numeric_exact",
@@ -27449,6 +27434,10 @@
         "induction_tier": "core",
         "enrichment_reasons": [],
         "included_in_core_induction": true,
+        "source_skill_scope_locked": true,
+        "skill_mapping_authority": "textbook_examples.skill_id",
+        "classification_scope": "within_current_skill",
+        "source_skill_id": "vh_數學B1_LinearFunction",
         "equivalence_type": "numeric_exact",
         "checker_key": "integer_checker",
         "requires_human_action": false
@@ -28132,6 +28121,11 @@
       },
       "subskill_id": "numeric_evaluate_function_notation",
       "classification_source": "rule_fallback_ai_unavailable",
+      "source_skill_scope_locked": true,
+      "skill_mapping_authority": "textbook_examples.skill_id",
+      "classification_scope": "within_current_skill",
+      "unresolved_reason": "",
+      "requires_human_rule_pack": false,
       "induction_eligibility": "eligible",
       "answer_type": "integer",
       "equivalence_type": "numeric_exact",
@@ -29018,6 +29012,10 @@
         "induction_tier": "core",
         "enrichment_reasons": [],
         "included_in_core_induction": true,
+        "source_skill_scope_locked": true,
+        "skill_mapping_authority": "textbook_examples.skill_id",
+        "classification_scope": "within_current_skill",
+        "source_skill_id": "vh_數學B1_LinearFunction",
         "equivalence_type": "numeric_exact",
         "checker_key": "integer_checker",
         "requires_human_action": false
@@ -29702,6 +29700,11 @@
       },
       "subskill_id": "numeric_evaluate_function_notation",
       "classification_source": "rule_fallback_ai_unavailable",
+      "source_skill_scope_locked": true,
+      "skill_mapping_authority": "textbook_examples.skill_id",
+      "classification_scope": "within_current_skill",
+      "unresolved_reason": "",
+      "requires_human_rule_pack": false,
       "induction_eligibility": "eligible",
       "answer_type": "integer",
       "equivalence_type": "numeric_exact",
@@ -30669,15 +30672,26 @@
         "induction_tier": "core",
         "enrichment_reasons": [],
         "included_in_core_induction": true,
+        "source_skill_scope_locked": true,
+        "skill_mapping_authority": "textbook_examples.skill_id",
+        "classification_scope": "within_current_skill",
+        "source_skill_id": "vh_數學B1_LinearFunction",
+        "unresolved_within_current_skill": true,
+        "pending_problem_type_induction": true,
+        "requires_human_rule_pack": true,
+        "requires_human_action": false,
+        "unresolved_reason": "semantic_score_zero_within_current_skill",
+        "generator_readiness": "pending_problem_type_induction",
+        "usable_for_phase3": false,
         "equivalence_type": "exact_string",
-        "checker_key": "text_short_checker",
-        "requires_human_action": false
+        "checker_key": "text_short_checker"
       },
       "answer_shape": "text_short",
       "classification_confidence": "high",
       "classification_reason": "rule_fallback_ai_unavailable",
       "risk_flags": [
-        "requires_human_action"
+        "requires_human_action",
+        "candidate_only_problem_type"
       ],
       "semantic_classification": {
         "ai_target_task": "",
@@ -31449,7 +31463,12 @@
       },
       "subskill_id": "compute_numeric",
       "classification_source": "rule_fallback_ai_unavailable",
-      "induction_eligibility": "excluded",
+      "source_skill_scope_locked": true,
+      "skill_mapping_authority": "textbook_examples.skill_id",
+      "classification_scope": "within_current_skill",
+      "unresolved_reason": "semantic_score_zero_within_current_skill",
+      "requires_human_rule_pack": true,
+      "induction_eligibility": "eligible",
       "answer_type": "text_short",
       "equivalence_type": "exact_string",
       "checker_key": "text_short_checker",
@@ -32442,6 +32461,10 @@
         "induction_tier": "core",
         "enrichment_reasons": [],
         "included_in_core_induction": true,
+        "source_skill_scope_locked": true,
+        "skill_mapping_authority": "textbook_examples.skill_id",
+        "classification_scope": "within_current_skill",
+        "source_skill_id": "vh_數學B1_LinearFunction",
         "equivalence_type": "numeric_exact",
         "checker_key": "integer_checker",
         "requires_human_action": false
@@ -33225,6 +33248,11 @@
       },
       "subskill_id": "numeric_evaluate_function_notation",
       "classification_source": "rule_fallback_ai_unavailable",
+      "source_skill_scope_locked": true,
+      "skill_mapping_authority": "textbook_examples.skill_id",
+      "classification_scope": "within_current_skill",
+      "unresolved_reason": "",
+      "requires_human_rule_pack": false,
       "induction_eligibility": "eligible",
       "answer_type": "integer",
       "equivalence_type": "numeric_exact",
@@ -34198,15 +34226,26 @@
         "induction_tier": "core",
         "enrichment_reasons": [],
         "included_in_core_induction": true,
+        "source_skill_scope_locked": true,
+        "skill_mapping_authority": "textbook_examples.skill_id",
+        "classification_scope": "within_current_skill",
+        "source_skill_id": "vh_數學B1_LinearFunction",
+        "unresolved_within_current_skill": true,
+        "pending_problem_type_induction": true,
+        "requires_human_rule_pack": true,
+        "requires_human_action": false,
+        "unresolved_reason": "semantic_score_zero_within_current_skill",
+        "generator_readiness": "pending_problem_type_induction",
+        "usable_for_phase3": false,
         "equivalence_type": "exact_string",
-        "checker_key": "text_short_checker",
-        "requires_human_action": false
+        "checker_key": "text_short_checker"
       },
       "answer_shape": "text_short",
       "classification_confidence": "high",
       "classification_reason": "rule_fallback_ai_unavailable",
       "risk_flags": [
-        "requires_human_action"
+        "requires_human_action",
+        "candidate_only_problem_type"
       ],
       "semantic_classification": {
         "ai_target_task": "",
@@ -34976,7 +35015,12 @@
       },
       "subskill_id": "compute_numeric",
       "classification_source": "rule_fallback_ai_unavailable",
-      "induction_eligibility": "excluded",
+      "source_skill_scope_locked": true,
+      "skill_mapping_authority": "textbook_examples.skill_id",
+      "classification_scope": "within_current_skill",
+      "unresolved_reason": "semantic_score_zero_within_current_skill",
+      "requires_human_rule_pack": true,
+      "induction_eligibility": "eligible",
       "answer_type": "text_short",
       "equivalence_type": "exact_string",
       "checker_key": "text_short_checker",
@@ -35973,15 +36017,26 @@
         "induction_tier": "core",
         "enrichment_reasons": [],
         "included_in_core_induction": true,
+        "source_skill_scope_locked": true,
+        "skill_mapping_authority": "textbook_examples.skill_id",
+        "classification_scope": "within_current_skill",
+        "source_skill_id": "vh_數學B1_LinearFunction",
+        "unresolved_within_current_skill": true,
+        "pending_problem_type_induction": true,
+        "requires_human_rule_pack": true,
+        "requires_human_action": false,
+        "unresolved_reason": "semantic_score_zero_within_current_skill",
+        "generator_readiness": "pending_problem_type_induction",
+        "usable_for_phase3": false,
         "equivalence_type": "exact_string",
-        "checker_key": "text_short_checker",
-        "requires_human_action": false
+        "checker_key": "text_short_checker"
       },
       "answer_shape": "text_short",
       "classification_confidence": "high",
       "classification_reason": "rule_fallback_ai_unavailable",
       "risk_flags": [
-        "requires_human_action"
+        "requires_human_action",
+        "candidate_only_problem_type"
       ],
       "semantic_classification": {
         "ai_target_task": "",
@@ -36756,7 +36811,12 @@
       },
       "subskill_id": "compute_numeric",
       "classification_source": "rule_fallback_ai_unavailable",
-      "induction_eligibility": "excluded",
+      "source_skill_scope_locked": true,
+      "skill_mapping_authority": "textbook_examples.skill_id",
+      "classification_scope": "within_current_skill",
+      "unresolved_reason": "semantic_score_zero_within_current_skill",
+      "requires_human_rule_pack": true,
+      "induction_eligibility": "eligible",
       "answer_type": "text_short",
       "equivalence_type": "exact_string",
       "checker_key": "text_short_checker",
@@ -37749,6 +37809,10 @@
         "induction_tier": "core",
         "enrichment_reasons": [],
         "included_in_core_induction": true,
+        "source_skill_scope_locked": true,
+        "skill_mapping_authority": "textbook_examples.skill_id",
+        "classification_scope": "within_current_skill",
+        "source_skill_id": "vh_數學B1_LinearFunction",
         "equivalence_type": "numeric_exact",
         "checker_key": "integer_checker",
         "requires_human_action": false
@@ -38532,6 +38596,11 @@
       },
       "subskill_id": "numeric_evaluate_function_notation",
       "classification_source": "rule_fallback_ai_unavailable",
+      "source_skill_scope_locked": true,
+      "skill_mapping_authority": "textbook_examples.skill_id",
+      "classification_scope": "within_current_skill",
+      "unresolved_reason": "",
+      "requires_human_rule_pack": false,
       "induction_eligibility": "eligible",
       "answer_type": "integer",
       "equivalence_type": "numeric_exact",
@@ -39608,9 +39677,19 @@
         "induction_tier": "core",
         "enrichment_reasons": [],
         "included_in_core_induction": true,
+        "source_skill_scope_locked": true,
+        "skill_mapping_authority": "textbook_examples.skill_id",
+        "classification_scope": "within_current_skill",
+        "source_skill_id": "vh_數學B1_LinearFunction",
+        "unresolved_within_current_skill": true,
+        "pending_problem_type_induction": true,
+        "requires_human_rule_pack": true,
+        "requires_human_action": false,
+        "unresolved_reason": "semantic_score_zero_within_current_skill",
+        "generator_readiness": "pending_problem_type_induction",
+        "usable_for_phase3": false,
         "equivalence_type": "exact_string",
-        "checker_key": "text_short_checker",
-        "requires_human_action": false
+        "checker_key": "text_short_checker"
       },
       "answer_shape": "text_short",
       "classification_confidence": "high",
@@ -40487,7 +40566,12 @@
       },
       "subskill_id": "applied_quadratic_inequality_problem",
       "classification_source": "rule_fallback_ai_unavailable",
-      "induction_eligibility": "excluded",
+      "source_skill_scope_locked": true,
+      "skill_mapping_authority": "textbook_examples.skill_id",
+      "classification_scope": "within_current_skill",
+      "unresolved_reason": "semantic_score_zero_within_current_skill",
+      "requires_human_rule_pack": true,
+      "induction_eligibility": "eligible",
       "answer_type": "text_short",
       "equivalence_type": "exact_string",
       "checker_key": "text_short_checker",
@@ -41493,9 +41577,19 @@
         "induction_tier": "core",
         "enrichment_reasons": [],
         "included_in_core_induction": true,
+        "source_skill_scope_locked": true,
+        "skill_mapping_authority": "textbook_examples.skill_id",
+        "classification_scope": "within_current_skill",
+        "source_skill_id": "vh_數學B1_LinearFunction",
+        "unresolved_within_current_skill": true,
+        "pending_problem_type_induction": true,
+        "requires_human_rule_pack": true,
+        "requires_human_action": false,
+        "unresolved_reason": "semantic_score_zero_within_current_skill",
+        "generator_readiness": "pending_problem_type_induction",
+        "usable_for_phase3": false,
         "equivalence_type": "choice_label",
-        "checker_key": "choice_label_checker",
-        "requires_human_action": false
+        "checker_key": "choice_label_checker"
       },
       "answer_shape": "single_choice",
       "classification_confidence": "high",
@@ -42280,7 +42374,12 @@
       },
       "subskill_id": "same_as_main_skill",
       "classification_source": "rule_fallback_ai_unavailable",
-      "induction_eligibility": "excluded",
+      "source_skill_scope_locked": true,
+      "skill_mapping_authority": "textbook_examples.skill_id",
+      "classification_scope": "within_current_skill",
+      "unresolved_reason": "semantic_score_zero_within_current_skill",
+      "requires_human_rule_pack": true,
+      "induction_eligibility": "eligible",
       "answer_type": "choice",
       "equivalence_type": "choice_label",
       "checker_key": "choice_label_checker",
@@ -43269,6 +43368,10 @@
         "induction_tier": "core",
         "enrichment_reasons": [],
         "included_in_core_induction": true,
+        "source_skill_scope_locked": true,
+        "skill_mapping_authority": "textbook_examples.skill_id",
+        "classification_scope": "within_current_skill",
+        "source_skill_id": "vh_數學B1_LinearFunction",
         "equivalence_type": "numeric_exact",
         "checker_key": "integer_checker",
         "requires_human_action": false
@@ -44051,6 +44154,11 @@
       },
       "subskill_id": "numeric_evaluate_function_notation",
       "classification_source": "rule_fallback_ai_unavailable",
+      "source_skill_scope_locked": true,
+      "skill_mapping_authority": "textbook_examples.skill_id",
+      "classification_scope": "within_current_skill",
+      "unresolved_reason": "",
+      "requires_human_rule_pack": false,
       "induction_eligibility": "eligible",
       "answer_type": "integer",
       "equivalence_type": "numeric_exact",
@@ -45040,6 +45148,10 @@
         "induction_tier": "core",
         "enrichment_reasons": [],
         "included_in_core_induction": true,
+        "source_skill_scope_locked": true,
+        "skill_mapping_authority": "textbook_examples.skill_id",
+        "classification_scope": "within_current_skill",
+        "source_skill_id": "vh_數學B1_LinearFunction",
         "equivalence_type": "numeric_exact",
         "checker_key": "integer_checker",
         "requires_human_action": false
@@ -45822,6 +45934,11 @@
       },
       "subskill_id": "numeric_evaluate_function_notation",
       "classification_source": "rule_fallback_ai_unavailable",
+      "source_skill_scope_locked": true,
+      "skill_mapping_authority": "textbook_examples.skill_id",
+      "classification_scope": "within_current_skill",
+      "unresolved_reason": "",
+      "requires_human_rule_pack": false,
       "induction_eligibility": "eligible",
       "answer_type": "integer",
       "equivalence_type": "numeric_exact",
@@ -46795,15 +46912,26 @@
         "induction_tier": "core",
         "enrichment_reasons": [],
         "included_in_core_induction": true,
+        "source_skill_scope_locked": true,
+        "skill_mapping_authority": "textbook_examples.skill_id",
+        "classification_scope": "within_current_skill",
+        "source_skill_id": "vh_數學B1_LinearFunction",
+        "unresolved_within_current_skill": true,
+        "pending_problem_type_induction": true,
+        "requires_human_rule_pack": true,
+        "requires_human_action": false,
+        "unresolved_reason": "semantic_score_zero_within_current_skill",
+        "generator_readiness": "pending_problem_type_induction",
+        "usable_for_phase3": false,
         "equivalence_type": "exact_string",
-        "checker_key": "text_short_checker",
-        "requires_human_action": false
+        "checker_key": "text_short_checker"
       },
       "answer_shape": "text_short",
       "classification_confidence": "high",
       "classification_reason": "rule_fallback_ai_unavailable",
       "risk_flags": [
-        "requires_human_action"
+        "requires_human_action",
+        "candidate_only_problem_type"
       ],
       "semantic_classification": {
         "ai_target_task": "",
@@ -47573,7 +47701,12 @@
       },
       "subskill_id": "compute_numeric",
       "classification_source": "rule_fallback_ai_unavailable",
-      "induction_eligibility": "excluded",
+      "source_skill_scope_locked": true,
+      "skill_mapping_authority": "textbook_examples.skill_id",
+      "classification_scope": "within_current_skill",
+      "unresolved_reason": "semantic_score_zero_within_current_skill",
+      "requires_human_rule_pack": true,
+      "induction_eligibility": "eligible",
       "answer_type": "text_short",
       "equivalence_type": "exact_string",
       "checker_key": "text_short_checker",
@@ -47581,7 +47714,7 @@
     },
     {
       "example_id": 4515,
-      "detected_problem_type_id": "numeric_numeric_evaluate_function_notation_single_choice",
+      "detected_problem_type_id": "numeric_evaluate_function_notation_single_choice",
       "example_feature": {
         "source_example_id": 4515,
         "question_text": "設$f\\left( x \\right)=ax+b$為一線型函數，且圖形通過點$\\left( -2,4 \\right)$、$\\left( 1,1 \\right)$，則$f\\left( x \\right)=$ (A) −x + 2 (B) x − 2 (C) x + 2 (D) −x − 2。",
@@ -48585,6 +48718,10 @@
         "induction_tier": "core",
         "enrichment_reasons": [],
         "included_in_core_induction": true,
+        "source_skill_scope_locked": true,
+        "skill_mapping_authority": "textbook_examples.skill_id",
+        "classification_scope": "within_current_skill",
+        "source_skill_id": "vh_數學B1_LinearFunction",
         "equivalence_type": "choice_label",
         "checker_key": "choice_label_checker",
         "requires_human_action": false
@@ -49373,6 +49510,11 @@
       },
       "subskill_id": "numeric_evaluate_function_notation",
       "classification_source": "rule_fallback_ai_unavailable",
+      "source_skill_scope_locked": true,
+      "skill_mapping_authority": "textbook_examples.skill_id",
+      "classification_scope": "within_current_skill",
+      "unresolved_reason": "",
+      "requires_human_rule_pack": false,
       "induction_eligibility": "eligible",
       "answer_type": "integer",
       "equivalence_type": "choice_label",
@@ -50362,6 +50504,10 @@
         "induction_tier": "core",
         "enrichment_reasons": [],
         "included_in_core_induction": true,
+        "source_skill_scope_locked": true,
+        "skill_mapping_authority": "textbook_examples.skill_id",
+        "classification_scope": "within_current_skill",
+        "source_skill_id": "vh_數學B1_LinearFunction",
         "equivalence_type": "numeric_exact",
         "checker_key": "integer_checker",
         "requires_human_action": false
@@ -51144,6 +51290,11 @@
       },
       "subskill_id": "numeric_evaluate_function_notation",
       "classification_source": "rule_fallback_ai_unavailable",
+      "source_skill_scope_locked": true,
+      "skill_mapping_authority": "textbook_examples.skill_id",
+      "classification_scope": "within_current_skill",
+      "unresolved_reason": "",
+      "requires_human_rule_pack": false,
       "induction_eligibility": "eligible",
       "answer_type": "integer",
       "equivalence_type": "numeric_exact",
@@ -51929,6 +52080,10 @@
         "induction_tier": "core",
         "enrichment_reasons": [],
         "included_in_core_induction": true,
+        "source_skill_scope_locked": true,
+        "skill_mapping_authority": "textbook_examples.skill_id",
+        "classification_scope": "within_current_skill",
+        "source_skill_id": "vh_數學B1_LinearFunction",
         "equivalence_type": "numeric_exact",
         "checker_key": "integer_checker",
         "requires_human_action": false
@@ -52513,6 +52668,11 @@
       },
       "subskill_id": "numeric_evaluate_function_notation",
       "classification_source": "rule_fallback_ai_unavailable",
+      "source_skill_scope_locked": true,
+      "skill_mapping_authority": "textbook_examples.skill_id",
+      "classification_scope": "within_current_skill",
+      "unresolved_reason": "",
+      "requires_human_rule_pack": false,
       "induction_eligibility": "eligible",
       "answer_type": "integer",
       "equivalence_type": "numeric_exact",
@@ -53395,6 +53555,10 @@
         "induction_tier": "core",
         "enrichment_reasons": [],
         "included_in_core_induction": true,
+        "source_skill_scope_locked": true,
+        "skill_mapping_authority": "textbook_examples.skill_id",
+        "classification_scope": "within_current_skill",
+        "source_skill_id": "vh_數學B1_LinearFunction",
         "equivalence_type": "numeric_exact",
         "checker_key": "integer_checker",
         "requires_human_action": false
@@ -54078,6 +54242,11 @@
       },
       "subskill_id": "numeric_evaluate_function_notation",
       "classification_source": "rule_fallback_ai_unavailable",
+      "source_skill_scope_locked": true,
+      "skill_mapping_authority": "textbook_examples.skill_id",
+      "classification_scope": "within_current_skill",
+      "unresolved_reason": "",
+      "requires_human_rule_pack": false,
       "induction_eligibility": "eligible",
       "answer_type": "integer",
       "equivalence_type": "numeric_exact",
@@ -54964,6 +55133,10 @@
         "induction_tier": "core",
         "enrichment_reasons": [],
         "included_in_core_induction": true,
+        "source_skill_scope_locked": true,
+        "skill_mapping_authority": "textbook_examples.skill_id",
+        "classification_scope": "within_current_skill",
+        "source_skill_id": "vh_數學B1_LinearFunction",
         "equivalence_type": "numeric_exact",
         "checker_key": "integer_checker",
         "requires_human_action": false
@@ -55648,6 +55821,11 @@
       },
       "subskill_id": "numeric_evaluate_function_notation",
       "classification_source": "rule_fallback_ai_unavailable",
+      "source_skill_scope_locked": true,
+      "skill_mapping_authority": "textbook_examples.skill_id",
+      "classification_scope": "within_current_skill",
+      "unresolved_reason": "",
+      "requires_human_rule_pack": false,
       "induction_eligibility": "eligible",
       "answer_type": "integer",
       "equivalence_type": "numeric_exact",
@@ -56615,15 +56793,26 @@
         "induction_tier": "core",
         "enrichment_reasons": [],
         "included_in_core_induction": true,
+        "source_skill_scope_locked": true,
+        "skill_mapping_authority": "textbook_examples.skill_id",
+        "classification_scope": "within_current_skill",
+        "source_skill_id": "vh_數學B1_LinearFunction",
+        "unresolved_within_current_skill": true,
+        "pending_problem_type_induction": true,
+        "requires_human_rule_pack": true,
+        "requires_human_action": false,
+        "unresolved_reason": "semantic_score_zero_within_current_skill",
+        "generator_readiness": "pending_problem_type_induction",
+        "usable_for_phase3": false,
         "equivalence_type": "exact_string",
-        "checker_key": "text_short_checker",
-        "requires_human_action": false
+        "checker_key": "text_short_checker"
       },
       "answer_shape": "text_short",
       "classification_confidence": "high",
       "classification_reason": "rule_fallback_ai_unavailable",
       "risk_flags": [
-        "requires_human_action"
+        "requires_human_action",
+        "candidate_only_problem_type"
       ],
       "semantic_classification": {
         "ai_target_task": "",
@@ -57395,7 +57584,12 @@
       },
       "subskill_id": "compute_numeric",
       "classification_source": "rule_fallback_ai_unavailable",
-      "induction_eligibility": "excluded",
+      "source_skill_scope_locked": true,
+      "skill_mapping_authority": "textbook_examples.skill_id",
+      "classification_scope": "within_current_skill",
+      "unresolved_reason": "semantic_score_zero_within_current_skill",
+      "requires_human_rule_pack": true,
+      "induction_eligibility": "eligible",
       "answer_type": "text_short",
       "equivalence_type": "exact_string",
       "checker_key": "text_short_checker",
@@ -58388,6 +58582,10 @@
         "induction_tier": "core",
         "enrichment_reasons": [],
         "included_in_core_induction": true,
+        "source_skill_scope_locked": true,
+        "skill_mapping_authority": "textbook_examples.skill_id",
+        "classification_scope": "within_current_skill",
+        "source_skill_id": "vh_數學B1_LinearFunction",
         "equivalence_type": "numeric_exact",
         "checker_key": "integer_checker",
         "requires_human_action": false
@@ -59171,6 +59369,11 @@
       },
       "subskill_id": "numeric_evaluate_function_notation",
       "classification_source": "rule_fallback_ai_unavailable",
+      "source_skill_scope_locked": true,
+      "skill_mapping_authority": "textbook_examples.skill_id",
+      "classification_scope": "within_current_skill",
+      "unresolved_reason": "",
+      "requires_human_rule_pack": false,
       "induction_eligibility": "eligible",
       "answer_type": "integer",
       "equivalence_type": "numeric_exact",
@@ -60144,15 +60347,26 @@
         "induction_tier": "core",
         "enrichment_reasons": [],
         "included_in_core_induction": true,
+        "source_skill_scope_locked": true,
+        "skill_mapping_authority": "textbook_examples.skill_id",
+        "classification_scope": "within_current_skill",
+        "source_skill_id": "vh_數學B1_LinearFunction",
+        "unresolved_within_current_skill": true,
+        "pending_problem_type_induction": true,
+        "requires_human_rule_pack": true,
+        "requires_human_action": false,
+        "unresolved_reason": "semantic_score_zero_within_current_skill",
+        "generator_readiness": "pending_problem_type_induction",
+        "usable_for_phase3": false,
         "equivalence_type": "exact_string",
-        "checker_key": "text_short_checker",
-        "requires_human_action": false
+        "checker_key": "text_short_checker"
       },
       "answer_shape": "text_short",
       "classification_confidence": "high",
       "classification_reason": "rule_fallback_ai_unavailable",
       "risk_flags": [
-        "requires_human_action"
+        "requires_human_action",
+        "candidate_only_problem_type"
       ],
       "semantic_classification": {
         "ai_target_task": "",
@@ -60922,7 +61136,12 @@
       },
       "subskill_id": "compute_numeric",
       "classification_source": "rule_fallback_ai_unavailable",
-      "induction_eligibility": "excluded",
+      "source_skill_scope_locked": true,
+      "skill_mapping_authority": "textbook_examples.skill_id",
+      "classification_scope": "within_current_skill",
+      "unresolved_reason": "semantic_score_zero_within_current_skill",
+      "requires_human_rule_pack": true,
+      "induction_eligibility": "eligible",
       "answer_type": "text_short",
       "equivalence_type": "exact_string",
       "checker_key": "text_short_checker",
@@ -61919,15 +62138,26 @@
         "induction_tier": "core",
         "enrichment_reasons": [],
         "included_in_core_induction": true,
+        "source_skill_scope_locked": true,
+        "skill_mapping_authority": "textbook_examples.skill_id",
+        "classification_scope": "within_current_skill",
+        "source_skill_id": "vh_數學B1_LinearFunction",
+        "unresolved_within_current_skill": true,
+        "pending_problem_type_induction": true,
+        "requires_human_rule_pack": true,
+        "requires_human_action": false,
+        "unresolved_reason": "semantic_score_zero_within_current_skill",
+        "generator_readiness": "pending_problem_type_induction",
+        "usable_for_phase3": false,
         "equivalence_type": "exact_string",
-        "checker_key": "text_short_checker",
-        "requires_human_action": false
+        "checker_key": "text_short_checker"
       },
       "answer_shape": "text_short",
       "classification_confidence": "high",
       "classification_reason": "rule_fallback_ai_unavailable",
       "risk_flags": [
-        "requires_human_action"
+        "requires_human_action",
+        "candidate_only_problem_type"
       ],
       "semantic_classification": {
         "ai_target_task": "",
@@ -62702,7 +62932,12 @@
       },
       "subskill_id": "compute_numeric",
       "classification_source": "rule_fallback_ai_unavailable",
-      "induction_eligibility": "excluded",
+      "source_skill_scope_locked": true,
+      "skill_mapping_authority": "textbook_examples.skill_id",
+      "classification_scope": "within_current_skill",
+      "unresolved_reason": "semantic_score_zero_within_current_skill",
+      "requires_human_rule_pack": true,
+      "induction_eligibility": "eligible",
       "answer_type": "text_short",
       "equivalence_type": "exact_string",
       "checker_key": "text_short_checker",
@@ -63695,6 +63930,10 @@
         "induction_tier": "core",
         "enrichment_reasons": [],
         "included_in_core_induction": true,
+        "source_skill_scope_locked": true,
+        "skill_mapping_authority": "textbook_examples.skill_id",
+        "classification_scope": "within_current_skill",
+        "source_skill_id": "vh_數學B1_LinearFunction",
         "equivalence_type": "numeric_exact",
         "checker_key": "integer_checker",
         "requires_human_action": false
@@ -64478,6 +64717,11 @@
       },
       "subskill_id": "numeric_evaluate_function_notation",
       "classification_source": "rule_fallback_ai_unavailable",
+      "source_skill_scope_locked": true,
+      "skill_mapping_authority": "textbook_examples.skill_id",
+      "classification_scope": "within_current_skill",
+      "unresolved_reason": "",
+      "requires_human_rule_pack": false,
       "induction_eligibility": "eligible",
       "answer_type": "integer",
       "equivalence_type": "numeric_exact",
@@ -65554,9 +65798,19 @@
         "induction_tier": "core",
         "enrichment_reasons": [],
         "included_in_core_induction": true,
+        "source_skill_scope_locked": true,
+        "skill_mapping_authority": "textbook_examples.skill_id",
+        "classification_scope": "within_current_skill",
+        "source_skill_id": "vh_數學B1_LinearFunction",
+        "unresolved_within_current_skill": true,
+        "pending_problem_type_induction": true,
+        "requires_human_rule_pack": true,
+        "requires_human_action": false,
+        "unresolved_reason": "semantic_score_zero_within_current_skill",
+        "generator_readiness": "pending_problem_type_induction",
+        "usable_for_phase3": false,
         "equivalence_type": "exact_string",
-        "checker_key": "text_short_checker",
-        "requires_human_action": false
+        "checker_key": "text_short_checker"
       },
       "answer_shape": "text_short",
       "classification_confidence": "high",
@@ -66433,7 +66687,12 @@
       },
       "subskill_id": "applied_quadratic_inequality_problem",
       "classification_source": "rule_fallback_ai_unavailable",
-      "induction_eligibility": "excluded",
+      "source_skill_scope_locked": true,
+      "skill_mapping_authority": "textbook_examples.skill_id",
+      "classification_scope": "within_current_skill",
+      "unresolved_reason": "semantic_score_zero_within_current_skill",
+      "requires_human_rule_pack": true,
+      "induction_eligibility": "eligible",
       "answer_type": "text_short",
       "equivalence_type": "exact_string",
       "checker_key": "text_short_checker",
@@ -67439,9 +67698,19 @@
         "induction_tier": "core",
         "enrichment_reasons": [],
         "included_in_core_induction": true,
+        "source_skill_scope_locked": true,
+        "skill_mapping_authority": "textbook_examples.skill_id",
+        "classification_scope": "within_current_skill",
+        "source_skill_id": "vh_數學B1_LinearFunction",
+        "unresolved_within_current_skill": true,
+        "pending_problem_type_induction": true,
+        "requires_human_rule_pack": true,
+        "requires_human_action": false,
+        "unresolved_reason": "semantic_score_zero_within_current_skill",
+        "generator_readiness": "pending_problem_type_induction",
+        "usable_for_phase3": false,
         "equivalence_type": "choice_label",
-        "checker_key": "choice_label_checker",
-        "requires_human_action": false
+        "checker_key": "choice_label_checker"
       },
       "answer_shape": "single_choice",
       "classification_confidence": "high",
@@ -68226,7 +68495,12 @@
       },
       "subskill_id": "same_as_main_skill",
       "classification_source": "rule_fallback_ai_unavailable",
-      "induction_eligibility": "excluded",
+      "source_skill_scope_locked": true,
+      "skill_mapping_authority": "textbook_examples.skill_id",
+      "classification_scope": "within_current_skill",
+      "unresolved_reason": "semantic_score_zero_within_current_skill",
+      "requires_human_rule_pack": true,
+      "induction_eligibility": "eligible",
       "answer_type": "choice",
       "equivalence_type": "choice_label",
       "checker_key": "choice_label_checker",
@@ -69215,6 +69489,10 @@
         "induction_tier": "core",
         "enrichment_reasons": [],
         "included_in_core_induction": true,
+        "source_skill_scope_locked": true,
+        "skill_mapping_authority": "textbook_examples.skill_id",
+        "classification_scope": "within_current_skill",
+        "source_skill_id": "vh_數學B1_LinearFunction",
         "equivalence_type": "numeric_exact",
         "checker_key": "integer_checker",
         "requires_human_action": false
@@ -69997,6 +70275,11 @@
       },
       "subskill_id": "numeric_evaluate_function_notation",
       "classification_source": "rule_fallback_ai_unavailable",
+      "source_skill_scope_locked": true,
+      "skill_mapping_authority": "textbook_examples.skill_id",
+      "classification_scope": "within_current_skill",
+      "unresolved_reason": "",
+      "requires_human_rule_pack": false,
       "induction_eligibility": "eligible",
       "answer_type": "integer",
       "equivalence_type": "numeric_exact",
@@ -70986,6 +71269,10 @@
         "induction_tier": "core",
         "enrichment_reasons": [],
         "included_in_core_induction": true,
+        "source_skill_scope_locked": true,
+        "skill_mapping_authority": "textbook_examples.skill_id",
+        "classification_scope": "within_current_skill",
+        "source_skill_id": "vh_數學B1_LinearFunction",
         "equivalence_type": "numeric_exact",
         "checker_key": "integer_checker",
         "requires_human_action": false
@@ -71768,6 +72055,11 @@
       },
       "subskill_id": "numeric_evaluate_function_notation",
       "classification_source": "rule_fallback_ai_unavailable",
+      "source_skill_scope_locked": true,
+      "skill_mapping_authority": "textbook_examples.skill_id",
+      "classification_scope": "within_current_skill",
+      "unresolved_reason": "",
+      "requires_human_rule_pack": false,
       "induction_eligibility": "eligible",
       "answer_type": "integer",
       "equivalence_type": "numeric_exact",
@@ -72741,15 +73033,26 @@
         "induction_tier": "core",
         "enrichment_reasons": [],
         "included_in_core_induction": true,
+        "source_skill_scope_locked": true,
+        "skill_mapping_authority": "textbook_examples.skill_id",
+        "classification_scope": "within_current_skill",
+        "source_skill_id": "vh_數學B1_LinearFunction",
+        "unresolved_within_current_skill": true,
+        "pending_problem_type_induction": true,
+        "requires_human_rule_pack": true,
+        "requires_human_action": false,
+        "unresolved_reason": "semantic_score_zero_within_current_skill",
+        "generator_readiness": "pending_problem_type_induction",
+        "usable_for_phase3": false,
         "equivalence_type": "exact_string",
-        "checker_key": "text_short_checker",
-        "requires_human_action": false
+        "checker_key": "text_short_checker"
       },
       "answer_shape": "text_short",
       "classification_confidence": "high",
       "classification_reason": "rule_fallback_ai_unavailable",
       "risk_flags": [
-        "requires_human_action"
+        "requires_human_action",
+        "candidate_only_problem_type"
       ],
       "semantic_classification": {
         "ai_target_task": "",
@@ -73519,7 +73822,12 @@
       },
       "subskill_id": "compute_numeric",
       "classification_source": "rule_fallback_ai_unavailable",
-      "induction_eligibility": "excluded",
+      "source_skill_scope_locked": true,
+      "skill_mapping_authority": "textbook_examples.skill_id",
+      "classification_scope": "within_current_skill",
+      "unresolved_reason": "semantic_score_zero_within_current_skill",
+      "requires_human_rule_pack": true,
+      "induction_eligibility": "eligible",
       "answer_type": "text_short",
       "equivalence_type": "exact_string",
       "checker_key": "text_short_checker",
@@ -73527,7 +73835,7 @@
     },
     {
       "example_id": 4515,
-      "detected_problem_type_id": "numeric_numeric_evaluate_function_notation_single_choice",
+      "detected_problem_type_id": "numeric_evaluate_function_notation_single_choice",
       "example_feature": {
         "source_example_id": 4515,
         "question_text": "設$f\\left( x \\right)=ax+b$為一線型函數，且圖形通過點$\\left( -2,4 \\right)$、$\\left( 1,1 \\right)$，則$f\\left( x \\right)=$ (A) −x + 2 (B) x − 2 (C) x + 2 (D) −x − 2。",
@@ -74531,6 +74839,10 @@
         "induction_tier": "core",
         "enrichment_reasons": [],
         "included_in_core_induction": true,
+        "source_skill_scope_locked": true,
+        "skill_mapping_authority": "textbook_examples.skill_id",
+        "classification_scope": "within_current_skill",
+        "source_skill_id": "vh_數學B1_LinearFunction",
         "equivalence_type": "choice_label",
         "checker_key": "choice_label_checker",
         "requires_human_action": false
@@ -75319,6 +75631,11 @@
       },
       "subskill_id": "numeric_evaluate_function_notation",
       "classification_source": "rule_fallback_ai_unavailable",
+      "source_skill_scope_locked": true,
+      "skill_mapping_authority": "textbook_examples.skill_id",
+      "classification_scope": "within_current_skill",
+      "unresolved_reason": "",
+      "requires_human_rule_pack": false,
       "induction_eligibility": "eligible",
       "answer_type": "integer",
       "equivalence_type": "choice_label",
@@ -76308,6 +76625,10 @@
         "induction_tier": "core",
         "enrichment_reasons": [],
         "included_in_core_induction": true,
+        "source_skill_scope_locked": true,
+        "skill_mapping_authority": "textbook_examples.skill_id",
+        "classification_scope": "within_current_skill",
+        "source_skill_id": "vh_數學B1_LinearFunction",
         "equivalence_type": "numeric_exact",
         "checker_key": "integer_checker",
         "requires_human_action": false
@@ -77090,6 +77411,11 @@
       },
       "subskill_id": "numeric_evaluate_function_notation",
       "classification_source": "rule_fallback_ai_unavailable",
+      "source_skill_scope_locked": true,
+      "skill_mapping_authority": "textbook_examples.skill_id",
+      "classification_scope": "within_current_skill",
+      "unresolved_reason": "",
+      "requires_human_rule_pack": false,
       "induction_eligibility": "eligible",
       "answer_type": "integer",
       "equivalence_type": "numeric_exact",
@@ -77122,6 +77448,7 @@
     "warnings": [
       "insufficient_examples",
       "ai_first_mode_fell_back_to_rule_only",
+      "ai_partial_unavailable_relaxed_tolerance",
       "no_registered_slot_but_presentation_known",
       "subskill_mismatch_warning",
       "anchor_slot_bootstrap_zero_source"
@@ -77133,6 +77460,7 @@
     "warnings": [
       "low_source_examples",
       "ai_first_mode_fell_back_to_rule_only",
+      "ai_partial_unavailable_relaxed_tolerance",
       "no_registered_slot_but_presentation_known",
       "subskill_mismatch_warning",
       "anchor_slot_bootstrap_zero_source"
@@ -77147,6 +77475,7 @@
     ],
     "warnings": [
       "ai_first_mode_fell_back_to_rule_only",
+      "ai_partial_unavailable_relaxed_tolerance",
       "no_registered_slot_but_presentation_known",
       "subskill_mismatch_warning",
       "anchor_slot_bootstrap_zero_source"
@@ -77163,7 +77492,7 @@
     "phase1_md": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_LinearFunction_phase1_summary.md"
   },
   "next_action": "phase2_generate_from_induced_specs",
-  "timestamp": "2026-06-15T00:55:57.793363+00:00",
+  "timestamp": "2026-06-25T05:44:38.254996+00:00",
   "dry_run": true,
   "auto_review_summary": {
     "skill_id": "vh_數學B1_LinearFunction",
@@ -90395,9 +90724,9 @@
         ],
         "structure_context_used": true,
         "sequence_context_used": true,
-        "alignment_kind": "unclassified_low_confidence",
-        "exclude_reason": "semantic_alignment_score_zero_requires_human_review",
-        "included_in_phase1": false,
+        "alignment_kind": "unresolved_within_current_skill",
+        "exclude_reason": "",
+        "included_in_phase1": true,
         "conflict_reason": "ai_api_key_missing",
         "source_mapping_warning": "",
         "skill_anchor_scope": "default",
@@ -91915,9 +92244,9 @@
         ],
         "structure_context_used": true,
         "sequence_context_used": true,
-        "alignment_kind": "unclassified_low_confidence",
-        "exclude_reason": "semantic_alignment_score_zero_requires_human_review",
-        "included_in_phase1": false,
+        "alignment_kind": "unresolved_within_current_skill",
+        "exclude_reason": "",
+        "included_in_phase1": true,
         "conflict_reason": "ai_api_key_missing",
         "source_mapping_warning": "",
         "skill_anchor_scope": "default",
@@ -92674,9 +93003,9 @@
         ],
         "structure_context_used": true,
         "sequence_context_used": true,
-        "alignment_kind": "unclassified_low_confidence",
-        "exclude_reason": "semantic_alignment_score_zero_requires_human_review",
-        "included_in_phase1": false,
+        "alignment_kind": "unresolved_within_current_skill",
+        "exclude_reason": "",
+        "included_in_phase1": true,
         "conflict_reason": "ai_api_key_missing",
         "source_mapping_warning": "",
         "skill_anchor_scope": "default",
@@ -94192,9 +94521,9 @@
         ],
         "structure_context_used": true,
         "sequence_context_used": true,
-        "alignment_kind": "unclassified_low_confidence",
-        "exclude_reason": "semantic_alignment_score_zero_requires_human_review",
-        "included_in_phase1": false,
+        "alignment_kind": "unresolved_within_current_skill",
+        "exclude_reason": "",
+        "included_in_phase1": true,
         "conflict_reason": "ai_api_key_missing",
         "source_mapping_warning": "",
         "skill_anchor_scope": "default",
@@ -95052,9 +95381,9 @@
         ],
         "structure_context_used": true,
         "sequence_context_used": true,
-        "alignment_kind": "unclassified_low_confidence",
-        "exclude_reason": "semantic_alignment_score_zero_requires_human_review",
-        "included_in_phase1": false,
+        "alignment_kind": "unresolved_within_current_skill",
+        "exclude_reason": "",
+        "included_in_phase1": true,
         "conflict_reason": "ai_api_key_missing",
         "source_mapping_warning": "",
         "skill_anchor_scope": "default",
@@ -97329,9 +97658,9 @@
         ],
         "structure_context_used": true,
         "sequence_context_used": true,
-        "alignment_kind": "unclassified_low_confidence",
-        "exclude_reason": "semantic_alignment_score_zero_requires_human_review",
-        "included_in_phase1": false,
+        "alignment_kind": "unresolved_within_current_skill",
+        "exclude_reason": "",
+        "included_in_phase1": true,
         "conflict_reason": "ai_api_key_missing",
         "source_mapping_warning": "",
         "skill_anchor_scope": "default",
@@ -100378,6 +100707,10 @@
         "induction_tier": "core",
         "enrichment_reasons": [],
         "included_in_core_induction": true,
+        "source_skill_scope_locked": true,
+        "skill_mapping_authority": "textbook_examples.skill_id",
+        "classification_scope": "within_current_skill",
+        "source_skill_id": "vh_數學B1_LinearFunction",
         "equivalence_type": "numeric_exact",
         "checker_key": "integer_checker",
         "requires_human_action": false
@@ -101255,6 +101588,10 @@
         "induction_tier": "core",
         "enrichment_reasons": [],
         "included_in_core_induction": true,
+        "source_skill_scope_locked": true,
+        "skill_mapping_authority": "textbook_examples.skill_id",
+        "classification_scope": "within_current_skill",
+        "source_skill_id": "vh_數學B1_LinearFunction",
         "equivalence_type": "numeric_exact",
         "checker_key": "integer_checker",
         "requires_human_action": false
@@ -102136,6 +102473,10 @@
         "induction_tier": "core",
         "enrichment_reasons": [],
         "included_in_core_induction": true,
+        "source_skill_scope_locked": true,
+        "skill_mapping_authority": "textbook_examples.skill_id",
+        "classification_scope": "within_current_skill",
+        "source_skill_id": "vh_數學B1_LinearFunction",
         "equivalence_type": "numeric_exact",
         "checker_key": "integer_checker",
         "requires_human_action": false
@@ -103098,9 +103439,19 @@
         "induction_tier": "core",
         "enrichment_reasons": [],
         "included_in_core_induction": true,
+        "source_skill_scope_locked": true,
+        "skill_mapping_authority": "textbook_examples.skill_id",
+        "classification_scope": "within_current_skill",
+        "source_skill_id": "vh_數學B1_LinearFunction",
+        "unresolved_within_current_skill": true,
+        "pending_problem_type_induction": true,
+        "requires_human_rule_pack": true,
+        "requires_human_action": false,
+        "unresolved_reason": "semantic_score_zero_within_current_skill",
+        "generator_readiness": "pending_problem_type_induction",
+        "usable_for_phase3": false,
         "equivalence_type": "exact_string",
-        "checker_key": "text_short_checker",
-        "requires_human_action": false
+        "checker_key": "text_short_checker"
       },
       {
         "source_example_id": 4424,
@@ -104086,6 +104437,10 @@
         "induction_tier": "core",
         "enrichment_reasons": [],
         "included_in_core_induction": true,
+        "source_skill_scope_locked": true,
+        "skill_mapping_authority": "textbook_examples.skill_id",
+        "classification_scope": "within_current_skill",
+        "source_skill_id": "vh_數學B1_LinearFunction",
         "equivalence_type": "numeric_exact",
         "checker_key": "integer_checker",
         "requires_human_action": false
@@ -105054,9 +105409,19 @@
         "induction_tier": "core",
         "enrichment_reasons": [],
         "included_in_core_induction": true,
+        "source_skill_scope_locked": true,
+        "skill_mapping_authority": "textbook_examples.skill_id",
+        "classification_scope": "within_current_skill",
+        "source_skill_id": "vh_數學B1_LinearFunction",
+        "unresolved_within_current_skill": true,
+        "pending_problem_type_induction": true,
+        "requires_human_rule_pack": true,
+        "requires_human_action": false,
+        "unresolved_reason": "semantic_score_zero_within_current_skill",
+        "generator_readiness": "pending_problem_type_induction",
+        "usable_for_phase3": false,
         "equivalence_type": "exact_string",
-        "checker_key": "text_short_checker",
-        "requires_human_action": false
+        "checker_key": "text_short_checker"
       },
       {
         "source_example_id": 4426,
@@ -106046,9 +106411,19 @@
         "induction_tier": "core",
         "enrichment_reasons": [],
         "included_in_core_induction": true,
+        "source_skill_scope_locked": true,
+        "skill_mapping_authority": "textbook_examples.skill_id",
+        "classification_scope": "within_current_skill",
+        "source_skill_id": "vh_數學B1_LinearFunction",
+        "unresolved_within_current_skill": true,
+        "pending_problem_type_induction": true,
+        "requires_human_rule_pack": true,
+        "requires_human_action": false,
+        "unresolved_reason": "semantic_score_zero_within_current_skill",
+        "generator_readiness": "pending_problem_type_induction",
+        "usable_for_phase3": false,
         "equivalence_type": "exact_string",
-        "checker_key": "text_short_checker",
-        "requires_human_action": false
+        "checker_key": "text_short_checker"
       },
       {
         "source_example_id": 4441,
@@ -107034,6 +107409,10 @@
         "induction_tier": "core",
         "enrichment_reasons": [],
         "included_in_core_induction": true,
+        "source_skill_scope_locked": true,
+        "skill_mapping_authority": "textbook_examples.skill_id",
+        "classification_scope": "within_current_skill",
+        "source_skill_id": "vh_數學B1_LinearFunction",
         "equivalence_type": "numeric_exact",
         "checker_key": "integer_checker",
         "requires_human_action": false
@@ -108105,9 +108484,19 @@
         "induction_tier": "core",
         "enrichment_reasons": [],
         "included_in_core_induction": true,
+        "source_skill_scope_locked": true,
+        "skill_mapping_authority": "textbook_examples.skill_id",
+        "classification_scope": "within_current_skill",
+        "source_skill_id": "vh_數學B1_LinearFunction",
+        "unresolved_within_current_skill": true,
+        "pending_problem_type_induction": true,
+        "requires_human_rule_pack": true,
+        "requires_human_action": false,
+        "unresolved_reason": "semantic_score_zero_within_current_skill",
+        "generator_readiness": "pending_problem_type_induction",
+        "usable_for_phase3": false,
         "equivalence_type": "exact_string",
-        "checker_key": "text_short_checker",
-        "requires_human_action": false
+        "checker_key": "text_short_checker"
       },
       {
         "source_example_id": 4446,
@@ -109106,9 +109495,19 @@
         "induction_tier": "core",
         "enrichment_reasons": [],
         "included_in_core_induction": true,
+        "source_skill_scope_locked": true,
+        "skill_mapping_authority": "textbook_examples.skill_id",
+        "classification_scope": "within_current_skill",
+        "source_skill_id": "vh_數學B1_LinearFunction",
+        "unresolved_within_current_skill": true,
+        "pending_problem_type_induction": true,
+        "requires_human_rule_pack": true,
+        "requires_human_action": false,
+        "unresolved_reason": "semantic_score_zero_within_current_skill",
+        "generator_readiness": "pending_problem_type_induction",
+        "usable_for_phase3": false,
         "equivalence_type": "choice_label",
-        "checker_key": "choice_label_checker",
-        "requires_human_action": false
+        "checker_key": "choice_label_checker"
       },
       {
         "source_example_id": 4448,
@@ -110090,6 +110489,10 @@
         "induction_tier": "core",
         "enrichment_reasons": [],
         "included_in_core_induction": true,
+        "source_skill_scope_locked": true,
+        "skill_mapping_authority": "textbook_examples.skill_id",
+        "classification_scope": "within_current_skill",
+        "source_skill_id": "vh_數學B1_LinearFunction",
         "equivalence_type": "numeric_exact",
         "checker_key": "integer_checker",
         "requires_human_action": false
@@ -111074,6 +111477,10 @@
         "induction_tier": "core",
         "enrichment_reasons": [],
         "included_in_core_induction": true,
+        "source_skill_scope_locked": true,
+        "skill_mapping_authority": "textbook_examples.skill_id",
+        "classification_scope": "within_current_skill",
+        "source_skill_id": "vh_數學B1_LinearFunction",
         "equivalence_type": "numeric_exact",
         "checker_key": "integer_checker",
         "requires_human_action": false
@@ -112042,9 +112449,19 @@
         "induction_tier": "core",
         "enrichment_reasons": [],
         "included_in_core_induction": true,
+        "source_skill_scope_locked": true,
+        "skill_mapping_authority": "textbook_examples.skill_id",
+        "classification_scope": "within_current_skill",
+        "source_skill_id": "vh_數學B1_LinearFunction",
+        "unresolved_within_current_skill": true,
+        "pending_problem_type_induction": true,
+        "requires_human_rule_pack": true,
+        "requires_human_action": false,
+        "unresolved_reason": "semantic_score_zero_within_current_skill",
+        "generator_readiness": "pending_problem_type_induction",
+        "usable_for_phase3": false,
         "equivalence_type": "exact_string",
-        "checker_key": "text_short_checker",
-        "requires_human_action": false
+        "checker_key": "text_short_checker"
       },
       {
         "source_example_id": 4515,
@@ -113049,6 +113466,10 @@
         "induction_tier": "core",
         "enrichment_reasons": [],
         "included_in_core_induction": true,
+        "source_skill_scope_locked": true,
+        "skill_mapping_authority": "textbook_examples.skill_id",
+        "classification_scope": "within_current_skill",
+        "source_skill_id": "vh_數學B1_LinearFunction",
         "equivalence_type": "choice_label",
         "checker_key": "choice_label_checker",
         "requires_human_action": false
@@ -114033,6 +114454,10 @@
         "induction_tier": "core",
         "enrichment_reasons": [],
         "included_in_core_induction": true,
+        "source_skill_scope_locked": true,
+        "skill_mapping_authority": "textbook_examples.skill_id",
+        "classification_scope": "within_current_skill",
+        "source_skill_id": "vh_數學B1_LinearFunction",
         "equivalence_type": "numeric_exact",
         "checker_key": "integer_checker",
         "requires_human_action": false
@@ -114265,7 +114690,7 @@
       "dominant_source_family_ratio": 0.6,
       "skill_source_score": 0.48,
       "skill_problem_type_score": 0.04,
-      "source_problem_type_score": 0.044,
+      "source_problem_type_score": 0.0319,
       "per_problem_type_scores": [
         {
           "problem_type_id": "numeric_numeric_evaluate_function_notation_short_answer",
@@ -114281,20 +114706,33 @@
           "answer_contract_supported": true
         },
         {
-          "problem_type_id": "numeric_numeric_evaluate_function_notation_single_choice",
+          "problem_type_id": "numeric_numeric_evaluate_function_notation_short_answer",
           "target_task": "numeric_evaluate_function_notation",
           "task_family": "function_concept_family",
           "inferred_tasks": [
             "numeric_evaluate_function_notation"
           ],
-          "skill_problem_type_score": 0.0435,
-          "source_problem_type_score": 0.044,
+          "skill_problem_type_score": 0.04,
+          "source_problem_type_score": 0.0319,
           "task_consistent_with_skill": true,
           "family_consistent_with_skill": true,
           "answer_contract_supported": true
         },
         {
-          "problem_type_id": "evaluate_function_value",
+          "problem_type_id": "evaluate_function_notation_single_choice",
+          "target_task": "numeric_evaluate_function_notation",
+          "task_family": "function_concept_family",
+          "inferred_tasks": [
+            "numeric_evaluate_function_notation"
+          ],
+          "skill_problem_type_score": 0.0476,
+          "source_problem_type_score": 0.022,
+          "task_consistent_with_skill": true,
+          "family_consistent_with_skill": true,
+          "answer_contract_supported": true
+        },
+        {
+          "problem_type_id": "evaluate_function_value_2",
           "target_task": "evaluate_function_value",
           "task_family": "function_concept_family",
           "inferred_tasks": [
@@ -114307,7 +114745,7 @@
           "answer_contract_supported": true
         },
         {
-          "problem_type_id": "interpret_function_notation",
+          "problem_type_id": "interpret_function_notation_2",
           "target_task": "interpret_function_notation",
           "task_family": "function_concept_family",
           "inferred_tasks": [
@@ -114323,7 +114761,8 @@
       "decision": "warn",
       "blockers": [],
       "warnings": [
-        "ai_first_mode_fell_back_to_rule_only"
+        "ai_first_mode_fell_back_to_rule_only",
+        "ai_partial_unavailable_relaxed_tolerance"
       ],
       "induction_core_example_count": 15,
       "induction_enrichment_example_count": 0,
@@ -114344,7 +114783,8 @@
     "skill_problem_type_alignment_status": "warn",
     "alignment_score": 0.04,
     "alignment_warnings": [
-      "ai_first_mode_fell_back_to_rule_only"
+      "ai_first_mode_fell_back_to_rule_only",
+      "ai_partial_unavailable_relaxed_tolerance"
     ],
     "alignment_blockers": [],
     "source_family_distribution": {
@@ -114374,158 +114814,7 @@
     "examples_outside_expected_subskills": [],
     "suggested_action": "",
     "requires_human_action": true,
-    "excluded_source_examples": [
-      {
-        "example_id": 4445,
-        "target_task": "compute_numeric",
-        "task_family": "generic_numeric_family",
-        "alignment_score": 0.0,
-        "aligned_with_skill": false,
-        "included_in_phase1": false,
-        "exclude_reason": "semantic_alignment_score_zero_requires_human_review",
-        "alignment_kind": "unclassified_low_confidence",
-        "skill_id_match": true,
-        "task_family_match": false,
-        "subskill_match": false,
-        "pass_with_warning": false,
-        "requires_human_action": true,
-        "induction_tier": "core",
-        "included_in_core_induction": false,
-        "enrichment_reasons": [],
-        "source_quality_issues": [],
-        "source_quality_reject": false,
-        "candidate_only": false,
-        "classification_source": "rule_fallback_ai_unavailable",
-        "induction_eligibility": "excluded",
-        "skill_id": "vh_數學B1_LinearFunction",
-        "title_stem_preview": "已知手機費包含月租基本費與超時通話費，某電信公司的手機月租基本費為m元，可以免費通話30分鐘。若通話時間超過30分鐘後，通話費與時間（分鐘）為線型函數的關係如圖..."
-      },
-      {
-        "example_id": 4425,
-        "target_task": "compute_numeric",
-        "task_family": "generic_numeric_family",
-        "alignment_score": 0.0,
-        "aligned_with_skill": false,
-        "included_in_phase1": false,
-        "exclude_reason": "semantic_alignment_score_zero_requires_human_review",
-        "alignment_kind": "unclassified_low_confidence",
-        "skill_id_match": true,
-        "task_family_match": false,
-        "subskill_match": false,
-        "pass_with_warning": false,
-        "requires_human_action": true,
-        "induction_tier": "core",
-        "included_in_core_induction": false,
-        "enrichment_reasons": [],
-        "source_quality_issues": [],
-        "source_quality_reject": false,
-        "candidate_only": false,
-        "classification_source": "rule_fallback_ai_unavailable",
-        "induction_eligibility": "excluded",
-        "skill_id": "vh_數學B1_LinearFunction",
-        "title_stem_preview": "右圖是某電信公司的通話費計算方式：300秒以內只繳基本費，超過300秒之後的費用，與通話時間成線型函數關係，試問： (1) 手機基本費用為多少元？ (2) 本月..."
-      },
-      {
-        "example_id": 4426,
-        "target_task": "compute_numeric",
-        "task_family": "generic_numeric_family",
-        "alignment_score": 0.0,
-        "aligned_with_skill": false,
-        "included_in_phase1": false,
-        "exclude_reason": "semantic_alignment_score_zero_requires_human_review",
-        "alignment_kind": "unclassified_low_confidence",
-        "skill_id_match": true,
-        "task_family_match": false,
-        "subskill_match": false,
-        "pass_with_warning": false,
-        "requires_human_action": true,
-        "induction_tier": "core",
-        "included_in_core_induction": false,
-        "enrichment_reasons": [],
-        "source_quality_issues": [],
-        "source_quality_reject": false,
-        "candidate_only": false,
-        "classification_source": "rule_fallback_ai_unavailable",
-        "induction_eligibility": "excluded",
-        "skill_id": "vh_數學B1_LinearFunction",
-        "title_stem_preview": "設直角坐標平面上四點$A\\left( -2,1 \\right)$、$B\\left( {{b}_{1}},{{b}_{2}} \\right)$、$C\\left( ..."
-      },
-      {
-        "example_id": 4442,
-        "target_task": "applied_quadratic_inequality_problem",
-        "task_family": "quadratic_inequality_family",
-        "alignment_score": 0.0,
-        "aligned_with_skill": false,
-        "included_in_phase1": false,
-        "exclude_reason": "semantic_alignment_score_zero_requires_human_review",
-        "alignment_kind": "unclassified_low_confidence",
-        "skill_id_match": true,
-        "task_family_match": false,
-        "subskill_match": false,
-        "pass_with_warning": false,
-        "requires_human_action": true,
-        "induction_tier": "core",
-        "included_in_core_induction": false,
-        "enrichment_reasons": [],
-        "source_quality_issues": [],
-        "source_quality_reject": false,
-        "candidate_only": false,
-        "classification_source": "rule_fallback_ai_unavailable",
-        "induction_eligibility": "excluded",
-        "skill_id": "vh_數學B1_LinearFunction",
-        "title_stem_preview": "高老師搭乘某廉價航空，他的行李托運費用是850元，若行李托運費用與重量是成線型函數的關係，如圖所示，試求高老師托運的行李幾公斤？"
-      },
-      {
-        "example_id": 4446,
-        "target_task": "compute_numeric",
-        "task_family": "generic_numeric_family",
-        "alignment_score": 0.0,
-        "aligned_with_skill": false,
-        "included_in_phase1": false,
-        "exclude_reason": "semantic_alignment_score_zero_requires_human_review",
-        "alignment_kind": "unclassified_low_confidence",
-        "skill_id_match": true,
-        "task_family_match": false,
-        "subskill_match": false,
-        "pass_with_warning": false,
-        "requires_human_action": true,
-        "induction_tier": "core",
-        "included_in_core_induction": false,
-        "enrichment_reasons": [],
-        "source_quality_issues": [],
-        "source_quality_reject": false,
-        "candidate_only": true,
-        "classification_source": "rule_fallback_ai_unavailable",
-        "induction_eligibility": "excluded",
-        "skill_id": "vh_數學B1_LinearFunction",
-        "title_stem_preview": "公司給小虹最多50萬元的預算來採買$x$、$y$兩種貨品。但小虹一時疏忽，無法確定$x$貨品跟$y$貨品的單價哪一個是100元、哪一個是200元。下列數對($x..."
-      },
-      {
-        "example_id": 4500,
-        "target_task": "compute_numeric",
-        "task_family": "generic_numeric_family",
-        "alignment_score": 0.0,
-        "aligned_with_skill": false,
-        "included_in_phase1": false,
-        "exclude_reason": "semantic_alignment_score_zero_requires_human_review",
-        "alignment_kind": "unclassified_low_confidence",
-        "skill_id_match": true,
-        "task_family_match": false,
-        "subskill_match": false,
-        "pass_with_warning": false,
-        "requires_human_action": true,
-        "induction_tier": "core",
-        "included_in_core_induction": false,
-        "enrichment_reasons": [],
-        "source_quality_issues": [],
-        "source_quality_reject": false,
-        "candidate_only": false,
-        "classification_source": "rule_fallback_ai_unavailable",
-        "induction_eligibility": "excluded",
-        "skill_id": "vh_數學B1_LinearFunction",
-        "title_stem_preview": "阿偉的汽車加滿油後開始行駛，其行駛距離x公里與剩餘油量y公升的關係為線型函數，其圖形如右圖所示，則x與y的關係式為"
-      }
-    ],
+    "excluded_source_examples": [],
     "rejected_source_examples": [],
     "source_quality_issues": [],
     "semantic_mismatch_examples": [],
@@ -114536,15 +114825,15 @@
     "inherited_from_previous_context_examples": [],
     "low_source_examples": [
       {
-        "problem_type_id": "numeric_numeric_evaluate_function_notation_single_choice",
+        "problem_type_id": "numeric_evaluate_function_notation_single_choice",
         "matched_example_count": 1
       },
       {
-        "problem_type_id": "evaluate_function_value",
+        "problem_type_id": "evaluate_function_value_2",
         "matched_example_count": 0
       },
       {
-        "problem_type_id": "interpret_function_notation",
+        "problem_type_id": "interpret_function_notation_2",
         "matched_example_count": 0
       }
     ],
@@ -114572,6 +114861,11 @@
     },
     "candidate_only_problem_types": [
       {
+        "example_id": 4446,
+        "subskill_id": "same_as_main_skill",
+        "reason": "candidate_only_source"
+      },
+      {
         "example_id": 4433,
         "problem_type_id": "numeric_numeric_evaluate_function_notation_short_answer",
         "reason": "runtime_not_supported"
@@ -114587,8 +114881,23 @@
         "reason": "runtime_not_supported"
       },
       {
+        "example_id": 4445,
+        "problem_type_id": "short_answer_compute_numeric_short_answer",
+        "reason": "runtime_not_supported"
+      },
+      {
         "example_id": 4424,
         "problem_type_id": "numeric_numeric_evaluate_function_notation_short_answer",
+        "reason": "runtime_not_supported"
+      },
+      {
+        "example_id": 4425,
+        "problem_type_id": "short_answer_compute_numeric_short_answer",
+        "reason": "runtime_not_supported"
+      },
+      {
+        "example_id": 4426,
+        "problem_type_id": "short_answer_compute_numeric_short_answer",
         "reason": "runtime_not_supported"
       },
       {
@@ -114607,8 +114916,13 @@
         "reason": "runtime_not_supported"
       },
       {
+        "example_id": 4500,
+        "problem_type_id": "short_answer_compute_numeric_short_answer",
+        "reason": "runtime_not_supported"
+      },
+      {
         "example_id": 4515,
-        "problem_type_id": "numeric_numeric_evaluate_function_notation_single_choice",
+        "problem_type_id": "numeric_evaluate_function_notation_single_choice",
         "reason": "runtime_not_supported"
       },
       {
@@ -114617,7 +114931,7 @@
         "reason": "runtime_not_supported"
       }
     ],
-    "candidate_only_count": 9,
+    "candidate_only_count": 14,
     "same_as_main_skill_count": 0,
     "rule_only_classification_count": 0,
     "hybrid_resolved_count": 0,
@@ -114665,6 +114979,10 @@
         "source_quality_reject": false,
         "candidate_only": false,
         "classification_source": "rule_fallback_ai_unavailable",
+        "source_skill_scope_locked": true,
+        "skill_mapping_authority": "textbook_examples.skill_id",
+        "classification_scope": "within_current_skill",
+        "unresolved_reason": "",
         "induction_eligibility": "eligible",
         "skill_id": "vh_數學B1_LinearFunction",
         "title_stem_preview": "試在坐標平面上畫出$y=f\\left( x \\right)=-2$的圖形。"
@@ -114690,6 +115008,10 @@
         "source_quality_reject": false,
         "candidate_only": false,
         "classification_source": "rule_fallback_ai_unavailable",
+        "source_skill_scope_locked": true,
+        "skill_mapping_authority": "textbook_examples.skill_id",
+        "classification_scope": "within_current_skill",
+        "unresolved_reason": "",
         "induction_eligibility": "eligible",
         "skill_id": "vh_數學B1_LinearFunction",
         "title_stem_preview": "試在坐標平面上畫出函數$y=f\\left( x \\right)=3x-6$的圖形。"
@@ -114715,6 +115037,10 @@
         "source_quality_reject": false,
         "candidate_only": false,
         "classification_source": "rule_fallback_ai_unavailable",
+        "source_skill_scope_locked": true,
+        "skill_mapping_authority": "textbook_examples.skill_id",
+        "classification_scope": "within_current_skill",
+        "unresolved_reason": "",
         "induction_eligibility": "eligible",
         "skill_id": "vh_數學B1_LinearFunction",
         "title_stem_preview": "下圖為函數$y=f\\left( x \\right)=ax+b$的圖形。\n(1)試求直線的x截距與y截距。\n(2)試求$f\\left( x \\right)$。"
@@ -114724,23 +115050,27 @@
         "target_task": "compute_numeric",
         "task_family": "generic_numeric_family",
         "alignment_score": 0.0,
-        "aligned_with_skill": false,
-        "included_in_phase1": false,
-        "exclude_reason": "semantic_alignment_score_zero_requires_human_review",
-        "alignment_kind": "unclassified_low_confidence",
+        "aligned_with_skill": true,
+        "included_in_phase1": true,
+        "exclude_reason": "",
+        "alignment_kind": "unresolved_within_current_skill",
         "skill_id_match": true,
         "task_family_match": false,
         "subskill_match": false,
         "pass_with_warning": false,
         "requires_human_action": true,
         "induction_tier": "core",
-        "included_in_core_induction": false,
+        "included_in_core_induction": true,
         "enrichment_reasons": [],
         "source_quality_issues": [],
         "source_quality_reject": false,
         "candidate_only": false,
         "classification_source": "rule_fallback_ai_unavailable",
-        "induction_eligibility": "excluded",
+        "source_skill_scope_locked": true,
+        "skill_mapping_authority": "textbook_examples.skill_id",
+        "classification_scope": "within_current_skill",
+        "unresolved_reason": "semantic_score_zero_within_current_skill",
+        "induction_eligibility": "eligible",
         "skill_id": "vh_數學B1_LinearFunction",
         "title_stem_preview": "已知手機費包含月租基本費與超時通話費，某電信公司的手機月租基本費為m元，可以免費通話30分鐘。若通話時間超過30分鐘後，通話費與時間（分鐘）為線型函數的關係如圖"
       },
@@ -114765,6 +115095,10 @@
         "source_quality_reject": false,
         "candidate_only": false,
         "classification_source": "rule_fallback_ai_unavailable",
+        "source_skill_scope_locked": true,
+        "skill_mapping_authority": "textbook_examples.skill_id",
+        "classification_scope": "within_current_skill",
+        "unresolved_reason": "",
         "induction_eligibility": "eligible",
         "skill_id": "vh_數學B1_LinearFunction",
         "title_stem_preview": "右圖為函數$y=f\\left( x \\right)=ax+b$的圖形。\n(1) 試求直線的x截距與y截距。\n(2) 試求$f\\left( x \\right)$。"
@@ -114774,23 +115108,27 @@
         "target_task": "compute_numeric",
         "task_family": "generic_numeric_family",
         "alignment_score": 0.0,
-        "aligned_with_skill": false,
-        "included_in_phase1": false,
-        "exclude_reason": "semantic_alignment_score_zero_requires_human_review",
-        "alignment_kind": "unclassified_low_confidence",
+        "aligned_with_skill": true,
+        "included_in_phase1": true,
+        "exclude_reason": "",
+        "alignment_kind": "unresolved_within_current_skill",
         "skill_id_match": true,
         "task_family_match": false,
         "subskill_match": false,
         "pass_with_warning": false,
         "requires_human_action": true,
         "induction_tier": "core",
-        "included_in_core_induction": false,
+        "included_in_core_induction": true,
         "enrichment_reasons": [],
         "source_quality_issues": [],
         "source_quality_reject": false,
         "candidate_only": false,
         "classification_source": "rule_fallback_ai_unavailable",
-        "induction_eligibility": "excluded",
+        "source_skill_scope_locked": true,
+        "skill_mapping_authority": "textbook_examples.skill_id",
+        "classification_scope": "within_current_skill",
+        "unresolved_reason": "semantic_score_zero_within_current_skill",
+        "induction_eligibility": "eligible",
         "skill_id": "vh_數學B1_LinearFunction",
         "title_stem_preview": "右圖是某電信公司的通話費計算方式：300秒以內只繳基本費，超過300秒之後的費用，與通話時間成線型函數關係，試問：\n(1) 手機基本費用為多少元？\n(2) 本月"
       },
@@ -114799,23 +115137,27 @@
         "target_task": "compute_numeric",
         "task_family": "generic_numeric_family",
         "alignment_score": 0.0,
-        "aligned_with_skill": false,
-        "included_in_phase1": false,
-        "exclude_reason": "semantic_alignment_score_zero_requires_human_review",
-        "alignment_kind": "unclassified_low_confidence",
+        "aligned_with_skill": true,
+        "included_in_phase1": true,
+        "exclude_reason": "",
+        "alignment_kind": "unresolved_within_current_skill",
         "skill_id_match": true,
         "task_family_match": false,
         "subskill_match": false,
         "pass_with_warning": false,
         "requires_human_action": true,
         "induction_tier": "core",
-        "included_in_core_induction": false,
+        "included_in_core_induction": true,
         "enrichment_reasons": [],
         "source_quality_issues": [],
         "source_quality_reject": false,
         "candidate_only": false,
         "classification_source": "rule_fallback_ai_unavailable",
-        "induction_eligibility": "excluded",
+        "source_skill_scope_locked": true,
+        "skill_mapping_authority": "textbook_examples.skill_id",
+        "classification_scope": "within_current_skill",
+        "unresolved_reason": "semantic_score_zero_within_current_skill",
+        "induction_eligibility": "eligible",
         "skill_id": "vh_數學B1_LinearFunction",
         "title_stem_preview": "設直角坐標平面上四點$A\\left( -2,1 \\right)$、$B\\left( {{b}_{1}},{{b}_{2}} \\right)$、$C\\left( "
       },
@@ -114840,6 +115182,10 @@
         "source_quality_reject": false,
         "candidate_only": false,
         "classification_source": "rule_fallback_ai_unavailable",
+        "source_skill_scope_locked": true,
+        "skill_mapping_authority": "textbook_examples.skill_id",
+        "classification_scope": "within_current_skill",
+        "unresolved_reason": "",
         "induction_eligibility": "eligible",
         "skill_id": "vh_數學B1_LinearFunction",
         "title_stem_preview": "右圖為函數$y=f\\left( x \\right)=ax+b$的圖形。\n(1) 試求直線的x截距與y截距。\n(2) 試求$f\\left( x \\right)$。"
@@ -114849,23 +115195,27 @@
         "target_task": "applied_quadratic_inequality_problem",
         "task_family": "quadratic_inequality_family",
         "alignment_score": 0.0,
-        "aligned_with_skill": false,
-        "included_in_phase1": false,
-        "exclude_reason": "semantic_alignment_score_zero_requires_human_review",
-        "alignment_kind": "unclassified_low_confidence",
+        "aligned_with_skill": true,
+        "included_in_phase1": true,
+        "exclude_reason": "",
+        "alignment_kind": "unresolved_within_current_skill",
         "skill_id_match": true,
         "task_family_match": false,
         "subskill_match": false,
         "pass_with_warning": false,
         "requires_human_action": true,
         "induction_tier": "core",
-        "included_in_core_induction": false,
+        "included_in_core_induction": true,
         "enrichment_reasons": [],
         "source_quality_issues": [],
         "source_quality_reject": false,
         "candidate_only": false,
         "classification_source": "rule_fallback_ai_unavailable",
-        "induction_eligibility": "excluded",
+        "source_skill_scope_locked": true,
+        "skill_mapping_authority": "textbook_examples.skill_id",
+        "classification_scope": "within_current_skill",
+        "unresolved_reason": "semantic_score_zero_within_current_skill",
+        "induction_eligibility": "eligible",
         "skill_id": "vh_數學B1_LinearFunction",
         "title_stem_preview": "高老師搭乘某廉價航空，他的行李托運費用是850元，若行李托運費用與重量是成線型函數的關係，如圖所示，試求高老師托運的行李幾公斤？"
       },
@@ -114874,23 +115224,27 @@
         "target_task": "compute_numeric",
         "task_family": "generic_numeric_family",
         "alignment_score": 0.0,
-        "aligned_with_skill": false,
-        "included_in_phase1": false,
-        "exclude_reason": "semantic_alignment_score_zero_requires_human_review",
-        "alignment_kind": "unclassified_low_confidence",
+        "aligned_with_skill": true,
+        "included_in_phase1": true,
+        "exclude_reason": "",
+        "alignment_kind": "unresolved_within_current_skill",
         "skill_id_match": true,
         "task_family_match": false,
         "subskill_match": false,
         "pass_with_warning": false,
         "requires_human_action": true,
         "induction_tier": "core",
-        "included_in_core_induction": false,
+        "included_in_core_induction": true,
         "enrichment_reasons": [],
         "source_quality_issues": [],
         "source_quality_reject": false,
         "candidate_only": true,
         "classification_source": "rule_fallback_ai_unavailable",
-        "induction_eligibility": "excluded",
+        "source_skill_scope_locked": true,
+        "skill_mapping_authority": "textbook_examples.skill_id",
+        "classification_scope": "within_current_skill",
+        "unresolved_reason": "semantic_score_zero_within_current_skill",
+        "induction_eligibility": "eligible",
         "skill_id": "vh_數學B1_LinearFunction",
         "title_stem_preview": "公司給小虹最多50萬元的預算來採買$x$、$y$兩種貨品。但小虹一時疏忽，無法確定$x$貨品跟$y$貨品的單價哪一個是100元、哪一個是200元。下列數對($x"
       },
@@ -114915,6 +115269,10 @@
         "source_quality_reject": false,
         "candidate_only": false,
         "classification_source": "rule_fallback_ai_unavailable",
+        "source_skill_scope_locked": true,
+        "skill_mapping_authority": "textbook_examples.skill_id",
+        "classification_scope": "within_current_skill",
+        "unresolved_reason": "",
         "induction_eligibility": "eligible",
         "skill_id": "vh_數學B1_LinearFunction",
         "title_stem_preview": "試在坐標平面上畫出$y=f\\left( x \\right)=3$的圖形。"
@@ -114940,6 +115298,10 @@
         "source_quality_reject": false,
         "candidate_only": false,
         "classification_source": "rule_fallback_ai_unavailable",
+        "source_skill_scope_locked": true,
+        "skill_mapping_authority": "textbook_examples.skill_id",
+        "classification_scope": "within_current_skill",
+        "unresolved_reason": "",
         "induction_eligibility": "eligible",
         "skill_id": "vh_數學B1_LinearFunction",
         "title_stem_preview": "試在坐標平面上畫出函數$y=f\\left( x \\right)=-2x+4$的圖形。"
@@ -114949,23 +115311,27 @@
         "target_task": "compute_numeric",
         "task_family": "generic_numeric_family",
         "alignment_score": 0.0,
-        "aligned_with_skill": false,
-        "included_in_phase1": false,
-        "exclude_reason": "semantic_alignment_score_zero_requires_human_review",
-        "alignment_kind": "unclassified_low_confidence",
+        "aligned_with_skill": true,
+        "included_in_phase1": true,
+        "exclude_reason": "",
+        "alignment_kind": "unresolved_within_current_skill",
         "skill_id_match": true,
         "task_family_match": false,
         "subskill_match": false,
         "pass_with_warning": false,
         "requires_human_action": true,
         "induction_tier": "core",
-        "included_in_core_induction": false,
+        "included_in_core_induction": true,
         "enrichment_reasons": [],
         "source_quality_issues": [],
         "source_quality_reject": false,
         "candidate_only": false,
         "classification_source": "rule_fallback_ai_unavailable",
-        "induction_eligibility": "excluded",
+        "source_skill_scope_locked": true,
+        "skill_mapping_authority": "textbook_examples.skill_id",
+        "classification_scope": "within_current_skill",
+        "unresolved_reason": "semantic_score_zero_within_current_skill",
+        "induction_eligibility": "eligible",
         "skill_id": "vh_數學B1_LinearFunction",
         "title_stem_preview": "阿偉的汽車加滿油後開始行駛，其行駛距離x公里與剩餘油量y公升的關係為線型函數，其圖形如右圖所示，則x與y的關係式為"
       },
@@ -114990,6 +115356,10 @@
         "source_quality_reject": false,
         "candidate_only": false,
         "classification_source": "rule_fallback_ai_unavailable",
+        "source_skill_scope_locked": true,
+        "skill_mapping_authority": "textbook_examples.skill_id",
+        "classification_scope": "within_current_skill",
+        "unresolved_reason": "",
         "induction_eligibility": "eligible",
         "skill_id": "vh_數學B1_LinearFunction",
         "title_stem_preview": "設$f\\left( x \\right)=ax+b$為一線型函數，且圖形通過點$\\left( -2,4 \\right)$、$\\left( 1,1 \\right)$"
@@ -115015,6 +115385,10 @@
         "source_quality_reject": false,
         "candidate_only": false,
         "classification_source": "rule_fallback_ai_unavailable",
+        "source_skill_scope_locked": true,
+        "skill_mapping_authority": "textbook_examples.skill_id",
+        "classification_scope": "within_current_skill",
+        "unresolved_reason": "",
         "induction_eligibility": "eligible",
         "skill_id": "vh_數學B1_LinearFunction",
         "title_stem_preview": "利用截距定義，試問下列何者不可能是函數$y=f\\left( x \\right)=ax-3$的圖形？"
@@ -115033,17 +115407,39 @@
           [
             "coordinate_point",
             "quadratic_equation"
-          ]
+          ],
+          "default"
         ],
         "source_example_ids": [
-          4424,
           4433,
           4434,
-          4441,
-          4444,
           4448,
           4449,
           4516
+        ],
+        "answer_type": "numeric",
+        "presentation_mode": "short_answer",
+        "source_has_choices": false
+      },
+      {
+        "grouping_reason": "split_by_feature_signature",
+        "feature_signature": [
+          "numeric",
+          "numeric_evaluate_function_notation",
+          "short_answer",
+          [
+            "numeric_computation"
+          ],
+          [
+            "coordinate_point",
+            "quadratic_equation"
+          ],
+          "line_equation"
+        ],
+        "source_example_ids": [
+          4424,
+          4441,
+          4444
         ],
         "answer_type": "numeric",
         "presentation_mode": "short_answer",
@@ -115061,7 +115457,8 @@
           [
             "coordinate_point",
             "quadratic_equation"
-          ]
+          ],
+          "line_equation"
         ],
         "source_example_ids": [
           4515
@@ -115069,6 +115466,68 @@
         "answer_type": "numeric",
         "presentation_mode": "single_choice",
         "source_has_choices": true
+      },
+      {
+        "grouping_reason": "split_by_feature_signature",
+        "feature_signature": [
+          "short_answer",
+          "compute_numeric",
+          "short_answer",
+          [
+            "numeric_computation"
+          ],
+          [],
+          "default"
+        ],
+        "source_example_ids": [
+          4425,
+          4445,
+          4500
+        ],
+        "answer_type": "short_answer",
+        "presentation_mode": "short_answer",
+        "source_has_choices": false
+      },
+      {
+        "grouping_reason": "split_by_feature_signature",
+        "feature_signature": [
+          "short_answer",
+          "compute_numeric",
+          "short_answer",
+          [
+            "numeric_computation"
+          ],
+          [
+            "coordinate_point",
+            "three_coordinate_points"
+          ],
+          "line_equation"
+        ],
+        "source_example_ids": [
+          4426
+        ],
+        "answer_type": "short_answer",
+        "presentation_mode": "short_answer",
+        "source_has_choices": false
+      },
+      {
+        "grouping_reason": "split_by_feature_signature",
+        "feature_signature": [
+          "short_answer",
+          "applied_quadratic_inequality_problem",
+          "short_answer",
+          [
+            "quadratic_factoring_reasoning"
+          ],
+          [],
+          "default"
+        ],
+        "source_example_ids": [
+          4442
+        ],
+        "answer_type": "short_answer",
+        "presentation_mode": "short_answer",
+        "source_has_choices": false
       }
     ],
     "induced_problem_type_specs": [
@@ -115078,15 +115537,12 @@
         "target_task": "numeric_evaluate_function_notation",
         "task_family": "function_concept_family",
         "display_name": "numeric / numeric_evaluate_function_notation",
-        "answer_format_hint": "",
+        "answer_format_hint": "text_short",
         "answer_fields": null,
         "answer_separator": null,
         "source_example_ids": [
-          4424,
           4433,
           4434,
-          4441,
-          4444,
           4448,
           4449,
           4516
@@ -115096,16 +115552,203 @@
           "choice_count": null,
           "correct_choice_count": null,
           "frontend_render_choices": false,
-          "source_has_choices": false,
           "answer_type": "text_short",
           "answer_shape": "text_short",
-          "answer_semantics": "text_short",
           "answer_equivalence": "exact_string",
-          "equivalence_type": "exact_string",
           "checker": "text_short_checker",
+          "accepted_formats": [
+            "5",
+            "5.0",
+            "-3"
+          ],
+          "equivalence_type": "exact_string",
           "checker_key": "text_short_checker",
-          "presentation_mode": "short_answer",
-          "selected_checker": "text_short_checker"
+          "presentation_mode": "short_answer"
+        },
+        "stem_contract": {
+          "stem_must_not_embed_choices": true,
+          "allowed_math_objects": [
+            "coordinate_point",
+            "quadratic_equation",
+            "quadratic_vertex_form"
+          ],
+          "required_math_objects": [
+            "coordinate_point",
+            "quadratic_equation"
+          ],
+          "forbidden_patterns": [
+            "\\(A\\)",
+            "\\(B\\)",
+            "\\(C\\)",
+            "\\(D\\)"
+          ]
+        },
+        "dependency_contract": {
+          "givens_must_be_used": true,
+          "target_answer_must_depend_on_givens": true,
+          "variables_in_conditions_must_appear_in_target": false
+        },
+        "semantic_contract": {
+          "reasoning_type": [
+            "numeric_computation"
+          ],
+          "reject_if": [
+            "unused_condition",
+            "ambiguous_answer",
+            "answer_not_derivable",
+            "duplicated_choices",
+            "no_correct_choice",
+            "multiple_correct_choices_when_single_choice"
+          ]
+        },
+        "generator_contract": {
+          "template_variants": [
+            {
+              "id": "default",
+              "label": "default",
+              "stem_pattern": "依題意求解：{stem_hint}。",
+              "weight": 1.0,
+              "enabled": true
+            }
+          ],
+          "parameter_schema": {
+            "seed": {
+              "type": "integer",
+              "randomize": true
+            },
+            "difficulty_level": {
+              "choices": [
+                "level_1",
+                "level_2",
+                "level_3"
+              ],
+              "weights": [
+                0.4,
+                0.4,
+                0.2
+              ]
+            }
+          },
+          "variation_dimensions": [
+            "seed",
+            "difficulty_level",
+            "context_style"
+          ],
+          "difficulty_controls": {
+            "level_1": {},
+            "level_2": {},
+            "level_3": {}
+          },
+          "anti_repetition_rules": {
+            "avoid_same_template_consecutive": true,
+            "avoid_same_ratio_consecutive": true,
+            "avoid_same_point_names_consecutive": true,
+            "avoid_same_answer_consecutive": true,
+            "recent_history_window": 5,
+            "signature_fields": [
+              "problem_type_id",
+              "template_variant",
+              "routing_track",
+              "scenario_type",
+              "ratio_form",
+              "ratio_values",
+              "coordinate_pattern",
+              "answer"
+            ]
+          },
+          "validity_constraints": [
+            "answer derivable from givens"
+          ],
+          "answer_shape": "numeric",
+          "explanation_variants": [
+            "stepwise"
+          ],
+          "sampling_strategy": "weighted_random",
+          "template_families": [
+            "numeric_evaluate_function_notation"
+          ],
+          "parameter_slots": {
+            "seed": "integer",
+            "difficulty": "easy"
+          },
+          "randomization_rules": {
+            "shuffle_choices": false
+          },
+          "avoid_llm_freeform_math": true,
+          "use_domain_functions": true,
+          "derivation_steps_required": true,
+          "templates": [
+            "template_scalar_unknown",
+            "template_feature_value"
+          ],
+          "problem_type_id": "numeric_numeric_evaluate_function_notation_short_answer",
+          "contract_validation_blockers": [],
+          "contract_validation_warnings": [
+            "single_template_variant_only",
+            "variation_dimensions_below_recommended_minimum"
+          ]
+        },
+        "validator_contract": {
+          "static_checks": [
+            "answer_contract_checks",
+            "choices_policy"
+          ],
+          "semantic_checks": [
+            "givens_to_target_dependency"
+          ],
+          "runtime_smoke_count": 30
+        },
+        "spec_source": "phase1_induced_draft",
+        "grouping_reason": "split_by_feature_signature",
+        "feature_signature": [
+          "numeric",
+          "numeric_evaluate_function_notation",
+          "short_answer",
+          [
+            "numeric_computation"
+          ],
+          [
+            "coordinate_point",
+            "quadratic_equation"
+          ],
+          "default"
+        ],
+        "canonical_base_problem_type_id": "numeric_evaluate_function_notation_short_answer",
+        "value_type_prefix": "numeric",
+        "_resolved_template_slot": "",
+        "naming_warning": "naming_warning:numeric_prefix_but_hint_is_text_short"
+      },
+      {
+        "problem_type_id": "numeric_numeric_evaluate_function_notation_short_answer",
+        "skill_id": "vh_數學B1_LinearFunction",
+        "target_task": "numeric_evaluate_function_notation",
+        "task_family": "function_concept_family",
+        "display_name": "numeric / numeric_evaluate_function_notation",
+        "answer_format_hint": "text_short",
+        "answer_fields": null,
+        "answer_separator": null,
+        "source_example_ids": [
+          4424,
+          4441,
+          4444
+        ],
+        "answer_contract": {
+          "choices_required": false,
+          "choice_count": null,
+          "correct_choice_count": null,
+          "frontend_render_choices": false,
+          "answer_type": "text_short",
+          "answer_shape": "text_short",
+          "answer_equivalence": "exact_string",
+          "checker": "text_short_checker",
+          "accepted_formats": [
+            "5",
+            "5.0",
+            "-3"
+          ],
+          "equivalence_type": "exact_string",
+          "checker_key": "text_short_checker",
+          "presentation_mode": "short_answer"
         },
         "stem_contract": {
           "stem_must_not_embed_choices": true,
@@ -115253,14 +115896,16 @@
           [
             "coordinate_point",
             "quadratic_equation"
-          ]
+          ],
+          "line_equation"
         ],
         "canonical_base_problem_type_id": "numeric_evaluate_function_notation_short_answer",
         "value_type_prefix": "numeric",
-        "_resolved_template_slot": ""
+        "_resolved_template_slot": "",
+        "naming_warning": "naming_warning:numeric_prefix_but_hint_is_text_short"
       },
       {
-        "problem_type_id": "numeric_numeric_evaluate_function_notation_single_choice",
+        "problem_type_id": "evaluate_function_notation_single_choice",
         "skill_id": "vh_數學B1_LinearFunction",
         "target_task": "numeric_evaluate_function_notation",
         "task_family": "function_concept_family",
@@ -115440,15 +116085,16 @@
           [
             "coordinate_point",
             "quadratic_equation"
-          ]
+          ],
+          "line_equation"
         ],
-        "canonical_base_problem_type_id": "numeric_evaluate_function_notation_single_choice",
+        "canonical_base_problem_type_id": "evaluate_function_notation_single_choice",
         "value_type_prefix": "numeric",
         "_resolved_template_slot": "",
         "naming_warning": "naming_warning:numeric_prefix_but_hint_is_A/B/C/D"
       },
       {
-        "problem_type_id": "evaluate_function_value",
+        "problem_type_id": "evaluate_function_value_2",
         "skill_id": "vh_數學B1_LinearFunction",
         "target_task": "evaluate_function_value",
         "task_family": "function_concept_family",
@@ -115585,7 +116231,7 @@
           "template_slots": {
             "stem": "function_value_numeric"
           },
-          "problem_type_id": "evaluate_function_value",
+          "problem_type_id": "evaluate_function_value_2",
           "contract_validation_blockers": [],
           "contract_validation_warnings": [
             "single_template_variant_only",
@@ -115607,12 +116253,12 @@
           "anchor_slot_bootstrap",
           "evaluate_function_value"
         ],
-        "canonical_base_problem_type_id": "evaluate_function_value",
+        "canonical_base_problem_type_id": "evaluate_function_value_2",
         "value_type_prefix": "",
         "_resolved_template_slot": "factor_quadratic_by_cross_multiplication"
       },
       {
-        "problem_type_id": "interpret_function_notation",
+        "problem_type_id": "interpret_function_notation_2",
         "skill_id": "vh_數學B1_LinearFunction",
         "target_task": "interpret_function_notation",
         "task_family": "function_concept_family",
@@ -115749,7 +116395,7 @@
           "template_slots": {
             "stem": "linear_function_two_point_choice"
           },
-          "problem_type_id": "interpret_function_notation",
+          "problem_type_id": "interpret_function_notation_2",
           "contract_validation_blockers": [],
           "contract_validation_warnings": [
             "single_template_variant_only",
@@ -115771,7 +116417,7 @@
           "anchor_slot_bootstrap",
           "interpret_function_notation"
         ],
-        "canonical_base_problem_type_id": "interpret_function_notation",
+        "canonical_base_problem_type_id": "interpret_function_notation_2",
         "value_type_prefix": "",
         "_resolved_template_slot": "factor_quadratic_by_cross_multiplication"
       }
@@ -115782,18 +116428,15 @@
         "proposed_problem_type_id": "numeric_numeric_evaluate_function_notation_short_answer",
         "display_name": "numeric / numeric_evaluate_function_notation",
         "matched_example_ids": [
-          4424,
           4433,
           4434,
-          4441,
-          4444,
           4448,
           4449,
           4516
         ],
-        "matched_example_count": 8,
+        "matched_example_count": 5,
         "unmatched_example_ids": [],
-        "representative_example_id": 4424,
+        "representative_example_id": 4433,
         "structural_features": [
           "text_short"
         ],
@@ -115802,26 +116445,96 @@
           "choice_count": null,
           "correct_choice_count": null,
           "frontend_render_choices": false,
-          "source_has_choices": false,
           "answer_type": "text_short",
           "answer_shape": "text_short",
-          "answer_semantics": "text_short",
           "answer_equivalence": "exact_string",
-          "equivalence_type": "exact_string",
           "checker": "text_short_checker",
+          "accepted_formats": [
+            "5",
+            "5.0",
+            "-3"
+          ],
+          "equivalence_type": "exact_string",
           "checker_key": "text_short_checker",
           "presentation_mode": "short_answer",
-          "selected_checker": "text_short_checker",
-          "checker_capability_status": "ok",
-          "checker_contract_blockers": [],
-          "checker_contract_warnings": [],
+          "order_matters": true,
+          "accepted_format_notes": [],
+          "canonical_answer_schema": "text_short"
+        },
+        "checker_key_proposal": "text_short_checker",
+        "equivalence_type_proposal": "exact_string",
+        "answer_shape": "text_short",
+        "answer_semantics": "text_short",
+        "presentation_mode": "short_answer",
+        "source_has_choices": false,
+        "selected_checker": "text_short_checker",
+        "checker_selection_reason": "task_family_default",
+        "coordinate_pair_presentation_note": "",
+        "confidence": "high",
+        "promote_recommendation": "recommend_promote_for_that_candidate",
+        "promote_blockers": [],
+        "risk_flags": [
+          "ai_first_mode_fell_back_to_rule_only",
+          "ai_partial_unavailable_relaxed_tolerance",
+          "no_registered_slot_but_presentation_known",
+          "subskill_mismatch_warning"
+        ],
+        "checker_contract_warnings": [],
+        "spec_source": "phase1_induced_draft",
+        "grouping_reason": "split_by_feature_signature",
+        "feature_signature": [
+          "numeric",
+          "numeric_evaluate_function_notation",
+          "short_answer",
+          [
+            "numeric_computation"
+          ],
+          [
+            "coordinate_point",
+            "quadratic_equation"
+          ],
+          "default"
+        ],
+        "problem_type_spec_draft": {
+          "problem_type_id": "numeric_numeric_evaluate_function_notation_short_answer",
+          "skill_id": "vh_數學B1_LinearFunction",
+          "target_task": "numeric_evaluate_function_notation",
+          "task_family": "function_concept_family",
+          "display_name": "numeric / numeric_evaluate_function_notation",
+          "answer_format_hint": "text_short",
+          "answer_fields": null,
+          "answer_separator": null,
+          "source_example_ids": [
+            4433,
+            4434,
+            4448,
+            4449,
+            4516
+          ],
+          "answer_contract": {
+            "choices_required": false,
+            "choice_count": null,
+            "correct_choice_count": null,
+            "frontend_render_choices": false,
+            "answer_type": "text_short",
+            "answer_shape": "text_short",
+            "answer_equivalence": "exact_string",
+            "checker": "text_short_checker",
+            "accepted_formats": [
+              "5",
+              "5.0",
+              "-3"
+            ],
+            "equivalence_type": "exact_string",
+            "checker_key": "text_short_checker",
+            "presentation_mode": "short_answer"
+          },
           "stem_contract": {
             "stem_must_not_embed_choices": true,
             "allowed_math_objects": [
               "coordinate_point",
               "quadratic_equation",
-              "quadratic_vertex_form",
-              "two_coordinate_points"
+              "quadratic_vertex_form"
             ],
             "required_math_objects": [
               "coordinate_point",
@@ -115949,6 +116662,73 @@
             ],
             "runtime_smoke_count": 30
           },
+          "spec_source": "phase1_induced_draft",
+          "grouping_reason": "split_by_feature_signature",
+          "feature_signature": [
+            "numeric",
+            "numeric_evaluate_function_notation",
+            "short_answer",
+            [
+              "numeric_computation"
+            ],
+            [
+              "coordinate_point",
+              "quadratic_equation"
+            ],
+            "default"
+          ],
+          "canonical_base_problem_type_id": "numeric_evaluate_function_notation_short_answer",
+          "value_type_prefix": "numeric",
+          "_resolved_template_slot": "",
+          "naming_warning": "naming_warning:numeric_prefix_but_hint_is_text_short"
+        },
+        "generator_readiness": "runtime_ready_with_warning",
+        "usable_for_phase3": true,
+        "template_slot": "",
+        "canonical_base_problem_type_id": "numeric_evaluate_function_notation_short_answer",
+        "value_type_prefix": "numeric",
+        "subskill_id": "numeric_evaluate_function_notation",
+        "answer_type": "text_short",
+        "runtime_status": "runtime_ready_candidate",
+        "next_action": "phase2_foundation_preflight",
+        "semantic_alignment": {
+          "skill_problem_type_score": 0.04,
+          "source_problem_type_score": 0.0319,
+          "task_consistent_with_skill": true
+        }
+      },
+      {
+        "problem_type_id": "numeric_numeric_evaluate_function_notation_short_answer",
+        "proposed_problem_type_id": "numeric_numeric_evaluate_function_notation_short_answer",
+        "display_name": "numeric / numeric_evaluate_function_notation",
+        "matched_example_ids": [
+          4424,
+          4441,
+          4444
+        ],
+        "matched_example_count": 3,
+        "unmatched_example_ids": [],
+        "representative_example_id": 4424,
+        "structural_features": [
+          "text_short"
+        ],
+        "answer_contract_proposal": {
+          "choices_required": false,
+          "choice_count": null,
+          "correct_choice_count": null,
+          "frontend_render_choices": false,
+          "answer_type": "text_short",
+          "answer_shape": "text_short",
+          "answer_equivalence": "exact_string",
+          "checker": "text_short_checker",
+          "accepted_formats": [
+            "5",
+            "5.0",
+            "-3"
+          ],
+          "equivalence_type": "exact_string",
+          "checker_key": "text_short_checker",
+          "presentation_mode": "short_answer",
           "order_matters": true,
           "accepted_format_notes": [],
           "canonical_answer_schema": "text_short"
@@ -115967,6 +116747,7 @@
         "promote_blockers": [],
         "risk_flags": [
           "ai_first_mode_fell_back_to_rule_only",
+          "ai_partial_unavailable_relaxed_tolerance",
           "no_registered_slot_but_presentation_known",
           "subskill_mismatch_warning"
         ],
@@ -115983,7 +116764,8 @@
           [
             "coordinate_point",
             "quadratic_equation"
-          ]
+          ],
+          "line_equation"
         ],
         "problem_type_spec_draft": {
           "problem_type_id": "numeric_numeric_evaluate_function_notation_short_answer",
@@ -115991,34 +116773,31 @@
           "target_task": "numeric_evaluate_function_notation",
           "task_family": "function_concept_family",
           "display_name": "numeric / numeric_evaluate_function_notation",
-          "answer_format_hint": "",
+          "answer_format_hint": "text_short",
           "answer_fields": null,
           "answer_separator": null,
           "source_example_ids": [
             4424,
-            4433,
-            4434,
             4441,
-            4444,
-            4448,
-            4449,
-            4516
+            4444
           ],
           "answer_contract": {
             "choices_required": false,
             "choice_count": null,
             "correct_choice_count": null,
             "frontend_render_choices": false,
-            "source_has_choices": false,
             "answer_type": "text_short",
             "answer_shape": "text_short",
-            "answer_semantics": "text_short",
             "answer_equivalence": "exact_string",
-            "equivalence_type": "exact_string",
             "checker": "text_short_checker",
+            "accepted_formats": [
+              "5",
+              "5.0",
+              "-3"
+            ],
+            "equivalence_type": "exact_string",
             "checker_key": "text_short_checker",
-            "presentation_mode": "short_answer",
-            "selected_checker": "text_short_checker"
+            "presentation_mode": "short_answer"
           },
           "stem_contract": {
             "stem_must_not_embed_choices": true,
@@ -116166,11 +116945,13 @@
             [
               "coordinate_point",
               "quadratic_equation"
-            ]
+            ],
+            "line_equation"
           ],
           "canonical_base_problem_type_id": "numeric_evaluate_function_notation_short_answer",
           "value_type_prefix": "numeric",
-          "_resolved_template_slot": ""
+          "_resolved_template_slot": "",
+          "naming_warning": "naming_warning:numeric_prefix_but_hint_is_text_short"
         },
         "generator_readiness": "runtime_ready_with_warning",
         "usable_for_phase3": true,
@@ -116178,6 +116959,7 @@
         "canonical_base_problem_type_id": "numeric_evaluate_function_notation_short_answer",
         "value_type_prefix": "numeric",
         "subskill_id": "numeric_evaluate_function_notation",
+        "answer_type": "text_short",
         "runtime_status": "runtime_ready_candidate",
         "next_action": "phase2_foundation_preflight",
         "semantic_alignment": {
@@ -116187,8 +116969,8 @@
         }
       },
       {
-        "problem_type_id": "numeric_numeric_evaluate_function_notation_single_choice",
-        "proposed_problem_type_id": "numeric_numeric_evaluate_function_notation_single_choice",
+        "problem_type_id": "numeric_evaluate_function_notation_single_choice",
+        "proposed_problem_type_id": "numeric_evaluate_function_notation_single_choice",
         "display_name": "numeric / numeric_evaluate_function_notation",
         "matched_example_ids": [
           4515
@@ -116219,146 +117001,6 @@
           "equivalence_type": "choice_label",
           "checker_key": "choice_label_checker",
           "presentation_mode": "single_choice",
-          "selected_checker": "choice_label_checker",
-          "checker_capability_status": "ok",
-          "checker_contract_blockers": [],
-          "checker_contract_warnings": [],
-          "stem_contract": {
-            "stem_must_not_embed_choices": true,
-            "allowed_math_objects": [
-              "coordinate_point",
-              "quadratic_equation",
-              "quadratic_vertex_form",
-              "three_coordinate_points",
-              "triangle",
-              "two_coordinate_points"
-            ],
-            "required_math_objects": [
-              "coordinate_point",
-              "quadratic_equation"
-            ],
-            "forbidden_patterns": [
-              "\\(A\\)",
-              "\\(B\\)",
-              "\\(C\\)",
-              "\\(D\\)"
-            ]
-          },
-          "dependency_contract": {
-            "givens_must_be_used": true,
-            "target_answer_must_depend_on_givens": true,
-            "variables_in_conditions_must_appear_in_target": false
-          },
-          "semantic_contract": {
-            "reasoning_type": [
-              "numeric_computation"
-            ],
-            "reject_if": [
-              "unused_condition",
-              "ambiguous_answer",
-              "answer_not_derivable",
-              "duplicated_choices",
-              "no_correct_choice",
-              "multiple_correct_choices_when_single_choice"
-            ]
-          },
-          "generator_contract": {
-            "template_variants": [
-              {
-                "id": "default",
-                "label": "default",
-                "stem_pattern": "依題意求解：{stem_hint}。",
-                "weight": 1.0,
-                "enabled": true
-              }
-            ],
-            "parameter_schema": {
-              "seed": {
-                "type": "integer",
-                "randomize": true
-              },
-              "difficulty_level": {
-                "choices": [
-                  "level_1",
-                  "level_2",
-                  "level_3"
-                ],
-                "weights": [
-                  0.4,
-                  0.4,
-                  0.2
-                ]
-              }
-            },
-            "variation_dimensions": [
-              "seed",
-              "difficulty_level",
-              "context_style"
-            ],
-            "difficulty_controls": {
-              "level_1": {},
-              "level_2": {},
-              "level_3": {}
-            },
-            "anti_repetition_rules": {
-              "avoid_same_template_consecutive": true,
-              "avoid_same_ratio_consecutive": true,
-              "avoid_same_point_names_consecutive": true,
-              "avoid_same_answer_consecutive": true,
-              "recent_history_window": 5,
-              "signature_fields": [
-                "problem_type_id",
-                "template_variant",
-                "routing_track",
-                "scenario_type",
-                "ratio_form",
-                "ratio_values",
-                "coordinate_pattern",
-                "answer"
-              ]
-            },
-            "validity_constraints": [
-              "answer derivable from givens"
-            ],
-            "answer_shape": "numeric",
-            "explanation_variants": [
-              "stepwise"
-            ],
-            "sampling_strategy": "weighted_random",
-            "template_families": [
-              "numeric_evaluate_function_notation"
-            ],
-            "parameter_slots": {
-              "seed": "integer",
-              "difficulty": "easy"
-            },
-            "randomization_rules": {
-              "shuffle_choices": false
-            },
-            "avoid_llm_freeform_math": true,
-            "use_domain_functions": true,
-            "derivation_steps_required": true,
-            "templates": [
-              "template_scalar_unknown",
-              "template_feature_value"
-            ],
-            "problem_type_id": "numeric_numeric_evaluate_function_notation_single_choice",
-            "contract_validation_blockers": [],
-            "contract_validation_warnings": [
-              "single_template_variant_only",
-              "variation_dimensions_below_recommended_minimum"
-            ]
-          },
-          "validator_contract": {
-            "static_checks": [
-              "answer_contract_checks",
-              "choices_policy"
-            ],
-            "semantic_checks": [
-              "givens_to_target_dependency"
-            ],
-            "runtime_smoke_count": 30
-          },
           "order_matters": true,
           "accepted_format_notes": [],
           "canonical_answer_schema": "single_choice"
@@ -116377,6 +117019,7 @@
         "promote_blockers": [],
         "risk_flags": [
           "ai_first_mode_fell_back_to_rule_only",
+          "ai_partial_unavailable_relaxed_tolerance",
           "no_registered_slot_but_presentation_known",
           "subskill_mismatch_warning"
         ],
@@ -116393,10 +117036,11 @@
           [
             "coordinate_point",
             "quadratic_equation"
-          ]
+          ],
+          "line_equation"
         ],
         "problem_type_spec_draft": {
-          "problem_type_id": "numeric_numeric_evaluate_function_notation_single_choice",
+          "problem_type_id": "evaluate_function_notation_single_choice",
           "skill_id": "vh_數學B1_LinearFunction",
           "target_task": "numeric_evaluate_function_notation",
           "task_family": "function_concept_family",
@@ -116576,9 +117220,10 @@
             [
               "coordinate_point",
               "quadratic_equation"
-            ]
+            ],
+            "line_equation"
           ],
-          "canonical_base_problem_type_id": "numeric_evaluate_function_notation_single_choice",
+          "canonical_base_problem_type_id": "evaluate_function_notation_single_choice",
           "value_type_prefix": "numeric",
           "_resolved_template_slot": "",
           "naming_warning": "naming_warning:numeric_prefix_but_hint_is_A/B/C/D"
@@ -116586,20 +117231,21 @@
         "generator_readiness": "runtime_ready_with_warning",
         "usable_for_phase3": true,
         "template_slot": "",
-        "canonical_base_problem_type_id": "numeric_evaluate_function_notation_single_choice",
+        "canonical_base_problem_type_id": "evaluate_function_notation_single_choice",
         "value_type_prefix": "numeric",
         "subskill_id": "numeric_evaluate_function_notation",
+        "answer_type": "single_choice",
         "runtime_status": "runtime_ready_candidate",
         "next_action": "phase2_foundation_preflight",
         "semantic_alignment": {
-          "skill_problem_type_score": 0.0435,
-          "source_problem_type_score": 0.044,
+          "skill_problem_type_score": 0.0,
+          "source_problem_type_score": 0.0,
           "task_consistent_with_skill": true
         }
       },
       {
-        "problem_type_id": "evaluate_function_value",
-        "proposed_problem_type_id": "evaluate_function_value",
+        "problem_type_id": "evaluate_function_value_2",
+        "proposed_problem_type_id": "evaluate_function_value_2",
         "display_name": "evaluate_function_value / anchor bootstrap",
         "matched_example_ids": [],
         "matched_example_count": 0,
@@ -116740,7 +117386,7 @@
             "template_slots": {
               "stem": "function_value_numeric"
             },
-            "problem_type_id": "evaluate_function_value",
+            "problem_type_id": "evaluate_function_value_2",
             "contract_validation_blockers": [],
             "contract_validation_warnings": [
               "single_template_variant_only",
@@ -116773,6 +117419,7 @@
         "promote_blockers": [],
         "risk_flags": [
           "ai_first_mode_fell_back_to_rule_only",
+          "ai_partial_unavailable_relaxed_tolerance",
           "anchor_slot_bootstrap_zero_source"
         ],
         "checker_contract_warnings": [],
@@ -116783,7 +117430,7 @@
           "evaluate_function_value"
         ],
         "problem_type_spec_draft": {
-          "problem_type_id": "evaluate_function_value",
+          "problem_type_id": "evaluate_function_value_2",
           "skill_id": "vh_數學B1_LinearFunction",
           "target_task": "evaluate_function_value",
           "task_family": "function_concept_family",
@@ -116920,7 +117567,7 @@
             "template_slots": {
               "stem": "function_value_numeric"
             },
-            "problem_type_id": "evaluate_function_value",
+            "problem_type_id": "evaluate_function_value_2",
             "contract_validation_blockers": [],
             "contract_validation_warnings": [
               "single_template_variant_only",
@@ -116942,14 +117589,14 @@
             "anchor_slot_bootstrap",
             "evaluate_function_value"
           ],
-          "canonical_base_problem_type_id": "evaluate_function_value",
+          "canonical_base_problem_type_id": "evaluate_function_value_2",
           "value_type_prefix": "",
           "_resolved_template_slot": "factor_quadratic_by_cross_multiplication"
         },
         "generator_readiness": "runtime_ready",
         "usable_for_phase3": true,
         "template_slot": "function_value_numeric",
-        "canonical_base_problem_type_id": "evaluate_function_value",
+        "canonical_base_problem_type_id": "evaluate_function_value_2",
         "value_type_prefix": "",
         "subskill_id": "evaluate_function_value",
         "runtime_status": "runtime_ready_candidate",
@@ -116961,8 +117608,8 @@
         }
       },
       {
-        "problem_type_id": "interpret_function_notation",
-        "proposed_problem_type_id": "interpret_function_notation",
+        "problem_type_id": "interpret_function_notation_2",
+        "proposed_problem_type_id": "interpret_function_notation_2",
         "display_name": "interpret_function_notation / anchor bootstrap",
         "matched_example_ids": [],
         "matched_example_count": 0,
@@ -117103,7 +117750,7 @@
             "template_slots": {
               "stem": "linear_function_two_point_choice"
             },
-            "problem_type_id": "interpret_function_notation",
+            "problem_type_id": "interpret_function_notation_2",
             "contract_validation_blockers": [],
             "contract_validation_warnings": [
               "single_template_variant_only",
@@ -117136,6 +117783,7 @@
         "promote_blockers": [],
         "risk_flags": [
           "ai_first_mode_fell_back_to_rule_only",
+          "ai_partial_unavailable_relaxed_tolerance",
           "anchor_slot_bootstrap_zero_source"
         ],
         "checker_contract_warnings": [],
@@ -117146,7 +117794,7 @@
           "interpret_function_notation"
         ],
         "problem_type_spec_draft": {
-          "problem_type_id": "interpret_function_notation",
+          "problem_type_id": "interpret_function_notation_2",
           "skill_id": "vh_數學B1_LinearFunction",
           "target_task": "interpret_function_notation",
           "task_family": "function_concept_family",
@@ -117283,7 +117931,7 @@
             "template_slots": {
               "stem": "linear_function_two_point_choice"
             },
-            "problem_type_id": "interpret_function_notation",
+            "problem_type_id": "interpret_function_notation_2",
             "contract_validation_blockers": [],
             "contract_validation_warnings": [
               "single_template_variant_only",
@@ -117305,14 +117953,14 @@
             "anchor_slot_bootstrap",
             "interpret_function_notation"
           ],
-          "canonical_base_problem_type_id": "interpret_function_notation",
+          "canonical_base_problem_type_id": "interpret_function_notation_2",
           "value_type_prefix": "",
           "_resolved_template_slot": "factor_quadratic_by_cross_multiplication"
         },
         "generator_readiness": "runtime_ready",
         "usable_for_phase3": true,
         "template_slot": "linear_function_two_point_choice",
-        "canonical_base_problem_type_id": "interpret_function_notation",
+        "canonical_base_problem_type_id": "interpret_function_notation_2",
         "value_type_prefix": "",
         "subskill_id": "interpret_function_notation",
         "runtime_status": "runtime_ready_candidate",
@@ -118102,6 +118750,10 @@
           "induction_tier": "core",
           "enrichment_reasons": [],
           "included_in_core_induction": true,
+          "source_skill_scope_locked": true,
+          "skill_mapping_authority": "textbook_examples.skill_id",
+          "classification_scope": "within_current_skill",
+          "source_skill_id": "vh_數學B1_LinearFunction",
           "equivalence_type": "numeric_exact",
           "checker_key": "integer_checker",
           "requires_human_action": false
@@ -118686,6 +119338,11 @@
         },
         "subskill_id": "numeric_evaluate_function_notation",
         "classification_source": "rule_fallback_ai_unavailable",
+        "source_skill_scope_locked": true,
+        "skill_mapping_authority": "textbook_examples.skill_id",
+        "classification_scope": "within_current_skill",
+        "unresolved_reason": "",
+        "requires_human_rule_pack": false,
         "induction_eligibility": "eligible"
       },
       {
@@ -119564,6 +120221,10 @@
           "induction_tier": "core",
           "enrichment_reasons": [],
           "included_in_core_induction": true,
+          "source_skill_scope_locked": true,
+          "skill_mapping_authority": "textbook_examples.skill_id",
+          "classification_scope": "within_current_skill",
+          "source_skill_id": "vh_數學B1_LinearFunction",
           "equivalence_type": "numeric_exact",
           "checker_key": "integer_checker",
           "requires_human_action": false
@@ -120247,6 +120908,11 @@
         },
         "subskill_id": "numeric_evaluate_function_notation",
         "classification_source": "rule_fallback_ai_unavailable",
+        "source_skill_scope_locked": true,
+        "skill_mapping_authority": "textbook_examples.skill_id",
+        "classification_scope": "within_current_skill",
+        "unresolved_reason": "",
+        "requires_human_rule_pack": false,
         "induction_eligibility": "eligible"
       },
       {
@@ -121129,6 +121795,10 @@
           "induction_tier": "core",
           "enrichment_reasons": [],
           "included_in_core_induction": true,
+          "source_skill_scope_locked": true,
+          "skill_mapping_authority": "textbook_examples.skill_id",
+          "classification_scope": "within_current_skill",
+          "source_skill_id": "vh_數學B1_LinearFunction",
           "equivalence_type": "numeric_exact",
           "checker_key": "integer_checker",
           "requires_human_action": false
@@ -121813,6 +122483,11 @@
         },
         "subskill_id": "numeric_evaluate_function_notation",
         "classification_source": "rule_fallback_ai_unavailable",
+        "source_skill_scope_locked": true,
+        "skill_mapping_authority": "textbook_examples.skill_id",
+        "classification_scope": "within_current_skill",
+        "unresolved_reason": "",
+        "requires_human_rule_pack": false,
         "induction_eligibility": "eligible"
       },
       {
@@ -122776,15 +123451,26 @@
           "induction_tier": "core",
           "enrichment_reasons": [],
           "included_in_core_induction": true,
+          "source_skill_scope_locked": true,
+          "skill_mapping_authority": "textbook_examples.skill_id",
+          "classification_scope": "within_current_skill",
+          "source_skill_id": "vh_數學B1_LinearFunction",
+          "unresolved_within_current_skill": true,
+          "pending_problem_type_induction": true,
+          "requires_human_rule_pack": true,
+          "requires_human_action": false,
+          "unresolved_reason": "semantic_score_zero_within_current_skill",
+          "generator_readiness": "pending_problem_type_induction",
+          "usable_for_phase3": false,
           "equivalence_type": "exact_string",
-          "checker_key": "text_short_checker",
-          "requires_human_action": false
+          "checker_key": "text_short_checker"
         },
         "answer_shape": "text_short",
         "classification_confidence": "high",
         "classification_reason": "rule_fallback_ai_unavailable",
         "risk_flags": [
-          "requires_human_action"
+          "requires_human_action",
+          "candidate_only_problem_type"
         ],
         "semantic_classification": {
           "ai_target_task": "",
@@ -123556,7 +124242,12 @@
         },
         "subskill_id": "compute_numeric",
         "classification_source": "rule_fallback_ai_unavailable",
-        "induction_eligibility": "excluded"
+        "source_skill_scope_locked": true,
+        "skill_mapping_authority": "textbook_examples.skill_id",
+        "classification_scope": "within_current_skill",
+        "unresolved_reason": "semantic_score_zero_within_current_skill",
+        "requires_human_rule_pack": true,
+        "induction_eligibility": "eligible"
       },
       {
         "example_id": 4424,
@@ -124545,6 +125236,10 @@
           "induction_tier": "core",
           "enrichment_reasons": [],
           "included_in_core_induction": true,
+          "source_skill_scope_locked": true,
+          "skill_mapping_authority": "textbook_examples.skill_id",
+          "classification_scope": "within_current_skill",
+          "source_skill_id": "vh_數學B1_LinearFunction",
           "equivalence_type": "numeric_exact",
           "checker_key": "integer_checker",
           "requires_human_action": false
@@ -125328,6 +126023,11 @@
         },
         "subskill_id": "numeric_evaluate_function_notation",
         "classification_source": "rule_fallback_ai_unavailable",
+        "source_skill_scope_locked": true,
+        "skill_mapping_authority": "textbook_examples.skill_id",
+        "classification_scope": "within_current_skill",
+        "unresolved_reason": "",
+        "requires_human_rule_pack": false,
         "induction_eligibility": "eligible"
       },
       {
@@ -126297,15 +126997,26 @@
           "induction_tier": "core",
           "enrichment_reasons": [],
           "included_in_core_induction": true,
+          "source_skill_scope_locked": true,
+          "skill_mapping_authority": "textbook_examples.skill_id",
+          "classification_scope": "within_current_skill",
+          "source_skill_id": "vh_數學B1_LinearFunction",
+          "unresolved_within_current_skill": true,
+          "pending_problem_type_induction": true,
+          "requires_human_rule_pack": true,
+          "requires_human_action": false,
+          "unresolved_reason": "semantic_score_zero_within_current_skill",
+          "generator_readiness": "pending_problem_type_induction",
+          "usable_for_phase3": false,
           "equivalence_type": "exact_string",
-          "checker_key": "text_short_checker",
-          "requires_human_action": false
+          "checker_key": "text_short_checker"
         },
         "answer_shape": "text_short",
         "classification_confidence": "high",
         "classification_reason": "rule_fallback_ai_unavailable",
         "risk_flags": [
-          "requires_human_action"
+          "requires_human_action",
+          "candidate_only_problem_type"
         ],
         "semantic_classification": {
           "ai_target_task": "",
@@ -127075,7 +127786,12 @@
         },
         "subskill_id": "compute_numeric",
         "classification_source": "rule_fallback_ai_unavailable",
-        "induction_eligibility": "excluded"
+        "source_skill_scope_locked": true,
+        "skill_mapping_authority": "textbook_examples.skill_id",
+        "classification_scope": "within_current_skill",
+        "unresolved_reason": "semantic_score_zero_within_current_skill",
+        "requires_human_rule_pack": true,
+        "induction_eligibility": "eligible"
       },
       {
         "example_id": 4426,
@@ -128068,15 +128784,26 @@
           "induction_tier": "core",
           "enrichment_reasons": [],
           "included_in_core_induction": true,
+          "source_skill_scope_locked": true,
+          "skill_mapping_authority": "textbook_examples.skill_id",
+          "classification_scope": "within_current_skill",
+          "source_skill_id": "vh_數學B1_LinearFunction",
+          "unresolved_within_current_skill": true,
+          "pending_problem_type_induction": true,
+          "requires_human_rule_pack": true,
+          "requires_human_action": false,
+          "unresolved_reason": "semantic_score_zero_within_current_skill",
+          "generator_readiness": "pending_problem_type_induction",
+          "usable_for_phase3": false,
           "equivalence_type": "exact_string",
-          "checker_key": "text_short_checker",
-          "requires_human_action": false
+          "checker_key": "text_short_checker"
         },
         "answer_shape": "text_short",
         "classification_confidence": "high",
         "classification_reason": "rule_fallback_ai_unavailable",
         "risk_flags": [
-          "requires_human_action"
+          "requires_human_action",
+          "candidate_only_problem_type"
         ],
         "semantic_classification": {
           "ai_target_task": "",
@@ -128851,7 +129578,12 @@
         },
         "subskill_id": "compute_numeric",
         "classification_source": "rule_fallback_ai_unavailable",
-        "induction_eligibility": "excluded"
+        "source_skill_scope_locked": true,
+        "skill_mapping_authority": "textbook_examples.skill_id",
+        "classification_scope": "within_current_skill",
+        "unresolved_reason": "semantic_score_zero_within_current_skill",
+        "requires_human_rule_pack": true,
+        "induction_eligibility": "eligible"
       },
       {
         "example_id": 4441,
@@ -129840,6 +130572,10 @@
           "induction_tier": "core",
           "enrichment_reasons": [],
           "included_in_core_induction": true,
+          "source_skill_scope_locked": true,
+          "skill_mapping_authority": "textbook_examples.skill_id",
+          "classification_scope": "within_current_skill",
+          "source_skill_id": "vh_數學B1_LinearFunction",
           "equivalence_type": "numeric_exact",
           "checker_key": "integer_checker",
           "requires_human_action": false
@@ -130623,6 +131359,11 @@
         },
         "subskill_id": "numeric_evaluate_function_notation",
         "classification_source": "rule_fallback_ai_unavailable",
+        "source_skill_scope_locked": true,
+        "skill_mapping_authority": "textbook_examples.skill_id",
+        "classification_scope": "within_current_skill",
+        "unresolved_reason": "",
+        "requires_human_rule_pack": false,
         "induction_eligibility": "eligible"
       },
       {
@@ -131695,9 +132436,19 @@
           "induction_tier": "core",
           "enrichment_reasons": [],
           "included_in_core_induction": true,
+          "source_skill_scope_locked": true,
+          "skill_mapping_authority": "textbook_examples.skill_id",
+          "classification_scope": "within_current_skill",
+          "source_skill_id": "vh_數學B1_LinearFunction",
+          "unresolved_within_current_skill": true,
+          "pending_problem_type_induction": true,
+          "requires_human_rule_pack": true,
+          "requires_human_action": false,
+          "unresolved_reason": "semantic_score_zero_within_current_skill",
+          "generator_readiness": "pending_problem_type_induction",
+          "usable_for_phase3": false,
           "equivalence_type": "exact_string",
-          "checker_key": "text_short_checker",
-          "requires_human_action": false
+          "checker_key": "text_short_checker"
         },
         "answer_shape": "text_short",
         "classification_confidence": "high",
@@ -132574,7 +133325,12 @@
         },
         "subskill_id": "applied_quadratic_inequality_problem",
         "classification_source": "rule_fallback_ai_unavailable",
-        "induction_eligibility": "excluded"
+        "source_skill_scope_locked": true,
+        "skill_mapping_authority": "textbook_examples.skill_id",
+        "classification_scope": "within_current_skill",
+        "unresolved_reason": "semantic_score_zero_within_current_skill",
+        "requires_human_rule_pack": true,
+        "induction_eligibility": "eligible"
       },
       {
         "example_id": 4446,
@@ -133576,9 +134332,19 @@
           "induction_tier": "core",
           "enrichment_reasons": [],
           "included_in_core_induction": true,
+          "source_skill_scope_locked": true,
+          "skill_mapping_authority": "textbook_examples.skill_id",
+          "classification_scope": "within_current_skill",
+          "source_skill_id": "vh_數學B1_LinearFunction",
+          "unresolved_within_current_skill": true,
+          "pending_problem_type_induction": true,
+          "requires_human_rule_pack": true,
+          "requires_human_action": false,
+          "unresolved_reason": "semantic_score_zero_within_current_skill",
+          "generator_readiness": "pending_problem_type_induction",
+          "usable_for_phase3": false,
           "equivalence_type": "choice_label",
-          "checker_key": "choice_label_checker",
-          "requires_human_action": false
+          "checker_key": "choice_label_checker"
         },
         "answer_shape": "single_choice",
         "classification_confidence": "high",
@@ -134363,7 +135129,12 @@
         },
         "subskill_id": "same_as_main_skill",
         "classification_source": "rule_fallback_ai_unavailable",
-        "induction_eligibility": "excluded"
+        "source_skill_scope_locked": true,
+        "skill_mapping_authority": "textbook_examples.skill_id",
+        "classification_scope": "within_current_skill",
+        "unresolved_reason": "semantic_score_zero_within_current_skill",
+        "requires_human_rule_pack": true,
+        "induction_eligibility": "eligible"
       },
       {
         "example_id": 4448,
@@ -135348,6 +136119,10 @@
           "induction_tier": "core",
           "enrichment_reasons": [],
           "included_in_core_induction": true,
+          "source_skill_scope_locked": true,
+          "skill_mapping_authority": "textbook_examples.skill_id",
+          "classification_scope": "within_current_skill",
+          "source_skill_id": "vh_數學B1_LinearFunction",
           "equivalence_type": "numeric_exact",
           "checker_key": "integer_checker",
           "requires_human_action": false
@@ -136130,6 +136905,11 @@
         },
         "subskill_id": "numeric_evaluate_function_notation",
         "classification_source": "rule_fallback_ai_unavailable",
+        "source_skill_scope_locked": true,
+        "skill_mapping_authority": "textbook_examples.skill_id",
+        "classification_scope": "within_current_skill",
+        "unresolved_reason": "",
+        "requires_human_rule_pack": false,
         "induction_eligibility": "eligible"
       },
       {
@@ -137115,6 +137895,10 @@
           "induction_tier": "core",
           "enrichment_reasons": [],
           "included_in_core_induction": true,
+          "source_skill_scope_locked": true,
+          "skill_mapping_authority": "textbook_examples.skill_id",
+          "classification_scope": "within_current_skill",
+          "source_skill_id": "vh_數學B1_LinearFunction",
           "equivalence_type": "numeric_exact",
           "checker_key": "integer_checker",
           "requires_human_action": false
@@ -137897,6 +138681,11 @@
         },
         "subskill_id": "numeric_evaluate_function_notation",
         "classification_source": "rule_fallback_ai_unavailable",
+        "source_skill_scope_locked": true,
+        "skill_mapping_authority": "textbook_examples.skill_id",
+        "classification_scope": "within_current_skill",
+        "unresolved_reason": "",
+        "requires_human_rule_pack": false,
         "induction_eligibility": "eligible"
       },
       {
@@ -138866,15 +139655,26 @@
           "induction_tier": "core",
           "enrichment_reasons": [],
           "included_in_core_induction": true,
+          "source_skill_scope_locked": true,
+          "skill_mapping_authority": "textbook_examples.skill_id",
+          "classification_scope": "within_current_skill",
+          "source_skill_id": "vh_數學B1_LinearFunction",
+          "unresolved_within_current_skill": true,
+          "pending_problem_type_induction": true,
+          "requires_human_rule_pack": true,
+          "requires_human_action": false,
+          "unresolved_reason": "semantic_score_zero_within_current_skill",
+          "generator_readiness": "pending_problem_type_induction",
+          "usable_for_phase3": false,
           "equivalence_type": "exact_string",
-          "checker_key": "text_short_checker",
-          "requires_human_action": false
+          "checker_key": "text_short_checker"
         },
         "answer_shape": "text_short",
         "classification_confidence": "high",
         "classification_reason": "rule_fallback_ai_unavailable",
         "risk_flags": [
-          "requires_human_action"
+          "requires_human_action",
+          "candidate_only_problem_type"
         ],
         "semantic_classification": {
           "ai_target_task": "",
@@ -139644,11 +140444,16 @@
         },
         "subskill_id": "compute_numeric",
         "classification_source": "rule_fallback_ai_unavailable",
-        "induction_eligibility": "excluded"
+        "source_skill_scope_locked": true,
+        "skill_mapping_authority": "textbook_examples.skill_id",
+        "classification_scope": "within_current_skill",
+        "unresolved_reason": "semantic_score_zero_within_current_skill",
+        "requires_human_rule_pack": true,
+        "induction_eligibility": "eligible"
       },
       {
         "example_id": 4515,
-        "detected_problem_type_id": "numeric_numeric_evaluate_function_notation_single_choice",
+        "detected_problem_type_id": "numeric_evaluate_function_notation_single_choice",
         "example_feature": {
           "source_example_id": 4515,
           "question_text": "設$f\\left( x \\right)=ax+b$為一線型函數，且圖形通過點$\\left( -2,4 \\right)$、$\\left( 1,1 \\right)$，則$f\\left( x \\right)=$ (A) −x + 2 (B) x − 2 (C) x + 2 (D) −x − 2。",
@@ -140652,6 +141457,10 @@
           "induction_tier": "core",
           "enrichment_reasons": [],
           "included_in_core_induction": true,
+          "source_skill_scope_locked": true,
+          "skill_mapping_authority": "textbook_examples.skill_id",
+          "classification_scope": "within_current_skill",
+          "source_skill_id": "vh_數學B1_LinearFunction",
           "equivalence_type": "choice_label",
           "checker_key": "choice_label_checker",
           "requires_human_action": false
@@ -141440,6 +142249,11 @@
         },
         "subskill_id": "numeric_evaluate_function_notation",
         "classification_source": "rule_fallback_ai_unavailable",
+        "source_skill_scope_locked": true,
+        "skill_mapping_authority": "textbook_examples.skill_id",
+        "classification_scope": "within_current_skill",
+        "unresolved_reason": "",
+        "requires_human_rule_pack": false,
         "induction_eligibility": "eligible"
       },
       {
@@ -142425,6 +143239,10 @@
           "induction_tier": "core",
           "enrichment_reasons": [],
           "included_in_core_induction": true,
+          "source_skill_scope_locked": true,
+          "skill_mapping_authority": "textbook_examples.skill_id",
+          "classification_scope": "within_current_skill",
+          "source_skill_id": "vh_數學B1_LinearFunction",
           "equivalence_type": "numeric_exact",
           "checker_key": "integer_checker",
           "requires_human_action": false
@@ -143207,6 +144025,11 @@
         },
         "subskill_id": "numeric_evaluate_function_notation",
         "classification_source": "rule_fallback_ai_unavailable",
+        "source_skill_scope_locked": true,
+        "skill_mapping_authority": "textbook_examples.skill_id",
+        "classification_scope": "within_current_skill",
+        "unresolved_reason": "",
+        "requires_human_rule_pack": false,
         "induction_eligibility": "eligible"
       }
     ],
@@ -143214,9 +144037,10 @@
     "problem_type_spec_first": true,
     "spec_defined_problem_type_ids": [
       "numeric_numeric_evaluate_function_notation_short_answer",
-      "numeric_numeric_evaluate_function_notation_single_choice",
-      "evaluate_function_value",
-      "interpret_function_notation"
+      "numeric_numeric_evaluate_function_notation_short_answer",
+      "evaluate_function_notation_single_choice",
+      "evaluate_function_value_2",
+      "interpret_function_notation_2"
     ],
     "classifier_gate": {
       "status": "classifier_auto_pending_promote_with_warning",
@@ -143224,6 +144048,7 @@
       "warnings": [
         "insufficient_examples",
         "ai_first_mode_fell_back_to_rule_only",
+        "ai_partial_unavailable_relaxed_tolerance",
         "no_registered_slot_but_presentation_known",
         "subskill_mismatch_warning",
         "anchor_slot_bootstrap_zero_source"
@@ -143235,6 +144060,7 @@
       "warnings": [
         "low_source_examples",
         "ai_first_mode_fell_back_to_rule_only",
+        "ai_partial_unavailable_relaxed_tolerance",
         "no_registered_slot_but_presentation_known",
         "subskill_mismatch_warning",
         "anchor_slot_bootstrap_zero_source"
@@ -143249,6 +144075,7 @@
       ],
       "warnings": [
         "ai_first_mode_fell_back_to_rule_only",
+        "ai_partial_unavailable_relaxed_tolerance",
         "no_registered_slot_but_presentation_known",
         "subskill_mismatch_warning",
         "anchor_slot_bootstrap_zero_source"
@@ -143284,9 +144111,10 @@
   "problem_type_spec_first": true,
   "spec_defined_problem_type_ids": [
     "numeric_numeric_evaluate_function_notation_short_answer",
-    "numeric_numeric_evaluate_function_notation_single_choice",
-    "evaluate_function_value",
-    "interpret_function_notation"
+    "numeric_numeric_evaluate_function_notation_short_answer",
+    "evaluate_function_notation_single_choice",
+    "evaluate_function_value_2",
+    "interpret_function_notation_2"
   ],
   "spec_mode": "ai_first_induce_from_sources",
   "induced_problem_type_specs": [
@@ -143296,15 +144124,12 @@
       "target_task": "numeric_evaluate_function_notation",
       "task_family": "function_concept_family",
       "display_name": "numeric / numeric_evaluate_function_notation",
-      "answer_format_hint": "",
+      "answer_format_hint": "text_short",
       "answer_fields": null,
       "answer_separator": null,
       "source_example_ids": [
-        4424,
         4433,
         4434,
-        4441,
-        4444,
         4448,
         4449,
         4516
@@ -143314,16 +144139,203 @@
         "choice_count": null,
         "correct_choice_count": null,
         "frontend_render_choices": false,
-        "source_has_choices": false,
         "answer_type": "text_short",
         "answer_shape": "text_short",
-        "answer_semantics": "text_short",
         "answer_equivalence": "exact_string",
-        "equivalence_type": "exact_string",
         "checker": "text_short_checker",
+        "accepted_formats": [
+          "5",
+          "5.0",
+          "-3"
+        ],
+        "equivalence_type": "exact_string",
         "checker_key": "text_short_checker",
-        "presentation_mode": "short_answer",
-        "selected_checker": "text_short_checker"
+        "presentation_mode": "short_answer"
+      },
+      "stem_contract": {
+        "stem_must_not_embed_choices": true,
+        "allowed_math_objects": [
+          "coordinate_point",
+          "quadratic_equation",
+          "quadratic_vertex_form"
+        ],
+        "required_math_objects": [
+          "coordinate_point",
+          "quadratic_equation"
+        ],
+        "forbidden_patterns": [
+          "\\(A\\)",
+          "\\(B\\)",
+          "\\(C\\)",
+          "\\(D\\)"
+        ]
+      },
+      "dependency_contract": {
+        "givens_must_be_used": true,
+        "target_answer_must_depend_on_givens": true,
+        "variables_in_conditions_must_appear_in_target": false
+      },
+      "semantic_contract": {
+        "reasoning_type": [
+          "numeric_computation"
+        ],
+        "reject_if": [
+          "unused_condition",
+          "ambiguous_answer",
+          "answer_not_derivable",
+          "duplicated_choices",
+          "no_correct_choice",
+          "multiple_correct_choices_when_single_choice"
+        ]
+      },
+      "generator_contract": {
+        "template_variants": [
+          {
+            "id": "default",
+            "label": "default",
+            "stem_pattern": "依題意求解：{stem_hint}。",
+            "weight": 1.0,
+            "enabled": true
+          }
+        ],
+        "parameter_schema": {
+          "seed": {
+            "type": "integer",
+            "randomize": true
+          },
+          "difficulty_level": {
+            "choices": [
+              "level_1",
+              "level_2",
+              "level_3"
+            ],
+            "weights": [
+              0.4,
+              0.4,
+              0.2
+            ]
+          }
+        },
+        "variation_dimensions": [
+          "seed",
+          "difficulty_level",
+          "context_style"
+        ],
+        "difficulty_controls": {
+          "level_1": {},
+          "level_2": {},
+          "level_3": {}
+        },
+        "anti_repetition_rules": {
+          "avoid_same_template_consecutive": true,
+          "avoid_same_ratio_consecutive": true,
+          "avoid_same_point_names_consecutive": true,
+          "avoid_same_answer_consecutive": true,
+          "recent_history_window": 5,
+          "signature_fields": [
+            "problem_type_id",
+            "template_variant",
+            "routing_track",
+            "scenario_type",
+            "ratio_form",
+            "ratio_values",
+            "coordinate_pattern",
+            "answer"
+          ]
+        },
+        "validity_constraints": [
+          "answer derivable from givens"
+        ],
+        "answer_shape": "numeric",
+        "explanation_variants": [
+          "stepwise"
+        ],
+        "sampling_strategy": "weighted_random",
+        "template_families": [
+          "numeric_evaluate_function_notation"
+        ],
+        "parameter_slots": {
+          "seed": "integer",
+          "difficulty": "easy"
+        },
+        "randomization_rules": {
+          "shuffle_choices": false
+        },
+        "avoid_llm_freeform_math": true,
+        "use_domain_functions": true,
+        "derivation_steps_required": true,
+        "templates": [
+          "template_scalar_unknown",
+          "template_feature_value"
+        ],
+        "problem_type_id": "numeric_numeric_evaluate_function_notation_short_answer",
+        "contract_validation_blockers": [],
+        "contract_validation_warnings": [
+          "single_template_variant_only",
+          "variation_dimensions_below_recommended_minimum"
+        ]
+      },
+      "validator_contract": {
+        "static_checks": [
+          "answer_contract_checks",
+          "choices_policy"
+        ],
+        "semantic_checks": [
+          "givens_to_target_dependency"
+        ],
+        "runtime_smoke_count": 30
+      },
+      "spec_source": "phase1_induced_draft",
+      "grouping_reason": "split_by_feature_signature",
+      "feature_signature": [
+        "numeric",
+        "numeric_evaluate_function_notation",
+        "short_answer",
+        [
+          "numeric_computation"
+        ],
+        [
+          "coordinate_point",
+          "quadratic_equation"
+        ],
+        "default"
+      ],
+      "canonical_base_problem_type_id": "numeric_evaluate_function_notation_short_answer",
+      "value_type_prefix": "numeric",
+      "_resolved_template_slot": "",
+      "naming_warning": "naming_warning:numeric_prefix_but_hint_is_text_short"
+    },
+    {
+      "problem_type_id": "numeric_numeric_evaluate_function_notation_short_answer",
+      "skill_id": "vh_數學B1_LinearFunction",
+      "target_task": "numeric_evaluate_function_notation",
+      "task_family": "function_concept_family",
+      "display_name": "numeric / numeric_evaluate_function_notation",
+      "answer_format_hint": "text_short",
+      "answer_fields": null,
+      "answer_separator": null,
+      "source_example_ids": [
+        4424,
+        4441,
+        4444
+      ],
+      "answer_contract": {
+        "choices_required": false,
+        "choice_count": null,
+        "correct_choice_count": null,
+        "frontend_render_choices": false,
+        "answer_type": "text_short",
+        "answer_shape": "text_short",
+        "answer_equivalence": "exact_string",
+        "checker": "text_short_checker",
+        "accepted_formats": [
+          "5",
+          "5.0",
+          "-3"
+        ],
+        "equivalence_type": "exact_string",
+        "checker_key": "text_short_checker",
+        "presentation_mode": "short_answer"
       },
       "stem_contract": {
         "stem_must_not_embed_choices": true,
@@ -143471,14 +144483,16 @@
         [
           "coordinate_point",
           "quadratic_equation"
-        ]
+        ],
+        "line_equation"
       ],
       "canonical_base_problem_type_id": "numeric_evaluate_function_notation_short_answer",
       "value_type_prefix": "numeric",
-      "_resolved_template_slot": ""
+      "_resolved_template_slot": "",
+      "naming_warning": "naming_warning:numeric_prefix_but_hint_is_text_short"
     },
     {
-      "problem_type_id": "numeric_numeric_evaluate_function_notation_single_choice",
+      "problem_type_id": "evaluate_function_notation_single_choice",
       "skill_id": "vh_數學B1_LinearFunction",
       "target_task": "numeric_evaluate_function_notation",
       "task_family": "function_concept_family",
@@ -143658,15 +144672,16 @@
         [
           "coordinate_point",
           "quadratic_equation"
-        ]
+        ],
+        "line_equation"
       ],
-      "canonical_base_problem_type_id": "numeric_evaluate_function_notation_single_choice",
+      "canonical_base_problem_type_id": "evaluate_function_notation_single_choice",
       "value_type_prefix": "numeric",
       "_resolved_template_slot": "",
       "naming_warning": "naming_warning:numeric_prefix_but_hint_is_A/B/C/D"
     },
     {
-      "problem_type_id": "evaluate_function_value",
+      "problem_type_id": "evaluate_function_value_2",
       "skill_id": "vh_數學B1_LinearFunction",
       "target_task": "evaluate_function_value",
       "task_family": "function_concept_family",
@@ -143803,7 +144818,7 @@
         "template_slots": {
           "stem": "function_value_numeric"
         },
-        "problem_type_id": "evaluate_function_value",
+        "problem_type_id": "evaluate_function_value_2",
         "contract_validation_blockers": [],
         "contract_validation_warnings": [
           "single_template_variant_only",
@@ -143825,12 +144840,12 @@
         "anchor_slot_bootstrap",
         "evaluate_function_value"
       ],
-      "canonical_base_problem_type_id": "evaluate_function_value",
+      "canonical_base_problem_type_id": "evaluate_function_value_2",
       "value_type_prefix": "",
       "_resolved_template_slot": "factor_quadratic_by_cross_multiplication"
     },
     {
-      "problem_type_id": "interpret_function_notation",
+      "problem_type_id": "interpret_function_notation_2",
       "skill_id": "vh_數學B1_LinearFunction",
       "target_task": "interpret_function_notation",
       "task_family": "function_concept_family",
@@ -143967,7 +144982,7 @@
         "template_slots": {
           "stem": "linear_function_two_point_choice"
         },
-        "problem_type_id": "interpret_function_notation",
+        "problem_type_id": "interpret_function_notation_2",
         "contract_validation_blockers": [],
         "contract_validation_warnings": [
           "single_template_variant_only",
@@ -143989,7 +145004,7 @@
         "anchor_slot_bootstrap",
         "interpret_function_notation"
       ],
-      "canonical_base_problem_type_id": "interpret_function_notation",
+      "canonical_base_problem_type_id": "interpret_function_notation_2",
       "value_type_prefix": "",
       "_resolved_template_slot": "factor_quadratic_by_cross_multiplication"
     }
@@ -144007,17 +145022,39 @@
         [
           "coordinate_point",
           "quadratic_equation"
-        ]
+        ],
+        "default"
       ],
       "source_example_ids": [
-        4424,
         4433,
         4434,
-        4441,
-        4444,
         4448,
         4449,
         4516
+      ],
+      "answer_type": "numeric",
+      "presentation_mode": "short_answer",
+      "source_has_choices": false
+    },
+    {
+      "grouping_reason": "split_by_feature_signature",
+      "feature_signature": [
+        "numeric",
+        "numeric_evaluate_function_notation",
+        "short_answer",
+        [
+          "numeric_computation"
+        ],
+        [
+          "coordinate_point",
+          "quadratic_equation"
+        ],
+        "line_equation"
+      ],
+      "source_example_ids": [
+        4424,
+        4441,
+        4444
       ],
       "answer_type": "numeric",
       "presentation_mode": "short_answer",
@@ -144035,7 +145072,8 @@
         [
           "coordinate_point",
           "quadratic_equation"
-        ]
+        ],
+        "line_equation"
       ],
       "source_example_ids": [
         4515
@@ -144043,6 +145081,68 @@
       "answer_type": "numeric",
       "presentation_mode": "single_choice",
       "source_has_choices": true
+    },
+    {
+      "grouping_reason": "split_by_feature_signature",
+      "feature_signature": [
+        "short_answer",
+        "compute_numeric",
+        "short_answer",
+        [
+          "numeric_computation"
+        ],
+        [],
+        "default"
+      ],
+      "source_example_ids": [
+        4425,
+        4445,
+        4500
+      ],
+      "answer_type": "short_answer",
+      "presentation_mode": "short_answer",
+      "source_has_choices": false
+    },
+    {
+      "grouping_reason": "split_by_feature_signature",
+      "feature_signature": [
+        "short_answer",
+        "compute_numeric",
+        "short_answer",
+        [
+          "numeric_computation"
+        ],
+        [
+          "coordinate_point",
+          "three_coordinate_points"
+        ],
+        "line_equation"
+      ],
+      "source_example_ids": [
+        4426
+      ],
+      "answer_type": "short_answer",
+      "presentation_mode": "short_answer",
+      "source_has_choices": false
+    },
+    {
+      "grouping_reason": "split_by_feature_signature",
+      "feature_signature": [
+        "short_answer",
+        "applied_quadratic_inequality_problem",
+        "short_answer",
+        [
+          "quadratic_factoring_reasoning"
+        ],
+        [],
+        "default"
+      ],
+      "source_example_ids": [
+        4442
+      ],
+      "answer_type": "short_answer",
+      "presentation_mode": "short_answer",
+      "source_has_choices": false
     }
   ],
   "human_review_items": [],
@@ -144053,18 +145153,15 @@
       "proposed_problem_type_id": "integer_numeric_evaluate_function_notation",
       "display_name": "integer / numeric_evaluate_function_notation",
       "matched_example_ids": [
-        4424,
         4433,
         4434,
-        4441,
-        4444,
         4448,
         4449,
         4516
       ],
-      "matched_example_count": 8,
+      "matched_example_count": 5,
       "unmatched_example_ids": [],
-      "representative_example_id": 4424,
+      "representative_example_id": 4433,
       "structural_features": [
         "text_short"
       ],
@@ -144073,26 +145170,96 @@
         "choice_count": null,
         "correct_choice_count": null,
         "frontend_render_choices": false,
-        "source_has_choices": false,
         "answer_type": "integer",
         "answer_shape": "text_short",
-        "answer_semantics": "text_short",
         "answer_equivalence": "numeric_exact",
-        "equivalence_type": "numeric_exact",
         "checker": "integer_checker",
+        "accepted_formats": [
+          "5",
+          "5.0",
+          "-3"
+        ],
+        "equivalence_type": "numeric_exact",
         "checker_key": "integer_checker",
         "presentation_mode": "",
-        "selected_checker": "text_short_checker",
-        "checker_capability_status": "ok",
-        "checker_contract_blockers": [],
-        "checker_contract_warnings": [],
+        "order_matters": true,
+        "accepted_format_notes": [],
+        "canonical_answer_schema": "text_short"
+      },
+      "checker_key_proposal": "integer_checker",
+      "equivalence_type_proposal": "numeric_exact",
+      "answer_shape": "text_short",
+      "answer_semantics": "text_short",
+      "presentation_mode": "short_answer",
+      "source_has_choices": false,
+      "selected_checker": "text_short_checker",
+      "checker_selection_reason": "task_family_default",
+      "coordinate_pair_presentation_note": "",
+      "confidence": "high",
+      "promote_recommendation": "recommend_promote_for_that_candidate",
+      "promote_blockers": [],
+      "risk_flags": [
+        "ai_first_mode_fell_back_to_rule_only",
+        "ai_partial_unavailable_relaxed_tolerance",
+        "no_registered_slot_but_presentation_known",
+        "subskill_mismatch_warning"
+      ],
+      "checker_contract_warnings": [],
+      "spec_source": "phase1_induced_draft",
+      "grouping_reason": "split_by_feature_signature",
+      "feature_signature": [
+        "numeric",
+        "numeric_evaluate_function_notation",
+        "short_answer",
+        [
+          "numeric_computation"
+        ],
+        [
+          "coordinate_point",
+          "quadratic_equation"
+        ],
+        "default"
+      ],
+      "problem_type_spec_draft": {
+        "problem_type_id": "text_short_text_short_evaluate_function_notation_expression",
+        "skill_id": "vh_數學B1_LinearFunction",
+        "target_task": "numeric_evaluate_function_notation",
+        "task_family": "function_concept_family",
+        "display_name": "numeric / numeric_evaluate_function_notation",
+        "answer_format_hint": "text_short",
+        "answer_fields": null,
+        "answer_separator": null,
+        "source_example_ids": [
+          4433,
+          4434,
+          4448,
+          4449,
+          4516
+        ],
+        "answer_contract": {
+          "choices_required": false,
+          "choice_count": null,
+          "correct_choice_count": null,
+          "frontend_render_choices": false,
+          "answer_type": "text_short",
+          "answer_shape": "text_short",
+          "answer_equivalence": "exact_string",
+          "checker": "text_short_checker",
+          "accepted_formats": [
+            "5",
+            "5.0",
+            "-3"
+          ],
+          "equivalence_type": "exact_string",
+          "checker_key": "text_short_checker",
+          "presentation_mode": "short_answer"
+        },
         "stem_contract": {
           "stem_must_not_embed_choices": true,
           "allowed_math_objects": [
             "coordinate_point",
             "quadratic_equation",
-            "quadratic_vertex_form",
-            "two_coordinate_points"
+            "quadratic_vertex_form"
           ],
           "required_math_objects": [
             "coordinate_point",
@@ -144220,6 +145387,73 @@
           ],
           "runtime_smoke_count": 30
         },
+        "spec_source": "phase1_induced_draft",
+        "grouping_reason": "split_by_feature_signature",
+        "feature_signature": [
+          "numeric",
+          "numeric_evaluate_function_notation",
+          "short_answer",
+          [
+            "numeric_computation"
+          ],
+          [
+            "coordinate_point",
+            "quadratic_equation"
+          ],
+          "default"
+        ],
+        "canonical_base_problem_type_id": "numeric_evaluate_function_notation_short_answer",
+        "value_type_prefix": "numeric",
+        "_resolved_template_slot": "",
+        "naming_warning": "naming_warning:numeric_prefix_but_hint_is_text_short"
+      },
+      "generator_readiness": "runtime_ready_with_warning",
+      "usable_for_phase3": true,
+      "template_slot": "",
+      "canonical_base_problem_type_id": "numeric_evaluate_function_notation_short_answer",
+      "value_type_prefix": "numeric",
+      "subskill_id": "numeric_evaluate_function_notation",
+      "answer_type": "text_short",
+      "runtime_status": "runtime_ready_candidate",
+      "next_action": "phase2_foundation_preflight",
+      "semantic_alignment": {
+        "skill_problem_type_score": 0.04,
+        "source_problem_type_score": 0.0319,
+        "task_consistent_with_skill": true
+      }
+    },
+    {
+      "problem_type_id": "integer_numeric_evaluate_function_notation",
+      "proposed_problem_type_id": "integer_numeric_evaluate_function_notation",
+      "display_name": "integer / numeric_evaluate_function_notation",
+      "matched_example_ids": [
+        4424,
+        4441,
+        4444
+      ],
+      "matched_example_count": 3,
+      "unmatched_example_ids": [],
+      "representative_example_id": 4424,
+      "structural_features": [
+        "text_short"
+      ],
+      "answer_contract_proposal": {
+        "choices_required": false,
+        "choice_count": null,
+        "correct_choice_count": null,
+        "frontend_render_choices": false,
+        "answer_type": "integer",
+        "answer_shape": "text_short",
+        "answer_equivalence": "numeric_exact",
+        "checker": "integer_checker",
+        "accepted_formats": [
+          "5",
+          "5.0",
+          "-3"
+        ],
+        "equivalence_type": "numeric_exact",
+        "checker_key": "integer_checker",
+        "presentation_mode": "",
         "order_matters": true,
         "accepted_format_notes": [],
         "canonical_answer_schema": "text_short"
@@ -144238,6 +145472,7 @@
       "promote_blockers": [],
       "risk_flags": [
         "ai_first_mode_fell_back_to_rule_only",
+        "ai_partial_unavailable_relaxed_tolerance",
         "no_registered_slot_but_presentation_known",
         "subskill_mismatch_warning"
       ],
@@ -144254,7 +145489,8 @@
         [
           "coordinate_point",
           "quadratic_equation"
-        ]
+        ],
+        "line_equation"
       ],
       "problem_type_spec_draft": {
         "problem_type_id": "text_short_text_short_evaluate_function_notation_expression",
@@ -144262,34 +145498,31 @@
         "target_task": "numeric_evaluate_function_notation",
         "task_family": "function_concept_family",
         "display_name": "numeric / numeric_evaluate_function_notation",
-        "answer_format_hint": "",
+        "answer_format_hint": "text_short",
         "answer_fields": null,
         "answer_separator": null,
         "source_example_ids": [
           4424,
-          4433,
-          4434,
           4441,
-          4444,
-          4448,
-          4449,
-          4516
+          4444
         ],
         "answer_contract": {
           "choices_required": false,
           "choice_count": null,
           "correct_choice_count": null,
           "frontend_render_choices": false,
-          "source_has_choices": false,
           "answer_type": "text_short",
           "answer_shape": "text_short",
-          "answer_semantics": "text_short",
           "answer_equivalence": "exact_string",
-          "equivalence_type": "exact_string",
           "checker": "text_short_checker",
+          "accepted_formats": [
+            "5",
+            "5.0",
+            "-3"
+          ],
+          "equivalence_type": "exact_string",
           "checker_key": "text_short_checker",
-          "presentation_mode": "short_answer",
-          "selected_checker": "text_short_checker"
+          "presentation_mode": "short_answer"
         },
         "stem_contract": {
           "stem_must_not_embed_choices": true,
@@ -144437,11 +145670,13 @@
           [
             "coordinate_point",
             "quadratic_equation"
-          ]
+          ],
+          "line_equation"
         ],
         "canonical_base_problem_type_id": "numeric_evaluate_function_notation_short_answer",
         "value_type_prefix": "numeric",
-        "_resolved_template_slot": ""
+        "_resolved_template_slot": "",
+        "naming_warning": "naming_warning:numeric_prefix_but_hint_is_text_short"
       },
       "generator_readiness": "runtime_ready_with_warning",
       "usable_for_phase3": true,
@@ -144449,14 +145684,14 @@
       "canonical_base_problem_type_id": "numeric_evaluate_function_notation_short_answer",
       "value_type_prefix": "numeric",
       "subskill_id": "numeric_evaluate_function_notation",
+      "answer_type": "text_short",
       "runtime_status": "runtime_ready_candidate",
       "next_action": "phase2_foundation_preflight",
       "semantic_alignment": {
         "skill_problem_type_score": 0.04,
         "source_problem_type_score": 0.0319,
         "task_consistent_with_skill": true
-      },
-      "answer_type": "text_short"
+      }
     },
     {
       "problem_type_id": "integer_numeric_evaluate_function_notation",
@@ -144491,146 +145726,6 @@
         "equivalence_type": "choice_label",
         "checker_key": "choice_label_checker",
         "presentation_mode": "",
-        "selected_checker": "choice_label_checker",
-        "checker_capability_status": "ok",
-        "checker_contract_blockers": [],
-        "checker_contract_warnings": [],
-        "stem_contract": {
-          "stem_must_not_embed_choices": true,
-          "allowed_math_objects": [
-            "coordinate_point",
-            "quadratic_equation",
-            "quadratic_vertex_form",
-            "three_coordinate_points",
-            "triangle",
-            "two_coordinate_points"
-          ],
-          "required_math_objects": [
-            "coordinate_point",
-            "quadratic_equation"
-          ],
-          "forbidden_patterns": [
-            "\\(A\\)",
-            "\\(B\\)",
-            "\\(C\\)",
-            "\\(D\\)"
-          ]
-        },
-        "dependency_contract": {
-          "givens_must_be_used": true,
-          "target_answer_must_depend_on_givens": true,
-          "variables_in_conditions_must_appear_in_target": false
-        },
-        "semantic_contract": {
-          "reasoning_type": [
-            "numeric_computation"
-          ],
-          "reject_if": [
-            "unused_condition",
-            "ambiguous_answer",
-            "answer_not_derivable",
-            "duplicated_choices",
-            "no_correct_choice",
-            "multiple_correct_choices_when_single_choice"
-          ]
-        },
-        "generator_contract": {
-          "template_variants": [
-            {
-              "id": "default",
-              "label": "default",
-              "stem_pattern": "依題意求解：{stem_hint}。",
-              "weight": 1.0,
-              "enabled": true
-            }
-          ],
-          "parameter_schema": {
-            "seed": {
-              "type": "integer",
-              "randomize": true
-            },
-            "difficulty_level": {
-              "choices": [
-                "level_1",
-                "level_2",
-                "level_3"
-              ],
-              "weights": [
-                0.4,
-                0.4,
-                0.2
-              ]
-            }
-          },
-          "variation_dimensions": [
-            "seed",
-            "difficulty_level",
-            "context_style"
-          ],
-          "difficulty_controls": {
-            "level_1": {},
-            "level_2": {},
-            "level_3": {}
-          },
-          "anti_repetition_rules": {
-            "avoid_same_template_consecutive": true,
-            "avoid_same_ratio_consecutive": true,
-            "avoid_same_point_names_consecutive": true,
-            "avoid_same_answer_consecutive": true,
-            "recent_history_window": 5,
-            "signature_fields": [
-              "problem_type_id",
-              "template_variant",
-              "routing_track",
-              "scenario_type",
-              "ratio_form",
-              "ratio_values",
-              "coordinate_pattern",
-              "answer"
-            ]
-          },
-          "validity_constraints": [
-            "answer derivable from givens"
-          ],
-          "answer_shape": "numeric",
-          "explanation_variants": [
-            "stepwise"
-          ],
-          "sampling_strategy": "weighted_random",
-          "template_families": [
-            "numeric_evaluate_function_notation"
-          ],
-          "parameter_slots": {
-            "seed": "integer",
-            "difficulty": "easy"
-          },
-          "randomization_rules": {
-            "shuffle_choices": false
-          },
-          "avoid_llm_freeform_math": true,
-          "use_domain_functions": true,
-          "derivation_steps_required": true,
-          "templates": [
-            "template_scalar_unknown",
-            "template_feature_value"
-          ],
-          "problem_type_id": "numeric_numeric_evaluate_function_notation_single_choice",
-          "contract_validation_blockers": [],
-          "contract_validation_warnings": [
-            "single_template_variant_only",
-            "variation_dimensions_below_recommended_minimum"
-          ]
-        },
-        "validator_contract": {
-          "static_checks": [
-            "answer_contract_checks",
-            "choices_policy"
-          ],
-          "semantic_checks": [
-            "givens_to_target_dependency"
-          ],
-          "runtime_smoke_count": 30
-        },
         "order_matters": true,
         "accepted_format_notes": [],
         "canonical_answer_schema": "single_choice"
@@ -144649,6 +145744,7 @@
       "promote_blockers": [],
       "risk_flags": [
         "ai_first_mode_fell_back_to_rule_only",
+        "ai_partial_unavailable_relaxed_tolerance",
         "no_registered_slot_but_presentation_known",
         "subskill_mismatch_warning"
       ],
@@ -144665,10 +145761,11 @@
         [
           "coordinate_point",
           "quadratic_equation"
-        ]
+        ],
+        "line_equation"
       ],
       "problem_type_spec_draft": {
-        "problem_type_id": "choice_choice_evaluate_function_notation_single_choice",
+        "problem_type_id": "choice_evaluate_function_notation_single_choice",
         "skill_id": "vh_數學B1_LinearFunction",
         "target_task": "numeric_evaluate_function_notation",
         "task_family": "function_concept_family",
@@ -144848,9 +145945,10 @@
           [
             "coordinate_point",
             "quadratic_equation"
-          ]
+          ],
+          "line_equation"
         ],
-        "canonical_base_problem_type_id": "numeric_evaluate_function_notation_single_choice",
+        "canonical_base_problem_type_id": "evaluate_function_notation_single_choice",
         "value_type_prefix": "numeric",
         "_resolved_template_slot": "",
         "naming_warning": "naming_warning:numeric_prefix_but_hint_is_A/B/C/D"
@@ -144858,21 +145956,21 @@
       "generator_readiness": "runtime_ready_with_warning",
       "usable_for_phase3": true,
       "template_slot": "",
-      "canonical_base_problem_type_id": "numeric_evaluate_function_notation_single_choice",
+      "canonical_base_problem_type_id": "evaluate_function_notation_single_choice",
       "value_type_prefix": "numeric",
       "subskill_id": "numeric_evaluate_function_notation",
+      "answer_type": "choice",
       "runtime_status": "runtime_ready_candidate",
       "next_action": "phase2_foundation_preflight",
       "semantic_alignment": {
-        "skill_problem_type_score": 0.0435,
-        "source_problem_type_score": 0.044,
+        "skill_problem_type_score": 0.0,
+        "source_problem_type_score": 0.0,
         "task_consistent_with_skill": true
-      },
-      "answer_type": "choice"
+      }
     },
     {
-      "problem_type_id": "evaluate_function_value",
-      "proposed_problem_type_id": "evaluate_function_value",
+      "problem_type_id": "evaluate_function_value_2",
+      "proposed_problem_type_id": "evaluate_function_value_2",
       "display_name": "evaluate_function_value / anchor bootstrap",
       "matched_example_ids": [],
       "matched_example_count": 0,
@@ -145013,7 +146111,7 @@
           "template_slots": {
             "stem": "function_value_numeric"
           },
-          "problem_type_id": "evaluate_function_value",
+          "problem_type_id": "evaluate_function_value_2",
           "contract_validation_blockers": [],
           "contract_validation_warnings": [
             "single_template_variant_only",
@@ -145046,6 +146144,7 @@
       "promote_blockers": [],
       "risk_flags": [
         "ai_first_mode_fell_back_to_rule_only",
+        "ai_partial_unavailable_relaxed_tolerance",
         "anchor_slot_bootstrap_zero_source"
       ],
       "checker_contract_warnings": [],
@@ -145056,7 +146155,7 @@
         "evaluate_function_value"
       ],
       "problem_type_spec_draft": {
-        "problem_type_id": "evaluate_function_value",
+        "problem_type_id": "evaluate_function_value_2",
         "skill_id": "vh_數學B1_LinearFunction",
         "target_task": "evaluate_function_value",
         "task_family": "function_concept_family",
@@ -145193,7 +146292,7 @@
           "template_slots": {
             "stem": "function_value_numeric"
           },
-          "problem_type_id": "evaluate_function_value",
+          "problem_type_id": "evaluate_function_value_2",
           "contract_validation_blockers": [],
           "contract_validation_warnings": [
             "single_template_variant_only",
@@ -145215,14 +146314,14 @@
           "anchor_slot_bootstrap",
           "evaluate_function_value"
         ],
-        "canonical_base_problem_type_id": "evaluate_function_value",
+        "canonical_base_problem_type_id": "evaluate_function_value_2",
         "value_type_prefix": "",
         "_resolved_template_slot": "factor_quadratic_by_cross_multiplication"
       },
       "generator_readiness": "runtime_ready",
       "usable_for_phase3": true,
       "template_slot": "function_value_numeric",
-      "canonical_base_problem_type_id": "evaluate_function_value",
+      "canonical_base_problem_type_id": "evaluate_function_value_2",
       "value_type_prefix": "",
       "subskill_id": "evaluate_function_value",
       "runtime_status": "runtime_ready_candidate",
@@ -145235,8 +146334,8 @@
       "answer_type": "expression"
     },
     {
-      "problem_type_id": "interpret_function_notation",
-      "proposed_problem_type_id": "interpret_function_notation",
+      "problem_type_id": "interpret_function_notation_2",
+      "proposed_problem_type_id": "interpret_function_notation_2",
       "display_name": "interpret_function_notation / anchor bootstrap",
       "matched_example_ids": [],
       "matched_example_count": 0,
@@ -145377,7 +146476,7 @@
           "template_slots": {
             "stem": "linear_function_two_point_choice"
           },
-          "problem_type_id": "interpret_function_notation",
+          "problem_type_id": "interpret_function_notation_2",
           "contract_validation_blockers": [],
           "contract_validation_warnings": [
             "single_template_variant_only",
@@ -145410,6 +146509,7 @@
       "promote_blockers": [],
       "risk_flags": [
         "ai_first_mode_fell_back_to_rule_only",
+        "ai_partial_unavailable_relaxed_tolerance",
         "anchor_slot_bootstrap_zero_source"
       ],
       "checker_contract_warnings": [],
@@ -145420,7 +146520,7 @@
         "interpret_function_notation"
       ],
       "problem_type_spec_draft": {
-        "problem_type_id": "interpret_function_notation",
+        "problem_type_id": "interpret_function_notation_2",
         "skill_id": "vh_數學B1_LinearFunction",
         "target_task": "interpret_function_notation",
         "task_family": "function_concept_family",
@@ -145557,7 +146657,7 @@
           "template_slots": {
             "stem": "linear_function_two_point_choice"
           },
-          "problem_type_id": "interpret_function_notation",
+          "problem_type_id": "interpret_function_notation_2",
           "contract_validation_blockers": [],
           "contract_validation_warnings": [
             "single_template_variant_only",
@@ -145579,14 +146679,14 @@
           "anchor_slot_bootstrap",
           "interpret_function_notation"
         ],
-        "canonical_base_problem_type_id": "interpret_function_notation",
+        "canonical_base_problem_type_id": "interpret_function_notation_2",
         "value_type_prefix": "",
         "_resolved_template_slot": "factor_quadratic_by_cross_multiplication"
       },
       "generator_readiness": "runtime_ready",
       "usable_for_phase3": true,
       "template_slot": "linear_function_two_point_choice",
-      "canonical_base_problem_type_id": "interpret_function_notation",
+      "canonical_base_problem_type_id": "interpret_function_notation_2",
       "value_type_prefix": "",
       "subskill_id": "interpret_function_notation",
       "runtime_status": "runtime_ready_candidate",
@@ -145599,7 +146699,7 @@
       "answer_type": "expression"
     }
   ],
-  "candidate_problem_type_count": 4,
+  "candidate_problem_type_count": 5,
   "source_skill_scope_locked": true,
   "classification_scope": "within_current_skill",
   "skill_mapping_authority": "textbook_examples.skill_id",

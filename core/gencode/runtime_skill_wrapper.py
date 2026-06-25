@@ -242,7 +242,14 @@ def check_answer(
     if not ac:
         ac = _resolve_answer_contract(payload=payload, answer_contract=answer_contract, skill_id=skill_id)
     correct_answer = coerce_correct_answer(correct_answer, ac)
-    checker = str(ac.get("checker") or (payload or {}).get("checker") or (payload or {}).get("checker_type") or "").strip()
+    checker = str(
+        ac.get("checker")
+        or ac.get("checker_key")
+        or (payload or {}).get("checker")
+        or (payload or {}).get("checker_key")
+        or (payload or {}).get("checker_type")
+        or ""
+    ).strip()
     family = answer_type_family(str(ac.get("answer_type", "")))
     equiv = str(
         ac.get("answer_equivalence")
@@ -253,6 +260,61 @@ def check_answer(
     coord_ctx = is_coordinate_pair_contract(ac) or (
         isinstance(payload, dict) and is_coordinate_pair_runtime_payload(payload)
     )
+
+    try:
+        from core.checkers.free_response_drawing_checker import (
+            check_drawing_answer,
+            find_answer_image,
+            is_drawing_answer_contract,
+        )
+    except Exception:  # pragma: no cover
+        check_drawing_answer = None  # type: ignore
+        find_answer_image = None  # type: ignore
+        is_drawing_answer_contract = None  # type: ignore
+
+    drawing_ctx = bool(
+        checker == "free_response_drawing_checker"
+        or family == "drawing"
+        or equiv == "drawing_equivalence"
+        or (
+            callable(is_drawing_answer_contract)
+            and is_drawing_answer_contract(ac, payload if isinstance(payload, dict) else {})
+        )
+    )
+    if drawing_ctx:
+        drawing_payload = dict(payload) if isinstance(payload, dict) else {}
+        if isinstance(user_answer, dict):
+            drawing_payload = {**drawing_payload, **user_answer}
+        if callable(find_answer_image):
+            image_data_url, image_field = find_answer_image(drawing_payload)
+        else:
+            image_data_url, image_field = None, ""
+        metadata = drawing_payload.get("metadata") if isinstance(drawing_payload.get("metadata"), dict) else {}
+        expected_spec = (
+            drawing_payload.get("expected_drawing_spec")
+            or ac.get("expected_drawing_spec")
+            or metadata.get("expected_drawing_spec")
+            or {}
+        )
+        if not callable(check_drawing_answer):
+            return False
+        result = check_drawing_answer(
+            image_data_url=image_data_url,
+            question_text=str(drawing_payload.get("question_text") or drawing_payload.get("question") or ""),
+            answer_contract=ac,
+            metadata=metadata,
+            expected_drawing_spec=expected_spec if isinstance(expected_spec, dict) else {},
+            context={
+                "skill_id": str(drawing_payload.get("skill_id") or skill_id or ""),
+                "component_id": str(drawing_payload.get("component_id") or metadata.get("component_id") or ""),
+                "problem_type_id": str(drawing_payload.get("problem_type_id") or metadata.get("problem_type_id") or ""),
+                "checker_key": checker or "free_response_drawing_checker",
+                "image_field": image_field,
+                "student_strokes_image_data_url": drawing_payload.get("student_strokes_image_data_url"),
+                "background_image_data_url": drawing_payload.get("background_image_data_url"),
+            },
+        )
+        return bool(result.get("is_correct"))
 
     if checker == "multi_part_answer_checker" or family == "multi_part" or equiv == "multi_part_answer":
         from core.checkers.multi_part_answer_checker import check_multi_part_answer

@@ -114,15 +114,11 @@ def _payload_error_code(payload_raw: object, error_log: object) -> str:
     return canonical_error_code(text)
 
 
-def get_v3_skill_component_coverage(
-    conn: sqlite3.Connection,
-    skill_id: str,
+def _build_coverage_payload(
+    skill_key: str,
+    example_ids: list[int],
+    tracker_map: dict[int, dict[str, object]],
 ) -> dict[str, object]:
-    """Return textbook-example coverage vs tracker for one skill."""
-    skill_key = str(skill_id or "").strip()
-    example_ids = _fetch_textbook_example_ids(conn, skill_key)
-    tracker_map = _fetch_tracker_by_example_id(conn, skill_key)
-
     examples: list[dict[str, object]] = []
     verified_count = 0
     missing_tracker_count = 0
@@ -199,6 +195,92 @@ def get_v3_skill_component_coverage(
         "unverified_count": unverified_count,
         "publish_ready": publish_ready,
         "examples": examples,
+    }
+
+
+def _fetch_batch_textbook_example_ids(
+    conn: sqlite3.Connection,
+    skill_ids: list[str],
+) -> dict[str, list[int]]:
+    keys = [str(skill_id or "").strip() for skill_id in skill_ids if str(skill_id or "").strip()]
+    if not keys:
+        return {}
+    placeholders = ",".join("?" for _ in keys)
+    rows = conn.execute(
+        f"""
+        SELECT skill_id, id
+        FROM textbook_examples
+        WHERE skill_id IN ({placeholders})
+        ORDER BY skill_id ASC, id ASC
+        """,
+        keys,
+    ).fetchall()
+    grouped: dict[str, list[int]] = {key: [] for key in keys}
+    for row in rows:
+        skill_key = str(_row_value(row, "skill_id", 0))
+        grouped.setdefault(skill_key, []).append(int(_row_value(row, "id", 1)))
+    return grouped
+
+
+def _fetch_batch_tracker_by_example_id(
+    conn: sqlite3.Connection,
+    skill_ids: list[str],
+) -> dict[str, dict[int, dict[str, object]]]:
+    keys = [str(skill_id or "").strip() for skill_id in skill_ids if str(skill_id or "").strip()]
+    if not keys or not tracker_table_exists(conn):
+        return {key: {} for key in keys}
+    placeholders = ",".join("?" for _ in keys)
+    rows = conn.execute(
+        f"""
+        SELECT skill_id, textbook_example_id, component_id, gencode_status, gencode_error_log, induced_spec_payload
+        FROM gencode_component_tracker
+        WHERE skill_id IN ({placeholders})
+        ORDER BY skill_id ASC, textbook_example_id ASC
+        """,
+        keys,
+    ).fetchall()
+    grouped: dict[str, dict[int, dict[str, object]]] = {key: {} for key in keys}
+    for row in rows:
+        skill_key = str(_row_value(row, "skill_id", 0))
+        example_id = int(_row_value(row, "textbook_example_id", 1))
+        grouped.setdefault(skill_key, {})[example_id] = {
+            "textbook_example_id": example_id,
+            "component_id": str(_row_value(row, "component_id", 2)),
+            "gencode_status": str(_row_value(row, "gencode_status", 3)),
+            "gencode_error_log": _row_value(row, "gencode_error_log", 4),
+            "induced_spec_payload": _row_value(row, "induced_spec_payload", 5),
+        }
+    return grouped
+
+
+def get_v3_skill_component_coverage(
+    conn: sqlite3.Connection,
+    skill_id: str,
+) -> dict[str, object]:
+    """Return textbook-example coverage vs tracker for one skill."""
+    skill_key = str(skill_id or "").strip()
+    example_ids = _fetch_textbook_example_ids(conn, skill_key)
+    tracker_map = _fetch_tracker_by_example_id(conn, skill_key)
+    return _build_coverage_payload(skill_key, example_ids, tracker_map)
+
+
+def get_v3_skills_component_coverage_batch(
+    conn: sqlite3.Connection,
+    skill_ids: list[str],
+) -> dict[str, dict[str, object]]:
+    """Return textbook-example coverage vs tracker for many skills with batched SQL."""
+    keys = [str(skill_id or "").strip() for skill_id in skill_ids if str(skill_id or "").strip()]
+    if not keys:
+        return {}
+    example_map = _fetch_batch_textbook_example_ids(conn, keys)
+    tracker_map = _fetch_batch_tracker_by_example_id(conn, keys)
+    return {
+        skill_key: _build_coverage_payload(
+            skill_key,
+            example_map.get(skill_key, []),
+            tracker_map.get(skill_key, {}),
+        )
+        for skill_key in keys
     }
 
 

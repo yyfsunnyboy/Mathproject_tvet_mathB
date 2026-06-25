@@ -1248,6 +1248,259 @@ def convert_domain_matrix_to_question_payload(
     display_answer = str(answer.get("canonical_form", semantic_answer))
     mode = str(presentation_mode or "short_answer").strip()
     resolved_answer_type = str(answer_type or "integer").strip()
+    table_chart_ops = {
+        "read_category_value",
+        "compare_category_values",
+        "calculate_total_ratio_percent",
+        "validate_chart_statement",
+        "cumulative_above_fail_count",
+        "cumulative_above_interval_count",
+        "cumulative_below_interval_count",
+    }
+    if op in table_chart_ops or validation_facts.get("domain_operation") in table_chart_ops:
+        operation = str(op or validation_facts.get("domain_operation") or problem_type_id or "read_category_value")
+        cumulative_ops = {
+            "cumulative_above_fail_count",
+            "cumulative_above_interval_count",
+            "cumulative_below_interval_count",
+        }
+        if operation in cumulative_ops:
+            story = str(givens.get("story_context") or "統計資料")
+            unit = str(givens.get("variable_unit") or "")
+            direction = str(givens.get("cumulative_direction") or validation_facts.get("cumulative_direction") or "above")
+            chart_phrase = "以上累積次數分配折線圖" if direction == "above" else "以下累積次數分配折線圖"
+            if operation == "cumulative_above_fail_count":
+                threshold = int(validation_facts.get("threshold") or givens.get("threshold") or 60)
+                question_text = (
+                    f"{story}的{chart_phrase}如下圖所示，試問：以{threshold}{unit}為準，不及格者有多少人？"
+                )
+            elif operation == "cumulative_above_interval_count":
+                low = int(validation_facts.get("interval_low") or givens.get("interval_low") or 70)
+                high = int(validation_facts.get("interval_high") or givens.get("interval_high") or 80)
+                prefix = "接續上題，" if int(textbook_example_id or 0) == 3885 else ""
+                question_text = (
+                    f"{prefix}{story}的{chart_phrase}如下圖所示，成績在{low}～{high}{unit}有多少人？"
+                )
+            else:
+                total = int(validation_facts.get("total_population") or givens.get("total_population") or 40)
+                low = int(validation_facts.get("interval_low") or givens.get("interval_low") or 30)
+                high = int(validation_facts.get("interval_high") or givens.get("interval_high") or 40)
+                if "員工" in story or unit == "歲":
+                    question_text = (
+                        f"依某公司{total}名員工的年齡繪製以下{chart_phrase}如下圖所示，"
+                        f"請問年齡在{low}～{high}{unit}有多少人？"
+                    )
+                else:
+                    question_text = (
+                        f"依{story}共{total}名員工繪製以下{chart_phrase}如下圖所示，"
+                        f"請問年齡在{low}～{high}{unit}有多少人？"
+                    )
+            semantic_answer = answer.get("value", validation_facts.get("answer_value"))
+            display_answer = str(semantic_answer)
+            resolved_answer_type = "integer"
+            rows = normalized.get("visual_spec", {}).get("rows") or []
+            choices: list[dict[str, str]] = []
+            options: list[str] = []
+            payload_answer = semantic_answer
+            payload_correct = semantic_answer
+            answer_contract = {
+                "presentation_mode": mode,
+                "answer_type": resolved_answer_type,
+                "checker": "integer_checker",
+                "checker_key": "integer_checker",
+                "answer_equivalence": "numeric_exact",
+                "equivalence": "numeric_exact",
+                "semantic_answer": semantic_answer,
+            }
+            if mode == "single_choice":
+                choices, correct_label = _build_choice_options(
+                    display_answer,
+                    normalized.get("distractors", []),
+                    seed_text=f"{operation}|{display_answer}|{component_id or ''}",
+                )
+                options = [str(choice["text"]) for choice in choices]
+                payload_answer = correct_label
+                payload_correct = correct_label
+                answer_contract = {
+                    "presentation_mode": "single_choice",
+                    "answer_type": resolved_answer_type,
+                    "checker": "choice_label_checker",
+                    "checker_key": "choice_label_checker",
+                    "answer_equivalence": "choice_label",
+                    "equivalence": "choice_label",
+                    "semantic_answer": semantic_answer,
+                }
+            return {
+                "question_text": question_text,
+                "answer": payload_answer,
+                "correct_answer": payload_correct,
+                "display_answer": display_answer,
+                "semantic_answer": semantic_answer,
+                "choices": choices,
+                "options": options,
+                "component_id": component_id,
+                "textbook_example_id": textbook_example_id,
+                "problem_type_id": operation,
+                "domain_operation": operation,
+                "fixed_domain_key": "statistics.table_chart",
+                "source_kind": source_kind,
+                "presentation_mode": mode,
+                "answer_type": resolved_answer_type,
+                "checker": answer_contract["checker"],
+                "checker_key": answer_contract["checker_key"],
+                "interaction_type": "single_choice" if mode == "single_choice" else "expression",
+                "auto_checkable": True,
+                "grading_mode": "auto",
+                "answer_contract": answer_contract,
+                "metadata": {
+                    "givens": givens,
+                    "raw_givens": givens,
+                    "target": display_answer,
+                    "derivation": [str(step) for step in normalized["explanation_steps"]],
+                    "presentation_mode": mode,
+                    "answer_type": resolved_answer_type,
+                    "semantic_answer": semantic_answer,
+                    "problem_type_id": operation,
+                    "domain_operation": operation,
+                    "fixed_domain_key": "statistics.table_chart",
+                    "component_id": component_id,
+                    "textbook_example_id": textbook_example_id,
+                    "interaction_type": "single_choice" if mode == "single_choice" else "expression",
+                    "auto_checkable": True,
+                    "grading_mode": "auto",
+                },
+                "math_core": {
+                    "givens": givens,
+                    "raw_givens": givens,
+                    "target": display_answer,
+                    "math_objects": ["cumulative_frequency_polygon", "statistical_chart"],
+                    "derivation": [str(step) for step in normalized["explanation_steps"]],
+                    "validation_facts": validation_facts,
+                },
+                "visual_spec": normalized["visual_spec"],
+                "visual_aids": normalized.get("visual_aids", matrix.get("visual_aids", [])),
+                "image_base64": normalized.get("image_base64", matrix.get("image_base64", "")),
+                "validation_facts": validation_facts,
+                "generator_key": generator_key or component_id,
+                "story_context": story,
+            }
+
+        rows = normalized.get("visual_spec", {}).get("rows") or []
+        value_map = validation_facts.get("value_map") or givens.get("value_map") or {}
+        categories = list(givens.get("categories") or list(value_map.keys()) or [])
+        if not value_map and rows:
+            value_map = {str(row[0]): int(row[1]) for row in rows if len(row) >= 2}
+            categories = list(value_map.keys())
+        target_label = str(validation_facts.get("target_label") or givens.get("target_label") or (categories[0] if categories else "A"))
+        compare_a = str(validation_facts.get("compare_a") or givens.get("compare_a") or (categories[0] if categories else "A"))
+        compare_b = str(validation_facts.get("compare_b") or givens.get("compare_b") or (categories[1] if len(categories) > 1 else compare_a))
+        if operation == "compare_category_values":
+            question_text = f"閱讀下列統計表，比較 {compare_a} 與 {compare_b} 的數值，兩者相差多少？"
+            semantic_answer = answer.get("value", validation_facts.get("answer_value"))
+            display_answer = str(semantic_answer)
+            resolved_answer_type = "integer" if isinstance(semantic_answer, int) else resolved_answer_type
+        elif operation == "calculate_total_ratio_percent":
+            question_text = f"閱讀下列統計表，求 {target_label} 佔總量的百分比。"
+            semantic_answer = answer.get("value", validation_facts.get("answer_value"))
+            display_answer = str(answer.get("canonical_form", semantic_answer))
+        elif operation == "validate_chart_statement":
+            statement = str(validation_facts.get("statement") or givens.get("statement") or "")
+            question_text = f"閱讀下列統計表，判斷敘述「{statement}」是否正確。"
+            semantic_answer = bool(answer.get("value", validation_facts.get("answer_value")))
+            display_answer = "true" if semantic_answer else "false"
+            resolved_answer_type = "boolean"
+        else:
+            question_text = f"閱讀下列統計表，求 {target_label} 的數值。"
+            semantic_answer = answer.get("value", validation_facts.get("answer_value"))
+            display_answer = str(semantic_answer)
+            resolved_answer_type = "integer" if isinstance(semantic_answer, int) else resolved_answer_type
+
+        choices: list[dict[str, str]] = []
+        options: list[str] = []
+        payload_answer = semantic_answer
+        payload_correct = semantic_answer
+        checker = "integer_checker" if resolved_answer_type in {"integer", "numeric"} else "text_short_checker"
+        equivalence = "numeric_exact" if checker == "integer_checker" else "exact_string"
+        answer_contract = {
+            "presentation_mode": mode,
+            "answer_type": resolved_answer_type,
+            "checker": checker,
+            "checker_key": checker,
+            "answer_equivalence": equivalence,
+            "equivalence": equivalence,
+            "semantic_answer": semantic_answer,
+        }
+        if mode == "single_choice":
+            choices, correct_label = _build_choice_options(
+                display_answer,
+                normalized.get("distractors", []),
+                seed_text=f"{operation}|{display_answer}|{component_id or ''}",
+            )
+            options = [str(choice["text"]) for choice in choices]
+            payload_answer = correct_label
+            payload_correct = correct_label
+            answer_contract = {
+                "presentation_mode": "single_choice",
+                "answer_type": resolved_answer_type,
+                "checker": "choice_label_checker",
+                "checker_key": "choice_label_checker",
+                "answer_equivalence": "choice_label",
+                "equivalence": "choice_label",
+                "semantic_answer": semantic_answer,
+            }
+        return {
+            "question_text": question_text,
+            "answer": payload_answer,
+            "correct_answer": payload_correct,
+            "display_answer": display_answer,
+            "semantic_answer": semantic_answer,
+            "choices": choices,
+            "options": options,
+            "component_id": component_id,
+            "textbook_example_id": textbook_example_id,
+            "problem_type_id": operation,
+            "domain_operation": operation,
+            "fixed_domain_key": "statistics.table_chart",
+            "source_kind": source_kind,
+            "presentation_mode": mode,
+            "answer_type": resolved_answer_type,
+            "checker": answer_contract["checker"],
+            "checker_key": answer_contract["checker_key"],
+            "interaction_type": "single_choice" if mode == "single_choice" else "expression",
+            "auto_checkable": True,
+            "grading_mode": "auto",
+            "answer_contract": answer_contract,
+            "metadata": {
+                "givens": givens,
+                "raw_givens": givens,
+                "target": display_answer,
+                "derivation": [str(step) for step in normalized["explanation_steps"]],
+                "presentation_mode": mode,
+                "answer_type": resolved_answer_type,
+                "semantic_answer": semantic_answer,
+                "problem_type_id": operation,
+                "domain_operation": operation,
+                "fixed_domain_key": "statistics.table_chart",
+                "component_id": component_id,
+                "textbook_example_id": textbook_example_id,
+                "interaction_type": "single_choice" if mode == "single_choice" else "expression",
+                "auto_checkable": True,
+                "grading_mode": "auto",
+            },
+            "math_core": {
+                "givens": givens,
+                "raw_givens": givens,
+                "target": display_answer,
+                "math_objects": ["statistical_chart", "category_value"],
+                "derivation": [str(step) for step in normalized["explanation_steps"]],
+                "validation_facts": validation_facts,
+            },
+            "visual_spec": normalized["visual_spec"],
+            "visual_aids": normalized.get("visual_aids", matrix.get("visual_aids", [])),
+            "image_base64": normalized.get("image_base64", matrix.get("image_base64", "")),
+            "validation_facts": validation_facts,
+            "generator_key": generator_key or component_id,
+        }
     question_text = str(kwargs.get("question_text") or "閱讀下列資料，根據表格回答問題。")
     if problem_type_id == "frequency_distribution_chart_construction":
         pass
@@ -1259,6 +1512,40 @@ def convert_domain_matrix_to_question_payload(
             question_text = f"閱讀下列次數分配表，求 {target_label} 的次數。"
 
     if problem_type_id == "frequency_distribution_chart_construction":
+        x_categories = [row[0] for row in matrix.get("visual_spec", {}).get("rows", [])]
+        expected_values = [row[1] for row in matrix.get("visual_spec", {}).get("rows", [])]
+        spec = {
+            "drawing_type": "histogram_and_frequency_polygon",
+            "x_categories": x_categories,
+            "expected_values": expected_values,
+            "required_elements": [
+                "x_axis",
+                "y_axis",
+                "histogram_bars",
+                "frequency_polygon"
+            ],
+            "grading_rules": {
+                "bar_count_matches_categories": True,
+                "histogram_bars_touch": True,
+                "polygon_connects_category_midpoints_in_order": True
+            },
+            "bar_rules": {
+                "count": len(x_categories),
+                "expected_heights": expected_values,
+                "touching": True,
+                "baseline": 0
+            },
+            "polygon_rules": {
+                "expected_points": [
+                    [cat, val] for cat, val in zip(x_categories, expected_values)
+                ],
+                "connect_in_order": True
+            },
+            "tolerance": {
+                "value": 0.8,
+                "position_ratio": 0.12
+            }
+        }
         return {
             "question_text": question_text,
             "answer": "直方圖與折線圖已繪製於畫布。",
@@ -1271,18 +1558,22 @@ def convert_domain_matrix_to_question_payload(
             "problem_type_id": problem_type_id,
             "source_kind": source_kind,
             "presentation_mode": mode,
-            "answer_type": resolved_answer_type,
+            "answer_type": "drawing",
+            "answer_shape": "drawing",
             "interaction_type": "handwriting_drawing",
             "auto_checkable": False,
             "grading_mode": "manual_or_ai_visual_review",
+            "expected_drawing_spec": spec,
             "answer_contract": {
                 "presentation_mode": mode,
-                "answer_type": resolved_answer_type,
+                "answer_type": "drawing",
+                "answer_shape": "drawing",
                 "checker": "free_response_drawing_checker",
                 "checker_key": "free_response_drawing_checker",
                 "answer_equivalence": "drawing_equivalence",
                 "equivalence": "drawing_equivalence",
                 "semantic_answer": "直方圖與折線圖已繪製於畫布。",
+                "expected_drawing_spec": spec,
             },
             "metadata": {
                 "givens": givens,
@@ -1290,7 +1581,8 @@ def convert_domain_matrix_to_question_payload(
                 "target": "直方圖與折線圖已繪製於畫布。",
                 "derivation": [str(step) for step in normalized["explanation_steps"]],
                 "presentation_mode": mode,
-                "answer_type": resolved_answer_type,
+                "answer_type": "drawing",
+                "answer_shape": "drawing",
                 "semantic_answer": "直方圖與折線圖已繪製於畫布。",
                 "problem_type_id": problem_type_id,
                 "component_id": component_id,
@@ -1298,6 +1590,7 @@ def convert_domain_matrix_to_question_payload(
                 "interaction_type": "handwriting_drawing",
                 "auto_checkable": False,
                 "grading_mode": "manual_or_ai_visual_review",
+                "expected_drawing_spec": spec,
             },
             "math_core": {
                 "givens": givens,
@@ -1314,31 +1607,64 @@ def convert_domain_matrix_to_question_payload(
             "generator_key": generator_key or component_id,
         }
 
+    choices: list[dict[str, str]] = []
+    options: list[str] = []
+    payload_answer = semantic_answer
+    payload_correct = semantic_answer
+    answer_contract = {
+        "presentation_mode": mode,
+        "answer_type": resolved_answer_type,
+        "checker": "text_short_checker" if problem_type_id == "histogram_distribution_update" else "integer_checker",
+        "checker_key": "text_short_checker" if problem_type_id == "histogram_distribution_update" else "integer_checker",
+        "answer_equivalence": "string_equivalence" if problem_type_id == "histogram_distribution_update" else "numeric_exact",
+        "equivalence": "string_equivalence" if problem_type_id == "histogram_distribution_update" else "numeric_exact",
+        "semantic_answer": semantic_answer,
+        "ui_contract": {
+            "response_mode": "text",
+            "text_input_enabled": True,
+            "normal_submit_enabled": True,
+            "ai_check_required": False,
+            "canvas_required": False,
+            "allow_image_upload": False,
+            "allow_text_answer": True,
+        } if problem_type_id == "histogram_distribution_update" else None,
+    }
+    if mode == "single_choice":
+        choices, correct_label = _build_choice_options(
+            display_answer,
+            normalized.get("distractors", []),
+            seed_text=f"{problem_type_id or op}|{display_answer}",
+        )
+        options = [str(choice["text"]) for choice in choices]
+        payload_answer = correct_label
+        payload_correct = correct_label
+        answer_contract = {
+            "presentation_mode": "single_choice",
+            "answer_type": "single_choice",
+            "checker": "choice_label_checker",
+            "checker_key": "choice_label_checker",
+            "answer_equivalence": "choice_label",
+            "equivalence": "choice_label",
+            "semantic_answer": semantic_answer,
+        }
+
     return {
         "question_text": question_text,
-        "answer": semantic_answer,
-        "correct_answer": semantic_answer,
+        "answer": payload_answer,
+        "correct_answer": payload_correct,
         "display_answer": display_answer,
-        "choices": [],
-        "options": [],
+        "choices": choices,
+        "options": options,
         "component_id": component_id,
         "textbook_example_id": textbook_example_id,
         "problem_type_id": problem_type_id or op,
         "source_kind": source_kind,
         "presentation_mode": mode,
         "answer_type": resolved_answer_type,
-        "interaction_type": "handwriting_drawing" if problem_type_id == "histogram_distribution_update" else "expression",
-        "auto_checkable": False if problem_type_id == "histogram_distribution_update" else True,
-        "grading_mode": "manual_or_ai_visual_review" if problem_type_id == "histogram_distribution_update" else "auto",
-        "answer_contract": {
-            "presentation_mode": mode,
-            "answer_type": resolved_answer_type,
-            "checker": "free_response_drawing_checker" if problem_type_id == "histogram_distribution_update" else "integer_checker",
-            "checker_key": "free_response_drawing_checker" if problem_type_id == "histogram_distribution_update" else "integer_checker",
-            "answer_equivalence": "drawing_equivalence" if problem_type_id == "histogram_distribution_update" else "numeric_exact",
-            "equivalence": "drawing_equivalence" if problem_type_id == "histogram_distribution_update" else "numeric_exact",
-            "semantic_answer": semantic_answer,
-        },
+        "interaction_type": "expression",
+        "auto_checkable": True,
+        "grading_mode": "auto",
+        "answer_contract": answer_contract,
         "metadata": {
             "givens": givens,
             "raw_givens": givens,
@@ -1350,9 +1676,9 @@ def convert_domain_matrix_to_question_payload(
             "problem_type_id": problem_type_id or op,
             "component_id": component_id,
             "textbook_example_id": textbook_example_id,
-            "interaction_type": "handwriting_drawing" if problem_type_id == "histogram_distribution_update" else "expression",
-            "auto_checkable": False if problem_type_id == "histogram_distribution_update" else True,
-            "grading_mode": "manual_or_ai_visual_review" if problem_type_id == "histogram_distribution_update" else "auto",
+            "interaction_type": "expression",
+            "auto_checkable": True,
+            "grading_mode": "auto",
         },
         "math_core": {
             "givens": givens,

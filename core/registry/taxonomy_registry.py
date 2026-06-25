@@ -62,6 +62,12 @@ DOMAIN_ALLOWED_OPERATIONS: dict[str, list[str]] = {
         "frequency_table_construction_review",
         "frequency_table_single_bin_count",
     ],
+    "statistics.table_chart": [
+        "read_category_value",
+        "compare_category_values",
+        "calculate_total_ratio_percent",
+        "validate_chart_statement",
+    ],
 }
 
 # Administrative profile: skill_id -> fixed_domain_key + curriculum.
@@ -115,6 +121,13 @@ SKILL_DOMAIN_PROFILE: dict[str, dict[str, Any]] = {
         "curriculum_profile": "vocational_high_b",
         "registry_revision": REGISTRY_REVISION,
         "mapping_reason": "textbook_skill_frequency_distribution_table",
+    },
+    "vh_數學B4_StatisticalChartReading": {
+        "fixed_domain_key": "statistics.table_chart",
+        "domain": "statistics",
+        "curriculum_profile": "vocational_high_b",
+        "registry_revision": REGISTRY_REVISION,
+        "mapping_reason": "textbook_skill_statistical_chart_reading",
     },
 }
 
@@ -209,6 +222,18 @@ SKILL_TO_DOMAIN: dict[str, dict[str, Any]] = {
         "allowed_types": [
             "frequency_table_construction_review",
             "frequency_table_single_bin_count",
+        ],
+    },
+    "vh_數學B4_StatisticalChartReading": {
+        "fixed_domain_key": "statistics.table_chart",
+        "domain_module": "core.domain.statistics.table_chart_domain",
+        "entrypoint": "build_statistical_chart_reading_matrix",
+        "default_curriculum_profile": "vocational_high_b",
+        "allowed_types": [
+            "read_category_value",
+            "compare_category_values",
+            "calculate_total_ratio_percent",
+            "validate_chart_statement",
         ],
     },
 }

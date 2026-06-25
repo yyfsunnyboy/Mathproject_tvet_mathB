@@ -3,6 +3,7 @@ from __future__ import annotations
 import logging
 logger = logging.getLogger(__name__)
 
+import hashlib
 import json
 import py_compile
 import sqlite3
@@ -3005,6 +3006,10 @@ def run_gencode_phase2_raw(
     v3_dryrun_base_dir: str = "reports/gencode_v3_dryrun",
     v3_project_root: str | None = None,
     v3_staging_root: str | None = None,
+    force_regenerate: bool = False,
+    generation_run_id: str | None = None,
+    generation_started_at: str | None = None,
+    old_artifact_hash: str | None = None,
 ) -> dict[str, Any]:
     skill_key = str(skill_id or "").strip()
     if v3_textbook_example_id is not None:
@@ -3016,6 +3021,10 @@ def run_gencode_phase2_raw(
             textbook_example_id=v3_textbook_example_id,
             source_kind=f"ex_{v3_textbook_example_id}",
             dryrun_base_dir=v3_dryrun_base_dir,
+            force_regenerate=force_regenerate,
+            generation_run_id=generation_run_id,
+            generation_started_at=generation_started_at,
+            old_artifact_hash=old_artifact_hash,
         )
         if V3_PRODUCTION_PUBLISH_ENABLED:
             if not str(v3_project_root or "").strip():
@@ -5003,8 +5012,13 @@ def _v3_resolve_gated_domain_operation(
         resolve_fixed_domain_context,
     )
 
-    ctx = resolve_fixed_domain_context(skill_id)
-    if ctx.fixed_domain_key.startswith("statistics.") and ctx.skill_id == "vh_數學B4_FrequencyDistributionTableConstruction" and not any(extra.get(k) for k in ("line_type", "problem_type_id", "domain_operation", "task_type")):
+    ctx = resolve_fixed_domain_context(
+        skill_id,
+        textbook_example=textbook_row,
+        problem_type_id=str(textbook_row.get("problem_type_id") or textbook_row.get("problem_type") or ""),
+        extra=extra,
+    )
+    if ctx.fixed_domain_key == "statistics.frequency_distribution" and not any(extra.get(k) for k in ("line_type", "problem_type_id", "domain_operation", "task_type")):
         selected = ctx.allowed_operations[0]
         log_dispatch_event(
             phase="v3_draft",
@@ -5061,14 +5075,17 @@ def _v3_resolve_gated_domain_operation(
         classification = normalize_ai_classification(classification, ctx)
     except (SkillFixedDomainError, ValueError) as exc:
         code = getattr(exc, "code", "domain_operation_not_allowed")
-        raise SkillFixedDomainError(
-            code,
-            str(exc),
-            details={
+        details = dict(getattr(exc, "details", {}) or {})
+        if not details:
+            details = {
                 "skill_id": skill_id,
                 "fixed_domain_key": ctx.fixed_domain_key,
                 "allowed_operations": list(ctx.allowed_operations),
-            },
+            }
+        raise SkillFixedDomainError(
+            code,
+            str(exc),
+            details=details,
         ) from exc
 
     selected = str(
@@ -5103,7 +5120,12 @@ def _v3_invoke_domain_entrypoint(
     difficulty_profile: str,
     constraints: dict[str, object] | None,
 ) -> dict[str, object]:
-    if entrypoint_name in {"build_coordinate_geometry_matrix", "build_parallel_lines_distance_matrix", "build_frequency_distribution_table_matrix"}:
+    if entrypoint_name in {
+        "build_coordinate_geometry_matrix",
+        "build_parallel_lines_distance_matrix",
+        "build_frequency_distribution_table_matrix",
+        "build_statistical_chart_reading_matrix",
+    }:
         return entrypoint_fn(
             seed=seed,
             domain_operation=domain_operation,
@@ -5167,6 +5189,16 @@ def build_v3_component_draft_from_skill(
         }
     row["id"] = textbook_example_id
 
+    from core.gencode.services.v3_source_topology_service import (
+        build_domain_params_from_topology,
+        build_source_topology_from_textbook_row,
+    )
+
+    source_topology = build_source_topology_from_textbook_row(row)
+    topology_constraints = build_domain_params_from_topology(source_topology)
+    if topology_constraints:
+        extra.update(topology_constraints)
+
     from core.gencode.skill_fixed_domain_authority import ComponentOverrideContext
     component_id = derive_component_id(textbook_example_id)
     with ComponentOverrideContext(extra, component_id=component_id):
@@ -5178,7 +5210,8 @@ def build_v3_component_draft_from_skill(
                 extra=extra,
             )
         except SkillFixedDomainError as exc:
-            raise ValueError(f"{exc.code}:{exc}") from exc
+            detail_text = json.dumps(getattr(exc, "details", {}) or {}, ensure_ascii=False, default=str)
+            raise ValueError(f"{exc.code}:{exc}; inference_trace={detail_text}") from exc
 
     from core.gencode.domain_capability_service import resolve_domain_capability
     from core.gencode.domain_function_extension_service import extend_domain_function_for_capability
@@ -5418,6 +5451,7 @@ def build_v3_component_draft_from_skill(
         "equivalence_type": equivalence_type,
         "checker_module": checker_module,
         "presentation_evidence": presentation_evidence,
+        "source_topology": source_topology,
     }
     files = build_component_files_from_domain_payload(
         skill_id=skill_id,
@@ -5615,6 +5649,17 @@ def _build_v3_induced_spec_payload(
         presentation_evidence = {}
     domain_operation = str(draft.get("domain_operation") or draft.get("line_type") or "").strip()
     problem_type_id = str(draft.get("problem_type_id") or domain_operation).strip()
+    from core.gencode.skill_fixed_domain_authority import resolve_fixed_domain_context
+    domain_ctx = resolve_fixed_domain_context(skill_id)
+    if (
+        domain_ctx.fixed_domain_key == "statistics.table_chart"
+        and domain_operation
+        and domain_operation not in set(domain_ctx.allowed_operations)
+    ):
+        raise ValueError(
+            f"unsupported_domain_operation:{domain_operation} for {skill_id}; "
+            f"allowed={list(domain_ctx.allowed_operations)}"
+        )
     answer_schema_key = str(
         draft.get("answer_schema_key")
         or resolve_answer_schema_key(
@@ -5623,8 +5668,6 @@ def _build_v3_induced_spec_payload(
         )
         or ""
     )
-    from core.gencode.skill_fixed_domain_authority import resolve_fixed_domain_context
-    domain_ctx = resolve_fixed_domain_context(skill_id)
     checker_key = str(draft.get("checker_key") or "")
     payload = migrate_induced_spec_payload(
         {
@@ -5645,7 +5688,7 @@ def _build_v3_induced_spec_payload(
             "domain_params": draft.get("constraints") if isinstance(draft.get("constraints"), dict) else {},
             "source_template": "",
             "source_kind": source_kind,
-            "line_type": draft.get("line_type"),
+            "line_type": domain_operation,
             "answer_type": str(draft.get("answer_type") or "expression"),
             "display_order": int(textbook_example_id),
             "source_order": int(textbook_example_id),
@@ -5654,6 +5697,59 @@ def _build_v3_induced_spec_payload(
         }
     )
     return payload
+
+
+def _sync_v3_draft_metadata_operation(
+    draft: dict[str, object],
+    *,
+    domain_operation: str,
+    problem_type_id: str,
+) -> dict[str, object]:
+    """Keep draft metadata constants aligned with the canonical gated operation."""
+    op = str(domain_operation or "").strip()
+    pt = str(problem_type_id or op).strip()
+    if not op:
+        return draft
+    draft["domain_operation"] = op
+    draft["line_type"] = op
+    draft["problem_type_id"] = pt
+    files = draft.get("files")
+    if not isinstance(files, dict):
+        return draft
+    metadata = files.get("metadata.py")
+    if not isinstance(metadata, str):
+        return draft
+    replacements = {
+        "DOMAIN_OPERATION": op,
+        "LINE_TYPE": op,
+        "TARGET_TASK": op,
+        "TEMPLATE_SLOT": op,
+        "PROBLEM_TYPE_ID": pt,
+    }
+    for const_name, const_value in replacements.items():
+        metadata = re.sub(
+            rf'^{const_name}: Final\[str\] = ".*"$',
+            f'{const_name}: Final[str] = "{const_value}"',
+            metadata,
+            flags=re.MULTILINE,
+        )
+    if draft.get("fixed_domain_key") == "statistics.table_chart":
+        metadata = re.sub(
+            r'^DOMAIN_LIBRARY: Final\[tuple\[str, \.\.\.\]\] = \([\s\S]*?\n\)$',
+            'DOMAIN_LIBRARY: Final[tuple[str, ...]] = (\n'
+            '    "core.domain.statistics.table_chart_domain.build_statistical_chart_reading_matrix",\n'
+            ')',
+            metadata,
+            flags=re.MULTILINE,
+        )
+        metadata = re.sub(
+            r'^TAXONOMY_PATH: Final\[str\] = ".*"$',
+            'TAXONOMY_PATH: Final[str] = "statistics:table_chart"',
+            metadata,
+            flags=re.MULTILINE,
+        )
+    files["metadata.py"] = metadata
+    return draft
 
 
 def run_gencode_phase2_v3_shadow_bridge(
@@ -5666,6 +5762,10 @@ def run_gencode_phase2_v3_shadow_bridge(
     taxonomy_path: str = "configs/gencode_taxonomy/k12_component_taxonomy.yaml",
     dryrun_base_dir: str = "reports/gencode_v3_dryrun",
     constraints: dict[str, object] | None = None,
+    force_regenerate: bool = False,
+    generation_run_id: str | None = None,
+    generation_started_at: str | None = None,
+    old_artifact_hash: str | None = None,
 ) -> dict[str, object]:
     """Run V3 shadow bridge without touching legacy Phase 2 production flows."""
     from core.gencode.services.component_tracker_service import (
@@ -5687,6 +5787,36 @@ def run_gencode_phase2_v3_shadow_bridge(
     assert_safe_sandbox_root(dryrun_path)
 
     extra = dict(constraints or {})
+    component_id_for_run = derive_component_id(textbook_example_id)
+    generation_run_key = str(generation_run_id or "").strip()
+    if not generation_run_key:
+        import uuid as _uuid
+        generation_run_key = _uuid.uuid4().hex
+    generation_started = str(generation_started_at or "").strip() or datetime.now().isoformat(timespec="seconds")
+    component_generate_path = (
+        Path(dryrun_path)
+        / skill_key
+        / "components"
+        / component_id_for_run
+        / "generate.py"
+    )
+    if old_artifact_hash is None and component_generate_path.is_file():
+        try:
+            old_artifact_hash = hashlib.sha256(component_generate_path.read_bytes()).hexdigest()
+        except Exception:
+            old_artifact_hash = None
+    generation_observation: dict[str, object] = {
+        "component_id": component_id_for_run,
+        "force_regenerate": bool(force_regenerate),
+        "cache_hit": False,
+        "skip_reason": None,
+        "generation_run_id": generation_run_key,
+        "generation_started_at": generation_started,
+        "generation_finished_at": None,
+        "old_artifact_hash": old_artifact_hash,
+        "new_artifact_hash": None,
+        "model_generation_invoked": False,
+    }
     try:
         from core.registry.taxonomy_registry import get_fixed_domain_key
 
@@ -5746,6 +5876,7 @@ def run_gencode_phase2_v3_shadow_bridge(
                     skill_id=skill_key,
                     gencode_status="needs_human_review",
                     induced_spec_payload={
+                        **generation_observation,
                         "source_kind": source_kind,
                         "line_type": problem_type_for_gate,
                         "problem_type_id": problem_type_for_gate,
@@ -5777,6 +5908,7 @@ def run_gencode_phase2_v3_shadow_bridge(
         skill_id=skill_key,
         gencode_status="generating",
         induced_spec_payload={
+            **generation_observation,
             "source_kind": source_kind,
             "line_type": extra.get("line_type"),
         },
@@ -5784,6 +5916,7 @@ def run_gencode_phase2_v3_shadow_bridge(
 
     draft = None
     try:
+        generation_observation["model_generation_invoked"] = True
         draft = build_v3_component_draft_from_skill(
             skill_id=skill_key,
             textbook_example_id=textbook_example_id,
@@ -5800,7 +5933,13 @@ def run_gencode_phase2_v3_shadow_bridge(
         if error_code == "COMPONENT_GENERATION_FAILED":
             raise
         component_id = derive_component_id(textbook_example_id)
-        payload = {"source_kind": source_kind, "error_code": error_code, "error": message}
+        generation_observation["generation_finished_at"] = datetime.now().isoformat(timespec="seconds")
+        payload = {
+            **generation_observation,
+            "source_kind": source_kind,
+            "error_code": error_code,
+            "error": message,
+        }
         details = getattr(exc, "details", None)
         if isinstance(details, dict):
             payload.update(details)
@@ -5833,6 +5972,19 @@ def run_gencode_phase2_v3_shadow_bridge(
         source_kind=source_kind,
         textbook_example_id=textbook_example_id,
         skill_id=skill_key,
+    )
+    from core.gencode.services.v3_source_topology_service import enrich_induced_spec_with_source_topology
+    from core.gencode.v3_presentation_inference import fetch_textbook_example_row
+
+    source_row = fetch_textbook_example_row(conn, textbook_example_id) or {"id": textbook_example_id}
+    induced_spec_payload = enrich_induced_spec_with_source_topology(
+        induced_spec_payload,
+        textbook_row=source_row,
+    )
+    draft = _sync_v3_draft_metadata_operation(
+        draft,
+        domain_operation=str(induced_spec_payload.get("domain_operation") or ""),
+        problem_type_id=str(induced_spec_payload.get("problem_type_id") or ""),
     )
 
     # Integrity gate: exec generate.py at seed=42, validate payload
@@ -5895,6 +6047,10 @@ def run_gencode_phase2_v3_shadow_bridge(
 
     component_dir = write_v3_component_to_disk(draft, dryrun_path)
     component_id = derive_component_id(textbook_example_id)
+    try:
+        generation_observation["new_artifact_hash"] = hashlib.sha256((Path(component_dir) / "generate.py").read_bytes()).hexdigest()
+    except Exception:
+        generation_observation["new_artifact_hash"] = None
 
     # Perform runtime compile, spec and smoke test immediately on the generated files
     import py_compile
@@ -5963,10 +6119,47 @@ def run_gencode_phase2_v3_shadow_bridge(
                 _blockers = vr.get("blockers") or ["multi_seed_integrity_check_failed"]
                 raise ValueError("; ".join(str(b) for b in _blockers))
 
+        from core.gencode.validators.source_isomorphism_validator import validate_source_isomorphism
+
+        iso = validate_source_isomorphism(
+            _sample_payload,
+            induced_spec=induced_spec_payload,
+        )
+        if not iso.get("passed", True):
+            _iso_blockers = [f"GENERATION_NOT_SOURCE_ISOMORPHIC:{b}" for b in (iso.get("blockers") or [])]
+            save_tracker_record(
+                conn,
+                textbook_example_id=textbook_example_id,
+                skill_id=skill_key,
+                gencode_status="needs_human_review",
+                induced_spec_payload={
+                    **induced_spec_payload,
+                    "integrity_gate_passed": False,
+                    "integrity_gate_blockers": _iso_blockers,
+                    "integrity_gate_version": "v1",
+                    "classification_status": "needs_human_review",
+                },
+                gencode_error_log="; ".join(_iso_blockers),
+            )
+            raise ValueError("; ".join(_iso_blockers))
+
         # Build induced spec based on successfully compiled/run metadata
         for attr in dir(meta_mod):
             if attr.isupper() and not attr.startswith("_"):
                 induced_spec_payload[attr.lower()] = getattr(meta_mod, attr)
+        from core.gencode.skill_fixed_domain_authority import resolve_fixed_domain_context as _resolve_fixed_domain_context
+        _domain_ctx = _resolve_fixed_domain_context(skill_key)
+        op = str(induced_spec_payload.get("domain_operation") or "")
+        if (
+            induced_spec_payload.get("fixed_domain_key") == "statistics.table_chart"
+            and op
+            and op not in set(_domain_ctx.allowed_operations)
+        ):
+            induced_spec_payload["integrity_gate_passed"] = False
+            induced_spec_payload.setdefault(
+                "integrity_gate_blockers",
+                [f"unsupported_domain_operation:{op}"],
+            )
 
     except Exception as validation_exc:
         _err_msg = str(validation_exc)
@@ -6011,7 +6204,11 @@ def run_gencode_phase2_v3_shadow_bridge(
         textbook_example_id=textbook_example_id,
         skill_id=skill_key,
         gencode_status="verified",
-        induced_spec_payload=induced_spec_payload,
+        induced_spec_payload={
+            **induced_spec_payload,
+            **generation_observation,
+            "generation_finished_at": datetime.now().isoformat(timespec="seconds"),
+        },
     )
     try:
         conn.commit()
@@ -6031,4 +6228,6 @@ def run_gencode_phase2_v3_shadow_bridge(
         "draft_status": draft.get("status"),
         "tracker_record": tracker,
         "dryrun_base_dir": dryrun_path,
+        **generation_observation,
+        "generation_finished_at": tracker.get("updated_at") or generation_observation.get("generation_finished_at"),
     }

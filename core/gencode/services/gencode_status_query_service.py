@@ -509,6 +509,7 @@ def inspect_gencode_files(
     dryrun_base_dir: str = "reports/gencode_v3_dryrun",
     production_base_dir: str = "agent_skills_v3",
     project_root: str | Path | None = None,
+    include_manifest: bool = True,
 ) -> dict[str, object]:
     """Read-only filesystem probes for dryrun and production component artifacts."""
     skill_key = str(skill_id or "").strip()
@@ -529,7 +530,7 @@ def inspect_gencode_files(
         "dryrun_generate_exists": bool(
             dryrun_component_dir and (dryrun_component_dir / "generate.py").is_file()
         ),
-        "dryrun_manifest_exists": (dryrun_root / skill_key / "component_manifest.json").is_file(),
+        "dryrun_manifest_exists": (dryrun_root / skill_key / "component_manifest.json").is_file() if include_manifest else False,
         "production_component_exists": bool(
             production_component_dir and production_component_dir.is_dir()
         ),
@@ -538,7 +539,7 @@ def inspect_gencode_files(
         ),
         "production_manifest_exists": (
             production_root / skill_key / "component_manifest.json"
-        ).is_file(),
+        ).is_file() if include_manifest else False,
     }
 
 
@@ -553,6 +554,17 @@ def inspect_skill_production_files(
     root = Path(project_root) if project_root is not None and str(project_root).strip() else PROJECT_ROOT
     wrapper_path = root / "skills" / f"{skill_key}.py"
     v3_skill_dir = _resolve_base_path(production_base_dir, project_root) / skill_key
+    
+    wrapper_exists = wrapper_path.is_file()
+    v3_skill_exists = v3_skill_dir.is_dir()
+    if not v3_skill_exists:
+        return {
+            "production_wrapper_exists": wrapper_exists,
+            "v3_package_exists": False,
+            "generator_specs_count": 0,
+            "production_component_count": 0,
+        }
+
     components_dir = v3_skill_dir / "components"
     generator_specs_count = 0
     production_component_count = 0
@@ -763,6 +775,7 @@ def build_admin_skill_gencode_status_view(
     project_root: str | Path | None = None,
     dryrun_base_dir: str = "reports/gencode_v3_dryrun",
     production_base_dir: str = "agent_skills_v3",
+    audit_variation: bool = False,
 ) -> dict[str, object]:
     from core.gencode.services.v3_skill_coverage_service import (
         build_coverage_warnings,
@@ -911,7 +924,7 @@ def build_admin_skill_gencode_status_view(
         teacher_status = _teacher_status_payload("not_generated")
 
     variation_report = {}
-    if verified_count > 0:
+    if audit_variation and verified_count > 0:
         from core.gencode.services.v3_variation_audit_service import audit_skill_variation
         try:
             variation_report = audit_skill_variation(
@@ -963,6 +976,253 @@ def build_admin_skill_gencode_status_view(
     }
 
 
+def _fetch_batch_tracker_rows_for_skills(
+    conn: sqlite3.Connection,
+    skill_ids: list[str],
+) -> dict[str, list[dict[str, object]]]:
+    keys = [str(skill_id or "").strip() for skill_id in skill_ids if str(skill_id or "").strip()]
+    if not keys or not _tracker_table_exists(conn):
+        return {key: [] for key in keys}
+    placeholders = ",".join("?" for _ in keys)
+    rows = conn.execute(
+        f"""
+        SELECT skill_id, textbook_example_id, component_id, gencode_status,
+               induced_spec_payload, gencode_error_log, updated_at
+        FROM gencode_component_tracker
+        WHERE skill_id IN ({placeholders})
+        ORDER BY skill_id ASC, textbook_example_id ASC, component_id ASC
+        """,
+        keys,
+    ).fetchall()
+    grouped: dict[str, list[dict[str, object]]] = {key: [] for key in keys}
+    for row in rows:
+        skill_key = str(_row_value(row, "skill_id", 0))
+        payload_raw = _row_value(row, "induced_spec_payload", 4)
+        payload_summary = _extract_payload_summary(payload_raw)
+        grouped.setdefault(skill_key, []).append(
+            {
+                "textbook_example_id": int(_row_value(row, "textbook_example_id", 1)),
+                "component_id": str(_row_value(row, "component_id", 2)),
+                "status": str(_row_value(row, "gencode_status", 3)),
+                **payload_summary,
+                "induced_spec_payload": payload_raw,
+                "has_payload": payload_raw is not None and str(payload_raw).strip() != "",
+                "error_log": _row_value(row, "gencode_error_log", 5),
+                "updated_at": _row_value(row, "updated_at", 6),
+            }
+        )
+    return grouped
+
+
+def _batch_inspect_skill_production_files(
+    skill_ids: list[str],
+    *,
+    production_base_dir: str = "agent_skills_v3",
+    project_root: str | Path | None = None,
+) -> dict[str, dict[str, object]]:
+    keys = [str(skill_id or "").strip() for skill_id in skill_ids if str(skill_id or "").strip()]
+    if not keys:
+        return {}
+    root = Path(project_root) if project_root is not None and str(project_root).strip() else PROJECT_ROOT
+    skills_dir = root / "skills"
+    production_root = _resolve_base_path(production_base_dir, project_root)
+    wrapper_ids = (
+        {path.stem for path in skills_dir.glob("*.py")}
+        if skills_dir.is_dir()
+        else set()
+    )
+    result: dict[str, dict[str, object]] = {}
+    for skill_key in keys:
+        v3_skill_dir = production_root / skill_key
+        init_path = v3_skill_dir / "__init__.py"
+        components_dir = v3_skill_dir / "components"
+        production_component_count = 0
+        if components_dir.is_dir():
+            production_component_count = sum(
+                1
+                for component_dir in components_dir.iterdir()
+                if component_dir.is_dir() and (component_dir / "generate.py").is_file()
+            )
+        result[skill_key] = {
+            "production_wrapper_exists": skill_key in wrapper_ids,
+            "v3_package_exists": v3_skill_dir.is_dir() and init_path.is_file(),
+            "generator_specs_count": production_component_count,
+            "production_component_count": production_component_count,
+        }
+    return result
+
+
+def _lite_published_component_count(
+    skill_key: str,
+    tracker_rows: list[dict[str, object]],
+    production_root: Path,
+) -> int:
+    published = 0
+    for row in tracker_rows:
+        if str(row.get("status")) != "verified":
+            continue
+        component_id = str(row.get("component_id") or "").strip()
+        if not component_id:
+            continue
+        if (production_root / skill_key / "components" / component_id / "generate.py").is_file():
+            published += 1
+    return published
+
+
+def _resolve_skill_level_teacher_status(
+    *,
+    total_examples: int,
+    verified_count: int,
+    failed_count: int,
+    published_count: int,
+    generated_not_packaged_count: int,
+    tracker_rows: list[dict[str, object]],
+    prod_info: dict[str, object],
+    file_status: dict[str, object],
+) -> dict[str, object]:
+    partially_published_payload = {
+        "status_key": "partially_published",
+        "label": f"部分上線 ({published_count}/{total_examples})",
+        "badge_class": "teacher-v3-partially-published",
+        "icon": "🟡",
+        "is_clickable": True,
+    }
+    if published_count == total_examples and total_examples > 0 and generated_not_packaged_count == 0:
+        teacher_status = _teacher_status_payload("published")
+        teacher_status["label"] = "全部上線"
+    elif published_count > 0:
+        teacher_status = partially_published_payload
+    elif failed_count > 0 and verified_count == 0:
+        teacher_status = _teacher_status_payload("failed")
+    elif verified_count > 0:
+        teacher_status = _teacher_status_payload("generated_not_packaged")
+    elif bool(file_status.get("dryrun_generate_exists") or file_status.get("production_generate_exists")):
+        teacher_status = _teacher_status_payload("generated_not_packaged")
+    elif any(str(row.get("status")) in {"generating", "pending"} for row in tracker_rows):
+        teacher_status = _teacher_status_payload("generating")
+    elif tracker_rows:
+        teacher_status = _teacher_status_payload("generation_incomplete")
+    else:
+        teacher_status = _teacher_status_payload("not_generated")
+    if not prod_info.get("v3_package_exists") and teacher_status.get("status_key") == "published":
+        teacher_status = _teacher_status_payload("generated_not_packaged")
+    return teacher_status
+
+
+def _build_skill_list_gencode_status_view(
+    *,
+    skill_id: str,
+    coverage: dict[str, object],
+    tracker_rows: list[dict[str, object]],
+    prod_info: dict[str, object],
+    production_root: Path,
+    dryrun_root: Path,
+    project_root: str | Path | None,
+    dryrun_base_dir: str,
+    production_base_dir: str,
+) -> dict[str, object]:
+    from core.gencode.services.v3_skill_coverage_service import build_coverage_warnings
+
+    total_examples = int(coverage.get("total_examples") or 0)
+    verified_count = int(coverage.get("verified_count") or 0)
+    failed_count = int(coverage.get("failed_count") or 0)
+    missing_tracker_ids = [
+        row["textbook_example_id"]
+        for row in coverage.get("examples", [])
+        if isinstance(row, dict) and row.get("status") == "missing_tracker"
+    ]
+    published_count = _lite_published_component_count(skill_id, tracker_rows, production_root)
+    generated_not_packaged_count = max(0, verified_count - published_count)
+    coverage_warnings = build_coverage_warnings(coverage)
+
+    if not tracker_rows:
+        status = "not_created"
+        component_id = None
+        has_payload = False
+        error_log = None
+        updated_at = None
+        component_count = 0
+        file_status = inspect_gencode_files(
+            skill_id=skill_id,
+            component_id=None,
+            dryrun_base_dir=dryrun_base_dir,
+            production_base_dir=production_base_dir,
+            project_root=project_root,
+            include_manifest=False,
+        )
+    else:
+        primary = max(tracker_rows, key=lambda row: _STATUS_PRIORITY.get(str(row["status"]), 0))
+        status = str(primary["status"])
+        component_id = ", ".join(str(row["component_id"]) for row in tracker_rows)
+        has_payload = any(bool(row.get("has_payload")) for row in tracker_rows)
+        error_logs = [str(row.get("error_log")) for row in tracker_rows if row.get("error_log")]
+        error_log = error_logs[0] if error_logs else None
+        updated_values = [str(row.get("updated_at")) for row in tracker_rows if row.get("updated_at")]
+        updated_at = max(updated_values) if updated_values else None
+        component_count = len(tracker_rows)
+        file_status = {
+            "dryrun_component_exists": False,
+            "dryrun_generate_exists": False,
+            "dryrun_manifest_exists": False,
+            "production_component_exists": published_count > 0,
+            "production_generate_exists": published_count > 0,
+            "production_manifest_exists": prod_info.get("v3_package_exists", False),
+        }
+        for row in tracker_rows:
+            component_key = str(row.get("component_id") or "").strip()
+            if not component_key:
+                continue
+            if (dryrun_root / skill_id / "components" / component_key / "generate.py").is_file():
+                file_status["dryrun_component_exists"] = True
+                file_status["dryrun_generate_exists"] = True
+            if (production_root / skill_id / "components" / component_key / "generate.py").is_file():
+                file_status["production_component_exists"] = True
+                file_status["production_generate_exists"] = True
+
+    teacher_status = _resolve_skill_level_teacher_status(
+        total_examples=total_examples,
+        verified_count=verified_count,
+        failed_count=failed_count,
+        published_count=published_count,
+        generated_not_packaged_count=generated_not_packaged_count,
+        tracker_rows=tracker_rows,
+        prod_info=prod_info,
+        file_status=file_status,
+    )
+
+    return {
+        "status": status,
+        "status_label": format_gencode_status_label(status),
+        "component_id": component_id,
+        "component_count": component_count,
+        "has_payload": has_payload,
+        "has_payload_label": "有" if has_payload else "無",
+        "error_log": error_log,
+        "updated_at": updated_at,
+        "coverage": coverage,
+        "coverage_summary": (
+            f"V3: {coverage.get('verified_count', 0)}/{coverage.get('total_examples', 0)} verified"
+        ),
+        "total_examples": total_examples,
+        "verified_count": verified_count,
+        "available_count": verified_count,
+        "published_count": published_count,
+        "generated_not_packaged_count": generated_not_packaged_count,
+        "failed_count": failed_count,
+        "unsupported_count": int(coverage.get("unsupported_count") or 0),
+        "missing_tracker_count": len(missing_tracker_ids),
+        "coverage_missing_ids": missing_tracker_ids,
+        "coverage_warnings": coverage_warnings,
+        "publish_ready": bool(coverage.get("publish_ready")),
+        "publish_eligible": bool(coverage.get("publish_ready")),
+        "teacher_status": teacher_status,
+        **file_status,
+        **prod_info,
+        "dryrun_generate_label": _bool_label(bool(file_status["dryrun_generate_exists"])),
+        "production_generate_label": _bool_label(bool(file_status["production_generate_exists"])),
+    }
+
+
 def build_admin_skills_gencode_status_map(
     conn: sqlite3.Connection,
     skill_ids: list[str],
@@ -970,17 +1230,68 @@ def build_admin_skills_gencode_status_map(
     project_root: str | Path | None = None,
     dryrun_base_dir: str = "reports/gencode_v3_dryrun",
     production_base_dir: str = "agent_skills_v3",
+    audit_variation: bool = False,
 ) -> dict[str, dict[str, object]]:
+    keys = [str(skill_id or "").strip() for skill_id in skill_ids if str(skill_id or "").strip()]
+    if not keys:
+        return {}
+    if audit_variation:
+        return {
+            skill_key: build_admin_skill_gencode_status_view(
+                conn,
+                skill_id=skill_key,
+                project_root=project_root,
+                dryrun_base_dir=dryrun_base_dir,
+                production_base_dir=production_base_dir,
+                audit_variation=True,
+            )
+            for skill_key in keys
+        }
+
+    from core.gencode.services.v3_skill_coverage_service import get_v3_skills_component_coverage_batch
+
+    root = Path(project_root) if project_root is not None and str(project_root).strip() else PROJECT_ROOT
+    dryrun_root = _resolve_base_path(dryrun_base_dir, project_root)
+    production_root = _resolve_base_path(production_base_dir, project_root)
+    coverage_map = get_v3_skills_component_coverage_batch(conn, keys)
+    tracker_map = _fetch_batch_tracker_rows_for_skills(conn, keys)
+    prod_map = _batch_inspect_skill_production_files(
+        keys,
+        production_base_dir=production_base_dir,
+        project_root=project_root,
+    )
     return {
-        str(skill_id): build_admin_skill_gencode_status_view(
-            conn,
-            skill_id=str(skill_id),
+        skill_key: _build_skill_list_gencode_status_view(
+            skill_id=skill_key,
+            coverage=coverage_map.get(
+                skill_key,
+                {
+                    "skill_id": skill_key,
+                    "total_examples": 0,
+                    "verified_count": 0,
+                    "failed_count": 0,
+                    "unsupported_count": 0,
+                    "publish_ready": False,
+                    "examples": [],
+                },
+            ),
+            tracker_rows=tracker_map.get(skill_key, []),
+            prod_info=prod_map.get(
+                skill_key,
+                {
+                    "production_wrapper_exists": False,
+                    "v3_package_exists": False,
+                    "generator_specs_count": 0,
+                    "production_component_count": 0,
+                },
+            ),
+            production_root=production_root,
+            dryrun_root=dryrun_root,
             project_root=project_root,
             dryrun_base_dir=dryrun_base_dir,
             production_base_dir=production_base_dir,
         )
-        for skill_id in skill_ids
-        if str(skill_id or "").strip()
+        for skill_key in keys
     }
 
 

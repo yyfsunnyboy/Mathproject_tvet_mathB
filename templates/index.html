@@ -1786,7 +1786,11 @@
 
                         <button id="analyze-handwriting-button">AI檢查</button>
                     </div>
-                </div><canvas id="handwriting-canvas"></canvas>
+                </div>
+                <div class="canvas-wrap" style="position: relative; flex: 1 1 auto; width: 100%; height: 100%; min-height: 240px; overflow: hidden; border: 1px solid #ced4da; border-radius: 0 0 var(--r-lg) var(--r-lg) !important;">
+                    <canvas id="drawing-background-canvas" style="position: absolute !important; inset: 0 !important; width: 100% !important; height: 100% !important; z-index: 1 !important; pointer-events: none !important;"></canvas>
+                    <canvas id="handwriting-canvas" style="position: absolute !important; inset: 0 !important; width: 100% !important; height: 100% !important; z-index: 2 !important; display: block !important; touch-action: none !important; user-select: none !important;"></canvas>
+                </div>
             </div>
         </div>
         <!-- 聊天區 -->
@@ -2287,6 +2291,8 @@
             levelIndicator = document.getElementById('level-indicator');
             canvas = document.getElementById('handwriting-canvas');
             ctx = canvas.getContext('2d');
+            backgroundCanvas = document.getElementById('drawing-background-canvas');
+            backgroundCtx = backgroundCanvas ? backgroundCanvas.getContext('2d') : null;
             analyzeBtn = document.getElementById('analyze-handwriting-button');
 
             // 檢查必要元素
@@ -2699,6 +2705,34 @@
         }
 
         // [1:1 精準座標]
+        let currentGeometry = { cssWidth: 0, cssHeight: 0, pixelWidth: 0, pixelHeight: 0, dpr: 1 };
+
+        function computeCanvasGeometry(container) {
+            const rect = container.getBoundingClientRect();
+            const dpr = window.devicePixelRatio || 1;
+            const cssWidth = Math.max(1, Math.floor(rect.width));
+            const cssHeight = Math.max(1, Math.floor(rect.height));
+
+            return {
+                cssWidth: cssWidth,
+                cssHeight: cssHeight,
+                pixelWidth: Math.round(cssWidth * dpr),
+                pixelHeight: Math.round(cssHeight * dpr),
+                dpr: dpr
+            };
+        }
+
+        function applyCanvasGeometry(canvasEl, geometry) {
+            canvasEl.style.setProperty('width', `${geometry.cssWidth}px`, 'important');
+            canvasEl.style.setProperty('height', `${geometry.cssHeight}px`, 'important');
+            canvasEl.width = geometry.pixelWidth;
+            canvasEl.height = geometry.pixelHeight;
+
+            const ctxEl = canvasEl.getContext("2d");
+            ctxEl.setTransform(geometry.dpr, 0, 0, geometry.dpr, 0, 0);
+            return ctxEl;
+        }
+
         function getMousePos(canvas, evt) {
             const rect = canvas.getBoundingClientRect();
 
@@ -2725,8 +2759,8 @@
         // 所有座標均以 CSS px 為單位；DPR 縮放由 resizeCanvas 的 setTransform 統一處理
         function calculateQuestionImageGeometry() {
             if (!currentQuestionImage || !canvas) return;
-            const cw = canvas.clientWidth || canvas.width;
-            const ch = canvas.clientHeight || canvas.height;
+            const cw = currentGeometry.cssWidth || canvas.clientWidth || 300;
+            const ch = currentGeometry.cssHeight || canvas.clientHeight || 150;
             if (cw <= 0 || ch <= 0) return;
 
             const availableWidth  = cw * 0.82;
@@ -2750,13 +2784,13 @@
 
         // === [HiDPI Fix] Step-2: 繪製背景圖（須先呼叫 calculateQuestionImageGeometry）===
         function drawQuestionImageBackground() {
-            if (!currentQuestionImage || !ctx || imgDestW <= 0 || imgDestH <= 0) return;
-            ctx.drawImage(currentQuestionImage, imgDestX, imgDestY, imgDestW, imgDestH);
+            if (!currentQuestionImage || !backgroundCtx || imgDestW <= 0 || imgDestH <= 0) return;
+            backgroundCtx.drawImage(currentQuestionImage, imgDestX, imgDestY, imgDestW, imgDestH);
         }
 
         // [V9.6 新增] 向後相容 wrapper：計算 geometry 後立即繪製背景
         function drawQuestionImage() {
-            if (!currentQuestionImage || !ctx || !canvas) return;
+            if (!currentQuestionImage || !backgroundCtx || !canvas) return;
             calculateQuestionImageGeometry();
             drawQuestionImageBackground();
         }
@@ -2796,8 +2830,12 @@
             const cw = canvas.clientWidth || canvas.width;
             const ch = canvas.clientHeight || canvas.height;
             ctx.clearRect(0, 0, cw, ch);
-            ctx.fillStyle = 'white';
-            ctx.fillRect(0, 0, cw, ch);
+            if (backgroundCtx) {
+                backgroundCtx.setTransform(1, 0, 0, 1, 0, 0);
+                backgroundCtx.clearRect(0, 0, cw, ch);
+                backgroundCtx.fillStyle = 'white';
+                backgroundCtx.fillRect(0, 0, cw, ch);
+            }
             blankCanvas = canvas.toDataURL();
             saveState();
             updateUndoRedoButtons();
@@ -2811,60 +2849,65 @@
         function resizeCanvas() {
             if (!canvas || !ctx) return;
 
-            const rect = canvas.getBoundingClientRect();
-            const displayWidth  = Math.round(rect.width);
-            const displayHeight = Math.round(rect.height);
-            if (displayWidth <= 0 || displayHeight <= 0) return;
+            const container = canvas.parentElement;
+            if (!container) return;
 
-            const dpr   = window.devicePixelRatio || 1;
-            const physW = Math.round(displayWidth  * dpr);
-            const physH = Math.round(displayHeight * dpr);
+            const geometry = computeCanvasGeometry(container);
 
             // 只有在 CSS 尺寸或物理像素尺寸真正改變時才重設畫布
-            if (displayWidth  === lastCanvasDisplayWidth &&
-                displayHeight === lastCanvasDisplayHeight &&
-                canvas.width  === physW &&
-                canvas.height === physH) {
+            if (geometry.cssWidth === lastCanvasDisplayWidth &&
+                geometry.cssHeight === lastCanvasDisplayHeight &&
+                canvas.width === geometry.pixelWidth &&
+                canvas.height === geometry.pixelHeight) {
                 return;
             }
 
             const previousSnapshot = undoStack.length > 0 ? undoStack[undoStack.length - 1] : null;
 
-            lastCanvasDisplayWidth  = displayWidth;
-            lastCanvasDisplayHeight = displayHeight;
+            lastCanvasDisplayWidth = geometry.cssWidth;
+            lastCanvasDisplayHeight = geometry.cssHeight;
+            currentGeometry = geometry;
 
-            // 設定物理像素解析度（4K/HiDPI 清晰輸出）
-            canvas.width  = physW;
-            canvas.height = physH;
-            // CSS 尺寸維持 CSS px（視覺大小不變）
-            canvas.style.width  = displayWidth  + 'px';
-            canvas.style.height = displayHeight + 'px';
-            canvas.style.touchAction = 'none';
+            applyCanvasGeometry(canvas, geometry);
 
-            // ctx 座標系統對齊 CSS px：所有繪圖指令皆以 CSS px 為單位，DPR 自動縮放
-            ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-            ctx.clearRect(0, 0, displayWidth, displayHeight);
-            ctx.fillStyle = 'white';
-            ctx.fillRect(0, 0, displayWidth, displayHeight);
+            if (backgroundCanvas) {
+                applyCanvasGeometry(backgroundCanvas, geometry);
+            }
+
+            // 清理與重新設定狀態
+            ctx.clearRect(0, 0, geometry.cssWidth, geometry.cssHeight);
             setPenStyle();
+
+            if (backgroundCtx) {
+                backgroundCtx.clearRect(0, 0, geometry.cssWidth, geometry.cssHeight);
+                backgroundCtx.fillStyle = 'white';
+                backgroundCtx.fillRect(0, 0, geometry.cssWidth, geometry.cssHeight);
+            }
 
             // [關鍵] 先更新 imgDest* geometry，橡皮擦補圖位置在 resize 後立即正確
             if (currentQuestionImage) {
                 calculateQuestionImageGeometry();
             }
 
+            console.log("[CANVAS ALIGN DEBUG]", {
+                bgRect: backgroundCanvas ? backgroundCanvas.getBoundingClientRect() : null,
+                drawRect: canvas.getBoundingClientRect(),
+                bgSize: backgroundCanvas ? [backgroundCanvas.width, backgroundCanvas.height] : null,
+                drawSize: [canvas.width, canvas.height],
+                dpr: geometry.dpr
+            });
+
             if (previousSnapshot) {
-                // 有快照：以 CSS px 尺寸還原（快照已含背景與筆跡，不重畫背景以免覆蓋筆跡）
+                if (currentQuestionImage) {
+                    drawQuestionImageBackground();
+                }
                 const img = new Image();
                 img.onload = () => {
                     const dpr2 = window.devicePixelRatio || 1;
                     ctx.setTransform(dpr2, 0, 0, dpr2, 0, 0);
-                    ctx.clearRect(0, 0, displayWidth, displayHeight);
-                    ctx.fillStyle = 'white';
-                    ctx.fillRect(0, 0, displayWidth, displayHeight);
+                    ctx.clearRect(0, 0, geometry.cssWidth, geometry.cssHeight);
                     // 快照以 CSS px 座標還原，transform 自動縮放至物理像素
-                    ctx.drawImage(img, 0, 0, displayWidth, displayHeight);
-                    // imgDest* 已在同步段更新，橡皮擦可立即正確使用
+                    ctx.drawImage(img, 0, 0, geometry.cssWidth, geometry.cssHeight);
                 };
                 img.src = previousSnapshot;
             } else if (currentQuestionImage) {
@@ -2896,34 +2939,8 @@
         function draw(e) {
             if (!isDrawing || isProcessing) return;
             const pos = getMousePos(canvas, e);
-
-            if (isErasing) {
-                // === [V9.7 智慧橡皮擦邏輯] ===
-                // 使用圓形蓋章的方式進行擦除，並還原背景圖
-                const eraserRadius = 15; // 橡皮擦半徑 (對應 lineWidth 30)
-
-                ctx.save(); // 儲存畫布狀態
-                ctx.beginPath();
-                ctx.arc(pos.x, pos.y, eraserRadius, 0, Math.PI * 2);
-                ctx.clip(); // 【關鍵】限制接下來的繪圖只發生在這個圓圈內
-
-                // 1. 先塗白 (清除筆跡)
-                ctx.fillStyle = 'white';
-                ctx.fill();
-
-                // 2. 如果這裡原本有圖片，把圖片的這一塊「補」回去
-                if (currentQuestionImage) {
-                    // 只會畫出圓圈範圍內的圖片，產生「穿透」效果
-                    ctx.drawImage(currentQuestionImage, imgDestX, imgDestY, imgDestW, imgDestH);
-                }
-
-                ctx.restore(); // 還原畫布狀態 (取消 clip)
-
-            } else {
-                // === 普通畫筆邏輯 (維持不變) ===
-                ctx.lineTo(pos.x, pos.y);
-                ctx.stroke();
-            }
+            ctx.lineTo(pos.x, pos.y);
+            ctx.stroke();
         }
 
         function stopDraw() {
@@ -2934,13 +2951,12 @@
         }
 
         function setPenStyle() {
-            // 設定線條寬度 (橡皮擦固定較粗)
-            ctx.lineWidth = isErasing ? 30 : currentWidth; // Adjust lineWidth to match eraser radius * 2
-            ctx.strokeStyle = isErasing ? 'white' : currentColor;
+            ctx.lineWidth = isErasing ? 30 : currentWidth;
+            ctx.strokeStyle = currentColor;
             ctx.lineCap = 'round';
-
-            // [V9.7 修改] 強制不透明，確保擦除乾淨且圖片還原清晰
+            ctx.lineJoin = 'round';
             ctx.globalAlpha = 1.0;
+            ctx.globalCompositeOperation = isErasing ? 'destination-out' : 'source-over';
         }
 
         // === 工具 ===
@@ -3467,14 +3483,200 @@
             };
         }
 
+        function buildCompositeCanvas() {
+            const composite = document.createElement("canvas");
+            composite.width = canvas.width;
+            composite.height = canvas.height;
+            const cctx = composite.getContext("2d");
+            cctx.clearRect(0, 0, composite.width, composite.height);
+            if (backgroundCanvas) {
+                cctx.drawImage(backgroundCanvas, 0, 0, composite.width, composite.height);
+            }
+            cctx.drawImage(canvas, 0, 0, composite.width, composite.height);
+            return composite;
+        }
+
+        function isDrawingQuestion(q) {
+            const cq = q || currentQuestion || {};
+            const contract = cq.answer_contract || {};
+            return (
+                contract.checker_key === 'free_response_drawing_checker' ||
+                contract.checker === 'free_response_drawing_checker' ||
+                contract.answer_type === 'drawing' ||
+                contract.answer_shape === 'drawing' ||
+                Boolean(q.expected_drawing_spec)
+            );
+        }
+
+        function resolveDrawingUiContract(question) {
+            const contract = question?.answer_contract || {};
+            const ui = contract.ui_contract || {};
+            const drawing = isDrawingQuestion(question) || ui.response_mode === "drawing";
+            return {
+                responseMode: ui.response_mode || (drawing ? "drawing" : "text"),
+                textInputEnabled: drawing ? (ui.text_input_enabled === true) : (ui.text_input_enabled !== false),
+                normalSubmitEnabled: drawing ? (ui.normal_submit_enabled === true) : (ui.normal_submit_enabled !== false),
+                aiCheckRequired: drawing ? (ui.ai_check_required !== false) : (ui.ai_check_required === true),
+                canvasRequired: drawing ? (ui.canvas_required !== false) : (ui.canvas_required === true),
+                allowImageUpload: ui.allow_image_upload !== false,
+                allowTextAnswer: ui.allow_text_answer === true,
+            };
+        }
+
+        function applyDrawingUiContract() {
+            if (!answerInput || !submitBtn || !analyzeBtn) return;
+            const question = currentQuestion;
+            const uiContract = resolveDrawingUiContract(question);
+            const drawing = isDrawingQuestion(question) || uiContract.responseMode === "drawing";
+
+            answerInput.disabled = !uiContract.textInputEnabled;
+            if (!uiContract.textInputEnabled) {
+                answerInput.setAttribute("aria-disabled", "true");
+                answerInput.placeholder = "此題請在畫布作答，並按 AI 檢查送出。";
+            } else {
+                answerInput.removeAttribute("aria-disabled");
+                answerInput.placeholder = "輸入答案...";
+            }
+
+            submitBtn.disabled = !uiContract.normalSubmitEnabled;
+            if (!uiContract.normalSubmitEnabled) {
+                submitBtn.setAttribute("aria-disabled", "true");
+            } else {
+                submitBtn.removeAttribute("aria-disabled");
+            }
+
+            if (!uiContract.aiCheckRequired) {
+                analyzeBtn.style.display = 'none';
+                analyzeBtn.disabled = true;
+            } else {
+                analyzeBtn.style.display = '';
+                analyzeBtn.disabled = false;
+            }
+
+            const scratchpad = document.getElementById('scratchpad-container');
+            if (scratchpad) {
+                if (drawing || uiContract.canvasRequired) {
+                    scratchpad.style.display = '';
+                } else {
+                    scratchpad.style.display = 'none';
+                }
+            }
+        }
+
+        function buildDrawingCheckAnswerPayload() {
+            const cq = currentQuestion || {};
+            const compCanvas = buildCompositeCanvas();
+            return {
+                skill_id: cq.skill_id || getSkillId() || '',
+                question_uid: cq.question_uid || '',
+                problem_type_id: cq.problem_type_id || window.currentProblemTypeId || '',
+                answer: "[drawing]",
+                composite_image_data_url: compCanvas.toDataURL("image/png"),
+                student_strokes_image_data_url: canvas.toDataURL("image/png"),
+                background_image_data_url: backgroundCanvas ? backgroundCanvas.toDataURL("image/png") : "",
+                image_data_url: compCanvas.toDataURL("image/png"),
+                checker_key: cq.checker_key || cq.checker || (cq.answer_contract && cq.answer_contract.checker) || "free_response_drawing_checker",
+            };
+        }
+
+        function submitDrawingAnswerFromCanvas(triggerSource) {
+            if (isProcessing) return;
+            isProcessing = true;
+            if (submitBtn) submitBtn.disabled = true;
+            if (analyzeBtn) analyzeBtn.disabled = true;
+
+            const submitEpoch = practiceQuestionEpoch;
+            const submitQuestionUid = currentQuestion && currentQuestion.question_uid ? String(currentQuestion.question_uid) : '';
+
+            // 顯示動態載入訊息
+            let dots = 0;
+            stopPracticeCheckLoading();
+            resultDisplay.className = '';
+            resultDisplay.style.background = '#fff3cd';
+            resultDisplay.style.color = '#856404';
+            resultDisplay.style.border = '1px solid #ffeaa7';
+            practiceCheckLoadingInterval = setInterval(() => {
+                dots = (dots + 1) % 4;
+                const dotString = '.'.repeat(dots);
+                resultDisplay.textContent = `正在檢查作圖${dotString}`;
+            }, 300);
+
+            const payload = buildDrawingCheckAnswerPayload();
+
+            fetch('/check_answer', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            })
+            .then(r => r.json())
+            .then(data => {
+                stopPracticeCheckLoading();
+                if (submitBtn) submitBtn.disabled = false;
+                if (analyzeBtn) analyzeBtn.disabled = false;
+                isProcessing = false;
+
+                if (shouldIgnoreCheckAnswerResponse(data, submitEpoch, submitQuestionUid)) {
+                    return;
+                }
+
+                if (data.duplicate_submission) {
+                    resultDisplay.textContent = data.message || data.result || '此題已批改過。';
+                    resultDisplay.className = data.correct ? 'correct' : 'incorrect';
+                    return;
+                }
+
+                const isCorrectVal = data.is_correct !== undefined ? data.is_correct : data.correct;
+
+                if (isCorrectVal === true) {
+                    resultDisplay.textContent = data.result || '正確！';
+                    resultDisplay.className = 'correct';
+                    updateStreak(true);
+                    consecutiveWrongs = 0;
+                    handleCorrectAnswer();
+                } else if (isCorrectVal === false) {
+                    resultDisplay.textContent = data.result || '錯誤';
+                    resultDisplay.className = 'incorrect';
+                    updateStreak(false);
+                    consecutiveWrongs++;
+                    if (consecutiveWrongs >= 3 && PREREQ_SKILLS && PREREQ_SKILLS.length > 0) {
+                        showPrereqSuggestionModal();
+                        consecutiveWrongs = 0;
+                    }
+                } else {
+                    // isCorrectVal === null (None / System Error / Blank Detection)
+                    resultDisplay.textContent = data.result || data.message || '無法判斷，請重新作答。';
+                    resultDisplay.className = 'incorrect';
+                }
+                applyDrawingUiContract();
+            })
+            .catch(err => {
+                stopPracticeCheckLoading();
+                if (submitBtn) submitBtn.disabled = false;
+                if (analyzeBtn) analyzeBtn.disabled = false;
+                isProcessing = false;
+                resultDisplay.textContent = '批改失敗，請稍後再試。';
+                resultDisplay.className = 'incorrect';
+            });
+        }
+
         function buildCheckAnswerPayload(userAnswer) {
             const cq = currentQuestion || {};
-            return {
+            const payload = {
                 skill_id: cq.skill_id || getSkillId() || '',
                 question_uid: cq.question_uid || '',
                 problem_type_id: cq.problem_type_id || window.currentProblemTypeId || '',
                 answer: userAnswer,
             };
+            if (isDrawingQuestion(cq)) {
+                payload.answer = "[drawing]";
+                const compCanvas = buildCompositeCanvas();
+                payload.composite_image_data_url = compCanvas.toDataURL("image/png");
+                payload.student_strokes_image_data_url = canvas.toDataURL("image/png");
+                payload.background_image_data_url = backgroundCanvas ? backgroundCanvas.toDataURL("image/png") : "";
+                payload.image_data_url = payload.composite_image_data_url;
+                payload.checker_key = cq.checker_key || cq.checker || (cq.answer_contract && cq.answer_contract.checker) || "free_response_drawing_checker";
+            }
+            return payload;
         }
 
         function shouldIgnoreCheckAnswerResponse(data, submitEpoch, submitQuestionUid) {
@@ -3609,6 +3811,7 @@
                     // 1. 顯示題目文字（完整覆寫）
                     const questionMainText = renderQuestion(data);
                     isInitialQuestionLoaded = true;
+                    applyDrawingUiContract();
 
                     // [V9.5 Debug] 印出後端回傳的所有資料，讓我們看看有沒有圖片
                     console.log("🔍 Backend Data Received:", data);
@@ -3618,9 +3821,11 @@
                     // 1. 先重置畫布與圖片變數
                     currentQuestionImage = null;
                     imgDestX = 0; imgDestY = 0; imgDestW = 0; imgDestH = 0;
-                    // [HiDPI Fix] 以 CSS px 清除（ctx transform 已對齊 CSS px，不可用 canvas.width 物理像素）
-                    ctx.fillStyle = 'white';
-                    ctx.fillRect(0, 0, canvas.clientWidth || canvas.width, canvas.clientHeight || canvas.height);
+                    ctx.clearRect(0, 0, canvas.clientWidth || canvas.width, canvas.clientHeight || canvas.height);
+                    if (backgroundCtx) {
+                        backgroundCtx.fillStyle = 'white';
+                        backgroundCtx.fillRect(0, 0, canvas.clientWidth || canvas.width, canvas.clientHeight || canvas.height);
+                    }
                     undoStack = [];
                     redoStack = [];
 
@@ -3959,6 +4164,11 @@
                 }
 
                 if (isProcessing) return;
+                const cq = currentQuestion || {};
+                if (isDrawingQuestion(cq)) {
+                    submitDrawingAnswerFromCanvas('submit-button');
+                    return;
+                }
                 const submitEpoch = practiceQuestionEpoch;
                 const submitQuestionUid = currentQuestion && currentQuestion.question_uid
                     ? String(currentQuestion.question_uid)
@@ -4216,6 +4426,24 @@
 
             analyzeBtn.onclick = () => {
                 if (isProcessing) return;
+                
+                const cq = currentQuestion || {};
+                const contract = cq.answer_contract || {};
+                const ui = contract.ui_contract || {};
+
+                if (isDrawingQuestion(cq)) {
+                    submitDrawingAnswerFromCanvas('ai-check-button');
+                    return;
+                }
+
+                if (ui.ai_check_required !== true) {
+                    console.warn(
+                        "[PRACTICE UI] AI check blocked by ui_contract",
+                        cq.problem_type_id
+                    );
+                    return;
+                }
+
                 isProcessing = true;
                 analyzeBtn.textContent = '分析中...';
                 analyzeBtn.disabled = true;
@@ -4229,7 +4457,6 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ 
                         image_data_url: img,
-                        expected_answer: window.currentExpectedAnswer || "",
                         question_text: questionText.innerText || ""
                     })
                 })
@@ -5552,7 +5779,7 @@ span[style*="font-size: 0.8em"][style*="color: #666"] {
 #clear-canvas-button:hover { background: #f9e0e0 !important; }
 
 /* Canvas 本體 — 保持亮色手寫面 (帶淡點格紙感) */
-#handwriting-canvas {
+#drawing-background-canvas {
   background-color: #fefefe !important;
   background-image:
     radial-gradient(circle, #d9e4d6 1px, transparent 1px) !important;
@@ -5560,8 +5787,13 @@ span[style*="font-size: 0.8em"][style*="color: #666"] {
   border: none !important;
   border-radius: 0 0 var(--r-lg) var(--r-lg) !important;
 }
+#handwriting-canvas {
+  background-color: transparent !important;
+  background-image: none !important;
+  border: none !important;
+  border-radius: 0 0 var(--r-lg) var(--r-lg) !important;
+}
 canvas {
-  background-color: #fefefe !important;
   border-radius: 0 0 var(--r-lg) var(--r-lg) !important;
 }
 

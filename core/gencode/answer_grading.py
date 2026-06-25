@@ -29,6 +29,7 @@ _CONTRACT_CHECKERS = frozenset(
         "linear_equation_equivalent_checker",
         "multi_part_answer_checker",
         "line_label_checker",
+        "free_response_drawing_checker",
     }
 )
 
@@ -74,12 +75,13 @@ def should_use_contract_aware_grading(current: dict[str, Any]) -> bool:
         "coordinate_pair_equivalence",
         "linear_equation_equivalent",
         "multi_part_answer",
+        "drawing_equivalence",
     }:
         return True
     if is_coordinate_pair_contract(ac) or is_coordinate_pair_runtime_payload(refreshed):
         return True
     family = answer_type_family(str(refreshed.get("answer_type", "")))
-    if family in {"solution_set", "interval", "classification", "numeric_or_radical", "coordinate_pair"}:
+    if family in {"solution_set", "interval", "classification", "numeric_or_radical", "coordinate_pair", "drawing"}:
         return True
     ca = coerce_correct_answer(refreshed.get("correct_answer", refreshed.get("answer")), ac)
     if isinstance(ca, (list, tuple, set)) and not is_coordinate_pair_contract(ac):
@@ -168,9 +170,70 @@ def grade_answer_for_current_question(
         ac if isinstance(ac, dict) else None,
     )
     checker = str(
-        ac.get("checker") or payload.get("checker") or payload.get("checker_type") or ""
+        ac.get("checker") or ac.get("checker_key") or payload.get("checker") or payload.get("checker_key") or payload.get("checker_type") or ""
     ).strip()
     expr_debug: dict[str, Any] | None = None
+    if checker == "free_response_drawing_checker" or answer_type_family(str(ac.get("answer_type", ""))) == "drawing":
+        from core.checkers.free_response_drawing_checker import (
+            check_drawing_answer,
+            find_answer_image,
+            find_student_strokes_image,
+        )
+
+        if isinstance(user_answer, dict):
+            payload.update(user_answer)
+        image_data_url, image_field = find_answer_image(payload)
+        strokes_data_url, strokes_field = find_student_strokes_image(payload)
+        metadata = payload.get("metadata") if isinstance(payload.get("metadata"), dict) else {}
+        expected_spec = (
+            payload.get("expected_drawing_spec")
+            or ac.get("expected_drawing_spec")
+            or metadata.get("expected_drawing_spec")
+            or {}
+        )
+        drawing_result = check_drawing_answer(
+            image_data_url=image_data_url,
+            question_text=str(payload.get("question_text") or payload.get("question") or ""),
+            answer_contract=ac if isinstance(ac, dict) else {},
+            metadata=metadata,
+            expected_drawing_spec=expected_spec if isinstance(expected_spec, dict) else {},
+            context={
+                "skill_id": skill_id,
+                "component_id": str(payload.get("component_id") or metadata.get("component_id") or ""),
+                "problem_type_id": str(payload.get("problem_type_id") or metadata.get("problem_type_id") or ""),
+                "checker_key": checker or "free_response_drawing_checker",
+                "image_field": image_field,
+                "student_strokes_image_data_url": strokes_data_url,
+                "student_strokes_image_field": strokes_field,
+                "vision_image_mode": "dual" if image_data_url and strokes_data_url else ("composite_only" if image_data_url else "missing"),
+            },
+        )
+        is_correct = drawing_result.get("is_correct")
+        log_check_answer_debug(
+            skill_id=skill_id,
+            current=payload,
+            user_answer="[drawing_image]" if image_data_url else "",
+            correct_answer="[expected_drawing_spec]",
+            check_result=bool(is_correct),
+            checker=checker,
+            log=log,
+        )
+        return {
+            "correct": is_correct,
+            "is_correct": is_correct,
+            "result": str(drawing_result.get("feedback") or ""),
+            "feedback": str(drawing_result.get("feedback") or ""),
+            "status": drawing_result.get("status"),
+            "system_error": bool(drawing_result.get("system_error", False)),
+            "score": drawing_result.get("score"),
+            "confidence": drawing_result.get("confidence"),
+            "recognized_features": drawing_result.get("recognized_features", {}),
+            "missing_features": drawing_result.get("missing_features", []),
+            "incorrect_features": drawing_result.get("incorrect_features", []),
+            "checker": "free_response_drawing_checker",
+            "analyzer": drawing_result.get("analyzer", ""),
+            "raw_analysis_available": bool(drawing_result.get("raw_analysis_available", False)),
+        }
     if checker == "expression_equivalence_checker" or str(
         ac.get("answer_type", payload.get("answer_type", ""))
     ) in {"numeric_or_radical", "math_expression", "radical_number", "expression"}:

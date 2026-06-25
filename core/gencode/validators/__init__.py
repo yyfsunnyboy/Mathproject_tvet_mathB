@@ -26,6 +26,8 @@ def validate_generator_payload(
     if not spec:
         return ["problem_type_spec_missing"]
     errors = validate_answer_contract(payload, spec)
+    from core.gencode.answer_payload import validate_answer_contract_consistency
+    errors.extend(validate_answer_contract_consistency(payload.get("answer_contract") or {}))
     errors.extend(validate_dependency_contract(payload, spec))
     errors.extend(validate_semantic_contract(payload, spec))
 
@@ -111,6 +113,9 @@ def validate_generator_payload(
     return sorted(set(errors))
 
 
+from core.gencode.validators.source_isomorphism_validator import validate_source_isomorphism
+
+
 __all__ = [
     "validate_answer_contract",
     "validate_condition_target_dependency",
@@ -118,4 +123,5 @@ __all__ = [
     "validate_semantic_and_dependency",
     "validate_semantic_contract",
     "validate_generator_payload",
+    "validate_source_isomorphism",
 ]

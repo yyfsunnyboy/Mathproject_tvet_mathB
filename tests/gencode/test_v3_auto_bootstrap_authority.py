@@ -52,6 +52,42 @@ def test_domain_capability_ready_for_frequency_table() -> None:
     assert result.operation_registered is True
 
 
+def test_b4_statistical_chart_reading_has_table_chart_domain_capability() -> None:
+    ctx = resolve_fixed_domain_context("vh_數學B4_StatisticalChartReading")
+
+    assert ctx.fixed_domain_key == "statistics.table_chart"
+    assert "read_category_value" in ctx.allowed_operations
+    assert "compare_category_values" in ctx.allowed_operations
+    assert "calculate_total_ratio_percent" in ctx.allowed_operations
+    assert "validate_chart_statement" in ctx.allowed_operations
+
+    result = resolve_domain_capability(
+        skill_id=ctx.skill_id,
+        fixed_domain_key=ctx.fixed_domain_key,
+        normalized_classification={
+            "domain_operation": "read_category_value",
+            "requested_capability": "statistical_chart_reading",
+            "function_name": ctx.entrypoint,
+        },
+        source_example={"id": 0},
+        domain_context=ctx,
+    )
+
+    assert result.capability_status == "ready"
+    assert result.function_exists is True
+    assert result.operation_registered is True
+
+
+def test_unknown_statistical_skill_does_not_use_broad_statistical_fallback() -> None:
+    from core.gencode.skill_fixed_domain_authority import SkillFixedDomainError
+    from core.gencode.v3_error_codes import DOMAIN_CAPABILITY_UNRESOLVED
+
+    with pytest.raises(SkillFixedDomainError) as exc:
+        resolve_fixed_domain_context("vh_數學B4_StatisticalMeasureUnknown")
+
+    assert exc.value.code == DOMAIN_CAPABILITY_UNRESOLVED
+
+
 def test_shadow_bridge_not_executed_is_not_unsupported() -> None:
     assert _classify_dryrun_error(ValueError("v3_shadow_bridge_not_executed")) == SHADOW_BRIDGE_NOT_EXECUTED
 

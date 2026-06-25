@@ -1,0 +1,65 @@
+{
+  "seed": 7,
+  "expected_drawing_spec": {
+    "drawing_type": "histogram_and_frequency_polygon",
+    "x_categories": [
+      "A組",
+      "B組",
+      "C組",
+      "D組"
+    ],
+    "expected_values": [
+      5,
+      4,
+      6,
+      8
+    ],
+    "required_elements": [
+      "x_axis",
+      "y_axis",
+      "histogram_bars",
+      "frequency_polygon"
+    ],
+    "grading_rules": {
+      "bar_count_matches_categories": true,
+      "histogram_bars_touch": true,
+      "polygon_connects_category_midpoints_in_order": true
+    },
+    "bar_rules": {
+      "count": 4,
+      "expected_heights": [
+        5,
+        4,
+        6,
+        8
+      ],
+      "touching": true,
+      "baseline": 0
+    },
+    "polygon_rules": {
+      "expected_points": [
+        [
+          "A組",
+          5
+        ],
+        [
+          "B組",
+          4
+        ],
+        [
+          "C組",
+          6
+        ],
+        [
+          "D組",
+          8
+        ]
+      ],
+      "connect_in_order": true
+    },
+    "tolerance": {
+      "value": 0.8,
+      "position_ratio": 0.12
+    }
+  }
+}
