@@ -19,12 +19,12 @@ PROBLEM_TYPE_ID = "compute_population_standard_deviation"
 TEXTBOOK_EXAMPLE_ID = 3899
 DEFAULT_COMPONENT_ID = "src_3899" if TEXTBOOK_EXAMPLE_ID else ""
 
-# Fixed choice labels (subject matter: which statistics change when one value changes)
-_CHOICES = [
-    {"key": "A", "label": "A", "text": "全距"},
-    {"key": "B", "label": "B", "text": "樣本標準差"},
-    {"key": "C", "label": "C", "text": "中位數"},
-    {"key": "D", "label": "D", "text": "眾數"},
+# Canonical stat definitions (order shuffled per call via seed)
+_STAT_ITEMS = [
+    {"stat": "range",    "text": "全距"},
+    {"stat": "std",      "text": "樣本標準差"},
+    {"stat": "median",  "text": "中位數"},
+    {"stat": "mode",    "text": "眾數"},
 ]
 
 
@@ -33,74 +33,92 @@ def _fmt(v: float) -> str:
     return str(int(v)) if v == int(v) else str(round(v, 4))
 
 
-def _determine_correct_label(
+def _determine_correct_stat(
     before_vals: list[float],
     after_vals: list[float],
-) -> str:
-    """Determine which choice label is correct based on actual statistic changes.
-
-    Checks which statistics differ between before/after datasets.
-    Returns the label of the first changed statistic matching the fixed choices.
-
-    Choice mapping:
-      A → 全距 (range)
-      B → 樣本標準差 (population standard deviation — textbook uses 'sample std' phrasing)
-      C → 中位數 (median)
-      D → 眾數 (mode)
-    """
+) -> str | None:
+    """Return the name of the unique changed statistic, or None if not exactly one."""
     changed: set[str] = set()
     if range_from_values(before_vals) != range_from_values(after_vals):
-        changed.add("A")
+        changed.add("range")
     if population_standard_deviation(before_vals) != population_standard_deviation(after_vals):
-        changed.add("B")
+        changed.add("std")
     if median_from_values(before_vals) != median_from_values(after_vals):
-        changed.add("C")
+        changed.add("median")
     if set(mode_from_values(before_vals)) != set(mode_from_values(after_vals)):
-        changed.add("D")
-
-    # Return the highest-priority changed label; B (standard deviation) is almost always
-    # correct when a non-central, non-extreme value changes.
-    for label in ("B", "A", "C", "D"):
-        if label in changed:
-            return label
-    return "B"  # fallback: std always changes when any unique value changes
+        changed.add("mode")
+    if len(changed) == 1:
+        return changed.pop()
+    return None  # 0 or 2+ statistics changed – caller must retry
 
 
 def generate(level: int = 1, seed: int | None = None, **kwargs: Any) -> dict[str, Any]:
     rng = random.Random(seed)
 
-    # Generate 10 data values in realistic small-integer range
     n_list = 10
-    raw_list = [float(rng.randint(1, 20)) for _ in range(n_list)]
+    max_attempts = 200
 
-    # original_value = raw_list[-1]  (the value that will be "changed")
-    original_value = raw_list[-1]
+    raw_list: list[float] = []
+    original_value: float = 0.0
+    changed_value: float = 0.0
+    correct_stat: str = "std"   # stat name that uniquely changed
 
-    # changed_value: different from original, nearby, in [1, 20]
-    delta = rng.choice([-2, -1, 1, 2])
-    changed_value = float(max(1, min(20, int(original_value) + delta)))
-    # Guarantee different (handles edge clamping)
-    if changed_value == original_value:
-        changed_value = float(max(1, min(20, int(original_value) - 1 if delta > 0 else int(original_value) + 1)))
+    for _attempt in range(max_attempts):
+        raw_list = [float(rng.randint(1, 20)) for _ in range(n_list)]
+        original_value = raw_list[-1]
+        for delta in rng.sample([-3, -2, -1, 1, 2, 3], k=6):
+            cv = float(max(1, min(20, int(original_value) + delta)))
+            if cv == original_value:
+                continue
+            before = raw_list[:]
+            after  = raw_list[:-1] + [cv]
+            stat = _determine_correct_stat(before, after)
+            if stat is not None:
+                changed_value = cv
+                correct_stat = stat
+                break
+        else:
+            continue
+        break
+    else:
+        raw_list = [float(rng.randint(1, 20)) for _ in range(n_list)]
+        original_value = raw_list[-1]
+        changed_value = float(max(1, 20 if original_value <= 10 else 1))
+        correct_stat = "std"
 
-    # Build before/after datasets for correct-answer computation
-    before_vals = raw_list[:]                       # original list (last = original_value)
-    after_vals  = raw_list[:-1] + [changed_value]   # list with last value changed
+    before_vals = raw_list[:]
+    after_vals  = raw_list[:-1] + [changed_value]
 
-    # Build question text from fresh values
-    list_text = "、".join(_fmt(v) for v in raw_list)
+    # Shuffle the four stat items using a deterministic sub-RNG derived from seed
+    # Use a separate Random so the data-generation RNG state is not consumed here.
+    shuffle_rng = random.Random((seed or 0) ^ 0xA3F7)
+    shuffled = list(_STAT_ITEMS)
+    shuffle_rng.shuffle(shuffled)
+    _KEYS = ["A", "B", "C", "D"]
+    choices = [
+        {"key": _KEYS[i], "label": _KEYS[i], "text": item["text"]}
+        for i, item in enumerate(shuffled)
+    ]
+    # Map stat name -> assigned key after shuffle
+    stat_to_key = {item["stat"]: _KEYS[i] for i, item in enumerate(shuffled)}
+    correct_label = stat_to_key[correct_stat]
+
     orig_str  = _fmt(original_value)
     chg_str   = _fmt(changed_value)
-    question  = (
-        f"假設有一組樣本資料：{list_text}。"
-        f"如果最後一個數字由 {orig_str} 更改為 {chg_str}，"
-        f"則下列哪些統計量所對應的數值會改變？"
-        f" (A) 全距 (B) 樣本標準差 (C) 中位數 (D) 眾數。"
+    list_text = "\u3001".join(_fmt(v) for v in raw_list)
+    choice_text = " ".join(f"({c['key']}) {c['text']}" for c in choices)
+    question = (
+        f"\u5047\u8a2d\u6709\u4e00\u7d44\u6a23\u672c\u8cc7\u6599\uff1a{list_text}\u3002"
+        f"\u5982\u679c\u6700\u5f8c\u4e00\u500b\u6578\u5b57\u7531 {orig_str} \u66f4\u6539\u70ba {chg_str}\uff0c"
+        f"\u5247\u4e0b\u5217\u54ea\u4e9b\u7d71\u8a08\u91cf\u6240\u5c0d\u61c9\u7684\u6578\u5024\u6703\u6539\u8b8a\uff1f"
+        f" {choice_text}\u3002"
     )
 
-    correct_label = _determine_correct_label(before_vals, after_vals)
+    # Distractor labels = all keys except the correct one
+    distractor_labels = [c["key"] for c in choices if c["key"] != correct_label]
 
-    # Build a minimal matrix-style dict compatible with convert_domain_matrix_to_question_payload
+
+    # Build matrix with all six required top-level fields
     matrix: dict[str, Any] = {
         "question_text": question,
         "givens": {
@@ -111,16 +129,40 @@ def generate(level: int = 1, seed: int | None = None, **kwargs: Any) -> dict[str
             "after_values": after_vals,
             "target_measure": "standard_deviation",
             "question_text": question,
-            "source_choices": _CHOICES,
+            "source_choices": choices,
             "source_answer_label": correct_label,
         },
+        # Required: answer dict.
+        # validate_domain_matrix (no kwargs path) checks ANSWER_REQUIRED_FIELDS:
+        #   canonical_form, general_form, coefficients — satisfy all three.
+        # The single_choice path then uses correct_label / source_choices.
+        "answer": {
+            "correct_label": correct_label,
+            "canonical_form": correct_label,
+            "general_form": correct_label,
+            "coefficients": {},
+            "value": correct_label,
+            "answer_type": "single_choice",
+            "presentation_mode": "single_choice",
+        },
+        # Required: distractors list (wrong choice labels)
+        "distractors": distractor_labels,
+        # Required: visual_spec (empty – no image/table for this question)
+        "visual_spec": {},
         "answer_value": correct_label,
         "answer_text": correct_label,
         "answer_shape": "single_choice",
         "presentation_mode": "single_choice",
         "answer_type": "single_choice",
+        "source_choices": choices,
+        "source_answer_label": correct_label,
+        # Required by _DESCRIPTIVE_MATRIX_REQUIRED check
+        "fixed_domain_key": "statistics.descriptive_statistics",
+        "selected_operation": "conceptual_dispersion_judgment",
+        "required_capabilities": ["conceptual_dispersion_judgment"],
+        "matched_capabilities": ["conceptual_dispersion_judgment"],
         "validation_facts": {
-            "domain_operation": "compute_population_standard_deviation",
+            "domain_operation": "conceptual_dispersion_judgment",
             "target_measure": "standard_deviation",
             "formula": "population_standard_deviation",
             "variance": population_variance(before_vals),
@@ -146,8 +188,9 @@ def generate(level: int = 1, seed: int | None = None, **kwargs: Any) -> dict[str
         problem_type_id=PROBLEM_TYPE_ID,
         component_id=component_id or None,
         textbook_example_id=TEXTBOOK_EXAMPLE_ID or None,
-        answer_schema_key="numeric_scalar",
-        domain_operation="compute_population_standard_deviation",
+        # conceptual_dispersion_judgment maps to choice_label schema in registry
+        answer_schema_key="choice_label",
+        domain_operation="conceptual_dispersion_judgment",
         seed=seed,
     )
     if component_id:
