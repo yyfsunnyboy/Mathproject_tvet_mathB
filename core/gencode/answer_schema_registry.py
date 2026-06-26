@@ -104,6 +104,8 @@ DOMAIN_OPERATION_ANSWER_SCHEMA: dict[str, str] = {
     "compute_range": "numeric_scalar",
     "compute_population_variance": "numeric_scalar",
     "compute_population_standard_deviation": "numeric_scalar",
+    "compute_sample_variance": "numeric_scalar",
+    "compute_sample_standard_deviation": "numeric_scalar",
     "complete_descriptive_statistics_table": "numeric_scalar",
     "compute_quartiles_and_iqr": "numeric_scalar",
     "compare_dispersion": "numeric_scalar",

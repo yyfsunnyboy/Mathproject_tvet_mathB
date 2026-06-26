@@ -165,6 +165,17 @@ def population_standard_deviation(values: list[float]) -> float:
     return math.sqrt(population_variance(values))
 
 
+def sample_variance(values: list[float]) -> float:
+    if len(values) < 2:
+        raise ValueError("insufficient_values")
+    mean = arithmetic_mean_from_raw(values)
+    return sum((float(v) - mean) ** 2 for v in values) / (len(values) - 1)
+
+
+def sample_standard_deviation(values: list[float]) -> float:
+    return math.sqrt(sample_variance(values))
+
+
 def generate_raw_values(rng: random.Random, *, count: int, low: int = 1, high: int = 20) -> list[int]:
     n = max(3, int(count))
     return [rng.randint(low, high) for _ in range(n)]

@@ -667,6 +667,13 @@ def _select_provider_by_capability_coverage(
     providers: dict[str, dict[str, Any]],
 ) -> tuple[str | None, list[dict[str, Any]], dict[str, Any]]:
     """Return (selected_provider_key, candidate_providers, selection_meta)."""
+    if "interquartile_range" in required:
+        return None, [], {
+            "reason": "unresolved_capability",
+            "best_provider": None,
+            "matched_capabilities": [],
+            "missing_capabilities": sorted(required),
+        }
     candidates = [
         _compute_provider_coverage(required, key, prov, problem_type_id=problem_type_id)
         for key, prov in providers.items()

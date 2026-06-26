@@ -22,6 +22,8 @@ from core.domain.statistics.descriptive_statistics_core import (
     range_and_iqr_summary,
     range_from_values,
     weighted_mean_from_pairs,
+    sample_variance,
+    sample_standard_deviation,
 )
 from core.gencode.descriptive_statistics_answer_contract import NO_MODE_SENTINEL
 
@@ -304,16 +306,50 @@ def _build_range(rng: random.Random, constraints: dict[str, Any], op: str) -> di
     )
 
 
+def _perturb_raw_values(rng: random.Random, orig_values: list[float], is_choice: bool = False) -> list[float]:
+    if not orig_values:
+        return orig_values
+    shift = rng.randint(2, 8)
+    if rng.random() < 0.5:
+        shift = -shift
+    if is_choice:
+        return [float(int(v + shift)) for v in orig_values]
+    else:
+        perturbed = []
+        for v in orig_values:
+            val = v + shift + rng.randint(-2, 2)
+            perturbed.append(float(int(val)))
+        return perturbed
+
+
 def _build_variance(rng: random.Random, constraints: dict[str, Any], op: str) -> dict[str, Any]:
-    values = [
-        float(v)
-        for v in (constraints.get("raw_values") or generate_raw_values(rng, count=int(constraints.get("count") or rng.randint(4, 6))))
-    ]
+    raw = constraints.get("raw_values")
+    q_template_v = str(constraints.get("question_text") or "")
+    if q_template_v:
+        # question_text present: use seed-driven generation (avoids narrative-number contamination)
+        low_v, high_v = _infer_value_range(constraints)
+        count_v = int(constraints.get("count") or 0) or _infer_count(constraints, raw, fallback=rng.randint(4, 6))
+        values = [float(v) for v in generate_raw_values(rng, count=count_v, low=low_v, high=high_v)]
+    elif raw:
+        # No question_text: safe to use provided raw_values directly (no narrative contamination)
+        values = [float(v) for v in raw]
+    else:
+        count_v = int(constraints.get("count") or 0) or rng.randint(4, 6)
+        values = [float(v) for v in generate_raw_values(rng, count=count_v)]
     rounding = dict(constraints.get("rounding_policy") or {"decimal_places": 0, "prefer_integer": True})
     var = population_variance(values)
     answer_text = format_numeric_answer(var, rounding)
-    values_text = ", ".join(format_numeric_answer(v, {"decimal_places": 0, "prefer_integer": True}) for v in values)
-    question = f"資料 {values_text}，求母體變異數。"
+    sep_v = "、"
+    values_text = sep_v.join(format_numeric_answer(v, {"decimal_places": 0, "prefer_integer": True}) for v in values)
+    if q_template_v:
+        q_updated_v = re.sub(
+            r"([\uff1a:\uff1a]\s*)[\d\s,\uff0c\u3001.+\-]+?(?=[,\u3002\u300d\uff01]|\u8a66\u6c42|\u6c42|\u5247|$)",
+            lambda m: m.group(1) + values_text,
+            q_template_v, count=1,
+        )
+        question = q_updated_v if q_updated_v != q_template_v else q_template_v
+    else:
+        question = f"\u8cc7\u6599 {values_text}\uff0c\u6c42\u6bcd\u9ad4\u8b8a\u7570\u6578\u3002"
     mean = arithmetic_mean_from_raw(values)
     return _matrix_shell(
         givens={"raw_values": values, "target_measure": "variance", "rounding_policy": rounding, "question_text": question},
@@ -332,51 +368,333 @@ def _build_variance(rng: random.Random, constraints: dict[str, Any], op: str) ->
         answer_shape="single_numeric",
     )
 
+# ── Semantic helpers (no tid / component_id references) ─────────────────────
+
+def _infer_value_range(constraints: dict[str, Any]) -> tuple[int, int]:
+    """Derive a plausible (low, high) data range from question semantics.
+
+    Uses ``data_range`` if explicitly provided, otherwise infers from
+    keywords in the question text.  Never references textbook_example_id.
+    """
+    if "data_range" in constraints:
+        lo, hi = constraints["data_range"]
+        return int(lo), int(hi)
+    q = str(constraints.get("question_text") or "")
+    if re.search(r"身高", q):          # height context
+        return 160, 200
+    if re.search(r"體重", q):          # body-weight context
+        return 30, 70
+    if re.search(r"成績|分數|月考|科[室-模]?", q):  # exam-score context
+        return 50, 100
+    return 1, 20                          # default: small integers
+
+
+def _infer_count(
+    constraints: dict[str, Any],
+    raw: list | None,
+    *,
+    fallback: int,
+) -> int:
+    """Derive the expected data-point count from constraints.
+
+    Priority: explicit ``count`` key > stated count in question text > fallback.
+    Never uses textbook_example_id.
+    """
+    if constraints.get("count"):
+        return int(constraints["count"])
+    q = str(constraints.get("question_text") or "")
+    # Stated count: "10 位", "六位", "12 人", etc.
+    m = re.search(r"(\d+)\s*(?:位|人|名|個|筆)", q)
+    if m:
+        n = int(m.group(1))
+        if 3 <= n <= 20:
+            return n
+    zh_map = {"六": 6, "七": 7, "八": 8, "九": 9, "十": 10}
+    for ch, n in zh_map.items():
+        if re.search(ch + r"\s*(?:位|人|名|個|筆|科|員)", q):
+            return n
+    if raw and 3 <= len(raw) <= 20:
+        return len(raw)
+    return fallback
+
 
 def _build_stddev(rng: random.Random, constraints: dict[str, Any], op: str) -> dict[str, Any]:
-    values = [
-        float(v)
-        for v in (
-            constraints.get("raw_values")
-            or generate_raw_values(rng, count=int(constraints.get("count") or rng.randint(4, 6)))
-        )
-    ]
+    raw = constraints.get("raw_values")
+    q_tmpl_s = str(constraints.get("question_text") or "")
+    if q_tmpl_s:
+        # question_text present: seed-driven to avoid narrative-number contamination
+        low, high = _infer_value_range(constraints)
+        count = int(constraints.get("count") or 0) or _infer_count(constraints, raw, fallback=rng.randint(4, 6))
+        values = [float(v) for v in generate_raw_values(rng, count=count, low=low, high=high)]
+    elif raw:
+        values = [float(v) for v in raw]
+    else:
+        low, high = _infer_value_range(constraints)
+        count = int(constraints.get("count") or 0) or rng.randint(4, 6)
+        values = [float(v) for v in generate_raw_values(rng, count=count, low=low, high=high)]
     rounding = dict(constraints.get("rounding_policy") or {"decimal_places": 0, "prefer_integer": True})
     var = population_variance(values)
     std = population_standard_deviation(values)
-    answer_text = format_numeric_answer(std, rounding)
-    values_text = ", ".join(format_numeric_answer(v, {"decimal_places": 0, "prefer_integer": True}) for v in values)
-    question = str(
-        constraints.get("question_text")
-        or f"資料 {values_text}，求母體標準差。"
-    )
+    sep = "、"
+    values_text = sep.join(format_numeric_answer(v, {"decimal_places": 0, "prefer_integer": True}) for v in values)
+    # Build question from stored template, substituting the fresh data list in-place.
+    q_template = str(constraints.get("question_text") or "")
+    if q_template:
+        q_updated = re.sub(
+            r"([：:﹕]\s*)[\d\s,，、.+\-]+?(?=[，。]|試求|求|則|$)",
+            lambda m: m.group(1) + values_text,
+            q_template,
+            count=1,
+        )
+        question = q_updated if q_updated != q_template else q_template
+    else:
+        question = f"資料 {values_text}，求母體標準差。"
     presentation_mode = str(constraints.get("presentation_mode") or "short_answer")
-    answer_shape = "single_choice" if presentation_mode == "single_choice" else "single_numeric"
-    answer_type = "single_choice" if presentation_mode == "single_choice" else "expression"
+    # multi_part when question explicitly requests both variance and standard deviation
+    wants_both = bool(re.search(r"變異數.*標準差|標準差.*變異數", question))
+    if wants_both:
+        answer_shape = "multi_part"
+        answer_type = "multi_part"
+        field_specs = [
+            {
+                "field_key": "population_variance",
+                "label": "母體變異數",
+                "expected_answer": var,
+                "answer_shape": "single_numeric",
+                "rounding_policy": rounding,
+            },
+            {
+                "field_key": "population_standard_deviation",
+                "label": "母體標準差",
+                "expected_answer": std,
+                "answer_shape": "single_numeric",
+                "rounding_policy": rounding,
+            }
+        ]
+        answer_value = {"population_variance": var, "population_standard_deviation": std}
+        answer_text = f"{format_numeric_answer(var, rounding)}, {format_numeric_answer(std, rounding)}"
+        return _matrix_shell(
+            givens={
+                "raw_values": values,
+                "target_measure": "population_standard_deviation",
+                "rounding_policy": rounding,
+                "question_text": question,
+                "field_specs": field_specs,
+            },
+            answer_value=answer_value,
+            answer_text=answer_text,
+            validation_facts={
+                "domain_operation": op,
+                "target_measure": "population_standard_deviation",
+                "formula": "population_standard_deviation",
+                "variance": var,
+                "standard_deviation": std,
+                "answer_shape": answer_shape,
+            },
+            explanation_steps=[
+                f"平均數 = {format_numeric_answer(arithmetic_mean_from_raw(values), rounding)}",
+                f"母體變異數 σ² = {format_numeric_answer(var, rounding)}",
+                f"母體標準差 σ = {format_numeric_answer(std, rounding)}",
+            ],
+            answer_shape=answer_shape,
+            presentation_mode=presentation_mode,
+            answer_type=answer_type,
+        )
+    else:
+        answer_shape = "single_choice" if presentation_mode == "single_choice" else "single_numeric"
+        answer_type = "single_choice" if presentation_mode == "single_choice" else "expression"
+        answer_text = format_numeric_answer(std, rounding)
+        return _matrix_shell(
+            givens={
+                "raw_values": values,
+                "target_measure": "standard_deviation",
+                "rounding_policy": rounding,
+                "question_text": question,
+                "source_choices": list(constraints.get("source_choices") or []),
+                "source_answer_label": str(constraints.get("source_answer_label") or "").strip(),
+            },
+            answer_value=std if presentation_mode != "single_choice" else str(constraints.get("source_answer_label") or answer_text),
+            answer_text=str(constraints.get("source_answer_label") or answer_text) if presentation_mode == "single_choice" else answer_text,
+            validation_facts={
+                "domain_operation": op,
+                "target_measure": "standard_deviation",
+                "formula": "population_standard_deviation",
+                "variance": var,
+                "standard_deviation": std,
+                "answer_shape": answer_shape,
+            },
+            explanation_steps=[
+                f"母體變異數 σ² = {format_numeric_answer(var, rounding)}",
+                f"母體標準差 σ = {answer_text}"
+            ],
+            answer_shape=answer_shape,
+            presentation_mode=presentation_mode,
+            answer_type=answer_type,
+        )
+
+
+def _build_sample_variance(rng: random.Random, constraints: dict[str, Any], op: str) -> dict[str, Any]:
+    tid = constraints.get("textbook_example_id") or constraints.get("source_example_id")
+    is_choice = (str(constraints.get("presentation_mode") or "") == "single_choice")
+    raw = constraints.get("raw_values")
+    q_tmpl2 = str(constraints.get("question_text") or "")
+    if q_tmpl2:
+        low2, high2 = _infer_value_range(constraints)
+        count2 = int(constraints.get("count") or 0) or _infer_count(constraints, raw, fallback=rng.randint(4, 6))
+        values = [float(v) for v in generate_raw_values(rng, count=count2, low=low2, high=high2)]
+    elif raw:
+        values = [float(v) for v in raw]
+    else:
+        low2, high2 = _infer_value_range(constraints)
+        count2 = int(constraints.get("count") or 0) or rng.randint(4, 6)
+        values = [float(v) for v in generate_raw_values(rng, count=count2, low=low2, high=high2)]
+
+    rounding = dict(constraints.get("rounding_policy") or {"decimal_places": 1, "prefer_integer": True})
+    var = sample_variance(values)
+    answer_text = format_numeric_answer(var, rounding)
+    sep2 = "、"
+    values_text = sep2.join(format_numeric_answer(v, {"decimal_places": 0, "prefer_integer": True}) for v in values)
+    q_tmpl2 = str(constraints.get("question_text") or "")
+    if q_tmpl2:
+        q_up2 = re.sub(
+            r"([\uff1a:\uff1a]\s*)[\d\s,\uff0c\u3001.+\-]+?(?=[,\u3002\u300d\uff01]|\u8a66\u6c42|\u6c42|\u5247|$)",
+            lambda m: m.group(1) + values_text,
+            q_tmpl2, count=1,
+        )
+        question = q_up2 if q_up2 != q_tmpl2 else q_tmpl2
+    else:
+        question = f"\u8cc7\u6599 {values_text}\uff0c\u6c42\u6a23\u672c\u8b8a\u7570\u6578\u3002"
+    mean = arithmetic_mean_from_raw(values)
     return _matrix_shell(
-        givens={
-            "raw_values": values,
-            "target_measure": "standard_deviation",
-            "rounding_policy": rounding,
-            "question_text": question,
-            "source_choices": list(constraints.get("source_choices") or []),
-            "source_answer_label": str(constraints.get("source_answer_label") or "").strip(),
-        },
-        answer_value=std if presentation_mode != "single_choice" else str(constraints.get("source_answer_label") or answer_text),
-        answer_text=str(constraints.get("source_answer_label") or answer_text) if presentation_mode == "single_choice" else answer_text,
+        givens={"raw_values": values, "target_measure": "sample_variance", "rounding_policy": rounding, "question_text": question},
+        answer_value=var,
+        answer_text=answer_text,
         validation_facts={
             "domain_operation": op,
-            "target_measure": "standard_deviation",
-            "formula": "population_standard_deviation",
-            "variance": var,
-            "standard_deviation": std,
-            "answer_shape": answer_shape,
+            "target_measure": "sample_variance",
+            "formula": "sample_variance",
+            "mean": mean,
+            "sample_variance": var,
+            "n": len(values),
+            "answer_shape": "single_numeric",
         },
-        explanation_steps=[f"母體變異數 σ² = {format_numeric_answer(var, rounding)}", f"母體標準差 σ = {answer_text}"],
-        answer_shape=answer_shape,
-        presentation_mode=presentation_mode,
-        answer_type=answer_type,
+        explanation_steps=[f"平均數 = {format_numeric_answer(mean, rounding)}", f"樣本變異數 s² = {answer_text}"],
+        answer_shape="single_numeric",
     )
+
+
+def _build_sample_stddev(rng: random.Random, constraints: dict[str, Any], op: str) -> dict[str, Any]:
+    tid = constraints.get("textbook_example_id") or constraints.get("source_example_id")
+    is_choice = (str(constraints.get("presentation_mode") or "") == "single_choice")
+    raw = constraints.get("raw_values")
+    q_tmpl3 = str(constraints.get("question_text") or "")
+    if q_tmpl3:
+        low3, high3 = _infer_value_range(constraints)
+        count3 = int(constraints.get("count") or 0) or _infer_count(constraints, raw, fallback=rng.randint(4, 6))
+        values = [float(v) for v in generate_raw_values(rng, count=count3, low=low3, high=high3)]
+    elif raw:
+        values = [float(v) for v in raw]
+    else:
+        low3, high3 = _infer_value_range(constraints)
+        count3 = int(constraints.get("count") or 0) or rng.randint(4, 6)
+        values = [float(v) for v in generate_raw_values(rng, count=count3, low=low3, high=high3)]
+
+    rounding = dict(constraints.get("rounding_policy") or {"decimal_places": 1, "prefer_integer": True})
+    var = sample_variance(values)
+    std = sample_standard_deviation(values)
+    sep3 = "、"
+    values_text = sep3.join(format_numeric_answer(v, {"decimal_places": 0, "prefer_integer": True}) for v in values)
+    q_tmpl3 = str(constraints.get("question_text") or "")
+    if q_tmpl3:
+        q_up3 = re.sub(
+            r"([\uff1a:\uff1a]\s*)[\d\s,\uff0c\u3001.+\-]+?(?=[,\u3002\u300d\uff01]|\u8a66\u6c42|\u6c42|\u5247|$)",
+            lambda m: m.group(1) + values_text,
+            q_tmpl3, count=1,
+        )
+        question = q_up3 if q_up3 != q_tmpl3 else q_tmpl3
+    else:
+        question = f"\u8cc7\u6599 {values_text}\uff0c\u6c42\u6a23\u672c\u6a19\u6e96\u5dee\u3002"
+    presentation_mode = str(constraints.get("presentation_mode") or "short_answer")
+    wants_both_s = bool(re.search(r"\u6a23\u672c\u8b8a\u7570\u6578.*\u6a23\u672c\u6a19\u6e96\u5dee|\u6a23\u672c\u6a19\u6e96\u5dee.*\u6a23\u672c\u8b8a\u7570\u6578", question))
+    if wants_both_s:
+        answer_shape = "multi_part"
+        answer_type = "multi_part"
+        field_specs = [
+            {
+                "field_key": "sample_variance",
+                "label": "樣本變異數",
+                "expected_answer": var,
+                "answer_shape": "single_numeric",
+                "rounding_policy": rounding,
+            },
+            {
+                "field_key": "sample_standard_deviation",
+                "label": "樣本標準差",
+                "expected_answer": std,
+                "answer_shape": "single_numeric",
+                "rounding_policy": rounding,
+            }
+        ]
+        answer_value = {"sample_variance": var, "sample_standard_deviation": std}
+        answer_text = f"{format_numeric_answer(var, rounding)}, {format_numeric_answer(std, rounding)}"
+        return _matrix_shell(
+            givens={
+                "raw_values": values,
+                "target_measure": "sample_standard_deviation",
+                "rounding_policy": rounding,
+                "question_text": question,
+                "field_specs": field_specs,
+            },
+            answer_value=answer_value,
+            answer_text=answer_text,
+            validation_facts={
+                "domain_operation": op,
+                "target_measure": "sample_standard_deviation",
+                "formula": "sample_standard_deviation",
+                "sample_variance": var,
+                "sample_standard_deviation": std,
+                "answer_shape": answer_shape,
+            },
+            explanation_steps=[
+                f"平均數 = {format_numeric_answer(arithmetic_mean_from_raw(values), rounding)}",
+                f"樣本變異數 s² = {format_numeric_answer(var, rounding)}",
+                f"樣本標準差 s = {format_numeric_answer(std, rounding)}",
+            ],
+            answer_shape=answer_shape,
+            presentation_mode=presentation_mode,
+            answer_type=answer_type,
+        )
+    else:
+        answer_shape = "single_choice" if presentation_mode == "single_choice" else "single_numeric"
+        answer_type = "single_choice" if presentation_mode == "single_choice" else "expression"
+        answer_text = format_numeric_answer(std, rounding)
+        return _matrix_shell(
+            givens={
+                "raw_values": values,
+                "target_measure": "sample_standard_deviation",
+                "rounding_policy": rounding,
+                "question_text": question,
+                "source_choices": list(constraints.get("source_choices") or []),
+                "source_answer_label": str(constraints.get("source_answer_label") or "").strip(),
+            },
+            answer_value=std if presentation_mode != "single_choice" else str(constraints.get("source_answer_label") or answer_text),
+            answer_text=str(constraints.get("source_answer_label") or answer_text) if presentation_mode == "single_choice" else answer_text,
+            validation_facts={
+                "domain_operation": op,
+                "target_measure": "sample_standard_deviation",
+                "formula": "sample_standard_deviation",
+                "sample_variance": var,
+                "sample_standard_deviation": std,
+                "answer_shape": answer_shape,
+            },
+            explanation_steps=[
+                f"樣本變異數 s² = {format_numeric_answer(var, rounding)}",
+                f"樣本標準差 s = {answer_text}"
+            ],
+            answer_shape=answer_shape,
+            presentation_mode=presentation_mode,
+            answer_type=answer_type,
+        )
 
 
 def _build_table_completion(rng: random.Random, constraints: dict[str, Any], op: str) -> dict[str, Any]:
@@ -636,6 +954,8 @@ _HANDLERS = {
     "compute_range": _build_range,
     "compute_population_variance": _build_variance,
     "compute_population_standard_deviation": _build_stddev,
+    "compute_sample_variance": _build_sample_variance,
+    "compute_sample_standard_deviation": _build_sample_stddev,
     "complete_descriptive_statistics_table": _build_table_completion,
     "compute_quartiles_and_iqr": _build_quartiles_and_iqr,
     "compare_dispersion": _build_compare_dispersion,
@@ -777,6 +1097,8 @@ def _operation_capabilities(operation: str) -> tuple[str, ...]:
         "compute_range": ("range",),
         "compute_population_variance": ("variance",),
         "compute_population_standard_deviation": ("standard_deviation", "variance"),
+        "compute_sample_variance": ("sample_variance",),
+        "compute_sample_standard_deviation": ("sample_standard_deviation", "sample_variance"),
         "complete_descriptive_statistics_table": (
             "descriptive_statistics_table_completion",
             "arithmetic_mean",

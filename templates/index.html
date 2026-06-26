@@ -4143,12 +4143,15 @@
             const contract = question?.answer_contract || {};
             const ui = contract.ui_contract || {};
             const drawing = isDrawingQuestion(question) || ui.response_mode === "drawing";
+            const handwritingEnabled = ui.handwriting_enabled !== false;
+            const canvasRequired = ui.canvas_required !== false;
             return {
                 responseMode: ui.response_mode || (drawing ? "drawing" : "text"),
                 textInputEnabled: drawing ? (ui.text_input_enabled === true) : (ui.text_input_enabled !== false),
                 normalSubmitEnabled: drawing ? (ui.normal_submit_enabled === true) : (ui.normal_submit_enabled !== false),
                 aiCheckRequired: drawing ? (ui.ai_check_required !== false) : (ui.ai_check_required === true),
-                canvasRequired: drawing ? (ui.canvas_required !== false) : (ui.canvas_required === true),
+                canvasRequired,
+                handwritingEnabled,
                 allowImageUpload: ui.allow_image_upload !== false,
                 allowTextAnswer: ui.allow_text_answer === true,
             };
@@ -4186,8 +4189,13 @@
 
             const scratchpad = document.getElementById('scratchpad-container');
             if (scratchpad) {
-                if (drawing || uiContract.canvasRequired) {
+                const cq2 = currentQuestion || {};
+                const shape2 = String(cq2.answer_shape || (cq2.answer_contract && cq2.answer_contract.answer_type) || '').toLowerCase();
+                const handwritingShapes = new Set(['short_answer', 'multi_field', 'table_fill', 'multi_blank', 'multi_part']);
+                const forceShow = handwritingShapes.has(shape2) && uiContract.handwritingEnabled;
+                if (drawing || forceShow || (uiContract.handwritingEnabled && uiContract.canvasRequired)) {
                     scratchpad.style.display = '';
+                    resizeCanvas();
                 } else {
                     scratchpad.style.display = 'none';
                 }

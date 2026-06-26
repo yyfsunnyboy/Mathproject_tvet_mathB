@@ -15,6 +15,8 @@ from core.domain.statistics.descriptive_statistics_core import (
     range_and_iqr_summary,
     range_from_values,
     weighted_mean_from_pairs,
+    sample_variance,
+    sample_standard_deviation,
 )
 from core.gencode.checker_registry import CHECKER_CAPABILITIES
 from core.gencode.descriptive_statistics_answer_contract import (
@@ -33,6 +35,8 @@ _DESCRIPTIVE_OPS = frozenset(
         "compute_range",
         "compute_population_variance",
         "compute_population_standard_deviation",
+        "compute_sample_variance",
+        "compute_sample_standard_deviation",
         "complete_descriptive_statistics_table",
         "compute_quartiles_and_iqr",
         "compare_dispersion",
@@ -92,6 +96,31 @@ def validate_descriptive_statistics_payload(payload: dict[str, Any]) -> list[str
     resolution = payload.get("domain_resolution") or meta.get("domain_resolution")
     if not isinstance(resolution, dict) or not resolution.get("fixed_domain_key"):
         errors.append("domain_evidence_complete: domain_resolution missing")
+    else:
+        req_caps = resolution.get("required_capabilities") or []
+        supported_caps = {
+            "arithmetic_mean",
+            "weighted_mean",
+            "median",
+            "mode",
+            "range",
+            "variance",
+            "standard_deviation",
+            "sample_variance",
+            "sample_standard_deviation",
+            "descriptive_statistics_table_completion",
+            "descriptive_statistics",
+            "dispersion_comparison",
+            "conceptual_dispersion_judgment",
+            "frequency_weighted_statistics",
+        }
+        for cap in req_caps:
+            if cap not in supported_caps:
+                errors.append(f"unresolved_capability: {cap}")
+
+    if ("變異數" in question) and ("標準差" in question):
+        if answer_shape != "multi_field" and answer_shape != "multi_part":
+            errors.append("answer_shape_consistency: both variance and standard deviation requested, must use multi_field/multi_part")
 
     checker_key = str(ac.get("checker_key") or ac.get("checker") or "").strip()
     if not checker_key or checker_key not in CHECKER_CAPABILITIES:
@@ -143,7 +172,7 @@ def validate_descriptive_statistics_payload(payload: dict[str, Any]) -> list[str
     if ac.get("equivalence_type") == "decimal_tolerance" and not rounding:
         errors.append("rounding_policy_consistency: tolerance contract requires rounding_policy")
 
-    if answer_shape in {"multi_blank", "table_fill"}:
+    if answer_shape in {"multi_blank", "table_fill", "multi_part"}:
         parts = ac.get("parts") if isinstance(ac.get("parts"), list) else []
         field_specs = givens.get("field_specs") if isinstance(givens.get("field_specs"), list) else []
         expected_count = len(field_specs) or int((payload.get("ui_contract") or {}).get("blank_count") or 0)
@@ -215,6 +244,21 @@ def validate_descriptive_statistics_payload(payload: dict[str, Any]) -> list[str
                 errors.append("standard_deviation_consistency: stddev mismatch")
             if abs(std - math.sqrt(var)) > 1e-6:
                 errors.append("standard_deviation_consistency: sqrt(variance) mismatch")
+        elif op == "compute_sample_variance" and raw_values:
+            vals = [float(v) for v in raw_values]
+            expected = sample_variance(vals)
+            if abs(float(facts.get("sample_variance", expected)) - expected) > 1e-6:
+                errors.append("sample_variance_consistency: sample variance mismatch")
+        elif op == "compute_sample_standard_deviation" and raw_values:
+            vals = [float(v) for v in raw_values]
+            var = sample_variance(vals)
+            std = sample_standard_deviation(vals)
+            if abs(float(facts.get("sample_variance", var)) - var) > 1e-6:
+                errors.append("sample_variance_consistency: sample variance mismatch in stddev payload")
+            if abs(float(facts.get("sample_standard_deviation", std)) - std) > 1e-6:
+                errors.append("sample_standard_deviation_consistency: sample stddev mismatch")
+            if abs(std - math.sqrt(var)) > 1e-6:
+                errors.append("sample_standard_deviation_consistency: sqrt(sample_variance) mismatch")
         elif op in {"compute_quartiles_and_iqr", "compare_dispersion"}:
             datasets = givens.get("datasets") or facts.get("group_summaries") or []
             if isinstance(datasets, list) and datasets:

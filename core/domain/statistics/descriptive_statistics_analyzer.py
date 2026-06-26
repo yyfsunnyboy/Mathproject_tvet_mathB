@@ -26,6 +26,8 @@ _CAPABILITY_PATTERNS: tuple[tuple[re.Pattern[str], str], ...] = (
     (re.compile(r"四分位距|\bIQR\b", re.I), "interquartile_range"),
     (re.compile(r"四分位數|\bQ1\b|\bQ3\b", re.I), "quartile"),
     (re.compile(r"比較.*離散|離散程度", re.I), "dispersion_comparison"),
+    (re.compile(r"樣本變異數|sample\s*variance|s\^2", re.I), "sample_variance"),
+    (re.compile(r"樣本標準差|sample\s*standard\s*deviation|\bs(?!²)\b", re.I), "sample_standard_deviation"),
     (re.compile(r"方差|variance|σ\^?2", re.I), "variance"),
     (re.compile(r"標準差|standard\s*deviation|σ(?!²)", re.I), "standard_deviation"),
     (re.compile(r"完成下表|填寫.*表|統計量.*表", re.I), "descriptive_statistics_table_completion"),
@@ -42,10 +44,14 @@ _PRIMARY_OPERATION_BY_PROBLEM_TYPE: dict[str, str] = {
     "conceptual_dispersion_judgment_computation": "conceptual_dispersion_judgment",
     "standard_deviation": "compute_population_standard_deviation",
     "standard_deviation_computation": "compute_population_standard_deviation",
+    "sample_standard_deviation": "compute_sample_standard_deviation",
+    "sample_standard_deviation_computation": "compute_sample_standard_deviation",
     "range": "compute_range",
     "range_computation": "compute_range",
     "variance": "compute_population_variance",
     "variance_computation": "compute_population_variance",
+    "sample_variance": "compute_sample_variance",
+    "sample_variance_computation": "compute_sample_variance",
     "arithmetic_mean": "compute_arithmetic_mean_from_raw_values",
     "arithmetic_mean_computation": "compute_arithmetic_mean_from_raw_values",
     "weighted_mean": "compute_weighted_mean",
@@ -77,8 +83,16 @@ def _normalize_capabilities(capabilities: list[str] | tuple[str, ...] | None) ->
     caps = list(capabilities or [])
     if "weighted_mean" in caps and "arithmetic_mean" in caps:
         caps = [cap for cap in caps if cap != "arithmetic_mean"]
+    if "sample_standard_deviation" in caps and "standard_deviation" in caps:
+        caps = [cap for cap in caps if cap != "standard_deviation"]
+    if "sample_variance" in caps and "variance" in caps:
+        caps = [cap for cap in caps if cap != "variance"]
     if "standard_deviation" in caps and "variance" in caps:
         caps = [cap for cap in caps if cap != "variance"]
+    if "sample_standard_deviation" in caps and "sample_variance" in caps:
+        caps = [cap for cap in caps if cap != "sample_variance"]
+    if {"standard_deviation", "variance", "sample_standard_deviation", "sample_variance"} & set(caps):
+        caps = [cap for cap in caps if cap != "arithmetic_mean"]
     return caps
 
 
@@ -180,6 +194,8 @@ def _infer_task_classification(
         "dispersion_comparison",
         "descriptive_statistics_table_completion",
         "weighted_mean",
+        "sample_standard_deviation",
+        "sample_variance",
         "standard_deviation",
         "variance",
         "median",
@@ -245,6 +261,12 @@ def resolve_descriptive_operation(
         op = "compute_quartiles_and_iqr"
         if op in allowed and set(required).issubset(set(spec.operations[op].provided_capabilities or ())):
             return op
+    if required_set <= {"sample_standard_deviation", "sample_variance"} and "sample_standard_deviation" in required_set:
+        op = "compute_sample_standard_deviation"
+        if op in allowed:
+            return op
+    if required_set == {"sample_variance"}:
+        return "compute_sample_variance" if "compute_sample_variance" in allowed else None
     if required_set <= {"standard_deviation", "variance"} and "standard_deviation" in required_set:
         op = "compute_population_standard_deviation"
         if op in allowed:
@@ -446,14 +468,29 @@ def extract_textbook_constraints(row: dict[str, Any] | None) -> dict[str, Any]:
     if datasets:
         out["datasets"] = datasets
 
-    if re.search(r"母體標準差|標準差", problem_text):
+    if re.search(r"母體標準差|標準差|變異數", problem_text):
         score_tokens = re.findall(r"(\d+)\s*分", problem_text)
         if score_tokens:
             out["raw_values"] = [float(token) for token in score_tokens]
         else:
-            nums = [float(token) for token in re.findall(r"-?\d+(?:\.\d+)?", problem_text)]
-            if 4 <= len(nums) <= 12:
-                out["raw_values"] = nums
+            # Only extract the data segment after the data-list delimiter (：/: followed by numbers)
+            # This prevents narrative numbers like "10 位", "2025 年", "例題 7" from leaking in.
+            data_segment_match = re.search(
+                r"[：:﹕]\s*([\d\s,，、.+\-]+?)(?:[，。]|試求|求|則|$)", problem_text
+            )
+            if data_segment_match:
+                nums = [
+                    float(t) for t in re.findall(r"-?\d+(?:\.\d+)?", data_segment_match.group(1))
+                ]
+                if 3 <= len(nums) <= 15:
+                    out["raw_values"] = nums
+                    # Carry the expected count so domain builder can validate length
+                    count_match = re.search(r"(\d+)\s*(?:位|人|名|個|筆)", problem_text)
+                    if count_match:
+                        stated_count = int(count_match.group(1))
+                        # Only trust stated count when it matches extracted length
+                        if stated_count == len(nums):
+                            out["count"] = stated_count
 
     if has_abcd_choice_group(problem_text):
         choices = parse_abcd_choices_from_text(problem_text)

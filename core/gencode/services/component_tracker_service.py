@@ -1,4 +1,4 @@
-﻿"""Gencode component tracker shadow-table service (sqlite3 only)."""
+"""Gencode component tracker shadow-table service (sqlite3 only)."""
 
 from __future__ import annotations
 
@@ -143,7 +143,6 @@ def _fetch_tracker_row(
         return {key: row[key] for key in _TRACKER_COLUMNS}
     return dict(zip(_TRACKER_COLUMNS, row, strict=True))
 
-
 def save_tracker_record(
     conn: sqlite3.Connection,
     *,
@@ -154,6 +153,41 @@ def save_tracker_record(
     gencode_error_log: str | None = None,
 ) -> dict[str, object]:
     """Insert or upsert a tracker row after administrative ownership assertion."""
+    status_to_check = str(gencode_status or "").strip()
+    status_to_check = STATUS_FOR_ERROR_CODE.get(status_to_check, status_to_check)
+    DB_CANONICAL_STATUSES = frozenset(
+        {
+            "pending",
+            "usable",
+            "generating",
+            "draft_written",
+            "smoke_passed",
+            "verified",
+            "failed",
+        }
+    )
+    if status_to_check not in DB_CANONICAL_STATUSES and status_to_check in ALLOWED_GENCODE_STATUSES:
+        original_attempted_status = status_to_check
+        original_error_code = status_to_check
+        original_error_detail = gencode_error_log or status_to_check
+        
+        payload_dict = {}
+        if isinstance(induced_spec_payload, dict):
+            payload_dict = dict(induced_spec_payload)
+        elif isinstance(induced_spec_payload, str):
+            try:
+                payload_dict = json.loads(induced_spec_payload)
+            except Exception:
+                payload_dict = {"raw_payload_text": induced_spec_payload}
+        
+        payload_dict.setdefault("original_attempted_status", original_attempted_status)
+        payload_dict.setdefault("original_error_code", original_error_code)
+        payload_dict.setdefault("original_error_detail", original_error_detail)
+        
+        induced_spec_payload = payload_dict
+        gencode_error_log = f"[{original_attempted_status}] {gencode_error_log}" if gencode_error_log else f"[{original_attempted_status}]"
+        gencode_status = "failed"
+
     status = _validate_gencode_status(gencode_status)
     assert_textbook_example_skill(
         conn,
@@ -214,7 +248,6 @@ def update_status(
     gencode_error_log: str | None = None,
 ) -> dict[str, object]:
     """Update tracker status after administrative ownership assertion."""
-    status = _validate_gencode_status(gencode_status)
     assert_textbook_example_skill(
         conn,
         textbook_example_id=textbook_example_id,
@@ -225,16 +258,55 @@ def update_status(
     if existing is None:
         raise ValueError("tracker_record_not_found")
 
+    status_to_check = str(gencode_status or "").strip()
+    status_to_check = STATUS_FOR_ERROR_CODE.get(status_to_check, status_to_check)
+    DB_CANONICAL_STATUSES = frozenset(
+        {
+            "pending",
+            "usable",
+            "generating",
+            "draft_written",
+            "smoke_passed",
+            "verified",
+            "failed",
+        }
+    )
+    
+    payload_text = existing.get("induced_spec_payload")
+
+    if status_to_check not in DB_CANONICAL_STATUSES and status_to_check in ALLOWED_GENCODE_STATUSES:
+        original_attempted_status = status_to_check
+        original_error_code = status_to_check
+        original_error_detail = gencode_error_log or status_to_check
+        
+        payload_dict = {}
+        if payload_text:
+            try:
+                payload_dict = json.loads(payload_text)
+            except Exception:
+                payload_dict = {"raw_payload_text": payload_text}
+        
+        payload_dict.setdefault("original_attempted_status", original_attempted_status)
+        payload_dict.setdefault("original_error_code", original_error_code)
+        payload_dict.setdefault("original_error_detail", original_error_detail)
+        
+        payload_text = json.dumps(payload_dict, ensure_ascii=False)
+        gencode_error_log = f"[{original_attempted_status}] {gencode_error_log}" if gencode_error_log else f"[{original_attempted_status}]"
+        gencode_status = "failed"
+
+    status = _validate_gencode_status(gencode_status)
+
     conn.execute(
         """
         UPDATE gencode_component_tracker
         SET
             gencode_status = ?,
             gencode_error_log = ?,
+            induced_spec_payload = ?,
             updated_at = datetime('now', 'localtime')
         WHERE textbook_example_id = ?
         """,
-        (status, gencode_error_log, textbook_example_id),
+        (status, gencode_error_log, payload_text, textbook_example_id),
     )
     conn.commit()
 
@@ -242,6 +314,3 @@ def update_status(
     if updated is None:
         raise RuntimeError("tracker_record_update_failed")
     return updated
-
-
-

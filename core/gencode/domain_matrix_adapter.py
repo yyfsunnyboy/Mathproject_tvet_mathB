@@ -1424,6 +1424,8 @@ _DESCRIPTIVE_STATS_OPS = frozenset(
         "compute_range",
         "compute_population_variance",
         "compute_population_standard_deviation",
+        "compute_sample_variance",
+        "compute_sample_standard_deviation",
         "complete_descriptive_statistics_table",
         "compute_quartiles_and_iqr",
         "compare_dispersion",

@@ -1,0 +1,62 @@
+{
+  "skill_id": "vh_數學B4_VarianceAndStandardDeviation",
+  "compiled_at": "2026-06-26T14:33:55.787424+00:00",
+  "publish_status": "dryrun_manifest_compiled",
+  "components": [
+    {
+      "component_id": "src_3848",
+      "status": "verified",
+      "presentation_mode": "short_answer",
+      "source_kind": "ex_3848",
+      "textbook_example_id": 3848,
+      "line_type": "compute_population_standard_deviation",
+      "domain_module": "core.domain.statistics.descriptive_statistics_domain",
+      "entrypoint": "build_descriptive_statistics_matrix",
+      "component_dir": "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_dryrun\\vh_數學B4_VarianceAndStandardDeviation\\components\\src_3848"
+    },
+    {
+      "component_id": "src_3849",
+      "status": "verified",
+      "presentation_mode": "short_answer",
+      "source_kind": "ex_3849",
+      "textbook_example_id": 3849,
+      "line_type": "compute_population_standard_deviation",
+      "domain_module": "core.domain.statistics.descriptive_statistics_domain",
+      "entrypoint": "build_descriptive_statistics_matrix",
+      "component_dir": "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_dryrun\\vh_數學B4_VarianceAndStandardDeviation\\components\\src_3849"
+    },
+    {
+      "component_id": "src_3850",
+      "status": "verified",
+      "presentation_mode": "short_answer",
+      "source_kind": "ex_3850",
+      "textbook_example_id": 3850,
+      "line_type": "compute_population_standard_deviation",
+      "domain_module": "core.domain.statistics.descriptive_statistics_domain",
+      "entrypoint": "build_descriptive_statistics_matrix",
+      "component_dir": "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_dryrun\\vh_數學B4_VarianceAndStandardDeviation\\components\\src_3850"
+    },
+    {
+      "component_id": "src_3851",
+      "status": "verified",
+      "presentation_mode": "short_answer",
+      "source_kind": "ex_3851",
+      "textbook_example_id": 3851,
+      "line_type": "compute_sample_standard_deviation",
+      "domain_module": "core.domain.statistics.descriptive_statistics_domain",
+      "entrypoint": "build_descriptive_statistics_matrix",
+      "component_dir": "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_dryrun\\vh_數學B4_VarianceAndStandardDeviation\\components\\src_3851"
+    },
+    {
+      "component_id": "src_3899",
+      "status": "verified",
+      "presentation_mode": "single_choice",
+      "source_kind": "ex_3899",
+      "textbook_example_id": 3899,
+      "line_type": "compute_population_standard_deviation",
+      "domain_module": "core.domain.statistics.descriptive_statistics_domain",
+      "entrypoint": "build_descriptive_statistics_matrix",
+      "component_dir": "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_dryrun\\vh_數學B4_VarianceAndStandardDeviation\\components\\src_3899"
+    }
+  ]
+}
