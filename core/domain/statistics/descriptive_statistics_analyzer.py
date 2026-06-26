@@ -265,6 +265,8 @@ def resolve_descriptive_operation(
         op = "compute_sample_standard_deviation"
         if op in allowed:
             return op
+    if required_set == {"median", "range"}:
+        return "compute_linear_transform_median_and_range" if "compute_linear_transform_median_and_range" in allowed else None
     if required_set == {"sample_variance"}:
         return "compute_sample_variance" if "compute_sample_variance" in allowed else None
     if required_set <= {"standard_deviation", "variance"} and "standard_deviation" in required_set:

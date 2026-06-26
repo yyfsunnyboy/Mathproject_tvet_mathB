@@ -1430,6 +1430,7 @@ _DESCRIPTIVE_STATS_OPS = frozenset(
         "compute_quartiles_and_iqr",
         "compare_dispersion",
         "conceptual_dispersion_judgment",
+        "compute_linear_transform_median_and_range",
     }
 )
 

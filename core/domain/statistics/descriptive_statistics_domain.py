@@ -944,6 +944,80 @@ def _build_conceptual_dispersion_judgment(rng: random.Random, constraints: dict[
     )
 
 
+def _build_linear_transform_median_and_range(rng: random.Random, constraints: dict[str, Any], op: str) -> dict[str, Any]:
+    # We want flat linear transform: y = x + shift
+    # Shift should vary by seed: rng.choice([-50, -40, -30, -20, 20, 30, 40, 50])
+    shift = rng.choice([-80, -60, -50, -40, -30, -20, 20, 30, 40, 50, 60, 80])
+    count = rng.randint(10, 30)
+
+    # Let's generate base values
+    base_values = [float(v) for v in generate_raw_values(rng, count=count, low=10, high=100)]
+    orig_median = median_from_values(base_values)
+    orig_range = range_from_values(base_values)
+
+    new_median = orig_median + shift
+    new_range = orig_range
+
+    shift_sign = "+" if shift > 0 else "-"
+    shift_abs = abs(shift)
+
+    question = f"有{count}筆資料，在計算時，若把所有數值都{ '加上' if shift > 0 else '減去' }{shift_abs}以後，再計算中位數和全距，則下列何者正確？"
+
+    # Single choice options:
+    # A: 新的中位數和全距與原來的都相同
+    # B: 新的中位數和全距與原來的都不相同
+    # C: 新的中位數與原來的相同，但全距不相同
+    # D: 新的全距與原來的相同，但中位數不同
+    # Correct is always D since median is shifted (new_median != orig_median), range is same (new_range == orig_range).
+    correct_label = "D"
+    choices = [
+        {"label": "A", "text": "新的中位數和全距與原來的都相同"},
+        {"label": "B", "text": "新的中位數和全距與原來的都不相同"},
+        {"label": "C", "text": "新的中位數與原來的相同，但全距不相同"},
+        {"label": "D", "text": "新的全距與原來的相同，但中位數不同"},
+    ]
+
+    return _matrix_shell(
+        givens={
+            "raw_values": base_values,
+            "shift_value": shift,
+            "original_median": orig_median,
+            "original_range": orig_range,
+            "transformed_median": new_median,
+            "transformed_range": new_range,
+            "question_text": question,
+            "choices": choices,
+            "source_choices": choices,
+            "source_answer_label": correct_label,
+            "answer": correct_label,
+            "distractors": ["A", "B", "C"],
+            "visual_spec": {},
+        },
+        answer_value=correct_label,
+        answer_text=correct_label,
+        validation_facts={
+            "domain_operation": op,
+            "target_measure": "compute_linear_transform_median_and_range",
+            "semantic_answer": correct_label,
+            "answer_shape": "single_choice",
+            "transformed_median": new_median,
+            "transformed_range": new_range,
+            "original_median": orig_median,
+            "original_range": orig_range,
+        },
+        explanation_steps=[
+            f"將所有數值進行平移：y = x {'+' if shift > 0 else '-'} {shift_abs}",
+            "新的中位數會隨之平移（改變），即新中位數 = 原中位數 + 平移量",
+            "全距代表離散程度（差值），平移後全距保持不變，即新全距 = 原全距",
+            "因此，新的全距與原來的相同，但中位數不同，答案選 (D)",
+        ],
+        answer_shape="single_choice",
+        presentation_mode="single_choice",
+        answer_type="single_choice",
+        ui_contract={"response_mode": "single_choice", "text_input_enabled": False},
+    )
+
+
 _HANDLERS = {
     "compute_arithmetic_mean_from_raw_values": _build_mean_raw,
     "compute_arithmetic_mean_from_frequency_table": _build_mean_frequency,
@@ -960,6 +1034,7 @@ _HANDLERS = {
     "compute_quartiles_and_iqr": _build_quartiles_and_iqr,
     "compare_dispersion": _build_compare_dispersion,
     "conceptual_dispersion_judgment": _build_conceptual_dispersion_judgment,
+    "compute_linear_transform_median_and_range": _build_linear_transform_median_and_range,
 }
 
 
@@ -1110,5 +1185,6 @@ def _operation_capabilities(operation: str) -> tuple[str, ...]:
         "compute_quartiles_and_iqr": ("range", "quartile", "interquartile_range"),
         "compare_dispersion": ("dispersion_comparison", "range", "quartile", "interquartile_range"),
         "conceptual_dispersion_judgment": ("conceptual_dispersion_judgment",),
+        "compute_linear_transform_median_and_range": ("median", "range"),
     }
     return mapping.get(operation, ("descriptive_statistics",))

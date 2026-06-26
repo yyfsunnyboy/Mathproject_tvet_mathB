@@ -1,0 +1,84 @@
+{
+  "skill_id": "vh_數學B4_LinearTransformationOfData",
+  "publish_status": "production_manifest_compiled",
+  "component_count": 7,
+  "components": [
+    {
+      "component_id": "src_3852",
+      "textbook_example_id": 3852,
+      "status": "verified",
+      "problem_type_id": "compute_population_standard_deviation",
+      "domain_operation": "compute_population_standard_deviation",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_3852/generate.py"
+    },
+    {
+      "component_id": "src_3853",
+      "textbook_example_id": 3853,
+      "status": "verified",
+      "problem_type_id": "compute_population_standard_deviation",
+      "domain_operation": "compute_population_standard_deviation",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "quiz",
+      "generate_py": "components/src_3853/generate.py"
+    },
+    {
+      "component_id": "src_3854",
+      "textbook_example_id": 3854,
+      "status": "verified",
+      "problem_type_id": "compute_population_standard_deviation",
+      "domain_operation": "compute_population_standard_deviation",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_3854/generate.py"
+    },
+    {
+      "component_id": "src_3855",
+      "textbook_example_id": 3855,
+      "status": "verified",
+      "problem_type_id": "compute_population_standard_deviation",
+      "domain_operation": "compute_population_standard_deviation",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_3855/generate.py"
+    },
+    {
+      "component_id": "src_3894",
+      "textbook_example_id": 3894,
+      "status": "verified",
+      "problem_type_id": "compute_arithmetic_mean_from_raw_values",
+      "domain_operation": "compute_arithmetic_mean_from_raw_values",
+      "presentation_mode": "single_choice",
+      "answer_type": "choice_label",
+      "source_kind": "test",
+      "generate_py": "components/src_3894/generate.py"
+    },
+    {
+      "component_id": "src_3895",
+      "textbook_example_id": 3895,
+      "status": "verified",
+      "problem_type_id": "compute_population_standard_deviation",
+      "domain_operation": "compute_population_standard_deviation",
+      "presentation_mode": "single_choice",
+      "answer_type": "choice_label",
+      "source_kind": "test",
+      "generate_py": "components/src_3895/generate.py"
+    },
+    {
+      "component_id": "src_3896",
+      "textbook_example_id": 3896,
+      "status": "verified",
+      "problem_type_id": "compute_population_standard_deviation",
+      "domain_operation": "compute_population_standard_deviation",
+      "presentation_mode": "single_choice",
+      "answer_type": "choice_label",
+      "source_kind": "test",
+      "generate_py": "components/src_3896/generate.py"
+    }
+  ]
+}

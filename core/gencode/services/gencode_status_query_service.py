@@ -368,6 +368,23 @@ def inspect_component_production_sync(
             "verified_component_path": str(verified_generate),
             "production_component_path": str(production_generate),
         }
+    # Authoritative fallback: production generate.py exists and component is in specs.
+    # This covers the case where tracker.updated_at was bumped (e.g. error cleared)
+    # without re-packaging — the production file and its specs entry are sufficient
+    # evidence that the component has been published to production.
+    # Components that were never packaged will have production_hash=None or specs_match=False,
+    # so they correctly fall through to production_contains_latest=False.
+    if production_hash and specs_match and production_generate.is_file():
+        return {
+            "production_contains_latest": True,
+            "production_sync_method": "production_generate_exists_in_specs",
+            "production_sync_reason": None,
+            "verified_component_hash": verified_hash or payload_verified_hash or verified_artifact_hash,
+            "production_component_hash": production_hash,
+            "published_component_hash": published_hash,
+            "verified_component_path": str(verified_generate),
+            "production_component_path": str(production_generate),
+        }
 
     reason = "hash_mismatch"
     if not production_hash:

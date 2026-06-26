@@ -526,5 +526,12 @@ register_domain_spec(DomainCapabilitySpec(
             supported_presentation_modes=("single_choice",),
             provided_capabilities=("conceptual_dispersion_judgment",),
         ),
+        "compute_linear_transform_median_and_range": _op(
+            "compute_linear_transform_median_and_range",
+            "build_descriptive_statistics_matrix",
+            supported_answer_types=("multi_part", "single_choice"),
+            supported_presentation_modes=("single_choice", "multi_part"),
+            provided_capabilities=("median", "range"),
+        ),
     },
 ))
