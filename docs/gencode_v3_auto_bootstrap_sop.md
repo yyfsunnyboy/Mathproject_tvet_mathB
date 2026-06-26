@@ -1,5 +1,11 @@
 # Gencode V3 Auto-Bootstrap SOP
 
+> **⚠️ 權威地位變更（2026-06-26）**：本文件之 **Auto-Bootstrap／Domain Bootstrap／Healer** 敘述已併入正式 SOP 權威來源：  
+> - [SOP_Gencode_AgentSkillV3_Specification.md §1.10](./系統SOP/Gencode_AgentSkillV3整合/SOP_Gencode_AgentSkillV3_Specification.md)（規範權威）  
+> - [SOP_Gencode_AgentSkillV3_PipelineFlow.md §1.7](./系統SOP/Gencode_AgentSkillV3整合/SOP_Gencode_AgentSkillV3_PipelineFlow.md)（流程權威）  
+> - [Gencode與AgentSkillV2整合總體設計_v0.3.md §14](./系統SOP/Gencode_AgentSkillV2整合/Gencode與AgentSkillV2整合總體設計_v0.3.md)（教師端產品敘事）  
+> **Automated Domain Bootstrap & Healer 為最終產品必要能力，不是選配。** 以下內容保留作歷史參考；衝突時以正式 SOP 為準。
+
 > **文件版本**：Gencode V3 SOP **v1.7**（Auto-Bootstrap Amendment）  
 > **生效日期**：2026-06-23  
 > **Supersedes**：Gencode V3 SOP v1.6 中「未知 skill = unsupported」「MVP Taxonomy Gate 阻擋生成」「skill-specific allowlist 作為生成入口」之隱含流程  

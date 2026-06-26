@@ -767,7 +767,15 @@
                         </td>
                         <td>
                             <div class="btn-group">
-                                <button class="btn btn-edit" onclick="openEditModal('{{ skill.skill_id }}')">
+                                <button class="btn btn-edit"
+                                    onclick='openEditModal({{ {
+                                        "skill_id": skill.skill_id,
+                                        "curriculum": skill.curriculum,
+                                        "grade": skill.grade,
+                                        "volume": skill.volume,
+                                        "chapter": skill.chapter,
+                                        "section": skill.section
+                                    }|tojson }})'>
                                     <i class="bi bi-pencil-fill"></i>
                                 </button>
                                 {% if not (production_wrapper_exists and v3_package_exists) %}
@@ -895,6 +903,11 @@
                 <span class="close" onclick="closeModal('editModal')">×</span>
             </div>
             <form id="editForm" method="POST">
+                <input type="hidden" id="edit_curriculum" name="curriculum" value="">
+                <input type="hidden" id="edit_grade" name="grade" value="">
+                <input type="hidden" id="edit_volume" name="volume" value="">
+                <input type="hidden" id="edit_chapter" name="chapter" value="">
+                <input type="hidden" id="edit_section" name="section" value="">
                 <div class="form-group">
                     <label>技能 ID</label>
                     <input type="text" id="edit_skill_id" disabled style="background: #e9ecef; cursor: not-allowed;">
@@ -952,8 +965,9 @@
                         min="1" max="50" required>
                 </div>
                 <div class="form-group">
-                    <label for="edit_order_index">排序順序</label>
-                    <input type="number" id="edit_order_index" name="order_index" min="0">
+                    <label for="edit_display_order">排序順序</label>
+                    <input type="number" id="edit_display_order" name="display_order" min="0">
+                    <small>數字越小越前面；對應目前課程篩選位置中的排序。</small>
                 </div>
                 <div class="form-group">
                     <div class="checkbox-group">
@@ -995,7 +1009,14 @@
             document.getElementById(modalId).style.display = 'none';
         }
 
-        function openEditModal(skillId) {
+        function openEditModal(curriculumCtx) {
+            const ctx = curriculumCtx || {};
+            const skillId = ctx.skill_id;
+            if (!skillId) {
+                Swal.fire('錯誤', '缺少技能 ID', 'error');
+                return;
+            }
+
             // 1. 顯示 Loading
             Swal.fire({
                 title: '載入中...',
@@ -1005,36 +1026,45 @@
                 }
             });
 
-            // 2. 發送請求
-            // 使用 url_for 動態生成網址，確保路徑正確
-            const url = "{{ url_for('core.admin_get_skill_details', skill_id='SKILL_ID_PLACEHOLDER') }}".replace('SKILL_ID_PLACEHOLDER', skillId);
+            const params = new URLSearchParams();
+            if (ctx.curriculum) params.set('curriculum', ctx.curriculum);
+            if (ctx.grade !== undefined && ctx.grade !== null && ctx.grade !== '') {
+                params.set('grade', String(ctx.grade));
+            }
+            if (ctx.volume) params.set('volume', ctx.volume);
+            if (ctx.chapter) params.set('chapter', ctx.chapter);
+            if (ctx.section) params.set('section', ctx.section);
+
+            const baseUrl = "{{ url_for('core.admin_get_skill_details', skill_id='SKILL_ID_PLACEHOLDER') }}".replace('SKILL_ID_PLACEHOLDER', skillId);
+            const url = params.toString() ? `${baseUrl}?${params.toString()}` : baseUrl;
 
             fetch(url)
                 .then(response => response.json())
                 .then(data => {
-                    Swal.close(); // 關閉 Loading
+                    Swal.close();
 
                     if (data.success) {
-                        // [Fix] 定義 skill 變數，從回應資料中取出
                         const skill = data.data;
 
-                        // 3. 填入資料
                         document.getElementById('edit_skill_id').value = skill.skill_id || '';
                         document.getElementById('edit_skill_en_name').value = skill.skill_en_name || '';
                         document.getElementById('edit_skill_ch_name').value = skill.skill_ch_name || '';
                         document.getElementById('edit_category').value = skill.category || '';
                         document.getElementById('edit_input_type').value = skill.input_type || 'text';
                         document.getElementById('edit_description').value = skill.description || '';
-                        // 優先使用新的 prompt 欄位
                         document.getElementById('edit_gemini_prompt').value = skill.gemini_prompt || '';
                         document.getElementById('edit_consecutive_correct_required').value = skill.consecutive_correct_required || 10;
-                        document.getElementById('edit_order_index').value = skill.order_index || 999;
+                        document.getElementById('edit_display_order').value = skill.display_order ?? 0;
 
-                        // 處理 Checkbox
+                        document.getElementById('edit_curriculum').value = skill.curriculum || ctx.curriculum || '';
+                        document.getElementById('edit_grade').value = (skill.grade ?? ctx.grade ?? '');
+                        document.getElementById('edit_volume').value = skill.volume || ctx.volume || '';
+                        document.getElementById('edit_chapter').value = skill.chapter || ctx.chapter || '';
+                        document.getElementById('edit_section').value = skill.section || ctx.section || '';
+
                         const isActiveBox = document.getElementById('edit_is_active');
                         if (isActiveBox) isActiveBox.checked = skill.is_active;
 
-                        // 填充 AI 推薦提問 (如果有這幾個欄位)
                         if (document.getElementById('edit_suggested_prompt_1'))
                             document.getElementById('edit_suggested_prompt_1').value = skill.suggested_prompt_1 || '';
                         if (document.getElementById('edit_suggested_prompt_2'))
@@ -1042,11 +1072,9 @@
                         if (document.getElementById('edit_suggested_prompt_3'))
                             document.getElementById('edit_suggested_prompt_3').value = skill.suggested_prompt_3 || '';
 
-                        // 更新 Form Action
                         const form = document.getElementById('editForm');
                         form.action = "{{ url_for('core.admin_edit_skill', skill_id='PLACEHOLDER') }}".replace('PLACEHOLDER', skill.skill_id);
 
-                        // 4. 顯示 Modal
                         document.getElementById('editModal').style.display = 'block';
                     } else {
                         throw new Error(data.message || 'API 回傳失敗');

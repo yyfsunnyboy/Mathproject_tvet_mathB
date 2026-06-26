@@ -6,7 +6,7 @@ import json
 import re
 from typing import Any
 
-from core.gencode.services.v3_example_semantic_classifier import parse_choices_from_text
+from core.gencode.v3_presentation_inference import has_abcd_choice_group, parse_abcd_choices_from_text
 
 _STAT_CHART_SOURCE_TOPOLOGY: dict[int, dict[str, Any]] = {
     3884: {
@@ -130,7 +130,9 @@ def build_source_topology_from_textbook_row(row: dict[str, Any]) -> dict[str, An
     example_id = int(row.get("id") or row.get("textbook_example_id") or 0)
     problem_text = str(row.get("problem_text") or "")
     notes = parse_textbook_notes(row.get("notes"))
-    choices = list(row.get("choices") or parse_choices_from_text(problem_text))
+    choices = list(row.get("choices") or [])
+    if not choices and has_abcd_choice_group(problem_text):
+        choices = parse_abcd_choices_from_text(problem_text)
     preset = dict(_STAT_CHART_SOURCE_TOPOLOGY.get(example_id) or {})
     if not preset:
         return {

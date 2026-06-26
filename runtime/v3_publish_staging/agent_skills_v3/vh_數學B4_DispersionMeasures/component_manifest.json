@@ -1,0 +1,62 @@
+{
+  "skill_id": "vh_數學B4_DispersionMeasures",
+  "publish_status": "production_manifest_compiled",
+  "component_count": 5,
+  "components": [
+    {
+      "component_id": "src_3845",
+      "textbook_example_id": 3845,
+      "status": "verified",
+      "problem_type_id": "compute_quartiles_and_iqr",
+      "domain_operation": "compute_quartiles_and_iqr",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_3845/generate.py"
+    },
+    {
+      "component_id": "src_3846",
+      "textbook_example_id": 3846,
+      "status": "verified",
+      "problem_type_id": "compare_dispersion",
+      "domain_operation": "compare_dispersion",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "quiz",
+      "generate_py": "components/src_3846/generate.py"
+    },
+    {
+      "component_id": "src_3847",
+      "textbook_example_id": 3847,
+      "status": "verified",
+      "problem_type_id": "compare_dispersion",
+      "domain_operation": "compare_dispersion",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_3847/generate.py"
+    },
+    {
+      "component_id": "src_3891",
+      "textbook_example_id": 3891,
+      "status": "verified",
+      "problem_type_id": "conceptual_dispersion_judgment",
+      "domain_operation": "conceptual_dispersion_judgment",
+      "presentation_mode": "single_choice",
+      "answer_type": "choice_label",
+      "source_kind": "test",
+      "generate_py": "components/src_3891/generate.py"
+    },
+    {
+      "component_id": "src_3892",
+      "textbook_example_id": 3892,
+      "status": "verified",
+      "problem_type_id": "compute_population_standard_deviation",
+      "domain_operation": "compute_population_standard_deviation",
+      "presentation_mode": "single_choice",
+      "answer_type": "choice_label",
+      "source_kind": "test",
+      "generate_py": "components/src_3892/generate.py"
+    }
+  ]
+}

@@ -1,0 +1,38 @@
+from __future__ import annotations
+
+from typing import Any
+
+from core.domain.statistics.descriptive_statistics_domain import build_descriptive_statistics_matrix
+from core.gencode.domain_matrix_adapter import convert_domain_matrix_to_question_payload
+
+PRESENTATION_MODE = "short_answer"
+ANSWER_TYPE = "expression"
+PROBLEM_TYPE_ID = "compute_mode_from_raw_values"
+TEXTBOOK_EXAMPLE_ID = 3837
+DEFAULT_COMPONENT_ID = "src_3837" if TEXTBOOK_EXAMPLE_ID else ""
+
+
+def generate(level: int = 1, seed: int | None = None, **kwargs: Any) -> dict[str, Any]:
+    matrix = build_descriptive_statistics_matrix(
+        seed=seed,
+        domain_operation="compute_mode_from_raw_values",
+        curriculum_profile="vocational_high_b",
+        difficulty_profile="easy",
+        constraints={'v3_induced_spec': {'classification_status': 'resolved', 'skill_id': 'vh_數學B4_CentralTendencyMeasures', 'source_example_id': 3837, 'textbook_example_id': 3837, 'source_hash': '940ab67b9be4b75bf2acb9e5e7c659ef', 'problem_type_id': 'mode_computation', 'required_capabilities': ['mode'], 'classification_source': 'generic_structural_inference', 'presentation_mode': 'single_choice', 'answer_contract': {'answer_type': 'choice', 'checker_key': 'choice_label_checker', 'equivalence_type': 'choice_label'}, 'answer_type': 'choice'}, 'phase1_classification': {'classification_status': 'resolved', 'skill_id': 'vh_數學B4_CentralTendencyMeasures', 'source_example_id': 3837, 'textbook_example_id': 3837, 'source_hash': '940ab67b9be4b75bf2acb9e5e7c659ef', 'problem_type_id': 'mode_computation', 'required_capabilities': ['mode'], 'classification_source': 'generic_structural_inference', 'presentation_mode': 'single_choice', 'answer_contract': {'answer_type': 'choice', 'checker_key': 'choice_label_checker', 'equivalence_type': 'choice_label'}, 'answer_type': 'choice'}, 'problem_type_id': 'mode_computation', 'required_capabilities': ['mode'], 'classification_source': 'generic_structural_inference', 'source_hash': '940ab67b9be4b75bf2acb9e5e7c659ef', 'presentation_mode': 'single_choice', 'answer_contract': {'answer_type': 'choice', 'checker_key': 'choice_label_checker', 'equivalence_type': 'choice_label'}, 'source_example_id': 3837, 'answer_type': 'choice', 'exact_task_operation': '', 'source_choices': ['65, 80, 70, 80, 75, 80, 85, 80, 75, 65；', '5, 6, 7, 6, 5, 8, 6, 7, 5, 9, 9。'], 'source_answer_label': '(1) 80；(2) 5, 6', 'domain_resolution': {'skill_id': 'vh_數學B4_CentralTendencyMeasures', 'fixed_domain_key': 'statistics.descriptive_statistics', 'resolution_source': 'derived_capability_match', 'binding_status': 'derived', 'required_capabilities': ['mode'], 'matched_capabilities': ['mode'], 'selected_operation': 'mode_computation', 'registry_revision': '2026-06-23-v1.8', 'domain_module': 'core.domain.statistics.descriptive_statistics_domain', 'entrypoint': 'build_descriptive_statistics_matrix', 'allowed_operations': ['compute_arithmetic_mean_from_raw_values', 'compute_arithmetic_mean_from_frequency_table', 'compute_weighted_mean', 'compute_median_from_raw_values', 'compute_mode_from_raw_values', 'compute_mode_from_frequency_table', 'compute_range', 'compute_population_variance', 'compute_population_standard_deviation', 'complete_descriptive_statistics_table'], 'curriculum_profile': 'vocational_high_b'}},
+    )
+    component_id = str(kwargs.get("component_id") or DEFAULT_COMPONENT_ID or "")
+    payload = convert_domain_matrix_to_question_payload(
+        matrix,
+        presentation_mode=PRESENTATION_MODE,
+        answer_type=ANSWER_TYPE,
+        problem_type_id=PROBLEM_TYPE_ID,
+        component_id=component_id or None,
+        textbook_example_id=TEXTBOOK_EXAMPLE_ID or None,
+        answer_schema_key="",
+        domain_operation="compute_mode_from_raw_values",
+        seed=seed,
+    )
+    if component_id:
+        payload["component_id"] = component_id
+    payload["seed"] = seed
+    return payload

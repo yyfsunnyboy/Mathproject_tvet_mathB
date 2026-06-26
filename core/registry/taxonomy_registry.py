@@ -224,6 +224,22 @@ def _skill_registered(skill_id: str) -> bool:
     return str(skill_id or "").strip() in SKILL_TO_DOMAIN
 
 
+def is_confirmed_skill_binding(skill_id: str) -> bool:
+    """Return True when skill_id has an explicit confirmed registry binding."""
+    return _skill_registered(skill_id)
+
+
+def get_confirmed_skill_binding(skill_id: str) -> dict[str, Any] | None:
+    """Return merged confirmed binding metadata, or None when unbound."""
+    key = str(skill_id or "").strip()
+    if not key or not _skill_registered(key):
+        return None
+    try:
+        return resolve_domain_for_skill(key)
+    except SkillDomainNotRegisteredError:
+        return None
+
+
 def get_fixed_domain_key(skill_id: str) -> str:
     """Return the single fixed routing domain key for a skill."""
     key = str(skill_id or "").strip()

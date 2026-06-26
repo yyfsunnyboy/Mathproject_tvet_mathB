@@ -288,6 +288,7 @@ def _v3_runtime_contract_api_fields(data: dict[str, Any]) -> dict[str, Any]:
         "choices_display": data.get("choices_display", data.get("choices", [])),
         "subquestions": data.get("subquestions", []),
         "table_data": data.get("table_data", {}),
+        "table_question": data.get("table_question", {}),
         "semantic_answer": data.get("semantic_answer") or meta.get("semantic_answer"),
         "display_answer": data.get("display_answer"),
         "component_id": data.get("component_id") or meta.get("component_id"),
@@ -1851,8 +1852,9 @@ def next_question():
             "image_base64": data.get("image_base64", ""),
             "visual_spec": data.get("visual_spec", {}),
             "visual_aids": session_data.get("visual_aids", data.get("visual_aids", [])),
-            "table_data": data.get("table_data", session_data.get("table_data", {})),
-            "subquestions": data.get("subquestions", session_data.get("subquestions", [])),
+            "table_data": session_data.get("table_data", data.get("table_data", {})),
+            "table_question": session_data.get("table_question", data.get("table_question", {})),
+            "subquestions": session_data.get("subquestions", data.get("subquestions", [])),
             "table": session_data.get("table", {}),
             "table_title": session_data.get("table_title", ""),
             "answer_type": session_data.get("answer_type", (skill_info.get("input_type", "text") if isinstance(skill_info, dict) else getattr(skill_info, "input_type", "text"))),
@@ -1968,6 +1970,10 @@ def check_answer():
         if body.get(_image_key):
             current[_image_key] = body.get(_image_key)
     current = _normalize_gencode_runtime_payload(current, skill_id=skill_id)
+    if isinstance(user_ans, dict):
+        from core.gencode.table_question_contract import normalize_table_student_answer
+
+        user_ans = normalize_table_student_answer(user_ans, current)
     if not isinstance(user_ans, (list, tuple, dict)):
         user_ans = _normalize_choice_alias_answer(user_ans, current)
     check_mode = str(

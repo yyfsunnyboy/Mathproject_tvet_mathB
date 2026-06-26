@@ -448,8 +448,6 @@ def publish_single_v3_skill_to_production(
 
     from core.gencode.services.v3_publish_eligibility import evaluate_v3_publish_eligibility
     eligibility = evaluate_v3_publish_eligibility(conn, skill_key)
-    if not eligibility.get("allowed") and eligibility.get("reason") == "DOMAIN_BINDING_MISSING":
-        raise ValueError("DOMAIN_BINDING_MISSING")
     eligibility_reason = str(eligibility.get("reason") or "v3_publish_not_eligible")
     partial_coverage_allowed = allow_partial_coverage and not bool(eligibility.get("full_coverage"))
     if not eligibility.get("allowed") and not partial_coverage_allowed:

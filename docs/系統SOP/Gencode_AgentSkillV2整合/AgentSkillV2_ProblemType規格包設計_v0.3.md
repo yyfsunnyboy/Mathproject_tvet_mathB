@@ -121,6 +121,57 @@ def check(user_answer, correct_answer, question_payload=None):
 2. 以 `skill_id` 或 `problem_type_id` 為條件，在全域調度器內寫死 `if/elif` 特例分支。
 3. 新建插槽處理函數卻未委託至上述 Domain 模組，而是將數學與文本邏輯堆疊於調度器本體。
 
+### 1.7 Capability-First Domain 解析與 Automated Bootstrap 契約（v0.3.1 · **必要能力**）
+
+> **產品定位**：本節為 **最終產品必要能力**，不是未來選配。與 [Gencode與AgentSkillV2整合總體設計_v0.3.md §14](Gencode與AgentSkillV2整合總體設計_v0.3.md)、[SOP_Gencode_AgentSkillV3_Specification.md §1.10](../Gencode_AgentSkillV3整合/SOP_Gencode_AgentSkillV3_Specification.md) 互補：本文件定義 **ProblemTypeSpec 必須攜帶的欄位**；V3 SOP 定義 **bootstrap／healer 產物與 Gate**。
+
+#### 1.7.1 ProblemTypeSpec 驅動的 resolution 順序
+
+```text
+Phase 1 induced spec（problem_type_id）
+→ required_capabilities / matched_capabilities / missing_capabilities
+→ capability-first domain matching（重用既有 verified provider）
+→ 若 PARTIAL / UNRESOLVED → Domain Gap Report → Automated Domain Bootstrap
+→ component scaffold（src_{example_id}）
+→ 教師預覽 → verified → Publish Gate
+```
+
+`SKILL_TO_DOMAIN` 僅為 **confirmed binding** 加速路徑；**不得**作為「未註冊 skill 禁止生成」之門檻。
+
+#### 1.7.2 Bootstrap 輸入（induced spec 必須可匯出）
+
+| 欄位 | 來源 |
+|------|------|
+| `problem_type_id` | ProblemTypeSpec |
+| `required_capabilities` | semantic / generator contract |
+| `matched_capabilities` / `missing_capabilities` | resolver 輸出 |
+| 教材例題集合 | `source_examples` + `examples_map` |
+| `answer_contract` / `presentation_mode` | AnswerContract SOP |
+| `source_hashes` | Layer 1 標準化 |
+| 相近既有 domains | registry capability index |
+
+#### 1.7.3 Bootstrap 產物（不得 skill／example 專用）
+
+至少包括：`domain manifest`、純數學 `core`、`domain operations`、`capability declarations`、`matrix adapter`、`component scaffold contract`、`answer contract`、`validator`、`unit tests`、`property tests`、`integration fixtures`、題目預覽、成本與修補紀錄。**禁止**產生 skill-specific 或 example-specific domain。
+
+#### 1.7.4 驗證三元分離（寫入 ValidatorContract）
+
+```text
+generator algorithm ≠ answer oracle ≠ integrity validator
+```
+
+ProblemTypeSpec 的 `validator_contract` **必須**分別聲明 oracle 來源與 integrity 檢查器；**禁止**用同一段生成邏輯自我證明正確。
+
+#### 1.7.5 Domain 狀態與 registry 升格
+
+| 狀態 | 規範 |
+|------|------|
+| `draft` | AI 初步產物；僅隔離區；正式 resolver／學生端 **不可用** |
+| `candidate` | 通過基本品質閘門；可 dry-run 與教師預覽；**不可**正式發布 |
+| `verified` | 完整驗證 + 教師／管理員核准；方可進入正式 provider 集合 |
+
+AI 產物 **不得** 直接修改正式 registry 或立即發布。
+
 ---
 
 ## 2. 核心 YAML Schema 設計
@@ -378,11 +429,12 @@ registry:
 | 日期 | 版本 | 職責與變更內容 | 紀錄人 |
 |---|---|---|---|
 | 2026-05-25 | v0.1 | 首版規格包 schema 定義 | Codex |
-| 2026-05-31 | v0.2 | 重整 v0.2，將流程性內容（Phase 3、Web Runtime、Quality Gate）移至總體設計，精簡 Schema 欄位，增加 source_item_status 與 non-destructive merge 細則，確保 100% 乾淨 UTF-8 | Antigravity |
-| 2026-06-01 | v0.3 | 增量新增 §1.5 薄入口外殼方案；完整保留 v0.2 Schema；焊入 Thin Facade 與全域調度器委託法規 | 首席系統架構師 |
-| 2026-06-13 | v0.3.1 | 增量新增 §1.5.6 防胖防禦線（Layer 6 Domain 隔離原則）；明訂 Math / Constraint / Template 三域具名模組 | 首席系統架構師 |
-| 2026-06-13 | v0.3.2 | 洗淨版：清除 `tvet_mathB_` 佔位符；YAML 範例改為 `vh_數學B1_Permutations`/`Combinatorics`；§2.5 Hint 改為語意關鍵字驅動剛性必填 | 首席系統架構師 |
+| 2026-05-31 | v0.2 | 重整 v0.2，將流程性內容移至總體設計，精簡 Schema 欄位，增加 source_item_status 與 non-destructive merge 細則 | Antigravity |
+| 2026-06-01 | v0.3 | 增量新增 §1.5 薄入口外殼方案；焊入 Thin Facade 與全域調度器委託法規 | 首席系統架構師 |
+| 2026-06-13 | v0.3.1 | 增量新增 §1.5.6 防胖防禦線（Layer 6 Domain 隔離原則） | 首席系統架構師 |
+| 2026-06-13 | v0.3.2 | 洗淨版：清除佔位符；YAML 範例改為 vh_數學B1 實例 | 首席系統架構師 |
+| 2026-06-26 | v0.3.3 | 新增 §1.7 Capability-First Bootstrap 契約；對齊 V3 §1.10 最終產品流程 | 首席系統架構師 |
 
 *本文件職責：定義 AgentSkillV2 所有核心規格檔（YAML）與 Registry Entry 的 Schema 結構，以及 Phase 3 技能薄外殼之職責邊界。*
 *不負責事項：不定義具體的運行流程（Phase）與等價判定 checker 的比對邏輯。*
-*應參考的其他 SOP：[Gencode與AgentSkillV2整合總體設計_v0.3.md](Gencode與AgentSkillV2整合總體設計_v0.3.md)、[AnswerContract_EquivalenceType_Gate_v0.3.md](AnswerContract_EquivalenceType_Gate_v0.3.md)。*
+*應參考的其他 SOP：[Gencode與AgentSkillV2整合總體設計_v0.3.md](Gencode與AgentSkillV2整合總體設計_v0.3.md)、[AnswerContract_EquivalenceType_Gate_v0.3.md](AnswerContract_EquivalenceType_Gate_v0.3.md)、[SOP_Gencode_AgentSkillV3_Specification.md §1.10](../Gencode_AgentSkillV3整合/SOP_Gencode_AgentSkillV3_Specification.md)。*

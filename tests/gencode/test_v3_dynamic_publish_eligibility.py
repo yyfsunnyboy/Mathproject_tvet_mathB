@@ -451,7 +451,7 @@ def test_illegal_skill_not_allowed_when_domain_unregistered(memory_conn: sqlite3
     _seed_examples(memory_conn)
     eligibility = evaluate_v3_publish_eligibility(memory_conn, DYNAMIC_SKILL)
     assert eligibility["allowed"] is False
-    assert eligibility["reason"] == "DOMAIN_BINDING_MISSING"
+    assert eligibility["reason"] == "DOMAIN_EVIDENCE_INCOMPLETE"
 
 
 def test_eligibility_does_not_skip_production_smoke_rollback(

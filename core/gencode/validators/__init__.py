@@ -153,6 +153,10 @@ def validate_generator_payload(
     if problem_type_id in _CUMULATIVE_FREQ_OPS or str(payload.get("domain_operation") or "") in _CUMULATIVE_FREQ_OPS:
         errors.extend(validate_cumulative_frequency_payload(payload))
 
+    from core.gencode.validators.descriptive_statistics_validator import validate_descriptive_statistics_payload
+
+    errors.extend(validate_descriptive_statistics_payload(payload))
+
     # Run SemanticChecker Base check
     import json
     from validators.semantic_checker import SemanticChecker

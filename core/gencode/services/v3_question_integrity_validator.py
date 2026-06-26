@@ -264,6 +264,12 @@ def validate_component_payload(
     blockers.extend(validate_single_choice_scalar_topology(payload))
     blockers.extend(_validate_required_evidence_visibility(payload))
 
+    from core.gencode.choice_contract_validator import validate_choice_contract
+
+    choice_result = validate_choice_contract(payload)
+    if not choice_result.get("ok"):
+        blockers.extend(choice_result.get("blockers") or [choice_result.get("error_code") or "CHOICE_CONTRACT_INCOMPLETE"])
+
     passed = len(blockers) == 0
     return {
         "passed": passed,

@@ -182,6 +182,24 @@ CHECKER_CAPABILITIES: dict[str, dict[str, Any]] = {
         "equivalence_types": ["normalized_line_label"],
         "module": "core.checkers.line_label_checker",
     },
+    "unordered_set_checker": {
+        "runtime_available": True,
+        "answer_types": ["solution_set", "unordered_set", "set", "integer_set", "number_set"],
+        "equivalence_types": ["unordered_solution_set", "set_equal"],
+        "module": "core.checkers.solution_set_checker",
+    },
+    "multi_blank_checker": {
+        "runtime_available": True,
+        "answer_types": ["multi_part", "multi_blank"],
+        "equivalence_types": ["multi_part_answer"],
+        "module": "core.checkers.multi_part_answer_checker",
+    },
+    "table_fill_checker": {
+        "runtime_available": True,
+        "answer_types": ["multi_part", "table_fill"],
+        "equivalence_types": ["multi_part_answer"],
+        "module": "core.checkers.multi_part_answer_checker",
+    },
 }
 
 

@@ -147,9 +147,11 @@ def generate_component_preview(example_id: int, seed: int = 42, timeout_seconds:
     if not isinstance(payload, dict):
         raise RuntimeError("generate_must_return_dict")
 
+    from core.gencode.choice_contract_validator import normalize_canonical_choices
+
     # Extract required fields from response contract
     question_text = str(payload.get("question_text") or payload.get("question") or "").strip()
-    choices = payload.get("choices")
+    choices = normalize_canonical_choices(payload.get("choices"))
 
     ac = payload.get("answer_contract") or {}
     answer_type = str(ac.get("answer_type") or payload.get("answer_type") or "").strip()
@@ -163,6 +165,9 @@ def generate_component_preview(example_id: int, seed: int = 42, timeout_seconds:
 
     correct_answer = str(payload.get("correct_answer") or payload.get("answer") or "").strip()
 
+    table_data = payload.get("table_data") if isinstance(payload.get("table_data"), dict) else {}
+    visible_table = table_data.get("visible_table") or table_data.get("display_rows") or []
+
     return {
         "success": True,
         "example_id": example_id,
@@ -173,12 +178,13 @@ def generate_component_preview(example_id: int, seed: int = 42, timeout_seconds:
         "problem_type_id": problem_type_id,
         "question": {
             "question_text": question_text,
-            "choices": choices if choices is not None else [],
+            "choices": choices,
             "answer_type": answer_type,
             "answer": correct_answer,
             "explanation": str(payload.get("explanation") or ""),
             "image_base64": str(payload.get("image_base64") or ""),
-            "table_data": payload.get("table_data") if isinstance(payload.get("table_data"), dict) else {},
+            "table_data": table_data,
+            "visible_table": visible_table,
             "subquestions": payload.get("subquestions") if isinstance(payload.get("subquestions"), list) else [],
             "visual_spec": payload.get("visual_spec") if isinstance(payload.get("visual_spec"), dict) else {},
         }

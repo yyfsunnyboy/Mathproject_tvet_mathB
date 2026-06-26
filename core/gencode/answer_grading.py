@@ -249,9 +249,11 @@ def grade_answer_for_current_question(
         is_correct = bool(expr_debug.get("correct"))
     elif checker == "multi_part_answer_checker" or family == "multi_part" or equiv == "multi_part_answer":
         from core.checkers.multi_part_answer_checker import check_multi_part_answer
+        from core.gencode.table_question_contract import normalize_table_student_answer
 
+        normalized_user_answer = normalize_table_student_answer(user_answer, payload)
         result = check_multi_part_answer(
-            user_answer,
+            normalized_user_answer,
             correct_answer,
             answer_contract=ac,
             payload=payload,

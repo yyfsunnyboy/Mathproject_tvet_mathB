@@ -81,8 +81,12 @@ _TEXTBOOK_ROW_FIELDS: tuple[str, ...] = (
     "source_section",
     "source_paragraph",
     "problem_type",
+    "problem_type_id",
+    "line_type",
     "problem_text",
     "correct_answer",
+    "detailed_solution",
+    "explanation",
     "difficulty_level",
     "difficulty_h",
 )
@@ -100,6 +104,22 @@ def _available_textbook_columns(conn: Any) -> set[str]:
     return names
 
 
+def _sqlite_cursor_row_to_dict(cursor: Any, row: Any) -> dict[str, Any]:
+    if row is None:
+        return {}
+    if isinstance(row, Mapping):
+        return dict(row)
+    if isinstance(row, sqlite3.Row) or hasattr(row, "keys"):
+        return {key: row[key] for key in row.keys()}
+    columns = [str(col[0]) for col in (getattr(cursor, "description", None) or [])]
+    if columns and isinstance(row, (tuple, list)):
+        return {
+            columns[index]: row[index]
+            for index in range(min(len(columns), len(row)))
+        }
+    return _row_to_dict(row)
+
+
 def fetch_textbook_example_row(conn: Any, textbook_example_id: int) -> dict[str, Any] | None:
     """Load one textbook_examples row as a dict."""
     if conn is None:
@@ -115,11 +135,7 @@ def fetch_textbook_example_row(conn: Any, textbook_example_id: int) -> dict[str,
     row = cursor.fetchone()
     if row is None:
         return None
-    if isinstance(row, sqlite3.Row):
-        return {key: row[key] for key in row.keys()}
-    if hasattr(row, "keys"):
-        return {key: row[key] for key in row.keys()}
-    return _row_to_dict(row)
+    return _sqlite_cursor_row_to_dict(cursor, row)
 
 
 def infer_presentation_mode_from_textbook_row(row: Any) -> dict[str, Any]:
@@ -186,6 +202,51 @@ def infer_presentation_mode_from_textbook_row(row: Any) -> dict[str, Any]:
             "has_short_answer_keyword": has_short_answer_keyword,
         },
     }
+
+
+def parse_abcd_choices_from_text(problem_text: str) -> list[dict[str, str]]:
+    """Parse A/B/C/D choice labels and texts; ignores (1)(2) sub-question markers."""
+    if not has_abcd_choice_group(problem_text):
+        return []
+    marker = re.compile(r"[\(（]\s*([A-Da-d])\s*[\)）]")
+    matches = list(marker.finditer(str(problem_text or "")))
+    choices: list[dict[str, str]] = []
+    for index, match in enumerate(matches):
+        label = str(match.group(1)).strip().upper()
+        start = match.end()
+        end = matches[index + 1].start() if index + 1 < len(matches) else len(problem_text)
+        text = str(problem_text[start:end]).strip().rstrip("。．.,，;；")
+        if not text:
+            continue
+        choices.append({"key": label, "label": label, "text": text})
+    return choices
+
+
+_STEM_TRAILING_PUNCT = re.compile(r"[：:。.．,，;；]+$")
+_ABCD_FIRST_MARKER = re.compile(r"[\(（]\s*([A-Da-d])\s*[\)）]")
+
+
+def question_text_has_embedded_abcd_choices(question_text: str) -> bool:
+    """True when question_text contains an A–D choice group (not sub-question (1)(2))."""
+    text = str(question_text or "")
+    if not text.strip():
+        return False
+    return has_abcd_choice_group(text) and bool(_ABCD_FIRST_MARKER.search(text))
+
+
+def split_question_stem_and_abcd_choices(problem_text: str) -> tuple[str, list[dict[str, str]], str]:
+    """Return (stem_only, parsed_choices, source_problem_text)."""
+    source = str(problem_text or "")
+    if not source.strip():
+        return "", [], source
+    if not has_abcd_choice_group(source):
+        return source.strip(), [], source
+    choices = parse_abcd_choices_from_text(source)
+    first = _ABCD_FIRST_MARKER.search(source)
+    if not first:
+        return source.strip(), choices, source
+    stem = _STEM_TRAILING_PUNCT.sub("", source[: first.start()].strip())
+    return stem, choices, source
 
 
 def build_presentation_evidence_payload(inferred: dict[str, Any]) -> dict[str, Any]:

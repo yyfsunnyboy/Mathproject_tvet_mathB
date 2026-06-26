@@ -945,9 +945,174 @@
             border-left: 3px solid #e74c3c;
             margin: 6px 0;
         }
+        #question-media-container .math-table-scroll-wrap {
+            width: 100%;
+            overflow-x: auto;
+            margin: 8px 0 4px;
+            -webkit-overflow-scrolling: touch;
+        }
+        #question-media-container table.math-table-fill,
+        #question-media-container table.math-table-readonly {
+            width: 100%;
+            min-width: 280px;
+            margin: 0 auto;
+            border-collapse: collapse;
+            font-size: 0.95rem;
+            background: #fff;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 1px 4px rgba(15, 23, 42, 0.08);
+        }
+        #question-media-container table.math-table-fill th,
+        #question-media-container table.math-table-fill td,
+        #question-media-container table.math-table-readonly th,
+        #question-media-container table.math-table-readonly td {
+            border: 1px solid #cbd5e1;
+            padding: 8px 10px;
+            text-align: center;
+            vertical-align: middle;
+            line-height: 1.35;
+        }
+        #question-media-container table.math-table-fill thead th,
+        #question-media-container table.math-table-readonly thead th {
+            background: #f1f5f9;
+            font-weight: 600;
+            color: #334155;
+        }
+        #question-media-container table.math-table-fill tbody tr:nth-child(even) td:not(.table-fill-cell) {
+            background: #fafafa;
+        }
+        #question-media-container table.math-table-fill tfoot td,
+        #question-media-container table.math-table-readonly tfoot td {
+            background: #f8fafc;
+            font-weight: 600;
+        }
+        #question-media-container .table-fill-cell {
+            background: #fffbeb;
+            min-width: 4.5rem;
+            padding: 6px 8px;
+        }
+        #question-media-container .table-fill-cell-inner {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+        }
+        #question-media-container .table-fill-label {
+            font-weight: 700;
+            font-style: italic;
+            color: #b45309;
+            font-size: 0.9rem;
+            line-height: 1;
+        }
+        #question-media-container .table-fill-input {
+            width: 3.25rem;
+            max-width: 100%;
+            padding: 4px 6px;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            text-align: center;
+            font-size: 0.95rem;
+            background: #fff;
+            box-sizing: border-box;
+        }
+        #question-media-container .table-fill-input:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+        }
+        #question-media-container .table-fill-input.table-fill-correct {
+            border-color: #16a34a;
+            background: #f0fdf4;
+        }
+        #question-media-container .table-fill-input.table-fill-incorrect {
+            border-color: #dc2626;
+            background: #fef2f2;
+        }
+        #question-media-container .table-fill-input.table-fill-missing {
+            border-color: #d97706;
+            background: #fff7ed;
+        }
+        #question-media-container .table-fill-cell.table-fill-cell-correct {
+            background: #f0fdf4;
+        }
+        #question-media-container .table-fill-cell.table-fill-cell-incorrect {
+            background: #fef2f2;
+        }
+        #question-media-container .table-fill-cell.table-fill-cell-missing {
+            background: #fff7ed;
+        }
+        #question-media-container .table-fill-fallback-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 10px;
+            margin-top: 10px;
+        }
+        #question-media-container .table-fill-fallback-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        #question-media-container .table-fill-fallback-row label {
+            min-width: 1.5rem;
+            font-weight: 700;
+            color: #b45309;
+        }
+        .subquestions-container.multi-part-list {
+            margin-top: 10px;
+        }
+        .multi-part-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            margin-bottom: 10px;
+        }
+        .multi-part-group-label {
+            font-weight: 600;
+            color: #333;
+        }
+        .multi-part-inline-fields {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px 18px;
+            align-items: center;
+        }
+        .multi-part-inline-field {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .multi-part-inline-field input {
+            width: 72px;
+            min-width: 56px;
+            padding: 4px 8px;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+        }
+        .multi-part-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+        .multi-part-row label {
+            min-width: 3rem;
+            font-weight: 600;
+        }
+        .multi-part-row .multi-part-input {
+            flex: 1;
+            max-width: 12rem;
+            padding: 4px 8px;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+        }
         @media (max-width: 600px) {
             #question-media-container img {
                 max-height: 220px;
+            }
+            #question-media-container .table-fill-input {
+                width: 2.75rem;
             }
         }
 
@@ -3516,12 +3681,275 @@
                 answer_type: payload.answer_type || '',
                 subquestions: Array.isArray(payload.subquestions) ? payload.subquestions.slice() : [],
                 table_data: payload.table_data || {},
+                table_question: payload.table_question || {},
                 image_base64: payload.image_base64 || '',
             };
         }
 
+        function isEngineeringFieldKey(key) {
+            return /^(lt|gt|part|field)_\d+$/i.test(String(key || '').trim());
+        }
+
+        function getTableQuestionModel(payload) {
+            const cq = payload || {};
+            const td = cq.table_data || {};
+            const tq = cq.table_question || {};
+            const blankCells = Array.isArray(td.blank_cells) ? td.blank_cells.slice()
+                : (Array.isArray(tq.blank_cells) ? tq.blank_cells.slice() : []);
+            return {
+                type: td.type || tq.type || (blankCells.length ? 'table_fill' : 'table'),
+                headers: td.headers || tq.headers || [],
+                rows: td.visible_table || td.display_rows || tq.rows || td.rows || [],
+                sourceRows: td.rows || tq.rows || td.display_rows || [],
+                blankCells: blankCells,
+                answerOrder: td.answer_order || tq.answer_order || blankCells.map((cell) => cell.field_key || cell.label).filter(Boolean),
+                showCaption: td.show_caption === true || tq.show_caption === true,
+                showBlankLabels: td.show_blank_labels === true || tq.show_blank_labels === true,
+                blankLabelMode: String(td.blank_label_mode || tq.blank_label_mode || 'complete_table'),
+                title: String(td.title || tq.title || '').trim(),
+                readonly: td.legacy_readonly === true || td.interaction_mode === 'readonly',
+                totalRow: td.total_row || tq.total_row || null,
+            };
+        }
+
+        function isTableFillQuestion(payload) {
+            const cq = payload || currentQuestion || {};
+            const model = getTableQuestionModel(cq);
+            if (model.readonly) return false;
+            if (model.type === 'table_fill') return model.blankCells.length > 0;
+            const ui = (cq.answer_contract && cq.answer_contract.ui_contract) || cq.ui_contract || {};
+            return (ui.response_mode === 'table_fill' || ui.inline_table_inputs === true)
+                && model.blankCells.length > 0;
+        }
+
+        function isReadonlyTableQuestion(payload) {
+            const cq = payload || currentQuestion || {};
+            const td = cq.table_data || {};
+            const model = getTableQuestionModel(cq);
+            return model.readonly || (Boolean(td.html) && model.blankCells.length === 0);
+        }
+
+        function escapeHtml(value) {
+            return String(value ?? '')
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;');
+        }
+
+        function renderBlankCellInput(cellSpec, showBlankLabels) {
+            const fieldKey = String(cellSpec.field_key || cellSpec.label || '').trim();
+            const label = String(cellSpec.label || '').trim();
+            const inputType = String(cellSpec.input_type || 'number').trim() || 'number';
+            const input = document.createElement('input');
+            input.type = inputType === 'text' ? 'text' : 'number';
+            input.className = 'table-fill-input';
+            input.dataset.fieldKey = fieldKey;
+            if (label) input.dataset.studentLabel = label;
+            input.setAttribute(
+                'aria-label',
+                showBlankLabels && label ? `${label} 的答案` : '表格空格'
+            );
+            input.autocomplete = 'off';
+            if (inputType === 'number') {
+                input.inputMode = 'numeric';
+                input.step = '1';
+            }
+            const inner = document.createElement('div');
+            inner.className = 'table-fill-cell-inner';
+            if (showBlankLabels && label) {
+                const labelEl = document.createElement('span');
+                labelEl.className = 'table-fill-label';
+                labelEl.textContent = label;
+                inner.appendChild(labelEl);
+            }
+            inner.appendChild(input);
+            return inner;
+        }
+
+        function renderTableQuestion(container, payload) {
+            if (!container) return;
+            container.innerHTML = '';
+            container.className = '';
+            const model = getTableQuestionModel(payload);
+            const td = (payload && payload.table_data) || {};
+
+            if (model.readonly && td.html) {
+                container.innerHTML = td.html;
+                container.classList.add('math-table-readonly');
+                container.style.display = 'block';
+                return;
+            }
+            if (!model.headers.length && !model.rows.length) {
+                if (td.html) {
+                    container.innerHTML = td.html;
+                    container.style.display = 'block';
+                }
+                return;
+            }
+
+            const scrollWrap = document.createElement('div');
+            scrollWrap.className = 'math-table-scroll-wrap';
+            const table = document.createElement('table');
+            table.className = 'math-table-fill';
+
+            if (model.showCaption && model.title) {
+                const caption = document.createElement('caption');
+                caption.textContent = model.title;
+                table.appendChild(caption);
+            }
+
+            const thead = document.createElement('thead');
+            const headRow = document.createElement('tr');
+            model.headers.forEach((header) => {
+                const th = document.createElement('th');
+                th.textContent = String(header);
+                headRow.appendChild(th);
+            });
+            thead.appendChild(headRow);
+            table.appendChild(thead);
+
+            const blankLookup = {};
+            model.blankCells.forEach((cell) => {
+                blankLookup[`${cell.row}:${cell.col}`] = cell;
+            });
+
+            const tbody = document.createElement('tbody');
+            model.rows.forEach((row, rowIdx) => {
+                const tr = document.createElement('tr');
+                row.forEach((cell, colIdx) => {
+                    const tdCell = document.createElement('td');
+                    const spec = blankLookup[`${rowIdx}:${colIdx}`];
+                    if (spec) {
+                        tdCell.className = 'table-fill-cell';
+                        tdCell.dataset.fieldKey = String(spec.field_key || spec.label || '');
+                        tdCell.appendChild(renderBlankCellInput(spec, model.showBlankLabels));
+                    } else {
+                        tdCell.textContent = cell === null || cell === undefined ? '' : String(cell);
+                    }
+                    tr.appendChild(tdCell);
+                });
+                tbody.appendChild(tr);
+            });
+            table.appendChild(tbody);
+
+            if (model.totalRow && Array.isArray(model.totalRow)) {
+                const tfoot = document.createElement('tfoot');
+                const tr = document.createElement('tr');
+                model.totalRow.forEach((cell) => {
+                    const tdCell = document.createElement('td');
+                    tdCell.textContent = cell === null || cell === undefined ? '' : String(cell);
+                    tr.appendChild(tdCell);
+                });
+                tfoot.appendChild(tr);
+                table.appendChild(tfoot);
+            }
+
+            scrollWrap.appendChild(table);
+            container.appendChild(scrollWrap);
+            container.style.display = 'block';
+        }
+
+        function renderTableFillFallbackGrid(payload) {
+            if (!subquestionsContainer) return;
+            clearSubquestionInputs();
+            const model = getTableQuestionModel(payload);
+            subquestionsContainer.style.display = 'block';
+            subquestionsContainer.className = 'subquestions-container table-fill-fallback-grid';
+            model.blankCells.forEach((cell, index) => {
+                const row = document.createElement('div');
+                row.className = 'table-fill-fallback-row';
+                const input = document.createElement('input');
+                input.type = 'number';
+                input.id = `table-fill-fallback-${index}`;
+                input.className = 'table-fill-input';
+                input.dataset.fieldKey = String(cell.field_key || cell.label || '');
+                input.inputMode = 'numeric';
+                if (model.showBlankLabels) {
+                    const label = document.createElement('label');
+                    const studentLabel = String(cell.label || '').trim();
+                    label.textContent = `${studentLabel} =`;
+                    label.setAttribute('for', `table-fill-fallback-${index}`);
+                    row.appendChild(label);
+                }
+                row.appendChild(input);
+                subquestionsContainer.appendChild(row);
+            });
+        }
+
+        function clearTableQuestionState() {
+            const qmc = document.getElementById('question-media-container');
+            if (qmc) {
+                qmc.innerHTML = '';
+                qmc.className = '';
+                qmc.style.display = 'none';
+            }
+        }
+
+        function collectTableAnswers() {
+            const qmc = document.getElementById('question-media-container');
+            const model = getTableQuestionModel(currentQuestion || {});
+            const order = model.answerOrder.length
+                ? model.answerOrder
+                : model.blankCells.map((cell) => cell.field_key || cell.label);
+            const answers = {};
+            const ordered = [];
+            order.forEach((fieldKey) => {
+                let input = null;
+                if (qmc) {
+                    input = qmc.querySelector(`.table-fill-input[data-field-key="${CSS.escape(String(fieldKey))}"]`);
+                }
+                if (!input && subquestionsContainer) {
+                    input = subquestionsContainer.querySelector(`.table-fill-input[data-field-key="${CSS.escape(String(fieldKey))}"]`);
+                }
+                const value = input ? String(input.value || '').trim() : '';
+                answers[String(fieldKey)] = value;
+                ordered.push(value);
+            });
+            return { answers, ordered };
+        }
+
+        function applyTableGradingResult(perPartResults) {
+            const qmc = document.getElementById('question-media-container');
+            if (!Array.isArray(perPartResults)) return;
+            const model = getTableQuestionModel(currentQuestion || {});
+            const labelToKey = {};
+            model.blankCells.forEach((cell) => {
+                if (cell.label) labelToKey[cell.label] = cell.field_key || cell.label;
+            });
+            perPartResults.forEach((row) => {
+                const fieldKey = row.key || labelToKey[row.label];
+                if (!fieldKey) return;
+                let input = null;
+                if (qmc) {
+                    input = qmc.querySelector(`.table-fill-input[data-field-key="${CSS.escape(String(fieldKey))}"]`);
+                }
+                if (!input && subquestionsContainer) {
+                    input = subquestionsContainer.querySelector(`.table-fill-input[data-field-key="${CSS.escape(String(fieldKey))}"]`);
+                }
+                if (!input) return;
+                const cell = input.closest('td') || input.closest('.table-fill-fallback-row');
+                input.disabled = true;
+                input.classList.remove('table-fill-correct', 'table-fill-incorrect', 'table-fill-missing');
+                if (cell) {
+                    cell.classList.remove('table-fill-cell-correct', 'table-fill-cell-incorrect', 'table-fill-cell-missing');
+                }
+                if (row.correct) {
+                    input.classList.add('table-fill-correct');
+                    if (cell) cell.classList.add('table-fill-cell-correct');
+                } else if (row.reason === 'missing_part') {
+                    input.classList.add('table-fill-missing');
+                    if (cell) cell.classList.add('table-fill-cell-missing');
+                } else {
+                    input.classList.add('table-fill-incorrect');
+                    if (cell) cell.classList.add('table-fill-cell-incorrect');
+                }
+            });
+        }
+
         function isMultiPartQuestion(payload) {
             const cq = payload || currentQuestion || {};
+            if (isTableFillQuestion(cq)) return true;
             const answerType = String(cq.answer_type || (cq.answer_contract && cq.answer_contract.answer_type) || '').toLowerCase();
             const subqs = cq.subquestions;
             return answerType === 'multi_part' && Array.isArray(subqs) && subqs.length > 0;
@@ -3533,8 +3961,76 @@
             subquestionsContainer.style.display = 'none';
         }
 
+        function buildMultiPartFieldGroups(payload, subqs) {
+            const ui = (payload && payload.ui_contract) || {};
+            if (Array.isArray(ui.field_groups) && ui.field_groups.length > 0) {
+                return ui.field_groups.map((group) => {
+                    const fields = (group.fields || [])
+                        .map((fieldKey) => subqs.find((sq) => String(sq.field_key || sq.key || '') === String(fieldKey)))
+                        .filter(Boolean);
+                    return {
+                        label: String(group.group_label || group.label || ''),
+                        fields,
+                    };
+                }).filter((group) => group.fields.length > 0);
+            }
+            const byPart = new Map();
+            subqs.forEach((sq) => {
+                const partKey = String(sq.part || sq.group_label || sq.label || '').trim();
+                if (!byPart.has(partKey)) byPart.set(partKey, []);
+                byPart.get(partKey).push(sq);
+            });
+            if (byPart.size > 1) {
+                return Array.from(byPart.entries()).map(([label, fields]) => ({ label, fields }));
+            }
+            return [{ label: '', fields: subqs }];
+        }
+
+        function renderGroupedMultiPartInputs(payload, groups) {
+            let globalIndex = 0;
+            groups.forEach((group) => {
+                const groupWrap = document.createElement('div');
+                groupWrap.className = 'multi-part-group';
+                if (group.label) {
+                    const groupLabel = document.createElement('div');
+                    groupLabel.className = 'multi-part-group-label';
+                    groupLabel.textContent = group.label;
+                    groupWrap.appendChild(groupLabel);
+                }
+                const inline = document.createElement('div');
+                inline.className = 'multi-part-inline-fields';
+                group.fields.forEach((sq, index) => {
+                    const fieldWrap = document.createElement('label');
+                    fieldWrap.className = 'multi-part-inline-field';
+                    const fieldKey = String(sq.field_key || sq.key || `part_${index}`);
+                    const prompt = String(sq.prompt || sq.label || `欄位 ${index + 1}`);
+                    fieldWrap.appendChild(document.createTextNode(`${prompt} `));
+                    const input = document.createElement('input');
+                    input.type = 'text';
+                    input.inputMode = 'decimal';
+                    input.id = `multi-part-input-${fieldKey}`;
+                    input.className = 'multi-part-input';
+                    input.dataset.partIndex = String(globalIndex);
+                    input.dataset.fieldKey = fieldKey;
+                    globalIndex += 1;
+                    fieldWrap.appendChild(input);
+                    inline.appendChild(fieldWrap);
+                });
+                groupWrap.appendChild(inline);
+                subquestionsContainer.appendChild(groupWrap);
+            });
+        }
+
         function renderSubquestionInputs(payload) {
             clearSubquestionInputs();
+            if (isTableFillQuestion(payload)) {
+                if (answerInput) {
+                    answerInput.style.display = 'none';
+                    answerInput.disabled = true;
+                    answerInput.value = '';
+                }
+                return;
+            }
             if (!subquestionsContainer || !isMultiPartQuestion(payload)) {
                 if (answerInput) {
                     answerInput.style.display = '';
@@ -3544,24 +4040,36 @@
             const subqs = payload.subquestions || [];
             subquestionsContainer.style.display = 'block';
             subquestionsContainer.classList.add('multi-part-list');
-            subqs.forEach((sq, index) => {
-                const row = document.createElement('div');
-                row.className = 'multi-part-row';
-                const label = document.createElement('label');
-                const partLabel = String(sq.part || `(${index + 1})`);
-                const prompt = String(sq.prompt || `小題 ${index + 1}`);
-                label.textContent = `${partLabel} ${prompt}`;
-                label.setAttribute('for', `multi-part-input-${index}`);
-                const input = document.createElement('input');
-                input.type = 'text';
-                input.id = `multi-part-input-${index}`;
-                input.className = 'multi-part-input';
-                input.dataset.partIndex = String(index);
-                input.placeholder = '請輸入此小題答案';
-                row.appendChild(label);
-                row.appendChild(input);
-                subquestionsContainer.appendChild(row);
-            });
+            const groups = buildMultiPartFieldGroups(payload, subqs);
+            const useGroupedLayout = groups.length > 0
+                && (groups.length > 1 || (groups[0].fields && groups[0].fields.length > 1));
+            if (useGroupedLayout) {
+                renderGroupedMultiPartInputs(payload, groups);
+            } else {
+                subqs.forEach((sq, index) => {
+                    const row = document.createElement('div');
+                    row.className = 'multi-part-row';
+                    const label = document.createElement('label');
+                    const rawPart = String(sq.part || sq.field_key || `(${index + 1})`);
+                    const partLabel = isEngineeringFieldKey(rawPart)
+                        ? String.fromCharCode(97 + index)
+                        : rawPart;
+                    const prompt = String(sq.prompt || `小題 ${index + 1}`);
+                    label.textContent = prompt.startsWith('：') || prompt.startsWith('=')
+                        ? `${partLabel}${prompt}`
+                        : `${partLabel} ${prompt}`;
+                    label.setAttribute('for', `multi-part-input-${index}`);
+                    const input = document.createElement('input');
+                    input.type = 'text';
+                    input.id = `multi-part-input-${index}`;
+                    input.className = 'multi-part-input';
+                    input.dataset.partIndex = String(index);
+                    input.dataset.fieldKey = String(sq.field_key || sq.part || partLabel);
+                    row.appendChild(label);
+                    row.appendChild(input);
+                    subquestionsContainer.appendChild(row);
+                });
+            }
             if (answerInput) {
                 answerInput.style.display = 'none';
                 answerInput.disabled = true;
@@ -3570,13 +4078,30 @@
         }
 
         function collectMultiPartAnswers() {
+            if (isTableFillQuestion(currentQuestion)) {
+                return collectTableAnswers().ordered;
+            }
             if (!subquestionsContainer) return [];
-            const inputs = subquestionsContainer.querySelectorAll('.multi-part-input');
+            const inputs = subquestionsContainer.querySelectorAll('.multi-part-input, .table-fill-input');
             return Array.from(inputs).map((node) => String(node.value || '').trim());
         }
 
         function applyMultiPartUiContract(payload) {
+            clearTableQuestionState();
+            const tableFill = isTableFillQuestion(payload || currentQuestion);
             const multi = isMultiPartQuestion(payload || currentQuestion);
+            if (tableFill) {
+                const qmc = document.getElementById('question-media-container');
+                renderTableQuestion(qmc, payload || currentQuestion);
+                clearSubquestionInputs();
+                if (answerInput) {
+                    answerInput.style.display = 'none';
+                    answerInput.disabled = true;
+                    answerInput.value = '';
+                }
+                if (submitBtn) submitBtn.disabled = false;
+                return;
+            }
             if (multi) {
                 renderSubquestionInputs(payload || currentQuestion);
                 if (submitBtn) submitBtn.disabled = false;
@@ -3772,7 +4297,12 @@
                 question_uid: cq.question_uid || '',
                 problem_type_id: cq.problem_type_id || window.currentProblemTypeId || '',
             };
-            if (isMultiPartQuestion(cq)) {
+            if (isTableFillQuestion(cq)) {
+                const collected = collectTableAnswers();
+                payload.answers = collected.ordered;
+                payload.answer = collected.ordered;
+                payload.table_answers = collected.answers;
+            } else if (isMultiPartQuestion(cq)) {
                 payload.answers = collectMultiPartAnswers();
                 payload.answer = payload.answers;
             } else {
@@ -3985,6 +4515,17 @@
                             saveState();
                         };
                         img.src = imgSource;
+                    } else if (isTableFillQuestion(data)) {
+                        const qmc = document.getElementById('question-media-container');
+                        renderTableQuestion(qmc, data);
+                        saveState();
+                    } else if (isReadonlyTableQuestion(data) && data.table_data && data.table_data.html) {
+                        const qmc = document.getElementById('question-media-container');
+                        if (qmc) {
+                            qmc.innerHTML = data.table_data.html;
+                            qmc.style.display = 'block';
+                        }
+                        saveState();
                     } else if (data.table_data && data.table_data.html) {
                         const qmc = document.getElementById('question-media-container');
                         if (qmc) {
@@ -4175,12 +4716,21 @@
             });
         }
 
+        function stripEmbeddedAbcdChoicesFromStem(text) {
+            const source = String(text || '');
+            const match = source.match(/[\(（]\s*A\s*[\)）]/);
+            if (match && match.index > 0) {
+                return source.slice(0, match.index).trim().replace(/[：:。.．,，;；]+$/, '');
+            }
+            return source;
+        }
+
         function resolveQuestionText(payload) {
             if (!payload || typeof payload !== 'object') return '';
             const direct = String(
                 payload.question_text || payload.new_question_text || payload.question || payload.prompt || ''
             ).trim();
-            if (direct) return direct;
+            let resolved = direct;
 
             const sources = [
                 payload.data,
@@ -4190,15 +4740,27 @@
                 payload.item,
             ].filter(src => src && typeof src === 'object');
 
-            for (const src of sources) {
-                const nested = String(
-                    src.question_text || src.new_question_text || src.question || src.prompt || src.text || ''
-                ).trim();
-                if (nested) return nested;
+            if (!resolved) {
+                for (const src of sources) {
+                    const nested = String(
+                        src.question_text || src.new_question_text || src.question || src.prompt || src.text || ''
+                    ).trim();
+                    if (nested) {
+                        resolved = nested;
+                        break;
+                    }
+                }
             }
 
-            console.error('[FRONTEND PRACTICE] missing question stem; keys=', Object.keys(payload));
-            return '';
+            if (!resolved) {
+                console.error('[FRONTEND PRACTICE] missing question stem; keys=', Object.keys(payload));
+                return '';
+            }
+
+            if (isChoiceQuestionPayload(payload) && getChoiceItems(payload).length > 0) {
+                resolved = stripEmbeddedAbcdChoicesFromStem(resolved);
+            }
+            return resolved;
         }
 
         function previewQuestionText(text) {
@@ -4390,6 +4952,9 @@
 
                         resultDisplay.textContent = data.result || (data.correct ? '正確！' : '錯誤');
                         resultDisplay.className = data.correct ? 'correct' : 'incorrect';
+                        if (Array.isArray(data.per_part_results) && isTableFillQuestion(currentQuestion)) {
+                            applyTableGradingResult(data.per_part_results);
+                        }
                         updateStreak(data.correct);
 
                         // [Phase 6] 處理前置單元推薦

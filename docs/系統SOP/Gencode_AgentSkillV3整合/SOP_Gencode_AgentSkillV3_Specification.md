@@ -1,13 +1,31 @@
 ﻿# Gencode × AgentSkillV3 核心規範說明書
 
-> **文件版本**：v1.8（Skill-Fixed Auto-Bootstrap · Domain Function Extension）  
-> **Amendment Revision**：v1.8 · 2026-06-23  
-> **Supersedes**：v1.7 中 production Generic Domain Fallback、AI 推論 Routing Domain、`unsupported_domain_operation` 作為終止態  
-> **文件權威分工**：本文件為 Gencode × AgentSkillV3 **唯一規範權威**（原則、契約、狀態、錯誤碼、Gate 定義）。流程與時序見配套 [SOP_Gencode_AgentSkillV3_PipelineFlow.md](./SOP_Gencode_AgentSkillV3_PipelineFlow.md)（**唯一流程權威**）。兩份文件衝突時：規則以本文件為準；流程以 PipelineFlow 為準。  
+> **文件版本**：v1.10（Automated Domain Bootstrap & Domain Healer · 最終產品核心流程）  
+> **Amendment Revision**：v1.10 · 2026-06-26  
+> **Supersedes**：v1.9 中「缺 domain 僅 gap report／工程師人工建 domain／老師用 Codex」之隱含假設；v1.8 §1.7 僅涵蓋 skill package bootstrap，**不含**完整 domain 自動建立  
+> **文件權威分工**：本文件為 Gencode × AgentSkillV3 **唯一規範權威**（原則、契約、狀態、錯誤碼、Gate 定義）；**題型介面／學生端作答契約／西堤作答套餐**之呈現與驗證規則亦以本文件為準。流程與時序見配套 [SOP_Gencode_AgentSkillV3_PipelineFlow.md](./SOP_Gencode_AgentSkillV3_PipelineFlow.md)（**唯一流程權威**；含 `answer_type` 判定、`generate()` 輸出契約、preview／smoke 流程）。兩份文件衝突時：規則以本文件為準；流程以 PipelineFlow 為準。  
 > **適用範圍**：高職數學 B 版 Gencode Pipeline 全面升級至 V3「西堤套餐」微元件化架構；含全新 skill 第一次自動建立  
 > **上位法規**：[Gencode與AgentSkillV2整合總體設計_v0.3.md](../Gencode_AgentSkillV2整合/Gencode與AgentSkillV2整合總體設計_v0.3.md)（Layer 1–6 原則完整繼承，本文件僅增量定義 V3 微元件層）  
 > **實體錨點目錄**：`docs/系統SOP/Gencode_AgentSkillV3整合/`  
 > **實作狀態**：**SOP 已更新，程式尚待對齊**（v1.5–v1.6 多數條款 IMPLEMENTED；v1.8 Auto-Bootstrap、Domain Function Extension、狀態機擴充待程式對齊）
+
+### v1.10 CHANGELOG（2026-06-26）
+
+- 新增 **§1.10 Automated Domain Bootstrap & Domain Healer**（**最終產品必要能力**，非選配）
+- 明確定義 domain 狀態 `draft`／`candidate`／`verified` 升格規則與驗證 Gate
+- 規定 `generator algorithm ≠ answer oracle ≠ integrity validator` 三元分離
+- 補充 `DOMAIN_CAPABILITY_UNRESOLVED`／`PARTIAL` 錯誤碼與教師端狀態對照
+- §1.8 限縮為 **既有 verified domain 內** operation 擴充；全新 capability 走 §1.10
+- 交叉引用總體設計 v0.3.3 §14、PipelineFlow §1.7
+
+### v1.9 CHANGELOG（2026-06-26）
+
+- 新增 **內容生成／資料呈現／學生作答** 三層分離原則（§2.0.1）
+- 正式定義五種 **西堤作答套餐**：`short_answer`、`single_choice`、`multi_part`、`table_fill`、`drawing`（§2.0.2–§2.0.4）
+- 新增 `answer_type` 選擇決策流程與禁止降級規則（§2.0.3、§2.0.5）
+- 明確區分 **資料呈現模式**（`text`／`image`／`graph`／`readonly_table`／`canvas`）與 **學生作答模式**（五種套餐）
+- `drawing` 強制 AI 檢查流程與 `ui_contract` 欄位定義（§2.0.4 套餐 E）；新 component 以 `drawing` 為準，§2.2.1 `handwriting` 僅作 legacy 映射
+- 交叉引用 PipelineFlow：生成端如何產出契約（§2.0.6）
 
 ### v1.8 CHANGELOG
 
@@ -392,7 +410,9 @@ textbook_example.skill_id
 | **Skill** | 已確定進入哪一家餐廳 | 行政歸屬；由 `textbook_example.skill_id` 鎖定 |
 | **Domain** | 該餐廳固定菜系與菜單 | Registry `fixed_domain_key` + `allowed_operations` |
 | **Operation** | 菜單中的數學題型 | `domain_operation` / `problem_type_id` |
-| **Presentation** | 上菜方式 | `presentation_mode` / `answer_type` |
+| **Data presentation** | 盤飾與配菜呈現 | `text`／`image`／`graph`／`readonly_table`／`canvas`（§2.0.1；**非**作答模式） |
+| **Answer interaction** | 學生怎麼吃（西堤作答套餐） | `answer_type`：`short_answer`／`single_choice`／`multi_part`／`table_fill`／`drawing`（§2.0.2） |
+| **Input widget** | 餐具細節 | `presentation_mode` + `ui_contract.interaction_mode`（§2.2；套餐內輸入元件樣式） |
 | **Question wording** | 題幹文字包裝 | Story Layer、`SCENARIO_POOL`、f-string 模板 |
 
 因此：
@@ -691,14 +711,14 @@ slope_intercept_line
 
 #### 1.7.1 Auto-Bootstrap 定義
 
-Auto-Bootstrap **自動建立**：
+Auto-Bootstrap **自動建立**（skill／component 層 · 見 §1.10 補充 **domain 層**）：
 
 - V3 skill package（`agent_skills_v3/{skill_id}/`）
 - manifest skeleton、`skill.json` draft
 - `components/src_{example_id}/` 目錄
 - tracker rows、induced spec 草案
 - wrapper skeleton
-- 缺少 Domain function 時的 capability gap 紀錄與 Extension 工作流程
+- capability gap 紀錄；**若缺 verified domain provider** → §1.10 Automated Domain Bootstrap（**不得**僅產 gap report 或要求老師寫程式）
 
 Auto-Bootstrap **不得自動改變**：
 
@@ -711,10 +731,12 @@ Auto-Bootstrap **不得自動改變**：
 
 | 情境 | 行為 |
 |------|------|
-| skill 已有 authoritative binding | 直接使用 `fixed_domain_key` |
-| registry row 缺失，但專案有 deterministic skill-domain mapping | 由 mapping 建立 registry row（`source=deterministic_mapping`） |
-| 完全找不到 deterministic binding | `DOMAIN_BINDING_MISSING`；**停止**該 skill 的 component generation |
-| — | **禁止** AI 自由猜 Domain；**禁止**標 `UNSUPPORTED_TASK_TYPE` |
+| skill 已有 authoritative binding | 直接使用 `fixed_domain_key`（confirmed binding） |
+| registry row 缺失，capability match 命中 verified provider | derived binding；重用 provider |
+| registry row 缺失，capability **無** verified provider | `DOMAIN_CAPABILITY_UNRESOLVED`／`PARTIAL` → §1.10 Bootstrap |
+| registry row 缺失，deterministic mapping 可解析且 domain 已 verified | 由 mapping 建立 registry row（`source=deterministic_mapping`） |
+| 完全找不到 provider 且無法 Bootstrap | 安全停止該 component；**禁止**錯配相近 domain |
+| — | **禁止** AI 自由猜 Routing Domain；**禁止**標 `UNSUPPORTED_TASK_TYPE`（教材可程式化時） |
 
 AI 可推論 operation 與 capability；**不可**推論 Routing Domain。
 
@@ -749,7 +771,9 @@ AI 可推論 operation 與 capability；**不可**推論 Routing Domain。
 - skill-specific allowlist **不得**作為生成入口；僅可用於灰度／風險提示
 - 一題一 `src_{example_id}`；單題失敗不阻斷姊妹題；僅 verified 可發布
 
-### 1.8 Domain Function Extension Contract（v1.8）
+### 1.8 Domain Function Extension Contract（v1.8 · 限縮範圍 v1.10）
+
+> **範圍**：本節僅適用於 **fixed domain 已存在且為 verified provider**、但缺少特定 operation／function 之情境。若 capability resolver 判定 **無可用 domain provider**（`DOMAIN_CAPABILITY_UNRESOLVED`／`PARTIAL`），**必須**改走 §1.10 Automated Domain Bootstrap，**不得**以相近 domain 硬套或僅產 gap report。
 
 當 Domain Capability Check 確認固定 Domain 缺少 operation 或 function 時，**必須**執行本階段（詳細時序見 PipelineFlow §1.5）。
 
@@ -828,7 +852,13 @@ function 測試通過後：更新 `allowed_operations` → 重建 induced spec �
 
 | 錯誤碼 | 語意 |
 |--------|------|
-| `DOMAIN_BINDING_MISSING` | 無 deterministic skill-domain binding |
+| `DOMAIN_BINDING_MISSING` | 無 deterministic skill-domain binding（**先** capability match；真缺 domain 走 §1.10） |
+| `DOMAIN_CAPABILITY_UNRESOLVED` | 無 verified provider 可滿足 required capabilities（**可恢復** · §1.10 Bootstrap） |
+| `DOMAIN_CAPABILITY_PARTIAL` | 部分 capability 有 provider；缺項走 §1.10 |
+| `DOMAIN_BOOTSTRAP_PENDING` | Automated Bootstrap 進行中 |
+| `DOMAIN_BOOTSTRAP_FAILED` | Bootstrap 失敗；保留 evidence |
+| `DOMAIN_HEALER_EXHAUSTED` | Healer 達輪次上限；待管理員審查 |
+| `DOMAIN_CANDIDATE_READY` | candidate 通過 Gate；待教師確認 |
 | `DOMAIN_MODULE_MISSING` | 固定 Domain 模組不存在 |
 | `DOMAIN_OPERATION_MISSING` | operation 未註冊 |
 | `DOMAIN_FUNCTION_MISSING` | function 不存在（**可恢復**） |
@@ -852,6 +882,224 @@ function 測試通過後：更新 `allowed_operations` → 重建 induced spec �
 
 **Tracker 持久化**：見 §4.5.2（Current Production vs Target；migration 前以 `failed` + 結構化 `error_code` 相容）。
 
+### 1.10 Automated Domain Bootstrap & Domain Healer（v1.10 · **最終產品必要能力**）
+
+> **產品定位（不可降級）**：本節為 **最終產品必要能力**，不是未來選配功能。正式產品使用者為一般數學老師；**不得**假設老師會使用 Codex、Python、Git、registry、domain、capability、scaffold、validator 等工程術語。教師端敘事見 [Gencode與AgentSkillV2整合總體設計_v0.3.md §14](../Gencode_AgentSkillV2整合/Gencode與AgentSkillV2整合總體設計_v0.3.md)；端到端時序見 [SOP_Gencode_AgentSkillV3_PipelineFlow.md §1.7](./SOP_Gencode_AgentSkillV3_PipelineFlow.md)。
+
+#### 1.10.1 觸發條件與分流
+
+Phase 1 induced spec 完成後，resolver 採 **capability-first matching**（§1.6、ProblemType SOP §1.7）：
+
+| 結果 | 行為 |
+|------|------|
+| 全部 `required_capabilities` 有 **verified** provider | 重用既有 domain → Shadow Bridge → component codegen |
+| `matched_capabilities` 部分、`missing_capabilities` 非空 | `DOMAIN_CAPABILITY_PARTIAL` → Gap Report → §1.10.3 Bootstrap |
+| 無任何可用 provider | `DOMAIN_CAPABILITY_UNRESOLVED` → Gap Report → §1.10.3 Bootstrap |
+| 固定 domain 已存在但缺 operation（§1.8 範圍） | `DOMAIN_FUNCTION_MISSING` → §1.8 Extension（**不**新建 domain） |
+
+**剛性規則**：
+
+1. `SKILL_TO_DOMAIN` 僅為 **confirmed binding** 加速路徑，**不是** V3 使用資格門檻；未註冊 skill 可用 **derived binding** 正常進入 Bootstrap Gate。
+2. 無完整 provider 時 **必須安全停止**，**禁止**錯配相近 domain 通過驗證。
+3. 新 domain **建立一次**後，所有具相同 capability 的 skills **共用**；**禁止** skill-specific 或 example-specific domain。
+
+#### 1.10.2 Domain 狀態模型（draft → candidate → verified）
+
+| 狀態 | 定義 | 正式 resolver | 學生端 | 教師預覽 |
+|------|------|:-------------:|:------:|:--------:|
+| `draft` | AI 初步產物；僅存在隔離區 | ❌ | ❌ | ❌ |
+| `candidate` | 通過 §1.10.5 基本品質閘門；可 dry-run | ❌ | ❌ | ✅ |
+| `verified` | 完整驗證 + 教師／管理員核准；併入正式 provider 集合 | ✅ | ✅（經 Publish Gate） | ✅ |
+
+**升格路徑**：
+
+```text
+draft（AI 產出）
+→ 自動測試 + Healer（§1.10.6）
+→ candidate（基本 Gate 通過）
+→ 題目預覽 + 教師教學語意確認（§1.10.8）
+→ verified（管理員／教師核准）
+→ 更新正式 provider 索引（append · non-destructive）
+→ 自動重跑原失敗 components
+```
+
+**禁止**：AI 產生的 domain **不得**直接修改正式 registry 或立即發布至學生端。
+
+#### 1.10.3 Automated Domain Bootstrap — 輸入
+
+Bootstrap 觸發前須完成成本控制鏈（§1.10.9）。輸入至少包括：
+
+| 欄位 | 說明 |
+|------|------|
+| `problem_type_id` | induced spec 錨點 |
+| `required_capabilities` | 題型語意所需能力集合 |
+| `matched_capabilities` / `missing_capabilities` | resolver 輸出 |
+| 教材例題集合 | 同 problem_type／同 capability 缺口之聚合例題 |
+| `answer_contract` | equivalence、cardinality、格式 |
+| `presentation_mode` / `answer_type` | 西堤套餐與 UI contract |
+| `source_hashes` | Layer 1 標準化雜湊；未變則重用 artifact |
+| 相近既有 domains | capability index 比對結果 |
+
+#### 1.10.4 Automated Domain Bootstrap — 產物
+
+產物至少包括（**全部**寫入 **candidate 隔離區**，不得 skill／example 專用）：
+
+```text
+domain manifest
+純數學 core（domain operations 以外）
+domain operations
+capability declarations
+matrix adapter
+component scaffold contract
+answer contract
+validator（獨立於 generator）
+unit tests
+property tests
+integration fixtures
+題目預覽
+成本與修補紀錄（bootstrap_run_id、token、輪次）
+registry draft（candidate 區 · 非 production）
+```
+
+**禁止產物**：skill-specific domain、example-specific domain、以 `example_id` 命名之 function。
+
+#### 1.10.5 Candidate 驗證與升格 Gate
+
+`candidate` 升格前 **至少** 通過下列檢查（詳細時序見 PipelineFlow §1.7.3）：
+
+| # | Gate | 說明 |
+|---|------|------|
+| 1 | module import | candidate 模組可 import |
+| 2 | py_compile | 語法合法 |
+| 3 | registry consistency | draft entry 與 manifest 一致 |
+| 4 | operation callable | 各 operation 可呼叫且回傳契約矩陣 |
+| 5 | 獨立數學 oracle | **與 generator 分離**之答案驗證 |
+| 6 | answer contract | checker dispatch 正確 |
+| 7 | 固定 seed 可重現 | 同 seed 同 payload |
+| 8 | 不同 seed 合理變異 | 參數空間非退化 |
+| 9 | 多 seed integrity | 批量 smoke |
+| 10 | 教材同構檢查 | 與 source facts 結構一致 |
+| 11 | UI contract | `answer_type`／呈現拓撲 |
+| 12 | 禁止 skill/example 特例掃描 | 靜態掃描無 `skill_id`／`example_id` 硬編碼 |
+| 13 | 既有 domain 回歸測試 | 不污染 verified provider |
+| 14 | 安全與超時檢查 | 執行時間與資源上限 |
+
+**三元分離（剛性）**：
+
+```text
+generator algorithm ≠ answer oracle ≠ integrity validator
+```
+
+**禁止**用同一段生成邏輯同時證明自己正確。validator 降標以通過測試 **一律視為 Healer 違規**（§1.10.6）。
+
+#### 1.10.6 Domain Healer 規則
+
+當 `candidate` 生成後結構化測試失敗，啟動 Healer **局部修補**：
+
+```text
+candidate 生成
+→ 結構化測試失敗
+→ healer 只修失敗 domain（candidate 隔離區）
+→ 只重跑失敗測試與必要回歸
+→ 最多 N 輪（預設 N 由管線設定；超限 → 待管理員審查）
+→ 通過後繼續 candidate 預覽流程
+→ 超過限制則保留 evidence → 管理員審查
+```
+
+**Healer 禁止項**：
+
+```text
+修改 production core
+修改已 verified domain
+新增 skill 白名單
+新增教材 ID 特例
+為通過測試而降低 validator 標準
+```
+
+#### 1.10.7 缺少 capability 時的完整閉環（教師視角）
+
+```text
+DOMAIN_CAPABILITY_UNRESOLVED / PARTIAL
+→ 建立 Domain Gap Report
+→ 聚合同類教材例題
+→ Automated Domain Bootstrap
+→ 建立 candidate domain
+→ 產生 core / operations / registry draft / adapter / validator / tests
+→ 自動測試
+→ Domain Healer 局部修補
+→ 產生題目預覽
+→ 教師確認教學語意與題目品質
+→ 升格 verified
+→ 自動重跑原失敗 components
+```
+
+單一 component 失敗 **不得** 500 整 skill、**不得** 產錯題、**不得** 阻斷姊妹 components。
+
+#### 1.10.8 教師端可回答的問題（教學語意）
+
+系統以結構化問答呈現；**不**暴露 stack trace、registry key 或 Python 路徑：
+
+- 角度採度數或弧度？
+- 變異數採母體或樣本公式？
+- 答案要求精確值或近似值？近似到小數第幾位？
+- 多解是否全部列出？
+- 題目難度與教材是否一致？
+
+#### 1.10.9 成本控制（產品政策）
+
+```text
+先重用 existing artifact
+→ no-LLM deterministic classification
+→ existing-domain capability matching
+→ 相近 domain extension analysis（§1.8 優先）
+→ 確認真的缺 domain
+→ 才呼叫 AI Bootstrap
+```
+
+AI 啟動前須顯示：預估呼叫次數、預估 token、預計建立或擴充的 domain、預計 operations、受影響 components。`source_hash` 未變時 **必須** 重用既有 classification、gap report 與 `candidate`，**不得** 重複呼叫 AI。
+
+#### 1.10.10 教師端狀態文字（建議）
+
+| 教師可見狀態 | 內部語意 |
+|-------------|----------|
+| 已找到既有出題能力 | verified provider matched |
+| 正在生成題目 | Shadow Bridge / component codegen |
+| 偵測到新的數學能力 | `DOMAIN_CAPABILITY_UNRESOLVED` |
+| 正在建立可重用出題能力 | Bootstrap → `candidate` |
+| 自動測試與修補中 | validator + Domain Healer |
+| 等待教師確認 | `candidate` 預覽就緒 |
+| 已核准並重新生成 | `verified` + 失敗 components 重跑 |
+| 需要管理員審查 | healer 超限或 bootstrap 失敗 |
+
+技術錯誤詳情僅保留於管理員診斷頁。
+
+#### 1.10.11 成功與失敗標準
+
+| 情境 | 預期 |
+|------|------|
+| 已有 domain | V3 重新生成 → 自動生成 → `verified` |
+| 缺少 domain | 不 500、不產錯題、不阻斷其他 components、不要求老師寫程式、自動 `candidate` |
+| Candidate 通過 | 教師確認 → `verified` → 原失敗 components 自動重跑 |
+| Candidate 無法修復 | 保留 evidence → 待管理員審查 → **不**影響其他 skill |
+
+#### 1.10.12 本節取代的舊規則
+
+| 舊敘述（已廢止） | 新正式架構 |
+|------------------|------------|
+| 新 domain 必須由工程師人工建立 | Automated Domain Bootstrap |
+| 未知 skill 必須先加入 `SKILL_TO_DOMAIN` | derived binding + Bootstrap Gate |
+| Auto-Bootstrap 只產生 gap report | Gap Report + 完整 Bootstrap 產物 + Healer |
+| 老師需使用 Codex 修復 | Healer 自動修 `candidate`；老師只確認教學語意 |
+| `DOMAIN_BINDING_MISSING` 一律停止 | 先 capability match；真缺 domain 走 Bootstrap，非錯配 |
+
+#### 1.10.13 與 §1.7 / §1.8 分工
+
+| 章節 | 職責 |
+|------|------|
+| §1.7 | skill package／tracker／component 骨架之 Auto-Bootstrap；Bootstrap Gate vs Publish Gate |
+| §1.8 | **既有 verified fixed domain** 內新增 operation／function |
+| §1.10 | **全新 capability** 之 domain 自動建立、Healer、升格 |
+
 ---
 
 ## 2. 八維度原子組件身分證合約
@@ -869,6 +1117,333 @@ function 測試通過後：更新 `allowed_operations` → 重建 induced spec �
 | D6 | `DOMAIN_LIBRARY` | 允許 import 的 Helper / Ops 白名單（見 §2.3） |
 | D7 | `ANSWER_VERIFICATION_TYPE` | `checker_key` + `equivalence_type`；對接 `checker_registry` |
 | D8 | `GENERATOR_READINESS` | `draft` / `runtime_ready` / `failed` / `verified` |
+
+> **v1.9 補充**：除八維度外，每個 component 的 `generate()` 輸出與 induced spec **必須**宣告正式 `answer_type`（§2.0.2）及完整 `ui_contract`／`answer_contract`；`metadata.py` 之 `ANSWER_VERIFICATION_TYPE["answer_type"]` 須與 `generate()` 一致。
+
+### 2.0 內容生成、資料呈現與學生作答三層分離（v1.9 · 西堤作答套餐權威）
+
+本節為 **題型介面／學生端作答契約** 之唯一規範來源。Gencode 管線如何判定並產出這些契約，見 [PipelineFlow §1.3 Step 3／§2.4 Step 2–3](./SOP_Gencode_AgentSkillV3_PipelineFlow.md)。
+
+#### 2.0.1 三層決策原則
+
+每筆教材例題（每個 `src_{textbook_example_id}` component）**必須分別決定**下列三層；三層**不得混為同一分類**。
+
+**（1）數學內容層**（Domain／Generator 責任）
+
+| 欄位 | 說明 |
+|------|------|
+| `skill_id` | 行政歸屬（DB 權威） |
+| `fixed_domain_key` | Registry 固定 Domain |
+| `domain_operation` | 白名單內數學操作 |
+| induced constraints | 參數化限制 |
+| generator | `generate.py` 搬運工 |
+| checker | `checker_key` |
+| validator | Domain／schema／topology gate |
+
+**（2）資料呈現模式**（題幹附件；**非**作答方式）
+
+| 模式 | 說明 | 典型 payload 欄位 |
+|------|------|-------------------|
+| `text` | 純文字題幹 | `question_text` |
+| `image` | 靜態圖 | `image_base64` |
+| `graph` | 可互動或程式繪製圖表 | `visual_spec`、`visual_aids` |
+| `readonly_table` | 唯讀表格（資料來源） | `table_data` |
+| `canvas` | 作圖畫布區（展示或作答載體） | `ui_contract` + `visual_spec` |
+
+**（3）學生作答模式**（西堤作答套餐；§2.0.2）
+
+五種正式 `answer_type`：`short_answer`、`single_choice`、`multi_part`、`table_fill`、`drawing`。
+
+**組合範例**（資料呈現 + 作答模式）：
+
+| 資料呈現 | 作答模式 | 說明 |
+|----------|----------|------|
+| `graph` | `multi_part` | 同一張圖回答多小題 |
+| `graph` | `single_choice` | 圖表題配選項 |
+| `readonly_table` | `short_answer` | 表格為資料，單一簡答 |
+| `readonly_table` | `multi_part` | 表格為資料，多小題各自輸入 |
+| `table_fill` | — | 答案須填入表格 cell 本身 |
+| `graph` + `canvas` | `drawing` | 學生在 canvas 作圖 |
+
+**剛性澄清**：
+
+- 有表格 **不代表** 一定是 `table_fill`；只有答案須**直接填入表格特定 cell** 時才用 `table_fill`。
+- 有多個答案 **不代表** 一定是 `multi_part`；若答案位置在表格 cell，應使用 `table_fill`。
+- `readonly_table` 僅表示表格為**唯讀資料來源**；學生最後若只答一題，搭配 `short_answer` 或 `single_choice`。
+
+#### 2.0.2 正式五種學生作答介面（西堤作答套餐）
+
+下列五種為 **唯一正式** 學生作答介面選項；新 component **必須**擇一，並貫穿下列管線節點：
+
+| 節點 | 要求 |
+|------|------|
+| component `metadata.py` | `ANSWER_VERIFICATION_TYPE["answer_type"]` |
+| `generate()` 輸出 | `answer_type` + 套餐所需欄位（§2.0.4、PipelineFlow §2.4） |
+| `ui_contract` | `interaction_mode` 與前台元件一致 |
+| `answer_contract` | `checker_key`、`answer_order` 等 |
+| checker registry | 對應 `checker_key` 已 `runtime_available` |
+| validator gate | Phase 2.5 套餐專屬斷言 |
+| preview | 實際驗證學生可操作方式 |
+| production smoke | 依 `answer_type` 分項驗證（PipelineFlow §3.4 Step 5） |
+| 本 SOP | 契約定義與禁止降級（§2.0.5） |
+
+| `answer_type` | 中文名稱 | 核心操作 |
+|---------------|----------|----------|
+| `short_answer` | 單一簡答題 | 單一文字、數值或式子輸入 |
+| `single_choice` | 單選題 | 從選項中選擇唯一答案 |
+| `multi_part` | 多重填充題 | 多個獨立小題，各有獨立輸入欄 |
+| `table_fill` | 表格填空題 | 直接在表格指定格子中填答 |
+| `drawing` | 作圖題 | 在 canvas 作圖，**強制** AI 檢查 |
+
+#### 2.0.3 作答套餐選擇決策流程
+
+Phase 1 classifier／induced spec 與 component-local config **必須**依教材**原始作答拓撲**判定 `answer_type`（不得僅依數學 Domain 推斷）：
+
+```text
+1. 答案是否必須填在表格特定 cell？
+   → 是：table_fill
+
+2. 是否有兩個以上獨立小題（(1)(2)(3) 或語意可區分之多問）？
+   → 是：multi_part
+
+3. 是否要求學生畫圖（作圖為主要作答方式）？
+   → 是：drawing
+   ※ 即使同時有文字描述或 expected_answer 字串，也不得降級為 short_answer
+
+4. 是否提供選項且只有一個正解？
+   → 是：single_choice
+
+5. 其餘
+   → short_answer
+```
+
+#### 2.0.4 各套餐必要契約
+
+##### 套餐 A：`short_answer`（單一簡答題）
+
+**適用**：只有一個答案；學生輸入一個數值、代數式、分數、文字或簡短結果。
+
+```json
+{
+  "answer_type": "short_answer",
+  "answer": {"value": 16},
+  "ui_contract": {
+    "interaction_mode": "single_input"
+  }
+}
+```
+
+**UI 規則**：顯示單一輸入框；不得顯示內部 `field_key`；輸入框尺寸應符合答案型態；不得把多小題強制塞入同一輸入框。
+
+##### 套餐 B：`single_choice`（單選題）
+
+**適用**：有多個選項，只有一個正確答案。
+
+```json
+{
+  "answer_type": "single_choice",
+  "choices": [
+    {"label": "A", "text": "15"},
+    {"label": "B", "text": "18"}
+  ],
+  "answer": {
+    "value": "B",
+    "semantic_value": 18
+  },
+  "ui_contract": {
+    "interaction_mode": "choice_list"
+  }
+}
+```
+
+**規則**：選項不可重複；必須有唯一正解；若依賴圖表，圖表與選項必須同時可見；checker **不得**只依選項位置而忽略 `semantic_value`。
+
+##### 套餐 C：`multi_part`（多重填充題）
+
+**定義**：一道題中有兩個以上彼此可區分的小題，每個小題需要獨立作答。
+
+**典型情境**：同一張圖多問；分別求斜率、截距、方程式；同一組資料衍生多個問題；題目含 `(1)、(2)、(3)` 等小題。
+
+```json
+{
+  "answer_type": "multi_part",
+  "subquestions": [
+    {
+      "part": "(1)",
+      "field_key": "part_1",
+      "prompt": "第一小題",
+      "expected_answer": 16,
+      "input_type": "number"
+    },
+    {
+      "part": "(2)",
+      "field_key": "part_2",
+      "prompt": "第二小題",
+      "expected_answer": 21,
+      "input_type": "number"
+    }
+  ],
+  "answer": {
+    "value": [16, 21]
+  },
+  "answer_contract": {
+    "checker_key": "multi_part_answer_checker",
+    "answer_order": ["part_1", "part_2"]
+  },
+  "ui_contract": {
+    "interaction_mode": "multiple_inputs"
+  }
+}
+```
+
+**UI 標準**：每一小題顯示自己的題號、文字及輸入框；共用圖表只顯示一次；不得要求逗號分隔多答案；提交後須有 per-part 正確／錯誤／未作答；切題時清除所有小題狀態。
+
+**Validator**：`subquestions` 不得為空；小題數與答案數一致；`field_key` 唯一；`answer_order` 完整；每個答案可由題面唯一求出；**不得**降級為 `short_answer`。
+
+##### 套餐 D：`table_fill`（表格填空題）
+
+**定義**：答案必須直接填入表格中的指定 cell；列、欄位置本身具有數學語意。
+
+**適用**：次數分配表、累積次數分配表、函數值表、統計資料表、數列規律表、係數表等。
+
+**不適用**（表格僅為資料來源，學生最後答一題）：`readonly_table` + `short_answer`／`single_choice`／`multi_part`。
+
+```json
+{
+  "answer_type": "table_fill",
+  "table_question": {
+    "type": "table_fill",
+    "interaction_mode": "inline_input",
+    "headers": ["欄1", "欄2", "欄3"],
+    "display_rows": [],
+    "blank_cells": [
+      {
+        "row": 0,
+        "col": 2,
+        "field_key": "field_1",
+        "label": "",
+        "expected_answer": 5,
+        "input_type": "number"
+      }
+    ],
+    "answer_order": ["field_1"],
+    "show_blank_labels": false
+  },
+  "answer_contract": {
+    "checker_key": "table_fill_answer_checker"
+  },
+  "ui_contract": {
+    "interaction_mode": "inline_table_input"
+  }
+}
+```
+
+**UI 標準**：使用真正的 HTML table；完整外框與欄線；標題列、資料列、總計列清楚；輸入框直接位於待填 cell；不得在表格下方產生一長串重複輸入欄；不得顯示 `lt_1`、`gt_1`、`field_3` 等工程名稱；窄螢幕支援水平捲動；每個 cell 可個別顯示正確、錯誤、未填。
+
+**空格代號規則**：預設 `show_blank_labels: false`（直接顯示空白輸入框，不顯示 a、b、c）。僅在教材明確命名 a、b、c、d、題幹要求「求 a、b、c、d」或後續問題需引用代號時設為 `true`。若表格不顯示代號，題幹也不得要求 a、b、c、d，應改為「請完成下方表格。」或「請在空格中填入正確數值。」
+
+**Validator**：`blank_cells` 不得為空；`row`／`col` 有效且不可重複；`field_key` 唯一；`answer_order` 涵蓋所有格；`expected_answer` 與題目資料一致；已知資料足以唯一求解；input 數量與 `blank_cells` 數量一致；**不得**退化為表格下方多重輸入框。
+
+##### 套餐 E：`drawing`（作圖題）
+
+**定義**：學生必須在 canvas 上作圖；文字答案及一般提交流程**不得**使用；**必須**強制透過 AI 作圖檢查。
+
+```json
+{
+  "answer_type": "drawing",
+  "ui_contract": {
+    "interaction_mode": "canvas",
+    "drawing_required": true,
+    "ai_check_required": true,
+    "text_answer_enabled": false,
+    "submit_button_enabled": false,
+    "auto_next_on_correct": true,
+    "success_dialog_required": true
+  }
+}
+```
+
+**UI 強制規則**（`answer_type == "drawing"` 或 `drawing_required == true`）：
+
+- 顯示 canvas 與作圖工具、AI 檢查按鈕
+- 文字答案 textbox **hidden 或 disabled**；一般「提交」按鈕 **hidden 或 disabled**
+- **不得**執行一般 short-answer checker；**不得**讓學生跳過 AI 檢查直接提交
+- AI 檢查是**唯一**正式送出管道
+
+**AI 檢查流程**：
+
+```text
+學生完成作圖
+→ 點擊 AI 檢查
+→ 鎖定按鈕，顯示檢查中
+→ 擷取 canvas
+→ 呼叫圖形檢查 endpoint
+→ 處理正確、錯誤或 API 錯誤
+```
+
+| 階段 | 行為 |
+|------|------|
+| 檢查中 | AI 檢查按鈕 disabled；防止重複送出；可暫時鎖定 canvas |
+| AI 判定錯誤 | 保留圖形；留在原題；顯示可操作提示；不跳下一題；不記錄答對；按鈕恢復可用 |
+| API 錯誤 | 不得誤判答對；不得跳題；顯示稍後重試；恢復 canvas 與按鈕 |
+| AI 判定正確 | 依序：寫入答對紀錄 → 更新連續答對與學習狀態 → 防止重複計分 → 鎖定 canvas 與按鈕 → 顯示成功 msgbox → 學生按「確定」→ 自動載入下一題 |
+
+**正確流程必須為**：
+
+```text
+AI check passed → record success → show success msgbox → user confirms → next question
+```
+
+不得在資料寫入完成前跳題，也不得未顯示成功訊息就直接跳題。
+
+**建議成功 response**：
+
+```json
+{
+  "success": true,
+  "is_correct": true,
+  "message": "作圖正確",
+  "attempt_recorded": true,
+  "next_action": "show_success_then_next"
+}
+```
+
+**Validator**：`drawing_required` 與 `ai_check_required` 為 true；textbox 與一般 submit 不可操作；AI 檢查按鈕可見；成功時寫入紀錄並顯示 msgbox；確認後跳下一題；失敗或 API 錯誤不跳題；重複點擊不重複計分；切題後 canvas 與狀態完整 reset。
+
+> **Legacy 映射**：歷史 `answer_type: "handwriting"` 與 §2.2.1 欄位在新 component 中**統一**遷移至 `drawing` + 上列 `ui_contract`；舊 payload 由 adapter 向後映射，新產出不得再宣告 `handwriting` 為正式套餐。
+
+#### 2.0.5 禁止降級與 Contract Violation
+
+下列情形一律視為 **contract violation**；Quality Gate **必須**標記 blocker，**不得** `verified`／`published`：
+
+| # | Violation |
+|---|-----------|
+| 1 | `multi_part` 被壓成單一輸入框 |
+| 2 | `table_fill` 被改成表格下方長串輸入框 |
+| 3 | `table_fill` 顯示內部 `field_key` |
+| 4 | 題幹寫「完成下表」但沒有真正表格 |
+| 5 | 題幹寫「如下圖」但圖未顯示 |
+| 6 | `drawing` 題仍可操作文字 textbox |
+| 7 | `drawing` 題一般提交按鈕仍可操作 |
+| 8 | `drawing` 題未強制 AI 檢查 |
+| 9 | AI 判定錯誤卻跳下一題 |
+| 10 | AI API 錯誤卻記錄答對 |
+| 11 | `drawing` 題成功後未顯示 msgbox |
+| 12 | 選擇題沒有唯一正解 |
+| 13 | `answer_type` 與 UI 實際操作不一致 |
+| 14 | component contract 經 adapter／wrapper／API 後欄位遺失 |
+
+#### 2.0.6 與 Gencode 管線銜接（交叉引用）
+
+| 本文件（呈現與驗證） | PipelineFlow（產出與流程） |
+|---------------------|---------------------------|
+| §2.0.2 五種套餐定義 | §1.3 Step 3：`answer_type` 判定 |
+| §2.0.4 各套餐 JSON 契約 | §2.4 Step 2：`generate()` 通用輸出契約 |
+| §2.0.5 禁止降級 | §2.4 Step 3：validator／preview 斷言 |
+| §2.0.4 套餐 E AI 流程 | §3.4 Step 5：production smoke 分項 |
+| `ui_contract` 完整保留 | §2.4：adapter 不得剝除 UI 欄位 |
+
+`candidate_verified` 與 `verified`：**不僅**看數學答案，**必須**確認 UI 可依 `answer_type` 實際作答；`ui_contract` 不完整 → **不得** verified／published。
 
 ### 2.1 標準 Metadata 宣告範例
 
@@ -930,46 +1505,65 @@ TAXONOMY_PATH: Final[str] = "coordinate_geometry:line_equation"
 
 ### 2.2 PRESENTATION_MODE 穩定 Key 對照表
 
+> **v1.9 分工**：`answer_type`（§2.0.2 西堤作答套餐）決定**學生怎麼答**；本節 `PRESENTATION_MODE` 決定**輸入元件外觀**（數字框、分數框、選項樣式等），透過 `ui_contract.interaction_mode` 與套餐對接。資料呈現（圖、唯讀表）見 §2.0.1，**不得**與 `answer_type` 混用。
+
 以下為前台 Web 與 `answer_contract.presentation_mode` **已穩定支援**的外觀 Key。  
 AI Codegen **不得**自創新 Key；若需擴充，須先修改 `core/gencode/answer_format_hint.py` 與前台 renderer。
 
 | Key | 典型 `answer_type` | 前台輸入元件 | 對接 Checker |
 |-----|-------------------|--------------|--------------|
-| `integer` | `integer` / `numeric` | 數字輸入框 | `integer_checker` / `numeric_checker` |
-| `choice` | `choice` / `multi_choice` | 選項群組（泛用） | `choice_label_checker` |
+| `integer` | `short_answer`（`integer`／`numeric` 語意） | 數字輸入框 | `integer_checker` / `numeric_checker` |
+| `choice` | `single_choice`（泛用選項） | 選項群組 | `choice_label_checker` |
 | `single_choice` | `single_choice` | A/B/C/D 單選 | `choice_label_checker` |
-| `rational` | `rational` / `fraction` | 分數輸入 | `rational_checker` / `fraction_checker` |
-| `interval_set` | `interval` / `interval_set` | 區間輸入 | `interval_checker` |
-| `equation` | `equation` / `expression` | 方程式輸入 | `equation_checker` / `linear_equation_equivalent_checker` |
-| `text_short` | `text_short` / `short_answer` | 短文字 | `text_short_checker` |
-| `handwriting` | `handwriting` / `manual_review` | 手寫板 + 相機上傳（文字框 disabled） | `ai_judged_checker` / `manual_review_checker` |
+| `rational` | `short_answer`（分數語意） | 分數輸入 | `rational_checker` / `fraction_checker` |
+| `interval_set` | `short_answer`（區間語意） | 區間輸入 | `interval_checker` |
+| `equation` | `short_answer`（方程式語意） | 方程式輸入 | `equation_checker` / `linear_equation_equivalent_checker` |
+| `text_short` | `short_answer` | 短文字 | `text_short_checker` |
+| `inline_table_input` | `table_fill` | 表格內嵌輸入 | `table_fill_answer_checker` |
+| `multiple_inputs` | `multi_part` | 多欄位輸入 | `multi_part_answer_checker` |
+| `canvas` | `drawing` | canvas + AI 檢查 | `ai_judged_checker` |
+| `handwriting` | **legacy** → 新題用 `drawing` | 手寫板（舊） | `ai_judged_checker` / `manual_review_checker` |
 
-> **備註**：歷史資料中 `presentation_mode: "short_answer"` 與 `text_short` 外觀等價；V3 新組件統一使用上表 Key，`skill_wrapper_compiler` 負責向後映射。
+> **備註**：歷史資料中 `presentation_mode: "short_answer"` 與 `text_short` 外觀等價；V3 新組件之正式 `answer_type` 使用 §2.0.2 五選一，`skill_wrapper_compiler` 負責向後映射。
 
-#### 2.2.1 手寫題前端硬體連動（`handwriting` 專用）
+#### 2.2.1 作圖題前端硬體連動（`drawing` · 取代 legacy `handwriting`）
 
-當 `PRESENTATION_MODE == "handwriting"` 時，`runtime_skill_wrapper` 在 `finalize_generator_payload()` 階段**必須**注入下列前台控制宣告（沿用既有 payload 欄位，**不得破壞** `practice.py` 學生端 response contract（§0.1.1）：
+當 `answer_type == "drawing"`（或 legacy `PRESENTATION_MODE == "handwriting"`）時，`runtime_skill_wrapper` 在 `finalize_generator_payload()` 階段**必須**注入下列前台控制宣告（完整契約見 §2.0.4 套餐 E；**不得破壞** `practice.py` 學生端 response contract（§0.1.1））：
 
 ```python
 payload.update({
-    "answer_type": "handwriting",
-    "answer_input_type": "handwriting",
-    "requires_handwriting": True,
-    "input_mode": "handwriting",
-    "text_input_disabled": True,          # 前台據此將文字輸入框設為 disabled
+    "answer_type": "drawing",              # 新 component 正式值；legacy 可映射 handwriting
+    "answer_input_type": "drawing",
+    "requires_handwriting": True,          # legacy 相容欄位
+    "input_mode": "canvas",
+    "text_input_disabled": True,
+    "text_answer_enabled": False,
+    "submit_button_enabled": False,
+    "drawing_required": True,
+    "ai_check_required": True,
     "allow_camera_upload": True,
     "allow_canvas_drawing": True,
     "runtime_mode": "visual_or_handwriting_ai_checked",
     "check_mode": "handwriting_ai_checked",
     "grading_mode": "ai_judged_free_response",
+    "ui_contract": {
+        "interaction_mode": "canvas",
+        "drawing_required": True,
+        "ai_check_required": True,
+        "text_answer_enabled": False,
+        "submit_button_enabled": False,
+        "auto_next_on_correct": True,
+        "success_dialog_required": True,
+    },
 })
 ```
 
-**剛性防線**：
+**剛性防線**（詳見 §2.0.4 套餐 E）：
 
-- 前台渲染系統讀取 `text_input_disabled: True` 後，**禁止**學生以鍵盤輸入文字答案；僅允許相機圖片上傳或畫布手寫。
-- 批改由具備 Vision 能力的後台 LLM 執行語意判定；component 內**不得**自寫 `check()` 邏輯覆寫此路徑。
-- 樹狀圖 / 列表題仍走 B4 `visual_or_handwriting_ai_checked` 契約；component 只輸出結構化數據，不觸碰前台元件選擇邏輯。
+- 前台讀取 `text_answer_enabled: false`／`text_input_disabled: True` 後，**禁止**鍵盤文字作答
+- **禁止**一般 submit；僅 AI 檢查為正式送出管道
+- 批改由 Vision LLM 執行；component 內**不得**自寫 `check()` 覆寫
+- AI 正確流程：`record success → msgbox → user confirms → next question`
 
 ### 2.3 DOMAIN_LIBRARY 精確對接表
 
@@ -1117,7 +1711,10 @@ domain                → 共用數學領域（如 coordinate_geometry）
 domain_operation      → 該題實際數學操作（induced spec 決定）
 problem_type_id       → 題型身份與 runtime 分流鍵
 answer_schema_key     → matrix["answer"] 結構契約
-presentation_mode     → 學生端輸入介面
+answer_type           → 學生作答套餐（§2.0.2 五選一）
+data_presentation     → 題幹附件呈現（§2.0.1；text/image/graph/readonly_table/canvas）
+presentation_mode     → 輸入元件外觀 Key（§2.2）
+ui_contract           → 前台互動宣告（interaction_mode 等）
 checker_key           → 批改與語意等價判定
 ```
 
@@ -1317,6 +1914,26 @@ def build_line_equation_matrix(
 1. 從 `metadata.py` 讀取 `DOMAIN_LIBRARY` 與 profile 參數（`curriculum_profile`、`difficulty_profile`）。
 2. 呼叫對應 Domain 入口函式（經 Registry 解析，見 §2.7）。
 3. 將 Full Matrix Dictionary **原樣搬運**至 payload（允許 f-string 題幹模板填空，禁止數學加工）。
+4. **必須**輸出完整 generator contract（§2.0.4、PipelineFlow §2.4 Step 2）；`answer_type` 與 induced spec 一致。
+
+**`generate()` 通用輸出契約**（不相關欄位可為空陣列／空物件，但依 `answer_type` 所需欄位**不可缺失**）：
+
+```json
+{
+  "question_text": "",
+  "answer_type": "short_answer | single_choice | multi_part | table_fill | drawing",
+  "answer": {},
+  "choices": [],
+  "subquestions": [],
+  "table_question": {},
+  "table_data": {},
+  "image_base64": "",
+  "visual_spec": {},
+  "visual_aids": [],
+  "ui_contract": {},
+  "answer_contract": {}
+}
+```
 
 ```python
 # ✅ v1.4 合法 generate.py 骨架（搬運工）
@@ -1479,9 +2096,13 @@ Batch dry-run 若偵測 ≥2 題完全相同之 `answer_schema_mismatch` → `sh
                             ▼
               ┌─────────────────────────────┐
               │ Layer C：Presentation Layer  │
+              │ - data_presentation 模式     │
+              │   (text/image/graph/         │
+              │    readonly_table/canvas)    │
+              │ - answer_type（西堤套餐）    │
               │ - presentation_mode Key      │
-              │ - answer_contract            │
-              │ → SOURCE_KIND → ORDER_WEIGHT     │
+              │ - ui_contract / answer_contract│
+              │ → SOURCE_KIND → ORDER_WEIGHT │
               └─────────────────────────────┘
 ```
 
@@ -2039,6 +2660,10 @@ agent_skills_v3/{skill_id}/components/{component_id}/
 
 ## 6. Codex 任務執行檢查清單
 
+- [ ] **三層分離（§2.0.1）**：數學內容層、`data_presentation`、`answer_type` 分別決定，不得混用
+- [ ] **西堤作答套餐（§2.0.2）**：`answer_type` 為五選一；貫穿 metadata、generate、UI、checker、validator、preview、smoke
+- [ ] **作答決策（§2.0.3）**：依教材原始作答拓撲判定；作圖題不得降級 `short_answer`
+- [ ] **禁止降級（§2.0.5）**：multi_part／table_fill／drawing 契約 violation 不得 verified
 - [ ] **Skill-Fixed Domain Authority（§1.6）**：`skill_id` 自 DB 唯讀；Registry `fixed_domain_key` 不可被 AI 覆寫；無跨 Domain fallback
 - [ ] **Verified 八項門檻（§1.6.11）**：除沙盒外須通過 skill/domain/operation/source/oracle/semantic/topology/runtime 驗證
 - [ ] **物理佈局防線（§1.2）**：`skills/{skill_id}.py` 保留於 `skills/` 根目錄；每題 `py` 獨立於 `agent_skills_v3/{skill_id}/components/{component_id}/`；無大雜燴目錄

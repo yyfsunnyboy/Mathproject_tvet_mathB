@@ -15,8 +15,10 @@ from pathlib import Path
 from typing import Any, Literal
 
 from core.gencode.pipeline_orchestrator import (
+    PHASE1_CLASSIFICATION_UNRESOLVED,
     V3_PRODUCTION_PUBLISH_ENABLED,
     _load_v3_taxonomy_mvp_scope,
+    resolve_v3_admin_induced_spec,
     run_gencode_phase2_raw,
 )
 from core.gencode.schema.gencode_component_tracker_inspection import (
@@ -541,15 +543,32 @@ def run_admin_v3_dryrun_for_skill(
             component_entry["tracker_transition"] = f"{tracker_status}->{post_status}"
 
             message = str(dryrun_result.get("status") or "draft_written")
-            if message == "failed":
+            if message in {"failed", "needs_human_review"}:
+                failed_count += 1
+                component_entry["status"] = "failed" if message == "failed" else post_status
+                component_entry["error"] = (
+                    dryrun_result.get("error_code")
+                    or ("PHASE1_CLASSIFICATION_UNRESOLVED" if message == "needs_human_review" else "COMPONENT_GENERATION_FAILED")
+                )
+                component_results.append(component_entry)
+                results.append({
+                    **component_entry,
+                    "status": "failed" if message == "failed" else "needs_human_review",
+                    "message": "component_generation_failed_this_run" if message == "failed" else "phase1_classification_unresolved",
+                    "cache_hit": False,
+                    "force_regenerate": bool(dryrun_result.get("force_regenerate", force or must_regenerate)),
+                })
+                continue
+
+            if smoke and not generate_path.is_file():
                 failed_count += 1
                 component_entry["status"] = "failed"
-                component_entry["error"] = dryrun_result.get("error_code") or "COMPONENT_GENERATION_FAILED"
+                component_entry["error"] = "component_files_missing"
                 component_results.append(component_entry)
                 results.append({
                     **component_entry,
                     "status": "failed",
-                    "message": "component_generation_failed_this_run",
+                    "message": "component_files_missing",
                     "cache_hit": False,
                     "force_regenerate": bool(dryrun_result.get("force_regenerate", force or must_regenerate)),
                 })
@@ -1016,6 +1035,77 @@ def run_admin_v3_dryrun_for_example(
     generation_run_id = uuid.uuid4().hex
     generation_started_at = _now_iso()
 
+    phase1_preflight = resolve_v3_admin_induced_spec(
+        conn,
+        skill_key,
+        textbook_example_id,
+        force_regenerate=bool(force_regenerate),
+    )
+    if not phase1_preflight.get("ok"):
+        error_code = str(phase1_preflight.get("error_code") or PHASE1_CLASSIFICATION_UNRESOLVED)
+        induced_payload = phase1_preflight.get("induced_spec")
+        error_details = phase1_preflight.get("error_details")
+        if not isinstance(error_details, dict):
+            error_details = (
+                induced_payload.get("error_details")
+                if isinstance(induced_payload, dict)
+                else None
+            )
+        payload: dict[str, object] = {
+            "classification_status": "unresolved",
+            "error_code": error_code,
+            "phase1_preflight": {
+                "reused": bool(phase1_preflight.get("reused")),
+                "phase1_invoked": bool(phase1_preflight.get("phase1_invoked")),
+                "source_hash": phase1_preflight.get("source_hash"),
+                "reason": phase1_preflight.get("reason"),
+            },
+            "generation_run_id": generation_run_id,
+            "generation_started_at": generation_started_at,
+            "generation_finished_at": _now_iso(),
+            "model_generation_invoked": False,
+        }
+        if isinstance(error_details, dict):
+            payload["error_details"] = error_details
+        if isinstance(induced_payload, dict):
+            payload["phase1_classification"] = induced_payload
+        save_tracker_record(
+            conn,
+            textbook_example_id=textbook_example_id,
+            skill_id=skill_key,
+            gencode_status="needs_human_review",
+            induced_spec_payload=payload,
+            gencode_error_log=f"{error_code}: {phase1_preflight.get('reason') or 'phase1_classification_unresolved'}",
+        )
+        try:
+            conn.commit()
+        except Exception:
+            pass
+        return {
+            "status": "needs_human_review",
+            "error_code": error_code,
+            "skill_id": skill_key,
+            "textbook_example_id": textbook_example_id,
+            "component_id": component_id,
+            "review_hints": review_hints,
+            "force_regenerate": bool(force_regenerate),
+            "cache_hit": False,
+            "skip_reason": "phase1_classification_unresolved",
+            "generation_run_id": generation_run_id,
+            "generation_started_at": generation_started_at,
+            "generation_finished_at": payload["generation_finished_at"],
+            "old_artifact_hash": old_artifact_hash,
+            "new_artifact_hash": old_artifact_hash,
+            "old_generate_mtime": old_generate_mtime,
+            "new_generate_mtime": old_generate_mtime,
+            "model_generation_invoked": False,
+            "phase1_preflight": phase1_preflight,
+        }
+
+    induced_spec = phase1_preflight.get("induced_spec")
+    if not isinstance(induced_spec, dict):
+        raise ValueError("phase1_induced_spec_missing")
+
     phase2_kwargs: dict[str, Any] = {
         "dry_run": True,
         "v3_textbook_example_id": textbook_example_id,
@@ -1025,6 +1115,7 @@ def run_admin_v3_dryrun_for_example(
         "generation_run_id": generation_run_id,
         "generation_started_at": generation_started_at,
         "old_artifact_hash": old_artifact_hash,
+        "v3_induced_spec": induced_spec,
     }
     if seed is not None:
         phase2_kwargs["seed"] = seed
@@ -1071,6 +1162,12 @@ def run_admin_v3_dryrun_for_example(
         "old_generate_mtime": old_generate_mtime,
         "new_generate_mtime": new_generate_mtime,
         "model_generation_invoked": bool(bridge_payload.get("model_generation_invoked", True)),
+        "phase1_preflight": {
+            "reused": bool(phase1_preflight.get("reused")),
+            "phase1_invoked": bool(phase1_preflight.get("phase1_invoked")),
+            "source_hash": phase1_preflight.get("source_hash"),
+            "induced_spec": induced_spec,
+        },
     }
 
 
@@ -1302,9 +1399,6 @@ def run_admin_v3_publish_for_skill(
     coverage = get_v3_skill_component_coverage(conn, skill_key)
     eligibility = evaluate_v3_publish_eligibility(conn, skill_key, coverage=coverage)
     warnings = build_coverage_warnings(coverage)
-
-    if not eligibility.get("allowed") and eligibility.get("reason") == "DOMAIN_BINDING_MISSING":
-        raise ValueError("DOMAIN_BINDING_MISSING")
 
     from core.gencode.v3_production_publish_service import (
         assert_production_publish_globally_enabled,

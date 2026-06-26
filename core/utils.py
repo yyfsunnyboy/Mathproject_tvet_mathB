@@ -199,17 +199,65 @@ def format_vocational_b_section_display(chapter_name, section_name):
     else:
         return chapter_name
 
+
+def apply_skill_display_order(query):
+    """依 SkillCurriculum.display_order 排序技能列表（管理端／學生端共用）。"""
+    return query.order_by(
+        SkillCurriculum.display_order.asc(),
+        SkillInfo.skill_ch_name.asc(),
+    )
+
+
+def find_skill_curriculum_entry(
+    skill_id: str,
+    *,
+    curriculum: str | None = None,
+    grade: str | int | None = None,
+    volume: str | None = None,
+    chapter: str | None = None,
+    section: str | None = None,
+):
+    """依課程位置精確查找 SkillCurriculum 列。"""
+    q = SkillCurriculum.query.filter(SkillCurriculum.skill_id == skill_id)
+    if curriculum:
+        aliases = get_curriculum_aliases(curriculum)
+        q = q.filter(SkillCurriculum.curriculum.in_(aliases))
+    if grade is not None and str(grade).isdigit():
+        q = q.filter(SkillCurriculum.grade == int(grade))
+    if volume:
+        q = q.filter(SkillCurriculum.volume == volume)
+    if chapter:
+        q = q.filter(SkillCurriculum.chapter == chapter)
+    if section:
+        q = q.filter(SkillCurriculum.section == section)
+    return q.first()
+
+
+def parse_display_order_value(raw, *, required: bool = False):
+    """驗證並轉型 display_order；回傳 (int | None, error_message | None)。"""
+    if raw is None or (isinstance(raw, str) and str(raw).strip() == ""):
+        if required:
+            return None, "排序順序必須是整數"
+        return None, None
+    try:
+        return int(raw), None
+    except (TypeError, ValueError):
+        return None, "排序順序必須是整數"
+
+
 def get_skills_by_volume_chapter(volume, chapter):
     """取得指定冊、章的所有技能（包含進度）"""
     # 使用 ORM 進行 JOIN 查詢
     # .join() 會根據我們在模型中定義的 ForeignKey 自動關聯
-    results = db.session.query(SkillCurriculum, SkillInfo)\
-                        .join(SkillInfo)\
-                        .filter(SkillCurriculum.volume == volume,
-                                SkillCurriculum.chapter == chapter,
-                                SkillInfo.is_active == True)\
-                        .order_by(SkillCurriculum.display_order)\
-                        .all()
+    results = apply_skill_display_order(
+        db.session.query(SkillCurriculum, SkillInfo)
+        .join(SkillInfo)
+        .filter(
+            SkillCurriculum.volume == volume,
+            SkillCurriculum.chapter == chapter,
+            SkillInfo.is_active == True,
+        )
+    ).all()
     
     return [{
         'curriculum': sc.curriculum,

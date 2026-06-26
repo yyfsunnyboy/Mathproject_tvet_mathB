@@ -994,6 +994,9 @@ def build_admin_skill_gencode_status_view(
         "publish_eligibility": eligibility,
         "publish_eligible": bool(eligibility.get("allowed")),
         "publish_ineligible_reason": eligibility.get("reason"),
+        "domain_binding_status": eligibility.get("domain_binding_status"),
+        "domain_resolution_source": eligibility.get("domain_resolution_source"),
+        "resolved_domain_key": eligibility.get("resolved_domain_key"),
         "teacher_status": teacher_status,
         # ── generation-run vs production state model ───────────────────────
         "current_generation_status": current_generation_status,
@@ -1160,7 +1163,9 @@ def _build_skill_list_gencode_status_view(
 
     total_examples = int(coverage.get("total_examples") or 0)
     verified_count = int(coverage.get("verified_count") or 0)
-    failed_count = int(coverage.get("failed_count") or 0)
+    failed_count = int(coverage.get("failed_count") or 0) + int(
+        coverage.get("needs_human_review_count") or 0
+    )
     missing_tracker_ids = [
         row["textbook_example_id"]
         for row in coverage.get("examples", [])

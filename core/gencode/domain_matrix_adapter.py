@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import random
+import re
 from fractions import Fraction
 from typing import Any
 
@@ -14,6 +15,55 @@ from core.gencode.resources.rational_display import (
     fraction_to_plain,
     normalize_fraction_value,
 )
+
+
+def _finalize_question_payload(payload: dict[str, Any]) -> dict[str, Any]:
+    from core.gencode.single_choice_payload_normalizer import normalize_single_choice_payload
+
+    return normalize_single_choice_payload(payload)
+
+
+def _subquestions_from_multi_field_contract(
+    answer_contract: dict[str, Any],
+    matrix_subquestions: list[Any] | None = None,
+) -> list[dict[str, Any]]:
+    parts = answer_contract.get("parts") if isinstance(answer_contract.get("parts"), list) else []
+    if not parts:
+        return [dict(item) for item in (matrix_subquestions or []) if isinstance(item, dict)]
+    field_specs = answer_contract.get("field_specs") if isinstance(answer_contract.get("field_specs"), list) else []
+    spec_by_key = {
+        str(spec.get("field_key") or spec.get("key") or ""): spec
+        for spec in field_specs
+        if isinstance(spec, dict)
+    }
+    matrix_by_key = {
+        str(sq.get("field_key") or sq.get("key") or ""): sq
+        for sq in (matrix_subquestions or [])
+        if isinstance(sq, dict)
+    }
+    subquestions: list[dict[str, Any]] = []
+    for part in parts:
+        if not isinstance(part, dict):
+            continue
+        field_key = str(part.get("field_key") or part.get("key") or "").strip()
+        spec = spec_by_key.get(field_key, {})
+        matrix_sq = matrix_by_key.get(field_key, {})
+        subquestions.append(
+            {
+                "field_key": field_key,
+                "part": str(
+                    spec.get("group_label")
+                    or part.get("group_label")
+                    or matrix_sq.get("part")
+                    or matrix_sq.get("label")
+                    or ""
+                ),
+                "prompt": str(part.get("label") or spec.get("label") or matrix_sq.get("prompt") or ""),
+                "expected_answer": part.get("expected_answer"),
+                "input_type": str(part.get("input_type") or spec.get("input_type") or "number"),
+            }
+        )
+    return subquestions
 
 MATRIX_REQUIRED_FIELDS = (
     "givens",
@@ -57,11 +107,28 @@ def validate_domain_matrix(matrix: dict[str, Any], **kwargs: Any) -> bool:
     if not isinstance(answer, dict):
         raise AnswerSchemaMismatchError("matrix['answer'] must be a dict.")
 
-    missing_answer = [field for field in ANSWER_REQUIRED_FIELDS if field not in answer]
-    if missing_answer:
-        raise AnswerSchemaMismatchError(
-            f"matrix['answer'] missing required fields: {missing_answer}"
+    from core.gencode.answer_schema_registry import resolve_answer_schema_key, validate_answer_schema
+
+    schema_key = resolve_answer_schema_key(
+        answer_schema_key=kwargs.get("answer_schema_key"),
+        domain_operation=kwargs.get("domain_operation"),
+        problem_type_id=kwargs.get("problem_type_id"),
+        task_type=kwargs.get("task_type"),
+    )
+    if schema_key:
+        validate_answer_schema(
+            answer,
+            answer_schema_key=schema_key,
+            component_id=kwargs.get("component_id"),
+            problem_type_id=kwargs.get("problem_type_id"),
+            domain_operation=kwargs.get("domain_operation"),
         )
+    else:
+        missing_answer = [field for field in ANSWER_REQUIRED_FIELDS if field not in answer]
+        if missing_answer:
+            raise AnswerSchemaMismatchError(
+                f"matrix['answer'] missing required fields: {missing_answer}"
+            )
 
     if not isinstance(matrix["distractors"], list):
         raise ValueError("matrix['distractors'] must be a list.")
@@ -1278,7 +1345,9 @@ def _convert_cumulative_frequency_distribution_payload(
             "ui_contract": ui_contract or {"response_mode": "text", "text_input_enabled": True},
         }
 
-    return {
+    from core.gencode.table_question_contract import normalize_table_question_payload
+
+    cumulative_payload = {
         "question_text": question_text,
         "answer": payload_answer,
         "correct_answer": payload_correct,
@@ -1331,6 +1400,7 @@ def _convert_cumulative_frequency_distribution_payload(
         "generator_key": generator_key or component_id,
         "explanation": matrix.get("explanation") or " ".join(str(s) for s in normalized["explanation_steps"]),
     }
+    return _finalize_question_payload(normalize_table_question_payload(cumulative_payload))
 
 
 _CUMULATIVE_FREQ_DIST_OPS = frozenset(
@@ -1342,6 +1412,312 @@ _CUMULATIVE_FREQ_DIST_OPS = frozenset(
         "cumulative_frequency_graph_reading",
     }
 )
+
+_DESCRIPTIVE_STATS_OPS = frozenset(
+    {
+        "compute_arithmetic_mean_from_raw_values",
+        "compute_arithmetic_mean_from_frequency_table",
+        "compute_weighted_mean",
+        "compute_median_from_raw_values",
+        "compute_mode_from_raw_values",
+        "compute_mode_from_frequency_table",
+        "compute_range",
+        "compute_population_variance",
+        "compute_population_standard_deviation",
+        "complete_descriptive_statistics_table",
+        "compute_quartiles_and_iqr",
+        "compare_dispersion",
+        "conceptual_dispersion_judgment",
+    }
+)
+
+
+_DESCRIPTIVE_MATRIX_REQUIRED = (
+    "fixed_domain_key",
+    "selected_operation",
+    "required_capabilities",
+    "answer_shape",
+)
+
+
+def _convert_descriptive_statistics_payload(
+    matrix: dict[str, Any],
+    *,
+    op: str,
+    presentation_mode: str | None = None,
+    answer_type: str | None = None,
+    problem_type_id: str | None = None,
+    component_id: str | None = None,
+    textbook_example_id: int | None = None,
+    source_kind: str | None = None,
+    generator_key: str | None = None,
+    domain_resolution: dict[str, Any] | None = None,
+    **kwargs: Any,
+) -> dict[str, Any]:
+    from core.gencode.descriptive_statistics_answer_contract import (
+        DescriptiveStatisticsContractError,
+        build_scaffold_payload_meta,
+        normalize_answer_contract,
+        validate_contract_dispatchable,
+    )
+    from core.gencode.table_question_contract import normalize_table_question_payload
+
+    normalized = normalize_domain_matrix(matrix)
+    missing = [field for field in _DESCRIPTIVE_MATRIX_REQUIRED if not str(matrix.get(field) or "").strip()]
+    if missing:
+        raise DescriptiveStatisticsContractError(
+            f"descriptive_matrix_contract_missing:{','.join(missing)}"
+        )
+
+    givens = normalized["givens"]
+    answer_obj = normalized["answer"]
+    validation_facts = dict(normalized["validation_facts"])
+    validation_facts.setdefault("domain_operation", op)
+    answer_shape = str(matrix.get("answer_shape") or validation_facts.get("answer_shape") or "single_numeric")
+    rounding_policy = dict(givens.get("rounding_policy") or matrix.get("rounding_policy") or {})
+    field_specs = list(givens.get("field_specs") or matrix.get("field_specs") or [])
+    semantic_answer = answer_obj.get("value", answer_obj.get("canonical_form"))
+    question_text = str(givens.get("question_text") or matrix.get("question_text") or "依據資料求指定統計量。")
+    ui_contract = dict(matrix.get("ui_contract") or {})
+    table_data = dict(matrix.get("table_data") or normalized.get("visual_spec") or {})
+    required_caps = list(matrix.get("required_capabilities") or [])
+    matched_caps = list(matrix.get("matched_capabilities") or required_caps)
+    fixed_domain_key = str(matrix.get("fixed_domain_key") or "statistics.descriptive_statistics")
+    selected_operation = str(matrix.get("selected_operation") or op)
+    source_data = {
+        "raw_values": givens.get("raw_values"),
+        "value_frequency_pairs": givens.get("value_frequency_pairs"),
+        "grouped_frequency_table": givens.get("grouped_frequency_table"),
+        "weights": givens.get("weights"),
+    }
+
+    answer_contract = normalize_answer_contract(
+        semantic_answer,
+        answer_shape,
+        rounding_policy=rounding_policy,
+        field_specs=field_specs or None,
+    )
+    dispatch_blockers = validate_contract_dispatchable(answer_contract)
+    if dispatch_blockers:
+        raise DescriptiveStatisticsContractError(
+            f"answer_contract_not_dispatchable:{','.join(dispatch_blockers)}"
+        )
+
+    mode = str(
+        presentation_mode
+        or answer_contract.get("presentation_mode")
+        or matrix.get("presentation_mode")
+        or "short_answer"
+    ).strip()
+    resolved_answer_type = str(answer_contract.get("answer_type") or answer_type or "expression").strip()
+
+    choice_bundle: dict[str, Any] | None = None
+    if mode == "single_choice":
+        from core.gencode.single_choice_contract import build_single_choice_contract
+
+        answer_obj = normalized["answer"]
+        semantic_for_choice = answer_obj.get("value", answer_obj.get("canonical_form"))
+        canonical_text = str(
+            answer_obj.get("canonical_form")
+            or __import__(
+                "core.domain.statistics.descriptive_statistics_core",
+                fromlist=["format_numeric_answer"],
+            ).format_numeric_answer(
+                semantic_for_choice,
+                dict(givens.get("rounding_policy") or rounding_policy or {}),
+            )
+        )
+        distractors = list(
+            matrix.get("distractors")
+            or validation_facts.get("distractor_candidates")
+            or []
+        )
+        generation_seed = kwargs.get("seed")
+        if generation_seed is None and matrix.get("generation_seed") is not None:
+            generation_seed = matrix.get("generation_seed")
+        source_choices = list(
+            kwargs.get("source_choices")
+            or givens.get("source_choices")
+            or matrix.get("source_choices")
+            or []
+        )
+        source_answer_label = str(
+            kwargs.get("source_answer_label")
+            or givens.get("source_answer_label")
+            or matrix.get("source_answer_label")
+            or ""
+        ).strip()
+        preserve_source = bool(kwargs.get("preserve_source_choices"))
+        if (
+            not preserve_source
+            and mode == "single_choice"
+            and source_choices
+            and re.fullmatch(r"[A-D]", source_answer_label)
+        ):
+            preserve_source = True
+        choice_bundle = build_single_choice_contract(
+            canonical_text,
+            distractors,
+            source_choices=source_choices or None,
+            source_answer_label=source_answer_label or None,
+            seed=generation_seed,
+            preserve_source_choices=preserve_source,
+        )
+        resolved_answer_type = "single_choice"
+        checker_key = "choice_label_checker"
+        answer_contract = {
+            "answer_shape": answer_shape,
+            "answer_type": "single_choice",
+            "checker_key": checker_key,
+            "checker": checker_key,
+            "equivalence_type": "choice_label",
+            "answer_equivalence": "choice_label",
+            "canonical_answer": choice_bundle["canonical_answer"],
+            "semantic_answer": choice_bundle["canonical_answer"],
+            "tolerance": None,
+            "rounding_policy": rounding_policy,
+            "field_specs": [],
+            "presentation_mode": "single_choice",
+            "ui_contract": dict(choice_bundle.get("ui_contract") or {}),
+        }
+        dispatch_blockers = validate_contract_dispatchable(answer_contract)
+        if dispatch_blockers:
+            raise DescriptiveStatisticsContractError(
+                f"answer_contract_not_dispatchable:{','.join(dispatch_blockers)}"
+            )
+    else:
+        checker_key = str(answer_contract.get("checker_key") or "")
+
+    if choice_bundle:
+        payload_answer = choice_bundle["correct_answer"]
+        payload_correct = choice_bundle["correct_answer"]
+        display_text = str(choice_bundle["canonical_answer"])
+    else:
+        display_answer = answer_contract.get("canonical_answer")
+        if isinstance(display_answer, list):
+            display_text = ", ".join(str(v) for v in display_answer)
+            payload_answer = display_answer
+            payload_correct = display_answer
+        elif isinstance(display_answer, dict):
+            display_text = "; ".join(f"{k}={v}" for k, v in display_answer.items())
+            payload_answer = display_answer
+            payload_correct = display_answer
+        else:
+            display_text = str(answer_obj.get("canonical_form") or display_answer or "")
+            payload_answer = display_text
+            payload_correct = display_text
+
+    answer_contract.update(
+        {
+            "presentation_mode": mode,
+            "answer_type": resolved_answer_type,
+            "answer_shape": answer_shape,
+            "semantic_answer": semantic_answer,
+        }
+    )
+    if answer_contract.get("ui_contract"):
+        ui_contract.update(dict(answer_contract["ui_contract"]))
+    matrix_ui = dict(matrix.get("ui_contract") or {})
+    if matrix_ui.get("field_groups") and not ui_contract.get("field_groups"):
+        ui_contract["field_groups"] = list(matrix_ui.get("field_groups") or [])
+
+    derivation = [str(step) for step in normalized["explanation_steps"]]
+    resolution = dict(domain_resolution or matrix.get("domain_resolution") or {})
+    resolution.setdefault("fixed_domain_key", fixed_domain_key)
+    resolution.setdefault("selected_operation", selected_operation)
+    resolution.setdefault("required_capabilities", required_caps)
+    resolution.setdefault("matched_capabilities", matched_caps)
+    resolution.setdefault("resolution_source", matrix.get("resolution_source") or "derived_capability_match")
+    resolution.setdefault("binding_status", matrix.get("binding_status") or "derived")
+    try:
+        from core.registry.taxonomy_registry import REGISTRY_REVISION
+
+        resolution.setdefault("registry_revision", REGISTRY_REVISION)
+    except Exception:
+        pass
+
+    payload = {
+        "question_text": question_text,
+        "answer": payload_answer,
+        "correct_answer": payload_correct,
+        "display_answer": display_text,
+        "choices": list(choice_bundle.get("choices") or []) if choice_bundle else [],
+        "options": (
+            [str(c.get("text") or "") for c in choice_bundle.get("choices") or []]
+            if choice_bundle
+            else []
+        ),
+        "component_id": component_id,
+        "textbook_example_id": textbook_example_id,
+        "problem_type_id": problem_type_id or selected_operation,
+        "domain_operation": selected_operation,
+        "selected_operation": selected_operation,
+        "fixed_domain_key": fixed_domain_key,
+        "source_kind": source_kind,
+        "presentation_mode": mode,
+        "answer_type": resolved_answer_type,
+        "answer_shape": answer_shape,
+        "interaction_type": "single_choice" if choice_bundle else mode,
+        "auto_checkable": True,
+        "grading_mode": "auto",
+        "answer_contract": answer_contract,
+        "ui_contract": ui_contract,
+        "checker_key": checker_key,
+        "equivalence_type": str(answer_contract.get("equivalence_type") or ""),
+        "rounding_policy": rounding_policy,
+        "source_data": source_data,
+        "metadata": {
+            "givens": givens,
+            "raw_givens": givens,
+            "target": givens.get("target_measure") or validation_facts.get("target_measure"),
+            "derivation": derivation,
+            "presentation_mode": mode,
+            "answer_type": resolved_answer_type,
+            "answer_shape": answer_shape,
+            "problem_type_id": problem_type_id or selected_operation,
+            "domain_operation": selected_operation,
+            "selected_operation": selected_operation,
+            "fixed_domain_key": fixed_domain_key,
+            "required_capabilities": required_caps,
+            "matched_capabilities": matched_caps,
+            "component_id": component_id,
+            "textbook_example_id": textbook_example_id,
+            "rounding_policy": rounding_policy,
+            "source_data": source_data,
+            "domain_resolution": resolution,
+        },
+        "math_core": {
+            "givens": givens,
+            "raw_givens": givens,
+            "target": semantic_answer,
+            "math_objects": ["descriptive_statistics"],
+            "derivation": derivation,
+            "validation_facts": validation_facts,
+        },
+        "visual_spec": table_data,
+        "table_data": table_data,
+        "validation_facts": validation_facts,
+        "generator_key": generator_key or component_id,
+        "subquestions": _subquestions_from_multi_field_contract(
+            answer_contract,
+            list(matrix.get("subquestions") or []),
+        )
+        if answer_contract.get("parts")
+        else list(matrix.get("subquestions") or []),
+        "domain_resolution": resolution,
+    }
+    if choice_bundle:
+        payload["checker"] = "choice_label_checker"
+        payload["checker_key"] = "choice_label_checker"
+        ui_contract.update(dict(choice_bundle.get("ui_contract") or {}))
+        payload["ui_contract"] = ui_contract
+    if answer_shape == "table_fill" and table_data.get("blank_cells"):
+        payload = normalize_table_question_payload(payload)
+        payload["answer_contract"] = dict(payload.get("answer_contract") or answer_contract)
+        payload["presentation_mode"] = "table_fill"
+        payload["answer_type"] = str(payload["answer_contract"].get("answer_type") or "multi_part")
+    payload["scaffold_payload_meta"] = build_scaffold_payload_meta(payload)
+    return _finalize_question_payload(payload)
 
 
 def convert_domain_matrix_to_question_payload(
@@ -1365,8 +1741,9 @@ def convert_domain_matrix_to_question_payload(
     evidence and does not perform cross-domain routing.
     """
     op = str(domain_operation or kwargs.get("domain_operation") or "").strip()
-    if op in _CUMULATIVE_FREQ_DIST_OPS:
-        return _convert_cumulative_frequency_distribution_payload(
+    if op in _DESCRIPTIVE_STATS_OPS:
+        return _finalize_question_payload(
+            _convert_descriptive_statistics_payload(
             matrix,
             op=op,
             presentation_mode=presentation_mode,
@@ -1377,7 +1754,21 @@ def convert_domain_matrix_to_question_payload(
             source_kind=source_kind,
             generator_key=generator_key,
             **kwargs,
-        )
+        ))
+    if op in _CUMULATIVE_FREQ_DIST_OPS:
+        return _finalize_question_payload(
+            _convert_cumulative_frequency_distribution_payload(
+            matrix,
+            op=op,
+            presentation_mode=presentation_mode,
+            answer_type=answer_type,
+            problem_type_id=problem_type_id,
+            component_id=component_id,
+            textbook_example_id=textbook_example_id,
+            source_kind=source_kind,
+            generator_key=generator_key,
+            **kwargs,
+        ))
     if op in {
         "two_points",
         "point_slope",
@@ -1417,7 +1808,8 @@ def convert_domain_matrix_to_question_payload(
         "parallel_lines_distance_single_choice",
         "area_using_parallel_distance",
     }:
-        return convert_line_equation_matrix_to_question_payload(
+        return _finalize_question_payload(
+            convert_line_equation_matrix_to_question_payload(
             matrix,
             presentation_mode=presentation_mode,
             answer_type=answer_type,
@@ -1429,7 +1821,7 @@ def convert_domain_matrix_to_question_payload(
             answer_schema_key=answer_schema_key,
             domain_operation=op,
             **kwargs,
-        )
+        ))
 
     normalized = normalize_domain_matrix(matrix)
     answer = normalized["answer"]
@@ -1528,7 +1920,7 @@ def convert_domain_matrix_to_question_payload(
                 }
             canonical_type = "single_choice" if mode == "single_choice" else resolved_answer_type
             canonical_value_type = "choice_label" if mode == "single_choice" else resolved_answer_type
-            return {
+            return _finalize_question_payload({
                 "question_text": question_text,
                 "answer": payload_answer,
                 "correct_answer": payload_correct,
@@ -1585,7 +1977,7 @@ def convert_domain_matrix_to_question_payload(
                 "validation_facts": validation_facts,
                 "generator_key": generator_key or component_id,
                 "story_context": story,
-            }
+            })
 
         rows = normalized.get("visual_spec", {}).get("rows") or []
         value_map = validation_facts.get("value_map") or givens.get("value_map") or {}
@@ -1654,7 +2046,7 @@ def convert_domain_matrix_to_question_payload(
             }
         canonical_type = "single_choice" if mode == "single_choice" else resolved_answer_type
         canonical_value_type = "choice_label" if mode == "single_choice" else resolved_answer_type
-        return {
+        return _finalize_question_payload({
             "question_text": question_text,
             "answer": payload_answer,
             "correct_answer": payload_correct,
@@ -1710,7 +2102,7 @@ def convert_domain_matrix_to_question_payload(
             "image_base64": normalized.get("image_base64", matrix.get("image_base64", "")),
             "validation_facts": validation_facts,
             "generator_key": generator_key or component_id,
-        }
+        })
     question_text = str(kwargs.get("question_text") or "閱讀下列資料，根據表格回答問題。")
     if problem_type_id == "frequency_distribution_chart_construction":
         pass
@@ -1858,7 +2250,7 @@ def convert_domain_matrix_to_question_payload(
             "semantic_answer": semantic_answer,
         }
 
-    return {
+    return _finalize_question_payload({
         "question_text": question_text,
         "answer": payload_answer,
         "correct_answer": payload_correct,
@@ -1903,4 +2295,4 @@ def convert_domain_matrix_to_question_payload(
         "image_base64": normalized.get("image_base64", matrix.get("image_base64", "")),
         "validation_facts": validation_facts,
         "generator_key": generator_key or component_id,
-    }
+    })

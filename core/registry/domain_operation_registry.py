@@ -8,6 +8,10 @@ No layer may maintain its own independent operation allowlist. Adding a new
 operation requires only one call to register_domain_spec() (or updating the
 operations dict of an existing DomainCapabilitySpec) — all downstream layers
 are automatically aware.
+
+Verified bootstrap candidates are registered separately via
+core.gencode.domain_bootstrap.candidate_registry and merged at resolution time.
+Do not register AI bootstrap drafts here until promotion succeeds.
 """
 
 from __future__ import annotations
@@ -32,6 +36,7 @@ class OperationSpec:
     supported_presentation_modes: tuple[str, ...] = ("short_answer",)
     required_source_features: tuple[str, ...] = ()
     runtime_contract: str | None = None
+    provided_capabilities: tuple[str, ...] = ()
 
 
 @dataclass
@@ -376,6 +381,134 @@ register_domain_spec(DomainCapabilitySpec(
             supported_presentation_modes=("short_answer",),
             required_source_features=("cumulative_frequency_polygon",),
             runtime_contract="cumulative_frequency_polygon_source_required",
+        ),
+    },
+))
+
+
+register_domain_spec(DomainCapabilitySpec(
+    domain_key="statistics.descriptive_statistics",
+    domain_module="core.domain.statistics.descriptive_statistics_domain",
+    entrypoint="build_descriptive_statistics_matrix",
+    capabilities=frozenset({
+        "arithmetic_mean",
+        "weighted_mean",
+        "median",
+        "mode",
+        "range",
+        "variance",
+        "standard_deviation",
+        "quartile",
+        "interquartile_range",
+        "dispersion_comparison",
+        "conceptual_dispersion_judgment",
+        "frequency_weighted_statistics",
+        "descriptive_statistics_table_completion",
+        "descriptive_statistics",
+    }),
+    operations={
+        "compute_arithmetic_mean_from_raw_values": _op(
+            "compute_arithmetic_mean_from_raw_values",
+            "build_descriptive_statistics_matrix",
+            supported_answer_types=("expression", "numeric"),
+            supported_presentation_modes=("short_answer",),
+            provided_capabilities=("arithmetic_mean",),
+        ),
+        "compute_arithmetic_mean_from_frequency_table": _op(
+            "compute_arithmetic_mean_from_frequency_table",
+            "build_descriptive_statistics_matrix",
+            supported_answer_types=("expression", "numeric"),
+            supported_presentation_modes=("short_answer",),
+            provided_capabilities=("arithmetic_mean", "frequency_weighted_statistics"),
+        ),
+        "compute_weighted_mean": _op(
+            "compute_weighted_mean",
+            "build_descriptive_statistics_matrix",
+            supported_answer_types=("expression", "numeric"),
+            supported_presentation_modes=("short_answer",),
+            provided_capabilities=("weighted_mean",),
+        ),
+        "compute_median_from_raw_values": _op(
+            "compute_median_from_raw_values",
+            "build_descriptive_statistics_matrix",
+            supported_answer_types=("expression", "numeric"),
+            supported_presentation_modes=("short_answer",),
+            provided_capabilities=("median",),
+        ),
+        "compute_mode_from_raw_values": _op(
+            "compute_mode_from_raw_values",
+            "build_descriptive_statistics_matrix",
+            supported_answer_types=("expression", "numeric", "text_short", "unordered_set"),
+            supported_presentation_modes=("short_answer",),
+            provided_capabilities=("mode",),
+        ),
+        "compute_mode_from_frequency_table": _op(
+            "compute_mode_from_frequency_table",
+            "build_descriptive_statistics_matrix",
+            supported_answer_types=("expression", "numeric", "text_short", "unordered_set"),
+            supported_presentation_modes=("short_answer",),
+            provided_capabilities=("mode", "frequency_weighted_statistics"),
+        ),
+        "compute_range": _op(
+            "compute_range",
+            "build_descriptive_statistics_matrix",
+            supported_answer_types=("expression", "numeric"),
+            supported_presentation_modes=("short_answer",),
+            provided_capabilities=("range",),
+        ),
+        "compute_population_variance": _op(
+            "compute_population_variance",
+            "build_descriptive_statistics_matrix",
+            supported_answer_types=("expression", "numeric"),
+            supported_presentation_modes=("short_answer",),
+            provided_capabilities=("variance",),
+        ),
+        "compute_population_standard_deviation": _op(
+            "compute_population_standard_deviation",
+            "build_descriptive_statistics_matrix",
+            supported_answer_types=("expression", "numeric"),
+            supported_presentation_modes=("short_answer",),
+            provided_capabilities=("standard_deviation", "variance"),
+        ),
+        "complete_descriptive_statistics_table": _op(
+            "complete_descriptive_statistics_table",
+            "build_descriptive_statistics_matrix",
+            supported_answer_types=("multi_blank", "table_fill"),
+            supported_presentation_modes=("multi_blank", "table_fill"),
+            provided_capabilities=(
+                "descriptive_statistics_table_completion",
+                "arithmetic_mean",
+                "median",
+                "range",
+                "variance",
+                "standard_deviation",
+            ),
+        ),
+        "compute_quartiles_and_iqr": _op(
+            "compute_quartiles_and_iqr",
+            "build_descriptive_statistics_matrix",
+            supported_answer_types=("multi_part",),
+            supported_presentation_modes=("short_answer", "multi_part"),
+            provided_capabilities=("range", "quartile", "interquartile_range"),
+        ),
+        "compare_dispersion": _op(
+            "compare_dispersion",
+            "build_descriptive_statistics_matrix",
+            supported_answer_types=("multi_part",),
+            supported_presentation_modes=("short_answer", "multi_part"),
+            provided_capabilities=(
+                "dispersion_comparison",
+                "range",
+                "quartile",
+                "interquartile_range",
+            ),
+        ),
+        "conceptual_dispersion_judgment": _op(
+            "conceptual_dispersion_judgment",
+            "build_descriptive_statistics_matrix",
+            supported_answer_types=("single_choice",),
+            supported_presentation_modes=("single_choice",),
+            provided_capabilities=("conceptual_dispersion_judgment",),
         ),
     },
 ))

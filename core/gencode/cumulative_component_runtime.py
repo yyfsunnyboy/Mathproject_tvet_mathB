@@ -8,6 +8,7 @@ from typing import Any
 from core.domain.statistics.frequency_distribution_domain import build_cumulative_frequency_matrix
 from core.gencode.component_induced_config import build_component_generate_context
 from core.gencode.domain_matrix_adapter import convert_domain_matrix_to_question_payload
+from core.gencode.table_question_contract import normalize_table_question_payload
 
 
 def generate_cumulative_component_payload(
@@ -60,4 +61,4 @@ def generate_cumulative_component_payload(
         payload["subquestions"] = matrix["subquestions"]
     if matrix.get("explanation"):
         payload["explanation"] = matrix["explanation"]
-    return payload
+    return normalize_table_question_payload(payload)

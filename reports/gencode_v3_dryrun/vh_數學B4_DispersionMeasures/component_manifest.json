@@ -1,0 +1,62 @@
+{
+  "skill_id": "vh_數學B4_DispersionMeasures",
+  "compiled_at": "2026-06-26T07:25:03.472952+00:00",
+  "publish_status": "dryrun_manifest_compiled",
+  "components": [
+    {
+      "component_id": "src_3845",
+      "status": "verified",
+      "presentation_mode": "short_answer",
+      "source_kind": "ex_3845",
+      "textbook_example_id": 3845,
+      "line_type": "compute_quartiles_and_iqr",
+      "domain_module": "core.domain.statistics.descriptive_statistics_domain",
+      "entrypoint": "build_descriptive_statistics_matrix",
+      "component_dir": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_dryrun\\vh_數學B4_DispersionMeasures\\components\\src_3845"
+    },
+    {
+      "component_id": "src_3846",
+      "status": "verified",
+      "presentation_mode": "short_answer",
+      "source_kind": "ex_3846",
+      "textbook_example_id": 3846,
+      "line_type": "compare_dispersion",
+      "domain_module": "core.domain.statistics.descriptive_statistics_domain",
+      "entrypoint": "build_descriptive_statistics_matrix",
+      "component_dir": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_dryrun\\vh_數學B4_DispersionMeasures\\components\\src_3846"
+    },
+    {
+      "component_id": "src_3847",
+      "status": "verified",
+      "presentation_mode": "short_answer",
+      "source_kind": "ex_3847",
+      "textbook_example_id": 3847,
+      "line_type": "compare_dispersion",
+      "domain_module": "core.domain.statistics.descriptive_statistics_domain",
+      "entrypoint": "build_descriptive_statistics_matrix",
+      "component_dir": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_dryrun\\vh_數學B4_DispersionMeasures\\components\\src_3847"
+    },
+    {
+      "component_id": "src_3891",
+      "status": "verified",
+      "presentation_mode": "single_choice",
+      "source_kind": "ex_3891",
+      "textbook_example_id": 3891,
+      "line_type": "conceptual_dispersion_judgment",
+      "domain_module": "core.domain.statistics.descriptive_statistics_domain",
+      "entrypoint": "build_descriptive_statistics_matrix",
+      "component_dir": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_dryrun\\vh_數學B4_DispersionMeasures\\components\\src_3891"
+    },
+    {
+      "component_id": "src_3892",
+      "status": "verified",
+      "presentation_mode": "single_choice",
+      "source_kind": "ex_3892",
+      "textbook_example_id": 3892,
+      "line_type": "compute_population_standard_deviation",
+      "domain_module": "core.domain.statistics.descriptive_statistics_domain",
+      "entrypoint": "build_descriptive_statistics_matrix",
+      "component_dir": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_dryrun\\vh_數學B4_DispersionMeasures\\components\\src_3892"
+    }
+  ]
+}

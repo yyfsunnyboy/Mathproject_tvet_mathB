@@ -8,10 +8,12 @@ from typing import Any
 
 from core.gencode.services.v3_skill_coverage_service import get_v3_skill_component_coverage
 from core.gencode.skill_fixed_domain_authority import (
-    SkillFixedDomainError,
-    resolve_fixed_domain_context,
+    DOMAIN_EVIDENCE_INCOMPLETE,
+    summarize_skill_domain_binding,
+    validate_publish_component_record,
 )
-from core.gencode.v3_error_codes import DOMAIN_BINDING_MISSING
+from core.gencode.v3_error_codes import CHOICE_CONTRACT_INCOMPLETE
+from core.gencode.choice_contract_validator import choice_contract_valid_from_spec
 
 # Module-level reference — allows tests to monkeypatch
 # 'core.gencode.services.v3_publish_eligibility._load_v3_taxonomy_mvp_scope'
@@ -81,7 +83,27 @@ def _parse_spec_payload(raw: Any) -> dict[str, Any]:
 
 
 def _component_passes_integrity_gate(spec: dict[str, Any]) -> bool:
-    return spec.get("integrity_gate_passed") is True and spec.get("integrity_gate_version") == "v1"
+    if spec.get("integrity_gate_passed") is not True or spec.get("integrity_gate_version") != "v1":
+        return False
+    return choice_contract_valid_from_spec(spec)
+
+
+def _load_verified_component_specs(conn: sqlite3.Connection, skill_id: str) -> list[dict[str, Any]]:
+    rows = conn.execute(
+        """
+        SELECT induced_spec_payload
+        FROM gencode_component_tracker
+        WHERE skill_id = ? AND gencode_status = 'verified'
+        """,
+        (skill_id,),
+    ).fetchall()
+    specs: list[dict[str, Any]] = []
+    for row in rows:
+        raw_payload = row["induced_spec_payload"] if hasattr(row, "keys") else row[0]
+        spec = _parse_spec_payload(raw_payload)
+        if spec:
+            specs.append(spec)
+    return specs
 
 
 def component_publish_blockers(
@@ -92,22 +114,21 @@ def component_publish_blockers(
     spec: dict[str, Any],
 ) -> list[str]:
     """Return publish blockers for one tracker row; empty means publish-eligible."""
-    from core.gencode.skill_fixed_domain_authority import validate_publish_component_record
-
     status = str(component_status or "").strip()
     if status != "verified":
         return ["component_not_verified"]
 
-    blockers = validate_publish_component_record(
+    if not choice_contract_valid_from_spec(spec):
+        return [CHOICE_CONTRACT_INCOMPLETE]
+
+    return validate_publish_component_record(
         skill_id=skill_id,
         component_skill_id=str(component_skill_id),
         component_fixed_domain_key=str(spec.get("fixed_domain_key") or ""),
         component_operation=str(spec.get("domain_operation") or spec.get("problem_type_id") or ""),
         component_status=status,
+        spec=spec,
     )
-    if not _component_passes_integrity_gate(spec):
-        blockers.append("integrity_gate_not_passed")
-    return blockers
 
 
 def count_publish_eligible_components(conn: sqlite3.Connection, skill_id: str) -> dict[str, int]:
@@ -143,6 +164,8 @@ def count_publish_eligible_components(conn: sqlite3.Connection, skill_id: str) -
             component_status=status,
             spec=spec,
         )
+        if not _component_passes_integrity_gate(spec):
+            blockers.append("integrity_gate_not_passed")
         if not blockers:
             eligible_count += 1
             continue
@@ -177,19 +200,14 @@ def evaluate_v3_publish_eligibility(
             "eligible_component_count": 0,
         }
 
-    try:
-        domain_context = resolve_fixed_domain_context(skill_key)
-        fixed_domain_key = domain_context.fixed_domain_key
-    except SkillFixedDomainError as exc:
-        return {
-            "allowed": False,
-            "full_coverage": False,
-            "reason": DOMAIN_BINDING_MISSING,
-            "skill_id": skill_key,
-            "coverage": _normalize_coverage(coverage or {}),
-            "eligible_component_count": 0,
-            "error_code": exc.code or DOMAIN_BINDING_MISSING,
-        }
+    verified_specs = _load_verified_component_specs(conn, skill_key)
+    domain_binding = summarize_skill_domain_binding(
+        skill_id=skill_key,
+        component_specs=verified_specs,
+    )
+    fixed_domain_key = str(domain_binding.get("resolved_domain_key") or "").strip()
+    domain_binding_status = str(domain_binding.get("domain_binding_status") or "").strip()
+    domain_resolution_source = str(domain_binding.get("domain_resolution_source") or "").strip()
 
     review_hints: list[str] = []
     try:
@@ -252,6 +270,17 @@ def evaluate_v3_publish_eligibility(
             reason = "NO_VERIFIED_COMPONENTS"
         elif integrity_blocked_count > 0 and domain_blocked_count < 1:
             reason = "COMPONENT_INTEGRITY_FAILED"
+        elif any(
+            str(blocker).startswith(DOMAIN_EVIDENCE_INCOMPLETE)
+            for spec in verified_specs
+            for blocker in component_publish_blockers(
+                skill_id=skill_key,
+                component_skill_id=skill_key,
+                component_status="verified",
+                spec=spec,
+            )
+        ):
+            reason = DOMAIN_EVIDENCE_INCOMPLETE
         elif failed > 0:
             reason = "COVERAGE_GATE_FAILED"
         else:
@@ -282,8 +311,9 @@ def evaluate_v3_publish_eligibility(
         "reason": reason,
         "skill_id": skill_key,
         "fixed_domain_key": fixed_domain_key,
-        "curriculum_profile": domain_context.curriculum_profile,
-        "allowed_operations": list(domain_context.allowed_operations),
+        "domain_binding_status": domain_binding_status,
+        "domain_resolution_source": domain_resolution_source,
+        "resolved_domain_key": fixed_domain_key,
         "coverage": normalized,
         "eligible_component_count": eligible_count,
         "domain_blocked_component_count": domain_blocked_count,

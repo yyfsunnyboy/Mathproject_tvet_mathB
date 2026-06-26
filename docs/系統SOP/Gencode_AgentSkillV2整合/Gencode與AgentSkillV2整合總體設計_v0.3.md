@@ -324,6 +324,7 @@
 | 2026-06-01 | v0.3 | 15 大原則（增補 13–15）；六層架構新增 Layer 6 執行期插槽層；焊入 Thin Facade 與 Runtime Multi-Slot Engine；完整保留 v0.2 流程與 Gate | 首席系統架構師 |
 | 2026-06-13 | v0.3.1 | 增補原則 16 Phase 錯誤對照權威地圖；Layer 2/3 焊入 Anchor Shield 單元錨定防線；新增條款 3.5 Self-Healing 自我修復閉環 | 首席系統架構師 |
 | 2026-06-13 | v0.3.2 | 洗淨版：Layer 1/2 改為 `vh_數學` 行政歸屬唯讀校驗；條款 3.6 改為語意關鍵字驅動診斷標籤；條款 3.5 錨定真實 SOP 目錄；新增 §13 Gen Code 職責對照 | 首席系統架構師 |
+| 2026-06-26 | v0.3.3 | 新增 §14 最終產品教師端流程與 Automated Domain Bootstrap & Healer；增補原則 17；廢止「工程師人工建 domain／老師用 Codex」舊假設 | 首席系統架構師 |
 
 ---
 
@@ -333,18 +334,131 @@
 
 | 程式名稱（路徑） | 對應場景 | 修改職責 |
 |----------------|---------|---------|
-| `core/gencode/pipeline_orchestrator.py` | 1️⃣ 教材匯入、編譯期 Self-Healing | 校驗 `vh_數學` 行政歸屬矩陣；從 `docs/系統SOP/Gencode_AgentSkillV2整合/` 載入 SOP 執行智能修復 |
-| `core/gencode/problem_type_induction.py` | 1️⃣ 教材匯入、Phase 1 盤點切題 | 語意關鍵字（排列/組合/機率）驅動四大診斷標籤注入；自動分流 core examples 與 source bank pool |
-| `core/gencode/runtime_skill_wrapper.py` | 2️⃣ 出題生成、3️⃣ 提示生成 | 全域調度器；控制難度（簡單/中等/困難）與 Hint 請求，委託 Domain 模組，穿透外殼交由 SymPy 最終判定 |
-| `core/gencode/slot_generators.py` | 2️⃣ 出題生成 | 全域插槽庫；掛載排列組合與機率數學算力分支，確保題目避免模糊或多解，保持課本一致 |
-| `core/gencode/scenario_pool_manager.py`（Template Domain，待建或擴充） | 2️⃣ 出題生成 | 管理排列組合（排隊、分球、買票）與機率（丟硬幣、擲骰子）情境文本池；最後一毫秒組裝題幹與黏貼格式尾綴 |
-| `core/diagnosis_analyzer.py` 或等價 `diagnosis_engine` 擴充 | 4️⃣ 錯誤診斷、5️⃣ 補救建議 | `check_answer` 答錯時比對正解與學生答案特徵（如 $P$/$C$ 階乘倍數差），拋出 `diagnosis_tags` 補救標籤 |
+| `core/gencode/pipeline_orchestrator.py` | 1️⃣ 教材匯入、編譯期 Self-Healing／Domain Bootstrap | 校驗 `vh_數學` 行政歸屬矩陣；capability-first resolution；Automated Domain Bootstrap & Healer 編排（§14） |
+| `core/gencode/problem_type_induction.py` | 1️⃣ 教材匯入、Phase 1 盤點切題 | 語意關鍵字驅動診斷標籤；`required_capabilities` 與 induced spec；自動分流 core examples |
+| `core/gencode/runtime_skill_wrapper.py` | 2️⃣ 出題生成、3️⃣ 提示生成 | 全域調度器；僅消費 **verified** domain provider；委託 Domain 模組 |
+| `core/gencode/slot_generators.py` | 2️⃣ 出題生成 | 全域插槽庫；委託 verified domain operations |
+| `core/gencode/scenario_pool_manager.py`（Template Domain，待建或擴充） | 2️⃣ 出題生成 | 情境文本池；題幹組裝 |
+| `core/diagnosis_analyzer.py` 或等價 `diagnosis_engine` 擴充 | 4️⃣ 錯誤診斷、5️⃣ 補救建議 | 答錯診斷標籤 |
 
 **剛性約束**：
-1. 系統負責決策與數學嚴格防守；AI 僅作純粹教學輔助（Hint 引導、情境文本建議），**不得**直接給最終答案。
-2. 上述程式之修改須遵守規格包 SOP §1.5.6 防胖防禦線：實體數學與文本邏輯委託 Domain 模組，調度器僅做分流。
+1. 系統負責決策與數學嚴格防守；AI Bootstrap 僅在確認缺 domain 後啟動（§14.7）。
+2. 上述程式之修改須遵守規格包 SOP §1.5.6 防胖防禦線。
 3. 新增 Gen Code 邏輯時，須在變更回報（§11）明列對照之 SOP 條款與場景編號。
+
+## 14. 最終產品：教師端自動出題與 Automated Domain Bootstrap & Healer（v0.3.3 · **必要能力**）
+
+> **產品定位（不可降級）**：下列流程為 **最終產品必要能力**，不是未來選配功能。正式產品的使用者是一般數學老師；**不得**假設老師會使用 Codex、Python、Git、registry、domain、capability、scaffold、validator 等工程術語或工具。
+
+### 14.1 教師端標準流程（唯一對外敘事）
+
+```text
+匯入教材
+→ 按「V3 重新生成」
+→ 系統自動辨識 problem_type 與 required_capabilities
+→ 優先重用既有 domain
+→ 產生 component
+→ 自動 compile / smoke / integrity validation
+→ 顯示生成例題
+→ 教師確認並發布
+```
+
+技術細節（Phase 1 induced spec、Shadow Bridge、Publish Gate）見 [SOP_Gencode_AgentSkillV3_Specification.md](../Gencode_AgentSkillV3整合/SOP_Gencode_AgentSkillV3_Specification.md) §1.10 與 [SOP_Gencode_AgentSkillV3_PipelineFlow.md](../Gencode_AgentSkillV3整合/SOP_Gencode_AgentSkillV3_PipelineFlow.md) §1.7。
+
+### 14.2 缺少 capability 時的自動補全（不得轉嫁給老師寫程式）
+
+若 `required_capabilities` 尚無 provider，系統 **不得** 要求老師撰寫 Python 或修改 registry，而 **必須** 自動進入：
+
+```text
+DOMAIN_CAPABILITY_UNRESOLVED / PARTIAL
+→ 建立 Domain Gap Report
+→ 聚合同類教材例題
+→ Automated Domain Bootstrap
+→ 建立 candidate domain
+→ 產生 core / operations / registry draft / adapter / validator / tests
+→ 自動測試
+→ Domain Healer 局部修補
+→ 產生題目預覽
+→ 教師確認教學語意與題目品質
+→ 升格 verified
+→ 自動重跑原失敗 components
+```
+
+### 14.3 與 V3 架構的通用原則（已確立 · 本文件背書）
+
+1. 每個教材例題為獨立 `src_{example_id}` component（見 V3 Specification §1.2）。
+2. Phase 1 先建立 induced spec，再進 domain resolution（capability-first）。
+3. Resolver 採 **capability-first matching**；`SKILL_TO_DOMAIN` 只是 **confirmed binding**，不是 V3 使用資格門檻。
+4. 未註冊 skill 可用 **derived binding** 正常生成與發布（Bootstrap Gate ≠ Publish Gate）。
+5. 無完整 provider 時 **必須安全停止**，不得錯配相近 domain 通過驗證。
+6. 新 domain **建立一次**後，所有具相同 capability 的 skills **共用**；不得為每個 skill 建立專用 generator 或 domain。
+
+### 14.4 教師只處理教學語意
+
+教師可回答的問題範例（系統以結構化問答呈現，**不**暴露 stack trace）：
+
+- 角度採度數或弧度？
+- 變異數採母體或樣本公式？
+- 答案要求精確值或近似值？近似到小數第幾位？
+- 多解是否全部列出？
+- 題目難度與教材是否一致？
+
+**禁止**要求教師：查看 stack trace、修改 Python、選擇 registry key、使用 Codex 修復。
+
+### 14.5 教師端狀態文字（建議對照）
+
+| 教師可見狀態 | 內部語意（管理員診斷頁） |
+|-------------|-------------------------|
+| 已找到既有出題能力 | existing domain / operation matched |
+| 正在生成題目 | Shadow Bridge / component codegen |
+| 偵測到新的數學能力 | `DOMAIN_CAPABILITY_UNRESOLVED` |
+| 正在建立可重用出題能力 | Automated Domain Bootstrap → `candidate` |
+| 自動測試與修補中 | validator + Domain Healer |
+| 等待教師確認 | `candidate` 預覽就緒 |
+| 已核准並重新生成 | `verified` + 原失敗 components 重跑 |
+| 需要管理員審查 | healer 超限或 bootstrap 失敗 |
+
+技術錯誤詳情僅保留於管理員診斷頁，**不**直接暴露給一般教師。
+
+### 14.6 成功與失敗標準（產品級）
+
+| 情境 | 預期結果 |
+|------|----------|
+| **已有 domain** | 按 V3 重新生成 → 自動生成 → `verified` |
+| **缺少 domain** | 不 500、不產錯題、不阻斷其他 components、不要求老師寫程式、自動建立 `candidate` |
+| **Candidate 通過** | 教師確認 → `verified` → 原失敗 components 自動重跑 |
+| **Candidate 無法修復** | 保留 evidence → 待管理員審查 → **不**影響其他 skill |
+
+### 14.7 成本控制（產品政策）
+
+```text
+先重用 existing artifact
+→ no-LLM deterministic classification
+→ existing-domain capability matching
+→ 相近 domain extension analysis
+→ 確認真的缺 domain
+→ 才呼叫 AI Bootstrap
+```
+
+AI 啟動前須向教師／管理員顯示：預估呼叫次數、預估 token、預計建立或擴充的 domain、預計 operations、受影響 components。`source_hash` 未變時 **必須** 重用既有 classification、gap report 與 `candidate`，**不得** 重複呼叫 AI。
+
+### 14.8 本節取代的舊規則（變更說明）
+
+| 舊敘述（已廢止） | 新正式架構 |
+|------------------|------------|
+| 新 domain 必須由工程師人工建立 | Automated Domain Bootstrap 自動建立 `candidate` |
+| 未知 skill 必須先加入 `SKILL_TO_DOMAIN` | derived binding + Bootstrap Gate；confirmed binding 僅為加速 |
+| Auto-Bootstrap 只產生 gap report | Gap Report + Bootstrap 產物 + Healer + 預覽 + 升格 |
+| 老師需使用 Codex 修復 | Domain Healer 自動修 `candidate` 隔離區；老師只確認教學語意 |
+
+權威實作細節（domain 狀態 `draft`／`candidate`／`verified`、驗證 Gate、Healer 禁止項）見 V3 Specification **§1.10**。
+
+### 14.9 原則 17（v0.3.3 增補）
+
+**17. 【教師優先、工程內隱原則】**：Gencode 最終產品對外只呈現教材匯入、重新生成、預覽確認與發布；所有 domain bootstrap、healer、registry draft 與 validator 均為 **系統內部閉環**。Self-Healing（原則 16）在產品語境下 **包含** Automated Domain Bootstrap 與 Domain Healer，且僅作用於隔離區 `candidate`，**不得**要求教師操作 Codex 或修改 production core。
+
+---
 
 *本文件職責：定義整合總體流程、最高法規、六層架構邊界與閉環安全機制。*
 *不負責事項：不定義 YAML schema 細部欄位與 equivalence 白名單細則。*
-*應參考的其他 SOP：[AgentSkillV2_ProblemType規格包設計_v0.3.md](AgentSkillV2_ProblemType規格包設計_v0.3.md)、[AnswerContract_EquivalenceType_Gate_v0.3.md](AnswerContract_EquivalenceType_Gate_v0.3.md)。*
+*應參考的其他 SOP：[AgentSkillV2_ProblemType規格包設計_v0.3.md](AgentSkillV2_ProblemType規格包設計_v0.3.md)、[AnswerContract_EquivalenceType_Gate_v0.3.md](AnswerContract_EquivalenceType_Gate_v0.3.md)、[SOP_Gencode_AgentSkillV3_Specification.md](../Gencode_AgentSkillV3整合/SOP_Gencode_AgentSkillV3_Specification.md) §1.10（Automated Domain Bootstrap & Healer）。*

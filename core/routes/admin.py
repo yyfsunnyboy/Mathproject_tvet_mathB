@@ -197,7 +197,10 @@ from core.utils import (
     normalize_curriculum,
     get_curriculum_label,
     get_curriculum_options,
-    get_curriculum_aliases
+    get_curriculum_aliases,
+    apply_skill_display_order,
+    find_skill_curriculum_entry,
+    parse_display_order_value,
 )
 from core.ai_settings import (
     AI_ROLE_KEYS,
@@ -2261,7 +2264,7 @@ def admin_delete_curriculum(id):
         return jsonify({'success': False}), 500
 
 # ==========================================
-# Skills Management (???鞈??
+# Skills Management（技能管理）
 # ==========================================
 
 @core_bp.route('/skills')
@@ -2294,15 +2297,7 @@ def admin_skills():
     if selected['f_section'] != 'all':
         query = query.filter(SkillCurriculum.section == selected['f_section'])
 
-    skills_data = (
-        query
-        .distinct()
-        .order_by(
-            SkillCurriculum.display_order.asc(),
-            SkillInfo.skill_id.asc()
-        )
-        .all()
-    )
+    skills_data = apply_skill_display_order(query.distinct()).all()
     _log_skills_route_phase(
         "main_skill_query",
         _time.time() - query_started,
@@ -2451,12 +2446,27 @@ def admin_skills():
     )
     return response
 
+
+def _admin_skill_request_wants_json() -> bool:
+    return bool(
+        request.is_json
+        or request.headers.get('X-Requested-With') == 'XMLHttpRequest'
+        or request.args.get('format') == 'json'
+    )
+
+
+def _admin_skill_request_data():
+    if request.is_json:
+        return request.get_json(silent=True) or {}
+    return request.form
+
+
 @core_bp.route('/skills/add', methods=['POST'])
 @login_required
 def admin_add_skill():
     data = request.form
     if db.session.get(SkillInfo, data['skill_id']):
-        flash('Invalid skill ID.', 'danger')
+        flash('技能 ID 已存在。', 'danger')
         return redirect(url_for('core.admin_skills'))
     try:
         new_skill = SkillInfo(
@@ -2473,16 +2483,24 @@ def admin_add_skill():
         )
         db.session.add(new_skill)
         db.session.commit()
-        flash('??????', 'success')
+        flash('技能新增成功。', 'success')
     except Exception as e:
-        flash(f'??芰?: {e}', 'danger')
+        flash(f'新增失敗：{e}', 'danger')
     return redirect(url_for('core.admin_skills'))
 
 @core_bp.route('/skills/edit/<skill_id>', methods=['POST'])
 @login_required
 def admin_edit_skill(skill_id):
     skill = db.get_or_404(SkillInfo, skill_id)
-    data = request.form
+    data = _admin_skill_request_data()
+    wants_json = _admin_skill_request_wants_json()
+
+    def _respond(success: bool, message: str, status: int = 200):
+        if wants_json:
+            return jsonify({'success': success, 'message': message}), status
+        flash(message, 'success' if success else 'danger')
+        return redirect(url_for('core.admin_skills'))
+
     try:
         skill.skill_en_name = data['skill_en_name']
         skill.skill_ch_name = data['skill_ch_name']
@@ -2491,15 +2509,34 @@ def admin_edit_skill(skill_id):
         skill.input_type = data.get('input_type', 'text')
         skill.gemini_prompt = data['gemini_prompt']
         skill.consecutive_correct_required = int(data['consecutive_correct_required'])
-        skill.is_active = data.get('is_active') == 'on'
+        skill.is_active = data.get('is_active') == 'on' or data.get('is_active') in (True, 'true', '1', 1)
         skill.suggested_prompt_1 = data.get('suggested_prompt_1', '')
         skill.suggested_prompt_2 = data.get('suggested_prompt_2', '')
         skill.suggested_prompt_3 = data.get('suggested_prompt_3', '')
+
+        raw_display_order = data.get('display_order')
+        if raw_display_order is not None and str(raw_display_order).strip() != '':
+            display_order, order_err = parse_display_order_value(raw_display_order)
+            if order_err:
+                return _respond(False, order_err, 400)
+
+            curriculum_row = find_skill_curriculum_entry(
+                skill_id,
+                curriculum=data.get('curriculum'),
+                grade=data.get('grade'),
+                volume=data.get('volume'),
+                chapter=data.get('chapter'),
+                section=data.get('section'),
+            )
+            if curriculum_row is None:
+                return _respond(False, '找不到對應課程位置的排序紀錄，請確認篩選條件後再試。', 400)
+            curriculum_row.display_order = display_order
+
         db.session.commit()
-        flash('?皝????', 'success')
+        return _respond(True, '技能資料已更新。')
     except Exception as e:
-        flash(f'??芰?: {e}', 'danger')
-    return redirect(url_for('core.admin_skills'))
+        db.session.rollback()
+        return _respond(False, f'更新失敗：{e}', 500)
 
 @core_bp.route('/skills/delete/<skill_id>', methods=['POST'])
 @login_required
@@ -2508,10 +2545,10 @@ def admin_delete_skill(skill_id):
     try:
         db.session.delete(skill)
         db.session.commit()
-        flash('??畸????', 'success')
+        flash('技能已刪除。', 'success')
     except Exception as e:
         db.session.rollback()
-        flash(f'??畸??剜?? (??迎?????????: {e}', 'danger')
+        flash(f'刪除失敗（可能仍有關聯資料）：{e}', 'danger')
     return redirect(url_for('core.admin_skills'))
 
 
@@ -2521,7 +2558,7 @@ def admin_toggle_skill(skill_id):
     skill = db.get_or_404(SkillInfo, skill_id)
     skill.is_active = not skill.is_active
     db.session.commit()
-    flash(f'???鞈Ｘ?{"?賹?" if skill.is_active else "?謚秋?"}', 'success')
+    flash(f'技能已{"啟用" if skill.is_active else "停用"}。', 'success')
     return redirect(url_for('core.admin_skills'))
 
 @core_bp.route('/skills/<skill_id>/regenerate', methods=['POST'])
@@ -2540,7 +2577,19 @@ def admin_regenerate_skill_code(skill_id):
 @login_required
 def admin_get_skill_details(skill_id):
     skill = db.session.get(SkillInfo, skill_id)
-    if not skill: return jsonify({'success': False}), 404
+    if not skill:
+        return jsonify({'success': False}), 404
+
+    curriculum_row = find_skill_curriculum_entry(
+        skill_id,
+        curriculum=request.args.get('curriculum'),
+        grade=request.args.get('grade'),
+        volume=request.args.get('volume'),
+        chapter=request.args.get('chapter'),
+        section=request.args.get('section'),
+    )
+    display_order = curriculum_row.display_order if curriculum_row else 0
+
     return jsonify({
         'success': True,
         'data': {
@@ -2554,7 +2603,14 @@ def admin_get_skill_details(skill_id):
             'gemini_prompt': skill.gemini_prompt,
             'suggested_prompt_1': skill.suggested_prompt_1,
             'suggested_prompt_2': skill.suggested_prompt_2,
-            'suggested_prompt_3': skill.suggested_prompt_3
+            'suggested_prompt_3': skill.suggested_prompt_3,
+            'is_active': skill.is_active,
+            'display_order': display_order,
+            'curriculum': curriculum_row.curriculum if curriculum_row else None,
+            'grade': curriculum_row.grade if curriculum_row else None,
+            'volume': curriculum_row.volume if curriculum_row else None,
+            'chapter': curriculum_row.chapter if curriculum_row else None,
+            'section': curriculum_row.section if curriculum_row else None,
         }
     })
 
@@ -4888,3 +4944,89 @@ def admin_example_v3_preview_generate(id: int):
             "message": "生成例題失敗",
             "detail": f"{e.__class__.__name__}: {e}\n{traceback.format_exc()}"
         }), 400
+
+
+@core_bp.route('/admin/domain-bootstrap/gaps/<gap_id>', methods=['GET'])
+@login_required
+def admin_domain_bootstrap_get_gap(gap_id: str):
+    if not (current_user.is_admin or current_user.role == 'teacher'):
+        return jsonify({"ok": False, "error": "forbidden"}), 403
+    from core.gencode.services.domain_bootstrap_action_service import get_domain_gap_report
+
+    try:
+        return jsonify({"ok": True, **get_domain_gap_report(gap_id)})
+    except ValueError as exc:
+        return jsonify({"ok": False, "error": str(exc)}), 404
+
+
+@core_bp.route('/admin/domain-bootstrap/gaps/<gap_id>/cost-estimate', methods=['GET'])
+@login_required
+def admin_domain_bootstrap_cost_estimate(gap_id: str):
+    if not (current_user.is_admin or current_user.role == 'teacher'):
+        return jsonify({"ok": False, "error": "forbidden"}), 403
+    from core.gencode.services.domain_bootstrap_action_service import estimate_domain_bootstrap_cost
+
+    allow_ai = request.args.get("allow_ai") in {"1", "true", "True"}
+    return jsonify({"ok": True, "cost_estimate": estimate_domain_bootstrap_cost(gap_id, allow_ai=allow_ai)})
+
+
+@core_bp.route('/admin/domain-bootstrap/gaps/<gap_id>/start', methods=['POST'])
+@login_required
+def admin_domain_bootstrap_start(gap_id: str):
+    if not (current_user.is_admin or current_user.role == 'teacher'):
+        return jsonify({"ok": False, "error": "forbidden"}), 403
+    from core.gencode.services.domain_bootstrap_action_service import start_domain_bootstrap
+
+    payload = request.get_json(silent=True) or {}
+    allow_ai = bool(payload.get("allow_ai"))
+    result = start_domain_bootstrap(gap_id, allow_ai=allow_ai)
+    return jsonify({"ok": True, **result})
+
+
+@core_bp.route('/admin/domain-bootstrap/gaps/<gap_id>/status', methods=['GET'])
+@login_required
+def admin_domain_bootstrap_status(gap_id: str):
+    if not (current_user.is_admin or current_user.role == 'teacher'):
+        return jsonify({"ok": False, "error": "forbidden"}), 403
+    from core.gencode.services.domain_bootstrap_action_service import get_bootstrap_status
+
+    try:
+        return jsonify({"ok": True, **get_bootstrap_status(gap_id)})
+    except ValueError as exc:
+        return jsonify({"ok": False, "error": str(exc)}), 404
+
+
+@core_bp.route('/admin/domain-bootstrap/gaps/<gap_id>/preview', methods=['GET'])
+@login_required
+def admin_domain_bootstrap_preview(gap_id: str):
+    if not (current_user.is_admin or current_user.role == 'teacher'):
+        return jsonify({"ok": False, "error": "forbidden"}), 403
+    from core.gencode.services.domain_bootstrap_action_service import get_candidate_preview
+
+    try:
+        return jsonify({"ok": True, "preview": get_candidate_preview(gap_id)})
+    except ValueError as exc:
+        return jsonify({"ok": False, "error": str(exc)}), 404
+
+
+@core_bp.route('/admin/domain-bootstrap/gaps/<gap_id>/approve', methods=['POST'])
+@login_required
+def admin_domain_bootstrap_approve(gap_id: str):
+    if not (current_user.is_admin or current_user.role == 'teacher'):
+        return jsonify({"ok": False, "error": "forbidden"}), 403
+    from core.gencode.services.domain_bootstrap_action_service import approve_domain_bootstrap
+
+    payload = request.get_json(silent=True) or {}
+    result = approve_domain_bootstrap(gap_id, teacher_answers=payload)
+    return jsonify({"ok": bool(result.get("approved")), **result})
+
+
+@core_bp.route('/admin/domain-bootstrap/gaps/<gap_id>/reject', methods=['POST'])
+@login_required
+def admin_domain_bootstrap_reject(gap_id: str):
+    if not (current_user.is_admin or current_user.role == 'teacher'):
+        return jsonify({"ok": False, "error": "forbidden"}), 403
+    from core.gencode.services.domain_bootstrap_action_service import reject_domain_bootstrap
+
+    return jsonify({"ok": True, **reject_domain_bootstrap(gap_id)})
+

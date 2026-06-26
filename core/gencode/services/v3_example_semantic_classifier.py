@@ -330,6 +330,11 @@ def _deterministic_classify(
             return freq
         return None
 
+    if fixed_domain_key == "statistics.descriptive_statistics":
+        from core.domain.statistics.descriptive_statistics_analyzer import classify_textbook_example
+
+        return classify_textbook_example(source)
+
     # Statistics deterministic rules (legacy path for skills without fixed domain binding)
     if "HistogramsAndFrequencyPolygons" in source.skill_id or any(
         kw in text for kw in ["直方圖", "折線圖", "次數分配"]

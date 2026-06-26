@@ -22,6 +22,9 @@ _RESPONSE_MODE_VALUES = frozenset({
     "short_answer",
     "text_short",
     "multi_part",
+    "multi_blank",
+    "table_fill",
+    "unordered_set",
 })
 
 
@@ -131,11 +134,17 @@ def _build_metadata_py(
         equivalence_type = str(payload_meta.get("equivalence_type", "choice_label"))
         checker_module = str(payload_meta.get("checker_module", "core.checkers.choice_label_checker"))
     else:
-        checker_key = str(payload_meta.get("checker_key", "linear_equation_equivalent_checker"))
-        equivalence_type = str(payload_meta.get("equivalence_type", "linear_equation_equivalent"))
-        checker_module = str(
-            payload_meta.get("checker_module", "core.checkers.linear_equation_equivalent_checker")
+        fixed_domain = str(payload_meta.get("fixed_domain_key") or payload_meta.get("template_domain_key") or "").strip()
+        default_checker = "integer_checker" if fixed_domain == "statistics.descriptive_statistics" else "linear_equation_equivalent_checker"
+        default_equiv = "numeric_exact" if fixed_domain == "statistics.descriptive_statistics" else "linear_equation_equivalent"
+        default_module = (
+            "core.gencode.runtime_skill_wrapper"
+            if fixed_domain == "statistics.descriptive_statistics"
+            else "core.checkers.linear_equation_equivalent_checker"
         )
+        checker_key = str(payload_meta.get("checker_key") or default_checker)
+        equivalence_type = str(payload_meta.get("equivalence_type") or default_equiv)
+        checker_module = str(payload_meta.get("checker_module") or default_module)
 
     domain_entry = _domain_library_entry(domain_meta)
     semantic_concepts = payload_meta.get(
@@ -234,6 +243,7 @@ def _build_generate_py(
         "build_parallel_lines_distance_matrix",
         "build_frequency_distribution_table_matrix",
         "build_statistical_chart_reading_matrix",
+        "build_descriptive_statistics_matrix",
     }:
         matrix_call = f'''{entrypoint}(
         seed=seed,
@@ -277,6 +287,7 @@ def generate(level: int = 1, seed: int | None = None, **kwargs: Any) -> dict[str
         textbook_example_id=TEXTBOOK_EXAMPLE_ID or None,
         answer_schema_key="{answer_schema_key}",
         domain_operation="{domain_operation}",
+        seed=seed,
     )
     if component_id:
         payload["component_id"] = component_id

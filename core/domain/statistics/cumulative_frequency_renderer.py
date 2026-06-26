@@ -124,21 +124,68 @@ def render_cumulative_frequency_graph(
         plt.close(fig)
 
 
+def _derive_blank_cell_label(original: Any) -> str:
+    """Return single-letter variable labels (a,b,c,d) embedded in source rows."""
+    if isinstance(original, str):
+        text = original.strip()
+        if 1 <= len(text) <= 2 and text.isalpha():
+            return text
+    return ""
+
+
+def _normalize_blank_cell_specs(
+    blank_cells: list[tuple[int, int]] | list[dict[str, Any]] | None,
+    rows: list[list[Any]],
+) -> list[dict[str, Any]]:
+    """Normalize blank cell coordinates and attach display labels when available."""
+    normalized: list[dict[str, Any]] = []
+    seen: set[tuple[int, int]] = set()
+    for item in blank_cells or []:
+        if isinstance(item, dict):
+            row_idx = int(item["row"])
+            col_idx = int(item["col"])
+            label = str(item.get("label") or "").strip() or _derive_blank_cell_label(rows[row_idx][col_idx])
+        else:
+            row_idx = int(item[0])
+            col_idx = int(item[1])
+            label = _derive_blank_cell_label(rows[row_idx][col_idx])
+        key = (row_idx, col_idx)
+        if key in seen:
+            continue
+        seen.add(key)
+        normalized.append({"row": row_idx, "col": col_idx, "label": label})
+    return sorted(normalized, key=lambda spec: (spec["row"], spec["col"]))
+
+
+def _format_blank_cell_html(label: str) -> str:
+    if label:
+        return (
+            f'<td class="table-blank-cell" data-blank-label="{label}">'
+            f'<span class="blank-label">{label}</span></td>'
+        )
+    return (
+        '<td class="table-blank-cell" data-blank-label="">'
+        '<span class="blank-placeholder">&nbsp;</span></td>'
+    )
+
+
 def render_cumulative_frequency_table(
     *,
     headers: list[str],
     rows: list[list[Any]],
-    blank_cells: list[tuple[int, int]] | None = None,
+    blank_cells: list[tuple[int, int]] | list[dict[str, Any]] | None = None,
     title: str = "累積次數分配表",
 ) -> dict[str, Any]:
     """Build HTML table_data for bidirectional cumulative-frequency tables."""
-    blank_set = {tuple(cell) for cell in (blank_cells or [])}
+    blank_specs = _normalize_blank_cell_specs(blank_cells, rows)
+    blank_positions = {(spec["row"], spec["col"]) for spec in blank_specs}
+    blank_labels = {(spec["row"], spec["col"]): spec["label"] for spec in blank_specs}
     display_rows: list[list[Any]] = []
     for row_idx, row in enumerate(rows):
         display_row: list[Any] = []
         for col_idx, cell in enumerate(row):
-            if (row_idx, col_idx) in blank_set:
-                display_row.append("")
+            if (row_idx, col_idx) in blank_positions:
+                display_row.append(blank_labels.get((row_idx, col_idx), "") or "")
             else:
                 display_row.append(cell)
         display_rows.append(display_row)
@@ -149,10 +196,13 @@ def render_cumulative_frequency_table(
     for header in headers:
         html_parts.append(f"<th>{header}</th>")
     html_parts.append("</tr></thead><tbody>")
-    for row in display_rows:
+    for row_idx, row in enumerate(display_rows):
         html_parts.append("<tr>")
-        for cell in row:
-            html_parts.append(f"<td>{cell}</td>")
+        for col_idx, cell in enumerate(row):
+            if (row_idx, col_idx) in blank_positions:
+                html_parts.append(_format_blank_cell_html(blank_labels.get((row_idx, col_idx), "")))
+            else:
+                html_parts.append(f"<td>{cell}</td>")
         html_parts.append("</tr>")
     html_parts.append("</tbody></table>")
     html = "".join(html_parts)
@@ -164,7 +214,8 @@ def render_cumulative_frequency_table(
             "headers": headers,
             "rows": rows,
             "display_rows": display_rows,
-            "blank_cells": [{"row": r, "col": c} for r, c in blank_set],
+            "visible_table": display_rows,
+            "blank_cells": blank_specs,
             "html": html,
         },
         "visual_spec": {

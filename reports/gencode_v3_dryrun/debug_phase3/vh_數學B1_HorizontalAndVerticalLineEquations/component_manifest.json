@@ -1,0 +1,18 @@
+{
+  "skill_id": "vh_數學B1_HorizontalAndVerticalLineEquations",
+  "compiled_at": "2026-06-26T04:04:39.842718+00:00",
+  "publish_status": "dryrun_manifest_compiled",
+  "components": [
+    {
+      "component_id": "src_4544",
+      "status": "verified",
+      "presentation_mode": "short_answer",
+      "source_kind": "ex_4544",
+      "textbook_example_id": 4544,
+      "line_type": "vertical_line",
+      "domain_module": "core.domain.coordinate_geometry.line_equation_domain",
+      "entrypoint": "build_line_equation_matrix",
+      "component_dir": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_dryrun\\debug_phase3\\vh_數學B1_HorizontalAndVerticalLineEquations\\components\\src_4544"
+    }
+  ]
+}

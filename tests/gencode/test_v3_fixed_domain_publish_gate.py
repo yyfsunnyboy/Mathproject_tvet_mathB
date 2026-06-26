@@ -202,7 +202,7 @@ def test_unregistered_domain_skill_blocked(
     memory_conn.commit()
     eligibility = evaluate_v3_publish_eligibility(memory_conn, REGISTERED_SKILL)
     assert eligibility["allowed"] is False
-    assert eligibility["reason"] == "DOMAIN_BINDING_MISSING"
+    assert eligibility["reason"] == "DOMAIN_EVIDENCE_INCOMPLETE"
 
 
 def test_domain_mismatch_component_excluded_from_generator_specs(

@@ -197,6 +197,12 @@ def refresh_runtime_question_session(payload: dict[str, Any], *, skill_id: str =
         return payload
     out = dict(payload)
     sid = str(skill_id or out.get("skill_id", out.get("skill", ""))).strip()
+    from core.gencode.table_question_contract import normalize_table_question_payload
+
+    out = normalize_table_question_payload(out)
+    from core.gencode.single_choice_payload_normalizer import normalize_single_choice_payload
+
+    out = normalize_single_choice_payload(out)
     ac = resolve_answer_contract_for_runtime(out, skill_id=sid)
     if ac:
         out["answer_contract"] = ac
@@ -601,7 +607,9 @@ def finalize_generator_payload(payload: dict[str, Any], answer_contract: dict[st
         text = str(raw_answer).strip()
         out["correct_answer"] = text
         out["answer"] = text
-    return out
+    from core.gencode.single_choice_payload_normalizer import normalize_single_choice_payload
+
+    return normalize_single_choice_payload(out)
 
 
 def validate_generated_answer_shape(

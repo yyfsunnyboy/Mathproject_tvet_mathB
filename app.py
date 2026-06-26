@@ -510,6 +510,11 @@ def create_app():
                 
                 
                 grouped_sections = list(sections_map.values())
+
+                for section_group in grouped_sections:
+                    section_group['skills'].sort(
+                        key=lambda s: (int(s.get('display_order') or 0), str(s.get('skill_ch_name') or ''))
+                    )
                 
                 # [Fix] 對 sections 進行自然排序
                 def natural_keys(text):

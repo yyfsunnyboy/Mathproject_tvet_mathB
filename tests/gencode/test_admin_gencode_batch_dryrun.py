@@ -107,10 +107,10 @@ def test_batch_dryrun_skips_verified_unless_force(memory_conn, dryrun_root):
         seed=42,
     )
     assert skipped["skipped_verified_count"] == 1
-    skipped_rows = [row for row in skipped["results"] if row["status"] == "skipped_verified"]
+    skipped_rows = [row for row in skipped["results"] if row["status"] == "reused_verified"]
     assert skipped_rows
     assert skipped_rows[0]["cache_hit"] is True
-    assert skipped_rows[0]["skip_reason"] == "verified_tracker"
+    assert skipped_rows[0]["skip_reason"] == "verified_tracker_reused"
     assert skipped_rows[0]["model_generation_invoked"] is False
 
     forced = run_admin_v3_dryrun_for_skill(

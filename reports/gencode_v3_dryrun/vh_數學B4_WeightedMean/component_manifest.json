@@ -1,0 +1,40 @@
+{
+  "skill_id": "vh_數學B4_WeightedMean",
+  "compiled_at": "2026-06-26T07:05:26.130394+00:00",
+  "publish_status": "dryrun_manifest_compiled",
+  "components": [
+    {
+      "component_id": "src_3842",
+      "status": "verified",
+      "presentation_mode": "short_answer",
+      "source_kind": "ex_3842",
+      "textbook_example_id": 3842,
+      "line_type": "compute_weighted_mean",
+      "domain_module": "core.domain.statistics.descriptive_statistics_domain",
+      "entrypoint": "build_descriptive_statistics_matrix",
+      "component_dir": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_dryrun\\vh_數學B4_WeightedMean\\components\\src_3842"
+    },
+    {
+      "component_id": "src_3843",
+      "status": "verified",
+      "presentation_mode": "short_answer",
+      "source_kind": "ex_3843",
+      "textbook_example_id": 3843,
+      "line_type": "compute_weighted_mean",
+      "domain_module": "core.domain.statistics.descriptive_statistics_domain",
+      "entrypoint": "build_descriptive_statistics_matrix",
+      "component_dir": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_dryrun\\vh_數學B4_WeightedMean\\components\\src_3843"
+    },
+    {
+      "component_id": "src_3844",
+      "status": "verified",
+      "presentation_mode": "short_answer",
+      "source_kind": "ex_3844",
+      "textbook_example_id": 3844,
+      "line_type": "compute_weighted_mean",
+      "domain_module": "core.domain.statistics.descriptive_statistics_domain",
+      "entrypoint": "build_descriptive_statistics_matrix",
+      "component_dir": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_dryrun\\vh_數學B4_WeightedMean\\components\\src_3844"
+    }
+  ]
+}

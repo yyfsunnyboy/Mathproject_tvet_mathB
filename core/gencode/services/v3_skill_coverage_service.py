@@ -16,6 +16,7 @@ from core.gencode.v3_error_codes import (
     is_domain_gap_error,
     is_pipeline_failure_error,
 )
+from core.gencode.choice_contract_validator import choice_contract_valid_from_spec
 
 _TRACKER_STATUSES = frozenset(
     {
@@ -114,6 +115,28 @@ def _payload_error_code(payload_raw: object, error_log: object) -> str:
     return canonical_error_code(text)
 
 
+def _parse_tracker_spec(payload_raw: object) -> dict[str, object]:
+    if isinstance(payload_raw, dict):
+        return payload_raw
+    if payload_raw is not None and str(payload_raw).strip():
+        try:
+            parsed = json.loads(str(payload_raw))
+        except Exception:
+            return {}
+        return parsed if isinstance(parsed, dict) else {}
+    return {}
+
+
+def _verified_choice_contract_blocks_publish(tracker_map: dict[int, dict[str, object]]) -> bool:
+    for tracker in tracker_map.values():
+        if str(tracker.get("gencode_status") or "").strip() != "verified":
+            continue
+        spec = _parse_tracker_spec(tracker.get("induced_spec_payload"))
+        if not choice_contract_valid_from_spec(spec):
+            return True
+    return False
+
+
 def _build_coverage_payload(
     skill_key: str,
     example_ids: list[int],
@@ -178,6 +201,7 @@ def _build_coverage_payload(
         and missing_tracker_count == 0
         and failed_count == 0
         and unverified_count == 0
+        and not _verified_choice_contract_blocks_publish(tracker_map)
     )
 
     return {

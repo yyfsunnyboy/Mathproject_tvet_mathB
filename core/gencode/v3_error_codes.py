@@ -24,9 +24,13 @@ UNSUPPORTED_TASK_TYPE = "UNSUPPORTED_TASK_TYPE"
 DOMAIN_OVERRIDE_NOT_FOUND = "DOMAIN_OVERRIDE_NOT_FOUND"
 DOMAIN_CAPABILITY_PARTIAL = "DOMAIN_CAPABILITY_PARTIAL"
 DOMAIN_CAPABILITY_UNRESOLVED = "DOMAIN_CAPABILITY_UNRESOLVED"
+DOMAIN_CAPABILITY_AMBIGUOUS = "DOMAIN_CAPABILITY_AMBIGUOUS"
+DOMAIN_BINDING_CONFLICT = "DOMAIN_BINDING_CONFLICT"
+DOMAIN_EVIDENCE_INCOMPLETE = "DOMAIN_EVIDENCE_INCOMPLETE"
 DOMAIN_CAPABILITY_MISSING = "domain_capability_missing"
 DOMAIN_PROVIDER_MISSING = "DOMAIN_PROVIDER_MISSING"
 DOMAIN_ADAPTER_FAILED = "DOMAIN_ADAPTER_FAILED"
+CHOICE_CONTRACT_INCOMPLETE = "CHOICE_CONTRACT_INCOMPLETE"
 
 
 RECOVERABLE_DOMAIN_CODES = frozenset(
@@ -88,15 +92,31 @@ def canonical_error_code(code: str) -> str:
         DOMAIN_OVERRIDE_NOT_FOUND,
         DOMAIN_CAPABILITY_PARTIAL,
         DOMAIN_CAPABILITY_UNRESOLVED,
+        DOMAIN_CAPABILITY_AMBIGUOUS,
+        DOMAIN_BINDING_CONFLICT,
+        DOMAIN_EVIDENCE_INCOMPLETE,
         DOMAIN_CAPABILITY_MISSING,
         DOMAIN_PROVIDER_MISSING,
         DOMAIN_ADAPTER_FAILED,
+        CHOICE_CONTRACT_INCOMPLETE,
     }
     return upper if upper in known else key
 
 
 def error_code_from_message(message: str) -> str:
     lowered = str(message or "").lower()
+    if "domain_capability_ambiguous" in lowered:
+        return DOMAIN_CAPABILITY_AMBIGUOUS
+    if "domain_capability_partial" in lowered:
+        return DOMAIN_CAPABILITY_PARTIAL
+    if "domain_capability_unresolved" in lowered:
+        return DOMAIN_CAPABILITY_UNRESOLVED
+    if "domain_binding_conflict" in lowered:
+        return DOMAIN_BINDING_CONFLICT
+    if "domain_evidence_incomplete" in lowered:
+        return DOMAIN_EVIDENCE_INCOMPLETE
+    if "choice_contract_incomplete" in lowered:
+        return CHOICE_CONTRACT_INCOMPLETE
     for legacy, canonical in LEGACY_ERROR_CODE_MAP.items():
         if legacy in lowered:
             return canonical
@@ -134,6 +154,8 @@ def is_domain_gap_error(code: str) -> bool:
         DOMAIN_FUNCTION_EXTENSION_PENDING,
         DOMAIN_FUNCTION_EXTENSION_FAILED,
         DOMAIN_FUNCTION_TEST_FAILED,
+        DOMAIN_CAPABILITY_PARTIAL,
+        DOMAIN_CAPABILITY_UNRESOLVED,
     }
 
 

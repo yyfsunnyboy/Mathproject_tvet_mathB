@@ -2553,7 +2553,13 @@ def _normalize_phase_response(payload: dict[str, Any]) -> dict[str, Any]:
     return payload
 
 
-def run_gencode_phase1(skill_id: str, dry_run: bool = True, spec_mode: str = "ai_first_induce_from_sources") -> dict[str, Any]:
+def run_gencode_phase1(
+    skill_id: str,
+    dry_run: bool = True,
+    spec_mode: str = "ai_first_induce_from_sources",
+    *,
+    allow_ai_bootstrap: bool = True,
+) -> dict[str, Any]:
     # SOP v0.2: Preflight Scan Policy Enforcement
     from core.gencode.sop_policy import validate_sop_preflight, build_sop_reference, validate_skill_level_blockers
     preflight = validate_sop_preflight(PROJECT_ROOT)
@@ -2657,31 +2663,42 @@ def run_gencode_phase1(skill_id: str, dry_run: bool = True, spec_mode: str = "ai
         raw_result = cls.classify_examples(examples, ctx)
         entries = [dict(x) for x in raw_result.examples_map_entries]
         if isinstance(cls, FallbackClassifier):
-            classifier_source = "ai_bootstrap"
-            ai_bootstrap_used = True
-            skill_ch_name = _pick_skill_ch_name(skill_id, examples)
-            try:
-                entries, proposal, meta = _run_ai_classifier_bootstrap(skill_id=skill_id, skill_ch_name=skill_ch_name, examples=examples)
-            except Exception as ex:
-                execute_pipeline_self_healing(ex, "phase1", skill_id)
-                ex_msg = str(ex)
+            if not allow_ai_bootstrap:
                 entries, proposal, meta = _build_neutral_fallback(
                     skill_id=skill_id,
                     examples=examples,
-                    reason=f"skill_specific_classifier_missing; ai_bootstrap_failed: {ex_msg}",
+                    reason="ai_bootstrap_disabled",
                 )
-                meta["ai_bootstrap_error"] = ex_msg
-                if "api key missing" in ex_msg.lower() or "unavailable" in ex_msg.lower():
-                    meta["ai_bootstrap_status"] = "unavailable"
-                    meta["ai_bootstrap_error"] = "AI client unavailable or API key missing"
-                if "ai_bootstrap_invalid_json::" in ex_msg:
-                    preview = ex_msg.split("::", 1)[1].strip()
-                    meta["ai_bootstrap_raw_response_preview"] = preview[:1000]
-                    meta["ai_bootstrap_validation_errors"] = ["invalid_json_response"]
-            classifier_source = str(meta.get("classifier_source", classifier_source))
-            ai_bootstrap_status = str(meta.get("ai_bootstrap_status", "failed" if classifier_source == "neutral_fallback" else "success"))
-            ai_bootstrap_confidence_summary = meta.get("ai_bootstrap_confidence_summary", {}) if isinstance(meta.get("ai_bootstrap_confidence_summary"), dict) else {}
-            inspect_report_note = str(meta.get("inspect_report_note", "")).strip()
+                classifier_source = "no_llm_unresolved"
+                ai_bootstrap_used = False
+                ai_bootstrap_status = "disabled"
+                inspect_report_note = "AI bootstrap disabled; deterministic/rule-pack classification only."
+            else:
+                classifier_source = "ai_bootstrap"
+                ai_bootstrap_used = True
+                skill_ch_name = _pick_skill_ch_name(skill_id, examples)
+                try:
+                    entries, proposal, meta = _run_ai_classifier_bootstrap(skill_id=skill_id, skill_ch_name=skill_ch_name, examples=examples)
+                except Exception as ex:
+                    execute_pipeline_self_healing(ex, "phase1", skill_id)
+                    ex_msg = str(ex)
+                    entries, proposal, meta = _build_neutral_fallback(
+                        skill_id=skill_id,
+                        examples=examples,
+                        reason=f"skill_specific_classifier_missing; ai_bootstrap_failed: {ex_msg}",
+                    )
+                    meta["ai_bootstrap_error"] = ex_msg
+                    if "api key missing" in ex_msg.lower() or "unavailable" in ex_msg.lower():
+                        meta["ai_bootstrap_status"] = "unavailable"
+                        meta["ai_bootstrap_error"] = "AI client unavailable or API key missing"
+                    if "ai_bootstrap_invalid_json::" in ex_msg:
+                        preview = ex_msg.split("::", 1)[1].strip()
+                        meta["ai_bootstrap_raw_response_preview"] = preview[:1000]
+                        meta["ai_bootstrap_validation_errors"] = ["invalid_json_response"]
+                classifier_source = str(meta.get("classifier_source", classifier_source))
+                ai_bootstrap_status = str(meta.get("ai_bootstrap_status", "failed" if classifier_source == "neutral_fallback" else "success"))
+                ai_bootstrap_confidence_summary = meta.get("ai_bootstrap_confidence_summary", {}) if isinstance(meta.get("ai_bootstrap_confidence_summary"), dict) else {}
+                inspect_report_note = str(meta.get("inspect_report_note", "")).strip()
     if not isinstance(entries, list):
         entries = []
     if not entries and examples:
@@ -3010,21 +3027,28 @@ def run_gencode_phase2_raw(
     generation_run_id: str | None = None,
     generation_started_at: str | None = None,
     old_artifact_hash: str | None = None,
+    v3_induced_spec: dict[str, object] | None = None,
+    seed: int | None = None,
 ) -> dict[str, Any]:
     skill_key = str(skill_id or "").strip()
     if v3_textbook_example_id is not None:
         if v3_conn is None:
             raise ValueError("missing_v3_conn")
+        bridge_constraints = _v3_constraints_from_induced_spec(
+            v3_induced_spec if isinstance(v3_induced_spec, dict) else None
+        )
         bridge_result = run_gencode_phase2_v3_shadow_bridge(
             conn=v3_conn,
             skill_id=skill_key,
             textbook_example_id=v3_textbook_example_id,
             source_kind=f"ex_{v3_textbook_example_id}",
             dryrun_base_dir=v3_dryrun_base_dir,
+            constraints=bridge_constraints or None,
             force_regenerate=force_regenerate,
             generation_run_id=generation_run_id,
             generation_started_at=generation_started_at,
             old_artifact_hash=old_artifact_hash,
+            seed=seed,
         )
         if V3_PRODUCTION_PUBLISH_ENABLED:
             if not str(v3_project_root or "").strip():
@@ -4531,6 +4555,567 @@ def publish_gencode_draft_skill(skill_id: str, confirm: bool = False, allow_runt
 # V3 isolated dry-run hook (does not touch Phase 2/3 production flows)
 # ---------------------------------------------------------------------------
 
+PHASE1_CLASSIFICATION_UNRESOLVED = "PHASE1_CLASSIFICATION_UNRESOLVED"
+
+# Import-time source labels stored in textbook_examples.problem_type — not math problem types.
+_NON_MATHEMATICAL_SOURCE_TYPES = frozenset(
+    {
+        "mixed_counting",
+        "in_class_practice",
+        "textbook_example",
+        "textbook_exercise",
+        "self_assessment",
+        "calculation",
+        "addition_principle",
+        "multiplication_principle",
+        "set_concepts",
+        "in_class_practice",
+    }
+)
+
+_PHASE1_CAPABILITY_PATTERNS: tuple[tuple[re.Pattern[str], str], ...] = (
+    (re.compile(r"平均(?:數|分|成績|身高)|算術平均|arithmetic\s*mean|\\bar\{x\}|μ", re.I), "arithmetic_mean"),
+    (re.compile(r"加權平均|weighted\s*mean|權數|乘以\s*\d+\s*%", re.I), "weighted_mean"),
+    (re.compile(r"中位數|median", re.I), "median"),
+    (re.compile(r"眾數|mode", re.I), "mode"),
+    (re.compile(r"全距|range", re.I), "range"),
+    (re.compile(r"方差|variance|σ\^?2", re.I), "variance"),
+    (re.compile(r"標準差|standard\s*deviation|σ(?!²)", re.I), "standard_deviation"),
+    (re.compile(r"次數分配|直方圖|折線圖|frequency\s*distribution|histogram", re.I), "frequency_distribution"),
+    (re.compile(r"累積次數|累積分配|cumulative", re.I), "cumulative_frequency"),
+    (re.compile(r"斜率|點斜式|截距|直線方程式|slope|intercept", re.I), "line_equation"),
+    (re.compile(r"點到直線|point\s*to\s*line", re.I), "distance_from_point_to_line"),
+    (re.compile(r"平行線.*距離|distance\s*between\s*parallel", re.I), "distance_between_parallel_lines"),
+)
+
+
+def _compute_v3_example_source_hash(row: dict[str, Any]) -> str:
+    from core.gencode.services.v3_example_semantic_classifier import calculate_source_hash
+
+    return calculate_source_hash(
+        str(row.get("problem_text") or ""),
+        str(row.get("correct_answer") or ""),
+        str(row.get("detailed_solution") or row.get("explanation") or ""),
+    )
+
+
+def _load_textbook_example_row_from_conn(conn: Any, textbook_example_id: int) -> dict[str, Any] | None:
+    """Load one textbook_examples row; works with sqlite3.Row and tuple rows from SQLAlchemy raw_connection."""
+    from core.gencode.v3_presentation_inference import fetch_textbook_example_row
+
+    return fetch_textbook_example_row(conn, int(textbook_example_id))
+
+
+def _normalize_phase1_capabilities(capabilities: list[str]) -> list[str]:
+    caps = list(capabilities or [])
+    if "weighted_mean" in caps and "arithmetic_mean" in caps:
+        caps = [cap for cap in caps if cap != "arithmetic_mean"]
+    if "standard_deviation" in caps and "variance" in caps:
+        caps = [cap for cap in caps if cap != "variance"]
+    return caps
+
+
+def _infer_generic_capabilities_from_text(text: str) -> list[str]:
+    normalized = str(text or "")
+    caps: list[str] = []
+    for pattern, capability in _PHASE1_CAPABILITY_PATTERNS:
+        if pattern.search(normalized) and capability not in caps:
+            caps.append(capability)
+    return _normalize_phase1_capabilities(caps)
+
+
+def _problem_type_id_from_capabilities(capabilities: list[str]) -> str:
+    caps = _normalize_phase1_capabilities(list(capabilities or []))
+    if not caps:
+        return ""
+    priority = (
+        "weighted_mean",
+        "descriptive_statistics_table_completion",
+        "median",
+        "mode",
+        "standard_deviation",
+        "variance",
+        "range",
+        "arithmetic_mean",
+    )
+    for cap in priority:
+        if cap in caps:
+            return f"{cap}_computation"
+    return f"{caps[0]}_computation"
+
+
+def _phase1_from_descriptive_domain_analyzer(
+    *,
+    skill_id: str,
+    textbook_row: dict[str, Any],
+    source_hash: str,
+    presentation_mode: str,
+) -> dict[str, Any] | None:
+    from core.domain.statistics.descriptive_statistics_analyzer import analyze_textbook_row
+    from core.gencode.v3_error_codes import DOMAIN_CAPABILITY_UNRESOLVED
+
+    example_id = int(textbook_row.get("id") or 0)
+    analysis = analyze_textbook_row(textbook_row, presentation_mode=presentation_mode)
+    if analysis is None:
+        return None
+
+    if analysis.status == "resolved":
+        answer_contract = _infer_answer_contract_from_row(textbook_row, presentation_mode=presentation_mode)
+        induced = _build_v3_phase1_induced_spec(
+            skill_id=skill_id,
+            textbook_example_id=example_id,
+            source_hash=source_hash,
+            problem_type_id=analysis.problem_type_id,
+            required_capabilities=list(analysis.required_capabilities),
+            classification_source=analysis.classification_source,
+            presentation_mode=analysis.presentation_mode,
+            answer_contract=answer_contract,
+        )
+        if analysis.selected_operation:
+            induced["selected_operation"] = analysis.selected_operation
+            induced["domain_operation"] = analysis.selected_operation
+        induced["answer_shape"] = analysis.answer_shape
+        induced["fixed_domain_key"] = analysis.fixed_domain_key
+        return induced
+
+    return {
+        "classification_status": "unresolved",
+        "classification_status_code": DOMAIN_CAPABILITY_UNRESOLVED,
+        "skill_id": skill_id,
+        "source_example_id": example_id,
+        "textbook_example_id": example_id,
+        "source_hash": source_hash,
+        "problem_type_id": analysis.problem_type_id,
+        "required_capabilities": list(analysis.required_capabilities),
+        "classification_source": analysis.classification_source,
+        "presentation_mode": presentation_mode,
+        "answer_contract": {},
+        "fixed_domain_key": analysis.fixed_domain_key,
+        "domain_gap": {
+            "suggested_action": analysis.suggested_action or "extend_existing_domain",
+            "missing_capabilities": list(analysis.missing_capabilities),
+            "required_capabilities": list(analysis.required_capabilities),
+            "nearby_domains": [analysis.fixed_domain_key],
+        },
+        "reason": "descriptive_statistics_operation_unresolved",
+    }
+
+
+def _infer_answer_contract_from_row(row: dict[str, Any], *, presentation_mode: str) -> dict[str, str]:
+    answer = str(row.get("correct_answer") or "").strip()
+    if presentation_mode == "single_choice" or re.search(r"[\(（]\s*[A-Da-d]\s*[\)）]", answer):
+        return {
+            "answer_type": "choice",
+            "checker_key": "choice_label_checker",
+            "equivalence_type": "choice_label",
+        }
+    if re.fullmatch(r"-?\d+(\.\d+)?", answer.replace(",", "")):
+        return {
+            "answer_type": "integer" if "." not in answer else "rational",
+            "checker_key": "integer_checker" if "." not in answer else "rational_checker",
+            "equivalence_type": "numeric_exact" if "." not in answer else "rational_equivalent",
+        }
+    return {
+        "answer_type": "expression",
+        "checker_key": "expression_checker",
+        "equivalence_type": "algebraic_equivalent",
+    }
+
+
+def _build_v3_phase1_induced_spec(
+    *,
+    skill_id: str,
+    textbook_example_id: int,
+    source_hash: str,
+    problem_type_id: str,
+    required_capabilities: list[str],
+    classification_source: str,
+    presentation_mode: str,
+    answer_contract: dict[str, str],
+) -> dict[str, Any]:
+    return {
+        "classification_status": "resolved",
+        "skill_id": str(skill_id or "").strip(),
+        "source_example_id": int(textbook_example_id),
+        "textbook_example_id": int(textbook_example_id),
+        "source_hash": str(source_hash or ""),
+        "problem_type_id": str(problem_type_id or "").strip(),
+        "required_capabilities": list(required_capabilities or []),
+        "classification_source": str(classification_source or "").strip(),
+        "presentation_mode": str(presentation_mode or "short_answer"),
+        "answer_contract": dict(answer_contract or {}),
+        "answer_type": str((answer_contract or {}).get("answer_type") or "expression"),
+    }
+
+
+def _phase1_induced_spec_is_reusable(spec: dict[str, Any], *, source_hash: str) -> bool:
+    if not isinstance(spec, dict):
+        return False
+    if str(spec.get("classification_status") or "").strip() != "resolved":
+        return False
+    if str(spec.get("source_hash") or "").strip() != str(source_hash or "").strip():
+        return False
+    if not str(spec.get("problem_type_id") or "").strip():
+        return False
+    if not str(spec.get("classification_source") or "").strip():
+        return False
+    caps = spec.get("required_capabilities")
+    if not isinstance(caps, list) or not caps:
+        return False
+    return True
+
+
+def _extract_phase1_induced_spec_from_payload(payload: dict[str, Any] | None) -> dict[str, Any]:
+    if not isinstance(payload, dict):
+        return {}
+    nested = payload.get("phase1_classification")
+    if isinstance(nested, dict):
+        return dict(nested)
+    if str(payload.get("classification_status") or "").strip() == "resolved":
+        return dict(payload)
+    return {}
+
+
+def _v3_constraints_from_induced_spec(induced_spec: dict[str, Any] | None) -> dict[str, object]:
+    from core.gencode.skill_fixed_domain_authority import normalize_induced_spec_to_resolver_constraints
+
+    normalized = normalize_induced_spec_to_resolver_constraints(induced_spec)
+    return dict(normalized)
+
+
+def _resolve_phase1_problem_type_from_row(row: dict[str, Any]) -> str:
+    explicit = str(row.get("problem_type_id") or "").strip()
+    if explicit:
+        return explicit
+    raw = str(row.get("problem_type") or "").strip()
+    if raw and raw.lower() not in _NON_MATHEMATICAL_SOURCE_TYPES:
+        return raw
+    return ""
+
+
+def run_v3_no_llm_phase1_for_example(
+    skill_id: str,
+    textbook_row: dict[str, Any],
+    *,
+    conn: Any = None,
+) -> dict[str, Any]:
+    """Deterministic, no-LLM Phase 1 preflight for a single textbook example."""
+    skill_key = str(skill_id or "").strip()
+    example_id = int(textbook_row.get("id") or 0)
+    source_hash = _compute_v3_example_source_hash(textbook_row)
+    question_text = str(textbook_row.get("problem_text") or "")
+    answer_text = str(textbook_row.get("correct_answer") or "")
+    explanation_text = str(textbook_row.get("detailed_solution") or textbook_row.get("explanation") or "")
+
+    from core.gencode.services.v3_example_semantic_classifier import (
+        TextbookExampleSource,
+        _deterministic_classify,
+    )
+    from core.gencode.v3_presentation_inference import (
+        has_abcd_choice_group,
+        infer_presentation_mode_from_textbook_row,
+        parse_abcd_choices_from_text,
+    )
+
+    inferred_presentation = infer_presentation_mode_from_textbook_row(textbook_row)
+    presentation_mode = str(inferred_presentation.get("presentation_mode") or "short_answer")
+    choices = parse_abcd_choices_from_text(question_text) if has_abcd_choice_group(question_text) else []
+    combined_text = " ".join(part for part in (question_text, answer_text, explanation_text) if part)
+
+    domain_phase1 = _phase1_from_descriptive_domain_analyzer(
+        skill_id=skill_key,
+        textbook_row=textbook_row,
+        source_hash=source_hash,
+        presentation_mode=presentation_mode,
+    )
+    if isinstance(domain_phase1, dict):
+        return domain_phase1
+
+    registered_pack = _load_registered_classifier_rulepack(skill_key)
+    if registered_pack:
+        examples = _load_textbook_examples_for_skill_conn(conn, skill_key) if conn is not None else [textbook_row]
+        if not examples:
+            examples = [textbook_row]
+        entries = _classify_examples_with_rulepack(skill_id=skill_key, examples=examples, pack=registered_pack)
+        for entry in entries:
+            if int(entry.get("example_id") or 0) != example_id:
+                continue
+            problem_type_id = str(entry.get("problem_type_id") or entry.get("subskill_id") or "").strip()
+            if not problem_type_id or problem_type_id.lower() in _NON_MATHEMATICAL_SOURCE_TYPES:
+                continue
+            caps = list(entry.get("required_domain_capabilities") or entry.get("required_capabilities") or [])
+            if not caps:
+                caps = [problem_type_id]
+            answer_contract = _infer_answer_contract_from_row(textbook_row, presentation_mode=presentation_mode)
+            return _build_v3_phase1_induced_spec(
+                skill_id=skill_key,
+                textbook_example_id=example_id,
+                source_hash=source_hash,
+                problem_type_id=problem_type_id,
+                required_capabilities=caps,
+                classification_source="phase1_rule_pack",
+                presentation_mode=presentation_mode,
+                answer_contract=answer_contract,
+            )
+
+    taxonomy_entry: dict[str, Any] = {}
+    try:
+        from core.registry.taxonomy_registry import resolve_domain_for_skill
+
+        routing = resolve_domain_for_skill(skill_key)
+        taxonomy_entry = {
+            "fixed_domain_key": routing.get("fixed_domain_key"),
+            "allowed_operations": routing.get("allowed_operations") or routing.get("allowed_types") or [],
+            "allowed_types": routing.get("allowed_types") or routing.get("allowed_operations") or [],
+        }
+    except Exception:
+        taxonomy_entry = {}
+
+    source = TextbookExampleSource(
+        skill_id=skill_key,
+        textbook_example_id=example_id,
+        question_text=question_text,
+        answer=answer_text,
+        choices=choices,
+        explanation=explanation_text,
+        source_label=str(textbook_row.get("source_description") or ""),
+        source_type="",
+        presentation_mode=presentation_mode,
+        question_type=str(textbook_row.get("question_type") or ""),
+        source_hash=source_hash,
+    )
+    deterministic = _deterministic_classify(source, taxonomy_entry)
+    if isinstance(deterministic, dict):
+        problem_type_id = str(
+            deterministic.get("problem_type_id")
+            or deterministic.get("selected_operation")
+            or ""
+        ).strip()
+        if problem_type_id and problem_type_id.lower() not in _NON_MATHEMATICAL_SOURCE_TYPES:
+            caps = list(
+                deterministic.get("required_domain_capabilities")
+                or deterministic.get("required_capabilities")
+                or []
+            )
+            if not caps:
+                caps = [problem_type_id]
+            answer_contract = _infer_answer_contract_from_row(textbook_row, presentation_mode=presentation_mode)
+            if deterministic.get("answer_type"):
+                answer_contract["answer_type"] = str(deterministic.get("answer_type"))
+            return _build_v3_phase1_induced_spec(
+                skill_id=skill_key,
+                textbook_example_id=example_id,
+                source_hash=source_hash,
+                problem_type_id=problem_type_id,
+                required_capabilities=caps,
+                classification_source=str(deterministic.get("classification_source") or "deterministic_classifier"),
+                presentation_mode=str(deterministic.get("presentation_mode") or presentation_mode),
+            answer_contract=answer_contract,
+        )
+
+    explicit_problem_type = _resolve_phase1_problem_type_from_row(textbook_row)
+    if explicit_problem_type:
+        caps = _infer_generic_capabilities_from_text(combined_text) or [explicit_problem_type]
+        answer_contract = _infer_answer_contract_from_row(textbook_row, presentation_mode=presentation_mode)
+        return _build_v3_phase1_induced_spec(
+            skill_id=skill_key,
+            textbook_example_id=example_id,
+            source_hash=source_hash,
+            problem_type_id=explicit_problem_type,
+            required_capabilities=caps,
+            classification_source="explicit_problem_type_metadata",
+            presentation_mode=presentation_mode,
+            answer_contract=answer_contract,
+        )
+
+    capabilities = _normalize_phase1_capabilities(_infer_generic_capabilities_from_text(combined_text))
+    if capabilities:
+        problem_type_id = _problem_type_id_from_capabilities(capabilities)
+        answer_contract = _infer_answer_contract_from_row(textbook_row, presentation_mode=presentation_mode)
+        return _build_v3_phase1_induced_spec(
+            skill_id=skill_key,
+            textbook_example_id=example_id,
+            source_hash=source_hash,
+            problem_type_id=problem_type_id,
+            required_capabilities=capabilities,
+            classification_source="generic_structural_inference",
+            presentation_mode=presentation_mode,
+            answer_contract=answer_contract,
+        )
+
+    return {
+        "classification_status": "unresolved",
+        "classification_status_code": PHASE1_CLASSIFICATION_UNRESOLVED,
+        "skill_id": skill_key,
+        "source_example_id": example_id,
+        "textbook_example_id": example_id,
+        "source_hash": source_hash,
+        "problem_type_id": "",
+        "required_capabilities": [],
+        "classification_source": "",
+        "presentation_mode": presentation_mode,
+        "answer_contract": {},
+        "reason": (
+            "empty_problem_text"
+            if not question_text.strip()
+            else (
+                "generic_structural_inference_no_match"
+                if not combined_text.strip()
+                else "phase1_classification_unresolved"
+            )
+        ),
+    }
+
+
+def _load_textbook_examples_for_skill_conn(conn: Any, skill_id: str) -> list[dict[str, Any]]:
+    if conn is None:
+        return []
+    skill_key = str(skill_id or "").strip()
+    if not skill_key:
+        return []
+    try:
+        id_rows = conn.execute(
+            "SELECT id FROM textbook_examples WHERE skill_id = ? ORDER BY id ASC",
+            (skill_key,),
+        ).fetchall()
+    except Exception:
+        return []
+    result: list[dict[str, Any]] = []
+    for id_row in id_rows:
+        example_id = int(id_row[0] if not hasattr(id_row, "keys") else id_row["id"])
+        loaded = _load_textbook_example_row_from_conn(conn, example_id)
+        if loaded:
+            result.append(loaded)
+    return result
+
+
+def _build_phase1_unresolved_detail(
+    *,
+    textbook_example_id: int,
+    source_hash: str,
+    row: dict[str, Any] | None,
+    reason: str,
+    attempted_sources: list[str] | None = None,
+) -> dict[str, Any]:
+    problem_text = str((row or {}).get("problem_text") or "")
+    answer_text = str((row or {}).get("correct_answer") or "")
+    solution_text = str(
+        (row or {}).get("detailed_solution") or (row or {}).get("explanation") or ""
+    )
+    return {
+        "error_code": PHASE1_CLASSIFICATION_UNRESOLVED,
+        "textbook_example_id": int(textbook_example_id),
+        "source_hash": str(source_hash or ""),
+        "attempted_sources": list(attempted_sources or []),
+        "problem_text_length": len(problem_text),
+        "answer_present": bool(answer_text.strip()),
+        "solution_present": bool(solution_text.strip()),
+        "reason": str(reason or "phase1_classification_unresolved"),
+    }
+
+
+def resolve_v3_admin_induced_spec(
+    conn: Any,
+    skill_id: str,
+    textbook_example_id: int,
+    *,
+    force_regenerate: bool = False,
+) -> dict[str, Any]:
+    """Resolve or build per-example induced spec before Admin V3 Phase 2."""
+    skill_key = str(skill_id or "").strip()
+    example_id = int(textbook_example_id)
+    row = _load_textbook_example_row_from_conn(conn, example_id)
+    if row is None:
+        detail = _build_phase1_unresolved_detail(
+            textbook_example_id=example_id,
+            source_hash="",
+            row=None,
+            reason="textbook_example_not_found",
+            attempted_sources=[],
+        )
+        return {
+            "ok": False,
+            "error_code": PHASE1_CLASSIFICATION_UNRESOLVED,
+            "reason": "textbook_example_not_found",
+            "induced_spec": None,
+            "reused": False,
+            "phase1_invoked": False,
+            "error_details": detail,
+        }
+
+    source_hash = _compute_v3_example_source_hash(row)
+    cached_spec: dict[str, Any] = {}
+    if not force_regenerate:
+        try:
+            tracker_row = conn.execute(
+                "SELECT induced_spec_payload FROM gencode_component_tracker WHERE textbook_example_id = ?",
+                (example_id,),
+            ).fetchone()
+            if tracker_row is not None:
+                raw_payload = tracker_row[0] if not hasattr(tracker_row, "keys") else tracker_row["induced_spec_payload"]
+                payload = json.loads(raw_payload) if isinstance(raw_payload, str) and raw_payload.strip() else {}
+                cached_spec = _extract_phase1_induced_spec_from_payload(payload if isinstance(payload, dict) else {})
+        except Exception:
+            cached_spec = {}
+
+        if _phase1_induced_spec_is_reusable(cached_spec, source_hash=source_hash):
+            return {
+                "ok": True,
+                "induced_spec": cached_spec,
+                "reused": True,
+                "phase1_invoked": False,
+                "source_hash": source_hash,
+            }
+
+    induced_spec = run_v3_no_llm_phase1_for_example(skill_key, row, conn=conn)
+    if str(induced_spec.get("classification_status") or "").strip() != "resolved":
+        attempted_sources: list[str] = []
+        if str(induced_spec.get("classification_source") or "").strip():
+            attempted_sources.append(str(induced_spec.get("classification_source")))
+        detail = _build_phase1_unresolved_detail(
+            textbook_example_id=example_id,
+            source_hash=source_hash,
+            row=row,
+            reason=str(induced_spec.get("reason") or "phase1_classification_unresolved"),
+            attempted_sources=attempted_sources,
+        )
+        induced_spec = {**induced_spec, "error_details": detail}
+        return {
+            "ok": False,
+            "error_code": PHASE1_CLASSIFICATION_UNRESOLVED,
+            "reason": detail["reason"],
+            "induced_spec": induced_spec,
+            "reused": False,
+            "phase1_invoked": True,
+            "source_hash": source_hash,
+            "error_details": detail,
+        }
+
+    return {
+        "ok": True,
+        "induced_spec": induced_spec,
+        "reused": False,
+        "phase1_invoked": True,
+        "source_hash": source_hash,
+    }
+
+
+def _should_run_source_isomorphism_check(induced_spec: dict[str, Any] | None) -> bool:
+    """Run strict isomorphism only for chart/topology-backed examples."""
+    if not isinstance(induced_spec, dict):
+        return False
+    topology = induced_spec.get("source_topology")
+    if not isinstance(topology, dict) or not topology:
+        return False
+    if str(topology.get("exact_task_operation") or "").strip():
+        return True
+    if str(topology.get("chart_type") or "").strip():
+        return True
+    if str(topology.get("source_style_ref") or "").strip():
+        return True
+    return False
+
+
 def _v3_resolve_dry_run_line_type(
     source_kind: str,
     constraints: dict[str, object] | None,
@@ -4749,6 +5334,12 @@ def _v3_infer_line_type_from_textbook_example(
         if y1 == y2:
             return "horizontal_line"
     return None
+
+
+def _v3_extract_dispersion_constraints(textbook_row: dict[str, object] | None) -> dict[str, object]:
+    from core.domain.statistics.descriptive_statistics_analyzer import extract_textbook_constraints
+
+    return extract_textbook_constraints(dict(textbook_row) if isinstance(textbook_row, dict) else {})
 
 
 def _v3_extract_slope_intercept_constraints(textbook_row: dict[str, object] | None) -> dict[str, object]:
@@ -5009,37 +5600,115 @@ def _v3_resolve_gated_domain_operation(
         build_classifier_taxonomy_entry,
         log_dispatch_event,
         normalize_ai_classification,
+        resolve_domain_authority,
         resolve_fixed_domain_context,
     )
 
-    ctx = resolve_fixed_domain_context(
+    induced_spec = extra.get("v3_induced_spec") if isinstance(extra.get("v3_induced_spec"), dict) else {}
+    if not induced_spec and isinstance(extra.get("phase1_classification"), dict):
+        induced_spec = dict(extra.get("phase1_classification") or {})
+    from core.gencode.skill_fixed_domain_authority import merge_resolver_extra_with_induced_constraints
+
+    resolver_extra = merge_resolver_extra_with_induced_constraints(dict(extra), induced_spec or None)
+    phase1_problem_type = str(
+        resolver_extra.get("problem_type_id")
+        or induced_spec.get("problem_type_id")
+        or ""
+    ).strip()
+    if phase1_problem_type.lower() in _NON_MATHEMATICAL_SOURCE_TYPES:
+        phase1_problem_type = ""
+
+    resolver_row = dict(textbook_row)
+    if phase1_problem_type:
+        resolver_row["problem_type_id"] = phase1_problem_type
+        raw_problem_type = str(textbook_row.get("problem_type") or "").strip().lower()
+        if raw_problem_type in _NON_MATHEMATICAL_SOURCE_TYPES:
+            resolver_row["problem_type"] = ""
+
+    domain_result = resolve_domain_authority(
         skill_id,
-        textbook_example=textbook_row,
-        problem_type_id=str(textbook_row.get("problem_type_id") or textbook_row.get("problem_type") or ""),
-        extra=extra,
+        textbook_example=resolver_row,
+        problem_type_id=phase1_problem_type or _resolve_phase1_problem_type_from_row(resolver_row),
+        extra=resolver_extra,
     )
+    extra["domain_resolution"] = domain_result.to_dict()
+    ctx = domain_result.to_fixed_domain_context()
     example_id = int(textbook_row.get("id") or 0)
     component_id = f"src_{example_id}" if example_id else ""
 
+    constraint_operation = ""
+    operation_candidates: list[str] = []
     for k in ("line_type", "problem_type_id", "domain_operation", "task_type"):
-        if k in extra and extra[k]:
-            selected = str(extra[k]).strip()
-            assert_operation_allowed(
-                skill_id=ctx.skill_id,
-                fixed_domain_key=ctx.fixed_domain_key,
-                selected_operation=selected,
-                allowed_operations=ctx.allowed_operations,
-            )
-            log_dispatch_event(
-                phase="v3_draft",
-                skill_id=ctx.skill_id,
-                component_id=component_id,
-                example_id=example_id,
-                fixed_domain_key=ctx.fixed_domain_key,
-                selected_operation=selected,
-                problem_type_id=selected,
-            )
-            return selected, {"problem_type_id": selected, "domain_operation": selected, "classification_source": "constraints"}, ctx
+        for source in (resolver_extra, extra, textbook_row):
+            if not isinstance(source, dict):
+                continue
+            value = str(source.get(k) or "").strip()
+            if value and value.lower() not in _NON_MATHEMATICAL_SOURCE_TYPES and value not in operation_candidates:
+                operation_candidates.append(value)
+    for candidate in operation_candidates:
+        if candidate in ctx.allowed_operations:
+            constraint_operation = candidate
+            break
+    if not constraint_operation:
+        from core.gencode.domain_operation_selector import resolve_operation_for_capabilities
+
+        capability_operation = resolve_operation_for_capabilities(
+            domain_key=ctx.fixed_domain_key,
+            required_capabilities=list(
+                resolver_extra.get("required_capabilities")
+                or induced_spec.get("required_capabilities")
+                or []
+            ),
+            problem_type_id=phase1_problem_type,
+            question_text=str(textbook_row.get("problem_text") or ""),
+            presentation_mode=str(
+                resolver_extra.get("presentation_mode")
+                or induced_spec.get("presentation_mode")
+                or ""
+            ),
+            answer_shape=str(
+                (induced_spec.get("answer_contract") or {}).get("answer_type")
+                if isinstance(induced_spec.get("answer_contract"), dict)
+                else ""
+            ),
+        )
+        if capability_operation and capability_operation in ctx.allowed_operations:
+            constraint_operation = capability_operation
+    if constraint_operation:
+        selected = constraint_operation
+        assert_operation_allowed(
+            skill_id=ctx.skill_id,
+            fixed_domain_key=ctx.fixed_domain_key,
+            selected_operation=selected,
+            allowed_operations=ctx.allowed_operations,
+        )
+        log_dispatch_event(
+            phase="v3_draft",
+            skill_id=ctx.skill_id,
+            component_id=component_id,
+            example_id=example_id,
+            fixed_domain_key=ctx.fixed_domain_key,
+            selected_operation=selected,
+            problem_type_id=selected,
+        )
+        classification_source = "derived_capability_match" if str(
+            domain_result.resolution_source or ""
+        ).strip() == "derived_capability_match" else "constraints"
+        return (
+            selected,
+            {
+                "problem_type_id": selected,
+                "domain_operation": selected,
+                "selected_operation": selected,
+                "classification_source": classification_source,
+                "required_capabilities": list(
+                    resolver_extra.get("required_capabilities")
+                    or induced_spec.get("required_capabilities")
+                    or []
+                ),
+            },
+            ctx,
+        )
 
     question_text = str(textbook_row.get("problem_text") or "")
     answer_text = str(textbook_row.get("correct_answer") or "")
@@ -5117,6 +5786,7 @@ def _v3_invoke_domain_entrypoint(
         "build_parallel_lines_distance_matrix",
         "build_frequency_distribution_table_matrix",
         "build_statistical_chart_reading_matrix",
+        "build_descriptive_statistics_matrix",
     }:
         return entrypoint_fn(
             seed=seed,
@@ -5190,6 +5860,10 @@ def build_v3_component_draft_from_skill(
     topology_constraints = build_domain_params_from_topology(source_topology)
     if topology_constraints:
         extra.update(topology_constraints)
+    if source_topology.get("source_choices"):
+        extra["source_choices"] = list(source_topology.get("source_choices") or [])
+    if source_topology.get("source_answer"):
+        extra["source_answer_label"] = str(source_topology.get("source_answer") or "").strip()
 
     from core.gencode.skill_fixed_domain_authority import ComponentOverrideContext
     component_id = derive_component_id(textbook_example_id)
@@ -5283,6 +5957,9 @@ def build_v3_component_draft_from_skill(
         answer_type = str(classification["answer_type"])
     else:
         answer_type = str(inferred.get("answer_type") or "expression")
+    if domain_ctx.fixed_domain_key == "statistics.descriptive_statistics":
+        extra.update(_v3_extract_dispersion_constraints(row))
+        extra["presentation_mode"] = presentation_mode
     if presentation_mode != "single_choice":
         if line_type == "slope_intercept_find_x_intercept":
             answer_type = "rational"
@@ -5336,6 +6013,20 @@ def build_v3_component_draft_from_skill(
         problem_type_id=problem_type_id,
         domain_operation=line_type,
     )
+    convert_kwargs: dict[str, Any] = {}
+    if seed is not None:
+        convert_kwargs["seed"] = seed
+    if extra.get("source_choices"):
+        convert_kwargs["source_choices"] = list(extra.get("source_choices") or [])
+    source_label = str(extra.get("source_answer_label") or "").strip().upper()
+    if source_label:
+        convert_kwargs["source_answer_label"] = source_label
+    if (
+        presentation_mode == "single_choice"
+        and convert_kwargs.get("source_choices")
+        and re.fullmatch(r"[A-D]", source_label)
+    ):
+        convert_kwargs["preserve_source_choices"] = True
     payload = convert_domain_matrix_to_question_payload(
         normalized_matrix,
         presentation_mode=presentation_mode,
@@ -5346,6 +6037,7 @@ def build_v3_component_draft_from_skill(
         source_kind=source_kind,
         answer_schema_key=answer_schema_key,
         domain_operation=line_type,
+        **convert_kwargs,
     )
 
     draft_metadata = {
@@ -5461,12 +6153,19 @@ def build_v3_component_draft_from_skill(
         "textbook_example_id": textbook_example_id,
         "source_kind": source_kind,
         "line_type": line_type,
+        "domain_operation": line_type,
         "domain_module": domain_module,
         "entrypoint": entrypoint,
+        "fixed_domain_key": domain_ctx.fixed_domain_key,
+        "registry_revision": domain_ctx.registry_revision,
         "presentation_mode": presentation_mode,
         "answer_type": answer_type,
         "problem_type_id": problem_type_id,
         "target_task": problem_type_id,
+        "answer_schema_key": answer_schema_key,
+        "checker_key": checker_key,
+        "constraints": extra,
+        "domain_resolution": dict(extra.get("domain_resolution") or {}),
         "presentation_evidence": presentation_evidence,
         "files": files,
     }
@@ -5641,16 +6340,27 @@ def _build_v3_induced_spec_payload(
         presentation_evidence = {}
     domain_operation = str(draft.get("domain_operation") or draft.get("line_type") or "").strip()
     problem_type_id = str(draft.get("problem_type_id") or domain_operation).strip()
-    from core.gencode.skill_fixed_domain_authority import resolve_fixed_domain_context
-    domain_ctx = resolve_fixed_domain_context(skill_id)
+    fixed_domain_key = str(draft.get("fixed_domain_key") or "").strip()
+    registry_revision = str(draft.get("registry_revision") or "").strip()
+    if not fixed_domain_key:
+        from core.gencode.skill_fixed_domain_authority import resolve_fixed_domain_context
+
+        domain_ctx = resolve_fixed_domain_context(skill_id)
+        fixed_domain_key = str(domain_ctx.fixed_domain_key or "").strip()
+        registry_revision = str(domain_ctx.registry_revision or "").strip()
+        allowed_operations = list(domain_ctx.allowed_operations)
+    else:
+        from core.registry.domain_operation_registry import get_domain_operations
+
+        allowed_operations = get_domain_operations(fixed_domain_key)
     if (
-        domain_ctx.fixed_domain_key == "statistics.table_chart"
-        and domain_operation
-        and domain_operation not in set(domain_ctx.allowed_operations)
+        domain_operation
+        and allowed_operations
+        and domain_operation not in set(allowed_operations)
     ):
         raise ValueError(
             f"unsupported_domain_operation:{domain_operation} for {skill_id}; "
-            f"allowed={list(domain_ctx.allowed_operations)}"
+            f"allowed={allowed_operations}"
         )
     answer_schema_key = str(
         draft.get("answer_schema_key")
@@ -5665,13 +6375,9 @@ def _build_v3_induced_spec_payload(
         {
             "component_id": f"src_{textbook_example_id}",
             "skill_id": skill_id,
-            "domain": str(domain_ctx.fixed_domain_key.split(".", 1)[0] if domain_ctx.fixed_domain_key else "coordinate_geometry"),
-            "fixed_domain_key": str(
-                draft.get("fixed_domain_key") or domain_ctx.fixed_domain_key or ""
-            ),
-            "registry_revision": str(
-                draft.get("registry_revision") or domain_ctx.registry_revision or ""
-            ),
+            "domain": str(fixed_domain_key.split(".", 1)[0] if fixed_domain_key else "coordinate_geometry"),
+            "fixed_domain_key": fixed_domain_key,
+            "registry_revision": registry_revision,
             "domain_operation": domain_operation,
             "problem_type_id": problem_type_id,
             "answer_schema_key": answer_schema_key,
@@ -5809,6 +6515,10 @@ def run_gencode_phase2_v3_shadow_bridge(
         "new_artifact_hash": None,
         "model_generation_invoked": False,
     }
+    if isinstance(extra.get("v3_induced_spec"), dict):
+        generation_observation["phase1_classification"] = dict(extra.get("v3_induced_spec") or {})
+    elif isinstance(extra.get("phase1_classification"), dict):
+        generation_observation["phase1_classification"] = dict(extra.get("phase1_classification") or {})
     try:
         from core.registry.taxonomy_registry import get_fixed_domain_key
 
@@ -5903,6 +6613,7 @@ def run_gencode_phase2_v3_shadow_bridge(
             **generation_observation,
             "source_kind": source_kind,
             "line_type": extra.get("line_type"),
+            "phase1_classification": extra.get("phase1_classification") or extra.get("v3_induced_spec"),
         },
     )
 
@@ -5918,10 +6629,14 @@ def run_gencode_phase2_v3_shadow_bridge(
             conn=conn,
         )
     except Exception as exc:
+        from core.gencode.skill_fixed_domain_authority import SkillFixedDomainError
         from core.gencode.v3_error_codes import V3PipelineError, error_code_from_message
 
         message = str(exc)
-        error_code = exc.code if isinstance(exc, V3PipelineError) else error_code_from_message(message)
+        if isinstance(exc, (V3PipelineError, SkillFixedDomainError)):
+            error_code = exc.code
+        else:
+            error_code = error_code_from_message(message)
         if error_code == "COMPONENT_GENERATION_FAILED":
             raise
         component_id = derive_component_id(textbook_example_id)
@@ -5935,11 +6650,34 @@ def run_gencode_phase2_v3_shadow_bridge(
         details = getattr(exc, "details", None)
         if isinstance(details, dict):
             payload.update(details)
+
+        tracker_status = "failed"
+        from core.gencode.domain_bootstrap.gap_service import is_domain_gap_error_code
+
+        if isinstance(exc, SkillFixedDomainError) and is_domain_gap_error_code(error_code):
+            try:
+                from core.gencode.domain_bootstrap.orchestrator import DomainBootstrapOrchestrator
+
+                phase1_spec = extra.get("v3_induced_spec") if isinstance(extra.get("v3_induced_spec"), dict) else {}
+                gap_payload = DomainBootstrapOrchestrator().handle_resolver_gap(
+                    exc=exc,
+                    skill_id=skill_key,
+                    textbook_example_id=textbook_example_id,
+                    component_id=component_id,
+                    phase1_spec=phase1_spec,
+                    source_hash=str(extra.get("source_hash") or ""),
+                )
+                payload["domain_bootstrap"] = gap_payload
+                payload["teacher_message"] = gap_payload.get("teacher_message")
+                tracker_status = "needs_human_review"
+            except Exception:
+                pass
+
         tracker = save_tracker_record(
             conn,
             textbook_example_id=textbook_example_id,
             skill_id=skill_key,
-            gencode_status="failed",
+            gencode_status=tracker_status,
             induced_spec_payload=payload,
             gencode_error_log=f"{error_code}: {message}",
         )
@@ -5951,7 +6689,7 @@ def run_gencode_phase2_v3_shadow_bridge(
             "route": "v3_shadow_bridge",
             "skill_id": skill_key,
             "v3_activated": True,
-            "tracker_status": "failed",
+            "tracker_status": tracker_status,
             "error_code": error_code,
             "textbook_example_id": textbook_example_id,
             "source_kind": source_kind,
@@ -5964,6 +6702,44 @@ def run_gencode_phase2_v3_shadow_bridge(
         source_kind=source_kind,
         textbook_example_id=textbook_example_id,
         skill_id=skill_key,
+    )
+    from core.gencode.skill_fixed_domain_authority import enrich_induced_spec_with_domain_evidence
+
+    resolution_payload = dict(draft.get("domain_resolution") or extra.get("domain_resolution") or {})
+    if not resolution_payload.get("matched_capabilities"):
+        resolution_payload["matched_capabilities"] = list(
+            resolution_payload.get("required_capabilities")
+            or (extra.get("v3_induced_spec") or {}).get("required_capabilities")
+            or (extra.get("phase1_classification") or {}).get("required_capabilities")
+            or []
+        )
+    if not resolution_payload.get("domain_module"):
+        resolution_payload["domain_module"] = str(draft.get("domain_module") or "")
+    if not resolution_payload.get("entrypoint"):
+        resolution_payload["entrypoint"] = str(draft.get("entrypoint") or "")
+    if not resolution_payload.get("fixed_domain_key"):
+        resolution_payload["fixed_domain_key"] = str(draft.get("fixed_domain_key") or induced_spec_payload.get("fixed_domain_key") or "")
+    if not resolution_payload.get("registry_revision"):
+        resolution_payload["registry_revision"] = str(draft.get("registry_revision") or induced_spec_payload.get("registry_revision") or "")
+    if not resolution_payload.get("resolution_source"):
+        resolution_payload["resolution_source"] = "derived_capability_match"
+    if not resolution_payload.get("binding_status"):
+        resolution_payload["binding_status"] = "derived"
+    resolution_payload["selected_operation"] = str(
+        induced_spec_payload.get("domain_operation")
+        or induced_spec_payload.get("problem_type_id")
+        or resolution_payload.get("selected_operation")
+        or ""
+    )
+    induced_spec_payload = enrich_induced_spec_with_domain_evidence(
+        induced_spec_payload,
+        resolution=resolution_payload,
+        source_hash=str(
+            extra.get("source_hash")
+            or induced_spec_payload.get("source_hash")
+            or generation_observation.get("source_hash")
+            or ""
+        ),
     )
     from core.gencode.services.v3_source_topology_service import enrich_induced_spec_with_source_topology
     from core.gencode.v3_presentation_inference import fetch_textbook_example_row
@@ -6011,6 +6787,12 @@ def run_gencode_phase2_v3_shadow_bridge(
 
     from core.gencode.services.v3_question_integrity_validator import validate_component_payload
     _gate_result = validate_component_payload(_sample_payload, component_id=str(derive_component_id(textbook_example_id)))
+    from core.gencode.choice_contract_validator import validate_choice_contract
+
+    _choice_result = validate_choice_contract(_sample_payload)
+    induced_spec_payload["choice_contract_valid"] = bool(_choice_result.get("ok"))
+    if not _choice_result.get("ok"):
+        induced_spec_payload["error_code"] = str(_choice_result.get("error_code") or "CHOICE_CONTRACT_INCOMPLETE")
     if not _gate_result["passed"]:
         _blockers = _gate_result["blockers"]
         save_tracker_record(
@@ -6035,6 +6817,7 @@ def run_gencode_phase2_v3_shadow_bridge(
         "integrity_gate_passed": True,
         "integrity_gate_blockers": [],
         "integrity_gate_version": "v1",
+        "choice_contract_valid": bool(_choice_result.get("ok")),
     })
 
     component_dir = write_v3_component_to_disk(draft, dryrun_path)
@@ -6113,45 +6896,44 @@ def run_gencode_phase2_v3_shadow_bridge(
 
         from core.gencode.validators.source_isomorphism_validator import validate_source_isomorphism
 
-        iso = validate_source_isomorphism(
-            _sample_payload,
-            induced_spec=induced_spec_payload,
-        )
-        if not iso.get("passed", True):
-            _iso_blockers = [f"GENERATION_NOT_SOURCE_ISOMORPHIC:{b}" for b in (iso.get("blockers") or [])]
-            save_tracker_record(
-                conn,
-                textbook_example_id=textbook_example_id,
-                skill_id=skill_key,
-                gencode_status="needs_human_review",
-                induced_spec_payload={
-                    **induced_spec_payload,
-                    "integrity_gate_passed": False,
-                    "integrity_gate_blockers": _iso_blockers,
-                    "integrity_gate_version": "v1",
-                    "classification_status": "needs_human_review",
-                },
-                gencode_error_log="; ".join(_iso_blockers),
+        if _should_run_source_isomorphism_check(induced_spec_payload):
+            iso = validate_source_isomorphism(
+                _sample_payload,
+                induced_spec=induced_spec_payload,
             )
-            raise ValueError("; ".join(_iso_blockers))
+            if not iso.get("passed", True):
+                _iso_blockers = [f"GENERATION_NOT_SOURCE_ISOMORPHIC:{b}" for b in (iso.get("blockers") or [])]
+                save_tracker_record(
+                    conn,
+                    textbook_example_id=textbook_example_id,
+                    skill_id=skill_key,
+                    gencode_status="needs_human_review",
+                    induced_spec_payload={
+                        **induced_spec_payload,
+                        "integrity_gate_passed": False,
+                        "integrity_gate_blockers": _iso_blockers,
+                        "integrity_gate_version": "v1",
+                        "classification_status": "needs_human_review",
+                    },
+                    gencode_error_log="; ".join(_iso_blockers),
+                )
+                raise ValueError("; ".join(_iso_blockers))
 
         # Build induced spec based on successfully compiled/run metadata
         for attr in dir(meta_mod):
             if attr.isupper() and not attr.startswith("_"):
                 induced_spec_payload[attr.lower()] = getattr(meta_mod, attr)
-        from core.gencode.skill_fixed_domain_authority import resolve_fixed_domain_context as _resolve_fixed_domain_context
-        _domain_ctx = _resolve_fixed_domain_context(skill_key)
         op = str(induced_spec_payload.get("domain_operation") or "")
-        if (
-            induced_spec_payload.get("fixed_domain_key") == "statistics.table_chart"
-            and op
-            and op not in set(_domain_ctx.allowed_operations)
-        ):
-            induced_spec_payload["integrity_gate_passed"] = False
-            induced_spec_payload.setdefault(
-                "integrity_gate_blockers",
-                [f"unsupported_domain_operation:{op}"],
-            )
+        fixed_key = str(induced_spec_payload.get("fixed_domain_key") or "").strip()
+        if fixed_key and op:
+            from core.registry.domain_operation_registry import get_domain_operations
+
+            if op not in set(get_domain_operations(fixed_key)):
+                induced_spec_payload["integrity_gate_passed"] = False
+                induced_spec_payload.setdefault(
+                    "integrity_gate_blockers",
+                    [f"unsupported_domain_operation:{op}"],
+                )
 
     except Exception as validation_exc:
         _err_msg = str(validation_exc)

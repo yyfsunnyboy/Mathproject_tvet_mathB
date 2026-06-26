@@ -95,6 +95,19 @@ DOMAIN_OPERATION_ANSWER_SCHEMA: dict[str, str] = {
     "cumulative_above_fail_count": "choice_label",
     "cumulative_above_interval_count": "choice_label",
     "cumulative_below_interval_count": "choice_label",
+    "compute_arithmetic_mean_from_raw_values": "numeric_scalar",
+    "compute_arithmetic_mean_from_frequency_table": "numeric_scalar",
+    "compute_weighted_mean": "numeric_scalar",
+    "compute_median_from_raw_values": "numeric_scalar",
+    "compute_mode_from_raw_values": "numeric_scalar",
+    "compute_mode_from_frequency_table": "numeric_scalar",
+    "compute_range": "numeric_scalar",
+    "compute_population_variance": "numeric_scalar",
+    "compute_population_standard_deviation": "numeric_scalar",
+    "complete_descriptive_statistics_table": "numeric_scalar",
+    "compute_quartiles_and_iqr": "numeric_scalar",
+    "compare_dispersion": "numeric_scalar",
+    "conceptual_dispersion_judgment": "choice_label",
 }
 
 PROBLEM_TYPE_ANSWER_SCHEMA: dict[str, str] = dict(DOMAIN_OPERATION_ANSWER_SCHEMA)
