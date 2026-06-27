@@ -48,9 +48,9 @@
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
             background: #f5f7fa;
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
 
         /* [Surface Pro 繪圖修正] */
@@ -112,17 +112,12 @@
 
         .practice-top {
             padding: 12px 20px;
-            /* 縮小內距 */
             border-bottom: 1px solid #e9ecef;
             position: relative;
-            flex: 2;
-            /* 題目和輸入框區域佔 2/5 */
             display: flex;
             flex-direction: column;
-            overflow: hidden;
-            /* 隱藏溢出內容，不出現卷軸 */
+            overflow: visible;
             min-height: 0;
-            /* 允許縮小 */
         }
 
         .practice-top h1 {
@@ -153,26 +148,15 @@
             border-radius: 12px;
             border: 1px solid #dee2e6;
             font-size: 1.25em;
-            /* 初始字體大小 (1.25rem ~ 1.25em) */
             line-height: 1.6;
             color: #2c3e50;
             margin: 6px 0;
-            white-space: pre-wrap;
-
-            /* [V9.9 CSS Upgrade] Scroll & Height Control */
-            height: auto !important;
-            /* 取消固定高度 */
-            min-height: 150px;
-            /* 設定最小高度，確保版面穩定 */
-            max-height: 400px;
-            /* 設定最大高度 */
-            overflow-y: auto;
-            /* 題目太長時顯示垂直捲軸 */
-
-            flex: 1;
+            white-space: normal;
+            height: auto;
+            min-height: 0;
+            max-height: none;
+            overflow: visible;
             word-wrap: break-word;
-            /* 確保長單字會自動換行 */
-            word-break: break-word;
             word-break: break-word;
         }
 
@@ -356,14 +340,12 @@
 
         /* === 畫布區 === */
         .practice-bottom {
-            flex: 3;
-            /* 計算紙手寫區佔 3/5 */
+            flex: 1 1 auto;
             padding: 15px;
             background: #f8f9fa;
             display: flex;
             flex-direction: column;
             min-height: 0;
-            /* 允許縮小 */
         }
 
         .canvas-toolbar {
@@ -517,7 +499,7 @@
             border-radius: 8px;
             width: 100%;
             height: 100%;
-            min-height: 240px;
+            min-height: 0;
             display: block;
             touch-action: none;
             /* 重要：防止觸控時滾動頁面 */
@@ -824,12 +806,9 @@
             display: flex;
             flex-direction: column;
             gap: 15px;
-            flex: 1;
-            /* 讓此容器填滿剩餘空間 */
+            flex: 0 0 auto;
             min-height: 0;
-            /* 確保在 flex 容器中可以正確縮放 */
-            overflow: hidden;
-            /* 隱藏內部溢出 */
+            overflow: visible;
         }
 
         .diagram-container {
@@ -878,7 +857,7 @@
             object-fit: contain;
         }
         #question-media-container img {
-            max-height: 340px;
+            max-height: none;
             margin: 0 auto;
             border-radius: 6px;
             box-shadow: 0 1px 6px rgba(0,0,0,.14);
@@ -1011,28 +990,37 @@
         }
         .multi-part-group {
             display: flex;
-            flex-direction: column;
-            gap: 6px;
-            margin-bottom: 10px;
+            flex-direction: row;
+            flex-wrap: nowrap;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
         }
         .multi-part-group-label {
+            flex: 0 0 auto;
             font-weight: 600;
             color: #333;
+            white-space: nowrap;
         }
         .multi-part-inline-fields {
             display: flex;
-            flex-wrap: wrap;
-            gap: 12px 18px;
+            flex-wrap: nowrap;
+            gap: 8px;
             align-items: center;
+            flex: 0 1 auto;
+            min-width: 0;
         }
         .multi-part-inline-field {
             display: inline-flex;
             align-items: center;
+            flex: 0 0 auto;
             gap: 6px;
+            white-space: nowrap;
         }
         .multi-part-inline-field input {
             width: 72px;
             min-width: 56px;
+            flex: 0 0 auto;
             padding: 4px 8px;
             border: 1px solid #cbd5e1;
             border-radius: 6px;
@@ -1040,19 +1028,32 @@
         .multi-part-row {
             display: flex;
             align-items: center;
+            flex-wrap: nowrap;
             gap: 8px;
             margin-bottom: 8px;
         }
         .multi-part-row label {
-            min-width: 3rem;
+            flex: 0 0 auto;
+            min-width: 0;
             font-weight: 600;
+            white-space: nowrap;
         }
         .multi-part-row .multi-part-input {
-            flex: 1;
+            flex: 0 0 auto;
+            width: 72px;
             max-width: 12rem;
             padding: 4px 8px;
             border: 1px solid #cbd5e1;
             border-radius: 6px;
+        }
+        @media (max-width: 479px) {
+            .multi-part-group,
+            .multi-part-row {
+                flex-wrap: wrap;
+            }
+            .multi-part-inline-fields {
+                flex-wrap: wrap;
+            }
         }
         @media (max-width: 600px) {
             #question-media-container img {
@@ -1068,38 +1069,44 @@
         #question-container {
             width: 100%;
             max-width: 100% !important;
-            /* 確保滿版 */
-
-            /* [Layout] Flexbox for row layout */
             display: flex;
             flex-direction: column;
-            gap: 15px;
-
-            /* [新增] 高度限制與捲軸 */
-            max-height: 35vh;
-            overflow-y: auto;
-
-            /* [Card Style] 灰色背景卡片樣式 */
+            gap: 12px;
+            height: auto;
+            min-height: 0;
+            max-height: none;
+            overflow: visible;
             background-color: #f8f9fa;
-            /* 淡灰背景 */
-            padding: 24px;
+            padding: 20px;
             border-radius: 16px;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
             border: 1px solid #edf2f7;
-
-            margin-bottom: 20px;
+            margin-bottom: 0;
             font-size: 1.2rem;
             line-height: 1.6;
             color: #2d3748;
+            box-sizing: border-box;
         }
 
-        /* [新增] 題目文字區塊樣式 */
         #question-text {
-            flex: 1;
-            /* 佔據剩餘空間 */
+            flex: 0 0 auto;
             background: none !important;
             border: none !important;
             padding: 0 !important;
+            margin: 0 !important;
+        }
+
+        #question-media-container:empty {
+            display: none !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            min-height: 0 !important;
+            height: 0 !important;
+        }
+
+        #question-choices:empty {
+            display: none;
+            margin: 0 !important;
         }
 
         /* 2. 計算紙區域容器：限制高度 + 捲軸 */
@@ -1110,6 +1117,26 @@
             flex-direction: column;
             gap: 8px;
             align-items: stretch;
+        }
+
+        #question-choices.choice-list.choice-grid-2x2 {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+            gap: 8px 12px;
+            align-items: stretch;
+        }
+
+        #question-choices.choice-list.choice-grid-2x2 .choice-option {
+            width: 100%;
+            min-width: 0;
+        }
+
+        @media (max-width: 599px) {
+            #question-choices.choice-list.choice-grid-2x2 {
+                display: flex;
+                flex-direction: column;
+                grid-template-columns: unset;
+            }
         }
 
         .choice-option {
@@ -1145,19 +1172,18 @@
 
         #scratchpad-container {
             width: 100%;
-            height: clamp(320px, 50vh, 650px);
+            height: auto;
+            min-height: 0;
             max-height: none;
-            overflow-y: auto;
-            overflow-x: hidden;
+            overflow: hidden;
             display: flex;
             flex-direction: column;
             gap: 8px;
-            min-width: 0;
-            min-height: 0;
             background-color: #ffffff;
             border-radius: 12px;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
             border: 1px solid #e2e8f0;
+            box-sizing: border-box;
         }
 
         /* 3. 工具列：凍結在頂部 (Sticky) */
@@ -1171,10 +1197,20 @@
             border-radius: 12px 12px 0 0;
             display: flex;
             align-items: center;
-            gap: 6px;
+            gap: 8px;
             padding: 6px 8px;
             min-height: 44px;
-            max-height: 44px;
+            flex-wrap: nowrap;
+            white-space: nowrap;
+            overflow: hidden;
+        }
+
+        .scratchpad-tools-primary {
+            flex: 1 1 auto;
+            min-width: 0;
+            display: flex;
+            align-items: center;
+            gap: 6px;
             flex-wrap: nowrap;
             white-space: nowrap;
             overflow-x: auto;
@@ -1284,13 +1320,12 @@
             background-color: transparent !important;
             border: none !important;
         }
-        /* Practice chat layout guardrails */
+        /* Practice chat layout — desktop viewport lock applied in #viewport-fit-layout */
         .chat-area {
-            height: calc(100vh - 120px);
             min-height: 0;
             display: flex;
             flex-direction: column;
-            overflow: hidden;
+            box-sizing: border-box;
         }
 
         #chat-history {
@@ -1329,24 +1364,26 @@
 
 <style id="responsive-layout-upgrade">
         /* =========================================================
-           Responsive Layout Upgrade (4K / 1080p / Laptop / Tablet)
+           Viewport-fit layout: desktop locked height, mobile natural flow
            ========================================================= */
 
+        :root {
+            --app-navbar-h: 52px;
+            --practice-gap: 10px;
+            --question-scroll-max: min(38dvh, 420px);
+        }
+
         html {
-            height: 100%;
             overflow-x: hidden;
         }
 
         body {
-            min-height: 100vh;
-            min-height: 100dvh;
-            height: auto;
+            margin: 0;
             overflow-x: hidden;
-            overflow-y: auto;
+            box-sizing: border-box;
         }
 
         .container {
-            flex: 1;
             display: flex;
             flex-direction: row;
             flex-wrap: nowrap;
@@ -1354,14 +1391,14 @@
             min-width: 0;
             min-height: 0;
             max-width: 100%;
-            overflow-x: hidden;
-            overflow-y: auto;
             box-sizing: border-box;
         }
 
         .practice-area,
         .chat-area,
-        .practice-top,
+        .practice-header-block,
+        .practice-question-block,
+        .practice-answer-block,
         .practice-bottom,
         .question-content,
         #question-container,
@@ -1370,46 +1407,43 @@
         #chat-history,
         .canvas-wrap {
             min-width: 0;
+            min-height: 0;
             max-width: 100%;
             box-sizing: border-box;
         }
 
-        .practice-area {
+        .practice-header-block,
+        .practice-question-block,
+        .practice-answer-block {
             display: flex;
             flex-direction: column;
-            min-height: 0;
-            overflow: hidden;
+            gap: var(--practice-gap);
         }
 
-        .chat-area {
-            display: flex;
-            flex-direction: column;
-            min-height: 0;
-            overflow: hidden;
-        }
-
-        .practice-top {
+        .practice-header-block {
             flex: 0 0 auto;
+            padding: 12px 16px 0;
         }
 
-        .practice-bottom {
-            flex: 1 1 auto;
-            overflow: hidden;
+        .practice-answer-block {
+            flex: 0 0 auto;
+            padding: 0 16px;
+            gap: 8px;
+        }
+
+        .practice-question-block {
+            flex: 0 0 auto;
+            padding: 0 16px;
+            min-height: 0;
         }
 
         #question-container {
             container-type: inline-size;
             container-name: question-main;
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            align-items: stretch;
-            width: 100% !important;
-            max-width: 100% !important;
-            max-height: none;
-            overflow-y: visible;
-            overflow-x: hidden;
-            padding: 20px;
+            height: auto;
+            min-height: 0;
+            margin-bottom: 0;
+            overflow: visible;
         }
 
         #question-text {
@@ -1423,22 +1457,79 @@
         }
 
         #question-text img,
-        #question-text svg {
+        .question-content {
+            flex: 0 0 auto;
+            overflow: visible;
+        }
+
+        #question-text img {
             display: block;
             max-width: 100%;
             height: auto;
             object-fit: contain;
+            margin-left: auto;
+            margin-right: auto;
         }
 
-        #question-choices {
-            width: 100%;
+        /* Inline LaTeX: keep \(...\) in sentence flow; only \[...\] centers as block */
+        #question-text mjx-container:not([display="true"]) {
+            display: inline-block !important;
+            width: auto !important;
+            max-width: none !important;
+            margin: 0 0.15em !important;
+            vertical-align: middle !important;
+            text-align: left !important;
+        }
+
+        #question-text mjx-container[display="true"] {
+            display: block !important;
+            width: auto !important;
+            max-width: 100% !important;
+            margin: 0.5em auto !important;
+            text-align: center !important;
+        }
+
+        #question-text mjx-container svg {
+            display: inline-block !important;
+            width: auto !important;
+            max-width: none !important;
+            height: auto !important;
+            margin: 0 !important;
+            vertical-align: middle !important;
+        }
+
+        #question-choices mjx-container:not([display="true"]) {
+            display: inline-block !important;
+            width: auto !important;
+            margin: 0 0.12em !important;
+            vertical-align: middle !important;
+        }
+
+        #question-media-container img,
+        #question-media-container svg {
+            display: block;
             max-width: 100%;
+            height: auto;
+            object-fit: contain;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        #question-media-container img,
+        #question-media-container svg,
+        #instant-question-image {
+            max-height: none;
         }
 
         #question-media-container {
             width: 100%;
             overflow-x: auto;
             -webkit-overflow-scrolling: touch;
+            text-align: center;
+        }
+
+        #question-media-container:not(:empty) {
+            margin: 4px 0;
         }
 
         @container question-main (min-width: 720px) {
@@ -1446,7 +1537,6 @@
             #question-media-container svg {
                 max-width: 100%;
                 width: auto;
-                height: auto;
             }
         }
 
@@ -1455,7 +1545,6 @@
             #question-media-container svg {
                 max-width: 100%;
                 width: 100%;
-                height: auto;
             }
         }
 
@@ -1465,25 +1554,53 @@
                 min-width: 560px;
                 max-width: none;
                 width: auto;
-                height: auto;
+            }
+        }
+
+        #question-choices {
+            width: 100%;
+            max-width: 100%;
+            margin-top: 0 !important;
+        }
+
+        .choice-list {
+            margin-top: 0;
+        }
+
+        @container question-main (max-width: 699px) {
+            #question-choices.choice-list.choice-grid-2x2 {
+                display: flex;
+                flex-direction: column;
+                grid-template-columns: unset;
+            }
+        }
+
+        @container question-main (min-width: 700px) {
+            #question-choices.choice-list.choice-grid-2x2 {
+                display: grid;
+                grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+                gap: 8px 12px;
             }
         }
 
         #scratchpad-container {
-            display: flex;
-            flex-direction: column;
-            height: clamp(320px, 50vh, 650px);
+            display: grid;
+            grid-template-rows: auto minmax(0, 1fr);
+            gap: 0;
+            width: 100%;
+            height: auto;
+            min-height: 0;
             max-height: none;
             overflow: hidden;
-            gap: 8px;
-            width: 100%;
+            padding: 0 16px 12px;
+            box-sizing: border-box;
         }
 
         .canvas-wrap {
             position: relative;
-            flex: 1 1 auto;
             width: 100%;
-            min-height: 240px;
+            min-height: 0;
+            height: 100%;
             overflow: hidden;
             border: 1px solid #ced4da;
             border-radius: 0 0 var(--r-lg, 8px) var(--r-lg, 8px);
@@ -1491,10 +1608,11 @@
 
         #handwriting-canvas,
         #drawing-background-canvas {
-            flex: none;
+            position: absolute;
+            inset: 0;
             width: 100% !important;
             height: 100% !important;
-            min-height: 240px;
+            min-height: 0 !important;
             display: block;
             touch-action: none;
         }
@@ -1506,11 +1624,24 @@
             flex: 0 0 auto;
             flex-wrap: nowrap;
             white-space: nowrap;
+            overflow: hidden;
+            max-width: 100%;
+            min-height: 44px;
+            position: static;
+            max-height: none;
+        }
+
+        .scratchpad-tools-primary {
+            flex: 1 1 auto;
+            min-width: 0;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-wrap: nowrap;
+            white-space: nowrap;
             overflow-x: auto;
             overflow-y: hidden;
             -webkit-overflow-scrolling: touch;
-            max-width: 100%;
-            min-height: 44px;
         }
 
         #scratchpad-controls .tool-btn,
@@ -1523,7 +1654,7 @@
             align-items: center;
             gap: 5px;
             flex: 0 0 auto;
-            margin-left: 6px;
+            margin-left: 0;
         }
 
         .canvas-actions {
@@ -1532,8 +1663,18 @@
             align-items: center;
             gap: 8px;
             flex: 0 0 auto;
+            flex-shrink: 0;
             flex-wrap: nowrap;
             white-space: nowrap;
+        }
+
+        #analyze-handwriting-button {
+            flex: 0 0 auto;
+            flex-shrink: 0;
+        }
+
+        #analyze-handwriting-button[hidden] {
+            display: none !important;
         }
 
         .canvas-actions button {
@@ -1544,35 +1685,18 @@
         .level-selector {
             flex-wrap: wrap;
             max-width: 100%;
-        }
-
-        .level-selector > * {
-            max-width: 100%;
+            gap: 8px;
         }
 
         .input-group {
             align-items: stretch;
             min-width: 0;
             max-width: 100%;
+            margin-top: 0;
         }
 
         #answer-input {
             min-width: 0;
-        }
-
-        #chat-history {
-            flex: 1 1 auto;
-            min-height: 180px;
-            overflow-y: auto;
-            overflow-x: hidden;
-        }
-
-        .bot-message,
-        .chat-message,
-        .user-message {
-            max-width: 100% !important;
-            overflow-wrap: anywhere;
-            word-break: break-word;
         }
 
         .suggestions-container {
@@ -1597,171 +1721,249 @@
             line-height: 1.35;
         }
 
-        .navbar,
-        nav,
-        .student-navbar,
-        .top-navbar,
-        .navbar-menu,
-        .nav-links,
-        .nav-items,
-        .navbar-content {
-            min-width: 0;
-            max-width: 100%;
+        .student-navbar {
+            flex: 0 0 auto;
         }
 
-        /* >= 1920px : 65% / 35% */
-        @media (min-width: 1920px) {
-            .practice-area {
-                flex: 0 0 65%;
-                max-width: 65%;
+        /* ===== Desktop: lock main stage to viewport ===== */
+        @media (min-width: 900px) {
+            html {
+                height: 100%;
             }
 
-            .chat-area {
-                flex: 0 0 35%;
-                max-width: 35%;
-                min-width: 320px;
-            }
-        }
-
-        /* 1280px – 1919px : 62% / 38% */
-        @media (min-width: 1280px) and (max-width: 1919px) {
-            .practice-area {
-                flex: 0 0 62%;
-                max-width: 62%;
-            }
-
-            .chat-area {
-                flex: 0 0 38%;
-                max-width: 38%;
-                min-width: 320px;
-            }
-
-            #question-text {
-                font-size: 1.15rem;
-            }
-        }
-
-        /* 965px – 1279px : dual 58% / 42% (主欄 >= 560px) */
-        @media (min-width: 965px) and (max-width: 1279px) {
-            .container {
-                flex-direction: row;
-            }
-
-            .practice-area {
-                flex: 0 0 58%;
-                max-width: 58%;
-            }
-
-            .chat-area {
-                flex: 1 1 42%;
-                min-width: 320px;
-                max-width: 42%;
-            }
-
-            #scratchpad-container {
-                height: clamp(340px, 48vh, 620px);
-            }
-        }
-
-        /* 900px – 964px : 主欄 < 560px → 上下排列 */
-        @media (min-width: 900px) and (max-width: 964px) {
-            .container {
+            body {
+                height: 100dvh;
+                max-height: 100dvh;
+                overflow: hidden;
+                display: flex;
                 flex-direction: column;
             }
 
-            .practice-area,
-            .chat-area {
-                flex: none;
-                width: 100%;
-                max-width: 100%;
+            .container {
+                flex: 1 1 auto;
+                height: calc(100dvh - var(--app-navbar-h));
+                max-height: calc(100dvh - var(--app-navbar-h));
+                overflow: hidden;
             }
 
-            .chat-area {
-                min-width: 0;
-                min-height: 36vh;
-                border-left: none;
-                border-top: 1px solid #dee2e6;
+            .practice-area {
+                display: grid;
+                grid-template-rows: auto minmax(0, auto) auto minmax(0, 1fr);
+                grid-template-areas:
+                    "header"
+                    "question"
+                    "answer"
+                    "canvas";
+                gap: var(--practice-gap);
+                height: 100%;
+                min-height: 0;
+                overflow: hidden;
+                padding-bottom: 8px;
+                box-sizing: border-box;
             }
 
-            #scratchpad-container {
-                height: clamp(360px, 52vh, 680px);
+            .practice-header-block {
+                grid-area: header;
+                padding: 10px 16px 0;
             }
-        }
 
-        /* < 900px : 強制單欄 */
-        @media (max-width: 899px) {
-            body {
+            .practice-question-block {
+                grid-area: question;
+                padding: 0 16px;
+                min-height: 0;
+                max-height: var(--question-scroll-max);
+                overflow-x: hidden;
                 overflow-y: auto;
             }
 
-            .container {
-                flex-direction: column;
-                overflow-x: hidden;
-                overflow-y: visible;
+            .practice-answer-block {
+                grid-area: answer;
+                padding: 0 16px;
             }
 
+            #scratchpad-container {
+                grid-area: canvas;
+                padding: 0 16px 8px;
+                min-height: 0;
+                height: auto;
+            }
+
+            .chat-area {
+                display: grid;
+                grid-template-rows: auto minmax(0, 1fr) auto auto auto;
+                grid-template-areas:
+                    "title"
+                    "history"
+                    "static"
+                    "dynamic"
+                    "input";
+                height: 100%;
+                min-height: 0;
+                overflow: hidden;
+            }
+
+            .chat-area > h3 {
+                grid-area: title;
+                margin-bottom: 6px;
+            }
+
+            #chat-history {
+                grid-area: history;
+                min-height: 0;
+                overflow-y: auto;
+                overflow-x: hidden;
+                flex: none;
+            }
+
+            #static-prompts {
+                grid-area: static;
+            }
+
+            #dynamic-prompts {
+                grid-area: dynamic;
+            }
+
+            .chat-input-area {
+                grid-area: input;
+            }
+        }
+
+        /* Column width breakpoints (unchanged intent) */
+        @media (min-width: 1920px) {
+            .practice-area { flex: 0 0 65%; max-width: 65%; }
+            .chat-area { flex: 0 0 35%; max-width: 35%; min-width: 320px; }
+        }
+
+        @media (min-width: 1280px) and (max-width: 1919px) {
+            .practice-area { flex: 0 0 62%; max-width: 62%; }
+            .chat-area { flex: 0 0 38%; max-width: 38%; min-width: 320px; }
+        }
+
+        @media (min-width: 965px) and (max-width: 1279px) {
+            .practice-area { flex: 0 0 58%; max-width: 58%; }
+            .chat-area { flex: 1 1 42%; min-width: 320px; max-width: 42%; }
+        }
+
+        @media (min-width: 900px) and (max-width: 964px) {
+            .container {
+                flex-direction: column;
+                overflow: hidden;
+            }
             .practice-area,
             .chat-area {
                 flex: none;
                 width: 100%;
                 max-width: 100%;
-                min-height: auto;
             }
-
             .practice-area {
-                box-shadow: none;
+                flex: 1 1 auto;
+                min-height: 0;
             }
-
             .chat-area {
+                flex: 0 0 auto;
+                height: auto;
+                max-height: min(36dvh, 360px);
+                min-height: 0;
                 border-left: none;
                 border-top: 1px solid #dee2e6;
-                min-width: 0;
-                min-height: 38vh;
-                padding: 14px;
+            }
+        }
+
+        /* Low-height desktop: compact spacing only */
+        @media (min-width: 900px) and (max-height: 900px) {
+            :root {
+                --practice-gap: 6px;
+                --question-scroll-max: min(32dvh, 340px);
             }
 
-            .practice-top {
-                padding: 12px 14px;
-            }
-
-            .practice-bottom {
-                padding: 12px;
+            .practice-header-block,
+            .practice-question-block,
+            .practice-answer-block {
+                padding-left: 12px;
+                padding-right: 12px;
             }
 
             #question-container {
-                padding: 14px;
-            }
-
-            #question-text {
-                font-size: 1.05rem !important;
-                line-height: 1.55;
+                padding: 14px 16px;
             }
 
             #scratchpad-container {
-                height: clamp(300px, 46vh, 560px);
-                min-height: 280px;
+                padding-bottom: 6px;
+            }
+        }
+
+        /* < 900px : natural single column, body scroll */
+        @media (max-width: 899px) {
+            body {
+                height: auto;
+                max-height: none;
+                overflow-x: hidden;
+                overflow-y: auto;
+                display: block;
             }
 
-            .practice-top h1 {
+            .container {
+                flex-direction: column;
+                height: auto;
+                max-height: none;
+                overflow: visible;
+            }
+
+            .practice-area {
+                display: flex;
+                flex-direction: column;
+                height: auto;
+                overflow: visible;
+            }
+
+            .practice-header-block,
+            .practice-question-block,
+            .practice-answer-block {
+                padding: 0 14px;
+            }
+
+            .practice-question-block {
+                max-height: none;
+                overflow: visible;
+            }
+
+            #scratchpad-container {
+                display: flex;
+                flex-direction: column;
+                min-height: 0;
+                height: auto;
+                max-height: none;
+                overflow: hidden;
+                padding: 0 12px 12px;
+            }
+
+            .canvas-wrap {
+                min-height: 200px;
+                flex: 1 1 auto;
+            }
+
+            .chat-area {
+                display: flex;
+                flex-direction: column;
+                height: auto;
+                min-height: 0;
+                overflow: visible;
+                border-left: none;
+                border-top: 1px solid #dee2e6;
+                padding: 14px;
+            }
+
+            #chat-history {
+                flex: 1 1 auto;
+                min-height: 160px;
+                max-height: none;
+            }
+
+            .practice-header-block h1,
+            #skill-title {
                 font-size: 1rem;
                 line-height: 1.45;
                 padding-right: 100px;
-            }
-
-            #streak-counter {
-                top: 12px;
-                right: 12px;
-                font-size: 0.82em;
-                padding: 4px 10px;
-            }
-
-            .level-selector {
-                align-items: stretch;
-            }
-
-            .level-selector .input-group {
-                margin-left: 0 !important;
-                width: 100%;
             }
 
             #scratchpad-controls .toolbar-label-text {
@@ -1769,12 +1971,14 @@
             }
         }
 
-        /* < 600px : 緊湊間距 + 最小字級 / 觸控 */
         @media (max-width: 599px) {
-            .practice-top,
-            .practice-bottom,
-            .chat-area {
-                padding: 8px 10px;
+            .practice-header-block,
+            .practice-question-block,
+            .practice-answer-block,
+            .chat-area,
+            #scratchpad-container {
+                padding-left: 10px;
+                padding-right: 10px;
             }
 
             #question-container {
@@ -1784,16 +1988,14 @@
 
             #question-text {
                 font-size: max(14px, 1rem) !important;
-                line-height: 1.5;
             }
 
             .bot-message {
                 font-size: max(14px, 0.95rem);
             }
 
-            .practice-top h1 {
+            #skill-title {
                 padding-right: 0;
-                margin-bottom: 10px;
             }
 
             #streak-counter {
@@ -1804,7 +2006,6 @@
 
             .input-group {
                 flex-direction: column;
-                gap: 8px;
             }
 
             #submit-button,
@@ -1814,7 +2015,6 @@
             }
 
             #scratchpad-container {
-                height: clamp(260px, 42vh, 480px);
                 min-height: 240px;
             }
 
@@ -1823,19 +2023,12 @@
             }
         }
 
-        /* 平板：工具列次要文字可隱藏 */
         @media (max-width: 1280px) {
             #scratchpad-controls .toolbar-label-text {
                 display: none;
             }
-
-            .canvas-actions button {
-                padding: 6px 10px;
-                font-size: 0.88rem;
-            }
         }
 
-        /* 觸控裝置：加大點擊區 */
         @media (pointer: coarse) {
             .tool-btn,
             .canvas-actions button,
@@ -1848,7 +2041,6 @@
 
             #scratchpad-controls {
                 gap: 10px;
-                padding-bottom: 4px;
             }
 
             input[type="range"] {
@@ -1866,7 +2058,7 @@
     <div class="container">
         <!-- 練習區 -->
         <div class="practice-area">
-            <div class="practice-top">
+            <div class="practice-header-block">
                 <h1 id="skill-title"> {{
                     skill_ch_name
                     }}
@@ -1921,8 +2113,8 @@
                     {% endif %}
 
                 </div>
-                <!-- 修改後的版面：問題和示意圖並排 -->
-                <!-- 修改後的版面：問題和示意圖並排 -->
+            </div>
+            <div class="practice-question-block">
                 <div class="question-content" id="question-container">
                     <div id="question-text">
                         {% if manual_review_unavailable %}
@@ -1949,6 +2141,8 @@
                     <div id="similar-ocr-preview" class="similar-preview-box" style="display:none;"></div>
                 </div>
                 {% endif %}
+            </div>
+            <div class="practice-answer-block">
                 <div id="subquestions-container" class="subquestions-container" style="display:none;"></div>
                 <div class="input-group"><input type="text" id="answer-input" placeholder="{% if manual_review_unavailable %}此題型尚未開放一般自動判分{% else %}輸入答案...{% endif %}"{% if manual_review_unavailable %} disabled aria-disabled="true"{% endif %}><button
                         id="submit-button"{% if manual_review_unavailable %} disabled aria-disabled="true"{% endif %}>{{ '檢查答案' if is_similar_practice else '提交' }}</button></div>
@@ -1968,6 +2162,7 @@
             </div>
             <div class="practice-bottom" id="scratchpad-container">
                 <div id="scratchpad-controls">
+                    <div class="scratchpad-tools-primary">
                     <button class="tool-btn active" onclick="setTool('pen', 'black')" title="黑筆" style="color: black;">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                             stroke-width="2">
@@ -2028,15 +2223,13 @@
                         <input type="range" id="pen-width" min="1" max="10" value="2" style="width: 60px;">
                         <span id="pen-width-label" class="toolbar-label-text" style="font-size: 0.8em; min-width: 15px;">2</span>
                     </div>
+                    </div>
 
                     <div class="canvas-actions">
-                        <button id="draw-diagram-button" class="tool-button"
-                            style="background-color: #27ae60; color: white;">繪製示意圖</button>
-                        <button id="undo-button">上一步</button>
-                        <button id="redo-button">下一步</button>
-                        <button id="upload-image-button">上傳圖片</button>
-
-                        <button id="analyze-handwriting-button">AI檢查</button>
+                        <button id="analyze-handwriting-button" type="button">AI檢查</button>
+                        <button id="undo-button" type="button">上一步</button>
+                        <button id="redo-button" type="button">下一步</button>
+                        <button id="upload-image-button" type="button">上傳圖片</button>
                     </div>
                 </div>
                 <div class="canvas-wrap">
@@ -2313,12 +2506,20 @@
     </style>
     <style>
         /* Practice chat layout guardrails (final override) */
-        .chat-area {
-            height: calc(100vh - 120px);
-            min-height: 0;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
+        @media (min-width: 900px) {
+            .chat-area {
+                height: 100%;
+                min-height: 0;
+                overflow: hidden;
+            }
+        }
+
+        @media (max-width: 899px) {
+            .chat-area {
+                height: auto;
+                min-height: 0;
+                overflow: visible;
+            }
         }
 
         #chat-history {
@@ -2338,9 +2539,9 @@
 
         #static-prompts,
         #dynamic-prompts {
-            max-height: 48px;
-            overflow-x: auto;
-            overflow-y: hidden;
+            max-height: none;
+            overflow-x: hidden;
+            overflow-y: visible;
         }
 
         /* === Final override: AI follow-up prompt buttons === */
@@ -2348,13 +2549,12 @@
         #static-prompts.suggestions-container {
             display: flex !important;
             flex-direction: column !important;
-            flex-wrap: nowrap !important;
+            flex-wrap: wrap !important;
             gap: 6px !important;
-            max-height: 132px !important;
-            overflow-y: auto !important;
+            max-height: none !important;
+            overflow-y: visible !important;
             overflow-x: hidden !important;
             padding: 4px 2px 6px 2px !important;
-            scrollbar-width: thin;
         }
 
         #dynamic-prompts .dynamic-prompt-btn,
@@ -2478,14 +2678,15 @@
             }
 
             // 初始化順序
+            updateAppViewportMetrics();
             initCanvas();
             setupTools();
+            setupChoiceGridLayoutObserver();
             setupAIButton();
             setupImageUpload(); // 新增：初始化圖片上傳功能
             setupLevelSelector(); // 新增：初始化難度選擇器
             setupChat();
             setupSubmit();
-            setupDiagramButton(); // 新增：初始化繪圖按鈕
             setupImageModal(); // 新增：初始化圖片放大功能
             if (PRACTICE_MODE === 'similar_practice') {
                 initializeSimilarPractice();
@@ -2977,6 +3178,15 @@
             drawQuestionImageBackground();
         }
 
+        function updateAppViewportMetrics() {
+            const nav = document.querySelector('.student-navbar');
+            const navH = nav ? Math.ceil(nav.getBoundingClientRect().height) : 52;
+            document.documentElement.style.setProperty('--app-navbar-h', `${navH}px`);
+            if (window.innerWidth >= 900) {
+                scheduleResizeCanvas();
+            }
+        }
+
         function scheduleResizeCanvas() {
             if (canvasResizeRaf) {
                 cancelAnimationFrame(canvasResizeRaf);
@@ -2993,8 +3203,14 @@
 
             const canvasWrap = canvas ? canvas.parentElement : null;
             if (!canvasResizeListenersAttached) {
-                window.addEventListener('resize', scheduleResizeCanvas);
-                window.addEventListener('orientationchange', scheduleResizeCanvas);
+                window.addEventListener('resize', () => {
+                    updateAppViewportMetrics();
+                    scheduleResizeCanvas();
+                });
+                window.addEventListener('orientationchange', () => {
+                    updateAppViewportMetrics();
+                    scheduleResizeCanvas();
+                });
                 canvasResizeListenersAttached = true;
             }
 
@@ -3037,10 +3253,7 @@
             blankCanvas = canvas.toDataURL();
             saveState();
             updateUndoRedoButtons();
-
-            if (analyzeBtn) {
-                analyzeBtn.style.display = 'inline-block';
-            }
+            applyDrawingUiContract();
         }
 
         // === [HiDPI Fix] DPR-aware resizeCanvas ===
@@ -4013,7 +4226,7 @@
                 const groupWrap = document.createElement('div');
                 groupWrap.className = 'multi-part-group';
                 if (group.label) {
-                    const groupLabel = document.createElement('div');
+                    const groupLabel = document.createElement('span');
                     groupLabel.className = 'multi-part-group-label';
                     groupLabel.textContent = group.label;
                     groupWrap.appendChild(groupLabel);
@@ -4148,29 +4361,61 @@
             return composite;
         }
 
-        function isDrawingQuestion(q) {
-            const cq = q || currentQuestion || {};
+        function isDrawingQuestion(questionInput) {
+            const cq = questionInput || currentQuestion || {};
             const contract = cq.answer_contract || {};
+            const ui = getMergedUiContract(cq);
             return (
                 contract.checker_key === 'free_response_drawing_checker' ||
                 contract.checker === 'free_response_drawing_checker' ||
-                contract.answer_type === 'drawing' ||
                 contract.answer_shape === 'drawing' ||
-                Boolean(q.expected_drawing_spec)
+                contract.answer_type === 'drawing' ||
+                ui.response_mode === 'drawing' ||
+                Boolean(cq.expected_drawing_spec)
             );
         }
 
-        function resolveDrawingUiContract(question) {
-            const contract = question?.answer_contract || {};
-            const ui = contract.ui_contract || {};
-            const drawing = isDrawingQuestion(question) || ui.response_mode === "drawing";
+        function getMergedUiContract(cq) {
+            const question = cq || {};
+            const contract = question.answer_contract || {};
+            const nested = (contract.ui_contract && typeof contract.ui_contract === 'object')
+                ? contract.ui_contract
+                : {};
+            const top = (question.ui_contract && typeof question.ui_contract === 'object')
+                ? question.ui_contract
+                : {};
+            return { ...nested, ...top };
+        }
+
+        function resolveAiCheckRequired(ui, drawing) {
+            if (ui.ai_check_required === true) {
+                return true;
+            }
+            if (ui.ai_check_required === false) {
+                return false;
+            }
+            if (drawing) {
+                return true;
+            }
+            const handwritingOn = ui.handwriting_enabled !== false;
+            const canvasOn = ui.canvas_required !== false;
+            if (handwritingOn && canvasOn) {
+                return true;
+            }
+            return false;
+        }
+
+        function resolveDrawingUiContract(cq) {
+            const question = cq || currentQuestion || {};
+            const ui = getMergedUiContract(question);
+            const drawing = isDrawingQuestion(question);
             const handwritingEnabled = ui.handwriting_enabled !== false;
             const canvasRequired = ui.canvas_required !== false;
             return {
                 responseMode: ui.response_mode || (drawing ? "drawing" : "text"),
                 textInputEnabled: drawing ? (ui.text_input_enabled === true) : (ui.text_input_enabled !== false),
                 normalSubmitEnabled: drawing ? (ui.normal_submit_enabled === true) : (ui.normal_submit_enabled !== false),
-                aiCheckRequired: drawing ? (ui.ai_check_required !== false) : (ui.ai_check_required === true),
+                aiCheckRequired: resolveAiCheckRequired(ui, drawing),
                 canvasRequired,
                 handwritingEnabled,
                 allowImageUpload: ui.allow_image_upload !== false,
@@ -4178,11 +4423,25 @@
             };
         }
 
+        function applyAnalyzeButtonVisibility(aiCheckRequired) {
+            if (!analyzeBtn) return;
+            if (aiCheckRequired) {
+                analyzeBtn.hidden = false;
+                analyzeBtn.removeAttribute('aria-hidden');
+                analyzeBtn.style.removeProperty('display');
+                analyzeBtn.disabled = false;
+            } else {
+                analyzeBtn.hidden = true;
+                analyzeBtn.setAttribute('aria-hidden', 'true');
+                analyzeBtn.disabled = true;
+            }
+        }
+
         function applyDrawingUiContract() {
             if (!answerInput || !submitBtn || !analyzeBtn) return;
-            const question = currentQuestion;
-            const uiContract = resolveDrawingUiContract(question);
-            const drawing = isDrawingQuestion(question) || uiContract.responseMode === "drawing";
+            const cq = currentQuestion || {};
+            const uiContract = resolveDrawingUiContract(cq);
+            const drawing = uiContract.responseMode === "drawing";
 
             answerInput.disabled = !uiContract.textInputEnabled;
             if (!uiContract.textInputEnabled) {
@@ -4200,21 +4459,18 @@
                 submitBtn.removeAttribute("aria-disabled");
             }
 
-            if (!uiContract.aiCheckRequired) {
-                analyzeBtn.style.display = 'none';
-                analyzeBtn.disabled = true;
-            } else {
-                analyzeBtn.style.display = '';
-                analyzeBtn.disabled = false;
-            }
+            applyAnalyzeButtonVisibility(uiContract.aiCheckRequired);
 
             const scratchpad = document.getElementById('scratchpad-container');
             if (scratchpad) {
-                const cq2 = currentQuestion || {};
-                const shape2 = String(cq2.answer_shape || (cq2.answer_contract && cq2.answer_contract.answer_type) || '').toLowerCase();
+                const shape = String(cq.answer_shape || (cq.answer_contract && cq.answer_contract.answer_type) || '').toLowerCase();
                 const handwritingShapes = new Set(['short_answer', 'multi_field', 'table_fill', 'multi_blank', 'multi_part']);
-                const forceShow = handwritingShapes.has(shape2) && uiContract.handwritingEnabled;
-                if (drawing || forceShow || (uiContract.handwritingEnabled && uiContract.canvasRequired)) {
+                const forceShow = handwritingShapes.has(shape) && uiContract.handwritingEnabled;
+                const showScratchpad = drawing
+                    || forceShow
+                    || uiContract.aiCheckRequired
+                    || (uiContract.handwritingEnabled && uiContract.canvasRequired);
+                if (showScratchpad) {
                     scratchpad.style.display = '';
                     scheduleResizeCanvas();
                 } else {
@@ -4727,15 +4983,71 @@
             });
         }
 
+        function isFourOptionSingleChoice(payload) {
+            const p = payload || currentQuestion || {};
+            const choices = getChoiceItems(p);
+            if (!Array.isArray(choices) || choices.length !== 4) {
+                return false;
+            }
+            const shape = String(
+                p.answer_shape
+                || (p.answer_contract && p.answer_contract.answer_shape)
+                || ''
+            ).toLowerCase();
+            const responseMode = String(
+                p.response_mode
+                || p.presentation_mode
+                || (p.answer_contract && p.answer_contract.presentation_mode)
+                || (p.answer_contract && p.answer_contract.response_mode)
+                || ''
+            ).toLowerCase();
+            const interaction = String(p.interaction_type || '').toLowerCase();
+            return shape === 'single_choice'
+                || responseMode === 'single_choice'
+                || interaction === 'single_choice';
+        }
+
+        let choiceGridResizeObserver = null;
+
+        function updateChoiceGridLayout(payload) {
+            if (!questionChoices) return;
+            questionChoices.classList.remove('choice-grid-2x2');
+            const p = payload || currentQuestion || {};
+            if (!isFourOptionSingleChoice(p)) {
+                return;
+            }
+            if (window.innerWidth < 600) {
+                return;
+            }
+            const width = questionChoices.getBoundingClientRect().width;
+            if (width >= 700) {
+                questionChoices.classList.add('choice-grid-2x2');
+            }
+        }
+
+        function setupChoiceGridLayoutObserver() {
+            if (!questionChoices || choiceGridResizeObserver) {
+                return;
+            }
+            choiceGridResizeObserver = new ResizeObserver(() => {
+                updateChoiceGridLayout(currentQuestion);
+            });
+            choiceGridResizeObserver.observe(questionChoices);
+            window.addEventListener('resize', () => {
+                updateChoiceGridLayout(currentQuestion);
+            });
+        }
+
         function renderChoices(payload) {
             if (!questionChoices) return;
             questionChoices.innerHTML = '';
+            questionChoices.classList.remove('choice-list', 'choice-grid-2x2');
             const choices = getChoiceItems(payload);
             if (!isChoiceQuestionPayload(payload) || !Array.isArray(choices) || choices.length === 0) {
                 questionChoices.style.display = 'none';
                 return;
             }
-            questionChoices.style.display = 'flex';
+            questionChoices.style.display = '';
             questionChoices.classList.add('choice-list');
             choices.forEach((choice, idx) => {
                 const rawText = extractChoiceText(choice).trim();
@@ -4759,6 +5071,7 @@
                 });
                 questionChoices.appendChild(button);
             });
+            requestAnimationFrame(() => updateChoiceGridLayout(payload));
         }
 
         function stripEmbeddedAbcdChoicesFromStem(text) {
@@ -4859,6 +5172,8 @@
             if (questionChoices && questionChoices.style.display !== 'none') {
                 renderMathContent(questionChoices);
             }
+            requestAnimationFrame(() => updateChoiceGridLayout(payload));
+            setTimeout(() => updateChoiceGridLayout(payload), 80);
             setTimeout(resetQuestionScroll, 0);
             setTimeout(resetQuestionScroll, 80);
             setTimeout(resetQuestionScroll, 250);
@@ -5050,100 +5365,6 @@
             };
         }
 
-        // === 新增：繪製示意圖 ===
-        function setupDiagramButton() {
-            const drawBtn = document.getElementById('draw-diagram-button');
-            const diagramImg = document.getElementById('diagram-image');
-            const loadingIndicator = document.getElementById('diagram-loading');
-            // 渲染追問按鈕的函式 (已修復 LaTeX 亂碼問題)
-            const renderFollowUpPrompts = (prompts) => {
-                // 1. 找到存放按鈕的容器
-                let suggestionsContainer = document.getElementById('suggestions');
-
-                // 如果找不到容器，動態建立一個放在對話紀錄下方 (防呆機制)
-                if (!suggestionsContainer) {
-                    suggestionsContainer = document.createElement('div');
-                    suggestionsContainer.id = 'suggestions';
-                    suggestionsContainer.style.padding = '10px';
-                    suggestionsContainer.style.display = 'flex';
-                    suggestionsContainer.style.gap = '10px';
-                    suggestionsContainer.style.flexWrap = 'wrap';
-                    const chatHistory = document.getElementById('chat-history');
-                    chatHistory.parentNode.insertBefore(suggestionsContainer, chatHistory.nextSibling);
-                }
-
-                suggestionsContainer.innerHTML = ''; // 清空舊的建議
-
-                prompts.forEach(promptText => {
-                    const btn = document.createElement('button');
-                    btn.className = 'suggestion-btn'; // 請確保 CSS 有設定這個 class 的樣式
-
-                    // --- 關鍵步驟 1: 使用剛剛寫好的 formatMathText 清洗文字 ---
-                    // 這會把 "如何計算 \sqrt{2}" 變成 "如何計算 $\sqrt{2}$"
-                    const safeText = formatMathText(promptText);
-
-                    btn.innerHTML = safeText;
-
-                    // 點擊按鈕後的動作 (自動發送訊息)
-                    btn.onclick = () => {
-                        const chatInput = document.getElementById('chat-input'); // 假設輸入框 ID
-                        chatInput.value = promptText; // 這裡可以用原始文字，因為傳給 AI 不需要 $
-                        // 觸發發送 (假設您的發送按鈕 ID 是 chat-send-btn)
-                        document.getElementById('chat-send-btn').click();
-                        suggestionsContainer.innerHTML = ''; // 點擊後清空建議
-                    };
-
-                    suggestionsContainer.appendChild(btn);
-                });
-
-                // --- 關鍵步驟 2: 告訴 MathJax 這裡有新東西要渲染 ---
-                if (window.MathJax) {
-                    window.MathJax.typesetPromise([suggestionsContainer]).then(() => {
-                        console.log('追問按鈕渲染完成');
-                    }).catch(err => console.error('按鈕渲染失敗:', err));
-                }
-            };
-
-            drawBtn.addEventListener('click', () => {
-                const question = questionText.innerText;
-                if (!question) {
-                    showCustomAlert('請先載入題目！');
-                    return;
-                }
-
-                loadingIndicator.style.display = 'block';
-                diagramImg.style.display = 'none';
-
-                fetch('/draw_diagram', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ question_text: question })
-                })
-                    .then(response => {
-                        if (!response.ok) {
-                            throw new Error('繪圖失敗，請查看伺服器日誌。');
-                        }
-                        return response.json();
-                    })
-                    .then(data => {
-                        if (data.success) {
-                            // 使用時間戳記來避免圖片快取問題
-                            diagramImg.src = data.image_path + '?t=' + new Date().getTime();
-                            diagramImg.style.display = 'block';
-                        } else {
-                            showCustomAlert(data.message || '繪圖時發生未知錯誤。');
-                        }
-                    })
-                    .catch(error => {
-                        console.error('繪圖請求失敗:', error);
-                        showCustomAlert(error.message);
-                    })
-                    .finally(() => {
-                        loadingIndicator.style.display = 'none';
-                    });
-            });
-        }
-
         // === 新增：顯示基礎技能建議 Modal ===
         function showPrereqSuggestionModal() {
             const modal = document.getElementById('prereqSuggestionModal');
@@ -5206,15 +5427,14 @@
                 if (isProcessing) return;
                 
                 const cq = currentQuestion || {};
-                const contract = cq.answer_contract || {};
-                const ui = contract.ui_contract || {};
+                const uiContract = resolveDrawingUiContract(cq);
 
                 if (isDrawingQuestion(cq)) {
                     submitDrawingAnswerFromCanvas('ai-check-button');
                     return;
                 }
 
-                if (ui.ai_check_required !== true) {
+                if (!uiContract.aiCheckRequired) {
                     console.warn(
                         "[PRACTICE UI] AI check blocked by ui_contract",
                         cq.problem_type_id
@@ -6161,8 +6381,32 @@ button#similar-reset-btn.level-button {
   border-radius: var(--r-md) !important;
 }
 
-/* MathJax — 自然融入文字 */
+/* MathJax — 自然融入文字（inline 保持句內；display math 才置中） */
 mjx-container { margin: 0 2px !important; }
+
+#question-text mjx-container:not([display="true"]) {
+  display: inline-block !important;
+  width: auto !important;
+  max-width: none !important;
+  margin: 0 0.15em !important;
+  vertical-align: middle !important;
+  text-align: left !important;
+}
+
+#question-text mjx-container[display="true"] {
+  display: block !important;
+  width: auto !important;
+  max-width: 100% !important;
+  margin: 0.5em auto !important;
+  text-align: center !important;
+}
+
+#question-text mjx-container svg {
+  display: inline-block !important;
+  width: auto !important;
+  margin: 0 !important;
+  vertical-align: middle !important;
+}
 
 /* Diagram container */
 .diagram-container {
@@ -6376,16 +6620,6 @@ span[style*="font-size: 0.8em"][style*="color: #666"] {
   box-shadow: none !important;
 }
 .canvas-actions button:disabled { opacity: 0.40 !important; cursor: not-allowed !important; }
-
-#draw-diagram-button {
-  background: var(--ok-bg) !important;
-  color: var(--ok-text) !important;
-  border-color: var(--ok-border) !important;
-}
-#draw-diagram-button:hover {
-  background: #d1ead9 !important;
-  color: var(--ok) !important;
-}
 
 #upload-image-button {
   background: var(--amber-bg) !important;
@@ -6693,7 +6927,6 @@ canvas {
 
 /* 題目文字舒適度：段落、MathJax 公式呼吸空間 */
 #question-text p { margin: 0 0 6px !important; }
-#question-text mjx-container { vertical-align: middle !important; }
 
 /* Toolbar label 文字 */
 .canvas-toolbar strong { color: var(--text-secondary) !important; }
